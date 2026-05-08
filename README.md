@@ -103,7 +103,7 @@ t('A brand new string nobody has translated yet')   // ✅ also fine
 
 The TypeScript trick is `T extends KnownSource | (string & {})` — known strings get autocomplete; new strings get accepted; nothing gets in your way. You also get autocomplete on `messages.sv['src/routes/home.tsx']['Recent writings']` if you really want to spelunk into the raw data. Refactoring is suddenly real: rename a string, find every site, fix typos with one click.
 
-Most i18n libs treat types as a stretch goal. yapyak treats them as table stakes.
+Most i18n libs treat types as a stretch goal. yapyak treats them as table stakes. 🐂
 
 ### Tiny footprint
 
@@ -168,7 +168,7 @@ Here's the trap with source-string-as-key i18n: the moment you change `t('Save c
 
 Every other source-string-as-key library has this problem. They wave their hands at it.
 
-yapyak doesn't.
+yapyak doesn't. 🐂
 
 When you save a file, yapyak compares the **positions** of every `t()` call against a position cache from your last save. If a string disappeared at line 12, column 5, and a new string appeared at the *exact same position*, that's not a deletion-and-addition. That's a rename. The translation is preserved. Your translator's work survives.
 
@@ -194,7 +194,7 @@ This is the kind of feature you don't notice until you don't have it — and the
 
 Here's where the clever founder would start thinking about money. Wrap the AI calls. Vibe code a nice looking "yapyak Cloud" in front. Charge $9/month per dev. Skim a margin off every translation. You know the playbook.
 
-We're not doing that. Not yet, anyway. Maybe never. Instead: bring your own AI. Whatever you want. Your Anthropic key, your OpenAI key, your self-hosted Llama, your fine-tuned DeepL endpoint, your wife who speaks Swedish. We don't care, we don't take a cut, we don't even know what model you're using — and frankly, we don't want to know.
+We're not doing that. Not yet, anyway. Maybe never. Instead: bring your own AI. Whatever you want. Your Anthropic key, your OpenAI key, your self-hosted Llama 🐂, your fine-tuned DeepL endpoint, your wife who speaks Swedish. We don't care, we don't take a cut, we don't even know what model you're using — and frankly, we don't want to know.
 
 The AI part is opt-in and pluggable:
 
@@ -256,7 +256,7 @@ t('{name, select, joakim {Hej} other {Hello}}, {greeting}', {
 // "Hej, world"
 ```
 
-Each locale becomes a chunk of compiled functions. Lazy-loaded. Cached. Fast.
+Each locale becomes a chunk of compiled functions. Lazy-loaded. Cached. Fast. 🐂
 
 ---
 
@@ -327,4 +327,4 @@ yapyak compile               # build static locale modules
 
 Early. Working great in production for one personal site so far. Built for Vite + React + TanStack Start; adapters for SvelteKit, Remix, and Astro coming as people ask for them.
 
-If you try it and something breaks, open an issue. If you try it and it's the best i18n DX you've used, tell someone.
+If you try it and something breaks, open an issue. If you try it and it's the best i18n DX you've used, tell someone. 🐂
