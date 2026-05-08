@@ -16,6 +16,11 @@
       "types": "./dist/vue/index.d.ts",
       "default": "./dist/vue/index.js"
     },
+    "./svelte": {
+      "types": "./dist/svelte/index.d.ts",
+      "svelte": "./dist/svelte/index.js",
+      "default": "./dist/svelte/index.js"
+    },
     "./vite": {
       "types": "./dist/vite/index.d.ts",
       "default": "./dist/vite/index.js"
@@ -32,7 +37,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && mkdir -p dist/svelte && cp src/svelte/*.svelte.ts dist/svelte/ && rm -f dist/svelte/*.svelte.js",
     "check": "biome check .",
     "check:write": "biome check --write .",
     "test": "vitest --run",
@@ -40,11 +45,15 @@
   },
   "peerDependencies": {
     "react": ">=19",
+    "svelte": ">=5",
     "vite": ">=5",
     "vue": ">=3.4"
   },
   "peerDependenciesMeta": {
     "react": {
+      "optional": true
+    },
+    "svelte": {
       "optional": true
     },
     "vite": {

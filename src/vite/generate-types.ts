@@ -1,6 +1,6 @@
 export interface GenerateTypesOptions {
   defaultLocale: string;
-  framework: 'react' | 'vue';
+  framework: 'react' | 'vue' | 'svelte';
   locales: string[];
   moduleName: string;
   translations: Record<string, Record<string, string>>;
@@ -33,8 +33,10 @@ export function generateTypes(options: GenerateTypesOptions): string {
     `  import type { ExtractParams, LocaleModule, MessageFunction } from 'yapyak';`,
   );
 
-  if (framework === 'vue') {
-    lines.push(`  import type { Ref } from 'vue';`);
+  if (framework === 'svelte') {
+    lines.push(`  import type { ReactiveLocale } from 'yapyak/svelte';`);
+  } else if (framework === 'vue') {
+    lines.push(`  import type { WritableComputedRef } from 'vue';`);
     lines.push(`  import type { YapyakPlugin } from 'yapyak/vue';`);
   } else {
     lines.push(`  import type {`);
@@ -56,9 +58,11 @@ export function generateTypes(options: GenerateTypesOptions): string {
   lines.push(`  ) => string;`);
   lines.push('');
 
-  if (framework === 'vue') {
+  if (framework === 'svelte') {
+    lines.push(`  export const locale: ReactiveLocale & { current: Locale };`);
+  } else if (framework === 'vue') {
     lines.push(`  export const yapyak: YapyakPlugin;`);
-    lines.push(`  export const useLocale: () => Ref<Locale>;`);
+    lines.push(`  export const useLocale: () => WritableComputedRef<Locale>;`);
   } else {
     lines.push(`  export const IntlProvider: FC<IntlProviderProps>;`);
     lines.push(
@@ -90,7 +94,10 @@ export function generateTypes(options: GenerateTypesOptions): string {
   lines.push(`  export const getLocale: () => Locale;`);
   lines.push('');
 
-  if (framework === 'vue') {
+  if (framework === 'svelte') {
+    lines.push(`  import type { Intl as SvelteIntl } from 'yapyak/svelte';`);
+    lines.push(`  const intl: SvelteIntl;`);
+  } else if (framework === 'vue') {
     lines.push(`  const intl: YapyakPlugin;`);
   } else {
     lines.push(`  const intl: Intl;`);

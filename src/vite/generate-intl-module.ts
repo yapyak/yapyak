@@ -2,7 +2,7 @@ export interface GenerateIntlModuleOptions {
   acceptLanguage: boolean;
   cookie: string | undefined;
   defaultLocale: string;
-  framework: 'react' | 'vue';
+  framework: 'react' | 'vue' | 'svelte';
   hasTanStack: boolean;
   locales: string[];
   moduleName: string;
@@ -19,7 +19,12 @@ export function generateIntlModule(options: GenerateIntlModuleOptions): string {
     moduleName,
   } = options;
   const lines: string[] = [];
-  const adapter = framework === 'vue' ? 'yapyak/vue' : 'yapyak/react';
+  const adapter =
+    framework === 'vue'
+      ? 'yapyak/vue'
+      : framework === 'svelte'
+        ? 'yapyak/svelte'
+        : 'yapyak/react';
 
   lines.push(
     `import { createIntl, parseAcceptLanguage, parseCookie, serializeCookie } from '${adapter}';`,
@@ -133,13 +138,31 @@ export function generateIntlModule(options: GenerateIntlModuleOptions): string {
   lines.push(`}`);
   lines.push('');
 
-  if (framework === 'vue') {
-    lines.push(`export const useLocale = intl.useLocale;`);
+  if (framework === 'svelte') {
+    lines.push(`const locale = {`);
+    lines.push(`  get current() { return intl.locale.current; },`);
+    lines.push(`  set current(next) { void setLocale(next); },`);
+    lines.push(`};`);
+    lines.push('');
+    lines.push(`export const t = intl.t;`);
+    lines.push(`export const getLocale = intl.getLocale;`);
+    lines.push(`export { locale, messages, setLocale };`);
+    lines.push(`export default intl;`);
+  } else if (framework === 'vue') {
+    lines.push(`import { computed } from 'vue';`);
+    lines.push(`const baseUseLocale = intl.useLocale;`);
+    lines.push(`function useLocale() {`);
+    lines.push(`  const baseRef = baseUseLocale();`);
+    lines.push(`  return computed({`);
+    lines.push(`    get: () => baseRef.value,`);
+    lines.push(`    set: (next) => { void setLocale(next); },`);
+    lines.push(`  });`);
+    lines.push(`}`);
     lines.push('');
     lines.push(`export const t = intl.t;`);
     lines.push(`export const yapyak = intl;`);
     lines.push(`export const getLocale = intl.getLocale;`);
-    lines.push(`export { messages, setLocale };`);
+    lines.push(`export { messages, setLocale, useLocale };`);
     lines.push(`export default intl;`);
   } else {
     lines.push(`const baseUseLocale = intl.useLocale;`);

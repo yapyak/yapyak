@@ -1,11 +1,4 @@
 import {
-  type App,
-  computed,
-  onScopeDispose,
-  ref,
-  type WritableComputedRef,
-} from 'vue';
-import {
   createRuntime,
   type ExtractParams,
   type LocaleModule,
@@ -26,16 +19,19 @@ export type Translate = <T extends string>(
     : [params: ExtractParams<T>]
 ) => string;
 
-export interface YapyakPlugin {
-  install: (app: App) => void;
+export interface ReactiveLocale {
+  current: string;
+}
+
+export interface Intl {
   getLocale: () => string;
   setLocale: (locale: string) => Promise<void>;
   setLocaleSync: (locale: string, module: LocaleModule) => void;
+  locale: ReactiveLocale;
   t: Translate;
-  useLocale: () => WritableComputedRef<string>;
 }
 
-export function createIntl(options: CreateIntlOptions): YapyakPlugin {
+export function createIntl(options: CreateIntlOptions): Intl {
   const { defaultLocale, detectLocale, loader, locales, messages } = options;
 
   const runtime = createRuntime({
@@ -46,32 +42,26 @@ export function createIntl(options: CreateIntlOptions): YapyakPlugin {
     messages,
   });
 
-  const localeTracker = ref(runtime.getLocale());
+  let localeState = $state(runtime.getLocale());
   runtime.subscribe(() => {
-    localeTracker.value = runtime.getLocale();
+    localeState = runtime.getLocale();
   });
 
-  function useLocale(): WritableComputedRef<string> {
-    const localeRef = ref(runtime.getLocale());
-    const unsub = runtime.subscribe(() => {
-      localeRef.value = runtime.getLocale();
-    });
-    onScopeDispose(unsub);
-
-    return computed({
-      get: () => localeRef.value,
-      set: (next: string) => {
-        void runtime.setLocale(next);
-      },
-    });
-  }
+  const locale: ReactiveLocale = {
+    get current(): string {
+      return localeState;
+    },
+    set current(next: string) {
+      void runtime.setLocale(next);
+    },
+  };
 
   function translate(
     source: string,
     params?: Record<string, unknown>,
     fileId?: string,
   ): string {
-    void localeTracker.value;
+    void localeState;
     if (!fileId) {
       return source;
     }
@@ -79,13 +69,10 @@ export function createIntl(options: CreateIntlOptions): YapyakPlugin {
   }
 
   return {
-    install(_app: App) {
-      // Reserved for future setup (devtools, global mixins).
-    },
     getLocale: runtime.getLocale,
     setLocale: runtime.setLocale,
     setLocaleSync: runtime.setLocaleSync,
+    locale,
     t: translate as Translate,
-    useLocale,
   };
 }

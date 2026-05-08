@@ -1,0 +1,8 @@
+{
+  "src/app.vue": {
+    "Hello, world": "Hej, världen",
+    "This is the yapyak Vue example.": "Detta är yapyak-exemplet för Vue.",
+    "Hello {name}": "Hej {name}",
+    "You have {count, plural, one {# message} other {# messages}}": "Du har {count, plural, one {# meddelande} other {# meddelanden}}"
+  }
+}

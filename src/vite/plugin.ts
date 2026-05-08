@@ -16,7 +16,7 @@ export interface YapyakPluginOptions {
   cookie?: string;
   defaultLocale?: string;
   factories?: string[];
-  framework?: 'react' | 'vue';
+  framework?: 'react' | 'vue' | 'svelte';
   intlModules?: string[];
   locales?: string[];
   localesDir?: string;
@@ -82,7 +82,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
     locales = [defaultLocale],
     localesDir = 'locales',
     moduleName = 'yapyak',
-    source = ['src/**/*.{ts,tsx,js,jsx,mjs,cjs}'],
+    source = ['src/**/*.{ts,tsx,js,jsx,mjs,cjs,vue,svelte}'],
   } = options;
 
   const autoTranslate = ai?.autoTranslate ?? false;
@@ -138,7 +138,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
       return false;
     }
     const cleaned = stripQuery(id);
-    return /\.(?:tsx?|jsx?|mjs|cjs)$/.test(cleaned);
+    return /\.(?:tsx?|jsx?|mjs|cjs|vue|svelte)$/.test(cleaned);
   }
 
   function toFileId(id: string): string {

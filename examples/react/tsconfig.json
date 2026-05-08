@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2023",
+    "types": ["vite/client"],
+    "verbatimModuleSyntax": true
+  },
+  "include": ["src/**/*", "node_modules/.cache/yapyak/types.d.ts"]
+}
