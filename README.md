@@ -262,17 +262,36 @@ Each locale becomes a chunk of compiled functions. Lazy-loaded. Cached. Fast. �
 
 ## Comparison
 
-|                                       | yapyak | next-intl | react-intl | i18next |
-|---------------------------------------|--------|-----------|------------|---------|
-| Source-string-as-key                  | ✅      | ❌         | ❌          | ❌       |
-| File-scoped translations              | ✅      | ❌         | ❌          | ❌       |
-| AOT-compiled messages                 | ✅      | ❌         | ❌          | ❌       |
-| Type-safe params from source          | ✅      | partial   | ❌          | ❌       |
-| Built-in AI translation               | ✅      | ❌         | ❌          | ❌       |
-| Auto-translate on save (HMR)          | ✅      | ❌         | ❌          | ❌       |
-| Position-aware translation memory     | ✅      | ❌         | ❌          | ❌       |
-| Zero-config SSR                       | ✅      | ❌         | ❌          | ❌       |
-| One package                           | ✅      | ✅         | ❌          | ❌       |
+Receipts at the bottom — these aren't vibes, they're verified against each library's actual docs as of May 2026 (Paraglide v2, Lingui v6, next-intl 4.0, etc.).
+
+Legend: ✅ shipped and idiomatic · ⚠️ partial / requires opt-in / clunky · ❌ not supported
+
+| Feature                            | yapyak | next-intl | react-intl | i18next | lingui | paraglide | tolgee | languine |
+|------------------------------------|--------|-----------|------------|---------|--------|-----------|--------|----------|
+| Source-string-as-key               |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ❌   |    ❌     |
+| File-scoped translations           |   ✅    |     ❌     |     ❌      |    ❌    |   ⚠️    |     ❌     |    ❌   |    ❌     |
+| AOT-compiled messages              |   ✅    |     ❌     |     ⚠️      |    ❌    |   ✅    |     ✅     |    ❌   |   N/A    |
+| Type-safe params from source       |   ✅    |     ⚠️     |     ❌      |    ⚠️    |   ⚠️    |     ✅     |    ❌   |   N/A    |
+| Autocomplete on `t()` calls        |   ✅    |     ⚠️     |     ❌      |    ⚠️    |   ❌    |     ✅     |    ❌   |   N/A    |
+| Built-in AI translation            |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ✅   |    ✅     |
+| Auto-translate on save (HMR)       |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ❌   |    ❌     |
+| Position-aware translation memory  |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ❌   |    ⚠️     |
+| Zero-config SSR                    |   ✅    |     ⚠️     |     ❌      |    ❌    |   ❌    |     ✅     |    ❌   |   N/A    |
+| One package                        |   ✅    |     ✅     |     ❌      |    ❌    |   ❌    |     ✅     |    ❌   |    ✅     |
+| Minimal API surface                |   ✅    |     ⚠️     |     ❌      |    ❌    |   ⚠️    |     ✅     |    ❌   |    ✅     |
+| Good UX                            |   ✅    |     ⚠️     |     ❌      |    ⚠️    |   ⚠️    |     ✅     |    ⚠️   |    ⚠️     |
+
+**The receipts:**
+
+- **next-intl** uses abstract keys (`t('home.welcome')`), no AOT, requires Next-specific routing/middleware setup. Type augmentation is opt-in. ([docs](https://next-intl.dev/docs/usage/configuration))
+- **react-intl** is the FormatJS suite — multiple packages (`@formatjs/*`), abstract message IDs, verbose `<FormattedMessage>` API.
+- **i18next** is the everywhere-default and shows it: `i18next` + `react-i18next` + `i18next-resources-to-backend` + plugins. Abstract keys. Type-safety is bolted on via TS augmentation.
+- **lingui v6** (April 2026) has macros and AOT compilation, but auto-generates short hash IDs by default (e.g. `"nwR43V"`); source-string-as-key requires explicit IDs. File-scoping needs manual `context=`. Multiple `@lingui/*` packages. ([release notes](https://lingui.dev/blog/2026/04/22/announcing-lingui-6.0))
+- **paraglide v2** (inlang) is the closest peer — compiler-based, tree-shakeable, AsyncLocalStorage SSR, single package. But messages are abstract keys (`m.greeting()`), no AI, no HMR-translate, no rename detection. ([repo](https://github.com/opral/paraglide-js))
+- **tolgee** has built-in AI translation — but it lives in their cloud platform, not the library. The library itself is essentially i18next under the hood. ([features](https://tolgee.io/features/ai-translation))
+- **languine** is a CLI tool that AI-translates JSON files via git diff. Not a library — runs separately, no runtime, no autocomplete, no SSR concerns. Position-aware ⚠️ via git-diff but not real rename detection. ([repo](https://github.com/languine-ai/languine))
+
+**yapyak is the only library that does all of this in one package** — and the only one that does *any* of source-string-as-key + file-scoped + auto-translate-on-save + position-aware memory.
 
 ---
 
