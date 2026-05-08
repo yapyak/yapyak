@@ -1,0 +1,62 @@
+{
+  "name": "yapyak",
+  "version": "0.0.0",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "default": "./dist/react/index.js"
+    },
+    "./vite": {
+      "types": "./dist/vite/index.d.ts",
+      "default": "./dist/vite/index.js"
+    },
+    "./compiler": {
+      "types": "./dist/compiler/index.d.ts",
+      "default": "./dist/compiler/index.js"
+    }
+  },
+  "bin": {
+    "yapyak": "./dist/cli/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "biome check .",
+    "check:write": "biome check --write .",
+    "test": "vitest --run",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": ">=19",
+    "vite": ">=5"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "vite": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.13",
+    "@types/node": "25.6.0",
+    "@types/react": "19.2.14",
+    "react": "19.2.5",
+    "typescript": "6.0.3",
+    "vite": "8.0.10",
+    "vitest": "3.0.4"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.33.0"
+}
