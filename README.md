@@ -1,4 +1,4 @@
-# yapyak
+# yapyak 🐂
 
 > **Let your app yak in any language.**
 >
@@ -60,7 +60,7 @@ export function App() {
 }
 ```
 
-That's it. Save the file. The plugin extracts `'Hello'`, asks Claude for a Swedish version, writes `locales/sv.json`, hot-reloads the page. You're done in three seconds.
+That's it. Save the file. The plugin extracts `'Hello'`, asks Claude for a Swedish version, writes `locales/sv.json`, hot-reloads the page. You're done in three seconds. 🐂
 
 ---
 
