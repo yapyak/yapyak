@@ -10,6 +10,10 @@ yapyak doesn't have that problem. Not for the next few years, anyway. It's writt
 
 The goal of yapyak is to eliminate all of that — and not feel enterprise-y while doing it. And ride the AI wave a little while we're at it.
 
+> *"Finally someone rethought this whole darn thing."*
+>
+> — a developer, somewhere, allegedly 🐂
+
 ### Vite-only, and proud of it
 
 yapyak is Vite-only. On purpose. Vite is awesome, it's pretty much the standard now, and going framework-agnostic means meeting eight different bundlers' edge cases halfway and pleasing none of them. We'd rather be excellent in one place than mediocre everywhere. If you're on Webpack or Rollup-without-Vite — we're not your tool, and that's fine.
