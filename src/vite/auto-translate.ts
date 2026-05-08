@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, sep } from 'node:path';
-import type { TranslateFunction } from '../ai/index.js';
+import type { Provider } from '../ai/index.js';
 import { extractMessages } from '../compiler/index.js';
 import { findBareBindings } from './find-bare-bindings.js';
 
@@ -12,7 +12,7 @@ export interface AutoTranslateOptions {
   locales: string[];
   localesDir: string;
   projectRoot: string;
-  translate: TranslateFunction;
+  provider: Provider;
   voice: string;
 }
 
@@ -103,23 +103,16 @@ export function createAutoTranslator(
         process.stdout.write(
           `[yapyak] translating ${missing.length} string${missing.length === 1 ? '' : 's'} → ${locale}\n`,
         );
-        for (const source of missing) {
-          try {
-            const translation = await options.translate({
-              defaultLocale: options.defaultLocale,
-              fileId,
-              glossary: options.glossary,
-              source,
-              targetLocale: locale,
-              voice: options.voice,
-            });
-            localeFile[source] = translation;
-            didTranslate = true;
-          } catch (error) {
-            const message =
-              error instanceof Error ? error.message : String(error);
-            process.stderr.write(`[yapyak] translate failed: ${message}\n`);
-          }
+
+        const translations = await translateMissing({
+          fileId,
+          locale,
+          missing,
+          options,
+        });
+        for (const [source, translation] of Object.entries(translations)) {
+          localeFile[source] = translation;
+          didTranslate = true;
         }
         localeJson[fileId] = localeFile;
         writeJson(localePath, sortFiles(localeJson));
@@ -132,6 +125,64 @@ export function createAutoTranslator(
   }
 
   return { onSourceFileChange };
+}
+
+interface TranslateMissingOptions {
+  fileId: string;
+  locale: string;
+  missing: string[];
+  options: AutoTranslateOptions;
+}
+
+async function translateMissing(
+  args: TranslateMissingOptions,
+): Promise<Record<string, string>> {
+  const { fileId, locale, missing, options } = args;
+  const result: Record<string, string> = {};
+
+  if (missing.length > 1 && options.provider.translateBatch) {
+    try {
+      const batch = await options.provider.translateBatch({
+        defaultLocale: options.defaultLocale,
+        glossary: options.glossary,
+        sources: missing,
+        targetLocale: locale,
+        voice: options.voice,
+      });
+      for (let i = 0; i < missing.length; i++) {
+        const source = missing[i];
+        const translation = batch[i];
+        if (source && translation !== undefined) {
+          result[source] = translation;
+        }
+      }
+      return result;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      process.stderr.write(
+        `[yapyak] batch failed (${message}), falling back to one-by-one\n`,
+      );
+    }
+  }
+
+  for (const source of missing) {
+    try {
+      const translation = await options.provider.translate({
+        defaultLocale: options.defaultLocale,
+        fileId,
+        glossary: options.glossary,
+        source,
+        targetLocale: locale,
+        voice: options.voice,
+      });
+      result[source] = translation;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      process.stderr.write(`[yapyak] translate failed: ${message}\n`);
+    }
+  }
+
+  return result;
 }
 
 function sourceLocalePath(options: AutoTranslateOptions): string {

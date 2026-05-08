@@ -37,7 +37,7 @@ function serializableAi(ai: AiOptions | undefined): SerializedAi | undefined {
   if (!ai) {
     return undefined;
   }
-  if (typeof ai.provider === 'function') {
+  if (ai.provider !== 'anthropic' && ai.provider !== 'openai') {
     return undefined;
   }
   const result: SerializedAi = {
@@ -98,6 +98,30 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
   let server: ViteDevServer | undefined;
   let autoTranslator: AutoTranslator | undefined;
 
+  function writeTypes(): void {
+    const sourcePath = join(projectRoot, localesDir, `${defaultLocale}.json`);
+    let translations: Record<string, Record<string, string>> = {};
+    if (existsSync(sourcePath)) {
+      try {
+        const raw = readFileSync(sourcePath, 'utf8');
+        if (raw.trim() !== '') {
+          translations = JSON.parse(raw);
+        }
+      } catch {
+        translations = {};
+      }
+    }
+    const types = generateTypes({
+      defaultLocale,
+      locales,
+      moduleName,
+      translations,
+    });
+    const cacheDir = join(projectRoot, CACHE_DIR);
+    mkdirSync(cacheDir, { recursive: true });
+    writeFileSync(join(cacheDir, 'types.d.ts'), types);
+  }
+
   function stripQuery(id: string): string {
     const queryIndex = id.indexOf('?');
     return queryIndex === -1 ? id : id.slice(0, queryIndex);
@@ -136,8 +160,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
       const cacheDir = join(projectRoot, CACHE_DIR);
       mkdirSync(cacheDir, { recursive: true });
 
-      const types = generateTypes({ defaultLocale, locales, moduleName });
-      writeFileSync(join(cacheDir, 'types.d.ts'), types);
+      writeTypes();
 
       const cachedConfig = {
         ai: serializableAi(ai),
@@ -164,7 +187,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
           );
         } else {
           try {
-            const translate = resolveProvider(ai);
+            const provider = resolveProvider(ai);
             autoTranslator = createAutoTranslator({
               defaultLocale,
               factories,
@@ -173,7 +196,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
               locales,
               localesDir,
               projectRoot,
-              translate,
+              provider,
               voice,
             });
           } catch (error) {
@@ -189,6 +212,9 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
         const dir = resolve(projectRoot, localesDir);
         if (!path.startsWith(dir)) {
           return;
+        }
+        if (path.endsWith(`${defaultLocale}.json`)) {
+          writeTypes();
         }
         for (const locale of locales) {
           const moduleId = `${VIRTUAL_LOCALE_RESOLVED_PREFIX}${locale}`;

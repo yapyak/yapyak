@@ -89,9 +89,38 @@ Total elapsed time: 1–3 seconds. No build step. No CLI loop. No waiting for a 
 
 Locale codes are a discriminated union: `setLocale('haha')` is a TypeScript error. Translation params are inferred from the source string: `t('Hello {name}')` *requires* `{ name }`, `t('Hello')` *forbids* a second argument. Mess up your ICU plural? You'll know at compile time.
 
+### Autocomplete that actually knows your strings
+
+This is the part where i18n libraries usually shrug. Either your keys are abstract identifiers (autocomplete works, but you've already lost), or your keys are the strings themselves and autocomplete just gives up.
+
+yapyak does both. The Vite plugin reads your locale files, generates a literal-typed union of every source string in your project, and rewires `t()` to autocomplete on it — while *still* letting you type a new string the second you need one. No registration step. No "add this to your messages.json first" dance.
+
+```tsx
+t('R')   // ↑ autocomplete suggests "Recent writings"
+t('Save changes')   // ↑ autocomplete from history
+t('A brand new string nobody has translated yet')   // ✅ also fine
+```
+
+The TypeScript trick is `T extends KnownSource | (string & {})` — known strings get autocomplete; new strings get accepted; nothing gets in your way. You also get autocomplete on `messages.sv['src/routes/home.tsx']['Recent writings']` if you really want to spelunk into the raw data. Refactoring is suddenly real: rename a string, find every site, fix typos with one click.
+
+Most i18n libs treat types as a stretch goal. yapyak treats them as table stakes.
+
 ### Tiny footprint
 
-The usual i18n library asks you to install a dozen sub-packages, scaffold a directory tree, configure a Babel plugin, and figure out where the messages live. yapyak is one package with a Vite plugin. Everything else — the runtime module, the per-locale chunks, the type declarations — is generated and cached invisibly inside `node_modules/.cache/`. Your repo gets `locales/sv.json` and one line in `tsconfig.json`. That's it.
+The usual i18n library asks you to install a dozen sub-packages, scaffold a directory tree, configure a Babel plugin, and figure out where the messages live. yapyak is one package with a Vite plugin. Everything else — the runtime module, the per-locale chunks, the type declarations — is generated and cached invisibly inside `node_modules/.cache/`. Your repo gets `locales/sv.json`, and one ugly line in `tsconfig.json`:
+
+```jsonc
+{
+  "include": ["src/**/*", "node_modules/.cache/yapyak/types.d.ts"]
+  //                       ^ yes, this is the ugliest line in your config.
+  //                         we hate it too. but TypeScript needs to find
+  //                         the auto-generated types somewhere, and this
+  //                         is the only place it doesn't pollute. promise:
+  //                         this is the ugliest yapyak ever asks you to be.
+}
+```
+
+That's it. `yapyak init` adds it for you. After that, you never touch it again.
 
 ### SSR-ready, no manual wiring
 

@@ -7,7 +7,23 @@ export interface TranslateInput {
   voice: string;
 }
 
+export interface BatchTranslateInput {
+  defaultLocale: string;
+  glossary: Record<string, Record<string, string>>;
+  sources: string[];
+  targetLocale: string;
+  voice: string;
+}
+
 export type TranslateFunction = (input: TranslateInput) => Promise<string>;
+export type BatchTranslateFunction = (
+  input: BatchTranslateInput,
+) => Promise<string[]>;
+
+export interface Provider {
+  translate: TranslateFunction;
+  translateBatch?: BatchTranslateFunction | undefined;
+}
 
 export type AnthropicModel =
   | 'claude-opus-4-7'
@@ -35,7 +51,7 @@ export type AiOptions = AiBaseOptions &
         provider: 'openai';
       }
     | {
-        provider: TranslateFunction;
+        provider: TranslateFunction | Provider;
       }
   );
 
