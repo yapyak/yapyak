@@ -128,7 +128,7 @@ export function generateIntlModule(options: GenerateIntlModuleOptions): string {
   lines.push(`});`);
   lines.push('');
 
-  lines.push(`async function setLocale(locale) {`);
+  lines.push(`function setLocale(locale) {`);
   if (cookie) {
     lines.push(`  if (typeof document !== 'undefined') {`);
     lines.push(`    document.cookie = serializeCookie(COOKIE_NAME, locale);`);

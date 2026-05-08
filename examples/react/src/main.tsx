@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { IntlProvider } from 'yapyak';
 import { App } from './app.js';
 
 const root = document.getElementById('root');
@@ -9,6 +10,8 @@ if (!root) {
 
 createRoot(root).render(
   <StrictMode>
-    <App />
+    <IntlProvider>
+      <App />
+    </IntlProvider>
   </StrictMode>,
 );

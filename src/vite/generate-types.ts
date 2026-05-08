@@ -66,7 +66,7 @@ export function generateTypes(options: GenerateTypesOptions): string {
   } else {
     lines.push(`  export const IntlProvider: FC<IntlProviderProps>;`);
     lines.push(
-      `  export const useLocale: () => readonly [Locale, (locale: Locale) => Promise<void>];`,
+      `  export const useLocale: () => readonly [Locale, (locale: Locale) => void];`,
     );
     lines.push(`  export const useTranslation: Intl['useTranslation'];`);
   }
@@ -90,7 +90,7 @@ export function generateTypes(options: GenerateTypesOptions): string {
   }
 
   lines.push('');
-  lines.push(`  export const setLocale: (locale: Locale) => Promise<void>;`);
+  lines.push(`  export const setLocale: (locale: Locale) => void;`);
   lines.push(`  export const getLocale: () => Locale;`);
   lines.push('');
 
