@@ -14,9 +14,11 @@ The goal of yapyak is to eliminate all of that — and not feel enterprise-y whi
 >
 > — a developer, somewhere, allegedly 🐂
 
-### Vite-only, and proud of it
+### Vite-only
 
-yapyak is Vite-only. On purpose. Vite is awesome, it's pretty much the standard now, and going framework-agnostic means meeting eight different bundlers' edge cases halfway and pleasing none of them. We'd rather be excellent in one place than mediocre everywhere. If you're on Webpack or Rollup-without-Vite — we're not your tool, and that's fine.
+Yapyak only exists because Vite exists. The "save a file, the right thing happens, immediately" experience that makes auto-translate-on-save feel like magic — that's Vite's contribution to the field, and Evan You and the team did the hard work. We're just standing on it.
+
+So we made a deliberate choice: Vite-only. Going framework-agnostic would mean meeting eight different bundlers' edge cases halfway and pleasing none of them. We'd rather be excellent in one place than mediocre everywhere. If you're on Webpack or Rollup-without-Vite, we're not your tool — and that's fine.
 
 ---
 
