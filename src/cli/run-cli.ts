@@ -101,6 +101,9 @@ function handleExtract(projectRoot: string): void {
   if (result.removed > 0) {
     console.log(`  -${result.removed} removed`);
   }
+  if (result.renamed > 0) {
+    console.log(`  ↻ ${result.renamed} renamed (translations preserved)`);
+  }
 }
 
 async function handleTranslate(
@@ -136,6 +139,11 @@ async function handleCheck(projectRoot: string, args: string[]): Promise<void> {
 
   if (write) {
     const extractResult = runExtract(projectRoot);
+    if (extractResult.renamed > 0) {
+      console.log(
+        `✔ Detected ${extractResult.renamed} rename(s); translations preserved`,
+      );
+    }
     if (extractResult.removed > 0) {
       console.log(`✔ Removed ${extractResult.removed} stale string(s)`);
     }
@@ -149,7 +157,11 @@ async function handleCheck(projectRoot: string, args: string[]): Promise<void> {
         console.log(`✔ ${result.locale}: ${result.translated} translated`);
       }
     }
-    if (extractResult.removed === 0 && totalTranslated === 0) {
+    if (
+      extractResult.removed === 0 &&
+      extractResult.renamed === 0 &&
+      totalTranslated === 0
+    ) {
       console.log('✓ Nothing to fix');
     }
     return;

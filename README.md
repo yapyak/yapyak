@@ -162,6 +162,34 @@ If you're on TanStack Start (and we'll add adapters for others), `<IntlProvider>
 </html>
 ```
 
+### Position-aware translation memory
+
+Here's the trap with source-string-as-key i18n: the moment you change `t('Save changes')` to `t('Save')`, you lose the connection to the existing translation. Your translator's careful work — or, let's be honest, the AI agent's careful work that nobody had the heart to second-guess — "Spara ändringar" tweaked just so to fit your brand voice — disappears. Your French team's nuanced phrasing? Gone. The German guy's diplomatic compromise? Gone. The Anthropic invoice you paid last week? Still on your card.
+
+Every other source-string-as-key library has this problem. They wave their hands at it.
+
+yapyak doesn't.
+
+When you save a file, yapyak compares the **positions** of every `t()` call against a position cache from your last save. If a string disappeared at line 12, column 5, and a new string appeared at the *exact same position*, that's not a deletion-and-addition. That's a rename. The translation is preserved. Your translator's work survives.
+
+```diff
+- t('Save changes')
++ t('Save')
+```
+
+```
+[yapyak] ↻ "Save changes" → "Save" (rename detected, reusing translations)
+[yapyak] sv.json updated, no AI calls needed
+```
+
+The Swedish "Spara ändringar"? Still there. Just under a new key. Click around — works exactly as before. Translator's work intact. AI never called. Cookie unchanged.
+
+Why position-based and not similarity-based? Because **position is exact**. "Save" and "Cave" have a 75% Levenshtein similarity. They're not the same message. Position match is unambiguous: same place in your code, you renamed it, period. False positives don't happen.
+
+The cache lives in `node_modules/.cache/yapyak/positions.json`. You never touch it. It just makes the right thing happen, silently, every save.
+
+This is the kind of feature you don't notice until you don't have it — and then you notice it screaming.
+
 ### AI without lock-in
 
 Here's where the clever founder would start thinking about money. Wrap the AI calls. Vibe code a nice looking "yapyak Cloud" in front. Charge $9/month per dev. Skim a margin off every translation. You know the playbook.
@@ -234,16 +262,17 @@ Each locale becomes a chunk of compiled functions. Lazy-loaded. Cached. Fast.
 
 ## Comparison
 
-|                                | yapyak | next-intl | react-intl | i18next |
-|--------------------------------|--------|-----------|------------|---------|
-| Source-string-as-key           | ✅      | ❌         | ❌          | ❌       |
-| File-scoped translations       | ✅      | ❌         | ❌          | ❌       |
-| AOT-compiled messages          | ✅      | ❌         | ❌          | ❌       |
-| Type-safe params from source   | ✅      | partial   | ❌          | ❌       |
-| Built-in AI translation        | ✅      | ❌         | ❌          | ❌       |
-| Auto-translate on save (HMR)   | ✅      | ❌         | ❌          | ❌       |
-| Zero-config SSR                | ✅      | ❌         | ❌          | ❌       |
-| One package                    | ✅      | ✅         | ❌          | ❌       |
+|                                       | yapyak | next-intl | react-intl | i18next |
+|---------------------------------------|--------|-----------|------------|---------|
+| Source-string-as-key                  | ✅      | ❌         | ❌          | ❌       |
+| File-scoped translations              | ✅      | ❌         | ❌          | ❌       |
+| AOT-compiled messages                 | ✅      | ❌         | ❌          | ❌       |
+| Type-safe params from source          | ✅      | partial   | ❌          | ❌       |
+| Built-in AI translation               | ✅      | ❌         | ❌          | ❌       |
+| Auto-translate on save (HMR)          | ✅      | ❌         | ❌          | ❌       |
+| Position-aware translation memory     | ✅      | ❌         | ❌          | ❌       |
+| Zero-config SSR                       | ✅      | ❌         | ❌          | ❌       |
+| One package                           | ✅      | ✅         | ❌          | ❌       |
 
 ---
 

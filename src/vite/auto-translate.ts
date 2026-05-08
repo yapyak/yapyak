@@ -2,7 +2,9 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, sep } from 'node:path';
 import type { Provider } from '../ai/index.js';
 import { extractMessages } from '../compiler/index.js';
+import { detectRenames, type MessagePosition } from './detect-renames.js';
 import { findBareBindings } from './find-bare-bindings.js';
+import { loadPositionCache, savePositionCache } from './position-cache.js';
 
 export interface AutoTranslateOptions {
   defaultLocale: string;
@@ -28,7 +30,7 @@ export function createAutoTranslator(
   const inflight = new Set<string>();
 
   async function onSourceFileChange(absolutePath: string): Promise<boolean> {
-    if (!/\.(?:tsx?|jsx?|mjs|cjs)$/.test(absolutePath)) {
+    if (!/\.(?:tsx?|jsx?|mjs|cjs|vue|svelte)$/.test(absolutePath)) {
       return false;
     }
     if (!absolutePath.startsWith(options.projectRoot)) {
@@ -55,6 +57,12 @@ export function createAutoTranslator(
       fileId,
     });
 
+    const newPositions: MessagePosition[] = extracted.map((message) => ({
+      column: message.column,
+      line: message.line,
+      source: message.source,
+    }));
+
     const sources = new Set<string>();
     for (const message of extracted) {
       sources.add(message.source);
@@ -63,6 +71,29 @@ export function createAutoTranslator(
     if (sources.size === 0) {
       return false;
     }
+
+    const positionCache = loadPositionCache(options.projectRoot);
+    const oldPositions = positionCache[fileId] ?? [];
+    const renames = detectRenames(oldPositions, newPositions);
+
+    if (renames.length > 0) {
+      applyRenames({
+        defaultLocale: options.defaultLocale,
+        fileId,
+        locales: options.locales,
+        localesDir: options.localesDir,
+        projectRoot: options.projectRoot,
+        renames,
+      });
+      for (const rename of renames) {
+        process.stdout.write(
+          `[yapyak] ↻ "${rename.from}" → "${rename.to}" (rename detected, reusing translations)\n`,
+        );
+      }
+    }
+
+    positionCache[fileId] = newPositions;
+    savePositionCache(options.projectRoot, positionCache);
 
     const sourcePath = sourceLocalePath(options);
     const sourceJson = readJson(sourcePath);
@@ -183,6 +214,46 @@ async function translateMissing(
   }
 
   return result;
+}
+
+interface ApplyRenamesArgs {
+  defaultLocale: string;
+  fileId: string;
+  locales: string[];
+  localesDir: string;
+  projectRoot: string;
+  renames: Array<{ from: string; to: string }>;
+}
+
+function applyRenames(args: ApplyRenamesArgs): void {
+  const { defaultLocale, fileId, locales, localesDir, projectRoot, renames } =
+    args;
+  for (const locale of locales) {
+    const path = join(projectRoot, localesDir, `${locale}.json`);
+    const json = readJson(path);
+    const fileEntries = json[fileId];
+    if (!fileEntries) {
+      continue;
+    }
+    let changed = false;
+    for (const rename of renames) {
+      const previous = fileEntries[rename.from];
+      if (previous === undefined) {
+        continue;
+      }
+      if (locale === defaultLocale) {
+        fileEntries[rename.to] = rename.to;
+      } else {
+        fileEntries[rename.to] = previous;
+      }
+      delete fileEntries[rename.from];
+      changed = true;
+    }
+    if (changed) {
+      json[fileId] = fileEntries;
+      writeJson(path, sortFiles(json));
+    }
+  }
 }
 
 function sourceLocalePath(options: AutoTranslateOptions): string {
