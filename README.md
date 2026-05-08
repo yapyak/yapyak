@@ -122,6 +122,31 @@ The usual i18n library asks you to install a dozen sub-packages, scaffold a dire
 
 That's it. `yapyak init` adds it for you. After that, you never touch it again.
 
+### One `getLocale()`, two universes
+
+This is the part where most i18n libs split into a server function and a client function and you have to remember which is which. yapyak doesn't.
+
+```ts
+import { getLocale } from 'yapyak';
+
+const locale = getLocale();   // works on the server, works in the browser
+```
+
+Same import. Same call site. Same return type. There is no isomorphism dance. There is no `if (typeof window === 'undefined')`. It just works.
+
+The detection chain, both server and client:
+
+1. **Cookie** — the user's explicit choice (`Cookie:` header on the server, `document.cookie` in the browser). Highest priority.
+2. **Browser/OS preference** — `Accept-Language` header on the server, `navigator.language` in the browser. The user's actual default if they haven't picked one yet.
+3. **Default locale** — the fallback you configured.
+
+```tsx
+// __root.tsx — the entirety of your <html lang>:
+<html lang={getLocale()}>
+```
+
+That's it. SSR with the right language from the first byte. Client takes over after hydration with no mismatch (the cookie is the same source on both sides). Locale-switching just updates the cookie and the cached value.
+
 ### SSR-ready, no manual wiring
 
 If you're on TanStack Start (and we'll add adapters for others), `<IntlProvider>` figures out the locale on the server by reading the request cookie via TanStack's request-scoped headers. The HTML ships pre-rendered in the right language. No flash, no `useEffect`-flicker, no `loader` boilerplate.

@@ -130,22 +130,18 @@ export function generateIntlModule(options: GenerateIntlModuleOptions): string {
   lines.push(`}`);
   lines.push('');
 
-  lines.push(`function setLocaleSync(locale) {`);
-  if (cookie) {
-    lines.push(`  if (typeof document !== 'undefined') {`);
-    lines.push(`    document.cookie = serializeCookie(COOKIE_NAME, locale);`);
-    lines.push(`  }`);
-  }
-  lines.push(`  intl.setLocaleSync(locale, messages[locale] ?? {});`);
+  lines.push(`const baseUseLocale = intl.useLocale;`);
+  lines.push(`function useLocale() {`);
+  lines.push(`  const [locale] = baseUseLocale();`);
+  lines.push(`  return [locale, setLocale];`);
   lines.push(`}`);
   lines.push('');
 
   lines.push(`export const t = intl.t;`);
   lines.push(`export const IntlProvider = intl.IntlProvider;`);
-  lines.push(`export const useLocale = intl.useLocale;`);
   lines.push(`export const useTranslation = intl.useTranslation;`);
   lines.push(`export const getLocale = intl.getLocale;`);
-  lines.push(`export { messages, setLocale, setLocaleSync };`);
+  lines.push(`export { messages, setLocale, useLocale };`);
   lines.push(`export default intl;`);
 
   return lines.join('\n');

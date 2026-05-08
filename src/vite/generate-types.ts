@@ -72,7 +72,6 @@ export function generateTypes(options: GenerateTypesOptions): string {
   );
   lines.push(`  export const useTranslation: Intl['useTranslation'];`);
   lines.push(`  export const setLocale: (locale: Locale) => Promise<void>;`);
-  lines.push(`  export const setLocaleSync: (locale: Locale) => void;`);
   lines.push(`  export const getLocale: () => Locale;`);
   lines.push('');
   lines.push(`  const intl: Intl;`);
