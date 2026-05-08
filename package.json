@@ -12,6 +12,10 @@
       "types": "./dist/react/index.d.ts",
       "default": "./dist/react/index.js"
     },
+    "./vue": {
+      "types": "./dist/vue/index.d.ts",
+      "default": "./dist/vue/index.js"
+    },
     "./vite": {
       "types": "./dist/vite/index.d.ts",
       "default": "./dist/vite/index.js"
@@ -36,13 +40,17 @@
   },
   "peerDependencies": {
     "react": ">=19",
-    "vite": ">=5"
+    "vite": ">=5",
+    "vue": ">=3.4"
   },
   "peerDependenciesMeta": {
     "react": {
       "optional": true
     },
     "vite": {
+      "optional": true
+    },
+    "vue": {
       "optional": true
     }
   },
@@ -53,7 +61,8 @@
     "react": "19.2.5",
     "typescript": "6.0.3",
     "vite": "8.0.10",
-    "vitest": "3.0.4"
+    "vitest": "3.0.4",
+    "vue": "3.5.13"
   },
   "engines": {
     "node": ">=22"

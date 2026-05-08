@@ -16,6 +16,7 @@ export interface YapyakPluginOptions {
   cookie?: string;
   defaultLocale?: string;
   factories?: string[];
+  framework?: 'react' | 'vue';
   intlModules?: string[];
   locales?: string[];
   localesDir?: string;
@@ -76,6 +77,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
     cookie,
     defaultLocale = 'en',
     factories = ['intl'],
+    framework = 'react',
     intlModules = [],
     locales = [defaultLocale],
     localesDir = 'locales',
@@ -113,6 +115,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
     }
     const types = generateTypes({
       defaultLocale,
+      framework,
       locales,
       moduleName,
       translations,
@@ -243,6 +246,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
           acceptLanguage,
           cookie,
           defaultLocale,
+          framework,
           hasTanStack: detectTanStack(projectRoot),
           locales,
           moduleName,
