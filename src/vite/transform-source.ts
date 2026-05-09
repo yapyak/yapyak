@@ -1,3 +1,6 @@
+import { messageHash } from './message-hash.js';
+import { DynamicSourceError, parseSourceArg } from './parse-source-arg.js';
+
 export interface TransformSourceOptions {
   bareNames?: ReadonlySet<string>;
   code: string;
@@ -5,9 +8,16 @@ export interface TransformSourceOptions {
   fileId: string;
 }
 
+export interface CollectedMessage {
+  fileId: string;
+  hash: string;
+  source: string;
+}
+
 export interface TransformSourceResult {
   code: string;
   count: number;
+  messages: CollectedMessage[];
 }
 
 export function transformSource(
@@ -28,30 +38,32 @@ export function transformSource(
   }
 
   if (patterns.length === 0) {
-    return { code, count: 0 };
+    return { code, count: 0, messages: [] };
   }
 
-  const callPositions: { callStart: number; matchEnd: number }[] = [];
+  const callPositions: { callKeywordStart: number; callStart: number }[] = [];
 
   for (const pattern of patterns) {
     let match: RegExpExecArray | null = pattern.exec(code);
     while (match !== null) {
       callPositions.push({
+        callKeywordStart: match.index,
         callStart: match.index + match[0].length,
-        matchEnd: match.index + match[0].length,
       });
       match = pattern.exec(code);
     }
   }
 
-  callPositions.sort((a, b) => a.callStart - b.callStart);
+  callPositions.sort((a, b) => a.callKeywordStart - b.callKeywordStart);
 
+  const messages: CollectedMessage[] = [];
+  const seen = new Set<string>();
   let count = 0;
   let result = '';
   let lastIndex = 0;
 
-  for (const { callStart } of callPositions) {
-    if (callStart < lastIndex) {
+  for (const { callKeywordStart, callStart } of callPositions) {
+    if (callKeywordStart < lastIndex) {
       continue;
     }
     const argsRange = sliceArguments(code, callStart);
@@ -59,19 +71,73 @@ export function transformSource(
       continue;
     }
     const { argsEnd, args } = argsRange;
-    const newArgs = injectFileId(args, fileId);
-    result += code.slice(lastIndex, callStart - 1);
-    result += newArgs;
+    const argList = splitTopLevelArgs(args);
+    const firstArg = argList[0];
+    if (firstArg === undefined) {
+      throw new DynamicSourceError(
+        `t() called with no arguments in ${fileId}`,
+      );
+    }
+
+    let source: string;
+    try {
+      source = parseSourceArg(firstArg).source;
+    } catch (error) {
+      if (error instanceof DynamicSourceError) {
+        const lineCol = locate(code, callKeywordStart);
+        throw new DynamicSourceError(
+          `${error.message} (${fileId}:${lineCol.line}:${lineCol.column})`,
+        );
+      }
+      throw error;
+    }
+
+    const hash = messageHash(fileId, source);
+    if (!seen.has(hash)) {
+      seen.add(hash);
+      messages.push({ fileId, hash, source });
+    }
+
+    const paramsArg = argList[1];
+    const replacement =
+      paramsArg !== undefined && paramsArg.length > 0
+        ? `_m_${hash}(${paramsArg})`
+        : `_m_${hash}()`;
+
+    result += code.slice(lastIndex, callKeywordStart);
+    result += replacement;
     lastIndex = argsEnd;
     count++;
   }
 
   result += code.slice(lastIndex);
-  return { code: result, count };
+
+  if (messages.length > 0) {
+    const importLine = `import { ${messages
+      .map((m) => `_m_${m.hash}`)
+      .join(', ')} } from 'yapyak/messages';\n`;
+    result = importLine + result;
+  }
+
+  return { code: result, count, messages };
 }
 
 function escapeRegex(input: string): string {
   return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function locate(code: string, offset: number): { line: number; column: number } {
+  let line = 1;
+  let column = 1;
+  for (let i = 0; i < offset; i++) {
+    if (code[i] === '\n') {
+      line++;
+      column = 1;
+    } else {
+      column++;
+    }
+  }
+  return { line, column };
 }
 
 interface ArgsRange {
@@ -137,28 +203,6 @@ function sliceArguments(code: string, start: number): ArgsRange | undefined {
   }
 
   return undefined;
-}
-
-function injectFileId(args: string, fileId: string): string {
-  const trimmed = args.trim();
-  const fileIdLiteral = JSON.stringify(fileId);
-
-  if (trimmed === '') {
-    return `(${fileIdLiteral})`;
-  }
-
-  const argsList = splitTopLevelArgs(args);
-  while (argsList.length < 2) {
-    argsList.push('undefined');
-  }
-
-  if (argsList.length >= 3) {
-    argsList[2] = fileIdLiteral;
-  } else {
-    argsList.push(fileIdLiteral);
-  }
-
-  return `(${argsList.join(', ')})`;
 }
 
 function splitTopLevelArgs(args: string): string[] {

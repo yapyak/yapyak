@@ -2,10 +2,13 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 import type { Plugin, ViteDevServer } from 'vite';
 import { type AiOptions, resolveProvider } from '../ai/index.js';
-import { compileLocale } from '../compiler/index.js';
 import { type AutoTranslator, createAutoTranslator } from './auto-translate.js';
 import { findBareBindings } from './find-bare-bindings.js';
 import { generateIntlModule } from './generate-intl-module.js';
+import {
+  generateMessagesModule,
+  type MessageEntry,
+} from './generate-messages-module.js';
 import { generateTypes } from './generate-types.js';
 import { loadTranslations } from './load-translations.js';
 import {
@@ -88,13 +91,15 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
 
   const VIRTUAL_INTL = moduleName;
   const VIRTUAL_INTL_RESOLVED = `\0${moduleName}`;
-  const VIRTUAL_LOCALE_PREFIX = `${moduleName}/locale-`;
-  const VIRTUAL_LOCALE_RESOLVED_PREFIX = `\0${moduleName}/locale-`;
+  const VIRTUAL_MESSAGES = `${moduleName}/messages`;
+  const VIRTUAL_MESSAGES_RESOLVED = `\0${moduleName}/messages`;
   const VIRTUAL_CONFIG = `${moduleName}/internal/config`;
   const VIRTUAL_CONFIG_RESOLVED = `\0${moduleName}/internal/config`;
 
   const factoryNames = new Set(factories);
   const intlModuleSet = new Set([VIRTUAL_INTL, ...intlModules]);
+  const messageRegistry = new Map<string, MessageEntry>();
+  const fileHashes = new Map<string, Set<string>>();
   let projectRoot = process.cwd();
   let server: ViteDevServer | undefined;
   let autoTranslator: AutoTranslator | undefined;
@@ -146,11 +151,52 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
     return normalized;
   }
 
-  function virtualToLocale(id: string): string | undefined {
-    if (!id.startsWith(VIRTUAL_LOCALE_RESOLVED_PREFIX)) {
-      return undefined;
+  function updateFileMessages(
+    fileId: string,
+    messages: { fileId: string; hash: string; source: string }[],
+  ): boolean {
+    const previous = fileHashes.get(fileId);
+    let changed = false;
+    if (previous) {
+      for (const hash of previous) {
+        if (!messages.some((m) => m.hash === hash)) {
+          messageRegistry.delete(hash);
+          changed = true;
+        }
+      }
     }
-    return id.slice(VIRTUAL_LOCALE_RESOLVED_PREFIX.length);
+    const current = new Set<string>();
+    for (const message of messages) {
+      current.add(message.hash);
+      if (!messageRegistry.has(message.hash)) {
+        changed = true;
+      }
+      messageRegistry.set(message.hash, message);
+    }
+    fileHashes.set(fileId, current);
+    return changed;
+  }
+
+  function invalidateMessagesModule(): void {
+    if (!server) {
+      return;
+    }
+    const module = server.moduleGraph.getModuleById(VIRTUAL_MESSAGES_RESOLVED);
+    if (module) {
+      server.moduleGraph.invalidateModule(module);
+      server.ws.send({ type: 'full-reload' });
+    }
+  }
+
+  function loadAllTranslations(): Record<
+    string,
+    Record<string, Record<string, string>>
+  > {
+    const result: Record<string, Record<string, Record<string, string>>> = {};
+    for (const locale of locales) {
+      result[locale] = loadTranslations({ locale, localesDir, projectRoot });
+    }
+    return result;
   }
 
   return {
@@ -218,14 +264,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
         if (path.endsWith(`${defaultLocale}.json`)) {
           writeTypes();
         }
-        for (const locale of locales) {
-          const moduleId = `${VIRTUAL_LOCALE_RESOLVED_PREFIX}${locale}`;
-          const module = devServer.moduleGraph.getModuleById(moduleId);
-          if (module) {
-            devServer.moduleGraph.invalidateModule(module);
-          }
-        }
-        devServer.ws.send({ type: 'full-reload' });
+        invalidateMessagesModule();
       });
     },
 
@@ -233,11 +272,11 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
       if (id === VIRTUAL_INTL) {
         return VIRTUAL_INTL_RESOLVED;
       }
+      if (id === VIRTUAL_MESSAGES) {
+        return VIRTUAL_MESSAGES_RESOLVED;
+      }
       if (id === VIRTUAL_CONFIG) {
         return VIRTUAL_CONFIG_RESOLVED;
-      }
-      if (id.startsWith(VIRTUAL_LOCALE_PREFIX)) {
-        return `\0${id}`;
       }
       return undefined;
     },
@@ -255,6 +294,18 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
           syncHtmlLang,
         });
       }
+      if (id === VIRTUAL_MESSAGES_RESOLVED) {
+        const translations = loadAllTranslations();
+        const messages = [...messageRegistry.values()].sort((a, b) =>
+          a.hash.localeCompare(b.hash),
+        );
+        return generateMessagesModule({
+          defaultLocale,
+          locales,
+          messages,
+          translations,
+        });
+      }
       if (id === VIRTUAL_CONFIG_RESOLVED) {
         const cookieName =
           persistence.type === 'cookie' ? persistence.name : 'locale';
@@ -264,20 +315,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
           2,
         )};\n`;
       }
-      const locale = virtualToLocale(id);
-      if (!locale) {
-        return undefined;
-      }
-      const translations = loadTranslations({
-        locale,
-        localesDir,
-        projectRoot,
-      });
-      const compiled = compileLocale({
-        locale,
-        translations,
-      });
-      return compiled.code;
+      return undefined;
     },
 
     transform(code, id): { code: string } | undefined {
@@ -296,7 +334,15 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
         fileId,
       });
       if (result.count === 0) {
+        if (fileHashes.has(fileId)) {
+          updateFileMessages(fileId, []);
+          invalidateMessagesModule();
+        }
         return undefined;
+      }
+      const changed = updateFileMessages(fileId, result.messages);
+      if (changed) {
+        invalidateMessagesModule();
       }
       if (autoTranslator) {
         const cleaned = stripQuery(id);
@@ -310,18 +356,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
       if (!ctx.file.startsWith(dir)) {
         return;
       }
-      const moduleIds = locales.map(
-        (locale) => `${VIRTUAL_LOCALE_RESOLVED_PREFIX}${locale}`,
-      );
-      const modules = moduleIds
-        .map((moduleId) => server?.moduleGraph.getModuleById(moduleId))
-        .filter(
-          (module): module is NonNullable<typeof module> =>
-            module !== undefined,
-        );
-      if (modules.length > 0) {
-        server?.ws.send({ type: 'full-reload' });
-      }
+      invalidateMessagesModule();
     },
   };
 }
