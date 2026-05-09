@@ -41,7 +41,7 @@ export default defineConfig(({ mode }) => {
       yapyak({
         defaultLocale: 'en',
         locales: ['en', 'sv'],
-        cookie: 'locale',
+        persistence: 'cookie',
         ai: {
           provider: 'anthropic',
           apiKey: env.ANTHROPIC_API_KEY,
@@ -152,6 +152,28 @@ The detection chain, both server and client:
 ```
 
 That's it. SSR with the right language from the first byte. Client takes over after hydration with no mismatch (the cookie is the same source on both sides). Locale-switching just updates the cookie and the cached value.
+
+### Persistence: cookie or localStorage
+
+Yapyak persists the user's locale choice somewhere — your call where:
+
+```ts
+yapyak({
+  persistence: 'cookie',         // default — SSR-safe
+  // OR
+  persistence: 'localStorage',   // SPA-only, GDPR-friendly
+  // OR
+  persistence: false,            // in-memory only, refresh resets to default
+})
+```
+
+**Cookie (default).** The only option that works with SSR. Sent with every request, so the server can read it and ship HTML pre-rendered in the right language. This is what most apps want.
+
+**localStorage.** Use this if your app is a pure SPA (no SSR), or if you want to avoid cookies for GDPR reasons (localStorage is exempt from cookie-banner requirements in most jurisdictions). Trade-off: the server can't read it, so the first paint always renders in the default locale and the client swaps in the user's locale after hydration. Brief flash possible.
+
+**`false`.** No persistence. Refresh resets to default. Useful for ephemeral sessions, demos, or apps where another mechanism handles the persistence.
+
+Need sessionStorage, IndexedDB, or a custom backend? Set `persistence: false` and call `setLocale()` yourself with whatever storage you want — `getLocale()` and `setLocale()` are the primitives, and they work without any persistence layer attached.
 
 ### SSR-ready, no manual wiring
 
@@ -310,7 +332,7 @@ yapyak({
   defaultLocale: 'en',
   locales: ['en', 'sv', 'de'],
   localesDir: 'locales',           // where translations live
-  cookie: 'locale',                // cookie name for locale persistence
+  persistence: 'cookie',           // 'cookie' | 'localStorage' | false (or full object form)
   acceptLanguage: true,            // fall back to Accept-Language header
   ai: {
     provider: 'anthropic',         // | 'openai' | (input) => Promise<string>

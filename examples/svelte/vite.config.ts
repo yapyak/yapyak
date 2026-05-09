@@ -5,7 +5,7 @@ import { yapyak } from 'yapyak/vite';
 export default defineConfig({
   plugins: [
     yapyak({
-      cookie: 'locale',
+      persistence: 'cookie',
       defaultLocale: 'en',
       framework: 'svelte',
       locales: ['en', 'sv'],

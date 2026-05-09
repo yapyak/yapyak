@@ -18,7 +18,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "jsx": "react-jsx",
-    "types": ["node", "react"]
+    "types": ["node", "react", "vite/client"]
   },
   "include": ["src"],
   "exclude": ["**/*.test.ts", "**/*.svelte.ts", "dist", "node_modules"]

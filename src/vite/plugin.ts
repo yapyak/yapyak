@@ -8,12 +8,15 @@ import { findBareBindings } from './find-bare-bindings.js';
 import { generateIntlModule } from './generate-intl-module.js';
 import { generateTypes } from './generate-types.js';
 import { loadTranslations } from './load-translations.js';
+import {
+  normalizePersistence,
+  type Persistence,
+} from './normalize-persistence.js';
 import { transformSource } from './transform-source.js';
 
 export interface YapyakPluginOptions {
   acceptLanguage?: boolean;
   ai?: AiOptions;
-  cookie?: string;
   defaultLocale?: string;
   factories?: string[];
   framework?: 'react' | 'vue' | 'svelte';
@@ -21,6 +24,7 @@ export interface YapyakPluginOptions {
   locales?: string[];
   localesDir?: string;
   moduleName?: string;
+  persistence?: Persistence;
   source?: string[];
 }
 
@@ -53,28 +57,10 @@ function serializableAi(ai: AiOptions | undefined): SerializedAi | undefined {
   return result;
 }
 
-function detectTanStack(projectRoot: string): boolean {
-  const pkgPath = join(projectRoot, 'package.json');
-  if (!existsSync(pkgPath)) {
-    return false;
-  }
-  try {
-    const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
-    const deps = {
-      ...(pkg.dependencies ?? {}),
-      ...(pkg.devDependencies ?? {}),
-    };
-    return '@tanstack/react-start' in deps;
-  } catch {
-    return false;
-  }
-}
-
 export function yapyak(options: YapyakPluginOptions = {}): Plugin {
   const {
     acceptLanguage = false,
     ai,
-    cookie,
     defaultLocale = 'en',
     factories = ['intl'],
     framework = 'react',
@@ -82,8 +68,11 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
     locales = [defaultLocale],
     localesDir = 'locales',
     moduleName = 'yapyak',
+    persistence: persistenceOption,
     source = ['src/**/*.{ts,tsx,js,jsx,mjs,cjs,vue,svelte}'],
   } = options;
+
+  const persistence = normalizePersistence(persistenceOption);
 
   const autoTranslate = ai?.autoTranslate ?? false;
   const voice = ai?.voice ?? '';
@@ -244,12 +233,11 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
       if (id === VIRTUAL_INTL_RESOLVED) {
         return generateIntlModule({
           acceptLanguage,
-          cookie,
           defaultLocale,
           framework,
-          hasTanStack: detectTanStack(projectRoot),
           locales,
           moduleName,
+          persistence,
         });
       }
       const locale = virtualToLocale(id);

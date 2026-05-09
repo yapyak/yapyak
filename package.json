@@ -28,6 +28,18 @@
     "./compiler": {
       "types": "./dist/compiler/index.d.ts",
       "default": "./dist/compiler/index.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "default": "./dist/server.js"
+    },
+    "./adapters/tanstack-start": {
+      "types": "./dist/adapters/tanstack-start.d.ts",
+      "default": "./dist/adapters/tanstack-start.js"
+    },
+    "./adapters/sveltekit": {
+      "types": "./dist/adapters/sveltekit.d.ts",
+      "default": "./dist/adapters/sveltekit.js"
     }
   },
   "bin": {
