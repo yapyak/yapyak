@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: yapyak 🐂
+  name: yapyak 🐃
   text: i18n that doesn’t suck
   tagline: Let your app yak in any language.
   actions:
@@ -14,7 +14,7 @@ hero:
       link: https://github.com/yapyak/yapyak
 
 features:
-  - icon: '🐂'
+  - icon: '🐃'
     title: Source-string-as-key
     details: The English text is the lookup key. No abstract IDs. No naming things. Tailwind energy for translations.
 

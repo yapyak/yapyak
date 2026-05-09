@@ -1,4 +1,4 @@
-# yapyak 🐂
+# yapyak 🐃
 
 > **Let your app yak in any language.**
 >
@@ -12,7 +12,7 @@ The goal of yapyak is to eliminate all of that — and not feel enterprise-y whi
 
 > *"Finally someone rethought this whole darn thing."*
 >
-> — a developer, somewhere, allegedly 🐂
+> — a developer, somewhere, allegedly 🐃
 
 ### Vite-only
 
@@ -31,6 +31,7 @@ pnpm exec yapyak init
 
 ```ts
 // vite.config.ts
+import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import { defineConfig, loadEnv } from 'vite';
 import { yapyak } from 'yapyak/vite';
 
@@ -39,15 +40,19 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       yapyak({
+        framework: 'react',
+        adapter: 'tanstackStart',
         defaultLocale: 'en',
         locales: ['en', 'sv'],
         persistence: 'cookie',
+        overlay: true,
         ai: {
           provider: 'anthropic',
           apiKey: env.ANTHROPIC_API_KEY,
           autoTranslate: true,
         },
       }),
+      tanstackStart(),
     ],
   };
 });
@@ -66,7 +71,9 @@ export function App() {
 }
 ```
 
-That's it. Save the file. The plugin extracts `'Hello'`, asks Claude for a Swedish version, writes `locales/sv.json`, hot-reloads the page. You're done in three seconds. 🐂
+That's it. Save the file. The plugin extracts `'Hello'`, asks Claude for a Swedish version, writes `locales/sv.json`, hot-reloads the page. Three seconds, no build step.
+
+A 🐃-button appears in the bottom-right of your dev page — click it any time to see all your translations, edit inline, AI-retranslate, preview the app in another locale. More on that below.
 
 ---
 
@@ -109,11 +116,11 @@ t('A brand new string nobody has translated yet')   // ✅ also fine
 
 The TypeScript trick is `T extends KnownSource | (string & {})` — known strings get autocomplete; new strings get accepted; nothing gets in your way. You also get autocomplete on `messages.sv['src/routes/home.tsx']['Recent writings']` if you really want to spelunk into the raw data. Refactoring is suddenly real: rename a string, find every site, fix typos with one click.
 
-Most i18n libs treat types as a stretch goal. yapyak treats them as table stakes. 🐂
+Most i18n libs treat types as a stretch goal. yapyak treats them as table stakes. 🐃
 
 ### Tiny footprint
 
-The usual i18n library asks you to install a dozen sub-packages, scaffold a directory tree, configure a Babel plugin, and figure out where the messages live. yapyak is one package with a Vite plugin. Everything else — the runtime module, the per-locale chunks, the type declarations — is generated and cached invisibly inside `node_modules/.cache/`. Your repo gets `locales/sv.json`, and one ugly line in `tsconfig.json`:
+The usual i18n library asks you to install a dozen sub-packages, scaffold a directory tree, configure a Babel plugin, and figure out where the messages live. yapyak is one package with a Vite plugin. Everything else — the runtime module, the messages module with all locales inlined and tree-shaken per route, the type declarations — is generated and cached invisibly inside `node_modules/.cache/`. Your repo gets `locales/sv.json`, and one ugly line in `tsconfig.json`:
 
 ```jsonc
 {
@@ -159,25 +166,25 @@ Yapyak persists the user's locale choice somewhere — your call where:
 
 ```ts
 yapyak({
-  persistence: 'cookie',         // default — SSR-safe
+  persistence: 'cookie',         // SSR-safe
   // OR
   persistence: 'localStorage',   // SPA-only, GDPR-friendly
   // OR
-  persistence: false,            // in-memory only, refresh resets to default
+  persistence: null,             // in-memory only (default), refresh resets
 })
 ```
 
-**Cookie (default).** The only option that works with SSR. Sent with every request, so the server can read it and ship HTML pre-rendered in the right language. This is what most apps want.
+**Cookie.** The only option that works with SSR. Sent with every request, so the server can read it and ship HTML pre-rendered in the right language. This is what most SSR apps want.
 
 **localStorage.** Use this if your app is a pure SPA (no SSR), or if you want to avoid cookies for GDPR reasons (localStorage is exempt from cookie-banner requirements in most jurisdictions). Trade-off: the server can't read it, so the first paint always renders in the default locale and the client swaps in the user's locale after hydration. Brief flash possible.
 
-**`false`.** No persistence. Refresh resets to default. Useful for ephemeral sessions, demos, or apps where another mechanism handles the persistence.
+**`null` (default).** No persistence. Refresh resets to default. Useful for ephemeral sessions, demos, or apps where another mechanism handles the persistence.
 
-Need sessionStorage, IndexedDB, or a custom backend? Set `persistence: false` and call `setLocale()` yourself with whatever storage you want — `getLocale()` and `setLocale()` are the primitives, and they work without any persistence layer attached.
+Need sessionStorage, IndexedDB, or a custom backend? Leave `persistence` unset and call `setLocale()` yourself with whatever storage you want — `getLocale()` and `setLocale()` are the primitives, and they work without any persistence layer attached.
 
 ### SSR-ready, no manual wiring
 
-If you're on TanStack Start (and we'll add adapters for others), `<IntlProvider>` figures out the locale on the server by reading the request cookie via TanStack's request-scoped headers. The HTML ships pre-rendered in the right language. No flash, no `useEffect`-flicker, no `loader` boilerplate.
+Set `adapter: 'tanstackStart'` (or `'sveltekit'`) in plugin options and yapyak figures out the locale on the server by reading the request cookie via the framework's request-scoped headers. The HTML ships pre-rendered in the right language. No flash, no `useEffect`-flicker, no `loader` boilerplate.
 
 ```tsx
 // __root.tsx — this is the entirety of your SSR setup
@@ -190,13 +197,15 @@ If you're on TanStack Start (and we'll add adapters for others), `<IntlProvider>
 </html>
 ```
 
+The adapter wires `setRequestSource` to TanStack's `getRequestHeaders()` (or SvelteKit's `getRequestEvent()`) automatically. You don't write the wiring; you don't import the wiring; you just set one config field.
+
 ### Position-aware translation memory
 
 Here's the trap with source-string-as-key i18n: the moment you change `t('Save changes')` to `t('Save')`, you lose the connection to the existing translation. Your translator's careful work — or, let's be honest, the AI agent's careful work that nobody had the heart to second-guess — "Spara ändringar" tweaked just so to fit your brand voice — disappears. Your French team's nuanced phrasing? Gone. The German guy's diplomatic compromise? Gone. The Anthropic invoice you paid last week? Still on your card.
 
 Every other source-string-as-key library has this problem. They wave their hands at it.
 
-yapyak doesn't. 🐂
+yapyak doesn't. 🐃
 
 When you save a file, yapyak compares the **positions** of every `t()` call against a position cache from your last save. If a string disappeared at line 12, column 5, and a new string appeared at the *exact same position*, that's not a deletion-and-addition. That's a rename. The translation is preserved. Your translator's work survives.
 
@@ -231,6 +240,27 @@ Nope. Yapyak's auto-translator searches every locale file for the same source st
 Two `t('Save')` calls in different files want *different* translations? Edit the JSON to customize either one. The cross-file lookup only fills in *missing* entries; it never overrides what's already there. Component-scoped customization stays customized.
 
 This is the feature that makes source-string-as-key viable in a 100-route app where things move around constantly.
+
+### The translation editor that lives where your app does
+
+Here's the part where most i18n libs hand you off: install our cloud, log in to our portal, navigate to your project, find the message, edit, push back. Cool. Have you tried not doing all that?
+
+yapyak ships a translation editor as part of the Vite dev plugin. Set `overlay: true` and a 🐃 button appears bottom-right of your dev page. Click it. A side panel slides in. Every translation in your app, searchable, editable, with stats and an "On this page" filter that updates as you navigate.
+
+What you can do without leaving the page:
+
+- **Edit any translation in place.** Type the new value, hit Save. JSON updates, HMR pushes the new string into the running app, no reload.
+- **AI-retranslate per locale.** "🤖 AI" button on every row. Same context-aware prompt as auto-save, just on demand.
+- **Preview as locale.** Dropdown switches the page to render in any locale. Overrides the cookie. Close the overlay → back to the user's actual locale. DevTools, not state-management.
+- **See completion at a glance.** "EN 27/27 · SV 24/27" header tells you what's incomplete in this app, right now.
+- **Sync.** One button equivalent to `yapyak check --write` from the terminal — prunes stale entries, fills missing translations via AI, all in place.
+- **Open in editor.** Click any file path → opens VSCode/Cursor at the right line.
+
+The whole thing lives inside Shadow DOM. It can't fight with your app's CSS, it can't be fought back. When you don't need it: closed, invisible, zero overhead. When you do: there, exactly where you need it.
+
+Off by default. Set `overlay: true` to enable. Dev-only — never ships in production builds.
+
+This is what "translation tooling lives in your app" feels like in 2026. No tab-switching. No portal logins. No separate web app fighting with your real one over which is the source of truth.
 
 ### Per-message tree-shaking
 
@@ -327,7 +357,7 @@ Whatever the mode, yapyak only ever sends what you've already opted into by enab
 
 Here's where the clever founder would start thinking about money. Wrap the AI calls. Vibe code a nice looking "yapyak Cloud" in front. Charge $9/month per dev. Skim a margin off every translation. You know the playbook.
 
-We're not doing that. Not yet, anyway. Maybe never. Instead: bring your own AI. Whatever you want. Your Anthropic key, your OpenAI key, your self-hosted Llama 🐂, your fine-tuned DeepL endpoint, your wife who speaks Swedish. We don't care, we don't take a cut, we don't even know what model you're using — and frankly, we don't want to know.
+We're not doing that. Not yet, anyway. Maybe never. Instead: bring your own AI. Whatever you want. Your Anthropic key, your OpenAI key, your self-hosted Llama 🐃, your fine-tuned DeepL endpoint, your wife who speaks Swedish. We don't care, we don't take a cut, we don't even know what model you're using — and frankly, we don't want to know.
 
 The AI part is opt-in and pluggable:
 
@@ -389,7 +419,52 @@ t('{name, select, joakim {Hej} other {Hello}}, {greeting}', {
 // "Hej, world"
 ```
 
-Each locale becomes a chunk of compiled functions. Lazy-loaded. Cached. Fast. 🐂
+Each unique `(file, source)` pair becomes its own tree-shakable function with all locales inlined as a switch. Routes pull in only the messages they reference. ICU plural rules use `Intl.PluralRules`. No runtime ICU parser ships. 🐃
+
+### Multi-framework, one plugin
+
+Same Vite plugin, four `framework` flavours. Each gets its own idiomatic API:
+
+```ts
+// React
+yapyak({ framework: 'react' });
+
+import { IntlProvider, useLocale, t } from 'yapyak';
+function App() {
+  const [locale, setLocale] = useLocale();
+  return <h1>{t('Hello')}</h1>;
+}
+```
+
+```vue
+<!-- Vue -->
+<!-- yapyak({ framework: 'vue' }) -->
+<script setup lang="ts">
+import { t, useLocale } from 'yapyak';
+const locale = useLocale();
+</script>
+<template><h1>{{ t('Hello') }}</h1></template>
+```
+
+```svelte
+<!-- Svelte -->
+<!-- yapyak({ framework: 'svelte' }) -->
+<script lang="ts">
+  import { locale, t } from 'yapyak';
+</script>
+<h1>{t('Hello')}</h1>
+<button onclick={() => (locale.current = 'sv')}>SV</button>
+```
+
+```ts
+// Runtime-free (Node CLI, server-only, embedded)
+yapyak({ framework: null });
+
+import { t, getLocale, setLocale, subscribe } from 'yapyak';
+console.log(t('Hello'));
+```
+
+The runtime singleton is the same; only the framework binding differs. Switch `framework` and the generated module switches with you — no changes to your `t()` calls.
 
 ---
 
@@ -414,6 +489,8 @@ Legend: ✅ shipped and idiomatic · ⚠️ partial / requires opt-in / clunky �
 | Cross-file translation reuse       |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ❌   |    ❌     |
 | Zero-config SSR                    |   ✅    |     ⚠️     |     ❌      |    ❌    |   ❌    |     ✅     |    ❌   |   N/A    |
 | Multi-framework (React/Vue/Svelte) |   ✅    |     ❌     |     ⚠️      |    ✅    |   ✅    |     ✅     |    ✅   |   N/A    |
+| Inline dev overlay (in-page edit)  |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ⚠️   |    ❌     |
+| Privacy modes for AI prompts       |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ❌   |    ❌     |
 | One package                        |   ✅    |     ✅     |     ❌      |    ❌    |   ❌    |     ✅     |    ❌   |    ✅     |
 | Minimal API surface                |   ✅    |     ⚠️     |     ❌      |    ❌    |   ⚠️    |     ✅     |    ❌   |    ✅     |
 | Good DX                            |   ✅    |     ⚠️     |     ❌      |    ⚠️    |   ⚠️    |     ✅     |    ⚠️   |    ⚠️     |
@@ -438,11 +515,14 @@ Legend: ✅ shipped and idiomatic · ⚠️ partial / requires opt-in / clunky �
 
 ```ts
 yapyak({
+  framework: 'react',              // 'react' | 'vue' | 'svelte' | null (default: null = runtime-free)
+  adapter: 'tanstackStart',        // 'tanstackStart' | 'sveltekit' | null — auto-wires SSR cookie reading
   defaultLocale: 'en',
   locales: ['en', 'sv', 'de'],
   localesDir: 'locales',           // where translations live
-  persistence: 'cookie',           // 'cookie' | 'localStorage' | false (or full object form)
+  persistence: 'cookie',           // 'cookie' | 'localStorage' | null (default: null)
   acceptLanguage: true,            // fall back to Accept-Language header
+  overlay: true,                   // inline dev overlay (default: false)
   ai: {
     provider: 'anthropic',         // | 'openai' | (input) => Promise<string>
     apiKey: env.ANTHROPIC_API_KEY,
@@ -450,7 +530,7 @@ yapyak({
     voice: 'Casual and direct.',
     glossary: { 'Save': { sv: 'Spara' } },
     autoTranslate: true,
-    context: 'full',               // 'full' | 'minimal' | 'off' — call-site context sent to LLM
+    context: 'full',               // 'full' | 'minimal' | 'none' — call-site context sent to LLM
   },
 })
 ```
@@ -459,12 +539,12 @@ yapyak({
 
 ```ts
 import {
-  t,                  // translate
-  setLocale,          // change locale + persist cookie
-  useLocale,          // [locale, setLocale] hook
+  t,                  // translate (replaced by transform with a tree-shakable function)
+  setLocale,          // change locale + persist (cookie / localStorage / nothing)
+  useLocale,          // [locale, setLocale] for React, computed ref for Vue
   getLocale,          // current locale (server or client)
-  IntlProvider,       // wraps your app
-  messages,           // raw compiled messages, keyed by locale
+  IntlProvider,       // React: wraps your app
+  locale,             // Svelte: { current: string } — read/write reactive
 } from 'yapyak';
 ```
 
@@ -484,6 +564,19 @@ yapyak compile               # build static locale modules
 
 Early — but the architecture is settled. Working in production on one personal site, getting battle-tested next on a larger SaaS. Vite plugin works for React (TanStack Start, vanilla), Vue (vanilla), Svelte (vanilla, SvelteKit), and runtime-free (CLI, server-only). Adapters for Remix and Astro coming as people ask.
 
-The big features — per-message tree-shaking, context-aware AI, cross-file rename stability, component-discriminated translations — are all in. Polish, edge cases, and `v1.0` come from real-world usage. Use it, break it, open an issue.
+The big features are all in:
 
-If you try it and it's the best i18n DX you've used, tell someone. 🐂
+- Per-message tree-shaking with source-string-as-key
+- Context-aware AI translation
+- Component-discriminated translations
+- Cross-file rename stability
+- Position-aware in-file rename memory
+- Inline dev overlay with live edit, AI re-translate, locale preview
+- Multi-framework support
+- Auto-wired SSR adapters
+
+What's left before `v1.0`: real-world usage, edge cases, doc polish, API freeze. We've moved a lot in the last few weeks; we want a `v0.x` series of feedback before locking the surface.
+
+Brutally honest: in design, yapyak leads. In maturity, Paraglide and i18next have years on us. If you want a battle-tested library for an enterprise team — check back in six months. If you want the best DX for a new app and don't mind helping us find rough edges — `pnpm add yapyak`.
+
+If you try it and it's the best i18n DX you've used, tell someone. 🐃

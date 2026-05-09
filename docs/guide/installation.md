@@ -45,16 +45,16 @@ That's the whole config. `defaultLocale` and `locales` are the only required fie
 Yapyak persists the user's locale somewhere. Three options:
 
 ```ts
-persistence: 'cookie'         // default — works with SSR
+persistence: 'cookie'         // works with SSR
 persistence: 'localStorage'   // SPA-only, GDPR-friendly
-persistence: false            // in-memory; refresh resets to default
+persistence: null             // in-memory (default); refresh resets to default
 ```
 
 **Cookie is the only choice that's SSR-safe.** Cookies are sent with every request, so the server can read them and ship HTML pre-rendered in the right language. If you have any kind of server rendering (TanStack Start, SvelteKit), use cookie.
 
 **localStorage** is for pure SPAs that never render server-side, or for apps that want to avoid cookies for GDPR reasons (localStorage is exempt from cookie banners in most jurisdictions). The trade-off: the server can't read it, so the first paint always renders in the default locale and the client swaps in after hydration. Brief flash possible.
 
-**`false`** disables persistence — useful for ephemeral sessions or when you handle persistence in app code via `setLocale()`.
+**`null`** (default) disables persistence — useful for ephemeral sessions or when you handle persistence in app code via `setLocale()`.
 
 To customize the cookie name or localStorage key:
 
@@ -98,7 +98,7 @@ export function App() {
 }
 ```
 
-Save the file. The plugin extracts `'Hello'`, asks the AI for a Swedish version, writes `locales/sv.json`, hot-reloads the page. Three seconds. 🐂
+Save the file. The plugin extracts `'Hello'`, asks the AI for a Swedish version, writes `locales/sv.json`, hot-reloads the page. Three seconds. 🐃
 
 ## Environment
 
