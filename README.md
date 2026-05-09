@@ -270,15 +270,15 @@ Each `t('...')` call is rewritten at build time to a direct reference to a tree-
 
 ```ts
 // You write:
-{t('Welcome to Skiftle')}
+{t('Welcome home')}
 
 // What ends up in the bundle:
 {_m_a3f8b2c1d4e5()}
 
 // What `_m_a3f8b2c1d4e5` looks like in the generated module:
 export const _m_a3f8b2c1d4e5 = (p) => ({
-  en: () => 'Welcome to Skiftle',
-  sv: () => 'Välkommen till Skiftle',
+  en: () => 'Welcome home',
+  sv: () => 'Välkommen hem',
 })[getLocale()]();
 ```
 
@@ -562,7 +562,7 @@ yapyak compile               # build static locale modules
 
 ## Status
 
-Early — but the architecture is settled. Working in production on one personal site, getting battle-tested next on a larger SaaS. Vite plugin works for React (TanStack Start, vanilla), Vue (vanilla), Svelte (vanilla, SvelteKit), and runtime-free (CLI, server-only). Adapters for Remix and Astro coming as people ask.
+Early — but the architecture is settled. Vite plugin works for React (TanStack Start, vanilla), Vue (vanilla), Svelte (vanilla, SvelteKit), and runtime-free (CLI, server-only). Adapters for Remix and Astro coming as people ask.
 
 The big features are all in:
 
@@ -576,7 +576,5 @@ The big features are all in:
 - Auto-wired SSR adapters
 
 What's left before `v1.0`: real-world usage, edge cases, doc polish, API freeze. We've moved a lot in the last few weeks; we want a `v0.x` series of feedback before locking the surface.
-
-Brutally honest: in design, yapyak leads. In maturity, Paraglide and i18next have years on us. If you want a battle-tested library for an enterprise team — check back in six months. If you want the best DX for a new app and don't mind helping us find rough edges — `pnpm add yapyak`.
 
 If you try it and it's the best i18n DX you've used, tell someone. 🐃
