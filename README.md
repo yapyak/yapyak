@@ -218,6 +218,93 @@ The cache lives in `node_modules/.cache/yapyak/positions.json`. You never touch 
 
 This is the kind of feature you don't notice until you don't have it — and then you notice it screaming.
 
+### Refactor across files — translations follow
+
+Position-aware memory handles renames *within a file*. But what happens when you refactor across files? Move `t('Save')` from `OldDialog.tsx` to a new shared `Button.tsx`. Or rename `payment-dialog.tsx` to `confirm-dialog.tsx`. Different file, different lookup key — surely the translation is lost?
+
+```
+[yapyak] reused 1 translation from other files → sv
+```
+
+Nope. Yapyak's auto-translator searches every locale file for the same source string in any other file. If it finds one, it copies the translation forward. Zero AI calls. Refactor freely — your translations migrate with the code.
+
+Two `t('Save')` calls in different files want *different* translations? Edit the JSON to customize either one. The cross-file lookup only fills in *missing* entries; it never overrides what's already there. Component-scoped customization stays customized.
+
+This is the feature that makes source-string-as-key viable in a 100-route app where things move around constantly.
+
+### Per-message tree-shaking
+
+Most i18n libraries ship every translation for every locale to every page. Yapyak doesn't.
+
+Each `t('...')` call is rewritten at build time to a direct reference to a tree-shakable function in a virtual `yapyak/messages` module:
+
+```ts
+// You write:
+{t('Welcome to Skiftle')}
+
+// What ends up in the bundle:
+{_m_a3f8b2c1d4e5()}
+
+// What `_m_a3f8b2c1d4e5` looks like in the generated module:
+export const _m_a3f8b2c1d4e5 = (p) => ({
+  en: () => 'Welcome to Skiftle',
+  sv: () => 'Välkommen till Skiftle',
+})[getLocale()]();
+```
+
+Each message is its own top-level export. Vite/Rollup tree-shake at module level: route `/checkout` only references the messages it actually uses, so only those messages' bodies end up in the route's chunk. Unused translations? Gone. Even unused locales for the messages that *are* used? Inlined alongside, but the rest of the message graph is dropped.
+
+App with 1000 messages × 5 locales, route uses 20 messages: the route loads 20 inlined functions, not 5000.
+
+Same architectural advantage as Paraglide's tree-shaking — but you keep writing source-string-as-key. No `m.greeting()` indirection, no JSON-to-ID translation table to maintain. Best of both worlds.
+
+### Component-discriminated translations
+
+Same English string, two contexts, two different translations. The classic example: `t('Save')` on a form button means "submit the form" (Swedish: *Spara*); `t('Save')` on a contract action means "preserve to disk" (Swedish: *Bevara*). Same English, different intent.
+
+Most i18n libraries make you invent unique IDs to distinguish: `m.form_save` vs `m.action_save`. Manual, error-prone, ugly. Yapyak does it automatically: each `t()` call's hash is `(fileId, source)`, so the same English in two files produces two independent entries. Edit either translation in the JSON without affecting the other.
+
+```json
+// locales/sv.json
+{
+  "src/components/employee-form.tsx": { "Save": "Spara" },
+  "src/components/contract-actions-bar.tsx": { "Save": "Bevara" }
+}
+```
+
+You don't think about it. You write `t('Save')` everywhere. Yapyak handles the rest.
+
+### Context-aware AI translation
+
+Generic AI translation: "translate 'Cancel' to Swedish". Output: "Annullera" or "Avbryt"? Coin flip — and they mean different things. *Annullera* is formal/legal (cancel a contract); *Avbryt* is casual/UI (close a dialog).
+
+Yapyak's auto-translator sends *call-site context* to your LLM along with the source string. The plugin already knows the file path, derives the component name, and snips the surrounding code:
+
+```
+Translate "Cancel" to sv.
+
+Call-site context:
+  File: src/components/payment-dialog.tsx
+  Component: PaymentDialog
+  Surrounding code:
+    <Button onClick={cancelPayment}>
+      {t('Cancel')}
+    </Button>
+```
+
+The model sees it's a button label in a dialog, returns *Avbryt*. Same string in `legal-agreement.tsx` next to `<a href={revokeContract}>` returns *Annullera*. Quality leap, not just efficiency.
+
+This is architecturally hard for libraries with abstract IDs — they don't know where the call site is at translation time. Yapyak's transform-driven model owns the call site, so the context is free.
+
+The context is automatic; you don't write it. Voice and glossary still apply on top:
+
+```ts
+ai: {
+  voice: 'Casual, witty, never corporate.',
+  glossary: { 'Sign up': { sv: 'Skapa konto' } },
+}
+```
+
 ### AI without lock-in
 
 Here's where the clever founder would start thinking about money. Wrap the AI calls. Vibe code a nice looking "yapyak Cloud" in front. Charge $9/month per dev. Skim a margin off every translation. You know the playbook.
@@ -297,14 +384,18 @@ Legend: ✅ shipped and idiomatic · ⚠️ partial / requires opt-in / clunky �
 | Feature                            | yapyak | next-intl | react-intl | i18next | lingui | paraglide | tolgee | languine |
 |------------------------------------|--------|-----------|------------|---------|--------|-----------|--------|----------|
 | Source-string-as-key               |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ❌   |    ❌     |
-| File-scoped translations           |   ✅    |     ❌     |     ❌      |    ❌    |   ⚠️    |     ❌     |    ❌   |    ❌     |
+| Per-message tree-shaking           |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ✅     |    ❌   |   N/A    |
+| Component-discriminated (auto)     |   ✅    |     ❌     |     ❌      |    ❌    |   ⚠️    |     ❌     |    ❌   |    ❌     |
 | AOT-compiled messages              |   ✅    |     ❌     |     ⚠️      |    ❌    |   ✅    |     ✅     |    ❌   |   N/A    |
 | Type-safe params from source       |   ✅    |     ⚠️     |     ❌      |    ⚠️    |   ⚠️    |     ✅     |    ❌   |   N/A    |
 | Autocomplete on `t()` calls        |   ✅    |     ⚠️     |     ❌      |    ⚠️    |   ❌    |     ✅     |    ❌   |   N/A    |
 | Built-in AI translation            |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ✅   |    ✅     |
+| Context-aware AI prompts           |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ❌   |    ❌     |
 | Auto-translate on save (HMR)       |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ❌   |    ❌     |
-| Position-aware translation memory  |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ❌   |    ⚠️     |
+| Position-aware rename memory       |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ❌   |    ⚠️     |
+| Cross-file translation reuse       |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ❌   |    ❌     |
 | Zero-config SSR                    |   ✅    |     ⚠️     |     ❌      |    ❌    |   ❌    |     ✅     |    ❌   |   N/A    |
+| Multi-framework (React/Vue/Svelte) |   ✅    |     ❌     |     ⚠️      |    ✅    |   ✅    |     ✅     |    ✅   |   N/A    |
 | One package                        |   ✅    |     ✅     |     ❌      |    ❌    |   ❌    |     ✅     |    ❌   |    ✅     |
 | Minimal API surface                |   ✅    |     ⚠️     |     ❌      |    ❌    |   ⚠️    |     ✅     |    ❌   |    ✅     |
 | Good DX                            |   ✅    |     ⚠️     |     ❌      |    ⚠️    |   ⚠️    |     ✅     |    ⚠️   |    ⚠️     |
@@ -319,7 +410,7 @@ Legend: ✅ shipped and idiomatic · ⚠️ partial / requires opt-in / clunky �
 - **tolgee** has built-in AI translation — but it lives in their cloud platform, not the library. The library itself is essentially i18next under the hood. ([features](https://tolgee.io/features/ai-translation))
 - **languine** is a CLI tool that AI-translates JSON files via git diff. Not a library — runs separately, no runtime, no autocomplete, no SSR concerns. Position-aware ⚠️ via git-diff but not real rename detection. ([repo](https://github.com/languine-ai/languine))
 
-**yapyak is the only library that does all of this in one package** — and the only one that does *any* of source-string-as-key + file-scoped + auto-translate-on-save + position-aware memory.
+**yapyak is the only library that does all of this in one package.** No one else combines source-string-as-key with per-message tree-shaking, no one else sends call-site context to the AI, no one else has cross-file translation reuse. The closest peer is Paraglide — same tree-shaking story, but you trade a lot of ergonomics to get there: explicit IDs, no AI built in, no rename detection, no context.
 
 ---
 
@@ -372,6 +463,8 @@ yapyak compile               # build static locale modules
 
 ## Status
 
-Early. Working great in production for one personal site so far. Built for Vite + React + TanStack Start; adapters for SvelteKit, Remix, and Astro coming as people ask for them.
+Early — but the architecture is settled. Working in production on one personal site, getting battle-tested next on a larger SaaS. Vite plugin works for React (TanStack Start, vanilla), Vue (vanilla), Svelte (vanilla, SvelteKit), and runtime-free (CLI, server-only). Adapters for Remix and Astro coming as people ask.
 
-If you try it and something breaks, open an issue. If you try it and it's the best i18n DX you've used, tell someone. 🐂
+The big features — per-message tree-shaking, context-aware AI, cross-file rename stability, component-discriminated translations — are all in. Polish, edge cases, and `v1.0` come from real-world usage. Use it, break it, open an issue.
+
+If you try it and it's the best i18n DX you've used, tell someone. 🐂

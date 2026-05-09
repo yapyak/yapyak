@@ -4,13 +4,15 @@ order: 1
 
 # Introduction
 
-Yapyak is an i18n library for Vite apps. Three properties define it:
+Yapyak is an i18n library for Vite apps. Five properties define it:
 
 1. **The translation is the key.** You write `t('Save changes')`. The English text *is* the lookup. No abstract IDs.
-2. **AI is built in.** Save a file with new strings, the AI translates them, your UI updates.
-3. **Translations follow your code.** Rename a string and the existing translation moves with it.
+2. **Per-message tree-shaking.** Each `t()` call rewrites to a direct function reference. Routes only ship the messages they actually use — same bundle story as Paraglide, without the explicit-ID tax.
+3. **Context-aware AI.** When the LLM translates, it gets the file path, component name, and surrounding code. Same English, different context, different translation.
+4. **Translations follow your code.** Rename a string in a file, move a `t()` call to another file, rename the file itself — the translation migrates automatically.
+5. **Component-discriminated, free.** `t('Save')` on a form vs `t('Save')` on a contract action get independent translations. You don't think about it.
 
-The rest follows from these three.
+The rest follows from these.
 
 ## How it feels
 
@@ -37,6 +39,20 @@ Translation keys are a special kind of hell. `home.hero.cta.signup.button` — d
 Yapyak takes a different swing: the translation is the key. There's nothing to name, because the source language already names it. Think of what Tailwind did to CSS class names — same energy, less friction.
 
 If two files happen to use the same source text but want different translations, that's fine — translations are scoped per file. `t('Save')` in your settings page can be `'Spara'`, while `t('Save')` in your editor can be `'Spara ändringar'`. Same key, different files, no collisions, no bikeshedding.
+
+## Why per-message tree-shaking matters
+
+Most i18n libraries ship every translation for every locale to every page. With 100 routes and 1000 messages, that's a lot of dead bytes in your bundle.
+
+Yapyak transforms each `t('Foo')` call to a direct reference to a tree-shakable function. Vite drops everything else. Route `/checkout` lands on the user with the 20 messages it actually uses, not all 1000.
+
+Paraglide pioneered this; we copied it — but we kept source-string-as-key on top. You don't trade ergonomics for bundle size.
+
+## Why context-aware AI
+
+Generic translation: "translate 'Cancel' to Swedish". Output: *Annullera* (formal/legal) or *Avbryt* (UI button)? Coin flip.
+
+Yapyak's transform knows the call site at extraction time: the file, the component, the surrounding code. It bundles all of that into the LLM prompt. The model sees a `<Button>` in a `PaymentDialog` and returns *Avbryt*. Same string elsewhere returns *Annullera*. Quality leap, fully automatic.
 
 ## Vite-only
 
