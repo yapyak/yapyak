@@ -305,6 +305,24 @@ ai: {
 }
 ```
 
+#### A note on privacy
+
+Yapyak sends call-site context to your configured LLM along with the source string. By default that's the component name plus three lines of surrounding code. This is what enables the quality leap over generic translation.
+
+If your codebase has sensitive logic close to UI strings — IP, internal tooling, customer data names — you can dial it down:
+
+```ts
+ai: {
+  context: 'full',     // default — component + snippet
+  context: 'minimal',  // component name only, no code
+  context: 'none',     // just the source string
+}
+```
+
+`'minimal'` keeps most of the disambiguation power (component name disambiguates `t('Save')` in `EmployeeForm` vs `ContractActionsBar`) while never sending a line of source code. `'none'` is for paranoid mode — same prompt as a generic translation tool.
+
+Whatever the mode, yapyak only ever sends what you've already opted into by enabling AI translation. We don't phone home, don't log, don't aggregate. The provider you configured is the only network hop.
+
 ### AI without lock-in
 
 Here's where the clever founder would start thinking about money. Wrap the AI calls. Vibe code a nice looking "yapyak Cloud" in front. Charge $9/month per dev. Skim a margin off every translation. You know the playbook.
@@ -432,6 +450,7 @@ yapyak({
     voice: 'Casual and direct.',
     glossary: { 'Save': { sv: 'Spara' } },
     autoTranslate: true,
+    context: 'full',               // 'full' | 'minimal' | 'off' — call-site context sent to LLM
   },
 })
 ```

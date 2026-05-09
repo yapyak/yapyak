@@ -1,12 +1,13 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, sep } from 'node:path';
-import type { Provider, TranslationContext } from '../ai/index.js';
+import type { ContextMode, Provider, TranslationContext } from '../ai/index.js';
 import { extractMessages, type MessageContext } from '../compiler/index.js';
 import { detectRenames, type MessagePosition } from './detect-renames.js';
 import { findBareBindings } from './find-bare-bindings.js';
 import { loadPositionCache, savePositionCache } from './position-cache.js';
 
 export interface AutoTranslateOptions {
+  contextMode: ContextMode;
   defaultLocale: string;
   factories: string[];
   glossary: Record<string, Record<string, string>>;
@@ -193,9 +194,17 @@ interface TranslateMissingOptions {
 function toTranslationContext(
   context: MessageContext | undefined,
   fileId: string,
+  mode: ContextMode,
 ): TranslationContext | undefined {
-  if (!context) {
+  if (!context || mode === 'none') {
     return undefined;
+  }
+  if (mode === 'minimal') {
+    return {
+      componentName: context.componentName,
+      fileId,
+      snippet: '',
+    };
   }
   return {
     componentName: context.componentName,
@@ -213,7 +222,11 @@ async function translateMissing(
   if (missing.length > 1 && options.provider.translateBatch) {
     try {
       const contexts = missing.map((source) =>
-        toTranslationContext(contextBySource.get(source), fileId),
+        toTranslationContext(
+          contextBySource.get(source),
+          fileId,
+          options.contextMode,
+        ),
       );
       const hasContext = contexts.some((c) => c !== undefined);
       const batch = await options.provider.translateBatch({
@@ -245,7 +258,11 @@ async function translateMissing(
   for (const source of missing) {
     try {
       const translation = await options.provider.translate({
-        context: toTranslationContext(contextBySource.get(source), fileId),
+        context: toTranslationContext(
+          contextBySource.get(source),
+          fileId,
+          options.contextMode,
+        ),
         defaultLocale: options.defaultLocale,
         fileId,
         glossary: options.glossary,

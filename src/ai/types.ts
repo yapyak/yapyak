@@ -40,8 +40,11 @@ export type AnthropicModel =
 
 export type OpenAiModel = 'gpt-5' | 'gpt-5-mini' | 'gpt-5-nano' | 'gpt-4o';
 
+export type ContextMode = 'full' | 'minimal' | 'none';
+
 export interface AiBaseOptions {
   autoTranslate?: boolean;
+  context?: ContextMode;
   glossary?: Record<string, Record<string, string>>;
   voice?: string;
 }

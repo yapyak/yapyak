@@ -49,6 +49,7 @@ describe('auto-translate context flow', () => {
     );
 
     const translator = createAutoTranslator({
+      contextMode: 'full',
       defaultLocale: 'en',
       factories: ['intl'],
       glossary: {},
@@ -91,6 +92,7 @@ describe('auto-translate context flow', () => {
     );
 
     const translator = createAutoTranslator({
+      contextMode: 'full',
       defaultLocale: 'en',
       factories: ['intl'],
       glossary: {},
@@ -137,6 +139,7 @@ describe('auto-translate context flow', () => {
     );
 
     const translator = createAutoTranslator({
+      contextMode: 'full',
       defaultLocale: 'en',
       factories: ['intl'],
       glossary: {},
@@ -153,6 +156,59 @@ describe('auto-translate context flow', () => {
     expect(capturedBatch).toHaveLength(0);
     expect(captured).toHaveLength(1);
     expect(captured[0]?.source).toBe('Brand new string');
+  });
+
+  it("strips snippet but keeps componentName when contextMode is 'minimal'", async () => {
+    const filePath = join(projectRoot, 'src', 'cancel-button.tsx');
+    writeFileSync(
+      filePath,
+      `import { t } from 'yapyak';\nexport function CancelButton() {\n  return <button>{t('Cancel minimal')}</button>;\n}\n`,
+    );
+
+    const translator = createAutoTranslator({
+      contextMode: 'minimal',
+      defaultLocale: 'en',
+      factories: ['intl'],
+      glossary: {},
+      intlModules: ['yapyak'],
+      locales: ['en', 'sv'],
+      localesDir: 'locales',
+      projectRoot,
+      provider: makeProvider(),
+      voice: '',
+    });
+
+    await translator.onSourceFileChange(filePath);
+
+    expect(captured).toHaveLength(1);
+    expect(captured[0]?.context?.componentName).toBe('CancelButton');
+    expect(captured[0]?.context?.snippet).toBe('');
+  });
+
+  it("omits context entirely when contextMode is 'none'", async () => {
+    const filePath = join(projectRoot, 'src', 'cancel-button.tsx');
+    writeFileSync(
+      filePath,
+      `import { t } from 'yapyak';\nexport function CancelButton() {\n  return <button>{t('Cancel off')}</button>;\n}\n`,
+    );
+
+    const translator = createAutoTranslator({
+      contextMode: 'none',
+      defaultLocale: 'en',
+      factories: ['intl'],
+      glossary: {},
+      intlModules: ['yapyak'],
+      locales: ['en', 'sv'],
+      localesDir: 'locales',
+      projectRoot,
+      provider: makeProvider(),
+      voice: '',
+    });
+
+    await translator.onSourceFileChange(filePath);
+
+    expect(captured).toHaveLength(1);
+    expect(captured[0]?.context).toBeUndefined();
   });
 
   it('forwards parallel contexts on batch translate', async () => {
@@ -173,6 +229,7 @@ describe('auto-translate context flow', () => {
     );
 
     const translator = createAutoTranslator({
+      contextMode: 'full',
       defaultLocale: 'en',
       factories: ['intl'],
       glossary: {},

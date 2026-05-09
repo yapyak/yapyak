@@ -15,6 +15,7 @@ export type {
   AnthropicModel,
   BatchTranslateFunction,
   BatchTranslateInput,
+  ContextMode,
   OpenAiModel,
   Provider,
   TranslateFunction,

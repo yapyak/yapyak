@@ -88,6 +88,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
   const autoTranslate = ai?.autoTranslate ?? false;
   const voice = ai?.voice ?? '';
   const glossary = ai?.glossary ?? {};
+  const contextMode = ai?.context ?? 'full';
 
   const VIRTUAL_INTL = moduleName;
   const VIRTUAL_INTL_RESOLVED = `\0${moduleName}`;
@@ -237,6 +238,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
           try {
             const provider = resolveProvider(ai);
             autoTranslator = createAutoTranslator({
+              contextMode,
               defaultLocale,
               factories,
               glossary,
