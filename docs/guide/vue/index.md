@@ -10,6 +10,8 @@ Yapyak's Vue adapter is intentionally idiomatic — none of the React patterns l
 
 The mental model:
 
+<div v-pre>
+
 ```vue
 <script setup lang="ts">
 import { t, useLocale } from 'yapyak';
@@ -24,5 +26,7 @@ const locale = useLocale();   // WritableComputedRef<Locale>
   </button>
 </template>
 ```
+
+</div>
 
 `locale` is a writable computed ref. Read `locale.value` (or just `locale` in templates — Vue auto-unwraps). Assign `locale.value = 'sv'` and yapyak writes the cookie and re-renders. No tuple, no setter parameter — you just assign, like every other Vue ref you've ever used.

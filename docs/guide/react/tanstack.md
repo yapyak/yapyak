@@ -20,6 +20,7 @@ export default defineConfig(({ mode }) => {
       yapyak({
         adapter: 'tanstackStart',
         defaultLocale: 'en',
+        framework: 'react',
         locales: ['en', 'sv'],
         persistence: 'cookie',
         ai: {
@@ -54,7 +55,7 @@ export const Route = createRootRoute({
 function Component() {
   const [locale] = useLocale();
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale}>
       <head>
         <HeadContent />
       </head>

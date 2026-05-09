@@ -16,13 +16,15 @@ import { transformSource } from './transform-source.js';
 
 export type Adapter = 'tanstackStart' | 'sveltekit' | null;
 
+export type Framework = 'react' | 'vue' | 'svelte' | null;
+
 export interface YapyakPluginOptions {
   acceptLanguage?: boolean;
   adapter?: Adapter;
   ai?: AiOptions;
   defaultLocale?: string;
   factories?: string[];
-  framework?: 'react' | 'vue' | 'svelte';
+  framework?: Framework;
   intlModules?: string[];
   locales?: string[];
   localesDir?: string;
@@ -68,7 +70,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
     ai,
     defaultLocale = 'en',
     factories = ['intl'],
-    framework = 'react',
+    framework = null,
     intlModules = [],
     locales = [defaultLocale],
     localesDir = 'locales',
@@ -257,7 +259,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
         const cookieName =
           persistence.type === 'cookie' ? persistence.name : 'locale';
         return `export const config = ${JSON.stringify(
-          { cookieName, defaultLocale, placeholder: '%lang%' },
+          { cookieName, defaultLocale },
           null,
           2,
         )};\n`;

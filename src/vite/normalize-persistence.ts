@@ -1,7 +1,7 @@
 export type Persistence =
   | 'cookie'
   | 'localStorage'
-  | false
+  | null
   | { type: 'cookie'; name: string }
   | { type: 'localStorage'; key: string };
 
@@ -13,10 +13,10 @@ export type ResolvedPersistence =
 export function normalizePersistence(
   persistence: Persistence | undefined,
 ): ResolvedPersistence {
-  if (persistence === false) {
+  if (persistence === null || persistence === undefined) {
     return { type: 'none' };
   }
-  if (persistence === undefined || persistence === 'cookie') {
+  if (persistence === 'cookie') {
     return { type: 'cookie', name: 'locale' };
   }
   if (persistence === 'localStorage') {

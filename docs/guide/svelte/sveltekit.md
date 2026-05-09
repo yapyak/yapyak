@@ -36,7 +36,7 @@ The `adapter: 'sveltekit'` option tells the plugin to wire `setRequestSource()` 
 export { handle } from 'yapyak/adapters/sveltekit';
 ```
 
-That's it for the simple case. The handle reads the locale cookie at SSR time and substitutes `<html lang>` in the streamed HTML response.
+The handle reads the locale cookie at SSR time and substitutes `<html lang>` in the streamed HTML response. It expects a `%lang%` placeholder in your `app.html` — see the next section.
 
 If you have your own handle, compose with `sequence`:
 
@@ -89,21 +89,3 @@ Same usage as Vanilla. The locale singleton is the same; the difference is just 
 - **Concurrent-safe.** Each request reads its own cookie via SvelteKit's request-scoped event. Two users hitting the server simultaneously don't see each other's locale.
 - **Configuration follows the plugin.** The cookie name and default locale you set in `vite.config.ts` flow through to the handle automatically — no duplication in `hooks.server.ts`.
 
-## Customizing the transform
-
-If you need a custom cookie name or placeholder beyond what the plugin knows, drop down to `htmlLangTransform` and wrap your own handle:
-
-```ts
-import type { Handle } from '@sveltejs/kit';
-import { htmlLangTransform } from 'yapyak/adapters/sveltekit';
-
-export const handle: Handle = ({ event, resolve }) =>
-  resolve(event, {
-    transformPageChunk: htmlLangTransform({
-      cookieName: 'my-locale',
-      placeholder: '%my-lang%',
-    }),
-  });
-```
-
-For 99% of apps, the default `export { handle } from 'yapyak/adapters/sveltekit'` is what you want.

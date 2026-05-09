@@ -4,7 +4,7 @@ export interface GenerateIntlModuleOptions {
   acceptLanguage: boolean;
   adapter: 'tanstackStart' | 'sveltekit' | null;
   defaultLocale: string;
-  framework: 'react' | 'vue' | 'svelte';
+  framework: 'react' | 'vue' | 'svelte' | null;
   locales: string[];
   moduleName: string;
   persistence: ResolvedPersistence;
@@ -23,26 +23,27 @@ export function generateIntlModule(options: GenerateIntlModuleOptions): string {
     syncHtmlLang,
   } = options;
   const lines: string[] = [];
-  const frameworkAdapter =
+  const isCookie = persistence.type === 'cookie';
+  const isLocalStorage = persistence.type === 'localStorage';
+
+  const importSource =
     framework === 'vue'
       ? 'yapyak/vue'
       : framework === 'svelte'
         ? 'yapyak/svelte'
-        : 'yapyak/react';
+        : framework === 'react'
+          ? 'yapyak/react'
+          : 'yapyak';
+  const intlFactory = framework === null ? 'createRuntime' : 'createIntl';
 
-  const isCookie = persistence.type === 'cookie';
-  const isLocalStorage = persistence.type === 'localStorage';
-
-  const reactImports: string[] = ['createIntl'];
+  const imports: string[] = [intlFactory];
   if (acceptLanguage) {
-    reactImports.push('parseAcceptLanguage');
+    imports.push('parseAcceptLanguage');
   }
   if (isCookie) {
-    reactImports.push('parseCookie', 'serializeCookie');
+    imports.push('parseCookie', 'serializeCookie');
   }
-  lines.push(
-    `import { ${reactImports.join(', ')} } from '${frameworkAdapter}';`,
-  );
+  lines.push(`import { ${imports.join(', ')} } from '${importSource}';`);
   if (isCookie) {
     lines.push(
       `import { getRequestSource, setRequestSource } from 'yapyak/server';`,
@@ -147,7 +148,7 @@ export function generateIntlModule(options: GenerateIntlModuleOptions): string {
     lines.push('');
   }
 
-  lines.push(`const intl = createIntl({`);
+  lines.push(`const intl = ${intlFactory}({`);
   lines.push(`  defaultLocale: DEFAULT_LOCALE,`);
   lines.push(`  detectLocale,`);
   lines.push(`  locales: LOCALES,`);
@@ -187,7 +188,17 @@ export function generateIntlModule(options: GenerateIntlModuleOptions): string {
     lines.push('');
   }
 
-  if (framework === 'svelte') {
+  if (framework === null) {
+    lines.push(`function t(source, params, fileId) {`);
+    lines.push(`  if (!fileId) return source;`);
+    lines.push(`  return intl.translate(source, params, fileId);`);
+    lines.push(`}`);
+    lines.push('');
+    lines.push(`export const getLocale = intl.getLocale;`);
+    lines.push(`export const subscribe = intl.subscribe;`);
+    lines.push(`export { messages, setLocale, syncHtmlLang, t };`);
+    lines.push(`export default intl;`);
+  } else if (framework === 'svelte') {
     lines.push(`const locale = {`);
     lines.push(`  get current() { return intl.locale.current; },`);
     lines.push(`  set current(next) { void setLocale(next); },`);

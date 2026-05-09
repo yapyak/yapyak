@@ -26,7 +26,7 @@ export default defineConfig({
 });
 ```
 
-`framework: 'svelte'` is required — without it the plugin emits the React adapter and your imports will fail.
+`framework: 'svelte'` is required — without it the plugin emits a runtime-free module without `locale.current` and your imports will fail.
 
 ## main.ts
 

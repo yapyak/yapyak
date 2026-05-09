@@ -26,7 +26,7 @@ export default defineConfig({
 });
 ```
 
-The `framework: 'vue'` tells the plugin to generate the Vue-flavored runtime module. Without it, you'll get React's tuple-based `useLocale()` and the wrong adapter import.
+The `framework: 'vue'` tells the plugin to generate the Vue-flavored runtime module. Without it, the plugin emits a runtime-free module without `useLocale()` and your imports will fail.
 
 ## main.ts
 
@@ -41,6 +41,8 @@ createApp(App).use(yapyak).mount('#app');
 The `yapyak` export here is the plugin object — pass it to `app.use()` once and you're done. The plugin doesn't actually do much today (no devtools, no global mixins) but the install hook is reserved, so we won't break your code if we add things later.
 
 ## App.vue
+
+<div v-pre>
 
 ```vue
 <script setup lang="ts">
@@ -60,9 +62,13 @@ const locale = useLocale();
 </template>
 ```
 
+</div>
+
 ## The plural quirk
 
-Vue's template parser uses `{{ }}` for interpolation. ICU plural and select messages contain `}}` (e.g. `... other {# items}}`) which collides. **Single placeholders are fine** — `{{ t('Hello {name}', { name: 'X' }) }}` works inline. **Plurals need a wrapper:**
+Vue's template parser uses <code v-pre>{{ }}</code> for interpolation. ICU plural and select messages contain `}}` (e.g. `... other {# items}}`) which collides. **Single placeholders are fine** inline. **Plurals need a wrapper:**
+
+<div v-pre>
 
 ```vue
 <script setup lang="ts">
@@ -79,7 +85,9 @@ const itemCount = computed(() =>
 </template>
 ```
 
-That's it. Move the call into a `computed()`, render the result. The template parser only sees `{{ itemCount }}`, no collision.
+</div>
+
+That's it. Move the call into a `computed()`, render the result. The template parser only sees <code v-pre>{{ itemCount }}</code>, no collision.
 
 ## SSR
 

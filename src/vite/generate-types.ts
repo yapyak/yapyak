@@ -1,6 +1,6 @@
 export interface GenerateTypesOptions {
   defaultLocale: string;
-  framework: 'react' | 'vue' | 'svelte';
+  framework: 'react' | 'vue' | 'svelte' | null;
   locales: string[];
   moduleName: string;
   translations: Record<string, Record<string, string>>;
@@ -38,12 +38,14 @@ export function generateTypes(options: GenerateTypesOptions): string {
   } else if (framework === 'vue') {
     lines.push(`  import type { WritableComputedRef } from 'vue';`);
     lines.push(`  import type { YapyakPlugin } from 'yapyak/vue';`);
-  } else {
+  } else if (framework === 'react') {
     lines.push(`  import type {`);
     lines.push(`    Intl,`);
     lines.push(`    IntlProviderProps,`);
     lines.push(`  } from 'yapyak/react';`);
     lines.push(`  import type { FC } from 'react';`);
+  } else {
+    lines.push(`  import type { Runtime } from 'yapyak';`);
   }
   lines.push('');
   lines.push(`  export type Locale = ${localeUnion};`);
@@ -63,12 +65,14 @@ export function generateTypes(options: GenerateTypesOptions): string {
   } else if (framework === 'vue') {
     lines.push(`  export const yapyak: YapyakPlugin;`);
     lines.push(`  export const useLocale: () => WritableComputedRef<Locale>;`);
-  } else {
+  } else if (framework === 'react') {
     lines.push(`  export const IntlProvider: FC<IntlProviderProps>;`);
     lines.push(
       `  export const useLocale: () => readonly [Locale, (locale: Locale) => void];`,
     );
     lines.push(`  export const useTranslation: Intl['useTranslation'];`);
+  } else {
+    lines.push(`  export const subscribe: Runtime['subscribe'];`);
   }
   lines.push('');
 
@@ -100,8 +104,10 @@ export function generateTypes(options: GenerateTypesOptions): string {
     lines.push(`  const intl: SvelteIntl;`);
   } else if (framework === 'vue') {
     lines.push(`  const intl: YapyakPlugin;`);
-  } else {
+  } else if (framework === 'react') {
     lines.push(`  const intl: Intl;`);
+  } else {
+    lines.push(`  const intl: Runtime;`);
   }
   lines.push(`  export default intl;`);
   lines.push(`}`);
