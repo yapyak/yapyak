@@ -126,32 +126,51 @@ export function createAutoTranslator(
         const localePath = otherLocalePath(options, locale);
         const localeJson = readJson(localePath);
         const localeFile = localeJson[fileId] ?? {};
+
+        const reused = reuseFromOtherFiles({
+          fileId,
+          localeFile,
+          localeJson,
+          sources,
+        });
+        let writeNeeded = reused > 0;
+        if (reused > 0) {
+          didTranslate = true;
+          process.stdout.write(
+            `[yapyak] reused ${reused} translation${reused === 1 ? '' : 's'} from other files → ${locale}\n`,
+          );
+        }
+
         const missing: string[] = [];
         for (const source of sources) {
           if (localeFile[source] === undefined) {
             missing.push(source);
           }
         }
-        if (missing.length === 0) {
-          continue;
-        }
-        process.stdout.write(
-          `[yapyak] translating ${missing.length} string${missing.length === 1 ? '' : 's'} → ${locale}\n`,
-        );
 
-        const translations = await translateMissing({
-          contextBySource,
-          fileId,
-          locale,
-          missing,
-          options,
-        });
-        for (const [source, translation] of Object.entries(translations)) {
-          localeFile[source] = translation;
-          didTranslate = true;
+        if (missing.length > 0) {
+          process.stdout.write(
+            `[yapyak] translating ${missing.length} string${missing.length === 1 ? '' : 's'} → ${locale}\n`,
+          );
+
+          const translations = await translateMissing({
+            contextBySource,
+            fileId,
+            locale,
+            missing,
+            options,
+          });
+          for (const [source, translation] of Object.entries(translations)) {
+            localeFile[source] = translation;
+            didTranslate = true;
+            writeNeeded = true;
+          }
         }
-        localeJson[fileId] = localeFile;
-        writeJson(localePath, sortFiles(localeJson));
+
+        if (writeNeeded) {
+          localeJson[fileId] = localeFile;
+          writeJson(localePath, sortFiles(localeJson));
+        }
       }
     } finally {
       inflight.delete(fileId);
@@ -242,6 +261,35 @@ async function translateMissing(
   }
 
   return result;
+}
+
+interface ReuseFromOtherFilesArgs {
+  fileId: string;
+  localeFile: Record<string, string>;
+  localeJson: Record<string, Record<string, string>>;
+  sources: Set<string>;
+}
+
+function reuseFromOtherFiles(args: ReuseFromOtherFilesArgs): number {
+  const { fileId, localeFile, localeJson, sources } = args;
+  let reused = 0;
+  for (const source of sources) {
+    if (localeFile[source] !== undefined) {
+      continue;
+    }
+    for (const [otherFileId, otherEntries] of Object.entries(localeJson)) {
+      if (otherFileId === fileId) {
+        continue;
+      }
+      const translation = otherEntries[source];
+      if (translation !== undefined) {
+        localeFile[source] = translation;
+        reused++;
+        break;
+      }
+    }
+  }
+  return reused;
 }
 
 interface ApplyRenamesArgs {

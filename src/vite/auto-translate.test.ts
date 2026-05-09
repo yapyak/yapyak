@@ -70,6 +70,91 @@ describe('auto-translate context flow', () => {
     expect(call?.context?.snippet).toContain("t('Cancel')");
   });
 
+  it('reuses translation when same source moves to a new file', async () => {
+    writeFileSync(
+      join(projectRoot, 'locales', 'en.json'),
+      JSON.stringify({
+        'src/old-place.tsx': { Save: 'Save' },
+      }),
+    );
+    writeFileSync(
+      join(projectRoot, 'locales', 'sv.json'),
+      JSON.stringify({
+        'src/old-place.tsx': { Save: 'Spara' },
+      }),
+    );
+
+    const newFile = join(projectRoot, 'src', 'new-place.tsx');
+    writeFileSync(
+      newFile,
+      `import { t } from 'yapyak';\nexport function NewPlace() { return <button>{t('Save')}</button>; }\n`,
+    );
+
+    const translator = createAutoTranslator({
+      defaultLocale: 'en',
+      factories: ['intl'],
+      glossary: {},
+      intlModules: ['yapyak'],
+      locales: ['en', 'sv'],
+      localesDir: 'locales',
+      projectRoot,
+      provider: makeProvider(),
+      voice: '',
+    });
+
+    await translator.onSourceFileChange(newFile);
+
+    expect(captured).toHaveLength(0);
+    expect(capturedBatch).toHaveLength(0);
+
+    const svJson = JSON.parse(
+      require('node:fs').readFileSync(
+        join(projectRoot, 'locales', 'sv.json'),
+        'utf8',
+      ),
+    );
+    expect(svJson['src/new-place.tsx']?.Save).toBe('Spara');
+  });
+
+  it('still calls LLM for genuinely new strings even when other files exist', async () => {
+    writeFileSync(
+      join(projectRoot, 'locales', 'en.json'),
+      JSON.stringify({
+        'src/old.tsx': { Save: 'Save' },
+      }),
+    );
+    writeFileSync(
+      join(projectRoot, 'locales', 'sv.json'),
+      JSON.stringify({
+        'src/old.tsx': { Save: 'Spara' },
+      }),
+    );
+
+    const newFile = join(projectRoot, 'src', 'new.tsx');
+    writeFileSync(
+      newFile,
+      `import { t } from 'yapyak';\nexport function New() { return <><h1>{t('Save')}</h1><p>{t('Brand new string')}</p></>; }\n`,
+    );
+
+    const translator = createAutoTranslator({
+      defaultLocale: 'en',
+      factories: ['intl'],
+      glossary: {},
+      intlModules: ['yapyak'],
+      locales: ['en', 'sv'],
+      localesDir: 'locales',
+      projectRoot,
+      provider: makeProvider(),
+      voice: '',
+    });
+
+    await translator.onSourceFileChange(newFile);
+
+    expect(capturedBatch).toHaveLength(0);
+    expect(captured).toHaveLength(1);
+    expect(captured[0]?.source).toBe('Brand new string');
+  });
+
   it('forwards parallel contexts on batch translate', async () => {
     const filePath = join(projectRoot, 'src', 'payment-dialog.tsx');
     writeFileSync(
