@@ -1,4 +1,11 @@
+export interface TranslationContext {
+  componentName: string;
+  fileId: string;
+  snippet: string;
+}
+
 export interface TranslateInput {
+  context?: TranslationContext | undefined;
   defaultLocale: string;
   fileId: string;
   glossary: Record<string, Record<string, string>>;
@@ -8,6 +15,7 @@ export interface TranslateInput {
 }
 
 export interface BatchTranslateInput {
+  contexts?: TranslationContext[] | undefined;
   defaultLocale: string;
   glossary: Record<string, Record<string, string>>;
   sources: string[];

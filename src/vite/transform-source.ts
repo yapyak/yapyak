@@ -74,9 +74,7 @@ export function transformSource(
     const argList = splitTopLevelArgs(args);
     const firstArg = argList[0];
     if (firstArg === undefined) {
-      throw new DynamicSourceError(
-        `t() called with no arguments in ${fileId}`,
-      );
+      throw new DynamicSourceError(`t() called with no arguments in ${fileId}`);
     }
 
     let source: string;
@@ -126,7 +124,10 @@ function escapeRegex(input: string): string {
   return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function locate(code: string, offset: number): { line: number; column: number } {
+function locate(
+  code: string,
+  offset: number,
+): { line: number; column: number } {
   let line = 1;
   let column = 1;
   for (let i = 0; i < offset; i++) {

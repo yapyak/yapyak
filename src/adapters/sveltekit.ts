@@ -8,9 +8,7 @@ interface HeadersLike {
   get(name: string): string | null | undefined;
 }
 
-let _getRequestEvent:
-  | (() => { request: { headers: HeadersLike } })
-  | undefined;
+let _getRequestEvent: (() => { request: { headers: HeadersLike } }) | undefined;
 if (import.meta.env?.SSR) {
   const server = await import('$app/server' as string);
   _getRequestEvent = (

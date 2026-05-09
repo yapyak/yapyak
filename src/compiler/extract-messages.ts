@@ -1,5 +1,14 @@
+import { deriveComponentName } from './derive-component-name.js';
+import { extractSnippet } from './extract-snippet.js';
+
+export interface MessageContext {
+  componentName: string;
+  snippet: string;
+}
+
 export interface ExtractedMessage {
   column: number;
+  context: MessageContext;
   fileId: string;
   line: number;
   source: string;
@@ -22,12 +31,14 @@ export function extractMessages(
     .map((name) => escapeRegExp(name))
     .join('|');
 
+  const componentName = deriveComponentName(fileId);
+
   if (factoryAlternatives) {
     const factoryPattern = new RegExp(
       `\\b(?:${factoryAlternatives})\\.t\\s*\\(\\s*(['"\`])((?:\\\\.|(?!\\1).)*)\\1`,
       'g',
     );
-    collect(code, factoryPattern, fileId, messages);
+    collect(code, factoryPattern, fileId, componentName, messages);
   }
 
   if (bareNames && bareNames.size > 0) {
@@ -36,7 +47,7 @@ export function extractMessages(
       `(?:^|[^.\\w$])(?:${bareAlternatives})\\s*\\(\\s*(['"\`])((?:\\\\.|(?!\\1).)*)\\1`,
       'g',
     );
-    collect(code, barePattern, fileId, messages);
+    collect(code, barePattern, fileId, componentName, messages);
   }
 
   return messages;
@@ -46,6 +57,7 @@ function collect(
   code: string,
   pattern: RegExp,
   fileId: string,
+  componentName: string,
   messages: ExtractedMessage[],
 ): void {
   let match: RegExpExecArray | null = pattern.exec(code);
@@ -59,8 +71,10 @@ function collect(
     const source = unescapeString(raw, quote);
     const offset = match.index;
     const { line, column } = locate(code, offset);
+    const snippet = extractSnippet({ code, line });
     messages.push({
       column,
+      context: { componentName, snippet },
       fileId,
       line,
       source,

@@ -19,5 +19,6 @@ export type {
   Provider,
   TranslateFunction,
   TranslateInput,
+  TranslationContext,
 } from './types.js';
 export { ANTHROPIC_DEFAULT_MODEL, OPENAI_DEFAULT_MODEL } from './types.js';

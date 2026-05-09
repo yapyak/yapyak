@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, sep } from 'node:path';
-import type { Provider } from '../ai/index.js';
-import { extractMessages } from '../compiler/index.js';
+import type { Provider, TranslationContext } from '../ai/index.js';
+import { extractMessages, type MessageContext } from '../compiler/index.js';
 import { detectRenames, type MessagePosition } from './detect-renames.js';
 import { findBareBindings } from './find-bare-bindings.js';
 import { loadPositionCache, savePositionCache } from './position-cache.js';
@@ -64,8 +64,12 @@ export function createAutoTranslator(
     }));
 
     const sources = new Set<string>();
+    const contextBySource = new Map<string, MessageContext>();
     for (const message of extracted) {
       sources.add(message.source);
+      if (!contextBySource.has(message.source)) {
+        contextBySource.set(message.source, message.context);
+      }
     }
 
     if (sources.size === 0) {
@@ -136,6 +140,7 @@ export function createAutoTranslator(
         );
 
         const translations = await translateMissing({
+          contextBySource,
           fileId,
           locale,
           missing,
@@ -159,21 +164,43 @@ export function createAutoTranslator(
 }
 
 interface TranslateMissingOptions {
+  contextBySource: Map<string, MessageContext>;
   fileId: string;
   locale: string;
   missing: string[];
   options: AutoTranslateOptions;
 }
 
+function toTranslationContext(
+  context: MessageContext | undefined,
+  fileId: string,
+): TranslationContext | undefined {
+  if (!context) {
+    return undefined;
+  }
+  return {
+    componentName: context.componentName,
+    fileId,
+    snippet: context.snippet,
+  };
+}
+
 async function translateMissing(
   args: TranslateMissingOptions,
 ): Promise<Record<string, string>> {
-  const { fileId, locale, missing, options } = args;
+  const { contextBySource, fileId, locale, missing, options } = args;
   const result: Record<string, string> = {};
 
   if (missing.length > 1 && options.provider.translateBatch) {
     try {
+      const contexts = missing.map((source) =>
+        toTranslationContext(contextBySource.get(source), fileId),
+      );
+      const hasContext = contexts.some((c) => c !== undefined);
       const batch = await options.provider.translateBatch({
+        contexts: hasContext
+          ? contexts.map((c) => c ?? { componentName: '', fileId, snippet: '' })
+          : undefined,
         defaultLocale: options.defaultLocale,
         glossary: options.glossary,
         sources: missing,
@@ -199,6 +226,7 @@ async function translateMissing(
   for (const source of missing) {
     try {
       const translation = await options.provider.translate({
+        context: toTranslationContext(contextBySource.get(source), fileId),
         defaultLocale: options.defaultLocale,
         fileId,
         glossary: options.glossary,

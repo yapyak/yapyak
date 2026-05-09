@@ -55,6 +55,7 @@ export function anthropicProvider(options: AnthropicProviderOptions): Provider {
   return {
     async translate(input): Promise<string> {
       const prompt = buildPrompt({
+        context: input.context,
         glossary: input.glossary,
         source: input.source,
         targetLocale: input.targetLocale,
@@ -65,6 +66,7 @@ export function anthropicProvider(options: AnthropicProviderOptions): Provider {
 
     async translateBatch(input): Promise<string[]> {
       const prompt = buildBatchPrompt({
+        contexts: input.contexts,
         glossary: input.glossary,
         sources: input.sources,
         targetLocale: input.targetLocale,

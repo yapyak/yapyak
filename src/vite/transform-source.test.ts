@@ -18,9 +18,7 @@ describe('transformSource', () => {
       `import { _m_${hash} } from 'yapyak/messages';\n_m_${hash}()`,
     );
     expect(result.count).toBe(1);
-    expect(result.messages).toEqual([
-      { fileId, hash, source: 'Welcome!' },
-    ]);
+    expect(result.messages).toEqual([{ fileId, hash, source: 'Welcome!' }]);
   });
 
   it('replaces two-arg t() with hash function call passing params', () => {

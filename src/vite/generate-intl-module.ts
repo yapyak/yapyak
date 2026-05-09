@@ -198,7 +198,9 @@ export function generateIntlModule(options: GenerateIntlModuleOptions): string {
   } else if (framework === 'vue') {
     lines.push(`import { computed, ref } from 'vue';`);
     lines.push(`const _localeRef = ref(intl.getLocale());`);
-    lines.push(`intl.subscribe(() => { _localeRef.value = intl.getLocale(); });`);
+    lines.push(
+      `intl.subscribe(() => { _localeRef.value = intl.getLocale(); });`,
+    );
     lines.push(`function getLocale() { return _localeRef.value; }`);
     lines.push('');
     lines.push(`const baseUseLocale = intl.useLocale;`);
