@@ -5,77 +5,82 @@ export const CLIENT_SCRIPT = `
 
   const API = '/.yapyak';
   const STYLE = \`
-    .yp-root { all: initial; font-family: system-ui, -apple-system, sans-serif; font-size: 13px; color: #1a1a1a; }
-    .yp-fab { all: initial; position: fixed; bottom: 16px; right: 16px; z-index: 2147483646; cursor: pointer;
-              background: #1a1a1a; color: white; width: 44px; height: 44px; border-radius: 22px;
-              display: flex; align-items: center; justify-content: center; font-size: 18px;
-              box-shadow: 0 4px 16px rgba(0,0,0,0.2); transition: transform 120ms; }
-    .yp-fab:hover { transform: scale(1.05); }
-    .yp-panel { all: initial; position: fixed; top: 0; right: 0; bottom: 0; width: 420px; max-width: 90vw;
-                z-index: 2147483647; background: white; box-shadow: -4px 0 24px rgba(0,0,0,0.12);
-                display: flex; flex-direction: column; font-family: system-ui, sans-serif; font-size: 13px;
-                color: #1a1a1a; }
-    .yp-panel-header { padding: 14px 16px; border-bottom: 1px solid #e5e5e5; display: flex;
-                       align-items: center; gap: 8px; }
-    .yp-panel-title { font-weight: 600; font-size: 14px; flex: 1; }
-    .yp-panel-close { all: initial; cursor: pointer; padding: 4px 8px; border-radius: 4px; color: #666;
-                     font-size: 16px; line-height: 1; }
-    .yp-panel-close:hover { background: #f0f0f0; }
-    .yp-search { all: initial; display: block; width: 100%; box-sizing: border-box; padding: 8px 12px;
-                 border: 1px solid #d4d4d4; border-radius: 6px; font-size: 13px; font-family: inherit;
-                 color: #1a1a1a; background: white; outline: none; }
-    .yp-search:focus { border-color: #1a1a1a; }
-    .yp-panel-search-row { padding: 12px 16px; border-bottom: 1px solid #e5e5e5; }
-    .yp-list { flex: 1; overflow-y: auto; }
-    .yp-list-item { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; cursor: pointer;
-                    transition: background 80ms; }
-    .yp-list-item:hover { background: #fafafa; }
-    .yp-list-item.expanded { background: #fafafa; }
-    .yp-list-source { font-weight: 500; line-height: 1.4; word-break: break-word; }
-    .yp-list-meta { color: #888; font-size: 11px; margin-top: 4px; font-family: ui-monospace, monospace; }
-    .yp-list-incomplete { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 3px;
-                          background: #fef3c7; color: #92400e; font-size: 10px; font-weight: 600;
-                          text-transform: uppercase; letter-spacing: 0.05em; }
-    .yp-section-header { padding: 8px 16px; background: #fafafa; border-bottom: 1px solid #e5e5e5;
-                          font-size: 11px; font-weight: 600; text-transform: uppercase;
-                          letter-spacing: 0.05em; color: #666; display: flex; align-items: center;
-                          justify-content: space-between; gap: 8px; position: sticky; top: 0; z-index: 1; }
-    .yp-section-count { font-weight: 500; color: #999; }
-    .yp-toggle { all: initial; cursor: pointer; padding: 2px 8px; border-radius: 3px;
-                  font-size: 10px; font-family: inherit; color: #666; background: white;
-                  border: 1px solid #d4d4d4; }
-    .yp-toggle.active { background: #1a1a1a; color: white; border-color: #1a1a1a; }
-    .yp-detail { padding: 16px; background: white; border-bottom: 1px solid #f0f0f0; }
-    .yp-locale-row { margin-bottom: 14px; }
-    .yp-locale-row:last-child { margin-bottom: 0; }
-    .yp-locale-label { display: flex; align-items: center; justify-content: space-between;
-                       margin-bottom: 6px; }
-    .yp-locale-tag { font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em;
-                     color: #666; font-family: ui-monospace, monospace; }
-    .yp-locale-actions { display: flex; gap: 4px; }
-    .yp-btn { all: initial; cursor: pointer; padding: 4px 10px; border-radius: 4px; font-size: 11px;
-              font-family: inherit; transition: background 80ms; }
-    .yp-btn-secondary { background: #f0f0f0; color: #1a1a1a; }
-    .yp-btn-secondary:hover { background: #e5e5e5; }
-    .yp-btn-primary { background: #1a1a1a; color: white; }
-    .yp-btn-primary:hover { background: #333; }
-    .yp-btn:disabled { opacity: 0.5; cursor: wait; }
-    .yp-textarea { all: initial; display: block; width: 100%; box-sizing: border-box; padding: 8px 10px;
-                   border: 1px solid #d4d4d4; border-radius: 4px; font-size: 13px; font-family: inherit;
-                   color: #1a1a1a; background: white; outline: none; resize: vertical; min-height: 36px;
-                   line-height: 1.4; }
-    .yp-textarea:focus { border-color: #1a1a1a; }
-    .yp-textarea.missing { background: #fffbeb; border-color: #fbbf24; }
-    .yp-empty { padding: 32px 16px; text-align: center; color: #888; }
-    .yp-spinner { display: inline-block; width: 11px; height: 11px; border: 1.5px solid currentColor;
-                  border-right-color: transparent; border-radius: 50%; animation: yp-spin 600ms linear infinite;
-                  vertical-align: -2px; }
-    @keyframes yp-spin { to { transform: rotate(360deg); } }
+    :host { all: initial; font-family: system-ui, -apple-system, sans-serif; font-size: 13px; color: #1a1a1a; }
+    * { box-sizing: border-box; }
+    .fab { position: fixed; bottom: 16px; right: 16px; z-index: 2147483646; cursor: pointer;
+           background: #1a1a1a; color: white; width: 44px; height: 44px; border-radius: 22px;
+           display: flex; align-items: center; justify-content: center; font-size: 18px; border: none;
+           box-shadow: 0 4px 16px rgba(0,0,0,0.2); transition: transform 120ms; }
+    .fab:hover { transform: scale(1.05); }
+    .panel { position: fixed; top: 0; right: 0; bottom: 0; width: 420px; max-width: 90vw;
+             z-index: 2147483647; background: white; box-shadow: -4px 0 24px rgba(0,0,0,0.12);
+             display: flex; flex-direction: column; }
+    .panel-header { padding: 14px 16px; border-bottom: 1px solid #e5e5e5; display: flex;
+                    align-items: center; gap: 8px; }
+    .panel-title { font-weight: 600; font-size: 14px; flex: 1; }
+    .panel-close { cursor: pointer; padding: 4px 8px; border-radius: 4px; color: #666;
+                   font-size: 16px; line-height: 1; background: none; border: none; font-family: inherit; }
+    .panel-close:hover { background: #f0f0f0; }
+    .search { display: block; width: 100%; padding: 8px 12px;
+              border: 1px solid #d4d4d4; border-radius: 6px; font-size: 13px; font-family: inherit;
+              color: #1a1a1a; background: white; outline: none; }
+    .search:focus { border-color: #1a1a1a; }
+    .panel-search-row { padding: 12px 16px; border-bottom: 1px solid #e5e5e5; }
+    .scope-row { display: flex; gap: 6px; margin-top: 8px; }
+    .list { flex: 1; overflow-y: auto; }
+    .list-item { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; cursor: pointer;
+                 transition: background 80ms; }
+    .list-item:hover { background: #fafafa; }
+    .list-item.expanded { background: #fafafa; }
+    .list-source { font-weight: 500; line-height: 1.4; word-break: break-word; }
+    .list-meta { color: #888; font-size: 11px; margin-top: 4px; font-family: ui-monospace, monospace; }
+    .list-incomplete { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 3px;
+                       background: #fef3c7; color: #92400e; font-size: 10px; font-weight: 600;
+                       text-transform: uppercase; letter-spacing: 0.05em; }
+    .section-header { padding: 8px 16px; background: #fafafa; border-bottom: 1px solid #e5e5e5;
+                      font-size: 11px; font-weight: 600; text-transform: uppercase;
+                      letter-spacing: 0.05em; color: #666; display: flex; align-items: center;
+                      justify-content: space-between; gap: 8px; position: sticky; top: 0; z-index: 1; }
+    .section-count { font-weight: 500; color: #999; }
+    .toggle { cursor: pointer; padding: 2px 8px; border-radius: 3px;
+              font-size: 10px; font-family: inherit; color: #666; background: white;
+              border: 1px solid #d4d4d4; }
+    .toggle.active { background: #1a1a1a; color: white; border-color: #1a1a1a; }
+    .detail { padding: 16px; background: white; border-bottom: 1px solid #f0f0f0; }
+    .locale-row { margin-bottom: 14px; }
+    .locale-row:last-child { margin-bottom: 0; }
+    .locale-label { display: flex; align-items: center; justify-content: space-between;
+                    margin-bottom: 6px; }
+    .locale-tag { font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em;
+                  color: #666; font-family: ui-monospace, monospace; }
+    .locale-actions { display: flex; gap: 4px; }
+    .btn { cursor: pointer; padding: 4px 10px; border-radius: 4px; font-size: 11px;
+           font-family: inherit; transition: background 80ms; border: none; }
+    .btn-secondary { background: #f0f0f0; color: #1a1a1a; }
+    .btn-secondary:hover { background: #e5e5e5; }
+    .btn-primary { background: #1a1a1a; color: white; }
+    .btn-primary:hover { background: #333; }
+    .btn:disabled { opacity: 0.5; cursor: wait; }
+    .textarea { display: block; width: 100%; padding: 8px 10px;
+                border: 1px solid #d4d4d4; border-radius: 4px; font-size: 13px; font-family: inherit;
+                color: #1a1a1a; background: white; outline: none; resize: vertical; min-height: 36px;
+                line-height: 1.4; }
+    .textarea:focus { border-color: #1a1a1a; }
+    .textarea.missing { background: #fffbeb; border-color: #fbbf24; }
+    .empty { padding: 32px 16px; text-align: center; color: #888; }
+    .spinner { display: inline-block; width: 11px; height: 11px; border: 1.5px solid currentColor;
+               border-right-color: transparent; border-radius: 50%; animation: spin 600ms linear infinite;
+               vertical-align: -2px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   \`;
 
+  const host = document.createElement('div');
+  host.id = '__yapyak-host';
+  const shadow = host.attachShadow({ mode: 'open' });
   const styleEl = document.createElement('style');
   styleEl.textContent = STYLE;
-  document.head.appendChild(styleEl);
+  shadow.appendChild(styleEl);
+  document.body.appendChild(host);
 
   let panelEl = null;
   let listEl = null;
@@ -108,7 +113,7 @@ export const CLIENT_SCRIPT = `
 
   function fab() {
     const el = document.createElement('button');
-    el.className = 'yp-fab yp-root';
+    el.className = 'fab';
     el.title = 'Yapyak translations';
     el.innerHTML = '🐂';
     el.onclick = openPanel;
@@ -118,24 +123,24 @@ export const CLIENT_SCRIPT = `
   async function openPanel() {
     if (panelEl) return;
     panelEl = document.createElement('div');
-    panelEl.className = 'yp-panel yp-root';
+    panelEl.className = 'panel';
     panelEl.innerHTML = \`
-      <div class="yp-panel-header">
-        <div class="yp-panel-title">🐂 Yapyak translations</div>
-        <button class="yp-panel-close" type="button" aria-label="Close">×</button>
+      <div class="panel-header">
+        <div class="panel-title">🐂 Yapyak translations</div>
+        <button class="panel-close" type="button" aria-label="Close">×</button>
       </div>
-      <div class="yp-panel-search-row">
-        <input class="yp-search" placeholder="Search by text or file…" />
-        <div style="display:flex;gap:6px;margin-top:8px">
-          <button class="yp-toggle active" data-scope="page" type="button">On this page</button>
-          <button class="yp-toggle" data-scope="all" type="button">All</button>
+      <div class="panel-search-row">
+        <input class="search" placeholder="Search by text or file…" />
+        <div class="scope-row">
+          <button class="toggle active" data-scope="page" type="button">On this page</button>
+          <button class="toggle" data-scope="all" type="button">All</button>
         </div>
       </div>
-      <div class="yp-list"></div>
+      <div class="list"></div>
     \`;
-    document.body.appendChild(panelEl);
-    panelEl.querySelector('.yp-panel-close').onclick = closePanel;
-    const search = panelEl.querySelector('.yp-search');
+    shadow.appendChild(panelEl);
+    panelEl.querySelector('.panel-close').onclick = closePanel;
+    const search = panelEl.querySelector('.search');
     search.addEventListener('input', (e) => {
       searchValue = e.target.value.toLowerCase();
       renderList();
@@ -149,13 +154,13 @@ export const CLIENT_SCRIPT = `
         renderList();
       });
     });
-    listEl = panelEl.querySelector('.yp-list');
-    listEl.innerHTML = '<div class="yp-empty">Loading…</div>';
+    listEl = panelEl.querySelector('.list');
+    listEl.innerHTML = '<div class="empty">Loading…</div>';
     try {
       allMessages = await api('GET', '/messages');
       renderList();
     } catch (err) {
-      listEl.innerHTML = \`<div class="yp-empty">Failed to load: \${escapeHtml(err.message)}</div>\`;
+      listEl.innerHTML = \`<div class="empty">Failed to load: \${escapeHtml(err.message)}</div>\`;
     }
 
     if (!window.__yapyakSeenListener) {
@@ -202,7 +207,7 @@ export const CLIENT_SCRIPT = `
     if (scope === 'page') {
       if (onPage.length === 0) {
         listEl.innerHTML =
-          '<div class="yp-empty">No translations rendered on this page yet. Switch to "All" to see everything.</div>';
+          '<div class="empty">No translations rendered on this page yet. Switch to "All" to see everything.</div>';
         return;
       }
       renderSection('On this page', onPage);
@@ -216,26 +221,26 @@ export const CLIENT_SCRIPT = `
       renderSection('Elsewhere', others);
     }
     if (onPage.length === 0 && others.length === 0) {
-      listEl.innerHTML = '<div class="yp-empty">No messages.</div>';
+      listEl.innerHTML = '<div class="empty">No messages.</div>';
     }
   }
 
   function renderSection(label, messages) {
     const header = document.createElement('div');
-    header.className = 'yp-section-header';
-    header.innerHTML = \`<span>\${escapeHtml(label)}</span><span class="yp-section-count">\${messages.length}</span>\`;
+    header.className = 'section-header';
+    header.innerHTML = \`<span>\${escapeHtml(label)}</span><span class="section-count">\${messages.length}</span>\`;
     listEl.appendChild(header);
     for (const msg of messages) {
       const item = document.createElement('div');
-      item.className = 'yp-list-item';
+      item.className = 'list-item';
       if (msg.hash === expandedHash) item.classList.add('expanded');
       const incomplete = isIncomplete(msg.hash);
       item.innerHTML = \`
-        <div class="yp-list-source">
+        <div class="list-source">
           \${escapeHtml(msg.source)}
-          \${incomplete ? '<span class="yp-list-incomplete">missing</span>' : ''}
+          \${incomplete ? '<span class="list-incomplete">missing</span>' : ''}
         </div>
-        <div class="yp-list-meta">\${msg.componentName ? escapeHtml(msg.componentName) + ' · ' : ''}\${escapeHtml(msg.fileId)}</div>
+        <div class="list-meta">\${msg.componentName ? escapeHtml(msg.componentName) + ' · ' : ''}\${escapeHtml(msg.fileId)}</div>
       \`;
       item.addEventListener('click', () => toggle(msg.hash, item));
       listEl.appendChild(item);
@@ -257,16 +262,16 @@ export const CLIENT_SCRIPT = `
   async function toggle(hash, itemEl) {
     if (expandedHash === hash) {
       expandedHash = null;
-      const old = itemEl.querySelector('.yp-detail');
+      const old = itemEl.querySelector('.detail');
       if (old) old.remove();
       itemEl.classList.remove('expanded');
       return;
     }
     if (expandedHash) {
-      const oldItem = listEl.querySelector('.yp-list-item.expanded');
+      const oldItem = listEl.querySelector('.list-item.expanded');
       if (oldItem) {
         oldItem.classList.remove('expanded');
-        const old = oldItem.querySelector('.yp-detail');
+        const old = oldItem.querySelector('.detail');
         if (old) old.remove();
       }
     }
@@ -275,16 +280,16 @@ export const CLIENT_SCRIPT = `
     let detail = currentDetails.get(hash);
     if (!detail) {
       const placeholder = document.createElement('div');
-      placeholder.className = 'yp-detail';
+      placeholder.className = 'detail';
       placeholder.addEventListener('click', (e) => e.stopPropagation());
-      placeholder.innerHTML = '<div class="yp-empty">Loading…</div>';
+      placeholder.innerHTML = '<div class="empty">Loading…</div>';
       itemEl.appendChild(placeholder);
       try {
         detail = await api('GET', \`/messages/\${hash}\`);
         currentDetails.set(hash, detail);
         placeholder.replaceWith(renderDetail(detail));
       } catch (err) {
-        placeholder.innerHTML = \`<div class="yp-empty">\${escapeHtml(err.message)}</div>\`;
+        placeholder.innerHTML = \`<div class="empty">\${escapeHtml(err.message)}</div>\`;
       }
     } else {
       itemEl.appendChild(renderDetail(detail));
@@ -293,22 +298,22 @@ export const CLIENT_SCRIPT = `
 
   function renderDetail(detail) {
     const wrap = document.createElement('div');
-    wrap.className = 'yp-detail';
+    wrap.className = 'detail';
     wrap.addEventListener('click', (e) => e.stopPropagation());
     const locales = Object.keys(detail.translations);
     for (const locale of locales) {
       const value = detail.translations[locale];
       const row = document.createElement('div');
-      row.className = 'yp-locale-row';
+      row.className = 'locale-row';
       row.innerHTML = \`
-        <div class="yp-locale-label">
-          <span class="yp-locale-tag">\${escapeHtml(locale)}</span>
-          <div class="yp-locale-actions">
-            <button class="yp-btn yp-btn-secondary" data-action="regenerate" type="button">🤖 AI</button>
-            <button class="yp-btn yp-btn-primary" data-action="save" type="button">Save</button>
+        <div class="locale-label">
+          <span class="locale-tag">\${escapeHtml(locale)}</span>
+          <div class="locale-actions">
+            <button class="btn btn-secondary" data-action="regenerate" type="button">🤖 AI</button>
+            <button class="btn btn-primary" data-action="save" type="button">Save</button>
           </div>
         </div>
-        <textarea class="yp-textarea\${value === null ? ' missing' : ''}">\${escapeHtml(value ?? '')}</textarea>
+        <textarea class="textarea\${value === null ? ' missing' : ''}">\${escapeHtml(value ?? '')}</textarea>
       \`;
       const textarea = row.querySelector('textarea');
       const saveBtn = row.querySelector('[data-action=save]');
@@ -342,7 +347,7 @@ export const CLIENT_SCRIPT = `
   async function action(button, fn) {
     const original = button.innerHTML;
     button.disabled = true;
-    button.innerHTML = '<span class="yp-spinner"></span>';
+    button.innerHTML = '<span class="spinner"></span>';
     try {
       await fn();
     } catch (err) {
@@ -353,6 +358,6 @@ export const CLIENT_SCRIPT = `
     }
   }
 
-  document.body.appendChild(fab());
+  shadow.appendChild(fab());
 })();
 `;
