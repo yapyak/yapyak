@@ -1,7 +1,9 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import { join } from 'node:path';
 import type { ContextMode, Provider } from '../../ai/index.js';
 import type { MessageEntry } from '../generate-messages-module.js';
 import { regenerateTranslation } from './regenerate.js';
+import { runSync } from './sync.js';
 import {
   createTranslationStore,
   type TranslationStore,
@@ -41,7 +43,31 @@ export function createDevOverlayMiddleware(
 
     try {
       if (req.method === 'GET' && path === '/.yapyak/messages') {
-        sendJson(res, 200, listMessages(options));
+        sendJson(res, 200, listMessages(options, store));
+        return;
+      }
+
+      if (req.method === 'POST' && path === '/.yapyak/sync') {
+        if (!options.provider) {
+          sendJson(res, 503, {
+            error:
+              'AI provider not configured. Set ai.provider in plugin options.',
+          });
+          return;
+        }
+        const result = await runSync({
+          contextMode: options.contextMode,
+          glossary: options.glossary,
+          locales: options.locales,
+          localesDir: options.localesDir,
+          messageRegistry: options.messageRegistry,
+          projectRoot: options.projectRoot,
+          provider: options.provider,
+          store,
+          voice: options.voice,
+        });
+        options.invalidateMessages();
+        sendJson(res, 200, result);
         return;
       }
 
@@ -155,14 +181,20 @@ export function createDevOverlayMiddleware(
   };
 }
 
-function listMessages(options: DevOverlayMiddlewareOptions): unknown {
+function listMessages(
+  options: DevOverlayMiddlewareOptions,
+  store: TranslationStore,
+): unknown {
   const entries = [...options.messageRegistry.values()];
   return entries
     .map((entry) => ({
+      absolutePath: join(options.projectRoot, entry.fileId),
       componentName: entry.componentName ?? '',
       fileId: entry.fileId,
       hash: entry.hash,
+      line: entry.line ?? null,
       source: entry.source,
+      translations: store.readAll(options.locales, entry.fileId, entry.source),
     }))
     .sort((a, b) => {
       const fileCmp = a.fileId.localeCompare(b.fileId);
@@ -181,9 +213,11 @@ function showMessage(
     return undefined;
   }
   return {
+    absolutePath: join(options.projectRoot, entry.fileId),
     componentName: entry.componentName ?? '',
     fileId: entry.fileId,
     hash: entry.hash,
+    line: entry.line ?? null,
     snippet: entry.snippet ?? '',
     source: entry.source,
     translations: store.readAll(options.locales, entry.fileId, entry.source),

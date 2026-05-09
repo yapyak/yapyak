@@ -35,6 +35,7 @@ export interface Intl {
   getLocale: () => string;
   setLocale: (locale: string) => Promise<void>;
   setLocaleSync: (locale: string, module: LocaleModule) => void;
+  setPreviewLocale: (locale: string | null) => void;
   subscribe: (listener: () => void) => () => void;
   t: Translate;
   useLocale: () => readonly [string, (locale: string) => Promise<void>];
@@ -103,6 +104,7 @@ export function createIntl(options: CreateIntlOptions): Intl {
     getLocale: runtime.getLocale,
     setLocale: runtime.setLocale,
     setLocaleSync: runtime.setLocaleSync,
+    setPreviewLocale: runtime.setPreviewLocale,
     subscribe: runtime.subscribe,
     t: translate as Translate,
     useLocale,

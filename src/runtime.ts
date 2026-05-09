@@ -14,6 +14,7 @@ export interface Runtime {
   getSnapshot: () => string;
   setLocale: (locale: string) => Promise<void>;
   setLocaleSync: (locale: string, module: LocaleModule) => void;
+  setPreviewLocale: (locale: string | null) => void;
   subscribe: (listener: () => void) => () => void;
   translate: (
     source: string,
@@ -30,6 +31,7 @@ export function createRuntime(options: RuntimeOptions): Runtime {
   const allMessages: Record<string, LocaleModule> = { ...messages };
   let clientLocale: string | undefined;
   let clientMessages: LocaleModule = messages[defaultLocale] ?? {};
+  let previewLocale: string | null = null;
   let version = 0;
   let snapshot = `${defaultLocale}#0`;
 
@@ -46,6 +48,9 @@ export function createRuntime(options: RuntimeOptions): Runtime {
   }
 
   function getLocale(): string {
+    if (previewLocale !== null) {
+      return previewLocale;
+    }
     if (!isBrowser) {
       return detectLocale?.() ?? defaultLocale;
     }
@@ -57,6 +62,17 @@ export function createRuntime(options: RuntimeOptions): Runtime {
       }
     }
     return clientLocale;
+  }
+
+  function setPreviewLocale(locale: string | null): void {
+    previewLocale = locale;
+    if (isBrowser) {
+      version++;
+      snapshot = `${getLocale()}#${version}`;
+      for (const listener of listeners) {
+        listener();
+      }
+    }
   }
 
   function getLocales(): string[] {
@@ -111,6 +127,7 @@ export function createRuntime(options: RuntimeOptions): Runtime {
     getSnapshot,
     setLocale,
     setLocaleSync,
+    setPreviewLocale,
     subscribe,
     translate,
   };

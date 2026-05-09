@@ -14,6 +14,7 @@ export interface CollectedMessage {
   componentName: string;
   fileId: string;
   hash: string;
+  line: number;
   snippet: string;
   source: string;
 }
@@ -102,6 +103,7 @@ export function transformSource(
         componentName: deriveComponentName(fileId),
         fileId,
         hash,
+        line: lineCol.line,
         snippet: extractSnippet({ code, line: lineCol.line }),
         source,
       });

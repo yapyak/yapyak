@@ -5,6 +5,7 @@ export interface MessageEntry {
   componentName?: string;
   fileId: string;
   hash: string;
+  line?: number;
   snippet?: string;
   source: string;
 }

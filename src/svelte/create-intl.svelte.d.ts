@@ -23,6 +23,7 @@ export interface Intl {
   getLocale: () => string;
   setLocale: (locale: string) => Promise<void>;
   setLocaleSync: (locale: string, module: LocaleModule) => void;
+  setPreviewLocale: (locale: string | null) => void;
   subscribe: (listener: () => void) => () => void;
   locale: ReactiveLocale;
   t: Translate;

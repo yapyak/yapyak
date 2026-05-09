@@ -18,9 +18,33 @@ export const CLIENT_SCRIPT = `
     .panel-header { padding: 14px 16px; border-bottom: 1px solid #e5e5e5; display: flex;
                     align-items: center; gap: 8px; }
     .panel-title { font-weight: 600; font-size: 14px; flex: 1; }
+    .panel-action { cursor: pointer; padding: 4px 10px; border-radius: 4px; color: #1a1a1a;
+                    font-size: 11px; font-weight: 500; line-height: 1; background: #f0f0f0;
+                    border: none; font-family: inherit; }
+    .panel-action:hover { background: #e5e5e5; }
+    .panel-action:disabled { opacity: 0.5; cursor: wait; }
     .panel-close { cursor: pointer; padding: 4px 8px; border-radius: 4px; color: #666;
                    font-size: 16px; line-height: 1; background: none; border: none; font-family: inherit; }
     .panel-close:hover { background: #f0f0f0; }
+    .preview-row { padding: 8px 16px; border-bottom: 1px solid #e5e5e5; display: flex; gap: 8px;
+                    align-items: center; font-size: 11px; color: #666; }
+    .preview-label { font-weight: 500; }
+    .preview-select { padding: 3px 6px; border: 1px solid #d4d4d4; border-radius: 4px;
+                       font-size: 11px; font-family: inherit; color: #1a1a1a; background: white;
+                       cursor: pointer; outline: none; }
+    .preview-select:focus { border-color: #1a1a1a; }
+    .preview-active { color: #1a1a1a; font-weight: 600; font-family: ui-monospace, monospace;
+                       text-transform: uppercase; letter-spacing: 0.05em; }
+    .stats-row { padding: 8px 16px; border-bottom: 1px solid #e5e5e5; display: flex; gap: 10px;
+                  flex-wrap: wrap; font-size: 11px; color: #666; }
+    .stat { display: inline-flex; align-items: baseline; gap: 4px; }
+    .stat-locale { font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+                    font-family: ui-monospace, monospace; color: #1a1a1a; }
+    .stat-count { font-family: ui-monospace, monospace; }
+    .stat-missing { color: #92400e; font-weight: 500; }
+    .stat-complete { color: #166534; font-weight: 500; }
+    .list-meta-link { color: #2563eb; cursor: pointer; text-decoration: none; }
+    .list-meta-link:hover { text-decoration: underline; }
     .search { display: block; width: 100%; padding: 8px 12px;
               border: 1px solid #d4d4d4; border-radius: 6px; font-size: 13px; font-family: inherit;
               color: #1a1a1a; background: white; outline: none; }
@@ -126,9 +150,16 @@ export const CLIENT_SCRIPT = `
     panelEl.className = 'panel';
     panelEl.innerHTML = \`
       <div class="panel-header">
-        <div class="panel-title">🐂 Yapyak translations</div>
+        <div class="panel-title">🐂 Yapyak</div>
+        <button class="panel-action" data-action="sync" type="button" title="Prune stale entries and translate missing">Sync</button>
         <button class="panel-close" type="button" aria-label="Close">×</button>
       </div>
+      <div class="preview-row">
+        <span class="preview-label">View as:</span>
+        <select class="preview-select" data-action="preview"></select>
+        <span class="preview-active" data-active-locale></span>
+      </div>
+      <div class="stats-row"></div>
       <div class="panel-search-row">
         <input class="search" placeholder="Search by text or file…" />
         <div class="scope-row">
@@ -140,6 +171,8 @@ export const CLIENT_SCRIPT = `
     \`;
     shadow.appendChild(panelEl);
     panelEl.querySelector('.panel-close').onclick = closePanel;
+    panelEl.querySelector('[data-action=sync]').onclick = onSyncClick;
+    setupPreviewSelect();
     const search = panelEl.querySelector('.search');
     search.addEventListener('input', (e) => {
       searchValue = e.target.value.toLowerCase();
@@ -158,6 +191,7 @@ export const CLIENT_SCRIPT = `
     listEl.innerHTML = '<div class="empty">Loading…</div>';
     try {
       allMessages = await api('GET', '/messages');
+      renderStats();
       renderList();
     } catch (err) {
       listEl.innerHTML = \`<div class="empty">Failed to load: \${escapeHtml(err.message)}</div>\`;
@@ -179,12 +213,31 @@ export const CLIENT_SCRIPT = `
 
   function closePanel() {
     if (panelEl) {
+      if (window.__yapyakSetPreview) window.__yapyakSetPreview(null);
       panelEl.remove();
       panelEl = null;
       listEl = null;
       expandedHash = null;
       currentDetails.clear();
     }
+  }
+
+  function setupPreviewSelect() {
+    if (!panelEl) return;
+    const select = panelEl.querySelector('[data-action=preview]');
+    const active = panelEl.querySelector('[data-active-locale]');
+    const locales = window.__yapyakLocales ?? [];
+    const current = window.__yapyakGetLocale ? window.__yapyakGetLocale() : '';
+    select.innerHTML = locales
+      .map((l) => \`<option value="\${escapeHtml(l)}">\${escapeHtml(l)}</option>\`)
+      .join('');
+    select.value = current;
+    if (active) active.textContent = current;
+    select.addEventListener('change', () => {
+      const locale = select.value;
+      if (window.__yapyakSetPreview) window.__yapyakSetPreview(locale);
+      if (active) active.textContent = locale;
+    });
   }
 
   function matchesSearch(msg) {
@@ -235,13 +288,20 @@ export const CLIENT_SCRIPT = `
       item.className = 'list-item';
       if (msg.hash === expandedHash) item.classList.add('expanded');
       const incomplete = isIncomplete(msg.hash);
+      const link = msg.absolutePath
+        ? \`<a class="list-meta-link" href="\${editorLink(msg.absolutePath, msg.line)}" data-stop>\${escapeHtml(msg.fileId)}</a>\`
+        : escapeHtml(msg.fileId);
       item.innerHTML = \`
         <div class="list-source">
           \${escapeHtml(msg.source)}
           \${incomplete ? '<span class="list-incomplete">missing</span>' : ''}
         </div>
-        <div class="list-meta">\${msg.componentName ? escapeHtml(msg.componentName) + ' · ' : ''}\${escapeHtml(msg.fileId)}</div>
+        <div class="list-meta">\${msg.componentName ? escapeHtml(msg.componentName) + ' · ' : ''}\${link}</div>
       \`;
+      const linkEl = item.querySelector('[data-stop]');
+      if (linkEl) {
+        linkEl.addEventListener('click', (e) => e.stopPropagation());
+      }
       item.addEventListener('click', () => toggle(msg.hash, item));
       listEl.appendChild(item);
       if (msg.hash === expandedHash) {
@@ -253,10 +313,78 @@ export const CLIENT_SCRIPT = `
     }
   }
 
+  function syncMessageInList(updated) {
+    const idx = allMessages.findIndex((m) => m.hash === updated.hash);
+    if (idx === -1) return;
+    allMessages[idx] = { ...allMessages[idx], translations: updated.translations };
+  }
+
   function isIncomplete(hash) {
     const detail = currentDetails.get(hash);
-    if (!detail) return false;
-    return Object.values(detail.translations).some((v) => v === null);
+    if (detail) {
+      return Object.values(detail.translations).some((v) => v === null);
+    }
+    const msg = allMessages.find((m) => m.hash === hash);
+    if (!msg || !msg.translations) return false;
+    return Object.values(msg.translations).some((v) => v === null);
+  }
+
+  function renderStats() {
+    const row = panelEl?.querySelector('.stats-row');
+    if (!row) return;
+    if (allMessages.length === 0) {
+      row.innerHTML = '<span style="color:#888">No messages yet.</span>';
+      return;
+    }
+    const sample = allMessages[0]?.translations ?? {};
+    const locales = Object.keys(sample);
+    const total = allMessages.length;
+    row.innerHTML = locales
+      .map((locale) => {
+        const translated = allMessages.filter(
+          (m) => m.translations?.[locale] != null,
+        ).length;
+        const missing = total - translated;
+        const cls = missing === 0 ? 'stat-complete' : 'stat-missing';
+        return \`<span class="stat"><span class="stat-locale">\${escapeHtml(locale)}</span><span class="stat-count \${cls}">\${translated}/\${total}</span></span>\`;
+      })
+      .join('');
+  }
+
+  function editorLink(absolutePath, line) {
+    const suffix = line ? \`:\${line}\` : '';
+    return \`vscode://file/\${absolutePath}\${suffix}\`;
+  }
+
+  async function onSyncClick(event) {
+    const button = event.currentTarget;
+    await action(button, async () => {
+      const result = await api('POST', '/sync');
+      allMessages = await api('GET', '/messages');
+      currentDetails.clear();
+      renderStats();
+      renderList();
+      const parts = [];
+      if (result.pruned > 0) parts.push(\`pruned \${result.pruned}\`);
+      if (result.translated > 0) parts.push(\`translated \${result.translated}\`);
+      if (parts.length === 0) parts.push('all in sync');
+      flash(\`Sync: \${parts.join(', ')}\`);
+    });
+  }
+
+  function flash(text) {
+    const el = document.createElement('div');
+    el.style.cssText =
+      'position:fixed;bottom:72px;right:16px;background:#1a1a1a;color:white;padding:8px 14px;border-radius:6px;font-size:12px;z-index:2147483646;animation:fade 2s ease-out forwards;';
+    el.textContent = text;
+    const style = document.createElement('style');
+    style.textContent = '@keyframes fade { 0%, 80% { opacity: 1; } 100% { opacity: 0; } }';
+    shadow.appendChild(style);
+    shadow.appendChild(el);
+    setTimeout(() => {
+      el.remove();
+      style.remove();
+    }, 2000);
   }
 
   async function toggle(hash, itemEl) {
@@ -326,6 +454,8 @@ export const CLIENT_SCRIPT = `
           currentDetails.set(detail.hash, updated);
           textarea.value = updated.translations[locale] ?? '';
           textarea.classList.toggle('missing', updated.translations[locale] === null);
+          syncMessageInList(updated);
+          renderStats();
         });
       };
       regenBtn.onclick = async () => {
@@ -337,6 +467,8 @@ export const CLIENT_SCRIPT = `
           currentDetails.set(detail.hash, updated);
           textarea.value = updated.translations[locale] ?? '';
           textarea.classList.toggle('missing', updated.translations[locale] === null);
+          syncMessageInList(updated);
+          renderStats();
         });
       };
       wrap.appendChild(row);

@@ -31,6 +31,7 @@ export interface YapyakPlugin {
   getLocale: () => string;
   setLocale: (locale: string) => Promise<void>;
   setLocaleSync: (locale: string, module: LocaleModule) => void;
+  setPreviewLocale: (locale: string | null) => void;
   subscribe: (listener: () => void) => () => void;
   t: Translate;
   useLocale: () => WritableComputedRef<string>;
@@ -86,6 +87,7 @@ export function createIntl(options: CreateIntlOptions): YapyakPlugin {
     getLocale: runtime.getLocale,
     setLocale: runtime.setLocale,
     setLocaleSync: runtime.setLocaleSync,
+    setPreviewLocale: runtime.setPreviewLocale,
     subscribe: runtime.subscribe,
     t: translate as Translate,
     useLocale,

@@ -209,6 +209,12 @@ export function generateIntlModule(options: GenerateIntlModuleOptions): string {
   lines.push(
     `  window.__yapyakNotify = () => intl.setLocaleSync(intl.getLocale(), {});`,
   );
+  lines.push(`  window.__yapyakLocales = LOCALES;`);
+  lines.push(`  window.__yapyakGetLocale = () => intl.getLocale();`);
+  lines.push(
+    `  window.__yapyakSetPreview = (locale) => intl.setPreviewLocale(locale);`,
+  );
+  lines.push(`  window.__yapyakSubscribe = intl.subscribe;`);
   lines.push(`  const id = '__yapyak-overlay';`);
   lines.push(`  if (!document.getElementById(id)) {`);
   lines.push(`    const s = document.createElement('script');`);
