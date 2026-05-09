@@ -1,3 +1,5 @@
+import { deriveComponentName } from '../compiler/derive-component-name.js';
+import { extractSnippet } from '../compiler/extract-snippet.js';
 import { messageHash } from './message-hash.js';
 import { DynamicSourceError, parseSourceArg } from './parse-source-arg.js';
 
@@ -9,8 +11,10 @@ export interface TransformSourceOptions {
 }
 
 export interface CollectedMessage {
+  componentName: string;
   fileId: string;
   hash: string;
+  snippet: string;
   source: string;
 }
 
@@ -93,7 +97,14 @@ export function transformSource(
     const hash = messageHash(fileId, source);
     if (!seen.has(hash)) {
       seen.add(hash);
-      messages.push({ fileId, hash, source });
+      const lineCol = locate(code, callKeywordStart);
+      messages.push({
+        componentName: deriveComponentName(fileId),
+        fileId,
+        hash,
+        snippet: extractSnippet({ code, line: lineCol.line }),
+        source,
+      });
     }
 
     const paramsArg = argList[1];

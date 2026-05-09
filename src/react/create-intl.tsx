@@ -57,26 +57,26 @@ export function createIntl(options: CreateIntlOptions): Intl {
   function IntlProvider(props: IntlProviderProps): ReactElement {
     const { children } = props;
 
-    const currentLocale = useSyncExternalStore(
+    const snapshot = useSyncExternalStore(
       runtime.subscribe,
-      runtime.getLocale,
-      runtime.getLocale,
+      runtime.getSnapshot,
+      runtime.getSnapshot,
     );
 
     return (
-      <Context.Provider key={currentLocale} value={intl}>
+      <Context.Provider key={snapshot} value={intl}>
         {children}
       </Context.Provider>
     );
   }
 
   function useLocale(): readonly [string, (locale: string) => Promise<void>] {
-    const locale = useSyncExternalStore(
+    useSyncExternalStore(
       runtime.subscribe,
-      runtime.getLocale,
-      runtime.getLocale,
+      runtime.getSnapshot,
+      runtime.getSnapshot,
     );
-    return [locale, runtime.setLocale];
+    return [runtime.getLocale(), runtime.setLocale];
   }
 
   function useTranslation(): Intl {

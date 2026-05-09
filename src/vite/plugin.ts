@@ -1,8 +1,10 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 import type { Plugin, ViteDevServer } from 'vite';
-import { type AiOptions, resolveProvider } from '../ai/index.js';
+import { type AiOptions, type Provider, resolveProvider } from '../ai/index.js';
 import { type AutoTranslator, createAutoTranslator } from './auto-translate.js';
+import { CLIENT_SCRIPT } from './dev-overlay/client.js';
+import { createDevOverlayMiddleware } from './dev-overlay/middleware.js';
 import { findBareBindings } from './find-bare-bindings.js';
 import { generateIntlModule } from './generate-intl-module.js';
 import {
@@ -26,6 +28,7 @@ export interface YapyakPluginOptions {
   adapter?: Adapter;
   ai?: AiOptions;
   defaultLocale?: string;
+  overlay?: boolean;
   factories?: string[];
   framework?: Framework;
   intlModules?: string[];
@@ -72,6 +75,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
     adapter = null,
     ai,
     defaultLocale = 'en',
+    overlay = false,
     factories = ['intl'],
     framework = null,
     intlModules = [],
@@ -183,10 +187,25 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
       return;
     }
     const module = server.moduleGraph.getModuleById(VIRTUAL_MESSAGES_RESOLVED);
-    if (module) {
-      server.moduleGraph.invalidateModule(module);
-      server.ws.send({ type: 'full-reload' });
+    if (!module) {
+      return;
     }
+    server.moduleGraph.invalidateModule(module);
+    const timestamp = Date.now();
+    module.lastHMRTimestamp = timestamp;
+    const path = `/@id/__x00__${VIRTUAL_MESSAGES}`;
+    server.ws.send({
+      type: 'update',
+      updates: [
+        {
+          type: 'js-update',
+          timestamp,
+          path,
+          acceptedPath: path,
+          explicitImportRequired: false,
+        },
+      ],
+    });
   }
 
   function loadAllTranslations(): Record<
@@ -229,32 +248,62 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
     configureServer(devServer): void {
       server = devServer;
 
+      let provider: Provider | undefined;
+      if (ai) {
+        try {
+          provider = resolveProvider(ai);
+        } catch (error) {
+          const message =
+            error instanceof Error ? error.message : String(error);
+          process.stderr.write(`[yapyak] ai provider error: ${message}\n`);
+        }
+      }
+
       if (autoTranslate) {
         if (!ai) {
           process.stderr.write(
             '[yapyak] autoTranslate is enabled but `ai` is not configured\n',
           );
-        } else {
-          try {
-            const provider = resolveProvider(ai);
-            autoTranslator = createAutoTranslator({
-              contextMode,
-              defaultLocale,
-              factories,
-              glossary,
-              intlModules: [moduleName, ...intlModules],
-              locales,
-              localesDir,
-              projectRoot,
-              provider,
-              voice,
-            });
-          } catch (error) {
-            const message =
-              error instanceof Error ? error.message : String(error);
-            process.stderr.write(`[yapyak] ai provider error: ${message}\n`);
-          }
+        } else if (provider) {
+          autoTranslator = createAutoTranslator({
+            contextMode,
+            defaultLocale,
+            factories,
+            glossary,
+            intlModules: [moduleName, ...intlModules],
+            locales,
+            localesDir,
+            projectRoot,
+            provider,
+            voice,
+          });
         }
+      }
+
+      if (overlay) {
+        devServer.middlewares.use('/.yapyak/overlay.js', (_req, res) => {
+          res.setHeader(
+            'content-type',
+            'application/javascript; charset=utf-8',
+          );
+          res.setHeader('cache-control', 'no-store');
+          res.end(CLIENT_SCRIPT);
+        });
+
+        devServer.middlewares.use(
+          createDevOverlayMiddleware({
+            contextMode,
+            defaultLocale,
+            glossary,
+            invalidateMessages: invalidateMessagesModule,
+            locales,
+            localesDir,
+            messageRegistry,
+            projectRoot,
+            provider,
+            voice,
+          }),
+        );
       }
 
       devServer.watcher.add(join(projectRoot, localesDir));
@@ -289,6 +338,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
           acceptLanguage,
           adapter,
           defaultLocale,
+          overlay,
           framework,
           locales,
           moduleName,
