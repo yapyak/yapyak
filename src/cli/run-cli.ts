@@ -46,11 +46,15 @@ function printHelp(): void {
   console.log('Usage: yapyak <command>');
   console.log('');
   console.log('Commands:');
-  console.log('  init [--locales sv,de,fr]  Scaffold locales/ and tsconfig include');
+  console.log(
+    '  init [--locales sv,de,fr]  Scaffold locales/ and tsconfig include',
+  );
   console.log('  extract                    Extract source strings from code');
   console.log('  translate [--force]        Fill missing translations via AI');
   console.log('  compile                    Build compiled locale modules');
-  console.log('  check [--write]            Validate translations (--write to auto-fix)');
+  console.log(
+    '  check [--write]            Validate translations (--write to auto-fix)',
+  );
   console.log('');
   console.log('Environment:');
   console.log('  ANTHROPIC_API_KEY          Required for `translate`');
@@ -199,7 +203,9 @@ async function handleCheck(projectRoot: string, args: string[]): Promise<void> {
 
   if (stale.length > 0) {
     const symbol = allowStale ? '⚠' : '✗';
-    const label = allowStale ? 'Stale translations (warning)' : 'Stale translations';
+    const label = allowStale
+      ? 'Stale translations (warning)'
+      : 'Stale translations';
     console.log(`${symbol} ${label} (${stale.length}):`);
     for (const issue of stale) {
       console.log(`  [${issue.locale}] ${issue.fileId} → "${issue.source}"`);

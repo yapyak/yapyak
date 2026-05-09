@@ -33,13 +33,13 @@
       "types": "./dist/server.d.ts",
       "default": "./dist/server.js"
     },
-    "./adapters/tanstack-start": {
-      "types": "./dist/adapters/tanstack-start.d.ts",
-      "default": "./dist/adapters/tanstack-start.js"
-    },
     "./adapters/sveltekit": {
       "types": "./dist/adapters/sveltekit.d.ts",
       "default": "./dist/adapters/sveltekit.js"
+    },
+    "./internal/config": {
+      "types": "./dist/internal/config.d.ts",
+      "default": "./dist/internal/config.js"
     }
   },
   "bin": {
@@ -56,12 +56,16 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
+    "@sveltejs/kit": ">=2",
     "react": ">=19",
     "svelte": ">=5",
     "vite": ">=5",
     "vue": ">=3.4"
   },
   "peerDependenciesMeta": {
+    "@sveltejs/kit": {
+      "optional": true
+    },
     "react": {
       "optional": true
     },
@@ -77,6 +81,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.13",
+    "@sveltejs/kit": "^2.59.1",
     "@types/node": "25.6.0",
     "@types/react": "19.2.14",
     "react": "19.2.5",

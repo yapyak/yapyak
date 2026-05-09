@@ -2,18 +2,28 @@ import type { ResolvedPersistence } from './normalize-persistence.js';
 
 export interface GenerateIntlModuleOptions {
   acceptLanguage: boolean;
+  adapter: 'tanstackStart' | 'sveltekit' | null;
   defaultLocale: string;
   framework: 'react' | 'vue' | 'svelte';
   locales: string[];
   moduleName: string;
   persistence: ResolvedPersistence;
+  syncHtmlLang: boolean;
 }
 
 export function generateIntlModule(options: GenerateIntlModuleOptions): string {
-  const { acceptLanguage, defaultLocale, framework, locales, moduleName, persistence } =
-    options;
+  const {
+    acceptLanguage,
+    adapter,
+    defaultLocale,
+    framework,
+    locales,
+    moduleName,
+    persistence,
+    syncHtmlLang,
+  } = options;
   const lines: string[] = [];
-  const adapter =
+  const frameworkAdapter =
     framework === 'vue'
       ? 'yapyak/vue'
       : framework === 'svelte'
@@ -30,15 +40,34 @@ export function generateIntlModule(options: GenerateIntlModuleOptions): string {
   if (isCookie) {
     reactImports.push('parseCookie', 'serializeCookie');
   }
-  lines.push(`import { ${reactImports.join(', ')} } from '${adapter}';`);
+  lines.push(
+    `import { ${reactImports.join(', ')} } from '${frameworkAdapter}';`,
+  );
   if (isCookie) {
-    lines.push(`import { getRequestSource } from 'yapyak/server';`);
+    lines.push(
+      `import { getRequestSource, setRequestSource } from 'yapyak/server';`,
+    );
   }
   for (const locale of locales) {
     lines.push(`import _${locale} from '${moduleName}/locale-${locale}';`);
   }
 
   lines.push('');
+  if (adapter === 'tanstackStart') {
+    lines.push(`if (import.meta.env.SSR) {`);
+    lines.push(
+      `  const { getRequestHeaders } = await import('@tanstack/react-start/server');`,
+    );
+    lines.push(`  setRequestSource(() => getRequestHeaders());`);
+    lines.push(`}`);
+  } else if (adapter === 'sveltekit') {
+    lines.push(`if (import.meta.env.SSR) {`);
+    lines.push(`  const { getRequestEvent } = await import('$app/server');`);
+    lines.push(`  setRequestSource(() => getRequestEvent().request.headers);`);
+    lines.push(`}`);
+  }
+  lines.push('');
+
   lines.push(`const messages = {`);
   for (const locale of locales) {
     lines.push(`  ${JSON.stringify(locale)}: _${locale},`);
@@ -59,7 +88,9 @@ export function generateIntlModule(options: GenerateIntlModuleOptions): string {
   if (isCookie) {
     lines.push(`  const cookieString = readCookieString();`);
     lines.push(`  if (cookieString) {`);
-    lines.push(`    const fromCookie = parseCookie(cookieString, COOKIE_NAME);`);
+    lines.push(
+      `    const fromCookie = parseCookie(cookieString, COOKIE_NAME);`,
+    );
     lines.push(`    if (fromCookie && LOCALES.includes(fromCookie)) {`);
     lines.push(`      return fromCookie;`);
     lines.push(`    }`);
@@ -133,12 +164,28 @@ export function generateIntlModule(options: GenerateIntlModuleOptions): string {
   }
   if (isLocalStorage) {
     lines.push(`  if (typeof localStorage !== 'undefined') {`);
-    lines.push(`    try { localStorage.setItem(STORAGE_KEY, locale); } catch {}`);
+    lines.push(
+      `    try { localStorage.setItem(STORAGE_KEY, locale); } catch {}`,
+    );
     lines.push(`  }`);
   }
   lines.push(`  intl.setLocaleSync(locale, messages[locale] ?? {});`);
   lines.push(`}`);
   lines.push('');
+
+  lines.push(`function syncHtmlLang() {`);
+  lines.push(`  if (typeof document === 'undefined') return () => {};`);
+  lines.push(`  document.documentElement.lang = intl.getLocale();`);
+  lines.push(`  return intl.subscribe(() => {`);
+  lines.push(`    document.documentElement.lang = intl.getLocale();`);
+  lines.push(`  });`);
+  lines.push(`}`);
+  lines.push('');
+
+  if (syncHtmlLang) {
+    lines.push(`syncHtmlLang();`);
+    lines.push('');
+  }
 
   if (framework === 'svelte') {
     lines.push(`const locale = {`);
@@ -148,7 +195,7 @@ export function generateIntlModule(options: GenerateIntlModuleOptions): string {
     lines.push('');
     lines.push(`export const t = intl.t;`);
     lines.push(`export const getLocale = intl.getLocale;`);
-    lines.push(`export { locale, messages, setLocale };`);
+    lines.push(`export { locale, messages, setLocale, syncHtmlLang };`);
     lines.push(`export default intl;`);
   } else if (framework === 'vue') {
     lines.push(`import { computed } from 'vue';`);
@@ -164,7 +211,7 @@ export function generateIntlModule(options: GenerateIntlModuleOptions): string {
     lines.push(`export const t = intl.t;`);
     lines.push(`export const yapyak = intl;`);
     lines.push(`export const getLocale = intl.getLocale;`);
-    lines.push(`export { messages, setLocale, useLocale };`);
+    lines.push(`export { messages, setLocale, syncHtmlLang, useLocale };`);
     lines.push(`export default intl;`);
   } else {
     lines.push(`const baseUseLocale = intl.useLocale;`);
@@ -177,7 +224,7 @@ export function generateIntlModule(options: GenerateIntlModuleOptions): string {
     lines.push(`export const IntlProvider = intl.IntlProvider;`);
     lines.push(`export const useTranslation = intl.useTranslation;`);
     lines.push(`export const getLocale = intl.getLocale;`);
-    lines.push(`export { messages, setLocale, useLocale };`);
+    lines.push(`export { messages, setLocale, syncHtmlLang, useLocale };`);
     lines.push(`export default intl;`);
   }
 

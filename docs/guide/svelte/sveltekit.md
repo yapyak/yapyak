@@ -4,7 +4,7 @@ order: 32
 
 # SvelteKit
 
-SvelteKit gives you SSR with request-scoped state via `event.locals`. Yapyak doesn't auto-detect SvelteKit the way it does TanStack — but the wiring is one line in `hooks.server.ts`.
+SvelteKit gives you SSR with request-scoped state via `event.request.headers`. Yapyak ships an adapter that handles the wiring — set `adapter: 'sveltekit'` in the plugin and re-export `handle` from `hooks.server.ts`. The first byte of HTML lands in the right language.
 
 ## vite.config.ts
 
@@ -16,52 +16,56 @@ import { yapyak } from 'yapyak/vite';
 export default defineConfig({
   plugins: [
     yapyak({
+      adapter: 'sveltekit',
       defaultLocale: 'en',
+      framework: 'svelte',
       locales: ['en', 'sv'],
       persistence: 'cookie',
-      framework: 'svelte',
     }),
     sveltekit(),
   ],
 });
 ```
 
-## Wiring the request cookie
+The `adapter: 'sveltekit'` option tells the plugin to wire `setRequestSource()` to SvelteKit's `getRequestEvent()` during SSR. No app-side code needed for that part.
 
-::: warning Heads up
-SvelteKit auto-wiring isn't shipped yet — this section is for the day it lands. For now, follow the manual pattern below.
-:::
-
-In `hooks.server.ts`, attach the cookie value to `event.locals` so it's available during SSR:
+## hooks.server.ts
 
 ```ts
 // src/hooks.server.ts
-import type { Handle } from '@sveltejs/kit';
-
-export const handle: Handle = async ({ event, resolve }) => {
-  const cookie = event.cookies.get('locale');
-  if (cookie) {
-    event.locals.locale = cookie;
-  }
-  return resolve(event);
-};
+export { handle } from 'yapyak/adapters/sveltekit';
 ```
 
-Then in your root layout, use the cookie value to seed `<html lang>`:
+That's it for the simple case. The handle reads the locale cookie at SSR time and substitutes `<html lang>` in the streamed HTML response.
 
-```svelte
-<!-- src/routes/+layout.svelte -->
-<script lang="ts">
-  import { locale } from 'yapyak';
-  let { children } = $props();
-</script>
+If you have your own handle, compose with `sequence`:
 
-<svelte:head>
-  <html lang={locale.current} />
-</svelte:head>
+```ts
+import { sequence } from '@sveltejs/kit/hooks';
+import { handle as yapyakHandle } from 'yapyak/adapters/sveltekit';
+import { authHandle } from './auth';
 
-{@render children()}
+export const handle = sequence(yapyakHandle, authHandle);
 ```
+
+## app.html
+
+Add a `%lang%` placeholder on the root element:
+
+```html
+<!-- src/app.html -->
+<!doctype html>
+<html lang="%lang%">
+  <head>
+    %sveltekit.head%
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents">%sveltekit.body%</div>
+  </body>
+</html>
+```
+
+The placeholder follows SvelteKit's standard template-substitution pattern (the same mechanism `%sveltekit.head%` uses). `transformPageChunk` in the yapyak handle replaces it with the resolved locale per request — `en` for an English visitor, `sv` for a Swedish one, no flicker.
 
 ## In a route
 
@@ -77,10 +81,29 @@ Then in your root layout, use the cookie value to seed `<html lang>`:
 </button>
 ```
 
-Same as Vanilla. The locale singleton is the same; the difference is just that on the server, `getLocale()` will know about the request cookie.
+Same usage as Vanilla. The locale singleton is the same; the difference is just that on the server, `getLocale()` knows about the request cookie.
 
-## Status
+## What you get for free
 
-SvelteKit support in yapyak is "works if you wire it manually" right now. The pieces — request-scoped cookies, SSR-safe state, framework adapter — are all there. The auto-wiring (the kind we have for TanStack Start) is the missing piece. Help wanted.
+- **Right language from the first byte.** SSR HTML ships pre-rendered in the user's locale. The cookie is read via the adapter, the `<html lang>` attribute is correct, no hydration mismatch.
+- **Concurrent-safe.** Each request reads its own cookie via SvelteKit's request-scoped event. Two users hitting the server simultaneously don't see each other's locale.
+- **Configuration follows the plugin.** The cookie name and default locale you set in `vite.config.ts` flow through to the handle automatically — no duplication in `hooks.server.ts`.
 
-If you're already using SvelteKit and run into edge cases, open an issue. We want this story to be as smooth as the TanStack one.
+## Customizing the transform
+
+If you need a custom cookie name or placeholder beyond what the plugin knows, drop down to `htmlLangTransform` and wrap your own handle:
+
+```ts
+import type { Handle } from '@sveltejs/kit';
+import { htmlLangTransform } from 'yapyak/adapters/sveltekit';
+
+export const handle: Handle = ({ event, resolve }) =>
+  resolve(event, {
+    transformPageChunk: htmlLangTransform({
+      cookieName: 'my-locale',
+      placeholder: '%my-lang%',
+    }),
+  });
+```
+
+For 99% of apps, the default `export { handle } from 'yapyak/adapters/sveltekit'` is what you want.

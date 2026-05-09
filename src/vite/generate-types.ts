@@ -91,6 +91,7 @@ export function generateTypes(options: GenerateTypesOptions): string {
 
   lines.push('');
   lines.push(`  export const setLocale: (locale: Locale) => void;`);
+  lines.push(`  export const syncHtmlLang: () => () => void;`);
   lines.push(`  export const getLocale: () => Locale;`);
   lines.push('');
 

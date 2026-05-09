@@ -41,7 +41,9 @@ export function parseAcceptLanguage(
     })
     .sort((a, b) => b.q - a.q);
   for (const entry of entries) {
-    const exact = available.find((locale) => locale.toLowerCase() === entry.tag);
+    const exact = available.find(
+      (locale) => locale.toLowerCase() === entry.tag,
+    );
     if (exact) {
       return exact;
     }

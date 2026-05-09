@@ -21,24 +21,21 @@ export function openaiProvider(options: OpenAiProviderOptions): Provider {
   const { apiKey, model = OPENAI_DEFAULT_MODEL } = options;
 
   async function callOpenAi(system: string, prompt: string): Promise<string> {
-    const response = await fetch(
-      'https://api.openai.com/v1/chat/completions',
-      {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model,
-          temperature: 0,
-          messages: [
-            { role: 'system', content: system },
-            { role: 'user', content: prompt },
-          ],
-        }),
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: `Bearer ${apiKey}`,
       },
-    );
+      body: JSON.stringify({
+        model,
+        temperature: 0,
+        messages: [
+          { role: 'system', content: system },
+          { role: 'user', content: prompt },
+        ],
+      }),
+    });
 
     if (!response.ok) {
       const text = await response.text();

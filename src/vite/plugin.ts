@@ -14,8 +14,11 @@ import {
 } from './normalize-persistence.js';
 import { transformSource } from './transform-source.js';
 
+export type Adapter = 'tanstackStart' | 'sveltekit' | null;
+
 export interface YapyakPluginOptions {
   acceptLanguage?: boolean;
+  adapter?: Adapter;
   ai?: AiOptions;
   defaultLocale?: string;
   factories?: string[];
@@ -26,6 +29,7 @@ export interface YapyakPluginOptions {
   moduleName?: string;
   persistence?: Persistence;
   source?: string[];
+  syncHtmlLang?: boolean;
 }
 
 export const CACHE_DIR = 'node_modules/.cache/yapyak';
@@ -60,6 +64,7 @@ function serializableAi(ai: AiOptions | undefined): SerializedAi | undefined {
 export function yapyak(options: YapyakPluginOptions = {}): Plugin {
   const {
     acceptLanguage = false,
+    adapter = null,
     ai,
     defaultLocale = 'en',
     factories = ['intl'],
@@ -70,6 +75,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
     moduleName = 'yapyak',
     persistence: persistenceOption,
     source = ['src/**/*.{ts,tsx,js,jsx,mjs,cjs,vue,svelte}'],
+    syncHtmlLang = false,
   } = options;
 
   const persistence = normalizePersistence(persistenceOption);
@@ -82,6 +88,8 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
   const VIRTUAL_INTL_RESOLVED = `\0${moduleName}`;
   const VIRTUAL_LOCALE_PREFIX = `${moduleName}/locale-`;
   const VIRTUAL_LOCALE_RESOLVED_PREFIX = `\0${moduleName}/locale-`;
+  const VIRTUAL_CONFIG = `${moduleName}/internal/config`;
+  const VIRTUAL_CONFIG_RESOLVED = `\0${moduleName}/internal/config`;
 
   const factoryNames = new Set(factories);
   const intlModuleSet = new Set([VIRTUAL_INTL, ...intlModules]);
@@ -223,6 +231,9 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
       if (id === VIRTUAL_INTL) {
         return VIRTUAL_INTL_RESOLVED;
       }
+      if (id === VIRTUAL_CONFIG) {
+        return VIRTUAL_CONFIG_RESOLVED;
+      }
       if (id.startsWith(VIRTUAL_LOCALE_PREFIX)) {
         return `\0${id}`;
       }
@@ -233,12 +244,23 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
       if (id === VIRTUAL_INTL_RESOLVED) {
         return generateIntlModule({
           acceptLanguage,
+          adapter,
           defaultLocale,
           framework,
           locales,
           moduleName,
           persistence,
+          syncHtmlLang,
         });
+      }
+      if (id === VIRTUAL_CONFIG_RESOLVED) {
+        const cookieName =
+          persistence.type === 'cookie' ? persistence.name : 'locale';
+        return `export const config = ${JSON.stringify(
+          { cookieName, defaultLocale, placeholder: '%lang%' },
+          null,
+          2,
+        )};\n`;
       }
       const locale = virtualToLocale(id);
       if (!locale) {

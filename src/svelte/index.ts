@@ -1,3 +1,8 @@
+export {
+  parseAcceptLanguage,
+  parseCookie,
+  serializeCookie,
+} from '../parse-cookie.js';
 export type {
   CreateIntlOptions,
   Intl,
@@ -5,8 +10,3 @@ export type {
   Translate,
 } from './create-intl.svelte.js';
 export { createIntl } from './create-intl.svelte.js';
-export {
-  parseAcceptLanguage,
-  parseCookie,
-  serializeCookie,
-} from '../parse-cookie.js';

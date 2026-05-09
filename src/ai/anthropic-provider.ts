@@ -17,9 +17,7 @@ interface AnthropicResponse {
   content: Array<{ text?: string; type: string }>;
 }
 
-export function anthropicProvider(
-  options: AnthropicProviderOptions,
-): Provider {
+export function anthropicProvider(options: AnthropicProviderOptions): Provider {
   const { apiKey, model = ANTHROPIC_DEFAULT_MODEL } = options;
 
   async function callAnthropic(
@@ -49,7 +47,9 @@ export function anthropicProvider(
     }
 
     const json = (await response.json()) as AnthropicResponse;
-    return (json.content.find((part) => part.type === 'text')?.text ?? '').trim();
+    return (
+      json.content.find((part) => part.type === 'text')?.text ?? ''
+    ).trim();
   }
 
   return {

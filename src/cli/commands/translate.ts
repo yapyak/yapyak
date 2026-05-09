@@ -1,10 +1,10 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import {
-  anthropicProvider,
   type AnthropicModel,
-  openaiProvider,
+  anthropicProvider,
   type OpenAiModel,
+  openaiProvider,
   type Provider,
 } from '../../ai/index.js';
 import { type CachedAi, loadConfig } from '../config.js';

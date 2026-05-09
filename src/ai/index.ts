@@ -1,7 +1,7 @@
-export { anthropicProvider } from './anthropic-provider.js';
 export type { AnthropicProviderOptions } from './anthropic-provider.js';
-export { openaiProvider } from './openai-provider.js';
+export { anthropicProvider } from './anthropic-provider.js';
 export type { OpenAiProviderOptions } from './openai-provider.js';
+export { openaiProvider } from './openai-provider.js';
 export { parseBatchResponse } from './parse-batch-response.js';
 export { resolveProvider } from './resolve-provider.js';
 export {

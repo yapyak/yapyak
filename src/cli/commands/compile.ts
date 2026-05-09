@@ -14,11 +14,7 @@ export function runCompile(projectRoot: string): CompileResult[] {
   const results: CompileResult[] = [];
 
   for (const locale of config.locales) {
-    const sourcePath = join(
-      projectRoot,
-      config.localesDir,
-      `${locale}.json`,
-    );
+    const sourcePath = join(projectRoot, config.localesDir, `${locale}.json`);
     const translations = readJson(sourcePath);
     const compiled = compileLocale({
       locale,
