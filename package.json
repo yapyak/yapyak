@@ -12,22 +12,30 @@
       "types": "./dist/react/index.d.ts",
       "default": "./dist/react/index.js"
     },
+    "./react/with-locale": {
+      "types": "./dist/react/with-locale.d.ts",
+      "default": "./dist/react/with-locale.js"
+    },
     "./vue": {
       "types": "./dist/vue/index.d.ts",
       "default": "./dist/vue/index.js"
+    },
+    "./vue/with-locale": {
+      "types": "./dist/vue/with-locale.d.ts",
+      "default": "./dist/vue/with-locale.js"
     },
     "./svelte": {
       "types": "./dist/svelte/index.d.ts",
       "svelte": "./dist/svelte/index.js",
       "default": "./dist/svelte/index.js"
     },
-    "./vite": {
-      "types": "./dist/vite/index.d.ts",
-      "default": "./dist/vite/index.js"
+    "./svelte/with-locale": {
+      "types": "./dist/svelte/with-locale.d.ts",
+      "default": "./dist/svelte/with-locale.js"
     },
-    "./compiler": {
-      "types": "./dist/compiler/index.d.ts",
-      "default": "./dist/compiler/index.js"
+    "./vite": {
+      "types": "./dist/vite/plugin.d.ts",
+      "default": "./dist/vite/plugin.js"
     },
     "./server": {
       "types": "./dist/server.d.ts",
@@ -36,20 +44,16 @@
     "./adapters/sveltekit": {
       "types": "./dist/adapters/sveltekit.d.ts",
       "default": "./dist/adapters/sveltekit.js"
-    },
-    "./internal/config": {
-      "types": "./dist/internal/config.d.ts",
-      "default": "./dist/internal/config.js"
     }
   },
   "bin": {
-    "yapyak": "./dist/cli/index.js"
+    "yapyak": "./dist/cli/run.js"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json && mkdir -p dist/svelte && cp src/svelte/*.svelte.ts dist/svelte/ && rm -f dist/svelte/*.svelte.js",
+    "build": "tsc -p tsconfig.build.json",
     "check": "biome check .",
     "check:write": "biome check --write .",
     "test": "vitest --run",
@@ -84,7 +88,9 @@
     "@sveltejs/kit": "^2.59.1",
     "@types/node": "25.6.0",
     "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
     "react": "19.2.5",
+    "react-dom": "19.2.5",
     "typescript": "6.0.3",
     "vite": "8.0.10",
     "vitest": "3.0.4",
@@ -93,5 +99,8 @@
   "engines": {
     "node": ">=22"
   },
-  "packageManager": "pnpm@10.33.0"
+  "packageManager": "pnpm@10.33.0",
+  "dependencies": {
+    "yaml": "^2.8.4"
+  }
 }

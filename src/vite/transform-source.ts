@@ -1,276 +1,234 @@
-import { deriveComponentName } from '../compiler/derive-component-name.js';
-import { extractSnippet } from '../compiler/extract-snippet.js';
-import { messageHash } from './message-hash.js';
-import { DynamicSourceError, parseSourceArg } from './parse-source-arg.js';
+import ts from 'typescript';
 
-export interface TransformSourceOptions {
-  bareNames?: ReadonlySet<string>;
-  code: string;
-  factoryNames: ReadonlySet<string>;
+export interface LocaleData {
+  [locale: string]: {
+    [fileId: string]: { [key: string]: string };
+  };
+}
+
+export interface TransformOptions {
+  defaultLocale: string;
   fileId: string;
+  helperImport?: string;
+  localeData: LocaleData;
+  locales: string[];
 }
 
-export interface CollectedMessage {
-  componentName: string;
-  fileId: string;
-  hash: string;
-  line: number;
-  snippet: string;
-  source: string;
-}
-
-export interface TransformSourceResult {
+export interface TransformResult {
   code: string;
-  count: number;
-  messages: CollectedMessage[];
 }
+
+const HELPER_NAME = '__yapyak_withLocale';
+const DEFAULT_HELPER_IMPORT = 'yapyak/with-locale';
+
+interface CallSite {
+  end: number;
+  schema: FlatSchema;
+  start: number;
+}
+
+type FlatSchema = { [key: string]: string };
 
 export function transformSource(
-  options: TransformSourceOptions,
-): TransformSourceResult {
-  const { bareNames, code, factoryNames, fileId } = options;
-
-  const patterns: RegExp[] = [];
-
-  if (factoryNames.size > 0) {
-    const factoryAlternatives = [...factoryNames].map(escapeRegex).join('|');
-    patterns.push(new RegExp(`\\b(?:${factoryAlternatives})\\.t\\s*\\(`, 'g'));
-  }
-
-  if (bareNames && bareNames.size > 0) {
-    const bareAlternatives = [...bareNames].map(escapeRegex).join('|');
-    patterns.push(new RegExp(`(?<![\\w.])(?:${bareAlternatives})\\s*\\(`, 'g'));
-  }
-
-  if (patterns.length === 0) {
-    return { code, count: 0, messages: [] };
-  }
-
-  const callPositions: { callKeywordStart: number; callStart: number }[] = [];
-
-  for (const pattern of patterns) {
-    let match: RegExpExecArray | null = pattern.exec(code);
-    while (match !== null) {
-      callPositions.push({
-        callKeywordStart: match.index,
-        callStart: match.index + match[0].length,
-      });
-      match = pattern.exec(code);
-    }
-  }
-
-  callPositions.sort((a, b) => a.callKeywordStart - b.callKeywordStart);
-
-  const messages: CollectedMessage[] = [];
-  const seen = new Set<string>();
-  let count = 0;
-  let result = '';
-  let lastIndex = 0;
-
-  for (const { callKeywordStart, callStart } of callPositions) {
-    if (callKeywordStart < lastIndex) {
-      continue;
-    }
-    const argsRange = sliceArguments(code, callStart);
-    if (!argsRange) {
-      continue;
-    }
-    const { argsEnd, args } = argsRange;
-    const argList = splitTopLevelArgs(args);
-    const firstArg = argList[0];
-    if (firstArg === undefined) {
-      throw new DynamicSourceError(`t() called with no arguments in ${fileId}`);
-    }
-
-    let source: string;
-    try {
-      source = parseSourceArg(firstArg).source;
-    } catch (error) {
-      if (error instanceof DynamicSourceError) {
-        const lineCol = locate(code, callKeywordStart);
-        throw new DynamicSourceError(
-          `${error.message} (${fileId}:${lineCol.line}:${lineCol.column})`,
-        );
-      }
-      throw error;
-    }
-
-    const hash = messageHash(fileId, source);
-    if (!seen.has(hash)) {
-      seen.add(hash);
-      const lineCol = locate(code, callKeywordStart);
-      messages.push({
-        componentName: deriveComponentName(fileId),
-        fileId,
-        hash,
-        line: lineCol.line,
-        snippet: extractSnippet({ code, line: lineCol.line }),
-        source,
-      });
-    }
-
-    const paramsArg = argList[1];
-    const replacement =
-      paramsArg !== undefined && paramsArg.length > 0
-        ? `_m_${hash}(${paramsArg})`
-        : `_m_${hash}()`;
-
-    result += code.slice(lastIndex, callKeywordStart);
-    result += replacement;
-    lastIndex = argsEnd;
-    count++;
-  }
-
-  result += code.slice(lastIndex);
-
-  if (messages.length > 0) {
-    const importLine = `import { ${messages
-      .map((m) => `_m_${m.hash}`)
-      .join(', ')} } from 'yapyak/messages';\n`;
-    result = importLine + result;
-  }
-
-  return { code: result, count, messages };
-}
-
-function escapeRegex(input: string): string {
-  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-function locate(
   code: string,
-  offset: number,
-): { line: number; column: number } {
-  let line = 1;
-  let column = 1;
-  for (let i = 0; i < offset; i++) {
-    if (code[i] === '\n') {
-      line++;
-      column = 1;
-    } else {
-      column++;
-    }
+  options: TransformOptions,
+): TransformResult | null {
+  const sourceFile = ts.createSourceFile(
+    options.fileId,
+    code,
+    ts.ScriptTarget.Latest,
+    true,
+    detectScriptKind(options.fileId),
+  );
+  const aliases = collectDefineTranslationsAliases(sourceFile);
+  if (aliases.size === 0) {
+    return null;
   }
-  return { line, column };
+  const callSites: CallSite[] = [];
+  visit(sourceFile);
+  if (callSites.length === 0) {
+    return null;
+  }
+
+  callSites.sort((a, b) => b.start - a.start);
+  let next = code;
+  for (const site of callSites) {
+    const compiled = compileCallExpression(site.schema, options);
+    next = `${next.slice(0, site.start)}${compiled}${next.slice(site.end)}`;
+  }
+  const helperImport = options.helperImport ?? DEFAULT_HELPER_IMPORT;
+  const importStatement = `import { withLocale as ${HELPER_NAME} } from '${helperImport}';\n`;
+  return { code: importStatement + next };
+
+  function visit(node: ts.Node): void {
+    if (
+      ts.isCallExpression(node) &&
+      ts.isIdentifier(node.expression) &&
+      aliases.has(node.expression.text) &&
+      node.arguments.length === 1
+    ) {
+      const arg = node.arguments[0];
+      if (arg && ts.isObjectLiteralExpression(arg)) {
+        const schema = parseFlatSchema(arg);
+        if (schema !== null) {
+          callSites.push({
+            end: node.getEnd(),
+            schema,
+            start: node.getStart(sourceFile),
+          });
+        }
+      }
+    }
+    ts.forEachChild(node, visit);
+  }
 }
 
-interface ArgsRange {
-  args: string;
-  argsEnd: number;
+function compileCallExpression(
+  schema: FlatSchema,
+  options: TransformOptions,
+): string {
+  const variants: Record<string, Record<string, string>> = {};
+  for (const [key, sourceValue] of Object.entries(schema)) {
+    const perLocale: Record<string, string> = {};
+    for (const locale of options.locales) {
+      const value = readLocaleValue(options.localeData, locale, options.fileId, key);
+      perLocale[locale] = value ?? sourceValue;
+    }
+    variants[key] = perLocale;
+  }
+  return `${HELPER_NAME}(${stringifyVariants(variants)})`;
 }
 
-function sliceArguments(code: string, start: number): ArgsRange | undefined {
-  let depth = 1;
-  let inString: string | undefined;
-  let inTemplate = false;
-  let templateDepth = 0;
-  let i = start;
-
-  while (i < code.length) {
-    const ch = code[i];
-    const prev = i > 0 ? code[i - 1] : '';
-
-    if (inString) {
-      if (ch === inString && prev !== '\\') {
-        inString = undefined;
-      }
-      i++;
-      continue;
+function stringifyVariants(
+  variants: Record<string, Record<string, string>>,
+): string {
+  const parts: string[] = [];
+  for (const [key, perLocale] of Object.entries(variants)) {
+    const localeParts: string[] = [];
+    for (const [locale, value] of Object.entries(perLocale)) {
+      localeParts.push(`${quoteIdentifier(locale)}: ${quoteString(value)}`);
     }
-
-    if (inTemplate) {
-      if (ch === '`' && prev !== '\\') {
-        inTemplate = false;
-      } else if (ch === '$' && code[i + 1] === '{') {
-        templateDepth++;
-        i += 2;
-        continue;
-      } else if (ch === '}' && templateDepth > 0) {
-        templateDepth--;
-      }
-      i++;
-      continue;
-    }
-
-    if (ch === "'" || ch === '"') {
-      inString = ch;
-      i++;
-      continue;
-    }
-    if (ch === '`') {
-      inTemplate = true;
-      i++;
-      continue;
-    }
-    if (ch === '(' || ch === '[' || ch === '{') {
-      depth++;
-    } else if (ch === ')' || ch === ']' || ch === '}') {
-      depth--;
-      if (depth === 0 && ch === ')') {
-        return {
-          args: code.slice(start, i),
-          argsEnd: i + 1,
-        };
-      }
-    }
-    i++;
+    parts.push(`${quoteIdentifier(key)}: { ${localeParts.join(', ')} }`);
   }
-
-  return undefined;
+  return `{ ${parts.join(', ')} }`;
 }
 
-function splitTopLevelArgs(args: string): string[] {
-  const result: string[] = [];
-  let depth = 0;
-  let inString: string | undefined;
-  let inTemplate = false;
-  let templateDepth = 0;
-  let start = 0;
+function quoteIdentifier(value: string): string {
+  if (/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(value)) {
+    return value;
+  }
+  return quoteString(value);
+}
 
-  for (let i = 0; i < args.length; i++) {
-    const ch = args[i];
-    const prev = i > 0 ? args[i - 1] : '';
+function quoteString(value: string): string {
+  return JSON.stringify(value);
+}
 
-    if (inString) {
-      if (ch === inString && prev !== '\\') {
-        inString = undefined;
+function readLocaleValue(
+  data: LocaleData,
+  locale: string,
+  fileId: string,
+  key: string,
+): string | undefined {
+  const localeFile = data[locale];
+  if (localeFile === undefined) {
+    return undefined;
+  }
+  const fileEntries = localeFile[fileId];
+  if (fileEntries === undefined) {
+    return undefined;
+  }
+  const value = fileEntries[key];
+  if (typeof value !== 'string' || value === '') {
+    return undefined;
+  }
+  return value;
+}
+
+function collectDefineTranslationsAliases(
+  sourceFile: ts.SourceFile,
+): Set<string> {
+  const aliases = new Set<string>();
+  for (const statement of sourceFile.statements) {
+    if (!ts.isImportDeclaration(statement)) {
+      continue;
+    }
+    const moduleSpecifier = statement.moduleSpecifier;
+    if (!ts.isStringLiteral(moduleSpecifier)) {
+      continue;
+    }
+    if (!isYapyakImport(moduleSpecifier.text)) {
+      continue;
+    }
+    const clause = statement.importClause;
+    if (clause === undefined) {
+      continue;
+    }
+    const namedBindings = clause.namedBindings;
+    if (namedBindings === undefined || !ts.isNamedImports(namedBindings)) {
+      continue;
+    }
+    for (const element of namedBindings.elements) {
+      const importedName = element.propertyName?.text ?? element.name.text;
+      if (importedName === 'defineTranslations') {
+        aliases.add(element.name.text);
       }
-      continue;
-    }
-
-    if (inTemplate) {
-      if (ch === '`' && prev !== '\\') {
-        inTemplate = false;
-      } else if (ch === '$' && args[i + 1] === '{') {
-        templateDepth++;
-      } else if (ch === '}' && templateDepth > 0) {
-        templateDepth--;
-      }
-      continue;
-    }
-
-    if (ch === "'" || ch === '"') {
-      inString = ch;
-      continue;
-    }
-    if (ch === '`') {
-      inTemplate = true;
-      continue;
-    }
-    if (ch === '(' || ch === '[' || ch === '{') {
-      depth++;
-    } else if (ch === ')' || ch === ']' || ch === '}') {
-      depth--;
-    } else if (ch === ',' && depth === 0) {
-      result.push(args.slice(start, i).trim());
-      start = i + 1;
     }
   }
+  return aliases;
+}
 
-  const last = args.slice(start).trim();
-  if (last !== '') {
-    result.push(last);
+function isYapyakImport(specifier: string): boolean {
+  return specifier === 'yapyak' || specifier.startsWith('yapyak/');
+}
+
+function parseFlatSchema(
+  node: ts.ObjectLiteralExpression,
+): FlatSchema | null {
+  const result: FlatSchema = {};
+  for (const property of node.properties) {
+    if (!ts.isPropertyAssignment(property)) {
+      return null;
+    }
+    const name = readPropertyName(property.name);
+    if (name === null) {
+      return null;
+    }
+    const initializer = property.initializer;
+    if (
+      !ts.isStringLiteral(initializer) &&
+      !ts.isNoSubstitutionTemplateLiteral(initializer)
+    ) {
+      return null;
+    }
+    result[name] = initializer.text;
   }
-
   return result;
+}
+
+function readPropertyName(name: ts.PropertyName): string | null {
+  if (ts.isIdentifier(name)) {
+    return name.text;
+  }
+  if (ts.isStringLiteral(name) || ts.isNoSubstitutionTemplateLiteral(name)) {
+    return name.text;
+  }
+  return null;
+}
+
+function detectScriptKind(fileId: string): ts.ScriptKind {
+  if (fileId.endsWith('.tsx')) {
+    return ts.ScriptKind.TSX;
+  }
+  if (fileId.endsWith('.jsx')) {
+    return ts.ScriptKind.JSX;
+  }
+  if (
+    fileId.endsWith('.js') ||
+    fileId.endsWith('.mjs') ||
+    fileId.endsWith('.cjs')
+  ) {
+    return ts.ScriptKind.JS;
+  }
+  return ts.ScriptKind.TS;
 }

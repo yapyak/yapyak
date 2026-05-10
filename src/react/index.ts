@@ -1,13 +1,5 @@
-export {
-  parseAcceptLanguage,
-  parseCookie,
-  serializeCookie,
-} from '../parse-cookie.js';
-export type {
-  CreateIntlOptions,
-  Intl,
-  IntlProviderProps,
-  Translate,
-} from './create-intl.js';
-export { createIntl } from './create-intl.js';
-export { createStaticLoader } from './create-static-loader.js';
+export type { Schema, SchemaValue, Translations } from '../translations.js';
+export { defineTranslations } from '../translations.js';
+export type { IntlProviderProps } from './intl-provider.js';
+export { IntlProvider } from './intl-provider.js';
+export { useLocale } from './use-locale.js';

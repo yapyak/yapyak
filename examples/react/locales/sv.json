@@ -1,7 +1,0 @@
-{
-  "src/app.tsx": {
-    "Hello, world": "Hej, världen",
-    "This is the yapyak React example.": "Detta är yapyak-exemplet för React.",
-    "You have {count, plural, one {# message} other {# messages}}": "Du har {count, plural, one {# meddelande} other {# meddelanden}}"
-  }
-}

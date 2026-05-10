@@ -1,7 +1,13 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { IntlProvider } from 'yapyak';
+import { configureLocale } from 'yapyak';
+import { IntlProvider } from 'yapyak/react';
 import { App } from './app.js';
+
+configureLocale({
+  defaultLocale: 'en',
+  locales: ['en', 'sv'],
+});
 
 const root = document.getElementById('root');
 if (!root) {
