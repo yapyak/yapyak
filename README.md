@@ -24,7 +24,7 @@ It's a Vite plugin. MIT, BYO key, no telemetry.
 
 ```bash
 npm install yapyak
-npx yapyak add sv
+npx yapyak add es
 ```
 
 ```ts
@@ -56,12 +56,12 @@ export function SaveButton() {
 
 Save the file.
 
-`locales/sv.json` appears automatically:
+`locales/es.json` appears automatically:
 
 ```json
 {
   "src/components/save-button.tsx": {
-    "Save changes": "Spara ändringar"
+    "Save changes": "Guardar cambios"
   }
 }
 ```
@@ -80,8 +80,8 @@ yapyak({
     apiKey: process.env.ANTHROPIC_API_KEY,
     voice: 'Personal blog voice. Casual, thoughtful, never corporate.',
     glossary: {
-      'sign in': { sv: 'logga in', no: 'logg inn' },
-      cart: { sv: 'varukorg', no: 'handlekurv' },
+      'sign in': { es: 'iniciar sesión', fr: 'se connecter', de: 'anmelden' },
+      cart: { es: 'carrito', fr: 'panier', de: 'Warenkorb' },
     },
   }),
 }),
@@ -112,7 +112,7 @@ The classic source-as-keys trap: change `t('Save')` to `t('Save changes')` and y
 
 ```
 [yapyak] ↻ "Save" → "Save changes" (rename detected)
-[yapyak] sv: re-translating…
+[yapyak] es: re-translating…
 ```
 
 The plugin compares positions of every `t()` call between saves. If a string disappeared at line 23, column 12, and a new string appeared at the exact same position, that's a rename — not a delete-and-add. Locale files get the key swapped, existing translations stay as placeholders until the new English re-translates.
@@ -127,8 +127,8 @@ When two files use the same English string and want different translations — `
 
 ```json
 {
-  "src/components/employee-form.tsx": { "Save": "Spara" },
-  "src/components/contract-actions-bar.tsx": { "Save": "Bevara" }
+  "src/components/employee-form.tsx": { "Save": "Guardar" },
+  "src/components/contract-actions-bar.tsx": { "Save": "Conservar" }
 }
 ```
 
@@ -234,3 +234,36 @@ Same `getLocale()` import on server and client:
 ```
 
 yapyak's DX bet: nothing you don't have to write. SSR adapter is one function call. Cookie persistence is one config flag. Translation files maintain themselves on save. Position-aware rename means you can refactor freely without losing translations. Tailwind put styling next to the markup; yapyak puts everything else next to it too — and lets the AI handle the rest.
+
+## CLI
+
+```bash
+$ npx yapyak status
+
+  Translation status
+
+  Locales   en (default) · es · fr · de · ja
+  Total     142 messages × 5 = 710 translations
+
+  Locale        Coverage
+  en (default)  142 / 142  ████████████████████  100%
+  es            142 / 142  ████████████████████  100%
+  fr            139 / 142  ███████████████████░   98%
+  de            135 / 142  ███████████████████░   95%
+  ja            142 / 142  ████████████████████  100%
+```
+
+```
+yapyak add <locale...>            add one or more locales, auto-translate everything
+yapyak translate                  fill missing translations across every locale
+yapyak translate es               fill missing in one locale
+yapyak translate --force          re-translate everything across every locale
+yapyak translate es --force       re-translate everything in one locale
+yapyak status                     coverage report
+yapyak status --json              machine-readable, exits 1 if any missing
+yapyak check                      exits 1 if anything is missing — for CI
+```
+
+`add` takes any number of locales: `npx yapyak add es fr de ja` scaffolds four files and translates them in one go.
+
+Zero runtime dependencies. Boots in milliseconds.

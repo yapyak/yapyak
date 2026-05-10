@@ -28,8 +28,8 @@ export async function run(argv: string[]): Promise<number> {
     case 'check':
       return check({ projectRoot });
     case 'add': {
-      const locale = rest.find((arg) => !arg.startsWith('--')) ?? '';
-      return await add({ locale, projectRoot });
+      const locales = rest.filter((arg) => !arg.startsWith('--'));
+      return await add({ locales, projectRoot });
     }
     case 'translate': {
       const locale = rest.find((arg) => !arg.startsWith('--'));
@@ -61,7 +61,7 @@ function printHelp(): void {
   ${color.dim('Usage:')}  yapyak ${color.cyan('<command>')} ${color.dim('[options]')}
 
   ${color.bold('Commands')}
-    ${color.cyan('add')} ${color.dim('<locale>')}          ${color.dim('Add a locale, auto-translate everything')}
+    ${color.cyan('add')} ${color.dim('<locale...>')}       ${color.dim('Add one or more locales, auto-translate everything')}
     ${color.cyan('translate')} ${color.dim('[locale]')}    ${color.dim('Fill missing translations via AI (uses .env API key)')}
     ${color.cyan('translate --force')}     ${color.dim('Re-translate everything, including existing values')}
     ${color.cyan('status')}                ${color.dim('Coverage report')}
