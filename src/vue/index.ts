@@ -1,0 +1,3 @@
+export type { Schema, SchemaValue, Translations } from '../translations.js';
+export { defineTranslations } from '../translations.js';
+export { useLocale } from './use-locale.js';

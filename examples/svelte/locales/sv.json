@@ -1,8 +1,0 @@
-{
-  "src/App.svelte": {
-    "Hello, world": "Hej, världen!!!!",
-    "This is the yapyak Svelte example.": "Detta är yapyak-exemplet för Svelte.",
-    "Hello {name}": "Hej {name}",
-    "You have {count, plural, one {# message} other {# messages}}": "Du har {count, plural, one {# meddelande} other {# meddelanden}}"
-  }
-}

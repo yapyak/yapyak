@@ -6,9 +6,6 @@ export default defineConfig({
   plugins: [
     yapyak({
       persistence: 'cookie',
-      defaultLocale: 'en',
-      framework: 'svelte',
-      locales: ['en', 'sv'],
     }),
     svelte(),
   ],

@@ -1,8 +1,0 @@
-{
-  "src/app.vue": {
-    "Hello, world": "Hello, world",
-    "This is the yapyak Vue example.": "This is the yapyak Vue example.",
-    "Hello {name}": "Hello {name}",
-    "You have {count, plural, one {# message} other {# messages}}": "You have {count, plural, one {# message} other {# messages}}"
-  }
-}

@@ -1,23 +1,23 @@
 <script lang="ts">
-  import { locale, t } from 'yapyak';
+  import { useLocale } from 'yapyak/svelte';
+  import { getLocales } from 'yapyak';
+  import { t } from './translations';
 
-  const messageCount = $derived(
-    t('You have {count, plural, one {# message} other {# messages}}', {
-      count: 3,
-    }),
-  );
+  const locale = useLocale();
+  const locales = getLocales();
 </script>
 
 <main style="font-family: system-ui; padding: 2rem;">
-  <h1>{t('Hello, world')}</h1>
-  <p>{t('This is the yapyak Svelte example.')}</p>
-  <p>{t('Hello {name}', { name: 'Joakim' })}</p>
-  <p>{messageCount}</p>
+  <h1>{t.hello}</h1>
+  <p>{t.intro}</p>
+  <p>{t.greeting({ name: 'Joakim' })}</p>
 
-  <button
-    type="button"
-    onclick={() => (locale.current = locale.current === 'en' ? 'sv' : 'en')}
-  >
-    {locale.current.toUpperCase()}
-  </button>
+  <label>
+    {t.switchLocale}
+    <select bind:value={locale.current}>
+      {#each locales as code (code)}
+        <option value={code}>{code.toUpperCase()}</option>
+      {/each}
+    </select>
+  </label>
 </main>
