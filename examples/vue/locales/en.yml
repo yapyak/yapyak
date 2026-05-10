@@ -1,5 +1,5 @@
-src/translations.ts:
-  hello: Hello, world
-  intro: This is the yapyak Vue example.
-  greeting: Hello {name}
-  switchLocale: Switch language
+src/app.vue:
+  Hello {name}: Hello {name}
+  Hello, world: Hello, world
+  Switch language: Switch language
+  This is the yapyak Vue example.: This is the yapyak Vue example.

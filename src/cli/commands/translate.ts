@@ -80,6 +80,7 @@ export async function translate(options: TranslateOptions): Promise<number> {
       defaultLocale: result.defaultLocale,
       locales: [result.defaultLocale, locale],
       localesDir: 'locales',
+      messages: result.messages,
       projectRoot,
       translator: wrapWithProgress(translator.fn, onProgress),
     });

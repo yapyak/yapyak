@@ -1,4 +1,4 @@
 src/app.tsx:
-  title: Hello, world
-  intro: This is the yapyak React example.
-  count: You have {count, plural, one {# message} other {# messages}}
+  Hello, world: Hello, world
+  This is the yapyak React example.: This is the yapyak React example.
+  You have {count, plural, one {# message} other {# messages}}: You have {count, plural, one {# message} other {# messages}}

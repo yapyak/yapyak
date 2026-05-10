@@ -32,7 +32,7 @@ export function anthropic(options: AnthropicOptions): Translator {
       return [];
     }
     const systemPrompt = buildSystemPrompt(options, reference, requests.length);
-    const userPrompt = JSON.stringify(requests.map((r) => r.source));
+    const userPrompt = JSON.stringify(requests.map(toUserItem));
 
     const response = await fetch(endpoint, {
       body: JSON.stringify({
@@ -116,23 +116,31 @@ function stripCodeFence(text: string): string {
   return text;
 }
 
+function toUserItem(request: TranslateRequest): Record<string, unknown> {
+  const item: Record<string, unknown> = { source: request.source };
+  const context = request.context;
+  if (context !== undefined) {
+    if (context.componentName !== '') {
+      item.component = context.componentName;
+    }
+    if (context.enclosingElement !== undefined) {
+      item.element = context.enclosingElement;
+    }
+  }
+  return item;
+}
+
 function buildSystemPrompt(
   options: AnthropicOptions,
   reference: TranslateRequest,
   count: number,
 ): string {
   const lines: string[] = [
-    `You are a professional translator. Translate ${count > 1 ? 'each string' : 'the user\'s message'} from ${reference.sourceLocale} to ${reference.targetLocale}.`,
+    `You are a professional translator. Translate the source string in each input from ${reference.sourceLocale} to ${reference.targetLocale}.`,
   ];
-  if (count > 1) {
-    lines.push(
-      `Input is a JSON array of source strings. Return ONLY a valid JSON array of the same length containing the translated strings, in the same order. No commentary, no markdown, no labels.`,
-    );
-  } else {
-    lines.push(
-      'Return only the translated string. No commentary, no quotes, no labels.',
-    );
-  }
+  lines.push(
+    'Input is a JSON array. Each item has a `source` string to translate and optional `component` and `element` fields giving usage context (use them to inform tone — a `button` element wants concise imperatives, a `h1` wants strong nouns, a `label` wants direct nouns). Return ONLY a valid JSON array of the same length containing the translated strings, in the same order. No commentary, no markdown, no labels.',
+  );
   lines.push(
     'Preserve all {placeholder} tokens and ICU patterns exactly as written.',
   );

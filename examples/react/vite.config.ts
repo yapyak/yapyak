@@ -6,9 +6,6 @@ export default defineConfig({
   plugins: [
     yapyak({
       persistence: 'cookie',
-      defaultLocale: 'en',
-      framework: 'react',
-      locales: ['en', 'sv'],
     }),
     react(),
   ],

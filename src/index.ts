@@ -1,5 +1,5 @@
-export { defineTranslations } from './translations.js';
-export type { Schema, SchemaValue, Translations } from './translations.js';
+export { t } from './runtime/t.js';
+export type { T, TInLocale } from './runtime/t.js';
 export {
   configureLocale,
   getDefaultLocale,

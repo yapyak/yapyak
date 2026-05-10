@@ -1,5 +1,5 @@
-src/translations.ts:
-  hello: Hello, world
-  intro: This is the yapyak Svelte example.
-  greeting: Hello {name}
-  switchLocale: Switch language
+src/App.svelte:
+  Hello {name}: Hello {name}
+  Hello, world: Hello, world
+  Switch language: Switch language
+  This is the yapyak Svelte example.: This is the yapyak Svelte example.

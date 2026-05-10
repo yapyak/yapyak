@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { getLocales } from 'yapyak';
-import { useLocale } from 'yapyak/vue';
-import { t } from './translations';
+import { t, useLocale } from 'yapyak/vue';
 
 const locale = useLocale();
 const locales = getLocales();
@@ -9,12 +8,12 @@ const locales = getLocales();
 
 <template>
   <main style="font-family: system-ui; padding: 2rem;">
-    <h1>{{ t.hello }}</h1>
-    <p>{{ t.intro }}</p>
-    <p>{{ t.greeting({ name: 'Joakim' }) }}</p>
+    <h1>{{ t('Hello, world') }}</h1>
+    <p>{{ t('This is the yapyak Vue example.') }}</p>
+    <p>{{ t('Hello {name}', { name: 'Joakim' }) }}</p>
 
     <label>
-      {{ t.switchLocale }}
+      {{ t('Switch language') }}
       <select v-model="locale">
         <option v-for="code in locales" :key="code" :value="code">
           {{ code.toUpperCase() }}

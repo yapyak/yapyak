@@ -1,13 +1,17 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { parse } from 'yaml';
-import { extractSchemas } from '../vite/extract-schemas.js';
+import {
+  DynamicMessageError,
+  type ExtractedMessage,
+  extractMessages,
+} from '../vite/extract-messages.js';
 import { walkSourceFiles } from '../vite/walk-source-files.js';
 
 export interface MissingEntry {
   fileId: string;
-  key: string;
   locale: string;
+  source: string;
 }
 
 export interface LocaleStats {
@@ -18,6 +22,7 @@ export interface LocaleStats {
 export interface CollectResult {
   defaultLocale: string;
   locales: string[];
+  messages: ExtractedMessage[];
   missing: MissingEntry[];
   perLocale: Record<string, LocaleStats>;
   totalMessages: number;
@@ -53,25 +58,32 @@ export function collect(options: CollectOptions): CollectResult {
     roots: ['src'],
   });
 
-  const sourcesByFile: Record<string, Record<string, string>> = {};
+  const messages: ExtractedMessage[] = [];
   for (const file of sourceFiles) {
-    const schemas = extractSchemas(file.code, file.fileId);
-    if (schemas.length === 0) {
-      continue;
-    }
-    const flat = sourcesByFile[file.fileId] ?? {};
-    for (const schema of schemas) {
-      for (const [key, value] of Object.entries(schema.schema)) {
-        if (typeof value === 'string') {
-          flat[key] = value;
-        }
+    let extracted: ExtractedMessage[];
+    try {
+      extracted = extractMessages({ code: file.code, fileId: file.fileId });
+    } catch (error) {
+      if (error instanceof DynamicMessageError) {
+        continue;
       }
+      throw error;
     }
-    sourcesByFile[file.fileId] = flat;
+    messages.push(...extracted);
+  }
+
+  const sourcesByFile: Record<string, Set<string>> = {};
+  for (const message of messages) {
+    let set = sourcesByFile[message.fileId];
+    if (set === undefined) {
+      set = new Set();
+      sourcesByFile[message.fileId] = set;
+    }
+    set.add(message.source);
   }
 
   const totalMessages = Object.values(sourcesByFile).reduce(
-    (sum, file) => sum + Object.keys(file).length,
+    (sum, file) => sum + file.size,
     0,
   );
 
@@ -84,20 +96,27 @@ export function collect(options: CollectOptions): CollectResult {
     let missingCount = 0;
     for (const [fileId, sources] of Object.entries(sourcesByFile)) {
       const fileEntries = data[fileId] ?? {};
-      for (const key of Object.keys(sources)) {
-        const value = fileEntries[key];
+      for (const source of sources) {
+        const value = fileEntries[source];
         if (typeof value === 'string' && value.trim() !== '') {
           translated++;
         } else {
           missingCount++;
-          missing.push({ fileId, key, locale });
+          missing.push({ fileId, locale, source });
         }
       }
     }
     perLocale[locale] = { missing: missingCount, translated };
   }
 
-  return { defaultLocale, locales, missing, perLocale, totalMessages };
+  return {
+    defaultLocale,
+    locales,
+    messages,
+    missing,
+    perLocale,
+    totalMessages,
+  };
 }
 
 function inferDefaultLocale(locales: string[]): string {
@@ -124,11 +143,11 @@ function readLocale(path: string): Record<string, Record<string, string>> {
       continue;
     }
     const flat: Record<string, string> = {};
-    for (const [key, value] of Object.entries(
+    for (const [source, value] of Object.entries(
       entries as Record<string, unknown>,
     )) {
       if (typeof value === 'string') {
-        flat[key] = value;
+        flat[source] = value;
       }
     }
     result[fileId] = flat;

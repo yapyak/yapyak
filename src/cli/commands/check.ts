@@ -43,7 +43,7 @@ export function check(options: CheckOptions): number {
         lastFileId = entry.fileId;
       }
       process.stdout.write(
-        `      ${color.dim('—')} ${color.bold(entry.key)}\n`,
+        `      ${color.dim('—')} ${color.bold(entry.source)}\n`,
       );
     }
     process.stdout.write('\n');

@@ -1,18 +1,17 @@
 import type { ReactElement } from 'react';
-import { defineTranslations, useLocale } from 'yapyak/react';
-
-const t = defineTranslations({
-  title: 'Hello, world',
-  intro: 'This is the yapyak React example.',
-  count: 'You have {count, plural, one {# message} other {# messages}}',
-});
+import { t } from 'yapyak';
+import { useLocale } from 'yapyak/react';
 
 export function App(): ReactElement {
   return (
     <main style={{ fontFamily: 'system-ui', padding: '2rem' }}>
-      <h1>{t.title}</h1>
-      <p>{t.intro}</p>
-      <p>{t.count({ count: 3 })}</p>
+      <h1>{t('Hello, world')}</h1>
+      <p>{t('This is the yapyak React example.')}</p>
+      <p>
+        {t('You have {count, plural, one {# message} other {# messages}}', {
+          count: 3,
+        })}
+      </p>
       <LocaleToggle />
     </main>
   );

@@ -1,6 +1,12 @@
+export interface MessageContext {
+  componentName: string;
+  enclosingElement: string | undefined;
+  snippet: string;
+}
+
 export interface TranslateRequest {
+  context?: MessageContext | undefined;
   fileId: string;
-  key: string;
   source: string;
   sourceLocale: string;
   targetLocale: string;

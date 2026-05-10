@@ -86,7 +86,7 @@ export function status(options: StatusOptions): number {
         lastFileId = entry.fileId;
       }
       process.stdout.write(
-        `      ${color.dim('—')} ${color.bold(entry.key)}\n`,
+        `      ${color.dim('—')} ${color.bold(entry.source)}\n`,
       );
     }
     if (entries.length > limit) {
