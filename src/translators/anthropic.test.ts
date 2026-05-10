@@ -66,7 +66,7 @@ describe('anthropic', () => {
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
-    expect((stub.body() as { model: string }).model).toBe('claude-sonnet-4-7');
+    expect((stub.body() as { model: string }).model).toBe('claude-sonnet-4-6');
   });
 
   it('uses custom model when specified', async () => {

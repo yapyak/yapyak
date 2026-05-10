@@ -8,7 +8,7 @@ export interface AnthropicOptions {
   voice?: string;
 }
 
-const DEFAULT_MODEL = 'claude-sonnet-4-7';
+const DEFAULT_MODEL = 'claude-sonnet-4-6';
 const DEFAULT_ENDPOINT = 'https://api.anthropic.com/v1/messages';
 const ANTHROPIC_VERSION = '2023-06-01';
 
