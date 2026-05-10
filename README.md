@@ -24,9 +24,7 @@ It's a Vite plugin. MIT, BYO key, no telemetry.
 
 ```bash
 npm install yapyak
-npx yapyak init
-
-# or pnpm: pnpm add yapyak && pnpm exec yapyak init
+npx yapyak add sv
 ```
 
 ```ts
@@ -38,10 +36,8 @@ import { anthropic } from 'yapyak/translators/anthropic';
 export default defineConfig({
   plugins: [
     yapyak({
-      persistence: 'cookie',
       translator: anthropic({
         apiKey: process.env.ANTHROPIC_API_KEY,
-        voice: 'Casual, thoughtful, never corporate.',
       }),
     }),
   ],
@@ -56,9 +52,19 @@ export function SaveButton() {
 }
 ```
 
-Save the file. Every locale in `locales/*.json` fills in. HMR pushes the new copy live.
+Save the file.
 
-`yapyak init` asks which locales you want and scaffolds empty files in `locales/`. Default locale lives in your code — no file needed. Add more later with `yapyak add fr`.
+`locales/sv.json` appears automatically:
+
+```json
+{
+  "src/components/save-button.tsx": {
+    "Save changes": "Spara ändringar"
+  }
+}
+```
+
+Edit the string. Save again. Every locale updates instantly via HMR.
 
 ## Translate by saving
 
