@@ -118,3 +118,95 @@ The classic source-as-keys trap: change `t('Save')` to `t('Save changes')` and y
 The plugin compares positions of every `t()` call between saves. If a string disappeared at line 23, column 12, and a new string appeared at the exact same position, that's a rename — not a delete-and-add. Locale files get the key swapped, existing translations stay as placeholders until the new English re-translates.
 
 Position matching is exact. No similarity heuristics. No false positives.
+
+## The string is the key
+
+`t('Save changes')`. The string itself is the lookup. No central key registry, no `i18n.json` ontology to keep in sync.
+
+When two files use the same English string and want different translations — `t('Save')` on a form button vs. `t('Save')` on a settings page — yapyak handles it automatically. Each call is keyed by `(file path, source string)`, so two files = two independent entries. Edit either one in isolation.
+
+```json
+{
+  "src/components/employee-form.tsx": { "Save": "Spara" },
+  "src/components/contract-actions-bar.tsx": { "Save": "Bevara" }
+}
+```
+
+The AI gets the file path, the component name, and the enclosing JSX or template element as context — so it can disambiguate without you ever annotating. `t('Save')` inside a `<button>` translates differently from `t('Save')` inside an `<h1>`.
+
+## Typed to the bone
+
+Params are inferred from the source string at compile time.
+
+```tsx
+t('Hello {name}', { name: 'Joakim' })   // ✓
+t('Hello {name}')                       // ✗ missing { name }
+t('Hello')                              // ✓
+t('Hello', { name: 'Joakim' })          // ✗ no params expected
+```
+
+```tsx
+t('You have {count, plural, one {# item} other {# items}}', { count: 3 })
+//          ^^^^^                                              ^^^^^^^^
+//          ICU plural — count: number is required
+```
+
+You can't pass the wrong shape. TypeScript reads the string literal and knows what it asks for. Plurals, selects, named placeholders — all ICU MessageFormat, all checked at the call site.
+
+## Works everywhere Vite works
+
+The same `t` in React, Svelte 5, Vue 3, and plain JS. Reactivity is the only framework-specific piece, exposed as `useLocale`.
+
+```tsx
+// React
+import { t } from 'yapyak';
+import { useLocale } from 'yapyak/react';
+
+function App() {
+  const [locale, setLocale] = useLocale();
+  return <h1>{t('Hello')}</h1>;
+}
+```
+
+```svelte
+<!-- Svelte 5 -->
+<script lang="ts">
+  import { t } from 'yapyak';
+  import { useLocale } from 'yapyak/svelte';
+  const locale = useLocale();
+</script>
+
+<h1>{t('Hello')}</h1>
+```
+
+```vue
+<!-- Vue 3 -->
+<script setup lang="ts">
+import { t } from 'yapyak';
+import { useLocale } from 'yapyak/vue';
+const locale = useLocale();
+</script>
+
+<template>
+  <h1>{{ t('Hello') }}</h1>
+</template>
+```
+
+`t()` works inline in `.svelte` and `.vue` templates — the plugin extracts and rewrites them the same way it does in `.ts` and `.tsx`.
+
+SSR adapters for TanStack Start and SvelteKit resolve locale per request from cookie or `Accept-Language`. Pre-rendered HTML in the right language from the first byte. No flash, no flicker.
+
+```ts
+// React + TanStack Start (in __root.tsx)
+import { tanstackStart } from 'yapyak/adapters/tanstack-start';
+tanstackStart();
+
+// Svelte + SvelteKit (in hooks.server.ts)
+export { handle } from 'yapyak/adapters/sveltekit';
+```
+
+Same `getLocale()` import on server and client:
+
+```tsx
+<html lang={getLocale()}>
+```
