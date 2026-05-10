@@ -69,7 +69,8 @@ export function runCheck(projectRoot: string): CheckResult {
     for (const [fileId, sources] of Object.entries(extracted)) {
       const fileTranslations = localeJson[fileId] ?? {};
       for (const source of sources) {
-        if (fileTranslations[source] === undefined) {
+        const value = fileTranslations[source];
+        if (value === undefined || value.trim() === '') {
           issues.push({ fileId, kind: 'missing', locale, source });
         }
       }

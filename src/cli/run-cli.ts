@@ -1,3 +1,4 @@
+import { runMcpServer } from '../mcp/server.js';
 import { runCheck } from './commands/check.js';
 import { runCompile } from './commands/compile.js';
 import { runExtract } from './commands/extract.js';
@@ -30,6 +31,9 @@ export async function runCli(argv: string[]): Promise<void> {
       case 'status':
         handleStatus(projectRoot, argv.slice(1));
         return;
+      case 'mcp':
+        await runMcpServer(projectRoot);
+        return;
       default:
         console.error(`Unknown command: ${command}`);
         printHelp();
@@ -55,6 +59,9 @@ function printHelp(): void {
     '  check [--write]            Validate translations (--write to prune stale)',
   );
   console.log('  status [--json]            Report missing translations');
+  console.log(
+    '  mcp                        Run MCP server (for Claude Code, Cursor, etc.)',
+  );
 }
 
 async function handleInit(projectRoot: string, args: string[]): Promise<void> {

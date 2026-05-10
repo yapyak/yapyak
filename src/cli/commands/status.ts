@@ -85,7 +85,7 @@ export function runStatus(projectRoot: string): StatusReport {
     const missingLocales: string[] = [];
     for (const locale of config.locales) {
       const value = localeJson[locale]?.[record.fileId]?.[record.source];
-      if (value === undefined || value === '') {
+      if (value === undefined || value.trim() === '') {
         missingLocales.push(locale);
         const stats = perLocale[locale];
         if (stats) {
