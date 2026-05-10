@@ -41,7 +41,9 @@ export async function run(argv: string[]): Promise<number> {
       const provider = providerArg
         ? (providerArg.slice('--provider='.length) as 'anthropic' | 'openai')
         : undefined;
+      const force = rest.includes('--force') || rest.includes('-f');
       return await translate({
+        force,
         locale,
         projectRoot,
         provider,
@@ -69,6 +71,7 @@ function printHelp(): void {
     ${color.cyan('check')}                 ${color.dim('Exits 1 if anything is missing — for CI')}
     ${color.cyan('add')} ${color.dim('<locale>')}          ${color.dim('Add a new locale file')}
     ${color.cyan('translate')} ${color.dim('[locale]')}    ${color.dim('Fill missing translations via AI (uses .env API key)')}
+    ${color.cyan('translate --force')}     ${color.dim('Re-translate everything, including existing values')}
 
 `);
 }

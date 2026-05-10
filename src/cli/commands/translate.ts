@@ -7,13 +7,14 @@ import { loadEnv } from '../load-env.js';
 import { color, header, progressBar, spinner, symbol } from '../tui.js';
 
 export interface TranslateOptions {
+  force?: boolean | undefined;
   locale?: string | undefined;
   projectRoot: string;
   provider?: 'anthropic' | 'openai' | undefined;
 }
 
 export async function translate(options: TranslateOptions): Promise<number> {
-  const { locale: targetLocale, projectRoot } = options;
+  const { force = false, locale: targetLocale, projectRoot } = options;
   const env = loadEnv(projectRoot);
 
   const translator = pickTranslator(env, options.provider);
@@ -42,9 +43,15 @@ export async function translate(options: TranslateOptions): Promise<number> {
       ? [targetLocale]
       : result.locales.filter((locale) => locale !== result.defaultLocale);
 
-  const stubsToFill = result.missing.filter((entry) =>
-    targetLocales.includes(entry.locale),
-  );
+  const stubsToFill = force
+    ? targetLocales.flatMap((locale) =>
+        result.messages.map((message) => ({
+          fileId: message.fileId,
+          locale,
+          source: message.source,
+        })),
+      )
+    : result.missing.filter((entry) => targetLocales.includes(entry.locale));
 
   process.stdout.write(
     header(
@@ -78,6 +85,7 @@ export async function translate(options: TranslateOptions): Promise<number> {
   for (const locale of localesToProcess) {
     const subResult = await autoTranslate({
       defaultLocale: result.defaultLocale,
+      force,
       locales: [result.defaultLocale, locale],
       localesDir: 'locales',
       messages: result.messages,
