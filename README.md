@@ -17,3 +17,62 @@ What Tailwind did to CSS class names, yapyak does to translation keys: kills the
 It's also the shape AI thrives in. Everything's in one file — the source string, the surrounding code, the component name. Claude reads `t('Save changes')` and sees the meaning right there. No round-trip to figure out what `auth.error.invalid_2` actually says. Every agent in your editor pulls in the same direction.
 
 It's a Vite plugin. MIT, BYO key, no telemetry.
+
+## Quick start
+
+```bash
+npm install yapyak
+npx yapyak init
+
+# or pnpm: pnpm add yapyak && pnpm exec yapyak init
+```
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite';
+import { yapyak } from 'yapyak/vite';
+import { anthropic } from 'yapyak/translators/anthropic';
+
+export default defineConfig({
+  plugins: [
+    yapyak({
+      persistence: 'cookie',
+      translator: anthropic({
+        apiKey: process.env.ANTHROPIC_API_KEY,
+        voice: 'Casual, thoughtful, never corporate.',
+      }),
+    }),
+  ],
+});
+```
+
+```tsx
+import { t } from 'yapyak';
+
+export function SaveButton() {
+  return <button>{t('Save changes')}</button>;
+}
+```
+
+Save the file. Every locale in `locales/*.json` fills in. HMR pushes the new copy live.
+
+## Translate by saving
+
+The Vite plugin watches every `t()` call. New strings get added to your locale files. Removed strings get pruned. Edited strings re-translate. All of it on save, in the background.
+
+Each batch goes to your translator with the source string, the file path, the surrounding JSX or template element, your voice prompt, and your glossary. Default batch size is 10 — about 10× fewer API calls than naive one-string-at-a-time. A typical save round-trips in under a second.
+
+```ts
+yapyak({
+  translator: anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+    voice: 'Personal blog voice. Casual, thoughtful, never corporate.',
+    glossary: {
+      'sign in': { sv: 'logga in', no: 'logg inn' },
+      cart: { sv: 'varukorg', no: 'handlekurv' },
+    },
+  }),
+}),
+```
+
+Each `t('...')` is rewritten at build time into a direct lookup with all locale variants inlined. Routes that don't reference a string don't ship its translations — Vite/Rollup tree-shake per chunk.
