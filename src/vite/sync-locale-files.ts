@@ -16,8 +16,10 @@ export function syncLocaleFiles(options: SyncOptions): void {
   const sourcesByFile = groupSourcesByFile(options.messages);
 
   for (const locale of options.locales) {
+    if (locale === options.defaultLocale) {
+      continue;
+    }
     const localePath = localeFilePath(options.projectRoot, options.localesDir, locale);
-    const isDefault = locale === options.defaultLocale;
     const existing = readLocaleFile(localePath);
     const next: LocaleFile = {};
 
@@ -29,12 +31,8 @@ export function syncLocaleFiles(options: SyncOptions): void {
       const existingFile = existing[fileId] ?? {};
       const fileEntries: Record<string, string> = {};
       for (const source of sources) {
-        if (isDefault) {
-          fileEntries[source] = source;
-        } else {
-          const value = existingFile[source];
-          fileEntries[source] = typeof value === 'string' ? value : '';
-        }
+        const value = existingFile[source];
+        fileEntries[source] = typeof value === 'string' ? value : '';
       }
       next[fileId] = fileEntries;
     }

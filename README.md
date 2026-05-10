@@ -1,30 +1,22 @@
 # yapyak 🐃
 
-> **Let your app yak in any language.**
+> **Translations are a side-effect.**
 >
-> The i18n library for the era where the agent is already in your editor.
+> The i18n library where your source code is the truth.
 
-In 2026, the i18n industry is racing to sell you AI translation. Cloud subscriptions. CLI subscriptions. Agent skills you install. API wrappers with your key on file. Everyone wants to be the AI layer between your code and your strings — in the prompt, in the API call, in the billing path.
+In 2026, every product team ships copy at the speed they ship code. A button label changes three times a day. An empty state gets rewritten mid-sprint. Marketing pushes a paragraph at 17:00. The old i18n flow — extract, push to a translation portal, wait for a human, pull, build, deploy — was built for a world that doesn't exist anymore.
 
-Now switch tabs. There's the agent. Claude Code, Cursor, Codex, Devin — pick one. It's already in your editor. It read your codebase this morning. It knows your voice from the `CLAUDE.md` you wrote last month. It writes half your code today, and you're already paying for it. So tell us — *what exactly does your i18n library need to ship its own AI translator for?*
+The new world has AI good enough to translate 90% of UI copy on the first try. With a voice prompt and call-site context, 95–100%. The bottleneck stopped being the translation. It became the loop around it: keys to invent, files to sync, PRs that block on a translator, code that refers to abstract IDs you have to grep to understand.
 
-Nothing. That's the whole thing. The agent is the translator. The library's job is to be a tool the agent picks up.
+yapyak deletes that loop.
 
-That's yapyak. A Vite plugin and an MCP server. The agent reads your messages, your call-site context, your locale files; calls whatever model it already has access to; writes the translations back. You watch it happen in chat, correct it inline, move on. No `apiKey` in your config. No second model registration. No yapyak Cloud — there isn't one and there never will be.
+You write English in your component. You save the file. Every other locale auto-fills via the AI of your choice, in your voice, with knowledge of the surrounding code. HMR pushes the new strings live before you alt-tab. There is no `en.json` on disk because your code *is* English. Translations are derived. They are side-effects.
 
-> *"Finally someone rethought this whole darn thing."*
+Your repo gets one folder — `locales/sv.json`, `locales/no.json`, `locales/dk.json`, etc. — and that's it. If you delete `locales/sv.json`, Swedish stops existing. Nothing else changes.
+
+> *"This is the first i18n library that didn't make me want to throw my keyboard."*
 >
 > — a developer, somewhere, allegedly 🐃
-
-### Vite-only
-
-Yapyak only exists because Vite exists. The "save a file, the right thing happens, immediately" experience that makes the whole watcher loop feel like magic — that's Vite's contribution to the field, and Evan You and the team did the hard work. We're just standing on it.
-
-So we made a deliberate choice: Vite-only. Going framework-agnostic would mean meeting eight different bundlers' edge cases halfway and pleasing none of them. We'd rather be excellent in one place than mediocre everywhere. If you're on Webpack or Rollup-without-Vite, we're not your tool — and that's fine.
-
-### Agent-first
-
-The other half of the manifesto: **yapyak does not ship an AI translator.** Not as a Cloud, not as a built-in provider, not as a CLI you pay for. The agent already open in your editor does the work. yapyak gives it the tools to do it well — read call-site context, write JSON atomically, validate, prune stale entries, the whole loop — over MCP. Details further down.
 
 ---
 
@@ -37,490 +29,395 @@ pnpm exec yapyak init
 
 ```ts
 // vite.config.ts
-import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import { defineConfig } from 'vite';
 import { yapyak } from 'yapyak/vite';
+import { anthropic } from 'yapyak/translators/anthropic';
 
 export default defineConfig({
   plugins: [
     yapyak({
-      framework: 'react',
-      adapter: 'tanstackStart',
-      defaultLocale: 'en',
-      locales: ['en', 'sv'],
       persistence: 'cookie',
-      overlay: true,
+      translator: anthropic({
+        apiKey: process.env.ANTHROPIC_API_KEY,
+        voice: 'Casual, thoughtful, never corporate.',
+      }),
     }),
-    tanstackStart(),
   ],
 });
 ```
 
-```jsonc
-// .mcp.json (project root)
-{
-  "mcpServers": {
-    "yapyak": { "command": "pnpm", "args": ["exec", "yapyak", "mcp"] }
-  }
-}
-```
-
 ```tsx
-// app.tsx
-import { IntlProvider, t } from 'yapyak';
+// any component
+import { t } from 'yapyak';
 
-export function App() {
-  return (
-    <IntlProvider>
-      <h1>{t('Hello')}</h1>
-    </IntlProvider>
-  );
+export function SaveButton() {
+  return <button>{t('Save changes')}</button>;
 }
 ```
 
-That's it. Save the file — the plugin extracts `'Hello'`, writes `locales/en.json`, stubs an empty entry in `locales/sv.json`. Then you say to your agent: *"fyll i alla saknade översättningar på svenska"*. It calls yapyak's MCP tools, reads the call-site context, writes the JSON. HMR pushes the new translation into your running app. No build step, no API key, no provider config.
-
-A 🐃-button appears in the bottom-right of your dev page — click it any time to see all your translations, edit inline, preview the app in another locale. More on that below.
+That's it. Save the file. Every locale in `locales/*.json` fills in via Anthropic, in your voice, with the call-site context. HMR pushes the new copy live. No keys to invent, no JSON to wire up, no `auth.error.invalid_2` to decode three months later.
 
 ---
 
 ## Why yapyak
 
-### No more naming things
+### The translation is the key
 
-Translation keys are a special kind of hell. `home.hero.cta.signup.button` — does it sign up or log in? Who knows. You named it, then someone changed the copy, and now the key lies. Or you skip naming and call it `key1`. Or you commit to a naming convention that nobody else on your team agrees with.
+Translation keys are a special kind of hell. `home.hero.cta.signup.button` — does it sign up or log in? Who knows. You named it, then someone changed the copy, and now the key lies. Or you skip naming and call it `key1`. Or you commit to a naming convention nobody else on your team agrees with. Or you pick i18next and end up with a dot-namespaced ontology that you grep through every time you read the code.
 
-yapyak takes a different swing: **the translation is the key**. You write `t('Save changes')`. The string itself *is* the lookup. There's nothing to name, because the source language already names it. Think of what Tailwind did to CSS class names — same energy. Less friction.
+yapyak takes a different swing: **the translation is the key**. You write `t('Save changes')`. The string itself *is* the lookup. There's nothing to name, because the source language already names it.
 
-This matters double in the agent era. When Claude Code reads `t('Switch to dark mode')` in your source, it sees the meaning right there. No round-trip to look up what `header.toggle.aria` *is*. The call site is the documentation. Agents like that. Humans like that. The 2026 i18n debate of "natural-language keys vs explicit keys" — we picked a side, and Lingui 6.0 picked the same side a month later for the same reasons.
+This is what Tailwind did to CSS class names. Externalizing CSS into `.scss` files with hand-named classes was supposed to be cleaner. It wasn't — it was a permanent naming meeting nobody asked for. Tailwind put the styling next to the markup, where it belongs, and named class meetings stopped happening. yapyak does the same to translation keys: it puts the meaning next to the call site, where it belongs.
 
-If two files happen to use the same source text but want different translations? That's fine — translations are scoped per file. `t('Save')` in your settings page can be `'Spara'`, while `t('Save')` in your editor can be `'Spara ändringar'`. Same key, different files, no collisions, no bikeshedding.
+This matters double in the agent era. When Claude or Cursor reads `t('Switch to dark mode')` in your source, it sees the meaning right there. No round-trip to look up what `header.toggle.aria` actually is. The call site is the documentation. Agents like that. Humans like that. Reviewers in PR-checks like that. When the agent rewrites a button, it rewrites the user-facing English directly — not a key indirection that may or may not be rewired correctly.
 
-### Agent-first via MCP
+### Translations are side-effects
 
-This is the one we built the rest of the library to enable.
+Most i18n libraries treat every locale as equal: `en.json`, `sv.json`, `de.json`, all parallel files of equal weight. This is a lie. The default locale isn't a translation — it's the source of truth. Treating it as a parallel file invites drift between code and `en.json`, and creates a "translation review" step for the language you wrote in.
 
-Drop `.mcp.json` in your project root with the snippet from the quick-start. Restart Claude Code (or Cursor, or any other MCP client). Now your agent has tools:
+yapyak does not have an `en.json`. The default locale lives in your source code. Other locales are projections of it. When you change `t('Save')` to `t('Save changes')`, the source is updated atomically — there's only one place to update. Other locales become stale and re-translate.
 
-| Tool | What it does |
-|---|---|
-| `get_config` | locales, defaultLocale, source patterns — the agent's first call |
-| `list_messages` | every translatable string with current state across locales |
-| `list_missing` | what's untranslated, optionally filtered by locale |
-| `read_message` | full call-site context: file, component, line, snippet, parent JSX element, attribute name |
-| `write_translation` | single atomic write |
-| `write_translations` | batched per-locale writes for filling many at once |
-| `remove_translation` | revert to "missing" so it gets re-translated |
-| `prune_stale` | auto-remove entries whose source no longer exists in code |
-| `validate` | missing / stale / invalid JSON, each with an `autoFixable` flag |
-
-Then you just talk to it: *"översätt allt nytt på svenska"*, *"ta bort 'Bradn ddd' från en.json, det var en typo"*, *"validate och fixa allt som är autoFixable"*. The agent reads context, calls the model it already has access to, writes the files. You watch it happen. You correct it inline. It learns from the correction.
-
-Why an MCP server beats every other shape an i18n-library-meets-AI could take:
-
-- **The agent already has the best context in the room.** It's read your whole codebase. It's read your `CLAUDE.md`. It knows your voice, your glossary, the decision your team made last Tuesday about how to translate "boka pass". A library config field can't compete with that.
-- **The agent can ask clarifying questions.** Generic AI translation guesses. An agent asks: *"Is this 'Archive' the verb or the noun? It looks like a button label, so I'm leaning verb — confirm?"* Then it gets it right.
-- **No proxy in your billing path.** Your agent calls its model directly. When the next price cut lands, you get the savings — no library sitting between you and the API charging on top.
-- **Switching agents costs you nothing.** Move from Claude Code to Cursor to Devin tomorrow. yapyak doesn't care, doesn't know, doesn't break. The MCP layer is the contract; everything else is the agent's problem.
-- **Project conventions transfer automatically.** Your `CLAUDE.md` says "use sentence case, never title case in Swedish UI"? The agent reads that before it writes a single translation. A library couldn't compete with that even if it tried.
-
-The MCP server is built into the package — no `@modelcontextprotocol/sdk` dep, no second install, just `pnpm exec yapyak mcp` and it speaks JSON-RPC over stdio. That's the whole shape. 🐃
-
-### Watch mode keeps your locales honest
-
-Save a file. The plugin extracts every `t()` call, syncs `en.json`, and stubs new entries in your other locale files as empty strings. Removed strings vanish from `en.json` — and the watcher updates the position cache so you keep rename memory across saves (more on that below).
-
-```diff
-+ t('Welcome home')
 ```
-```
-[yapyak] en.json: +1 entry · sv.json: +1 stub (awaiting translation)
+locales/
+  sv.json      ← side-effect
+  no.json      ← side-effect
+  dk.json      ← side-effect
 ```
 
-That's the entire watcher contract. No CLI loop, no manual `yapyak extract`, no "remember to run something before commit". You write code, the JSON files keep up. You ask the agent to fill the stubs whenever you feel like it.
+Your project gets smaller. Your mental model gets simpler. The thing that's always true is always true: *your code is what users in your default language see*.
 
-### Typed to the bone
+### AI is built in. Use it like an HMR layer
 
-Locale codes are a discriminated union: `setLocale('haha')` is a TypeScript error. Translation params are inferred from the source string: `t('Hello {name}')` *requires* `{ name }`, `t('Hello')` *forbids* a second argument. Mess up your ICU plural? You'll know at compile time.
-
-### Autocomplete that actually knows your strings
-
-This is the part where i18n libraries usually shrug. Either your keys are abstract identifiers (autocomplete works, but you've already lost), or your keys are the strings themselves and autocomplete just gives up.
-
-yapyak does both. The Vite plugin reads your locale files, generates a literal-typed union of every source string in your project, and rewires `t()` to autocomplete on it — while *still* letting you type a new string the second you need one. No registration step. No "add this to your messages.json first" dance.
-
-```tsx
-t('R')   // ↑ autocomplete suggests "Recent writings"
-t('Save changes')   // ↑ autocomplete from history
-t('A brand new string nobody has translated yet')   // ✅ also fine
-```
-
-The TypeScript trick is `T extends KnownSource | (string & {})` — known strings get autocomplete; new strings get accepted; nothing gets in your way. You also get autocomplete on `messages.sv['src/routes/home.tsx']['Recent writings']` if you really want to spelunk into the raw data. Refactoring is suddenly real: rename a string, find every site, fix typos with one click.
-
-Most i18n libs treat types as a stretch goal. yapyak treats them as table stakes. 🐃
-
-### Tiny footprint
-
-The usual i18n library asks you to install a dozen sub-packages, scaffold a directory tree, configure a Babel plugin, and figure out where the messages live. yapyak is one package with a Vite plugin and a built-in MCP server. Everything else — the runtime module, the messages module with all locales inlined and tree-shaken per route, the type declarations — is generated and cached invisibly inside `node_modules/.cache/`. Your repo gets `locales/sv.json`, one `.mcp.json`, and one ugly line in `tsconfig.json`:
-
-```jsonc
-{
-  "include": ["src/**/*", "node_modules/.cache/yapyak/types.d.ts"]
-  //                       ^ yes, this is the ugliest line in your config.
-  //                         we hate it too. but TypeScript needs to find
-  //                         the auto-generated types somewhere, and this
-  //                         is the only place it doesn't pollute. promise:
-  //                         this is the ugliest yapyak ever asks you to be.
-}
-```
-
-That's it. `yapyak init` adds it for you. After that, you never touch it again.
-
-### One `getLocale()`, two universes
-
-This is the part where most i18n libs split into a server function and a client function and you have to remember which is which. yapyak doesn't.
-
-```ts
-import { getLocale } from 'yapyak';
-
-const locale = getLocale();   // works on the server, works in the browser
-```
-
-Same import. Same call site. Same return type. There is no isomorphism dance. There is no `if (typeof window === 'undefined')`. It just works.
-
-The detection chain, both server and client:
-
-1. **Cookie** — the user's explicit choice (`Cookie:` header on the server, `document.cookie` in the browser). Highest priority.
-2. **Browser/OS preference** — `Accept-Language` header on the server, `navigator.language` in the browser. The user's actual default if they haven't picked one yet.
-3. **Default locale** — the fallback you configured.
-
-```tsx
-// __root.tsx — the entirety of your <html lang>:
-<html lang={getLocale()}>
-```
-
-That's it. SSR with the right language from the first byte. Client takes over after hydration with no mismatch (the cookie is the same source on both sides). Locale-switching just updates the cookie and the cached value.
-
-### Persistence: cookie or localStorage
-
-Yapyak persists the user's locale choice somewhere — your call where:
+yapyak ships with translators for Anthropic and OpenAI out of the box. Drop in an API key, set your voice, save a file. Translations happen.
 
 ```ts
 yapyak({
-  persistence: 'cookie',         // SSR-safe
-  // OR
-  persistence: 'localStorage',   // SPA-only, GDPR-friendly
-  // OR
-  persistence: null,             // in-memory only (default), refresh resets
-})
+  translator: anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+    voice: 'Personal blog voice. Casual, thoughtful, never corporate. Match the original cadence.',
+    glossary: {
+      'sign in': { sv: 'logga in', no: 'logg inn', dk: 'log ind' },
+      'cart': { sv: 'varukorg', no: 'handlekurv', dk: 'kurv' },
+    },
+  }),
+}),
 ```
 
-**Cookie.** The only option that works with SSR. Sent with every request, so the server can read it and ship HTML pre-rendered in the right language. This is what most SSR apps want.
+What happens on save:
 
-**localStorage.** Use this if your app is a pure SPA (no SSR), or if you want to avoid cookies for GDPR reasons (localStorage is exempt from cookie-banner requirements in most jurisdictions). Trade-off: the server can't read it, so the first paint always renders in the default locale and the client swaps in the user's locale after hydration. Brief flash possible.
+1. Plugin extracts every `t('...')` call from your source.
+2. New strings get an empty stub in each non-default locale file.
+3. Translator sends a JSON batch to the AI provider — up to 10 strings per request — with the source string, the component name, the enclosing JSX/template element, your voice, and your glossary.
+4. AI returns translations. Plugin writes them to disk.
+5. HMR pushes the new copy into your running app.
 
-**`null` (default).** No persistence. Refresh resets to default. Useful for ephemeral sessions, demos, or apps where another mechanism handles the persistence.
+Total wall-clock time for a fresh translation: about a second per batch. 10× fewer API calls than naive one-string-at-a-time approaches.
 
-Need sessionStorage, IndexedDB, or a custom backend? Leave `persistence` unset and call `setLocale()` yourself with whatever storage you want — `getLocale()` and `setLocale()` are the primitives, and they work without any persistence layer attached.
-
-### SSR-ready, no manual wiring
-
-Set `adapter: 'tanstackStart'` (or `'sveltekit'`) in plugin options and yapyak figures out the locale on the server by reading the request cookie via the framework's request-scoped headers. The HTML ships pre-rendered in the right language. No flash, no `useEffect`-flicker, no `loader` boilerplate.
-
-```tsx
-// __root.tsx — this is the entirety of your SSR setup
-<html lang={getLocale()}>
-  <body>
-    <IntlProvider>
-      <Outlet />
-    </IntlProvider>
-  </body>
-</html>
-```
-
-The adapter wires `setRequestSource` to TanStack's `getRequestHeaders()` (or SvelteKit's `getRequestEvent()`) automatically. You don't write the wiring; you don't import the wiring; you just set one config field.
-
-### Position-aware translation memory
-
-Here's the trap with source-string-as-key i18n: the moment you change `t('Save changes')` to `t('Save')`, you lose the connection to the existing translation. Your agent's careful work — that "Spara ändringar" tweaked just so to fit your brand voice — disappears. Your French team's nuanced phrasing? Gone. The German guy's diplomatic compromise? Gone. The agent now has to re-translate from scratch, and might land on a slightly different word this time.
-
-Every other source-string-as-key library has this problem. They wave their hands at it.
-
-yapyak doesn't. 🐃
-
-When you save a file, yapyak compares the **positions** of every `t()` call against a position cache from your last save. If a string disappeared at line 12, column 5, and a new string appeared at the *exact same position*, that's not a deletion-and-addition. That's a rename. The translation is preserved. The agent isn't asked to redo work it already did.
-
-```diff
-- t('Save changes')
-+ t('Save')
-```
-
-```
-[yapyak] ↻ "Save changes" → "Save" (rename detected, reusing translations)
-```
-
-The Swedish "Spara ändringar"? Still there. Just under a new key. Click around — works exactly as before. No agent round-trip needed. Cookie unchanged.
-
-Why position-based and not similarity-based? Because **position is exact**. "Save" and "Cave" have a 75% Levenshtein similarity. They're not the same message. Position match is unambiguous: same place in your code, you renamed it, period. False positives don't happen.
-
-The cache lives in `node_modules/.cache/yapyak/positions.json`. You never touch it. It just makes the right thing happen, silently, every save.
-
-This is the kind of feature you don't notice until you don't have it — and then you notice it screaming.
-
-### Refactor across files — translations follow
-
-Position-aware memory handles renames *within a file*. But what happens when you refactor across files? Move `t('Save')` from `OldDialog.tsx` to a new shared `Button.tsx`. Or rename `payment-dialog.tsx` to `confirm-dialog.tsx`. Different file, different lookup key — surely the translation is lost?
-
-```
-[yapyak] reused 1 translation from other files → sv
-```
-
-Nope. yapyak's watcher searches every locale file for the same source string in any other file. If it finds one, it copies the translation forward. Zero agent calls. Refactor freely — your translations migrate with the code.
-
-Two `t('Save')` calls in different files want *different* translations? Edit the JSON to customize either one (or ask the agent to). The cross-file lookup only fills in *missing* entries; it never overrides what's already there. Component-scoped customization stays customized.
-
-This is the feature that makes source-string-as-key viable in a 100-route app where things move around constantly.
-
-### The translation editor that lives where your app does
-
-Here's the part where most i18n libs hand you off: install our cloud, log in to our portal, navigate to your project, find the message, edit, push back. Cool. Have you tried not doing all that?
-
-yapyak ships a translation editor as part of the Vite dev plugin. Set `overlay: true` and a 🐃 button appears bottom-right of your dev page. Click it. A side panel slides in. Every translation in your app, searchable, editable, with stats and an "On this page" filter that updates as you navigate.
-
-What you can do without leaving the page:
-
-- **Edit any translation in place.** Type the new value, hit Save. JSON updates, HMR pushes the new string into the running app, no reload.
-- **Preview as locale.** Dropdown switches the page to render in any locale. Overrides the cookie. Close the overlay → back to the user's actual locale. DevTools, not state-management.
-- **See completion at a glance.** "EN 27/27 · SV 24/27" header tells you what's incomplete in this app, right now.
-- **Open in editor.** Click any file path → opens VSCode/Cursor at the right line.
-
-For everything else — bulk fills, AI re-translation, glossary work — you talk to your agent. The overlay deliberately doesn't compete with that. It's for the things you do faster by hand than by typing a sentence to a chatbot.
-
-The whole thing lives inside Shadow DOM. It can't fight with your app's CSS, it can't be fought back. When you don't need it: closed, invisible, zero overhead. When you do: there, exactly where you need it.
-
-Off by default. Set `overlay: true` to enable. Dev-only — never ships in production builds.
-
-### Per-message tree-shaking
-
-Most i18n libraries ship every translation for every locale to every page. Yapyak doesn't.
-
-Each `t('...')` call is rewritten at build time to a direct reference to a tree-shakable function in a virtual `yapyak/messages` module:
+The translator interface is open — bring your own. Local model? Cloudflare Workers AI? Your fine-tuned 7B? Implement the `Translator` type, drop it in. yapyak doesn't care which model translates; it cares that *something* fills the stubs.
 
 ```ts
-// You write:
-{t('Welcome home')}
-
-// What ends up in the bundle:
-{_m_a3f8b2c1d4e5()}
-
-// What `_m_a3f8b2c1d4e5` looks like in the generated module:
-export const _m_a3f8b2c1d4e5 = (p) => ({
-  en: () => 'Welcome home',
-  sv: () => 'Välkommen hem',
-})[getLocale()]();
+interface Translator {
+  (request: TranslateRequest): Promise<string>;
+  batch?(requests: TranslateRequest[]): Promise<string[]>;
+}
 ```
 
-Each message is its own top-level export. Vite/Rollup tree-shake at module level: route `/checkout` only references the messages it actually uses, so only those messages' bodies end up in the route's chunk. Unused translations? Gone. Even unused locales for the messages that *are* used? Inlined alongside, but the rest of the message graph is dropped.
+No yapyak Cloud. No subscription tier. No monetization play. This is built to be useful, not to be sold.
 
-App with 1000 messages × 5 locales, route uses 20 messages: the route loads 20 inlined functions, not 5000.
+### Voice that holds across releases
 
-Same architectural advantage as Paraglide's tree-shaking — but you keep writing source-string-as-key. No `m.greeting()` indirection, no JSON-to-ID translation table to maintain. Best of both worlds.
+A consistent tone is the hardest part of multi-language UI. Different translators introduce different voices. AI services drift between calls if they don't have grounding. Marketing-tone-but-friendly is a vibe, not a regex.
 
-### Component-discriminated translations
+yapyak makes voice a first-class config:
 
-Same English string, two contexts, two different translations. The classic example: `t('Save')` on a form button means "submit the form" (Swedish: *Spara*); `t('Save')` on a contract action means "preserve to disk" (Swedish: *Bevara*). Same English, different intent.
+```ts
+voice: 'Personal blog voice. Casual, thoughtful, never corporate. Match the original cadence.'
+```
 
-Most i18n libraries make you invent unique IDs to distinguish: `m.form_save` vs `m.action_save`. Manual, error-prone, ugly. yapyak does it automatically: each `t()` call's hash is `(fileId, source)`, so the same English in two files produces two independent entries. Edit either translation in the JSON without affecting the other.
+This string gets prepended to every translation prompt. Every string, every locale, every release. There is no drift across translators, because there is one translator, and one voice. When you change the voice, you re-translate with `pnpm exec yapyak translate --force`. Done.
+
+### Position-aware rename memory
+
+Source-string-as-key has one classic trap: change `t('Save')` to `t('Save changes')` and you've effectively renamed the key. Naive implementations lose the existing translation. The careful "Spara" your translator picked? Gone. The agent has to redo work.
+
+yapyak solves this with **position-based rename detection**. When a file changes, the plugin compares positions of every `t()` call against the previous extraction. If a string disappeared at line 23, column 12, and a new string appeared at *the exact same position*, that's not a delete-and-add. That's a rename.
+
+```diff
+- t('Save')
++ t('Save changes')
+```
+
+```
+[yapyak] ↻ "Save" → "Save changes" (rename detected, locale entries migrated)
+[yapyak] sv: marked stale, re-translating…
+```
+
+Locale files get the key swapped (translations preserved). The new English value triggers a re-translation pass. The old "Spara" stays as a temporary placeholder until the new "Spara ändringar" lands a beat later. No lost work, no orphaned translations.
+
+Why position-based and not similarity-based? Because **position is exact**. "Save" and "Cave" have a 75% Levenshtein similarity but they're different messages. Position match is unambiguous: same place in your code, you renamed it, period. False positives don't happen.
+
+### Same English, different contexts, different translations
+
+`t('Save')` on a form button means "submit the form" — Swedish: *Spara*. `t('Save')` on a settings page means "preserve to disk" — also *Spara*, mostly, but maybe *Bevara* depending on context. Same English, different intent.
+
+Most i18n libraries make you invent unique keys: `form.save_button` vs `settings.save_action`. yapyak handles it for you: each `t()` call's storage key is `(filePath, sourceString)`, so the same English in two files produces two independent entries. Edit either translation in the JSON without affecting the other.
 
 ```json
-// locales/sv.json
 {
   "src/components/employee-form.tsx": { "Save": "Spara" },
   "src/components/contract-actions-bar.tsx": { "Save": "Bevara" }
 }
 ```
 
-You don't think about it. You write `t('Save')` everywhere. yapyak handles the rest. The agent reading via `read_message` gets the file path and component name in the response, so it can disambiguate without you ever annotating anything.
+You don't think about it. You write `t('Save')` everywhere. yapyak handles the disambiguation. The AI gets the file path, the component name, and the enclosing JSX/template element (`button`, `h1`, `label`, `option`) as context — so it can translate "Save" the verb differently from "Save" the noun without you ever annotating anything.
 
-### Built on AOT-compiled ICU
+### Type safety, including parameters
 
-Translations get compiled to JavaScript functions ahead of time — no runtime parser, no MessageFormat library shipping in your bundle. Plurals, selects, named placeholders, exact match — all the standard stuff:
+The runtime is small. The type system is strict.
 
 ```tsx
-t('You have {count, plural, one {# message} other {# messages}}', { count: 3 })
-// "You have 3 messages"
+t('Hello {name}', { name: 'Joakim' })   // ✓ params inferred from {name}
+t('Hello {name}')                         // ✗ TypeScript error: missing { name }
+t('Hello')                                // ✓ no params allowed
+t('Hello', { name: 'Joakim' })            // ✗ TypeScript error: no params expected
 
-t('{name, select, joakim {Hej} other {Hello}}, {greeting}', {
-  name: 'joakim',
-  greeting: 'world',
-})
-// "Hej, world"
+t('You have {count, plural, one {# item} other {# items}}', { count: 3 })
+//          ^^^^^                                              ^^^^^^^^
+//          ICU plural — count: number is required
 ```
 
-Each unique `(file, source)` pair becomes its own tree-shakable function with all locales inlined as a switch. Routes pull in only the messages they reference. ICU plural rules use `Intl.PluralRules`. No runtime ICU parser ships. 🐃
+Param names and types are derived from the string literal at compile time. You can't pass the wrong shape because TypeScript knows what shape the string asks for. Plurals, selects, named placeholders — all standard ICU MessageFormat.
 
-### Multi-framework, one plugin
+### One `t`, every framework
 
-Same Vite plugin, four `framework` flavours. Each gets its own idiomatic API:
+The same `t` function works in React, Svelte 5, Vue 3, and any plain JavaScript context. Reactivity is the only framework-specific piece, exposed as `useLocale`.
 
-```ts
+```tsx
 // React
-yapyak({ framework: 'react' });
+import { t } from 'yapyak';
+import { useLocale } from 'yapyak/react';
 
-import { IntlProvider, useLocale, t } from 'yapyak';
 function App() {
   const [locale, setLocale] = useLocale();
   return <h1>{t('Hello')}</h1>;
 }
 ```
 
-```vue
-<!-- Vue -->
-<!-- yapyak({ framework: 'vue' }) -->
-<script setup lang="ts">
-import { t, useLocale } from 'yapyak';
-const locale = useLocale();
-</script>
-<template><h1>{{ t('Hello') }}</h1></template>
-```
-
 ```svelte
-<!-- Svelte -->
-<!-- yapyak({ framework: 'svelte' }) -->
+<!-- Svelte 5 -->
 <script lang="ts">
-  import { locale, t } from 'yapyak';
+  import { t } from 'yapyak';
+  import { useLocale } from 'yapyak/svelte';
+  const locale = useLocale();
 </script>
+
 <h1>{t('Hello')}</h1>
 <button onclick={() => (locale.current = 'sv')}>SV</button>
 ```
 
-```ts
-// Runtime-free (Node CLI, server-only, embedded)
-yapyak({ framework: null });
+```vue
+<!-- Vue 3 -->
+<script setup lang="ts">
+import { t } from 'yapyak';
+import { useLocale } from 'yapyak/vue';
+const locale = useLocale();
+</script>
 
-import { t, getLocale, setLocale, subscribe } from 'yapyak';
-console.log(t('Hello'));
+<template>
+  <h1>{{ t('Hello') }}</h1>
+</template>
 ```
 
-The runtime singleton is the same; only the framework binding differs. Switch `framework` and the generated module switches with you — no changes to your `t()` calls.
+The plugin processes `.ts`, `.tsx`, `.js`, `.jsx`, `.svelte`, and `.vue` files. `t()` calls in templates work the same as in scripts. Same import. Same call site. Same compiled output.
 
----
+### SSR-correct, no flicker
 
-## Comparison
+Set the adapter and yapyak resolves the locale per request from the cookie or `Accept-Language` header — pre-rendered HTML in the right language from the first byte.
 
-Receipts at the bottom — these aren't vibes, they're verified against each library's actual docs as of May 2026 (Paraglide v2, Lingui v6, next-intl 4.0, etc.).
+```ts
+// React + TanStack Start
+import { tanstackStart } from 'yapyak/adapters/tanstack-start';
+tanstackStart();
 
-Legend: ✅ shipped and idiomatic · ⚠️ partial / requires opt-in / clunky · ❌ not supported
+// Svelte + SvelteKit
+import { sveltekit } from 'yapyak/adapters/sveltekit';
+// hooks.server.ts:
+export { handle } from 'yapyak/adapters/sveltekit';
+```
 
-| Feature                                | yapyak | next-intl | react-intl | i18next | lingui | paraglide | tolgee | languine |
-|----------------------------------------|--------|-----------|------------|---------|--------|-----------|--------|----------|
-| Source-string-as-key                   |   ✅    |     ❌     |     ❌      |    ❌    |   ⚠️    |     ❌     |    ❌   |    ❌     |
-| Per-message tree-shaking               |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ✅     |    ❌   |   N/A    |
-| Component-discriminated (auto)         |   ✅    |     ❌     |     ❌      |    ❌    |   ⚠️    |     ❌     |    ❌   |    ❌     |
-| AOT-compiled messages                  |   ✅    |     ❌     |     ⚠️      |    ❌    |   ✅    |     ✅     |    ❌   |   N/A    |
-| Type-safe params from source           |   ✅    |     ⚠️     |     ❌      |    ⚠️    |   ⚠️    |     ✅     |    ❌   |   N/A    |
-| Autocomplete on `t()` calls            |   ✅    |     ⚠️     |     ❌      |    ⚠️    |   ❌    |     ✅     |    ❌   |   N/A    |
-| **MCP server for agent translation**   |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ❌   |    ❌     |
-| Agent-readable call-site context       |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ❌   |    ❌     |
-| Watcher syncs locale stubs             |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ❌   |    ❌     |
-| Position-aware rename memory           |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ❌   |    ⚠️     |
-| Cross-file translation reuse           |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ❌   |    ❌     |
-| Zero-config SSR                        |   ✅    |     ⚠️     |     ❌      |    ❌    |   ❌    |     ✅     |    ❌   |   N/A    |
-| Multi-framework (React/Vue/Svelte)     |   ✅    |     ❌     |     ⚠️      |    ✅    |   ✅    |     ✅     |    ✅   |   N/A    |
-| Inline dev overlay (in-page edit)      |   ✅    |     ❌     |     ❌      |    ❌    |   ❌    |     ❌     |    ⚠️   |    ❌     |
-| One package                            |   ✅    |     ✅     |     ❌      |    ❌    |   ❌    |     ✅     |    ❌   |    ✅     |
-| Minimal API surface                    |   ✅    |     ⚠️     |     ❌      |    ❌    |   ⚠️    |     ✅     |    ❌   |    ✅     |
-| No vendor lock-in for translation work |   ✅    |     ✅     |     ✅      |    ✅    |   ✅    |     ✅     |    ❌   |    ⚠️     |
+Under the hood, the adapters use AsyncLocalStorage-backed request scoping (TanStack's `getRequestHeaders()`, SvelteKit's `getRequestEvent()`) so `getLocale()` returns the right value during SSR for *that specific request*. There is no global state pollution between concurrent requests.
 
-**The receipts:**
+```tsx
+// __root.tsx — the entirety of your <html lang>:
+<html lang={getLocale()}>
+```
 
-- **next-intl** uses abstract keys (`t('home.welcome')`), no AOT, requires Next-specific routing/middleware setup. Type augmentation is opt-in. ([docs](https://next-intl.dev/docs/usage/configuration))
-- **react-intl** is the FormatJS suite — multiple packages (`@formatjs/*`), abstract message IDs, verbose `<FormattedMessage>` API.
-- **i18next** is the everywhere-default and shows it: `i18next` + `react-i18next` + `i18next-resources-to-backend` + plugins. Abstract keys. Type-safety is bolted on via TS augmentation.
-- **lingui v6** (April 2026) shipped agent-oriented [Lingui Skills](https://github.com/lingui/skills) — but skills are prompt bundles, not tools. The agent still doesn't get programmatic access to your message graph. Source-string-as-key is supported but auto-generates short hash IDs by default (e.g. `"nwR43V"`); raw source IDs require opt-in. File-scoping needs manual `context=`. ([release notes](https://lingui.dev/blog/2026/04/22/announcing-lingui-6.0))
-- **paraglide v2** (inlang) is the closest peer on the compiler axis — tree-shakeable, AsyncLocalStorage SSR, single package. But messages are abstract keys (`m.greeting()`), no MCP, no rename detection. ([repo](https://github.com/opral/paraglide-js))
-- **tolgee** has built-in AI translation — but it lives in their cloud platform, not the library. The library itself is essentially i18next under the hood, and the AI is locked to their billing. ([features](https://tolgee.io/features/ai-translation))
-- **languine** is a CLI tool that AI-translates JSON files via git diff. Not a library — runs separately, no runtime, no MCP, no autocomplete, no SSR concerns. Position-aware ⚠️ via git-diff but not real rename detection. ([repo](https://github.com/languine-ai/languine))
+Same import on server and client. Same return type. Same call site. There is no `if (typeof window === 'undefined')` to write.
 
-**yapyak is the only library that ships an MCP server with translation tools.** No one else exposes call-site context to your agent programmatically. No one else combines source-string-as-key with per-message tree-shaking. No one else has cross-file translation reuse. The closest peer on tooling is Paraglide; the closest peer on agent-orientation is Lingui Skills. Neither does both, and neither speaks MCP.
-
----
-
-## API
-
-### `yapyak()` plugin options
+### Persistence: cookie, localStorage, or none
 
 ```ts
 yapyak({
-  framework: 'react',              // 'react' | 'vue' | 'svelte' | null (default: null = runtime-free)
-  adapter: 'tanstackStart',        // 'tanstackStart' | 'sveltekit' | null — auto-wires SSR cookie reading
-  defaultLocale: 'en',
-  locales: ['en', 'sv', 'de'],
-  localesDir: 'locales',           // where translations live
-  persistence: 'cookie',           // 'cookie' | 'localStorage' | null (default: null)
-  acceptLanguage: true,            // fall back to Accept-Language header
-  overlay: true,                   // inline dev overlay (default: false)
+  persistence: 'cookie',         // SSR-safe (default)
+  // OR
+  persistence: 'localStorage',   // SPA-only, GDPR-friendly
+  // OR
+  persistence: null,             // in-memory, refresh resets
 })
 ```
 
-That's the entire surface. No `ai`, no `provider`, no `apiKey`. The translation work is the agent's job.
+**Cookie** is what most SSR apps want. Sent with every request, so the server can read it and ship pre-rendered HTML in the right language.
 
-### Runtime API
+**localStorage** is for pure SPAs (no SSR) or apps that want to dodge cookie-banner requirements. Tradeoff: server can't read it, so first paint is in default locale and the client swaps in the user's locale after hydration.
+
+**`null`** is the default — no persistence, refresh resets. Useful for ephemeral sessions or when another mechanism handles persistence.
+
+### Locale auto-discovery
+
+You don't list locales in your config. yapyak finds them by reading `locales/*.json`. Add a file → it's a locale. Delete a file → it's gone. The default locale is configured (defaults to `'en'`); it does not need a file because your source code is the file.
+
+```
+locales/
+  sv.json
+  no.json
+  dk.json
+```
+
+This config implies `defaultLocale: 'en'`, `locales: ['en', 'sv', 'no', 'dk']`. No vite-config plumbing.
+
+### Vite-only
+
+yapyak only exists because Vite exists. The "save a file, the right thing happens, immediately" experience that makes the whole watcher loop feel like magic — that's Vite's contribution to the field, and Evan You and the team did the hard work. We're just standing on it.
+
+So we made a deliberate choice: Vite-only. Going framework-agnostic would mean meeting eight different bundlers' edge cases halfway and pleasing none of them. We'd rather be excellent in one place than mediocre everywhere. If you're on Webpack or Rollup-without-Vite, we're not your tool, and that's fine.
+
+### Compile-time call-site rewrite
+
+Each `t('...')` call is rewritten at build time into a direct call that has all locale variants inlined:
 
 ```ts
-import {
-  t,                  // translate (replaced by transform with a tree-shakable function)
-  setLocale,          // change locale + persist (cookie / localStorage / nothing)
-  useLocale,          // [locale, setLocale] for React, computed ref for Vue
-  getLocale,          // current locale (server or client)
-  IntlProvider,       // React: wraps your app
-  locale,             // Svelte: { current: string } — read/write reactive
-} from 'yapyak';
+// You write:
+{t('Save changes')}
+
+// Plugin rewrites to:
+__yapyak_pick({ en: 'Save changes', sv: 'Spara ändringar', no: 'Lagre endringer' })
 ```
 
-### CLI
+The runtime helper reads the current locale from the store and returns the matching value. Per-call inlining means Vite/Rollup can dead-code-eliminate per chunk: a route that doesn't import `Save changes` doesn't have its translations in the bundle. Bundle size scales with strings used per chunk, not total strings in the project.
 
-```bash
-yapyak init                  # scaffold locales/ + tsconfig
-yapyak extract               # one-shot sync of JSON files with code (the watcher does this live)
-yapyak compile               # build static locale modules
-yapyak check [--write]       # validate (--write to prune stale)
-yapyak status [--json]       # report missing translations
-yapyak mcp                   # run the MCP server (used by .mcp.json)
+### CLI: zero deps, instant
+
+```
+yapyak init                 scaffold locales/, vite config, .env
+yapyak status               coverage report per locale
+yapyak status --json        machine-readable, exits 1 if any missing
+yapyak check                exits 1 if anything is missing — for CI
+yapyak add <locale>         add new locale, auto-translate everything
+yapyak translate            fill missing translations via AI
+yapyak translate --force    re-translate everything, including existing values
+yapyak translate sv         only this locale
 ```
 
-### MCP tools
+The CLI has zero runtime dependencies (uses Node + ANSI escape codes). Boots fast. Looks decent in a terminal. Doesn't pretend to be a TUI framework.
 
-These are the tools your agent sees once `.mcp.json` is wired up. You don't call them yourself — your agent does.
+### Untranslated default-locale strings? No problem
 
-| Tool                  | Purpose                                                                              |
-|-----------------------|--------------------------------------------------------------------------------------|
-| `get_config`          | Returns `defaultLocale`, `locales`, `localesDir`, `source` patterns.                 |
-| `list_messages`       | All translatable strings + current state across every locale.                        |
-| `list_missing`        | Filter to what's untranslated. Optional `locale` arg.                                |
-| `read_message`        | Single message by hash with file, component, line, snippet, parent JSX, attribute.   |
-| `write_translation`   | Single atomic write to one locale.                                                   |
-| `write_translations`  | Batched writes — multiple updates merged into one file write per locale.             |
-| `remove_translation`  | Remove an entry so it falls back to "missing".                                       |
-| `prune_stale`         | Remove all entries whose source no longer exists in code. Equivalent to `--write`.   |
-| `validate`            | Returns `{ issues, autoFixableCount }`. Stale issues carry `autoFixable: true`.      |
+If you haven't run `translate` yet, untranslated locale entries are empty strings. The compiled output falls back to the source string for any missing locale value. Your app renders English in Swedish until Swedish exists. No errors, no `[missing translation key: ...]` placeholders, no flicker.
+
+Add the key, save, untranslated. UI shows English. Run translate, save. UI shows Swedish. The transition is invisible to your runtime — your code is correct in either state.
+
+### Forced-locale rendering
+
+For server emails, multi-locale digests, or testing:
+
+```ts
+t.in('sv')('Welcome back')                          // 'Välkommen tillbaka'
+t.in('no')('Hello {name}', { name: 'Ole' })         // 'Hei Ole'
+```
+
+Same compile-time rewrite, just with the locale baked in. Useful for sending an email to a user whose preferred locale isn't the request locale.
+
+### No monetization
+
+Built for our own products. There is no Cloud, no SaaS tier, no upsell, no MCP-server-as-a-service, no commercial plan. Bring your own AI key. MIT license. If a feature gets built, it's because we needed it. If a feature isn't built, you can build it — the code is small enough to read in an afternoon.
 
 ---
 
-## Status
+## What yapyak doesn't do (yet)
 
-Early — but the architecture is settled. Vite plugin works for React (TanStack Start, vanilla), Vue (vanilla), Svelte (vanilla, SvelteKit), and runtime-free (CLI, server-only). MCP server tested with Claude Code. Adapters for Remix and Astro coming as people ask.
+- **Rich-text translations** — for now, `t()` returns a string. JSX-with-formatting (`<Trans>Hello <strong>{name}</strong></Trans>`) isn't supported. Coming when we need it.
+- **Webpack support** — see "Vite-only" above. Not coming.
+- **A SaaS dashboard** — see "No monetization" above. Not coming.
+- **MCP server** — earlier drafts had this. We ripped it out. Auto-translate-on-save makes the agent-tool layer redundant: there's nothing for the agent to do that the plugin doesn't already do faster. If you want to translate from chat, just ask Claude — it already has access to your filesystem and your `.env`.
 
-The big features are all in:
+---
 
-- Per-message tree-shaking with source-string-as-key
-- Built-in MCP server with nine tools, no extra dependencies
-- Component-discriminated translations
-- Cross-file rename stability
-- Position-aware in-file rename memory
-- Watcher that syncs locale stubs on every save
-- Inline dev overlay with live edit + locale preview
-- Multi-framework support
-- Auto-wired SSR adapters
+## What about the agent in my editor?
 
-What's left before `v1.0`: real-world usage, edge cases, doc polish, API freeze. We've moved a lot in the last few weeks; we want a `v0.x` series of feedback before locking the surface.
+You'll still talk to it. But not for translation — for *editing* translations. The flow is:
+
+1. You write `t('Save changes')`. Plugin auto-translates.
+2. The Swedish translation feels off. You ask Claude: *"hej, ändra svenska översättningen av 'Save changes' till något snabbare, typ 'Spara'."*.
+3. Claude opens `locales/sv.json`, edits the entry, saves. Plugin sees the file change, HMR pushes the new value. You see it live.
+
+The agent is a fast translator-correction interface. It's not the translator. The translator is yapyak. The model providing the actual MT can be the agent's underlying model (Claude, GPT-5, etc.) — same model, just routed through a plugin instead of a chat message. Faster, no chat-context overhead, no copy-paste.
+
+---
+
+## Comparisons
+
+**vs. Lingui.** Closest peer. Lingui has source-as-keys via macro. Major differences: Lingui needs a separate `extract` + `compile` cycle (yapyak is automatic on save), Lingui uses TMS workflows for translation (yapyak uses AI built in), Lingui has a default-locale file (yapyak doesn't).
+
+**vs. i18next.** Different universe. i18next has abstract dot-namespaced keys, manual JSON management, runtime parsing. Powerful, but ceremony-heavy. yapyak is the answer to "what if we just deleted all that".
+
+**vs. next-intl, paraglide, vue-i18n.** All abstract-key-based. All require external translation files for default locale. None integrate AI translation. yapyak picks a different fork.
+
+**vs. Crowdin / Lokalise / Phrase.** TMS clouds. Translator-portal-and-PR-loop. Built for the world where translation took weeks. yapyak is built for the world where it takes seconds.
+
+---
+
+## Frameworks shipping today
+
+- **React** + TanStack Start (SSR adapter)
+- **Svelte 5** + SvelteKit (SSR adapter)
+- **Vue 3** (SSR adapter coming when someone needs it)
+
+Same `t()` everywhere. Framework-specific imports only for `useLocale` reactivity hooks.
+
+---
+
+## Install
+
+```bash
+pnpm add yapyak
+pnpm exec yapyak init
+```
+
+Drop the resulting `vite.config.ts` snippet in. Add `ANTHROPIC_API_KEY` (or `OPENAI_API_KEY`) to `.env`. Start writing `t('strings')`. Save. Done.
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite';
+import { yapyak } from 'yapyak/vite';
+import { anthropic } from 'yapyak/translators/anthropic';
+
+export default defineConfig({
+  plugins: [
+    yapyak({
+      persistence: 'cookie',
+      translator: anthropic({
+        apiKey: process.env.ANTHROPIC_API_KEY,
+        voice: 'Casual, thoughtful, never corporate.',
+      }),
+    }),
+  ],
+});
+```
+
+The README is the docs. The code is small enough to read in an afternoon. The CLI tells you what's missing. The plugin tells you when it can't translate something. There's no "comprehensive guide" to read because there isn't that much.
+
+Yak away. 🐃
+
+---
+
+MIT license. No telemetry. No phoning home. Built by [@qwuide](https://github.com/qwuide).

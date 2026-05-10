@@ -50,6 +50,9 @@ export async function init(options: InitOptions): Promise<void> {
   }
   let createdLocaleFiles = 0;
   for (const locale of locales) {
+    if (locale === defaultLocale) {
+      continue;
+    }
     const path = join(localesDir, `${locale}.json`);
     if (!existsSync(path)) {
       writeFileSync(path, '');

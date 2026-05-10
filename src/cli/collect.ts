@@ -38,18 +38,13 @@ const SOURCE_PATTERN = /\.(?:tsx?|jsx?|mjs|cjs|mts|cts|svelte|vue)$/;
 export function collect(options: CollectOptions): CollectResult {
   const localesDir = options.localesDir ?? 'locales';
   const localesPath = join(options.projectRoot, localesDir);
-  const locales = existsSync(localesPath)
+  const fileLocales = existsSync(localesPath)
     ? readdirSync(localesPath)
         .filter((name) => name.endsWith('.json'))
         .map((name) => name.replace(/\.json$/, ''))
-        .sort()
     : [];
-  if (locales.length === 0) {
-    throw new Error(
-      `No locale files found in ${localesPath}. Run yapyak init first.`,
-    );
-  }
-  const defaultLocale = options.defaultLocale ?? inferDefaultLocale(locales);
+  const defaultLocale = options.defaultLocale ?? 'en';
+  const locales = [...new Set([defaultLocale, ...fileLocales])].sort();
 
   const sourceFiles = walkSourceFiles({
     pattern: SOURCE_PATTERN,
@@ -90,6 +85,10 @@ export function collect(options: CollectOptions): CollectResult {
   const missing: MissingEntry[] = [];
 
   for (const locale of locales) {
+    if (locale === defaultLocale) {
+      perLocale[locale] = { missing: 0, translated: totalMessages };
+      continue;
+    }
     const data = readLocale(join(localesPath, `${locale}.json`));
     let translated = 0;
     let missingCount = 0;
@@ -116,10 +115,6 @@ export function collect(options: CollectOptions): CollectResult {
     perLocale,
     totalMessages,
   };
-}
-
-function inferDefaultLocale(locales: string[]): string {
-  return locales.includes('en') ? 'en' : (locales[0] ?? 'en');
 }
 
 function readLocale(path: string): Record<string, Record<string, string>> {
