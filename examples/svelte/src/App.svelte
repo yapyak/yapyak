@@ -1,8 +1,7 @@
 <script lang="ts">
   import { getLocales } from 'yapyak';
-  import { t, useLocale } from 'yapyak/svelte';
+  import { locale, t } from 'yapyak/svelte';
 
-  const locale = useLocale();
   const locales = getLocales();
 </script>
 

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { getLocales } from 'yapyak';
-import { t, useLocale } from 'yapyak/vue';
+import { locale, t } from 'yapyak/vue';
 
-const locale = useLocale();
 const locales = getLocales();
 </script>
 

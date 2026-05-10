@@ -1,30 +1,17 @@
 import { defineConfig } from 'vitepress';
-import { generateSidebar } from 'vitepress-sidebar';
-
-const sidebar = generateSidebar([
-  {
-    collapsed: false,
-    documentRootPath: '.',
-    frontmatterOrderDefaultValue: 999,
-    resolvePath: '/guide/',
-    scanStartPath: 'guide',
-    sortMenusByFrontmatterOrder: true,
-    useFolderLinkFromIndexFile: true,
-    useFolderTitleFromIndexFile: true,
-    useTitleFromFileHeading: true,
-  },
-]) as Record<string, { items: { text: string }[] }>;
 
 export default defineConfig({
   cleanUrls: true,
-  description: 'i18n that doesn’t suck. Let your app yak in any language.',
+  description:
+    'i18n where your code is the source of truth. Translations are side-effects.',
   head: [
     ['meta', { content: 'website', property: 'og:type' }],
     ['meta', { content: 'yapyak', property: 'og:title' }],
     [
       'meta',
       {
-        content: 'i18n that doesn’t suck. Let your app yak in any language.',
+        content:
+          'i18n where your code is the source of truth. Translations are side-effects.',
         property: 'og:description',
       },
     ],
@@ -37,17 +24,94 @@ export default defineConfig({
     lineNumbers: false,
   },
   themeConfig: {
+    editLink: {
+      pattern: 'https://github.com/yapyak/yapyak/edit/main/docs/:path',
+    },
+    externalLinkIcon: true,
+    footer: {
+      copyright: 'Copyright 2026-present',
+      message: 'Released under the MIT License.',
+    },
+    lastUpdated: {
+      text: 'Last updated',
+    },
     nav: [
-      { text: 'Guide', link: '/guide/introduction' },
+      { activeMatch: '/guide/', link: '/guide/introduction', text: 'Guide' },
       {
-        text: 'GitHub',
         link: 'https://github.com/yapyak/yapyak',
+        text: 'GitHub',
       },
     ],
+    outline: [2, 3],
     search: {
       provider: 'local',
     },
-    sidebar,
+    sidebar: {
+      '/guide/': [
+        {
+          items: [
+            { link: '/guide/introduction', text: 'Introduction' },
+            { link: '/guide/installation', text: 'Installation' },
+            { link: '/guide/how-it-works', text: 'How it works' },
+          ],
+          text: 'Getting Started',
+        },
+        {
+          items: [
+            {
+              collapsed: false,
+              items: [
+                {
+                  link: '/guide/translations/auto-translation',
+                  text: 'Auto-translation',
+                },
+                {
+                  link: '/guide/translations/position-aware-renames',
+                  text: 'Position-aware renames',
+                },
+              ],
+              link: '/guide/translations/',
+              text: 'Translations',
+            },
+            { link: '/guide/locales/', text: 'Locales' },
+            {
+              collapsed: false,
+              items: [
+                { link: '/guide/frameworks/react/', text: 'React' },
+                { link: '/guide/frameworks/svelte/', text: 'Svelte' },
+                { link: '/guide/frameworks/vue/', text: 'Vue' },
+              ],
+              link: '/guide/frameworks/',
+              text: 'Frameworks',
+            },
+            {
+              collapsed: false,
+              items: [
+                {
+                  link: '/guide/adapters/tanstack-start/',
+                  text: 'TanStack Start',
+                },
+                { link: '/guide/adapters/sveltekit/', text: 'SvelteKit' },
+                { link: '/guide/adapters/custom/', text: 'Custom' },
+              ],
+              link: '/guide/adapters/',
+              text: 'Adapters',
+            },
+            {
+              collapsed: false,
+              items: [
+                { link: '/guide/translators/anthropic/', text: 'Anthropic' },
+                { link: '/guide/translators/openai/', text: 'OpenAI' },
+                { link: '/guide/translators/custom/', text: 'Custom' },
+              ],
+              link: '/guide/translators/',
+              text: 'Translators',
+            },
+          ],
+          text: 'Core',
+        },
+      ],
+    },
     socialLinks: [
       { icon: 'github', link: 'https://github.com/yapyak/yapyak' },
     ],

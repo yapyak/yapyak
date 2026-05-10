@@ -2,8 +2,8 @@
 
 [![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://react.dev/)
-[![Svelte 5](https://img.shields.io/badge/Svelte_5-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/)
-[![Vue 3](https://img.shields.io/badge/Vue_3-4FC08D?logo=vuedotjs&logoColor=white)](https://vuejs.org/)
+[![Svelte](https://img.shields.io/badge/Svelte-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/)
+[![Vue](https://img.shields.io/badge/Vue-4FC08D?logo=vuedotjs&logoColor=white)](https://vuejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
@@ -11,7 +11,7 @@
 >
 > i18n where your code is the source of truth. Translations are side-effects.
 
-**React · Svelte 5 · Vue 3** — with SSR adapters for **TanStack Start** and **SvelteKit**.
+**React · Svelte · Vue** — with SSR adapters for **TanStack Start** and **SvelteKit**.
 
 yapyak co-locates your translations with your code and lets AI maintain them.
 
@@ -162,7 +162,7 @@ You can't pass the wrong shape. TypeScript reads the string literal and knows wh
 
 ## Works everywhere Vite works
 
-The same `t` in React, Svelte 5, Vue 3, and plain JS. Reactivity is the only framework-specific piece, exposed as `useLocale`.
+The same `t` in React, Svelte, Vue, and plain JS. Reactivity is the only framework-specific piece, exposed as `useLocale`.
 
 ```tsx
 // React
@@ -176,26 +176,24 @@ function App() {
 ```
 
 ```svelte
-<!-- Svelte 5 -->
+<!-- Svelte -->
 <script lang="ts">
-  import { t } from 'yapyak';
-  import { useLocale } from 'yapyak/svelte';
-  const locale = useLocale();
+  import { locale, t } from 'yapyak/svelte';
 </script>
 
 <h1>{t('Hello')}</h1>
+<button onclick={() => (locale.current = 'es')}>Español</button>
 ```
 
 ```vue
-<!-- Vue 3 -->
+<!-- Vue -->
 <script setup lang="ts">
-import { t } from 'yapyak';
-import { useLocale } from 'yapyak/vue';
-const locale = useLocale();
+import { locale, t } from 'yapyak/vue';
 </script>
 
 <template>
   <h1>{{ t('Hello') }}</h1>
+  <button @click="locale = 'es'">Español</button>
 </template>
 ```
 
