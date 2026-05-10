@@ -14,8 +14,8 @@ const locales = getLocales();
     <label>
       {{ t('Switch language') }}
       <select v-model="locale">
-        <option v-for="code in locales" :key="code" :value="code">
-          {{ code.toUpperCase() }}
+        <option v-for="locale in locales" :key="locale" :value="locale">
+          {{ locale.toUpperCase() }}
         </option>
       </select>
     </label>

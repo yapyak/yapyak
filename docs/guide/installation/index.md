@@ -91,9 +91,9 @@ export function LocaleToggle() {
   const locales = getLocales();
   return (
     <select value={locale} onChange={(e) => setLocale(e.target.value)}>
-      {locales.map((code) => (
-        <option key={code} value={code}>
-          {code.toUpperCase()}
+      {locales.map((locale) => (
+        <option key={locale} value={locale}>
+          {locale.toUpperCase()}
         </option>
       ))}
     </select>
@@ -109,8 +109,8 @@ export function LocaleToggle() {
 </script>
 
 <select bind:value={locale.current}>
-  {#each locales as code (code)}
-    <option value={code}>{code.toUpperCase()}</option>
+  {#each locales as locale}
+    <option value={locale}>{locale.toUpperCase()}</option>
   {/each}
 </select>
 ```
@@ -124,8 +124,8 @@ const locales = getLocales();
 
 <template>
   <select v-model="locale">
-    <option v-for="code in locales" :key="code" :value="code">
-      {{ code.toUpperCase() }}
+    <option v-for="locale in locales" :key="locale" :value="locale">
+      {{ locale.toUpperCase() }}
     </option>
   </select>
 </template>
