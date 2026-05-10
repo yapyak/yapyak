@@ -1,8 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 import type { Plugin, ViteDevServer } from 'vite';
-import { type AiOptions, type Provider, resolveProvider } from '../ai/index.js';
-import { type AutoTranslator, createAutoTranslator } from './auto-translate.js';
 import { CLIENT_SCRIPT } from './dev-overlay/client.js';
 import { createDevOverlayMiddleware } from './dev-overlay/middleware.js';
 import { findBareBindings } from './find-bare-bindings.js';
@@ -17,6 +15,7 @@ import {
   normalizePersistence,
   type Persistence,
 } from './normalize-persistence.js';
+import { createSourceTracker, type SourceTracker } from './source-tracker.js';
 import { transformSource } from './transform-source.js';
 
 export type Adapter = 'tanstackStart' | 'sveltekit' | null;
@@ -26,15 +25,14 @@ export type Framework = 'react' | 'vue' | 'svelte' | null;
 export interface YapyakPluginOptions {
   acceptLanguage?: boolean;
   adapter?: Adapter;
-  ai?: AiOptions;
   defaultLocale?: string;
-  overlay?: boolean;
   factories?: string[];
   framework?: Framework;
   intlModules?: string[];
   locales?: string[];
   localesDir?: string;
   moduleName?: string;
+  overlay?: boolean;
   persistence?: Persistence;
   source?: string[];
   syncHtmlLang?: boolean;
@@ -42,57 +40,24 @@ export interface YapyakPluginOptions {
 
 export const CACHE_DIR = 'node_modules/.cache/yapyak';
 
-interface SerializedAi {
-  apiKey: string;
-  glossary: Record<string, Record<string, string>>;
-  model?: string;
-  provider: 'anthropic' | 'openai';
-  voice: string;
-}
-
-function serializableAi(ai: AiOptions | undefined): SerializedAi | undefined {
-  if (!ai) {
-    return undefined;
-  }
-  if (ai.provider !== 'anthropic' && ai.provider !== 'openai') {
-    return undefined;
-  }
-  const result: SerializedAi = {
-    apiKey: ai.apiKey,
-    glossary: ai.glossary ?? {},
-    provider: ai.provider,
-    voice: ai.voice ?? '',
-  };
-  if (ai.model) {
-    result.model = ai.model;
-  }
-  return result;
-}
-
 export function yapyak(options: YapyakPluginOptions = {}): Plugin {
   const {
     acceptLanguage = false,
     adapter = null,
-    ai,
     defaultLocale = 'en',
-    overlay = false,
     factories = ['intl'],
     framework = null,
     intlModules = [],
     locales = [defaultLocale],
     localesDir = 'locales',
     moduleName = 'yapyak',
+    overlay = false,
     persistence: persistenceOption,
     source = ['src/**/*.{ts,tsx,js,jsx,mjs,cjs,vue,svelte}'],
     syncHtmlLang = false,
   } = options;
 
   const persistence = normalizePersistence(persistenceOption);
-
-  const autoTranslate = ai?.autoTranslate ?? false;
-  const voice = ai?.voice ?? '';
-  const glossary = ai?.glossary ?? {};
-  const contextMode = ai?.context ?? 'full';
 
   const VIRTUAL_INTL = moduleName;
   const VIRTUAL_INTL_RESOLVED = `\0${moduleName}`;
@@ -107,7 +72,7 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
   const fileHashes = new Map<string, Set<string>>();
   let projectRoot = process.cwd();
   let server: ViteDevServer | undefined;
-  let autoTranslator: AutoTranslator | undefined;
+  let sourceTracker: SourceTracker | undefined;
 
   function writeTypes(): void {
     const sourcePath = join(projectRoot, localesDir, `${defaultLocale}.json`);
@@ -231,7 +196,6 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
       writeTypes();
 
       const cachedConfig = {
-        ai: serializableAi(ai),
         defaultLocale,
         factories,
         intlModules: [moduleName, ...intlModules],
@@ -248,37 +212,14 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
     configureServer(devServer): void {
       server = devServer;
 
-      let provider: Provider | undefined;
-      if (ai) {
-        try {
-          provider = resolveProvider(ai);
-        } catch (error) {
-          const message =
-            error instanceof Error ? error.message : String(error);
-          process.stderr.write(`[yapyak] ai provider error: ${message}\n`);
-        }
-      }
-
-      if (autoTranslate) {
-        if (!ai) {
-          process.stderr.write(
-            '[yapyak] autoTranslate is enabled but `ai` is not configured\n',
-          );
-        } else if (provider) {
-          autoTranslator = createAutoTranslator({
-            contextMode,
-            defaultLocale,
-            factories,
-            glossary,
-            intlModules: [moduleName, ...intlModules],
-            locales,
-            localesDir,
-            projectRoot,
-            provider,
-            voice,
-          });
-        }
-      }
+      sourceTracker = createSourceTracker({
+        defaultLocale,
+        factories,
+        intlModules: [moduleName, ...intlModules],
+        locales,
+        localesDir,
+        projectRoot,
+      });
 
       if (overlay) {
         devServer.middlewares.use('/.yapyak/overlay.js', (_req, res) => {
@@ -292,30 +233,31 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
 
         devServer.middlewares.use(
           createDevOverlayMiddleware({
-            contextMode,
-            defaultLocale,
-            glossary,
             invalidateMessages: invalidateMessagesModule,
             locales,
             localesDir,
             messageRegistry,
             projectRoot,
-            provider,
-            voice,
           }),
         );
       }
 
       devServer.watcher.add(join(projectRoot, localesDir));
+      for (const pattern of source) {
+        devServer.watcher.add(join(projectRoot, pattern));
+      }
       devServer.watcher.on('change', (path) => {
         const dir = resolve(projectRoot, localesDir);
-        if (!path.startsWith(dir)) {
+        if (path.startsWith(dir)) {
+          if (path.endsWith(`${defaultLocale}.json`)) {
+            writeTypes();
+          }
+          invalidateMessagesModule();
           return;
         }
-        if (path.endsWith(`${defaultLocale}.json`)) {
-          writeTypes();
+        if (isSourceFile(path) && sourceTracker) {
+          sourceTracker.onSourceFileChange(path);
         }
-        invalidateMessagesModule();
       });
     },
 
@@ -338,10 +280,10 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
           acceptLanguage,
           adapter,
           defaultLocale,
-          overlay,
           framework,
           locales,
           moduleName,
+          overlay,
           persistence,
           syncHtmlLang,
         });
@@ -396,9 +338,9 @@ export function yapyak(options: YapyakPluginOptions = {}): Plugin {
       if (changed) {
         invalidateMessagesModule();
       }
-      if (autoTranslator) {
-        const cleaned = stripQuery(id);
-        void autoTranslator.onSourceFileChange(cleaned);
+      const cleaned = stripQuery(id);
+      if (sourceTracker) {
+        sourceTracker.onSourceFileChange(cleaned);
       }
       return { code: result.code };
     },

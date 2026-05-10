@@ -18,11 +18,6 @@ export const CLIENT_SCRIPT = `
     .panel-header { padding: 14px 16px; border-bottom: 1px solid #e5e5e5; display: flex;
                     align-items: center; gap: 8px; }
     .panel-title { font-weight: 600; font-size: 14px; flex: 1; }
-    .panel-action { cursor: pointer; padding: 4px 10px; border-radius: 4px; color: #1a1a1a;
-                    font-size: 11px; font-weight: 500; line-height: 1; background: #f0f0f0;
-                    border: none; font-family: inherit; }
-    .panel-action:hover { background: #e5e5e5; }
-    .panel-action:disabled { opacity: 0.5; cursor: wait; }
     .panel-close { cursor: pointer; padding: 4px 8px; border-radius: 4px; color: #666;
                    font-size: 16px; line-height: 1; background: none; border: none; font-family: inherit; }
     .panel-close:hover { background: #f0f0f0; }
@@ -150,8 +145,7 @@ export const CLIENT_SCRIPT = `
     panelEl.className = 'panel';
     panelEl.innerHTML = \`
       <div class="panel-header">
-        <div class="panel-title">🐂 Yapyak</div>
-        <button class="panel-action" data-action="sync" type="button" title="Prune stale entries and translate missing">Sync</button>
+        <div class="panel-title">🐃 Yapyak</div>
         <button class="panel-close" type="button" aria-label="Close">×</button>
       </div>
       <div class="preview-row">
@@ -171,7 +165,6 @@ export const CLIENT_SCRIPT = `
     \`;
     shadow.appendChild(panelEl);
     panelEl.querySelector('.panel-close').onclick = closePanel;
-    panelEl.querySelector('[data-action=sync]').onclick = onSyncClick;
     setupPreviewSelect();
     const search = panelEl.querySelector('.search');
     search.addEventListener('input', (e) => {
@@ -356,37 +349,6 @@ export const CLIENT_SCRIPT = `
     return \`vscode://file/\${absolutePath}\${suffix}\`;
   }
 
-  async function onSyncClick(event) {
-    const button = event.currentTarget;
-    await action(button, async () => {
-      const result = await api('POST', '/sync');
-      allMessages = await api('GET', '/messages');
-      currentDetails.clear();
-      renderStats();
-      renderList();
-      const parts = [];
-      if (result.pruned > 0) parts.push(\`pruned \${result.pruned}\`);
-      if (result.translated > 0) parts.push(\`translated \${result.translated}\`);
-      if (parts.length === 0) parts.push('all in sync');
-      flash(\`Sync: \${parts.join(', ')}\`);
-    });
-  }
-
-  function flash(text) {
-    const el = document.createElement('div');
-    el.style.cssText =
-      'position:fixed;bottom:72px;right:16px;background:#1a1a1a;color:white;padding:8px 14px;border-radius:6px;font-size:12px;z-index:2147483646;animation:fade 2s ease-out forwards;';
-    el.textContent = text;
-    const style = document.createElement('style');
-    style.textContent = '@keyframes fade { 0%, 80% { opacity: 1; } 100% { opacity: 0; } }';
-    shadow.appendChild(style);
-    shadow.appendChild(el);
-    setTimeout(() => {
-      el.remove();
-      style.remove();
-    }, 2000);
-  }
-
   async function toggle(hash, itemEl) {
     if (expandedHash === hash) {
       expandedHash = null;
@@ -437,15 +399,13 @@ export const CLIENT_SCRIPT = `
         <div class="locale-label">
           <span class="locale-tag">\${escapeHtml(locale)}</span>
           <div class="locale-actions">
-            <button class="btn btn-secondary" data-action="regenerate" type="button">🤖 AI</button>
             <button class="btn btn-primary" data-action="save" type="button">Save</button>
           </div>
         </div>
-        <textarea class="textarea\${value === null ? ' missing' : ''}">\${escapeHtml(value ?? '')}</textarea>
+        <textarea class="textarea\${!value ? ' missing' : ''}">\${escapeHtml(value ?? '')}</textarea>
       \`;
       const textarea = row.querySelector('textarea');
       const saveBtn = row.querySelector('[data-action=save]');
-      const regenBtn = row.querySelector('[data-action=regenerate]');
       saveBtn.onclick = async () => {
         await action(saveBtn, async () => {
           const updated = await api('PATCH', \`/messages/\${detail.hash}/translations/\${locale}\`, {
@@ -453,20 +413,7 @@ export const CLIENT_SCRIPT = `
           });
           currentDetails.set(detail.hash, updated);
           textarea.value = updated.translations[locale] ?? '';
-          textarea.classList.toggle('missing', updated.translations[locale] === null);
-          syncMessageInList(updated);
-          renderStats();
-        });
-      };
-      regenBtn.onclick = async () => {
-        await action(regenBtn, async () => {
-          const updated = await api(
-            'POST',
-            \`/messages/\${detail.hash}/translations/\${locale}/regenerate\`,
-          );
-          currentDetails.set(detail.hash, updated);
-          textarea.value = updated.translations[locale] ?? '';
-          textarea.classList.toggle('missing', updated.translations[locale] === null);
+          textarea.classList.toggle('missing', !updated.translations[locale]);
           syncMessageInList(updated);
           renderStats();
         });

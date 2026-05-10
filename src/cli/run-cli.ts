@@ -2,7 +2,7 @@ import { runCheck } from './commands/check.js';
 import { runCompile } from './commands/compile.js';
 import { runExtract } from './commands/extract.js';
 import { runInit } from './commands/init.js';
-import { runTranslate } from './commands/translate.js';
+import { runStatus } from './commands/status.js';
 
 export async function runCli(argv: string[]): Promise<void> {
   const command = argv[0];
@@ -21,14 +21,14 @@ export async function runCli(argv: string[]): Promise<void> {
       case 'extract':
         handleExtract(projectRoot);
         return;
-      case 'translate':
-        await handleTranslate(projectRoot, argv.slice(1));
-        return;
       case 'compile':
         handleCompile(projectRoot);
         return;
       case 'check':
-        await handleCheck(projectRoot, argv.slice(1));
+        handleCheck(projectRoot, argv.slice(1));
+        return;
+      case 'status':
+        handleStatus(projectRoot, argv.slice(1));
         return;
       default:
         console.error(`Unknown command: ${command}`);
@@ -50,14 +50,11 @@ function printHelp(): void {
     '  init [--locales sv,de,fr]  Scaffold locales/ and tsconfig include',
   );
   console.log('  extract                    Extract source strings from code');
-  console.log('  translate [--force]        Fill missing translations via AI');
   console.log('  compile                    Build compiled locale modules');
   console.log(
-    '  check [--write]            Validate translations (--write to auto-fix)',
+    '  check [--write]            Validate translations (--write to prune stale)',
   );
-  console.log('');
-  console.log('Environment:');
-  console.log('  ANTHROPIC_API_KEY          Required for `translate`');
+  console.log('  status [--json]            Report missing translations');
 }
 
 async function handleInit(projectRoot: string, args: string[]): Promise<void> {
@@ -91,7 +88,7 @@ async function handleInit(projectRoot: string, args: string[]): Promise<void> {
   console.log('Next steps:');
   console.log('  1. Add the yapyak plugin to vite.config.ts');
   console.log("  2. Wrap user-facing text in t('...')");
-  console.log('  3. Run `yapyak extract` then `yapyak translate`');
+  console.log('  3. Run `yapyak extract` to populate locales/');
 }
 
 function handleExtract(projectRoot: string): void {
@@ -110,24 +107,6 @@ function handleExtract(projectRoot: string): void {
   }
 }
 
-async function handleTranslate(
-  projectRoot: string,
-  args: string[],
-): Promise<void> {
-  const forceAll = args.includes('--force');
-
-  console.log('ℹ Translating missing strings...');
-  const results = await runTranslate(projectRoot, { forceAll });
-
-  for (const result of results) {
-    if (result.translated > 0) {
-      console.log(`✔ ${result.locale}: ${result.translated} translated`);
-    } else {
-      console.log(`✓ ${result.locale}: nothing to translate`);
-    }
-  }
-}
-
 function handleCompile(projectRoot: string): void {
   const results = runCompile(projectRoot);
   for (const result of results) {
@@ -137,7 +116,7 @@ function handleCompile(projectRoot: string): void {
   }
 }
 
-async function handleCheck(projectRoot: string, args: string[]): Promise<void> {
+function handleCheck(projectRoot: string, args: string[]): void {
   const allowStale = args.includes('--allow-stale');
   const write = args.includes('--write');
 
@@ -151,21 +130,7 @@ async function handleCheck(projectRoot: string, args: string[]): Promise<void> {
     if (extractResult.removed > 0) {
       console.log(`✔ Removed ${extractResult.removed} stale string(s)`);
     }
-    const translateResults = await runTranslate(projectRoot, {
-      forceAll: false,
-    });
-    let totalTranslated = 0;
-    for (const result of translateResults) {
-      totalTranslated += result.translated;
-      if (result.translated > 0) {
-        console.log(`✔ ${result.locale}: ${result.translated} translated`);
-      }
-    }
-    if (
-      extractResult.removed === 0 &&
-      extractResult.renamed === 0 &&
-      totalTranslated === 0
-    ) {
+    if (extractResult.removed === 0 && extractResult.renamed === 0) {
       console.log('✓ Nothing to fix');
     }
     return;
@@ -213,6 +178,40 @@ async function handleCheck(projectRoot: string, args: string[]): Promise<void> {
   }
 
   if (blocking.length > 0) {
+    process.exit(1);
+  }
+}
+
+function handleStatus(projectRoot: string, args: string[]): void {
+  const json = args.includes('--json');
+  const result = runStatus(projectRoot);
+
+  if (json) {
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+    if (result.missing.length > 0) {
+      process.exit(1);
+    }
+    return;
+  }
+
+  console.log(`Total messages: ${result.totalMessages}`);
+  for (const [locale, stats] of Object.entries(result.perLocale)) {
+    const tag = stats.missing === 0 ? '✓' : '✗';
+    console.log(
+      `  ${tag} ${locale}: ${stats.translated}/${result.totalMessages}`,
+    );
+  }
+  if (result.missing.length > 0) {
+    console.log('');
+    console.log(`Missing (${result.missing.length}):`);
+    for (const m of result.missing.slice(0, 20)) {
+      console.log(
+        `  [${m.missingLocales.join(',')}] ${m.fileId} → "${m.source}"`,
+      );
+    }
+    if (result.missing.length > 20) {
+      console.log(`  … and ${result.missing.length - 20} more`);
+    }
     process.exit(1);
   }
 }

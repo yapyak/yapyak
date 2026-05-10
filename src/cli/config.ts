@@ -1,16 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-export interface CachedAi {
-  apiKey: string;
-  glossary: Record<string, Record<string, string>>;
-  model?: string;
-  provider: 'anthropic' | 'openai';
-  voice: string;
-}
-
 export interface YapyakConfig {
-  ai: CachedAi | undefined;
   defaultLocale: string;
   factories: string[];
   intlModules: string[];
@@ -32,7 +23,6 @@ export function loadConfig(projectRoot: string): YapyakConfig {
   const parsed = JSON.parse(raw) as Partial<YapyakConfig>;
   const defaultLocale = parsed.defaultLocale ?? 'en';
   return {
-    ai: parsed.ai,
     defaultLocale,
     factories: parsed.factories ?? ['intl'],
     intlModules: parsed.intlModules ?? ['yapyak'],

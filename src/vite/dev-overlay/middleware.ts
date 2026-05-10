@@ -1,9 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { join } from 'node:path';
-import type { ContextMode, Provider } from '../../ai/index.js';
 import type { MessageEntry } from '../generate-messages-module.js';
-import { regenerateTranslation } from './regenerate.js';
-import { runSync } from './sync.js';
 import {
   createTranslationStore,
   type TranslationStore,
@@ -12,16 +9,11 @@ import {
 type Next = (err?: unknown) => void;
 
 export interface DevOverlayMiddlewareOptions {
-  contextMode: ContextMode;
-  defaultLocale: string;
-  glossary: Record<string, Record<string, string>>;
   invalidateMessages: () => void;
   locales: string[];
   localesDir: string;
   messageRegistry: Map<string, MessageEntry>;
   projectRoot: string;
-  provider: Provider | undefined;
-  voice: string;
 }
 
 export function createDevOverlayMiddleware(
@@ -44,30 +36,6 @@ export function createDevOverlayMiddleware(
     try {
       if (req.method === 'GET' && path === '/.yapyak/messages') {
         sendJson(res, 200, listMessages(options, store));
-        return;
-      }
-
-      if (req.method === 'POST' && path === '/.yapyak/sync') {
-        if (!options.provider) {
-          sendJson(res, 503, {
-            error:
-              'AI provider not configured. Set ai.provider in plugin options.',
-          });
-          return;
-        }
-        const result = await runSync({
-          contextMode: options.contextMode,
-          glossary: options.glossary,
-          locales: options.locales,
-          localesDir: options.localesDir,
-          messageRegistry: options.messageRegistry,
-          projectRoot: options.projectRoot,
-          provider: options.provider,
-          store,
-          voice: options.voice,
-        });
-        options.invalidateMessages();
-        sendJson(res, 200, result);
         return;
       }
 
@@ -130,46 +98,6 @@ export function createDevOverlayMiddleware(
           options.invalidateMessages();
         }
         sendJson(res, 204, null);
-        return;
-      }
-
-      const regenerateMatch = path.match(
-        /^\/\.yapyak\/messages\/([0-9a-f]+)\/translations\/([a-zA-Z0-9_-]+)\/regenerate$/,
-      );
-      if (
-        req.method === 'POST' &&
-        regenerateMatch?.[1] &&
-        regenerateMatch?.[2]
-      ) {
-        const hash = regenerateMatch[1];
-        const locale = regenerateMatch[2];
-        const entry = options.messageRegistry.get(hash);
-        if (!entry) {
-          sendJson(res, 404, { error: 'Message not found' });
-          return;
-        }
-        if (!options.locales.includes(locale)) {
-          sendJson(res, 422, { error: `Unknown locale: ${locale}` });
-          return;
-        }
-        if (!options.provider) {
-          sendJson(res, 503, {
-            error:
-              'AI provider not configured. Set ai.provider in plugin options.',
-          });
-          return;
-        }
-        const value = await regenerateTranslation({
-          contextMode: options.contextMode,
-          entry,
-          glossary: options.glossary,
-          locale,
-          provider: options.provider,
-          voice: options.voice,
-        });
-        store.write(locale, entry.fileId, entry.source, value);
-        options.invalidateMessages();
-        sendJson(res, 200, showMessage(hash, options, store));
         return;
       }
 
