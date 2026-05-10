@@ -6,4 +6,7 @@ export interface TranslateRequest {
   targetLocale: string;
 }
 
-export type Translator = (request: TranslateRequest) => Promise<string>;
+export interface Translator {
+  (request: TranslateRequest): Promise<string>;
+  batch?(requests: TranslateRequest[]): Promise<string[]>;
+}

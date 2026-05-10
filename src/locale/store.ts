@@ -1,5 +1,9 @@
 import { detectLocale } from './detect.js';
 import { parseCookie } from '../parse-cookie.js';
+import {
+  createPersistence,
+  type PersistenceConfig,
+} from './persistence.js';
 
 export interface LocaleStoreOptions {
   acceptLanguage?: boolean;
@@ -7,6 +11,8 @@ export interface LocaleStoreOptions {
   defaultLocale: string;
   initialLocale?: string;
   locales: string[];
+  persistence?: 'cookie' | 'localStorage' | null;
+  storageKey?: string;
 }
 
 export interface RequestSource {
@@ -30,11 +36,18 @@ export interface LocaleStore {
 export function createLocaleStore(options: LocaleStoreOptions): LocaleStore {
   const listeners = new Set<() => void>();
   const cookieName = options.cookieName ?? 'locale';
+  const storageKey = options.storageKey ?? 'yapyak:locale';
   const acceptLanguage = options.acceptLanguage ?? false;
+  const persistence = createPersistence(
+    buildPersistenceConfig(options.persistence ?? null, cookieName, storageKey),
+  );
+  const persisted = persistence?.load();
   const initial =
-    options.initialLocale && options.locales.includes(options.initialLocale)
-      ? options.initialLocale
-      : options.defaultLocale;
+    persisted && options.locales.includes(persisted)
+      ? persisted
+      : options.initialLocale && options.locales.includes(options.initialLocale)
+        ? options.initialLocale
+        : options.defaultLocale;
   let locale = initial;
   let version = 0;
   let snapshot = `${locale}#${version}`;
@@ -79,6 +92,7 @@ export function createLocaleStore(options: LocaleStoreOptions): LocaleStore {
       locale = next;
       version++;
       snapshot = `${locale}#${version}`;
+      persistence?.save(next);
       for (const listener of listeners) {
         listener();
       }
@@ -127,12 +141,34 @@ export function resetLocaleStore(): void {
   activeStore = null;
 }
 
+function buildPersistenceConfig(
+  kind: 'cookie' | 'localStorage' | null,
+  cookieName: string,
+  storageKey: string,
+): PersistenceConfig {
+  if (kind === 'cookie') {
+    return { cookieName, kind: 'cookie' };
+  }
+  if (kind === 'localStorage') {
+    return { kind: 'localStorage', storageKey };
+  }
+  return { kind: null };
+}
+
 export function getLocale(): string {
   return getLocaleStore().get();
 }
 
 export function setLocale(locale: string): void {
   getLocaleStore().set(locale);
+}
+
+export function getLocales(): string[] {
+  return getLocaleStore().locales;
+}
+
+export function getDefaultLocale(): string {
+  return getLocaleStore().defaultLocale;
 }
 
 export function setRequestSource(provider: RequestSourceProvider | null): void {

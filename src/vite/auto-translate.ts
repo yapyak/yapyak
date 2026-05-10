@@ -49,30 +49,65 @@ export async function autoTranslate(
     );
     const data = readLocaleFile(localePath);
     let touched = false;
+    const requests = localeStubs.map((stub) => ({
+      fileId: stub.fileId,
+      key: stub.key,
+      source: stub.source,
+      sourceLocale: options.defaultLocale,
+      targetLocale: stub.locale,
+    }));
 
-    for (const stub of localeStubs) {
+    if (typeof options.translator.batch === 'function') {
       try {
-        const result = await options.translator({
-          fileId: stub.fileId,
-          key: stub.key,
-          source: stub.source,
-          sourceLocale: options.defaultLocale,
-          targetLocale: stub.locale,
-        });
-        const trimmed = result.trim();
-        if (trimmed === '') {
+        const results = await options.translator.batch(requests);
+        for (let i = 0; i < localeStubs.length; i++) {
+          const stub = localeStubs[i];
+          const value = results[i];
+          if (stub === undefined || value === undefined) {
+            continue;
+          }
+          const trimmed = value.trim();
+          if (trimmed === '') {
+            continue;
+          }
+          setNested(data, stub.fileId, stub.key, trimmed);
+          translated++;
+          touched = true;
+        }
+      } catch (error) {
+        for (const stub of localeStubs) {
+          errors.push({
+            error,
+            fileId: stub.fileId,
+            key: stub.key,
+            locale: stub.locale,
+          });
+        }
+      }
+    } else {
+      for (let i = 0; i < localeStubs.length; i++) {
+        const stub = localeStubs[i];
+        const request = requests[i];
+        if (stub === undefined || request === undefined) {
           continue;
         }
-        setNested(data, stub.fileId, stub.key, trimmed);
-        translated++;
-        touched = true;
-      } catch (error) {
-        errors.push({
-          error,
-          fileId: stub.fileId,
-          key: stub.key,
-          locale: stub.locale,
-        });
+        try {
+          const result = await options.translator(request);
+          const trimmed = result.trim();
+          if (trimmed === '') {
+            continue;
+          }
+          setNested(data, stub.fileId, stub.key, trimmed);
+          translated++;
+          touched = true;
+        } catch (error) {
+          errors.push({
+            error,
+            fileId: stub.fileId,
+            key: stub.key,
+            locale: stub.locale,
+          });
+        }
       }
     }
 

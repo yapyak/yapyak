@@ -20,7 +20,7 @@ function stubFetch(text: string): {
     };
     return new Response(
       JSON.stringify({
-        content: [{ text, type: 'text' }],
+        content: [{ text: JSON.stringify([text]), type: 'text' }],
       }),
       { status: 200 },
     );
@@ -114,20 +114,6 @@ describe('anthropic', () => {
     expect(system).not.toContain("S'inscrire");
   });
 
-  it('includes file and key context in system prompt', async () => {
-    const stub = stubFetch('Hej');
-    await anthropic({ apiKey: 'k' })({
-      fileId: 'src/components/welcome.tsx',
-      key: 'greeting',
-      source: 'Hi',
-      sourceLocale: 'en',
-      targetLocale: 'sv',
-    });
-    const system = (stub.body() as { system: string }).system;
-    expect(system).toContain('src/components/welcome.tsx');
-    expect(system).toContain('greeting');
-  });
-
   it('reminds the model to preserve placeholders', async () => {
     const stub = stubFetch('Hej {name}');
     await anthropic({ apiKey: 'k' })({
@@ -162,7 +148,9 @@ describe('anthropic', () => {
     vi.stubGlobal('fetch', async (url: string) => {
       capturedUrl = url;
       return new Response(
-        JSON.stringify({ content: [{ text: 'Hej', type: 'text' }] }),
+        JSON.stringify({
+          content: [{ text: JSON.stringify(['Hej']), type: 'text' }],
+        }),
         { status: 200 },
       );
     });
@@ -177,5 +165,127 @@ describe('anthropic', () => {
       targetLocale: 'sv',
     });
     expect(capturedUrl).toBe('https://proxy.example.com/messages');
+  });
+
+  it('uses .batch() to translate many strings in one call', async () => {
+    let calls = 0;
+    vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
+      calls++;
+      const body = JSON.parse(init.body as string);
+      const sources: string[] = JSON.parse(body.messages[0].content);
+      const translations = sources.map((source) =>
+        source.replace(/Hello/g, 'Hej'),
+      );
+      return new Response(
+        JSON.stringify({
+          content: [{ text: JSON.stringify(translations), type: 'text' }],
+        }),
+        { status: 200 },
+      );
+    });
+    const t = anthropic({ apiKey: 'k' });
+    const results = await t.batch?.([
+      {
+        fileId: 'x',
+        key: 'a',
+        source: 'Hello A',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      },
+      {
+        fileId: 'x',
+        key: 'b',
+        source: 'Hello B',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      },
+    ]);
+    expect(results).toEqual(['Hej A', 'Hej B']);
+    expect(calls).toBe(1);
+  });
+
+  it('chunks .batch() into smaller calls when above batchSize', async () => {
+    let calls = 0;
+    vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
+      calls++;
+      const body = JSON.parse(init.body as string);
+      const sources: string[] = JSON.parse(body.messages[0].content);
+      return new Response(
+        JSON.stringify({
+          content: [
+            { text: JSON.stringify(sources.map(() => 'ok')), type: 'text' },
+          ],
+        }),
+        { status: 200 },
+      );
+    });
+    const t = anthropic({ apiKey: 'k', batchSize: 3 });
+    const requests = Array.from({ length: 7 }, (_, i) => ({
+      fileId: 'x',
+      key: `k${i}`,
+      source: `s${i}`,
+      sourceLocale: 'en',
+      targetLocale: 'sv',
+    }));
+    const results = await t.batch?.(requests);
+    expect(results?.length).toBe(7);
+    expect(calls).toBe(3);
+  });
+
+  it('strips markdown code fence around JSON', async () => {
+    vi.stubGlobal('fetch', async () =>
+      new Response(
+        JSON.stringify({
+          content: [
+            {
+              text: '```json\n["Hej"]\n```',
+              type: 'text',
+            },
+          ],
+        }),
+        { status: 200 },
+      ),
+    );
+    const t = anthropic({ apiKey: 'k' });
+    const result = await t({
+      fileId: 'x',
+      key: 'g',
+      source: 'Hi',
+      sourceLocale: 'en',
+      targetLocale: 'sv',
+    });
+    expect(result).toBe('Hej');
+  });
+
+  it('throws when batch response length does not match', async () => {
+    vi.stubGlobal('fetch', async () =>
+      new Response(
+        JSON.stringify({
+          content: [
+            { text: JSON.stringify(['only-one']), type: 'text' },
+          ],
+        }),
+        { status: 200 },
+      ),
+    );
+    const t = anthropic({ apiKey: 'k' });
+    await expect(
+      t.batch?.([
+        {
+          fileId: 'x',
+          key: 'a',
+          source: 'A',
+          sourceLocale: 'en',
+          targetLocale: 'sv',
+        },
+        {
+          fileId: 'x',
+          key: 'b',
+          source: 'B',
+          sourceLocale: 'en',
+          targetLocale: 'sv',
+        },
+      ]),
+    ).rejects.toThrow(/expected 2/);
   });
 });

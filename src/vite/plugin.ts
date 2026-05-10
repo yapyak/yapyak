@@ -1,6 +1,7 @@
 import { relative } from 'node:path';
 import type { Plugin, ResolvedConfig } from 'vite';
 import { autoTranslate } from './auto-translate.js';
+import { discoverLocales } from './discover-locales.js';
 import {
   type ExtractedSchema,
   extractSchemas,
@@ -26,11 +27,23 @@ export function yapyak(options: YapyakOptions): Plugin {
   const schemasByFile = new Map<string, ExtractedSchema[]>();
   let projectRoot = process.cwd();
   let localeCache: LocaleData | null = null;
+  let resolved: { defaultLocale: string; locales: string[] } | null = null;
+
+  function discover(): { defaultLocale: string; locales: string[] } {
+    if (resolved === null) {
+      resolved = discoverLocales({
+        defaultLocale: normalized.defaultLocale,
+        localesDir: normalized.localesDir,
+        projectRoot,
+      });
+    }
+    return resolved;
+  }
 
   function getLocaleData(): LocaleData {
     if (localeCache === null) {
       localeCache = readLocaleData({
-        locales: normalized.locales,
+        locales: discover().locales,
         localesDir: normalized.localesDir,
         projectRoot,
       });
@@ -43,9 +56,10 @@ export function yapyak(options: YapyakOptions): Plugin {
     for (const list of schemasByFile.values()) {
       allSchemas.push(...list);
     }
+    const { defaultLocale, locales } = discover();
     syncLocaleFiles({
-      defaultLocale: normalized.defaultLocale,
-      locales: normalized.locales,
+      defaultLocale,
+      locales,
       localesDir: normalized.localesDir,
       projectRoot,
       schemas: allSchemas,
@@ -74,9 +88,10 @@ export function yapyak(options: YapyakOptions): Plugin {
     if (translator === undefined) {
       return;
     }
+    const { defaultLocale, locales } = discover();
     void autoTranslate({
-      defaultLocale: normalized.defaultLocale,
-      locales: normalized.locales,
+      defaultLocale,
+      locales,
       localesDir: normalized.localesDir,
       projectRoot,
       translator,
@@ -117,7 +132,7 @@ export function yapyak(options: YapyakOptions): Plugin {
     },
     load(id: string): string | null {
       if (id === SETUP_RESOLVED) {
-        return generateSetup(normalized);
+        return generateSetup(normalized, discover());
       }
       return null;
     },
@@ -132,12 +147,12 @@ export function yapyak(options: YapyakOptions): Plugin {
         return null;
       }
 
+      const { defaultLocale, locales } = discover();
       const result = transformSource(code, {
-        defaultLocale: normalized.defaultLocale,
+        defaultLocale,
         fileId,
-        helperImport: helperImportFor(normalized.framework),
         localeData: getLocaleData(),
-        locales: normalized.locales,
+        locales,
       });
       if (result === null) {
         return null;
@@ -169,39 +184,19 @@ export function yapyak(options: YapyakOptions): Plugin {
 
 function generateSetup(
   normalized: ReturnType<typeof normalizeOptions>,
+  resolved: { defaultLocale: string; locales: string[] },
 ): string {
   const lines: string[] = [];
   lines.push(`import { configureLocale } from 'yapyak';`);
   lines.push(`configureLocale(${JSON.stringify({
     acceptLanguage: normalized.acceptLanguage,
     cookieName: normalized.cookieName,
-    defaultLocale: normalized.defaultLocale,
-    locales: normalized.locales,
+    defaultLocale: resolved.defaultLocale,
+    locales: resolved.locales,
+    persistence: normalized.persistence,
+    storageKey: normalized.storageKey,
   })});`);
-  if (normalized.adapter === 'tanstackStart') {
-    lines.push(
-      `import { tanstackStart } from 'yapyak/adapters/tanstack-start';`,
-    );
-    lines.push(`tanstackStart();`);
-  }
-  if (normalized.adapter === 'sveltekit') {
-    lines.push(`import { sveltekit } from 'yapyak/adapters/sveltekit';`);
-    lines.push(`sveltekit();`);
-  }
   return lines.join('\n');
-}
-
-function helperImportFor(framework: 'react' | 'vue' | 'svelte' | null): string {
-  if (framework === 'react') {
-    return 'yapyak/react/with-locale';
-  }
-  if (framework === 'vue') {
-    return 'yapyak/vue/with-locale';
-  }
-  if (framework === 'svelte') {
-    return 'yapyak/svelte/with-locale';
-  }
-  return 'yapyak/with-locale';
 }
 
 function isUserSource(id: string): boolean {

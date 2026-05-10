@@ -21,6 +21,12 @@ export interface TransformResult {
 const HELPER_NAME = '__yapyak_withLocale';
 const DEFAULT_HELPER_IMPORT = 'yapyak/with-locale';
 
+const FRAMEWORK_HELPER_IMPORT: Record<string, string> = {
+  'yapyak/react': 'yapyak/react/with-locale',
+  'yapyak/svelte': 'yapyak/svelte/with-locale',
+  'yapyak/vue': 'yapyak/vue/with-locale',
+};
+
 interface CallSite {
   end: number;
   schema: FlatSchema;
@@ -40,8 +46,8 @@ export function transformSource(
     true,
     detectScriptKind(options.fileId),
   );
-  const aliases = collectDefineTranslationsAliases(sourceFile);
-  if (aliases.size === 0) {
+  const detected = collectDefineTranslationsAliases(sourceFile);
+  if (detected.aliases.size === 0) {
     return null;
   }
   const callSites: CallSite[] = [];
@@ -56,7 +62,10 @@ export function transformSource(
     const compiled = compileCallExpression(site.schema, options);
     next = `${next.slice(0, site.start)}${compiled}${next.slice(site.end)}`;
   }
-  const helperImport = options.helperImport ?? DEFAULT_HELPER_IMPORT;
+  const helperImport =
+    options.helperImport ??
+    FRAMEWORK_HELPER_IMPORT[detected.importPath] ??
+    DEFAULT_HELPER_IMPORT;
   const importStatement = `import { withLocale as ${HELPER_NAME} } from '${helperImport}';\n`;
   return { code: importStatement + next };
 
@@ -64,7 +73,7 @@ export function transformSource(
     if (
       ts.isCallExpression(node) &&
       ts.isIdentifier(node.expression) &&
-      aliases.has(node.expression.text) &&
+      detected.aliases.has(node.expression.text) &&
       node.arguments.length === 1
     ) {
       const arg = node.arguments[0];
@@ -145,10 +154,16 @@ function readLocaleValue(
   return value;
 }
 
+interface DetectedAliases {
+  aliases: Set<string>;
+  importPath: string;
+}
+
 function collectDefineTranslationsAliases(
   sourceFile: ts.SourceFile,
-): Set<string> {
+): DetectedAliases {
   const aliases = new Set<string>();
+  let importPath = '';
   for (const statement of sourceFile.statements) {
     if (!ts.isImportDeclaration(statement)) {
       continue;
@@ -172,10 +187,13 @@ function collectDefineTranslationsAliases(
       const importedName = element.propertyName?.text ?? element.name.text;
       if (importedName === 'defineTranslations') {
         aliases.add(element.name.text);
+        if (importPath === '') {
+          importPath = moduleSpecifier.text;
+        }
       }
     }
   }
-  return aliases;
+  return { aliases, importPath };
 }
 
 function isYapyakImport(specifier: string): boolean {

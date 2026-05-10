@@ -62,6 +62,9 @@
       "default": "./dist/translators/openai.js"
     }
   },
+  "bin": {
+    "yapyak": "./dist/cli/run.js"
+  },
   "files": [
     "dist"
   ],

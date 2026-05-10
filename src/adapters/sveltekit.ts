@@ -1,4 +1,5 @@
-import { setRequestSource } from '../locale/store.js';
+import type { Handle } from '@sveltejs/kit';
+import { getLocaleStore, setRequestSource } from '../locale/store.js';
 
 interface HeadersLike {
   get(name: string): string | null | undefined;
@@ -27,3 +28,13 @@ export function sveltekit(): void {
     };
   });
 }
+
+const PLACEHOLDER = '%yapyak.lang%';
+
+export const handle: Handle = ({ event, resolve }) =>
+  resolve(event, {
+    transformPageChunk: ({ html }) => {
+      const locale = getLocaleStore().get();
+      return html.replace(PLACEHOLDER, locale);
+    },
+  });
