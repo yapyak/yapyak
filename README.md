@@ -36,8 +36,10 @@ import { anthropic } from 'yapyak/translators/anthropic';
 export default defineConfig({
   plugins: [
     yapyak({
+      persistence: 'cookie',
       translator: anthropic({
         apiKey: process.env.ANTHROPIC_API_KEY,
+        voice: 'Casual, thoughtful, never corporate.',
       }),
     }),
   ],
@@ -86,3 +88,15 @@ yapyak({
 ```
 
 Each `t('...')` is rewritten at build time into a direct lookup with all locale variants inlined. Routes that don't reference a string don't ship its translations — Vite/Rollup tree-shake per chunk.
+
+## Add a language anytime
+
+Need French? Run one command.
+
+```bash
+$ npx yapyak add fr
+  Translating via Anthropic  142 strings
+  ✔ 142 translated · 14.3s
+```
+
+yapyak walks every `t()` call in your codebase, batches them to your translator, and writes `locales/fr.json` in one pass.
