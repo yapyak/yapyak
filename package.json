@@ -48,6 +48,18 @@
     "./adapters/tanstack-start": {
       "types": "./dist/adapters/tanstack-start.d.ts",
       "default": "./dist/adapters/tanstack-start.js"
+    },
+    "./translators": {
+      "types": "./dist/translators/types.d.ts",
+      "default": "./dist/translators/types.js"
+    },
+    "./translators/anthropic": {
+      "types": "./dist/translators/anthropic.d.ts",
+      "default": "./dist/translators/anthropic.js"
+    },
+    "./translators/openai": {
+      "types": "./dist/translators/openai.d.ts",
+      "default": "./dist/translators/openai.js"
     }
   },
   "bin": {

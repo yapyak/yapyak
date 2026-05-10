@@ -1,3 +1,5 @@
+import type { Translator } from '../translators/types.js';
+
 export type Framework = 'react' | 'vue' | 'svelte' | null;
 export type Adapter = 'tanstackStart' | 'sveltekit' | null;
 export type Persistence = 'cookie' | 'localStorage' | null;
@@ -5,7 +7,6 @@ export type Persistence = 'cookie' | 'localStorage' | null;
 export interface YapyakOptions {
   acceptLanguage?: boolean | undefined;
   adapter?: Adapter | undefined;
-  apiKey?: string | undefined;
   cookieName?: string | undefined;
   defaultLocale: string;
   framework?: Framework | undefined;
@@ -13,12 +14,12 @@ export interface YapyakOptions {
   localesDir?: string | undefined;
   persistence?: Persistence | undefined;
   storageKey?: string | undefined;
+  translator?: Translator | undefined;
 }
 
 export interface NormalizedOptions {
   acceptLanguage: boolean;
   adapter: Adapter;
-  apiKey: string | undefined;
   cookieName: string;
   defaultLocale: string;
   framework: Framework;
@@ -26,6 +27,7 @@ export interface NormalizedOptions {
   localesDir: string;
   persistence: Persistence;
   storageKey: string;
+  translator: Translator | undefined;
 }
 
 export function normalizeOptions(options: YapyakOptions): NormalizedOptions {
@@ -49,7 +51,6 @@ export function normalizeOptions(options: YapyakOptions): NormalizedOptions {
   return {
     acceptLanguage: options.acceptLanguage ?? false,
     adapter: options.adapter ?? null,
-    apiKey: options.apiKey,
     cookieName: options.cookieName ?? 'locale',
     defaultLocale: options.defaultLocale,
     framework: options.framework ?? null,
@@ -57,5 +58,6 @@ export function normalizeOptions(options: YapyakOptions): NormalizedOptions {
     localesDir: options.localesDir ?? 'locales',
     persistence: options.persistence ?? null,
     storageKey: options.storageKey ?? 'yapyak:locale',
+    translator: options.translator,
   };
 }

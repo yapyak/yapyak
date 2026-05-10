@@ -1,5 +1,6 @@
 import { relative } from 'node:path';
 import type { Plugin, ResolvedConfig } from 'vite';
+import { autoTranslate } from './auto-translate.js';
 import {
   type ExtractedSchema,
   extractSchemas,
@@ -66,6 +67,36 @@ export function yapyak(options: YapyakOptions): Plugin {
     syncAll();
   }
 
+  function fillStubs(): void {
+    const translator = normalized.translator;
+    if (translator === undefined) {
+      return;
+    }
+    void autoTranslate({
+      defaultLocale: normalized.defaultLocale,
+      locales: normalized.locales,
+      localesDir: normalized.localesDir,
+      projectRoot,
+      translator,
+    })
+      .then((result) => {
+        if (result.translated > 0) {
+          localeCache = null;
+        }
+        for (const error of result.errors) {
+          // biome-ignore lint/suspicious/noConsole: dev plugin output
+          console.warn(
+            `[yapyak] translation failed: ${error.locale} ${error.fileId}:${error.key}`,
+            error.error,
+          );
+        }
+      })
+      .catch((error: unknown) => {
+        // biome-ignore lint/suspicious/noConsole: dev plugin output
+        console.warn('[yapyak] auto-translate error:', error);
+      });
+  }
+
   return {
     name: 'yapyak',
     configResolved(config: ResolvedConfig): void {
@@ -73,6 +104,7 @@ export function yapyak(options: YapyakOptions): Plugin {
     },
     buildStart(): void {
       scanAllSources();
+      fillStubs();
     },
     transform(code: string, id: string): { code: string } | null {
       if (!isUserSource(id)) {
@@ -114,6 +146,7 @@ export function yapyak(options: YapyakOptions): Plugin {
         schemasByFile.set(fileId, after);
       }
       syncAll();
+      fillStubs();
     },
   };
 }

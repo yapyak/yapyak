@@ -10,7 +10,6 @@ describe('normalizeOptions', () => {
     expect(result).toEqual({
       acceptLanguage: false,
       adapter: null,
-      apiKey: undefined,
       cookieName: 'locale',
       defaultLocale: 'en',
       framework: null,
@@ -18,14 +17,15 @@ describe('normalizeOptions', () => {
       localesDir: 'locales',
       persistence: null,
       storageKey: 'yapyak:locale',
+      translator: undefined,
     });
   });
 
   it('passes through user-provided values', () => {
+    const fakeTranslator = async (): Promise<string> => 'x';
     const result = normalizeOptions({
       acceptLanguage: true,
       adapter: 'tanstackStart',
-      apiKey: 'ya_live_x',
       cookieName: 'app-locale',
       defaultLocale: 'sv',
       framework: 'react',
@@ -33,13 +33,14 @@ describe('normalizeOptions', () => {
       localesDir: 'translations',
       persistence: 'cookie',
       storageKey: 'app:locale',
+      translator: fakeTranslator,
     });
     expect(result.framework).toBe('react');
     expect(result.adapter).toBe('tanstackStart');
     expect(result.persistence).toBe('cookie');
     expect(result.cookieName).toBe('app-locale');
     expect(result.localesDir).toBe('translations');
-    expect(result.apiKey).toBe('ya_live_x');
+    expect(result.translator).toBe(fakeTranslator);
     expect(result.acceptLanguage).toBe(true);
   });
 
