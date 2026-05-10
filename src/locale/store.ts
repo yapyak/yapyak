@@ -1,20 +1,36 @@
+import { detectLocale } from './detect.js';
+import { parseCookie } from '../parse-cookie.js';
+
 export interface LocaleStoreOptions {
+  acceptLanguage?: boolean;
+  cookieName?: string;
   defaultLocale: string;
   initialLocale?: string;
   locales: string[];
 }
 
+export interface RequestSource {
+  acceptLanguage?: string | undefined;
+  cookieHeader?: string | undefined;
+}
+
+export type RequestSourceProvider = () => RequestSource | undefined;
+
 export interface LocaleStore {
+  cookieName: string;
   defaultLocale: string;
   get(): string;
   getSnapshot(): string;
   locales: string[];
   set(locale: string): void;
+  setRequestSource(provider: RequestSourceProvider | null): void;
   subscribe(listener: () => void): () => void;
 }
 
 export function createLocaleStore(options: LocaleStoreOptions): LocaleStore {
   const listeners = new Set<() => void>();
+  const cookieName = options.cookieName ?? 'locale';
+  const acceptLanguage = options.acceptLanguage ?? false;
   const initial =
     options.initialLocale && options.locales.includes(options.initialLocale)
       ? options.initialLocale
@@ -22,14 +38,35 @@ export function createLocaleStore(options: LocaleStoreOptions): LocaleStore {
   let locale = initial;
   let version = 0;
   let snapshot = `${locale}#${version}`;
+  let requestSource: RequestSourceProvider | null = null;
+
+  function resolveLocale(): string {
+    if (requestSource !== null && typeof window === 'undefined') {
+      const source = requestSource();
+      if (source !== undefined) {
+        const persisted = readCookieValue(source.cookieHeader, cookieName);
+        return detectLocale({
+          acceptLanguage: acceptLanguage ? source.acceptLanguage : undefined,
+          defaultLocale: options.defaultLocale,
+          locales: options.locales,
+          persisted,
+        });
+      }
+    }
+    return locale;
+  }
 
   return {
+    cookieName,
     defaultLocale: options.defaultLocale,
     locales: options.locales,
     get() {
-      return locale;
+      return resolveLocale();
     },
     getSnapshot() {
+      if (requestSource !== null && typeof window === 'undefined') {
+        return resolveLocale();
+      }
       return snapshot;
     },
     set(next) {
@@ -46,6 +83,9 @@ export function createLocaleStore(options: LocaleStoreOptions): LocaleStore {
         listener();
       }
     },
+    setRequestSource(provider) {
+      requestSource = provider;
+    },
     subscribe(listener) {
       listeners.add(listener);
       return () => {
@@ -53,6 +93,17 @@ export function createLocaleStore(options: LocaleStoreOptions): LocaleStore {
       };
     },
   };
+}
+
+function readCookieValue(
+  header: string | undefined,
+  name: string,
+): string | undefined {
+  if (header === undefined || header === '') {
+    return undefined;
+  }
+  const value = parseCookie(header)[name];
+  return value === '' ? undefined : value;
 }
 
 let activeStore: LocaleStore | null = null;
@@ -82,4 +133,8 @@ export function getLocale(): string {
 
 export function setLocale(locale: string): void {
   getLocaleStore().set(locale);
+}
+
+export function setRequestSource(provider: RequestSourceProvider | null): void {
+  getLocaleStore().setRequestSource(provider);
 }

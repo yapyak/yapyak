@@ -44,6 +44,10 @@
     "./adapters/sveltekit": {
       "types": "./dist/adapters/sveltekit.d.ts",
       "default": "./dist/adapters/sveltekit.js"
+    },
+    "./adapters/tanstack-start": {
+      "types": "./dist/adapters/tanstack-start.d.ts",
+      "default": "./dist/adapters/tanstack-start.js"
     }
   },
   "bin": {
@@ -86,6 +90,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.4.13",
     "@sveltejs/kit": "^2.59.1",
+    "@tanstack/react-start": "^1.167.65",
     "@types/node": "25.6.0",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",

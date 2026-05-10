@@ -12,6 +12,7 @@ import { readLocaleData } from './read-locale-data.js';
 import { syncLocaleFiles } from './sync-locale-files.js';
 import { transformSource } from './transform-source.js';
 import type { LocaleData } from './transform-source.js';
+import { walkSourceFiles } from './walk-source-files.js';
 
 export type { YapyakOptions };
 
@@ -49,27 +50,36 @@ export function yapyak(options: YapyakOptions): Plugin {
     localeCache = null;
   }
 
+  function scanAllSources(): void {
+    const files = walkSourceFiles({
+      pattern: SOURCE_PATTERN,
+      projectRoot,
+      roots: ['src'],
+    });
+    schemasByFile.clear();
+    for (const file of files) {
+      const schemas = extractSchemas(file.code, file.fileId);
+      if (schemas.length > 0) {
+        schemasByFile.set(file.fileId, schemas);
+      }
+    }
+    syncAll();
+  }
+
   return {
     name: 'yapyak',
     configResolved(config: ResolvedConfig): void {
       projectRoot = config.root;
+    },
+    buildStart(): void {
+      scanAllSources();
     },
     transform(code: string, id: string): { code: string } | null {
       if (!isUserSource(id)) {
         return null;
       }
       const fileId = toFileId(projectRoot, id);
-      const before = schemasByFile.get(fileId) ?? [];
       const after = extractSchemas(code, fileId);
-
-      if (!schemasEqual(before, after)) {
-        if (after.length === 0) {
-          schemasByFile.delete(fileId);
-        } else {
-          schemasByFile.set(fileId, after);
-        }
-        syncAll();
-      }
 
       if (after.length === 0) {
         return null;
@@ -86,6 +96,24 @@ export function yapyak(options: YapyakOptions): Plugin {
         return null;
       }
       return { code: result.code };
+    },
+    async handleHotUpdate(ctx): Promise<void> {
+      if (!isUserSource(ctx.file)) {
+        return;
+      }
+      const fileId = toFileId(projectRoot, ctx.file);
+      const code = await ctx.read();
+      const before = schemasByFile.get(fileId) ?? [];
+      const after = extractSchemas(code, fileId);
+      if (schemasEqual(before, after)) {
+        return;
+      }
+      if (after.length === 0) {
+        schemasByFile.delete(fileId);
+      } else {
+        schemasByFile.set(fileId, after);
+      }
+      syncAll();
     },
   };
 }
@@ -110,14 +138,13 @@ function isUserSource(id: string): boolean {
   if (id.startsWith('\0')) {
     return false;
   }
-  if (id.includes('?')) {
-    return false;
-  }
-  return SOURCE_PATTERN.test(id);
+  const path = id.split('?')[0] ?? id;
+  return SOURCE_PATTERN.test(path);
 }
 
 function toFileId(projectRoot: string, id: string): string {
-  return relative(projectRoot, id).replaceAll('\\', '/');
+  const path = id.split('?')[0] ?? id;
+  return relative(projectRoot, path).replaceAll('\\', '/');
 }
 
 function schemasEqual(
