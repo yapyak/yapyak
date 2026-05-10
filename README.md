@@ -7,7 +7,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-> **Yap in code. Ship in everything.**
+> **Yap in code. The rest translates itself.**
 >
 > i18n where your code is the source of truth. Translations are side-effects.
 
