@@ -1,8 +1,8 @@
 # yapyak 🐃
 
-> **Yap in English. Ship in everything.**
+> **Yap in code. Ship in everything.**
 >
-> i18n for AI-powered teams. Translations are side-effects.
+> i18n where your code is the source of truth. Translations are side-effects.
 
 **React · Svelte 5 · Vue 3** — with SSR adapters for **TanStack Start** and **SvelteKit**.
 
@@ -265,5 +265,15 @@ yapyak check                      exits 1 if anything is missing — for CI
 ```
 
 `add` takes any number of locales: `npx yapyak add es fr de ja` scaffolds four files and translates them in one go.
+
+## Vite-only
+
+yapyak exists because Vite exists. "Save a file and the right thing happens" is what makes auto-translate-on-HMR feel like magic. Going framework-agnostic would mean meeting eight bundlers' edge cases halfway. We're excellent in one place instead.
+
+---
+
+MIT. No telemetry. No Cloud. Built by [@qwuide](https://github.com/qwuide) for our own products.
+
+🐃
 
 Zero runtime dependencies. Boots in milliseconds.
