@@ -100,3 +100,21 @@ $ npx yapyak add fr
 ```
 
 yapyak walks every `t()` call in your codebase, batches them to your translator, and writes `locales/fr.json` in one pass.
+
+## Position-aware rename memory
+
+The classic source-as-keys trap: change `t('Save')` to `t('Save changes')` and you've renamed the key. Naive implementations lose every existing translation. yapyak doesn't.
+
+```diff
+- t('Save')
++ t('Save changes')
+```
+
+```
+[yapyak] ↻ "Save" → "Save changes" (rename detected)
+[yapyak] sv: re-translating…
+```
+
+The plugin compares positions of every `t()` call between saves. If a string disappeared at line 23, column 12, and a new string appeared at the exact same position, that's a rename — not a delete-and-add. Locale files get the key swapped, existing translations stay as placeholders until the new English re-translates.
+
+Position matching is exact. No similarity heuristics. No false positives.
