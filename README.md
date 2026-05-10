@@ -210,3 +210,27 @@ Same `getLocale()` import on server and client:
 ```tsx
 <html lang={getLocale()}>
 ```
+
+## vs other libraries
+
+|                              | yapyak | Lingui | i18next | next-intl | paraglide |
+|------------------------------|:------:|:------:|:-------:|:---------:|:---------:|
+| Source string is the key     |   ✓    |   ✓¹   |    ✗    |     ✗     |     ✗     |
+| No default-locale file       |   ✓    |   ✗    |    ✗    |     ✗     |     ✗     |
+| Auto-translate on save       |   ✓    |   ✗    |    ✗    |     ✗     |     ✗     |
+| Position-aware rename memory |   ✓    |   ✗    |    ✗    |     ✗     |     ✗     |
+| Per-file scoping             |   ✓    |   ✗    |    ✗    |     ✗     |     ✗     |
+| Compile-time tree-shake      |   ✓    |   ✓    |    ✗    |     ✗     |     ✓     |
+| Type-safe params             |   ✓    |   ✓    |    ~    |     ✓     |     ✓     |
+| Zero-config SSR adapter      |   ✓    |   ✗    |    ✗    |     ~     |     ✗     |
+| One-flag cookie persistence  |   ✓    |   ✗    |    ✗    |     ~     |     ✗     |
+| No paid upsell               |   ✓    |   ✓²   |    ✗³   |     ✓     |     ~⁴    |
+
+```
+¹ Lingui supports both source-as-key (via t/Trans macros) and explicit IDs.
+² Lingui itself is MIT and free. Crowdin is a recommended third-party TMS.
+³ Locize is the official i18next-by-same-team paid translation service ($99/mo+).
+⁴ paraglide-js is free; the inlang ecosystem includes paid editor features.
+```
+
+yapyak's DX bet: nothing you don't have to write. SSR adapter is one function call. Cookie persistence is one config flag. Translation files maintain themselves on save. Position-aware rename means you can refactor freely without losing translations. Tailwind put styling next to the markup; yapyak puts everything else next to it too — and lets the AI handle the rest.
