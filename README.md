@@ -4,6 +4,8 @@
 >
 > i18n for AI-powered teams. Translations are side-effects.
 
+**React · Svelte 5 · Vue 3** — with SSR adapters for **TanStack Start** and **SvelteKit**.
+
 yapyak co-locates your translations with your code and lets AI maintain them.
 
 You write `t('Save changes')` in your component. Save. The AI of your choice (Anthropic, OpenAI, or anything you wire up) regenerates every locale in your voice — with the surrounding code as context — and HMR pushes the new copy live before you switch tabs.
@@ -55,6 +57,8 @@ export function SaveButton() {
 ```
 
 Save the file. Every locale in `locales/*.json` fills in. HMR pushes the new copy live.
+
+`yapyak init` asks which locales you want and scaffolds empty files in `locales/`. Default locale lives in your code — no file needed. Add more later with `yapyak add fr`.
 
 ## Translate by saving
 
