@@ -1,16 +1,27 @@
-import { type ReactNode, useSyncExternalStore } from 'react';
+import {
+  createContext,
+  type ReactElement,
+  type ReactNode,
+  useSyncExternalStore,
+} from 'react';
 import { getLocaleStore } from '../locale/store.js';
 
 export interface IntlProviderProps {
   children: ReactNode;
 }
 
-export function IntlProvider(props: IntlProviderProps): ReactNode {
+const LocaleContext = createContext<string>('en');
+
+export function IntlProvider(props: IntlProviderProps): ReactElement {
   const store = getLocaleStore();
-  useSyncExternalStore(
+  const locale = useSyncExternalStore(
     store.subscribe,
-    store.getSnapshot,
-    store.getSnapshot,
+    () => store.get(),
+    () => store.get(),
   );
-  return props.children;
+  return (
+    <LocaleContext value={locale} key={locale}>
+      {props.children}
+    </LocaleContext>
+  );
 }

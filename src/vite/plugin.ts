@@ -18,6 +18,8 @@ import { walkSourceFiles } from './walk-source-files.js';
 export type { YapyakOptions };
 
 const SOURCE_PATTERN = /\.(?:tsx?|jsx?|mjs|cjs|mts|cts)$/;
+const SETUP_ID = 'virtual:yapyak/setup';
+const SETUP_RESOLVED = `\0${SETUP_ID}`;
 
 export function yapyak(options: YapyakOptions): Plugin {
   const normalized = normalizeOptions(options);
@@ -99,12 +101,25 @@ export function yapyak(options: YapyakOptions): Plugin {
 
   return {
     name: 'yapyak',
+    enforce: 'pre',
     configResolved(config: ResolvedConfig): void {
       projectRoot = config.root;
     },
     buildStart(): void {
       scanAllSources();
       fillStubs();
+    },
+    resolveId(id: string): string | null {
+      if (id === SETUP_ID) {
+        return SETUP_RESOLVED;
+      }
+      return null;
+    },
+    load(id: string): string | null {
+      if (id === SETUP_RESOLVED) {
+        return generateSetup(normalized);
+      }
+      return null;
     },
     transform(code: string, id: string): { code: string } | null {
       if (!isUserSource(id)) {
@@ -127,7 +142,8 @@ export function yapyak(options: YapyakOptions): Plugin {
       if (result === null) {
         return null;
       }
-      return { code: result.code };
+      const withSetup = `import '${SETUP_ID}';\n${result.code}`;
+      return { code: withSetup };
     },
     async handleHotUpdate(ctx): Promise<void> {
       if (!isUserSource(ctx.file)) {
@@ -149,6 +165,30 @@ export function yapyak(options: YapyakOptions): Plugin {
       fillStubs();
     },
   };
+}
+
+function generateSetup(
+  normalized: ReturnType<typeof normalizeOptions>,
+): string {
+  const lines: string[] = [];
+  lines.push(`import { configureLocale } from 'yapyak';`);
+  lines.push(`configureLocale(${JSON.stringify({
+    acceptLanguage: normalized.acceptLanguage,
+    cookieName: normalized.cookieName,
+    defaultLocale: normalized.defaultLocale,
+    locales: normalized.locales,
+  })});`);
+  if (normalized.adapter === 'tanstackStart') {
+    lines.push(
+      `import { tanstackStart } from 'yapyak/adapters/tanstack-start';`,
+    );
+    lines.push(`tanstackStart();`);
+  }
+  if (normalized.adapter === 'sveltekit') {
+    lines.push(`import { sveltekit } from 'yapyak/adapters/sveltekit';`);
+    lines.push(`sveltekit();`);
+  }
+  return lines.join('\n');
 }
 
 function helperImportFor(framework: 'react' | 'vue' | 'svelte' | null): string {
