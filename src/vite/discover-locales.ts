@@ -20,8 +20,8 @@ export function discoverLocales(options: DiscoverOptions): DiscoverResult {
     );
   }
   const locales = readdirSync(dir)
-    .filter((name) => name.endsWith('.yml'))
-    .map((name) => name.replace(/\.yml$/, ''))
+    .filter((name) => name.endsWith('.json'))
+    .map((name) => name.replace(/\.json$/, ''))
     .sort();
   if (locales.length === 0) {
     throw new Error(
@@ -33,7 +33,7 @@ export function discoverLocales(options: DiscoverOptions): DiscoverResult {
   if (requested !== undefined && requested !== '') {
     if (!locales.includes(requested)) {
       throw new Error(
-        `yapyak: defaultLocale "${requested}" has no matching ${options.localesDir}/${requested}.yml`,
+        `yapyak: defaultLocale "${requested}" has no matching ${options.localesDir}/${requested}.json`,
       );
     }
     return { defaultLocale: requested, locales };

@@ -1,0 +1,8 @@
+{
+  "src/App.svelte": {
+    "Hello {name}": "",
+    "Hello, world": "",
+    "Switch language": "",
+    "This is the yapyak Svelte example.": ""
+  }
+}

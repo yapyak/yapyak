@@ -1,6 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { parse, stringify } from 'yaml';
 import type { ExtractedMessage } from './extract-messages.js';
 
 export type LocaleFile = Record<string, Record<string, string>>;
@@ -17,11 +16,7 @@ export function syncLocaleFiles(options: SyncOptions): void {
   const sourcesByFile = groupSourcesByFile(options.messages);
 
   for (const locale of options.locales) {
-    const localePath = join(
-      options.projectRoot,
-      options.localesDir,
-      `${locale}.yml`,
-    );
+    const localePath = localeFilePath(options.projectRoot, options.localesDir, locale);
     const isDefault = locale === options.defaultLocale;
     const existing = readLocaleFile(localePath);
     const next: LocaleFile = {};
@@ -46,6 +41,14 @@ export function syncLocaleFiles(options: SyncOptions): void {
 
     writeLocaleFile(localePath, next);
   }
+}
+
+export function localeFilePath(
+  projectRoot: string,
+  localesDir: string,
+  locale: string,
+): string {
+  return join(projectRoot, localesDir, `${locale}.json`);
 }
 
 function groupSourcesByFile(
@@ -75,7 +78,12 @@ export function readLocaleFile(path: string): LocaleFile {
   if (content.trim() === '') {
     return {};
   }
-  const parsed: unknown = parse(content);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(content);
+  } catch {
+    return {};
+  }
   if (typeof parsed !== 'object' || parsed === null) {
     return {};
   }
@@ -97,6 +105,6 @@ export function readLocaleFile(path: string): LocaleFile {
 
 export function writeLocaleFile(path: string, data: LocaleFile): void {
   mkdirSync(dirname(path), { recursive: true });
-  const content = stringify(data, { lineWidth: 0 });
+  const content = `${JSON.stringify(data, null, 2)}\n`;
   writeFileSync(path, content);
 }

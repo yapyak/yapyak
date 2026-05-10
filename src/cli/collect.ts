@@ -1,6 +1,5 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
-import { parse } from 'yaml';
 import {
   DynamicMessageError,
   type ExtractedMessage,
@@ -34,15 +33,15 @@ export interface CollectOptions {
   projectRoot: string;
 }
 
-const SOURCE_PATTERN = /\.(?:tsx?|jsx?|mjs|cjs|mts|cts)$/;
+const SOURCE_PATTERN = /\.(?:tsx?|jsx?|mjs|cjs|mts|cts|svelte|vue)$/;
 
 export function collect(options: CollectOptions): CollectResult {
   const localesDir = options.localesDir ?? 'locales';
   const localesPath = join(options.projectRoot, localesDir);
   const locales = existsSync(localesPath)
     ? readdirSync(localesPath)
-        .filter((name) => name.endsWith('.yml'))
-        .map((name) => name.replace(/\.yml$/, ''))
+        .filter((name) => name.endsWith('.json'))
+        .map((name) => name.replace(/\.json$/, ''))
         .sort()
     : [];
   if (locales.length === 0) {
@@ -91,7 +90,7 @@ export function collect(options: CollectOptions): CollectResult {
   const missing: MissingEntry[] = [];
 
   for (const locale of locales) {
-    const data = readLocale(join(localesPath, `${locale}.yml`));
+    const data = readLocale(join(localesPath, `${locale}.json`));
     let translated = 0;
     let missingCount = 0;
     for (const [fileId, sources] of Object.entries(sourcesByFile)) {
@@ -131,7 +130,12 @@ function readLocale(path: string): Record<string, Record<string, string>> {
   if (content.trim() === '') {
     return {};
   }
-  const parsed: unknown = parse(content);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(content);
+  } catch {
+    return {};
+  }
   if (typeof parsed !== 'object' || parsed === null) {
     return {};
   }

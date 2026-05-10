@@ -27,7 +27,7 @@ export async function add(options: AddOptions): Promise<number> {
   }
 
   const localesDir = join(projectRoot, 'locales');
-  const localePath = join(localesDir, `${locale}.yml`);
+  const localePath = join(localesDir, `${locale}.json`);
 
   process.stdout.write(header(`Adding locale: ${color.cyan(locale)}`));
 
@@ -37,12 +37,12 @@ export async function add(options: AddOptions): Promise<number> {
 
   if (existsSync(localePath)) {
     process.stdout.write(
-      `  ${symbol.warn} ${color.yellow(`locales/${locale}.yml already exists — leaving it alone.`)}\n`,
+      `  ${symbol.warn} ${color.yellow(`locales/${locale}.json already exists — leaving it alone.`)}\n`,
     );
   } else {
     writeFileSync(localePath, '');
     process.stdout.write(
-      `  ${symbol.check} Created ${color.bold(`locales/${locale}.yml`)}\n`,
+      `  ${symbol.check} Created ${color.bold(`locales/${locale}.json`)}\n`,
     );
   }
 
@@ -77,7 +77,7 @@ export async function add(options: AddOptions): Promise<number> {
       `\n  ${color.dim('Set')} ${color.cyan('ANTHROPIC_API_KEY')} ${color.dim('or')} ${color.cyan('OPENAI_API_KEY')} ${color.dim('in')} ${color.bold('.env.local')} ${color.dim('to auto-translate,')}\n`,
     );
     process.stdout.write(
-      `  ${color.dim('or fill in')} ${color.bold(`locales/${locale}.yml`)} ${color.dim('by hand.')}\n\n`,
+      `  ${color.dim('or fill in')} ${color.bold(`locales/${locale}.json`)} ${color.dim('by hand.')}\n\n`,
     );
     return 0;
   }
@@ -119,7 +119,7 @@ export async function add(options: AddOptions): Promise<number> {
   }
 
   process.stdout.write(
-    `\n  ${color.dim('Review')} ${color.bold(`locales/${locale}.yml`)} ${color.dim('and tweak as needed.')}\n\n`,
+    `\n  ${color.dim('Review')} ${color.bold(`locales/${locale}.json`)} ${color.dim('and tweak as needed.')}\n\n`,
   );
 
   return translateResult.errors.length === 0 ? 0 : 1;

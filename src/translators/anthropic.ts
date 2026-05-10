@@ -103,7 +103,25 @@ function parseBatchResponse(text: string, expectedLength: number): string[] {
       `yapyak/translators/anthropic: batch response had ${parsed.length} items, expected ${expectedLength}`,
     );
   }
-  return parsed.map((value) => String(value).trim());
+  return parsed.map((value, index) => coerceToString(value, index));
+}
+
+function coerceToString(value: unknown, index: number): string {
+  if (typeof value === 'string') {
+    return value.trim();
+  }
+  if (value !== null && typeof value === 'object') {
+    const obj = value as Record<string, unknown>;
+    for (const key of ['translation', 'translated', 'output', 'text', 'value']) {
+      const candidate = obj[key];
+      if (typeof candidate === 'string') {
+        return candidate.trim();
+      }
+    }
+  }
+  throw new Error(
+    `yapyak/translators/anthropic: batch response item ${index} was not a string and had no recognizable string field: ${JSON.stringify(value).slice(0, 200)}`,
+  );
 }
 
 function stripCodeFence(text: string): string {
@@ -139,7 +157,10 @@ function buildSystemPrompt(
     `You are a professional translator. Translate the source string in each input from ${reference.sourceLocale} to ${reference.targetLocale}.`,
   ];
   lines.push(
-    'Input is a JSON array. Each item has a `source` string to translate and optional `component` and `element` fields giving usage context (use them to inform tone — a `button` element wants concise imperatives, a `h1` wants strong nouns, a `label` wants direct nouns). Return ONLY a valid JSON array of the same length containing the translated strings, in the same order. No commentary, no markdown, no labels.',
+    'Input is a JSON array. Each item has a `source` string to translate and optional `component` and `element` fields giving usage context (use them to inform tone — a `button` element wants concise imperatives, a `h1` wants strong nouns, a `label` wants direct nouns).',
+  );
+  lines.push(
+    'Output: a JSON array of plain strings — same length, same order. Each output element MUST be a string, not an object. Do not echo the input shape. Do not include `source`, `component`, or `element` keys in the output. No commentary, no markdown, no code fences, no labels. Just the JSON array of translated strings.',
   );
   lines.push(
     'Preserve all {placeholder} tokens and ICU patterns exactly as written.',

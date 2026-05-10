@@ -31,7 +31,7 @@ export function migrateLocales(
     const localePath = join(
       options.projectRoot,
       options.localesDir,
-      `${locale}.yml`,
+      `${locale}.json`,
     );
     const data = readLocaleFile(localePath);
     const fileEntries = data[options.fileId];
@@ -75,7 +75,7 @@ export function markStale(
     const localePath = join(
       options.projectRoot,
       options.localesDir,
-      `${locale}.yml`,
+      `${locale}.json`,
     );
     const data = readLocaleFile(localePath);
     const fileEntries = data[options.fileId];

@@ -1,4 +1,0 @@
-src/app.tsx:
-  Hello, world: ""
-  This is the yapyak React example.: ""
-  You have {count, plural, one {# message} other {# messages}}: ""

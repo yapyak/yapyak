@@ -1,6 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { parse } from 'yaml';
 import type { LocaleData } from './transform-source.js';
 
 export interface ReadOptions {
@@ -13,7 +12,7 @@ export function readLocaleData(options: ReadOptions): LocaleData {
   const data: LocaleData = {};
   for (const locale of options.locales) {
     data[locale] = readLocaleFile(
-      join(options.projectRoot, options.localesDir, `${locale}.yml`),
+      join(options.projectRoot, options.localesDir, `${locale}.json`),
     );
   }
   return data;
@@ -29,7 +28,12 @@ function readLocaleFile(path: string): {
   if (content.trim() === '') {
     return {};
   }
-  const parsed: unknown = parse(content);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(content);
+  } catch {
+    return {};
+  }
   if (typeof parsed !== 'object' || parsed === null) {
     return {};
   }
