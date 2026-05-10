@@ -2,13 +2,15 @@
 
 > **Let your app yak in any language.**
 >
-> The agent-first i18n library for your Vite app. Built for the era where Claude Code, Cursor, and Devin sit in your dev loop and handle the translation work themselves — yapyak just gives them the right tools.
+> The i18n library for the era where the agent is already in your editor.
 
-So let's face it: every translation library so far has kind of sucked. The tooling around them has evolved a lot. The DX around them has evolved. And yet, somehow, the translation libraries themselves have been frozen in time — about as stiff and stuck as the printing industry. Important, sure. Better not to touch it, sure. It works, sure. But the *thing* is: today, it's completely unnecessarily clunky. The world has moved on. The only reason nothing's moved with it is that legacy libraries are stuck dragging backwards compatibility behind them like a tail.
+In 2026, the i18n industry is racing to sell you AI translation. Cloud subscriptions. CLI subscriptions. Agent skills you install. API wrappers with your key on file. Everyone wants to be the AI layer between your code and your strings — in the prompt, in the API call, in the billing path.
 
-yapyak doesn't have that problem. Not for the next few years, anyway. It's written from scratch with today's tooling in mind: Vite, AOT compilation, **MCP-driven agent workflows**, file-scoped keys, AsyncLocalStorage SSR. No legacy. No baggage. No 2014.
+Now switch tabs. There's the agent. Claude Code, Cursor, Codex, Devin — pick one. It's already in your editor. It read your codebase this morning. It knows your voice from the `CLAUDE.md` you wrote last month. It writes half your code today, and you're already paying for it. So tell us — *what exactly does your i18n library need to ship its own AI translator for?*
 
-The goal of yapyak is to eliminate all of that — and not feel enterprise-y while doing it. And ride the agent wave a little while we're at it.
+Nothing. That's the whole thing. The agent is the translator. The library's job is to be a tool the agent picks up.
+
+That's yapyak. A Vite plugin and an MCP server. The agent reads your messages, your call-site context, your locale files; calls whatever model it already has access to; writes the translations back. You watch it happen in chat, correct it inline, move on. No `apiKey` in your config. No second model registration. No yapyak Cloud — there isn't one and there never will be.
 
 > *"Finally someone rethought this whole darn thing."*
 >
@@ -22,11 +24,7 @@ So we made a deliberate choice: Vite-only. Going framework-agnostic would mean m
 
 ### Agent-first
 
-The other deliberate choice: yapyak does not have a built-in AI translator. It used to. We ripped it out.
-
-Here's what changed our mind. In 2026, the average dev opening a Vite project already has Claude Code or Cursor running in another pane. That agent has read the whole codebase. It knows the team's voice. It can be asked clarifying questions. It has better LLM access than yapyak will ever provision through a config field. So we asked: who is the AI in `ai: { provider: 'anthropic', apiKey: '...' }` actually serving? Not the user — they already have a better one. Not yapyak — we don't want to be a billing layer.
-
-So we removed it. yapyak now ships an MCP server instead. The agent already in your dev loop drives the translation work directly, using its own LLM call, with full call-site context yapyak hands it. More on that below.
+The other half of the manifesto: **yapyak does not ship an AI translator.** Not as a Cloud, not as a built-in provider, not as a CLI you pay for. The agent already open in your editor does the work. yapyak gives it the tools to do it well — read call-site context, write JSON atomically, validate, prune stale entries, the whole loop — over MCP. Details further down.
 
 ---
 
@@ -118,15 +116,15 @@ Drop `.mcp.json` in your project root with the snippet from the quick-start. Res
 
 Then you just talk to it: *"översätt allt nytt på svenska"*, *"ta bort 'Bradn ddd' från en.json, det var en typo"*, *"validate och fixa allt som är autoFixable"*. The agent reads context, calls the model it already has access to, writes the files. You watch it happen. You correct it inline. It learns from the correction.
 
-Why this beats baked-in AI translation:
+Why an MCP server beats every other shape an i18n-library-meets-AI could take:
 
-- **Your agent has better context than yapyak ever could.** It's read your whole codebase. It's read your `CLAUDE.md`. It knows your voice, your glossary, the decision your team made last Tuesday about how to translate "boka pass". You wrote zero config to make any of that happen.
-- **Your agent has clarifying questions.** Generic AI translation guesses. An agent asks: *"Is this 'Archive' the verb or the noun? It looks like a button label, so I'm leaning verb — confirm?"* Then it gets it right.
-- **Your agent's billing is your problem, not yapyak's.** No `apiKey` in `vite.config.ts`. No second model registration. No worry about whether yapyak is skimming a margin off your translations. (We're not. Ever. There is no yapyak Cloud and there will not be one.)
+- **The agent already has the best context in the room.** It's read your whole codebase. It's read your `CLAUDE.md`. It knows your voice, your glossary, the decision your team made last Tuesday about how to translate "boka pass". A library config field can't compete with that.
+- **The agent can ask clarifying questions.** Generic AI translation guesses. An agent asks: *"Is this 'Archive' the verb or the noun? It looks like a button label, so I'm leaning verb — confirm?"* Then it gets it right.
+- **No proxy in your billing path.** Your agent calls its model directly. When the next price cut lands, you get the savings — no library sitting between you and the API charging on top.
 - **Switching agents costs you nothing.** Move from Claude Code to Cursor to Devin tomorrow. yapyak doesn't care, doesn't know, doesn't break. The MCP layer is the contract; everything else is the agent's problem.
-- **The agent picks up your project conventions automatically.** Your `CLAUDE.md` says "use sentence case, never title case in Swedish UI"? The agent reads that before it writes a single translation. yapyak couldn't compete with that even if we tried.
+- **Project conventions transfer automatically.** Your `CLAUDE.md` says "use sentence case, never title case in Swedish UI"? The agent reads that before it writes a single translation. A library couldn't compete with that even if it tried.
 
-The MCP server is built into the package — no `@modelcontextprotocol/sdk` dep, no second install, just `pnpm exec yapyak mcp` and it speaks JSON-RPC over stdio. Tolgee has AI in their cloud. Languine is a CLI calling an API. Lingui ships "skills" for code generation but no tools-MCP for translation work itself. yapyak is the only library that gives your agent *tools to actually translate your project*. 🐃
+The MCP server is built into the package — no `@modelcontextprotocol/sdk` dep, no second install, just `pnpm exec yapyak mcp` and it speaks JSON-RPC over stdio. That's the whole shape. 🐃
 
 ### Watch mode keeps your locales honest
 
