@@ -7,9 +7,9 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-> **Yap in code. The rest translates itself.**
+> **AI-native i18n for Vite.**
 >
-> i18n where your code is the source of truth. Translations are side-effects.
+> Wrap your strings in `t()` — translations write themselves.
 
 **React · Svelte · Vue** — with SSR adapters for **TanStack Start** and **SvelteKit**.
 
