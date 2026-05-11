@@ -1,8 +1,11 @@
 import type { MessageContext, TranslateRequest, Translator } from './types.js';
 
+export type ContextLevel = 'none' | 'minimal' | 'rich';
+
 export interface TranslateItem {
   component?: string;
   element?: string;
+  snippet?: string;
   source: string;
 }
 
@@ -15,15 +18,18 @@ export interface TranslateParams {
 
 export interface CreateTranslatorOptions {
   batchSize?: number | undefined;
+  context?: ContextLevel | undefined;
   translate: (params: TranslateParams) => string[] | Promise<string[]>;
 }
 
 const DEFAULT_BATCH_SIZE = 10;
+const DEFAULT_CONTEXT: ContextLevel = 'minimal';
 
 export function createTranslator(
   options: CreateTranslatorOptions,
 ): Translator {
   const batchSize = options.batchSize ?? DEFAULT_BATCH_SIZE;
+  const contextLevel = options.context ?? DEFAULT_CONTEXT;
 
   async function runBatch(requests: TranslateRequest[]): Promise<string[]> {
     if (requests.length === 0) {
@@ -34,7 +40,7 @@ export function createTranslator(
       return [];
     }
     const result = await options.translate({
-      items: requests.map(toItem),
+      items: requests.map((request) => toItem(request, contextLevel)),
       sourceLocale: reference.sourceLocale,
       targetLocale: reference.targetLocale,
     });
@@ -61,8 +67,14 @@ export function createTranslator(
   return translator;
 }
 
-function toItem(request: TranslateRequest): TranslateItem {
+function toItem(
+  request: TranslateRequest,
+  level: ContextLevel,
+): TranslateItem {
   const item: TranslateItem = { source: request.source };
+  if (level === 'none') {
+    return item;
+  }
   const context = request.context;
   if (context !== undefined) {
     if (context.componentName !== '') {
@@ -70,6 +82,9 @@ function toItem(request: TranslateRequest): TranslateItem {
     }
     if (context.enclosingElement !== undefined) {
       item.element = context.enclosingElement;
+    }
+    if (level === 'rich' && context.snippet !== '') {
+      item.snippet = context.snippet;
     }
   }
   return item;

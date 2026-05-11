@@ -11,6 +11,7 @@ export {
 export type { LocaleStore, LocaleStoreOptions } from './locale/store.js';
 export { createTranslator } from './translators/create.js';
 export type {
+  ContextLevel,
   CreateTranslatorOptions,
   TranslateItem,
   TranslateParams,
