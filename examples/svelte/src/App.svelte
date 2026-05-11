@@ -43,7 +43,7 @@
     {t("Switch language")}
     <select bind:value={locale.current}>
       {#each locales as code}
-        <option value={code}>{code.toUpperCase()}</option>
+        <option value={code}>{code === "sv" ? t("Swedish") : t("English")}</option>
       {/each}
     </select>
   </label>

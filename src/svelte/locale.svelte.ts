@@ -1,4 +1,5 @@
 import { getLocaleStore } from '../locale/store.js';
+import { registerTracker } from '../runtime/tracker.js';
 
 export interface ReactiveLocale {
   current: string;
@@ -10,6 +11,9 @@ let value = $state(store.get());
 if (typeof window !== 'undefined') {
   store.subscribe(() => {
     value = store.get();
+  });
+  registerTracker(() => {
+    void value;
   });
 }
 

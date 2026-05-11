@@ -147,7 +147,7 @@ function compileCall(input: CompileInput, options: TransformOptions): string {
 function stringifyVariants(variants: Record<string, string>): string {
   const parts: string[] = [];
   for (const [locale, value] of Object.entries(variants)) {
-    parts.push(`${quoteIdentifier(locale)}: ${JSON.stringify(value)}`);
+    parts.push(`${quoteIdentifier(locale)}: ${singleQuoteString(value)}`);
   }
   return `{ ${parts.join(', ')} }`;
 }
@@ -156,7 +156,18 @@ function quoteIdentifier(value: string): string {
   if (/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(value)) {
     return value;
   }
-  return JSON.stringify(value);
+  return singleQuoteString(value);
+}
+
+function singleQuoteString(value: string): string {
+  const escaped = value
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
+  return `'${escaped}'`;
 }
 
 function readLocaleValue(

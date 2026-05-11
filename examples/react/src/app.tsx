@@ -56,7 +56,7 @@ function LocaleToggle(): ReactElement {
       >
         {locales.map((code) => (
           <option key={code} value={code}>
-            {code.toUpperCase()}
+            {code === 'sv' ? t('Swedish') : t('English')}
           </option>
         ))}
       </select>
