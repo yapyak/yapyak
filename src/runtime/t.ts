@@ -31,7 +31,10 @@ export type ExtractParams<
 
 type IsEmpty<T> = keyof T extends never ? true : false;
 
-type Params<Source extends string> = ExtractParams<Source>;
+// biome-ignore lint/complexity/noBannedTypes: intentional
+type Params<Source extends string> = Source extends `${string}{${string}`
+  ? ExtractParams<Source>
+  : {};
 
 export interface T {
   <Source extends string>(
