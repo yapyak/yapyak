@@ -2,10 +2,8 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 export interface WalkOptions {
-  ignore?: string[];
-  pattern: RegExp;
+  filter: (id: string) => boolean;
   projectRoot: string;
-  roots: string[];
 }
 
 export interface WalkedFile {
@@ -13,32 +11,24 @@ export interface WalkedFile {
   fileId: string;
 }
 
-const DEFAULT_IGNORE = [
+const ALWAYS_SKIP_DIRS = new Set([
   'node_modules',
-  'dist',
-  'build',
   '.git',
-  '.next',
   '.vite',
   '.cache',
   '.turbo',
-  '.output',
-];
+]);
 
 export function walkSourceFiles(options: WalkOptions): WalkedFile[] {
-  const ignore = new Set(options.ignore ?? DEFAULT_IGNORE);
   const results: WalkedFile[] = [];
-  for (const root of options.roots) {
-    walk(join(options.projectRoot, root), options.projectRoot, options.pattern, ignore, results);
-  }
+  walk(options.projectRoot, options.projectRoot, options.filter, results);
   return results;
 }
 
 function walk(
   dir: string,
   projectRoot: string,
-  pattern: RegExp,
-  ignore: Set<string>,
+  filter: (id: string) => boolean,
   results: WalkedFile[],
 ): void {
   let entries: string[];
@@ -48,7 +38,7 @@ function walk(
     return;
   }
   for (const name of entries) {
-    if (ignore.has(name) || name.startsWith('.')) {
+    if (ALWAYS_SKIP_DIRS.has(name)) {
       continue;
     }
     const fullPath = join(dir, name);
@@ -59,10 +49,13 @@ function walk(
       continue;
     }
     if (stat.isDirectory()) {
-      walk(fullPath, projectRoot, pattern, ignore, results);
+      walk(fullPath, projectRoot, filter, results);
       continue;
     }
-    if (!stat.isFile() || !pattern.test(name)) {
+    if (!stat.isFile()) {
+      continue;
+    }
+    if (!filter(fullPath)) {
       continue;
     }
     let code: string;

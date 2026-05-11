@@ -76,9 +76,26 @@ Until the new translation lands (a beat later), the old translation stays as a p
 
 **You manually edit the locale JSON.** Manual edits are preserved through renames — the plugin only touches the *key*, not the *value*. Your hand-tweaked Spanish translation stays attached to the new English string until auto-translate decides to refresh it.
 
-## Disabling
+## Preserving manual edits through renames
 
-You can't disable position-aware renames. If you don't want the migration, edit the JSON manually after the rename — but the cost of the migration is zero translations that didn't deserve to be preserved.
+The default behavior on rename: migrate the key, **clear the translation value** so the AI re-translates from the new English. Source is truth; the translation should follow.
+
+If you fine-tune translations manually and don't want renames to discard your wordsmithing, opt into preservation:
+
+```ts
+// vite.config.ts
+yapyak({
+  preserveTranslationsOnRename: true,   // default: false
+})
+```
+
+With this on, renames migrate the key but keep the existing translation. Auto-translate then skips the entry (because it's non-empty), so your manual work stays attached to the new English string.
+
+The tradeoff: existing translations can become stale relative to the new English without anyone noticing. You'll need to manually review or run `yapyak translate <locale> --force` if the rename was a meaningful copy change.
+
+## Disabling rename detection itself
+
+You can't disable position-aware rename detection. It's foundational to the rest of the workflow. If you genuinely want a rename to be treated as delete + add (lose translations entirely), edit the JSON files by hand after the save.
 
 ## What this enables
 

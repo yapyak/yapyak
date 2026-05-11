@@ -1,10 +1,12 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
+import { createFilter } from 'vite';
 import {
   DynamicMessageError,
   type ExtractedMessage,
   extractMessages,
 } from '../vite/extract-messages.js';
+import { DEFAULT_EXCLUDE, DEFAULT_INCLUDE } from '../vite/normalize-options.js';
 import { walkSourceFiles } from '../vite/walk-source-files.js';
 
 export interface MissingEntry {
@@ -33,8 +35,6 @@ export interface CollectOptions {
   projectRoot: string;
 }
 
-const SOURCE_PATTERN = /\.(?:tsx?|jsx?|mjs|cjs|mts|cts|svelte|vue)$/;
-
 export function collect(options: CollectOptions): CollectResult {
   const localesDir = options.localesDir ?? 'locales';
   const localesPath = join(options.projectRoot, localesDir);
@@ -46,10 +46,10 @@ export function collect(options: CollectOptions): CollectResult {
   const defaultLocale = options.defaultLocale ?? 'en';
   const locales = [...new Set([defaultLocale, ...fileLocales])].sort();
 
+  const filter = createFilter(DEFAULT_INCLUDE, DEFAULT_EXCLUDE);
   const sourceFiles = walkSourceFiles({
-    pattern: SOURCE_PATTERN,
+    filter,
     projectRoot: options.projectRoot,
-    roots: ['src'],
   });
 
   const messages: ExtractedMessage[] = [];

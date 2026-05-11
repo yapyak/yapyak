@@ -40,6 +40,46 @@ ANTHROPIC_API_KEY=sk-ant-…
 
 OpenAI, Ollama, or any custom translator works the same way — see [Translators](/guide/translators/).
 
+### All options
+
+Every plugin option, with defaults:
+
+```ts
+yapyak({
+  // Locale resolution
+  defaultLocale: 'en',                  // language you write in
+  acceptLanguage: false,                // use Accept-Language as SSR fallback
+  persistence: null,                    // 'cookie' | 'localStorage' | null
+  cookieName: 'locale',
+  storageKey: 'yapyak:locale',
+
+  // Locale files
+  localesDir: 'locales',                // where locale JSON files live
+
+  // Source scanning (any file matching here gets parsed for t() calls)
+  include: ['**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,svelte,vue}'],
+  exclude: [
+    'node_modules/**',
+    'dist/**',
+    'build/**',
+    '.next/**',
+    '.svelte-kit/**',
+    '.vercel/**',
+    '.output/**',
+    '**/*.test.*',
+    '**/*.spec.*',
+  ],
+
+  // Workflow
+  preserveTranslationsOnRename: false,  // see /guide/translations/position-aware-renames
+
+  // AI
+  translator: undefined,                // omit to disable auto-translate
+})
+```
+
+Most projects only set `persistence` and `translator`. The defaults work for everything else.
+
 ## 3. Add a locale
 
 ```bash

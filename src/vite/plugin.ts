@@ -1,5 +1,5 @@
 import { relative } from 'node:path';
-import type { Plugin, ResolvedConfig } from 'vite';
+import { createFilter, type Plugin, type ResolvedConfig } from 'vite';
 import { autoTranslate } from './auto-translate.js';
 import { detectRenames } from './detect-renames.js';
 import { discoverLocales } from './discover-locales.js';
@@ -21,12 +21,12 @@ import { walkSourceFiles } from './walk-source-files.js';
 
 export type { YapyakOptions };
 
-const SOURCE_PATTERN = /\.(?:tsx?|jsx?|mjs|cjs|mts|cts|svelte|vue)$/;
 const SETUP_ID = 'virtual:yapyak/setup';
 const SETUP_RESOLVED = `\0${SETUP_ID}`;
 
-export function yapyak(options: YapyakOptions): Plugin {
+export function yapyak(options: YapyakOptions = {}): Plugin {
   const normalized = normalizeOptions(options);
+  const filter = createFilter(normalized.include, normalized.exclude);
   const messagesByFile = new Map<string, ExtractedMessage[]>();
   let projectRoot = process.cwd();
   let localeCache: LocaleData | null = null;
@@ -72,9 +72,8 @@ export function yapyak(options: YapyakOptions): Plugin {
 
   function scanAllSources(): void {
     const files = walkSourceFiles({
-      pattern: SOURCE_PATTERN,
+      filter,
       projectRoot,
-      roots: ['src'],
     });
     messagesByFile.clear();
     for (const file of files) {
@@ -157,7 +156,7 @@ export function yapyak(options: YapyakOptions): Plugin {
       return null;
     },
     transform(code: string, id: string): { code: string } | null {
-      if (!isUserSource(id)) {
+      if (!isCandidateId(id, filter)) {
         return null;
       }
       const fileId = toFileId(projectRoot, id);
@@ -187,7 +186,7 @@ export function yapyak(options: YapyakOptions): Plugin {
       return { code: withSetup };
     },
     async handleHotUpdate(ctx): Promise<void> {
-      if (!isUserSource(ctx.file)) {
+      if (!isCandidateId(ctx.file, filter)) {
         return;
       }
       const fileId = toFileId(projectRoot, ctx.file);
@@ -219,6 +218,7 @@ export function yapyak(options: YapyakOptions): Plugin {
           fileId,
           locales,
           localesDir: normalized.localesDir,
+          preserveTranslations: normalized.preserveTranslationsOnRename,
           projectRoot,
           renames,
         });
@@ -265,15 +265,12 @@ function generateSetup(
   return lines.join('\n');
 }
 
-function isUserSource(id: string): boolean {
-  if (id.includes('node_modules')) {
-    return false;
-  }
+function isCandidateId(id: string, filter: (id: string) => boolean): boolean {
   if (id.startsWith('\0')) {
     return false;
   }
   const path = id.split('?')[0] ?? id;
-  return SOURCE_PATTERN.test(path);
+  return filter(path);
 }
 
 function toFileId(projectRoot: string, id: string): string {

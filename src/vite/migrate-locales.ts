@@ -11,6 +11,7 @@ export interface MigrateLocalesOptions {
   fileId: string;
   locales: string[];
   localesDir: string;
+  preserveTranslations: boolean;
   projectRoot: string;
   renames: Rename[];
 }
@@ -50,7 +51,9 @@ export function migrateLocales(
       if (isDefault) {
         next[rename.to] = rename.to;
       } else {
-        next[rename.to] = previousValue ?? '';
+        next[rename.to] = options.preserveTranslations
+          ? (previousValue ?? '')
+          : '';
         staleEntries.push({ locale, source: rename.to });
       }
       changed = true;
