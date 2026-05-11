@@ -1,9 +1,11 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { collect } from '../collect.js';
+import type { YapyakCliConfig } from '../load-config.js';
 import { color, symbol } from '../tui.js';
 
 export interface ExportOptions {
+  config: YapyakCliConfig;
   locales: string[];
   out: string | undefined;
   projectRoot: string;
@@ -14,7 +16,7 @@ type LocaleData = Record<string, Record<string, string>>;
 type Snapshot = Record<string, LocaleData>;
 
 export function exportCommand(options: ExportOptions): number {
-  const { locales: localeFilter, out, projectRoot, split } = options;
+  const { config, locales: localeFilter, out, projectRoot, split } = options;
 
   if (split && out === undefined) {
     process.stdout.write(
@@ -23,14 +25,18 @@ export function exportCommand(options: ExportOptions): number {
     return 1;
   }
 
-  if (out !== undefined && isInsideLocalesDir(out, projectRoot)) {
+  if (out !== undefined && isInsideLocalesDir(out, projectRoot, config.localesDir)) {
     process.stdout.write(
-      `\n  ${symbol.cross} ${color.red('yapyak export refuses to write inside locales/.')}\n  ${color.dim('That directory is owned by the plugin and represents the on-disk state, not a derived snapshot.')}\n\n`,
+      `\n  ${symbol.cross} ${color.red(`yapyak export refuses to write inside ${config.localesDir}/.`)}\n  ${color.dim('That directory is owned by the plugin and represents the on-disk state, not a derived snapshot.')}\n\n`,
     );
     return 1;
   }
 
-  const collected = collect({ projectRoot });
+  const collected = collect({
+    defaultLocale: config.defaultLocale,
+    localesDir: config.localesDir,
+    projectRoot,
+  });
   const allLocales = collected.locales;
   const targetLocales =
     localeFilter.length === 0
@@ -48,7 +54,7 @@ export function exportCommand(options: ExportOptions): number {
   const sourcesByFile = buildSourcesByFile(collected.messages);
   const snapshot = buildSnapshot({
     defaultLocale: collected.defaultLocale,
-    localesDir: join(projectRoot, 'locales'),
+    localesDir: join(projectRoot, config.localesDir),
     sourcesByFile,
     targetLocales,
   });
@@ -173,9 +179,13 @@ function readLocaleFile(path: string): LocaleData {
   return out;
 }
 
-function isInsideLocalesDir(out: string, projectRoot: string): boolean {
+function isInsideLocalesDir(
+  out: string,
+  projectRoot: string,
+  localesDir: string,
+): boolean {
   const absOut = isAbsolute(out) ? out : resolve(projectRoot, out);
-  const absLocales = resolve(projectRoot, 'locales');
+  const absLocales = resolve(projectRoot, localesDir);
   return absOut === absLocales || absOut.startsWith(`${absLocales}/`);
 }
 

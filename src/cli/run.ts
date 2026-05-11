@@ -4,6 +4,7 @@ import { check } from './commands/check.js';
 import { exportCommand } from './commands/export.js';
 import { status } from './commands/status.js';
 import { translate } from './commands/translate.js';
+import { loadYapyakConfig } from './load-config.js';
 import { color, symbol } from './tui.js';
 
 export async function run(argv: string[]): Promise<number> {
@@ -21,18 +22,25 @@ export async function run(argv: string[]): Promise<number> {
     case '-v':
       process.stdout.write('yapyak 0.0.0\n');
       return 0;
-    case 'status':
+    case 'status': {
+      const config = await loadYapyakConfig(projectRoot);
       return status({
+        config,
         json: rest.includes('--json'),
         projectRoot,
       });
-    case 'check':
-      return check({ projectRoot });
+    }
+    case 'check': {
+      const config = await loadYapyakConfig(projectRoot);
+      return check({ config, projectRoot });
+    }
     case 'add': {
+      const config = await loadYapyakConfig(projectRoot);
       const locales = rest.filter((arg) => !arg.startsWith('--'));
-      return await add({ locales, projectRoot });
+      return await add({ config, locales, projectRoot });
     }
     case 'translate': {
+      const config = await loadYapyakConfig(projectRoot);
       const locale = rest.find((arg) => !arg.startsWith('--'));
       const providerArg = rest.find((arg) => arg.startsWith('--provider='));
       const provider = providerArg
@@ -40,6 +48,7 @@ export async function run(argv: string[]): Promise<number> {
         : undefined;
       const force = rest.includes('--force') || rest.includes('-f');
       return await translate({
+        config,
         force,
         locale,
         projectRoot,
@@ -47,11 +56,12 @@ export async function run(argv: string[]): Promise<number> {
       });
     }
     case 'export': {
+      const config = await loadYapyakConfig(projectRoot);
       const locales = rest.filter((arg) => !arg.startsWith('--'));
       const outArg = rest.find((arg) => arg.startsWith('--out='));
       const out = outArg ? outArg.slice('--out='.length) : undefined;
       const split = rest.includes('--split');
-      return exportCommand({ locales, out, projectRoot, split });
+      return exportCommand({ config, locales, out, projectRoot, split });
     }
     default:
       process.stdout.write(

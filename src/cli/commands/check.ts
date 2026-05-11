@@ -1,12 +1,18 @@
 import { collect } from '../collect.js';
+import type { YapyakCliConfig } from '../load-config.js';
 import { color, header, symbol } from '../tui.js';
 
 export interface CheckOptions {
+  config: YapyakCliConfig;
   projectRoot: string;
 }
 
 export function check(options: CheckOptions): number {
-  const result = collect({ projectRoot: options.projectRoot });
+  const result = collect({
+    defaultLocale: options.config.defaultLocale,
+    localesDir: options.config.localesDir,
+    projectRoot: options.projectRoot,
+  });
 
   process.stdout.write(header('Translation check'));
 

@@ -6,15 +6,17 @@ import type { Translator } from '../../translators/types.js';
 import { autoTranslate } from '../../vite/auto-translate.js';
 import { collect } from '../collect.js';
 import { loadEnv } from '../load-env.js';
+import type { YapyakCliConfig } from '../load-config.js';
 import { color, header, progressBar, spinner, symbol } from '../tui.js';
 
 export interface AddOptions {
+  config: YapyakCliConfig;
   locales: string[];
   projectRoot: string;
 }
 
 export async function add(options: AddOptions): Promise<number> {
-  const { locales, projectRoot } = options;
+  const { config, locales, projectRoot } = options;
 
   if (locales.length === 0) {
     process.stdout.write(
@@ -29,31 +31,35 @@ export async function add(options: AddOptions): Promise<number> {
     return 1;
   }
 
-  const localesDir = join(projectRoot, 'locales');
-  if (!existsSync(localesDir)) {
-    mkdirSync(localesDir, { recursive: true });
+  const localesDirAbs = join(projectRoot, config.localesDir);
+  if (!existsSync(localesDirAbs)) {
+    mkdirSync(localesDirAbs, { recursive: true });
   }
 
   const labelLine = locales.map((l) => color.cyan(l)).join(', ');
   process.stdout.write(header(`Adding locales: ${labelLine}`));
 
   for (const locale of locales) {
-    const localePath = join(localesDir, `${locale}.json`);
+    const localePath = join(localesDirAbs, `${locale}.json`);
     if (existsSync(localePath)) {
       process.stdout.write(
-        `  ${symbol.warn} ${color.yellow(`locales/${locale}.json already exists — leaving it alone.`)}\n`,
+        `  ${symbol.warn} ${color.yellow(`${config.localesDir}/${locale}.json already exists — leaving it alone.`)}\n`,
       );
     } else {
       writeFileSync(localePath, '');
       process.stdout.write(
-        `  ${symbol.check} Created ${color.bold(`locales/${locale}.json`)}\n`,
+        `  ${symbol.check} Created ${color.bold(`${config.localesDir}/${locale}.json`)}\n`,
       );
     }
   }
 
   let result;
   try {
-    result = collect({ projectRoot });
+    result = collect({
+      defaultLocale: config.defaultLocale,
+      localesDir: config.localesDir,
+      projectRoot,
+    });
   } catch {
     process.stdout.write(
       `\n  ${color.dim('No source strings found yet — locale files are ready for')} ${color.cyan('pnpm dev')}${color.dim('.')}\n\n`,
@@ -122,7 +128,7 @@ export async function add(options: AddOptions): Promise<number> {
     const subResult = await autoTranslate({
       defaultLocale: result.defaultLocale,
       locales: [result.defaultLocale, locale],
-      localesDir: 'locales',
+      localesDir: config.localesDir,
       messages: result.messages,
       projectRoot,
       translator: wrapWithProgress(translator.fn, onProgress),

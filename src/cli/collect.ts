@@ -30,8 +30,8 @@ export interface CollectResult {
 }
 
 export interface CollectOptions {
-  defaultLocale?: string;
-  localesDir?: string;
+  defaultLocale?: string | undefined;
+  localesDir?: string | undefined;
   projectRoot: string;
 }
 

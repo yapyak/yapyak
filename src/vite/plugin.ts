@@ -136,6 +136,12 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
   return {
     name: 'yapyak',
     enforce: 'pre',
+    api: {
+      yapyak: {
+        defaultLocale: normalized.defaultLocale,
+        localesDir: normalized.localesDir,
+      },
+    },
     configResolved(config: ResolvedConfig): void {
       projectRoot = config.root;
     },

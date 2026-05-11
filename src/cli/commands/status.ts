@@ -1,13 +1,19 @@
 import { collect } from '../collect.js';
+import type { YapyakCliConfig } from '../load-config.js';
 import { color, header, progressBar, renderTable, symbol } from '../tui.js';
 
 export interface StatusOptions {
+  config: YapyakCliConfig;
   json?: boolean;
   projectRoot: string;
 }
 
 export function status(options: StatusOptions): number {
-  const result = collect({ projectRoot: options.projectRoot });
+  const result = collect({
+    defaultLocale: options.config.defaultLocale,
+    localesDir: options.config.localesDir,
+    projectRoot: options.projectRoot,
+  });
 
   if (options.json === true) {
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);

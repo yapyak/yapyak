@@ -4,9 +4,11 @@ import type { Translator } from '../../translators/types.js';
 import { autoTranslate } from '../../vite/auto-translate.js';
 import { collect } from '../collect.js';
 import { loadEnv } from '../load-env.js';
+import type { YapyakCliConfig } from '../load-config.js';
 import { color, header, progressBar, spinner, symbol } from '../tui.js';
 
 export interface TranslateOptions {
+  config: YapyakCliConfig;
   force?: boolean | undefined;
   locale?: string | undefined;
   projectRoot: string;
@@ -14,7 +16,7 @@ export interface TranslateOptions {
 }
 
 export async function translate(options: TranslateOptions): Promise<number> {
-  const { force = false, locale: targetLocale, projectRoot } = options;
+  const { config, force = false, locale: targetLocale, projectRoot } = options;
   const env = loadEnv(projectRoot);
 
   const translator = pickTranslator(env, options.provider);
@@ -37,7 +39,11 @@ export async function translate(options: TranslateOptions): Promise<number> {
     return 1;
   }
 
-  const result = collect({ projectRoot });
+  const result = collect({
+    defaultLocale: config.defaultLocale,
+    localesDir: config.localesDir,
+    projectRoot,
+  });
   const targetLocales =
     targetLocale !== undefined && targetLocale !== ''
       ? [targetLocale]
@@ -87,7 +93,7 @@ export async function translate(options: TranslateOptions): Promise<number> {
       defaultLocale: result.defaultLocale,
       force,
       locales: [result.defaultLocale, locale],
-      localesDir: 'locales',
+      localesDir: config.localesDir,
       messages: result.messages,
       projectRoot,
       translator: wrapWithProgress(translator.fn, onProgress),
