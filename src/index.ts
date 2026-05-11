@@ -9,3 +9,14 @@ export {
   setLocale,
 } from './locale/store.js';
 export type { LocaleStore, LocaleStoreOptions } from './locale/store.js';
+export { createTranslator } from './translators/create.js';
+export type {
+  CreateTranslatorOptions,
+  TranslateItem,
+  TranslateParams,
+} from './translators/create.js';
+export type {
+  MessageContext,
+  TranslateRequest,
+  Translator,
+} from './translators/types.js';
