@@ -39,7 +39,8 @@ export function anthropic(options: AnthropicOptions): Translator {
   return createTranslator({
     batchSize,
     context,
-    async translate({ items, signal, sourceLocale, targetLocale }) {
+    async translate(params) {
+      const { items, signal, sourceLocale, targetLocale } = params;
       const init: RequestInit = {
         body: JSON.stringify({
           max_tokens: Math.max(1024, items.length * 256),

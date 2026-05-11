@@ -44,7 +44,8 @@ export function openai(options: OpenAIOptions): Translator {
   return createTranslator({
     batchSize,
     context,
-    async translate({ items, signal, sourceLocale, targetLocale }) {
+    async translate(params) {
+      const { items, signal, sourceLocale, targetLocale } = params;
       const body: Record<string, unknown> = {
         messages: [
           {

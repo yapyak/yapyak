@@ -11,9 +11,10 @@ if (typeof window !== 'undefined') {
 }
 
 export const locale: WritableComputedRef<string> = computed<string>({
-  get: () =>
-    typeof window === 'undefined' ? store.get() : valueRef.value,
-  set: (next: string) => {
+  get() {
+    return typeof window === 'undefined' ? store.get() : valueRef.value;
+  },
+  set(next: string) {
     store.set(next);
   },
 });
