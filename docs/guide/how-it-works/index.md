@@ -10,7 +10,7 @@ A high-level tour of what happens between `t('Save changes')` in your component 
         │
         ▼
 [ Vite plugin: extract ]
-   collects every t() call → (file, line, column, source)
+   collects (file, line, column, source) for every t() call
         │
         ▼
 [ sync locale files ]
@@ -19,16 +19,18 @@ A high-level tour of what happens between `t('Save changes')` in your component 
         │
         ▼
 [ auto-translate ]
-   batch missing strings → AI provider → write to locales/{locale}.json
+   batch missing strings, send to AI provider, write to locales/{locale}.json
         │
         ▼
 [ Vite plugin: transform ]
    rewrite each call site:
-   t('Save changes')  →  __yapyak_pick({ en: '...', es: '...', ... })
+   t('Save changes')
+   becomes
+   __yapyak_pick({ en: '...', es: '...', ... })
         │
         ▼
 [ runtime: pick ]
-   reads current locale from store → returns variant
+   reads current locale from store, returns the variant
         │
         ▼
 [ HMR ]
@@ -114,7 +116,7 @@ The CLI shares the same extract/sync/translate machinery as the Vite plugin. `ya
 - **No build step you have to run.** `vite dev` covers it. CI runs `npx yapyak check` to fail on missing translations.
 - **No translation portal.** Locale files are JSON in your repo, version-controlled, reviewable as code.
 - **No runtime AI call.** The AI runs at extract/translate time only. Production has no dependency on a model provider.
-- **No central message registry.** Each call site is keyed by `(file path, source string)`. Move the file → translations follow.
+- **No central message registry.** Each call site is keyed by `(file path, source string)`. Move the file and the translations follow.
 
 ## Where to read next
 

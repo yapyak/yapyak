@@ -117,7 +117,7 @@ anthropic({
 })
 ```
 
-Retries trigger on 408 / 429 / 5xx HTTP statuses and on network-level errors, with exponential backoff (250ms → 500ms → 1s → 2s → 4s, capped at 8s). 4xx errors other than 408/429 bubble up immediately (they're not transient).
+Retries trigger on 408 / 429 / 5xx HTTP statuses and on network-level errors, with exponential backoff (250ms, 500ms, 1s, 2s, 4s, capped at 8s). 4xx errors other than 408/429 bubble up immediately (they're not transient).
 
 ## Bring your own
 

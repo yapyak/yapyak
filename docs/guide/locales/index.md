@@ -13,7 +13,7 @@ locales/
   de.json    ← German locale exists
 ```
 
-Implicit configuration: `defaultLocale: 'en'`, `locales: ['en', 'es', 'fr', 'de']`. Add a file → it's a new locale. Delete a file → it's gone.
+Implicit configuration: `defaultLocale: 'en'`, `locales: ['en', 'es', 'fr', 'de']`. Add a file, get a new locale. Delete a file, lose it.
 
 The default locale (`en` by default) doesn't need a file because your source code is the file.
 
@@ -131,7 +131,7 @@ yapyak({
 
 ### Cookie
 
-The right choice for SSR apps. Sent with every request → server can read it and pre-render in the user's locale. The cookie is written client-side on `setLocale()`, with `path=/`, `samesite=lax`, `max-age=1y`.
+The right choice for SSR apps. Sent with every request, so the server can read it and pre-render in the user's locale. The cookie is written client-side on `setLocale()`, with `path=/`, `samesite=lax`, `max-age=1y`.
 
 Customize the cookie name:
 
@@ -167,7 +167,7 @@ When `persistence: 'cookie'` is set *and* an SSR adapter is wired ([TanStack Sta
 2. **`Accept-Language` header** (browser/OS preference) — if `acceptLanguage: true`
 3. **Default locale** (configured fallback)
 
-Each request picks the right locale before HTML renders. `getLocale()` returns the per-request value; `t()` calls in SSR render in that locale; the cookie matches what the client reads → no hydration mismatch.
+Each request picks the right locale before HTML renders. `getLocale()` returns the per-request value; `t()` calls in SSR render in that locale; the cookie matches what the client reads, so there's no hydration mismatch.
 
 To opt into `Accept-Language` matching:
 

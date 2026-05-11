@@ -51,7 +51,7 @@ interface OpenAIOptions {
 | `timeout` | `30_000` | Per-request timeout in milliseconds. |
 | `maxRetries` | `2` | Retries on 408/429/5xx + network errors. |
 | `organization` | — | Sets `OpenAI-Organization` header for multi-org accounts. |
-| `seed` | — | Reproducible outputs. Same `(prompt, seed)` → same result. |
+| `seed` | — | Reproducible outputs. Same `(prompt, seed)` gives the same result. |
 | `user` | — | End-user tracking string, included in request payload. |
 
 ## Use as a universal compatibility layer

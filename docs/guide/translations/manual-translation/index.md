@@ -26,13 +26,35 @@ No `translator`. That's it.
 
 You write `t()` calls as usual:
 
-```tsx
+::: code-group
+
+```tsx [React]
 import { t } from 'yapyak';
 
 export function SaveButton() {
   return <button>{t('Save changes')}</button>;
 }
 ```
+
+```svelte [Svelte]
+<script lang="ts">
+  import { t } from 'yapyak';
+</script>
+
+<button>{t('Save changes')}</button>
+```
+
+```vue [Vue]
+<script setup lang="ts">
+import { t } from 'yapyak';
+</script>
+
+<template>
+  <button>{{ t('Save changes') }}</button>
+</template>
+```
+
+:::
 
 On save, yapyak detects the new string and adds it to every locale file as an **empty stub**:
 

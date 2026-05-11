@@ -221,7 +221,7 @@ If your `translate` throws:
 - Other batches continue (don't take down the whole translation pipeline)
 - Failed entries stay as empty stubs — retried on next save or next `yapyak translate`
 
-If you want retries inside your translator (e.g., for rate-limited APIs), use yapyak's shared retry helper or roll your own. The shipped translators use a built-in `fetchWithRetry` (250ms→500→1s→2s→4s→8s backoff on 408/429/5xx).
+If you want retries inside your translator (e.g., for rate-limited APIs), use yapyak's shared retry helper or roll your own. The shipped translators use a built-in `fetchWithRetry` with exponential backoff (250ms, 500ms, 1s, 2s, 4s, 8s) on 408/429/5xx.
 
 ## Testing your translator
 

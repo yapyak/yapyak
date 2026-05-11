@@ -6,8 +6,8 @@ Three steps to a translated string.
 
 ```bash
 npm install yapyak
-# or: pnpm add yapyak
-# or: yarn add yapyak
+# or
+pnpm add yapyak
 ```
 
 `yapyak` ships everything in one package — Vite plugin, runtime, framework adapters, CLI, translators. There are no `@yapyak/*` sub-packages to install.
@@ -58,13 +58,35 @@ npx yapyak add es fr de ja
 
 ## Write your first translation
 
-```tsx
+::: code-group
+
+```tsx [React]
 import { t } from 'yapyak';
 
 export function SaveButton() {
   return <button>{t('Save changes')}</button>;
 }
 ```
+
+```svelte [Svelte]
+<script lang="ts">
+  import { t } from 'yapyak';
+</script>
+
+<button>{t('Save changes')}</button>
+```
+
+```vue [Vue]
+<script setup lang="ts">
+import { t } from 'yapyak';
+</script>
+
+<template>
+  <button>{{ t('Save changes') }}</button>
+</template>
+```
+
+:::
 
 Save the file. `locales/es.json` updates automatically:
 
@@ -135,7 +157,7 @@ const locales = getLocales();
 
 :::
 
-Add a locale → its file appears in `locales/` → `getLocales()` returns it on the next render. No hardcoded list to keep in sync.
+Add a locale and its file appears in `locales/`. `getLocales()` returns it on the next render. No hardcoded list to keep in sync.
 
 If `persistence: 'cookie'` is set in `vite.config.ts`, the choice is stored automatically and read back on the next request — including SSR.
 
@@ -145,12 +167,14 @@ For server-rendered apps, wire the adapter once. The adapter resolves locale per
 
 ::: code-group
 
-```ts [TanStack Start (in __root.tsx)]
+```ts [TanStack Start]
+// src/routes/__root.tsx
 import { tanstackStart } from 'yapyak/adapters/tanstack-start';
 tanstackStart();
 ```
 
-```ts [SvelteKit (in hooks.server.ts)]
+```ts [SvelteKit]
+// src/hooks.server.ts
 import { sveltekit } from 'yapyak/adapters/sveltekit';
 sveltekit();
 ```
@@ -161,31 +185,43 @@ That's the entirety of the SSR wiring.
 
 ### Wiring `<html lang>` (optional)
 
-If you want the resolved locale to drive the `lang` attribute on the root HTML element, opt in. Two patterns depending on framework.
+If you want the resolved locale to drive the `lang` attribute on the root HTML element, opt in.
 
-::: code-group
+#### TanStack Start
 
-```tsx [TanStack Start]
+```tsx
+// src/routes/__root.tsx
 import { getLocale } from 'yapyak';
 
-// in your root component
 <html lang={getLocale()}>
 ```
 
-```ts [SvelteKit (hooks.server.ts)]
+#### SvelteKit
+
+```ts
+// src/hooks.server.ts
 import { sveltekit, handle } from 'yapyak/adapters/sveltekit';
 
 sveltekit();
-export { handle };  // replaces %yapyak.lang% in app.html
+export { handle };
 ```
 
-```html [SvelteKit (app.html)]
+```html
+<!-- src/app.html -->
 <html lang="%yapyak.lang%">
 ```
 
-:::
+If you already have other handles, compose them with SvelteKit's `sequence`:
 
-The `handle` export from `yapyak/adapters/sveltekit` is **only** for the `<html lang>` placeholder. SSR locale resolution is wired by `sveltekit()` alone — `handle` is optional.
+```ts
+// src/hooks.server.ts
+import { sequence } from '@sveltejs/kit/hooks';
+import { sveltekit, handle as yapyakHandle } from 'yapyak/adapters/sveltekit';
+import { handle as authHandle } from './auth';
+
+sveltekit();
+export const handle = sequence(yapyakHandle, authHandle);
+```
 
 ## Verify
 

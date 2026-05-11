@@ -44,7 +44,7 @@ yapyak({
 }),
 ```
 
-The string is prepended to every translation prompt. Every string, every locale, every release. Change the voice → re-run with `--force` to regenerate.
+The string is prepended to every translation prompt. Every string, every locale, every release. Change the voice and re-run with `--force` to regenerate.
 
 ## Glossary
 
@@ -117,12 +117,26 @@ npx yapyak translate --force      # rebuild every non-default locale
 
 If you want a string to stay as the source language (e.g. brand name, code keyword), don't translate it differently across locales — just write it once and let yapyak handle the rest. The plugin will still produce per-locale entries, but they'll all be the same.
 
-For strings that should *never* go through AI translation (proper nouns, version numbers, code), use them outside `t()`:
+For strings that should *never* go through AI translation (proper nouns, version numbers, code), keep them outside `t()`:
 
-```tsx
-<h1>{t('Welcome to')} React</h1>           // 'React' is hardcoded, not a translation
-<h1>{t('Welcome to')} {appName}</h1>        // appName is a variable, not a translation
+::: code-group
+
+```tsx [React]
+<h1>{t('Welcome to')} React</h1>
+<h1>{t('Welcome to')} {appName}</h1>
 ```
+
+```svelte [Svelte]
+<h1>{t('Welcome to')} React</h1>
+<h1>{t('Welcome to')} {appName}</h1>
+```
+
+```vue [Vue]
+<h1>{{ t('Welcome to') }} React</h1>
+<h1>{{ t('Welcome to') }} {{ appName }}</h1>
+```
+
+:::
 
 The string `'Welcome to'` translates; `'React'` and `appName` are concatenated as-is.
 
