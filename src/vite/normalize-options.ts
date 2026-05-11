@@ -17,6 +17,7 @@ export interface YapyakOptions {
   include?: FilterPattern;
   localesDir?: string | undefined;
   persistence?: Persistence | undefined;
+  preserveTranslationsOnRename?: boolean | undefined;
   storageKey?: string | undefined;
   translator?: Translator | undefined;
 }
@@ -29,6 +30,7 @@ export interface NormalizedOptions {
   include: FilterPattern;
   localesDir: string;
   persistence: Persistence;
+  preserveTranslationsOnRename: boolean;
   storageKey: string;
   translator: Translator | undefined;
 }
@@ -69,6 +71,8 @@ export function normalizeOptions(options: YapyakOptions): NormalizedOptions {
     include: options.include ?? DEFAULT_INCLUDE,
     localesDir: options.localesDir ?? 'locales',
     persistence: options.persistence ?? null,
+    preserveTranslationsOnRename:
+      options.preserveTranslationsOnRename ?? options.translator === undefined,
     storageKey: options.storageKey ?? 'yapyak:locale',
     translator: options.translator,
   };

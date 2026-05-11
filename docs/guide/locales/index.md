@@ -51,7 +51,7 @@ getLocales()         // ['en', 'es', 'fr', 'de']
 getDefaultLocale()   // 'en'
 ```
 
-`getLocales()` returns the default locale plus every JSON file in `locales/`. Useful for building locale switchers — see [Frameworks](/guide/frameworks/) for the per-framework patterns.
+`getLocales()` returns the default locale plus every JSON file in `locales/`. Useful for building locale switchers.
 
 ## Switching locale
 
@@ -63,17 +63,57 @@ setLocale('es');
 
 Updates the in-memory store, persists according to your `persistence` config, and notifies all subscribed `useLocale` hooks. Components re-render in the new locale.
 
-In components, prefer the framework-idiomatic locale binding:
+In components, use the framework-idiomatic reactive binding so the UI re-renders on locale change:
 
-- **React**: `const [locale, setLocale] = useLocale()` from `yapyak/react`
-- **Svelte**: `import { locale } from 'yapyak/svelte'` — singleton, read/write via `locale.current`
-- **Vue**: `import { locale } from 'yapyak/vue'` — singleton `WritableComputedRef`, read/write via `.value` (or `v-model`)
+::: code-group
 
-See:
+```tsx [React]
+import { getLocales } from 'yapyak';
+import { useLocale } from 'yapyak/react';
 
-- [Frameworks / React](/guide/frameworks/react)
-- [Frameworks / Svelte](/guide/frameworks/svelte)
-- [Frameworks / Vue](/guide/frameworks/vue)
+export function LocaleToggle() {
+  const [locale, setLocale] = useLocale();
+  return (
+    <select value={locale} onChange={(event) => setLocale(event.target.value)}>
+      {getLocales().map((code) => (
+        <option key={code} value={code}>{code.toUpperCase()}</option>
+      ))}
+    </select>
+  );
+}
+```
+
+```svelte [Svelte]
+<script lang="ts">
+  import { getLocales } from 'yapyak';
+  import { locale } from 'yapyak/svelte';
+</script>
+
+<select bind:value={locale.current}>
+  {#each getLocales() as code}
+    <option value={code}>{code.toUpperCase()}</option>
+  {/each}
+</select>
+```
+
+```vue [Vue]
+<script setup lang="ts">
+import { getLocales } from 'yapyak';
+import { locale } from 'yapyak/vue';
+</script>
+
+<template>
+  <select v-model="locale">
+    <option v-for="code in getLocales()" :key="code" :value="code">
+      {{ code.toUpperCase() }}
+    </option>
+  </select>
+</template>
+```
+
+:::
+
+The framework-specific exports (`yapyak/react`, `yapyak/svelte`, `yapyak/vue`) only differ in *how* you read and write the locale reactively — the `t` function itself is the same import everywhere.
 
 ## Persistence
 
@@ -168,7 +208,7 @@ The plugin doesn't validate codes — whatever filename you create in `locales/`
 
 ## Default-locale fallback
 
-When a translation is missing for a target locale (e.g. AI hasn't filled it in yet), the runtime falls back to the default locale's source string. Users see English instead of an empty UI. No `[missing translation key: ...]` placeholders, no errors.
+When a translation is missing for a target locale (e.g. AI hasn't filled it in yet), the runtime falls back to the default locale's source string. Users see the source instead of an empty UI. No `[missing translation key: ...]` placeholders, no errors.
 
 ```tsx
 t('A new untranslated string')

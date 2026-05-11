@@ -14,5 +14,5 @@ export function pick(
   if (params === undefined || !hasPlaceholder(value)) {
     return value;
   }
-  return interpolate(value, params);
+  return interpolate(value, params, locale);
 }

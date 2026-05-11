@@ -69,25 +69,11 @@ export default defineConfig({
                   link: '/guide/translations/manual-translation',
                   text: 'Manual translation',
                 },
-                {
-                  link: '/guide/translations/position-aware-renames',
-                  text: 'Position-aware renames',
-                },
               ],
               link: '/guide/translations/',
               text: 'Translations',
             },
             { link: '/guide/locales/', text: 'Locales' },
-            {
-              collapsed: false,
-              items: [
-                { link: '/guide/frameworks/react/', text: 'React' },
-                { link: '/guide/frameworks/svelte/', text: 'Svelte' },
-                { link: '/guide/frameworks/vue/', text: 'Vue' },
-              ],
-              link: '/guide/frameworks/',
-              text: 'Frameworks',
-            },
             {
               collapsed: false,
               items: [

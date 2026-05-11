@@ -100,9 +100,11 @@ After saving the rename:
 
 The key swaps. The value — your translation — stays.
 
-When a translator is configured, yapyak treats the entry as stale and re-translates it in the background, so "Guardar" gets refreshed to "Guardar cambios" a beat later. **Without a translator, there's no background pass.** The old value stays put under the new key forever, or until you edit it yourself. It's technically stale (the English changed), but no work is lost — you tweak `"Guardar"` to `"Guardar cambios"` in place, instead of starting from a blank stub.
+This is the default behavior when no translator is configured (`preserveTranslationsOnRename` defaults to `true` for you). The translation is technically stale — the source changed — but it's still your real work. Tweak `"Guardar"` to `"Guardar cambios"` in place, instead of starting from a blank stub.
 
-Refactor your English aggressively. Your translations follow.
+With a translator the default flips to `false`, so renames clear the value and the AI re-translates instantly. Both defaults are right for their context; you almost never set the option explicitly.
+
+Refactor your source aggressively. Your translations follow.
 
 ## CI: gate on completeness
 
@@ -134,7 +136,7 @@ Round-trip: export `locales/*.json` to your TMS, translators do their work, impo
 
 ## Mixing manual and AI
 
-Configure a translator and yapyak still respects manual edits. Translation files are the source of truth — yapyak only fills in **missing** keys on save. Existing entries are never overwritten unless you run `yapyak translate --force`.
+Configure a translator and yapyak still respects manual edits in steady state. Translation files are the source of truth — yapyak only fills in **missing** keys on save. Existing entries are never overwritten unless you run `yapyak translate --force`.
 
 This means you can:
 
@@ -142,7 +144,7 @@ This means you can:
 - Hand-edit the 10% that matter (marketing copy, legal, brand voice)
 - Re-run `yapyak translate` later — your hand edits survive
 
-The position-aware rename detection works the same way whether the translation was written by AI or by you.
+**One caveat: renames.** With a translator configured, the default is `preserveTranslationsOnRename: false` — renames clear the value and the AI re-translates. If you've hand-tweaked a translation and don't want it re-translated when you rename the source, either set `preserveTranslationsOnRename: true`, or move the term into [`glossary`](/guide/translators/anthropic#glossary-example) where it's locked across all translations forever.
 
 ## When to skip AI entirely
 

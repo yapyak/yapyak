@@ -19,8 +19,8 @@ So yapyak removes it. The string is the key. There is no `en.json`. The AI handl
 - **Source-as-keys.** `t('Save changes')` is the lookup. No central registry, no naming meeting.
 - **Auto-translate on save.** Anthropic, OpenAI, or any custom translator. Batched, voice-consistent, context-aware.
 - **Position-aware rename memory.** Edit a string and translations migrate without losing existing work.
-- **Per-file scoping.** Same English in two files = two independent entries. The AI disambiguates without you annotating.
-- **Type-safe params.** TypeScript reads the source string and infers the param shape. ICU plurals and selects checked at the call site.
+- **Per-file scoping.** Same source string in two files = two independent entries. The AI disambiguates without you annotating.
+- **ICU plurals and selects at runtime.** `{count, plural, ...}`, `{count, selectordinal, ...}`, `{name, select, ...}`. Per-locale CLDR categories via `Intl.PluralRules`. Recursive interpolation.
 - **One `t` for React, Svelte, Vue.** Reactivity is the only framework-specific piece, exposed as `useLocale`.
 - **SSR adapters.** TanStack Start and SvelteKit. One function call wires per-request locale resolution.
 - **CLI.** Add languages, translate missing, force re-translation, status, CI checks. Zero runtime dependencies.
@@ -37,4 +37,4 @@ So yapyak removes it. The string is the key. There is no `en.json`. The AI handl
 - [Installation](/guide/installation) — install the package, configure the Vite plugin, add your first locale.
 - [How it works](/guide/how-it-works) — what the plugin does on save, how the AI loop is orchestrated, how the runtime resolves locale.
 - [Translations](/guide/translations/) — the `t()` function, params, plurals, forced locale, per-file scoping.
-- [Frameworks](/guide/frameworks/) — React, Svelte, Vue integration.
+- [Locales](/guide/locales/) — adding locales, persistence, the reactive locale binding per framework.

@@ -205,5 +205,5 @@ npx yapyak check
 
 - [How it works](/guide/how-it-works) — the auto-translate pipeline, position-aware renames, compile-time rewrite
 - [Translations](/guide/translations/) — `t()` API, params, plurals, forced locale
-- [Frameworks](/guide/frameworks/) — framework-specific setup guides
+- [Locales](/guide/locales/) — adding locales, persistence, reactive bindings
 - [Translators](/guide/translators/) — Anthropic, OpenAI, custom

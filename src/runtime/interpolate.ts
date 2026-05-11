@@ -5,6 +5,7 @@ export function hasPlaceholder(template: string): boolean {
 export function interpolate(
   template: string,
   params: Record<string, unknown>,
+  locale: string,
 ): string {
   let result = '';
   let index = 0;
@@ -13,7 +14,7 @@ export function interpolate(
     if (char === '{') {
       const end = findMatchingBrace(template, index);
       const token = template.slice(index + 1, end);
-      result += renderToken(token, params);
+      result += renderToken(token, params, locale);
       index = end + 1;
     } else {
       result += char;
@@ -43,6 +44,7 @@ function findMatchingBrace(template: string, openAt: number): number {
 function renderToken(
   token: string,
   params: Record<string, unknown>,
+  locale: string,
 ): string {
   const firstComma = token.indexOf(',');
   if (firstComma === -1) {
@@ -60,11 +62,14 @@ function renderToken(
   const body =
     secondComma === -1 ? '' : afterName.slice(secondComma + 1).trim();
   const value = params[name];
-  if (kind === 'plural' || kind === 'selectordinal') {
-    return resolvePlural(body, Number(value), params);
+  if (kind === 'plural') {
+    return resolvePlural(body, Number(value), params, locale, 'cardinal');
+  }
+  if (kind === 'selectordinal') {
+    return resolvePlural(body, Number(value), params, locale, 'ordinal');
   }
   if (kind === 'select') {
-    return resolveSelect(body, String(value), params);
+    return resolveSelect(body, String(value), params, locale);
   }
   if (kind === 'number') {
     return value === undefined ? '' : String(value);
@@ -76,25 +81,28 @@ function resolvePlural(
   body: string,
   count: number,
   params: Record<string, unknown>,
+  locale: string,
+  type: 'cardinal' | 'ordinal',
 ): string {
   const branches = parseBranches(body);
   const exact = branches.get(`=${count}`);
   if (exact !== undefined) {
-    return interpolate(exact.replace(/#/g, String(count)), params);
+    return interpolate(exact.replace(/#/g, String(count)), params, locale);
   }
-  const category = pluralCategory(count);
+  const category = pluralCategory(locale, count, type);
   const branch = branches.get(category) ?? branches.get('other') ?? '';
-  return interpolate(branch.replace(/#/g, String(count)), params);
+  return interpolate(branch.replace(/#/g, String(count)), params, locale);
 }
 
 function resolveSelect(
   body: string,
   value: string,
   params: Record<string, unknown>,
+  locale: string,
 ): string {
   const branches = parseBranches(body);
   const branch = branches.get(value) ?? branches.get('other') ?? '';
-  return interpolate(branch, params);
+  return interpolate(branch, params, locale);
 }
 
 function parseBranches(body: string): Map<string, string> {
@@ -130,9 +138,18 @@ function parseBranches(body: string): Map<string, string> {
   return branches;
 }
 
-function pluralCategory(count: number): string {
-  if (count === 1) {
-    return 'one';
+const pluralRulesCache = new Map<string, Intl.PluralRules>();
+
+function pluralCategory(
+  locale: string,
+  count: number,
+  type: 'cardinal' | 'ordinal',
+): string {
+  const key = `${locale}:${type}`;
+  let rules = pluralRulesCache.get(key);
+  if (rules === undefined) {
+    rules = new Intl.PluralRules(locale, { type });
+    pluralRulesCache.set(key, rules);
   }
-  return 'other';
+  return rules.select(count);
 }

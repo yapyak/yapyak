@@ -81,7 +81,7 @@ One command scaffolds the files and translates everything in one pass.
 + t('Save changes')
 ```
 
-yapyak compares positions of every `t()` call between saves. String gone at line 23, column 12, new one at the exact same spot — that's a rename, not a delete-and-add. The locale key swaps in place and the new English re-translates in the background. No window where the entry is missing, no flash of fallback English.
+yapyak compares positions of every `t()` call between saves. String gone at line 23, column 12, new one at the exact same spot — that's a rename, not a delete-and-add. The locale key swaps in place and the new source re-translates in the background. No window where the entry is missing, no flash of fallback to the source language.
 
 Exact position matching. No similarity heuristics, no false positives.
 
@@ -89,16 +89,15 @@ Exact position matching. No similarity heuristics, no false positives.
 
 `t('Save')` on a form button vs. `t('Save')` on a settings page can need different translations. Each call is keyed by `(file path, source string)` — two files, two independent entries. The AI gets the file path, component name, and enclosing JSX as context, so `t('Save')` in a `<button>` translates differently from `t('Save')` in an `<h1>`. No annotation needed.
 
-## Typed to the bone
+## ICU at runtime
 
 ```tsx
-t('Hello {name}', { name: 'Joakim' })   // ✓
-t('Hello {name}')                       // ✗ missing { name }
-t('Hello', { name: 'Joakim' })          // ✗ no params expected
+t('Hello {name}', { name: 'Joakim' })
 t('You have {count, plural, one {# item} other {# items}}', { count: 3 })
+t('{name, select, joakim {Hej} other {Hello}}', { name: 'joakim' })
 ```
 
-TypeScript reads the string literal and knows what it asks for. Plurals, selects, named placeholders — all ICU MessageFormat, all checked at the call site.
+Plurals, ordinals, selects, named placeholders, recursive interpolation. Per-locale CLDR categories via `Intl.PluralRules` — Russian gets `one`/`few`/`many`, Arabic gets `zero`/`one`/`two`/`few`/`many`. Plus `t.in(locale)('...')` for forced-locale rendering — emails, multi-locale digests, that sort of thing.
 
 ## Works everywhere Vite works
 
@@ -115,7 +114,8 @@ const [locale, setLocale] = useLocale();
 ```svelte
 <!-- Svelte -->
 <script lang="ts">
-  import { locale, t } from 'yapyak/svelte';
+  import { t } from 'yapyak';
+  import { locale } from 'yapyak/svelte';
 </script>
 
 <button onclick={() => (locale.current = 'es')}>Español</button>
@@ -124,7 +124,8 @@ const [locale, setLocale] = useLocale();
 ```vue
 <!-- Vue -->
 <script setup lang="ts">
-import { locale, t } from 'yapyak/vue';
+import { t } from 'yapyak';
+import { locale } from 'yapyak/vue';
 </script>
 ```
 

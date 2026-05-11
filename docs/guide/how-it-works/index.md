@@ -119,5 +119,5 @@ The CLI shares the same extract/sync/translate machinery as the Vite plugin. `ya
 ## Where to read next
 
 - [Translations / Auto-translation](/guide/translations/auto-translation) — the AI loop in detail
-- [Translations / Position-aware renames](/guide/translations/position-aware-renames) — the rename mechanism, deep
+- [Translations / How renames work](/guide/translations/#how-renames-work) — the rename mechanism
 - [Adapters](/guide/adapters/) — how SSR locale resolution works per framework

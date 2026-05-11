@@ -22,8 +22,8 @@ features:
     details: Edit a string and translations migrate automatically. The classic source-as-keys problem, finally solved.
   - title: Works with React, Svelte, Vue
     details: Same `t()` everywhere. SSR adapters for TanStack Start and SvelteKit ship with the package.
-  - title: Type-safe, ICU-aware
-    details: Params inferred from the source string at compile time. Plurals and selects checked at the call site.
+  - title: ICU at runtime
+    details: Plurals, selects, named placeholders, recursive interpolation. `t.in(locale)` for forced-locale rendering of emails and digests.
   - title: MIT, no telemetry, no Cloud
     details: Built for our own products. No paid tier, no upsell, no SaaS. Bring your AI key, own the whole loop.
 ---

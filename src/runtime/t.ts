@@ -1,3 +1,4 @@
+import { getLocaleStore } from '../locale/store.js';
 import { hasPlaceholder, interpolate } from './interpolate.js';
 import { pick } from './pick.js';
 
@@ -15,7 +16,7 @@ function call(source: string, params?: Record<string, unknown>): string {
   if (params === undefined || !hasPlaceholder(source)) {
     return source;
   }
-  return interpolate(source, params);
+  return interpolate(source, params, getLocaleStore().get());
 }
 
 function inLocale(locale: string): TInLocale {
