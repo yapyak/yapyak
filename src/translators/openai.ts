@@ -1,5 +1,5 @@
 import { type ContextLevel, createTranslator } from './create.js';
-import { fetchWithRetry } from './http.js';
+import { fetchWithRetry } from './fetch.js';
 import type { Translator } from './types.js';
 
 export interface OpenAIOptions {
