@@ -1,4 +1,5 @@
 import { type ContextLevel, createTranslator } from './create.js';
+import { fetchWithRetry } from './http.js';
 import type { Translator } from './types.js';
 
 export interface AnthropicOptions {
@@ -7,21 +8,37 @@ export interface AnthropicOptions {
   context?: ContextLevel;
   endpoint?: string;
   glossary?: Record<string, Record<string, string>>;
+  headers?: Record<string, string>;
+  maxRetries?: number;
   model?: string;
+  temperature?: number;
+  timeout?: number;
   voice?: string;
 }
 
 const DEFAULT_MODEL = 'claude-sonnet-4-6';
 const DEFAULT_ENDPOINT = 'https://api.anthropic.com/v1/messages';
 const ANTHROPIC_VERSION = '2023-06-01';
+const DEFAULT_TEMPERATURE = 0.2;
+const DEFAULT_TIMEOUT = 30_000;
+const DEFAULT_MAX_RETRIES = 2;
 
 export function anthropic(options: AnthropicOptions): Translator {
-  const model = options.model ?? DEFAULT_MODEL;
-  const endpoint = options.endpoint ?? DEFAULT_ENDPOINT;
+  const {
+    apiKey,
+    batchSize,
+    context,
+    endpoint = DEFAULT_ENDPOINT,
+    headers: customHeaders,
+    maxRetries = DEFAULT_MAX_RETRIES,
+    model = DEFAULT_MODEL,
+    temperature = DEFAULT_TEMPERATURE,
+    timeout = DEFAULT_TIMEOUT,
+  } = options;
 
   return createTranslator({
-    batchSize: options.batchSize,
-    context: options.context,
+    batchSize,
+    context,
     async translate({ items, signal, sourceLocale, targetLocale }) {
       const init: RequestInit = {
         body: JSON.stringify({
@@ -31,18 +48,26 @@ export function anthropic(options: AnthropicOptions): Translator {
           ],
           model,
           system: buildSystem(options, sourceLocale, targetLocale),
+          temperature,
         }),
         headers: {
           'anthropic-version': ANTHROPIC_VERSION,
           'content-type': 'application/json',
-          'x-api-key': options.apiKey,
+          'x-api-key': apiKey,
+          ...customHeaders,
         },
         method: 'POST',
       };
+      const fetchInit: Parameters<typeof fetchWithRetry>[0] = {
+        init,
+        maxRetries,
+        timeout,
+        url: endpoint,
+      };
       if (signal !== undefined) {
-        init.signal = signal;
+        fetchInit.signal = signal;
       }
-      const response = await fetch(endpoint, init);
+      const response = await fetchWithRetry(fetchInit);
       if (!response.ok) {
         const text = await response.text();
         throw new Error(
