@@ -68,6 +68,7 @@ export type TInLocale = <Source extends string>(
 ) => string;
 
 function call(source: string, params?: Record<string, unknown>): string {
+  runTrackers();
   if (params === undefined || !hasPlaceholder(source)) {
     return source;
   }

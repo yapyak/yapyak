@@ -188,8 +188,23 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       if (result === null) {
         return null;
       }
-      const withSetup = `import '${SETUP_ID}';\n${result.code}`;
-      return { code: withSetup };
+      return { code: result.code };
+    },
+    transformIndexHtml(): Array<{
+      tag: string;
+      attrs: Record<string, string | boolean>;
+      injectTo: 'head-prepend';
+    }> {
+      return [
+        {
+          attrs: {
+            src: `/@id/${SETUP_ID}`,
+            type: 'module',
+          },
+          injectTo: 'head-prepend',
+          tag: 'script',
+        },
+      ];
     },
     async handleHotUpdate(ctx): Promise<void> {
       if (!isCandidateId(ctx.file, filter)) {
