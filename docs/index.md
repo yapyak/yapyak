@@ -16,7 +16,7 @@ hero:
 features:
   - icon: "⚡"
     title: Auto-translation on save
-    details: Edit a string, save the file, watch every locale update via HMR. AI runs in the background — in your voice, with the call site as context. Finally, i18n that ships as fast as you do.
+    details: Edit a string, save the file, watch every locale update via HMR — in your voice, with the call site as context. Finally, i18n that ships as fast as you do.
 
   - icon: "💸"
     title: Your AI, your bill
@@ -24,15 +24,15 @@ features:
 
   - icon: "🧭"
     title: Context-aware
-    details: The AI sees more than just the string. Component name, enclosing element, surrounding code — the same word in a button translates differently from the same word in a heading. Set the level — none, minimal, or rich.
+    details: The AI sees more than just the string. Component name, enclosing element, surrounding code — the same word in a button translates differently from the same word in a heading. Choose how much code reaches the AI — none, minimal, or rich.
 
   - icon: "📦"
     title: Tree-shaken per chunk
-    details: No runtime JSON. No central catalog. No barrel imports. Each `t()` inlines its variants and tree-shakes per chunk.
+    details: No runtime JSON. No central catalog. No barrel imports. Translations compile inline at the call site, and bundles scale with usage.
 
   - icon: "🌱"
     title: Source code is the truth
-    details: The string is the lookup. No registry, no naming convention, no key to invent. What Tailwind did to CSS class names, yapyak does to translation keys.
+    details: Tailwind killed CSS naming. yapyak kills i18n naming. The source string is the key, the default translation, and lives co-located with your code — no en.json to keep in sync. Source-as-strings, AI-friendly by design.
 
   - icon: "✏️"
     title: Manual translation, too

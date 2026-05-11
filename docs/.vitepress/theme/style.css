@@ -2,25 +2,25 @@
   --vp-home-hero-name-color: transparent;
   --vp-home-hero-name-background: linear-gradient(
     135deg,
-    #e8c8a0,
-    #d4b89c,
-    #a8845a
+    #5cd6e0,
+    #3dbfd1,
+    #146e80
   );
   --vp-home-hero-image-background-image: radial-gradient(
     circle,
-    #d4b89c33 0%,
+    #3dbfd133 0%,
     transparent 70%
   );
   --vp-home-hero-image-filter: blur(44px);
-  --vp-c-brand-1: #6e4824;
-  --vp-c-brand-2: #8a5a3a;
-  --vp-c-brand-3: #a8744a;
-  --vp-c-brand-soft: #a8744a24;
+  --vp-c-brand-1: #0e5a6e;
+  --vp-c-brand-2: #146e80;
+  --vp-c-brand-3: #1f8298;
+  --vp-c-brand-soft: #14708024;
 }
 
 .dark {
-  --vp-c-brand-1: #e8c8a0;
-  --vp-c-brand-2: #d4b89c;
-  --vp-c-brand-3: #a8845a;
-  --vp-c-brand-soft: #d4b89c29;
+  --vp-c-brand-1: #5cd6e0;
+  --vp-c-brand-2: #3dbfd1;
+  --vp-c-brand-3: #146e80;
+  --vp-c-brand-soft: #3dbfd129;
 }
