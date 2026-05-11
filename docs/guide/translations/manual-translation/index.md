@@ -99,6 +99,8 @@ Without a translator, this creates `locales/es.json` with every `t()` call scaff
 
 Fill in stubs at your own pace. Untranslated keys fall back to the source string at runtime, so a half-finished locale still renders.
 
+If you're handing the work off to a translator instead of typing the values yourself, snapshot the file with `yapyak export es` and send it along. See [handing off to a translator](#handing-off-to-a-translator) for the round-trip.
+
 ## Renames keep your translations
 
 Without a translator, this is the feature that makes source-as-keys viable at all. Rename `t('Save')` to `t('Save changes')` and your existing translations stay attached.
@@ -146,15 +148,57 @@ Drop `yapyak check` into your pipeline and the build fails the moment someone ad
 
 No empty stubs in production.
 
+## Handing off to a translator
+
+The fastest path: snapshot one locale, send the file, get it back, drop it in.
+
+```bash
+yapyak export sv > sv.json
+```
+
+`sv.json` contains every source string plus the current translation (or empty stub) for each, wrapped with the locale code so the file is self-identifying:
+
+```json
+{
+  "sv": {
+    "src/components/save-button.tsx": {
+      "Save changes": ""
+    },
+    "src/components/cancel-button.tsx": {
+      "Cancel": ""
+    }
+  }
+}
+```
+
+Each entry has the source string as the key — the translator sees the original directly. Empty values are stubs waiting to be filled; non-empty values are existing translations they can revise.
+
+When you get the file back, unwrap the top key and overwrite `locales/sv.json`:
+
+```bash
+jq '.sv' sv.json.translated > locales/sv.json
+```
+
+Sending multiple locales to the same translator? List them:
+
+```bash
+yapyak export sv nb da > nordics.json
+```
+
+All three wrapped in one file, each independent.
+
 ## TMS integration
 
-`locales/*.json` is plain JSON keyed by file path, then by source string. Any translation management system that handles flat or nested JSON works:
+For Crowdin, Lokalise, Phrase, POEditor, Transifex — anything that wants one file per locale in a directory:
 
-- **Crowdin** — point a source file pattern at `locales/en.json` (or export a flat copy)
-- **Lokalise** — JSON connector reads the structure as-is
-- **Phrase / POEditor / Transifex** — same
+```bash
+yapyak export --split --out tms-export/
+# writes tms-export/en.json, tms-export/sv.json, etc.
+```
 
-Round-trip: export `locales/*.json` to your TMS, translators do their work, import the result back. Commit. yapyak's structure stays intact because the keys are stable (file path + source string), not opaque IDs that shift around.
+Each file is wrapped with its locale code, so it travels safely outside `locales/` without losing its identity. Point your TMS at `tms-export/`, do the round-trip, then import the results back into `locales/*.json` (unwrap the top key).
+
+`yapyak export` refuses to write inside `locales/` — that directory is owned by the plugin and represents the canonical on-disk state, not a derived snapshot.
 
 ## Mixing manual and AI
 

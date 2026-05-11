@@ -1,0 +1,184 @@
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, isAbsolute, join, resolve } from 'node:path';
+import { collect } from '../collect.js';
+import { color, symbol } from '../tui.js';
+
+export interface ExportOptions {
+  locales: string[];
+  out: string | undefined;
+  projectRoot: string;
+  split: boolean;
+}
+
+type LocaleData = Record<string, Record<string, string>>;
+type Snapshot = Record<string, LocaleData>;
+
+export function exportCommand(options: ExportOptions): number {
+  const { locales: localeFilter, out, projectRoot, split } = options;
+
+  if (split && out === undefined) {
+    process.stdout.write(
+      `\n  ${symbol.cross} ${color.red('--split requires --out=<dir>')}\n\n`,
+    );
+    return 1;
+  }
+
+  if (out !== undefined && isInsideLocalesDir(out, projectRoot)) {
+    process.stdout.write(
+      `\n  ${symbol.cross} ${color.red('yapyak export refuses to write inside locales/.')}\n  ${color.dim('That directory is owned by the plugin and represents the on-disk state, not a derived snapshot.')}\n\n`,
+    );
+    return 1;
+  }
+
+  const collected = collect({ projectRoot });
+  const allLocales = collected.locales;
+  const targetLocales =
+    localeFilter.length === 0
+      ? allLocales
+      : localeFilter.filter((locale) => allLocales.includes(locale));
+
+  const unknown = localeFilter.filter((locale) => !allLocales.includes(locale));
+  if (unknown.length > 0) {
+    process.stdout.write(
+      `\n  ${symbol.cross} ${color.red(`Unknown locale${unknown.length > 1 ? 's' : ''}: ${unknown.join(', ')}`)}\n  ${color.dim(`Known: ${allLocales.join(', ')}`)}\n\n`,
+    );
+    return 1;
+  }
+
+  const sourcesByFile = buildSourcesByFile(collected.messages);
+  const snapshot = buildSnapshot({
+    defaultLocale: collected.defaultLocale,
+    localesDir: join(projectRoot, 'locales'),
+    sourcesByFile,
+    targetLocales,
+  });
+
+  if (split) {
+    const outDir = resolve(projectRoot, out as string);
+    if (!existsSync(outDir)) {
+      mkdirSync(outDir, { recursive: true });
+    }
+    for (const [locale, data] of Object.entries(snapshot)) {
+      const wrapped = { [locale]: data };
+      writeFileSync(join(outDir, `${locale}.json`), stringify(wrapped));
+    }
+    process.stdout.write(
+      `  ${symbol.check} Exported ${color.bold(String(Object.keys(snapshot).length))} locale${Object.keys(snapshot).length === 1 ? '' : 's'} to ${color.bold(out as string)}/\n`,
+    );
+    return 0;
+  }
+
+  const payload = stringify(snapshot);
+  if (out === undefined) {
+    process.stdout.write(`${payload}\n`);
+    return 0;
+  }
+  const outPath = resolve(projectRoot, out);
+  mkdirSync(dirname(outPath), { recursive: true });
+  writeFileSync(outPath, payload);
+  process.stdout.write(
+    `  ${symbol.check} Wrote ${color.bold(out)} (${Object.keys(snapshot).length} locale${Object.keys(snapshot).length === 1 ? '' : 's'})\n`,
+  );
+  return 0;
+}
+
+function buildSourcesByFile(
+  messages: { fileId: string; source: string }[],
+): Map<string, Set<string>> {
+  const map = new Map<string, Set<string>>();
+  for (const message of messages) {
+    let sources = map.get(message.fileId);
+    if (sources === undefined) {
+      sources = new Set();
+      map.set(message.fileId, sources);
+    }
+    sources.add(message.source);
+  }
+  return map;
+}
+
+function buildSnapshot(args: {
+  defaultLocale: string;
+  localesDir: string;
+  sourcesByFile: Map<string, Set<string>>;
+  targetLocales: string[];
+}): Snapshot {
+  const snapshot: Snapshot = {};
+  for (const locale of args.targetLocales) {
+    snapshot[locale] = buildLocaleData({
+      isDefault: locale === args.defaultLocale,
+      localePath: join(args.localesDir, `${locale}.json`),
+      sourcesByFile: args.sourcesByFile,
+    });
+  }
+  return snapshot;
+}
+
+function buildLocaleData(args: {
+  isDefault: boolean;
+  localePath: string;
+  sourcesByFile: Map<string, Set<string>>;
+}): LocaleData {
+  const onDisk = args.isDefault ? {} : readLocaleFile(args.localePath);
+  const result: LocaleData = {};
+  for (const [fileId, sources] of args.sourcesByFile) {
+    const entries: Record<string, string> = {};
+    const fileEntries = onDisk[fileId] ?? {};
+    for (const source of sources) {
+      if (args.isDefault) {
+        entries[source] = source;
+      } else {
+        entries[source] = fileEntries[source] ?? '';
+      }
+    }
+    result[fileId] = entries;
+  }
+  return result;
+}
+
+function readLocaleFile(path: string): LocaleData {
+  if (!existsSync(path)) {
+    return {};
+  }
+  const content = readFileSync(path, 'utf-8');
+  if (content.trim() === '') {
+    return {};
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(content);
+  } catch {
+    return {};
+  }
+  if (typeof parsed !== 'object' || parsed === null) {
+    return {};
+  }
+  const out: LocaleData = {};
+  for (const [fileId, entries] of Object.entries(
+    parsed as Record<string, unknown>,
+  )) {
+    if (typeof entries !== 'object' || entries === null) {
+      continue;
+    }
+    const flat: Record<string, string> = {};
+    for (const [source, value] of Object.entries(
+      entries as Record<string, unknown>,
+    )) {
+      if (typeof value === 'string') {
+        flat[source] = value;
+      }
+    }
+    out[fileId] = flat;
+  }
+  return out;
+}
+
+function isInsideLocalesDir(out: string, projectRoot: string): boolean {
+  const absOut = isAbsolute(out) ? out : resolve(projectRoot, out);
+  const absLocales = resolve(projectRoot, 'locales');
+  return absOut === absLocales || absOut.startsWith(`${absLocales}/`);
+}
+
+function stringify(value: unknown): string {
+  return `${JSON.stringify(value, null, 2)}\n`;
+}

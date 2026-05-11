@@ -146,11 +146,14 @@ sveltekit();
 ## CLI
 
 ```bash
-yapyak add <locale...>       add locales, auto-translate everything
-yapyak translate             fill missing across every locale
-yapyak translate es --force  re-translate one locale
-yapyak status                coverage report
-yapyak check                 exits 1 if anything is missing — for CI
+yapyak add <locale...>           add locales, auto-translate everything
+yapyak translate                 fill missing across every locale
+yapyak translate es --force      re-translate one locale
+yapyak export                    snapshot all locales as wrapped JSON (stdout)
+yapyak export sv en              snapshot just these locales
+yapyak export --split --out tms/ one file per locale into a directory
+yapyak status                    coverage report
+yapyak check                     exits 1 if anything is missing — for CI
 ```
 
 ## Vite-only

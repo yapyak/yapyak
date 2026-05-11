@@ -109,7 +109,7 @@ The translator runs at build time only — the production runtime makes zero AI 
 
 ## On `yapyak <command>` from the CLI
 
-The CLI shares the same extract/sync/translate machinery as the Vite plugin. `yapyak add fr` walks your source, extracts every `t()` call, creates `locales/fr.json`, batches all strings to your translator, and writes the result. `yapyak translate` fills missing translations across existing locales. `yapyak status` reports coverage. None of these commands require Vite to be running — they're independent entry points to the same library code.
+The CLI shares the same extract/sync/translate machinery as the Vite plugin. `yapyak add fr` walks your source, extracts every `t()` call, creates `locales/fr.json`, batches all strings to your translator, and writes the result. `yapyak translate` fills missing translations across existing locales. `yapyak status` reports coverage. `yapyak export` snapshots locales (including the source language extracted from your code) into a wrapped JSON for handoff to translators or TMS pipelines. None of these commands require Vite to be running — they're independent entry points to the same library code.
 
 ## What stays out of the picture
 
