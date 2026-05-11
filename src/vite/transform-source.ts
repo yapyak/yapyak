@@ -166,7 +166,8 @@ function singleQuoteString(value: string): string {
     .replace(/\n/g, '\\n')
     .replace(/\r/g, '\\r')
     .replace(/\u2028/g, '\\u2028')
-    .replace(/\u2029/g, '\\u2029');
+    .replace(/\u2029/g, '\\u2029')
+    .replace(/\}/g, '\\u007D');
   return `'${escaped}'`;
 }
 
