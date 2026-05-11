@@ -10,28 +10,28 @@ export function interpolate(
   let result = '';
   let index = 0;
   while (index < template.length) {
-    const char = template[index];
-    if (char === '{') {
+    const character = template[index];
+    if (character === '{') {
       const end = findMatchingBrace(template, index);
       const token = template.slice(index + 1, end);
       result += renderToken(token, params, locale);
       index = end + 1;
     } else {
-      result += char;
+      result += character;
       index++;
     }
   }
   return result;
 }
 
-function findMatchingBrace(template: string, openAt: number): number {
+function findMatchingBrace(template: string, openIndex: number): number {
   let depth = 1;
-  let index = openAt + 1;
+  let index = openIndex + 1;
   while (index < template.length && depth > 0) {
-    const char = template[index];
-    if (char === '{') {
+    const character = template[index];
+    if (character === '{') {
       depth++;
-    } else if (char === '}') {
+    } else if (character === '}') {
       depth--;
     }
     if (depth > 0) {
@@ -72,7 +72,13 @@ function renderToken(
     return resolveSelect(body, String(value), params, locale);
   }
   if (kind === 'number') {
-    return value === undefined ? '' : String(value);
+    return formatNumber(value, body, locale);
+  }
+  if (kind === 'date') {
+    return formatDate(value, body, locale);
+  }
+  if (kind === 'time') {
+    return formatTime(value, body, locale);
   }
   return value === undefined ? '' : String(value);
 }
@@ -145,11 +151,128 @@ function pluralCategory(
   count: number,
   type: 'cardinal' | 'ordinal',
 ): string {
-  const key = `${locale}:${type}`;
-  let rules = pluralRulesCache.get(key);
+  const cacheKey = `${locale}:${type}`;
+  let rules = pluralRulesCache.get(cacheKey);
   if (rules === undefined) {
     rules = new Intl.PluralRules(locale, { type });
-    pluralRulesCache.set(key, rules);
+    pluralRulesCache.set(cacheKey, rules);
   }
   return rules.select(count);
+}
+
+const dateTimeFormatCache = new Map<string, Intl.DateTimeFormat>();
+const numberFormatCache = new Map<string, Intl.NumberFormat>();
+
+type DateTimeStyle = 'short' | 'medium' | 'long' | 'full';
+
+function parseDateTimeStyle(style: string): DateTimeStyle {
+  const trimmed = style.trim();
+  if (
+    trimmed === 'short' ||
+    trimmed === 'medium' ||
+    trimmed === 'long' ||
+    trimmed === 'full'
+  ) {
+    return trimmed;
+  }
+  return 'medium';
+}
+
+function getDateFormatter(
+  locale: string,
+  styleArgument: string,
+): Intl.DateTimeFormat {
+  const style = parseDateTimeStyle(styleArgument);
+  const cacheKey = `date:${locale}:${style}`;
+  let formatter = dateTimeFormatCache.get(cacheKey);
+  if (formatter === undefined) {
+    formatter = new Intl.DateTimeFormat(locale, { dateStyle: style });
+    dateTimeFormatCache.set(cacheKey, formatter);
+  }
+  return formatter;
+}
+
+function getTimeFormatter(
+  locale: string,
+  styleArgument: string,
+): Intl.DateTimeFormat {
+  const style = parseDateTimeStyle(styleArgument);
+  const cacheKey = `time:${locale}:${style}`;
+  let formatter = dateTimeFormatCache.get(cacheKey);
+  if (formatter === undefined) {
+    formatter = new Intl.DateTimeFormat(locale, { timeStyle: style });
+    dateTimeFormatCache.set(cacheKey, formatter);
+  }
+  return formatter;
+}
+
+function getNumberFormatter(
+  locale: string,
+  styleArgument: string,
+): Intl.NumberFormat {
+  const cacheKey = `number:${locale}:${styleArgument}`;
+  let formatter = numberFormatCache.get(cacheKey);
+  if (formatter === undefined) {
+    formatter = new Intl.NumberFormat(locale, parseNumberOptions(styleArgument));
+    numberFormatCache.set(cacheKey, formatter);
+  }
+  return formatter;
+}
+
+function parseNumberOptions(
+  styleArgument: string,
+): Intl.NumberFormatOptions {
+  const trimmed = styleArgument.trim();
+  if (trimmed === '' || trimmed === 'decimal') {
+    return {};
+  }
+  if (trimmed === 'percent') {
+    return { style: 'percent' };
+  }
+  if (trimmed === 'integer') {
+    return { maximumFractionDigits: 0 };
+  }
+  if (trimmed.startsWith('currency')) {
+    const currencyCode = trimmed.slice('currency'.length).trim() || 'USD';
+    return { style: 'currency', currency: currencyCode };
+  }
+  return {};
+}
+
+function toDate(value: unknown): Date | null {
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value;
+  }
+  if (typeof value === 'number' || typeof value === 'string') {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+  return null;
+}
+
+function formatDate(value: unknown, body: string, locale: string): string {
+  const date = toDate(value);
+  if (date === null) {
+    return '';
+  }
+  return getDateFormatter(locale, body).format(date);
+}
+
+function formatTime(value: unknown, body: string, locale: string): string {
+  const date = toDate(value);
+  if (date === null) {
+    return '';
+  }
+  return getTimeFormatter(locale, body).format(date);
+}
+
+function formatNumber(value: unknown, body: string, locale: string): string {
+  if (value === undefined || value === null) {
+    return '';
+  }
+  const numericValue = Number(value);
+  if (Number.isNaN(numericValue)) {
+    return String(value);
+  }
+  return getNumberFormatter(locale, body).format(numericValue);
 }

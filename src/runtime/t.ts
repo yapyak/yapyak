@@ -8,13 +8,14 @@ type Trim<Source extends string> = Source extends ` ${infer Rest}`
     ? Trim<Rest>
     : Source;
 
-type SimpleParam<Placeholder extends string> = Trim<Placeholder> extends ''
-  ? Record<string, never>
-  : { [Key in Trim<Placeholder>]: string | number };
+type SimpleParam<Placeholder extends string> =
+  Trim<Placeholder> extends ''
+    ? Record<string, never>
+    : { [Key in Trim<Placeholder>]: string | number };
 
-export type ExtractParams<
+type ResolveIcuPattern<
   Source extends string,
-  Accumulated = unknown,
+  Accumulated,
 > = Source extends `${string}{${infer Name}, plural,${string}}}${infer Rest}`
   ? ExtractParams<Rest, Accumulated & { [Key in Trim<Name>]: number }>
   : Source extends `${string}{${infer Name}, selectordinal,${string}}}${infer Rest}`
@@ -23,18 +24,33 @@ export type ExtractParams<
       ? ExtractParams<Rest, Accumulated & { [Key in Trim<Name>]: string }>
       : Source extends `${string}{${infer Name}, number${string}}${infer Rest}`
         ? ExtractParams<Rest, Accumulated & { [Key in Trim<Name>]: number }>
-        : Source extends `${string}{${infer Placeholder}}${infer Rest}`
-          ? ExtractParams<Rest, Accumulated & SimpleParam<Placeholder>>
-          : Accumulated extends unknown
-            ? { [Key in keyof Accumulated]: Accumulated[Key] }
-            : Accumulated;
+        : Source extends `${string}{${infer Name}, date${string}}${infer Rest}`
+          ? ExtractParams<Rest, Accumulated & { [Key in Trim<Name>]: Date | number }>
+          : Source extends `${string}{${infer Name}, time${string}}${infer Rest}`
+            ? ExtractParams<Rest, Accumulated & { [Key in Trim<Name>]: Date | number }>
+            : Source extends `${string}{${infer Name},${string}}${infer Rest}`
+              ? ExtractParams<Rest, Accumulated & { [Key in Trim<Name>]: unknown }>
+              : Accumulated extends unknown
+                ? { [Key in keyof Accumulated]: Accumulated[Key] }
+                : Accumulated;
+
+export type ExtractParams<
+  Source extends string,
+  Accumulated = unknown,
+> = Source extends `${string}{${infer Placeholder}}${infer Rest}`
+  ? Placeholder extends `${string},${string}`
+    ? ResolveIcuPattern<Source, Accumulated>
+    : ExtractParams<Rest, Accumulated & SimpleParam<Placeholder>>
+  : Accumulated extends unknown
+    ? { [Key in keyof Accumulated]: Accumulated[Key] }
+    : Accumulated;
 
 type IsEmpty<T> = keyof T extends never ? true : false;
 
-// biome-ignore lint/complexity/noBannedTypes: intentional
 type Params<Source extends string> = Source extends `${string}{${string}`
   ? ExtractParams<Source>
-  : {};
+  : // biome-ignore lint/complexity/noBannedTypes: intentional
+    {};
 
 export interface T {
   <Source extends string>(
@@ -46,14 +62,10 @@ export interface T {
   in(locale: string): TInLocale;
 }
 
-export interface TInLocale {
-  <Source extends string>(
-    source: Source,
-    ...args: IsEmpty<Params<Source>> extends true
-      ? []
-      : [params: Params<Source>]
-  ): string;
-}
+export type TInLocale = <Source extends string>(
+  source: Source,
+  ...args: IsEmpty<Params<Source>> extends true ? [] : [params: Params<Source>]
+) => string;
 
 function call(source: string, params?: Record<string, unknown>): string {
   if (params === undefined || !hasPlaceholder(source)) {
