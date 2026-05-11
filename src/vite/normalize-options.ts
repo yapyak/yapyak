@@ -40,15 +40,26 @@ export const DEFAULT_INCLUDE: string[] = [
 ];
 
 export const DEFAULT_EXCLUDE: string[] = [
+  '**/.*/**',
   'node_modules/**',
   'dist/**',
   'build/**',
-  '.next/**',
-  '.svelte-kit/**',
-  '.vercel/**',
-  '.output/**',
+  'out/**',
+  'coverage/**',
+  'playwright-report/**',
+  'test-results/**',
+  'storybook-static/**',
+  'public/**',
+  '**/routeTree.gen.*',
+  '**/*.gen.{ts,tsx,js,jsx,mjs,cjs}',
   '**/*.test.*',
   '**/*.spec.*',
+  '**/__tests__/**',
+  '**/cypress/**',
+  '**/playwright/**',
+  '**/e2e/**',
+  '*.config.{ts,js,mjs,cjs}',
+  '**/*.d.ts',
 ];
 
 export function normalizeOptions(options: YapyakOptions): NormalizedOptions {

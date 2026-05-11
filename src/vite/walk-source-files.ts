@@ -11,13 +11,7 @@ export interface WalkedFile {
   fileId: string;
 }
 
-const ALWAYS_SKIP_DIRS = new Set([
-  'node_modules',
-  '.git',
-  '.vite',
-  '.cache',
-  '.turbo',
-]);
+const PROBE_FILE = '__yapyak_probe__.ts';
 
 export function walkSourceFiles(options: WalkOptions): WalkedFile[] {
   const results: WalkedFile[] = [];
@@ -38,9 +32,6 @@ function walk(
     return;
   }
   for (const name of entries) {
-    if (ALWAYS_SKIP_DIRS.has(name)) {
-      continue;
-    }
     const fullPath = join(dir, name);
     let stat;
     try {
@@ -49,6 +40,9 @@ function walk(
       continue;
     }
     if (stat.isDirectory()) {
+      if (!filter(join(fullPath, PROBE_FILE))) {
+        continue;
+      }
       walk(fullPath, projectRoot, filter, results);
       continue;
     }
