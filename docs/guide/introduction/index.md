@@ -1,6 +1,6 @@
 # Introduction
 
-yapyak is AI-native i18n for Vite. Your source code is the source of truth. Translations are side-effects.
+yapyak is an AI-native i18n library for Vite. Your source code is the source of truth. Translations are side-effects.
 
 You write `t('Save changes')` in your component. The plugin extracts it, sends it to Anthropic, OpenAI, Gemini, or Ollama — with your voice, the file path, and surrounding element as context — and writes translations to every locale. HMR pushes the new copy live before you switch tabs.
 
