@@ -77,14 +77,28 @@ Internally, `locale` wraps a Svelte 5 `$state` rune. Reactivity is automatic whe
 
 ## SSR with SvelteKit
 
-For server-rendered Svelte via SvelteKit, add the adapter to `hooks.server.ts`:
+Two pieces, used independently.
+
+**SSR locale resolution** — required for SSR. Wires per-request locale from cookie + `Accept-Language`:
 
 ```ts
 // src/hooks.server.ts
-export { handle } from 'yapyak/adapters/sveltekit';
+import { sveltekit } from 'yapyak/adapters/sveltekit';
+
+sveltekit();
 ```
 
-And add the language placeholder to `app.html`:
+After this, `getLocale()` and `t()` both return the right values for each request, with no leakage between concurrent requests.
+
+**`<html lang>` injection** — optional. If you want the resolved locale to land in the `lang` attribute, opt into the handle and use the placeholder in `app.html`:
+
+```ts
+// src/hooks.server.ts
+import { sveltekit, handle } from 'yapyak/adapters/sveltekit';
+
+sveltekit();
+export { handle };
+```
 
 ```html
 <!-- src/app.html -->
@@ -97,7 +111,9 @@ And add the language placeholder to `app.html`:
 </html>
 ```
 
-The adapter resolves the locale per request from cookie + `Accept-Language`, replaces `%yapyak.lang%` with the resolved value, and ensures `getLocale()` returns the right locale during render. See [Adapters / SvelteKit](/guide/adapters/sveltekit) for details.
+`handle` does one thing: replaces `%yapyak.lang%` with the current locale. It does not wire `setRequestSource` — that's `sveltekit()`'s job. Use either together or just `sveltekit()` alone.
+
+See [Adapters / SvelteKit](/guide/adapters/sveltekit) for the deeper details.
 
 ## SPA without SSR
 

@@ -139,7 +139,7 @@ If `persistence: 'cookie'` is set in `vite.config.ts`, the choice is stored auto
 
 ## SSR setup
 
-For server-rendered apps, add the adapter to your root layout:
+For server-rendered apps, wire the adapter once. The adapter resolves locale per request from cookie or `Accept-Language`.
 
 ::: code-group
 
@@ -149,20 +149,41 @@ tanstackStart();
 ```
 
 ```ts [SvelteKit (in hooks.server.ts)]
-export { handle } from 'yapyak/adapters/sveltekit';
+import { sveltekit } from 'yapyak/adapters/sveltekit';
+sveltekit();
 ```
 
 :::
 
-That's the entirety of the SSR wiring. The adapter resolves locale per request from cookie or `Accept-Language`.
+That's the entirety of the SSR wiring.
 
-Use `getLocale()` anywhere — same import on server and client:
+### Wiring `<html lang>` (optional)
 
-```tsx
+If you want the resolved locale to drive the `lang` attribute on the root HTML element, opt in. Two patterns depending on framework.
+
+::: code-group
+
+```tsx [TanStack Start]
 import { getLocale } from 'yapyak';
 
+// in your root component
 <html lang={getLocale()}>
 ```
+
+```ts [SvelteKit (hooks.server.ts)]
+import { sveltekit, handle } from 'yapyak/adapters/sveltekit';
+
+sveltekit();
+export { handle };  // replaces %yapyak.lang% in app.html
+```
+
+```html [SvelteKit (app.html)]
+<html lang="%yapyak.lang%">
+```
+
+:::
+
+The `handle` export from `yapyak/adapters/sveltekit` is **only** for the `<html lang>` placeholder. SSR locale resolution is wired by `sveltekit()` alone — `handle` is optional.
 
 ## Verify
 

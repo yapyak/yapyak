@@ -207,13 +207,27 @@ import { tanstackStart } from 'yapyak/adapters/tanstack-start';
 tanstackStart();
 
 // Svelte + SvelteKit (in hooks.server.ts)
-export { handle } from 'yapyak/adapters/sveltekit';
+import { sveltekit } from 'yapyak/adapters/sveltekit';
+sveltekit();
 ```
 
-Same `getLocale()` import on server and client:
+Optional: wire the resolved locale to `<html lang>`. On TanStack Start, write it directly in your root component. On SvelteKit, opt into the placeholder transform.
 
 ```tsx
+// React: just user code
 <html lang={getLocale()}>
+```
+
+```ts
+// SvelteKit (hooks.server.ts): import + re-export the handle
+import { sveltekit, handle } from 'yapyak/adapters/sveltekit';
+sveltekit();
+export { handle };
+```
+
+```html
+<!-- SvelteKit (app.html): use the placeholder -->
+<html lang="%yapyak.lang%">
 ```
 
 ## vs other libraries
