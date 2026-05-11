@@ -1,10 +1,9 @@
 import { type ContextLevel, createTranslator } from './create.js';
 import { fetchWithRetry } from './fetch.js';
-import { buildSystem, stripCodeFence } from './prompt.js';
+import { buildSystem } from './prompt.js';
 import type { Translator } from './types.js';
 
-export interface AnthropicOptions {
-  apiKey: string;
+export interface OllamaOptions {
   batchSize?: number;
   context?: ContextLevel;
   endpoint?: string;
@@ -17,16 +16,14 @@ export interface AnthropicOptions {
   voice?: string;
 }
 
-const DEFAULT_MODEL = 'claude-sonnet-4-6';
-const DEFAULT_ENDPOINT = 'https://api.anthropic.com/v1/messages';
-const ANTHROPIC_VERSION = '2023-06-01';
+const DEFAULT_MODEL = 'llama3.1';
+const DEFAULT_ENDPOINT = 'http://localhost:11434/api/generate';
 const DEFAULT_TEMPERATURE = 0.2;
-const DEFAULT_TIMEOUT = 30_000;
-const DEFAULT_MAX_RETRIES = 2;
+const DEFAULT_TIMEOUT = 120_000;
+const DEFAULT_MAX_RETRIES = 1;
 
-export function anthropic(options: AnthropicOptions): Translator {
+export function ollama(options: OllamaOptions = {}): Translator {
   const {
-    apiKey,
     batchSize,
     context,
     endpoint = DEFAULT_ENDPOINT,
@@ -44,18 +41,17 @@ export function anthropic(options: AnthropicOptions): Translator {
       const { items, signal, sourceLocale, targetLocale } = params;
       const init: RequestInit = {
         body: JSON.stringify({
-          max_tokens: Math.max(1024, items.length * 256),
-          messages: [
-            { content: JSON.stringify(items), role: 'user' },
-          ],
+          format: 'json',
           model,
+          options: {
+            temperature,
+          },
+          prompt: JSON.stringify(items),
+          stream: false,
           system: buildSystem(options, sourceLocale, targetLocale),
-          temperature,
         }),
         headers: {
-          'anthropic-version': ANTHROPIC_VERSION,
           'content-type': 'application/json',
-          'x-api-key': apiKey,
           ...customHeaders,
         },
         method: 'POST',
@@ -73,22 +69,21 @@ export function anthropic(options: AnthropicOptions): Translator {
       if (!response.ok) {
         const text = await response.text();
         throw new Error(
-          `yapyak/translators/anthropic: ${response.status} ${text}`,
+          `yapyak/translators/ollama: ${response.status} ${text}`,
         );
       }
-      const body = (await response.json()) as AnthropicMessageResponse;
-      const text = body.content?.[0]?.text;
+      const responseBody = (await response.json()) as OllamaResponse;
+      const text = responseBody.response;
       if (typeof text !== 'string') {
         throw new Error(
-          'yapyak/translators/anthropic: response did not contain a text block',
+          'yapyak/translators/ollama: response did not contain a response field',
         );
       }
-      const cleaned = stripCodeFence(text.trim());
-      return JSON.parse(cleaned) as string[];
+      return JSON.parse(text.trim()) as string[];
     },
   });
 }
 
-interface AnthropicMessageResponse {
-  content?: Array<{ text?: string; type: string }>;
+interface OllamaResponse {
+  response?: string;
 }

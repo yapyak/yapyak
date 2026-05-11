@@ -52,6 +52,14 @@
     "./translators/openai": {
       "types": "./dist/translators/openai.d.ts",
       "default": "./dist/translators/openai.js"
+    },
+    "./translators/gemini": {
+      "types": "./dist/translators/gemini.d.ts",
+      "default": "./dist/translators/gemini.js"
+    },
+    "./translators/ollama": {
+      "types": "./dist/translators/ollama.d.ts",
+      "default": "./dist/translators/ollama.js"
     }
   },
   "bin": {

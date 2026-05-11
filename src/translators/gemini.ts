@@ -3,7 +3,7 @@ import { fetchWithRetry } from './fetch.js';
 import { buildSystem, stripCodeFence } from './prompt.js';
 import type { Translator } from './types.js';
 
-export interface OpenAIOptions {
+export interface GeminiOptions {
   apiKey: string;
   batchSize?: number;
   context?: ContextLevel;
@@ -12,21 +12,18 @@ export interface OpenAIOptions {
   headers?: Record<string, string>;
   maxRetries?: number;
   model?: string;
-  organization?: string;
-  seed?: number;
   temperature?: number;
   timeout?: number;
-  user?: string;
   voice?: string;
 }
 
-const DEFAULT_MODEL = 'gpt-5-mini';
-const DEFAULT_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
+const DEFAULT_MODEL = 'gemini-2.5-flash';
+const DEFAULT_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta';
 const DEFAULT_TEMPERATURE = 0.2;
 const DEFAULT_TIMEOUT = 30_000;
 const DEFAULT_MAX_RETRIES = 2;
 
-export function openai(options: OpenAIOptions): Translator {
+export function gemini(options: GeminiOptions): Translator {
   const {
     apiKey,
     batchSize,
@@ -35,11 +32,8 @@ export function openai(options: OpenAIOptions): Translator {
     headers: customHeaders,
     maxRetries = DEFAULT_MAX_RETRIES,
     model = DEFAULT_MODEL,
-    organization,
-    seed,
     temperature = DEFAULT_TEMPERATURE,
     timeout = DEFAULT_TIMEOUT,
-    user,
   } = options;
 
   return createTranslator({
@@ -47,41 +41,37 @@ export function openai(options: OpenAIOptions): Translator {
     context,
     async translate(params) {
       const { items, signal, sourceLocale, targetLocale } = params;
-      const body: Record<string, unknown> = {
-        messages: [
-          {
-            content: buildSystem(options, sourceLocale, targetLocale),
-            role: 'system',
-          },
-          { content: JSON.stringify(items), role: 'user' },
-        ],
-        model,
-        temperature,
-      };
-      if (seed !== undefined) {
-        body.seed = seed;
-      }
-      if (user !== undefined) {
-        body.user = user;
-      }
-      const headers: Record<string, string> = {
-        authorization: `Bearer ${apiKey}`,
-        'content-type': 'application/json',
-        ...customHeaders,
-      };
-      if (organization !== undefined) {
-        headers['OpenAI-Organization'] = organization;
-      }
+      const url = `${endpoint}/models/${model}:generateContent`;
       const init: RequestInit = {
-        body: JSON.stringify(body),
-        headers,
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [{ text: JSON.stringify(items) }],
+              role: 'user',
+            },
+          ],
+          generationConfig: {
+            responseMimeType: 'application/json',
+            temperature,
+          },
+          systemInstruction: {
+            parts: [
+              { text: buildSystem(options, sourceLocale, targetLocale) },
+            ],
+          },
+        }),
+        headers: {
+          'content-type': 'application/json',
+          'x-goog-api-key': apiKey,
+          ...customHeaders,
+        },
         method: 'POST',
       };
       const fetchInit: Parameters<typeof fetchWithRetry>[0] = {
         init,
         maxRetries,
         timeout,
-        url: endpoint,
+        url,
       };
       if (signal !== undefined) {
         fetchInit.signal = signal;
@@ -90,14 +80,14 @@ export function openai(options: OpenAIOptions): Translator {
       if (!response.ok) {
         const text = await response.text();
         throw new Error(
-          `yapyak/translators/openai: ${response.status} ${text}`,
+          `yapyak/translators/gemini: ${response.status} ${text}`,
         );
       }
-      const responseBody = (await response.json()) as OpenAIChatResponse;
-      const text = responseBody.choices?.[0]?.message?.content;
+      const responseBody = (await response.json()) as GeminiResponse;
+      const text = responseBody.candidates?.[0]?.content?.parts?.[0]?.text;
       if (typeof text !== 'string') {
         throw new Error(
-          'yapyak/translators/openai: response did not contain a text block',
+          'yapyak/translators/gemini: response did not contain a text part',
         );
       }
       const cleaned = stripCodeFence(text.trim());
@@ -106,8 +96,10 @@ export function openai(options: OpenAIOptions): Translator {
   });
 }
 
-interface OpenAIChatResponse {
-  choices?: Array<{
-    message?: { content?: string; role: string };
+interface GeminiResponse {
+  candidates?: Array<{
+    content?: {
+      parts?: Array<{ text?: string }>;
+    };
   }>;
 }
