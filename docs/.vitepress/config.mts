@@ -102,6 +102,8 @@ export default defineConfig({
               items: [
                 { link: '/guide/translators/anthropic/', text: 'Anthropic' },
                 { link: '/guide/translators/openai/', text: 'OpenAI' },
+                { link: '/guide/translators/gemini/', text: 'Gemini' },
+                { link: '/guide/translators/ollama/', text: 'Ollama' },
                 { link: '/guide/translators/custom/', text: 'Custom' },
               ],
               link: '/guide/translators/',
