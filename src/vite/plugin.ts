@@ -218,7 +218,6 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
           fileId,
           locales,
           localesDir: normalized.localesDir,
-          preserveTranslations: normalized.preserveTranslationsOnRename,
           projectRoot,
           renames,
         });

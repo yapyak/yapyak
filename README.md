@@ -74,18 +74,16 @@ $ npx yapyak add fr de ja
 
 One command scaffolds the files and translates everything in one pass.
 
-## Position-aware rename memory
-
-Change `t('Save')` to `t('Save changes')` and naive implementations lose the translation. yapyak doesn't.
+## Rename detection
 
 ```diff
 - t('Save')
 + t('Save changes')
 ```
 
-The plugin compares positions of every `t()` call between saves. String gone at line 23, column 12, new one at the exact same spot — that's a rename, not a delete-and-add. Locale files swap the key, existing translations stay as placeholders until the new English re-translates.
+yapyak compares positions of every `t()` call between saves. String gone at line 23, column 12, new one at the exact same spot — that's a rename, not a delete-and-add. The locale key swaps in place and the new English re-translates in the background. No window where the entry is missing, no flash of fallback English.
 
-Exact position matching. No similarity heuristics. No false positives.
+Exact position matching. No similarity heuristics, no false positives.
 
 ## The string is the key
 

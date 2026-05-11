@@ -66,6 +66,10 @@ export default defineConfig({
                   text: 'Auto-translation',
                 },
                 {
+                  link: '/guide/translations/manual-translation',
+                  text: 'Manual translation',
+                },
+                {
                   link: '/guide/translations/position-aware-renames',
                   text: 'Position-aware renames',
                 },

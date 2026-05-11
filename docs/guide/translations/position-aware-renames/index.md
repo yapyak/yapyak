@@ -1,12 +1,12 @@
 # Position-aware renames
 
-Source-as-keys has one classic trap: change `t('Save')` to `t('Save changes')` and you've effectively renamed the key. Naive implementations lose every existing translation — yours, your team's, the AI's careful tone-matched output — and the next pass has to redo the work.
+Source-as-keys has one classic trap: change `t('Save')` to `t('Save changes')` and you've effectively renamed the key. Most implementations treat that as a delete-and-add — the old entry vanishes, the new one appears empty, and the locale flashes back to English while the new translation lands.
 
-yapyak doesn't.
+yapyak handles it as a rename instead.
 
 ## The mechanism
 
-When a file changes, the plugin compares the **positions** of every `t()` call against the previous extraction. If a string disappeared at line 23, column 12, *and* a new string appeared at the exact same position, that's not a delete-and-add. That's a rename.
+When a file changes, the plugin compares the **positions** of every `t()` call against the previous extraction. If a string disappeared at line 23, column 12, *and* a new string appeared at the exact same position, that's a rename.
 
 ```diff
 - t('Save')
@@ -18,13 +18,13 @@ When a file changes, the plugin compares the **positions** of every `t()` call a
 [yapyak] es: re-translating…
 ```
 
-For each detected rename, locale files get the key swapped in place. Existing translations stay as placeholders until the new English re-translates a beat later. No lost work, no orphaned entries.
+The locale key swaps in place. The old translation value stays attached to the new key as a placeholder while the AI re-translates the new English in the background. When the fresh translation arrives, HMR swaps it in. No window where the entry is missing, no flash of fallback English.
 
 ## Why position-based, not similarity-based
 
-Position is **exact**. "Save" and "Cave" have a 75% Levenshtein similarity but they're different messages. Edit-distance heuristics produce false positives that silently corrupt translations.
+Position is **exact**. "Save" and "Cave" have 75% Levenshtein similarity but they're different messages. Edit-distance heuristics produce false positives that silently corrupt translations.
 
-Position match is unambiguous: same place in the source file, you renamed it. Period. False positives don't happen because the position is reset by any structural change to the file.
+Position match is unambiguous: same place in the source file, you renamed it. Period.
 
 ## What counts as a rename
 
@@ -35,15 +35,13 @@ A rename is detected when **all four** conditions hold:
 3. The disappeared string isn't elsewhere in the new file
 4. The appeared string isn't elsewhere in the old file
 
-If the same position contained a string before *and* after but the string itself changed → that's a rename.
+If the disappeared string exists at a different position in the new file → that's a delete + add (the string moved or duplicated).
 
-If the disappeared string also exists at a different position in the new file → that's a delete + add (the string moved or duplicated).
-
-If multiple positions changed in one save (refactor, multi-line edit) → each change is evaluated independently; renames that match are migrated, the rest are treated as delete/add.
+If multiple positions changed in one save → each change is evaluated independently; renames that match are migrated, the rest are treated as delete/add.
 
 ## Cross-locale migration
 
-When a rename is detected, **every** locale file gets the same key swap atomically. There's no per-locale staleness — Spanish, French, German, Japanese all migrate together.
+When a rename is detected, **every** locale file gets the same key swap atomically.
 
 ```diff
 // locales/es.json
@@ -55,53 +53,36 @@ When a rename is detected, **every** locale file gets the same key swap atomical
 + "Save changes": "Enregistrer"
 ```
 
-Then auto-translate runs and updates each locale's translation to match the new English:
+Then auto-translate runs and updates each locale to match the new English:
 
 ```diff
 - "Save changes": "Guardar"
 + "Save changes": "Guardar cambios"
 ```
 
-Until the new translation lands (a beat later), the old translation stays as a placeholder. Users see "Guardar" briefly, then "Guardar cambios" via HMR. No flash of English, no missing string.
+The old translation acts as a placeholder for the one-second window between save and HMR. The user never sees an English flash.
+
+## What about hand-edited translations?
+
+A rename re-translates. If you've hand-tweaked the Spanish for a specific string and want it to survive renames *and* edits, put it in [`glossary`](/guide/translators/anthropic#glossary-example). Glossary entries are forced and AI is instructed to use them verbatim.
+
+That's the one mechanism for locking a translation in yapyak. There's intentionally no per-call-site override flag — every option you add is a mental tax on every user. AI owns the locale files; glossary is the one explicit exception. That's the whole contract.
 
 ## Edge cases
 
-**Multiple `t()` calls renamed in one save.** Each rename is matched independently by position. If you rename two strings on different lines in the same save, both migrate.
+**Multiple `t()` calls renamed in one save.** Each rename is matched independently by position.
 
-**Same position, same string, just whitespace edits.** Not a rename. The plugin sees the source string is unchanged.
+**Same position, same string, just whitespace edits.** Not a rename. The source string is unchanged.
 
-**File renamed (e.g., `foo.tsx` → `bar.tsx`).** This is *path-keyed* migration, not position-keyed. yapyak's locale files are keyed by file path, so renaming a file moves the entire file's translation block. (See [Translations](/guide/translations/) for per-file scoping.)
+**File renamed (e.g., `foo.tsx` → `bar.tsx`).** Path-keyed migration, not position-keyed. yapyak's locale files are keyed by file path, so renaming a file moves the entire translation block for that file.
 
-**Multiple strings collapse to one position.** If you delete a `t()` call and another `t()` happens to land at that exact position, it's treated as a rename. False positive risk, but extremely rare in practice — it requires the delete and the unrelated reformat to coincide on the same line.
-
-**You manually edit the locale JSON.** Manual edits are preserved through renames — the plugin only touches the *key*, not the *value*. Your hand-tweaked Spanish translation stays attached to the new English string until auto-translate decides to refresh it.
-
-## Preserving manual edits through renames
-
-The default behavior on rename: migrate the key, **clear the translation value** so the AI re-translates from the new English. Source is truth; the translation should follow.
-
-If you fine-tune translations manually and don't want renames to discard your wordsmithing, opt into preservation:
-
-```ts
-// vite.config.ts
-yapyak({
-  preserveTranslationsOnRename: true,   // default: false
-})
-```
-
-With this on, renames migrate the key but keep the existing translation. Auto-translate then skips the entry (because it's non-empty), so your manual work stays attached to the new English string.
-
-The tradeoff: existing translations can become stale relative to the new English without anyone noticing. You'll need to manually review or run `yapyak translate <locale> --force` if the rename was a meaningful copy change.
-
-## Disabling rename detection itself
-
-You can't disable position-aware rename detection. It's foundational to the rest of the workflow. If you genuinely want a rename to be treated as delete + add (lose translations entirely), edit the JSON files by hand after the save.
+**Multiple strings collapse to one position.** If you delete a `t()` call and another `t()` happens to land at that exact position, it's treated as a rename. False-positive risk, but extremely rare — it requires a delete and an unrelated reformat to coincide on the same line.
 
 ## What this enables
 
-- **Refactor copy aggressively.** Change "Save" to "Save changes" to "Save and exit" without thinking about translation cost.
-- **A/B copy testing.** Try variants. Existing translations follow.
+- **Refactor copy aggressively.** Change "Save" to "Save changes" to "Save and exit" without losing momentum.
+- **A/B copy testing.** Try variants; existing translations follow.
 - **Editor-driven workflow.** Treat `t()` literals as regular code — rename them like you rename variables.
-- **No locale-file babysitting.** You don't have to manually update keys in five JSON files when copy changes.
+- **No locale-file babysitting.** You don't have to update keys in five JSON files when copy changes.
 
 This is the feature you don't notice until you don't have it. Then you notice it screaming.
