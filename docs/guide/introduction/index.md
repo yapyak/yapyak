@@ -25,6 +25,7 @@ So yapyak removes it. The string is the key. There is no `en.json`. The AI handl
 - **Same `t` for React, Svelte, Vue.** SSR adapters for TanStack Start and SvelteKit. Reactivity is the only framework-specific piece, exposed as `useLocale`.
 - **Position-aware rename memory.** Edit a string and translations migrate without losing existing work.
 - **Per-file scoping.** Same source string in two files = two independent entries. The AI disambiguates without you annotating.
+- **Type-safe params.** TypeScript extracts placeholders from the source string at the call site — `t('Hello {name}')` requires `{ name: ... }`. ICU plurals require `number`, selects require `string`. No codegen, no `.d.ts` files to maintain.
 - **ICU at runtime.** Plurals, ordinals, selects, named placeholders. Per-locale CLDR categories via `Intl.PluralRules`. Recursive interpolation.
 - **CLI.** Add languages, fill missing translations, snapshot for handoff, status report, CI checks. Zero runtime dependencies.
 

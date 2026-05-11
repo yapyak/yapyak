@@ -2,15 +2,55 @@ import { getLocaleStore } from '../locale/store.js';
 import { hasPlaceholder, interpolate } from './interpolate.js';
 import { pick } from './pick.js';
 
+type Trim<Source extends string> = Source extends ` ${infer Rest}`
+  ? Trim<Rest>
+  : Source extends `${infer Rest} `
+    ? Trim<Rest>
+    : Source;
+
+type SimpleParam<Placeholder extends string> = Trim<Placeholder> extends ''
+  ? Record<string, never>
+  : { [Key in Trim<Placeholder>]: string | number };
+
+export type ExtractParams<
+  Source extends string,
+  Accumulated = unknown,
+> = Source extends `${string}{${infer Name}, plural,${string}}}${infer Rest}`
+  ? ExtractParams<Rest, Accumulated & { [Key in Trim<Name>]: number }>
+  : Source extends `${string}{${infer Name}, selectordinal,${string}}}${infer Rest}`
+    ? ExtractParams<Rest, Accumulated & { [Key in Trim<Name>]: number }>
+    : Source extends `${string}{${infer Name}, select,${string}}}${infer Rest}`
+      ? ExtractParams<Rest, Accumulated & { [Key in Trim<Name>]: string }>
+      : Source extends `${string}{${infer Name}, number${string}}${infer Rest}`
+        ? ExtractParams<Rest, Accumulated & { [Key in Trim<Name>]: number }>
+        : Source extends `${string}{${infer Placeholder}}${infer Rest}`
+          ? ExtractParams<Rest, Accumulated & SimpleParam<Placeholder>>
+          : Accumulated extends unknown
+            ? { [Key in keyof Accumulated]: Accumulated[Key] }
+            : Accumulated;
+
+type IsEmpty<T> = keyof T extends never ? true : false;
+
+type Params<Source extends string> = ExtractParams<Source>;
+
 export interface T {
-  (source: string, params?: Record<string, unknown>): string;
+  <Source extends string>(
+    source: Source,
+    ...args: IsEmpty<Params<Source>> extends true
+      ? []
+      : [params: Params<Source>]
+  ): string;
   in(locale: string): TInLocale;
 }
 
-export type TInLocale = (
-  source: string,
-  params?: Record<string, unknown>,
-) => string;
+export interface TInLocale {
+  <Source extends string>(
+    source: Source,
+    ...args: IsEmpty<Params<Source>> extends true
+      ? []
+      : [params: Params<Source>]
+  ): string;
+}
 
 function call(source: string, params?: Record<string, unknown>): string {
   if (params === undefined || !hasPlaceholder(source)) {
@@ -20,11 +60,12 @@ function call(source: string, params?: Record<string, unknown>): string {
 }
 
 function inLocale(locale: string): TInLocale {
-  return (source, params) =>
+  const fn = (source: string, params?: Record<string, unknown>) =>
     pick({ [locale]: source }, params, locale);
+  return fn as TInLocale;
 }
 
-const fn = call as T;
+const fn = call as unknown as T;
 fn.in = inLocale;
 
 export const t: T = fn;

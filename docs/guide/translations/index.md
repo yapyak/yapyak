@@ -47,7 +47,7 @@ The plugin rewrites every call site at build time into a direct lookup with all 
 
 ## Parameters
 
-Pass a `params` object as the second argument. Placeholders use `{name}` syntax and are substituted at runtime.
+Pass a `params` object as the second argument. Placeholders use `{name}` syntax.
 
 ```tsx
 t('Hello {name}', { name: 'Joakim' })
@@ -57,7 +57,17 @@ t('Saved {count} files', { count: 3 })
 // 'Saved 3 files'
 ```
 
-The current `t` signature is `(source: string, params?: Record<string, unknown>) => string`. Param presence and shape are **not** type-checked against the source string at compile time. If you reference a placeholder that isn't in `params`, the substitution returns an empty string at runtime.
+**Type-safe automatically.** TypeScript extracts the placeholders from the source string and requires them as params — no codegen, no `.d.ts` files to maintain.
+
+```tsx
+t('Hello {name}')                       // ✗ Expected 2 arguments
+t('Hello {name}', {})                   // ✗ Property 'name' is missing
+t('Hello {name}', { name: 'Joakim' })   // ✓
+t('Save changes')                       // ✓ no params
+t('Save changes', { foo: 'bar' })       // ✗ Expected 1 argument
+```
+
+ICU placeholders are typed by kind: `{count, plural, ...}` requires `count: number`, `{name, select, ...}` requires `name: string`, `{n, number}` requires `n: number`. Simple `{name}` accepts `string | number`.
 
 ## Plurals and selects
 
