@@ -11,11 +11,12 @@ The rules below this section are copied verbatim from the skiftle frontend codeb
   - All user-facing strings go through `t('...')`. No `useTranslation` hook.
   - Locale switching uses `useLocale()` from `yapyak/react`.
   - No translation key conventions (no `{subject}{Component}{Prop}` camelCase keys). The source string IS the key.
-- **Styling uses Tailwind v4.** The CSS Modules rules described below are NOT enforced here. Treat them as reference for the rare case we need a `.module.css` (e.g. a complex animation), but the default is Tailwind utility classes directly on JSX.
+- **Styling is CSS Modules**, same conventions as described later in this file. Design tokens live in `src/style.css` as CSS custom properties (`--bg`, `--text`, `--mint`, `--space-*`, `--radius-*`, etc.). Components have `.module.css` siblings, PascalCase classes, nested children, `@layer components`.
 - **No `@skiftle/api` types.** We don't have a backend. Types come from `yapyak`'s public exports and from each route's own data shape.
 - **No `useMutation` from `#hooks/useMutation`.** Same reason — no backend. If a route needs an action (rare on a docs site), use a server function or plain `fetch` directly.
 - **Mutation/confirm/toast conventions are still useful** as patterns — apply them if/when the site grows interactive features (search, locale switcher feedback, etc.).
 - **Loaders return Markdown content** for `/guide/$slug` routes. The shape is `{ title, description, content }` parsed from frontmatter — pass through to the component unchanged.
+- **Path aliases** `#components/*` and `#lib/*` are wired via package.json `imports` and tsconfig `paths`. Use them for cross-folder imports, not relative paths.
 
 ## Formatting
 

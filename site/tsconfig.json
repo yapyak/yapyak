@@ -5,6 +5,10 @@
     "module": "preserve",
     "moduleResolution": "bundler",
     "noEmit": true,
+    "paths": {
+      "#components/*": ["./src/components/*"],
+      "#lib/*": ["./src/lib/*"]
+    },
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,

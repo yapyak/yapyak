@@ -2,6 +2,10 @@
   "name": "@yapyak/site",
   "private": true,
   "type": "module",
+  "imports": {
+    "#components/*": "./src/components/*",
+    "#lib/*": "./src/lib/*"
+  },
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
@@ -17,19 +21,17 @@
   },
   "devDependencies": {
     "@shikijs/rehype": "^4.0.2",
-    "@tailwindcss/vite": "^4.3.0",
     "@tanstack/router-plugin": "^1.167.35",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
-    "@vitejs/plugin-react": "^5.0.0",
     "hast-util-to-jsx-runtime": "^2.3.0",
+    "lightningcss": "^1.32.0",
     "rehype-slug": "^6.0.0",
     "remark-frontmatter": "^5.0.0",
     "remark-gfm": "^4.0.0",
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.0",
     "shiki": "^4.0.2",
-    "tailwindcss": "^4.3.0",
     "typescript": "^6.0.0",
     "unified": "^11.0.5",
     "vite": "^8.0.12",

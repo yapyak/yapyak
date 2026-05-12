@@ -1,0 +1,34 @@
+@layer components {
+  .DocArticle {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+
+    .Header {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+    }
+
+    .Title {
+      margin: 0;
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .Description {
+      margin: 0;
+      font-size: var(--font-size-lg);
+      color: var(--text-soft);
+    }
+
+    .Body {
+      color: var(--text-soft);
+      font-size: var(--font-size-md);
+      line-height: 1.75;
+    }
+  }
+}

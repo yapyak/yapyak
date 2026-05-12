@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { t } from 'yapyak';
-import { Hero } from '../components/hero';
+import { Hero } from '#components/hero';
 
 export const Route = createFileRoute('/')({
   component: Component,

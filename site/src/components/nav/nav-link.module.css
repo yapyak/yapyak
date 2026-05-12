@@ -1,0 +1,20 @@
+@layer components {
+  .NavLink {
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-pill);
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    transition: color var(--transition), background-color var(--transition);
+
+    &:hover {
+      color: var(--text);
+    }
+
+    &[data-status="active"] {
+      background-color: var(--nav-hover);
+      color: var(--text);
+    }
+  }
+}

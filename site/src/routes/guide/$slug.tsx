@@ -2,7 +2,8 @@ import { createFileRoute, notFound } from '@tanstack/react-router';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { ReactElement } from 'react';
-import { renderMarkdown } from '../../lib/markdown';
+import { renderMarkdown } from '#lib/markdown';
+import styles from './$slug.module.css';
 
 export const Route = createFileRoute('/guide/$slug')({
   async loader({ params }) {
@@ -27,14 +28,15 @@ export const Route = createFileRoute('/guide/$slug')({
 function Component(): ReactElement {
   const { doc } = Route.useLoaderData();
   return (
-    <article>
-      <header className="mb-8">
-        <h1 className="text-4xl font-black tracking-tight">{doc.title}</h1>
+    <article className={styles.DocArticle}>
+      <header className={styles.Header}>
+        <h1 className={styles.Title}>{doc.title}</h1>
         {doc.description.length > 0 ? (
-          <p className="mt-2 text-lg text-ink-300">{doc.description}</p>
+          <p className={styles.Description}>{doc.description}</p>
         ) : null}
       </header>
       <div
+        className={styles.Body}
         // biome-ignore lint/security/noDangerouslySetInnerHtml: rendered server-side from trusted markdown
         dangerouslySetInnerHTML={{ __html: doc.html }}
       />

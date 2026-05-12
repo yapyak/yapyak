@@ -1,0 +1,18 @@
+@layer components {
+  .Wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-black);
+    letter-spacing: -0.02em;
+    line-height: 1;
+
+    .Yap {
+      color: var(--text-muted);
+    }
+
+    .Yak {
+      color: var(--mint);
+    }
+  }
+}

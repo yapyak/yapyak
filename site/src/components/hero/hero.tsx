@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import type { ReactElement } from 'react';
 import { t } from 'yapyak';
+import styles from './hero.module.css';
 
 export interface HeroProps {
   heading: string;
@@ -10,22 +11,17 @@ export interface HeroProps {
 export function Hero(props: HeroProps): ReactElement {
   const { heading, description } = props;
   return (
-    <section className="grid grid-cols-1 items-center gap-12 px-6 py-24 lg:grid-cols-[1fr_auto] mx-auto max-w-5xl">
-      <div className="flex max-w-2xl flex-col gap-6">
-        <h1 className="text-5xl font-medium tracking-tight md:text-3xl">
-          {heading}
-        </h1>
-        <p className="text-xl text-ink-300">{description}</p>
-        <div className="mt-4 flex gap-3">
-          <Link
-            to="/guide"
-            className="brand-gradient rounded-full px-6 py-3 font-medium text-bg transition-[filter] hover:brightness-110"
-          >
+    <section className={styles.Hero}>
+      <div className={styles.Stack}>
+        <h1 className={styles.Heading}>{heading}</h1>
+        <p className={styles.Description}>{description}</p>
+        <div className={styles.Actions}>
+          <Link to="/guide" className={styles.PrimaryButton}>
             {t('Get Started')}
           </Link>
           <a
             href="https://github.com/yapyak/yapyak"
-            className="rounded-full bg-white/6 px-6 py-3 font-medium text-ink-50 shadow-[0_-1px_0_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(255,255,255,0.08)] hover:bg-white/10"
+            className={styles.SecondaryButton}
           >
             {t('View on GitHub')}
           </a>
@@ -38,17 +34,17 @@ export function Hero(props: HeroProps): ReactElement {
 
 function HeroMark(): ReactElement {
   return (
-    <div className="relative size-48 lg:size-64">
-      <div className="absolute inset-0 bg-mint-400 opacity-15 blur-2xl" />
+    <div className={styles.Mark}>
+      <div className={styles.Glow} />
       <svg
         viewBox="0 0 64 64"
-        className="relative size-full"
+        className={styles.Svg}
         aria-hidden="true"
       >
         <defs>
           <linearGradient id="hero-bubble" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--color-aqua)" />
-            <stop offset="100%" stopColor="var(--color-mint-500)" />
+            <stop offset="0%" stopColor="var(--aqua)" />
+            <stop offset="100%" stopColor="var(--mint)" />
           </linearGradient>
         </defs>
         <path

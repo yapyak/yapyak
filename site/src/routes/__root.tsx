@@ -5,7 +5,8 @@ import {
   Scripts,
 } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
-import { Nav } from '../components/nav';
+import { Nav } from '#components/nav';
+import '../style.css';
 
 export const Route = createRootRoute({
   head() {
@@ -20,10 +21,7 @@ export const Route = createRootRoute({
             'yapyak is a self-maintaining i18n library that translates your strings as you save.',
         },
       ],
-      links: [
-        { rel: 'stylesheet', href: '/src/styles/globals.css' },
-        { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
-      ],
+      links: [{ rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],
     };
   },
   shellComponent: ShellComponent,
@@ -32,10 +30,10 @@ export const Route = createRootRoute({
 
 function Component() {
   return (
-    <div>
+    <>
       <Nav />
       <Outlet />
-    </div>
+    </>
   );
 }
 
