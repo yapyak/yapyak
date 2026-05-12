@@ -3,11 +3,13 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
+    width: calc(var(--space-4) + var(--space-2) + 0.95rem * 1.65);
+    height: calc(var(--space-4) + var(--space-2) + 0.95rem * 1.65);
     color: var(--text-muted);
-    font-size: 1.25rem;
-    text-decoration: none;
+    font-size: 1.1rem;
+    background-color: var(--nav-bg);
+    border-radius: var(--radius-pill);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
     transition: color var(--transition);
 
     &:hover {
