@@ -19,13 +19,13 @@ export function Hero(props: HeroProps): ReactElement {
         <div className="mt-4 flex gap-3">
           <Link
             to="/guide"
-            className="rounded-full bg-mint-400 px-6 py-3 font-medium text-bg hover:bg-mint-300"
+            className="brand-gradient rounded-full px-6 py-3 font-medium text-bg transition-[filter] hover:brightness-110"
           >
             {t('Get Started')}
           </Link>
           <a
             href="https://github.com/yapyak/yapyak"
-            className="rounded-full bg-surface px-6 py-3 font-medium text-ink-50 hover:bg-surface/70"
+            className="rounded-full bg-white/6 px-6 py-3 font-medium text-ink-50 shadow-[0_-1px_0_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(255,255,255,0.08)] hover:bg-white/10"
           >
             {t('View on GitHub')}
           </a>
@@ -53,28 +53,8 @@ function HeroMark(): ReactElement {
         </defs>
         <path
           fill="url(#hero-bubble)"
-          d="M32 0c17.673 0 32 14.327 32 32s-14.327 32-32 32H8c-4.418 0-8-3.582-8-8V32C0 14.327 14.327 0 32 0Z"
-        />
-        <circle
-          cx="16"
-          cy="32"
-          r="5"
-          fill="var(--color-bg)"
-          className="origin-center animate-typing [transform-box:fill-box]"
-        />
-        <circle
-          cx="32"
-          cy="32"
-          r="5"
-          fill="var(--color-bg)"
-          className="origin-center animate-typing [animation-delay:0.15s] [transform-box:fill-box]"
-        />
-        <circle
-          cx="48"
-          cy="32"
-          r="5"
-          fill="var(--color-bg)"
-          className="origin-center animate-typing [animation-delay:0.3s] [transform-box:fill-box]"
+          fillRule="evenodd"
+          d="M32 0c17.673 0 32 14.327 32 32s-14.327 32-32 32H8c-4.418 0-8-3.582-8-8V32C0 14.327 14.327 0 32 0ZM16 27a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm16 0a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm16 0a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z"
         />
       </svg>
     </div>
