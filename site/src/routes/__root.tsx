@@ -1,3 +1,5 @@
+import '../style.css';
+
 import {
   createRootRoute,
   HeadContent,
@@ -12,7 +14,6 @@ import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
 import { Wordmark } from '#components/logo';
 import { Navigation } from '#components/navigation';
-import '../style.css';
 
 export const Route = createRootRoute({
   head() {
