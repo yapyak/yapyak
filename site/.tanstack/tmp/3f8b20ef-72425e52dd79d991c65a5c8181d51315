@@ -22,7 +22,7 @@ const loadDoc = createServerFn({ method: 'GET' })
     };
   });
 
-export const Route = createFileRoute('/guide/$slug')({
+export const Route = createFileRoute('/guide/$')({
   async loader({ params }) {
     const doc = await loadDoc({ data: params.slug });
     if (doc === null) {

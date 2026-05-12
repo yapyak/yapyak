@@ -3,6 +3,7 @@ export type SidebarNode = SidebarGroup | SidebarLink;
 export interface SidebarGroup {
   type: 'group';
   title: string;
+  href?: string;
   items: SidebarNode[];
   collapsed?: boolean;
 }
@@ -18,68 +19,90 @@ export const guideSidebar: SidebarNode[] = [
     type: 'group',
     title: 'Getting Started',
     items: [
-      {
-        type: 'link',
-        title: 'Installation',
-        href: '/guide/installation',
-      },
-      {
-        type: 'link',
-        title: 'Quick start',
-        href: '/guide/quick-start',
-      },
+      { type: 'link', title: 'Introduction', href: '/guide/introduction' },
+      { type: 'link', title: 'Installation', href: '/guide/installation' },
+      { type: 'link', title: 'How it works', href: '/guide/how-it-works' },
     ],
   },
   {
     type: 'group',
-    title: 'Frameworks',
+    title: 'Core',
     items: [
       {
-        type: 'link',
-        title: 'React',
-        href: '/guide/react',
+        type: 'group',
+        title: 'Translations',
+        href: '/guide/translations',
+        items: [
+          {
+            type: 'link',
+            title: 'Auto-translation',
+            href: '/guide/translations/auto-translation',
+          },
+          {
+            type: 'link',
+            title: 'Manual translation',
+            href: '/guide/translations/manual-translation',
+          },
+        ],
       },
       {
         type: 'link',
-        title: 'Vue',
-        href: '/guide/vue',
-      },
-      {
-        type: 'link',
-        title: 'Svelte',
-        href: '/guide/svelte',
+        title: 'Locales',
+        href: '/guide/locales',
       },
       {
         type: 'group',
-        title: 'SSR',
+        title: 'Adapters',
+        href: '/guide/adapters',
         items: [
           {
             type: 'link',
             title: 'TanStack Start',
-            href: '/guide/tanstack-start',
+            href: '/guide/adapters/tanstack-start',
           },
           {
             type: 'link',
             title: 'SvelteKit',
-            href: '/guide/sveltekit',
+            href: '/guide/adapters/sveltekit',
+          },
+          {
+            type: 'link',
+            title: 'Custom',
+            href: '/guide/adapters/custom',
           },
         ],
       },
-    ],
-  },
-  {
-    type: 'group',
-    title: 'AI translation',
-    items: [
       {
-        type: 'link',
+        type: 'group',
         title: 'Translators',
         href: '/guide/translators',
-      },
-      {
-        type: 'link',
-        title: 'Context-aware prompts',
-        href: '/guide/context',
+        items: [
+          {
+            type: 'link',
+            title: 'Anthropic',
+            href: '/guide/translators/anthropic',
+          },
+          {
+            type: 'link',
+            title: 'OpenAI',
+            href: '/guide/translators/openai',
+          },
+          {
+            type: 'link',
+            title: 'Gemini',
+            href: '/guide/translators/gemini',
+          },
+          {
+            type: 'link',
+            title: 'Ollama',
+            href: '/guide/translators/ollama',
+          },
+          {
+            type: 'link',
+            title: 'Custom',
+            href: '/guide/translators/custom',
+          },
+        ],
       },
     ],
   },
