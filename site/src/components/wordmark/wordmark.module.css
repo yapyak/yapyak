@@ -1,0 +1,23 @@
+@layer components {
+  .Wordmark {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 var(--space-5);
+    height: calc(var(--space-4) + var(--space-2) + 0.95rem * 1.65);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    background-color: var(--nav-bg);
+    border-radius: var(--radius-pill) var(--radius-pill) var(--radius-pill) 0;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
+
+    .Yap {
+      color: var(--text);
+    }
+
+    .Yak {
+      color: var(--mint);
+    }
+  }
+}

@@ -12,7 +12,7 @@ import { t } from 'yapyak';
 import { GitHubIcon } from '#components/icon';
 import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
-import { Wordmark } from '#components/logo';
+import { Wordmark } from '#components/wordmark';
 import { Navigation } from '#components/navigation';
 
 export const Route = createRootRoute({
