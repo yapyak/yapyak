@@ -7,6 +7,12 @@
     "Get Started": "",
     "View on GitHub": ""
   },
+  "src/components/nav/nav.tsx": {
+    "Guide": "",
+    "Home": "",
+    "Reference": "",
+    "View on GitHub": ""
+  },
   "src/routes/__root.tsx": {
     "Guide": "",
     "Home": "",

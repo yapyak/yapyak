@@ -1,0 +1,62 @@
+@layer components {
+  .HeroDemoLocales {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-lg);
+    background-color: rgba(20, 20, 20, 0.5);
+    backdrop-filter: blur(20px);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+      0 30px 60px -30px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+
+    .LocaleRow {
+      display: grid;
+      grid-template-columns: auto auto 1fr;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      font-family: var(--font-mono);
+      font-size: var(--font-size-xs);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &[data-shimmering] {
+        .Json {
+          animation: locale-shimmer 600ms ease-in-out;
+        }
+      }
+    }
+
+    .Flag {
+      font-size: 0.95rem;
+      line-height: 1;
+    }
+
+    .Filename {
+      color: var(--text-muted);
+      letter-spacing: -0.01em;
+    }
+
+    .Json {
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+  }
+
+  @keyframes locale-shimmer {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.35;
+    }
+  }
+}

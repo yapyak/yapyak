@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import type { ReactElement, ReactNode } from 'react';
 import { t } from 'yapyak';
+import { HeroDemo } from '#components/hero-demo';
 import styles from './hero.module.css';
 
 export interface HeroProps {
@@ -48,31 +49,7 @@ export function Hero(props: HeroProps): ReactElement {
           </a>
         </div>
       </div>
-      <HeroMark />
+      <HeroDemo />
     </section>
-  );
-}
-
-function HeroMark(): ReactElement {
-  return (
-    <div className={styles.Mark}>
-      <svg
-        viewBox="0 0 64 64"
-        className={styles.Svg}
-        aria-hidden="true"
-      >
-        <defs>
-          <linearGradient id="hero-bubble" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--aqua)" />
-            <stop offset="100%" stopColor="var(--mint)" />
-          </linearGradient>
-        </defs>
-        <path
-          fill="url(#hero-bubble)"
-          fillRule="evenodd"
-          d="M32 0c17.673 0 32 14.327 32 32s-14.327 32-32 32H8c-4.418 0-8-3.582-8-8V32C0 14.327 14.327 0 32 0ZM16 27a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm16 0a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm16 0a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z"
-        />
-      </svg>
-    </div>
   );
 }

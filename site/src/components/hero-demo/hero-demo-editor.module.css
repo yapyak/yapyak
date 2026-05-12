@@ -1,0 +1,94 @@
+@layer components {
+  .HeroDemoEditor {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-lg);
+    background-color: rgba(20, 20, 20, 0.7);
+    backdrop-filter: blur(20px);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+      0 40px 80px -30px rgba(0, 0, 0, 0.6),
+      0 20px 40px -20px oklab(0.87 -0.24 0.06 / 0.12);
+    overflow: hidden;
+    transition: box-shadow 400ms ease;
+
+    &[data-saving] {
+      box-shadow:
+        inset 0 0 0 1px oklab(0.87 -0.24 0.06 / 0.35),
+        0 40px 80px -30px rgba(0, 0, 0, 0.6),
+        0 0 60px -10px oklab(0.87 -0.24 0.06 / 0.3);
+    }
+
+    .Tabs {
+      display: flex;
+      align-items: center;
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .Tab {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-family: var(--font-mono);
+      font-size: var(--font-size-xs);
+      color: var(--text-soft);
+    }
+
+    .TabFilename {
+      letter-spacing: -0.01em;
+    }
+
+    .TabDot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: transparent;
+      transition: background-color 300ms ease;
+
+      &[data-dirty] {
+        background-color: var(--mint);
+      }
+    }
+
+    .Pre {
+      margin: 0;
+      padding: var(--space-5) var(--space-6);
+      overflow: hidden;
+    }
+
+    .Code {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: var(--font-size-sm);
+      line-height: 1.7;
+      white-space: pre;
+    }
+
+    .Caret {
+      display: inline-block;
+      width: 1.5px;
+      height: 1.05em;
+      vertical-align: text-bottom;
+      background-color: var(--mint);
+      border-radius: 1px;
+      animation: caret-blink 1.06s steps(2, end) infinite;
+
+      &[data-typing] {
+        animation: none;
+        opacity: 1;
+      }
+    }
+  }
+
+  @keyframes caret-blink {
+    0%,
+    50% {
+      opacity: 1;
+    }
+    50.01%,
+    100% {
+      opacity: 0;
+    }
+  }
+}

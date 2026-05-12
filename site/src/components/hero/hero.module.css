@@ -1,14 +1,13 @@
 @layer components {
   .Hero {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
     align-items: center;
+    gap: var(--space-12);
 
-    max-width: 64rem;
+    max-width: 80rem;
     margin: 0 auto;
-    padding: var(--space-20) 60px;
-
-
+    padding: var(--space-20) var(--space-8);
 
     .Stack {
       display: flex;
@@ -85,26 +84,9 @@
       }
     }
 
-    .Mark {
-      position: relative;
-      width: 16rem;
-      height: 16rem;
-
-      .Svg {
-        position: relative;
-        width: 100%;
-        height: 100%;
-      }
-    }
-
-    @media (max-width: 768px) {
+    @media (max-width: 960px) {
       grid-template-columns: 1fr;
-
-      .Mark {
-        width: 12rem;
-        height: 12rem;
-      }
+      gap: var(--space-12);
     }
-
   }
 }
