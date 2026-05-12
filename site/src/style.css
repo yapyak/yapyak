@@ -2,14 +2,14 @@
   --bg: #141414;
   --surface: rgba(255, 255, 255, 0.02);
   --surface-strong: rgba(255, 255, 255, 0.05);
-  --rule: rgba(255, 255, 255, 0.04);
+  --rule: rgba(255, 255, 255, 0.02);
 
-  --text: #f5f5f5;
-  --text-soft: #c8c8c8;
+  --text: #e6e6e6;
+  --text-soft: #b8b8b8;
   --text-muted: #8a8a8a;
 
   --nav-bg: rgba(0, 0, 0, 0.2);
-  --nav-hover: rgba(255, 255, 255, 0.06);
+  --surface-elevated: rgba(255, 255, 255, 0.04);
 
   --surface-hover: rgba(255, 255, 255, 0.04);
   --surface-hover-ring: rgba(255, 255, 255, 0.06);
