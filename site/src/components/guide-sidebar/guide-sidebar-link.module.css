@@ -1,0 +1,18 @@
+@layer components {
+  .GuideSidebarLink {
+    display: block;
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--font-size-sm);
+    color: var(--text-soft);
+    text-decoration: none;
+    transition: color var(--transition);
+
+    &:hover {
+      color: var(--text);
+    }
+
+    &[data-status="active"] {
+      color: var(--mint);
+    }
+  }
+}

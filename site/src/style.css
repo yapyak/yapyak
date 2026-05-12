@@ -55,6 +55,17 @@
   --font-weight-black: 900;
 
   --transition: 150ms ease;
+
+  --font-mono:
+    ui-monospace,
+    "SF Mono",
+    "Monaco",
+    "Menlo",
+    "Cascadia Code",
+    "Roboto Mono",
+    Consolas,
+    "Liberation Mono",
+    monospace;
 }
 
 * {

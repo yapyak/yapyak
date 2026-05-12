@@ -1,0 +1,8 @@
+import { yapyak } from 'yapyak/vite';
+import { anthropic } from 'yapyak/translators';
+
+yapyak({
+  translator: anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+  }),
+});

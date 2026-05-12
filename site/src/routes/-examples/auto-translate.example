@@ -1,0 +1,5 @@
+import { t } from 'yapyak';
+
+export function SaveButton() {
+  return <button>{t('Save changes')}</button>;
+}

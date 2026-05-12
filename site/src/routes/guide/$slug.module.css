@@ -29,6 +29,32 @@
       color: var(--text-soft);
       font-size: var(--font-size-md);
       line-height: 1.75;
+
+      pre {
+        margin: var(--space-6) 0;
+        padding: var(--space-5) var(--space-6);
+        background: var(--surface);
+        border: 1px solid var(--rule);
+        border-radius: var(--radius-lg);
+        font-family: var(--font-mono);
+        font-size: 14px;
+        line-height: 1.6;
+        overflow-x: auto;
+        background-color: var(--surface) !important;
+      }
+
+      pre code {
+        font-family: inherit;
+      }
+
+      :not(pre) > code {
+        padding: 2px 6px;
+        background: var(--surface-elevated);
+        border-radius: var(--radius-sm);
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+        color: var(--text);
+      }
     }
   }
 }

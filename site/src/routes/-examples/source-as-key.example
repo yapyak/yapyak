@@ -1,0 +1,3 @@
+<button>{t('Save changes')}</button>
+<button>{t('Cancel')}</button>
+<h1>{t('Welcome back, {name}', { name })}</h1>

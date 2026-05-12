@@ -2,25 +2,24 @@
   .GuideLayout {
     display: grid;
     grid-template-columns: 240px 1fr;
-    gap: var(--space-12);
+    gap: var(--space-8);
     max-width: 64rem;
     margin: 0 auto;
     padding: var(--space-12) var(--space-6);
 
-    .Sidebar {
-      color: var(--text-muted);
-
-      .SidebarHeading {
-        margin: 0 0 var(--space-4);
-        font-size: var(--font-size-xs);
-        font-weight: var(--font-weight-semibold);
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-      }
-    }
-
     .Content {
       max-width: 48rem;
+      padding-left: var(--space-8);
+      border-left: 1px solid var(--rule);
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+
+      .Content {
+        padding-left: 0;
+        border-left: none;
+      }
     }
   }
 }

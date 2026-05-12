@@ -1,0 +1,78 @@
+@layer components {
+  .FeatureBlock {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: var(--space-16);
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: var(--space-16) var(--space-6);
+
+    &[data-reverse] {
+      .Stack {
+        order: 2;
+      }
+
+      .Code {
+        order: 1;
+      }
+    }
+
+    .Stack {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .Title {
+      margin: 0;
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .Description {
+      margin: 0;
+      font-size: var(--font-size-md);
+      line-height: 1.6;
+      color: var(--text-soft);
+    }
+
+    .Code {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+
+      pre {
+        margin: 0;
+        padding: var(--space-5) var(--space-6);
+        font-family: var(--font-mono);
+        font-size: 14px;
+        line-height: 1.6;
+        overflow-x: auto;
+        background-color: transparent !important;
+      }
+
+      code {
+        font-family: inherit;
+      }
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+
+      &[data-reverse] {
+        .Stack {
+          order: 1;
+        }
+
+        .Code {
+          order: 2;
+        }
+      }
+    }
+  }
+}

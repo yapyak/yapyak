@@ -1,0 +1,49 @@
+@layer components {
+  .GuideSidebarGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+
+    .Title {
+      margin: 0;
+      padding: 0 var(--space-3);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .Items {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    &[data-depth="0"] {
+      > .Title {
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      &:not(:first-child) {
+        padding-top: var(--space-6);
+        border-top: 1px solid var(--rule);
+      }
+    }
+
+    &:not([data-depth="0"]) {
+      padding-left: var(--space-3);
+
+      > .Title {
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--text-soft);
+        text-transform: none;
+        letter-spacing: normal;
+      }
+    }
+  }
+}

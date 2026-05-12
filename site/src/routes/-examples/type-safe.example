@@ -1,0 +1,8 @@
+t('Hello {name}', { name: 'Joakim' });
+t('Hello {name}');
+//                Error: Expected 2 arguments, but got 1.
+
+t('You have {count, plural, one {# msg} other {# msgs}}', { count: 3 });
+t('You have {count, plural, one {# msg} other {# msgs}}', { count: '3' });
+//                                                                  ~~~
+//                Error: Type 'string' is not assignable to type 'number'.

@@ -1,0 +1,10 @@
+@layer components {
+  .GuideSidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    position: sticky;
+    top: var(--space-6);
+    align-self: start;
+  }
+}

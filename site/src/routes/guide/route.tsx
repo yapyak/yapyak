@@ -1,5 +1,7 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 import type { ReactElement } from 'react';
+import { GuideSidebar } from '#components/guide-sidebar';
+import { guideSidebar } from '#lib/sidebars';
 import styles from './route.module.css';
 
 export const Route = createFileRoute('/guide')({
@@ -9,9 +11,7 @@ export const Route = createFileRoute('/guide')({
 function Component(): ReactElement {
   return (
     <div className={styles.GuideLayout}>
-      <aside className={styles.Sidebar}>
-        <h3 className={styles.SidebarHeading}>Guide</h3>
-      </aside>
+      <GuideSidebar items={guideSidebar} />
       <main className={styles.Content}>
         <Outlet />
       </main>

@@ -1,12 +1,31 @@
 @layer components {
   .FrameworkRow {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: var(--space-10);
     padding: var(--space-16) var(--space-6);
-    border-top: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
+
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - var(--space-12) * 2);
+      max-width: 64rem;
+      height: 1px;
+      background-color: var(--rule);
+    }
+
+    &::before {
+      top: 0;
+    }
+
+    &::after {
+      bottom: 0;
+    }
 
     .Heading {
       margin: 0;
@@ -39,6 +58,17 @@
       margin: 0;
       font-size: var(--font-size-sm);
       color: var(--text-muted);
+
+      .Link {
+        color: var(--mint);
+        font-weight: var(--font-weight-medium);
+        text-decoration: none;
+        transition: color var(--transition);
+
+        &:hover {
+          color: var(--aqua);
+        }
+      }
     }
   }
 }
