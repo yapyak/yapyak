@@ -23,8 +23,8 @@ export interface TransformResult {
   code: string;
 }
 
-const HELPER_NAME = '__yapyak_pick';
-const DEFAULT_HELPER_IMPORT = 'yapyak/runtime/pick';
+const HELPER_NAME = '_$pick';
+const DEFAULT_HELPER_IMPORT = 'yapyak/runtime';
 
 interface CallSite {
   argsStart: number;
