@@ -18,6 +18,7 @@
   --mint: oklab(0.87 -0.24 0.06);
   --mint-soft: oklab(0.87 -0.24 0.06 / 0.4);
   --mint-glow: oklab(0.87 -0.24 0.06 / 0.2);
+  --mint-text-glow: 0 0 12px oklab(0.87 -0.24 0.06 / 0.35);
   --accent-contrast: #08110d;
 
   --brand-gradient: linear-gradient(in oklab to bottom, var(--aqua), var(--mint));
@@ -88,4 +89,44 @@ body {
   hanging-punctuation: first last;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.CodeBlock {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+
+  pre {
+    margin: 0;
+    padding: var(--space-5) var(--space-6);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-x: auto;
+    color: var(--text-soft);
+  }
+
+  pre code {
+    font-family: inherit;
+  }
+}
+
+.tx-plain    { color: inherit; }
+.tx-keyword  { color: var(--text); }
+.tx-type     { color: #9ab8d0; }
+.tx-literal  { color: #d8a05a; }
+.tx-string   { color: #c8b78a; }
+.tx-template { color: #c8b78a; }
+.tx-number   { color: #d8a05a; }
+.tx-comment  { color: var(--text-muted); font-style: italic; }
+.tx-fn-call  { color: #c4a8d0; }
+.tx-jsx-tag  { color: #8aacc8; }
+.tx-punct    { color: var(--text-muted); }
+
+.tx-tx-call,
+.tx-tx-source,
+.tx-tx-yapyak {
+  color: var(--mint);
+  text-shadow: var(--mint-text-glow);
 }

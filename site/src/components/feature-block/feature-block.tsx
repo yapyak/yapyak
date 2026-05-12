@@ -1,15 +1,18 @@
 import type { ReactElement } from 'react';
+import { CodeBlock } from '#components/code-block';
+import type { Lang } from '#lib/utils/tokenize';
 import styles from './feature-block.module.css';
 
 export interface FeatureBlockProps {
   title: string;
   description: string;
-  codeHtml: string;
+  code: string;
+  lang: Lang;
   reverse?: boolean;
 }
 
 export function FeatureBlock(props: FeatureBlockProps): ReactElement {
-  const { title, description, codeHtml, reverse = false } = props;
+  const { title, description, code, lang, reverse = false } = props;
   return (
     <section
       className={styles.FeatureBlock}
@@ -19,11 +22,7 @@ export function FeatureBlock(props: FeatureBlockProps): ReactElement {
         <h2 className={styles.Title}>{title}</h2>
         <p className={styles.Description}>{description}</p>
       </div>
-      <div
-        className={styles.Code}
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: pre-rendered server-side via shiki
-        dangerouslySetInnerHTML={{ __html: codeHtml }}
-      />
+      <CodeBlock code={code} lang={lang} />
     </section>
   );
 }

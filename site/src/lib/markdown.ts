@@ -1,4 +1,3 @@
-import rehypeShiki from '@shikijs/rehype';
 import rehypeSlug from 'rehype-slug';
 import rehypeStringify from 'rehype-stringify';
 import remarkFrontmatter from 'remark-frontmatter';
@@ -7,6 +6,7 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
 import { parse as parseYaml } from 'yaml';
+import { rehypeTokenize } from './utils/rehype-tokenize.js';
 
 export interface Doc {
   title: string;
@@ -22,9 +22,7 @@ const processor = unified()
   .use(remarkFrontmatter, ['yaml'])
   .use(remarkRehype)
   .use(rehypeSlug)
-  .use(rehypeShiki, {
-    theme: 'vesper',
-  })
+  .use(rehypeTokenize)
   .use(rehypeStringify);
 
 export async function renderMarkdown(source: string): Promise<{
