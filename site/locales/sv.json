@@ -1,0 +1,15 @@
+{
+  "src/components/hero/hero.tsx": {
+    "Get Started": "",
+    "View on GitHub": ""
+  },
+  "src/components/nav/nav.tsx": {
+    "GitHub": "",
+    "Guide": "",
+    "Home": ""
+  },
+  "src/routes/index.tsx": {
+    "The i18n Library for Vite apps": "",
+    "yapyak is a self-maintaining i18n library that translates your strings as you save.": ""
+  }
+}

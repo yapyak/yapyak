@@ -1,0 +1,59 @@
+import {
+  createRootRoute,
+  HeadContent,
+  Outlet,
+  Scripts,
+} from '@tanstack/react-router';
+import type { ReactNode } from 'react';
+import { Nav } from '../components/nav';
+
+export const Route = createRootRoute({
+  head() {
+    return {
+      meta: [
+        { charSet: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { title: 'yapyak — The i18n Library for Vite apps' },
+        {
+          name: 'description',
+          content:
+            'yapyak is a self-maintaining i18n library that translates your strings as you save.',
+        },
+      ],
+      links: [
+        { rel: 'stylesheet', href: '/src/styles/globals.css' },
+        { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
+      ],
+    };
+  },
+  shellComponent: ShellComponent,
+  component: Component,
+});
+
+function Component() {
+  return (
+    <div>
+      <Nav />
+      <Outlet />
+    </div>
+  );
+}
+
+interface RootDocumentProps {
+  children: ReactNode;
+}
+
+function ShellComponent(props: RootDocumentProps): ReactNode {
+  const { children } = props;
+  return (
+    <html lang="en">
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        {children}
+        <Scripts />
+      </body>
+    </html>
+  );
+}
