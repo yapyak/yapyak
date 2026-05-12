@@ -17,6 +17,7 @@ export function Layout(props: LayoutProps): ReactElement {
   const { children, className, ...restProps } = props;
   return (
     <div {...restProps} className={cn(styles.Layout, className)}>
+      <div className={styles.Grain} aria-hidden="true" />
       {children}
     </div>
   );
