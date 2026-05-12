@@ -1,11 +1,17 @@
 import {
   createRootRoute,
   HeadContent,
+  Link,
   Outlet,
   Scripts,
 } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
-import { Header } from '#components/header';
+import { t } from 'yapyak';
+import { GitHubIcon } from '#components/icon';
+import { IconLink } from '#components/icon-link';
+import { Layout } from '#components/layout';
+import { Wordmark } from '#components/logo';
+import { Navigation } from '#components/navigation';
 import '../style.css';
 
 export const Route = createRootRoute({
@@ -30,10 +36,27 @@ export const Route = createRootRoute({
 
 function Component() {
   return (
-    <>
-      <Header />
-      <Outlet />
-    </>
+    <Layout>
+      <Layout.Header>
+        <Link to="/">
+          <Wordmark />
+        </Link>
+        <Navigation>
+          <Navigation.Link to="/">{t('Home')}</Navigation.Link>
+          <Navigation.Link to="/guide">{t('Guide')}</Navigation.Link>
+          <Navigation.Link to="/reference">{t('Reference')}</Navigation.Link>
+        </Navigation>
+        <IconLink
+          href="https://github.com/yapyak/yapyak"
+          aria-label={t('View on GitHub')}
+        >
+          <GitHubIcon />
+        </IconLink>
+      </Layout.Header>
+      <Layout.Main>
+        <Outlet />
+      </Layout.Main>
+    </Layout>
   );
 }
 

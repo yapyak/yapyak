@@ -42,6 +42,18 @@
         font-size: 0.9em;
         color: var(--text);
       }
+
+      a {
+        color: var(--mint);
+        text-decoration: underline;
+        text-decoration-color: var(--rule);
+        text-underline-offset: 3px;
+        transition: text-decoration-color var(--transition);
+
+        &:hover {
+          text-decoration-color: var(--mint);
+        }
+      }
     }
   }
 }

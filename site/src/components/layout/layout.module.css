@@ -1,0 +1,26 @@
+@layer components {
+  .Layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .Header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: var(--space-6);
+
+    > :first-child {
+      justify-self: start;
+    }
+
+    > :last-child {
+      justify-self: end;
+    }
+  }
+
+  .Main {
+    flex: 1;
+  }
+}

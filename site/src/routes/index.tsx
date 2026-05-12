@@ -14,7 +14,7 @@ export const Route = createFileRoute('/')({
 
 function Component() {
   return (
-    <main>
+    <div>
       <Hero
         heading={t('The i18n Library for Vite apps')}
         description={t(
@@ -56,6 +56,6 @@ function Component() {
         lang="ts"
         reverse
       />
-    </main>
+    </div>
   );
 }

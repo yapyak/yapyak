@@ -1,3 +1,5 @@
+@layer reset, base, components;
+
 :root {
   --bg: #141414;
   --surface: rgba(255, 255, 255, 0.02);
@@ -69,64 +71,75 @@
     monospace;
 }
 
-* {
-  box-sizing: border-box;
+@layer reset {
+  * {
+    box-sizing: border-box;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
-::selection {
-  background-color: var(--mint-soft);
-  color: var(--text);
-}
+@layer base {
+  ::selection {
+    background-color: var(--mint-soft);
+    color: var(--text);
+  }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-  font-family: apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  font-size: var(--font-size-md);
-  line-height: 1.65;
-  color: var(--text-soft);
-  background: var(--bg);
-  hanging-punctuation: first last;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.CodeBlock {
-  background: var(--surface);
-  border: 1px solid var(--rule);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-
-  pre {
+  body {
     margin: 0;
-    padding: var(--space-5) var(--space-6);
-    font-family: var(--font-mono);
-    font-size: 14px;
-    line-height: 1.6;
-    overflow-x: auto;
+    min-height: 100vh;
+    font-family: apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: var(--font-size-md);
+    line-height: 1.65;
     color: var(--text-soft);
-  }
-
-  pre code {
-    font-family: inherit;
+    background: var(--bg);
+    hanging-punctuation: first last;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-.tx-plain    { color: inherit; }
-.tx-keyword  { color: var(--text); }
-.tx-type     { color: #9ab8d0; }
-.tx-literal  { color: #d8a05a; }
-.tx-string   { color: #c8b78a; }
-.tx-template { color: #c8b78a; }
-.tx-number   { color: #d8a05a; }
-.tx-comment  { color: var(--text-muted); font-style: italic; }
-.tx-fn-call  { color: #c4a8d0; }
-.tx-jsx-tag  { color: #8aacc8; }
-.tx-punct    { color: var(--text-muted); }
+@layer components {
+  .CodeBlock {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
 
-.tx-tx-call,
-.tx-tx-source,
-.tx-tx-yapyak {
-  color: var(--mint);
-  text-shadow: var(--mint-text-glow);
+    pre {
+      margin: 0;
+      padding: var(--space-5) var(--space-6);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      line-height: 1.6;
+      overflow-x: auto;
+      color: var(--text-soft);
+    }
+
+    pre code {
+      font-family: inherit;
+    }
+  }
+
+  .tx-plain    { color: inherit; }
+  .tx-keyword  { color: var(--text); }
+  .tx-type     { color: #9ab8d0; }
+  .tx-literal  { color: #d8a05a; }
+  .tx-string   { color: #c8b78a; }
+  .tx-template { color: #c8b78a; }
+  .tx-number   { color: #d8a05a; }
+  .tx-comment  { color: var(--text-muted); font-style: italic; }
+  .tx-fn-call  { color: #c4a8d0; }
+  .tx-jsx-tag  { color: #8aacc8; }
+  .tx-punct    { color: var(--text-muted); }
+
+  .tx-tx-call,
+  .tx-tx-source,
+  .tx-tx-yapyak {
+    color: var(--mint);
+    text-shadow: var(--mint-text-glow);
+  }
 }

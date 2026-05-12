@@ -1,0 +1,17 @@
+@layer components {
+  .IconLink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    text-decoration: none;
+    transition: color var(--transition);
+
+    &:hover {
+      color: var(--text);
+    }
+  }
+}
