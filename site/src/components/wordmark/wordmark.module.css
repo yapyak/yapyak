@@ -4,7 +4,7 @@
     align-items: center;
     padding: 0 var(--space-5);
     height: calc(var(--space-4) + var(--space-2) + 0.95rem * 1.65);
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-md);
     font-weight: var(--font-weight-semibold);
     letter-spacing: -0.03em;
     line-height: 1;
@@ -17,7 +17,10 @@
     }
 
     .Yak {
-      color: var(--mint);
+      background: var(--brand-gradient);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
     }
   }
 }
