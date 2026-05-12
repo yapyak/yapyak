@@ -90,14 +90,6 @@
       width: 16rem;
       height: 16rem;
 
-      .Glow {
-        position: absolute;
-        inset: 0;
-        background-color: var(--mint-glow);
-        filter: blur(48px);
-        opacity: 0.6;
-      }
-
       .Svg {
         position: relative;
         width: 100%;
@@ -113,5 +105,6 @@
         height: 12rem;
       }
     }
+
   }
 }

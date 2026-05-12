@@ -56,7 +56,6 @@ export function Hero(props: HeroProps): ReactElement {
 function HeroMark(): ReactElement {
   return (
     <div className={styles.Mark}>
-      <div className={styles.Glow} />
       <svg
         viewBox="0 0 64 64"
         className={styles.Svg}

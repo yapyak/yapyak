@@ -3,7 +3,7 @@
     display: inline-flex;
     align-items: baseline;
     font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-black);
+    font-weight: var(--font-weight-medium);
     letter-spacing: -0.02em;
     line-height: 1;
 
