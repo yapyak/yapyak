@@ -1,4 +1,11 @@
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+import {
+  type CSSProperties,
+  type HTMLAttributes,
+  type ReactElement,
+  type ReactNode,
+  useEffect,
+  useState,
+} from 'react';
 import { cn } from '#lib/cn';
 import { LayoutHeaderCenter } from './layout-header-center';
 import { LayoutHeaderEnd } from './layout-header-end';
@@ -16,9 +23,25 @@ export declare namespace LayoutHeader {
 }
 
 export function LayoutHeader(props: LayoutHeaderProps): ReactElement {
-  const { children, className, ...restProps } = props;
+  const { children, className, style, ...restProps } = props;
+  const [fillOpacity, setFillOpacity] = useState(0);
+
+  useEffect(() => {
+    const update = () => {
+      setFillOpacity(Math.min(window.scrollY / 40, 1));
+    };
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    return () => window.removeEventListener('scroll', update);
+  }, []);
+
   return (
-    <header {...restProps} className={cn(styles.LayoutHeader, className)}>
+    <header
+      {...restProps}
+      className={cn(styles.LayoutHeader, className)}
+      style={{ ...style, '--fill-opacity': fillOpacity } as CSSProperties}
+    >
+      <div className={styles.Fill} />
       {children}
     </header>
   );
