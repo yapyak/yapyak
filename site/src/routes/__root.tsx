@@ -39,20 +39,26 @@ function Component() {
   return (
     <Layout>
       <Layout.Header>
-        <Link to="/">
-          <Wordmark />
-        </Link>
-        <Navigation>
-          <Navigation.Link to="/">{t('Home')}</Navigation.Link>
-          <Navigation.Link to="/guide">{t('Guide')}</Navigation.Link>
-          <Navigation.Link to="/reference">{t('Reference')}</Navigation.Link>
-        </Navigation>
-        <IconLink
-          href="https://github.com/yapyak/yapyak"
-          aria-label={t('View on GitHub')}
-        >
-          <GitHubIcon />
-        </IconLink>
+        <Layout.Header.Start>
+          <Link to="/">
+            <Wordmark />
+          </Link>
+        </Layout.Header.Start>
+        <Layout.Header.Center>
+          <Navigation>
+            <Navigation.Link to="/">{t('Home')}</Navigation.Link>
+            <Navigation.Link to="/guide">{t('Guide')}</Navigation.Link>
+            <Navigation.Link to="/reference">{t('Reference')}</Navigation.Link>
+          </Navigation>
+        </Layout.Header.Center>
+        <Layout.Header.End>
+          <IconLink
+            href="https://github.com/yapyak/yapyak"
+            aria-label={t('View on GitHub')}
+          >
+            <GitHubIcon />
+          </IconLink>
+        </Layout.Header.End>
       </Layout.Header>
       <Layout.Main>
         <Outlet />

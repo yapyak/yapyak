@@ -1,0 +1,5 @@
+@layer components {
+  .LayoutMain {
+    flex: 1;
+  }
+}
