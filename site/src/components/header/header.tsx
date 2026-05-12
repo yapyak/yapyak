@@ -4,11 +4,11 @@ import { t } from 'yapyak';
 import { GitHubIcon } from '#components/icon';
 import { Wordmark } from '#components/logo';
 import { Navigation } from '#components/navigation';
-import styles from './nav.module.css';
+import styles from './header.module.css';
 
-export function Nav(): ReactElement {
+export function Header(): ReactElement {
   return (
-    <header className={styles.Nav}>
+    <header className={styles.Header}>
       <Link to="/" className={styles.LogoLink}>
         <Wordmark />
       </Link>

@@ -5,7 +5,7 @@ import {
   Scripts,
 } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
-import { Nav } from '#components/nav';
+import { Header } from '#components/header';
 import '../style.css';
 
 export const Route = createRootRoute({
@@ -31,7 +31,7 @@ export const Route = createRootRoute({
 function Component() {
   return (
     <>
-      <Nav />
+      <Header />
       <Outlet />
     </>
   );

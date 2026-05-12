@@ -3,14 +3,14 @@
     "SSR adapters for TanStack Start and SvelteKit included": "",
     "Works seamlessly with": ""
   },
-  "src/components/hero/hero.tsx": {
-    "Get Started": "",
-    "View on GitHub": ""
-  },
-  "src/components/nav/nav.tsx": {
+  "src/components/header/header.tsx": {
     "Guide": "",
     "Home": "",
     "Reference": "",
+    "View on GitHub": ""
+  },
+  "src/components/hero/hero.tsx": {
+    "Get Started": "",
     "View on GitHub": ""
   },
   "src/routes/index.tsx": {
