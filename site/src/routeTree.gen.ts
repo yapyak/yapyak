@@ -9,11 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ReferenceRouteRouteImport } from './routes/reference/route'
 import { Route as GuideRouteRouteImport } from './routes/guide/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ReferenceIndexRouteImport } from './routes/reference/index'
 import { Route as GuideIndexRouteImport } from './routes/guide/index'
+import { Route as ReferenceSlugRouteImport } from './routes/reference/$slug'
 import { Route as GuideSlugRouteImport } from './routes/guide/$slug'
 
+const ReferenceRouteRoute = ReferenceRouteRouteImport.update({
+  id: '/reference',
+  path: '/reference',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GuideRouteRoute = GuideRouteRouteImport.update({
   id: '/guide',
   path: '/guide',
@@ -24,10 +32,20 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReferenceIndexRoute = ReferenceIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ReferenceRouteRoute,
+} as any)
 const GuideIndexRoute = GuideIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => GuideRouteRoute,
+} as any)
+const ReferenceSlugRoute = ReferenceSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ReferenceRouteRoute,
 } as any)
 const GuideSlugRoute = GuideSlugRouteImport.update({
   id: '/$slug',
@@ -38,36 +56,67 @@ const GuideSlugRoute = GuideSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/guide': typeof GuideRouteRouteWithChildren
+  '/reference': typeof ReferenceRouteRouteWithChildren
   '/guide/$slug': typeof GuideSlugRoute
+  '/reference/$slug': typeof ReferenceSlugRoute
   '/guide/': typeof GuideIndexRoute
+  '/reference/': typeof ReferenceIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/guide/$slug': typeof GuideSlugRoute
+  '/reference/$slug': typeof ReferenceSlugRoute
   '/guide': typeof GuideIndexRoute
+  '/reference': typeof ReferenceIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/guide': typeof GuideRouteRouteWithChildren
+  '/reference': typeof ReferenceRouteRouteWithChildren
   '/guide/$slug': typeof GuideSlugRoute
+  '/reference/$slug': typeof ReferenceSlugRoute
   '/guide/': typeof GuideIndexRoute
+  '/reference/': typeof ReferenceIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/guide' | '/guide/$slug' | '/guide/'
+  fullPaths:
+    | '/'
+    | '/guide'
+    | '/reference'
+    | '/guide/$slug'
+    | '/reference/$slug'
+    | '/guide/'
+    | '/reference/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/guide/$slug' | '/guide'
-  id: '__root__' | '/' | '/guide' | '/guide/$slug' | '/guide/'
+  to: '/' | '/guide/$slug' | '/reference/$slug' | '/guide' | '/reference'
+  id:
+    | '__root__'
+    | '/'
+    | '/guide'
+    | '/reference'
+    | '/guide/$slug'
+    | '/reference/$slug'
+    | '/guide/'
+    | '/reference/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GuideRouteRoute: typeof GuideRouteRouteWithChildren
+  ReferenceRouteRoute: typeof ReferenceRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reference': {
+      id: '/reference'
+      path: '/reference'
+      fullPath: '/reference'
+      preLoaderRoute: typeof ReferenceRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/guide': {
       id: '/guide'
       path: '/guide'
@@ -82,12 +131,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reference/': {
+      id: '/reference/'
+      path: '/'
+      fullPath: '/reference/'
+      preLoaderRoute: typeof ReferenceIndexRouteImport
+      parentRoute: typeof ReferenceRouteRoute
+    }
     '/guide/': {
       id: '/guide/'
       path: '/'
       fullPath: '/guide/'
       preLoaderRoute: typeof GuideIndexRouteImport
       parentRoute: typeof GuideRouteRoute
+    }
+    '/reference/$slug': {
+      id: '/reference/$slug'
+      path: '/$slug'
+      fullPath: '/reference/$slug'
+      preLoaderRoute: typeof ReferenceSlugRouteImport
+      parentRoute: typeof ReferenceRouteRoute
     }
     '/guide/$slug': {
       id: '/guide/$slug'
@@ -113,9 +176,24 @@ const GuideRouteRouteWithChildren = GuideRouteRoute._addFileChildren(
   GuideRouteRouteChildren,
 )
 
+interface ReferenceRouteRouteChildren {
+  ReferenceSlugRoute: typeof ReferenceSlugRoute
+  ReferenceIndexRoute: typeof ReferenceIndexRoute
+}
+
+const ReferenceRouteRouteChildren: ReferenceRouteRouteChildren = {
+  ReferenceSlugRoute: ReferenceSlugRoute,
+  ReferenceIndexRoute: ReferenceIndexRoute,
+}
+
+const ReferenceRouteRouteWithChildren = ReferenceRouteRoute._addFileChildren(
+  ReferenceRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GuideRouteRoute: GuideRouteRouteWithChildren,
+  ReferenceRouteRoute: ReferenceRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

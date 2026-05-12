@@ -9,20 +9,21 @@ const loadDoc = createServerFn({ method: 'GET' })
     const { readFile } = await import('node:fs/promises');
     const { join } = await import('node:path');
     const { renderMarkdown } = await import('#lib/markdown');
-    const path = join(process.cwd(), 'content', 'guide', `${slug}.md`);
-    const source = await readFile(path, 'utf8').catch(() => null);
-    if (source === null) {
+    try {
+      const path = join(process.cwd(), 'content', 'reference', `${slug}.md`);
+      const source = await readFile(path, 'utf8');
+      const { frontmatter, html } = await renderMarkdown(source);
+      return {
+        title: (frontmatter.title as string | undefined) ?? slug,
+        description: (frontmatter.description as string | undefined) ?? '',
+        html,
+      };
+    } catch {
       return null;
     }
-    const { frontmatter, html } = await renderMarkdown(source);
-    return {
-      title: (frontmatter.title as string | undefined) ?? slug,
-      description: (frontmatter.description as string | undefined) ?? '',
-      html,
-    };
   });
 
-export const Route = createFileRoute('/guide/$slug')({
+export const Route = createFileRoute('/reference/$slug')({
   async loader({ params }) {
     const doc = await loadDoc({ data: params.slug });
     if (doc === null) {

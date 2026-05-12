@@ -1,12 +1,17 @@
 {
+  "src/components/framework-row/framework-row.tsx": {
+    "SSR adapters for TanStack Start and SvelteKit included": "",
+    "Works seamlessly with": ""
+  },
   "src/components/hero/hero.tsx": {
     "Get Started": "",
     "View on GitHub": ""
   },
   "src/components/nav/nav.tsx": {
-    "GitHub": "",
     "Guide": "",
-    "Home": ""
+    "Home": "",
+    "Reference": "",
+    "View on GitHub": ""
   },
   "src/routes/index.tsx": {
     "The i18n Library for Vite apps": "",

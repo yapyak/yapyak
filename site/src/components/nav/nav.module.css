@@ -11,21 +11,16 @@
       text-decoration: none;
     }
 
-    .Pill {
+    .GithubLink {
       display: inline-flex;
       align-items: center;
-      gap: var(--space-1);
-      padding: var(--space-1);
-      background-color: var(--nav-bg);
-      border-radius: var(--radius-pill);
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
-    }
-
-    .GithubLink {
+      justify-content: center;
       justify-self: end;
+      width: 2.25rem;
+      height: 2.25rem;
       color: var(--text-muted);
+      font-size: 1.25rem;
       text-decoration: none;
-      font-size: var(--font-size-sm);
       transition: color var(--transition);
 
       &:hover {

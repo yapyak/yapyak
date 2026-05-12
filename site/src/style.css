@@ -1,5 +1,5 @@
 :root {
-  --bg: #191D22;
+  --bg: #141414;
   --surface: rgba(255, 255, 255, 0.02);
   --surface-strong: rgba(255, 255, 255, 0.05);
   --rule: rgba(255, 255, 255, 0.04);
@@ -18,6 +18,7 @@
   --mint: oklab(0.87 -0.24 0.06);
   --mint-soft: oklab(0.87 -0.24 0.06 / 0.4);
   --mint-glow: oklab(0.87 -0.24 0.06 / 0.2);
+  --accent-contrast: #08110d;
 
   --brand-gradient: linear-gradient(in oklab to bottom, var(--aqua), var(--mint));
 
@@ -68,8 +69,7 @@
 body {
   margin: 0;
   min-height: 100vh;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
+  font-family: apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: var(--font-size-md);
   line-height: 1.65;
   color: var(--text-soft);

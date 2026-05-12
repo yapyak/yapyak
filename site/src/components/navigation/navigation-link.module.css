@@ -1,0 +1,36 @@
+@layer components {
+  .NavigationLink {
+    position: relative;
+    display: inline-block;
+    padding: var(--space-1) var(--space-6);
+    font-size: 0.95rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--text-muted);
+    text-decoration: none;
+    border-radius: var(--radius-pill);
+    transition:
+      color var(--transition),
+      background-color var(--transition),
+      box-shadow var(--transition),
+      transform var(--transition);
+
+    &[data-status="active"] {
+      background: var(--brand-gradient);
+      color: var(--accent-contrast);
+    }
+
+    &:not([data-status="active"]) {
+      &:hover {
+        background-color: var(--nav-hover);
+        color: var(--text);
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.12),
+          0 -1px rgba(255, 255, 255, 0.06);
+      }
+
+      &:active {
+        transform: scale(0.96);
+      }
+    }
+  }
+}

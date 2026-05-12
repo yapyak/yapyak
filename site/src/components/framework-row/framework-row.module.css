@@ -1,0 +1,44 @@
+@layer components {
+  .FrameworkRow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-10);
+    padding: var(--space-16) var(--space-6);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+
+    .Heading {
+      margin: 0;
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-muted);
+    }
+
+    .Logos {
+      display: flex;
+      align-items: center;
+      gap: var(--space-16);
+    }
+
+    .Logo {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      filter: saturate(0.9);
+      opacity: 0.9;
+      transition: opacity var(--transition), filter var(--transition);
+
+      &:hover {
+        opacity: 1;
+        filter: saturate(1);
+      }
+    }
+
+    .Footnote {
+      margin: 0;
+      font-size: var(--font-size-sm);
+      color: var(--text-muted);
+    }
+  }
+}

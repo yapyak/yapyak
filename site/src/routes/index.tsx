@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { t } from 'yapyak';
+import { FrameworkRow } from '#components/framework-row';
 import { Hero } from '#components/hero';
 
 export const Route = createFileRoute('/')({
@@ -15,6 +16,7 @@ function Component() {
           'yapyak is a self-maintaining i18n library that translates your strings as you save.',
         )}
       />
+      <FrameworkRow />
     </main>
   );
 }
