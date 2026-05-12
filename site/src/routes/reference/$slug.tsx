@@ -13,10 +13,18 @@ const loadDoc = createServerFn({ method: 'GET' })
       const path = join(process.cwd(), 'content', 'reference', `${slug}.md`);
       const source = await readFile(path, 'utf8');
       const { frontmatter, html } = await renderMarkdown(source);
+      const h1Match = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
+      const titleFromH1 =
+        h1Match !== null && h1Match[1] !== undefined
+          ? h1Match[1].replace(/<[^>]+>/g, '').trim()
+          : null;
+      const body = html.replace(/^\s*<h1[^>]*>[\s\S]*?<\/h1>\s*/, '');
+      const title =
+        (frontmatter.title as string | undefined) ?? titleFromH1 ?? slug;
       return {
-        title: (frontmatter.title as string | undefined) ?? slug,
+        title,
         description: (frontmatter.description as string | undefined) ?? '',
-        html,
+        html: body,
       };
     } catch {
       return null;

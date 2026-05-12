@@ -27,11 +27,15 @@ interface IndicatorState {
   height: number;
 }
 
+const SLIDE_DURATION = 320;
+
 export function Navigation(props: NavigationProps): ReactElement {
   const { children, className, ...restProps } = props;
   const element = useRef<HTMLElement>(null);
+  const previousPathnameRef = useRef<string | null>(null);
   const [indicator, setIndicator] = useState<IndicatorState | null>(null);
   const [isReady, setIsReady] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const location = useLocation();
 
   useLayoutEffect(() => {
@@ -49,11 +53,28 @@ export function Navigation(props: NavigationProps): ReactElement {
       width: activeElement.offsetWidth,
       height: activeElement.offsetHeight,
     });
+
     const frame = window.requestAnimationFrame(() => {
       setIsReady(true);
     });
+
+    let timeout: number | undefined;
+    if (
+      previousPathnameRef.current !== null &&
+      previousPathnameRef.current !== location.pathname
+    ) {
+      setIsAnimating(true);
+      timeout = window.setTimeout(() => {
+        setIsAnimating(false);
+      }, SLIDE_DURATION);
+    }
+    previousPathnameRef.current = location.pathname;
+
     return () => {
       window.cancelAnimationFrame(frame);
+      if (timeout !== undefined) {
+        window.clearTimeout(timeout);
+      }
     };
   }, [location.pathname]);
 
@@ -70,6 +91,7 @@ export function Navigation(props: NavigationProps): ReactElement {
       {...restProps}
       ref={element}
       className={cn(styles.Navigation, className)}
+      data-animating={isAnimating ? '' : undefined}
     >
       {indicator && (
         <span

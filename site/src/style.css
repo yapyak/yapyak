@@ -77,7 +77,7 @@
   }
 
   a {
-    color: inherit;
+    color: var(--text-muted);
     text-decoration: none;
   }
 }
