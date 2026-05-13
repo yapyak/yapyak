@@ -33,14 +33,6 @@
       text-shadow: 0 0 32px oklab(0.87 -0.24 0.06 / 0.22);
     }
 
-    &[data-active] .Numeral {
-      text-shadow: 0 0 28px oklab(0.87 -0.24 0.06 / 0.35);
-    }
-
-    &[data-accent='mint'][data-active] .Numeral {
-      text-shadow: 0 0 36px oklab(0.87 -0.24 0.06 / 0.5);
-    }
-
     .Content {
       display: flex;
       flex-direction: column;
@@ -75,6 +67,10 @@
     }
 
     &:hover {
+      .Numeral {
+        text-shadow: 0 0 28px oklab(0.87 -0.24 0.06 / 0.35);
+      }
+
       .Description {
         color: var(--text);
       }

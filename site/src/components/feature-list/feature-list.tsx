@@ -1,7 +1,6 @@
 import {
   type CSSProperties,
   type ReactElement,
-  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -12,90 +11,66 @@ import { FEATURES } from './features';
 interface IndicatorState {
   top: number;
   height: number;
+  visible: boolean;
 }
+
+const INITIAL_INDICATOR: IndicatorState = {
+  top: 0,
+  height: 0,
+  visible: false,
+};
 
 export function FeatureList(): ReactElement {
   const itemRefs = useRef<Array<HTMLLIElement | null>>([]);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [indicator, setIndicator] = useState<IndicatorState | null>(null);
+  const visibleRef = useRef(false);
+  const [indicator, setIndicator] = useState<IndicatorState>(INITIAL_INDICATOR);
 
-  useEffect(() => {
-    let frame = 0;
+  const handleItemEnter = (index: number) => {
+    const item = itemRefs.current[index];
+    if (item === null || item === undefined) {
+      return;
+    }
+    const top = item.offsetTop;
+    const height = item.offsetHeight;
+    if (visibleRef.current) {
+      setIndicator({ top, height, visible: true });
+      return;
+    }
+    visibleRef.current = true;
+    setIndicator({ top, height, visible: false });
+    window.requestAnimationFrame(() => {
+      setIndicator((previous) => ({ ...previous, visible: true }));
+    });
+  };
 
-    const update = () => {
-      const triggerLine = window.innerHeight * 0.4;
-      let nextIndex = 0;
-      for (let index = 0; index < itemRefs.current.length; index++) {
-        const item = itemRefs.current[index];
-        if (item === null || item === undefined) {
-          continue;
-        }
-        const rect = item.getBoundingClientRect();
-        if (rect.top <= triggerLine) {
-          nextIndex = index;
-        } else {
-          break;
-        }
-      }
-      const activeItem = itemRefs.current[nextIndex];
-      if (activeItem !== null && activeItem !== undefined) {
-        setActiveIndex(nextIndex);
-        setIndicator({
-          top: activeItem.offsetTop,
-          height: activeItem.offsetHeight,
-        });
-      }
-    };
+  const handleListLeave = () => {
+    visibleRef.current = false;
+    setIndicator((previous) => ({ ...previous, visible: false }));
+  };
 
-    const onScroll = () => {
-      if (frame !== 0) {
-        return;
-      }
-      frame = window.requestAnimationFrame(() => {
-        frame = 0;
-        update();
-      });
-    };
-
-    update();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-      if (frame !== 0) {
-        window.cancelAnimationFrame(frame);
-      }
-    };
-  }, []);
-
-  const indicatorStyle: CSSProperties | undefined =
-    indicator !== null
-      ? {
-          transform: `translateY(${indicator.top}px)`,
-          height: `${indicator.height}px`,
-        }
-      : undefined;
+  const indicatorStyle: CSSProperties = {
+    transform: `translateY(${indicator.top}px)`,
+    height: `${indicator.height}px`,
+  };
 
   return (
     <section className={styles.FeatureList}>
       <div className={styles.Divider} aria-hidden="true" />
-      <ol className={styles.List}>
-        {indicator !== null ? (
-          <span
-            aria-hidden="true"
-            className={styles.Indicator}
-            style={indicatorStyle}
-          />
-        ) : null}
+      <ol className={styles.List} onMouseLeave={handleListLeave}>
+        <span
+          aria-hidden="true"
+          className={styles.Indicator}
+          data-visible={indicator.visible || undefined}
+          style={indicatorStyle}
+        />
         {FEATURES.map((feature, index) => (
           <FeatureListItem
             key={feature.number}
             feature={feature}
-            isActive={index === activeIndex}
             ref={(element) => {
               itemRefs.current[index] = element;
             }}
+            onMouseEnter={() => handleItemEnter(index)}
           />
         ))}
       </ol>
