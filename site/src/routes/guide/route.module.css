@@ -1,8 +1,7 @@
 @layer components {
   .GuideLayout {
     display: grid;
-    grid-template-columns: 240px 1fr;
-    gap: var(--space-8);
+    grid-template-columns: 280px 1fr;
     max-width: 64rem;
     margin: 0 auto;
     padding: var(--space-12) var(--space-6);

@@ -14,8 +14,9 @@
     .Title {
       margin: 0;
       font-size: var(--font-size-3xl);
-      font-weight: var(--font-weight-bold);
-      letter-spacing: -0.02em;
+      font-weight: var(--font-weight-medium);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
       color: var(--text);
     }
 
@@ -29,6 +30,49 @@
       color: var(--text-soft);
       font-size: var(--font-size-md);
       line-height: 1.75;
+
+      h1, h2, h3, h4, h5, h6 {
+        margin: var(--space-10) 0 var(--space-4);
+        font-weight: var(--font-weight-medium);
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+        color: var(--text);
+      }
+
+      h1 { font-size: var(--font-size-3xl); }
+      h2 { font-size: var(--font-size-2xl); }
+      h3 { font-size: var(--font-size-xl); }
+      h4 { font-size: var(--font-size-lg); }
+      h5 { font-size: var(--font-size-md); }
+      h6 { font-size: var(--font-size-sm); text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
+
+      h1:first-child,
+      h2:first-child,
+      h3:first-child {
+        margin-top: 0;
+      }
+
+      p {
+        margin: var(--space-4) 0;
+      }
+
+      strong, b {
+        font-weight: var(--font-weight-semibold);
+        color: var(--text);
+      }
+
+      em, i {
+        font-style: italic;
+      }
+
+      ul, ol {
+        margin: var(--space-4) 0;
+        padding-left: var(--space-6);
+      }
+
+      li {
+        margin: var(--space-2) 0;
+      }
 
       .CodeBlock {
         margin: var(--space-6) 0;
