@@ -20,12 +20,6 @@
       &:last-child {
         border-bottom: none;
       }
-
-      &[data-shimmering] {
-        .Json {
-          animation: locale-shimmer 600ms ease-in-out;
-        }
-      }
     }
 
     .Flag {
@@ -44,16 +38,67 @@
       overflow: hidden;
       text-overflow: ellipsis;
       min-width: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .Key {
+      display: inline-block;
+      animation: materialize 750ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .Value {
+      display: inline-block;
+      animation: materialize 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .Skeleton {
+      display: inline-block;
+      width: 8rem;
+      height: 0.85em;
+      margin: 0 1px;
+      border-radius: 4px;
+      background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.04) 0%,
+        rgba(255, 255, 255, 0.1) 40%,
+        oklab(0.87 -0.24 0.06 / 0.18) 50%,
+        rgba(255, 255, 255, 0.1) 60%,
+        rgba(255, 255, 255, 0.04) 100%
+      );
+      background-size: 250% 100%;
+      animation: skeleton-sweep 2s ease-in-out infinite;
     }
   }
 
-  @keyframes locale-shimmer {
-    0%,
+  @keyframes materialize {
+    0% {
+      opacity: 0;
+      filter: blur(8px);
+      transform: translateY(6px) scale(0.96);
+      text-shadow: 0 0 0 transparent;
+    }
+    55% {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateY(0) scale(1);
+      text-shadow: 0 0 18px oklab(0.87 -0.24 0.06 / 0.55);
+    }
     100% {
       opacity: 1;
+      filter: blur(0);
+      transform: translateY(0) scale(1);
+      text-shadow: 0 0 0 transparent;
     }
-    50% {
-      opacity: 0.35;
+  }
+
+  @keyframes skeleton-sweep {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
     }
   }
 }

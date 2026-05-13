@@ -47,7 +47,7 @@ export function HeroDemo(): ReactElement {
           onFrameworkChange={setFramework}
         />
         <HeroDemoLocales
-          source={state.source}
+          savedSource={state.savedSource}
           translations={state.translations}
           shimmering={state.shimmering}
         />

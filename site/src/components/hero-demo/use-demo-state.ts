@@ -9,6 +9,7 @@ import {
 
 export interface DemoState {
   source: string;
+  savedSource: string;
   translations: Record<LocaleCode, string>;
   shimmering: Set<LocaleCode>;
   saving: boolean;
@@ -17,6 +18,7 @@ export interface DemoState {
 
 const INITIAL_STATE: DemoState = {
   source: INITIAL_SCENE.source,
+  savedSource: INITIAL_SCENE.source,
   translations: INITIAL_SCENE.translations,
   shimmering: new Set(),
   saving: false,
@@ -103,30 +105,20 @@ export function useDemoState(active: boolean): DemoState {
         setState((state) => ({
           ...state,
           saving: false,
+          savedSource: scene.source,
           translations: EMPTY_TRANSLATIONS,
           shimmering: new Set(LOCALES.map((locale) => locale.code)),
         }));
 
-        await sleep(420);
+        await sleep(700);
 
-        setState((state) => ({ ...state, shimmering: new Set() }));
+        setState((state) => ({
+          ...state,
+          shimmering: new Set(),
+          translations: scene.translations,
+        }));
 
-        await Promise.all(
-          LOCALES.map(async (locale) => {
-            const target = scene.translations[locale.code];
-            for (let index = 0; index < target.length; index++) {
-              if (cancelled) {
-                return;
-              }
-              const partial = target.slice(0, index + 1);
-              setState((state) => ({
-                ...state,
-                translations: { ...state.translations, [locale.code]: partial },
-              }));
-              await sleep(jitter(locale.speed, 25));
-            }
-          }),
-        );
+        await sleep(1200);
 
         sceneIndex++;
       }
