@@ -31,12 +31,12 @@ export const INITIAL_SCENE: Scene = {
 
 export const SCENES: Scene[] = [
   {
-    source: 'Start your free trial',
+    source: 'Try it free',
     translations: {
-      sv: 'Starta din gratis testperiod',
-      es: 'Comienza tu prueba gratuita',
-      ja: '無料トライアルを始める',
-      de: 'Starten Sie Ihre kostenlose Testversion',
+      sv: 'Prova gratis',
+      es: 'Pruébalo gratis',
+      ja: '無料で試す',
+      de: 'Kostenlos testen',
     },
   },
   {

@@ -5,26 +5,6 @@
     max-width: 36rem;
     isolation: isolate;
 
-    .Glow {
-      position: absolute;
-      inset: -10% -8%;
-      z-index: -1;
-      background:
-        radial-gradient(
-          60% 50% at 70% 20%,
-          oklab(0.87 -0.24 0.06 / 0.18),
-          transparent 70%
-        ),
-        radial-gradient(
-          50% 50% at 20% 80%,
-          oklab(0.88 -0.21 0.01 / 0.14),
-          transparent 70%
-        );
-      filter: blur(40px);
-      opacity: 0;
-      transition: opacity 1200ms ease 200ms;
-      pointer-events: none;
-    }
 
     .Stack {
       display: flex;
@@ -40,10 +20,6 @@
     }
 
     &[data-active] {
-      .Glow {
-        opacity: 1;
-      }
-
       .Stack {
         transform: none;
         opacity: 1;
