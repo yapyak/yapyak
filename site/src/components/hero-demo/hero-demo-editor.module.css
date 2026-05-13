@@ -14,59 +14,78 @@
 
     .Tabs {
       display: flex;
+      align-items: center;
       gap: var(--space-1);
       padding: var(--space-2) var(--space-2);
       border-bottom: 1px solid var(--rule);
     }
 
-    .Tab {
+    .SaveStatus {
       display: inline-flex;
       align-items: center;
       gap: var(--space-2);
-      padding: var(--space-2) var(--space-3);
-      background-color: transparent;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-family: inherit;
+      margin-left: auto;
+      margin-right: var(--space-2);
       font-size: var(--font-size-xs);
       color: var(--text-muted);
-      cursor: pointer;
-      transition:
-        background-color 200ms ease,
-        color 200ms ease;
+      opacity: 0;
+      transition: opacity 140ms ease;
 
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.04);
-        color: var(--text-soft);
+      &[data-saving] {
+        opacity: 1;
+      }
+    }
+
+    .SaveSpinner {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 255, 255, 0.15);
+      border-top-color: var(--mint);
+      animation: save-spinner 600ms linear infinite;
+    }
+
+    .SaveLabel {
+      letter-spacing: -0.01em;
+    }
+
+    .Tab {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 5rem;
+      padding: var(--space-2) 0;
+      background-color: transparent;
+      border: none;
+      border-radius: 0.75rem;
+      font-family: inherit;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-muted);
+      cursor: pointer;
+      box-shadow: 0 0 0 1px transparent;
+      transition:
+        background-color var(--transition),
+        box-shadow var(--transition),
+        color var(--transition),
+        transform var(--transition);
+
+      &:hover,
+      &[data-active] {
+        color: var(--text);
+        background-color: var(--surface-elevated);
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.12),
+          0 -1px rgba(255, 255, 255, 0.06);
       }
 
-      &[data-active] {
-        background-color: rgba(255, 255, 255, 0.06);
-        color: var(--text);
+      &:active {
+        transform: scale(0.96);
       }
     }
 
     .TabLabel {
-      font-weight: var(--font-weight-medium);
       letter-spacing: -0.01em;
-    }
-
-    .TabFilename {
-      font-family: var(--font-mono);
-      color: var(--text-muted);
-      letter-spacing: -0.01em;
-    }
-
-    .TabDot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background-color: transparent;
-      transition: background-color 300ms ease;
-
-      &[data-dirty] {
-        background-color: var(--mint);
-      }
     }
 
     .Pre {
@@ -96,6 +115,12 @@
         animation: none;
         opacity: 1;
       }
+    }
+  }
+
+  @keyframes save-spinner {
+    to {
+      transform: rotate(360deg);
     }
   }
 

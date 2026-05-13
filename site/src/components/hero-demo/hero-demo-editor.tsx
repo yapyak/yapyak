@@ -46,15 +46,16 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
             onClick={() => onFrameworkChange(entry.id)}
           >
             <span className={styles.TabLabel}>{entry.label}</span>
-            <span className={styles.TabFilename}>{entry.filename}</span>
-            {entry.id === framework ? (
-              <span
-                className={styles.TabDot}
-                data-dirty={typing || undefined}
-              />
-            ) : null}
           </button>
         ))}
+        <span
+          className={styles.SaveStatus}
+          data-saving={saving || undefined}
+          aria-hidden="true"
+        >
+          <span className={styles.SaveSpinner} />
+          <span className={styles.SaveLabel}>Saving…</span>
+        </span>
       </div>
       <pre className={styles.Pre}>
         <code className={styles.Code}>
