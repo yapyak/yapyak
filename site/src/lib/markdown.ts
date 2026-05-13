@@ -1,12 +1,6 @@
-import rehypeSlug from 'rehype-slug';
-import rehypeStringify from 'rehype-stringify';
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkGfm from 'remark-gfm';
-import remarkParse from 'remark-parse';
-import remarkRehype from 'remark-rehype';
-import { unified } from 'unified';
+import { marked, type RendererObject, type Tokens } from 'marked';
 import { parse as parseYaml } from 'yaml';
-import { rehypeTokenize } from './utils/rehype-tokenize.js';
+import { type Lang, tokenize } from './utils/tokenize.js';
 
 export interface Doc {
   title: string;
@@ -16,38 +10,97 @@ export interface Doc {
   html: string;
 }
 
-const processor = unified()
-  .use(remarkParse)
-  .use(remarkGfm)
-  .use(remarkFrontmatter, ['yaml'])
-  .use(remarkRehype)
-  .use(rehypeSlug)
-  .use(rehypeTokenize)
-  .use(rehypeStringify);
+const SUPPORTED_LANGS = new Set<Lang>([
+  'tsx',
+  'ts',
+  'jsx',
+  'js',
+  'svelte',
+  'vue',
+  'bash',
+  'json',
+]);
 
-export async function renderMarkdown(source: string): Promise<{
+const renderer: RendererObject = {
+  code({ text, lang }: Tokens.Code): string {
+    if (lang !== undefined && SUPPORTED_LANGS.has(lang as Lang)) {
+      const tokens = tokenize(text, lang as Lang);
+      const spans = tokens
+        .map(
+          (token) =>
+            `<span class="tx-${token.type}">${escapeHtml(token.value)}</span>`,
+        )
+        .join('');
+      return `<div class="CodeBlock" data-lang="${escapeAttr(lang)}"><pre><code>${spans}</code></pre></div>`;
+    }
+    return `<pre><code>${escapeHtml(text)}</code></pre>`;
+  },
+  heading({ tokens, depth }: Tokens.Heading): string {
+    const text = this.parser.parseInline(tokens);
+    const slug = slugify(text);
+    return `<h${depth} id="${escapeAttr(slug)}">${text}</h${depth}>\n`;
+  },
+};
+
+marked.use({ gfm: true, renderer });
+
+export function renderMarkdown(source: string): {
   frontmatter: Record<string, unknown>;
   html: string;
-}> {
-  const tree = processor.parse(source);
-  const frontmatter = extractFrontmatter(tree);
-  const hast = await processor.run(tree);
-  const html = processor.stringify(hast);
-  return {
-    frontmatter,
-    html,
-  };
+} {
+  const { frontmatter, body } = splitFrontmatter(source);
+  const html = marked.parse(body) as string;
+  return { frontmatter, html };
 }
 
-function extractFrontmatter(tree: ReturnType<typeof processor.parse>): Record<string, unknown> {
-  const root = tree as { children: Array<{ type: string; value?: string }> };
-  const yaml = root.children.find((node) => node.type === 'yaml');
-  if (yaml?.value === undefined) {
-    return {};
+function splitFrontmatter(source: string): {
+  frontmatter: Record<string, unknown>;
+  body: string;
+} {
+  const lines = source.split('\n');
+  if (lines[0]?.trim() !== '---') {
+    return { frontmatter: {}, body: source };
   }
-  const parsed = parseYaml(yaml.value);
+  let closeIndex = -1;
+  for (let index = 1; index < lines.length; index++) {
+    if (lines[index]?.trim() === '---') {
+      closeIndex = index;
+      break;
+    }
+  }
+  if (closeIndex === -1) {
+    return { frontmatter: {}, body: source };
+  }
+  const yamlText = lines.slice(1, closeIndex).join('\n');
+  const body = lines.slice(closeIndex + 1).join('\n');
+  const parsed = parseYaml(yamlText);
   if (parsed === null || typeof parsed !== 'object') {
-    return {};
+    return { frontmatter: {}, body };
   }
-  return parsed as Record<string, unknown>;
+  return { frontmatter: parsed as Record<string, unknown>, body };
+}
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/<[^>]+>/g, '')
+    .replace(/&[a-z]+;/gi, '')
+    .replace(/[^\w\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function escapeAttr(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
