@@ -2,6 +2,8 @@
   .NavigationLink {
     position: relative;
     display: inline-block;
+    min-width: 6rem;
+    text-align: center;
     padding: var(--space-1) var(--space-6);
     font-size: 0.95rem;
     font-weight: var(--font-weight-medium);
