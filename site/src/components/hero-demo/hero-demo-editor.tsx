@@ -19,7 +19,6 @@ export const FRAMEWORKS: FrameworkConfig[] = [
 
 export interface HeroDemoEditorProps {
   source: string;
-  saving: boolean;
   typing: boolean;
   framework: Framework;
   onFrameworkChange: (framework: Framework) => void;
@@ -29,13 +28,13 @@ const CARET_MARKER = 'CARET';
 const T = 't';
 
 export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
-  const { source, saving, typing, framework, onFrameworkChange } = props;
+  const { source, typing, framework, onFrameworkChange } = props;
   const config = FRAMEWORKS.find((entry) => entry.id === framework) ?? FRAMEWORKS[0]!;
   const code = buildCode(framework, source);
   const tokens = tokenize(code, config.lang);
 
   return (
-    <div className={styles.HeroDemoEditor} data-saving={saving || undefined}>
+    <div className={styles.HeroDemoEditor}>
       <div className={styles.Tabs}>
         {FRAMEWORKS.map((entry) => (
           <button
@@ -45,17 +44,14 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
             data-active={entry.id === framework || undefined}
             onClick={() => onFrameworkChange(entry.id)}
           >
-            <span className={styles.TabLabel}>{entry.label}</span>
+            <span className={styles.TabFilename}>{entry.filename}</span>
+            <span
+              className={styles.TabDot}
+              data-dirty={(entry.id === framework && typing) || undefined}
+              aria-hidden="true"
+            />
           </button>
         ))}
-        <span
-          className={styles.SaveStatus}
-          data-saving={saving || undefined}
-          aria-hidden="true"
-        >
-          <span className={styles.SaveSpinner} />
-          <span className={styles.SaveLabel}>Saving…</span>
-        </span>
       </div>
       <pre className={styles.Pre}>
         <code className={styles.Code}>

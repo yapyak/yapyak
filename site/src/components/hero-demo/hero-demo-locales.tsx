@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react';
+import { LocaleFlag } from '#components/locale-flag';
 import { LOCALES, type LocaleCode } from './scenes';
 import styles from './hero-demo-locales.module.css';
 
@@ -18,7 +19,7 @@ export function HeroDemoLocales(props: HeroDemoLocalesProps): ReactElement {
         return (
           <div key={locale.code} className={styles.LocaleRow}>
             <span className={styles.Flag} aria-hidden="true">
-              {locale.flag}
+              <LocaleFlag code={locale.code} />
             </span>
             <span className={styles.Filename}>{locale.filename}</span>
             <span className={styles.Json}>

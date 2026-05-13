@@ -41,7 +41,6 @@ export function HeroDemo(): ReactElement {
       <div className={styles.Stack}>
         <HeroDemoEditor
           source={state.source}
-          saving={state.saving}
           typing={state.typing}
           framework={framework}
           onFrameworkChange={setFramework}

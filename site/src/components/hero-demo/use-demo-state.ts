@@ -101,7 +101,7 @@ export function useDemoState(active: boolean): DemoState {
         await sleep(360);
 
         setState((state) => ({ ...state, saving: true }));
-        await sleep(420);
+        await sleep(900);
         setState((state) => ({
           ...state,
           saving: false,
@@ -110,15 +110,32 @@ export function useDemoState(active: boolean): DemoState {
           shimmering: new Set(LOCALES.map((locale) => locale.code)),
         }));
 
-        await sleep(700);
+        await sleep(350);
 
-        setState((state) => ({
-          ...state,
-          shimmering: new Set(),
-          translations: scene.translations,
-        }));
+        for (let index = 0; index < LOCALES.length; index++) {
+          const locale = LOCALES[index];
+          if (locale === undefined) {
+            continue;
+          }
+          setState((state) => {
+            const nextShimmering = new Set(state.shimmering);
+            nextShimmering.delete(locale.code);
+            return {
+              ...state,
+              shimmering: nextShimmering,
+              translations: {
+                ...state.translations,
+                [locale.code]: scene.translations[locale.code],
+              },
+            };
+          });
+          if (cancelled) {
+            return;
+          }
+          await sleep(130);
+        }
 
-        await sleep(1200);
+        await sleep(1100);
 
         sceneIndex++;
       }
