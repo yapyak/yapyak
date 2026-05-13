@@ -31,12 +31,12 @@ export const INITIAL_SCENE: Scene = {
 
 export const SCENES: Scene[] = [
   {
-    source: 'Try it free',
+    source: 'Save changes',
     translations: {
-      sv: 'Prova gratis',
-      es: 'Pruébalo gratis',
-      ja: '無料で試す',
-      de: 'Kostenlos testen',
+      sv: 'Spara ändringar',
+      es: 'Guardar cambios',
+      ja: '変更を保存',
+      de: 'Änderungen speichern',
     },
   },
   {

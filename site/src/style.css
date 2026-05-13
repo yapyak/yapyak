@@ -136,9 +136,15 @@
   .tx-jsx-tag  { color: #8aacc8; }
   .tx-punct    { color: var(--text-muted); }
 
-  .tx-tx-call,
-  .tx-tx-source,
+  .tx-tx-call {
+    color: #c4a8d0;
+  }
+
   .tx-tx-yapyak {
+    color: #c8b78a;
+  }
+
+  .tx-tx-source {
     color: var(--mint);
     text-shadow: var(--mint-text-glow);
   }

@@ -24,7 +24,7 @@ export function HeroDemoLocales(props: HeroDemoLocalesProps): ReactElement {
             <span className={styles.Json}>
               <span className="tx-punct">{'{ '}</span>
               <span key={savedSource} className={styles.Key}>
-                <span className="tx-tx-source">
+                <span className="tx-string">
                   <span>"</span>
                   {savedSource}
                   <span>"</span>
@@ -35,7 +35,7 @@ export function HeroDemoLocales(props: HeroDemoLocalesProps): ReactElement {
                 <span className={styles.Skeleton} aria-hidden="true" />
               ) : (
                 <span key={value} className={styles.Value}>
-                  <span className="tx-string">
+                  <span className="tx-tx-source">
                     <span>"</span>
                     {value}
                     <span>"</span>
