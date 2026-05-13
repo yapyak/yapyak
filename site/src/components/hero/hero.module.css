@@ -3,9 +3,8 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
     align-items: center;
-    gap: var(--space-12);
 
-    max-width: 80rem;
+    max-width: 70rem;
     margin: 0 auto;
     padding: var(--space-20) var(--space-8);
 
