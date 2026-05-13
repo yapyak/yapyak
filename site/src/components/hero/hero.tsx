@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactElement } from 'react';
 import { t } from 'yapyak';
 import { HeroDemo } from '#components/hero-demo';
 import styles from './hero.module.css';

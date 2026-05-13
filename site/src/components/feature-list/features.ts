@@ -23,7 +23,7 @@ export const FEATURES: Feature[] = [
     number: '03',
     title: 'Built for agentic workflows',
     description:
-      'Agents like Claude Code and Cursor write t() calls, yapyak handles the rest. No keys to invent, no namespaces to bikeshed.',
+      'Every design decision serves the agent loop. t() extracts at save. Renames migrate translations. The CLI scripts cleanly. Claude Code, Cursor, Codex — they write code, yapyak handles i18n.',
   },
   {
     number: '04',

@@ -1,24 +1,58 @@
-import type { ReactElement } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { Wordmark } from '#components/wordmark';
 import styles from './footer.module.css';
 
+const TAGLINES = [
+  "Who's yaking in the back? That's yapyak.",
+  "Who's keeping i18n on track? That's yapyak.",
+  "Who's that yak inside your stack? That's yapyak.",
+  "Who's translating while you snack? That's yapyak.",
+  "Who's shipping copy at lightning crack? That's yapyak.",
+  "Who's that AI-powered i18n hack? That's yapyak.",
+];
+
+const ROTATION_INTERVAL = 5200;
+
 export function Footer(): ReactElement {
+  const [index, setIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const start = Math.floor(Math.random() * TAGLINES.length);
+    setIndex(start);
+    const reducedMotionQuery = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    );
+    if (reducedMotionQuery.matches) {
+      return;
+    }
+    const interval = window.setInterval(() => {
+      setIndex((previous) =>
+        previous === null ? start : (previous + 1) % TAGLINES.length,
+      );
+    }, ROTATION_INTERVAL);
+    return () => window.clearInterval(interval);
+  }, []);
+
   return (
     <div className={styles.Footer}>
       <FooterBubble />
-      <p className={styles.Tagline}>
-        Who's yaking in the back? That's yapyak.
-      </p>
+      <div className={styles.TaglineSlot}>
+        {index !== null ? (
+          <p key={index} className={styles.Tagline}>
+            {TAGLINES[index]}
+          </p>
+        ) : null}
+      </div>
       <Wordmark />
       <p className={styles.Copyright}>
         © 2026 yapyak
         <span className={styles.Separator}>·</span>
         MIT license
         <span className={styles.Separator}>·</span>
-        <a
-          href="https://github.com/yapyak/yapyak"
-          className={styles.Link}
-        >
+        <a href="https://github.com/yapyak/yapyak" className={styles.Link}>
           GitHub
         </a>
         <span className={styles.Separator}>·</span>
