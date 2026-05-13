@@ -87,6 +87,50 @@
         color: var(--text);
       }
 
+      table {
+        width: 100%;
+        margin: var(--space-6) 0;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: var(--font-size-sm);
+      }
+
+      thead th {
+        padding: var(--space-3) var(--space-4);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-medium);
+        text-align: left;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+        background: var(--surface);
+        border-top: 1px solid rgba(255, 255, 255, 0.04);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
+
+      thead th:first-child {
+        border-left: 1px solid rgba(255, 255, 255, 0.04);
+        border-top-left-radius: var(--radius-md);
+        border-bottom-left-radius: var(--radius-md);
+      }
+
+      thead th:last-child {
+        border-right: 1px solid rgba(255, 255, 255, 0.04);
+        border-top-right-radius: var(--radius-md);
+        border-bottom-right-radius: var(--radius-md);
+      }
+
+      tbody td {
+        padding: var(--space-3) var(--space-4);
+        color: var(--text-soft);
+        border-bottom: 1px solid var(--rule);
+        vertical-align: top;
+      }
+
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+
       a {
         color: var(--mint);
         text-decoration: underline;
