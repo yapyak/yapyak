@@ -125,7 +125,7 @@
   }
 
   .tx-plain    { color: inherit; }
-  .tx-keyword  { color: var(--text); }
+  .tx-keyword  { color: #d18ac0; }
   .tx-type     { color: #9ab8d0; }
   .tx-literal  { color: #d8a05a; }
   .tx-string   { color: #c8b78a; }

@@ -16,7 +16,7 @@ export const FEATURES: Feature[] = [
     number: '02',
     title: 'Source string is the key',
     description:
-      "What Tailwind did for class names, we did for keys. Just write t('Save changes'). No IDs, no namespaces, no t('common.buttons.save_v2'). AI loves it too — nothing to hallucinate.",
+      "What Tailwind did for class names, yapyak did for keys. Just write t('Save changes'). No IDs, no namespaces, no t('common.buttons.save_v2'). AI loves it too — nothing to hallucinate.",
     accent: 'mint',
   },
   {
@@ -51,7 +51,7 @@ export const FEATURES: Feature[] = [
   },
   {
     number: '08',
-    title: 'Bring your own translator. Or none.',
+    title: 'Bring your own AI. Or none.',
     description:
       'Anthropic, OpenAI, Gemini, Ollama out of the box. A custom one in 30 lines. Or skip AI entirely and fill the JSON yourself — old habits are welcome.',
   },
