@@ -61,13 +61,13 @@
 
   --header-height: 5.5rem;
 
-  --syntax-keyword: #d18ac0;
-  --syntax-type: #9ab8d0;
-  --syntax-literal: #d8a05a;
-  --syntax-string: #c8b78a;
-  --syntax-number: #d8a05a;
-  --syntax-fn-call: #c4a8d0;
-  --syntax-jsx-tag: #8aacc8;
+  --syntax-keyword: #c4a3c4;
+  --syntax-type: #93b8d6;
+  --syntax-literal: #d4a071;
+  --syntax-string: #d8c896;
+  --syntax-number: #d4a071;
+  --syntax-fn-call: #c8a8d8;
+  --syntax-jsx-tag: #93b8d6;
 
   --font-mono:
     ui-monospace,
