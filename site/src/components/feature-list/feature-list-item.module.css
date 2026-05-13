@@ -12,18 +12,6 @@
       border-bottom: none;
     }
 
-    .HoverBar {
-      position: absolute;
-      left: -1px;
-      top: 0;
-      bottom: 0;
-      width: 1px;
-      background-color: var(--mint);
-      transform: scaleY(0);
-      transform-origin: top;
-      transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
     .Numeral {
       font-size: clamp(4rem, 8vw, 6rem);
       font-weight: var(--font-weight-medium);
@@ -43,6 +31,14 @@
 
     &[data-accent='mint'] .Numeral {
       text-shadow: 0 0 32px oklab(0.87 -0.24 0.06 / 0.22);
+    }
+
+    &[data-active] .Numeral {
+      text-shadow: 0 0 28px oklab(0.87 -0.24 0.06 / 0.35);
+    }
+
+    &[data-accent='mint'][data-active] .Numeral {
+      text-shadow: 0 0 36px oklab(0.87 -0.24 0.06 / 0.5);
     }
 
     .Content {
@@ -79,14 +75,6 @@
     }
 
     &:hover {
-      .HoverBar {
-        transform: scaleY(1);
-      }
-
-      .Numeral {
-        text-shadow: 0 0 28px oklab(0.87 -0.24 0.06 / 0.3);
-      }
-
       .Description {
         color: var(--text);
       }
