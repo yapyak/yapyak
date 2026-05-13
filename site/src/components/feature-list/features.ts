@@ -16,7 +16,7 @@ export const FEATURES: Feature[] = [
     number: '02',
     title: 'Source string is the key',
     description:
-      "What Tailwind did for class names, yapyak did for keys. Just write t('Save changes'). No IDs, no namespaces, no t('common.buttons.save_v2'). AI loves it too — nothing to hallucinate.",
+      "What Tailwind did for class names, yapyak did for keys. Just write t('Save changes'). No IDs, no namespaces, no en.json — your English never leaves the source. AI loves it too: nothing to invent, nothing to sync.",
     accent: 'mint',
   },
   {

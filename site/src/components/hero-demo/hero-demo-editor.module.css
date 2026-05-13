@@ -8,9 +8,25 @@
     overflow: hidden;
 
     .Tabs {
+      position: relative;
       display: flex;
       align-items: stretch;
       border-bottom: 1px solid var(--rule);
+    }
+
+    .TabIndicator {
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      height: 1px;
+      background-color: var(--mint);
+      pointer-events: none;
+
+      &[data-ready] {
+        transition:
+          transform 320ms cubic-bezier(0.32, 0.72, 0, 1),
+          width 320ms cubic-bezier(0.32, 0.72, 0, 1);
+      }
     }
 
     .Tab {
@@ -38,16 +54,6 @@
       &[data-active] {
         color: var(--text);
         background-color: rgba(255, 255, 255, 0.03);
-      }
-
-      &[data-active]::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: -1px;
-        height: 1px;
-        background-color: var(--mint);
       }
     }
 

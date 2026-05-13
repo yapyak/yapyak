@@ -1,4 +1,10 @@
-import type { ReactElement } from 'react';
+import {
+  type CSSProperties,
+  type ReactElement,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { type Lang, tokenize } from '#lib/utils/tokenize';
 import styles from './hero-demo-editor.module.css';
 
@@ -27,15 +33,59 @@ export interface HeroDemoEditorProps {
 const CARET_MARKER = 'CARET';
 const T = 't';
 
+interface IndicatorState {
+  x: number;
+  width: number;
+}
+
 export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
   const { source, typing, framework, onFrameworkChange } = props;
   const config = FRAMEWORKS.find((entry) => entry.id === framework) ?? FRAMEWORKS[0]!;
   const code = buildCode(framework, source);
   const tokens = tokenize(code, config.lang);
 
+  const tabsElement = useRef<HTMLDivElement>(null);
+  const [indicator, setIndicator] = useState<IndicatorState | null>(null);
+  const [isReady, setIsReady] = useState(false);
+
+  useLayoutEffect(() => {
+    const $tabs = tabsElement.current;
+    if ($tabs === null) {
+      return;
+    }
+    const activeTab = $tabs.querySelector('[data-active]');
+    if (!(activeTab instanceof HTMLElement)) {
+      return;
+    }
+    setIndicator({
+      x: activeTab.offsetLeft,
+      width: activeTab.offsetWidth,
+    });
+    const frame = window.requestAnimationFrame(() => {
+      setIsReady(true);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [framework]);
+
+  const indicatorStyle: CSSProperties | undefined =
+    indicator !== null
+      ? {
+          transform: `translateX(${indicator.x}px)`,
+          width: `${indicator.width}px`,
+        }
+      : undefined;
+
   return (
     <div className={styles.HeroDemoEditor}>
-      <div className={styles.Tabs}>
+      <div ref={tabsElement} className={styles.Tabs}>
+        {indicator !== null ? (
+          <span
+            aria-hidden="true"
+            className={styles.TabIndicator}
+            data-ready={isReady || undefined}
+            style={indicatorStyle}
+          />
+        ) : null}
         {FRAMEWORKS.map((entry) => (
           <button
             key={entry.id}
