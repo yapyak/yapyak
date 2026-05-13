@@ -9,6 +9,7 @@ import {
 } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
 import { t } from 'yapyak';
+import { Footer } from '#components/footer';
 import { GitHubIcon } from '#components/icon';
 import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
@@ -63,6 +64,9 @@ function Component() {
       <Layout.Main>
         <Outlet />
       </Layout.Main>
+      <Layout.Footer>
+        <Footer />
+      </Layout.Footer>
     </Layout>
   );
 }

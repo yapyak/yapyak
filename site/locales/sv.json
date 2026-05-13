@@ -14,15 +14,7 @@
     "View on GitHub": ""
   },
   "src/routes/index.tsx": {
-    "Auto-translation on save": "",
-    "Edit a string, save the file, and every locale updates via HMR. In your voice, with the call site as context. Finally, i18n that ships as fast as you do.": "",
-    "No keys file. No abstract IDs to look up. The English text you write is the translation key, and lives co-located with your code.": "",
-    "Pick from Anthropic, OpenAI, Gemini, Ollama — or write your own translator in 30 lines. Your key, your bill, no middleman. Each string runs once and caches.": "",
-    "The i18n Library for Vite apps": "",
-    "The source string is the key": "",
-    "Type-safe params from the source string": "",
-    "TypeScript reads the source string itself and demands the params it sees. Plurals need numbers. Dates need Dates. Forget a placeholder and the compiler stops you.": "",
-    "Your AI, your bill": "",
-    "yapyak is a self-maintaining i18n library that translates your strings as you save.": ""
+    "Built for Vite. Designed for the AI era.": "",
+    "The i18n library that maintains itself.": ""
   }
 }

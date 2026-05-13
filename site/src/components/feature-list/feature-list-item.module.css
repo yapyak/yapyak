@@ -1,0 +1,142 @@
+@layer components {
+  .FeatureListItem {
+    position: relative;
+    display: grid;
+    grid-template-columns: 9rem 1fr;
+    gap: var(--space-8);
+    align-items: start;
+    padding: var(--space-12) var(--space-8);
+    border-bottom: 1px solid var(--rule);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .HoverBar {
+      position: absolute;
+      left: -1px;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background-color: var(--mint);
+      transform: scaleY(0);
+      transform-origin: top;
+      transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .Numeral {
+      font-size: clamp(4rem, 8vw, 6rem);
+      font-weight: var(--font-weight-medium);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      background: linear-gradient(
+        180deg,
+        #f5f5f5 0%,
+        #c8c8c8 55%,
+        #8a8a8a 100%
+      );
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      transition: text-shadow 400ms ease;
+    }
+
+    &[data-accent='mint'] .Numeral {
+      text-shadow: 0 0 32px oklab(0.87 -0.24 0.06 / 0.22);
+    }
+
+    .Content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      max-width: 38rem;
+    }
+
+    .Title {
+      margin: 0;
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-medium);
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      color: var(--text);
+      text-wrap: balance;
+    }
+
+    .Underline {
+      display: block;
+      width: 60px;
+      height: 1px;
+      background-color: var(--mint);
+      opacity: 0.55;
+      transform-origin: left;
+    }
+
+    .Description {
+      margin: 0;
+      font-size: var(--font-size-md);
+      color: var(--text-soft);
+      transition: color 400ms ease;
+    }
+
+    &:hover {
+      .HoverBar {
+        transform: scaleY(1);
+      }
+
+      .Numeral {
+        text-shadow: 0 0 28px oklab(0.87 -0.24 0.06 / 0.3);
+      }
+
+      .Description {
+        color: var(--text);
+      }
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+      padding: var(--space-10) var(--space-6);
+
+      .Numeral {
+        font-size: 3.5rem;
+      }
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    .FeatureListItem {
+      animation: feature-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+
+    .FeatureListItem .Underline {
+      transform: scaleX(0);
+      animation: underline-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 35% entry 85%;
+    }
+  }
+
+  @keyframes feature-reveal {
+    from {
+      opacity: 0;
+      filter: blur(8px);
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes underline-draw {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
