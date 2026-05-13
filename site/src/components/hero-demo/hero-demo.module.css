@@ -6,7 +6,7 @@
     .Stack {
       display: flex;
       flex-direction: column;
-      gap: var(--space-4);
+      gap: var(--space-8);
       transform: translateY(12px);
       opacity: 0;
       filter: blur(8px);

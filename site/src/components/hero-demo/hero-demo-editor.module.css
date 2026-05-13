@@ -3,13 +3,13 @@
     display: flex;
     flex-direction: column;
     background: var(--surface);
-    border: 1px solid var(--rule);
     border-radius: var(--radius-lg);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
     overflow: hidden;
-    transition: border-color 400ms ease;
+    transition: box-shadow 400ms ease;
 
     &[data-saving] {
-      border-color: oklab(0.87 -0.24 0.06 / 0.35);
+      box-shadow: 0 0 0 1px oklab(0.87 -0.24 0.06 / 0.35);
     }
 
     .Tabs {

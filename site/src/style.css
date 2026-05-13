@@ -105,8 +105,8 @@
 @layer components {
   .CodeBlock {
     background: var(--surface);
-    border: 1px solid var(--rule);
     border-radius: var(--radius-lg);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
     overflow: hidden;
 
     pre {
