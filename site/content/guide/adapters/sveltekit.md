@@ -3,14 +3,11 @@ title: SvelteKit
 order: 3
 ---
 
-Two pieces wire SvelteKit: the `sveltekit()` call that binds per-request headers, and the `handle` hook that injects the resolved locale into `<html lang>`.
+Re-export the `handle` hook from `hooks.server.ts`.
 
 ```ts
 // src/hooks.server.ts
-import { sveltekit, handle } from 'yapyak/adapters/sveltekit';
-
-sveltekit();
-export { handle };
+export { handle } from 'yapyak/adapters/sveltekit';
 ```
 
 ```html
@@ -25,19 +22,18 @@ export { handle };
 </html>
 ```
 
-The `%yapyak.lang%` placeholder is replaced by SvelteKit's `transformPageChunk` with the resolved locale before HTML reaches the browser.
+The hook binds each request's locale context and substitutes `%yapyak.lang%` with the resolved locale before HTML reaches the browser.
 
 ## Composing with existing handles
 
-Most apps already export a `handle` from `hooks.server.ts` (auth, logging, etc.). Use SvelteKit's `sequence`:
+If you already export a `handle` from `hooks.server.ts` (auth, logging, etc.), compose with SvelteKit's `sequence`:
 
 ```ts
 // src/hooks.server.ts
 import { sequence } from '@sveltejs/kit/hooks';
-import { sveltekit, handle as yapyakHandle } from 'yapyak/adapters/sveltekit';
+import { handle as yapyakHandle } from 'yapyak/adapters/sveltekit';
 import { handle as authHandle } from './auth';
 
-sveltekit();
 export const handle = sequence(yapyakHandle, authHandle);
 ```
 
@@ -54,5 +50,4 @@ yapyak({
 })
 ```
 
-The cookie is written client-side on `setLocale()` and read server-side by the adapter on every request. See [Locales / Persistence](/guide/locales#persistence).
-
+The cookie is written client-side on `setLocale()` and read server-side by the handle on every request. See [Locales / Persistence](/guide/locales#persistence).

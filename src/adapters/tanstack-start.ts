@@ -1,38 +1,25 @@
-import { setRequestSource } from '../locale/store.js';
-
-interface HeadersLike {
-  get(name: string): string | null | undefined;
-}
-
-let _getRequestHeaders: (() => HeadersLike) | undefined;
-if (import.meta.env?.SSR) {
-  const server = await import('@tanstack/react-start/server' as string);
-  _getRequestHeaders = (server as { getRequestHeaders: () => HeadersLike })
-    .getRequestHeaders;
-}
+import {
+  type AnyRequestMiddleware,
+  createMiddleware,
+} from '@tanstack/react-start';
+import { withRequest } from '../server.js';
 
 /**
- * Wires yapyak to TanStack Start's per-request headers for SSR locale detection.
+ * TanStack Start request middleware that wires yapyak's per-request locale
+ * context for every incoming request.
  *
- * Call once at the top of your server entry.
+ * Register in `src/start.ts`:
  *
  * @example
  * ```ts
- * import { tanstackStart } from 'yapyak/tanstack-start';
+ * // src/start.ts
+ * import { middleware } from 'yapyak/adapters/tanstack-start';
  *
- * tanstackStart();
+ * export default {
+ *   requestMiddleware: [middleware],
+ * };
  * ```
  */
-export function tanstackStart(): void {
-  if (!_getRequestHeaders) {
-    return;
-  }
-  const get = _getRequestHeaders;
-  setRequestSource(() => {
-    const headers = get();
-    return {
-      acceptLanguage: headers.get('accept-language') ?? undefined,
-      cookieHeader: headers.get('cookie') ?? undefined,
-    };
-  });
-}
+export const middleware: AnyRequestMiddleware = createMiddleware().server(
+  ({ request, next }) => withRequest(request, () => next()),
+);

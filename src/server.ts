@@ -1,81 +1,45 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { detectLocale } from './locale/detect.js';
-import { parseCookie } from './parse-cookie.js';
+import { registerRequestHeadersReader } from './locale/store.js';
 
-/** The per-request context yapyak reads on the server. */
-export interface RequestContext {
-  /** The `Accept-Language` header value. */
-  acceptLanguage?: string | undefined;
-  /** The `Cookie` header value. */
-  cookieHeader?: string | undefined;
+interface RequestHeaders {
+  acceptLanguage: string | undefined;
+  cookieHeader: string | undefined;
 }
 
-const storage = new AsyncLocalStorage<RequestContext>();
+const storage = new AsyncLocalStorage<RequestHeaders>();
+
+registerRequestHeadersReader(() => storage.getStore());
 
 /**
- * Runs `fn` with the request context bound for the duration of the call.
+ * Runs `fn` with the request's locale headers bound to an async-scoped context.
  *
- * Wire this once in your SSR entry. The framework adapters (`tanstackStart`,
- * `sveltekit`) do this for you — only call it directly for custom SSR setups.
+ * The shipped adapters (`yapyak/adapters/sveltekit`, `yapyak/adapters/tanstack-start`)
+ * call this for you. Use it directly when wiring a custom SSR setup.
  *
- * @param context - The request context, sourced from the incoming HTTP request.
- * @param fn - The function to run with the context bound.
+ * @param request - The incoming Web `Request`.
+ * @param fn - The function to run with the request bound.
  * @returns The return value of `fn`.
  *
  * @example
  * ```ts
- * export async function handler(request: Request): Promise<Response> {
- *   return withRequest(
- *     {
- *       acceptLanguage: request.headers.get('accept-language') ?? undefined,
- *       cookieHeader: request.headers.get('cookie') ?? undefined,
- *     },
- *     () => renderApp(request),
- *   );
+ * import { withRequest } from 'yapyak/server';
+ *
+ * function handler(request: Request): Response {
+ *   return withRequest(request, () => renderApp(request));
  * }
  * ```
  */
-export function withRequest<T>(context: RequestContext, fn: () => T): T {
-  return storage.run(context, fn);
-}
-
-/** @internal */
-export function getRequestContext(): RequestContext | undefined {
-  return storage.getStore();
-}
-
-export interface ResolveOptions {
-  cookieName?: string;
-  defaultLocale: string;
-  locales: string[];
-}
-
-/** @internal */
-export function resolveRequestLocale(options: ResolveOptions): string {
-  const context = getRequestContext();
-  if (context === undefined) {
-    return options.defaultLocale;
-  }
-  const persisted = readCookieValue(
-    context.cookieHeader,
-    options.cookieName ?? 'locale',
+export function withRequest<T>(request: Request, fn: () => T): T {
+  return storage.run(
+    {
+      acceptLanguage: request.headers.get('accept-language') ?? undefined,
+      cookieHeader: request.headers.get('cookie') ?? undefined,
+    },
+    fn,
   );
-  return detectLocale({
-    acceptLanguage: context.acceptLanguage,
-    defaultLocale: options.defaultLocale,
-    locales: options.locales,
-    persisted,
-  });
 }
 
-function readCookieValue(
-  header: string | undefined,
-  name: string,
-): string | undefined {
-  if (header === undefined || header === '') {
-    return undefined;
-  }
-  const cookies = parseCookie(header);
-  const value = cookies[name];
-  return value === '' ? undefined : value;
+/** @internal */
+export function getRequestHeaders(): RequestHeaders | undefined {
+  return storage.getStore();
 }

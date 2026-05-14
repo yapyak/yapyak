@@ -1,8 +1,18 @@
 import { renderToString } from 'react-dom/server';
-import { afterEach, describe, expect, it } from 'vitest';
-import { configureLocale, resetLocaleStore } from '../locale/store.js';
-import { IntlProvider } from './intl-provider.js';
-import { useLocale } from './use-locale.js';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('virtual:yapyak', () => ({
+  LOCALES: ['en', 'sv', 'fr'],
+  DEFAULT_LOCALE: 'en',
+  COOKIE_NAME: 'locale',
+  PERSISTENCE: null,
+  ACCEPT_LANGUAGE: false,
+  STORAGE_KEY: 'yapyak:locale',
+}));
+
+const { getLocale, resetLocaleStore } = await import('../locale/store.js');
+const { IntlProvider } = await import('./intl-provider.js');
+const { useLocale } = await import('./use-locale.js');
 
 afterEach(() => {
   resetLocaleStore();
@@ -15,29 +25,11 @@ function LocaleLabel(): string {
 
 describe('useLocale', () => {
   it('reads current locale during server render', () => {
-    configureLocale({
-      defaultLocale: 'en',
-      initialLocale: 'sv',
-      locales: ['en', 'sv'],
-    });
     const html = renderToString(<LocaleLabel />);
-    expect(html).toBe('sv');
-  });
-
-  it('reflects defaultLocale when nothing else configured', () => {
-    configureLocale({
-      defaultLocale: 'fr',
-      locales: ['en', 'sv', 'fr'],
-    });
-    const html = renderToString(<LocaleLabel />);
-    expect(html).toBe('fr');
+    expect(html).toBe('en');
   });
 
   it('returns a setter that updates the store', () => {
-    const store = configureLocale({
-      defaultLocale: 'en',
-      locales: ['en', 'sv'],
-    });
     let setter: ((locale: string) => void) | undefined;
     function Capture(): null {
       const [, set] = useLocale();
@@ -46,16 +38,12 @@ describe('useLocale', () => {
     }
     renderToString(<Capture />);
     setter?.('sv');
-    expect(store.get()).toBe('sv');
+    expect(getLocale()).toBe('sv');
   });
 });
 
 describe('IntlProvider', () => {
   it('renders children', () => {
-    configureLocale({
-      defaultLocale: 'en',
-      locales: ['en'],
-    });
     const html = renderToString(
       <IntlProvider>
         <span>hello</span>
@@ -64,17 +52,12 @@ describe('IntlProvider', () => {
     expect(html).toBe('<span>hello</span>');
   });
 
-  it('subscribes to store via useSyncExternalStore on render', () => {
-    configureLocale({
-      defaultLocale: 'en',
-      initialLocale: 'sv',
-      locales: ['en', 'sv'],
-    });
+  it('exposes current locale to descendants', () => {
     const html = renderToString(
       <IntlProvider>
         <LocaleLabel />
       </IntlProvider>,
     );
-    expect(html).toBe('sv');
+    expect(html).toBe('en');
   });
 });

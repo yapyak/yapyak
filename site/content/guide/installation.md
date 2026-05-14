@@ -115,7 +115,7 @@ If your app is server-rendered, wire the adapter once. Pick the page for your fr
 
 - [TanStack Start](/guide/adapters/tanstack-start)
 - [SvelteKit](/guide/adapters/sveltekit)
-- [Custom](/guide/adapters/custom) — Next.js, Astro, Hono, or any other Node setup
+- [Custom](/guide/adapters/custom) — any other Vite SSR setup
 
 Pure SPAs (no SSR) don't need an adapter — skip this step.
 

@@ -3,36 +3,29 @@ title: Custom
 order: 4
 ---
 
-If your Vite SSR setup isn't covered by the shipped adapters (TanStack Start, SvelteKit), wire yapyak manually to the framework's per-request headers.
-
-The adapter pattern is small:
+If your Vite SSR setup isn't TanStack Start or SvelteKit, wrap each request with `withRequest()`.
 
 ```ts
-// my-adapter.ts
-import { setRequestSource } from 'yapyak';
+import { withRequest } from 'yapyak/server';
 
-export function myFrameworkAdapter(): void {
-  setRequestSource(() => {
-    const headers = getCurrentRequestHeaders();
-    return {
-      acceptLanguage: headers.get('accept-language') ?? undefined,
-      cookieHeader: headers.get('cookie') ?? undefined,
-    };
-  });
+function handler(request: Request): Response | Promise<Response> {
+  return withRequest(request, () => renderApp(request));
 }
 ```
 
-The provider you pass to `setRequestSource()` is called lazily by yapyak each time `getLocale()` runs during SSR. Read the framework's current request headers inside the provider, return `accept-language` and `cookie`.
+`withRequest()` reads `accept-language` and `cookie` from the `Request`, binds them to an async-scoped context, and runs the callback inside that scope. `getLocale()`, `t()`, and any other yapyak call inside the callback see this request's locale.
 
-## What `setRequestSource()` does
+## What `withRequest()` does
 
-It registers a function that returns the *current* request's headers. yapyak invokes that function whenever locale resolution is needed during server-rendering, then resolves the locale from cookie → `Accept-Language` → default.
+It uses Node's `AsyncLocalStorage.run()` for safe per-request isolation. Concurrent requests can't bleed locale state into each other. The callback's return value is forwarded.
 
-Call `setRequestSource()` once at startup — not per request.
+```ts
+withRequest<T>(request: Request, fn: () => T): T;
+```
 
-## Setting `<html lang>` (manual setups)
+## Setting `<html lang>`
 
-Use `useLocale()` (React) or `locale` (Svelte/Vue) in the root component:
+Read the locale via `useLocale()` (React) or `locale` (Svelte/Vue) inside your root component so it re-renders on locale change:
 
 ```tsx
 import type { ReactElement } from 'react';
@@ -43,8 +36,6 @@ function Component(): ReactElement {
   return <html lang={locale}>{/* ... */}</html>;
 }
 ```
-
-The component re-renders when the locale changes.
 
 ## Cookie persistence
 

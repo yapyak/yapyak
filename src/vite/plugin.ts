@@ -21,8 +21,8 @@ import { walkSourceFiles } from './walk-source-files.js';
 
 export type { YapyakOptions };
 
-const SETUP_ID = 'virtual:yapyak/setup';
-const SETUP_RESOLVED = `\0${SETUP_ID}`;
+const CONFIG_ID = 'virtual:yapyak';
+const CONFIG_RESOLVED = `\0${CONFIG_ID}`;
 
 /**
  * The yapyak Vite plugin.
@@ -176,14 +176,14 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       fillStubs();
     },
     resolveId(id: string): string | null {
-      if (id === SETUP_ID) {
-        return SETUP_RESOLVED;
+      if (id === CONFIG_ID) {
+        return CONFIG_RESOLVED;
       }
       return null;
     },
     load(id: string): string | null {
-      if (id === SETUP_RESOLVED) {
-        return generateSetup(normalized, discover());
+      if (id === CONFIG_RESOLVED) {
+        return generateConfig(normalized, discover());
       }
       return null;
     },
@@ -215,22 +215,6 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         return null;
       }
       return { code: result.code };
-    },
-    transformIndexHtml(): Array<{
-      tag: string;
-      attrs: Record<string, string | boolean>;
-      injectTo: 'head-prepend';
-    }> {
-      return [
-        {
-          attrs: {
-            src: `/@id/${SETUP_ID}`,
-            type: 'module',
-          },
-          injectTo: 'head-prepend',
-          tag: 'script',
-        },
-      ];
     },
     async handleHotUpdate(ctx): Promise<void> {
       if (!isCandidateId(ctx.file, filter)) {
@@ -295,20 +279,29 @@ function toPosition(message: ExtractedMessage): {
   };
 }
 
-function generateSetup(
+function generateConfig(
   normalized: ReturnType<typeof normalizeOptions>,
   resolved: { defaultLocale: string; locales: string[] },
 ): string {
   const lines: string[] = [];
-  lines.push(`import { configureLocale } from 'yapyak/runtime';`);
-  lines.push(`configureLocale(${JSON.stringify({
-    acceptLanguage: normalized.acceptLanguage,
-    cookieName: normalized.cookieName,
-    defaultLocale: resolved.defaultLocale,
-    locales: resolved.locales,
-    persistence: normalized.persistence,
-    storageKey: normalized.storageKey,
-  })});`);
+  lines.push(
+    `export const LOCALES = ${JSON.stringify(resolved.locales)};`,
+  );
+  lines.push(
+    `export const DEFAULT_LOCALE = ${JSON.stringify(resolved.defaultLocale)};`,
+  );
+  lines.push(
+    `export const COOKIE_NAME = ${JSON.stringify(normalized.cookieName)};`,
+  );
+  lines.push(
+    `export const PERSISTENCE = ${JSON.stringify(normalized.persistence)};`,
+  );
+  lines.push(
+    `export const ACCEPT_LANGUAGE = ${JSON.stringify(normalized.acceptLanguage)};`,
+  );
+  lines.push(
+    `export const STORAGE_KEY = ${JSON.stringify(normalized.storageKey)};`,
+  );
   return lines.join('\n');
 }
 

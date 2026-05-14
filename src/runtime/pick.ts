@@ -1,4 +1,4 @@
-import { getLocaleStore } from '../locale/store.js';
+import { getDefaultLocale, getLocale } from '../locale/store.js';
 import { hasPlaceholder, interpolate } from './interpolate.js';
 import { runTrackers } from './tracker.js';
 
@@ -12,9 +12,8 @@ export function pick(
   if (fixedLocale === undefined) {
     runTrackers();
   }
-  const store = getLocaleStore();
-  const locale = fixedLocale ?? store.get();
-  const value = variants[locale] ?? variants[store.defaultLocale] ?? '';
+  const locale = fixedLocale ?? getLocale();
+  const value = variants[locale] ?? variants[getDefaultLocale()] ?? '';
   if (params === undefined || !hasPlaceholder(value)) {
     return value;
   }

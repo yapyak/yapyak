@@ -3,13 +3,15 @@ title: TanStack Start
 order: 2
 ---
 
-Wire the adapter once at the top of your root route.
+Register yapyak's request middleware once in `src/start.ts`.
 
 ```ts
-// src/routes/__root.tsx
-import { tanstackStart } from 'yapyak/adapters/tanstack-start';
+// src/start.ts
+import { middleware } from 'yapyak/adapters/tanstack-start';
 
-tanstackStart();
+export default {
+  requestMiddleware: [middleware],
+};
 ```
 
 That's the entire wiring. Every server-rendered request now resolves its own locale from cookie or `Accept-Language` header.
@@ -22,10 +24,7 @@ Drive the root element's `lang` attribute from the locale via `useLocale()`. The
 // src/routes/__root.tsx
 import { createRootRoute, Outlet } from '@tanstack/react-router';
 import type { ReactElement } from 'react';
-import { tanstackStart } from 'yapyak/adapters/tanstack-start';
 import { useLocale } from 'yapyak/react';
-
-tanstackStart();
 
 function Component(): ReactElement {
   const [locale] = useLocale();
@@ -53,4 +52,4 @@ yapyak({
 })
 ```
 
-The cookie is written client-side on `setLocale()` and read server-side by the adapter. See [Locales / Persistence](/guide/locales#persistence) for details.
+The cookie is written client-side on `setLocale()` and read server-side by the middleware. See [Locales / Persistence](/guide/locales#persistence).

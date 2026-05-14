@@ -5,21 +5,31 @@ order: 1
 
 An adapter wires yapyak to your SSR framework so each request renders in its own locale. Without one, server-rendered HTML always uses the default locale.
 
-For TanStack Start and SvelteKit, a one-line call handles the wiring:
+For TanStack Start, register the request middleware:
 
 ```ts
-import { tanstackStart } from 'yapyak/adapters/tanstack-start';
-tanstackStart();
+// src/start.ts
+import { middleware } from 'yapyak/adapters/tanstack-start';
+
+export default {
+  requestMiddleware: [middleware],
+};
 ```
 
-For other frameworks, call `setRequestSource(request)` at the top of each request handler:
+For SvelteKit, re-export the handle hook:
 
 ```ts
-import { setRequestSource } from 'yapyak';
+// src/hooks.server.ts
+export { handle } from 'yapyak/adapters/sveltekit';
+```
+
+For other frameworks, wrap each request manually with `withRequest()`:
+
+```ts
+import { withRequest } from 'yapyak/server';
 
 function handler(request: Request) {
-  setRequestSource(request);
-  return renderApp(request);
+  return withRequest(request, () => renderApp(request));
 }
 ```
 
@@ -29,4 +39,4 @@ Pure SPAs (no SSR) don't need an adapter.
 
 - [TanStack Start](/guide/adapters/tanstack-start)
 - [SvelteKit](/guide/adapters/sveltekit)
-- [Custom](/guide/adapters/custom) — Next.js, Astro, Hono, Express, or any Node request handler
+- [Custom](/guide/adapters/custom)

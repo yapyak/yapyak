@@ -1,105 +1,103 @@
-import { describe, expect, it } from 'vitest';
-import {
-  getRequestContext,
-  resolveRequestLocale,
-  withRequest,
-} from './server.js';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('virtual:yapyak', () => ({
+  LOCALES: ['en', 'sv', 'fr'],
+  DEFAULT_LOCALE: 'en',
+  COOKIE_NAME: 'locale',
+  PERSISTENCE: null,
+  ACCEPT_LANGUAGE: true,
+  STORAGE_KEY: 'yapyak:locale',
+}));
+
+const { getLocale, resetLocaleStore } = await import('./locale/store.js');
+const { getRequestHeaders, withRequest } = await import('./server.js');
+
+function makeRequest(
+  headers: { acceptLanguage?: string; cookie?: string } = {},
+): Request {
+  const h = new Headers();
+  if (headers.acceptLanguage !== undefined) {
+    h.set('accept-language', headers.acceptLanguage);
+  }
+  if (headers.cookie !== undefined) {
+    h.set('cookie', headers.cookie);
+  }
+  return new Request('http://example.test', { headers: h });
+}
 
 describe('withRequest', () => {
-  it('makes context readable inside the callback', () => {
-    let captured: ReturnType<typeof getRequestContext>;
-    withRequest({ cookieHeader: 'locale=sv' }, () => {
-      captured = getRequestContext();
+  afterEach(() => {
+    resetLocaleStore();
+  });
+
+  it('makes headers readable inside the callback', () => {
+    let captured: ReturnType<typeof getRequestHeaders>;
+    withRequest(makeRequest({ cookie: 'locale=sv' }), () => {
+      captured = getRequestHeaders();
     });
-    expect(captured).toEqual({ cookieHeader: 'locale=sv' });
+    expect(captured).toEqual({
+      acceptLanguage: undefined,
+      cookieHeader: 'locale=sv',
+    });
   });
 
   it('returns the callback result', () => {
-    const result = withRequest({}, () => 42);
+    const result = withRequest(makeRequest(), () => 42);
     expect(result).toBe(42);
   });
 
-  it('isolates contexts across nested calls', () => {
-    const outerHeader = 'locale=sv';
-    const innerHeader = 'locale=fr';
+  it('isolates headers across nested calls', () => {
     let outerSeenAfterInner = '';
-    withRequest({ cookieHeader: outerHeader }, () => {
-      withRequest({ cookieHeader: innerHeader }, () => {
+    withRequest(makeRequest({ cookie: 'locale=sv' }), () => {
+      withRequest(makeRequest({ cookie: 'locale=fr' }), () => {
         // inner scope
       });
-      outerSeenAfterInner = getRequestContext()?.cookieHeader ?? '';
+      outerSeenAfterInner = getRequestHeaders()?.cookieHeader ?? '';
     });
-    expect(outerSeenAfterInner).toBe(outerHeader);
+    expect(outerSeenAfterInner).toBe('locale=sv');
   });
 
   it('returns undefined outside any withRequest scope', () => {
-    expect(getRequestContext()).toBeUndefined();
+    expect(getRequestHeaders()).toBeUndefined();
   });
 });
 
-describe('resolveRequestLocale', () => {
-  it('reads cookie locale from request context', () => {
-    const result = withRequest({ cookieHeader: 'locale=sv' }, () =>
-      resolveRequestLocale({
-        defaultLocale: 'en',
-        locales: ['en', 'sv'],
-      }),
+describe('locale resolution inside withRequest', () => {
+  afterEach(() => {
+    resetLocaleStore();
+  });
+
+  it('reads cookie locale from the request', () => {
+    const result = withRequest(makeRequest({ cookie: 'locale=sv' }), () =>
+      getLocale(),
     );
     expect(result).toBe('sv');
   });
 
   it('falls back to Accept-Language when no cookie', () => {
     const result = withRequest(
-      { acceptLanguage: 'sv-SE,en;q=0.9' },
-      () =>
-        resolveRequestLocale({
-          defaultLocale: 'en',
-          locales: ['en', 'sv'],
-        }),
+      makeRequest({ acceptLanguage: 'sv-SE,en;q=0.9' }),
+      () => getLocale(),
     );
     expect(result).toBe('sv');
   });
 
   it('cookie takes priority over Accept-Language', () => {
     const result = withRequest(
-      { acceptLanguage: 'fr', cookieHeader: 'locale=sv' },
-      () =>
-        resolveRequestLocale({
-          defaultLocale: 'en',
-          locales: ['en', 'sv', 'fr'],
-        }),
+      makeRequest({ acceptLanguage: 'fr', cookie: 'locale=sv' }),
+      () => getLocale(),
     );
     expect(result).toBe('sv');
   });
 
-  it('returns default when no request context', () => {
-    expect(
-      resolveRequestLocale({
-        defaultLocale: 'en',
-        locales: ['en', 'sv'],
-      }),
-    ).toBe('en');
-  });
-
-  it('uses configured cookie name', () => {
-    const result = withRequest({ cookieHeader: 'app-locale=fr' }, () =>
-      resolveRequestLocale({
-        cookieName: 'app-locale',
-        defaultLocale: 'en',
-        locales: ['en', 'sv', 'fr'],
-      }),
-    );
-    expect(result).toBe('fr');
+  it('returns default when no request scope', () => {
+    expect(getLocale()).toBe('en');
   });
 
   it('falls back when persisted cookie is unsupported locale', () => {
     const result = withRequest(
-      { acceptLanguage: 'sv', cookieHeader: 'locale=de' },
-      () =>
-        resolveRequestLocale({
-          defaultLocale: 'en',
-          locales: ['en', 'sv'],
-        }),
+      makeRequest({ acceptLanguage: 'sv', cookie: 'locale=de' }),
+      () => getLocale(),
     );
     expect(result).toBe('sv');
   });

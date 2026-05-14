@@ -1,4 +1,4 @@
-import { getLocaleStore } from '../locale/store.js';
+import { getLocale, setLocale, subscribeLocale } from '../locale/store.js';
 import { registerTracker } from '../runtime/tracker.js';
 
 /** A reactive locale handle for Svelte 5. */
@@ -7,12 +7,11 @@ export interface ReactiveLocale {
   current: string;
 }
 
-const store = getLocaleStore();
-let value = $state(store.get());
+let value = $state(getLocale());
 
 if (typeof window !== 'undefined') {
-  store.subscribe(() => {
-    value = store.get();
+  subscribeLocale(() => {
+    value = getLocale();
   });
   registerTracker(() => {
     void value;
@@ -40,9 +39,9 @@ if (typeof window !== 'undefined') {
  */
 export const locale: ReactiveLocale = {
   get current(): string {
-    return typeof window === 'undefined' ? store.get() : value;
+    return typeof window === 'undefined' ? getLocale() : value;
   },
   set current(next: string) {
-    store.set(next);
+    setLocale(next);
   },
 };

@@ -1,120 +1,62 @@
-import { detectLocale } from './detect.js';
-import { parseCookie } from '../parse-cookie.js';
 import {
-  createPersistence,
-  type PersistenceConfig,
-} from './persistence.js';
+  ACCEPT_LANGUAGE,
+  COOKIE_NAME,
+  DEFAULT_LOCALE,
+  LOCALES,
+  PERSISTENCE,
+  STORAGE_KEY,
+} from 'virtual:yapyak';
+import { parseCookie } from '../parse-cookie.js';
+import { detectLocale } from './detect.js';
+import { createPersistence, type PersistenceConfig } from './persistence.js';
 
-/** Options for configuring the locale store. */
-export interface LocaleStoreOptions {
-  /** Enable Accept-Language header detection on the server. */
-  acceptLanguage?: boolean;
-  /** Cookie name for locale persistence. Defaults to `'locale'`. */
-  cookieName?: string;
-  /** The fallback locale used when no other locale is resolved. */
-  defaultLocale: string;
-  /** The initial locale to use before any user selection. */
-  initialLocale?: string;
-  /** All locales the app supports. */
-  locales: string[];
-  /** Where to persist the user's locale selection. */
-  persistence?: 'cookie' | 'localStorage' | null;
-  /** localStorage key for locale persistence. Defaults to `'yapyak:locale'`. */
-  storageKey?: string;
+interface RequestHeaders {
+  acceptLanguage: string | undefined;
+  cookieHeader: string | undefined;
 }
 
-export interface RequestSource {
-  acceptLanguage?: string | undefined;
-  cookieHeader?: string | undefined;
+type RequestHeadersReader = () => RequestHeaders | undefined;
+
+let headersReader: RequestHeadersReader | null = null;
+
+/** @internal */
+export function registerRequestHeadersReader(
+  reader: RequestHeadersReader,
+): void {
+  headersReader = reader;
 }
 
-export type RequestSourceProvider = () => RequestSource | undefined;
+const persistence = createPersistence(
+  buildPersistenceConfig(PERSISTENCE, COOKIE_NAME, STORAGE_KEY),
+);
 
-export interface LocaleStore {
-  cookieName: string;
-  defaultLocale: string;
-  get(): string;
-  getSnapshot(): string;
-  locales: string[];
-  set(locale: string): void;
-  setRequestSource(provider: RequestSourceProvider | null): void;
-  subscribe(listener: () => void): () => void;
-}
-
-export function createLocaleStore(options: LocaleStoreOptions): LocaleStore {
-  const listeners = new Set<() => void>();
-  const cookieName = options.cookieName ?? 'locale';
-  const storageKey = options.storageKey ?? 'yapyak:locale';
-  const acceptLanguage = options.acceptLanguage ?? false;
-  const persistence = createPersistence(
-    buildPersistenceConfig(options.persistence ?? null, cookieName, storageKey),
-  );
+function initialLocale(): string {
   const persisted = persistence?.load();
-  const initial =
-    persisted && options.locales.includes(persisted)
-      ? persisted
-      : options.initialLocale && options.locales.includes(options.initialLocale)
-        ? options.initialLocale
-        : options.defaultLocale;
-  let locale = initial;
-  let version = 0;
-  let snapshot = `${locale}#${version}`;
-  let requestSource: RequestSourceProvider | null = null;
-
-  function resolveLocale(): string {
-    if (requestSource !== null && typeof window === 'undefined') {
-      const source = requestSource();
-      if (source !== undefined) {
-        const persisted = readCookieValue(source.cookieHeader, cookieName);
-        return detectLocale({
-          acceptLanguage: acceptLanguage ? source.acceptLanguage : undefined,
-          defaultLocale: options.defaultLocale,
-          locales: options.locales,
-          persisted,
-        });
-      }
-    }
-    return locale;
+  if (persisted !== undefined && LOCALES.includes(persisted)) {
+    return persisted;
   }
+  return DEFAULT_LOCALE;
+}
 
-  return {
-    cookieName,
-    defaultLocale: options.defaultLocale,
-    locales: options.locales,
-    get() {
-      return resolveLocale();
-    },
-    getSnapshot() {
-      if (requestSource !== null && typeof window === 'undefined') {
-        return resolveLocale();
-      }
-      return snapshot;
-    },
-    set(next) {
-      if (!options.locales.includes(next)) {
-        return;
-      }
-      if (next === locale) {
-        return;
-      }
-      locale = next;
-      version++;
-      snapshot = `${locale}#${version}`;
-      persistence?.save(next);
-      for (const listener of listeners) {
-        listener();
-      }
-    },
-    setRequestSource(provider) {
-      requestSource = provider;
-    },
-    subscribe(listener) {
-      listeners.add(listener);
-      return () => {
-        listeners.delete(listener);
-      };
-    },
-  };
+let currentLocale = initialLocale();
+let version = 0;
+let snapshot = `${currentLocale}#${version}`;
+const listeners = new Set<() => void>();
+
+function resolveLocale(): string {
+  if (typeof window === 'undefined' && headersReader !== null) {
+    const source = headersReader();
+    if (source !== undefined) {
+      const persisted = readCookieValue(source.cookieHeader, COOKIE_NAME);
+      return detectLocale({
+        acceptLanguage: ACCEPT_LANGUAGE ? source.acceptLanguage : undefined,
+        defaultLocale: DEFAULT_LOCALE,
+        locales: LOCALES,
+        persisted,
+      });
+    }
+  }
+  return currentLocale;
 }
 
 function readCookieValue(
@@ -126,29 +68,6 @@ function readCookieValue(
   }
   const value = parseCookie(header)[name];
   return value === '' ? undefined : value;
-}
-
-let activeStore: LocaleStore | null = null;
-
-/** @internal */
-export function configureLocale(options: LocaleStoreOptions): LocaleStore {
-  activeStore = createLocaleStore(options);
-  return activeStore;
-}
-
-/** @internal */
-export function getLocaleStore(): LocaleStore {
-  if (activeStore === null) {
-    activeStore = createLocaleStore({
-      defaultLocale: 'en',
-      locales: ['en'],
-    });
-  }
-  return activeStore;
-}
-
-export function resetLocaleStore(): void {
-  activeStore = null;
 }
 
 function buildPersistenceConfig(
@@ -167,7 +86,7 @@ function buildPersistenceConfig(
 
 /** Returns the current locale. */
 export function getLocale(): string {
-  return getLocaleStore().get();
+  return resolveLocale();
 }
 
 /**
@@ -179,20 +98,55 @@ export function getLocale(): string {
  * @param locale - The locale to switch to.
  */
 export function setLocale(locale: string): void {
-  getLocaleStore().set(locale);
+  if (!LOCALES.includes(locale)) {
+    return;
+  }
+  if (locale === currentLocale) {
+    return;
+  }
+  currentLocale = locale;
+  version++;
+  snapshot = `${currentLocale}#${version}`;
+  persistence?.save(locale);
+  for (const listener of listeners) {
+    listener();
+  }
 }
 
 /** Returns the list of configured locales. */
 export function getLocales(): string[] {
-  return getLocaleStore().locales;
+  return LOCALES;
 }
 
 /** Returns the configured default locale. */
 export function getDefaultLocale(): string {
-  return getLocaleStore().defaultLocale;
+  return DEFAULT_LOCALE;
 }
 
 /** @internal */
-export function setRequestSource(provider: RequestSourceProvider | null): void {
-  getLocaleStore().setRequestSource(provider);
+export function getLocaleSnapshot(): string {
+  if (
+    typeof window === 'undefined' &&
+    headersReader !== null &&
+    headersReader() !== undefined
+  ) {
+    return resolveLocale();
+  }
+  return snapshot;
+}
+
+/** @internal */
+export function subscribeLocale(listener: () => void): () => void {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+/** @internal */
+export function resetLocaleStore(): void {
+  currentLocale = initialLocale();
+  version = 0;
+  snapshot = `${currentLocale}#${version}`;
+  listeners.clear();
 }

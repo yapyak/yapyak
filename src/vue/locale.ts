@@ -1,13 +1,12 @@
 import { computed, ref, type WritableComputedRef } from 'vue';
-import { getLocaleStore } from '../locale/store.js';
+import { getLocale, setLocale, subscribeLocale } from '../locale/store.js';
 import { registerTracker } from '../runtime/tracker.js';
 
-const store = getLocaleStore();
-const valueRef = ref(store.get());
+const valueRef = ref(getLocale());
 
 if (typeof window !== 'undefined') {
-  store.subscribe(() => {
-    valueRef.value = store.get();
+  subscribeLocale(() => {
+    valueRef.value = getLocale();
   });
   registerTracker(() => {
     void valueRef.value;
@@ -38,9 +37,9 @@ if (typeof window !== 'undefined') {
  */
 export const locale: WritableComputedRef<string> = computed<string>({
   get() {
-    return typeof window === 'undefined' ? store.get() : valueRef.value;
+    return typeof window === 'undefined' ? getLocale() : valueRef.value;
   },
   set(next: string) {
-    store.set(next);
+    setLocale(next);
   },
 });
