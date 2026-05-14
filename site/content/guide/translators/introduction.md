@@ -19,28 +19,6 @@ yapyak({
 })
 ```
 
-## Which one to pick
-
-| You want… | Use |
-| --- | --- |
-| Best translation quality for UI copy | [Anthropic](/guide/translators/anthropic) (Claude Sonnet) |
-| Broadest model selection, ecosystem familiarity | [OpenAI](/guide/translators/openai) (GPT) |
-| Cheap + native multilingual strength | [Gemini](/guide/translators/gemini) (Flash) |
-| Local, free, no API key, privacy-strict | [Ollama](/guide/translators/ollama) (Llama 3.1, DeepSeek-R1, etc.) |
-| Something else (Groq, DeepSeek, Mistral, OpenRouter, Vercel AI Gateway) | [OpenAI](/guide/translators/openai) with custom `endpoint` |
-| Your own service or model | [Custom](/guide/translators/custom) via `createTranslator` |
-
-## Cost & speed at a glance
-
-| Translator | Default model | ~Price per 1M tokens | Speed |
-| --- | --- | --- | --- |
-| Anthropic | `claude-sonnet-4-6` | $3 in / $15 out | Standard |
-| OpenAI | `gpt-5-mini` | $0.30 in / $2.40 out | Standard |
-| Gemini | `gemini-2.5-flash` | $0.30 in / $2.50 out | Fast |
-| Ollama | `llama3.1` | Free (your hardware) | Variable (depends on GPU) |
-
-For typical UI translation projects, AI cost is in the cents-per-week range across any provider. Pick based on quality / privacy / brand fit rather than cost.
-
 ## Shared options
 
 Every shipped translator accepts the same core options:
@@ -108,19 +86,61 @@ anthropic({
 
 When the AI sees a source string containing a glossary key, it's instructed to use the configured translation. Useful for brand terms, regulated language (legal, medical), or product-specific vocabulary.
 
-## Reliability
+## When things go wrong
 
-`maxRetries` and `timeout` give you robust translation even on flaky networks or rate-limited APIs:
+API calls fail. Networks drop. Providers go down. yapyak's translation layer is designed to fail gracefully.
+
+### Automatic retries
+
+Transient errors are retried with exponential backoff:
+
+- Triggers on `408`, `429`, `5xx` and network-level errors
+- Backoff: 250ms, 500ms, 1s, 2s, 4s, capped at 8s
+- Default `maxRetries: 2` (Ollama: `1`)
+- Other `4xx` errors bubble up immediately
+
+Tune for flakier networks or stricter rate limits:
 
 ```ts
 anthropic({
   apiKey: '…',
-  timeout: 60_000,     // wait longer for slow networks
-  maxRetries: 5,       // try harder before giving up
+  timeout: 60_000,
+  maxRetries: 5,
 })
 ```
 
-Retries trigger on 408 / 429 / 5xx HTTP statuses and on network-level errors, with exponential backoff (250ms, 500ms, 1s, 2s, 4s, capped at 8s). 4xx errors other than 408/429 bubble up immediately (they're not transient).
+### After retries are exhausted
+
+The plugin catches errors per batch. Other batches and other locales keep running. Failed strings get logged:
+
+```
+[yapyak] translation failed: sv src/components/save-button.tsx "Save changes" Error: ...
+```
+
+Failed strings stay missing in `locales/*.json` — no partial writes. On the next save, yapyak retries them automatically because they're still missing.
+
+### What the user sees
+
+Nothing broken. yapyak shows the source string wherever a translation is missing:
+
+```tsx
+t('Save changes')
+// Renders as 'Save changes' in sv until the translation lands.
+```
+
+The app keeps working. No empty UI, no errors.
+
+### Recovery
+
+| Failure | What happens | Fix |
+| --- | --- | --- |
+| Single string fails | Other strings translate, that one stays source-text | Auto-retry next save |
+| Whole batch fails | Other locales/batches continue | Auto-retry next save |
+| Provider down | Console-warnings, app runs on source-text | Auto-retry next save |
+| API key invalid | 401, warnings per stub, app runs on source-text | Fix the key, save again |
+| CI build | `npx yapyak check` fails on missing translations | Translate locally first, or fix CI secret |
+
+No data loss. No partial writes. Retries until the call succeeds, or until you intervene.
 
 ## Bring your own
 
