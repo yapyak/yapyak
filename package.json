@@ -37,6 +37,10 @@
       "types": "./dist/adapters/astro.d.ts",
       "default": "./dist/adapters/astro.js"
     },
+    "./adapters/react-router": {
+      "types": "./dist/adapters/react-router.d.ts",
+      "default": "./dist/adapters/react-router.js"
+    },
     "./adapters/sveltekit": {
       "types": "./dist/adapters/sveltekit.d.ts",
       "default": "./dist/adapters/sveltekit.js"
@@ -83,6 +87,7 @@
     "@sveltejs/kit": ">=2",
     "astro": ">=5",
     "react": ">=19",
+    "react-router": ">=7.9",
     "svelte": ">=5",
     "vite": ">=5",
     "vue": ">=3.4"
@@ -95,6 +100,9 @@
       "optional": true
     },
     "react": {
+      "optional": true
+    },
+    "react-router": {
       "optional": true
     },
     "svelte": {
@@ -117,6 +125,7 @@
     "astro": "^6.3.2",
     "react": "19.2.5",
     "react-dom": "19.2.5",
+    "react-router": "^7.15.0",
     "typescript": "6.0.3",
     "vite": "8.0.10",
     "vitest": "3.0.4",

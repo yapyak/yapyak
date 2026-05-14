@@ -1,6 +1,6 @@
 ---
 title: Custom
-order: 5
+order: 6
 ---
 
 If your Vite SSR setup isn't TanStack Start or SvelteKit, wrap each request with `withRequest()`.
