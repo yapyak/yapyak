@@ -1,9 +1,6 @@
-export type { LocaleStore, LocaleStoreOptions } from './locale/store.js';
 export {
-  configureLocale,
   getDefaultLocale,
   getLocale,
-  getLocaleStore,
   getLocales,
   setLocale,
 } from './locale/store.js';

@@ -180,40 +180,51 @@ yapyak({
 
 Off by default because it adds a dependency on header parsing semantics; on for apps that want browser-language detection out of the box.
 
-## Manual configuration (rare)
+## Locale codes
 
-You usually don't need to call `configureLocale` yourself — the Vite plugin generates a setup file (`virtual:yapyak/setup`) that calls it automatically. But if you're consuming yapyak outside the Vite build (a Node CLI script, a server function, a worker), you can configure manually:
+yapyak treats locale codes as opaque strings. Whatever you name a file in `locales/` becomes a locale.
 
-```ts
-import { configureLocale } from 'yapyak';
+Common conventions:
 
-configureLocale({
-  defaultLocale: 'en',
-  locales: ['en', 'es', 'fr'],
-  persistence: 'cookie',
-});
+- ISO 639-1: `en`, `es`, `fr`, `de`, `ja`
+- BCP 47 regional: `en-US`, `en-GB`, `pt-BR`, `zh-Hant`
+- Custom: `pseudo`, `qa`, `internal` for testing
+
+Regional tags work end-to-end. `Intl.PluralRules` and `Intl.DateTimeFormat` get the full tag for region-aware formatting.
+
+```bash
+npx yapyak add pt-BR es-MX zh-Hant
+# or
+pnpm yapyak add pt-BR es-MX zh-Hant
 ```
 
-After configuration, `getLocale()`, `setLocale()`, and `t()` all work normally. If you call `configureLocale` more than once, the latest call wins.
+### Regional vs language
 
-## Locale-code conventions
+`pt-BR` and `pt` are two separate locales. Configure both if you ship both. There's no runtime fallback from one to the other.
 
-yapyak is locale-agnostic — any string works as a locale code. Common conventions:
+`Accept-Language` matching during SSR detection is the one place tags collapse. A regional header against a language-code locale matches on the prefix:
 
-- ISO 639-1 codes: `en`, `es`, `fr`, `de`, `ja`
-- Country variants: `en-US`, `en-GB`, `pt-BR`, `pt-PT`
-- Custom: `internal`, `qa`, `pseudo` for testing
+| Configured locales | `Accept-Language` | `getLocale()` returns |
+|---|---|---|
+| `['en', 'pt']` | `pt-BR,en;q=0.9` | `pt` |
+| `['en', 'pt-BR']` | `pt-BR,en;q=0.9` | `pt-BR` |
+| `['en', 'pt-BR']` | `pt,en;q=0.9` | `en` |
+| `['en', 'sv']` | `de-DE,fr;q=0.9` | `en` |
 
-The plugin doesn't validate codes — whatever filename you create in `locales/` becomes a valid locale. Use whatever convention your team prefers.
+One direction only. Header `pt-BR` resolves to locale `pt`. Header `pt` does not resolve to locale `pt-BR`.
+
+This follows RFC 4647 Lookup. The requested tag truncates from the right until a match is found. Expanding `pt` to `pt-BR` would mean guessing a region the user did not request.
+
+The cookie wins over `Accept-Language` either way.
 
 ## Default-locale fallback
 
-When a translation is missing for a target locale (e.g. AI hasn't filled it in yet), the runtime falls back to the default locale's source string. Users see the source instead of an empty UI. No `[missing translation key: ...]` placeholders, no errors.
+When a translation is missing or empty for a target locale, the runtime renders the source string.
 
 ```tsx
 t('A new untranslated string')
 // Rendered as 'A new untranslated string' in es, fr, de, etc.
-// until auto-translate fills in the locale-specific values.
+// until a translation lands.
 ```
 
-This is what makes "save the file, ship live" safe. There's no broken intermediate state.
+Both states resolve to the source: a key absent from `locales/*.json`, and a key present with `""`. A half-finished AI run leaves stubs as `""`, and those stubs render the source until the next save fills them in.

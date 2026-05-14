@@ -300,7 +300,7 @@ function generateSetup(
   resolved: { defaultLocale: string; locales: string[] },
 ): string {
   const lines: string[] = [];
-  lines.push(`import { configureLocale } from 'yapyak';`);
+  lines.push(`import { configureLocale } from 'yapyak/runtime';`);
   lines.push(`configureLocale(${JSON.stringify({
     acceptLanguage: normalized.acceptLanguage,
     cookieName: normalized.cookieName,

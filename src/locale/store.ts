@@ -130,25 +130,7 @@ function readCookieValue(
 
 let activeStore: LocaleStore | null = null;
 
-/**
- * Configures the active locale store for this app.
- *
- * Call once at startup, before any `t()` calls. Adapters (`tanstackStart`,
- * `sveltekit`) call this automatically — only call it directly when wiring
- * a custom setup.
- *
- * @param options - The locale configuration.
- * @returns The configured locale store.
- *
- * @example
- * ```ts
- * configureLocale({
- *   defaultLocale: 'en',
- *   locales: ['en', 'sv', 'es'],
- *   persistence: 'cookie',
- * });
- * ```
- */
+/** @internal */
 export function configureLocale(options: LocaleStoreOptions): LocaleStore {
   activeStore = createLocaleStore(options);
   return activeStore;
