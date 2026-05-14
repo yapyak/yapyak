@@ -1,13 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  createPersistence,
-  DEFAULT_COOKIE_NAME,
-  DEFAULT_STORAGE_KEY,
-} from './persistence.js';
+import { createPersistence } from './persistence.js';
+
+const COOKIE_NAME = 'locale';
+const STORAGE_KEY = 'locale';
 
 describe('createPersistence', () => {
-  it('returns null when kind is null', () => {
-    expect(createPersistence({ kind: null })).toBeNull();
+  it('returns null when config is null', () => {
+    expect(createPersistence(null)).toBeNull();
   });
 });
 
@@ -41,10 +40,10 @@ describe('cookie persistence', () => {
   });
 
   it('loads value from document.cookie', () => {
-    cookieJar = `${DEFAULT_COOKIE_NAME}=sv`;
+    cookieJar = `${COOKIE_NAME}=sv`;
     const persistence = createPersistence({
-      cookieName: DEFAULT_COOKIE_NAME,
-      kind: 'cookie',
+      type: 'cookie',
+      name: COOKIE_NAME,
     });
     expect(persistence?.load()).toBe('sv');
   });
@@ -52,34 +51,34 @@ describe('cookie persistence', () => {
   it('returns undefined when cookie is missing', () => {
     cookieJar = 'theme=dark';
     const persistence = createPersistence({
-      cookieName: DEFAULT_COOKIE_NAME,
-      kind: 'cookie',
+      type: 'cookie',
+      name: COOKIE_NAME,
     });
     expect(persistence?.load()).toBeUndefined();
   });
 
   it('returns undefined when cookie is empty string', () => {
-    cookieJar = `${DEFAULT_COOKIE_NAME}=`;
+    cookieJar = `${COOKIE_NAME}=`;
     const persistence = createPersistence({
-      cookieName: DEFAULT_COOKIE_NAME,
-      kind: 'cookie',
+      type: 'cookie',
+      name: COOKIE_NAME,
     });
     expect(persistence?.load()).toBeUndefined();
   });
 
   it('writes to document.cookie on save', () => {
     const persistence = createPersistence({
-      cookieName: DEFAULT_COOKIE_NAME,
-      kind: 'cookie',
+      type: 'cookie',
+      name: COOKIE_NAME,
     });
     persistence?.save('fr');
-    expect(cookieJar).toContain(`${DEFAULT_COOKIE_NAME}=fr`);
+    expect(cookieJar).toContain(`${COOKIE_NAME}=fr`);
   });
 
   it('uses configured cookie name', () => {
     const persistence = createPersistence({
-      cookieName: 'app-locale',
-      kind: 'cookie',
+      type: 'cookie',
+      name: 'app-locale',
     });
     persistence?.save('de');
     expect(cookieJar).toContain('app-locale=de');
@@ -109,35 +108,35 @@ describe('localStorage persistence', () => {
   });
 
   it('loads value from localStorage', () => {
-    storage.set(DEFAULT_STORAGE_KEY, 'sv');
+    storage.set(STORAGE_KEY, 'sv');
     const persistence = createPersistence({
-      kind: 'localStorage',
-      storageKey: DEFAULT_STORAGE_KEY,
+      type: 'localStorage',
+      key: STORAGE_KEY,
     });
     expect(persistence?.load()).toBe('sv');
   });
 
   it('returns undefined when key is missing', () => {
     const persistence = createPersistence({
-      kind: 'localStorage',
-      storageKey: DEFAULT_STORAGE_KEY,
+      type: 'localStorage',
+      key: STORAGE_KEY,
     });
     expect(persistence?.load()).toBeUndefined();
   });
 
   it('writes to localStorage on save', () => {
     const persistence = createPersistence({
-      kind: 'localStorage',
-      storageKey: DEFAULT_STORAGE_KEY,
+      type: 'localStorage',
+      key: STORAGE_KEY,
     });
     persistence?.save('fr');
-    expect(storage.get(DEFAULT_STORAGE_KEY)).toBe('fr');
+    expect(storage.get(STORAGE_KEY)).toBe('fr');
   });
 
   it('uses configured storage key', () => {
     const persistence = createPersistence({
-      kind: 'localStorage',
-      storageKey: 'custom-key',
+      type: 'localStorage',
+      key: 'custom-key',
     });
     persistence?.save('de');
     expect(storage.get('custom-key')).toBe('de');
@@ -151,8 +150,8 @@ describe('localStorage persistence', () => {
       setItem() {},
     });
     const persistence = createPersistence({
-      kind: 'localStorage',
-      storageKey: DEFAULT_STORAGE_KEY,
+      type: 'localStorage',
+      key: STORAGE_KEY,
     });
     expect(persistence?.load()).toBeUndefined();
   });
@@ -167,8 +166,8 @@ describe('localStorage persistence', () => {
       },
     });
     const persistence = createPersistence({
-      kind: 'localStorage',
-      storageKey: DEFAULT_STORAGE_KEY,
+      type: 'localStorage',
+      key: STORAGE_KEY,
     });
     expect(() => persistence?.save('de')).not.toThrow();
   });
@@ -177,32 +176,32 @@ describe('localStorage persistence', () => {
 describe('persistence in non-browser environments', () => {
   it('cookie persistence load returns undefined when document is missing', () => {
     const persistence = createPersistence({
-      cookieName: DEFAULT_COOKIE_NAME,
-      kind: 'cookie',
+      type: 'cookie',
+      name: COOKIE_NAME,
     });
     expect(persistence?.load()).toBeUndefined();
   });
 
   it('cookie persistence save is a no-op when document is missing', () => {
     const persistence = createPersistence({
-      cookieName: DEFAULT_COOKIE_NAME,
-      kind: 'cookie',
+      type: 'cookie',
+      name: COOKIE_NAME,
     });
     expect(() => persistence?.save('sv')).not.toThrow();
   });
 
   it('localStorage persistence load returns undefined when storage is missing', () => {
     const persistence = createPersistence({
-      kind: 'localStorage',
-      storageKey: DEFAULT_STORAGE_KEY,
+      type: 'localStorage',
+      key: STORAGE_KEY,
     });
     expect(persistence?.load()).toBeUndefined();
   });
 
   it('localStorage persistence save is a no-op when storage is missing', () => {
     const persistence = createPersistence({
-      kind: 'localStorage',
-      storageKey: DEFAULT_STORAGE_KEY,
+      type: 'localStorage',
+      key: STORAGE_KEY,
     });
     expect(() => persistence?.save('sv')).not.toThrow();
   });

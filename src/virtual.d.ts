@@ -1,9 +1,10 @@
 declare module 'virtual:yapyak' {
   export const LOCALES: string[];
   export const DEFAULT_LOCALE: string;
-  export const COOKIE_NAME: string;
-  export const PERSISTENCE: 'cookie' | 'localStorage' | null;
+  export const PERSISTENCE:
+    | { type: 'cookie'; name: string }
+    | { type: 'localStorage'; key: string }
+    | null;
   export const ACCEPT_LANGUAGE: boolean;
-  export const STORAGE_KEY: string;
   export const SYNC_HTML_LANG: boolean;
 }

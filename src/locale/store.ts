@@ -1,15 +1,13 @@
 import {
   ACCEPT_LANGUAGE,
-  COOKIE_NAME,
   DEFAULT_LOCALE,
   LOCALES,
-  SYNC_HTML_LANG,
   PERSISTENCE,
-  STORAGE_KEY,
+  SYNC_HTML_LANG,
 } from 'virtual:yapyak';
 import { parseCookie } from '../parse-cookie.js';
 import { detectLocale } from './detect.js';
-import { createPersistence, type PersistenceConfig } from './persistence.js';
+import { createPersistence } from './persistence.js';
 
 interface RequestHeaders {
   acceptLanguage: string | undefined;
@@ -27,9 +25,7 @@ export function registerRequestHeadersReader(
   headersReader = reader;
 }
 
-const persistence = createPersistence(
-  buildPersistenceConfig(PERSISTENCE, COOKIE_NAME, STORAGE_KEY),
-);
+const persistence = createPersistence(PERSISTENCE);
 
 function initialLocale(): string {
   const persisted = persistence?.load();
@@ -52,7 +48,12 @@ function resolveLocale(): string {
   if (typeof window === 'undefined' && headersReader !== null) {
     const source = headersReader();
     if (source !== undefined) {
-      const persisted = readCookieValue(source.cookieHeader, COOKIE_NAME);
+      const cookieName =
+        PERSISTENCE?.type === 'cookie' ? PERSISTENCE.name : null;
+      const persisted =
+        cookieName !== null
+          ? readCookieValue(source.cookieHeader, cookieName)
+          : undefined;
       return detectLocale({
         acceptLanguage: ACCEPT_LANGUAGE ? source.acceptLanguage : undefined,
         defaultLocale: DEFAULT_LOCALE,
@@ -73,20 +74,6 @@ function readCookieValue(
   }
   const value = parseCookie(header)[name];
   return value === '' ? undefined : value;
-}
-
-function buildPersistenceConfig(
-  kind: 'cookie' | 'localStorage' | null,
-  cookieName: string,
-  storageKey: string,
-): PersistenceConfig {
-  if (kind === 'cookie') {
-    return { cookieName, kind: 'cookie' };
-  }
-  if (kind === 'localStorage') {
-    return { kind: 'localStorage', storageKey };
-  }
-  return { kind: null };
 }
 
 /** Returns the current locale. */

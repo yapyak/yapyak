@@ -1,6 +1,43 @@
 import type { Translator } from '../translator/index.js';
 
-export type Persistence = 'cookie' | 'localStorage' | null;
+/** Cookie persistence config. */
+export interface CookiePersistence {
+  type: 'cookie';
+  /** Cookie name. Defaults to `'locale'`. */
+  name?: string;
+}
+
+/** localStorage persistence config. */
+export interface LocalStoragePersistence {
+  type: 'localStorage';
+  /** Storage key. Defaults to `'locale'`. */
+  key?: string;
+}
+
+/**
+ * Where to persist the user's locale selection.
+ *
+ * Use the string shorthand for defaults, or the object form to customize.
+ *
+ * @example
+ * ```ts
+ * persistence: 'cookie'
+ * persistence: 'localStorage'
+ * persistence: { type: 'cookie', name: 'app:locale' }
+ * persistence: { type: 'localStorage', key: 'app:locale' }
+ * ```
+ */
+export type Persistence =
+  | 'cookie'
+  | 'localStorage'
+  | CookiePersistence
+  | LocalStoragePersistence;
+
+/** Normalized persistence config (internal). */
+export type NormalizedPersistence =
+  | { type: 'cookie'; name: string }
+  | { type: 'localStorage'; key: string }
+  | null;
 
 export type FilterPattern =
   | string
@@ -13,8 +50,6 @@ export type FilterPattern =
 export interface YapyakOptions {
   /** Detect locale from the `Accept-Language` header on the server. */
   acceptLanguage?: boolean | undefined;
-  /** Cookie name for locale persistence. Defaults to `'locale'`. */
-  cookieName?: string | undefined;
   /** The default locale. Inferred from locale files if omitted. */
   defaultLocale?: string | undefined;
   /** Glob patterns to exclude from extraction. */
@@ -31,30 +66,32 @@ export interface YapyakOptions {
    * isn't owned by a reactive framework binding. See each adapter's docs.
    */
   syncHtmlLang?: boolean | undefined;
-  /** Where to persist the user's locale selection. */
-  persistence?: Persistence | undefined;
+  /**
+   * Where to persist the user's locale selection.
+   *
+   * Use the string shorthand (`'cookie'` or `'localStorage'`) for defaults,
+   * or the object form (`{ type: 'cookie', name: '...' }`) to customize.
+   * Omit for no persistence.
+   */
+  persistence?: Persistence | null | undefined;
   /**
    * Preserve existing translations when a `t()` call is renamed in place.
    * Defaults to `true` without a translator, `false` with one.
    */
   preserveTranslationsOnRename?: boolean | undefined;
-  /** localStorage key for locale persistence. Defaults to `'yapyak:locale'`. */
-  storageKey?: string | undefined;
   /** Translator used to fill missing entries. Stubs stay empty without one. */
   translator?: Translator | undefined;
 }
 
 export interface NormalizedOptions {
   acceptLanguage: boolean;
-  cookieName: string;
   defaultLocale: string | undefined;
   exclude: FilterPattern;
   include: FilterPattern;
   localesDir: string;
-  persistence: Persistence;
+  persistence: NormalizedPersistence;
   syncHtmlLang: boolean;
   preserveTranslationsOnRename: boolean;
-  storageKey: string;
   translator: Translator | undefined;
 }
 
@@ -85,18 +122,37 @@ export const DEFAULT_EXCLUDE: string[] = [
   '**/*.d.ts',
 ];
 
+const DEFAULT_COOKIE_NAME = 'locale';
+const DEFAULT_STORAGE_KEY = 'locale';
+
+function normalizePersistence(
+  input: Persistence | null | undefined,
+): NormalizedPersistence {
+  if (input == null) {
+    return null;
+  }
+  if (typeof input === 'string') {
+    if (input === 'cookie') {
+      return { type: 'cookie', name: DEFAULT_COOKIE_NAME };
+    }
+    return { type: 'localStorage', key: DEFAULT_STORAGE_KEY };
+  }
+  if (input.type === 'cookie') {
+    return { type: 'cookie', name: input.name ?? DEFAULT_COOKIE_NAME };
+  }
+  return { type: 'localStorage', key: input.key ?? DEFAULT_STORAGE_KEY };
+}
+
 export function normalizeOptions(options: YapyakOptions): NormalizedOptions {
   return {
     acceptLanguage: options.acceptLanguage ?? false,
-    cookieName: options.cookieName ?? 'locale',
     defaultLocale: options.defaultLocale,
     exclude: options.exclude ?? DEFAULT_EXCLUDE,
     include: options.include ?? DEFAULT_INCLUDE,
     localesDir: options.localesDir ?? 'locales',
-    persistence: options.persistence ?? null,
+    persistence: normalizePersistence(options.persistence),
     preserveTranslationsOnRename:
       options.preserveTranslationsOnRename ?? options.translator === undefined,
-    storageKey: options.storageKey ?? 'yapyak:locale',
     syncHtmlLang: options.syncHtmlLang ?? false,
     translator: options.translator,
   };

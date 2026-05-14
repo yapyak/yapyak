@@ -1,30 +1,25 @@
 import { parseCookie } from '../parse-cookie.js';
 
-export type PersistenceKind = 'cookie' | 'localStorage';
-
 export type PersistenceConfig =
-  | { cookieName: string; kind: 'cookie' }
-  | { kind: 'localStorage'; storageKey: string }
-  | { kind: null };
+  | { type: 'cookie'; name: string }
+  | { type: 'localStorage'; key: string }
+  | null;
 
 export interface Persistence {
   load(): string | undefined;
   save(locale: string): void;
 }
 
-export const DEFAULT_COOKIE_NAME = 'locale';
-export const DEFAULT_STORAGE_KEY = 'yapyak:locale';
-
 export function createPersistence(
   config: PersistenceConfig,
 ): Persistence | null {
-  if (config.kind === null) {
+  if (config === null) {
     return null;
   }
-  if (config.kind === 'cookie') {
-    return cookiePersistence(config.cookieName);
+  if (config.type === 'cookie') {
+    return cookiePersistence(config.name);
   }
-  return localStoragePersistence(config.storageKey);
+  return localStoragePersistence(config.key);
 }
 
 function cookiePersistence(name: string): Persistence {

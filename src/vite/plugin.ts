@@ -291,16 +291,10 @@ function generateConfig(
     `export const DEFAULT_LOCALE = ${JSON.stringify(resolved.defaultLocale)};`,
   );
   lines.push(
-    `export const COOKIE_NAME = ${JSON.stringify(normalized.cookieName)};`,
-  );
-  lines.push(
     `export const PERSISTENCE = ${JSON.stringify(normalized.persistence)};`,
   );
   lines.push(
     `export const ACCEPT_LANGUAGE = ${JSON.stringify(normalized.acceptLanguage)};`,
-  );
-  lines.push(
-    `export const STORAGE_KEY = ${JSON.stringify(normalized.storageKey)};`,
   );
   lines.push(
     `export const SYNC_HTML_LANG = ${JSON.stringify(normalized.syncHtmlLang)};`,
