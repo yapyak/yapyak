@@ -1,4 +1,8 @@
-# Ollama
+---
+title: Ollama
+order: 5
+---
+
 
 Run translation locally — no API key, no vendor in your billing path, no data leaving your machine.
 

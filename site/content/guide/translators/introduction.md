@@ -1,4 +1,7 @@
-# Translators
+---
+title: Introduction
+order: 1
+---
 
 A **translator** is the function yapyak calls to actually translate strings. The plugin extracts `t()` calls, batches them, and passes them to the configured translator. The translator makes the HTTP call to an AI provider and returns the translations.
 

@@ -1,5 +1,6 @@
 ---
 title: How it works
+order: 3
 ---
 
 You write `t()` in your code. yapyak rewrites the call to inline the translations for every locale, right at the call site.

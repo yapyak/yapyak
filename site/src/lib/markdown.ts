@@ -260,6 +260,13 @@ export function renderMarkdown(source: string): {
   return { frontmatter, html };
 }
 
+export function parseFrontmatter(source: string): {
+  frontmatter: Record<string, unknown>;
+  body: string;
+} {
+  return splitFrontmatter(source);
+}
+
 function splitFrontmatter(source: string): {
   frontmatter: Record<string, unknown>;
   body: string;

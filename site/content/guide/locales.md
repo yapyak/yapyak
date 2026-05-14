@@ -1,4 +1,7 @@
-# Locales
+---
+title: Locales
+order: 5
+---
 
 Locales are configured implicitly. The default lives in your code; the others live as files in `locales/`.
 

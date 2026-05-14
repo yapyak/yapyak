@@ -1,4 +1,8 @@
-# OpenAI
+---
+title: OpenAI
+order: 3
+---
+
 
 Use OpenAI's GPT models — or any OpenAI-compatible provider (Groq, DeepSeek, Mistral, OpenRouter, Vercel AI Gateway, Together AI) — as your translator.
 

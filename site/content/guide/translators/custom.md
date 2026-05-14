@@ -1,4 +1,8 @@
-# Custom translator
+---
+title: Custom
+order: 6
+---
+
 
 Anything that can return translated strings can be a yapyak translator. Use `createTranslator` to build one — it handles batching, validation, and error handling so you only have to wire the LLM call.
 

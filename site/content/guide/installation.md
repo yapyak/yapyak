@@ -1,4 +1,7 @@
-# Installation
+---
+title: Installation
+order: 2
+---
 
 Three steps to a translated string.
 

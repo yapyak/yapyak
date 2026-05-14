@@ -1,5 +1,6 @@
 ---
 title: Introduction
+order: 1
 ---
 
 yapyak generates translations on save. You write a string in your code, save the file, and every locale file in your repo updates.

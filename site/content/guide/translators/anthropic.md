@@ -1,4 +1,8 @@
-# Anthropic
+---
+title: Anthropic
+order: 2
+---
+
 
 Use Claude (Sonnet, Opus, Haiku) as your translator.
 

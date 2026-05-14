@@ -1,4 +1,8 @@
-# Gemini
+---
+title: Gemini
+order: 4
+---
+
 
 Use Google's Gemini models as your translator. Gemini's strength: cost-effective multilingual translation with native handling of non-Latin scripts (Japanese, Korean, Arabic, Hebrew).
 
