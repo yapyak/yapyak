@@ -46,6 +46,8 @@ The plugin has more options for advanced cases (custom locale folder, include/ex
 
 ```bash
 npx yapyak add es
+# or
+pnpm yapyak add es
 ```
 
 This creates `locales/es.json` and translates all your `t()` strings into Spanish. The default locale (`en` by default) stays in your code — it doesn't need a file.
@@ -54,6 +56,8 @@ Add multiple at once:
 
 ```bash
 npx yapyak add es fr de ja
+# or
+pnpm yapyak add es fr de ja
 ```
 
 ## Write your first translation
@@ -92,9 +96,7 @@ Save the file. `locales/es.json` updates automatically:
 
 ```json
 {
-  "src/components/save-button.tsx": {
-    "Save changes": "Guardar cambios"
-  }
+  "Save changes": "Guardar cambios"
 }
 ```
 
@@ -229,12 +231,16 @@ Check translation status:
 
 ```bash
 npx yapyak status
+# or
+pnpm yapyak status
 ```
 
 Run in CI to fail builds on missing translations:
 
 ```bash
 npx yapyak check
+# or
+pnpm yapyak check
 ```
 
 ## What's next

@@ -26,18 +26,22 @@ After save, `locales/sv.json` looks something like this:
 
 ```json
 {
-  "Save changes": "Spara ändringar"
+  "src/components/save-button.tsx": {
+    "Save changes": "Spara ändringar"
+  }
 }
 ```
 
-Same source string in two components stays separate — yapyak keys translations by file as well, so "Save" in a button and "Save" in a menu can translate differently if they need to.
+Entries are keyed by file path, then by source string. The same string in two components stays separate — "Save" in a button and "Save" in a menu can translate differently if they need to.
 
 ## Add a locale
 
 Adding a language is creating a file:
 
 ```bash
-yapyak add ja
+npx yapyak add ja
+# or
+pnpm yapyak add ja
 ```
 
 Or just create `locales/ja.json` by hand. yapyak picks it up on next save and generates (or stubs) the Japanese translations alongside the rest.

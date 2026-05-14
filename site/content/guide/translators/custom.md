@@ -219,7 +219,7 @@ If your `translate` throws:
 
 - The plugin/CLI logs the error and the failed batch
 - Other batches continue (don't take down the whole translation pipeline)
-- Failed entries stay as empty stubs — retried on next save or next `yapyak translate`
+- Failed entries stay as empty stubs — retried on next save or next `npx yapyak translate`
 
 If you want retries inside your translator (e.g., for rate-limited APIs), use yapyak's shared retry helper or roll your own. The shipped translators use a built-in `fetchWithRetry` with exponential backoff (250ms, 500ms, 1s, 2s, 4s, 8s) on 408/429/5xx.
 
@@ -258,6 +258,8 @@ Users install it alongside yapyak:
 
 ```bash
 npm install yapyak my-yapyak-translator
+# or
+pnpm add yapyak my-yapyak-translator
 ```
 
 ```ts

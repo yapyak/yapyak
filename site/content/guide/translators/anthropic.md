@@ -109,7 +109,14 @@ Whenever the AI sees a glossary key in the source string, it's instructed to use
 In production builds (`vite build`), the translator runs once during the SSR build phase. In CI:
 
 - Set `ANTHROPIC_API_KEY` as a secret
-- Add `npx yapyak check` as a pre-build step to fail fast on missing translations
+- Add a pre-build step to fail fast on missing translations:
+
+  ```bash
+  npx yapyak check
+  # or
+  pnpm yapyak check
+  ```
+
 - Or pre-translate locally and commit `locales/*.json` to skip AI calls in CI entirely
 
 The latter is the most common setup: developers run translation locally (where they have keys), CI just verifies completeness.
