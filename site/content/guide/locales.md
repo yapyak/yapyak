@@ -86,19 +86,6 @@ export function LocaleToggle() {
 }
 ```
 
-```svelte [Svelte]
-<script lang="ts">
-  import { getLocales } from 'yapyak';
-  import { locale } from 'yapyak/svelte';
-</script>
-
-<select bind:value={locale.current}>
-  {#each getLocales() as code}
-    <option value={code}>{code.toUpperCase()}</option>
-  {/each}
-</select>
-```
-
 ```vue [Vue]
 <script setup lang="ts">
 import { getLocales } from 'yapyak';
@@ -114,9 +101,22 @@ import { locale } from 'yapyak/vue';
 </template>
 ```
 
+```svelte [Svelte]
+<script lang="ts">
+  import { getLocales } from 'yapyak';
+  import { locale } from 'yapyak/svelte';
+</script>
+
+<select bind:value={locale.current}>
+  {#each getLocales() as code}
+    <option value={code}>{code.toUpperCase()}</option>
+  {/each}
+</select>
+```
+
 :::
 
-The framework-specific exports (`yapyak/react`, `yapyak/svelte`, `yapyak/vue`) only differ in *how* you read and write the locale reactively — the `t` function itself is the same import everywhere.
+The framework-specific exports (`yapyak/react`, `yapyak/vue`, `yapyak/svelte`) only differ in *how* you read and write the locale reactively — the `t` function itself is the same import everywhere.
 
 ## Persistence
 

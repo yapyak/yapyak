@@ -1,6 +1,6 @@
 ---
 title: Astro
-order: 4
+order: 2
 ---
 
 Re-export yapyak's middleware as `onRequest` from `src/middleware.ts`.
@@ -49,7 +49,7 @@ Every navigation re-runs the middleware and re-renders the layout, so `<html lan
 
 ### Client-side locale switching (islands)
 
-If a React/Svelte/Vue island calls `setLocale()` without triggering a navigation, the static `<html>` element doesn't re-render — the `lang` attribute stays stale.
+If a React/Vue/Svelte island calls `setLocale()` without triggering a navigation, the static `<html>` element doesn't re-render — the `lang` attribute stays stale.
 
 Enable `syncHtmlLang` to make yapyak update the attribute on every `setLocale()`:
 

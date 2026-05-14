@@ -35,8 +35,8 @@ export function FrameworkRow(): ReactElement {
       <h2 className={styles.Heading}>{t('Works seamlessly with')}</h2>
       <div className={styles.Logos}>
         <img src="/logos/react.svg" alt="React" className={styles.Logo} />
-        <img src="/logos/svelte.svg" alt="Svelte" className={styles.Logo} />
         <img src="/logos/vue.svg" alt="Vue" className={styles.Logo} />
+        <img src="/logos/svelte.svg" alt="Svelte" className={styles.Logo} />
       </div>
       <p className={styles.Footnote}>
         {linkifyFrameworks(

@@ -19,8 +19,8 @@ interface FrameworkConfig {
 
 export const FRAMEWORKS: FrameworkConfig[] = [
   { id: 'react', label: 'React', filename: 'app.tsx', lang: 'tsx' },
-  { id: 'svelte', label: 'Svelte', filename: 'app.svelte', lang: 'svelte' },
   { id: 'vue', label: 'Vue', filename: 'app.vue', lang: 'vue' },
+  { id: 'svelte', label: 'Svelte', filename: 'app.svelte', lang: 'svelte' },
 ];
 
 export interface HeroDemoEditorProps {

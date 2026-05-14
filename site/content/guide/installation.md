@@ -75,14 +75,6 @@ export function SaveButton() {
 }
 ```
 
-```svelte [Svelte]
-<script lang="ts">
-  import { t } from 'yapyak';
-</script>
-
-<button>{t('Save changes')}</button>
-```
-
 ```vue [Vue]
 <script setup lang="ts">
 import { t } from 'yapyak';
@@ -91,6 +83,14 @@ import { t } from 'yapyak';
 <template>
   <button>{{ t('Save changes') }}</button>
 </template>
+```
+
+```svelte [Svelte]
+<script lang="ts">
+  import { t } from 'yapyak';
+</script>
+
+<button>{t('Save changes')}</button>
 ```
 
 :::
@@ -107,7 +107,7 @@ HMR pushes the new copy live. Edit the string. Save again. Every locale re-trans
 
 ## Switch language at runtime
 
-`useLocale()` in React, `locale` in Svelte and Vue. The full pattern with code samples for each framework lives in [Locales / Switching locale](/guide/locales#switching-locale).
+`useLocale()` in React, `locale` in Vue and Svelte. The full pattern with code samples for each framework lives in [Locales / Switching locale](/guide/locales#switching-locale).
 
 ## SSR setup
 

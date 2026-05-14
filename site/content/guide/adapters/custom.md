@@ -25,7 +25,7 @@ withRequest<T>(request: Request, fn: () => T): T;
 
 ## Setting `<html lang>`
 
-If your root component is a reactive framework binding (React/Svelte/Vue), read the locale there so it re-renders on change:
+If your root component is a reactive framework binding (React/Vue/Svelte), read the locale there so it re-renders on change:
 
 ```tsx
 import type { ReactElement } from 'react';

@@ -1,6 +1,6 @@
 ---
 title: Gemini
-order: 4
+order: 3
 ---
 
 
