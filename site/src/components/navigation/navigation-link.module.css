@@ -26,8 +26,8 @@
         background-color: var(--surface-elevated);
         color: var(--text);
         box-shadow:
-          0 0 0 1px rgba(255, 255, 255, 0.12),
-          0 -1px rgba(255, 255, 255, 0.06);
+          0 0 0 1px var(--ring-strong),
+          0 -1px var(--ring-highlight);
       }
 
       &:active {

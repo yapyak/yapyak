@@ -1,7 +1,7 @@
 @layer components {
   .LayoutFooter {
     background-color: var(--nav-bg);
-    box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.04);
+    box-shadow: 0 -1px 0 var(--ring);
     padding: var(--space-20) var(--space-8);
   }
 }

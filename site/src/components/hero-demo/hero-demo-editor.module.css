@@ -4,7 +4,7 @@
     flex-direction: column;
     background: var(--surface);
     border-radius: var(--radius-md);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
+    box-shadow: 0 0 0 1px var(--ring);
     overflow: hidden;
 
     .Tabs {
@@ -48,12 +48,12 @@
 
       &:hover {
         color: var(--text-soft);
-        background-color: rgba(255, 255, 255, 0.02);
+        background-color: var(--surface);
       }
 
       &[data-active] {
         color: var(--text);
-        background-color: rgba(255, 255, 255, 0.03);
+        background-color: var(--surface-active);
       }
     }
 

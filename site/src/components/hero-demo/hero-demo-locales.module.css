@@ -4,7 +4,7 @@
     flex-direction: column;
     background: var(--surface);
     border-radius: var(--radius-md);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
+    box-shadow: 0 0 0 1px var(--ring);
     overflow: hidden;
 
     .LocaleRow {
@@ -62,11 +62,11 @@
       border-radius: 4px;
       background: linear-gradient(
         90deg,
-        rgba(255, 255, 255, 0.04) 0%,
+        var(--ring) 0%,
         rgba(255, 255, 255, 0.1) 40%,
         oklab(0.87 -0.24 0.06 / 0.18) 50%,
         rgba(255, 255, 255, 0.1) 60%,
-        rgba(255, 255, 255, 0.04) 100%
+        var(--ring) 100%
       );
       background-size: 250% 100%;
       animation: skeleton-sweep 2s ease-in-out infinite;

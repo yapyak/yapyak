@@ -27,7 +27,7 @@
     }
 
     .Body {
-      color: #d4d4d4;
+      color: var(--text-default);
       font-size: var(--font-size-md);
       line-height: 1.65;
       max-width: 38rem;
@@ -112,18 +112,18 @@
         letter-spacing: 0.06em;
         color: var(--text-muted);
         background: var(--surface);
-        border-top: 1px solid rgba(255, 255, 255, 0.04);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        border-top: 1px solid var(--ring);
+        border-bottom: 1px solid var(--ring);
       }
 
       thead th:first-child {
-        border-left: 1px solid rgba(255, 255, 255, 0.04);
+        border-left: 1px solid var(--ring);
         border-top-left-radius: var(--radius-md);
         border-bottom-left-radius: var(--radius-md);
       }
 
       thead th:last-child {
-        border-right: 1px solid rgba(255, 255, 255, 0.04);
+        border-right: 1px solid var(--ring);
         border-top-right-radius: var(--radius-md);
         border-bottom-right-radius: var(--radius-md);
       }

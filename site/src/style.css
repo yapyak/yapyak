@@ -4,24 +4,36 @@
   --bg: #141414;
   --surface: rgba(255, 255, 255, 0.02);
   --surface-strong: rgba(255, 255, 255, 0.05);
+  --surface-elevated: rgba(255, 255, 255, 0.04);
+  --surface-active: rgba(255, 255, 255, 0.03);
   --rule: rgba(255, 255, 255, 0.02);
 
+  --ring: rgba(255, 255, 255, 0.04);
+  --ring-strong: rgba(255, 255, 255, 0.12);
+  --ring-highlight: rgba(255, 255, 255, 0.06);
+
   --text: #e6e6e6;
+  --text-default: #d4d4d4;
   --text-soft: #b8b8b8;
   --text-muted: #8a8a8a;
 
   --nav-bg: rgba(0, 0, 0, 0.2);
-  --surface-elevated: rgba(255, 255, 255, 0.04);
-
-  --surface-hover: rgba(255, 255, 255, 0.04);
-  --surface-hover-ring: rgba(255, 255, 255, 0.06);
 
   --aqua: oklab(0.88 -0.21 0.01);
   --mint: oklab(0.87 -0.24 0.06);
   --mint-soft: oklab(0.87 -0.24 0.06 / 0.4);
   --mint-glow: oklab(0.87 -0.24 0.06 / 0.2);
+  --mint-glow-soft: oklab(0.87 -0.24 0.06 / 0.08);
+  --mint-glow-strong: oklab(0.87 -0.24 0.06 / 0.35);
   --mint-text-glow: 0 0 12px oklab(0.87 -0.24 0.06 / 0.35);
   --accent-contrast: #08110d;
+
+  --silver-light: #f5f5f5;
+  --silver-mid: #c8c8c8;
+  --silver-dark: #8a8a8a;
+
+  --diff-remove: #ff9aa0;
+  --diff-remove-bg: rgba(255, 154, 160, 0.08);
 
   --brand-gradient: linear-gradient(in oklab to bottom, var(--aqua), var(--mint));
 
@@ -116,7 +128,7 @@
   .CodeBlock {
     background: var(--surface);
     border-radius: var(--radius-lg);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
+    box-shadow: 0 0 0 1px var(--ring);
     overflow: hidden;
 
     pre {
@@ -162,13 +174,13 @@
   .tx-diff-add {
     display: inline;
     color: var(--mint);
-    background-color: oklab(0.87 -0.24 0.06 / 0.08);
+    background-color: var(--mint-glow-soft);
   }
 
   .tx-diff-remove {
     display: inline;
-    color: #ff9aa0;
-    background-color: rgba(255, 154, 160, 0.08);
+    color: var(--diff-remove);
+    background-color: var(--diff-remove-bg);
   }
 
   .tx-diff-hunk {
@@ -189,7 +201,7 @@
     position: relative;
     border-radius: var(--radius-md);
     background: var(--surface);
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
+    box-shadow: 0 0 0 1px var(--ring);
     overflow: hidden;
     margin: var(--space-6) 0;
   }
@@ -235,7 +247,7 @@
 
   .CodeGroupTab:has(input:checked) {
     color: var(--text);
-    background-color: rgba(255, 255, 255, 0.03);
+    background-color: var(--surface-active);
   }
 
   .CodeGroupTab:has(input:checked)::after {

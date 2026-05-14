@@ -19,9 +19,9 @@
       line-height: 1;
       background: linear-gradient(
         180deg,
-        #f5f5f5 0%,
-        #c8c8c8 55%,
-        #8a8a8a 100%
+        var(--silver-light) 0%,
+        var(--silver-mid) 55%,
+        var(--silver-dark) 100%
       );
       background-clip: text;
       -webkit-background-clip: text;
@@ -68,7 +68,7 @@
 
     &:hover {
       .Numeral {
-        text-shadow: 0 0 28px oklab(0.87 -0.24 0.06 / 0.35);
+        text-shadow: 0 0 28px var(--mint-glow-strong);
       }
 
       .Description {
