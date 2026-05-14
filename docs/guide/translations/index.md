@@ -57,7 +57,7 @@ t('Saved {count} files', { count: 3 })
 // 'Saved 3 files'
 ```
 
-**Type-safe automatically.** TypeScript extracts the placeholders from the source string and requires them as params — no codegen, no `.d.ts` files to maintain.
+**Type-safe automatically.** The source string itself is the contract — TypeScript reads `{name}` placeholders from the literal type and requires them as params. No codegen step. No `.d.ts` files to maintain. Type-checking only happens against the source string at the call site (not against your locale JSON), so it stays cheap and scales with your project without dragging type-check time.
 
 ```tsx
 t('Hello {name}')                       // ✗ Expected 2 arguments

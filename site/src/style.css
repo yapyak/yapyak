@@ -159,6 +159,32 @@
     text-shadow: var(--mint-text-glow);
   }
 
+  .tx-diff-add {
+    display: inline;
+    color: var(--mint);
+    background-color: oklab(0.87 -0.24 0.06 / 0.08);
+  }
+
+  .tx-diff-remove {
+    display: inline;
+    color: #ff9aa0;
+    background-color: rgba(255, 154, 160, 0.08);
+  }
+
+  .tx-diff-hunk {
+    display: inline;
+    color: var(--syntax-type);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .tx-bash-var {
+    color: var(--syntax-fn-call);
+  }
+
+  .tx-bash-flag {
+    color: var(--syntax-type);
+  }
+
   .CodeGroup {
     position: relative;
     border-radius: var(--radius-md);

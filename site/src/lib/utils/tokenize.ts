@@ -1,4 +1,13 @@
-export type Lang = 'tsx' | 'ts' | 'jsx' | 'js' | 'svelte' | 'vue' | 'bash' | 'json';
+export type Lang =
+  | 'tsx'
+  | 'ts'
+  | 'jsx'
+  | 'js'
+  | 'svelte'
+  | 'vue'
+  | 'bash'
+  | 'json'
+  | 'diff';
 
 export type TokenType =
   | 'plain'
@@ -14,7 +23,12 @@ export type TokenType =
   | 'punct'
   | 'tx-call'
   | 'tx-source'
-  | 'tx-yapyak';
+  | 'tx-yapyak'
+  | 'diff-add'
+  | 'diff-remove'
+  | 'diff-hunk'
+  | 'bash-var'
+  | 'bash-flag';
 
 export interface Token {
   type: TokenType;
@@ -101,6 +115,12 @@ const LITERALS = new Set(['true', 'false', 'null', 'undefined']);
 const YAPYAK_STRING = /^(["'`])yapyak(?:\/[\w-]+)*\1$/;
 
 export function tokenize(code: string, lang: Lang): Token[] {
+  if (lang === 'diff') {
+    return tokenizeDiff(code);
+  }
+  if (lang === 'bash') {
+    return tokenizeBash(code);
+  }
   const tokens: Token[] = [];
   let i = 0;
   while (i < code.length) {
@@ -114,6 +134,114 @@ export function tokenize(code: string, lang: Lang): Token[] {
     }
   }
   applyYapyakHighlight(tokens);
+  return mergePlainTokens(tokens);
+}
+
+function tokenizeDiff(code: string): Token[] {
+  const tokens: Token[] = [];
+  const lines = code.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i] ?? '';
+    const trailing = i < lines.length - 1 ? '\n' : '';
+    if (line.startsWith('@@')) {
+      tokens.push({ type: 'diff-hunk', value: line + trailing });
+    } else if (line.startsWith('+') && !line.startsWith('+++')) {
+      tokens.push({ type: 'diff-add', value: line + trailing });
+    } else if (line.startsWith('-') && !line.startsWith('---')) {
+      tokens.push({ type: 'diff-remove', value: line + trailing });
+    } else {
+      tokens.push({ type: 'plain', value: line + trailing });
+    }
+  }
+  return mergePlainTokens(tokens);
+}
+
+function tokenizeBash(code: string): Token[] {
+  const tokens: Token[] = [];
+  let i = 0;
+  let atLineStart = true;
+  while (i < code.length) {
+    const c = code[i] ?? '';
+
+    if (c === ' ' || c === '\t' || c === '\n' || c === '\r') {
+      const match = /^[\s]+/.exec(code.slice(i));
+      if (match) {
+        tokens.push({ type: 'plain', value: match[0] });
+        if (match[0].includes('\n')) {
+          atLineStart = true;
+        }
+        i += match[0].length;
+        continue;
+      }
+    }
+
+    if (c === '#') {
+      const newline = code.indexOf('\n', i);
+      const value = newline === -1 ? code.slice(i) : code.slice(i, newline);
+      tokens.push({ type: 'comment', value });
+      i += value.length;
+      continue;
+    }
+
+    if (c === "'" || c === '"') {
+      const re = c === "'" ? /^'(?:\\.|[^'\\])*'/ : /^"(?:\\.|[^"\\])*"/;
+      const match = re.exec(code.slice(i));
+      if (match) {
+        tokens.push({ type: 'string', value: match[0] });
+        i += match[0].length;
+        continue;
+      }
+    }
+
+    if (c === '$') {
+      const braced = /^\$\{[^}]+\}/.exec(code.slice(i));
+      if (braced) {
+        tokens.push({ type: 'bash-var', value: braced[0] });
+        i += braced[0].length;
+        continue;
+      }
+      const plain = /^\$[A-Za-z_][\w]*/.exec(code.slice(i));
+      if (plain) {
+        tokens.push({ type: 'bash-var', value: plain[0] });
+        i += plain[0].length;
+        continue;
+      }
+    }
+
+    if (c === '-') {
+      const flag = /^--?[A-Za-z][\w-]*/.exec(code.slice(i));
+      if (flag) {
+        tokens.push({ type: 'bash-flag', value: flag[0] });
+        i += flag[0].length;
+        continue;
+      }
+    }
+
+    if (c >= '0' && c <= '9') {
+      const match = /^\d+(?:\.\d+)?/.exec(code.slice(i));
+      if (match) {
+        tokens.push({ type: 'number', value: match[0] });
+        i += match[0].length;
+        continue;
+      }
+    }
+
+    if (atLineStart && /[A-Za-z_]/.test(c)) {
+      const match = /^[A-Za-z_][\w-]*/.exec(code.slice(i));
+      if (match) {
+        tokens.push({ type: 'fn-call', value: match[0] });
+        atLineStart = false;
+        i += match[0].length;
+        continue;
+      }
+    }
+
+    if (c !== '\n') {
+      atLineStart = false;
+    }
+    tokens.push({ type: 'plain', value: c });
+    i++;
+  }
   return mergePlainTokens(tokens);
 }
 

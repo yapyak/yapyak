@@ -24,6 +24,7 @@ const SUPPORTED_LANGS = new Set<Lang>([
   'vue',
   'bash',
   'json',
+  'diff',
 ]);
 
 let groupCounter = 0;
