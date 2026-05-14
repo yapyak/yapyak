@@ -15,31 +15,11 @@ export interface SidebarLink {
 }
 
 export const guideSidebar: SidebarNode[] = [
-  {
-    type: 'group',
-    title: 'Getting Started',
-    items: [
-      { type: 'link', title: 'Introduction', href: '/guide/introduction' },
-      { type: 'link', title: 'Installation', href: '/guide/installation' },
-      { type: 'link', title: 'How it works', href: '/guide/how-it-works' },
-    ],
-  },
-  {
-    type: 'group',
-    title: 'Core',
-    items: [
-      {
-        type: 'link',
-        title: 'Translations',
-        href: '/guide/translations',
-      },
-      {
-        type: 'link',
-        title: 'Locales',
-        href: '/guide/locales',
-      },
-    ],
-  },
+  { type: 'link', title: 'Introduction', href: '/guide/introduction' },
+  { type: 'link', title: 'Installation', href: '/guide/installation' },
+  { type: 'link', title: 'How it works', href: '/guide/how-it-works' },
+  { type: 'link', title: 'Translations', href: '/guide/translations' },
+  { type: 'link', title: 'Locales', href: '/guide/locales' },
   {
     type: 'group',
     title: 'Adapters',

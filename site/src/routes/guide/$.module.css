@@ -8,7 +8,6 @@
       display: flex;
       flex-direction: column;
       gap: var(--space-2);
-      margin-bottom: var(--space-4);
     }
 
     .Title {
@@ -27,9 +26,6 @@
     }
 
     .Body {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-4);
       color: var(--text-default);
       font-size: var(--font-size-md);
       line-height: 1.65;
@@ -43,15 +39,28 @@
       }
 
       h1 { font-size: var(--font-size-2xl); }
-      h2 { font-size: var(--font-size-xl); padding-top: var(--space-4); }
-      h3 { font-size: var(--font-size-lg); padding-top: var(--space-2); }
-      h4 { font-size: var(--font-size-md); }
-      h5 { font-size: var(--font-size-sm); }
-      h6 { font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
-
-      > :first-child {
-        padding-top: 0;
+      h2 { font-size: var(--font-size-xl); margin: var(--space-8) 0 var(--space-3); }
+      h3 { font-size: var(--font-size-lg); margin: var(--space-7) 0 var(--space-2); }
+      h4 { font-size: var(--font-size-md); margin: var(--space-5) 0 var(--space-2); }
+      h5 { font-size: var(--font-size-sm); margin: var(--space-4) 0 var(--space-2); }
+      h6 {
+        font-size: var(--font-size-xs);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--text-muted);
+        margin: var(--space-4) 0 var(--space-2);
       }
+
+      p, ul, ol, table, .CodeBlock {
+        margin: var(--space-4) 0;
+      }
+
+      li {
+        margin: var(--space-2) 0;
+      }
+
+      > :first-child { margin-top: 0; }
+      > :last-child { margin-bottom: 0; }
 
       p:first-of-type {
         font-size: var(--font-size-lg);
@@ -69,9 +78,6 @@
       }
 
       ul, ol {
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-2);
         padding-left: var(--space-6);
       }
 
