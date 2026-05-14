@@ -4,6 +4,7 @@
   "type": "module",
   "imports": {
     "#components/*": "./src/components/*",
+    "#docs/*": "./src/docs/*",
     "#lib/*": "./src/lib/*"
   },
   "scripts": {

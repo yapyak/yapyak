@@ -1,0 +1,65 @@
+@layer components {
+  .ReferenceSidebarModule {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+
+    .RootHeading {
+      margin: 0;
+      padding: 0;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .ToggleRow {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      width: 100%;
+      padding: var(--space-1) 0;
+      background: transparent;
+      border: 0;
+      text-align: left;
+      cursor: pointer;
+      color: var(--text-soft);
+      font-size: var(--font-size-sm);
+      transition: color var(--transition);
+
+      &:hover {
+        color: var(--text);
+      }
+
+      .ChevronIcon {
+        display: block;
+        flex: 0 0 auto;
+        transition: transform 150ms ease;
+        color: var(--text-muted);
+      }
+
+      &[data-open='true'] .ChevronIcon {
+        transform: rotate(90deg);
+      }
+
+      .ModuleLabel {
+        font-weight: var(--font-weight-medium);
+      }
+    }
+
+    .ChildList {
+      list-style: none;
+      margin: 0;
+      padding-left: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      &[data-flush='true'] {
+        padding-left: 0;
+        gap: var(--space-1);
+      }
+    }
+  }
+}

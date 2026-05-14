@@ -6,4 +6,5 @@ dist
 .env.local
 docs/.vitepress/cache/
 docs/.vitepress/dist/
+site/content/reference/api-manifest.json
 

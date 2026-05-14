@@ -1,0 +1,23 @@
+@layer components {
+  .ReferenceSidebarSymbol {
+    display: block;
+    padding: var(--space-1) 0;
+    font-size: var(--font-size-sm);
+    color: var(--text-soft);
+    text-decoration: none;
+    transition: color var(--transition);
+
+    &:hover {
+      color: var(--text);
+    }
+
+    &[data-status='active'] {
+      color: var(--mint);
+    }
+
+    &[data-deprecated='true'] {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+  }
+}
