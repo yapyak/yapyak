@@ -9,16 +9,30 @@ export type FilterPattern =
   | null
   | undefined;
 
+/** Options for the yapyak Vite plugin. */
 export interface YapyakOptions {
+  /** Detect locale from the `Accept-Language` header on the server. */
   acceptLanguage?: boolean | undefined;
+  /** Cookie name for locale persistence. Defaults to `'locale'`. */
   cookieName?: string | undefined;
+  /** The default locale. Inferred from locale files if omitted. */
   defaultLocale?: string | undefined;
+  /** Glob patterns to exclude from extraction. */
   exclude?: FilterPattern;
+  /** Glob patterns to include for extraction. */
   include?: FilterPattern;
+  /** Directory for locale JSON files, relative to project root. Defaults to `'locales'`. */
   localesDir?: string | undefined;
+  /** Where to persist the user's locale selection. */
   persistence?: Persistence | undefined;
+  /**
+   * Preserve existing translations when a `t()` call is renamed in place.
+   * Defaults to `true` without a translator, `false` with one.
+   */
   preserveTranslationsOnRename?: boolean | undefined;
+  /** localStorage key for locale persistence. Defaults to `'yapyak:locale'`. */
   storageKey?: string | undefined;
+  /** Translator used to fill missing entries. Stubs stay empty without one. */
   translator?: Translator | undefined;
 }
 

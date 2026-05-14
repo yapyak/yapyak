@@ -15,6 +15,19 @@ if (import.meta.env?.SSR) {
   ).getRequestEvent;
 }
 
+/**
+ * Wires yapyak to SvelteKit's per-request headers for SSR locale detection.
+ *
+ * Call once at the top of `hooks.server.ts`.
+ *
+ * @example
+ * ```ts
+ * import { sveltekit, handle } from 'yapyak/sveltekit';
+ *
+ * sveltekit();
+ * export { handle };
+ * ```
+ */
 export function sveltekit(): void {
   if (!_getRequestEvent) {
     return;
@@ -31,6 +44,12 @@ export function sveltekit(): void {
 
 const PLACEHOLDER = '%yapyak.lang%';
 
+/**
+ * SvelteKit `Handle` hook that substitutes `%yapyak.lang%` in `app.html`
+ * with the resolved locale.
+ *
+ * Re-export from your `hooks.server.ts`.
+ */
 export const handle: Handle = ({ event, resolve }) =>
   resolve(event, {
     transformPageChunk: ({ html }) => {

@@ -1,30 +1,74 @@
 import type { MessageContext, TranslateRequest, Translator } from './types.js';
 
+/**
+ * How much call-site context to pass to the translate function.
+ *
+ * - `'none'` — source string only.
+ * - `'minimal'` — source + component name + enclosing element.
+ * - `'rich'` — minimal plus the surrounding code snippet.
+ */
 export type ContextLevel = 'none' | 'minimal' | 'rich';
 
+/** A single item to translate. */
 export interface TranslateItem {
+  /** The component name derived from the file path. */
   component?: string;
+  /** The nearest enclosing JSX/HTML element. */
   element?: string;
+  /** The surrounding code snippet (only with `context: 'rich'`). */
   snippet?: string;
+  /** The source string to translate. */
   source: string;
 }
 
+/** Parameters passed to a translator's `translate` function. */
 export interface TranslateParams {
+  /** The items to translate. Translations must be returned in the same order. */
   items: TranslateItem[];
+  /** Abort signal for cancellation. */
   signal?: AbortSignal;
+  /** The source locale. */
   sourceLocale: string;
+  /** The target locale. */
   targetLocale: string;
 }
 
+/** Options for `createTranslator`. */
 export interface CreateTranslatorOptions {
+  /** Max number of items per `translate` call. Defaults to 10. */
   batchSize?: number | undefined;
+  /** How much call-site context to include. Defaults to `'minimal'`. */
   context?: ContextLevel | undefined;
+  /** Translates a batch of items. Must return strings in the same order as `items`. */
   translate: (params: TranslateParams) => string[] | Promise<string[]>;
 }
 
 const DEFAULT_BATCH_SIZE = 10;
 const DEFAULT_CONTEXT: ContextLevel = 'minimal';
 
+/**
+ * Builds a translator from a `translate` function.
+ *
+ * Handles batching, context shaping, and result validation — you just provide
+ * the function that talks to the AI.
+ *
+ * @param options - The translator options.
+ * @returns A translator usable in the Vite plugin config.
+ *
+ * @example
+ * ```ts
+ * const myTranslator = createTranslator({
+ *   async translate({ items, sourceLocale, targetLocale }) {
+ *     const response = await fetch('https://my-api.example/translate', {
+ *       method: 'POST',
+ *       body: JSON.stringify({ items, sourceLocale, targetLocale }),
+ *     });
+ *     const { translations } = await response.json();
+ *     return translations;
+ *   },
+ * });
+ * ```
+ */
 export function createTranslator(
   options: CreateTranslatorOptions,
 ): Translator {

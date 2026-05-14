@@ -11,6 +11,18 @@ if (import.meta.env?.SSR) {
     .getRequestHeaders;
 }
 
+/**
+ * Wires yapyak to TanStack Start's per-request headers for SSR locale detection.
+ *
+ * Call once at the top of your server entry.
+ *
+ * @example
+ * ```ts
+ * import { tanstackStart } from 'yapyak/tanstack-start';
+ *
+ * tanstackStart();
+ * ```
+ */
 export function tanstackStart(): void {
   if (!_getRequestHeaders) {
     return;

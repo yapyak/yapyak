@@ -3,16 +3,27 @@ import { fetchWithRetry } from './fetch.js';
 import { buildSystem } from './prompt.js';
 import type { Translator } from './types.js';
 
+/** Options for the Ollama translator. */
 export interface OllamaOptions {
+  /** Max items per API call. Defaults to 10. */
   batchSize?: number;
+  /** How much call-site context to include. Defaults to `'minimal'`. */
   context?: ContextLevel;
+  /** Override the API endpoint. Defaults to `http://localhost:11434/api/generate`. */
   endpoint?: string;
+  /** Glossary of fixed translations, keyed by source string then locale. */
   glossary?: Record<string, Record<string, string>>;
+  /** Extra request headers. */
   headers?: Record<string, string>;
+  /** Max retry attempts on transient failures. Defaults to 1. */
   maxRetries?: number;
+  /** Model name. Defaults to `'llama3.1'`. */
   model?: string;
+  /** Sampling temperature. Defaults to 0.2. */
   temperature?: number;
+  /** Request timeout in milliseconds. Defaults to 120000. */
   timeout?: number;
+  /** Voice/tone guidance passed to the model. */
   voice?: string;
 }
 
@@ -22,6 +33,21 @@ const DEFAULT_TEMPERATURE = 0.2;
 const DEFAULT_TIMEOUT = 120_000;
 const DEFAULT_MAX_RETRIES = 1;
 
+/**
+ * Translator backed by a local Ollama server.
+ *
+ * @param options - The translator options.
+ * @returns A translator usable in the Vite plugin config.
+ *
+ * @example
+ * ```ts
+ * import { ollama } from 'yapyak/translators/ollama';
+ *
+ * yapyak({
+ *   translator: ollama({ model: 'llama3.1' }),
+ * });
+ * ```
+ */
 export function ollama(options: OllamaOptions = {}): Translator {
   const {
     batchSize,

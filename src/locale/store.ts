@@ -5,13 +5,21 @@ import {
   type PersistenceConfig,
 } from './persistence.js';
 
+/** Options for configuring the locale store. */
 export interface LocaleStoreOptions {
+  /** Enable Accept-Language header detection on the server. */
   acceptLanguage?: boolean;
+  /** Cookie name for locale persistence. Defaults to `'locale'`. */
   cookieName?: string;
+  /** The fallback locale used when no other locale is resolved. */
   defaultLocale: string;
+  /** The initial locale to use before any user selection. */
   initialLocale?: string;
+  /** All locales the app supports. */
   locales: string[];
+  /** Where to persist the user's locale selection. */
   persistence?: 'cookie' | 'localStorage' | null;
+  /** localStorage key for locale persistence. Defaults to `'yapyak:locale'`. */
   storageKey?: string;
 }
 
@@ -122,11 +130,31 @@ function readCookieValue(
 
 let activeStore: LocaleStore | null = null;
 
+/**
+ * Configures the active locale store for this app.
+ *
+ * Call once at startup, before any `t()` calls. Adapters (`tanstackStart`,
+ * `sveltekit`) call this automatically — only call it directly when wiring
+ * a custom setup.
+ *
+ * @param options - The locale configuration.
+ * @returns The configured locale store.
+ *
+ * @example
+ * ```ts
+ * configureLocale({
+ *   defaultLocale: 'en',
+ *   locales: ['en', 'sv', 'es'],
+ *   persistence: 'cookie',
+ * });
+ * ```
+ */
 export function configureLocale(options: LocaleStoreOptions): LocaleStore {
   activeStore = createLocaleStore(options);
   return activeStore;
 }
 
+/** @internal */
 export function getLocaleStore(): LocaleStore {
   if (activeStore === null) {
     activeStore = createLocaleStore({
@@ -155,22 +183,34 @@ function buildPersistenceConfig(
   return { kind: null };
 }
 
+/** Returns the current locale. */
 export function getLocale(): string {
   return getLocaleStore().get();
 }
 
+/**
+ * Switches the active locale.
+ *
+ * No-op if the locale is not in the configured `locales` list. Triggers
+ * re-renders in framework integrations (`useLocale`, Svelte/Vue stores).
+ *
+ * @param locale - The locale to switch to.
+ */
 export function setLocale(locale: string): void {
   getLocaleStore().set(locale);
 }
 
+/** Returns the list of configured locales. */
 export function getLocales(): string[] {
   return getLocaleStore().locales;
 }
 
+/** Returns the configured default locale. */
 export function getDefaultLocale(): string {
   return getLocaleStore().defaultLocale;
 }
 
+/** @internal */
 export function setRequestSource(provider: RequestSourceProvider | null): void {
   getLocaleStore().setRequestSource(provider);
 }

@@ -3,17 +3,29 @@ import { fetchWithRetry } from './fetch.js';
 import { buildSystem, stripCodeFence } from './prompt.js';
 import type { Translator } from './types.js';
 
+/** Options for the Gemini translator. */
 export interface GeminiOptions {
+  /** Your Google AI API key. */
   apiKey: string;
+  /** Max items per API call. Defaults to 10. */
   batchSize?: number;
+  /** How much call-site context to include. Defaults to `'minimal'`. */
   context?: ContextLevel;
+  /** Override the API endpoint base URL. */
   endpoint?: string;
+  /** Glossary of fixed translations, keyed by source string then locale. */
   glossary?: Record<string, Record<string, string>>;
+  /** Extra request headers. */
   headers?: Record<string, string>;
+  /** Max retry attempts on transient failures. Defaults to 2. */
   maxRetries?: number;
+  /** Model name. Defaults to `'gemini-2.5-flash'`. */
   model?: string;
+  /** Sampling temperature. Defaults to 0.2. */
   temperature?: number;
+  /** Request timeout in milliseconds. Defaults to 30000. */
   timeout?: number;
+  /** Voice/tone guidance passed to the model. */
   voice?: string;
 }
 
@@ -23,6 +35,21 @@ const DEFAULT_TEMPERATURE = 0.2;
 const DEFAULT_TIMEOUT = 30_000;
 const DEFAULT_MAX_RETRIES = 2;
 
+/**
+ * Translator backed by the Google Gemini API.
+ *
+ * @param options - The translator options.
+ * @returns A translator usable in the Vite plugin config.
+ *
+ * @example
+ * ```ts
+ * import { gemini } from 'yapyak/translators/gemini';
+ *
+ * yapyak({
+ *   translator: gemini({ apiKey: process.env.GOOGLE_API_KEY! }),
+ * });
+ * ```
+ */
 export function gemini(options: GeminiOptions): Translator {
   const {
     apiKey,

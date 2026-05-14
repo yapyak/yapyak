@@ -14,6 +14,28 @@ if (typeof window !== 'undefined') {
   });
 }
 
+/**
+ * The reactive locale ref for Vue.
+ *
+ * Read `locale.value` inside a setup function or template to subscribe;
+ * assign to switch.
+ *
+ * @example
+ * ```vue
+ * <script setup>
+ * import { locale } from 'yapyak/vue';
+ * import { t } from 'yapyak';
+ * </script>
+ *
+ * <template>
+ *   <p>{{ t('Hello') }}</p>
+ *   <select v-model="locale">
+ *     <option value="en">English</option>
+ *     <option value="sv">Svenska</option>
+ *   </select>
+ * </template>
+ * ```
+ */
 export const locale: WritableComputedRef<string> = computed<string>({
   get() {
     return typeof window === 'undefined' ? store.get() : valueRef.value;

@@ -53,6 +53,7 @@ type Params<Source extends string> = Source extends `${string}{${string}`
   : // biome-ignore lint/complexity/noBannedTypes: intentional
     {};
 
+/** The runtime translation function. */
 export interface T {
   <Source extends string>(
     source: Source,
@@ -60,9 +61,11 @@ export interface T {
       ? []
       : [params: Params<Source>]
   ): string;
+  /** Returns a one-off `t` locked to a specific locale, resolved at call time. */
   in(locale: string): TInLocale;
 }
 
+/** A `t` function locked to a specific locale. */
 export type TInLocale = <Source extends string>(
   source: Source,
   ...args: IsEmpty<Params<Source>> extends true ? [] : [params: Params<Source>]
@@ -85,4 +88,22 @@ function inLocale(locale: string): TInLocale {
 const fn = call as unknown as T;
 fn.in = inLocale;
 
+/**
+ * Translates a source string to the current locale.
+ *
+ * The first argument must be a static string literal — yapyak's Vite plugin
+ * reads it statically to extract translations. Placeholders use `{name}` and
+ * are type-checked from the source literal.
+ *
+ * @example
+ * ```tsx
+ * t('Save changes');
+ *
+ * t('Hello, {name}!', { name: 'Alex' });
+ *
+ * t('You have {count, plural, one {# item} other {# items}}', { count: 1 });
+ *
+ * t.in(user.locale)('Welcome back, {name}!', { name: user.name });
+ * ```
+ */
 export const t: T = fn;

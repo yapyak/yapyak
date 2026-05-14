@@ -24,6 +24,32 @@ export type { YapyakOptions };
 const SETUP_ID = 'virtual:yapyak/setup';
 const SETUP_RESOLVED = `\0${SETUP_ID}`;
 
+/**
+ * The yapyak Vite plugin.
+ *
+ * Extracts `t()` calls at build time, syncs locale files, optionally fills
+ * missing translations through an AI translator, and inlines variants at
+ * each call site.
+ *
+ * @param options - Plugin options.
+ * @returns A Vite plugin.
+ *
+ * @example
+ * ```ts
+ * import { defineConfig } from 'vite';
+ * import { yapyak } from 'yapyak/vite';
+ * import { anthropic } from 'yapyak/translators/anthropic';
+ *
+ * export default defineConfig({
+ *   plugins: [
+ *     yapyak({
+ *       defaultLocale: 'en',
+ *       translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),
+ *     }),
+ *   ],
+ * });
+ * ```
+ */
 export function yapyak(options: YapyakOptions = {}): Plugin {
   const normalized = normalizeOptions(options);
   const filter = createFilter(normalized.include, normalized.exclude);
