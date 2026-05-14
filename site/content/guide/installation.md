@@ -13,8 +13,6 @@ npm install yapyak
 pnpm add yapyak
 ```
 
-`yapyak` ships everything in one package — Vite plugin, runtime, framework adapters, CLI, translators. There are no `@yapyak/*` sub-packages to install.
-
 ## 2. Add the plugin to `vite.config.ts`
 
 ```ts

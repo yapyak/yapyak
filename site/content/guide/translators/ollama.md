@@ -53,38 +53,19 @@ No `apiKey`. Ollama runs locally without auth.
 
 ## Picking a model
 
-Ollama runs many models. Translation quality varies a lot by model size:
+Translation quality scales with model size. `llama3.1` (8B, default) handles European languages well on consumer hardware. Larger models like `llama3.1:70b` or `qwen3:32b` approach cloud-model quality, especially for non-Latin scripts, but need significant RAM.
 
-| Model | Parameters | Translation quality | Notes |
-| --- | --- | --- | --- |
-| `llama3.1` (default) | 8B | Good | Solid default for European languages |
-| `llama3.1:70b` | 70B | Excellent | Approaches Claude/GPT quality; needs ~40GB RAM |
-| `qwen3:32b` | 32B | Excellent for Asian languages | Strong on Chinese, Japanese, Korean |
-| `gemma3:27b` | 27B | Very good | Google's open model |
-| `mistral:7b` | 7B | Good for European | Fast, low memory |
-| `deepseek-r1:32b` | 32B | Excellent reasoning | Heavier — better for nuanced translation |
-
-Pull a model before using it:
+Pull the model you want first:
 
 ```bash
 ollama pull llama3.1
-ollama pull qwen3:32b
 ```
 
-For most projects on developer hardware (M-series Mac, RTX 4070+), **`llama3.1` (8B) is the default** — runs comfortably in real-time, produces solid UI translations.
+Then point yapyak at it:
 
-If you have the hardware for it, **`llama3.1:70b` or `qwen3:32b` produces noticeably better quality**, especially for non-Latin-script targets.
-
-## Hardware requirements (rough guide)
-
-| Model size | RAM needed | Translation speed (M1 Max) |
-| --- | --- | --- |
-| 7-8B | 8 GB | ~50 tokens/sec |
-| 13B | 16 GB | ~30 tokens/sec |
-| 32B | 32 GB | ~10 tokens/sec |
-| 70B | 48 GB+ | ~3 tokens/sec |
-
-Translation through yapyak typically generates 100-300 output tokens per batch of 10 strings. A 7B model finishes a batch in ~3 seconds on consumer hardware.
+```ts
+ollama({ model: 'qwen3:32b' })
+```
 
 ## Remote Ollama
 

@@ -52,33 +52,9 @@ interface GeminiOptions {
 | `timeout` | `30_000` | Per-request timeout in milliseconds. |
 | `maxRetries` | `2` | Retries on 408/429/5xx + network errors. |
 
-## Picking a model
-
-Google's Gemini lineup:
-
-| Model | Best for | Approx. price | When to use |
-| --- | --- | --- | --- |
-| `gemini-2.5-pro` | High-quality nuanced copy | $1.25 in / $10 out per 1M | Marketing-critical translation |
-| `gemini-2.5-flash` (default) | UI translation | $0.30 in / $2.50 out per 1M | The 99% case |
-| `gemini-2.5-flash-lite` | High-volume, low-stakes | $0.10 in / $0.40 out per 1M | Internal tooling, very large catalogs |
-
-For yapyak's typical workload, **`gemini-2.5-flash` is the right default** — comparable quality to `gpt-5-mini` at similar price.
-
 ## Why Gemini for translation
 
-Gemini was trained on Google's translation pipeline (Google Translate underpinning). Empirically strong on:
-
-- **Non-Latin scripts** — better Japanese/Korean/Arabic/Hebrew output than English-first models
-- **Idiom handling** — especially Asian language idioms
-- **Multilingual context** — translating idiomatic English into target locales where literal translation fails
-
-For UI translation projects with significant non-Latin-script coverage, Gemini often produces more natural output than Claude or GPT, at lower cost.
-
-## Authentication
-
-Gemini uses the `x-goog-api-key` header for auth. yapyak handles this internally — you only set `apiKey`.
-
-Older Gemini SDKs use `?key=…` query parameter; yapyak uses the header form (cleaner, doesn't leak the key in URL logs).
+Gemini was trained on Google's translation pipeline. Empirically strong on non-Latin scripts (Japanese, Korean, Arabic, Hebrew) and Asian-language idiom handling. For UI translation projects with significant non-Latin-script coverage, often produces more natural output than Claude or GPT at lower cost.
 
 ## CI
 

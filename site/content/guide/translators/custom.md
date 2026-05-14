@@ -83,43 +83,6 @@ You provide `translate`. The factory handles the rest:
 
 No automatic coercion. If your AI returns weird shapes, normalize them inside `translate` before returning. The factory expects clean output.
 
-## Example: Ollama from scratch
-
-What the shipped `ollama()` translator looks like internally — a minimal, complete custom translator:
-
-```ts
-import { createTranslator } from 'yapyak';
-
-export function ollama(opts: { model?: string; voice?: string } = {}) {
-  const model = opts.model ?? 'llama3.1';
-
-  return createTranslator({
-    batchSize: 10,
-    async translate({ items, sourceLocale, targetLocale, signal }) {
-      const system = `Translate each item.source from ${sourceLocale} to ${targetLocale}.${
-        opts.voice ? `\nVoice: ${opts.voice}` : ''
-      }\nReturn a JSON array of strings, same length, same order.`;
-
-      const response = await fetch('http://localhost:11434/api/generate', {
-        method: 'POST',
-        signal,
-        body: JSON.stringify({
-          model,
-          system,
-          prompt: JSON.stringify(items),
-          format: 'json',
-          stream: false,
-        }),
-      });
-      const data = await response.json();
-      return JSON.parse(data.response);
-    },
-  });
-}
-```
-
-~25 lines for a complete translator. Use as a template.
-
 ## Example: factory pattern with options
 
 For a reusable translator with configurable options:
@@ -224,5 +187,5 @@ it('translates a batch', async () => {
 });
 ```
 
-The shipped translators have similar tests — open the source under `packages/yapyak/src/translators/` for examples.
+The shipped translators have similar tests — open the source under `src/translator/` for examples.
 

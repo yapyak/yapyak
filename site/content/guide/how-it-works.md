@@ -85,12 +85,4 @@ The translator uses this to disambiguate: "Save" in a `<button>` reads different
 
 ## Why the call-site inline matters
 
-The translations travel with the code that uses them. Vite splits your app into chunks per route; yapyak's translations follow that split automatically. A route that doesn't import a string doesn't ship its translations.
-
-Bundle size scales with the strings *used* per chunk, not the total strings in the project. No translations.json fetch at app start. No central message registry. The translations were already there.
-
-## Where to read next
-
-- [Translations](/guide/translations) — the t() function, params, plurals.
-- [Locales](/guide/locales) — adding locales, switching at runtime.
-- [Translators / Custom](/guide/translators/custom) — write your own translator.
+Translations travel with the code that uses them. Vite splits your app into chunks per route; yapyak's translations follow that split automatically. Bundle size scales with the strings actually used per chunk, not the total strings in the project.

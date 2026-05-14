@@ -58,11 +58,9 @@ interface OpenAIOptions {
 | `seed` | — | Reproducible outputs. Same `(prompt, seed)` gives the same result. |
 | `user` | — | End-user tracking string, included in request payload. |
 
-## Use as a universal compatibility layer
+## OpenAI-compatible providers
 
-Many AI providers expose **OpenAI-compatible endpoints**. You can use them through this translator by overriding `endpoint`.
-
-### Groq (fast inference)
+Many providers expose OpenAI-compatible endpoints — Groq, DeepSeek, Mistral, OpenRouter, Together AI, Vercel AI Gateway, Ollama (compat mode). Use this translator with their endpoint and the right model name:
 
 ```ts
 openai({
@@ -72,79 +70,7 @@ openai({
 })
 ```
 
-### DeepSeek (cheapest quality model)
-
-```ts
-openai({
-  apiKey: process.env.DEEPSEEK_API_KEY!,
-  endpoint: 'https://api.deepseek.com/v1/chat/completions',
-  model: 'deepseek-chat',
-})
-```
-
-### Mistral (European data sovereignty)
-
-```ts
-openai({
-  apiKey: process.env.MISTRAL_API_KEY!,
-  endpoint: 'https://api.mistral.ai/v1/chat/completions',
-  model: 'mistral-large-latest',
-})
-```
-
-### Together AI (open-source models at scale)
-
-```ts
-openai({
-  apiKey: process.env.TOGETHER_API_KEY!,
-  endpoint: 'https://api.together.xyz/v1/chat/completions',
-  model: 'meta-llama/Llama-3.1-70B-Instruct-Turbo',
-})
-```
-
-### OpenRouter (gateway to 200+ models)
-
-```ts
-openai({
-  apiKey: process.env.OPENROUTER_API_KEY!,
-  endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-  model: 'anthropic/claude-sonnet-4',
-})
-```
-
-### Vercel AI Gateway
-
-```ts
-openai({
-  apiKey: process.env.VERCEL_AI_TOKEN!,
-  endpoint: 'https://gateway.ai.vercel.app/v1/openai/chat/completions',
-})
-```
-
-### Ollama (local, OpenAI-compat mode)
-
-```ts
-openai({
-  apiKey: 'ollama',
-  endpoint: 'http://localhost:11434/v1/chat/completions',
-  model: 'llama3.1',
-})
-```
-
 For native Ollama integration, prefer [`yapyak/translator/ollama`](/guide/translators/ollama).
-
-## Picking a model
-
-OpenAI's current lineup (May 2026):
-
-| Model | Best for | When to use |
-| --- | --- | --- |
-| `gpt-5` | Highest-quality translations | Marketing-critical copy |
-| `gpt-5-mini` (default) | UI translation | The 99% case |
-| `gpt-5-nano` | High-volume cheap | Internal tooling, prototypes |
-| `o4-mini` | Reasoning-heavy contexts | Rarely needed for translation |
-
-For yapyak's typical workload, **`gpt-5-mini` is the right default**. It's accurate enough for UI translation and ~10× cheaper than full `gpt-5`.
 
 ## Seed example
 
