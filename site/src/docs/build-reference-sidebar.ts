@@ -52,13 +52,16 @@ export function buildReferenceSidebar(manifest: ApiManifest): ReferenceSidebar {
 }
 
 function buildModule(module: ApiModule): RefModule {
+  const isRoot = module.id === 'yapyak';
   const slug = moduleSlug(module.id);
-  const href = `/reference/${slug}`;
+  const href = isRoot ? '/reference' : `/reference/${slug}`;
   const symbols: RefSymbol[] = module.exports.map((api) => ({
     name: api.name,
     kind: api.kind,
     deprecated: api.deprecated !== null,
-    href: `${href}/${api.name}`,
+    href: isRoot
+      ? `/reference/${api.name}`
+      : `${href}/${api.name}`,
   }));
   return {
     id: module.id,

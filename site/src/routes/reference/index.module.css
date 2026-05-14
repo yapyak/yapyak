@@ -1,0 +1,83 @@
+@layer components {
+  .IntroductionArticle {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+
+    .Header {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .Title {
+      margin: 0;
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-medium);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .Description {
+      margin: 0;
+      font-size: var(--font-size-lg);
+      color: var(--text-soft);
+    }
+
+    .Body {
+      color: var(--text-default);
+      font-size: var(--font-size-md);
+      line-height: 1.65;
+      max-width: 38rem;
+
+      h1, h2, h3, h4, h5, h6 {
+        font-weight: var(--font-weight-medium);
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+        color: var(--text);
+      }
+
+      h2 { font-size: var(--font-size-xl); margin: var(--space-8) 0 var(--space-3); }
+      h3 { font-size: var(--font-size-lg); margin: var(--space-7) 0 var(--space-2); }
+
+      p, ul, ol, :global(.CodeBlock) {
+        margin: var(--space-4) 0;
+      }
+
+      li {
+        margin: var(--space-2) 0;
+      }
+
+      > :first-child { margin-top: 0; }
+      > :last-child { margin-bottom: 0; }
+
+      a {
+        color: var(--mint);
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
+      ul, ol {
+        padding-left: var(--space-6);
+      }
+
+      :not(pre) > code {
+        padding: 2px 6px;
+        background: var(--surface-elevated);
+        border-radius: var(--radius-sm);
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+        color: var(--text-soft);
+      }
+
+      strong, b {
+        font-weight: var(--font-weight-semibold);
+        color: var(--text);
+      }
+    }
+  }
+}

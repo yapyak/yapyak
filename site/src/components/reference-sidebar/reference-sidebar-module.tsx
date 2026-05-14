@@ -16,32 +16,23 @@ export function ReferenceSidebarModule(
   const isOnPath = location.pathname.startsWith(module.href);
   const hasChildren =
     module.symbols.length > 0 || module.submodules.length > 0;
-  const isRootModule = module.id === 'yapyak';
   const [isOpen, setIsOpen] = useState(isOnPath);
-  const showChildren = hasChildren && (isRootModule || isOpen);
   const displayName = lastSegment(module.id);
 
   return (
     <div className={styles.ReferenceSidebarModule}>
-      {isRootModule ? (
-        <h3 className={styles.RootHeading}>{displayName}</h3>
-      ) : (
-        <button
-          type="button"
-          className={styles.ToggleRow}
-          aria-expanded={isOpen}
-          data-open={isOpen ? 'true' : undefined}
-          onClick={() => setIsOpen((current) => !current)}
-        >
-          <ChevronIcon />
-          <span className={styles.ModuleLabel}>{displayName}</span>
-        </button>
-      )}
-      {showChildren ? (
-        <ul
-          className={styles.ChildList}
-          data-flush={isRootModule ? 'true' : undefined}
-        >
+      <button
+        type="button"
+        className={styles.ToggleRow}
+        aria-expanded={isOpen}
+        data-open={isOpen ? 'true' : undefined}
+        onClick={() => setIsOpen((current) => !current)}
+      >
+        <ChevronIcon />
+        <span className={styles.ModuleLabel}>{displayName}</span>
+      </button>
+      {hasChildren && isOpen ? (
+        <ul className={styles.ChildList}>
           {module.symbols.map((symbol) => (
             <li key={symbol.href}>
               <ReferenceSidebarSymbol symbol={symbol} />

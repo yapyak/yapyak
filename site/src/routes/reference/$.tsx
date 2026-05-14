@@ -30,10 +30,11 @@ const loadDoc = createServerFn({ method: 'GET' })
       if (firstExport === undefined) {
         return { kind: 'not-found' };
       }
+      const isRoot = moduleMatch.id === 'yapyak';
       const slug = moduleSlugInline(moduleMatch.id);
       return {
         kind: 'redirect-to-first-symbol',
-        targetPath: `${slug}/${firstExport.name}`,
+        targetPath: isRoot ? firstExport.name : `${slug}/${firstExport.name}`,
       };
     }
 
