@@ -43,16 +43,16 @@ The same source string in two files becomes two independent entries. yapyak keys
 
 ## Constraints
 
-`t()` requires its first argument to be a string literal:
+The first argument to `t()` must be a static string literal. Anything else fails at build time:
 
 ```tsx
 t('Save changes')                  // ✓
 t(`Save changes`)                  // ✓ no-substitution template
-t(`Hello ${name}`)                 // ✗ template interpolation
-t(msg)                             // ✗ dynamic argument
+t(`Hello ${name}`)                 // ✗ build error — template interpolation
+t(message)                         // ✗ build error — dynamic argument
 ```
 
-Extraction runs at build time and needs static input. The fix is to surface both branches:
+Extraction reads the source statically, so dynamic input has nothing to extract. When a value depends on a condition, write both literals:
 
 ```tsx
 {condition ? t('Save') : t('Cancel')}
