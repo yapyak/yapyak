@@ -5,6 +5,9 @@
     font-size: var(--font-size-sm);
     color: var(--text-soft);
     text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     transition: color var(--transition);
 
     &:hover {

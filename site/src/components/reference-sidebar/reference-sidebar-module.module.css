@@ -34,7 +34,12 @@
       }
 
       .ModuleLabel {
+        flex: 1;
+        min-width: 0;
         font-weight: var(--font-weight-medium);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
 

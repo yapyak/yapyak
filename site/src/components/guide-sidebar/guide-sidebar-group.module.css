@@ -8,6 +8,9 @@
       margin: 0;
       padding: 0 var(--space-3);
       font-weight: var(--font-weight-semibold);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .TitleLink {
@@ -17,6 +20,9 @@
       font-size: var(--font-size-sm);
       color: var(--text-soft);
       text-decoration: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       transition: color var(--transition);
 
       &:hover {
