@@ -29,21 +29,9 @@ export const guideSidebar: SidebarNode[] = [
     title: 'Core',
     items: [
       {
-        type: 'group',
+        type: 'link',
         title: 'Translations',
         href: '/guide/translations',
-        items: [
-          {
-            type: 'link',
-            title: 'Auto-translation',
-            href: '/guide/translations/auto-translation',
-          },
-          {
-            type: 'link',
-            title: 'Manual translation',
-            href: '/guide/translations/manual-translation',
-          },
-        ],
       },
       {
         type: 'link',

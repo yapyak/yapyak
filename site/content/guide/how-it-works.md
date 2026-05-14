@@ -65,7 +65,7 @@ If a string is moved *and* renamed in the same save, position-matching fails —
 
 ## What gets sent to the AI
 
-For every missing entry, yapyak builds a context object from the call site:
+For every missing entry, yapyak extracts a context object from the call site:
 
 ```json
 {
@@ -80,7 +80,7 @@ For every missing entry, yapyak builds a context object from the call site:
 - **enclosingElement** — the nearest opening JSX tag above the call (`button`, `h1`, `label`, etc.).
 - **snippet** — three lines above and below the call site, dedented.
 
-The translator uses this to disambiguate: "Save" in a `<button>` reads differently from "Save" in an `<h1>`. Add a voice and a glossary in your config and they flow through too.
+The translator uses this to disambiguate: "Save" in a `<button>` reads differently from "Save" in an `<h1>`. How much of the context the translator passes to the model is configurable — see [Translators / Translation context](/guide/translators#translation-context).
 
 ## Why the call-site inline matters
 

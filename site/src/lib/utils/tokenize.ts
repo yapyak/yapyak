@@ -365,6 +365,35 @@ function applyYapyakHighlight(tokens: Token[]): void {
         }
       }
     }
+
+    if (token.type === 'fn-call' && token.value === '_$pick') {
+      const openParen = findNextSignificant(tokens, index + 1);
+      if (
+        openParen !== null &&
+        tokens[openParen]?.type === 'punct' &&
+        tokens[openParen]?.value === '('
+      ) {
+        let depth = 1;
+        let cursor = openParen + 1;
+        while (cursor < tokens.length && depth > 0) {
+          const inner = tokens[cursor];
+          if (inner === undefined) {
+            break;
+          }
+          if (inner.type === 'punct') {
+            if (inner.value === '(') {
+              depth++;
+            } else if (inner.value === ')') {
+              depth--;
+            }
+          }
+          if (inner.type === 'string' || inner.type === 'template') {
+            inner.type = 'tx-source';
+          }
+          cursor++;
+        }
+      }
+    }
   }
 }
 
