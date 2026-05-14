@@ -38,59 +38,67 @@ export const guideSidebar: SidebarNode[] = [
         title: 'Locales',
         href: '/guide/locales',
       },
+    ],
+  },
+  {
+    type: 'group',
+    title: 'Adapters',
+    items: [
       {
-        type: 'group',
-        title: 'Adapters',
-        href: '/guide/adapters',
-        items: [
-          {
-            type: 'link',
-            title: 'TanStack Start',
-            href: '/guide/adapters/tanstack-start',
-          },
-          {
-            type: 'link',
-            title: 'SvelteKit',
-            href: '/guide/adapters/sveltekit',
-          },
-          {
-            type: 'link',
-            title: 'Custom',
-            href: '/guide/adapters/custom',
-          },
-        ],
+        type: 'link',
+        title: 'Introduction',
+        href: '/guide/adapters/introduction',
       },
       {
-        type: 'group',
-        title: 'Translators',
-        href: '/guide/translators',
-        items: [
-          {
-            type: 'link',
-            title: 'Anthropic',
-            href: '/guide/translators/anthropic',
-          },
-          {
-            type: 'link',
-            title: 'OpenAI',
-            href: '/guide/translators/openai',
-          },
-          {
-            type: 'link',
-            title: 'Gemini',
-            href: '/guide/translators/gemini',
-          },
-          {
-            type: 'link',
-            title: 'Ollama',
-            href: '/guide/translators/ollama',
-          },
-          {
-            type: 'link',
-            title: 'Custom',
-            href: '/guide/translators/custom',
-          },
-        ],
+        type: 'link',
+        title: 'TanStack Start',
+        href: '/guide/adapters/tanstack-start',
+      },
+      {
+        type: 'link',
+        title: 'SvelteKit',
+        href: '/guide/adapters/sveltekit',
+      },
+      {
+        type: 'link',
+        title: 'Custom',
+        href: '/guide/adapters/custom',
+      },
+    ],
+  },
+  {
+    type: 'group',
+    title: 'Translators',
+    items: [
+      {
+        type: 'link',
+        title: 'Introduction',
+        href: '/guide/translators/introduction',
+      },
+      {
+        type: 'link',
+        title: 'Anthropic',
+        href: '/guide/translators/anthropic',
+      },
+      {
+        type: 'link',
+        title: 'OpenAI',
+        href: '/guide/translators/openai',
+      },
+      {
+        type: 'link',
+        title: 'Gemini',
+        href: '/guide/translators/gemini',
+      },
+      {
+        type: 'link',
+        title: 'Ollama',
+        href: '/guide/translators/ollama',
+      },
+      {
+        type: 'link',
+        title: 'Custom',
+        href: '/guide/translators/custom',
       },
     ],
   },
