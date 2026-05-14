@@ -24,12 +24,13 @@ export interface YapyakOptions {
   /** Directory for locale JSON files, relative to project root. Defaults to `'locales'`. */
   localesDir?: string | undefined;
   /**
-   * Take over `<html lang>` yourself. When `false` (default), yapyak keeps the
-   * `lang` attribute on `document.documentElement` in sync with the current
-   * locale. Set `true` if you manage the attribute manually (e.g. a yapyak
-   * island on a multi-locale page).
+   * Keep `document.documentElement.lang` synced with the current locale.
+   *
+   * Off by default. yapyak does not touch the DOM unless this is set to
+   * `true`. Useful for SvelteKit/Astro/SPA setups where the `<html>` element
+   * isn't owned by a reactive framework binding. See each adapter's docs.
    */
-  manualHtmlLang?: boolean | undefined;
+  syncHtmlLang?: boolean | undefined;
   /** Where to persist the user's locale selection. */
   persistence?: Persistence | undefined;
   /**
@@ -50,8 +51,8 @@ export interface NormalizedOptions {
   exclude: FilterPattern;
   include: FilterPattern;
   localesDir: string;
-  manualHtmlLang: boolean;
   persistence: Persistence;
+  syncHtmlLang: boolean;
   preserveTranslationsOnRename: boolean;
   storageKey: string;
   translator: Translator | undefined;
@@ -92,11 +93,11 @@ export function normalizeOptions(options: YapyakOptions): NormalizedOptions {
     exclude: options.exclude ?? DEFAULT_EXCLUDE,
     include: options.include ?? DEFAULT_INCLUDE,
     localesDir: options.localesDir ?? 'locales',
-    manualHtmlLang: options.manualHtmlLang ?? false,
     persistence: options.persistence ?? null,
     preserveTranslationsOnRename:
       options.preserveTranslationsOnRename ?? options.translator === undefined,
     storageKey: options.storageKey ?? 'yapyak:locale',
+    syncHtmlLang: options.syncHtmlLang ?? false,
     translator: options.translator,
   };
 }

@@ -303,7 +303,7 @@ function generateConfig(
     `export const STORAGE_KEY = ${JSON.stringify(normalized.storageKey)};`,
   );
   lines.push(
-    `export const MANUAL_HTML_LANG = ${JSON.stringify(normalized.manualHtmlLang)};`,
+    `export const SYNC_HTML_LANG = ${JSON.stringify(normalized.syncHtmlLang)};`,
   );
   return lines.join('\n');
 }

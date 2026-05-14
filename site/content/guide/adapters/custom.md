@@ -1,6 +1,6 @@
 ---
 title: Custom
-order: 4
+order: 5
 ---
 
 If your Vite SSR setup isn't TanStack Start or SvelteKit, wrap each request with `withRequest()`.
@@ -25,7 +25,7 @@ withRequest<T>(request: Request, fn: () => T): T;
 
 ## Setting `<html lang>`
 
-Read the locale via `useLocale()` (React) or `locale` (Svelte/Vue) inside your root component so it re-renders on locale change:
+If your root component is a reactive framework binding (React/Svelte/Vue), read the locale there so it re-renders on change:
 
 ```tsx
 import type { ReactElement } from 'react';
@@ -35,6 +35,15 @@ function Component(): ReactElement {
   const [locale] = useLocale();
   return <html lang={locale}>{/* ... */}</html>;
 }
+```
+
+If `<html>` is static HTML (no framework binding), enable `syncHtmlLang` and yapyak will keep `document.documentElement.lang` synced with the current locale:
+
+```ts
+// vite.config.ts
+yapyak({
+  syncHtmlLang: true,
+})
 ```
 
 ## Cookie persistence

@@ -41,6 +41,8 @@ function Component(): ReactElement {
 export const Route = createRootRoute({ component: Component });
 ```
 
+This is the recommended pattern for TanStack Start. React re-renders the root component on locale change, the `lang` attribute updates reactively, and SSR renders the correct `lang` per request. No extra plugin option needed.
+
 ## Cookie persistence
 
 For SSR locale switching to work, the user's choice must be readable by the server. Enable `persistence: 'cookie'` in the Vite plugin:
