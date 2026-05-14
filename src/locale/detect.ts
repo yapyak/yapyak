@@ -1,9 +1,9 @@
 export interface DetectOptions {
-  acceptLanguage?: string | undefined;
+  acceptLanguage?: string;
   defaultLocale: string;
   locales: string[];
-  navigatorLanguages?: readonly string[] | undefined;
-  persisted?: string | undefined;
+  navigatorLanguages?: readonly string[];
+  persisted?: string;
 }
 
 export function detectLocale(options: DetectOptions): string {

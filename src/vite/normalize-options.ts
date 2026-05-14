@@ -49,15 +49,15 @@ export type FilterPattern =
 /** Options for the yapyak Vite plugin. */
 export interface YapyakOptions {
   /** Detect locale from the `Accept-Language` header on the server. */
-  acceptLanguage?: boolean | undefined;
+  acceptLanguage?: boolean;
   /** The default locale. Inferred from locale files if omitted. */
-  defaultLocale?: string | undefined;
+  defaultLocale?: string;
   /** Glob patterns to exclude from extraction. */
   exclude?: FilterPattern;
   /** Glob patterns to include for extraction. */
   include?: FilterPattern;
   /** Directory for locale JSON files, relative to project root. Defaults to `'locales'`. */
-  localesDir?: string | undefined;
+  localesDir?: string;
   /**
    * Keep `document.documentElement.lang` synced with the current locale.
    *
@@ -65,7 +65,7 @@ export interface YapyakOptions {
    * `true`. Useful for SvelteKit/Astro/SPA setups where the `<html>` element
    * isn't owned by a reactive framework binding. See each adapter's docs.
    */
-  syncHtmlLang?: boolean | undefined;
+  syncHtmlLang?: boolean;
   /**
    * Where to persist the user's locale selection.
    *
@@ -73,14 +73,14 @@ export interface YapyakOptions {
    * or the object form (`{ type: 'cookie', name: '...' }`) to customize.
    * Omit for no persistence.
    */
-  persistence?: Persistence | null | undefined;
+  persistence?: Persistence | null;
   /**
    * Preserve existing translations when a `t()` call is renamed in place.
    * Defaults to `true` without a translator, `false` with one.
    */
-  preserveTranslationsOnRename?: boolean | undefined;
+  preserveTranslationsOnRename?: boolean;
   /** Translator used to fill missing entries. Stubs stay empty without one. */
-  translator?: Translator | undefined;
+  translator?: Translator;
 }
 
 export interface NormalizedOptions {

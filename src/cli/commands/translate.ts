@@ -9,10 +9,10 @@ import { color, header, progressBar, spinner, symbol } from '../tui.js';
 
 export interface TranslateOptions {
   config: YapyakCliConfig;
-  force?: boolean | undefined;
-  locale?: string | undefined;
+  force?: boolean;
+  locale?: string;
   projectRoot: string;
-  provider?: 'anthropic' | 'openai' | undefined;
+  provider?: 'anthropic' | 'openai';
 }
 
 export async function translate(options: TranslateOptions): Promise<number> {

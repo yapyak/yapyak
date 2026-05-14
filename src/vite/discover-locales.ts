@@ -2,7 +2,7 @@ import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 export interface DiscoverOptions {
-  defaultLocale?: string | undefined;
+  defaultLocale?: string;
   localesDir: string;
   projectRoot: string;
 }

@@ -11,7 +11,7 @@ export interface MessageContext {
 /** A single translation request. */
 export interface TranslateRequest {
   /** The call-site context. */
-  context?: MessageContext | undefined;
+  context?: MessageContext;
   /** The file path the source string came from. */
   fileId: string;
   /** The source string to translate. */
@@ -97,9 +97,9 @@ export interface TranslateParams {
 /** Options for `createTranslator`. */
 export interface CreateTranslatorOptions {
   /** Max number of items per `translate` call. Defaults to 10. */
-  batchSize?: number | undefined;
+  batchSize?: number;
   /** How much call-site context to include. Defaults to `'minimal'`. */
-  context?: ContextLevel | undefined;
+  context?: ContextLevel;
   /** Translates a batch of items. Must return strings in the same order as `items`. */
   translate: (params: TranslateParams) => string[] | Promise<string[]>;
 }
