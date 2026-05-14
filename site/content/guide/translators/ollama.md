@@ -38,9 +38,9 @@ interface OllamaOptions {
 
 | Option | Default | Notes |
 | --- | --- | --- |
-| `voice` | — | Tone prompt. |
-| `glossary` | — | Forced translations per locale. |
-| `context` | `'minimal'` | How much call-site context to send to the model. |
+| `voice` | — | See [Voice](/guide/translators/#voice). |
+| `glossary` | — | See [Glossary](/guide/translators/#glossary). |
+| `context` | `'minimal'` | See [Translation context](/guide/translators/#translation-context). |
 | `batchSize` | `10` | Strings per request. Lower for very small models (7B parameters and under). |
 | `model` | `'llama3.1'` | Any model in your local Ollama library. |
 | `temperature` | `0.2` | Low = deterministic. |

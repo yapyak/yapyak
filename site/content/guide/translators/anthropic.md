@@ -41,9 +41,9 @@ interface AnthropicOptions {
 | Option | Default | Notes |
 | --- | --- | --- |
 | `apiKey` | — | Required. Set via `.env.local` (`ANTHROPIC_API_KEY`) and read via `process.env`. |
-| `voice` | — | Tone prompt. See [Translators overview](/guide/translators/#voice). |
-| `glossary` | — | Forced translations per locale. See [overview](/guide/translators/#glossary). |
-| `context` | `'minimal'` | How much call-site context to send. See [overview](/guide/translators/#translation-context). |
+| `voice` | — | See [Voice](/guide/translators/#voice). |
+| `glossary` | — | See [Glossary](/guide/translators/#glossary). |
+| `context` | `'minimal'` | See [Translation context](/guide/translators/#translation-context). |
 | `batchSize` | `10` | Strings per HTTP request. |
 | `model` | `'claude-sonnet-4-6'` | Any Claude model. `claude-opus-4-5` for higher quality, `claude-haiku-4-5` for lower cost. |
 | `temperature` | `0.2` | Low = deterministic. Recommended for translation consistency. |
@@ -108,22 +108,9 @@ anthropic({
 
 Whenever the AI sees a glossary key in the source string, it's instructed to use the configured translation. Useful for brand terms, regulated language (legal, medical), or product-specific vocabulary that must render consistently across the app.
 
-## SSR builds and CI
+## CI
 
-In production builds (`vite build`), the translator runs once during the SSR build phase. In CI:
-
-- Set `ANTHROPIC_API_KEY` as a secret
-- Add a pre-build step to fail fast on missing translations:
-
-  ```bash
-  npx yapyak check
-  # or
-  pnpm yapyak check
-  ```
-
-- Or pre-translate locally and commit `locales/*.json` to skip AI calls in CI entirely
-
-The latter is the most common setup: developers run translation locally (where they have keys), CI just verifies completeness.
+Set `ANTHROPIC_API_KEY` as a CI secret if you translate in CI. Most projects pre-translate locally and commit `locales/*.json`. See [Installation / CI](/guide/installation#ci) for both patterns.
 
 ## Streaming and tool use
 

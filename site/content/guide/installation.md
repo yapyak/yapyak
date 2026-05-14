@@ -107,130 +107,19 @@ HMR pushes the new copy live. Edit the string. Save again. Every locale re-trans
 
 ## Switch language at runtime
 
-Each framework exposes the locale in its idiomatic shape. `getLocales()` returns every configured locale (default + every file in `locales/`) so you don't hardcode the list.
-
-::: code-group
-
-```tsx [React]
-import { getLocales } from 'yapyak';
-import { useLocale } from 'yapyak/react';
-
-export function LocaleToggle() {
-  const [locale, setLocale] = useLocale();
-  const locales = getLocales();
-  return (
-    <select value={locale} onChange={(e) => setLocale(e.target.value)}>
-      {locales.map((locale) => (
-        <option key={locale} value={locale}>
-          {locale.toUpperCase()}
-        </option>
-      ))}
-    </select>
-  );
-}
-```
-
-```svelte [Svelte]
-<script lang="ts">
-  import { getLocales } from 'yapyak';
-  import { locale } from 'yapyak/svelte';
-  const locales = getLocales();
-</script>
-
-<select bind:value={locale.current}>
-  {#each locales as locale}
-    <option value={locale}>{locale.toUpperCase()}</option>
-  {/each}
-</select>
-```
-
-```vue [Vue]
-<script setup lang="ts">
-import { getLocales } from 'yapyak';
-import { locale } from 'yapyak/vue';
-const locales = getLocales();
-</script>
-
-<template>
-  <select v-model="locale">
-    <option v-for="locale in locales" :key="locale" :value="locale">
-      {{ locale.toUpperCase() }}
-    </option>
-  </select>
-</template>
-```
-
-:::
-
-Add a locale and its file appears in `locales/`. `getLocales()` returns it on the next render. No hardcoded list to keep in sync.
-
-If `persistence: 'cookie'` is set in `vite.config.ts`, the choice is stored automatically and read back on the next request — including SSR.
+`useLocale()` in React, `locale` in Svelte and Vue. The full pattern with code samples for each framework lives in [Locales / Switching locale](/guide/locales#switching-locale).
 
 ## SSR setup
 
-For server-rendered apps, wire the adapter once. The adapter resolves locale per request from cookie or `Accept-Language`.
+If your app is server-rendered, wire the adapter once. Pick the page for your framework:
 
-::: code-group
+- [TanStack Start](/guide/adapters/tanstack-start)
+- [SvelteKit](/guide/adapters/sveltekit)
+- [Custom](/guide/adapters/custom) — Next.js, Astro, Hono, or any other Node setup
 
-```ts [TanStack Start]
-// src/routes/__root.tsx
-import { tanstackStart } from 'yapyak/adapters/tanstack-start';
-tanstackStart();
-```
-
-```ts [SvelteKit]
-// src/hooks.server.ts
-import { sveltekit } from 'yapyak/adapters/sveltekit';
-sveltekit();
-```
-
-:::
-
-That's the entirety of the SSR wiring.
-
-### Wiring `<html lang>` (optional)
-
-If you want the resolved locale to drive the `lang` attribute on the root HTML element, opt in.
-
-#### TanStack Start
-
-```tsx
-// src/routes/__root.tsx
-import { getLocale } from 'yapyak';
-
-<html lang={getLocale()}>
-```
-
-#### SvelteKit
-
-```ts
-// src/hooks.server.ts
-import { sveltekit, handle } from 'yapyak/adapters/sveltekit';
-
-sveltekit();
-export { handle };
-```
-
-```html
-<!-- src/app.html -->
-<html lang="%yapyak.lang%">
-```
-
-If you already have other handles, compose them with SvelteKit's `sequence`:
-
-```ts
-// src/hooks.server.ts
-import { sequence } from '@sveltejs/kit/hooks';
-import { sveltekit, handle as yapyakHandle } from 'yapyak/adapters/sveltekit';
-import { handle as authHandle } from './auth';
-
-sveltekit();
-export const handle = sequence(yapyakHandle, authHandle);
-```
+Pure SPAs (no SSR) don't need an adapter — skip this step.
 
 ## Verify
-
-Check translation status:
 
 ```bash
 npx yapyak status
@@ -238,13 +127,23 @@ npx yapyak status
 pnpm yapyak status
 ```
 
-Run in CI to fail builds on missing translations:
+Lists every locale, how many strings each has, and which entries are missing.
+
+## CI
+
+Fail builds on missing translations:
 
 ```bash
 npx yapyak check
 # or
 pnpm yapyak check
 ```
+
+Two common CI shapes:
+
+**Pre-translate locally, commit `locales/*.json`.** No AI calls in CI. The build runs `yapyak check` and fails if anything's missing. Recommended for most projects — you don't ship credentials to your CI provider.
+
+**Translate in CI.** Set your translator's API key as a CI secret. The build runs translation as part of `vite build`. Faster onboarding (no manual translate step) but every CI run hits the AI provider.
 
 ## What's next
 

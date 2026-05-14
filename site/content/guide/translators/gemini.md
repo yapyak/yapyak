@@ -41,9 +41,9 @@ interface GeminiOptions {
 | Option | Default | Notes |
 | --- | --- | --- |
 | `apiKey` | — | Required. Set via `.env.local` (`GEMINI_API_KEY`). |
-| `voice` | — | Tone prompt. |
-| `glossary` | — | Forced translations per locale. |
-| `context` | `'minimal'` | How much call-site context to send. |
+| `voice` | — | See [Voice](/guide/translators/#voice). |
+| `glossary` | — | See [Glossary](/guide/translators/#glossary). |
+| `context` | `'minimal'` | See [Translation context](/guide/translators/#translation-context). |
 | `batchSize` | `10` | Strings per HTTP request. |
 | `model` | `'gemini-2.5-flash'` | Any Gemini model. `gemini-2.5-pro` for higher quality. |
 | `temperature` | `0.2` | Low = deterministic. |
@@ -80,9 +80,9 @@ Gemini uses the `x-goog-api-key` header for auth. yapyak handles this internally
 
 Older Gemini SDKs use `?key=…` query parameter; yapyak uses the header form (cleaner, doesn't leak the key in URL logs).
 
-## SSR builds and CI
+## CI
 
-Same pattern as Anthropic. See [Anthropic / SSR builds and CI](/guide/translators/anthropic#ssr-builds-and-ci).
+Set `GEMINI_API_KEY` as a CI secret if you translate in CI. See [Installation / CI](/guide/installation#ci) for both patterns.
 
 ## Vertex AI
 

@@ -44,9 +44,9 @@ interface OpenAIOptions {
 | Option | Default | Notes |
 | --- | --- | --- |
 | `apiKey` | — | Required. Set via `.env.local` (`OPENAI_API_KEY`). |
-| `voice` | — | Tone prompt. See [overview](/guide/translators/#voice). |
-| `glossary` | — | Forced translations per locale. See [overview](/guide/translators/#glossary). |
-| `context` | `'minimal'` | How much call-site context to send. |
+| `voice` | — | See [Voice](/guide/translators/#voice). |
+| `glossary` | — | See [Glossary](/guide/translators/#glossary). |
+| `context` | `'minimal'` | See [Translation context](/guide/translators/#translation-context). |
 | `batchSize` | `10` | Strings per HTTP request. |
 | `model` | `'gpt-5-mini'` | Any OpenAI model — `gpt-5` for higher quality, `gpt-5-mini` for cost. |
 | `temperature` | `0.2` | Low = deterministic. |
@@ -174,6 +174,6 @@ openai({
 
 Sent as the `OpenAI-Organization` HTTP header.
 
-## SSR builds and CI
+## CI
 
-Same pattern as Anthropic — set `OPENAI_API_KEY` as a CI secret, or pre-translate locally and commit the result. See [Anthropic / SSR builds and CI](/guide/translators/anthropic#ssr-builds-and-ci).
+Set `OPENAI_API_KEY` as a CI secret if you translate in CI. See [Installation / CI](/guide/installation#ci) for both patterns.
