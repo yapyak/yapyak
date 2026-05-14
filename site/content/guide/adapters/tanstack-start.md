@@ -1,6 +1,6 @@
 ---
 title: TanStack Start
-order: 5
+order: 6
 ---
 
 Register yapyak's request middleware once in `src/start.ts`.

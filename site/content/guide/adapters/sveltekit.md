@@ -1,6 +1,6 @@
 ---
 title: SvelteKit
-order: 4
+order: 5
 ---
 
 Re-export the `handle` hook from `hooks.server.ts`.

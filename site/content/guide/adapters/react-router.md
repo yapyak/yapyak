@@ -1,6 +1,6 @@
 ---
 title: React Router
-order: 3
+order: 4
 ---
 
 Register yapyak's middleware in your root route. React Router 7 framework mode required, with `v8_middleware` enabled.
@@ -97,4 +97,3 @@ The cookie is written client-side on `setLocale()` and read server-side by the m
 
 - `react-router >= 7.9.0` — middleware became stable here. Earlier versions used `unstable_middleware`-prefixed APIs.
 - `future.v8_middleware: true` in `react-router.config.ts` — without this, the `middleware` export is ignored silently.
-- `middleware` export must be an array, even with a single entry.
