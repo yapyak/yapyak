@@ -37,9 +37,16 @@ export interface Translator {
 /**
  * How much call-site context to pass to the translate function.
  *
- * - `'none'` — source string only.
- * - `'minimal'` — source + component name + enclosing element.
+ * - `'none'` — source string only. Privacy-strict; nothing about your code leaves your project.
+ * - `'minimal'` — source + component name + enclosing element. Default.
  * - `'rich'` — minimal plus the surrounding code snippet.
+ *
+ * @example
+ * ```ts
+ * function buildTranslator(level: ContextLevel) {
+ *   return createTranslator({ context: level, translate: ... });
+ * }
+ * ```
  */
 export type ContextLevel = 'none' | 'minimal' | 'rich';
 
@@ -55,11 +62,31 @@ export interface TranslateItem {
   source: string;
 }
 
-/** Parameters passed to a translator's `translate` function. */
+/**
+ * Parameters passed to a translator's `translate` function.
+ *
+ * `items`, `sourceLocale`, and `targetLocale` are always present. Forward
+ * `signal` to your underlying fetch/SDK call to honor cancellation.
+ *
+ * @example
+ * ```ts
+ * async function myTranslate(params: TranslateParams): Promise<string[]> {
+ *   const response = await fetch('https://api.example/translate', {
+ *     method: 'POST',
+ *     body: JSON.stringify(params),
+ *     signal: params.signal,
+ *   });
+ *   const { translations } = await response.json();
+ *   return translations;
+ * }
+ *
+ * createTranslator({ translate: myTranslate });
+ * ```
+ */
 export interface TranslateParams {
   /** The items to translate. Translations must be returned in the same order. */
   items: TranslateItem[];
-  /** Abort signal for cancellation. */
+  /** Abort signal for cancellation. Forward to your underlying fetch/SDK call. */
   signal?: AbortSignal;
   /** The source locale. */
   sourceLocale: string;
@@ -107,6 +134,11 @@ export function createTranslator(
   options: CreateTranslatorOptions,
 ): Translator {
   const batchSize = options.batchSize ?? DEFAULT_BATCH_SIZE;
+  if (!Number.isInteger(batchSize) || batchSize <= 0) {
+    throw new Error(
+      `createTranslator: batchSize must be a positive integer, got ${String(batchSize)}.`,
+    );
+  }
   const contextLevel = options.context ?? DEFAULT_CONTEXT;
 
   async function runBatch(requests: TranslateRequest[]): Promise<string[]> {
@@ -117,12 +149,17 @@ export function createTranslator(
     if (reference === undefined) {
       return [];
     }
+    const items = requests.map((request) => toItem(request, contextLevel));
     const result = await options.translate({
-      items: requests.map((request) => toItem(request, contextLevel)),
+      items,
       sourceLocale: reference.sourceLocale,
       targetLocale: reference.targetLocale,
     });
-    return validateBatch(result, requests.length);
+    return validateBatch(result, {
+      items,
+      sourceLocale: reference.sourceLocale,
+      targetLocale: reference.targetLocale,
+    });
   }
 
   async function batch(requests: TranslateRequest[]): Promise<string[]> {
@@ -168,21 +205,39 @@ function toItem(
   return item;
 }
 
-function validateBatch(result: unknown, expectedLength: number): string[] {
+interface BatchContext {
+  items: TranslateItem[];
+  sourceLocale: string;
+  targetLocale: string;
+}
+
+function validateBatch(result: unknown, context: BatchContext): string[] {
+  const expectedLength = context.items.length;
+  const locales = `${context.sourceLocale} → ${context.targetLocale}`;
+  const sources = context.items
+    .map((item) => JSON.stringify(item.source))
+    .join(', ');
+
   if (!Array.isArray(result)) {
-    throw new Error(`translate must return an array, got ${typeof result}`);
+    throw new Error(
+      `translate (${locales}) must return an array of ${expectedLength} string${expectedLength === 1 ? '' : 's'}, got ${typeof result}.\n` +
+        `Sources: ${sources}`,
+    );
   }
   if (result.length !== expectedLength) {
     throw new Error(
-      `translate returned ${result.length} items, expected ${expectedLength}`,
+      `translate (${locales}) returned ${result.length} item${result.length === 1 ? '' : 's'}, expected ${expectedLength}.\n` +
+        `Sources: ${sources}`,
     );
   }
   const validated: string[] = [];
   for (let i = 0; i < result.length; i++) {
     const value = result[i];
     if (typeof value !== 'string') {
+      const source = JSON.stringify(context.items[i]?.source ?? '');
       throw new Error(
-        `translate item ${i} was not a string: ${preview(value)}`,
+        `translate (${locales}) item ${i} was not a string: ${preview(value)}.\n` +
+          `Source: ${source}`,
       );
     }
     validated.push(value.trim());
