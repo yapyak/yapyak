@@ -43,6 +43,10 @@ let version = 0;
 let snapshot = `${currentLocale}#${version}`;
 const listeners = new Set<() => void>();
 
+if (typeof document !== 'undefined') {
+  document.documentElement.lang = currentLocale;
+}
+
 function resolveLocale(): string {
   if (typeof window === 'undefined' && headersReader !== null) {
     const source = headersReader();
@@ -108,6 +112,9 @@ export function setLocale(locale: string): void {
   version++;
   snapshot = `${currentLocale}#${version}`;
   persistence?.save(locale);
+  if (typeof document !== 'undefined') {
+    document.documentElement.lang = locale;
+  }
   for (const listener of listeners) {
     listener();
   }

@@ -33,6 +33,10 @@
       "types": "./dist/server.d.ts",
       "default": "./dist/server.js"
     },
+    "./adapters/astro": {
+      "types": "./dist/adapters/astro.d.ts",
+      "default": "./dist/adapters/astro.js"
+    },
     "./adapters/sveltekit": {
       "types": "./dist/adapters/sveltekit.d.ts",
       "default": "./dist/adapters/sveltekit.js"
@@ -77,6 +81,7 @@
   },
   "peerDependencies": {
     "@sveltejs/kit": ">=2",
+    "astro": ">=5",
     "react": ">=19",
     "svelte": ">=5",
     "vite": ">=5",
@@ -84,6 +89,9 @@
   },
   "peerDependenciesMeta": {
     "@sveltejs/kit": {
+      "optional": true
+    },
+    "astro": {
       "optional": true
     },
     "react": {
@@ -106,6 +114,7 @@
     "@types/node": "25.6.0",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
+    "astro": "^6.3.2",
     "react": "19.2.5",
     "react-dom": "19.2.5",
     "typescript": "6.0.3",
