@@ -201,31 +201,11 @@ This translator is *synchronous* — `translate` returns `string[]` directly, no
 
 Use case: catch hard-coded strings (without `t()` wrapping) by setting up a pseudo-locale that mangles every translated string. Anything still showing real English in your UI when running in pseudo mode is a bug.
 
-## Available helpers
-
-For convenience, the shared system-prompt builder used by the shipped translators is exported:
-
-```ts
-import { createTranslator } from 'yapyak';
-import { buildSystem } from 'yapyak/translator/prompt';   // (if you publish this)
-
-// inside your translate:
-const system = buildSystem(opts, sourceLocale, targetLocale);
-```
-
-::: tip
-This helper isn't currently a public export. If you'd find it useful for your own translator, open an issue and we'll consider stabilizing it.
-:::
-
 ## Errors and retries
 
-If your `translate` throws:
+If your `translate` throws, yapyak handles it gracefully — failed strings stay missing in `locales/*.json` and retry on the next save. See [When things go wrong](/guide/translators#when-things-go-wrong) for the full failure model.
 
-- The plugin/CLI logs the error and the failed batch
-- Other batches continue (don't take down the whole translation pipeline)
-- Failed entries stay as empty stubs — retried on next save or next `npx yapyak translate`
-
-If you want retries inside your translator (e.g., for rate-limited APIs), use yapyak's shared retry helper or roll your own. The shipped translators use a built-in `fetchWithRetry` with exponential backoff (250ms, 500ms, 1s, 2s, 4s, 8s) on 408/429/5xx.
+For retries inside your own translator (e.g., rate-limited APIs), wrap the HTTP call yourself. The shipped translators use a built-in `fetchWithRetry` with exponential backoff on 408/429/5xx — you can replicate that pattern or use any retry library.
 
 ## Testing your translator
 
@@ -246,30 +226,3 @@ it('translates a batch', async () => {
 
 The shipped translators have similar tests — open the source under `packages/yapyak/src/translators/` for examples.
 
-## Publish as a package
-
-If you've built a translator worth sharing, publish it as an npm package:
-
-```ts
-// my-yapyak-translator/src/index.ts
-import { createTranslator, type Translator } from 'yapyak';
-
-export interface MyOptions { /* ... */ }
-export function myProvider(opts: MyOptions): Translator { /* ... */ }
-```
-
-Users install it alongside yapyak:
-
-```bash
-npm install yapyak my-yapyak-translator
-# or
-pnpm add yapyak my-yapyak-translator
-```
-
-```ts
-import { myProvider } from 'my-yapyak-translator';
-
-yapyak({
-  translator: myProvider({ /* ... */ }),
-})
-```

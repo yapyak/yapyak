@@ -5,7 +5,7 @@ order: 1
 
 A **translator** is the function yapyak calls to actually translate strings. The plugin extracts `t()` calls, batches them, and passes them to the configured translator. The translator makes the HTTP call to an AI provider and returns the translations.
 
-yapyak ships four translators out of the box: **Anthropic**, **OpenAI**, **Gemini**, and **Ollama**. Each is a thin wrapper over `createTranslator` — open the source, it's ~100 lines.
+yapyak ships four translators out of the box: **Anthropic**, **OpenAI**, **Gemini**, and **Ollama**. Many other providers (Groq, DeepSeek, Mistral, OpenRouter, Together AI, Vercel AI Gateway) expose OpenAI-compatible APIs — point the OpenAI translator at their endpoint and you're done. For anything else, build a [custom translator](/guide/translators/custom).
 
 ```ts
 import { yapyak } from 'yapyak/vite';
@@ -140,7 +140,7 @@ The app keeps working. No empty UI, no errors.
 | API key invalid | 401, warnings per stub, app runs on source-text | Fix the key, save again |
 | CI build | `npx yapyak check` fails on missing translations | Translate locally first, or fix CI secret |
 
-No data loss. No partial writes. Retries until the call succeeds, or until you intervene.
+Translations retry on every save until the call succeeds, or until you intervene.
 
 ## Bring your own
 

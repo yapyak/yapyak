@@ -51,7 +51,7 @@
         margin: var(--space-4) 0 var(--space-2);
       }
 
-      p, ul, ol, table, .CodeBlock {
+      p, ul, ol, table, :global(.CodeBlock) {
         margin: var(--space-4) 0;
       }
 
