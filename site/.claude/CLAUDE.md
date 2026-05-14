@@ -18,6 +18,233 @@ The rules below this section are copied verbatim from the skiftle frontend codeb
 - **Loaders return Markdown content** for `/guide/$slug` routes. The shape is `{ title, description, content }` parsed from frontmatter — pass through to the component unchanged.
 - **Path aliases** `#components/*` and `#lib/*` are wired via package.json `imports` and tsconfig `paths`. Use them for cross-folder imports, not relative paths.
 
+## The yapyak ethos
+
+The thesis that underlies every page, every feature, every line of copy:
+
+> **Translation is part of the local dev loop — not a project beside it.**
+> You write code. yapyak handles i18n. Locally. Without a portal.
+
+Everything else follows from that.
+
+### The five underlying beliefs
+
+1. **Local beats portal.** Locale files live in the repo, get committed via git. No dashboard, no seat-model, no "Contact sales".
+
+2. **The source string is the contract.** The English you write IS the key. No `t('common.buttons.save_v2')`. No `.d.ts` to maintain. What Tailwind did for class names, yapyak did for i18n keys.
+
+3. **AI is useful — when it has context.** Not magic. Not perfect. But useful when it knows you're writing inside a `<button>` in `<SaveDialog>`, with voice "casual" and glossary `"Cart" → "Korg"`. And always optional. Skip AI entirely if you want.
+
+4. **No margin on your tokens.** You bring your own API key. Anthropic, OpenAI, Gemini, Ollama, or a custom translator in 30 lines. yapyak never sees your tokens.
+
+5. **Behind all the AI talk, yapyak is a normal modern i18n library.** Plurals, dates, lists, ordinals, framework adapters, CLI, manual workflow, rename-detection. The boring stuff works.
+
+### Lift the non-business-model angle early
+
+In any long-form doc, README, or release post, the *"yapyak has no business model"* and *"bring your own AI"* points should appear early — typically in the first one or two paragraphs after the thesis. This is not a footer disclaimer or fine-print beat. It's a core promise that shapes how the reader frames everything else.
+
+Phrasings that work:
+
+- *"Your AI key. Your locale files. yapyak has no business model."*
+- *"yapyak never sees your tokens."*
+- *"A library on npm. MIT-licensed. No portal."*
+
+Phrasings to avoid:
+
+- ✗ *"Free forever!"* — sounds like a SaaS marketing claim
+- ✗ *"100% open source"* — generic, fluffy
+- ✗ *"Bring your own AI to save on costs."* — frames it as cost-saving, not as principle
+
+The point isn't that yapyak is *cheap*. The point is that yapyak is *not in the business* of selling AI access. That distinction matters.
+
+### Voice signature — these lines feel like yapyak
+
+> *"Edit. Save. Done."* — terse, declarative, no second step.
+>
+> *"What Tailwind did for class names, yapyak did for keys."* — anchor the idea in something the reader already understands.
+>
+> *"Built for our own needs, and shared in case others have felt the same friction."* — closing-line warmth without self-importance.
+
+### The underlying feeling
+
+yapyak is the library you wish a competent colleague had built. Someone tired of the industry's bullshit who just fixed it. Doesn't try to impress you. Doesn't claim to have solved something magic. Opened GitHub, slapped on an MIT license, and said: *"Here. Use it if you want. Or don't."*
+
+Every doc, every README section, every release note, every marketing line should feel like it was written by that person — not by a marketing team, not by an LLM that has digested 10,000 SaaS landing pages.
+
+## Documentation tone
+
+All `.md` files under `content/` and any marketing copy on the site follow these rules. yapyak docs are written like an honest engineer talking to a fellow engineer — not marketing copy, not corporate documentation. Personal, precise, anti-fluff.
+
+### Voice rules
+
+1. **Never use "I" or "we" in docs.** The subject is either *yapyak* or *the reader*.
+   - ✓ "yapyak extracts the string on save."
+   - ✓ "You write `t('Save changes')`."
+   - ✗ "We extract the string on save."
+   - ✗ "I built yapyak to solve…"
+
+   (Exception: changelog entries, blog/release posts, and `README.md` may use "I" / "we" since they're authored statements. Docs are not.)
+
+2. **Short declarative sentences.** Multiple periods beat commas.
+   - ✓ *"Not perfect. Not magic. But useful."*
+   - ✗ *"While not perfect, the system is useful when properly configured."*
+
+3. **Lowercase brand.** Always `yapyak`. Never `Yapyak`, `YAPYAK`, or `Yap Yak`.
+
+4. **Lead with code blocks, not inline code.** The example is the explanation — but it should be a small *code block*, not endless backticks scattered in prose. Inline `code` is for naming a specific identifier, not for showing usage.
+   - ✓ Write a short code block showing `t('Save changes')` in context. Body prose stays clean.
+   - ✗ *"Call `t()` with a `source` string and optional `params` for `{placeholder}` interpolation against the `Intl` primitives configured in `yapyak.config.ts`."* — every other word is in backticks. Show, don't sprinkle.
+   - Rule of thumb: if a sentence has 3+ inline `code` spans, replace it with a small code block.
+
+5. **State the negative space.** What yapyak *isn't* is as important as what it is.
+   - ✓ *"No translation keys. No default `en.json`. No portal."*
+
+6. **Dry humor at observation-level, never jokes.** Specific, slightly absurd, or self-aware lines are encouraged — but they land as a *droll observation*, not a punchline. They should be inseparable from the technical claim they decorate.
+
+   Calibration anchor — these are the level we want:
+   - *"Forget a `{count}` placeholder and TypeScript stops you before your tech lead does."*
+   - *"Yes, all four Polish plural forms."*
+   - *"Set a voice ('friendly', 'terse', 'lawyer at a dinner party')."*
+   - *"Even when the AI thinks it knows better."*
+   - *"Next.js? Open a PR."*
+   - *"No 'Contact sales'. Other i18n services mark up your AI bill 5x. yapyak never sees your tokens."*
+
+   Each line above passes the test: it is *technically true*, *specific*, and *quietly funny*. None of them are punchlines or set-ups for laughter.
+
+   Below the line — never write:
+   - ✗ *"AI go brrr 🚀"*
+   - ✗ *"Translation: solved!! 🎉"*
+   - ✗ *"Buckle up, this is gonna blow your mind."*
+   - ✗ *"yapyak go brr"* / *"Just sprinkle some t() on it"* / wink-wink references to memes.
+
+   The difference: feature-list-level humor *informs* while it amuses. Meme-level humor *only* amuses, and breaks tone.
+
+7. **Acknowledge alternatives.** Don't pretend the reader has no choice.
+   - ✓ *"Or skip AI entirely."*
+   - ✗ *"yapyak requires an AI translator to function."* (when it doesn't)
+
+8. **Honest about limitations.** Premium ≠ flawless.
+   - ✓ *"Not perfect. Not magic."*
+   - ✗ *"Flawless translations every time."*
+
+### No AI-tone — this is non-negotiable
+
+LLM-written prose has a *texture* that humans recognize instinctively. The texture is rhythmic, repetitive, listy, and over-balanced. yapyak docs must not sound like that. Avoid these tells, even when individual instances seem fine:
+
+#### Banned patterns
+
+1. **Anaphora lists** ("No X. No Y. No Z." style):
+   - ✗ *"No lock-in. No cloud. No enterprise."*
+   - ✗ *"No dashboard. No login. No portal."*
+   - ✗ *"Built for X. Built for Y. Built for Z."*
+
+   This is the single most recognizable AI cadence. Allowed *once* per page max, only when it serves a real rhetorical beat (e.g., a manifesto-style closer). Default: write a normal sentence.
+
+2. **Numbered prose** ("First / Second / Third"):
+   - ✗ *"First, install the package. Second, configure the plugin. Third, write your strings."*
+   - ✓ Use a numbered list, or just write naturally: *"Install the package, configure the plugin, write your strings."*
+
+3. **"Not just X — Y"** / **"It's not about X, it's about Y"** — banned. AI overuses this contrast pattern.
+
+4. **Tricolons** in prose (three parallel clauses): one is fine, three on a page is a tell.
+
+5. **Transition adverbs**: *furthermore, moreover, additionally, that said, what's more.* Cut them.
+
+6. **"Whether you're X or Y…"** — banned. The textbook AI opener for inclusive language.
+
+7. **Em-dash overuse** — using `—` more than once or twice per page reads as AI. Prefer periods.
+
+8. **Negation padding** — claims followed by an immediate *"not X"* rebuttal of an unstated alternative:
+   - ✗ *"yapyak treats translation as part of the local dev loop, not a project beside it."*
+   - ✗ *"It's not just a library — it's a way of thinking about i18n."*
+   - ✗ *"Built for shipping, not for portals."*
+   - ✗ *"We made it simple, not simplistic."*
+
+   This is one of the most recognizable AI rhetorical patterns. It manufactures depth by inventing a phantom alternative and dismissing it. If the positive claim is strong enough, the contrast adds nothing. If it isn't, write a stronger claim.
+
+   The fix is to formulate the positive statement so completely that no contrast is needed:
+   - ✓ *"yapyak generates translations on save."*
+   - ✓ *"yapyak is a library on npm. MIT-licensed."*
+   - ✓ *"Built for shipping."*
+
+   When you catch yourself writing *"X, not Y"* or *"not just X, but Y"* — stop and rewrite the X side so it carries the whole weight.
+
+### Say it once. Then stop.
+
+- Find the **single shortest sentence** that says the thing. If two sentences say the same thing twice, delete one.
+- ✗ *"yapyak extracts your strings on save. The strings are automatically pulled out of your code whenever you hit save."*
+- ✓ *"yapyak extracts strings on save."*
+
+If you find yourself adding a second sentence for "extra emphasis", you don't need it. Trust the reader.
+
+### Plain English, not fancy English
+
+- Prefer short common words. *use* > *utilize*. *help* > *facilitate*. *let* > *enable*. *need* > *require*. *show* > *demonstrate*.
+- Avoid Latinate vocabulary when an Anglo-Saxon word works.
+- ✗ *"yapyak facilitates the automatic generation of translation artifacts."*
+- ✓ *"yapyak writes the translation files for you."*
+
+The reader is a competent engineer, not someone you're trying to impress with vocabulary.
+
+### Banned vocabulary
+
+Marketing words that ring fake:
+> revolutionary, cutting-edge, world-class, enterprise-ready, powerful and flexible, robust, seamless, leverage, empower, unlock, supercharge, harness, transform, next-generation
+
+Corporate phrases:
+> "contact sales", "seat model", "industry-leading", "best-in-class", "speak to our team", "enterprise tier"
+
+Hype openers:
+> "We're excited to announce", "Introducing the next generation of…", "Just X simple steps"
+
+### Structure
+
+- **Open with what it does**, not why it exists.
+- **Bullet lists** are fine, but periods make sentences breathe better than dashes.
+- **Don't oversell.** If something is small, say it's small.
+- **Closing line** may be quietly emotional. Example:
+  > *"Built for our own needs, and shared in case others have felt the same friction."*
+
+### Subject substitution
+
+When tempted to write "we" or "I", use yapyak or the reader:
+
+| Tempted to write | Write instead |
+|------------------|---------------|
+| *We extract strings on save.* | *yapyak extracts strings on save.* |
+| *We pass call-site context to the AI.* | *yapyak passes call-site context to the AI.* |
+| *I built this because…* | *yapyak treats translation as part of the local dev loop.* |
+| *We don't take a margin on AI.* | *yapyak never sees your tokens.* |
+| *Let's add a translator.* | *Add a translator like this:* |
+
+### Examples — good vs bad
+
+**Bad:**
+> *"yapyak is a revolutionary AI-powered i18n solution that empowers developers to ship localized apps faster than ever."*
+
+**Good:**
+> *"yapyak extracts strings on save and translates them with whatever AI you bring. No portal."*
+
+---
+
+**Bad:**
+> *"We've built yapyak from the ground up for enterprise-grade scale."*
+
+**Good:**
+> *"yapyak is a local-first i18n library. Your AI key, your locale files, your repo."*
+
+---
+
+**Bad:**
+> *"Translation has never been easier with our seamless integration."*
+
+**Good:**
+> *"Write `t('Save changes')`. Save the file. The browser updates through HMR."*
+
+### Emojis
+
+Maximum one per page. Brand emoji 🐃 only when natural (e.g. release post title). Never decorative inside body content.
+
 ## Formatting
 
 - Always run `pnpm check:write` after making changes to ensure consistent formatting and lint compliance

@@ -1,125 +1,95 @@
-# How it works
+---
+title: How it works
+---
 
-A high-level tour of what happens between `t('Save changes')` in your component and `Guardar cambios` rendering in the user's browser.
+You write `t()` in your code. yapyak rewrites the call to inline the translations for every locale, right at the call site.
 
-## The pipeline
+## What you write
 
-```
-[ component.tsx ]
-   t('Save changes')
-        │
-        ▼
-[ Vite plugin: extract ]
-   collects (file, line, column, source) for every t() call
-        │
-        ▼
-[ sync locale files ]
-   diff against last extraction
-   add new strings, prune removed, migrate renamed positions
-        │
-        ▼
-[ auto-translate ]
-   batch missing strings, send to AI provider, write to locales/{locale}.json
-        │
-        ▼
-[ Vite plugin: transform ]
-   rewrite each call site:
-   t('Save changes')
-   becomes
-   __yapyak_pick({ en: '...', es: '...', ... })
-        │
-        ▼
-[ runtime: pick ]
-   reads current locale from store, returns the variant
-        │
-        ▼
-[ HMR ]
-   pushes the new compiled module to the browser
-```
+```tsx
+import { t } from 'yapyak';
 
-Five subsystems collaborating: extract, sync, translate, transform, and the runtime.
-
-## On every save
-
-When a user saves a source file in dev, the plugin's `handleHotUpdate` hook runs:
-
-1. **Re-extract.** The plugin parses the file and collects every `t()` call site. For each: `(file path, line, column, source string, optional fixed locale from t.in('xx'))`.
-2. **Compare positions.** New extraction is compared against the previous one for that file. The plugin computes three sets:
-   - **Added strings** (appeared at a position that didn't have one before)
-   - **Removed strings** (disappeared from a position that had one)
-   - **Renamed strings** (a string disappeared at line 23, column 12 *and* a new string appeared at line 23, column 12 — that's a rename, not a delete-and-add)
-3. **Migrate locale files.** For each rename, the locale entries get the key swapped — translations preserved as placeholders. Removed strings get pruned. Added strings get empty stubs in every locale.
-4. **Trigger auto-translation.** Stubs are batched and sent to the configured translator (Anthropic, OpenAI, custom). Results are written to `locales/{locale}.json`.
-5. **HMR.** Vite's HMR engine pushes the updated JSON-backed compiled modules to the browser.
-
-The user typed `t('Save changes')`, saved, and a second later sees `Guardar cambios` in the running app — without thinking about a single JSON file.
-
-## The transform: from `t('...')` to inline lookup
-
-When the plugin encounters a `t()` call in a `.ts`, `.tsx`, `.js`, `.jsx`, `.svelte`, or `.vue` file, it rewrites the call to a direct lookup with all locale variants inlined:
-
-```ts
-// You write:
-{t('Save changes')}
-
-// Plugin rewrites to:
-__yapyak_pick({
-  en: 'Save changes',
-  es: 'Guardar cambios',
-  fr: 'Enregistrer les modifications',
-  de: 'Änderungen speichern',
-})
-```
-
-The runtime helper `__yapyak_pick` is tiny:
-
-```ts
-function pick(variants, params, fixedLocale) {
-  const locale = fixedLocale ?? getLocaleStore().get();
-  const value = variants[locale] ?? variants[defaultLocale] ?? '';
-  return params ? interpolate(value, params) : value;
+export function SaveButton() {
+  return <button>{t('Save changes')}</button>;
 }
 ```
 
-Because the variants are inlined per call site, Vite and Rollup can tree-shake at module level: a route that doesn't import a string doesn't ship its translations. Bundle size scales with strings *used* per chunk, not total strings in the project.
+## What yapyak compiles it to
 
-## Locale resolution at runtime
+```tsx
+import { pick as _$pick } from 'yapyak/runtime';
 
-The runtime locale lives in a store with three reading paths and one writing path:
+export function SaveButton() {
+  return <button>{_$pick({ en: 'Save changes', sv: 'Spara ändringar', es: 'Guardar cambios' })}</button>;
+}
+```
 
-- **Client read:** `getLocaleStore().get()` returns the current locale, optionally falling back to a persisted cookie or localStorage value, then to `defaultLocale`.
-- **Server read:** the adapter (TanStack Start, SvelteKit, custom) wires `setRequestSource(() => ({ acceptLanguage, cookieHeader }))` at request boundary. `get()` resolves per-request via `AsyncLocalStorage`, so concurrent requests don't pollute each other.
-- **Reactive read:** React's `useLocale` hook subscribes via `useSyncExternalStore`. Svelte exports a `locale` singleton backed by `$state`. Vue exports a `locale` singleton backed by `ref` + `computed`. Components re-render when locale changes.
-- **Write:** `setLocale(next)` updates the in-memory store, persists to cookie or localStorage if configured, and notifies all subscribers.
+The variants are inlined at the call site. At runtime, `_$pick()` returns the right one for the current locale.
 
-Same `getLocale()` import on the server and the browser. No isomorphism dance.
+## On save
 
-## On `vite build`
+When the file saves, yapyak's Vite plugin runs five steps:
 
-Production builds run the same pipeline once during the SSR build phase:
+1. **Re-extract.** It parses the file and collects every `t()` call: source string, line, column, and the surrounding context.
+2. **Detect renames.** If a string disappeared from line 23, column 12 and a new one appeared at the same position, that's a rename — not a delete plus add.
+3. **Sync locale files.** New strings get empty entries in every `locales/*.json`. Removed strings get pruned.
+4. **Translate.** If a translator is configured, missing entries are batched and sent to the AI with the call-site context attached.
+5. **Inline + HMR.** Vite re-bundles the file, the transform reads the fresh locale data and inlines the variants, the browser updates.
 
-1. Walk all source files matching the source pattern
-2. Extract every `t()` call across the project
-3. Reconcile with locale files on disk
-4. Auto-translate any missing strings
-5. Bake locale variants into compiled call sites
-6. Vite/Rollup tree-shake per chunk
+If no translator is configured, step 4 is skipped — the stubs stay empty until you fill them by hand.
 
-The translator runs at build time only — the production runtime makes zero AI calls. Translations are static data baked into the bundle.
+## Rename detection
 
-## On `yapyak <command>` from the CLI
+yapyak tracks `t()` calls by *position* in the source — line and column — not by string similarity. When you edit `t('Save')` to `t('Save changes')` on the same line and column, the diff looks like a rename, and existing translations move with the call site.
 
-The CLI shares the same extract/sync/translate machinery as the Vite plugin. `yapyak add fr` walks your source, extracts every `t()` call, creates `locales/fr.json`, batches all strings to your translator, and writes the result. `yapyak translate` fills missing translations across existing locales. `yapyak status` reports coverage. `yapyak export` snapshots locales (including the source language extracted from your code) into a wrapped JSON for handoff to translators or TMS pipelines. None of these commands require Vite to be running — they're independent entry points to the same library code.
+```diff
+// locales/sv.json
+{
+  "src/components/save-button.tsx": {
+-    "Save": "Spara",
++    "Save changes": "Spara"
+  }
+}
+```
 
-## What stays out of the picture
+The non-default locales get one of two treatments, depending on `preserveTranslationsOnRename`:
 
-- **No build step you have to run.** `vite dev` covers it. CI runs `npx yapyak check` to fail on missing translations.
-- **No translation portal.** Locale files are JSON in your repo, version-controlled, reviewable as code.
-- **No runtime AI call.** The AI runs at extract/translate time only. Production has no dependency on a model provider.
-- **No central message registry.** Each call site is keyed by `(file path, source string)`. Move the file and the translations follow.
+| Setting | Behavior |
+|---------|----------|
+| `true` (default when no translator is configured) | Old translation carried to the new key. Your handwritten Swedish "Spara" survives. |
+| `false` (default when a translator is configured) | New key gets an empty stub. The AI re-translates from the new source. |
+
+The split exists because intent differs. Manual workflows want their handwritten translations preserved across small edits. AI workflows usually want a re-translation because the new source string may mean something subtly different. Override the default by setting `preserveTranslationsOnRename` in your plugin config.
+
+If a string is moved *and* renamed in the same save, position-matching fails — yapyak treats it as a delete plus add, and the translation is lost. Rename detection is line+column-strict by design; fuzzy matching would silently rebind unrelated strings.
+
+## What gets sent to the AI
+
+For every missing entry, yapyak builds a context object from the call site:
+
+```json
+{
+  "source": "Save changes",
+  "componentName": "SaveButton",
+  "enclosingElement": "button",
+  "snippet": "  return (\n    <button>{t('Save changes')}</button>\n  );"
+}
+```
+
+- **componentName** — derived from the file path (`save-button.tsx` → `SaveButton`).
+- **enclosingElement** — the nearest opening JSX tag above the call (`button`, `h1`, `label`, etc.).
+- **snippet** — three lines above and below the call site, dedented.
+
+The translator uses this to disambiguate: "Save" in a `<button>` reads differently from "Save" in an `<h1>`. Add a voice and a glossary in your config and they flow through too.
+
+## Why the call-site inline matters
+
+The translations travel with the code that uses them. Vite splits your app into chunks per route; yapyak's translations follow that split automatically. A route that doesn't import a string doesn't ship its translations.
+
+Bundle size scales with the strings *used* per chunk, not the total strings in the project. No translations.json fetch at app start. No central message registry. The translations were already there.
 
 ## Where to read next
 
-- [Translations / Auto-translation](/guide/translations/auto-translation) — the AI loop in detail
-- [Translations / How renames work](/guide/translations/#how-renames-work) — the rename mechanism
-- [Adapters](/guide/adapters/) — how SSR locale resolution works per framework
+- [Translations](/guide/translations) — the t() function, params, plurals.
+- [Locales](/guide/locales) — adding locales, switching at runtime.
+- [Translators / Custom](/guide/translators/custom) — write your own translator.
