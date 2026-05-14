@@ -21,9 +21,9 @@
       "svelte": "./dist/svelte/index.js",
       "default": "./dist/svelte/index.js"
     },
-    "./runtime": {
-      "types": "./dist/runtime/index.d.ts",
-      "default": "./dist/runtime/index.js"
+    "./internal": {
+      "types": "./dist/internal/index.d.ts",
+      "default": "./dist/internal/index.js"
     },
     "./vite": {
       "types": "./dist/vite/plugin.d.ts",

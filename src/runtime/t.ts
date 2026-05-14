@@ -1,6 +1,6 @@
 import { getLocale } from '../locale/store.js';
 import { hasPlaceholder, interpolate } from './interpolate.js';
-import { pick } from './pick.js';
+import { pick } from '../internal/pick.js';
 import { runTrackers } from './tracker.js';
 
 type Trim<Source extends string> = Source extends ` ${infer Rest}`

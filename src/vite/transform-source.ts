@@ -24,7 +24,7 @@ export interface TransformResult {
 }
 
 const HELPER_NAME = '_$pick';
-const DEFAULT_HELPER_IMPORT = 'yapyak/runtime';
+const DEFAULT_HELPER_IMPORT = 'yapyak/internal';
 
 interface CallSite {
   argsStart: number;
