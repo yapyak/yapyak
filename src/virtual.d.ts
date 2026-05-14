@@ -5,4 +5,5 @@ declare module 'virtual:yapyak' {
   export const PERSISTENCE: 'cookie' | 'localStorage' | null;
   export const ACCEPT_LANGUAGE: boolean;
   export const STORAGE_KEY: string;
+  export const MANUAL_HTML_LANG: boolean;
 }

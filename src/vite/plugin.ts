@@ -302,6 +302,9 @@ function generateConfig(
   lines.push(
     `export const STORAGE_KEY = ${JSON.stringify(normalized.storageKey)};`,
   );
+  lines.push(
+    `export const MANUAL_HTML_LANG = ${JSON.stringify(normalized.manualHtmlLang)};`,
+  );
   return lines.join('\n');
 }
 

@@ -7,6 +7,7 @@ vi.mock('virtual:yapyak', () => ({
   PERSISTENCE: null,
   ACCEPT_LANGUAGE: false,
   STORAGE_KEY: 'yapyak:locale',
+  MANUAL_HTML_LANG: false,
 }));
 
 const {

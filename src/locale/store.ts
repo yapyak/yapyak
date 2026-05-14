@@ -3,6 +3,7 @@ import {
   COOKIE_NAME,
   DEFAULT_LOCALE,
   LOCALES,
+  MANUAL_HTML_LANG,
   PERSISTENCE,
   STORAGE_KEY,
 } from 'virtual:yapyak';
@@ -43,7 +44,7 @@ let version = 0;
 let snapshot = `${currentLocale}#${version}`;
 const listeners = new Set<() => void>();
 
-if (typeof document !== 'undefined') {
+if (!MANUAL_HTML_LANG && typeof document !== 'undefined') {
   document.documentElement.lang = currentLocale;
 }
 
@@ -112,7 +113,7 @@ export function setLocale(locale: string): void {
   version++;
   snapshot = `${currentLocale}#${version}`;
   persistence?.save(locale);
-  if (typeof document !== 'undefined') {
+  if (!MANUAL_HTML_LANG && typeof document !== 'undefined') {
     document.documentElement.lang = locale;
   }
   for (const listener of listeners) {

@@ -23,6 +23,13 @@ export interface YapyakOptions {
   include?: FilterPattern;
   /** Directory for locale JSON files, relative to project root. Defaults to `'locales'`. */
   localesDir?: string | undefined;
+  /**
+   * Take over `<html lang>` yourself. When `false` (default), yapyak keeps the
+   * `lang` attribute on `document.documentElement` in sync with the current
+   * locale. Set `true` if you manage the attribute manually (e.g. a yapyak
+   * island on a multi-locale page).
+   */
+  manualHtmlLang?: boolean | undefined;
   /** Where to persist the user's locale selection. */
   persistence?: Persistence | undefined;
   /**
@@ -43,6 +50,7 @@ export interface NormalizedOptions {
   exclude: FilterPattern;
   include: FilterPattern;
   localesDir: string;
+  manualHtmlLang: boolean;
   persistence: Persistence;
   preserveTranslationsOnRename: boolean;
   storageKey: string;
@@ -84,6 +92,7 @@ export function normalizeOptions(options: YapyakOptions): NormalizedOptions {
     exclude: options.exclude ?? DEFAULT_EXCLUDE,
     include: options.include ?? DEFAULT_INCLUDE,
     localesDir: options.localesDir ?? 'locales',
+    manualHtmlLang: options.manualHtmlLang ?? false,
     persistence: options.persistence ?? null,
     preserveTranslationsOnRename:
       options.preserveTranslationsOnRename ?? options.translator === undefined,
