@@ -6,7 +6,7 @@ order: 7
 If your Vite SSR setup isn't TanStack Start or SvelteKit, wrap each request with `withRequest()`.
 
 ```ts
-import { withRequest } from 'yapyak/server';
+import { withRequest } from 'yapyak/adapter';
 
 function handler(request: Request): Response | Promise<Response> {
   return withRequest(request, () => renderApp(request));

@@ -1,6 +1,6 @@
 import type { Handle } from '@sveltejs/kit';
 import { getLocale } from '../locale/store.js';
-import { withRequest } from '../server.js';
+import { withRequest } from './index.js';
 
 const PLACEHOLDER = '%yapyak.lang%';
 
@@ -14,7 +14,7 @@ const PLACEHOLDER = '%yapyak.lang%';
  * @example
  * ```ts
  * // src/hooks.server.ts
- * export { handle } from 'yapyak/adapters/sveltekit';
+ * export { handle } from 'yapyak/adapter/sveltekit';
  * ```
  */
 export const handle: Handle = ({ event, resolve }) =>

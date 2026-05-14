@@ -29,49 +29,49 @@
       "types": "./dist/vite/plugin.d.ts",
       "default": "./dist/vite/plugin.js"
     },
-    "./server": {
-      "types": "./dist/server.d.ts",
-      "default": "./dist/server.js"
+    "./adapter": {
+      "types": "./dist/adapter/index.d.ts",
+      "default": "./dist/adapter/index.js"
     },
-    "./adapters/astro": {
-      "types": "./dist/adapters/astro.d.ts",
-      "default": "./dist/adapters/astro.js"
+    "./adapter/astro": {
+      "types": "./dist/adapter/astro.d.ts",
+      "default": "./dist/adapter/astro.js"
     },
-    "./adapters/nuxt": {
-      "types": "./dist/adapters/nuxt.d.ts",
-      "default": "./dist/adapters/nuxt.js"
+    "./adapter/nuxt": {
+      "types": "./dist/adapter/nuxt.d.ts",
+      "default": "./dist/adapter/nuxt.js"
     },
-    "./adapters/react-router": {
-      "types": "./dist/adapters/react-router.d.ts",
-      "default": "./dist/adapters/react-router.js"
+    "./adapter/react-router": {
+      "types": "./dist/adapter/react-router.d.ts",
+      "default": "./dist/adapter/react-router.js"
     },
-    "./adapters/sveltekit": {
-      "types": "./dist/adapters/sveltekit.d.ts",
-      "default": "./dist/adapters/sveltekit.js"
+    "./adapter/sveltekit": {
+      "types": "./dist/adapter/sveltekit.d.ts",
+      "default": "./dist/adapter/sveltekit.js"
     },
-    "./adapters/tanstack-start": {
-      "types": "./dist/adapters/tanstack-start.d.ts",
-      "default": "./dist/adapters/tanstack-start.js"
+    "./adapter/tanstack-start": {
+      "types": "./dist/adapter/tanstack-start.d.ts",
+      "default": "./dist/adapter/tanstack-start.js"
     },
-    "./translators": {
-      "types": "./dist/translators/types.d.ts",
-      "default": "./dist/translators/types.js"
+    "./translator": {
+      "types": "./dist/translator/index.d.ts",
+      "default": "./dist/translator/index.js"
     },
-    "./translators/anthropic": {
-      "types": "./dist/translators/anthropic.d.ts",
-      "default": "./dist/translators/anthropic.js"
+    "./translator/anthropic": {
+      "types": "./dist/translator/anthropic.d.ts",
+      "default": "./dist/translator/anthropic.js"
     },
-    "./translators/openai": {
-      "types": "./dist/translators/openai.d.ts",
-      "default": "./dist/translators/openai.js"
+    "./translator/openai": {
+      "types": "./dist/translator/openai.d.ts",
+      "default": "./dist/translator/openai.js"
     },
-    "./translators/gemini": {
-      "types": "./dist/translators/gemini.d.ts",
-      "default": "./dist/translators/gemini.js"
+    "./translator/gemini": {
+      "types": "./dist/translator/gemini.d.ts",
+      "default": "./dist/translator/gemini.js"
     },
-    "./translators/ollama": {
-      "types": "./dist/translators/ollama.d.ts",
-      "default": "./dist/translators/ollama.js"
+    "./translator/ollama": {
+      "types": "./dist/translator/ollama.d.ts",
+      "default": "./dist/translator/ollama.js"
     }
   },
   "bin": {

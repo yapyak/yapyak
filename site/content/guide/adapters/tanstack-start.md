@@ -7,7 +7,7 @@ Register yapyak's request middleware once in `src/start.ts`.
 
 ```ts
 // src/start.ts
-import { middleware } from 'yapyak/adapters/tanstack-start';
+import { middleware } from 'yapyak/adapter/tanstack-start';
 
 export default {
   requestMiddleware: [middleware],

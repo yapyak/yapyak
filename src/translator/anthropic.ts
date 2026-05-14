@@ -1,7 +1,7 @@
-import { type ContextLevel, createTranslator } from './create.js';
+import { type ContextLevel, createTranslator } from './index.js';
 import { fetchWithRetry } from './fetch.js';
 import { buildSystem, stripCodeFence } from './prompt.js';
-import type { Translator } from './types.js';
+import type { Translator } from './index.js';
 
 /** Options for the Anthropic translator. */
 export interface AnthropicOptions {
@@ -44,7 +44,7 @@ const DEFAULT_MAX_RETRIES = 2;
  *
  * @example
  * ```ts
- * import { anthropic } from 'yapyak/translators/anthropic';
+ * import { anthropic } from 'yapyak/translator/anthropic';
  *
  * yapyak({
  *   translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! }),
@@ -100,14 +100,14 @@ export function anthropic(options: AnthropicOptions): Translator {
       if (!response.ok) {
         const text = await response.text();
         throw new Error(
-          `yapyak/translators/anthropic: ${response.status} ${text}`,
+          `yapyak/translator/anthropic: ${response.status} ${text}`,
         );
       }
       const body = (await response.json()) as AnthropicMessageResponse;
       const text = body.content?.[0]?.text;
       if (typeof text !== 'string') {
         throw new Error(
-          'yapyak/translators/anthropic: response did not contain a text block',
+          'yapyak/translator/anthropic: response did not contain a text block',
         );
       }
       const cleaned = stripCodeFence(text.trim());

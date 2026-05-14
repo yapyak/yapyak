@@ -207,7 +207,7 @@ For convenience, the shared system-prompt builder used by the shipped translator
 
 ```ts
 import { createTranslator } from 'yapyak';
-import { buildSystem } from 'yapyak/translators/prompt';   // (if you publish this)
+import { buildSystem } from 'yapyak/translator/prompt';   // (if you publish this)
 
 // inside your translate:
 const system = buildSystem(opts, sourceLocale, targetLocale);

@@ -1,5 +1,5 @@
 import type { MiddlewareFunction } from 'react-router';
-import { withRequest } from '../server.js';
+import { withRequest } from './index.js';
 
 /**
  * React Router 7 framework-mode middleware that wires yapyak's per-request
@@ -11,7 +11,7 @@ import { withRequest } from '../server.js';
  * ```tsx
  * // app/root.tsx
  * import type { Route } from './+types/root';
- * import { middleware as yapyakMiddleware } from 'yapyak/adapters/react-router';
+ * import { middleware as yapyakMiddleware } from 'yapyak/adapter/react-router';
  *
  * export const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];
  * ```

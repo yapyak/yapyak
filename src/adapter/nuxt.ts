@@ -10,7 +10,7 @@ import { registerRequestHeadersReader } from '../locale/store.js';
  * @example
  * ```ts
  * // server/plugins/yapyak.ts
- * export { default } from 'yapyak/adapters/nuxt';
+ * export { default } from 'yapyak/adapter/nuxt';
  * ```
  *
  * Requires `experimental.asyncContext: true` in `nuxt.config.ts`.

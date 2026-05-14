@@ -1,5 +1,5 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { registerRequestHeadersReader } from './locale/store.js';
+import { registerRequestHeadersReader } from '../locale/store.js';
 
 interface RequestHeaders {
   acceptLanguage: string | undefined;
@@ -13,7 +13,8 @@ registerRequestHeadersReader(() => storage.getStore());
 /**
  * Runs `fn` with the request's locale headers bound to an async-scoped context.
  *
- * The shipped adapters (`yapyak/adapters/sveltekit`, `yapyak/adapters/tanstack-start`)
+ * The shipped adapters (`yapyak/adapter/sveltekit`, `yapyak/adapter/tanstack-start`,
+ * `yapyak/adapter/astro`, `yapyak/adapter/react-router`, `yapyak/adapter/nuxt`)
  * call this for you. Use it directly when wiring a custom SSR setup.
  *
  * @param request - The incoming Web `Request`.
@@ -22,7 +23,7 @@ registerRequestHeadersReader(() => storage.getStore());
  *
  * @example
  * ```ts
- * import { withRequest } from 'yapyak/server';
+ * import { withRequest } from 'yapyak/adapter';
  *
  * function handler(request: Request): Response {
  *   return withRequest(request, () => renderApp(request));

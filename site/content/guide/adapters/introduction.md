@@ -9,7 +9,7 @@ For TanStack Start, register the request middleware:
 
 ```ts
 // src/start.ts
-import { middleware } from 'yapyak/adapters/tanstack-start';
+import { middleware } from 'yapyak/adapter/tanstack-start';
 
 export default {
   requestMiddleware: [middleware],
@@ -20,13 +20,13 @@ For SvelteKit, re-export the handle hook:
 
 ```ts
 // src/hooks.server.ts
-export { handle } from 'yapyak/adapters/sveltekit';
+export { handle } from 'yapyak/adapter/sveltekit';
 ```
 
 For other frameworks, wrap each request manually with `withRequest()`:
 
 ```ts
-import { withRequest } from 'yapyak/server';
+import { withRequest } from 'yapyak/adapter';
 
 function handler(request: Request) {
   return withRequest(request, () => renderApp(request));

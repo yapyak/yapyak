@@ -1,6 +1,6 @@
 /// <reference types="astro/client" />
 import { defineMiddleware } from 'astro:middleware';
-import { withRequest } from '../server.js';
+import { withRequest } from './index.js';
 
 type AstroMiddleware = ReturnType<typeof defineMiddleware>;
 
@@ -13,7 +13,7 @@ type AstroMiddleware = ReturnType<typeof defineMiddleware>;
  * @example
  * ```ts
  * // src/middleware.ts
- * export { middleware as onRequest } from 'yapyak/adapters/astro';
+ * export { middleware as onRequest } from 'yapyak/adapter/astro';
  * ```
  *
  * Composing with other middlewares via `sequence`:
@@ -22,7 +22,7 @@ type AstroMiddleware = ReturnType<typeof defineMiddleware>;
  * ```ts
  * // src/middleware.ts
  * import { sequence } from 'astro:middleware';
- * import { middleware as yapyakMiddleware } from 'yapyak/adapters/astro';
+ * import { middleware as yapyakMiddleware } from 'yapyak/adapter/astro';
  * import { authMiddleware } from './auth';
  *
  * export const onRequest = sequence(yapyakMiddleware, authMiddleware);

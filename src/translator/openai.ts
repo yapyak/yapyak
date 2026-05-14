@@ -1,7 +1,7 @@
-import { type ContextLevel, createTranslator } from './create.js';
+import { type ContextLevel, createTranslator } from './index.js';
 import { fetchWithRetry } from './fetch.js';
 import { buildSystem, stripCodeFence } from './prompt.js';
-import type { Translator } from './types.js';
+import type { Translator } from './index.js';
 
 /** Options for the OpenAI translator. */
 export interface OpenAIOptions {
@@ -49,7 +49,7 @@ const DEFAULT_MAX_RETRIES = 2;
  *
  * @example
  * ```ts
- * import { openai } from 'yapyak/translators/openai';
+ * import { openai } from 'yapyak/translator/openai';
  *
  * yapyak({
  *   translator: openai({ apiKey: process.env.OPENAI_API_KEY! }),
@@ -120,14 +120,14 @@ export function openai(options: OpenAIOptions): Translator {
       if (!response.ok) {
         const text = await response.text();
         throw new Error(
-          `yapyak/translators/openai: ${response.status} ${text}`,
+          `yapyak/translator/openai: ${response.status} ${text}`,
         );
       }
       const responseBody = (await response.json()) as OpenAIChatResponse;
       const text = responseBody.choices?.[0]?.message?.content;
       if (typeof text !== 'string') {
         throw new Error(
-          'yapyak/translators/openai: response did not contain a text block',
+          'yapyak/translator/openai: response did not contain a text block',
         );
       }
       const cleaned = stripCodeFence(text.trim());

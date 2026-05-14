@@ -1,6 +1,6 @@
-import { anthropic } from '../../translators/anthropic.js';
-import { openai } from '../../translators/openai.js';
-import type { Translator } from '../../translators/types.js';
+import { anthropic } from '../../translator/anthropic.js';
+import { openai } from '../../translator/openai.js';
+import type { Translator } from '../../translator/index.js';
 import { autoTranslate } from '../../vite/auto-translate.js';
 import { collect } from '../collect.js';
 import { loadEnv } from '../load-env.js';

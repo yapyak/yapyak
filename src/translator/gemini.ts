@@ -1,55 +1,58 @@
-import { type ContextLevel, createTranslator } from './create.js';
+import { type ContextLevel, createTranslator } from './index.js';
 import { fetchWithRetry } from './fetch.js';
-import { buildSystem } from './prompt.js';
-import type { Translator } from './types.js';
+import { buildSystem, stripCodeFence } from './prompt.js';
+import type { Translator } from './index.js';
 
-/** Options for the Ollama translator. */
-export interface OllamaOptions {
+/** Options for the Gemini translator. */
+export interface GeminiOptions {
+  /** Your Google AI API key. */
+  apiKey: string;
   /** Max items per API call. Defaults to 10. */
   batchSize?: number;
   /** How much call-site context to include. Defaults to `'minimal'`. */
   context?: ContextLevel;
-  /** Override the API endpoint. Defaults to `http://localhost:11434/api/generate`. */
+  /** Override the API endpoint base URL. */
   endpoint?: string;
   /** Glossary of fixed translations, keyed by source string then locale. */
   glossary?: Record<string, Record<string, string>>;
   /** Extra request headers. */
   headers?: Record<string, string>;
-  /** Max retry attempts on transient failures. Defaults to 1. */
+  /** Max retry attempts on transient failures. Defaults to 2. */
   maxRetries?: number;
-  /** Model name. Defaults to `'llama3.1'`. */
+  /** Model name. Defaults to `'gemini-2.5-flash'`. */
   model?: string;
   /** Sampling temperature. Defaults to 0.2. */
   temperature?: number;
-  /** Request timeout in milliseconds. Defaults to 120000. */
+  /** Request timeout in milliseconds. Defaults to 30000. */
   timeout?: number;
   /** Voice/tone guidance passed to the model. */
   voice?: string;
 }
 
-const DEFAULT_MODEL = 'llama3.1';
-const DEFAULT_ENDPOINT = 'http://localhost:11434/api/generate';
+const DEFAULT_MODEL = 'gemini-2.5-flash';
+const DEFAULT_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta';
 const DEFAULT_TEMPERATURE = 0.2;
-const DEFAULT_TIMEOUT = 120_000;
-const DEFAULT_MAX_RETRIES = 1;
+const DEFAULT_TIMEOUT = 30_000;
+const DEFAULT_MAX_RETRIES = 2;
 
 /**
- * Translator backed by a local Ollama server.
+ * Translator backed by the Google Gemini API.
  *
  * @param options - The translator options.
  * @returns A translator usable in the Vite plugin config.
  *
  * @example
  * ```ts
- * import { ollama } from 'yapyak/translators/ollama';
+ * import { gemini } from 'yapyak/translator/gemini';
  *
  * yapyak({
- *   translator: ollama({ model: 'llama3.1' }),
+ *   translator: gemini({ apiKey: process.env.GOOGLE_API_KEY! }),
  * });
  * ```
  */
-export function ollama(options: OllamaOptions = {}): Translator {
+export function gemini(options: GeminiOptions): Translator {
   const {
+    apiKey,
     batchSize,
     context,
     endpoint = DEFAULT_ENDPOINT,
@@ -65,19 +68,28 @@ export function ollama(options: OllamaOptions = {}): Translator {
     context,
     async translate(params) {
       const { items, signal, sourceLocale, targetLocale } = params;
+      const url = `${endpoint}/models/${model}:generateContent`;
       const init: RequestInit = {
         body: JSON.stringify({
-          format: 'json',
-          model,
-          options: {
+          contents: [
+            {
+              parts: [{ text: JSON.stringify(items) }],
+              role: 'user',
+            },
+          ],
+          generationConfig: {
+            responseMimeType: 'application/json',
             temperature,
           },
-          prompt: JSON.stringify(items),
-          stream: false,
-          system: buildSystem(options, sourceLocale, targetLocale),
+          systemInstruction: {
+            parts: [
+              { text: buildSystem(options, sourceLocale, targetLocale) },
+            ],
+          },
         }),
         headers: {
           'content-type': 'application/json',
+          'x-goog-api-key': apiKey,
           ...customHeaders,
         },
         method: 'POST',
@@ -86,7 +98,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
         init,
         maxRetries,
         timeout,
-        url: endpoint,
+        url,
       };
       if (signal !== undefined) {
         fetchInit.signal = signal;
@@ -95,21 +107,26 @@ export function ollama(options: OllamaOptions = {}): Translator {
       if (!response.ok) {
         const text = await response.text();
         throw new Error(
-          `yapyak/translators/ollama: ${response.status} ${text}`,
+          `yapyak/translator/gemini: ${response.status} ${text}`,
         );
       }
-      const responseBody = (await response.json()) as OllamaResponse;
-      const text = responseBody.response;
+      const responseBody = (await response.json()) as GeminiResponse;
+      const text = responseBody.candidates?.[0]?.content?.parts?.[0]?.text;
       if (typeof text !== 'string') {
         throw new Error(
-          'yapyak/translators/ollama: response did not contain a response field',
+          'yapyak/translator/gemini: response did not contain a text part',
         );
       }
-      return JSON.parse(text.trim()) as string[];
+      const cleaned = stripCodeFence(text.trim());
+      return JSON.parse(cleaned) as string[];
     },
   });
 }
 
-interface OllamaResponse {
-  response?: string;
+interface GeminiResponse {
+  candidates?: Array<{
+    content?: {
+      parts?: Array<{ text?: string }>;
+    };
+  }>;
 }

@@ -2,7 +2,7 @@ import {
   type AnyRequestMiddleware,
   createMiddleware,
 } from '@tanstack/react-start';
-import { withRequest } from '../server.js';
+import { withRequest } from './index.js';
 
 /**
  * TanStack Start request middleware that wires yapyak's per-request locale
@@ -13,7 +13,7 @@ import { withRequest } from '../server.js';
  * @example
  * ```ts
  * // src/start.ts
- * import { middleware } from 'yapyak/adapters/tanstack-start';
+ * import { middleware } from 'yapyak/adapter/tanstack-start';
  *
  * export default {
  *   requestMiddleware: [middleware],

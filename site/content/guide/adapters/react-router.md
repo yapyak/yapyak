@@ -27,7 +27,7 @@ In `app/root.tsx`:
 ```tsx
 // app/root.tsx
 import type { Route } from './+types/root';
-import { middleware as yapyakMiddleware } from 'yapyak/adapters/react-router';
+import { middleware as yapyakMiddleware } from 'yapyak/adapter/react-router';
 
 export const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];
 ```

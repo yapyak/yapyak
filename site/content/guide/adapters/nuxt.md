@@ -28,7 +28,7 @@ In `server/plugins/yapyak.ts`:
 
 ```ts
 // server/plugins/yapyak.ts
-export { default } from 'yapyak/adapters/nuxt';
+export { default } from 'yapyak/adapter/nuxt';
 ```
 
 That's the entire wiring. Every server-rendered request now resolves its own locale from cookie or `Accept-Language` header.

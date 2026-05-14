@@ -8,7 +8,7 @@ Run translation locally — no API key, no vendor in your billing path, no data 
 
 ```ts
 import { yapyak } from 'yapyak/vite';
-import { ollama } from 'yapyak/translators/ollama';
+import { ollama } from 'yapyak/translator/ollama';
 
 yapyak({
   translator: ollama({
@@ -113,8 +113,8 @@ ollama({
 For development: local Ollama. For production builds: cloud (Anthropic/OpenAI). Branch on `NODE_ENV`:
 
 ```ts
-import { anthropic } from 'yapyak/translators/anthropic';
-import { ollama } from 'yapyak/translators/ollama';
+import { anthropic } from 'yapyak/translator/anthropic';
+import { ollama } from 'yapyak/translator/ollama';
 
 const translator = process.env.NODE_ENV === 'production'
   ? anthropic({

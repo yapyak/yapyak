@@ -1,4 +1,4 @@
-import type { Translator } from '../translators/types.js';
+import type { Translator } from '../translator/index.js';
 
 export type Persistence = 'cookie' | 'localStorage' | null;
 

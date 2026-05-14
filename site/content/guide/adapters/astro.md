@@ -7,7 +7,7 @@ Re-export yapyak's middleware as `onRequest` from `src/middleware.ts`.
 
 ```ts
 // src/middleware.ts
-export { middleware as onRequest } from 'yapyak/adapters/astro';
+export { middleware as onRequest } from 'yapyak/adapter/astro';
 ```
 
 That's the entire wiring. Every server-rendered request now resolves its own locale from cookie or `Accept-Language` header.
@@ -19,7 +19,7 @@ If you have your own middlewares (auth, logging, etc.), compose with Astro's `se
 ```ts
 // src/middleware.ts
 import { sequence } from 'astro:middleware';
-import { middleware as yapyakMiddleware } from 'yapyak/adapters/astro';
+import { middleware as yapyakMiddleware } from 'yapyak/adapter/astro';
 import { authMiddleware } from './auth';
 
 export const onRequest = sequence(yapyakMiddleware, authMiddleware);
