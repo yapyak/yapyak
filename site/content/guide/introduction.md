@@ -20,7 +20,7 @@ That's the whole API. The English you write is the key.
 
 When the file saves, yapyak finds the `t()` call, reads the surrounding code as context, and writes entries to every locale file in your project.
 
-If a translator is configured, the entries get filled in. If not, they land as empty stubs you can fill by hand. The browser updates through HMR either way.
+If a [translator](/guide/translators/introduction) is configured, the entries get filled in. If not, they land as empty stubs you can fill by hand. The browser updates through HMR either way.
 
 After save, `locales/sv.json` looks something like this:
 

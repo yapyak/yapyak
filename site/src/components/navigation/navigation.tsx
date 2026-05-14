@@ -43,16 +43,28 @@ export function Navigation(props: NavigationProps): ReactElement {
     if (!$element) {
       return;
     }
-    const activeElement = $element.querySelector('[data-status="active"]');
-    if (!(activeElement instanceof HTMLElement)) {
-      return;
+
+    const measure = () => {
+      const $activeElement = $element.querySelector('[data-status="active"]');
+      if (!($activeElement instanceof HTMLElement)) {
+        return;
+      }
+      setIndicator({
+        x: $activeElement.offsetLeft,
+        y: $activeElement.offsetTop,
+        width: $activeElement.offsetWidth,
+        height: $activeElement.offsetHeight,
+      });
+    };
+
+    measure();
+
+    const observer = new ResizeObserver(measure);
+    observer.observe($element);
+
+    if (typeof document !== 'undefined' && document.fonts) {
+      void document.fonts.ready.then(measure);
     }
-    setIndicator({
-      x: activeElement.offsetLeft,
-      y: activeElement.offsetTop,
-      width: activeElement.offsetWidth,
-      height: activeElement.offsetHeight,
-    });
 
     const frame = window.requestAnimationFrame(() => {
       setIsReady(true);
@@ -71,6 +83,7 @@ export function Navigation(props: NavigationProps): ReactElement {
     previousPathnameRef.current = location.pathname;
 
     return () => {
+      observer.disconnect();
       window.cancelAnimationFrame(frame);
       if (timeout !== undefined) {
         window.clearTimeout(timeout);
