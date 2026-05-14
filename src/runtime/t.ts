@@ -62,11 +62,11 @@ export interface T {
       : [params: Params<Source>]
   ): string;
   /** Returns a one-off `t` locked to a specific locale, resolved at call time. */
-  in(locale: string): TInLocale;
+  in(locale: string): TIn;
 }
 
 /** A `t` function locked to a specific locale. */
-export type TInLocale = <Source extends string>(
+export type TIn = <Source extends string>(
   source: Source,
   ...args: IsEmpty<Params<Source>> extends true ? [] : [params: Params<Source>]
 ) => string;
@@ -79,10 +79,10 @@ function call(source: string, params?: Record<string, unknown>): string {
   return interpolate(source, params, getLocale());
 }
 
-function inLocale(locale: string): TInLocale {
+function inLocale(locale: string): TIn {
   const fn = (source: string, params?: Record<string, unknown>) =>
     pick({ [locale]: source }, params, locale);
-  return fn as TInLocale;
+  return fn as TIn;
 }
 
 const fn = call as unknown as T;

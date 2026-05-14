@@ -4,7 +4,7 @@ export {
   getLocales,
   setLocale,
 } from './locale/store.js';
-export type { T, TInLocale } from './runtime/t.js';
+export type { T, TIn } from './runtime/t.js';
 export { t } from './runtime/t.js';
 export type {
   ContextLevel,
