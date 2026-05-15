@@ -1,0 +1,1459 @@
+{
+  "modules": [
+    {
+      "exports": [
+        {
+          "deprecated": null,
+          "description": "Returns the configured default locale.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/locale/store.ts",
+            "line": 117
+          },
+          "name": "getDefaultLocale",
+          "tags": [],
+          "kind": "function",
+          "parameters": [],
+          "returnDescription": "",
+          "returnType": "string",
+          "signature": "getDefaultLocale(): string"
+        },
+        {
+          "deprecated": null,
+          "description": "Returns the current locale.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/locale/store.ts",
+            "line": 80
+          },
+          "name": "getLocale",
+          "tags": [],
+          "kind": "function",
+          "parameters": [],
+          "returnDescription": "",
+          "returnType": "string",
+          "signature": "getLocale(): string"
+        },
+        {
+          "deprecated": null,
+          "description": "Returns the list of configured locales.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/locale/store.ts",
+            "line": 112
+          },
+          "name": "getLocales",
+          "tags": [],
+          "kind": "function",
+          "parameters": [],
+          "returnDescription": "",
+          "returnType": "string[]",
+          "signature": "getLocales(): string[]"
+        },
+        {
+          "deprecated": null,
+          "description": "Switches the active locale.\n\nNo-op if the locale is not in the configured `locales` list. Triggers\nre-renders in framework integrations (`useLocale`, Svelte/Vue stores).",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/locale/store.ts",
+            "line": 92
+          },
+          "name": "setLocale",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": null,
+              "description": "- The locale to switch to.",
+              "name": "locale",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returnDescription": "",
+          "returnType": "void",
+          "signature": "setLocale(locale: string): void"
+        },
+        {
+          "deprecated": null,
+          "description": "Translates a source string to the current locale.\n\nThe first argument must be a static string literal — yapyak's Vite plugin\nreads it statically to extract translations. Placeholders use `{name}` and\nare type-checked from the source literal.",
+          "examples": [
+            "```tsx\nt('Save changes');\n\nt('Hello, {name}!', { name: 'Alex' });\n\nt('You have {count, plural, one {# item} other {# items}}', { count: 1 });\n\nt.in(user.locale)('Welcome back, {name}!', { name: user.name });\n```"
+          ],
+          "location": {
+            "column": 14,
+            "file": "src/runtime/t.ts",
+            "line": 117
+          },
+          "name": "t",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "source",
+              "optional": false,
+              "type": "Source"
+            },
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "args",
+              "optional": false,
+              "type": "IsEmpty<Params<Source>> extends true ? [] : [params: Params<Source>]"
+            }
+          ],
+          "returnDescription": "",
+          "returnType": "string",
+          "signature": "t(source: Source, args: IsEmpty<Params<Source>> extends true ? [] : [params: Params<Source>]): string"
+        },
+        {
+          "deprecated": null,
+          "description": "The runtime translation function.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/runtime/t.ts",
+            "line": 65
+          },
+          "name": "T",
+          "tags": [],
+          "callSignatures": [
+            {
+              "parameters": [
+                {
+                  "defaultValue": null,
+                  "description": "",
+                  "name": "source",
+                  "optional": false,
+                  "type": "Source"
+                },
+                {
+                  "defaultValue": null,
+                  "description": "",
+                  "name": "args",
+                  "optional": false,
+                  "type": "IsEmpty<Params<Source>> extends true ? [] : [params: Params<Source>]"
+                }
+              ],
+              "returnType": "string"
+            }
+          ],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "Returns a one-off `t` locked to a specific locale, resolved at call time.",
+              "name": "in",
+              "optional": false,
+              "type": "(locale: string) => TIn"
+            }
+          ],
+          "signature": "export interface T {\n  /** Returns a one-off `t` locked to a specific locale, resolved at call time. */\n  in(locale: string): TIn;\n  <Source extends string>(\n    source: Source,\n    ...args: IsEmpty<Params<Source>> extends true\n      ? []\n      : [params: Params<Source>]\n  ): string;\n}"
+        },
+        {
+          "deprecated": null,
+          "description": "A `t` function locked to a specific locale.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/runtime/t.ts",
+            "line": 77
+          },
+          "name": "TIn",
+          "tags": [],
+          "kind": "type",
+          "resolvedType": "TIn",
+          "signature": "export type TIn = <Source extends string>(\n  source: Source,\n  ...args: IsEmpty<Params<Source>> extends true ? [] : [params: Params<Source>]\n) => string;"
+        }
+      ],
+      "id": "yapyak",
+      "sourcePath": "src/index.ts",
+      "subpath": "."
+    },
+    {
+      "exports": [
+        {
+          "deprecated": null,
+          "description": "Subscribes the React tree to locale changes.\n\nWrap your app once at the root. Re-renders descendants when `setLocale` is\ncalled, so `t()` calls inside the tree return the new locale's strings.",
+          "examples": [
+            "```tsx\n<IntlProvider>\n  <App />\n</IntlProvider>\n```"
+          ],
+          "location": {
+            "column": 1,
+            "file": "src/react/intl-provider.tsx",
+            "line": 27
+          },
+          "name": "IntlProvider",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "props",
+              "optional": false,
+              "type": "IntlProviderProps"
+            }
+          ],
+          "returnDescription": "",
+          "returnType": "ReactElement<unknown, string | JSXElementConstructor<any>>",
+          "signature": "IntlProvider(props: IntlProviderProps): ReactElement<unknown, string | JSXElementConstructor<any>>"
+        },
+        {
+          "deprecated": null,
+          "description": "Returns the current locale and a setter, like `useState`.\n\nThe component re-renders when the locale changes.",
+          "examples": [
+            "```tsx\nfunction LanguageSwitcher() {\n  const [locale, setLocale] = useLocale();\n  return (\n    <select value={locale} onChange={(event) => setLocale(event.target.value)}>\n      <option value=\"en\">English</option>\n      <option value=\"sv\">Svenska</option>\n    </select>\n  );\n}\n```"
+          ],
+          "location": {
+            "column": 1,
+            "file": "src/react/use-locale.ts",
+            "line": 23
+          },
+          "name": "useLocale",
+          "tags": [],
+          "kind": "function",
+          "parameters": [],
+          "returnDescription": "",
+          "returnType": "readonly [string, (locale: string) => void]",
+          "signature": "useLocale(): readonly [string, (locale: string) => void]"
+        },
+        {
+          "deprecated": null,
+          "description": "Props for `IntlProvider`.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/react/intl-provider.tsx",
+            "line": 8
+          },
+          "name": "IntlProviderProps",
+          "tags": [],
+          "callSignatures": [],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "children",
+              "optional": false,
+              "type": "ReactNode"
+            }
+          ],
+          "signature": "export interface IntlProviderProps {\n  children: ReactNode;\n}"
+        }
+      ],
+      "id": "yapyak/react",
+      "sourcePath": "src/react/index.ts",
+      "subpath": "./react"
+    },
+    {
+      "exports": [
+        {
+          "deprecated": null,
+          "description": "The reactive locale ref for Vue.\n\nRead `locale.value` inside a setup function or template to subscribe;\nassign to switch.",
+          "examples": [
+            "```vue\n<script setup>\nimport { locale } from 'yapyak/vue';\nimport { t } from 'yapyak';\n</script>\n\n<template>\n  <p>{{ t('Hello') }}</p>\n  <select v-model=\"locale\">\n    <option value=\"en\">English</option>\n    <option value=\"sv\">Svenska</option>\n  </select>\n</template>\n```"
+          ],
+          "location": {
+            "column": 14,
+            "file": "src/vue/locale.ts",
+            "line": 41
+          },
+          "name": "locale",
+          "tags": [],
+          "kind": "variable",
+          "signature": "const locale: WritableComputedRef<string, string>",
+          "type": "WritableComputedRef<string, string>"
+        }
+      ],
+      "id": "yapyak/vue",
+      "sourcePath": "src/vue/index.ts",
+      "subpath": "./vue"
+    },
+    {
+      "exports": [
+        {
+          "deprecated": null,
+          "description": "The reactive locale store for Svelte 5.\n\nRead `locale.current` inside a component to subscribe; assign to switch.",
+          "examples": [
+            "```svelte\n<script>\n  import { locale } from 'yapyak/svelte';\n  import { t } from 'yapyak';\n</script>\n\n<p>{t('Hello')}</p>\n<select bind:value={locale.current}>\n  <option value=\"en\">English</option>\n  <option value=\"sv\">Svenska</option>\n</select>\n```"
+          ],
+          "location": {
+            "column": 14,
+            "file": "src/svelte/locale.svelte.ts",
+            "line": 40
+          },
+          "name": "locale",
+          "tags": [],
+          "kind": "variable",
+          "signature": "const locale: ReactiveLocale",
+          "type": "ReactiveLocale"
+        },
+        {
+          "deprecated": null,
+          "description": "A reactive locale handle for Svelte 5.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/svelte/locale.svelte.ts",
+            "line": 5
+          },
+          "name": "ReactiveLocale",
+          "tags": [],
+          "callSignatures": [],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "The current locale. Reads track reactivity, writes call `setLocale`.",
+              "name": "current",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "signature": "export interface ReactiveLocale {\n  /** The current locale. Reads track reactivity, writes call `setLocale`. */\n  current: string;\n}"
+        }
+      ],
+      "id": "yapyak/svelte",
+      "sourcePath": "src/svelte/index.ts",
+      "subpath": "./svelte"
+    },
+    {
+      "exports": [
+        {
+          "deprecated": null,
+          "description": "The yapyak Vite plugin.\n\nExtracts `t()` calls at build time, syncs locale files, optionally fills\nmissing translations through an AI translator, and inlines variants at\neach call site.",
+          "examples": [
+            "```ts\nimport { defineConfig } from 'vite';\nimport { yapyak } from 'yapyak/vite';\nimport { anthropic } from 'yapyak/translator/anthropic';\n\nexport default defineConfig({\n  plugins: [\n    yapyak({\n      defaultLocale: 'en',\n      translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),\n    }),\n  ],\n});\n```"
+          ],
+          "location": {
+            "column": 1,
+            "file": "src/vite/plugin.ts",
+            "line": 51
+          },
+          "name": "yapyak",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": "{}",
+              "description": "- Plugin options.",
+              "name": "options",
+              "optional": true,
+              "type": "YapyakOptions"
+            }
+          ],
+          "returnDescription": "A Vite plugin.",
+          "returnType": "Plugin<any>",
+          "signature": "yapyak(options?: YapyakOptions): Plugin<any>"
+        },
+        {
+          "deprecated": null,
+          "description": "Options for the yapyak Vite plugin.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/vite/normalize-options.ts",
+            "line": 50
+          },
+          "name": "YapyakOptions",
+          "tags": [],
+          "callSignatures": [],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "Detect locale from the `Accept-Language` header on the server.",
+              "name": "acceptLanguage",
+              "optional": true,
+              "type": "boolean"
+            },
+            {
+              "defaultValue": null,
+              "description": "The default locale. Inferred from locale files if omitted.",
+              "name": "defaultLocale",
+              "optional": true,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "Glob patterns to exclude from extraction.",
+              "name": "exclude",
+              "optional": true,
+              "type": "FilterPattern"
+            },
+            {
+              "defaultValue": null,
+              "description": "Glob patterns to include for extraction.",
+              "name": "include",
+              "optional": true,
+              "type": "FilterPattern"
+            },
+            {
+              "defaultValue": null,
+              "description": "Directory for locale JSON files, relative to project root. Defaults to `'locales'`.",
+              "name": "localesDir",
+              "optional": true,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "Where to persist the user's locale selection.\n\nUse the string shorthand (`'cookie'` or `'localStorage'`) for defaults,\nor the object form (`{ type: 'cookie', name: '...' }`) to customize.\nOmit for no persistence.",
+              "name": "persistence",
+              "optional": true,
+              "type": "Persistence | null"
+            },
+            {
+              "defaultValue": null,
+              "description": "Preserve existing translations when a `t()` call is renamed in place.\nDefaults to `true` without a translator, `false` with one.",
+              "name": "preserveTranslationsOnRename",
+              "optional": true,
+              "type": "boolean"
+            },
+            {
+              "defaultValue": null,
+              "description": "Keep `document.documentElement.lang` synced with the current locale.\n\nOff by default. yapyak does not touch the DOM unless this is set to\n`true`. Useful for SvelteKit/Astro/SPA setups where the `<html>` element\nisn't owned by a reactive framework binding. See each adapter's docs.",
+              "name": "syncHtmlLang",
+              "optional": true,
+              "type": "boolean"
+            },
+            {
+              "defaultValue": null,
+              "description": "Translator used to fill missing entries. Stubs stay empty without one.",
+              "name": "translator",
+              "optional": true,
+              "type": "Translator"
+            }
+          ],
+          "signature": "export interface YapyakOptions {\n  /** Detect locale from the `Accept-Language` header on the server. */\n  acceptLanguage?: boolean;\n  /** The default locale. Inferred from locale files if omitted. */\n  defaultLocale?: string;\n  /** Glob patterns to exclude from extraction. */\n  exclude?: FilterPattern;\n  /** Glob patterns to include for extraction. */\n  include?: FilterPattern;\n  /** Directory..."
+        }
+      ],
+      "id": "yapyak/vite",
+      "sourcePath": "src/vite/plugin.ts",
+      "subpath": "./vite"
+    },
+    {
+      "exports": [
+        {
+          "deprecated": null,
+          "description": "Runs `fn` with the request's locale headers bound to an async-scoped context.\n\nThe shipped adapters (`yapyak/adapter/sveltekit`, `yapyak/adapter/tanstack-start`,\n`yapyak/adapter/astro`, `yapyak/adapter/react-router`) call this for you.\nUse it directly when wiring a custom SSR setup.",
+          "examples": [
+            "```ts\nimport { withRequest } from 'yapyak/adapter';\n\nfunction handler(request: Request): Response {\n  return withRequest(request, () => renderApp(request));\n}\n```"
+          ],
+          "location": {
+            "column": 1,
+            "file": "src/adapter/index.ts",
+            "line": 33
+          },
+          "name": "withRequest",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": null,
+              "description": "- The incoming Web `Request`.",
+              "name": "request",
+              "optional": false,
+              "type": "Request"
+            },
+            {
+              "defaultValue": null,
+              "description": "- The function to run with the request bound.",
+              "name": "fn",
+              "optional": false,
+              "type": "() => T"
+            }
+          ],
+          "returnDescription": "The return value of `fn`.",
+          "returnType": "T",
+          "signature": "withRequest(request: Request, fn: () => T): T"
+        }
+      ],
+      "id": "yapyak/adapter",
+      "sourcePath": "src/adapter/index.ts",
+      "subpath": "./adapter"
+    },
+    {
+      "exports": [
+        {
+          "deprecated": null,
+          "description": "Astro middleware that wires yapyak's per-request locale context for every\nincoming request.\n\nRe-export from `src/middleware.ts`:",
+          "examples": [
+            "```ts\n// src/middleware.ts\nexport { middleware as onRequest } from 'yapyak/adapter/astro';\n```\n\nComposing with other middlewares via `sequence`:",
+            "```ts\n// src/middleware.ts\nimport { sequence } from 'astro:middleware';\nimport { middleware as yapyakMiddleware } from 'yapyak/adapter/astro';\nimport { authMiddleware } from './auth.ts';\n\nexport const onRequest = sequence(yapyakMiddleware, authMiddleware);\n```"
+          ],
+          "location": {
+            "column": 14,
+            "file": "src/adapter/astro.ts",
+            "line": 32
+          },
+          "name": "middleware",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "context",
+              "optional": false,
+              "type": "APIContext<Record<string, any>, Record<string, string | undefined>>"
+            },
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "next",
+              "optional": false,
+              "type": "MiddlewareNext"
+            }
+          ],
+          "returnDescription": "",
+          "returnType": "void | Response | Promise<Response> | Promise<void>",
+          "signature": "middleware(context: APIContext<Record<string, any>, Record<string, string | undefined>>, next: MiddlewareNext): void | Response | Promise<Response> | Promise<void>"
+        }
+      ],
+      "id": "yapyak/adapter/astro",
+      "sourcePath": "src/adapter/astro.ts",
+      "subpath": "./adapter/astro"
+    },
+    {
+      "exports": [
+        {
+          "deprecated": null,
+          "description": "React Router 7 framework-mode middleware that wires yapyak's per-request\nlocale context for every incoming request.\n\nRegister in `app/root.tsx`:",
+          "examples": [
+            "```tsx\n// app/root.tsx\nimport type { Route } from './+types/root.ts';\nimport { middleware as yapyakMiddleware } from 'yapyak/adapter/react-router';\n\nexport const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];\n```\n\nRequires `future.v8_middleware: true` in `react-router.config.ts`."
+          ],
+          "location": {
+            "column": 14,
+            "file": "src/adapter/react-router.ts",
+            "line": 22
+          },
+          "name": "middleware",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "args",
+              "optional": false,
+              "type": "DataFunctionArgs<Readonly<RouterContextProvider>>"
+            },
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "next",
+              "optional": false,
+              "type": "MiddlewareNextFunction<unknown>"
+            }
+          ],
+          "returnDescription": "",
+          "returnType": "unknown",
+          "signature": "middleware(args: DataFunctionArgs<Readonly<RouterContextProvider>>, next: MiddlewareNextFunction<unknown>): unknown"
+        }
+      ],
+      "id": "yapyak/adapter/react-router",
+      "sourcePath": "src/adapter/react-router.ts",
+      "subpath": "./adapter/react-router"
+    },
+    {
+      "exports": [
+        {
+          "deprecated": null,
+          "description": "SvelteKit `Handle` hook that binds yapyak's per-request locale context to\nevery incoming request and substitutes `%yapyak.lang%` in `app.html` with\nthe resolved locale.\n\nRe-export from your `hooks.server.ts`.",
+          "examples": [
+            "```ts\n// src/hooks.server.ts\nexport { handle } from 'yapyak/adapter/sveltekit';\n```"
+          ],
+          "location": {
+            "column": 14,
+            "file": "src/adapter/sveltekit.ts",
+            "line": 21
+          },
+          "name": "handle",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "input",
+              "optional": false,
+              "type": "{ event: RequestEvent<Record<string, string>, string | null>; resolve: (event: RequestEvent<Record<string, string>, string | null>, opts?: ResolveOptions | undefined) => MaybePromise<...>; }"
+            }
+          ],
+          "returnDescription": "",
+          "returnType": "MaybePromise<Response>",
+          "signature": "handle(input: { event: RequestEvent<Record<string, string>, string | null>; resolve: (event: RequestEvent<Record<string, string>, string | null>, opts?: ResolveOptions | undefined) => MaybePromise<...>; }): MaybePromise<Response>"
+        }
+      ],
+      "id": "yapyak/adapter/sveltekit",
+      "sourcePath": "src/adapter/sveltekit.ts",
+      "subpath": "./adapter/sveltekit"
+    },
+    {
+      "exports": [
+        {
+          "deprecated": null,
+          "description": "TanStack Start request middleware that wires yapyak's per-request locale\ncontext for every incoming request.\n\nRegister in `src/start.ts`:",
+          "examples": [
+            "```ts\n// src/start.ts\nimport { middleware } from 'yapyak/adapter/tanstack-start';\n\nexport default {\n  requestMiddleware: [middleware],\n};\n```"
+          ],
+          "location": {
+            "column": 14,
+            "file": "src/adapter/tanstack-start.ts",
+            "line": 23
+          },
+          "name": "middleware",
+          "tags": [],
+          "kind": "variable",
+          "signature": "const middleware: AnyRequestMiddleware",
+          "type": "AnyRequestMiddleware"
+        }
+      ],
+      "id": "yapyak/adapter/tanstack-start",
+      "sourcePath": "src/adapter/tanstack-start.ts",
+      "subpath": "./adapter/tanstack-start"
+    },
+    {
+      "exports": [
+        {
+          "deprecated": null,
+          "description": "Builds a translator from a `translate` function.\n\nHandles batching, context shaping, and result validation — you just provide\nthe function that talks to the AI.",
+          "examples": [
+            "```ts\nconst myTranslator = createTranslator({\n  async translate({ items, sourceLocale, targetLocale }) {\n    const response = await fetch('https://my-api.example/translate', {\n      method: 'POST',\n      body: JSON.stringify({ items, sourceLocale, targetLocale }),\n    });\n    const { translations } = await response.json();\n    return translations;\n  },\n});\n```"
+          ],
+          "location": {
+            "column": 1,
+            "file": "src/translator/index.ts",
+            "line": 133
+          },
+          "name": "createTranslator",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": null,
+              "description": "- The translator options.",
+              "name": "options",
+              "optional": false,
+              "type": "CreateTranslatorOptions"
+            }
+          ],
+          "returnDescription": "A translator usable in the Vite plugin config.",
+          "returnType": "Translator",
+          "signature": "createTranslator(options: CreateTranslatorOptions): Translator"
+        },
+        {
+          "deprecated": null,
+          "description": "Options for `createTranslator`.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/translator/index.ts",
+            "line": 98
+          },
+          "name": "CreateTranslatorOptions",
+          "tags": [],
+          "callSignatures": [],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "Max number of items per `translate` call. Defaults to 10.",
+              "name": "batchSize",
+              "optional": true,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "How much call-site context to include. Defaults to `'minimal'`.",
+              "name": "context",
+              "optional": true,
+              "type": "ContextLevel"
+            },
+            {
+              "defaultValue": null,
+              "description": "Translates a batch of items. Must return strings in the same order as `items`.",
+              "name": "translate",
+              "optional": false,
+              "type": "(params: TranslateParams) => string[] | Promise<string[]>"
+            }
+          ],
+          "signature": "export interface CreateTranslatorOptions {\n  /** Max number of items per `translate` call. Defaults to 10. */\n  batchSize?: number;\n  /** How much call-site context to include. Defaults to `'minimal'`. */\n  context?: ContextLevel;\n  /** Translates a batch of items. Must return strings in the same order as `items`. */\n  translate: (params: TranslateParams) => string[] | Promise<string[]>;\n}"
+        },
+        {
+          "deprecated": null,
+          "description": "Call-site context for a translation request.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/translator/index.ts",
+            "line": 2
+          },
+          "name": "MessageContext",
+          "tags": [],
+          "callSignatures": [],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "The component name derived from the file path.",
+              "name": "componentName",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "The nearest enclosing JSX/HTML element above the call.",
+              "name": "enclosingElement",
+              "optional": false,
+              "type": "string | undefined"
+            },
+            {
+              "defaultValue": null,
+              "description": "The surrounding code snippet, three lines above and below.",
+              "name": "snippet",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "signature": "export interface MessageContext {\n  /** The component name derived from the file path. */\n  componentName: string;\n  /** The nearest enclosing JSX/HTML element above the call. */\n  enclosingElement: string | undefined;\n  /** The surrounding code snippet, three lines above and below. */\n  snippet: string;\n}"
+        },
+        {
+          "deprecated": null,
+          "description": "A single item to translate.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/translator/index.ts",
+            "line": 54
+          },
+          "name": "TranslateItem",
+          "tags": [],
+          "callSignatures": [],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "The component name derived from the file path.",
+              "name": "component",
+              "optional": true,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "The nearest enclosing JSX/HTML element.",
+              "name": "element",
+              "optional": true,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "The surrounding code snippet (only with `context: 'rich'`).",
+              "name": "snippet",
+              "optional": true,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "The source string to translate.",
+              "name": "source",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "signature": "export interface TranslateItem {\n  /** The component name derived from the file path. */\n  component?: string;\n  /** The nearest enclosing JSX/HTML element. */\n  element?: string;\n  /** The surrounding code snippet (only with `context: 'rich'`). */\n  snippet?: string;\n  /** The source string to translate. */\n  source: string;\n}"
+        },
+        {
+          "deprecated": null,
+          "description": "Parameters passed to a translator's `translate` function.\n\n`items`, `sourceLocale`, and `targetLocale` are always present. Forward\n`signal` to your underlying fetch/SDK call to honor cancellation.",
+          "examples": [
+            "```ts\nasync function myTranslate(params: TranslateParams): Promise<string[]> {\n  const response = await fetch('https://api.example/translate', {\n    method: 'POST',\n    body: JSON.stringify(params),\n    signal: params.signal,\n  });\n  const { translations } = await response.json();\n  return translations;\n}\n\ncreateTranslator({ translate: myTranslate });\n```"
+          ],
+          "location": {
+            "column": 1,
+            "file": "src/translator/index.ts",
+            "line": 86
+          },
+          "name": "TranslateParams",
+          "tags": [],
+          "callSignatures": [],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "The items to translate. Translations must be returned in the same order.",
+              "name": "items",
+              "optional": false,
+              "type": "TranslateItem[]"
+            },
+            {
+              "defaultValue": null,
+              "description": "Abort signal for cancellation. Forward to your underlying fetch/SDK call.",
+              "name": "signal",
+              "optional": true,
+              "type": "AbortSignal"
+            },
+            {
+              "defaultValue": null,
+              "description": "The source locale.",
+              "name": "sourceLocale",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "The target locale.",
+              "name": "targetLocale",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "signature": "export interface TranslateParams {\n  /** The items to translate. Translations must be returned in the same order. */\n  items: TranslateItem[];\n  /** Abort signal for cancellation. Forward to your underlying fetch/SDK call. */\n  signal?: AbortSignal;\n  /** The source locale. */\n  sourceLocale: string;\n  /** The target locale. */\n  targetLocale: string;\n}"
+        },
+        {
+          "deprecated": null,
+          "description": "A single translation request.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/translator/index.ts",
+            "line": 12
+          },
+          "name": "TranslateRequest",
+          "tags": [],
+          "callSignatures": [],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "The call-site context.",
+              "name": "context",
+              "optional": true,
+              "type": "MessageContext"
+            },
+            {
+              "defaultValue": null,
+              "description": "The file path the source string came from.",
+              "name": "fileId",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "The source string to translate.",
+              "name": "source",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "The source locale.",
+              "name": "sourceLocale",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "The target locale.",
+              "name": "targetLocale",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "signature": "export interface TranslateRequest {\n  /** The call-site context. */\n  context?: MessageContext;\n  /** The file path the source string came from. */\n  fileId: string;\n  /** The source string to translate. */\n  source: string;\n  /** The source locale. */\n  sourceLocale: string;\n  /** The target locale. */\n  targetLocale: string;\n}"
+        },
+        {
+          "deprecated": null,
+          "description": "Translates source strings into target locales.\n\nPass to the Vite plugin's `translator` option. Use `createTranslator` to\nbuild one — or the built-ins (`anthropic`, `openai`, `gemini`, `ollama`).",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/translator/index.ts",
+            "line": 31
+          },
+          "name": "Translator",
+          "tags": [],
+          "callSignatures": [
+            {
+              "parameters": [
+                {
+                  "defaultValue": null,
+                  "description": "",
+                  "name": "request",
+                  "optional": false,
+                  "type": "TranslateRequest"
+                }
+              ],
+              "returnType": "Promise<string>"
+            }
+          ],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "Translates a batch of requests.",
+              "name": "batch",
+              "optional": true,
+              "type": "((requests: TranslateRequest[]) => Promise<string[]>)"
+            }
+          ],
+          "signature": "export interface Translator {\n  /** Translates a batch of requests. */\n  batch?(requests: TranslateRequest[]): Promise<string[]>;\n  (request: TranslateRequest): Promise<string>;\n}"
+        },
+        {
+          "deprecated": null,
+          "description": "How much call-site context to pass to the translate function.\n\n- `'none'` — source string only. Privacy-strict; nothing about your code leaves your project.\n- `'minimal'` — source + component name + enclosing element. Default.\n- `'rich'` — minimal plus the surrounding code snippet.",
+          "examples": [
+            "```ts\nfunction buildTranslator(level: ContextLevel) {\n  return createTranslator({ context: level, translate: ... });\n}\n```"
+          ],
+          "location": {
+            "column": 1,
+            "file": "src/translator/index.ts",
+            "line": 51
+          },
+          "name": "ContextLevel",
+          "tags": [],
+          "kind": "type",
+          "resolvedType": "ContextLevel",
+          "signature": "export type ContextLevel = 'none' | 'minimal' | 'rich';"
+        }
+      ],
+      "id": "yapyak/translator",
+      "sourcePath": "src/translator/index.ts",
+      "subpath": "./translator"
+    },
+    {
+      "exports": [
+        {
+          "deprecated": null,
+          "description": "Translator backed by the Anthropic Messages API.",
+          "examples": [
+            "```ts\nimport { anthropic } from 'yapyak/translator/anthropic';\n\nyapyak({\n  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! }),\n});\n```"
+          ],
+          "location": {
+            "column": 1,
+            "file": "src/translator/anthropic.ts",
+            "line": 55
+          },
+          "name": "anthropic",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": null,
+              "description": "- The translator options.",
+              "name": "options",
+              "optional": false,
+              "type": "AnthropicOptions"
+            }
+          ],
+          "returnDescription": "A translator usable in the Vite plugin config.",
+          "returnType": "Translator",
+          "signature": "anthropic(options: AnthropicOptions): Translator"
+        },
+        {
+          "deprecated": null,
+          "description": "Options for the Anthropic translator.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/translator/anthropic.ts",
+            "line": 8
+          },
+          "name": "AnthropicOptions",
+          "tags": [],
+          "callSignatures": [],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "Your Anthropic API key.",
+              "name": "apiKey",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "Max items per API call. Defaults to 10.",
+              "name": "batchSize",
+              "optional": true,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "How much call-site context to include. Defaults to `'minimal'`.",
+              "name": "context",
+              "optional": true,
+              "type": "ContextLevel"
+            },
+            {
+              "defaultValue": null,
+              "description": "Override the API endpoint.",
+              "name": "endpoint",
+              "optional": true,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "Glossary of fixed translations, keyed by source string then locale.",
+              "name": "glossary",
+              "optional": true,
+              "type": "Record<string, Record<string, string>>"
+            },
+            {
+              "defaultValue": null,
+              "description": "Extra request headers.",
+              "name": "headers",
+              "optional": true,
+              "type": "Record<string, string>"
+            },
+            {
+              "defaultValue": null,
+              "description": "Max retry attempts on transient failures. Defaults to 2.",
+              "name": "maxRetries",
+              "optional": true,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "Model name. Defaults to `'claude-sonnet-4-6'`.",
+              "name": "model",
+              "optional": true,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "Sampling temperature. Defaults to 0.2.",
+              "name": "temperature",
+              "optional": true,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "Request timeout in milliseconds. Defaults to 30000.",
+              "name": "timeout",
+              "optional": true,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "Voice/tone guidance passed to the model.",
+              "name": "voice",
+              "optional": true,
+              "type": "string"
+            }
+          ],
+          "signature": "export interface AnthropicOptions {\n  /** Your Anthropic API key. */\n  apiKey: string;\n  /** Max items per API call. Defaults to 10. */\n  batchSize?: number;\n  /** How much call-site context to include. Defaults to `'minimal'`. */\n  context?: ContextLevel;\n  /** Override the API endpoint. */\n  endpoint?: string;\n  /** Glossary of fixed translations, keyed by source string then locale. */\n  glos..."
+        }
+      ],
+      "id": "yapyak/translator/anthropic",
+      "sourcePath": "src/translator/anthropic.ts",
+      "subpath": "./translator/anthropic"
+    },
+    {
+      "exports": [
+        {
+          "deprecated": null,
+          "description": "Translator backed by the OpenAI Chat Completions API.",
+          "examples": [
+            "```ts\nimport { openai } from 'yapyak/translator/openai';\n\nyapyak({\n  translator: openai({ apiKey: process.env.OPENAI_API_KEY! }),\n});\n```"
+          ],
+          "location": {
+            "column": 1,
+            "file": "src/translator/openai.ts",
+            "line": 60
+          },
+          "name": "openai",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": null,
+              "description": "- The translator options.",
+              "name": "options",
+              "optional": false,
+              "type": "OpenAIOptions"
+            }
+          ],
+          "returnDescription": "A translator usable in the Vite plugin config.",
+          "returnType": "Translator",
+          "signature": "openai(options: OpenAIOptions): Translator"
+        },
+        {
+          "deprecated": null,
+          "description": "Options for the OpenAI translator.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/translator/openai.ts",
+            "line": 8
+          },
+          "name": "OpenAIOptions",
+          "tags": [],
+          "callSignatures": [],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "Your OpenAI API key.",
+              "name": "apiKey",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "Max items per API call. Defaults to 10.",
+              "name": "batchSize",
+              "optional": true,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "How much call-site context to include. Defaults to `'minimal'`.",
+              "name": "context",
+              "optional": true,
+              "type": "ContextLevel"
+            },
+            {
+              "defaultValue": null,
+              "description": "Override the API endpoint.",
+              "name": "endpoint",
+              "optional": true,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "Glossary of fixed translations, keyed by source string then locale.",
+              "name": "glossary",
+              "optional": true,
+              "type": "Record<string, Record<string, string>>"
+            },
+            {
+              "defaultValue": null,
+              "description": "Extra request headers.",
+              "name": "headers",
+              "optional": true,
+              "type": "Record<string, string>"
+            },
+            {
+              "defaultValue": null,
+              "description": "Max retry attempts on transient failures. Defaults to 2.",
+              "name": "maxRetries",
+              "optional": true,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "Model name. Defaults to `'gpt-5-mini'`.",
+              "name": "model",
+              "optional": true,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "OpenAI organization ID.",
+              "name": "organization",
+              "optional": true,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "Deterministic seed for reproducible output.",
+              "name": "seed",
+              "optional": true,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "Sampling temperature. Defaults to 0.2.",
+              "name": "temperature",
+              "optional": true,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "Request timeout in milliseconds. Defaults to 30000.",
+              "name": "timeout",
+              "optional": true,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "Stable end-user identifier forwarded to OpenAI.",
+              "name": "user",
+              "optional": true,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "Voice/tone guidance passed to the model.",
+              "name": "voice",
+              "optional": true,
+              "type": "string"
+            }
+          ],
+          "signature": "export interface OpenAIOptions {\n  /** Your OpenAI API key. */\n  apiKey: string;\n  /** Max items per API call. Defaults to 10. */\n  batchSize?: number;\n  /** How much call-site context to include. Defaults to `'minimal'`. */\n  context?: ContextLevel;\n  /** Override the API endpoint. */\n  endpoint?: string;\n  /** Glossary of fixed translations, keyed by source string then locale. */\n  glossary?:..."
+        }
+      ],
+      "id": "yapyak/translator/openai",
+      "sourcePath": "src/translator/openai.ts",
+      "subpath": "./translator/openai"
+    },
+    {
+      "exports": [
+        {
+          "deprecated": null,
+          "description": "Translator backed by the Google Gemini API.",
+          "examples": [
+            "```ts\nimport { gemini } from 'yapyak/translator/gemini';\n\nyapyak({\n  translator: gemini({ apiKey: process.env.GOOGLE_API_KEY! }),\n});\n```"
+          ],
+          "location": {
+            "column": 1,
+            "file": "src/translator/gemini.ts",
+            "line": 54
+          },
+          "name": "gemini",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": null,
+              "description": "- The translator options.",
+              "name": "options",
+              "optional": false,
+              "type": "GeminiOptions"
+            }
+          ],
+          "returnDescription": "A translator usable in the Vite plugin config.",
+          "returnType": "Translator",
+          "signature": "gemini(options: GeminiOptions): Translator"
+        },
+        {
+          "deprecated": null,
+          "description": "Options for the Gemini translator.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/translator/gemini.ts",
+            "line": 8
+          },
+          "name": "GeminiOptions",
+          "tags": [],
+          "callSignatures": [],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "Your Google AI API key.",
+              "name": "apiKey",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "Max items per API call. Defaults to 10.",
+              "name": "batchSize",
+              "optional": true,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "How much call-site context to include. Defaults to `'minimal'`.",
+              "name": "context",
+              "optional": true,
+              "type": "ContextLevel"
+            },
+            {
+              "defaultValue": null,
+              "description": "Override the API endpoint base URL.",
+              "name": "endpoint",
+              "optional": true,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "Glossary of fixed translations, keyed by source string then locale.",
+              "name": "glossary",
+              "optional": true,
+              "type": "Record<string, Record<string, string>>"
+            },
+            {
+              "defaultValue": null,
+              "description": "Extra request headers.",
+              "name": "headers",
+              "optional": true,
+              "type": "Record<string, string>"
+            },
+            {
+              "defaultValue": null,
+              "description": "Max retry attempts on transient failures. Defaults to 2.",
+              "name": "maxRetries",
+              "optional": true,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "Model name. Defaults to `'gemini-2.5-flash'`.",
+              "name": "model",
+              "optional": true,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "Sampling temperature. Defaults to 0.2.",
+              "name": "temperature",
+              "optional": true,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "Request timeout in milliseconds. Defaults to 30000.",
+              "name": "timeout",
+              "optional": true,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "Voice/tone guidance passed to the model.",
+              "name": "voice",
+              "optional": true,
+              "type": "string"
+            }
+          ],
+          "signature": "export interface GeminiOptions {\n  /** Your Google AI API key. */\n  apiKey: string;\n  /** Max items per API call. Defaults to 10. */\n  batchSize?: number;\n  /** How much call-site context to include. Defaults to `'minimal'`. */\n  context?: ContextLevel;\n  /** Override the API endpoint base URL. */\n  endpoint?: string;\n  /** Glossary of fixed translations, keyed by source string then locale. */\n..."
+        }
+      ],
+      "id": "yapyak/translator/gemini",
+      "sourcePath": "src/translator/gemini.ts",
+      "subpath": "./translator/gemini"
+    },
+    {
+      "exports": [
+        {
+          "deprecated": null,
+          "description": "Translator backed by a local Ollama server.",
+          "examples": [
+            "```ts\nimport { ollama } from 'yapyak/translator/ollama';\n\nyapyak({\n  translator: ollama({ model: 'llama3.1' }),\n});\n```"
+          ],
+          "location": {
+            "column": 1,
+            "file": "src/translator/ollama.ts",
+            "line": 52
+          },
+          "name": "ollama",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": "{}",
+              "description": "- The translator options.",
+              "name": "options",
+              "optional": true,
+              "type": "OllamaOptions"
+            }
+          ],
+          "returnDescription": "A translator usable in the Vite plugin config.",
+          "returnType": "Translator",
+          "signature": "ollama(options?: OllamaOptions): Translator"
+        },
+        {
+          "deprecated": null,
+          "description": "Options for the Ollama translator.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/translator/ollama.ts",
+            "line": 8
+          },
+          "name": "OllamaOptions",
+          "tags": [],
+          "callSignatures": [],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "Max items per API call. Defaults to 10.",
+              "name": "batchSize",
+              "optional": true,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "How much call-site context to include. Defaults to `'minimal'`.",
+              "name": "context",
+              "optional": true,
+              "type": "ContextLevel"
+            },
+            {
+              "defaultValue": null,
+              "description": "Override the API endpoint. Defaults to `http://localhost:11434/api/generate`.",
+              "name": "endpoint",
+              "optional": true,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "Glossary of fixed translations, keyed by source string then locale.",
+              "name": "glossary",
+              "optional": true,
+              "type": "Record<string, Record<string, string>>"
+            },
+            {
+              "defaultValue": null,
+              "description": "Extra request headers.",
+              "name": "headers",
+              "optional": true,
+              "type": "Record<string, string>"
+            },
+            {
+              "defaultValue": null,
+              "description": "Max retry attempts on transient failures. Defaults to 1.",
+              "name": "maxRetries",
+              "optional": true,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "Model name. Defaults to `'llama3.1'`.",
+              "name": "model",
+              "optional": true,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "Sampling temperature. Defaults to 0.2.",
+              "name": "temperature",
+              "optional": true,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "Request timeout in milliseconds. Defaults to 120000.",
+              "name": "timeout",
+              "optional": true,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "Voice/tone guidance passed to the model.",
+              "name": "voice",
+              "optional": true,
+              "type": "string"
+            }
+          ],
+          "signature": "export interface OllamaOptions {\n  /** Max items per API call. Defaults to 10. */\n  batchSize?: number;\n  /** How much call-site context to include. Defaults to `'minimal'`. */\n  context?: ContextLevel;\n  /** Override the API endpoint. Defaults to `http://localhost:11434/api/generate`. */\n  endpoint?: string;\n  /** Glossary of fixed translations, keyed by source string then locale. */\n  glossar..."
+        }
+      ],
+      "id": "yapyak/translator/ollama",
+      "sourcePath": "src/translator/ollama.ts",
+      "subpath": "./translator/ollama"
+    }
+  ]
+}

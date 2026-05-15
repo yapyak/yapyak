@@ -11,7 +11,8 @@
       "**/*.jsonc",
       "!**/dist",
       "!**/node_modules",
-      "!**/routeTree.gen.*"
+      "!**/routeTree.gen.*",
+      "!**/api-manifest.json"
     ]
   }
 }

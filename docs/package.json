@@ -1,5 +1,5 @@
 {
-  "name": "@yapyak/site",
+  "name": "@yapyak/docs",
   "private": true,
   "type": "module",
   "imports": {

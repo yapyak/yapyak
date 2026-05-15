@@ -1,8 +1,7 @@
 packages:
-  - .
+  - docs
   - examples/*
   - packages/*
-  - site
 
 catalog:
   '@biomejs/biome': 2.4.13

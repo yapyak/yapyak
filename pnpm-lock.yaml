@@ -79,59 +79,53 @@ catalogs:
 importers:
 
   .:
-    dependencies:
-      svelte:
-        specifier: '>=5'
-        version: 5.55.5
     devDependencies:
       '@biomejs/biome':
         specifier: 'catalog:'
         version: 2.4.13
-      '@sveltejs/kit':
-        specifier: 'catalog:'
-        version: 2.59.1(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.55.5)(vite@8.0.12(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)))(svelte@5.55.5)(typescript@6.0.3)(vite@8.0.12(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
-      '@tanstack/react-start':
-        specifier: 'catalog:'
-        version: 1.167.65(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(vite@8.0.12(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
-      '@types/node':
-        specifier: 'catalog:'
-        version: 25.6.0
-      '@types/react':
-        specifier: 'catalog:'
-        version: 19.2.14
-      '@types/react-dom':
-        specifier: 'catalog:'
-        version: 19.2.3(@types/react@19.2.14)
       '@yapyak/biome-config':
         specifier: workspace:*
         version: link:packages/biome-config
-      '@yapyak/typescript-config':
-        specifier: workspace:*
-        version: link:packages/typescript-config
-      astro:
+
+  docs:
+    dependencies:
+      '@tanstack/react-router':
         specifier: 'catalog:'
-        version: 6.3.2(@types/node@25.6.0)(db0@0.3.4)(ioredis@5.10.1)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.3)(terser@5.47.1)(yaml@2.8.4)
+        version: 1.169.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      '@tanstack/react-start':
+        specifier: 'catalog:'
+        version: 1.167.65(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(vite@8.0.12(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
       react:
         specifier: 'catalog:'
         version: 19.2.5
       react-dom:
         specifier: 'catalog:'
         version: 19.2.5(react@19.2.5)
-      react-router:
+      yapyak:
+        specifier: workspace:*
+        version: link:../packages/yapyak
+    devDependencies:
+      '@types/react':
         specifier: 'catalog:'
-        version: 7.15.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.2.3(@types/react@19.2.14)
+      '@yapyak/typescript-config':
+        specifier: workspace:*
+        version: link:../packages/typescript-config
+      lightningcss:
+        specifier: 'catalog:'
+        version: 1.32.0
+      marked:
+        specifier: 'catalog:'
+        version: 18.0.3
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
       vite:
         specifier: 'catalog:'
         version: 8.0.12(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)
-      vitest:
-        specifier: 'catalog:'
-        version: 3.0.4(@types/debug@4.1.13)(@types/node@25.6.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.47.1)(yaml@2.8.4)
-      vue:
-        specifier: 'catalog:'
-        version: 3.5.13(typescript@6.0.3)
 
   examples/react:
     dependencies:
@@ -143,7 +137,7 @@ importers:
         version: 19.2.5(react@19.2.5)
       yapyak:
         specifier: workspace:*
-        version: link:../..
+        version: link:../../packages/yapyak
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -171,7 +165,7 @@ importers:
         version: 5.55.5
       yapyak:
         specifier: workspace:*
-        version: link:../..
+        version: link:../../packages/yapyak
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
         specifier: 'catalog:'
@@ -196,7 +190,7 @@ importers:
         version: 3.5.13(typescript@6.0.3)
       yapyak:
         specifier: workspace:*
-        version: link:../..
+        version: link:../../packages/yapyak
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: 'catalog:'
@@ -218,24 +212,17 @@ importers:
 
   packages/typescript-config: {}
 
-  site:
-    dependencies:
-      '@tanstack/react-router':
+  packages/yapyak:
+    devDependencies:
+      '@sveltejs/kit':
         specifier: 'catalog:'
-        version: 1.169.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+        version: 2.59.1(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.55.5)(vite@8.0.12(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)))(svelte@5.55.5)(typescript@6.0.3)(vite@8.0.12(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
       '@tanstack/react-start':
         specifier: 'catalog:'
         version: 1.167.65(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(vite@8.0.12(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
-      react:
+      '@types/node':
         specifier: 'catalog:'
-        version: 19.2.5
-      react-dom:
-        specifier: 'catalog:'
-        version: 19.2.5(react@19.2.5)
-      yapyak:
-        specifier: workspace:*
-        version: link:..
-    devDependencies:
+        version: 25.6.0
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.14
@@ -244,19 +231,34 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@yapyak/typescript-config':
         specifier: workspace:*
-        version: link:../packages/typescript-config
-      lightningcss:
+        version: link:../typescript-config
+      astro:
         specifier: 'catalog:'
-        version: 1.32.0
-      marked:
+        version: 6.3.2(@types/node@25.6.0)(db0@0.3.4)(ioredis@5.10.1)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.3)(terser@5.47.1)(yaml@2.8.4)
+      react:
         specifier: 'catalog:'
-        version: 18.0.3
+        version: 19.2.5
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.2.5(react@19.2.5)
+      react-router:
+        specifier: 'catalog:'
+        version: 7.15.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      svelte:
+        specifier: 'catalog:'
+        version: 5.55.5
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
       vite:
         specifier: 'catalog:'
         version: 8.0.12(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)
+      vitest:
+        specifier: 'catalog:'
+        version: 3.0.4(@types/debug@4.1.13)(@types/node@25.6.0)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.47.1)(yaml@2.8.4)
+      vue:
+        specifier: 'catalog:'
+        version: 3.5.13(typescript@6.0.3)
 
 packages:
 
