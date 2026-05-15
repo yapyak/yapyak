@@ -1,5 +1,5 @@
 @layer components {
-  .ReferenceSidebarSymbol {
+  .ReferenceNavigationSymbol {
     display: block;
     padding: var(--space-1) var(--space-3);
     font-size: var(--font-size-sm);

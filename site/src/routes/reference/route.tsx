@@ -1,8 +1,8 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import type { ReactElement } from 'react';
-import { ReferenceSidebar } from '#components/reference-sidebar';
-import styles from './route.module.css';
+import { ReferenceLayout } from '#components/reference-layout';
+import { ReferenceNavigation } from '#components/reference-navigation';
 
 const loadSidebar = createServerFn({ method: 'GET' }).handler(async () => {
   const { loadManifest } = await import('#docs/load-manifest');
@@ -22,11 +22,13 @@ export const Route = createFileRoute('/reference')({
 function Component(): ReactElement {
   const { sidebar } = Route.useLoaderData();
   return (
-    <div className={styles.ReferenceLayout}>
-      <ReferenceSidebar data={sidebar} />
-      <main className={styles.Content}>
+    <ReferenceLayout>
+      <ReferenceLayout.Sidebar>
+        <ReferenceNavigation data={sidebar} />
+      </ReferenceLayout.Sidebar>
+      <ReferenceLayout.Content>
         <Outlet />
-      </main>
-    </div>
+      </ReferenceLayout.Content>
+    </ReferenceLayout>
   );
 }

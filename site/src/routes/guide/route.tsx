@@ -1,8 +1,8 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import type { ReactElement } from 'react';
-import { GuideSidebar } from '#components/guide-sidebar';
-import styles from './route.module.css';
+import { GuideLayout } from '#components/guide-layout';
+import { GuideNavigation } from '#components/guide-navigation';
 
 const loadSidebar = createServerFn({ method: 'GET' }).handler(async () => {
   const { buildGuideSidebar } = await import('#lib/build-sidebar');
@@ -20,11 +20,13 @@ export const Route = createFileRoute('/guide')({
 function Component(): ReactElement {
   const { sidebar } = Route.useLoaderData();
   return (
-    <div className={styles.GuideLayout}>
-      <GuideSidebar items={sidebar} />
-      <main className={styles.Content}>
+    <GuideLayout>
+      <GuideLayout.Sidebar>
+        <GuideNavigation items={sidebar} />
+      </GuideLayout.Sidebar>
+      <GuideLayout.Content>
         <Outlet />
-      </main>
-    </div>
+      </GuideLayout.Content>
+    </GuideLayout>
   );
 }

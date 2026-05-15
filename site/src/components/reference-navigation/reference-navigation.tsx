@@ -1,35 +1,40 @@
 import type { ReactElement } from 'react';
 import type { ReferenceSidebar as ReferenceSidebarData } from '#docs/build-reference-sidebar';
-import { ReferenceSidebarModule } from './reference-sidebar-module';
-import { ReferenceSidebarSymbol } from './reference-sidebar-symbol';
-import styles from './reference-sidebar.module.css';
+import { ReferenceNavigationModule } from './reference-navigation-module';
+import { ReferenceNavigationSymbol } from './reference-navigation-symbol';
+import styles from './reference-navigation.module.css';
 
-export interface ReferenceSidebarProps {
+export interface ReferenceNavigationProps {
   data: ReferenceSidebarData;
 }
 
-export function ReferenceSidebar(props: ReferenceSidebarProps): ReactElement {
+export function ReferenceNavigation(
+  props: ReferenceNavigationProps,
+): ReactElement {
   const { data } = props;
   const root = data.modules.find((m) => m.id === 'yapyak');
   if (root === undefined) {
     return (
       <nav
-        className={styles.ReferenceSidebar}
+        className={styles.ReferenceNavigation}
         aria-label="Reference navigation"
       />
     );
   }
   return (
-    <nav className={styles.ReferenceSidebar} aria-label="Reference navigation">
+    <nav
+      className={styles.ReferenceNavigation}
+      aria-label="Reference navigation"
+    >
       <ul className={styles.ItemList}>
         {root.symbols.map((symbol) => (
           <li key={symbol.href}>
-            <ReferenceSidebarSymbol symbol={symbol} />
+            <ReferenceNavigationSymbol symbol={symbol} />
           </li>
         ))}
         {root.submodules.map((submodule) => (
           <li key={submodule.id}>
-            <ReferenceSidebarModule module={submodule} />
+            <ReferenceNavigationModule module={submodule} />
           </li>
         ))}
       </ul>

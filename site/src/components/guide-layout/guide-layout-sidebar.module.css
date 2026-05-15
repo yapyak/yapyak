@@ -1,8 +1,5 @@
 @layer components {
-  .GuideSidebar {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
+  .GuideLayoutSidebar {
     padding: var(--space-8) var(--space-8) var(--space-8) 0;
     position: sticky;
     top: var(--header-height);

@@ -1,6 +1,6 @@
 @layer components {
-  .GuideSidebarLink {
-
+  .GuideNavigationLink {
+    display: block;
     padding: var(--space-1) var(--space-3);
     font-size: var(--font-size-sm);
     color: var(--text-soft);
@@ -14,7 +14,7 @@
       color: var(--text);
     }
 
-    &[data-status="active"] {
+    &[data-status='active'] {
       color: var(--mint);
     }
   }

@@ -1,20 +1,20 @@
 import { Link } from '@tanstack/react-router';
 import type { ReactElement } from 'react';
 import type { RefSymbol } from '#docs/build-reference-sidebar';
-import styles from './reference-sidebar-symbol.module.css';
+import styles from './reference-navigation-symbol.module.css';
 
-export interface ReferenceSidebarSymbolProps {
+export interface ReferenceNavigationSymbolProps {
   symbol: RefSymbol;
 }
 
-export function ReferenceSidebarSymbol(
-  props: ReferenceSidebarSymbolProps,
+export function ReferenceNavigationSymbol(
+  props: ReferenceNavigationSymbolProps,
 ): ReactElement {
   const { symbol } = props;
   return (
     <Link
       to={symbol.href}
-      className={styles.ReferenceSidebarSymbol}
+      className={styles.ReferenceNavigationSymbol}
       activeOptions={{ exact: true }}
       data-deprecated={symbol.deprecated ? 'true' : undefined}
     >

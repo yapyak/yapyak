@@ -1,20 +1,20 @@
 import { Link } from '@tanstack/react-router';
 import type { ReactElement, ReactNode } from 'react';
 import type { SidebarGroup, SidebarNode } from '#lib/sidebars';
-import { GuideSidebarLink } from './guide-sidebar-link';
-import styles from './guide-sidebar-group.module.css';
+import { GuideNavigationLink } from './guide-navigation-link';
+import styles from './guide-navigation-group.module.css';
 
-export interface GuideSidebarGroupProps {
+export interface GuideNavigationGroupProps {
   node: SidebarGroup;
   depth: number;
 }
 
-export function GuideSidebarGroup(
-  props: GuideSidebarGroupProps,
+export function GuideNavigationGroup(
+  props: GuideNavigationGroupProps,
 ): ReactElement {
   const { node, depth } = props;
   return (
-    <div className={styles.GuideSidebarGroup} data-depth={depth}>
+    <div className={styles.GuideNavigationGroup} data-depth={depth}>
       <Title node={node} />
       <ul className={styles.Items}>
         {node.items.map((child) => (
@@ -43,9 +43,9 @@ function Title(props: TitleProps): ReactNode {
 
 function renderChild(child: SidebarNode, depth: number): ReactElement {
   if (child.type === 'group') {
-    return <GuideSidebarGroup node={child} depth={depth} />;
+    return <GuideNavigationGroup node={child} depth={depth} />;
   }
-  return <GuideSidebarLink node={child} />;
+  return <GuideNavigationLink node={child} />;
 }
 
 function getKey(node: SidebarNode): string {

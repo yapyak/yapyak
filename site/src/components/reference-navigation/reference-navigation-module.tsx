@@ -1,15 +1,15 @@
 import { useLocation } from '@tanstack/react-router';
 import { useState, type ReactElement } from 'react';
 import type { RefModule } from '#docs/build-reference-sidebar';
-import { ReferenceSidebarSymbol } from './reference-sidebar-symbol';
-import styles from './reference-sidebar-module.module.css';
+import { ReferenceNavigationSymbol } from './reference-navigation-symbol';
+import styles from './reference-navigation-module.module.css';
 
-export interface ReferenceSidebarModuleProps {
+export interface ReferenceNavigationModuleProps {
   module: RefModule;
 }
 
-export function ReferenceSidebarModule(
-  props: ReferenceSidebarModuleProps,
+export function ReferenceNavigationModule(
+  props: ReferenceNavigationModuleProps,
 ): ReactElement {
   const { module } = props;
   const location = useLocation();
@@ -20,7 +20,7 @@ export function ReferenceSidebarModule(
   const displayName = lastSegment(module.id);
 
   return (
-    <div className={styles.ReferenceSidebarModule}>
+    <div className={styles.ReferenceNavigationModule}>
       <button
         type="button"
         className={styles.ToggleRow}
@@ -35,12 +35,12 @@ export function ReferenceSidebarModule(
         <ul className={styles.ChildList}>
           {module.symbols.map((symbol) => (
             <li key={symbol.href}>
-              <ReferenceSidebarSymbol symbol={symbol} />
+              <ReferenceNavigationSymbol symbol={symbol} />
             </li>
           ))}
           {module.submodules.map((submodule) => (
             <li key={submodule.id}>
-              <ReferenceSidebarModule module={submodule} />
+              <ReferenceNavigationModule module={submodule} />
             </li>
           ))}
         </ul>
