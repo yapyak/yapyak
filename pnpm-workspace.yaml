@@ -1,6 +1,5 @@
 packages:
   - .
-  - docs
   - examples/*
   - packages/*
   - site
@@ -26,8 +25,6 @@ catalog:
   svelte-check: 4.4.8
   typescript: 6.0.3
   vite: 8.0.12
-  vitepress: 2.0.0-alpha.16
-  vitepress-sidebar: 1.33.2
   vitest: 3.0.4
   vue: 3.5.13
   vue-tsc: 3.2.8
