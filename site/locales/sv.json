@@ -1,4 +1,10 @@
 {
+  "../src/svelte/locale.svelte.ts": {
+    "Hello": ""
+  },
+  "../src/vue/locale.ts": {
+    "Hello": ""
+  },
   "src/components/hero/hero.tsx": {
     "Get Started": "",
     "View on GitHub": ""

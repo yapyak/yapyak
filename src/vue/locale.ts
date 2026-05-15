@@ -2,8 +2,8 @@ import type { WritableComputedRef } from 'vue';
 
 import { computed, ref } from 'vue';
 
-import { getLocale, setLocale, subscribeLocale } from '../locale/store';
-import { registerTracker } from '../runtime/tracker';
+import { getLocale, setLocale, subscribeLocale } from '../locale/store.ts';
+import { registerTracker } from '../runtime/tracker.ts';
 
 const valueRef = ref(getLocale());
 

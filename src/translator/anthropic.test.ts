@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { anthropic } from './anthropic';
+import { anthropic } from './anthropic.ts';
 
 afterEach(() => {
   vi.unstubAllGlobals();

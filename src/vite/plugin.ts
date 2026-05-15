@@ -1,20 +1,20 @@
 import type { Plugin, ResolvedConfig } from 'vite';
-import type { ExtractedMessage } from './extract-messages';
-import type { YapyakOptions } from './normalize-options';
-import type { LocaleData } from './transform-source';
+import type { ExtractedMessage } from './extract-messages.ts';
+import type { YapyakOptions } from './normalize-options.ts';
+import type { LocaleData } from './transform-source.ts';
 
 import { createFilter } from 'vite';
 
-import { autoTranslate } from './auto-translate';
-import { detectRenames } from './detect-renames';
-import { discoverLocales } from './discover-locales';
-import { DynamicMessageError, extractMessages } from './extract-messages';
-import { migrateLocales } from './migrate-locales';
-import { normalizeOptions } from './normalize-options';
-import { readLocaleData } from './read-locale-data';
-import { syncLocaleFiles } from './sync-locale-files';
-import { transformSource } from './transform-source';
-import { walkSourceFiles } from './walk-source-files';
+import { autoTranslate } from './auto-translate.ts';
+import { detectRenames } from './detect-renames.ts';
+import { discoverLocales } from './discover-locales.ts';
+import { DynamicMessageError, extractMessages } from './extract-messages.ts';
+import { migrateLocales } from './migrate-locales.ts';
+import { normalizeOptions } from './normalize-options.ts';
+import { readLocaleData } from './read-locale-data.ts';
+import { syncLocaleFiles } from './sync-locale-files.ts';
+import { transformSource } from './transform-source.ts';
+import { walkSourceFiles } from './walk-source-files.ts';
 import { relative } from 'node:path';
 
 export type { YapyakOptions };

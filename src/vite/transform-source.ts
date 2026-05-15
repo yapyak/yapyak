@@ -1,9 +1,9 @@
-import { DynamicSourceError, parseSourceArg } from './parse-source-arg';
+import { DynamicSourceError, parseSourceArg } from './parse-source-arg.ts';
 import {
   locate,
   sliceArguments,
   splitTopLevelArgs,
-} from './slice-arguments';
+} from './slice-arguments.ts';
 
 export interface LocaleData {
   [locale: string]: {

@@ -2,7 +2,7 @@ import type { NitroAppPlugin } from 'nitropack/types';
 
 import { defineNitroPlugin, useEvent } from 'nitropack/runtime';
 
-import { registerRequestHeadersReader } from '../locale/store';
+import { registerRequestHeadersReader } from '../locale/store.ts';
 
 /**
  * Nuxt / Nitro plugin that wires yapyak's per-request locale context.

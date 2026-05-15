@@ -1,7 +1,7 @@
-import type { YapyakCliConfig } from '../load-config';
+import type { YapyakCliConfig } from '../load-config.ts';
 
-import { collect } from '../collect';
-import { color, header, symbol } from '../tui';
+import { collect } from '../collect.ts';
+import { color, header, symbol } from '../tui.ts';
 
 export interface CheckOptions {
   config: YapyakCliConfig;

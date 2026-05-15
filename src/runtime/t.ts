@@ -1,7 +1,7 @@
-import { pick } from '../internal/pick';
-import { getLocale } from '../locale/store';
-import { hasPlaceholder, interpolate } from './interpolate';
-import { runTrackers } from './tracker';
+import { pick } from '../internal/pick.ts';
+import { getLocale } from '../locale/store.ts';
+import { hasPlaceholder, interpolate } from './interpolate.ts';
+import { runTrackers } from './tracker.ts';
 
 type Trim<Source extends string> = Source extends ` ${infer Rest}`
   ? Trim<Rest>

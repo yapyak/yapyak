@@ -1,13 +1,13 @@
-import type { ExtractedMessage } from '../vite/extract-messages';
+import type { ExtractedMessage } from '../vite/extract-messages.ts';
 
 import { createFilter } from 'vite';
 
 import {
   DynamicMessageError,
   extractMessages,
-} from '../vite/extract-messages';
-import { DEFAULT_EXCLUDE, DEFAULT_INCLUDE } from '../vite/normalize-options';
-import { walkSourceFiles } from '../vite/walk-source-files';
+} from '../vite/extract-messages.ts';
+import { DEFAULT_EXCLUDE, DEFAULT_INCLUDE } from '../vite/normalize-options.ts';
+import { walkSourceFiles } from '../vite/walk-source-files.ts';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 

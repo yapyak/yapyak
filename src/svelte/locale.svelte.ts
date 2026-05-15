@@ -1,5 +1,5 @@
-import { getLocale, setLocale, subscribeLocale } from '../locale/store';
-import { registerTracker } from '../runtime/tracker';
+import { getLocale, setLocale, subscribeLocale } from '../locale/store.ts';
+import { registerTracker } from '../runtime/tracker.ts';
 
 /** A reactive locale handle for Svelte 5. */
 export interface ReactiveLocale {

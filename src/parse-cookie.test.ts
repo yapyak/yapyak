@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseCookie } from './parse-cookie';
+import { parseCookie } from './parse-cookie.ts';
 
 describe('parseCookie', () => {
   it('returns empty object for empty header', () => {

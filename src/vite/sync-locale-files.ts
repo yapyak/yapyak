@@ -1,4 +1,4 @@
-import type { ExtractedMessage } from './extract-messages';
+import type { ExtractedMessage } from './extract-messages.ts';
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';

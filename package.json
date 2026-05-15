@@ -80,7 +80,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsc -p tsconfig.build.json",
     "check": "biome check .",
     "check:write": "biome check --write .",
     "test": "vitest --run",
@@ -140,7 +140,6 @@
     "react": "19.2.5",
     "react-dom": "19.2.5",
     "react-router": "^7.15.0",
-    "tsup": "^8.5.1",
     "typescript": "6.0.3",
     "vite": "8.0.10",
     "vitest": "3.0.4",

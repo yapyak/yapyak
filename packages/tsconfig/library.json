@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "declaration": true,
-    "ignoreDeprecations": "6.0",
     "isolatedDeclarations": true,
     "jsx": "react-jsx",
     "module": "esnext",
+    "rewriteRelativeImportExtensions": true,
     "target": "es2022",
     "types": ["node", "react", "vite/client"]
   },
