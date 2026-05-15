@@ -5,7 +5,7 @@ import { yapyak } from 'yapyak/vite';
 import { apiManifest } from './src/docs/api-manifest-plugin.ts';
 import { resolve } from 'node:path';
 
-const yapyakDir = resolve(import.meta.dirname, '..');
+const yapyakDir = resolve(import.meta.dirname, '..', 'packages', 'yapyak');
 
 export default defineConfig({
   css: {
