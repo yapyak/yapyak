@@ -33,7 +33,7 @@ export const FEATURES: Feature[] = [
   },
   {
     description:
-      'Forget a {count} placeholder and TypeScript stops you before your tech lead does. Source-as-keys means types live on the call site — your editor stays instant at 50 strings or 50,000.',
+      'Forget a {count} placeholder and TypeScript stops you before your tech lead does. Source-as-keys means types live on the call site. Same speed at 50 strings or 50,000.',
     number: '05',
     title: 'Type-safe params',
   },

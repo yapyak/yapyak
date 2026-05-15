@@ -13,21 +13,19 @@ async function handler(request: Request): Promise<Response> {
 }
 ```
 
-`withRequest()` reads `accept-language` and `cookie` from the `Request`, resolves the locale, lazy-loads that locale's translations, and binds everything to an async-scoped context. `getLocale()`, `t()`, and any other yapyak call inside the callback see this request's locale.
+`withRequest()` reads `accept-language` and `cookie` from the `Request`, resolves the locale, loads its translations, and binds everything to an async-scoped context. `getLocale()`, `t()`, and any other yapyak call inside the callback see this request's locale.
 
 ## What `withRequest()` does
 
-Three steps per request:
-
-1. **Resolve locale** from cookie + `Accept-Language` header.
-2. **Load locale data** via dynamic `import()` (cached across requests — the second request for the same locale is free).
-3. **Run the callback** inside `AsyncLocalStorage.run()` so concurrent requests stay isolated.
+1. Resolves the locale from cookie + `Accept-Language`.
+2. Loads the locale's data via dynamic `import()`. Cached across requests; the second request for the same locale skips the load.
+3. Runs the callback inside `AsyncLocalStorage.run()` so concurrent requests stay isolated.
 
 ```ts
 withRequest<T>(request: Request, fn: () => T | Promise<T>): Promise<T>;
 ```
 
-`withRequest()` is always async — it awaits the locale-data load before running the callback.
+Always returns a promise. The callback runs after the locale data is in memory.
 
 ## Setting `<html lang>`
 

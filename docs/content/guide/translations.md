@@ -30,19 +30,18 @@ CLDR plural categories resolve per-locale via `Intl.PluralRules`. All categories
 
 ### Type-checking limits
 
-TypeScript reads placeholders straight from the source literal. The trade-off: template-literal types can't fully parse nested ICU, so a few edge cases slip through.
+TypeScript reads placeholders straight from the source literal. Template-literal types can't fully parse nested ICU, so a few edge cases slip through.
 
 **Caught at compile time:**
 
-- Missing simple placeholder: `t('Hello {name}')` without `name` → error
-- Typo in placeholder name: `{ nme: 'Alex' }` → error
-- Missing ICU outer key: `t('{count, plural, ...}')` without `count` → error
-- Typo in ICU outer key: `{ cnt: 1 }` → error
+- Missing simple placeholder: `t('Hello {name}')` without `name`.
+- Typo in placeholder name: `{ nme: 'Alex' }`.
+- Missing ICU outer key: `t('{count, plural, ...}')` without `count`.
+- Wrong value type for ICU: `{ count: 'three' }` for a plural pattern. Plural and number formats expect `number`, date and time expect `Date | number`, select expects `string`.
 
 **Not caught:**
 
-- Wrong value type for ICU: `{ count: 'three' }` for a plural pattern. ICU's runtime coerces strings to numbers, so this rarely causes real bugs.
-- Nested placeholders inside ICU branches: `author` in the example below isn't extracted by the type system. Extra keys are accepted without checking.
+Nested placeholders inside ICU branches. The type system extracts the outer key only; inner placeholders work at runtime but TypeScript doesn't enforce them.
 
 ```tsx
 // `author` runs fine at runtime, but TS only enforces `count`
@@ -50,7 +49,7 @@ t('You have {count, plural, one {# item by {author}} other {# items by {author}}
   { count: 1, author: 'Alex' });
 ```
 
-If you need strict typing for nested ICU, declare a typed variable:
+For strict typing on nested ICU, declare a typed variable:
 
 ```tsx
 const params: { count: number; author: string } = { count: 1, author: 'Alex' };

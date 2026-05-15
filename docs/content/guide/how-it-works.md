@@ -3,7 +3,7 @@ title: How it works
 order: 3
 ---
 
-You write `t()` in your code. yapyak rewrites the call to a compact lookup, then emits each non-default locale as its own lazy-loaded chunk.
+You write `t()` in your code. yapyak rewrites the call to a runtime lookup and emits each non-default locale as its own chunk.
 
 ## What you write
 
@@ -25,7 +25,7 @@ export function SaveButton() {
 }
 ```
 
-The call site keeps only the file path and the source string. The runtime `_$pick()` returns the source directly when the current locale is the default (so the default locale costs zero extra bytes), or looks up `(fileId, source)` in the active locale's data when it's not.
+The call site only carries the file path and the source string. At runtime, `_$pick()` returns the source directly for the default locale, and looks up `(fileId, source)` in the active locale's data otherwise.
 
 ## Per-locale chunks
 
@@ -41,7 +41,7 @@ export default {
 };
 ```
 
-These modules are dynamically imported by the runtime when `setLocale()` or `loadLocale()` is called. Rolldown (Vite's bundler) splits each into its own chunk; only the user's current locale lives in memory at any time.
+The runtime imports these dynamically when `setLocale()` or `loadLocale()` runs. Rolldown splits each into its own chunk; only the active locale's data is in memory.
 
 ## On save
 
@@ -99,12 +99,8 @@ For every missing entry, yapyak extracts a context object from the call site:
 
 The translator uses this to disambiguate: "Save" in a `<button>` reads differently from "Save" in an `<h1>`. How much of the context the translator passes to the model is configurable — see [Translators / Translation context](/guide/translators#translation-context).
 
-## Why this architecture scales
+## Why this scales
 
-Two properties of the design make it fast at every scale:
+**Source-as-keys.** The default locale's text lives in your source code. The bundle pays nothing extra for it.
 
-**Source-as-keys.** The default locale's text lives in your source code, so it costs nothing extra in the bundle. Other locales reference the same `(fileId, source)` pair, so the runtime knows exactly which translation to swap in.
-
-**Per-locale chunks.** Initial loads ship only the default locale (free) plus the active locale (if different). A user browsing in `sv` never pays for the `de`, `fr`, `es` chunks. Compare this to libraries that inline every variant at every call site — those bundles grow linearly with `locales × strings`.
-
-A medium app with 5 locales and 10,000 strings ships roughly 4–5× less initial JavaScript than the inline-variants approach.
+**Per-locale chunks.** Initial loads ship the default locale only. Other locales arrive on demand.
