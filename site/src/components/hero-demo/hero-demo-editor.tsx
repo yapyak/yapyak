@@ -121,7 +121,6 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
               return (
                 <span
                   className="tx-tx-source"
-                  // biome-ignore lint/suspicious/noArrayIndexKey: stable per render
                   key={index}
                 >
                   <span>'</span>
@@ -138,7 +137,6 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
             return (
               <span
                 className={`tx-${token.type}`}
-                // biome-ignore lint/suspicious/noArrayIndexKey: stable per render
                 key={index}
               >
                 {token.value}

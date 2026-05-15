@@ -22,7 +22,6 @@ export function ReferenceSymbolSignature(
       <h2 className={styles.Heading}>Signature</h2>
       <div
         className={styles.Body}
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: server-rendered markdown
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </section>

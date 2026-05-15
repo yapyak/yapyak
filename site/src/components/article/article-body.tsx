@@ -15,7 +15,6 @@ export function ArticleBody(props: ArticleBodyProps): ReactElement {
     <div
       {...restProps}
       className={merged}
-      // biome-ignore lint/security/noDangerouslySetInnerHtml: server-rendered markdown
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
