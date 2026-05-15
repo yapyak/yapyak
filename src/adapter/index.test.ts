@@ -1,10 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('virtual:yapyak', () => ({
-  LOCALES: ['en', 'sv', 'fr'],
-  DEFAULT_LOCALE: 'en',
-  PERSISTENCE: { type: 'cookie', name: 'locale' },
   ACCEPT_LANGUAGE: true,
+  DEFAULT_LOCALE: 'en',
+  LOCALES: ['en', 'sv', 'fr'],
+  PERSISTENCE: { name: 'locale', type: 'cookie' },
   SYNC_HTML_LANG: false,
 }));
 

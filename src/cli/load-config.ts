@@ -1,4 +1,6 @@
-import { loadConfigFromFile, type Plugin, type PluginOption } from 'vite';
+import type { Plugin, PluginOption } from 'vite';
+
+import { loadConfigFromFile } from 'vite';
 
 export interface YapyakCliConfig {
   defaultLocale: string | undefined;

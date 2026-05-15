@@ -1,6 +1,8 @@
-import { Link } from '@tanstack/react-router';
 import type { ReactElement } from 'react';
 import type { RefSymbol } from '#docs/build-reference-sidebar';
+
+import { Link } from '@tanstack/react-router';
+
 import styles from './reference-navigation-symbol.module.css';
 
 export interface ReferenceNavigationSymbolProps {
@@ -13,10 +15,10 @@ export function ReferenceNavigationSymbol(
   const { symbol } = props;
   return (
     <Link
-      to={symbol.href}
-      className={styles.ReferenceNavigationSymbol}
       activeOptions={{ exact: true }}
+      className={styles.ReferenceNavigationSymbol}
       data-deprecated={symbol.deprecated ? 'true' : undefined}
+      to={symbol.href}
     >
       {symbol.name}
     </Link>

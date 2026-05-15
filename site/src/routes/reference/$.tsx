@@ -1,14 +1,16 @@
-import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
 import type { ReactElement } from 'react';
-import { ReferenceSymbol } from '#components/reference-symbol';
 import type { ApiExport, ApiModule } from '#docs/extract-api';
 
+import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
+import { createServerFn } from '@tanstack/react-start';
+
+import { ReferenceSymbol } from '#components/reference-symbol';
+
 interface RenderedSymbol {
-  symbol: ApiExport;
   descriptionHtml: string;
-  signatureHtml: string;
   exampleHtmls: string[];
+  signatureHtml: string;
+  symbol: ApiExport;
 }
 
 type Resolved =
@@ -51,9 +53,7 @@ const loadDoc = createServerFn({ method: 'GET' })
       return { kind: 'not-found' };
     }
     const descriptionHtml =
-      symbol.description === ''
-        ? ''
-        : renderMarkdown(symbol.description).html;
+      symbol.description === '' ? '' : renderMarkdown(symbol.description).html;
     const signatureHtml = renderMarkdown(
       `\`\`\`ts\n${symbol.signature}\n\`\`\``,
     ).html;
@@ -63,7 +63,7 @@ const loadDoc = createServerFn({ method: 'GET' })
     return {
       kind: 'symbol',
       module: parent,
-      rendered: { symbol, descriptionHtml, signatureHtml, exampleHtmls },
+      rendered: { descriptionHtml, exampleHtmls, signatureHtml, symbol },
     };
   });
 
@@ -80,6 +80,7 @@ function moduleSlugInline(id: string): string {
 }
 
 export const Route = createFileRoute('/reference/$')({
+  component: Component,
   async loader({ params }) {
     const path = params._splat ?? '';
     if (path === '') {
@@ -91,14 +92,13 @@ export const Route = createFileRoute('/reference/$')({
     }
     if (resolved.kind === 'redirect-to-first-symbol') {
       throw redirect({
-        to: '/reference/$',
         params: { _splat: resolved.targetPath },
         replace: true,
+        to: '/reference/$',
       });
     }
     return { module: resolved.module, rendered: resolved.rendered };
   },
-  component: Component,
 });
 
 function Component(): ReactElement {
@@ -107,8 +107,8 @@ function Component(): ReactElement {
   return (
     <ReferenceSymbol>
       <ReferenceSymbol.Header
-        module={module.id}
         kind={symbol.kind}
+        module={module.id}
         name={symbol.name}
       />
       {symbol.deprecated !== null ? (
@@ -120,19 +120,22 @@ function Component(): ReactElement {
       <ReferenceSymbol.Signature html={signatureHtml} />
       {symbol.kind === 'function' && symbol.parameters.length > 0 ? (
         <ReferenceSymbol.MemberTable
-          title="Parameters"
           members={symbol.parameters}
+          title="Parameters"
         />
       ) : null}
       {symbol.kind === 'function' &&
       (symbol.returnType !== 'void' || symbol.returnDescription !== '') ? (
         <ReferenceSymbol.Returns
-          type={symbol.returnType}
           description={symbol.returnDescription}
+          type={symbol.returnType}
         />
       ) : null}
       {symbol.kind === 'interface' && symbol.members.length > 0 ? (
-        <ReferenceSymbol.MemberTable title="Members" members={symbol.members} />
+        <ReferenceSymbol.MemberTable
+          members={symbol.members}
+          title="Members"
+        />
       ) : null}
       {exampleHtmls.length > 0 ? (
         <ReferenceSymbol.Examples htmls={exampleHtmls} />

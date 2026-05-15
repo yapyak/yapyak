@@ -1,6 +1,8 @@
+import type { ReactElement } from 'react';
+
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import type { ReactElement } from 'react';
+
 import { Article } from '#components/article';
 
 type DocResult =
@@ -49,10 +51,10 @@ const loadDoc = createServerFn({ method: 'GET' })
       const title =
         (frontmatter.title as string | undefined) ?? titleFromH1 ?? slug;
       return {
-        kind: 'doc',
-        title,
         description: (frontmatter.description as string | undefined) ?? '',
         html: body,
+        kind: 'doc',
+        title,
       };
     }
     return null;
@@ -78,6 +80,7 @@ function resolveRedirect(fromSlug: string, target: string): string {
 }
 
 export const Route = createFileRoute('/guide/$')({
+  component: Component,
   async loader({ params }) {
     const slug = params._splat ?? '';
     if (slug === '') {
@@ -88,18 +91,20 @@ export const Route = createFileRoute('/guide/$')({
       throw notFound();
     }
     if (result.kind === 'redirect') {
-      throw redirect({ to: result.target, replace: true });
+      throw redirect({ replace: true, to: result.target });
     }
     return { doc: result };
   },
-  component: Component,
 });
 
 function Component(): ReactElement {
   const { doc } = Route.useLoaderData();
   return (
     <Article>
-      <Article.Header title={doc.title} description={doc.description} />
+      <Article.Header
+        description={doc.description}
+        title={doc.title}
+      />
       <Article.Body html={doc.html} />
     </Article>
   );

@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+
 import styles from './guide-layout-sidebar.module.css';
 
 export interface GuideLayoutSidebarProps extends HTMLAttributes<HTMLElement> {
@@ -13,7 +14,10 @@ export function GuideLayoutSidebar(
     ? `${styles.GuideLayoutSidebar} ${className}`
     : styles.GuideLayoutSidebar;
   return (
-    <aside {...restProps} className={merged}>
+    <aside
+      {...restProps}
+      className={merged}
+    >
       {children}
     </aside>
   );

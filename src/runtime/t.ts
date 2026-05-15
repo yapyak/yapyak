@@ -1,6 +1,6 @@
+import { pick } from '../internal/pick.js';
 import { getLocale } from '../locale/store.js';
 import { hasPlaceholder, interpolate } from './interpolate.js';
-import { pick } from '../internal/pick.js';
 import { runTrackers } from './tracker.js';
 
 type Trim<Source extends string> = Source extends ` ${infer Rest}`
@@ -26,11 +26,20 @@ type ResolveIcuPattern<
       : Source extends `${string}{${infer Name}, number${string}}${infer Rest}`
         ? ExtractParams<Rest, Accumulated & { [Key in Trim<Name>]: number }>
         : Source extends `${string}{${infer Name}, date${string}}${infer Rest}`
-          ? ExtractParams<Rest, Accumulated & { [Key in Trim<Name>]: Date | number }>
+          ? ExtractParams<
+              Rest,
+              Accumulated & { [Key in Trim<Name>]: Date | number }
+            >
           : Source extends `${string}{${infer Name}, time${string}}${infer Rest}`
-            ? ExtractParams<Rest, Accumulated & { [Key in Trim<Name>]: Date | number }>
+            ? ExtractParams<
+                Rest,
+                Accumulated & { [Key in Trim<Name>]: Date | number }
+              >
             : Source extends `${string}{${infer Name},${string}}${infer Rest}`
-              ? ExtractParams<Rest, Accumulated & { [Key in Trim<Name>]: unknown }>
+              ? ExtractParams<
+                  Rest,
+                  Accumulated & { [Key in Trim<Name>]: unknown }
+                >
               : Accumulated extends unknown
                 ? { [Key in keyof Accumulated]: Accumulated[Key] }
                 : Accumulated;
@@ -55,14 +64,14 @@ type Params<Source extends string> = Source extends `${string}{${string}`
 
 /** The runtime translation function. */
 export interface T {
+  /** Returns a one-off `t` locked to a specific locale, resolved at call time. */
+  in(locale: string): TIn;
   <Source extends string>(
     source: Source,
     ...args: IsEmpty<Params<Source>> extends true
       ? []
       : [params: Params<Source>]
   ): string;
-  /** Returns a one-off `t` locked to a specific locale, resolved at call time. */
-  in(locale: string): TIn;
 }
 
 /** A `t` function locked to a specific locale. */

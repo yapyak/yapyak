@@ -1,12 +1,15 @@
-import { Link } from '@tanstack/react-router';
 import type { ReactElement } from 'react';
+
+import { Link } from '@tanstack/react-router';
 import { t } from 'yapyak';
+
 import { HeroDemo } from '#components/hero-demo';
+
 import styles from './hero.module.css';
 
 export interface HeroProps {
-  heading: string;
   description: string;
+  heading: string;
 }
 
 export function Hero(props: HeroProps): ReactElement {
@@ -17,12 +20,15 @@ export function Hero(props: HeroProps): ReactElement {
         <h1 className={styles.Heading}>{heading}</h1>
         <p className={styles.Description}>{description}</p>
         <div className={styles.Actions}>
-          <Link to="/guide" className={styles.PrimaryButton}>
+          <Link
+            className={styles.PrimaryButton}
+            to="/guide"
+          >
             {t('Get Started')}
           </Link>
           <a
-            href="https://github.com/yapyak/yapyak"
             className={styles.SecondaryButton}
+            href="https://github.com/yapyak/yapyak"
           >
             {t('View on GitHub')}
           </a>

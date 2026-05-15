@@ -1,10 +1,11 @@
 import type { HTMLAttributes, ReactElement } from 'react';
+
 import styles from './reference-symbol-returns.module.css';
 
 export interface ReferenceSymbolReturnsProps
   extends HTMLAttributes<HTMLElement> {
-  type: string;
   description?: string;
+  type: string;
 }
 
 export function ReferenceSymbolReturns(
@@ -15,7 +16,10 @@ export function ReferenceSymbolReturns(
     ? `${styles.ReferenceSymbolReturns} ${className}`
     : styles.ReferenceSymbolReturns;
   return (
-    <section {...restProps} className={merged}>
+    <section
+      {...restProps}
+      className={merged}
+    >
       <h2 className={styles.Heading}>Returns</h2>
       <p className={styles.Line}>
         <code>{type}</code>

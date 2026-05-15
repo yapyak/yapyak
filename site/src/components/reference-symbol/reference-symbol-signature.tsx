@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactElement } from 'react';
+
 import styles from './reference-symbol-signature.module.css';
 
 export interface ReferenceSymbolSignatureProps
@@ -14,7 +15,10 @@ export function ReferenceSymbolSignature(
     ? `${styles.ReferenceSymbolSignature} ${className}`
     : styles.ReferenceSymbolSignature;
   return (
-    <section {...restProps} className={merged}>
+    <section
+      {...restProps}
+      className={merged}
+    >
       <h2 className={styles.Heading}>Signature</h2>
       <div
         className={styles.Body}

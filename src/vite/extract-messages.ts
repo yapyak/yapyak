@@ -138,10 +138,7 @@ function findCallSites(code: string, aliases: Set<string>): CallSite[] {
   }
   const sites: CallSite[] = [];
   const aliasUnion = [...aliases].map(escapeRegex).join('|');
-  const directRe = new RegExp(
-    `(?<![\\w.$])(?:${aliasUnion})\\s*\\(`,
-    'g',
-  );
+  const directRe = new RegExp(`(?<![\\w.$])(?:${aliasUnion})\\s*\\(`, 'g');
   let match: RegExpExecArray | null = directRe.exec(code);
   while (match !== null) {
     sites.push({
@@ -188,7 +185,10 @@ function dedupeAndOrder(sites: CallSite[]): CallSite[] {
   return out;
 }
 
-function findEnclosingElement(code: string, position: number): string | undefined {
+function findEnclosingElement(
+  code: string,
+  position: number,
+): string | undefined {
   let depth = 0;
   let i = position;
   while (i > 0) {

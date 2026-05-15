@@ -246,8 +246,8 @@ function tokenizeBash(code: string): Token[] {
 }
 
 interface ScanResult {
-  token: Token;
   end: number;
+  token: Token;
 }
 
 function scanToken(code: string, i: number, _lang: Lang): ScanResult | null {
@@ -259,52 +259,67 @@ function scanToken(code: string, i: number, _lang: Lang): ScanResult | null {
   if (c === ' ' || c === '\t' || c === '\n' || c === '\r') {
     const match = /^[\s]+/.exec(code.slice(i));
     if (match) {
-      return { token: { type: 'plain', value: match[0] }, end: i + match[0].length };
+      return {
+        end: i + match[0].length,
+        token: { type: 'plain', value: match[0] },
+      };
     }
   }
 
   if (c === '/' && code[i + 1] === '/') {
     const newline = code.indexOf('\n', i);
     const value = newline === -1 ? code.slice(i) : code.slice(i, newline);
-    return { token: { type: 'comment', value }, end: i + value.length };
+    return { end: i + value.length, token: { type: 'comment', value } };
   }
 
   if (c === '/' && code[i + 1] === '*') {
     const close = code.indexOf('*/', i + 2);
     const end = close === -1 ? code.length : close + 2;
-    return { token: { type: 'comment', value: code.slice(i, end) }, end };
+    return { end, token: { type: 'comment', value: code.slice(i, end) } };
   }
 
   if (c === "'" || c === '"') {
     const re = c === "'" ? /^'(?:\\.|[^'\\\n])*'/ : /^"(?:\\.|[^"\\\n])*"/;
     const match = re.exec(code.slice(i));
     if (match) {
-      return { token: { type: 'string', value: match[0] }, end: i + match[0].length };
+      return {
+        end: i + match[0].length,
+        token: { type: 'string', value: match[0] },
+      };
     }
   }
 
   if (c === '`') {
     const match = /^`(?:\\.|[^`\\])*`/.exec(code.slice(i));
     if (match) {
-      return { token: { type: 'template', value: match[0] }, end: i + match[0].length };
+      return {
+        end: i + match[0].length,
+        token: { type: 'template', value: match[0] },
+      };
     }
   }
 
   if (c === '<') {
     const match = /^<\/?[A-Za-z][\w.-]*/.exec(code.slice(i));
     if (match) {
-      return { token: { type: 'jsx-tag', value: match[0] }, end: i + match[0].length };
+      return {
+        end: i + match[0].length,
+        token: { type: 'jsx-tag', value: match[0] },
+      };
     }
   }
 
   if (c === '/' && code[i + 1] === '>') {
-    return { token: { type: 'jsx-tag', value: '/>' }, end: i + 2 };
+    return { end: i + 2, token: { type: 'jsx-tag', value: '/>' } };
   }
 
   if (c >= '0' && c <= '9') {
     const match = /^\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/.exec(code.slice(i));
     if (match) {
-      return { token: { type: 'number', value: match[0] }, end: i + match[0].length };
+      return {
+        end: i + match[0].length,
+        token: { type: 'number', value: match[0] },
+      };
     }
   }
 
@@ -322,12 +337,12 @@ function scanToken(code: string, i: number, _lang: Lang): ScanResult | null {
       } else if (code[i + value.length] === '(') {
         type = 'fn-call';
       }
-      return { token: { type, value }, end: i + value.length };
+      return { end: i + value.length, token: { type, value } };
     }
   }
 
   if (/[{}()[\];,.:?!<>=+\-*/%&|^~]/.test(c)) {
-    return { token: { type: 'punct', value: c }, end: i + 1 };
+    return { end: i + 1, token: { type: 'punct', value: c } };
   }
 
   return null;
@@ -345,7 +360,10 @@ function applyYapyakHighlight(tokens: Token[]): void {
       continue;
     }
 
-    if ((token.type === 'fn-call' || token.type === 'plain') && token.value === 't') {
+    if (
+      (token.type === 'fn-call' || token.type === 'plain') &&
+      token.value === 't'
+    ) {
       const next = findNextSignificant(tokens, index + 1);
       if (
         next !== null &&

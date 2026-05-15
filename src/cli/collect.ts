@@ -1,13 +1,15 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { join, relative, sep } from 'node:path';
+import type { ExtractedMessage } from '../vite/extract-messages.js';
+
 import { createFilter } from 'vite';
+
 import {
   DynamicMessageError,
-  type ExtractedMessage,
   extractMessages,
 } from '../vite/extract-messages.js';
 import { DEFAULT_EXCLUDE, DEFAULT_INCLUDE } from '../vite/normalize-options.js';
 import { walkSourceFiles } from '../vite/walk-source-files.js';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join, relative, sep } from 'node:path';
 
 export interface MissingEntry {
   fileId: string;

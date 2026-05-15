@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactElement } from 'react';
+
 import styles from './reference-symbol-source-link.module.css';
 
 export interface ReferenceSymbolSourceLinkProps
@@ -15,7 +16,10 @@ export function ReferenceSymbolSourceLink(
     ? `${styles.ReferenceSymbolSourceLink} ${className}`
     : styles.ReferenceSymbolSourceLink;
   return (
-    <footer {...restProps} className={merged}>
+    <footer
+      {...restProps}
+      className={merged}
+    >
       <span className={styles.Path}>
         {file}:{line}
       </span>

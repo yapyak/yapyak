@@ -1,16 +1,17 @@
-import { useLocation } from '@tanstack/react-router';
-import {
-  type CSSProperties,
-  type HTMLAttributes,
-  type ReactElement,
-  type ReactNode,
-  useLayoutEffect,
-  useRef,
-  useState,
+import type {
+  CSSProperties,
+  HTMLAttributes,
+  ReactElement,
+  ReactNode,
 } from 'react';
+
+import { useLocation } from '@tanstack/react-router';
+import { useLayoutEffect, useRef, useState } from 'react';
+
 import { cn } from '#lib/cn';
-import { NavigationLink } from './navigation-link';
+
 import styles from './navigation.module.css';
+import { NavigationLink } from './navigation-link';
 
 export interface NavigationProps extends HTMLAttributes<HTMLElement> {
   children?: ReactNode;
@@ -21,10 +22,10 @@ export declare namespace Navigation {
 }
 
 interface IndicatorState {
+  height: number;
+  width: number;
   x: number;
   y: number;
-  width: number;
-  height: number;
 }
 
 const SLIDE_DURATION = 320;
@@ -50,10 +51,10 @@ export function Navigation(props: NavigationProps): ReactElement {
         return;
       }
       setIndicator({
+        height: $activeElement.offsetHeight,
+        width: $activeElement.offsetWidth,
         x: $activeElement.offsetLeft,
         y: $activeElement.offsetTop,
-        width: $activeElement.offsetWidth,
-        height: $activeElement.offsetHeight,
       });
     };
 
@@ -93,18 +94,18 @@ export function Navigation(props: NavigationProps): ReactElement {
 
   const indicatorStyle: CSSProperties | undefined = indicator
     ? {
+        height: `${indicator.height}px`,
         transform: `translate(${indicator.x}px, ${indicator.y}px)`,
         width: `${indicator.width}px`,
-        height: `${indicator.height}px`,
       }
     : undefined;
 
   return (
     <nav
       {...restProps}
-      ref={element}
       className={cn(styles.Navigation, className)}
       data-animating={isAnimating ? '' : undefined}
+      ref={element}
     >
       {indicator && (
         <span

@@ -1,18 +1,21 @@
-import {
-  marked,
-  type RendererObject,
-  type TokenizerAndRendererExtension,
-  type Tokens,
+import type {
+  RendererObject,
+  TokenizerAndRendererExtension,
+  Tokens,
 } from 'marked';
+import type { Lang } from './utils/tokenize.js';
+
+import { marked } from 'marked';
 import { parse as parseYaml } from 'yaml';
-import { type Lang, tokenize } from './utils/tokenize.js';
+
+import { tokenize } from './utils/tokenize.js';
 
 export interface Doc {
-  title: string;
   description: string;
+  html: string;
   order: number;
   slug: string;
-  html: string;
+  title: string;
 }
 
 const SUPPORTED_LANGS = new Set<Lang>([
@@ -46,10 +49,7 @@ function parseLangLabel(lang: string | undefined): {
   return { actualLang: lang, label: undefined };
 }
 
-function renderTokenizedCode(
-  text: string,
-  lang: string | undefined,
-): string {
+function renderTokenizedCode(text: string, lang: string | undefined): string {
   if (lang !== undefined && SUPPORTED_LANGS.has(lang as Lang)) {
     const tokens = tokenize(text, lang as Lang);
     return tokens
@@ -121,48 +121,14 @@ const renderer: RendererObject = {
 };
 
 interface CodeGroupBlock {
+  html: string;
   label: string;
   lang: string | undefined;
-  html: string;
 }
 
 const codeGroupExtension: TokenizerAndRendererExtension = {
-  name: 'codeGroup',
   level: 'block',
-  start(src: string): number | undefined {
-    const index = src.search(/^:::\s*code-group\b/m);
-    return index === -1 ? undefined : index;
-  },
-  tokenizer(src: string) {
-    const openMatch = /^:::\s*code-group\s*(?:\n|$)/.exec(src);
-    if (openMatch === null) {
-      return undefined;
-    }
-    const openLength = openMatch[0].length;
-    const result = parseContainerBody(src.slice(openLength));
-    if (result === null) {
-      return undefined;
-    }
-    const childTokens = this.lexer.blockTokens(`${result.body}\n`);
-    const blocks: CodeGroupBlock[] = [];
-    for (const child of childTokens) {
-      if (child.type === 'code') {
-        const codeChild = child as Tokens.Code;
-        const { actualLang, label } = parseLangLabel(codeChild.lang);
-        blocks.push({
-          label: label ?? actualLang ?? 'Code',
-          lang: actualLang,
-          html: `<pre><code>${renderTokenizedCode(codeChild.text, actualLang)}</code></pre>`,
-        });
-      }
-    }
-    return {
-      type: 'codeGroup',
-      raw: src.slice(0, openLength + result.consumed),
-      groupId: `cg-${groupCounter++}`,
-      blocks,
-    };
-  },
+  name: 'codeGroup',
   renderer(token) {
     const groupId = token.groupId as string;
     const blocks = token.blocks as CodeGroupBlock[];
@@ -192,21 +158,64 @@ const codeGroupExtension: TokenizerAndRendererExtension = {
       .join('');
     return `<div class="CodeGroup"><div class="CodeGroupTabs">${tabs}</div><div class="CodeGroupPanels">${panels}</div></div>`;
   },
+  start(src: string): number | undefined {
+    const index = src.search(/^:::\s*code-group\b/m);
+    return index === -1 ? undefined : index;
+  },
+  tokenizer(src: string) {
+    const openMatch = /^:::\s*code-group\s*(?:\n|$)/.exec(src);
+    if (openMatch === null) {
+      return undefined;
+    }
+    const openLength = openMatch[0].length;
+    const result = parseContainerBody(src.slice(openLength));
+    if (result === null) {
+      return undefined;
+    }
+    const childTokens = this.lexer.blockTokens(`${result.body}\n`);
+    const blocks: CodeGroupBlock[] = [];
+    for (const child of childTokens) {
+      if (child.type === 'code') {
+        const codeChild = child as Tokens.Code;
+        const { actualLang, label } = parseLangLabel(codeChild.lang);
+        blocks.push({
+          html: `<pre><code>${renderTokenizedCode(codeChild.text, actualLang)}</code></pre>`,
+          label: label ?? actualLang ?? 'Code',
+          lang: actualLang,
+        });
+      }
+    }
+    return {
+      blocks,
+      groupId: `cg-${groupCounter++}`,
+      raw: src.slice(0, openLength + result.consumed),
+      type: 'codeGroup',
+    };
+  },
 };
 
 type CalloutVariant = 'tip' | 'info' | 'warning' | 'danger' | 'details';
 
 const CALLOUT_DEFAULT_TITLES: Record<CalloutVariant, string> = {
-  tip: 'Tip',
-  info: 'Info',
-  warning: 'Warning',
   danger: 'Danger',
   details: 'Details',
+  info: 'Info',
+  tip: 'Tip',
+  warning: 'Warning',
 };
 
 const calloutExtension: TokenizerAndRendererExtension = {
-  name: 'callout',
   level: 'block',
+  name: 'callout',
+  renderer(token) {
+    const variant = token.variant as CalloutVariant;
+    const title = token.title as string;
+    const inner = this.parser.parse(token.tokens || []);
+    if (variant === 'details') {
+      return `<details class="Callout" data-variant="details"><summary class="CalloutTitle">${escapeHtml(title)}</summary><div class="CalloutBody">${inner}</div></details>`;
+    }
+    return `<aside class="Callout" data-variant="${variant}"><div class="CalloutTitle">${escapeHtml(title)}</div><div class="CalloutBody">${inner}</div></aside>`;
+  },
   start(src: string): number | undefined {
     const index = src.search(/^:::\s*(?:tip|info|warning|danger|details)\b/m);
     return index === -1 ? undefined : index;
@@ -227,28 +236,19 @@ const calloutExtension: TokenizerAndRendererExtension = {
       return undefined;
     }
     return {
-      type: 'callout',
       raw: src.slice(0, openLength + result.consumed),
-      variant,
       title: customTitle ?? CALLOUT_DEFAULT_TITLES[variant],
       tokens: this.lexer.blockTokens(`${result.body}\n`),
+      type: 'callout',
+      variant,
     };
-  },
-  renderer(token) {
-    const variant = token.variant as CalloutVariant;
-    const title = token.title as string;
-    const inner = this.parser.parse(token.tokens || []);
-    if (variant === 'details') {
-      return `<details class="Callout" data-variant="details"><summary class="CalloutTitle">${escapeHtml(title)}</summary><div class="CalloutBody">${inner}</div></details>`;
-    }
-    return `<aside class="Callout" data-variant="${variant}"><div class="CalloutTitle">${escapeHtml(title)}</div><div class="CalloutBody">${inner}</div></aside>`;
   },
 };
 
 marked.use({
+  extensions: [codeGroupExtension, calloutExtension],
   gfm: true,
   renderer,
-  extensions: [codeGroupExtension, calloutExtension],
 });
 
 export function renderMarkdown(source: string): {
@@ -273,7 +273,7 @@ function splitFrontmatter(source: string): {
 } {
   const lines = source.split('\n');
   if (lines[0]?.trim() !== '---') {
-    return { frontmatter: {}, body: source };
+    return { body: source, frontmatter: {} };
   }
   let closeIndex = -1;
   for (let index = 1; index < lines.length; index++) {
@@ -283,15 +283,15 @@ function splitFrontmatter(source: string): {
     }
   }
   if (closeIndex === -1) {
-    return { frontmatter: {}, body: source };
+    return { body: source, frontmatter: {} };
   }
   const yamlText = lines.slice(1, closeIndex).join('\n');
   const body = lines.slice(closeIndex + 1).join('\n');
   const parsed = parseYaml(yamlText);
   if (parsed === null || typeof parsed !== 'object') {
-    return { frontmatter: {}, body };
+    return { body, frontmatter: {} };
   }
-  return { frontmatter: parsed as Record<string, unknown>, body };
+  return { body, frontmatter: parsed as Record<string, unknown> };
 }
 
 function slugify(text: string): string {

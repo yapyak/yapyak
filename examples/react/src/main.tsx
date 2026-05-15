@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { IntlProvider } from 'yapyak/react';
+
 import { App } from './app.js';
 
 const root = document.getElementById('root');

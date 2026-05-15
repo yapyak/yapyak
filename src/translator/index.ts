@@ -29,9 +29,9 @@ export interface TranslateRequest {
  * build one — or the built-ins (`anthropic`, `openai`, `gemini`, `ollama`).
  */
 export interface Translator {
-  (request: TranslateRequest): Promise<string>;
   /** Translates a batch of requests. */
   batch?(requests: TranslateRequest[]): Promise<string[]>;
+  (request: TranslateRequest): Promise<string>;
 }
 
 /**
@@ -130,9 +130,7 @@ const DEFAULT_CONTEXT: ContextLevel = 'minimal';
  * });
  * ```
  */
-export function createTranslator(
-  options: CreateTranslatorOptions,
-): Translator {
+export function createTranslator(options: CreateTranslatorOptions): Translator {
   const batchSize = options.batchSize ?? DEFAULT_BATCH_SIZE;
   if (!Number.isInteger(batchSize) || batchSize <= 0) {
     throw new Error(
@@ -182,10 +180,7 @@ export function createTranslator(
   return translator;
 }
 
-function toItem(
-  request: TranslateRequest,
-  level: ContextLevel,
-): TranslateItem {
+function toItem(request: TranslateRequest, level: ContextLevel): TranslateItem {
   const item: TranslateItem = { source: request.source };
   if (level === 'none') {
     return item;

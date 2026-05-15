@@ -1,6 +1,8 @@
-import { Link } from '@tanstack/react-router';
 import type { ReactElement } from 'react';
 import type { SidebarLink } from '#lib/sidebars';
+
+import { Link } from '@tanstack/react-router';
+
 import styles from './guide-navigation-link.module.css';
 
 export interface GuideNavigationLinkProps {
@@ -12,7 +14,10 @@ export function GuideNavigationLink(
 ): ReactElement {
   const { node } = props;
   return (
-    <Link to={node.href} className={styles.GuideNavigationLink}>
+    <Link
+      className={styles.GuideNavigationLink}
+      to={node.href}
+    >
       {node.title}
     </Link>
   );

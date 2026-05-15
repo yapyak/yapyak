@@ -5,17 +5,17 @@ export interface ReferenceSidebar {
 }
 
 export interface RefModule {
-  id: string;
   href: string;
-  symbols: RefSymbol[];
+  id: string;
   submodules: RefModule[];
+  symbols: RefSymbol[];
 }
 
 export interface RefSymbol {
-  name: string;
-  kind: ApiExport['kind'];
   deprecated: boolean;
   href: string;
+  kind: ApiExport['kind'];
+  name: string;
 }
 
 export function buildReferenceSidebar(manifest: ApiManifest): ReferenceSidebar {
@@ -56,25 +56,20 @@ function buildModule(module: ApiModule): RefModule {
   const slug = moduleSlug(module.id);
   const href = isRoot ? '/reference' : `/reference/${slug}`;
   const symbols: RefSymbol[] = module.exports.map((api) => ({
-    name: api.name,
-    kind: api.kind,
     deprecated: api.deprecated !== null,
-    href: isRoot
-      ? `/reference/${api.name}`
-      : `${href}/${api.name}`,
+    href: isRoot ? `/reference/${api.name}` : `${href}/${api.name}`,
+    kind: api.kind,
+    name: api.name,
   }));
   return {
-    id: module.id,
     href,
-    symbols,
+    id: module.id,
     submodules: [],
+    symbols,
   };
 }
 
-function findParentId(
-  id: string,
-  byId: Map<string, ApiModule>,
-): string | null {
+function findParentId(id: string, byId: Map<string, ApiModule>): string | null {
   let cursor = id;
   while (true) {
     const idx = cursor.lastIndexOf('/');
@@ -92,4 +87,3 @@ export function moduleSlug(id: string): string {
   const trimmed = id.replace(/^yapyak\/?/, '');
   return trimmed === '' ? 'yapyak' : trimmed;
 }
-

@@ -8,15 +8,15 @@
       margin: 0;
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-semibold);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
       color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .Body {
-      color: var(--text-soft);
-      line-height: 1.6;
       font-size: var(--font-size-md);
+      line-height: 1.6;
+      color: var(--text-soft);
 
       :global(.CodeBlock) {
         margin: 0;

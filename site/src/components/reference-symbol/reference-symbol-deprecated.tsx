@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactElement } from 'react';
+
 import styles from './reference-symbol-deprecated.module.css';
 
 export interface ReferenceSymbolDeprecatedProps
@@ -14,7 +15,10 @@ export function ReferenceSymbolDeprecated(
     ? `${styles.ReferenceSymbolDeprecated} ${className}`
     : styles.ReferenceSymbolDeprecated;
   return (
-    <div {...restProps} className={merged}>
+    <div
+      {...restProps}
+      className={merged}
+    >
       <strong>Deprecated.</strong> {message}
     </div>
   );

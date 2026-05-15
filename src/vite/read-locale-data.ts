@@ -1,6 +1,7 @@
+import type { LocaleData } from './transform-source.js';
+
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { LocaleData } from './transform-source.js';
 
 export interface ReadOptions {
   locales: string[];

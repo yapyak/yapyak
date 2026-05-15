@@ -1,7 +1,11 @@
-import { type ReactElement, useEffect, useRef, useState } from 'react';
-import { type Framework, HeroDemoEditor } from './hero-demo-editor';
-import { HeroDemoLocales } from './hero-demo-locales';
+import type { ReactElement } from 'react';
+import type { Framework } from './hero-demo-editor';
+
+import { useEffect, useRef, useState } from 'react';
+
 import styles from './hero-demo.module.css';
+import { HeroDemoEditor } from './hero-demo-editor';
+import { HeroDemoLocales } from './hero-demo-locales';
 import { useDemoState } from './use-demo-state';
 
 export function HeroDemo(): ReactElement {
@@ -34,21 +38,21 @@ export function HeroDemo(): ReactElement {
 
   return (
     <div
-      ref={containerElement}
       className={styles.HeroDemo}
       data-active={isActive || undefined}
+      ref={containerElement}
     >
       <div className={styles.Stack}>
         <HeroDemoEditor
-          source={state.source}
-          typing={state.typing}
           framework={framework}
           onFrameworkChange={setFramework}
+          source={state.source}
+          typing={state.typing}
         />
         <HeroDemoLocales
           savedSource={state.savedSource}
-          translations={state.translations}
           shimmering={state.shimmering}
+          translations={state.translations}
         />
       </div>
     </div>

@@ -2,10 +2,10 @@
   .HeroDemoEditor {
     display: flex;
     flex-direction: column;
+    overflow: hidden;
     background: var(--surface);
     border-radius: var(--radius-md);
     box-shadow: 0 0 0 1px var(--ring);
-    overflow: hidden;
 
     .Tabs {
       position: relative;
@@ -16,11 +16,11 @@
 
     .TabIndicator {
       position: absolute;
-      left: 0;
       bottom: -1px;
+      left: 0;
       height: 1px;
-      background-color: var(--mint);
       pointer-events: none;
+      background-color: var(--mint);
 
       &[data-ready] {
         transition:
@@ -30,18 +30,18 @@
     }
 
     .Tab {
+      position: relative;
       display: inline-flex;
-      align-items: center;
       gap: var(--space-2);
+      align-items: center;
       padding: var(--space-3) var(--space-4);
-      background-color: transparent;
-      border: none;
-      border-right: 1px solid var(--rule);
       font-family: var(--font-mono);
       font-size: var(--font-size-xs);
       color: var(--text-muted);
       cursor: pointer;
-      position: relative;
+      background-color: transparent;
+      border: none;
+      border-right: 1px solid var(--rule);
       transition:
         background-color var(--transition),
         color var(--transition);
@@ -64,8 +64,8 @@
     .TabDot {
       width: 6px;
       height: 6px;
-      border-radius: 50%;
       background-color: transparent;
+      border-radius: 50%;
       transition: background-color 300ms ease;
 
       &[data-dirty] {
@@ -74,8 +74,8 @@
     }
 
     .Pre {
-      margin: 0;
       padding: var(--space-5) var(--space-6);
+      margin: 0;
       overflow: hidden;
     }
 
@@ -97,8 +97,8 @@
       animation: caret-blink 1.06s steps(2, end) infinite;
 
       &[data-typing] {
-        animation: none;
         opacity: 1;
+        animation: none;
       }
     }
   }

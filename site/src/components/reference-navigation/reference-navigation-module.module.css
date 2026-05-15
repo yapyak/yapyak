@@ -6,16 +6,16 @@
 
     .ToggleRow {
       display: flex;
-      align-items: center;
       gap: var(--space-2);
+      align-items: center;
       width: 100%;
       padding: var(--space-1) var(--space-3);
-      background: transparent;
-      border: 0;
+      font-size: var(--font-size-sm);
+      color: var(--text-soft);
       text-align: left;
       cursor: pointer;
-      color: var(--text-soft);
-      font-size: var(--font-size-sm);
+      background: transparent;
+      border: 0;
       transition: color var(--transition);
 
       &:hover {
@@ -25,31 +25,31 @@
       .ChevronIcon {
         display: block;
         flex: 0 0 auto;
-        transition: transform 150ms ease;
         color: var(--text-muted);
+        transition: transform 150ms ease;
       }
 
-      &[data-open='true'] .ChevronIcon {
+      &[data-open="true"] .ChevronIcon {
         transform: rotate(90deg);
       }
 
       .ModuleLabel {
         flex: 1;
         min-width: 0;
-        font-weight: var(--font-weight-medium);
         overflow: hidden;
         text-overflow: ellipsis;
+        font-weight: var(--font-weight-medium);
         white-space: nowrap;
       }
     }
 
     .ChildList {
-      list-style: none;
-      margin: 0;
-      padding-left: 1.25rem;
       display: flex;
       flex-direction: column;
       gap: 2px;
+      padding-left: 1.25rem;
+      margin: 0;
+      list-style: none;
     }
   }
 }

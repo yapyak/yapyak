@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import { anthropic } from './anthropic.js';
 
 afterEach(() => {
@@ -128,8 +129,9 @@ describe('anthropic', () => {
   });
 
   it('throws when API responds with non-2xx', async () => {
-    vi.stubGlobal('fetch', async () =>
-      new Response('rate limited', { status: 429 }),
+    vi.stubGlobal(
+      'fetch',
+      async () => new Response('rate limited', { status: 429 }),
     );
     const t = anthropic({ apiKey: 'k' });
     await expect(
@@ -233,18 +235,20 @@ describe('anthropic', () => {
   });
 
   it('strips markdown code fence around JSON', async () => {
-    vi.stubGlobal('fetch', async () =>
-      new Response(
-        JSON.stringify({
-          content: [
-            {
-              text: '```json\n["Hej"]\n```',
-              type: 'text',
-            },
-          ],
-        }),
-        { status: 200 },
-      ),
+    vi.stubGlobal(
+      'fetch',
+      async () =>
+        new Response(
+          JSON.stringify({
+            content: [
+              {
+                text: '```json\n["Hej"]\n```',
+                type: 'text',
+              },
+            ],
+          }),
+          { status: 200 },
+        ),
     );
     const t = anthropic({ apiKey: 'k' });
     const result = await t({
@@ -258,15 +262,15 @@ describe('anthropic', () => {
   });
 
   it('throws when batch response length does not match', async () => {
-    vi.stubGlobal('fetch', async () =>
-      new Response(
-        JSON.stringify({
-          content: [
-            { text: JSON.stringify(['only-one']), type: 'text' },
-          ],
-        }),
-        { status: 200 },
-      ),
+    vi.stubGlobal(
+      'fetch',
+      async () =>
+        new Response(
+          JSON.stringify({
+            content: [{ text: JSON.stringify(['only-one']), type: 'text' }],
+          }),
+          { status: 200 },
+        ),
     );
     const t = anthropic({ apiKey: 'k' });
     await expect(

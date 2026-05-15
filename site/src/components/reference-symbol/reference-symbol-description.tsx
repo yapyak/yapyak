@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactElement } from 'react';
+
 import styles from './reference-symbol-description.module.css';
 
 export interface ReferenceSymbolDescriptionProps
@@ -14,7 +15,10 @@ export function ReferenceSymbolDescription(
     ? `${styles.ReferenceSymbolDescription} ${className}`
     : styles.ReferenceSymbolDescription;
   return (
-    <section {...restProps} className={merged}>
+    <section
+      {...restProps}
+      className={merged}
+    >
       <div
         className={styles.Body}
         // biome-ignore lint/security/noDangerouslySetInnerHtml: server-rendered markdown

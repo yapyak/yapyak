@@ -35,7 +35,11 @@
   --diff-remove: #ff9aa0;
   --diff-remove-bg: rgba(255, 154, 160, 0.08);
 
-  --brand-gradient: linear-gradient(in oklab to bottom, var(--aqua), var(--mint));
+  --brand-gradient: linear-gradient(
+    in oklab to bottom,
+    var(--aqua),
+    var(--mint)
+  );
 
   --radius-sm: 0.5rem;
   --radius-md: 1rem;
@@ -82,15 +86,8 @@
   --syntax-jsx-tag: #93b8d6;
 
   --font-mono:
-    ui-monospace,
-    "SF Mono",
-    "Monaco",
-    "Menlo",
-    "Cascadia Code",
-    "Roboto Mono",
-    Consolas,
-    "Liberation Mono",
-    monospace;
+    ui-monospace, "SF Mono", "Monaco", "Menlo", "Cascadia Code", "Roboto Mono",
+    Consolas, "Liberation Mono", monospace;
 }
 
 @layer reset {
@@ -104,13 +101,12 @@
     color: var(--text-muted);
     text-decoration: none;
   }
-
 }
 
 @layer base {
   ::selection {
-    background-color: var(--mint-soft);
     color: var(--text);
+    background-color: var(--mint-soft);
   }
 
   body {
@@ -129,18 +125,18 @@
 
 @layer components {
   .CodeBlock {
+    overflow: hidden;
     background: var(--surface);
     border-radius: var(--radius-lg);
     box-shadow: 0 0 0 1px var(--ring);
-    overflow: hidden;
 
     pre {
-      margin: 0;
       padding: var(--space-5) var(--space-6);
+      margin: 0;
+      overflow-x: auto;
       font-family: var(--font-mono);
       font-size: 14px;
       line-height: 1.6;
-      overflow-x: auto;
       color: var(--text-soft);
     }
 
@@ -149,17 +145,40 @@
     }
   }
 
-  .tx-plain    { color: inherit; }
-  .tx-keyword  { color: var(--syntax-keyword); }
-  .tx-type     { color: var(--syntax-type); }
-  .tx-literal  { color: var(--syntax-literal); }
-  .tx-string   { color: var(--syntax-string); }
-  .tx-template { color: var(--syntax-string); }
-  .tx-number   { color: var(--syntax-number); }
-  .tx-comment  { color: var(--text-muted); font-style: italic; }
-  .tx-fn-call  { color: var(--syntax-fn-call); }
-  .tx-jsx-tag  { color: var(--syntax-jsx-tag); }
-  .tx-punct    { color: var(--text-muted); }
+  .tx-plain {
+    color: inherit;
+  }
+  .tx-keyword {
+    color: var(--syntax-keyword);
+  }
+  .tx-type {
+    color: var(--syntax-type);
+  }
+  .tx-literal {
+    color: var(--syntax-literal);
+  }
+  .tx-string {
+    color: var(--syntax-string);
+  }
+  .tx-template {
+    color: var(--syntax-string);
+  }
+  .tx-number {
+    color: var(--syntax-number);
+  }
+  .tx-comment {
+    font-style: italic;
+    color: var(--text-muted);
+  }
+  .tx-fn-call {
+    color: var(--syntax-fn-call);
+  }
+  .tx-jsx-tag {
+    color: var(--syntax-jsx-tag);
+  }
+  .tx-punct {
+    color: var(--text-muted);
+  }
 
   .tx-tx-call {
     color: var(--syntax-fn-call);
@@ -188,8 +207,8 @@
 
   .tx-diff-hunk {
     display: inline;
-    color: var(--syntax-type);
     font-weight: var(--font-weight-medium);
+    color: var(--syntax-type);
   }
 
   .tx-bash-var {
@@ -202,11 +221,11 @@
 
   .CodeGroup {
     position: relative;
-    border-radius: var(--radius-md);
-    background: var(--surface);
-    box-shadow: 0 0 0 1px var(--ring);
-    overflow: hidden;
     margin: var(--space-6) 0;
+    overflow: hidden;
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    box-shadow: 0 0 0 1px var(--ring);
   }
 
   .CodeGroupTabs {
@@ -221,12 +240,12 @@
     display: inline-flex;
     align-items: center;
     padding: var(--space-3) var(--space-4);
-    background-color: transparent;
-    border-right: 1px solid var(--rule);
     font-family: var(--font-mono);
     font-size: var(--font-size-xs);
     color: var(--text-muted);
     cursor: pointer;
+    background-color: transparent;
+    border-right: 1px solid var(--rule);
     transition:
       background-color var(--transition),
       color var(--transition);
@@ -236,11 +255,11 @@
     position: absolute;
     width: 1px;
     height: 1px;
+    margin: 0;
     overflow: hidden;
-    clip: rect(0 0 0 0);
     white-space: nowrap;
     pointer-events: none;
-    margin: 0;
+    clip: rect(0 0 0 0);
   }
 
   .CodeGroupTab:hover {
@@ -254,12 +273,12 @@
   }
 
   .CodeGroupTab:has(input:checked)::after {
-    content: '';
     position: absolute;
-    left: 0;
     right: 0;
     bottom: -1px;
+    left: 0;
     height: 1px;
+    content: "";
     background-color: var(--mint);
   }
 
@@ -267,12 +286,18 @@
     display: none;
   }
 
-  .CodeGroup:has(.CodeGroupTab:nth-of-type(1) input:checked) .CodeGroupPanel:nth-of-type(1),
-  .CodeGroup:has(.CodeGroupTab:nth-of-type(2) input:checked) .CodeGroupPanel:nth-of-type(2),
-  .CodeGroup:has(.CodeGroupTab:nth-of-type(3) input:checked) .CodeGroupPanel:nth-of-type(3),
-  .CodeGroup:has(.CodeGroupTab:nth-of-type(4) input:checked) .CodeGroupPanel:nth-of-type(4),
-  .CodeGroup:has(.CodeGroupTab:nth-of-type(5) input:checked) .CodeGroupPanel:nth-of-type(5),
-  .CodeGroup:has(.CodeGroupTab:nth-of-type(6) input:checked) .CodeGroupPanel:nth-of-type(6) {
+  .CodeGroup:has(.CodeGroupTab:nth-of-type(1) input:checked)
+    .CodeGroupPanel:nth-of-type(1),
+  .CodeGroup:has(.CodeGroupTab:nth-of-type(2) input:checked)
+    .CodeGroupPanel:nth-of-type(2),
+  .CodeGroup:has(.CodeGroupTab:nth-of-type(3) input:checked)
+    .CodeGroupPanel:nth-of-type(3),
+  .CodeGroup:has(.CodeGroupTab:nth-of-type(4) input:checked)
+    .CodeGroupPanel:nth-of-type(4),
+  .CodeGroup:has(.CodeGroupTab:nth-of-type(5) input:checked)
+    .CodeGroupPanel:nth-of-type(5),
+  .CodeGroup:has(.CodeGroupTab:nth-of-type(6) input:checked)
+    .CodeGroupPanel:nth-of-type(6) {
     display: block;
   }
 
@@ -281,34 +306,34 @@
     --callout-bg: rgba(255, 255, 255, 0.02);
 
     position: relative;
-    margin: var(--space-6) 0;
     padding: var(--space-4) var(--space-5) var(--space-4) var(--space-6);
+    margin: var(--space-6) 0;
     background-color: var(--callout-bg);
     border-radius: var(--radius-md);
     box-shadow: inset 3px 0 0 0 var(--callout-accent);
   }
 
-  .Callout[data-variant='tip'] {
+  .Callout[data-variant="tip"] {
     --callout-accent: var(--mint);
     --callout-bg: oklab(0.87 -0.24 0.06 / 0.05);
   }
 
-  .Callout[data-variant='info'] {
+  .Callout[data-variant="info"] {
     --callout-accent: var(--aqua);
     --callout-bg: oklab(0.88 -0.21 0.01 / 0.05);
   }
 
-  .Callout[data-variant='warning'] {
+  .Callout[data-variant="warning"] {
     --callout-accent: #d8a05a;
     --callout-bg: rgba(216, 160, 90, 0.06);
   }
 
-  .Callout[data-variant='danger'] {
+  .Callout[data-variant="danger"] {
     --callout-accent: #ff7b72;
     --callout-bg: rgba(255, 123, 114, 0.06);
   }
 
-  .Callout[data-variant='details'] {
+  .Callout[data-variant="details"] {
     --callout-accent: var(--text-muted);
     --callout-bg: rgba(255, 255, 255, 0.02);
   }
@@ -317,15 +342,15 @@
     margin-bottom: var(--space-2);
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-semibold);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
     color: var(--callout-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
 
   details.Callout > summary.CalloutTitle {
     cursor: pointer;
-    list-style: none;
     user-select: none;
+    list-style: none;
   }
 
   details.Callout > summary.CalloutTitle::-webkit-details-marker {
@@ -333,9 +358,9 @@
   }
 
   details.Callout > summary.CalloutTitle::before {
-    content: '▸';
     display: inline-block;
     margin-right: var(--space-2);
+    content: "▸";
     transition: transform var(--transition);
   }
 
@@ -352,12 +377,12 @@
   }
 
   .CodeGroupPanel pre {
-    margin: 0;
     padding: var(--space-5) var(--space-6);
+    margin: 0;
+    overflow-x: auto;
     font-family: var(--font-mono);
     font-size: 14px;
     line-height: 1.6;
-    overflow-x: auto;
     color: var(--text-soft);
   }
 }

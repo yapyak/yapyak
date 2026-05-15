@@ -1,17 +1,18 @@
 import type { HTMLAttributes, ReactElement } from 'react';
+
 import styles from './reference-symbol-member-table.module.css';
 
 export interface ReferenceSymbolMember {
-  name: string;
-  type: string;
-  optional: boolean;
   description: string;
+  name: string;
+  optional: boolean;
+  type: string;
 }
 
 export interface ReferenceSymbolMemberTableProps
   extends HTMLAttributes<HTMLElement> {
-  title: string;
   members: ReferenceSymbolMember[];
+  title: string;
 }
 
 export function ReferenceSymbolMemberTable(
@@ -22,7 +23,10 @@ export function ReferenceSymbolMemberTable(
     ? `${styles.ReferenceSymbolMemberTable} ${className}`
     : styles.ReferenceSymbolMemberTable;
   return (
-    <section {...restProps} className={merged}>
+    <section
+      {...restProps}
+      className={merged}
+    >
       <h2 className={styles.Heading}>{title}</h2>
       <table className={styles.Table}>
         <thead>

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { detectLocale, parseAcceptLanguage } from './detect.js';
 
 describe('detectLocale', () => {

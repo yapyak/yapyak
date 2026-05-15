@@ -1,12 +1,15 @@
 import type { ReactElement } from 'react';
+import type { LocaleCode } from './scenes';
+
 import { LocaleFlag } from '#components/locale-flag';
-import { LOCALES, type LocaleCode } from './scenes';
+
 import styles from './hero-demo-locales.module.css';
+import { LOCALES } from './scenes';
 
 export interface HeroDemoLocalesProps {
   savedSource: string;
-  translations: Record<LocaleCode, string>;
   shimmering: Set<LocaleCode>;
+  translations: Record<LocaleCode, string>;
 }
 
 export function HeroDemoLocales(props: HeroDemoLocalesProps): ReactElement {
@@ -17,14 +20,23 @@ export function HeroDemoLocales(props: HeroDemoLocalesProps): ReactElement {
         const value = translations[locale.code];
         const isShimmering = shimmering.has(locale.code);
         return (
-          <div key={locale.code} className={styles.LocaleRow}>
-            <span className={styles.Flag} aria-hidden="true">
+          <div
+            className={styles.LocaleRow}
+            key={locale.code}
+          >
+            <span
+              aria-hidden="true"
+              className={styles.Flag}
+            >
               <LocaleFlag code={locale.code} />
             </span>
             <span className={styles.Filename}>{locale.filename}</span>
             <span className={styles.Json}>
               <span className="tx-punct">{'{ '}</span>
-              <span key={savedSource} className={styles.Key}>
+              <span
+                className={styles.Key}
+                key={savedSource}
+              >
                 <span className="tx-string">
                   <span>"</span>
                   {savedSource}
@@ -33,9 +45,15 @@ export function HeroDemoLocales(props: HeroDemoLocalesProps): ReactElement {
               </span>
               <span className="tx-punct">: </span>
               {isShimmering || value === '' ? (
-                <span className={styles.Skeleton} aria-hidden="true" />
+                <span
+                  aria-hidden="true"
+                  className={styles.Skeleton}
+                />
               ) : (
-                <span key={value} className={styles.Value}>
+                <span
+                  className={styles.Value}
+                  key={value}
+                >
                   <span className="tx-tx-source">
                     <span>"</span>
                     {value}

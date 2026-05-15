@@ -1,7 +1,8 @@
-import { type ContextLevel, createTranslator } from './index.js';
+import type { ContextLevel, Translator } from './index.js';
+
 import { fetchWithRetry } from './fetch.js';
+import { createTranslator } from './index.js';
 import { buildSystem, stripCodeFence } from './prompt.js';
-import type { Translator } from './index.js';
 
 /** Options for the Gemini translator. */
 export interface GeminiOptions {
@@ -82,9 +83,7 @@ export function gemini(options: GeminiOptions): Translator {
             temperature,
           },
           systemInstruction: {
-            parts: [
-              { text: buildSystem(options, sourceLocale, targetLocale) },
-            ],
+            parts: [{ text: buildSystem(options, sourceLocale, targetLocale) }],
           },
         }),
         headers: {
@@ -106,9 +105,7 @@ export function gemini(options: GeminiOptions): Translator {
       const response = await fetchWithRetry(fetchInit);
       if (!response.ok) {
         const text = await response.text();
-        throw new Error(
-          `yapyak/translator/gemini: ${response.status} ${text}`,
-        );
+        throw new Error(`yapyak/translator/gemini: ${response.status} ${text}`);
       }
       const responseBody = (await response.json()) as GeminiResponse;
       const text = responseBody.candidates?.[0]?.content?.parts?.[0]?.text;

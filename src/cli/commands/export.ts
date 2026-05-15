@@ -1,8 +1,9 @@
+import type { YapyakCliConfig } from '../load-config.js';
+
+import { collect } from '../collect.js';
+import { color, symbol } from '../tui.js';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
-import { collect } from '../collect.js';
-import type { YapyakCliConfig } from '../load-config.js';
-import { color, symbol } from '../tui.js';
 
 export interface ExportOptions {
   config: YapyakCliConfig;
@@ -25,7 +26,10 @@ export function exportCommand(options: ExportOptions): number {
     return 1;
   }
 
-  if (out !== undefined && isInsideLocalesDir(out, projectRoot, config.localesDir)) {
+  if (
+    out !== undefined &&
+    isInsideLocalesDir(out, projectRoot, config.localesDir)
+  ) {
     process.stdout.write(
       `\n  ${symbol.cross} ${color.red(`yapyak export refuses to write inside ${config.localesDir}/.`)}\n  ${color.dim('That directory is owned by the plugin and represents the on-disk state, not a derived snapshot.')}\n\n`,
     );

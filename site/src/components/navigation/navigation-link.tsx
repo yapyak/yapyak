@@ -1,6 +1,10 @@
-import { Link, type LinkProps } from '@tanstack/react-router';
+import type { LinkProps } from '@tanstack/react-router';
 import type { ReactElement, ReactNode } from 'react';
+
+import { Link } from '@tanstack/react-router';
+
 import { cn } from '#lib/cn';
+
 import styles from './navigation-link.module.css';
 
 export type NavigationLinkProps = Omit<LinkProps, 'className'> & {

@@ -1,31 +1,54 @@
 @layer components {
   .ArticleBody {
-    color: var(--text-default);
+    max-width: 38rem;
     font-size: var(--font-size-md);
     line-height: 1.65;
-    max-width: 38rem;
+    color: var(--text-default);
 
-    h1, h2, h3, h4, h5, h6 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
       font-weight: var(--font-weight-medium);
-      letter-spacing: -0.02em;
       line-height: 1.2;
       color: var(--text);
+      letter-spacing: -0.02em;
     }
 
-    h1 { font-size: var(--font-size-2xl); }
-    h2 { font-size: var(--font-size-xl); margin: var(--space-8) 0 var(--space-3); }
-    h3 { font-size: var(--font-size-lg); margin: var(--space-7) 0 var(--space-2); }
-    h4 { font-size: var(--font-size-md); margin: var(--space-5) 0 var(--space-2); }
-    h5 { font-size: var(--font-size-sm); margin: var(--space-4) 0 var(--space-2); }
+    h1 {
+      font-size: var(--font-size-2xl);
+    }
+    h2 {
+      margin: var(--space-8) 0 var(--space-3);
+      font-size: var(--font-size-xl);
+    }
+    h3 {
+      margin: var(--space-7) 0 var(--space-2);
+      font-size: var(--font-size-lg);
+    }
+    h4 {
+      margin: var(--space-5) 0 var(--space-2);
+      font-size: var(--font-size-md);
+    }
+    h5 {
+      margin: var(--space-4) 0 var(--space-2);
+      font-size: var(--font-size-sm);
+    }
     h6 {
+      margin: var(--space-4) 0 var(--space-2);
       font-size: var(--font-size-xs);
+      color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.04em;
-      color: var(--text-muted);
-      margin: var(--space-4) 0 var(--space-2);
     }
 
-    p, ul, ol, table, :global(.CodeBlock) {
+    p,
+    ul,
+    ol,
+    table,
+    :global(.CodeBlock) {
       margin: var(--space-4) 0;
     }
 
@@ -33,52 +56,59 @@
       margin: var(--space-2) 0;
     }
 
-    > :first-child { margin-top: 0; }
-    > :last-child { margin-bottom: 0; }
+    > :first-child {
+      margin-top: 0;
+    }
+    > :last-child {
+      margin-bottom: 0;
+    }
 
     p:first-of-type {
       font-size: var(--font-size-lg);
-      color: var(--text);
       line-height: 1.55;
+      color: var(--text);
     }
 
-    strong, b {
+    strong,
+    b {
       font-weight: var(--font-weight-semibold);
       color: var(--text);
     }
 
-    em, i {
+    em,
+    i {
       font-style: italic;
     }
 
-    ul, ol {
+    ul,
+    ol {
       padding-left: var(--space-6);
     }
 
     :not(pre) > code {
       padding: 2px 6px;
-      background: var(--surface-elevated);
-      border-radius: var(--radius-sm);
       font-family: var(--font-mono);
       font-size: 0.9em;
       color: var(--text-soft);
+      background: var(--surface-elevated);
+      border-radius: var(--radius-sm);
     }
 
     table {
       width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
       font-size: var(--font-size-sm);
+      border-spacing: 0;
+      border-collapse: separate;
     }
 
     thead th {
       padding: var(--space-3) var(--space-4);
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-medium);
+      color: var(--text-muted);
       text-align: left;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: var(--text-muted);
       background: var(--surface);
       border-top: 1px solid var(--ring);
       border-bottom: 1px solid var(--ring);
@@ -98,9 +128,9 @@
 
     tbody td {
       padding: var(--space-3) var(--space-4);
+      vertical-align: top;
       color: var(--text-soft);
       border-bottom: 1px solid var(--rule);
-      vertical-align: top;
     }
 
     tbody tr:last-child td {

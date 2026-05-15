@@ -1,46 +1,46 @@
-import {
-  type CSSProperties,
-  type ReactElement,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
-import { type Lang, tokenize } from '#lib/utils/tokenize';
+import type { CSSProperties, ReactElement } from 'react';
+import type { Lang } from '#lib/utils/tokenize';
+
+import { useLayoutEffect, useRef, useState } from 'react';
+
+import { tokenize } from '#lib/utils/tokenize';
+
 import styles from './hero-demo-editor.module.css';
 
 export type Framework = 'react' | 'svelte' | 'vue';
 
 interface FrameworkConfig {
+  filename: string;
   id: Framework;
   label: string;
-  filename: string;
   lang: Lang;
 }
 
 export const FRAMEWORKS: FrameworkConfig[] = [
-  { id: 'react', label: 'React', filename: 'app.tsx', lang: 'tsx' },
-  { id: 'vue', label: 'Vue', filename: 'app.vue', lang: 'vue' },
-  { id: 'svelte', label: 'Svelte', filename: 'app.svelte', lang: 'svelte' },
+  { filename: 'app.tsx', id: 'react', label: 'React', lang: 'tsx' },
+  { filename: 'app.vue', id: 'vue', label: 'Vue', lang: 'vue' },
+  { filename: 'app.svelte', id: 'svelte', label: 'Svelte', lang: 'svelte' },
 ];
 
 export interface HeroDemoEditorProps {
-  source: string;
-  typing: boolean;
   framework: Framework;
   onFrameworkChange: (framework: Framework) => void;
+  source: string;
+  typing: boolean;
 }
 
 const CARET_MARKER = 'CARET';
 const T = 't';
 
 interface IndicatorState {
-  x: number;
   width: number;
+  x: number;
 }
 
 export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
   const { source, typing, framework, onFrameworkChange } = props;
-  const config = FRAMEWORKS.find((entry) => entry.id === framework) ?? FRAMEWORKS[0]!;
+  const config =
+    FRAMEWORKS.find((entry) => entry.id === framework) ?? FRAMEWORKS[0]!;
   const code = buildCode(framework, source);
   const tokens = tokenize(code, config.lang);
 
@@ -58,8 +58,8 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
       return;
     }
     setIndicator({
-      x: activeTab.offsetLeft,
       width: activeTab.offsetWidth,
+      x: activeTab.offsetLeft,
     });
     const frame = window.requestAnimationFrame(() => {
       setIsReady(true);
@@ -77,7 +77,10 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
 
   return (
     <div className={styles.HeroDemoEditor}>
-      <div ref={tabsElement} className={styles.Tabs}>
+      <div
+        className={styles.Tabs}
+        ref={tabsElement}
+      >
         {indicator !== null ? (
           <span
             aria-hidden="true"
@@ -88,17 +91,17 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
         ) : null}
         {FRAMEWORKS.map((entry) => (
           <button
-            key={entry.id}
-            type="button"
             className={styles.Tab}
             data-active={entry.id === framework || undefined}
+            key={entry.id}
             onClick={() => onFrameworkChange(entry.id)}
+            type="button"
           >
             <span className={styles.TabFilename}>{entry.filename}</span>
             <span
+              aria-hidden="true"
               className={styles.TabDot}
               data-dirty={(entry.id === framework && typing) || undefined}
-              aria-hidden="true"
             />
           </button>
         ))}
@@ -106,16 +109,19 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
       <pre className={styles.Pre}>
         <code className={styles.Code}>
           {tokens.map((token, index) => {
-            if (token.type === 'tx-source' && token.value.includes(CARET_MARKER)) {
+            if (
+              token.type === 'tx-source' &&
+              token.value.includes(CARET_MARKER)
+            ) {
               const inner = token.value.slice(1, -1);
               const parts = inner.split(CARET_MARKER);
               const before = parts[0] ?? '';
               const after = parts[1] ?? '';
               return (
                 <span
+                  className="tx-tx-source"
                   // biome-ignore lint/suspicious/noArrayIndexKey: stable per render
                   key={index}
-                  className="tx-tx-source"
                 >
                   <span>'</span>
                   {before}
@@ -130,9 +136,9 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
             }
             return (
               <span
+                className={`tx-${token.type}`}
                 // biome-ignore lint/suspicious/noArrayIndexKey: stable per render
                 key={index}
-                className={`tx-${token.type}`}
               >
                 {token.value}
               </span>

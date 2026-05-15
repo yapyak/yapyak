@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 import { add } from './commands/add.js';
 import { check } from './commands/check.js';
 import { exportCommand } from './commands/export.js';

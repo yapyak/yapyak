@@ -1,5 +1,7 @@
-import { defineNitroPlugin, useEvent } from 'nitropack/runtime';
 import type { NitroAppPlugin } from 'nitropack/types';
+
+import { defineNitroPlugin, useEvent } from 'nitropack/runtime';
+
 import { registerRequestHeadersReader } from '../locale/store.js';
 
 /**

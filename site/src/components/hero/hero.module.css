@@ -5,8 +5,8 @@
     align-items: center;
 
     max-width: 70rem;
-    margin: 0 auto;
     padding: var(--space-20) var(--space-4);
+    margin: 0 auto;
 
     .Stack {
       display: flex;
@@ -19,9 +19,9 @@
       margin: 0;
       font-size: var(--font-size-4xl);
       font-weight: var(--font-weight-medium);
-      letter-spacing: -0.04em;
       line-height: 1;
       color: var(--text-soft);
+      letter-spacing: -0.04em;
       text-wrap: balance;
     }
 
@@ -31,7 +31,6 @@
       color: var(--text-soft);
     }
 
-
     .Actions {
       display: flex;
       gap: var(--space-3);
@@ -40,11 +39,11 @@
 
     .PrimaryButton {
       padding: var(--space-2) var(--space-5);
-      background: var(--brand-gradient);
-      color: var(--accent-contrast);
       font-weight: var(--font-weight-medium);
-      border-radius: var(--radius-pill);
+      color: var(--accent-contrast);
       text-decoration: none;
+      background: var(--brand-gradient);
+      border-radius: var(--radius-pill);
       transition:
         filter var(--transition),
         transform var(--transition);
@@ -60,10 +59,10 @@
 
     .SecondaryButton {
       padding: var(--space-2) var(--space-5);
-      color: var(--text);
       font-weight: var(--font-weight-medium);
-      border-radius: var(--radius-pill);
+      color: var(--text);
       text-decoration: none;
+      border-radius: var(--radius-pill);
       box-shadow:
         0 0 0 1px var(--ring-strong),
         0 -1px var(--ring-highlight);

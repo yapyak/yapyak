@@ -15,21 +15,21 @@
     .Numeral {
       font-size: clamp(4rem, 8vw, 6rem);
       font-weight: var(--font-weight-medium);
-      letter-spacing: -0.04em;
       line-height: 1;
+      color: transparent;
+      letter-spacing: -0.04em;
       background: linear-gradient(
         180deg,
         var(--silver-light) 0%,
         var(--silver-mid) 55%,
         var(--silver-dark) 100%
       );
-      background-clip: text;
       -webkit-background-clip: text;
-      color: transparent;
+      background-clip: text;
       transition: text-shadow 400ms ease;
     }
 
-    &[data-accent='mint'] .Numeral {
+    &[data-accent="mint"] .Numeral {
       text-shadow: 0 0 32px oklab(0.87 -0.24 0.06 / 0.22);
     }
 
@@ -44,9 +44,9 @@
       margin: 0;
       font-size: var(--font-size-2xl);
       font-weight: var(--font-weight-medium);
-      letter-spacing: -0.02em;
       line-height: 1.05;
       color: var(--text);
+      letter-spacing: -0.02em;
       text-wrap: balance;
     }
 

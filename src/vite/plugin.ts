@@ -1,23 +1,21 @@
-import { relative } from 'node:path';
-import { createFilter, type Plugin, type ResolvedConfig } from 'vite';
+import type { Plugin, ResolvedConfig } from 'vite';
+import type { ExtractedMessage } from './extract-messages.js';
+import type { YapyakOptions } from './normalize-options.js';
+import type { LocaleData } from './transform-source.js';
+
+import { createFilter } from 'vite';
+
 import { autoTranslate } from './auto-translate.js';
 import { detectRenames } from './detect-renames.js';
 import { discoverLocales } from './discover-locales.js';
-import {
-  DynamicMessageError,
-  type ExtractedMessage,
-  extractMessages,
-} from './extract-messages.js';
+import { DynamicMessageError, extractMessages } from './extract-messages.js';
 import { migrateLocales } from './migrate-locales.js';
-import {
-  normalizeOptions,
-  type YapyakOptions,
-} from './normalize-options.js';
+import { normalizeOptions } from './normalize-options.js';
 import { readLocaleData } from './read-locale-data.js';
 import { syncLocaleFiles } from './sync-locale-files.js';
 import { transformSource } from './transform-source.js';
-import type { LocaleData } from './transform-source.js';
 import { walkSourceFiles } from './walk-source-files.js';
+import { relative } from 'node:path';
 
 export type { YapyakOptions };
 
@@ -160,62 +158,20 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
   }
 
   return {
-    name: 'yapyak',
-    enforce: 'pre',
     api: {
       yapyak: {
         defaultLocale: normalized.defaultLocale,
         localesDir: normalized.localesDir,
       },
     },
-    configResolved(config: ResolvedConfig): void {
-      projectRoot = config.root;
-    },
     buildStart(): void {
       scanAllSources();
       fillStubs();
     },
-    resolveId(id: string): string | null {
-      if (id === CONFIG_ID) {
-        return CONFIG_RESOLVED;
-      }
-      return null;
+    configResolved(config: ResolvedConfig): void {
+      projectRoot = config.root;
     },
-    load(id: string): string | null {
-      if (id === CONFIG_RESOLVED) {
-        return generateConfig(normalized, discover());
-      }
-      return null;
-    },
-    transform(code: string, id: string): { code: string } | null {
-      if (!isCandidateId(id, filter)) {
-        return null;
-      }
-      const fileId = toFileId(projectRoot, id);
-      let messages: ExtractedMessage[];
-      try {
-        messages = extractMessages({ code, fileId });
-      } catch (error) {
-        if (error instanceof DynamicMessageError) {
-          throw error;
-        }
-        throw error;
-      }
-      if (messages.length === 0) {
-        return null;
-      }
-      const { defaultLocale, locales } = discover();
-      const result = transformSource(code, {
-        defaultLocale,
-        fileId,
-        localeData: getLocaleData(),
-        locales,
-      });
-      if (result === null) {
-        return null;
-      }
-      return { code: result.code };
-    },
+    enforce: 'pre',
     async handleHotUpdate(ctx): Promise<void> {
       if (!isCandidateId(ctx.file, filter)) {
         return;
@@ -264,6 +220,48 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       syncAll();
       fillStubs();
     },
+    load(id: string): string | null {
+      if (id === CONFIG_RESOLVED) {
+        return generateConfig(normalized, discover());
+      }
+      return null;
+    },
+    name: 'yapyak',
+    resolveId(id: string): string | null {
+      if (id === CONFIG_ID) {
+        return CONFIG_RESOLVED;
+      }
+      return null;
+    },
+    transform(code: string, id: string): { code: string } | null {
+      if (!isCandidateId(id, filter)) {
+        return null;
+      }
+      const fileId = toFileId(projectRoot, id);
+      let messages: ExtractedMessage[];
+      try {
+        messages = extractMessages({ code, fileId });
+      } catch (error) {
+        if (error instanceof DynamicMessageError) {
+          throw error;
+        }
+        throw error;
+      }
+      if (messages.length === 0) {
+        return null;
+      }
+      const { defaultLocale, locales } = discover();
+      const result = transformSource(code, {
+        defaultLocale,
+        fileId,
+        localeData: getLocaleData(),
+        locales,
+      });
+      if (result === null) {
+        return null;
+      }
+      return { code: result.code };
+    },
   };
 }
 
@@ -284,9 +282,7 @@ function generateConfig(
   resolved: { defaultLocale: string; locales: string[] },
 ): string {
   const lines: string[] = [];
-  lines.push(
-    `export const LOCALES = ${JSON.stringify(resolved.locales)};`,
-  );
+  lines.push(`export const LOCALES = ${JSON.stringify(resolved.locales)};`);
   lines.push(
     `export const DEFAULT_LOCALE = ${JSON.stringify(resolved.defaultLocale)};`,
   );
@@ -315,10 +311,7 @@ function toFileId(projectRoot: string, id: string): string {
   return relative(projectRoot, path).replaceAll('\\', '/');
 }
 
-function messagesEqual(
-  a: ExtractedMessage[],
-  b: ExtractedMessage[],
-): boolean {
+function messagesEqual(a: ExtractedMessage[], b: ExtractedMessage[]): boolean {
   if (a.length !== b.length) {
     return false;
   }

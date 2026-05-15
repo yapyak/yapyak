@@ -2,12 +2,12 @@
   .Wordmark {
     display: inline-flex;
     align-items: center;
-    padding: 0 var(--space-5);
     height: calc(var(--space-4) + var(--space-2) + 0.95rem * 1.65);
+    padding: 0 var(--space-5);
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-semibold);
-    letter-spacing: -0.03em;
     line-height: 1;
+    letter-spacing: -0.03em;
     background-color: var(--nav-bg);
     border-radius: var(--radius-pill) var(--radius-pill) var(--radius-pill) 0;
     box-shadow: 0 0 0 1px var(--ring);
@@ -17,10 +17,10 @@
     }
 
     .Yak {
-      background: var(--brand-gradient);
-      background-clip: text;
-      -webkit-background-clip: text;
       color: transparent;
+      background: var(--brand-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
     }
   }
 }

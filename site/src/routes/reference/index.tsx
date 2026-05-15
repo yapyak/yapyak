@@ -1,6 +1,8 @@
+import type { ReactElement } from 'react';
+
 import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import type { ReactElement } from 'react';
+
 import { Article } from '#components/article';
 
 const loadIntroduction = createServerFn({ method: 'GET' }).handler(async () => {
@@ -11,18 +13,18 @@ const loadIntroduction = createServerFn({ method: 'GET' }).handler(async () => {
   const source = await readFile(path, 'utf8');
   const { frontmatter, html } = await renderMarkdown(source);
   return {
-    title: (frontmatter.title as string | undefined) ?? 'Reference',
     description: (frontmatter.description as string | undefined) ?? '',
     html,
+    title: (frontmatter.title as string | undefined) ?? 'Reference',
   };
 });
 
 export const Route = createFileRoute('/reference/')({
+  component: Component,
   async loader() {
     const introduction = await loadIntroduction();
     return { introduction };
   },
-  component: Component,
 });
 
 function Component(): ReactElement {
@@ -30,8 +32,8 @@ function Component(): ReactElement {
   return (
     <Article>
       <Article.Header
-        title={introduction.title}
         description={introduction.description}
+        title={introduction.title}
       />
       <Article.Body html={introduction.html} />
     </Article>

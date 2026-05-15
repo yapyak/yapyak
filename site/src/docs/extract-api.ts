@@ -1,16 +1,17 @@
+import ts from 'typescript';
+
 import { readFile } from 'node:fs/promises';
 import { dirname, join, relative, resolve } from 'node:path';
-import ts from 'typescript';
 
 export interface ApiManifest {
   modules: ApiModule[];
 }
 
 export interface ApiModule {
-  id: string;
-  subpath: string;
-  sourcePath: string;
   exports: ApiExport[];
+  id: string;
+  sourcePath: string;
+  subpath: string;
 }
 
 export type ApiExport =
@@ -21,33 +22,33 @@ export type ApiExport =
   | ApiClass;
 
 export interface ApiSymbolBase {
-  name: string;
-  description: string;
-  tags: ApiTag[];
-  examples: string[];
   deprecated: string | null;
+  description: string;
+  examples: string[];
   location: ApiLocation;
+  name: string;
+  tags: ApiTag[];
 }
 
 export interface ApiFunction extends ApiSymbolBase {
   kind: 'function';
-  signature: string;
   parameters: ApiParameter[];
-  returnType: string;
   returnDescription: string;
+  returnType: string;
+  signature: string;
 }
 
 export interface ApiInterface extends ApiSymbolBase {
-  kind: 'interface';
-  signature: string;
-  members: ApiMember[];
   callSignatures: ApiCallSignature[];
+  kind: 'interface';
+  members: ApiMember[];
+  signature: string;
 }
 
 export interface ApiTypeAlias extends ApiSymbolBase {
   kind: 'type';
-  signature: string;
   resolvedType: string;
+  signature: string;
 }
 
 export interface ApiVariable extends ApiSymbolBase {
@@ -58,24 +59,24 @@ export interface ApiVariable extends ApiSymbolBase {
 
 export interface ApiClass extends ApiSymbolBase {
   kind: 'class';
-  signature: string;
   members: ApiMember[];
+  signature: string;
 }
 
 export interface ApiParameter {
-  name: string;
-  type: string;
-  optional: boolean;
-  description: string;
   defaultValue: string | null;
+  description: string;
+  name: string;
+  optional: boolean;
+  type: string;
 }
 
 export interface ApiMember {
-  name: string;
-  type: string;
-  optional: boolean;
-  description: string;
   defaultValue: string | null;
+  description: string;
+  name: string;
+  optional: boolean;
+  type: string;
 }
 
 export interface ApiCallSignature {
@@ -84,9 +85,9 @@ export interface ApiCallSignature {
 }
 
 export interface ApiLocation {
+  column: number;
   file: string;
   line: number;
-  column: number;
 }
 
 export interface ApiTag {
@@ -95,16 +96,20 @@ export interface ApiTag {
 }
 
 interface EntryPoint {
+  filePath: string;
   id: string;
   subpath: string;
-  filePath: string;
 }
 
 export async function extractApi(yapyakDir: string): Promise<ApiManifest> {
   const entries = await resolveEntryPoints(yapyakDir);
   const rootFiles = entries.map((entry) => entry.filePath);
 
-  const configPath = ts.findConfigFile(yapyakDir, ts.sys.fileExists, 'tsconfig.json');
+  const configPath = ts.findConfigFile(
+    yapyakDir,
+    ts.sys.fileExists,
+    'tsconfig.json',
+  );
   if (configPath === undefined) {
     throw new Error(`extractApi: no tsconfig.json under ${yapyakDir}`);
   }
@@ -116,12 +121,12 @@ export async function extractApi(yapyakDir: string): Promise<ApiManifest> {
   );
 
   const program = ts.createProgram({
-    rootNames: rootFiles,
     options: {
       ...parsed.options,
-      noEmit: true,
       declaration: false,
+      noEmit: true,
     },
+    rootNames: rootFiles,
   });
   const checker = program.getTypeChecker();
 
@@ -143,10 +148,10 @@ export async function extractApi(yapyakDir: string): Promise<ApiManifest> {
     exports.sort(compareExports);
 
     modules.push({
-      id: entry.id,
-      subpath: entry.subpath,
-      sourcePath: relative(yapyakDir, entry.filePath).replaceAll('\\', '/'),
       exports,
+      id: entry.id,
+      sourcePath: relative(yapyakDir, entry.filePath).replaceAll('\\', '/'),
+      subpath: entry.subpath,
     });
   }
 
@@ -174,9 +179,8 @@ async function resolveEntryPoints(yapyakDir: string): Promise<EntryPoint[]> {
       .replace(/\.d\.ts$/, '.ts')
       .replace(/\.js$/, '.ts');
     const filePath = resolve(yapyakDir, sourcePath);
-    const id =
-      subpath === '.' ? pkg.name : `${pkg.name}${subpath.slice(1)}`;
-    entries.push({ id, subpath, filePath });
+    const id = subpath === '.' ? pkg.name : `${pkg.name}${subpath.slice(1)}`;
+    entries.push({ filePath, id, subpath });
   }
   return entries;
 }
@@ -253,7 +257,6 @@ function buildBase(
     } else if (tag.name === 'deprecated') {
       deprecated = text;
     } else if (tag.name === 'param' || tag.name === 'returns') {
-      continue;
     } else {
       tags.push({ name: tag.name, text });
     }
@@ -265,16 +268,16 @@ function buildBase(
   );
 
   return {
-    name: original.getName(),
-    description,
-    tags,
-    examples,
     deprecated,
+    description,
+    examples,
     location: {
+      column: character + 1,
       file: relative(yapyakDir, source.fileName).replaceAll('\\', '/'),
       line: line + 1,
-      column: character + 1,
     },
+    name: original.getName(),
+    tags,
   };
 }
 
@@ -295,10 +298,10 @@ function buildInterface(
 
   return {
     ...base,
-    kind: 'interface',
-    signature: declarationText(declaration),
-    members,
     callSignatures,
+    kind: 'interface',
+    members,
+    signature: declarationText(declaration),
   };
 }
 
@@ -311,8 +314,8 @@ function buildTypeAlias(
   return {
     ...base,
     kind: 'type',
-    signature: declarationText(declaration),
     resolvedType: checker.typeToString(resolved),
+    signature: declarationText(declaration),
   };
 }
 
@@ -325,8 +328,8 @@ function buildClass(
   return {
     ...base,
     kind: 'class',
-    signature: `class ${base.name}`,
     members: collectMembers(symbol, declaration, checker),
+    signature: `class ${base.name}`,
   };
 }
 
@@ -369,10 +372,10 @@ function buildFunctionFromSignature(
     return {
       ...base,
       kind: 'function',
-      signature: `function ${base.name}(): unknown`,
       parameters: [],
-      returnType: 'unknown',
       returnDescription,
+      returnType: 'unknown',
+      signature: `function ${base.name}(): unknown`,
     };
   }
 
@@ -387,10 +390,10 @@ function buildFunctionFromSignature(
   return {
     ...base,
     kind: 'function',
-    signature,
     parameters,
-    returnType,
     returnDescription,
+    returnType,
+    signature,
   };
 }
 
@@ -450,11 +453,11 @@ function memberToApi(
   const description = ts.displayPartsToString(docParts).trim();
   const defaultValue = readDefaultTag(memberSymbol, checker);
   return {
-    name: memberSymbol.getName(),
-    type: stripUndefinedFromOptional(checker.typeToString(type), memberSymbol),
-    optional: (memberSymbol.flags & ts.SymbolFlags.Optional) !== 0,
-    description,
     defaultValue,
+    description,
+    name: memberSymbol.getName(),
+    optional: (memberSymbol.flags & ts.SymbolFlags.Optional) !== 0,
+    type: stripUndefinedFromOptional(checker.typeToString(type), memberSymbol),
   };
 }
 
@@ -478,11 +481,11 @@ function paramFromSymbol(
       ? decl.initializer.getText()
       : null;
   return {
-    name: paramSymbol.getName(),
-    type: checker.typeToString(type),
-    optional,
-    description,
     defaultValue,
+    description,
+    name: paramSymbol.getName(),
+    optional,
+    type: checker.typeToString(type),
   };
 }
 
@@ -570,11 +573,11 @@ function uniqueTags(tags: ts.JSDocTagInfo[]): ts.JSDocTagInfo[] {
 }
 
 const KIND_ORDER: Record<ApiExport['kind'], number> = {
-  function: 0,
-  variable: 1,
   class: 2,
+  function: 0,
   interface: 3,
   type: 4,
+  variable: 1,
 };
 
 function compareExports(a: ApiExport, b: ApiExport): number {

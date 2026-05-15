@@ -1,4 +1,5 @@
 import type { Handle } from '@sveltejs/kit';
+
 import { getLocale } from '../locale/store.js';
 import { withRequest } from './index.js';
 

@@ -1,5 +1,7 @@
 import '../style.css';
 
+import type { ReactNode } from 'react';
+
 import {
   createRootRoute,
   HeadContent,
@@ -7,9 +9,9 @@ import {
   Outlet,
   Scripts,
 } from '@tanstack/react-router';
-import type { ReactNode } from 'react';
 import { t } from 'yapyak';
 import { useLocale } from 'yapyak/react';
+
 import { Footer } from '#components/footer';
 import { GitHubIcon } from '#components/icon';
 import { IconLink } from '#components/icon-link';
@@ -18,40 +20,40 @@ import { Navigation } from '#components/navigation';
 import { Wordmark } from '#components/wordmark';
 
 export const Route = createRootRoute({
+  component: Component,
   head() {
     return {
+      links: [{ href: '/favicon.svg', rel: 'icon', type: 'image/svg+xml' }],
       meta: [
         { charSet: 'utf-8' },
-        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { content: 'width=device-width, initial-scale=1', name: 'viewport' },
         { title: 'yapyak — i18n that maintains itself.' },
         {
+          content: 'Built for Vite. Designed for the AI era.',
           name: 'description',
-          content: 'Built for Vite. Designed for the AI era.',
         },
         {
+          content: 'yapyak — i18n that maintains itself.',
           property: 'og:title',
-          content: 'yapyak — i18n that maintains itself.',
         },
         {
+          content: 'Built for Vite. Designed for the AI era.',
           property: 'og:description',
-          content: 'Built for Vite. Designed for the AI era.',
         },
-        { property: 'og:type', content: 'website' },
-        { name: 'twitter:card', content: 'summary_large_image' },
+        { content: 'website', property: 'og:type' },
+        { content: 'summary_large_image', name: 'twitter:card' },
         {
-          name: 'twitter:title',
           content: 'yapyak — i18n that maintains itself.',
+          name: 'twitter:title',
         },
         {
-          name: 'twitter:description',
           content: 'Built for Vite. Designed for the AI era.',
+          name: 'twitter:description',
         },
       ],
-      links: [{ rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }],
     };
   },
   shellComponent: ShellComponent,
-  component: Component,
 });
 
 function Component() {
@@ -72,8 +74,8 @@ function Component() {
         </Layout.Header.Center>
         <Layout.Header.End>
           <IconLink
-            href="https://github.com/yapyak/yapyak"
             aria-label={t('View on GitHub')}
+            href="https://github.com/yapyak/yapyak"
           >
             <GitHubIcon />
           </IconLink>

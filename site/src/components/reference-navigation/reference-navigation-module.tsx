@@ -1,8 +1,11 @@
-import { useLocation } from '@tanstack/react-router';
-import { useState, type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import type { RefModule } from '#docs/build-reference-sidebar';
-import { ReferenceNavigationSymbol } from './reference-navigation-symbol';
+
+import { useLocation } from '@tanstack/react-router';
+import { useState } from 'react';
+
 import styles from './reference-navigation-module.module.css';
+import { ReferenceNavigationSymbol } from './reference-navigation-symbol';
 
 export interface ReferenceNavigationModuleProps {
   module: RefModule;
@@ -14,19 +17,18 @@ export function ReferenceNavigationModule(
   const { module } = props;
   const location = useLocation();
   const isOnPath = location.pathname.startsWith(module.href);
-  const hasChildren =
-    module.symbols.length > 0 || module.submodules.length > 0;
+  const hasChildren = module.symbols.length > 0 || module.submodules.length > 0;
   const [isOpen, setIsOpen] = useState(isOnPath);
   const displayName = lastSegment(module.id);
 
   return (
     <div className={styles.ReferenceNavigationModule}>
       <button
-        type="button"
-        className={styles.ToggleRow}
         aria-expanded={isOpen}
+        className={styles.ToggleRow}
         data-open={isOpen ? 'true' : undefined}
         onClick={() => setIsOpen((current) => !current)}
+        type="button"
       >
         <ChevronIcon />
         <span className={styles.ModuleLabel}>{displayName}</span>
@@ -57,19 +59,19 @@ function lastSegment(id: string): string {
 function ChevronIcon(): ReactElement {
   return (
     <svg
+      aria-hidden="true"
       className={styles.ChevronIcon}
-      width="10"
       height="10"
       viewBox="0 0 10 10"
-      aria-hidden="true"
+      width="10"
     >
       <path
         d="M3.5 2L7 5L3.5 8"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.25"
         strokeLinecap="round"
         strokeLinejoin="round"
+        strokeWidth="1.25"
       />
     </svg>
   );

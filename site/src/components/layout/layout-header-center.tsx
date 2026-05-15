@@ -1,5 +1,7 @@
 import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+
 import { cn } from '#lib/cn';
+
 import styles from './layout-header-center.module.css';
 
 export interface LayoutHeaderCenterProps
@@ -12,7 +14,10 @@ export function LayoutHeaderCenter(
 ): ReactElement {
   const { children, className, ...restProps } = props;
   return (
-    <div {...restProps} className={cn(styles.LayoutHeaderCenter, className)}>
+    <div
+      {...restProps}
+      className={cn(styles.LayoutHeaderCenter, className)}
+    >
       {children}
     </div>
   );

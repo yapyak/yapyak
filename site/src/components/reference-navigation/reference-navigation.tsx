@@ -1,8 +1,9 @@
 import type { ReactElement } from 'react';
 import type { ReferenceSidebar as ReferenceSidebarData } from '#docs/build-reference-sidebar';
+
+import styles from './reference-navigation.module.css';
 import { ReferenceNavigationModule } from './reference-navigation-module';
 import { ReferenceNavigationSymbol } from './reference-navigation-symbol';
-import styles from './reference-navigation.module.css';
 
 export interface ReferenceNavigationProps {
   data: ReferenceSidebarData;
@@ -16,15 +17,15 @@ export function ReferenceNavigation(
   if (root === undefined) {
     return (
       <nav
-        className={styles.ReferenceNavigation}
         aria-label="Reference navigation"
+        className={styles.ReferenceNavigation}
       />
     );
   }
   return (
     <nav
-      className={styles.ReferenceNavigation}
       aria-label="Reference navigation"
+      className={styles.ReferenceNavigation}
     >
       <ul className={styles.ItemList}>
         {root.symbols.map((symbol) => (

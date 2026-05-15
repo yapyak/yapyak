@@ -1,7 +1,7 @@
-import {
-  type AnyRequestMiddleware,
-  createMiddleware,
-} from '@tanstack/react-start';
+import type { AnyRequestMiddleware } from '@tanstack/react-start';
+
+import { createMiddleware } from '@tanstack/react-start';
+
 import { withRequest } from './index.js';
 
 /**

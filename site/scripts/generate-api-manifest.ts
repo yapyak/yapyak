@@ -1,6 +1,6 @@
+import { extractApi } from '../src/docs/extract-api.ts';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
-import { extractApi } from '../src/docs/extract-api.ts';
 
 const yapyakDir = resolve(import.meta.dirname, '..', '..');
 const outFile = resolve(

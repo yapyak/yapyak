@@ -1,5 +1,6 @@
-import { collect } from '../collect.js';
 import type { YapyakCliConfig } from '../load-config.js';
+
+import { collect } from '../collect.js';
 import { color, header, progressBar, renderTable, symbol } from '../tui.js';
 
 export interface StatusOptions {
@@ -30,9 +31,7 @@ export function status(options: StatusOptions): number {
     .join(` ${color.dim('·')} `);
 
   process.stdout.write(header('Translation status'));
-  process.stdout.write(
-    `  ${color.dim('Locales')}   ${localesLine}\n`,
-  );
+  process.stdout.write(`  ${color.dim('Locales')}   ${localesLine}\n`);
   process.stdout.write(
     `  ${color.dim('Total')}     ${color.bold(String(total))} messages × ${result.locales.length} = ${color.bold(
       String(total * result.locales.length),
@@ -45,7 +44,9 @@ export function status(options: StatusOptions): number {
     const ratio = total === 0 ? 1 : translated / total;
     const percent = `${Math.round(ratio * 100)}%`;
     return [
-      locale === result.defaultLocale ? `${locale} ${color.dim('(default)')}` : locale,
+      locale === result.defaultLocale
+        ? `${locale} ${color.dim('(default)')}`
+        : locale,
       `${translated} / ${total}`,
       `${progressBar(translated, total, 20)}  ${percent}`,
     ];

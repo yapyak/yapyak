@@ -1,22 +1,20 @@
-import {
-  type CSSProperties,
-  type ReactElement,
-  useRef,
-  useState,
-} from 'react';
-import { FeatureListItem } from './feature-list-item';
+import type { CSSProperties, ReactElement } from 'react';
+
+import { useRef, useState } from 'react';
+
 import styles from './feature-list.module.css';
+import { FeatureListItem } from './feature-list-item';
 import { FEATURES } from './features';
 
 interface IndicatorState {
-  top: number;
   height: number;
+  top: number;
   visible: boolean;
 }
 
 const INITIAL_INDICATOR: IndicatorState = {
-  top: 0,
   height: 0,
+  top: 0,
   visible: false,
 };
 
@@ -33,11 +31,11 @@ export function FeatureList(): ReactElement {
     const top = item.offsetTop;
     const height = item.offsetHeight;
     if (visibleRef.current) {
-      setIndicator({ top, height, visible: true });
+      setIndicator({ height, top, visible: true });
       return;
     }
     visibleRef.current = true;
-    setIndicator({ top, height, visible: false });
+    setIndicator({ height, top, visible: false });
     window.requestAnimationFrame(() => {
       setIndicator((previous) => ({ ...previous, visible: true }));
     });
@@ -49,14 +47,20 @@ export function FeatureList(): ReactElement {
   };
 
   const indicatorStyle: CSSProperties = {
-    transform: `translateY(${indicator.top}px)`,
     height: `${indicator.height}px`,
+    transform: `translateY(${indicator.top}px)`,
   };
 
   return (
     <section className={styles.FeatureList}>
-      <div className={styles.Divider} aria-hidden="true" />
-      <ol className={styles.List} onMouseLeave={handleListLeave}>
+      <div
+        aria-hidden="true"
+        className={styles.Divider}
+      />
+      <ol
+        className={styles.List}
+        onMouseLeave={handleListLeave}
+      >
         <span
           aria-hidden="true"
           className={styles.Indicator}
@@ -65,12 +69,12 @@ export function FeatureList(): ReactElement {
         />
         {FEATURES.map((feature, index) => (
           <FeatureListItem
-            key={feature.number}
             feature={feature}
+            key={feature.number}
+            onMouseEnter={() => handleItemEnter(index)}
             ref={(element) => {
               itemRefs.current[index] = element;
             }}
-            onMouseEnter={() => handleItemEnter(index)}
           />
         ))}
       </ol>

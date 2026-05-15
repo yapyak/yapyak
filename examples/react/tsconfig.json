@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "module": "preserve",
     "moduleResolution": "bundler",
     "noEmit": true,
-    "jsx": "react-jsx",
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,

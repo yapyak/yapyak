@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "module": "preserve",
     "moduleResolution": "bundler",
     "noEmit": true,
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
@@ -11,8 +11,5 @@
     "types": ["vite/client"],
     "verbatimModuleSyntax": true
   },
-  "include": [
-    "src/**/*",
-    "src/**/*.svelte"
-  ]
+  "include": ["src/**/*", "src/**/*.svelte"]
 }

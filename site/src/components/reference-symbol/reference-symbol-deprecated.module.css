@@ -1,9 +1,13 @@
 @layer components {
   .ReferenceSymbolDeprecated {
     padding: var(--space-3) var(--space-4);
-    border-left: 3px solid var(--intent-danger, #c44);
-    background-color: color-mix(in oklab, var(--surface), var(--intent-danger, #c44) 6%);
-    color: var(--text-soft);
     font-size: var(--font-size-sm);
+    color: var(--text-soft);
+    background-color: color-mix(
+      in oklab,
+      var(--surface),
+      var(--intent-danger, #c44) 6%
+    );
+    border-left: 3px solid var(--intent-danger, #c44);
   }
 }

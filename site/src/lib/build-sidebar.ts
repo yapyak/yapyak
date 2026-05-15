@@ -1,12 +1,13 @@
-import { readdir, readFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import { parseFrontmatter } from './markdown';
 import type { SidebarGroup, SidebarLink, SidebarNode } from './sidebars';
 
+import { parseFrontmatter } from './markdown';
+import { readdir, readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+
 interface Frontmatter {
-  title?: string;
   order?: number;
   redirect?: string;
+  title?: string;
 }
 
 export async function buildGuideSidebar(
@@ -30,22 +31,30 @@ async function walkDir(
     const full = join(absDir, entry.name);
 
     if (entry.isDirectory()) {
-      const group = await buildGroup(full, `${urlPrefix}/${entry.name}`, entry.name);
+      const group = await buildGroup(
+        full,
+        `${urlPrefix}/${entry.name}`,
+        entry.name,
+      );
       if (group !== null) {
         collected.push({
+          name: entry.name,
           node: group.node,
           order: group.order,
-          name: entry.name,
         });
       }
       continue;
     }
 
-    if (entry.isFile() && entry.name.endsWith('.md') && entry.name !== 'index.md') {
+    if (
+      entry.isFile() &&
+      entry.name.endsWith('.md') &&
+      entry.name !== 'index.md'
+    ) {
       const slug = entry.name.replace(/\.md$/, '');
       const link = await buildLink(full, `${urlPrefix}/${slug}`);
       if (link !== null) {
-        collected.push({ node: link.node, order: link.order, name: slug });
+        collected.push({ name: slug, node: link.node, order: link.order });
       }
     }
   }
@@ -81,7 +90,7 @@ async function buildLink(
       ? frontmatter.order
       : Number.POSITIVE_INFINITY;
   return {
-    node: { type: 'link', title, href },
+    node: { href, title, type: 'link' },
     order,
   };
 }
@@ -113,7 +122,7 @@ async function buildGroup(
       : Number.POSITIVE_INFINITY;
 
   return {
-    node: { type: 'group', title, items },
+    node: { items, title, type: 'group' },
     order,
   };
 }

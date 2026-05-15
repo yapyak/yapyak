@@ -5,8 +5,8 @@
     justify-content: center;
     width: calc(var(--space-4) + var(--space-2) + 0.95rem * 1.65);
     height: calc(var(--space-4) + var(--space-2) + 0.95rem * 1.65);
-    color: var(--text-muted);
     font-size: 1.1rem;
+    color: var(--text-muted);
     background-color: var(--nav-bg);
     border-radius: var(--radius-pill);
     box-shadow: 0 0 0 1px var(--ring);

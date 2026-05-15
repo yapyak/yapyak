@@ -1,13 +1,14 @@
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import type { Translator } from '../../translator/index.js';
+import type { YapyakCliConfig } from '../load-config.js';
+
 import { anthropic } from '../../translator/anthropic.js';
 import { openai } from '../../translator/openai.js';
-import type { Translator } from '../../translator/index.js';
 import { autoTranslate } from '../../vite/auto-translate.js';
 import { collect } from '../collect.js';
 import { loadEnv } from '../load-env.js';
-import type { YapyakCliConfig } from '../load-config.js';
 import { color, header, progressBar, spinner, symbol } from '../tui.js';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 export interface AddOptions {
   config: YapyakCliConfig;
@@ -179,12 +180,13 @@ interface PickedTranslator {
   providerName: string;
 }
 
-function pickTranslator(
-  env: Record<string, string>,
-): PickedTranslator | null {
+function pickTranslator(env: Record<string, string>): PickedTranslator | null {
   const anthropicKey = env.ANTHROPIC_API_KEY;
   if (anthropicKey !== undefined && anthropicKey !== '') {
-    return { fn: anthropic({ apiKey: anthropicKey }), providerName: 'Anthropic' };
+    return {
+      fn: anthropic({ apiKey: anthropicKey }),
+      providerName: 'Anthropic',
+    };
   }
   const openaiKey = env.OPENAI_API_KEY;
   if (openaiKey !== undefined && openaiKey !== '') {

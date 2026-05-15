@@ -37,6 +37,7 @@ function cookiePersistence(name: string): Persistence {
         return;
       }
       const value = encodeURIComponent(locale);
+      // biome-ignore lint/suspicious/noDocumentCookie: Needed
       document.cookie = `${name}=${value}; path=/; max-age=31536000; samesite=lax`;
     },
   };

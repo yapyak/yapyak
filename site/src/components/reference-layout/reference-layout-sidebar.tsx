@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+
 import styles from './reference-layout-sidebar.module.css';
 
 export interface ReferenceLayoutSidebarProps
@@ -14,7 +15,10 @@ export function ReferenceLayoutSidebar(
     ? `${styles.ReferenceLayoutSidebar} ${className}`
     : styles.ReferenceLayoutSidebar;
   return (
-    <aside {...restProps} className={merged}>
+    <aside
+      {...restProps}
+      className={merged}
+    >
       {children}
     </aside>
   );

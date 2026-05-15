@@ -213,15 +213,16 @@ function getNumberFormatter(
   const cacheKey = `number:${locale}:${styleArgument}`;
   let formatter = numberFormatCache.get(cacheKey);
   if (formatter === undefined) {
-    formatter = new Intl.NumberFormat(locale, parseNumberOptions(styleArgument));
+    formatter = new Intl.NumberFormat(
+      locale,
+      parseNumberOptions(styleArgument),
+    );
     numberFormatCache.set(cacheKey, formatter);
   }
   return formatter;
 }
 
-function parseNumberOptions(
-  styleArgument: string,
-): Intl.NumberFormatOptions {
+function parseNumberOptions(styleArgument: string): Intl.NumberFormatOptions {
   const trimmed = styleArgument.trim();
   if (trimmed === '' || trimmed === 'decimal') {
     return {};
@@ -234,7 +235,7 @@ function parseNumberOptions(
   }
   if (trimmed.startsWith('currency')) {
     const currencyCode = trimmed.slice('currency'.length).trim() || 'USD';
-    return { style: 'currency', currency: currencyCode };
+    return { currency: currencyCode, style: 'currency' };
   }
   return {};
 }

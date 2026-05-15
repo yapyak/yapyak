@@ -5,9 +5,9 @@
     gap: var(--space-3);
 
     .Body {
-      color: var(--text-soft);
-      line-height: 1.6;
       font-size: var(--font-size-md);
+      line-height: 1.6;
+      color: var(--text-soft);
 
       p {
         margin: 0;
@@ -19,11 +19,11 @@
 
       :not(pre) > code {
         padding: 2px 6px;
-        background: var(--surface-elevated);
-        border-radius: var(--radius-sm);
         font-family: var(--font-mono);
         font-size: 0.9em;
         color: var(--text-soft);
+        background: var(--surface-elevated);
+        border-radius: var(--radius-sm);
       }
 
       :global(.CodeBlock) {

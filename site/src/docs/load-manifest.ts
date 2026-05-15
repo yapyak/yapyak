@@ -1,6 +1,7 @@
+import type { ApiManifest } from './extract-api';
+
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import type { ApiManifest } from './extract-api';
 
 const MANIFEST_RELATIVE_PATH = ['content', 'reference', 'api-manifest.json'];
 

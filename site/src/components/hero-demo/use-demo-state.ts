@@ -1,27 +1,24 @@
+import type { LocaleCode } from './scenes';
+
 import { useEffect, useState } from 'react';
-import {
-  EMPTY_TRANSLATIONS,
-  INITIAL_SCENE,
-  LOCALES,
-  type LocaleCode,
-  SCENES,
-} from './scenes';
+
+import { EMPTY_TRANSLATIONS, INITIAL_SCENE, LOCALES, SCENES } from './scenes';
 
 export interface DemoState {
-  source: string;
   savedSource: string;
-  translations: Record<LocaleCode, string>;
-  shimmering: Set<LocaleCode>;
   saving: boolean;
+  shimmering: Set<LocaleCode>;
+  source: string;
+  translations: Record<LocaleCode, string>;
   typing: boolean;
 }
 
 const INITIAL_STATE: DemoState = {
-  source: INITIAL_SCENE.source,
   savedSource: INITIAL_SCENE.source,
-  translations: INITIAL_SCENE.translations,
-  shimmering: new Set(),
   saving: false,
+  shimmering: new Set(),
+  source: INITIAL_SCENE.source,
+  translations: INITIAL_SCENE.translations,
   typing: false,
 };
 
@@ -104,10 +101,10 @@ export function useDemoState(active: boolean): DemoState {
         await sleep(900);
         setState((state) => ({
           ...state,
-          saving: false,
           savedSource: scene.source,
-          translations: EMPTY_TRANSLATIONS,
+          saving: false,
           shimmering: new Set(LOCALES.map((locale) => locale.code)),
+          translations: EMPTY_TRANSLATIONS,
         }));
 
         await sleep(350);

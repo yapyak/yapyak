@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactElement } from 'react';
+
 import styles from './article-body.module.css';
 
 export interface ArticleBodyProps extends HTMLAttributes<HTMLDivElement> {

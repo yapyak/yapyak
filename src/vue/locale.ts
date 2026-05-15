@@ -1,4 +1,7 @@
-import { computed, ref, type WritableComputedRef } from 'vue';
+import type { WritableComputedRef } from 'vue';
+
+import { computed, ref } from 'vue';
+
 import { getLocale, setLocale, subscribeLocale } from '../locale/store.js';
 import { registerTracker } from '../runtime/tracker.js';
 

@@ -8,9 +8,9 @@
       margin: 0;
       font-size: var(--font-size-3xl);
       font-weight: var(--font-weight-medium);
-      letter-spacing: -0.03em;
       line-height: 1.1;
       color: var(--text);
+      letter-spacing: -0.03em;
     }
 
     .Description {

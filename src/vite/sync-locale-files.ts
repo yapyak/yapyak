@@ -1,6 +1,7 @@
+import type { ExtractedMessage } from './extract-messages.js';
+
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import type { ExtractedMessage } from './extract-messages.js';
 
 export type LocaleFile = Record<string, Record<string, string>>;
 
@@ -19,7 +20,11 @@ export function syncLocaleFiles(options: SyncOptions): void {
     if (locale === options.defaultLocale) {
       continue;
     }
-    const localePath = localeFilePath(options.projectRoot, options.localesDir, locale);
+    const localePath = localeFilePath(
+      options.projectRoot,
+      options.localesDir,
+      locale,
+    );
     const existing = readLocaleFile(localePath);
     const next: LocaleFile = {};
 

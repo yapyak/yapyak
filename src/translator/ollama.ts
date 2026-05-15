@@ -1,7 +1,8 @@
-import { type ContextLevel, createTranslator } from './index.js';
+import type { ContextLevel, Translator } from './index.js';
+
 import { fetchWithRetry } from './fetch.js';
+import { createTranslator } from './index.js';
 import { buildSystem } from './prompt.js';
-import type { Translator } from './index.js';
 
 /** Options for the Ollama translator. */
 export interface OllamaOptions {
@@ -94,9 +95,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
       const response = await fetchWithRetry(fetchInit);
       if (!response.ok) {
         const text = await response.text();
-        throw new Error(
-          `yapyak/translator/ollama: ${response.status} ${text}`,
-        );
+        throw new Error(`yapyak/translator/ollama: ${response.status} ${text}`);
       }
       const responseBody = (await response.json()) as OllamaResponse;
       const text = responseBody.response;

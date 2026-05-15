@@ -1,3 +1,6 @@
+import { parseCookie } from '../parse-cookie.js';
+import { detectLocale } from './detect.js';
+import { createPersistence } from './persistence.js';
 import {
   ACCEPT_LANGUAGE,
   DEFAULT_LOCALE,
@@ -5,9 +8,6 @@ import {
   PERSISTENCE,
   SYNC_HTML_LANG,
 } from 'virtual:yapyak';
-import { parseCookie } from '../parse-cookie.js';
-import { detectLocale } from './detect.js';
-import { createPersistence } from './persistence.js';
 
 interface RequestHeaders {
   acceptLanguage: string | undefined;

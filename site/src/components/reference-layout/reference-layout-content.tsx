@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+
 import styles from './reference-layout-content.module.css';
 
 export interface ReferenceLayoutContentProps
@@ -14,7 +15,10 @@ export function ReferenceLayoutContent(
     ? `${styles.ReferenceLayoutContent} ${className}`
     : styles.ReferenceLayoutContent;
   return (
-    <main {...restProps} className={merged}>
+    <main
+      {...restProps}
+      className={merged}
+    >
       {children}
     </main>
   );

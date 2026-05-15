@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react';
+
 import styles from './wordmark.module.css';
 
 export function Wordmark(): ReactElement {

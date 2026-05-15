@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactElement } from 'react';
+
 import styles from './reference-symbol-examples.module.css';
 
 export interface ReferenceSymbolExamplesProps
@@ -14,14 +15,17 @@ export function ReferenceSymbolExamples(
     ? `${styles.ReferenceSymbolExamples} ${className}`
     : styles.ReferenceSymbolExamples;
   return (
-    <section {...restProps} className={merged}>
+    <section
+      {...restProps}
+      className={merged}
+    >
       <h2 className={styles.Heading}>Examples</h2>
       {htmls.map((html, index) => (
         <div
-          key={index}
           className={styles.Body}
           // biome-ignore lint/security/noDangerouslySetInnerHtml: server-rendered markdown
           dangerouslySetInnerHTML={{ __html: html }}
+          key={index}
         />
       ))}
     </section>

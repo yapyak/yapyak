@@ -1,10 +1,11 @@
+import type { Translator } from '../../translator/index.js';
+import type { YapyakCliConfig } from '../load-config.js';
+
 import { anthropic } from '../../translator/anthropic.js';
 import { openai } from '../../translator/openai.js';
-import type { Translator } from '../../translator/index.js';
 import { autoTranslate } from '../../vite/auto-translate.js';
 import { collect } from '../collect.js';
 import { loadEnv } from '../load-env.js';
-import type { YapyakCliConfig } from '../load-config.js';
 import { color, header, progressBar, spinner, symbol } from '../tui.js';
 
 export interface TranslateOptions {
@@ -87,7 +88,9 @@ export async function translate(options: TranslateOptions): Promise<number> {
     );
   };
 
-  const localesToProcess = Array.from(new Set(stubsToFill.map((s) => s.locale)));
+  const localesToProcess = Array.from(
+    new Set(stubsToFill.map((s) => s.locale)),
+  );
   for (const locale of localesToProcess) {
     const subResult = await autoTranslate({
       defaultLocale: result.defaultLocale,
@@ -103,9 +106,7 @@ export async function translate(options: TranslateOptions): Promise<number> {
 
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
   if (failed === 0) {
-    sp.succeed(
-      `${done} translated · ${color.dim(`${elapsed}s`)}`,
-    );
+    sp.succeed(`${done} translated · ${color.dim(`${elapsed}s`)}`);
   } else {
     sp.fail(
       `${done} translated · ${color.red(`${failed} failed`)} · ${color.dim(`${elapsed}s`)}`,

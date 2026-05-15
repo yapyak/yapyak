@@ -2,8 +2,8 @@
   .Footer {
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: var(--space-6);
+    align-items: center;
     max-width: 40rem;
     margin: 0 auto;
     text-align: center;
@@ -15,11 +15,11 @@
 
     .TaglineSlot {
       position: relative;
-      width: 100%;
-      min-height: calc(var(--font-size-lg) * 1.5);
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 100%;
+      min-height: calc(var(--font-size-lg) * 1.5);
     }
 
     .Tagline {
@@ -33,14 +33,14 @@
     }
 
     .Copyright {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 0;
+      align-items: center;
+      justify-content: center;
       margin: var(--space-2) 0 0;
       font-size: var(--font-size-xs);
       color: var(--text-muted);
-      display: inline-flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      gap: 0;
     }
 
     .Separator {

@@ -2,16 +2,16 @@ import type { Translator } from '../translator/index.js';
 
 /** Cookie persistence config. */
 export interface CookiePersistence {
-  type: 'cookie';
   /** Cookie name. Defaults to `'locale'`. */
   name?: string;
+  type: 'cookie';
 }
 
 /** localStorage persistence config. */
 export interface LocalStoragePersistence {
-  type: 'localStorage';
   /** Storage key. Defaults to `'locale'`. */
   key?: string;
+  type: 'localStorage';
 }
 
 /**
@@ -59,14 +59,6 @@ export interface YapyakOptions {
   /** Directory for locale JSON files, relative to project root. Defaults to `'locales'`. */
   localesDir?: string;
   /**
-   * Keep `document.documentElement.lang` synced with the current locale.
-   *
-   * Off by default. yapyak does not touch the DOM unless this is set to
-   * `true`. Useful for SvelteKit/Astro/SPA setups where the `<html>` element
-   * isn't owned by a reactive framework binding. See each adapter's docs.
-   */
-  syncHtmlLang?: boolean;
-  /**
    * Where to persist the user's locale selection.
    *
    * Use the string shorthand (`'cookie'` or `'localStorage'`) for defaults,
@@ -79,6 +71,14 @@ export interface YapyakOptions {
    * Defaults to `true` without a translator, `false` with one.
    */
   preserveTranslationsOnRename?: boolean;
+  /**
+   * Keep `document.documentElement.lang` synced with the current locale.
+   *
+   * Off by default. yapyak does not touch the DOM unless this is set to
+   * `true`. Useful for SvelteKit/Astro/SPA setups where the `<html>` element
+   * isn't owned by a reactive framework binding. See each adapter's docs.
+   */
+  syncHtmlLang?: boolean;
   /** Translator used to fill missing entries. Stubs stay empty without one. */
   translator?: Translator;
 }
@@ -90,8 +90,8 @@ export interface NormalizedOptions {
   include: FilterPattern;
   localesDir: string;
   persistence: NormalizedPersistence;
-  syncHtmlLang: boolean;
   preserveTranslationsOnRename: boolean;
+  syncHtmlLang: boolean;
   translator: Translator | undefined;
 }
 
@@ -133,14 +133,14 @@ function normalizePersistence(
   }
   if (typeof input === 'string') {
     if (input === 'cookie') {
-      return { type: 'cookie', name: DEFAULT_COOKIE_NAME };
+      return { name: DEFAULT_COOKIE_NAME, type: 'cookie' };
     }
-    return { type: 'localStorage', key: DEFAULT_STORAGE_KEY };
+    return { key: DEFAULT_STORAGE_KEY, type: 'localStorage' };
   }
   if (input.type === 'cookie') {
-    return { type: 'cookie', name: input.name ?? DEFAULT_COOKIE_NAME };
+    return { name: input.name ?? DEFAULT_COOKIE_NAME, type: 'cookie' };
   }
-  return { type: 'localStorage', key: input.key ?? DEFAULT_STORAGE_KEY };
+  return { key: input.key ?? DEFAULT_STORAGE_KEY, type: 'localStorage' };
 }
 
 export function normalizeOptions(options: YapyakOptions): NormalizedOptions {

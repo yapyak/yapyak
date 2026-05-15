@@ -2,16 +2,16 @@ export type LocaleCode = 'sv' | 'es' | 'ja' | 'de';
 
 export interface Locale {
   code: LocaleCode;
-  flag: string;
   filename: string;
+  flag: string;
   speed: number;
 }
 
 export const LOCALES: Locale[] = [
-  { code: 'sv', flag: '🇸🇪', filename: 'sv.json', speed: 55 },
-  { code: 'es', flag: '🇪🇸', filename: 'es.json', speed: 48 },
-  { code: 'ja', flag: '🇯🇵', filename: 'ja.json', speed: 85 },
-  { code: 'de', flag: '🇩🇪', filename: 'de.json', speed: 52 },
+  { code: 'sv', filename: 'sv.json', flag: '🇸🇪', speed: 55 },
+  { code: 'es', filename: 'es.json', flag: '🇪🇸', speed: 48 },
+  { code: 'ja', filename: 'ja.json', flag: '🇯🇵', speed: 85 },
+  { code: 'de', filename: 'de.json', flag: '🇩🇪', speed: 52 },
 ];
 
 export interface Scene {
@@ -22,10 +22,10 @@ export interface Scene {
 export const INITIAL_SCENE: Scene = {
   source: 'Welcome',
   translations: {
-    sv: 'Välkommen',
+    de: 'Willkommen',
     es: 'Bienvenido',
     ja: 'ようこそ',
-    de: 'Willkommen',
+    sv: 'Välkommen',
   },
 };
 
@@ -33,35 +33,35 @@ export const SCENES: Scene[] = [
   {
     source: 'Save changes',
     translations: {
-      sv: 'Spara ändringar',
+      de: 'Änderungen speichern',
       es: 'Guardar cambios',
       ja: '変更を保存',
-      de: 'Änderungen speichern',
+      sv: 'Spara ändringar',
     },
   },
   {
     source: 'Your bag is empty',
     translations: {
-      sv: 'Din kundvagn är tom',
+      de: 'Ihr Warenkorb ist leer',
       es: 'Tu bolsa está vacía',
       ja: 'カートは空です',
-      de: 'Ihr Warenkorb ist leer',
+      sv: 'Din kundvagn är tom',
     },
   },
   {
     source: 'Continue with Google',
     translations: {
-      sv: 'Fortsätt med Google',
+      de: 'Mit Google fortfahren',
       es: 'Continuar con Google',
       ja: 'Googleで続行',
-      de: 'Mit Google fortfahren',
+      sv: 'Fortsätt med Google',
     },
   },
 ];
 
 export const EMPTY_TRANSLATIONS: Record<LocaleCode, string> = {
-  sv: '',
+  de: '',
   es: '',
   ja: '',
-  de: '',
+  sv: '',
 };

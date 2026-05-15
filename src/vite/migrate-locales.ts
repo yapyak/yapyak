@@ -1,10 +1,8 @@
-import { join } from 'node:path';
 import type { Rename } from './detect-renames.js';
-import {
-  type LocaleFile,
-  readLocaleFile,
-  writeLocaleFile,
-} from './sync-locale-files.js';
+import type { LocaleFile } from './sync-locale-files.js';
+
+import { readLocaleFile, writeLocaleFile } from './sync-locale-files.js';
+import { join } from 'node:path';
 
 export interface MigrateLocalesOptions {
   defaultLocale: string;
@@ -67,7 +65,10 @@ export function migrateLocales(
 }
 
 export function markStale(
-  options: Pick<MigrateLocalesOptions, 'fileId' | 'locales' | 'localesDir' | 'projectRoot' | 'defaultLocale'> & {
+  options: Pick<
+    MigrateLocalesOptions,
+    'fileId' | 'locales' | 'localesDir' | 'projectRoot' | 'defaultLocale'
+  > & {
     sources: string[];
   },
 ): void {

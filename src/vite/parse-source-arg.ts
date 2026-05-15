@@ -17,11 +17,10 @@ export class DynamicSourceError extends Error {
 export function parseSourceArg(rawArg: string): string {
   const trimmed = rawArg.trim();
   if (trimmed.length === 0) {
-    throw new DynamicSourceError(
-      't() called with no arguments',
-      '',
-      { column: 0, line: 0 },
-    );
+    throw new DynamicSourceError('t() called with no arguments', '', {
+      column: 0,
+      line: 0,
+    });
   }
 
   const first = trimmed[0];

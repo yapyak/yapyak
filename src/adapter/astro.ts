@@ -1,6 +1,7 @@
 /// <reference types="astro/client" />
-import { defineMiddleware } from 'astro:middleware';
+
 import { withRequest } from './index.js';
+import { defineMiddleware } from 'astro:middleware';
 
 type AstroMiddleware = ReturnType<typeof defineMiddleware>;
 

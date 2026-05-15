@@ -46,7 +46,11 @@ export function transformSource(
     return null;
   }
 
-  const replacements: Array<{ end: number; replacement: string; start: number }> = [];
+  const replacements: Array<{
+    end: number;
+    replacement: string;
+    start: number;
+  }> = [];
 
   for (const site of sites) {
     const argsRange = sliceArguments(code, site.argsStart);
@@ -73,11 +77,14 @@ export function transformSource(
       throw error;
     }
     const paramsArg = argList[1];
-    const compiled = compileCall({
-      fixedLocale: site.fixedLocale,
-      paramsExpression: paramsArg,
-      source,
-    }, options);
+    const compiled = compileCall(
+      {
+        fixedLocale: site.fixedLocale,
+        paramsExpression: paramsArg,
+        source,
+      },
+      options,
+    );
     replacements.push({
       end: argsRange.argsEnd,
       replacement: compiled,
@@ -238,10 +245,7 @@ function findCallSites(code: string, aliases: Set<string>): CallSite[] {
   }
   const sites: CallSite[] = [];
   const aliasUnion = [...aliases].map(escapeRegex).join('|');
-  const directRe = new RegExp(
-    `(?<![\\w.$])(?:${aliasUnion})\\s*\\(`,
-    'g',
-  );
+  const directRe = new RegExp(`(?<![\\w.$])(?:${aliasUnion})\\s*\\(`, 'g');
   let match: RegExpExecArray | null = directRe.exec(code);
   while (match !== null) {
     sites.push({

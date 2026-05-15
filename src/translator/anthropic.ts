@@ -1,7 +1,8 @@
-import { type ContextLevel, createTranslator } from './index.js';
+import type { ContextLevel, Translator } from './index.js';
+
 import { fetchWithRetry } from './fetch.js';
+import { createTranslator } from './index.js';
 import { buildSystem, stripCodeFence } from './prompt.js';
-import type { Translator } from './index.js';
 
 /** Options for the Anthropic translator. */
 export interface AnthropicOptions {
@@ -72,9 +73,7 @@ export function anthropic(options: AnthropicOptions): Translator {
       const init: RequestInit = {
         body: JSON.stringify({
           max_tokens: Math.max(1024, items.length * 256),
-          messages: [
-            { content: JSON.stringify(items), role: 'user' },
-          ],
+          messages: [{ content: JSON.stringify(items), role: 'user' }],
           model,
           system: buildSystem(options, sourceLocale, targetLocale),
           temperature,

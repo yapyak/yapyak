@@ -1,17 +1,17 @@
 {
-  "eslint.enable": false,
-  "prettier.enable": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
   "editor.defaultFormatter": "biomejs.biome",
   "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.organizeImports.biome": "explicit",
-    "source.fixAll.biome": "explicit"
-  },
-  "js/ts.tsdk.path": "node_modules/typescript/lib",
-  "search.exclude": {
+  "eslint.enable": false,
+  "files.exclude": {
     "**/.claude/worktrees": true
   },
-  "files.exclude": {
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "prettier.enable": false,
+  "search.exclude": {
     "**/.claude/worktrees": true
   }
 }

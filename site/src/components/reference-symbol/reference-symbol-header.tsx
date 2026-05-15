@@ -1,10 +1,11 @@
 import type { HTMLAttributes, ReactElement } from 'react';
+
 import styles from './reference-symbol-header.module.css';
 
 export interface ReferenceSymbolHeaderProps
   extends HTMLAttributes<HTMLElement> {
-  module: string;
   kind: string;
+  module: string;
   name: string;
 }
 
@@ -16,7 +17,10 @@ export function ReferenceSymbolHeader(
     ? `${styles.ReferenceSymbolHeader} ${className}`
     : styles.ReferenceSymbolHeader;
   return (
-    <header {...restProps} className={merged}>
+    <header
+      {...restProps}
+      className={merged}
+    >
       <span className={styles.Eyebrow}>
         {module} <span className={styles.EyebrowDot}>·</span> {kind}
       </span>

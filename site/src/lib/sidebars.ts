@@ -1,15 +1,15 @@
 export type SidebarNode = SidebarGroup | SidebarLink;
 
 export interface SidebarGroup {
-  type: 'group';
-  title: string;
+  collapsed?: boolean;
   href?: string;
   items: SidebarNode[];
-  collapsed?: boolean;
+  title: string;
+  type: 'group';
 }
 
 export interface SidebarLink {
-  type: 'link';
-  title: string;
   href: string;
+  title: string;
+  type: 'link';
 }

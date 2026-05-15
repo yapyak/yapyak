@@ -1,4 +1,5 @@
 import type { MiddlewareFunction } from 'react-router';
+
 import { withRequest } from './index.js';
 
 /**

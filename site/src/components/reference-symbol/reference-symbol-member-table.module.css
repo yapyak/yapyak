@@ -8,30 +8,30 @@
       margin: 0;
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-semibold);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
       color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .Table {
       width: 100%;
-      border-collapse: collapse;
       font-size: var(--font-size-sm);
+      border-collapse: collapse;
 
       th,
       td {
-        text-align: left;
         padding: var(--space-2) var(--space-3);
-        border-bottom: 1px solid var(--rule);
         vertical-align: top;
+        text-align: left;
+        border-bottom: 1px solid var(--rule);
       }
 
       th {
         font-size: var(--font-size-xs);
         font-weight: var(--font-weight-semibold);
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
         color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
       }
 
       td {
@@ -44,8 +44,8 @@
       }
 
       .Optional {
-        color: var(--text-muted);
         font-family: var(--font-mono);
+        color: var(--text-muted);
       }
     }
   }

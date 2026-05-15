@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react';
+
 import { getLocales, t } from 'yapyak';
 import { useLocale } from 'yapyak/react';
 
@@ -6,7 +7,9 @@ const now = new Date();
 
 export function App(): ReactElement {
   return (
-    <main style={{ fontFamily: 'system-ui', padding: '2rem', maxWidth: '720px' }}>
+    <main
+      style={{ fontFamily: 'system-ui', maxWidth: '720px', padding: '2rem' }}
+    >
       <h1>{t('Hello there')}</h1>
       <p>{t('This is the {name} example.', { name: 'yapyak' })}</p>
 
@@ -55,7 +58,10 @@ function LocaleToggle(): ReactElement {
         value={locale}
       >
         {locales.map((code) => (
-          <option key={code} value={code}>
+          <option
+            key={code}
+            value={code}
+          >
             {code === 'sv' ? t('Swedish') : t('English')}
           </option>
         ))}

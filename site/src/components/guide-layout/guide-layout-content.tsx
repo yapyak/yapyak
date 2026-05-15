@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+
 import styles from './guide-layout-content.module.css';
 
 export interface GuideLayoutContentProps extends HTMLAttributes<HTMLElement> {
@@ -13,7 +14,10 @@ export function GuideLayoutContent(
     ? `${styles.GuideLayoutContent} ${className}`
     : styles.GuideLayoutContent;
   return (
-    <main {...restProps} className={merged}>
+    <main
+      {...restProps}
+      className={merged}
+    >
       {children}
     </main>
   );

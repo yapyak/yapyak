@@ -1,24 +1,24 @@
 {
   "compilerOptions": {
-    "target": "es2022",
+    "declaration": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedDeclarations": true,
+    "jsx": "react-jsx",
     "module": "esnext",
     "moduleResolution": "bundler",
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,
-    "verbatimModuleSyntax": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "declaration": true,
-    "isolatedDeclarations": true,
+    "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": true,
     "outDir": "dist",
+    "resolveJsonModule": true,
     "rootDir": "src",
-    "jsx": "react-jsx",
-    "types": ["node", "react", "vite/client"]
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "es2022",
+    "types": ["node", "react", "vite/client"],
+    "verbatimModuleSyntax": true
   },
-  "include": ["src"],
-  "exclude": ["dist", "node_modules"]
+  "exclude": ["dist", "node_modules"],
+  "include": ["src"]
 }

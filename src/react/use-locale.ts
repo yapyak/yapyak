@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react';
+
 import { getLocale, setLocale, subscribeLocale } from '../locale/store.js';
 
 /**

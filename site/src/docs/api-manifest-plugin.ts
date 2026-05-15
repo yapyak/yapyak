@@ -1,11 +1,12 @@
-import { writeFile, mkdir } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
 import type { Plugin } from 'vite';
+
 import { extractApi } from './extract-api';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { dirname, join, resolve } from 'node:path';
 
 interface Options {
-  yapyakDir: string;
   outFile: string;
+  yapyakDir: string;
 }
 
 export function apiManifest(options: Options): Plugin {
@@ -35,7 +36,6 @@ export function apiManifest(options: Options): Plugin {
   }
 
   return {
-    name: 'yapyak-api-manifest',
     async buildStart() {
       await generate();
     },
@@ -52,5 +52,6 @@ export function apiManifest(options: Options): Plugin {
         }
       });
     },
+    name: 'yapyak-api-manifest',
   };
 }
