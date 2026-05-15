@@ -14,8 +14,8 @@ registerRequestHeadersReader(() => storage.getStore());
  * Runs `fn` with the request's locale headers bound to an async-scoped context.
  *
  * The shipped adapters (`yapyak/adapter/sveltekit`, `yapyak/adapter/tanstack-start`,
- * `yapyak/adapter/astro`, `yapyak/adapter/react-router`, `yapyak/adapter/nuxt`)
- * call this for you. Use it directly when wiring a custom SSR setup.
+ * `yapyak/adapter/astro`, `yapyak/adapter/react-router`) call this for you.
+ * Use it directly when wiring a custom SSR setup.
  *
  * @param request - The incoming Web `Request`.
  * @param fn - The function to run with the request bound.

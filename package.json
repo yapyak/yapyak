@@ -36,10 +36,6 @@
       "types": "./dist/adapter/astro.d.ts",
       "default": "./dist/adapter/astro.js"
     },
-    "./adapter/nuxt": {
-      "types": "./dist/adapter/nuxt.d.ts",
-      "default": "./dist/adapter/nuxt.js"
-    },
     "./adapter/react-router": {
       "types": "./dist/adapter/react-router.d.ts",
       "default": "./dist/adapter/react-router.js"
@@ -89,8 +85,6 @@
   "peerDependencies": {
     "@sveltejs/kit": ">=2",
     "astro": ">=5",
-    "nitropack": ">=2",
-    "nuxt": ">=3",
     "react": ">=19",
     "react-router": ">=7.9",
     "svelte": ">=5",
@@ -102,12 +96,6 @@
       "optional": true
     },
     "astro": {
-      "optional": true
-    },
-    "nitropack": {
-      "optional": true
-    },
-    "nuxt": {
       "optional": true
     },
     "react": {
@@ -135,8 +123,6 @@
     "@types/react-dom": "19.2.3",
     "@yapyak/tsconfig": "workspace:*",
     "astro": "^6.3.2",
-    "nitropack": "^2.13.4",
-    "nuxt": "^4.4.5",
     "react": "19.2.5",
     "react-dom": "19.2.5",
     "react-router": "^7.15.0",
