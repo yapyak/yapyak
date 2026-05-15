@@ -3,8 +3,9 @@ import type { ReactElement, ReactNode } from 'react';
 import { cn } from '#lib/cn';
 import styles from './navigation-link.module.css';
 
-export type NavigationLinkProps = LinkProps & {
+export type NavigationLinkProps = Omit<LinkProps, 'className'> & {
   children?: ReactNode;
+  className?: string;
 };
 
 export function NavigationLink(props: NavigationLinkProps): ReactElement {
