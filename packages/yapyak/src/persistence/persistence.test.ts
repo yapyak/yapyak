@@ -46,7 +46,7 @@ describe('cookie persistence', () => {
       name: COOKIE_NAME,
       type: 'cookie',
     });
-    expect(persistence?.load()).toBe('sv');
+    expect(persistence?.get()).toBe('sv');
   });
 
   it('returns undefined when cookie is missing', () => {
@@ -55,7 +55,7 @@ describe('cookie persistence', () => {
       name: COOKIE_NAME,
       type: 'cookie',
     });
-    expect(persistence?.load()).toBeUndefined();
+    expect(persistence?.get()).toBeUndefined();
   });
 
   it('returns undefined when cookie is empty string', () => {
@@ -64,7 +64,7 @@ describe('cookie persistence', () => {
       name: COOKIE_NAME,
       type: 'cookie',
     });
-    expect(persistence?.load()).toBeUndefined();
+    expect(persistence?.get()).toBeUndefined();
   });
 
   it('writes to document.cookie on save', () => {
@@ -72,7 +72,7 @@ describe('cookie persistence', () => {
       name: COOKIE_NAME,
       type: 'cookie',
     });
-    persistence?.save('fr');
+    persistence?.set('fr');
     expect(cookieJar).toContain(`${COOKIE_NAME}=fr`);
   });
 
@@ -81,7 +81,7 @@ describe('cookie persistence', () => {
       name: 'app-locale',
       type: 'cookie',
     });
-    persistence?.save('de');
+    persistence?.set('de');
     expect(cookieJar).toContain('app-locale=de');
   });
 });
@@ -114,7 +114,7 @@ describe('localStorage persistence', () => {
       key: STORAGE_KEY,
       type: 'localStorage',
     });
-    expect(persistence?.load()).toBe('sv');
+    expect(persistence?.get()).toBe('sv');
   });
 
   it('returns undefined when key is missing', () => {
@@ -122,7 +122,7 @@ describe('localStorage persistence', () => {
       key: STORAGE_KEY,
       type: 'localStorage',
     });
-    expect(persistence?.load()).toBeUndefined();
+    expect(persistence?.get()).toBeUndefined();
   });
 
   it('writes to localStorage on save', () => {
@@ -130,7 +130,7 @@ describe('localStorage persistence', () => {
       key: STORAGE_KEY,
       type: 'localStorage',
     });
-    persistence?.save('fr');
+    persistence?.set('fr');
     expect(storage.get(STORAGE_KEY)).toBe('fr');
   });
 
@@ -139,7 +139,7 @@ describe('localStorage persistence', () => {
       key: 'custom-key',
       type: 'localStorage',
     });
-    persistence?.save('de');
+    persistence?.set('de');
     expect(storage.get('custom-key')).toBe('de');
   });
 
@@ -154,7 +154,7 @@ describe('localStorage persistence', () => {
       key: STORAGE_KEY,
       type: 'localStorage',
     });
-    expect(persistence?.load()).toBeUndefined();
+    expect(persistence?.get()).toBeUndefined();
   });
 
   it('swallows setItem errors', () => {
@@ -170,7 +170,7 @@ describe('localStorage persistence', () => {
       key: STORAGE_KEY,
       type: 'localStorage',
     });
-    expect(() => persistence?.save('de')).not.toThrow();
+    expect(() => persistence?.set('de')).not.toThrow();
   });
 });
 
@@ -180,7 +180,7 @@ describe('persistence in non-browser environments', () => {
       name: COOKIE_NAME,
       type: 'cookie',
     });
-    expect(persistence?.load()).toBeUndefined();
+    expect(persistence?.get()).toBeUndefined();
   });
 
   it('cookie persistence save is a no-op when document is missing', () => {
@@ -188,7 +188,7 @@ describe('persistence in non-browser environments', () => {
       name: COOKIE_NAME,
       type: 'cookie',
     });
-    expect(() => persistence?.save('sv')).not.toThrow();
+    expect(() => persistence?.set('sv')).not.toThrow();
   });
 
   it('localStorage persistence load returns undefined when storage is missing', () => {
@@ -196,7 +196,7 @@ describe('persistence in non-browser environments', () => {
       key: STORAGE_KEY,
       type: 'localStorage',
     });
-    expect(persistence?.load()).toBeUndefined();
+    expect(persistence?.get()).toBeUndefined();
   });
 
   it('localStorage persistence save is a no-op when storage is missing', () => {
@@ -204,6 +204,6 @@ describe('persistence in non-browser environments', () => {
       key: STORAGE_KEY,
       type: 'localStorage',
     });
-    expect(() => persistence?.save('sv')).not.toThrow();
+    expect(() => persistence?.set('sv')).not.toThrow();
   });
 });

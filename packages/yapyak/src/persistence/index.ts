@@ -1,4 +1,5 @@
-import { parseCookie } from './parse-cookie.ts';
+import { cookie } from './cookie.ts';
+import { localStorage } from './local-storage.ts';
 
 export type PersistenceConfig =
   | { type: 'cookie'; name: string }
@@ -6,8 +7,8 @@ export type PersistenceConfig =
   | null;
 
 export interface Persistence {
-  load(): string | undefined;
-  save(locale: string): void;
+  get(): string | undefined;
+  set(locale: string): void;
 }
 
 export function createPersistence(
@@ -17,54 +18,9 @@ export function createPersistence(
     return null;
   }
   if (config.type === 'cookie') {
-    return cookiePersistence(config.name);
+    return cookie(config.name);
   }
-  return localStoragePersistence(config.key);
+  return localStorage(config.key);
 }
 
-function cookiePersistence(name: string): Persistence {
-  return {
-    load() {
-      if (typeof document === 'undefined') {
-        return undefined;
-      }
-      const cookies = parseCookie(document.cookie);
-      const value = cookies[name];
-      return value === '' ? undefined : value;
-    },
-    save(locale) {
-      if (typeof document === 'undefined') {
-        return;
-      }
-      const value = encodeURIComponent(locale);
-      // biome-ignore lint/suspicious/noDocumentCookie: Needed
-      document.cookie = `${name}=${value}; path=/; max-age=31536000; samesite=lax`;
-    },
-  };
-}
-
-function localStoragePersistence(key: string): Persistence {
-  return {
-    load() {
-      if (typeof localStorage === 'undefined') {
-        return undefined;
-      }
-      try {
-        const value = localStorage.getItem(key);
-        return value === null || value === '' ? undefined : value;
-      } catch {
-        return undefined;
-      }
-    },
-    save(locale) {
-      if (typeof localStorage === 'undefined') {
-        return;
-      }
-      try {
-        localStorage.setItem(key, locale);
-      } catch {
-        // ignore quota / privacy-mode errors
-      }
-    },
-  };
-}
+export { parseCookie } from './cookie.ts';

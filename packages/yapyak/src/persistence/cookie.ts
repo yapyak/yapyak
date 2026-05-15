@@ -1,3 +1,5 @@
+import type { Persistence } from './index.ts';
+
 export function parseCookie(header: string): Record<string, string> {
   const result: Record<string, string> = {};
   if (header === '') {
@@ -28,4 +30,25 @@ export function parseCookie(header: string): Record<string, string> {
     }
   }
   return result;
+}
+
+export function cookie(name: string): Persistence {
+  return {
+    get() {
+      if (typeof document === 'undefined') {
+        return undefined;
+      }
+      const cookies = parseCookie(document.cookie);
+      const value = cookies[name];
+      return value === '' ? undefined : value;
+    },
+    set(locale) {
+      if (typeof document === 'undefined') {
+        return;
+      }
+      const value = encodeURIComponent(locale);
+      // biome-ignore lint/suspicious/noDocumentCookie: yapyak persistence
+      document.cookie = `${name}=${value}; path=/; max-age=31536000; samesite=lax`;
+    },
+  };
 }

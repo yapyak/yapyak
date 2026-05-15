@@ -1,5 +1,5 @@
+import { parseCookie } from '../persistence/cookie.ts';
 import { createPersistence } from '../persistence/index.ts';
-import { parseCookie } from '../persistence/parse-cookie.ts';
 import { detectLocale } from './detect.ts';
 import {
   ACCEPT_LANGUAGE,
@@ -28,7 +28,7 @@ export function registerRequestHeadersReader(
 const persistence = createPersistence(PERSISTENCE);
 
 function initialLocale(): string {
-  const persisted = persistence?.load();
+  const persisted = persistence?.get();
   if (persisted !== undefined && LOCALES.includes(persisted)) {
     return persisted;
   }
@@ -99,7 +99,7 @@ export function setLocale(locale: string): void {
   currentLocale = locale;
   version++;
   snapshot = `${currentLocale}#${version}`;
-  persistence?.save(locale);
+  persistence?.set(locale);
   if (SYNC_HTML_LANG && typeof document !== 'undefined') {
     document.documentElement.lang = locale;
   }
