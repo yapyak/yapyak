@@ -1,7 +1,7 @@
 import { cookie } from './cookie.ts';
 import { localStorage } from './local-storage.ts';
 
-export type PersistenceConfig =
+type PersistenceConfig =
   | { type: 'cookie'; name: string }
   | { type: 'localStorage'; key: string }
   | null;

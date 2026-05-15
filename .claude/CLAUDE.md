@@ -2,7 +2,14 @@
 
 ## Project
 
-`lokale` is a monorepo of i18n libraries: a runtime (`core`), a compiler, a React adapter, a Vite plugin, and a CLI. The product name is "lokale" — package scope is `@lokale/*`. Library export is `createIntl()`; the convention for the variable is `intl`.
+`yapyak` is a Vite-first i18n library. The main package is published as `yapyak` (unscoped). Internal/private workspace packages live under the `@yapyak/*` scope (`@yapyak/biome-config`, `@yapyak/typescript-config`, `@yapyak/docs`). The runtime translation function is `t()`.
+
+Monorepo layout:
+- `packages/yapyak/` — the published library (core runtime, vite plugin, CLI, adapters, translators, persistence)
+- `packages/biome-config/` — shared biome config (`@yapyak/biome-config`, private)
+- `packages/typescript-config/` — shared tsconfig (`@yapyak/typescript-config`, private)
+- `docs/` — VitePress-free docs site built with Vite + TanStack Start (`@yapyak/docs`, private)
+- `examples/{react,svelte,vue}/` — minimal framework demos
 
 ## Conventions (strict)
 
@@ -47,7 +54,7 @@ A symbol only appears in `index.ts` if another module needs it. Internal helpers
 
 ### TypeScript
 
-- All library packages extend `@lokale/typescript-config/library`.
+- All library packages extend `@yapyak/typescript-config/library`.
 - `isolatedDeclarations: true` — every exported function and component must have an explicit return type.
 - Never use the `readonly` modifier.
 - Never use `as unknown as` to make code compile. Fix the type instead.
@@ -99,7 +106,9 @@ Do not write a "real" justification. Do not explain why the rule doesn't apply. 
 
 ### Build
 
-- No build step for libraries. Ship `src/` directly. `package.json` exports point to `./src/index.ts`.
+- `packages/yapyak/` is built with `tsc -p tsconfig.build.json` to `dist/`. `package.json` `exports` point to `./dist/**`.
+- The TS config uses `rewriteRelativeImportExtensions: true` so source imports use `.ts` extensions and the emit rewrites them to `.js`.
+- `isolatedDeclarations: true` is enforced — every exported function/component needs an explicit return type.
 
 ### Versioning
 

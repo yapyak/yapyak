@@ -25,8 +25,8 @@
       "default": "./dist/internal/index.js"
     },
     "./vite": {
-      "types": "./dist/vite/plugin.d.ts",
-      "default": "./dist/vite/plugin.js"
+      "types": "./dist/vite/index.d.ts",
+      "default": "./dist/vite/index.js"
     },
     "./adapter": {
       "types": "./dist/adapter/index.d.ts",

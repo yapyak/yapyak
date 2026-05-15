@@ -1,8 +1,10 @@
+import type { LocaleFile } from '../../vite/index.ts';
 import type { YapyakCliConfig } from '../load-config.ts';
 
+import { readLocaleFile } from '../../vite/index.ts';
 import { collect } from '../collect.ts';
 import { color, symbol } from '../tui.ts';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 
 export interface ExportOptions {
@@ -13,8 +15,7 @@ export interface ExportOptions {
   split: boolean;
 }
 
-type LocaleData = Record<string, Record<string, string>>;
-type Snapshot = Record<string, LocaleData>;
+type Snapshot = Record<string, LocaleFile>;
 
 export function exportCommand(options: ExportOptions): number {
   const { config, locales: localeFilter, out, projectRoot, split } = options;
@@ -115,7 +116,7 @@ function buildSnapshot(args: {
 }): Snapshot {
   const snapshot: Snapshot = {};
   for (const locale of args.targetLocales) {
-    snapshot[locale] = buildLocaleData({
+    snapshot[locale] = buildLocaleFile({
       isDefault: locale === args.defaultLocale,
       localePath: join(args.localesDir, `${locale}.json`),
       sourcesByFile: args.sourcesByFile,
@@ -124,13 +125,13 @@ function buildSnapshot(args: {
   return snapshot;
 }
 
-function buildLocaleData(args: {
+function buildLocaleFile(args: {
   isDefault: boolean;
   localePath: string;
   sourcesByFile: Map<string, Set<string>>;
-}): LocaleData {
+}): LocaleFile {
   const onDisk = args.isDefault ? {} : readLocaleFile(args.localePath);
-  const result: LocaleData = {};
+  const result: LocaleFile = {};
   for (const [fileId, sources] of args.sourcesByFile) {
     const entries: Record<string, string> = {};
     const fileEntries = onDisk[fileId] ?? {};
@@ -144,43 +145,6 @@ function buildLocaleData(args: {
     result[fileId] = entries;
   }
   return result;
-}
-
-function readLocaleFile(path: string): LocaleData {
-  if (!existsSync(path)) {
-    return {};
-  }
-  const content = readFileSync(path, 'utf-8');
-  if (content.trim() === '') {
-    return {};
-  }
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(content);
-  } catch {
-    return {};
-  }
-  if (typeof parsed !== 'object' || parsed === null) {
-    return {};
-  }
-  const out: LocaleData = {};
-  for (const [fileId, entries] of Object.entries(
-    parsed as Record<string, unknown>,
-  )) {
-    if (typeof entries !== 'object' || entries === null) {
-      continue;
-    }
-    const flat: Record<string, string> = {};
-    for (const [source, value] of Object.entries(
-      entries as Record<string, unknown>,
-    )) {
-      if (typeof value === 'string') {
-        flat[source] = value;
-      }
-    }
-    out[fileId] = flat;
-  }
-  return out;
 }
 
 function isInsideLocalesDir(

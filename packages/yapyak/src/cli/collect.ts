@@ -10,7 +10,7 @@ import {
   walkSourceFiles,
 } from '../vite/index.ts';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { join, relative, sep } from 'node:path';
+import { join } from 'node:path';
 
 export interface MissingEntry {
   fileId: string;
@@ -155,8 +155,4 @@ function readLocale(path: string): Record<string, Record<string, string>> {
     result[fileId] = flat;
   }
   return result;
-}
-
-export function relativeFileId(projectRoot: string, fullPath: string): string {
-  return relative(projectRoot, fullPath).split(sep).join('/');
 }

@@ -62,39 +62,3 @@ export function migrateLocales(
   }
   return { staleEntries };
 }
-
-export function markStale(
-  options: Pick<
-    MigrateLocalesOptions,
-    'fileId' | 'locales' | 'localesDir' | 'projectRoot' | 'defaultLocale'
-  > & {
-    sources: string[];
-  },
-): void {
-  for (const locale of options.locales) {
-    if (locale === options.defaultLocale) {
-      continue;
-    }
-    const localePath = join(
-      options.projectRoot,
-      options.localesDir,
-      `${locale}.json`,
-    );
-    const data = readLocaleFile(localePath);
-    const fileEntries = data[options.fileId];
-    if (fileEntries === undefined) {
-      continue;
-    }
-    let changed = false;
-    for (const source of options.sources) {
-      if (Object.hasOwn(fileEntries, source) && fileEntries[source] !== '') {
-        fileEntries[source] = '';
-        changed = true;
-      }
-    }
-    if (changed) {
-      data[options.fileId] = fileEntries;
-      writeLocaleFile(localePath, data);
-    }
-  }
-}

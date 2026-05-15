@@ -1,3 +1,5 @@
+import type { MessageContext } from '../translator/index.ts';
+
 import { deriveComponentName } from './derive-component-name.ts';
 import { extractSnippet } from './extract-snippet.ts';
 import { DynamicSourceError, parseSourceArg } from './parse-source-arg.ts';
@@ -6,12 +8,6 @@ import {
   sliceArguments,
   splitTopLevelArgs,
 } from './slice-arguments.ts';
-
-export interface MessageContext {
-  componentName: string;
-  enclosingElement: string | undefined;
-  snippet: string;
-}
 
 export interface ExtractedMessage {
   column: number;

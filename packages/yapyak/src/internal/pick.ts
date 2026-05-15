@@ -1,8 +1,6 @@
 import { getDefaultLocale, getLocale } from '../locale/index.ts';
 import { hasPlaceholder, interpolate, runTrackers } from '../runtime/index.ts';
 
-export type Variants = Record<string, string>;
-
 /**
  * @internal
  *
@@ -10,7 +8,7 @@ export type Variants = Record<string, string>;
  * Do not import directly — use `t()` from `'yapyak'` instead.
  */
 export function pick(
-  variants: Variants,
+  variants: Record<string, string>,
   params?: Record<string, unknown>,
   fixedLocale?: string,
 ): string {

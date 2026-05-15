@@ -15,7 +15,6 @@
     "@vitejs/plugin-vue": "catalog:",
     "@yapyak/typescript-config": "workspace:*",
     "typescript": "catalog:",
-    "vite": "catalog:",
-    "vue-tsc": "catalog:"
+    "vite": "catalog:"
   }
 }

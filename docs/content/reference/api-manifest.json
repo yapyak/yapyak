@@ -329,6 +329,106 @@
       "exports": [
         {
           "deprecated": null,
+          "description": "",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/vite/auto-translate.ts",
+            "line": 35
+          },
+          "name": "autoTranslate",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "options",
+              "optional": false,
+              "type": "AutoTranslateOptions"
+            }
+          ],
+          "returnDescription": "",
+          "returnType": "Promise<AutoTranslateResult>",
+          "signature": "autoTranslate(options: AutoTranslateOptions): Promise<AutoTranslateResult>"
+        },
+        {
+          "deprecated": null,
+          "description": "",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/vite/extract-messages.ts",
+            "line": 28
+          },
+          "name": "extractMessages",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "options",
+              "optional": false,
+              "type": "ExtractMessagesOptions"
+            }
+          ],
+          "returnDescription": "",
+          "returnType": "ExtractedMessage[]",
+          "signature": "extractMessages(options: ExtractMessagesOptions): ExtractedMessage[]"
+        },
+        {
+          "deprecated": null,
+          "description": "",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/vite/sync-locale-files.ts",
+            "line": 76
+          },
+          "name": "readLocaleFile",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "path",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "returnDescription": "",
+          "returnType": "LocaleFile",
+          "signature": "readLocaleFile(path: string): LocaleFile"
+        },
+        {
+          "deprecated": null,
+          "description": "",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/vite/walk-source-files.ts",
+            "line": 16
+          },
+          "name": "walkSourceFiles",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "options",
+              "optional": false,
+              "type": "WalkOptions"
+            }
+          ],
+          "returnDescription": "",
+          "returnType": "WalkedFile[]",
+          "signature": "walkSourceFiles(options: WalkOptions): WalkedFile[]"
+        },
+        {
+          "deprecated": null,
           "description": "The yapyak Vite plugin.\n\nExtracts `t()` calls at build time, syncs locale files, optionally fills\nmissing translations through an AI translator, and inlines variants at\neach call site.",
           "examples": [
             "```ts\nimport { defineConfig } from 'vite';\nimport { yapyak } from 'yapyak/vite';\nimport { anthropic } from 'yapyak/translator';\n\nexport default defineConfig({\n  plugins: [\n    yapyak({\n      defaultLocale: 'en',\n      translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),\n    }),\n  ],\n});\n```"
@@ -353,6 +453,110 @@
           "returnDescription": "A Vite plugin.",
           "returnType": "Plugin<any>",
           "signature": "yapyak(options?: YapyakOptions): Plugin<any>"
+        },
+        {
+          "deprecated": null,
+          "description": "",
+          "examples": [],
+          "location": {
+            "column": 14,
+            "file": "src/vite/normalize-options.ts",
+            "line": 102
+          },
+          "name": "DEFAULT_EXCLUDE",
+          "tags": [],
+          "kind": "variable",
+          "signature": "const DEFAULT_EXCLUDE: string[]",
+          "type": "string[]"
+        },
+        {
+          "deprecated": null,
+          "description": "",
+          "examples": [],
+          "location": {
+            "column": 14,
+            "file": "src/vite/normalize-options.ts",
+            "line": 98
+          },
+          "name": "DEFAULT_INCLUDE",
+          "tags": [],
+          "kind": "variable",
+          "signature": "const DEFAULT_INCLUDE: string[]",
+          "type": "string[]"
+        },
+        {
+          "deprecated": null,
+          "description": "",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/vite/extract-messages.ts",
+            "line": 26
+          },
+          "name": "DynamicMessageError",
+          "tags": [],
+          "kind": "class",
+          "members": [],
+          "signature": "class DynamicMessageError"
+        },
+        {
+          "deprecated": null,
+          "description": "",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/vite/extract-messages.ts",
+            "line": 12
+          },
+          "name": "ExtractedMessage",
+          "tags": [],
+          "callSignatures": [],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "column",
+              "optional": false,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "context",
+              "optional": false,
+              "type": "MessageContext"
+            },
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "fileId",
+              "optional": false,
+              "type": "string"
+            },
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "fixedLocale",
+              "optional": false,
+              "type": "string | undefined"
+            },
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "line",
+              "optional": false,
+              "type": "number"
+            },
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "source",
+              "optional": false,
+              "type": "string"
+            }
+          ],
+          "signature": "export interface ExtractedMessage {\n  column: number;\n  context: MessageContext;\n  fileId: string;\n  fixedLocale: string | undefined;\n  line: number;\n  source: string;\n}"
         },
         {
           "deprecated": null,
@@ -433,10 +637,25 @@
             }
           ],
           "signature": "export interface YapyakOptions {\n  /** Detect locale from the `Accept-Language` header on the server. */\n  acceptLanguage?: boolean;\n  /** The default locale. Inferred from locale files if omitted. */\n  defaultLocale?: string;\n  /** Glob patterns to exclude from extraction. */\n  exclude?: FilterPattern;\n  /** Glob patterns to include for extraction. */\n  include?: FilterPattern;\n  /** Directory..."
+        },
+        {
+          "deprecated": null,
+          "description": "",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/vite/sync-locale-files.ts",
+            "line": 6
+          },
+          "name": "LocaleFile",
+          "tags": [],
+          "kind": "type",
+          "resolvedType": "LocaleFile",
+          "signature": "export type LocaleFile = Record<string, Record<string, string>>;"
         }
       ],
       "id": "yapyak/vite",
-      "sourcePath": "src/vite/plugin.ts",
+      "sourcePath": "src/vite/index.ts",
       "subpath": "./vite"
     },
     {

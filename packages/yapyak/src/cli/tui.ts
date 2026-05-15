@@ -1,6 +1,6 @@
 const ESC = '\x1b[';
 
-export interface ColorPalette {
+interface ColorPalette {
   bold(text: string): string;
   cyan(text: string): string;
   dim(text: string): string;
@@ -18,7 +18,7 @@ export const color: ColorPalette = {
   yellow: (s) => `${ESC}33m${s}${ESC}0m`,
 };
 
-export interface SymbolSet {
+interface SymbolSet {
   arrow: string;
   bullet: string;
   check: string;
@@ -46,7 +46,7 @@ const padEndVisual = (value: string, width: number): string => {
   return len >= width ? value : value + ' '.repeat(width - len);
 };
 
-export interface Spinner {
+interface Spinner {
   fail(text: string): void;
   succeed(text: string): void;
   update(text: string): void;
@@ -116,7 +116,7 @@ export async function confirm(
   return /^y(es)?$/i.test(answer);
 }
 
-export interface TableOptions {
+interface TableOptions {
   align?: Array<'left' | 'right'>;
   headers: string[];
   rows: string[][];

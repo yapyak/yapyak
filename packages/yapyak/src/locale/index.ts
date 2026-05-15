@@ -1,4 +1,3 @@
-export { detectLocale, parseAcceptLanguage } from './detect.ts';
 export {
   getDefaultLocale,
   getLocale,
