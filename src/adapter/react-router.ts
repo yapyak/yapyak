@@ -1,6 +1,6 @@
 import type { MiddlewareFunction } from 'react-router';
 
-import { withRequest } from './index.js';
+import { withRequest } from './index';
 
 /**
  * React Router 7 framework-mode middleware that wires yapyak's per-request

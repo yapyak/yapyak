@@ -1,6 +1,6 @@
-import { parseCookie } from '../parse-cookie.js';
-import { detectLocale } from './detect.js';
-import { createPersistence } from './persistence.js';
+import { parseCookie } from '../parse-cookie';
+import { detectLocale } from './detect';
+import { createPersistence } from './persistence';
 import {
   ACCEPT_LANGUAGE,
   DEFAULT_LOCALE,

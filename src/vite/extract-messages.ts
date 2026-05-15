@@ -1,11 +1,11 @@
-import { deriveComponentName } from './derive-component-name.js';
-import { extractSnippet } from './extract-snippet.js';
-import { DynamicSourceError, parseSourceArg } from './parse-source-arg.js';
+import { deriveComponentName } from './derive-component-name';
+import { extractSnippet } from './extract-snippet';
+import { DynamicSourceError, parseSourceArg } from './parse-source-arg';
 import {
   locate,
   sliceArguments,
   splitTopLevelArgs,
-} from './slice-arguments.js';
+} from './slice-arguments';
 
 export interface MessageContext {
   componentName: string;

@@ -8,8 +8,8 @@ vi.mock('virtual:yapyak', () => ({
   SYNC_HTML_LANG: false,
 }));
 
-const { getLocale, resetLocaleStore } = await import('../locale/store.js');
-const { getRequestHeaders, withRequest } = await import('./index.js');
+const { getLocale, resetLocaleStore } = await import('../locale/store');
+const { getRequestHeaders, withRequest } = await import('./index');
 
 function makeRequest(
   headers: { acceptLanguage?: string; cookie?: string } = {},

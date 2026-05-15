@@ -9,9 +9,9 @@ vi.mock('virtual:yapyak', () => ({
   SYNC_HTML_LANG: false,
 }));
 
-const { getLocale, resetLocaleStore } = await import('../locale/store.js');
-const { IntlProvider } = await import('./intl-provider.js');
-const { useLocale } = await import('./use-locale.js');
+const { getLocale, resetLocaleStore } = await import('../locale/store');
+const { IntlProvider } = await import('./intl-provider');
+const { useLocale } = await import('./use-locale');
 
 afterEach(() => {
   resetLocaleStore();

@@ -1,6 +1,6 @@
-import { getDefaultLocale, getLocale } from '../locale/store.js';
-import { hasPlaceholder, interpolate } from '../runtime/interpolate.js';
-import { runTrackers } from '../runtime/tracker.js';
+import { getDefaultLocale, getLocale } from '../locale/store';
+import { hasPlaceholder, interpolate } from '../runtime/interpolate';
+import { runTrackers } from '../runtime/tracker';
 
 export type Variants = Record<string, string>;
 

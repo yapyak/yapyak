@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
-    "moduleResolution": "bundler",
-    "strict": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "verbatimModuleSyntax": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "noImplicitOverride": true,
+    "moduleResolution": "bundler",
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true
+    "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "verbatimModuleSyntax": true
   }
 }

@@ -1,3 +1,3 @@
-export type { ReactiveLocale } from './locale.svelte.js';
+export type { ReactiveLocale } from './locale.svelte';
 
-export { locale } from './locale.svelte.js';
+export { locale } from './locale.svelte';

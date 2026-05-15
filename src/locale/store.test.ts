@@ -16,7 +16,7 @@ const {
   resetLocaleStore,
   setLocale,
   subscribeLocale,
-} = await import('./store.js');
+} = await import('./store');
 
 afterEach(() => {
   resetLocaleStore();

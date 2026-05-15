@@ -1,6 +1,6 @@
-import type { Rename } from './detect-renames.js';
+import type { Rename } from './detect-renames';
 
-import { readLocaleFile, writeLocaleFile } from './sync-locale-files.js';
+import { readLocaleFile, writeLocaleFile } from './sync-locale-files';
 import { join } from 'node:path';
 
 export interface MigrateLocalesOptions {

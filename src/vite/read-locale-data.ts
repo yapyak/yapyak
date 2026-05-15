@@ -1,4 +1,4 @@
-import type { LocaleData } from './transform-source.js';
+import type { LocaleData } from './transform-source';
 
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';

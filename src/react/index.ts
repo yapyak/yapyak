@@ -1,4 +1,4 @@
-export type { IntlProviderProps } from './intl-provider.js';
+export type { IntlProviderProps } from './intl-provider';
 
-export { IntlProvider } from './intl-provider.js';
-export { useLocale } from './use-locale.js';
+export { IntlProvider } from './intl-provider';
+export { useLocale } from './use-locale';

@@ -1,9 +1,9 @@
-export type { T, TIn } from './runtime/t.js';
+export type { T, TIn } from './runtime/t';
 
 export {
   getDefaultLocale,
   getLocale,
   getLocales,
   setLocale,
-} from './locale/store.js';
-export { t } from './runtime/t.js';
+} from './locale/store';
+export { t } from './runtime/t';

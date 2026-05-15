@@ -1,8 +1,8 @@
-import type { ContextLevel, Translator } from './index.js';
+import type { ContextLevel, Translator } from './index';
 
-import { fetchWithRetry } from './fetch.js';
-import { createTranslator } from './index.js';
-import { buildSystem, stripCodeFence } from './prompt.js';
+import { fetchWithRetry } from './fetch';
+import { createTranslator } from './index';
+import { buildSystem, stripCodeFence } from './prompt';
 
 /** Options for the Gemini translator. */
 export interface GeminiOptions {

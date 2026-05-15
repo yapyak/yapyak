@@ -1,4 +1,4 @@
-import { parseCookie } from '../parse-cookie.js';
+import { parseCookie } from '../parse-cookie';
 
 export type PersistenceConfig =
   | { type: 'cookie'; name: string }

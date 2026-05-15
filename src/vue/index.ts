@@ -1,1 +1,1 @@
-export { locale } from './locale.js';
+export { locale } from './locale';

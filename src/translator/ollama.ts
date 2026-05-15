@@ -1,8 +1,8 @@
-import type { ContextLevel, Translator } from './index.js';
+import type { ContextLevel, Translator } from './index';
 
-import { fetchWithRetry } from './fetch.js';
-import { createTranslator } from './index.js';
-import { buildSystem } from './prompt.js';
+import { fetchWithRetry } from './fetch';
+import { createTranslator } from './index';
+import { buildSystem } from './prompt';
 
 /** Options for the Ollama translator. */
 export interface OllamaOptions {

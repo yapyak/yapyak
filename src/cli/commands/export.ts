@@ -1,7 +1,7 @@
-import type { YapyakCliConfig } from '../load-config.js';
+import type { YapyakCliConfig } from '../load-config';
 
-import { collect } from '../collect.js';
-import { color, symbol } from '../tui.js';
+import { collect } from '../collect';
+import { color, symbol } from '../tui';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 

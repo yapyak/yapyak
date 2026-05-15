@@ -1,12 +1,12 @@
-import type { Translator } from '../../translator/index.js';
-import type { YapyakCliConfig } from '../load-config.js';
+import type { Translator } from '../../translator/index';
+import type { YapyakCliConfig } from '../load-config';
 
-import { anthropic } from '../../translator/anthropic.js';
-import { openai } from '../../translator/openai.js';
-import { autoTranslate } from '../../vite/auto-translate.js';
-import { collect } from '../collect.js';
-import { loadEnv } from '../load-env.js';
-import { color, header, progressBar, spinner, symbol } from '../tui.js';
+import { anthropic } from '../../translator/anthropic';
+import { openai } from '../../translator/openai';
+import { autoTranslate } from '../../vite/auto-translate';
+import { collect } from '../collect';
+import { loadEnv } from '../load-env';
+import { color, header, progressBar, spinner, symbol } from '../tui';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 

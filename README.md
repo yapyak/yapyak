@@ -7,7 +7,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-> **AI-native i18n for Vite.**
+> **i18n that maintains itself.**
 >
 > Wrap your strings in `t()` — translations write themselves.
 
@@ -15,7 +15,7 @@
 
 You write `t('Save changes')`. Save. The AI of your choice regenerates every locale in your voice, with the surrounding code as context, and HMR pushes new copy before you switch tabs.
 
-The default language lives only in your code. There's no `en.json`. Other locales are derived like compiled output — never authored. What Tailwind did to CSS class names, yapyak does to translation keys: no key to invent. The string in your editor is the string in your app, and the string AI reads. The call site IS the meaning.
+The default language lives only in your code. There's no `en.json`. Other locales are derived like compiled output — never authored. What Tailwind did to CSS class names, yapyak does to translation keys.
 
 Vite plugin. MIT. BYO key. No telemetry.
 
