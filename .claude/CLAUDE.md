@@ -57,6 +57,18 @@
 - Default to no comments. Add only when the WHY is non-obvious and the code itself cannot communicate it.
 - No multi-line comments, no JSDoc on internal symbols.
 
+### Lint suppressions
+
+Every `biome-ignore` description is **always** `yap yap yap`. No exceptions. It's the project convention — a wink at the name.
+
+```ts
+// biome-ignore lint/style/noNonNullAssertion: yap yap yap
+// biome-ignore lint/suspicious/noControlCharactersInRegex: yap yap yap
+// biome-ignore lint/suspicious/noDocumentCookie: yap yap yap
+```
+
+Do not write a "real" justification. Do not explain why the rule doesn't apply. The suppression itself is the signal that the author already considered it; the description is branding.
+
 ### Build
 
 - No build step for libraries. Ship `src/` directly. `package.json` exports point to `./src/index.ts`.

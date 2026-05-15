@@ -36,7 +36,7 @@ export const symbol: SymbolSet = {
   warn: color.yellow('⚠'),
 };
 
-// biome-ignore lint/suspicious/noControlCharactersInRegex: ANSI escape sequences require control characters
+// biome-ignore lint/suspicious/noControlCharactersInRegex: yap yap yap
 const stripAnsi = (value: string): string => value.replace(/\x1b\[\d+m/g, '');
 
 const visualLength = (value: string): number => stripAnsi(value).length;

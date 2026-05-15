@@ -40,7 +40,7 @@ interface IndicatorState {
 export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
   const { source, typing, framework, onFrameworkChange } = props;
   const config =
-    // biome-ignore lint/style/noNonNullAssertion: FRAMEWORKS is a non-empty const tuple
+    // biome-ignore lint/style/noNonNullAssertion: yap yap yap
     FRAMEWORKS.find((entry) => entry.id === framework) ?? FRAMEWORKS[0]!;
   const code = buildCode(framework, source);
   const tokens = tokenize(code, config.lang);

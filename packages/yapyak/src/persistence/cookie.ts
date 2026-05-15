@@ -35,20 +35,20 @@ export function parseCookie(header: string): Record<string, string> {
 export function cookie(name: string): Persistence {
   return {
     get() {
-      if (typeof document === 'undefined') {
+      if (typeof globalThis.document === 'undefined') {
         return undefined;
       }
-      const cookies = parseCookie(document.cookie);
+      const cookies = parseCookie(globalThis.document.cookie);
       const value = cookies[name];
       return value === '' ? undefined : value;
     },
     set(locale) {
-      if (typeof document === 'undefined') {
+      if (typeof globalThis.document === 'undefined') {
         return;
       }
       const value = encodeURIComponent(locale);
-      // biome-ignore lint/suspicious/noDocumentCookie: yapyak persistence
-      document.cookie = `${name}=${value}; path=/; max-age=31536000; samesite=lax`;
+      // biome-ignore lint/suspicious/noDocumentCookie: yap yap yap
+      globalThis.document.cookie = `${name}=${value}; path=/; max-age=31536000; samesite=lax`;
     },
   };
 }
