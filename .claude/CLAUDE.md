@@ -110,6 +110,10 @@ Do not write a "real" justification. Do not explain why the rule doesn't apply. 
 - The TS config uses `rewriteRelativeImportExtensions: true` so source imports use `.ts` extensions and the emit rewrites them to `.js`.
 - `isolatedDeclarations: true` is enforced — every exported function/component needs an explicit return type.
 
+### Vite-plugin compile target
+
+`yapyak/internal` is a public subpath that **only** exists for the Vite plugin's emitted code (transformed `t()` calls). Users should never import from it manually. The single export (`pick`) is the runtime side of the compiler — calling it directly bypasses placeholder type-checking that the plugin enforces at compile time.
+
 ### Versioning
 
 - Use `workspace:*` for internal package references.

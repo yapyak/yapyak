@@ -87,7 +87,7 @@
           "location": {
             "column": 14,
             "file": "src/runtime/t.ts",
-            "line": 120
+            "line": 70
           },
           "name": "t",
           "tags": [],
@@ -119,7 +119,7 @@
           "location": {
             "column": 1,
             "file": "src/runtime/t.ts",
-            "line": 64
+            "line": 14
           },
           "name": "T",
           "tags": [],
@@ -163,7 +163,7 @@
           "location": {
             "column": 1,
             "file": "src/runtime/t.ts",
-            "line": 76
+            "line": 26
           },
           "name": "TIn",
           "tags": [],
@@ -359,7 +359,7 @@
           "location": {
             "column": 1,
             "file": "src/vite/extract-messages.ts",
-            "line": 28
+            "line": 29
           },
           "name": "extractMessages",
           "tags": [],
@@ -491,7 +491,7 @@
           "location": {
             "column": 1,
             "file": "src/vite/extract-messages.ts",
-            "line": 26
+            "line": 27
           },
           "name": "DynamicMessageError",
           "tags": [],
@@ -506,7 +506,7 @@
           "location": {
             "column": 1,
             "file": "src/vite/extract-messages.ts",
-            "line": 12
+            "line": 13
           },
           "name": "ExtractedMessage",
           "tags": [],

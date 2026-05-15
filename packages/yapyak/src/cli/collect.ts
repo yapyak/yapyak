@@ -7,9 +7,10 @@ import {
   DEFAULT_INCLUDE,
   DynamicMessageError,
   extractMessages,
+  readLocaleFile,
   walkSourceFiles,
 } from '../vite/index.ts';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 export interface MissingEntry {
@@ -92,7 +93,7 @@ export function collect(options: CollectOptions): CollectResult {
       perLocale[locale] = { missing: 0, translated: totalMessages };
       continue;
     }
-    const data = readLocale(join(localesPath, `${locale}.json`));
+    const data = readLocaleFile(join(localesPath, `${locale}.json`));
     let translated = 0;
     let missingCount = 0;
     for (const [fileId, sources] of Object.entries(sourcesByFile)) {
@@ -118,41 +119,4 @@ export function collect(options: CollectOptions): CollectResult {
     perLocale,
     totalMessages,
   };
-}
-
-function readLocale(path: string): Record<string, Record<string, string>> {
-  if (!existsSync(path)) {
-    return {};
-  }
-  const content = readFileSync(path, 'utf-8');
-  if (content.trim() === '') {
-    return {};
-  }
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(content);
-  } catch {
-    return {};
-  }
-  if (typeof parsed !== 'object' || parsed === null) {
-    return {};
-  }
-  const result: Record<string, Record<string, string>> = {};
-  for (const [fileId, entries] of Object.entries(
-    parsed as Record<string, unknown>,
-  )) {
-    if (typeof entries !== 'object' || entries === null) {
-      continue;
-    }
-    const flat: Record<string, string> = {};
-    for (const [source, value] of Object.entries(
-      entries as Record<string, unknown>,
-    )) {
-      if (typeof value === 'string') {
-        flat[source] = value;
-      }
-    }
-    result[fileId] = flat;
-  }
-  return result;
 }
