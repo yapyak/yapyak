@@ -89,6 +89,7 @@
   "peerDependencies": {
     "@sveltejs/kit": ">=2",
     "astro": ">=5",
+    "nitropack": ">=2",
     "nuxt": ">=3",
     "react": ">=19",
     "react-router": ">=7.9",
@@ -101,6 +102,9 @@
       "optional": true
     },
     "astro": {
+      "optional": true
+    },
+    "nitropack": {
       "optional": true
     },
     "nuxt": {

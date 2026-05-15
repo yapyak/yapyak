@@ -1,6 +1,8 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
+  clean: true,
+  dts: true,
   entry: [
     'src/index.ts',
     'src/internal/index.ts',
@@ -21,23 +23,9 @@ export default defineConfig({
     'src/translator/ollama.ts',
     'src/cli/run.ts',
   ],
+  external: ['astro:middleware', 'virtual:yapyak'],
   format: 'esm',
-  dts: true,
-  clean: true,
-  splitting: false,
   outDir: 'dist',
+  splitting: false,
   target: 'node22',
-  external: [
-    'nitropack',
-    'nitropack/runtime',
-    'nitropack/types',
-    '@sveltejs/kit',
-    'astro',
-    'astro:middleware',
-    'react',
-    'react-router',
-    'vite',
-    'virtual:yapyak',
-    'vue',
-  ],
 });
