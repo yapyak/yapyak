@@ -28,6 +28,35 @@ t('{gender, select, male {his} female {her} other {their}} cart', { gender: 'fem
 
 CLDR plural categories resolve per-locale via `Intl.PluralRules`. All categories ship in, including the four Polish plural forms.
 
+### Type-checking limits
+
+TypeScript reads placeholders straight from the source literal. The trade-off: template-literal types can't fully parse nested ICU, so a few edge cases slip through.
+
+**Caught at compile time:**
+
+- Missing simple placeholder: `t('Hello {name}')` without `name` → error
+- Typo in placeholder name: `{ nme: 'Alex' }` → error
+- Missing ICU outer key: `t('{count, plural, ...}')` without `count` → error
+- Typo in ICU outer key: `{ cnt: 1 }` → error
+
+**Not caught:**
+
+- Wrong value type for ICU: `{ count: 'three' }` for a plural pattern. ICU's runtime coerces strings to numbers, so this rarely causes real bugs.
+- Nested placeholders inside ICU branches: `author` in the example below isn't extracted by the type system. Extra keys are accepted without checking.
+
+```tsx
+// `author` runs fine at runtime, but TS only enforces `count`
+t('You have {count, plural, one {# item by {author}} other {# items by {author}}}',
+  { count: 1, author: 'Alex' });
+```
+
+If you need strict typing for nested ICU, declare a typed variable:
+
+```tsx
+const params: { count: number; author: string } = { count: 1, author: 'Alex' };
+t('You have {count, plural, one {# item by {author}} other {# items by {author}}}', params);
+```
+
 ## Forced locale
 
 `t.in()` returns a one-off t locked to a specific locale. The locale is resolved at call time, so a variable works:

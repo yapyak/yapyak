@@ -6,29 +6,33 @@ type Trim<Source extends string> = Source extends ` ${infer Rest}`
 
 type SimpleParam<Placeholder extends string> =
   Trim<Placeholder> extends ''
-    ? Record<string, never>
-    : { [Key in Trim<Placeholder>]: string | number };
+    ? unknown
+    : Placeholder extends `${string}{${string}`
+      ? unknown
+      : { [Key in Trim<Placeholder>]: string | number };
 
-type IcuType<Format extends string> = Format extends
-  | 'plural'
-  | 'selectordinal'
-  | 'number'
-  ? number
-  : Format extends 'select'
-    ? string
-    : Format extends `date${string}` | `time${string}`
+type IcuValueType<Format extends string> =
+  Trim<Format> extends 'plural' | 'selectordinal' | 'number'
+    ? number
+    : Trim<Format> extends 'date' | 'time'
       ? Date | number
-      : unknown;
+      : Trim<Format> extends 'select'
+        ? string
+        : string | number | Date;
+
+type IcuParam<Name extends string, Format extends string = ''> = {
+  [Key in Trim<Name>]: IcuValueType<Format>;
+} & Record<string, unknown>;
 
 type ResolveIcuPattern<
   Source extends string,
   Accumulated,
-> = Source extends `${string}{${infer Name}, ${infer Format},${string}}${infer Rest}`
-  ? ExtractParams<Rest, Accumulated & { [Key in Trim<Name>]: IcuType<Format> }>
-  : Source extends `${string}{${infer Name},${string}}${infer Rest}`
-    ? ExtractParams<Rest, Accumulated & { [Key in Trim<Name>]: unknown }>
-    : Accumulated extends unknown
-      ? { [Key in keyof Accumulated]: Accumulated[Key] }
+> = Source extends `${string}{${infer Name},${infer Format},${string}}}${infer Rest}`
+  ? ExtractParams<Rest, Accumulated & IcuParam<Name, Format>>
+  : Source extends `${string}{${infer Name},${infer Format},${string}}${infer Rest}`
+    ? ExtractParams<Rest, Accumulated & IcuParam<Name, Format>>
+    : Source extends `${string}{${infer Name},${string}}${infer Rest}`
+      ? ExtractParams<Rest, Accumulated & IcuParam<Name>>
       : Accumulated;
 
 export type ExtractParams<
@@ -38,6 +42,4 @@ export type ExtractParams<
   ? Placeholder extends `${string},${string}`
     ? ResolveIcuPattern<Source, Accumulated>
     : ExtractParams<Rest, Accumulated & SimpleParam<Placeholder>>
-  : Accumulated extends unknown
-    ? { [Key in keyof Accumulated]: Accumulated[Key] }
-    : Accumulated;
+  : Accumulated;
