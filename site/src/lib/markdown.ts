@@ -6,7 +6,6 @@ import type {
 import type { Lang } from './utils/tokenize.js';
 
 import { marked } from 'marked';
-import { parse as parseYaml } from 'yaml';
 
 import { tokenize } from './utils/tokenize.js';
 
@@ -285,13 +284,24 @@ function splitFrontmatter(source: string): {
   if (closeIndex === -1) {
     return { body: source, frontmatter: {} };
   }
-  const yamlText = lines.slice(1, closeIndex).join('\n');
   const body = lines.slice(closeIndex + 1).join('\n');
-  const parsed = parseYaml(yamlText);
-  if (parsed === null || typeof parsed !== 'object') {
-    return { body, frontmatter: {} };
+  const frontmatter: Record<string, unknown> = {};
+  for (const line of lines.slice(1, closeIndex)) {
+    const separatorIndex = line.indexOf(':');
+    if (separatorIndex === -1) {
+      continue;
+    }
+    const key = line.slice(0, separatorIndex).trim();
+    const rawValue = line.slice(separatorIndex + 1).trim();
+    if (key === '') {
+      continue;
+    }
+    const numeric = Number(rawValue);
+    frontmatter[key] = rawValue !== '' && Number.isFinite(numeric)
+      ? numeric
+      : rawValue;
   }
-  return { body, frontmatter: parsed as Record<string, unknown> };
+  return { body, frontmatter };
 }
 
 function slugify(text: string): string {

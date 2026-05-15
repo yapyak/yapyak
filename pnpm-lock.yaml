@@ -75,9 +75,6 @@ catalogs:
     vue-tsc:
       specifier: 3.2.8
       version: 3.2.8
-    yaml:
-      specifier: 2.8.4
-      version: 2.8.4
 
 importers:
 
@@ -86,9 +83,6 @@ importers:
       svelte:
         specifier: '>=5'
         version: 5.55.5
-      yaml:
-        specifier: 'catalog:'
-        version: 2.8.4
     devDependencies:
       '@biomejs/biome':
         specifier: 'catalog:'
@@ -271,9 +265,6 @@ importers:
       vite:
         specifier: 'catalog:'
         version: 8.0.12(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)
-      yaml:
-        specifier: 'catalog:'
-        version: 2.8.4
 
 packages:
 
@@ -7160,7 +7151,8 @@ snapshots:
 
   yallist@3.1.1: {}
 
-  yaml@2.8.4: {}
+  yaml@2.8.4:
+    optional: true
 
   yargs-parser@22.0.0: {}
 

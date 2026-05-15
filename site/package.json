@@ -27,7 +27,6 @@
     "lightningcss": "catalog:",
     "marked": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:",
-    "yaml": "catalog:"
+    "vite": "catalog:"
   }
 }
