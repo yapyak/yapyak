@@ -297,9 +297,8 @@ function splitFrontmatter(source: string): {
       continue;
     }
     const numeric = Number(rawValue);
-    frontmatter[key] = rawValue !== '' && Number.isFinite(numeric)
-      ? numeric
-      : rawValue;
+    frontmatter[key] =
+      rawValue !== '' && Number.isFinite(numeric) ? numeric : rawValue;
   }
   return { body, frontmatter };
 }

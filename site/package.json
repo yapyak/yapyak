@@ -23,7 +23,7 @@
   "devDependencies": {
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@yapyak/tsconfig": "workspace:*",
+    "@yapyak/typescript-config": "workspace:*",
     "lightningcss": "catalog:",
     "marked": "catalog:",
     "typescript": "catalog:",

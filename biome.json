@@ -1,35 +1,6 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.4.13/schema.json",
-  "assist": {
-    "actions": {
-      "source": {
-        "noDuplicateClasses": "on",
-        "organizeImports": {
-          "level": "on",
-          "options": {
-            "groups": [
-              { "type": true },
-              ":BLANK_LINE:",
-              ":PACKAGE:",
-              ":BLANK_LINE:",
-              ":ALIAS:",
-              ":BLANK_LINE:",
-              ["./**", "../**"]
-            ]
-          }
-        },
-        "useSortedAttributes": "on",
-        "useSortedInterfaceMembers": "on",
-        "useSortedKeys": "on",
-        "useSortedProperties": "on"
-      }
-    }
-  },
-  "css": {
-    "parser": {
-      "cssModules": true
-    }
-  },
+  "extends": ["@yapyak/biome-config"],
   "files": {
     "ignoreUnknown": true,
     "includes": [
@@ -40,67 +11,7 @@
       "**/*.jsonc",
       "!**/dist",
       "!**/node_modules",
-      "!**/routeTree.gen.*",
-      "!**/api-manifest.json"
+      "!**/routeTree.gen.*"
     ]
-  },
-  "formatter": {
-    "indentStyle": "space",
-    "indentWidth": 2,
-    "lineEnding": "lf",
-    "lineWidth": 80
-  },
-  "javascript": {
-    "formatter": {
-      "attributePosition": "multiline",
-      "quoteStyle": "single",
-      "semicolons": "always",
-      "trailingCommas": "all"
-    }
-  },
-  "json": {
-    "parser": {
-      "allowComments": true
-    }
-  },
-  "linter": {
-    "enabled": true,
-    "rules": {
-      "complexity": {
-        "noBannedTypes": "off"
-      },
-      "correctness": {
-        "noUnusedImports": "error",
-        "useExhaustiveDependencies": "warn"
-      },
-      "recommended": true,
-      "style": {
-        "noDescendingSpecificity": "off",
-        "useConsistentCurlyBraces": "error",
-        "useImportType": {
-          "level": "error",
-          "options": {
-            "style": "separatedType"
-          }
-        }
-      }
-    }
-  },
-  "overrides": [
-    {
-      "assist": {
-        "actions": {
-          "source": {
-            "useSortedKeys": "off"
-          }
-        }
-      },
-      "includes": ["**/package.json"]
-    }
-  ],
-  "vcs": {
-    "clientKind": "git",
-    "enabled": true,
-    "useIgnoreFile": true
   }
 }

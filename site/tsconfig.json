@@ -1,5 +1,4 @@
 {
-  "extends": "@yapyak/tsconfig/react",
   "compilerOptions": {
     "paths": {
       "#components/*": ["./src/components/*"],
@@ -7,5 +6,6 @@
       "#lib/*": ["./src/lib/*"]
     }
   },
+  "extends": "@yapyak/typescript-config/react",
   "include": ["src/**/*"]
 }

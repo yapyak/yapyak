@@ -1,4 +1,4 @@
 {
-  "extends": "@yapyak/tsconfig/svelte",
+  "extends": "@yapyak/typescript-config/svelte",
   "include": ["src/**/*", "src/**/*.svelte"]
 }

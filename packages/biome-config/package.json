@@ -1,0 +1,15 @@
+{
+  "name": "@yapyak/biome-config",
+  "private": true,
+  "version": "0.0.0",
+  "license": "MIT",
+  "exports": {
+    ".": "./biome.json"
+  },
+  "files": [
+    "biome.json"
+  ],
+  "engines": {
+    "node": ">=22"
+  }
+}

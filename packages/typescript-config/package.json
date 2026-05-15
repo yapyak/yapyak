@@ -1,5 +1,5 @@
 {
-  "name": "@yapyak/tsconfig",
+  "name": "@yapyak/typescript-config",
   "private": true,
   "version": "0.0.0",
   "exports": {

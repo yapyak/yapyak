@@ -102,9 +102,12 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.2.3(@types/react@19.2.14)
-      '@yapyak/tsconfig':
+      '@yapyak/biome-config':
         specifier: workspace:*
-        version: link:packages/tsconfig
+        version: link:packages/biome-config
+      '@yapyak/typescript-config':
+        specifier: workspace:*
+        version: link:packages/typescript-config
       astro:
         specifier: 'catalog:'
         version: 6.3.2(@types/node@25.6.0)(db0@0.3.4)(ioredis@5.10.1)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.3)(terser@5.47.1)(yaml@2.8.4)
@@ -151,9 +154,9 @@ importers:
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 6.0.1(vite@8.0.12(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
-      '@yapyak/tsconfig':
+      '@yapyak/typescript-config':
         specifier: workspace:*
-        version: link:../../packages/tsconfig
+        version: link:../../packages/typescript-config
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -173,9 +176,9 @@ importers:
       '@sveltejs/vite-plugin-svelte':
         specifier: 'catalog:'
         version: 5.1.1(svelte@5.55.5)(vite@8.0.12(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
-      '@yapyak/tsconfig':
+      '@yapyak/typescript-config':
         specifier: workspace:*
-        version: link:../../packages/tsconfig
+        version: link:../../packages/typescript-config
       svelte-check:
         specifier: 'catalog:'
         version: 4.4.8(picomatch@4.0.4)(svelte@5.55.5)(typescript@6.0.3)
@@ -198,9 +201,9 @@ importers:
       '@vitejs/plugin-vue':
         specifier: 'catalog:'
         version: 6.0.6(vite@8.0.12(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))(vue@3.5.13(typescript@6.0.3))
-      '@yapyak/tsconfig':
+      '@yapyak/typescript-config':
         specifier: workspace:*
-        version: link:../../packages/tsconfig
+        version: link:../../packages/typescript-config
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -211,7 +214,9 @@ importers:
         specifier: 'catalog:'
         version: 3.2.8(typescript@6.0.3)
 
-  packages/tsconfig: {}
+  packages/biome-config: {}
+
+  packages/typescript-config: {}
 
   site:
     dependencies:
@@ -237,9 +242,9 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.2.3(@types/react@19.2.14)
-      '@yapyak/tsconfig':
+      '@yapyak/typescript-config':
         specifier: workspace:*
-        version: link:../packages/tsconfig
+        version: link:../packages/typescript-config
       lightningcss:
         specifier: 'catalog:'
         version: 1.32.0
