@@ -1,0 +1,22 @@
+@layer components {
+  .ArticleHeader {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+
+    .Title {
+      margin: 0;
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-medium);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .Description {
+      margin: 0;
+      font-size: var(--font-size-lg);
+      color: var(--text-soft);
+    }
+  }
+}

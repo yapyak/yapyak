@@ -1,0 +1,25 @@
+@layer components {
+  .ReferenceSymbolHeader {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+
+    .Eyebrow {
+      font-family: var(--font-mono);
+      font-size: var(--font-size-xs);
+      color: var(--text-muted);
+
+      .EyebrowDot {
+        margin: 0 var(--space-1);
+        opacity: 0.5;
+      }
+    }
+
+    .Heading {
+      margin: 0;
+      font-family: var(--font-mono);
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+}

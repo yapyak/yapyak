@@ -1,0 +1,7 @@
+@layer components {
+  .Article {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+}

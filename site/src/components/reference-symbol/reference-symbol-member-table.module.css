@@ -1,0 +1,52 @@
+@layer components {
+  .ReferenceSymbolMemberTable {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+
+    .Heading {
+      margin: 0;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .Table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--font-size-sm);
+
+      th,
+      td {
+        text-align: left;
+        padding: var(--space-2) var(--space-3);
+        border-bottom: 1px solid var(--rule);
+        vertical-align: top;
+      }
+
+      th {
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      td {
+        color: var(--text-soft);
+      }
+
+      code {
+        font-family: var(--font-mono);
+        color: var(--text);
+      }
+
+      .Optional {
+        color: var(--text-muted);
+        font-family: var(--font-mono);
+      }
+    }
+  }
+}

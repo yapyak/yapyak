@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import type { ReactElement } from 'react';
-import styles from './index.module.css';
+import { Article } from '#components/article';
 
 const loadIntroduction = createServerFn({ method: 'GET' }).handler(async () => {
   const { readFile } = await import('node:fs/promises');
@@ -11,7 +11,7 @@ const loadIntroduction = createServerFn({ method: 'GET' }).handler(async () => {
   const source = await readFile(path, 'utf8');
   const { frontmatter, html } = await renderMarkdown(source);
   return {
-    title: (frontmatter.title as string | undefined) ?? 'API Reference',
+    title: (frontmatter.title as string | undefined) ?? 'Reference',
     description: (frontmatter.description as string | undefined) ?? '',
     html,
   };
@@ -28,18 +28,12 @@ export const Route = createFileRoute('/reference/')({
 function Component(): ReactElement {
   const { introduction } = Route.useLoaderData();
   return (
-    <article className={styles.IntroductionArticle}>
-      <header className={styles.Header}>
-        <h1 className={styles.Title}>{introduction.title}</h1>
-        {introduction.description !== '' ? (
-          <p className={styles.Description}>{introduction.description}</p>
-        ) : null}
-      </header>
-      <div
-        className={styles.Body}
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: server-rendered markdown
-        dangerouslySetInnerHTML={{ __html: introduction.html }}
+    <Article>
+      <Article.Header
+        title={introduction.title}
+        description={introduction.description}
       />
-    </article>
+      <Article.Body html={introduction.html} />
+    </Article>
   );
 }

@@ -1,7 +1,7 @@
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import type { ReactElement } from 'react';
-import styles from './$.module.css';
+import { Article } from '#components/article';
 
 type DocResult =
   | {
@@ -98,18 +98,9 @@ export const Route = createFileRoute('/guide/$')({
 function Component(): ReactElement {
   const { doc } = Route.useLoaderData();
   return (
-    <article className={styles.DocArticle}>
-      <header className={styles.Header}>
-        <h1 className={styles.Title}>{doc.title}</h1>
-        {doc.description.length > 0 ? (
-          <p className={styles.Description}>{doc.description}</p>
-        ) : null}
-      </header>
-      <div
-        className={styles.Body}
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: rendered server-side from trusted markdown
-        dangerouslySetInnerHTML={{ __html: doc.html }}
-      />
-    </article>
+    <Article>
+      <Article.Header title={doc.title} description={doc.description} />
+      <Article.Body html={doc.html} />
+    </Article>
   );
 }
