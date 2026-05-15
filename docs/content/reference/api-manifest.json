@@ -9,7 +9,7 @@
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 117
+            "line": 116
           },
           "name": "getDefaultLocale",
           "tags": [],
@@ -26,7 +26,7 @@
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 80
+            "line": 79
           },
           "name": "getLocale",
           "tags": [],
@@ -43,7 +43,7 @@
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 112
+            "line": 111
           },
           "name": "getLocales",
           "tags": [],
@@ -60,7 +60,7 @@
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 92
+            "line": 91
           },
           "name": "setLocale",
           "tags": [],

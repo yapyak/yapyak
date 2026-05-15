@@ -1,4 +1,4 @@
-import { registerRequestHeadersReader } from '../locale/store.ts';
+import { registerRequestHeadersReader } from '../locale/index.ts';
 import { AsyncLocalStorage } from 'node:async_hooks';
 
 interface RequestHeaders {

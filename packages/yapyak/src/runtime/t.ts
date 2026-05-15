@@ -1,5 +1,5 @@
-import { pick } from '../internal/pick.ts';
-import { getLocale } from '../locale/store.ts';
+import { pick } from '../internal/index.ts';
+import { getLocale } from '../locale/index.ts';
 import { hasPlaceholder, interpolate } from './interpolate.ts';
 import { runTrackers } from './tracker.ts';
 

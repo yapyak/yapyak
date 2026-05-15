@@ -1,9 +1,8 @@
 import type { Translator } from '../../translator/index.ts';
 import type { YapyakCliConfig } from '../load-config.ts';
 
-import { anthropic } from '../../translator/anthropic.ts';
-import { openai } from '../../translator/openai.ts';
-import { autoTranslate } from '../../vite/auto-translate.ts';
+import { anthropic, openai } from '../../translator/index.ts';
+import { autoTranslate } from '../../vite/index.ts';
 import { collect } from '../collect.ts';
 import { loadEnv } from '../load-env.ts';
 import { color, header, progressBar, spinner, symbol } from '../tui.ts';

@@ -1,5 +1,4 @@
-import { parseCookie } from '../persistence/cookie.ts';
-import { createPersistence } from '../persistence/index.ts';
+import { createPersistence, parseCookie } from '../persistence/index.ts';
 import { detectLocale } from './detect.ts';
 import {
   ACCEPT_LANGUAGE,

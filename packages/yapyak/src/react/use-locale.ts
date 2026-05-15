@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react';
 
-import { getLocale, setLocale, subscribeLocale } from '../locale/store.ts';
+import { getLocale, setLocale, subscribeLocale } from '../locale/index.ts';
 
 /**
  * Returns the current locale and a setter, like `useState`.

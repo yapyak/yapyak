@@ -17,6 +17,34 @@
 - One concept per file.
 - `index.ts` re-exports the public API of a package.
 
+### Cross-module imports
+
+Within `src/`, every folder is its own module (`adapter/`, `locale/`, `persistence/`, `runtime/`, `translator/`, `vite/`, etc.). When a file in module A needs something from module B, the import **always** goes through `B/index.ts` — never directly to a sub-file.
+
+```ts
+// ✓ Right — cross-module imports go through the barrel
+import { getLocale, setLocale } from '../locale/index.ts';
+import { parseCookie } from '../persistence/index.ts';
+import { extractMessages } from '../vite/index.ts';
+
+// ✗ Wrong — reaching into another module's internals
+import { getLocale } from '../locale/store.ts';
+import { parseCookie } from '../persistence/cookie.ts';
+import { extractMessages } from '../vite/extract-messages.ts';
+```
+
+Intra-module imports (files within the same folder importing each other) **stay direct** — no barrel hop:
+
+```ts
+// ✓ Right — same folder, direct import
+// in persistence/cookie.ts
+import type { Persistence } from './index.ts';
+```
+
+The rule lets each module refactor its internal structure freely. Adding, renaming, or splitting files inside a module never breaks consumers as long as `index.ts` stays stable.
+
+A symbol only appears in `index.ts` if another module needs it. Internal helpers stay unexported from the barrel.
+
 ### TypeScript
 
 - All library packages extend `@lokale/typescript-config/library`.
