@@ -1,4 +1,8 @@
-import { getDefaultLocale, getLocale } from '../locale/index.ts';
+import {
+  getCachedLocaleData,
+  getDefaultLocale,
+  getLocale,
+} from '../locale/index.ts';
 import { hasPlaceholder, interpolate, runTrackers } from '../runtime/index.ts';
 
 /**
@@ -8,7 +12,8 @@ import { hasPlaceholder, interpolate, runTrackers } from '../runtime/index.ts';
  * Do not import directly — use `t()` from `'yapyak'` instead.
  */
 export function pick(
-  variants: Record<string, string>,
+  fileId: string,
+  source: string,
   params?: Record<string, unknown>,
   fixedLocale?: string,
 ): string {
@@ -16,7 +21,10 @@ export function pick(
     runTrackers();
   }
   const locale = fixedLocale ?? getLocale();
-  const value = variants[locale] ?? variants[getDefaultLocale()] ?? '';
+  let value = source;
+  if (locale !== getDefaultLocale()) {
+    value = getCachedLocaleData(locale)[fileId]?.[source] ?? source;
+  }
   if (params === undefined || !hasPlaceholder(value)) {
     return value;
   }

@@ -4,6 +4,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 vi.mock('virtual:yapyak', () => ({
   ACCEPT_LANGUAGE: false,
   DEFAULT_LOCALE: 'en',
+  LOADERS: {
+    fr: () => Promise.resolve({ default: {} }),
+    sv: () => Promise.resolve({ default: {} }),
+  },
   LOCALES: ['en', 'sv', 'fr'],
   PERSISTENCE: null,
   SYNC_HTML_LANG: false,
@@ -28,15 +32,15 @@ describe('useLocale', () => {
     expect(html).toBe('en');
   });
 
-  it('returns a setter that updates the store', () => {
-    let setter: ((locale: string) => void) | undefined;
+  it('returns a setter that updates the store', async () => {
+    let setter: ((locale: string) => Promise<void>) | undefined;
     function Capture(): null {
       const [, set] = useLocale();
       setter = set;
       return null;
     }
     renderToString(<Capture />);
-    setter?.('sv');
+    await setter?.('sv');
     expect(getLocale()).toBe('sv');
   });
 });

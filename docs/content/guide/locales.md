@@ -61,10 +61,22 @@ getDefaultLocale()   // 'en'
 ```ts
 import { setLocale } from 'yapyak';
 
-setLocale('es');
+await setLocale('es');
 ```
 
-Updates the in-memory store, persists according to your `persistence` config, and notifies all subscribed `useLocale` hooks. Components re-render in the new locale.
+`setLocale` is async because non-default locales are code-split into their own chunks and fetched on demand. The first switch to a locale triggers a dynamic `import()`; subsequent switches read from cache. Default locale switches are instant — the default-locale strings are inlined as your source code.
+
+After the data is loaded, the store updates, persistence writes (cookie or localStorage), and subscribed `useLocale` hooks re-render with the new locale.
+
+If you want to avoid the network round-trip when the user clicks, pre-load:
+
+```ts
+import { loadLocale, setLocale } from 'yapyak';
+
+await loadLocale('es');   // fetch chunk in the background
+// later, when user clicks:
+await setLocale('es');    // resolves instantly from cache
+```
 
 In components, use the framework-idiomatic reactive binding so the UI re-renders on locale change:
 
@@ -219,6 +231,26 @@ One direction only. Header `pt-BR` resolves to locale `pt`. Header `pt` does not
 This follows RFC 4647 Lookup. The requested tag truncates from the right until a match is found. Expanding `pt` to `pt-BR` would mean guessing a region the user did not request.
 
 The cookie wins over `Accept-Language` either way.
+
+## Bundle architecture
+
+Translations are code-split per locale. Each non-default locale ships as a separate chunk that loads on demand.
+
+```
+main bundle (always loaded)
+├── _$pick('src/Greeting.tsx', 'Hello {name}', params)   ← default-locale text inlined as source
+├── _$pick('src/Button.tsx', 'Save')
+└── ...
+
+chunks/locale-es.js     ← lazy-loaded on setLocale('es')
+chunks/locale-fr.js     ← lazy-loaded on setLocale('fr')
+```
+
+The default locale costs zero extra bytes: the source string in your code IS the value the runtime returns. Other locales live in dedicated chunks the bundler emits, indexed by `(fileId, source)` pairs.
+
+For an app with 5 locales and 10,000 strings, this is roughly a 4–5× initial-bundle reduction versus the all-locales-inline approach used by older i18n libraries.
+
+SSR adapters pre-load the right locale per request (via `Accept-Language` or cookie), so the server never serves the default locale text when the user wants Spanish.
 
 ## Default-locale fallback
 

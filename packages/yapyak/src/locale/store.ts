@@ -1,5 +1,6 @@
 import { createPersistence, parseCookie } from '../persistence/index.ts';
 import { detectLocale } from './detect.ts';
+import { loadLocaleData } from './loader.ts';
 import {
   ACCEPT_LANGUAGE,
   DEFAULT_LOCALE,
@@ -8,20 +9,21 @@ import {
   SYNC_HTML_LANG,
 } from 'virtual:yapyak';
 
-interface RequestHeaders {
+export interface RequestContext {
   acceptLanguage: string | undefined;
   cookieHeader: string | undefined;
+  locale: string;
 }
 
-type RequestHeadersReader = () => RequestHeaders | undefined;
+type RequestContextReader = () => RequestContext | undefined;
 
-let headersReader: RequestHeadersReader | null = null;
+let requestContextReader: RequestContextReader | null = null;
 
 /** @internal */
-export function registerRequestHeadersReader(
-  reader: RequestHeadersReader,
+export function registerRequestContextReader(
+  reader: RequestContextReader,
 ): void {
-  headersReader = reader;
+  requestContextReader = reader;
 }
 
 const persistence = createPersistence(PERSISTENCE);
@@ -43,58 +45,34 @@ if (SYNC_HTML_LANG && typeof document !== 'undefined') {
   document.documentElement.lang = currentLocale;
 }
 
-function resolveLocale(): string {
-  if (typeof window === 'undefined' && headersReader !== null) {
-    const source = headersReader();
-    if (source !== undefined) {
-      const cookieName =
-        PERSISTENCE?.type === 'cookie' ? PERSISTENCE.name : null;
-      const persisted =
-        cookieName !== null
-          ? readCookieValue(source.cookieHeader, cookieName)
-          : undefined;
-      return detectLocale({
-        acceptLanguage: ACCEPT_LANGUAGE ? source.acceptLanguage : undefined,
-        defaultLocale: DEFAULT_LOCALE,
-        locales: LOCALES,
-        persisted,
-      });
+/** Returns the current locale. */
+export function getLocale(): string {
+  if (typeof window === 'undefined' && requestContextReader !== null) {
+    const ctx = requestContextReader();
+    if (ctx !== undefined) {
+      return ctx.locale;
     }
   }
   return currentLocale;
 }
 
-function readCookieValue(
-  header: string | undefined,
-  name: string,
-): string | undefined {
-  if (header === undefined || header === '') {
-    return undefined;
-  }
-  const value = parseCookie(header)[name];
-  return value === '' ? undefined : value;
-}
-
-/** Returns the current locale. */
-export function getLocale(): string {
-  return resolveLocale();
-}
-
 /**
  * Switches the active locale.
  *
- * No-op if the locale is not in the configured `locales` list. Triggers
- * re-renders in framework integrations (`useLocale`, Svelte/Vue stores).
+ * Loads the locale's translations if not already cached, then notifies
+ * framework integrations to re-render. No-op if the locale is not in the
+ * configured `locales` list.
  *
  * @param locale - The locale to switch to.
  */
-export function setLocale(locale: string): void {
+export async function setLocale(locale: string): Promise<void> {
   if (!LOCALES.includes(locale)) {
     return;
   }
   if (locale === currentLocale) {
     return;
   }
+  await loadLocaleData(locale);
   currentLocale = locale;
   version++;
   snapshot = `${currentLocale}#${version}`;
@@ -118,15 +96,30 @@ export function getDefaultLocale(): string {
 }
 
 /** @internal */
-export function getLocaleSnapshot(): string {
-  if (
-    typeof window === 'undefined' &&
-    headersReader !== null &&
-    headersReader() !== undefined
-  ) {
-    return resolveLocale();
+export function resolveLocaleFromHeaders(
+  acceptLanguage: string | undefined,
+  cookieHeader: string | undefined,
+): string {
+  const cookieName = PERSISTENCE?.type === 'cookie' ? PERSISTENCE.name : null;
+  const persisted =
+    cookieName !== null ? readCookieValue(cookieHeader, cookieName) : undefined;
+  return detectLocale({
+    acceptLanguage: ACCEPT_LANGUAGE ? acceptLanguage : undefined,
+    defaultLocale: DEFAULT_LOCALE,
+    locales: LOCALES,
+    persisted,
+  });
+}
+
+function readCookieValue(
+  header: string | undefined,
+  name: string,
+): string | undefined {
+  if (header === undefined || header === '') {
+    return undefined;
   }
-  return snapshot;
+  const value = parseCookie(header)[name];
+  return value === '' ? undefined : value;
 }
 
 /** @internal */
@@ -143,4 +136,16 @@ export function resetLocaleStore(): void {
   version = 0;
   snapshot = `${currentLocale}#${version}`;
   listeners.clear();
+}
+
+/** @internal */
+export function getLocaleSnapshot(): string {
+  if (
+    typeof window === 'undefined' &&
+    requestContextReader !== null &&
+    requestContextReader() !== undefined
+  ) {
+    return getLocale();
+  }
+  return snapshot;
 }

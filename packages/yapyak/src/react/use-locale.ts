@@ -20,7 +20,7 @@ import { getLocale, setLocale, subscribeLocale } from '../locale/index.ts';
  * }
  * ```
  */
-export function useLocale(): [string, (locale: string) => void] {
+export function useLocale(): [string, (locale: string) => Promise<void>] {
   const locale = useSyncExternalStore(subscribeLocale, getLocale, getLocale);
   return [locale, setLocale];
 }
