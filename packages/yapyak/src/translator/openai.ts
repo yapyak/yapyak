@@ -50,7 +50,7 @@ const DEFAULT_MAX_RETRIES = 2;
  *
  * @example
  * ```ts
- * import { openai } from 'yapyak/translator/openai';
+ * import { openai } from 'yapyak/translator';
  *
  * yapyak({
  *   translator: openai({ apiKey: process.env.OPENAI_API_KEY! }),
@@ -120,14 +120,12 @@ export function openai(options: OpenAIOptions): Translator {
       const response = await fetchWithRetry(fetchInit);
       if (!response.ok) {
         const text = await response.text();
-        throw new Error(`yapyak/translator/openai: ${response.status} ${text}`);
+        throw new Error(`yapyak openai: ${response.status} ${text}`);
       }
       const responseBody = (await response.json()) as OpenAIChatResponse;
       const text = responseBody.choices?.[0]?.message?.content;
       if (typeof text !== 'string') {
-        throw new Error(
-          'yapyak/translator/openai: response did not contain a text block',
-        );
+        throw new Error('yapyak openai: response did not contain a text block');
       }
       const cleaned = stripCodeFence(text.trim());
       return JSON.parse(cleaned) as string[];

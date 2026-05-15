@@ -8,7 +8,7 @@ Use Claude (Sonnet, Opus, Haiku) as your translator.
 
 ```ts
 import { yapyak } from 'yapyak/vite';
-import { anthropic } from 'yapyak/translator/anthropic';
+import { anthropic } from 'yapyak/translator';
 
 yapyak({
   translator: anthropic({

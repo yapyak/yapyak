@@ -8,7 +8,7 @@ Use Google's Gemini models as your translator. Gemini's strength: cost-effective
 
 ```ts
 import { yapyak } from 'yapyak/vite';
-import { gemini } from 'yapyak/translator/gemini';
+import { gemini } from 'yapyak/translator';
 
 yapyak({
   translator: gemini({

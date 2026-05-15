@@ -36,7 +36,7 @@ const CONFIG_RESOLVED = `\0${CONFIG_ID}`;
  * ```ts
  * import { defineConfig } from 'vite';
  * import { yapyak } from 'yapyak/vite';
- * import { anthropic } from 'yapyak/translator/anthropic';
+ * import { anthropic } from 'yapyak/translator';
  *
  * export default defineConfig({
  *   plugins: [

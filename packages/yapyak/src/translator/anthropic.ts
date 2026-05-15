@@ -45,7 +45,7 @@ const DEFAULT_MAX_RETRIES = 2;
  *
  * @example
  * ```ts
- * import { anthropic } from 'yapyak/translator/anthropic';
+ * import { anthropic } from 'yapyak/translator';
  *
  * yapyak({
  *   translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! }),
@@ -98,15 +98,13 @@ export function anthropic(options: AnthropicOptions): Translator {
       const response = await fetchWithRetry(fetchInit);
       if (!response.ok) {
         const text = await response.text();
-        throw new Error(
-          `yapyak/translator/anthropic: ${response.status} ${text}`,
-        );
+        throw new Error(`yapyak anthropic: ${response.status} ${text}`);
       }
       const body = (await response.json()) as AnthropicMessageResponse;
       const text = body.content?.[0]?.text;
       if (typeof text !== 'string') {
         throw new Error(
-          'yapyak/translator/anthropic: response did not contain a text block',
+          'yapyak anthropic: response did not contain a text block',
         );
       }
       const cleaned = stripCodeFence(text.trim());

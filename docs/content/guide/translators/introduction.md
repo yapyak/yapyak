@@ -9,7 +9,7 @@ yapyak ships four translators out of the box: **Anthropic**, **OpenAI**, **Gemin
 
 ```ts
 import { yapyak } from 'yapyak/vite';
-import { anthropic } from 'yapyak/translator/anthropic';
+import { anthropic } from 'yapyak/translator';
 
 yapyak({
   translator: anthropic({

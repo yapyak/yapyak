@@ -44,7 +44,7 @@ const DEFAULT_MAX_RETRIES = 2;
  *
  * @example
  * ```ts
- * import { gemini } from 'yapyak/translator/gemini';
+ * import { gemini } from 'yapyak/translator';
  *
  * yapyak({
  *   translator: gemini({ apiKey: process.env.GOOGLE_API_KEY! }),
@@ -105,14 +105,12 @@ export function gemini(options: GeminiOptions): Translator {
       const response = await fetchWithRetry(fetchInit);
       if (!response.ok) {
         const text = await response.text();
-        throw new Error(`yapyak/translator/gemini: ${response.status} ${text}`);
+        throw new Error(`yapyak gemini: ${response.status} ${text}`);
       }
       const responseBody = (await response.json()) as GeminiResponse;
       const text = responseBody.candidates?.[0]?.content?.parts?.[0]?.text;
       if (typeof text !== 'string') {
-        throw new Error(
-          'yapyak/translator/gemini: response did not contain a text part',
-        );
+        throw new Error('yapyak gemini: response did not contain a text part');
       }
       const cleaned = stripCodeFence(text.trim());
       return JSON.parse(cleaned) as string[];

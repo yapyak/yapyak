@@ -248,3 +248,8 @@ function preview(value: unknown): string {
     return String(value);
   }
 }
+
+export { anthropic } from './anthropic.ts';
+export { gemini } from './gemini.ts';
+export { ollama } from './ollama.ts';
+export { openai } from './openai.ts';

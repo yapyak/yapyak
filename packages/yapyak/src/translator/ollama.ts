@@ -42,7 +42,7 @@ const DEFAULT_MAX_RETRIES = 1;
  *
  * @example
  * ```ts
- * import { ollama } from 'yapyak/translator/ollama';
+ * import { ollama } from 'yapyak/translator';
  *
  * yapyak({
  *   translator: ollama({ model: 'llama3.1' }),
@@ -95,13 +95,13 @@ export function ollama(options: OllamaOptions = {}): Translator {
       const response = await fetchWithRetry(fetchInit);
       if (!response.ok) {
         const text = await response.text();
-        throw new Error(`yapyak/translator/ollama: ${response.status} ${text}`);
+        throw new Error(`yapyak ollama: ${response.status} ${text}`);
       }
       const responseBody = (await response.json()) as OllamaResponse;
       const text = responseBody.response;
       if (typeof text !== 'string') {
         throw new Error(
-          'yapyak/translator/ollama: response did not contain a response field',
+          'yapyak ollama: response did not contain a response field',
         );
       }
       return JSON.parse(text.trim()) as string[];

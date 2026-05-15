@@ -8,7 +8,7 @@ Use OpenAI's GPT models — or any OpenAI-compatible provider (Groq, DeepSeek, M
 
 ```ts
 import { yapyak } from 'yapyak/vite';
-import { openai } from 'yapyak/translator/openai';
+import { openai } from 'yapyak/translator';
 
 yapyak({
   translator: openai({
@@ -70,7 +70,7 @@ openai({
 })
 ```
 
-For native Ollama integration, prefer [`yapyak/translator/ollama`](/guide/translators/ollama).
+For native Ollama integration, prefer the [`ollama` translator](/guide/translators/ollama).
 
 ## Seed example
 

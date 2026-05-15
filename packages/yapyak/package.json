@@ -51,22 +51,6 @@
     "./translator": {
       "types": "./dist/translator/index.d.ts",
       "default": "./dist/translator/index.js"
-    },
-    "./translator/anthropic": {
-      "types": "./dist/translator/anthropic.d.ts",
-      "default": "./dist/translator/anthropic.js"
-    },
-    "./translator/openai": {
-      "types": "./dist/translator/openai.d.ts",
-      "default": "./dist/translator/openai.js"
-    },
-    "./translator/gemini": {
-      "types": "./dist/translator/gemini.d.ts",
-      "default": "./dist/translator/gemini.js"
-    },
-    "./translator/ollama": {
-      "types": "./dist/translator/ollama.d.ts",
-      "default": "./dist/translator/ollama.js"
     }
   },
   "bin": {

@@ -331,7 +331,7 @@
           "deprecated": null,
           "description": "The yapyak Vite plugin.\n\nExtracts `t()` calls at build time, syncs locale files, optionally fills\nmissing translations through an AI translator, and inlines variants at\neach call site.",
           "examples": [
-            "```ts\nimport { defineConfig } from 'vite';\nimport { yapyak } from 'yapyak/vite';\nimport { anthropic } from 'yapyak/translator/anthropic';\n\nexport default defineConfig({\n  plugins: [\n    yapyak({\n      defaultLocale: 'en',\n      translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),\n    }),\n  ],\n});\n```"
+            "```ts\nimport { defineConfig } from 'vite';\nimport { yapyak } from 'yapyak/vite';\nimport { anthropic } from 'yapyak/translator';\n\nexport default defineConfig({\n  plugins: [\n    yapyak({\n      defaultLocale: 'en',\n      translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),\n    }),\n  ],\n});\n```"
           ],
           "location": {
             "column": 1,
@@ -625,6 +625,33 @@
       "exports": [
         {
           "deprecated": null,
+          "description": "Translator backed by the Anthropic Messages API.",
+          "examples": [
+            "```ts\nimport { anthropic } from 'yapyak/translator';\n\nyapyak({\n  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! }),\n});\n```"
+          ],
+          "location": {
+            "column": 1,
+            "file": "src/translator/anthropic.ts",
+            "line": 55
+          },
+          "name": "anthropic",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": null,
+              "description": "- The translator options.",
+              "name": "options",
+              "optional": false,
+              "type": "AnthropicOptions"
+            }
+          ],
+          "returnDescription": "A translator usable in the Vite plugin config.",
+          "returnType": "Translator",
+          "signature": "anthropic(options: AnthropicOptions): Translator"
+        },
+        {
+          "deprecated": null,
           "description": "Builds a translator from a `translate` function.\n\nHandles batching, context shaping, and result validation — you just provide\nthe function that talks to the AI.",
           "examples": [
             "```ts\nconst myTranslator = createTranslator({\n  async translate({ items, sourceLocale, targetLocale }) {\n    const response = await fetch('https://my-api.example/translate', {\n      method: 'POST',\n      body: JSON.stringify({ items, sourceLocale, targetLocale }),\n    });\n    const { translations } = await response.json();\n    return translations;\n  },\n});\n```"
@@ -649,6 +676,87 @@
           "returnDescription": "A translator usable in the Vite plugin config.",
           "returnType": "Translator",
           "signature": "createTranslator(options: CreateTranslatorOptions): Translator"
+        },
+        {
+          "deprecated": null,
+          "description": "Translator backed by the Google Gemini API.",
+          "examples": [
+            "```ts\nimport { gemini } from 'yapyak/translator';\n\nyapyak({\n  translator: gemini({ apiKey: process.env.GOOGLE_API_KEY! }),\n});\n```"
+          ],
+          "location": {
+            "column": 1,
+            "file": "src/translator/gemini.ts",
+            "line": 54
+          },
+          "name": "gemini",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": null,
+              "description": "- The translator options.",
+              "name": "options",
+              "optional": false,
+              "type": "GeminiOptions"
+            }
+          ],
+          "returnDescription": "A translator usable in the Vite plugin config.",
+          "returnType": "Translator",
+          "signature": "gemini(options: GeminiOptions): Translator"
+        },
+        {
+          "deprecated": null,
+          "description": "Translator backed by a local Ollama server.",
+          "examples": [
+            "```ts\nimport { ollama } from 'yapyak/translator';\n\nyapyak({\n  translator: ollama({ model: 'llama3.1' }),\n});\n```"
+          ],
+          "location": {
+            "column": 1,
+            "file": "src/translator/ollama.ts",
+            "line": 52
+          },
+          "name": "ollama",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": "{}",
+              "description": "- The translator options.",
+              "name": "options",
+              "optional": true,
+              "type": "OllamaOptions"
+            }
+          ],
+          "returnDescription": "A translator usable in the Vite plugin config.",
+          "returnType": "Translator",
+          "signature": "ollama(options?: OllamaOptions): Translator"
+        },
+        {
+          "deprecated": null,
+          "description": "Translator backed by the OpenAI Chat Completions API.",
+          "examples": [
+            "```ts\nimport { openai } from 'yapyak/translator';\n\nyapyak({\n  translator: openai({ apiKey: process.env.OPENAI_API_KEY! }),\n});\n```"
+          ],
+          "location": {
+            "column": 1,
+            "file": "src/translator/openai.ts",
+            "line": 60
+          },
+          "name": "openai",
+          "tags": [],
+          "kind": "function",
+          "parameters": [
+            {
+              "defaultValue": null,
+              "description": "- The translator options.",
+              "name": "options",
+              "optional": false,
+              "type": "OpenAIOptions"
+            }
+          ],
+          "returnDescription": "A translator usable in the Vite plugin config.",
+          "returnType": "Translator",
+          "signature": "openai(options: OpenAIOptions): Translator"
         },
         {
           "deprecated": null,
@@ -928,532 +1036,6 @@
       "id": "yapyak/translator",
       "sourcePath": "src/translator/index.ts",
       "subpath": "./translator"
-    },
-    {
-      "exports": [
-        {
-          "deprecated": null,
-          "description": "Translator backed by the Anthropic Messages API.",
-          "examples": [
-            "```ts\nimport { anthropic } from 'yapyak/translator/anthropic';\n\nyapyak({\n  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! }),\n});\n```"
-          ],
-          "location": {
-            "column": 1,
-            "file": "src/translator/anthropic.ts",
-            "line": 55
-          },
-          "name": "anthropic",
-          "tags": [],
-          "kind": "function",
-          "parameters": [
-            {
-              "defaultValue": null,
-              "description": "- The translator options.",
-              "name": "options",
-              "optional": false,
-              "type": "AnthropicOptions"
-            }
-          ],
-          "returnDescription": "A translator usable in the Vite plugin config.",
-          "returnType": "Translator",
-          "signature": "anthropic(options: AnthropicOptions): Translator"
-        },
-        {
-          "deprecated": null,
-          "description": "Options for the Anthropic translator.",
-          "examples": [],
-          "location": {
-            "column": 1,
-            "file": "src/translator/anthropic.ts",
-            "line": 8
-          },
-          "name": "AnthropicOptions",
-          "tags": [],
-          "callSignatures": [],
-          "kind": "interface",
-          "members": [
-            {
-              "defaultValue": null,
-              "description": "Your Anthropic API key.",
-              "name": "apiKey",
-              "optional": false,
-              "type": "string"
-            },
-            {
-              "defaultValue": null,
-              "description": "Max items per API call. Defaults to 10.",
-              "name": "batchSize",
-              "optional": true,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "How much call-site context to include. Defaults to `'minimal'`.",
-              "name": "context",
-              "optional": true,
-              "type": "ContextLevel"
-            },
-            {
-              "defaultValue": null,
-              "description": "Override the API endpoint.",
-              "name": "endpoint",
-              "optional": true,
-              "type": "string"
-            },
-            {
-              "defaultValue": null,
-              "description": "Glossary of fixed translations, keyed by source string then locale.",
-              "name": "glossary",
-              "optional": true,
-              "type": "Record<string, Record<string, string>>"
-            },
-            {
-              "defaultValue": null,
-              "description": "Extra request headers.",
-              "name": "headers",
-              "optional": true,
-              "type": "Record<string, string>"
-            },
-            {
-              "defaultValue": null,
-              "description": "Max retry attempts on transient failures. Defaults to 2.",
-              "name": "maxRetries",
-              "optional": true,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "Model name. Defaults to `'claude-sonnet-4-6'`.",
-              "name": "model",
-              "optional": true,
-              "type": "string"
-            },
-            {
-              "defaultValue": null,
-              "description": "Sampling temperature. Defaults to 0.2.",
-              "name": "temperature",
-              "optional": true,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "Request timeout in milliseconds. Defaults to 30000.",
-              "name": "timeout",
-              "optional": true,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "Voice/tone guidance passed to the model.",
-              "name": "voice",
-              "optional": true,
-              "type": "string"
-            }
-          ],
-          "signature": "export interface AnthropicOptions {\n  /** Your Anthropic API key. */\n  apiKey: string;\n  /** Max items per API call. Defaults to 10. */\n  batchSize?: number;\n  /** How much call-site context to include. Defaults to `'minimal'`. */\n  context?: ContextLevel;\n  /** Override the API endpoint. */\n  endpoint?: string;\n  /** Glossary of fixed translations, keyed by source string then locale. */\n  glos..."
-        }
-      ],
-      "id": "yapyak/translator/anthropic",
-      "sourcePath": "src/translator/anthropic.ts",
-      "subpath": "./translator/anthropic"
-    },
-    {
-      "exports": [
-        {
-          "deprecated": null,
-          "description": "Translator backed by the OpenAI Chat Completions API.",
-          "examples": [
-            "```ts\nimport { openai } from 'yapyak/translator/openai';\n\nyapyak({\n  translator: openai({ apiKey: process.env.OPENAI_API_KEY! }),\n});\n```"
-          ],
-          "location": {
-            "column": 1,
-            "file": "src/translator/openai.ts",
-            "line": 60
-          },
-          "name": "openai",
-          "tags": [],
-          "kind": "function",
-          "parameters": [
-            {
-              "defaultValue": null,
-              "description": "- The translator options.",
-              "name": "options",
-              "optional": false,
-              "type": "OpenAIOptions"
-            }
-          ],
-          "returnDescription": "A translator usable in the Vite plugin config.",
-          "returnType": "Translator",
-          "signature": "openai(options: OpenAIOptions): Translator"
-        },
-        {
-          "deprecated": null,
-          "description": "Options for the OpenAI translator.",
-          "examples": [],
-          "location": {
-            "column": 1,
-            "file": "src/translator/openai.ts",
-            "line": 8
-          },
-          "name": "OpenAIOptions",
-          "tags": [],
-          "callSignatures": [],
-          "kind": "interface",
-          "members": [
-            {
-              "defaultValue": null,
-              "description": "Your OpenAI API key.",
-              "name": "apiKey",
-              "optional": false,
-              "type": "string"
-            },
-            {
-              "defaultValue": null,
-              "description": "Max items per API call. Defaults to 10.",
-              "name": "batchSize",
-              "optional": true,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "How much call-site context to include. Defaults to `'minimal'`.",
-              "name": "context",
-              "optional": true,
-              "type": "ContextLevel"
-            },
-            {
-              "defaultValue": null,
-              "description": "Override the API endpoint.",
-              "name": "endpoint",
-              "optional": true,
-              "type": "string"
-            },
-            {
-              "defaultValue": null,
-              "description": "Glossary of fixed translations, keyed by source string then locale.",
-              "name": "glossary",
-              "optional": true,
-              "type": "Record<string, Record<string, string>>"
-            },
-            {
-              "defaultValue": null,
-              "description": "Extra request headers.",
-              "name": "headers",
-              "optional": true,
-              "type": "Record<string, string>"
-            },
-            {
-              "defaultValue": null,
-              "description": "Max retry attempts on transient failures. Defaults to 2.",
-              "name": "maxRetries",
-              "optional": true,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "Model name. Defaults to `'gpt-5-mini'`.",
-              "name": "model",
-              "optional": true,
-              "type": "string"
-            },
-            {
-              "defaultValue": null,
-              "description": "OpenAI organization ID.",
-              "name": "organization",
-              "optional": true,
-              "type": "string"
-            },
-            {
-              "defaultValue": null,
-              "description": "Deterministic seed for reproducible output.",
-              "name": "seed",
-              "optional": true,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "Sampling temperature. Defaults to 0.2.",
-              "name": "temperature",
-              "optional": true,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "Request timeout in milliseconds. Defaults to 30000.",
-              "name": "timeout",
-              "optional": true,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "Stable end-user identifier forwarded to OpenAI.",
-              "name": "user",
-              "optional": true,
-              "type": "string"
-            },
-            {
-              "defaultValue": null,
-              "description": "Voice/tone guidance passed to the model.",
-              "name": "voice",
-              "optional": true,
-              "type": "string"
-            }
-          ],
-          "signature": "export interface OpenAIOptions {\n  /** Your OpenAI API key. */\n  apiKey: string;\n  /** Max items per API call. Defaults to 10. */\n  batchSize?: number;\n  /** How much call-site context to include. Defaults to `'minimal'`. */\n  context?: ContextLevel;\n  /** Override the API endpoint. */\n  endpoint?: string;\n  /** Glossary of fixed translations, keyed by source string then locale. */\n  glossary?:..."
-        }
-      ],
-      "id": "yapyak/translator/openai",
-      "sourcePath": "src/translator/openai.ts",
-      "subpath": "./translator/openai"
-    },
-    {
-      "exports": [
-        {
-          "deprecated": null,
-          "description": "Translator backed by the Google Gemini API.",
-          "examples": [
-            "```ts\nimport { gemini } from 'yapyak/translator/gemini';\n\nyapyak({\n  translator: gemini({ apiKey: process.env.GOOGLE_API_KEY! }),\n});\n```"
-          ],
-          "location": {
-            "column": 1,
-            "file": "src/translator/gemini.ts",
-            "line": 54
-          },
-          "name": "gemini",
-          "tags": [],
-          "kind": "function",
-          "parameters": [
-            {
-              "defaultValue": null,
-              "description": "- The translator options.",
-              "name": "options",
-              "optional": false,
-              "type": "GeminiOptions"
-            }
-          ],
-          "returnDescription": "A translator usable in the Vite plugin config.",
-          "returnType": "Translator",
-          "signature": "gemini(options: GeminiOptions): Translator"
-        },
-        {
-          "deprecated": null,
-          "description": "Options for the Gemini translator.",
-          "examples": [],
-          "location": {
-            "column": 1,
-            "file": "src/translator/gemini.ts",
-            "line": 8
-          },
-          "name": "GeminiOptions",
-          "tags": [],
-          "callSignatures": [],
-          "kind": "interface",
-          "members": [
-            {
-              "defaultValue": null,
-              "description": "Your Google AI API key.",
-              "name": "apiKey",
-              "optional": false,
-              "type": "string"
-            },
-            {
-              "defaultValue": null,
-              "description": "Max items per API call. Defaults to 10.",
-              "name": "batchSize",
-              "optional": true,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "How much call-site context to include. Defaults to `'minimal'`.",
-              "name": "context",
-              "optional": true,
-              "type": "ContextLevel"
-            },
-            {
-              "defaultValue": null,
-              "description": "Override the API endpoint base URL.",
-              "name": "endpoint",
-              "optional": true,
-              "type": "string"
-            },
-            {
-              "defaultValue": null,
-              "description": "Glossary of fixed translations, keyed by source string then locale.",
-              "name": "glossary",
-              "optional": true,
-              "type": "Record<string, Record<string, string>>"
-            },
-            {
-              "defaultValue": null,
-              "description": "Extra request headers.",
-              "name": "headers",
-              "optional": true,
-              "type": "Record<string, string>"
-            },
-            {
-              "defaultValue": null,
-              "description": "Max retry attempts on transient failures. Defaults to 2.",
-              "name": "maxRetries",
-              "optional": true,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "Model name. Defaults to `'gemini-2.5-flash'`.",
-              "name": "model",
-              "optional": true,
-              "type": "string"
-            },
-            {
-              "defaultValue": null,
-              "description": "Sampling temperature. Defaults to 0.2.",
-              "name": "temperature",
-              "optional": true,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "Request timeout in milliseconds. Defaults to 30000.",
-              "name": "timeout",
-              "optional": true,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "Voice/tone guidance passed to the model.",
-              "name": "voice",
-              "optional": true,
-              "type": "string"
-            }
-          ],
-          "signature": "export interface GeminiOptions {\n  /** Your Google AI API key. */\n  apiKey: string;\n  /** Max items per API call. Defaults to 10. */\n  batchSize?: number;\n  /** How much call-site context to include. Defaults to `'minimal'`. */\n  context?: ContextLevel;\n  /** Override the API endpoint base URL. */\n  endpoint?: string;\n  /** Glossary of fixed translations, keyed by source string then locale. */\n..."
-        }
-      ],
-      "id": "yapyak/translator/gemini",
-      "sourcePath": "src/translator/gemini.ts",
-      "subpath": "./translator/gemini"
-    },
-    {
-      "exports": [
-        {
-          "deprecated": null,
-          "description": "Translator backed by a local Ollama server.",
-          "examples": [
-            "```ts\nimport { ollama } from 'yapyak/translator/ollama';\n\nyapyak({\n  translator: ollama({ model: 'llama3.1' }),\n});\n```"
-          ],
-          "location": {
-            "column": 1,
-            "file": "src/translator/ollama.ts",
-            "line": 52
-          },
-          "name": "ollama",
-          "tags": [],
-          "kind": "function",
-          "parameters": [
-            {
-              "defaultValue": "{}",
-              "description": "- The translator options.",
-              "name": "options",
-              "optional": true,
-              "type": "OllamaOptions"
-            }
-          ],
-          "returnDescription": "A translator usable in the Vite plugin config.",
-          "returnType": "Translator",
-          "signature": "ollama(options?: OllamaOptions): Translator"
-        },
-        {
-          "deprecated": null,
-          "description": "Options for the Ollama translator.",
-          "examples": [],
-          "location": {
-            "column": 1,
-            "file": "src/translator/ollama.ts",
-            "line": 8
-          },
-          "name": "OllamaOptions",
-          "tags": [],
-          "callSignatures": [],
-          "kind": "interface",
-          "members": [
-            {
-              "defaultValue": null,
-              "description": "Max items per API call. Defaults to 10.",
-              "name": "batchSize",
-              "optional": true,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "How much call-site context to include. Defaults to `'minimal'`.",
-              "name": "context",
-              "optional": true,
-              "type": "ContextLevel"
-            },
-            {
-              "defaultValue": null,
-              "description": "Override the API endpoint. Defaults to `http://localhost:11434/api/generate`.",
-              "name": "endpoint",
-              "optional": true,
-              "type": "string"
-            },
-            {
-              "defaultValue": null,
-              "description": "Glossary of fixed translations, keyed by source string then locale.",
-              "name": "glossary",
-              "optional": true,
-              "type": "Record<string, Record<string, string>>"
-            },
-            {
-              "defaultValue": null,
-              "description": "Extra request headers.",
-              "name": "headers",
-              "optional": true,
-              "type": "Record<string, string>"
-            },
-            {
-              "defaultValue": null,
-              "description": "Max retry attempts on transient failures. Defaults to 1.",
-              "name": "maxRetries",
-              "optional": true,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "Model name. Defaults to `'llama3.1'`.",
-              "name": "model",
-              "optional": true,
-              "type": "string"
-            },
-            {
-              "defaultValue": null,
-              "description": "Sampling temperature. Defaults to 0.2.",
-              "name": "temperature",
-              "optional": true,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "Request timeout in milliseconds. Defaults to 120000.",
-              "name": "timeout",
-              "optional": true,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "Voice/tone guidance passed to the model.",
-              "name": "voice",
-              "optional": true,
-              "type": "string"
-            }
-          ],
-          "signature": "export interface OllamaOptions {\n  /** Max items per API call. Defaults to 10. */\n  batchSize?: number;\n  /** How much call-site context to include. Defaults to `'minimal'`. */\n  context?: ContextLevel;\n  /** Override the API endpoint. Defaults to `http://localhost:11434/api/generate`. */\n  endpoint?: string;\n  /** Glossary of fixed translations, keyed by source string then locale. */\n  glossar..."
-        }
-      ],
-      "id": "yapyak/translator/ollama",
-      "sourcePath": "src/translator/ollama.ts",
-      "subpath": "./translator/ollama"
     }
   ]
 }
