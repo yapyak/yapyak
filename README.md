@@ -30,7 +30,7 @@ npx yapyak add es
 // vite.config.ts
 import { defineConfig } from 'vite';
 import { yapyak } from 'yapyak/vite';
-import { anthropic } from 'yapyak/translators/anthropic';
+import { anthropic } from 'yapyak/translator';
 
 export default defineConfig({
   plugins: [
@@ -134,13 +134,14 @@ import { locale } from 'yapyak/vue';
 SSR adapters for TanStack Start and SvelteKit resolve locale per request from cookie or `Accept-Language`. Pre-rendered HTML in the right language from the first byte. No flash, no flicker.
 
 ```ts
-// TanStack Start (__root.tsx)
-import { tanstackStart } from 'yapyak/adapters/tanstack-start';
-tanstackStart();
+// TanStack Start (src/start.ts)
+import { middleware } from 'yapyak/adapter/tanstack-start';
+export default {
+  requestMiddleware: [middleware],
+};
 
-// SvelteKit (hooks.server.ts)
-import { sveltekit } from 'yapyak/adapters/sveltekit';
-sveltekit();
+// SvelteKit (src/hooks.server.ts)
+export { handle } from 'yapyak/adapter/sveltekit';
 ```
 
 ## CLI

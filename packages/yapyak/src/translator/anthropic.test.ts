@@ -38,7 +38,6 @@ describe('anthropic', () => {
     const t = anthropic({ apiKey: 'k' });
     const result = await t({
       fileId: 'src/x.tsx',
-      key: 'greeting',
       source: 'Hello world',
       sourceLocale: 'en',
       targetLocale: 'sv',
@@ -50,7 +49,6 @@ describe('anthropic', () => {
     const stub = stubFetch('Hej');
     await anthropic({ apiKey: 'sk-test' })({
       fileId: 'src/x.tsx',
-      key: 'g',
       source: 'Hi',
       sourceLocale: 'en',
       targetLocale: 'sv',
@@ -62,7 +60,6 @@ describe('anthropic', () => {
     const stub = stubFetch('Hej');
     await anthropic({ apiKey: 'k' })({
       fileId: 'x',
-      key: 'g',
       source: 'Hi',
       sourceLocale: 'en',
       targetLocale: 'sv',
@@ -74,7 +71,6 @@ describe('anthropic', () => {
     const stub = stubFetch('Hej');
     await anthropic({ apiKey: 'k', model: 'claude-opus-4-7' })({
       fileId: 'x',
-      key: 'g',
       source: 'Hi',
       sourceLocale: 'en',
       targetLocale: 'sv',
@@ -86,7 +82,6 @@ describe('anthropic', () => {
     const stub = stubFetch('Hej');
     await anthropic({ apiKey: 'k', voice: 'Casual, never corporate' })({
       fileId: 'x',
-      key: 'g',
       source: 'Hi',
       sourceLocale: 'en',
       targetLocale: 'sv',
@@ -105,7 +100,6 @@ describe('anthropic', () => {
       },
     })({
       fileId: 'x',
-      key: 'cta',
       source: 'Sign up',
       sourceLocale: 'en',
       targetLocale: 'sv',
@@ -119,7 +113,6 @@ describe('anthropic', () => {
     const stub = stubFetch('Hej {name}');
     await anthropic({ apiKey: 'k' })({
       fileId: 'x',
-      key: 'g',
       source: 'Hi {name}',
       sourceLocale: 'en',
       targetLocale: 'sv',
@@ -137,7 +130,6 @@ describe('anthropic', () => {
     await expect(
       t({
         fileId: 'x',
-        key: 'g',
         source: 'Hi',
         sourceLocale: 'en',
         targetLocale: 'sv',
@@ -161,7 +153,6 @@ describe('anthropic', () => {
       endpoint: 'https://proxy.example.com/messages',
     })({
       fileId: 'x',
-      key: 'g',
       source: 'Hi',
       sourceLocale: 'en',
       targetLocale: 'sv',
@@ -174,9 +165,9 @@ describe('anthropic', () => {
     vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
       calls++;
       const body = JSON.parse(init.body as string);
-      const sources: string[] = JSON.parse(body.messages[0].content);
-      const translations = sources.map((source) =>
-        source.replace(/Hello/g, 'Hej'),
+      const items: { source: string }[] = JSON.parse(body.messages[0].content);
+      const translations = items.map((item) =>
+        item.source.replace(/Hello/g, 'Hej'),
       );
       return new Response(
         JSON.stringify({
@@ -189,14 +180,12 @@ describe('anthropic', () => {
     const results = await t.batch?.([
       {
         fileId: 'x',
-        key: 'a',
         source: 'Hello A',
         sourceLocale: 'en',
         targetLocale: 'sv',
       },
       {
         fileId: 'x',
-        key: 'b',
         source: 'Hello B',
         sourceLocale: 'en',
         targetLocale: 'sv',
@@ -211,11 +200,11 @@ describe('anthropic', () => {
     vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
       calls++;
       const body = JSON.parse(init.body as string);
-      const sources: string[] = JSON.parse(body.messages[0].content);
+      const items: { source: string }[] = JSON.parse(body.messages[0].content);
       return new Response(
         JSON.stringify({
           content: [
-            { text: JSON.stringify(sources.map(() => 'ok')), type: 'text' },
+            { text: JSON.stringify(items.map(() => 'ok')), type: 'text' },
           ],
         }),
         { status: 200 },
@@ -224,7 +213,6 @@ describe('anthropic', () => {
     const t = anthropic({ apiKey: 'k', batchSize: 3 });
     const requests = Array.from({ length: 7 }, (_, i) => ({
       fileId: 'x',
-      key: `k${i}`,
       source: `s${i}`,
       sourceLocale: 'en',
       targetLocale: 'sv',
@@ -253,7 +241,6 @@ describe('anthropic', () => {
     const t = anthropic({ apiKey: 'k' });
     const result = await t({
       fileId: 'x',
-      key: 'g',
       source: 'Hi',
       sourceLocale: 'en',
       targetLocale: 'sv',
@@ -277,14 +264,12 @@ describe('anthropic', () => {
       t.batch?.([
         {
           fileId: 'x',
-          key: 'a',
           source: 'A',
           sourceLocale: 'en',
           targetLocale: 'sv',
         },
         {
           fileId: 'x',
-          key: 'b',
           source: 'B',
           sourceLocale: 'en',
           targetLocale: 'sv',

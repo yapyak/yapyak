@@ -7,7 +7,7 @@ order: 6
 Anything that can return translated strings can be a yapyak translator. Use `createTranslator` to build one — it handles batching, validation, and error handling so you only have to wire the LLM call.
 
 ```ts
-import { createTranslator } from 'yapyak';
+import { createTranslator } from 'yapyak/translator';
 
 const myTranslator = createTranslator({
   async translate({ items, sourceLocale, targetLocale, signal }) {
@@ -88,7 +88,7 @@ No automatic coercion. If your AI returns weird shapes, normalize them inside `t
 For a reusable translator with configurable options:
 
 ```ts
-import { createTranslator } from 'yapyak';
+import { createTranslator } from 'yapyak/translator';
 
 interface MyLLMOptions {
   endpoint: string;
@@ -146,7 +146,7 @@ yapyak({
 For testing, pseudo-locales, or specific deterministic transforms:
 
 ```ts
-import { createTranslator } from 'yapyak';
+import { createTranslator } from 'yapyak/translator';
 
 export const pseudoLocale = createTranslator({
   translate({ items, targetLocale }) {

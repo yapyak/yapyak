@@ -2,7 +2,7 @@ export interface DetectOptions {
   acceptLanguage?: string;
   defaultLocale: string;
   locales: string[];
-  navigatorLanguages?: readonly string[];
+  navigatorLanguages?: string[];
   persisted?: string;
 }
 

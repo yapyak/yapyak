@@ -1,4 +1,3 @@
-import { pick } from '../internal/index.ts';
 import { getLocale } from '../locale/index.ts';
 import { hasPlaceholder, interpolate } from './interpolate.ts';
 import { runTrackers } from './tracker.ts';
@@ -79,21 +78,25 @@ export type TIn = <Source extends string>(
   ...args: IsEmpty<Params<Source>> extends true ? [] : [params: Params<Source>]
 ) => string;
 
-function call(source: string, params?: Record<string, unknown>): string {
+function inLocale(locale: string): TIn {
+  const fn: TIn = (source, ...args) => {
+    const params = args[0];
+    if (params === undefined || !hasPlaceholder(source)) {
+      return source;
+    }
+    return interpolate(source, params as Record<string, unknown>, locale);
+  };
+  return fn;
+}
+
+const fn: T = (source, ...args) => {
   runTrackers();
+  const params = args[0];
   if (params === undefined || !hasPlaceholder(source)) {
     return source;
   }
-  return interpolate(source, params, getLocale());
-}
-
-function inLocale(locale: string): TIn {
-  const fn = (source: string, params?: Record<string, unknown>) =>
-    pick({ [locale]: source }, params, locale);
-  return fn as TIn;
-}
-
-const fn = call as unknown as T;
+  return interpolate(source, params as Record<string, unknown>, getLocale());
+};
 fn.in = inLocale;
 
 /**

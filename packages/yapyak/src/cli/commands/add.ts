@@ -53,14 +53,13 @@ export async function add(options: AddOptions): Promise<number> {
     }
   }
 
-  let result: ReturnType<typeof collect>;
-  try {
-    result = collect({
-      defaultLocale: config.defaultLocale,
-      localesDir: config.localesDir,
-      projectRoot,
-    });
-  } catch {
+  const result = collect({
+    defaultLocale: config.defaultLocale,
+    localesDir: config.localesDir,
+    projectRoot,
+  });
+
+  if (result.totalMessages === 0) {
     process.stdout.write(
       `\n  ${color.dim('No source strings found yet — locale files are ready for')} ${color.cyan('pnpm dev')}${color.dim('.')}\n\n`,
     );

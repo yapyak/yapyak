@@ -234,15 +234,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         return null;
       }
       const fileId = toFileId(projectRoot, id);
-      let messages: ExtractedMessage[];
-      try {
-        messages = extractMessages({ code, fileId });
-      } catch (error) {
-        if (error instanceof DynamicMessageError) {
-          throw error;
-        }
-        throw error;
-      }
+      const messages = extractMessages({ code, fileId });
       if (messages.length === 0) {
         return null;
       }

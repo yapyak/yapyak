@@ -26,16 +26,11 @@ export async function loadYapyakConfig(
 }
 
 async function readConfig(projectRoot: string): Promise<YapyakCliConfig> {
-  let loaded: Awaited<ReturnType<typeof loadConfigFromFile>> = null;
-  try {
-    loaded = await loadConfigFromFile(
-      { command: 'serve', mode: 'development' },
-      undefined,
-      projectRoot,
-    );
-  } catch {
-    return DEFAULTS;
-  }
+  const loaded = await loadConfigFromFile(
+    { command: 'serve', mode: 'development' },
+    undefined,
+    projectRoot,
+  );
   if (loaded === null) {
     return DEFAULTS;
   }

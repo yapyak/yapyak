@@ -55,9 +55,13 @@ function isRetryable(status: number): boolean {
 }
 
 function isNetworkError(error: unknown): boolean {
-  if (!(error instanceof Error)) return false;
-  if (error.name === 'AbortError') return true;
-  return error.message.includes('fetch') || error.message.includes('network');
+  if (!(error instanceof Error)) {
+    return false;
+  }
+  if (error.name === 'AbortError' || error.name === 'TimeoutError') {
+    return true;
+  }
+  return error instanceof TypeError;
 }
 
 function backoffMs(attempt: number): number {

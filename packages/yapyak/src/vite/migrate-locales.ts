@@ -26,6 +26,9 @@ export function migrateLocales(
   }
 
   for (const locale of options.locales) {
+    if (locale === options.defaultLocale) {
+      continue;
+    }
     const localePath = join(
       options.projectRoot,
       options.localesDir,
@@ -37,7 +40,6 @@ export function migrateLocales(
       continue;
     }
     let changed = false;
-    const isDefault = locale === options.defaultLocale;
     const next: Record<string, string> = { ...fileEntries };
     for (const rename of options.renames) {
       if (!Object.hasOwn(next, rename.from)) {
@@ -45,14 +47,10 @@ export function migrateLocales(
       }
       const previousValue = next[rename.from];
       delete next[rename.from];
-      if (isDefault) {
-        next[rename.to] = rename.to;
-      } else {
-        next[rename.to] = options.preserveTranslations
-          ? (previousValue ?? '')
-          : '';
-        staleEntries.push({ locale, source: rename.to });
-      }
+      next[rename.to] = options.preserveTranslations
+        ? (previousValue ?? '')
+        : '';
+      staleEntries.push({ locale, source: rename.to });
       changed = true;
     }
     if (changed) {

@@ -87,7 +87,7 @@
           "location": {
             "column": 14,
             "file": "src/runtime/t.ts",
-            "line": 117
+            "line": 120
           },
           "name": "t",
           "tags": [],
@@ -119,7 +119,7 @@
           "location": {
             "column": 1,
             "file": "src/runtime/t.ts",
-            "line": 65
+            "line": 64
           },
           "name": "T",
           "tags": [],
@@ -163,7 +163,7 @@
           "location": {
             "column": 1,
             "file": "src/runtime/t.ts",
-            "line": 77
+            "line": 76
           },
           "name": "TIn",
           "tags": [],
@@ -221,8 +221,8 @@
           "kind": "function",
           "parameters": [],
           "returnDescription": "",
-          "returnType": "readonly [string, (locale: string) => void]",
-          "signature": "useLocale(): readonly [string, (locale: string) => void]"
+          "returnType": "[string, (locale: string) => void]",
+          "signature": "useLocale(): [string, (locale: string) => void]"
         },
         {
           "deprecated": null,
