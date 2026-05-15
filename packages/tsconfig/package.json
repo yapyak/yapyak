@@ -1,0 +1,14 @@
+{
+  "name": "@yapyak/tsconfig",
+  "private": true,
+  "version": "0.0.0",
+  "exports": {
+    "./base": "./base.json",
+    "./library": "./library.json",
+    "./app": "./app.json",
+    "./react": "./react.json",
+    "./svelte": "./svelte.json",
+    "./vue": "./vue.json"
+  },
+  "files": ["*.json"]
+}

@@ -25,6 +25,7 @@ export function ReferenceSymbolExamples(
           className={styles.Body}
           // biome-ignore lint/security/noDangerouslySetInnerHtml: server-rendered markdown
           dangerouslySetInnerHTML={{ __html: html }}
+          // biome-ignore lint/suspicious/noArrayIndexKey: examples render in stable order
           key={index}
         />
       ))}

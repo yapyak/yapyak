@@ -2,7 +2,7 @@ import type { Plugin } from 'vite';
 
 import { extractApi } from './extract-api';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 
 interface Options {
   outFile: string;

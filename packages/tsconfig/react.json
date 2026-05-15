@@ -1,0 +1,6 @@
+{
+  "extends": "./app.json",
+  "compilerOptions": {
+    "jsx": "react-jsx"
+  }
+}

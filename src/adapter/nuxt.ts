@@ -21,6 +21,7 @@ const plugin: NitroAppPlugin = defineNitroPlugin(() => {
   registerRequestHeadersReader(() => {
     let event: ReturnType<typeof useEvent> | undefined;
     try {
+      // biome-ignore lint/correctness/useHookAtTopLevel: Nitro useEvent throws outside event context, caught below
       event = useEvent();
     } catch {
       return undefined;

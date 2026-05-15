@@ -111,7 +111,6 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         }
       } catch (error) {
         if (error instanceof DynamicMessageError) {
-          // biome-ignore lint/suspicious/noConsole: dev plugin output
           console.error(error.message);
           continue;
         }
@@ -144,7 +143,6 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
           localeCache = null;
         }
         for (const error of result.errors) {
-          // biome-ignore lint/suspicious/noConsole: dev plugin output
           console.warn(
             `[yapyak] translation failed: ${error.locale} ${error.fileId} "${error.source}"`,
             error.error,
@@ -152,7 +150,6 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         }
       })
       .catch((error: unknown) => {
-        // biome-ignore lint/suspicious/noConsole: dev plugin output
         console.warn('[yapyak] auto-translate error:', error);
       });
   }
@@ -184,7 +181,6 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         after = extractMessages({ code, fileId });
       } catch (error) {
         if (error instanceof DynamicMessageError) {
-          // biome-ignore lint/suspicious/noConsole: dev plugin output
           console.error(error.message);
           return;
         }

@@ -498,7 +498,7 @@ function declarationText(declaration: ts.Declaration): string {
   if (text.length <= 400) {
     return text;
   }
-  return text.slice(0, 397) + '...';
+  return `${text.slice(0, 397)}...`;
 }
 
 function pickDeclaration(symbol: ts.Symbol): ts.Declaration | undefined {

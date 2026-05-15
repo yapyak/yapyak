@@ -59,8 +59,7 @@ type IsEmpty<T> = keyof T extends never ? true : false;
 
 type Params<Source extends string> = Source extends `${string}{${string}`
   ? ExtractParams<Source>
-  : // biome-ignore lint/complexity/noBannedTypes: intentional
-    {};
+  : {};
 
 /** The runtime translation function. */
 export interface T {

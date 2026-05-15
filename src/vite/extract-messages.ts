@@ -88,10 +88,6 @@ interface CallSite {
   fixedLocale: string | undefined;
 }
 
-interface AliasInfo {
-  name: string;
-}
-
 function collectAliases(code: string): Set<string> {
   const aliases = new Set<string>();
   const importRe =

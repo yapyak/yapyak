@@ -1,0 +1,11 @@
+{
+  "extends": "./base.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es2022",
+    "declaration": true,
+    "isolatedDeclarations": true,
+    "jsx": "react-jsx",
+    "types": ["node", "react", "vite/client"]
+  }
+}

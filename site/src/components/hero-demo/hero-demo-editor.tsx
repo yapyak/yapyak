@@ -40,6 +40,7 @@ interface IndicatorState {
 export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
   const { source, typing, framework, onFrameworkChange } = props;
   const config =
+    // biome-ignore lint/style/noNonNullAssertion: FRAMEWORKS is a non-empty const tuple
     FRAMEWORKS.find((entry) => entry.id === framework) ?? FRAMEWORKS[0]!;
   const code = buildCode(framework, source);
   const tokens = tokenize(code, config.lang);
@@ -65,7 +66,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
       setIsReady(true);
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [framework]);
+  }, []);
 
   const indicatorStyle: CSSProperties | undefined =
     indicator !== null

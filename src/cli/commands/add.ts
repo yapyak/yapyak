@@ -54,7 +54,7 @@ export async function add(options: AddOptions): Promise<number> {
     }
   }
 
-  let result;
+  let result: ReturnType<typeof collect>;
   try {
     result = collect({
       defaultLocale: config.defaultLocale,

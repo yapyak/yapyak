@@ -2,4 +2,5 @@ packages:
   - .
   - docs
   - examples/*
+  - packages/*
   - site

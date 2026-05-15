@@ -33,6 +33,9 @@ importers:
       '@types/react-dom':
         specifier: 19.2.3
         version: 19.2.3(@types/react@19.2.14)
+      '@yapyak/tsconfig':
+        specifier: workspace:*
+        version: link:packages/tsconfig
       astro:
         specifier: ^6.3.2
         version: 6.3.2(@types/node@25.6.0)(db0@0.3.4)(ioredis@5.10.1)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.3)(terser@5.47.1)(yaml@2.8.4)
@@ -98,6 +101,9 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^6.0.0
         version: 6.0.1(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
+      '@yapyak/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
       typescript:
         specifier: ^6.0.0
         version: 6.0.3
@@ -117,6 +123,9 @@ importers:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.0
         version: 5.1.1(svelte@5.55.5)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
+      '@yapyak/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
       svelte-check:
         specifier: ^4.0.0
         version: 4.4.8(picomatch@4.0.4)(svelte@5.55.5)(typescript@6.0.3)
@@ -139,6 +148,9 @@ importers:
       '@vitejs/plugin-vue':
         specifier: ^6.0.0
         version: 6.0.6(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))(vue@3.5.13(typescript@6.0.3))
+      '@yapyak/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
       typescript:
         specifier: ^6.0.0
         version: 6.0.3
@@ -148,6 +160,8 @@ importers:
       vue-tsc:
         specifier: ^3.0.0
         version: 3.2.8(typescript@6.0.3)
+
+  packages/tsconfig: {}
 
   site:
     dependencies:
@@ -173,6 +187,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.2.0
         version: 19.2.3(@types/react@19.2.14)
+      '@yapyak/tsconfig':
+        specifier: workspace:*
+        version: link:../packages/tsconfig
       lightningcss:
         specifier: ^1.32.0
         version: 1.32.0

@@ -1,16 +1,4 @@
 {
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
-    "module": "preserve",
-    "moduleResolution": "bundler",
-    "noEmit": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "target": "ES2023",
-    "types": ["vite/client"],
-    "verbatimModuleSyntax": true
-  },
+  "extends": "@yapyak/tsconfig/react",
   "include": ["src/**/*"]
 }

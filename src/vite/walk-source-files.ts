@@ -33,7 +33,7 @@ function walk(
   }
   for (const name of entries) {
     const fullPath = join(dir, name);
-    let stat;
+    let stat: ReturnType<typeof statSync>;
     try {
       stat = statSync(fullPath);
     } catch {

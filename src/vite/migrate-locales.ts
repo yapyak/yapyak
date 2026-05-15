@@ -1,5 +1,4 @@
 import type { Rename } from './detect-renames.js';
-import type { LocaleFile } from './sync-locale-files.js';
 
 import { readLocaleFile, writeLocaleFile } from './sync-locale-files.js';
 import { join } from 'node:path';
