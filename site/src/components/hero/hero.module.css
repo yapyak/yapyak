@@ -6,7 +6,7 @@
 
     max-width: 70rem;
     margin: 0 auto;
-    padding: var(--space-20) var(--space-8);
+    padding: var(--space-20) var(--space-4);
 
     .Stack {
       display: flex;

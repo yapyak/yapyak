@@ -9,12 +9,13 @@ import {
 } from '@tanstack/react-router';
 import type { ReactNode } from 'react';
 import { t } from 'yapyak';
+import { useLocale } from 'yapyak/react';
 import { Footer } from '#components/footer';
 import { GitHubIcon } from '#components/icon';
 import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
-import { Wordmark } from '#components/wordmark';
 import { Navigation } from '#components/navigation';
+import { Wordmark } from '#components/wordmark';
 
 export const Route = createRootRoute({
   head() {
@@ -22,15 +23,14 @@ export const Route = createRootRoute({
       meta: [
         { charSet: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { title: 'yapyak — The i18n library that maintains itself' },
+        { title: 'yapyak — i18n that maintains itself.' },
         {
           name: 'description',
-          content:
-            'Built for Vite. Designed for the AI era. yapyak is an i18n library that maintains itself — no source.json, no SaaS, no AI margin.',
+          content: 'Built for Vite. Designed for the AI era.',
         },
         {
           property: 'og:title',
-          content: 'yapyak — The i18n library that maintains itself',
+          content: 'yapyak — i18n that maintains itself.',
         },
         {
           property: 'og:description',
@@ -40,7 +40,7 @@ export const Route = createRootRoute({
         { name: 'twitter:card', content: 'summary_large_image' },
         {
           name: 'twitter:title',
-          content: 'yapyak — The i18n library that maintains itself',
+          content: 'yapyak — i18n that maintains itself.',
         },
         {
           name: 'twitter:description',
@@ -95,8 +95,11 @@ interface RootDocumentProps {
 
 function ShellComponent(props: RootDocumentProps): ReactNode {
   const { children } = props;
+
+  const [locale] = useLocale();
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <head>
         <HeadContent />
       </head>

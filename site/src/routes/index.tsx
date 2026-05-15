@@ -11,7 +11,7 @@ function Component() {
   return (
     <div>
       <Hero
-        heading={t('The i18n library that maintains itself.')}
+        heading={t('i18n that maintains itself.')}
         description={t('Built for Vite. Designed for the AI era.')}
       />
       <FeatureList />
