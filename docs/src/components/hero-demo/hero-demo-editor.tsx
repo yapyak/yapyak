@@ -96,7 +96,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
         ) : null}
         {FRAMEWORKS.map((entry) => {
           const isActive = entry.id === framework;
-          const isDirty = isActive && typing;
+          const isDirty = isActive && (typing || saving);
           return (
             <button
               className={styles.Tab}
@@ -153,6 +153,10 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
           })}
         </code>
       </pre>
+      <span
+        aria-hidden="true"
+        className={styles.Flash}
+      />
     </div>
   );
 }

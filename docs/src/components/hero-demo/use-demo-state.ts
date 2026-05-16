@@ -95,14 +95,8 @@ export function useDemoState(active: boolean): DemoState {
           }
         }
 
-        setState((state) => ({ ...state, typing: false }));
-
-        await sleep(360);
-
-        setState((state) => ({ ...state, saving: true }));
-        await sleep(360);
-        setState((state) => ({ ...state, saving: false }));
-        await sleep(240);
+        setState((state) => ({ ...state, saving: true, typing: false }));
+        await sleep(600);
         setState((state) => ({
           ...state,
           receiving: true,
@@ -137,6 +131,7 @@ export function useDemoState(active: boolean): DemoState {
           await sleep(130);
         }
 
+        setState((state) => ({ ...state, saving: false }));
         await sleep(1100);
 
         sceneIndex++;
