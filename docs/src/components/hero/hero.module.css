@@ -65,8 +65,8 @@
       background-color: var(--surface-elevated);
       border-radius: var(--radius-pill);
       box-shadow:
-        0 0 0 1px var(--ring-strong),
-        0 -1px var(--ring-highlight);
+        inset 0 0 0 1px var(--ring-strong),
+        inset 0 1px var(--ring-highlight);
       transition:
         background-color var(--transition),
         transform var(--transition);
