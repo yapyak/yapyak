@@ -7,12 +7,13 @@ import { Wordmark } from '#components/wordmark';
 import styles from './footer.module.css';
 
 const TAGLINES = [
-  "Who's yaking in the back? That's yapyak.",
+  "Who's yakking in the back? That's yapyak.",
   "Who's keeping i18n on track? That's yapyak.",
   "Who's that yak inside your stack? That's yapyak.",
   "Who's translating while you snack? That's yapyak.",
-  "Who's shipping copy at lightning crack? That's yapyak.",
-  "Who's that AI-powered i18n hack? That's yapyak.",
+  "Who's the AI with the i18n knack? That's yapyak.",
+  "Who's i18n minus the heart attack? That's yapyak.",
+  "Who's got your back like a perfect fallback? That's yapyak.",
 ];
 
 const ROTATION_INTERVAL = 5200;
