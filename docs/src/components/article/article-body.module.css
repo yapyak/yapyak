@@ -2,8 +2,9 @@
   .ArticleBody {
     max-width: 38rem;
     font-size: var(--font-size-md);
-    line-height: 1.65;
+    line-height: 1.7;
     color: var(--text-default);
+    letter-spacing: -0.003em;
 
     h1,
     h2,
@@ -21,23 +22,24 @@
       font-size: var(--font-size-2xl);
     }
     h2 {
-      margin: var(--space-8) 0 var(--space-3);
+      margin: var(--space-12) 0 var(--space-5);
       font-size: var(--font-size-xl);
+      line-height: 1.15;
     }
     h3 {
-      margin: var(--space-7) 0 var(--space-2);
+      margin: var(--space-10) 0 var(--space-4);
       font-size: var(--font-size-lg);
     }
     h4 {
-      margin: var(--space-5) 0 var(--space-2);
+      margin: var(--space-8) 0 var(--space-3);
       font-size: var(--font-size-md);
     }
     h5 {
-      margin: var(--space-4) 0 var(--space-2);
+      margin: var(--space-5) 0 var(--space-2);
       font-size: var(--font-size-sm);
     }
     h6 {
-      margin: var(--space-4) 0 var(--space-2);
+      margin: var(--space-5) 0 var(--space-2);
       font-size: var(--font-size-xs);
       color: var(--text-muted);
       text-transform: uppercase;
@@ -47,13 +49,16 @@
     p,
     ul,
     ol,
-    table,
+    table {
+      margin: var(--space-5) 0;
+    }
+
     :global(.CodeBlock) {
-      margin: var(--space-4) 0;
+      margin: var(--space-8) 0;
     }
 
     li {
-      margin: var(--space-2) 0;
+      margin: var(--space-3) 0;
     }
 
     > :first-child {

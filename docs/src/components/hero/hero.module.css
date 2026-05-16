@@ -20,7 +20,7 @@
       font-size: var(--font-size-4xl);
       font-weight: var(--font-weight-medium);
       line-height: 1;
-      color: var(--text-soft);
+      color: var(--text);
       letter-spacing: -0.04em;
       text-wrap: balance;
     }
