@@ -116,11 +116,11 @@
     0% {
       opacity: 0;
     }
-    16% {
-      opacity: 0.02;
+    4% {
+      opacity: 0.06;
     }
     44% {
-      opacity: 0.02;
+      opacity: 0.06;
     }
     100% {
       opacity: 0;
