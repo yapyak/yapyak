@@ -62,6 +62,7 @@
       font-weight: var(--font-weight-medium);
       color: var(--text);
       text-decoration: none;
+      background-color: var(--surface);
       border-radius: var(--radius-pill);
       box-shadow:
         0 0 0 1px var(--ring-strong),
