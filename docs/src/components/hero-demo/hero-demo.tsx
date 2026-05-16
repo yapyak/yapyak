@@ -46,10 +46,12 @@ export function HeroDemo(): ReactElement {
         <HeroDemoEditor
           framework={framework}
           onFrameworkChange={setFramework}
+          saving={state.saving}
           source={state.source}
           typing={state.typing}
         />
         <HeroDemoLocales
+          receiving={state.receiving}
           savedSource={state.savedSource}
           shimmering={state.shimmering}
           translations={state.translations}

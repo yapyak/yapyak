@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { EMPTY_TRANSLATIONS, INITIAL_SCENE, LOCALES, SCENES } from './scenes';
 
 export interface DemoState {
+  receiving: boolean;
   savedSource: string;
   saving: boolean;
   shimmering: Set<LocaleCode>;
@@ -14,6 +15,7 @@ export interface DemoState {
 }
 
 const INITIAL_STATE: DemoState = {
+  receiving: false,
   savedSource: INITIAL_SCENE.source,
   saving: false,
   shimmering: new Set(),
@@ -98,16 +100,19 @@ export function useDemoState(active: boolean): DemoState {
         await sleep(360);
 
         setState((state) => ({ ...state, saving: true }));
-        await sleep(900);
+        await sleep(360);
+        setState((state) => ({ ...state, saving: false }));
+        await sleep(240);
         setState((state) => ({
           ...state,
+          receiving: true,
           savedSource: scene.source,
-          saving: false,
           shimmering: new Set(LOCALES.map((locale) => locale.code)),
           translations: EMPTY_TRANSLATIONS,
         }));
-
-        await sleep(350);
+        await sleep(360);
+        setState((state) => ({ ...state, receiving: false }));
+        await sleep(120);
 
         for (let index = 0; index < LOCALES.length; index++) {
           const locale = LOCALES[index];

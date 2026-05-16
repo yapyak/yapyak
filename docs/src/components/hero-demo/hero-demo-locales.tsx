@@ -7,15 +7,19 @@ import styles from './hero-demo-locales.module.css';
 import { LOCALES } from './scenes';
 
 export interface HeroDemoLocalesProps {
+  receiving: boolean;
   savedSource: string;
   shimmering: Set<LocaleCode>;
   translations: Record<LocaleCode, string>;
 }
 
 export function HeroDemoLocales(props: HeroDemoLocalesProps): ReactElement {
-  const { savedSource, translations, shimmering } = props;
+  const { savedSource, translations, shimmering, receiving } = props;
   return (
-    <div className={styles.HeroDemoLocales}>
+    <div
+      className={styles.HeroDemoLocales}
+      data-receiving={receiving || undefined}
+    >
       {LOCALES.map((locale) => {
         const value = translations[locale.code];
         const isShimmering = shimmering.has(locale.code);

@@ -25,6 +25,7 @@ export const FRAMEWORKS: FrameworkConfig[] = [
 export interface HeroDemoEditorProps {
   framework: Framework;
   onFrameworkChange: (framework: Framework) => void;
+  saving: boolean;
   source: string;
   typing: boolean;
 }
@@ -38,7 +39,7 @@ interface IndicatorState {
 }
 
 export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
-  const { source, typing, framework, onFrameworkChange } = props;
+  const { source, typing, saving, framework, onFrameworkChange } = props;
   const config =
     // biome-ignore lint/style/noNonNullAssertion: yap yap yap
     FRAMEWORKS.find((entry) => entry.id === framework) ?? FRAMEWORKS[0]!;
@@ -66,7 +67,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
       setIsReady(true);
     });
     return () => window.cancelAnimationFrame(frame);
-  }, []);
+  }, [framework]);
 
   const indicatorStyle: CSSProperties | undefined =
     indicator !== null
@@ -77,7 +78,10 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
       : undefined;
 
   return (
-    <div className={styles.HeroDemoEditor}>
+    <div
+      className={styles.HeroDemoEditor}
+      data-saving={saving || undefined}
+    >
       <div
         className={styles.Tabs}
         ref={tabsElement}
@@ -90,22 +94,26 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
             style={indicatorStyle}
           />
         ) : null}
-        {FRAMEWORKS.map((entry) => (
-          <button
-            className={styles.Tab}
-            data-active={entry.id === framework || undefined}
-            key={entry.id}
-            onClick={() => onFrameworkChange(entry.id)}
-            type="button"
-          >
-            <span className={styles.TabFilename}>{entry.filename}</span>
-            <span
-              aria-hidden="true"
-              className={styles.TabDot}
-              data-dirty={(entry.id === framework && typing) || undefined}
-            />
-          </button>
-        ))}
+        {FRAMEWORKS.map((entry) => {
+          const isActive = entry.id === framework;
+          const isDirty = isActive && typing;
+          return (
+            <button
+              className={styles.Tab}
+              data-active={isActive || undefined}
+              key={entry.id}
+              onClick={() => onFrameworkChange(entry.id)}
+              type="button"
+            >
+              <span className={styles.TabFilename}>{entry.filename}</span>
+              <span
+                aria-hidden="true"
+                className={styles.TabDot}
+                data-dirty={isDirty || undefined}
+              />
+            </button>
+          );
+        })}
       </div>
       <pre className={styles.Pre}>
         <code className={styles.Code}>
