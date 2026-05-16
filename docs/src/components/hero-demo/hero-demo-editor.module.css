@@ -142,11 +142,11 @@
     }
     16% {
       opacity: 1;
-      transform: scale(1.9);
+      transform: scale(1.55);
     }
     50% {
       opacity: 1;
-      transform: scale(1.9);
+      transform: scale(1.55);
     }
     100% {
       opacity: 0;
