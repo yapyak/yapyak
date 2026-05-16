@@ -45,7 +45,7 @@ export const FEATURES: Feature[] = [
   },
   {
     description:
-      'Inlined by Vite, shipped with the route. No translations.json. No fetch waterfall. They were already there.',
+      'Each call site embeds its locale variants inline. Vite route-splits your app; translations split with the routes that use them. A page ships only the strings it renders.',
     number: '07',
     title: 'Translations ride with your code',
   },

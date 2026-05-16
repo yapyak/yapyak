@@ -13,8 +13,11 @@ export interface LocaleData {
 }
 
 export interface TransformOptions {
+  defaultLocale: string;
   fileId: string;
   helperImport?: string;
+  localeData: LocaleData;
+  locales: string[];
 }
 
 export interface TransformResult {
@@ -64,12 +67,14 @@ export function transformSource(
       throw error;
     }
     const paramsArg = argList[1];
-    const compiled = compileCall({
-      fileId: options.fileId,
-      fixedLocale: site.fixedLocale,
-      paramsExpression: paramsArg,
-      source,
-    });
+    const compiled = compileCall(
+      {
+        fixedLocale: site.fixedLocale,
+        paramsExpression: paramsArg,
+        source,
+      },
+      options,
+    );
     replacements.push({
       end: argsRange.argsEnd,
       replacement: compiled,
@@ -109,17 +114,24 @@ function injectImport(code: string, importStatement: string): string {
 }
 
 interface CompileInput {
-  fileId: string;
   fixedLocale: string | undefined;
   paramsExpression: string | undefined;
   source: string;
 }
 
-function compileCall(input: CompileInput): string {
-  const args: string[] = [
-    singleQuoteString(input.fileId),
-    singleQuoteString(input.source),
-  ];
+function compileCall(input: CompileInput, options: TransformOptions): string {
+  const variants: Record<string, string> = {};
+  for (const locale of options.locales) {
+    const value = readLocaleValue(
+      options.localeData,
+      locale,
+      options.fileId,
+      input.source,
+    );
+    variants[locale] = value ?? input.source;
+  }
+  const variantsLiteral = stringifyVariants(variants);
+  const args: string[] = [variantsLiteral];
   if (input.paramsExpression !== undefined || input.fixedLocale !== undefined) {
     args.push(input.paramsExpression ?? 'undefined');
   }
@@ -127,6 +139,21 @@ function compileCall(input: CompileInput): string {
     args.push(JSON.stringify(input.fixedLocale));
   }
   return `${HELPER_NAME}(${args.join(', ')})`;
+}
+
+function stringifyVariants(variants: Record<string, string>): string {
+  const parts: string[] = [];
+  for (const [locale, value] of Object.entries(variants)) {
+    parts.push(`${quoteIdentifier(locale)}: ${singleQuoteString(value)}`);
+  }
+  return `{ ${parts.join(', ')} }`;
+}
+
+function quoteIdentifier(value: string): string {
+  if (/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(value)) {
+    return value;
+  }
+  return singleQuoteString(value);
 }
 
 function singleQuoteString(value: string): string {
@@ -139,4 +166,25 @@ function singleQuoteString(value: string): string {
     .replace(new RegExp(String.fromCharCode(0x2029), 'g'), '\\u2029')
     .replace(/\}/g, '\\u007D');
   return `'${escaped}'`;
+}
+
+function readLocaleValue(
+  data: LocaleData,
+  locale: string,
+  fileId: string,
+  source: string,
+): string | undefined {
+  const localeFile = data[locale];
+  if (localeFile === undefined) {
+    return undefined;
+  }
+  const fileEntries = localeFile[fileId];
+  if (fileEntries === undefined) {
+    return undefined;
+  }
+  const value = fileEntries[source];
+  if (typeof value !== 'string' || value === '') {
+    return undefined;
+  }
+  return value;
 }

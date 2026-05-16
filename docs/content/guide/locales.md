@@ -61,22 +61,10 @@ getDefaultLocale()   // 'en'
 ```ts
 import { setLocale } from 'yapyak';
 
-await setLocale('es');
+setLocale('es');
 ```
 
-`setLocale` is async. Non-default locales are code-split, so the first switch to a locale triggers a dynamic `import()`. Subsequent switches read from cache. Default-locale switches resolve immediately — the strings are already in the bundle.
-
-Once loaded, the store updates, persistence writes, and subscribed `useLocale` hooks re-render.
-
-To avoid the network round-trip on click, pre-load:
-
-```ts
-import { loadLocale, setLocale } from 'yapyak';
-
-await loadLocale('es');
-// later, when user clicks:
-await setLocale('es');
-```
+Updates the in-memory store, persists according to your `persistence` config, and notifies all subscribed `useLocale` hooks. Components re-render in the new locale.
 
 In components, use the framework-idiomatic reactive binding so the UI re-renders on locale change:
 
@@ -231,24 +219,6 @@ One direction only. Header `pt-BR` resolves to locale `pt`. Header `pt` does not
 This follows RFC 4647 Lookup. The requested tag truncates from the right until a match is found. Expanding `pt` to `pt-BR` would mean guessing a region the user did not request.
 
 The cookie wins over `Accept-Language` either way.
-
-## Bundle architecture
-
-Translations are code-split per locale. The default locale lives in your source. Every other locale ships as a separate chunk, loaded on demand.
-
-```
-main bundle
-├── _$pick('src/Greeting.tsx', 'Hello {name}', params)
-├── _$pick('src/Button.tsx', 'Save')
-└── ...
-
-chunks/locale-es.js     ← loaded on setLocale('es')
-chunks/locale-fr.js     ← loaded on setLocale('fr')
-```
-
-Default-locale text is the source string itself — the bundle pays nothing extra for it. Other locales are JSON-shaped chunks keyed by `(fileId, source)`.
-
-SSR adapters resolve the locale from `Accept-Language` or the cookie and load that chunk before render, so HTML arrives in the user's language from the first byte.
 
 ## Default-locale fallback
 

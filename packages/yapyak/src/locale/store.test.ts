@@ -3,10 +3,6 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 vi.mock('virtual:yapyak', () => ({
   ACCEPT_LANGUAGE: false,
   DEFAULT_LOCALE: 'en',
-  LOADERS: {
-    fr: () => Promise.resolve({ default: {} }),
-    sv: () => Promise.resolve({ default: {} }),
-  },
   LOCALES: ['en', 'sv', 'fr'],
   PERSISTENCE: null,
   SYNC_HTML_LANG: false,
@@ -39,41 +35,41 @@ describe('locale store', () => {
     expect(getDefaultLocale()).toBe('en');
   });
 
-  it('updates locale on setLocale', async () => {
-    await setLocale('sv');
+  it('updates locale on setLocale', () => {
+    setLocale('sv');
     expect(getLocale()).toBe('sv');
   });
 
-  it('ignores setLocale to unsupported locale', async () => {
-    await setLocale('de');
+  it('ignores setLocale to unsupported locale', () => {
+    setLocale('de');
     expect(getLocale()).toBe('en');
   });
 
-  it('notifies subscribers on change', async () => {
+  it('notifies subscribers on change', () => {
     const listener = vi.fn();
     subscribeLocale(listener);
-    await setLocale('sv');
+    setLocale('sv');
     expect(listener).toHaveBeenCalledTimes(1);
   });
 
-  it('does not notify when set to same locale', async () => {
+  it('does not notify when set to same locale', () => {
     const listener = vi.fn();
     subscribeLocale(listener);
-    await setLocale('en');
+    setLocale('en');
     expect(listener).not.toHaveBeenCalled();
   });
 
-  it('does not notify after unsubscribe', async () => {
+  it('does not notify after unsubscribe', () => {
     const listener = vi.fn();
     const unsubscribe = subscribeLocale(listener);
     unsubscribe();
-    await setLocale('sv');
+    setLocale('sv');
     expect(listener).not.toHaveBeenCalled();
   });
 
-  it('produces a new snapshot on each change', async () => {
+  it('produces a new snapshot on each change', () => {
     const before = getLocaleSnapshot();
-    await setLocale('sv');
+    setLocale('sv');
     const after = getLocaleSnapshot();
     expect(before).not.toBe(after);
   });

@@ -21,8 +21,6 @@ export type { YapyakOptions };
 
 const CONFIG_ID = 'virtual:yapyak';
 const CONFIG_RESOLVED = `\0${CONFIG_ID}`;
-const LOCALE_PREFIX = 'virtual:yapyak/locales/';
-const LOCALE_RESOLVED_PREFIX = `\0${LOCALE_PREFIX}`;
 
 /**
  * The yapyak Vite plugin.
@@ -223,19 +221,12 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       if (id === CONFIG_RESOLVED) {
         return generateConfig(normalized, discover());
       }
-      if (id.startsWith(LOCALE_RESOLVED_PREFIX)) {
-        const locale = id.slice(LOCALE_RESOLVED_PREFIX.length);
-        return generateLocaleModule(locale, getLocaleData());
-      }
       return null;
     },
     name: 'yapyak',
     resolveId(id: string): string | null {
       if (id === CONFIG_ID) {
         return CONFIG_RESOLVED;
-      }
-      if (id.startsWith(LOCALE_PREFIX)) {
-        return `\0${id}`;
       }
       return null;
     },
@@ -248,7 +239,13 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       if (messages.length === 0) {
         return null;
       }
-      const result = transformSource(code, { fileId });
+      const { defaultLocale, locales } = discover();
+      const result = transformSource(code, {
+        defaultLocale,
+        fileId,
+        localeData: getLocaleData(),
+        locales,
+      });
       if (result === null) {
         return null;
       }
@@ -287,29 +284,7 @@ function generateConfig(
   lines.push(
     `export const SYNC_HTML_LANG = ${JSON.stringify(normalized.syncHtmlLang)};`,
   );
-  lines.push(generateLoaders(resolved));
   return lines.join('\n');
-}
-
-function generateLoaders(resolved: {
-  defaultLocale: string;
-  locales: string[];
-}): string {
-  const entries: string[] = [];
-  for (const locale of resolved.locales) {
-    if (locale === resolved.defaultLocale) {
-      continue;
-    }
-    const id = JSON.stringify(locale);
-    const path = `'virtual:yapyak/locales/${locale}'`;
-    entries.push(`  ${id}: () => import(${path}),`);
-  }
-  return `export const LOADERS = {\n${entries.join('\n')}\n};`;
-}
-
-function generateLocaleModule(locale: string, data: LocaleData): string {
-  const fileData = data[locale] ?? {};
-  return `export default ${JSON.stringify(fileData)};`;
 }
 
 function isCandidateId(id: string, filter: (id: string) => boolean): boolean {

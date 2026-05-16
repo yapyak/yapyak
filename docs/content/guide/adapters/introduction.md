@@ -28,7 +28,7 @@ For other frameworks, wrap each request manually with `withRequest()`:
 ```ts
 import { withRequest } from 'yapyak/adapter';
 
-async function handler(request: Request) {
+function handler(request: Request) {
   return withRequest(request, () => renderApp(request));
 }
 ```

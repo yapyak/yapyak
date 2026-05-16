@@ -9,7 +9,7 @@
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 94
+            "line": 116
           },
           "name": "getDefaultLocale",
           "tags": [],
@@ -26,7 +26,7 @@
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 49
+            "line": 79
           },
           "name": "getLocale",
           "tags": [],
@@ -43,7 +43,7 @@
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 89
+            "line": 111
           },
           "name": "getLocales",
           "tags": [],
@@ -55,37 +55,12 @@
         },
         {
           "deprecated": null,
-          "description": "",
-          "examples": [],
-          "location": {
-            "column": 1,
-            "file": "src/locale/loader.ts",
-            "line": 28
-          },
-          "name": "loadLocale",
-          "tags": [],
-          "kind": "function",
-          "parameters": [
-            {
-              "defaultValue": null,
-              "description": "",
-              "name": "locale",
-              "optional": false,
-              "type": "string"
-            }
-          ],
-          "returnDescription": "",
-          "returnType": "Promise<void>",
-          "signature": "loadLocale(locale: string): Promise<void>"
-        },
-        {
-          "deprecated": null,
-          "description": "Switches the active locale.\n\nLoads the locale's translations if not already cached, then notifies\nframework integrations to re-render. No-op if the locale is not in the\nconfigured `locales` list.",
+          "description": "Switches the active locale.\n\nNo-op if the locale is not in the configured `locales` list. Triggers\nre-renders in framework integrations (`useLocale`, Svelte/Vue stores).",
           "examples": [],
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 68
+            "line": 91
           },
           "name": "setLocale",
           "tags": [],
@@ -100,8 +75,8 @@
             }
           ],
           "returnDescription": "",
-          "returnType": "Promise<void>",
-          "signature": "setLocale(locale: string): Promise<void>"
+          "returnType": "void",
+          "signature": "setLocale(locale: string): void"
         },
         {
           "deprecated": null,
@@ -246,8 +221,8 @@
           "kind": "function",
           "parameters": [],
           "returnDescription": "",
-          "returnType": "[string, (locale: string) => Promise<void>]",
-          "signature": "useLocale(): [string, (locale: string) => Promise<void>]"
+          "returnType": "[string, (locale: string) => void]",
+          "signature": "useLocale(): [string, (locale: string) => void]"
         },
         {
           "deprecated": null,
@@ -461,7 +436,7 @@
           "location": {
             "column": 1,
             "file": "src/vite/plugin.ts",
-            "line": 54
+            "line": 52
           },
           "name": "yapyak",
           "tags": [],
@@ -687,14 +662,14 @@
       "exports": [
         {
           "deprecated": null,
-          "description": "Runs `fn` with the request's locale context bound to async-scoped storage.\n\nResolves the locale from cookie + `Accept-Language`, loads its translations,\nand binds everything for the duration of `fn`. The shipped adapters\n(`yapyak/adapter/sveltekit`, `yapyak/adapter/tanstack-start`,\n`yapyak/adapter/astro`, `yapyak/adapter/react-router`) call this for you.\nUse it directly when wiring a custom SSR setup.",
+          "description": "Runs `fn` with the request's locale headers bound to async-scoped storage.\n\nThe shipped adapters (`yapyak/adapter/sveltekit`, `yapyak/adapter/tanstack-start`,\n`yapyak/adapter/astro`, `yapyak/adapter/react-router`) call this for you.\nUse it directly when wiring a custom SSR setup.",
           "examples": [
-            "```ts\nimport { withRequest } from 'yapyak/adapter';\n\nasync function handler(request: Request): Promise<Response> {\n  return withRequest(request, () => renderApp(request));\n}\n```"
+            "```ts\nimport { withRequest } from 'yapyak/adapter';\n\nfunction handler(request: Request): Response {\n  return withRequest(request, () => renderApp(request));\n}\n```"
           ],
           "location": {
             "column": 1,
             "file": "src/adapter/index.ts",
-            "line": 36
+            "line": 33
           },
           "name": "withRequest",
           "tags": [],
@@ -709,15 +684,15 @@
             },
             {
               "defaultValue": null,
-              "description": "- The function to run with the request bound. May return a promise.",
+              "description": "- The function to run with the request bound.",
               "name": "fn",
               "optional": false,
-              "type": "() => T | Promise<T>"
+              "type": "() => T"
             }
           ],
-          "returnDescription": "A promise resolving to the value returned by `fn`.",
-          "returnType": "Promise<T>",
-          "signature": "withRequest(request: Request, fn: () => T | Promise<T>): Promise<T>"
+          "returnDescription": "The return value of `fn`.",
+          "returnType": "T",
+          "signature": "withRequest(request: Request, fn: () => T): T"
         }
       ],
       "id": "yapyak/adapter",
@@ -758,8 +733,8 @@
             }
           ],
           "returnDescription": "",
-          "returnType": "void | Promise<void> | Response | Promise<Response>",
-          "signature": "middleware(context: APIContext<Record<string, any>, Record<string, string | undefined>>, next: MiddlewareNext): void | Promise<void> | Response | Promise<Response>"
+          "returnType": "void | Response | Promise<Response> | Promise<void>",
+          "signature": "middleware(context: APIContext<Record<string, any>, Record<string, string | undefined>>, next: MiddlewareNext): void | Response | Promise<Response> | Promise<void>"
         }
       ],
       "id": "yapyak/adapter/astro",

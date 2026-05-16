@@ -3,7 +3,7 @@ title: How it works
 order: 3
 ---
 
-You write `t()` in your code. yapyak rewrites the call to a runtime lookup and emits each non-default locale as its own chunk.
+You write `t()` in your code. yapyak rewrites the call to inline the translations for every locale, right at the call site.
 
 ## What you write
 
@@ -21,27 +21,11 @@ export function SaveButton() {
 import { pick as _$pick } from 'yapyak/internal';
 
 export function SaveButton() {
-  return <button>{_$pick('src/components/save-button.tsx', 'Save changes')}</button>;
+  return <button>{_$pick({ en: 'Save changes', sv: 'Spara ändringar', es: 'Guardar cambios' })}</button>;
 }
 ```
 
-The call site only carries the file path and the source string. At runtime, `_$pick()` returns the source directly for the default locale, and looks up `(fileId, source)` in the active locale's data otherwise.
-
-## Per-locale chunks
-
-For every non-default locale, the Vite plugin emits a virtual module:
-
-```ts
-// virtual:yapyak/locales/sv
-export default {
-  'src/components/save-button.tsx': {
-    'Save changes': 'Spara ändringar',
-  },
-  // ...one entry per (fileId, source) pair
-};
-```
-
-The runtime imports these dynamically when `setLocale()` or `loadLocale()` runs. Rolldown splits each into its own chunk; only the active locale's data is in memory.
+The variants are inlined at the call site. At runtime, `_$pick()` returns the right one for the current locale.
 
 ## On save
 
@@ -51,7 +35,7 @@ When the file saves, yapyak's Vite plugin runs five steps:
 2. **Detect renames.** If a string disappeared from line 23, column 12 and a new one appeared at the same position, that's a rename — not a delete plus add.
 3. **Sync locale files.** New strings get empty entries in every `locales/*.json`. Removed strings get pruned.
 4. **Translate.** If a translator is configured, missing entries are batched and sent to the AI with the call-site context attached.
-5. **Re-emit + HMR.** Vite re-bundles the file, regenerates the affected locale virtual modules, and the browser hot-swaps the active locale's data.
+5. **Inline + HMR.** Vite re-bundles the file, the transform reads the fresh locale data and inlines the variants, the browser updates.
 
 If no translator is configured, step 4 is skipped — the stubs stay empty until you fill them by hand.
 
@@ -99,8 +83,6 @@ For every missing entry, yapyak extracts a context object from the call site:
 
 The translator uses this to disambiguate: "Save" in a `<button>` reads differently from "Save" in an `<h1>`. How much of the context the translator passes to the model is configurable — see [Translators / Translation context](/guide/translators#translation-context).
 
-## Why this scales
+## Why the call-site inline matters
 
-**Source-as-keys.** The default locale's text lives in your source code. The bundle pays nothing extra for it.
-
-**Per-locale chunks.** Initial loads ship the default locale only. Other locales arrive on demand.
+Translations travel with the code that uses them. Vite splits your app into chunks per route; yapyak's translations follow that split automatically. Bundle size scales with the strings actually used per chunk, not the total strings in the project.
