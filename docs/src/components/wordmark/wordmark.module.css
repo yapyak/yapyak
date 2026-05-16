@@ -10,7 +10,7 @@
     letter-spacing: -0.03em;
     background-color: var(--nav-bg);
     border-radius: var(--radius-pill) var(--radius-pill) var(--radius-pill) 0;
-    box-shadow: 0 0 0 1px var(--ring);
+    box-shadow: 0 0 0 1px var(--ring-faint);
 
     .Yap {
       color: var(--text);

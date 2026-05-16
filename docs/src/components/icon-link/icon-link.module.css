@@ -9,7 +9,7 @@
     color: var(--text-muted);
     background-color: var(--nav-bg);
     border-radius: var(--radius-pill);
-    box-shadow: 0 0 0 1px var(--ring);
+    box-shadow: 0 0 0 1px var(--ring-faint);
     transition: color var(--transition);
 
     &:hover {

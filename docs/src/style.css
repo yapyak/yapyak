@@ -8,9 +8,10 @@
   --surface-active: rgba(255, 255, 255, 0.03);
   --rule: rgba(255, 255, 255, 0.02);
 
+  --ring-faint: rgba(255, 255, 255, 0.02);
   --ring: rgba(255, 255, 255, 0.04);
-  --ring-strong: rgba(255, 255, 255, 0.12);
   --ring-highlight: rgba(255, 255, 255, 0.06);
+  --ring-strong: rgba(255, 255, 255, 0.12);
 
   --text: #e6e6e6;
   --text-default: #d4d4d4;
