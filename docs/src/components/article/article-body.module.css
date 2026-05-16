@@ -1,6 +1,6 @@
 @layer components {
   .ArticleBody {
-    max-width: 38rem;
+    max-width: 40rem;
     font-size: var(--font-size-md);
     line-height: 1.7;
     color: var(--text-default);
