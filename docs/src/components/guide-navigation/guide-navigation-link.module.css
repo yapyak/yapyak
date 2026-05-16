@@ -8,10 +8,21 @@
     color: var(--text-soft);
     white-space: nowrap;
     text-decoration: none;
-    transition: color var(--transition);
+    outline: var(--space-2) solid transparent;
+    outline-offset: 0;
+    border-radius: var(--radius-sm);
+    transition:
+      color var(--transition),
+      outline 400ms;
 
     &:hover {
       color: var(--text);
+    }
+
+    &:focus-visible {
+      color: var(--text);
+      outline-width: 3px;
+      outline-color: var(--aqua-soft);
     }
 
     &[data-status="active"] {

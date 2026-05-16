@@ -20,6 +20,8 @@
   --nav-bg: rgba(0, 0, 0, 0.2);
 
   --aqua: oklab(0.88 -0.21 0.01);
+  --aqua-ro: oklab(0.88 -0.21 0.01 / 0.1);
+  --aqua-soft: oklab(0.88 -0.21 0.01 / 0.4);
   --mint: oklab(0.87 -0.24 0.06);
   --mint-soft: oklab(0.87 -0.24 0.06 / 0.4);
   --mint-glow: oklab(0.87 -0.24 0.06 / 0.2);

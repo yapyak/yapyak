@@ -9,12 +9,20 @@
     color: var(--text-muted);
     text-align: center;
     text-decoration: none;
+    outline: var(--space-2) solid transparent;
+    outline-offset: 0;
     border-radius: var(--radius-pill);
     transition:
       color var(--transition),
       background-color var(--transition),
       box-shadow var(--transition),
+      outline 400ms,
       transform var(--transition);
+
+    &:focus-visible {
+      outline-width: 4px;
+      outline-color: var(--aqua-soft);
+    }
 
     &[data-status="active"] {
       color: var(--accent-contrast);
