@@ -141,7 +141,10 @@
     0% {
       transform: scale(1);
     }
-    45% {
+    25% {
+      transform: scale(1.9);
+    }
+    70% {
       transform: scale(1.9);
     }
     100% {
@@ -153,7 +156,10 @@
     0% {
       opacity: 0;
     }
-    17% {
+    16% {
+      opacity: 0.02;
+    }
+    44% {
       opacity: 0.02;
     }
     100% {
@@ -165,7 +171,10 @@
     0% {
       transform: scale(1);
     }
-    45% {
+    25% {
+      transform: scale(1.012);
+    }
+    70% {
       transform: scale(1.012);
     }
     100% {
