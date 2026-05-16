@@ -62,7 +62,7 @@
       font-weight: var(--font-weight-medium);
       color: var(--text);
       text-decoration: none;
-      background-color: var(--surface);
+      background-color: var(--surface-elevated);
       border-radius: var(--radius-pill);
       box-shadow:
         0 0 0 1px var(--ring-strong),
@@ -72,7 +72,7 @@
         transform var(--transition);
 
       &:hover {
-        background-color: var(--surface-elevated);
+        background-color: var(--surface-strong);
       }
 
       &:active {
