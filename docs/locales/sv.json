@@ -3,8 +3,11 @@
     "Hello": ""
   },
   "src/components/hero/hero.tsx": {
+    "BYO LLM key": "",
     "Get Started": "",
-    "View on GitHub": ""
+    "MIT licensed": "",
+    "View on GitHub": "",
+    "self-hosted": ""
   },
   "src/routes/__root.tsx": {
     "Guide": "",

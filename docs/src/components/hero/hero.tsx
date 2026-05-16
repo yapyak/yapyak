@@ -33,6 +33,23 @@ export function Hero(props: HeroProps): ReactElement {
             {t('View on GitHub')}
           </a>
         </div>
+        <div className={styles.Badges}>
+          <span className={styles.Badge}>{t('MIT licensed')}</span>
+          <span
+            aria-hidden="true"
+            className={styles.BadgeDivider}
+          >
+            ·
+          </span>
+          <span className={styles.Badge}>{t('self-hosted')}</span>
+          <span
+            aria-hidden="true"
+            className={styles.BadgeDivider}
+          >
+            ·
+          </span>
+          <span className={styles.Badge}>{t('BYO LLM key')}</span>
+        </div>
       </div>
       <HeroDemo />
     </section>
