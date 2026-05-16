@@ -80,6 +80,7 @@
 
       &[data-dirty] {
         background-color: var(--mint);
+        animation: dot-show 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
       }
     }
 
@@ -124,6 +125,15 @@
     }
   }
 
+  @keyframes dot-show {
+    0% {
+      transform: scale(0);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
   @keyframes dot-pulse {
     0% {
       opacity: 1;
@@ -137,15 +147,10 @@
     50% {
       opacity: 1;
       transform: scale(1.9);
-      animation-timing-function: cubic-bezier(0.34, 1.7, 0.5, 1);
-    }
-    63% {
-      opacity: 0.72;
-      transform: scale(1);
     }
     100% {
       opacity: 0;
-      transform: scale(1);
+      transform: scale(0);
     }
   }
 
