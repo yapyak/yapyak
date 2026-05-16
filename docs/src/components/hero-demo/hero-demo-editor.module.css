@@ -55,15 +55,7 @@
       box-shadow: inset -1px 0 0 var(--rule);
       transition:
         background-color var(--transition),
-        box-shadow var(--transition),
         color var(--transition);
-
-      &:hover,
-      &:has(+ .Tab:hover),
-      &[data-active],
-      &:has(+ .Tab[data-active]) {
-        box-shadow: inset -1px 0 0 var(--ring-highlight);
-      }
 
       &:hover {
         color: var(--text-soft);
