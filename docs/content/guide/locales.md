@@ -88,8 +88,8 @@ export function LocaleToggle() {
 
 ```vue [Vue]
 <script setup lang="ts">
-import { getLocales } from 'yapyak';
-import { locale } from 'yapyak/vue';
+import { getLocales } from 'yapyak'
+import { locale } from 'yapyak/vue'
 </script>
 
 <template>

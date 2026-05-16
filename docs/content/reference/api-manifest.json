@@ -259,7 +259,7 @@
           "deprecated": null,
           "description": "The reactive locale ref for Vue.\n\nRead `locale.value` inside a setup function or template to subscribe;\nassign to switch.",
           "examples": [
-            "```vue\n<script setup>\nimport { locale } from 'yapyak/vue';\nimport { t } from 'yapyak';\n</script>\n\n<template>\n  <p>{{ t('Hello') }}</p>\n  <select v-model=\"locale\">\n    <option value=\"en\">English</option>\n    <option value=\"sv\">Svenska</option>\n  </select>\n</template>\n```"
+            "```vue\n<script setup>\nimport { locale } from 'yapyak/vue'\nimport { t } from 'yapyak'\n</script>\n\n<template>\n  <p>{{ t('Hello') }}</p>\n  <select v-model=\"locale\">\n    <option value=\"en\">English</option>\n    <option value=\"sv\">Svenska</option>\n  </select>\n</template>\n```"
           ],
           "location": {
             "column": 14,

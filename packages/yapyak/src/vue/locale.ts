@@ -25,8 +25,8 @@ if (typeof window !== 'undefined') {
  * @example
  * ```vue
  * <script setup>
- * import { locale } from 'yapyak/vue';
- * import { t } from 'yapyak';
+ * import { locale } from 'yapyak/vue'
+ * import { t } from 'yapyak'
  * </script>
  *
  * <template>

@@ -75,7 +75,7 @@ export function SaveButton() {
 
 ```vue [Vue]
 <script setup lang="ts">
-import { t } from 'yapyak';
+import { t } from 'yapyak'
 </script>
 
 <template>

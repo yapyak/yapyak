@@ -177,7 +177,7 @@ export function Welcome() {
 `;
     case 'vue':
       return `<script setup>
-import { ${T} } from 'yapyak';
+import { ${T} } from 'yapyak'
 </script>
 
 <template>
