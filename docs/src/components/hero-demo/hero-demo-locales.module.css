@@ -10,7 +10,9 @@
     transform-origin: center;
 
     &[data-receiving] {
-      animation: locales-pulse 360ms cubic-bezier(0.32, 0.72, 0, 1);
+      animation:
+        locales-pulse 360ms cubic-bezier(0.32, 0.72, 0, 1),
+        locales-ring 950ms cubic-bezier(0.32, 0.72, 0, 1);
     }
 
     .Flash {
@@ -109,6 +111,21 @@
       filter: blur(0);
       transform: translateY(0) scale(1);
       text-shadow: 0 0 0 transparent;
+    }
+  }
+
+  @keyframes locales-ring {
+    0% {
+      box-shadow: 0 0 0 1px var(--ring);
+    }
+    4% {
+      box-shadow: 0 0 0 1px oklab(0.87 -0.24 0.06 / 0.12);
+    }
+    44% {
+      box-shadow: 0 0 0 1px oklab(0.87 -0.24 0.06 / 0.12);
+    }
+    100% {
+      box-shadow: 0 0 0 1px var(--ring);
     }
   }
 
