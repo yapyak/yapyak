@@ -97,6 +97,7 @@
       color: var(--text-soft);
       background: var(--surface-elevated);
       border-radius: var(--radius-sm);
+      box-shadow: inset 0 0 0 1px var(--ring);
     }
 
     table {
