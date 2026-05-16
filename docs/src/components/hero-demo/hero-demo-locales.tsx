@@ -20,6 +20,10 @@ export function HeroDemoLocales(props: HeroDemoLocalesProps): ReactElement {
       className={styles.HeroDemoLocales}
       data-receiving={receiving || undefined}
     >
+      <span
+        aria-hidden="true"
+        className={styles.Flash}
+      />
       {LOCALES.map((locale) => {
         const value = translations[locale.code];
         const isShimmering = shimmering.has(locale.code);

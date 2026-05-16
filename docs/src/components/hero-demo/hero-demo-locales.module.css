@@ -1,5 +1,6 @@
 @layer components {
   .HeroDemoLocales {
+    position: relative;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -10,6 +11,18 @@
 
     &[data-receiving] {
       animation: locales-pulse 360ms cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    .Flash {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-color: var(--mint);
+      opacity: 0;
+    }
+
+    &[data-receiving] .Flash {
+      animation: locales-flash 950ms linear forwards;
     }
 
     .LocaleRow {
@@ -96,6 +109,21 @@
       filter: blur(0);
       transform: translateY(0) scale(1);
       text-shadow: 0 0 0 transparent;
+    }
+  }
+
+  @keyframes locales-flash {
+    0% {
+      opacity: 0;
+    }
+    16% {
+      opacity: 0.02;
+    }
+    44% {
+      opacity: 0.02;
+    }
+    100% {
+      opacity: 0;
     }
   }
 

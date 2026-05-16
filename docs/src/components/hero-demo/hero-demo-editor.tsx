@@ -153,10 +153,6 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
           })}
         </code>
       </pre>
-      <span
-        aria-hidden="true"
-        className={styles.Flash}
-      />
     </div>
   );
 }

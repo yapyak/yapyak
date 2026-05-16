@@ -96,7 +96,7 @@ export function useDemoState(active: boolean): DemoState {
         }
 
         setState((state) => ({ ...state, saving: true, typing: false }));
-        await sleep(600);
+        await sleep(1000);
         setState((state) => ({
           ...state,
           receiving: true,
@@ -105,11 +105,7 @@ export function useDemoState(active: boolean): DemoState {
           translations: EMPTY_TRANSLATIONS,
         }));
         await sleep(360);
-        setState((state) => ({
-          ...state,
-          receiving: false,
-          saving: false,
-        }));
+        setState((state) => ({ ...state, saving: false }));
         await sleep(120);
 
         for (let index = 0; index < LOCALES.length; index++) {
@@ -135,6 +131,7 @@ export function useDemoState(active: boolean): DemoState {
           await sleep(130);
         }
 
+        setState((state) => ({ ...state, receiving: false }));
         await sleep(1100);
 
         sceneIndex++;
