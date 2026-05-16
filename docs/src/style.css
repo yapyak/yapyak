@@ -3,13 +3,13 @@
 :root {
   --bg: #141414;
   --surface: rgba(255, 255, 255, 0.02);
-  --surface-strong: rgba(255, 255, 255, 0.05);
+  --surface-strong: rgba(255, 255, 255, 0.07);
   --surface-elevated: rgba(255, 255, 255, 0.04);
   --surface-active: rgba(255, 255, 255, 0.03);
   --rule: rgba(255, 255, 255, 0.02);
 
   --ring: rgba(255, 255, 255, 0.04);
-  --ring-highlight: rgba(255, 255, 255, 0.06);
+  --ring-highlight: rgba(255, 255, 255, 0.08);
   --ring-strong: rgba(255, 255, 255, 0.12);
 
   --text: #e6e6e6;
