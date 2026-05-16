@@ -6,7 +6,7 @@
     overflow: hidden;
     background: var(--surface);
     border-radius: var(--radius-md);
-    box-shadow: 0 0 0 1px var(--ring);
+    box-shadow: inset 0 0 0 1px var(--ring);
     transform-origin: center;
 
     &[data-receiving] {
@@ -116,16 +116,16 @@
 
   @keyframes locales-ring {
     0% {
-      box-shadow: 0 0 0 1px var(--ring);
+      box-shadow: inset 0 0 0 1px var(--ring);
     }
     4% {
-      box-shadow: 0 0 0 1px oklab(0.87 -0.24 0.06 / 0.12);
+      box-shadow: inset 0 0 0 1px oklab(0.87 -0.24 0.06 / 0.12);
     }
     44% {
-      box-shadow: 0 0 0 1px oklab(0.87 -0.24 0.06 / 0.12);
+      box-shadow: inset 0 0 0 1px oklab(0.87 -0.24 0.06 / 0.12);
     }
     100% {
-      box-shadow: 0 0 0 1px var(--ring);
+      box-shadow: inset 0 0 0 1px var(--ring);
     }
   }
 
