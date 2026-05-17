@@ -1,16 +1,11 @@
 import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
 
-import styles from './article.module.css';
 import { ArticleBody } from './article/body';
 import { ArticleHeader } from './article/header';
+import styles from './article.module.css';
 
 export interface ArticleProps extends HTMLAttributes<HTMLElement> {
   children?: ReactNode;
-}
-
-export declare namespace Article {
-  let Header: typeof ArticleHeader;
-  let Body: typeof ArticleBody;
 }
 
 export function Article(props: ArticleProps): ReactElement {

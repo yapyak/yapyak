@@ -378,7 +378,6 @@ systems/
 **Always render `Box` as the component's root.** Never use raw HTML tags directly in the JSX root. `Box` lives at `components/box.tsx` and handles `className` merging, `ref` composition, `style` merging, and `data-*` boolean normalization for free.
 
 ```tsx
-import type { ReactElement } from 'react';
 import type { BoxProps } from '#components/box';
 
 import { Box } from '#components/box';
@@ -390,7 +389,7 @@ export interface ButtonProps extends BoxProps<'button'> {
   isPressed?: boolean;
 }
 
-export function Button(props: ButtonProps): ReactElement {
+export function Button(props: ButtonProps) {
   const { className, isDisabled, isPressed, ...restProps } = props;
 
   return (
@@ -411,7 +410,7 @@ export function Button(props: ButtonProps): ReactElement {
 - **Props ALWAYS extend `BoxProps<T>` where `T` is the root element.** Never write a standalone props interface. Extending pulls in all native attributes plus Box's enhanced `className`/`ref`/`style`.
 - **`<div>` is the default — drop the redundancy.** Write `extends BoxProps` (not `BoxProps<'div'>`) and omit `as="div"` on the Box.
 - **Other roots are explicit.** `BoxProps<'button'>` + `as="button"`, `BoxProps<'a'>` + `as="a"`, etc.
-- **`className` is an array, not a merge call.** Write `className={[styles.Button, className]}`. Box flattens and joins falsy-safe. Never use `cn()`, `clsx`, template strings, or ternaries to merge.
+- **`className` is ALWAYS forwarded.** Any component that styles itself MUST destructure consumer `className` and pass it along: `className={[styles.Button, className]}`. Never write `className={styles.Button}` alone — that drops anything the consumer passed. Box flattens and joins falsy-safe. Never use `cn()`, `clsx`, template strings, or ternaries to merge.
 - **`data-*` attributes pass through directly.** Box normalizes booleans → empty string / undefined. Write `data-pressed={isPressed}`, never `data-pressed={isPressed || undefined}`.
 - **Spread `...restProps` FIRST on `Box`, then explicit overrides.** That way explicit props (className, data-*, as) always win over what the consumer passed.
 - **Pass control props through to the native attribute too.** `isDisabled` → both `data-disabled={isDisabled}` (for CSS styling) AND `disabled={isDisabled}` (for native behavior).
@@ -421,7 +420,6 @@ export function Button(props: ButtonProps): ReactElement {
 ### Box for div (default case)
 
 ```tsx
-import type { ReactElement } from 'react';
 import type { BoxProps } from '#components/box';
 
 import { Box } from '#components/box';
@@ -432,7 +430,7 @@ export interface CardProps extends BoxProps {
   isElevated?: boolean;
 }
 
-export function Card(props: CardProps): ReactElement {
+export function Card(props: CardProps) {
   const { className, isElevated, ...restProps } = props;
 
   return (
@@ -446,16 +444,11 @@ export function Card(props: CardProps): ReactElement {
 ```
 
 No `<'div'>`, no `as="div"`, no `children` destructuring, self-closing — defaults all the way down.
-- Compound components use dot-notation with `declare namespace` + property assignment, never `Object.assign` or `*Fn` suffix:
+- Compound components use plain property assignment in app code — never `Object.assign` or `*Fn` suffix:
 
   ```tsx
-  // ✓ Right
-  export declare namespace ActionList {
-    let Item: typeof ActionListItem;
-    let Separator: typeof ActionListSeparator;
-  }
-
-  export function ActionList(props: ActionListProps): ReactElement {
+  // ✓ Right — app code (inference)
+  export function ActionList(props: ActionListProps) {
     // body
   }
 
@@ -467,10 +460,17 @@ No `<'div'>`, no `as="div"`, no `children` destructuring, self-closing — defau
   function ActionListFn(props) { ... }
   ```
 
-  - File order: `declare namespace` → `function` declaration → property assignments
-  - `declare namespace` provides the type for sub-components (works with `isolatedDeclarations`)
-  - Use `let` (not `const`) inside the namespace — `const` makes properties readonly and blocks the assignment
-  - Property assignments come at the end (right after the function body)
+  - File order: `function` declaration → property assignments at the end
+  - TypeScript infers the sub-component types from the assignments — no `declare namespace` needed
+  - **Exception for library packages** (`isolatedDeclarations: true`): you must declare the namespace explicitly since inference isn't allowed across the public API:
+
+    ```tsx
+    // Required only in packages/* with isolatedDeclarations
+    export declare namespace ActionList {
+      let Item: typeof ActionListItem;
+      let Separator: typeof ActionListSeparator;
+    }
+    ```
 
 ### Render-prop pattern on Base primitives
 
@@ -1652,25 +1652,45 @@ Same rule for pseudo-classes combined with descendants:
 }
 ```
 
-## Library packages
+## Return types — app code vs library code
 
-Packages under `packages/*` that consumers import (kit packages — ui, core, form, intl, cookie, symbol, etc.) extend `@skiftle/typescript-config/library`. That config sets `isolatedDeclarations: true`, which **requires explicit return types** on every exported function or component.
+**Default rule for app code: let TypeScript infer return types. Don't annotate.**
+
+```tsx
+// ✓ App code — inference
+export function Button(props: ButtonProps) {
+  const { className, ...restProps } = props;
+
+  return <Box {...restProps} className={[styles.Button, className]} />;
+}
+
+// ✗ App code — unnecessary annotation
+export function Button(props: ButtonProps): ReactElement {
+  // ...
+}
+```
+
+Inference is faster to read, faster to write, and keeps refactors cheap. The component's shape is obvious from the JSX.
+
+**Annotate only when actually required:**
+
+- The function returns multiple unrelated branches that TS infers too loosely (`string | number | ReactElement | undefined`)
+- The component is part of a public package with `isolatedDeclarations: true` (kit packages, libraries)
+- A specific generic signature can't otherwise be expressed (rare)
+- The inferred type leaks an internal type alias that shouldn't be public API
+
+**Library packages** under `packages/*` that consumers import (kit packages — ui, core, form, intl, cookie, symbol, etc.) extend `@skiftle/typescript-config/library`. That config sets `isolatedDeclarations: true`, which **requires explicit return types** on every exported function or component:
 
 ```ts
 // ✓ Required in library packages
 export function useThing(options: Options): UseThingReturn {
   // ...
 }
-
-// ✗ Inference-only — TS error in library packages
-export function useThing(options: Options) {
-  // ...
-}
 ```
 
-The rule exists to keep public API surfaces stable: explicit return types are the contract; implementation changes can't accidentally widen or narrow the type. `apps/` and internal-only packages don't extend `library` — inference is fine there.
+The rule for libraries exists to keep public API surfaces stable: explicit return types are the contract; implementation changes can't accidentally widen or narrow the type. `apps/` and internal-only packages don't extend `library` — inference is preferred there.
 
-When in doubt: if the package's `tsconfig.json` extends `@skiftle/typescript-config/library`, every exported function and component needs an explicit return type.
+When in doubt: if the package's `tsconfig.json` extends `@skiftle/typescript-config/library`, every exported function and component needs an explicit return type. Otherwise, infer.
 
 ## package.json conventions
 

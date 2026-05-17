@@ -17,10 +17,6 @@ export interface NavigationProps extends HTMLAttributes<HTMLElement> {
   children?: ReactNode;
 }
 
-export declare namespace Navigation {
-  let Link: typeof NavigationLink;
-}
-
 interface IndicatorState {
   height: number;
   width: number;

@@ -8,11 +8,6 @@ export interface ReferenceLayoutProps extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;
 }
 
-export declare namespace ReferenceLayout {
-  let Sidebar: typeof ReferenceLayoutSidebar;
-  let Content: typeof ReferenceLayoutContent;
-}
-
 export function ReferenceLayout(props: ReferenceLayoutProps): ReactElement {
   const { children, className, ...restProps } = props;
   const merged = className

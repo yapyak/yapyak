@@ -18,12 +18,6 @@ export interface LayoutHeaderProps extends HTMLAttributes<HTMLElement> {
   children?: ReactNode;
 }
 
-export declare namespace LayoutHeader {
-  let Start: typeof LayoutHeaderStart;
-  let Center: typeof LayoutHeaderCenter;
-  let End: typeof LayoutHeaderEnd;
-}
-
 export function LayoutHeader(props: LayoutHeaderProps): ReactElement {
   const { children, className, style, ...restProps } = props;
   const [fillOpacity, setFillOpacity] = useState(0);
