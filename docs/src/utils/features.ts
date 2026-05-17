@@ -1,5 +1,4 @@
 export interface Feature {
-  accent?: 'mint';
   description: string;
   number: string;
   title: string;
@@ -13,7 +12,6 @@ export const FEATURES: Feature[] = [
     title: 'Auto-translation on save',
   },
   {
-    accent: 'mint',
     description:
       "What Tailwind did for class names, yapyak did for keys. Just write t('Save changes') — the English is your key, your value, your single source of truth. AI doesn't have to invent identifiers either.",
     number: '02',
