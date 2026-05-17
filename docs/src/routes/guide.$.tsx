@@ -15,7 +15,9 @@ export const Route = createFileRoute('/guide/$')({
     if (!slug) {
       throw notFound();
     }
+
     const result = await loadData({ data: slug });
+
     if (result.kind === 'not-found') {
       throw notFound();
     }
