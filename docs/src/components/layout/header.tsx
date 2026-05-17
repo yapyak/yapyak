@@ -31,7 +31,7 @@ export function LayoutHeader(props: LayoutHeaderProps) {
       className={[styles.LayoutHeader, className]}
       style={[style, { '--layout-header-fill-opacity': fillOpacity }]}
     >
-      <Box className={styles.Fill} />
+      <Box className={styles.FillOverlay} />
       {children}
     </Box>
   );

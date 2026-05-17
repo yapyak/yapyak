@@ -2,9 +2,10 @@
   .ReferenceLayout {
     display: grid;
     grid-template-columns: 200px 1fr;
+    justify-self: center;
+    width: 100%;
     max-width: 64rem;
     padding: var(--space-12) var(--space-6);
-    margin: 0 auto;
 
     @media (max-width: 768px) {
       grid-template-columns: 1fr;

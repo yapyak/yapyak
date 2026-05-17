@@ -15,7 +15,7 @@
         locales-ring 950ms cubic-bezier(0.32, 0.72, 0, 1);
     }
 
-    .Flash {
+    .FlashOverlay {
       position: absolute;
       inset: 0;
       pointer-events: none;
@@ -23,7 +23,7 @@
       opacity: 0;
     }
 
-    &[data-receiving] .Flash {
+    &[data-receiving] .FlashOverlay {
       animation: locales-flash 950ms linear forwards;
     }
 
@@ -42,18 +42,18 @@
       }
     }
 
-    .Flag {
+    .FlagIcon {
       display: inline-flex;
       align-items: center;
       line-height: 1;
     }
 
-    .Filename {
+    .FilenameText {
       color: var(--text-muted);
       letter-spacing: -0.01em;
     }
 
-    .Json {
+    .JsonText {
       display: inline-flex;
       gap: 0;
       align-items: center;
@@ -64,12 +64,12 @@
       white-space: nowrap;
     }
 
-    .Key {
+    .KeyText {
       display: inline-block;
       animation: materialize 750ms cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
-    .Value {
+    .ValueText {
       display: inline-block;
       animation: materialize 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
     }
@@ -78,7 +78,7 @@
       display: inline-block;
       width: 8rem;
       height: 0.85em;
-      margin: 0 1px;
+      padding: 0 1px;
       background: linear-gradient(
         90deg,
         var(--ring) 0%,
@@ -87,6 +87,7 @@
         rgba(255, 255, 255, 0.1) 60%,
         var(--ring) 100%
       );
+      background-clip: padding-box;
       background-size: 250% 100%;
       border-radius: 4px;
       animation: skeleton-sweep 2s ease-in-out infinite;

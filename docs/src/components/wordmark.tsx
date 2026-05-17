@@ -17,13 +17,13 @@ export function Wordmark(props: WordmarkProps) {
     >
       <Box
         as="span"
-        className={styles.Yap}
+        className={styles.YapText}
       >
         yap
       </Box>
       <Box
         as="span"
-        className={styles.Yak}
+        className={styles.YakText}
       >
         yak
       </Box>

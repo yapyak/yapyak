@@ -25,7 +25,7 @@ export function GuideNavigationGroup(props: GuideNavigationGroupProps) {
       <Title node={node} />
       <Box
         as="ul"
-        className={styles.Items}
+        className={styles.ItemList}
       >
         {node.items.map((child) => (
           <Box
@@ -51,7 +51,7 @@ function Title(props: TitleProps) {
     return (
       <Box
         as="h3"
-        className={styles.Title}
+        className={styles.TitleHeading}
       >
         {node.title}
       </Box>

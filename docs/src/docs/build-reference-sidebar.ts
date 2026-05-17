@@ -12,8 +12,8 @@ export interface RefModule {
 }
 
 export interface RefSymbol {
-  deprecated: boolean;
   href: string;
+  isDeprecated: boolean;
   kind: ApiExport['kind'];
   name: string;
 }
@@ -56,8 +56,8 @@ function buildModule(module: ApiModule): RefModule {
   const slug = moduleSlug(module.id);
   const href = isRoot ? '/reference' : `/reference/${slug}`;
   const symbols: RefSymbol[] = module.exports.map((api) => ({
-    deprecated: api.deprecated !== null,
     href: isRoot ? `/reference/${api.name}` : `${href}/${api.name}`,
+    isDeprecated: api.deprecated !== null,
     kind: api.kind,
     name: api.name,
   }));

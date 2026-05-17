@@ -20,7 +20,7 @@ export function ReferenceNavigationSymbol(
       activeOptions={{ exact: true }}
       as={Link}
       className={styles.ReferenceNavigationSymbol}
-      data-deprecated={symbol.deprecated}
+      data-deprecated={symbol.isDeprecated}
       to={symbol.href}
     >
       {symbol.name}

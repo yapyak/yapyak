@@ -18,22 +18,29 @@ interface FrameworkConfig {
   language: Language;
 }
 
+const REACT_CONFIG: FrameworkConfig = {
+  filename: 'app.tsx',
+  id: 'react',
+  label: 'React',
+  language: 'tsx',
+};
+
 export const FRAMEWORKS: FrameworkConfig[] = [
-  { filename: 'app.tsx', id: 'react', label: 'React', language: 'tsx' },
+  REACT_CONFIG,
   { filename: 'app.vue', id: 'vue', label: 'Vue', language: 'vue' },
   { filename: 'app.svelte', id: 'svelte', label: 'Svelte', language: 'svelte' },
 ];
 
 export interface HeroDemoEditorProps extends BoxProps {
   framework: Framework;
+  isSaving: boolean;
+  isTyping: boolean;
   onFrameworkChange: (framework: Framework) => void;
-  saving: boolean;
   source: string;
-  typing: boolean;
 }
 
 const CARET_MARKER = 'CARET';
-const T = 't';
+const T_NAME = 't';
 
 interface IndicatorState {
   width: number;
@@ -41,11 +48,17 @@ interface IndicatorState {
 }
 
 export function HeroDemoEditor(props: HeroDemoEditorProps) {
-  const { className, framework, onFrameworkChange, saving, source, typing } =
-    props;
+  const {
+    className,
+    framework,
+    isSaving,
+    isTyping,
+    onFrameworkChange,
+    source,
+    ...restProps
+  } = props;
   const config =
-    // biome-ignore lint/style/noNonNullAssertion: yap yap yap
-    FRAMEWORKS.find((entry) => entry.id === framework) ?? FRAMEWORKS[0]!;
+    FRAMEWORKS.find((entry) => entry.id === framework) ?? REACT_CONFIG;
   const code = buildCode(framework, source);
   const tokens = tokenize(code, config.language);
 
@@ -54,17 +67,17 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
   const [isReady, setIsReady] = useState(false);
 
   useLayoutEffect(() => {
-    const $tabs = tabsElement.current;
-    if (!$tabs) {
+    const $tabsElement = tabsElement.current;
+    if (!$tabsElement) {
       return;
     }
-    const activeTab = $tabs.querySelector('[data-active]');
-    if (!(activeTab instanceof HTMLElement)) {
+    const activeTabElement = $tabsElement.querySelector('[data-active]');
+    if (!(activeTabElement instanceof HTMLElement)) {
       return;
     }
     setIndicator({
-      width: activeTab.offsetWidth,
-      x: activeTab.offsetLeft,
+      width: activeTabElement.offsetWidth,
+      x: activeTabElement.offsetLeft,
     });
     const frame = window.requestAnimationFrame(() => {
       setIsReady(true);
@@ -74,34 +87,37 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
 
   return (
     <Box
+      {...restProps}
       className={[styles.HeroDemoEditor, className]}
-      data-saving={saving}
+      data-saving={isSaving}
       style={
-        indicator && {
-          '--hero-demo-editor-tab-indicator-width': `${indicator.width}px`,
-          '--hero-demo-editor-tab-indicator-x': `${indicator.x}px`,
-        }
+        indicator
+          ? {
+              '--hero-demo-editor-tab-indicator-width': `${indicator.width}px`,
+              '--hero-demo-editor-tab-indicator-x': `${indicator.x}px`,
+            }
+          : undefined
       }
     >
       <Box
-        className={styles.Tabs}
+        className={styles.TabRow}
         ref={tabsElement}
       >
         {indicator && (
           <Box
             aria-hidden="true"
             as="span"
-            className={styles.TabIndicator}
+            className={styles.TabIndicatorBar}
             data-ready={isReady}
           />
         )}
         {FRAMEWORKS.map((entry) => {
           const isActive = entry.id === framework;
-          const isDirty = isActive && (typing || saving);
+          const isDirty = isActive && (isTyping || isSaving);
           return (
             <Box
               as="button"
-              className={styles.Tab}
+              className={styles.TabButton}
               data-active={isActive}
               key={entry.id}
               onClick={() => onFrameworkChange(entry.id)}
@@ -109,7 +125,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
             >
               <Box
                 as="span"
-                className={styles.TabFilename}
+                className={styles.TabFilenameText}
               >
                 {entry.filename}
               </Box>
@@ -125,7 +141,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
       </Box>
       <Box
         as="pre"
-        className={styles.Pre}
+        className={styles.PreformattedText}
       >
         <Box
           as="code"
@@ -148,9 +164,10 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
                   <Box as="span">'</Box>
                   {before}
                   <Box
+                    aria-hidden="true"
                     as="span"
                     className={styles.Caret}
-                    data-typing={typing}
+                    data-typing={isTyping}
                   />
                   {after}
                   <Box as="span">'</Box>
@@ -177,26 +194,26 @@ function buildCode(framework: Framework, source: string): string {
   const value = `${safe}${CARET_MARKER}`;
   switch (framework) {
     case 'react':
-      return `import { ${T} } from 'yapyak';
+      return `import { ${T_NAME} } from 'yapyak';
 
 export function Welcome() {
-  return <h1>{${T}('${value}')}</h1>;
+  return <h1>{${T_NAME}('${value}')}</h1>;
 }
 `;
     case 'svelte':
       return `<script>
-  import { ${T} } from 'yapyak';
+  import { ${T_NAME} } from 'yapyak';
 </script>
 
-<h1>{${T}('${value}')}</h1>
+<h1>{${T_NAME}('${value}')}</h1>
 `;
     case 'vue':
       return `<script setup>
-import { ${T} } from 'yapyak'
+import { ${T_NAME} } from 'yapyak'
 </script>
 
 <template>
-  <h1>{{ ${T}('${value}') }}</h1>
+  <h1>{{ ${T_NAME}('${value}') }}</h1>
 </template>
 `;
   }

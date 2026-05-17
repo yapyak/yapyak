@@ -9,24 +9,32 @@ import { HeroDemoLocaleFlag } from './locale-flag';
 import styles from './locale-stack.module.css';
 
 export interface HeroDemoLocaleStackProps extends BoxProps {
-  receiving: boolean;
+  isReceiving: boolean;
   savedSource: string;
   shimmering: Set<LocaleCode>;
   translations: Record<LocaleCode, string>;
 }
 
 export function HeroDemoLocaleStack(props: HeroDemoLocaleStackProps) {
-  const { className, receiving, savedSource, shimmering, translations } = props;
+  const {
+    className,
+    isReceiving,
+    savedSource,
+    shimmering,
+    translations,
+    ...restProps
+  } = props;
 
   return (
     <Box
+      {...restProps}
       className={[styles.HeroDemoLocaleStack, className]}
-      data-receiving={receiving}
+      data-receiving={isReceiving}
     >
       <Box
         aria-hidden="true"
         as="span"
-        className={styles.Flash}
+        className={styles.FlashOverlay}
       />
       {LOCALES.map((locale) => {
         const value = translations[locale.code];
@@ -39,24 +47,24 @@ export function HeroDemoLocaleStack(props: HeroDemoLocaleStackProps) {
             <Box
               aria-hidden="true"
               as="span"
-              className={styles.Flag}
+              className={styles.FlagIcon}
             >
               <HeroDemoLocaleFlag code={locale.code} />
             </Box>
             <Box
               as="span"
-              className={styles.Filename}
+              className={styles.FilenameText}
             >
               {locale.filename}
             </Box>
             <Box
               as="span"
-              className={styles.Json}
+              className={styles.JsonText}
             >
               <CodeBlockToken type="punct">{'{ '}</CodeBlockToken>
               <Box
                 as="span"
-                className={styles.Key}
+                className={styles.KeyText}
                 key={savedSource}
               >
                 <CodeBlockToken type="string">
@@ -66,7 +74,7 @@ export function HeroDemoLocaleStack(props: HeroDemoLocaleStackProps) {
                 </CodeBlockToken>
               </Box>
               <CodeBlockToken type="punct">: </CodeBlockToken>
-              {isShimmering || value === '' ? (
+              {isShimmering || !value ? (
                 <Box
                   aria-hidden="true"
                   as="span"
@@ -75,7 +83,7 @@ export function HeroDemoLocaleStack(props: HeroDemoLocaleStackProps) {
               ) : (
                 <Box
                   as="span"
-                  className={styles.Value}
+                  className={styles.ValueText}
                   key={value}
                 >
                   <CodeBlockToken type="tx-source">

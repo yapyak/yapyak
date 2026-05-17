@@ -23,24 +23,24 @@ const ROTATION_INTERVAL = 5200;
 
 export function Footer(props: FooterProps) {
   const { className, ...restProps } = props;
-  const [index, setIndex] = useState<number | null>(null);
+  const [tagline, setTagline] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
       return;
     }
-    const start = Math.floor(Math.random() * TAGLINES.length);
-    setIndex(start);
+    const startIndex = Math.floor(Math.random() * TAGLINES.length);
+    setTagline(TAGLINES[startIndex] ?? null);
     const reducedMotionQuery = window.matchMedia(
       '(prefers-reduced-motion: reduce)',
     );
     if (reducedMotionQuery.matches) {
       return;
     }
+    let cursor = startIndex;
     const interval = window.setInterval(() => {
-      setIndex((previous) =>
-        previous === null ? start : (previous + 1) % TAGLINES.length,
-      );
+      cursor = (cursor + 1) % TAGLINES.length;
+      setTagline(TAGLINES[cursor] ?? null);
     }, ROTATION_INTERVAL);
     return () => window.clearInterval(interval);
   }, []);
@@ -54,36 +54,36 @@ export function Footer(props: FooterProps) {
         alt=""
         aria-hidden="true"
         as="img"
-        className={styles.Bubble}
+        className={styles.BubbleImage}
         src="/logo.svg"
       />
-      <Box className={styles.TaglineSlot}>
-        {index !== null && (
+      <Box className={styles.TaglineRow}>
+        {tagline && (
           <Box
             as="p"
-            className={styles.Tagline}
-            key={index}
+            className={styles.TaglineParagraph}
+            key={tagline}
           >
-            {TAGLINES[index]}
+            {tagline}
           </Box>
         )}
       </Box>
       <Wordmark />
       <Box
         as="p"
-        className={styles.Copyright}
+        className={styles.CopyrightParagraph}
       >
         © 2026 yapyak
         <Box
           as="span"
-          className={styles.Separator}
+          className={styles.SeparatorText}
         >
           ·
         </Box>
         MIT license
         <Box
           as="span"
-          className={styles.Separator}
+          className={styles.SeparatorText}
         >
           ·
         </Box>
@@ -96,7 +96,7 @@ export function Footer(props: FooterProps) {
         </Box>
         <Box
           as="span"
-          className={styles.Separator}
+          className={styles.SeparatorText}
         >
           ·
         </Box>

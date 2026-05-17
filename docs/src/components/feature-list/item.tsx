@@ -21,29 +21,29 @@ export function FeatureListItem(props: FeatureListItemProps) {
     >
       <Box
         aria-hidden="true"
-        className={styles.Indicator}
+        className={styles.IndicatorBar}
       />
       <Box
         as="span"
-        className={styles.Numeral}
+        className={styles.NumeralText}
       >
         {feature.number}
       </Box>
-      <Box className={styles.Content}>
+      <Box className={styles.ContentStack}>
         <Box
           as="h3"
-          className={styles.Title}
+          className={styles.TitleHeading}
         >
           {feature.title}
         </Box>
         <Box
           aria-hidden="true"
           as="span"
-          className={styles.Underline}
+          className={styles.UnderlineDivider}
         />
         <Box
           as="p"
-          className={styles.Description}
+          className={styles.DescriptionParagraph}
         >
           {feature.description}
         </Box>

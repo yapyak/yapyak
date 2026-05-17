@@ -20,18 +20,18 @@ export function ArticleHeader(props: ArticleHeaderProps) {
     >
       <Box
         as="h1"
-        className={styles.Title}
+        className={styles.TitleHeading}
       >
         {title}
       </Box>
-      {description ? (
+      {description && (
         <Box
           as="p"
-          className={styles.Description}
+          className={styles.DescriptionParagraph}
         >
           {description}
         </Box>
-      ) : null}
+      )}
     </Box>
   );
 }

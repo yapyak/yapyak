@@ -4,13 +4,14 @@
     flex-direction: column;
     gap: var(--space-2);
 
-    .Eyebrow {
+    .EyebrowText {
+      display: inline-flex;
+      gap: var(--space-1);
       font-family: var(--font-mono);
       font-size: var(--font-size-xs);
       color: var(--text-muted);
 
       .EyebrowDot {
-        margin: 0 var(--space-1);
         opacity: 0.5;
       }
     }

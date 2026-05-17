@@ -21,15 +21,15 @@ export function ReferenceSymbolHeader(props: ReferenceSymbolHeaderProps) {
     >
       <Box
         as="span"
-        className={styles.Eyebrow}
+        className={styles.EyebrowText}
       >
-        {module}{' '}
+        {module}
         <Box
           as="span"
           className={styles.EyebrowDot}
         >
           ·
-        </Box>{' '}
+        </Box>
         {kind}
       </Box>
       <Box

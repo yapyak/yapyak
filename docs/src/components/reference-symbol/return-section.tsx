@@ -28,7 +28,7 @@ export function ReferenceSymbolReturnSection(
       </Box>
       <Box
         as="p"
-        className={styles.Line}
+        className={styles.LineParagraph}
       >
         <Box as="code">{type}</Box>
         {description && ` — ${description}`}

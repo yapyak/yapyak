@@ -3,7 +3,7 @@
     padding-top: var(--space-6);
     border-top: 1px solid var(--rule);
 
-    .Path {
+    .PathText {
       font-family: var(--font-mono);
       font-size: var(--font-size-xs);
       color: var(--text-muted);

@@ -4,7 +4,7 @@
     flex-direction: column;
     min-height: 100vh;
 
-    .Grain {
+    .GrainOverlay {
       position: fixed;
       inset: 0;
       z-index: 9999;

@@ -31,7 +31,7 @@ export function ReferenceNavigationModule(
       <Box
         aria-expanded={isOpen}
         as="button"
-        className={styles.ToggleRow}
+        className={styles.ToggleButton}
         data-open={isOpen}
         onClick={() => setIsOpen((current) => !current)}
         type="button"

@@ -19,7 +19,7 @@ export function Layout(props: LayoutProps) {
     >
       <Box
         aria-hidden="true"
-        className={styles.Grain}
+        className={styles.GrainOverlay}
       />
       {children}
     </Box>

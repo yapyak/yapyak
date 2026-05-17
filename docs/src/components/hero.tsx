@@ -31,21 +31,21 @@ export function Hero(props: HeroProps) {
         </Box>
         <Box
           as="p"
-          className={styles.Description}
+          className={styles.DescriptionParagraph}
         >
           {description}
         </Box>
-        <Box className={styles.Actions}>
+        <Box className={styles.ActionRow}>
           <Box
             as={Link}
-            className={styles.PrimaryButton}
+            className={styles.PrimaryLink}
             to="/guide"
           >
             {t('Get Started')}
           </Box>
           <Box
             as="a"
-            className={styles.SecondaryButton}
+            className={styles.SecondaryLink}
             href="https://github.com/yapyak/yapyak"
           >
             {t('View on GitHub')}
@@ -53,7 +53,7 @@ export function Hero(props: HeroProps) {
         </Box>
         <Box
           as="p"
-          className={styles.Trust}
+          className={styles.TrustParagraph}
         >
           {t('Open source. Use any LLM. No middleman.')}
         </Box>

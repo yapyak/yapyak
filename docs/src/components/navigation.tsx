@@ -35,15 +35,15 @@ export function Navigation(props: NavigationProps) {
     }
 
     const measure = () => {
-      const $activeElement = $element.querySelector('[data-status="active"]');
-      if (!($activeElement instanceof HTMLElement)) {
+      const activeElement = $element.querySelector('[data-status="active"]');
+      if (!(activeElement instanceof HTMLElement)) {
         return;
       }
       setIndicator({
-        height: $activeElement.offsetHeight,
-        width: $activeElement.offsetWidth,
-        x: $activeElement.offsetLeft,
-        y: $activeElement.offsetTop,
+        height: activeElement.offsetHeight,
+        width: activeElement.offsetWidth,
+        x: activeElement.offsetLeft,
+        y: activeElement.offsetTop,
       });
     };
 
@@ -101,7 +101,7 @@ export function Navigation(props: NavigationProps) {
         <Box
           aria-hidden="true"
           as="span"
-          className={styles.Indicator}
+          className={styles.IndicatorBar}
           data-ready={isReady}
         />
       )}

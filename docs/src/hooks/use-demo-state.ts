@@ -10,30 +10,30 @@ import {
 } from '#utils/hero-demo-scenes';
 
 export interface DemoState {
-  receiving: boolean;
+  isReceiving: boolean;
+  isSaving: boolean;
+  isTyping: boolean;
   savedSource: string;
-  saving: boolean;
   shimmering: Set<LocaleCode>;
   source: string;
   translations: Record<LocaleCode, string>;
-  typing: boolean;
 }
 
 const INITIAL_STATE: DemoState = {
-  receiving: false,
+  isReceiving: false,
+  isSaving: false,
+  isTyping: false,
   savedSource: INITIAL_SCENE.source,
-  saving: false,
   shimmering: new Set(),
   source: INITIAL_SCENE.source,
   translations: INITIAL_SCENE.translations,
-  typing: false,
 };
 
-export function useDemoState(active: boolean): DemoState {
+export function useDemoState(isActive: boolean): DemoState {
   const [state, setState] = useState<DemoState>(INITIAL_STATE);
 
   useEffect(() => {
-    if (!active) {
+    if (!isActive) {
       return;
     }
     if (typeof window === 'undefined') {
@@ -46,15 +46,15 @@ export function useDemoState(active: boolean): DemoState {
       return;
     }
 
-    let cancelled = false;
+    let isCancelled = false;
     const timeouts = new Set<number>();
 
-    const sleep = (ms: number) =>
+    const sleep = (milliseconds: number) =>
       new Promise<void>((resolve) => {
         const id = window.setTimeout(() => {
           timeouts.delete(id);
           resolve();
-        }, ms);
+        }, milliseconds);
         timeouts.add(id);
       });
 
@@ -65,24 +65,24 @@ export function useDemoState(active: boolean): DemoState {
       let currentSource = INITIAL_SCENE.source;
       let sceneIndex = 0;
 
-      while (!cancelled) {
+      while (!isCancelled) {
         const scene = SCENES[sceneIndex % SCENES.length];
         if (scene === undefined) {
           return;
         }
 
         await sleep(2600);
-        if (cancelled) {
+        if (isCancelled) {
           return;
         }
 
-        setState((state) => ({ ...state, typing: true }));
+        setState((previous) => ({ ...previous, isTyping: true }));
 
         while (currentSource.length > 0) {
           currentSource = currentSource.slice(0, -1);
-          setState((state) => ({ ...state, source: currentSource }));
+          setState((previous) => ({ ...previous, source: currentSource }));
           await sleep(jitter(28, 26));
-          if (cancelled) {
+          if (isCancelled) {
             return;
           }
         }
@@ -91,26 +91,30 @@ export function useDemoState(active: boolean): DemoState {
 
         for (let index = 0; index < scene.source.length; index++) {
           currentSource = scene.source.slice(0, index + 1);
-          setState((state) => ({ ...state, source: currentSource }));
+          setState((previous) => ({ ...previous, source: currentSource }));
           const character = scene.source[index];
           const delay = jitter(48, 70) + (character === ' ' ? 60 : 0);
           await sleep(delay);
-          if (cancelled) {
+          if (isCancelled) {
             return;
           }
         }
 
-        setState((state) => ({ ...state, saving: true, typing: false }));
+        setState((previous) => ({
+          ...previous,
+          isSaving: true,
+          isTyping: false,
+        }));
         await sleep(1000);
-        setState((state) => ({
-          ...state,
-          receiving: true,
+        setState((previous) => ({
+          ...previous,
+          isReceiving: true,
           savedSource: scene.source,
           shimmering: new Set(LOCALES.map((locale) => locale.code)),
           translations: EMPTY_TRANSLATIONS,
         }));
         await sleep(360);
-        setState((state) => ({ ...state, saving: false }));
+        setState((previous) => ({ ...previous, isSaving: false }));
         await sleep(120);
 
         for (let index = 0; index < LOCALES.length; index++) {
@@ -118,25 +122,25 @@ export function useDemoState(active: boolean): DemoState {
           if (locale === undefined) {
             continue;
           }
-          setState((state) => {
-            const nextShimmering = new Set(state.shimmering);
+          setState((previous) => {
+            const nextShimmering = new Set(previous.shimmering);
             nextShimmering.delete(locale.code);
             return {
-              ...state,
+              ...previous,
               shimmering: nextShimmering,
               translations: {
-                ...state.translations,
+                ...previous.translations,
                 [locale.code]: scene.translations[locale.code],
               },
             };
           });
-          if (cancelled) {
+          if (isCancelled) {
             return;
           }
           await sleep(130);
         }
 
-        setState((state) => ({ ...state, receiving: false }));
+        setState((previous) => ({ ...previous, isReceiving: false }));
         await sleep(1100);
 
         sceneIndex++;
@@ -146,13 +150,13 @@ export function useDemoState(active: boolean): DemoState {
     run();
 
     return () => {
-      cancelled = true;
+      isCancelled = true;
       for (const id of timeouts) {
         window.clearTimeout(id);
       }
       timeouts.clear();
     };
-  }, [active]);
+  }, [isActive]);
 
   return state;
 }

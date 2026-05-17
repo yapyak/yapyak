@@ -22,7 +22,7 @@ export function ReferenceSymbolSourceLink(
     >
       <Box
         as="span"
-        className={styles.Path}
+        className={styles.PathText}
       >
         {file}:{line}
       </Box>

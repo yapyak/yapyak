@@ -14,12 +14,12 @@ export interface HeroDemoProps extends BoxProps {}
 
 export function HeroDemo(props: HeroDemoProps) {
   const { className, ...restProps } = props;
-  const containerElement = useRef<HTMLDivElement>(null);
+  const element = useRef<HTMLDivElement>(null);
   const [isActive, setIsActive] = useState(false);
   const [framework, setFramework] = useState<Framework>('react');
 
   useEffect(() => {
-    const $element = containerElement.current;
+    const $element = element.current;
     if (!$element) {
       return;
     }
@@ -46,18 +46,18 @@ export function HeroDemo(props: HeroDemoProps) {
       {...restProps}
       className={[styles.HeroDemo, className]}
       data-active={isActive}
-      ref={containerElement}
+      ref={element}
     >
       <Box className={styles.Stack}>
         <HeroDemoEditor
           framework={framework}
+          isSaving={state.isSaving}
+          isTyping={state.isTyping}
           onFrameworkChange={setFramework}
-          saving={state.saving}
           source={state.source}
-          typing={state.typing}
         />
         <HeroDemoLocaleStack
-          receiving={state.receiving}
+          isReceiving={state.isReceiving}
           savedSource={state.savedSource}
           shimmering={state.shimmering}
           translations={state.translations}

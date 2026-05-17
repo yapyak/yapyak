@@ -55,7 +55,7 @@ export function ReferenceSymbolMemberTable(
                 {member.optional && (
                   <Box
                     as="span"
-                    className={styles.Optional}
+                    className={styles.OptionalText}
                   >
                     ?
                   </Box>

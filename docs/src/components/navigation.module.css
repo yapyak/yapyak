@@ -14,7 +14,7 @@
     border-radius: var(--radius-pill);
     box-shadow: inset 0 0 0 1px var(--ring);
 
-    .Indicator {
+    .IndicatorBar {
       position: absolute;
       top: 0;
       left: 0;
@@ -38,7 +38,7 @@
     }
 
     &[data-animating] {
-      .Indicator {
+      .IndicatorBar {
         opacity: 1;
       }
 

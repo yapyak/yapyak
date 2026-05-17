@@ -1554,7 +1554,10 @@ Each landmark name appears max once per component. `StartBar` and `EndBar` count
 - `Chevron` — chevron icon
 - `Arrow` — arrow icon
 - `Dot` — dot indicator
+- `Caret` — text caret indicator (blinking cursor in fake editor etc)
 - `Spacer` — spacer element
+- `Overlay` — full-cover decorative layer (flash, noise, gradient effect)
+- `Skeleton` — loading placeholder block
 
 **List items:**
 - `Item` — `<li>`
