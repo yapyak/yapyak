@@ -1,7 +1,7 @@
 import type { BoxProps } from '#components/box';
 import type { CalloutVariant } from '#components/callout';
 import type { CodeGroupBlock } from '#components/code-group';
-import type { MarkdocNode, MarkdocTag } from '#lib/markdoc';
+import type { Block } from '#lib/content';
 
 import { Fragment } from 'react';
 
@@ -10,51 +10,42 @@ import { Callout } from '#components/callout';
 import { CodeBlock } from '#components/code-block';
 import { CodeGroup } from '#components/code-group';
 
-import styles from './markdoc-renderer.module.css';
+import styles from './block-renderer.module.css';
 
-export interface MarkdocRendererProps extends BoxProps {
-  tree: MarkdocNode[];
+export interface BlockRendererProps extends BoxProps {
+  blocks: Block[];
 }
 
-export function MarkdocRenderer(props: MarkdocRendererProps) {
-  const { className, tree, ...restProps } = props;
+export function BlockRenderer(props: BlockRendererProps) {
+  const { blocks, className, ...restProps } = props;
 
   return (
     <Box
       {...restProps}
-      className={[styles.MarkdocRenderer, className]}
+      className={[styles.BlockRenderer, className]}
     >
-      {tree.map((node, index) => (
-        <Fragment key={index}>{renderNode(node)}</Fragment>
-      ))}
+      {blocks.map(renderBlock)}
     </Box>
   );
 }
 
-function renderNode(node: MarkdocNode) {
-  if (node === null) {
-    return null;
-  }
-  if (typeof node === 'string') {
-    return node;
-  }
-  if (typeof node === 'number' || typeof node === 'boolean') {
-    return String(node);
-  }
-  return renderTag(node);
+function renderBlock(block: Block, index: number) {
+  return <Fragment key={index}>{renderBlockContent(block)}</Fragment>;
 }
 
-function renderTag(tag: MarkdocTag) {
-  const children = tag.children.map((child, index) => (
-    <Fragment key={index}>{renderNode(child)}</Fragment>
-  ));
+function renderBlockContent(block: Block) {
+  if (block.type === 'text') {
+    return block.value;
+  }
 
-  switch (tag.name) {
+  const children = block.children.map(renderBlock);
+
+  switch (block.type) {
     case 'Callout':
       return (
         <Callout
-          title={tag.attributes.title as string | undefined}
-          variant={tag.attributes.variant as CalloutVariant}
+          title={block.attributes.title as string | undefined}
+          variant={block.attributes.variant as CalloutVariant}
         >
           {children}
         </Callout>
@@ -62,17 +53,17 @@ function renderTag(tag: MarkdocTag) {
     case 'CodeBlock':
       return (
         <CodeBlock
-          language={tag.attributes.language as string | undefined}
-          source={tag.attributes.source as string}
+          language={block.attributes.language as string | undefined}
+          source={block.attributes.source as string}
         />
       );
     case 'CodeGroup':
-      return <CodeGroup blocks={extractCodeBlocks(tag)} />;
+      return <CodeGroup blocks={extractCodeBlocks(block)} />;
     case 'a':
       return (
         <Box
           as="a"
-          href={tag.attributes.href as string}
+          href={block.attributes.href as string}
         >
           {children}
         </Box>
@@ -80,9 +71,9 @@ function renderTag(tag: MarkdocTag) {
     case 'img':
       return (
         <Box
-          alt={tag.attributes.alt as string | undefined}
+          alt={block.attributes.alt as string | undefined}
           as="img"
-          src={tag.attributes.src as string}
+          src={block.attributes.src as string}
         />
       );
     case 'h1':
@@ -93,15 +84,15 @@ function renderTag(tag: MarkdocTag) {
     case 'h6':
       return (
         <Box
-          as={tag.name}
-          id={tag.attributes.id as string | undefined}
+          as={block.type}
+          id={block.attributes.id as string | undefined}
         >
           {children}
         </Box>
       );
     case 'hr':
     case 'br':
-      return <Box as={tag.name} />;
+      return <Box as={block.type} />;
     case 'p':
     case 'ul':
     case 'ol':
@@ -117,21 +108,16 @@ function renderTag(tag: MarkdocTag) {
     case 'tr':
     case 'th':
     case 'td':
-      return <Box as={tag.name}>{children}</Box>;
+      return <Box as={block.type}>{children}</Box>;
     default:
-      throw new Error(`MarkdocRenderer: unknown tag "${tag.name}"`);
+      throw new Error(`BlockRenderer: unknown block type "${block.type}"`);
   }
 }
 
-function extractCodeBlocks(group: MarkdocTag) {
+function extractCodeBlocks(group: Block) {
   const blocks: CodeGroupBlock[] = [];
   for (const child of group.children) {
-    if (
-      typeof child !== 'object' ||
-      child === null ||
-      child.$$mdtype !== 'Tag' ||
-      child.name !== 'CodeBlock'
-    ) {
+    if (child.type !== 'CodeBlock') {
       continue;
     }
     const language = child.attributes.language;

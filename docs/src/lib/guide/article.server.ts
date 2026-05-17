@@ -1,4 +1,4 @@
-import { loadMarkdocPage } from '#lib/markdoc';
+import { loadPage } from '#lib/content';
 
 import { join } from 'node:path';
 
@@ -8,7 +8,7 @@ export async function loadGuideArticle(slug: string) {
     join(process.cwd(), 'content', 'guide', slug, 'index.md'),
   ];
   for (const path of candidates) {
-    const result = await loadMarkdocPage(path);
+    const result = await loadPage(path);
     if (result === null) {
       continue;
     }

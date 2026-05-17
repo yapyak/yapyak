@@ -1,19 +1,19 @@
 import type { Config, Schema } from '@markdoc/markdoc';
-import type { MarkdocNode } from './types';
+import type { Block } from './types';
 
 import Markdoc from '@markdoc/markdoc';
 
-export function parseMarkdoc(source: string) {
+export function parseContent(source: string) {
   const ast = Markdoc.parse(source);
   const frontmatterSource = ast.attributes.frontmatter as string | undefined;
   const frontmatter = frontmatterSource
     ? parseFrontmatter(frontmatterSource)
     : {};
   const transformed = Markdoc.transform(ast, markdocConfig);
-  const tree = Array.isArray(transformed)
-    ? transformed.map(toPlainNode)
-    : [toPlainNode(transformed)];
-  return { frontmatter, tree };
+  const blocks = Array.isArray(transformed)
+    ? transformed.map(toBlock)
+    : [toBlock(transformed)];
+  return { blocks, frontmatter };
 }
 
 export function parseFrontmatterOnly(source: string) {
@@ -22,23 +22,37 @@ export function parseFrontmatterOnly(source: string) {
   return frontmatterSource ? parseFrontmatter(frontmatterSource) : {};
 }
 
-function toPlainNode(node: unknown): MarkdocNode {
+function toBlock(node: unknown): Block {
   if (Markdoc.Tag.isTag(node)) {
     return {
-      $$mdtype: 'Tag',
       attributes: node.attributes,
-      children: node.children.map(toPlainNode),
-      name: node.name,
+      children: node.children.map(toBlock),
+      type: node.name,
+      value: '',
     };
   }
-  if (
-    typeof node === 'string' ||
-    typeof node === 'number' ||
-    typeof node === 'boolean'
-  ) {
-    return node;
+  if (typeof node === 'string') {
+    return {
+      attributes: {},
+      children: [],
+      type: 'text',
+      value: node,
+    };
   }
-  return null;
+  if (typeof node === 'number' || typeof node === 'boolean') {
+    return {
+      attributes: {},
+      children: [],
+      type: 'text',
+      value: String(node),
+    };
+  }
+  return {
+    attributes: {},
+    children: [],
+    type: 'text',
+    value: '',
+  };
 }
 
 const document: Schema = {

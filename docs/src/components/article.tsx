@@ -1,8 +1,8 @@
 import type { BoxProps } from '#components/box';
-import type { Page } from '#lib/markdoc';
+import type { Page } from '#lib/content';
 
 import { Box } from '#components/box';
-import { MarkdocRenderer } from '#components/markdoc-renderer';
+import { BlockRenderer } from '#components/block-renderer';
 
 import styles from './article.module.css';
 
@@ -39,7 +39,7 @@ export function Article(props: ArticleProps) {
         )}
       </Box>
       <Box className={styles.Body}>
-        <MarkdocRenderer tree={page.tree} />
+        <BlockRenderer blocks={page.blocks} />
       </Box>
     </Box>
   );

@@ -1,4 +1,4 @@
-import { parseMarkdoc } from '#lib/markdoc';
+import { parseContent } from '#lib/content';
 
 import { loadManifest } from './manifest.server';
 
@@ -32,16 +32,16 @@ export async function loadReferenceSymbol(path: string) {
   if (symbol === undefined) {
     return { kind: 'not-found' as const };
   }
-  const descriptionTree = symbol.description
-    ? parseMarkdoc(symbol.description).tree
+  const descriptionBlocks = symbol.description
+    ? parseContent(symbol.description).blocks
     : null;
-  const exampleTrees = symbol.examples.map(
-    (example) => parseMarkdoc(example).tree,
+  const exampleBlocks = symbol.examples.map(
+    (example) => parseContent(example).blocks,
   );
   return {
     kind: 'symbol' as const,
     module: parent,
-    rendered: { descriptionTree, exampleTrees, symbol },
+    rendered: { descriptionBlocks, exampleBlocks, symbol },
   };
 }
 

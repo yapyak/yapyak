@@ -1,20 +1,20 @@
 import type { BoxProps } from '#components/box';
-import type { MarkdocNode } from '#lib/markdoc';
+import type { Block } from '#lib/content';
 
+import { BlockRenderer } from '#components/block-renderer';
 import { Box } from '#components/box';
-import { MarkdocRenderer } from '#components/markdoc-renderer';
 
 import styles from './example-section.module.css';
 
 export interface ReferenceSymbolExampleSectionProps
   extends BoxProps<'section'> {
-  trees: MarkdocNode[][];
+  examples: Block[][];
 }
 
 export function ReferenceSymbolExampleSection(
   props: ReferenceSymbolExampleSectionProps,
 ) {
-  const { className, trees, ...restProps } = props;
+  const { className, examples, ...restProps } = props;
 
   return (
     <Box
@@ -29,10 +29,10 @@ export function ReferenceSymbolExampleSection(
         Examples
       </Box>
       <Box className={styles.ExampleStack}>
-        {trees.map((tree, index) => (
-          <MarkdocRenderer
+        {examples.map((blocks, index) => (
+          <BlockRenderer
             key={index}
-            tree={tree}
+            blocks={blocks}
           />
         ))}
       </Box>

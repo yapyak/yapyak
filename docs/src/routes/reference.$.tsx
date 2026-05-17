@@ -32,7 +32,7 @@ export const Route = createFileRoute('/reference/$')({
 
 function Component() {
   const { module, rendered } = Route.useLoaderData();
-  const { symbol, descriptionTree, exampleTrees } = rendered;
+  const { symbol, descriptionBlocks, exampleBlocks } = rendered;
   return (
     <ReferenceSymbol>
       <ReferenceSymbol.Header
@@ -43,8 +43,8 @@ function Component() {
       {symbol.deprecated && (
         <ReferenceSymbol.Deprecated message={symbol.deprecated} />
       )}
-      {descriptionTree && (
-        <ReferenceSymbol.Description tree={descriptionTree} />
+      {descriptionBlocks && (
+        <ReferenceSymbol.Description blocks={descriptionBlocks} />
       )}
       <ReferenceSymbol.Signature source={symbol.signature} />
       {symbol.kind === 'function' && symbol.parameters.length > 0 && (
@@ -66,8 +66,8 @@ function Component() {
           title="Members"
         />
       )}
-      {exampleTrees.length > 0 && (
-        <ReferenceSymbol.Examples trees={exampleTrees} />
+      {exampleBlocks.length > 0 && (
+        <ReferenceSymbol.Examples examples={exampleBlocks} />
       )}
       <ReferenceSymbol.SourceLink
         file={symbol.location.file}

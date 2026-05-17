@@ -1,19 +1,19 @@
 import type { BoxProps } from '#components/box';
-import type { MarkdocNode } from '#lib/markdoc';
+import type { Block } from '#lib/content';
 
+import { BlockRenderer } from '#components/block-renderer';
 import { Box } from '#components/box';
-import { MarkdocRenderer } from '#components/markdoc-renderer';
 
 import styles from './description.module.css';
 
 export interface ReferenceSymbolDescriptionProps extends BoxProps<'section'> {
-  tree: MarkdocNode[];
+  blocks: Block[];
 }
 
 export function ReferenceSymbolDescription(
   props: ReferenceSymbolDescriptionProps,
 ) {
-  const { className, tree, ...restProps } = props;
+  const { blocks, className, ...restProps } = props;
 
   return (
     <Box
@@ -21,7 +21,7 @@ export function ReferenceSymbolDescription(
       as="section"
       className={[styles.ReferenceSymbolDescription, className]}
     >
-      <MarkdocRenderer tree={tree} />
+      <BlockRenderer blocks={blocks} />
     </Box>
   );
 }
