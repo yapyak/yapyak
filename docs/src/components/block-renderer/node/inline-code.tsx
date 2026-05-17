@@ -2,12 +2,12 @@ import type { InlineCodeBlock } from '#lib/content';
 
 import { Box } from '#components/box';
 
-export interface BlockRendererNodeInlineCodeProps {
+export interface NodeInlineCodeProps {
   block: InlineCodeBlock;
 }
 
-export function BlockRendererNodeInlineCode(
-  props: BlockRendererNodeInlineCodeProps,
+export function NodeInlineCode(
+  props: NodeInlineCodeProps,
 ) {
   const { block } = props;
   return <Box as="code">{block.value}</Box>;

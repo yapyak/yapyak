@@ -4,12 +4,12 @@ import { Box } from '#components/box';
 
 import { BlockRendererNode } from '../node';
 
-export interface BlockRendererNodeBlockquoteProps {
+export interface NodeBlockquoteProps {
   block: BlockquoteBlock;
 }
 
-export function BlockRendererNodeBlockquote(
-  props: BlockRendererNodeBlockquoteProps,
+export function NodeBlockquote(
+  props: NodeBlockquoteProps,
 ) {
   const { block } = props;
   return (

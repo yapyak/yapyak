@@ -4,11 +4,11 @@ import { Box } from '#components/box';
 
 import { BlockRendererNode } from '../node';
 
-export interface BlockRendererNodeStrongProps {
+export interface NodeStrongProps {
   block: StrongBlock;
 }
 
-export function BlockRendererNodeStrong(props: BlockRendererNodeStrongProps) {
+export function NodeStrong(props: NodeStrongProps) {
   const { block } = props;
   return (
     <Box as="strong">

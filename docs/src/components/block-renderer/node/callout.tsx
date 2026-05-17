@@ -4,12 +4,12 @@ import { Callout } from '#components/callout';
 
 import { BlockRendererNode } from '../node';
 
-export interface BlockRendererNodeCalloutProps {
+export interface NodeCalloutProps {
   block: CalloutBlock;
 }
 
-export function BlockRendererNodeCallout(
-  props: BlockRendererNodeCalloutProps,
+export function NodeCallout(
+  props: NodeCalloutProps,
 ) {
   const { block } = props;
   return (

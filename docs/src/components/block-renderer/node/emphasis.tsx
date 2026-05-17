@@ -4,12 +4,12 @@ import { Box } from '#components/box';
 
 import { BlockRendererNode } from '../node';
 
-export interface BlockRendererNodeEmphasisProps {
+export interface NodeEmphasisProps {
   block: EmphasisBlock;
 }
 
-export function BlockRendererNodeEmphasis(
-  props: BlockRendererNodeEmphasisProps,
+export function NodeEmphasis(
+  props: NodeEmphasisProps,
 ) {
   const { block } = props;
   return (

@@ -1,5 +1,5 @@
 import { Box } from '#components/box';
 
-export function BlockRendererNodeLineBreak() {
+export function NodeLineBreak() {
   return <Box as="br" />;
 }

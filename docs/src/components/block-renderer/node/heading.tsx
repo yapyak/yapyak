@@ -4,12 +4,12 @@ import { Box } from '#components/box';
 
 import { BlockRendererNode } from '../node';
 
-export interface BlockRendererNodeHeadingProps {
+export interface NodeHeadingProps {
   block: HeadingBlock;
 }
 
-export function BlockRendererNodeHeading(
-  props: BlockRendererNodeHeadingProps,
+export function NodeHeading(
+  props: NodeHeadingProps,
 ) {
   const { block } = props;
   return (

@@ -1,26 +1,26 @@
 import type { Block } from '#lib/content';
 
-import { BlockRendererNodeBlockquote } from './node/blockquote';
-import { BlockRendererNodeCallout } from './node/callout';
-import { BlockRendererNodeCodeBlock } from './node/code-block';
-import { BlockRendererNodeCodeGroup } from './node/code-group';
-import { BlockRendererNodeEmphasis } from './node/emphasis';
-import { BlockRendererNodeHeading } from './node/heading';
-import { BlockRendererNodeImage } from './node/image';
-import { BlockRendererNodeInlineCode } from './node/inline-code';
-import { BlockRendererNodeLineBreak } from './node/line-break';
-import { BlockRendererNodeLink } from './node/link';
-import { BlockRendererNodeList } from './node/list';
-import { BlockRendererNodeListItem } from './node/list-item';
-import { BlockRendererNodeParagraph } from './node/paragraph';
-import { BlockRendererNodeStrikethrough } from './node/strikethrough';
-import { BlockRendererNodeStrong } from './node/strong';
-import { BlockRendererNodeTable } from './node/table';
-import { BlockRendererNodeTableCell } from './node/table-cell';
-import { BlockRendererNodeTableHeaderCell } from './node/table-header-cell';
-import { BlockRendererNodeTableRow } from './node/table-row';
-import { BlockRendererNodeText } from './node/text';
-import { BlockRendererNodeThematicBreak } from './node/thematic-break';
+import { NodeBlockquote } from './node/blockquote';
+import { NodeCallout } from './node/callout';
+import { NodeCodeBlock } from './node/code-block';
+import { NodeCodeGroup } from './node/code-group';
+import { NodeEmphasis } from './node/emphasis';
+import { NodeHeading } from './node/heading';
+import { NodeImage } from './node/image';
+import { NodeInlineCode } from './node/inline-code';
+import { NodeLineBreak } from './node/line-break';
+import { NodeLink } from './node/link';
+import { NodeList } from './node/list';
+import { NodeListItem } from './node/list-item';
+import { NodeParagraph } from './node/paragraph';
+import { NodeStrikethrough } from './node/strikethrough';
+import { NodeStrong } from './node/strong';
+import { NodeTable } from './node/table';
+import { NodeTableCell } from './node/table-cell';
+import { NodeTableHeaderCell } from './node/table-header-cell';
+import { NodeTableRow } from './node/table-row';
+import { NodeText } from './node/text';
+import { NodeThematicBreak } from './node/thematic-break';
 
 export interface BlockRendererNodeProps {
   block: Block;
@@ -30,46 +30,46 @@ export function BlockRendererNode(props: BlockRendererNodeProps) {
   const { block } = props;
   switch (block.type) {
     case 'text':
-      return <BlockRendererNodeText block={block} />;
+      return <NodeText block={block} />;
     case 'heading':
-      return <BlockRendererNodeHeading block={block} />;
+      return <NodeHeading block={block} />;
     case 'paragraph':
-      return <BlockRendererNodeParagraph block={block} />;
+      return <NodeParagraph block={block} />;
     case 'link':
-      return <BlockRendererNodeLink block={block} />;
+      return <NodeLink block={block} />;
     case 'image':
-      return <BlockRendererNodeImage block={block} />;
+      return <NodeImage block={block} />;
     case 'list':
-      return <BlockRendererNodeList block={block} />;
+      return <NodeList block={block} />;
     case 'list-item':
-      return <BlockRendererNodeListItem block={block} />;
+      return <NodeListItem block={block} />;
     case 'emphasis':
-      return <BlockRendererNodeEmphasis block={block} />;
+      return <NodeEmphasis block={block} />;
     case 'strong':
-      return <BlockRendererNodeStrong block={block} />;
+      return <NodeStrong block={block} />;
     case 'strikethrough':
-      return <BlockRendererNodeStrikethrough block={block} />;
+      return <NodeStrikethrough block={block} />;
     case 'inline-code':
-      return <BlockRendererNodeInlineCode block={block} />;
+      return <NodeInlineCode block={block} />;
     case 'blockquote':
-      return <BlockRendererNodeBlockquote block={block} />;
+      return <NodeBlockquote block={block} />;
     case 'thematic-break':
-      return <BlockRendererNodeThematicBreak />;
+      return <NodeThematicBreak />;
     case 'line-break':
-      return <BlockRendererNodeLineBreak />;
+      return <NodeLineBreak />;
     case 'table':
-      return <BlockRendererNodeTable block={block} />;
+      return <NodeTable block={block} />;
     case 'table-row':
-      return <BlockRendererNodeTableRow block={block} />;
+      return <NodeTableRow block={block} />;
     case 'table-header-cell':
-      return <BlockRendererNodeTableHeaderCell block={block} />;
+      return <NodeTableHeaderCell block={block} />;
     case 'table-cell':
-      return <BlockRendererNodeTableCell block={block} />;
+      return <NodeTableCell block={block} />;
     case 'code-block':
-      return <BlockRendererNodeCodeBlock block={block} />;
+      return <NodeCodeBlock block={block} />;
     case 'code-group':
-      return <BlockRendererNodeCodeGroup block={block} />;
+      return <NodeCodeGroup block={block} />;
     case 'callout':
-      return <BlockRendererNodeCallout block={block} />;
+      return <NodeCallout block={block} />;
   }
 }

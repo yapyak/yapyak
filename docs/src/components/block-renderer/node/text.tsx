@@ -1,10 +1,10 @@
 import type { TextBlock } from '#lib/content';
 
-export interface BlockRendererNodeTextProps {
+export interface NodeTextProps {
   block: TextBlock;
 }
 
-export function BlockRendererNodeText(props: BlockRendererNodeTextProps) {
+export function NodeText(props: NodeTextProps) {
   const { block } = props;
   return block.value;
 }

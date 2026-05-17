@@ -4,11 +4,11 @@ import { Box } from '#components/box';
 
 import { BlockRendererNode } from '../node';
 
-export interface BlockRendererNodeTableProps {
+export interface NodeTableProps {
   block: TableBlock;
 }
 
-export function BlockRendererNodeTable(props: BlockRendererNodeTableProps) {
+export function NodeTable(props: NodeTableProps) {
   const { block } = props;
   return (
     <Box as="table">

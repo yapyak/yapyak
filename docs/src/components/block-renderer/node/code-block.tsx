@@ -2,12 +2,12 @@ import type { CodeBlock as CodeBlockData } from '#lib/content';
 
 import { CodeBlock } from '#components/code-block';
 
-export interface BlockRendererNodeCodeBlockProps {
+export interface NodeCodeBlockProps {
   block: CodeBlockData;
 }
 
-export function BlockRendererNodeCodeBlock(
-  props: BlockRendererNodeCodeBlockProps,
+export function NodeCodeBlock(
+  props: NodeCodeBlockProps,
 ) {
   const { block } = props;
   return (

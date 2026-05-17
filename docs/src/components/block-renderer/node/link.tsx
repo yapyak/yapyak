@@ -4,11 +4,11 @@ import { Box } from '#components/box';
 
 import { BlockRendererNode } from '../node';
 
-export interface BlockRendererNodeLinkProps {
+export interface NodeLinkProps {
   block: LinkBlock;
 }
 
-export function BlockRendererNodeLink(props: BlockRendererNodeLinkProps) {
+export function NodeLink(props: NodeLinkProps) {
   const { block } = props;
   return (
     <Box

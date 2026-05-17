@@ -1,5 +1,5 @@
 import { Box } from '#components/box';
 
-export function BlockRendererNodeThematicBreak() {
+export function NodeThematicBreak() {
   return <Box as="hr" />;
 }
