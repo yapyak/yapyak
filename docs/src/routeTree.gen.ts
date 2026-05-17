@@ -9,20 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ReferenceRouteRouteImport } from './routes/reference/route'
-import { Route as GuideRouteRouteImport } from './routes/guide/route'
+import { Route as ReferenceRouteImport } from './routes/reference'
+import { Route as GuideRouteImport } from './routes/guide'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ReferenceIndexRouteImport } from './routes/reference/index'
-import { Route as GuideIndexRouteImport } from './routes/guide/index'
-import { Route as ReferenceSplatRouteImport } from './routes/reference/$'
-import { Route as GuideSplatRouteImport } from './routes/guide/$'
+import { Route as ReferenceIndexRouteImport } from './routes/reference.index'
+import { Route as GuideIndexRouteImport } from './routes/guide.index'
+import { Route as ReferenceSplatRouteImport } from './routes/reference.$'
+import { Route as GuideSplatRouteImport } from './routes/guide.$'
 
-const ReferenceRouteRoute = ReferenceRouteRouteImport.update({
+const ReferenceRoute = ReferenceRouteImport.update({
   id: '/reference',
   path: '/reference',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GuideRouteRoute = GuideRouteRouteImport.update({
+const GuideRoute = GuideRouteImport.update({
   id: '/guide',
   path: '/guide',
   getParentRoute: () => rootRouteImport,
@@ -35,28 +35,28 @@ const IndexRoute = IndexRouteImport.update({
 const ReferenceIndexRoute = ReferenceIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => ReferenceRouteRoute,
+  getParentRoute: () => ReferenceRoute,
 } as any)
 const GuideIndexRoute = GuideIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => GuideRouteRoute,
+  getParentRoute: () => GuideRoute,
 } as any)
 const ReferenceSplatRoute = ReferenceSplatRouteImport.update({
   id: '/$',
   path: '/$',
-  getParentRoute: () => ReferenceRouteRoute,
+  getParentRoute: () => ReferenceRoute,
 } as any)
 const GuideSplatRoute = GuideSplatRouteImport.update({
   id: '/$',
   path: '/$',
-  getParentRoute: () => GuideRouteRoute,
+  getParentRoute: () => GuideRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/guide': typeof GuideRouteRouteWithChildren
-  '/reference': typeof ReferenceRouteRouteWithChildren
+  '/guide': typeof GuideRouteWithChildren
+  '/reference': typeof ReferenceRouteWithChildren
   '/guide/$': typeof GuideSplatRoute
   '/reference/$': typeof ReferenceSplatRoute
   '/guide/': typeof GuideIndexRoute
@@ -72,8 +72,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/guide': typeof GuideRouteRouteWithChildren
-  '/reference': typeof ReferenceRouteRouteWithChildren
+  '/guide': typeof GuideRouteWithChildren
+  '/reference': typeof ReferenceRouteWithChildren
   '/guide/$': typeof GuideSplatRoute
   '/reference/$': typeof ReferenceSplatRoute
   '/guide/': typeof GuideIndexRoute
@@ -104,8 +104,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  GuideRouteRoute: typeof GuideRouteRouteWithChildren
-  ReferenceRouteRoute: typeof ReferenceRouteRouteWithChildren
+  GuideRoute: typeof GuideRouteWithChildren
+  ReferenceRoute: typeof ReferenceRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -114,14 +114,14 @@ declare module '@tanstack/react-router' {
       id: '/reference'
       path: '/reference'
       fullPath: '/reference'
-      preLoaderRoute: typeof ReferenceRouteRouteImport
+      preLoaderRoute: typeof ReferenceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/guide': {
       id: '/guide'
       path: '/guide'
       fullPath: '/guide'
-      preLoaderRoute: typeof GuideRouteRouteImport
+      preLoaderRoute: typeof GuideRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -136,64 +136,62 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/reference/'
       preLoaderRoute: typeof ReferenceIndexRouteImport
-      parentRoute: typeof ReferenceRouteRoute
+      parentRoute: typeof ReferenceRoute
     }
     '/guide/': {
       id: '/guide/'
       path: '/'
       fullPath: '/guide/'
       preLoaderRoute: typeof GuideIndexRouteImport
-      parentRoute: typeof GuideRouteRoute
+      parentRoute: typeof GuideRoute
     }
     '/reference/$': {
       id: '/reference/$'
       path: '/$'
       fullPath: '/reference/$'
       preLoaderRoute: typeof ReferenceSplatRouteImport
-      parentRoute: typeof ReferenceRouteRoute
+      parentRoute: typeof ReferenceRoute
     }
     '/guide/$': {
       id: '/guide/$'
       path: '/$'
       fullPath: '/guide/$'
       preLoaderRoute: typeof GuideSplatRouteImport
-      parentRoute: typeof GuideRouteRoute
+      parentRoute: typeof GuideRoute
     }
   }
 }
 
-interface GuideRouteRouteChildren {
+interface GuideRouteChildren {
   GuideSplatRoute: typeof GuideSplatRoute
   GuideIndexRoute: typeof GuideIndexRoute
 }
 
-const GuideRouteRouteChildren: GuideRouteRouteChildren = {
+const GuideRouteChildren: GuideRouteChildren = {
   GuideSplatRoute: GuideSplatRoute,
   GuideIndexRoute: GuideIndexRoute,
 }
 
-const GuideRouteRouteWithChildren = GuideRouteRoute._addFileChildren(
-  GuideRouteRouteChildren,
-)
+const GuideRouteWithChildren = GuideRoute._addFileChildren(GuideRouteChildren)
 
-interface ReferenceRouteRouteChildren {
+interface ReferenceRouteChildren {
   ReferenceSplatRoute: typeof ReferenceSplatRoute
   ReferenceIndexRoute: typeof ReferenceIndexRoute
 }
 
-const ReferenceRouteRouteChildren: ReferenceRouteRouteChildren = {
+const ReferenceRouteChildren: ReferenceRouteChildren = {
   ReferenceSplatRoute: ReferenceSplatRoute,
   ReferenceIndexRoute: ReferenceIndexRoute,
 }
 
-const ReferenceRouteRouteWithChildren = ReferenceRouteRoute._addFileChildren(
-  ReferenceRouteRouteChildren,
+const ReferenceRouteWithChildren = ReferenceRoute._addFileChildren(
+  ReferenceRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  GuideRouteRoute: GuideRouteRouteWithChildren,
-  ReferenceRouteRoute: ReferenceRouteRouteWithChildren,
+  GuideRoute: GuideRouteWithChildren,
+  ReferenceRoute: ReferenceRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
