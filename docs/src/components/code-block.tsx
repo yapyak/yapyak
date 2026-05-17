@@ -19,9 +19,12 @@ const SUPPORTED_LANGUAGES = new Set<Language>([
   'js',
   'svelte',
   'vue',
+  'astro',
   'bash',
   'json',
   'diff',
+  'html',
+  'yaml',
 ]);
 
 export function CodeBlock(props: CodeBlockProps) {

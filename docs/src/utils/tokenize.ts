@@ -5,9 +5,12 @@ export type Language =
   | 'js'
   | 'svelte'
   | 'vue'
+  | 'astro'
   | 'bash'
   | 'json'
-  | 'diff';
+  | 'diff'
+  | 'html'
+  | 'yaml';
 
 export type TokenType =
   | 'plain'
@@ -120,6 +123,12 @@ export function tokenize(code: string, language: Language): Token[] {
   }
   if (language === 'bash') {
     return tokenizeBash(code);
+  }
+  if (language === 'html') {
+    return tokenizeHtml(code);
+  }
+  if (language === 'yaml') {
+    return tokenizeYaml(code);
   }
   const tokens: Token[] = [];
   let i = 0;
@@ -242,6 +251,198 @@ function tokenizeBash(code: string): Token[] {
     tokens.push({ type: 'plain', value: c });
     i++;
   }
+  return mergePlainTokens(tokens);
+}
+
+function tokenizeHtml(code: string): Token[] {
+  const tokens: Token[] = [];
+  let i = 0;
+  let mode: 'text' | 'tag' = 'text';
+
+  while (i < code.length) {
+    if (mode === 'text') {
+      if (code.startsWith('<!--', i)) {
+        const end = code.indexOf('-->', i + 4);
+        const stop = end === -1 ? code.length : end + 3;
+        tokens.push({ type: 'comment', value: code.slice(i, stop) });
+        i = stop;
+        continue;
+      }
+
+      if (code[i] === '<') {
+        const match = /^<\/?[A-Za-z][\w.-]*/.exec(code.slice(i));
+        if (match) {
+          tokens.push({ type: 'jsx-tag', value: match[0] });
+          i += match[0].length;
+          mode = 'tag';
+          continue;
+        }
+      }
+
+      const nextOpen = code.indexOf('<', i);
+      const stop = nextOpen === -1 ? code.length : nextOpen;
+      tokens.push({ type: 'plain', value: code.slice(i, stop) });
+      i = stop;
+      continue;
+    }
+
+    if (code[i] === '/' && code[i + 1] === '>') {
+      tokens.push({ type: 'jsx-tag', value: '/>' });
+      i += 2;
+      mode = 'text';
+      continue;
+    }
+
+    if (code[i] === '>') {
+      tokens.push({ type: 'jsx-tag', value: '>' });
+      i++;
+      mode = 'text';
+      continue;
+    }
+
+    const whitespace = /^[\s]+/.exec(code.slice(i));
+    if (whitespace) {
+      tokens.push({ type: 'plain', value: whitespace[0] });
+      i += whitespace[0].length;
+      continue;
+    }
+
+    if (code[i] === '=') {
+      tokens.push({ type: 'punct', value: '=' });
+      i++;
+      continue;
+    }
+
+    if (code[i] === '"' || code[i] === "'") {
+      const quote = code[i];
+      const regex = quote === "'" ? /^'(?:\\.|[^'\\])*'/ : /^"(?:\\.|[^"\\])*"/;
+      const match = regex.exec(code.slice(i));
+      if (match) {
+        tokens.push({ type: 'string', value: match[0] });
+        i += match[0].length;
+        continue;
+      }
+    }
+
+    const attribute = /^[A-Za-z_:@][\w:.-]*/.exec(code.slice(i));
+    if (attribute) {
+      tokens.push({ type: 'fn-call', value: attribute[0] });
+      i += attribute[0].length;
+      continue;
+    }
+
+    tokens.push({ type: 'plain', value: code[i] ?? '' });
+    i++;
+  }
+
+  return mergePlainTokens(tokens);
+}
+
+function tokenizeYaml(code: string): Token[] {
+  const tokens: Token[] = [];
+  const lines = code.split('\n');
+
+  for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+    const line = lines[lineIndex] ?? '';
+    const trailing = lineIndex < lines.length - 1 ? '\n' : '';
+    let cursor = 0;
+
+    const indent = /^[ \t]*/.exec(line)?.[0] ?? '';
+    if (indent) {
+      tokens.push({ type: 'plain', value: indent });
+      cursor += indent.length;
+    }
+
+    if (cursor >= line.length) {
+      if (trailing) {
+        tokens.push({ type: 'plain', value: trailing });
+      }
+      continue;
+    }
+
+    if (line[cursor] === '#') {
+      tokens.push({ type: 'comment', value: line.slice(cursor) + trailing });
+      continue;
+    }
+
+    if (
+      line[cursor] === '-' &&
+      (line[cursor + 1] === ' ' || cursor + 1 === line.length)
+    ) {
+      tokens.push({ type: 'punct', value: '-' });
+      cursor++;
+    }
+
+    while (cursor < line.length && line[cursor] === ' ') {
+      tokens.push({ type: 'plain', value: ' ' });
+      cursor++;
+    }
+
+    if (cursor >= line.length) {
+      if (trailing) {
+        tokens.push({ type: 'plain', value: trailing });
+      }
+      continue;
+    }
+
+    const keyMatch = /^([A-Za-z_][\w-]*)(\s*:)(\s|$)/.exec(line.slice(cursor));
+    if (keyMatch) {
+      tokens.push({ type: 'keyword', value: keyMatch[1] ?? '' });
+      tokens.push({ type: 'punct', value: keyMatch[2] ?? '' });
+      cursor += (keyMatch[1]?.length ?? 0) + (keyMatch[2]?.length ?? 0);
+    }
+
+    while (cursor < line.length) {
+      const remainder = line.slice(cursor);
+
+      const ws = /^[ \t]+/.exec(remainder);
+      if (ws) {
+        tokens.push({ type: 'plain', value: ws[0] });
+        cursor += ws[0].length;
+        continue;
+      }
+
+      if (remainder[0] === '#') {
+        tokens.push({ type: 'comment', value: line.slice(cursor) });
+        cursor = line.length;
+        continue;
+      }
+
+      if (remainder[0] === '"' || remainder[0] === "'") {
+        const quote = remainder[0];
+        const regex =
+          quote === "'" ? /^'(?:\\.|[^'\\])*'/ : /^"(?:\\.|[^"\\])*"/;
+        const match = regex.exec(remainder);
+        if (match) {
+          tokens.push({ type: 'string', value: match[0] });
+          cursor += match[0].length;
+          continue;
+        }
+      }
+
+      const numberMatch = /^-?\d+(?:\.\d+)?(?=\s|$|,)/.exec(remainder);
+      if (numberMatch) {
+        tokens.push({ type: 'number', value: numberMatch[0] });
+        cursor += numberMatch[0].length;
+        continue;
+      }
+
+      const literalMatch = /^(true|false|null|~)(?=\s|$|,)/.exec(remainder);
+      if (literalMatch) {
+        tokens.push({ type: 'literal', value: literalMatch[0] });
+        cursor += literalMatch[0].length;
+        continue;
+      }
+
+      tokens.push({ type: 'plain', value: remainder });
+      cursor = line.length;
+    }
+
+    if (trailing) {
+      tokens.push({ type: 'plain', value: trailing });
+    }
+  }
+
   return mergePlainTokens(tokens);
 }
 
