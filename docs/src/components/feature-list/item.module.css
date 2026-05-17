@@ -107,13 +107,13 @@
       animation: feature-reveal linear both;
       animation-timeline: view();
       animation-range: entry 0% entry 60%;
-    }
 
-    .FeatureListItem .Underline {
-      transform: scaleX(0);
-      animation: underline-draw linear both;
-      animation-timeline: view();
-      animation-range: entry 35% entry 85%;
+      .Underline {
+        transform: scaleX(0);
+        animation: underline-draw linear both;
+        animation-timeline: view();
+        animation-range: entry 35% entry 85%;
+      }
     }
   }
 

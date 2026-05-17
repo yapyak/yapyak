@@ -1638,7 +1638,23 @@ If no rule matches unambiguously, the structure is wrong, not the name. Fix the 
 - **Never write vendor prefixes.** Build pipeline uses Lightning CSS, which auto-prefixes based on browserslist targets. Write the standard property only (`user-select: none`) — Lightning CSS adds `-webkit-*` / `-moz-*` / `-ms-*` variants if the targets need them. Manual prefixes are dead code and out of sync with build output.
 - **Primitives (`*Base` components) have no `.module.css` files.** They are headless by design — consumers control all visual styling. Behavior-related rules (`user-select`, `cursor`, `pointer-events`) go inline via the `style` prop merged through `mergeProps`. Visual styling lives in the styled component one level up (`Button` for `ButtonBase`, `Checkbox` for `CheckboxBase`, etc.).
 - **Never use `margin`.** Always use `flex` + `gap` or `grid` + `gap` for spacing between elements. No exceptions — if you reach for `margin-top`/`margin-bottom`/`margin-inline`, restructure the parent into a flex/grid container. Need different gaps between groups? Wrap the tighter group in a sub-container with its own gap.
-- **Always use the `flex` shorthand** — never `flex-grow` or `flex-shrink` alone. Write `flex: 1`, `flex: 0 0 auto`, `flex: none`, etc.
+- **TOTALLY FORBIDDEN: `flex-grow`, `flex-shrink`, `flex-basis`.** Always use the `flex` shorthand. No exceptions.
+
+  ```css
+  /* ✗ Wrong */
+  flex-shrink: 0;
+  flex-grow: 1;
+  flex-basis: 0;
+
+  /* ✓ Right — common cases */
+  flex: none;       /* don't grow, don't shrink, basis auto (= 0 0 auto) */
+  flex: 1;          /* grow, shrink, basis 0 (greedy fill) */
+  flex: 0 0 auto;   /* don't grow, don't shrink, basis auto (explicit) */
+  flex: 1 0 auto;   /* grow, don't shrink, basis auto */
+  flex: auto;       /* grow, shrink, basis auto (= 1 1 auto) */
+  ```
+
+  Why: `flex` always sets all three values explicitly. The longhand forms leave the other two undefined or at their browser defaults, which differ from what people expect (e.g., `flex-basis` defaults to `auto`, not `0`). One shorthand = one mental model.
 - **Never leave unnecessary properties.** Every property must pay for itself in the specific context. Common dead properties to prune: `display: inline-block` on a flex/grid item (flex overrides it), `width: 100%` on a block element that already fills its container, redundant `color` that matches the inherited value, `margin: 0` on an element that has no default margin, `overflow: hidden` when nothing overflows, duplicate properties across sibling rules that could be merged.
 - Use `background-color` — never the `background` shorthand (unless setting multiple background properties)
 - Nesting is for structure and state — child elements are nested, pseudo-classes/data-attributes are nested
@@ -1737,6 +1753,83 @@ Use data attributes on the **root element** of a component for state and variant
 ```
 
 This applies to components that have variant-like behavior (appearance, size, state). Route files rarely need data attributes — if a route element needs variants, it should be extracted into a component.
+
+### CSS nesting MUST mirror DOM structure — no exceptions
+
+**STRICT RULE:** Every nested rule reflects the actual element hierarchy. A class lives at the exact same nesting depth in CSS as its element lives in the DOM. No flattened descendant selectors. No shortcuts.
+
+```html
+<div class="Button">
+  <span class="Atom">
+    <span class="Content"></span>
+  </span>
+</div>
+```
+
+```css
+/* ✓ Right — CSS mirrors DOM */
+.Button {
+  .Atom {
+    .Content {
+    }
+  }
+}
+
+/* ✗ Wrong — Content at root, doesn't reflect that it's inside Atom inside Button */
+.Content {
+}
+
+/* ✗ Wrong — Atom at root, doesn't reflect that it's inside Button */
+.Atom {
+  .Content {
+  }
+}
+
+/* ✗ Wrong — descendant combinator skipping a level */
+.Button .Content {
+}
+
+/* ✗ Wrong — combined selector instead of nested */
+.Button .Atom {
+}
+```
+
+**No combined descendant selectors at the top level.** `.Button .Atom { ... }` is forbidden — must always be `.Button { .Atom { ... } }`. This includes `>` (child) combinators: `.Foo > .Bar` becomes `.Foo { > .Bar { ... } }`.
+
+**Why:** reading the CSS instantly tells you the DOM shape. Refactoring an element's position in the JSX maps to moving its rule in the CSS. Nothing implicit.
+
+**Exception: classes that legitimately appear at multiple DOM positions.** If a class can appear in more than one parent (used by multiple components, or recurring in different sub-trees of the same component), nest it under the **nearest common parent** — typically the closest ancestor where it always appears. Don't duplicate the rule under every possible parent.
+
+```css
+/* DOM: .Description appears inside both .Article.Body and .Article.Header */
+
+/* ✓ Right — nest under nearest common ancestor (.Article) */
+.Article {
+  .Description {
+    color: var(--text-soft);
+  }
+
+  .Body {
+    /* body-specific stuff */
+  }
+
+  .Header {
+    /* header-specific stuff */
+  }
+}
+
+/* ✗ Wrong — duplicating the rule under each possible parent */
+.Article {
+  .Body {
+    .Description { color: var(--text-soft); }
+  }
+  .Header {
+    .Description { color: var(--text-soft); }
+  }
+}
+```
+
+If a class is truly shared across **multiple components** (not just multiple sub-trees), put it in `style.css` (global scope) at top level — those classes are documented as global utilities and aren't expected to mirror any specific DOM.
 
 ### Never flatten nested selectors
 

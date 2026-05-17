@@ -214,77 +214,116 @@
     background: var(--surface);
     border-radius: var(--radius-md);
     box-shadow: inset 0 0 0 1px var(--ring);
-  }
 
-  .CodeGroupTabs {
-    position: relative;
-    display: flex;
-    align-items: stretch;
-    border-bottom: 1px solid var(--rule);
-  }
+    .CodeGroupTabs {
+      position: relative;
+      display: flex;
+      align-items: stretch;
+      border-bottom: 1px solid var(--rule);
 
-  .CodeGroupTab {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    padding: var(--space-3) var(--space-4);
-    font-family: var(--font-mono);
-    font-size: var(--font-size-xs);
-    color: var(--text-muted);
-    cursor: pointer;
-    border-right: 1px solid var(--rule);
-    transition:
-      background-color var(--transition),
-      color var(--transition);
-  }
+      .CodeGroupTab {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        padding: var(--space-3) var(--space-4);
+        font-family: var(--font-mono);
+        font-size: var(--font-size-xs);
+        color: var(--text-muted);
+        cursor: pointer;
+        border-right: 1px solid var(--rule);
+        transition:
+          background-color var(--transition),
+          color var(--transition);
 
-  .CodeGroupTab > input {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    white-space: nowrap;
-    pointer-events: none;
-    clip: rect(0 0 0 0);
-  }
+        > input {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          overflow: hidden;
+          white-space: nowrap;
+          pointer-events: none;
+          clip: rect(0 0 0 0);
+        }
 
-  .CodeGroupTab:hover {
-    color: var(--text-soft);
-    background-color: rgba(255, 255, 255, 0.02);
-  }
+        &:hover {
+          color: var(--text-soft);
+          background-color: rgba(255, 255, 255, 0.02);
+        }
 
-  .CodeGroupTab:has(input:checked) {
-    color: var(--text);
-    background-color: var(--surface-active);
-  }
+        &:has(input:checked) {
+          color: var(--text);
+          background-color: var(--surface-active);
 
-  .CodeGroupTab:has(input:checked)::after {
-    position: absolute;
-    right: 0;
-    bottom: -1px;
-    left: 0;
-    height: 1px;
-    content: "";
-    background-color: var(--mint);
-  }
+          &::after {
+            position: absolute;
+            right: 0;
+            bottom: -1px;
+            left: 0;
+            height: 1px;
+            content: "";
+            background-color: var(--mint);
+          }
+        }
+      }
+    }
 
-  .CodeGroupPanels > .CodeGroupPanel {
-    display: none;
-  }
+    .CodeGroupPanels {
+      > .CodeGroupPanel {
+        display: none;
 
-  .CodeGroup:has(.CodeGroupTab:nth-of-type(1) input:checked)
-    .CodeGroupPanel:nth-of-type(1),
-  .CodeGroup:has(.CodeGroupTab:nth-of-type(2) input:checked)
-    .CodeGroupPanel:nth-of-type(2),
-  .CodeGroup:has(.CodeGroupTab:nth-of-type(3) input:checked)
-    .CodeGroupPanel:nth-of-type(3),
-  .CodeGroup:has(.CodeGroupTab:nth-of-type(4) input:checked)
-    .CodeGroupPanel:nth-of-type(4),
-  .CodeGroup:has(.CodeGroupTab:nth-of-type(5) input:checked)
-    .CodeGroupPanel:nth-of-type(5),
-  .CodeGroup:has(.CodeGroupTab:nth-of-type(6) input:checked)
-    .CodeGroupPanel:nth-of-type(6) {
-    display: block;
+        pre {
+          padding: var(--space-5) var(--space-6);
+          overflow-x: auto;
+          font-family: var(--font-mono);
+          font-size: 14px;
+          line-height: 1.6;
+          color: var(--text-soft);
+        }
+      }
+    }
+
+    &:has(.CodeGroupTab:nth-of-type(1) input:checked) {
+      .CodeGroupPanels {
+        .CodeGroupPanel:nth-of-type(1) {
+          display: block;
+        }
+      }
+    }
+    &:has(.CodeGroupTab:nth-of-type(2) input:checked) {
+      .CodeGroupPanels {
+        .CodeGroupPanel:nth-of-type(2) {
+          display: block;
+        }
+      }
+    }
+    &:has(.CodeGroupTab:nth-of-type(3) input:checked) {
+      .CodeGroupPanels {
+        .CodeGroupPanel:nth-of-type(3) {
+          display: block;
+        }
+      }
+    }
+    &:has(.CodeGroupTab:nth-of-type(4) input:checked) {
+      .CodeGroupPanels {
+        .CodeGroupPanel:nth-of-type(4) {
+          display: block;
+        }
+      }
+    }
+    &:has(.CodeGroupTab:nth-of-type(5) input:checked) {
+      .CodeGroupPanels {
+        .CodeGroupPanel:nth-of-type(5) {
+          display: block;
+        }
+      }
+    }
+    &:has(.CodeGroupTab:nth-of-type(6) input:checked) {
+      .CodeGroupPanels {
+        .CodeGroupPanel:nth-of-type(6) {
+          display: block;
+        }
+      }
+    }
   }
 
   .Callout {
@@ -297,78 +336,76 @@
     background-color: var(--callout-bg);
     border-radius: var(--radius-md);
     box-shadow: inset 3px 0 0 0 var(--callout-accent);
+
+    .CalloutTitle {
+      margin-bottom: var(--space-2);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--callout-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .CalloutBody {
+      > :first-child {
+        margin-top: 0;
+      }
+
+      > :last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    &[data-variant="tip"] {
+      --callout-accent: var(--mint);
+      --callout-bg: oklab(0.87 -0.24 0.06 / 0.05);
+    }
+
+    &[data-variant="info"] {
+      --callout-accent: var(--aqua);
+      --callout-bg: oklab(0.88 -0.21 0.01 / 0.05);
+    }
+
+    &[data-variant="warning"] {
+      --callout-accent: #d8a05a;
+      --callout-bg: rgba(216, 160, 90, 0.06);
+    }
+
+    &[data-variant="danger"] {
+      --callout-accent: #ff7b72;
+      --callout-bg: rgba(255, 123, 114, 0.06);
+    }
+
+    &[data-variant="details"] {
+      --callout-accent: var(--text-muted);
+      --callout-bg: rgba(255, 255, 255, 0.02);
+    }
   }
 
-  .Callout[data-variant="tip"] {
-    --callout-accent: var(--mint);
-    --callout-bg: oklab(0.87 -0.24 0.06 / 0.05);
-  }
+  details.Callout {
+    > summary.CalloutTitle {
+      cursor: pointer;
+      user-select: none;
+      list-style: none;
 
-  .Callout[data-variant="info"] {
-    --callout-accent: var(--aqua);
-    --callout-bg: oklab(0.88 -0.21 0.01 / 0.05);
-  }
+      &::-webkit-details-marker {
+        display: none;
+      }
 
-  .Callout[data-variant="warning"] {
-    --callout-accent: #d8a05a;
-    --callout-bg: rgba(216, 160, 90, 0.06);
-  }
+      &::before {
+        display: inline-block;
+        margin-right: var(--space-2);
+        content: "▸";
+        transition: transform var(--transition);
+      }
+    }
 
-  .Callout[data-variant="danger"] {
-    --callout-accent: #ff7b72;
-    --callout-bg: rgba(255, 123, 114, 0.06);
-  }
-
-  .Callout[data-variant="details"] {
-    --callout-accent: var(--text-muted);
-    --callout-bg: rgba(255, 255, 255, 0.02);
-  }
-
-  .CalloutTitle {
-    margin-bottom: var(--space-2);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-semibold);
-    color: var(--callout-accent);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-
-  details.Callout > summary.CalloutTitle {
-    cursor: pointer;
-    user-select: none;
-    list-style: none;
-  }
-
-  details.Callout > summary.CalloutTitle::-webkit-details-marker {
-    display: none;
-  }
-
-  details.Callout > summary.CalloutTitle::before {
-    display: inline-block;
-    margin-right: var(--space-2);
-    content: "▸";
-    transition: transform var(--transition);
-  }
-
-  details.Callout[open] > summary.CalloutTitle::before {
-    transform: rotate(90deg);
-  }
-
-  .CalloutBody > :first-child {
-    margin-top: 0;
-  }
-
-  .CalloutBody > :last-child {
-    margin-bottom: 0;
-  }
-
-  .CodeGroupPanel pre {
-    padding: var(--space-5) var(--space-6);
-    margin: 0;
-    overflow-x: auto;
-    font-family: var(--font-mono);
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--text-soft);
+    &[open] {
+      > summary.CalloutTitle {
+        &::before {
+          transform: rotate(90deg);
+        }
+      }
+    }
   }
 }
