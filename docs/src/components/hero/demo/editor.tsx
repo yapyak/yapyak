@@ -18,15 +18,8 @@ interface FrameworkConfig {
   language: Language;
 }
 
-const REACT_CONFIG: FrameworkConfig = {
-  filename: 'app.tsx',
-  id: 'react',
-  label: 'React',
-  language: 'tsx',
-};
-
-export const FRAMEWORKS: FrameworkConfig[] = [
-  REACT_CONFIG,
+export const FRAMEWORKS: [FrameworkConfig, FrameworkConfig, FrameworkConfig] = [
+  { filename: 'app.tsx', id: 'react', label: 'React', language: 'tsx' },
   { filename: 'app.vue', id: 'vue', label: 'Vue', language: 'vue' },
   { filename: 'app.svelte', id: 'svelte', label: 'Svelte', language: 'svelte' },
 ];
@@ -58,7 +51,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
     ...restProps
   } = props;
   const config =
-    FRAMEWORKS.find((entry) => entry.id === framework) ?? REACT_CONFIG;
+    FRAMEWORKS.find((entry) => entry.id === framework) ?? FRAMEWORKS[0];
   const code = buildCode(framework, source);
   const tokens = tokenize(code, config.language);
 

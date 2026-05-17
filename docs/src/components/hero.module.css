@@ -2,6 +2,7 @@
   .Hero {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: var(--space-10);
     align-items: center;
     justify-self: center;
 
