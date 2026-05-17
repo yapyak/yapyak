@@ -1,9 +1,9 @@
-import { createServerFn } from '@tanstack/react-start';
+import { parseMarkdoc } from '#lib/markdoc.server';
 
-export const loadReferenceIntroduction = createServerFn().handler(async () => {
-  const { readFile } = await import('node:fs/promises');
-  const { join } = await import('node:path');
-  const { parseMarkdoc } = await import('#lib/markdoc');
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+
+export async function loadReferenceIntroduction() {
   const path = join(process.cwd(), 'content', 'reference', 'introduction.md');
   const source = await readFile(path, 'utf8');
   const { frontmatter, tree } = parseMarkdoc(source);
@@ -12,4 +12,4 @@ export const loadReferenceIntroduction = createServerFn().handler(async () => {
     title: (frontmatter.title as string | undefined) ?? 'Reference',
     tree,
   };
-});
+}

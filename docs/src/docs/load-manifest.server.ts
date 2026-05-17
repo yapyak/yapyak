@@ -1,4 +1,4 @@
-import type { ApiManifest } from './extract-api';
+import type { ApiManifest } from './extract-api.server';
 
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';

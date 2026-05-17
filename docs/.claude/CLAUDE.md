@@ -782,9 +782,34 @@ return { shiftAssignments: map };
 
 ### Server Functions
 
-- Loader data: always named `loadData` — uses `createServerFn()` (GET is default, never specify `{ method: 'GET' }`)
-- Mutations: verb + resource — `createComment`, `destroyComment`, `batchCreateShiftAssignments` — uses `createServerFn({ method: 'POST' })`
-- All server functions use `authenticated` middleware
+- **Every route has exactly one `loadData` server function**, declared inline in the route file (`createServerFn().inputValidator(...).handler(...)`). Never extracted to `#lib/*`, never in another file. The router `loader` calls `loadData({ data: input })` and handles the discriminated result (throw `notFound()`, throw `redirect(...)`, or return data). No other logic in the loader.
+- **`loadData` body delegates to server-only helpers via static imports from `.server.ts` files.** Pattern:
+
+  ```tsx
+  // routes/guide.$.tsx
+  import { loadGuideArticle } from './guide.$.server';
+
+  const loadData = createServerFn()
+    .inputValidator((slug: string) => slug)
+    .handler(({ data: slug }) => loadGuideArticle(slug));
+  ```
+
+  Pass-through is fine when the helper does all the work. Inline more logic only if it's tiny route-glue.
+
+- **No dynamic `await import(...)` inside handlers.** The old `await import('node:fs/promises')` / `await import('#lib/...')` pattern is replaced by static imports from `.server.ts` files — TanStack Start's `.server.ts` suffix tree-shakes the file from the client bundle, so static imports are safe and cleaner.
+- **GET is default** for `createServerFn()` — never specify `{ method: 'GET' }`. Mutations use `createServerFn({ method: 'POST' })`.
+- Mutations: verb + resource — `createComment`, `destroyComment`, `batchCreateShiftAssignments`.
+- All server functions use `authenticated` middleware (where backend exists).
+
+### Server-only helpers (`.server.ts`)
+
+TanStack Start's `.server.ts` suffix marks a file as server-only — it never bundles to the client.
+
+- **Route-specific server helpers** live next to the route file: `routes/guide.$.server.ts` is the companion to `routes/guide.$.tsx`.
+- **Cross-route shared server helpers** live in `lib/*.server.ts` or `docs/*.server.ts` depending on domain.
+- **Function names inside `.server.ts`** are plain action verbs that describe what they do — `loadGuideArticle`, `parseMarkdoc`, `loadManifest`, `extractApi`. No prefix or suffix to mark them as server-only; the file extension already signals it.
+- **Types that are shared between client and server live in a non-`.server.ts` file** (`lib/markdoc.ts` for types, `lib/markdoc.server.ts` for functions that use them). Client components import types via `import type { ... }` from the type file. If types must stay in a `.server.ts` (rare), client imports them via `import type` only — the type-only import is erased at build time so no runtime code leaks.
+- **Server helpers return plain data (discriminated unions, primitives, arrays)** — never class instances. Server-fn serialization (seroval) only handles JSON-compatible shapes.
 
 ### Search Params
 

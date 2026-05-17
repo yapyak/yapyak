@@ -4,19 +4,14 @@ import { createServerFn } from '@tanstack/react-start';
 import { ReferenceLayout } from '#components/reference-layout';
 import { ReferenceNavigation } from '#components/reference-navigation';
 
-const loadSidebar = createServerFn({ method: 'GET' }).handler(async () => {
-  const { loadManifest } = await import('#docs/load-manifest');
-  const { buildReferenceSidebar } = await import(
-    '#docs/build-reference-sidebar'
-  );
-  const manifest = await loadManifest(process.cwd());
-  return buildReferenceSidebar(manifest);
-});
+import { loadReferenceSidebar } from './reference.server';
+
+const loadData = createServerFn().handler(() => loadReferenceSidebar());
 
 export const Route = createFileRoute('/reference')({
   component: Component,
   async loader() {
-    const sidebar = await loadSidebar();
+    const sidebar = await loadData();
     return { sidebar };
   },
 });

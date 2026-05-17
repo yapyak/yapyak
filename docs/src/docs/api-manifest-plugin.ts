@@ -1,6 +1,6 @@
 import type { Plugin } from 'vite';
 
-import { extractApi } from './extract-api';
+import { extractApi } from './extract-api.server';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 

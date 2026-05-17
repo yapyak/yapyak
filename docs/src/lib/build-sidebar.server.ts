@@ -1,6 +1,6 @@
 import type { SidebarNode } from './sidebars';
 
-import { parseFrontmatterOnly } from './markdoc';
+import { parseFrontmatterOnly } from './markdoc.server';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 

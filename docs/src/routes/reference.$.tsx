@@ -1,16 +1,22 @@
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
+import { createServerFn } from '@tanstack/react-start';
 
 import { ReferenceSymbol } from '#components/reference-symbol';
-import { loadReferenceSymbol } from '#lib/load-reference-symbol';
+
+import { loadReferenceSymbol } from './reference.$.server';
+
+const loadData = createServerFn()
+  .inputValidator((path: string) => path)
+  .handler(({ data: path }) => loadReferenceSymbol(path));
 
 export const Route = createFileRoute('/reference/$')({
   component: Component,
   async loader({ params }) {
     const path = params._splat ?? '';
-    if (path === '') {
+    if (!path) {
       throw notFound();
     }
-    const result = await loadReferenceSymbol({ data: path });
+    const result = await loadData({ data: path });
     if (result.kind === 'not-found') {
       throw notFound();
     }

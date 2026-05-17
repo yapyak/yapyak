@@ -1,12 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { createServerFn } from '@tanstack/react-start';
 
 import { Article } from '#components/article';
-import { loadReferenceIntroduction } from '#lib/load-reference-introduction';
+
+import { loadReferenceIntroduction } from './reference.index.server';
+
+const loadData = createServerFn().handler(() => loadReferenceIntroduction());
 
 export const Route = createFileRoute('/reference/')({
   component: Component,
   async loader() {
-    const introduction = await loadReferenceIntroduction();
+    const introduction = await loadData();
     return { introduction };
   },
 });
