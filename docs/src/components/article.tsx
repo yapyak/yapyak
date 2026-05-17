@@ -1,25 +1,24 @@
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+import type { BoxProps } from '#components/box';
+
+import { Box } from '#components/box';
 
 import { ArticleBody } from './article/body';
 import { ArticleHeader } from './article/header';
 import styles from './article.module.css';
 
-export interface ArticleProps extends HTMLAttributes<HTMLElement> {
-  children?: ReactNode;
-}
+export interface ArticleProps extends BoxProps<'article'> {}
 
-export function Article(props: ArticleProps): ReactElement {
-  const { children, className, ...restProps } = props;
-  const merged = className ? `${styles.Article} ${className}` : styles.Article;
+export function Article(props: ArticleProps) {
+  const { className, ...restProps } = props;
+
   return (
-    <article
+    <Box
       {...restProps}
-      className={merged}
-    >
-      {children}
-    </article>
+      as="article"
+      className={[styles.Article, className]}
+    />
   );
 }
 
-Article.Header = ArticleHeader;
 Article.Body = ArticleBody;
+Article.Header = ArticleHeader;

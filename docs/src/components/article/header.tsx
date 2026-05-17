@@ -1,26 +1,37 @@
-import type { HTMLAttributes, ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
+
+import { Box } from '#components/box';
 
 import styles from './header.module.css';
 
-export interface ArticleHeaderProps extends HTMLAttributes<HTMLElement> {
+export interface ArticleHeaderProps extends BoxProps<'header'> {
   description?: string;
   title: string;
 }
 
-export function ArticleHeader(props: ArticleHeaderProps): ReactElement {
-  const { title, description, className, ...restProps } = props;
-  const merged = className
-    ? `${styles.ArticleHeader} ${className}`
-    : styles.ArticleHeader;
+export function ArticleHeader(props: ArticleHeaderProps) {
+  const { className, description, title, ...restProps } = props;
+
   return (
-    <header
+    <Box
       {...restProps}
-      className={merged}
+      as="header"
+      className={[styles.ArticleHeader, className]}
     >
-      <h1 className={styles.Title}>{title}</h1>
-      {description !== undefined && description !== '' ? (
-        <p className={styles.Description}>{description}</p>
+      <Box
+        as="h1"
+        className={styles.Title}
+      >
+        {title}
+      </Box>
+      {description ? (
+        <Box
+          as="p"
+          className={styles.Description}
+        >
+          {description}
+        </Box>
       ) : null}
-    </header>
+    </Box>
   );
 }

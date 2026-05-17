@@ -1,20 +1,20 @@
-import type { HTMLAttributes, ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
+
+import { Box } from '#components/box';
 
 import styles from './body.module.css';
 
-export interface ArticleBodyProps extends HTMLAttributes<HTMLDivElement> {
+export interface ArticleBodyProps extends BoxProps {
   html: string;
 }
 
-export function ArticleBody(props: ArticleBodyProps): ReactElement {
-  const { html, className, ...restProps } = props;
-  const merged = className
-    ? `${styles.ArticleBody} ${className}`
-    : styles.ArticleBody;
+export function ArticleBody(props: ArticleBodyProps) {
+  const { className, html, ...restProps } = props;
+
   return (
-    <div
+    <Box
       {...restProps}
-      className={merged}
+      className={[styles.ArticleBody, className]}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );

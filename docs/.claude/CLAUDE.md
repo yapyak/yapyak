@@ -375,7 +375,34 @@ systems/
 
 ### Box primitive (the root element)
 
-**Always render `Box` as the component's root.** Never use raw HTML tags directly in the JSX root. `Box` lives at `components/box.tsx` and handles `className` merging, `ref` composition, `style` merging, and `data-*` boolean normalization for free.
+**Always render `Box` for every HTML element in a component.** Not just the root — every `<div>`, `<h1>`, `<p>`, `<span>`, `<button>`, etc. becomes `<Box as="...">`. The only HTML tag allowed raw in component code is `<svg>` (see the SVG exception below). `Box` lives at `components/box.tsx` and handles `className` merging, `ref` composition, `style` merging, and `data-*` boolean normalization for free.
+
+**Why every element, not just root:** consistency. The moment you mix `<Box>` and raw `<h1>` in the same component, two patterns coexist. Future contributors won't know whether to use raw HTML for "simple" elements or always Box. Always Box is the only readable rule.
+
+### Conditional rendering
+
+**Never explicitly compare against `undefined`, `''`, `null`, or `0` for conditional rendering.** Use the truthy short-circuit. JavaScript's falsy semantics already cover all empty/missing states.
+
+```tsx
+// ✓ Right
+{description && <Box as="p" className={styles.Description}>{description}</Box>}
+
+{items.length > 0 && <Box as="ul">{items.map(...)}</Box>}
+
+{user?.name && <Box>{user.name}</Box>}
+
+// ✗ Wrong — verbose, signals over-thinking
+{description !== undefined && description !== '' ? (
+  <Box as="p">{description}</Box>
+) : null}
+
+{items.length !== 0 && items.length !== undefined && <Box>...</Box>}
+
+// ✗ Also wrong — ternary with null branch when && works
+{condition ? <Box>...</Box> : null}
+```
+
+The only time a ternary is justified: rendering **different content** based on the condition (`condition ? <A/> : <B/>`). For "render or don't render", `&&` is the rule.
 
 ```tsx
 import type { BoxProps } from '#components/box';
