@@ -2,21 +2,23 @@ import type { BoxProps } from '#components/box';
 
 import { Box } from '#components/box';
 
-import styles from './returns.module.css';
+import styles from './return-section.module.css';
 
-export interface ReferenceSymbolReturnsProps extends BoxProps<'section'> {
+export interface ReferenceSymbolReturnSectionProps extends BoxProps<'section'> {
   description?: string;
   type: string;
 }
 
-export function ReferenceSymbolReturns(props: ReferenceSymbolReturnsProps) {
+export function ReferenceSymbolReturnSection(
+  props: ReferenceSymbolReturnSectionProps,
+) {
   const { className, description, type, ...restProps } = props;
 
   return (
     <Box
       {...restProps}
       as="section"
-      className={[styles.ReferenceSymbolReturns, className]}
+      className={[styles.ReferenceSymbolReturnSection, className]}
     >
       <Box
         as="h2"

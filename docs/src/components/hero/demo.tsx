@@ -7,7 +7,7 @@ import { Box } from '#components/box';
 import { useDemoState } from '#hooks/use-demo-state';
 
 import { HeroDemoEditor } from './demo/editor';
-import { HeroDemoLocales } from './demo/locales';
+import { HeroDemoLocaleList } from './demo/locale-list';
 import styles from './demo.module.css';
 
 export interface HeroDemoProps extends BoxProps {}
@@ -56,7 +56,7 @@ export function HeroDemo(props: HeroDemoProps) {
           source={state.source}
           typing={state.typing}
         />
-        <HeroDemoLocales
+        <HeroDemoLocaleList
           receiving={state.receiving}
           savedSource={state.savedSource}
           shimmering={state.shimmering}

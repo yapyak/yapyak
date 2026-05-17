@@ -2,20 +2,22 @@ import type { BoxProps } from '#components/box';
 
 import { Box } from '#components/box';
 
-import styles from './examples.module.css';
+import styles from './example-list.module.css';
 
-export interface ReferenceSymbolExamplesProps extends BoxProps<'section'> {
+export interface ReferenceSymbolExampleListProps extends BoxProps<'section'> {
   htmls: string[];
 }
 
-export function ReferenceSymbolExamples(props: ReferenceSymbolExamplesProps) {
+export function ReferenceSymbolExampleList(
+  props: ReferenceSymbolExampleListProps,
+) {
   const { className, htmls, ...restProps } = props;
 
   return (
     <Box
       {...restProps}
       as="section"
-      className={[styles.ReferenceSymbolExamples, className]}
+      className={[styles.ReferenceSymbolExampleList, className]}
     >
       <Box
         as="h2"

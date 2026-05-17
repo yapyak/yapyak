@@ -284,6 +284,19 @@ Same rule applies to props types: `text.tsx` exports `ButtonTextProps`, not `Tex
 
 Example: `HeroDemo` is consumed only by `Hero`. It's NOT at `components/hero-demo.tsx` — it's at `components/hero/demo.tsx` (exported as `HeroDemo`). If a third component starts importing `HeroDemo`, it gets promoted to a top-level file.
 
+**TOTALLY FORBIDDEN: plural component names.** Never `locales.tsx`, `examples.tsx`, `items.tsx`, `tabs.tsx`, etc. Always singular noun + element-type suffix from the Element vocabulary: `LocaleList`, `ExampleList`, `ItemRow`, `TabBar`. The plural is encoded in the element type (`List`, `Group`, `Stack`), not the noun.
+
+```
+✗ locales.tsx          → Locales         (plural, missing element)
+✓ locale-list.tsx      → LocaleList      (singular + List)
+
+✗ examples.tsx         → Examples
+✓ example-list.tsx     → ExampleList
+
+✗ returns.tsx          → Returns         (looks plural; "Returns" is the section content)
+✓ return-section.tsx   → ReturnSection   (singular + Section)
+```
+
 ```
 components/
   wordmark.tsx                ← public (single-file component)

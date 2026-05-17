@@ -5,21 +5,21 @@ import { Box } from '#components/box';
 import { LOCALES } from '#utils/hero-demo-scenes';
 
 import { HeroDemoLocaleFlag } from './locale-flag';
-import styles from './locales.module.css';
+import styles from './locale-list.module.css';
 
-export interface HeroDemoLocalesProps extends BoxProps {
+export interface HeroDemoLocaleListProps extends BoxProps {
   receiving: boolean;
   savedSource: string;
   shimmering: Set<LocaleCode>;
   translations: Record<LocaleCode, string>;
 }
 
-export function HeroDemoLocales(props: HeroDemoLocalesProps) {
+export function HeroDemoLocaleList(props: HeroDemoLocaleListProps) {
   const { className, receiving, savedSource, shimmering, translations } = props;
 
   return (
     <Box
-      className={[styles.HeroDemoLocales, className]}
+      className={[styles.HeroDemoLocaleList, className]}
       data-receiving={receiving}
     >
       <Box

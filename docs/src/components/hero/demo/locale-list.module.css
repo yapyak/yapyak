@@ -1,5 +1,5 @@
 @layer components {
-  .HeroDemoLocales {
+  .HeroDemoLocaleList {
     position: relative;
     display: flex;
     flex-direction: column;
