@@ -3,15 +3,14 @@ export type LocaleCode = 'sv' | 'es' | 'ja' | 'de';
 export interface Locale {
   code: LocaleCode;
   filename: string;
-  flag: string;
   speed: number;
 }
 
 export const LOCALES: Locale[] = [
-  { code: 'sv', filename: 'sv.json', flag: '🇸🇪', speed: 55 },
-  { code: 'es', filename: 'es.json', flag: '🇪🇸', speed: 48 },
-  { code: 'ja', filename: 'ja.json', flag: '🇯🇵', speed: 85 },
-  { code: 'de', filename: 'de.json', flag: '🇩🇪', speed: 52 },
+  { code: 'sv', filename: 'sv.json', speed: 55 },
+  { code: 'es', filename: 'es.json', speed: 48 },
+  { code: 'ja', filename: 'ja.json', speed: 85 },
+  { code: 'de', filename: 'de.json', speed: 52 },
 ];
 
 export interface Scene {
