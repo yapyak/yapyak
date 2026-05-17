@@ -4,15 +4,15 @@ import { Box } from '#components/box';
 
 import styles from './start.module.css';
 
-export interface LayoutHeaderStartProps extends BoxProps {}
+export interface HeaderStartProps extends BoxProps {}
 
-export function LayoutHeaderStart(props: LayoutHeaderStartProps) {
+export function HeaderStart(props: HeaderStartProps) {
   const { className, ...restProps } = props;
 
   return (
     <Box
       {...restProps}
-      className={[styles.LayoutHeaderStart, className]}
+      className={[styles.HeaderStart, className]}
     />
   );
 }

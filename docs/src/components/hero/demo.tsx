@@ -6,8 +6,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Box } from '#components/box';
 import { useDemoState } from '#hooks/use-demo-state';
 
-import { HeroDemoEditor } from './demo/editor';
-import { HeroDemoLocaleStack } from './demo/locale-stack';
+import { DemoEditor } from './demo/editor';
+import { DemoLocaleStack } from './demo/locale-stack';
 import styles from './demo.module.css';
 
 export interface HeroDemoProps extends BoxProps {}
@@ -49,14 +49,14 @@ export function HeroDemo(props: HeroDemoProps) {
       ref={element}
     >
       <Box className={styles.Stack}>
-        <HeroDemoEditor
+        <DemoEditor
           framework={framework}
           isSaving={state.isSaving}
           isTyping={state.isTyping}
           onFrameworkChange={setFramework}
           source={state.source}
         />
-        <HeroDemoLocaleStack
+        <DemoLocaleStack
           isReceiving={state.isReceiving}
           savedSource={state.savedSource}
           shimmering={state.shimmering}

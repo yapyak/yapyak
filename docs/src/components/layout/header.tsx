@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 
 import { Box } from '#components/box';
 
-import { LayoutHeaderCenter } from './header/center';
-import { LayoutHeaderEnd } from './header/end';
-import { LayoutHeaderStart } from './header/start';
+import { HeaderCenter } from './header/center';
+import { HeaderEnd } from './header/end';
+import { HeaderStart } from './header/start';
 import styles from './header.module.css';
 
 export interface LayoutHeaderProps extends BoxProps<'header'> {}
@@ -37,6 +37,6 @@ export function LayoutHeader(props: LayoutHeaderProps) {
   );
 }
 
-LayoutHeader.Start = LayoutHeaderStart;
-LayoutHeader.Center = LayoutHeaderCenter;
-LayoutHeader.End = LayoutHeaderEnd;
+LayoutHeader.Start = HeaderStart;
+LayoutHeader.Center = HeaderCenter;
+LayoutHeader.End = HeaderEnd;

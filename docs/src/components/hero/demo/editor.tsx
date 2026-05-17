@@ -24,7 +24,7 @@ export const FRAMEWORKS: [FrameworkConfig, FrameworkConfig, FrameworkConfig] = [
   { filename: 'app.svelte', id: 'svelte', label: 'Svelte', language: 'svelte' },
 ];
 
-export interface HeroDemoEditorProps extends BoxProps {
+export interface DemoEditorProps extends BoxProps {
   framework: Framework;
   isSaving: boolean;
   isTyping: boolean;
@@ -40,7 +40,7 @@ interface IndicatorState {
   x: number;
 }
 
-export function HeroDemoEditor(props: HeroDemoEditorProps) {
+export function DemoEditor(props: DemoEditorProps) {
   const {
     className,
     framework,
@@ -81,13 +81,13 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
   return (
     <Box
       {...restProps}
-      className={[styles.HeroDemoEditor, className]}
+      className={[styles.DemoEditor, className]}
       data-saving={isSaving}
       style={
         indicator
           ? {
-              '--hero-demo-editor-tab-indicator-width': `${indicator.width}px`,
-              '--hero-demo-editor-tab-indicator-x': `${indicator.x}px`,
+              '--demo-editor-tab-indicator-width': `${indicator.width}px`,
+              '--demo-editor-tab-indicator-x': `${indicator.x}px`,
             }
           : undefined
       }

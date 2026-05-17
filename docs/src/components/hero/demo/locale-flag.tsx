@@ -2,20 +2,20 @@ import { useId } from 'react';
 
 import styles from './locale-flag.module.css';
 
-export type HeroDemoLocaleFlagCode = 'sv' | 'es' | 'ja' | 'de';
+export type DemoLocaleFlagCode = 'sv' | 'es' | 'ja' | 'de';
 
-export interface HeroDemoLocaleFlagProps {
-  code: HeroDemoLocaleFlagCode;
+export interface DemoLocaleFlagProps {
+  code: DemoLocaleFlagCode;
 }
 
-export function HeroDemoLocaleFlag(props: HeroDemoLocaleFlagProps) {
+export function DemoLocaleFlag(props: DemoLocaleFlagProps) {
   const { code } = props;
   const id = useId();
   const clipId = `${id}-clip`;
   return (
     <svg
       aria-hidden="true"
-      className={styles.HeroDemoLocaleFlag}
+      className={styles.DemoLocaleFlag}
       height={12}
       viewBox="0 0 18 12"
       width={18}
@@ -42,7 +42,7 @@ export function HeroDemoLocaleFlag(props: HeroDemoLocaleFlagProps) {
   );
 }
 
-function renderFlag(code: HeroDemoLocaleFlagCode) {
+function renderFlag(code: DemoLocaleFlagCode) {
   switch (code) {
     case 'sv':
       return (

@@ -5,17 +5,17 @@ import { Box } from '#components/box';
 import { CodeBlockToken } from '#components/code-block-token';
 import { LOCALES } from '#utils/hero-demo-scenes';
 
-import { HeroDemoLocaleFlag } from './locale-flag';
+import { DemoLocaleFlag } from './locale-flag';
 import styles from './locale-stack.module.css';
 
-export interface HeroDemoLocaleStackProps extends BoxProps {
+export interface DemoLocaleStackProps extends BoxProps {
   isReceiving: boolean;
   savedSource: string;
   shimmering: Set<LocaleCode>;
   translations: Record<LocaleCode, string>;
 }
 
-export function HeroDemoLocaleStack(props: HeroDemoLocaleStackProps) {
+export function DemoLocaleStack(props: DemoLocaleStackProps) {
   const {
     className,
     isReceiving,
@@ -28,7 +28,7 @@ export function HeroDemoLocaleStack(props: HeroDemoLocaleStackProps) {
   return (
     <Box
       {...restProps}
-      className={[styles.HeroDemoLocaleStack, className]}
+      className={[styles.DemoLocaleStack, className]}
       data-receiving={isReceiving}
     >
       <Box
@@ -49,7 +49,7 @@ export function HeroDemoLocaleStack(props: HeroDemoLocaleStackProps) {
               as="span"
               className={styles.FlagIcon}
             >
-              <HeroDemoLocaleFlag code={locale.code} />
+              <DemoLocaleFlag code={locale.code} />
             </Box>
             <Box
               as="span"

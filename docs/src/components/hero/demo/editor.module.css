@@ -1,7 +1,7 @@
 @layer components {
-  .HeroDemoEditor {
-    --hero-demo-editor-tab-indicator-width: 0;
-    --hero-demo-editor-tab-indicator-x: 0;
+  .DemoEditor {
+    --demo-editor-tab-indicator-width: 0;
+    --demo-editor-tab-indicator-x: 0;
 
     position: relative;
     display: flex;
@@ -27,11 +27,11 @@
       position: absolute;
       bottom: 0;
       left: 0;
-      width: var(--hero-demo-editor-tab-indicator-width);
+      width: var(--demo-editor-tab-indicator-width);
       height: 1px;
       pointer-events: none;
       background-color: var(--mint);
-      transform: translateX(var(--hero-demo-editor-tab-indicator-x));
+      transform: translateX(var(--demo-editor-tab-indicator-x));
       transform-origin: center;
 
       &[data-ready] {

@@ -4,15 +4,15 @@ import { Box } from '#components/box';
 
 import styles from './end.module.css';
 
-export interface LayoutHeaderEndProps extends BoxProps {}
+export interface HeaderEndProps extends BoxProps {}
 
-export function LayoutHeaderEnd(props: LayoutHeaderEndProps) {
+export function HeaderEnd(props: HeaderEndProps) {
   const { className, ...restProps } = props;
 
   return (
     <Box
       {...restProps}
-      className={[styles.LayoutHeaderEnd, className]}
+      className={[styles.HeaderEnd, className]}
     />
   );
 }

@@ -4,15 +4,15 @@ import { Box } from '#components/box';
 
 import styles from './center.module.css';
 
-export interface LayoutHeaderCenterProps extends BoxProps {}
+export interface HeaderCenterProps extends BoxProps {}
 
-export function LayoutHeaderCenter(props: LayoutHeaderCenterProps) {
+export function HeaderCenter(props: HeaderCenterProps) {
   const { className, ...restProps } = props;
 
   return (
     <Box
       {...restProps}
-      className={[styles.LayoutHeaderCenter, className]}
+      className={[styles.HeaderCenter, className]}
     />
   );
 }
