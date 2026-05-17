@@ -23,7 +23,7 @@ export function FeatureList(): ReactElement {
   const visibleRef = useRef(false);
   const [indicator, setIndicator] = useState<IndicatorState>(INITIAL_INDICATOR);
 
-  const handleItemEnter = (index: number) => {
+  const handleItemPointerEnter = (index: number) => {
     const item = itemRefs.current[index];
     if (item === null || item === undefined) {
       return;
@@ -41,7 +41,7 @@ export function FeatureList(): ReactElement {
     });
   };
 
-  const handleListLeave = () => {
+  const handleListPointerLeave = () => {
     visibleRef.current = false;
     setIndicator((previous) => ({ ...previous, visible: false }));
   };
@@ -59,7 +59,7 @@ export function FeatureList(): ReactElement {
       />
       <ol
         className={styles.List}
-        onMouseLeave={handleListLeave}
+        onPointerLeave={handleListPointerLeave}
       >
         <span
           aria-hidden="true"
@@ -71,7 +71,7 @@ export function FeatureList(): ReactElement {
           <FeatureListItem
             feature={feature}
             key={feature.number}
-            onMouseEnter={() => handleItemEnter(index)}
+            onPointerEnter={() => handleItemPointerEnter(index)}
             ref={(element) => {
               itemRefs.current[index] = element;
             }}

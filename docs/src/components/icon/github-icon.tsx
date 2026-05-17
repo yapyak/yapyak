@@ -1,6 +1,8 @@
 import type { ReactElement, SVGProps } from 'react';
 
-export function GitHubIcon(props: SVGProps<SVGSVGElement>): ReactElement {
+export interface GitHubIconProps extends SVGProps<SVGSVGElement> {}
+
+export function GitHubIcon(props: GitHubIconProps): ReactElement {
   return (
     <svg
       aria-hidden="true"

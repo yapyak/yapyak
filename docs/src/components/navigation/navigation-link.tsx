@@ -7,10 +7,10 @@ import { cn } from '#lib/cn';
 
 import styles from './navigation-link.module.css';
 
-export type NavigationLinkProps = Omit<LinkProps, 'className'> & {
+export interface NavigationLinkProps extends Omit<LinkProps, 'className'> {
   children?: ReactNode;
   className?: string;
-};
+}
 
 export function NavigationLink(props: NavigationLinkProps): ReactElement {
   const { children, className, ...restProps } = props;
