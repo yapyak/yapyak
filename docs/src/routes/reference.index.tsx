@@ -9,12 +9,12 @@ const loadData = createServerFn().handler(() => loadReferenceIntroduction());
 export const Route = createFileRoute('/reference/')({
   component: Component,
   async loader() {
-    const introduction = await loadData();
-    return { introduction };
+    const page = await loadData();
+    return { page };
   },
 });
 
 function Component() {
-  const { introduction } = Route.useLoaderData();
-  return <Article article={introduction} />;
+  const { page } = Route.useLoaderData();
+  return <Article page={page} />;
 }

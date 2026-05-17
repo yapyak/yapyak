@@ -14,3 +14,9 @@ export interface MarkdocTag {
 }
 
 export type MarkdocNode = MarkdocTag | boolean | number | string | null;
+
+export interface Page {
+  description: string;
+  title: string;
+  tree: MarkdocNode[];
+}

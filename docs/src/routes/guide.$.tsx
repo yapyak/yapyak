@@ -24,11 +24,11 @@ export const Route = createFileRoute('/guide/$')({
     if (result.kind === 'redirect') {
       throw redirect({ replace: true, to: result.target });
     }
-    return { article: result.article };
+    return { page: result.page };
   },
 });
 
 function Component() {
-  const { article } = Route.useLoaderData();
-  return <Article article={article} />;
+  const { page } = Route.useLoaderData();
+  return <Article page={page} />;
 }

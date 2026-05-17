@@ -1,5 +1,5 @@
 import type { BoxProps } from '#components/box';
-import type { Article as ArticleData } from '#lib/article';
+import type { Page } from '#lib/markdoc';
 
 import { Box } from '#components/box';
 import { MarkdocRenderer } from '#components/markdoc-renderer';
@@ -7,11 +7,11 @@ import { MarkdocRenderer } from '#components/markdoc-renderer';
 import styles from './article.module.css';
 
 export interface ArticleProps extends BoxProps<'article'> {
-  article: ArticleData;
+  page: Page;
 }
 
 export function Article(props: ArticleProps) {
-  const { article, className, ...restProps } = props;
+  const { className, page, ...restProps } = props;
 
   return (
     <Box
@@ -27,19 +27,19 @@ export function Article(props: ArticleProps) {
           as="h1"
           className={styles.TitleHeading}
         >
-          {article.title}
+          {page.title}
         </Box>
-        {article.description && (
+        {page.description && (
           <Box
             as="p"
             className={styles.DescriptionParagraph}
           >
-            {article.description}
+            {page.description}
           </Box>
         )}
       </Box>
       <Box className={styles.Body}>
-        <MarkdocRenderer tree={article.tree} />
+        <MarkdocRenderer tree={page.tree} />
       </Box>
     </Box>
   );

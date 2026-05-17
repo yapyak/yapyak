@@ -1,6 +1,5 @@
-import { parseMarkdoc } from '#lib/markdoc';
+import { loadMarkdocPage } from '#lib/markdoc';
 
-import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 export async function loadGuideArticle(slug: string) {
@@ -9,11 +8,11 @@ export async function loadGuideArticle(slug: string) {
     join(process.cwd(), 'content', 'guide', slug, 'index.md'),
   ];
   for (const path of candidates) {
-    const source = await readFile(path, 'utf8').catch(() => null);
-    if (source === null) {
+    const result = await loadMarkdocPage(path);
+    if (result === null) {
       continue;
     }
-    const { frontmatter, tree } = parseMarkdoc(source);
+    const { frontmatter, page } = result;
     const redirectField = frontmatter.redirect;
     if (typeof redirectField === 'string' && redirectField) {
       const target = resolveRedirect(slug, redirectField);
@@ -22,12 +21,8 @@ export async function loadGuideArticle(slug: string) {
       }
     }
     return {
-      article: {
-        description: (frontmatter.description as string | undefined) ?? '',
-        title: (frontmatter.title as string | undefined) ?? slug,
-        tree,
-      },
       kind: 'article' as const,
+      page: { ...page, title: page.title || slug },
     };
   }
   return { kind: 'not-found' as const };
