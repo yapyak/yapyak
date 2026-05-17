@@ -61,7 +61,6 @@
   --aqua-soft: oklab(0.88 -0.21 0.01 / 0.4);
   --mint: oklab(0.87 -0.24 0.06);
   --mint-soft: oklab(0.87 -0.24 0.06 / 0.4);
-  --mint-glow: oklab(0.87 -0.24 0.06 / 0.2);
   --mint-glow-soft: oklab(0.87 -0.24 0.06 / 0.08);
   --mint-glow-strong: oklab(0.87 -0.24 0.06 / 0.35);
 
@@ -73,16 +72,16 @@
   --diff-remove-bg: rgba(255, 154, 160, 0.08);
 
   --bg: #141414;
-  --surface: var(--surface);
+  --surface: rgba(255, 255, 255, 0.02);
   --surface-strong: rgba(255, 255, 255, 0.07);
   --surface-elevated: rgba(255, 255, 255, 0.04);
   --surface-active: rgba(255, 255, 255, 0.03);
   --nav-bg: rgba(0, 0, 0, 0.2);
 
-  --rule: var(--surface);
+  --rule: rgba(255, 255, 255, 0.02);
   --ring: rgba(255, 255, 255, 0.04);
   --ring-highlight: rgba(255, 255, 255, 0.08);
-  --ring-strong: var(--ring-strong);
+  --ring-strong: rgba(255, 255, 255, 0.12);
 
   --text: #e6e6e6;
   --text-default: #d4d4d4;
