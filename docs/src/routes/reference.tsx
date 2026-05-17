@@ -1,5 +1,3 @@
-import type { ReactElement } from 'react';
-
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
@@ -23,7 +21,7 @@ export const Route = createFileRoute('/reference')({
   },
 });
 
-function Component(): ReactElement {
+function Component() {
   const { sidebar } = Route.useLoaderData();
   return (
     <ReferenceLayout>

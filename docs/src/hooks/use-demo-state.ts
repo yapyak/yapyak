@@ -29,7 +29,7 @@ const INITIAL_STATE: DemoState = {
   translations: INITIAL_SCENE.translations,
 };
 
-export function useDemoState(isActive: boolean): DemoState {
+export function useDemoState(isActive: boolean) {
   const [state, setState] = useState<DemoState>(INITIAL_STATE);
 
   useEffect(() => {

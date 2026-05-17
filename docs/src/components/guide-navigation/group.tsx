@@ -80,7 +80,7 @@ function renderChild(child: SidebarNode, depth: number) {
   return <GuideNavigationLink node={child} />;
 }
 
-function getKey(node: SidebarNode): string {
+function getKey(node: SidebarNode) {
   if (node.type === 'link') {
     return node.href;
   }

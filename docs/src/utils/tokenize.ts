@@ -146,7 +146,7 @@ export function tokenize(code: string, language: Language): Token[] {
   return mergePlainTokens(tokens);
 }
 
-function tokenizeDiff(code: string): Token[] {
+function tokenizeDiff(code: string) {
   const tokens: Token[] = [];
   const lines = code.split('\n');
   for (let index = 0; index < lines.length; index++) {
@@ -165,7 +165,7 @@ function tokenizeDiff(code: string): Token[] {
   return mergePlainTokens(tokens);
 }
 
-function tokenizeBash(code: string): Token[] {
+function tokenizeBash(code: string) {
   const tokens: Token[] = [];
   let index = 0;
   let atLineStart = true;
@@ -261,7 +261,7 @@ function tokenizeBash(code: string): Token[] {
   return mergePlainTokens(tokens);
 }
 
-function tokenizeHtml(code: string): Token[] {
+function tokenizeHtml(code: string) {
   const tokens: Token[] = [];
   let index = 0;
   let mode: 'text' | 'tag' = 'text';
@@ -345,7 +345,7 @@ function tokenizeHtml(code: string): Token[] {
   return mergePlainTokens(tokens);
 }
 
-function tokenizeYaml(code: string): Token[] {
+function tokenizeYaml(code: string) {
   const tokens: Token[] = [];
   const lines = code.split('\n');
 
@@ -567,7 +567,7 @@ function scanToken(
   return null;
 }
 
-function applyYapyakHighlight(tokens: Token[]): void {
+function applyYapyakHighlight(tokens: Token[]) {
   for (let index = 0; index < tokens.length; index++) {
     const token = tokens[index];
     if (token === undefined) {
@@ -634,7 +634,7 @@ function applyYapyakHighlight(tokens: Token[]): void {
   }
 }
 
-function findNextSignificant(tokens: Token[], from: number): number | null {
+function findNextSignificant(tokens: Token[], from: number) {
   for (let index = from; index < tokens.length; index++) {
     const token = tokens[index];
     if (token === undefined) {
@@ -648,7 +648,7 @@ function findNextSignificant(tokens: Token[], from: number): number | null {
   return null;
 }
 
-function mergePlainTokens(tokens: Token[]): Token[] {
+function mergePlainTokens(tokens: Token[]) {
   const result: Token[] = [];
   for (const token of tokens) {
     const previous = result[result.length - 1];

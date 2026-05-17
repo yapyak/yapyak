@@ -1,21 +1,8 @@
-import type { MarkdocNode } from '#lib/markdoc';
-
 import { createServerFn } from '@tanstack/react-start';
-
-export type GuideArticleResult =
-  | { kind: 'article'; article: GuideArticle }
-  | { kind: 'redirect'; target: string }
-  | { kind: 'not-found' };
-
-export interface GuideArticle {
-  description: string;
-  title: string;
-  tree: MarkdocNode[];
-}
 
 export const loadGuideArticle = createServerFn()
   .inputValidator((slug: string) => slug)
-  .handler(async ({ data: slug }): Promise<GuideArticleResult> => {
+  .handler(async ({ data: slug }) => {
     const { readFile } = await import('node:fs/promises');
     const { join } = await import('node:path');
     const { parseMarkdoc } = await import('#lib/markdoc');
@@ -33,7 +20,7 @@ export const loadGuideArticle = createServerFn()
       if (typeof redirectField === 'string' && redirectField) {
         const target = resolveRedirect(slug, redirectField);
         if (target !== `/guide/${slug}`) {
-          return { kind: 'redirect', target };
+          return { kind: 'redirect' as const, target };
         }
       }
       return {
@@ -42,13 +29,13 @@ export const loadGuideArticle = createServerFn()
           title: (frontmatter.title as string | undefined) ?? slug,
           tree,
         },
-        kind: 'article',
+        kind: 'article' as const,
       };
     }
-    return { kind: 'not-found' };
+    return { kind: 'not-found' as const };
   });
 
-function resolveRedirect(fromSlug: string, target: string): string {
+function resolveRedirect(fromSlug: string, target: string) {
   if (target.startsWith('/')) {
     return target;
   }

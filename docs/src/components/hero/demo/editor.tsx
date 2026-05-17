@@ -182,7 +182,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
   );
 }
 
-function buildCode(framework: Framework, source: string): string {
+function buildCode(framework: Framework, source: string) {
   const safe = source.replace(/'/g, "\\'");
   const value = `${safe}${CARET_MARKER}`;
   switch (framework) {

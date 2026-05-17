@@ -1,5 +1,3 @@
-import type { ReactElement } from 'react';
-
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 
 import { ReferenceSymbol } from '#components/reference-symbol';
@@ -27,7 +25,7 @@ export const Route = createFileRoute('/reference/$')({
   },
 });
 
-function Component(): ReactElement {
+function Component() {
   const { module, rendered } = Route.useLoaderData();
   const { symbol, descriptionTree, exampleTrees } = rendered;
   return (

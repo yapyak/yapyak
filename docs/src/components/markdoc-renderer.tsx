@@ -123,7 +123,7 @@ function renderTag(tag: MarkdocTag) {
   }
 }
 
-function extractCodeBlocks(group: MarkdocTag): CodeGroupBlock[] {
+function extractCodeBlocks(group: MarkdocTag) {
   const blocks: CodeGroupBlock[] = [];
   for (const child of group.children) {
     if (

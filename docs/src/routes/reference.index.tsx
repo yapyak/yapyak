@@ -1,5 +1,3 @@
-import type { ReactElement } from 'react';
-
 import { createFileRoute } from '@tanstack/react-router';
 
 import { Article } from '#components/article';
@@ -13,7 +11,7 @@ export const Route = createFileRoute('/reference/')({
   },
 });
 
-function Component(): ReactElement {
+function Component() {
   const { introduction } = Route.useLoaderData();
   return (
     <Article>

@@ -1,4 +1,4 @@
-export function mergeClassNames(...classNames: unknown[]): string | undefined {
+export function mergeClassNames(...classNames: unknown[]) {
   const result: string[] = [];
 
   function flatten(input: unknown) {

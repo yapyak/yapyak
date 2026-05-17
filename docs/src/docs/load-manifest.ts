@@ -8,7 +8,7 @@ const MANIFEST_RELATIVE_PATH = ['content', 'reference', 'api-manifest.json'];
 let cached: ApiManifest | null = null;
 let cachedAt = 0;
 
-export async function loadManifest(projectRoot: string): Promise<ApiManifest> {
+export async function loadManifest(projectRoot: string) {
   const path = join(projectRoot, ...MANIFEST_RELATIVE_PATH);
   if (process.env.NODE_ENV === 'production' && cached !== null) {
     return cached;

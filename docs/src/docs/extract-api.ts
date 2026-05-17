@@ -101,7 +101,7 @@ interface EntryPoint {
   subpath: string;
 }
 
-export async function extractApi(yapyakDir: string): Promise<ApiManifest> {
+export async function extractApi(yapyakDir: string) {
   const entries = await resolveEntryPoints(yapyakDir);
   const rootFiles = entries.map((entry) => entry.filePath);
 
@@ -158,7 +158,7 @@ export async function extractApi(yapyakDir: string): Promise<ApiManifest> {
   return { modules };
 }
 
-async function resolveEntryPoints(yapyakDir: string): Promise<EntryPoint[]> {
+async function resolveEntryPoints(yapyakDir: string) {
   const pkgRaw = await readFile(join(yapyakDir, 'package.json'), 'utf8');
   const pkg = JSON.parse(pkgRaw) as {
     name: string;
@@ -237,7 +237,7 @@ function buildBase(
   declaration: ts.Declaration,
   checker: ts.TypeChecker,
   yapyakDir: string,
-): ApiSymbolBase {
+) {
   const docs = aliased
     .getDocumentationComment(checker)
     .concat(original.getDocumentationComment(checker));
@@ -419,7 +419,7 @@ function collectMembers(
   symbol: ts.Symbol,
   declaration: ts.Declaration,
   checker: ts.TypeChecker,
-): ApiMember[] {
+) {
   const members: ApiMember[] = [];
   const seen = new Set<string>();
   const memberMap = symbol.members;
@@ -448,7 +448,7 @@ function memberToApi(
   memberSymbol: ts.Symbol,
   contextDeclaration: ts.Declaration,
   checker: ts.TypeChecker,
-): ApiMember | null {
+) {
   const declaration = memberSymbol.getDeclarations()?.[0] ?? contextDeclaration;
   const type = checker.getTypeOfSymbolAtLocation(memberSymbol, declaration);
   const docParts = memberSymbol.getDocumentationComment(checker);
@@ -463,10 +463,7 @@ function memberToApi(
   };
 }
 
-function paramFromSymbol(
-  paramSymbol: ts.Symbol,
-  checker: ts.TypeChecker,
-): ApiParameter {
+function paramFromSymbol(paramSymbol: ts.Symbol, checker: ts.TypeChecker) {
   const decl = paramSymbol.getDeclarations()?.[0];
   const type =
     decl !== undefined
@@ -491,11 +488,11 @@ function paramFromSymbol(
   };
 }
 
-function formatParam(parameter: ApiParameter): string {
+function formatParam(parameter: ApiParameter) {
   return `${parameter.name}${parameter.optional ? '?' : ''}: ${parameter.type}`;
 }
 
-function declarationText(declaration: ts.Declaration): string {
+function declarationText(declaration: ts.Declaration) {
   const text = declaration.getText();
   if (text.length <= 400) {
     return text;
@@ -503,7 +500,7 @@ function declarationText(declaration: ts.Declaration): string {
   return `${text.slice(0, 397)}...`;
 }
 
-function pickDeclaration(symbol: ts.Symbol): ts.Declaration | undefined {
+function pickDeclaration(symbol: ts.Symbol) {
   const decls = symbol.getDeclarations();
   if (decls === undefined || decls.length === 0) {
     return undefined;
@@ -511,25 +508,18 @@ function pickDeclaration(symbol: ts.Symbol): ts.Declaration | undefined {
   return decls[0];
 }
 
-function resolveAlias(symbol: ts.Symbol, checker: ts.TypeChecker): ts.Symbol {
+function resolveAlias(symbol: ts.Symbol, checker: ts.TypeChecker) {
   if ((symbol.flags & ts.SymbolFlags.Alias) !== 0) {
     return checker.getAliasedSymbol(symbol);
   }
   return symbol;
 }
 
-function hasTag(
-  symbol: ts.Symbol,
-  checker: ts.TypeChecker,
-  name: string,
-): boolean {
+function hasTag(symbol: ts.Symbol, checker: ts.TypeChecker, name: string) {
   return symbol.getJsDocTags(checker).some((tag) => tag.name === name);
 }
 
-function readDefaultTag(
-  symbol: ts.Symbol,
-  checker: ts.TypeChecker,
-): string | null {
+function readDefaultTag(symbol: ts.Symbol, checker: ts.TypeChecker) {
   const tag = symbol
     .getJsDocTags(checker)
     .find((tag) => tag.name === 'default' || tag.name === 'defaultValue');
@@ -539,14 +529,14 @@ function readDefaultTag(
   return ts.displayPartsToString(tag.text).trim() || null;
 }
 
-function stripUndefinedFromOptional(text: string, symbol: ts.Symbol): string {
+function stripUndefinedFromOptional(text: string, symbol: ts.Symbol) {
   if ((symbol.flags & ts.SymbolFlags.Optional) === 0) {
     return text;
   }
   return text.replace(/\s*\|\s*undefined$/, '');
 }
 
-function uniqueParts(parts: ts.SymbolDisplayPart[]): ts.SymbolDisplayPart[] {
+function uniqueParts(parts: ts.SymbolDisplayPart[]) {
   const seen = new Set<string>();
   const out: ts.SymbolDisplayPart[] = [];
   for (const part of parts) {
@@ -560,7 +550,7 @@ function uniqueParts(parts: ts.SymbolDisplayPart[]): ts.SymbolDisplayPart[] {
   return out;
 }
 
-function uniqueTags(tags: ts.JSDocTagInfo[]): ts.JSDocTagInfo[] {
+function uniqueTags(tags: ts.JSDocTagInfo[]) {
   const seen = new Set<string>();
   const out: ts.JSDocTagInfo[] = [];
   for (const tag of tags) {
@@ -582,7 +572,7 @@ const KIND_ORDER: Record<ApiExport['kind'], number> = {
   variable: 1,
 };
 
-function compareExports(a: ApiExport, b: ApiExport): number {
+function compareExports(a: ApiExport, b: ApiExport) {
   if (a.kind !== b.kind) {
     return KIND_ORDER[a.kind] - KIND_ORDER[b.kind];
   }

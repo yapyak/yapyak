@@ -1,5 +1,3 @@
-import type { ReactElement } from 'react';
-
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 
 import { Article } from '#components/article';
@@ -23,7 +21,7 @@ export const Route = createFileRoute('/guide/$')({
   },
 });
 
-function Component(): ReactElement {
+function Component() {
   const { article } = Route.useLoaderData();
   return (
     <Article>

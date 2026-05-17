@@ -73,6 +73,6 @@ export function ReferenceSymbolMemberTable(
   );
 }
 
-function stripDashPrefix(text: string): string {
+function stripDashPrefix(text: string) {
   return text.startsWith('- ') ? text.slice(2) : text;
 }

@@ -24,7 +24,7 @@ export interface ParsedMarkdoc {
   tree: MarkdocNode[];
 }
 
-export function parseMarkdoc(source: string): ParsedMarkdoc {
+export function parseMarkdoc(source: string) {
   const ast = Markdoc.parse(source);
   const frontmatterSource = ast.attributes.frontmatter as string | undefined;
   const frontmatter = frontmatterSource
@@ -37,7 +37,7 @@ export function parseMarkdoc(source: string): ParsedMarkdoc {
   return { frontmatter, tree };
 }
 
-export function parseFrontmatterOnly(source: string): Record<string, unknown> {
+export function parseFrontmatterOnly(source: string) {
   const ast = Markdoc.parse(source);
   const frontmatterSource = ast.attributes.frontmatter as string | undefined;
   return frontmatterSource ? parseFrontmatter(frontmatterSource) : {};
@@ -146,10 +146,7 @@ const markdocConfig: Config = {
   },
 };
 
-function parseLanguageLabel(raw: string | undefined): {
-  label: string | undefined;
-  language: string | undefined;
-} {
+function parseLanguageLabel(raw: string | undefined) {
   if (!raw) {
     return { label: undefined, language: undefined };
   }
@@ -163,7 +160,7 @@ function parseLanguageLabel(raw: string | undefined): {
   return { label: undefined, language: raw };
 }
 
-function extractText(children: unknown[]): string {
+function extractText(children: unknown[]) {
   const parts: string[] = [];
   for (const child of children) {
     if (typeof child === 'string') {
@@ -175,7 +172,7 @@ function extractText(children: unknown[]): string {
   return parts.join('');
 }
 
-function parseFrontmatter(raw: string): Record<string, unknown> {
+function parseFrontmatter(raw: string) {
   const result: Record<string, unknown> = {};
   for (const line of raw.split('\n')) {
     const separatorIndex = line.indexOf(':');
@@ -193,7 +190,7 @@ function parseFrontmatter(raw: string): Record<string, unknown> {
   return result;
 }
 
-function slugify(text: string): string {
+function slugify(text: string) {
   return text
     .toLowerCase()
     .replace(/[^\w\s-]/g, '')

@@ -18,7 +18,7 @@ export interface RefSymbol {
   name: string;
 }
 
-export function buildReferenceSidebar(manifest: ApiManifest): ReferenceSidebar {
+export function buildReferenceSidebar(manifest: ApiManifest) {
   const byId = new Map<string, ApiModule>();
   for (const module of manifest.modules) {
     byId.set(module.id, module);
@@ -51,7 +51,7 @@ export function buildReferenceSidebar(manifest: ApiManifest): ReferenceSidebar {
   return { modules: topLevel };
 }
 
-function buildModule(module: ApiModule): RefModule {
+function buildModule(module: ApiModule) {
   const isRoot = module.id === 'yapyak';
   const slug = moduleSlug(module.id);
   const href = isRoot ? '/reference' : `/reference/${slug}`;
@@ -69,7 +69,7 @@ function buildModule(module: ApiModule): RefModule {
   };
 }
 
-function findParentId(id: string, byId: Map<string, ApiModule>): string | null {
+function findParentId(id: string, byId: Map<string, ApiModule>) {
   let cursor = id;
   while (true) {
     const idx = cursor.lastIndexOf('/');
@@ -83,7 +83,7 @@ function findParentId(id: string, byId: Map<string, ApiModule>): string | null {
   }
 }
 
-export function moduleSlug(id: string): string {
+export function moduleSlug(id: string) {
   const trimmed = id.replace(/^yapyak\/?/, '');
   return trimmed === '' ? 'yapyak' : trimmed;
 }

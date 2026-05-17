@@ -1,4 +1,4 @@
-import type { SidebarGroup, SidebarLink, SidebarNode } from './sidebars';
+import type { SidebarNode } from './sidebars';
 
 import { parseFrontmatterOnly } from './markdoc';
 import { readdir, readFile } from 'node:fs/promises';
@@ -10,19 +10,13 @@ interface Frontmatter {
   title?: string;
 }
 
-export async function buildGuideSidebar(
-  projectRoot: string,
-): Promise<SidebarNode[]> {
+export async function buildGuideSidebar(projectRoot: string) {
   return walkDir(join(projectRoot, 'content', 'guide'), '/guide');
 }
 
-async function walkDir(
-  absDir: string,
-  urlPrefix: string,
-): Promise<SidebarNode[]> {
+async function walkDir(absDir: string, urlPrefix: string) {
   const entries = await readdir(absDir, { withFileTypes: true });
-  const collected: Array<{ node: SidebarNode; order: number; name: string }> =
-    [];
+  const collected: { node: SidebarNode; order: number; name: string }[] = [];
 
   for (const entry of entries) {
     if (entry.name.startsWith('.') || entry.name.startsWith('_')) {
@@ -69,10 +63,7 @@ async function walkDir(
   return collected.map((item) => item.node);
 }
 
-async function buildLink(
-  absPath: string,
-  href: string,
-): Promise<{ node: SidebarLink; order: number } | null> {
+async function buildLink(absPath: string, href: string) {
   const source = await readFile(absPath, 'utf8').catch(() => null);
   if (source === null) {
     return null;
@@ -90,7 +81,7 @@ async function buildLink(
       ? frontmatter.order
       : Number.POSITIVE_INFINITY;
   return {
-    node: { href, title, type: 'link' },
+    node: { href, title, type: 'link' as const },
     order,
   };
 }
@@ -99,7 +90,7 @@ async function buildGroup(
   absDir: string,
   urlPrefix: string,
   folderName: string,
-): Promise<{ node: SidebarGroup; order: number } | null> {
+) {
   const indexPath = join(absDir, 'index.md');
   const indexSource = await readFile(indexPath, 'utf8').catch(() => null);
   const indexFrontmatter =
@@ -122,12 +113,12 @@ async function buildGroup(
       : Number.POSITIVE_INFINITY;
 
   return {
-    node: { items, title, type: 'group' },
+    node: { items, title, type: 'group' as const },
     order,
   };
 }
 
-function deriveTitle(href: string): string {
+function deriveTitle(href: string) {
   const last = href.split('/').pop() ?? '';
   return last
     .split('-')
@@ -135,7 +126,7 @@ function deriveTitle(href: string): string {
     .join(' ');
 }
 
-function capitalize(value: string): string {
+function capitalize(value: string) {
   if (value.length === 0) {
     return value;
   }

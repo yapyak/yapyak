@@ -71,7 +71,7 @@ export function ReferenceNavigationModule(
   );
 }
 
-function lastSegment(id: string): string {
+function lastSegment(id: string) {
   const slashIndex = id.lastIndexOf('/');
   return slashIndex === -1 ? id : id.slice(slashIndex + 1);
 }
