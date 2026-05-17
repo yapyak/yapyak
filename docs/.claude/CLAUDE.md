@@ -284,14 +284,16 @@ Same rule applies to props types: `text.tsx` exports `ButtonTextProps`, not `Tex
 
 Example: `HeroDemo` is consumed only by `Hero`. It's NOT at `components/hero-demo.tsx` — it's at `components/hero/demo.tsx` (exported as `HeroDemo`). If a third component starts importing `HeroDemo`, it gets promoted to a top-level file.
 
-**TOTALLY FORBIDDEN: plural component names.** Never `locales.tsx`, `examples.tsx`, `items.tsx`, `tabs.tsx`, etc. Always singular noun + element-type suffix from the Element vocabulary: `LocaleList`, `ExampleList`, `ItemRow`, `TabBar`. The plural is encoded in the element type (`List`, `Group`, `Stack`), not the noun.
+**TOTALLY FORBIDDEN: plural component names.** Never `locales.tsx`, `examples.tsx`, `items.tsx`, `tabs.tsx`, etc. Always singular noun + element-type suffix from the Element vocabulary: `LocaleStack`, `ExampleSection`, `ItemRow`, `TabBar`. The plural is encoded in the element type (`List`, `Stack`, `Section`, `Grid`), not the noun.
+
+**`List` is reserved for `<ul>` / `<ol>` elements only.** If the element renders as a `<div>` with `flex-direction: column`, it's a `Stack`. If it's a `<section>` with a heading and body, it's a `Section`. Match the suffix to the actual DOM.
 
 ```
 ✗ locales.tsx          → Locales         (plural, missing element)
-✓ locale-list.tsx      → LocaleList      (singular + List)
+✓ locale-stack.tsx     → LocaleStack     (singular + Stack — renders as <div> flex column)
 
 ✗ examples.tsx         → Examples
-✓ example-list.tsx     → ExampleList
+✓ example-section.tsx  → ExampleSection  (singular + Section — renders as <section> with heading)
 
 ✗ returns.tsx          → Returns         (looks plural; "Returns" is the section content)
 ✓ return-section.tsx   → ReturnSection   (singular + Section)

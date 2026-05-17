@@ -4,7 +4,7 @@ import { Box } from '#components/box';
 
 import { ReferenceSymbolDeprecated } from './reference-symbol/deprecated';
 import { ReferenceSymbolDescription } from './reference-symbol/description';
-import { ReferenceSymbolExampleList } from './reference-symbol/example-list';
+import { ReferenceSymbolExampleSection } from './reference-symbol/example-section';
 import { ReferenceSymbolHeader } from './reference-symbol/header';
 import { ReferenceSymbolMemberTable } from './reference-symbol/member-table';
 import { ReferenceSymbolReturnSection } from './reference-symbol/return-section';
@@ -32,5 +32,5 @@ ReferenceSymbol.Description = ReferenceSymbolDescription;
 ReferenceSymbol.Signature = ReferenceSymbolSignature;
 ReferenceSymbol.MemberTable = ReferenceSymbolMemberTable;
 ReferenceSymbol.Returns = ReferenceSymbolReturnSection;
-ReferenceSymbol.Examples = ReferenceSymbolExampleList;
+ReferenceSymbol.Examples = ReferenceSymbolExampleSection;
 ReferenceSymbol.SourceLink = ReferenceSymbolSourceLink;
