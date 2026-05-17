@@ -16,8 +16,8 @@ export function BlockRendererNodeBlockquote(
     <Box as="blockquote">
       {block.children.map((child, index) => (
         <BlockRendererNode
-          key={index}
           block={child}
+          key={index}
         />
       ))}
     </Box>

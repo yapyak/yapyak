@@ -256,23 +256,52 @@ All files and folders use **kebab-case**. No exceptions — `.ts`, `.tsx`, `.mod
 
 **Top-level files:** Filename matches the primary export **by spelling**, not casing: `useTheme` → `use-theme.ts`, `ButtonGroup` → `button-group.tsx`, `createArrayNode` → `create-array-node.ts`.
 
-**Nested files within a component folder:** Filename is the **local short form** (no parent prefix). Exported symbols carry the **full hierarchical name** built from ancestor folders. CSS module class names match the exported name.
+**The naming rule (deterministic, mechanical):**
+
+- `ComponentName = PascalCase(parent-folder-name) + PascalCase(filename)`
+- Top-level files (directly under `components/`): just `PascalCase(filename)`
+- Root CSS class in the matching `.module.css` always equals the component name (1:1)
+- Props type follows the same rule: `NodeHeadingProps`, not `HeadingProps`
+
+**`parent-folder-name` means the immediate parent only — never ancestors.** At any nesting depth, only the folder directly above the file contributes to the name. Grand-parent folders are not included.
 
 ```
 components/
-  button.tsx           → exports `Button`,         CSS `.Button`
-  button.module.css
-  button/
-    text.tsx           → exports `ButtonText`,     CSS `.ButtonText`
-    text.module.css
-    atom/
-      icon.tsx         → exports `ButtonAtomIcon`, CSS `.ButtonAtomIcon`
-      icon.module.css
+  block-renderer.tsx                  → BlockRenderer       → .BlockRenderer
+  block-renderer.module.css
+  block-renderer/
+    node.tsx                          → BlockRendererNode   → .BlockRendererNode
+    node.module.css
+    node/
+      heading.tsx                     → NodeHeading         → .NodeHeading
+      heading.module.css
+      code-block.tsx                  → NodeCodeBlock       → .NodeCodeBlock
+      code-block.module.css
+      list-item.tsx                   → NodeListItem        → .NodeListItem
+      list-item.module.css
 ```
 
-Why: the filesystem path already carries the ancestor context. Don't repeat it in filenames. But when a symbol leaves its file — appearing in JSX, in imports, in inspector — it needs the full name to be unambiguous and self-describing.
+The full ancestor chain is carried by the **file path**, not by the component name or the CSS class. Don't repeat what the filesystem already says. CSS Modules guarantee global uniqueness at build time — the class label is only a local identifier inside its file. The 1:1 match with component name keeps the mental model uniform: every component has one root class with the same name.
 
-Same rule applies to props types: `text.tsx` exports `ButtonTextProps`, not `TextProps`.
+**Child CSS classes follow the same parent prefix.** Inside `heading.module.css`, the root is `.NodeHeading` and children are `.NodeHeadingIcon`, `.NodeHeadingLeadingBadge` etc — same prefix rule.
+
+**The constitutional rule that makes the prefix meaningful:**
+
+A folder exists if and only if a sibling `.tsx` file with the same name exists. That sibling is the folder's owner. The folder's name therefore matches a real component — never a generic grouping label.
+
+```
+components/
+  dialog.tsx        ← owner of dialog/
+  dialog/
+    header.tsx      ← parent prefix is the real `Dialog` component
+```
+
+What this guarantees:
+- Parent-folder prefixes are always anchored to a real component. They carry semantic weight by construction.
+- The structure cannot grow generic grouping folders (`parts/`, `internal/`, `common/`, etc.) because no corresponding `.tsx` exists to legitimize them.
+
+What it does not guarantee:
+- That a component was wisely named. If someone names a component `Atom` carelessly, its children inherit the `Atom` prefix. Name components well — the folder rule only ensures the prefix is anchored to a real component.
 
 ### Components (`components/`)
 
@@ -637,7 +666,7 @@ The render-prop function receives `state` typed as `UseXReturn['state']` (or a r
   </Box>
   ```
 
-- **CSS variable names always start with the full kebab-cased component name** — the same name as the exported symbol and the CSS class. The path through the component tree IS the prefix. No exceptions, including for variables that are only consumed inside the same `.module.css`.
+- **CSS variable names always start with the kebab-cased component name** — the same name as the exported symbol and the CSS class (which follow the immediate-parent + filename rule). No exceptions, including for variables that are only consumed inside the same `.module.css`.
 
   | Path | Component | CSS class | CSS variable |
   | --- | --- | --- | --- |
@@ -662,7 +691,7 @@ The render-prop function receives `state` typed as `UseXReturn['state']` (or a r
 - Domain components are named `[Resource][Element]`: `ClientTable`, `EmployeeCard`, `AccountNavigation`
 - No "Page" components — the route `Component` function handles page layout directly
 - **Dispatcher components:** When a "base" component renders a different sub-component based on a type/variant (discriminated union), name the variants `[Parent][Variant]` — not `[Parent][Element]`. Example: `ActivityItem` dispatches to `ActivityItemComment` and `ActivityItemEvent` based on `activitableType`
-- **Renderer-dispatcher pattern:** When a `*Renderer` iterator (e.g. `BlockRenderer`) dispatches each element via a recursive sub-component, name the dispatcher `Node` and put it under the renderer's folder. Variants live in a `node/` sub-folder, one file per `type` discriminant. Names follow the ancestor-path rule strictly — dispatcher exports `[Parent]Node`, variants export `[Parent]Node[Variant]`. Example:
+- **Renderer-dispatcher pattern:** When a `*Renderer` iterator (e.g. `BlockRenderer`) dispatches each element via a recursive sub-component, the dispatcher file is `node.tsx` placed under the renderer's folder, and variants live in a `node/` sub-folder — one file per `type` discriminant. Names follow the standard rule (immediate-parent + filename), which here means the dispatcher exports `[ParentRenderer]Node` and variants export `Node[Variant]`. Example:
 
   ```
   components/
@@ -670,13 +699,13 @@ The render-prop function receives `state` typed as `UseXReturn['state']` (or a r
     block-renderer/
       node.tsx                               → BlockRendererNode (dispatcher: switch block.type)
       node/
-        heading.tsx                          → BlockRendererNodeHeading
-        paragraph.tsx                        → BlockRendererNodeParagraph
-        code-block.tsx                       → BlockRendererNodeCodeBlock
+        heading.tsx                          → NodeHeading
+        paragraph.tsx                        → NodeParagraph
+        code-block.tsx                       → NodeCodeBlock
         ...
   ```
 
-  Each variant takes `block: SomeBlock` (the narrowed shape from the discriminated union), renders its root element, and recurses into `block.children` by mapping `<[Parent]Node block={child} />`. The dispatcher's `switch` has no default — TS exhaustivity check enforces that new block types get handled.
+  Each variant takes `block: SomeBlock` (the narrowed shape from the discriminated union), renders its root element, and recurses into `block.children` by mapping `<[ParentRenderer]Node block={child} />` (the dispatcher, imported from `../node`). The dispatcher's `switch` has no default — TS exhaustivity check enforces that new block types get handled.
 
 ### Layout vs domain name
 
