@@ -1,0 +1,24 @@
+@layer components {
+  .FeatureSection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-24);
+    width: 100%;
+    max-width: 80rem;
+    padding: 0 var(--space-8) var(--space-24);
+    place-self: center;
+
+    .Divider {
+      height: 1px;
+      background-color: var(--rule);
+    }
+
+    .List {
+      position: relative;
+      width: 100%;
+      max-width: 64rem;
+      place-self: center;
+      border-left: 1px solid var(--rule);
+    }
+  }
+}

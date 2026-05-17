@@ -5,18 +5,18 @@ import { Box } from '#components/box';
 
 import styles from './item.module.css';
 
-export interface FeatureListItemProps extends BoxProps<'li'> {
+export interface FeatureSectionItemProps extends BoxProps<'li'> {
   feature: Feature;
 }
 
-export function FeatureListItem(props: FeatureListItemProps) {
+export function FeatureSectionItem(props: FeatureSectionItemProps) {
   const { className, feature, ...restProps } = props;
 
   return (
     <Box
       {...restProps}
       as="li"
-      className={[styles.FeatureListItem, className]}
+      className={[styles.FeatureSectionItem, className]}
       data-accent={feature.accent}
     >
       <Box

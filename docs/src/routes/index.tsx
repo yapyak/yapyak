@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { t } from 'yapyak';
 
-import { FeatureList } from '#components/feature-list';
+import { FeatureSection } from '#components/feature-section';
 import { Hero } from '#components/hero';
 
 export const Route = createFileRoute('/')({
@@ -10,12 +10,12 @@ export const Route = createFileRoute('/')({
 
 function Component() {
   return (
-    <div>
+    <>
       <Hero
         description={t('Built for Vite. Designed for the AI era.')}
         heading={t('i18n that maintains itself.')}
       />
-      <FeatureList />
-    </div>
+      <FeatureSection />
+    </>
   );
 }

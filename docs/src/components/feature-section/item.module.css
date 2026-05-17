@@ -1,5 +1,5 @@
 @layer components {
-  .FeatureListItem {
+  .FeatureSectionItem {
     position: relative;
     display: grid;
     grid-template-columns: 9rem 1fr;
@@ -102,7 +102,7 @@
   }
 
   @supports (animation-timeline: view()) {
-    .FeatureListItem {
+    .FeatureSectionItem {
       animation: feature-reveal linear both;
       animation-timeline: view();
       animation-range: entry 0% entry 60%;
