@@ -13,9 +13,7 @@
     .List {
       position: relative;
       max-width: 64rem;
-      padding: 0;
       margin: 0 auto;
-      list-style: none;
       border-left: 1px solid var(--rule);
     }
   }

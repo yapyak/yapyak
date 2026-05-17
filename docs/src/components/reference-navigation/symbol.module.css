@@ -7,7 +7,6 @@
     font-size: var(--font-size-sm);
     color: var(--text-soft);
     white-space: nowrap;
-    text-decoration: none;
     transition: color var(--transition);
 
     &:hover {

@@ -7,7 +7,6 @@
     font-size: var(--font-size-sm);
     color: var(--text-soft);
     white-space: nowrap;
-    text-decoration: none;
     outline: var(--space-2) solid transparent;
     outline-offset: 0;
     border-radius: var(--radius-sm);

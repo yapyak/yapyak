@@ -58,7 +58,6 @@
     }
 
     .Title {
-      margin: 0;
       font-size: var(--font-size-2xl);
       font-weight: var(--font-weight-medium);
       line-height: 1.05;
@@ -77,7 +76,6 @@
     }
 
     .Description {
-      margin: 0;
       font-size: var(--font-size-md);
       color: var(--text-soft);
       transition: color 400ms ease;

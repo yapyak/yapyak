@@ -54,9 +54,6 @@
       font-family: var(--font-mono);
       font-size: var(--font-size-xs);
       color: var(--text-muted);
-      cursor: pointer;
-      background-color: transparent;
-      border: none;
       box-shadow: inset -1px 0 0 var(--rule);
       transition:
         background-color var(--transition),
@@ -102,7 +99,6 @@
 
     .Pre {
       padding: var(--space-5) var(--space-6);
-      margin: 0;
       overflow: hidden;
     }
 

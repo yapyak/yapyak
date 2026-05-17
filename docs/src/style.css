@@ -1,5 +1,7 @@
 @layer reset, base, components;
 
+@import "./styles/reset.css";
+
 :root {
   --bg: #141414;
   --surface: rgba(255, 255, 255, 0.02);
@@ -89,19 +91,6 @@
   --font-mono:
     ui-monospace, "SF Mono", "Monaco", "Menlo", "Cascadia Code", "Roboto Mono",
     Consolas, "Liberation Mono", monospace;
-}
-
-@layer reset {
-  * {
-    box-sizing: border-box;
-    padding: 0;
-    margin: 0;
-  }
-
-  a {
-    color: var(--text-muted);
-    text-decoration: none;
-  }
 }
 
 @layer base {

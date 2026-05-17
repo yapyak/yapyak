@@ -9,10 +9,6 @@
       line-height: 1.6;
       color: var(--text-soft);
 
-      p {
-        margin: 0;
-      }
-
       p + p {
         margin-top: var(--space-3);
       }
@@ -24,10 +20,6 @@
         color: var(--text-soft);
         background: var(--surface-elevated);
         border-radius: var(--radius-sm);
-      }
-
-      :global(.CodeBlock) {
-        margin: 0;
       }
     }
   }

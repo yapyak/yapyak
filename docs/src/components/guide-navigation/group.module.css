@@ -6,7 +6,6 @@
 
     .Title {
       padding: 0 var(--space-3);
-      margin: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       font-weight: var(--font-weight-semibold);
@@ -22,7 +21,6 @@
       font-weight: var(--font-weight-medium);
       color: var(--text-soft);
       white-space: nowrap;
-      text-decoration: none;
       transition: color var(--transition);
 
       &:hover {
@@ -40,8 +38,6 @@
       flex-direction: column;
       gap: 2px;
       padding: 0;
-      margin: 0;
-      list-style: none;
     }
 
     &[data-depth="0"] {

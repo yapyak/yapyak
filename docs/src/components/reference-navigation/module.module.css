@@ -13,9 +13,6 @@
       font-size: var(--font-size-sm);
       color: var(--text-soft);
       text-align: left;
-      cursor: pointer;
-      background: transparent;
-      border: 0;
       transition: color var(--transition);
 
       &:hover {
@@ -48,8 +45,6 @@
       flex-direction: column;
       gap: 2px;
       padding-left: 1.25rem;
-      margin: 0;
-      list-style: none;
     }
   }
 }

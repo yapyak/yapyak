@@ -16,7 +16,6 @@
     }
 
     .Heading {
-      margin: 0;
       font-size: var(--font-size-4xl);
       font-weight: var(--font-weight-medium);
       line-height: 1;
@@ -26,7 +25,6 @@
     }
 
     .Description {
-      margin: 0;
       font-size: var(--font-size-xl);
       color: var(--text-soft);
     }
@@ -38,7 +36,6 @@
     }
 
     .Trust {
-      margin: 0;
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-medium);
       color: var(--text-muted);
@@ -49,7 +46,6 @@
       padding: var(--space-2) var(--space-5);
       font-weight: var(--font-weight-medium);
       color: var(--accent-contrast);
-      text-decoration: none;
       outline: var(--space-2) solid transparent;
       outline-offset: 0;
       background: var(--brand-gradient);
@@ -78,7 +74,6 @@
       padding: var(--space-2) var(--space-5);
       font-weight: var(--font-weight-medium);
       color: var(--text);
-      text-decoration: none;
       outline: var(--space-2) solid transparent;
       outline-offset: 0;
       background-color: var(--surface-elevated);

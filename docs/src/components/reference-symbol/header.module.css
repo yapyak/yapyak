@@ -16,7 +16,6 @@
     }
 
     .Heading {
-      margin: 0;
       font-family: var(--font-mono);
       font-size: var(--font-size-3xl);
       font-weight: var(--font-weight-semibold);
