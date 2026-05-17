@@ -254,36 +254,81 @@ Maximum one per page. Brand emoji 🐃 only when natural (e.g. release post titl
 
 All files and folders use **kebab-case**. No exceptions — `.ts`, `.tsx`, `.module.css`, folders, everything.
 
-Exports keep their idiomatic casing. Filename matches the primary export **by spelling**, not casing: `useTheme` → `use-theme.ts`, `ButtonGroup` → `button-group.tsx`, `createArrayNode` → `create-array-node.ts`.
+**Top-level files:** Filename matches the primary export **by spelling**, not casing: `useTheme` → `use-theme.ts`, `ButtonGroup` → `button-group.tsx`, `createArrayNode` → `create-array-node.ts`.
+
+**Nested files within a component folder:** Filename is the **local short form** (no parent prefix). Exported symbols carry the **full hierarchical name** built from ancestor folders. CSS module class names match the exported name.
+
+```
+components/
+  button.tsx           → exports `Button`,         CSS `.Button`
+  button.module.css
+  button/
+    text.tsx           → exports `ButtonText`,     CSS `.ButtonText`
+    text.module.css
+    atom/
+      icon.tsx         → exports `ButtonAtomIcon`, CSS `.ButtonAtomIcon`
+      icon.module.css
+```
+
+Why: the filesystem path already carries the ancestor context. Don't repeat it in filenames. But when a symbol leaves its file — appearing in JSX, in imports, in inspector — it needs the full name to be unambiguous and self-describing.
+
+Same rule applies to props types: `text.tsx` exports `ButtonTextProps`, not `TextProps`.
 
 ### Components (`components/`)
 
-One folder per component "concern". Related components are flat files in the same folder. Never nest sub-folders for sub-components:
+**Top-level files are the public API. Folders contain private internals.**
 
 ```
-button/
-  button.tsx
+components/
+  wordmark.tsx                ← public (single-file component)
+  wordmark.module.css
+
+  button.tsx                  ← public (compound component owner)
   button.module.css
-  button-group.tsx
-  button-group.module.css
-  index.ts
-dialog/
-  dialog.tsx
-  dialog.module.css
-  dialog-content.tsx
-  dialog-content.module.css
-  dialog-header.tsx
-  dialog-header.module.css
-  dialog-footer.tsx
-  dialog-footer.module.css
-  dialog-trigger.tsx
-  use-dialog-trigger.ts
-  index.ts
+  button/                     ← internals
+    text.tsx
+    text.module.css
+    icon.tsx
+
+  dialog.tsx                  ← public
+  dialog/                     ← internals
+    content.tsx
+    content.module.css
+    header.tsx
+    footer.tsx
+    trigger.tsx
+    use-trigger.ts            ← component-specific hook (stays internal)
+    actions.ts                ← component-specific data (stays internal)
 ```
 
-- `index.ts` determines what is public — files not exported from `index.ts` are private/internal
-- Each `.tsx` component has its own `.module.css` directly next to it
-- Hooks related to a component live in the same folder (`use-dialog-trigger.ts`)
+**Rules:**
+
+- **Top-level files are publicly importable.** Anything imported via `#components/X` resolves to `components/X.tsx`.
+- **Folder matches its top-level file.** `button/` belongs to `button.tsx`. The folder contains internals not exported as standalone modules.
+- **No `index.ts` files.** The top-level `.tsx` IS the entry. Compound parts attach via `Component.Sub = SubComponent` pattern (see *Compound components*).
+- **Single-file components don't need a folder.** Just `wordmark.tsx` + `wordmark.module.css`.
+- **CSS modules co-locate.** `button.module.css` next to `button.tsx`. Internals have their own `.module.css` inside the folder.
+- **Component folders contain ONLY components.** No `.ts` data files, no hooks, no utilities — only `.tsx` (sub-components) and `.module.css`.
+- **Hooks always go to `hooks/`.** Even if used by exactly one component. Naming: `use-demo-state.ts`, accessed via `#hooks/use-demo-state`.
+- **Utilities and data always go to `utils/`.** Even if used by exactly one component. Or inline directly into the component file if it's small and tightly coupled (a `FEATURES = [...]` array etc).
+- **Choose between inline and `utils/` based on size and reuse:** 5-line constant → inline. 50-line data array → `utils/`. Helper function → `utils/`. Hook → `hooks/`. No middle ground inside the component folder.
+
+### Imports
+
+Two rules cover everything:
+
+1. **Cross-domain imports use aliases**: `#components/*`, `#hooks/*`, `#lib/*`, `#utils/*`, `#docs/*`.
+2. **Imports inside a component's own folder use relative paths**: `button.tsx` imports `./button/text`, not `#components/button/text`.
+
+| From | To | Import |
+| --- | --- | --- |
+| `routes/foo.tsx` | `components/button.tsx` | `import { Button } from '#components/button'` |
+| `components/button.tsx` | `components/button/text.tsx` | `import { ButtonText } from './button/text'` |
+| `components/button/text.tsx` | sibling `components/button/icon.tsx` | `import { ButtonIcon } from './icon'` |
+| `components/button.tsx` | `hooks/use-press.ts` | `import { usePress } from '#hooks/use-press'` |
+| `components/button.tsx` | `lib/cn.ts` | `import { cn } from '#lib/cn'` |
+
+The point: `./` means "inside this component". `#` means "from elsewhere in the codebase". Reading an import tells you the boundary instantly.
 
 ### Primitives (`primitives/`) and Systems (`systems/`)
 
@@ -322,10 +367,10 @@ systems/
 - Props are destructured on the first line of the function body, not in the signature: `const { disabled = false } = props`
 - Defaults are set in the destructuring assignment
 - `...restProps` is spread onto the root element when the component wraps a native or base element
-- Each component gets its own folder: `components/Button/Button.tsx` with an `index.ts` that re-exports
-- Each component has its own `ComponentName.module.css` file directly next to its `.tsx` file — never import CSS from a parent component
-- Sub-components are flat files in the parent folder — never nested sub-folders: `ActionList/ActionListItem.tsx` not `ActionList/ActionListItem/ActionListItem.tsx`
-- `index.ts` determines what is public — sub-components not exported from `index.ts` are private
+- Each public component is a top-level file in `components/` (e.g. `components/button.tsx`)
+- Internal sub-components live in a folder matching the public file (e.g. `components/button/text.tsx`)
+- Each `.tsx` component has its own `.module.css` file directly next to it — never import CSS from a parent component
+- The top-level file IS the public surface — no `index.ts` boilerplate
 - Compound components use dot-notation with `declare namespace` + property assignment, never `Object.assign` or `*Fn` suffix:
 
   ```tsx

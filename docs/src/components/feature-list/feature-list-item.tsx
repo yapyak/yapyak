@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import type { Feature } from './features';
+import type { Feature } from '#utils/features';
 
 import styles from './feature-list-item.module.css';
 

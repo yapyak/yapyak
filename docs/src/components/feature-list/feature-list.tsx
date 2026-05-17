@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 
 import styles from './feature-list.module.css';
 import { FeatureListItem } from './feature-list-item';
-import { FEATURES } from './features';
+import { FEATURES } from '#utils/features';
 
 export function FeatureList(): ReactElement {
   return (

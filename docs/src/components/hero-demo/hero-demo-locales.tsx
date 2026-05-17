@@ -1,10 +1,10 @@
 import type { ReactElement } from 'react';
-import type { LocaleCode } from './scenes';
+import type { LocaleCode } from '#utils/hero-demo-scenes';
 
 import { LocaleFlag } from '#components/locale-flag';
 
 import styles from './hero-demo-locales.module.css';
-import { LOCALES } from './scenes';
+import { LOCALES } from '#utils/hero-demo-scenes';
 
 export interface HeroDemoLocalesProps {
   receiving: boolean;

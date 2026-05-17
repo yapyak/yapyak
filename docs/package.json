@@ -5,7 +5,9 @@
   "imports": {
     "#components/*": "./src/components/*",
     "#docs/*": "./src/docs/*",
-    "#lib/*": "./src/lib/*"
+    "#hooks/*": "./src/hooks/*",
+    "#lib/*": "./src/lib/*",
+    "#utils/*": "./src/utils/*"
   },
   "scripts": {
     "dev": "vite dev",

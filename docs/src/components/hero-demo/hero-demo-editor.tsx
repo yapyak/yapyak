@@ -1,9 +1,9 @@
 import type { CSSProperties, ReactElement } from 'react';
-import type { Lang } from '#lib/utils/tokenize';
+import type { Lang } from '#utils/tokenize';
 
 import { useLayoutEffect, useRef, useState } from 'react';
 
-import { tokenize } from '#lib/utils/tokenize';
+import { tokenize } from '#utils/tokenize';
 
 import styles from './hero-demo-editor.module.css';
 

@@ -3,11 +3,11 @@ import type {
   TokenizerAndRendererExtension,
   Tokens,
 } from 'marked';
-import type { Lang } from './utils/tokenize.js';
+import type { Lang } from '#utils/tokenize';
 
 import { marked } from 'marked';
 
-import { tokenize } from './utils/tokenize.js';
+import { tokenize } from '#utils/tokenize';
 
 export interface Doc {
   description: string;

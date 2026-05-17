@@ -1,8 +1,13 @@
-import type { LocaleCode } from './scenes';
+import type { LocaleCode } from '#utils/hero-demo-scenes';
 
 import { useEffect, useState } from 'react';
 
-import { EMPTY_TRANSLATIONS, INITIAL_SCENE, LOCALES, SCENES } from './scenes';
+import {
+  EMPTY_TRANSLATIONS,
+  INITIAL_SCENE,
+  LOCALES,
+  SCENES,
+} from '#utils/hero-demo-scenes';
 
 export interface DemoState {
   receiving: boolean;

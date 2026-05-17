@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import styles from './hero-demo.module.css';
 import { HeroDemoEditor } from './hero-demo-editor';
 import { HeroDemoLocales } from './hero-demo-locales';
-import { useDemoState } from './use-demo-state';
+import { useDemoState } from '#hooks/use-demo-state';
 
 export function HeroDemo(): ReactElement {
   const containerElement = useRef<HTMLDivElement>(null);
