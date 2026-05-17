@@ -2,11 +2,13 @@ import type { CodeGroupBlock } from '#lib/content';
 
 import { CodeGroup } from '#components/code-group';
 
-export interface ItemCodeGroupProps {
+export interface BlockRendererNodeCodeGroupProps {
   block: CodeGroupBlock;
 }
 
-export function ItemCodeGroup(props: ItemCodeGroupProps) {
+export function BlockRendererNodeCodeGroup(
+  props: BlockRendererNodeCodeGroupProps,
+) {
   const { block } = props;
   return (
     <CodeGroup

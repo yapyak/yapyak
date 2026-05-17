@@ -2,18 +2,20 @@ import type { EmphasisBlock } from '#lib/content';
 
 import { Box } from '#components/box';
 
-import { Item } from './item';
+import { BlockRendererNode } from '../node';
 
-export interface ItemEmphasisProps {
+export interface BlockRendererNodeEmphasisProps {
   block: EmphasisBlock;
 }
 
-export function ItemEmphasis(props: ItemEmphasisProps) {
+export function BlockRendererNodeEmphasis(
+  props: BlockRendererNodeEmphasisProps,
+) {
   const { block } = props;
   return (
     <Box as="em">
       {block.children.map((child, index) => (
-        <Item
+        <BlockRendererNode
           key={index}
           block={child}
         />

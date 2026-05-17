@@ -2,18 +2,20 @@ import type { ParagraphBlock } from '#lib/content';
 
 import { Box } from '#components/box';
 
-import { Item } from './item';
+import { BlockRendererNode } from '../node';
 
-export interface ItemParagraphProps {
+export interface BlockRendererNodeParagraphProps {
   block: ParagraphBlock;
 }
 
-export function ItemParagraph(props: ItemParagraphProps) {
+export function BlockRendererNodeParagraph(
+  props: BlockRendererNodeParagraphProps,
+) {
   const { block } = props;
   return (
     <Box as="p">
       {block.children.map((child, index) => (
-        <Item
+        <BlockRendererNode
           key={index}
           block={child}
         />

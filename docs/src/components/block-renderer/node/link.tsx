@@ -2,13 +2,13 @@ import type { LinkBlock } from '#lib/content';
 
 import { Box } from '#components/box';
 
-import { Item } from './item';
+import { BlockRendererNode } from '../node';
 
-export interface ItemLinkProps {
+export interface BlockRendererNodeLinkProps {
   block: LinkBlock;
 }
 
-export function ItemLink(props: ItemLinkProps) {
+export function BlockRendererNodeLink(props: BlockRendererNodeLinkProps) {
   const { block } = props;
   return (
     <Box
@@ -16,7 +16,7 @@ export function ItemLink(props: ItemLinkProps) {
       href={block.href}
     >
       {block.children.map((child, index) => (
-        <Item
+        <BlockRendererNode
           key={index}
           block={child}
         />

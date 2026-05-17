@@ -2,18 +2,20 @@ import type { StrikethroughBlock } from '#lib/content';
 
 import { Box } from '#components/box';
 
-import { Item } from './item';
+import { BlockRendererNode } from '../node';
 
-export interface ItemStrikethroughProps {
+export interface BlockRendererNodeStrikethroughProps {
   block: StrikethroughBlock;
 }
 
-export function ItemStrikethrough(props: ItemStrikethroughProps) {
+export function BlockRendererNodeStrikethrough(
+  props: BlockRendererNodeStrikethroughProps,
+) {
   const { block } = props;
   return (
     <Box as="s">
       {block.children.map((child, index) => (
-        <Item
+        <BlockRendererNode
           key={index}
           block={child}
         />

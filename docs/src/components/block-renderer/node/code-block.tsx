@@ -2,11 +2,13 @@ import type { CodeBlock as CodeBlockData } from '#lib/content';
 
 import { CodeBlock } from '#components/code-block';
 
-export interface ItemCodeBlockProps {
+export interface BlockRendererNodeCodeBlockProps {
   block: CodeBlockData;
 }
 
-export function ItemCodeBlock(props: ItemCodeBlockProps) {
+export function BlockRendererNodeCodeBlock(
+  props: BlockRendererNodeCodeBlockProps,
+) {
   const { block } = props;
   return (
     <CodeBlock

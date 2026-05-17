@@ -2,18 +2,18 @@ import type { StrongBlock } from '#lib/content';
 
 import { Box } from '#components/box';
 
-import { Item } from './item';
+import { BlockRendererNode } from '../node';
 
-export interface ItemStrongProps {
+export interface BlockRendererNodeStrongProps {
   block: StrongBlock;
 }
 
-export function ItemStrong(props: ItemStrongProps) {
+export function BlockRendererNodeStrong(props: BlockRendererNodeStrongProps) {
   const { block } = props;
   return (
     <Box as="strong">
       {block.children.map((child, index) => (
-        <Item
+        <BlockRendererNode
           key={index}
           block={child}
         />

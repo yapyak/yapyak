@@ -662,6 +662,21 @@ The render-prop function receives `state` typed as `UseXReturn['state']` (or a r
 - Domain components are named `[Resource][Element]`: `ClientTable`, `EmployeeCard`, `AccountNavigation`
 - No "Page" components — the route `Component` function handles page layout directly
 - **Dispatcher components:** When a "base" component renders a different sub-component based on a type/variant (discriminated union), name the variants `[Parent][Variant]` — not `[Parent][Element]`. Example: `ActivityItem` dispatches to `ActivityItemComment` and `ActivityItemEvent` based on `activitableType`
+- **Renderer-dispatcher pattern:** When a `*Renderer` iterator (e.g. `BlockRenderer`) dispatches each element via a recursive sub-component, name the dispatcher `Node` and put it under the renderer's folder. Variants live in a `node/` sub-folder, one file per `type` discriminant. Names follow the ancestor-path rule strictly — dispatcher exports `[Parent]Node`, variants export `[Parent]Node[Variant]`. Example:
+
+  ```
+  components/
+    block-renderer.tsx                       → BlockRenderer
+    block-renderer/
+      node.tsx                               → BlockRendererNode (dispatcher: switch block.type)
+      node/
+        heading.tsx                          → BlockRendererNodeHeading
+        paragraph.tsx                        → BlockRendererNodeParagraph
+        code-block.tsx                       → BlockRendererNodeCodeBlock
+        ...
+  ```
+
+  Each variant takes `block: SomeBlock` (the narrowed shape from the discriminated union), renders its root element, and recurses into `block.children` by mapping `<[Parent]Node block={child} />`. The dispatcher's `switch` has no default — TS exhaustivity check enforces that new block types get handled.
 
 ### Layout vs domain name
 

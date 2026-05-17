@@ -2,13 +2,15 @@ import type { HeadingBlock } from '#lib/content';
 
 import { Box } from '#components/box';
 
-import { Item } from './item';
+import { BlockRendererNode } from '../node';
 
-export interface ItemHeadingProps {
+export interface BlockRendererNodeHeadingProps {
   block: HeadingBlock;
 }
 
-export function ItemHeading(props: ItemHeadingProps) {
+export function BlockRendererNodeHeading(
+  props: BlockRendererNodeHeadingProps,
+) {
   const { block } = props;
   return (
     <Box
@@ -16,7 +18,7 @@ export function ItemHeading(props: ItemHeadingProps) {
       id={block.id}
     >
       {block.children.map((child, index) => (
-        <Item
+        <BlockRendererNode
           key={index}
           block={child}
         />

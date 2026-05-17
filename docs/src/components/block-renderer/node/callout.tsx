@@ -2,13 +2,15 @@ import type { CalloutBlock } from '#lib/content';
 
 import { Callout } from '#components/callout';
 
-import { Item } from './item';
+import { BlockRendererNode } from '../node';
 
-export interface ItemCalloutProps {
+export interface BlockRendererNodeCalloutProps {
   block: CalloutBlock;
 }
 
-export function ItemCallout(props: ItemCalloutProps) {
+export function BlockRendererNodeCallout(
+  props: BlockRendererNodeCalloutProps,
+) {
   const { block } = props;
   return (
     <Callout
@@ -16,7 +18,7 @@ export function ItemCallout(props: ItemCalloutProps) {
       variant={block.variant}
     >
       {block.children.map((child, index) => (
-        <Item
+        <BlockRendererNode
           key={index}
           block={child}
         />

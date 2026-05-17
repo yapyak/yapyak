@@ -2,11 +2,11 @@ import type { ImageBlock } from '#lib/content';
 
 import { Box } from '#components/box';
 
-export interface ItemImageProps {
+export interface BlockRendererNodeImageProps {
   block: ImageBlock;
 }
 
-export function ItemImage(props: ItemImageProps) {
+export function BlockRendererNodeImage(props: BlockRendererNodeImageProps) {
   const { block } = props;
   return (
     <Box

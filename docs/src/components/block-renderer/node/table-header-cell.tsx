@@ -2,18 +2,20 @@ import type { TableHeaderCellBlock } from '#lib/content';
 
 import { Box } from '#components/box';
 
-import { Item } from './item';
+import { BlockRendererNode } from '../node';
 
-export interface ItemTableHeaderCellProps {
+export interface BlockRendererNodeTableHeaderCellProps {
   block: TableHeaderCellBlock;
 }
 
-export function ItemTableHeaderCell(props: ItemTableHeaderCellProps) {
+export function BlockRendererNodeTableHeaderCell(
+  props: BlockRendererNodeTableHeaderCellProps,
+) {
   const { block } = props;
   return (
     <Box as="th">
       {block.children.map((child, index) => (
-        <Item
+        <BlockRendererNode
           key={index}
           block={child}
         />

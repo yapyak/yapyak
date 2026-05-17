@@ -2,18 +2,20 @@ import type { ListItemBlock } from '#lib/content';
 
 import { Box } from '#components/box';
 
-import { Item } from './item';
+import { BlockRendererNode } from '../node';
 
-export interface ItemListItemProps {
+export interface BlockRendererNodeListItemProps {
   block: ListItemBlock;
 }
 
-export function ItemListItem(props: ItemListItemProps) {
+export function BlockRendererNodeListItem(
+  props: BlockRendererNodeListItemProps,
+) {
   const { block } = props;
   return (
     <Box as="li">
       {block.children.map((child, index) => (
-        <Item
+        <BlockRendererNode
           key={index}
           block={child}
         />

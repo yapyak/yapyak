@@ -2,18 +2,20 @@ import type { BlockquoteBlock } from '#lib/content';
 
 import { Box } from '#components/box';
 
-import { Item } from './item';
+import { BlockRendererNode } from '../node';
 
-export interface ItemBlockquoteProps {
+export interface BlockRendererNodeBlockquoteProps {
   block: BlockquoteBlock;
 }
 
-export function ItemBlockquote(props: ItemBlockquoteProps) {
+export function BlockRendererNodeBlockquote(
+  props: BlockRendererNodeBlockquoteProps,
+) {
   const { block } = props;
   return (
     <Box as="blockquote">
       {block.children.map((child, index) => (
-        <Item
+        <BlockRendererNode
           key={index}
           block={child}
         />

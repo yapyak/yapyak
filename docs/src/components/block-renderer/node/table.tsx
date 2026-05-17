@@ -2,24 +2,24 @@ import type { TableBlock } from '#lib/content';
 
 import { Box } from '#components/box';
 
-import { Item } from './item';
+import { BlockRendererNode } from '../node';
 
-export interface ItemTableProps {
+export interface BlockRendererNodeTableProps {
   block: TableBlock;
 }
 
-export function ItemTable(props: ItemTableProps) {
+export function BlockRendererNodeTable(props: BlockRendererNodeTableProps) {
   const { block } = props;
   return (
     <Box as="table">
       {block.head && (
         <Box as="thead">
-          <Item block={block.head} />
+          <BlockRendererNode block={block.head} />
         </Box>
       )}
       <Box as="tbody">
         {block.body.map((row, index) => (
-          <Item
+          <BlockRendererNode
             key={index}
             block={row}
           />
