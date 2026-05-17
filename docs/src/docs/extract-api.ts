@@ -440,7 +440,7 @@ function collectMembers(
       members.push(member);
     }
   });
-  members.sort((left, right) => left.name.localeCompare(right.name));
+  members.sort((a, b) => a.name.localeCompare(b.name));
   return members;
 }
 
