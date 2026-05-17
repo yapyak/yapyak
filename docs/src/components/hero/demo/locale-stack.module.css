@@ -5,7 +5,7 @@
     flex-direction: column;
     overflow: hidden;
     background: var(--surface);
-    border-radius: var(--radius-md);
+    border-radius: var(--border-radius-md);
     box-shadow: inset 0 0 0 1px var(--ring);
     transform-origin: center;
 
@@ -30,9 +30,9 @@
     .LocaleRow {
       display: grid;
       grid-template-columns: auto auto 1fr;
-      gap: var(--space-3);
+      gap: var(--spacing-3);
       align-items: center;
-      padding: var(--space-3) var(--space-4);
+      padding: var(--spacing-3) var(--spacing-4);
       font-family: var(--font-mono);
       font-size: var(--font-size-xs);
       border-bottom: 1px solid var(--rule);
@@ -45,12 +45,12 @@
     .FlagIcon {
       display: inline-flex;
       align-items: center;
-      line-height: 1;
+      line-height: var(--line-height-none);
     }
 
     .FilenameText {
       color: var(--text-muted);
-      letter-spacing: -0.01em;
+      letter-spacing: var(--letter-spacing-tight);
     }
 
     .JsonText {

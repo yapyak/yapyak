@@ -2,6 +2,6 @@
   .GuideNavigation {
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
+    gap: var(--spacing-1);
   }
 }

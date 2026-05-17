@@ -2,14 +2,14 @@
   .ReferenceSymbolMemberTable {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--spacing-3);
 
     .Heading {
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-semibold);
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: var(--letter-spacing-wide);
     }
 
     .Table {
@@ -19,7 +19,7 @@
 
       th,
       td {
-        padding: var(--space-2) var(--space-3);
+        padding: var(--spacing-2) var(--spacing-3);
         vertical-align: top;
         border-bottom: 1px solid var(--rule);
       }
@@ -29,7 +29,7 @@
         font-weight: var(--font-weight-semibold);
         color: var(--text-muted);
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: var(--letter-spacing-wide);
       }
 
       td {

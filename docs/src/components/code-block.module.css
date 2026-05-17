@@ -3,13 +3,13 @@
     position: relative;
     overflow: hidden;
     background: var(--surface);
-    border-radius: var(--radius-lg);
+    border-radius: var(--border-radius-lg);
     box-shadow: inset 0 0 0 1px var(--ring);
 
     .LanguageText {
       position: absolute;
-      top: var(--space-3);
-      right: var(--space-4);
+      top: var(--spacing-3);
+      right: var(--spacing-4);
       font-family: var(--font-mono);
       font-size: var(--font-size-xs);
       color: var(--text-muted);
@@ -19,13 +19,13 @@
     }
 
     .PreformattedText {
-      padding: var(--space-5) var(--space-6);
+      padding: var(--spacing-5) var(--spacing-6);
       overflow-x: auto;
       scrollbar-color: var(--rule) transparent;
       scrollbar-width: thin;
       font-family: var(--font-mono);
       font-size: 14px;
-      line-height: 1.6;
+      line-height: var(--line-height-normal);
       color: var(--text-soft);
 
       code {

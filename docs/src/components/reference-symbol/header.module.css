@@ -2,11 +2,11 @@
   .ReferenceSymbolHeader {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
+    gap: var(--spacing-2);
 
     .EyebrowText {
       display: inline-flex;
-      gap: var(--space-1);
+      gap: var(--spacing-1);
       font-family: var(--font-mono);
       font-size: var(--font-size-xs);
       color: var(--text-muted);

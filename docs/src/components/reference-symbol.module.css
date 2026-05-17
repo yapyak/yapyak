@@ -2,7 +2,7 @@
   .ReferenceSymbol {
     display: flex;
     flex-direction: column;
-    gap: var(--space-8);
+    gap: var(--spacing-8);
     max-width: 38rem;
   }
 }

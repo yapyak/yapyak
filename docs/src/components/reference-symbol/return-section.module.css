@@ -2,19 +2,19 @@
   .ReferenceSymbolReturnSection {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--spacing-3);
 
     .Heading {
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-semibold);
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: var(--letter-spacing-wide);
     }
 
     .LineParagraph {
       font-size: var(--font-size-sm);
-      line-height: 1.6;
+      line-height: var(--line-height-normal);
       color: var(--text-soft);
 
       code {

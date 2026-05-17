@@ -1,15 +1,15 @@
 @layer components {
   .GuideNavigationLink {
     display: block;
-    padding: var(--space-1) var(--space-3);
+    padding: var(--spacing-1) var(--spacing-3);
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: var(--font-size-sm);
     color: var(--text-soft);
     white-space: nowrap;
-    outline: var(--space-2) solid transparent;
+    outline: var(--spacing-2) solid transparent;
     outline-offset: 0;
-    border-radius: var(--radius-sm);
+    border-radius: var(--border-radius-sm);
     transition:
       color var(--transition),
       outline 400ms;

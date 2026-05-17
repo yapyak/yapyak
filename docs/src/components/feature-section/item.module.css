@@ -3,9 +3,9 @@
     position: relative;
     display: grid;
     grid-template-columns: 9rem 1fr;
-    gap: var(--space-8);
+    gap: var(--spacing-8);
     align-items: start;
-    padding: var(--space-12) var(--space-8);
+    padding: var(--spacing-12) var(--spacing-8);
     border-bottom: 1px solid var(--rule);
 
     &:last-child {
@@ -32,9 +32,9 @@
     .NumeralText {
       font-size: clamp(4rem, 8vw, 6rem);
       font-weight: var(--font-weight-medium);
-      line-height: 1;
+      line-height: var(--line-height-none);
       color: transparent;
-      letter-spacing: -0.04em;
+      letter-spacing: var(--letter-spacing-tightest);
       background: linear-gradient(
         180deg,
         var(--silver-light) 0%,
@@ -52,16 +52,16 @@
     .ContentStack {
       display: flex;
       flex-direction: column;
-      gap: var(--space-3);
+      gap: var(--spacing-3);
       max-width: 38rem;
     }
 
     .TitleHeading {
       font-size: var(--font-size-2xl);
       font-weight: var(--font-weight-medium);
-      line-height: 1.05;
+      line-height: var(--line-height-tight);
       color: var(--text);
-      letter-spacing: -0.02em;
+      letter-spacing: var(--letter-spacing-tighter);
       text-wrap: balance;
     }
 
@@ -92,8 +92,8 @@
 
     @media (max-width: 768px) {
       grid-template-columns: 1fr;
-      gap: var(--space-4);
-      padding: var(--space-10) var(--space-6);
+      gap: var(--spacing-4);
+      padding: var(--spacing-10) var(--spacing-6);
 
       .NumeralText {
         font-size: 3.5rem;

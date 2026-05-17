@@ -3,14 +3,14 @@
     position: relative;
     display: inline-block;
     min-width: 6rem;
-    padding: var(--space-1) var(--space-6);
+    padding: var(--spacing-1) var(--spacing-6);
     font-size: 0.95rem;
     font-weight: var(--font-weight-medium);
     color: var(--text-muted);
     text-align: center;
-    outline: var(--space-2) solid transparent;
+    outline: var(--spacing-2) solid transparent;
     outline-offset: 0;
-    border-radius: var(--radius-pill);
+    border-radius: var(--border-radius-full);
     transition:
       color var(--transition),
       background-color var(--transition),

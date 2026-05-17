@@ -7,7 +7,7 @@ body {
   min-height: 100vh;
   font-family: system-ui;
   font-size: var(--font-size-md);
-  line-height: 1.65;
+  line-height: var(--line-height-relaxed);
   color: var(--text-soft);
   background-color: var(--bg);
   hanging-punctuation: first last;

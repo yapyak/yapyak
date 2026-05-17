@@ -2,14 +2,14 @@
   .Wordmark {
     display: inline-flex;
     align-items: center;
-    height: calc(var(--space-4) + var(--space-2) + 0.95rem * 1.65);
-    padding: 0 var(--space-5);
+    height: calc(var(--spacing-4) + var(--spacing-2) + 0.95rem * 1.65);
+    padding: 0 var(--spacing-5);
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-semibold);
-    line-height: 1;
-    letter-spacing: -0.03em;
+    line-height: var(--line-height-none);
+    letter-spacing: var(--letter-spacing-tighter);
     background-color: var(--nav-bg);
-    border-radius: var(--radius-pill) var(--radius-pill) var(--radius-pill) 0;
+    border-radius: var(--border-radius-full) var(--border-radius-full) var(--border-radius-full) 0;
     box-shadow: inset 0 0 0 1px var(--ring);
 
     .YapText {
