@@ -1619,7 +1619,22 @@ If no rule matches unambiguously, the structure is wrong, not the name. Fix the 
 
 - All component/route CSS is wrapped in `@layer components`
 - Use design tokens (`var(--spacing-2)`, `var(--border)`, `var(--intent-danger)`) — never hardcoded values
-- **Never reset element defaults.** Kit has a global reset (`@layer reset`) that strips browser defaults — `<ul>` has no list-style/padding/margin, `<button>` has no default styling, etc. Don't write `padding: 0`, `margin: 0`, `list-style: none`, `border: 0`, `outline: 0`, `background: none`, etc. on individual components — those defaults are already gone. If you find yourself zeroing a property, that's a sign the global reset already handled it.
+- **Never reset element defaults in component CSS.** The global reset (`src/styles/reset.css` under `@layer reset`) already strips browser defaults. The reset handles:
+
+  | Element / Property | What's reset |
+  | --- | --- |
+  | `*, *::before, *::after` | `box-sizing: border-box`, `margin: 0`, `padding: 0` |
+  | `ul`, `ol` | `list-style: none` |
+  | `a` | `color: inherit`, `text-decoration: none` |
+  | `button` | `font: inherit`, `color: inherit`, `cursor: pointer`, `background: none`, `border: 0` |
+  | `input`, `textarea`, `select` | `font: inherit` |
+  | `img`, `video`, `svg` | `display: block`, `max-width: 100%` |
+  | `h1`–`h6` | `font-size: inherit`, `font-weight: inherit` (headings opt-in to their own styles) |
+  | `th` | `text-align: left` |
+
+  Never write any of these properties in a component CSS to "reset" them — the reset already did. If a property looks like a reset, ask: would the element have this anyway? If yes, delete the line. If no, the property is component-specific styling and belongs.
+
+  **If a new reset is needed broadly**, add it to `src/styles/reset.css` — not per-component.
 - **Never write vendor prefixes.** Build pipeline uses Lightning CSS, which auto-prefixes based on browserslist targets. Write the standard property only (`user-select: none`) — Lightning CSS adds `-webkit-*` / `-moz-*` / `-ms-*` variants if the targets need them. Manual prefixes are dead code and out of sync with build output.
 - **Primitives (`*Base` components) have no `.module.css` files.** They are headless by design — consumers control all visual styling. Behavior-related rules (`user-select`, `cursor`, `pointer-events`) go inline via the `style` prop merged through `mergeProps`. Visual styling lives in the styled component one level up (`Button` for `ButtonBase`, `Checkbox` for `CheckboxBase`, etc.).
 - **Never use `margin`.** Always use `flex` + `gap` or `grid` + `gap` for spacing between elements. No exceptions — if you reach for `margin-top`/`margin-bottom`/`margin-inline`, restructure the parent into a flex/grid container. Need different gaps between groups? Wrap the tighter group in a sub-container with its own gap.

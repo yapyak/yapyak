@@ -21,7 +21,6 @@
       td {
         padding: var(--space-2) var(--space-3);
         vertical-align: top;
-        text-align: left;
         border-bottom: 1px solid var(--rule);
       }
 

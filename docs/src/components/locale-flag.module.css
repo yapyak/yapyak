@@ -1,6 +1,5 @@
 @layer components {
   .LocaleFlag {
-    display: block;
     flex-shrink: 0;
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
   }

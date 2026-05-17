@@ -20,7 +20,6 @@
       }
 
       .ChevronIcon {
-        display: block;
         flex: 0 0 auto;
         color: var(--text-muted);
         transition: transform 150ms ease;

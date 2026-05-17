@@ -100,7 +100,6 @@
   }
 
   body {
-    margin: 0;
     min-height: 100vh;
     font-family: system-ui;
     font-size: var(--font-size-md);
@@ -122,7 +121,6 @@
 
     pre {
       padding: var(--space-5) var(--space-6);
-      margin: 0;
       overflow-x: auto;
       font-family: var(--font-mono);
       font-size: 14px;
@@ -234,7 +232,6 @@
     font-size: var(--font-size-xs);
     color: var(--text-muted);
     cursor: pointer;
-    background-color: transparent;
     border-right: 1px solid var(--rule);
     transition:
       background-color var(--transition),
@@ -245,7 +242,6 @@
     position: absolute;
     width: 1px;
     height: 1px;
-    margin: 0;
     overflow: hidden;
     white-space: nowrap;
     pointer-events: none;

@@ -112,7 +112,6 @@
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-medium);
       color: var(--text-muted);
-      text-align: left;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       background: var(--surface);
