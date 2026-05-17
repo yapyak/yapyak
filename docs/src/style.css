@@ -20,7 +20,6 @@
   --nav-bg: rgba(0, 0, 0, 0.2);
 
   --aqua: oklab(0.88 -0.21 0.01);
-  --aqua-ro: oklab(0.88 -0.21 0.01 / 0.1);
   --aqua-soft: oklab(0.88 -0.21 0.01 / 0.4);
   --mint: oklab(0.87 -0.24 0.06);
   --mint-soft: oklab(0.87 -0.24 0.06 / 0.4);
@@ -118,7 +117,7 @@
     font-size: var(--font-size-md);
     line-height: 1.65;
     color: var(--text-soft);
-    background: var(--bg);
+    background-color: var(--bg);
     hanging-punctuation: first last;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
