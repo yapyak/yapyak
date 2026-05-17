@@ -1,32 +1,35 @@
-import type { HTMLAttributes, ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
+
+import { Box } from '#components/box';
 
 import styles from './examples.module.css';
 
-export interface ReferenceSymbolExamplesProps
-  extends HTMLAttributes<HTMLElement> {
+export interface ReferenceSymbolExamplesProps extends BoxProps<'section'> {
   htmls: string[];
 }
 
-export function ReferenceSymbolExamples(
-  props: ReferenceSymbolExamplesProps,
-): ReactElement {
-  const { htmls, className, ...restProps } = props;
-  const merged = className
-    ? `${styles.ReferenceSymbolExamples} ${className}`
-    : styles.ReferenceSymbolExamples;
+export function ReferenceSymbolExamples(props: ReferenceSymbolExamplesProps) {
+  const { className, htmls, ...restProps } = props;
+
   return (
-    <section
+    <Box
       {...restProps}
-      className={merged}
+      as="section"
+      className={[styles.ReferenceSymbolExamples, className]}
     >
-      <h2 className={styles.Heading}>Examples</h2>
+      <Box
+        as="h2"
+        className={styles.Heading}
+      >
+        Examples
+      </Box>
       {htmls.map((html, index) => (
-        <div
+        <Box
           className={styles.Body}
           dangerouslySetInnerHTML={{ __html: html }}
           key={index}
         />
       ))}
-    </section>
+    </Box>
   );
 }

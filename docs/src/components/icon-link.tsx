@@ -1,21 +1,19 @@
-import type { AnchorHTMLAttributes, ReactElement, ReactNode } from 'react';
+import type { BoxProps } from '#components/box';
 
-import { cn } from '#lib/cn';
+import { Box } from '#components/box';
 
 import styles from './icon-link.module.css';
 
-export interface IconLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
-  children?: ReactNode;
-}
+export interface IconLinkProps extends BoxProps<'a'> {}
 
-export function IconLink(props: IconLinkProps): ReactElement {
-  const { children, className, ...restProps } = props;
+export function IconLink(props: IconLinkProps) {
+  const { className, ...restProps } = props;
+
   return (
-    <a
+    <Box
       {...restProps}
-      className={cn(styles.IconLink, className)}
-    >
-      {children}
-    </a>
+      as="a"
+      className={[styles.IconLink, className]}
+    />
   );
 }

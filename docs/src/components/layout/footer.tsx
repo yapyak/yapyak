@@ -1,21 +1,19 @@
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+import type { BoxProps } from '#components/box';
 
-import { cn } from '#lib/cn';
+import { Box } from '#components/box';
 
 import styles from './footer.module.css';
 
-export interface LayoutFooterProps extends HTMLAttributes<HTMLElement> {
-  children?: ReactNode;
-}
+export interface LayoutFooterProps extends BoxProps<'footer'> {}
 
-export function LayoutFooter(props: LayoutFooterProps): ReactElement {
-  const { children, className, ...restProps } = props;
+export function LayoutFooter(props: LayoutFooterProps) {
+  const { className, ...restProps } = props;
+
   return (
-    <footer
+    <Box
       {...restProps}
-      className={cn(styles.LayoutFooter, className)}
-    >
-      {children}
-    </footer>
+      as="footer"
+      className={[styles.LayoutFooter, className]}
+    />
   );
 }

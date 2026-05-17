@@ -1,8 +1,9 @@
-import type { CSSProperties, ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
 import type { Lang } from '#utils/tokenize';
 
 import { useLayoutEffect, useRef, useState } from 'react';
 
+import { Box } from '#components/box';
 import { tokenize } from '#utils/tokenize';
 
 import styles from './editor.module.css';
@@ -22,7 +23,7 @@ export const FRAMEWORKS: FrameworkConfig[] = [
   { filename: 'app.svelte', id: 'svelte', label: 'Svelte', lang: 'svelte' },
 ];
 
-export interface HeroDemoEditorProps {
+export interface HeroDemoEditorProps extends BoxProps {
   framework: Framework;
   onFrameworkChange: (framework: Framework) => void;
   saving: boolean;
@@ -38,8 +39,9 @@ interface IndicatorState {
   x: number;
 }
 
-export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
-  const { source, typing, saving, framework, onFrameworkChange } = props;
+export function HeroDemoEditor(props: HeroDemoEditorProps) {
+  const { className, framework, onFrameworkChange, saving, source, typing } =
+    props;
   const config =
     // biome-ignore lint/style/noNonNullAssertion: yap yap yap
     FRAMEWORKS.find((entry) => entry.id === framework) ?? FRAMEWORKS[0]!;
@@ -52,7 +54,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
 
   useLayoutEffect(() => {
     const $tabs = tabsElement.current;
-    if ($tabs === null) {
+    if (!$tabs) {
       return;
     }
     const activeTab = $tabs.querySelector('[data-active]');
@@ -69,54 +71,63 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
     return () => window.cancelAnimationFrame(frame);
   }, [framework]);
 
-  const indicatorStyle: CSSProperties | undefined =
-    indicator !== null
-      ? {
-          transform: `translateX(${indicator.x}px)`,
-          width: `${indicator.width}px`,
-        }
-      : undefined;
-
   return (
-    <div
-      className={styles.HeroDemoEditor}
-      data-saving={saving || undefined}
+    <Box
+      className={[styles.HeroDemoEditor, className]}
+      data-saving={saving}
     >
-      <div
+      <Box
         className={styles.Tabs}
         ref={tabsElement}
       >
-        {indicator !== null ? (
-          <span
+        {indicator && (
+          <Box
             aria-hidden="true"
+            as="span"
             className={styles.TabIndicator}
-            data-ready={isReady || undefined}
-            style={indicatorStyle}
+            data-ready={isReady}
+            style={{
+              transform: `translateX(${indicator.x}px)`,
+              width: `${indicator.width}px`,
+            }}
           />
-        ) : null}
+        )}
         {FRAMEWORKS.map((entry) => {
           const isActive = entry.id === framework;
           const isDirty = isActive && (typing || saving);
           return (
-            <button
+            <Box
+              as="button"
               className={styles.Tab}
-              data-active={isActive || undefined}
+              data-active={isActive}
               key={entry.id}
               onClick={() => onFrameworkChange(entry.id)}
               type="button"
             >
-              <span className={styles.TabFilename}>{entry.filename}</span>
-              <span
+              <Box
+                as="span"
+                className={styles.TabFilename}
+              >
+                {entry.filename}
+              </Box>
+              <Box
                 aria-hidden="true"
+                as="span"
                 className={styles.TabDot}
-                data-dirty={isDirty || undefined}
+                data-dirty={isDirty}
               />
-            </button>
+            </Box>
           );
         })}
-      </div>
-      <pre className={styles.Pre}>
-        <code className={styles.Code}>
+      </Box>
+      <Box
+        as="pre"
+        className={styles.Pre}
+      >
+        <Box
+          as="code"
+          className={styles.Code}
+        >
           {tokens.map((token, index) => {
             if (
               token.type === 'tx-source' &&
@@ -127,33 +138,36 @@ export function HeroDemoEditor(props: HeroDemoEditorProps): ReactElement {
               const before = parts[0] ?? '';
               const after = parts[1] ?? '';
               return (
-                <span
+                <Box
+                  as="span"
                   className="tx-tx-source"
                   key={index}
                 >
-                  <span>'</span>
+                  <Box as="span">'</Box>
                   {before}
-                  <span
+                  <Box
+                    as="span"
                     className={styles.Caret}
-                    data-typing={typing || undefined}
+                    data-typing={typing}
                   />
                   {after}
-                  <span>'</span>
-                </span>
+                  <Box as="span">'</Box>
+                </Box>
               );
             }
             return (
-              <span
+              <Box
+                as="span"
                 className={`tx-${token.type}`}
                 key={index}
               >
                 {token.value}
-              </span>
+              </Box>
             );
           })}
-        </code>
-      </pre>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 }
 

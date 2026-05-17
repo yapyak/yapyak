@@ -1,32 +1,53 @@
-import type { ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
 import type { Feature } from '#utils/features';
+
+import { Box } from '#components/box';
 
 import styles from './item.module.css';
 
-export interface FeatureListItemProps {
+export interface FeatureListItemProps extends BoxProps<'li'> {
   feature: Feature;
 }
 
-export function FeatureListItem(props: FeatureListItemProps): ReactElement {
-  const { feature } = props;
+export function FeatureListItem(props: FeatureListItemProps) {
+  const { className, feature, ...restProps } = props;
+
   return (
-    <li
-      className={styles.FeatureListItem}
+    <Box
+      {...restProps}
+      as="li"
+      className={[styles.FeatureListItem, className]}
       data-accent={feature.accent}
     >
-      <span
+      <Box
         aria-hidden="true"
         className={styles.Indicator}
       />
-      <span className={styles.Numeral}>{feature.number}</span>
-      <div className={styles.Content}>
-        <h3 className={styles.Title}>{feature.title}</h3>
-        <span
+      <Box
+        as="span"
+        className={styles.Numeral}
+      >
+        {feature.number}
+      </Box>
+      <Box className={styles.Content}>
+        <Box
+          as="h3"
+          className={styles.Title}
+        >
+          {feature.title}
+        </Box>
+        <Box
           aria-hidden="true"
+          as="span"
           className={styles.Underline}
         />
-        <p className={styles.Description}>{feature.description}</p>
-      </div>
-    </li>
+        <Box
+          as="p"
+          className={styles.Description}
+        >
+          {feature.description}
+        </Box>
+      </Box>
+    </Box>
   );
 }

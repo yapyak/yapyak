@@ -1,4 +1,6 @@
-import type { HTMLAttributes, ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
+
+import { Box } from '#components/box';
 
 import styles from './member-table.module.css';
 
@@ -9,51 +11,65 @@ export interface ReferenceSymbolMember {
   type: string;
 }
 
-export interface ReferenceSymbolMemberTableProps
-  extends HTMLAttributes<HTMLElement> {
+export interface ReferenceSymbolMemberTableProps extends BoxProps<'section'> {
   members: ReferenceSymbolMember[];
   title: string;
 }
 
 export function ReferenceSymbolMemberTable(
   props: ReferenceSymbolMemberTableProps,
-): ReactElement {
-  const { title, members, className, ...restProps } = props;
-  const merged = className
-    ? `${styles.ReferenceSymbolMemberTable} ${className}`
-    : styles.ReferenceSymbolMemberTable;
+) {
+  const { className, members, title, ...restProps } = props;
+
   return (
-    <section
+    <Box
       {...restProps}
-      className={merged}
+      as="section"
+      className={[styles.ReferenceSymbolMemberTable, className]}
     >
-      <h2 className={styles.Heading}>{title}</h2>
-      <table className={styles.Table}>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Box
+        as="h2"
+        className={styles.Heading}
+      >
+        {title}
+      </Box>
+      <Box
+        as="table"
+        className={styles.Table}
+      >
+        <Box as="thead">
+          <Box as="tr">
+            <Box as="th">Name</Box>
+            <Box as="th">Type</Box>
+            <Box as="th">Description</Box>
+          </Box>
+        </Box>
+        <Box as="tbody">
           {members.map((member) => (
-            <tr key={member.name}>
-              <td>
-                <code>{member.name}</code>
-                {member.optional ? (
-                  <span className={styles.Optional}>?</span>
-                ) : null}
-              </td>
-              <td>
-                <code>{member.type}</code>
-              </td>
-              <td>{stripDashPrefix(member.description)}</td>
-            </tr>
+            <Box
+              as="tr"
+              key={member.name}
+            >
+              <Box as="td">
+                <Box as="code">{member.name}</Box>
+                {member.optional && (
+                  <Box
+                    as="span"
+                    className={styles.Optional}
+                  >
+                    ?
+                  </Box>
+                )}
+              </Box>
+              <Box as="td">
+                <Box as="code">{member.type}</Box>
+              </Box>
+              <Box as="td">{stripDashPrefix(member.description)}</Box>
+            </Box>
           ))}
-        </tbody>
-      </table>
-    </section>
+        </Box>
+      </Box>
+    </Box>
   );
 }
 

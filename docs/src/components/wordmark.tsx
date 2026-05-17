@@ -1,12 +1,32 @@
-import type { ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
+
+import { Box } from '#components/box';
 
 import styles from './wordmark.module.css';
 
-export function Wordmark(): ReactElement {
+export interface WordmarkProps extends BoxProps<'span'> {}
+
+export function Wordmark(props: WordmarkProps) {
+  const { className, ...restProps } = props;
+
   return (
-    <span className={styles.Wordmark}>
-      <span className={styles.Yap}>yap</span>
-      <span className={styles.Yak}>yak</span>
-    </span>
+    <Box
+      {...restProps}
+      as="span"
+      className={[styles.Wordmark, className]}
+    >
+      <Box
+        as="span"
+        className={styles.Yap}
+      >
+        yap
+      </Box>
+      <Box
+        as="span"
+        className={styles.Yak}
+      >
+        yak
+      </Box>
+    </Box>
   );
 }

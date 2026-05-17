@@ -1,4 +1,6 @@
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+import type { BoxProps } from '#components/box';
+
+import { Box } from '#components/box';
 
 import styles from './reference-symbol.module.css';
 import { ReferenceSymbolDeprecated } from './reference-symbol/deprecated';
@@ -10,22 +12,17 @@ import { ReferenceSymbolReturns } from './reference-symbol/returns';
 import { ReferenceSymbolSignature } from './reference-symbol/signature';
 import { ReferenceSymbolSourceLink } from './reference-symbol/source-link';
 
-export interface ReferenceSymbolProps extends HTMLAttributes<HTMLElement> {
-  children?: ReactNode;
-}
+export interface ReferenceSymbolProps extends BoxProps<'article'> {}
 
-export function ReferenceSymbol(props: ReferenceSymbolProps): ReactElement {
-  const { children, className, ...restProps } = props;
-  const merged = className
-    ? `${styles.ReferenceSymbol} ${className}`
-    : styles.ReferenceSymbol;
+export function ReferenceSymbol(props: ReferenceSymbolProps) {
+  const { className, ...restProps } = props;
+
   return (
-    <article
+    <Box
       {...restProps}
-      className={merged}
-    >
-      {children}
-    </article>
+      as="article"
+      className={[styles.ReferenceSymbol, className]}
+    />
   );
 }
 

@@ -1,32 +1,36 @@
-import type { HTMLAttributes, ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
+
+import { Box } from '#components/box';
 
 import styles from './returns.module.css';
 
-export interface ReferenceSymbolReturnsProps
-  extends HTMLAttributes<HTMLElement> {
+export interface ReferenceSymbolReturnsProps extends BoxProps<'section'> {
   description?: string;
   type: string;
 }
 
-export function ReferenceSymbolReturns(
-  props: ReferenceSymbolReturnsProps,
-): ReactElement {
-  const { type, description, className, ...restProps } = props;
-  const merged = className
-    ? `${styles.ReferenceSymbolReturns} ${className}`
-    : styles.ReferenceSymbolReturns;
+export function ReferenceSymbolReturns(props: ReferenceSymbolReturnsProps) {
+  const { className, description, type, ...restProps } = props;
+
   return (
-    <section
+    <Box
       {...restProps}
-      className={merged}
+      as="section"
+      className={[styles.ReferenceSymbolReturns, className]}
     >
-      <h2 className={styles.Heading}>Returns</h2>
-      <p className={styles.Line}>
-        <code>{type}</code>
-        {description !== undefined && description !== ''
-          ? ` — ${description}`
-          : null}
-      </p>
-    </section>
+      <Box
+        as="h2"
+        className={styles.Heading}
+      >
+        Returns
+      </Box>
+      <Box
+        as="p"
+        className={styles.Line}
+      >
+        <Box as="code">{type}</Box>
+        {description && ` — ${description}`}
+      </Box>
+    </Box>
   );
 }

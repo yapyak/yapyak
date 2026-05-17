@@ -1,25 +1,24 @@
-import type { HTMLAttributes, ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
+
+import { Box } from '#components/box';
 
 import styles from './deprecated.module.css';
 
-export interface ReferenceSymbolDeprecatedProps
-  extends HTMLAttributes<HTMLDivElement> {
+export interface ReferenceSymbolDeprecatedProps extends BoxProps {
   message: string;
 }
 
 export function ReferenceSymbolDeprecated(
   props: ReferenceSymbolDeprecatedProps,
-): ReactElement {
-  const { message, className, ...restProps } = props;
-  const merged = className
-    ? `${styles.ReferenceSymbolDeprecated} ${className}`
-    : styles.ReferenceSymbolDeprecated;
+) {
+  const { className, message, ...restProps } = props;
+
   return (
-    <div
+    <Box
       {...restProps}
-      className={merged}
+      className={[styles.ReferenceSymbolDeprecated, className]}
     >
-      <strong>Deprecated.</strong> {message}
-    </div>
+      <Box as="strong">Deprecated.</Box> {message}
+    </Box>
   );
 }

@@ -1,29 +1,28 @@
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+import type { BoxProps } from '#components/box';
 
-import { cn } from '#lib/cn';
+import { Box } from '#components/box';
 
 import { LayoutFooter } from './layout/footer';
 import { LayoutHeader } from './layout/header';
 import { LayoutMain } from './layout/main';
 import styles from './layout.module.css';
 
-export interface LayoutProps extends HTMLAttributes<HTMLDivElement> {
-  children?: ReactNode;
-}
+export interface LayoutProps extends BoxProps {}
 
-export function Layout(props: LayoutProps): ReactElement {
+export function Layout(props: LayoutProps) {
   const { children, className, ...restProps } = props;
+
   return (
-    <div
+    <Box
       {...restProps}
-      className={cn(styles.Layout, className)}
+      className={[styles.Layout, className]}
     >
-      <div
+      <Box
         aria-hidden="true"
         className={styles.Grain}
       />
       {children}
-    </div>
+    </Box>
   );
 }
 

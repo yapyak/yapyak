@@ -1,28 +1,31 @@
-import type { HTMLAttributes, ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
+
+import { Box } from '#components/box';
 
 import styles from './source-link.module.css';
 
-export interface ReferenceSymbolSourceLinkProps
-  extends HTMLAttributes<HTMLElement> {
+export interface ReferenceSymbolSourceLinkProps extends BoxProps<'footer'> {
   file: string;
   line: number;
 }
 
 export function ReferenceSymbolSourceLink(
   props: ReferenceSymbolSourceLinkProps,
-): ReactElement {
-  const { file, line, className, ...restProps } = props;
-  const merged = className
-    ? `${styles.ReferenceSymbolSourceLink} ${className}`
-    : styles.ReferenceSymbolSourceLink;
+) {
+  const { className, file, line, ...restProps } = props;
+
   return (
-    <footer
+    <Box
       {...restProps}
-      className={merged}
+      as="footer"
+      className={[styles.ReferenceSymbolSourceLink, className]}
     >
-      <span className={styles.Path}>
+      <Box
+        as="span"
+        className={styles.Path}
+      >
         {file}:{line}
-      </span>
-    </footer>
+      </Box>
+    </Box>
   );
 }

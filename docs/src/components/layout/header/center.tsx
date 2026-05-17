@@ -1,24 +1,18 @@
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+import type { BoxProps } from '#components/box';
 
-import { cn } from '#lib/cn';
+import { Box } from '#components/box';
 
 import styles from './center.module.css';
 
-export interface LayoutHeaderCenterProps
-  extends HTMLAttributes<HTMLDivElement> {
-  children?: ReactNode;
-}
+export interface LayoutHeaderCenterProps extends BoxProps {}
 
-export function LayoutHeaderCenter(
-  props: LayoutHeaderCenterProps,
-): ReactElement {
-  const { children, className, ...restProps } = props;
+export function LayoutHeaderCenter(props: LayoutHeaderCenterProps) {
+  const { className, ...restProps } = props;
+
   return (
-    <div
+    <Box
       {...restProps}
-      className={cn(styles.LayoutHeaderCenter, className)}
-    >
-      {children}
-    </div>
+      className={[styles.LayoutHeaderCenter, className]}
+    />
   );
 }

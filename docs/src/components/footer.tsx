@@ -1,10 +1,13 @@
-import type { ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
 
 import { useEffect, useState } from 'react';
 
+import { Box } from '#components/box';
 import { Wordmark } from '#components/wordmark';
 
 import styles from './footer.module.css';
+
+export interface FooterProps extends BoxProps {}
 
 const TAGLINES = [
   "Who's yakking in the back? That's yapyak.",
@@ -18,7 +21,8 @@ const TAGLINES = [
 
 const ROTATION_INTERVAL = 5200;
 
-export function Footer(): ReactElement {
+export function Footer(props: FooterProps) {
+  const { className, ...restProps } = props;
   const [index, setIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -42,44 +46,68 @@ export function Footer(): ReactElement {
   }, []);
 
   return (
-    <div className={styles.Footer}>
-      <img
+    <Box
+      {...restProps}
+      className={[styles.Footer, className]}
+    >
+      <Box
         alt=""
         aria-hidden="true"
+        as="img"
         className={styles.Bubble}
         src="/logo.svg"
       />
-      <div className={styles.TaglineSlot}>
-        {index !== null ? (
-          <p
+      <Box className={styles.TaglineSlot}>
+        {index !== null && (
+          <Box
+            as="p"
             className={styles.Tagline}
             key={index}
           >
             {TAGLINES[index]}
-          </p>
-        ) : null}
-      </div>
+          </Box>
+        )}
+      </Box>
       <Wordmark />
-      <p className={styles.Copyright}>
+      <Box
+        as="p"
+        className={styles.Copyright}
+      >
         © 2026 yapyak
-        <span className={styles.Separator}>·</span>
+        <Box
+          as="span"
+          className={styles.Separator}
+        >
+          ·
+        </Box>
         MIT license
-        <span className={styles.Separator}>·</span>
-        <a
+        <Box
+          as="span"
+          className={styles.Separator}
+        >
+          ·
+        </Box>
+        <Box
+          as="a"
           className={styles.Link}
           href="https://github.com/yapyak/yapyak"
         >
           GitHub
-        </a>
-        <span className={styles.Separator}>·</span>
-        <a
+        </Box>
+        <Box
+          as="span"
+          className={styles.Separator}
+        >
+          ·
+        </Box>
+        <Box
+          as="a"
           className={styles.Link}
           href="https://www.npmjs.com/package/yapyak"
         >
           npm
-        </a>
-      </p>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 }
-

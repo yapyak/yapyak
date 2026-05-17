@@ -1,25 +1,37 @@
-import type { ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
 
+import { Box } from '#components/box';
 import { FEATURES } from '#utils/features';
 
 import { FeatureListItem } from './feature-list/item';
 import styles from './feature-list.module.css';
 
-export function FeatureList(): ReactElement {
+export interface FeatureListProps extends BoxProps<'section'> {}
+
+export function FeatureList(props: FeatureListProps) {
+  const { className, ...restProps } = props;
+
   return (
-    <section className={styles.FeatureList}>
-      <div
+    <Box
+      {...restProps}
+      as="section"
+      className={[styles.FeatureList, className]}
+    >
+      <Box
         aria-hidden="true"
         className={styles.Divider}
       />
-      <ol className={styles.List}>
+      <Box
+        as="ol"
+        className={styles.List}
+      >
         {FEATURES.map((feature) => (
           <FeatureListItem
             feature={feature}
             key={feature.number}
           />
         ))}
-      </ol>
-    </section>
+      </Box>
+    </Box>
   );
 }

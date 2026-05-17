@@ -1,20 +1,25 @@
-import type { ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
 import type { SidebarNode } from '#lib/sidebars';
 
-import styles from './guide-navigation.module.css';
+import { Box } from '#components/box';
+
 import { GuideNavigationGroup } from './guide-navigation/group';
 import { GuideNavigationLink } from './guide-navigation/link';
+import styles from './guide-navigation.module.css';
 
-export interface GuideNavigationProps {
+export interface GuideNavigationProps extends BoxProps<'nav'> {
   items: SidebarNode[];
 }
 
-export function GuideNavigation(props: GuideNavigationProps): ReactElement {
-  const { items } = props;
+export function GuideNavigation(props: GuideNavigationProps) {
+  const { className, items, ...restProps } = props;
+
   return (
-    <nav
+    <Box
       aria-label="Guide navigation"
-      className={styles.GuideNavigation}
+      {...restProps}
+      as="nav"
+      className={[styles.GuideNavigation, className]}
     >
       {items.map((node) =>
         node.type === 'group' ? (
@@ -30,6 +35,6 @@ export function GuideNavigation(props: GuideNavigationProps): ReactElement {
           />
         ),
       )}
-    </nav>
+    </Box>
   );
 }

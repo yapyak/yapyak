@@ -1,20 +1,22 @@
-import type { ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
 import type { RefModule } from '#docs/build-reference-sidebar';
 
 import { useLocation } from '@tanstack/react-router';
 import { useState } from 'react';
 
+import { Box } from '#components/box';
+
 import styles from './module.module.css';
 import { ReferenceNavigationSymbol } from './symbol';
 
-export interface ReferenceNavigationModuleProps {
+export interface ReferenceNavigationModuleProps extends BoxProps {
   module: RefModule;
 }
 
 export function ReferenceNavigationModule(
   props: ReferenceNavigationModuleProps,
-): ReactElement {
-  const { module } = props;
+) {
+  const { className, module, ...restProps } = props;
   const location = useLocation();
   const isOnPath = location.pathname.startsWith(module.href);
   const hasChildren = module.symbols.length > 0 || module.submodules.length > 0;
@@ -22,32 +24,50 @@ export function ReferenceNavigationModule(
   const displayName = lastSegment(module.id);
 
   return (
-    <div className={styles.ReferenceNavigationModule}>
-      <button
+    <Box
+      {...restProps}
+      className={[styles.ReferenceNavigationModule, className]}
+    >
+      <Box
         aria-expanded={isOpen}
+        as="button"
         className={styles.ToggleRow}
-        data-open={isOpen ? 'true' : undefined}
+        data-open={isOpen}
         onClick={() => setIsOpen((current) => !current)}
         type="button"
       >
         <ChevronIcon />
-        <span className={styles.ModuleLabel}>{displayName}</span>
-      </button>
-      {hasChildren && isOpen ? (
-        <ul className={styles.ChildList}>
+        <Box
+          as="span"
+          className={styles.ModuleLabel}
+        >
+          {displayName}
+        </Box>
+      </Box>
+      {hasChildren && isOpen && (
+        <Box
+          as="ul"
+          className={styles.ChildList}
+        >
           {module.symbols.map((symbol) => (
-            <li key={symbol.href}>
+            <Box
+              as="li"
+              key={symbol.href}
+            >
               <ReferenceNavigationSymbol symbol={symbol} />
-            </li>
+            </Box>
           ))}
           {module.submodules.map((submodule) => (
-            <li key={submodule.id}>
+            <Box
+              as="li"
+              key={submodule.id}
+            >
               <ReferenceNavigationModule module={submodule} />
-            </li>
+            </Box>
           ))}
-        </ul>
-      ) : null}
-    </div>
+        </Box>
+      )}
+    </Box>
   );
 }
 
@@ -56,7 +76,7 @@ function lastSegment(id: string): string {
   return slashIndex === -1 ? id : id.slice(slashIndex + 1);
 }
 
-function ChevronIcon(): ReactElement {
+function ChevronIcon() {
   return (
     <svg
       aria-hidden="true"

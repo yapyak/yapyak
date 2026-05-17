@@ -1,24 +1,19 @@
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+import type { BoxProps } from '#components/box';
+
+import { Box } from '#components/box';
 
 import styles from './sidebar.module.css';
 
-export interface GuideLayoutSidebarProps extends HTMLAttributes<HTMLElement> {
-  children?: ReactNode;
-}
+export interface GuideLayoutSidebarProps extends BoxProps<'aside'> {}
 
-export function GuideLayoutSidebar(
-  props: GuideLayoutSidebarProps,
-): ReactElement {
-  const { children, className, ...restProps } = props;
-  const merged = className
-    ? `${styles.GuideLayoutSidebar} ${className}`
-    : styles.GuideLayoutSidebar;
+export function GuideLayoutSidebar(props: GuideLayoutSidebarProps) {
+  const { className, ...restProps } = props;
+
   return (
-    <aside
+    <Box
       {...restProps}
-      className={merged}
-    >
-      {children}
-    </aside>
+      as="aside"
+      className={[styles.GuideLayoutSidebar, className]}
+    />
   );
 }

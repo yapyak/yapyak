@@ -1,24 +1,17 @@
-import type {
-  CSSProperties,
-  HTMLAttributes,
-  ReactElement,
-  ReactNode,
-} from 'react';
+import type { BoxProps } from '#components/box';
 
 import { useEffect, useState } from 'react';
 
-import { cn } from '#lib/cn';
+import { Box } from '#components/box';
 
 import styles from './header.module.css';
 import { LayoutHeaderCenter } from './header/center';
 import { LayoutHeaderEnd } from './header/end';
 import { LayoutHeaderStart } from './header/start';
 
-export interface LayoutHeaderProps extends HTMLAttributes<HTMLElement> {
-  children?: ReactNode;
-}
+export interface LayoutHeaderProps extends BoxProps<'header'> {}
 
-export function LayoutHeader(props: LayoutHeaderProps): ReactElement {
+export function LayoutHeader(props: LayoutHeaderProps) {
   const { children, className, style, ...restProps } = props;
   const [fillOpacity, setFillOpacity] = useState(0);
 
@@ -32,14 +25,15 @@ export function LayoutHeader(props: LayoutHeaderProps): ReactElement {
   }, []);
 
   return (
-    <header
+    <Box
       {...restProps}
-      className={cn(styles.LayoutHeader, className)}
-      style={{ ...style, '--fill-opacity': fillOpacity } as CSSProperties}
+      as="header"
+      className={[styles.LayoutHeader, className]}
+      style={[style, { '--fill-opacity': fillOpacity }]}
     >
-      <div className={styles.Fill} />
+      <Box className={styles.Fill} />
       {children}
-    </header>
+    </Box>
   );
 }
 

@@ -1,29 +1,32 @@
-import type { HTMLAttributes, ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
+
+import { Box } from '#components/box';
 
 import styles from './signature.module.css';
 
-export interface ReferenceSymbolSignatureProps
-  extends HTMLAttributes<HTMLElement> {
+export interface ReferenceSymbolSignatureProps extends BoxProps<'section'> {
   html: string;
 }
 
-export function ReferenceSymbolSignature(
-  props: ReferenceSymbolSignatureProps,
-): ReactElement {
-  const { html, className, ...restProps } = props;
-  const merged = className
-    ? `${styles.ReferenceSymbolSignature} ${className}`
-    : styles.ReferenceSymbolSignature;
+export function ReferenceSymbolSignature(props: ReferenceSymbolSignatureProps) {
+  const { className, html, ...restProps } = props;
+
   return (
-    <section
+    <Box
       {...restProps}
-      className={merged}
+      as="section"
+      className={[styles.ReferenceSymbolSignature, className]}
     >
-      <h2 className={styles.Heading}>Signature</h2>
-      <div
+      <Box
+        as="h2"
+        className={styles.Heading}
+      >
+        Signature
+      </Box>
+      <Box
         className={styles.Body}
         dangerouslySetInnerHTML={{ __html: html }}
       />
-    </section>
+    </Box>
   );
 }

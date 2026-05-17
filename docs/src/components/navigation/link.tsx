@@ -1,28 +1,20 @@
-import type { LinkProps } from '@tanstack/react-router';
-import type { ReactElement, ReactNode } from 'react';
+import type { ComponentProps } from 'react';
 
 import { Link } from '@tanstack/react-router';
 
-import { cn } from '#lib/cn';
+import { mergeClassNames } from '#utils/merge-class-names';
 
 import styles from './link.module.css';
 
-export interface NavigationLinkProps extends Omit<LinkProps, 'className'> {
-  children?: ReactNode;
-  className?: string;
-}
+export interface NavigationLinkProps extends ComponentProps<typeof Link> {}
 
-export function NavigationLink(props: NavigationLinkProps): ReactElement {
-  const { children, className, ...restProps } = props;
+export function NavigationLink(props: NavigationLinkProps) {
+  const { className, ...restProps } = props;
+
   return (
     <Link
       {...restProps}
-      className={cn(
-        styles.NavigationLink,
-        typeof className === 'string' ? className : undefined,
-      )}
-    >
-      {children}
-    </Link>
+      className={mergeClassNames(styles.NavigationLink, className)}
+    />
   );
 }

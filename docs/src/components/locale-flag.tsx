@@ -1,5 +1,3 @@
-import type { ReactElement, ReactNode } from 'react';
-
 import { useId } from 'react';
 
 import styles from './locale-flag.module.css';
@@ -10,7 +8,7 @@ export interface LocaleFlagProps {
   code: LocaleFlagCode;
 }
 
-export function LocaleFlag(props: LocaleFlagProps): ReactElement {
+export function LocaleFlag(props: LocaleFlagProps) {
   const { code } = props;
   const id = useId();
   const clipId = `${id}-clip`;
@@ -44,7 +42,7 @@ export function LocaleFlag(props: LocaleFlagProps): ReactElement {
   );
 }
 
-function renderFlag(code: LocaleFlagCode): ReactNode {
+function renderFlag(code: LocaleFlagCode) {
   switch (code) {
     case 'sv':
       return (

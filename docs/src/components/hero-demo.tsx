@@ -1,21 +1,26 @@
-import type { ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
 import type { Framework } from './hero-demo/editor';
 
 import { useEffect, useRef, useState } from 'react';
 
+import { Box } from '#components/box';
+import { useDemoState } from '#hooks/use-demo-state';
+
 import styles from './hero-demo.module.css';
 import { HeroDemoEditor } from './hero-demo/editor';
 import { HeroDemoLocales } from './hero-demo/locales';
-import { useDemoState } from '#hooks/use-demo-state';
 
-export function HeroDemo(): ReactElement {
+export interface HeroDemoProps extends BoxProps {}
+
+export function HeroDemo(props: HeroDemoProps) {
+  const { className, ...restProps } = props;
   const containerElement = useRef<HTMLDivElement>(null);
   const [isActive, setIsActive] = useState(false);
   const [framework, setFramework] = useState<Framework>('react');
 
   useEffect(() => {
     const $element = containerElement.current;
-    if ($element === null) {
+    if (!$element) {
       return;
     }
     const observer = new IntersectionObserver(
@@ -37,12 +42,13 @@ export function HeroDemo(): ReactElement {
   const state = useDemoState(isActive);
 
   return (
-    <div
-      className={styles.HeroDemo}
-      data-active={isActive || undefined}
+    <Box
+      {...restProps}
+      className={[styles.HeroDemo, className]}
+      data-active={isActive}
       ref={containerElement}
     >
-      <div className={styles.Stack}>
+      <Box className={styles.Stack}>
         <HeroDemoEditor
           framework={framework}
           onFrameworkChange={setFramework}
@@ -56,7 +62,7 @@ export function HeroDemo(): ReactElement {
           shimmering={state.shimmering}
           translations={state.translations}
         />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

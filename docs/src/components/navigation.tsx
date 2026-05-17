@@ -1,21 +1,14 @@
-import type {
-  CSSProperties,
-  HTMLAttributes,
-  ReactElement,
-  ReactNode,
-} from 'react';
+import type { BoxProps } from '#components/box';
 
 import { useLocation } from '@tanstack/react-router';
 import { useLayoutEffect, useRef, useState } from 'react';
 
-import { cn } from '#lib/cn';
+import { Box } from '#components/box';
 
-import styles from './navigation.module.css';
 import { NavigationLink } from './navigation/link';
+import styles from './navigation.module.css';
 
-export interface NavigationProps extends HTMLAttributes<HTMLElement> {
-  children?: ReactNode;
-}
+export interface NavigationProps extends BoxProps<'nav'> {}
 
 interface IndicatorState {
   height: number;
@@ -26,7 +19,7 @@ interface IndicatorState {
 
 const SLIDE_DURATION = 320;
 
-export function Navigation(props: NavigationProps): ReactElement {
+export function Navigation(props: NavigationProps) {
   const { children, className, ...restProps } = props;
   const element = useRef<HTMLElement>(null);
   const previousPathnameRef = useRef<string | null>(null);
@@ -88,31 +81,29 @@ export function Navigation(props: NavigationProps): ReactElement {
     };
   }, [location.pathname]);
 
-  const indicatorStyle: CSSProperties | undefined = indicator
-    ? {
-        height: `${indicator.height}px`,
-        transform: `translate(${indicator.x}px, ${indicator.y}px)`,
-        width: `${indicator.width}px`,
-      }
-    : undefined;
-
   return (
-    <nav
+    <Box
       {...restProps}
-      className={cn(styles.Navigation, className)}
-      data-animating={isAnimating ? '' : undefined}
+      as="nav"
+      className={[styles.Navigation, className]}
+      data-animating={isAnimating}
       ref={element}
     >
       {indicator && (
-        <span
+        <Box
           aria-hidden="true"
+          as="span"
           className={styles.Indicator}
-          data-ready={isReady ? '' : undefined}
-          style={indicatorStyle}
+          data-ready={isReady}
+          style={{
+            height: `${indicator.height}px`,
+            transform: `translate(${indicator.x}px, ${indicator.y}px)`,
+            width: `${indicator.width}px`,
+          }}
         />
       )}
       {children}
-    </nav>
+    </Box>
   );
 }
 

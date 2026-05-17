@@ -1,28 +1,28 @@
-import type { HTMLAttributes, ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
+
+import { Box } from '#components/box';
 
 import styles from './description.module.css';
 
-export interface ReferenceSymbolDescriptionProps
-  extends HTMLAttributes<HTMLElement> {
+export interface ReferenceSymbolDescriptionProps extends BoxProps<'section'> {
   html: string;
 }
 
 export function ReferenceSymbolDescription(
   props: ReferenceSymbolDescriptionProps,
-): ReactElement {
-  const { html, className, ...restProps } = props;
-  const merged = className
-    ? `${styles.ReferenceSymbolDescription} ${className}`
-    : styles.ReferenceSymbolDescription;
+) {
+  const { className, html, ...restProps } = props;
+
   return (
-    <section
+    <Box
       {...restProps}
-      className={merged}
+      as="section"
+      className={[styles.ReferenceSymbolDescription, className]}
     >
-      <div
+      <Box
         className={styles.Body}
         dangerouslySetInnerHTML={{ __html: html }}
       />
-    </section>
+    </Box>
   );
 }

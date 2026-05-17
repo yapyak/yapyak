@@ -1,25 +1,21 @@
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+import type { BoxProps } from '#components/box';
 
-import styles from './reference-layout.module.css';
+import { Box } from '#components/box';
+
 import { ReferenceLayoutContent } from './reference-layout/content';
 import { ReferenceLayoutSidebar } from './reference-layout/sidebar';
+import styles from './reference-layout.module.css';
 
-export interface ReferenceLayoutProps extends HTMLAttributes<HTMLDivElement> {
-  children?: ReactNode;
-}
+export interface ReferenceLayoutProps extends BoxProps {}
 
-export function ReferenceLayout(props: ReferenceLayoutProps): ReactElement {
-  const { children, className, ...restProps } = props;
-  const merged = className
-    ? `${styles.ReferenceLayout} ${className}`
-    : styles.ReferenceLayout;
+export function ReferenceLayout(props: ReferenceLayoutProps) {
+  const { className, ...restProps } = props;
+
   return (
-    <div
+    <Box
       {...restProps}
-      className={merged}
-    >
-      {children}
-    </div>
+      className={[styles.ReferenceLayout, className]}
+    />
   );
 }
 

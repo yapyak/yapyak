@@ -1,21 +1,19 @@
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+import type { BoxProps } from '#components/box';
 
-import { cn } from '#lib/cn';
+import { Box } from '#components/box';
 
 import styles from './main.module.css';
 
-export interface LayoutMainProps extends HTMLAttributes<HTMLElement> {
-  children?: ReactNode;
-}
+export interface LayoutMainProps extends BoxProps<'main'> {}
 
-export function LayoutMain(props: LayoutMainProps): ReactElement {
-  const { children, className, ...restProps } = props;
+export function LayoutMain(props: LayoutMainProps) {
+  const { className, ...restProps } = props;
+
   return (
-    <main
+    <Box
       {...restProps}
-      className={cn(styles.LayoutMain, className)}
-    >
-      {children}
-    </main>
+      as="main"
+      className={[styles.LayoutMain, className]}
+    />
   );
 }

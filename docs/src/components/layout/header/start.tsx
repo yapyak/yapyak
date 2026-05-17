@@ -1,21 +1,18 @@
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+import type { BoxProps } from '#components/box';
 
-import { cn } from '#lib/cn';
+import { Box } from '#components/box';
 
 import styles from './start.module.css';
 
-export interface LayoutHeaderStartProps extends HTMLAttributes<HTMLDivElement> {
-  children?: ReactNode;
-}
+export interface LayoutHeaderStartProps extends BoxProps {}
 
-export function LayoutHeaderStart(props: LayoutHeaderStartProps): ReactElement {
-  const { children, className, ...restProps } = props;
+export function LayoutHeaderStart(props: LayoutHeaderStartProps) {
+  const { className, ...restProps } = props;
+
   return (
-    <div
+    <Box
       {...restProps}
-      className={cn(styles.LayoutHeaderStart, className)}
-    >
-      {children}
-    </div>
+      className={[styles.LayoutHeaderStart, className]}
+    />
   );
 }

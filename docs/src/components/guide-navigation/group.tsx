@@ -1,32 +1,42 @@
-import type { ReactElement, ReactNode } from 'react';
+import type { BoxProps } from '#components/box';
 import type { SidebarGroup, SidebarNode } from '#lib/sidebars';
 
 import { Link } from '@tanstack/react-router';
 
+import { Box } from '#components/box';
+
 import styles from './group.module.css';
 import { GuideNavigationLink } from './link';
 
-export interface GuideNavigationGroupProps {
+export interface GuideNavigationGroupProps extends BoxProps {
   depth: number;
   node: SidebarGroup;
 }
 
-export function GuideNavigationGroup(
-  props: GuideNavigationGroupProps,
-): ReactElement {
-  const { node, depth } = props;
+export function GuideNavigationGroup(props: GuideNavigationGroupProps) {
+  const { className, depth, node, ...restProps } = props;
+
   return (
-    <div
-      className={styles.GuideNavigationGroup}
+    <Box
+      {...restProps}
+      className={[styles.GuideNavigationGroup, className]}
       data-depth={depth}
     >
       <Title node={node} />
-      <ul className={styles.Items}>
+      <Box
+        as="ul"
+        className={styles.Items}
+      >
         {node.items.map((child) => (
-          <li key={getKey(child)}>{renderChild(child, depth + 1)}</li>
+          <Box
+            as="li"
+            key={getKey(child)}
+          >
+            {renderChild(child, depth + 1)}
+          </Box>
         ))}
-      </ul>
-    </div>
+      </Box>
+    </Box>
   );
 }
 
@@ -34,22 +44,31 @@ interface TitleProps {
   node: SidebarGroup;
 }
 
-function Title(props: TitleProps): ReactNode {
+function Title(props: TitleProps) {
   const { node } = props;
+
   if (node.href === undefined) {
-    return <h3 className={styles.Title}>{node.title}</h3>;
+    return (
+      <Box
+        as="h3"
+        className={styles.Title}
+      >
+        {node.title}
+      </Box>
+    );
   }
   return (
-    <Link
+    <Box
+      as={Link}
       className={styles.TitleLink}
       to={node.href}
     >
       {node.title}
-    </Link>
+    </Box>
   );
 }
 
-function renderChild(child: SidebarNode, depth: number): ReactElement {
+function renderChild(child: SidebarNode, depth: number) {
   if (child.type === 'group') {
     return (
       <GuideNavigationGroup

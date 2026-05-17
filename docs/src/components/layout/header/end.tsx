@@ -1,21 +1,18 @@
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+import type { BoxProps } from '#components/box';
 
-import { cn } from '#lib/cn';
+import { Box } from '#components/box';
 
 import styles from './end.module.css';
 
-export interface LayoutHeaderEndProps extends HTMLAttributes<HTMLDivElement> {
-  children?: ReactNode;
-}
+export interface LayoutHeaderEndProps extends BoxProps {}
 
-export function LayoutHeaderEnd(props: LayoutHeaderEndProps): ReactElement {
-  const { children, className, ...restProps } = props;
+export function LayoutHeaderEnd(props: LayoutHeaderEndProps) {
+  const { className, ...restProps } = props;
+
   return (
-    <div
+    <Box
       {...restProps}
-      className={cn(styles.LayoutHeaderEnd, className)}
-    >
-      {children}
-    </div>
+      className={[styles.LayoutHeaderEnd, className]}
+    />
   );
 }

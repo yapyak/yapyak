@@ -1,79 +1,115 @@
-import type { ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
 import type { LocaleCode } from '#utils/hero-demo-scenes';
 
+import { Box } from '#components/box';
 import { LocaleFlag } from '#components/locale-flag';
-
-import styles from './locales.module.css';
 import { LOCALES } from '#utils/hero-demo-scenes';
 
-export interface HeroDemoLocalesProps {
+import styles from './locales.module.css';
+
+export interface HeroDemoLocalesProps extends BoxProps {
   receiving: boolean;
   savedSource: string;
   shimmering: Set<LocaleCode>;
   translations: Record<LocaleCode, string>;
 }
 
-export function HeroDemoLocales(props: HeroDemoLocalesProps): ReactElement {
-  const { savedSource, translations, shimmering, receiving } = props;
+export function HeroDemoLocales(props: HeroDemoLocalesProps) {
+  const { className, receiving, savedSource, shimmering, translations } = props;
+
   return (
-    <div
-      className={styles.HeroDemoLocales}
-      data-receiving={receiving || undefined}
+    <Box
+      className={[styles.HeroDemoLocales, className]}
+      data-receiving={receiving}
     >
-      <span
+      <Box
         aria-hidden="true"
+        as="span"
         className={styles.Flash}
       />
       {LOCALES.map((locale) => {
         const value = translations[locale.code];
         const isShimmering = shimmering.has(locale.code);
         return (
-          <div
+          <Box
             className={styles.LocaleRow}
             key={locale.code}
           >
-            <span
+            <Box
               aria-hidden="true"
+              as="span"
               className={styles.Flag}
             >
               <LocaleFlag code={locale.code} />
-            </span>
-            <span className={styles.Filename}>{locale.filename}</span>
-            <span className={styles.Json}>
-              <span className="tx-punct">{'{ '}</span>
-              <span
+            </Box>
+            <Box
+              as="span"
+              className={styles.Filename}
+            >
+              {locale.filename}
+            </Box>
+            <Box
+              as="span"
+              className={styles.Json}
+            >
+              <Box
+                as="span"
+                className="tx-punct"
+              >
+                {'{ '}
+              </Box>
+              <Box
+                as="span"
                 className={styles.Key}
                 key={savedSource}
               >
-                <span className="tx-string">
-                  <span>"</span>
+                <Box
+                  as="span"
+                  className="tx-string"
+                >
+                  <Box as="span">"</Box>
                   {savedSource}
-                  <span>"</span>
-                </span>
-              </span>
-              <span className="tx-punct">: </span>
+                  <Box as="span">"</Box>
+                </Box>
+              </Box>
+              <Box
+                as="span"
+                className="tx-punct"
+              >
+                :{' '}
+              </Box>
               {isShimmering || value === '' ? (
-                <span
+                <Box
                   aria-hidden="true"
+                  as="span"
                   className={styles.Skeleton}
                 />
               ) : (
-                <span
+                <Box
+                  as="span"
                   className={styles.Value}
                   key={value}
                 >
-                  <span className="tx-tx-source">
-                    <span>"</span>
+                  <Box
+                    as="span"
+                    className="tx-tx-source"
+                  >
+                    <Box as="span">"</Box>
                     {value}
-                    <span>"</span>
-                  </span>
-                </span>
+                    <Box as="span">"</Box>
+                  </Box>
+                </Box>
               )}
-              <span className="tx-punct">{' }'}</span>
-            </span>
-          </div>
+              <Box
+                as="span"
+                className="tx-punct"
+              >
+                {' }'}
+              </Box>
+            </Box>
+          </Box>
         );
       })}
-    </div>
+    </Box>
   );
 }
