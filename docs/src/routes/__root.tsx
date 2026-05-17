@@ -13,7 +13,7 @@ import { t } from 'yapyak';
 import { useLocale } from 'yapyak/react';
 
 import { Footer } from '#components/footer';
-import { GitHubIcon } from '#components/icon';
+import { GitHubIcon } from '#components/github-icon';
 import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
 import { Navigation } from '#components/navigation';

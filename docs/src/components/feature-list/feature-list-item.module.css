@@ -12,6 +12,23 @@
       border-bottom: none;
     }
 
+    .Indicator {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -1px;
+      width: 1px;
+      pointer-events: none;
+      background-color: var(--mint);
+      box-shadow: 0 0 8px var(--mint-glow-strong);
+      opacity: 0;
+      transition: opacity 220ms ease;
+    }
+
+    &:hover .Indicator {
+      opacity: 1;
+    }
+
     .Numeral {
       font-size: clamp(4rem, 8vw, 6rem);
       font-weight: var(--font-weight-medium);
