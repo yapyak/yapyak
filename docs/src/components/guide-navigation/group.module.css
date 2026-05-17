@@ -54,7 +54,8 @@
       }
 
       &:not(:first-child) {
-        padding-top: var(--space-10);
+        padding-top: var(--space-6);
+        margin-top: var(--space-5);
         border-top: 1px solid var(--rule);
       }
     }
