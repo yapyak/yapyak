@@ -1,4 +1,4 @@
-import type { RefSymbol } from '#docs/build-reference-sidebar';
+import type { RefSymbol } from '#lib/reference';
 
 import { Link } from '@tanstack/react-router';
 

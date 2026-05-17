@@ -1,5 +1,5 @@
 import type { Config, Schema } from '@markdoc/markdoc';
-import type { MarkdocNode } from './markdoc';
+import type { MarkdocNode } from './types';
 
 import Markdoc from '@markdoc/markdoc';
 

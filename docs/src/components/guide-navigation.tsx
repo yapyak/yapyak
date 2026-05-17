@@ -1,5 +1,5 @@
 import type { BoxProps } from '#components/box';
-import type { SidebarNode } from '#lib/sidebars';
+import type { SidebarNode } from '#lib/guide';
 
 import { Box } from '#components/box';
 

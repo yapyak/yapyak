@@ -2,8 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
 import { Article } from '#components/article';
-
-import { loadReferenceIntroduction } from './reference.index.server';
+import { loadReferenceIntroduction } from '#lib/reference';
 
 const loadData = createServerFn().handler(() => loadReferenceIntroduction());
 

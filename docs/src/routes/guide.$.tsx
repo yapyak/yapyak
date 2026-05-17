@@ -2,8 +2,7 @@ import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
 import { Article } from '#components/article';
-
-import { loadGuideArticle } from './guide.$.server';
+import { loadGuideArticle } from '#lib/guide';
 
 const loadData = createServerFn()
   .inputValidator((slug: string) => slug)

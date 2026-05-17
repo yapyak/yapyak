@@ -2,8 +2,7 @@ import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
 import { ReferenceSymbol } from '#components/reference-symbol';
-
-import { loadReferenceSymbol } from './reference.$.server';
+import { loadReferenceSymbol } from '#lib/reference';
 
 const loadData = createServerFn()
   .inputValidator((path: string) => path)

@@ -1,5 +1,5 @@
 import type { BoxProps } from '#components/box';
-import type { SidebarGroup, SidebarNode } from '#lib/sidebars';
+import type { SidebarGroup, SidebarNode } from '#lib/guide';
 
 import { Link } from '@tanstack/react-router';
 

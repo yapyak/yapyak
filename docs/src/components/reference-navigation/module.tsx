@@ -1,5 +1,5 @@
 import type { BoxProps } from '#components/box';
-import type { RefModule } from '#docs/build-reference-sidebar';
+import type { RefModule } from '#lib/reference';
 
 import { useLocation } from '@tanstack/react-router';
 import { useState } from 'react';

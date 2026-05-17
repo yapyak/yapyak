@@ -1,4 +1,4 @@
-import type { SidebarLink } from '#lib/sidebars';
+import type { SidebarLink } from '#lib/guide';
 
 import { Link } from '@tanstack/react-router';
 

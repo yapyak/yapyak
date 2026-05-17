@@ -1,5 +1,11 @@
-import type { RefModule, RefSymbol } from './build-reference-sidebar';
-import type { ApiManifest, ApiModule } from './extract-api.server';
+import type { ApiManifest, ApiModule, RefModule, RefSymbol } from './types';
+
+import { loadManifest } from './manifest.server';
+
+export async function loadReferenceSidebar() {
+  const manifest = await loadManifest(process.cwd());
+  return buildReferenceSidebar(manifest);
+}
 
 export function buildReferenceSidebar(manifest: ApiManifest) {
   const byId = new Map<string, ApiModule>();

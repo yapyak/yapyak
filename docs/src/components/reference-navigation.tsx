@@ -1,5 +1,5 @@
 import type { BoxProps } from '#components/box';
-import type { ReferenceSidebar as ReferenceSidebarData } from '#docs/build-reference-sidebar';
+import type { ReferenceSidebar as ReferenceSidebarData } from '#lib/reference';
 
 import { Box } from '#components/box';
 

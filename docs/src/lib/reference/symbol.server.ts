@@ -1,5 +1,6 @@
-import { loadManifest } from '#docs/load-manifest.server';
-import { parseMarkdoc } from '#lib/markdoc.server';
+import { parseMarkdoc } from '#lib/markdoc';
+
+import { loadManifest } from './manifest.server';
 
 export async function loadReferenceSymbol(path: string) {
   const manifest = await loadManifest(process.cwd());

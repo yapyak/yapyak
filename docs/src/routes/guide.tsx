@@ -3,7 +3,7 @@ import { createServerFn } from '@tanstack/react-start';
 
 import { GuideLayout } from '#components/guide-layout';
 import { GuideNavigation } from '#components/guide-navigation';
-import { buildGuideSidebar } from '#lib/build-sidebar.server';
+import { buildGuideSidebar } from '#lib/guide';
 
 const loadData = createServerFn().handler(() =>
   buildGuideSidebar(process.cwd()),

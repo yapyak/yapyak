@@ -1,4 +1,4 @@
-import { parseMarkdoc } from '#lib/markdoc.server';
+import { parseMarkdoc } from '#lib/markdoc';
 
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';

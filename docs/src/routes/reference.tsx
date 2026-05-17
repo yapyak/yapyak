@@ -3,8 +3,7 @@ import { createServerFn } from '@tanstack/react-start';
 
 import { ReferenceLayout } from '#components/reference-layout';
 import { ReferenceNavigation } from '#components/reference-navigation';
-
-import { loadReferenceSidebar } from './reference.server';
+import { loadReferenceSidebar } from '#lib/reference';
 
 const loadData = createServerFn().handler(() => loadReferenceSidebar());
 
