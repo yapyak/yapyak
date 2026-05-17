@@ -1458,6 +1458,46 @@ type MyComponentProps = Omit<PickListProps, 'children'> & {
 
 If you find yourself wanting to make an inherited prop required at your layer, **don't**. The contract belongs to the leaf component (typically Box/HTML element). Re-declaring is noise.
 
+## Domain vs UI: null vs undefined
+
+Two layers, two conventions. Never mix.
+
+**Domain types use `null` for missing optional values.** Treat parsed/loaded content as if it came from a backend. Stable shape (the field is always present), explicit "intentionally absent" semantics, serializable to JSON. This applies to everything in `lib/content`, route loaders, and any data we'd ever cache or send over a wire.
+
+```ts
+// ✓ Domain
+interface CalloutBlock {
+  type: 'callout';
+  title: string | null;     // stable shape, null = author didn't provide
+  variant: CalloutVariant;
+  children: Block[];
+}
+```
+
+**UI components use `?:` optional fields.** React-idiomatic, `undefined` for missing. Components are vanilla React building blocks — they don't know about domain conventions, they don't accept `null` in their props.
+
+```ts
+// ✓ UI
+interface CalloutProps extends BoxProps<'aside'> {
+  title?: string;            // optional, undefined when omitted
+  variant: CalloutVariant;
+}
+```
+
+**The conversion lives inline at the dispatcher node** — the boundary between the two layers. Per-prop `?? undefined` translates domain-null to UI-undefined. Don't hide this in adapter functions; the visible `?? undefined` IS the layer-boundary marker.
+
+```tsx
+// ✓ Dispatcher node — translation visible at the boundary
+<Callout
+  title={block.title ?? undefined}
+  variant={block.variant}
+>
+  ...
+</Callout>
+```
+
+**Display defaults belong in the UI, not in the dispatcher.** If a callout has no title, the Callout component decides what to show (e.g. capitalized variant name). The dispatcher only translates absence; it doesn't invent display values.
+
 ## Type modifiers
 
 Never use the TypeScript `readonly` modifier. Not in interfaces, not in array types (`readonly T[]`), not on class properties. If a value comes from outside and shouldn't be mutated, that's enforced by code review and discipline — not by the type system.

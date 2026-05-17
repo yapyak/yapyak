@@ -9,5 +9,13 @@ export interface NodeCodeGroupProps {
 export function NodeCodeGroup(props: NodeCodeGroupProps) {
   const { block } = props;
 
-  return <CodeGroup tabs={block.tabs} />;
+  return (
+    <CodeGroup
+      tabs={block.tabs.map((tab) => ({
+        label: tab.label ?? undefined,
+        language: tab.language ?? undefined,
+        source: tab.source,
+      }))}
+    />
+  );
 }

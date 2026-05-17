@@ -12,7 +12,7 @@ export function NodeCallout(props: NodeCalloutProps) {
   const { block } = props;
   return (
     <Callout
-      title={block.title}
+      title={block.title ?? undefined}
       variant={block.variant}
     >
       {block.children.map((child, index) => (

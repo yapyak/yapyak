@@ -8,8 +8,8 @@ import { CodeBlock } from '#components/code-block';
 import styles from './code-group.module.css';
 
 export interface CodeGroupTab {
-  label: string | null;
-  language: string | null;
+  label?: string;
+  language?: string;
   source: string;
 }
 

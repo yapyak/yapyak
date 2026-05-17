@@ -6,8 +6,8 @@ import styles from './callout.module.css';
 
 export type CalloutVariant = 'tip' | 'info' | 'warning' | 'danger';
 
-export interface CalloutProps extends Omit<BoxProps<'aside'>, 'title'> {
-  title: string | null;
+export interface CalloutProps extends BoxProps<'aside'> {
+  title?: string;
   variant: CalloutVariant;
 }
 
