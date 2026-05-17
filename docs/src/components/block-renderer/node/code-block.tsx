@@ -12,7 +12,7 @@ export function NodeCodeBlock(
   const { block } = props;
   return (
     <CodeBlock
-      language={block.language ?? undefined}
+      language={block.language}
       source={block.source}
     />
   );

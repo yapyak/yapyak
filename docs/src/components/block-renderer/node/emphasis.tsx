@@ -8,16 +8,15 @@ export interface NodeEmphasisProps {
   block: EmphasisBlock;
 }
 
-export function NodeEmphasis(
-  props: NodeEmphasisProps,
-) {
+export function NodeEmphasis(props: NodeEmphasisProps) {
   const { block } = props;
+
   return (
     <Box as="em">
       {block.children.map((child, index) => (
         <BlockRendererNode
-          key={index}
           block={child}
+          key={index}
         />
       ))}
     </Box>

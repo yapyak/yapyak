@@ -8,19 +8,17 @@ export interface NodeCalloutProps {
   block: CalloutBlock;
 }
 
-export function NodeCallout(
-  props: NodeCalloutProps,
-) {
+export function NodeCallout(props: NodeCalloutProps) {
   const { block } = props;
   return (
     <Callout
-      title={block.title ?? undefined}
+      title={block.title}
       variant={block.variant}
     >
       {block.children.map((child, index) => (
         <BlockRendererNode
-          key={index}
           block={child}
+          key={index}
         />
       ))}
     </Callout>

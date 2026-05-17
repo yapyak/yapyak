@@ -8,9 +8,7 @@ export interface NodeHeadingProps {
   block: HeadingBlock;
 }
 
-export function NodeHeading(
-  props: NodeHeadingProps,
-) {
+export function NodeHeading(props: NodeHeadingProps) {
   const { block } = props;
   return (
     <Box
@@ -19,8 +17,8 @@ export function NodeHeading(
     >
       {block.children.map((child, index) => (
         <BlockRendererNode
-          key={index}
           block={child}
+          key={index}
         />
       ))}
     </Box>

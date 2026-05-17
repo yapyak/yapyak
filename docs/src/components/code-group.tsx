@@ -7,18 +7,18 @@ import { CodeBlock } from '#components/code-block';
 
 import styles from './code-group.module.css';
 
-export interface CodeGroupBlock {
-  label: string;
-  language?: string;
+export interface CodeGroupTab {
+  label: string | null;
+  language: string | null;
   source: string;
 }
 
 export interface CodeGroupProps extends BoxProps {
-  blocks: CodeGroupBlock[];
+  tabs: CodeGroupTab[];
 }
 
 export function CodeGroup(props: CodeGroupProps) {
-  const { blocks, className, ...restProps } = props;
+  const { className, tabs, ...restProps } = props;
   const groupId = useId();
 
   return (
@@ -27,14 +27,14 @@ export function CodeGroup(props: CodeGroupProps) {
       className={[styles.CodeGroup, className]}
     >
       <Box className={styles.TabRow}>
-        {blocks.map((block, index) => (
+        {tabs.map((tab, index) => (
           <Box
             as="label"
             className={styles.TabLabel}
             key={index}
           >
             <Box
-              aria-label={block.label}
+              aria-label={tab.label ?? tab.language ?? 'Code'}
               as="input"
               className={styles.TabInput}
               defaultChecked={index === 0}
@@ -45,7 +45,7 @@ export function CodeGroup(props: CodeGroupProps) {
               as="span"
               className={styles.TabText}
             >
-              {block.label}
+              {tab.label ?? tab.language ?? 'Code'}
             </Box>
             <Box
               aria-hidden="true"
@@ -55,14 +55,14 @@ export function CodeGroup(props: CodeGroupProps) {
         ))}
       </Box>
       <Box className={styles.CodeBlockStack}>
-        {blocks.map((block, index) => (
+        {tabs.map((tab, index) => (
           <Box
             className={styles.CodeBlockWrapper}
             key={index}
           >
             <CodeBlock
-              language={block.language}
-              source={block.source}
+              language={tab.language}
+              source={tab.source}
             />
           </Box>
         ))}

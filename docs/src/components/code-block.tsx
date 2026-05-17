@@ -8,7 +8,7 @@ import { tokenize } from '#utils/tokenize';
 import styles from './code-block.module.css';
 
 export interface CodeBlockProps extends BoxProps {
-  language?: string;
+  language: string | null;
   source: string;
 }
 
@@ -37,7 +37,7 @@ export function CodeBlock(props: CodeBlockProps) {
     <Box
       {...restProps}
       className={[styles.CodeBlock, className]}
-      data-language={language}
+      data-language={language ?? undefined}
     >
       <Box
         as="pre"
