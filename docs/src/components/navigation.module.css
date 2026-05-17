@@ -1,5 +1,10 @@
 @layer components {
   .Navigation {
+    --navigation-indicator-height: 0;
+    --navigation-indicator-width: 0;
+    --navigation-indicator-x: 0;
+    --navigation-indicator-y: 0;
+
     position: relative;
     display: inline-flex;
     gap: var(--space-2);

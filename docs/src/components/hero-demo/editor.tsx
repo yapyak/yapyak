@@ -75,6 +75,12 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
     <Box
       className={[styles.HeroDemoEditor, className]}
       data-saving={saving}
+      style={
+        indicator && {
+          '--hero-demo-editor-tab-indicator-width': `${indicator.width}px`,
+          '--hero-demo-editor-tab-indicator-x': `${indicator.x}px`,
+        }
+      }
     >
       <Box
         className={styles.Tabs}
@@ -86,10 +92,6 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
             as="span"
             className={styles.TabIndicator}
             data-ready={isReady}
-            style={{
-              transform: `translateX(${indicator.x}px)`,
-              width: `${indicator.width}px`,
-            }}
           />
         )}
         {FRAMEWORKS.map((entry) => {

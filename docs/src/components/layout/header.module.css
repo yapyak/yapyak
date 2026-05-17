@@ -1,5 +1,7 @@
 @layer components {
   .LayoutHeader {
+    --layout-header-fill-opacity: 0;
+
     position: sticky;
     top: 0;
     z-index: 10;
@@ -16,7 +18,7 @@
       pointer-events: none;
       background-color: rgba(20, 20, 20, 0.9);
       border-bottom: 1px solid var(--rule);
-      opacity: var(--fill-opacity, 0);
+      opacity: var(--layout-header-fill-opacity);
       backdrop-filter: blur(24px);
     }
   }

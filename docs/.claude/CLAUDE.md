@@ -561,8 +561,51 @@ The render-prop function receives `state` typed as `UseXReturn['state']` (or a r
 - `data-*` attributes use lowercase kebab-case: `data-animating`, `data-hide-indicator` — never camelCase (`data-isAnimating`)
 - `data-*` attributes never use `is`/`has` prefix: `data-active`, `data-disabled` — never `data-is-active`
 - Never pass `|| undefined` to `data-*` attributes — `Box` handles falsy values automatically
-- CSS custom properties (`style={{ '--x': value }}`) are always set on the root element, even if consumed by descendants via CSS `var()`
-- **Cross-component CSS variables** (custom properties read by one component and set by another) must be prefixed with the **owning component's kebab-case name**. The owning component is the one that *reads* the variable (it defines the contract). Example: `SelectionIndicator` reads `--selection-indicator-fill-color` and `--selection-indicator-icon-color`; consumers like `BodyRow` set those exact names to override defaults. Unprefixed names like `--fill-color` collide globally; component-prefixed names form a clear contract. Variables consumed only within the same component (internal CSS modules) don't need prefixes.
+- **TOTALLY FORBIDDEN: passing direct CSS values via inline `style`.** Never `style={{ height: '42px' }}`, never `style={{ transform: 'translate(10px, 20px)' }}`, never `style={{ color: 'red' }}`. Inline `style` is **only** for setting CSS custom properties that the stylesheet then consumes via `var()`. The actual styling rules live in `.module.css`.
+
+  ```tsx
+  // ✗ Wrong — direct values in style
+  <Box style={{ height: `${size}px`, width: `${size}px` }} />
+
+  // ✓ Right — custom properties, CSS reads them
+  <Box style={{ '--button-size': `${size}px` }} />
+  ```
+
+  ```css
+  .Button {
+    width: var(--button-size);
+    height: var(--button-size);
+  }
+  ```
+
+- **CSS custom properties are always set on the component's root element**, even if consumed by descendants via CSS `var()`. CSS variables cascade — set them once at the top, children read them anywhere in the subtree.
+
+  ```tsx
+  // ✗ Wrong — set on child that consumes it
+  <Box className={styles.Navigation}>
+    <Box className={styles.Indicator} style={{ '--indicator-x': `${x}px` }} />
+  </Box>
+
+  // ✓ Right — set on root, child consumes via cascade
+  <Box
+    className={styles.Navigation}
+    style={{ '--navigation-indicator-x': `${x}px` }}
+  >
+    <Box className={styles.Indicator} />
+  </Box>
+  ```
+
+- **CSS variable names always start with the full kebab-cased component name** — the same name as the exported symbol and the CSS class. The path through the component tree IS the prefix. No exceptions, including for variables that are only consumed inside the same `.module.css`.
+
+  | Path | Component | CSS class | CSS variable |
+  | --- | --- | --- | --- |
+  | `button.tsx` | `Button` | `.Button` | `--button-x` |
+  | `button/atom/text.tsx` | `ButtonAtomText` | `.ButtonAtomText` | `--button-atom-text-x` |
+  | `navigation.tsx` (with indicator child) | `Navigation` | `.Navigation` + `.Indicator` | `--navigation-indicator-x` (named after the *owning* component, not the child class) |
+
+  Why: every variable's owner is searchable. `--button-atom-text-size` belongs to `ButtonAtomText`, no guesswork. Unprefixed names like `--size` or `--fill-color` collide globally across components and are forbidden.
+
+- **Cross-component CSS variables** (custom properties read by one component and set by another) follow the same rule: prefix with the **reading** component's full name. The reader defines the contract; the setter conforms to it. Example: `SelectionIndicator` reads `--selection-indicator-fill-color`; consumers like `BodyRow` set that exact name to override.
 - **Avoid passing `className` to styled components** (`Button`, `Badge`, `Link`, etc.). Use variants (`size`, `appearance`, `intent`) to customize. If no variant fits — add one to the component, or use the Base primitive (`ButtonBase`, `LinkBase`) for full control. `className` on styled components is a code smell — it means the component API is incomplete
 - **Never pass explicit generic type arguments in JSX** — no `<Box<'input'>>`, `<List<User>>`, etc. The generic is inferred from `as=` or other props. If inference fails, the component's type definition is wrong — fix it there, not at the call site.
 
@@ -1589,20 +1632,59 @@ If no rule matches unambiguously, the structure is wrong, not the name. Fix the 
 
 Within a selector block:
 
-1. Own properties
-2. Child element selectors
-3. Pseudo-classes and state modifiers (`&:hover`, `&[data-*]`)
+1. **CSS variable defaults** (the configurable knobs)
+2. Own properties
+3. Child element selectors
+4. Pseudo-classes and state modifiers (`&:hover`, `&[data-*]`)
 
 ```css
-.sidebar {
-  display: flex;
-  border-right: var(--border);
+.Sidebar {
+  --sidebar-width: 320px;
+  --sidebar-bg: var(--surface);
 
-  .sidebar-header { ... }
-  .sidebar-list { ... }
+  display: flex;
+  width: var(--sidebar-width);
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--rule);
+
+  .SidebarHeader { ... }
+  .SidebarList { ... }
 
   &[data-collapsed] { ... }
 }
+```
+
+### CSS variable defaults
+
+**Always declare defaults at the top of the root class** — never use the `var(--x, default)` fallback syntax.
+
+```css
+/* ✓ Right — defaults declared at top */
+.Button {
+  --button-size: 1rem;
+  --button-color: var(--text);
+
+  width: var(--button-size);
+  color: var(--button-color);
+}
+
+/* ✗ Wrong — fallbacks scattered through the file */
+.Button {
+  width: var(--button-size, 1rem);
+  color: var(--button-color, var(--text));
+}
+```
+
+Why:
+- **Single source of truth**: each default appears once. Used 5× in the file? Still one default at the top.
+- **Discoverability**: the top of every component CSS reads like a config block. "What can I tune on this component?" → scroll to top, done.
+- **DevTools-friendly**: the default value shows up in the inspector as the resolved property, not hidden inside a `var()` fallback string.
+- **Consistent with design tokens**: yapyak's tokens (`--mint`, `--space-*`, `--ring`) are declared globally at the top. Component-local variables follow the same pattern at the component scope.
+
+Consumers override via inline `style` on the component, which cascades through naturally:
+
+```tsx
+<Button style={{ '--button-size': '2rem' }} />
 ```
 
 ### State and variant styling
