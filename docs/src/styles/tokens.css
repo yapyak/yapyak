@@ -1,0 +1,89 @@
+:root {
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.25rem;
+  --radius-pill: 999px;
+
+  --font-size-xs: 0.8125rem;
+  --font-size-sm: 0.9375rem;
+  --font-size-md: 1.0625rem;
+  --font-size-lg: 1.1875rem;
+  --font-size-xl: 1.4375rem;
+  --font-size-2xl: 1.8125rem;
+  --font-size-3xl: 2.3125rem;
+  --font-size-4xl: 3rem;
+
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  --transition: 150ms ease;
+
+  --font-mono:
+    ui-monospace, 'SF Mono', 'Monaco', 'Menlo', 'Cascadia Code', 'Roboto Mono',
+    Consolas, 'Liberation Mono', monospace;
+
+  --aqua: oklab(0.88 -0.21 0.01);
+  --aqua-soft: oklab(0.88 -0.21 0.01 / 0.4);
+  --mint: oklab(0.87 -0.24 0.06);
+  --mint-soft: oklab(0.87 -0.24 0.06 / 0.4);
+  --mint-glow: oklab(0.87 -0.24 0.06 / 0.2);
+  --mint-glow-soft: oklab(0.87 -0.24 0.06 / 0.08);
+  --mint-glow-strong: oklab(0.87 -0.24 0.06 / 0.35);
+
+  --silver-light: #f5f5f5;
+  --silver-mid: #c8c8c8;
+  --silver-dark: #8a8a8a;
+
+  --diff-remove: #ff9aa0;
+  --diff-remove-bg: rgba(255, 154, 160, 0.08);
+
+  --bg: #141414;
+  --surface: rgba(255, 255, 255, 0.02);
+  --surface-strong: rgba(255, 255, 255, 0.07);
+  --surface-elevated: rgba(255, 255, 255, 0.04);
+  --surface-active: rgba(255, 255, 255, 0.03);
+  --nav-bg: rgba(0, 0, 0, 0.2);
+
+  --rule: rgba(255, 255, 255, 0.02);
+  --ring: rgba(255, 255, 255, 0.04);
+  --ring-highlight: rgba(255, 255, 255, 0.08);
+  --ring-strong: rgba(255, 255, 255, 0.12);
+
+  --text: #e6e6e6;
+  --text-default: #d4d4d4;
+  --text-soft: #b8b8b8;
+  --text-muted: #8a8a8a;
+
+  --brand-gradient: linear-gradient(
+    in oklab to bottom,
+    var(--aqua),
+    var(--mint)
+  );
+  --mint-text-glow: 0 0 12px oklab(0.87 -0.24 0.06 / 0.35);
+  --accent-contrast: #08110d;
+
+  --header-height: 5.5rem;
+
+  --syntax-keyword: #c4a3c4;
+  --syntax-type: #93b8d6;
+  --syntax-literal: #d4a071;
+  --syntax-string: #d8c896;
+  --syntax-number: #d4a071;
+  --syntax-fn-call: #c8a8d8;
+  --syntax-jsx-tag: #93b8d6;
+}

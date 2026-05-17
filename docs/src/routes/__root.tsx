@@ -1,4 +1,4 @@
-import '../style.css';
+import '../styles/index.css';
 
 import type { ReactNode } from 'react';
 

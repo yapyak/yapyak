@@ -1,0 +1,16 @@
+::selection {
+  color: var(--text);
+  background-color: var(--mint-soft);
+}
+
+body {
+  min-height: 100vh;
+  font-family: system-ui;
+  font-size: var(--font-size-md);
+  line-height: 1.65;
+  color: var(--text-soft);
+  background-color: var(--bg);
+  hanging-punctuation: first last;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
