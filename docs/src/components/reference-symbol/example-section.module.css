@@ -13,7 +13,7 @@
     }
 
     .ExampleStack {
-      --markdoc-renderer-gap: var(--space-3);
+      --block-renderer-gap: var(--space-3);
 
       display: flex;
       flex-direction: column;

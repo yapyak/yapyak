@@ -13,7 +13,7 @@ import { t } from 'yapyak';
 import { useLocale } from 'yapyak/react';
 
 import { Footer } from '#components/footer';
-import { GitHubIcon } from '#components/github-icon';
+import { GithubIcon } from '#components/github-icon';
 import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
 import { Navigation } from '#components/navigation';
@@ -77,7 +77,7 @@ function Component() {
             aria-label={t('View on GitHub')}
             href="https://github.com/yapyak/yapyak"
           >
-            <GitHubIcon />
+            <GithubIcon />
           </IconLink>
         </Layout.Header.End>
       </Layout.Header>

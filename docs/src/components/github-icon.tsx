@@ -1,8 +1,8 @@
 import type { SVGProps } from 'react';
 
-export interface GitHubIconProps extends SVGProps<SVGSVGElement> {}
+export interface GithubIconProps extends SVGProps<SVGSVGElement> {}
 
-export function GitHubIcon(props: GitHubIconProps) {
+export function GithubIcon(props: GithubIconProps) {
   return (
     <svg
       aria-hidden="true"

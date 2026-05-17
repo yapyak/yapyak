@@ -1,6 +1,6 @@
 @layer components {
   .ReferenceSymbolDescription {
-    --markdoc-renderer-gap: var(--space-3);
+    --block-renderer-gap: var(--space-3);
 
     font-size: var(--font-size-md);
     line-height: 1.6;
