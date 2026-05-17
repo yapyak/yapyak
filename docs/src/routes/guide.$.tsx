@@ -30,13 +30,5 @@ export const Route = createFileRoute('/guide/$')({
 
 function Component() {
   const { article } = Route.useLoaderData();
-  return (
-    <Article>
-      <Article.Header
-        description={article.description}
-        title={article.title}
-      />
-      <Article.Body tree={article.tree} />
-    </Article>
-  );
+  return <Article article={article} />;
 }

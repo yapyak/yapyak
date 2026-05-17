@@ -16,13 +16,5 @@ export const Route = createFileRoute('/reference/')({
 
 function Component() {
   const { introduction } = Route.useLoaderData();
-  return (
-    <Article>
-      <Article.Header
-        description={introduction.description}
-        title={introduction.title}
-      />
-      <Article.Body tree={introduction.tree} />
-    </Article>
-  );
+  return <Article article={introduction} />;
 }

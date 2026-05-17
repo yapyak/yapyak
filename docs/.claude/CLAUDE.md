@@ -579,6 +579,27 @@ The render-prop function receives `state` typed as `UseXReturn['state']` (or a r
 
 - Never pass data as a separate prop when it is already accessible from another prop. If a component receives `param` and needs `param.name`, read it from `param.name` inside the component — do not add a `name` prop.
 - Pass domain data (e.g. `enums`, `types`) as-is through the component tree. Derive computed values at the point of use, not at intermediate layers.
+- **Domain components take the full domain object, not exploded fields.** A component representing a domain concept (`Article`, `ReferenceSymbol`, `ClientCard`, `Hero`) takes one prop with the whole object — `<Article article={article} />`, `<ClientCard client={client} />` — and reads its sub-fields internally. The component is the single owner of *how* its fields are rendered. The call site never spreads fields one by one.
+
+  ```tsx
+  // ✓ Right — domain component, full object
+  <Article article={article} />
+  <ClientCard client={client} />
+
+  // ✗ Wrong — exploded fields at call site
+  <Article description={article.description} title={article.title} tree={article.tree} />
+  <ClientCard name={client.name} email={client.email} status={client.status} />
+  ```
+
+  The **exception** is **dumb reusable primitives** — `Box`, `Button`, `Badge`, `Link`, `Input`, etc. They take individual props because they have no domain knowledge. They're styling/behavior wrappers, not domain renderers.
+
+  ```tsx
+  // ✓ Right — primitive, individual props
+  <Button intent="primary" size="md">Save</Button>
+  <Badge variant="success">Active</Badge>
+  ```
+
+  Internal compound parts (`Article.Header`, `Article.Body`) are still defined as sub-components for code organization, but the **default API is the outer component taking the full object** — consumers don't compose sub-parts manually unless they need to deviate. The outer component renders the standard arrangement of sub-parts using the domain object's fields.
 - `data-*` attributes use lowercase kebab-case: `data-animating`, `data-hide-indicator` — never camelCase (`data-isAnimating`)
 - `data-*` attributes never use `is`/`has` prefix: `data-active`, `data-disabled` — never `data-is-active`
 - Never pass `|| undefined` to `data-*` attributes — `Box` handles falsy values automatically
