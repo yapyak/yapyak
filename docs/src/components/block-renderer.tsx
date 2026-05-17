@@ -1,7 +1,11 @@
 import type { BoxProps } from '#components/box';
-import type { CalloutVariant } from '#components/callout';
-import type { CodeGroupBlock } from '#components/code-group';
-import type { Block } from '#lib/content';
+import type {
+  Block,
+  CodeBlock as CodeBlockData,
+  CodeGroupBlock as CodeGroupBlockData,
+  HeadingBlock,
+  TableBlock,
+} from '#lib/content';
 
 import { Fragment } from 'react';
 
@@ -34,105 +38,128 @@ function renderBlock(block: Block, index: number) {
 }
 
 function renderBlockContent(block: Block) {
-  if (block.type === 'text') {
-    return block.value;
-  }
-
-  const children = block.children.map(renderBlock);
-
   switch (block.type) {
-    case 'Callout':
+    case 'text':
+      return block.value;
+    case 'heading':
       return (
-        <Callout
-          title={block.attributes.title as string | undefined}
-          variant={block.attributes.variant as CalloutVariant}
+        <Box
+          as={headingTag(block.level)}
+          id={block.id}
         >
-          {children}
-        </Callout>
+          {block.children.map(renderBlock)}
+        </Box>
       );
-    case 'CodeBlock':
-      return (
-        <CodeBlock
-          language={block.attributes.language as string | undefined}
-          source={block.attributes.source as string}
-        />
-      );
-    case 'CodeGroup':
-      return <CodeGroup blocks={extractCodeBlocks(block)} />;
-    case 'a':
+    case 'paragraph':
+      return <Box as="p">{block.children.map(renderBlock)}</Box>;
+    case 'link':
       return (
         <Box
           as="a"
-          href={block.attributes.href as string}
+          href={block.href}
         >
-          {children}
+          {block.children.map(renderBlock)}
         </Box>
       );
-    case 'img':
+    case 'image':
       return (
         <Box
-          alt={block.attributes.alt as string | undefined}
+          alt={block.alt ?? ''}
           as="img"
-          src={block.attributes.src as string}
+          src={block.src}
         />
       );
-    case 'h1':
-    case 'h2':
-    case 'h3':
-    case 'h4':
-    case 'h5':
-    case 'h6':
+    case 'list':
       return (
-        <Box
-          as={block.type}
-          id={block.attributes.id as string | undefined}
-        >
-          {children}
+        <Box as={block.ordered ? 'ol' : 'ul'}>
+          {block.children.map(renderBlock)}
         </Box>
       );
-    case 'hr':
-    case 'br':
-      return <Box as={block.type} />;
-    case 'p':
-    case 'ul':
-    case 'ol':
-    case 'li':
+    case 'list-item':
+      return <Box as="li">{block.children.map(renderBlock)}</Box>;
+    case 'emphasis':
+      return <Box as="em">{block.children.map(renderBlock)}</Box>;
     case 'strong':
-    case 'em':
-    case 's':
-    case 'code':
+      return <Box as="strong">{block.children.map(renderBlock)}</Box>;
+    case 'strikethrough':
+      return <Box as="s">{block.children.map(renderBlock)}</Box>;
+    case 'inline-code':
+      return <Box as="code">{block.value}</Box>;
     case 'blockquote':
+      return <Box as="blockquote">{block.children.map(renderBlock)}</Box>;
+    case 'thematic-break':
+      return <Box as="hr" />;
+    case 'line-break':
+      return <Box as="br" />;
     case 'table':
-    case 'thead':
-    case 'tbody':
-    case 'tr':
-    case 'th':
-    case 'td':
-      return <Box as={block.type}>{children}</Box>;
-    default:
-      throw new Error(`BlockRenderer: unknown block type "${block.type}"`);
+      return renderTable(block);
+    case 'table-row':
+      return <Box as="tr">{block.children.map(renderBlock)}</Box>;
+    case 'table-header-cell':
+      return <Box as="th">{block.children.map(renderBlock)}</Box>;
+    case 'table-cell':
+      return <Box as="td">{block.children.map(renderBlock)}</Box>;
+    case 'code-block':
+      return renderCodeBlock(block);
+    case 'code-group':
+      return renderCodeGroup(block);
+    case 'callout':
+      return (
+        <Callout
+          title={block.title ?? undefined}
+          variant={block.variant}
+        >
+          {block.children.map(renderBlock)}
+        </Callout>
+      );
   }
 }
 
-function extractCodeBlocks(group: Block) {
-  const blocks: CodeGroupBlock[] = [];
-  for (const child of group.children) {
-    if (child.type !== 'CodeBlock') {
-      continue;
-    }
-    const language = child.attributes.language;
-    const source = child.attributes.source;
-    const label = child.attributes.label;
-    blocks.push({
-      label:
-        typeof label === 'string'
-          ? label
-          : typeof language === 'string'
-            ? language
-            : 'Code',
-      language: typeof language === 'string' ? language : undefined,
-      source: typeof source === 'string' ? source : '',
-    });
+function renderTable(block: TableBlock) {
+  return (
+    <Box as="table">
+      {block.head && (
+        <Box as="thead">{renderBlock(block.head, 0)}</Box>
+      )}
+      <Box as="tbody">{block.body.map(renderBlock)}</Box>
+    </Box>
+  );
+}
+
+function renderCodeBlock(block: CodeBlockData) {
+  return (
+    <CodeBlock
+      language={block.language ?? undefined}
+      source={block.source}
+    />
+  );
+}
+
+function renderCodeGroup(block: CodeGroupBlockData) {
+  return (
+    <CodeGroup
+      blocks={block.tabs.map((tab) => ({
+        label: tab.label ?? tab.language ?? 'Code',
+        language: tab.language ?? undefined,
+        source: tab.source,
+      }))}
+    />
+  );
+}
+
+function headingTag(level: HeadingBlock['level']) {
+  switch (level) {
+    case 1:
+      return 'h1';
+    case 2:
+      return 'h2';
+    case 3:
+      return 'h3';
+    case 4:
+      return 'h4';
+    case 5:
+      return 'h5';
+    case 6:
+      return 'h6';
   }
-  return blocks;
 }

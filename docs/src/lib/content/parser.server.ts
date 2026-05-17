@@ -1,5 +1,14 @@
 import type { Config, Schema } from '@markdoc/markdoc';
-import type { Block } from './types';
+import type {
+  Block,
+  CalloutBlock,
+  CodeBlock,
+  CodeGroupBlock,
+  TableBlock,
+  TableCellBlock,
+  TableHeaderCellBlock,
+  TableRowBlock,
+} from './types';
 
 import Markdoc from '@markdoc/markdoc';
 
@@ -10,9 +19,8 @@ export function parseContent(source: string) {
     ? parseFrontmatter(frontmatterSource)
     : {};
   const transformed = Markdoc.transform(ast, markdocConfig);
-  const blocks = Array.isArray(transformed)
-    ? transformed.map(toBlock)
-    : [toBlock(transformed)];
+  const raw = Array.isArray(transformed) ? transformed : [transformed];
+  const blocks = raw.flatMap(toBlocks);
   return { blocks, frontmatter };
 }
 
@@ -22,37 +30,174 @@ export function parseFrontmatterOnly(source: string) {
   return frontmatterSource ? parseFrontmatter(frontmatterSource) : {};
 }
 
-function toBlock(node: unknown): Block {
-  if (Markdoc.Tag.isTag(node)) {
-    return {
-      attributes: node.attributes,
-      children: node.children.map(toBlock),
-      type: node.name,
-      value: '',
-    };
-  }
+function toBlocks(node: unknown): Block[] {
   if (typeof node === 'string') {
-    return {
-      attributes: {},
-      children: [],
-      type: 'text',
-      value: node,
-    };
+    return [{ type: 'text', value: node }];
   }
   if (typeof node === 'number' || typeof node === 'boolean') {
-    return {
-      attributes: {},
-      children: [],
-      type: 'text',
-      value: String(node),
-    };
+    return [{ type: 'text', value: String(node) }];
+  }
+  if (!Markdoc.Tag.isTag(node)) {
+    return [];
+  }
+
+  const children = node.children.flatMap(toBlocks);
+
+  switch (node.name) {
+    case 'h1':
+    case 'h2':
+    case 'h3':
+    case 'h4':
+    case 'h5':
+    case 'h6':
+      return [
+        {
+          children,
+          id: stringAttribute(node.attributes.id) ?? '',
+          level: Number(node.name.slice(1)) as 1 | 2 | 3 | 4 | 5 | 6,
+          type: 'heading',
+        },
+      ];
+    case 'p':
+      return [{ children, type: 'paragraph' }];
+    case 'a':
+      return [
+        {
+          children,
+          href: stringAttribute(node.attributes.href) ?? '',
+          type: 'link',
+        },
+      ];
+    case 'img':
+      return [
+        {
+          alt: stringAttribute(node.attributes.alt),
+          src: stringAttribute(node.attributes.src) ?? '',
+          type: 'image',
+        },
+      ];
+    case 'ul':
+    case 'ol':
+      return [
+        {
+          children: children.filter(isListItem),
+          ordered: node.name === 'ol',
+          type: 'list',
+        },
+      ];
+    case 'li':
+      return [{ children, type: 'list-item' }];
+    case 'em':
+      return [{ children, type: 'emphasis' }];
+    case 'strong':
+      return [{ children, type: 'strong' }];
+    case 's':
+      return [{ children, type: 'strikethrough' }];
+    case 'code':
+      return [{ type: 'inline-code', value: extractText(node.children) }];
+    case 'blockquote':
+      return [{ children, type: 'blockquote' }];
+    case 'hr':
+      return [{ type: 'thematic-break' }];
+    case 'br':
+      return [{ type: 'line-break' }];
+    case 'table':
+      return [buildTable(node.children)];
+    case 'thead':
+    case 'tbody':
+      return children;
+    case 'tr':
+      return [{ children: children.filter(isCell), type: 'table-row' }];
+    case 'th':
+      return [{ children, type: 'table-header-cell' }];
+    case 'td':
+      return [{ children, type: 'table-cell' }];
+    case 'CodeBlock':
+      return [buildCodeBlock(node.attributes)];
+    case 'CodeGroup':
+      return [
+        {
+          tabs: node.children
+            .flatMap(toBlocks)
+            .filter((block): block is CodeBlock => block.type === 'code-block'),
+          type: 'code-group',
+        },
+      ];
+    case 'Callout':
+      return [buildCallout(node.attributes, children)];
+    default:
+      throw new Error(`parseContent: unknown tag "${node.name}"`);
+  }
+}
+
+function buildTable(children: unknown[]): TableBlock {
+  let head: TableRowBlock | null = null;
+  const body: TableRowBlock[] = [];
+
+  for (const child of children) {
+    if (!Markdoc.Tag.isTag(child)) {
+      continue;
+    }
+    if (child.name === 'thead') {
+      const rows = child.children
+        .flatMap(toBlocks)
+        .filter((block): block is TableRowBlock => block.type === 'table-row');
+      head = rows[0] ?? null;
+    } else if (child.name === 'tbody') {
+      const rows = child.children
+        .flatMap(toBlocks)
+        .filter((block): block is TableRowBlock => block.type === 'table-row');
+      body.push(...rows);
+    }
+  }
+
+  return { body, head, type: 'table' };
+}
+
+function buildCodeBlock(attributes: Record<string, unknown>): CodeBlock {
+  return {
+    label: stringAttribute(attributes.label),
+    language: stringAttribute(attributes.language),
+    source: stringAttribute(attributes.source) ?? '',
+    type: 'code-block',
+  };
+}
+
+function buildCallout(
+  attributes: Record<string, unknown>,
+  children: Block[],
+): CalloutBlock {
+  const variant = attributes.variant;
+  if (
+    variant !== 'tip' &&
+    variant !== 'info' &&
+    variant !== 'warning' &&
+    variant !== 'danger'
+  ) {
+    throw new Error(`Callout: invalid variant "${String(variant)}"`);
   }
   return {
-    attributes: {},
-    children: [],
-    type: 'text',
-    value: '',
+    children,
+    title: stringAttribute(attributes.title),
+    type: 'callout',
+    variant,
   };
+}
+
+function isListItem(
+  block: Block,
+): block is Extract<Block, { type: 'list-item' }> {
+  return block.type === 'list-item';
+}
+
+function isCell(
+  block: Block,
+): block is TableCellBlock | TableHeaderCellBlock {
+  return block.type === 'table-cell' || block.type === 'table-header-cell';
+}
+
+function stringAttribute(value: unknown): string | null {
+  return typeof value === 'string' && value.length > 0 ? value : null;
 }
 
 const document: Schema = {
