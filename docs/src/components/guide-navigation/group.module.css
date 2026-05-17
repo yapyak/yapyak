@@ -56,7 +56,7 @@
       &:not(:first-child) {
         padding-top: var(--spacing-6);
         margin-top: var(--spacing-5);
-        border-top: 1px solid var(--rule);
+        border-top: var(--px) solid var(--rule);
       }
     }
 

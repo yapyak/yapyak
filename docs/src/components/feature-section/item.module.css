@@ -6,7 +6,7 @@
     gap: var(--spacing-8);
     align-items: start;
     padding: var(--spacing-12) var(--spacing-8);
-    border-bottom: 1px solid var(--rule);
+    border-bottom: var(--px) solid var(--rule);
 
     &:last-child {
       border-bottom: none;
@@ -16,8 +16,8 @@
       position: absolute;
       top: 0;
       bottom: 0;
-      left: -1px;
-      width: 1px;
+      left: -var(--px);
+      width: var(--px);
       pointer-events: none;
       background-color: var(--mint);
       box-shadow: 0 0 8px var(--mint-glow-strong);
@@ -68,7 +68,7 @@
     .UnderlineDivider {
       display: block;
       width: 60px;
-      height: 1px;
+      height: var(--px);
       background-color: var(--mint);
       opacity: 0.55;
       transform-origin: left;

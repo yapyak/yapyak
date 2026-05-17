@@ -1,7 +1,7 @@
 @layer components {
   .Callout {
     --callout-accent: var(--text-muted);
-    --callout-background: rgba(255, 255, 255, 0.02);
+    --callout-background: var(--surface);
 
     position: relative;
     display: flex;

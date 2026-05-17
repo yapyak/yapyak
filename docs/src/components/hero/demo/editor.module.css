@@ -9,7 +9,7 @@
     overflow: hidden;
     background: var(--surface);
     border-radius: var(--border-radius-md);
-    box-shadow: inset 0 0 0 1px var(--ring);
+    box-shadow: inset 0 0 0 var(--px) var(--ring);
     transform-origin: center;
 
     &[data-saving] {
@@ -20,7 +20,7 @@
       position: relative;
       display: flex;
       align-items: stretch;
-      box-shadow: inset 0 -1px 0 var(--rule);
+      box-shadow: inset 0 -var(--px) 0 var(--rule);
     }
 
     .TabIndicatorBar {
@@ -28,7 +28,7 @@
       bottom: 0;
       left: 0;
       width: var(--demo-editor-tab-indicator-width);
-      height: 1px;
+      height: var(--px);
       pointer-events: none;
       background-color: var(--mint);
       transform: translateX(var(--demo-editor-tab-indicator-x));
@@ -54,7 +54,7 @@
       font-family: var(--font-mono);
       font-size: var(--font-size-xs);
       color: var(--text-muted);
-      box-shadow: inset -1px 0 0 var(--rule);
+      box-shadow: inset -var(--px) 0 0 var(--rule);
       transition:
         background-color var(--transition),
         box-shadow var(--transition),
@@ -72,12 +72,12 @@
 
       &:hover,
       &:has(+ .TabButton:hover) {
-        box-shadow: inset -1px 0 0 var(--ring);
+        box-shadow: inset -var(--px) 0 0 var(--ring);
       }
 
       &[data-active],
       &:has(+ .TabButton[data-active]) {
-        box-shadow: inset -1px 0 0 var(--ring-highlight);
+        box-shadow: inset -var(--px) 0 0 var(--ring-highlight);
       }
     }
 
@@ -115,7 +115,7 @@
       height: 1.05em;
       vertical-align: text-bottom;
       background-color: var(--text);
-      border-radius: 1px;
+      border-radius: var(--px);
       animation: caret-blink 1.06s steps(2, end) infinite;
 
       &[data-typing] {

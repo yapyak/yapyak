@@ -1,5 +1,5 @@
 :root {
-  --px: 1px;
+  --px: var(--px);
   --infinite: 9999px;
 
   --spacing-0: 0;
@@ -73,16 +73,16 @@
   --diff-remove-bg: rgba(255, 154, 160, 0.08);
 
   --bg: #141414;
-  --surface: rgba(255, 255, 255, 0.02);
+  --surface: var(--surface);
   --surface-strong: rgba(255, 255, 255, 0.07);
   --surface-elevated: rgba(255, 255, 255, 0.04);
   --surface-active: rgba(255, 255, 255, 0.03);
   --nav-bg: rgba(0, 0, 0, 0.2);
 
-  --rule: rgba(255, 255, 255, 0.02);
+  --rule: var(--surface);
   --ring: rgba(255, 255, 255, 0.04);
   --ring-highlight: rgba(255, 255, 255, 0.08);
-  --ring-strong: rgba(255, 255, 255, 0.12);
+  --ring-strong: var(--ring-strong);
 
   --text: #e6e6e6;
   --text-default: #d4d4d4;

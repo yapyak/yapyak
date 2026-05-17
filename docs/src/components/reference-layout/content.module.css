@@ -2,7 +2,7 @@
   .ReferenceLayoutContent {
     max-width: 48rem;
     padding: var(--spacing-8) 0 var(--spacing-24) var(--spacing-8);
-    border-left: 1px solid var(--rule);
+    border-left: var(--px) solid var(--rule);
 
     @media (max-width: 768px) {
       padding-left: 0;

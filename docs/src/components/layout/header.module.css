@@ -17,7 +17,7 @@
       z-index: -1;
       pointer-events: none;
       background-color: rgba(20, 20, 20, 0.9);
-      border-bottom: 1px solid var(--rule);
+      border-bottom: var(--px) solid var(--rule);
       opacity: var(--layout-header-fill-opacity);
       backdrop-filter: blur(24px);
     }

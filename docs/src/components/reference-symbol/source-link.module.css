@@ -1,7 +1,7 @@
 @layer components {
   .ReferenceSymbolSourceLink {
     padding-top: var(--spacing-6);
-    border-top: 1px solid var(--rule);
+    border-top: var(--px) solid var(--rule);
 
     .PathText {
       font-family: var(--font-mono);

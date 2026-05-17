@@ -80,8 +80,8 @@
       background-color: var(--surface-elevated);
       border-radius: var(--border-radius-full);
       box-shadow:
-        inset 0 0 0 1px var(--ring-highlight),
-        inset 0 1px var(--ring-highlight);
+        inset 0 0 0 var(--px) var(--ring-highlight),
+        inset 0 var(--px) var(--ring-highlight);
       transition:
         background-color var(--transition),
         outline 400ms,
@@ -100,8 +100,8 @@
         outline-width: 4px;
         outline-color: var(--aqua-soft);
         box-shadow:
-          inset 0 0 0 1px var(--aqua-soft),
-          inset 0 1px var(--aqua-soft);
+          inset 0 0 0 var(--px) var(--aqua-soft),
+          inset 0 var(--px) var(--aqua-soft);
       }
     }
 
