@@ -1,14 +1,14 @@
 import type { BoxProps } from '#components/box';
-import type { Framework } from './hero-demo/editor';
+import type { Framework } from './demo/editor';
 
 import { useEffect, useRef, useState } from 'react';
 
 import { Box } from '#components/box';
 import { useDemoState } from '#hooks/use-demo-state';
 
-import { HeroDemoEditor } from './hero-demo/editor';
-import { HeroDemoLocales } from './hero-demo/locales';
-import styles from './hero-demo.module.css';
+import { HeroDemoEditor } from './demo/editor';
+import { HeroDemoLocales } from './demo/locales';
+import styles from './demo.module.css';
 
 export interface HeroDemoProps extends BoxProps {}
 

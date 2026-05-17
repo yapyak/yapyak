@@ -278,6 +278,12 @@ Same rule applies to props types: `text.tsx` exports `ButtonTextProps`, not `Tex
 
 **Top-level files are the public API. Folders contain private internals.**
 
+**What counts as "public":** consumed by a route file OR by 2+ other components OR genuinely reusable across contexts. Public components live at `components/X.tsx`.
+
+**What counts as "private/internal":** consumed by only ONE other component. Internal components live inside that parent's folder at `components/parent/X.tsx`. Never at root.
+
+Example: `HeroDemo` is consumed only by `Hero`. It's NOT at `components/hero-demo.tsx` — it's at `components/hero/demo.tsx` (exported as `HeroDemo`). If a third component starts importing `HeroDemo`, it gets promoted to a top-level file.
+
 ```
 components/
   wordmark.tsx                ← public (single-file component)

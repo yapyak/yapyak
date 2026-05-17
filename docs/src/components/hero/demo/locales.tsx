@@ -2,9 +2,9 @@ import type { BoxProps } from '#components/box';
 import type { LocaleCode } from '#utils/hero-demo-scenes';
 
 import { Box } from '#components/box';
-import { LocaleFlag } from '#components/locale-flag';
 import { LOCALES } from '#utils/hero-demo-scenes';
 
+import { HeroDemoLocaleFlag } from './locale-flag';
 import styles from './locales.module.css';
 
 export interface HeroDemoLocalesProps extends BoxProps {
@@ -40,7 +40,7 @@ export function HeroDemoLocales(props: HeroDemoLocalesProps) {
               as="span"
               className={styles.Flag}
             >
-              <LocaleFlag code={locale.code} />
+              <HeroDemoLocaleFlag code={locale.code} />
             </Box>
             <Box
               as="span"

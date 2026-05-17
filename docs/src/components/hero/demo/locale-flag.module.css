@@ -1,5 +1,5 @@
 @layer components {
-  .LocaleFlag {
+  .HeroDemoLocaleFlag {
     flex: none;
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
   }

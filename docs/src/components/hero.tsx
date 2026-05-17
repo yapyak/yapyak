@@ -4,8 +4,8 @@ import { Link } from '@tanstack/react-router';
 import { t } from 'yapyak';
 
 import { Box } from '#components/box';
-import { HeroDemo } from '#components/hero-demo';
 
+import { HeroDemo } from './hero/demo';
 import styles from './hero.module.css';
 
 export interface HeroProps extends BoxProps<'section'> {
