@@ -63,7 +63,7 @@ pnpm yapyak add es fr de ja
 
 ## Write your first translation
 
-::: code-group
+{% code-group %}
 
 ```tsx [React]
 import { t } from 'yapyak';
@@ -91,7 +91,7 @@ import { t } from 'yapyak'
 <button>{t('Save changes')}</button>
 ```
 
-:::
+{% /code-group %}
 
 Save the file. `locales/es.json` updates automatically:
 

@@ -1,4 +1,4 @@
-export type Lang =
+export type Language =
   | 'tsx'
   | 'ts'
   | 'jsx'
@@ -114,17 +114,17 @@ const LITERALS = new Set(['true', 'false', 'null', 'undefined']);
 
 const YAPYAK_STRING = /^(["'`])yapyak(?:\/[\w-]+)*\1$/;
 
-export function tokenize(code: string, lang: Lang): Token[] {
-  if (lang === 'diff') {
+export function tokenize(code: string, language: Language): Token[] {
+  if (language === 'diff') {
     return tokenizeDiff(code);
   }
-  if (lang === 'bash') {
+  if (language === 'bash') {
     return tokenizeBash(code);
   }
   const tokens: Token[] = [];
   let i = 0;
   while (i < code.length) {
-    const result = scanToken(code, i, lang);
+    const result = scanToken(code, i, language);
     if (result === null) {
       tokens.push({ type: 'plain', value: code[i] ?? '' });
       i++;
@@ -250,7 +250,11 @@ interface ScanResult {
   token: Token;
 }
 
-function scanToken(code: string, i: number, _lang: Lang): ScanResult | null {
+function scanToken(
+  code: string,
+  i: number,
+  _language: Language,
+): ScanResult | null {
   const c = code[i];
   if (c === undefined) {
     return null;

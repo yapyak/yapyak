@@ -1,15 +1,16 @@
 import type { BoxProps } from '#components/box';
 
 import { Box } from '#components/box';
+import { CodeBlock } from '#components/code-block';
 
 import styles from './signature.module.css';
 
 export interface ReferenceSymbolSignatureProps extends BoxProps<'section'> {
-  html: string;
+  source: string;
 }
 
 export function ReferenceSymbolSignature(props: ReferenceSymbolSignatureProps) {
-  const { className, html, ...restProps } = props;
+  const { className, source, ...restProps } = props;
 
   return (
     <Box
@@ -23,9 +24,9 @@ export function ReferenceSymbolSignature(props: ReferenceSymbolSignatureProps) {
       >
         Signature
       </Box>
-      <Box
-        className={styles.Body}
-        dangerouslySetInnerHTML={{ __html: html }}
+      <CodeBlock
+        language="ts"
+        source={source}
       />
     </Box>
   );

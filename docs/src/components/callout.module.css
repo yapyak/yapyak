@@ -1,0 +1,49 @@
+@layer components {
+  .Callout {
+    --callout-accent: var(--text-muted);
+    --callout-background: rgba(255, 255, 255, 0.02);
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-5) var(--space-4) var(--space-6);
+    background-color: var(--callout-background);
+    border-radius: var(--radius-md);
+    box-shadow: inset 3px 0 0 0 var(--callout-accent);
+
+    .TitleText {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--callout-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .BodyStack {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    &[data-variant="tip"] {
+      --callout-accent: var(--mint);
+      --callout-background: oklab(0.87 -0.24 0.06 / 0.05);
+    }
+
+    &[data-variant="info"] {
+      --callout-accent: var(--aqua);
+      --callout-background: oklab(0.88 -0.21 0.01 / 0.05);
+    }
+
+    &[data-variant="warning"] {
+      --callout-accent: #d8a05a;
+      --callout-background: rgba(216, 160, 90, 0.06);
+    }
+
+    &[data-variant="danger"] {
+      --callout-accent: #ff7b72;
+      --callout-background: rgba(255, 123, 114, 0.06);
+    }
+  }
+}

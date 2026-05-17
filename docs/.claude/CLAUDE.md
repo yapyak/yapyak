@@ -1529,6 +1529,7 @@ Each landmark name appears max once per component. `StartBar` and `EndBar` count
 - `Heading` — `<Heading>` component (any level)
 - `Paragraph` — `<Paragraph>` component / `<p>`
 - `Text` — `<Text>` component / `<span>` / plain text in `<Box>`
+- `PreformattedText` — `<pre>`
 - `Code` — `<code>`
 - `Label` — `<Label>` / `<label>`
 

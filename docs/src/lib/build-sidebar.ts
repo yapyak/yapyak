@@ -1,6 +1,6 @@
 import type { SidebarGroup, SidebarLink, SidebarNode } from './sidebars';
 
-import { parseFrontmatter } from './markdown';
+import { parseFrontmatterOnly } from './markdoc';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -77,7 +77,7 @@ async function buildLink(
   if (source === null) {
     return null;
   }
-  const frontmatter = parseFrontmatter(source).frontmatter as Frontmatter;
+  const frontmatter = parseFrontmatterOnly(source) as Frontmatter;
   if (typeof frontmatter.redirect === 'string') {
     return null;
   }
@@ -104,7 +104,7 @@ async function buildGroup(
   const indexSource = await readFile(indexPath, 'utf8').catch(() => null);
   const indexFrontmatter =
     indexSource !== null
-      ? (parseFrontmatter(indexSource).frontmatter as Frontmatter)
+      ? (parseFrontmatterOnly(indexSource) as Frontmatter)
       : ({} as Frontmatter);
 
   const items = await walkDir(absDir, urlPrefix);

@@ -1,9 +1,10 @@
 import type { BoxProps } from '#components/box';
-import type { Lang } from '#utils/tokenize';
+import type { Language } from '#utils/tokenize';
 
 import { useLayoutEffect, useRef, useState } from 'react';
 
 import { Box } from '#components/box';
+import { CodeBlockToken } from '#components/code-block-token';
 import { tokenize } from '#utils/tokenize';
 
 import styles from './editor.module.css';
@@ -14,13 +15,13 @@ interface FrameworkConfig {
   filename: string;
   id: Framework;
   label: string;
-  lang: Lang;
+  language: Language;
 }
 
 export const FRAMEWORKS: FrameworkConfig[] = [
-  { filename: 'app.tsx', id: 'react', label: 'React', lang: 'tsx' },
-  { filename: 'app.vue', id: 'vue', label: 'Vue', lang: 'vue' },
-  { filename: 'app.svelte', id: 'svelte', label: 'Svelte', lang: 'svelte' },
+  { filename: 'app.tsx', id: 'react', label: 'React', language: 'tsx' },
+  { filename: 'app.vue', id: 'vue', label: 'Vue', language: 'vue' },
+  { filename: 'app.svelte', id: 'svelte', label: 'Svelte', language: 'svelte' },
 ];
 
 export interface HeroDemoEditorProps extends BoxProps {
@@ -46,7 +47,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
     // biome-ignore lint/style/noNonNullAssertion: yap yap yap
     FRAMEWORKS.find((entry) => entry.id === framework) ?? FRAMEWORKS[0]!;
   const code = buildCode(framework, source);
-  const tokens = tokenize(code, config.lang);
+  const tokens = tokenize(code, config.language);
 
   const tabsElement = useRef<HTMLDivElement>(null);
   const [indicator, setIndicator] = useState<IndicatorState | null>(null);
@@ -140,10 +141,9 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
               const before = parts[0] ?? '';
               const after = parts[1] ?? '';
               return (
-                <Box
-                  as="span"
-                  className="tx-tx-source"
+                <CodeBlockToken
                   key={index}
+                  type="tx-source"
                 >
                   <Box as="span">'</Box>
                   {before}
@@ -154,17 +154,16 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
                   />
                   {after}
                   <Box as="span">'</Box>
-                </Box>
+                </CodeBlockToken>
               );
             }
             return (
-              <Box
-                as="span"
-                className={`tx-${token.type}`}
+              <CodeBlockToken
                 key={index}
+                type={token.type}
               >
                 {token.value}
-              </Box>
+              </CodeBlockToken>
             );
           })}
         </Box>

@@ -12,14 +12,15 @@
       letter-spacing: 0.05em;
     }
 
-    .Body {
+    .ExampleStack {
+      --markdoc-renderer-gap: var(--space-3);
+
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
       font-size: var(--font-size-md);
       line-height: 1.6;
       color: var(--text-soft);
-    }
-
-    .Body + .Body {
-      margin-top: var(--space-4);
     }
   }
 }

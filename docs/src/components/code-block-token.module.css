@@ -1,0 +1,81 @@
+@layer components {
+  .CodeBlockToken {
+    &[data-type="plain"] {
+      color: inherit;
+    }
+
+    &[data-type="keyword"] {
+      color: var(--syntax-keyword);
+    }
+
+    &[data-type="type"] {
+      color: var(--syntax-type);
+    }
+
+    &[data-type="literal"] {
+      color: var(--syntax-literal);
+    }
+
+    &[data-type="string"],
+    &[data-type="template"] {
+      color: var(--syntax-string);
+    }
+
+    &[data-type="number"] {
+      color: var(--syntax-number);
+    }
+
+    &[data-type="comment"] {
+      font-style: italic;
+      color: var(--text-muted);
+    }
+
+    &[data-type="fn-call"],
+    &[data-type="tx-call"] {
+      color: var(--syntax-fn-call);
+    }
+
+    &[data-type="jsx-tag"] {
+      color: var(--syntax-jsx-tag);
+    }
+
+    &[data-type="punct"] {
+      color: var(--text-muted);
+    }
+
+    &[data-type="tx-yapyak"] {
+      color: var(--syntax-string);
+    }
+
+    &[data-type="tx-source"] {
+      color: var(--mint);
+      text-shadow: var(--mint-text-glow);
+    }
+
+    &[data-type="diff-add"] {
+      display: inline;
+      color: var(--mint);
+      background-color: var(--mint-glow-soft);
+    }
+
+    &[data-type="diff-remove"] {
+      display: inline;
+      color: var(--diff-remove);
+      background-color: var(--diff-remove-bg);
+    }
+
+    &[data-type="diff-hunk"] {
+      display: inline;
+      font-weight: var(--font-weight-medium);
+      color: var(--syntax-type);
+    }
+
+    &[data-type="bash-var"] {
+      color: var(--syntax-fn-call);
+    }
+
+    &[data-type="bash-flag"] {
+      color: var(--syntax-type);
+    }
+  }
+}

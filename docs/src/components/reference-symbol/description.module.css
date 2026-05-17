@@ -1,26 +1,18 @@
 @layer components {
   .ReferenceSymbolDescription {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
+    --markdoc-renderer-gap: var(--space-3);
 
-    .Body {
-      font-size: var(--font-size-md);
-      line-height: 1.6;
+    font-size: var(--font-size-md);
+    line-height: 1.6;
+    color: var(--text-soft);
+
+    :not(pre) > code {
+      padding: 2px 6px;
+      font-family: var(--font-mono);
+      font-size: 0.9em;
       color: var(--text-soft);
-
-      p + p {
-        margin-top: var(--space-3);
-      }
-
-      :not(pre) > code {
-        padding: 2px 6px;
-        font-family: var(--font-mono);
-        font-size: 0.9em;
-        color: var(--text-soft);
-        background: var(--surface-elevated);
-        border-radius: var(--radius-sm);
-      }
+      background: var(--surface-elevated);
+      border-radius: var(--radius-sm);
     }
   }
 }

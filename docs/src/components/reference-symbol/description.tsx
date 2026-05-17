@@ -1,17 +1,19 @@
 import type { BoxProps } from '#components/box';
+import type { MarkdocNode } from '#lib/markdoc';
 
 import { Box } from '#components/box';
+import { MarkdocRenderer } from '#components/markdoc-renderer';
 
 import styles from './description.module.css';
 
 export interface ReferenceSymbolDescriptionProps extends BoxProps<'section'> {
-  html: string;
+  tree: MarkdocNode[];
 }
 
 export function ReferenceSymbolDescription(
   props: ReferenceSymbolDescriptionProps,
 ) {
-  const { className, html, ...restProps } = props;
+  const { className, tree, ...restProps } = props;
 
   return (
     <Box
@@ -19,10 +21,7 @@ export function ReferenceSymbolDescription(
       as="section"
       className={[styles.ReferenceSymbolDescription, className]}
     >
-      <Box
-        className={styles.Body}
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
+      <MarkdocRenderer tree={tree} />
     </Box>
   );
 }

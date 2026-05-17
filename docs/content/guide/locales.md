@@ -68,7 +68,7 @@ Updates the in-memory store, persists according to your `persistence` config, an
 
 In components, use the framework-idiomatic reactive binding so the UI re-renders on locale change:
 
-::: code-group
+{% code-group %}
 
 ```tsx [React]
 import { getLocales } from 'yapyak';
@@ -114,7 +114,7 @@ import { locale } from 'yapyak/vue'
 </select>
 ```
 
-:::
+{% /code-group %}
 
 The framework-specific exports (`yapyak/react`, `yapyak/vue`, `yapyak/svelte`) only differ in *how* you read and write the locale reactively — the `t` function itself is the same import everywhere.
 

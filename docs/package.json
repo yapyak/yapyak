@@ -17,6 +17,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@markdoc/markdoc": "catalog:",
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-start": "catalog:",
     "react": "catalog:",
@@ -28,7 +29,6 @@
     "@types/react-dom": "catalog:",
     "@yapyak/typescript-config": "workspace:*",
     "lightningcss": "catalog:",
-    "marked": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:"
   }

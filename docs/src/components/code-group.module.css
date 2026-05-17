@@ -1,0 +1,107 @@
+@layer components {
+  .CodeGroup {
+    position: relative;
+    overflow: hidden;
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    box-shadow: inset 0 0 0 1px var(--ring);
+
+    .TabRow {
+      position: relative;
+      display: flex;
+      align-items: stretch;
+      border-bottom: 1px solid var(--rule);
+
+      .TabLabel {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        padding: var(--space-3) var(--space-4);
+        font-family: var(--font-mono);
+        font-size: var(--font-size-xs);
+        color: var(--text-muted);
+        cursor: pointer;
+        border-right: 1px solid var(--rule);
+        transition:
+          background-color var(--transition),
+          color var(--transition);
+
+        .TabInput {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          overflow: hidden;
+          white-space: nowrap;
+          pointer-events: none;
+          clip: rect(0 0 0 0);
+        }
+
+        .IndicatorBar {
+          position: absolute;
+          right: 0;
+          bottom: -1px;
+          left: 0;
+          height: 1px;
+          background-color: var(--mint);
+          opacity: 0;
+        }
+
+        &:hover {
+          color: var(--text-soft);
+          background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        &:has(.TabInput:checked) {
+          color: var(--text);
+          background-color: var(--surface-active);
+
+          .IndicatorBar {
+            opacity: 1;
+          }
+        }
+      }
+    }
+
+    .CodeBlockStack {
+      .CodeBlockWrapper {
+        display: none;
+      }
+    }
+
+    &:has(.TabLabel:nth-of-type(1) .TabInput:checked) {
+      .CodeBlockStack .CodeBlockWrapper:nth-of-type(1) {
+        display: block;
+      }
+    }
+
+    &:has(.TabLabel:nth-of-type(2) .TabInput:checked) {
+      .CodeBlockStack .CodeBlockWrapper:nth-of-type(2) {
+        display: block;
+      }
+    }
+
+    &:has(.TabLabel:nth-of-type(3) .TabInput:checked) {
+      .CodeBlockStack .CodeBlockWrapper:nth-of-type(3) {
+        display: block;
+      }
+    }
+
+    &:has(.TabLabel:nth-of-type(4) .TabInput:checked) {
+      .CodeBlockStack .CodeBlockWrapper:nth-of-type(4) {
+        display: block;
+      }
+    }
+
+    &:has(.TabLabel:nth-of-type(5) .TabInput:checked) {
+      .CodeBlockStack .CodeBlockWrapper:nth-of-type(5) {
+        display: block;
+      }
+    }
+
+    &:has(.TabLabel:nth-of-type(6) .TabInput:checked) {
+      .CodeBlockStack .CodeBlockWrapper:nth-of-type(6) {
+        display: block;
+      }
+    }
+  }
+}

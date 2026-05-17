@@ -1,0 +1,68 @@
+import type { MarkdocNode } from '#lib/markdoc';
+
+import { createServerFn } from '@tanstack/react-start';
+
+export type GuideArticleResult =
+  | { kind: 'article'; article: GuideArticle }
+  | { kind: 'redirect'; target: string }
+  | { kind: 'not-found' };
+
+export interface GuideArticle {
+  description: string;
+  title: string;
+  tree: MarkdocNode[];
+}
+
+export const loadGuideArticle = createServerFn()
+  .inputValidator((slug: string) => slug)
+  .handler(async ({ data: slug }): Promise<GuideArticleResult> => {
+    const { readFile } = await import('node:fs/promises');
+    const { join } = await import('node:path');
+    const { parseMarkdoc } = await import('#lib/markdoc');
+    const candidates = [
+      join(process.cwd(), 'content', 'guide', `${slug}.md`),
+      join(process.cwd(), 'content', 'guide', slug, 'index.md'),
+    ];
+    for (const path of candidates) {
+      const source = await readFile(path, 'utf8').catch(() => null);
+      if (source === null) {
+        continue;
+      }
+      const { frontmatter, tree } = parseMarkdoc(source);
+      const redirectField = frontmatter.redirect;
+      if (typeof redirectField === 'string' && redirectField) {
+        const target = resolveRedirect(slug, redirectField);
+        if (target !== `/guide/${slug}`) {
+          return { kind: 'redirect', target };
+        }
+      }
+      return {
+        article: {
+          description: (frontmatter.description as string | undefined) ?? '',
+          title: (frontmatter.title as string | undefined) ?? slug,
+          tree,
+        },
+        kind: 'article',
+      };
+    }
+    return { kind: 'not-found' };
+  });
+
+function resolveRedirect(fromSlug: string, target: string): string {
+  if (target.startsWith('/')) {
+    return target;
+  }
+  const fromSegments = fromSlug.split('/').filter(Boolean);
+  const targetSegments = target.split('/').filter(Boolean);
+  for (const segment of targetSegments) {
+    if (segment === '.') {
+      continue;
+    }
+    if (segment === '..') {
+      fromSegments.pop();
+      continue;
+    }
+    fromSegments.push(segment);
+  }
+  return `/guide/${fromSegments.join('/')}`;
+}

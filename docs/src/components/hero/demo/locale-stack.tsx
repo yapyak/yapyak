@@ -2,6 +2,7 @@ import type { BoxProps } from '#components/box';
 import type { LocaleCode } from '#utils/hero-demo-scenes';
 
 import { Box } from '#components/box';
+import { CodeBlockToken } from '#components/code-block-token';
 import { LOCALES } from '#utils/hero-demo-scenes';
 
 import { HeroDemoLocaleFlag } from './locale-flag';
@@ -52,32 +53,19 @@ export function HeroDemoLocaleStack(props: HeroDemoLocaleStackProps) {
               as="span"
               className={styles.Json}
             >
-              <Box
-                as="span"
-                className="tx-punct"
-              >
-                {'{ '}
-              </Box>
+              <CodeBlockToken type="punct">{'{ '}</CodeBlockToken>
               <Box
                 as="span"
                 className={styles.Key}
                 key={savedSource}
               >
-                <Box
-                  as="span"
-                  className="tx-string"
-                >
+                <CodeBlockToken type="string">
                   <Box as="span">"</Box>
                   {savedSource}
                   <Box as="span">"</Box>
-                </Box>
+                </CodeBlockToken>
               </Box>
-              <Box
-                as="span"
-                className="tx-punct"
-              >
-                :{' '}
-              </Box>
+              <CodeBlockToken type="punct">: </CodeBlockToken>
               {isShimmering || value === '' ? (
                 <Box
                   aria-hidden="true"
@@ -90,22 +78,14 @@ export function HeroDemoLocaleStack(props: HeroDemoLocaleStackProps) {
                   className={styles.Value}
                   key={value}
                 >
-                  <Box
-                    as="span"
-                    className="tx-tx-source"
-                  >
+                  <CodeBlockToken type="tx-source">
                     <Box as="span">"</Box>
                     {value}
                     <Box as="span">"</Box>
-                  </Box>
+                  </CodeBlockToken>
                 </Box>
               )}
-              <Box
-                as="span"
-                className="tx-punct"
-              >
-                {' }'}
-              </Box>
+              <CodeBlockToken type="punct">{' }'}</CodeBlockToken>
             </Box>
           </Box>
         );
