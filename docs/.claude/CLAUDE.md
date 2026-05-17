@@ -365,12 +365,87 @@ systems/
 - Named exports only, never default exports
 - Props type is an exported interface in the same file: `export interface ComponentNameProps`
 - Props are destructured on the first line of the function body, not in the signature: `const { disabled = false } = props`
+- **Blank line between destructuring and the rest of the function body**
 - Defaults are set in the destructuring assignment
-- `...restProps` is spread onto the root element when the component wraps a native or base element
+- `...restProps` is spread onto the root element when the component wraps a native or base element — and is spread FIRST, then explicit overrides come after
 - Each public component is a top-level file in `components/` (e.g. `components/button.tsx`)
 - Internal sub-components live in a folder matching the public file (e.g. `components/button/text.tsx`)
 - Each `.tsx` component has its own `.module.css` file directly next to it — never import CSS from a parent component
 - The top-level file IS the public surface — no `index.ts` boilerplate
+
+### Box primitive (the root element)
+
+**Always render `Box` as the component's root.** Never use raw HTML tags directly in the JSX root. `Box` lives at `components/box.tsx` and handles `className` merging, `ref` composition, `style` merging, and `data-*` boolean normalization for free.
+
+```tsx
+import type { ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
+
+import { Box } from '#components/box';
+
+import styles from './button.module.css';
+
+export interface ButtonProps extends BoxProps<'button'> {
+  isDisabled?: boolean;
+  isPressed?: boolean;
+}
+
+export function Button(props: ButtonProps): ReactElement {
+  const { className, isDisabled, isPressed, ...restProps } = props;
+
+  return (
+    <Box
+      {...restProps}
+      as="button"
+      className={[styles.Button, className]}
+      data-disabled={isDisabled}
+      data-pressed={isPressed}
+      disabled={isDisabled}
+    />
+  );
+}
+```
+
+**Rules:**
+
+- **Props ALWAYS extend `BoxProps<T>` where `T` is the root element.** Never write a standalone props interface. Extending pulls in all native attributes plus Box's enhanced `className`/`ref`/`style`.
+- **`<div>` is the default — drop the redundancy.** Write `extends BoxProps` (not `BoxProps<'div'>`) and omit `as="div"` on the Box.
+- **Other roots are explicit.** `BoxProps<'button'>` + `as="button"`, `BoxProps<'a'>` + `as="a"`, etc.
+- **`className` is an array, not a merge call.** Write `className={[styles.Button, className]}`. Box flattens and joins falsy-safe. Never use `cn()`, `clsx`, template strings, or ternaries to merge.
+- **`data-*` attributes pass through directly.** Box normalizes booleans → empty string / undefined. Write `data-pressed={isPressed}`, never `data-pressed={isPressed || undefined}`.
+- **Spread `...restProps` FIRST on `Box`, then explicit overrides.** That way explicit props (className, data-*, as) always win over what the consumer passed.
+- **Pass control props through to the native attribute too.** `isDisabled` → both `data-disabled={isDisabled}` (for CSS styling) AND `disabled={isDisabled}` (for native behavior).
+- **Don't destructure `children` if you don't transform them.** `children` is already on `BoxProps<T>` and flows through `...restProps`. Self-close `<Box />` instead of `<Box>{children}</Box>`. Only destructure `children` when you wrap, transform, or render them alongside other content.
+- **SVG is exempt from Box.** SVG components render raw `<svg>` with `SVGProps<SVGSVGElement>` and spread `{...props}` directly. The Box abstraction (className arrays, data-attr normalization) doesn't add value for static SVG icons, and `<svg>` has its own namespace + attribute set that doesn't map cleanly.
+
+### Box for div (default case)
+
+```tsx
+import type { ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
+
+import { Box } from '#components/box';
+
+import styles from './card.module.css';
+
+export interface CardProps extends BoxProps {
+  isElevated?: boolean;
+}
+
+export function Card(props: CardProps): ReactElement {
+  const { className, isElevated, ...restProps } = props;
+
+  return (
+    <Box
+      {...restProps}
+      className={[styles.Card, className]}
+      data-elevated={isElevated}
+    />
+  );
+}
+```
+
+No `<'div'>`, no `as="div"`, no `children` destructuring, self-closing — defaults all the way down.
 - Compound components use dot-notation with `declare namespace` + property assignment, never `Object.assign` or `*Fn` suffix:
 
   ```tsx

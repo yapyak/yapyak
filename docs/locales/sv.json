@@ -1,8 +1,5 @@
 {
-  "../packages/yapyak/src/vue/locale.ts": {
-    "Hello": ""
-  },
-  "src/components/hero/hero.tsx": {
+  "src/components/hero.tsx": {
     "Get Started": "",
     "Open source. Use any LLM. No middleman.": "",
     "View on GitHub": ""

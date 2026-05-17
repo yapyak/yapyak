@@ -1,8 +1,8 @@
 import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
 
-import styles from './guide-layout.module.css';
 import { GuideLayoutContent } from './guide-layout/content';
 import { GuideLayoutSidebar } from './guide-layout/sidebar';
+import styles from './guide-layout.module.css';
 
 export interface GuideLayoutProps extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;

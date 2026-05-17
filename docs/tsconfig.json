@@ -5,6 +5,7 @@
       "#docs/*": ["./src/docs/*"],
       "#hooks/*": ["./src/hooks/*"],
       "#lib/*": ["./src/lib/*"],
+      "#types": ["./src/types.ts"],
       "#utils/*": ["./src/utils/*"]
     }
   },
