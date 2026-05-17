@@ -8,6 +8,7 @@ import { tokenize } from '#utils/tokenize';
 import styles from './code-block.module.css';
 
 export interface CodeBlockProps extends BoxProps {
+  label?: string;
   language?: string;
   source: string;
 }
@@ -28,10 +29,11 @@ const SUPPORTED_LANGUAGES = new Set<Language>([
 ]);
 
 export function CodeBlock(props: CodeBlockProps) {
-  const { className, language, source, ...restProps } = props;
+  const { className, label, language, source, ...restProps } = props;
 
   const isHighlighted =
     language && SUPPORTED_LANGUAGES.has(language as Language);
+  const tag = label ?? language;
 
   return (
     <Box
@@ -39,6 +41,14 @@ export function CodeBlock(props: CodeBlockProps) {
       className={[styles.CodeBlock, className]}
       data-language={language}
     >
+      {tag && (
+        <Box
+          as="span"
+          className={styles.LanguageText}
+        >
+          {tag}
+        </Box>
+      )}
       <Box
         as="pre"
         className={styles.PreformattedText}
