@@ -88,6 +88,14 @@ export function Navigation(props: NavigationProps) {
       className={[styles.Navigation, className]}
       data-animating={isAnimating}
       ref={element}
+      style={
+        indicator && {
+          '--navigation-indicator-height': `${indicator.height}px`,
+          '--navigation-indicator-width': `${indicator.width}px`,
+          '--navigation-indicator-x': `${indicator.x}px`,
+          '--navigation-indicator-y': `${indicator.y}px`,
+        }
+      }
     >
       {indicator && (
         <Box
@@ -95,11 +103,6 @@ export function Navigation(props: NavigationProps) {
           as="span"
           className={styles.Indicator}
           data-ready={isReady}
-          style={{
-            height: `${indicator.height}px`,
-            transform: `translate(${indicator.x}px, ${indicator.y}px)`,
-            width: `${indicator.width}px`,
-          }}
         />
       )}
       {children}

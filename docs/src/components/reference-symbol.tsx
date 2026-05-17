@@ -2,7 +2,6 @@ import type { BoxProps } from '#components/box';
 
 import { Box } from '#components/box';
 
-import styles from './reference-symbol.module.css';
 import { ReferenceSymbolDeprecated } from './reference-symbol/deprecated';
 import { ReferenceSymbolDescription } from './reference-symbol/description';
 import { ReferenceSymbolExamples } from './reference-symbol/examples';
@@ -11,6 +10,7 @@ import { ReferenceSymbolMemberTable } from './reference-symbol/member-table';
 import { ReferenceSymbolReturns } from './reference-symbol/returns';
 import { ReferenceSymbolSignature } from './reference-symbol/signature';
 import { ReferenceSymbolSourceLink } from './reference-symbol/source-link';
+import styles from './reference-symbol.module.css';
 
 export interface ReferenceSymbolProps extends BoxProps<'article'> {}
 

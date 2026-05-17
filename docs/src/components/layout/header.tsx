@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 
 import { Box } from '#components/box';
 
-import styles from './header.module.css';
 import { LayoutHeaderCenter } from './header/center';
 import { LayoutHeaderEnd } from './header/end';
 import { LayoutHeaderStart } from './header/start';
+import styles from './header.module.css';
 
 export interface LayoutHeaderProps extends BoxProps<'header'> {}
 

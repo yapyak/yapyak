@@ -3,9 +3,9 @@ import type { ReferenceSidebar as ReferenceSidebarData } from '#docs/build-refer
 
 import { Box } from '#components/box';
 
-import styles from './reference-navigation.module.css';
 import { ReferenceNavigationModule } from './reference-navigation/module';
 import { ReferenceNavigationSymbol } from './reference-navigation/symbol';
+import styles from './reference-navigation.module.css';
 
 export interface ReferenceNavigationProps extends BoxProps<'nav'> {
   data: ReferenceSidebarData;

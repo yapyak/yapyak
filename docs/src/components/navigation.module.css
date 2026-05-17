@@ -13,10 +13,16 @@
       position: absolute;
       top: 0;
       left: 0;
+      width: var(--navigation-indicator-width);
+      height: var(--navigation-indicator-height);
       pointer-events: none;
       background: var(--brand-gradient);
       border-radius: var(--radius-pill);
       opacity: 0;
+      transform: translate(
+        var(--navigation-indicator-x),
+        var(--navigation-indicator-y)
+      );
 
       &[data-ready] {
         transition:

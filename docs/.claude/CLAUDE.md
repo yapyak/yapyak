@@ -247,7 +247,7 @@ Maximum one per page. Brand emoji 🐃 only when natural (e.g. release post titl
 
 ## Formatting
 
-- Always run `pnpm check:write` after making changes to ensure consistent formatting and lint compliance
+- **MANDATORY: Run `pnpm check:write` after every code change.** No exceptions. The command runs Biome with `--write` from the repo root and handles formatting, lint, and import ordering. Skip this and PRs bounce.
 - **Never leave comments in code.** No inline `//`, no block `/* */`, no JSDoc on internal symbols. Code should be self-explanatory through naming. The only exception is when a comment is the sole way to communicate non-obvious intent (rare — fix the code first).
 
 ## File Naming
@@ -381,7 +381,7 @@ systems/
 
 ### Conditional rendering
 
-**Never explicitly compare against `undefined`, `''`, `null`, or `0` for conditional rendering.** Use the truthy short-circuit. JavaScript's falsy semantics already cover all empty/missing states.
+**TOTALLY FORBIDDEN: explicitly comparing against `undefined`, `''`, `null`, or `0` for conditional rendering.** Use the truthy short-circuit `&&`. JavaScript's falsy semantics already cover all empty/missing states. Writing `value !== undefined && value !== ''` signals over-thinking and bloats the JSX.
 
 ```tsx
 // ✓ Right
