@@ -131,15 +131,15 @@ export function tokenize(code: string, language: Language): Token[] {
     return tokenizeYaml(code);
   }
   const tokens: Token[] = [];
-  let i = 0;
-  while (i < code.length) {
-    const result = scanToken(code, i, language);
+  let index = 0;
+  while (index < code.length) {
+    const result = scanToken(code, index, language);
     if (result === null) {
-      tokens.push({ type: 'plain', value: code[i] ?? '' });
-      i++;
+      tokens.push({ type: 'plain', value: code[index] ?? '' });
+      index++;
     } else {
       tokens.push(result.token);
-      i = result.end;
+      index = result.end;
     }
   }
   applyYapyakHighlight(tokens);
@@ -149,9 +149,9 @@ export function tokenize(code: string, language: Language): Token[] {
 function tokenizeDiff(code: string): Token[] {
   const tokens: Token[] = [];
   const lines = code.split('\n');
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i] ?? '';
-    const trailing = i < lines.length - 1 ? '\n' : '';
+  for (let index = 0; index < lines.length; index++) {
+    const line = lines[index] ?? '';
+    const trailing = index < lines.length - 1 ? '\n' : '';
     if (line.startsWith('@@')) {
       tokens.push({ type: 'diff-hunk', value: line + trailing });
     } else if (line.startsWith('+') && !line.startsWith('+++')) {
@@ -167,172 +167,179 @@ function tokenizeDiff(code: string): Token[] {
 
 function tokenizeBash(code: string): Token[] {
   const tokens: Token[] = [];
-  let i = 0;
+  let index = 0;
   let atLineStart = true;
-  while (i < code.length) {
-    const c = code[i] ?? '';
+  while (index < code.length) {
+    const character = code[index] ?? '';
 
-    if (c === ' ' || c === '\t' || c === '\n' || c === '\r') {
-      const match = /^[\s]+/.exec(code.slice(i));
+    if (
+      character === ' ' ||
+      character === '\t' ||
+      character === '\n' ||
+      character === '\r'
+    ) {
+      const match = /^[\s]+/.exec(code.slice(index));
       if (match) {
         tokens.push({ type: 'plain', value: match[0] });
         if (match[0].includes('\n')) {
           atLineStart = true;
         }
-        i += match[0].length;
+        index += match[0].length;
         continue;
       }
     }
 
-    if (c === '#') {
-      const newline = code.indexOf('\n', i);
-      const value = newline === -1 ? code.slice(i) : code.slice(i, newline);
+    if (character === '#') {
+      const newline = code.indexOf('\n', index);
+      const value =
+        newline === -1 ? code.slice(index) : code.slice(index, newline);
       tokens.push({ type: 'comment', value });
-      i += value.length;
+      index += value.length;
       continue;
     }
 
-    if (c === "'" || c === '"') {
-      const re = c === "'" ? /^'(?:\\.|[^'\\])*'/ : /^"(?:\\.|[^"\\])*"/;
-      const match = re.exec(code.slice(i));
+    if (character === "'" || character === '"') {
+      const re =
+        character === "'" ? /^'(?:\\.|[^'\\])*'/ : /^"(?:\\.|[^"\\])*"/;
+      const match = re.exec(code.slice(index));
       if (match) {
         tokens.push({ type: 'string', value: match[0] });
-        i += match[0].length;
+        index += match[0].length;
         continue;
       }
     }
 
-    if (c === '$') {
-      const braced = /^\$\{[^}]+\}/.exec(code.slice(i));
+    if (character === '$') {
+      const braced = /^\$\{[^}]+\}/.exec(code.slice(index));
       if (braced) {
         tokens.push({ type: 'bash-var', value: braced[0] });
-        i += braced[0].length;
+        index += braced[0].length;
         continue;
       }
-      const plain = /^\$[A-Za-z_][\w]*/.exec(code.slice(i));
+      const plain = /^\$[A-Za-z_][\w]*/.exec(code.slice(index));
       if (plain) {
         tokens.push({ type: 'bash-var', value: plain[0] });
-        i += plain[0].length;
+        index += plain[0].length;
         continue;
       }
     }
 
-    if (c === '-') {
-      const flag = /^--?[A-Za-z][\w-]*/.exec(code.slice(i));
+    if (character === '-') {
+      const flag = /^--?[A-Za-z][\w-]*/.exec(code.slice(index));
       if (flag) {
         tokens.push({ type: 'bash-flag', value: flag[0] });
-        i += flag[0].length;
+        index += flag[0].length;
         continue;
       }
     }
 
-    if (c >= '0' && c <= '9') {
-      const match = /^\d+(?:\.\d+)?/.exec(code.slice(i));
+    if (character >= '0' && character <= '9') {
+      const match = /^\d+(?:\.\d+)?/.exec(code.slice(index));
       if (match) {
         tokens.push({ type: 'number', value: match[0] });
-        i += match[0].length;
+        index += match[0].length;
         continue;
       }
     }
 
-    if (atLineStart && /[A-Za-z_]/.test(c)) {
-      const match = /^[A-Za-z_][\w-]*/.exec(code.slice(i));
+    if (atLineStart && /[A-Za-z_]/.test(character)) {
+      const match = /^[A-Za-z_][\w-]*/.exec(code.slice(index));
       if (match) {
         tokens.push({ type: 'fn-call', value: match[0] });
         atLineStart = false;
-        i += match[0].length;
+        index += match[0].length;
         continue;
       }
     }
 
-    if (c !== '\n') {
+    if (character !== '\n') {
       atLineStart = false;
     }
-    tokens.push({ type: 'plain', value: c });
-    i++;
+    tokens.push({ type: 'plain', value: character });
+    index++;
   }
   return mergePlainTokens(tokens);
 }
 
 function tokenizeHtml(code: string): Token[] {
   const tokens: Token[] = [];
-  let i = 0;
+  let index = 0;
   let mode: 'text' | 'tag' = 'text';
 
-  while (i < code.length) {
+  while (index < code.length) {
     if (mode === 'text') {
-      if (code.startsWith('<!--', i)) {
-        const end = code.indexOf('-->', i + 4);
+      if (code.startsWith('<!--', index)) {
+        const end = code.indexOf('-->', index + 4);
         const stop = end === -1 ? code.length : end + 3;
-        tokens.push({ type: 'comment', value: code.slice(i, stop) });
-        i = stop;
+        tokens.push({ type: 'comment', value: code.slice(index, stop) });
+        index = stop;
         continue;
       }
 
-      if (code[i] === '<') {
-        const match = /^<\/?[A-Za-z][\w.-]*/.exec(code.slice(i));
+      if (code[index] === '<') {
+        const match = /^<\/?[A-Za-z][\w.-]*/.exec(code.slice(index));
         if (match) {
           tokens.push({ type: 'jsx-tag', value: match[0] });
-          i += match[0].length;
+          index += match[0].length;
           mode = 'tag';
           continue;
         }
       }
 
-      const nextOpen = code.indexOf('<', i);
+      const nextOpen = code.indexOf('<', index);
       const stop = nextOpen === -1 ? code.length : nextOpen;
-      tokens.push({ type: 'plain', value: code.slice(i, stop) });
-      i = stop;
+      tokens.push({ type: 'plain', value: code.slice(index, stop) });
+      index = stop;
       continue;
     }
 
-    if (code[i] === '/' && code[i + 1] === '>') {
+    if (code[index] === '/' && code[index + 1] === '>') {
       tokens.push({ type: 'jsx-tag', value: '/>' });
-      i += 2;
+      index += 2;
       mode = 'text';
       continue;
     }
 
-    if (code[i] === '>') {
+    if (code[index] === '>') {
       tokens.push({ type: 'jsx-tag', value: '>' });
-      i++;
+      index++;
       mode = 'text';
       continue;
     }
 
-    const whitespace = /^[\s]+/.exec(code.slice(i));
+    const whitespace = /^[\s]+/.exec(code.slice(index));
     if (whitespace) {
       tokens.push({ type: 'plain', value: whitespace[0] });
-      i += whitespace[0].length;
+      index += whitespace[0].length;
       continue;
     }
 
-    if (code[i] === '=') {
+    if (code[index] === '=') {
       tokens.push({ type: 'punct', value: '=' });
-      i++;
+      index++;
       continue;
     }
 
-    if (code[i] === '"' || code[i] === "'") {
-      const quote = code[i];
+    if (code[index] === '"' || code[index] === "'") {
+      const quote = code[index];
       const regex = quote === "'" ? /^'(?:\\.|[^'\\])*'/ : /^"(?:\\.|[^"\\])*"/;
-      const match = regex.exec(code.slice(i));
+      const match = regex.exec(code.slice(index));
       if (match) {
         tokens.push({ type: 'string', value: match[0] });
-        i += match[0].length;
+        index += match[0].length;
         continue;
       }
     }
 
-    const attribute = /^[A-Za-z_:@][\w:.-]*/.exec(code.slice(i));
+    const attribute = /^[A-Za-z_:@][\w:.-]*/.exec(code.slice(index));
     if (attribute) {
       tokens.push({ type: 'fn-call', value: attribute[0] });
-      i += attribute[0].length;
+      index += attribute[0].length;
       continue;
     }
 
-    tokens.push({ type: 'plain', value: code[i] ?? '' });
-    i++;
+    tokens.push({ type: 'plain', value: code[index] ?? '' });
+    index++;
   }
 
   return mergePlainTokens(tokens);
@@ -453,83 +460,90 @@ interface ScanResult {
 
 function scanToken(
   code: string,
-  i: number,
+  index: number,
   _language: Language,
 ): ScanResult | null {
-  const c = code[i];
-  if (c === undefined) {
+  const character = code[index];
+  if (character === undefined) {
     return null;
   }
 
-  if (c === ' ' || c === '\t' || c === '\n' || c === '\r') {
-    const match = /^[\s]+/.exec(code.slice(i));
+  if (
+    character === ' ' ||
+    character === '\t' ||
+    character === '\n' ||
+    character === '\r'
+  ) {
+    const match = /^[\s]+/.exec(code.slice(index));
     if (match) {
       return {
-        end: i + match[0].length,
+        end: index + match[0].length,
         token: { type: 'plain', value: match[0] },
       };
     }
   }
 
-  if (c === '/' && code[i + 1] === '/') {
-    const newline = code.indexOf('\n', i);
-    const value = newline === -1 ? code.slice(i) : code.slice(i, newline);
-    return { end: i + value.length, token: { type: 'comment', value } };
+  if (character === '/' && code[index + 1] === '/') {
+    const newline = code.indexOf('\n', index);
+    const value =
+      newline === -1 ? code.slice(index) : code.slice(index, newline);
+    return { end: index + value.length, token: { type: 'comment', value } };
   }
 
-  if (c === '/' && code[i + 1] === '*') {
-    const close = code.indexOf('*/', i + 2);
+  if (character === '/' && code[index + 1] === '*') {
+    const close = code.indexOf('*/', index + 2);
     const end = close === -1 ? code.length : close + 2;
-    return { end, token: { type: 'comment', value: code.slice(i, end) } };
+    return { end, token: { type: 'comment', value: code.slice(index, end) } };
   }
 
-  if (c === "'" || c === '"') {
-    const re = c === "'" ? /^'(?:\\.|[^'\\\n])*'/ : /^"(?:\\.|[^"\\\n])*"/;
-    const match = re.exec(code.slice(i));
+  if (character === "'" || character === '"') {
+    const re =
+      character === "'" ? /^'(?:\\.|[^'\\\n])*'/ : /^"(?:\\.|[^"\\\n])*"/;
+    const match = re.exec(code.slice(index));
     if (match) {
       return {
-        end: i + match[0].length,
+        end: index + match[0].length,
         token: { type: 'string', value: match[0] },
       };
     }
   }
 
-  if (c === '`') {
-    const match = /^`(?:\\.|[^`\\])*`/.exec(code.slice(i));
+  if (character === '`') {
+    const match = /^`(?:\\.|[^`\\])*`/.exec(code.slice(index));
     if (match) {
       return {
-        end: i + match[0].length,
+        end: index + match[0].length,
         token: { type: 'template', value: match[0] },
       };
     }
   }
 
-  if (c === '<') {
-    const match = /^<\/?[A-Za-z][\w.-]*/.exec(code.slice(i));
+  if (character === '<') {
+    const match = /^<\/?[A-Za-z][\w.-]*/.exec(code.slice(index));
     if (match) {
       return {
-        end: i + match[0].length,
+        end: index + match[0].length,
         token: { type: 'jsx-tag', value: match[0] },
       };
     }
   }
 
-  if (c === '/' && code[i + 1] === '>') {
-    return { end: i + 2, token: { type: 'jsx-tag', value: '/>' } };
+  if (character === '/' && code[index + 1] === '>') {
+    return { end: index + 2, token: { type: 'jsx-tag', value: '/>' } };
   }
 
-  if (c >= '0' && c <= '9') {
-    const match = /^\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/.exec(code.slice(i));
+  if (character >= '0' && character <= '9') {
+    const match = /^\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/.exec(code.slice(index));
     if (match) {
       return {
-        end: i + match[0].length,
+        end: index + match[0].length,
         token: { type: 'number', value: match[0] },
       };
     }
   }
 
-  if (/[A-Za-z_$]/.test(c)) {
-    const match = /^[A-Za-z_$][\w$]*/.exec(code.slice(i));
+  if (/[A-Za-z_$]/.test(character)) {
+    const match = /^[A-Za-z_$][\w$]*/.exec(code.slice(index));
     if (match) {
       const value = match[0];
       let type: TokenType = 'plain';
@@ -539,15 +553,15 @@ function scanToken(
         type = 'literal';
       } else if (BUILTIN_TYPES.has(value)) {
         type = 'type';
-      } else if (code[i + value.length] === '(') {
+      } else if (code[index + value.length] === '(') {
         type = 'fn-call';
       }
-      return { end: i + value.length, token: { type, value } };
+      return { end: index + value.length, token: { type, value } };
     }
   }
 
-  if (/[{}()[\];,.:?!<>=+\-*/%&|^~]/.test(c)) {
-    return { end: i + 1, token: { type: 'punct', value: c } };
+  if (/[{}()[\];,.:?!<>=+\-*/%&|^~]/.test(character)) {
+    return { end: index + 1, token: { type: 'punct', value: character } };
   }
 
   return null;

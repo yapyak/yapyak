@@ -690,6 +690,14 @@ events.map((event) => event.actorId);
 const employee = employees.find((employee) => employee.userId === id);
 ```
 
+**Exception: sort comparators use `(a, b)`.** The two-argument compare callback for `Array.prototype.sort` is a well-known idiom — `a` and `b` are the canonical parameter names in this specific context. Don't rename them to `left/right` or domain terms.
+
+```tsx
+// Good
+items.sort((a, b) => a.order - b.order);
+collected.sort((a, b) => a.name.localeCompare(b.name));
+```
+
 ### Component Architecture
 
 - **Domain components** (tables, forms, cards) live in `src/components/`, take props, and do one thing.
@@ -1662,7 +1670,7 @@ If no rule matches unambiguously, the structure is wrong, not the name. Fix the 
   **If a new reset is needed broadly**, add it to `src/styles/reset.css` — not per-component.
 - **Never write vendor prefixes.** Build pipeline uses Lightning CSS, which auto-prefixes based on browserslist targets. Write the standard property only (`user-select: none`) — Lightning CSS adds `-webkit-*` / `-moz-*` / `-ms-*` variants if the targets need them. Manual prefixes are dead code and out of sync with build output.
 - **Primitives (`*Base` components) have no `.module.css` files.** They are headless by design — consumers control all visual styling. Behavior-related rules (`user-select`, `cursor`, `pointer-events`) go inline via the `style` prop merged through `mergeProps`. Visual styling lives in the styled component one level up (`Button` for `ButtonBase`, `Checkbox` for `CheckboxBase`, etc.).
-- **Never use `margin`.** Always use `flex` + `gap` or `grid` + `gap` for spacing between elements. No exceptions — if you reach for `margin-top`/`margin-bottom`/`margin-inline`, restructure the parent into a flex/grid container. Need different gaps between groups? Wrap the tighter group in a sub-container with its own gap.
+- **Prefer `flex`/`grid` + `gap` over `margin`** for spacing between elements. Default to gap when laying out siblings — restructure the parent into a flex/grid container when possible. Use `margin` only when gap can't express the spacing cleanly (asymmetric per-child spacing, non-uniform offsets between specific siblings, or when adding a parent flex container would cascade unwanted side-effects). When you reach for margin, make sure it's because gap genuinely doesn't fit, not because you skipped restructuring.
 - **TOTALLY FORBIDDEN: `flex-grow`, `flex-shrink`, `flex-basis`.** Always use the `flex` shorthand. No exceptions.
 
   ```css

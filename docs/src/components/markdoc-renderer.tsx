@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react';
 import type { BoxProps } from '#components/box';
 import type { CalloutVariant } from '#components/callout';
 import type { CodeGroupBlock } from '#components/code-group';
@@ -32,7 +31,7 @@ export function MarkdocRenderer(props: MarkdocRendererProps) {
   );
 }
 
-function renderNode(node: MarkdocNode): ReactNode {
+function renderNode(node: MarkdocNode) {
   if (node === null) {
     return null;
   }
@@ -45,7 +44,7 @@ function renderNode(node: MarkdocNode): ReactNode {
   return renderTag(node);
 }
 
-function renderTag(tag: MarkdocTag): ReactNode {
+function renderTag(tag: MarkdocTag) {
   const children = tag.children.map((child, index) => (
     <Fragment key={index}>{renderNode(child)}</Fragment>
   ));

@@ -13,13 +13,13 @@ export interface ReferenceNavigationProps extends BoxProps<'nav'> {
 
 export function ReferenceNavigation(props: ReferenceNavigationProps) {
   const { className, data, ...restProps } = props;
-  const root = data.modules.find((m) => m.id === 'yapyak');
+  const root = data.modules.find((module) => module.id === 'yapyak');
 
   if (!root) {
     return (
       <Box
-        aria-label="Reference navigation"
         {...restProps}
+        aria-label="Reference navigation"
         as="nav"
         className={[styles.ReferenceNavigation, className]}
       />

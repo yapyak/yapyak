@@ -60,13 +60,13 @@ export function Navigation(props: NavigationProps) {
       setIsReady(true);
     });
 
-    let timeout: number | undefined;
+    let timeoutId: number | undefined;
     if (
       previousPathnameRef.current !== null &&
       previousPathnameRef.current !== location.pathname
     ) {
       setIsAnimating(true);
-      timeout = window.setTimeout(() => {
+      timeoutId = window.setTimeout(() => {
         setIsAnimating(false);
       }, SLIDE_DURATION);
     }
@@ -75,8 +75,8 @@ export function Navigation(props: NavigationProps) {
     return () => {
       observer.disconnect();
       window.cancelAnimationFrame(frame);
-      if (timeout !== undefined) {
-        window.clearTimeout(timeout);
+      if (timeoutId !== undefined) {
+        window.clearTimeout(timeoutId);
       }
     };
   }, [location.pathname]);
@@ -89,12 +89,14 @@ export function Navigation(props: NavigationProps) {
       data-animating={isAnimating}
       ref={element}
       style={
-        indicator && {
-          '--navigation-indicator-height': `${indicator.height}px`,
-          '--navigation-indicator-width': `${indicator.width}px`,
-          '--navigation-indicator-x': `${indicator.x}px`,
-          '--navigation-indicator-y': `${indicator.y}px`,
-        }
+        indicator
+          ? {
+              '--navigation-indicator-height': `${indicator.height}px`,
+              '--navigation-indicator-width': `${indicator.width}px`,
+              '--navigation-indicator-x': `${indicator.x}px`,
+              '--navigation-indicator-y': `${indicator.y}px`,
+            }
+          : undefined
       }
     >
       {indicator && (

@@ -16,8 +16,8 @@ export function GuideNavigation(props: GuideNavigationProps) {
 
   return (
     <Box
-      aria-label="Guide navigation"
       {...restProps}
+      aria-label="Guide navigation"
       as="nav"
       className={[styles.GuideNavigation, className]}
     >

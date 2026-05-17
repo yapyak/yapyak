@@ -38,11 +38,11 @@ export function Footer(props: FooterProps) {
       return;
     }
     let cursor = startIndex;
-    const interval = window.setInterval(() => {
+    const intervalId = window.setInterval(() => {
       cursor = (cursor + 1) % TAGLINES.length;
       setTagline(TAGLINES[cursor] ?? null);
     }, ROTATION_INTERVAL);
-    return () => window.clearInterval(interval);
+    return () => window.clearInterval(intervalId);
   }, []);
 
   return (

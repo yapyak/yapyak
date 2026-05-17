@@ -292,7 +292,9 @@ function buildInterface(
   const callSignatures: ApiCallSignature[] = type
     .getCallSignatures()
     .map((sig) => ({
-      parameters: sig.getParameters().map((p) => paramFromSymbol(p, checker)),
+      parameters: sig
+        .getParameters()
+        .map((parameter) => paramFromSymbol(parameter, checker)),
       returnType: checker.typeToString(sig.getReturnType()),
     }));
 
@@ -362,7 +364,7 @@ function buildFunctionFromSignature(
   checker: ts.TypeChecker,
 ): ApiFunction {
   const tags = symbol.getJsDocTags(checker);
-  const returnTag = tags.find((t) => t.name === 'returns');
+  const returnTag = tags.find((tag) => tag.name === 'returns');
   const returnDescription =
     returnTag !== undefined
       ? ts.displayPartsToString(returnTag.text).trim()
@@ -381,10 +383,10 @@ function buildFunctionFromSignature(
 
   const parameters = sig
     .getParameters()
-    .map((p) => paramFromSymbol(p, checker));
+    .map((parameter) => paramFromSymbol(parameter, checker));
   const returnType = checker.typeToString(sig.getReturnType());
   const signature = `${base.name}(${parameters
-    .map((p) => formatParam(p))
+    .map((parameter) => formatParam(parameter))
     .join(', ')}): ${returnType}`;
 
   return {
@@ -438,7 +440,7 @@ function collectMembers(
       members.push(member);
     }
   });
-  members.sort((a, b) => a.name.localeCompare(b.name));
+  members.sort((left, right) => left.name.localeCompare(right.name));
   return members;
 }
 
@@ -489,8 +491,8 @@ function paramFromSymbol(
   };
 }
 
-function formatParam(p: ApiParameter): string {
-  return `${p.name}${p.optional ? '?' : ''}: ${p.type}`;
+function formatParam(parameter: ApiParameter): string {
+  return `${parameter.name}${parameter.optional ? '?' : ''}: ${parameter.type}`;
 }
 
 function declarationText(declaration: ts.Declaration): string {
@@ -530,7 +532,7 @@ function readDefaultTag(
 ): string | null {
   const tag = symbol
     .getJsDocTags(checker)
-    .find((t) => t.name === 'default' || t.name === 'defaultValue');
+    .find((tag) => tag.name === 'default' || tag.name === 'defaultValue');
   if (tag === undefined) {
     return null;
   }

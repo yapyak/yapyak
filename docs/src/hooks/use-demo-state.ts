@@ -51,11 +51,11 @@ export function useDemoState(isActive: boolean): DemoState {
 
     const sleep = (milliseconds: number) =>
       new Promise<void>((resolve) => {
-        const id = window.setTimeout(() => {
-          timeouts.delete(id);
+        const timeoutId = window.setTimeout(() => {
+          timeouts.delete(timeoutId);
           resolve();
         }, milliseconds);
-        timeouts.add(id);
+        timeouts.add(timeoutId);
       });
 
     const jitter = (base: number, spread: number) =>
@@ -151,8 +151,8 @@ export function useDemoState(isActive: boolean): DemoState {
 
     return () => {
       isCancelled = true;
-      for (const id of timeouts) {
-        window.clearTimeout(id);
+      for (const timeoutId of timeouts) {
+        window.clearTimeout(timeoutId);
       }
       timeouts.clear();
     };
