@@ -65,14 +65,15 @@
   --color-mint: oklab(0.87 -0.24 0.06);
   --color-aqua: oklab(0.88 -0.21 0.01);
   --color-coral: oklab(0.83 0.12 0.03);
-  --color-silver: #e6e6e6;
-  --color-ink: #141414;
 
   --color-lilac: #c4a3c4;
   --color-iris: #c8a8d8;
   --color-steel: #93b8d6;
   --color-amber: #d4a071;
   --color-sand: #d8c896;
+
+  --color-silver: #e6e6e6;
+  --color-ink: #141414;
 
   /* === TIER 2: SEMANTIC (what components reference) === */
 
