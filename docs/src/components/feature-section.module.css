@@ -9,6 +9,7 @@
     padding: 0 var(--spacing-8) var(--spacing-24);
 
     .Divider {
+      display: none;
       height: var(--px);
       background-color: var(--rule);
     }
@@ -19,6 +20,12 @@
       width: 100%;
       max-width: 64rem;
       border-left: var(--px) solid var(--rule);
+    }
+
+    @media (min-width: 60rem) {
+      .Divider {
+        display: block;
+      }
     }
   }
 }

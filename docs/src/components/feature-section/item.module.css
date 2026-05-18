@@ -2,10 +2,10 @@
   .FeatureSectionItem {
     position: relative;
     display: grid;
-    grid-template-columns: 9rem 1fr;
-    gap: var(--spacing-8);
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
     align-items: start;
-    padding: var(--spacing-12) var(--spacing-8);
+    padding: var(--spacing-10) var(--spacing-6);
     border-bottom: var(--px) solid var(--rule);
 
     &:last-child {
@@ -30,7 +30,7 @@
     }
 
     .NumeralText {
-      font-size: clamp(4rem, 8vw, 6rem);
+      font-size: 3.5rem;
       font-weight: var(--font-weight-medium);
       line-height: var(--line-height-none);
       color: transparent;
@@ -40,7 +40,7 @@
       transition: text-shadow 400ms ease;
     }
 
-    &[data-accent="mint"] .NumeralText {
+    &[data-accent='mint'] .NumeralText {
       text-shadow: 0 0 32px color-mix(in oklab, var(--brand) 22%, transparent);
     }
 
@@ -85,13 +85,13 @@
       }
     }
 
-    @media (max-width: 768px) {
-      grid-template-columns: 1fr;
-      gap: var(--spacing-4);
-      padding: var(--spacing-10) var(--spacing-6);
+    @media (min-width: 60rem) {
+      grid-template-columns: 9rem 1fr;
+      gap: var(--spacing-8);
+      padding: var(--spacing-12) var(--spacing-8);
 
       .NumeralText {
-        font-size: 3.5rem;
+        font-size: clamp(4rem, 8vw, 6rem);
       }
     }
   }

@@ -1,23 +1,25 @@
 @layer components {
   .Hero {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-    gap: var(--spacing-10);
+    grid-template-columns: minmax(0, 36rem);
+    justify-content: center;
+    gap: var(--spacing-6);
     place-self: center;
     align-items: center;
 
     max-width: 70rem;
-    padding: var(--spacing-20) var(--spacing-4);
+    padding: clamp(var(--spacing-12), 8vw, var(--spacing-24))
+      clamp(var(--spacing-4), 4vw, var(--spacing-8));
 
     .Stack {
       display: flex;
       flex-direction: column;
-      gap: var(--spacing-6);
+      gap: clamp(var(--spacing-4), 2vw, var(--spacing-6));
       max-width: 36rem;
     }
 
     .Heading {
-      font-size: var(--font-size-4xl);
+      font-size: clamp(2.25rem, 4vw + 1rem, 3.75rem);
       font-weight: var(--font-weight-medium);
       line-height: var(--line-height-none);
       color: var(--foreground);
@@ -26,12 +28,13 @@
     }
 
     .DescriptionParagraph {
-      font-size: var(--font-size-xl);
+      font-size: clamp(1.0625rem, 1vw + 0.875rem, 1.4375rem);
       color: var(--foreground-soft);
     }
 
     .ActionRow {
       display: flex;
+      flex-wrap: wrap;
       gap: var(--spacing-3);
       padding-top: var(--spacing-2);
     }
@@ -105,9 +108,30 @@
       }
     }
 
-    @media (max-width: 960px) {
-      grid-template-columns: 1fr;
-      gap: var(--spacing-12);
+    @media (min-width: 60rem) {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      justify-content: stretch;
+    }
+
+    @media (max-width: 480px) {
+      .ActionRow {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .PrimaryLink,
+      .SecondaryLink {
+        text-align: center;
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .Hero {
+      .PrimaryLink,
+      .SecondaryLink {
+        transition: none;
+      }
     }
   }
 }

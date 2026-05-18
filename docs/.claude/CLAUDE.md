@@ -1594,6 +1594,38 @@ What components actually use. Named after **intent** (what the color DOES).
 3. **No raw hex/rgba/oklab in component CSS.** If you need a translucent brand color, write `color-mix(in oklch, var(--brand) X%, transparent)` inline. Don't inline `oklab(0.87 -0.24 0.06 / X)`.
 4. **Re-theming a swap**: change `--brand: var(--color-aqua)` and the entire site updates without touching components.
 
+## Breakpoints
+
+One layout-shift breakpoint, used uniformly across the codebase:
+
+- **`min-width: 60rem`** (960px) — the threshold where layouts shift from mobile (stacked, 1-col, no decorations) to desktop (multi-col, dividers, hover-only affordances).
+
+**Mobile-first.** Default CSS targets mobile/small screens. `@media (min-width: 60rem)` enhances for desktop. Never use `max-width` queries — they invert the model and lead to harder-to-maintain stylesheets.
+
+```css
+/* ✓ mobile-first */
+.Component {
+  /* default: mobile */
+  grid-template-columns: 1fr;
+
+  @media (min-width: 60rem) {
+    /* desktop enhancement */
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ✗ desktop-first — don't */
+.Component {
+  grid-template-columns: 1fr 1fr;
+
+  @media (max-width: 60rem) {
+    grid-template-columns: 1fr;
+  }
+}
+```
+
+If you need a different threshold for a specific component (rare), document why. Generally everything that shifts between mobile and desktop layouts uses 60rem.
+
 ## CSS Modules
 
 All styling uses CSS Modules with CSS custom properties from the design token system (`@skiftle/ui/styles`).
