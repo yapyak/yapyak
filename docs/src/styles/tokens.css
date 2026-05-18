@@ -59,8 +59,8 @@
   --ring-inset: inset 0 0 0 var(--px) var(--ring);
 
   --font-mono:
-    ui-monospace, 'SF Mono', 'Monaco', 'Menlo', 'Cascadia Code', 'Roboto Mono',
-    Consolas, 'Liberation Mono', monospace;
+    ui-monospace, "SF Mono", "Monaco", "Menlo", "Cascadia Code", "Roboto Mono",
+    Consolas, "Liberation Mono", monospace;
 
   --aqua: oklab(0.88 -0.21 0.01);
   --aqua-soft: oklab(0.88 -0.21 0.01 / 0.4);
