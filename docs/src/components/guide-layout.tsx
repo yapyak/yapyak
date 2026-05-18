@@ -46,11 +46,7 @@ export function GuideLayout(props: GuideLayoutProps) {
       className={[styles.GuideLayout, className]}
       data-sidebar-open={isSidebarOpen}
     >
-      <Box className={styles.SidebarToggleBar}>
-        <GuideLayoutSidebarToggleButton
-          onClick={() => setIsSidebarOpen(true)}
-        />
-      </Box>
+      <GuideLayoutSidebarToggleButton onClick={() => setIsSidebarOpen(true)} />
       <Box
         aria-hidden="true"
         className={styles.Backdrop}

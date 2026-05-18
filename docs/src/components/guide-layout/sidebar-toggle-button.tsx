@@ -1,6 +1,7 @@
 import { t } from 'yapyak';
 
 import { Box } from '#components/box';
+import { ChevronIcon } from '#components/chevron-icon';
 
 import styles from './sidebar-toggle-button.module.css';
 
@@ -19,7 +20,18 @@ export function GuideLayoutSidebarToggleButton(
       onClick={onClick}
       type="button"
     >
-      {t('Sections')}
+      <Box
+        as="span"
+        className={styles.LabelText}
+      >
+        {t('Sections')}
+      </Box>
+      <Box
+        as="span"
+        className={styles.ChevronWrapper}
+      >
+        <ChevronIcon direction="down" />
+      </Box>
     </Box>
   );
 }

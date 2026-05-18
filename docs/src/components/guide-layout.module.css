@@ -5,24 +5,11 @@
 
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-6);
+    gap: var(--spacing-3);
     place-self: center;
     width: 100%;
     max-width: 64rem;
-    padding: var(--spacing-12) var(--spacing-6);
-
-    .SidebarToggleBar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 90;
-      display: flex;
-      justify-content: center;
-      padding: var(--spacing-4);
-      background-color: var(--canvas);
-      box-shadow: 0 calc(var(--px) * -1) 0 var(--rule);
-    }
+    padding: var(--spacing-6) var(--spacing-6) var(--spacing-12);
 
     .Backdrop {
       display: none;
@@ -61,10 +48,6 @@
       display: grid;
       grid-template-columns: 200px 1fr;
       gap: 0;
-
-      .SidebarToggleBar {
-        display: none;
-      }
     }
   }
 }

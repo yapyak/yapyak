@@ -1,4 +1,7 @@
 {
+  "src/components/guide-layout/sidebar-toggle-button.tsx": {
+    "Sections": ""
+  },
   "src/components/hero.tsx": {
     "Get Started": "",
     "Open source. Use any LLM. No vendor lock-in.": "",
