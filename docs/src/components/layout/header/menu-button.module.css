@@ -1,0 +1,67 @@
+@layer components {
+  .HeaderMenuButton {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    outline: var(--spacing-2) solid transparent;
+    outline-offset: 0;
+    border-radius: var(--border-radius-full);
+    transition:
+      background-color var(--transition),
+      box-shadow var(--transition),
+      outline 400ms,
+      transform var(--transition);
+
+    &:hover {
+      background-color: var(--surface-stronger);
+      box-shadow:
+        inset 0 0 0 var(--px) var(--ring-strong),
+        inset 0 var(--px) var(--ring-strong);
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+
+    &:focus-visible {
+      outline-width: 4px;
+      outline-color: var(--accent-soft);
+    }
+
+    .Line {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background-color: var(--foreground);
+      border-radius: var(--border-radius-full);
+      transition:
+        transform 320ms var(--ease-snappy),
+        opacity 320ms var(--ease-snappy);
+    }
+
+    &[data-open] {
+      .Line:first-child {
+        transform: translateY(3px) rotate(45deg);
+      }
+
+      .Line:last-child {
+        transform: translateY(-4px) rotate(-45deg);
+      }
+    }
+
+    @media (min-width: 60rem) {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .HeaderMenuButton .Line {
+      transition: none;
+    }
+  }
+}

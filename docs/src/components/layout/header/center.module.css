@@ -1,5 +1,10 @@
 @layer components {
   .HeaderCenter {
+    display: none;
     justify-self: center;
+
+    @media (min-width: 60rem) {
+      display: block;
+    }
   }
 }

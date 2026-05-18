@@ -4,6 +4,18 @@
     "Open source. Use any LLM. No vendor lock-in.": "",
     "View on GitHub": ""
   },
+  "src/components/layout/header.tsx": {
+    "Guide": "",
+    "Home": "",
+    "Reference": "",
+    "View on GitHub": ""
+  },
+  "src/components/layout/header/menu.tsx": {
+    "Guide": "",
+    "Home": "",
+    "Reference": "",
+    "View on GitHub": ""
+  },
   "src/routes/__root.tsx": {
     "Guide": "",
     "Home": "",

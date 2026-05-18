@@ -1037,6 +1037,8 @@ SIDEBAR SUB-SLOTS (when Sidebar is itself compound)
 
 HEADER SUB-SLOTS
   Title               — title cluster (h1 + optional badge)
+  Bar                 — primary horizontal bar (wordmark + actions)
+  Drawer              — expandable section that toggles open (mobile menu)
 ```
 
 ### Step 4: Compose the name
