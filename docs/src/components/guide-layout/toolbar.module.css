@@ -29,7 +29,7 @@
       max-height: 70vh;
       padding: var(--spacing-6) var(--spacing-6) var(--spacing-4);
       overflow-y: auto;
-      scrollbar-color: var(--rule) transparent;
+      scrollbar-color: var(--ring-stronger) transparent;
       scrollbar-width: thin;
     }
 

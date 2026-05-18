@@ -11,7 +11,7 @@
       padding: var(--spacing-8) var(--spacing-8) var(--spacing-8) 0;
       overflow-y: auto;
       background-color: transparent;
-      scrollbar-color: var(--rule) transparent;
+      scrollbar-color: var(--ring-stronger) transparent;
       scrollbar-width: thin;
     }
   }
