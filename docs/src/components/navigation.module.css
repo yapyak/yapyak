@@ -12,7 +12,7 @@
     padding: var(--spacing-2);
     background-color: var(--nav-bg);
     border-radius: var(--border-radius-full);
-    box-shadow: inset 0 0 0 var(--px) var(--ring);
+    box-shadow: var(--ring-inset);
 
     .IndicatorBar {
       position: absolute;
@@ -31,9 +31,9 @@
 
       &[data-ready] {
         transition:
-          transform 320ms cubic-bezier(0.32, 0.72, 0, 1),
-          width 320ms cubic-bezier(0.32, 0.72, 0, 1),
-          height 320ms cubic-bezier(0.32, 0.72, 0, 1);
+          transform 320ms var(--ease-snappy),
+          width 320ms var(--ease-snappy),
+          height 320ms var(--ease-snappy);
       }
     }
 

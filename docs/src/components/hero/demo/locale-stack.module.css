@@ -6,13 +6,13 @@
     overflow: hidden;
     background: var(--surface);
     border-radius: var(--border-radius-md);
-    box-shadow: inset 0 0 0 var(--px) var(--ring);
+    box-shadow: var(--ring-inset);
     transform-origin: center;
 
     &[data-receiving] {
       animation:
-        locales-pulse 950ms cubic-bezier(0.32, 0.72, 0, 1),
-        locales-ring 950ms cubic-bezier(0.32, 0.72, 0, 1);
+        locales-pulse 950ms var(--ease-snappy),
+        locales-ring 950ms var(--ease-snappy);
     }
 
     .FlashOverlay {
@@ -66,12 +66,12 @@
 
     .KeyText {
       display: inline-block;
-      animation: materialize 750ms cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation: materialize 750ms var(--ease-smooth) both;
     }
 
     .ValueText {
       display: inline-block;
-      animation: materialize 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation: materialize 900ms var(--ease-smooth) both;
     }
 
     .Skeleton {
@@ -117,7 +117,7 @@
 
   @keyframes locales-ring {
     0% {
-      box-shadow: inset 0 0 0 var(--px) var(--ring);
+      box-shadow: var(--ring-inset);
     }
     4% {
       box-shadow: inset 0 0 0 var(--px) oklab(0.87 -0.24 0.06 / 0.12);
@@ -126,7 +126,7 @@
       box-shadow: inset 0 0 0 var(--px) oklab(0.87 -0.24 0.06 / 0.12);
     }
     100% {
-      box-shadow: inset 0 0 0 var(--px) var(--ring);
+      box-shadow: var(--ring-inset);
     }
   }
 

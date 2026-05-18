@@ -2,6 +2,6 @@
   .LayoutFooter {
     padding: var(--spacing-20) var(--spacing-8);
     background-color: var(--nav-bg);
-    box-shadow: 0 -var(--px) 0 var(--ring);
+    box-shadow: 0 calc(var(--px) * -1) 0 var(--ring);
   }
 }

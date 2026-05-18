@@ -4,7 +4,7 @@
     overflow: hidden;
     background: var(--surface);
     border-radius: var(--border-radius-md);
-    box-shadow: inset 0 0 0 var(--px) var(--ring);
+    box-shadow: var(--ring-inset);
 
     .TabRow {
       position: relative;
@@ -39,7 +39,7 @@
         .IndicatorBar {
           position: absolute;
           right: 0;
-          bottom: -var(--px);
+          bottom: calc(var(--px) * -1);
           left: 0;
           height: var(--px);
           background-color: var(--mint);

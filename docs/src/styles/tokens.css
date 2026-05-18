@@ -1,5 +1,5 @@
 :root {
-  --px: var(--px);
+  --px: 1px;
   --infinite: 9999px;
 
   --spacing-0: 0;
@@ -52,6 +52,11 @@
   --letter-spacing-wider: 0.06em;
 
   --transition: 150ms ease;
+
+  --ease-snappy: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --ring-inset: inset 0 0 0 var(--px) var(--ring);
 
   --font-mono:
     ui-monospace, 'SF Mono', 'Monaco', 'Menlo', 'Cascadia Code', 'Roboto Mono',
