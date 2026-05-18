@@ -2,7 +2,7 @@
   .DemoLocaleFlag {
     flex: none;
     filter: drop-shadow(
-      0 var(--px) 2px color-mix(in oklab, var(--color-ink) 30%, transparent)
+      0 var(--px) 2px color-mix(in oklab, var(--color-black) 30%, transparent)
     );
   }
 }

@@ -74,6 +74,7 @@
 
   --color-silver: #e6e6e6;
   --color-ink: #141414;
+  --color-black: #000000;
 
   /* === TIER 2: SEMANTIC (what components reference) === */
 
@@ -90,7 +91,7 @@
 
   /* canvas — page foundation */
   --canvas: var(--color-ink);
-  --canvas-soft: color-mix(in oklab, var(--color-ink) 20%, transparent);
+  --canvas-soft: color-mix(in oklab, var(--color-black) 20%, transparent);
 
   /* surface — content layers (cards, panels) */
   --surface: color-mix(in oklab, var(--color-silver) 2%, transparent);
