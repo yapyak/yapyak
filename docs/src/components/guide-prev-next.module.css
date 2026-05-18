@@ -1,9 +1,13 @@
 @layer components {
   .GuidePrevNext {
-    display: grid;
+    display: none;
     grid-template-columns: 1fr;
     gap: var(--spacing-3);
     margin-top: var(--spacing-12);
+
+    @media (min-width: 60rem) {
+      display: grid;
+    }
 
     .PreviousCard,
     .NextCard {

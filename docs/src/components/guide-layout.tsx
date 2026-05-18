@@ -8,7 +8,7 @@ import { Box } from '#components/box';
 import { GuideLayoutContent } from './guide-layout/content';
 import { GuideLayoutSidebar } from './guide-layout/sidebar';
 import { GuideLayoutSidebarCloseButton } from './guide-layout/sidebar-close-button';
-import { GuideLayoutSidebarToggleButton } from './guide-layout/sidebar-toggle-button';
+import { GuideLayoutToolbar } from './guide-layout/toolbar';
 import styles from './guide-layout.module.css';
 
 export interface GuideLayoutProps extends BoxProps {}
@@ -77,4 +77,4 @@ export function GuideLayout(props: GuideLayoutProps) {
 
 GuideLayout.Sidebar = GuideLayoutSidebar;
 GuideLayout.Content = GuideLayoutContent;
-GuideLayout.SidebarToggle = GuideLayoutSidebarToggleButton;
+GuideLayout.Toolbar = GuideLayoutToolbar;

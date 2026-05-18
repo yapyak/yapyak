@@ -45,9 +45,12 @@ function Component() {
   const { page, previous, next } = Route.useLoaderData();
   return (
     <>
-      <GuideLayout.SidebarToggle />
       <Article page={page} />
       <GuidePrevNext
+        next={next}
+        previous={previous}
+      />
+      <GuideLayout.Toolbar
         next={next}
         previous={previous}
       />
