@@ -57,16 +57,22 @@
   --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
 
   --font-family-mono:
-    ui-monospace, 'SF Mono', 'Monaco', 'Menlo', 'Cascadia Code', 'Roboto Mono',
-    Consolas, 'Liberation Mono', monospace;
+    ui-monospace, "SF Mono", "Monaco", "Menlo", "Cascadia Code", "Roboto Mono",
+    Consolas, "Liberation Mono", monospace;
 
   /* === TIER 1: PALETTE (raw colors, never used directly in components) === */
 
   --color-mint: oklab(0.87 -0.24 0.06);
   --color-aqua: oklab(0.88 -0.21 0.01);
-  --color-coral: #ff9aa0;
+  --color-coral: oklab(0.83 0.12 0.03);
   --color-silver: #e6e6e6;
   --color-ink: #141414;
+
+  --color-lilac: #c4a3c4;
+  --color-iris: #c8a8d8;
+  --color-steel: #93b8d6;
+  --color-amber: #d4a071;
+  --color-sand: #d8c896;
 
   /* === TIER 2: SEMANTIC (what components reference) === */
 
@@ -130,12 +136,12 @@
   /* layout */
   --header-height: 5.5rem;
 
-  /* syntax (palette TBD — next refactor) */
-  --syntax-keyword: #c4a3c4;
-  --syntax-type: #93b8d6;
-  --syntax-literal: #d4a071;
-  --syntax-string: #d8c896;
-  --syntax-number: #d4a071;
-  --syntax-fn-call: #c8a8d8;
-  --syntax-jsx-tag: #93b8d6;
+  /* syntax — derived from palette */
+  --syntax-keyword: var(--color-lilac);
+  --syntax-fn-call: var(--color-iris);
+  --syntax-type: var(--color-steel);
+  --syntax-jsx-tag: var(--color-steel);
+  --syntax-literal: var(--color-amber);
+  --syntax-number: var(--color-amber);
+  --syntax-string: var(--color-sand);
 }
