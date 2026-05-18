@@ -66,11 +66,11 @@
   --color-aqua: oklab(0.88 -0.21 0.01);
   --color-coral: oklab(0.83 0.12 0.03);
 
-  --color-lilac: #c4a3c4;
-  --color-iris: #c8a8d8;
-  --color-steel: #93b8d6;
-  --color-amber: #d4a071;
-  --color-sand: #d8c896;
+  --color-lilac: oklab(0.75 0.045 -0.04);
+  --color-iris: oklab(0.77 0.046 -0.065);
+  --color-steel: oklab(0.75 -0.025 -0.054);
+  --color-amber: oklab(0.75 0.047 0.088);
+  --color-sand: oklab(0.84 -0.007 0.07);
 
   --color-silver: #e6e6e6;
   --color-ink: #141414;
@@ -83,39 +83,39 @@
   --danger: var(--color-coral);
 
   /* brand & accent variants */
-  --brand-soft: color-mix(in oklch, var(--brand) 40%, transparent);
-  --brand-glow-soft: color-mix(in oklch, var(--brand) 8%, transparent);
-  --brand-glow-strong: color-mix(in oklch, var(--brand) 35%, transparent);
-  --accent-soft: color-mix(in oklch, var(--accent) 40%, transparent);
+  --brand-soft: color-mix(in oklab, var(--brand) 40%, transparent);
+  --brand-glow-soft: color-mix(in oklab, var(--brand) 8%, transparent);
+  --brand-glow-strong: color-mix(in oklab, var(--brand) 35%, transparent);
+  --accent-soft: color-mix(in oklab, var(--accent) 40%, transparent);
 
   /* backgrounds */
   --bg: var(--color-ink);
-  --nav-bg: color-mix(in oklch, var(--color-ink) 20%, transparent);
+  --nav-bg: color-mix(in oklab, var(--color-ink) 20%, transparent);
 
   /* surfaces — silver alpha overlays */
-  --surface: color-mix(in oklch, var(--color-silver) 2%, transparent);
-  --surface-elevated: color-mix(in oklch, var(--color-silver) 4%, transparent);
-  --surface-active: color-mix(in oklch, var(--color-silver) 3%, transparent);
-  --surface-strong: color-mix(in oklch, var(--color-silver) 7%, transparent);
+  --surface: color-mix(in oklab, var(--color-silver) 2%, transparent);
+  --surface-elevated: color-mix(in oklab, var(--color-silver) 4%, transparent);
+  --surface-active: color-mix(in oklab, var(--color-silver) 3%, transparent);
+  --surface-strong: color-mix(in oklab, var(--color-silver) 7%, transparent);
 
   /* rules & rings — silver alpha overlays */
-  --rule: color-mix(in oklch, var(--color-silver) 2%, transparent);
-  --ring: color-mix(in oklch, var(--color-silver) 4%, transparent);
-  --ring-highlight: color-mix(in oklch, var(--color-silver) 8%, transparent);
-  --ring-strong: color-mix(in oklch, var(--color-silver) 12%, transparent);
+  --rule: color-mix(in oklab, var(--color-silver) 2%, transparent);
+  --ring: color-mix(in oklab, var(--color-silver) 4%, transparent);
+  --ring-highlight: color-mix(in oklab, var(--color-silver) 8%, transparent);
+  --ring-strong: color-mix(in oklab, var(--color-silver) 12%, transparent);
 
   /* text — silver fading toward ink */
   --text: var(--color-silver);
-  --text-body: color-mix(in oklch, var(--color-silver) 91%, var(--color-ink));
-  --text-soft: color-mix(in oklch, var(--color-silver) 78%, var(--color-ink));
-  --text-muted: color-mix(in oklch, var(--color-silver) 56%, var(--color-ink));
+  --text-body: color-mix(in oklab, var(--color-silver) 91%, var(--color-ink));
+  --text-soft: color-mix(in oklab, var(--color-silver) 78%, var(--color-ink));
+  --text-muted: color-mix(in oklab, var(--color-silver) 56%, var(--color-ink));
 
   /* diff — derived from danger */
   --diff-remove: var(--danger);
-  --diff-remove-bg: color-mix(in oklch, var(--danger) 8%, transparent);
+  --diff-remove-bg: color-mix(in oklab, var(--danger) 8%, transparent);
 
   /* accent contrast — ink with brand hint */
-  --accent-contrast: color-mix(in oklch, var(--brand) 8%, var(--color-ink));
+  --accent-contrast: color-mix(in oklab, var(--brand) 8%, var(--color-ink));
 
   /* effects */
   --shadow-brand-glow: 0 0 12px var(--brand-glow-strong);
@@ -129,9 +129,9 @@
   );
   --gradient-silver: linear-gradient(
     to bottom,
-    color-mix(in oklch, var(--color-silver), white 60%) 0%,
+    color-mix(in oklab, var(--color-silver), white 60%) 0%,
     var(--color-silver) 55%,
-    color-mix(in oklch, var(--color-silver), var(--color-ink) 40%) 100%
+    color-mix(in oklab, var(--color-silver), var(--color-ink) 40%) 100%
   );
 
   /* layout */

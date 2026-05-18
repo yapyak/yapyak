@@ -28,12 +28,12 @@
 
     &[data-variant="tip"] {
       --callout-accent: var(--brand);
-      --callout-background: color-mix(in oklch, var(--brand) 5%, transparent);
+      --callout-background: color-mix(in oklab, var(--brand) 5%, transparent);
     }
 
     &[data-variant="info"] {
       --callout-accent: var(--accent);
-      --callout-background: color-mix(in oklch, var(--accent) 5%, transparent);
+      --callout-background: color-mix(in oklab, var(--accent) 5%, transparent);
     }
 
     &[data-variant="warning"] {

@@ -41,7 +41,7 @@
     }
 
     &[data-accent="mint"] .NumeralText {
-      text-shadow: 0 0 32px color-mix(in oklch, var(--brand) 22%, transparent);
+      text-shadow: 0 0 32px color-mix(in oklab, var(--brand) 22%, transparent);
     }
 
     .ContentStack {
