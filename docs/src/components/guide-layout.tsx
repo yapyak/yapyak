@@ -1,7 +1,7 @@
 import type { BoxProps } from '#components/box';
 
 import { useLocation } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 import { Box } from '#components/box';
 
@@ -12,6 +12,18 @@ import { GuideLayoutSidebarToggleButton } from './guide-layout/sidebar-toggle-bu
 import styles from './guide-layout.module.css';
 
 export interface GuideLayoutProps extends BoxProps {}
+
+interface GuideLayoutContextValue {
+  openSidebar: () => void;
+}
+
+const GuideLayoutContext = createContext<GuideLayoutContextValue>({
+  openSidebar: () => {},
+});
+
+export function useGuideLayout() {
+  return useContext(GuideLayoutContext);
+}
 
 export function GuideLayout(props: GuideLayoutProps) {
   const { children, className, ...restProps } = props;
@@ -41,26 +53,28 @@ export function GuideLayout(props: GuideLayoutProps) {
   }, [isSidebarOpen]);
 
   return (
-    <Box
-      {...restProps}
-      className={[styles.GuideLayout, className]}
-      data-sidebar-open={isSidebarOpen}
-    >
-      <GuideLayoutSidebarToggleButton onClick={() => setIsSidebarOpen(true)} />
+    <GuideLayoutContext value={{ openSidebar: () => setIsSidebarOpen(true) }}>
       <Box
-        aria-hidden="true"
-        className={styles.Backdrop}
-        onClick={() => setIsSidebarOpen(false)}
-      />
-      <Box className={styles.CloseButtonSlot}>
-        <GuideLayoutSidebarCloseButton
+        {...restProps}
+        className={[styles.GuideLayout, className]}
+        data-sidebar-open={isSidebarOpen}
+      >
+        <Box
+          aria-hidden="true"
+          className={styles.Backdrop}
           onClick={() => setIsSidebarOpen(false)}
         />
+        <Box className={styles.CloseButtonSlot}>
+          <GuideLayoutSidebarCloseButton
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        </Box>
+        {children}
       </Box>
-      {children}
-    </Box>
+    </GuideLayoutContext>
   );
 }
 
 GuideLayout.Sidebar = GuideLayoutSidebar;
 GuideLayout.Content = GuideLayoutContent;
+GuideLayout.SidebarToggle = GuideLayoutSidebarToggleButton;

@@ -1,3 +1,9 @@
+@property --layout-header-border-opacity {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
 @layer components {
   .LayoutHeader {
     position: sticky;
@@ -5,7 +11,16 @@
     z-index: 100;
     display: flex;
     flex-direction: column;
-    background-color: transparent;
+    background-color: var(--canvas);
+    border-bottom: var(--px) solid
+      color-mix(
+        in oklab,
+        var(--rule) calc(var(--layout-header-border-opacity) * 100%),
+        transparent
+      );
+    animation: layout-header-border-fade linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 40px;
 
     .Bar {
       display: grid;
@@ -65,18 +80,10 @@
       box-shadow: inset 0 var(--px) 0 var(--rule);
     }
 
-    &[data-scrolled],
-    &[data-menu-open] {
-      background-color: var(--canvas);
-    }
-
-    &[data-scrolled] {
-      border-bottom: var(--px) solid var(--rule);
-    }
-
     &[data-menu-open] {
       position: fixed;
       inset: 0;
+      z-index: 220;
       overflow-y: auto;
       border-bottom: none;
 
@@ -102,17 +109,24 @@
       &[data-menu-open] {
         position: sticky;
         inset: auto;
-        background-color: transparent;
-
-        &[data-scrolled] {
-          background-color: var(--canvas);
-          border-bottom: var(--px) solid var(--rule);
-        }
 
         .Drawer {
           display: none;
         }
       }
+    }
+  }
+
+  @keyframes layout-header-border-fade {
+    to {
+      --layout-header-border-opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .LayoutHeader {
+      animation: none;
+      --layout-header-border-opacity: 1;
     }
   }
 }

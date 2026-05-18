@@ -2,6 +2,7 @@ import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
 import { Article } from '#components/article';
+import { GuideLayout } from '#components/guide-layout';
 import { GuidePrevNext } from '#components/guide-prev-next';
 import { loadGuideArticle, loadGuidePrevNext } from '#lib/guide';
 
@@ -44,6 +45,7 @@ function Component() {
   const { page, previous, next } = Route.useLoaderData();
   return (
     <>
+      <GuideLayout.SidebarToggle />
       <Article page={page} />
       <GuidePrevNext
         next={next}

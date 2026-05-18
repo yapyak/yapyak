@@ -1,12 +1,11 @@
 @layer components {
   .ReferenceLayoutContent {
     max-width: 48rem;
-    padding: var(--spacing-8) 0 var(--spacing-24) var(--spacing-8);
-    border-left: var(--px) solid var(--rule);
+    padding: var(--spacing-8) 0 var(--spacing-24);
 
-    @media (max-width: 768px) {
-      padding-left: 0;
-      border-left: none;
+    @media (min-width: 60rem) {
+      padding-left: var(--spacing-8);
+      border-left: var(--px) solid var(--rule);
     }
   }
 }

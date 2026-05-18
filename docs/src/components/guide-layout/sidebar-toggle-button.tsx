@@ -1,37 +1,25 @@
+import { Box } from '#components/box';
+import { SectionsIcon } from '#components/sections-icon';
 import { t } from 'yapyak';
 
-import { Box } from '#components/box';
-import { ChevronIcon } from '#components/chevron-icon';
-
+import { useGuideLayout } from '../guide-layout';
 import styles from './sidebar-toggle-button.module.css';
 
-export interface GuideLayoutSidebarToggleButtonProps {
-  onClick: () => void;
-}
+export interface GuideLayoutSidebarToggleButtonProps {}
 
 export function GuideLayoutSidebarToggleButton(
-  props: GuideLayoutSidebarToggleButtonProps,
+  _props: GuideLayoutSidebarToggleButtonProps,
 ) {
-  const { onClick } = props;
+  const { openSidebar } = useGuideLayout();
   return (
     <Box
+      aria-label={t('Open sections')}
       as="button"
       className={styles.GuideLayoutSidebarToggleButton}
-      onClick={onClick}
+      onClick={openSidebar}
       type="button"
     >
-      <Box
-        as="span"
-        className={styles.LabelText}
-      >
-        {t('Sections')}
-      </Box>
-      <Box
-        as="span"
-        className={styles.ChevronWrapper}
-      >
-        <ChevronIcon direction="down" />
-      </Box>
+      <SectionsIcon />
     </Box>
   );
 }
