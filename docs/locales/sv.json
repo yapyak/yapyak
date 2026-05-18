@@ -1,7 +1,7 @@
 {
   "src/components/hero.tsx": {
     "Get Started": "",
-    "Open source. Use any LLM. No middleman.": "",
+    "Open source. Use any LLM. No vendor lock-in.": "",
     "View on GitHub": ""
   },
   "src/routes/__root.tsx": {

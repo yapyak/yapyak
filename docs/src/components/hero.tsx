@@ -55,7 +55,7 @@ export function Hero(props: HeroProps) {
           as="p"
           className={styles.TrustParagraph}
         >
-          {t('Open source. Use any LLM. No middleman.')}
+          {t('Open source. Use any LLM. No vendor lock-in.')}
         </Box>
       </Box>
       <HeroDemo />
