@@ -48,14 +48,14 @@
     }
 
     &[data-type="tx-source"] {
-      color: var(--mint);
-      text-shadow: var(--mint-text-glow);
+      color: var(--brand);
+      text-shadow: var(--shadow-brand-glow);
     }
 
     &[data-type="diff-add"] {
       display: inline;
-      color: var(--mint);
-      background-color: var(--mint-glow-soft);
+      color: var(--brand);
+      background-color: var(--brand-glow-soft);
     }
 
     &[data-type="diff-remove"] {

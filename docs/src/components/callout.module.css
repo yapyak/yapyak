@@ -27,13 +27,13 @@
     }
 
     &[data-variant="tip"] {
-      --callout-accent: var(--mint);
-      --callout-background: oklab(0.87 -0.24 0.06 / 0.05);
+      --callout-accent: var(--brand);
+      --callout-background: color-mix(in oklch, var(--brand) 5%, transparent);
     }
 
     &[data-variant="info"] {
-      --callout-accent: var(--aqua);
-      --callout-background: oklab(0.88 -0.21 0.01 / 0.05);
+      --callout-accent: var(--accent);
+      --callout-background: color-mix(in oklch, var(--accent) 5%, transparent);
     }
 
     &[data-variant="warning"] {

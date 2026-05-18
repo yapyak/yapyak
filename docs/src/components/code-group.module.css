@@ -4,7 +4,7 @@
     overflow: hidden;
     background: var(--surface);
     border-radius: var(--border-radius-md);
-    box-shadow: var(--ring-inset);
+    box-shadow: var(--shadow-ring-inset);
 
     .TabRow {
       position: relative;
@@ -17,7 +17,7 @@
         display: inline-flex;
         align-items: center;
         padding: var(--spacing-3) var(--spacing-4);
-        font-family: var(--font-mono);
+        font-family: var(--font-family-mono);
         font-size: var(--font-size-xs);
         color: var(--text-muted);
         cursor: pointer;
@@ -42,7 +42,7 @@
           bottom: calc(var(--px) * -1);
           left: 0;
           height: var(--px);
-          background-color: var(--mint);
+          background-color: var(--brand);
           opacity: 0;
         }
 

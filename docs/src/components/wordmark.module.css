@@ -10,7 +10,7 @@
     letter-spacing: var(--letter-spacing-tighter);
     background-color: var(--nav-bg);
     border-radius: var(--border-radius-full) var(--border-radius-full) var(--border-radius-full) 0;
-    box-shadow: var(--ring-inset);
+    box-shadow: var(--shadow-ring-inset);
 
     .YapText {
       color: var(--text);
@@ -18,7 +18,7 @@
 
     .YakText {
       color: transparent;
-      background: var(--brand-gradient);
+      background: var(--gradient-brand);
       background-clip: text;
     }
   }

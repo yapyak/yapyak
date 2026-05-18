@@ -20,12 +20,12 @@
 
     &:focus-visible {
       outline-width: 4px;
-      outline-color: var(--aqua-soft);
+      outline-color: var(--accent-soft);
     }
 
     &[data-status="active"] {
       color: var(--accent-contrast);
-      background: var(--brand-gradient);
+      background: var(--gradient-brand);
     }
 
     &:not([data-status="active"]) {

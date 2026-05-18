@@ -28,8 +28,8 @@
       }
 
       &[data-status="active"] {
-        color: var(--mint);
-        text-shadow: var(--mint-text-glow);
+        color: var(--brand);
+        text-shadow: var(--shadow-brand-glow);
       }
     }
 

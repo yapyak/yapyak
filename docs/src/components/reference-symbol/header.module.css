@@ -7,7 +7,7 @@
     .EyebrowText {
       display: inline-flex;
       gap: var(--spacing-1);
-      font-family: var(--font-mono);
+      font-family: var(--font-family-mono);
       font-size: var(--font-size-xs);
       color: var(--text-muted);
 
@@ -17,7 +17,7 @@
     }
 
     .Heading {
-      font-family: var(--font-mono);
+      font-family: var(--font-family-mono);
       font-size: var(--font-size-3xl);
       font-weight: var(--font-weight-semibold);
     }

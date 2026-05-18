@@ -49,7 +49,7 @@
       color: var(--accent-contrast);
       outline: var(--spacing-2) solid transparent;
       outline-offset: 0;
-      background: var(--brand-gradient);
+      background: var(--gradient-brand);
       border-radius: var(--border-radius-full);
       transition:
         filter var(--transition),
@@ -67,7 +67,7 @@
 
       &:focus-visible {
         outline-width: 4px;
-        outline-color: var(--aqua-soft);
+        outline-color: var(--accent-soft);
       }
     }
 
@@ -98,10 +98,10 @@
 
       &:focus-visible {
         outline-width: 4px;
-        outline-color: var(--aqua-soft);
+        outline-color: var(--accent-soft);
         box-shadow:
-          inset 0 0 0 var(--px) var(--aqua-soft),
-          inset 0 var(--px) var(--aqua-soft);
+          inset 0 0 0 var(--px) var(--accent-soft),
+          inset 0 var(--px) var(--accent-soft);
       }
     }
 

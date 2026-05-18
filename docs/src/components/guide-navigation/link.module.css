@@ -21,11 +21,11 @@
     &:focus-visible {
       color: var(--text);
       outline-width: 3px;
-      outline-color: var(--aqua-soft);
+      outline-color: var(--accent-soft);
     }
 
     &[data-status="active"] {
-      color: var(--mint);
+      color: var(--brand);
     }
   }
 }

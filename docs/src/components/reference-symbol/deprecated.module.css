@@ -6,8 +6,8 @@
     background-color: color-mix(
       in oklab,
       var(--surface),
-      var(--intent-danger, #c44) 6%
+      var(--danger) 6%
     );
-    border-left: 3px solid var(--intent-danger, #c44);
+    border-left: 3px solid var(--danger);
   }
 }

@@ -56,53 +56,81 @@
   --ease-snappy: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
 
-  --ring-inset: inset 0 0 0 var(--px) var(--ring);
+  --font-family-mono:
+    ui-monospace, 'SF Mono', 'Monaco', 'Menlo', 'Cascadia Code', 'Roboto Mono',
+    Consolas, 'Liberation Mono', monospace;
 
-  --font-mono:
-    ui-monospace, "SF Mono", "Monaco", "Menlo", "Cascadia Code", "Roboto Mono",
-    Consolas, "Liberation Mono", monospace;
+  /* === TIER 1: PALETTE (raw colors, never used directly in components) === */
 
-  --aqua: oklab(0.88 -0.21 0.01);
-  --aqua-soft: oklab(0.88 -0.21 0.01 / 0.4);
-  --mint: oklab(0.87 -0.24 0.06);
-  --mint-soft: oklab(0.87 -0.24 0.06 / 0.4);
-  --mint-glow-soft: oklab(0.87 -0.24 0.06 / 0.08);
-  --mint-glow-strong: oklab(0.87 -0.24 0.06 / 0.35);
+  --color-mint: oklab(0.87 -0.24 0.06);
+  --color-aqua: oklab(0.88 -0.21 0.01);
+  --color-coral: #ff9aa0;
+  --color-silver: #e6e6e6;
+  --color-ink: #141414;
 
-  --silver-light: #f5f5f5;
-  --silver-mid: #c8c8c8;
-  --silver-dark: #8a8a8a;
+  /* === TIER 2: SEMANTIC (what components reference) === */
 
-  --diff-remove: #ff9aa0;
-  --diff-remove-bg: rgba(255, 154, 160, 0.08);
+  /* color intent — swap palette here to re-theme */
+  --brand: var(--color-mint);
+  --accent: var(--color-aqua);
+  --danger: var(--color-coral);
 
-  --bg: #141414;
-  --surface: rgba(255, 255, 255, 0.02);
-  --surface-strong: rgba(255, 255, 255, 0.07);
-  --surface-elevated: rgba(255, 255, 255, 0.04);
-  --surface-active: rgba(255, 255, 255, 0.03);
-  --nav-bg: rgba(0, 0, 0, 0.2);
+  /* brand & accent variants */
+  --brand-soft: color-mix(in oklch, var(--brand) 40%, transparent);
+  --brand-glow-soft: color-mix(in oklch, var(--brand) 8%, transparent);
+  --brand-glow-strong: color-mix(in oklch, var(--brand) 35%, transparent);
+  --accent-soft: color-mix(in oklch, var(--accent) 40%, transparent);
 
-  --rule: rgba(255, 255, 255, 0.02);
-  --ring: rgba(255, 255, 255, 0.04);
-  --ring-highlight: rgba(255, 255, 255, 0.08);
-  --ring-strong: rgba(255, 255, 255, 0.12);
+  /* backgrounds */
+  --bg: var(--color-ink);
+  --nav-bg: color-mix(in oklch, var(--color-ink) 20%, transparent);
 
-  --text: #e6e6e6;
-  --text-default: #d4d4d4;
-  --text-soft: #b8b8b8;
-  --text-muted: #8a8a8a;
+  /* surfaces — silver alpha overlays */
+  --surface: color-mix(in oklch, var(--color-silver) 2%, transparent);
+  --surface-elevated: color-mix(in oklch, var(--color-silver) 4%, transparent);
+  --surface-active: color-mix(in oklch, var(--color-silver) 3%, transparent);
+  --surface-strong: color-mix(in oklch, var(--color-silver) 7%, transparent);
 
-  --brand-gradient: linear-gradient(
+  /* rules & rings — silver alpha overlays */
+  --rule: color-mix(in oklch, var(--color-silver) 2%, transparent);
+  --ring: color-mix(in oklch, var(--color-silver) 4%, transparent);
+  --ring-highlight: color-mix(in oklch, var(--color-silver) 8%, transparent);
+  --ring-strong: color-mix(in oklch, var(--color-silver) 12%, transparent);
+
+  /* text — silver fading toward ink */
+  --text: var(--color-silver);
+  --text-body: color-mix(in oklch, var(--color-silver) 91%, var(--color-ink));
+  --text-soft: color-mix(in oklch, var(--color-silver) 78%, var(--color-ink));
+  --text-muted: color-mix(in oklch, var(--color-silver) 56%, var(--color-ink));
+
+  /* diff — derived from danger */
+  --diff-remove: var(--danger);
+  --diff-remove-bg: color-mix(in oklch, var(--danger) 8%, transparent);
+
+  /* accent contrast — ink with brand hint */
+  --accent-contrast: color-mix(in oklch, var(--brand) 8%, var(--color-ink));
+
+  /* effects */
+  --shadow-brand-glow: 0 0 12px var(--brand-glow-strong);
+  --shadow-ring-inset: inset 0 0 0 var(--px) var(--ring);
+
+  /* gradients */
+  --gradient-brand: linear-gradient(
     in oklab to bottom,
-    var(--aqua),
-    var(--mint)
+    var(--accent),
+    var(--brand)
   );
-  --mint-text-glow: 0 0 12px oklab(0.87 -0.24 0.06 / 0.35);
-  --accent-contrast: #08110d;
+  --gradient-silver: linear-gradient(
+    to bottom,
+    color-mix(in oklch, var(--color-silver), white 60%) 0%,
+    var(--color-silver) 55%,
+    color-mix(in oklch, var(--color-silver), var(--color-ink) 40%) 100%
+  );
 
+  /* layout */
   --header-height: 5.5rem;
 
+  /* syntax (palette TBD — next refactor) */
   --syntax-keyword: #c4a3c4;
   --syntax-type: #93b8d6;
   --syntax-literal: #d4a071;

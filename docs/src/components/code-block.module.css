@@ -4,13 +4,13 @@
     overflow: hidden;
     background: var(--surface);
     border-radius: var(--border-radius-lg);
-    box-shadow: var(--ring-inset);
+    box-shadow: var(--shadow-ring-inset);
 
     .LanguageText {
       position: absolute;
       top: var(--spacing-3);
       right: var(--spacing-4);
-      font-family: var(--font-mono);
+      font-family: var(--font-family-mono);
       font-size: var(--font-size-xs);
       color: var(--text-muted);
       text-transform: lowercase;
@@ -23,7 +23,7 @@
       overflow-x: auto;
       scrollbar-color: var(--rule) transparent;
       scrollbar-width: thin;
-      font-family: var(--font-mono);
+      font-family: var(--font-family-mono);
       font-size: 14px;
       line-height: var(--line-height-normal);
       color: var(--text-soft);

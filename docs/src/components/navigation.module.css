@@ -12,7 +12,7 @@
     padding: var(--spacing-2);
     background-color: var(--nav-bg);
     border-radius: var(--border-radius-full);
-    box-shadow: var(--ring-inset);
+    box-shadow: var(--shadow-ring-inset);
 
     .IndicatorBar {
       position: absolute;
@@ -21,7 +21,7 @@
       width: var(--navigation-indicator-width);
       height: var(--navigation-indicator-height);
       pointer-events: none;
-      background: var(--brand-gradient);
+      background: var(--gradient-brand);
       border-radius: var(--border-radius-full);
       opacity: 0;
       transform: translate(

@@ -14,7 +14,7 @@
     }
 
     &[data-status="active"] {
-      color: var(--mint);
+      color: var(--brand);
     }
 
     &[data-deprecated="true"] {

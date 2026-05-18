@@ -37,12 +37,12 @@
       }
 
       code {
-        font-family: var(--font-mono);
+        font-family: var(--font-family-mono);
         color: var(--text);
       }
 
       .OptionalText {
-        font-family: var(--font-mono);
+        font-family: var(--font-family-mono);
         color: var(--text-muted);
       }
     }

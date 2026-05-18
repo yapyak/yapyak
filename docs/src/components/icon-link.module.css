@@ -9,7 +9,7 @@
     color: var(--text-muted);
     background-color: var(--nav-bg);
     border-radius: var(--border-radius-full);
-    box-shadow: var(--ring-inset);
+    box-shadow: var(--shadow-ring-inset);
     transition: color var(--transition);
 
     &:hover {

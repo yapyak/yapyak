@@ -4,7 +4,7 @@
     border-top: var(--px) solid var(--rule);
 
     .PathText {
-      font-family: var(--font-mono);
+      font-family: var(--font-family-mono);
       font-size: var(--font-size-xs);
       color: var(--text-muted);
     }

@@ -27,7 +27,7 @@
       max-width: 40rem;
       font-size: var(--font-size-md);
       line-height: var(--line-height-loose);
-      color: var(--text-default);
+      color: var(--text-body);
       letter-spacing: var(--letter-spacing-tight);
 
       h1,
@@ -100,12 +100,12 @@
 
       :not(pre) > code {
         padding: 2px 6px;
-        font-family: var(--font-mono);
+        font-family: var(--font-family-mono);
         font-size: 0.9em;
         color: var(--text-soft);
         background: var(--surface-elevated);
         border-radius: var(--border-radius-sm);
-        box-shadow: var(--ring-inset);
+        box-shadow: var(--shadow-ring-inset);
       }
 
       table {
@@ -151,14 +151,14 @@
       }
 
       a {
-        color: var(--mint);
+        color: var(--brand);
         text-decoration: underline;
         text-decoration-color: var(--rule);
         text-underline-offset: 3px;
         transition: text-decoration-color var(--transition);
 
         &:hover {
-          text-decoration-color: var(--mint);
+          text-decoration-color: var(--brand);
         }
       }
     }

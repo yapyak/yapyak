@@ -18,7 +18,7 @@
       color: var(--text-soft);
 
       code {
-        font-family: var(--font-mono);
+        font-family: var(--font-family-mono);
         color: var(--text);
       }
     }
