@@ -1,5 +1,8 @@
+html {
+  background-color: var(--canvas);
+}
+
 ::selection {
-  color: var(--foreground);
   background-color: var(--brand-soft);
 }
 
