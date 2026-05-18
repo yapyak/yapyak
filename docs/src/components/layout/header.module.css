@@ -16,7 +16,7 @@
       inset: 0;
       z-index: -1;
       pointer-events: none;
-      background-color: rgba(20, 20, 20, 0.9);
+      background-color: color-mix(in oklab, var(--color-ink) 90%, transparent);
       border-bottom: var(--px) solid var(--rule);
       opacity: var(--layout-header-fill-opacity);
       backdrop-filter: blur(24px);

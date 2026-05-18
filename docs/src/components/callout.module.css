@@ -37,13 +37,13 @@
     }
 
     &[data-variant="warning"] {
-      --callout-accent: #d8a05a;
-      --callout-background: rgba(216, 160, 90, 0.06);
+      --callout-accent: var(--warning);
+      --callout-background: color-mix(in oklab, var(--warning) 6%, transparent);
     }
 
     &[data-variant="danger"] {
-      --callout-accent: #ff7b72;
-      --callout-background: rgba(255, 123, 114, 0.06);
+      --callout-accent: var(--danger);
+      --callout-background: color-mix(in oklab, var(--danger) 6%, transparent);
     }
   }
 }

@@ -81,6 +81,7 @@
   --brand: var(--color-mint);
   --accent: var(--color-aqua);
   --danger: var(--color-coral);
+  --warning: var(--color-amber);
 
   /* brand & accent variants */
   --brand-soft: color-mix(in oklab, var(--brand) 40%, transparent);

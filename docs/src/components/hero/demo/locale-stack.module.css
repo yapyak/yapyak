@@ -82,9 +82,9 @@
       background: linear-gradient(
         90deg,
         var(--ring) 0%,
-        rgba(255, 255, 255, 0.1) 40%,
+        color-mix(in oklab, var(--color-silver) 10%, transparent) 40%,
         color-mix(in oklab, var(--brand) 18%, transparent) 50%,
-        rgba(255, 255, 255, 0.1) 60%,
+        color-mix(in oklab, var(--color-silver) 10%, transparent) 60%,
         var(--ring) 100%
       );
       background-clip: padding-box;
