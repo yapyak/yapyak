@@ -13,7 +13,7 @@
     box-shadow: var(--shadow-ring-inset);
 
     .YapText {
-      color: var(--text);
+      color: var(--foreground);
     }
 
     .YakText {

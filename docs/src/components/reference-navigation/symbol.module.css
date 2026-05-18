@@ -5,12 +5,12 @@
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: var(--font-size-sm);
-    color: var(--text-soft);
+    color: var(--foreground-soft);
     white-space: nowrap;
     transition: color var(--transition);
 
     &:hover {
-      color: var(--text);
+      color: var(--foreground);
     }
 
     &[data-status="active"] {
@@ -18,7 +18,7 @@
     }
 
     &[data-deprecated="true"] {
-      color: var(--text-softer);
+      color: var(--foreground-softer);
       text-decoration: line-through;
     }
   }

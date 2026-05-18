@@ -2,7 +2,7 @@
   .ReferenceSymbolDeprecated {
     padding: var(--spacing-3) var(--spacing-4);
     font-size: var(--font-size-sm);
-    color: var(--text-soft);
+    color: var(--foreground-soft);
     background-color: color-mix(
       in oklab,
       var(--surface),

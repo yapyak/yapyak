@@ -1,5 +1,5 @@
 ::selection {
-  color: var(--text);
+  color: var(--foreground);
   background-color: var(--brand-soft);
 }
 
@@ -8,7 +8,7 @@ body {
   font-family: system-ui;
   font-size: var(--font-size-md);
   line-height: var(--line-height-relaxed);
-  color: var(--text-soft);
+  color: var(--foreground-soft);
   background-color: var(--canvas);
   hanging-punctuation: first last;
   -webkit-font-smoothing: antialiased;

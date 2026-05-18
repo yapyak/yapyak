@@ -4,13 +4,13 @@
 
     font-size: var(--font-size-md);
     line-height: var(--line-height-normal);
-    color: var(--text-soft);
+    color: var(--foreground-soft);
 
     :not(pre) > code {
       padding: 2px 6px;
       font-family: var(--font-family-mono);
       font-size: 0.9em;
-      color: var(--text-soft);
+      color: var(--foreground-soft);
       background: var(--surface-strong);
       border-radius: var(--border-radius-sm);
     }

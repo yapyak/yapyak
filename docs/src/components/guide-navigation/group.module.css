@@ -19,12 +19,12 @@
       text-overflow: ellipsis;
       font-size: var(--font-size-sm);
       font-weight: var(--font-weight-medium);
-      color: var(--text-soft);
+      color: var(--foreground-soft);
       white-space: nowrap;
       transition: color var(--transition);
 
       &:hover {
-        color: var(--text);
+        color: var(--foreground);
       }
 
       &[data-status="active"] {
@@ -44,7 +44,7 @@
       > .TitleHeading {
         font-size: var(--font-size-xs);
         font-weight: var(--font-weight-semibold);
-        color: var(--text-softer);
+        color: var(--foreground-softer);
         text-transform: uppercase;
         letter-spacing: var(--letter-spacing-wide);
       }

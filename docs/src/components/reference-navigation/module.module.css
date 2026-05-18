@@ -11,17 +11,17 @@
       width: 100%;
       padding: var(--spacing-1) var(--spacing-3);
       font-size: var(--font-size-sm);
-      color: var(--text-soft);
+      color: var(--foreground-soft);
       text-align: left;
       transition: color var(--transition);
 
       &:hover {
-        color: var(--text);
+        color: var(--foreground);
       }
 
       .ChevronIcon {
         flex: 0 0 auto;
-        color: var(--text-softer);
+        color: var(--foreground-softer);
         transition: transform var(--transition);
       }
 

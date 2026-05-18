@@ -7,7 +7,7 @@
     .Heading {
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-semibold);
-      color: var(--text-softer);
+      color: var(--foreground-softer);
       text-transform: uppercase;
       letter-spacing: var(--letter-spacing-wide);
     }
@@ -20,7 +20,7 @@
       gap: var(--spacing-4);
       font-size: var(--font-size-md);
       line-height: var(--line-height-normal);
-      color: var(--text-soft);
+      color: var(--foreground-soft);
     }
   }
 }

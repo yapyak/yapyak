@@ -12,7 +12,7 @@
       right: var(--spacing-4);
       font-family: var(--font-family-mono);
       font-size: var(--font-size-xs);
-      color: var(--text-softer);
+      color: var(--foreground-softer);
       text-transform: lowercase;
       user-select: none;
       pointer-events: none;
@@ -26,7 +26,7 @@
       font-family: var(--font-family-mono);
       font-size: 14px;
       line-height: var(--line-height-normal);
-      color: var(--text-soft);
+      color: var(--foreground-soft);
 
       code {
         font-family: inherit;

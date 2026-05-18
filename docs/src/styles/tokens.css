@@ -104,10 +104,10 @@
   --ring-strong: color-mix(in oklab, var(--color-silver) 8%, transparent);
   --ring-stronger: color-mix(in oklab, var(--color-silver) 12%, transparent);
 
-  /* text — copy emphasis */
-  --text: var(--color-silver);
-  --text-soft: color-mix(in oklab, var(--color-silver) 78%, var(--color-ink));
-  --text-softer: color-mix(in oklab, var(--color-silver) 56%, var(--color-ink));
+  /* foreground — text & icon emphasis */
+  --foreground: var(--color-silver);
+  --foreground-soft: color-mix(in oklab, var(--color-silver) 78%, var(--color-ink));
+  --foreground-softer: color-mix(in oklab, var(--color-silver) 56%, var(--color-ink));
 
   /* brand contrast — text on brand-colored bg */
   --brand-contrast: color-mix(in oklab, var(--brand) 8%, var(--color-ink));

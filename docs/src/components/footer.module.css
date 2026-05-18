@@ -25,7 +25,7 @@
     .TaglineParagraph {
       font-size: var(--font-size-lg);
       font-style: italic;
-      color: var(--text-soft);
+      color: var(--foreground-soft);
       letter-spacing: var(--letter-spacing-tight);
       text-wrap: balance;
       animation: tagline-enter 700ms var(--ease-smooth);
@@ -39,7 +39,7 @@
       justify-content: center;
       padding-top: var(--spacing-2);
       font-size: var(--font-size-xs);
-      color: var(--text-softer);
+      color: var(--foreground-softer);
     }
 
     .SeparatorText {
@@ -47,11 +47,11 @@
     }
 
     .Link {
-      color: var(--text-softer);
+      color: var(--foreground-softer);
       transition: color var(--transition);
 
       &:hover {
-        color: var(--text-soft);
+        color: var(--foreground-soft);
       }
     }
   }

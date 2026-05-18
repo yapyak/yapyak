@@ -49,7 +49,7 @@
     }
 
     .FilenameText {
-      color: var(--text-softer);
+      color: var(--foreground-softer);
       letter-spacing: var(--letter-spacing-tight);
     }
 
@@ -60,7 +60,7 @@
       min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
-      color: var(--text);
+      color: var(--foreground);
       white-space: nowrap;
     }
 

@@ -6,7 +6,7 @@
     padding: var(--spacing-1) var(--spacing-6);
     font-size: 0.95rem;
     font-weight: var(--font-weight-medium);
-    color: var(--text-softer);
+    color: var(--foreground-softer);
     text-align: center;
     outline: var(--spacing-2) solid transparent;
     outline-offset: 0;
@@ -30,7 +30,7 @@
 
     &:not([data-status="active"]) {
       &:hover {
-        color: var(--text);
+        color: var(--foreground);
         background-color: var(--surface-strong);
         box-shadow:
           inset 0 0 0 var(--px) var(--ring-strong),

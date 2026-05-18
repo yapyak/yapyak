@@ -7,7 +7,7 @@
     .Heading {
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-semibold);
-      color: var(--text-softer);
+      color: var(--foreground-softer);
       text-transform: uppercase;
       letter-spacing: var(--letter-spacing-wide);
     }
@@ -15,11 +15,11 @@
     .LineParagraph {
       font-size: var(--font-size-sm);
       line-height: var(--line-height-normal);
-      color: var(--text-soft);
+      color: var(--foreground-soft);
 
       code {
         font-family: var(--font-family-mono);
-        color: var(--text);
+        color: var(--foreground);
       }
     }
   }

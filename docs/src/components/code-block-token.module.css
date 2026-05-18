@@ -27,7 +27,7 @@
 
     &[data-type="comment"] {
       font-style: italic;
-      color: var(--text-softer);
+      color: var(--foreground-softer);
     }
 
     &[data-type="fn-call"],
@@ -40,7 +40,7 @@
     }
 
     &[data-type="punct"] {
-      color: var(--text-softer);
+      color: var(--foreground-softer);
     }
 
     &[data-type="tx-yapyak"] {

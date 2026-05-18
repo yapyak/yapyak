@@ -55,7 +55,7 @@
       font-size: var(--font-size-2xl);
       font-weight: var(--font-weight-medium);
       line-height: var(--line-height-tight);
-      color: var(--text);
+      color: var(--foreground);
       letter-spacing: var(--letter-spacing-tighter);
       text-wrap: balance;
     }
@@ -71,7 +71,7 @@
 
     .DescriptionParagraph {
       font-size: var(--font-size-md);
-      color: var(--text-soft);
+      color: var(--foreground-soft);
       transition: color 400ms ease;
     }
 
@@ -81,7 +81,7 @@
       }
 
       .DescriptionParagraph {
-        color: var(--text);
+        color: var(--foreground);
       }
     }
 
