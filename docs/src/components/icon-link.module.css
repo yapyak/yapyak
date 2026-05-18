@@ -5,7 +5,7 @@
     justify-content: center;
     width: calc(var(--spacing-4) + var(--spacing-2) + 0.95rem * 1.65);
     height: calc(var(--spacing-4) + var(--spacing-2) + 0.95rem * 1.65);
-    font-size: 1.1rem;
+    font-size: var(--font-size-md);
     color: var(--foreground-softer);
     background-color: var(--canvas-soft);
     border-radius: var(--border-radius-full);

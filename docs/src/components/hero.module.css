@@ -89,7 +89,7 @@
         transform var(--transition);
 
       &:hover {
-        background-color: var(--surface-strong);
+        background-color: var(--surface-stronger);
       }
 
       &:active {

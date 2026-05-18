@@ -24,7 +24,7 @@
       scrollbar-color: var(--rule) transparent;
       scrollbar-width: thin;
       font-family: var(--font-family-mono);
-      font-size: 14px;
+      font-size: var(--font-size-sm);
       line-height: var(--line-height-normal);
       color: var(--foreground-soft);
 
