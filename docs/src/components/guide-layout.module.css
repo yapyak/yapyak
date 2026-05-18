@@ -1,8 +1,5 @@
 @layer components {
   .GuideLayout {
-    --sidebar-translate: 100%;
-    --sidebar-transition: none;
-
     display: flex;
     flex-direction: column;
     gap: var(--spacing-3);
@@ -15,32 +12,17 @@
       display: none;
     }
 
-    .CloseButtonSlot {
-      display: none;
-    }
-
     &[data-sidebar-open] {
-      --sidebar-translate: 0;
-      --sidebar-transition: transform 320ms var(--ease-snappy);
-
       .Backdrop {
         position: fixed;
         inset: 0;
-        z-index: 150;
+        z-index: 110;
         display: block;
         background-color: color-mix(
           in oklab,
-          var(--color-black) 60%,
+          var(--color-black) 50%,
           transparent
         );
-      }
-
-      .CloseButtonSlot {
-        position: fixed;
-        top: var(--spacing-3);
-        right: var(--spacing-4);
-        z-index: 210;
-        display: block;
       }
     }
 

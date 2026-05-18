@@ -7,17 +7,20 @@ import { Box } from '#components/box';
 
 import { GuideLayoutContent } from './guide-layout/content';
 import { GuideLayoutSidebar } from './guide-layout/sidebar';
-import { GuideLayoutSidebarCloseButton } from './guide-layout/sidebar-close-button';
 import { GuideLayoutToolbar } from './guide-layout/toolbar';
 import styles from './guide-layout.module.css';
 
 export interface GuideLayoutProps extends BoxProps {}
 
 interface GuideLayoutContextValue {
+  closeSidebar: () => void;
+  isSidebarOpen: boolean;
   openSidebar: () => void;
 }
 
 const GuideLayoutContext = createContext<GuideLayoutContextValue>({
+  closeSidebar: () => {},
+  isSidebarOpen: false,
   openSidebar: () => {},
 });
 
@@ -53,7 +56,13 @@ export function GuideLayout(props: GuideLayoutProps) {
   }, [isSidebarOpen]);
 
   return (
-    <GuideLayoutContext value={{ openSidebar: () => setIsSidebarOpen(true) }}>
+    <GuideLayoutContext
+      value={{
+        closeSidebar: () => setIsSidebarOpen(false),
+        isSidebarOpen,
+        openSidebar: () => setIsSidebarOpen(true),
+      }}
+    >
       <Box
         {...restProps}
         className={[styles.GuideLayout, className]}
@@ -64,11 +73,6 @@ export function GuideLayout(props: GuideLayoutProps) {
           className={styles.Backdrop}
           onClick={() => setIsSidebarOpen(false)}
         />
-        <Box className={styles.CloseButtonSlot}>
-          <GuideLayoutSidebarCloseButton
-            onClick={() => setIsSidebarOpen(false)}
-          />
-        </Box>
         {children}
       </Box>
     </GuideLayoutContext>

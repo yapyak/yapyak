@@ -1,34 +1,18 @@
 @layer components {
   .GuideLayoutSidebar {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    padding: calc(var(--spacing-3) + 48px + var(--spacing-4)) var(--spacing-6)
-      var(--spacing-8);
-    overflow-y: auto;
-    background-color: var(--canvas);
-    scrollbar-color: var(--rule) transparent;
-    scrollbar-width: thin;
-    transform: translateY(var(--sidebar-translate, 100%));
-    transition: var(--sidebar-transition, none);
+    display: none;
 
     @media (min-width: 60rem) {
       position: sticky;
-      inset: auto;
       top: var(--header-height);
-      z-index: auto;
+      display: block;
       align-self: start;
       max-height: calc(100vh - var(--header-height));
       padding: var(--spacing-8) var(--spacing-8) var(--spacing-8) 0;
+      overflow-y: auto;
       background-color: transparent;
-      transform: none;
-      transition: none;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .GuideLayoutSidebar {
-      transition: none;
+      scrollbar-color: var(--rule) transparent;
+      scrollbar-width: thin;
     }
   }
 }

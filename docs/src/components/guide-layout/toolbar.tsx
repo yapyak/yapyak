@@ -1,4 +1,5 @@
 import type { GuideAdjacent } from '#lib/guide';
+import type { ReactNode } from 'react';
 
 import { Link } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
@@ -6,23 +7,27 @@ import { t } from 'yapyak';
 
 import { Box } from '#components/box';
 import { ChevronIcon } from '#components/chevron-icon';
-import { SectionsIcon } from '#components/sections-icon';
+import { OutlineIcon } from '#components/outline-icon';
 
 import { useGuideLayout } from '../guide-layout';
 import styles from './toolbar.module.css';
 
 export interface GuideLayoutToolbarProps {
+  children: ReactNode;
   next: GuideAdjacent | null;
   previous: GuideAdjacent | null;
 }
 
 export function GuideLayoutToolbar(props: GuideLayoutToolbarProps) {
-  const { next, previous } = props;
-  const { openSidebar } = useGuideLayout();
+  const { children, next, previous } = props;
+  const { closeSidebar, isSidebarOpen, openSidebar } = useGuideLayout();
   const [isHidden, setIsHidden] = useState(false);
   const lastScrollYRef = useRef(0);
 
   useEffect(() => {
+    if (isSidebarOpen) {
+      return;
+    }
     lastScrollYRef.current = window.scrollY;
     const update = () => {
       const currentScrollY = window.scrollY;
@@ -39,54 +44,72 @@ export function GuideLayoutToolbar(props: GuideLayoutToolbarProps) {
     };
     window.addEventListener('scroll', update, { passive: true });
     return () => window.removeEventListener('scroll', update);
-  }, []);
+  }, [isSidebarOpen]);
+
+  const handleOutlineToggle = () => {
+    if (isSidebarOpen) {
+      closeSidebar();
+    } else {
+      setIsHidden(false);
+      openSidebar();
+    }
+  };
 
   return (
     <Box
       className={styles.GuideLayoutToolbar}
       data-hidden={isHidden}
+      data-open={isSidebarOpen}
     >
-      {previous ? (
-        <Box
-          aria-label={t('Previous')}
-          as={Link}
-          className={styles.NavButton}
-          to={previous.href}
-        >
-          <ChevronIcon direction="left" />
-        </Box>
-      ) : (
-        <Box
-          aria-hidden="true"
-          className={styles.NavButton}
-          data-disabled
-        />
-      )}
-      <Box
-        aria-label={t('Open sections')}
-        as="button"
-        className={styles.SectionsButton}
-        onClick={openSidebar}
-        type="button"
-      >
-        <SectionsIcon />
+      <Box className={styles.NavContent}>
+        <Box className={styles.NavScroll}>{children}</Box>
       </Box>
-      {next ? (
+      <Box className={styles.ButtonRow}>
+        {previous ? (
+          <Box
+            aria-label={t('Previous')}
+            as={Link}
+            className={styles.NavButton}
+            to={previous.href}
+          >
+            <ChevronIcon direction="left" />
+          </Box>
+        ) : (
+          <Box
+            aria-hidden="true"
+            className={styles.NavButton}
+            data-disabled
+          />
+        )}
         <Box
-          aria-label={t('Next')}
-          as={Link}
-          className={styles.NavButton}
-          to={next.href}
+          aria-expanded={isSidebarOpen}
+          aria-label={
+            isSidebarOpen ? t('Close outline') : t('Open outline')
+          }
+          as="button"
+          className={styles.OutlineButton}
+          onClick={handleOutlineToggle}
+          type="button"
         >
-          <ChevronIcon direction="right" />
+          <OutlineIcon />
         </Box>
-      ) : (
-        <Box
-          aria-hidden="true"
-          className={styles.NavButton}
-          data-disabled
-        />
-      )}
+        {next ? (
+          <Box
+            aria-label={t('Next')}
+            as={Link}
+            className={styles.NavButton}
+            to={next.href}
+          >
+            <ChevronIcon direction="right" />
+          </Box>
+        ) : (
+          <Box
+            aria-hidden="true"
+            className={styles.NavButton}
+            data-disabled
+          />
+        )}
+      </Box>
     </Box>
   );
 }

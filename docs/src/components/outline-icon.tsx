@@ -1,8 +1,8 @@
 import type { SVGProps } from 'react';
 
-export interface SectionsIconProps extends SVGProps<SVGSVGElement> {}
+export interface OutlineIconProps extends SVGProps<SVGSVGElement> {}
 
-export function SectionsIcon(props: SectionsIconProps) {
+export function OutlineIcon(props: OutlineIconProps) {
   return (
     <svg
       aria-hidden="true"

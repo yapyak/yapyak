@@ -5,23 +5,44 @@
     left: 0;
     z-index: 120;
     display: flex;
-    gap: var(--spacing-3);
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
     width: 100%;
-    padding: var(--spacing-3) var(--spacing-4);
-    padding-bottom: max(var(--spacing-3), env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
     background-color: var(--canvas);
     border-top: var(--px) solid var(--rule);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
     transform: translateY(0);
-    transition: transform 400ms cubic-bezier(0.32, 0.72, 0, 1);
+    transition:
+      transform 400ms cubic-bezier(0.32, 0.72, 0, 1),
+      border-top-left-radius 400ms cubic-bezier(0.32, 0.72, 0, 1),
+      border-top-right-radius 400ms cubic-bezier(0.32, 0.72, 0, 1);
+    interpolate-size: allow-keywords;
 
-    &[data-hidden] {
-      transform: translateY(100%);
+    .NavContent {
+      height: 0;
+      overflow: hidden;
+      transition: height 400ms cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    .NavScroll {
+      max-height: 70vh;
+      padding: var(--spacing-6) var(--spacing-6) var(--spacing-4);
+      overflow-y: auto;
+      scrollbar-color: var(--rule) transparent;
+      scrollbar-width: thin;
+    }
+
+    .ButtonRow {
+      display: flex;
+      gap: var(--spacing-3);
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--spacing-3) var(--spacing-4);
     }
 
     .NavButton,
-    .SectionsButton {
+    .OutlineButton {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -60,6 +81,26 @@
       &[data-disabled] {
         opacity: 0.3;
         pointer-events: none;
+      }
+    }
+
+    &[data-hidden]:not([data-open]) {
+      transform: translateY(100%);
+    }
+
+    &[data-open] {
+      border-top-left-radius: var(--border-radius-lg);
+      border-top-right-radius: var(--border-radius-lg);
+
+      .NavContent {
+        height: auto;
+        border-bottom: var(--px) solid var(--rule);
+      }
+
+      .OutlineButton {
+        color: var(--foreground);
+        background-color: var(--surface-stronger);
+        box-shadow: var(--shadow-ring-inset);
       }
     }
 
