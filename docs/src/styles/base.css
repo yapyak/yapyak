@@ -9,7 +9,7 @@ body {
   font-size: var(--font-size-md);
   line-height: var(--line-height-relaxed);
   color: var(--text-soft);
-  background-color: var(--bg);
+  background-color: var(--canvas);
   hanging-punctuation: first last;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

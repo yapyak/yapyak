@@ -85,41 +85,35 @@
 
   /* brand & accent variants */
   --brand-soft: color-mix(in oklab, var(--brand) 40%, transparent);
-  --brand-glow-soft: color-mix(in oklab, var(--brand) 8%, transparent);
-  --brand-glow-strong: color-mix(in oklab, var(--brand) 35%, transparent);
+  --brand-softer: color-mix(in oklab, var(--brand) 8%, transparent);
   --accent-soft: color-mix(in oklab, var(--accent) 40%, transparent);
 
-  /* backgrounds */
-  --bg: var(--color-ink);
-  --nav-bg: color-mix(in oklab, var(--color-ink) 20%, transparent);
+  /* canvas — page foundation */
+  --canvas: var(--color-ink);
+  --canvas-soft: color-mix(in oklab, var(--color-ink) 20%, transparent);
 
-  /* surfaces — silver alpha overlays */
+  /* surface — content layers (cards, panels) */
   --surface: color-mix(in oklab, var(--color-silver) 2%, transparent);
-  --surface-elevated: color-mix(in oklab, var(--color-silver) 4%, transparent);
-  --surface-active: color-mix(in oklab, var(--color-silver) 3%, transparent);
   --surface-strong: color-mix(in oklab, var(--color-silver) 7%, transparent);
 
-  /* rules & rings — silver alpha overlays */
+  /* rule — divider lines */
   --rule: color-mix(in oklab, var(--color-silver) 2%, transparent);
+
+  /* ring — borders, outlines */
   --ring: color-mix(in oklab, var(--color-silver) 4%, transparent);
-  --ring-highlight: color-mix(in oklab, var(--color-silver) 8%, transparent);
-  --ring-strong: color-mix(in oklab, var(--color-silver) 12%, transparent);
+  --ring-strong: color-mix(in oklab, var(--color-silver) 8%, transparent);
+  --ring-stronger: color-mix(in oklab, var(--color-silver) 12%, transparent);
 
-  /* text — silver fading toward ink */
+  /* text — copy emphasis */
   --text: var(--color-silver);
-  --text-body: color-mix(in oklab, var(--color-silver) 91%, var(--color-ink));
   --text-soft: color-mix(in oklab, var(--color-silver) 78%, var(--color-ink));
-  --text-muted: color-mix(in oklab, var(--color-silver) 56%, var(--color-ink));
+  --text-softer: color-mix(in oklab, var(--color-silver) 56%, var(--color-ink));
 
-  /* diff — derived from danger */
-  --diff-remove: var(--danger);
-  --diff-remove-bg: color-mix(in oklab, var(--danger) 8%, transparent);
-
-  /* accent contrast — ink with brand hint */
-  --accent-contrast: color-mix(in oklab, var(--brand) 8%, var(--color-ink));
+  /* brand contrast — text on brand-colored bg */
+  --brand-contrast: color-mix(in oklab, var(--brand) 8%, var(--color-ink));
 
   /* effects */
-  --shadow-brand-glow: 0 0 12px var(--brand-glow-strong);
+  --shadow-brand-glow: 0 0 12px var(--brand-soft);
   --shadow-ring-inset: inset 0 0 0 var(--px) var(--ring);
 
   /* gradients */
@@ -128,6 +122,7 @@
     var(--accent),
     var(--brand)
   );
+
   --gradient-silver: linear-gradient(
     to bottom,
     color-mix(in oklab, var(--color-silver), white 60%) 0%,

@@ -39,14 +39,14 @@
     .TrustParagraph {
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-medium);
-      color: var(--text-muted);
+      color: var(--text-softer);
       letter-spacing: var(--letter-spacing-tight);
     }
 
     .PrimaryLink {
       padding: var(--spacing-2) var(--spacing-5);
       font-weight: var(--font-weight-medium);
-      color: var(--accent-contrast);
+      color: var(--brand-contrast);
       outline: var(--spacing-2) solid transparent;
       outline-offset: 0;
       background: var(--gradient-brand);
@@ -77,11 +77,11 @@
       color: var(--text);
       outline: var(--spacing-2) solid transparent;
       outline-offset: 0;
-      background-color: var(--surface-elevated);
+      background-color: var(--surface-strong);
       border-radius: var(--border-radius-full);
       box-shadow:
-        inset 0 0 0 var(--px) var(--ring-highlight),
-        inset 0 var(--px) var(--ring-highlight);
+        inset 0 0 0 var(--px) var(--ring-strong),
+        inset 0 var(--px) var(--ring-strong);
       transition:
         background-color var(--transition),
         outline 400ms,

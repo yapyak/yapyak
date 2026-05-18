@@ -6,8 +6,8 @@
     width: calc(var(--spacing-4) + var(--spacing-2) + 0.95rem * 1.65);
     height: calc(var(--spacing-4) + var(--spacing-2) + 0.95rem * 1.65);
     font-size: 1.1rem;
-    color: var(--text-muted);
-    background-color: var(--nav-bg);
+    color: var(--text-softer);
+    background-color: var(--canvas-soft);
     border-radius: var(--border-radius-full);
     box-shadow: var(--shadow-ring-inset);
     transition: color var(--transition);

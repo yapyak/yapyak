@@ -27,7 +27,7 @@
 
     &[data-type="comment"] {
       font-style: italic;
-      color: var(--text-muted);
+      color: var(--text-softer);
     }
 
     &[data-type="fn-call"],
@@ -40,7 +40,7 @@
     }
 
     &[data-type="punct"] {
-      color: var(--text-muted);
+      color: var(--text-softer);
     }
 
     &[data-type="tx-yapyak"] {
@@ -55,13 +55,13 @@
     &[data-type="diff-add"] {
       display: inline;
       color: var(--brand);
-      background-color: var(--brand-glow-soft);
+      background-color: var(--brand-softer);
     }
 
     &[data-type="diff-remove"] {
       display: inline;
-      color: var(--diff-remove);
-      background-color: var(--diff-remove-bg);
+      color: var(--danger);
+      background-color: color-mix(in oklab, var(--danger) 8%, transparent);
     }
 
     &[data-type="diff-hunk"] {

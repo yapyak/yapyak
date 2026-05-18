@@ -27,7 +27,7 @@
       max-width: 40rem;
       font-size: var(--font-size-md);
       line-height: var(--line-height-loose);
-      color: var(--text-body);
+      color: var(--text-soft);
       letter-spacing: var(--letter-spacing-tight);
 
       h1,
@@ -68,7 +68,7 @@
 
       h6 {
         font-size: var(--font-size-xs);
-        color: var(--text-muted);
+        color: var(--text-softer);
         text-transform: uppercase;
         letter-spacing: var(--letter-spacing-wide);
       }
@@ -103,7 +103,7 @@
         font-family: var(--font-family-mono);
         font-size: 0.9em;
         color: var(--text-soft);
-        background: var(--surface-elevated);
+        background: var(--surface-strong);
         border-radius: var(--border-radius-sm);
         box-shadow: var(--shadow-ring-inset);
       }
@@ -119,7 +119,7 @@
         padding: var(--spacing-3) var(--spacing-4);
         font-size: var(--font-size-xs);
         font-weight: var(--font-weight-medium);
-        color: var(--text-muted);
+        color: var(--text-softer);
         text-transform: uppercase;
         letter-spacing: var(--letter-spacing-wider);
         background: var(--surface);

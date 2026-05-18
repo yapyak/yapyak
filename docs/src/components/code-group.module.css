@@ -19,7 +19,7 @@
         padding: var(--spacing-3) var(--spacing-4);
         font-family: var(--font-family-mono);
         font-size: var(--font-size-xs);
-        color: var(--text-muted);
+        color: var(--text-softer);
         cursor: pointer;
         border-right: var(--px) solid var(--rule);
         transition:
@@ -53,7 +53,7 @@
 
         &:has(.TabInput:checked) {
           color: var(--text);
-          background-color: var(--surface-active);
+          background-color: var(--surface);
 
           .IndicatorBar {
             opacity: 1;

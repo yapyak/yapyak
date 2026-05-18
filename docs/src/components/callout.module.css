@@ -1,6 +1,6 @@
 @layer components {
   .Callout {
-    --callout-accent: var(--text-muted);
+    --callout-accent: var(--text-softer);
     --callout-background: var(--surface);
 
     position: relative;

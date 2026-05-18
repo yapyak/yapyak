@@ -12,7 +12,7 @@
       right: var(--spacing-4);
       font-family: var(--font-family-mono);
       font-size: var(--font-size-xs);
-      color: var(--text-muted);
+      color: var(--text-softer);
       text-transform: lowercase;
       user-select: none;
       pointer-events: none;

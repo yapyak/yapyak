@@ -53,7 +53,7 @@
       padding: var(--spacing-3) var(--spacing-4);
       font-family: var(--font-family-mono);
       font-size: var(--font-size-xs);
-      color: var(--text-muted);
+      color: var(--text-softer);
       box-shadow: inset calc(var(--px) * -1) 0 0 var(--rule);
       transition:
         background-color var(--transition),
@@ -67,7 +67,7 @@
 
       &[data-active] {
         color: var(--text);
-        background-color: var(--surface-active);
+        background-color: var(--surface);
       }
 
       &:hover,
@@ -77,7 +77,7 @@
 
       &[data-active],
       &:has(+ .TabButton[data-active]) {
-        box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring-highlight);
+        box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring-strong);
       }
     }
 

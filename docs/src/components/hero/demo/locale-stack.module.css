@@ -49,7 +49,7 @@
     }
 
     .FilenameText {
-      color: var(--text-muted);
+      color: var(--text-softer);
       letter-spacing: var(--letter-spacing-tight);
     }
 

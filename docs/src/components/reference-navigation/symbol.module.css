@@ -18,7 +18,7 @@
     }
 
     &[data-deprecated="true"] {
-      color: var(--text-muted);
+      color: var(--text-softer);
       text-decoration: line-through;
     }
   }

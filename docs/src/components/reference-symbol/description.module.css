@@ -11,7 +11,7 @@
       font-family: var(--font-family-mono);
       font-size: 0.9em;
       color: var(--text-soft);
-      background: var(--surface-elevated);
+      background: var(--surface-strong);
       border-radius: var(--border-radius-sm);
     }
   }

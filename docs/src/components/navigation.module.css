@@ -10,7 +10,7 @@
     gap: var(--spacing-2);
     align-items: center;
     padding: var(--spacing-2);
-    background-color: var(--nav-bg);
+    background-color: var(--canvas-soft);
     border-radius: var(--border-radius-full);
     box-shadow: var(--shadow-ring-inset);
 

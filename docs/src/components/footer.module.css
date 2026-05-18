@@ -39,7 +39,7 @@
       justify-content: center;
       padding-top: var(--spacing-2);
       font-size: var(--font-size-xs);
-      color: var(--text-muted);
+      color: var(--text-softer);
     }
 
     .SeparatorText {
@@ -47,7 +47,7 @@
     }
 
     .Link {
-      color: var(--text-muted);
+      color: var(--text-softer);
       transition: color var(--transition);
 
       &:hover {

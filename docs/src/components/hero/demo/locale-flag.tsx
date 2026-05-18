@@ -32,7 +32,7 @@ export function DemoLocaleFlag(props: DemoLocaleFlagProps) {
         fill="none"
         height="11"
         rx="1.5"
-        stroke="var(--ring-strong)"
+        stroke="var(--ring-stronger)"
         strokeWidth="1"
         width="17"
         x="0.5"
