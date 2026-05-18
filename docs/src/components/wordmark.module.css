@@ -8,7 +8,7 @@
     font-weight: var(--font-weight-semibold);
     line-height: var(--line-height-none);
     letter-spacing: var(--letter-spacing-tighter);
-    background-color: var(--canvas-soft);
+    background-color: var(--canvas-strong);
     border-radius: var(--border-radius-full) var(--border-radius-full) var(--border-radius-full) 0;
     box-shadow: var(--shadow-ring-inset);
 

@@ -91,7 +91,7 @@
 
   /* canvas — page foundation */
   --canvas: var(--color-ink);
-  --canvas-soft: color-mix(in oklab, var(--color-black) 20%, transparent);
+  --canvas-strong: color-mix(in oklab, var(--color-black) 20%, transparent);
 
   /* surface — content layers (cards, panels) */
   --surface: color-mix(in oklab, var(--color-silver) 2%, transparent);
