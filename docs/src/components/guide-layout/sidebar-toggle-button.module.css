@@ -1,0 +1,34 @@
+@layer components {
+  .GuideLayoutSidebarToggleButton {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-2) var(--spacing-5);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--foreground-soft);
+    outline: var(--spacing-2) solid transparent;
+    outline-offset: 0;
+    background-color: var(--surface-stronger);
+    border-radius: var(--border-radius-full);
+    box-shadow: var(--shadow-ring-inset);
+    transition:
+      color var(--transition),
+      background-color var(--transition),
+      box-shadow var(--transition),
+      outline 400ms,
+      transform var(--transition);
+
+    &:hover {
+      color: var(--foreground);
+    }
+
+    &:active {
+      transform: scale(0.99);
+    }
+
+    &:focus-visible {
+      outline-width: 4px;
+      outline-color: var(--accent-soft);
+    }
+  }
+}

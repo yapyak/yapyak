@@ -1,0 +1,71 @@
+@layer components {
+  .GuidePrevNext {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-12);
+
+    .PreviousCard,
+    .NextCard {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-1);
+      padding: var(--spacing-4) var(--spacing-5);
+      border-radius: var(--border-radius-md);
+      box-shadow: var(--shadow-ring-inset);
+      transition:
+        background-color var(--transition),
+        box-shadow var(--transition),
+        transform var(--transition);
+
+      &:hover {
+        background-color: var(--surface);
+      }
+    }
+
+    .PreviousCard {
+      transform-origin: left center;
+
+      &:active {
+        transform: scale(0.96);
+      }
+    }
+
+    .NextCard {
+      align-items: flex-end;
+      text-align: right;
+      transform-origin: right center;
+
+      &:active {
+        transform: scale(0.96);
+      }
+    }
+
+    .LabelText {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--foreground-softer);
+      letter-spacing: var(--letter-spacing-wide);
+      text-transform: uppercase;
+    }
+
+    .TitleText {
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-medium);
+      color: var(--foreground);
+      letter-spacing: var(--letter-spacing-tight);
+    }
+
+    .Spacer {
+      display: none;
+    }
+
+    @media (min-width: 40rem) {
+      grid-template-columns: 1fr 1fr;
+
+      .Spacer {
+        display: block;
+      }
+    }
+  }
+}
