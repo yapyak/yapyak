@@ -1,8 +1,0 @@
-@layer components {
-  .ReferenceSymbol {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-8);
-    max-width: 38rem;
-  }
-}

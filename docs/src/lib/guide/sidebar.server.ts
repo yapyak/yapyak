@@ -1,4 +1,4 @@
-import type { SidebarNode } from './types';
+import type { NavNode } from '#lib/navigation';
 
 import { parseFrontmatterOnly } from '#lib/content';
 
@@ -17,7 +17,7 @@ export async function buildGuideSidebar(projectRoot: string) {
 
 async function walkDir(absDir: string, urlPrefix: string) {
   const entries = await readdir(absDir, { withFileTypes: true });
-  const collected: { node: SidebarNode; order: number; name: string }[] = [];
+  const collected: { node: NavNode; order: number; name: string }[] = [];
 
   for (const entry of entries) {
     if (entry.name.startsWith('.') || entry.name.startsWith('_')) {
@@ -73,16 +73,16 @@ async function buildLink(absPath: string, href: string) {
   if (typeof frontmatter.redirect === 'string') {
     return null;
   }
-  const title =
+  const label =
     typeof frontmatter.title === 'string'
       ? frontmatter.title
-      : deriveTitle(href);
+      : deriveLabel(href);
   const order =
     typeof frontmatter.order === 'number'
       ? frontmatter.order
       : Number.POSITIVE_INFINITY;
   return {
-    node: { href, title, type: 'link' as const },
+    node: { href, label, type: 'link' as const },
     order,
   };
 }
@@ -104,7 +104,7 @@ async function buildGroup(
     return null;
   }
 
-  const title =
+  const label =
     typeof indexFrontmatter.title === 'string'
       ? indexFrontmatter.title
       : capitalize(folderName);
@@ -114,12 +114,17 @@ async function buildGroup(
       : Number.POSITIVE_INFINITY;
 
   return {
-    node: { items, title, type: 'group' as const },
+    node: {
+      children: items,
+      collapsible: false,
+      label,
+      type: 'group' as const,
+    },
     order,
   };
 }
 
-function deriveTitle(href: string) {
+function deriveLabel(href: string) {
   const last = href.split('/').pop() ?? '';
   return last
     .split('-')

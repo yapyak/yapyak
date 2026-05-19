@@ -7,10 +7,11 @@ import {
 import { createServerFn } from '@tanstack/react-start';
 
 import { Article } from '#components/article';
-import { GuideLayout } from '#components/guide-layout';
-import { GuideNavigation } from '#components/guide-navigation';
-import { GuidePagination } from '#components/guide-pagination';
-import { findAdjacentPages, loadGuideArticle } from '#lib/guide';
+import { ContentLayout } from '#components/content-layout';
+import { ContentNavigation } from '#components/content-navigation';
+import { ContentPagination } from '#components/content-pagination';
+import { loadGuideArticle } from '#lib/guide';
+import { findAdjacent } from '#lib/navigation';
 
 const guideRouteApi = getRouteApi('/guide');
 
@@ -37,7 +38,7 @@ export const Route = createFileRoute('/guide/$')({
       throw redirect({ replace: true, to: result.target });
     }
 
-    const { next, previous } = findAdjacentPages(context.sidebar, slug);
+    const { next, previous } = findAdjacent(context.sidebar, `/guide/${slug}`);
 
     return {
       next,
@@ -53,16 +54,19 @@ function Component() {
   return (
     <>
       <Article page={page} />
-      <GuidePagination
+      <ContentPagination
         next={next}
         previous={previous}
       />
-      <GuideLayout.Toolbar
+      <ContentLayout.Toolbar
         next={next}
         previous={previous}
       >
-        <GuideNavigation items={sidebar} />
-      </GuideLayout.Toolbar>
+        <ContentNavigation
+          aria-label="Guide navigation"
+          tree={sidebar}
+        />
+      </ContentLayout.Toolbar>
     </>
   );
 }

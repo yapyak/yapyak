@@ -1,8 +1,8 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
-import { GuideLayout } from '#components/guide-layout';
-import { GuideNavigation } from '#components/guide-navigation';
+import { ContentLayout } from '#components/content-layout';
+import { ContentNavigation } from '#components/content-navigation';
 import { buildGuideSidebar } from '#lib/guide';
 
 const loadData = createServerFn().handler(() =>
@@ -20,13 +20,16 @@ export const Route = createFileRoute('/guide')({
 function Component() {
   const { sidebar } = Route.useRouteContext();
   return (
-    <GuideLayout>
-      <GuideLayout.Sidebar>
-        <GuideNavigation items={sidebar} />
-      </GuideLayout.Sidebar>
-      <GuideLayout.Content>
+    <ContentLayout>
+      <ContentLayout.Sidebar>
+        <ContentNavigation
+          aria-label="Guide navigation"
+          tree={sidebar}
+        />
+      </ContentLayout.Sidebar>
+      <ContentLayout.Content>
         <Outlet />
-      </GuideLayout.Content>
-    </GuideLayout>
+      </ContentLayout.Content>
+    </ContentLayout>
   );
 }

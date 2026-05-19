@@ -1,4 +1,5 @@
-import type { ApiManifest, ApiModule, RefModule, RefSymbol } from './types';
+import type { ApiManifest, ApiModule } from './types';
+import type { NavNode } from '#lib/navigation';
 
 import { loadManifest } from './manifest.server';
 
@@ -7,55 +8,61 @@ export async function loadReferenceSidebar() {
   return buildReferenceSidebar(manifest);
 }
 
-export function buildReferenceSidebar(manifest: ApiManifest) {
+export function buildReferenceSidebar(manifest: ApiManifest): NavNode[] {
   const byId = new Map<string, ApiModule>();
   for (const module of manifest.modules) {
     byId.set(module.id, module);
   }
-
-  const sortedIds = [...byId.keys()].sort();
-  const built = new Map<string, RefModule>();
-  const topLevel: RefModule[] = [];
-
-  for (const id of sortedIds) {
-    const module = byId.get(id);
-    if (module === undefined) {
-      continue;
-    }
-    const node = buildModule(module);
-    built.set(id, node);
+  const childrenById = new Map<string, ApiModule[]>();
+  for (const id of byId.keys()) {
     const parentId = findParentId(id, byId);
     if (parentId === null) {
-      topLevel.push(node);
       continue;
     }
-    const parent = built.get(parentId);
-    if (parent === undefined) {
-      topLevel.push(node);
-      continue;
+    let list = childrenById.get(parentId);
+    if (list === undefined) {
+      list = [];
+      childrenById.set(parentId, list);
     }
-    parent.submodules.push(node);
+    const module = byId.get(id);
+    if (module !== undefined) {
+      list.push(module);
+    }
   }
 
-  return { modules: topLevel };
+  const root = byId.get('yapyak');
+  if (root === undefined) {
+    return [];
+  }
+  return moduleChildren(root, byId, childrenById);
 }
 
-function buildModule(module: ApiModule) {
-  const isRoot = module.id === 'yapyak';
-  const slug = moduleSlug(module.id);
-  const href = isRoot ? '/reference' : `/reference/${slug}`;
-  const symbols: RefSymbol[] = module.exports.map((api) => ({
-    href: isRoot ? `/reference/${api.name}` : `${href}/${api.name}`,
-    isDeprecated: api.deprecated !== null,
-    kind: api.kind,
-    name: api.name,
-  }));
-  return {
-    href,
-    id: module.id,
-    submodules: [],
-    symbols,
-  };
+function moduleChildren(
+  module: ApiModule,
+  byId: Map<string, ApiModule>,
+  childrenById: Map<string, ApiModule[]>,
+): NavNode[] {
+  const nodes: NavNode[] = [];
+  for (const api of module.exports) {
+    nodes.push({
+      badge: api.deprecated !== null ? { variant: 'deprecated' } : undefined,
+      href: symbolHref(module.id, api.name),
+      label: api.name,
+      type: 'link',
+    });
+  }
+  const subModules = (childrenById.get(module.id) ?? []).slice().sort((a, b) =>
+    a.id.localeCompare(b.id),
+  );
+  for (const child of subModules) {
+    nodes.push({
+      children: moduleChildren(child, byId, childrenById),
+      collapsible: true,
+      label: lastSegment(child.id),
+      type: 'group',
+    });
+  }
+  return nodes;
 }
 
 function findParentId(id: string, byId: Map<string, ApiModule>) {
@@ -70,6 +77,16 @@ function findParentId(id: string, byId: Map<string, ApiModule>) {
       return cursor;
     }
   }
+}
+
+function symbolHref(moduleId: string, name: string) {
+  const slug = moduleSlug(moduleId);
+  return slug === 'yapyak' ? `/reference/${name}` : `/reference/${slug}/${name}`;
+}
+
+function lastSegment(id: string) {
+  const slashIndex = id.lastIndexOf('/');
+  return slashIndex === -1 ? id : id.slice(slashIndex + 1);
 }
 
 export function moduleSlug(id: string) {

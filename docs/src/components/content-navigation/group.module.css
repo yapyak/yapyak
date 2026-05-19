@@ -1,0 +1,93 @@
+@layer components {
+  .ContentNavigationGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+
+    .TitleHeading {
+      padding: 0 var(--spacing-3);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: var(--font-weight-semibold);
+      white-space: nowrap;
+    }
+
+    .ToggleButton {
+      display: flex;
+      gap: var(--spacing-2);
+      align-items: center;
+      width: 100%;
+      padding: var(--spacing-1) var(--spacing-3);
+      font-size: var(--font-size-sm);
+      color: var(--foreground-soft);
+      text-align: left;
+      transition: color var(--transition);
+
+      &:hover {
+        color: var(--foreground);
+      }
+
+      .ChevronIcon {
+        flex: 0 0 auto;
+        color: var(--foreground-softer);
+        transition: transform var(--transition);
+      }
+
+      &[data-open='true'] .ChevronIcon {
+        transform: rotate(90deg);
+      }
+
+      .ToggleLabel {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: var(--font-weight-medium);
+        white-space: nowrap;
+      }
+    }
+
+    .ItemList {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 0;
+    }
+
+    &[data-depth='0'] {
+      > .TitleHeading {
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--foreground-softer);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+      }
+
+      > .ItemList {
+        gap: var(--spacing-1);
+      }
+
+      &:not(:first-child) {
+        padding-top: var(--spacing-6);
+        margin-top: var(--spacing-5);
+        border-top: var(--px) solid var(--rule);
+      }
+    }
+
+    &[data-collapsible] {
+      gap: 0;
+
+      > .ItemList {
+        padding-left: 1.25rem;
+      }
+    }
+
+    &:not([data-depth='0']):not([data-collapsible]) {
+      gap: 0;
+
+      > .ItemList {
+        padding-left: var(--spacing-4);
+      }
+    }
+  }
+}

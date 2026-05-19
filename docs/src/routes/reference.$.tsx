@@ -1,7 +1,7 @@
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
-import { ReferenceSymbol } from '#components/reference-symbol';
+import { Article } from '#components/article';
 import { loadReferenceSymbol } from '#lib/reference';
 
 const loadData = createServerFn()
@@ -26,53 +26,11 @@ export const Route = createFileRoute('/reference/$')({
         to: '/reference/$',
       });
     }
-    return { module: result.module, rendered: result.rendered };
+    return { page: result.page };
   },
 });
 
 function Component() {
-  const { module, rendered } = Route.useLoaderData();
-  const { symbol, descriptionBlocks, exampleBlocks } = rendered;
-  return (
-    <ReferenceSymbol>
-      <ReferenceSymbol.Header
-        kind={symbol.kind}
-        module={module.id}
-        name={symbol.name}
-      />
-      {symbol.deprecated && (
-        <ReferenceSymbol.Deprecated message={symbol.deprecated} />
-      )}
-      {descriptionBlocks && (
-        <ReferenceSymbol.Description blocks={descriptionBlocks} />
-      )}
-      <ReferenceSymbol.Signature source={symbol.signature} />
-      {symbol.kind === 'function' && symbol.parameters.length > 0 && (
-        <ReferenceSymbol.MemberTable
-          members={symbol.parameters}
-          title="Parameters"
-        />
-      )}
-      {symbol.kind === 'function' &&
-        (symbol.returnType !== 'void' || symbol.returnDescription) && (
-          <ReferenceSymbol.Returns
-            description={symbol.returnDescription}
-            type={symbol.returnType}
-          />
-        )}
-      {symbol.kind === 'interface' && symbol.members.length > 0 && (
-        <ReferenceSymbol.MemberTable
-          members={symbol.members}
-          title="Members"
-        />
-      )}
-      {exampleBlocks.length > 0 && (
-        <ReferenceSymbol.Examples examples={exampleBlocks} />
-      )}
-      <ReferenceSymbol.SourceLink
-        file={symbol.location.file}
-        line={symbol.location.line}
-      />
-    </ReferenceSymbol>
-  );
+  const { page } = Route.useLoaderData();
+  return <Article page={page} />;
 }

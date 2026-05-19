@@ -1,0 +1,35 @@
+@layer components {
+  .ContentLayout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    place-self: center;
+    width: 100%;
+    max-width: 64rem;
+    padding: var(--spacing-6) var(--spacing-6) 0;
+
+    .Backdrop {
+      display: none;
+    }
+
+    &[data-sidebar-open] {
+      .Backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 110;
+        display: block;
+        background-color: color-mix(
+          in oklab,
+          var(--color-black) 50%,
+          transparent
+        );
+      }
+    }
+
+    @media (min-width: 60rem) {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 0;
+    }
+  }
+}
