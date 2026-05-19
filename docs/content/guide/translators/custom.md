@@ -33,7 +33,7 @@ yapyak({ translator: myTranslator });
 | Your own fine-tuned model | Custom |
 | Rules-based / dictionary lookup | Custom (no AI needed) |
 
-For OpenAI-compatible providers (Groq, DeepSeek, Mistral, OpenRouter, Vercel AI Gateway), prefer the [OpenAI translator with `endpoint`](/guide/translators/openai#use-as-a-universal-compatibility-layer) — no custom translator needed.
+For OpenAI-compatible providers (Groq, DeepSeek, Mistral, OpenRouter, Vercel AI Gateway), prefer the [OpenAI translator with `endpoint`](/guide/translators/openai#openai-compatible-providers) — no custom translator needed.
 
 ## The `createTranslator` API
 

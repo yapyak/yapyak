@@ -10,7 +10,7 @@ Re-export yapyak's middleware as `onRequest` from `src/middleware.ts`.
 export { middleware as onRequest } from 'yapyak/adapter/astro';
 ```
 
-That's the entire wiring. Every server-rendered request now resolves its own locale from cookie or `Accept-Language` header.
+That's the entire wiring.
 
 ## Composing with other middlewares
 

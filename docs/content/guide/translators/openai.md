@@ -3,7 +3,6 @@ title: OpenAI
 order: 5
 ---
 
-
 Use OpenAI's GPT models — or any OpenAI-compatible provider (Groq, DeepSeek, Mistral, OpenRouter, Vercel AI Gateway, Together AI) — as your translator.
 
 ```ts
@@ -44,19 +43,13 @@ interface OpenAIOptions {
 | Option | Default | Notes |
 | --- | --- | --- |
 | `apiKey` | — | Required. Set via `.env.local` (`OPENAI_API_KEY`). |
-| `voice` | — | See [Voice](/guide/translators/#voice). |
-| `glossary` | — | See [Glossary](/guide/translators/#glossary). |
-| `context` | `'minimal'` | See [Translation context](/guide/translators/#translation-context). |
-| `batchSize` | `10` | Strings per HTTP request. |
 | `model` | `'gpt-5-mini'` | Any OpenAI model — `gpt-5` for higher quality, `gpt-5-mini` for cost. |
-| `temperature` | `0.2` | Low = deterministic. |
 | `endpoint` | `'https://api.openai.com/v1/chat/completions'` | Override for any OpenAI-compatible provider. |
-| `headers` | — | Extra HTTP headers. |
-| `timeout` | `30_000` | Per-request timeout in milliseconds. |
-| `maxRetries` | `2` | Retries on 408/429/5xx + network errors. |
 | `organization` | — | Sets `OpenAI-Organization` header for multi-org accounts. |
 | `seed` | — | Reproducible outputs. Same `(prompt, seed)` gives the same result. |
 | `user` | — | End-user tracking string, included in request payload. |
+
+See [Shared options](/guide/translators#shared-options) for `voice`, `glossary`, `context`, `batchSize`, `temperature`, `headers`, `timeout`, `maxRetries`.
 
 ## OpenAI-compatible providers
 

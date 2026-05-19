@@ -3,7 +3,6 @@ title: Ollama
 order: 4
 ---
 
-
 Run translation locally — no API key, no vendor in your billing path, no data leaving your machine.
 
 ```ts
@@ -38,18 +37,14 @@ interface OllamaOptions {
 
 | Option | Default | Notes |
 | --- | --- | --- |
-| `voice` | — | See [Voice](/guide/translators/#voice). |
-| `glossary` | — | See [Glossary](/guide/translators/#glossary). |
-| `context` | `'minimal'` | See [Translation context](/guide/translators/#translation-context). |
-| `batchSize` | `10` | Strings per request. Lower for very small models (7B parameters and under). |
 | `model` | `'llama3.1'` | Any model in your local Ollama library. |
-| `temperature` | `0.2` | Low = deterministic. |
 | `endpoint` | `'http://localhost:11434/api/generate'` | Override for remote Ollama servers. |
-| `headers` | — | Extra HTTP headers (rarely needed for local). |
 | `timeout` | `120_000` | Per-request timeout. Higher default than cloud — local inference is slower. |
 | `maxRetries` | `1` | Lower default — local network is reliable, no need for aggressive retries. |
 
 No `apiKey`. Ollama runs locally without auth.
+
+See [Shared options](/guide/translators#shared-options) for `voice`, `glossary`, `context`, `batchSize`, `temperature`, `headers`.
 
 ## Picking a model
 

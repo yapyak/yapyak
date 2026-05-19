@@ -3,40 +3,23 @@ title: Introduction
 order: 1
 ---
 
-An adapter wires yapyak to your SSR framework so each request renders in its own locale. Without one, server-rendered HTML always uses the default locale.
+An adapter wires yapyak to your favorite SSR framework so each request renders in its own locale. Without one, server-rendered HTML always uses the default locale.
 
-For TanStack Start, register the request middleware:
+## What an adapter does
 
-```ts
-// src/start.ts
-import { middleware } from 'yapyak/adapter/tanstack-start';
+At request time, the adapter binds the request's `Cookie` and `Accept-Language` headers to an async-scoped context. Anywhere inside that request — route loaders, server components, route handlers — `getLocale()`, `t()`, and the rest of the yapyak surface see the locale for *this* user, not a global default.
 
-export default {
-  requestMiddleware: [middleware],
-};
-```
+## Pure SPAs don't need one
 
-For SvelteKit, re-export the handle hook:
+If you ship a fully client-rendered app with no SSR, the locale lives entirely in the browser.
 
-```ts
-// src/hooks.server.ts
-export { handle } from 'yapyak/adapter/sveltekit';
-```
+## Pick your framework
 
-For other frameworks, wrap each request manually with `withRequest()`:
+yapyak ships adapters for the major SSR frameworks:
 
-```ts
-import { withRequest } from 'yapyak/adapter';
+- [Astro](/guide/adapters/astro) — middleware re-export
+- [React Router](/guide/adapters/react-router) — root-route middleware (v7 framework mode)
+- [TanStack Start](/guide/adapters/tanstack-start) — request middleware
+- [SvelteKit](/guide/adapters/sveltekit) — handle hook re-export
 
-function handler(request: Request) {
-  return withRequest(request, () => renderApp(request));
-}
-```
-
-Pure SPAs (no SSR) don't need an adapter.
-
-## Pages
-
-- [TanStack Start](/guide/adapters/tanstack-start)
-- [SvelteKit](/guide/adapters/sveltekit)
-- [Custom](/guide/adapters/custom)
+For anything else, the [custom adapter](/guide/adapters/custom) wraps each request with `withRequest()` — that's the entire surface area.

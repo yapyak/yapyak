@@ -32,7 +32,7 @@ import { middleware as yapyakMiddleware } from 'yapyak/adapter/react-router';
 export const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];
 ```
 
-That's the entire wiring. Every server-rendered request now resolves its own locale from cookie or `Accept-Language` header.
+That's the entire wiring.
 
 ## Composing with other middlewares
 

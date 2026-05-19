@@ -189,13 +189,48 @@ The reader is a competent engineer, not someone you're trying to impress with vo
 ### Banned vocabulary
 
 Marketing words that ring fake:
-> revolutionary, cutting-edge, world-class, enterprise-ready, powerful and flexible, robust, seamless, leverage, empower, unlock, supercharge, harness, transform, next-generation
+> revolutionary, cutting-edge, world-class, enterprise-ready, powerful and flexible, robust, seamless, seamlessly, leverage, empower, unlock, supercharge, harness, transform, next-generation, lightning-fast, blazing-fast, blazingly, effortlessly, elegantly, production-ready, out of the box
+
+Marketing prefixes / suffixes:
+> AI-powered, AI-driven, AI-native, AI-first (the modifier almost always adds zero meaning — say what it actually does instead)
+
+Cute-speak:
+> magic, magical, automagically, made with love, crafted with care, hand-crafted, sprinkle on, just X (as in "just sprinkle some t() in your code"), simply X
+
+Apple-imitator clichés (avoid even when tempted):
+> "It just works.", "Designed for X.", "Made for X."
 
 Corporate phrases:
 > "contact sales", "seat model", "industry-leading", "best-in-class", "speak to our team", "enterprise tier"
 
 Hype openers:
 > "We're excited to announce", "Introducing the next generation of…", "Just X simple steps"
+
+Tautological closers:
+> "No X to wire up. No Y to configure. No Z to maintain." (the AI's favorite ending — see "Banned patterns" above)
+> "X just lets Y come along for the ride." (passive-cute construction; rewrite as active)
+> "Adding a Z is one Z, not a pipeline." (over-clever inversion)
+
+### Cliché AI sentence shapes
+
+Avoid these *structural* tells, regardless of which words fill them:
+
+- **"Welcome to the X era."** — "AI era", "agent era", "post-X era".
+- **"This is what X looks like in 20YY."** — pseudo-prophet voice.
+- **"The Y agents/devs/teams would build themselves."** — over-claiming inevitability.
+- **"For an AI agent, X is the whole change."** — when X is one tiny thing.
+- **"Whatever the user reads, the agent reads."** — triple-actor parity claims.
+- **"Built around the way agents think."** — projection / anthropomorphism.
+
+If a sentence reads like it could appear on any other dev-tool landing page, cut it.
+
+### Brand convention details
+
+- **`yapyak`** — always lowercase in prose, even at sentence start. Like `npm`, `iPhone`, `eBay`.
+- **`t()`** — code-formatted (backticks) when referring to the function.
+- **HTTP headers** — canonical casing in prose: `Accept-Language`, `Cookie`, `Authorization`. Not `accept-language`, even though the wire format is case-insensitive.
+- **TypeScript identifiers** keep their casing as defined: `YapyakOptions`, `TIn`, `AnthropicOptions`. These follow code conventions, not brand conventions.
+- **Canonical example string**: `t('Save changes')`. Don't invent new placeholder strings unless the example specifically needs something else (e.g. `t('Hello, {name}!')` for interpolation).
 
 ### Structure
 
@@ -244,6 +279,63 @@ When tempted to write "we" or "I", use yapyak or the reader:
 ### Emojis
 
 Maximum one per page. Brand emoji 🐃 only when natural (e.g. release post title). Never decorative inside body content.
+
+### Where to inject tone (the half-funny pattern)
+
+Guide content has a tendency to drift toward sterile reference-manual prose. The fix: each page should carry **one to two droll observations** that pass the rule above — *technically true*, *specific*, *quietly funny*.
+
+**Guidance per page type:**
+
+| Page type | Tone budget | What it lands on |
+|---|---|---|
+| **Overview / Introduction** | 1-2 lines | The pain that drove yapyak's design choice (e.g. *"Without one, the server cheerfully serves everyone the default locale, every time."*) |
+| **How-it-works** | 1-2 lines | Edge cases and what yapyak does when it gives up (e.g. *"yapyak treats it as a delete plus add, and the translation is lost. Fuzzy matching would silently rebind unrelated strings."*) |
+| **API / Options reference** | 0-1 lines | Resist humor in option tables. One column may carry a specific example (e.g. *"Set a voice ('friendly', 'terse', 'lawyer at a dinner party')."*). |
+| **Translators (per-provider)** | 1 line | Genuine differentiation observation — *"Empirically strong on Japanese, Korean, Arabic, Hebrew."* / *"Without negotiating with a vendor."* |
+| **Adapters (per-framework)** | 0-1 lines | Don't inject humor in setup code. One line of context may carry observation if framework has notable quirk. |
+| **CLI reference** | 0-1 lines | Specific descriptions of behaviors that commonly surprise. Resist over-decorating commands. |
+| **Locales (regional vs language)** | 1-2 lines | The exactly-here-everyone-gets-confused topic — relate. *"This is the one place tags collapse."* |
+| **Errors / Recovery** | 1 line | What the user sees when things fail — keep grounded, not dramatic. |
+
+**Hard limit:** max 2 droll observations per page. More than that and the page reads as trying-too-hard.
+
+**Test for each candidate line:**
+1. Is the technical claim accurate without the humor part? (If no — fix the claim first.)
+2. Does the humor part *observe* something real, not invent it?
+3. Would a competent engineer chuckle on first read but not feel sold-to?
+4. Is it inseparable from the technical claim, or could it be cut without losing information?
+
+If you can't say yes to all four, cut.
+
+### Calibration drill — before/after
+
+The goal isn't humor-as-decoration. It's *acknowledgment that a real person wrote this, and they have eyes on what hurts.*
+
+**Generic claims (sterile) → Observed claims (with voice):**
+
+| Sterile | Observed |
+|---|---|
+| *"Without one, server-rendered HTML always uses the default locale."* | *"Without one, the server cheerfully serves everyone the default locale, every time."* |
+| *"If you ship a fully client-rendered app with no SSR, the locale lives entirely in the browser."* | *"If your app never renders on a server, you'll never need an adapter — the locale lives entirely in the user's browser."* |
+| *"Useful for snapshot testing the translation pipeline."* | *"Useful for snapshot tests, where a translation drift is the kind of CI failure that surprises you at 4pm on a Friday."* |
+| *"For privacy-strict teams, this satisfies compliance."* | *"For privacy-strict teams (legal, medical, defense), this is the only AI translation flow that satisfies compliance without negotiating with a vendor."* |
+| *"Match the source string format."* | *"If the source has `{count}`, the translation must too. TypeScript stops you before your tech lead does."* |
+| *"The translator picks one model by default."* | *"`gemini-2.5-flash` by default. `gemini-2.5-pro` when output quality matters more than billing."* |
+
+**Anti-patterns — over-injection:**
+
+| Don't | Why |
+|---|---|
+| *"yapyak makes i18n actually fun again."* | Marketing fluff. Cut. |
+| *"Translation has never been easier."* | Comparative without referent. Cut. |
+| *"Buckle up, you'll love this part."* | Meme-tier. Cut. |
+| *"It's not just X — it's Y."* | Banned negation-padding. |
+| *"yapyak just lets translations come along for the ride."* | Passive-cute. Rewrite active. |
+| *"This is the i18n you've been waiting for."* | Prophet voice. Cut. |
+
+**The line everyone aims for and most miss:**
+
+A reader who's been writing i18n for 10 years should read a line and think *"yes, exactly — they got it."* That's the calibration target. Not a laugh. A *nod*.
 
 ## Formatting
 

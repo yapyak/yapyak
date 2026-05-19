@@ -3,7 +3,6 @@ title: Gemini
 order: 3
 ---
 
-
 Use Google's Gemini models as your translator. Gemini's strength: cost-effective multilingual translation with native handling of non-Latin scripts (Japanese, Korean, Arabic, Hebrew).
 
 ```ts
@@ -41,16 +40,10 @@ interface GeminiOptions {
 | Option | Default | Notes |
 | --- | --- | --- |
 | `apiKey` | — | Required. Set via `.env.local` (`GEMINI_API_KEY`). |
-| `voice` | — | See [Voice](/guide/translators/#voice). |
-| `glossary` | — | See [Glossary](/guide/translators/#glossary). |
-| `context` | `'minimal'` | See [Translation context](/guide/translators/#translation-context). |
-| `batchSize` | `10` | Strings per HTTP request. |
 | `model` | `'gemini-2.5-flash'` | Any Gemini model. `gemini-2.5-pro` for higher quality. |
-| `temperature` | `0.2` | Low = deterministic. |
 | `endpoint` | `'https://generativelanguage.googleapis.com/v1beta'` | Base URL — model name is appended automatically. |
-| `headers` | — | Extra HTTP headers. |
-| `timeout` | `30_000` | Per-request timeout in milliseconds. |
-| `maxRetries` | `2` | Retries on 408/429/5xx + network errors. |
+
+See [Shared options](/guide/translators#shared-options) for `voice`, `glossary`, `context`, `batchSize`, `temperature`, `headers`, `timeout`, `maxRetries`.
 
 ## Why Gemini for translation
 

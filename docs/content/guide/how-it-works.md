@@ -71,14 +71,14 @@ For every missing entry, yapyak extracts a context object from the call site:
 ```json
 {
   "source": "Save changes",
-  "componentName": "SaveButton",
-  "enclosingElement": "button",
+  "component": "SaveButton",
+  "element": "button",
   "snippet": "  return (\n    <button>{t('Save changes')}</button>\n  );"
 }
 ```
 
-- **componentName** — derived from the file path (`save-button.tsx` → `SaveButton`).
-- **enclosingElement** — the nearest opening JSX tag above the call (`button`, `h1`, `label`, etc.).
+- **component** — derived from the file path (`save-button.tsx` → `SaveButton`).
+- **element** — the nearest opening JSX tag above the call (`button`, `h1`, `label`, etc.).
 - **snippet** — three lines above and below the call site, dedented.
 
 The translator uses this to disambiguate: "Save" in a `<button>` reads differently from "Save" in an `<h1>`. How much of the context the translator passes to the model is configurable — see [Translators / Translation context](/guide/translators#translation-context).

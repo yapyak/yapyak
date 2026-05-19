@@ -14,7 +14,7 @@ export default {
 };
 ```
 
-That's the entire wiring. Every server-rendered request now resolves its own locale from cookie or `Accept-Language` header.
+That's the entire wiring.
 
 ## Setting `<html lang>`
 

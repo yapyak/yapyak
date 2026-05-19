@@ -13,7 +13,7 @@ function handler(request: Request): Response | Promise<Response> {
 }
 ```
 
-`withRequest()` reads `accept-language` and `cookie` from the `Request`, binds them to an async-scoped context, and runs the callback inside that scope. `getLocale()`, `t()`, and any other yapyak call inside the callback see this request's locale.
+`withRequest()` reads `Accept-Language` and `Cookie` from the `Request`, binds them to an async-scoped context, and runs the callback inside that scope. `getLocale()`, `t()`, and any other yapyak call inside the callback see this request's locale.
 
 ## What `withRequest()` does
 

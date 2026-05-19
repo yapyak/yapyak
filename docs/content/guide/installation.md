@@ -148,4 +148,4 @@ Two common CI shapes:
 - [How it works](/guide/how-it-works) — the auto-translate pipeline, position-aware renames, compile-time rewrite
 - [Translations](/guide/translations/) — `t()` API, params, plurals, forced locale
 - [Locales](/guide/locales/) — adding locales, persistence, reactive bindings
-- [Translators](/guide/translators/) — Anthropic, OpenAI, custom
+- [Translators](/guide/translators/) — Anthropic, OpenAI, Gemini, Ollama, custom
