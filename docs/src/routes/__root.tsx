@@ -91,11 +91,11 @@ function Component() {
   );
 }
 
-interface RootDocumentProps {
+interface ShellComponentProps {
   children: ReactNode;
 }
 
-function ShellComponent(props: RootDocumentProps): ReactNode {
+function ShellComponent(props: ShellComponentProps) {
   const { children } = props;
 
   const [locale] = useLocale();
