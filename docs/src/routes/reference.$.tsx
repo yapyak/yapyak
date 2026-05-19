@@ -1,8 +1,19 @@
-import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
+import {
+  createFileRoute,
+  getRouteApi,
+  notFound,
+  redirect,
+} from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
+import { ContentLayout } from '#components/content-layout';
+import { ContentNavigation } from '#components/content-navigation';
+import { ContentPagination } from '#components/content-pagination';
 import { PageArticle } from '#components/page-article';
 import { loadReferencePage } from '#lib/reference';
+import { findAdjacent } from '#lib/navigation';
+
+const referenceRouteApi = getRouteApi('/reference');
 
 const loadData = createServerFn()
   .inputValidator((path: string) => path)
@@ -10,7 +21,7 @@ const loadData = createServerFn()
 
 export const Route = createFileRoute('/reference/$')({
   component: Component,
-  async loader({ params }) {
+  async loader({ context, params }) {
     const path = params._splat ?? '';
     if (!path) {
       throw notFound();
@@ -26,11 +37,33 @@ export const Route = createFileRoute('/reference/$')({
         to: '/reference/$',
       });
     }
-    return { page: result.page };
+    const { next, previous } = findAdjacent(
+      context.sidebar,
+      `/reference/${path}`,
+    );
+    return { next, page: result.page, previous };
   },
 });
 
 function Component() {
-  const { page } = Route.useLoaderData();
-  return <PageArticle page={page} />;
+  const { page, previous, next } = Route.useLoaderData();
+  const { sidebar } = referenceRouteApi.useRouteContext();
+  return (
+    <>
+      <PageArticle page={page} />
+      <ContentPagination
+        next={next}
+        previous={previous}
+      />
+      <ContentLayout.Toolbar
+        next={next}
+        previous={previous}
+      >
+        <ContentNavigation
+          aria-label="Reference navigation"
+          tree={sidebar}
+        />
+      </ContentLayout.Toolbar>
+    </>
+  );
 }

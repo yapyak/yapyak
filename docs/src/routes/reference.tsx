@@ -8,15 +8,15 @@ import { loadReferenceSidebar } from '#lib/reference';
 const loadData = createServerFn().handler(() => loadReferenceSidebar());
 
 export const Route = createFileRoute('/reference')({
-  component: Component,
-  async loader() {
+  async beforeLoad() {
     const sidebar = await loadData();
     return { sidebar };
   },
+  component: Component,
 });
 
 function Component() {
-  const { sidebar } = Route.useLoaderData();
+  const { sidebar } = Route.useRouteContext();
   return (
     <ContentLayout>
       <ContentLayout.Sidebar>
