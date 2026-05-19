@@ -30,10 +30,11 @@
       .ChevronIcon {
         flex: 0 0 auto;
         color: var(--foreground-softer);
+        transform-origin: center;
         transition: transform var(--transition);
       }
 
-      &[data-open='true'] .ChevronIcon {
+      &[data-open] .ChevronIcon {
         transform: rotate(90deg);
       }
 
@@ -67,7 +68,7 @@
         gap: var(--spacing-1);
       }
 
-      &:not(:first-child) {
+      &:not([data-collapsible]):not(:first-child) {
         padding-top: var(--spacing-6);
         margin-top: var(--spacing-5);
         border-top: var(--px) solid var(--rule);
