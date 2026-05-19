@@ -11,7 +11,7 @@ export interface NodeTableCellProps {
 export function NodeTableCell(props: NodeTableCellProps) {
   const { block } = props;
   return (
-    <Box as="td">
+    <Box as={block.header ? 'th' : 'td'}>
       {block.children.map((child, index) => (
         <BlockRendererNode
           block={child}

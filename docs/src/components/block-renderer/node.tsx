@@ -4,6 +4,8 @@ import { NodeBlockquote } from './node/blockquote';
 import { NodeCallout } from './node/callout';
 import { NodeCodeBlock } from './node/code-block';
 import { NodeCodeGroup } from './node/code-group';
+import { NodeCodeLocation } from './node/code-location';
+import { NodeDivider } from './node/divider';
 import { NodeEmphasis } from './node/emphasis';
 import { NodeEyebrow } from './node/eyebrow';
 import { NodeHeading } from './node/heading';
@@ -14,15 +16,12 @@ import { NodeLink } from './node/link';
 import { NodeList } from './node/list';
 import { NodeListItem } from './node/list-item';
 import { NodeParagraph } from './node/paragraph';
-import { NodeSourceLink } from './node/source-link';
 import { NodeStrikethrough } from './node/strikethrough';
 import { NodeStrong } from './node/strong';
 import { NodeTable } from './node/table';
 import { NodeTableCell } from './node/table-cell';
-import { NodeTableHeaderCell } from './node/table-header-cell';
 import { NodeTableRow } from './node/table-row';
 import { NodeText } from './node/text';
-import { NodeThematicBreak } from './node/thematic-break';
 
 export interface BlockRendererNodeProps {
   block: Block;
@@ -55,16 +54,14 @@ export function BlockRendererNode(props: BlockRendererNodeProps) {
       return <NodeInlineCode block={block} />;
     case 'blockquote':
       return <NodeBlockquote block={block} />;
-    case 'thematic-break':
-      return <NodeThematicBreak />;
+    case 'divider':
+      return <NodeDivider />;
     case 'line-break':
       return <NodeLineBreak />;
     case 'table':
       return <NodeTable block={block} />;
     case 'table-row':
       return <NodeTableRow block={block} />;
-    case 'table-header-cell':
-      return <NodeTableHeaderCell block={block} />;
     case 'table-cell':
       return <NodeTableCell block={block} />;
     case 'code-block':
@@ -75,7 +72,7 @@ export function BlockRendererNode(props: BlockRendererNodeProps) {
       return <NodeCallout block={block} />;
     case 'eyebrow':
       return <NodeEyebrow block={block} />;
-    case 'source-link':
-      return <NodeSourceLink block={block} />;
+    case 'code-location':
+      return <NodeCodeLocation block={block} />;
   }
 }

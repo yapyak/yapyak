@@ -3,6 +3,8 @@ export type Block =
   | CalloutBlock
   | CodeBlock
   | CodeGroupBlock
+  | CodeLocationBlock
+  | DividerBlock
   | EmphasisBlock
   | EyebrowBlock
   | HeadingBlock
@@ -13,15 +15,12 @@ export type Block =
   | ListBlock
   | ListItemBlock
   | ParagraphBlock
-  | SourceLinkBlock
   | StrikethroughBlock
   | StrongBlock
   | TableBlock
   | TableCellBlock
-  | TableHeaderCellBlock
   | TableRowBlock
-  | TextBlock
-  | ThematicBreakBlock;
+  | TextBlock;
 
 export interface TextBlock {
   type: 'text';
@@ -89,8 +88,8 @@ export interface BlockquoteBlock {
   type: 'blockquote';
 }
 
-export interface ThematicBreakBlock {
-  type: 'thematic-break';
+export interface DividerBlock {
+  type: 'divider';
 }
 
 export interface LineBreakBlock {
@@ -104,17 +103,13 @@ export interface TableBlock {
 }
 
 export interface TableRowBlock {
-  children: (TableCellBlock | TableHeaderCellBlock)[];
+  children: TableCellBlock[];
   type: 'table-row';
-}
-
-export interface TableHeaderCellBlock {
-  children: Block[];
-  type: 'table-header-cell';
 }
 
 export interface TableCellBlock {
   children: Block[];
+  header: boolean;
   type: 'table-cell';
 }
 
@@ -142,11 +137,11 @@ export interface EyebrowBlock {
   type: 'eyebrow';
 }
 
-export interface SourceLinkBlock {
+export interface CodeLocationBlock {
   file: string;
   href: string | null;
   line: number;
-  type: 'source-link';
+  type: 'code-location';
 }
 
 export interface Page {

@@ -1,21 +1,21 @@
-import type { SourceLinkBlock } from '#lib/content';
+import type { CodeLocationBlock } from '#lib/content';
 
 import { Box } from '#components/box';
 
-import styles from './source-link.module.css';
+import styles from './code-location.module.css';
 
-export interface NodeSourceLinkProps {
-  block: SourceLinkBlock;
+export interface NodeCodeLocationProps {
+  block: CodeLocationBlock;
 }
 
-export function NodeSourceLink(props: NodeSourceLinkProps) {
+export function NodeCodeLocation(props: NodeCodeLocationProps) {
   const { block } = props;
   const label = `${block.file}:${block.line}`;
   if (block.href !== null) {
     return (
       <Box
         as="a"
-        className={styles.SourceLink}
+        className={styles.CodeLocation}
         href={block.href}
         rel="noreferrer"
         target="_blank"
@@ -27,7 +27,7 @@ export function NodeSourceLink(props: NodeSourceLinkProps) {
   return (
     <Box
       as="span"
-      className={styles.SourceLink}
+      className={styles.CodeLocation}
     >
       {label}
     </Box>

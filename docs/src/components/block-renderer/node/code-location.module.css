@@ -1,8 +1,8 @@
 @layer components {
-  .SourceLink {
+  .CodeLocation {
     display: inline-block;
-    margin-top: var(--spacing-8);
     padding-top: var(--spacing-4);
+    margin-top: var(--spacing-8);
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
     color: var(--foreground-softer);

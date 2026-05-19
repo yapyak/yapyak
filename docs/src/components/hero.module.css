@@ -52,7 +52,7 @@
     }
 
     .PrimaryLink {
-      padding: var(--spacing-2) var(--spacing-5);
+      padding: var(--spacing-2) var(--spacing-6);
       font-weight: var(--font-weight-medium);
       color: var(--brand-contrast);
       outline: var(--spacing-2) solid transparent;
@@ -80,7 +80,7 @@
     }
 
     .SecondaryLink {
-      padding: var(--spacing-2) var(--spacing-5);
+      padding: var(--spacing-2) var(--spacing-6);
       font-weight: var(--font-weight-medium);
       color: var(--foreground);
       outline: var(--spacing-2) solid transparent;
@@ -122,11 +122,6 @@
       .ActionRow {
         flex-direction: column;
         align-items: stretch;
-      }
-
-      .PrimaryLink,
-      .SecondaryLink {
-        text-align: center;
       }
     }
   }

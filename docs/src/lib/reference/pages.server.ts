@@ -11,10 +11,7 @@ import { parseContent, slugify } from '#lib/content';
 
 import { moduleSlug } from './sidebar.server';
 
-export function buildSymbolPage(
-  symbol: ApiExport,
-  moduleId: string,
-): Page {
+export function buildSymbolPage(symbol: ApiExport, moduleId: string): Page {
   const blocks: Block[] = [];
 
   blocks.push(eyebrow(moduleId, symbol.kind));
@@ -73,7 +70,7 @@ export function buildSymbolPage(
     file: symbol.location.file,
     href: null,
     line: symbol.location.line,
-    type: 'source-link',
+    type: 'code-location',
   });
 
   return { blocks, description: '', title: symbol.name };
@@ -111,20 +108,14 @@ function membersTable(members: ApiMember[]): Block {
 function paramRow(parameter: ApiParameter): TableRowBlock {
   return {
     children: [
-      {
-        children: [
-          {
-            type: 'inline-code',
-            value: parameter.name + (parameter.optional ? '?' : ''),
-          },
-        ],
-        type: 'table-cell',
-      },
-      { children: tokensToBlocks(parameter.type), type: 'table-cell' },
-      {
-        children: [{ type: 'text', value: parameter.description }],
-        type: 'table-cell',
-      },
+      bodyCell([
+        {
+          type: 'inline-code',
+          value: parameter.name + (parameter.optional ? '?' : ''),
+        },
+      ]),
+      bodyCell(tokensToBlocks(parameter.type)),
+      bodyCell([{ type: 'text', value: parameter.description }]),
     ],
     type: 'table-row',
   };
@@ -133,30 +124,29 @@ function paramRow(parameter: ApiParameter): TableRowBlock {
 function memberRow(member: ApiMember): TableRowBlock {
   return {
     children: [
-      {
-        children: [
-          {
-            type: 'inline-code',
-            value: member.name + (member.optional ? '?' : ''),
-          },
-        ],
-        type: 'table-cell',
-      },
-      { children: tokensToBlocks(member.type), type: 'table-cell' },
-      {
-        children: [{ type: 'text', value: member.description }],
-        type: 'table-cell',
-      },
+      bodyCell([
+        {
+          type: 'inline-code',
+          value: member.name + (member.optional ? '?' : ''),
+        },
+      ]),
+      bodyCell(tokensToBlocks(member.type)),
+      bodyCell([{ type: 'text', value: member.description }]),
     ],
     type: 'table-row',
   };
+}
+
+function bodyCell(children: Block[]) {
+  return { children, header: false, type: 'table-cell' as const };
 }
 
 function tableHeaderRow(labels: string[]): TableRowBlock {
   return {
     children: labels.map((label) => ({
       children: [{ type: 'text' as const, value: label }],
-      type: 'table-header-cell' as const,
+      header: true,
+      type: 'table-cell' as const,
     })),
     type: 'table-row',
   };

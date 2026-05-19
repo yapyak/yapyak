@@ -3,7 +3,7 @@ title: Introduction
 order: 1
 ---
 
-An adapter wires yapyak to your favorite SSR framework so each request renders in its own locale. Without one, server-rendered HTML always uses the default locale.
+An adapter wires yapyak to your SSR framework so each request renders in its own locale. Without one, server-rendered HTML always uses the default locale.
 
 ## What an adapter does
 

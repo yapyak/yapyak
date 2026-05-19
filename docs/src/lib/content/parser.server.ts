@@ -5,7 +5,6 @@ import type {
   CodeBlock,
   TableBlock,
   TableCellBlock,
-  TableHeaderCellBlock,
   TableRowBlock,
 } from './types';
 
@@ -102,7 +101,7 @@ function toBlocks(node: unknown): Block[] {
     case 'blockquote':
       return [{ children, type: 'blockquote' }];
     case 'hr':
-      return [{ type: 'thematic-break' }];
+      return [{ type: 'divider' }];
     case 'br':
       return [{ type: 'line-break' }];
     case 'table':
@@ -113,9 +112,9 @@ function toBlocks(node: unknown): Block[] {
     case 'tr':
       return [{ children: children.filter(isCell), type: 'table-row' }];
     case 'th':
-      return [{ children, type: 'table-header-cell' }];
+      return [{ children, header: true, type: 'table-cell' }];
     case 'td':
-      return [{ children, type: 'table-cell' }];
+      return [{ children, header: false, type: 'table-cell' }];
     case 'CodeBlock':
       return [buildCodeBlock(node.attributes)];
     case 'CodeGroup':
@@ -194,8 +193,8 @@ function isListItem(
   return block.type === 'list-item';
 }
 
-function isCell(block: Block): block is TableCellBlock | TableHeaderCellBlock {
-  return block.type === 'table-cell' || block.type === 'table-header-cell';
+function isCell(block: Block): block is TableCellBlock {
+  return block.type === 'table-cell';
 }
 
 function stringAttribute(value: unknown): string | null {

@@ -4,6 +4,8 @@ export type {
   CalloutBlock,
   CodeBlock,
   CodeGroupBlock,
+  CodeLocationBlock,
+  DividerBlock,
   EmphasisBlock,
   EyebrowBlock,
   HeadingBlock,
@@ -15,15 +17,12 @@ export type {
   ListItemBlock,
   Page,
   ParagraphBlock,
-  SourceLinkBlock,
   StrikethroughBlock,
   StrongBlock,
   TableBlock,
   TableCellBlock,
-  TableHeaderCellBlock,
   TableRowBlock,
   TextBlock,
-  ThematicBreakBlock,
 } from './types';
 
 export { loadPage } from './loader.server';

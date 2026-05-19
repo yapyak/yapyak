@@ -394,7 +394,7 @@ Every page's opening sentence:
 3. Is one sentence — no preamble
 
 ✓ *"`t()` is the runtime API. It takes a source string literal and optional params, and returns the right variant for the current locale."*
-✓ *"An adapter wires yapyak to your favorite SSR framework so each request renders in its own locale."*
+✓ *"An adapter wires yapyak to your SSR framework so each request renders in its own locale."*
 ✓ *"yapyak generates translations on save."*
 
 ✗ *"This page covers..."*
