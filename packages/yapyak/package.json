@@ -60,7 +60,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsup",
     "test": "vitest --run",
     "typecheck": "tsc --noEmit"
   },
@@ -108,6 +108,7 @@
     "react-dom": "catalog:",
     "react-router": "catalog:",
     "svelte": "catalog:",
+    "tsup": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:",

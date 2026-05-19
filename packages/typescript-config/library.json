@@ -2,6 +2,7 @@
   "compilerOptions": {
     "allowImportingTsExtensions": true,
     "declaration": true,
+    "ignoreDeprecations": "6.0",
     "isolatedDeclarations": true,
     "jsx": "react-jsx",
     "module": "esnext",

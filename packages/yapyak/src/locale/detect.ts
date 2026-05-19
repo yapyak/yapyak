@@ -1,3 +1,4 @@
+/** @internal */
 export interface DetectOptions {
   acceptLanguage?: string;
   defaultLocale: string;
@@ -6,6 +7,7 @@ export interface DetectOptions {
   persisted?: string;
 }
 
+/** @internal */
 export function detectLocale(options: DetectOptions): string {
   if (
     options.persisted !== undefined &&
@@ -41,6 +43,7 @@ interface RankedCandidate {
   quality: number;
 }
 
+/** @internal */
 export function parseAcceptLanguage(header: string): string[] {
   if (header === '') {
     return [];

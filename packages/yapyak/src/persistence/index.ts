@@ -6,11 +6,13 @@ type PersistenceConfig =
   | { type: 'localStorage'; key: string }
   | null;
 
+/** @internal */
 export interface Persistence {
   get(): string | undefined;
   set(locale: string): void;
 }
 
+/** @internal */
 export function createPersistence(
   config: PersistenceConfig,
 ): Persistence | null {

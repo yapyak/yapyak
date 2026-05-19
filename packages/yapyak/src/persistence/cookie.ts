@@ -1,5 +1,6 @@
 import type { Persistence } from './index.ts';
 
+/** @internal */
 export function parseCookie(header: string): Record<string, string> {
   const result: Record<string, string> = {};
   if (header === '') {

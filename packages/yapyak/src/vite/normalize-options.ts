@@ -95,10 +95,12 @@ export interface NormalizedOptions {
   translator: Translator | undefined;
 }
 
+/** @internal */
 export const DEFAULT_INCLUDE: string[] = [
   '**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,svelte,vue}',
 ];
 
+/** @internal */
 export const DEFAULT_EXCLUDE: string[] = [
   '**/.*/**',
   'node_modules/**',

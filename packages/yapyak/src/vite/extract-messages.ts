@@ -10,6 +10,7 @@ import {
   splitTopLevelArgs,
 } from './slice-arguments.ts';
 
+/** @internal */
 export interface ExtractedMessage {
   column: number;
   context: MessageContext;
@@ -19,13 +20,16 @@ export interface ExtractedMessage {
   source: string;
 }
 
+/** @internal */
 export interface ExtractMessagesOptions {
   code: string;
   fileId: string;
 }
 
+/** @internal */
 export class DynamicMessageError extends DynamicSourceError {}
 
+/** @internal */
 export function extractMessages(
   options: ExtractMessagesOptions,
 ): ExtractedMessage[] {

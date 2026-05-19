@@ -3,6 +3,7 @@ import type { ExtractedMessage } from './extract-messages.ts';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
+/** @internal */
 export type LocaleFile = Record<string, Record<string, string>>;
 
 export interface SyncOptions {
@@ -73,6 +74,7 @@ function groupSourcesByFile(
   return result;
 }
 
+/** @internal */
 export function readLocaleFile(path: string): LocaleFile {
   if (!existsSync(path)) {
     return {};

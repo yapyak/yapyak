@@ -92,6 +92,50 @@ A symbol only appears in `index.ts` if another module needs it. Internal helpers
 - Default to no comments. Add only when the WHY is non-obvious and the code itself cannot communicate it.
 - No multi-line comments, no JSDoc on internal symbols.
 
+### Visibility — public, semi-public, private
+
+Every exported symbol falls into one of three visibility levels:
+
+| Level | Where it lives | Marker | Reachable by |
+|---|---|---|---|
+| **Public** | In a module barrel `index.ts` *and* a package entry point in `package.json` `exports` | None | Users of the package |
+| **Semi-public** | In a module barrel `index.ts` for cross-module use within the package | `/** @internal */` on the **definition** | Other modules within the package, via the barrel |
+| **Private** | Not exported from any barrel — lives in a sub-file of its own module | None needed | Only files in the same folder |
+
+The `@internal` marker:
+- Goes on the **definition site** (the `export function`, `export interface`, etc.), never on the re-export line in the barrel.
+- Companion compiler setting: `stripInternal: true` (set in `@yapyak/typescript-config/library`). With it, `@internal` declarations are removed from emitted `.d.ts` files, so TypeScript users can't accidentally `import { x } from 'yapyak/...'`. The `.js` output stays intact, so cross-module imports inside the package continue to work at runtime.
+- Format: single line, immediately above the export.
+
+```ts
+// ✓ Correct — @internal at definition
+/** @internal */
+export function registerTracker(fn: () => void): () => void { ... }
+```
+
+```ts
+// ✗ Wrong — @internal on the re-export in a barrel
+// runtime/index.ts
+/** @internal */
+export { registerTracker } from './tracker.ts';
+```
+
+```ts
+// ✗ Wrong — @internal on something that doesn't need barrel export
+// vite/find-call-sites.ts (used only within vite/)
+/** @internal */
+export function findCallSites(code: string): CallSite[] { ... }
+// — if no other module imports this, the barrel shouldn't expose it,
+//   and the marker is redundant
+```
+
+Decision flow when writing a new export:
+
+1. Will another module need it? **No** → don't put it in the barrel. No marker.
+2. Will another module need it? **Yes** → put it in the barrel.
+   - Should users be able to use it? **No** → mark `@internal` at definition.
+   - **Yes** → no marker. Make sure the symbol is also wired into the relevant package entry point.
+
 ### Lint suppressions
 
 Every `biome-ignore` description is **always** `yap yap yap`. No exceptions. It's the project convention — a wink at the name.

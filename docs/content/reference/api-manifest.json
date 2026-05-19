@@ -334,10 +334,15 @@
           "location": {
             "column": 1,
             "file": "src/vite/auto-translate.ts",
-            "line": 35
+            "line": 38
           },
           "name": "autoTranslate",
-          "tags": [],
+          "tags": [
+            {
+              "name": "internal",
+              "text": ""
+            }
+          ],
           "kind": "function",
           "parameters": [
             {
@@ -359,10 +364,15 @@
           "location": {
             "column": 1,
             "file": "src/vite/extract-messages.ts",
-            "line": 29
+            "line": 33
           },
           "name": "extractMessages",
-          "tags": [],
+          "tags": [
+            {
+              "name": "internal",
+              "text": ""
+            }
+          ],
           "kind": "function",
           "parameters": [
             {
@@ -384,10 +394,15 @@
           "location": {
             "column": 1,
             "file": "src/vite/sync-locale-files.ts",
-            "line": 76
+            "line": 78
           },
           "name": "readLocaleFile",
-          "tags": [],
+          "tags": [
+            {
+              "name": "internal",
+              "text": ""
+            }
+          ],
           "kind": "function",
           "parameters": [
             {
@@ -409,10 +424,15 @@
           "location": {
             "column": 1,
             "file": "src/vite/walk-source-files.ts",
-            "line": 16
+            "line": 19
           },
           "name": "walkSourceFiles",
-          "tags": [],
+          "tags": [
+            {
+              "name": "internal",
+              "text": ""
+            }
+          ],
           "kind": "function",
           "parameters": [
             {
@@ -461,10 +481,15 @@
           "location": {
             "column": 14,
             "file": "src/vite/normalize-options.ts",
-            "line": 102
+            "line": 104
           },
           "name": "DEFAULT_EXCLUDE",
-          "tags": [],
+          "tags": [
+            {
+              "name": "internal",
+              "text": ""
+            }
+          ],
           "kind": "variable",
           "signature": "const DEFAULT_EXCLUDE: string[]",
           "type": "string[]"
@@ -476,10 +501,15 @@
           "location": {
             "column": 14,
             "file": "src/vite/normalize-options.ts",
-            "line": 98
+            "line": 99
           },
           "name": "DEFAULT_INCLUDE",
-          "tags": [],
+          "tags": [
+            {
+              "name": "internal",
+              "text": ""
+            }
+          ],
           "kind": "variable",
           "signature": "const DEFAULT_INCLUDE: string[]",
           "type": "string[]"
@@ -491,10 +521,15 @@
           "location": {
             "column": 1,
             "file": "src/vite/extract-messages.ts",
-            "line": 27
+            "line": 30
           },
           "name": "DynamicMessageError",
-          "tags": [],
+          "tags": [
+            {
+              "name": "internal",
+              "text": ""
+            }
+          ],
           "kind": "class",
           "members": [],
           "signature": "class DynamicMessageError"
@@ -506,10 +541,15 @@
           "location": {
             "column": 1,
             "file": "src/vite/extract-messages.ts",
-            "line": 13
+            "line": 14
           },
           "name": "ExtractedMessage",
-          "tags": [],
+          "tags": [
+            {
+              "name": "internal",
+              "text": ""
+            }
+          ],
           "callSignatures": [],
           "kind": "interface",
           "members": [
@@ -645,10 +685,15 @@
           "location": {
             "column": 1,
             "file": "src/vite/sync-locale-files.ts",
-            "line": 6
+            "line": 7
           },
           "name": "LocaleFile",
-          "tags": [],
+          "tags": [
+            {
+              "name": "internal",
+              "text": ""
+            }
+          ],
           "kind": "type",
           "resolvedType": "LocaleFile",
           "signature": "export type LocaleFile = Record<string, Record<string, string>>;"
