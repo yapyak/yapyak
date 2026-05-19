@@ -12,7 +12,7 @@ import {
 import { t } from 'yapyak';
 import { useLocale } from 'yapyak/react';
 
-import { Footer } from '#components/footer';
+import { Colophon } from '#components/colophon';
 import { GithubIcon } from '#components/github-icon';
 import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
@@ -85,7 +85,7 @@ function Component() {
         <Outlet />
       </Layout.Main>
       <Layout.Footer>
-        <Footer />
+        <Colophon />
       </Layout.Footer>
     </Layout>
   );

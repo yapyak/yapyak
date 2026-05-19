@@ -5,9 +5,9 @@ import { useEffect, useState } from 'react';
 import { Box } from '#components/box';
 import { Wordmark } from '#components/wordmark';
 
-import styles from './footer.module.css';
+import styles from './colophon.module.css';
 
-export interface FooterProps extends BoxProps {}
+export interface ColophonProps extends BoxProps {}
 
 const TAGLINES = [
   "Who's yakking in the back? That's yapyak.",
@@ -21,7 +21,7 @@ const TAGLINES = [
 
 const ROTATION_INTERVAL = 5200;
 
-export function Footer(props: FooterProps) {
+export function Colophon(props: ColophonProps) {
   const { className, ...restProps } = props;
   const [tagline, setTagline] = useState<string | null>(null);
 
@@ -48,7 +48,7 @@ export function Footer(props: FooterProps) {
   return (
     <Box
       {...restProps}
-      className={[styles.Footer, className]}
+      className={[styles.Colophon, className]}
     >
       <Box
         alt=""
