@@ -9,25 +9,20 @@ import { createServerFn } from '@tanstack/react-start';
 import { Article } from '#components/article';
 import { GuideLayout } from '#components/guide-layout';
 import { GuideNavigation } from '#components/guide-navigation';
-import { GuidePrevNext } from '#components/guide-prev-next';
-import { loadGuideArticle, loadGuidePrevNext } from '#lib/guide';
+import { GuidePagination } from '#components/guide-pagination';
+import { findAdjacentPages, loadGuideArticle } from '#lib/guide';
 
 const guideRouteApi = getRouteApi('/guide');
 
 const loadData = createServerFn()
   .inputValidator((slug: string) => slug)
   .handler(async ({ data: slug }) => {
-    const result = await loadGuideArticle(slug);
-    if (result.kind !== 'article') {
-      return result;
-    }
-    const { previous, next } = await loadGuidePrevNext(slug);
-    return { ...result, next, previous };
+    return loadGuideArticle(slug);
   });
 
 export const Route = createFileRoute('/guide/$')({
   component: Component,
-  async loader({ params }) {
+  async loader({ context, params }) {
     const slug = params._splat ?? '';
     if (!slug) {
       throw notFound();
@@ -41,21 +36,24 @@ export const Route = createFileRoute('/guide/$')({
     if (result.kind === 'redirect') {
       throw redirect({ replace: true, to: result.target });
     }
+
+    const { next, previous } = findAdjacentPages(context.sidebar, slug);
+
     return {
-      next: result.next ?? null,
+      next,
       page: result.page,
-      previous: result.previous ?? null,
+      previous,
     };
   },
 });
 
 function Component() {
   const { page, previous, next } = Route.useLoaderData();
-  const { sidebar } = guideRouteApi.useLoaderData();
+  const { sidebar } = guideRouteApi.useRouteContext();
   return (
     <>
       <Article page={page} />
-      <GuidePrevNext
+      <GuidePagination
         next={next}
         previous={previous}
       />

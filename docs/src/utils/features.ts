@@ -1,5 +1,4 @@
 export interface Feature {
-  accent?: 'mint';
   description: string;
   number: string;
   title: string;

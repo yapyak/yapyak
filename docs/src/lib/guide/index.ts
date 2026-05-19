@@ -1,6 +1,6 @@
-export type { GuideAdjacent } from './prev-next.server';
+export type { GuideAdjacent, GuidePagination } from './pagination';
 export type { SidebarGroup, SidebarLink, SidebarNode } from './types';
 
 export { loadGuideArticle } from './article.server';
-export { loadGuidePrevNext } from './prev-next.server';
+export { findAdjacentPages } from './pagination';
 export { buildGuideSidebar } from './sidebar.server';

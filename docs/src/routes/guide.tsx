@@ -10,15 +10,15 @@ const loadData = createServerFn().handler(() =>
 );
 
 export const Route = createFileRoute('/guide')({
-  component: Component,
-  async loader() {
+  async beforeLoad() {
     const sidebar = await loadData();
     return { sidebar };
   },
+  component: Component,
 });
 
 function Component() {
-  const { sidebar } = Route.useLoaderData();
+  const { sidebar } = Route.useRouteContext();
   return (
     <GuideLayout>
       <GuideLayout.Sidebar>

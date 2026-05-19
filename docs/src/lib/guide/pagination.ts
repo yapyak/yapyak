@@ -1,15 +1,20 @@
 import type { SidebarNode } from './types';
 
-import { buildGuideSidebar } from './sidebar.server';
-
 export interface GuideAdjacent {
   href: string;
   title: string;
 }
 
-export async function loadGuidePrevNext(slug: string) {
-  const tree = await buildGuideSidebar(process.cwd());
-  const flat = flattenLinks(tree);
+export interface GuidePagination {
+  next: GuideAdjacent | null;
+  previous: GuideAdjacent | null;
+}
+
+export function findAdjacentPages(
+  sidebar: SidebarNode[],
+  slug: string,
+): GuidePagination {
+  const flat = flattenLinks(sidebar);
   const currentHref = `/guide/${slug}`;
   const index = flat.findIndex((link) => link.href === currentHref);
   if (index === -1) {

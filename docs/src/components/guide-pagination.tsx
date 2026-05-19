@@ -6,14 +6,14 @@ import { t } from 'yapyak';
 
 import { Box } from '#components/box';
 
-import styles from './guide-prev-next.module.css';
+import styles from './guide-pagination.module.css';
 
-export interface GuidePrevNextProps extends BoxProps<'nav'> {
+export interface GuidePaginationProps extends BoxProps<'nav'> {
   next: GuideAdjacent | null;
   previous: GuideAdjacent | null;
 }
 
-export function GuidePrevNext(props: GuidePrevNextProps) {
+export function GuidePagination(props: GuidePaginationProps) {
   const { className, next, previous, ...restProps } = props;
 
   if (!next && !previous) {
@@ -24,7 +24,7 @@ export function GuidePrevNext(props: GuidePrevNextProps) {
     <Box
       {...restProps}
       as="nav"
-      className={[styles.GuidePrevNext, className]}
+      className={[styles.GuidePagination, className]}
     >
       {previous ? (
         <Link
