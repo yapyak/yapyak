@@ -11,25 +11,7 @@
       color: var(--foreground-softer);
       text-transform: uppercase;
       letter-spacing: var(--letter-spacing-wider);
-      background-color: var(--surface);
-      border-top: var(--px) solid var(--ring);
-      border-bottom: var(--px) solid var(--ring);
-
-      &:first-child {
-        border-left: var(--px) solid var(--ring);
-        border-top-left-radius: var(--border-radius-md);
-        border-bottom-left-radius: var(--border-radius-md);
-      }
-
-      &:last-child {
-        border-right: var(--px) solid var(--ring);
-        border-top-right-radius: var(--border-radius-md);
-        border-bottom-right-radius: var(--border-radius-md);
-      }
-    }
-
-    tbody tr:last-child &:not([data-header]) {
-      border-bottom: none;
+      border-bottom-color: var(--ring);
     }
   }
 }
