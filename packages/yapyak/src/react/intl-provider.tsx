@@ -25,13 +25,15 @@ const LocaleContext = createContext<string>('en');
  * ```
  */
 export function IntlProvider(props: IntlProviderProps): ReactElement {
+  const { children } = props;
+
   const locale = useSyncExternalStore(subscribeLocale, getLocale, getLocale);
   return (
     <LocaleContext
       key={locale}
       value={locale}
     >
-      {props.children}
+      {children}
     </LocaleContext>
   );
 }

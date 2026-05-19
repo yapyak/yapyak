@@ -12,7 +12,6 @@ type Params<Source extends string> = Source extends `${string}{${string}`
 
 /** The runtime translation function. */
 export interface T {
-  /** Returns a one-off `t` locked to a specific locale, resolved at call time. */
   in(locale: string): TIn;
   <Source extends string>(
     source: Source,

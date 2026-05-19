@@ -6,13 +6,15 @@ import type { LocaleData } from './transform-source';
 import { createFilter } from 'vite';
 
 import { autoTranslate } from './auto-translate';
-import { detectRenames } from './detect-renames';
-import { discoverLocales } from './discover-locales';
 import { DynamicMessageError, extractMessages } from './extract-messages';
-import { migrateLocales } from './migrate-locales';
+import {
+  detectRenames,
+  discoverLocales,
+  migrateLocales,
+  readLocaleData,
+  syncLocaleFiles,
+} from './locale-files';
 import { normalizeOptions } from './normalize-options';
-import { readLocaleData } from './read-locale-data';
-import { syncLocaleFiles } from './sync-locale-files';
 import { transformSource } from './transform-source';
 import { walkSourceFiles } from './walk-source-files';
 import { relative } from 'node:path';

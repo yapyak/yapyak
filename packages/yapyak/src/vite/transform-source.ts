@@ -1,10 +1,11 @@
-import { findCallSites } from './find-call-sites';
-import { DynamicSourceError, parseSourceArg } from './parse-source-arg';
 import {
+  DynamicSourceError,
+  findCallSites,
   locate,
+  parseSourceArg,
   sliceArguments,
   splitTopLevelArgs,
-} from './slice-arguments';
+} from './parser';
 
 export interface LocaleData {
   [locale: string]: {

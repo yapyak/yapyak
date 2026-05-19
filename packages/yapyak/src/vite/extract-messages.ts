@@ -1,14 +1,15 @@
 import type { MessageContext } from '../translator';
 
-import { deriveComponentName } from './derive-component-name';
-import { extractSnippet } from './extract-snippet';
-import { findCallSites } from './find-call-sites';
-import { DynamicSourceError, parseSourceArg } from './parse-source-arg';
 import {
+  DynamicSourceError,
+  deriveComponentName,
+  extractSnippet,
+  findCallSites,
   locate,
+  parseSourceArg,
   sliceArguments,
   splitTopLevelArgs,
-} from './slice-arguments';
+} from './parser';
 
 /** @internal */
 export interface ExtractedMessage {

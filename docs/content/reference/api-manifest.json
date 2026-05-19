@@ -87,7 +87,7 @@
           "location": {
             "column": 14,
             "file": "src/runtime/t.ts",
-            "line": 70
+            "line": 69
           },
           "name": "t",
           "tags": [],
@@ -148,13 +148,13 @@
           "members": [
             {
               "defaultValue": null,
-              "description": "Returns a one-off `t` locked to a specific locale, resolved at call time.",
+              "description": "",
               "name": "in",
               "optional": false,
               "type": "(locale: string) => TIn"
             }
           ],
-          "signature": "export interface T {\n  /** Returns a one-off `t` locked to a specific locale, resolved at call time. */\n  in(locale: string): TIn;\n  <Source extends string>(\n    source: Source,\n    ...args: IsEmpty<Params<Source>> extends true\n      ? []\n      : [params: Params<Source>]\n  ): string;\n}"
+          "signature": "export interface T {\n  in(locale: string): TIn;\n  <Source extends string>(\n    source: Source,\n    ...args: IsEmpty<Params<Source>> extends true\n      ? []\n      : [params: Params<Source>]\n  ): string;\n}"
         },
         {
           "deprecated": null,
@@ -163,7 +163,7 @@
           "location": {
             "column": 1,
             "file": "src/runtime/t.ts",
-            "line": 26
+            "line": 25
           },
           "name": "TIn",
           "tags": [],
@@ -329,126 +329,6 @@
       "exports": [
         {
           "deprecated": null,
-          "description": "",
-          "examples": [],
-          "location": {
-            "column": 1,
-            "file": "src/vite/auto-translate.ts",
-            "line": 38
-          },
-          "name": "autoTranslate",
-          "tags": [
-            {
-              "name": "internal",
-              "text": ""
-            }
-          ],
-          "kind": "function",
-          "parameters": [
-            {
-              "defaultValue": null,
-              "description": "",
-              "name": "options",
-              "optional": false,
-              "type": "AutoTranslateOptions"
-            }
-          ],
-          "returnDescription": "",
-          "returnType": "Promise<AutoTranslateResult>",
-          "signature": "autoTranslate(options: AutoTranslateOptions): Promise<AutoTranslateResult>"
-        },
-        {
-          "deprecated": null,
-          "description": "",
-          "examples": [],
-          "location": {
-            "column": 1,
-            "file": "src/vite/extract-messages.ts",
-            "line": 33
-          },
-          "name": "extractMessages",
-          "tags": [
-            {
-              "name": "internal",
-              "text": ""
-            }
-          ],
-          "kind": "function",
-          "parameters": [
-            {
-              "defaultValue": null,
-              "description": "",
-              "name": "options",
-              "optional": false,
-              "type": "ExtractMessagesOptions"
-            }
-          ],
-          "returnDescription": "",
-          "returnType": "ExtractedMessage[]",
-          "signature": "extractMessages(options: ExtractMessagesOptions): ExtractedMessage[]"
-        },
-        {
-          "deprecated": null,
-          "description": "",
-          "examples": [],
-          "location": {
-            "column": 1,
-            "file": "src/vite/sync-locale-files.ts",
-            "line": 78
-          },
-          "name": "readLocaleFile",
-          "tags": [
-            {
-              "name": "internal",
-              "text": ""
-            }
-          ],
-          "kind": "function",
-          "parameters": [
-            {
-              "defaultValue": null,
-              "description": "",
-              "name": "path",
-              "optional": false,
-              "type": "string"
-            }
-          ],
-          "returnDescription": "",
-          "returnType": "LocaleFile",
-          "signature": "readLocaleFile(path: string): LocaleFile"
-        },
-        {
-          "deprecated": null,
-          "description": "",
-          "examples": [],
-          "location": {
-            "column": 1,
-            "file": "src/vite/walk-source-files.ts",
-            "line": 19
-          },
-          "name": "walkSourceFiles",
-          "tags": [
-            {
-              "name": "internal",
-              "text": ""
-            }
-          ],
-          "kind": "function",
-          "parameters": [
-            {
-              "defaultValue": null,
-              "description": "",
-              "name": "options",
-              "optional": false,
-              "type": "WalkOptions"
-            }
-          ],
-          "returnDescription": "",
-          "returnType": "WalkedFile[]",
-          "signature": "walkSourceFiles(options: WalkOptions): WalkedFile[]"
-        },
-        {
-          "deprecated": null,
           "description": "The yapyak Vite plugin.\n\nExtracts `t()` calls at build time, syncs locale files, optionally fills\nmissing translations through an AI translator, and emits per-locale chunks\nthat are lazy-loaded by the runtime — so the default locale costs zero\nextra bytes and non-default locales ship as separate chunks.",
           "examples": [
             "```ts\nimport { defineConfig } from 'vite';\nimport { yapyak } from 'yapyak/vite';\nimport { anthropic } from 'yapyak/translator';\n\nexport default defineConfig({\n  plugins: [\n    yapyak({\n      defaultLocale: 'en',\n      translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),\n    }),\n  ],\n});\n```"
@@ -456,7 +336,7 @@
           "location": {
             "column": 1,
             "file": "src/vite/plugin.ts",
-            "line": 52
+            "line": 54
           },
           "name": "yapyak",
           "tags": [],
@@ -473,130 +353,6 @@
           "returnDescription": "A Vite plugin.",
           "returnType": "Plugin<any>",
           "signature": "yapyak(options?: YapyakOptions): Plugin<any>"
-        },
-        {
-          "deprecated": null,
-          "description": "",
-          "examples": [],
-          "location": {
-            "column": 14,
-            "file": "src/vite/normalize-options.ts",
-            "line": 104
-          },
-          "name": "DEFAULT_EXCLUDE",
-          "tags": [
-            {
-              "name": "internal",
-              "text": ""
-            }
-          ],
-          "kind": "variable",
-          "signature": "const DEFAULT_EXCLUDE: string[]",
-          "type": "string[]"
-        },
-        {
-          "deprecated": null,
-          "description": "",
-          "examples": [],
-          "location": {
-            "column": 14,
-            "file": "src/vite/normalize-options.ts",
-            "line": 99
-          },
-          "name": "DEFAULT_INCLUDE",
-          "tags": [
-            {
-              "name": "internal",
-              "text": ""
-            }
-          ],
-          "kind": "variable",
-          "signature": "const DEFAULT_INCLUDE: string[]",
-          "type": "string[]"
-        },
-        {
-          "deprecated": null,
-          "description": "",
-          "examples": [],
-          "location": {
-            "column": 1,
-            "file": "src/vite/extract-messages.ts",
-            "line": 30
-          },
-          "name": "DynamicMessageError",
-          "tags": [
-            {
-              "name": "internal",
-              "text": ""
-            }
-          ],
-          "kind": "class",
-          "members": [],
-          "signature": "class DynamicMessageError"
-        },
-        {
-          "deprecated": null,
-          "description": "",
-          "examples": [],
-          "location": {
-            "column": 1,
-            "file": "src/vite/extract-messages.ts",
-            "line": 14
-          },
-          "name": "ExtractedMessage",
-          "tags": [
-            {
-              "name": "internal",
-              "text": ""
-            }
-          ],
-          "callSignatures": [],
-          "kind": "interface",
-          "members": [
-            {
-              "defaultValue": null,
-              "description": "",
-              "name": "column",
-              "optional": false,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "",
-              "name": "context",
-              "optional": false,
-              "type": "MessageContext"
-            },
-            {
-              "defaultValue": null,
-              "description": "",
-              "name": "fileId",
-              "optional": false,
-              "type": "string"
-            },
-            {
-              "defaultValue": null,
-              "description": "",
-              "name": "fixedLocale",
-              "optional": false,
-              "type": "string | undefined"
-            },
-            {
-              "defaultValue": null,
-              "description": "",
-              "name": "line",
-              "optional": false,
-              "type": "number"
-            },
-            {
-              "defaultValue": null,
-              "description": "",
-              "name": "source",
-              "optional": false,
-              "type": "string"
-            }
-          ],
-          "signature": "export interface ExtractedMessage {\n  column: number;\n  context: MessageContext;\n  fileId: string;\n  fixedLocale: string | undefined;\n  line: number;\n  source: string;\n}"
         },
         {
           "deprecated": null,
@@ -677,26 +433,6 @@
             }
           ],
           "signature": "export interface YapyakOptions {\n  /** Detect locale from the `Accept-Language` header on the server. */\n  acceptLanguage?: boolean;\n  /** The default locale. Inferred from locale files if omitted. */\n  defaultLocale?: string;\n  /** Glob patterns to exclude from extraction. */\n  exclude?: FilterPattern;\n  /** Glob patterns to include for extraction. */\n  include?: FilterPattern;\n  /** Directory..."
-        },
-        {
-          "deprecated": null,
-          "description": "",
-          "examples": [],
-          "location": {
-            "column": 1,
-            "file": "src/vite/sync-locale-files.ts",
-            "line": 7
-          },
-          "name": "LocaleFile",
-          "tags": [
-            {
-              "name": "internal",
-              "text": ""
-            }
-          ],
-          "kind": "type",
-          "resolvedType": "LocaleFile",
-          "signature": "export type LocaleFile = Record<string, Record<string, string>>;"
         }
       ],
       "id": "yapyak/vite",

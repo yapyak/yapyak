@@ -113,10 +113,13 @@ function extractExport(
   checker: ts.TypeChecker,
   yapyakDir: string,
 ): ApiExport[] {
-  if (hasTag(symbol, checker, 'internal')) {
+  const aliased = resolveAlias(symbol, checker);
+  if (
+    hasTag(symbol, checker, 'internal') ||
+    hasTag(aliased, checker, 'internal')
+  ) {
     return [];
   }
-  const aliased = resolveAlias(symbol, checker);
   const declaration = pickDeclaration(aliased);
   if (declaration === undefined) {
     return [];
