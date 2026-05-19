@@ -14,15 +14,20 @@
           "name": "getDefaultLocale",
           "tags": [],
           "kind": "function",
-          "parameters": [],
-          "returnDescription": "",
-          "returnType": [
+          "overloads": [
             {
-              "kind": "text",
-              "text": "string"
+              "parameters": [],
+              "returnType": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ],
+              "signature": "getDefaultLocale(): string",
+              "typeParameters": []
             }
           ],
-          "signature": "getDefaultLocale(): string"
+          "returnDescription": ""
         },
         {
           "deprecated": null,
@@ -36,15 +41,20 @@
           "name": "getLocale",
           "tags": [],
           "kind": "function",
-          "parameters": [],
-          "returnDescription": "",
-          "returnType": [
+          "overloads": [
             {
-              "kind": "text",
-              "text": "string"
+              "parameters": [],
+              "returnType": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ],
+              "signature": "getLocale(): string",
+              "typeParameters": []
             }
           ],
-          "signature": "getLocale(): string"
+          "returnDescription": ""
         },
         {
           "deprecated": null,
@@ -58,15 +68,20 @@
           "name": "getLocales",
           "tags": [],
           "kind": "function",
-          "parameters": [],
-          "returnDescription": "",
-          "returnType": [
+          "overloads": [
             {
-              "kind": "text",
-              "text": "string[]"
+              "parameters": [],
+              "returnType": [
+                {
+                  "kind": "text",
+                  "text": "string[]"
+                }
+              ],
+              "signature": "getLocales(): string[]",
+              "typeParameters": []
             }
           ],
-          "signature": "getLocales(): string[]"
+          "returnDescription": ""
         },
         {
           "deprecated": null,
@@ -80,28 +95,33 @@
           "name": "setLocale",
           "tags": [],
           "kind": "function",
-          "parameters": [
+          "overloads": [
             {
-              "defaultValue": null,
-              "description": "The locale to switch to.",
-              "name": "locale",
-              "optional": false,
-              "type": [
+              "parameters": [
+                {
+                  "defaultValue": null,
+                  "description": "The locale to switch to.",
+                  "name": "locale",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "text",
+                      "text": "string"
+                    }
+                  ]
+                }
+              ],
+              "returnType": [
                 {
                   "kind": "text",
-                  "text": "string"
+                  "text": "void"
                 }
-              ]
+              ],
+              "signature": "setLocale(locale: string): void",
+              "typeParameters": []
             }
           ],
-          "returnDescription": "",
-          "returnType": [
-            {
-              "kind": "text",
-              "text": "void"
-            }
-          ],
-          "signature": "setLocale(locale: string): void"
+          "returnDescription": ""
         },
         {
           "deprecated": null,
@@ -112,58 +132,47 @@
           "location": {
             "column": 14,
             "file": "src/runtime/t.ts",
-            "line": 69
+            "line": 65
           },
           "name": "t",
           "tags": [],
           "kind": "function",
-          "parameters": [
+          "overloads": [
             {
-              "defaultValue": null,
-              "description": "",
-              "name": "source",
-              "optional": false,
-              "type": [
+              "parameters": [
+                {
+                  "defaultValue": null,
+                  "description": "",
+                  "name": "source",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "text",
+                      "text": "Source"
+                    }
+                  ]
+                }
+              ],
+              "returnType": [
                 {
                   "kind": "text",
-                  "text": "Source"
+                  "text": "string"
+                }
+              ],
+              "signature": "t<Source extends string>(source: Source): string",
+              "typeParameters": [
+                {
+                  "constraint": [
+                    {
+                      "kind": "text",
+                      "text": "string"
+                    }
+                  ],
+                  "defaultType": null,
+                  "name": "Source"
                 }
               ]
             },
-            {
-              "defaultValue": null,
-              "description": "",
-              "name": "args",
-              "optional": false,
-              "type": [
-                {
-                  "kind": "text",
-                  "text": "IsEmpty<Params<Source>> extends true\n      ? []\n      : [params: Params<Source>]"
-                }
-              ]
-            }
-          ],
-          "returnDescription": "",
-          "returnType": [
-            {
-              "kind": "text",
-              "text": "string"
-            }
-          ],
-          "signature": "t(source: Source, args: IsEmpty<Params<Source>> extends true\n      ? []\n      : [params: Params<Source>]): string"
-        },
-        {
-          "deprecated": null,
-          "description": "The runtime translation function.",
-          "examples": [],
-          "location": {
-            "column": 1,
-            "file": "src/runtime/t.ts",
-            "line": 14
-          },
-          "name": "T",
-          "tags": [],
-          "callSignatures": [
             {
               "parameters": [
                 {
@@ -181,12 +190,108 @@
                 {
                   "defaultValue": null,
                   "description": "",
-                  "name": "args",
+                  "name": "params",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "ref",
+                      "module": "yapyak",
+                      "name": "Params",
+                      "text": "Params"
+                    },
+                    {
+                      "kind": "text",
+                      "text": "<Source>"
+                    }
+                  ]
+                }
+              ],
+              "returnType": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ],
+              "signature": "t<Source extends string>(source: Source, params: Params<Source>): string",
+              "typeParameters": [
+                {
+                  "constraint": [
+                    {
+                      "kind": "text",
+                      "text": "string"
+                    }
+                  ],
+                  "defaultType": null,
+                  "name": "Source"
+                }
+              ]
+            }
+          ],
+          "returnDescription": ""
+        },
+        {
+          "deprecated": null,
+          "description": "The runtime translation function.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/runtime/t.ts",
+            "line": 16
+          },
+          "name": "T",
+          "tags": [],
+          "callSignatures": [
+            {
+              "parameters": [
+                {
+                  "defaultValue": null,
+                  "description": "",
+                  "name": "source",
                   "optional": false,
                   "type": [
                     {
                       "kind": "text",
-                      "text": "IsEmpty<Params<Source>> extends true\n      ? []\n      : [params: Params<Source>]"
+                      "text": "Source"
+                    }
+                  ]
+                }
+              ],
+              "returnType": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
+            },
+            {
+              "parameters": [
+                {
+                  "defaultValue": null,
+                  "description": "",
+                  "name": "source",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "text",
+                      "text": "Source"
+                    }
+                  ]
+                },
+                {
+                  "defaultValue": null,
+                  "description": "",
+                  "name": "params",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "ref",
+                      "module": "yapyak",
+                      "name": "Params",
+                      "text": "Params"
+                    },
+                    {
+                      "kind": "text",
+                      "text": "<Source>"
                     }
                   ]
                 }
@@ -214,7 +319,7 @@
               ]
             }
           ],
-          "signature": "export interface T {\n  in(locale: string): TIn;\n  <Source extends string>(\n    source: Source,\n    ...args: IsEmpty<Params<Source>> extends true\n      ? []\n      : [params: Params<Source>]\n  ): string;\n}"
+          "signature": "export interface T {\n  in(locale: string): TIn;\n  <Source extends string>(source: Source): string;\n  <Source extends string>(source: Source, params: Params<Source>): string;\n}"
         },
         {
           "deprecated": null,
@@ -223,18 +328,97 @@
           "location": {
             "column": 1,
             "file": "src/runtime/t.ts",
-            "line": 25
+            "line": 23
           },
           "name": "TIn",
+          "tags": [],
+          "callSignatures": [
+            {
+              "parameters": [
+                {
+                  "defaultValue": null,
+                  "description": "",
+                  "name": "source",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "text",
+                      "text": "Source"
+                    }
+                  ]
+                }
+              ],
+              "returnType": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
+            },
+            {
+              "parameters": [
+                {
+                  "defaultValue": null,
+                  "description": "",
+                  "name": "source",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "text",
+                      "text": "Source"
+                    }
+                  ]
+                },
+                {
+                  "defaultValue": null,
+                  "description": "",
+                  "name": "params",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "ref",
+                      "module": "yapyak",
+                      "name": "Params",
+                      "text": "Params"
+                    },
+                    {
+                      "kind": "text",
+                      "text": "<Source>"
+                    }
+                  ]
+                }
+              ],
+              "returnType": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
+            }
+          ],
+          "kind": "interface",
+          "members": [],
+          "signature": "export interface TIn {\n  <Source extends string>(source: Source): string;\n  <Source extends string>(source: Source, params: Params<Source>): string;\n}"
+        },
+        {
+          "deprecated": null,
+          "description": "The placeholder values for a source string. Empty if the source has no\nplaceholders, otherwise a record of placeholder name to expected value type.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/runtime/t.ts",
+            "line": 11
+          },
+          "name": "Params",
           "tags": [],
           "kind": "type",
           "resolvedType": [
             {
               "kind": "text",
-              "text": "<Source extends string>(\n  source: Source,\n  ...args: IsEmpty<Params<Source>> extends true ? [] : [params: Params<Source>]\n) => string"
+              "text": "Source extends `${string}{${string}`\n  ? ExtractParams<Source>\n  : {}"
             }
           ],
-          "signature": "export type TIn = <Source extends string>(\n  source: Source,\n  ...args: IsEmpty<Params<Source>> extends true ? [] : [params: Params<Source>]\n) => string;"
+          "signature": "export type Params<Source extends string> = Source extends `${string}{${string}`\n  ? ExtractParams<Source>\n  : {};"
         }
       ],
       "id": "yapyak",
@@ -257,30 +441,35 @@
           "name": "IntlProvider",
           "tags": [],
           "kind": "function",
-          "parameters": [
+          "overloads": [
             {
-              "defaultValue": null,
-              "description": "",
-              "name": "props",
-              "optional": false,
-              "type": [
+              "parameters": [
                 {
-                  "kind": "ref",
-                  "module": "yapyak/react",
-                  "name": "IntlProviderProps",
-                  "text": "IntlProviderProps"
+                  "defaultValue": null,
+                  "description": "",
+                  "name": "props",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "ref",
+                      "module": "yapyak/react",
+                      "name": "IntlProviderProps",
+                      "text": "IntlProviderProps"
+                    }
+                  ]
                 }
-              ]
+              ],
+              "returnType": [
+                {
+                  "kind": "text",
+                  "text": "ReactElement"
+                }
+              ],
+              "signature": "IntlProvider(props: IntlProviderProps): ReactElement",
+              "typeParameters": []
             }
           ],
-          "returnDescription": "",
-          "returnType": [
-            {
-              "kind": "text",
-              "text": "ReactElement"
-            }
-          ],
-          "signature": "IntlProvider(props: IntlProviderProps): ReactElement"
+          "returnDescription": ""
         },
         {
           "deprecated": null,
@@ -296,15 +485,20 @@
           "name": "useLocale",
           "tags": [],
           "kind": "function",
-          "parameters": [],
-          "returnDescription": "",
-          "returnType": [
+          "overloads": [
             {
-              "kind": "text",
-              "text": "[string, (locale: string) => void]"
+              "parameters": [],
+              "returnType": [
+                {
+                  "kind": "text",
+                  "text": "[string, (locale: string) => void]"
+                }
+              ],
+              "signature": "useLocale(): [string, (locale: string) => void]",
+              "typeParameters": []
             }
           ],
-          "signature": "useLocale(): [string, (locale: string) => void]"
+          "returnDescription": ""
         },
         {
           "deprecated": null,
@@ -445,30 +639,35 @@
           "name": "yapyak",
           "tags": [],
           "kind": "function",
-          "parameters": [
+          "overloads": [
             {
-              "defaultValue": "{}",
-              "description": "Plugin options.",
-              "name": "options",
-              "optional": true,
-              "type": [
+              "parameters": [
                 {
-                  "kind": "ref",
-                  "module": "yapyak/vite",
-                  "name": "YapyakOptions",
-                  "text": "YapyakOptions"
+                  "defaultValue": "{}",
+                  "description": "Plugin options.",
+                  "name": "options",
+                  "optional": true,
+                  "type": [
+                    {
+                      "kind": "ref",
+                      "module": "yapyak/vite",
+                      "name": "YapyakOptions",
+                      "text": "YapyakOptions"
+                    }
+                  ]
                 }
-              ]
+              ],
+              "returnType": [
+                {
+                  "kind": "text",
+                  "text": "Plugin"
+                }
+              ],
+              "signature": "yapyak(options?: YapyakOptions): Plugin",
+              "typeParameters": []
             }
           ],
-          "returnDescription": "A Vite plugin.",
-          "returnType": [
-            {
-              "kind": "text",
-              "text": "Plugin"
-            }
-          ],
-          "signature": "yapyak(options?: YapyakOptions): Plugin"
+          "returnDescription": "A Vite plugin."
         },
         {
           "deprecated": null,
@@ -618,40 +817,51 @@
           "name": "withRequest",
           "tags": [],
           "kind": "function",
-          "parameters": [
+          "overloads": [
             {
-              "defaultValue": null,
-              "description": "The incoming Web `Request`.",
-              "name": "request",
-              "optional": false,
-              "type": [
+              "parameters": [
                 {
-                  "kind": "text",
-                  "text": "Request"
+                  "defaultValue": null,
+                  "description": "The incoming Web `Request`.",
+                  "name": "request",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "text",
+                      "text": "Request"
+                    }
+                  ]
+                },
+                {
+                  "defaultValue": null,
+                  "description": "The function to run with the request bound.",
+                  "name": "fn",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "text",
+                      "text": "() => T"
+                    }
+                  ]
                 }
-              ]
-            },
-            {
-              "defaultValue": null,
-              "description": "The function to run with the request bound.",
-              "name": "fn",
-              "optional": false,
-              "type": [
+              ],
+              "returnType": [
                 {
                   "kind": "text",
-                  "text": "() => T"
+                  "text": "T"
+                }
+              ],
+              "signature": "withRequest<T>(request: Request, fn: () => T): T",
+              "typeParameters": [
+                {
+                  "constraint": null,
+                  "defaultType": null,
+                  "name": "T"
                 }
               ]
             }
           ],
-          "returnDescription": "The return value of `fn`.",
-          "returnType": [
-            {
-              "kind": "text",
-              "text": "T"
-            }
-          ],
-          "signature": "withRequest(request: Request, fn: () => T): T"
+          "returnDescription": "The return value of `fn`."
         }
       ],
       "id": "yapyak/adapter",
@@ -675,40 +885,45 @@
           "name": "middleware",
           "tags": [],
           "kind": "function",
-          "parameters": [
+          "overloads": [
             {
-              "defaultValue": null,
-              "description": "",
-              "name": "context",
-              "optional": false,
-              "type": [
+              "parameters": [
+                {
+                  "defaultValue": null,
+                  "description": "",
+                  "name": "context",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "text",
+                      "text": "APIContext"
+                    }
+                  ]
+                },
+                {
+                  "defaultValue": null,
+                  "description": "",
+                  "name": "next",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "text",
+                      "text": "MiddlewareNext"
+                    }
+                  ]
+                }
+              ],
+              "returnType": [
                 {
                   "kind": "text",
-                  "text": "APIContext"
+                  "text": "Promise<Response> | Response | Promise<void> | void"
                 }
-              ]
-            },
-            {
-              "defaultValue": null,
-              "description": "",
-              "name": "next",
-              "optional": false,
-              "type": [
-                {
-                  "kind": "text",
-                  "text": "MiddlewareNext"
-                }
-              ]
+              ],
+              "signature": "middleware(context: APIContext, next: MiddlewareNext): Promise<Response> | Response | Promise<void> | void",
+              "typeParameters": []
             }
           ],
-          "returnDescription": "",
-          "returnType": [
-            {
-              "kind": "text",
-              "text": "Promise<Response> | Response | Promise<void> | void"
-            }
-          ],
-          "signature": "middleware(context: APIContext, next: MiddlewareNext): Promise<Response> | Response | Promise<void> | void"
+          "returnDescription": ""
         }
       ],
       "id": "yapyak/adapter/astro",
@@ -731,40 +946,45 @@
           "name": "middleware",
           "tags": [],
           "kind": "function",
-          "parameters": [
+          "overloads": [
             {
-              "defaultValue": null,
-              "description": "",
-              "name": "args",
-              "optional": false,
-              "type": [
+              "parameters": [
+                {
+                  "defaultValue": null,
+                  "description": "",
+                  "name": "args",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "text",
+                      "text": "DataFunctionArgs<Readonly<RouterContextProvider>>"
+                    }
+                  ]
+                },
+                {
+                  "defaultValue": null,
+                  "description": "",
+                  "name": "next",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "text",
+                      "text": "MiddlewareNextFunction<Result>"
+                    }
+                  ]
+                }
+              ],
+              "returnType": [
                 {
                   "kind": "text",
-                  "text": "DataFunctionArgs<Readonly<RouterContextProvider>>"
+                  "text": "MaybePromise<Result | void>"
                 }
-              ]
-            },
-            {
-              "defaultValue": null,
-              "description": "",
-              "name": "next",
-              "optional": false,
-              "type": [
-                {
-                  "kind": "text",
-                  "text": "MiddlewareNextFunction<Result>"
-                }
-              ]
+              ],
+              "signature": "middleware(args: DataFunctionArgs<Readonly<RouterContextProvider>>, next: MiddlewareNextFunction<Result>): MaybePromise<Result | void>",
+              "typeParameters": []
             }
           ],
-          "returnDescription": "",
-          "returnType": [
-            {
-              "kind": "text",
-              "text": "MaybePromise<Result | void>"
-            }
-          ],
-          "signature": "middleware(args: DataFunctionArgs<Readonly<RouterContextProvider>>, next: MiddlewareNextFunction<Result>): MaybePromise<Result | void>"
+          "returnDescription": ""
         }
       ],
       "id": "yapyak/adapter/react-router",
@@ -787,28 +1007,33 @@
           "name": "handle",
           "tags": [],
           "kind": "function",
-          "parameters": [
+          "overloads": [
             {
-              "defaultValue": null,
-              "description": "",
-              "name": "input",
-              "optional": false,
-              "type": [
+              "parameters": [
+                {
+                  "defaultValue": null,
+                  "description": "",
+                  "name": "input",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "text",
+                      "text": "{\n\t\tevent: RequestEvent;\n\t\tresolve: (event: RequestEvent, opts?: ResolveOptions) => MaybePromise<Response>;\n\t}"
+                    }
+                  ]
+                }
+              ],
+              "returnType": [
                 {
                   "kind": "text",
-                  "text": "{\n\t\tevent: RequestEvent;\n\t\tresolve: (event: RequestEvent, opts?: ResolveOptions) => MaybePromise<Response>;\n\t}"
+                  "text": "MaybePromise<Response>"
                 }
-              ]
+              ],
+              "signature": "handle(input: {\n\t\tevent: RequestEvent;\n\t\tresolve: (event: RequestEvent, opts?: ResolveOptions) => MaybePromise<Response>;\n\t}): MaybePromise<Response>",
+              "typeParameters": []
             }
           ],
-          "returnDescription": "",
-          "returnType": [
-            {
-              "kind": "text",
-              "text": "MaybePromise<Response>"
-            }
-          ],
-          "signature": "handle(input: {\n\t\tevent: RequestEvent;\n\t\tresolve: (event: RequestEvent, opts?: ResolveOptions) => MaybePromise<Response>;\n\t}): MaybePromise<Response>"
+          "returnDescription": ""
         }
       ],
       "id": "yapyak/adapter/sveltekit",
@@ -860,30 +1085,35 @@
           "name": "anthropic",
           "tags": [],
           "kind": "function",
-          "parameters": [
+          "overloads": [
             {
-              "defaultValue": null,
-              "description": "The translator options.",
-              "name": "options",
-              "optional": false,
-              "type": [
+              "parameters": [
                 {
-                  "kind": "text",
-                  "text": "AnthropicOptions"
+                  "defaultValue": null,
+                  "description": "The translator options.",
+                  "name": "options",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "text",
+                      "text": "AnthropicOptions"
+                    }
+                  ]
                 }
-              ]
+              ],
+              "returnType": [
+                {
+                  "kind": "ref",
+                  "module": "yapyak/translator",
+                  "name": "Translator",
+                  "text": "Translator"
+                }
+              ],
+              "signature": "anthropic(options: AnthropicOptions): Translator",
+              "typeParameters": []
             }
           ],
-          "returnDescription": "A translator usable in the Vite plugin config.",
-          "returnType": [
-            {
-              "kind": "ref",
-              "module": "yapyak/translator",
-              "name": "Translator",
-              "text": "Translator"
-            }
-          ],
-          "signature": "anthropic(options: AnthropicOptions): Translator"
+          "returnDescription": "A translator usable in the Vite plugin config."
         },
         {
           "deprecated": null,
@@ -899,32 +1129,37 @@
           "name": "createTranslator",
           "tags": [],
           "kind": "function",
-          "parameters": [
+          "overloads": [
             {
-              "defaultValue": null,
-              "description": "The translator options.",
-              "name": "options",
-              "optional": false,
-              "type": [
+              "parameters": [
+                {
+                  "defaultValue": null,
+                  "description": "The translator options.",
+                  "name": "options",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "ref",
+                      "module": "yapyak/translator",
+                      "name": "CreateTranslatorOptions",
+                      "text": "CreateTranslatorOptions"
+                    }
+                  ]
+                }
+              ],
+              "returnType": [
                 {
                   "kind": "ref",
                   "module": "yapyak/translator",
-                  "name": "CreateTranslatorOptions",
-                  "text": "CreateTranslatorOptions"
+                  "name": "Translator",
+                  "text": "Translator"
                 }
-              ]
+              ],
+              "signature": "createTranslator(options: CreateTranslatorOptions): Translator",
+              "typeParameters": []
             }
           ],
-          "returnDescription": "A translator usable in the Vite plugin config.",
-          "returnType": [
-            {
-              "kind": "ref",
-              "module": "yapyak/translator",
-              "name": "Translator",
-              "text": "Translator"
-            }
-          ],
-          "signature": "createTranslator(options: CreateTranslatorOptions): Translator"
+          "returnDescription": "A translator usable in the Vite plugin config."
         },
         {
           "deprecated": null,
@@ -940,30 +1175,35 @@
           "name": "gemini",
           "tags": [],
           "kind": "function",
-          "parameters": [
+          "overloads": [
             {
-              "defaultValue": null,
-              "description": "The translator options.",
-              "name": "options",
-              "optional": false,
-              "type": [
+              "parameters": [
                 {
-                  "kind": "text",
-                  "text": "GeminiOptions"
+                  "defaultValue": null,
+                  "description": "The translator options.",
+                  "name": "options",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "text",
+                      "text": "GeminiOptions"
+                    }
+                  ]
                 }
-              ]
+              ],
+              "returnType": [
+                {
+                  "kind": "ref",
+                  "module": "yapyak/translator",
+                  "name": "Translator",
+                  "text": "Translator"
+                }
+              ],
+              "signature": "gemini(options: GeminiOptions): Translator",
+              "typeParameters": []
             }
           ],
-          "returnDescription": "A translator usable in the Vite plugin config.",
-          "returnType": [
-            {
-              "kind": "ref",
-              "module": "yapyak/translator",
-              "name": "Translator",
-              "text": "Translator"
-            }
-          ],
-          "signature": "gemini(options: GeminiOptions): Translator"
+          "returnDescription": "A translator usable in the Vite plugin config."
         },
         {
           "deprecated": null,
@@ -979,30 +1219,35 @@
           "name": "ollama",
           "tags": [],
           "kind": "function",
-          "parameters": [
+          "overloads": [
             {
-              "defaultValue": "{}",
-              "description": "The translator options.",
-              "name": "options",
-              "optional": true,
-              "type": [
+              "parameters": [
                 {
-                  "kind": "text",
-                  "text": "OllamaOptions"
+                  "defaultValue": "{}",
+                  "description": "The translator options.",
+                  "name": "options",
+                  "optional": true,
+                  "type": [
+                    {
+                      "kind": "text",
+                      "text": "OllamaOptions"
+                    }
+                  ]
                 }
-              ]
+              ],
+              "returnType": [
+                {
+                  "kind": "ref",
+                  "module": "yapyak/translator",
+                  "name": "Translator",
+                  "text": "Translator"
+                }
+              ],
+              "signature": "ollama(options?: OllamaOptions): Translator",
+              "typeParameters": []
             }
           ],
-          "returnDescription": "A translator usable in the Vite plugin config.",
-          "returnType": [
-            {
-              "kind": "ref",
-              "module": "yapyak/translator",
-              "name": "Translator",
-              "text": "Translator"
-            }
-          ],
-          "signature": "ollama(options?: OllamaOptions): Translator"
+          "returnDescription": "A translator usable in the Vite plugin config."
         },
         {
           "deprecated": null,
@@ -1018,30 +1263,35 @@
           "name": "openai",
           "tags": [],
           "kind": "function",
-          "parameters": [
+          "overloads": [
             {
-              "defaultValue": null,
-              "description": "The translator options.",
-              "name": "options",
-              "optional": false,
-              "type": [
+              "parameters": [
                 {
-                  "kind": "text",
-                  "text": "OpenAIOptions"
+                  "defaultValue": null,
+                  "description": "The translator options.",
+                  "name": "options",
+                  "optional": false,
+                  "type": [
+                    {
+                      "kind": "text",
+                      "text": "OpenAIOptions"
+                    }
+                  ]
                 }
-              ]
+              ],
+              "returnType": [
+                {
+                  "kind": "ref",
+                  "module": "yapyak/translator",
+                  "name": "Translator",
+                  "text": "Translator"
+                }
+              ],
+              "signature": "openai(options: OpenAIOptions): Translator",
+              "typeParameters": []
             }
           ],
-          "returnDescription": "A translator usable in the Vite plugin config.",
-          "returnType": [
-            {
-              "kind": "ref",
-              "module": "yapyak/translator",
-              "name": "Translator",
-              "text": "Translator"
-            }
-          ],
-          "signature": "openai(options: OpenAIOptions): Translator"
+          "returnDescription": "A translator usable in the Vite plugin config."
         },
         {
           "deprecated": null,

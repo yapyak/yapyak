@@ -1,4 +1,4 @@
-export type { T, TIn } from './runtime';
+export type { Params, T, TIn } from './runtime';
 
 export {
   getDefaultLocale,

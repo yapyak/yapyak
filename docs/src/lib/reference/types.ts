@@ -27,10 +27,21 @@ export interface ApiSymbolBase {
 
 export interface ApiFunction extends ApiSymbolBase {
   kind: 'function';
-  parameters: ApiParameter[];
+  overloads: ApiOverload[];
   returnDescription: string;
+}
+
+export interface ApiOverload {
+  parameters: ApiParameter[];
   returnType: TypeToken[];
   signature: string;
+  typeParameters: ApiTypeParameter[];
+}
+
+export interface ApiTypeParameter {
+  constraint: TypeToken[] | null;
+  defaultType: TypeToken[] | null;
+  name: string;
 }
 
 export interface ApiInterface extends ApiSymbolBase {

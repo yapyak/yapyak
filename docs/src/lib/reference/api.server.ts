@@ -10,6 +10,7 @@ import type {
   ApiSymbolBase,
   ApiTag,
   ApiTypeAlias,
+  ApiTypeParameter,
   ApiVariable,
   TypeToken,
 } from './types';
@@ -311,8 +312,7 @@ function buildFunction(
   context: Context,
 ): ApiFunction {
   const type = context.checker.getTypeOfSymbolAtLocation(symbol, declaration);
-  const sig = type.getCallSignatures()[0];
-  return buildFunctionFromSignature(base, symbol, sig, context);
+  return buildFunctionFromSignatures(base, symbol, type.getCallSignatures(), context);
 }
 
 function buildVariableAsFunction(
@@ -322,14 +322,13 @@ function buildVariableAsFunction(
   context: Context,
 ): ApiFunction {
   const type = context.checker.getTypeOfSymbolAtLocation(symbol, declaration);
-  const sig = type.getCallSignatures()[0];
-  return buildFunctionFromSignature(base, symbol, sig, context);
+  return buildFunctionFromSignatures(base, symbol, type.getCallSignatures(), context);
 }
 
-function buildFunctionFromSignature(
+function buildFunctionFromSignatures(
   base: ApiSymbolBase,
   symbol: ts.Symbol,
-  sig: ts.Signature | undefined,
+  signatures: readonly ts.Signature[],
   context: Context,
 ): ApiFunction {
   const { checker } = context;
@@ -340,33 +339,41 @@ function buildFunctionFromSignature(
       ? ts.displayPartsToString(returnTag.text).trim()
       : '';
 
-  if (sig === undefined) {
+  if (signatures.length === 0) {
     return {
       ...base,
       kind: 'function',
-      parameters: [],
+      overloads: [
+        {
+          parameters: [],
+          returnType: [{ kind: 'text', text: 'unknown' }],
+          signature: `function ${base.name}(): unknown`,
+          typeParameters: [],
+        },
+      ],
       returnDescription,
-      returnType: [{ kind: 'text', text: 'unknown' }],
-      signature: `function ${base.name}(): unknown`,
     };
   }
 
-  const parameters = sig
-    .getParameters()
-    .map((parameter) => paramFromSymbol(parameter, context));
-  const returnType = signatureReturnTokens(sig, context);
-  const returnTypeText = renderTokens(returnType);
-  const signature = `${base.name}(${parameters
-    .map((parameter) => formatParam(parameter))
-    .join(', ')}): ${returnTypeText}`;
+  const overloads = signatures.map((sig) => {
+    const typeParameters = typeParametersFromSignature(sig, context);
+    const parameters = sig
+      .getParameters()
+      .map((parameter) => paramFromSymbol(parameter, context));
+    const returnType = signatureReturnTokens(sig, context);
+    const returnTypeText = renderTokens(returnType);
+    const typeParamsText = formatTypeParameters(typeParameters);
+    const signature = `${base.name}${typeParamsText}(${parameters
+      .map((parameter) => formatParam(parameter))
+      .join(', ')}): ${returnTypeText}`;
+    return { parameters, returnType, signature, typeParameters };
+  });
 
   return {
     ...base,
     kind: 'function',
-    parameters,
+    overloads,
     returnDescription,
-    returnType,
-    signature,
   };
 }
 
@@ -482,6 +489,44 @@ function signatureReturnTokens(sig: ts.Signature, context: Context) {
   const declaration = sig.getDeclaration();
   const typeNode = declaration?.type;
   return tokenizeOrFallback(typeNode, sig.getReturnType(), context);
+}
+
+function typeParametersFromSignature(
+  sig: ts.Signature,
+  context: Context,
+): ApiTypeParameter[] {
+  const declarations = sig.getDeclaration()?.typeParameters;
+  if (declarations === undefined) {
+    return [];
+  }
+  return declarations.map((declaration) => ({
+    constraint:
+      declaration.constraint !== undefined
+        ? typeNodeToTokens(declaration.constraint, context)
+        : null,
+    defaultType:
+      declaration.default !== undefined
+        ? typeNodeToTokens(declaration.default, context)
+        : null,
+    name: declaration.name.getText(),
+  }));
+}
+
+function formatTypeParameters(typeParameters: ApiTypeParameter[]) {
+  if (typeParameters.length === 0) {
+    return '';
+  }
+  const parts = typeParameters.map((typeParameter) => {
+    let text = typeParameter.name;
+    if (typeParameter.constraint !== null) {
+      text += ` extends ${renderTokens(typeParameter.constraint)}`;
+    }
+    if (typeParameter.defaultType !== null) {
+      text += ` = ${renderTokens(typeParameter.defaultType)}`;
+    }
+    return text;
+  });
+  return `<${parts.join(', ')}>`;
 }
 
 function tokenizeOrFallback(

@@ -2,7 +2,9 @@ import type {
   ApiExport,
   ApiFunction,
   ApiMember,
+  ApiOverload,
   ApiParameter,
+  ApiTypeParameter,
   TypeToken,
 } from './types';
 import type { Block, Page, TableRowBlock } from '#lib/content';
@@ -36,21 +38,23 @@ export function buildSymbolPage(symbol: ApiExport, moduleId: string): Page {
   }
 
   blocks.push(heading2('Signature'));
-  blocks.push({
-    label: null,
-    language: 'ts',
-    source: symbol.signature,
-    type: 'code-block',
-  });
+  blocks.push(signatureBlock(symbol));
 
   if (symbol.kind === 'function') {
-    if (symbol.parameters.length > 0) {
-      blocks.push(heading2('Parameters'));
-      blocks.push(parametersTable(symbol.parameters));
+    const typeParameters = unifyTypeParameters(symbol.overloads);
+    if (typeParameters.length > 0) {
+      blocks.push(heading2('Type Parameters'));
+      blocks.push(typeParametersTable(typeParameters));
     }
-    if (!isVoidTokens(symbol.returnType) || symbol.returnDescription) {
+    const parameters = unifyParameters(symbol.overloads);
+    if (parameters.length > 0) {
+      blocks.push(heading2('Parameters'));
+      blocks.push(parametersTable(parameters));
+    }
+    const returnType = symbol.overloads[0]?.returnType;
+    if (returnType && (!isVoidTokens(returnType) || symbol.returnDescription)) {
       blocks.push(heading2('Returns'));
-      blocks.push(returnsParagraph(symbol));
+      blocks.push(returnsParagraph(returnType, symbol.returnDescription));
     }
   }
 
@@ -76,6 +80,36 @@ export function buildSymbolPage(symbol: ApiExport, moduleId: string): Page {
   return { blocks, description: '', title: symbol.name };
 }
 
+function signatureBlock(symbol: ApiExport): Block {
+  const source =
+    symbol.kind === 'function'
+      ? symbol.overloads.map((overload) => overload.signature).join('\n')
+      : symbol.signature;
+  return { label: null, language: 'ts', source, type: 'code-block' };
+}
+
+function unifyParameters(overloads: ApiOverload[]): ApiParameter[] {
+  if (overloads.length === 0) {
+    return [];
+  }
+  const maxLength = Math.max(
+    ...overloads.map((overload) => overload.parameters.length),
+  );
+  const unified: ApiParameter[] = [];
+  for (let position = 0; position < maxLength; position++) {
+    const present = overloads.filter(
+      (overload) => overload.parameters[position] !== undefined,
+    );
+    const first = present[0]?.parameters[position];
+    if (first === undefined) {
+      continue;
+    }
+    const inAll = present.length === overloads.length;
+    unified.push({ ...first, optional: !inAll || first.optional });
+  }
+  return unified;
+}
+
 function eyebrow(moduleId: string, kind: string): Block {
   return { text: `${moduleId} · ${kind}`, type: 'eyebrow' };
 }
@@ -86,6 +120,48 @@ function heading2(text: string): Block {
     id: slugify(text),
     level: 2,
     type: 'heading',
+  };
+}
+
+function unifyTypeParameters(overloads: ApiOverload[]): ApiTypeParameter[] {
+  const seen = new Set<string>();
+  const unified: ApiTypeParameter[] = [];
+  for (const overload of overloads) {
+    for (const typeParameter of overload.typeParameters) {
+      if (seen.has(typeParameter.name)) {
+        continue;
+      }
+      seen.add(typeParameter.name);
+      unified.push(typeParameter);
+    }
+  }
+  return unified;
+}
+
+function typeParametersTable(typeParameters: ApiTypeParameter[]): Block {
+  return {
+    body: typeParameters.map((typeParameter) => typeParameterRow(typeParameter)),
+    head: tableHeaderRow(['Name', 'Constraint', 'Default']),
+    type: 'table',
+  };
+}
+
+function typeParameterRow(typeParameter: ApiTypeParameter): TableRowBlock {
+  return {
+    children: [
+      bodyCell([{ type: 'inline-code', value: typeParameter.name }]),
+      bodyCell(
+        typeParameter.constraint !== null
+          ? tokensToBlocks(typeParameter.constraint)
+          : [{ type: 'text', value: '' }],
+      ),
+      bodyCell(
+        typeParameter.defaultType !== null
+          ? tokensToBlocks(typeParameter.defaultType)
+          : [{ type: 'text', value: '' }],
+      ),
+    ],
+    type: 'table-row',
   };
 }
 
@@ -152,10 +228,13 @@ function tableHeaderRow(labels: string[]): TableRowBlock {
   };
 }
 
-function returnsParagraph(symbol: ApiFunction): Block {
-  const children: Block[] = tokensToBlocks(symbol.returnType);
-  if (symbol.returnDescription) {
-    children.push({ type: 'text', value: ` — ${symbol.returnDescription}` });
+function returnsParagraph(
+  returnType: TypeToken[],
+  returnDescription: string,
+): Block {
+  const children: Block[] = tokensToBlocks(returnType);
+  if (returnDescription) {
+    children.push({ type: 'text', value: ` — ${returnDescription}` });
   }
   return { children, type: 'paragraph' };
 }
