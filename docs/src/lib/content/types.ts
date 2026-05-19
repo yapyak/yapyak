@@ -43,6 +43,7 @@ export interface ParagraphBlock {
 export interface LinkBlock {
   children: Block[];
   href: string;
+  kind: 'external' | 'internal';
   type: 'link';
 }
 

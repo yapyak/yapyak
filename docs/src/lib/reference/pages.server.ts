@@ -177,6 +177,7 @@ function tokensToBlocks(tokens: TypeToken[]): Block[] {
       blocks.push({
         children: [{ type: 'inline-code', value: token.text }],
         href: symbolHref(token.module, token.name),
+        kind: 'internal',
         type: 'link',
       });
     } else {

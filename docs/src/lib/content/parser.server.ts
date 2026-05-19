@@ -61,14 +61,17 @@ function toBlocks(node: unknown): Block[] {
       ];
     case 'p':
       return [{ children, type: 'paragraph' }];
-    case 'a':
+    case 'a': {
+      const href = stringAttribute(node.attributes.href) ?? '';
       return [
         {
           children,
-          href: stringAttribute(node.attributes.href) ?? '',
+          href,
+          kind: href.startsWith('/') ? 'internal' : 'external',
           type: 'link',
         },
       ];
+    }
     case 'img':
       return [
         {
