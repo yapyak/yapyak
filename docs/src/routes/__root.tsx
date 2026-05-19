@@ -27,27 +27,27 @@ export const Route = createRootRoute({
       meta: [
         { charSet: 'utf-8' },
         { content: 'width=device-width, initial-scale=1', name: 'viewport' },
-        { title: 'yapyak — i18n that maintains itself.' },
+        { title: 'yapyak — i18n that writes itself.' },
         {
-          content: 'Built for Vite. Designed for the AI era.',
+          content: 'For Vite apps moving at the speed of save.',
           name: 'description',
         },
         {
-          content: 'yapyak — i18n that maintains itself.',
+          content: 'yapyak — i18n that writes itself.',
           property: 'og:title',
         },
         {
-          content: 'Built for Vite. Designed for the AI era.',
+          content: 'For Vite apps moving at the speed of save.',
           property: 'og:description',
         },
         { content: 'website', property: 'og:type' },
         { content: 'summary_large_image', name: 'twitter:card' },
         {
-          content: 'yapyak — i18n that maintains itself.',
+          content: 'yapyak — i18n that writes itself.',
           name: 'twitter:title',
         },
         {
-          content: 'Built for Vite. Designed for the AI era.',
+          content: 'For Vite apps moving at the speed of save.',
           name: 'twitter:description',
         },
       ],

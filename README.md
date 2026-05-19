@@ -1,8 +1,8 @@
 # yapyak
 
-**i18n that maintains itself.**
+**i18n that writes itself.**
 
-Built for Vite. Designed for the AI era.
+For Vite apps moving at the speed of save.
 
 ```tsx
 import { t } from 'yapyak'

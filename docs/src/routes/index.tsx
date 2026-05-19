@@ -12,8 +12,8 @@ function Component() {
   return (
     <>
       <Hero
-        description={t('Built for Vite. Designed for the AI era.')}
-        heading={t('i18n that maintains itself.')}
+        description={t('For Vite apps moving at the speed of save.')}
+        heading={t('i18n that writes itself.')}
       />
       <FeatureSection />
     </>

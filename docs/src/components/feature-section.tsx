@@ -35,7 +35,7 @@ export function FeatureSection(props: FeatureSectionProps) {
     },
     {
       description: t(
-        'Other libraries treat translations as data. Yapyak treats them as code — inlined at each call site, split with your routes by Vite, the locale toggle paints in the same frame as the click.',
+        'Other libraries treat translations as data. Yapyak treats them as code — inlined at each call site, split with your routes by Vite. Locale switches re-render synchronously: no fetch, no fallback, no flicker.',
       ),
       number: '03',
       title: t('Translations as code, not data'),
@@ -84,7 +84,7 @@ export function FeatureSection(props: FeatureSectionProps) {
     },
     {
       description: t(
-        "MIT-licensed, full functionality on npm. Bring your own LLM key and pay the model provider directly. Yapyak doesn't sit between you and the AI bill; there's no upgrade tier.",
+        "MIT-licensed, full functionality on npm. Bring your own LLM key and pay the model provider directly. yapyak doesn't sit between you and the AI bill; there's no upgrade tier.",
       ),
       number: '10',
       title: t('Open source, not open core'),
