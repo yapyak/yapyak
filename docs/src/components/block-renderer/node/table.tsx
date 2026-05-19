@@ -3,6 +3,7 @@ import type { TableBlock } from '#lib/content';
 import { Box } from '#components/box';
 
 import { BlockRendererNode } from '../node';
+import styles from './table.module.css';
 
 export interface NodeTableProps {
   block: TableBlock;
@@ -11,7 +12,10 @@ export interface NodeTableProps {
 export function NodeTable(props: NodeTableProps) {
   const { block } = props;
   return (
-    <Box as="table">
+    <Box
+      as="table"
+      className={styles.Table}
+    >
       {block.head && (
         <Box as="thead">
           <BlockRendererNode block={block.head} />

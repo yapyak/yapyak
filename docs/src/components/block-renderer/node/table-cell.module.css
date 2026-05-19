@@ -1,0 +1,35 @@
+@layer components {
+  .TableCell {
+    padding: var(--spacing-3) var(--spacing-4);
+    vertical-align: top;
+    color: var(--foreground-soft);
+    border-bottom: var(--px) solid var(--rule);
+
+    &[data-header] {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--foreground-softer);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-wider);
+      background-color: var(--surface);
+      border-top: var(--px) solid var(--ring);
+      border-bottom: var(--px) solid var(--ring);
+
+      &:first-child {
+        border-left: var(--px) solid var(--ring);
+        border-top-left-radius: var(--border-radius-md);
+        border-bottom-left-radius: var(--border-radius-md);
+      }
+
+      &:last-child {
+        border-right: var(--px) solid var(--ring);
+        border-top-right-radius: var(--border-radius-md);
+        border-bottom-right-radius: var(--border-radius-md);
+      }
+    }
+
+    tbody tr:last-child &:not([data-header]) {
+      border-bottom: none;
+    }
+  }
+}

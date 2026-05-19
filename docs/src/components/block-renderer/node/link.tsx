@@ -5,6 +5,7 @@ import { Link } from '@tanstack/react-router';
 import { Box } from '#components/box';
 
 import { BlockRendererNode } from '../node';
+import styles from './link.module.css';
 
 export interface NodeLinkProps {
   block: LinkBlock;
@@ -23,6 +24,7 @@ export function NodeLink(props: NodeLinkProps) {
     return (
       <Box
         as={Link}
+        className={styles.Link}
         to={block.href}
       >
         {children}
@@ -33,6 +35,7 @@ export function NodeLink(props: NodeLinkProps) {
   return (
     <Box
       as="a"
+      className={styles.Link}
       href={block.href}
       rel="noreferrer"
       target="_blank"

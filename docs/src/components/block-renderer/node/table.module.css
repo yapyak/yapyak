@@ -1,0 +1,8 @@
+@layer components {
+  .Table {
+    width: 100%;
+    font-size: var(--font-size-sm);
+    border-spacing: 0;
+    border-collapse: separate;
+  }
+}

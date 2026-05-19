@@ -3,6 +3,7 @@ import type { HeadingBlock } from '#lib/content';
 import { Box } from '#components/box';
 
 import { BlockRendererNode } from '../node';
+import styles from './heading.module.css';
 
 export interface NodeHeadingProps {
   block: HeadingBlock;
@@ -13,6 +14,8 @@ export function NodeHeading(props: NodeHeadingProps) {
   return (
     <Box
       as={headingTag(block.level)}
+      className={styles.Heading}
+      data-level={block.level}
       id={block.id}
     >
       {block.children.map((child, index) => (
