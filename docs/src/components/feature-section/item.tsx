@@ -17,7 +17,6 @@ export function FeatureSectionItem(props: FeatureSectionItemProps) {
       {...restProps}
       as="li"
       className={[styles.FeatureSectionItem, className]}
-      data-accent={feature.accent}
     >
       <Box
         aria-hidden="true"
