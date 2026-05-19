@@ -37,9 +37,6 @@ const DEFAULT_MAX_RETRIES = 1;
 /**
  * Translator backed by a local Ollama server.
  *
- * @param options - The translator options.
- * @returns A translator usable in the Vite plugin config.
- *
  * @example
  * ```ts
  * import { ollama } from 'yapyak/translator';

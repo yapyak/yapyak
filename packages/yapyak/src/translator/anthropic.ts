@@ -40,9 +40,6 @@ const DEFAULT_MAX_RETRIES = 2;
 /**
  * Translator backed by the Anthropic Messages API.
  *
- * @param options - The translator options.
- * @returns A translator usable in the Vite plugin config.
- *
  * @example
  * ```ts
  * import { anthropic } from 'yapyak/translator';

@@ -23,10 +23,9 @@ Drive the root element's `lang` attribute from the locale via `useLocale()`. The
 ```tsx
 // src/routes/__root.tsx
 import { createRootRoute, Outlet } from '@tanstack/react-router';
-import type { ReactElement } from 'react';
 import { useLocale } from 'yapyak/react';
 
-function Component(): ReactElement {
+function Component() {
   const [locale] = useLocale();
   return (
     <html lang={locale}>

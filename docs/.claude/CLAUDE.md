@@ -410,6 +410,27 @@ Every page's opening sentence:
 
 If you need a fresh example (placeholder demo, plural demo), introduce a single new canonical one and reuse it. Don't invent throwaway examples.
 
+#### Examples never show explicit return types
+
+Guide code examples target what a *reader would write*, not what the library's `isolatedDeclarations` setting enforces internally. Inference is the everyday TypeScript flow. Don't import `ReactElement` / `JSX.Element` just to annotate the return.
+
+✗ Banned in examples:
+```tsx
+import type { ReactElement } from 'react';
+function Component(): ReactElement {
+  // ...
+}
+```
+
+✓ Acceptable in examples:
+```tsx
+function Component() {
+  // ...
+}
+```
+
+Same rule for arrow functions: don't write `(): ReactElement => ...` in guide examples. The point of the example is the surrounding logic, not annotation discipline. (yapyak's own library code follows `isolatedDeclarations` per the root [CLAUDE.md], but that's an internal-correctness concern, not an example-pedagogy concern.)
+
 #### The single-source rule
 
 > Each concept lives in exactly one file. Every other mention is a link.

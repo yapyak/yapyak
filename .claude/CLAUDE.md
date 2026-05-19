@@ -91,6 +91,7 @@ A symbol only appears in `index.ts` if another module needs it. Internal helpers
 
 - Default to no comments. Add only when the WHY is non-obvious and the code itself cannot communicate it.
 - No multi-line comments, no JSDoc on internal symbols.
+- **No `@param`, `@returns`, `@return` in JSDoc.** TypeScript signatures already say what arguments and return values are. These tags are pure restatement and ship no information past the signature. Keep description prose and `@example` blocks; cut the parameter/return annotations.
 
 ### Lint suppressions
 

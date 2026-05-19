@@ -86,7 +86,6 @@ export function getLocale(): string {
  * No-op if the locale is not in the configured `locales` list. Triggers
  * re-renders in framework integrations (`useLocale`, Svelte/Vue stores).
  *
- * @param locale - The locale to switch to.
  */
 export function setLocale(locale: string): void {
   if (!LOCALES.includes(locale)) {

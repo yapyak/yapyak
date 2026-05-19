@@ -28,10 +28,9 @@ withRequest<T>(request: Request, fn: () => T): T;
 If your root component is a reactive framework binding (React/Vue/Svelte), read the locale there so it re-renders on change:
 
 ```tsx
-import type { ReactElement } from 'react';
 import { useLocale } from 'yapyak/react';
 
-function Component(): ReactElement {
+function Component() {
   const [locale] = useLocale();
   return <html lang={locale}>{/* ... */}</html>;
 }

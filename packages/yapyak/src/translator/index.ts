@@ -113,9 +113,6 @@ const DEFAULT_CONTEXT: ContextLevel = 'minimal';
  * Handles batching, context shaping, and result validation — you just provide
  * the function that talks to the AI.
  *
- * @param options - The translator options.
- * @returns A translator usable in the Vite plugin config.
- *
  * @example
  * ```ts
  * const myTranslator = createTranslator({

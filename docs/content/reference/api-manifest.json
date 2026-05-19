@@ -9,7 +9,7 @@
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 116
+            "line": 115
           },
           "name": "getDefaultLocale",
           "tags": [],
@@ -43,7 +43,7 @@
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 111
+            "line": 110
           },
           "name": "getLocales",
           "tags": [],
@@ -60,7 +60,7 @@
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 91
+            "line": 90
           },
           "name": "setLocale",
           "tags": [],
@@ -68,7 +68,7 @@
           "parameters": [
             {
               "defaultValue": null,
-              "description": "- The locale to switch to.",
+              "description": "",
               "name": "locale",
               "optional": false,
               "type": "string"
@@ -436,7 +436,7 @@
           "location": {
             "column": 1,
             "file": "src/vite/plugin.ts",
-            "line": 52
+            "line": 49
           },
           "name": "yapyak",
           "tags": [],
@@ -444,13 +444,13 @@
           "parameters": [
             {
               "defaultValue": "{}",
-              "description": "- Plugin options.",
+              "description": "",
               "name": "options",
               "optional": true,
               "type": "YapyakOptions"
             }
           ],
-          "returnDescription": "A Vite plugin.",
+          "returnDescription": "",
           "returnType": "Plugin<any>",
           "signature": "yapyak(options?: YapyakOptions): Plugin<any>"
         },
@@ -669,7 +669,7 @@
           "location": {
             "column": 1,
             "file": "src/adapter/index.ts",
-            "line": 33
+            "line": 29
           },
           "name": "withRequest",
           "tags": [],
@@ -677,20 +677,20 @@
           "parameters": [
             {
               "defaultValue": null,
-              "description": "- The incoming Web `Request`.",
+              "description": "",
               "name": "request",
               "optional": false,
               "type": "Request"
             },
             {
               "defaultValue": null,
-              "description": "- The function to run with the request bound.",
+              "description": "",
               "name": "fn",
               "optional": false,
               "type": "() => T"
             }
           ],
-          "returnDescription": "The return value of `fn`.",
+          "returnDescription": "",
           "returnType": "T",
           "signature": "withRequest(request: Request, fn: () => T): T"
         }
@@ -851,7 +851,7 @@
           "location": {
             "column": 1,
             "file": "src/translator/anthropic.ts",
-            "line": 55
+            "line": 52
           },
           "name": "anthropic",
           "tags": [],
@@ -859,13 +859,13 @@
           "parameters": [
             {
               "defaultValue": null,
-              "description": "- The translator options.",
+              "description": "",
               "name": "options",
               "optional": false,
               "type": "AnthropicOptions"
             }
           ],
-          "returnDescription": "A translator usable in the Vite plugin config.",
+          "returnDescription": "",
           "returnType": "Translator",
           "signature": "anthropic(options: AnthropicOptions): Translator"
         },
@@ -878,7 +878,7 @@
           "location": {
             "column": 1,
             "file": "src/translator/index.ts",
-            "line": 133
+            "line": 130
           },
           "name": "createTranslator",
           "tags": [],
@@ -886,13 +886,13 @@
           "parameters": [
             {
               "defaultValue": null,
-              "description": "- The translator options.",
+              "description": "",
               "name": "options",
               "optional": false,
               "type": "CreateTranslatorOptions"
             }
           ],
-          "returnDescription": "A translator usable in the Vite plugin config.",
+          "returnDescription": "",
           "returnType": "Translator",
           "signature": "createTranslator(options: CreateTranslatorOptions): Translator"
         },
@@ -905,7 +905,7 @@
           "location": {
             "column": 1,
             "file": "src/translator/gemini.ts",
-            "line": 54
+            "line": 51
           },
           "name": "gemini",
           "tags": [],
@@ -913,13 +913,13 @@
           "parameters": [
             {
               "defaultValue": null,
-              "description": "- The translator options.",
+              "description": "",
               "name": "options",
               "optional": false,
               "type": "GeminiOptions"
             }
           ],
-          "returnDescription": "A translator usable in the Vite plugin config.",
+          "returnDescription": "",
           "returnType": "Translator",
           "signature": "gemini(options: GeminiOptions): Translator"
         },
@@ -932,7 +932,7 @@
           "location": {
             "column": 1,
             "file": "src/translator/ollama.ts",
-            "line": 52
+            "line": 49
           },
           "name": "ollama",
           "tags": [],
@@ -940,13 +940,13 @@
           "parameters": [
             {
               "defaultValue": "{}",
-              "description": "- The translator options.",
+              "description": "",
               "name": "options",
               "optional": true,
               "type": "OllamaOptions"
             }
           ],
-          "returnDescription": "A translator usable in the Vite plugin config.",
+          "returnDescription": "",
           "returnType": "Translator",
           "signature": "ollama(options?: OllamaOptions): Translator"
         },
@@ -959,7 +959,7 @@
           "location": {
             "column": 1,
             "file": "src/translator/openai.ts",
-            "line": 60
+            "line": 57
           },
           "name": "openai",
           "tags": [],
@@ -967,13 +967,13 @@
           "parameters": [
             {
               "defaultValue": null,
-              "description": "- The translator options.",
+              "description": "",
               "name": "options",
               "optional": false,
               "type": "OpenAIOptions"
             }
           ],
-          "returnDescription": "A translator usable in the Vite plugin config.",
+          "returnDescription": "",
           "returnType": "Translator",
           "signature": "openai(options: OpenAIOptions): Translator"
         },
