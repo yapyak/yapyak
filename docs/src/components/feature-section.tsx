@@ -28,17 +28,17 @@ export function FeatureSection(props: FeatureSectionProps) {
     },
     {
       description: t(
-        "What Tailwind did for class names, yapyak did for keys. Just write t('Save changes') — the English is your key, your value, your single source of truth. AI doesn't have to invent identifiers either.",
+        "What Tailwind did for class names, yapyak did for keys. Just write t('Save changes') — the English is your key, your value, your single source of truth.",
       ),
       number: '02',
       title: t('Source string is the key'),
     },
     {
       description: t(
-        'Other libraries treat translations as data: a dictionary loaded at runtime, looked up on every call. Yapyak treats them as code — each call site compiles to a literal with every locale variant inlined. The bundle splits with your routes. The model that ships 20 languages is the same as the one that ships 2.',
+        "Other libraries load a runtime dictionary. yapyak compiles each t() into an inline object with every locale variant, right where it's used. Vite already splits your app — yapyak just lets translations come along for the ride.",
       ),
       number: '03',
-      title: t('Translations as code, not data'),
+      title: t('Translations compile in'),
     },
     {
       description: t(
@@ -66,7 +66,7 @@ export function FeatureSection(props: FeatureSectionProps) {
         'Every Intl primitive: plurals, dates, numbers, lists, ordinals. Yes, all four Polish plural forms.',
       ),
       number: '07',
-      title: t('Feature-complete intl'),
+      title: t('Production-ready intl'),
     },
     {
       description: t(
@@ -77,10 +77,10 @@ export function FeatureSection(props: FeatureSectionProps) {
     },
     {
       description: t(
-        'Every design decision serves the agent loop. t() extracts at save. Renames migrate translations. The CLI scripts cleanly. Claude Code, Cursor, Codex — they write code, yapyak handles i18n.',
+        'Every design decision serves the agent loop. For an AI agent, each t() carries the whole message at the call site. Renames migrate translations, extractions happen at save, the CLI scripts cleanly. Your agent writes the code. yapyak does the rest.',
       ),
       number: '09',
-      title: t('Built for agentic workflows'),
+      title: t('Built for agents'),
     },
     {
       description: t(

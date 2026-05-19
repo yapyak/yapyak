@@ -10,7 +10,7 @@ import { t } from 'yapyak'
 <button>{t('Save changes')}</button>
 ```
 
-Save the file. Yapyak finds the `t()` call, reads the surrounding code as context, and writes every locale entry. The English string is your key.
+Save the file. yapyak finds the `t()` call, reads the surrounding code as context, and writes every locale entry. The English string is your key.
 
 **Documentation →** [yapyak.dev](https://yapyak.dev)
 

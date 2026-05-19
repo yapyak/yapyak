@@ -2,7 +2,7 @@
 
 This is the yapyak marketing + docs site. It's a TanStack Start app inside the yapyak monorepo, dogfooding the `yapyak` library itself.
 
-## Yapyak-site overrides
+## yapyak-site overrides
 
 The rules below this section are copied verbatim from the skiftle frontend codebase, since they capture the conventions we want for any React/TanStack site we ship. The following deviations apply specifically to `yapyak/site/`:
 
