@@ -1,5 +1,5 @@
-import type { GuideAdjacent } from '#lib/guide';
 import type { ReactNode } from 'react';
+import type { GuideAdjacent } from '#lib/guide';
 
 import { Link } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
@@ -83,9 +83,7 @@ export function GuideLayoutToolbar(props: GuideLayoutToolbarProps) {
         )}
         <Box
           aria-expanded={isSidebarOpen}
-          aria-label={
-            isSidebarOpen ? t('Close outline') : t('Open outline')
-          }
+          aria-label={isSidebarOpen ? t('Close outline') : t('Open outline')}
           as="button"
           className={styles.OutlineButton}
           onClick={handleOutlineToggle}

@@ -3,11 +3,7 @@
     padding: var(--spacing-3) var(--spacing-4);
     font-size: var(--font-size-sm);
     color: var(--foreground-soft);
-    background-color: color-mix(
-      in oklab,
-      var(--surface),
-      var(--danger) 6%
-    );
+    background-color: color-mix(in oklab, var(--surface), var(--danger) 6%);
     border-left: 3px solid var(--danger);
   }
 }

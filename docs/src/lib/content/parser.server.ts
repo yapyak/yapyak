@@ -3,7 +3,6 @@ import type {
   Block,
   CalloutBlock,
   CodeBlock,
-  CodeGroupBlock,
   TableBlock,
   TableCellBlock,
   TableHeaderCellBlock,
@@ -190,9 +189,7 @@ function isListItem(
   return block.type === 'list-item';
 }
 
-function isCell(
-  block: Block,
-): block is TableCellBlock | TableHeaderCellBlock {
+function isCell(block: Block): block is TableCellBlock | TableHeaderCellBlock {
   return block.type === 'table-cell' || block.type === 'table-header-cell';
 }
 

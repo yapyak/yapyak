@@ -22,7 +22,7 @@ const loadData = createServerFn()
       return result;
     }
     const { previous, next } = await loadGuidePrevNext(slug);
-    return { ...result, previous, next };
+    return { ...result, next, previous };
   });
 
 export const Route = createFileRoute('/guide/$')({
@@ -42,9 +42,9 @@ export const Route = createFileRoute('/guide/$')({
       throw redirect({ replace: true, to: result.target });
     }
     return {
+      next: result.next ?? null,
       page: result.page,
       previous: result.previous ?? null,
-      next: result.next ?? null,
     };
   },
 });

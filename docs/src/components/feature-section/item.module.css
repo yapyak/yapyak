@@ -40,7 +40,7 @@
       transition: text-shadow 400ms ease;
     }
 
-    &[data-accent='mint'] .NumeralText {
+    &[data-accent="mint"] .NumeralText {
       text-shadow: 0 0 32px color-mix(in oklab, var(--brand) 22%, transparent);
     }
 

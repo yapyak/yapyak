@@ -78,8 +78,8 @@
       }
 
       &[data-disabled] {
-        opacity: 0.3;
         pointer-events: none;
+        opacity: 0.3;
       }
     }
 

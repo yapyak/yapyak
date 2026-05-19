@@ -14,19 +14,19 @@
       font-size: var(--font-size-xs);
       color: var(--foreground-softer);
       text-transform: lowercase;
-      user-select: none;
       pointer-events: none;
+      user-select: none;
     }
 
     .PreformattedText {
       padding: var(--spacing-5) var(--spacing-6);
       overflow-x: auto;
-      scrollbar-color: var(--ring-stronger) transparent;
-      scrollbar-width: thin;
       font-family: var(--font-family-mono);
       font-size: var(--font-size-sm);
       line-height: var(--line-height-normal);
       color: var(--foreground-soft);
+      scrollbar-color: var(--ring-stronger) transparent;
+      scrollbar-width: thin;
 
       code {
         font-family: inherit;

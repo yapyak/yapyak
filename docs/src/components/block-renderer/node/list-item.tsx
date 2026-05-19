@@ -8,16 +8,14 @@ export interface NodeListItemProps {
   block: ListItemBlock;
 }
 
-export function NodeListItem(
-  props: NodeListItemProps,
-) {
+export function NodeListItem(props: NodeListItemProps) {
   const { block } = props;
   return (
     <Box as="li">
       {block.children.map((child, index) => (
         <BlockRendererNode
-          key={index}
           block={child}
+          key={index}
         />
       ))}
     </Box>

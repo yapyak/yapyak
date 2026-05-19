@@ -8,16 +8,14 @@ export interface NodeTableRowProps {
   block: TableRowBlock;
 }
 
-export function NodeTableRow(
-  props: NodeTableRowProps,
-) {
+export function NodeTableRow(props: NodeTableRowProps) {
   const { block } = props;
   return (
     <Box as="tr">
       {block.children.map((child, index) => (
         <BlockRendererNode
-          key={index}
           block={child}
+          key={index}
         />
       ))}
     </Box>

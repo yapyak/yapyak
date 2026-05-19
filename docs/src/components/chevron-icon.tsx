@@ -4,13 +4,15 @@ export interface ChevronIconProps extends SVGProps<SVGSVGElement> {
   direction?: 'down' | 'left' | 'right' | 'up';
 }
 
-const ROTATION_MAP: Record<NonNullable<ChevronIconProps['direction']>, number> =
-  {
-    down: 0,
-    up: 180,
-    left: 90,
-    right: -90,
-  };
+const ROTATION_MAP: Record<
+  NonNullable<ChevronIconProps['direction']>,
+  number
+> = {
+  down: 0,
+  left: 90,
+  right: -90,
+  up: 180,
+};
 
 export function ChevronIcon(props: ChevronIconProps) {
   const { direction = 'down', style, ...restProps } = props;

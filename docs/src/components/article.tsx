@@ -1,8 +1,8 @@
 import type { BoxProps } from '#components/box';
 import type { Page } from '#lib/content';
 
-import { Box } from '#components/box';
 import { BlockRenderer } from '#components/block-renderer';
+import { Box } from '#components/box';
 
 import styles from './article.module.css';
 

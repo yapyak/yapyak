@@ -31,8 +31,8 @@ export function ReferenceSymbolExampleSection(
       <Box className={styles.ExampleStack}>
         {examples.map((blocks, index) => (
           <BlockRenderer
-            key={index}
             blocks={blocks}
+            key={index}
           />
         ))}
       </Box>

@@ -108,8 +108,16 @@
 
   /* foreground — text & icon emphasis */
   --foreground: var(--color-silver);
-  --foreground-soft: color-mix(in oklab, var(--color-silver) 78%, var(--color-ink));
-  --foreground-softer: color-mix(in oklab, var(--color-silver) 56%, var(--color-ink));
+  --foreground-soft: color-mix(
+    in oklab,
+    var(--color-silver) 78%,
+    var(--color-ink)
+  );
+  --foreground-softer: color-mix(
+    in oklab,
+    var(--color-silver) 56%,
+    var(--color-ink)
+  );
 
   /* brand contrast — text on brand-colored bg */
   --brand-contrast: color-mix(in oklab, var(--brand) 8%, var(--color-ink));

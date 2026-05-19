@@ -27,53 +27,53 @@ export interface TextBlock {
 }
 
 export interface HeadingBlock {
-  type: 'heading';
-  level: 1 | 2 | 3 | 4 | 5 | 6;
-  id: string;
   children: Block[];
+  id: string;
+  level: 1 | 2 | 3 | 4 | 5 | 6;
+  type: 'heading';
 }
 
 export interface ParagraphBlock {
-  type: 'paragraph';
   children: Block[];
+  type: 'paragraph';
 }
 
 export interface LinkBlock {
-  type: 'link';
-  href: string;
   children: Block[];
+  href: string;
+  type: 'link';
 }
 
 export interface ImageBlock {
-  type: 'image';
-  src: string;
   alt: string | null;
+  src: string;
+  type: 'image';
 }
 
 export interface ListBlock {
-  type: 'list';
-  ordered: boolean;
   children: ListItemBlock[];
+  ordered: boolean;
+  type: 'list';
 }
 
 export interface ListItemBlock {
-  type: 'list-item';
   children: Block[];
+  type: 'list-item';
 }
 
 export interface EmphasisBlock {
-  type: 'emphasis';
   children: Block[];
+  type: 'emphasis';
 }
 
 export interface StrongBlock {
-  type: 'strong';
   children: Block[];
+  type: 'strong';
 }
 
 export interface StrikethroughBlock {
-  type: 'strikethrough';
   children: Block[];
+  type: 'strikethrough';
 }
 
 export interface InlineCodeBlock {
@@ -82,8 +82,8 @@ export interface InlineCodeBlock {
 }
 
 export interface BlockquoteBlock {
-  type: 'blockquote';
   children: Block[];
+  type: 'blockquote';
 }
 
 export interface ThematicBreakBlock {
@@ -95,43 +95,43 @@ export interface LineBreakBlock {
 }
 
 export interface TableBlock {
-  type: 'table';
-  head: TableRowBlock | null;
   body: TableRowBlock[];
+  head: TableRowBlock | null;
+  type: 'table';
 }
 
 export interface TableRowBlock {
-  type: 'table-row';
   children: (TableCellBlock | TableHeaderCellBlock)[];
+  type: 'table-row';
 }
 
 export interface TableHeaderCellBlock {
-  type: 'table-header-cell';
   children: Block[];
+  type: 'table-header-cell';
 }
 
 export interface TableCellBlock {
-  type: 'table-cell';
   children: Block[];
+  type: 'table-cell';
 }
 
 export interface CodeBlock {
-  type: 'code-block';
   label: string | null;
   language: string | null;
   source: string;
+  type: 'code-block';
 }
 
 export interface CodeGroupBlock {
-  type: 'code-group';
   tabs: CodeBlock[];
+  type: 'code-group';
 }
 
 export interface CalloutBlock {
+  children: Block[];
+  title: string | null;
   type: 'callout';
   variant: 'danger' | 'info' | 'tip' | 'warning';
-  title: string | null;
-  children: Block[];
 }
 
 export interface Page {

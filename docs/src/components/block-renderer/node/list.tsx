@@ -14,8 +14,8 @@ export function NodeList(props: NodeListProps) {
     <Box as={block.ordered ? 'ol' : 'ul'}>
       {block.children.map((child, index) => (
         <BlockRendererNode
-          key={index}
           block={child}
+          key={index}
         />
       ))}
     </Box>

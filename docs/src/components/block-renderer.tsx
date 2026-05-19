@@ -20,8 +20,8 @@ export function BlockRenderer(props: BlockRendererProps) {
     >
       {blocks.map((block, index) => (
         <BlockRendererNode
-          key={index}
           block={block}
+          key={index}
         />
       ))}
     </Box>

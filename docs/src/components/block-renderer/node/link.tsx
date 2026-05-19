@@ -17,8 +17,8 @@ export function NodeLink(props: NodeLinkProps) {
     >
       {block.children.map((child, index) => (
         <BlockRendererNode
-          key={index}
           block={child}
+          key={index}
         />
       ))}
     </Box>

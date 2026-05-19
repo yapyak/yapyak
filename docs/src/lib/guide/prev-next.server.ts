@@ -13,11 +13,11 @@ export async function loadGuidePrevNext(slug: string) {
   const currentHref = `/guide/${slug}`;
   const index = flat.findIndex((link) => link.href === currentHref);
   if (index === -1) {
-    return { previous: null, next: null };
+    return { next: null, previous: null };
   }
   return {
-    previous: index > 0 ? flat[index - 1] : null,
     next: index < flat.length - 1 ? flat[index + 1] : null,
+    previous: index > 0 ? flat[index - 1] : null,
   };
 }
 

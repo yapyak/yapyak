@@ -6,9 +6,7 @@ export interface NodeCodeBlockProps {
   block: CodeBlockData;
 }
 
-export function NodeCodeBlock(
-  props: NodeCodeBlockProps,
-) {
+export function NodeCodeBlock(props: NodeCodeBlockProps) {
   const { block } = props;
   return (
     <CodeBlock

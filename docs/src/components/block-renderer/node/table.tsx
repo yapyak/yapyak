@@ -20,8 +20,8 @@ export function NodeTable(props: NodeTableProps) {
       <Box as="tbody">
         {block.body.map((row, index) => (
           <BlockRendererNode
-            key={index}
             block={row}
+            key={index}
           />
         ))}
       </Box>

@@ -8,9 +8,7 @@ export interface NodeBlockquoteProps {
   block: BlockquoteBlock;
 }
 
-export function NodeBlockquote(
-  props: NodeBlockquoteProps,
-) {
+export function NodeBlockquote(props: NodeBlockquoteProps) {
   const { block } = props;
   return (
     <Box as="blockquote">

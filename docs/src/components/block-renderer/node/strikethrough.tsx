@@ -8,16 +8,14 @@ export interface NodeStrikethroughProps {
   block: StrikethroughBlock;
 }
 
-export function NodeStrikethrough(
-  props: NodeStrikethroughProps,
-) {
+export function NodeStrikethrough(props: NodeStrikethroughProps) {
   const { block } = props;
   return (
     <Box as="s">
       {block.children.map((child, index) => (
         <BlockRendererNode
-          key={index}
           block={child}
+          key={index}
         />
       ))}
     </Box>

@@ -1,5 +1,5 @@
 @property --layout-header-border-opacity {
-  syntax: '<number>';
+  syntax: "<number>";
   inherits: false;
   initial-value: 0;
 }
@@ -68,7 +68,7 @@
         transform: scale(0.99);
       }
 
-      &[data-status='active'] {
+      &[data-status="active"] {
         color: var(--brand);
       }
     }
@@ -125,8 +125,8 @@
 
   @media (prefers-reduced-motion: reduce) {
     .LayoutHeader {
-      animation: none;
       --layout-header-border-opacity: 1;
+      animation: none;
     }
   }
 }

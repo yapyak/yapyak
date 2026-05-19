@@ -14,8 +14,8 @@ export function NodeStrong(props: NodeStrongProps) {
     <Box as="strong">
       {block.children.map((child, index) => (
         <BlockRendererNode
-          key={index}
           block={child}
+          key={index}
         />
       ))}
     </Box>

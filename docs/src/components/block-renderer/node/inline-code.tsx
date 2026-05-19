@@ -6,9 +6,7 @@ export interface NodeInlineCodeProps {
   block: InlineCodeBlock;
 }
 
-export function NodeInlineCode(
-  props: NodeInlineCodeProps,
-) {
+export function NodeInlineCode(props: NodeInlineCodeProps) {
   const { block } = props;
   return <Box as="code">{block.value}</Box>;
 }
