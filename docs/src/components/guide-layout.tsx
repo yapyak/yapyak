@@ -33,6 +33,7 @@ export function GuideLayout(props: GuideLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: yap yap yap
   useEffect(() => {
     setIsSidebarOpen(false);
   }, [location.pathname]);

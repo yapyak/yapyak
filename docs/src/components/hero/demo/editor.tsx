@@ -59,6 +59,7 @@ export function DemoEditor(props: DemoEditorProps) {
   const [indicator, setIndicator] = useState<IndicatorState | null>(null);
   const [isReady, setIsReady] = useState(false);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: yap yap yap
   useLayoutEffect(() => {
     const $tabsElement = tabsElement.current;
     if (!$tabsElement) {
