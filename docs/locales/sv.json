@@ -29,7 +29,7 @@
     "Framework adapters": "",
     "MIT-licensed, full functionality on npm. Bring your own LLM key and pay the model provider directly. yapyak doesn't sit between you and the AI bill; there's no upgrade tier.": "",
     "Open source, not open core": "",
-    "Other libraries treat translations as data. Yapyak treats them as code — inlined at each call site, split with your routes by Vite. Locale switches re-render synchronously: no fetch, no fallback, no flicker.": "",
+    "Other libraries treat translations as data: a dictionary loaded at runtime, looked up on every call. Yapyak treats them as code — each call site compiles to a literal with every locale variant inlined. The bundle splits with your routes. The model that ships 20 languages is the same as the one that ships 2.": "",
     "React, Vue, and Svelte bindings. SSR adapters for Astro, React Router, SvelteKit, and TanStack Start. Next.js? Open a PR.": "",
     "Source string is the key": "",
     "The translator sees the component, the element, and the surrounding code. Set a voice (\"friendly\", \"terse\", \"lawyer at a dinner party\"). Pin glossary terms so \"Cart\" stays \"Korg\" — even when the AI thinks it knows better.": "",

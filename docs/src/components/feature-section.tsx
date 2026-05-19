@@ -35,7 +35,7 @@ export function FeatureSection(props: FeatureSectionProps) {
     },
     {
       description: t(
-        'Other libraries treat translations as data. Yapyak treats them as code — inlined at each call site, split with your routes by Vite. Locale switches re-render synchronously: no fetch, no fallback, no flicker.',
+        'Other libraries treat translations as data: a dictionary loaded at runtime, looked up on every call. Yapyak treats them as code — each call site compiles to a literal with every locale variant inlined. The bundle splits with your routes. The model that ships 20 languages is the same as the one that ships 2.',
       ),
       number: '03',
       title: t('Translations as code, not data'),
