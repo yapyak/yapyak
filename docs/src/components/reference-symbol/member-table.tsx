@@ -1,5 +1,7 @@
 import type { BoxProps } from '#components/box';
 
+import { t } from 'yapyak';
+
 import { Box } from '#components/box';
 
 import styles from './member-table.module.css';
@@ -39,9 +41,9 @@ export function ReferenceSymbolMemberTable(
       >
         <Box as="thead">
           <Box as="tr">
-            <Box as="th">Name</Box>
-            <Box as="th">Type</Box>
-            <Box as="th">Description</Box>
+            <Box as="th">{t('Name')}</Box>
+            <Box as="th">{t('Type')}</Box>
+            <Box as="th">{t('Description')}</Box>
           </Box>
         </Box>
         <Box as="tbody">

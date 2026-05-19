@@ -1,5 +1,7 @@
 import type { BoxProps } from '#components/box';
 
+import { t } from 'yapyak';
+
 import { Box } from '#components/box';
 
 import styles from './return-section.module.css';
@@ -24,7 +26,7 @@ export function ReferenceSymbolReturnSection(
         as="h2"
         className={styles.Heading}
       >
-        Returns
+        {t('Returns')}
       </Box>
       <Box
         as="p"

@@ -1,4 +1,20 @@
 {
+  "src/components/callout.tsx": {
+    "Danger": "",
+    "Info": "",
+    "Tip": "",
+    "Warning": ""
+  },
+  "src/components/colophon.tsx": {
+    "MIT license": "",
+    "Who's got your back like a perfect fallback? That's yapyak.": "",
+    "Who's i18n minus the heart attack? That's yapyak.": "",
+    "Who's keeping i18n on track? That's yapyak.": "",
+    "Who's that yak inside your stack? That's yapyak.": "",
+    "Who's the AI with the i18n knack? That's yapyak.": "",
+    "Who's translating while you snack? That's yapyak.": "",
+    "Who's yakking in the back? That's yapyak.": ""
+  },
   "src/components/feature-section.tsx": {
     "Anthropic, OpenAI, Gemini, Ollama out of the box. A custom one in 30 lines. Or skip AI entirely and fill the JSON yourself — old habits are welcome.": "",
     "Auto-translation on save": "",
@@ -41,6 +57,27 @@
     "Home": "",
     "Reference": "",
     "View on GitHub": ""
+  },
+  "src/components/layout/header/menu-button.tsx": {
+    "Close menu": "",
+    "Open menu": ""
+  },
+  "src/components/reference-symbol/deprecated.tsx": {
+    "Deprecated.": ""
+  },
+  "src/components/reference-symbol/example-section.tsx": {
+    "Examples": ""
+  },
+  "src/components/reference-symbol/member-table.tsx": {
+    "Description": "",
+    "Name": "",
+    "Type": ""
+  },
+  "src/components/reference-symbol/return-section.tsx": {
+    "Returns": ""
+  },
+  "src/components/reference-symbol/signature.tsx": {
+    "Signature": ""
   },
   "src/routes/__root.tsx": {
     "Guide": "",

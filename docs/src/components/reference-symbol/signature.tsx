@@ -1,5 +1,7 @@
 import type { BoxProps } from '#components/box';
 
+import { t } from 'yapyak';
+
 import { Box } from '#components/box';
 import { CodeBlock } from '#components/code-block';
 
@@ -22,7 +24,7 @@ export function ReferenceSymbolSignature(props: ReferenceSymbolSignatureProps) {
         as="h2"
         className={styles.Heading}
       >
-        Signature
+        {t('Signature')}
       </Box>
       <CodeBlock
         language="ts"

@@ -1,6 +1,8 @@
 import type { BoxProps } from '#components/box';
 import type { Block } from '#lib/content';
 
+import { t } from 'yapyak';
+
 import { BlockRenderer } from '#components/block-renderer';
 import { Box } from '#components/box';
 
@@ -26,7 +28,7 @@ export function ReferenceSymbolExampleSection(
         as="h2"
         className={styles.Heading}
       >
-        Examples
+        {t('Examples')}
       </Box>
       <Box className={styles.ExampleStack}>
         {examples.map((blocks, index) => (

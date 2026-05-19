@@ -1,3 +1,5 @@
+import { t } from 'yapyak';
+
 import { Box } from '#components/box';
 
 import styles from './menu-button.module.css';
@@ -12,7 +14,7 @@ export function HeaderMenuButton(props: HeaderMenuButtonProps) {
   return (
     <Box
       aria-expanded={isOpen}
-      aria-label={isOpen ? 'Close menu' : 'Open menu'}
+      aria-label={isOpen ? t('Close menu') : t('Open menu')}
       as="button"
       className={styles.HeaderMenuButton}
       data-open={isOpen}
