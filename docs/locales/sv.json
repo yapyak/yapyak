@@ -1,4 +1,26 @@
 {
+  "src/components/feature-section.tsx": {
+    "Anthropic, OpenAI, Gemini, Ollama out of the box. A custom one in 30 lines. Or skip AI entirely and fill the JSON yourself — old habits are welcome.": "",
+    "Auto-translation on save": "",
+    "Bring your own AI. Or none.": "",
+    "Built for agentic workflows": "",
+    "Context-aware AI translation": "",
+    "Edit. Save. Done. Every locale updates via HMR before you blink. There is no second step.": "",
+    "Every Intl primitive: plurals, dates, numbers, lists, ordinals. Yes, all four Polish plural forms.": "",
+    "Every design decision serves the agent loop. t() extracts at save. Renames migrate translations. The CLI scripts cleanly. Claude Code, Cursor, Codex — they write code, yapyak handles i18n.": "",
+    "Feature-complete intl": "",
+    "Forget a {count} placeholder and TypeScript stops you before your tech lead does. Source-as-keys means types live on the call site. Same speed at 50 strings or 50,000.": "",
+    "Framework adapters": "",
+    "MIT-licensed, full functionality on npm. Bring your own LLM key and pay the model provider directly. Yapyak doesn't sit between you and the AI bill; there's no upgrade tier.": "",
+    "Open source, not open core": "",
+    "Other libraries treat translations as data. Yapyak treats them as code — inlined at each call site, split with your routes by Vite, the locale toggle paints in the same frame as the click.": "",
+    "React, Vue, and Svelte bindings. SSR adapters for Astro, React Router, SvelteKit, and TanStack Start. Next.js? Open a PR.": "",
+    "Source string is the key": "",
+    "The translator sees the component, the element, and the surrounding code. Set a voice (\"friendly\", \"terse\", \"lawyer at a dinner party\"). Pin glossary terms so \"Cart\" stays \"Korg\" — even when the AI thinks it knows better.": "",
+    "Translations as code, not data": "",
+    "Type-safe params": "",
+    "What Tailwind did for class names, yapyak did for keys. Just write t('Save changes') — the English is your key, your value, your single source of truth. AI doesn't have to invent identifiers either.": ""
+  },
   "src/components/guide-layout/toolbar.tsx": {
     "Close outline": "",
     "Next": "",
@@ -6,10 +28,6 @@
     "Previous": ""
   },
   "src/components/guide-pagination.tsx": {
-    "Next": "",
-    "Previous": ""
-  },
-  "src/components/guide-prev-next.tsx": {
     "Next": "",
     "Previous": ""
   },

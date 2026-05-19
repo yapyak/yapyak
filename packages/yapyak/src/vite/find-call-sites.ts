@@ -12,9 +12,10 @@ export function findCallSites(code: string): CallSite[] {
   }
   const sites: CallSite[] = [];
   const aliasUnion = [...aliases].map(escapeRegex).join('|');
+  const scannable = maskInactiveRegions(code);
 
   const directRx = new RegExp(`(?<![\\w.$])(?:${aliasUnion})\\s*\\(`, 'g');
-  let match: RegExpExecArray | null = directRx.exec(code);
+  let match: RegExpExecArray | null = directRx.exec(scannable);
   while (match !== null) {
     sites.push({
       argsStart: match.index + match[0].length,
@@ -22,14 +23,14 @@ export function findCallSites(code: string): CallSite[] {
       callStart: match.index,
       fixedLocale: undefined,
     });
-    match = directRx.exec(code);
+    match = directRx.exec(scannable);
   }
 
   const localeRx = new RegExp(
     `(?<![\\w.$])(?:${aliasUnion})\\s*\\.\\s*in\\s*\\(\\s*(['"])([^'"]+)\\1\\s*\\)\\s*\\(`,
     'g',
   );
-  let localeMatch: RegExpExecArray | null = localeRx.exec(code);
+  let localeMatch: RegExpExecArray | null = localeRx.exec(scannable);
   while (localeMatch !== null) {
     const fixedLocale = localeMatch[2];
     if (fixedLocale !== undefined) {
@@ -40,11 +41,120 @@ export function findCallSites(code: string): CallSite[] {
         fixedLocale,
       });
     }
-    localeMatch = localeRx.exec(code);
+    localeMatch = localeRx.exec(scannable);
   }
 
   return dedupeAndOrder(sites);
 }
+
+function maskInactiveRegions(code: string): string {
+  const chars = code.split('');
+  const stack: { braceDepth: number; mode: Mode; quote: string | undefined }[] =
+    [{ braceDepth: 0, mode: 'code', quote: undefined }];
+  let i = 0;
+
+  while (i < code.length) {
+    const state = stack[stack.length - 1] as (typeof stack)[number];
+    const ch = code[i] as string;
+
+    if (state.mode === 'code' || state.mode === 'interp') {
+      if (ch === '/' && code[i + 1] === '/') {
+        const newline = code.indexOf('\n', i);
+        const stop = newline === -1 ? code.length : newline;
+        for (let k = i; k < stop; k++) {
+          chars[k] = ' ';
+        }
+        i = stop;
+        continue;
+      }
+      if (ch === '/' && code[i + 1] === '*') {
+        const closing = code.indexOf('*/', i + 2);
+        const stop = closing === -1 ? code.length : closing + 2;
+        for (let k = i; k < stop; k++) {
+          if (chars[k] !== '\n') {
+            chars[k] = ' ';
+          }
+        }
+        i = stop;
+        continue;
+      }
+      if (ch === "'" || ch === '"') {
+        stack.push({ braceDepth: 0, mode: 'string', quote: ch });
+        i++;
+        continue;
+      }
+      if (ch === '`') {
+        stack.push({ braceDepth: 0, mode: 'template', quote: undefined });
+        i++;
+        continue;
+      }
+      if (state.mode === 'interp') {
+        if (ch === '{') {
+          state.braceDepth++;
+        } else if (ch === '}') {
+          state.braceDepth--;
+          if (state.braceDepth === 0) {
+            stack.pop();
+            i++;
+            continue;
+          }
+        }
+      }
+      i++;
+      continue;
+    }
+
+    if (state.mode === 'string') {
+      if (ch === '\\') {
+        chars[i] = ' ';
+        if (i + 1 < code.length && code[i + 1] !== '\n') {
+          chars[i + 1] = ' ';
+        }
+        i += 2;
+        continue;
+      }
+      if (ch === state.quote) {
+        stack.pop();
+        i++;
+        continue;
+      }
+      if (ch !== '\n') {
+        chars[i] = ' ';
+      }
+      i++;
+      continue;
+    }
+
+    if (state.mode === 'template') {
+      if (ch === '\\') {
+        chars[i] = ' ';
+        if (i + 1 < code.length && code[i + 1] !== '\n') {
+          chars[i + 1] = ' ';
+        }
+        i += 2;
+        continue;
+      }
+      if (ch === '`') {
+        stack.pop();
+        i++;
+        continue;
+      }
+      if (ch === '$' && code[i + 1] === '{') {
+        stack.push({ braceDepth: 1, mode: 'interp', quote: undefined });
+        i += 2;
+        continue;
+      }
+      if (ch !== '\n') {
+        chars[i] = ' ';
+      }
+      i++;
+    }
+  }
+
+  return chars.join('');
+}
+
+type Mode = 'code' | 'interp' | 'string' | 'template';
 
 function collectAliases(code: string): Set<string> {
   const aliases = new Set<string>();

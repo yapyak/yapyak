@@ -1,5 +1,5 @@
 import type { BoxProps } from '#components/box';
-import type { Feature } from '#utils/features';
+import type { Feature } from '#components/feature-section';
 
 import { Box } from '#components/box';
 
