@@ -5,6 +5,7 @@ export type {
   CodeBlock,
   CodeGroupBlock,
   EmphasisBlock,
+  EyebrowBlock,
   HeadingBlock,
   ImageBlock,
   InlineCodeBlock,
@@ -14,6 +15,7 @@ export type {
   ListItemBlock,
   Page,
   ParagraphBlock,
+  SourceLinkBlock,
   StrikethroughBlock,
   StrongBlock,
   TableBlock,
@@ -26,3 +28,4 @@ export type {
 
 export { loadPage } from './loader.server';
 export { parseContent, parseFrontmatterOnly } from './parser.server';
+export { slugify } from './slugify';

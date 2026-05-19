@@ -29,7 +29,7 @@ export interface ApiFunction extends ApiSymbolBase {
   kind: 'function';
   parameters: ApiParameter[];
   returnDescription: string;
-  returnType: string;
+  returnType: TypeToken[];
   signature: string;
 }
 
@@ -42,14 +42,14 @@ export interface ApiInterface extends ApiSymbolBase {
 
 export interface ApiTypeAlias extends ApiSymbolBase {
   kind: 'type';
-  resolvedType: string;
+  resolvedType: TypeToken[];
   signature: string;
 }
 
 export interface ApiVariable extends ApiSymbolBase {
   kind: 'variable';
   signature: string;
-  type: string;
+  type: TypeToken[];
 }
 
 export interface ApiClass extends ApiSymbolBase {
@@ -63,7 +63,7 @@ export interface ApiParameter {
   description: string;
   name: string;
   optional: boolean;
-  type: string;
+  type: TypeToken[];
 }
 
 export interface ApiMember {
@@ -71,12 +71,26 @@ export interface ApiMember {
   description: string;
   name: string;
   optional: boolean;
-  type: string;
+  type: TypeToken[];
 }
 
 export interface ApiCallSignature {
   parameters: ApiParameter[];
-  returnType: string;
+  returnType: TypeToken[];
+}
+
+export type TypeToken = TypeTextToken | TypeRefToken;
+
+export interface TypeTextToken {
+  kind: 'text';
+  text: string;
+}
+
+export interface TypeRefToken {
+  kind: 'ref';
+  module: string;
+  name: string;
+  text: string;
 }
 
 export interface ApiLocation {

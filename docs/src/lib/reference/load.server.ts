@@ -1,7 +1,32 @@
-import { loadManifest } from './manifest.server';
-import { buildSymbolPage, buildSymbolRegistry } from './pages.server';
+import type { Page } from '#lib/content';
 
-export async function loadReferenceSymbol(path: string) {
+import { loadPage } from '#lib/content';
+
+import { join } from 'node:path';
+
+import { loadManifest } from './manifest.server';
+import { buildSymbolPage } from './pages.server';
+
+export type LoadReferenceResult =
+  | { kind: 'not-found' }
+  | { kind: 'page'; page: Page }
+  | { kind: 'redirect'; target: string };
+
+export async function loadReferencePage(
+  path: string,
+): Promise<LoadReferenceResult> {
+  if (path === '') {
+    const introPath = join(process.cwd(), 'content', 'reference', 'introduction.md');
+    const result = await loadPage(introPath);
+    if (result === null) {
+      return { kind: 'not-found' };
+    }
+    return {
+      kind: 'page',
+      page: { ...result.page, title: result.page.title || 'Reference' },
+    };
+  }
+
   const manifest = await loadManifest(process.cwd());
 
   const moduleId = slugToModuleId(path);
@@ -9,12 +34,12 @@ export async function loadReferenceSymbol(path: string) {
   if (moduleMatch !== undefined) {
     const firstExport = moduleMatch.exports[0];
     if (firstExport === undefined) {
-      return { kind: 'not-found' as const };
+      return { kind: 'not-found' };
     }
     const isRoot = moduleMatch.id === 'yapyak';
     const slug = moduleSlug(moduleMatch.id);
     return {
-      kind: 'redirect' as const,
+      kind: 'redirect',
       target: isRoot ? firstExport.name : `${slug}/${firstExport.name}`,
     };
   }
@@ -25,16 +50,14 @@ export async function loadReferenceSymbol(path: string) {
   const parentId = slugToModuleId(parentSlug);
   const parent = manifest.modules.find((module) => module.id === parentId);
   if (parent === undefined) {
-    return { kind: 'not-found' as const };
+    return { kind: 'not-found' };
   }
   const symbol = parent.exports.find((entry) => entry.name === symbolName);
   if (symbol === undefined) {
-    return { kind: 'not-found' as const };
+    return { kind: 'not-found' };
   }
 
-  const registry = buildSymbolRegistry(manifest);
-  const page = buildSymbolPage(symbol, parent.id, registry);
-  return { kind: 'symbol' as const, page };
+  return { kind: 'page', page: buildSymbolPage(symbol, parent.id) };
 }
 
 function slugToModuleId(slug: string) {

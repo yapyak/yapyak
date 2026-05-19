@@ -11,6 +11,8 @@ import type {
 
 import Markdoc from '@markdoc/markdoc';
 
+import { slugify } from './slugify';
+
 export function parseContent(source: string) {
   const ast = Markdoc.parse(source);
   const frontmatterSource = ast.attributes.frontmatter as string | undefined;
@@ -325,12 +327,3 @@ function parseFrontmatter(raw: string) {
   return result;
 }
 
-function slugify(text: string) {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}

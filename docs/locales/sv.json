@@ -15,6 +15,16 @@
     "Who's translating while you snack? That's yapyak.": "",
     "Who's yakking in the back? That's yapyak.": ""
   },
+  "src/components/content-layout/toolbar.tsx": {
+    "Close outline": "",
+    "Next": "",
+    "Open outline": "",
+    "Previous": ""
+  },
+  "src/components/content-pagination.tsx": {
+    "Next": "",
+    "Previous": ""
+  },
   "src/components/feature-section.tsx": {
     "Anthropic, OpenAI, Gemini, Ollama out of the box. A custom one in 30 lines. Or skip AI entirely and fill the JSON yourself — old habits are welcome.": "",
     "Auto-translation on save": "",
@@ -24,7 +34,7 @@
     "Edit. Save. Done. Every locale updates via HMR before you blink. There is no second step.": "",
     "Every Intl primitive: plurals, dates, numbers, lists, ordinals. Yes, all four Polish plural forms.": "",
     "Every design decision serves the agent loop. For an AI agent, each t() carries the whole message at the call site. Renames migrate translations, extractions happen at save, the CLI scripts cleanly. Your agent writes the code. yapyak does the rest.": "",
-    "Forget a {count} placeholder and TypeScript stops you before your tech lead does. Source-as-keys means types live on the call site. Same speed at 50 strings or 50,000.": "",
+    "Forget a placeholder param and TypeScript stops you before your tech lead does. Source-as-keys means types live on the call site. Same speed at 50 strings or 50,000.": "",
     "Framework adapters": "",
     "MIT-licensed, full functionality on npm. Bring your own LLM key and pay the model provider directly. yapyak doesn't sit between you and the AI bill; there's no upgrade tier.": "",
     "Open source, not open core": "",
@@ -36,16 +46,6 @@
     "Translations compile in": "",
     "Type-safe params": "",
     "What Tailwind did for class names, yapyak did for keys. Just write t('Save changes') — the English is your key, your value, your single source of truth.": ""
-  },
-  "src/components/guide-layout/toolbar.tsx": {
-    "Close outline": "",
-    "Next": "",
-    "Open outline": "",
-    "Previous": ""
-  },
-  "src/components/guide-pagination.tsx": {
-    "Next": "",
-    "Previous": ""
   },
   "src/components/hero.tsx": {
     "Get Started": "",
@@ -61,23 +61,6 @@
   "src/components/layout/header/menu-button.tsx": {
     "Close menu": "",
     "Open menu": ""
-  },
-  "src/components/reference-symbol/deprecated.tsx": {
-    "Deprecated.": ""
-  },
-  "src/components/reference-symbol/example-section.tsx": {
-    "Examples": ""
-  },
-  "src/components/reference-symbol/member-table.tsx": {
-    "Description": "",
-    "Name": "",
-    "Type": ""
-  },
-  "src/components/reference-symbol/return-section.tsx": {
-    "Returns": ""
-  },
-  "src/components/reference-symbol/signature.tsx": {
-    "Signature": ""
   },
   "src/routes/__root.tsx": {
     "Guide": "",

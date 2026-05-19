@@ -13,11 +13,13 @@ export type {
   ApiTag,
   ApiTypeAlias,
   ApiVariable,
+  TypeRefToken,
+  TypeTextToken,
+  TypeToken,
 } from './types';
 
 export { extractApi } from './api.server';
-export { loadReferenceIntroduction } from './introduction.server';
+export { loadReferencePage } from './load.server';
 export { loadManifest } from './manifest.server';
-export { buildSymbolPage, buildSymbolRegistry } from './pages.server';
+export { buildSymbolPage } from './pages.server';
 export { buildReferenceSidebar, loadReferenceSidebar } from './sidebar.server';
-export { loadReferenceSymbol } from './symbol.server';

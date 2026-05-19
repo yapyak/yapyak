@@ -2,11 +2,11 @@ import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
 import { Article } from '#components/article';
-import { loadReferenceSymbol } from '#lib/reference';
+import { loadReferencePage } from '#lib/reference';
 
 const loadData = createServerFn()
   .inputValidator((path: string) => path)
-  .handler(({ data: path }) => loadReferenceSymbol(path));
+  .handler(({ data: path }) => loadReferencePage(path));
 
 export const Route = createFileRoute('/reference/$')({
   component: Component,

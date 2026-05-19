@@ -11,6 +11,7 @@ import type {
   ApiTag,
   ApiTypeAlias,
   ApiVariable,
+  TypeToken,
 } from './types';
 
 import ts from 'typescript';
@@ -22,6 +23,17 @@ interface EntryPoint {
   filePath: string;
   id: string;
   subpath: string;
+}
+
+interface SymbolRef {
+  module: string;
+  name: string;
+}
+
+interface Context {
+  checker: ts.TypeChecker;
+  registry: Map<ts.Symbol, SymbolRef>;
+  yapyakDir: string;
 }
 
 export async function extractApi(yapyakDir: string) {
@@ -53,6 +65,9 @@ export async function extractApi(yapyakDir: string) {
   });
   const checker = program.getTypeChecker();
 
+  const registry = buildRegistry(entries, program, checker);
+  const context: Context = { checker, registry, yapyakDir };
+
   const modules: ApiModule[] = [];
   for (const entry of entries) {
     const sourceFile = program.getSourceFile(entry.filePath);
@@ -65,7 +80,7 @@ export async function extractApi(yapyakDir: string) {
     }
     const exports = checker
       .getExportsOfModule(moduleSymbol)
-      .flatMap((symbol) => extractExport(symbol, checker, yapyakDir))
+      .flatMap((symbol) => extractExport(symbol, context))
       .filter((value): value is ApiExport => value !== null);
 
     exports.sort(compareExports);
@@ -79,6 +94,37 @@ export async function extractApi(yapyakDir: string) {
   }
 
   return { modules };
+}
+
+function buildRegistry(
+  entries: EntryPoint[],
+  program: ts.Program,
+  checker: ts.TypeChecker,
+) {
+  const registry = new Map<ts.Symbol, SymbolRef>();
+  for (const entry of entries) {
+    const sourceFile = program.getSourceFile(entry.filePath);
+    if (sourceFile === undefined) {
+      continue;
+    }
+    const moduleSymbol = checker.getSymbolAtLocation(sourceFile);
+    if (moduleSymbol === undefined) {
+      continue;
+    }
+    for (const symbol of checker.getExportsOfModule(moduleSymbol)) {
+      const aliased = resolveAlias(symbol, checker);
+      if (
+        hasTag(symbol, checker, 'internal') ||
+        hasTag(aliased, checker, 'internal')
+      ) {
+        continue;
+      }
+      if (!registry.has(aliased)) {
+        registry.set(aliased, { module: entry.id, name: symbol.getName() });
+      }
+    }
+  }
+  return registry;
 }
 
 async function resolveEntryPoints(yapyakDir: string) {
@@ -108,11 +154,8 @@ async function resolveEntryPoints(yapyakDir: string) {
   return entries;
 }
 
-function extractExport(
-  symbol: ts.Symbol,
-  checker: ts.TypeChecker,
-  yapyakDir: string,
-): ApiExport[] {
+function extractExport(symbol: ts.Symbol, context: Context): ApiExport[] {
+  const { checker } = context;
   const aliased = resolveAlias(symbol, checker);
   if (
     hasTag(symbol, checker, 'internal') ||
@@ -125,22 +168,22 @@ function extractExport(
     return [];
   }
 
-  const base = buildBase(symbol, aliased, declaration, checker, yapyakDir);
+  const base = buildBase(symbol, aliased, declaration, context);
 
   if (ts.isInterfaceDeclaration(declaration)) {
-    return [buildInterface(base, aliased, declaration, checker)];
+    return [buildInterface(base, aliased, declaration, context)];
   }
   if (ts.isTypeAliasDeclaration(declaration)) {
-    return [buildTypeAlias(base, declaration, checker)];
+    return [buildTypeAlias(base, declaration, context)];
   }
   if (ts.isClassDeclaration(declaration)) {
-    return [buildClass(base, aliased, declaration, checker)];
+    return [buildClass(base, aliased, declaration, context)];
   }
   if (
     ts.isFunctionDeclaration(declaration) ||
     ts.isMethodDeclaration(declaration)
   ) {
-    return [buildFunction(base, aliased, declaration, checker)];
+    return [buildFunction(base, aliased, declaration, context)];
   }
   if (
     ts.isVariableDeclaration(declaration) ||
@@ -150,9 +193,9 @@ function extractExport(
     const type = checker.getTypeOfSymbolAtLocation(aliased, declaration);
     const callSignatures = type.getCallSignatures();
     if (callSignatures.length > 0) {
-      return [buildVariableAsFunction(base, aliased, declaration, checker)];
+      return [buildVariableAsFunction(base, aliased, declaration, context)];
     }
-    return [buildVariable(base, aliased, declaration, checker)];
+    return [buildVariable(base, aliased, declaration, context)];
   }
   return [];
 }
@@ -161,9 +204,9 @@ function buildBase(
   original: ts.Symbol,
   aliased: ts.Symbol,
   declaration: ts.Declaration,
-  checker: ts.TypeChecker,
-  yapyakDir: string,
+  context: Context,
 ) {
+  const { checker, yapyakDir } = context;
   const docs = aliased
     .getDocumentationComment(checker)
     .concat(original.getDocumentationComment(checker));
@@ -211,17 +254,17 @@ function buildInterface(
   base: ApiSymbolBase,
   symbol: ts.Symbol,
   declaration: ts.InterfaceDeclaration,
-  checker: ts.TypeChecker,
+  context: Context,
 ): ApiInterface {
-  const members = collectMembers(symbol, declaration, checker);
-  const type = checker.getDeclaredTypeOfSymbol(symbol);
+  const members = collectMembers(symbol, declaration, context);
+  const type = context.checker.getDeclaredTypeOfSymbol(symbol);
   const callSignatures: ApiCallSignature[] = type
     .getCallSignatures()
     .map((sig) => ({
       parameters: sig
         .getParameters()
-        .map((parameter) => paramFromSymbol(parameter, checker)),
-      returnType: checker.typeToString(sig.getReturnType()),
+        .map((parameter) => paramFromSymbol(parameter, context)),
+      returnType: signatureReturnTokens(sig, context),
     }));
 
   return {
@@ -236,13 +279,13 @@ function buildInterface(
 function buildTypeAlias(
   base: ApiSymbolBase,
   declaration: ts.TypeAliasDeclaration,
-  checker: ts.TypeChecker,
+  context: Context,
 ): ApiTypeAlias {
-  const resolved = checker.getTypeAtLocation(declaration.type);
+  const resolvedTokens = typeNodeToTokens(declaration.type, context);
   return {
     ...base,
     kind: 'type',
-    resolvedType: checker.typeToString(resolved),
+    resolvedType: resolvedTokens,
     signature: declarationText(declaration),
   };
 }
@@ -251,12 +294,12 @@ function buildClass(
   base: ApiSymbolBase,
   symbol: ts.Symbol,
   declaration: ts.ClassDeclaration,
-  checker: ts.TypeChecker,
+  context: Context,
 ): ApiClass {
   return {
     ...base,
     kind: 'class',
-    members: collectMembers(symbol, declaration, checker),
+    members: collectMembers(symbol, declaration, context),
     signature: `class ${base.name}`,
   };
 }
@@ -265,30 +308,31 @@ function buildFunction(
   base: ApiSymbolBase,
   symbol: ts.Symbol,
   declaration: ts.FunctionDeclaration | ts.MethodDeclaration,
-  checker: ts.TypeChecker,
+  context: Context,
 ): ApiFunction {
-  const type = checker.getTypeOfSymbolAtLocation(symbol, declaration);
+  const type = context.checker.getTypeOfSymbolAtLocation(symbol, declaration);
   const sig = type.getCallSignatures()[0];
-  return buildFunctionFromSignature(base, symbol, sig, checker);
+  return buildFunctionFromSignature(base, symbol, sig, context);
 }
 
 function buildVariableAsFunction(
   base: ApiSymbolBase,
   symbol: ts.Symbol,
   declaration: ts.Declaration,
-  checker: ts.TypeChecker,
+  context: Context,
 ): ApiFunction {
-  const type = checker.getTypeOfSymbolAtLocation(symbol, declaration);
+  const type = context.checker.getTypeOfSymbolAtLocation(symbol, declaration);
   const sig = type.getCallSignatures()[0];
-  return buildFunctionFromSignature(base, symbol, sig, checker);
+  return buildFunctionFromSignature(base, symbol, sig, context);
 }
 
 function buildFunctionFromSignature(
   base: ApiSymbolBase,
   symbol: ts.Symbol,
   sig: ts.Signature | undefined,
-  checker: ts.TypeChecker,
+  context: Context,
 ): ApiFunction {
+  const { checker } = context;
   const tags = symbol.getJsDocTags(checker);
   const returnTag = tags.find((tag) => tag.name === 'returns');
   const returnDescription =
@@ -302,18 +346,19 @@ function buildFunctionFromSignature(
       kind: 'function',
       parameters: [],
       returnDescription,
-      returnType: 'unknown',
+      returnType: [{ kind: 'text', text: 'unknown' }],
       signature: `function ${base.name}(): unknown`,
     };
   }
 
   const parameters = sig
     .getParameters()
-    .map((parameter) => paramFromSymbol(parameter, checker));
-  const returnType = checker.typeToString(sig.getReturnType());
+    .map((parameter) => paramFromSymbol(parameter, context));
+  const returnType = signatureReturnTokens(sig, context);
+  const returnTypeText = renderTokens(returnType);
   const signature = `${base.name}(${parameters
     .map((parameter) => formatParam(parameter))
-    .join(', ')}): ${returnType}`;
+    .join(', ')}): ${returnTypeText}`;
 
   return {
     ...base,
@@ -329,22 +374,28 @@ function buildVariable(
   base: ApiSymbolBase,
   symbol: ts.Symbol,
   declaration: ts.Declaration,
-  checker: ts.TypeChecker,
+  context: Context,
 ): ApiVariable {
+  const { checker } = context;
   const type = checker.getTypeOfSymbolAtLocation(symbol, declaration);
-  const typeText = checker.typeToString(type);
+  const typeNode = ts.isVariableDeclaration(declaration)
+    ? declaration.type
+    : ts.isPropertySignature(declaration) || ts.isPropertyDeclaration(declaration)
+      ? declaration.type
+      : undefined;
+  const tokens = tokenizeOrFallback(typeNode, type, context);
   return {
     ...base,
     kind: 'variable',
-    signature: `const ${base.name}: ${typeText}`,
-    type: typeText,
+    signature: `const ${base.name}: ${renderTokens(tokens)}`,
+    type: tokens,
   };
 }
 
 function collectMembers(
   symbol: ts.Symbol,
   declaration: ts.Declaration,
-  checker: ts.TypeChecker,
+  context: Context,
 ) {
   const members: ApiMember[] = [];
   const seen = new Set<string>();
@@ -361,7 +412,7 @@ function collectMembers(
       return;
     }
     seen.add(key);
-    const member = memberToApi(memberSymbol, declaration, checker);
+    const member = memberToApi(memberSymbol, declaration, context);
     if (member !== null) {
       members.push(member);
     }
@@ -373,30 +424,43 @@ function collectMembers(
 function memberToApi(
   memberSymbol: ts.Symbol,
   contextDeclaration: ts.Declaration,
-  checker: ts.TypeChecker,
-) {
+  context: Context,
+): ApiMember {
+  const { checker } = context;
   const declaration = memberSymbol.getDeclarations()?.[0] ?? contextDeclaration;
   const type = checker.getTypeOfSymbolAtLocation(memberSymbol, declaration);
+  const typeNode =
+    ts.isPropertySignature(declaration) || ts.isPropertyDeclaration(declaration)
+      ? declaration.type
+      : undefined;
+  const tokens = tokenizeOrFallback(typeNode, type, context);
   const docParts = memberSymbol.getDocumentationComment(checker);
-  const description = ts.displayPartsToString(docParts).trim();
+  const description = normalizeDescription(ts.displayPartsToString(docParts));
   const defaultValue = readDefaultTag(memberSymbol, checker);
+  const optional = (memberSymbol.flags & ts.SymbolFlags.Optional) !== 0;
   return {
     defaultValue,
     description,
     name: memberSymbol.getName(),
-    optional: (memberSymbol.flags & ts.SymbolFlags.Optional) !== 0,
-    type: stripUndefinedFromOptional(checker.typeToString(type), memberSymbol),
+    optional,
+    type: optional ? stripUndefinedFromTokens(tokens) : tokens,
   };
 }
 
-function paramFromSymbol(paramSymbol: ts.Symbol, checker: ts.TypeChecker) {
+function paramFromSymbol(
+  paramSymbol: ts.Symbol,
+  context: Context,
+): ApiParameter {
+  const { checker } = context;
   const decl = paramSymbol.getDeclarations()?.[0];
   const type =
     decl !== undefined
       ? checker.getTypeOfSymbolAtLocation(paramSymbol, decl)
       : checker.getDeclaredTypeOfSymbol(paramSymbol);
+  const typeNode = decl !== undefined && ts.isParameter(decl) ? decl.type : undefined;
+  const tokens = tokenizeOrFallback(typeNode, type, context);
   const docParts = paramSymbol.getDocumentationComment(checker);
-  const description = ts.displayPartsToString(docParts).trim();
+  const description = normalizeDescription(ts.displayPartsToString(docParts));
   const optional =
     decl !== undefined &&
     ts.isParameter(decl) &&
@@ -410,12 +474,131 @@ function paramFromSymbol(paramSymbol: ts.Symbol, checker: ts.TypeChecker) {
     description,
     name: paramSymbol.getName(),
     optional,
-    type: checker.typeToString(type),
+    type: tokens,
   };
 }
 
+function signatureReturnTokens(sig: ts.Signature, context: Context) {
+  const declaration = sig.getDeclaration();
+  const typeNode = declaration?.type;
+  return tokenizeOrFallback(typeNode, sig.getReturnType(), context);
+}
+
+function tokenizeOrFallback(
+  typeNode: ts.TypeNode | undefined,
+  fallback: ts.Type,
+  context: Context,
+): TypeToken[] {
+  if (typeNode !== undefined) {
+    return typeNodeToTokens(typeNode, context);
+  }
+  return [{ kind: 'text', text: context.checker.typeToString(fallback) }];
+}
+
+function typeNodeToTokens(
+  typeNode: ts.TypeNode,
+  context: Context,
+): TypeToken[] {
+  const { checker, registry } = context;
+  const baseStart = typeNode.getStart();
+  const text = typeNode.getText();
+  const refs: Array<{ end: number; ref: SymbolRef; start: number }> = [];
+
+  const visit = (node: ts.Node) => {
+    if (ts.isIdentifier(node) && !isExcludedIdentifierPosition(node)) {
+      const symbol = checker.getSymbolAtLocation(node);
+      if (symbol !== undefined) {
+        const resolved = resolveAllAliases(symbol, checker);
+        const ref = registry.get(resolved);
+        if (ref !== undefined) {
+          refs.push({
+            end: node.getEnd() - baseStart,
+            ref,
+            start: node.getStart() - baseStart,
+          });
+        }
+      }
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(typeNode);
+
+  refs.sort((a, b) => a.start - b.start);
+  const tokens: TypeToken[] = [];
+  let cursor = 0;
+  for (const ref of refs) {
+    if (ref.start > cursor) {
+      tokens.push({ kind: 'text', text: text.slice(cursor, ref.start) });
+    }
+    tokens.push({
+      kind: 'ref',
+      module: ref.ref.module,
+      name: ref.ref.name,
+      text: text.slice(ref.start, ref.end),
+    });
+    cursor = ref.end;
+  }
+  if (cursor < text.length) {
+    tokens.push({ kind: 'text', text: text.slice(cursor) });
+  }
+  if (tokens.length === 0) {
+    tokens.push({ kind: 'text', text });
+  }
+  return tokens;
+}
+
+function isExcludedIdentifierPosition(node: ts.Identifier) {
+  const parent = node.parent;
+  if (parent === undefined) {
+    return false;
+  }
+  if (ts.isPropertySignature(parent) && parent.name === node) {
+    return true;
+  }
+  if (ts.isPropertyDeclaration(parent) && parent.name === node) {
+    return true;
+  }
+  if (ts.isParameter(parent) && parent.name === node) {
+    return true;
+  }
+  if (ts.isTypeParameterDeclaration(parent) && parent.name === node) {
+    return true;
+  }
+  return false;
+}
+
+function resolveAllAliases(symbol: ts.Symbol, checker: ts.TypeChecker) {
+  let current = symbol;
+  while ((current.flags & ts.SymbolFlags.Alias) !== 0) {
+    current = checker.getAliasedSymbol(current);
+  }
+  return current;
+}
+
+function stripUndefinedFromTokens(tokens: TypeToken[]): TypeToken[] {
+  if (tokens.length === 0) {
+    return tokens;
+  }
+  const last = tokens[tokens.length - 1];
+  if (last === undefined || last.kind !== 'text') {
+    return tokens;
+  }
+  const trimmed = last.text.replace(/\s*\|\s*undefined$/, '');
+  if (trimmed === last.text) {
+    return tokens;
+  }
+  if (trimmed === '') {
+    return tokens.slice(0, -1);
+  }
+  return [...tokens.slice(0, -1), { kind: 'text', text: trimmed }];
+}
+
+function renderTokens(tokens: TypeToken[]) {
+  return tokens.map((token) => token.text).join('');
+}
+
 function formatParam(parameter: ApiParameter) {
-  return `${parameter.name}${parameter.optional ? '?' : ''}: ${parameter.type}`;
+  return `${parameter.name}${parameter.optional ? '?' : ''}: ${renderTokens(parameter.type)}`;
 }
 
 function declarationText(declaration: ts.Declaration) {
@@ -455,11 +638,9 @@ function readDefaultTag(symbol: ts.Symbol, checker: ts.TypeChecker) {
   return ts.displayPartsToString(tag.text).trim() || null;
 }
 
-function stripUndefinedFromOptional(text: string, symbol: ts.Symbol) {
-  if ((symbol.flags & ts.SymbolFlags.Optional) === 0) {
-    return text;
-  }
-  return text.replace(/\s*\|\s*undefined$/, '');
+function normalizeDescription(text: string) {
+  const trimmed = text.trim();
+  return trimmed.startsWith('- ') ? trimmed.slice(2) : trimmed;
 }
 
 function uniqueParts(parts: ts.SymbolDisplayPart[]) {

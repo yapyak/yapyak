@@ -1,6 +1,7 @@
 import type { Plugin } from 'vite';
 
 import { extractApi } from './api.server';
+import { invalidateManifest } from './manifest.server';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 
@@ -18,6 +19,7 @@ export function apiManifest(options: Options): Plugin {
     const payload = JSON.stringify(manifest, null, 2);
     await mkdir(dirname(options.outFile), { recursive: true });
     await writeFile(options.outFile, `${payload}\n`, 'utf8');
+    invalidateManifest();
   }
 
   function schedule() {

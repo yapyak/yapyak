@@ -16,7 +16,12 @@
           "kind": "function",
           "parameters": [],
           "returnDescription": "",
-          "returnType": "string",
+          "returnType": [
+            {
+              "kind": "text",
+              "text": "string"
+            }
+          ],
           "signature": "getDefaultLocale(): string"
         },
         {
@@ -33,7 +38,12 @@
           "kind": "function",
           "parameters": [],
           "returnDescription": "",
-          "returnType": "string",
+          "returnType": [
+            {
+              "kind": "text",
+              "text": "string"
+            }
+          ],
           "signature": "getLocale(): string"
         },
         {
@@ -50,7 +60,12 @@
           "kind": "function",
           "parameters": [],
           "returnDescription": "",
-          "returnType": "string[]",
+          "returnType": [
+            {
+              "kind": "text",
+              "text": "string[]"
+            }
+          ],
           "signature": "getLocales(): string[]"
         },
         {
@@ -68,14 +83,24 @@
           "parameters": [
             {
               "defaultValue": null,
-              "description": "- The locale to switch to.",
+              "description": "The locale to switch to.",
               "name": "locale",
               "optional": false,
-              "type": "string"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
             }
           ],
           "returnDescription": "",
-          "returnType": "void",
+          "returnType": [
+            {
+              "kind": "text",
+              "text": "void"
+            }
+          ],
           "signature": "setLocale(locale: string): void"
         },
         {
@@ -98,19 +123,34 @@
               "description": "",
               "name": "source",
               "optional": false,
-              "type": "Source"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "Source"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "",
               "name": "args",
               "optional": false,
-              "type": "IsEmpty<Params<Source>> extends true ? [] : [params: Params<Source>]"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "IsEmpty<Params<Source>> extends true\n      ? []\n      : [params: Params<Source>]"
+                }
+              ]
             }
           ],
           "returnDescription": "",
-          "returnType": "string",
-          "signature": "t(source: Source, args: IsEmpty<Params<Source>> extends true ? [] : [params: Params<Source>]): string"
+          "returnType": [
+            {
+              "kind": "text",
+              "text": "string"
+            }
+          ],
+          "signature": "t(source: Source, args: IsEmpty<Params<Source>> extends true\n      ? []\n      : [params: Params<Source>]): string"
         },
         {
           "deprecated": null,
@@ -131,17 +171,32 @@
                   "description": "",
                   "name": "source",
                   "optional": false,
-                  "type": "Source"
+                  "type": [
+                    {
+                      "kind": "text",
+                      "text": "Source"
+                    }
+                  ]
                 },
                 {
                   "defaultValue": null,
                   "description": "",
                   "name": "args",
                   "optional": false,
-                  "type": "IsEmpty<Params<Source>> extends true ? [] : [params: Params<Source>]"
+                  "type": [
+                    {
+                      "kind": "text",
+                      "text": "IsEmpty<Params<Source>> extends true\n      ? []\n      : [params: Params<Source>]"
+                    }
+                  ]
                 }
               ],
-              "returnType": "string"
+              "returnType": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
             }
           ],
           "kind": "interface",
@@ -151,7 +206,12 @@
               "description": "",
               "name": "in",
               "optional": false,
-              "type": "(locale: string) => TIn"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "(locale: string) => TIn"
+                }
+              ]
             }
           ],
           "signature": "export interface T {\n  in(locale: string): TIn;\n  <Source extends string>(\n    source: Source,\n    ...args: IsEmpty<Params<Source>> extends true\n      ? []\n      : [params: Params<Source>]\n  ): string;\n}"
@@ -168,7 +228,12 @@
           "name": "TIn",
           "tags": [],
           "kind": "type",
-          "resolvedType": "TIn",
+          "resolvedType": [
+            {
+              "kind": "text",
+              "text": "<Source extends string>(\n  source: Source,\n  ...args: IsEmpty<Params<Source>> extends true ? [] : [params: Params<Source>]\n) => string"
+            }
+          ],
           "signature": "export type TIn = <Source extends string>(\n  source: Source,\n  ...args: IsEmpty<Params<Source>> extends true ? [] : [params: Params<Source>]\n) => string;"
         }
       ],
@@ -198,12 +263,24 @@
               "description": "",
               "name": "props",
               "optional": false,
-              "type": "IntlProviderProps"
+              "type": [
+                {
+                  "kind": "ref",
+                  "module": "yapyak/react",
+                  "name": "IntlProviderProps",
+                  "text": "IntlProviderProps"
+                }
+              ]
             }
           ],
           "returnDescription": "",
-          "returnType": "ReactElement<unknown, string | JSXElementConstructor<any>>",
-          "signature": "IntlProvider(props: IntlProviderProps): ReactElement<unknown, string | JSXElementConstructor<any>>"
+          "returnType": [
+            {
+              "kind": "text",
+              "text": "ReactElement"
+            }
+          ],
+          "signature": "IntlProvider(props: IntlProviderProps): ReactElement"
         },
         {
           "deprecated": null,
@@ -221,7 +298,12 @@
           "kind": "function",
           "parameters": [],
           "returnDescription": "",
-          "returnType": "[string, (locale: string) => void]",
+          "returnType": [
+            {
+              "kind": "text",
+              "text": "[string, (locale: string) => void]"
+            }
+          ],
           "signature": "useLocale(): [string, (locale: string) => void]"
         },
         {
@@ -243,7 +325,12 @@
               "description": "",
               "name": "children",
               "optional": false,
-              "type": "ReactNode"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "ReactNode"
+                }
+              ]
             }
           ],
           "signature": "export interface IntlProviderProps {\n  children: ReactNode;\n}"
@@ -269,8 +356,13 @@
           "name": "locale",
           "tags": [],
           "kind": "variable",
-          "signature": "const locale: WritableComputedRef<string, string>",
-          "type": "WritableComputedRef<string, string>"
+          "signature": "const locale: WritableComputedRef<string>",
+          "type": [
+            {
+              "kind": "text",
+              "text": "WritableComputedRef<string>"
+            }
+          ]
         }
       ],
       "id": "yapyak/vue",
@@ -294,7 +386,14 @@
           "tags": [],
           "kind": "variable",
           "signature": "const locale: ReactiveLocale",
-          "type": "ReactiveLocale"
+          "type": [
+            {
+              "kind": "ref",
+              "module": "yapyak/svelte",
+              "name": "ReactiveLocale",
+              "text": "ReactiveLocale"
+            }
+          ]
         },
         {
           "deprecated": null,
@@ -315,7 +414,12 @@
               "description": "The current locale. Reads track reactivity, writes call `setLocale`.",
               "name": "current",
               "optional": false,
-              "type": "string"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
             }
           ],
           "signature": "export interface ReactiveLocale {\n  /** The current locale. Reads track reactivity, writes call `setLocale`. */\n  current: string;\n}"
@@ -344,15 +448,27 @@
           "parameters": [
             {
               "defaultValue": "{}",
-              "description": "- Plugin options.",
+              "description": "Plugin options.",
               "name": "options",
               "optional": true,
-              "type": "YapyakOptions"
+              "type": [
+                {
+                  "kind": "ref",
+                  "module": "yapyak/vite",
+                  "name": "YapyakOptions",
+                  "text": "YapyakOptions"
+                }
+              ]
             }
           ],
           "returnDescription": "A Vite plugin.",
-          "returnType": "Plugin<any>",
-          "signature": "yapyak(options?: YapyakOptions): Plugin<any>"
+          "returnType": [
+            {
+              "kind": "text",
+              "text": "Plugin"
+            }
+          ],
+          "signature": "yapyak(options?: YapyakOptions): Plugin"
         },
         {
           "deprecated": null,
@@ -373,63 +489,110 @@
               "description": "Detect locale from the `Accept-Language` header on the server.",
               "name": "acceptLanguage",
               "optional": true,
-              "type": "boolean"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "boolean"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "The default locale. Inferred from locale files if omitted.",
               "name": "defaultLocale",
               "optional": true,
-              "type": "string"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "Glob patterns to exclude from extraction.",
               "name": "exclude",
               "optional": true,
-              "type": "FilterPattern"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "FilterPattern"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "Glob patterns to include for extraction.",
               "name": "include",
               "optional": true,
-              "type": "FilterPattern"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "FilterPattern"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "Directory for locale JSON files, relative to project root. Defaults to `'locales'`.",
               "name": "localesDir",
               "optional": true,
-              "type": "string"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "Where to persist the user's locale selection.\n\nUse the string shorthand (`'cookie'` or `'localStorage'`) for defaults,\nor the object form (`{ type: 'cookie', name: '...' }`) to customize.\nOmit for no persistence.",
               "name": "persistence",
               "optional": true,
-              "type": "Persistence | null"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "Persistence | null"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "Preserve existing translations when a `t()` call is renamed in place.\nDefaults to `true` without a translator, `false` with one.",
               "name": "preserveTranslationsOnRename",
               "optional": true,
-              "type": "boolean"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "boolean"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "Keep `document.documentElement.lang` synced with the current locale.\n\nOff by default. yapyak does not touch the DOM unless this is set to\n`true`. Useful for SvelteKit/Astro/SPA setups where the `<html>` element\nisn't owned by a reactive framework binding. See each adapter's docs.",
               "name": "syncHtmlLang",
               "optional": true,
-              "type": "boolean"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "boolean"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "Translator used to fill missing entries. Stubs stay empty without one.",
               "name": "translator",
               "optional": true,
-              "type": "Translator"
+              "type": [
+                {
+                  "kind": "ref",
+                  "module": "yapyak/translator",
+                  "name": "Translator",
+                  "text": "Translator"
+                }
+              ]
             }
           ],
           "signature": "export interface YapyakOptions {\n  /** Detect locale from the `Accept-Language` header on the server. */\n  acceptLanguage?: boolean;\n  /** The default locale. Inferred from locale files if omitted. */\n  defaultLocale?: string;\n  /** Glob patterns to exclude from extraction. */\n  exclude?: FilterPattern;\n  /** Glob patterns to include for extraction. */\n  include?: FilterPattern;\n  /** Directory..."
@@ -458,21 +621,36 @@
           "parameters": [
             {
               "defaultValue": null,
-              "description": "- The incoming Web `Request`.",
+              "description": "The incoming Web `Request`.",
               "name": "request",
               "optional": false,
-              "type": "Request"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "Request"
+                }
+              ]
             },
             {
               "defaultValue": null,
-              "description": "- The function to run with the request bound.",
+              "description": "The function to run with the request bound.",
               "name": "fn",
               "optional": false,
-              "type": "() => T"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "() => T"
+                }
+              ]
             }
           ],
           "returnDescription": "The return value of `fn`.",
-          "returnType": "T",
+          "returnType": [
+            {
+              "kind": "text",
+              "text": "T"
+            }
+          ],
           "signature": "withRequest(request: Request, fn: () => T): T"
         }
       ],
@@ -503,19 +681,34 @@
               "description": "",
               "name": "context",
               "optional": false,
-              "type": "APIContext<Record<string, any>, Record<string, string | undefined>>"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "APIContext"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "",
               "name": "next",
               "optional": false,
-              "type": "MiddlewareNext"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "MiddlewareNext"
+                }
+              ]
             }
           ],
           "returnDescription": "",
-          "returnType": "void | Response | Promise<Response> | Promise<void>",
-          "signature": "middleware(context: APIContext<Record<string, any>, Record<string, string | undefined>>, next: MiddlewareNext): void | Response | Promise<Response> | Promise<void>"
+          "returnType": [
+            {
+              "kind": "text",
+              "text": "Promise<Response> | Response | Promise<void> | void"
+            }
+          ],
+          "signature": "middleware(context: APIContext, next: MiddlewareNext): Promise<Response> | Response | Promise<void> | void"
         }
       ],
       "id": "yapyak/adapter/astro",
@@ -544,19 +737,34 @@
               "description": "",
               "name": "args",
               "optional": false,
-              "type": "DataFunctionArgs<Readonly<RouterContextProvider>>"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "DataFunctionArgs<Readonly<RouterContextProvider>>"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "",
               "name": "next",
               "optional": false,
-              "type": "MiddlewareNextFunction<unknown>"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "MiddlewareNextFunction<Result>"
+                }
+              ]
             }
           ],
           "returnDescription": "",
-          "returnType": "unknown",
-          "signature": "middleware(args: DataFunctionArgs<Readonly<RouterContextProvider>>, next: MiddlewareNextFunction<unknown>): unknown"
+          "returnType": [
+            {
+              "kind": "text",
+              "text": "MaybePromise<Result | void>"
+            }
+          ],
+          "signature": "middleware(args: DataFunctionArgs<Readonly<RouterContextProvider>>, next: MiddlewareNextFunction<Result>): MaybePromise<Result | void>"
         }
       ],
       "id": "yapyak/adapter/react-router",
@@ -585,12 +793,22 @@
               "description": "",
               "name": "input",
               "optional": false,
-              "type": "{ event: RequestEvent<Record<string, string>, string | null>; resolve: (event: RequestEvent<Record<string, string>, string | null>, opts?: ResolveOptions | undefined) => MaybePromise<...>; }"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "{\n\t\tevent: RequestEvent;\n\t\tresolve: (event: RequestEvent, opts?: ResolveOptions) => MaybePromise<Response>;\n\t}"
+                }
+              ]
             }
           ],
           "returnDescription": "",
-          "returnType": "MaybePromise<Response>",
-          "signature": "handle(input: { event: RequestEvent<Record<string, string>, string | null>; resolve: (event: RequestEvent<Record<string, string>, string | null>, opts?: ResolveOptions | undefined) => MaybePromise<...>; }): MaybePromise<Response>"
+          "returnType": [
+            {
+              "kind": "text",
+              "text": "MaybePromise<Response>"
+            }
+          ],
+          "signature": "handle(input: {\n\t\tevent: RequestEvent;\n\t\tresolve: (event: RequestEvent, opts?: ResolveOptions) => MaybePromise<Response>;\n\t}): MaybePromise<Response>"
         }
       ],
       "id": "yapyak/adapter/sveltekit",
@@ -614,7 +832,12 @@
           "tags": [],
           "kind": "variable",
           "signature": "const middleware: AnyRequestMiddleware",
-          "type": "AnyRequestMiddleware"
+          "type": [
+            {
+              "kind": "text",
+              "text": "AnyRequestMiddleware"
+            }
+          ]
         }
       ],
       "id": "yapyak/adapter/tanstack-start",
@@ -640,14 +863,26 @@
           "parameters": [
             {
               "defaultValue": null,
-              "description": "- The translator options.",
+              "description": "The translator options.",
               "name": "options",
               "optional": false,
-              "type": "AnthropicOptions"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "AnthropicOptions"
+                }
+              ]
             }
           ],
           "returnDescription": "A translator usable in the Vite plugin config.",
-          "returnType": "Translator",
+          "returnType": [
+            {
+              "kind": "ref",
+              "module": "yapyak/translator",
+              "name": "Translator",
+              "text": "Translator"
+            }
+          ],
           "signature": "anthropic(options: AnthropicOptions): Translator"
         },
         {
@@ -667,14 +902,28 @@
           "parameters": [
             {
               "defaultValue": null,
-              "description": "- The translator options.",
+              "description": "The translator options.",
               "name": "options",
               "optional": false,
-              "type": "CreateTranslatorOptions"
+              "type": [
+                {
+                  "kind": "ref",
+                  "module": "yapyak/translator",
+                  "name": "CreateTranslatorOptions",
+                  "text": "CreateTranslatorOptions"
+                }
+              ]
             }
           ],
           "returnDescription": "A translator usable in the Vite plugin config.",
-          "returnType": "Translator",
+          "returnType": [
+            {
+              "kind": "ref",
+              "module": "yapyak/translator",
+              "name": "Translator",
+              "text": "Translator"
+            }
+          ],
           "signature": "createTranslator(options: CreateTranslatorOptions): Translator"
         },
         {
@@ -694,14 +943,26 @@
           "parameters": [
             {
               "defaultValue": null,
-              "description": "- The translator options.",
+              "description": "The translator options.",
               "name": "options",
               "optional": false,
-              "type": "GeminiOptions"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "GeminiOptions"
+                }
+              ]
             }
           ],
           "returnDescription": "A translator usable in the Vite plugin config.",
-          "returnType": "Translator",
+          "returnType": [
+            {
+              "kind": "ref",
+              "module": "yapyak/translator",
+              "name": "Translator",
+              "text": "Translator"
+            }
+          ],
           "signature": "gemini(options: GeminiOptions): Translator"
         },
         {
@@ -721,14 +982,26 @@
           "parameters": [
             {
               "defaultValue": "{}",
-              "description": "- The translator options.",
+              "description": "The translator options.",
               "name": "options",
               "optional": true,
-              "type": "OllamaOptions"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "OllamaOptions"
+                }
+              ]
             }
           ],
           "returnDescription": "A translator usable in the Vite plugin config.",
-          "returnType": "Translator",
+          "returnType": [
+            {
+              "kind": "ref",
+              "module": "yapyak/translator",
+              "name": "Translator",
+              "text": "Translator"
+            }
+          ],
           "signature": "ollama(options?: OllamaOptions): Translator"
         },
         {
@@ -748,14 +1021,26 @@
           "parameters": [
             {
               "defaultValue": null,
-              "description": "- The translator options.",
+              "description": "The translator options.",
               "name": "options",
               "optional": false,
-              "type": "OpenAIOptions"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "OpenAIOptions"
+                }
+              ]
             }
           ],
           "returnDescription": "A translator usable in the Vite plugin config.",
-          "returnType": "Translator",
+          "returnType": [
+            {
+              "kind": "ref",
+              "module": "yapyak/translator",
+              "name": "Translator",
+              "text": "Translator"
+            }
+          ],
           "signature": "openai(options: OpenAIOptions): Translator"
         },
         {
@@ -777,21 +1062,48 @@
               "description": "Max number of items per `translate` call. Defaults to 10.",
               "name": "batchSize",
               "optional": true,
-              "type": "number"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "number"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "How much call-site context to include. Defaults to `'minimal'`.",
               "name": "context",
               "optional": true,
-              "type": "ContextLevel"
+              "type": [
+                {
+                  "kind": "ref",
+                  "module": "yapyak/translator",
+                  "name": "ContextLevel",
+                  "text": "ContextLevel"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "Translates a batch of items. Must return strings in the same order as `items`.",
               "name": "translate",
               "optional": false,
-              "type": "(params: TranslateParams) => string[] | Promise<string[]>"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "(params: "
+                },
+                {
+                  "kind": "ref",
+                  "module": "yapyak/translator",
+                  "name": "TranslateParams",
+                  "text": "TranslateParams"
+                },
+                {
+                  "kind": "text",
+                  "text": ") => string[] | Promise<string[]>"
+                }
+              ]
             }
           ],
           "signature": "export interface CreateTranslatorOptions {\n  /** Max number of items per `translate` call. Defaults to 10. */\n  batchSize?: number;\n  /** How much call-site context to include. Defaults to `'minimal'`. */\n  context?: ContextLevel;\n  /** Translates a batch of items. Must return strings in the same order as `items`. */\n  translate: (params: TranslateParams) => string[] | Promise<string[]>;\n}"
@@ -815,21 +1127,36 @@
               "description": "The component name derived from the file path.",
               "name": "componentName",
               "optional": false,
-              "type": "string"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "The nearest enclosing JSX/HTML element above the call.",
               "name": "enclosingElement",
               "optional": false,
-              "type": "string | undefined"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string | undefined"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "The surrounding code snippet, three lines above and below.",
               "name": "snippet",
               "optional": false,
-              "type": "string"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
             }
           ],
           "signature": "export interface MessageContext {\n  /** The component name derived from the file path. */\n  componentName: string;\n  /** The nearest enclosing JSX/HTML element above the call. */\n  enclosingElement: string | undefined;\n  /** The surrounding code snippet, three lines above and below. */\n  snippet: string;\n}"
@@ -853,28 +1180,48 @@
               "description": "The component name derived from the file path.",
               "name": "component",
               "optional": true,
-              "type": "string"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "The nearest enclosing JSX/HTML element.",
               "name": "element",
               "optional": true,
-              "type": "string"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "The surrounding code snippet (only with `context: 'rich'`).",
               "name": "snippet",
               "optional": true,
-              "type": "string"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "The source string to translate.",
               "name": "source",
               "optional": false,
-              "type": "string"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
             }
           ],
           "signature": "export interface TranslateItem {\n  /** The component name derived from the file path. */\n  component?: string;\n  /** The nearest enclosing JSX/HTML element. */\n  element?: string;\n  /** The surrounding code snippet (only with `context: 'rich'`). */\n  snippet?: string;\n  /** The source string to translate. */\n  source: string;\n}"
@@ -900,28 +1247,54 @@
               "description": "The items to translate. Translations must be returned in the same order.",
               "name": "items",
               "optional": false,
-              "type": "TranslateItem[]"
+              "type": [
+                {
+                  "kind": "ref",
+                  "module": "yapyak/translator",
+                  "name": "TranslateItem",
+                  "text": "TranslateItem"
+                },
+                {
+                  "kind": "text",
+                  "text": "[]"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "Abort signal for cancellation. Forward to your underlying fetch/SDK call.",
               "name": "signal",
               "optional": true,
-              "type": "AbortSignal"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "AbortSignal"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "The source locale.",
               "name": "sourceLocale",
               "optional": false,
-              "type": "string"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "The target locale.",
               "name": "targetLocale",
               "optional": false,
-              "type": "string"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
             }
           ],
           "signature": "export interface TranslateParams {\n  /** The items to translate. Translations must be returned in the same order. */\n  items: TranslateItem[];\n  /** Abort signal for cancellation. Forward to your underlying fetch/SDK call. */\n  signal?: AbortSignal;\n  /** The source locale. */\n  sourceLocale: string;\n  /** The target locale. */\n  targetLocale: string;\n}"
@@ -945,35 +1318,62 @@
               "description": "The call-site context.",
               "name": "context",
               "optional": true,
-              "type": "MessageContext"
+              "type": [
+                {
+                  "kind": "ref",
+                  "module": "yapyak/translator",
+                  "name": "MessageContext",
+                  "text": "MessageContext"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "The file path the source string came from.",
               "name": "fileId",
               "optional": false,
-              "type": "string"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "The source string to translate.",
               "name": "source",
               "optional": false,
-              "type": "string"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "The source locale.",
               "name": "sourceLocale",
               "optional": false,
-              "type": "string"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
             },
             {
               "defaultValue": null,
               "description": "The target locale.",
               "name": "targetLocale",
               "optional": false,
-              "type": "string"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
             }
           ],
           "signature": "export interface TranslateRequest {\n  /** The call-site context. */\n  context?: MessageContext;\n  /** The file path the source string came from. */\n  fileId: string;\n  /** The source string to translate. */\n  source: string;\n  /** The source locale. */\n  sourceLocale: string;\n  /** The target locale. */\n  targetLocale: string;\n}"
@@ -997,10 +1397,22 @@
                   "description": "",
                   "name": "request",
                   "optional": false,
-                  "type": "TranslateRequest"
+                  "type": [
+                    {
+                      "kind": "ref",
+                      "module": "yapyak/translator",
+                      "name": "TranslateRequest",
+                      "text": "TranslateRequest"
+                    }
+                  ]
                 }
               ],
-              "returnType": "Promise<string>"
+              "returnType": [
+                {
+                  "kind": "text",
+                  "text": "Promise<string>"
+                }
+              ]
             }
           ],
           "kind": "interface",
@@ -1010,7 +1422,12 @@
               "description": "Translates a batch of requests.",
               "name": "batch",
               "optional": true,
-              "type": "((requests: TranslateRequest[]) => Promise<string[]>)"
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "((requests: TranslateRequest[]) => Promise<string[]>)"
+                }
+              ]
             }
           ],
           "signature": "export interface Translator {\n  /** Translates a batch of requests. */\n  batch?(requests: TranslateRequest[]): Promise<string[]>;\n  (request: TranslateRequest): Promise<string>;\n}"
@@ -1029,7 +1446,12 @@
           "name": "ContextLevel",
           "tags": [],
           "kind": "type",
-          "resolvedType": "ContextLevel",
+          "resolvedType": [
+            {
+              "kind": "text",
+              "text": "'none' | 'minimal' | 'rich'"
+            }
+          ],
           "signature": "export type ContextLevel = 'none' | 'minimal' | 'rich';"
         }
       ],

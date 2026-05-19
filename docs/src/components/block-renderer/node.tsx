@@ -5,6 +5,7 @@ import { NodeCallout } from './node/callout';
 import { NodeCodeBlock } from './node/code-block';
 import { NodeCodeGroup } from './node/code-group';
 import { NodeEmphasis } from './node/emphasis';
+import { NodeEyebrow } from './node/eyebrow';
 import { NodeHeading } from './node/heading';
 import { NodeImage } from './node/image';
 import { NodeInlineCode } from './node/inline-code';
@@ -13,6 +14,7 @@ import { NodeLink } from './node/link';
 import { NodeList } from './node/list';
 import { NodeListItem } from './node/list-item';
 import { NodeParagraph } from './node/paragraph';
+import { NodeSourceLink } from './node/source-link';
 import { NodeStrikethrough } from './node/strikethrough';
 import { NodeStrong } from './node/strong';
 import { NodeTable } from './node/table';
@@ -71,5 +73,9 @@ export function BlockRendererNode(props: BlockRendererNodeProps) {
       return <NodeCodeGroup block={block} />;
     case 'callout':
       return <NodeCallout block={block} />;
+    case 'eyebrow':
+      return <NodeEyebrow block={block} />;
+    case 'source-link':
+      return <NodeSourceLink block={block} />;
   }
 }

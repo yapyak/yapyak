@@ -56,7 +56,7 @@ export function FeatureSection(props: FeatureSectionProps) {
     },
     {
       description: t(
-        'Forget a {count} placeholder and TypeScript stops you before your tech lead does. Source-as-keys means types live on the call site. Same speed at 50 strings or 50,000.',
+        'Forget a placeholder param and TypeScript stops you before your tech lead does. Source-as-keys means types live on the call site. Same speed at 50 strings or 50,000.',
       ),
       number: '06',
       title: t('Type-safe params'),

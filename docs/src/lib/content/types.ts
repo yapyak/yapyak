@@ -4,6 +4,7 @@ export type Block =
   | CodeBlock
   | CodeGroupBlock
   | EmphasisBlock
+  | EyebrowBlock
   | HeadingBlock
   | ImageBlock
   | InlineCodeBlock
@@ -12,6 +13,7 @@ export type Block =
   | ListBlock
   | ListItemBlock
   | ParagraphBlock
+  | SourceLinkBlock
   | StrikethroughBlock
   | StrongBlock
   | TableBlock
@@ -132,6 +134,18 @@ export interface CalloutBlock {
   title: string | null;
   type: 'callout';
   variant: 'danger' | 'info' | 'tip' | 'warning';
+}
+
+export interface EyebrowBlock {
+  text: string;
+  type: 'eyebrow';
+}
+
+export interface SourceLinkBlock {
+  file: string;
+  href: string | null;
+  line: number;
+  type: 'source-link';
 }
 
 export interface Page {
