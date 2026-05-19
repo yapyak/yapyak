@@ -3,7 +3,7 @@ title: Gemini
 order: 3
 ---
 
-Use Google's Gemini models as your translator. Gemini's strength: cost-effective multilingual translation with native handling of non-Latin scripts (Japanese, Korean, Arabic, Hebrew).
+Use Google's Gemini models as your translator.
 
 ```ts
 import { yapyak } from 'yapyak/vite';
@@ -39,19 +39,11 @@ interface GeminiOptions {
 
 | Option | Default | Notes |
 | --- | --- | --- |
-| `apiKey` | — | Required. Set via `.env.local` (`GEMINI_API_KEY`). |
-| `model` | `'gemini-2.5-flash'` | Any Gemini model. `gemini-2.5-pro` for higher quality. |
+| `apiKey` | — | Required. |
+| `model` | `'gemini-2.5-flash'` | Any Gemini model. |
 | `endpoint` | `'https://generativelanguage.googleapis.com/v1beta'` | Base URL — model name is appended automatically. |
 
 See [Shared options](/guide/translators#shared-options) for `voice`, `glossary`, `context`, `batchSize`, `temperature`, `headers`, `timeout`, `maxRetries`.
-
-## Why Gemini for translation
-
-Gemini was trained on Google's translation pipeline. Empirically strong on non-Latin scripts (Japanese, Korean, Arabic, Hebrew) and Asian-language idiom handling. For UI translation projects with significant non-Latin-script coverage, often produces more natural output than Claude or GPT at lower cost.
-
-## CI
-
-Set `GEMINI_API_KEY` as a CI secret if you translate in CI. See [Installation / CI](/guide/installation#ci) for both patterns.
 
 ## Vertex AI
 

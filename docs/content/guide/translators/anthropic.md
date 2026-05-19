@@ -39,12 +39,8 @@ interface AnthropicOptions {
 
 | Option | Default | Notes |
 | --- | --- | --- |
-| `apiKey` | — | Required. Set via `.env.local` (`ANTHROPIC_API_KEY`) and read via `process.env`. |
-| `model` | `'claude-sonnet-4-6'` | Any Claude model. `claude-opus-4-5` for higher quality, `claude-haiku-4-5` for lower cost. |
+| `apiKey` | — | Required. |
+| `model` | `'claude-sonnet-4-6'` | Any Claude model. |
 | `endpoint` | `'https://api.anthropic.com/v1/messages'` | Override for private deployments or proxies. |
 
 See [Shared options](/guide/translators#shared-options) for `voice`, `glossary`, `context`, `batchSize`, `temperature`, `headers`, `timeout`, `maxRetries`.
-
-## CI
-
-Set `ANTHROPIC_API_KEY` as a CI secret if you translate in CI. Most projects pre-translate locally and commit `locales/*.json`. See [Installation / CI](/guide/installation#ci) for both patterns.

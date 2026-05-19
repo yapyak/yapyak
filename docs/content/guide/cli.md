@@ -17,7 +17,7 @@ Run it via `npx yapyak` or `pnpm yapyak`.
 | `yapyak check` | Exit 1 if anything's missing (for CI) |
 | `yapyak export` | Snapshot locales as JSON for handoff |
 
-The CLI reads the same `vite.config.ts` as the plugin. Same translator config, same locales directory, same default locale.
+The CLI reads `vite.config.ts` — translator, locales, defaults all match the plugin.
 
 ## Add a language
 
@@ -61,7 +61,7 @@ npx yapyak translate --provider=openai
 npx yapyak status
 ```
 
-Prints a table with one row per locale and a progress bar showing translated / total. Use this when you want a quick read on where the project stands.
+Prints a coverage table with progress per locale.
 
 For scripts and dashboards, get JSON:
 
@@ -84,7 +84,7 @@ Exits 1 with a per-locale list of missing strings if any locale is incomplete. D
 - run: pnpm build
 ```
 
-Two CI patterns work well here. Either pre-translate locally and commit `locales/*.json` (no API keys in CI), or set your translator's API key as a CI secret and let `vite build` translate during the build. Pre-translating is the safer default.
+Two CI patterns: pre-translate locally and commit `locales/*.json` (no keys in CI), or use a CI secret and translate at build time. Pre-translating is safer.
 
 ## Snapshot for handoff
 
@@ -94,7 +94,7 @@ Sending translations to a human translator, syncing to a CMS, or producing a ver
 npx yapyak export --out=snapshot.json
 ```
 
-Writes one JSON file containing every locale, every string, in the same shape as `locales/*.json` but combined.
+Writes one JSON file with all locales merged in `locales/*.json` format.
 
 Filter to specific locales:
 

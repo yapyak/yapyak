@@ -39,16 +39,14 @@ interface OllamaOptions {
 | --- | --- | --- |
 | `model` | `'llama3.1'` | Any model in your local Ollama library. |
 | `endpoint` | `'http://localhost:11434/api/generate'` | Override for remote Ollama servers. |
-| `timeout` | `120_000` | Per-request timeout. Higher default than cloud — local inference is slower. |
-| `maxRetries` | `1` | Lower default — local network is reliable, no need for aggressive retries. |
+| `timeout` | `120_000` | Higher than cloud — local inference is slower. |
+| `maxRetries` | `1` | Lower than cloud — local network rarely needs retries. |
 
 No `apiKey`. Ollama runs locally without auth.
 
 See [Shared options](/guide/translators#shared-options) for `voice`, `glossary`, `context`, `batchSize`, `temperature`, `headers`.
 
 ## Picking a model
-
-Translation quality scales with model size. `llama3.1` (8B, default) handles European languages well on consumer hardware. Larger models like `llama3.1:70b` or `qwen3:32b` approach cloud-model quality, especially for non-Latin scripts, but need significant RAM.
 
 Pull the model you want first:
 

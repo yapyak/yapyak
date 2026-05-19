@@ -419,6 +419,30 @@ This is the most violated rule. The audit pass catches it. To prevent regression
 - If the concept has a home elsewhere — delete what you wrote, write a link sentence instead.
 - If the concept *doesn't* have a home — establish one (add to the table) and write the explanation there. Other pages link.
 
+#### Don't editorialize about provider models
+
+yapyak's docs list what's *supported*. They do not opine on which model is "higher quality", "cheaper", "better for non-Latin scripts", "strong on idiom handling", or similar. Reasons:
+
+1. Provider model lineups change quarterly. Any recommendation ages instantly.
+2. It's not yapyak's place to compare external AI vendors.
+3. Cost/quality trade-offs depend on the user's specific workload — they read provider docs themselves.
+
+✗ Banned phrasings in `model` columns and provider pages:
+- *"`X` for higher quality, `Y` for lower cost"*
+- *"Any Claude model. `X` for accuracy, `Y` for speed."*
+- *"Empirically strong on non-Latin scripts"*
+- *"Approaches cloud-model quality"*
+- *"Cost-effective multilingual translation"*
+- *"Trained on Google's translation pipeline"*
+
+✓ Acceptable:
+- *"Any Claude model."* (in the default-value table)
+- *"Set via `.env.local` (`ANTHROPIC_API_KEY`)."*
+- Practical commands: *"Pull the model: `ollama pull llama3.1`. Point yapyak at it: `ollama({ model: 'qwen3:32b' })`."*
+- Brand-fact differentiation that doesn't quality-rank: *"Ollama runs locally. No API key required."*
+
+If a section reads as "Why use *this provider*", delete it.
+
 ### Say it once. Then stop.
 
 - Find the **single shortest sentence** that says the thing. If two sentences say the same thing twice, delete one.

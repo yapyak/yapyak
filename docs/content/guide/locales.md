@@ -18,7 +18,7 @@ locales/
 
 Implicit configuration: `defaultLocale: 'en'`, `locales: ['en', 'es', 'fr', 'de']`. Add a file, get a new locale. Delete a file, lose it.
 
-The default locale (`en` by default) doesn't need a file because your source code is the file.
+The default locale doesn't need a file — your source code is the file.
 
 ## The default locale
 
@@ -54,7 +54,7 @@ getLocales()         // ['en', 'es', 'fr', 'de']
 getDefaultLocale()   // 'en'
 ```
 
-`getLocales()` returns the default locale plus every JSON file in `locales/`. Useful for building locale switchers.
+`getLocales()` returns the default locale plus every JSON file in `locales/`.
 
 ## Switching locale
 
@@ -147,7 +147,7 @@ yapyak({
 
 ### localStorage
 
-For pure SPAs (no SSR) or apps avoiding cookie banners (localStorage is exempt from EU cookie-consent rules in most jurisdictions).
+For pure SPAs (no SSR) or apps avoiding cookie consent requirements.
 
 Tradeoff: server can't read it. First paint always renders in the default locale; the client swaps to the user's locale after hydration. Brief flash possible.
 

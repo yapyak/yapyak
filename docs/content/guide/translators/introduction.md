@@ -47,7 +47,7 @@ See each provider's page for full details.
 
 ## Translation context
 
-`context` controls how much information about each `t()` call site gets sent to the AI:
+`context` controls what data to send per `t()` call:
 
 | Level | Sends | Use when |
 | --- | --- | --- |
@@ -68,7 +68,7 @@ anthropic({
 })
 ```
 
-The voice string is prepended to every translation prompt. Consistent across saves, locales, and `--force` runs.
+The voice string is prepended to every translation prompt.
 
 ## Glossary
 
@@ -84,7 +84,7 @@ anthropic({
 })
 ```
 
-When the AI sees a source string containing a glossary key, it's instructed to use the configured translation. Useful for brand terms, regulated language (legal, medical), or product-specific vocabulary.
+When a source string contains a glossary key, the AI uses the configured translation. For brand terms, regulated language, product vocabulary.
 
 ## When things go wrong
 
@@ -111,7 +111,7 @@ anthropic({
 
 ### After retries are exhausted
 
-The plugin catches errors per batch. Other batches and other locales keep running. Failed strings get logged:
+Errors are caught per batch — others keep running, failed strings logged:
 
 ```
 [yapyak] translation failed: sv src/components/save-button.tsx "Save changes" Error: ...

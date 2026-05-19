@@ -29,7 +29,7 @@ The variants are inlined at the call site. At runtime, `_$pick()` returns the ri
 
 ## On save
 
-When the file saves, yapyak's Vite plugin runs five steps:
+On save, yapyak's Vite plugin:
 
 1. **Re-extract.** It parses the file and collects every `t()` call: source string, line, column, and the surrounding context.
 2. **Detect renames.** If a string disappeared from line 23, column 12 and a new one appeared at the same position, that's a rename — not a delete plus add.

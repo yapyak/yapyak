@@ -42,8 +42,8 @@ interface OpenAIOptions {
 
 | Option | Default | Notes |
 | --- | --- | --- |
-| `apiKey` | — | Required. Set via `.env.local` (`OPENAI_API_KEY`). |
-| `model` | `'gpt-5-mini'` | Any OpenAI model — `gpt-5` for higher quality, `gpt-5-mini` for cost. |
+| `apiKey` | — | Required. |
+| `model` | `'gpt-5-mini'` | Any OpenAI model. |
 | `endpoint` | `'https://api.openai.com/v1/chat/completions'` | Override for any OpenAI-compatible provider. |
 | `organization` | — | Sets `OpenAI-Organization` header for multi-org accounts. |
 | `seed` | — | Reproducible outputs. Same `(prompt, seed)` gives the same result. |
@@ -92,7 +92,3 @@ openai({
 ```
 
 Sent as the `OpenAI-Organization` HTTP header.
-
-## CI
-
-Set `OPENAI_API_KEY` as a CI secret if you translate in CI. See [Installation / CI](/guide/installation#ci) for both patterns.

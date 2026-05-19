@@ -7,7 +7,7 @@ An adapter wires yapyak to your favorite SSR framework so each request renders i
 
 ## What an adapter does
 
-At request time, the adapter binds the request's `Cookie` and `Accept-Language` headers to an async-scoped context. Anywhere inside that request — route loaders, server components, route handlers — `getLocale()`, `t()`, and the rest of the yapyak surface see the locale for *this* user, not a global default.
+At request time, the adapter binds `Cookie` and `Accept-Language` to an async-scoped context. Inside that request — route loaders, server components, route handlers — `getLocale()` and `t()` see the per-request locale.
 
 ## Pure SPAs don't need one
 
