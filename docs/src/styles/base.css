@@ -1,11 +1,3 @@
-html {
-  background-color: var(--canvas);
-}
-
-::selection {
-  background-color: var(--brand-soft);
-}
-
 body {
   min-height: 100vh;
   font-family: system-ui;
@@ -16,4 +8,8 @@ body {
   hanging-punctuation: first last;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--brand-soft);
 }

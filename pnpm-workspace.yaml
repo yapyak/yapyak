@@ -16,7 +16,6 @@ catalog:
   '@vitejs/plugin-react': 6.0.1
   '@vitejs/plugin-vue': 6.0.6
   astro: 6.3.2
-  lightningcss: 1.32.0
   marked: 18.0.3
   react: 19.2.5
   react-dom: 19.2.5

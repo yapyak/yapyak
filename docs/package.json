@@ -28,7 +28,6 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@yapyak/typescript-config": "workspace:*",
-    "lightningcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:"
   }

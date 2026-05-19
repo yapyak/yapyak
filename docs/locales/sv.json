@@ -1,11 +1,12 @@
 {
-  "src/components/guide-layout/sidebar-toggle-button.tsx": {
-    "Open sections": ""
-  },
   "src/components/guide-layout/toolbar.tsx": {
     "Close outline": "",
     "Next": "",
     "Open outline": "",
+    "Previous": ""
+  },
+  "src/components/guide-prev-next.tsx": {
+    "Next": "",
     "Previous": ""
   },
   "src/components/hero.tsx": {
@@ -14,12 +15,6 @@
     "View on GitHub": ""
   },
   "src/components/layout/header.tsx": {
-    "Guide": "",
-    "Home": "",
-    "Reference": "",
-    "View on GitHub": ""
-  },
-  "src/components/layout/header/menu.tsx": {
     "Guide": "",
     "Home": "",
     "Reference": "",
