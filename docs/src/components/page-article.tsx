@@ -4,20 +4,20 @@ import type { Page } from '#lib/content';
 import { BlockRenderer } from '#components/block-renderer';
 import { Box } from '#components/box';
 
-import styles from './article.module.css';
+import styles from './page-article.module.css';
 
-export interface ArticleProps extends BoxProps<'article'> {
+export interface PageArticleProps extends BoxProps<'article'> {
   page: Page;
 }
 
-export function Article(props: ArticleProps) {
+export function PageArticle(props: PageArticleProps) {
   const { className, page, ...restProps } = props;
 
   return (
     <Box
       {...restProps}
       as="article"
-      className={[styles.Article, className]}
+      className={[styles.PageArticle, className]}
     >
       <Box
         as="header"

@@ -6,10 +6,10 @@ import {
 } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
-import { Article } from '#components/article';
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
 import { ContentPagination } from '#components/content-pagination';
+import { PageArticle } from '#components/page-article';
 import { loadGuideArticle } from '#lib/guide';
 import { findAdjacent } from '#lib/navigation';
 
@@ -53,7 +53,7 @@ function Component() {
   const { sidebar } = guideRouteApi.useRouteContext();
   return (
     <>
-      <Article page={page} />
+      <PageArticle page={page} />
       <ContentPagination
         next={next}
         previous={previous}

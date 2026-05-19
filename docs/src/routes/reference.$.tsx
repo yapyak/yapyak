@@ -1,7 +1,7 @@
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
-import { Article } from '#components/article';
+import { PageArticle } from '#components/page-article';
 import { loadReferencePage } from '#lib/reference';
 
 const loadData = createServerFn()
@@ -32,5 +32,5 @@ export const Route = createFileRoute('/reference/$')({
 
 function Component() {
   const { page } = Route.useLoaderData();
-  return <Article page={page} />;
+  return <PageArticle page={page} />;
 }
