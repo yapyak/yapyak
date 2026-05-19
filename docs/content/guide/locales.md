@@ -181,7 +181,7 @@ yapyak({
 })
 ```
 
-Off by default because it adds a dependency on header parsing semantics; on for apps that want browser-language detection out of the box.
+Off by default because it adds a dependency on header parsing semantics. Turn it on when you want browser-language detection without writing the parser yourself.
 
 ## Locale codes
 

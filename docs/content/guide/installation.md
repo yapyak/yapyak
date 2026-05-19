@@ -41,7 +41,7 @@ ANTHROPIC_API_KEY=sk-ant-…
 
 OpenAI, Ollama, or any custom translator works the same way — see [Translators](/guide/translators/).
 
-The plugin has more options for advanced cases (custom locale folder, include/exclude patterns, rename behavior). Most projects don't need to touch them — defaults work out of the box. See the [Vite plugin reference](/reference/vite-plugin) when you do.
+The plugin has more options for advanced cases (custom locale folder, include/exclude patterns, rename behavior). Most projects never reach for them. The [Vite plugin reference](/reference/vite-plugin) is there for the day you do.
 
 ## 3. Add a locale
 
@@ -111,11 +111,13 @@ HMR pushes the new copy live. Edit the string. Save again. Every locale re-trans
 
 If your app is server-rendered, wire the adapter once. Pick the page for your framework:
 
+- [Astro](/guide/adapters/astro)
+- [React Router](/guide/adapters/react-router)
 - [TanStack Start](/guide/adapters/tanstack-start)
 - [SvelteKit](/guide/adapters/sveltekit)
 - [Custom](/guide/adapters/custom) — any other Vite SSR setup
 
-Pure SPAs (no SSR) don't need an adapter — skip this step.
+If your app never renders on a server, skip this step.
 
 ## Verify
 

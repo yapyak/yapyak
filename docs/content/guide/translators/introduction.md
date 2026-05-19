@@ -5,7 +5,7 @@ order: 1
 
 A **translator** is the function yapyak calls to actually translate strings. The plugin extracts `t()` calls, batches them, and passes them to the configured translator. The translator makes the HTTP call to an AI provider and returns the translations.
 
-yapyak ships four translators out of the box: **Anthropic**, **OpenAI**, **Gemini**, and **Ollama**. Many other providers (Groq, DeepSeek, Mistral, OpenRouter, Together AI, Vercel AI Gateway) expose OpenAI-compatible APIs — point the OpenAI translator at their endpoint and you're done. For anything else, build a [custom translator](/guide/translators/custom).
+yapyak ships four translators: **Anthropic**, **OpenAI**, **Gemini**, and **Ollama**. Many other providers (Groq, DeepSeek, Mistral, OpenRouter, Together AI, Vercel AI Gateway) expose OpenAI-compatible APIs — point the OpenAI translator at their endpoint and you're done. For anything else, build a [custom translator](/guide/translators/custom).
 
 ```ts
 import { yapyak } from 'yapyak/vite';
