@@ -17,6 +17,10 @@ registerRequestHeadersReader(() => storage.getStore());
  * `yapyak/adapter/astro`, `yapyak/adapter/react-router`) call this for you.
  * Use it directly when wiring a custom SSR setup.
  *
+ * @param request - The incoming Web `Request`.
+ * @param fn - The function to run with the request bound.
+ * @returns The return value of `fn`.
+ *
  * @example
  * ```ts
  * import { withRequest } from 'yapyak/adapter';

@@ -30,6 +30,9 @@ const CONFIG_RESOLVED = `\0${CONFIG_ID}`;
  * that are lazy-loaded by the runtime — so the default locale costs zero
  * extra bytes and non-default locales ship as separate chunks.
  *
+ * @param options - Plugin options.
+ * @returns A Vite plugin.
+ *
  * @example
  * ```ts
  * import { defineConfig } from 'vite';

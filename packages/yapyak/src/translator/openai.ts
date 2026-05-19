@@ -45,6 +45,9 @@ const DEFAULT_MAX_RETRIES = 2;
 /**
  * Translator backed by the OpenAI Chat Completions API.
  *
+ * @param options - The translator options.
+ * @returns A translator usable in the Vite plugin config.
+ *
  * @example
  * ```ts
  * import { openai } from 'yapyak/translator';

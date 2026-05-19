@@ -39,6 +39,9 @@ const DEFAULT_MAX_RETRIES = 2;
 /**
  * Translator backed by the Google Gemini API.
  *
+ * @param options - The translator options.
+ * @returns A translator usable in the Vite plugin config.
+ *
  * @example
  * ```ts
  * import { gemini } from 'yapyak/translator';
