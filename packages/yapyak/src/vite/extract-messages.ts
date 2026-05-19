@@ -1,14 +1,14 @@
-import type { MessageContext } from '../translator/index.ts';
+import type { MessageContext } from '../translator';
 
-import { deriveComponentName } from './derive-component-name.ts';
-import { extractSnippet } from './extract-snippet.ts';
-import { findCallSites } from './find-call-sites.ts';
-import { DynamicSourceError, parseSourceArg } from './parse-source-arg.ts';
+import { deriveComponentName } from './derive-component-name';
+import { extractSnippet } from './extract-snippet';
+import { findCallSites } from './find-call-sites';
+import { DynamicSourceError, parseSourceArg } from './parse-source-arg';
 import {
   locate,
   sliceArguments,
   splitTopLevelArgs,
-} from './slice-arguments.ts';
+} from './slice-arguments';
 
 /** @internal */
 export interface ExtractedMessage {

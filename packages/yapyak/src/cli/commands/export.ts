@@ -1,9 +1,9 @@
-import type { LocaleFile } from '../../vite/index.ts';
-import type { YapyakCliConfig } from '../load-config.ts';
+import type { LocaleFile } from '../../vite';
+import type { YapyakCliConfig } from '../load-config';
 
-import { readLocaleFile } from '../../vite/index.ts';
-import { collect } from '../collect.ts';
-import { color, symbol } from '../tui.ts';
+import { readLocaleFile } from '../../vite';
+import { collect } from '../collect';
+import { color, symbol } from '../tui';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 

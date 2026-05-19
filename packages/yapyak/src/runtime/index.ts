@@ -1,5 +1,5 @@
-export type { T, TIn } from './t.ts';
+export type { T, TIn } from './t';
 
-export { hasPlaceholder, interpolate } from './interpolate.ts';
-export { t } from './t.ts';
-export { registerTracker, runTrackers } from './tracker.ts';
+export { hasPlaceholder, interpolate } from './interpolate';
+export { t } from './t';
+export { registerTracker, runTrackers } from './tracker';

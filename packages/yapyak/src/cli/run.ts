@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import { add } from './commands/add.ts';
-import { check } from './commands/check.ts';
-import { exportCommand } from './commands/export.ts';
-import { status } from './commands/status.ts';
-import { translate } from './commands/translate.ts';
-import { loadYapyakConfig } from './load-config.ts';
-import { color, symbol } from './tui.ts';
+import { add } from './commands/add';
+import { check } from './commands/check';
+import { exportCommand } from './commands/export';
+import { status } from './commands/status';
+import { translate } from './commands/translate';
+import { loadYapyakConfig } from './load-config';
+import { color, symbol } from './tui';
 
 export async function run(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;

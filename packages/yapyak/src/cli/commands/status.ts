@@ -1,7 +1,7 @@
-import type { YapyakCliConfig } from '../load-config.ts';
+import type { YapyakCliConfig } from '../load-config';
 
-import { collect } from '../collect.ts';
-import { color, header, progressBar, renderTable, symbol } from '../tui.ts';
+import { collect } from '../collect';
+import { color, header, progressBar, renderTable, symbol } from '../tui';
 
 export interface StatusOptions {
   config: YapyakCliConfig;

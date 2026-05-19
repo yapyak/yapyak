@@ -1,6 +1,6 @@
-import type { LocaleData } from './transform-source.ts';
+import type { LocaleData } from './transform-source';
 
-import { readLocaleFile } from './sync-locale-files.ts';
+import { readLocaleFile } from './sync-locale-files';
 import { join } from 'node:path';
 
 export interface ReadOptions {

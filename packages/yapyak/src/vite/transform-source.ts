@@ -1,10 +1,10 @@
-import { findCallSites } from './find-call-sites.ts';
-import { DynamicSourceError, parseSourceArg } from './parse-source-arg.ts';
+import { findCallSites } from './find-call-sites';
+import { DynamicSourceError, parseSourceArg } from './parse-source-arg';
 import {
   locate,
   sliceArguments,
   splitTopLevelArgs,
-} from './slice-arguments.ts';
+} from './slice-arguments';
 
 export interface LocaleData {
   [locale: string]: {

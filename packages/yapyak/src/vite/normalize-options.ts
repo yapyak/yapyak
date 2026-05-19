@@ -1,4 +1,4 @@
-import type { Translator } from '../translator/index.ts';
+import type { Translator } from '../translator';
 
 /** Cookie persistence config. */
 export interface CookiePersistence {

@@ -1,6 +1,8 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
+  clean: true,
+  dts: true,
   entry: [
     'src/index.ts',
     'src/internal/index.ts',
@@ -16,8 +18,6 @@ export default defineConfig({
     'src/adapter/tanstack-start.ts',
     'src/cli/run.ts',
   ],
-  format: 'esm',
-  dts: true,
-  clean: true,
   external: ['astro:middleware', 'virtual:yapyak'],
+  format: 'esm',
 });

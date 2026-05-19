@@ -1,4 +1,4 @@
-import type { ExtractedMessage } from '../vite/index.ts';
+import type { ExtractedMessage } from '../vite';
 
 import { createFilter } from 'vite';
 
@@ -9,7 +9,7 @@ import {
   extractMessages,
   readLocaleFile,
   walkSourceFiles,
-} from '../vite/index.ts';
+} from '../vite';
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 

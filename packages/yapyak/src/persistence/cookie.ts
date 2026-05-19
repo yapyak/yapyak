@@ -1,4 +1,4 @@
-import type { Persistence } from './index.ts';
+import type { Persistence } from '.';
 
 /** @internal */
 export function parseCookie(header: string): Record<string, string> {

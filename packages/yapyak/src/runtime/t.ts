@@ -1,8 +1,8 @@
-import type { ExtractParams } from './extract-params.ts';
+import type { ExtractParams } from './extract-params';
 
-import { getLocale } from '../locale/index.ts';
-import { hasPlaceholder, interpolate } from './interpolate.ts';
-import { runTrackers } from './tracker.ts';
+import { getLocale } from '../locale';
+import { hasPlaceholder, interpolate } from './interpolate';
+import { runTrackers } from './tracker';
 
 type IsEmpty<T> = keyof T extends never ? true : false;
 

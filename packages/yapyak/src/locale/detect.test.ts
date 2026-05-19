@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { detectLocale, parseAcceptLanguage } from './detect.ts';
+import { detectLocale, parseAcceptLanguage } from './detect';
 
 describe('detectLocale', () => {
   it('uses persisted value when supported', () => {

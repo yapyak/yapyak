@@ -1,9 +1,9 @@
-export type { T, TIn } from './runtime/index.ts';
+export type { T, TIn } from './runtime';
 
 export {
   getDefaultLocale,
   getLocale,
   getLocales,
   setLocale,
-} from './locale/index.ts';
-export { t } from './runtime/index.ts';
+} from './locale';
+export { t } from './runtime';

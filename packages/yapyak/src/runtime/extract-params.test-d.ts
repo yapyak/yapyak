@@ -1,4 +1,4 @@
-import type { ExtractParams } from './extract-params.ts';
+import type { ExtractParams } from './extract-params';
 
 import { expectTypeOf, test } from 'vitest';
 

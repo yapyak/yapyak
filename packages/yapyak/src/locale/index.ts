@@ -1,4 +1,4 @@
-export { detectLocale, parseAcceptLanguage } from './detect.ts';
+export { detectLocale, parseAcceptLanguage } from './detect';
 export {
   getDefaultLocale,
   getLocale,
@@ -8,4 +8,4 @@ export {
   resetLocaleStore,
   setLocale,
   subscribeLocale,
-} from './store.ts';
+} from './store';

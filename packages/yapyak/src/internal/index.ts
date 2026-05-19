@@ -1,1 +1,1 @@
-export { pick } from './pick.ts';
+export { pick } from './pick';

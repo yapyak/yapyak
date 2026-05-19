@@ -249,7 +249,7 @@ function preview(value: unknown): string {
   }
 }
 
-export { anthropic } from './anthropic.ts';
-export { gemini } from './gemini.ts';
-export { ollama } from './ollama.ts';
-export { openai } from './openai.ts';
+export { anthropic } from './anthropic';
+export { gemini } from './gemini';
+export { ollama } from './ollama';
+export { openai } from './openai';

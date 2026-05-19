@@ -751,7 +751,7 @@
           "description": "Astro middleware that wires yapyak's per-request locale context for every\nincoming request.\n\nRe-export from `src/middleware.ts`:",
           "examples": [
             "```ts\n// src/middleware.ts\nexport { middleware as onRequest } from 'yapyak/adapter/astro';\n```\n\nComposing with other middlewares via `sequence`:",
-            "```ts\n// src/middleware.ts\nimport { sequence } from 'astro:middleware';\nimport { middleware as yapyakMiddleware } from 'yapyak/adapter/astro';\nimport { authMiddleware } from './auth.ts';\n\nexport const onRequest = sequence(yapyakMiddleware, authMiddleware);\n```"
+            "```ts\n// src/middleware.ts\nimport { sequence } from 'astro:middleware';\nimport { middleware as yapyakMiddleware } from 'yapyak/adapter/astro';\nimport { authMiddleware } from './auth';\n\nexport const onRequest = sequence(yapyakMiddleware, authMiddleware);\n```"
           ],
           "location": {
             "column": 14,
@@ -792,7 +792,7 @@
           "deprecated": null,
           "description": "React Router 7 framework-mode middleware that wires yapyak's per-request\nlocale context for every incoming request.\n\nRegister in `app/root.tsx`:",
           "examples": [
-            "```tsx\n// app/root.tsx\nimport type { Route } from './+types/root.ts';\nimport { middleware as yapyakMiddleware } from 'yapyak/adapter/react-router';\n\nexport const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];\n```\n\nRequires `future.v8_middleware: true` in `react-router.config.ts`."
+            "```tsx\n// app/root.tsx\nimport type { Route } from './+types/root';\nimport { middleware as yapyakMiddleware } from 'yapyak/adapter/react-router';\n\nexport const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];\n```\n\nRequires `future.v8_middleware: true` in `react-router.config.ts`."
           ],
           "location": {
             "column": 14,

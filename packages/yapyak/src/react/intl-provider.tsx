@@ -2,7 +2,7 @@ import type { ReactElement, ReactNode } from 'react';
 
 import { createContext, useSyncExternalStore } from 'react';
 
-import { getLocale, subscribeLocale } from '../locale/index.ts';
+import { getLocale, subscribeLocale } from '../locale';
 
 /** Props for `IntlProvider`. */
 export interface IntlProviderProps {

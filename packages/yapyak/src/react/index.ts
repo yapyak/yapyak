@@ -1,4 +1,4 @@
-export type { IntlProviderProps } from './intl-provider.tsx';
+export type { IntlProviderProps } from './intl-provider';
 
-export { IntlProvider } from './intl-provider.tsx';
-export { useLocale } from './use-locale.ts';
+export { IntlProvider } from './intl-provider';
+export { useLocale } from './use-locale';

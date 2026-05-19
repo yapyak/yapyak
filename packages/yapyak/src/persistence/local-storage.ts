@@ -1,4 +1,4 @@
-import type { Persistence } from './index.ts';
+import type { Persistence } from '.';
 
 export function localStorage(key: string): Persistence {
   return {

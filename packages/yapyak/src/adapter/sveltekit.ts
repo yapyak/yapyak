@@ -1,7 +1,7 @@
 import type { Handle } from '@sveltejs/kit';
 
-import { getLocale } from '../locale/index.ts';
-import { withRequest } from './index.ts';
+import { getLocale } from '../locale';
+import { withRequest } from '.';
 
 const PLACEHOLDER = '%yapyak.lang%';
 

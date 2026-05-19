@@ -1,5 +1,5 @@
-import { createPersistence, parseCookie } from '../persistence/index.ts';
-import { detectLocale } from './detect.ts';
+import { createPersistence, parseCookie } from '../persistence';
+import { detectLocale } from './detect';
 import {
   ACCEPT_LANGUAGE,
   DEFAULT_LOCALE,

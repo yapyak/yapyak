@@ -1,5 +1,5 @@
-import { getDefaultLocale, getLocale } from '../locale/index.ts';
-import { hasPlaceholder, interpolate, runTrackers } from '../runtime/index.ts';
+import { getDefaultLocale, getLocale } from '../locale';
+import { hasPlaceholder, interpolate, runTrackers } from '../runtime';
 
 type Variants = Record<string, string>;
 

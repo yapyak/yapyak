@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createPersistence } from './index.ts';
+import { createPersistence } from '.';
 
 const COOKIE_NAME = 'locale';
 const STORAGE_KEY = 'locale';

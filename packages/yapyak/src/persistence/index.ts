@@ -1,5 +1,5 @@
-import { cookie } from './cookie.ts';
-import { localStorage } from './local-storage.ts';
+import { cookie } from './cookie';
+import { localStorage } from './local-storage';
 
 type PersistenceConfig =
   | { type: 'cookie'; name: string }
@@ -25,4 +25,4 @@ export function createPersistence(
   return localStorage(config.key);
 }
 
-export { parseCookie } from './cookie.ts';
+export { parseCookie } from './cookie';
