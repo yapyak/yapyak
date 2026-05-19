@@ -63,7 +63,7 @@ Set the tone for every translation:
 
 ```ts
 anthropic({
-  apiKey: '…',
+  apiKey: '...',
   voice: 'Personal blog voice. Casual, thoughtful, never corporate. Match the original cadence.',
 })
 ```
@@ -76,7 +76,7 @@ Force specific translations for terms that must always render the same way:
 
 ```ts
 anthropic({
-  apiKey: '…',
+  apiKey: '...',
   glossary: {
     'sign in': { sv: 'logga in', no: 'logg inn', dk: 'log ind' },
     'cart': { es: 'carrito', fr: 'panier', de: 'Warenkorb' },
@@ -103,7 +103,7 @@ Tune for flakier networks or stricter rate limits:
 
 ```ts
 anthropic({
-  apiKey: '…',
+  apiKey: '...',
   timeout: 60_000,
   maxRetries: 5,
 })

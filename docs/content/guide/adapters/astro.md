@@ -25,7 +25,7 @@ import { authMiddleware } from './auth';
 export const onRequest = sequence(yapyakMiddleware, authMiddleware);
 ```
 
-## Setting `<html lang>`
+## Set the page language
 
 Astro renders `<html>` once per page request as static HTML, not through a reactive framework binding. Server-side, read `getLocale()` in your layout:
 

@@ -48,7 +48,7 @@ export const middleware: Route.MiddlewareFunction[] = [
 
 yapyak's middleware should run first so subsequent middlewares can read the locale via `getLocale()` if they need to.
 
-## Setting `<html lang>`
+## Set the page language
 
 Read the locale via `useLocale()` inside your `Layout` component. The component re-renders when the locale changes, both on the server (per-request locale) and the client:
 

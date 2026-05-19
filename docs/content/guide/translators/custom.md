@@ -35,7 +35,7 @@ yapyak({ translator: myTranslator });
 
 For OpenAI-compatible providers (Groq, DeepSeek, Mistral, OpenRouter, Vercel AI Gateway), prefer the [OpenAI translator with `endpoint`](/guide/translators/openai#openai-compatible-providers) — no custom translator needed.
 
-## The `createTranslator` API
+## The createTranslator API
 
 ```ts
 interface CreateTranslatorOptions {
@@ -176,7 +176,7 @@ For retries inside your own translator (e.g., rate-limited APIs), wrap the HTTP 
 import { describe, it, expect } from 'vitest';
 import { myLLM } from './my-translator';
 
-const translator = myLLM({ apiKey: 'test', model: 'mock', endpoint: '…' });
+const translator = myLLM({ apiKey: 'test', model: 'mock', endpoint: '...' });
 
 it('translates a batch', async () => {
   const result = await translator.batch!([

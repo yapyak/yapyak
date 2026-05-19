@@ -11,9 +11,9 @@ yapyak doesn't ask you to list locales in `vite.config.ts`. Whatever JSON files 
 
 ```
 locales/
-  es.json    ← Spanish locale exists
-  fr.json    ← French locale exists
-  de.json    ← German locale exists
+  es.json
+  fr.json
+  de.json
 ```
 
 Implicit configuration: `defaultLocale: 'en'`, `locales: ['en', 'es', 'fr', 'de']`. Add a file, get a new locale. Delete a file, lose it.
@@ -158,9 +158,9 @@ yapyak({
 })
 ```
 
-### `null` (default)
+### No persistence (default)
 
-No persistence. Refresh resets to the default locale. Useful for ephemeral sessions, demos, or when another mechanism (e.g. a session API) handles persistence.
+`persistence: null`. Refresh resets to the default locale. Useful for ephemeral sessions, demos, or when another mechanism (e.g. a session API) handles persistence.
 
 ## SSR detection
 

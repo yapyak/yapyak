@@ -169,6 +169,256 @@ LLM-written prose has a *texture* that humans recognize instinctively. The textu
 
    When you catch yourself writing *"X, not Y"* or *"not just X, but Y"* — stop and rewrite the X side so it carries the whole weight.
 
+9. **Unicode ellipsis `…` in code or values** — banned. Always use three ASCII dots `...`. The Unicode ellipsis (U+2026) is an LLM auto-fill habit. Real engineers type three periods.
+
+   ✗ Banned:
+   ```bash
+   ANTHROPIC_API_KEY=sk-ant-…
+   ```
+   ```ts
+   anthropic({ apiKey: '…', voice: '…' })
+   ```
+
+   ✓ Fix:
+   ```bash
+   ANTHROPIC_API_KEY=sk-ant-...
+   ```
+   ```ts
+   anthropic({ apiKey: '...', voice: '...' })
+   ```
+
+   In prose, Unicode `…` is also weak — most cases want a real punctuation rewrite, not an ellipsis. Prefer rewriting sentences over trailing them off.
+
+10. **Decorative arrows inside code blocks** — the *"line — let me kindly explain what this line means"* pattern. Strictly forbidden:
+
+   ✗ Banned:
+   ```
+   locales/
+     es.json    ← Spanish locale exists
+     fr.json    ← French locale exists
+     de.json    ← German locale exists
+   ```
+
+   ✗ Also banned:
+   ```ts
+   yapyak({
+     persistence: 'cookie',   ← stores the locale across sessions
+     translator: anthropic(), ← Claude does the translation
+   })
+   ```
+
+   This is one of the loudest LLM tells. Real engineers either let the code speak for itself (filenames, identifiers, types already say what's what), use syntax-native comments (`//`, `#`, `/* */`), or explain in the prose around the code block. Never decorate code lines with `←` / `→` annotations.
+
+   ✓ Fix — let the code stand alone, explain in prose:
+   ```
+   locales/
+     es.json
+     fr.json
+     de.json
+   ```
+   With prose around it: *"Whatever JSON files exist in `locales/` are your non-default locales."*
+
+   ✓ Fix — use real syntax-comments when annotation is genuinely needed:
+   ```ts
+   yapyak({
+     persistence: 'cookie',     // SSR-safe (recommended)
+     translator: anthropic({...}),
+   })
+   ```
+
+   Arrows are fine in *prose* for transformations (e.g. *"`save-button.tsx` → `SaveButton`"*) or in flow diagrams. Just never as inline code-block decoration.
+
+### Determinism — page structure is fixed
+
+Every page of a given type follows the same skeleton, in the same order, using the same vocabulary. Two pages of the same type should read like the same author wrote them on the same day. No improvisation.
+
+#### Page-type templates
+
+**Concept introduction page** (`<topic>/introduction.md`, `adapters/introduction.md`, `translators/introduction.md`):
+```
+---
+title: Introduction
+order: 1
+---
+
+<one-sentence definition of the topic — what it IS, abstract>
+
+## What an X does
+
+<mechanics — how it works in one paragraph>
+
+## When you don't need one (optional)
+
+<edge cases where the topic doesn't apply>
+
+## Pick your Y
+
+<linked list of detail pages>
+```
+
+**Detail page** (any provider/adapter/specific implementation page):
+```
+---
+title: <Name>
+order: <n>
+---
+
+<one-sentence framing of why someone picks this option specifically>
+
+```<language>
+<minimal working setup, no more than 10 lines>
+```
+
+<one sentence pointing at signup/docs/source>
+
+## Options
+
+```ts
+interface <Name>Options { ... }
+```
+
+| Option | Default | Notes |
+| --- | --- | --- |
+| <provider-specific options only> |
+
+See [Shared options](/guide/<topic>#shared-options) for ...
+
+## <provider-specific sections, only when there's real differentiation>
+
+## CI (when applicable)
+```
+
+**Topic page** (`translations.md`, `locales.md`, `how-it-works.md`):
+```
+---
+title: <Topic>
+order: <n>
+---
+
+<one-sentence definition of what this page covers>
+
+## <H2 per concept>
+
+<code example>
+
+<1-2 paragraph explanation>
+```
+
+#### Information hierarchy — what lives where
+
+For *every* concept, there is exactly **one** canonical home. Every other reference is a link.
+
+| Concept | Canonical home |
+|---|---|
+| What `t()` is, params, plurals, forced locale | `translations.md` |
+| Auto-discovery, persistence (cookie/localStorage), `Accept-Language`, regional vs language, fallback | `locales.md` |
+| Save-loop, rename detection, compile-time rewrite, AI context object | `how-it-works.md` |
+| Install steps, CI patterns | `installation.md` |
+| CLI commands and flags | `cli.md` |
+| Adapter concept (what + when not needed) | `adapters/introduction.md` |
+| Shared translator options (voice, glossary, context, batchSize, etc.) | `translators/introduction.md` |
+| Error handling, retries, recovery table | `translators/introduction.md` |
+| `createTranslator` API for custom providers | `translators/custom.md` |
+| `withRequest` for custom adapters | `adapters/custom.md` |
+
+If a page explains a concept that has a canonical home elsewhere, the page is **wrong**. Cut the explanation, link instead.
+
+#### Cross-reference format
+
+One format for every link to another doc page. Use it verbatim:
+
+> See [Section name](/guide/path#anchor) for X.
+
+Examples:
+- ✓ *"See [Persistence](/guide/locales#persistence) for cookie configuration."*
+- ✓ *"See [Shared options](/guide/translators#shared-options) for `voice`, `glossary`, `context`."*
+- ✗ *"For more on this, check out the persistence section..."*
+- ✗ *"Persistence is documented over on the Locales page."*
+
+No prose variations on "see". No "head over to", "check out", "more info at".
+
+#### Terminology lock
+
+Same concept, same word, every page. No synonyms.
+
+| Concept | The word | Banned alternatives |
+|---|---|---|
+| The translation function | `t()` | `the translate function`, `the t helper` |
+| A configured `t()` invocation | **call site** | call location, invocation site, t() spot |
+| The user's source-language string | **source string** | source text, key, source key, English (when language-agnostic) |
+| The JSON files under `locales/` | **locale files** | translation files, i18n JSON, translation JSON, language files |
+| What the AI receives | **call-site context** | context payload, request context, translation hint |
+| What the Vite plugin produces | **inlined object** / **inlined variants** | compiled translations, baked translations, baked-in translations |
+| The configured AI providers | **translator** (singular) / **translators** | provider, AI provider, model provider, AI service |
+| The adapter package for a framework | **adapter** | wrapper, integration, plugin (no — Vite *plugin* is the plugin) |
+| `defaultLocale` runtime behavior | **default locale** | source locale, fallback locale, base locale |
+| Per-call locale override | **forced locale** (via `t.in()`) | locked locale, scoped locale, fixed locale |
+
+When introducing a new term, add it to this table. When two writers reach for two words for the same thing, the table picks the winner.
+
+#### Section-heading conventions
+
+Same heading text for same concept across pages. Don't paraphrase:
+
+- *"Options"* — never *"Configuration"*, *"Settings"*, *"Parameters"*.
+- *"CI"* — never *"Continuous integration"*, *"Build pipeline"*.
+- *"Picking a model"* — never *"Choosing a model"*, *"Model selection"*.
+- *"What X does"* — never *"How X works"* (reserve "How it works" for `how-it-works.md`).
+- *"When you don't need one"* — never *"Skip this section"*, *"Opt-out cases"*.
+
+#### Headings are labels, not narrative
+
+Two hard bans:
+
+1. **No numbered headings.** *"`## 1. Install the package`"*, *"`## Step 2: Configure`"* — banned. AI loves numbering everything, and sequence is communicated by section order plus an opening line in prose (e.g. *"Three steps to a translated string."*). Numbered headings also produce ugly anchor slugs (`#1-install-the-package`), shift on insertion, and read as LLM-template output in the sidebar.
+
+   ✗ `## 1. Install the package`
+   ✗ `## Step 1: Install`
+   ✓ `## Install`
+   ✓ `## Install yapyak`
+
+2. **No inline code in headings.** *"`## Add the plugin to vite.config.ts`"* (with backticks around `vite.config.ts`) — banned. Backticks render inconsistently across themes, anchor slugs become unreadable (`#add-the-plugin-to-vite-config-ts`), and headings should be ognable at scan-speed. Move the filename to the first sentence of the section body where it can be properly code-styled.
+
+   ✗ `` ## Add the plugin to `vite.config.ts` ``
+   ✗ `` ## The `t()` function ``
+   ✓ `## Configure Vite` → body: *"Add the plugin to `vite.config.ts`:"*
+   ✓ `## The runtime API` → body: *"`t()` takes a source string literal..."*
+
+   The body is for code. The heading is for the label.
+
+#### Opening-sentence rule
+
+Every page's opening sentence:
+1. Names the subject in the first three words
+2. States what it *does* (not why it exists)
+3. Is one sentence — no preamble
+
+✓ *"`t()` is the runtime API. It takes a source string literal and optional params, and returns the right variant for the current locale."*
+✓ *"An adapter wires yapyak to your favorite SSR framework so each request renders in its own locale."*
+✓ *"yapyak generates translations on save."*
+
+✗ *"This page covers..."*
+✗ *"Let's talk about..."*
+✗ *"In this guide, we'll explore..."*
+
+#### Code-example consistency
+
+- **One canonical example string** project-wide: `t('Save changes')`.
+- **One canonical filename** for the call site: `save-button.tsx`.
+- **One canonical component name**: `SaveButton`.
+- **One canonical locale pair for examples**: `en` (source) → `sv` (translated). Use `es`/`fr`/`de`/`ja` only when illustrating *multiple* locales.
+
+If you need a fresh example (placeholder demo, plural demo), introduce a single new canonical one and reuse it. Don't invent throwaway examples.
+
+#### The single-source rule
+
+> Each concept lives in exactly one file. Every other mention is a link.
+
+This is the most violated rule. The audit pass catches it. To prevent regression:
+- Before writing more than two sentences explaining a concept, check the canonical-home table above.
+- If the concept has a home elsewhere — delete what you wrote, write a link sentence instead.
+- If the concept *doesn't* have a home — establish one (add to the table) and write the explanation there. Other pages link.
+
 ### Say it once. Then stop.
 
 - Find the **single shortest sentence** that says the thing. If two sentences say the same thing twice, delete one.

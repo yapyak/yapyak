@@ -5,7 +5,7 @@ order: 2
 
 Three steps to a translated string.
 
-## 1. Install the package
+## Install
 
 ```bash
 npm install yapyak
@@ -13,7 +13,9 @@ npm install yapyak
 pnpm add yapyak
 ```
 
-## 2. Add the plugin to `vite.config.ts`
+## Configure Vite
+
+Add the plugin to `vite.config.ts`:
 
 ```ts
 import { defineConfig } from 'vite';
@@ -36,14 +38,14 @@ export default defineConfig({
 Add your API key to `.env.local`:
 
 ```bash
-ANTHROPIC_API_KEY=sk-ant-…
+ANTHROPIC_API_KEY=sk-ant-...
 ```
 
 OpenAI, Ollama, or any custom translator works the same way — see [Translators](/guide/translators/).
 
-The plugin has more options for advanced cases (custom locale folder, include/exclude patterns, rename behavior). Most projects never reach for them. The [Vite plugin reference](/reference/vite-plugin) is there for the day you do.
+The plugin has more options for advanced cases (custom locale folder, include/exclude patterns, rename behavior). See [Translations](/guide/translations).
 
-## 3. Add a locale
+## Add a locale
 
 ```bash
 npx yapyak add es

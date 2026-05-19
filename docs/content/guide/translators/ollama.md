@@ -95,11 +95,11 @@ import { ollama } from 'yapyak/translator';
 const translator = process.env.NODE_ENV === 'production'
   ? anthropic({
       apiKey: process.env.ANTHROPIC_API_KEY!,
-      voice: '…',
+      voice: '...',
     })
   : ollama({
       model: 'llama3.1',
-      voice: '…',
+      voice: '...',
     });
 
 yapyak({ translator });

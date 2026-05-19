@@ -15,7 +15,7 @@ function handler(request: Request): Response | Promise<Response> {
 
 `withRequest()` reads `Accept-Language` and `Cookie` from the `Request`, binds them to an async-scoped context, and runs the callback inside that scope. `getLocale()`, `t()`, and any other yapyak call inside the callback see this request's locale.
 
-## What `withRequest()` does
+## What withRequest does
 
 It uses Node's `AsyncLocalStorage.run()` for safe per-request isolation. Concurrent requests can't bleed locale state into each other. The callback's return value is forwarded.
 
@@ -23,7 +23,7 @@ It uses Node's `AsyncLocalStorage.run()` for safe per-request isolation. Concurr
 withRequest<T>(request: Request, fn: () => T): T;
 ```
 
-## Setting `<html lang>`
+## Set the page language
 
 If your root component is a reactive framework binding (React/Vue/Svelte), read the locale there so it re-renders on change:
 

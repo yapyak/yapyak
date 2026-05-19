@@ -16,7 +16,7 @@ export default {
 
 That's the entire wiring.
 
-## Setting `<html lang>`
+## Set the page language
 
 Drive the root element's `lang` attribute from the locale via `useLocale()`. The component re-renders when the locale changes:
 

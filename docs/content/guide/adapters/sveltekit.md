@@ -24,7 +24,7 @@ export { handle } from 'yapyak/adapter/sveltekit';
 
 The hook binds each request's locale context and substitutes `%yapyak.lang%` with the resolved locale before HTML reaches the browser.
 
-## Setting `<html lang>` on client-side switches
+## Set the page language on client-side switches
 
 `%yapyak.lang%` is substituted **server-side** — the placeholder is gone by the time HTML reaches the browser. So calling `setLocale()` on the client without a full page reload won't update `<html lang>` on its own.
 

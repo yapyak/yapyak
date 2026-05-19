@@ -120,11 +120,11 @@ npx yapyak export sv | jq '.sv'
 
 ## Reference
 
-### `add <locale...>`
+### add
 
 Creates locale files and translates every `t()` string into each target language. Existing files are left alone and only their missing entries are filled.
 
-### `translate [locale]`
+### translate
 
 Fills missing translations. Without an argument, processes every non-default locale.
 
@@ -136,7 +136,7 @@ Fills missing translations. Without an argument, processes every non-default loc
 
 Reads API keys from `.env.local` (`ANTHROPIC_API_KEY` or `OPENAI_API_KEY`).
 
-### `status`
+### status
 
 Prints a coverage table per locale.
 
@@ -144,11 +144,11 @@ Prints a coverage table per locale.
 | --- | --- |
 | `--json` | Machine-readable output. Exits 1 if any missing, 0 otherwise. |
 
-### `check`
+### check
 
 Exits 1 with a list of missing strings if any locale is incomplete. Exits 0 if everything is translated. Designed for CI.
 
-### `export [locale...]`
+### export
 
 Writes a JSON snapshot of every translated string. With no locale arguments, includes every locale.
 
