@@ -431,6 +431,9 @@ function collectTypeMembers(
   declaration: ts.Declaration,
   context: Context,
 ): ApiMember[] {
+  if (isOpaqueType(type)) {
+    return [];
+  }
   const properties = type.getProperties();
   if (properties.length === 0) {
     return [];
@@ -443,6 +446,41 @@ function collectTypeMembers(
     }
   }
   return members.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function isOpaqueType(type: ts.Type): boolean {
+  const opaqueFlags =
+    ts.TypeFlags.Primitive |
+    ts.TypeFlags.Any |
+    ts.TypeFlags.Unknown |
+    ts.TypeFlags.Never |
+    ts.TypeFlags.TypeParameter;
+  if ((type.flags & opaqueFlags) !== 0) {
+    return true;
+  }
+  if (type.isUnion() || type.isIntersection()) {
+    return true;
+  }
+  if (isBuiltinType(type)) {
+    return true;
+  }
+  return false;
+}
+
+function isBuiltinType(type: ts.Type): boolean {
+  const symbol = type.aliasSymbol ?? type.symbol;
+  if (symbol === undefined) {
+    return false;
+  }
+  const declarations = symbol.declarations;
+  if (declarations === undefined || declarations.length === 0) {
+    return false;
+  }
+  return declarations.every((declaration) =>
+    /\/typescript\/lib\/lib\.[^/]+\.d\.ts$/.test(
+      declaration.getSourceFile().fileName,
+    ),
+  );
 }
 
 function collectMembers(
