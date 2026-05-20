@@ -1,8 +1,2 @@
-export type {
-  CookiePersistence,
-  LocalStoragePersistence,
-  PersistenceOptions,
-  YapyakOptions,
-} from './options';
-
+export type { PersistenceOptions, YapyakOptions } from './options';
 export { yapyak } from './plugin';

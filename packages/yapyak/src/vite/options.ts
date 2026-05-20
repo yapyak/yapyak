@@ -4,20 +4,6 @@ import type { Translator } from '../translator';
 
 import { DEFAULT_EXCLUDE, DEFAULT_INCLUDE } from '../parser';
 
-/** Cookie persistence config. */
-export interface CookiePersistence {
-  /** Cookie name. Defaults to `'locale'`. */
-  name?: string;
-  type: 'cookie';
-}
-
-/** localStorage persistence config. */
-export interface LocalStoragePersistence {
-  /** Storage key. Defaults to `'locale'`. */
-  key?: string;
-  type: 'localStorage';
-}
-
 /**
  * Where to persist the user's locale selection.
  *
@@ -34,8 +20,8 @@ export interface LocalStoragePersistence {
 export type PersistenceOptions =
   | 'cookie'
   | 'localStorage'
-  | CookiePersistence
-  | LocalStoragePersistence;
+  | { name?: string; type: 'cookie' }
+  | { key?: string; type: 'localStorage' };
 
 /** Options for the yapyak Vite plugin. */
 export interface YapyakOptions {
