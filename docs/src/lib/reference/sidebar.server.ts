@@ -47,7 +47,7 @@ function moduleChildren(
     nodes.push({
       badge: api.deprecated !== null ? { variant: 'deprecated' } : undefined,
       href: symbolHref(module.id, api.name),
-      label: api.name,
+      label: api.kind === 'function' ? `${api.name}()` : api.name,
       type: 'link',
     });
   }

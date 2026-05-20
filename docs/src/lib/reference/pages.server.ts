@@ -77,7 +77,11 @@ export function buildSymbolPage(symbol: ApiExport, moduleId: string): Page {
     type: 'code-location',
   });
 
-  return { blocks, description: '', title: symbol.name };
+  return {
+    blocks,
+    description: '',
+    title: symbol.kind === 'function' ? `${symbol.name}()` : symbol.name,
+  };
 }
 
 function signatureBlock(symbol: ApiExport): Block {
