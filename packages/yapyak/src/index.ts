@@ -1,9 +1,5 @@
+export type { I18n } from './i18n';
 export type { Params, T, TIn } from './runtime';
 
-export {
-  getDefaultLocale,
-  getLocale,
-  getLocales,
-  setLocale,
-} from './locale';
+export { i18n } from './i18n';
 export { t } from './runtime';

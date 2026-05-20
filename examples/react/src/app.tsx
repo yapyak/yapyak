@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 
-import { getLocales, t } from 'yapyak';
-import { useLocale } from 'yapyak/react';
+import { t } from 'yapyak';
+import { useI18n } from 'yapyak/react';
 
 const now = new Date();
 
@@ -48,8 +48,7 @@ export function App(): ReactElement {
 }
 
 function LocaleToggle(): ReactElement {
-  const [locale, setLocale] = useLocale();
-  const locales = getLocales();
+  const { locale, setLocale, locales } = useI18n();
   return (
     <label>
       {t('Switch language')}

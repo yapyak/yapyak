@@ -35,50 +35,38 @@ When the default isn't `en`, you write `t('Spara ändringar')` directly. Other l
 
 If `defaultLocale` is unset, yapyak uses `'en'`.
 
-## Reading the current locale
+## The i18n namespace
+
+All locale state lives on the `i18n` object exported from `'yapyak'`:
 
 ```ts
-import { getLocale } from 'yapyak';
+import { i18n } from 'yapyak';
 
-getLocale()   // 'es'
+i18n.locale          // 'es' — currently-active locale
+i18n.locales         // ['en', 'es', 'fr', 'de'] — all configured
+i18n.defaultLocale   // 'en'
+i18n.setLocale('sv');
+i18n.subscribe((state) => console.log(state.locale));
 ```
 
-Same import on the server and client. On the server, the locale is resolved per request via the SSR adapter (cookie + `Accept-Language` header). On the client, it's read from the runtime store.
-
-## Reading all configured locales
-
-```ts
-import { getLocales, getDefaultLocale } from 'yapyak';
-
-getLocales()         // ['en', 'es', 'fr', 'de']
-getDefaultLocale()   // 'en'
-```
-
-`getLocales()` returns the default locale plus every JSON file in `locales/`.
+Same import on the server and client. On the server, `i18n.locale` resolves per request via the SSR adapter (cookie + `Accept-Language` header). On the client, it reads from the runtime store.
 
 ## Switching locale
 
-```ts
-import { setLocale } from 'yapyak';
+`i18n.setLocale(code)` updates the in-memory store, persists according to your `persistence` config, and notifies framework adapters. Components re-render in the new locale.
 
-setLocale('es');
-```
-
-Updates the in-memory store, persists according to your `persistence` config, and notifies all subscribed `useLocale` hooks. Components re-render in the new locale.
-
-In components, use the framework-idiomatic reactive binding so the UI re-renders on locale change:
+In components, import the framework-specific `i18n` so the UI re-renders on locale change:
 
 {% code-group %}
 
 ```tsx [React]
-import { getLocales } from 'yapyak';
-import { useLocale } from 'yapyak/react';
+import { useI18n } from 'yapyak/react';
 
 export function LocaleToggle() {
-  const [locale, setLocale] = useLocale();
+  const { locale, setLocale, locales } = useI18n();
   return (
     <select value={locale} onChange={(event) => setLocale(event.target.value)}>
-      {getLocales().map((code) => (
+      {locales.map((code) => (
         <option key={code} value={code}>{code.toUpperCase()}</option>
       ))}
     </select>
@@ -88,13 +76,14 @@ export function LocaleToggle() {
 
 ```vue [Vue]
 <script setup lang="ts">
-import { getLocales } from 'yapyak'
-import { locale } from 'yapyak/vue'
+import { i18n } from 'yapyak/vue'
+
+const { locale, locales } = i18n;
 </script>
 
 <template>
   <select v-model="locale">
-    <option v-for="code in getLocales()" :key="code" :value="code">
+    <option v-for="code in locales" :key="code" :value="code">
       {{ code.toUpperCase() }}
     </option>
   </select>
@@ -103,12 +92,11 @@ import { locale } from 'yapyak/vue'
 
 ```svelte [Svelte]
 <script lang="ts">
-  import { getLocales } from 'yapyak';
-  import { locale } from 'yapyak/svelte';
+  import { i18n } from 'yapyak/svelte';
 </script>
 
-<select bind:value={locale.current}>
-  {#each getLocales() as code}
+<select bind:value={i18n.locale}>
+  {#each i18n.locales as code}
     <option value={code}>{code.toUpperCase()}</option>
   {/each}
 </select>
@@ -116,7 +104,22 @@ import { locale } from 'yapyak/vue'
 
 {% /code-group %}
 
-The framework-specific exports (`yapyak/react`, `yapyak/vue`, `yapyak/svelte`) only differ in *how* you read and write the locale reactively — the `t` function itself is the same import everywhere.
+The framework-specific `i18n` exports (`yapyak/react`, `yapyak/vue`, `yapyak/svelte`) only differ in *how* the locale is reactively bound — the data shape and `t` function are the same everywhere.
+
+## Subscribing to locale changes
+
+Outside framework components — e.g. persistence layers, analytics, document.lang sync — use `i18n.subscribe(fn)` to react imperatively:
+
+```ts
+import { i18n } from 'yapyak';
+
+const unsubscribe = i18n.subscribe((state) => {
+  document.documentElement.lang = state.locale;
+});
+// Later: unsubscribe()
+```
+
+The callback receives the full `i18n` state (same reference as the import). It fires whenever `i18n.setLocale(...)` is called with a new value. Returns an unsubscribe function.
 
 ## Persistence
 
@@ -134,7 +137,7 @@ yapyak({
 
 ### Cookie
 
-The right choice for SSR apps. Sent with every request, so the server can read it and pre-render in the user's locale. The cookie is written client-side on `setLocale()`, with `path=/`, `samesite=lax`, `max-age=1y`.
+The right choice for SSR apps. Sent with every request, so the server can read it and pre-render in the user's locale. The cookie is written client-side on `i18n.setLocale()`, with `path=/`, `samesite=lax`, `max-age=1y`.
 
 Customize the cookie name:
 
@@ -170,7 +173,7 @@ When `persistence: 'cookie'` is set *and* an SSR adapter is wired ([TanStack Sta
 2. **`Accept-Language` header** (browser/OS preference) — if `acceptLanguage: true`
 3. **Default locale** (configured fallback)
 
-Each request picks the right locale before HTML renders. `getLocale()` returns the per-request value; `t()` calls in SSR render in that locale; the cookie matches what the client reads, so there's no hydration mismatch.
+Each request picks the right locale before HTML renders. `i18n.locale` returns the per-request value; `t()` calls in SSR render in that locale; the cookie matches what the client reads, so there's no hydration mismatch.
 
 To opt into `Accept-Language` matching:
 
@@ -207,7 +210,7 @@ pnpm yapyak add pt-BR es-MX zh-Hant
 
 `Accept-Language` matching during SSR detection is the one place tags collapse. A regional header against a language-code locale matches on the prefix:
 
-| Configured locales | `Accept-Language` | `getLocale()` returns |
+| Configured locales | `Accept-Language` | `i18n.locale` returns |
 |---|---|---|
 | `['en', 'pt']` | `pt-BR,en;q=0.9` | `pt` |
 | `['en', 'pt-BR']` | `pt-BR,en;q=0.9` | `pt-BR` |

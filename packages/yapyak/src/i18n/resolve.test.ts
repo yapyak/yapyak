@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { detectLocale, parseAcceptLanguage } from './detect';
+import { resolveLocale, parseAcceptLanguage } from './resolve';
 
-describe('detectLocale', () => {
+describe('resolveLocale', () => {
   it('uses persisted value when supported', () => {
     expect(
-      detectLocale({
+      resolveLocale({
         defaultLocale: 'en',
         locales: ['en', 'sv'],
         persisted: 'sv',
@@ -15,7 +15,7 @@ describe('detectLocale', () => {
 
   it('ignores persisted value when unsupported', () => {
     expect(
-      detectLocale({
+      resolveLocale({
         defaultLocale: 'en',
         locales: ['en', 'sv'],
         persisted: 'de',
@@ -25,7 +25,7 @@ describe('detectLocale', () => {
 
   it('reads Accept-Language when no persisted value', () => {
     expect(
-      detectLocale({
+      resolveLocale({
         acceptLanguage: 'sv,en;q=0.9',
         defaultLocale: 'en',
         locales: ['en', 'sv'],
@@ -35,7 +35,7 @@ describe('detectLocale', () => {
 
   it('matches lang prefix when full locale not supported', () => {
     expect(
-      detectLocale({
+      resolveLocale({
         acceptLanguage: 'sv-SE,en-GB;q=0.9',
         defaultLocale: 'en',
         locales: ['en', 'sv'],
@@ -45,7 +45,7 @@ describe('detectLocale', () => {
 
   it('respects q-values when ranking candidates', () => {
     expect(
-      detectLocale({
+      resolveLocale({
         acceptLanguage: 'sv;q=0.5,fr;q=0.9,en;q=0.7',
         defaultLocale: 'en',
         locales: ['en', 'sv', 'fr'],
@@ -55,7 +55,7 @@ describe('detectLocale', () => {
 
   it('reads navigator.languages when Accept-Language missing', () => {
     expect(
-      detectLocale({
+      resolveLocale({
         defaultLocale: 'en',
         locales: ['en', 'sv'],
         navigatorLanguages: ['sv-SE', 'en'],
@@ -65,7 +65,7 @@ describe('detectLocale', () => {
 
   it('falls back to defaultLocale when nothing matches', () => {
     expect(
-      detectLocale({
+      resolveLocale({
         acceptLanguage: 'de,fr',
         defaultLocale: 'en',
         locales: ['en', 'sv'],
@@ -75,7 +75,7 @@ describe('detectLocale', () => {
 
   it('persisted takes priority over Accept-Language', () => {
     expect(
-      detectLocale({
+      resolveLocale({
         acceptLanguage: 'fr',
         defaultLocale: 'en',
         locales: ['en', 'sv', 'fr'],
@@ -86,7 +86,7 @@ describe('detectLocale', () => {
 
   it('returns defaultLocale when no signals provided', () => {
     expect(
-      detectLocale({
+      resolveLocale({
         defaultLocale: 'en',
         locales: ['en', 'sv'],
       }),

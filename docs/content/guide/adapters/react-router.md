@@ -46,19 +46,19 @@ export const middleware: Route.MiddlewareFunction[] = [
 ];
 ```
 
-yapyak's middleware should run first so subsequent middlewares can read the locale via `getLocale()` if they need to.
+yapyak's middleware should run first so subsequent middlewares can read the locale via `i18n.locale` if they need to.
 
 ## Set the page language
 
-Read the locale via `useLocale()` inside your `Layout` component. The component re-renders when the locale changes, both on the server (per-request locale) and the client:
+Read the locale via `useI18n()` inside your `Layout` component. The component re-renders when the locale changes, both on the server (per-request locale) and the client:
 
 ```tsx
 // app/root.tsx
 import { Links, Meta, Outlet, Scripts } from 'react-router';
-import { useLocale } from 'yapyak/react';
+import { useI18n } from 'yapyak/react';
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const [locale] = useLocale();
+  const { locale } = useI18n();
   return (
     <html lang={locale}>
       <head>
@@ -91,7 +91,7 @@ yapyak({
 })
 ```
 
-The cookie is written client-side on `setLocale()` and read server-side by the middleware. See [Locales / Persistence](/guide/locales#persistence).
+The cookie is written client-side on `i18n.setLocale()` and read server-side by the middleware. See [Locales / Persistence](/guide/locales#persistence).
 
 ## Requirements
 

@@ -13,7 +13,7 @@ function handler(request: Request): Response | Promise<Response> {
 }
 ```
 
-`withRequest()` reads `Accept-Language` and `Cookie` from the `Request`, binds them to an async-scoped context, and runs the callback inside that scope. `getLocale()`, `t()`, and any other yapyak call inside the callback see this request's locale.
+`withRequest()` reads `Accept-Language` and `Cookie` from the `Request`, binds them to an async-scoped context, and runs the callback inside that scope. `i18n.locale`, `t()`, and any other yapyak call inside the callback see this request's locale.
 
 ## What withRequest does
 
@@ -28,10 +28,10 @@ withRequest<T>(request: Request, fn: () => T): T;
 If your root component is a reactive framework binding (React/Vue/Svelte), read the locale there so it re-renders on change:
 
 ```tsx
-import { useLocale } from 'yapyak/react';
+import { useI18n } from 'yapyak/react';
 
 function Component() {
-  const [locale] = useLocale();
+  const { locale } = useI18n();
   return <html lang={locale}>{/* ... */}</html>;
 }
 ```

@@ -1,5 +1,5 @@
 import { createPersistence, parseCookie } from '../persistence';
-import { detectLocale } from './detect';
+import { resolveLocale } from './resolve';
 import {
   ACCEPT_LANGUAGE,
   DEFAULT_LOCALE,
@@ -35,15 +35,13 @@ function initialLocale(): string {
 }
 
 let currentLocale = initialLocale();
-let version = 0;
-let snapshot = `${currentLocale}#${version}`;
-const listeners = new Set<() => void>();
+const listeners = new Set<(state: I18n) => void>();
 
 if (SYNC_HTML_LANG && typeof document !== 'undefined') {
   document.documentElement.lang = currentLocale;
 }
 
-function resolveLocale(): string {
+function readLocale(): string {
   if (typeof window === 'undefined' && headersReader !== null) {
     const source = headersReader();
     if (source !== undefined) {
@@ -53,7 +51,7 @@ function resolveLocale(): string {
         cookieName !== null
           ? readCookieValue(source.cookieHeader, cookieName)
           : undefined;
-      return detectLocale({
+      return resolveLocale({
         acceptLanguage: ACCEPT_LANGUAGE ? source.acceptLanguage : undefined,
         defaultLocale: DEFAULT_LOCALE,
         locales: LOCALES,
@@ -75,20 +73,7 @@ function readCookieValue(
   return value === '' ? undefined : value;
 }
 
-/** Returns the current locale. */
-export function getLocale(): string {
-  return resolveLocale();
-}
-
-/**
- * Switches the active locale.
- *
- * No-op if the locale is not in the configured `locales` list. Triggers
- * re-renders in framework integrations (`useLocale`, Svelte/Vue stores).
- *
- * @param locale - The locale to switch to.
- */
-export function setLocale(locale: string): void {
+function applyLocale(locale: string): void {
   if (!LOCALES.includes(locale)) {
     return;
   }
@@ -96,51 +81,80 @@ export function setLocale(locale: string): void {
     return;
   }
   currentLocale = locale;
-  version++;
-  snapshot = `${currentLocale}#${version}`;
   persistence?.set(locale);
   if (SYNC_HTML_LANG && typeof document !== 'undefined') {
     document.documentElement.lang = locale;
   }
   for (const listener of listeners) {
-    listener();
+    listener(i18n);
   }
 }
 
-/** Returns the list of configured locales. */
-export function getLocales(): string[] {
-  return LOCALES;
+/** Yapyak's i18n state namespace. */
+export interface I18n {
+  /** The default locale (build-time constant). */
+  readonly defaultLocale: string;
+  /** The currently-active locale. */
+  readonly locale: string;
+  /** All configured locales (build-time constant). */
+  readonly locales: readonly string[];
+  /**
+   * Switch the active locale. No-op if `value` is not in `locales`.
+   *
+   * @param value - The locale to switch to.
+   */
+  setLocale(value: string): void;
+  /**
+   * Subscribe to i18n state changes.
+   *
+   * @param fn - Callback fired whenever the i18n state changes. Receives the
+   *   current `i18n` state.
+   * @returns A function that unsubscribes the listener.
+   */
+  subscribe(fn: (state: I18n) => void): () => void;
 }
 
-/** Returns the configured default locale. */
-export function getDefaultLocale(): string {
-  return DEFAULT_LOCALE;
-}
+/**
+ * The i18n state namespace.
+ *
+ * Holds the active locale and exposes operations to read and mutate it.
+ * Framework adapters wrap this with reactive bindings.
+ *
+ * @example
+ * ```ts
+ * import { i18n } from 'yapyak';
+ *
+ * console.log(i18n.locale);            // 'en'
+ * i18n.setLocale('sv');
+ *
+ * i18n.subscribe((state) => {
+ *   localStorage.setItem('locale', state.locale);
+ * });
+ * ```
+ */
+export const i18n: I18n = {
+  get defaultLocale(): string {
+    return DEFAULT_LOCALE;
+  },
+  get locale(): string {
+    return readLocale();
+  },
+  get locales(): readonly string[] {
+    return LOCALES;
+  },
+  setLocale(value: string): void {
+    applyLocale(value);
+  },
+  subscribe(fn: (state: I18n) => void): () => void {
+    listeners.add(fn);
+    return (): void => {
+      listeners.delete(fn);
+    };
+  },
+};
 
 /** @internal */
-export function getLocaleSnapshot(): string {
-  if (
-    typeof window === 'undefined' &&
-    headersReader !== null &&
-    headersReader() !== undefined
-  ) {
-    return resolveLocale();
-  }
-  return snapshot;
-}
-
-/** @internal */
-export function subscribeLocale(listener: () => void): () => void {
-  listeners.add(listener);
-  return () => {
-    listeners.delete(listener);
-  };
-}
-
-/** @internal */
-export function resetLocaleStore(): void {
+export function resetI18n(): void {
   currentLocale = initialLocale();
-  version = 0;
-  snapshot = `${currentLocale}#${version}`;
   listeners.clear();
 }

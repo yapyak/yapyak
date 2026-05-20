@@ -2,7 +2,12 @@ import type { ReactElement, ReactNode } from 'react';
 
 import { createContext, useSyncExternalStore } from 'react';
 
-import { getLocale, subscribeLocale } from '../locale';
+import { i18n } from '../i18n';
+
+const subscribe = (notify: () => void): (() => void) =>
+  i18n.subscribe(() => notify());
+
+const snapshot = (): string => i18n.locale;
 
 /** Props for `IntlProvider`. */
 export interface IntlProviderProps {
@@ -12,22 +17,29 @@ export interface IntlProviderProps {
 const LocaleContext = createContext<string>('en');
 
 /**
- * Subscribes the React tree to locale changes.
+ * Subscribes the React tree to i18n state changes.
  *
- * Wrap your app once at the root. Re-renders descendants when `setLocale` is
- * called, so `t()` calls inside the tree return the new locale's strings.
+ * Wrap your app once at the root. Re-renders descendants when
+ * `i18n.setLocale()` is called, so `t()` calls inside the tree return the new
+ * locale's strings.
  *
  * @example
  * ```tsx
- * <IntlProvider>
- *   <App />
- * </IntlProvider>
+ * import { IntlProvider } from 'yapyak/react';
+ *
+ * function App() {
+ *   return (
+ *     <IntlProvider>
+ *       <YourApp />
+ *     </IntlProvider>
+ *   );
+ * }
  * ```
  */
 export function IntlProvider(props: IntlProviderProps): ReactElement {
   const { children } = props;
 
-  const locale = useSyncExternalStore(subscribeLocale, getLocale, getLocale);
+  const locale = useSyncExternalStore(subscribe, snapshot, snapshot);
   return (
     <LocaleContext
       key={locale}

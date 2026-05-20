@@ -1,3 +1,3 @@
-export type { ReactiveLocale } from './locale.svelte';
+export type { I18n } from './i18n.svelte';
 
-export { locale } from './locale.svelte';
+export { i18n } from './i18n.svelte';

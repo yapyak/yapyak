@@ -10,7 +10,7 @@ import {
   Scripts,
 } from '@tanstack/react-router';
 import { t } from 'yapyak';
-import { useLocale } from 'yapyak/react';
+import { useI18n } from 'yapyak/react';
 
 import { Colophon } from '#components/colophon';
 import { GithubIcon } from '#components/github-icon';
@@ -98,7 +98,7 @@ interface ShellComponentProps {
 function ShellComponent(props: ShellComponentProps) {
   const { children } = props;
 
-  const [locale] = useLocale();
+  const { locale } = useI18n();
 
   return (
     <html lang={locale}>

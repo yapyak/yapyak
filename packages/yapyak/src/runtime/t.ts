@@ -1,6 +1,6 @@
 import type { ExtractParams } from './extract-params';
 
-import { getLocale } from '../locale';
+import { i18n } from '../i18n';
 import { hasPlaceholder, interpolate } from './interpolate';
 import { runTrackers } from './tracker';
 
@@ -40,7 +40,7 @@ const fn = (source: string, params?: unknown): string => {
   if (params === undefined || !hasPlaceholder(source)) {
     return source;
   }
-  return interpolate(source, params as Record<string, unknown>, getLocale());
+  return interpolate(source, params as Record<string, unknown>, i18n.locale);
 };
 (fn as T).in = inLocale;
 

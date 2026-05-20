@@ -8,7 +8,7 @@ vi.mock('virtual:yapyak', () => ({
   SYNC_HTML_LANG: false,
 }));
 
-const { getLocale, resetLocaleStore } = await import('../locale/store');
+const { i18n, resetI18n } = await import('../i18n/store');
 const { withRequest } = await import('./index');
 
 function makeRequest(
@@ -26,7 +26,7 @@ function makeRequest(
 
 describe('withRequest', () => {
   afterEach(() => {
-    resetLocaleStore();
+    resetI18n();
   });
 
   it('returns the callback result', () => {
@@ -36,7 +36,7 @@ describe('withRequest', () => {
 
   it('binds locale inside the callback', () => {
     const result = withRequest(makeRequest({ cookie: 'locale=sv' }), () =>
-      getLocale(),
+      i18n.locale,
     );
     expect(result).toBe('sv');
   });
@@ -45,7 +45,7 @@ describe('withRequest', () => {
     let outerSeenAfterInner = '';
     withRequest(makeRequest({ cookie: 'locale=sv' }), () => {
       withRequest(makeRequest({ cookie: 'locale=fr' }), () => {});
-      outerSeenAfterInner = getLocale();
+      outerSeenAfterInner = i18n.locale;
     });
     expect(outerSeenAfterInner).toBe('sv');
   });
@@ -53,12 +53,12 @@ describe('withRequest', () => {
 
 describe('locale resolution inside withRequest', () => {
   afterEach(() => {
-    resetLocaleStore();
+    resetI18n();
   });
 
   it('reads cookie locale from the request', () => {
     const result = withRequest(makeRequest({ cookie: 'locale=sv' }), () =>
-      getLocale(),
+      i18n.locale,
     );
     expect(result).toBe('sv');
   });
@@ -66,7 +66,7 @@ describe('locale resolution inside withRequest', () => {
   it('falls back to Accept-Language when no cookie', () => {
     const result = withRequest(
       makeRequest({ acceptLanguage: 'sv-SE,en;q=0.9' }),
-      () => getLocale(),
+      () => i18n.locale,
     );
     expect(result).toBe('sv');
   });
@@ -74,19 +74,19 @@ describe('locale resolution inside withRequest', () => {
   it('cookie takes priority over Accept-Language', () => {
     const result = withRequest(
       makeRequest({ acceptLanguage: 'fr', cookie: 'locale=sv' }),
-      () => getLocale(),
+      () => i18n.locale,
     );
     expect(result).toBe('sv');
   });
 
   it('returns default when no request scope', () => {
-    expect(getLocale()).toBe('en');
+    expect(i18n.locale).toBe('en');
   });
 
   it('falls back when persisted cookie is unsupported locale', () => {
     const result = withRequest(
       makeRequest({ acceptLanguage: 'sv', cookie: 'locale=de' }),
-      () => getLocale(),
+      () => i18n.locale,
     );
     expect(result).toBe('sv');
   });

@@ -107,7 +107,7 @@ HMR pushes the new copy live. Edit the string. Save again. Every locale re-trans
 
 ## Switch language at runtime
 
-`useLocale()` in React, `locale` in Vue and Svelte. The full pattern with code samples for each framework lives in [Locales / Switching locale](/guide/locales#switching-locale).
+`useI18n()` in React, `i18n` in Vue and Svelte. The full pattern with code samples for each framework lives in [Locales / Switching locale](/guide/locales#switching-locale).
 
 ## SSR setup
 

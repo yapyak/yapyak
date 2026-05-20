@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { getLocales, t } from 'yapyak';
-import { locale } from 'yapyak/vue';
+import { t } from 'yapyak';
+import { i18n } from 'yapyak/vue';
 
-const locales = getLocales();
+const { locale, locales } = i18n;
 const now = new Date();
 </script>
 

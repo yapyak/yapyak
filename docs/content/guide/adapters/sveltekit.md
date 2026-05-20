@@ -26,9 +26,9 @@ The hook binds each request's locale context and substitutes `%yapyak.lang%` wit
 
 ## Set the page language on client-side switches
 
-`%yapyak.lang%` is substituted **server-side** — the placeholder is gone by the time HTML reaches the browser. So calling `setLocale()` on the client without a full page reload won't update `<html lang>` on its own.
+`%yapyak.lang%` is substituted **server-side** — the placeholder is gone by the time HTML reaches the browser. So calling `i18n.setLocale()` on the client without a full page reload won't update `<html lang>` on its own.
 
-Enable `syncHtmlLang` to make yapyak update the attribute on every `setLocale()`:
+Enable `syncHtmlLang` to make yapyak update the attribute on every `i18n.setLocale()`:
 
 ```ts
 // vite.config.ts
@@ -38,7 +38,7 @@ yapyak({
 })
 ```
 
-With this set, `document.documentElement.lang` follows the current locale on store init and on every `setLocale()`. SSR still uses the `%yapyak.lang%` substitution — no hydration mismatch.
+With this set, `document.documentElement.lang` follows the current locale on store init and on every `i18n.setLocale()`. SSR still uses the `%yapyak.lang%` substitution — no hydration mismatch.
 
 If you only ever switch locale via full page navigations (e.g. `<a href="?lang=sv">` + reload), leave `syncHtmlLang` off — the substitution alone is enough.
 
@@ -68,4 +68,4 @@ yapyak({
 })
 ```
 
-The cookie is written client-side on `setLocale()` and read server-side by the handle on every request. See [Locales / Persistence](/guide/locales#persistence).
+The cookie is written client-side on `i18n.setLocale()` and read server-side by the handle on every request. See [Locales / Persistence](/guide/locales#persistence).

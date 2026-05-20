@@ -4,127 +4,6 @@
       "exports": [
         {
           "deprecated": null,
-          "description": "Returns the configured default locale.",
-          "examples": [],
-          "location": {
-            "column": 1,
-            "file": "src/locale/store.ts",
-            "line": 116
-          },
-          "name": "getDefaultLocale",
-          "tags": [],
-          "kind": "function",
-          "overloads": [
-            {
-              "parameters": [],
-              "returnType": [
-                {
-                  "kind": "text",
-                  "text": "string"
-                }
-              ],
-              "signature": "getDefaultLocale(): string",
-              "typeParameters": []
-            }
-          ],
-          "returnDescription": ""
-        },
-        {
-          "deprecated": null,
-          "description": "Returns the current locale.",
-          "examples": [],
-          "location": {
-            "column": 1,
-            "file": "src/locale/store.ts",
-            "line": 79
-          },
-          "name": "getLocale",
-          "tags": [],
-          "kind": "function",
-          "overloads": [
-            {
-              "parameters": [],
-              "returnType": [
-                {
-                  "kind": "text",
-                  "text": "string"
-                }
-              ],
-              "signature": "getLocale(): string",
-              "typeParameters": []
-            }
-          ],
-          "returnDescription": ""
-        },
-        {
-          "deprecated": null,
-          "description": "Returns the list of configured locales.",
-          "examples": [],
-          "location": {
-            "column": 1,
-            "file": "src/locale/store.ts",
-            "line": 111
-          },
-          "name": "getLocales",
-          "tags": [],
-          "kind": "function",
-          "overloads": [
-            {
-              "parameters": [],
-              "returnType": [
-                {
-                  "kind": "text",
-                  "text": "string[]"
-                }
-              ],
-              "signature": "getLocales(): string[]",
-              "typeParameters": []
-            }
-          ],
-          "returnDescription": ""
-        },
-        {
-          "deprecated": null,
-          "description": "Switches the active locale.\n\nNo-op if the locale is not in the configured `locales` list. Triggers\nre-renders in framework integrations (`useLocale`, Svelte/Vue stores).",
-          "examples": [],
-          "location": {
-            "column": 1,
-            "file": "src/locale/store.ts",
-            "line": 91
-          },
-          "name": "setLocale",
-          "tags": [],
-          "kind": "function",
-          "overloads": [
-            {
-              "parameters": [
-                {
-                  "defaultValue": null,
-                  "description": "The locale to switch to.",
-                  "name": "locale",
-                  "optional": false,
-                  "type": [
-                    {
-                      "kind": "text",
-                      "text": "string"
-                    }
-                  ]
-                }
-              ],
-              "returnType": [
-                {
-                  "kind": "text",
-                  "text": "void"
-                }
-              ],
-              "signature": "setLocale(locale: string): void",
-              "typeParameters": []
-            }
-          ],
-          "returnDescription": ""
-        },
-        {
-          "deprecated": null,
           "description": "Translates a source string to the current locale.\n\nThe first argument must be a static string literal — yapyak's Vite plugin\nreads it statically to extract translations. Placeholders use `{name}` and\nare type-checked from the source literal.",
           "examples": [
             "```tsx\nt('Save changes');\n\nt('Hello, {name}!', { name: 'Alex' });\n\nt('You have {count, plural, one {# item} other {# items}}', { count: 1 });\n\nt.in(user.locale)('Welcome back, {name}!', { name: user.name });\n```"
@@ -228,6 +107,107 @@
             }
           ],
           "returnDescription": ""
+        },
+        {
+          "deprecated": null,
+          "description": "The i18n state namespace.\n\nHolds the active locale and exposes operations to read and mutate it.\nFramework adapters wrap this with reactive bindings.",
+          "examples": [
+            "```ts\nimport { i18n } from 'yapyak';\n\nconsole.log(i18n.locale);            // 'en'\ni18n.setLocale('sv');\n\ni18n.subscribe((state) => {\n  localStorage.setItem('locale', state.locale);\n});\n```"
+          ],
+          "location": {
+            "column": 14,
+            "file": "src/i18n/store.ts",
+            "line": 135
+          },
+          "name": "i18n",
+          "tags": [],
+          "kind": "variable",
+          "signature": "const i18n: I18n",
+          "type": [
+            {
+              "kind": "ref",
+              "module": "yapyak",
+              "name": "I18n",
+              "text": "I18n"
+            }
+          ]
+        },
+        {
+          "deprecated": null,
+          "description": "Yapyak's i18n state namespace.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/i18n/store.ts",
+            "line": 94
+          },
+          "name": "I18n",
+          "tags": [],
+          "callSignatures": [],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "The default locale (build-time constant).",
+              "name": "defaultLocale",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "The currently-active locale.",
+              "name": "locale",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "All configured locales (build-time constant).",
+              "name": "locales",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "readonly string[]"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "Switch the active locale. No-op if `value` is not in `locales`.",
+              "name": "setLocale",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "(value: string) => void"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "Subscribe to i18n state changes.",
+              "name": "subscribe",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "(fn: (state: I18n) => void) => () => void"
+                }
+              ]
+            }
+          ],
+          "signature": "export interface I18n {\n  /** The default locale (build-time constant). */\n  readonly defaultLocale: string;\n  /** The currently-active locale. */\n  readonly locale: string;\n  /** All configured locales (build-time constant). */\n  readonly locales: readonly string[];\n  /**\n   * Switch the active locale. No-op if `value` is not in `locales`.\n   *\n   * @param value - The locale to switch to.\n   *..."
         },
         {
           "deprecated": null,
@@ -429,14 +409,14 @@
       "exports": [
         {
           "deprecated": null,
-          "description": "Subscribes the React tree to locale changes.\n\nWrap your app once at the root. Re-renders descendants when `setLocale` is\ncalled, so `t()` calls inside the tree return the new locale's strings.",
+          "description": "Subscribes the React tree to i18n state changes.\n\nWrap your app once at the root. Re-renders descendants when\n`i18n.setLocale()` is called, so `t()` calls inside the tree return the new\nlocale's strings.",
           "examples": [
-            "```tsx\n<IntlProvider>\n  <App />\n</IntlProvider>\n```"
+            "```tsx\nimport { IntlProvider } from 'yapyak/react';\n\nfunction App() {\n  return (\n    <IntlProvider>\n      <YourApp />\n    </IntlProvider>\n  );\n}\n```"
           ],
           "location": {
             "column": 1,
             "file": "src/react/intl-provider.tsx",
-            "line": 27
+            "line": 39
           },
           "name": "IntlProvider",
           "tags": [],
@@ -473,16 +453,16 @@
         },
         {
           "deprecated": null,
-          "description": "Returns the current locale and a setter, like `useState`.\n\nThe component re-renders when the locale changes.",
+          "description": "Subscribes the component to i18n state changes and returns the i18n namespace.\n\nThe component re-renders whenever the i18n state changes. The returned object\nhas the same shape as the core `i18n` — destructure `locale` and `setLocale`\nfor React-idiomatic patterns.",
           "examples": [
-            "```tsx\nfunction LanguageSwitcher() {\n  const [locale, setLocale] = useLocale();\n  return (\n    <select value={locale} onChange={(event) => setLocale(event.target.value)}>\n      <option value=\"en\">English</option>\n      <option value=\"sv\">Svenska</option>\n    </select>\n  );\n}\n```"
+            "```tsx\nimport { t } from 'yapyak';\nimport { useI18n } from 'yapyak/react';\n\nfunction LanguageSwitcher() {\n  const { locale, setLocale, locales } = useI18n();\n  return (\n    <select value={locale} onChange={(e) => setLocale(e.target.value)}>\n      {locales.map((code) => <option key={code} value={code}>{code}</option>)}\n    </select>\n  );\n}\n```"
           ],
           "location": {
             "column": 1,
-            "file": "src/react/use-locale.ts",
-            "line": 23
+            "file": "src/react/use-i18n.ts",
+            "line": 36
           },
-          "name": "useLocale",
+          "name": "useI18n",
           "tags": [],
           "kind": "function",
           "overloads": [
@@ -490,15 +470,17 @@
               "parameters": [],
               "returnType": [
                 {
-                  "kind": "text",
-                  "text": "[string, (locale: string) => void]"
+                  "kind": "ref",
+                  "module": "yapyak",
+                  "name": "I18n",
+                  "text": "I18n"
                 }
               ],
-              "signature": "useLocale(): [string, (locale: string) => void]",
+              "signature": "useI18n(): I18n",
               "typeParameters": []
             }
           ],
-          "returnDescription": ""
+          "returnDescription": "The i18n namespace (re-renders the calling component on change)."
         },
         {
           "deprecated": null,
@@ -507,7 +489,7 @@
           "location": {
             "column": 1,
             "file": "src/react/intl-provider.tsx",
-            "line": 8
+            "line": 13
           },
           "name": "IntlProviderProps",
           "tags": [],
@@ -538,25 +520,80 @@
       "exports": [
         {
           "deprecated": null,
-          "description": "The reactive locale ref for Vue.\n\nRead `locale.value` inside a setup function or template to subscribe;\nassign to switch.",
+          "description": "The reactive i18n namespace for Vue 3.\n\n`i18n.locale` is a Vue ref — destructure to use idiomatically in\n`<script setup>`. Top-level refs auto-unwrap in templates.",
           "examples": [
-            "```vue\n<script setup>\nimport { locale } from 'yapyak/vue'\nimport { t } from 'yapyak'\n</script>\n\n<template>\n  <p>{{ t('Hello') }}</p>\n  <select v-model=\"locale\">\n    <option value=\"en\">English</option>\n    <option value=\"sv\">Svenska</option>\n  </select>\n</template>\n```"
+            "```vue\n<script setup>\nimport { t } from 'yapyak';\nimport { i18n } from 'yapyak/vue';\n\nconst { locale, locales } = i18n;\n</script>\n\n<template>\n  <p>{{ t('Hello') }}</p>\n  <select v-model=\"locale\">\n    <option v-for=\"code in locales\" :key=\"code\" :value=\"code\">{{ code }}</option>\n  </select>\n</template>\n```"
           ],
           "location": {
             "column": 14,
-            "file": "src/vue/locale.ts",
-            "line": 41
+            "file": "src/vue/i18n.ts",
+            "line": 61
           },
-          "name": "locale",
+          "name": "i18n",
           "tags": [],
           "kind": "variable",
-          "signature": "const locale: WritableComputedRef<string>",
+          "signature": "const i18n: I18n",
           "type": [
             {
-              "kind": "text",
-              "text": "WritableComputedRef<string>"
+              "kind": "ref",
+              "module": "yapyak/vue",
+              "name": "I18n",
+              "text": "I18n"
             }
           ]
+        },
+        {
+          "deprecated": null,
+          "description": "The reactive i18n namespace for Vue.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/vue/i18n.ts",
+            "line": 29
+          },
+          "name": "I18n",
+          "tags": [],
+          "callSignatures": [],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "The default locale (build-time constant).",
+              "name": "defaultLocale",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "The currently-active locale as a writable Vue ref.",
+              "name": "locale",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "Ref<string>"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "All configured locales (build-time constant).",
+              "name": "locales",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "readonly string[]"
+                }
+              ]
+            }
+          ],
+          "signature": "export interface I18n {\n  /** The currently-active locale as a writable Vue ref. */\n  locale: Ref<string>;\n  /** All configured locales (build-time constant). */\n  readonly locales: readonly string[];\n  /** The default locale (build-time constant). */\n  readonly defaultLocale: string;\n}"
         }
       ],
       "id": "yapyak/vue",
@@ -567,46 +604,46 @@
       "exports": [
         {
           "deprecated": null,
-          "description": "The reactive locale store for Svelte 5.\n\nRead `locale.current` inside a component to subscribe; assign to switch.",
+          "description": "The reactive i18n namespace for Svelte 5.\n\nRead `i18n.locale` inside a component to subscribe; assign to switch.",
           "examples": [
-            "```svelte\n<script>\n  import { locale } from 'yapyak/svelte';\n  import { t } from 'yapyak';\n</script>\n\n<p>{t('Hello')}</p>\n<select bind:value={locale.current}>\n  <option value=\"en\">English</option>\n  <option value=\"sv\">Svenska</option>\n</select>\n```"
+            "```svelte\n<script>\n  import { t } from 'yapyak';\n  import { i18n } from 'yapyak/svelte';\n</script>\n\n<p>{t('Hello')}</p>\n<select bind:value={i18n.locale}>\n  {#each i18n.locales as code}\n    <option value={code}>{code}</option>\n  {/each}\n</select>\n```"
           ],
           "location": {
             "column": 14,
-            "file": "src/svelte/locale.svelte.ts",
-            "line": 40
+            "file": "src/svelte/i18n.svelte.ts",
+            "line": 45
           },
-          "name": "locale",
+          "name": "i18n",
           "tags": [],
           "kind": "variable",
-          "signature": "const locale: ReactiveLocale",
+          "signature": "const i18n: I18n",
           "type": [
             {
               "kind": "ref",
               "module": "yapyak/svelte",
-              "name": "ReactiveLocale",
-              "text": "ReactiveLocale"
+              "name": "I18n",
+              "text": "I18n"
             }
           ]
         },
         {
           "deprecated": null,
-          "description": "A reactive locale handle for Svelte 5.",
+          "description": "The reactive i18n namespace for Svelte 5.",
           "examples": [],
           "location": {
             "column": 1,
-            "file": "src/svelte/locale.svelte.ts",
-            "line": 5
+            "file": "src/svelte/i18n.svelte.ts",
+            "line": 16
           },
-          "name": "ReactiveLocale",
+          "name": "I18n",
           "tags": [],
           "callSignatures": [],
           "kind": "interface",
           "members": [
             {
               "defaultValue": null,
-              "description": "The current locale. Reads track reactivity, writes call `setLocale`.",
-              "name": "current",
+              "description": "The default locale (build-time constant).",
+              "name": "defaultLocale",
               "optional": false,
               "type": [
                 {
@@ -614,9 +651,33 @@
                   "text": "string"
                 }
               ]
+            },
+            {
+              "defaultValue": null,
+              "description": "The currently-active locale. Reactive — assign to switch.",
+              "name": "locale",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "All configured locales (build-time constant).",
+              "name": "locales",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "readonly string[]"
+                }
+              ]
             }
           ],
-          "signature": "export interface ReactiveLocale {\n  /** The current locale. Reads track reactivity, writes call `setLocale`. */\n  current: string;\n}"
+          "signature": "export interface I18n {\n  /** The currently-active locale. Reactive — assign to switch. */\n  locale: string;\n  /** All configured locales (build-time constant). */\n  readonly locales: readonly string[];\n  /** The default locale (build-time constant). */\n  readonly defaultLocale: string;\n}"
         }
       ],
       "id": "yapyak/svelte",
