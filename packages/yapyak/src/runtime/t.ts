@@ -1,4 +1,4 @@
-import type { ExtractParams } from './extract-params';
+import type { ExtractParamDict } from './extract-params';
 
 import { getLocale } from '../locale';
 import { hasPlaceholder, interpolate } from './interpolate';
@@ -8,21 +8,21 @@ import { runTrackers } from './tracker';
  * The placeholder values for a source string. Empty if the source has no
  * placeholders, otherwise a record of placeholder name to expected value type.
  */
-export type Params<Source extends string> = Source extends `${string}{${string}`
-  ? ExtractParams<Source>
+export type ParamDict<S extends string> = S extends `${string}{${string}`
+  ? ExtractParamDict<S>
   : {};
 
 /** The runtime translation function. */
 export interface T {
   in(locale: string): TIn;
-  <Source extends string>(source: Source): string;
-  <Source extends string>(source: Source, params: Params<Source>): string;
+  <S extends string>(source: S): string;
+  <S extends string>(source: S, params: ParamDict<S>): string;
 }
 
 /** A `t` function locked to a specific locale. */
 export interface TIn {
-  <Source extends string>(source: Source): string;
-  <Source extends string>(source: Source, params: Params<Source>): string;
+  <S extends string>(source: S): string;
+  <S extends string>(source: S, params: ParamDict<S>): string;
 }
 
 function inLocale(locale: string): TIn {

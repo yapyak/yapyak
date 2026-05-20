@@ -140,7 +140,7 @@
                   "type": [
                     {
                       "kind": "text",
-                      "text": "Source"
+                      "text": "S"
                     }
                   ]
                 }
@@ -151,7 +151,7 @@
                   "text": "string"
                 }
               ],
-              "signature": "t<Source extends string>(source: Source): string",
+              "signature": "t<S extends string>(source: S): string",
               "typeParameters": [
                 {
                   "constraint": [
@@ -161,7 +161,7 @@
                     }
                   ],
                   "defaultType": null,
-                  "name": "Source"
+                  "name": "S"
                 }
               ]
             },
@@ -175,7 +175,7 @@
                   "type": [
                     {
                       "kind": "text",
-                      "text": "Source"
+                      "text": "S"
                     }
                   ]
                 },
@@ -188,12 +188,12 @@
                     {
                       "kind": "ref",
                       "module": "yapyak",
-                      "name": "Params",
-                      "text": "Params"
+                      "name": "ParamDict",
+                      "text": "ParamDict"
                     },
                     {
                       "kind": "text",
-                      "text": "<Source>"
+                      "text": "<S>"
                     }
                   ]
                 }
@@ -204,7 +204,7 @@
                   "text": "string"
                 }
               ],
-              "signature": "t<Source extends string>(source: Source, params: Params<Source>): string",
+              "signature": "t<S extends string>(source: S, params: ParamDict<S>): string",
               "typeParameters": [
                 {
                   "constraint": [
@@ -214,7 +214,7 @@
                     }
                   ],
                   "defaultType": null,
-                  "name": "Source"
+                  "name": "S"
                 }
               ]
             }
@@ -1199,7 +1199,7 @@
                   "type": [
                     {
                       "kind": "text",
-                      "text": "Source"
+                      "text": "S"
                     }
                   ]
                 }
@@ -1221,7 +1221,7 @@
                   "type": [
                     {
                       "kind": "text",
-                      "text": "Source"
+                      "text": "S"
                     }
                   ]
                 },
@@ -1234,12 +1234,12 @@
                     {
                       "kind": "ref",
                       "module": "yapyak",
-                      "name": "Params",
-                      "text": "Params"
+                      "name": "ParamDict",
+                      "text": "ParamDict"
                     },
                     {
                       "kind": "text",
-                      "text": "<Source>"
+                      "text": "<S>"
                     }
                   ]
                 }
@@ -1267,7 +1267,7 @@
               ]
             }
           ],
-          "signature": "export interface T {\n  in(locale: string): TIn;\n  <Source extends string>(source: Source): string;\n  <Source extends string>(source: Source, params: Params<Source>): string;\n}"
+          "signature": "export interface T {\n  in(locale: string): TIn;\n  <S extends string>(source: S): string;\n  <S extends string>(source: S, params: ParamDict<S>): string;\n}"
         },
         {
           "deprecated": null,
@@ -1291,7 +1291,7 @@
                   "type": [
                     {
                       "kind": "text",
-                      "text": "Source"
+                      "text": "S"
                     }
                   ]
                 }
@@ -1313,7 +1313,7 @@
                   "type": [
                     {
                       "kind": "text",
-                      "text": "Source"
+                      "text": "S"
                     }
                   ]
                 },
@@ -1326,12 +1326,12 @@
                     {
                       "kind": "ref",
                       "module": "yapyak",
-                      "name": "Params",
-                      "text": "Params"
+                      "name": "ParamDict",
+                      "text": "ParamDict"
                     },
                     {
                       "kind": "text",
-                      "text": "<Source>"
+                      "text": "<S>"
                     }
                   ]
                 }
@@ -1346,7 +1346,7 @@
           ],
           "kind": "interface",
           "members": [],
-          "signature": "export interface TIn {\n  <Source extends string>(source: Source): string;\n  <Source extends string>(source: Source, params: Params<Source>): string;\n}"
+          "signature": "export interface TIn {\n  <S extends string>(source: S): string;\n  <S extends string>(source: S, params: ParamDict<S>): string;\n}"
         },
         {
           "deprecated": null,
@@ -1357,16 +1357,16 @@
             "file": "src/runtime/t.ts",
             "line": 11
           },
-          "name": "Params",
+          "name": "ParamDict",
           "tags": [],
           "kind": "type",
           "resolvedType": [
             {
               "kind": "text",
-              "text": "Source extends `${string}{${string}`\n  ? ExtractParams<Source>\n  : {}"
+              "text": "S extends `${string}{${string}`\n  ? ExtractParamDict<S>\n  : {}"
             }
           ],
-          "signature": "export type Params<Source extends string> = Source extends `${string}{${string}`\n  ? ExtractParams<Source>\n  : {};"
+          "signature": "export type ParamDict<S extends string> = S extends `${string}{${string}`\n  ? ExtractParamDict<S>\n  : {};"
         }
       ],
       "id": "yapyak",

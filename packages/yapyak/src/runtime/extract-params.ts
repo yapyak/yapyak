@@ -1,8 +1,8 @@
-type Trim<Source extends string> = Source extends ` ${infer Rest}`
+type Trim<S extends string> = S extends ` ${infer Rest}`
   ? Trim<Rest>
-  : Source extends `${infer Rest} `
+  : S extends `${infer Rest} `
     ? Trim<Rest>
-    : Source;
+    : S;
 
 type SimpleParam<Placeholder extends string> =
   Trim<Placeholder> extends ''
@@ -25,21 +25,21 @@ type IcuParam<Name extends string, Format extends string = ''> = {
 } & Record<string, unknown>;
 
 type ResolveIcuPattern<
-  Source extends string,
+  S extends string,
   Accumulated,
-> = Source extends `${string}{${infer Name},${infer Format},${string}}}${infer Rest}`
-  ? ExtractParams<Rest, Accumulated & IcuParam<Name, Format>>
-  : Source extends `${string}{${infer Name},${infer Format},${string}}${infer Rest}`
-    ? ExtractParams<Rest, Accumulated & IcuParam<Name, Format>>
-    : Source extends `${string}{${infer Name},${string}}${infer Rest}`
-      ? ExtractParams<Rest, Accumulated & IcuParam<Name>>
+> = S extends `${string}{${infer Name},${infer Format},${string}}}${infer Rest}`
+  ? ExtractParamDict<Rest, Accumulated & IcuParam<Name, Format>>
+  : S extends `${string}{${infer Name},${infer Format},${string}}${infer Rest}`
+    ? ExtractParamDict<Rest, Accumulated & IcuParam<Name, Format>>
+    : S extends `${string}{${infer Name},${string}}${infer Rest}`
+      ? ExtractParamDict<Rest, Accumulated & IcuParam<Name>>
       : Accumulated;
 
-export type ExtractParams<
-  Source extends string,
+export type ExtractParamDict<
+  S extends string,
   Accumulated = unknown,
-> = Source extends `${string}{${infer Placeholder}}${infer Rest}`
+> = S extends `${string}{${infer Placeholder}}${infer Rest}`
   ? Placeholder extends `${string},${string}`
-    ? ResolveIcuPattern<Source, Accumulated>
-    : ExtractParams<Rest, Accumulated & SimpleParam<Placeholder>>
+    ? ResolveIcuPattern<S, Accumulated>
+    : ExtractParamDict<Rest, Accumulated & SimpleParam<Placeholder>>
   : Accumulated;

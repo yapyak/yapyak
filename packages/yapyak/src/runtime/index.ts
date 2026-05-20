@@ -1,4 +1,4 @@
-export type { Params, T, TIn } from './t';
+export type { ParamDict, T, TIn } from './t';
 
 export { hasPlaceholder, interpolate } from './interpolate';
 export { t } from './t';

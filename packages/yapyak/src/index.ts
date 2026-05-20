@@ -1,4 +1,4 @@
-export type { Params, T, TIn } from './runtime';
+export type { ParamDict, T, TIn } from './runtime';
 
 export {
   defaultLocale,
