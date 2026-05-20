@@ -1,5 +1,5 @@
 /** @internal */
-export interface ResolveOptions {
+export interface ResolveLocaleOptions {
   acceptLanguage?: string;
   defaultLocale: string;
   locales: string[];
@@ -8,7 +8,7 @@ export interface ResolveOptions {
 }
 
 /** @internal */
-export function resolveLocale(options: ResolveOptions): string {
+export function resolveLocale(options: ResolveLocaleOptions): string {
   if (
     options.persisted !== undefined &&
     options.locales.includes(options.persisted)
@@ -28,7 +28,7 @@ export function resolveLocale(options: ResolveOptions): string {
   return options.defaultLocale;
 }
 
-function collectCandidates(options: ResolveOptions): string[] {
+function collectCandidates(options: ResolveLocaleOptions): string[] {
   if (options.acceptLanguage !== undefined) {
     return parseAcceptLanguage(options.acceptLanguage);
   }

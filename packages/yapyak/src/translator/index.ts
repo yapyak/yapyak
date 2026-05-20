@@ -70,7 +70,7 @@ export interface TranslateItem {
  *
  * @example
  * ```ts
- * async function myTranslate(params: TranslateParams): Promise<string[]> {
+ * async function myTranslate(params: TranslateBatchRequest): Promise<string[]> {
  *   const response = await fetch('https://api.example/translate', {
  *     method: 'POST',
  *     body: JSON.stringify(params),
@@ -83,7 +83,7 @@ export interface TranslateItem {
  * createTranslator({ translate: myTranslate });
  * ```
  */
-export interface TranslateParams {
+export interface TranslateBatchRequest {
   /** The items to translate. Translations must be returned in the same order. */
   items: TranslateItem[];
   /** Abort signal for cancellation. Forward to your underlying fetch/SDK call. */
@@ -101,7 +101,7 @@ export interface CreateTranslatorOptions {
   /** How much call-site context to include. Defaults to `'minimal'`. */
   context?: ContextLevel;
   /** Translates a batch of items. Must return strings in the same order as `items`. */
-  translate: (params: TranslateParams) => string[] | Promise<string[]>;
+  translate: (params: TranslateBatchRequest) => string[] | Promise<string[]>;
 }
 
 const DEFAULT_BATCH_SIZE = 10;

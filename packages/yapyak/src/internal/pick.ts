@@ -3,12 +3,7 @@ import { hasPlaceholder, interpolate, runTrackers } from '../runtime';
 
 type Variants = Record<string, string>;
 
-/**
- * @internal
- *
- * Compile-target only. Used by the yapyak Vite plugin's transformed output.
- * Do not import directly — use `t()` from `'yapyak'` instead.
- */
+/** @internal */
 export function pick(
   variants: Variants,
   params?: Record<string, unknown>,

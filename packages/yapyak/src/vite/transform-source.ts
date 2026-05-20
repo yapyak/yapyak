@@ -145,7 +145,7 @@ function compileCall(input: CompileInput, options: TransformOptions): string {
 function stringifyVariants(variants: Record<string, string>): string {
   const parts: string[] = [];
   for (const [locale, value] of Object.entries(variants)) {
-    parts.push(`${quoteIdentifier(locale)}: ${singleQuoteString(value)}`);
+    parts.push(`${quoteIdentifier(locale)}: ${quoteString(value)}`);
   }
   return `{ ${parts.join(', ')} }`;
 }
@@ -154,10 +154,10 @@ function quoteIdentifier(value: string): string {
   if (/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(value)) {
     return value;
   }
-  return singleQuoteString(value);
+  return quoteString(value);
 }
 
-function singleQuoteString(value: string): string {
+function quoteString(value: string): string {
   const escaped = value
     .replace(/\\/g, '\\\\')
     .replace(/'/g, "\\'")

@@ -71,17 +71,34 @@ Closed vocabulary for type names. Pick from this list — never invent a new suf
 | Suffix | Meaning | Example |
 |---|---|---|
 | `*Options` | Configuration passed to a function or factory | `CreateClientOptions`, `ResolveOptions` |
+| `*Config` | Static configuration loaded from disk (different from function args) | `YapyakCliConfig` |
 | `*Result` | Return value of a non-trivial computation | `CollectResult` |
-| `*Entry` | A single item in a collection or map | `MissingEntry`, `CacheEntry` |
+| `*Entry` | A single key-value pair in a collection or map | `MissingEntry`, `CacheEntry`, `RenameEntry` |
+| `*Item` | A single element in an ordered sequence | `TranslateItem` |
 | `*Context` | Bundle of state passed through a flow | `OperationContext`, `MessageContext` |
 | `*Tree` | Nested or recursive data structure | `OperationTree`, `EndpointTree` |
 | `*Stats` | Aggregated metrics | `LocaleStats` |
 | `*Error` | Custom error class | `DomainError`, `ConstraintError` |
 | `*Base` | Abstract parent class (rare in TS) | — |
-| `*Dict` | Record-shaped value | `ParamDict`, `Dict` |
+| `*Dict` | Record-shaped value with arbitrary keys | `ParamDict`, `Dict` |
+| `*Data` | Raw data bundle (different from `*Stats` which is aggregated) | `LocaleData` |
+| `*Position` | Location in source/file | `MessagePosition` |
+| `*Site` | Location enriched with context | `CallSite` |
+| `*Range` | Span or extent | `ArgsRange` |
+| `*Pattern` | Matcher (regex-like) | `FilterPattern` |
+| `*Level` | Ordinal/enum classification | `ContextLevel` |
+| `*Request` | Input data for an operation | `TranslateRequest`, `TranslateBatchRequest` |
 | `*Props` | React component props | `IntlProviderProps` |
 | `*Return` | Hook return type | `UseLocaleReturn` |
 | `*Tag` / `*Kind` | Discriminator string for union types | — |
+
+**Past-participle prefix pattern.** A type representing the post-processed form of a base type may use the participle as a prefix: `Walked*`, `Extracted*`, `Normalized*`. Use when the difference between the raw and processed form is meaningful in the API.
+
+```ts
+WalkedFile         // file after walk (with metadata)
+ExtractedMessage   // message after extraction
+NormalizedOptions  // options after normalization
+```
 
 If a new shape doesn't fit any entry above, **extend this list first, then code**.
 
@@ -94,7 +111,16 @@ Closed vocabulary for the first word of function names. Same rule: extend the li
 | `get*` | Pure getter — no side effects, no async | `getLocale()` |
 | `set*` | Mutator — updates state, may notify | `setLocale(locale)` |
 | `has*` | Boolean check — "does this have X?" | `hasPlaceholder(template)` |
-| `is*` | Boolean state — "is this X?" | `isPlainObject(value)` |
+| `is*` / `are*` | Boolean state — "is this X?" / "are these X?" | `isPlainObject(value)`, `areMessagesEqual(a, b)` |
+| `find*` | Search — returns first match or `null`/`undefined` | `findCallSites()`, `findMatchingBrace()` |
+| `format*` | Format a value to a string (Intl-style) | `formatDate()`, `formatNumber()` |
+| `to*` | Convert a value into another shape | `toDate()`, `toPositionKey()` |
+| `use*` | React hook | `useLocale()` |
+| `generate*` | Produce derived output from source (codegen) | `generateConfig()` |
+| `discover*` | Scan filesystem/source for a set of items | `discoverLocales()` |
+| `migrate*` | Refactor existing data in place | `migrateLocales()` |
+| `render*` | Produce display output (table, token, UI) | `renderTable()`, `renderToken()` |
+| `validate*` | Run validation — return result, may throw | `validateBatch()` |
 | `load*` | Async load from disk or network | `loadEnv()`, `loadConfig()` |
 | `read*` / `write*` | I/O operations | `readLocaleData()`, `writeFile()` |
 | `parse*` | String → structured value | `parseCookie()`, `parseAcceptLanguage()` |
@@ -200,6 +226,64 @@ type Record<Key extends string, Value> = ...
 ### Control flow
 
 - Always use braces and a newline. No one-line `if`-statements.
+
+### Null/undefined checks
+
+Default to explicit comparison. Truthy checks (`!value`) are a footgun in typed code — they conflate `undefined`/`null` with `0`/`''`/`false`, and TS's narrowing relies on the explicit form.
+
+| Type | Check |
+|---|---|
+| `T \| undefined` | `value === undefined` / `value !== undefined` |
+| `T \| null` | `value === null` / `value !== null` |
+| `T \| null \| undefined` | `value == null` / `value != null` (double-equal, catches both) |
+| `boolean` | `value` / `!value` (it *is* a boolean) |
+| Explicit boolean coercion (rare) | `Boolean(value)` — not `!!value` |
+
+Truthy checks (`!value`, `!!value`) are allowed **only** when all falsy values (`null`, `undefined`, `0`, `''`, `false`) genuinely should be treated the same. In typed code, that's rare.
+
+```ts
+// ✓ Explicit — TS narrows, no ambiguity
+if (locale === undefined) return DEFAULT;
+if (cookieName !== null) { ... }
+if (value == null) return; // T | null | undefined
+
+// ✗ Footgun — treats 0/'' as missing
+if (!count) return;       // count: number | undefined
+if (!name) return;        // name: string | undefined
+if (!!value) { ... }      // use Boolean(value) instead
+```
+
+### Map and Set naming
+
+**Set** — always a plural noun describing the elements:
+
+```ts
+const listeners = new Set<Listener>();
+const trackers = new Set<Tracker>();
+const seen = new Set<number>();
+const aliases = new Set<string>();
+```
+
+**Map** — pick by purpose:
+
+| Purpose | Pattern | Example |
+|---|---|---|
+| Index/lookup (key derived from value) | `<plural-values>By<KeyName>` | `messagesByFile`, `usersById` |
+| Cache/memoization (input → derived) | `<thing>Cache` (suffix) | `pluralRulesCache`, `formatterCache` |
+| Domain mapping (the map *is* a concept) | Plural noun for contents | `branches`, `variants` |
+
+**Forbidden — bare type-nouns or generic names:**
+
+```ts
+// ✗ Says nothing about contents
+const set = new Set();
+const map = new Map();
+const data = {};
+const result = new Map();
+const items = new Set();   // only OK if "items" is the domain term
+```
+
+If you can't name the contents, the variable is at the wrong level — extract a function, or pick a name that describes the role.
 
 ### Object literals
 

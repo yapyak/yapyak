@@ -189,7 +189,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         }
         throw error;
       }
-      if (messagesEqual(before, after)) {
+      if (areMessagesEqual(before, after)) {
         return;
       }
 
@@ -302,7 +302,7 @@ function toFileId(projectRoot: string, id: string): string {
   return relative(projectRoot, path).replaceAll('\\', '/');
 }
 
-function messagesEqual(a: ExtractedMessage[], b: ExtractedMessage[]): boolean {
+function areMessagesEqual(a: ExtractedMessage[], b: ExtractedMessage[]): boolean {
   if (a.length !== b.length) {
     return false;
   }

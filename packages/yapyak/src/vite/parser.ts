@@ -269,7 +269,7 @@ export function parseSourceArg(rawArg: string): string {
       );
     }
     const body = trimmed.slice(1, -1);
-    if (containsTemplateInterpolation(body)) {
+    if (hasTemplateInterpolation(body)) {
       throw new DynamicSourceError(
         't() first argument must be a static string literal; template interpolation is not allowed',
         '',
@@ -292,7 +292,7 @@ export function extractSnippet(options: ExtractSnippetOptions): string {
   const start = Math.max(0, line - 1 - radius);
   const end = Math.min(lines.length, line + radius);
   const slice = lines.slice(start, end);
-  const indent = minimumIndent(slice);
+  const indent = getMinimumIndent(slice);
   return slice.map((row) => row.slice(indent)).join('\n');
 }
 
@@ -490,7 +490,7 @@ function preview(value: string): string {
   return value.length <= 60 ? value : `${value.slice(0, 60)}…`;
 }
 
-function containsTemplateInterpolation(body: string): boolean {
+function hasTemplateInterpolation(body: string): boolean {
   for (let i = 0; i < body.length; i++) {
     const ch = body[i];
     if (ch === '\\') {
@@ -591,7 +591,7 @@ function unescapeString(input: string): string {
   return result;
 }
 
-function minimumIndent(rows: string[]): number {
+function getMinimumIndent(rows: string[]): number {
   let min = Number.POSITIVE_INFINITY;
   for (const row of rows) {
     if (row.trim() === '') {

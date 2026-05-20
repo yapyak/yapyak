@@ -97,7 +97,7 @@ function resolvePlural(
   if (exact !== undefined) {
     return interpolate(exact.replace(/#/g, String(count)), params, locale);
   }
-  const category = pluralCategory(locale, count, type);
+  const category = getPluralCategory(locale, count, type);
   const branch = branches.get(category) ?? branches.get('other') ?? '';
   return interpolate(branch.replace(/#/g, String(count)), params, locale);
 }
@@ -148,7 +148,7 @@ function parseBranches(body: string): Map<string, string> {
 
 const pluralRulesCache = new Map<string, Intl.PluralRules>();
 
-function pluralCategory(
+function getPluralCategory(
   locale: string,
   count: number,
   type: 'cardinal' | 'ordinal',

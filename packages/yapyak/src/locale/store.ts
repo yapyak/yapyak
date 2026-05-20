@@ -26,7 +26,7 @@ export function registerRequestHeadersReader(
 
 const persistence = createPersistence(PERSISTENCE);
 
-function initialLocale(): string {
+function getInitialLocale(): string {
   const persisted = persistence?.get();
   if (persisted !== undefined && LOCALES.includes(persisted)) {
     return persisted;
@@ -34,7 +34,7 @@ function initialLocale(): string {
   return DEFAULT_LOCALE;
 }
 
-let currentLocale = initialLocale();
+let currentLocale = getInitialLocale();
 const listeners = new Set<(locale: string) => void>();
 
 if (SYNC_HTML_LANG && typeof document !== 'undefined') {
@@ -146,6 +146,6 @@ export function subscribeLocale(fn: (locale: string) => void): () => void {
 
 /** @internal */
 export function resetLocale(): void {
-  currentLocale = initialLocale();
+  currentLocale = getInitialLocale();
   listeners.clear();
 }

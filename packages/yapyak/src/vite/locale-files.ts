@@ -38,7 +38,7 @@ export interface MessagePosition {
   source: string;
 }
 
-export interface Rename {
+export interface RenameEntry {
   from: string;
   to: string;
 }
@@ -50,7 +50,7 @@ export interface MigrateLocalesOptions {
   localesDir: string;
   preserveTranslations: boolean;
   projectRoot: string;
-  renames: Rename[];
+  renames: RenameEntry[];
 }
 
 export interface MigrationResult {
@@ -64,7 +64,7 @@ export function syncLocaleFiles(options: SyncOptions): void {
     if (locale === options.defaultLocale) {
       continue;
     }
-    const localePath = localeFilePath(
+    const localePath = getLocaleFilePath(
       options.projectRoot,
       options.localesDir,
       locale,
@@ -90,7 +90,7 @@ export function syncLocaleFiles(options: SyncOptions): void {
   }
 }
 
-export function localeFilePath(
+export function getLocaleFilePath(
   projectRoot: string,
   localesDir: string,
   locale: string,
@@ -168,7 +168,7 @@ export function readLocaleData(options: ReadOptions): LocaleData {
 export function detectRenames(
   oldEntries: MessagePosition[],
   newEntries: MessagePosition[],
-): Rename[] {
+): RenameEntry[] {
   const oldSources = new Set<string>();
   for (const entry of oldEntries) {
     oldSources.add(entry.source);
@@ -199,18 +199,18 @@ export function detectRenames(
   const newByPosition = new Map<string, string>();
   for (const entry of newEntries) {
     if (added.has(entry.source)) {
-      newByPosition.set(positionKey(entry), entry.source);
+      newByPosition.set(toPositionKey(entry), entry.source);
     }
   }
 
-  const renames: Rename[] = [];
+  const renames: RenameEntry[] = [];
   const claimedAdded = new Set<string>();
 
   for (const oldEntry of oldEntries) {
     if (!removed.has(oldEntry.source)) {
       continue;
     }
-    const candidate = newByPosition.get(positionKey(oldEntry));
+    const candidate = newByPosition.get(toPositionKey(oldEntry));
     if (candidate === undefined) {
       continue;
     }
@@ -287,6 +287,6 @@ function groupSourcesByFile(
   return result;
 }
 
-function positionKey(entry: MessagePosition): string {
+function toPositionKey(entry: MessagePosition): string {
   return `${entry.line}:${entry.column}`;
 }
