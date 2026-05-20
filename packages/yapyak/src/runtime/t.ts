@@ -8,21 +8,21 @@ import { runTrackers } from './tracker';
  * The placeholder values for a source string. Empty if the source has no
  * placeholders, otherwise a record of placeholder name to expected value type.
  */
-export type ParamDict<S extends string> = S extends `${string}{${string}`
-  ? ExtractParamDict<S>
+export type ParamDict<T extends string> = T extends `${string}{${string}`
+  ? ExtractParamDict<T>
   : {};
 
 /** The runtime translation function. */
 export interface T {
   in(locale: string): TIn;
-  <S extends string>(source: S): string;
-  <S extends string>(source: S, params: ParamDict<S>): string;
+  <T extends string>(source: T): string;
+  <T extends string>(source: T, params: ParamDict<T>): string;
 }
 
 /** A `t` function locked to a specific locale. */
 export interface TIn {
-  <S extends string>(source: S): string;
-  <S extends string>(source: S, params: ParamDict<S>): string;
+  <T extends string>(source: T): string;
+  <T extends string>(source: T, params: ParamDict<T>): string;
 }
 
 function inLocale(locale: string): TIn {

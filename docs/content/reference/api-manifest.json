@@ -140,7 +140,7 @@
                   "type": [
                     {
                       "kind": "text",
-                      "text": "S"
+                      "text": "T"
                     }
                   ]
                 }
@@ -151,7 +151,7 @@
                   "text": "string"
                 }
               ],
-              "signature": "t<S extends string>(source: S): string",
+              "signature": "t<T extends string>(source: T): string",
               "typeParameters": [
                 {
                   "constraint": [
@@ -161,7 +161,7 @@
                     }
                   ],
                   "defaultType": null,
-                  "name": "S"
+                  "name": "T"
                 }
               ]
             },
@@ -175,7 +175,7 @@
                   "type": [
                     {
                       "kind": "text",
-                      "text": "S"
+                      "text": "T"
                     }
                   ]
                 },
@@ -193,7 +193,7 @@
                     },
                     {
                       "kind": "text",
-                      "text": "<S>"
+                      "text": "<T>"
                     }
                   ]
                 }
@@ -204,7 +204,7 @@
                   "text": "string"
                 }
               ],
-              "signature": "t<S extends string>(source: S, params: ParamDict<S>): string",
+              "signature": "t<T extends string>(source: T, params: ParamDict<T>): string",
               "typeParameters": [
                 {
                   "constraint": [
@@ -214,7 +214,7 @@
                     }
                   ],
                   "defaultType": null,
-                  "name": "S"
+                  "name": "T"
                 }
               ]
             }
@@ -1199,7 +1199,7 @@
                   "type": [
                     {
                       "kind": "text",
-                      "text": "S"
+                      "text": "T"
                     }
                   ]
                 }
@@ -1221,7 +1221,7 @@
                   "type": [
                     {
                       "kind": "text",
-                      "text": "S"
+                      "text": "T"
                     }
                   ]
                 },
@@ -1239,7 +1239,7 @@
                     },
                     {
                       "kind": "text",
-                      "text": "<S>"
+                      "text": "<T>"
                     }
                   ]
                 }
@@ -1267,7 +1267,7 @@
               ]
             }
           ],
-          "signature": "export interface T {\n  in(locale: string): TIn;\n  <S extends string>(source: S): string;\n  <S extends string>(source: S, params: ParamDict<S>): string;\n}"
+          "signature": "export interface T {\n  in(locale: string): TIn;\n  <T extends string>(source: T): string;\n  <T extends string>(source: T, params: ParamDict<T>): string;\n}"
         },
         {
           "deprecated": null,
@@ -1291,7 +1291,7 @@
                   "type": [
                     {
                       "kind": "text",
-                      "text": "S"
+                      "text": "T"
                     }
                   ]
                 }
@@ -1313,7 +1313,7 @@
                   "type": [
                     {
                       "kind": "text",
-                      "text": "S"
+                      "text": "T"
                     }
                   ]
                 },
@@ -1331,7 +1331,7 @@
                     },
                     {
                       "kind": "text",
-                      "text": "<S>"
+                      "text": "<T>"
                     }
                   ]
                 }
@@ -1346,7 +1346,7 @@
           ],
           "kind": "interface",
           "members": [],
-          "signature": "export interface TIn {\n  <S extends string>(source: S): string;\n  <S extends string>(source: S, params: ParamDict<S>): string;\n}"
+          "signature": "export interface TIn {\n  <T extends string>(source: T): string;\n  <T extends string>(source: T, params: ParamDict<T>): string;\n}"
         },
         {
           "deprecated": null,
@@ -1361,7 +1361,7 @@
           "tags": [],
           "kind": "type",
           "resolvedType": [],
-          "signature": "export type ParamDict<S extends string> = S extends `${string}{${string}`\n  ? ExtractParamDict<S>\n  : {};"
+          "signature": "export type ParamDict<T extends string> = T extends `${string}{${string}`\n  ? ExtractParamDict<T>\n  : {};"
         }
       ],
       "id": "yapyak",
