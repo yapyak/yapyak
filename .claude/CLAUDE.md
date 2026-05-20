@@ -159,6 +159,28 @@ type Record<Key extends string, Value> = ...    // multi-generic without T-prefi
 
 The prefix makes type parameters visually unambiguous against concrete types (`TElement` vs `Element`, `TKey` vs a domain `Key`).
 
+### No abbreviations
+
+Never abbreviate variable, parameter, or block-parameter names. Use the full domain word.
+
+```ts
+// ✗
+comments.map((c) => c.actorId);
+events.map((e) => e.actorId);
+const emp = employees.find((emp) => emp.userId === id);
+
+// ✓
+comments.map((comment) => comment.actorId);
+events.map((event) => event.actorId);
+const employee = employees.find((employee) => employee.userId === id);
+```
+
+**Exception:** `Array.prototype.sort` comparators use `(a, b)` — canonical idiom.
+
+```ts
+items.sort((a, b) => a.order - b.order);
+```
+
 ### Boolean naming
 
 All `boolean`-typed variables, properties, and functions that return `boolean` **must** carry one of these prefixes:
@@ -378,6 +400,44 @@ Do not write a "real" justification. The suppression itself is the signal that t
 
 `yapyak/internal` is a public subpath that **only** exists for the Vite plugin's emitted code (transformed `t()` calls). Users should never import from it manually. The single export (`pick`) is the runtime side of the compiler — calling it directly bypasses placeholder type-checking the plugin enforces at compile time.
 
+### package.json conventions
+
+Biome's `useSortedKeys` is disabled for `package.json` files. Alphabetical sorting breaks Node's `exports` resolution — conditions are checked in key order, first match wins.
+
+**Top-level field order** (subset of `sort-package-json` canonical):
+
+```
+name, version, private, description, keywords, homepage, bugs,
+repository, license, author, type, imports, exports, main, types,
+sideEffects, files, bin, scripts, dependencies, devDependencies,
+peerDependencies, peerDependenciesMeta, optionalDependencies,
+engines, packageManager, publishConfig, pnpm, workspaces
+```
+
+**`exports` condition order — hard rules:**
+
+- `"types"` MUST be first (TypeScript stops at first match)
+- `"default"` MUST be last (Node resolver fallback)
+- `"source"` / `"development"` BEFORE `"import"` / `"require"`
+- Full canonical order: `types, source, development, browser, node, import, require, default`
+
+```jsonc
+{
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  }
+}
+```
+
+Include only conditions a package needs; keep the relative order regardless of which subset is present.
+
+**Sub-path export keys:** `"."` first, rest alphabetical.
+
+**Nested objects** (`scripts`, `dependencies`, `devDependencies`, `peerDependencies`, `files`, `keywords`, `engines`, `pnpm.overrides`): alphabetical.
+
 ### Versioning
 
 **Hard rules — no exceptions.**
@@ -417,3 +477,44 @@ Adding a new external dep: pin the exact version in `pnpm-workspace.yaml` under 
 ### Formatting
 
 Always run `pnpm check:write` after changes.
+
+---
+
+## Working with the user
+
+These rules govern *when to act vs. when to stop and ask*. They override the default impulse to keep producing.
+
+### Stop signals
+
+The moment any of these appear, **stop and report — do not work around them**:
+
+- A circular dependency between two symbols ("A needs B, B needs A")
+- A `useEffect` whose only job is to keep a ref synced with a value
+- An `as unknown as` or other type assertion to make something compile
+- A "fallback" or default that exists because two call sites disagree on what's required
+- A bridge layer that converts the same data back and forth (`Set` → array → `Set`)
+- The thought "this is fine, the consumer can opt out via..."
+
+These are signals that the *design* is wrong, not that you need a cleverer workaround.
+
+### Defaults and optional props
+
+- Never add a default value or optional prop the user didn't ask for.
+- If a prop should exist, it's explicit and required. If it shouldn't, it doesn't exist.
+- When tempted to write `?? defaultValue`, ask: should this prop exist at all?
+
+### Composition layers
+
+Respect the layering the user has stated. If the architecture is `A → B → C`, do not let `A` reach into `C` directly to "save a layer". The intermediate layer exists for a reason; bypassing it is a design change disguised as an implementation detail.
+
+### "Kör" / "go ahead" scope
+
+"Kör" means: do the *specific* thing we just discussed, then stop and report. Not the next three things you can foresee. After completing a single instruction, return to the user before proceeding. Do not chain forward.
+
+### Ambiguity
+
+If two reasonable interpretations of the user's instruction exist, ask. Do not pick. "Vague enough that I'm guessing" = stop. A 30-second clarifying question is cheaper than a 30-minute refactor that gets rolled back.
+
+### Production cadence
+
+Producing code is not the goal. Building the right thing is. It is correct and expected to spend a turn saying "this design is wrong, here is why, what do you want to do?" — that is work, not stalling.
