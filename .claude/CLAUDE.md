@@ -59,6 +59,29 @@ A symbol only appears in `index.ts` if another module needs it. Internal helpers
 - Never use the `readonly` modifier.
 - Never use `as unknown as` to make code compile. Fix the type instead.
 
+### Generics
+
+- **One type parameter:** use `T`.
+- **Two or more type parameters:** prefix each with `T` and use a descriptive, unabbreviated name — `TKey`, `TValue`, `TSource`, `TAccumulator`, `TName`, `TFormat`.
+- Never abbreviate (`Acc`, `Src`, `K`, `V`). Single-letter `T` is allowed only for the one-generic case.
+- The prefix makes type parameters visually unambiguous against concrete types (`TElement` vs `Element`, `TKey` vs a domain `Key`).
+
+```ts
+// ✓ One generic — T
+type ParamDict<T extends string> = ...
+function useState<T>(initial: T): [T, (next: T) => void]
+
+// ✓ Two+ generics — T-prefix, full word
+type Record<TKey extends string, TValue> = ...
+type ExtractParamDict<TSource extends string, TAccumulator = unknown> = ...
+
+// ✗ Abbreviated
+type ExtractParamDict<S extends string, Acc = unknown> = ...
+
+// ✗ Mixed (no prefix on multi-param)
+type Record<Key extends string, Value> = ...
+```
+
 ### React
 
 - Props type is an exported interface in the same file: `export interface ProviderProps`.

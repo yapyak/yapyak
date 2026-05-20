@@ -74,7 +74,7 @@ export function buildSymbolPage(symbol: ApiExport, moduleId: string): Page {
     }
   }
 
-  if (symbol.kind === 'type') {
+  if (symbol.kind === 'type' && symbol.resolvedType.length > 0) {
     blocks.push(heading2('Type'));
     blocks.push(typeAliasBlock(symbol));
   }

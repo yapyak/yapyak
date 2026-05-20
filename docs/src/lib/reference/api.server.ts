@@ -282,13 +282,38 @@ function buildTypeAlias(
   declaration: ts.TypeAliasDeclaration,
   context: Context,
 ): ApiTypeAlias {
-  const resolvedTokens = typeNodeToTokens(declaration.type, context);
+  const resolvedTokens = isComputedTypeNode(declaration.type)
+    ? []
+    : typeNodeToTokens(declaration.type, context);
   return {
     ...base,
     kind: 'type',
     resolvedType: resolvedTokens,
     signature: declarationText(declaration),
   };
+}
+
+function isComputedTypeNode(node: ts.TypeNode): boolean {
+  let computed = false;
+  const visit = (current: ts.Node): void => {
+    if (computed) {
+      return;
+    }
+    if (
+      ts.isConditionalTypeNode(current) ||
+      ts.isInferTypeNode(current) ||
+      ts.isTemplateLiteralTypeNode(current) ||
+      ts.isMappedTypeNode(current) ||
+      ts.isTypeOperatorNode(current) ||
+      ts.isIndexedAccessTypeNode(current)
+    ) {
+      computed = true;
+      return;
+    }
+    ts.forEachChild(current, visit);
+  };
+  visit(node);
+  return computed;
 }
 
 function buildClass(

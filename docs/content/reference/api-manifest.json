@@ -237,7 +237,7 @@
             {
               "defaultValue": null,
               "description": "Iterator",
-              "name": "__@iterator@9536",
+              "name": "__@iterator@9533",
               "optional": false,
               "type": [
                 {
@@ -859,7 +859,7 @@
             {
               "defaultValue": null,
               "description": "Iterator of values in the array.",
-              "name": "__@iterator@9536",
+              "name": "__@iterator@9533",
               "optional": false,
               "type": [
                 {
@@ -871,7 +871,7 @@
             {
               "defaultValue": null,
               "description": "Is an object whose properties have the value 'true'\nwhen they will be absent when used in a 'with' statement.",
-              "name": "__@unscopables@18064",
+              "name": "__@unscopables@18062",
               "optional": false,
               "type": [
                 {
@@ -1360,12 +1360,7 @@
           "name": "ParamDict",
           "tags": [],
           "kind": "type",
-          "resolvedType": [
-            {
-              "kind": "text",
-              "text": "S extends `${string}{${string}`\n  ? ExtractParamDict<S>\n  : {}"
-            }
-          ],
+          "resolvedType": [],
           "signature": "export type ParamDict<S extends string> = S extends `${string}{${string}`\n  ? ExtractParamDict<S>\n  : {};"
         }
       ],
@@ -1502,7 +1497,7 @@
             {
               "defaultValue": null,
               "description": "Type differentiator only.\nWe need this to be in public d.ts but don't want it to show up in IDE\nautocomplete, so we use a private Symbol instead.",
-              "name": "__@RefSymbol@18369",
+              "name": "__@RefSymbol@18367",
               "optional": false,
               "type": [
                 {
