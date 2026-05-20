@@ -434,7 +434,8 @@ function buildVariable(
   const type = checker.getTypeOfSymbolAtLocation(symbol, declaration);
   const typeNode = ts.isVariableDeclaration(declaration)
     ? declaration.type
-    : ts.isPropertySignature(declaration) || ts.isPropertyDeclaration(declaration)
+    : ts.isPropertySignature(declaration) ||
+        ts.isPropertyDeclaration(declaration)
       ? declaration.type
       : undefined;
   const tokens = tokenizeOrFallback(typeNode, type, context);
@@ -570,7 +571,8 @@ function paramFromSymbol(
     decl !== undefined
       ? checker.getTypeOfSymbolAtLocation(paramSymbol, decl)
       : checker.getDeclaredTypeOfSymbol(paramSymbol);
-  const typeNode = decl !== undefined && ts.isParameter(decl) ? decl.type : undefined;
+  const typeNode =
+    decl !== undefined && ts.isParameter(decl) ? decl.type : undefined;
   const tokens = tokenizeOrFallback(typeNode, type, context);
   const docParts = paramSymbol.getDocumentationComment(checker);
   const description = normalizeDescription(ts.displayPartsToString(docParts));

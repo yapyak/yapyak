@@ -24,7 +24,7 @@
       outline-color: var(--accent-soft);
     }
 
-    &[data-status='active'] {
+    &[data-status="active"] {
       color: var(--brand);
     }
 

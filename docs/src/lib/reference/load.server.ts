@@ -2,10 +2,9 @@ import type { Page } from '#lib/content';
 
 import { loadPage } from '#lib/content';
 
-import { join } from 'node:path';
-
 import { loadManifest } from './manifest.server';
 import { buildSymbolPage } from './pages.server';
+import { join } from 'node:path';
 
 export type LoadReferenceResult =
   | { kind: 'not-found' }
@@ -16,7 +15,12 @@ export async function loadReferencePage(
   path: string,
 ): Promise<LoadReferenceResult> {
   if (path === '') {
-    const introPath = join(process.cwd(), 'content', 'reference', 'introduction.md');
+    const introPath = join(
+      process.cwd(),
+      'content',
+      'reference',
+      'introduction.md',
+    );
     const result = await loadPage(introPath);
     if (result === null) {
       return { kind: 'not-found' };

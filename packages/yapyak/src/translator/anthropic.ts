@@ -1,8 +1,8 @@
 import type { ContextLevel, Translator } from '.';
 
 import { fetchWithRetry } from './fetch';
-import { createTranslator } from '.';
 import { buildSystem, stripCodeFence } from './prompt';
+import { createTranslator } from '.';
 
 /** Options for the Anthropic translator. */
 export interface AnthropicOptions {

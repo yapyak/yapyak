@@ -1,7 +1,7 @@
-import type { LocaleFile } from '../../vite';
+import type { LocaleFile } from '../../catalog';
 import type { YapyakCliConfig } from '../load-config';
 
-import { readLocaleFile } from '../../vite';
+import { readLocaleFile } from '../../catalog';
 import { collect } from '../collect';
 import { color, symbol } from '../tui';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';

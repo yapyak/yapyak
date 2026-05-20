@@ -1,11 +1,23 @@
-import type { ExtractedMessage } from './extract-messages';
-import type { LocaleData } from './transform-source';
+import type { ExtractedMessage } from '../parser';
 
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+} from 'node:fs';
 import { dirname, join } from 'node:path';
 
 /** @internal */
 export type LocaleFile = Record<string, Record<string, string>>;
+
+/** @internal */
+export interface LocaleData {
+  [locale: string]: {
+    [fileId: string]: { [source: string]: string };
+  };
+}
 
 export interface SyncLocaleFilesOptions {
   defaultLocale: string;
@@ -48,9 +60,9 @@ export interface MigrateLocalesOptions {
   fileId: string;
   locales: string[];
   localesDir: string;
-  shouldPreserveTranslations: boolean;
   projectRoot: string;
   renames: RenameEntry[];
+  shouldPreserveTranslations: boolean;
 }
 
 export interface MigrateLocalesResult {
@@ -138,7 +150,9 @@ export function writeLocaleFile(path: string, data: LocaleFile): void {
   writeFileSync(path, content);
 }
 
-export function discoverLocales(options: DiscoverLocalesOptions): DiscoverLocalesResult {
+export function discoverLocales(
+  options: DiscoverLocalesOptions,
+): DiscoverLocalesResult {
   const dir = join(options.projectRoot, options.localesDir);
   const fileLocales = existsSync(dir)
     ? readdirSync(dir)

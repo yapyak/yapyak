@@ -328,4 +328,3 @@ function parseFrontmatter(raw: string) {
   }
   return result;
 }
-

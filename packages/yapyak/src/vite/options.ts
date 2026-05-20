@@ -1,4 +1,8 @@
+import type { FilterPattern } from 'vite';
+import type { NormalizedPersistence } from '../persistence';
 import type { Translator } from '../translator';
+
+import { DEFAULT_EXCLUDE, DEFAULT_INCLUDE } from '../parser';
 
 /** Cookie persistence config. */
 export interface CookiePersistence {
@@ -27,24 +31,11 @@ export interface LocalStoragePersistence {
  * persistence: { type: 'localStorage', key: 'app:locale' }
  * ```
  */
-export type Persistence =
+export type PersistenceOptions =
   | 'cookie'
   | 'localStorage'
   | CookiePersistence
   | LocalStoragePersistence;
-
-/** Normalized persistence config (internal). */
-export type NormalizedPersistence =
-  | { type: 'cookie'; name: string }
-  | { type: 'localStorage'; key: string }
-  | null;
-
-export type FilterPattern =
-  | string
-  | RegExp
-  | Array<string | RegExp>
-  | null
-  | undefined;
 
 /** Options for the yapyak Vite plugin. */
 export interface YapyakOptions {
@@ -63,7 +54,7 @@ export interface YapyakOptions {
    * or the object form (`{ type: 'cookie', name: '...' }`) to customize.
    * Omit for no persistence.
    */
-  persistence?: Persistence | null;
+  persistence?: PersistenceOptions | null;
   /**
    * Preserve existing translations when a `t()` call is renamed in place.
    * Defaults to `true` without a translator, `false` with one.
@@ -77,13 +68,13 @@ export interface YapyakOptions {
    * isn't owned by a reactive framework binding. See each adapter's docs.
    */
   shouldSyncHtmlLang?: boolean;
-  /** Translator used to fill missing entries. Stubs stay empty without one. */
-  translator?: Translator;
   /** Detect locale from the `Accept-Language` header on the server. */
   shouldUseAcceptLanguage?: boolean;
+  /** Translator used to fill missing entries. Stubs stay empty without one. */
+  translator?: Translator;
 }
 
-export interface NormalizedOptions {
+interface NormalizedOptions {
   defaultLocale: string | undefined;
   exclude: FilterPattern;
   include: FilterPattern;
@@ -95,40 +86,11 @@ export interface NormalizedOptions {
   translator: Translator | undefined;
 }
 
-/** @internal */
-export const DEFAULT_INCLUDE: string[] = [
-  '**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,svelte,vue}',
-];
-
-/** @internal */
-export const DEFAULT_EXCLUDE: string[] = [
-  '**/.*/**',
-  'node_modules/**',
-  'dist/**',
-  'build/**',
-  'out/**',
-  'coverage/**',
-  'playwright-report/**',
-  'test-results/**',
-  'storybook-static/**',
-  'public/**',
-  '**/routeTree.gen.*',
-  '**/*.gen.{ts,tsx,js,jsx,mjs,cjs}',
-  '**/*.test.*',
-  '**/*.spec.*',
-  '**/__tests__/**',
-  '**/cypress/**',
-  '**/playwright/**',
-  '**/e2e/**',
-  '*.config.{ts,js,mjs,cjs}',
-  '**/*.d.ts',
-];
-
 const DEFAULT_COOKIE_NAME = 'locale';
 const DEFAULT_STORAGE_KEY = 'locale';
 
 function normalizePersistence(
-  input: Persistence | null | undefined,
+  input: PersistenceOptions | null | undefined,
 ): NormalizedPersistence {
   if (input == null) {
     return null;
@@ -153,7 +115,8 @@ export function normalizeOptions(options: YapyakOptions): NormalizedOptions {
     localesDir: options.localesDir ?? 'locales',
     persistence: normalizePersistence(options.persistence),
     shouldPreserveTranslationsOnRename:
-      options.shouldPreserveTranslationsOnRename ?? options.translator === undefined,
+      options.shouldPreserveTranslationsOnRename ??
+      options.translator === undefined,
     shouldSyncHtmlLang: options.shouldSyncHtmlLang ?? false,
     shouldUseAcceptLanguage: options.shouldUseAcceptLanguage ?? false,
     translator: options.translator,

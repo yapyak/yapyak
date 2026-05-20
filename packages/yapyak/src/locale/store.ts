@@ -8,7 +8,8 @@ import {
   SYNC_HTML_LANG,
 } from 'virtual:yapyak';
 
-interface RequestHeaders {
+/** @internal */
+export interface RequestHeaders {
   acceptLanguage: string | undefined;
   cookieHeader: string | undefined;
 }

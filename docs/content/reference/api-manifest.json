@@ -11,7 +11,7 @@
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 67
+            "line": 68
           },
           "name": "getLocale",
           "tags": [],
@@ -41,7 +41,7 @@
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 102
+            "line": 103
           },
           "name": "setLocale",
           "tags": [],
@@ -84,7 +84,7 @@
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 140
+            "line": 141
           },
           "name": "subscribeLocale",
           "tags": [],
@@ -245,7 +245,7 @@
           "location": {
             "column": 14,
             "file": "src/locale/store.ts",
-            "line": 123
+            "line": 124
           },
           "name": "defaultLocale",
           "tags": [],
@@ -266,7 +266,7 @@
           "location": {
             "column": 14,
             "file": "src/locale/store.ts",
-            "line": 120
+            "line": 121
           },
           "name": "locales",
           "tags": [],
@@ -654,7 +654,7 @@
             {
               "defaultValue": null,
               "description": "Type differentiator only.\nWe need this to be in public d.ts but don't want it to show up in IDE\nautocomplete, so we use a private Symbol instead.",
-              "name": "__@RefSymbol@857",
+              "name": "__@RefSymbol@826",
               "optional": false,
               "type": [
                 {
@@ -774,7 +774,7 @@
           "location": {
             "column": 1,
             "file": "src/vite/plugin.ts",
-            "line": 54
+            "line": 55
           },
           "name": "yapyak",
           "tags": [],
@@ -812,12 +812,94 @@
         },
         {
           "deprecated": null,
+          "description": "Cookie persistence config.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/vite/options.ts",
+            "line": 8
+          },
+          "name": "CookiePersistence",
+          "tags": [],
+          "callSignatures": [],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "Cookie name. Defaults to `'locale'`.",
+              "name": "name",
+              "optional": true,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "type",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "'cookie'"
+                }
+              ]
+            }
+          ],
+          "signature": "export interface CookiePersistence {\n  /** Cookie name. Defaults to `'locale'`. */\n  name?: string;\n  type: 'cookie';\n}"
+        },
+        {
+          "deprecated": null,
+          "description": "localStorage persistence config.",
+          "examples": [],
+          "location": {
+            "column": 1,
+            "file": "src/vite/options.ts",
+            "line": 15
+          },
+          "name": "LocalStoragePersistence",
+          "tags": [],
+          "callSignatures": [],
+          "kind": "interface",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "Storage key. Defaults to `'locale'`.",
+              "name": "key",
+              "optional": true,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "type",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "'localStorage'"
+                }
+              ]
+            }
+          ],
+          "signature": "export interface LocalStoragePersistence {\n  /** Storage key. Defaults to `'locale'`. */\n  key?: string;\n  type: 'localStorage';\n}"
+        },
+        {
+          "deprecated": null,
           "description": "Options for the yapyak Vite plugin.",
           "examples": [],
           "location": {
             "column": 1,
-            "file": "src/vite/normalize-options.ts",
-            "line": 50
+            "file": "src/vite/options.ts",
+            "line": 41
           },
           "name": "YapyakOptions",
           "tags": [],
@@ -879,8 +961,14 @@
               "optional": true,
               "type": [
                 {
+                  "kind": "ref",
+                  "module": "yapyak/vite",
+                  "name": "PersistenceOptions",
+                  "text": "PersistenceOptions"
+                },
+                {
                   "kind": "text",
-                  "text": "Persistence | null"
+                  "text": " | null"
                 }
               ]
             },
@@ -936,6 +1024,44 @@
             }
           ],
           "signature": "export interface YapyakOptions {\n  /** The default locale. Inferred from locale files if omitted. */\n  defaultLocale?: string;\n  /** Glob patterns to exclude from extraction. */\n  exclude?: FilterPattern;\n  /** Glob patterns to include for extraction. */\n  include?: FilterPattern;\n  /** Directory for locale JSON files, relative to project root. Defaults to `'locales'`. */\n  localesDir?: string;..."
+        },
+        {
+          "deprecated": null,
+          "description": "Where to persist the user's locale selection.\n\nUse the string shorthand for defaults, or the object form to customize.",
+          "examples": [
+            "```ts\npersistence: 'cookie'\npersistence: 'localStorage'\npersistence: { type: 'cookie', name: 'app:locale' }\npersistence: { type: 'localStorage', key: 'app:locale' }\n```"
+          ],
+          "location": {
+            "column": 1,
+            "file": "src/vite/options.ts",
+            "line": 34
+          },
+          "name": "PersistenceOptions",
+          "tags": [],
+          "kind": "type",
+          "resolvedType": [
+            {
+              "kind": "text",
+              "text": "| 'cookie'\n  | 'localStorage'\n  | "
+            },
+            {
+              "kind": "ref",
+              "module": "yapyak/vite",
+              "name": "CookiePersistence",
+              "text": "CookiePersistence"
+            },
+            {
+              "kind": "text",
+              "text": "\n  | "
+            },
+            {
+              "kind": "ref",
+              "module": "yapyak/vite",
+              "name": "LocalStoragePersistence",
+              "text": "LocalStoragePersistence"
+            }
+          ],
+          "signature": "export type PersistenceOptions =\n  | 'cookie'\n  | 'localStorage'\n  | CookiePersistence\n  | LocalStoragePersistence;"
         }
       ],
       "id": "yapyak/vite",
@@ -953,7 +1079,7 @@
           "location": {
             "column": 1,
             "file": "src/adapter/index.ts",
-            "line": 33
+            "line": 30
           },
           "name": "withRequest",
           "tags": [],

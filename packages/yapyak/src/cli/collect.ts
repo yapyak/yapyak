@@ -1,15 +1,15 @@
-import type { ExtractedMessage } from '../vite';
+import type { ExtractedMessage } from '../parser';
 
 import { createFilter } from 'vite';
 
+import { readLocaleFile } from '../catalog';
 import {
   DEFAULT_EXCLUDE,
   DEFAULT_INCLUDE,
   DynamicMessageError,
   extractMessages,
-  readLocaleFile,
   walkSourceFiles,
-} from '../vite';
+} from '../parser';
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 

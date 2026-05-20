@@ -1,25 +1,26 @@
 import type { Plugin, ResolvedConfig } from 'vite';
-import type { ExtractedMessage } from './extract-messages';
-import type { YapyakOptions } from './normalize-options';
-import type { LocaleData } from './transform-source';
+import type { LocaleData } from '../catalog';
+import type { ExtractedMessage } from '../parser';
+import type { YapyakOptions } from './options';
 
 import { createFilter } from 'vite';
 
-import { autoTranslate } from './auto-translate';
-import { DynamicMessageError, extractMessages } from './extract-messages';
 import {
+  autoTranslate,
   detectRenames,
   discoverLocales,
   migrateLocales,
   readLocaleData,
   syncLocaleFiles,
-} from './locale-files';
-import { normalizeOptions } from './normalize-options';
+} from '../catalog';
+import {
+  DynamicMessageError,
+  extractMessages,
+  walkSourceFiles,
+} from '../parser';
+import { normalizeOptions } from './options';
 import { transformSource } from './transform-source';
-import { walkSourceFiles } from './walk-source-files';
 import { relative } from 'node:path';
-
-export type { YapyakOptions };
 
 const CONFIG_ID = 'virtual:yapyak';
 const CONFIG_RESOLVED = `\0${CONFIG_ID}`;
@@ -204,9 +205,10 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
           fileId,
           locales,
           localesDir: normalized.localesDir,
-          shouldPreserveTranslations: normalized.shouldPreserveTranslationsOnRename,
           projectRoot,
           renames,
+          shouldPreserveTranslations:
+            normalized.shouldPreserveTranslationsOnRename,
         });
         localeCache = null;
       }
@@ -302,7 +304,10 @@ function toFileId(projectRoot: string, id: string): string {
   return relative(projectRoot, path).replaceAll('\\', '/');
 }
 
-function areMessagesEqual(a: ExtractedMessage[], b: ExtractedMessage[]): boolean {
+function areMessagesEqual(
+  a: ExtractedMessage[],
+  b: ExtractedMessage[],
+): boolean {
   if (a.length !== b.length) {
     return false;
   }

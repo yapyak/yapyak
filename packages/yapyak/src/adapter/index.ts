@@ -1,10 +1,7 @@
+import type { RequestHeaders } from '../locale';
+
 import { registerRequestHeadersReader } from '../locale';
 import { AsyncLocalStorage } from 'node:async_hooks';
-
-interface RequestHeaders {
-  acceptLanguage: string | undefined;
-  cookieHeader: string | undefined;
-}
 
 const storage = new AsyncLocalStorage<RequestHeaders>();
 

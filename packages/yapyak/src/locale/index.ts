@@ -3,6 +3,7 @@ export {
   defaultLocale,
   getLocale,
   locales,
+  type RequestHeaders,
   registerRequestHeadersReader,
   resetLocale,
   setLocale,

@@ -55,7 +55,7 @@
       padding: 0;
     }
 
-    &[data-depth='0'] {
+    &[data-depth="0"] {
       > .TitleHeading {
         font-size: var(--font-size-xs);
         font-weight: var(--font-weight-semibold);
@@ -83,7 +83,7 @@
       }
     }
 
-    &:not([data-depth='0']):not([data-collapsible]) {
+    &:not([data-depth="0"]):not([data-collapsible]) {
       gap: 0;
 
       > .ItemList {

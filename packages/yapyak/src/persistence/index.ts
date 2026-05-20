@@ -1,7 +1,8 @@
 import { cookie } from './cookie';
 import { localStorage } from './local-storage';
 
-type PersistenceConfig =
+/** @internal */
+export type NormalizedPersistence =
   | { type: 'cookie'; name: string }
   | { type: 'localStorage'; key: string }
   | null;
@@ -14,7 +15,7 @@ export interface Persistence {
 
 /** @internal */
 export function createPersistence(
-  config: PersistenceConfig,
+  config: NormalizedPersistence,
 ): Persistence | null {
   if (config === null) {
     return null;

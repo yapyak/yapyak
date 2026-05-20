@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { resolveLocale, parseAcceptLanguage } from './resolve';
+import { parseAcceptLanguage, resolveLocale } from './resolve';
 
 describe('resolveLocale', () => {
   it('uses persisted value when supported', () => {

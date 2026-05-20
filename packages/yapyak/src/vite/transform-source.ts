@@ -1,3 +1,5 @@
+import type { LocaleData } from '../catalog';
+
 import {
   DynamicSourceError,
   findCallSites,
@@ -5,13 +7,7 @@ import {
   parseSourceArg,
   sliceArguments,
   splitTopLevelArgs,
-} from './parser';
-
-export interface LocaleData {
-  [locale: string]: {
-    [fileId: string]: { [source: string]: string };
-  };
-}
+} from '../parser';
 
 export interface TransformSourceOptions {
   defaultLocale: string;
@@ -22,8 +18,8 @@ export interface TransformSourceOptions {
 }
 
 export interface TransformSourceResult {
-  hasChanged: boolean;
   code: string;
+  hasChanged: boolean;
 }
 
 const HELPER_NAME = '_$pick';
@@ -35,7 +31,7 @@ export function transformSource(
 ): TransformSourceResult {
   const sites = findCallSites(code);
   if (sites.length === 0) {
-    return { hasChanged: false, code };
+    return { code, hasChanged: false };
   }
 
   const replacements: Array<{
@@ -85,13 +81,13 @@ export function transformSource(
   }
 
   if (replacements.length === 0) {
-    return { hasChanged: false, code };
+    return { code, hasChanged: false };
   }
 
   const helperImport = options.helperImport ?? DEFAULT_HELPER_IMPORT;
   const importStatement = `import { pick as ${HELPER_NAME} } from '${helperImport}';`;
   const transformed = applyReplacements(code, replacements);
-  return { hasChanged: true, code: injectImport(transformed, importStatement) };
+  return { code: injectImport(transformed, importStatement), hasChanged: true };
 }
 
 function applyReplacements(
@@ -121,7 +117,10 @@ interface CompileInput {
   source: string;
 }
 
-function compileCall(input: CompileInput, options: TransformSourceOptions): string {
+function compileCall(
+  input: CompileInput,
+  options: TransformSourceOptions,
+): string {
   const variants: Record<string, string> = {};
   for (const locale of options.locales) {
     const value = readLocaleValue(

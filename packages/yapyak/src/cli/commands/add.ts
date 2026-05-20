@@ -1,8 +1,8 @@
 import type { Translator } from '../../translator';
 import type { YapyakCliConfig } from '../load-config';
 
+import { autoTranslate } from '../../catalog';
 import { anthropic, openai } from '../../translator';
-import { autoTranslate } from '../../vite';
 import { collect } from '../collect';
 import { loadEnv } from '../load-env';
 import { color, header, progressBar, spinner, symbol } from '../tui';

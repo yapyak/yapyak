@@ -10,8 +10,8 @@ import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
 import { ContentPagination } from '#components/content-pagination';
 import { PageArticle } from '#components/page-article';
-import { loadReferencePage } from '#lib/reference';
 import { findAdjacent } from '#lib/navigation';
+import { loadReferencePage } from '#lib/reference';
 
 const referenceRouteApi = getRouteApi('/reference');
 

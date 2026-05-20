@@ -1,3 +1,4 @@
+import type { Block, Page, TableRowBlock } from '#lib/content';
 import type {
   ApiExport,
   ApiMember,
@@ -8,7 +9,6 @@ import type {
   ApiVariable,
   TypeToken,
 } from './types';
-import type { Block, Page, TableRowBlock } from '#lib/content';
 
 import { parseContent, slugify } from '#lib/content';
 
@@ -77,9 +77,7 @@ export function buildSymbolPage(symbol: ApiExport, moduleId: string): Page {
       blocks.push({
         label: null,
         language: 'ts',
-        source: symbol.callSignatures
-          .map((sig) => sig.signature)
-          .join('\n'),
+        source: symbol.callSignatures.map((sig) => sig.signature).join('\n'),
         type: 'code-block',
       });
     }
@@ -201,7 +199,9 @@ function unifyTypeParameters(overloads: ApiOverload[]): ApiTypeParameter[] {
 
 function typeParametersTable(typeParameters: ApiTypeParameter[]): Block {
   return {
-    body: typeParameters.map((typeParameter) => typeParameterRow(typeParameter)),
+    body: typeParameters.map((typeParameter) =>
+      typeParameterRow(typeParameter),
+    ),
     head: tableHeaderRow(['Name', 'Constraint', 'Default']),
     type: 'table',
   };
@@ -322,11 +322,15 @@ function tokensToBlocks(tokens: TypeToken[]): Block[] {
 
 function isVoidTokens(tokens: TypeToken[]) {
   return (
-    tokens.length === 1 && tokens[0]?.kind === 'text' && tokens[0].text === 'void'
+    tokens.length === 1 &&
+    tokens[0]?.kind === 'text' &&
+    tokens[0].text === 'void'
   );
 }
 
 function symbolHref(moduleId: string, name: string) {
   const slug = moduleSlug(moduleId);
-  return slug === 'yapyak' ? `/reference/${name}` : `/reference/${slug}/${name}`;
+  return slug === 'yapyak'
+    ? `/reference/${name}`
+    : `/reference/${slug}/${name}`;
 }

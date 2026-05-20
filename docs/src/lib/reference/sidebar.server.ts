@@ -1,5 +1,5 @@
-import type { ApiManifest, ApiModule } from './types';
 import type { NavNode } from '#lib/navigation';
+import type { ApiManifest, ApiModule } from './types';
 
 import { loadManifest } from './manifest.server';
 
@@ -51,9 +51,9 @@ function moduleChildren(
       type: 'link',
     });
   }
-  const subModules = (childrenById.get(module.id) ?? []).slice().sort((a, b) =>
-    a.id.localeCompare(b.id),
-  );
+  const subModules = (childrenById.get(module.id) ?? [])
+    .slice()
+    .sort((a, b) => a.id.localeCompare(b.id));
   for (const child of subModules) {
     nodes.push({
       children: moduleChildren(child, byId, childrenById),
@@ -81,7 +81,9 @@ function findParentId(id: string, byId: Map<string, ApiModule>) {
 
 function symbolHref(moduleId: string, name: string) {
   const slug = moduleSlug(moduleId);
-  return slug === 'yapyak' ? `/reference/${name}` : `/reference/${slug}/${name}`;
+  return slug === 'yapyak'
+    ? `/reference/${name}`
+    : `/reference/${slug}/${name}`;
 }
 
 function lastSegment(id: string) {
