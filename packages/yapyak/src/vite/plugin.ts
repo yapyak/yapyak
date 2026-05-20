@@ -248,7 +248,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         localeData: getLocaleData(),
         locales,
       });
-      if (!result.changed) {
+      if (!result.hasChanged) {
         return null;
       }
       return { code: result.code };

@@ -9,7 +9,7 @@ export interface CheckOptions {
 }
 
 export function check(options: CheckOptions): number {
-  const result = collect({
+  const report = collect({
     defaultLocale: options.config.defaultLocale,
     localesDir: options.config.localesDir,
     projectRoot: options.projectRoot,
@@ -17,16 +17,16 @@ export function check(options: CheckOptions): number {
 
   process.stdout.write(header('Translation check'));
 
-  if (result.missing.length === 0) {
-    const total = result.totalMessages * result.locales.length;
+  if (report.missing.length === 0) {
+    const total = report.totalMessages * report.locales.length;
     process.stdout.write(
       `  ${symbol.check} ${color.green(`All ${total} translations present.`)}\n\n`,
     );
     return 0;
   }
 
-  const byLocale: Record<string, typeof result.missing> = {};
-  for (const entry of result.missing) {
+  const byLocale: Record<string, typeof report.missing> = {};
+  for (const entry of report.missing) {
     const list = byLocale[entry.locale];
     if (list === undefined) {
       byLocale[entry.locale] = [entry];
@@ -36,7 +36,7 @@ export function check(options: CheckOptions): number {
   }
 
   process.stdout.write(
-    `  ${symbol.cross} ${color.red(`${result.missing.length} missing translations`)}\n\n`,
+    `  ${symbol.cross} ${color.red(`${report.missing.length} missing translations`)}\n\n`,
   );
 
   for (const [locale, entries] of Object.entries(byLocale)) {

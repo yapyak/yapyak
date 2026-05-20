@@ -272,11 +272,11 @@
           "tags": [],
           "kind": "variable",
           "members": [],
-          "signature": "const locales: readonly string[]",
+          "signature": "const locales: string[]",
           "type": [
             {
               "kind": "text",
-              "text": "readonly string[]"
+              "text": "string[]"
             }
           ]
         },
@@ -654,7 +654,7 @@
             {
               "defaultValue": null,
               "description": "Type differentiator only.\nWe need this to be in public d.ts but don't want it to show up in IDE\nautocomplete, so we use a private Symbol instead.",
-              "name": "__@RefSymbol@498083",
+              "name": "__@RefSymbol@857",
               "optional": false,
               "type": [
                 {

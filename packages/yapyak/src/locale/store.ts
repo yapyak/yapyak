@@ -117,7 +117,7 @@ export function setLocale(value: string): void {
 }
 
 /** All configured locales (build-time constant). */
-export const locales: readonly string[] = LOCALES;
+export const locales: string[] = LOCALES;
 
 /** The default locale (build-time constant). */
 export const defaultLocale: string = DEFAULT_LOCALE;

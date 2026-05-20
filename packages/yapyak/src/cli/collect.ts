@@ -72,12 +72,12 @@ export function collect(options: CollectOptions): CollectResult {
 
   const sourcesByFile: Record<string, Set<string>> = {};
   for (const message of messages) {
-    let set = sourcesByFile[message.fileId];
-    if (set === undefined) {
-      set = new Set();
-      sourcesByFile[message.fileId] = set;
+    let sources = sourcesByFile[message.fileId];
+    if (sources === undefined) {
+      sources = new Set();
+      sourcesByFile[message.fileId] = sources;
     }
-    set.add(message.source);
+    sources.add(message.source);
   }
 
   const totalMessages = Object.values(sourcesByFile).reduce(
@@ -93,11 +93,11 @@ export function collect(options: CollectOptions): CollectResult {
       perLocale[locale] = { missing: 0, translated: totalMessages };
       continue;
     }
-    const data = readLocaleFile(join(localesPath, `${locale}.json`));
+    const localeFile = readLocaleFile(join(localesPath, `${locale}.json`));
     let translated = 0;
     let missingCount = 0;
     for (const [fileId, sources] of Object.entries(sourcesByFile)) {
-      const fileEntries = data[fileId] ?? {};
+      const fileEntries = localeFile[fileId] ?? {};
       for (const source of sources) {
         const value = fileEntries[source];
         if (typeof value === 'string' && value.trim() !== '') {

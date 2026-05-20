@@ -10,7 +10,7 @@ export interface StatusOptions {
 }
 
 export function status(options: StatusOptions): number {
-  const result = collect({
+  const report = collect({
     defaultLocale: options.config.defaultLocale,
     localesDir: options.config.localesDir,
     projectRoot: options.projectRoot,
@@ -18,13 +18,13 @@ export function status(options: StatusOptions): number {
 
   if (options.json === true) {
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
-    return result.missing.length === 0 ? 0 : 1;
+    return report.missing.length === 0 ? 0 : 1;
   }
 
-  const total = result.totalMessages;
-  const localesLine = result.locales
+  const total = report.totalMessages;
+  const localesLine = report.locales
     .map((locale) =>
-      locale === result.defaultLocale
+      locale === report.defaultLocale
         ? `${color.bold(locale)} ${color.dim('(default)')}`
         : color.bold(locale),
     )
@@ -33,18 +33,18 @@ export function status(options: StatusOptions): number {
   process.stdout.write(header('Translation status'));
   process.stdout.write(`  ${color.dim('Locales')}   ${localesLine}\n`);
   process.stdout.write(
-    `  ${color.dim('Total')}     ${color.bold(String(total))} messages × ${result.locales.length} = ${color.bold(
-      String(total * result.locales.length),
+    `  ${color.dim('Total')}     ${color.bold(String(total))} messages × ${report.locales.length} = ${color.bold(
+      String(total * report.locales.length),
     )} translations\n\n`,
   );
 
-  const rows = result.locales.map((locale) => {
-    const stats = result.perLocale[locale];
+  const rows = report.locales.map((locale) => {
+    const stats = report.perLocale[locale];
     const translated = stats?.translated ?? 0;
     const ratio = total === 0 ? 1 : translated / total;
     const percent = `${Math.round(ratio * 100)}%`;
     return [
-      locale === result.defaultLocale
+      locale === report.defaultLocale
         ? `${locale} ${color.dim('(default)')}`
         : locale,
       `${translated} / ${total}`,
@@ -63,15 +63,15 @@ export function status(options: StatusOptions): number {
       .join('\n')}\n\n`,
   );
 
-  if (result.missing.length === 0) {
+  if (report.missing.length === 0) {
     process.stdout.write(
       `  ${symbol.check} ${color.green('All translations present.')}\n\n`,
     );
     return 0;
   }
 
-  const byLocale: Record<string, typeof result.missing> = {};
-  for (const entry of result.missing) {
+  const byLocale: Record<string, typeof report.missing> = {};
+  for (const entry of report.missing) {
     const list = byLocale[entry.locale];
     if (list === undefined) {
       byLocale[entry.locale] = [entry];

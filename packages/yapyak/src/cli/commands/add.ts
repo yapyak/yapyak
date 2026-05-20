@@ -53,13 +53,13 @@ export async function add(options: AddOptions): Promise<number> {
     }
   }
 
-  const result = collect({
+  const report = collect({
     defaultLocale: config.defaultLocale,
     localesDir: config.localesDir,
     projectRoot,
   });
 
-  if (result.totalMessages === 0) {
+  if (report.totalMessages === 0) {
     process.stdout.write(
       `\n  ${color.dim('No source strings found yet — locale files are ready for')} ${color.cyan('pnpm dev')}${color.dim('.')}\n\n`,
     );
@@ -68,8 +68,8 @@ export async function add(options: AddOptions): Promise<number> {
 
   let totalMissing = 0;
   for (const locale of locales) {
-    const stats = result.perLocale[locale];
-    totalMissing += stats?.missing ?? result.totalMessages;
+    const stats = report.perLocale[locale];
+    totalMissing += stats?.missing ?? report.totalMessages;
   }
 
   if (totalMissing === 0) {
@@ -104,8 +104,8 @@ export async function add(options: AddOptions): Promise<number> {
   const startedAt = Date.now();
 
   for (const locale of locales) {
-    const stats = result.perLocale[locale];
-    const missing = stats?.missing ?? result.totalMessages;
+    const stats = report.perLocale[locale];
+    const missing = stats?.missing ?? report.totalMessages;
     if (missing === 0) {
       process.stdout.write(
         `  ${symbol.check} ${color.bold(locale)} ${color.dim('already complete')}\n`,
@@ -125,10 +125,10 @@ export async function add(options: AddOptions): Promise<number> {
     };
 
     const subResult = await autoTranslate({
-      defaultLocale: result.defaultLocale,
-      locales: [result.defaultLocale, locale],
+      defaultLocale: report.defaultLocale,
+      locales: [report.defaultLocale, locale],
       localesDir: config.localesDir,
-      messages: result.messages,
+      messages: report.messages,
       projectRoot,
       translator: wrapWithProgress(translator.fn, onProgress),
     });

@@ -22,7 +22,7 @@ export interface TransformSourceOptions {
 }
 
 export interface TransformSourceResult {
-  changed: boolean;
+  hasChanged: boolean;
   code: string;
 }
 
@@ -35,7 +35,7 @@ export function transformSource(
 ): TransformSourceResult {
   const sites = findCallSites(code);
   if (sites.length === 0) {
-    return { changed: false, code };
+    return { hasChanged: false, code };
   }
 
   const replacements: Array<{
@@ -85,13 +85,13 @@ export function transformSource(
   }
 
   if (replacements.length === 0) {
-    return { changed: false, code };
+    return { hasChanged: false, code };
   }
 
   const helperImport = options.helperImport ?? DEFAULT_HELPER_IMPORT;
   const importStatement = `import { pick as ${HELPER_NAME} } from '${helperImport}';`;
   const transformed = applyReplacements(code, replacements);
-  return { changed: true, code: injectImport(transformed, importStatement) };
+  return { hasChanged: true, code: injectImport(transformed, importStatement) };
 }
 
 function applyReplacements(

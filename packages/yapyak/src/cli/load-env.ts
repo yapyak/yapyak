@@ -4,7 +4,7 @@ import { join } from 'node:path';
 const ENV_FILES = ['.env.local', '.env'];
 
 export function loadEnv(projectRoot: string): Record<string, string> {
-  const result: Record<string, string> = { ...process.env } as Record<
+  const env: Record<string, string> = { ...process.env } as Record<
     string,
     string
   >;
@@ -30,10 +30,10 @@ export function loadEnv(projectRoot: string): Record<string, string> {
         (rawValue.startsWith("'") && rawValue.endsWith("'"))
           ? rawValue.slice(1, -1)
           : rawValue;
-      if (result[key] === undefined || result[key] === '') {
-        result[key] = value;
+      if (env[key] === undefined || env[key] === '') {
+        env[key] = value;
       }
     }
   }
-  return result;
+  return env;
 }

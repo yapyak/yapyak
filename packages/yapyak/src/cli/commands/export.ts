@@ -96,16 +96,16 @@ export function exportCommand(options: ExportOptions): number {
 function buildSourcesByFile(
   messages: { fileId: string; source: string }[],
 ): Map<string, Set<string>> {
-  const map = new Map<string, Set<string>>();
+  const sourcesByFile = new Map<string, Set<string>>();
   for (const message of messages) {
-    let sources = map.get(message.fileId);
+    let sources = sourcesByFile.get(message.fileId);
     if (sources === undefined) {
       sources = new Set();
-      map.set(message.fileId, sources);
+      sourcesByFile.set(message.fileId, sources);
     }
     sources.add(message.source);
   }
-  return map;
+  return sourcesByFile;
 }
 
 function buildSnapshot(args: {
@@ -131,7 +131,7 @@ function buildLocaleFile(args: {
   sourcesByFile: Map<string, Set<string>>;
 }): LocaleFile {
   const onDisk = args.isDefault ? {} : readLocaleFile(args.localePath);
-  const result: LocaleFile = {};
+  const localeFile: LocaleFile = {};
   for (const [fileId, sources] of args.sourcesByFile) {
     const entries: Record<string, string> = {};
     const fileEntries = onDisk[fileId] ?? {};
@@ -142,9 +142,9 @@ function buildLocaleFile(args: {
         entries[source] = fileEntries[source] ?? '';
       }
     }
-    result[fileId] = entries;
+    localeFile[fileId] = entries;
   }
-  return result;
+  return localeFile;
 }
 
 function isInsideLocalesDir(

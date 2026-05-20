@@ -39,7 +39,7 @@ export async function translate(options: TranslateOptions): Promise<number> {
     return 1;
   }
 
-  const result = collect({
+  const report = collect({
     defaultLocale: config.defaultLocale,
     localesDir: config.localesDir,
     projectRoot,
@@ -47,17 +47,17 @@ export async function translate(options: TranslateOptions): Promise<number> {
   const targetLocales =
     targetLocale !== undefined && targetLocale !== ''
       ? [targetLocale]
-      : result.locales.filter((locale) => locale !== result.defaultLocale);
+      : report.locales.filter((locale) => locale !== report.defaultLocale);
 
   const stubsToFill = force
     ? targetLocales.flatMap((locale) =>
-        result.messages.map((message) => ({
+        report.messages.map((message) => ({
           fileId: message.fileId,
           locale,
           source: message.source,
         })),
       )
-    : result.missing.filter((entry) => targetLocales.includes(entry.locale));
+    : report.missing.filter((entry) => targetLocales.includes(entry.locale));
 
   process.stdout.write(
     header(
@@ -92,11 +92,11 @@ export async function translate(options: TranslateOptions): Promise<number> {
   );
   for (const locale of localesToProcess) {
     const subResult = await autoTranslate({
-      defaultLocale: result.defaultLocale,
+      defaultLocale: report.defaultLocale,
       force,
-      locales: [result.defaultLocale, locale],
+      locales: [report.defaultLocale, locale],
       localesDir: config.localesDir,
-      messages: result.messages,
+      messages: report.messages,
       projectRoot,
       translator: wrapWithProgress(translator.fn, onProgress),
     });
