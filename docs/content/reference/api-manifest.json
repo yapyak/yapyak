@@ -16,6 +16,7 @@
           "name": "getLocale",
           "tags": [],
           "kind": "function",
+          "members": [],
           "overloads": [
             {
               "parameters": [],
@@ -45,6 +46,7 @@
           "name": "setLocale",
           "tags": [],
           "kind": "function",
+          "members": [],
           "overloads": [
             {
               "parameters": [
@@ -87,6 +89,7 @@
           "name": "subscribeLocale",
           "tags": [],
           "kind": "function",
+          "members": [],
           "overloads": [
             {
               "parameters": [
@@ -129,6 +132,20 @@
           "name": "t",
           "tags": [],
           "kind": "function",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "in",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "(locale: string) => TIn"
+                }
+              ]
+            }
+          ],
           "overloads": [
             {
               "parameters": [
@@ -470,6 +487,7 @@
           "name": "IntlProvider",
           "tags": [],
           "kind": "function",
+          "members": [],
           "overloads": [
             {
               "parameters": [
@@ -514,6 +532,7 @@
           "name": "useLocale",
           "tags": [],
           "kind": "function",
+          "members": [],
           "overloads": [
             {
               "parameters": [],
@@ -583,7 +602,7 @@
             {
               "defaultValue": null,
               "description": "Type differentiator only.\nWe need this to be in public d.ts but don't want it to show up in IDE\nautocomplete, so we use a private Symbol instead.",
-              "name": "__@RefSymbol@477143",
+              "name": "__@RefSymbol@839",
               "optional": false,
               "type": [
                 {
@@ -708,6 +727,7 @@
           "name": "yapyak",
           "tags": [],
           "kind": "function",
+          "members": [],
           "overloads": [
             {
               "parameters": [
@@ -886,6 +906,7 @@
           "name": "withRequest",
           "tags": [],
           "kind": "function",
+          "members": [],
           "overloads": [
             {
               "parameters": [
@@ -954,6 +975,7 @@
           "name": "middleware",
           "tags": [],
           "kind": "function",
+          "members": [],
           "overloads": [
             {
               "parameters": [
@@ -1015,6 +1037,7 @@
           "name": "middleware",
           "tags": [],
           "kind": "function",
+          "members": [],
           "overloads": [
             {
               "parameters": [
@@ -1076,6 +1099,7 @@
           "name": "handle",
           "tags": [],
           "kind": "function",
+          "members": [],
           "overloads": [
             {
               "parameters": [
@@ -1180,6 +1204,7 @@
           "name": "anthropic",
           "tags": [],
           "kind": "function",
+          "members": [],
           "overloads": [
             {
               "parameters": [
@@ -1224,6 +1249,7 @@
           "name": "createTranslator",
           "tags": [],
           "kind": "function",
+          "members": [],
           "overloads": [
             {
               "parameters": [
@@ -1270,6 +1296,7 @@
           "name": "gemini",
           "tags": [],
           "kind": "function",
+          "members": [],
           "overloads": [
             {
               "parameters": [
@@ -1314,6 +1341,7 @@
           "name": "ollama",
           "tags": [],
           "kind": "function",
+          "members": [],
           "overloads": [
             {
               "parameters": [
@@ -1358,6 +1386,7 @@
           "name": "openai",
           "tags": [],
           "kind": "function",
+          "members": [],
           "overloads": [
             {
               "parameters": [

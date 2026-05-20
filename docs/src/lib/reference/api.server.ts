@@ -337,7 +337,13 @@ function buildFunction(
   context: Context,
 ): ApiFunction {
   const type = context.checker.getTypeOfSymbolAtLocation(symbol, declaration);
-  return buildFunctionFromSignatures(base, symbol, type.getCallSignatures(), context);
+  return buildFunctionFromSignatures(
+    base,
+    symbol,
+    type.getCallSignatures(),
+    [],
+    context,
+  );
 }
 
 function buildVariableAsFunction(
@@ -347,13 +353,21 @@ function buildVariableAsFunction(
   context: Context,
 ): ApiFunction {
   const type = context.checker.getTypeOfSymbolAtLocation(symbol, declaration);
-  return buildFunctionFromSignatures(base, symbol, type.getCallSignatures(), context);
+  const members = collectTypeMembers(type, declaration, context);
+  return buildFunctionFromSignatures(
+    base,
+    symbol,
+    type.getCallSignatures(),
+    members,
+    context,
+  );
 }
 
 function buildFunctionFromSignatures(
   base: ApiSymbolBase,
   symbol: ts.Symbol,
   signatures: readonly ts.Signature[],
+  members: ApiMember[],
   context: Context,
 ): ApiFunction {
   const { checker } = context;
@@ -368,6 +382,7 @@ function buildFunctionFromSignatures(
     return {
       ...base,
       kind: 'function',
+      members,
       overloads: [
         {
           parameters: [],
@@ -397,6 +412,7 @@ function buildFunctionFromSignatures(
   return {
     ...base,
     kind: 'function',
+    members,
     overloads,
     returnDescription,
   };

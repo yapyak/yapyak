@@ -56,6 +56,10 @@ export function buildSymbolPage(symbol: ApiExport, moduleId: string): Page {
       blocks.push(heading2('Returns'));
       blocks.push(returnsParagraph(returnType, symbol.returnDescription));
     }
+    if (symbol.members.length > 0) {
+      blocks.push(heading2('Members'));
+      blocks.push(membersTable(symbol.members));
+    }
   }
 
   if (symbol.kind === 'variable') {

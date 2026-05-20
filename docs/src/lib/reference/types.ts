@@ -27,6 +27,7 @@ export interface ApiSymbolBase {
 
 export interface ApiFunction extends ApiSymbolBase {
   kind: 'function';
+  members: ApiMember[];
   overloads: ApiOverload[];
   returnDescription: string;
 }
