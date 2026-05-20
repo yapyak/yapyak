@@ -4,25 +4,6 @@ import type { Translator } from '../translator';
 
 import { DEFAULT_EXCLUDE, DEFAULT_INCLUDE } from '../parser';
 
-/**
- * Where to persist the user's locale selection.
- *
- * Use the string shorthand for defaults, or the object form to customize.
- *
- * @example
- * ```ts
- * persistence: 'cookie'
- * persistence: 'localStorage'
- * persistence: { type: 'cookie', name: 'app:locale' }
- * persistence: { type: 'localStorage', key: 'app:locale' }
- * ```
- */
-export type PersistenceOptions =
-  | 'cookie'
-  | 'localStorage'
-  | { name?: string; type: 'cookie' }
-  | { key?: string; type: 'localStorage' };
-
 /** Options for the yapyak Vite plugin. */
 export interface YapyakOptions {
   /** The default locale. Inferred from locale files if omitted. */
@@ -39,8 +20,21 @@ export interface YapyakOptions {
    * Use the string shorthand (`'cookie'` or `'localStorage'`) for defaults,
    * or the object form (`{ type: 'cookie', name: '...' }`) to customize.
    * Omit for no persistence.
+   *
+   * @example
+   * ```ts
+   * persistence: 'cookie'
+   * persistence: 'localStorage'
+   * persistence: { type: 'cookie', name: 'app:locale' }
+   * persistence: { type: 'localStorage', key: 'app:locale' }
+   * ```
    */
-  persistence?: PersistenceOptions | null;
+  persistence?:
+    | 'cookie'
+    | 'localStorage'
+    | { name?: string; type: 'cookie' }
+    | { key?: string; type: 'localStorage' }
+    | null;
   /**
    * Preserve existing translations when a `t()` call is renamed in place.
    * Defaults to `true` without a translator, `false` with one.
@@ -76,7 +70,7 @@ const DEFAULT_COOKIE_NAME = 'locale';
 const DEFAULT_STORAGE_KEY = 'locale';
 
 function normalizePersistence(
-  input: PersistenceOptions | null | undefined,
+  input: YapyakOptions['persistence'],
 ): NormalizedPersistence {
   if (input == null) {
     return null;
