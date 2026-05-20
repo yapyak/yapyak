@@ -175,7 +175,7 @@ yapyak({
 When `persistence: 'cookie'` is set *and* an SSR adapter is wired ([TanStack Start](/guide/adapters/tanstack-start), [SvelteKit](/guide/adapters/sveltekit), or [custom](/guide/adapters/custom)), the locale resolves per request through this cascade:
 
 1. **Cookie** (the user's explicit choice) — highest priority
-2. **`Accept-Language` header** (browser/OS preference) — if `acceptLanguage: true`
+2. **`Accept-Language` header** (browser/OS preference) — if `shouldUseAcceptLanguage: true`
 3. **Default locale** (configured fallback)
 
 Each request picks the right locale before HTML renders. `getLocale()` returns the per-request value; `t()` calls in SSR render in that locale; the cookie matches what the client reads, so there's no hydration mismatch.
@@ -185,7 +185,7 @@ To opt into `Accept-Language` matching:
 ```ts
 yapyak({
   persistence: 'cookie',
-  acceptLanguage: true,   // default: false
+  shouldUseAcceptLanguage: true,   // default: false
 })
 ```
 

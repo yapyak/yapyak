@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 /** @internal */
-export interface WalkOptions {
+export interface WalkSourceFilesOptions {
   filter: (id: string) => boolean;
   projectRoot: string;
 }
@@ -16,7 +16,7 @@ export interface WalkedFile {
 const PROBE_FILE = '__yapyak_probe__.ts';
 
 /** @internal */
-export function walkSourceFiles(options: WalkOptions): WalkedFile[] {
+export function walkSourceFiles(options: WalkSourceFilesOptions): WalkedFile[] {
   const results: WalkedFile[] = [];
   walk(options.projectRoot, options.projectRoot, options.filter, results);
   return results;

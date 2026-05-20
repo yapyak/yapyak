@@ -48,8 +48,6 @@ export type FilterPattern =
 
 /** Options for the yapyak Vite plugin. */
 export interface YapyakOptions {
-  /** Detect locale from the `Accept-Language` header on the server. */
-  acceptLanguage?: boolean;
   /** The default locale. Inferred from locale files if omitted. */
   defaultLocale?: string;
   /** Glob patterns to exclude from extraction. */
@@ -70,7 +68,7 @@ export interface YapyakOptions {
    * Preserve existing translations when a `t()` call is renamed in place.
    * Defaults to `true` without a translator, `false` with one.
    */
-  preserveTranslationsOnRename?: boolean;
+  shouldPreserveTranslationsOnRename?: boolean;
   /**
    * Keep `document.documentElement.lang` synced with the current locale.
    *
@@ -78,20 +76,22 @@ export interface YapyakOptions {
    * `true`. Useful for SvelteKit/Astro/SPA setups where the `<html>` element
    * isn't owned by a reactive framework binding. See each adapter's docs.
    */
-  syncHtmlLang?: boolean;
+  shouldSyncHtmlLang?: boolean;
   /** Translator used to fill missing entries. Stubs stay empty without one. */
   translator?: Translator;
+  /** Detect locale from the `Accept-Language` header on the server. */
+  shouldUseAcceptLanguage?: boolean;
 }
 
 export interface NormalizedOptions {
-  acceptLanguage: boolean;
   defaultLocale: string | undefined;
   exclude: FilterPattern;
   include: FilterPattern;
   localesDir: string;
   persistence: NormalizedPersistence;
-  preserveTranslationsOnRename: boolean;
-  syncHtmlLang: boolean;
+  shouldPreserveTranslationsOnRename: boolean;
+  shouldSyncHtmlLang: boolean;
+  shouldUseAcceptLanguage: boolean;
   translator: Translator | undefined;
 }
 
@@ -147,15 +147,15 @@ function normalizePersistence(
 
 export function normalizeOptions(options: YapyakOptions): NormalizedOptions {
   return {
-    acceptLanguage: options.acceptLanguage ?? false,
     defaultLocale: options.defaultLocale,
     exclude: options.exclude ?? DEFAULT_EXCLUDE,
     include: options.include ?? DEFAULT_INCLUDE,
     localesDir: options.localesDir ?? 'locales',
     persistence: normalizePersistence(options.persistence),
-    preserveTranslationsOnRename:
-      options.preserveTranslationsOnRename ?? options.translator === undefined,
-    syncHtmlLang: options.syncHtmlLang ?? false,
+    shouldPreserveTranslationsOnRename:
+      options.shouldPreserveTranslationsOnRename ?? options.translator === undefined,
+    shouldSyncHtmlLang: options.shouldSyncHtmlLang ?? false,
+    shouldUseAcceptLanguage: options.shouldUseAcceptLanguage ?? false,
     translator: options.translator,
   };
 }

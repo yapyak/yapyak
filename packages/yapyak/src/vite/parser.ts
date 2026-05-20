@@ -80,7 +80,7 @@ export function sliceArguments(
 ): ArgsRange | undefined {
   let depth = 1;
   let inString: string | undefined;
-  let inTemplate = false;
+  let isInTemplate = false;
   let templateBraceDepth = 0;
   const templateBraceStack: number[] = [];
   let i = start;
@@ -97,9 +97,9 @@ export function sliceArguments(
       continue;
     }
 
-    if (inTemplate) {
+    if (isInTemplate) {
       if (ch === '`' && prev !== '\\') {
-        inTemplate = false;
+        isInTemplate = false;
         i++;
         continue;
       }
@@ -129,7 +129,7 @@ export function sliceArguments(
       continue;
     }
     if (ch === '`') {
-      inTemplate = true;
+      isInTemplate = true;
       i++;
       continue;
     }
@@ -154,7 +154,7 @@ export function splitTopLevelArgs(args: string): string[] {
   const result: string[] = [];
   let depth = 0;
   let inString: string | undefined;
-  let inTemplate = false;
+  let isInTemplate = false;
   let templateBraceDepth = 0;
   const templateBraceStack: number[] = [];
   let start = 0;
@@ -170,9 +170,9 @@ export function splitTopLevelArgs(args: string): string[] {
       continue;
     }
 
-    if (inTemplate) {
+    if (isInTemplate) {
       if (ch === '`' && prev !== '\\') {
-        inTemplate = false;
+        isInTemplate = false;
         continue;
       }
       if (ch === '$' && args[i + 1] === '{') {
@@ -199,7 +199,7 @@ export function splitTopLevelArgs(args: string): string[] {
       continue;
     }
     if (ch === '`') {
-      inTemplate = true;
+      isInTemplate = true;
       continue;
     }
     if (ch === '(' || ch === '[' || ch === '{') {

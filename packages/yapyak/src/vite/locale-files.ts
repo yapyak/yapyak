@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path';
 /** @internal */
 export type LocaleFile = Record<string, Record<string, string>>;
 
-export interface SyncOptions {
+export interface SyncLocaleFilesOptions {
   defaultLocale: string;
   locales: string[];
   localesDir: string;
@@ -15,18 +15,18 @@ export interface SyncOptions {
   projectRoot: string;
 }
 
-export interface DiscoverOptions {
+export interface DiscoverLocalesOptions {
   defaultLocale?: string;
   localesDir: string;
   projectRoot: string;
 }
 
-export interface DiscoverResult {
+export interface DiscoverLocalesResult {
   defaultLocale: string;
   locales: string[];
 }
 
-export interface ReadOptions {
+export interface ReadLocaleDataOptions {
   locales: string[];
   localesDir: string;
   projectRoot: string;
@@ -48,16 +48,16 @@ export interface MigrateLocalesOptions {
   fileId: string;
   locales: string[];
   localesDir: string;
-  preserveTranslations: boolean;
+  shouldPreserveTranslations: boolean;
   projectRoot: string;
   renames: RenameEntry[];
 }
 
-export interface MigrationResult {
+export interface MigrateLocalesResult {
   staleEntries: Array<{ locale: string; source: string }>;
 }
 
-export function syncLocaleFiles(options: SyncOptions): void {
+export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
   const sourcesByFile = groupSourcesByFile(options.messages);
 
   for (const locale of options.locales) {
@@ -138,7 +138,7 @@ export function writeLocaleFile(path: string, data: LocaleFile): void {
   writeFileSync(path, content);
 }
 
-export function discoverLocales(options: DiscoverOptions): DiscoverResult {
+export function discoverLocales(options: DiscoverLocalesOptions): DiscoverLocalesResult {
   const dir = join(options.projectRoot, options.localesDir);
   const fileLocales = existsSync(dir)
     ? readdirSync(dir)
@@ -155,7 +155,7 @@ export function discoverLocales(options: DiscoverOptions): DiscoverResult {
   return { defaultLocale, locales };
 }
 
-export function readLocaleData(options: ReadOptions): LocaleData {
+export function readLocaleData(options: ReadLocaleDataOptions): LocaleData {
   const data: LocaleData = {};
   for (const locale of options.locales) {
     data[locale] = readLocaleFile(
@@ -226,8 +226,8 @@ export function detectRenames(
 
 export function migrateLocales(
   options: MigrateLocalesOptions,
-): MigrationResult {
-  const staleEntries: MigrationResult['staleEntries'] = [];
+): MigrateLocalesResult {
+  const staleEntries: MigrateLocalesResult['staleEntries'] = [];
   if (options.renames.length === 0) {
     return { staleEntries };
   }
@@ -246,7 +246,7 @@ export function migrateLocales(
     if (fileEntries === undefined) {
       continue;
     }
-    let changed = false;
+    let hasChanged = false;
     const next: Record<string, string> = { ...fileEntries };
     for (const rename of options.renames) {
       if (!Object.hasOwn(next, rename.from)) {
@@ -254,13 +254,13 @@ export function migrateLocales(
       }
       const previousValue = next[rename.from];
       delete next[rename.from];
-      next[rename.to] = options.preserveTranslations
+      next[rename.to] = options.shouldPreserveTranslations
         ? (previousValue ?? '')
         : '';
       staleEntries.push({ locale, source: rename.to });
-      changed = true;
+      hasChanged = true;
     }
-    if (changed) {
+    if (hasChanged) {
       data[options.fileId] = next;
       writeLocaleFile(localePath, data);
     }

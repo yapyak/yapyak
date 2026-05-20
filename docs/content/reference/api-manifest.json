@@ -654,7 +654,7 @@
             {
               "defaultValue": null,
               "description": "Type differentiator only.\nWe need this to be in public d.ts but don't want it to show up in IDE\nautocomplete, so we use a private Symbol instead.",
-              "name": "__@RefSymbol@487499",
+              "name": "__@RefSymbol@498083",
               "optional": false,
               "type": [
                 {
@@ -826,18 +826,6 @@
           "members": [
             {
               "defaultValue": null,
-              "description": "Detect locale from the `Accept-Language` header on the server.",
-              "name": "acceptLanguage",
-              "optional": true,
-              "type": [
-                {
-                  "kind": "text",
-                  "text": "boolean"
-                }
-              ]
-            },
-            {
-              "defaultValue": null,
               "description": "The default locale. Inferred from locale files if omitted.",
               "name": "defaultLocale",
               "optional": true,
@@ -899,7 +887,7 @@
             {
               "defaultValue": null,
               "description": "Preserve existing translations when a `t()` call is renamed in place.\nDefaults to `true` without a translator, `false` with one.",
-              "name": "preserveTranslationsOnRename",
+              "name": "shouldPreserveTranslationsOnRename",
               "optional": true,
               "type": [
                 {
@@ -911,7 +899,19 @@
             {
               "defaultValue": null,
               "description": "Keep `document.documentElement.lang` synced with the current locale.\n\nOff by default. yapyak does not touch the DOM unless this is set to\n`true`. Useful for SvelteKit/Astro/SPA setups where the `<html>` element\nisn't owned by a reactive framework binding. See each adapter's docs.",
-              "name": "syncHtmlLang",
+              "name": "shouldSyncHtmlLang",
+              "optional": true,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "boolean"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "Detect locale from the `Accept-Language` header on the server.",
+              "name": "shouldUseAcceptLanguage",
               "optional": true,
               "type": [
                 {
@@ -935,7 +935,7 @@
               ]
             }
           ],
-          "signature": "export interface YapyakOptions {\n  /** Detect locale from the `Accept-Language` header on the server. */\n  acceptLanguage?: boolean;\n  /** The default locale. Inferred from locale files if omitted. */\n  defaultLocale?: string;\n  /** Glob patterns to exclude from extraction. */\n  exclude?: FilterPattern;\n  /** Glob patterns to include for extraction. */\n  include?: FilterPattern;\n  /** Directory..."
+          "signature": "export interface YapyakOptions {\n  /** The default locale. Inferred from locale files if omitted. */\n  defaultLocale?: string;\n  /** Glob patterns to exclude from extraction. */\n  exclude?: FilterPattern;\n  /** Glob patterns to include for extraction. */\n  include?: FilterPattern;\n  /** Directory for locale JSON files, relative to project root. Defaults to `'locales'`. */\n  localesDir?: string;..."
         }
       ],
       "id": "yapyak/vite",

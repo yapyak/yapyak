@@ -204,7 +204,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
           fileId,
           locales,
           localesDir: normalized.localesDir,
-          preserveTranslations: normalized.preserveTranslationsOnRename,
+          shouldPreserveTranslations: normalized.shouldPreserveTranslationsOnRename,
           projectRoot,
           renames,
         });
@@ -248,7 +248,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         localeData: getLocaleData(),
         locales,
       });
-      if (result === null) {
+      if (!result.changed) {
         return null;
       }
       return { code: result.code };
@@ -281,10 +281,10 @@ function generateConfig(
     `export const PERSISTENCE = ${JSON.stringify(normalized.persistence)};`,
   );
   lines.push(
-    `export const ACCEPT_LANGUAGE = ${JSON.stringify(normalized.acceptLanguage)};`,
+    `export const ACCEPT_LANGUAGE = ${JSON.stringify(normalized.shouldUseAcceptLanguage)};`,
   );
   lines.push(
-    `export const SYNC_HTML_LANG = ${JSON.stringify(normalized.syncHtmlLang)};`,
+    `export const SYNC_HTML_LANG = ${JSON.stringify(normalized.shouldSyncHtmlLang)};`,
   );
   return lines.join('\n');
 }

@@ -13,7 +13,7 @@ export interface LocaleData {
   };
 }
 
-export interface TransformOptions {
+export interface TransformSourceOptions {
   defaultLocale: string;
   fileId: string;
   helperImport?: string;
@@ -21,7 +21,8 @@ export interface TransformOptions {
   locales: string[];
 }
 
-export interface TransformResult {
+export interface TransformSourceResult {
+  changed: boolean;
   code: string;
 }
 
@@ -30,11 +31,11 @@ const DEFAULT_HELPER_IMPORT = 'yapyak/internal';
 
 export function transformSource(
   code: string,
-  options: TransformOptions,
-): TransformResult | null {
+  options: TransformSourceOptions,
+): TransformSourceResult {
   const sites = findCallSites(code);
   if (sites.length === 0) {
-    return null;
+    return { changed: false, code };
   }
 
   const replacements: Array<{
@@ -84,13 +85,13 @@ export function transformSource(
   }
 
   if (replacements.length === 0) {
-    return null;
+    return { changed: false, code };
   }
 
   const helperImport = options.helperImport ?? DEFAULT_HELPER_IMPORT;
   const importStatement = `import { pick as ${HELPER_NAME} } from '${helperImport}';`;
   const transformed = applyReplacements(code, replacements);
-  return { code: injectImport(transformed, importStatement) };
+  return { changed: true, code: injectImport(transformed, importStatement) };
 }
 
 function applyReplacements(
@@ -120,7 +121,7 @@ interface CompileInput {
   source: string;
 }
 
-function compileCall(input: CompileInput, options: TransformOptions): string {
+function compileCall(input: CompileInput, options: TransformSourceOptions): string {
   const variants: Record<string, string> = {};
   for (const locale of options.locales) {
     const value = readLocaleValue(
