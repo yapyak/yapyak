@@ -1,10 +1,11 @@
 import type {
   ApiExport,
-  ApiFunction,
   ApiMember,
   ApiOverload,
   ApiParameter,
+  ApiTypeAlias,
   ApiTypeParameter,
+  ApiVariable,
   TypeToken,
 } from './types';
 import type { Block, Page, TableRowBlock } from '#lib/content';
@@ -37,10 +38,9 @@ export function buildSymbolPage(symbol: ApiExport, moduleId: string): Page {
     blocks.push(...parsed.blocks);
   }
 
-  blocks.push(heading2('Signature'));
-  blocks.push(signatureBlock(symbol));
-
   if (symbol.kind === 'function') {
+    blocks.push(heading2('Signature'));
+    blocks.push(functionSignatureBlock(symbol.overloads));
     const typeParameters = unifyTypeParameters(symbol.overloads);
     if (typeParameters.length > 0) {
       blocks.push(heading2('Type Parameters'));
@@ -58,14 +58,32 @@ export function buildSymbolPage(symbol: ApiExport, moduleId: string): Page {
     }
   }
 
-  if (symbol.kind === 'interface' && symbol.members.length > 0) {
-    blocks.push(heading2('Members'));
-    blocks.push(membersTable(symbol.members));
+  if (symbol.kind === 'variable') {
+    blocks.push(heading2('Signature'));
+    blocks.push(variableSignatureBlock(symbol));
+    if (symbol.members.length > 0) {
+      blocks.push(heading2('Members'));
+      blocks.push(membersTable(symbol.members));
+    }
   }
 
-  if (symbol.kind === 'variable' && symbol.members.length > 0) {
-    blocks.push(heading2('Members'));
-    blocks.push(membersTable(symbol.members));
+  if (symbol.kind === 'interface') {
+    if (symbol.members.length > 0) {
+      blocks.push(heading2('Members'));
+      blocks.push(membersTable(symbol.members));
+    }
+  }
+
+  if (symbol.kind === 'type') {
+    blocks.push(heading2('Type'));
+    blocks.push(typeAliasBlock(symbol));
+  }
+
+  if (symbol.kind === 'class') {
+    if (symbol.members.length > 0) {
+      blocks.push(heading2('Members'));
+      blocks.push(membersTable(symbol.members));
+    }
   }
 
   if (symbol.examples.length > 0) {
@@ -89,12 +107,31 @@ export function buildSymbolPage(symbol: ApiExport, moduleId: string): Page {
   };
 }
 
-function signatureBlock(symbol: ApiExport): Block {
-  const source =
-    symbol.kind === 'function'
-      ? symbol.overloads.map((overload) => overload.signature).join('\n')
-      : symbol.signature;
-  return { label: null, language: 'ts', source, type: 'code-block' };
+function functionSignatureBlock(overloads: ApiOverload[]): Block {
+  return {
+    label: null,
+    language: 'ts',
+    source: overloads.map((overload) => overload.signature).join('\n'),
+    type: 'code-block',
+  };
+}
+
+function variableSignatureBlock(symbol: ApiVariable): Block {
+  return {
+    label: null,
+    language: 'ts',
+    source: symbol.signature,
+    type: 'code-block',
+  };
+}
+
+function typeAliasBlock(symbol: ApiTypeAlias): Block {
+  return {
+    label: null,
+    language: 'ts',
+    source: symbol.resolvedType.map((token) => token.text).join(''),
+    type: 'code-block',
+  };
 }
 
 function unifyParameters(overloads: ApiOverload[]): ApiParameter[] {
