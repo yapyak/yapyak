@@ -1,11 +1,7 @@
-import {
-  getLocale as coreLocale,
-  setLocale,
-  subscribeLocale,
-} from '../locale';
+import { getLocale, setLocale, subscribeLocale } from '../locale';
 import { registerTracker } from '../runtime';
 
-let active = $state(coreLocale());
+let active = $state(getLocale());
 
 if (typeof window !== 'undefined') {
   subscribeLocale((next) => {
@@ -43,7 +39,7 @@ export interface Locale {
  */
 export const locale: Locale = {
   get current(): string {
-    return typeof window === 'undefined' ? coreLocale() : active;
+    return typeof window === 'undefined' ? getLocale() : active;
   },
   set current(value: string) {
     setLocale(value);

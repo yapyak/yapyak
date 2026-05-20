@@ -4,9 +4,6 @@ import { createContext, useSyncExternalStore } from 'react';
 
 import { getLocale, subscribeLocale } from '../locale';
 
-const subscribe = (notify: () => void): (() => void) =>
-  subscribeLocale(() => notify());
-
 /** Props for `IntlProvider`. */
 export interface IntlProviderProps {
   children: ReactNode;
@@ -36,7 +33,7 @@ const LocaleContext = createContext<string>('en');
 export function IntlProvider(props: IntlProviderProps): ReactElement {
   const { children } = props;
 
-  const current = useSyncExternalStore(subscribe, getLocale, getLocale);
+  const current = useSyncExternalStore(subscribeLocale, getLocale, getLocale);
   return (
     <LocaleContext
       key={current}

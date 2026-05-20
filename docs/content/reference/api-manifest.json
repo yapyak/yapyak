@@ -11,7 +11,7 @@
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 88
+            "line": 67
           },
           "name": "getLocale",
           "tags": [],
@@ -40,7 +40,7 @@
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 106
+            "line": 102
           },
           "name": "setLocale",
           "tags": [],
@@ -82,7 +82,7 @@
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 144
+            "line": 140
           },
           "name": "subscribeLocale",
           "tags": [],
@@ -228,7 +228,7 @@
           "location": {
             "column": 14,
             "file": "src/locale/store.ts",
-            "line": 127
+            "line": 123
           },
           "name": "defaultLocale",
           "tags": [],
@@ -850,7 +850,7 @@
           "location": {
             "column": 14,
             "file": "src/locale/store.ts",
-            "line": 124
+            "line": 120
           },
           "name": "locales",
           "tags": [],
@@ -1384,7 +1384,7 @@
           "location": {
             "column": 1,
             "file": "src/react/intl-provider.tsx",
-            "line": 36
+            "line": 33
           },
           "name": "IntlProvider",
           "tags": [],
@@ -1428,7 +1428,7 @@
           "location": {
             "column": 1,
             "file": "src/react/use-locale.ts",
-            "line": 31
+            "line": 28
           },
           "name": "useLocale",
           "tags": [],
@@ -1455,7 +1455,7 @@
           "location": {
             "column": 1,
             "file": "src/react/intl-provider.tsx",
-            "line": 11
+            "line": 8
           },
           "name": "IntlProviderProps",
           "tags": [],
@@ -1493,7 +1493,7 @@
           "location": {
             "column": 14,
             "file": "src/vue/locale.ts",
-            "line": 34
+            "line": 30
           },
           "name": "locale",
           "tags": [],
@@ -1548,7 +1548,7 @@
           "location": {
             "column": 14,
             "file": "src/svelte/locale.svelte.ts",
-            "line": 44
+            "line": 40
           },
           "name": "locale",
           "tags": [],
@@ -1584,7 +1584,7 @@
           "location": {
             "column": 1,
             "file": "src/svelte/locale.svelte.ts",
-            "line": 20
+            "line": 16
           },
           "name": "Locale",
           "tags": [],

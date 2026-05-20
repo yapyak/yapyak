@@ -1,5 +1,5 @@
 import { createPersistence, parseCookie } from '../persistence';
-import { resolveLocale as resolve } from './resolve';
+import { resolveLocale } from './resolve';
 import {
   ACCEPT_LANGUAGE,
   DEFAULT_LOCALE,
@@ -52,27 +52,6 @@ function readCookieValue(
   return value === '' ? undefined : value;
 }
 
-function readLocale(): string {
-  if (typeof window === 'undefined' && headersReader !== null) {
-    const source = headersReader();
-    if (source !== undefined) {
-      const cookieName =
-        PERSISTENCE?.type === 'cookie' ? PERSISTENCE.name : null;
-      const persisted =
-        cookieName !== null
-          ? readCookieValue(source.cookieHeader, cookieName)
-          : undefined;
-      return resolve({
-        acceptLanguage: ACCEPT_LANGUAGE ? source.acceptLanguage : undefined,
-        defaultLocale: DEFAULT_LOCALE,
-        locales: LOCALES,
-        persisted,
-      });
-    }
-  }
-  return currentLocale;
-}
-
 /**
  * Returns the currently-active locale.
  *
@@ -86,7 +65,24 @@ function readLocale(): string {
  * ```
  */
 export function getLocale(): string {
-  return readLocale();
+  if (typeof window === 'undefined' && headersReader !== null) {
+    const source = headersReader();
+    if (source !== undefined) {
+      const cookieName =
+        PERSISTENCE?.type === 'cookie' ? PERSISTENCE.name : null;
+      const persisted =
+        cookieName !== null
+          ? readCookieValue(source.cookieHeader, cookieName)
+          : undefined;
+      return resolveLocale({
+        acceptLanguage: ACCEPT_LANGUAGE ? source.acceptLanguage : undefined,
+        defaultLocale: DEFAULT_LOCALE,
+        locales: LOCALES,
+        persisted,
+      });
+    }
+  }
+  return currentLocale;
 }
 
 /**

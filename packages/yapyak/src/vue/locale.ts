@@ -2,11 +2,7 @@ import type { Ref } from 'vue';
 
 import { customRef } from 'vue';
 
-import {
-  getLocale as coreLocale,
-  setLocale,
-  subscribeLocale,
-} from '../locale';
+import { getLocale, setLocale, subscribeLocale } from '../locale';
 import { registerTracker } from '../runtime';
 
 /**
@@ -33,9 +29,7 @@ import { registerTracker } from '../runtime';
  */
 export const locale: Ref<string> = customRef<string>((track, trigger) => {
   if (typeof window !== 'undefined') {
-    subscribeLocale(() => {
-      trigger();
-    });
+    subscribeLocale(trigger);
     registerTracker(() => {
       void locale.value;
     });
@@ -43,7 +37,7 @@ export const locale: Ref<string> = customRef<string>((track, trigger) => {
   return {
     get(): string {
       track();
-      return coreLocale();
+      return getLocale();
     },
     set(value: string): void {
       setLocale(value);

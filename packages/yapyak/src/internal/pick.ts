@@ -1,7 +1,4 @@
-import {
-  defaultLocale,
-  getLocale as readLocale,
-} from '../locale';
+import { defaultLocale, getLocale } from '../locale';
 import { hasPlaceholder, interpolate, runTrackers } from '../runtime';
 
 type Variants = Record<string, string>;
@@ -20,7 +17,7 @@ export function pick(
   if (fixedLocale === undefined) {
     runTrackers();
   }
-  const active = fixedLocale ?? readLocale();
+  const active = fixedLocale ?? getLocale();
   const value = variants[active] ?? variants[defaultLocale] ?? '';
   if (params === undefined || !hasPlaceholder(value)) {
     return value;

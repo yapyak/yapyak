@@ -2,9 +2,6 @@ import { useSyncExternalStore } from 'react';
 
 import { getLocale, setLocale, subscribeLocale } from '../locale';
 
-const subscribe = (notify: () => void): (() => void) =>
-  subscribeLocale(() => notify());
-
 /**
  * Returns the current locale and a setter, in tuple form.
  *
@@ -29,6 +26,6 @@ const subscribe = (notify: () => void): (() => void) =>
  * ```
  */
 export function useLocale(): [string, (value: string) => void] {
-  const current = useSyncExternalStore(subscribe, getLocale, getLocale);
+  const current = useSyncExternalStore(subscribeLocale, getLocale, getLocale);
   return [current, setLocale];
 }
