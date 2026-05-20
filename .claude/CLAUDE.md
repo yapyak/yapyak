@@ -11,12 +11,107 @@ Monorepo layout:
 - `docs/` — VitePress-free docs site built with Vite + TanStack Start (`@yapyak/docs`, private)
 - `examples/{react,svelte,vue}/` — minimal framework demos
 
+## Core principle
+
+**Consistency beats local optimization.**
+
+If there are two reasonable ways to do something, one is forbidden. If something looks cleaner in isolation but introduces variation, it is not allowed. The closed vocabularies below (type suffixes, verb prefixes) exist for this reason — extend the list first, then code. Never coin a new name at the call site.
+
+Breaking changes are acceptable. Inconsistency is not.
+
+Names describe **what**, not **how**. Execution details (`*Sync`, `*FromCookie`, `*ViaGraphQL`) leak implementation into the API. If two implementations must be distinguished, separate them at the module level — never as a suffix on every name.
+
 ## Conventions (strict)
 
 ### File naming
 
 - All files and folders use kebab-case. No exceptions.
 - Filename matches primary export by spelling, not casing: `createIntl` → `create-intl.tsx`, `useLocale` → `use-locale.ts`.
+
+### Singular vs plural
+
+**Always singular:**
+- File names: `cookie.ts`, `locale.ts`, `endpoint.ts`, `pick.ts` — never `cookies.ts`
+- Type names: `Endpoint`, `Locale`, `Cookie` — never `Endpoints`
+- Concept folders: `adapter/`, `locale/`, `runtime/`, `translator/` — the folder names a concept
+- Single-value variables: `const locale = 'sv'`, `const user = { ... }`
+
+**Plural:**
+- Collection variables (arrays, sets, maps): `const locales = ['en', 'sv']`, `const users = [...]`
+- Dictionary folders that hold a flat collection of peer items: `cli/commands/`, `utils/`
+
+The test for folders: **is this a concept or a collection of peers?** A new item in a dictionary folder slots in next to existing ones without ranking — that's plural. A folder that names a single concept (even if it has many files implementing it) is singular.
+
+### Singleton naming — skip the qualifier
+
+When there's only one of a kind within a module, drop the qualifier. The parent module provides context.
+
+```ts
+// ✓ Right — only one parser in vite/
+vite/parser.ts
+
+// ✗ Wrong — unnecessary qualifier
+vite/vite-parser.ts
+vite/source-parser.ts
+```
+
+Add qualifiers only when distinguishing between multiple peers.
+
+### Test files
+
+- Unit tests: `*.test.ts` co-located next to implementation
+  - `store.ts` → `store.test.ts`
+- Type-only tests (no runtime, `expectType<T>`): `*.test-d.ts`
+- One test file per implementation file. Never a `tests/` folder.
+
+### Type suffix vocabulary
+
+Closed vocabulary for type names. Pick from this list — never invent a new suffix at the call site.
+
+| Suffix | Meaning | Example |
+|---|---|---|
+| `*Options` | Configuration passed to a function or factory | `CreateClientOptions`, `ResolveOptions` |
+| `*Result` | Return value of a non-trivial computation | `CollectResult` |
+| `*Entry` | A single item in a collection or map | `MissingEntry`, `CacheEntry` |
+| `*Context` | Bundle of state passed through a flow | `OperationContext`, `MessageContext` |
+| `*Tree` | Nested or recursive data structure | `OperationTree`, `EndpointTree` |
+| `*Stats` | Aggregated metrics | `LocaleStats` |
+| `*Error` | Custom error class | `DomainError`, `ConstraintError` |
+| `*Base` | Abstract parent class (rare in TS) | — |
+| `*Dict` | Record-shaped value | `ParamDict`, `Dict` |
+| `*Props` | React component props | `IntlProviderProps` |
+| `*Return` | Hook return type | `UseLocaleReturn` |
+| `*Tag` / `*Kind` | Discriminator string for union types | — |
+
+If a new shape doesn't fit any entry above, **extend this list first, then code**.
+
+### Function verb prefix vocabulary
+
+Closed vocabulary for the first word of function names. Same rule: extend the list before inventing.
+
+| Prefix | Purpose | Example |
+|---|---|---|
+| `get*` | Pure getter — no side effects, no async | `getLocale()` |
+| `set*` | Mutator — updates state, may notify | `setLocale(locale)` |
+| `has*` | Boolean check — "does this have X?" | `hasPlaceholder(template)` |
+| `is*` | Boolean state — "is this X?" | `isPlainObject(value)` |
+| `load*` | Async load from disk or network | `loadEnv()`, `loadConfig()` |
+| `read*` / `write*` | I/O operations | `readLocaleData()`, `writeFile()` |
+| `parse*` | String → structured value | `parseCookie()`, `parseAcceptLanguage()` |
+| `resolve*` | Compute final value from inputs | `resolveLocale()`, `resolveKeyTransform()` |
+| `extract*` | Pull a subset out of larger data | `extractMessages()`, `extractParams()` |
+| `transform*` | Map A → B preserving structure | `transformKeys()`, `transformSource()` |
+| `create*` | Public factory | `createClient()`, `createOperation()` |
+| `make*` | Private file-scope factory | `makeT()`, `makeEmptyResult()` |
+| `define*` | DSL definer for static config | `defineEndpoint()`, `defineContract()` |
+| `with*` | Run a callback inside an async scope | `withRequest()`, `withLocale()` |
+| `register*` | Add to an internal registry | `registerTracker()` |
+| `subscribe*` | Observer pattern, returns unsubscribe | `subscribeLocale()` |
+| `run*` | Execute registered side effects | `runTrackers()` |
+| `pick*` / `omit*` | Subset operations | `pick()` |
+| `walk*` | Recursive traversal | `walkSourceFiles()` |
+| `build*` | Construct a complex object | `buildOperationTree()` |
+| `normalize*` | Bring to canonical form | `normalizeOptions()`, `normalizeKey()` |
 
 ### Modules
 
