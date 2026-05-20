@@ -56,12 +56,12 @@ function LocaleToggle(): ReactElement {
         onChange={(event) => setLocale(event.target.value)}
         value={locale}
       >
-        {locales.map((code) => (
+        {locales.map((locale) => (
           <option
-            key={code}
-            value={code}
+            key={locale}
+            value={locale}
           >
-            {code === 'sv' ? t('Swedish') : t('English')}
+            {locale === 'sv' ? t('Swedish') : t('English')}
           </option>
         ))}
       </select>

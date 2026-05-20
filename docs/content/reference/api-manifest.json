@@ -110,7 +110,7 @@
         },
         {
           "deprecated": null,
-          "description": "The i18n state namespace.\n\nHolds the active locale and exposes operations to read and mutate it.\nFramework adapters wrap this with reactive bindings.",
+          "description": "The i18n namespace.\n\nHolds the active locale and exposes operations to read and mutate it.\nFramework adapters wrap this with reactive bindings.",
           "examples": [
             "```ts\nimport { i18n } from 'yapyak';\n\nconsole.log(i18n.locale);            // 'en'\ni18n.setLocale('sv');\n\ni18n.subscribe((state) => {\n  localStorage.setItem('locale', state.locale);\n});\n```"
           ],

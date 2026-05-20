@@ -115,7 +115,7 @@ export interface I18n {
 }
 
 /**
- * The i18n state namespace.
+ * The i18n namespace.
  *
  * Holds the active locale and exposes operations to read and mutate it.
  * Framework adapters wrap this with reactive bindings.

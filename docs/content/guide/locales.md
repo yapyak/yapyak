@@ -53,7 +53,7 @@ Same import on the server and client. On the server, `i18n.locale` resolves per 
 
 ## Switching locale
 
-`i18n.setLocale(code)` updates the in-memory store, persists according to your `persistence` config, and notifies framework adapters. Components re-render in the new locale.
+`i18n.setLocale(locale)` updates the in-memory store, persists according to your `persistence` config, and notifies framework adapters. Components re-render in the new locale.
 
 In components, import the framework-specific `i18n` so the UI re-renders on locale change:
 
@@ -66,8 +66,8 @@ export function LocaleToggle() {
   const { locale, setLocale, locales } = useI18n();
   return (
     <select value={locale} onChange={(event) => setLocale(event.target.value)}>
-      {locales.map((code) => (
-        <option key={code} value={code}>{code.toUpperCase()}</option>
+      {locales.map((locale) => (
+        <option key={locale} value={locale}>{locale.toUpperCase()}</option>
       ))}
     </select>
   );
@@ -83,8 +83,8 @@ const { locale, locales } = i18n;
 
 <template>
   <select v-model="locale">
-    <option v-for="code in locales" :key="code" :value="code">
-      {{ code.toUpperCase() }}
+    <option v-for="locale in locales" :key="locale" :value="locale">
+      {{ locale.toUpperCase() }}
     </option>
   </select>
 </template>
@@ -96,8 +96,8 @@ const { locale, locales } = i18n;
 </script>
 
 <select bind:value={i18n.locale}>
-  {#each i18n.locales as code}
-    <option value={code}>{code.toUpperCase()}</option>
+  {#each i18n.locales as locale}
+    <option value={locale}>{locale.toUpperCase()}</option>
   {/each}
 </select>
 ```

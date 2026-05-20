@@ -31,8 +31,8 @@ const now = new Date();
     <label>
       {{ t('Switch language') }}
       <select v-model="locale">
-        <option v-for="code in locales" :key="code" :value="code">
-          {{ code === 'sv' ? t('Swedish') : t('English') }}
+        <option v-for="locale in locales" :key="locale" :value="locale">
+          {{ locale === 'sv' ? t('Swedish') : t('English') }}
         </option>
       </select>
     </label>
