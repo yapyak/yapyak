@@ -23,17 +23,20 @@ export interface T extends TIn {
   in(locale: string): TIn;
 }
 
-function makeT(readLocale: () => string, track: boolean): TIn {
-  const translate = (source: string, params?: unknown): string => {
-    if (track) {
-      runTrackers();
-    }
-    if (params === undefined || !hasPlaceholder(source)) {
-      return source;
-    }
-    return interpolate(source, params as Record<string, unknown>, readLocale());
-  };
-  return translate as TIn;
+function translate(source: string, params: unknown, locale: string): string {
+  if (params === undefined || !hasPlaceholder(source)) {
+    return source;
+  }
+  return interpolate(source, params as Record<string, unknown>, locale);
+}
+
+function tIn(locale: string): TIn {
+  function scoped<T extends string>(source: T): string;
+  function scoped<T extends string>(source: T, params: ParamDict<T>): string;
+  function scoped(source: string, params?: unknown): string {
+    return translate(source, params, locale);
+  }
+  return scoped;
 }
 
 /**
@@ -54,6 +57,10 @@ function makeT(readLocale: () => string, track: boolean): TIn {
  * t.in(user.locale)('Welcome back, {name}!', { name: user.name });
  * ```
  */
-export const t: T = Object.assign(makeT(getLocale, true), {
-  in: (locale: string): TIn => makeT(() => locale, false),
-});
+export const t: T = Object.assign(
+  ((source: string, params?: unknown): string => {
+    runTrackers();
+    return translate(source, params, getLocale());
+  }) as TIn,
+  { in: tIn },
+);
