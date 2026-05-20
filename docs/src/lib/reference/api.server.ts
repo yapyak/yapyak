@@ -697,7 +697,34 @@ function typeNodeToTokens(
   if (tokens.length === 0) {
     tokens.push({ kind: 'text', text });
   }
-  return tokens;
+  return dedentTokens(tokens);
+}
+
+function dedentTokens(tokens: TypeToken[]): TypeToken[] {
+  const joined = tokens.map((token) => token.text).join('');
+  if (!joined.includes('\n')) {
+    return tokens;
+  }
+  const lines = joined.split('\n').slice(1);
+  let minIndent = Infinity;
+  for (const line of lines) {
+    if (line.trim() === '') {
+      continue;
+    }
+    const match = line.match(/^ */);
+    const indent = match !== null ? match[0].length : 0;
+    if (indent < minIndent) {
+      minIndent = indent;
+    }
+  }
+  if (!Number.isFinite(minIndent) || minIndent === 0) {
+    return tokens;
+  }
+  const pattern = new RegExp(`\\n {${minIndent}}`, 'g');
+  return tokens.map((token) => ({
+    ...token,
+    text: token.text.replace(pattern, '\n'),
+  }));
 }
 
 function isExcludedIdentifierPosition(node: ts.Identifier) {

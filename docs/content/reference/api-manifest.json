@@ -654,7 +654,7 @@
             {
               "defaultValue": null,
               "description": "Type differentiator only.\nWe need this to be in public d.ts but don't want it to show up in IDE\nautocomplete, so we use a private Symbol instead.",
-              "name": "__@RefSymbol@818",
+              "name": "__@RefSymbol@323",
               "optional": false,
               "type": [
                 {
@@ -960,7 +960,7 @@
           "resolvedType": [
             {
               "kind": "text",
-              "text": "| 'cookie'\n  | 'localStorage'\n  | { name?: string; type: 'cookie' }\n  | { key?: string; type: 'localStorage' }"
+              "text": "| 'cookie'\n| 'localStorage'\n| { name?: string; type: 'cookie' }\n| { key?: string; type: 'localStorage' }"
             }
           ],
           "signature": "export type PersistenceOptions =\n  | 'cookie'\n  | 'localStorage'\n  | { name?: string; type: 'cookie' }\n  | { key?: string; type: 'localStorage' };"
