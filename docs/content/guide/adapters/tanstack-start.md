@@ -18,15 +18,15 @@ That's the entire wiring.
 
 ## Set the page language
 
-Drive the root element's `lang` attribute from the locale via `useI18n()`. The component re-renders when the locale changes:
+Drive the root element's `lang` attribute from the locale via `useLocale()`. The component re-renders when the locale changes:
 
 ```tsx
 // src/routes/__root.tsx
 import { createRootRoute, Outlet } from '@tanstack/react-router';
-import { useI18n } from 'yapyak/react';
+import { useLocale } from 'yapyak/react';
 
 function Component() {
-  const { locale } = useI18n();
+  const [locale] = useLocale();
   return (
     <html lang={locale}>
       <head>{/* ... */}</head>
@@ -53,4 +53,4 @@ yapyak({
 })
 ```
 
-The cookie is written client-side on `i18n.setLocale()` and read server-side by the middleware. See [Locales / Persistence](/guide/locales#persistence).
+The cookie is written client-side on `setLocale()` and read server-side by the middleware. See [Locales / Persistence](/guide/locales#persistence).

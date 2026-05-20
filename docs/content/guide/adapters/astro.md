@@ -27,15 +27,14 @@ export const onRequest = sequence(yapyakMiddleware, authMiddleware);
 
 ## Set the page language
 
-Astro renders `<html>` once per page request as static HTML, not through a reactive framework binding. Server-side, read `i18n.locale` in your layout:
+Astro renders `<html>` once per page request as static HTML, not through a reactive framework binding. Server-side, read `getLocale()` in your layout:
 
 ```astro
 ---
 // src/layouts/Layout.astro
-import { i18n } from 'yapyak';
-const locale = i18n.locale;
+import { getLocale } from 'yapyak';
 ---
-<html lang={locale}>
+<html lang={getLocale()}>
   <head>
     <slot name="head" />
   </head>
@@ -49,9 +48,9 @@ Every navigation re-runs the middleware and re-renders the layout, so `<html lan
 
 ### Client-side locale switching (islands)
 
-If a React/Vue/Svelte island calls `i18n.setLocale()` without triggering a navigation, the static `<html>` element doesn't re-render — the `lang` attribute stays stale.
+If a React/Vue/Svelte island calls `setLocale()` without triggering a navigation, the static `<html>` element doesn't re-render — the `lang` attribute stays stale.
 
-Enable `syncHtmlLang` to make yapyak update the attribute on every `i18n.setLocale()`:
+Enable `syncHtmlLang` to make yapyak update the attribute on every `setLocale()`:
 
 ```ts
 // vite.config.ts
@@ -61,7 +60,7 @@ yapyak({
 })
 ```
 
-With this set, `document.documentElement.lang` follows the current locale on store init and on every `i18n.setLocale()`. SSR still renders the right `lang` via your layout's `i18n.locale` — no hydration mismatch.
+With this set, `document.documentElement.lang` follows the current locale on store init and on every `setLocale()`. SSR still renders the right `lang` via your layout's `getLocale()` — no hydration mismatch.
 
 If you only switch locale via full navigations (e.g. `<a href="/sv/...">`), leave `syncHtmlLang` off.
 
@@ -76,4 +75,4 @@ yapyak({
 })
 ```
 
-The cookie is written client-side on `i18n.setLocale()` and read server-side by the middleware on every request. See [Locales / Persistence](/guide/locales#persistence).
+The cookie is written client-side on `setLocale()` and read server-side by the middleware on every request. See [Locales / Persistence](/guide/locales#persistence).

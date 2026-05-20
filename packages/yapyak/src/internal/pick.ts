@@ -1,4 +1,7 @@
-import { i18n } from '../i18n';
+import {
+  defaultLocale,
+  getLocale as readLocale,
+} from '../locale';
 import { hasPlaceholder, interpolate, runTrackers } from '../runtime';
 
 type Variants = Record<string, string>;
@@ -17,10 +20,10 @@ export function pick(
   if (fixedLocale === undefined) {
     runTrackers();
   }
-  const locale = fixedLocale ?? i18n.locale;
-  const value = variants[locale] ?? variants[i18n.defaultLocale] ?? '';
+  const active = fixedLocale ?? readLocale();
+  const value = variants[active] ?? variants[defaultLocale] ?? '';
   if (params === undefined || !hasPlaceholder(value)) {
     return value;
   }
-  return interpolate(value, params, locale);
+  return interpolate(value, params, active);
 }

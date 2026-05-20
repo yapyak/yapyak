@@ -35,35 +35,40 @@ When the default isn't `en`, you write `t('Spara ändringar')` directly. Other l
 
 If `defaultLocale` is unset, yapyak uses `'en'`.
 
-## The i18n namespace
-
-All locale data and operations live on the `i18n` namespace exported from `'yapyak'`:
+## Reading and switching the locale
 
 ```ts
-import { i18n } from 'yapyak';
+import {
+  getLocale,
+  setLocale,
+  locales,
+  defaultLocale,
+  subscribeLocale,
+} from 'yapyak';
 
-i18n.locale          // 'es' — currently-active locale
-i18n.locales         // ['en', 'es', 'fr', 'de'] — all configured
-i18n.defaultLocale   // 'en'
-i18n.setLocale('sv');
-i18n.subscribe((next) => console.log(next.locale));
+getLocale();                       // 'es' — currently-active locale
+setLocale('sv');                // switch
+locales;                        // ['en', 'es', 'fr', 'de'] — all configured
+defaultLocale;                  // 'en'
+subscribeLocale((locale) => console.log(locale));
 ```
 
-Same import on the server and client. On the server, `i18n.locale` resolves per request via the SSR adapter (cookie + `Accept-Language` header). On the client, it reads from the runtime store.
+Same imports on the server and client. On the server, `getLocale()` resolves per request via the SSR adapter (cookie + `Accept-Language` header). On the client, it reads from the runtime store.
 
 ## Switching locale
 
-`i18n.setLocale(locale)` updates the in-memory store, persists according to your `persistence` config, and notifies framework adapters. Components re-render in the new locale.
+`setLocale(locale)` updates the in-memory store, persists according to your `persistence` config, and notifies framework adapters. Components re-render in the new locale.
 
-In components, import the framework-specific `i18n` so the UI re-renders on locale change:
+In components, import the framework-specific binding so the UI re-renders on locale change:
 
 {% code-group %}
 
 ```tsx [React]
-import { useI18n } from 'yapyak/react';
+import { locales } from 'yapyak';
+import { useLocale } from 'yapyak/react';
 
 export function LocaleToggle() {
-  const { locale, setLocale, locales } = useI18n();
+  const [locale, setLocale] = useLocale();
   return (
     <select value={locale} onChange={(event) => setLocale(event.target.value)}>
       {locales.map((locale) => (
@@ -76,9 +81,8 @@ export function LocaleToggle() {
 
 ```vue [Vue]
 <script setup lang="ts">
-import { i18n } from 'yapyak/vue'
-
-const { locale, locales } = i18n;
+import { locales } from 'yapyak';
+import { locale } from 'yapyak/vue';
 </script>
 
 <template>
@@ -92,11 +96,12 @@ const { locale, locales } = i18n;
 
 ```svelte [Svelte]
 <script lang="ts">
-  import { i18n } from 'yapyak/svelte';
+  import { locales } from 'yapyak';
+  import { locale } from 'yapyak/svelte';
 </script>
 
-<select bind:value={i18n.locale}>
-  {#each i18n.locales as locale}
+<select bind:value={locale.current}>
+  {#each locales as locale}
     <option value={locale}>{locale.toUpperCase()}</option>
   {/each}
 </select>
@@ -104,22 +109,22 @@ const { locale, locales } = i18n;
 
 {% /code-group %}
 
-The framework-specific `i18n` exports (`yapyak/react`, `yapyak/vue`, `yapyak/svelte`) only differ in *how* the locale is reactively bound — the data shape and `t` function are the same everywhere.
+The framework-specific imports (`yapyak/react`, `yapyak/vue`, `yapyak/svelte`) only differ in *how* the locale is reactively bound — `t` and the rest of `'yapyak'`'s exports are the same everywhere.
 
 ## Subscribing to locale changes
 
-Outside framework components — e.g. persistence layers, analytics, document.lang sync — use `i18n.subscribe(fn)` to react imperatively:
+Outside framework components — e.g. persistence layers, analytics, document.lang sync — use `subscribeLocale(fn)` to react imperatively:
 
 ```ts
-import { i18n } from 'yapyak';
+import { subscribeLocale } from 'yapyak';
 
-const unsubscribe = i18n.subscribe((next) => {
-  document.documentElement.lang = next.locale;
+const unsubscribe = subscribeLocale((locale) => {
+  document.documentElement.lang = locale;
 });
 // Later: unsubscribe()
 ```
 
-The callback receives the current `i18n` (same reference as the import). It fires whenever `i18n.setLocale(...)` is called with a new value. Returns an unsubscribe function.
+The callback receives the new locale. It fires whenever `setLocale(...)` is called with a new value. Returns an unsubscribe function.
 
 ## Persistence
 
@@ -137,7 +142,7 @@ yapyak({
 
 ### Cookie
 
-The right choice for SSR apps. Sent with every request, so the server can read it and pre-render in the user's locale. The cookie is written client-side on `i18n.setLocale()`, with `path=/`, `samesite=lax`, `max-age=1y`.
+The right choice for SSR apps. Sent with every request, so the server can read it and pre-render in the user's locale. The cookie is written client-side on `setLocale()`, with `path=/`, `samesite=lax`, `max-age=1y`.
 
 Customize the cookie name:
 
@@ -173,7 +178,7 @@ When `persistence: 'cookie'` is set *and* an SSR adapter is wired ([TanStack Sta
 2. **`Accept-Language` header** (browser/OS preference) — if `acceptLanguage: true`
 3. **Default locale** (configured fallback)
 
-Each request picks the right locale before HTML renders. `i18n.locale` returns the per-request value; `t()` calls in SSR render in that locale; the cookie matches what the client reads, so there's no hydration mismatch.
+Each request picks the right locale before HTML renders. `getLocale()` returns the per-request value; `t()` calls in SSR render in that locale; the cookie matches what the client reads, so there's no hydration mismatch.
 
 To opt into `Accept-Language` matching:
 
@@ -210,7 +215,7 @@ pnpm yapyak add pt-BR es-MX zh-Hant
 
 `Accept-Language` matching during SSR detection is the one place tags collapse. A regional header against a language-code locale matches on the prefix:
 
-| Configured locales | `Accept-Language` | `i18n.locale` returns |
+| Configured locales | `Accept-Language` | `getLocale()` returns |
 |---|---|---|
 | `['en', 'pt']` | `pt-BR,en;q=0.9` | `pt` |
 | `['en', 'pt-BR']` | `pt-BR,en;q=0.9` | `pt-BR` |

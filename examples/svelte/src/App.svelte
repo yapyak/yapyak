@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { t } from "yapyak";
-  import { i18n } from "yapyak/svelte";
+  import { locales, t } from "yapyak";
+  import { locale } from "yapyak/svelte";
 
   const now = new Date();
 </script>
@@ -40,8 +40,8 @@
 
   <label>
     {t("Switch language")}
-    <select bind:value={i18n.locale}>
-      {#each i18n.locales as locale}
+    <select bind:value={locale.current}>
+      {#each locales as locale}
         <option value={locale}>{locale === "sv" ? t("Swedish") : t("English")}</option>
       {/each}
     </select>

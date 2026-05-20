@@ -1,5 +1,5 @@
 import { createPersistence, parseCookie } from '../persistence';
-import { resolveLocale } from './resolve';
+import { resolveLocale as resolve } from './resolve';
 import {
   ACCEPT_LANGUAGE,
   DEFAULT_LOCALE,
@@ -35,31 +35,10 @@ function initialLocale(): string {
 }
 
 let currentLocale = initialLocale();
-const listeners = new Set<(next: I18n) => void>();
+const listeners = new Set<(locale: string) => void>();
 
 if (SYNC_HTML_LANG && typeof document !== 'undefined') {
   document.documentElement.lang = currentLocale;
-}
-
-function getLocale(): string {
-  if (typeof window === 'undefined' && headersReader !== null) {
-    const source = headersReader();
-    if (source !== undefined) {
-      const cookieName =
-        PERSISTENCE?.type === 'cookie' ? PERSISTENCE.name : null;
-      const persisted =
-        cookieName !== null
-          ? readCookieValue(source.cookieHeader, cookieName)
-          : undefined;
-      return resolveLocale({
-        acceptLanguage: ACCEPT_LANGUAGE ? source.acceptLanguage : undefined,
-        defaultLocale: DEFAULT_LOCALE,
-        locales: LOCALES,
-        persisted,
-      });
-    }
-  }
-  return currentLocale;
 }
 
 function readCookieValue(
@@ -73,7 +52,58 @@ function readCookieValue(
   return value === '' ? undefined : value;
 }
 
-function setLocale(value: string): void {
+function readLocale(): string {
+  if (typeof window === 'undefined' && headersReader !== null) {
+    const source = headersReader();
+    if (source !== undefined) {
+      const cookieName =
+        PERSISTENCE?.type === 'cookie' ? PERSISTENCE.name : null;
+      const persisted =
+        cookieName !== null
+          ? readCookieValue(source.cookieHeader, cookieName)
+          : undefined;
+      return resolve({
+        acceptLanguage: ACCEPT_LANGUAGE ? source.acceptLanguage : undefined,
+        defaultLocale: DEFAULT_LOCALE,
+        locales: LOCALES,
+        persisted,
+      });
+    }
+  }
+  return currentLocale;
+}
+
+/**
+ * Returns the currently-active locale.
+ *
+ * @returns The active locale code.
+ *
+ * @example
+ * ```ts
+ * import { getLocale } from 'yapyak';
+ *
+ * console.log(getLocale());   // 'sv'
+ * ```
+ */
+export function getLocale(): string {
+  return readLocale();
+}
+
+/**
+ * Switch the active locale. No-op if `value` is not in `locales`.
+ *
+ * Notifies subscribers and framework adapters.
+ *
+ * @param value - The locale to switch to.
+ *
+ * @example
+ * ```ts
+ * import { setLocale } from 'yapyak';
+ *
+ * setLocale('sv');
+ * ```
+ */
+export function setLocale(value: string): void {
   if (!LOCALES.includes(value)) {
     return;
   }
@@ -86,69 +116,40 @@ function setLocale(value: string): void {
     document.documentElement.lang = value;
   }
   for (const listener of listeners) {
-    listener(i18n);
+    listener(value);
   }
 }
 
-/** The i18n namespace. */
-export interface I18n {
-  /** The default locale (build-time constant). */
-  readonly defaultLocale: string;
-  /** The currently-active locale. */
-  readonly locale: string;
-  /** All configured locales (build-time constant). */
-  readonly locales: readonly string[];
-  /**
-   * Switch the active locale. No-op if `value` is not in `locales`.
-   *
-   * @param value - The locale to switch to.
-   */
-  setLocale(value: string): void;
-  /**
-   * Subscribe to changes.
-   *
-   * @param fn - Callback fired whenever i18n changes. Receives the
-   *   current `i18n`.
-   * @returns A function that unsubscribes the listener.
-   */
-  subscribe(fn: (next: I18n) => void): () => void;
-}
+/** All configured locales (build-time constant). */
+export const locales: readonly string[] = LOCALES;
+
+/** The default locale (build-time constant). */
+export const defaultLocale: string = DEFAULT_LOCALE;
 
 /**
- * The i18n namespace.
+ * Subscribe to locale changes.
  *
- * Holds the active locale and exposes operations to read and mutate it.
- * Framework adapters wrap this with reactive bindings.
+ * @param fn - Callback fired whenever the locale changes. Receives the new locale.
+ * @returns A function that unsubscribes the listener.
  *
  * @example
  * ```ts
- * import { i18n } from 'yapyak';
+ * import { subscribeLocale } from 'yapyak';
  *
- * console.log(i18n.locale);            // 'en'
- * i18n.setLocale('sv');
- *
- * i18n.subscribe((next) => {
- *   localStorage.setItem('locale', next.locale);
+ * const unsubscribe = subscribeLocale((locale) => {
+ *   document.documentElement.lang = locale;
  * });
  * ```
  */
-export const i18n: I18n = {
-  defaultLocale: DEFAULT_LOCALE,
-  get locale(): string {
-    return getLocale();
-  },
-  locales: LOCALES,
-  setLocale,
-  subscribe(fn: (next: I18n) => void): () => void {
-    listeners.add(fn);
-    return (): void => {
-      listeners.delete(fn);
-    };
-  },
-};
+export function subscribeLocale(fn: (locale: string) => void): () => void {
+  listeners.add(fn);
+  return (): void => {
+    listeners.delete(fn);
+  };
+}
 
 /** @internal */
-export function resetI18n(): void {
+export function resetLocale(): void {
   currentLocale = initialLocale();
   listeners.clear();
 }

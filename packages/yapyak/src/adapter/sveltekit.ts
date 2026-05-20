@@ -1,6 +1,6 @@
 import type { Handle } from '@sveltejs/kit';
 
-import { i18n } from '../i18n';
+import { getLocale } from '../locale';
 import { withRequest } from '.';
 
 const PLACEHOLDER = '%yapyak.lang%';
@@ -21,6 +21,6 @@ const PLACEHOLDER = '%yapyak.lang%';
 export const handle: Handle = ({ event, resolve }) =>
   withRequest(event.request, () =>
     resolve(event, {
-      transformPageChunk: ({ html }) => html.replace(PLACEHOLDER, i18n.locale),
+      transformPageChunk: ({ html }) => html.replace(PLACEHOLDER, getLocale()),
     }),
   );

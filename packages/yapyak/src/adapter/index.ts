@@ -1,4 +1,4 @@
-import { registerRequestHeadersReader } from '../i18n';
+import { registerRequestHeadersReader } from '../locale';
 import { AsyncLocalStorage } from 'node:async_hooks';
 
 interface RequestHeaders {
