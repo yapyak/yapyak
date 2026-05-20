@@ -10,11 +10,11 @@ const subscribe = (notify: () => void): (() => void) =>
 const snapshot = (): string => i18n.locale;
 
 /**
- * Subscribes the component to i18n state changes and returns the i18n namespace.
+ * Subscribes the component to i18n changes and returns the i18n namespace.
  *
- * The component re-renders whenever the i18n state changes. The returned object
- * has the same shape as the core `i18n` — destructure `locale` and `setLocale`
- * for React-idiomatic patterns.
+ * The component re-renders whenever i18n changes. The returned object has the
+ * same shape as the core `i18n` — destructure `locale` and `setLocale` for
+ * React-idiomatic patterns.
  *
  * @returns The i18n namespace (re-renders the calling component on change).
  *

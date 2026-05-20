@@ -35,7 +35,7 @@ function initialLocale(): string {
 }
 
 let currentLocale = initialLocale();
-const listeners = new Set<(state: I18n) => void>();
+const listeners = new Set<(next: I18n) => void>();
 
 if (SYNC_HTML_LANG && typeof document !== 'undefined') {
   document.documentElement.lang = currentLocale;
@@ -90,7 +90,7 @@ function setLocale(value: string): void {
   }
 }
 
-/** Yapyak's i18n state namespace. */
+/** The i18n namespace. */
 export interface I18n {
   /** The default locale (build-time constant). */
   readonly defaultLocale: string;
@@ -105,13 +105,13 @@ export interface I18n {
    */
   setLocale(value: string): void;
   /**
-   * Subscribe to i18n state changes.
+   * Subscribe to changes.
    *
-   * @param fn - Callback fired whenever the i18n state changes. Receives the
-   *   current `i18n` state.
+   * @param fn - Callback fired whenever i18n changes. Receives the
+   *   current `i18n`.
    * @returns A function that unsubscribes the listener.
    */
-  subscribe(fn: (state: I18n) => void): () => void;
+  subscribe(fn: (next: I18n) => void): () => void;
 }
 
 /**
@@ -127,8 +127,8 @@ export interface I18n {
  * console.log(i18n.locale);            // 'en'
  * i18n.setLocale('sv');
  *
- * i18n.subscribe((state) => {
- *   localStorage.setItem('locale', state.locale);
+ * i18n.subscribe((next) => {
+ *   localStorage.setItem('locale', next.locale);
  * });
  * ```
  */
@@ -139,7 +139,7 @@ export const i18n: I18n = {
   },
   locales: LOCALES,
   setLocale,
-  subscribe(fn: (state: I18n) => void): () => void {
+  subscribe(fn: (next: I18n) => void): () => void {
     listeners.add(fn);
     return (): void => {
       listeners.delete(fn);

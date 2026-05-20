@@ -112,7 +112,7 @@
           "deprecated": null,
           "description": "The i18n namespace.\n\nHolds the active locale and exposes operations to read and mutate it.\nFramework adapters wrap this with reactive bindings.",
           "examples": [
-            "```ts\nimport { i18n } from 'yapyak';\n\nconsole.log(i18n.locale);            // 'en'\ni18n.setLocale('sv');\n\ni18n.subscribe((state) => {\n  localStorage.setItem('locale', state.locale);\n});\n```"
+            "```ts\nimport { i18n } from 'yapyak';\n\nconsole.log(i18n.locale);            // 'en'\ni18n.setLocale('sv');\n\ni18n.subscribe((next) => {\n  localStorage.setItem('locale', next.locale);\n});\n```"
           ],
           "location": {
             "column": 14,
@@ -122,6 +122,68 @@
           "name": "i18n",
           "tags": [],
           "kind": "variable",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "The default locale (build-time constant).",
+              "name": "defaultLocale",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "The currently-active locale.",
+              "name": "locale",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "All configured locales (build-time constant).",
+              "name": "locales",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "readonly string[]"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "Switch the active locale. No-op if `value` is not in `locales`.",
+              "name": "setLocale",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "(value: string) => void"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "Subscribe to changes.",
+              "name": "subscribe",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "(fn: (next: I18n) => void) => () => void"
+                }
+              ]
+            }
+          ],
           "signature": "const i18n: I18n",
           "type": [
             {
@@ -134,7 +196,7 @@
         },
         {
           "deprecated": null,
-          "description": "Yapyak's i18n state namespace.",
+          "description": "The i18n namespace.",
           "examples": [],
           "location": {
             "column": 1,
@@ -196,13 +258,13 @@
             },
             {
               "defaultValue": null,
-              "description": "Subscribe to i18n state changes.",
+              "description": "Subscribe to changes.",
               "name": "subscribe",
               "optional": false,
               "type": [
                 {
                   "kind": "text",
-                  "text": "(fn: (state: I18n) => void) => () => void"
+                  "text": "(fn: (next: I18n) => void) => () => void"
                 }
               ]
             }
@@ -409,7 +471,7 @@
       "exports": [
         {
           "deprecated": null,
-          "description": "Subscribes the React tree to i18n state changes.\n\nWrap your app once at the root. Re-renders descendants when\n`i18n.setLocale()` is called, so `t()` calls inside the tree return the new\nlocale's strings.",
+          "description": "Subscribes the React tree to i18n changes.\n\nWrap your app once at the root. Re-renders descendants when\n`i18n.setLocale()` is called, so `t()` calls inside the tree return the new\nlocale's strings.",
           "examples": [
             "```tsx\nimport { IntlProvider } from 'yapyak/react';\n\nfunction App() {\n  return (\n    <IntlProvider>\n      <YourApp />\n    </IntlProvider>\n  );\n}\n```"
           ],
@@ -453,7 +515,7 @@
         },
         {
           "deprecated": null,
-          "description": "Subscribes the component to i18n state changes and returns the i18n namespace.\n\nThe component re-renders whenever the i18n state changes. The returned object\nhas the same shape as the core `i18n` — destructure `locale` and `setLocale`\nfor React-idiomatic patterns.",
+          "description": "Subscribes the component to i18n changes and returns the i18n namespace.\n\nThe component re-renders whenever i18n changes. The returned object has the\nsame shape as the core `i18n` — destructure `locale` and `setLocale` for\nReact-idiomatic patterns.",
           "examples": [
             "```tsx\nimport { t } from 'yapyak';\nimport { useI18n } from 'yapyak/react';\n\nfunction LanguageSwitcher() {\n  const { locale, setLocale, locales } = useI18n();\n  return (\n    <select value={locale} onChange={(e) => setLocale(e.target.value)}>\n      {locales.map((code) => <option key={code} value={code}>{code}</option>)}\n    </select>\n  );\n}\n```"
           ],
@@ -532,6 +594,44 @@
           "name": "i18n",
           "tags": [],
           "kind": "variable",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "The default locale (build-time constant).",
+              "name": "defaultLocale",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "The currently-active locale as a writable Vue ref.",
+              "name": "locale",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "Ref<string>"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "All configured locales (build-time constant).",
+              "name": "locales",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "readonly string[]"
+                }
+              ]
+            }
+          ],
           "signature": "const i18n: I18n",
           "type": [
             {
@@ -616,6 +716,44 @@
           "name": "i18n",
           "tags": [],
           "kind": "variable",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "The default locale (build-time constant).",
+              "name": "defaultLocale",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "The currently-active locale. Reactive — assign to switch.",
+              "name": "locale",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "string"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "All configured locales (build-time constant).",
+              "name": "locales",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "readonly string[]"
+                }
+              ]
+            }
+          ],
           "signature": "const i18n: I18n",
           "type": [
             {
@@ -1117,6 +1255,32 @@
           "name": "middleware",
           "tags": [],
           "kind": "variable",
+          "members": [
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "~types",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "RequestMiddlewareTypes<TRegister, TMiddlewares, TServerContext>"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
+              "description": "",
+              "name": "options",
+              "optional": false,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "RequestMiddlewareOptions<TRegister, TMiddlewares, TServerContext>"
+                }
+              ]
+            }
+          ],
           "signature": "const middleware: AnyRequestMiddleware",
           "type": [
             {

@@ -17,7 +17,7 @@ export interface IntlProviderProps {
 const LocaleContext = createContext<string>('en');
 
 /**
- * Subscribes the React tree to i18n state changes.
+ * Subscribes the React tree to i18n changes.
  *
  * Wrap your app once at the root. Re-renders descendants when
  * `i18n.setLocale()` is called, so `t()` calls inside the tree return the new

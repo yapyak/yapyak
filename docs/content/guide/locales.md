@@ -37,7 +37,7 @@ If `defaultLocale` is unset, yapyak uses `'en'`.
 
 ## The i18n namespace
 
-All locale state lives on the `i18n` object exported from `'yapyak'`:
+All locale data and operations live on the `i18n` namespace exported from `'yapyak'`:
 
 ```ts
 import { i18n } from 'yapyak';
@@ -46,7 +46,7 @@ i18n.locale          // 'es' — currently-active locale
 i18n.locales         // ['en', 'es', 'fr', 'de'] — all configured
 i18n.defaultLocale   // 'en'
 i18n.setLocale('sv');
-i18n.subscribe((state) => console.log(state.locale));
+i18n.subscribe((next) => console.log(next.locale));
 ```
 
 Same import on the server and client. On the server, `i18n.locale` resolves per request via the SSR adapter (cookie + `Accept-Language` header). On the client, it reads from the runtime store.
@@ -113,13 +113,13 @@ Outside framework components — e.g. persistence layers, analytics, document.la
 ```ts
 import { i18n } from 'yapyak';
 
-const unsubscribe = i18n.subscribe((state) => {
-  document.documentElement.lang = state.locale;
+const unsubscribe = i18n.subscribe((next) => {
+  document.documentElement.lang = next.locale;
 });
 // Later: unsubscribe()
 ```
 
-The callback receives the full `i18n` state (same reference as the import). It fires whenever `i18n.setLocale(...)` is called with a new value. Returns an unsubscribe function.
+The callback receives the current `i18n` (same reference as the import). It fires whenever `i18n.setLocale(...)` is called with a new value. Returns an unsubscribe function.
 
 ## Persistence
 

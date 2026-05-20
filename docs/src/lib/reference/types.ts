@@ -59,6 +59,7 @@ export interface ApiTypeAlias extends ApiSymbolBase {
 
 export interface ApiVariable extends ApiSymbolBase {
   kind: 'variable';
+  members: ApiMember[];
   signature: string;
   type: TypeToken[];
 }

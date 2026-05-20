@@ -4,8 +4,8 @@ import { registerTracker } from '../runtime';
 let activeLocale = $state(core.locale);
 
 if (typeof window !== 'undefined') {
-  core.subscribe((state) => {
-    activeLocale = state.locale;
+  core.subscribe((next) => {
+    activeLocale = next.locale;
   });
   registerTracker(() => {
     void activeLocale;

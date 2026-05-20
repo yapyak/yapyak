@@ -391,12 +391,33 @@ function buildVariable(
       ? declaration.type
       : undefined;
   const tokens = tokenizeOrFallback(typeNode, type, context);
+  const members = collectTypeMembers(type, declaration, context);
   return {
     ...base,
     kind: 'variable',
+    members,
     signature: `const ${base.name}: ${renderTokens(tokens)}`,
     type: tokens,
   };
+}
+
+function collectTypeMembers(
+  type: ts.Type,
+  declaration: ts.Declaration,
+  context: Context,
+): ApiMember[] {
+  const properties = type.getProperties();
+  if (properties.length === 0) {
+    return [];
+  }
+  const members: ApiMember[] = [];
+  for (const property of properties) {
+    const member = memberToApi(property, declaration, context);
+    if (member !== null) {
+      members.push(member);
+    }
+  }
+  return members.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function collectMembers(

@@ -63,6 +63,11 @@ export function buildSymbolPage(symbol: ApiExport, moduleId: string): Page {
     blocks.push(membersTable(symbol.members));
   }
 
+  if (symbol.kind === 'variable' && symbol.members.length > 0) {
+    blocks.push(heading2('Members'));
+    blocks.push(membersTable(symbol.members));
+  }
+
   if (symbol.examples.length > 0) {
     blocks.push(heading2('Examples'));
     for (const example of symbol.examples) {
