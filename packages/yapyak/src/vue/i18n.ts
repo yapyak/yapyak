@@ -60,10 +60,6 @@ export interface I18n {
  */
 export const i18n: I18n = {
   locale: localeRef,
-  get locales(): readonly string[] {
-    return core.locales;
-  },
-  get defaultLocale(): string {
-    return core.defaultLocale;
-  },
+  locales: core.locales,
+  defaultLocale: core.defaultLocale,
 };

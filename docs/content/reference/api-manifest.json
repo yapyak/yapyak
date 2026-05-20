@@ -677,7 +677,7 @@
               ]
             }
           ],
-          "signature": "export interface I18n {\n  /** The currently-active locale. Reactive — assign to switch. */\n  locale: string;\n  /** All configured locales (build-time constant). */\n  readonly locales: readonly string[];\n  /** The default locale (build-time constant). */\n  readonly defaultLocale: string;\n}"
+          "signature": "export interface I18n {\n  /** The default locale (build-time constant). */\n  readonly defaultLocale: string;\n  /** The currently-active locale. Reactive — assign to switch. */\n  locale: string;\n  /** All configured locales (build-time constant). */\n  readonly locales: readonly string[];\n}"
         }
       ],
       "id": "yapyak/svelte",

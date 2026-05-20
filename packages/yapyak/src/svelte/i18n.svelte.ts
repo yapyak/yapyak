@@ -14,12 +14,12 @@ if (typeof window !== 'undefined') {
 
 /** The reactive i18n namespace for Svelte 5. */
 export interface I18n {
+  /** The default locale (build-time constant). */
+  readonly defaultLocale: string;
   /** The currently-active locale. Reactive — assign to switch. */
   locale: string;
   /** All configured locales (build-time constant). */
   readonly locales: readonly string[];
-  /** The default locale (build-time constant). */
-  readonly defaultLocale: string;
 }
 
 /**
@@ -43,16 +43,12 @@ export interface I18n {
  * ```
  */
 export const i18n: I18n = {
+  defaultLocale: core.defaultLocale,
   get locale(): string {
     return typeof window === 'undefined' ? core.locale : activeLocale;
   },
   set locale(value: string) {
     core.setLocale(value);
   },
-  get locales(): readonly string[] {
-    return core.locales;
-  },
-  get defaultLocale(): string {
-    return core.defaultLocale;
-  },
+  locales: core.locales,
 };

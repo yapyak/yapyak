@@ -41,7 +41,7 @@ if (SYNC_HTML_LANG && typeof document !== 'undefined') {
   document.documentElement.lang = currentLocale;
 }
 
-function readLocale(): string {
+function getLocale(): string {
   if (typeof window === 'undefined' && headersReader !== null) {
     const source = headersReader();
     if (source !== undefined) {
@@ -73,17 +73,17 @@ function readCookieValue(
   return value === '' ? undefined : value;
 }
 
-function applyLocale(locale: string): void {
-  if (!LOCALES.includes(locale)) {
+function setLocale(value: string): void {
+  if (!LOCALES.includes(value)) {
     return;
   }
-  if (locale === currentLocale) {
+  if (value === currentLocale) {
     return;
   }
-  currentLocale = locale;
-  persistence?.set(locale);
+  currentLocale = value;
+  persistence?.set(value);
   if (SYNC_HTML_LANG && typeof document !== 'undefined') {
-    document.documentElement.lang = locale;
+    document.documentElement.lang = value;
   }
   for (const listener of listeners) {
     listener(i18n);
@@ -133,18 +133,12 @@ export interface I18n {
  * ```
  */
 export const i18n: I18n = {
-  get defaultLocale(): string {
-    return DEFAULT_LOCALE;
-  },
+  defaultLocale: DEFAULT_LOCALE,
   get locale(): string {
-    return readLocale();
+    return getLocale();
   },
-  get locales(): readonly string[] {
-    return LOCALES;
-  },
-  setLocale(value: string): void {
-    applyLocale(value);
-  },
+  locales: LOCALES,
+  setLocale,
   subscribe(fn: (state: I18n) => void): () => void {
     listeners.add(fn);
     return (): void => {
