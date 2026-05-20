@@ -261,12 +261,18 @@ function buildInterface(
   const type = context.checker.getDeclaredTypeOfSymbol(symbol);
   const callSignatures: ApiCallSignature[] = type
     .getCallSignatures()
-    .map((sig) => ({
-      parameters: sig
+    .map((sig) => {
+      const typeParameters = typeParametersFromSignature(sig, context);
+      const parameters = sig
         .getParameters()
-        .map((parameter) => paramFromSymbol(parameter, context)),
-      returnType: signatureReturnTokens(sig, context),
-    }));
+        .map((parameter) => paramFromSymbol(parameter, context));
+      const returnType = signatureReturnTokens(sig, context);
+      const typeParamsText = formatTypeParameters(typeParameters);
+      const signature = `${typeParamsText}(${parameters
+        .map((parameter) => formatParam(parameter))
+        .join(', ')}): ${renderTokens(returnType)}`;
+      return { parameters, returnType, signature, typeParameters };
+    });
 
   return {
     ...base,

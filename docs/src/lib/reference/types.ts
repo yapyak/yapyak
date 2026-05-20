@@ -90,6 +90,8 @@ export interface ApiMember {
 export interface ApiCallSignature {
   parameters: ApiParameter[];
   returnType: TypeToken[];
+  signature: string;
+  typeParameters: ApiTypeParameter[];
 }
 
 export type TypeToken = TypeTextToken | TypeRefToken;

@@ -72,6 +72,17 @@ export function buildSymbolPage(symbol: ApiExport, moduleId: string): Page {
   }
 
   if (symbol.kind === 'interface') {
+    if (symbol.callSignatures.length > 0) {
+      blocks.push(heading2('Call signatures'));
+      blocks.push({
+        label: null,
+        language: 'ts',
+        source: symbol.callSignatures
+          .map((sig) => sig.signature)
+          .join('\n'),
+        type: 'code-block',
+      });
+    }
     if (symbol.members.length > 0) {
       blocks.push(heading2('Members'));
       blocks.push(membersTable(symbol.members));

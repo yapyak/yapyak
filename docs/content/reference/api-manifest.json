@@ -312,6 +312,19 @@
                   "kind": "text",
                   "text": "string"
                 }
+              ],
+              "signature": "<T extends string>(source: T): string",
+              "typeParameters": [
+                {
+                  "constraint": [
+                    {
+                      "kind": "text",
+                      "text": "string"
+                    }
+                  ],
+                  "defaultType": null,
+                  "name": "T"
+                }
               ]
             },
             {
@@ -351,6 +364,19 @@
                 {
                   "kind": "text",
                   "text": "string"
+                }
+              ],
+              "signature": "<T extends string>(source: T, params: ParamDict<T>): string",
+              "typeParameters": [
+                {
+                  "constraint": [
+                    {
+                      "kind": "text",
+                      "text": "string"
+                    }
+                  ],
+                  "defaultType": null,
+                  "name": "T"
                 }
               ]
             }
@@ -404,6 +430,19 @@
                   "kind": "text",
                   "text": "string"
                 }
+              ],
+              "signature": "<T extends string>(source: T): string",
+              "typeParameters": [
+                {
+                  "constraint": [
+                    {
+                      "kind": "text",
+                      "text": "string"
+                    }
+                  ],
+                  "defaultType": null,
+                  "name": "T"
+                }
               ]
             },
             {
@@ -443,6 +482,19 @@
                 {
                   "kind": "text",
                   "text": "string"
+                }
+              ],
+              "signature": "<T extends string>(source: T, params: ParamDict<T>): string",
+              "typeParameters": [
+                {
+                  "constraint": [
+                    {
+                      "kind": "text",
+                      "text": "string"
+                    }
+                  ],
+                  "defaultType": null,
+                  "name": "T"
                 }
               ]
             }
@@ -1786,7 +1838,9 @@
                   "kind": "text",
                   "text": "Promise<string>"
                 }
-              ]
+              ],
+              "signature": "(request: TranslateRequest): Promise<string>",
+              "typeParameters": []
             }
           ],
           "kind": "interface",
