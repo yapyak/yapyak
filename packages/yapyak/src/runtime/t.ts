@@ -12,37 +12,29 @@ export type ParamDict<T extends string> = T extends `${string}{${string}`
   ? ExtractParamDict<T>
   : {};
 
-/** The runtime translation function. */
-export interface T {
-  in(locale: string): TIn;
-  <T extends string>(source: T): string;
-  <T extends string>(source: T, params: ParamDict<T>): string;
-}
-
 /** A `t` function locked to a specific locale. */
 export interface TIn {
   <T extends string>(source: T): string;
   <T extends string>(source: T, params: ParamDict<T>): string;
 }
 
-function inLocale(locale: string): TIn {
-  const fn = (source: string, params?: unknown): string => {
+/** The runtime translation function. */
+export interface T extends TIn {
+  in(locale: string): TIn;
+}
+
+function makeT(readLocale: () => string, track: boolean): TIn {
+  const translate = (source: string, params?: unknown): string => {
+    if (track) {
+      runTrackers();
+    }
     if (params === undefined || !hasPlaceholder(source)) {
       return source;
     }
-    return interpolate(source, params as Record<string, unknown>, locale);
+    return interpolate(source, params as Record<string, unknown>, readLocale());
   };
-  return fn as TIn;
+  return translate as TIn;
 }
-
-const fn = (source: string, params?: unknown): string => {
-  runTrackers();
-  if (params === undefined || !hasPlaceholder(source)) {
-    return source;
-  }
-  return interpolate(source, params as Record<string, unknown>, getLocale());
-};
-(fn as T).in = inLocale;
 
 /**
  * Translates a source string to the current locale.
@@ -62,4 +54,6 @@ const fn = (source: string, params?: unknown): string => {
  * t.in(user.locale)('Welcome back, {name}!', { name: user.name });
  * ```
  */
-export const t: T = fn as T;
+export const t: T = Object.assign(makeT(getLocale, true), {
+  in: (locale: string): TIn => makeT(() => locale, false),
+});

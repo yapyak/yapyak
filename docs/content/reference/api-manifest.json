@@ -124,7 +124,7 @@
           "location": {
             "column": 14,
             "file": "src/runtime/t.ts",
-            "line": 65
+            "line": 57
           },
           "name": "t",
           "tags": [],
@@ -270,7 +270,7 @@
           "location": {
             "column": 1,
             "file": "src/runtime/t.ts",
-            "line": 16
+            "line": 22
           },
           "name": "T",
           "tags": [],
@@ -353,7 +353,7 @@
               ]
             }
           ],
-          "signature": "export interface T {\n  in(locale: string): TIn;\n  <T extends string>(source: T): string;\n  <T extends string>(source: T, params: ParamDict<T>): string;\n}"
+          "signature": "export interface T extends TIn {\n  in(locale: string): TIn;\n}"
         },
         {
           "deprecated": null,
@@ -362,7 +362,7 @@
           "location": {
             "column": 1,
             "file": "src/runtime/t.ts",
-            "line": 23
+            "line": 16
           },
           "name": "TIn",
           "tags": [],
@@ -583,7 +583,7 @@
             {
               "defaultValue": null,
               "description": "Type differentiator only.\nWe need this to be in public d.ts but don't want it to show up in IDE\nautocomplete, so we use a private Symbol instead.",
-              "name": "__@RefSymbol@845",
+              "name": "__@RefSymbol@474113",
               "optional": false,
               "type": [
                 {
