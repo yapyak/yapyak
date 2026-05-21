@@ -1,3 +1,9 @@
+/**
+ * SvelteKit adapter. Provides the {@link handle} hook for per-request locale context and `<html lang>` substitution.
+ *
+ * @packageDocumentation
+ */
+
 import type { Handle } from '@sveltejs/kit';
 
 import { getLocale } from '../locale';

@@ -4,35 +4,63 @@ import { fetchWithRetry } from './fetch';
 import { buildSystem, stripCodeFence } from './prompt';
 import { createTranslator } from '.';
 
-/** Options for the OpenAI translator. */
+/** Options for the {@link openai} translator. */
 export interface OpenAIOptions {
   /** Your OpenAI API key. */
   apiKey: string;
-  /** Max items per API call. Defaults to 10. */
+  /**
+   * Maximum items per API call.
+   *
+   * @defaultValue `10`
+   */
   batchSize?: number;
-  /** How much call-site context to include. Defaults to `'minimal'`. */
+  /**
+   * How much call-site context to include.
+   *
+   * @defaultValue `'minimal'`
+   */
   context?: ContextLevel;
-  /** Override the API endpoint. */
+  /**
+   * The API endpoint.
+   *
+   * @defaultValue `'https://api.openai.com/v1/chat/completions'`
+   */
   endpoint?: string;
   /** Glossary of fixed translations, keyed by source string then locale. */
   glossary?: Record<string, Record<string, string>>;
   /** Extra request headers. */
   headers?: Record<string, string>;
-  /** Max retry attempts on transient failures. Defaults to 2. */
+  /**
+   * Maximum retry attempts on transient failures.
+   *
+   * @defaultValue `2`
+   */
   maxRetries?: number;
-  /** Model name. Defaults to `'gpt-5-mini'`. */
+  /**
+   * Model name.
+   *
+   * @defaultValue `'gpt-5-mini'`
+   */
   model?: string;
-  /** OpenAI organization ID. */
+  /** The OpenAI organization ID. */
   organization?: string;
   /** Deterministic seed for reproducible output. */
   seed?: number;
-  /** Sampling temperature. Defaults to 0.2. */
+  /**
+   * Sampling temperature.
+   *
+   * @defaultValue `0.2`
+   */
   temperature?: number;
-  /** Request timeout in milliseconds. Defaults to 30000. */
+  /**
+   * Request timeout in milliseconds.
+   *
+   * @defaultValue `30_000`
+   */
   timeout?: number;
   /** Stable end-user identifier forwarded to OpenAI. */
   user?: string;
-  /** Voice/tone guidance passed to the model. */
+  /** Voice and tone guidance passed to the model. */
   voice?: string;
 }
 
@@ -43,10 +71,9 @@ const DEFAULT_TIMEOUT = 30_000;
 const DEFAULT_MAX_RETRIES = 2;
 
 /**
- * Translator backed by the OpenAI Chat Completions API.
+ * Creates a translator backed by the OpenAI Chat Completions API.
  *
  * @param options - The translator options.
- * @returns A translator usable in the Vite plugin config.
  *
  * @example
  * ```ts

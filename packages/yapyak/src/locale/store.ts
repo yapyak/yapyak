@@ -54,15 +54,13 @@ function readCookieValue(
 }
 
 /**
- * Returns the currently-active locale.
- *
- * @returns The active locale code.
+ * The currently-active locale.
  *
  * @example
  * ```ts
  * import { getLocale } from 'yapyak';
  *
- * console.log(getLocale());   // 'sv'
+ * getLocale(); // => 'sv'
  * ```
  */
 export function getLocale(): string {
@@ -89,8 +87,9 @@ export function getLocale(): string {
 }
 
 /**
- * Switch the active locale. No-op if `value` is not in `locales`.
+ * Switches the active locale. No-op if `value` is not in {@link locales}.
  *
+ * @remarks
  * Notifies subscribers and framework adapters.
  *
  * @param value - The locale to switch to.
@@ -126,10 +125,10 @@ export const locales: string[] = LOCALES;
 export const defaultLocale: string = DEFAULT_LOCALE;
 
 /**
- * Subscribe to locale changes.
+ * Subscribes to locale changes.
  *
- * @param fn - Callback fired whenever the locale changes. Receives the new locale.
- * @returns A function that unsubscribes the listener.
+ * @param fn - Called whenever the locale changes. Receives the new locale.
+ * @returns The unsubscribe function.
  *
  * @example
  * ```ts

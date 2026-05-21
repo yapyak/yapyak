@@ -4,7 +4,7 @@ import { createContext, useSyncExternalStore } from 'react';
 
 import { getLocale, subscribeLocale } from '../locale';
 
-/** Props for `IntlProvider`. */
+/** Props for {@link IntlProvider}. */
 export interface IntlProviderProps {
   children: ReactNode;
 }
@@ -12,10 +12,11 @@ export interface IntlProviderProps {
 const LocaleContext = createContext<string>('en');
 
 /**
- * Subscribes the React tree to locale changes.
+ * Provides locale context to the React tree. Wrap your app once at the root.
  *
- * Wrap your app once at the root. Re-renders descendants when `setLocale()` is
- * called, so `t()` calls inside the tree return the new locale's strings.
+ * @remarks
+ * Re-renders descendants when {@link setLocale} is called, so {@link t} calls
+ * inside the tree return the new locale's strings.
  *
  * @example
  * ```tsx

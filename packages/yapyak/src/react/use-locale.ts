@@ -3,11 +3,10 @@ import { useSyncExternalStore } from 'react';
 import { getLocale, setLocale, subscribeLocale } from '../locale';
 
 /**
- * Returns the current locale and a setter, in tuple form.
+ * Subscribes the component to locale changes. Returns the current locale and a setter.
  *
+ * @remarks
  * The component re-renders whenever the locale changes.
- *
- * @returns A tuple `[locale, setLocale]`.
  *
  * @example
  * ```tsx

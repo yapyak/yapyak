@@ -4,29 +4,57 @@ import { fetchWithRetry } from './fetch';
 import { buildSystem, stripCodeFence } from './prompt';
 import { createTranslator } from '.';
 
-/** Options for the Gemini translator. */
+/** Options for the {@link gemini} translator. */
 export interface GeminiOptions {
   /** Your Google AI API key. */
   apiKey: string;
-  /** Max items per API call. Defaults to 10. */
+  /**
+   * Maximum items per API call.
+   *
+   * @defaultValue `10`
+   */
   batchSize?: number;
-  /** How much call-site context to include. Defaults to `'minimal'`. */
+  /**
+   * How much call-site context to include.
+   *
+   * @defaultValue `'minimal'`
+   */
   context?: ContextLevel;
-  /** Override the API endpoint base URL. */
+  /**
+   * The API endpoint base URL.
+   *
+   * @defaultValue `'https://generativelanguage.googleapis.com/v1beta'`
+   */
   endpoint?: string;
   /** Glossary of fixed translations, keyed by source string then locale. */
   glossary?: Record<string, Record<string, string>>;
   /** Extra request headers. */
   headers?: Record<string, string>;
-  /** Max retry attempts on transient failures. Defaults to 2. */
+  /**
+   * Maximum retry attempts on transient failures.
+   *
+   * @defaultValue `2`
+   */
   maxRetries?: number;
-  /** Model name. Defaults to `'gemini-2.5-flash'`. */
+  /**
+   * Model name.
+   *
+   * @defaultValue `'gemini-2.5-flash'`
+   */
   model?: string;
-  /** Sampling temperature. Defaults to 0.2. */
+  /**
+   * Sampling temperature.
+   *
+   * @defaultValue `0.2`
+   */
   temperature?: number;
-  /** Request timeout in milliseconds. Defaults to 30000. */
+  /**
+   * Request timeout in milliseconds.
+   *
+   * @defaultValue `30_000`
+   */
   timeout?: number;
-  /** Voice/tone guidance passed to the model. */
+  /** Voice and tone guidance passed to the model. */
   voice?: string;
 }
 
@@ -37,10 +65,9 @@ const DEFAULT_TIMEOUT = 30_000;
 const DEFAULT_MAX_RETRIES = 2;
 
 /**
- * Translator backed by the Google Gemini API.
+ * Creates a translator backed by the Google Gemini API.
  *
  * @param options - The translator options.
- * @returns A translator usable in the Vite plugin config.
  *
  * @example
  * ```ts

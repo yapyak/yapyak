@@ -1,3 +1,9 @@
+/**
+ * React Router 7 adapter. Provides {@link middleware} for per-request locale context.
+ *
+ * @packageDocumentation
+ */
+
 import type { MiddlewareFunction } from 'react-router';
 
 import { withRequest } from '.';

@@ -1,5 +1,11 @@
 /// <reference types="astro/client" />
 
+/**
+ * Astro adapter. Provides {@link middleware} for per-request locale context.
+ *
+ * @packageDocumentation
+ */
+
 import { defineMiddleware } from 'astro:middleware';
 import { withRequest } from '.';
 

@@ -4,27 +4,55 @@ import { fetchWithRetry } from './fetch';
 import { buildSystem } from './prompt';
 import { createTranslator } from '.';
 
-/** Options for the Ollama translator. */
+/** Options for the {@link ollama} translator. */
 export interface OllamaOptions {
-  /** Max items per API call. Defaults to 10. */
+  /**
+   * Maximum items per API call.
+   *
+   * @defaultValue `10`
+   */
   batchSize?: number;
-  /** How much call-site context to include. Defaults to `'minimal'`. */
+  /**
+   * How much call-site context to include.
+   *
+   * @defaultValue `'minimal'`
+   */
   context?: ContextLevel;
-  /** Override the API endpoint. Defaults to `http://localhost:11434/api/generate`. */
+  /**
+   * The API endpoint.
+   *
+   * @defaultValue `'http://localhost:11434/api/generate'`
+   */
   endpoint?: string;
   /** Glossary of fixed translations, keyed by source string then locale. */
   glossary?: Record<string, Record<string, string>>;
   /** Extra request headers. */
   headers?: Record<string, string>;
-  /** Max retry attempts on transient failures. Defaults to 1. */
+  /**
+   * Maximum retry attempts on transient failures.
+   *
+   * @defaultValue `1`
+   */
   maxRetries?: number;
-  /** Model name. Defaults to `'llama3.1'`. */
+  /**
+   * Model name.
+   *
+   * @defaultValue `'llama3.1'`
+   */
   model?: string;
-  /** Sampling temperature. Defaults to 0.2. */
+  /**
+   * Sampling temperature.
+   *
+   * @defaultValue `0.2`
+   */
   temperature?: number;
-  /** Request timeout in milliseconds. Defaults to 120000. */
+  /**
+   * Request timeout in milliseconds.
+   *
+   * @defaultValue `120_000`
+   */
   timeout?: number;
-  /** Voice/tone guidance passed to the model. */
+  /** Voice and tone guidance passed to the model. */
   voice?: string;
 }
 
@@ -35,10 +63,9 @@ const DEFAULT_TIMEOUT = 120_000;
 const DEFAULT_MAX_RETRIES = 1;
 
 /**
- * Translator backed by a local Ollama server.
+ * Creates a translator backed by a local Ollama server.
  *
  * @param options - The translator options.
- * @returns A translator usable in the Vite plugin config.
  *
  * @example
  * ```ts

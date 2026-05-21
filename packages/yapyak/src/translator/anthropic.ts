@@ -4,29 +4,57 @@ import { fetchWithRetry } from './fetch';
 import { buildSystem, stripCodeFence } from './prompt';
 import { createTranslator } from '.';
 
-/** Options for the Anthropic translator. */
+/** Options for the {@link anthropic} translator. */
 export interface AnthropicOptions {
   /** Your Anthropic API key. */
   apiKey: string;
-  /** Max items per API call. Defaults to 10. */
+  /**
+   * Maximum items per API call.
+   *
+   * @defaultValue `10`
+   */
   batchSize?: number;
-  /** How much call-site context to include. Defaults to `'minimal'`. */
+  /**
+   * How much call-site context to include.
+   *
+   * @defaultValue `'minimal'`
+   */
   context?: ContextLevel;
-  /** Override the API endpoint. */
+  /**
+   * The API endpoint.
+   *
+   * @defaultValue `'https://api.anthropic.com/v1/messages'`
+   */
   endpoint?: string;
   /** Glossary of fixed translations, keyed by source string then locale. */
   glossary?: Record<string, Record<string, string>>;
   /** Extra request headers. */
   headers?: Record<string, string>;
-  /** Max retry attempts on transient failures. Defaults to 2. */
+  /**
+   * Maximum retry attempts on transient failures.
+   *
+   * @defaultValue `2`
+   */
   maxRetries?: number;
-  /** Model name. Defaults to `'claude-sonnet-4-6'`. */
+  /**
+   * Model name.
+   *
+   * @defaultValue `'claude-sonnet-4-6'`
+   */
   model?: string;
-  /** Sampling temperature. Defaults to 0.2. */
+  /**
+   * Sampling temperature.
+   *
+   * @defaultValue `0.2`
+   */
   temperature?: number;
-  /** Request timeout in milliseconds. Defaults to 30000. */
+  /**
+   * Request timeout in milliseconds.
+   *
+   * @defaultValue `30_000`
+   */
   timeout?: number;
-  /** Voice/tone guidance passed to the model. */
+  /** Voice and tone guidance passed to the model. */
   voice?: string;
 }
 
@@ -38,10 +66,9 @@ const DEFAULT_TIMEOUT = 30_000;
 const DEFAULT_MAX_RETRIES = 2;
 
 /**
- * Translator backed by the Anthropic Messages API.
+ * Creates a translator backed by the Anthropic Messages API.
  *
  * @param options - The translator options.
- * @returns A translator usable in the Vite plugin config.
  *
  * @example
  * ```ts

@@ -4,17 +4,26 @@ import type { Translator } from '../translator';
 
 import { DEFAULT_EXCLUDE, DEFAULT_INCLUDE } from '../parser';
 
-/** Options for the yapyak Vite plugin. */
+/** Options for the {@link yapyak} Vite plugin. */
 export interface YapyakOptions {
-  /** The default locale. Inferred from locale files if omitted. */
+  /**
+   * The default locale.
+   *
+   * @remarks
+   * Inferred from locale files if omitted.
+   */
   defaultLocale?: string;
-  /** Detect locale from the `Accept-Language` header on the server. */
+  /** Whether to detect locale from the `Accept-Language` header on the server. */
   detectAcceptLanguage?: boolean;
   /** Glob patterns to exclude from extraction. */
   exclude?: FilterPattern;
   /** Glob patterns to include for extraction. */
   include?: FilterPattern;
-  /** Directory for locale JSON files, relative to project root. Defaults to `'locales'`. */
+  /**
+   * Directory for locale JSON files, relative to project root.
+   *
+   * @defaultValue `'locales'`
+   */
   localesDir?: string;
   /**
    * Where to persist the user's locale selection.
@@ -38,19 +47,21 @@ export interface YapyakOptions {
     | { key?: string; type: 'localStorage' }
     | null;
   /**
-   * Preserve existing translations when a `t()` call is renamed in place.
-   * Defaults to `true` without a translator, `false` with one.
+   * Whether to preserve existing translations when a `t()` call is renamed in place.
+   *
+   * @defaultValue `true` without a {@link Translator}, `false` with one
    */
   preserveTranslationsOnRename?: boolean;
   /**
-   * Keep `document.documentElement.lang` synced with the current locale.
+   * Whether to keep `document.documentElement.lang` synced with the current locale.
    *
+   * @remarks
    * Off by default. yapyak does not touch the DOM unless this is set to
    * `true`. Useful for SvelteKit/Astro/SPA setups where the `<html>` element
    * isn't owned by a reactive framework binding. See each adapter's docs.
    */
   syncHtmlLang?: boolean;
-  /** Translator used to fill missing entries. Stubs stay empty without one. */
+  /** The translator used to fill missing entries. Stubs stay empty without one. */
   translator?: Translator;
 }
 

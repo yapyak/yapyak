@@ -1,3 +1,9 @@
+/**
+ * TanStack Start adapter. Provides {@link middleware} for per-request locale context.
+ *
+ * @packageDocumentation
+ */
+
 import type { AnyRequestMiddleware } from '@tanstack/react-start';
 
 import { createMiddleware } from '@tanstack/react-start';

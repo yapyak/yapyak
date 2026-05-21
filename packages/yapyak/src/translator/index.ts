@@ -1,3 +1,9 @@
+/**
+ * Translator API. Provides {@link createTranslator} and the built-ins ({@link anthropic}, {@link openai}, {@link gemini}, {@link ollama}).
+ *
+ * @packageDocumentation
+ */
+
 /** Call-site context for a translation request. */
 export interface MessageContext {
   /** The component name derived from the file path. */
@@ -25,8 +31,10 @@ export interface TranslateRequest {
 /**
  * Translates source strings into target locales.
  *
- * Pass to the Vite plugin's `translator` option. Use `createTranslator` to
- * build one — or the built-ins (`anthropic`, `openai`, `gemini`, `ollama`).
+ * @remarks
+ * Pass to the Vite plugin's `translator` option. Use {@link createTranslator}
+ * to build one — or the built-ins ({@link anthropic}, {@link openai},
+ * {@link gemini}, {@link ollama}).
  */
 export interface Translator {
   /** Translates a batch of requests. */
@@ -94,11 +102,19 @@ export interface TranslateBatchRequest {
   targetLocale: string;
 }
 
-/** Options for `createTranslator`. */
+/** Options for {@link createTranslator}. */
 export interface CreateTranslatorOptions {
-  /** Max number of items per `translate` call. Defaults to 10. */
+  /**
+   * Maximum number of items per `translate` call.
+   *
+   * @defaultValue `10`
+   */
   batchSize?: number;
-  /** How much call-site context to include. Defaults to `'minimal'`. */
+  /**
+   * How much call-site context to include.
+   *
+   * @defaultValue `'minimal'`
+   */
   context?: ContextLevel;
   /** Translates a batch of items. Must return strings in the same order as `items`. */
   translate: (params: TranslateBatchRequest) => string[] | Promise<string[]>;
@@ -110,11 +126,11 @@ const DEFAULT_CONTEXT: ContextLevel = 'minimal';
 /**
  * Builds a translator from a `translate` function.
  *
- * Handles batching, context shaping, and result validation — you just provide
+ * @remarks
+ * Handles batching, context shaping, and result validation — you provide
  * the function that talks to the AI.
  *
  * @param options - The translator options.
- * @returns A translator usable in the Vite plugin config.
  *
  * @example
  * ```ts

@@ -26,15 +26,15 @@ const CONFIG_ID = 'virtual:yapyak';
 const CONFIG_RESOLVED = `\0${CONFIG_ID}`;
 
 /**
- * The yapyak Vite plugin.
+ * Creates the yapyak Vite plugin.
  *
- * Extracts `t()` calls at build time, syncs locale files, optionally fills
- * missing translations through an AI translator, and emits per-locale chunks
+ * @remarks
+ * Extracts {@link t} calls at build time, syncs locale files, optionally fills
+ * missing translations through a {@link Translator}, and emits per-locale chunks
  * that are lazy-loaded by the runtime — so the default locale costs zero
  * extra bytes and non-default locales ship as separate chunks.
  *
- * @param options - Plugin options.
- * @returns A Vite plugin.
+ * @param options - The plugin options.
  *
  * @example
  * ```ts

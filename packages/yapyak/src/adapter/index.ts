@@ -1,3 +1,9 @@
+/**
+ * Custom adapter API. Provides {@link withRequest} for binding per-request locale context to async-scoped storage.
+ *
+ * @packageDocumentation
+ */
+
 import type { RequestHeaders } from '../locale';
 
 import { registerRequestHeadersReader } from '../locale';
@@ -10,13 +16,13 @@ registerRequestHeadersReader(() => storage.getStore());
 /**
  * Runs `fn` with the request's locale headers bound to async-scoped storage.
  *
+ * @remarks
  * The shipped adapters (`yapyak/adapter/sveltekit`, `yapyak/adapter/tanstack-start`,
  * `yapyak/adapter/astro`, `yapyak/adapter/react-router`) call this for you.
  * Use it directly when wiring a custom SSR setup.
  *
  * @param request - The incoming Web `Request`.
  * @param fn - The function to run with the request bound.
- * @returns The return value of `fn`.
  *
  * @example
  * ```ts
