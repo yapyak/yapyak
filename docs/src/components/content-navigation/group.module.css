@@ -78,6 +78,12 @@
     &[data-collapsible] {
       gap: 0;
 
+      &:not(:first-child) {
+        padding-top: var(--spacing-2);
+        margin-top: var(--spacing-2);
+        border-top: var(--px) solid var(--rule);
+      }
+
       > .ItemList {
         padding-left: var(--spacing-3);
       }
