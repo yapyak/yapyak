@@ -14,7 +14,7 @@ export interface MessageContext {
   snippet: string;
 }
 
-/** A single translation request. */
+/** Request shape for {@link Translator}. */
 export interface TranslateRequest {
   /** The call-site context. */
   context?: MessageContext;
@@ -43,7 +43,7 @@ export interface Translator {
 }
 
 /**
- * How much call-site context to pass to the translate function.
+ * The context level. Determines how much call-site context is passed to the translator.
  *
  * - `'none'` — sends the source string only.
  * - `'minimal'` — sends the source string, the component name, and the enclosing element.
@@ -61,7 +61,7 @@ export interface Translator {
  */
 export type ContextLevel = 'none' | 'minimal' | 'rich';
 
-/** A single item to translate. */
+/** An item in a translate batch. */
 export interface TranslateItem {
   /** The component name derived from the file path. */
   component?: string;
@@ -74,8 +74,9 @@ export interface TranslateItem {
 }
 
 /**
- * Parameters passed to a translator's `translate` function.
+ * Request shape for the `translate` callback.
  *
+ * @remarks
  * `items`, `sourceLocale`, and `targetLocale` are always present. Forward
  * `signal` to the underlying fetch/SDK call to honor cancellation.
  *

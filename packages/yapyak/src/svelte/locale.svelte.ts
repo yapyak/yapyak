@@ -12,7 +12,7 @@ if (typeof window !== 'undefined') {
   });
 }
 
-/** A reactive locale handle for Svelte 5. */
+/** The locale. Reactive handle for Svelte 5 components. */
 export interface Locale {
   /** The current locale. Reads track reactivity, writes call {@link setLocale}. */
   current: string;

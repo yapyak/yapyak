@@ -5,8 +5,10 @@ import { hasPlaceholder, interpolate } from './interpolate';
 import { runTrackers } from './tracker';
 
 /**
- * The placeholder values for a source string. Empty if the source has no
- * placeholders, otherwise a record of placeholder name to expected value type.
+ * The param dict. Maps placeholder names to expected value types for the source string `T`.
+ *
+ * @remarks
+ * Empty when `T` contains no placeholders.
  */
 export type ParamDict<T extends string> = T extends `${string}{${string}`
   ? ExtractParamDict<T>
