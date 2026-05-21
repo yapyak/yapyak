@@ -62,7 +62,7 @@ export function LayoutHeader(props: LayoutHeaderProps) {
         {children}
         <Box className={styles.MenuButtonSlot}>
           <HeaderMenuButton
-            isOpen={isMenuOpen}
+            open={isMenuOpen}
             onToggle={() => setIsMenuOpen((open) => !open)}
           />
         </Box>

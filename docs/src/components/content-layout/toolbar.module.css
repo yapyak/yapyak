@@ -48,7 +48,6 @@
       justify-content: center;
       width: 48px;
       height: 48px;
-      font-size: 22px;
       color: var(--foreground);
       outline: var(--spacing-2) solid transparent;
       outline-offset: 0;

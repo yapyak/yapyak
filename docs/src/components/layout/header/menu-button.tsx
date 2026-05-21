@@ -5,19 +5,19 @@ import { Box } from '#components/box';
 import styles from './menu-button.module.css';
 
 export interface HeaderMenuButtonProps {
-  isOpen: boolean;
+  open: boolean;
   onToggle: () => void;
 }
 
 export function HeaderMenuButton(props: HeaderMenuButtonProps) {
-  const { isOpen, onToggle } = props;
+  const { open, onToggle } = props;
   return (
     <Box
-      aria-expanded={isOpen}
-      aria-label={isOpen ? t('Close menu') : t('Open menu')}
+      aria-expanded={open}
+      aria-label={open ? t('Close menu') : t('Open menu')}
       as="button"
       className={styles.HeaderMenuButton}
-      data-open={isOpen}
+      data-open={open}
       onClick={onToggle}
       type="button"
     >

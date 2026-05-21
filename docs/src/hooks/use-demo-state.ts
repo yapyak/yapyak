@@ -10,9 +10,9 @@ import {
 } from '#utils/hero-demo-scenes';
 
 export interface DemoState {
-  isReceiving: boolean;
-  isSaving: boolean;
-  isTyping: boolean;
+  receiving: boolean;
+  saving: boolean;
+  typing: boolean;
   savedSource: string;
   shimmering: Set<LocaleCode>;
   source: string;
@@ -20,20 +20,20 @@ export interface DemoState {
 }
 
 const INITIAL_STATE: DemoState = {
-  isReceiving: false,
-  isSaving: false,
-  isTyping: false,
+  receiving: false,
+  saving: false,
+  typing: false,
   savedSource: INITIAL_SCENE.source,
   shimmering: new Set(),
   source: INITIAL_SCENE.source,
   translations: INITIAL_SCENE.translations,
 };
 
-export function useDemoState(isActive: boolean) {
+export function useDemoState(active: boolean) {
   const [state, setState] = useState<DemoState>(INITIAL_STATE);
 
   useEffect(() => {
-    if (!isActive) {
+    if (!active) {
       return;
     }
     if (typeof window === 'undefined') {
@@ -76,7 +76,7 @@ export function useDemoState(isActive: boolean) {
           return;
         }
 
-        setState((previous) => ({ ...previous, isTyping: true }));
+        setState((previous) => ({ ...previous, typing: true }));
 
         while (currentSource.length > 0) {
           currentSource = currentSource.slice(0, -1);
@@ -102,19 +102,19 @@ export function useDemoState(isActive: boolean) {
 
         setState((previous) => ({
           ...previous,
-          isSaving: true,
-          isTyping: false,
+          saving: true,
+          typing: false,
         }));
         await sleep(1000);
         setState((previous) => ({
           ...previous,
-          isReceiving: true,
+          receiving: true,
           savedSource: scene.source,
           shimmering: new Set(LOCALES.map((locale) => locale.code)),
           translations: EMPTY_TRANSLATIONS,
         }));
         await sleep(360);
-        setState((previous) => ({ ...previous, isSaving: false }));
+        setState((previous) => ({ ...previous, saving: false }));
         await sleep(120);
 
         for (let index = 0; index < LOCALES.length; index++) {
@@ -140,7 +140,7 @@ export function useDemoState(isActive: boolean) {
           await sleep(130);
         }
 
-        setState((previous) => ({ ...previous, isReceiving: false }));
+        setState((previous) => ({ ...previous, receiving: false }));
         await sleep(1100);
 
         sceneIndex++;
@@ -156,7 +156,7 @@ export function useDemoState(isActive: boolean) {
       }
       timeouts.clear();
     };
-  }, [isActive]);
+  }, [active]);
 
   return state;
 }

@@ -9,7 +9,7 @@ import { DemoLocaleFlag } from './locale-flag';
 import styles from './locale-stack.module.css';
 
 export interface DemoLocaleStackProps extends BoxProps {
-  isReceiving: boolean;
+  receiving: boolean;
   savedSource: string;
   shimmering: Set<LocaleCode>;
   translations: Record<LocaleCode, string>;
@@ -18,7 +18,7 @@ export interface DemoLocaleStackProps extends BoxProps {
 export function DemoLocaleStack(props: DemoLocaleStackProps) {
   const {
     className,
-    isReceiving,
+    receiving,
     savedSource,
     shimmering,
     translations,
@@ -29,7 +29,7 @@ export function DemoLocaleStack(props: DemoLocaleStackProps) {
     <Box
       {...restProps}
       className={[styles.DemoLocaleStack, className]}
-      data-receiving={isReceiving}
+      data-receiving={receiving}
     >
       <Box
         aria-hidden="true"

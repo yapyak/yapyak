@@ -14,14 +14,14 @@ export interface ContentLayoutProps extends BoxProps {}
 
 interface ContentLayoutContextValue {
   closeSidebar: () => void;
-  isSidebarOpen: boolean;
   openSidebar: () => void;
+  sidebarOpen: boolean;
 }
 
 const ContentLayoutContext = createContext<ContentLayoutContextValue>({
   closeSidebar: () => {},
-  isSidebarOpen: false,
   openSidebar: () => {},
+  sidebarOpen: false,
 });
 
 export function useContentLayout() {
@@ -60,8 +60,8 @@ export function ContentLayout(props: ContentLayoutProps) {
     <ContentLayoutContext
       value={{
         closeSidebar: () => setIsSidebarOpen(false),
-        isSidebarOpen,
         openSidebar: () => setIsSidebarOpen(true),
+        sidebarOpen: isSidebarOpen,
       }}
     >
       <Box

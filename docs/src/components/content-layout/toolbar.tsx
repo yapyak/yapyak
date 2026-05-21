@@ -20,7 +20,11 @@ export interface ContentLayoutToolbarProps {
 
 export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
   const { children, next, previous } = props;
-  const { closeSidebar, isSidebarOpen, openSidebar } = useContentLayout();
+  const {
+    closeSidebar,
+    openSidebar,
+    sidebarOpen: isSidebarOpen,
+  } = useContentLayout();
   const [isHidden, setIsHidden] = useState(false);
   const lastScrollYRef = useRef(0);
 

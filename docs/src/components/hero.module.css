@@ -53,9 +53,16 @@
 
     .ActionRow {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
+      align-items: stretch;
       gap: var(--spacing-3);
       padding-top: var(--spacing-2);
+
+      @media (min-width: 640px) {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: initial;
+      }
     }
 
     .TrustParagraph {
@@ -132,12 +139,6 @@
       justify-content: stretch;
     }
 
-    @media (max-width: 480px) {
-      .ActionRow {
-        flex-direction: column;
-        align-items: stretch;
-      }
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {

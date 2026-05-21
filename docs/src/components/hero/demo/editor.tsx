@@ -26,8 +26,8 @@ export const FRAMEWORKS: [FrameworkConfig, FrameworkConfig, FrameworkConfig] = [
 
 export interface DemoEditorProps extends BoxProps {
   framework: Framework;
-  isSaving: boolean;
-  isTyping: boolean;
+  saving: boolean;
+  typing: boolean;
   onFrameworkChange: (framework: Framework) => void;
   source: string;
 }
@@ -44,8 +44,8 @@ export function DemoEditor(props: DemoEditorProps) {
   const {
     className,
     framework,
-    isSaving,
-    isTyping,
+    saving,
+    typing,
     onFrameworkChange,
     source,
     ...restProps
@@ -83,7 +83,7 @@ export function DemoEditor(props: DemoEditorProps) {
     <Box
       {...restProps}
       className={[styles.DemoEditor, className]}
-      data-saving={isSaving}
+      data-saving={saving}
       style={
         indicator
           ? {
@@ -107,7 +107,7 @@ export function DemoEditor(props: DemoEditorProps) {
         )}
         {FRAMEWORKS.map((entry) => {
           const isActive = entry.id === framework;
-          const isDirty = isActive && (isTyping || isSaving);
+          const isDirty = isActive && (typing || saving);
           return (
             <Box
               as="button"
@@ -161,7 +161,7 @@ export function DemoEditor(props: DemoEditorProps) {
                     aria-hidden="true"
                     as="span"
                     className={styles.Caret}
-                    data-typing={isTyping}
+                    data-typing={typing}
                   />
                   {after}
                   <Box as="span">'</Box>
