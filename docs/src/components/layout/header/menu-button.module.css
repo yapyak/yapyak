@@ -3,7 +3,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
     align-items: center;
     justify-content: center;
     width: 48px;
