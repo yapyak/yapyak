@@ -22,7 +22,13 @@ export default defineConfig({
       yapyakDir,
     }),
     yapyak(),
-    tanstackStart(),
+    tanstackStart({
+      prerender: {
+        crawlLinks: true,
+        enabled: true,
+        failOnError: true,
+      },
+    }),
   ],
   server: {
     port: 3000,

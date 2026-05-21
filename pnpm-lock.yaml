@@ -86,9 +86,6 @@ importers:
 
   docs:
     dependencies:
-      '@markdoc/markdoc':
-        specifier: 'catalog:'
-        version: 0.5.7(@types/react@19.2.14)(react@19.2.5)
       '@tanstack/react-router':
         specifier: 'catalog:'
         version: 1.169.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -105,6 +102,9 @@ importers:
         specifier: workspace:*
         version: link:../packages/yapyak
     devDependencies:
+      '@markdoc/markdoc':
+        specifier: 'catalog:'
+        version: 0.5.7(@types/react@19.2.14)(react@19.2.5)
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.14

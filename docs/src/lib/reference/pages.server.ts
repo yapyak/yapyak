@@ -322,7 +322,7 @@ function returnsParagraph(
 function tokensToBlocks(tokens: TypeToken[]): Block[] {
   const blocks: Block[] = [];
   for (const token of tokens) {
-    if (token.kind === 'ref') {
+    if (token.kind === 'ref' && isYapyakModule(token.module)) {
       blocks.push({
         children: [{ type: 'inline-code', value: token.text }],
         href: symbolHref(token.module, token.name),
@@ -337,6 +337,10 @@ function tokensToBlocks(tokens: TypeToken[]): Block[] {
     blocks.push({ type: 'inline-code', value: '' });
   }
   return blocks;
+}
+
+function isYapyakModule(module: string): boolean {
+  return module === 'yapyak' || module.startsWith('yapyak/');
 }
 
 function isVoidTokens(tokens: TypeToken[]) {

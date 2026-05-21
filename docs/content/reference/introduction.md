@@ -1,6 +1,6 @@
 ---
 title: Reference
-description: Every exported function, interface, and type — pulled from source.
+description: Every export, generated directly from source.
 ---
 
-This reference is generated from yapyak's source. Every export under `yapyak`, `yapyak/vite`, `yapyak/translator`, `yapyak/persistence`, `yapyak/adapter/*`, and the framework runtimes has its own page below.
+Every function, interface, and type exported from yapyak has its own page. Each page is generated from the source — signatures, type parameters, parameters, return types, and JSDoc descriptions stay in sync with the code on every build.
