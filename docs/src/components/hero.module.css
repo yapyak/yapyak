@@ -33,6 +33,10 @@
       letter-spacing: var(--letter-spacing-tightest);
       text-wrap: balance;
 
+      @media (min-width: 640px) {
+        font-size: 3.5rem;
+      }
+
       @media (min-width: 1024px) {
         font-size: 4.5rem;
       }

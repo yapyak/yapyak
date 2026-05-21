@@ -38,6 +38,10 @@
       background: var(--gradient-silver);
       background-clip: text;
       transition: text-shadow 400ms ease;
+
+      @media (min-width: 640px) {
+        font-size: 4.5rem;
+      }
     }
 
     .ContentStack {
