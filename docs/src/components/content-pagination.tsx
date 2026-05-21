@@ -9,14 +9,14 @@ import { Box } from '#components/box';
 import styles from './content-pagination.module.css';
 
 export interface ContentPaginationProps extends BoxProps<'nav'> {
-  next: Page | null;
-  previous: Page | null;
+  nextPage: Page | null;
+  previousPage: Page | null;
 }
 
 export function ContentPagination(props: ContentPaginationProps) {
-  const { className, next, previous, ...restProps } = props;
+  const { className, nextPage, previousPage, ...restProps } = props;
 
-  if (!next && !previous) {
+  if (!nextPage && !previousPage) {
     return null;
   }
 
@@ -26,10 +26,10 @@ export function ContentPagination(props: ContentPaginationProps) {
       as="nav"
       className={[styles.ContentPagination, className]}
     >
-      {previous ? (
+      {previousPage ? (
         <Link
           className={styles.PreviousCard}
-          to={previous.href}
+          to={previousPage.href}
         >
           <Box
             as="span"
@@ -41,16 +41,16 @@ export function ContentPagination(props: ContentPaginationProps) {
             as="span"
             className={styles.TitleText}
           >
-            {previous.title}
+            {previousPage.title}
           </Box>
         </Link>
       ) : (
         <Box className={styles.Spacer} />
       )}
-      {next ? (
+      {nextPage ? (
         <Link
           className={styles.NextCard}
-          to={next.href}
+          to={nextPage.href}
         >
           <Box
             as="span"
@@ -62,7 +62,7 @@ export function ContentPagination(props: ContentPaginationProps) {
             as="span"
             className={styles.TitleText}
           >
-            {next.title}
+            {nextPage.title}
           </Box>
         </Link>
       ) : (

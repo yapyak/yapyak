@@ -14,12 +14,12 @@ import styles from './toolbar.module.css';
 
 export interface ContentLayoutToolbarProps {
   children: ReactNode;
-  next: Page | null;
-  previous: Page | null;
+  nextPage: Page | null;
+  previousPage: Page | null;
 }
 
 export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
-  const { children, next, previous } = props;
+  const { children, nextPage, previousPage } = props;
   const {
     closeSidebar,
     openSidebar,
@@ -69,12 +69,12 @@ export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
         <Box className={styles.NavScroll}>{children}</Box>
       </Box>
       <Box className={styles.ButtonRow}>
-        {previous ? (
+        {previousPage ? (
           <Box
             aria-label={t('Previous')}
             as={Link}
             className={styles.NavButton}
-            to={previous.href}
+            to={previousPage.href}
           >
             <ChevronIcon direction="left" />
           </Box>
@@ -99,12 +99,12 @@ export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
         >
           <OutlineIcon />
         </Box>
-        {next ? (
+        {nextPage ? (
           <Box
             aria-label={t('Next')}
             as={Link}
             className={styles.NavButton}
-            to={next.href}
+            to={nextPage.href}
           >
             <ChevronIcon direction="right" />
           </Box>

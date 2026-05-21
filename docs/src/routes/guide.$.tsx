@@ -17,7 +17,7 @@ const guideRouteApi = getRouteApi('/guide');
 export const Route = createFileRoute('/guide/$')({
   component: Component,
   loader({ params }) {
-    const slug = params._splat ?? '';
+    const slug = params._splat;
     if (!slug) {
       throw notFound();
     }
@@ -31,25 +31,25 @@ export const Route = createFileRoute('/guide/$')({
       throw redirect({ replace: true, to: result.target });
     }
 
-    const { next, previous } = doc.findAdjacentPages(result.page);
+    const { nextPage, previousPage } = doc.findAdjacentPages(result.page);
 
-    return { next, page: result.page, previous };
+    return { nextPage, page: result.page, previousPage };
   },
 });
 
 function Component() {
-  const { page, previous, next } = Route.useLoaderData();
+  const { page, previousPage, nextPage } = Route.useLoaderData();
   const { sidebar } = guideRouteApi.useRouteContext();
   return (
     <>
       <PageArticle page={page} />
       <ContentPagination
-        next={next}
-        previous={previous}
+        nextPage={nextPage}
+        previousPage={previousPage}
       />
       <ContentLayout.Toolbar
-        next={next}
-        previous={previous}
+        nextPage={nextPage}
+        previousPage={previousPage}
       >
         <ContentNavigation
           aria-label="Guide navigation"

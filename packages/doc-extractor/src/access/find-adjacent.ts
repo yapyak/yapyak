@@ -12,22 +12,23 @@ export function findAdjacentPages(
 ): AdjacentPages {
   const collection = collectionFromHref(page.href);
   if (collection === null) {
-    return { next: null, previous: null };
+    return { nextPage: null, previousPage: null };
   }
   const collectionData = manifest.collections[collection];
   if (collectionData === undefined) {
-    return { next: null, previous: null };
+    return { nextPage: null, previousPage: null };
   }
   const flat = flattenLinks(collectionData.sidebar);
   const index = flat.findIndex((link) => link.href === page.href);
   if (index === -1) {
-    return { next: null, previous: null };
+    return { nextPage: null, previousPage: null };
   }
   const previousLink = index > 0 ? flat[index - 1] : undefined;
   const nextLink = index < flat.length - 1 ? flat[index + 1] : undefined;
   return {
-    next: nextLink === undefined ? null : findPageByHref(manifest, nextLink.href),
-    previous:
+    nextPage:
+      nextLink === undefined ? null : findPageByHref(manifest, nextLink.href),
+    previousPage:
       previousLink === undefined
         ? null
         : findPageByHref(manifest, previousLink.href),

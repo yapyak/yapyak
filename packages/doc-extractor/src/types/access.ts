@@ -6,6 +6,6 @@ export type LoadResult =
   | { kind: 'not-found' };
 
 export interface AdjacentPages {
-  next: Page | null;
-  previous: Page | null;
+  nextPage: Page | null;
+  previousPage: Page | null;
 }

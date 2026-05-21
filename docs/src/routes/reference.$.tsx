@@ -17,7 +17,7 @@ const referenceRouteApi = getRouteApi('/reference');
 export const Route = createFileRoute('/reference/$')({
   component: Component,
   loader({ params }) {
-    const path = params._splat ?? '';
+    const path = params._splat;
     if (!path) {
       throw notFound();
     }
@@ -32,24 +32,24 @@ export const Route = createFileRoute('/reference/$')({
         to: '/reference/$',
       });
     }
-    const { next, previous } = doc.findAdjacentPages(result.page);
-    return { next, page: result.page, previous };
+    const { nextPage, previousPage } = doc.findAdjacentPages(result.page);
+    return { nextPage, page: result.page, previousPage };
   },
 });
 
 function Component() {
-  const { page, previous, next } = Route.useLoaderData();
+  const { page, previousPage, nextPage } = Route.useLoaderData();
   const { sidebar } = referenceRouteApi.useRouteContext();
   return (
     <>
       <PageArticle page={page} />
       <ContentPagination
-        next={next}
-        previous={previous}
+        nextPage={nextPage}
+        previousPage={previousPage}
       />
       <ContentLayout.Toolbar
-        next={next}
-        previous={previous}
+        nextPage={nextPage}
+        previousPage={previousPage}
       >
         <ContentNavigation
           aria-label="Reference navigation"

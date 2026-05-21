@@ -16,24 +16,24 @@ export const Route = createFileRoute('/reference/')({
     if (page === null) {
       throw notFound();
     }
-    const { next, previous } = doc.findAdjacentPages(page);
-    return { next, page, previous };
+    const { nextPage, previousPage } = doc.findAdjacentPages(page);
+    return { nextPage, page, previousPage };
   },
 });
 
 function Component() {
-  const { page, previous, next } = Route.useLoaderData();
+  const { page, previousPage, nextPage } = Route.useLoaderData();
   const { sidebar } = referenceRouteApi.useRouteContext();
   return (
     <>
       <PageArticle page={page} />
       <ContentPagination
-        next={next}
-        previous={previous}
+        nextPage={nextPage}
+        previousPage={previousPage}
       />
       <ContentLayout.Toolbar
-        next={next}
-        previous={previous}
+        nextPage={nextPage}
+        previousPage={previousPage}
       >
         <ContentNavigation
           aria-label="Reference navigation"
