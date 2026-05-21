@@ -127,12 +127,12 @@
           "deprecated": null,
           "description": "Translates a source string to the current locale.\n\nThe first argument must be a static string literal — yapyak's Vite plugin\nreads it statically to extract translations. Placeholders use `{name}` and\nare type-checked from the source literal.",
           "examples": [
-            "```tsx\nt('Save changes');\n\nt('Hello, {name}!', { name: 'Alex' });\n\nt('You have {count, plural, one {# item} other {# items}}', { count: 1 });\n\nt.in(user.locale)('Welcome back, {name}!', { name: user.name });\n```"
+            "```tsx\nimport { t } from 'yapyak';\n\nt('Save changes');\n\nt('Hello, {name}!', { name: 'Alex' });\n\nt('You have {count, plural, one {# item} other {# items}}', { count: 1 });\n\nt.in(user.locale)('Welcome back, {name}!', { name: user.name });\n```"
           ],
           "location": {
             "column": 14,
             "file": "src/runtime/t.ts",
-            "line": 62
+            "line": 64
           },
           "name": "t",
           "tags": [],
@@ -674,7 +674,7 @@
             {
               "defaultValue": null,
               "description": "Type differentiator only.\nWe need this to be in public d.ts but don't want it to show up in IDE\nautocomplete, so we use a private Symbol instead.",
-              "name": "__@RefSymbol@817",
+              "name": "__@RefSymbol@41774",
               "optional": false,
               "type": [
                 {
@@ -978,13 +978,13 @@
           "location": {
             "column": 1,
             "file": "src/adapter/index.ts",
-            "line": 36
+            "line": 34
           },
           "name": "withRequest",
           "tags": [
             {
               "name": "remarks",
-              "text": "The shipped adapters (`yapyak/adapter/sveltekit`, `yapyak/adapter/tanstack-start`,\n`yapyak/adapter/astro`, `yapyak/adapter/react-router`) call this for you.\nUse it directly when wiring a custom SSR setup."
+              "text": "Called by the shipped adapters (`yapyak/adapter/sveltekit`, `yapyak/adapter/tanstack-start`, `yapyak/adapter/astro`, `yapyak/adapter/react-router`). Called directly only when wiring a custom SSR setup."
             }
           ],
           "kind": "function",
@@ -1044,15 +1044,15 @@
       "exports": [
         {
           "deprecated": null,
-          "description": "Astro middleware that wires yapyak's per-request locale context for every\nincoming request.\n\nRe-export from `src/middleware.ts`:",
+          "description": "Astro middleware. Wires yapyak's per-request locale context.",
           "examples": [
-            "```ts\n// src/middleware.ts\nexport { middleware as onRequest } from 'yapyak/adapter/astro';\n```\n\nComposing with other middlewares via `sequence`:",
-            "```ts\n// src/middleware.ts\nimport { sequence } from 'astro:middleware';\nimport { middleware as yapyakMiddleware } from 'yapyak/adapter/astro';\nimport { authMiddleware } from './auth';\n\nexport const onRequest = sequence(yapyakMiddleware, authMiddleware);\n```"
+            "Re-export from `src/middleware.ts`\n```ts\nexport { middleware as onRequest } from 'yapyak/adapter/astro';\n```",
+            "Compose with other middlewares\n```ts\nimport { sequence } from 'astro:middleware';\nimport { middleware as yapyakMiddleware } from 'yapyak/adapter/astro';\nimport { middleware as authMiddleware } from './auth';\n\nexport const onRequest = sequence(yapyakMiddleware, authMiddleware);\n```"
           ],
           "location": {
             "column": 14,
             "file": "src/adapter/astro.ts",
-            "line": 38
+            "line": 31
           },
           "name": "middleware",
           "tags": [],
@@ -1107,17 +1107,22 @@
       "exports": [
         {
           "deprecated": null,
-          "description": "React Router 7 framework-mode middleware that wires yapyak's per-request\nlocale context for every incoming request.\n\nRegister in `app/root.tsx`:",
+          "description": "React Router 7 framework-mode middleware. Wires yapyak's per-request locale context.",
           "examples": [
-            "```tsx\n// app/root.tsx\nimport type { Route } from './+types/root';\nimport { middleware as yapyakMiddleware } from 'yapyak/adapter/react-router';\n\nexport const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];\n```\n\nRequires `future.v8_middleware: true` in `react-router.config.ts`."
+            "Register in `app/root.tsx`\n```tsx\nimport type { Route } from './+types/root';\nimport { middleware as yapyakMiddleware } from 'yapyak/adapter/react-router';\n\nexport const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];\n```"
           ],
           "location": {
             "column": 14,
             "file": "src/adapter/react-router.ts",
-            "line": 28
+            "line": 25
           },
           "name": "middleware",
-          "tags": [],
+          "tags": [
+            {
+              "name": "remarks",
+              "text": "Requires `future.v8_middleware: true` in `react-router.config.ts`."
+            }
+          ],
           "kind": "function",
           "members": [],
           "overloads": [
@@ -1169,14 +1174,15 @@
       "exports": [
         {
           "deprecated": null,
-          "description": "SvelteKit `Handle` hook that binds yapyak's per-request locale context to\nevery incoming request and substitutes `%yapyak.lang%` in `app.html` with\nthe resolved locale.\n\nRe-export from `hooks.server.ts`.",
+          "description": "SvelteKit `Handle` hook. Binds yapyak's per-request locale context and substitutes `%yapyak.lang%` in `app.html` with the resolved locale.",
           "examples": [
-            "```ts\n// src/hooks.server.ts\nexport { handle } from 'yapyak/adapter/sveltekit';\n```"
+            "Re-export from `hooks.server.ts`\n```ts\nexport { handle } from 'yapyak/adapter/sveltekit';\n```",
+            "Compose with other handles\n```ts\nimport { sequence } from '@sveltejs/kit/hooks';\nimport { handle as yapyakHandle } from 'yapyak/adapter/sveltekit';\nimport { handle as authHandle } from './auth';\n\nexport const handle = sequence(yapyakHandle, authHandle);\n```"
           ],
           "location": {
             "column": 14,
             "file": "src/adapter/sveltekit.ts",
-            "line": 27
+            "line": 31
           },
           "name": "handle",
           "tags": [],
@@ -1219,14 +1225,14 @@
       "exports": [
         {
           "deprecated": null,
-          "description": "TanStack Start request middleware that wires yapyak's per-request locale\ncontext for every incoming request.\n\nRegister in `src/start.ts`:",
+          "description": "TanStack Start request middleware. Wires yapyak's per-request locale context.",
           "examples": [
-            "```ts\n// src/start.ts\nimport { middleware } from 'yapyak/adapter/tanstack-start';\n\nexport default {\n  requestMiddleware: [middleware],\n};\n```"
+            "Register in `src/start.ts`\n```ts\nimport { middleware } from 'yapyak/adapter/tanstack-start';\n\nexport default {\nrequestMiddleware: [middleware],\n};\n```"
           ],
           "location": {
             "column": 14,
             "file": "src/adapter/tanstack-start.ts",
-            "line": 29
+            "line": 25
           },
           "name": "middleware",
           "tags": [],
@@ -1326,7 +1332,7 @@
           "location": {
             "column": 1,
             "file": "src/translator/index.ts",
-            "line": 153
+            "line": 151
           },
           "name": "createTranslator",
           "tags": [
@@ -1511,7 +1517,7 @@
           "location": {
             "column": 1,
             "file": "src/translator/index.ts",
-            "line": 110
+            "line": 108
           },
           "name": "CreateTranslatorOptions",
           "tags": [],
@@ -1631,7 +1637,7 @@
           "location": {
             "column": 1,
             "file": "src/translator/index.ts",
-            "line": 98
+            "line": 96
           },
           "name": "TranslateBatchRequest",
           "tags": [
@@ -1707,7 +1713,7 @@
           "location": {
             "column": 1,
             "file": "src/translator/index.ts",
-            "line": 65
+            "line": 63
           },
           "name": "TranslateItem",
           "tags": [],
@@ -1851,13 +1857,13 @@
           "location": {
             "column": 1,
             "file": "src/translator/index.ts",
-            "line": 39
+            "line": 37
           },
           "name": "Translator",
           "tags": [
             {
               "name": "remarks",
-              "text": "Pass to the Vite plugin's `translator` option. Use {@link createTranslator}\nto build one — or the built-ins ({@link anthropic }, {@link openai },\n{@link gemini }, {@link ollama })."
+              "text": "Returned by {@link createTranslator} and by the built-ins ({@link anthropic }, {@link openai }, {@link gemini }, {@link ollama }). Passed to the Vite plugin's `translator` option."
             }
           ],
           "callSignatures": [
@@ -1914,7 +1920,7 @@
           "location": {
             "column": 1,
             "file": "src/translator/index.ts",
-            "line": 62
+            "line": 60
           },
           "name": "ContextLevel",
           "tags": [

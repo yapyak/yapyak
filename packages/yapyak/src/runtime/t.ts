@@ -50,6 +50,8 @@ function tIn(locale: string): TIn {
  *
  * @example
  * ```tsx
+ * import { t } from 'yapyak';
+ *
  * t('Save changes');
  *
  * t('Hello, {name}!', { name: 'Alex' });

@@ -12,16 +12,20 @@ import { withRequest } from '.';
 const PLACEHOLDER = '%yapyak.lang%';
 
 /**
- * SvelteKit `Handle` hook that binds yapyak's per-request locale context to
- * every incoming request and substitutes `%yapyak.lang%` in `app.html` with
- * the resolved locale.
+ * SvelteKit `Handle` hook. Binds yapyak's per-request locale context and substitutes `%yapyak.lang%` in `app.html` with the resolved locale.
  *
- * Re-export from `hooks.server.ts`.
- *
- * @example
+ * @example Re-export from `hooks.server.ts`
  * ```ts
- * // src/hooks.server.ts
  * export { handle } from 'yapyak/adapter/sveltekit';
+ * ```
+ *
+ * @example Compose with other handles
+ * ```ts
+ * import { sequence } from '@sveltejs/kit/hooks';
+ * import { handle as yapyakHandle } from 'yapyak/adapter/sveltekit';
+ * import { handle as authHandle } from './auth';
+ *
+ * export const handle = sequence(yapyakHandle, authHandle);
  * ```
  */
 export const handle: Handle = ({ event, resolve }) =>

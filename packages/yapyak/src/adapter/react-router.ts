@@ -9,21 +9,18 @@ import type { MiddlewareFunction } from 'react-router';
 import { withRequest } from '.';
 
 /**
- * React Router 7 framework-mode middleware that wires yapyak's per-request
- * locale context for every incoming request.
+ * React Router 7 framework-mode middleware. Wires yapyak's per-request locale context.
  *
- * Register in `app/root.tsx`:
+ * @remarks
+ * Requires `future.v8_middleware: true` in `react-router.config.ts`.
  *
- * @example
+ * @example Register in `app/root.tsx`
  * ```tsx
- * // app/root.tsx
  * import type { Route } from './+types/root';
  * import { middleware as yapyakMiddleware } from 'yapyak/adapter/react-router';
  *
  * export const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];
  * ```
- *
- * Requires `future.v8_middleware: true` in `react-router.config.ts`.
  */
 export const middleware: MiddlewareFunction = ({ request }, next) =>
   withRequest(request, () => next());

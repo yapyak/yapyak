@@ -32,9 +32,7 @@ export interface TranslateRequest {
  * Translates source strings into target locales.
  *
  * @remarks
- * Pass to the Vite plugin's `translator` option. Use {@link createTranslator}
- * to build one — or the built-ins ({@link anthropic}, {@link openai},
- * {@link gemini}, {@link ollama}).
+ * Returned by {@link createTranslator} and by the built-ins ({@link anthropic}, {@link openai}, {@link gemini}, {@link ollama}). Passed to the Vite plugin's `translator` option.
  */
 export interface Translator {
   /** Translates a batch of requests. */

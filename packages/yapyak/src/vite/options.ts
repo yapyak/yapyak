@@ -56,9 +56,7 @@ export interface YapyakOptions {
    * Whether to keep `document.documentElement.lang` synced with the current locale.
    *
    * @remarks
-   * Off by default. yapyak does not touch the DOM unless this is set to
-   * `true`. Useful for SvelteKit/Astro/SPA setups where the `<html>` element
-   * isn't owned by a reactive framework binding. See each adapter's docs.
+   * Without it, yapyak does not touch the DOM. Enable for SvelteKit, Astro, and SPA setups where the `<html>` element isn't owned by a reactive framework binding.
    */
   syncHtmlLang?: boolean;
   /** The translator used to fill missing entries. Stubs stay empty without one. */
