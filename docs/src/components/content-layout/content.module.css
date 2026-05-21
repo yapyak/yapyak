@@ -1,6 +1,6 @@
 @layer components {
   .ContentLayoutContent {
-    padding: var(--spacing-8) 0 var(--spacing-24);
+    padding: var(--spacing-8) 0 var(--spacing-32);
 
     @media (min-width: 1024px) {
       max-width: 720px;
