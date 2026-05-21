@@ -79,7 +79,7 @@
       gap: 0;
 
       > .ItemList {
-        padding-left: 20px;
+        padding-left: var(--spacing-3);
       }
     }
 
@@ -87,7 +87,7 @@
       gap: 0;
 
       > .ItemList {
-        padding-left: var(--spacing-4);
+        padding-left: var(--spacing-3);
       }
     }
   }

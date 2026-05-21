@@ -89,13 +89,13 @@ function CollapsibleGroup(props: ContentNavigationGroupProps) {
         onClick={() => setIsOpen((current) => !current)}
         type="button"
       >
-        <ChevronIcon />
         <Box
           as="span"
           className={styles.ToggleLabel}
         >
           {node.label}
         </Box>
+        <ChevronIcon />
       </Box>
       {isOpen && (
         <Box
