@@ -207,8 +207,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
           localesDir: normalized.localesDir,
           projectRoot,
           renames,
-          shouldPreserveTranslations:
-            normalized.preserveTranslationsOnRename,
+          preserveTranslations: normalized.preserveTranslationsOnRename,
         });
         localeCache = null;
       }
@@ -250,7 +249,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         localeData: getLocaleData(),
         locales,
       });
-      if (!result.hasChanged) {
+      if (!result.changed) {
         return null;
       }
       return { code: result.code };

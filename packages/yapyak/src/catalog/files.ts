@@ -62,7 +62,7 @@ export interface MigrateLocalesOptions {
   localesDir: string;
   projectRoot: string;
   renames: RenameEntry[];
-  shouldPreserveTranslations: boolean;
+  preserveTranslations: boolean;
 }
 
 export interface MigrateLocalesResult {
@@ -268,7 +268,7 @@ export function migrateLocales(
       }
       const previousValue = next[rename.from];
       delete next[rename.from];
-      next[rename.to] = options.shouldPreserveTranslations
+      next[rename.to] = options.preserveTranslations
         ? (previousValue ?? '')
         : '';
       staleEntries.push({ locale, source: rename.to });

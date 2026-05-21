@@ -117,7 +117,8 @@ function buildSnapshot(args: {
   const snapshot: Snapshot = {};
   for (const locale of args.targetLocales) {
     snapshot[locale] = buildLocaleFile({
-      isDefault: locale === args.defaultLocale,
+      defaultLocale: args.defaultLocale,
+      locale,
       localePath: join(args.localesDir, `${locale}.json`),
       sourcesByFile: args.sourcesByFile,
     });
@@ -126,17 +127,19 @@ function buildSnapshot(args: {
 }
 
 function buildLocaleFile(args: {
-  isDefault: boolean;
+  defaultLocale: string;
+  locale: string;
   localePath: string;
   sourcesByFile: Map<string, Set<string>>;
 }): LocaleFile {
-  const onDisk = args.isDefault ? {} : readLocaleFile(args.localePath);
+  const isDefault = args.locale === args.defaultLocale;
+  const onDisk = isDefault ? {} : readLocaleFile(args.localePath);
   const localeFile: LocaleFile = {};
   for (const [fileId, sources] of args.sourcesByFile) {
     const entries: Record<string, string> = {};
     const fileEntries = onDisk[fileId] ?? {};
     for (const source of sources) {
-      if (args.isDefault) {
+      if (isDefault) {
         entries[source] = source;
       } else {
         entries[source] = fileEntries[source] ?? '';
