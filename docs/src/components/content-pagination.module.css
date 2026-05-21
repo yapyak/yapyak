@@ -22,8 +22,10 @@
         box-shadow var(--transition),
         transform var(--transition);
 
-      &:hover {
-        background-color: var(--surface);
+      @media (hover: hover) {
+        &:hover {
+          background-color: var(--surface);
+        }
       }
     }
 

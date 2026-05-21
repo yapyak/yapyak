@@ -60,19 +60,21 @@
         box-shadow var(--transition),
         color var(--transition);
 
-      &:hover {
-        color: var(--foreground-soft);
-        background-color: var(--surface);
+      @media (hover: hover) {
+        &:hover {
+          color: var(--foreground-soft);
+          background-color: var(--surface);
+          box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
+        }
+
+        &:has(+ .TabButton:hover) {
+          box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
+        }
       }
 
       &[data-active] {
         color: var(--foreground);
         background-color: var(--surface);
-      }
-
-      &:hover,
-      &:has(+ .TabButton:hover) {
-        box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
       }
 
       &[data-active],

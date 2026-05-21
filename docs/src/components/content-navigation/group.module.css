@@ -23,7 +23,13 @@
       text-align: left;
       transition: color var(--transition);
 
-      &:hover {
+      @media (hover: hover) {
+        &:hover {
+          color: var(--foreground);
+        }
+      }
+
+      &:active {
         color: var(--foreground);
       }
 

@@ -46,8 +46,14 @@
           opacity: 0;
         }
 
-        &:hover {
-          color: var(--foreground-soft);
+        @media (hover: hover) {
+          &:hover {
+            color: var(--foreground-soft);
+            background-color: var(--surface);
+          }
+        }
+
+        &:active {
           background-color: var(--surface);
         }
 

@@ -17,11 +17,13 @@
       outline 400ms,
       transform var(--transition);
 
-    &:hover {
-      background-color: var(--surface-stronger);
-      box-shadow:
-        inset 0 0 0 var(--px) var(--ring-strong),
-        inset 0 var(--px) var(--ring-strong);
+    @media (hover: hover) {
+      &:hover {
+        background-color: var(--surface-stronger);
+        box-shadow:
+          inset 0 0 0 var(--px) var(--ring-strong),
+          inset 0 var(--px) var(--ring-strong);
+      }
     }
 
     &:active {

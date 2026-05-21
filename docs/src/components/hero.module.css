@@ -89,8 +89,10 @@
         box-shadow 400ms,
         transform var(--transition);
 
-      &:hover {
-        filter: brightness(1.1);
+      @media (hover: hover) {
+        &:hover {
+          filter: brightness(1.1);
+        }
       }
 
       &:active {
@@ -123,8 +125,10 @@
         box-shadow 400ms,
         transform var(--transition);
 
-      &:hover {
-        background-color: var(--surface-stronger);
+      @media (hover: hover) {
+        &:hover {
+          background-color: var(--surface-stronger);
+        }
       }
 
       &:active {

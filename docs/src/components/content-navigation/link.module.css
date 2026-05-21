@@ -14,7 +14,13 @@
       color var(--transition),
       outline 400ms;
 
-    &:hover {
+    @media (hover: hover) {
+      &:hover {
+        color: var(--foreground);
+      }
+    }
+
+    &:active {
       color: var(--foreground);
     }
 

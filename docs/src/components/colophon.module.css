@@ -50,8 +50,10 @@
       color: var(--foreground-softer);
       transition: color var(--transition);
 
-      &:hover {
-        color: var(--foreground-soft);
+      @media (hover: hover) {
+        &:hover {
+          color: var(--foreground-soft);
+        }
       }
     }
   }

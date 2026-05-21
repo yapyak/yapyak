@@ -6,8 +6,10 @@
     text-underline-offset: 4px;
     transition: text-decoration-color var(--transition);
 
-    &:hover {
-      text-decoration-color: var(--brand);
+    @media (hover: hover) {
+      &:hover {
+        text-decoration-color: var(--brand);
+      }
     }
   }
 }

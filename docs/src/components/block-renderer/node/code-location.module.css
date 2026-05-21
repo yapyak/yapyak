@@ -9,8 +9,10 @@
     border-top: var(--px) solid var(--rule);
     transition: color var(--transition);
 
-    &[href]:hover {
-      color: var(--foreground);
+    @media (hover: hover) {
+      &[href]:hover {
+        color: var(--foreground);
+      }
     }
   }
 }

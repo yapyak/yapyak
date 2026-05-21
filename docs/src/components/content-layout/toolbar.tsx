@@ -80,10 +80,14 @@ export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
           </Box>
         ) : (
           <Box
-            aria-hidden="true"
+            aria-label={t('Previous')}
+            as="button"
             className={styles.NavButton}
-            data-disabled
-          />
+            disabled
+            type="button"
+          >
+            <ChevronIcon direction="left" />
+          </Box>
         )}
         <Box
           aria-expanded={isSidebarOpen}
@@ -106,10 +110,14 @@ export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
           </Box>
         ) : (
           <Box
-            aria-hidden="true"
+            aria-label={t('Next')}
+            as="button"
             className={styles.NavButton}
-            data-disabled
-          />
+            disabled
+            type="button"
+          >
+            <ChevronIcon direction="right" />
+          </Box>
         )}
       </Box>
     </Box>

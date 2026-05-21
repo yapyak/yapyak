@@ -29,12 +29,14 @@
     }
 
     &:not([data-status="active"]) {
-      &:hover {
-        color: var(--foreground);
-        background-color: var(--surface-stronger);
-        box-shadow:
-          inset 0 0 0 var(--px) var(--ring-strong),
-          inset 0 var(--px) var(--ring-strong);
+      @media (hover: hover) {
+        &:hover {
+          color: var(--foreground);
+          background-color: var(--surface-stronger);
+          box-shadow:
+            inset 0 0 0 var(--px) var(--ring-strong),
+            inset 0 var(--px) var(--ring-strong);
+        }
       }
 
       &:active {

@@ -60,8 +60,10 @@
         border-bottom: none;
       }
 
-      &:hover {
-        color: var(--foreground);
+      @media (hover: hover) {
+        &:hover {
+          color: var(--foreground);
+        }
       }
 
       &:active {
