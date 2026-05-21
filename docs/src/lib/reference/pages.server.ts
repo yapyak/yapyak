@@ -1,12 +1,12 @@
 import type { Block, Page, TableRowBlock } from '#lib/content';
 import type {
-  ApiExport,
-  ApiMember,
-  ApiOverload,
-  ApiParameter,
-  ApiTypeAlias,
-  ApiTypeParameter,
-  ApiVariable,
+  ReferenceExport,
+  ReferenceMember,
+  ReferenceOverload,
+  ReferenceParameter,
+  ReferenceTypeAlias,
+  ReferenceTypeParameter,
+  ReferenceVariable,
   TypeToken,
 } from './types';
 
@@ -14,7 +14,7 @@ import { parseContent, slugify } from '#lib/content';
 
 import { moduleSlug } from './sidebar.server';
 
-export function buildSymbolPage(symbol: ApiExport, moduleId: string): Page {
+export function buildSymbolPage(symbol: ReferenceExport, moduleId: string): Page {
   const blocks: Block[] = [];
 
   blocks.push(eyebrow(moduleId, symbol.kind));
@@ -120,7 +120,7 @@ export function buildSymbolPage(symbol: ApiExport, moduleId: string): Page {
   };
 }
 
-function functionSignatureBlock(overloads: ApiOverload[]): Block {
+function functionSignatureBlock(overloads: ReferenceOverload[]): Block {
   return {
     label: null,
     language: 'ts',
@@ -129,7 +129,7 @@ function functionSignatureBlock(overloads: ApiOverload[]): Block {
   };
 }
 
-function variableSignatureBlock(symbol: ApiVariable): Block {
+function variableSignatureBlock(symbol: ReferenceVariable): Block {
   return {
     label: null,
     language: 'ts',
@@ -138,7 +138,7 @@ function variableSignatureBlock(symbol: ApiVariable): Block {
   };
 }
 
-function typeAliasBlock(symbol: ApiTypeAlias): Block {
+function typeAliasBlock(symbol: ReferenceTypeAlias): Block {
   return {
     label: null,
     language: 'ts',
@@ -147,14 +147,14 @@ function typeAliasBlock(symbol: ApiTypeAlias): Block {
   };
 }
 
-function unifyParameters(overloads: ApiOverload[]): ApiParameter[] {
+function unifyParameters(overloads: ReferenceOverload[]): ReferenceParameter[] {
   if (overloads.length === 0) {
     return [];
   }
   const maxLength = Math.max(
     ...overloads.map((overload) => overload.parameters.length),
   );
-  const unified: ApiParameter[] = [];
+  const unified: ReferenceParameter[] = [];
   for (let position = 0; position < maxLength; position++) {
     const present = overloads.filter(
       (overload) => overload.parameters[position] !== undefined,
@@ -182,9 +182,9 @@ function heading2(text: string): Block {
   };
 }
 
-function unifyTypeParameters(overloads: ApiOverload[]): ApiTypeParameter[] {
+function unifyTypeParameters(overloads: ReferenceOverload[]): ReferenceTypeParameter[] {
   const seen = new Set<string>();
-  const unified: ApiTypeParameter[] = [];
+  const unified: ReferenceTypeParameter[] = [];
   for (const overload of overloads) {
     for (const typeParameter of overload.typeParameters) {
       if (seen.has(typeParameter.name)) {
@@ -197,7 +197,7 @@ function unifyTypeParameters(overloads: ApiOverload[]): ApiTypeParameter[] {
   return unified;
 }
 
-function typeParametersTable(typeParameters: ApiTypeParameter[]): Block {
+function typeParametersTable(typeParameters: ReferenceTypeParameter[]): Block {
   return {
     body: typeParameters.map((typeParameter) =>
       typeParameterRow(typeParameter),
@@ -207,7 +207,7 @@ function typeParametersTable(typeParameters: ApiTypeParameter[]): Block {
   };
 }
 
-function typeParameterRow(typeParameter: ApiTypeParameter): TableRowBlock {
+function typeParameterRow(typeParameter: ReferenceTypeParameter): TableRowBlock {
   return {
     children: [
       bodyCell([{ type: 'inline-code', value: typeParameter.name }]),
@@ -226,7 +226,7 @@ function typeParameterRow(typeParameter: ApiTypeParameter): TableRowBlock {
   };
 }
 
-function parametersTable(parameters: ApiParameter[]): Block {
+function parametersTable(parameters: ReferenceParameter[]): Block {
   return {
     body: parameters.map((parameter) => paramRow(parameter)),
     head: tableHeaderRow(['Name', 'Type', 'Description']),
@@ -234,7 +234,7 @@ function parametersTable(parameters: ApiParameter[]): Block {
   };
 }
 
-function membersTable(members: ApiMember[]): Block {
+function membersTable(members: ReferenceMember[]): Block {
   return {
     body: members.map((member) => memberRow(member)),
     head: tableHeaderRow(['Name', 'Type', 'Description']),
@@ -242,7 +242,7 @@ function membersTable(members: ApiMember[]): Block {
   };
 }
 
-function paramRow(parameter: ApiParameter): TableRowBlock {
+function paramRow(parameter: ReferenceParameter): TableRowBlock {
   return {
     children: [
       bodyCell([
@@ -258,7 +258,7 @@ function paramRow(parameter: ApiParameter): TableRowBlock {
   };
 }
 
-function memberRow(member: ApiMember): TableRowBlock {
+function memberRow(member: ReferenceMember): TableRowBlock {
   return {
     children: [
       bodyCell([

@@ -22,6 +22,7 @@ catalog:
   react-router: 7.15.0
   svelte: 5.55.5
   tsup: 8.5.1
+  typedoc: 0.28.19
   typescript: 6.0.3
   vite: 8.0.12
   vitest: 3.0.4

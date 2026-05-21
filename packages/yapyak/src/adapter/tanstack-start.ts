@@ -13,7 +13,7 @@ import { withRequest } from '.';
 /**
  * TanStack Start request middleware. Wires yapyak's per-request locale context.
  *
- * @example Register in `src/start.ts`
+ * @example Register in src/start.ts
  * ```ts
  * import { middleware } from 'yapyak/adapter/tanstack-start';
  *

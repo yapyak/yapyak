@@ -1,11 +1,11 @@
-import type { ApiManifest } from './types';
+import type { ReferenceManifest } from './types';
 
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-const MANIFEST_RELATIVE_PATH = ['content', 'reference', 'api-manifest.json'];
+const MANIFEST_RELATIVE_PATH = ['content', 'reference', 'manifest.json'];
 
-let cached: ApiManifest | null = null;
+let cached: ReferenceManifest | null = null;
 
 export async function loadManifest(projectRoot: string) {
   if (cached !== null) {
@@ -13,7 +13,7 @@ export async function loadManifest(projectRoot: string) {
   }
   const path = join(projectRoot, ...MANIFEST_RELATIVE_PATH);
   const raw = await readFile(path, 'utf8');
-  cached = JSON.parse(raw) as ApiManifest;
+  cached = JSON.parse(raw) as ReferenceManifest;
   return cached;
 }
 

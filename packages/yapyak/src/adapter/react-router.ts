@@ -14,7 +14,7 @@ import { withRequest } from '.';
  * @remarks
  * Requires `future.v8_middleware: true` in `react-router.config.ts`.
  *
- * @example Register in `app/root.tsx`
+ * @example Register in app/root.tsx
  * ```tsx
  * import type { Route } from './+types/root';
  * import { middleware as yapyakMiddleware } from 'yapyak/adapter/react-router';

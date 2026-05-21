@@ -14,7 +14,7 @@ const PLACEHOLDER = '%yapyak.lang%';
 /**
  * SvelteKit `Handle` hook. Binds yapyak's per-request locale context and substitutes `%yapyak.lang%` in `app.html` with the resolved locale.
  *
- * @example Re-export from `hooks.server.ts`
+ * @example Re-export from hooks.server.ts
  * ```ts
  * export { handle } from 'yapyak/adapter/sveltekit';
  * ```

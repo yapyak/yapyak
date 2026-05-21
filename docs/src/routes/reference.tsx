@@ -3,9 +3,9 @@ import { createServerFn } from '@tanstack/react-start';
 
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
-import { loadReferenceSidebar } from '#lib/reference';
+import { loadSidebar } from '#lib/reference';
 
-const loadData = createServerFn().handler(() => loadReferenceSidebar());
+const loadData = createServerFn().handler(() => loadSidebar());
 
 export const Route = createFileRoute('/reference')({
   async beforeLoad() {

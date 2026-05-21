@@ -1,77 +1,77 @@
-export interface ApiManifest {
-  modules: ApiModule[];
+export interface ReferenceManifest {
+  modules: ReferenceModule[];
 }
 
-export interface ApiModule {
-  exports: ApiExport[];
+export interface ReferenceModule {
+  exports: ReferenceExport[];
   id: string;
   sourcePath: string;
   subpath: string;
 }
 
-export type ApiExport =
-  | ApiFunction
-  | ApiInterface
-  | ApiTypeAlias
-  | ApiVariable
-  | ApiClass;
+export type ReferenceExport =
+  | ReferenceClass
+  | ReferenceFunction
+  | ReferenceInterface
+  | ReferenceTypeAlias
+  | ReferenceVariable;
 
-export interface ApiSymbolBase {
+export interface ReferenceSymbolBase {
   deprecated: string | null;
   description: string;
   examples: string[];
-  location: ApiLocation;
+  location: ReferenceLocation;
   name: string;
-  tags: ApiTag[];
+  tags: ReferenceTag[];
 }
 
-export interface ApiFunction extends ApiSymbolBase {
+export interface ReferenceFunction extends ReferenceSymbolBase {
   kind: 'function';
-  members: ApiMember[];
-  overloads: ApiOverload[];
+  members: ReferenceMember[];
+  overloads: ReferenceOverload[];
   returnDescription: string;
 }
 
-export interface ApiOverload {
-  parameters: ApiParameter[];
+export interface ReferenceOverload {
+  parameters: ReferenceParameter[];
   returnType: TypeToken[];
   signature: string;
-  typeParameters: ApiTypeParameter[];
+  typeParameters: ReferenceTypeParameter[];
 }
 
-export interface ApiTypeParameter {
+export interface ReferenceTypeParameter {
   constraint: TypeToken[] | null;
   defaultType: TypeToken[] | null;
   name: string;
 }
 
-export interface ApiInterface extends ApiSymbolBase {
-  callSignatures: ApiCallSignature[];
+export interface ReferenceInterface extends ReferenceSymbolBase {
+  callSignatures: ReferenceCallSignature[];
   kind: 'interface';
-  members: ApiMember[];
+  members: ReferenceMember[];
   signature: string;
 }
 
-export interface ApiTypeAlias extends ApiSymbolBase {
+export interface ReferenceTypeAlias extends ReferenceSymbolBase {
   kind: 'type';
   resolvedType: TypeToken[];
   signature: string;
 }
 
-export interface ApiVariable extends ApiSymbolBase {
+export interface ReferenceVariable extends ReferenceSymbolBase {
   kind: 'variable';
-  members: ApiMember[];
+  members: ReferenceMember[];
   signature: string;
   type: TypeToken[];
 }
 
-export interface ApiClass extends ApiSymbolBase {
+export interface ReferenceClass extends ReferenceSymbolBase {
   kind: 'class';
-  members: ApiMember[];
+  members: ReferenceMember[];
   signature: string;
 }
 
-export interface ApiParameter {
+export interface ReferenceParameter {
   defaultValue: string | null;
   description: string;
   name: string;
@@ -79,7 +79,7 @@ export interface ApiParameter {
   type: TypeToken[];
 }
 
-export interface ApiMember {
+export interface ReferenceMember {
   defaultValue: string | null;
   description: string;
   name: string;
@@ -87,14 +87,14 @@ export interface ApiMember {
   type: TypeToken[];
 }
 
-export interface ApiCallSignature {
-  parameters: ApiParameter[];
+export interface ReferenceCallSignature {
+  parameters: ReferenceParameter[];
   returnType: TypeToken[];
   signature: string;
-  typeParameters: ApiTypeParameter[];
+  typeParameters: ReferenceTypeParameter[];
 }
 
-export type TypeToken = TypeTextToken | TypeRefToken;
+export type TypeToken = TypeRefToken | TypeTextToken;
 
 export interface TypeTextToken {
   kind: 'text';
@@ -108,13 +108,13 @@ export interface TypeRefToken {
   text: string;
 }
 
-export interface ApiLocation {
+export interface ReferenceLocation {
   column: number;
   file: string;
   line: number;
 }
 
-export interface ApiTag {
+export interface ReferenceTag {
   name: string;
   text: string;
 }

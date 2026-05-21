@@ -1,19 +1,19 @@
 import type { NavNode } from '#lib/navigation';
-import type { ApiManifest, ApiModule } from './types';
+import type { ReferenceManifest, ReferenceModule } from './types';
 
 import { loadManifest } from './manifest.server';
 
-export async function loadReferenceSidebar() {
+export async function loadSidebar() {
   const manifest = await loadManifest(process.cwd());
-  return buildReferenceSidebar(manifest);
+  return buildSidebar(manifest);
 }
 
-export function buildReferenceSidebar(manifest: ApiManifest): NavNode[] {
-  const byId = new Map<string, ApiModule>();
+export function buildSidebar(manifest: ReferenceManifest): NavNode[] {
+  const byId = new Map<string, ReferenceModule>();
   for (const module of manifest.modules) {
     byId.set(module.id, module);
   }
-  const childrenById = new Map<string, ApiModule[]>();
+  const childrenById = new Map<string, ReferenceModule[]>();
   for (const id of byId.keys()) {
     const parentId = findParentId(id, byId);
     if (parentId === null) {
@@ -38,9 +38,9 @@ export function buildReferenceSidebar(manifest: ApiManifest): NavNode[] {
 }
 
 function moduleChildren(
-  module: ApiModule,
-  byId: Map<string, ApiModule>,
-  childrenById: Map<string, ApiModule[]>,
+  module: ReferenceModule,
+  byId: Map<string, ReferenceModule>,
+  childrenById: Map<string, ReferenceModule[]>,
 ): NavNode[] {
   const nodes: NavNode[] = [];
   for (const api of module.exports) {
@@ -65,7 +65,7 @@ function moduleChildren(
   return nodes;
 }
 
-function findParentId(id: string, byId: Map<string, ApiModule>) {
+function findParentId(id: string, byId: Map<string, ReferenceModule>) {
   let cursor = id;
   while (true) {
     const slashIndex = cursor.lastIndexOf('/');

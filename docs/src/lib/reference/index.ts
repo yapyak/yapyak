@@ -1,27 +1,29 @@
 export type {
-  ApiCallSignature,
-  ApiClass,
-  ApiExport,
-  ApiFunction,
-  ApiInterface,
-  ApiLocation,
-  ApiManifest,
-  ApiMember,
-  ApiModule,
-  ApiOverload,
-  ApiParameter,
-  ApiSymbolBase,
-  ApiTag,
-  ApiTypeAlias,
-  ApiTypeParameter,
-  ApiVariable,
+  ReferenceCallSignature,
+  ReferenceClass,
+  ReferenceExport,
+  ReferenceFunction,
+  ReferenceInterface,
+  ReferenceLocation,
+  ReferenceManifest,
+  ReferenceMember,
+  ReferenceModule,
+  ReferenceOverload,
+  ReferenceParameter,
+  ReferenceSymbolBase,
+  ReferenceTag,
+  ReferenceTypeAlias,
+  ReferenceTypeParameter,
+  ReferenceVariable,
   TypeRefToken,
   TypeTextToken,
   TypeToken,
 } from './types';
 
-export { extractApi } from './api.server';
-export { loadReferencePage } from './load.server';
-export { loadManifest } from './manifest.server';
-export { buildSymbolPage } from './pages.server';
-export { buildReferenceSidebar, loadReferenceSidebar } from './sidebar.server';
+export { loadReferencePage } from './load.server.ts';
+export { loadManifest } from './manifest.server.ts';
+export { buildSymbolPage } from './pages.server.ts';
+export {
+  buildSidebar,
+  loadSidebar,
+} from './sidebar.server.ts';

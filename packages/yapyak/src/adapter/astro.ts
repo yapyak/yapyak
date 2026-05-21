@@ -14,7 +14,7 @@ type AstroMiddleware = ReturnType<typeof defineMiddleware>;
 /**
  * Astro middleware. Wires yapyak's per-request locale context.
  *
- * @example Re-export from `src/middleware.ts`
+ * @example Re-export from src/middleware.ts
  * ```ts
  * export { middleware as onRequest } from 'yapyak/adapter/astro';
  * ```
