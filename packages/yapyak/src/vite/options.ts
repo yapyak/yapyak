@@ -39,7 +39,7 @@ export interface YapyakOptions {
    * Preserve existing translations when a `t()` call is renamed in place.
    * Defaults to `true` without a translator, `false` with one.
    */
-  shouldPreserveTranslationsOnRename?: boolean;
+  preserveTranslationsOnRename?: boolean;
   /**
    * Keep `document.documentElement.lang` synced with the current locale.
    *
@@ -47,9 +47,9 @@ export interface YapyakOptions {
    * `true`. Useful for SvelteKit/Astro/SPA setups where the `<html>` element
    * isn't owned by a reactive framework binding. See each adapter's docs.
    */
-  shouldSyncHtmlLang?: boolean;
+  syncHtmlLang?: boolean;
   /** Detect locale from the `Accept-Language` header on the server. */
-  shouldUseAcceptLanguage?: boolean;
+  detectAcceptLanguage?: boolean;
   /** Translator used to fill missing entries. Stubs stay empty without one. */
   translator?: Translator;
 }
@@ -60,9 +60,9 @@ interface NormalizedOptions {
   include: FilterPattern;
   localesDir: string;
   persistence: NormalizedPersistence;
-  shouldPreserveTranslationsOnRename: boolean;
-  shouldSyncHtmlLang: boolean;
-  shouldUseAcceptLanguage: boolean;
+  detectAcceptLanguage: boolean;
+  preserveTranslationsOnRename: boolean;
+  syncHtmlLang: boolean;
   translator: Translator | undefined;
 }
 
@@ -94,11 +94,11 @@ export function normalizeOptions(options: YapyakOptions): NormalizedOptions {
     include: options.include ?? DEFAULT_INCLUDE,
     localesDir: options.localesDir ?? 'locales',
     persistence: normalizePersistence(options.persistence),
-    shouldPreserveTranslationsOnRename:
-      options.shouldPreserveTranslationsOnRename ??
+    detectAcceptLanguage: options.detectAcceptLanguage ?? false,
+    preserveTranslationsOnRename:
+      options.preserveTranslationsOnRename ??
       options.translator === undefined,
-    shouldSyncHtmlLang: options.shouldSyncHtmlLang ?? false,
-    shouldUseAcceptLanguage: options.shouldUseAcceptLanguage ?? false,
+    syncHtmlLang: options.syncHtmlLang ?? false,
     translator: options.translator,
   };
 }

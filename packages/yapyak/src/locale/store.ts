@@ -1,8 +1,8 @@
 import { createPersistence, parseCookie } from '../persistence';
 import { resolveLocale } from './resolve';
 import {
-  ACCEPT_LANGUAGE,
   DEFAULT_LOCALE,
+  DETECT_ACCEPT_LANGUAGE,
   LOCALES,
   PERSISTENCE,
   SYNC_HTML_LANG,
@@ -76,7 +76,9 @@ export function getLocale(): string {
           ? readCookieValue(source.cookieHeader, cookieName)
           : undefined;
       return resolveLocale({
-        acceptLanguage: ACCEPT_LANGUAGE ? source.acceptLanguage : undefined,
+        acceptLanguage: DETECT_ACCEPT_LANGUAGE
+          ? source.acceptLanguage
+          : undefined,
         defaultLocale: DEFAULT_LOCALE,
         locales: LOCALES,
         persisted,

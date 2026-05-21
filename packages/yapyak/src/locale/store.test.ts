@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('virtual:yapyak', () => ({
-  ACCEPT_LANGUAGE: false,
   DEFAULT_LOCALE: 'en',
+  DETECT_ACCEPT_LANGUAGE: false,
   LOCALES: ['en', 'sv', 'fr'],
   PERSISTENCE: null,
   SYNC_HTML_LANG: false,

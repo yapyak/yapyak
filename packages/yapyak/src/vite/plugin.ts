@@ -208,7 +208,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
           projectRoot,
           renames,
           shouldPreserveTranslations:
-            normalized.shouldPreserveTranslationsOnRename,
+            normalized.preserveTranslationsOnRename,
         });
         localeCache = null;
       }
@@ -283,10 +283,10 @@ function generateConfig(
     `export const PERSISTENCE = ${JSON.stringify(normalized.persistence)};`,
   );
   lines.push(
-    `export const ACCEPT_LANGUAGE = ${JSON.stringify(normalized.shouldUseAcceptLanguage)};`,
+    `export const DETECT_ACCEPT_LANGUAGE = ${JSON.stringify(normalized.detectAcceptLanguage)};`,
   );
   lines.push(
-    `export const SYNC_HTML_LANG = ${JSON.stringify(normalized.shouldSyncHtmlLang)};`,
+    `export const SYNC_HTML_LANG = ${JSON.stringify(normalized.syncHtmlLang)};`,
   );
   return lines.join('\n');
 }

@@ -5,6 +5,6 @@ declare module 'virtual:yapyak' {
     | { type: 'cookie'; name: string }
     | { type: 'localStorage'; key: string }
     | null;
-  export const ACCEPT_LANGUAGE: boolean;
+  export const DETECT_ACCEPT_LANGUAGE: boolean;
   export const SYNC_HTML_LANG: boolean;
 }

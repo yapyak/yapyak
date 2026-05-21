@@ -41,7 +41,7 @@
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 103
+            "line": 105
           },
           "name": "setLocale",
           "tags": [],
@@ -84,7 +84,7 @@
           "location": {
             "column": 1,
             "file": "src/locale/store.ts",
-            "line": 141
+            "line": 143
           },
           "name": "subscribeLocale",
           "tags": [],
@@ -245,7 +245,7 @@
           "location": {
             "column": 14,
             "file": "src/locale/store.ts",
-            "line": 124
+            "line": 126
           },
           "name": "defaultLocale",
           "tags": [],
@@ -266,7 +266,7 @@
           "location": {
             "column": 14,
             "file": "src/locale/store.ts",
-            "line": 121
+            "line": 123
           },
           "name": "locales",
           "tags": [],
@@ -654,7 +654,7 @@
             {
               "defaultValue": null,
               "description": "Type differentiator only.\nWe need this to be in public d.ts but don't want it to show up in IDE\nautocomplete, so we use a private Symbol instead.",
-              "name": "__@RefSymbol@815",
+              "name": "__@RefSymbol@322",
               "optional": false,
               "type": [
                 {
@@ -838,6 +838,18 @@
             },
             {
               "defaultValue": null,
+              "description": "Detect locale from the `Accept-Language` header on the server.",
+              "name": "detectAcceptLanguage",
+              "optional": true,
+              "type": [
+                {
+                  "kind": "text",
+                  "text": "boolean"
+                }
+              ]
+            },
+            {
+              "defaultValue": null,
               "description": "Glob patterns to exclude from extraction.",
               "name": "exclude",
               "optional": true,
@@ -887,7 +899,7 @@
             {
               "defaultValue": null,
               "description": "Preserve existing translations when a `t()` call is renamed in place.\nDefaults to `true` without a translator, `false` with one.",
-              "name": "shouldPreserveTranslationsOnRename",
+              "name": "preserveTranslationsOnRename",
               "optional": true,
               "type": [
                 {
@@ -899,19 +911,7 @@
             {
               "defaultValue": null,
               "description": "Keep `document.documentElement.lang` synced with the current locale.\n\nOff by default. yapyak does not touch the DOM unless this is set to\n`true`. Useful for SvelteKit/Astro/SPA setups where the `<html>` element\nisn't owned by a reactive framework binding. See each adapter's docs.",
-              "name": "shouldSyncHtmlLang",
-              "optional": true,
-              "type": [
-                {
-                  "kind": "text",
-                  "text": "boolean"
-                }
-              ]
-            },
-            {
-              "defaultValue": null,
-              "description": "Detect locale from the `Accept-Language` header on the server.",
-              "name": "shouldUseAcceptLanguage",
+              "name": "syncHtmlLang",
               "optional": true,
               "type": [
                 {
