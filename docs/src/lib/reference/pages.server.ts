@@ -1,9 +1,11 @@
 import type { Block, Page, TableRowBlock } from '#lib/content';
 import type {
+  ReferenceExample,
   ReferenceExport,
   ReferenceMember,
   ReferenceOverload,
   ReferenceParameter,
+  ReferenceThrows,
   ReferenceTypeAlias,
   ReferenceTypeParameter,
   ReferenceVariable,
@@ -35,6 +37,11 @@ export function buildSymbolPage(symbol: ReferenceExport, moduleId: string): Page
 
   if (symbol.description) {
     const parsed = parseContent(symbol.description);
+    blocks.push(...parsed.blocks);
+  }
+
+  if (symbol.remarks) {
+    const parsed = parseContent(symbol.remarks);
     blocks.push(...parsed.blocks);
   }
 
@@ -99,11 +106,21 @@ export function buildSymbolPage(symbol: ReferenceExport, moduleId: string): Page
     }
   }
 
+  if (symbol.throws.length > 0) {
+    blocks.push(heading2('Throws'));
+    blocks.push(throwsTable(symbol.throws));
+  }
+
   if (symbol.examples.length > 0) {
     blocks.push(heading2('Examples'));
     for (const example of symbol.examples) {
-      blocks.push(...parseContent(example).blocks);
+      blocks.push(...exampleBlocks(example));
     }
+  }
+
+  if (symbol.seeAlso.length > 0) {
+    blocks.push(heading2('See also'));
+    blocks.push(seeAlsoList(symbol.seeAlso));
   }
 
   blocks.push({
@@ -202,7 +219,7 @@ function typeParametersTable(typeParameters: ReferenceTypeParameter[]): Block {
     body: typeParameters.map((typeParameter) =>
       typeParameterRow(typeParameter),
     ),
-    head: tableHeaderRow(['Name', 'Constraint', 'Default']),
+    head: tableHeaderRow(['Name', 'Constraint', 'Default', 'Description']),
     type: 'table',
   };
 }
@@ -221,6 +238,7 @@ function typeParameterRow(typeParameter: ReferenceTypeParameter): TableRowBlock 
           ? tokensToBlocks(typeParameter.defaultType)
           : [{ type: 'text', value: '' }],
       ),
+      bodyCell(markdownToInline(typeParameter.description)),
     ],
     type: 'table-row',
   };
@@ -252,7 +270,7 @@ function paramRow(parameter: ReferenceParameter): TableRowBlock {
         },
       ]),
       bodyCell(tokensToBlocks(parameter.type)),
-      bodyCell([{ type: 'text', value: parameter.description }]),
+      bodyCell(markdownToInline(parameter.description)),
     ],
     type: 'table-row',
   };
@@ -268,7 +286,7 @@ function memberRow(member: ReferenceMember): TableRowBlock {
         },
       ]),
       bodyCell(tokensToBlocks(member.type)),
-      bodyCell([{ type: 'text', value: member.description }]),
+      bodyCell(markdownToInline(member.description)),
     ],
     type: 'table-row',
   };
@@ -333,4 +351,72 @@ function symbolHref(moduleId: string, name: string) {
   return slug === 'yapyak'
     ? `/reference/${name}`
     : `/reference/${slug}/${name}`;
+}
+
+function markdownToInline(source: string): Block[] {
+  if (source === '') {
+    return [{ type: 'text', value: '' }];
+  }
+  const parsed = parseContent(source);
+  const blocks = parsed.blocks;
+  if (
+    blocks.length === 1 &&
+    blocks[0] !== undefined &&
+    blocks[0].type === 'paragraph'
+  ) {
+    return blocks[0].children;
+  }
+  return blocks;
+}
+
+function exampleBlocks(example: ReferenceExample): Block[] {
+  const result: Block[] = [];
+  if (example.title !== null) {
+    result.push({
+      children: [{ type: 'text', value: example.title }],
+      id: slugify(example.title),
+      level: 3,
+      type: 'heading',
+    });
+  }
+  result.push({
+    label: null,
+    language: example.language,
+    source: example.code,
+    type: 'code-block',
+  });
+  return result;
+}
+
+function throwsTable(throws: ReferenceThrows[]): Block {
+  return {
+    body: throws.map((entry) => throwsRow(entry)),
+    head: tableHeaderRow(['Error', 'When']),
+    type: 'table',
+  };
+}
+
+function throwsRow(entry: ReferenceThrows): TableRowBlock {
+  return {
+    children: [
+      bodyCell(
+        entry.errorClass
+          ? [{ type: 'inline-code', value: entry.errorClass }]
+          : [{ type: 'text', value: '' }],
+      ),
+      bodyCell(markdownToInline(entry.condition)),
+    ],
+    type: 'table-row',
+  };
+}
+
+function seeAlsoList(entries: string[]): Block {
+  return {
+    children: entries.map((entry) => ({
+      children: markdownToInline(entry),
+      type: 'list-item',
+    })),
+    ordered: false,
+    type: 'list',
+  };
 }

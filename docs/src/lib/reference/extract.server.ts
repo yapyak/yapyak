@@ -9,6 +9,7 @@ import type {
 } from 'typedoc';
 import type {
   ReferenceCallSignature,
+  ReferenceExample,
   ReferenceExport,
   ReferenceFunction,
   ReferenceInterface,
@@ -18,7 +19,9 @@ import type {
   ReferenceModule,
   ReferenceOverload,
   ReferenceParameter,
+  ReferenceSymbolBase,
   ReferenceTag,
+  ReferenceThrows,
   ReferenceTypeAlias,
   ReferenceTypeParameter,
   ReferenceVariable,
@@ -40,12 +43,29 @@ interface PackageManifest {
   name: string;
 }
 
+interface Context {
+  nameIndex: Map<string, string | 'ambiguous'>;
+  registry: Map<number, string>;
+  yapyakDir: string;
+}
+
+interface CommentLike {
+  blockTags?: ReadonlyArray<{
+    content?: ReadonlyArray<CommentDisplayPart>;
+    name?: string;
+    tag: string;
+  }>;
+  summary?: ReadonlyArray<CommentDisplayPart>;
+}
+
 export async function extract(
   yapyakDir: string,
 ): Promise<ReferenceManifest> {
   const entries = await loadEntries(yapyakDir);
   const project = await loadProject(yapyakDir, entries);
-  const modules = collectModules(project, entries, yapyakDir);
+  const { nameIndex, registry } = buildLinkRegistry(project, entries, yapyakDir);
+  const context: Context = { nameIndex, registry, yapyakDir };
+  const modules = collectModules(project, entries, context);
   return { modules };
 }
 
@@ -95,15 +115,55 @@ async function loadProject(
   return project;
 }
 
-function collectModules(
+function buildLinkRegistry(
   project: ProjectReflection,
   entries: EntryPoint[],
   yapyakDir: string,
+): {
+  nameIndex: Map<string, string | 'ambiguous'>;
+  registry: Map<number, string>;
+} {
+  const entriesByName = new Map<string, EntryPoint>();
+  for (const entry of entries) {
+    entriesByName.set(entryToModuleName(entry, yapyakDir), entry);
+  }
+  const registry = new Map<number, string>();
+  const nameIndex = new Map<string, string | 'ambiguous'>();
+  for (const child of project.children ?? []) {
+    const entry = entriesByName.get(child.name);
+    if (entry === undefined) {
+      continue;
+    }
+    for (const symbol of child.children ?? []) {
+      const url = buildSymbolUrl(entry.id, symbol.name);
+      registry.set(symbol.id, url);
+      const existing = nameIndex.get(symbol.name);
+      if (existing === undefined) {
+        nameIndex.set(symbol.name, url);
+      } else if (existing !== url) {
+        nameIndex.set(symbol.name, 'ambiguous');
+      }
+    }
+  }
+  return { nameIndex, registry };
+}
+
+function buildSymbolUrl(moduleId: string, symbolName: string): string {
+  if (moduleId === 'yapyak') {
+    return `/reference/${symbolName}`;
+  }
+  const slug = moduleId.replace(/^yapyak\//, '');
+  return `/reference/${slug}/${symbolName}`;
+}
+
+function collectModules(
+  project: ProjectReflection,
+  entries: EntryPoint[],
+  context: Context,
 ): ReferenceModule[] {
   const entriesByName = new Map<string, EntryPoint>();
   for (const entry of entries) {
-    const moduleName = entryToModuleName(entry, yapyakDir);
-    entriesByName.set(moduleName, entry);
+    entriesByName.set(entryToModuleName(entry, context.yapyakDir), entry);
   }
 
   const modules: ReferenceModule[] = [];
@@ -113,13 +173,16 @@ function collectModules(
       continue;
     }
     const exports = (child.children ?? [])
-      .flatMap((symbol) => convertExport(symbol, yapyakDir) ?? [])
+      .flatMap((symbol) => convertExport(symbol, context) ?? [])
       .filter((value): value is ReferenceExport => value !== null);
     exports.sort(compareExports);
     modules.push({
       exports,
       id: entry.id,
-      sourcePath: relative(yapyakDir, entry.filePath).replaceAll('\\', '/'),
+      sourcePath: relative(context.yapyakDir, entry.filePath).replaceAll(
+        '\\',
+        '/',
+      ),
       subpath: entry.subpath,
     });
   }
@@ -134,19 +197,19 @@ function entryToModuleName(entry: EntryPoint, yapyakDir: string): string {
 
 function convertExport(
   reflection: DeclarationReflection,
-  yapyakDir: string,
+  context: Context,
 ): ReferenceExport | null {
   switch (reflection.kind) {
     case ReflectionKind.Function:
-      return convertFunction(reflection, yapyakDir);
+      return convertFunction(reflection, context);
     case ReflectionKind.Interface:
-      return convertInterface(reflection, yapyakDir);
+      return convertInterface(reflection, context);
     case ReflectionKind.TypeAlias:
-      return convertTypeAlias(reflection, yapyakDir);
+      return convertTypeAlias(reflection, context);
     case ReflectionKind.Variable:
-      return convertVariable(reflection, yapyakDir);
+      return convertVariable(reflection, context);
     case ReflectionKind.Class:
-      return convertClass(reflection, yapyakDir);
+      return convertClass(reflection, context);
     default:
       return null;
   }
@@ -154,14 +217,15 @@ function convertExport(
 
 function convertFunction(
   reflection: DeclarationReflection,
-  yapyakDir: string,
+  context: Context,
 ): ReferenceFunction {
-  const base = convertBase(reflection, yapyakDir);
+  const base = convertBase(reflection, context);
   const overloads = (reflection.signatures ?? []).map((signature) =>
-    convertOverload(signature, reflection.name),
+    convertOverload(signature, reflection.name, context),
   );
   const returnDescription = readReturnDescription(
     reflection.signatures?.[0] ?? null,
+    context,
   );
   return {
     ...base,
@@ -174,29 +238,29 @@ function convertFunction(
 
 function convertInterface(
   reflection: DeclarationReflection,
-  yapyakDir: string,
+  context: Context,
 ): ReferenceInterface {
-  const base = convertBase(reflection, yapyakDir);
+  const base = convertBase(reflection, context);
   const callSignatures = (reflection.signatures ?? []).map((signature) =>
-    convertCallSignature(signature),
+    convertCallSignature(signature, context),
   );
   const members = (reflection.children ?? []).map((child) =>
-    convertMember(child),
+    convertMember(child, context),
   );
   return {
     ...base,
     callSignatures,
     kind: 'interface',
     members,
-    signature: buildInterfaceSignature(reflection),
+    signature: buildInterfaceSignature(reflection, context),
   };
 }
 
 function convertTypeAlias(
   reflection: DeclarationReflection,
-  yapyakDir: string,
+  context: Context,
 ): ReferenceTypeAlias {
-  const base = convertBase(reflection, yapyakDir);
+  const base = convertBase(reflection, context);
   const resolvedType =
     reflection.type === undefined ? [] : convertType(reflection.type);
   return {
@@ -209,9 +273,9 @@ function convertTypeAlias(
 
 function convertVariable(
   reflection: DeclarationReflection,
-  yapyakDir: string,
+  context: Context,
 ): ReferenceVariable {
-  const base = convertBase(reflection, yapyakDir);
+  const base = convertBase(reflection, context);
   const type = reflection.type === undefined ? [] : convertType(reflection.type);
   return {
     ...base,
@@ -224,11 +288,11 @@ function convertVariable(
 
 function convertClass(
   reflection: DeclarationReflection,
-  yapyakDir: string,
+  context: Context,
 ): ReferenceExport {
-  const base = convertBase(reflection, yapyakDir);
+  const base = convertBase(reflection, context);
   const members = (reflection.children ?? []).map((child) =>
-    convertMember(child),
+    convertMember(child, context),
   );
   return {
     ...base,
@@ -240,41 +304,34 @@ function convertClass(
 
 function convertBase(
   reflection: DeclarationReflection,
-  yapyakDir: string,
-): {
-  deprecated: string | null;
-  description: string;
-  examples: string[];
-  location: ReferenceLocation;
-  name: string;
-  tags: ReferenceTag[];
-} {
+  context: Context,
+): ReferenceSymbolBase {
   const comment = reflection.comment ?? null;
   const signature = reflection.signatures?.[0]?.comment ?? null;
   const effective = comment ?? signature;
-  const description = effective ? partsToMarkdown(effective.summary) : '';
-  const examples = effective ? collectExamples(effective) : [];
-  const tags = effective ? collectTags(effective) : [];
-  const deprecated = effective ? readDeprecated(effective) : null;
   return {
-    deprecated,
-    description,
-    examples,
-    location: readLocation(reflection, yapyakDir),
+    deprecated: effective ? readDeprecated(effective, context) : null,
+    description: effective ? partsToMarkdown(effective.summary, context) : '',
+    examples: effective ? collectExamples(effective, context) : [],
+    location: readLocation(reflection, context.yapyakDir),
     name: reflection.name,
-    tags,
+    remarks: effective ? readBlockTag(effective, '@remarks', context) : '',
+    seeAlso: effective ? readSeeAlso(effective, context) : [],
+    tags: effective ? collectTags(effective, context) : [],
+    throws: effective ? readThrows(effective, context) : [],
   };
 }
 
 function convertOverload(
   signature: SignatureReflection,
   functionName: string,
+  context: Context,
 ): ReferenceOverload {
   const parameters = (signature.parameters ?? []).map((param) =>
-    convertParameter(param),
+    convertParameter(param, context),
   );
   const typeParameters = (signature.typeParameters ?? []).map((param) =>
-    convertTypeParameter(param),
+    convertTypeParameter(param, context),
   );
   const returnType =
     signature.type === undefined ? [] : convertType(signature.type);
@@ -293,12 +350,13 @@ function convertOverload(
 
 function convertCallSignature(
   signature: SignatureReflection,
+  context: Context,
 ): ReferenceCallSignature {
   const parameters = (signature.parameters ?? []).map((param) =>
-    convertParameter(param),
+    convertParameter(param, context),
   );
   const typeParameters = (signature.typeParameters ?? []).map((param) =>
-    convertTypeParameter(param),
+    convertTypeParameter(param, context),
   );
   const returnType =
     signature.type === undefined ? [] : convertType(signature.type);
@@ -312,21 +370,29 @@ function convertCallSignature(
   };
 }
 
-function convertParameter(param: ParameterReflection): ReferenceParameter {
+function convertParameter(
+  param: ParameterReflection,
+  context: Context,
+): ReferenceParameter {
   return {
     defaultValue: param.defaultValue ?? null,
-    description: param.comment ? partsToMarkdown(param.comment.summary) : '',
+    description: param.comment
+      ? partsToMarkdown(param.comment.summary, context)
+      : '',
     name: param.name,
     optional: Boolean(param.flags.isOptional) || param.defaultValue !== undefined,
     type: param.type === undefined ? [] : convertType(param.type),
   };
 }
 
-function convertMember(reflection: DeclarationReflection): ReferenceMember {
+function convertMember(
+  reflection: DeclarationReflection,
+  context: Context,
+): ReferenceMember {
   const comment = reflection.comment ?? null;
   return {
-    defaultValue: readDefaultValue(reflection),
-    description: comment ? partsToMarkdown(comment.summary) : '',
+    defaultValue: readDefaultValue(reflection, context),
+    description: comment ? partsToMarkdown(comment.summary, context) : '',
     name: reflection.name,
     optional: Boolean(reflection.flags.isOptional),
     type: reflection.type === undefined ? [] : convertType(reflection.type),
@@ -335,11 +401,15 @@ function convertMember(reflection: DeclarationReflection): ReferenceMember {
 
 function convertTypeParameter(
   param: TypeParameterReflection,
+  context: Context,
 ): ReferenceTypeParameter {
   return {
     constraint: param.type === undefined ? null : convertType(param.type),
     defaultType:
       param.default === undefined ? null : convertType(param.default),
+    description: param.comment
+      ? partsToMarkdown(param.comment.summary, context)
+      : '',
     name: param.name,
   };
 }
@@ -412,12 +482,77 @@ function appendType(type: SomeType, tokens: TypeToken[]): void {
       tokens.push({ kind: 'text', text: ']' });
       return;
     case 'reflection': {
-      const text = type.declaration.toString();
-      tokens.push({ kind: 'text', text });
+      appendReflectionType(type, tokens);
       return;
     }
     default:
       tokens.push({ kind: 'text', text: type.toString() });
+  }
+}
+
+function appendReflectionType(
+  type: { declaration: DeclarationReflection },
+  tokens: TypeToken[],
+): void {
+  const declaration = type.declaration;
+  const signature = declaration.signatures?.[0];
+  if (signature !== undefined) {
+    appendSignatureType(signature, tokens);
+    return;
+  }
+  const children = declaration.children;
+  if (children !== undefined && children.length > 0) {
+    tokens.push({ kind: 'text', text: '{ ' });
+    for (let index = 0; index < children.length; index++) {
+      const child = children[index]!;
+      if (index > 0) {
+        tokens.push({ kind: 'text', text: '; ' });
+      }
+      const optional = child.flags.isOptional ? '?' : '';
+      tokens.push({ kind: 'text', text: `${child.name}${optional}: ` });
+      if (child.type !== undefined) {
+        appendType(child.type, tokens);
+      }
+    }
+    tokens.push({ kind: 'text', text: ' }' });
+    return;
+  }
+  tokens.push({ kind: 'text', text: '{}' });
+}
+
+function appendSignatureType(
+  signature: SignatureReflection,
+  tokens: TypeToken[],
+): void {
+  const typeParameters = signature.typeParameters ?? [];
+  if (typeParameters.length > 0) {
+    tokens.push({ kind: 'text', text: '<' });
+    for (let index = 0; index < typeParameters.length; index++) {
+      if (index > 0) {
+        tokens.push({ kind: 'text', text: ', ' });
+      }
+      tokens.push({ kind: 'text', text: typeParameters[index]!.name });
+    }
+    tokens.push({ kind: 'text', text: '>' });
+  }
+  tokens.push({ kind: 'text', text: '(' });
+  const parameters = signature.parameters ?? [];
+  for (let index = 0; index < parameters.length; index++) {
+    if (index > 0) {
+      tokens.push({ kind: 'text', text: ', ' });
+    }
+    const param = parameters[index]!;
+    const optional = param.flags.isOptional ? '?' : '';
+    tokens.push({ kind: 'text', text: `${param.name}${optional}: ` });
+    if (param.type !== undefined) {
+      appendType(param.type, tokens);
+    }
+  }
+  tokens.push({ kind: 'text', text: ') => ' });
+  if (signature.type !== undefined) {
+    appendType(signature.type, tokens);
+  } else {
+    tokens.push({ kind: 'text', text: 'void' });
   }
 }
 
@@ -491,14 +626,23 @@ function buildFunctionSignature(
   return `function ${name}${tp}(${params}): ${stringifyTokens(returnType)};`;
 }
 
-function buildInterfaceSignature(reflection: DeclarationReflection): string {
+function buildInterfaceSignature(
+  reflection: DeclarationReflection,
+  context: Context,
+): string {
   const tp = (reflection.typeParameters ?? []).map((param) =>
-    convertTypeParameter(param),
+    convertTypeParameter(param, context),
   );
   return `interface ${reflection.name}${buildTypeParameterList(tp)}`;
 }
 
-function partsToMarkdown(parts: CommentDisplayPart[]): string {
+function partsToMarkdown(
+  parts: ReadonlyArray<CommentDisplayPart> | undefined,
+  context: Context,
+): string {
+  if (parts === undefined) {
+    return '';
+  }
   let out = '';
   for (const part of parts) {
     if (part.kind === 'text') {
@@ -506,71 +650,185 @@ function partsToMarkdown(parts: CommentDisplayPart[]): string {
     } else if (part.kind === 'code') {
       out += part.text;
     } else if (part.kind === 'inline-tag' && part.tag === '@link') {
-      out += `\`${part.text}\``;
+      out += resolveInlineLink(part, context);
     }
   }
   return out;
 }
 
-function collectExamples(comment: {
-  blockTags?: { content?: CommentDisplayPart[]; name?: string; tag: string }[];
-}): string[] {
-  const examples: string[] = [];
+function resolveInlineLink(
+  part: { target?: unknown; text: string },
+  context: Context,
+): string {
+  const targetId = resolveTargetId(part.target);
+  if (targetId !== null) {
+    const url = context.registry.get(targetId);
+    if (url !== undefined) {
+      return `[${part.text}](${url})`;
+    }
+  }
+  const byName = context.nameIndex.get(part.text);
+  if (byName !== undefined && byName !== 'ambiguous') {
+    return `[${part.text}](${byName})`;
+  }
+  return `\`${part.text}\``;
+}
+
+function resolveTargetId(target: unknown): number | null {
+  if (typeof target === 'number') {
+    return target;
+  }
+  if (
+    typeof target === 'object' &&
+    target !== null &&
+    'id' in target &&
+    typeof (target as { id: unknown }).id === 'number'
+  ) {
+    return (target as { id: number }).id;
+  }
+  return null;
+}
+
+function collectExamples(
+  comment: CommentLike,
+  context: Context,
+): ReferenceExample[] {
+  const examples: ReferenceExample[] = [];
   for (const tag of comment.blockTags ?? []) {
     if (tag.tag !== '@example') {
       continue;
     }
-    const code = tag.content
+    const rawContent = tag.content
       ? tag.content.map((part) => part.text ?? '').join('')
       : '';
-    examples.push(tag.name ? `**${tag.name}**\n\n${code}` : code);
+    const fenced = parseCodeFence(rawContent);
+    examples.push({
+      code: fenced.code,
+      language: fenced.language,
+      title: tag.name ? tag.name : null,
+    });
+    void context;
   }
   return examples;
 }
 
-function collectTags(comment: {
-  blockTags?: { content?: CommentDisplayPart[]; tag: string }[];
-}): ReferenceTag[] {
+function parseCodeFence(raw: string): { code: string; language: string } {
+  const trimmed = raw.trim();
+  const fenceMatch = trimmed.match(/^```(\S*)\n([\s\S]*?)\n```$/);
+  if (fenceMatch !== null) {
+    return {
+      code: fenceMatch[2] ?? '',
+      language: fenceMatch[1] ?? 'ts',
+    };
+  }
+  return { code: trimmed, language: 'ts' };
+}
+
+function collectTags(
+  comment: CommentLike,
+  context: Context,
+): ReferenceTag[] {
   const tags: ReferenceTag[] = [];
   for (const tag of comment.blockTags ?? []) {
     if (
       tag.tag === '@example' ||
       tag.tag === '@deprecated' ||
       tag.tag === '@returns' ||
-      tag.tag === '@remarks'
+      tag.tag === '@remarks' ||
+      tag.tag === '@throws' ||
+      tag.tag === '@see' ||
+      tag.tag === '@param' ||
+      tag.tag === '@typeParam' ||
+      tag.tag === '@defaultValue'
     ) {
       continue;
     }
-    const text = tag.content ? partsToMarkdown(tag.content) : '';
-    tags.push({ name: tag.tag.replace(/^@/, ''), text });
+    tags.push({
+      name: tag.tag.replace(/^@/, ''),
+      text: partsToMarkdown(tag.content, context),
+    });
   }
   return tags;
 }
 
-function readDeprecated(comment: {
-  blockTags?: { content?: CommentDisplayPart[]; tag: string }[];
-}): string | null {
+function readBlockTag(
+  comment: CommentLike,
+  tagName: string,
+  context: Context,
+): string {
   for (const tag of comment.blockTags ?? []) {
-    if (tag.tag === '@deprecated') {
-      return tag.content ? partsToMarkdown(tag.content) : '';
-    }
-  }
-  return null;
-}
-
-function readReturnDescription(signature: SignatureReflection | null): string {
-  if (signature === null || signature.comment === undefined) {
-    return '';
-  }
-  for (const tag of signature.comment.blockTags ?? []) {
-    if (tag.tag === '@returns') {
-      return partsToMarkdown(tag.content);
+    if (tag.tag === tagName) {
+      return partsToMarkdown(tag.content, context);
     }
   }
   return '';
 }
 
-function readDefaultValue(reflection: DeclarationReflection): string | null {
+function readDeprecated(
+  comment: CommentLike,
+  context: Context,
+): string | null {
+  for (const tag of comment.blockTags ?? []) {
+    if (tag.tag === '@deprecated') {
+      return partsToMarkdown(tag.content, context);
+    }
+  }
+  return null;
+}
+
+function readSeeAlso(comment: CommentLike, context: Context): string[] {
+  const entries: string[] = [];
+  for (const tag of comment.blockTags ?? []) {
+    if (tag.tag !== '@see') {
+      continue;
+    }
+    entries.push(partsToMarkdown(tag.content, context));
+  }
+  return entries;
+}
+
+function readThrows(
+  comment: CommentLike,
+  context: Context,
+): ReferenceThrows[] {
+  const throws: ReferenceThrows[] = [];
+  for (const tag of comment.blockTags ?? []) {
+    if (tag.tag !== '@throws') {
+      continue;
+    }
+    const text = partsToMarkdown(tag.content, context).trim();
+    const match = text.match(/^\{(?:@link\s+)?([^}]+)\}\s*(.*)$/s);
+    if (match !== null) {
+      throws.push({
+        condition: (match[2] ?? '').trim(),
+        errorClass: (match[1] ?? '').trim(),
+      });
+    } else {
+      throws.push({ condition: text, errorClass: '' });
+    }
+  }
+  return throws;
+}
+
+function readReturnDescription(
+  signature: SignatureReflection | null,
+  context: Context,
+): string {
+  if (signature === null || signature.comment === undefined) {
+    return '';
+  }
+  for (const tag of signature.comment.blockTags ?? []) {
+    if (tag.tag === '@returns') {
+      return partsToMarkdown(tag.content, context);
+    }
+  }
+  return '';
+}
+
+function readDefaultValue(
+  reflection: DeclarationReflection,
+  context: Context,
+): string | null {
   if (reflection.defaultValue !== undefined) {
     return reflection.defaultValue;
   }
@@ -580,7 +838,7 @@ function readDefaultValue(reflection: DeclarationReflection): string | null {
   if (tag === undefined) {
     return null;
   }
-  return partsToMarkdown(tag.content).trim() || null;
+  return partsToMarkdown(tag.content, context).trim() || null;
 }
 
 function readLocation(

@@ -28,10 +28,6 @@
       line-height: var(--line-height-loose);
       color: var(--foreground-soft);
       letter-spacing: var(--letter-spacing-tight);
-
-      @media (min-width: 60rem) {
-        max-width: 40rem;
-      }
     }
   }
 }

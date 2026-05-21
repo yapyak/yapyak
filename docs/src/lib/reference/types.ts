@@ -19,10 +19,24 @@ export type ReferenceExport =
 export interface ReferenceSymbolBase {
   deprecated: string | null;
   description: string;
-  examples: string[];
+  examples: ReferenceExample[];
   location: ReferenceLocation;
   name: string;
+  remarks: string;
+  seeAlso: string[];
   tags: ReferenceTag[];
+  throws: ReferenceThrows[];
+}
+
+export interface ReferenceExample {
+  code: string;
+  language: string;
+  title: string | null;
+}
+
+export interface ReferenceThrows {
+  condition: string;
+  errorClass: string;
 }
 
 export interface ReferenceFunction extends ReferenceSymbolBase {
@@ -42,6 +56,7 @@ export interface ReferenceOverload {
 export interface ReferenceTypeParameter {
   constraint: TypeToken[] | null;
   defaultType: TypeToken[] | null;
+  description: string;
   name: string;
 }
 

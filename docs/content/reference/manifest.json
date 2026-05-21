@@ -6,7 +6,11 @@
           "deprecated": null,
           "description": "Runs `fn` with the request's locale headers bound to async-scoped storage.",
           "examples": [
-            "```ts\nimport { withRequest } from 'yapyak/adapter';\n\nfunction handler(request: Request): Response {\n  return withRequest(request, () => renderApp(request));\n}\n```"
+            {
+              "code": "import { withRequest } from 'yapyak/adapter';\n\nfunction handler(request: Request): Response {\n  return withRequest(request, () => renderApp(request));\n}",
+              "language": "ts",
+              "title": null
+            }
           ],
           "location": {
             "column": 16,
@@ -14,7 +18,10 @@
             "line": 34
           },
           "name": "withRequest",
+          "remarks": "Called by the shipped adapters (`yapyak/adapter/sveltekit`, `yapyak/adapter/tanstack-start`, `yapyak/adapter/astro`, `yapyak/adapter/react-router`). Called directly only when wiring a custom SSR setup.",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "function",
           "members": [],
           "overloads": [
@@ -42,7 +49,13 @@
                   "type": [
                     {
                       "kind": "text",
-                      "text": "TypeLiteral __type"
+                      "text": "() => "
+                    },
+                    {
+                      "kind": "ref",
+                      "module": "yapyak",
+                      "name": "T",
+                      "text": "T"
                     }
                   ]
                 }
@@ -55,11 +68,12 @@
                   "text": "T"
                 }
               ],
-              "signature": "function withRequest<T>(request: Request, fn: TypeLiteral __type): T;",
+              "signature": "function withRequest<T>(request: Request, fn: () => T): T;",
               "typeParameters": [
                 {
                   "constraint": null,
                   "defaultType": null,
+                  "description": "",
                   "name": "T"
                 }
               ]
@@ -78,8 +92,16 @@
           "deprecated": null,
           "description": "Astro middleware. Wires yapyak's per-request locale context.",
           "examples": [
-            "**Re-export from src/middleware.ts**\n\n```ts\nexport { middleware as onRequest } from 'yapyak/adapter/astro';\n```",
-            "**Compose with other middlewares**\n\n```ts\nimport { sequence } from 'astro:middleware';\nimport { middleware as yapyakMiddleware } from 'yapyak/adapter/astro';\nimport { middleware as authMiddleware } from './auth';\n\nexport const onRequest = sequence(yapyakMiddleware, authMiddleware);\n```"
+            {
+              "code": "export { middleware as onRequest } from 'yapyak/adapter/astro';",
+              "language": "ts",
+              "title": "Re-export from src/middleware.ts"
+            },
+            {
+              "code": "import { sequence } from 'astro:middleware';\nimport { middleware as yapyakMiddleware } from 'yapyak/adapter/astro';\nimport { middleware as authMiddleware } from './auth';\n\nexport const onRequest = sequence(yapyakMiddleware, authMiddleware);",
+              "language": "ts",
+              "title": "Compose with other middlewares"
+            }
           ],
           "location": {
             "column": 13,
@@ -87,7 +109,10 @@
             "line": 31
           },
           "name": "middleware",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "variable",
           "members": [],
           "signature": "const middleware: AstroMiddleware;",
@@ -111,7 +136,11 @@
           "deprecated": null,
           "description": "React Router 7 framework-mode middleware. Wires yapyak's per-request locale context.",
           "examples": [
-            "**Register in app/root.tsx**\n\n```tsx\nimport type { Route } from './+types/root';\nimport { middleware as yapyakMiddleware } from 'yapyak/adapter/react-router';\n\nexport const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];\n```"
+            {
+              "code": "import type { Route } from './+types/root';\nimport { middleware as yapyakMiddleware } from 'yapyak/adapter/react-router';\n\nexport const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];",
+              "language": "tsx",
+              "title": "Register in app/root.tsx"
+            }
           ],
           "location": {
             "column": 13,
@@ -119,7 +148,10 @@
             "line": 25
           },
           "name": "middleware",
+          "remarks": "Requires `future.v8_middleware: true` in `react-router.config.ts`.",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "variable",
           "members": [],
           "signature": "const middleware: MiddlewareFunction;",
@@ -143,8 +175,16 @@
           "deprecated": null,
           "description": "SvelteKit `Handle` hook. Binds yapyak's per-request locale context and substitutes `%yapyak.lang%` in `app.html` with the resolved locale.",
           "examples": [
-            "**Re-export from hooks.server.ts**\n\n```ts\nexport { handle } from 'yapyak/adapter/sveltekit';\n```",
-            "**Compose with other handles**\n\n```ts\nimport { sequence } from '@sveltejs/kit/hooks';\nimport { handle as yapyakHandle } from 'yapyak/adapter/sveltekit';\nimport { handle as authHandle } from './auth';\n\nexport const handle = sequence(yapyakHandle, authHandle);\n```"
+            {
+              "code": "export { handle } from 'yapyak/adapter/sveltekit';",
+              "language": "ts",
+              "title": "Re-export from hooks.server.ts"
+            },
+            {
+              "code": "import { sequence } from '@sveltejs/kit/hooks';\nimport { handle as yapyakHandle } from 'yapyak/adapter/sveltekit';\nimport { handle as authHandle } from './auth';\n\nexport const handle = sequence(yapyakHandle, authHandle);",
+              "language": "ts",
+              "title": "Compose with other handles"
+            }
           ],
           "location": {
             "column": 13,
@@ -152,7 +192,10 @@
             "line": 31
           },
           "name": "handle",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "variable",
           "members": [],
           "signature": "const handle: Handle;",
@@ -176,7 +219,11 @@
           "deprecated": null,
           "description": "TanStack Start request middleware. Wires yapyak's per-request locale context.",
           "examples": [
-            "**Register in src/start.ts**\n\n```ts\nimport { middleware } from 'yapyak/adapter/tanstack-start';\n\nexport default {\n  requestMiddleware: [middleware],\n};\n```"
+            {
+              "code": "import { middleware } from 'yapyak/adapter/tanstack-start';\n\nexport default {\n  requestMiddleware: [middleware],\n};",
+              "language": "ts",
+              "title": "Register in src/start.ts"
+            }
           ],
           "location": {
             "column": 13,
@@ -184,7 +231,10 @@
             "line": 25
           },
           "name": "middleware",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "variable",
           "members": [],
           "signature": "const middleware: AnyRequestMiddleware;",
@@ -208,7 +258,11 @@
           "deprecated": null,
           "description": "The currently-active locale.",
           "examples": [
-            "```ts\nimport { getLocale } from 'yapyak';\n\ngetLocale(); // => 'sv'\n```"
+            {
+              "code": "import { getLocale } from 'yapyak';\n\ngetLocale(); // => 'sv'",
+              "language": "ts",
+              "title": null
+            }
           ],
           "location": {
             "column": 16,
@@ -216,7 +270,10 @@
             "line": 66
           },
           "name": "getLocale",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "function",
           "members": [],
           "overloads": [
@@ -238,7 +295,11 @@
           "deprecated": null,
           "description": "Switches the active locale.",
           "examples": [
-            "```ts\nimport { setLocale } from 'yapyak';\n\nsetLocale('sv');\n```"
+            {
+              "code": "import { setLocale } from 'yapyak';\n\nsetLocale('sv');",
+              "language": "ts",
+              "title": null
+            }
           ],
           "location": {
             "column": 16,
@@ -246,7 +307,10 @@
             "line": 104
           },
           "name": "setLocale",
+          "remarks": "No-op if `value` is not in [locales](/reference/locales). Notifies subscribers and framework adapters.",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "function",
           "members": [],
           "overloads": [
@@ -281,7 +345,11 @@
           "deprecated": null,
           "description": "Subscribes to locale changes.",
           "examples": [
-            "```ts\nimport { subscribeLocale } from 'yapyak';\n\nconst unsubscribe = subscribeLocale((locale) => {\n  document.documentElement.lang = locale;\n});\n```"
+            {
+              "code": "import { subscribeLocale } from 'yapyak';\n\nconst unsubscribe = subscribeLocale((locale) => {\n  document.documentElement.lang = locale;\n});",
+              "language": "ts",
+              "title": null
+            }
           ],
           "location": {
             "column": 16,
@@ -289,7 +357,10 @@
             "line": 142
           },
           "name": "subscribeLocale",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "function",
           "members": [],
           "overloads": [
@@ -303,7 +374,7 @@
                   "type": [
                     {
                       "kind": "text",
-                      "text": "TypeLiteral __type"
+                      "text": "(locale: string) => void"
                     }
                   ]
                 }
@@ -311,10 +382,10 @@
               "returnType": [
                 {
                   "kind": "text",
-                  "text": "TypeLiteral __type"
+                  "text": "() => void"
                 }
               ],
-              "signature": "function subscribeLocale(fn: TypeLiteral __type): TypeLiteral __type;",
+              "signature": "function subscribeLocale(fn: (locale: string) => void): () => void;",
               "typeParameters": []
             }
           ],
@@ -330,7 +401,10 @@
             "line": 24
           },
           "name": "T",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "callSignatures": [
             {
               "parameters": [
@@ -365,6 +439,7 @@
                     }
                   ],
                   "defaultType": null,
+                  "description": "",
                   "name": "T"
                 }
               ]
@@ -430,6 +505,7 @@
                     }
                   ],
                   "defaultType": null,
+                  "description": "",
                   "name": "T"
                 }
               ]
@@ -457,7 +533,10 @@
             "line": 18
           },
           "name": "TIn",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "callSignatures": [
             {
               "parameters": [
@@ -492,6 +571,7 @@
                     }
                   ],
                   "defaultType": null,
+                  "description": "",
                   "name": "T"
                 }
               ]
@@ -557,6 +637,7 @@
                     }
                   ],
                   "defaultType": null,
+                  "description": "",
                   "name": "T"
                 }
               ]
@@ -576,7 +657,10 @@
             "line": 13
           },
           "name": "ParamDict",
+          "remarks": "Empty when `T` contains no placeholders.",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "type",
           "resolvedType": [
             {
@@ -596,7 +680,10 @@
             "line": 125
           },
           "name": "defaultLocale",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "variable",
           "members": [],
           "signature": "const defaultLocale: string;",
@@ -617,7 +704,10 @@
             "line": 122
           },
           "name": "locales",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "variable",
           "members": [],
           "signature": "const locales: string[];",
@@ -632,7 +722,11 @@
           "deprecated": null,
           "description": "Translates a source string to the current locale.",
           "examples": [
-            "```tsx\nimport { t } from 'yapyak';\n\nt('Save changes');\n\nt('Hello, {name}!', { name: 'Alex' });\n\nt('You have {count, plural, one {# item} other {# items}}', { count: 1 });\n\nt.in(user.locale)('Welcome back, {name}!', { name: user.name });\n```"
+            {
+              "code": "import { t } from 'yapyak';\n\nt('Save changes');\n\nt('Hello, {name}!', { name: 'Alex' });\n\nt('You have {count, plural, one {# item} other {# items}}', { count: 1 });\n\nt.in(user.locale)('Welcome back, {name}!', { name: user.name });",
+              "language": "tsx",
+              "title": null
+            }
           ],
           "location": {
             "column": 13,
@@ -640,7 +734,10 @@
             "line": 63
           },
           "name": "t",
+          "remarks": "The first argument must be a static string literal — yapyak's Vite plugin reads it statically to extract translations. Placeholders use `{name}` and are type-checked from the source literal.",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "variable",
           "members": [],
           "signature": "const t: T;",
@@ -664,7 +761,11 @@
           "deprecated": null,
           "description": "Provides locale context to the React tree.",
           "examples": [
-            "```tsx\nimport { IntlProvider } from 'yapyak/react';\n\nfunction App() {\n  return (\n    <IntlProvider>\n      <App />\n    </IntlProvider>\n  );\n}\n```"
+            {
+              "code": "import { IntlProvider } from 'yapyak/react';\n\nfunction App() {\n  return (\n    <IntlProvider>\n      <App />\n    </IntlProvider>\n  );\n}",
+              "language": "tsx",
+              "title": null
+            }
           ],
           "location": {
             "column": 16,
@@ -672,7 +773,10 @@
             "line": 33
           },
           "name": "IntlProvider",
+          "remarks": "Mounts once at the React tree's root. Re-renders descendants when [setLocale](/reference/setLocale) is called, so [t](/reference/t) calls inside the tree return the new locale's strings.",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "function",
           "members": [],
           "overloads": [
@@ -711,7 +815,11 @@
           "deprecated": null,
           "description": "Subscribes to locale changes and returns the current locale and a setter.",
           "examples": [
-            "```tsx\nimport { t } from 'yapyak';\nimport { useLocale } from 'yapyak/react';\n\nfunction LocaleToggle() {\n  const [locale, setLocale] = useLocale();\n  return (\n    <select value={locale} onChange={(e) => setLocale(e.target.value)}>\n      <option value=\"en\">English</option>\n      <option value=\"sv\">Svenska</option>\n    </select>\n  );\n}\n```"
+            {
+              "code": "import { t } from 'yapyak';\nimport { useLocale } from 'yapyak/react';\n\nfunction LocaleToggle() {\n  const [locale, setLocale] = useLocale();\n  return (\n    <select value={locale} onChange={(e) => setLocale(e.target.value)}>\n      <option value=\"en\">English</option>\n      <option value=\"sv\">Svenska</option>\n    </select>\n  );\n}",
+              "language": "tsx",
+              "title": null
+            }
           ],
           "location": {
             "column": 16,
@@ -719,7 +827,10 @@
             "line": 27
           },
           "name": "useLocale",
+          "remarks": "The component re-renders whenever the locale changes.",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "function",
           "members": [],
           "overloads": [
@@ -728,10 +839,10 @@
               "returnType": [
                 {
                   "kind": "text",
-                  "text": "[string, TypeLiteral __type]"
+                  "text": "[string, (value: string) => void]"
                 }
               ],
-              "signature": "function useLocale(): [string, TypeLiteral __type];",
+              "signature": "function useLocale(): [string, (value: string) => void];",
               "typeParameters": []
             }
           ],
@@ -739,7 +850,7 @@
         },
         {
           "deprecated": null,
-          "description": "Props for `IntlProvider`.",
+          "description": "Props for [IntlProvider](/reference/react/IntlProvider).",
           "examples": [],
           "location": {
             "column": 17,
@@ -747,7 +858,10 @@
             "line": 8
           },
           "name": "IntlProviderProps",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "callSignatures": [],
           "kind": "interface",
           "members": [
@@ -785,13 +899,16 @@
             "line": 16
           },
           "name": "Locale",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "callSignatures": [],
           "kind": "interface",
           "members": [
             {
               "defaultValue": null,
-              "description": "The current locale. Reads track reactivity, writes call `setLocale`.",
+              "description": "The current locale. Reads track reactivity, writes call [setLocale](/reference/setLocale).",
               "name": "current",
               "optional": false,
               "type": [
@@ -808,7 +925,11 @@
           "deprecated": null,
           "description": "The reactive locale store for Svelte 5.",
           "examples": [
-            "```svelte\n<script>\n  import { t } from 'yapyak';\n  import { locale } from 'yapyak/svelte';\n</script>\n\n<p>{t('Hello')}</p>\n<select bind:value={locale.current}>\n  <option value=\"en\">English</option>\n  <option value=\"sv\">Svenska</option>\n</select>\n```"
+            {
+              "code": "<script>\n  import { t } from 'yapyak';\n  import { locale } from 'yapyak/svelte';\n</script>\n\n<p>{t('Hello')}</p>\n<select bind:value={locale.current}>\n  <option value=\"en\">English</option>\n  <option value=\"sv\">Svenska</option>\n</select>",
+              "language": "svelte",
+              "title": null
+            }
           ],
           "location": {
             "column": 13,
@@ -816,7 +937,10 @@
             "line": 41
           },
           "name": "locale",
+          "remarks": "Reads to `locale.current` track reactivity. Writes call [setLocale](/reference/setLocale).",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "variable",
           "members": [],
           "signature": "const locale: Locale;",
@@ -840,7 +964,11 @@
           "deprecated": null,
           "description": "Creates an Anthropic translator.",
           "examples": [
-            "```ts\nimport { anthropic } from 'yapyak/translator';\n\nyapyak({\n  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! }),\n});\n```"
+            {
+              "code": "import { anthropic } from 'yapyak/translator';\n\nyapyak({\n  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! }),\n});",
+              "language": "ts",
+              "title": null
+            }
           ],
           "location": {
             "column": 16,
@@ -848,7 +976,10 @@
             "line": 82
           },
           "name": "anthropic",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "function",
           "members": [],
           "overloads": [
@@ -887,7 +1018,11 @@
           "deprecated": null,
           "description": "Builds a translator from a `translate` function.",
           "examples": [
-            "```ts\nconst myTranslator = createTranslator({\n  async translate({ items, sourceLocale, targetLocale }) {\n    const response = await fetch('https://my-api.example/translate', {\n      method: 'POST',\n      body: JSON.stringify({ items, sourceLocale, targetLocale }),\n    });\n    const { translations } = await response.json();\n    return translations;\n  },\n});\n```"
+            {
+              "code": "const myTranslator = createTranslator({\n  async translate({ items, sourceLocale, targetLocale }) {\n    const response = await fetch('https://my-api.example/translate', {\n      method: 'POST',\n      body: JSON.stringify({ items, sourceLocale, targetLocale }),\n    });\n    const { translations } = await response.json();\n    return translations;\n  },\n});",
+              "language": "ts",
+              "title": null
+            }
           ],
           "location": {
             "column": 16,
@@ -895,7 +1030,10 @@
             "line": 150
           },
           "name": "createTranslator",
+          "remarks": "Handles batching, context shaping, and result validation. The provided function talks to the AI.",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "function",
           "members": [],
           "overloads": [
@@ -934,7 +1072,11 @@
           "deprecated": null,
           "description": "Creates a Gemini translator.",
           "examples": [
-            "```ts\nimport { gemini } from 'yapyak/translator';\n\nyapyak({\n  translator: gemini({ apiKey: process.env.GOOGLE_API_KEY! }),\n});\n```"
+            {
+              "code": "import { gemini } from 'yapyak/translator';\n\nyapyak({\n  translator: gemini({ apiKey: process.env.GOOGLE_API_KEY! }),\n});",
+              "language": "ts",
+              "title": null
+            }
           ],
           "location": {
             "column": 16,
@@ -942,7 +1084,10 @@
             "line": 81
           },
           "name": "gemini",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "function",
           "members": [],
           "overloads": [
@@ -981,7 +1126,11 @@
           "deprecated": null,
           "description": "Creates an Ollama translator.",
           "examples": [
-            "```ts\nimport { ollama } from 'yapyak/translator';\n\nyapyak({\n  translator: ollama({ model: 'llama3.1' }),\n});\n```"
+            {
+              "code": "import { ollama } from 'yapyak/translator';\n\nyapyak({\n  translator: ollama({ model: 'llama3.1' }),\n});",
+              "language": "ts",
+              "title": null
+            }
           ],
           "location": {
             "column": 16,
@@ -989,7 +1138,10 @@
             "line": 79
           },
           "name": "ollama",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "function",
           "members": [],
           "overloads": [
@@ -1028,7 +1180,11 @@
           "deprecated": null,
           "description": "Creates an OpenAI translator.",
           "examples": [
-            "```ts\nimport { openai } from 'yapyak/translator';\n\nyapyak({\n  translator: openai({ apiKey: process.env.OPENAI_API_KEY! }),\n});\n```"
+            {
+              "code": "import { openai } from 'yapyak/translator';\n\nyapyak({\n  translator: openai({ apiKey: process.env.OPENAI_API_KEY! }),\n});",
+              "language": "ts",
+              "title": null
+            }
           ],
           "location": {
             "column": 16,
@@ -1036,7 +1192,10 @@
             "line": 87
           },
           "name": "openai",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "function",
           "members": [],
           "overloads": [
@@ -1073,7 +1232,7 @@
         },
         {
           "deprecated": null,
-          "description": "Options for `createTranslator`.",
+          "description": "Options for [createTranslator](/reference/translator/createTranslator).",
           "examples": [],
           "location": {
             "column": 17,
@@ -1081,7 +1240,10 @@
             "line": 108
           },
           "name": "CreateTranslatorOptions",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "callSignatures": [],
           "kind": "interface",
           "members": [
@@ -1119,7 +1281,27 @@
               "type": [
                 {
                   "kind": "text",
-                  "text": "TypeLiteral __type"
+                  "text": "(params: "
+                },
+                {
+                  "kind": "ref",
+                  "module": "yapyak",
+                  "name": "TranslateBatchRequest",
+                  "text": "TranslateBatchRequest"
+                },
+                {
+                  "kind": "text",
+                  "text": ") => string[] | "
+                },
+                {
+                  "kind": "ref",
+                  "module": "typescript",
+                  "name": "Promise",
+                  "text": "Promise"
+                },
+                {
+                  "kind": "text",
+                  "text": "<string[]>"
                 }
               ]
             }
@@ -1136,7 +1318,10 @@
             "line": 8
           },
           "name": "MessageContext",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "callSignatures": [],
           "kind": "interface",
           "members": [
@@ -1183,7 +1368,11 @@
           "deprecated": null,
           "description": "Request shape for the `translate` callback.",
           "examples": [
-            "```ts\nasync function myTranslate(params: TranslateBatchRequest): Promise<string[]> {\n  const response = await fetch('https://api.example/translate', {\n    method: 'POST',\n    body: JSON.stringify(params),\n    signal: params.signal,\n  });\n  const { translations } = await response.json();\n  return translations;\n}\n\ncreateTranslator({ translate: myTranslate });\n```"
+            {
+              "code": "async function myTranslate(params: TranslateBatchRequest): Promise<string[]> {\n  const response = await fetch('https://api.example/translate', {\n    method: 'POST',\n    body: JSON.stringify(params),\n    signal: params.signal,\n  });\n  const { translations } = await response.json();\n  return translations;\n}\n\ncreateTranslator({ translate: myTranslate });",
+              "language": "ts",
+              "title": null
+            }
           ],
           "location": {
             "column": 17,
@@ -1191,7 +1380,10 @@
             "line": 96
           },
           "name": "TranslateBatchRequest",
+          "remarks": "`items`, `sourceLocale`, and `targetLocale` are always present. Forward\n`signal` to the underlying fetch/SDK call to honor cancellation.",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "callSignatures": [],
           "kind": "interface",
           "members": [
@@ -1264,7 +1456,10 @@
             "line": 63
           },
           "name": "TranslateItem",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "callSignatures": [],
           "kind": "interface",
           "members": [
@@ -1321,7 +1516,7 @@
         },
         {
           "deprecated": null,
-          "description": "Request shape for `Translator`.",
+          "description": "Request shape for [Translator](/reference/translator/Translator).",
           "examples": [],
           "location": {
             "column": 17,
@@ -1329,7 +1524,10 @@
             "line": 18
           },
           "name": "TranslateRequest",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "callSignatures": [],
           "kind": "interface",
           "members": [
@@ -1408,7 +1606,10 @@
             "line": 37
           },
           "name": "Translator",
+          "remarks": "Returned by [createTranslator](/reference/translator/createTranslator) and by the built-ins ([anthropic](/reference/translator/anthropic), [openai](/reference/translator/openai), [gemini](/reference/translator/gemini), [ollama](/reference/translator/ollama)). Passed to the Vite plugin's `translator` option.",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "callSignatures": [
             {
               "parameters": [
@@ -1459,7 +1660,11 @@
           "deprecated": null,
           "description": "The context level. Determines how much call-site context is passed to the translator.\n\n- `'none'` — sends the source string only.\n- `'minimal'` — sends the source string, the component name, and the enclosing element.\n- `'rich'` — sends the source string, the component name, the enclosing element, and the surrounding code snippet.",
           "examples": [
-            "```ts\nfunction buildTranslator(level: ContextLevel) {\n  return createTranslator({ context: level, translate: ... });\n}\n```"
+            {
+              "code": "function buildTranslator(level: ContextLevel) {\n  return createTranslator({ context: level, translate: ... });\n}",
+              "language": "ts",
+              "title": null
+            }
           ],
           "location": {
             "column": 12,
@@ -1467,7 +1672,10 @@
             "line": 60
           },
           "name": "ContextLevel",
+          "remarks": "Choose `'none'` when nothing about the calling code may leave the project.",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "type",
           "resolvedType": [
             {
@@ -1488,7 +1696,11 @@
           "deprecated": null,
           "description": "Creates the yapyak Vite plugin.",
           "examples": [
-            "```ts\nimport { defineConfig } from 'vite';\nimport { yapyak } from 'yapyak/vite';\nimport { anthropic } from 'yapyak/translator';\n\nexport default defineConfig({\n  plugins: [\n    yapyak({\n      defaultLocale: 'en',\n      translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),\n    }),\n  ],\n});\n```"
+            {
+              "code": "import { defineConfig } from 'vite';\nimport { yapyak } from 'yapyak/vite';\nimport { anthropic } from 'yapyak/translator';\n\nexport default defineConfig({\n  plugins: [\n    yapyak({\n      defaultLocale: 'en',\n      translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),\n    }),\n  ],\n});",
+              "language": "ts",
+              "title": null
+            }
           ],
           "location": {
             "column": 16,
@@ -1496,7 +1708,10 @@
             "line": 55
           },
           "name": "yapyak",
+          "remarks": "Extracts [t](/reference/t) calls at build time, syncs locale files, optionally fills\nmissing translations through a [Translator](/reference/translator/Translator), and emits per-locale chunks\nthat are lazy-loaded by the runtime — so the default locale costs zero\nextra bytes and non-default locales ship as separate chunks.",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "function",
           "members": [],
           "overloads": [
@@ -1533,7 +1748,7 @@
         },
         {
           "deprecated": null,
-          "description": "Options for the `yapyak` Vite plugin.",
+          "description": "Options for the [yapyak](/reference/vite/yapyak) Vite plugin.",
           "examples": [],
           "location": {
             "column": 17,
@@ -1541,7 +1756,10 @@
             "line": 8
           },
           "name": "YapyakOptions",
+          "remarks": "",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "callSignatures": [],
           "kind": "interface",
           "members": [
@@ -1617,12 +1835,12 @@
               "type": [
                 {
                   "kind": "text",
-                  "text": "'cookie' | 'localStorage' | TypeLiteral __type | TypeLiteral __type | null"
+                  "text": "'cookie' | 'localStorage' | { name?: string; type: 'cookie' } | { key?: string; type: 'localStorage' } | null"
                 }
               ]
             },
             {
-              "defaultValue": "`true` without a `Translator`, `false` with one",
+              "defaultValue": "`true` without a [Translator](/reference/translator/Translator), `false` with one",
               "description": "Whether to preserve existing translations when a `t()` call is renamed in place.",
               "name": "preserveTranslationsOnRename",
               "optional": true,
@@ -1673,7 +1891,11 @@
           "deprecated": null,
           "description": "The reactive locale ref for Vue.",
           "examples": [
-            "```vue\n<script setup>\nimport { t } from 'yapyak';\nimport { locale } from 'yapyak/vue';\n</script>\n\n<template>\n  <p>{{ t('Hello') }}: {{ locale }}</p>\n  <select v-model=\"locale\">\n    <option value=\"en\">English</option>\n    <option value=\"sv\">Svenska</option>\n  </select>\n</template>\n```"
+            {
+              "code": "<script setup>\nimport { t } from 'yapyak';\nimport { locale } from 'yapyak/vue';\n</script>\n\n<template>\n  <p>{{ t('Hello') }}: {{ locale }}</p>\n  <select v-model=\"locale\">\n    <option value=\"en\">English</option>\n    <option value=\"sv\">Svenska</option>\n  </select>\n</template>",
+              "language": "vue",
+              "title": null
+            }
           ],
           "location": {
             "column": 13,
@@ -1681,7 +1903,10 @@
             "line": 30
           },
           "name": "locale",
+          "remarks": "Typed as `Ref<string>`. Auto-unwraps in templates. Reads track reactivity, writes call [setLocale](/reference/setLocale).",
+          "seeAlso": [],
           "tags": [],
+          "throws": [],
           "kind": "variable",
           "members": [],
           "signature": "const locale: Ref<string>;",
