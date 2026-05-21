@@ -17,11 +17,11 @@ const referenceRouteApi = getRouteApi('/reference');
 export const Route = createFileRoute('/reference/$')({
   component: Component,
   loader({ params }) {
-    const path = params._splat;
-    if (!path) {
+    const splat = params._splat;
+    if (!params._splat) {
       throw notFound();
     }
-    const result = doc.resolvePath('reference', path);
+    const result = doc.resolvePath('reference', splat);
     if (result.kind === 'not-found') {
       throw notFound();
     }

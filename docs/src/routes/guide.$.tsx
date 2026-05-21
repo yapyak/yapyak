@@ -17,12 +17,12 @@ const guideRouteApi = getRouteApi('/guide');
 export const Route = createFileRoute('/guide/$')({
   component: Component,
   loader({ params }) {
-    const slug = params._splat;
-    if (!slug) {
+    const splat = params._splat;
+    if (!splat) {
       throw notFound();
     }
 
-    const result = doc.resolvePath('guide', slug);
+    const result = doc.resolvePath('guide', splat);
 
     if (result.kind === 'not-found') {
       throw notFound();
