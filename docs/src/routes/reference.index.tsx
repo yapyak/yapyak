@@ -1,5 +1,5 @@
 import { createFileRoute, getRouteApi, notFound } from '@tanstack/react-router';
-import { findAdjacent, getPage } from '@yapyak/doc-extractor';
+import { findAdjacentPages, getPage } from '@yapyak/doc-extractor';
 
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
@@ -16,7 +16,7 @@ export const Route = createFileRoute('/reference/')({
     if (page === null) {
       throw notFound();
     }
-    const { next, previous } = findAdjacent(
+    const { next, previous } = findAdjacentPages(
       manifest,
       'reference',
       '/reference',

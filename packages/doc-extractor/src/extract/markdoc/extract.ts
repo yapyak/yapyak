@@ -11,15 +11,18 @@ export interface MarkdocExtractResult {
 
 export async function extractMarkdoc(
   root: string,
+  collectionName: string,
 ): Promise<MarkdocExtractResult> {
   const files = await walkMarkdownFiles(root);
   const pages = new Map<string, Page>();
   for (const absolutePath of files) {
-    const page = await loadMarkdocPage(absolutePath);
+    const path = filePathToRoutePath(absolutePath, root);
+    const href =
+      path === '' ? `/${collectionName}` : `/${collectionName}/${path}`;
+    const page = await loadMarkdocPage(absolutePath, href);
     if (page === null) {
       continue;
     }
-    const path = filePathToRoutePath(absolutePath, root);
     pages.set(path, page);
   }
   return { pages, watchedFiles: files };
@@ -27,6 +30,7 @@ export async function extractMarkdoc(
 
 export async function loadMarkdocPage(
   absolutePath: string,
+  href: string,
 ): Promise<Page | null> {
   const source = await readFile(absolutePath, 'utf8').catch(() => null);
   if (source === null) {
@@ -36,6 +40,7 @@ export async function loadMarkdocPage(
   return {
     blocks,
     description: (frontmatter.description as string | undefined) ?? '',
+    href,
     meta: frontmatter,
     title: (frontmatter.title as string | undefined) ?? '',
   };

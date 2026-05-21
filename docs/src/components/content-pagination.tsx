@@ -1,4 +1,4 @@
-import type { SidebarLink } from '@yapyak/doc-extractor';
+import type { Page } from '@yapyak/doc-extractor';
 import type { BoxProps } from '#components/box';
 
 import { Link } from '@tanstack/react-router';
@@ -9,8 +9,8 @@ import { Box } from '#components/box';
 import styles from './content-pagination.module.css';
 
 export interface ContentPaginationProps extends BoxProps<'nav'> {
-  next: SidebarLink | null;
-  previous: SidebarLink | null;
+  next: Page | null;
+  previous: Page | null;
 }
 
 export function ContentPagination(props: ContentPaginationProps) {
@@ -41,7 +41,7 @@ export function ContentPagination(props: ContentPaginationProps) {
             as="span"
             className={styles.TitleText}
           >
-            {previous.label}
+            {previous.title}
           </Box>
         </Link>
       ) : (
@@ -62,7 +62,7 @@ export function ContentPagination(props: ContentPaginationProps) {
             as="span"
             className={styles.TitleText}
           >
-            {next.label}
+            {next.title}
           </Box>
         </Link>
       ) : (

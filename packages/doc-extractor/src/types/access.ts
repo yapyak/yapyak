@@ -1,4 +1,4 @@
-import type { Page, SidebarLink } from './manifest.ts';
+import type { Page } from './manifest.ts';
 
 export type LoadResult =
   | { kind: 'page'; page: Page }
@@ -6,6 +6,6 @@ export type LoadResult =
   | { kind: 'not-found' };
 
 export interface AdjacentPages {
-  next: SidebarLink | null;
-  previous: SidebarLink | null;
+  next: Page | null;
+  previous: Page | null;
 }

@@ -55,7 +55,7 @@ export type {
 } from './types/manifest.ts';
 
 export { blockToText } from './access/block-to-text.ts';
-export { findAdjacent } from './access/find-adjacent.ts';
+export { findAdjacentPages } from './access/find-adjacent.ts';
 export { getAllPages } from './access/get-all-pages.ts';
 export { getCodeBlocks } from './access/get-code-blocks.ts';
 export { getCollection } from './access/get-collection.ts';

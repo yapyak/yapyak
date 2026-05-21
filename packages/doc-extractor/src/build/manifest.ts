@@ -50,7 +50,7 @@ async function buildMarkdocCollection(
   collectionName: string,
   root: string,
 ): Promise<Collection> {
-  const { pages: pagesMap } = await extractMarkdoc(root);
+  const { pages: pagesMap } = await extractMarkdoc(root, collectionName);
   const pages: Record<string, Page> = {};
   for (const [path, page] of pagesMap) {
     pages[path] = page;
@@ -82,8 +82,10 @@ async function buildTypedocCollection(
   for (const module of refManifest.modules) {
     for (const symbol of module.exports) {
       const path = pathFor(module.id, symbol.name, rootModule);
+      const href = `/${collectionName}/${path}`;
       const page = buildSymbolPage(symbol, {
         collectionName,
+        href,
         index,
         moduleId: module.id,
         rootModule,
@@ -103,7 +105,7 @@ async function buildTypedocCollection(
   }
 
   if (introPath !== undefined) {
-    const intro = await loadMarkdocPage(introPath);
+    const intro = await loadMarkdocPage(introPath, `/${collectionName}`);
     if (intro !== null) {
       pages[''] = intro;
     }

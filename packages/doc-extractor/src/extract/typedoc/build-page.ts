@@ -39,6 +39,7 @@ export function buildSymbolIndex(manifest: ReferenceManifest): SymbolIndex {
 
 export interface BuildSymbolPageOptions {
   collectionName: string;
+  href: string;
   index: SymbolIndex;
   moduleId: string;
   rootModule: string;
@@ -167,6 +168,7 @@ export function buildSymbolPage(
   return {
     blocks,
     description: '',
+    href: options.href,
     meta: {},
     title: symbol.kind === 'function' ? `${symbol.name}()` : symbol.name,
   };

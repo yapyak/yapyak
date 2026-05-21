@@ -4,7 +4,7 @@ import {
   notFound,
   redirect,
 } from '@tanstack/react-router';
-import { findAdjacent, resolvePath } from '@yapyak/doc-extractor';
+import { findAdjacentPages, resolvePath } from '@yapyak/doc-extractor';
 
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
@@ -31,7 +31,7 @@ export const Route = createFileRoute('/guide/$')({
       throw redirect({ replace: true, to: result.target });
     }
 
-    const { next, previous } = findAdjacent(
+    const { next, previous } = findAdjacentPages(
       manifest,
       'guide',
       `/guide/${slug}`,

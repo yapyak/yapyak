@@ -11,6 +11,7 @@ export type MetaValue =
 export interface Page {
   blocks: Block[];
   description: string;
+  href: string;
   meta: Record<string, MetaValue>;
   title: string;
 }

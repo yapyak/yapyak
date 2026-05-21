@@ -1,4 +1,4 @@
-import type { SidebarLink } from '@yapyak/doc-extractor';
+import type { Page } from '@yapyak/doc-extractor';
 import type { ReactNode } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -14,8 +14,8 @@ import styles from './toolbar.module.css';
 
 export interface ContentLayoutToolbarProps {
   children: ReactNode;
-  next: SidebarLink | null;
-  previous: SidebarLink | null;
+  next: Page | null;
+  previous: Page | null;
 }
 
 export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
