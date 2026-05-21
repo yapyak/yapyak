@@ -935,7 +935,7 @@
               ]
             }
           ],
-          "signature": "export interface YapyakOptions {\n  /** The default locale. Inferred from locale files if omitted. */\n  defaultLocale?: string;\n  /** Glob patterns to exclude from extraction. */\n  exclude?: FilterPattern;\n  /** Glob patterns to include for extraction. */\n  include?: FilterPattern;\n  /** Directory for locale JSON files, relative to project root. Defaults to `'locales'`. */\n  localesDir?: string;..."
+          "signature": "export interface YapyakOptions {\n  /** The default locale. Inferred from locale files if omitted. */\n  defaultLocale?: string;\n  /** Detect locale from the `Accept-Language` header on the server. */\n  detectAcceptLanguage?: boolean;\n  /** Glob patterns to exclude from extraction. */\n  exclude?: FilterPattern;\n  /** Glob patterns to include for extraction. */\n  include?: FilterPattern;\n  /** Dir..."
         }
       ],
       "id": "yapyak/vite",

@@ -8,6 +8,8 @@ import { DEFAULT_EXCLUDE, DEFAULT_INCLUDE } from '../parser';
 export interface YapyakOptions {
   /** The default locale. Inferred from locale files if omitted. */
   defaultLocale?: string;
+  /** Detect locale from the `Accept-Language` header on the server. */
+  detectAcceptLanguage?: boolean;
   /** Glob patterns to exclude from extraction. */
   exclude?: FilterPattern;
   /** Glob patterns to include for extraction. */
@@ -48,19 +50,17 @@ export interface YapyakOptions {
    * isn't owned by a reactive framework binding. See each adapter's docs.
    */
   syncHtmlLang?: boolean;
-  /** Detect locale from the `Accept-Language` header on the server. */
-  detectAcceptLanguage?: boolean;
   /** Translator used to fill missing entries. Stubs stay empty without one. */
   translator?: Translator;
 }
 
 interface NormalizedOptions {
   defaultLocale: string | undefined;
+  detectAcceptLanguage: boolean;
   exclude: FilterPattern;
   include: FilterPattern;
   localesDir: string;
   persistence: NormalizedPersistence;
-  detectAcceptLanguage: boolean;
   preserveTranslationsOnRename: boolean;
   syncHtmlLang: boolean;
   translator: Translator | undefined;
@@ -90,11 +90,11 @@ function normalizePersistence(
 export function normalizeOptions(options: YapyakOptions): NormalizedOptions {
   return {
     defaultLocale: options.defaultLocale,
+    detectAcceptLanguage: options.detectAcceptLanguage ?? false,
     exclude: options.exclude ?? DEFAULT_EXCLUDE,
     include: options.include ?? DEFAULT_INCLUDE,
     localesDir: options.localesDir ?? 'locales',
     persistence: normalizePersistence(options.persistence),
-    detectAcceptLanguage: options.detectAcceptLanguage ?? false,
     preserveTranslationsOnRename:
       options.preserveTranslationsOnRename ??
       options.translator === undefined,
