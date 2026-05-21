@@ -16,7 +16,7 @@ const PLACEHOLDER = '%yapyak.lang%';
  * every incoming request and substitutes `%yapyak.lang%` in `app.html` with
  * the resolved locale.
  *
- * Re-export from your `hooks.server.ts`.
+ * Re-export from `hooks.server.ts`.
  *
  * @example
  * ```ts

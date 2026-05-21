@@ -45,9 +45,12 @@ export interface Translator {
 /**
  * How much call-site context to pass to the translate function.
  *
- * - `'none'` — source string only. Privacy-strict; nothing about your code leaves your project.
- * - `'minimal'` — source + component name + enclosing element. Default.
- * - `'rich'` — minimal plus the surrounding code snippet.
+ * - `'none'` — sends the source string only.
+ * - `'minimal'` — sends the source string, the component name, and the enclosing element.
+ * - `'rich'` — sends the source string, the component name, the enclosing element, and the surrounding code snippet.
+ *
+ * @remarks
+ * Choose `'none'` when nothing about the calling code may leave the project.
  *
  * @example
  * ```ts
@@ -74,7 +77,7 @@ export interface TranslateItem {
  * Parameters passed to a translator's `translate` function.
  *
  * `items`, `sourceLocale`, and `targetLocale` are always present. Forward
- * `signal` to your underlying fetch/SDK call to honor cancellation.
+ * `signal` to the underlying fetch/SDK call to honor cancellation.
  *
  * @example
  * ```ts
@@ -94,7 +97,7 @@ export interface TranslateItem {
 export interface TranslateBatchRequest {
   /** The items to translate. Translations must be returned in the same order. */
   items: TranslateItem[];
-  /** Abort signal for cancellation. Forward to your underlying fetch/SDK call. */
+  /** Abort signal for cancellation. Forward to the underlying fetch/SDK call. */
   signal?: AbortSignal;
   /** The source locale. */
   sourceLocale: string;

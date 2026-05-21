@@ -6,7 +6,7 @@ import { createTranslator } from '.';
 
 /** Options for the {@link openai} translator. */
 export interface OpenAIOptions {
-  /** Your OpenAI API key. */
+  /** The OpenAI API key. */
   apiKey: string;
   /**
    * Maximum items per API call.
@@ -71,7 +71,7 @@ const DEFAULT_TIMEOUT = 30_000;
 const DEFAULT_MAX_RETRIES = 2;
 
 /**
- * Creates a translator backed by the OpenAI Chat Completions API.
+ * Creates an OpenAI translator.
  *
  * @param options - The translator options.
  *

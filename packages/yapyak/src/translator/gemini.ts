@@ -6,7 +6,7 @@ import { createTranslator } from '.';
 
 /** Options for the {@link gemini} translator. */
 export interface GeminiOptions {
-  /** Your Google AI API key. */
+  /** The Google AI API key. */
   apiKey: string;
   /**
    * Maximum items per API call.
@@ -65,7 +65,7 @@ const DEFAULT_TIMEOUT = 30_000;
 const DEFAULT_MAX_RETRIES = 2;
 
 /**
- * Creates a translator backed by the Google Gemini API.
+ * Creates a Gemini translator.
  *
  * @param options - The translator options.
  *

@@ -6,7 +6,7 @@ import { createTranslator } from '.';
 
 /** Options for the {@link anthropic} translator. */
 export interface AnthropicOptions {
-  /** Your Anthropic API key. */
+  /** The Anthropic API key. */
   apiKey: string;
   /**
    * Maximum items per API call.
@@ -66,7 +66,7 @@ const DEFAULT_TIMEOUT = 30_000;
 const DEFAULT_MAX_RETRIES = 2;
 
 /**
- * Creates a translator backed by the Anthropic Messages API.
+ * Creates an Anthropic translator.
  *
  * @param options - The translator options.
  *

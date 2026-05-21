@@ -63,7 +63,7 @@ const DEFAULT_TIMEOUT = 120_000;
 const DEFAULT_MAX_RETRIES = 1;
 
 /**
- * Creates a translator backed by a local Ollama server.
+ * Creates an Ollama translator.
  *
  * @param options - The translator options.
  *

@@ -12,7 +12,7 @@ export interface IntlProviderProps {
 const LocaleContext = createContext<string>('en');
 
 /**
- * Provides locale context to the React tree. Wrap your app once at the root.
+ * Provides locale context to the React tree. Place once at the root.
  *
  * @remarks
  * Re-renders descendants when {@link setLocale} is called, so {@link t} calls
@@ -25,7 +25,7 @@ const LocaleContext = createContext<string>('en');
  * function App() {
  *   return (
  *     <IntlProvider>
- *       <YourApp />
+ *       <App />
  *     </IntlProvider>
  *   );
  * }
