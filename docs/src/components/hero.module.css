@@ -7,7 +7,7 @@
     align-items: center;
 
     width: 100%;
-    max-width: 70rem;
+    max-width: 1024px;
     padding: clamp(var(--spacing-12), 8vw, var(--spacing-24))
       clamp(var(--spacing-4), 4vw, var(--spacing-8));
 
@@ -17,9 +17,9 @@
       gap: clamp(var(--spacing-4), 2vw, var(--spacing-6));
     }
 
-    @media (min-width: 60rem) {
+    @media (min-width: 1024px) {
       .Stack {
-        max-width: 36rem;
+        max-width: 576px;
       }
     }
 
@@ -113,7 +113,7 @@
       }
     }
 
-    @media (min-width: 60rem) {
+    @media (min-width: 1024px) {
       grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
       justify-content: stretch;
     }

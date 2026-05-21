@@ -5,7 +5,7 @@
     gap: var(--spacing-24);
     place-self: center;
     width: 100%;
-    max-width: 70rem;
+    max-width: 1024px;
     padding: 0 clamp(var(--spacing-4), 4vw, var(--spacing-8)) var(--spacing-24);
 
     .Divider {
@@ -20,7 +20,7 @@
       border-left: var(--px) solid var(--rule);
     }
 
-    @media (min-width: 60rem) {
+    @media (min-width: 1024px) {
       .Divider {
         display: block;
       }

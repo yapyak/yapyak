@@ -5,7 +5,7 @@
     gap: var(--spacing-3);
     margin-top: var(--spacing-12);
 
-    @media (min-width: 60rem) {
+    @media (min-width: 1024px) {
       display: grid;
     }
 
@@ -64,7 +64,7 @@
       display: none;
     }
 
-    @media (min-width: 40rem) {
+    @media (min-width: 640px) {
       grid-template-columns: 1fr 1fr;
 
       .Spacer {

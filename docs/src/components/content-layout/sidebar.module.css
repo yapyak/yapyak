@@ -2,7 +2,7 @@
   .ContentLayoutSidebar {
     display: none;
 
-    @media (min-width: 60rem) {
+    @media (min-width: 1024px) {
       position: sticky;
       top: var(--header-height);
       display: block;

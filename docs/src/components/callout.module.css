@@ -10,7 +10,7 @@
     padding: var(--spacing-4) var(--spacing-5) var(--spacing-4) var(--spacing-6);
     background-color: var(--callout-background);
     border-radius: var(--border-radius-md);
-    box-shadow: inset 3px 0 0 0 var(--callout-accent);
+    box-shadow: inset 2px 0 0 0 var(--callout-accent);
 
     .TitleText {
       font-size: var(--font-size-xs);

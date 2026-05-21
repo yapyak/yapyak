@@ -79,7 +79,7 @@
       gap: 0;
 
       > .ItemList {
-        padding-left: 1.25rem;
+        padding-left: 20px;
       }
     }
 

@@ -76,7 +76,7 @@
 
     .Skeleton {
       display: inline-block;
-      width: 8rem;
+      width: 128px;
       height: 0.85em;
       padding: 0 var(--px);
       background: linear-gradient(

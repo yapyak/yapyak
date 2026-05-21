@@ -2,8 +2,8 @@
   .ContentLayoutContent {
     padding: var(--spacing-8) 0 var(--spacing-24);
 
-    @media (min-width: 60rem) {
-      max-width: 48rem;
+    @media (min-width: 1024px) {
+      max-width: 720px;
       padding-left: var(--spacing-8);
       border-left: var(--px) solid var(--rule);
     }

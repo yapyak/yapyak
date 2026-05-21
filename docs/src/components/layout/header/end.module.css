@@ -3,7 +3,7 @@
     display: none;
     justify-self: end;
 
-    @media (min-width: 60rem) {
+    @media (min-width: 1024px) {
       display: block;
     }
   }

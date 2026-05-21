@@ -96,7 +96,7 @@
       }
     }
 
-    @media (min-width: 60rem) {
+    @media (min-width: 1024px) {
       .Bar {
         grid-template-columns: 1fr auto 1fr;
       }

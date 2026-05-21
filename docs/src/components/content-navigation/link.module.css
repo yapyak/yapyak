@@ -20,7 +20,7 @@
 
     &:focus-visible {
       color: var(--foreground);
-      outline-width: 3px;
+      outline-width: 2px;
       outline-color: var(--accent-soft);
     }
 

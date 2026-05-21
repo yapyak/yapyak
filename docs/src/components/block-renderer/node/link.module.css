@@ -3,7 +3,7 @@
     color: var(--brand);
     text-decoration: underline;
     text-decoration-color: var(--rule);
-    text-underline-offset: 3px;
+    text-underline-offset: 4px;
     transition: text-decoration-color var(--transition);
 
     &:hover {

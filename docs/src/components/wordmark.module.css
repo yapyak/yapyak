@@ -2,7 +2,7 @@
   .Wordmark {
     display: inline-flex;
     align-items: center;
-    height: calc(var(--spacing-4) + var(--spacing-2) + 0.95rem * 1.65);
+    height: var(--spacing-12);
     padding: 0 var(--spacing-5);
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-semibold);

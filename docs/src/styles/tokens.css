@@ -17,9 +17,9 @@
   --spacing-20: 80px;
   --spacing-24: 96px;
 
-  --border-radius-sm: 0.5rem;
-  --border-radius-md: 1rem;
-  --border-radius-lg: 1.25rem;
+  --border-radius-sm: 8px;
+  --border-radius-md: 16px;
+  --border-radius-lg: 20px;
   --border-radius-full: 999px;
 
   --font-size-xs: 0.8125rem;
@@ -141,7 +141,7 @@
   );
 
   /* layout */
-  --header-height: 5.5rem;
+  --header-height: 88px;
 
   /* syntax — derived from palette */
   --syntax-keyword: var(--color-lilac);

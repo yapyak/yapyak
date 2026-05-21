@@ -111,7 +111,7 @@
 
     .Caret {
       display: inline-block;
-      width: 1.5px;
+      width: 2px;
       height: 1.05em;
       vertical-align: text-bottom;
       background-color: var(--foreground);

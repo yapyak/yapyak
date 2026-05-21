@@ -3,7 +3,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
     align-items: center;
     justify-content: center;
     width: 48px;
@@ -46,7 +46,7 @@
 
     &[data-open] {
       .Line:first-child {
-        transform: translateY(3px) rotate(45deg);
+        transform: translateY(4px) rotate(45deg);
       }
 
       .Line:last-child {
@@ -54,7 +54,7 @@
       }
     }
 
-    @media (min-width: 60rem) {
+    @media (min-width: 1024px) {
       display: none;
     }
   }

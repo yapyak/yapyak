@@ -5,7 +5,7 @@
     gap: var(--spacing-6);
     place-self: center;
     align-items: center;
-    max-width: 40rem;
+    max-width: 640px;
     text-align: center;
 
     .BubbleImage {
