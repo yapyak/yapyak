@@ -2,6 +2,7 @@ import type { Block, Page, ExportKind, TableRowBlock } from '#lib/content';
 import type {
   ReferenceExample,
   ReferenceExport,
+  ReferenceManifest,
   ReferenceMember,
   ReferenceOverload,
   ReferenceParameter,
@@ -16,7 +17,30 @@ import { parseContent, slugify } from '#lib/content';
 
 import { moduleSlug } from './sidebar.server';
 
-export function buildSymbolPage(symbol: ReferenceExport, moduleId: string): Page {
+type SymbolIndex = Map<string, string>;
+
+let currentIndex: SymbolIndex = new Map();
+
+export function buildSymbolIndex(manifest: ReferenceManifest): SymbolIndex {
+  const index: SymbolIndex = new Map();
+  for (const module of manifest.modules) {
+    for (const entry of module.exports) {
+      const key = `${module.id}::${entry.name}`;
+      index.set(key, module.id);
+      if (!index.has(entry.name)) {
+        index.set(entry.name, module.id);
+      }
+    }
+  }
+  return index;
+}
+
+export function buildSymbolPage(
+  symbol: ReferenceExport,
+  moduleId: string,
+  index: SymbolIndex = new Map(),
+): Page {
+  currentIndex = index;
   const blocks: Block[] = [];
 
   blocks.push(eyebrow(moduleId, symbol.kind));
@@ -133,6 +157,7 @@ export function buildSymbolPage(symbol: ReferenceExport, moduleId: string): Page
   return {
     blocks,
     description: '',
+    meta: {},
     title: symbol.kind === 'function' ? `${symbol.name}()` : symbol.name,
   };
 }
@@ -322,10 +347,11 @@ function returnsParagraph(
 function tokensToBlocks(tokens: TypeToken[]): Block[] {
   const blocks: Block[] = [];
   for (const token of tokens) {
-    if (token.kind === 'ref' && isYapyakModule(token.module)) {
+    const resolvedModule = token.kind === 'ref' ? resolveModule(token) : null;
+    if (token.kind === 'ref' && resolvedModule !== null) {
       blocks.push({
         children: [{ type: 'inline-code', value: token.text }],
-        href: symbolHref(token.module, token.name),
+        href: symbolHref(resolvedModule, token.name),
         kind: 'internal',
         type: 'link',
       });
@@ -339,8 +365,13 @@ function tokensToBlocks(tokens: TypeToken[]): Block[] {
   return blocks;
 }
 
-function isYapyakModule(module: string): boolean {
-  return module === 'yapyak' || module.startsWith('yapyak/');
+function resolveModule(token: { module: string; name: string }): string | null {
+  const exactKey = `${token.module}::${token.name}`;
+  if (currentIndex.has(exactKey)) {
+    return token.module;
+  }
+  const fallback = currentIndex.get(token.name);
+  return fallback ?? null;
 }
 
 function isVoidTokens(tokens: TypeToken[]) {

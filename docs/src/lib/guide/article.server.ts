@@ -8,12 +8,11 @@ export async function loadGuideArticle(slug: string) {
     join(process.cwd(), 'content', 'guide', slug, 'index.md'),
   ];
   for (const path of candidates) {
-    const result = await loadPage(path);
-    if (result === null) {
+    const page = await loadPage(path);
+    if (page === null) {
       continue;
     }
-    const { frontmatter, page } = result;
-    const redirectField = frontmatter.redirect;
+    const redirectField = page.meta.redirect;
     if (typeof redirectField === 'string' && redirectField) {
       const target = resolveRedirect(slug, redirectField);
       if (target !== `/guide/${slug}`) {

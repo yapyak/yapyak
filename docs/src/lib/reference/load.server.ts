@@ -3,7 +3,7 @@ import type { Page } from '#lib/content';
 import { loadPage } from '#lib/content';
 
 import { loadManifest } from './manifest.server';
-import { buildSymbolPage } from './pages.server';
+import { buildSymbolIndex, buildSymbolPage } from './pages.server';
 import { join } from 'node:path';
 
 export type LoadReferenceResult =
@@ -21,13 +21,13 @@ export async function loadReferencePage(
       'reference',
       'introduction.md',
     );
-    const result = await loadPage(introPath);
-    if (result === null) {
+    const page = await loadPage(introPath);
+    if (page === null) {
       return { kind: 'not-found' };
     }
     return {
       kind: 'page',
-      page: { ...result.page, title: result.page.title || 'Reference' },
+      page: { ...page, title: page.title || 'Reference' },
     };
   }
 
@@ -61,7 +61,8 @@ export async function loadReferencePage(
     return { kind: 'not-found' };
   }
 
-  return { kind: 'page', page: buildSymbolPage(symbol, parent.id) };
+  const index = buildSymbolIndex(manifest);
+  return { kind: 'page', page: buildSymbolPage(symbol, parent.id, index) };
 }
 
 function slugToModuleId(slug: string) {

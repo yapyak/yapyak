@@ -1,7 +1,7 @@
 import type { Plugin } from 'vite';
 
-import { extract } from './extract.server.ts';
-import { invalidateManifest } from './manifest.server.ts';
+import { extract } from './extract.server';
+import { invalidateManifest } from './manifest.server';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 

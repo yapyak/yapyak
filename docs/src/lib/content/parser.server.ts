@@ -3,6 +3,7 @@ import type {
   Block,
   CalloutBlock,
   CodeBlock,
+  MetaValue,
   TableBlock,
   TableCellBlock,
   TableRowBlock,
@@ -311,8 +312,8 @@ function extractText(children: unknown[]) {
   return parts.join('');
 }
 
-function parseFrontmatter(raw: string) {
-  const result: Record<string, unknown> = {};
+function parseFrontmatter(raw: string): Record<string, MetaValue> {
+  const result: Record<string, MetaValue> = {};
   for (const line of raw.split('\n')) {
     const separatorIndex = line.indexOf(':');
     if (separatorIndex === -1) {

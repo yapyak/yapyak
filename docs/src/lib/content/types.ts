@@ -152,8 +152,17 @@ export interface CodeLocationBlock {
   type: 'code-location';
 }
 
+export type MetaValue =
+  | string
+  | number
+  | boolean
+  | null
+  | MetaValue[]
+  | { [key: string]: MetaValue };
+
 export interface Page {
   blocks: Block[];
   description: string;
+  meta: Record<string, MetaValue>;
   title: string;
 }

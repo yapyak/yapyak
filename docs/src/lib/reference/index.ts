@@ -20,10 +20,7 @@ export type {
   TypeToken,
 } from './types';
 
-export { loadReferencePage } from './load.server.ts';
-export { loadManifest } from './manifest.server.ts';
-export { buildSymbolPage } from './pages.server.ts';
-export {
-  buildSidebar,
-  loadSidebar,
-} from './sidebar.server.ts';
+export { loadReferencePage } from './load.server';
+export { loadManifest } from './manifest.server';
+export { buildSymbolPage } from './pages.server';
+export { buildSidebar, loadSidebar } from './sidebar.server';
