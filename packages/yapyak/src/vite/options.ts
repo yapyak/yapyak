@@ -15,12 +15,12 @@ export interface YapyakOptions {
   defaultLocale?: string;
   /** Whether to detect locale from the `Accept-Language` header on the server. */
   detectAcceptLanguage?: boolean;
-  /** Glob patterns to exclude from extraction. */
+  /** The glob patterns to exclude from extraction. */
   exclude?: FilterPattern;
-  /** Glob patterns to include for extraction. */
+  /** The glob patterns to include for extraction. */
   include?: FilterPattern;
   /**
-   * Directory for locale JSON files, relative to project root.
+   * The directory for locale JSON files, relative to the project root.
    *
    * @defaultValue `'locales'`
    */

@@ -87,10 +87,10 @@ export function getLocale(): string {
 }
 
 /**
- * Switches the active locale. No-op if `value` is not in {@link locales}.
+ * Switches the active locale.
  *
  * @remarks
- * Notifies subscribers and framework adapters.
+ * No-op if `value` is not in {@link locales}. Notifies subscribers and framework adapters.
  *
  * @param value - The locale to switch to.
  *

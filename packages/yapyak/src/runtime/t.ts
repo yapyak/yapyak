@@ -44,9 +44,8 @@ function tIn(locale: string): TIn {
 /**
  * Translates a source string to the current locale.
  *
- * The first argument must be a static string literal — yapyak's Vite plugin
- * reads it statically to extract translations. Placeholders use `{name}` and
- * are type-checked from the source literal.
+ * @remarks
+ * The first argument must be a static string literal — yapyak's Vite plugin reads it statically to extract translations. Placeholders use `{name}` and are type-checked from the source literal.
  *
  * @example
  * ```tsx

@@ -9,7 +9,7 @@ export interface GeminiOptions {
   /** The Google AI API key. */
   apiKey: string;
   /**
-   * Maximum items per API call.
+   * The maximum items per API call.
    *
    * @defaultValue `10`
    */
@@ -26,35 +26,35 @@ export interface GeminiOptions {
    * @defaultValue `'https://generativelanguage.googleapis.com/v1beta'`
    */
   endpoint?: string;
-  /** Glossary of fixed translations, keyed by source string then locale. */
+  /** The glossary of fixed translations, keyed by source string then locale. */
   glossary?: Record<string, Record<string, string>>;
-  /** Extra request headers. */
+  /** The extra request headers. */
   headers?: Record<string, string>;
   /**
-   * Maximum retry attempts on transient failures.
+   * The maximum retry attempts on transient failures.
    *
    * @defaultValue `2`
    */
   maxRetries?: number;
   /**
-   * Model name.
+   * The model name.
    *
    * @defaultValue `'gemini-2.5-flash'`
    */
   model?: string;
   /**
-   * Sampling temperature.
+   * The sampling temperature.
    *
    * @defaultValue `0.2`
    */
   temperature?: number;
   /**
-   * Request timeout in milliseconds.
+   * The request timeout in milliseconds.
    *
    * @defaultValue `30_000`
    */
   timeout?: number;
-  /** Voice and tone guidance passed to the model. */
+  /** The voice and tone guidance passed to the model. */
   voice?: string;
 }
 

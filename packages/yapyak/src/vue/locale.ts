@@ -8,8 +8,8 @@ import { registerTracker } from '../runtime';
 /**
  * The reactive locale ref for Vue.
  *
- * `locale` is a `Ref<string>`. Read `locale.value` in `<script setup>`; it
- * auto-unwraps in templates. Assignable via `locale.value = ...` or `v-model`.
+ * @remarks
+ * Typed as `Ref<string>`. Auto-unwraps in templates. Reads track reactivity, writes call {@link setLocale}.
  *
  * @example
  * ```vue

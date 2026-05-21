@@ -34,7 +34,7 @@
         },
         {
           "deprecated": null,
-          "description": "Switches the active locale. No-op if `value` is not in {@link locales}.",
+          "description": "Switches the active locale.",
           "examples": [
             "```ts\nimport { setLocale } from 'yapyak';\n\nsetLocale('sv');\n```"
           ],
@@ -47,7 +47,7 @@
           "tags": [
             {
               "name": "remarks",
-              "text": "Notifies subscribers and framework adapters."
+              "text": "No-op if `value` is not in {@link locales}. Notifies subscribers and framework adapters."
             }
           ],
           "kind": "function",
@@ -125,17 +125,22 @@
         },
         {
           "deprecated": null,
-          "description": "Translates a source string to the current locale.\n\nThe first argument must be a static string literal — yapyak's Vite plugin\nreads it statically to extract translations. Placeholders use `{name}` and\nare type-checked from the source literal.",
+          "description": "Translates a source string to the current locale.",
           "examples": [
             "```tsx\nimport { t } from 'yapyak';\n\nt('Save changes');\n\nt('Hello, {name}!', { name: 'Alex' });\n\nt('You have {count, plural, one {# item} other {# items}}', { count: 1 });\n\nt.in(user.locale)('Welcome back, {name}!', { name: user.name });\n```"
           ],
           "location": {
             "column": 14,
             "file": "src/runtime/t.ts",
-            "line": 64
+            "line": 63
           },
           "name": "t",
-          "tags": [],
+          "tags": [
+            {
+              "name": "remarks",
+              "text": "The first argument must be a static string literal — yapyak's Vite plugin reads it statically to extract translations. Placeholders use `{name}` and are type-checked from the source literal."
+            }
+          ],
           "kind": "function",
           "members": [
             {
@@ -537,20 +542,20 @@
       "exports": [
         {
           "deprecated": null,
-          "description": "Provides locale context to the React tree. Place once at the root.",
+          "description": "Provides locale context to the React tree.",
           "examples": [
             "```tsx\nimport { IntlProvider } from 'yapyak/react';\n\nfunction App() {\n  return (\n    <IntlProvider>\n      <App />\n    </IntlProvider>\n  );\n}\n```"
           ],
           "location": {
             "column": 1,
             "file": "src/react/intl-provider.tsx",
-            "line": 34
+            "line": 33
           },
           "name": "IntlProvider",
           "tags": [
             {
               "name": "remarks",
-              "text": "Re-renders descendants when {@link setLocale } is called, so {@link t } calls\ninside the tree return the new locale's strings."
+              "text": "Mounts once at the React tree's root. Re-renders descendants when {@link setLocale } is called, so {@link t } calls inside the tree return the new locale's strings."
             }
           ],
           "kind": "function",
@@ -587,7 +592,7 @@
         },
         {
           "deprecated": null,
-          "description": "Subscribes the component to locale changes. Returns the current locale and a setter.",
+          "description": "Subscribes to locale changes and returns the current locale and a setter.",
           "examples": [
             "```tsx\nimport { t } from 'yapyak';\nimport { useLocale } from 'yapyak/react';\n\nfunction LocaleToggle() {\n  const [locale, setLocale] = useLocale();\n  return (\n    <select value={locale} onChange={(e) => setLocale(e.target.value)}>\n      <option value=\"en\">English</option>\n      <option value=\"sv\">Svenska</option>\n    </select>\n  );\n}\n```"
           ],
@@ -658,7 +663,7 @@
       "exports": [
         {
           "deprecated": null,
-          "description": "The reactive locale ref for Vue.\n\n`locale` is a `Ref<string>`. Read `locale.value` in `<script setup>`; it\nauto-unwraps in templates. Assignable via `locale.value = ...` or `v-model`.",
+          "description": "The reactive locale ref for Vue.",
           "examples": [
             "```vue\n<script setup>\nimport { t } from 'yapyak';\nimport { locale } from 'yapyak/vue';\n</script>\n\n<template>\n  <p>{{ t('Hello') }}: {{ locale }}</p>\n  <select v-model=\"locale\">\n    <option value=\"en\">English</option>\n    <option value=\"sv\">Svenska</option>\n  </select>\n</template>\n```"
           ],
@@ -668,13 +673,18 @@
             "line": 30
           },
           "name": "locale",
-          "tags": [],
+          "tags": [
+            {
+              "name": "remarks",
+              "text": "Typed as `Ref<string>`. Auto-unwraps in templates. Reads track reactivity, writes call {@link setLocale}."
+            }
+          ],
           "kind": "variable",
           "members": [
             {
               "defaultValue": null,
               "description": "Type differentiator only.\nWe need this to be in public d.ts but don't want it to show up in IDE\nautocomplete, so we use a private Symbol instead.",
-              "name": "__@RefSymbol@41774",
+              "name": "__@RefSymbol@820",
               "optional": false,
               "type": [
                 {
@@ -713,17 +723,22 @@
       "exports": [
         {
           "deprecated": null,
-          "description": "The reactive locale store for Svelte 5.\n\nRead `locale.current` inside a component to subscribe; assign to switch.",
+          "description": "The reactive locale store for Svelte 5.",
           "examples": [
             "```svelte\n<script>\n  import { t } from 'yapyak';\n  import { locale } from 'yapyak/svelte';\n</script>\n\n<p>{t('Hello')}</p>\n<select bind:value={locale.current}>\n  <option value=\"en\">English</option>\n  <option value=\"sv\">Svenska</option>\n</select>\n```"
           ],
           "location": {
             "column": 14,
             "file": "src/svelte/locale.svelte.ts",
-            "line": 40
+            "line": 41
           },
           "name": "locale",
-          "tags": [],
+          "tags": [
+            {
+              "name": "remarks",
+              "text": "Reads to `locale.current` track reactivity. Writes call {@link setLocale}."
+            }
+          ],
           "kind": "variable",
           "members": [
             {
@@ -875,7 +890,7 @@
             },
             {
               "defaultValue": null,
-              "description": "Glob patterns to exclude from extraction.",
+              "description": "The glob patterns to exclude from extraction.",
               "name": "exclude",
               "optional": true,
               "type": [
@@ -887,7 +902,7 @@
             },
             {
               "defaultValue": null,
-              "description": "Glob patterns to include for extraction.",
+              "description": "The glob patterns to include for extraction.",
               "name": "include",
               "optional": true,
               "type": [
@@ -899,7 +914,7 @@
             },
             {
               "defaultValue": "`'locales'`",
-              "description": "Directory for locale JSON files, relative to project root.",
+              "description": "The directory for locale JSON files, relative to the project root.",
               "name": "localesDir",
               "optional": true,
               "type": [
@@ -960,7 +975,7 @@
               ]
             }
           ],
-          "signature": "export interface YapyakOptions {\n  /**\n   * The default locale.\n   *\n   * @remarks\n   * Inferred from locale files if omitted.\n   */\n  defaultLocale?: string;\n  /** Whether to detect locale from the `Accept-Language` header on the server. */\n  detectAcceptLanguage?: boolean;\n  /** Glob patterns to exclude from extraction. */\n  exclude?: FilterPattern;\n  /** Glob patterns to include for extracti..."
+          "signature": "export interface YapyakOptions {\n  /**\n   * The default locale.\n   *\n   * @remarks\n   * Inferred from locale files if omitted.\n   */\n  defaultLocale?: string;\n  /** Whether to detect locale from the `Accept-Language` header on the server. */\n  detectAcceptLanguage?: boolean;\n  /** The glob patterns to exclude from extraction. */\n  exclude?: FilterPattern;\n  /** The glob patterns to include for ..."
         }
       ],
       "id": "yapyak/vite",
@@ -1332,13 +1347,13 @@
           "location": {
             "column": 1,
             "file": "src/translator/index.ts",
-            "line": 151
+            "line": 150
           },
           "name": "createTranslator",
           "tags": [
             {
               "name": "remarks",
-              "text": "Handles batching, context shaping, and result validation — you provide\nthe function that talks to the AI."
+              "text": "Handles batching, context shaping, and result validation. The provided function talks to the AI."
             }
           ],
           "kind": "function",
@@ -1526,7 +1541,7 @@
           "members": [
             {
               "defaultValue": "`10`",
-              "description": "Maximum number of items per `translate` call.",
+              "description": "The maximum number of items per `translate` call.",
               "name": "batchSize",
               "optional": true,
               "type": [
@@ -1573,7 +1588,7 @@
               ]
             }
           ],
-          "signature": "export interface CreateTranslatorOptions {\n  /**\n   * Maximum number of items per `translate` call.\n   *\n   * @defaultValue `10`\n   */\n  batchSize?: number;\n  /**\n   * How much call-site context to include.\n   *\n   * @defaultValue `'minimal'`\n   */\n  context?: ContextLevel;\n  /** Translates a batch of items. Must return strings in the same order as `items`. */\n  translate: (params: TranslateBat..."
+          "signature": "export interface CreateTranslatorOptions {\n  /**\n   * The maximum number of items per `translate` call.\n   *\n   * @defaultValue `10`\n   */\n  batchSize?: number;\n  /**\n   * How much call-site context to include.\n   *\n   * @defaultValue `'minimal'`\n   */\n  context?: ContextLevel;\n  /** Translates a batch of items. Must return strings in the same order as `items`. */\n  translate: (params: Translat..."
         },
         {
           "deprecated": null,
@@ -1669,7 +1684,7 @@
             },
             {
               "defaultValue": null,
-              "description": "Abort signal for cancellation. Forward to the underlying fetch/SDK call.",
+              "description": "The abort signal for cancellation. Forwarded to the underlying fetch/SDK call.",
               "name": "signal",
               "optional": true,
               "type": [
@@ -1704,7 +1719,7 @@
               ]
             }
           ],
-          "signature": "export interface TranslateBatchRequest {\n  /** The items to translate. Translations must be returned in the same order. */\n  items: TranslateItem[];\n  /** Abort signal for cancellation. Forward to the underlying fetch/SDK call. */\n  signal?: AbortSignal;\n  /** The source locale. */\n  sourceLocale: string;\n  /** The target locale. */\n  targetLocale: string;\n}"
+          "signature": "export interface TranslateBatchRequest {\n  /** The items to translate. Translations must be returned in the same order. */\n  items: TranslateItem[];\n  /** The abort signal for cancellation. Forwarded to the underlying fetch/SDK call. */\n  signal?: AbortSignal;\n  /** The source locale. */\n  sourceLocale: string;\n  /** The target locale. */\n  targetLocale: string;\n}"
         },
         {
           "deprecated": null,

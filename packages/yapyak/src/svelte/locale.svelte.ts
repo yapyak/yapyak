@@ -21,7 +21,8 @@ export interface Locale {
 /**
  * The reactive locale store for Svelte 5.
  *
- * Read `locale.current` inside a component to subscribe; assign to switch.
+ * @remarks
+ * Reads to `locale.current` track reactivity. Writes call {@link setLocale}.
  *
  * @example
  * ```svelte

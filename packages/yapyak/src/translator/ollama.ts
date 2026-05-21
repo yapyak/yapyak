@@ -7,7 +7,7 @@ import { createTranslator } from '.';
 /** Options for the {@link ollama} translator. */
 export interface OllamaOptions {
   /**
-   * Maximum items per API call.
+   * The maximum items per API call.
    *
    * @defaultValue `10`
    */
@@ -24,35 +24,35 @@ export interface OllamaOptions {
    * @defaultValue `'http://localhost:11434/api/generate'`
    */
   endpoint?: string;
-  /** Glossary of fixed translations, keyed by source string then locale. */
+  /** The glossary of fixed translations, keyed by source string then locale. */
   glossary?: Record<string, Record<string, string>>;
-  /** Extra request headers. */
+  /** The extra request headers. */
   headers?: Record<string, string>;
   /**
-   * Maximum retry attempts on transient failures.
+   * The maximum retry attempts on transient failures.
    *
    * @defaultValue `1`
    */
   maxRetries?: number;
   /**
-   * Model name.
+   * The model name.
    *
    * @defaultValue `'llama3.1'`
    */
   model?: string;
   /**
-   * Sampling temperature.
+   * The sampling temperature.
    *
    * @defaultValue `0.2`
    */
   temperature?: number;
   /**
-   * Request timeout in milliseconds.
+   * The request timeout in milliseconds.
    *
    * @defaultValue `120_000`
    */
   timeout?: number;
-  /** Voice and tone guidance passed to the model. */
+  /** The voice and tone guidance passed to the model. */
   voice?: string;
 }
 

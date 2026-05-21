@@ -9,7 +9,7 @@ export interface OpenAIOptions {
   /** The OpenAI API key. */
   apiKey: string;
   /**
-   * Maximum items per API call.
+   * The maximum items per API call.
    *
    * @defaultValue `10`
    */
@@ -26,41 +26,41 @@ export interface OpenAIOptions {
    * @defaultValue `'https://api.openai.com/v1/chat/completions'`
    */
   endpoint?: string;
-  /** Glossary of fixed translations, keyed by source string then locale. */
+  /** The glossary of fixed translations, keyed by source string then locale. */
   glossary?: Record<string, Record<string, string>>;
-  /** Extra request headers. */
+  /** The extra request headers. */
   headers?: Record<string, string>;
   /**
-   * Maximum retry attempts on transient failures.
+   * The maximum retry attempts on transient failures.
    *
    * @defaultValue `2`
    */
   maxRetries?: number;
   /**
-   * Model name.
+   * The model name.
    *
    * @defaultValue `'gpt-5-mini'`
    */
   model?: string;
   /** The OpenAI organization ID. */
   organization?: string;
-  /** Deterministic seed for reproducible output. */
+  /** The deterministic seed for reproducible output. */
   seed?: number;
   /**
-   * Sampling temperature.
+   * The sampling temperature.
    *
    * @defaultValue `0.2`
    */
   temperature?: number;
   /**
-   * Request timeout in milliseconds.
+   * The request timeout in milliseconds.
    *
    * @defaultValue `30_000`
    */
   timeout?: number;
-  /** Stable end-user identifier forwarded to OpenAI. */
+  /** The stable end-user identifier forwarded to OpenAI. */
   user?: string;
-  /** Voice and tone guidance passed to the model. */
+  /** The voice and tone guidance passed to the model. */
   voice?: string;
 }
 

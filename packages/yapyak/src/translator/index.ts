@@ -96,7 +96,7 @@ export interface TranslateItem {
 export interface TranslateBatchRequest {
   /** The items to translate. Translations must be returned in the same order. */
   items: TranslateItem[];
-  /** Abort signal for cancellation. Forward to the underlying fetch/SDK call. */
+  /** The abort signal for cancellation. Forwarded to the underlying fetch/SDK call. */
   signal?: AbortSignal;
   /** The source locale. */
   sourceLocale: string;
@@ -107,7 +107,7 @@ export interface TranslateBatchRequest {
 /** Options for {@link createTranslator}. */
 export interface CreateTranslatorOptions {
   /**
-   * Maximum number of items per `translate` call.
+   * The maximum number of items per `translate` call.
    *
    * @defaultValue `10`
    */
@@ -129,8 +129,7 @@ const DEFAULT_CONTEXT: ContextLevel = 'minimal';
  * Builds a translator from a `translate` function.
  *
  * @remarks
- * Handles batching, context shaping, and result validation — you provide
- * the function that talks to the AI.
+ * Handles batching, context shaping, and result validation. The provided function talks to the AI.
  *
  * @param options - The translator options.
  *
