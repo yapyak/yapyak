@@ -13,22 +13,12 @@
       height: 72px;
     }
 
-    .TaglineRow {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      min-height: calc(var(--font-size-lg) * 1.5);
-    }
-
     .TaglineParagraph {
       font-size: var(--font-size-lg);
       font-style: italic;
       color: var(--foreground-soft);
       letter-spacing: var(--letter-spacing-tight);
       text-wrap: balance;
-      animation: tagline-enter 700ms var(--ease-smooth);
     }
 
     .CopyrightParagraph {
@@ -58,16 +48,4 @@
     }
   }
 
-  @keyframes tagline-enter {
-    0% {
-      opacity: 0;
-      transform: translateY(6px);
-      filter: blur(4px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-      filter: blur(0);
-    }
-  }
 }
