@@ -1,4 +1,4 @@
-import type { TextBlock } from '#lib/content';
+import type { TextBlock } from '@yapyak/doc-extractor';
 
 export interface NodeTextProps {
   block: TextBlock;

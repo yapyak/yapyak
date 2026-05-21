@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "paths": {
       "#components/*": ["./src/components/*"],
       "#docs/*": ["./src/docs/*"],
@@ -7,8 +9,10 @@
       "#lib/*": ["./src/lib/*"],
       "#types": ["./src/types.ts"],
       "#utils/*": ["./src/utils/*"]
-    }
+    },
+    "resolveJsonModule": true,
+    "types": ["node", "vite/client"]
   },
   "extends": "@yapyak/typescript-config/react",
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "manifest.json"]
 }

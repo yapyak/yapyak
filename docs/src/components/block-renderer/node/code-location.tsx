@@ -1,4 +1,4 @@
-import type { CodeLocationBlock } from '#lib/content';
+import type { CodeLocationBlock } from '@yapyak/doc-extractor';
 
 import { Box } from '#components/box';
 

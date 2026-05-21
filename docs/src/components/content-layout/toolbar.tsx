@@ -1,5 +1,5 @@
+import type { SidebarLink } from '@yapyak/doc-extractor';
 import type { ReactNode } from 'react';
-import type { NavAdjacent } from '#lib/navigation';
 
 import { Link } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
@@ -14,8 +14,8 @@ import styles from './toolbar.module.css';
 
 export interface ContentLayoutToolbarProps {
   children: ReactNode;
-  next: NavAdjacent | null;
-  previous: NavAdjacent | null;
+  next: SidebarLink | null;
+  previous: SidebarLink | null;
 }
 
 export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {

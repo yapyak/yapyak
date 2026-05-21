@@ -5,8 +5,8 @@ import { Box } from '#components/box';
 import styles from './menu-button.module.css';
 
 export interface HeaderMenuButtonProps {
-  open: boolean;
   onToggle: () => void;
+  open: boolean;
 }
 
 export function HeaderMenuButton(props: HeaderMenuButtonProps) {

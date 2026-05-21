@@ -1,5 +1,5 @@
+import type { Block } from '@yapyak/doc-extractor';
 import type { BoxProps } from '#components/box';
-import type { Block } from '#lib/content';
 
 import { Box } from '#components/box';
 

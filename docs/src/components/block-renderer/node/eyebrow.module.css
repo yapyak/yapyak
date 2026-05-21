@@ -1,8 +1,8 @@
 @layer components {
   .Eyebrow {
     display: flex;
-    align-items: center;
     gap: var(--spacing-3);
+    align-items: center;
 
     .ModuleText {
       font-size: var(--font-size-xs);

@@ -4,32 +4,25 @@ import {
   notFound,
   redirect,
 } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
+import { findAdjacent, resolvePath } from '@yapyak/doc-extractor';
 
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
 import { ContentPagination } from '#components/content-pagination';
 import { PageArticle } from '#components/page-article';
-import { loadGuideArticle } from '#lib/guide';
-import { findAdjacent } from '#lib/navigation';
+import { manifest } from '#lib/manifest';
 
 const guideRouteApi = getRouteApi('/guide');
 
-const loadData = createServerFn()
-  .inputValidator((slug: string) => slug)
-  .handler(async ({ data: slug }) => {
-    return loadGuideArticle(slug);
-  });
-
 export const Route = createFileRoute('/guide/$')({
   component: Component,
-  async loader({ context, params }) {
+  loader({ params }) {
     const slug = params._splat ?? '';
     if (!slug) {
       throw notFound();
     }
 
-    const result = await loadData({ data: slug });
+    const result = resolvePath(manifest, 'guide', slug);
 
     if (result.kind === 'not-found') {
       throw notFound();
@@ -38,7 +31,11 @@ export const Route = createFileRoute('/guide/$')({
       throw redirect({ replace: true, to: result.target });
     }
 
-    const { next, previous } = findAdjacent(context.sidebar, `/guide/${slug}`);
+    const { next, previous } = findAdjacent(
+      manifest,
+      'guide',
+      `/guide/${slug}`,
+    );
 
     return {
       next,

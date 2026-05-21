@@ -4,41 +4,37 @@ import {
   notFound,
   redirect,
 } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
+import { findAdjacent, resolvePath } from '@yapyak/doc-extractor';
 
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
 import { ContentPagination } from '#components/content-pagination';
 import { PageArticle } from '#components/page-article';
-import { findAdjacent } from '#lib/navigation';
-import { loadReferencePage } from '#lib/reference';
+import { manifest } from '#lib/manifest';
 
 const referenceRouteApi = getRouteApi('/reference');
 
-const loadData = createServerFn()
-  .inputValidator((path: string) => path)
-  .handler(({ data: path }) => loadReferencePage(path));
-
 export const Route = createFileRoute('/reference/$')({
   component: Component,
-  async loader({ context, params }) {
+  loader({ params }) {
     const path = params._splat ?? '';
     if (!path) {
       throw notFound();
     }
-    const result = await loadData({ data: path });
+    const result = resolvePath(manifest, 'reference', path);
     if (result.kind === 'not-found') {
       throw notFound();
     }
     if (result.kind === 'redirect') {
       throw redirect({
-        params: { _splat: result.target },
+        params: { _splat: result.target.replace(/^\/reference\//, '') },
         replace: true,
         to: '/reference/$',
       });
     }
     const { next, previous } = findAdjacent(
-      context.sidebar,
+      manifest,
+      'reference',
       `/reference/${path}`,
     );
     return { next, page: result.page, previous };

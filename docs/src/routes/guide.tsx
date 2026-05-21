@@ -1,18 +1,13 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
+import { getSidebar } from '@yapyak/doc-extractor';
 
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
-import { buildGuideSidebar } from '#lib/guide';
-
-const loadData = createServerFn().handler(() =>
-  buildGuideSidebar(process.cwd()),
-);
+import { manifest } from '#lib/manifest';
 
 export const Route = createFileRoute('/guide')({
-  async beforeLoad() {
-    const sidebar = await loadData();
-    return { sidebar };
+  beforeLoad() {
+    return { sidebar: getSidebar(manifest, 'guide') };
   },
   component: Component,
 });

@@ -1,5 +1,5 @@
+import type { ExportKind } from '@yapyak/doc-extractor';
 import type { BoxProps } from '#components/box';
-import type { ExportKind } from '#lib/content';
 
 import { Box } from '#components/box';
 

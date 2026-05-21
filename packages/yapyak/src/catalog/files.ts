@@ -60,9 +60,9 @@ export interface MigrateLocalesOptions {
   fileId: string;
   locales: string[];
   localesDir: string;
+  preserveTranslations: boolean;
   projectRoot: string;
   renames: RenameEntry[];
-  preserveTranslations: boolean;
 }
 
 export interface MigrateLocalesResult {

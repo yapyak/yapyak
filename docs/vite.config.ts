@@ -1,25 +1,31 @@
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
+import { docExtractor } from '@yapyak/doc-extractor/vite';
 import { defineConfig } from 'vite';
 import { yapyak } from 'yapyak/vite';
 
-import { referenceManifest } from './src/lib/reference/reference-manifest-plugin.ts';
 import { resolve } from 'node:path';
-
-const yapyakDir = resolve(import.meta.dirname, '..', 'packages', 'yapyak');
 
 export default defineConfig({
   css: {
     transformer: 'lightningcss',
   },
   plugins: [
-    referenceManifest({
-      outFile: resolve(
-        import.meta.dirname,
-        'content',
-        'reference',
-        'manifest.json',
-      ),
-      yapyakDir,
+    docExtractor({
+      collections: {
+        guide: {
+          root: resolve(import.meta.dirname, 'content/guide'),
+          source: 'markdoc',
+        },
+        reference: {
+          intro: resolve(
+            import.meta.dirname,
+            'content/reference/introduction.md',
+          ),
+          packageDir: resolve(import.meta.dirname, '../packages/yapyak'),
+          source: 'typedoc',
+        },
+      },
+      out: resolve(import.meta.dirname, 'manifest.json'),
     }),
     yapyak(),
     tanstackStart({

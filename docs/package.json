@@ -19,16 +19,16 @@
   "dependencies": {
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-start": "catalog:",
+    "@yapyak/doc-extractor": "workspace:*",
     "react": "catalog:",
     "react-dom": "catalog:",
     "yapyak": "workspace:*"
   },
   "devDependencies": {
-    "@markdoc/markdoc": "catalog:",
+    "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@yapyak/typescript-config": "workspace:*",
-    "typedoc": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:"
   }

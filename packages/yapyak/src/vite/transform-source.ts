@@ -18,8 +18,8 @@ export interface TransformSourceOptions {
 }
 
 export interface TransformSourceResult {
-  code: string;
   changed: boolean;
+  code: string;
 }
 
 const HELPER_NAME = '_$pick';
@@ -31,7 +31,7 @@ export function transformSource(
 ): TransformSourceResult {
   const sites = findCallSites(code);
   if (sites.length === 0) {
-    return { code, changed: false };
+    return { changed: false, code };
   }
 
   const replacements: Array<{
@@ -81,13 +81,13 @@ export function transformSource(
   }
 
   if (replacements.length === 0) {
-    return { code, changed: false };
+    return { changed: false, code };
   }
 
   const helperImport = options.helperImport ?? DEFAULT_HELPER_IMPORT;
   const importStatement = `import { pick as ${HELPER_NAME} } from '${helperImport}';`;
   const transformed = applyReplacements(code, replacements);
-  return { code: injectImport(transformed, importStatement), changed: true };
+  return { changed: true, code: injectImport(transformed, importStatement) };
 }
 
 function applyReplacements(

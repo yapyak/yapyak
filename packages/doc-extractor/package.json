@@ -1,0 +1,26 @@
+{
+  "name": "@yapyak/doc-extractor",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./extract": "./src/extract/index.ts",
+    "./vite": "./src/vite.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@markdoc/markdoc": "catalog:",
+    "typedoc": "catalog:"
+  },
+  "peerDependencies": {
+    "vite": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@yapyak/typescript-config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

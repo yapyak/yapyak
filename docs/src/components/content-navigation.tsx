@@ -1,5 +1,5 @@
+import type { SidebarNode } from '@yapyak/doc-extractor';
 import type { BoxProps } from '#components/box';
-import type { NavNode } from '#lib/navigation';
 
 import { Box } from '#components/box';
 
@@ -8,7 +8,7 @@ import { ContentNavigationLink } from './content-navigation/link';
 import styles from './content-navigation.module.css';
 
 export interface ContentNavigationProps extends BoxProps<'nav'> {
-  tree: NavNode[];
+  tree: SidebarNode[];
 }
 
 export function ContentNavigation(props: ContentNavigationProps) {

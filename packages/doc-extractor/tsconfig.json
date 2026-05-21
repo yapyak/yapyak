@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "isolatedDeclarations": false,
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "extends": "@yapyak/typescript-config/library",
+  "include": ["src/**/*"]
+}

@@ -1,4 +1,4 @@
-import type { Block } from '#lib/content';
+import type { Block } from '@yapyak/doc-extractor';
 
 import { NodeBlockquote } from './node/blockquote';
 import { NodeCallout } from './node/callout';

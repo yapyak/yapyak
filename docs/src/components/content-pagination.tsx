@@ -1,5 +1,5 @@
+import type { SidebarLink } from '@yapyak/doc-extractor';
 import type { BoxProps } from '#components/box';
-import type { NavAdjacent } from '#lib/navigation';
 
 import { Link } from '@tanstack/react-router';
 import { t } from 'yapyak';
@@ -9,8 +9,8 @@ import { Box } from '#components/box';
 import styles from './content-pagination.module.css';
 
 export interface ContentPaginationProps extends BoxProps<'nav'> {
-  next: NavAdjacent | null;
-  previous: NavAdjacent | null;
+  next: SidebarLink | null;
+  previous: SidebarLink | null;
 }
 
 export function ContentPagination(props: ContentPaginationProps) {

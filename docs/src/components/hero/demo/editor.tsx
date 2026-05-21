@@ -26,10 +26,10 @@ export const FRAMEWORKS: [FrameworkConfig, FrameworkConfig, FrameworkConfig] = [
 
 export interface DemoEditorProps extends BoxProps {
   framework: Framework;
-  saving: boolean;
-  typing: boolean;
   onFrameworkChange: (framework: Framework) => void;
+  saving: boolean;
   source: string;
+  typing: boolean;
 }
 
 const CARET_MARKER = 'CARET';

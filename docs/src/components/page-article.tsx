@@ -1,5 +1,5 @@
+import type { Page } from '@yapyak/doc-extractor';
 import type { BoxProps } from '#components/box';
-import type { Page } from '#lib/content';
 
 import { BlockRenderer } from '#components/block-renderer';
 import { Box } from '#components/box';

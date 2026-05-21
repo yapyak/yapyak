@@ -105,8 +105,7 @@ export function normalizeOptions(options: YapyakOptions): NormalizedOptions {
     localesDir: options.localesDir ?? 'locales',
     persistence: normalizePersistence(options.persistence),
     preserveTranslationsOnRename:
-      options.preserveTranslationsOnRename ??
-      options.translator === undefined,
+      options.preserveTranslationsOnRename ?? options.translator === undefined,
     syncHtmlLang: options.syncHtmlLang ?? false,
     translator: options.translator,
   };

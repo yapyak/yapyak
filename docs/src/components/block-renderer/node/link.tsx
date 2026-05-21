@@ -1,4 +1,4 @@
-import type { LinkBlock } from '#lib/content';
+import type { LinkBlock } from '@yapyak/doc-extractor';
 
 import { Link } from '@tanstack/react-router';
 

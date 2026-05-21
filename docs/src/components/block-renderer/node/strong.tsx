@@ -1,4 +1,4 @@
-import type { StrongBlock } from '#lib/content';
+import type { StrongBlock } from '@yapyak/doc-extractor';
 
 import { Box } from '#components/box';
 

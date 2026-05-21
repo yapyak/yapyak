@@ -1,26 +1,27 @@
 import { createFileRoute, getRouteApi, notFound } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
+import { findAdjacent, getPage } from '@yapyak/doc-extractor';
 
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
 import { ContentPagination } from '#components/content-pagination';
 import { PageArticle } from '#components/page-article';
-import { findAdjacent } from '#lib/navigation';
-import { loadReferencePage } from '#lib/reference';
+import { manifest } from '#lib/manifest';
 
 const referenceRouteApi = getRouteApi('/reference');
 
-const loadData = createServerFn().handler(() => loadReferencePage(''));
-
 export const Route = createFileRoute('/reference/')({
   component: Component,
-  async loader({ context }) {
-    const result = await loadData();
-    if (result.kind !== 'page') {
+  loader() {
+    const page = getPage(manifest, 'reference', '');
+    if (page === null) {
       throw notFound();
     }
-    const { next, previous } = findAdjacent(context.sidebar, '/reference');
-    return { next, page: result.page, previous };
+    const { next, previous } = findAdjacent(
+      manifest,
+      'reference',
+      '/reference',
+    );
+    return { next, page, previous };
   },
 });
 

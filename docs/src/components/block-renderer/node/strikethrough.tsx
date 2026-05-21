@@ -1,4 +1,4 @@
-import type { StrikethroughBlock } from '#lib/content';
+import type { StrikethroughBlock } from '@yapyak/doc-extractor';
 
 import { Box } from '#components/box';
 

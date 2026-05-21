@@ -51,10 +51,10 @@ export function HeroDemo(props: HeroDemoProps) {
       <Box className={styles.Stack}>
         <DemoEditor
           framework={framework}
-          saving={state.saving}
-          typing={state.typing}
           onFrameworkChange={setFramework}
+          saving={state.saving}
           source={state.source}
+          typing={state.typing}
         />
         <DemoLocaleStack
           receiving={state.receiving}

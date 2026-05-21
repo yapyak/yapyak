@@ -92,6 +92,9 @@ importers:
       '@tanstack/react-start':
         specifier: 'catalog:'
         version: 1.167.65(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(vite@8.0.12(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
+      '@yapyak/doc-extractor':
+        specifier: workspace:*
+        version: link:../packages/doc-extractor
       react:
         specifier: 'catalog:'
         version: 19.2.5
@@ -102,9 +105,9 @@ importers:
         specifier: workspace:*
         version: link:../packages/yapyak
     devDependencies:
-      '@markdoc/markdoc':
+      '@types/node':
         specifier: 'catalog:'
-        version: 0.5.7(@types/react@19.2.14)(react@19.2.5)
+        version: 25.6.0
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.14
@@ -114,9 +117,6 @@ importers:
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../packages/typescript-config
-      typedoc:
-        specifier: 'catalog:'
-        version: 0.28.19(typescript@6.0.3)
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -200,6 +200,28 @@ importers:
         version: 8.0.12(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)
 
   packages/biome-config: {}
+
+  packages/doc-extractor:
+    dependencies:
+      '@markdoc/markdoc':
+        specifier: 'catalog:'
+        version: 0.5.7(@types/react@19.2.14)(react@19.2.5)
+      typedoc:
+        specifier: 'catalog:'
+        version: 0.28.19(typescript@6.0.3)
+      vite:
+        specifier: 'catalog:'
+        version: 8.0.12(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.6.0
+      '@yapyak/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
 
   packages/typescript-config: {}
 

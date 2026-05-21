@@ -1,5 +1,5 @@
+import type { SidebarGroup, SidebarNode } from '@yapyak/doc-extractor';
 import type { BoxProps } from '#components/box';
-import type { NavGroup, NavNode } from '#lib/navigation';
 
 import { useLocation } from '@tanstack/react-router';
 import { useState } from 'react';
@@ -11,7 +11,7 @@ import { ContentNavigationLink } from './link';
 
 export interface ContentNavigationGroupProps extends BoxProps {
   depth: number;
-  node: NavGroup;
+  node: SidebarGroup;
 }
 
 export function ContentNavigationGroup(props: ContentNavigationGroupProps) {
@@ -116,7 +116,7 @@ function CollapsibleGroup(props: ContentNavigationGroupProps) {
   );
 }
 
-function renderChild(child: NavNode, depth: number) {
+function renderChild(child: SidebarNode, depth: number) {
   if (child.type === 'group') {
     return (
       <ContentNavigationGroup
@@ -128,14 +128,14 @@ function renderChild(child: NavNode, depth: number) {
   return <ContentNavigationLink node={child} />;
 }
 
-function getKey(node: NavNode) {
+function getKey(node: SidebarNode) {
   if (node.type === 'link') {
     return node.href;
   }
   return `group:${node.label}`;
 }
 
-function childrenContainPath(nodes: NavNode[], pathname: string): boolean {
+function childrenContainPath(nodes: SidebarNode[], pathname: string): boolean {
   for (const node of nodes) {
     if (node.type === 'link' && pathname.startsWith(node.href)) {
       return true;

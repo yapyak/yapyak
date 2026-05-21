@@ -1,4 +1,4 @@
-import type { ImageBlock } from '#lib/content';
+import type { ImageBlock } from '@yapyak/doc-extractor';
 
 import { Box } from '#components/box';
 

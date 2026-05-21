@@ -1,4 +1,4 @@
-import type { HeadingBlock } from '#lib/content';
+import type { HeadingBlock } from '@yapyak/doc-extractor';
 
 import { Box } from '#components/box';
 

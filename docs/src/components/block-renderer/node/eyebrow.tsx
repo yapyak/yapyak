@@ -1,9 +1,8 @@
-import type { EyebrowBlock } from '#lib/content';
+import type { EyebrowBlock } from '@yapyak/doc-extractor';
 
 import { Box } from '#components/box';
 
 import { KindBadge } from './eyebrow/kind-badge';
-
 import styles from './eyebrow.module.css';
 
 export interface NodeEyebrowProps {

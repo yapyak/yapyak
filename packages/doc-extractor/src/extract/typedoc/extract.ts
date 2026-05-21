@@ -29,8 +29,14 @@ import type {
 } from './types.ts';
 
 import { Application, ReflectionKind, TSConfigReader } from 'typedoc';
+
 import { readFile } from 'node:fs/promises';
 import { join, relative, resolve } from 'node:path';
+
+export interface TypedocExtractOptions {
+  collectionName: string;
+  packageDir: string;
+}
 
 interface EntryPoint {
   filePath: string;
@@ -38,15 +44,16 @@ interface EntryPoint {
   subpath: string;
 }
 
-interface PackageManifest {
-  exports: Record<string, { default?: string; types?: string }>;
+interface PackageJson {
+  exports: Record<string, { default?: string; types?: string } | string>;
   name: string;
 }
 
 interface Context {
+  collectionName: string;
   nameIndex: Map<string, string | 'ambiguous'>;
+  packageDir: string;
   registry: Map<number, string>;
-  yapyakDir: string;
 }
 
 interface CommentLike {
@@ -58,27 +65,41 @@ interface CommentLike {
   summary?: ReadonlyArray<CommentDisplayPart>;
 }
 
-export async function extract(
-  yapyakDir: string,
+export async function extractTypedoc(
+  options: TypedocExtractOptions,
 ): Promise<ReferenceManifest> {
-  const entries = await loadEntries(yapyakDir);
-  const project = await loadProject(yapyakDir, entries);
-  const { nameIndex, registry } = buildLinkRegistry(project, entries, yapyakDir);
-  const context: Context = { nameIndex, registry, yapyakDir };
+  const { collectionName, packageDir } = options;
+  const entries = await loadEntries(packageDir);
+  const project = await loadProject(packageDir, entries);
+  const { nameIndex, registry } = buildLinkRegistry(
+    project,
+    entries,
+    packageDir,
+    collectionName,
+  );
+  const context: Context = {
+    collectionName,
+    nameIndex,
+    packageDir,
+    registry,
+  };
   const modules = collectModules(project, entries, context);
   return { modules };
 }
 
-async function loadEntries(yapyakDir: string): Promise<EntryPoint[]> {
-  const raw = await readFile(join(yapyakDir, 'package.json'), 'utf8');
-  const pkg = JSON.parse(raw) as PackageManifest;
+async function loadEntries(packageDir: string): Promise<EntryPoint[]> {
+  const raw = await readFile(join(packageDir, 'package.json'), 'utf8');
+  const pkg = JSON.parse(raw) as PackageJson;
 
   const entries: EntryPoint[] = [];
   for (const [subpath, conditions] of Object.entries(pkg.exports)) {
     if (subpath === './internal') {
       continue;
     }
-    const distPath = conditions.types ?? conditions.default;
+    const distPath =
+      typeof conditions === 'string'
+        ? conditions
+        : (conditions.types ?? conditions.default);
     if (distPath === undefined) {
       continue;
     }
@@ -86,7 +107,7 @@ async function loadEntries(yapyakDir: string): Promise<EntryPoint[]> {
       .replace(/^\.\/dist\//, './src/')
       .replace(/\.d\.ts$/, '.ts')
       .replace(/\.js$/, '.ts');
-    const filePath = resolve(yapyakDir, sourcePath);
+    const filePath = resolve(packageDir, sourcePath);
     const id = subpath === '.' ? pkg.name : `${pkg.name}${subpath.slice(1)}`;
     entries.push({ filePath, id, subpath });
   }
@@ -94,7 +115,7 @@ async function loadEntries(yapyakDir: string): Promise<EntryPoint[]> {
 }
 
 async function loadProject(
-  yapyakDir: string,
+  packageDir: string,
   entries: EntryPoint[],
 ): Promise<ProjectReflection> {
   const app = await Application.bootstrap(
@@ -104,13 +125,13 @@ async function loadProject(
       excludePrivate: true,
       excludeProtected: true,
       skipErrorChecking: true,
-      tsconfig: resolve(yapyakDir, 'tsconfig.json'),
+      tsconfig: resolve(packageDir, 'tsconfig.json'),
     },
     [new TSConfigReader()],
   );
   const project = await app.convert();
   if (project === undefined) {
-    throw new Error('extract: TypeDoc convert failed');
+    throw new Error('extractTypedoc: TypeDoc convert failed');
   }
   return project;
 }
@@ -118,14 +139,15 @@ async function loadProject(
 function buildLinkRegistry(
   project: ProjectReflection,
   entries: EntryPoint[],
-  yapyakDir: string,
+  packageDir: string,
+  collectionName: string,
 ): {
   nameIndex: Map<string, string | 'ambiguous'>;
   registry: Map<number, string>;
 } {
   const entriesByName = new Map<string, EntryPoint>();
   for (const entry of entries) {
-    entriesByName.set(entryToModuleName(entry, yapyakDir), entry);
+    entriesByName.set(entryToModuleName(entry, packageDir), entry);
   }
   const registry = new Map<number, string>();
   const nameIndex = new Map<string, string | 'ambiguous'>();
@@ -135,7 +157,7 @@ function buildLinkRegistry(
       continue;
     }
     for (const symbol of child.children ?? []) {
-      const url = buildSymbolUrl(entry.id, symbol.name);
+      const url = buildSymbolUrl(entry.id, symbol.name, collectionName);
       registry.set(symbol.id, url);
       const existing = nameIndex.get(symbol.name);
       if (existing === undefined) {
@@ -148,12 +170,22 @@ function buildLinkRegistry(
   return { nameIndex, registry };
 }
 
-function buildSymbolUrl(moduleId: string, symbolName: string): string {
-  if (moduleId === 'yapyak') {
-    return `/reference/${symbolName}`;
+function buildSymbolUrl(
+  moduleId: string,
+  symbolName: string,
+  collectionName: string,
+): string {
+  const rootModule = moduleIdRoot(moduleId);
+  if (moduleId === rootModule) {
+    return `/${collectionName}/${symbolName}`;
   }
-  const slug = moduleId.replace(/^yapyak\//, '');
-  return `/reference/${slug}/${symbolName}`;
+  const slug = moduleId.slice(rootModule.length + 1);
+  return `/${collectionName}/${slug}/${symbolName}`;
+}
+
+function moduleIdRoot(moduleId: string): string {
+  const slashIndex = moduleId.indexOf('/');
+  return slashIndex === -1 ? moduleId : moduleId.slice(0, slashIndex);
 }
 
 function collectModules(
@@ -163,7 +195,7 @@ function collectModules(
 ): ReferenceModule[] {
   const entriesByName = new Map<string, EntryPoint>();
   for (const entry of entries) {
-    entriesByName.set(entryToModuleName(entry, context.yapyakDir), entry);
+    entriesByName.set(entryToModuleName(entry, context.packageDir), entry);
   }
 
   const modules: ReferenceModule[] = [];
@@ -179,7 +211,7 @@ function collectModules(
     modules.push({
       exports,
       id: entry.id,
-      sourcePath: relative(context.yapyakDir, entry.filePath).replaceAll(
+      sourcePath: relative(context.packageDir, entry.filePath).replaceAll(
         '\\',
         '/',
       ),
@@ -189,8 +221,8 @@ function collectModules(
   return modules;
 }
 
-function entryToModuleName(entry: EntryPoint, yapyakDir: string): string {
-  const relPath = relative(join(yapyakDir, 'src'), entry.filePath);
+function entryToModuleName(entry: EntryPoint, packageDir: string): string {
+  const relPath = relative(join(packageDir, 'src'), entry.filePath);
   const noExt = relPath.replace(/\.tsx?$/, '');
   return noExt.replace(/\/index$/, '') || 'index';
 }
@@ -276,7 +308,8 @@ function convertVariable(
   context: Context,
 ): ReferenceVariable {
   const base = convertBase(reflection, context);
-  const type = reflection.type === undefined ? [] : convertType(reflection.type);
+  const type =
+    reflection.type === undefined ? [] : convertType(reflection.type);
   return {
     ...base,
     kind: 'variable',
@@ -313,7 +346,7 @@ function convertBase(
     deprecated: effective ? readDeprecated(effective, context) : null,
     description: effective ? partsToMarkdown(effective.summary, context) : '',
     examples: effective ? collectExamples(effective, context) : [],
-    location: readLocation(reflection, context.yapyakDir),
+    location: readLocation(reflection, context.packageDir),
     name: reflection.name,
     remarks: effective ? readBlockTag(effective, '@remarks', context) : '',
     seeAlso: effective ? readSeeAlso(effective, context) : [],
@@ -380,7 +413,8 @@ function convertParameter(
       ? partsToMarkdown(param.comment.summary, context)
       : '',
     name: param.name,
-    optional: Boolean(param.flags.isOptional) || param.defaultValue !== undefined,
+    optional:
+      Boolean(param.flags.isOptional) || param.defaultValue !== undefined,
     type: param.type === undefined ? [] : convertType(param.type),
   };
 }
@@ -428,7 +462,10 @@ function appendType(type: SomeType, tokens: TypeToken[]): void {
     case 'literal':
       tokens.push({
         kind: 'text',
-        text: typeof type.value === 'string' ? `'${type.value}'` : String(type.value),
+        text:
+          typeof type.value === 'string'
+            ? `'${type.value}'`
+            : String(type.value),
       });
       return;
     case 'reference': {
@@ -531,7 +568,7 @@ function appendSignatureType(
       if (index > 0) {
         tokens.push({ kind: 'text', text: ', ' });
       }
-      tokens.push({ kind: 'text', text: typeParameters[index]!.name });
+      tokens.push({ kind: 'text', text: typeParameters[index]?.name });
     }
     tokens.push({ kind: 'text', text: '>' });
   }
@@ -724,10 +761,7 @@ function parseCodeFence(raw: string): { code: string; language: string } {
   return { code: trimmed, language: 'ts' };
 }
 
-function collectTags(
-  comment: CommentLike,
-  context: Context,
-): ReferenceTag[] {
+function collectTags(comment: CommentLike, context: Context): ReferenceTag[] {
   const tags: ReferenceTag[] = [];
   for (const tag of comment.blockTags ?? []) {
     if (
@@ -764,10 +798,7 @@ function readBlockTag(
   return '';
 }
 
-function readDeprecated(
-  comment: CommentLike,
-  context: Context,
-): string | null {
+function readDeprecated(comment: CommentLike, context: Context): string | null {
   for (const tag of comment.blockTags ?? []) {
     if (tag.tag === '@deprecated') {
       return partsToMarkdown(tag.content, context);
@@ -787,10 +818,7 @@ function readSeeAlso(comment: CommentLike, context: Context): string[] {
   return entries;
 }
 
-function readThrows(
-  comment: CommentLike,
-  context: Context,
-): ReferenceThrows[] {
+function readThrows(comment: CommentLike, context: Context): ReferenceThrows[] {
   const throws: ReferenceThrows[] = [];
   for (const tag of comment.blockTags ?? []) {
     if (tag.tag !== '@throws') {
@@ -843,14 +871,16 @@ function readDefaultValue(
 
 function readLocation(
   reflection: DeclarationReflection,
-  yapyakDir: string,
+  packageDir: string,
 ): ReferenceLocation {
   const source = reflection.sources?.[0];
   if (source === undefined) {
     return { column: 0, file: '', line: 0 };
   }
-  const file = relative(yapyakDir, source.fullFileName ?? source.fileName)
-    .replaceAll('\\', '/');
+  const file = relative(
+    packageDir,
+    source.fullFileName ?? source.fileName,
+  ).replaceAll('\\', '/');
   return {
     column: source.character,
     file,
@@ -860,8 +890,8 @@ function readLocation(
 
 function compareExports(a: ReferenceExport, b: ReferenceExport): number {
   const kindOrder: Record<ReferenceExport['kind'], number> = {
-    function: 0,
     class: 1,
+    function: 0,
     interface: 2,
     type: 3,
     variable: 4,

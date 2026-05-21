@@ -1,4 +1,4 @@
-import type { BlockquoteBlock } from '#lib/content';
+import type { BlockquoteBlock } from '@yapyak/doc-extractor';
 
 import { Box } from '#components/box';
 

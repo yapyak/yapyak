@@ -11,22 +11,22 @@ import {
 
 export interface DemoState {
   receiving: boolean;
-  saving: boolean;
-  typing: boolean;
   savedSource: string;
+  saving: boolean;
   shimmering: Set<LocaleCode>;
   source: string;
   translations: Record<LocaleCode, string>;
+  typing: boolean;
 }
 
 const INITIAL_STATE: DemoState = {
   receiving: false,
-  saving: false,
-  typing: false,
   savedSource: INITIAL_SCENE.source,
+  saving: false,
   shimmering: new Set(),
   source: INITIAL_SCENE.source,
   translations: INITIAL_SCENE.translations,
+  typing: false,
 };
 
 export function useDemoState(active: boolean) {

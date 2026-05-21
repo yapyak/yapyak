@@ -1,4 +1,5 @@
-import type { Block, Page, ExportKind, TableRowBlock } from '#lib/content';
+import type { Block, ExportKind, TableRowBlock } from '../../types/blocks.ts';
+import type { Page } from '../../types/manifest.ts';
 import type {
   ReferenceExample,
   ReferenceExport,
@@ -11,15 +12,16 @@ import type {
   ReferenceTypeParameter,
   ReferenceVariable,
   TypeToken,
-} from './types';
+} from './types.ts';
 
-import { parseContent, slugify } from '#lib/content';
-
-import { moduleSlug } from './sidebar.server';
+import { slugify } from '../../utils/slug.ts';
+import { parseMarkdoc } from '../markdoc/parse.ts';
 
 type SymbolIndex = Map<string, string>;
 
 let currentIndex: SymbolIndex = new Map();
+let currentCollection = 'reference';
+let currentRootModule = '';
 
 export function buildSymbolIndex(manifest: ReferenceManifest): SymbolIndex {
   const index: SymbolIndex = new Map();
@@ -35,15 +37,23 @@ export function buildSymbolIndex(manifest: ReferenceManifest): SymbolIndex {
   return index;
 }
 
+export interface BuildSymbolPageOptions {
+  collectionName: string;
+  index: SymbolIndex;
+  moduleId: string;
+  rootModule: string;
+}
+
 export function buildSymbolPage(
   symbol: ReferenceExport,
-  moduleId: string,
-  index: SymbolIndex = new Map(),
+  options: BuildSymbolPageOptions,
 ): Page {
-  currentIndex = index;
+  currentIndex = options.index;
+  currentCollection = options.collectionName;
+  currentRootModule = options.rootModule;
   const blocks: Block[] = [];
 
-  blocks.push(eyebrow(moduleId, symbol.kind));
+  blocks.push(eyebrow(options.moduleId, symbol.kind, options.rootModule));
 
   if (symbol.deprecated !== null) {
     blocks.push({
@@ -60,12 +70,12 @@ export function buildSymbolPage(
   }
 
   if (symbol.description) {
-    const parsed = parseContent(symbol.description);
+    const parsed = parseMarkdoc(symbol.description);
     blocks.push(...parsed.blocks);
   }
 
   if (symbol.remarks) {
-    const parsed = parseContent(symbol.remarks);
+    const parsed = parseMarkdoc(symbol.remarks);
     blocks.push(...parsed.blocks);
   }
 
@@ -211,8 +221,13 @@ function unifyParameters(overloads: ReferenceOverload[]): ReferenceParameter[] {
   return unified;
 }
 
-function eyebrow(moduleId: string, kind: ExportKind): Block {
-  const module = moduleId === 'yapyak' ? null : moduleId.replace(/^yapyak\//, '');
+function eyebrow(
+  moduleId: string,
+  kind: ExportKind,
+  rootModule: string,
+): Block {
+  const module =
+    moduleId === rootModule ? null : moduleId.slice(rootModule.length + 1);
   return { kind, module, type: 'eyebrow' };
 }
 
@@ -225,7 +240,9 @@ function heading2(text: string): Block {
   };
 }
 
-function unifyTypeParameters(overloads: ReferenceOverload[]): ReferenceTypeParameter[] {
+function unifyTypeParameters(
+  overloads: ReferenceOverload[],
+): ReferenceTypeParameter[] {
   const seen = new Set<string>();
   const unified: ReferenceTypeParameter[] = [];
   for (const overload of overloads) {
@@ -250,7 +267,9 @@ function typeParametersTable(typeParameters: ReferenceTypeParameter[]): Block {
   };
 }
 
-function typeParameterRow(typeParameter: ReferenceTypeParameter): TableRowBlock {
+function typeParameterRow(
+  typeParameter: ReferenceTypeParameter,
+): TableRowBlock {
   return {
     children: [
       bodyCell([{ type: 'inline-code', value: typeParameter.name }]),
@@ -383,17 +402,18 @@ function isVoidTokens(tokens: TypeToken[]) {
 }
 
 function symbolHref(moduleId: string, name: string) {
-  const slug = moduleSlug(moduleId);
-  return slug === 'yapyak'
-    ? `/reference/${name}`
-    : `/reference/${slug}/${name}`;
+  if (moduleId === currentRootModule) {
+    return `/${currentCollection}/${name}`;
+  }
+  const slug = moduleId.slice(currentRootModule.length + 1);
+  return `/${currentCollection}/${slug}/${name}`;
 }
 
 function markdownToInline(source: string): Block[] {
   if (source === '') {
     return [{ type: 'text', value: '' }];
   }
-  const parsed = parseContent(source);
+  const parsed = parseMarkdoc(source);
   const blocks = parsed.blocks;
   if (
     blocks.length === 1 &&

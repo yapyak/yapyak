@@ -3,17 +3,22 @@ import type {
   Block,
   CalloutBlock,
   CodeBlock,
-  MetaValue,
   TableBlock,
   TableCellBlock,
   TableRowBlock,
-} from './types';
+} from '../../types/blocks.ts';
+import type { MetaValue } from '../../types/manifest.ts';
 
 import Markdoc from '@markdoc/markdoc';
 
-import { slugify } from './slugify';
+import { slugify } from '../../utils/slug.ts';
 
-export function parseContent(source: string) {
+export interface ParsedContent {
+  blocks: Block[];
+  frontmatter: Record<string, MetaValue>;
+}
+
+export function parseMarkdoc(source: string): ParsedContent {
   const ast = Markdoc.parse(source);
   const frontmatterSource = ast.attributes.frontmatter as string | undefined;
   const frontmatter = frontmatterSource
@@ -25,7 +30,9 @@ export function parseContent(source: string) {
   return { blocks, frontmatter };
 }
 
-export function parseFrontmatterOnly(source: string) {
+export function parseFrontmatterOnly(
+  source: string,
+): Record<string, MetaValue> {
   const ast = Markdoc.parse(source);
   const frontmatterSource = ast.attributes.frontmatter as string | undefined;
   return frontmatterSource ? parseFrontmatter(frontmatterSource) : {};
@@ -130,7 +137,7 @@ function toBlocks(node: unknown): Block[] {
     case 'Callout':
       return [buildCallout(node.attributes, children)];
     default:
-      throw new Error(`parseContent: unknown tag "${node.name}"`);
+      throw new Error(`parseMarkdoc: unknown tag "${node.name}"`);
   }
 }
 

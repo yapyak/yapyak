@@ -1,4 +1,4 @@
-import type { NavLink } from '#lib/navigation';
+import type { SidebarLink } from '@yapyak/doc-extractor';
 
 import { Link } from '@tanstack/react-router';
 
@@ -7,7 +7,7 @@ import { Box } from '#components/box';
 import styles from './link.module.css';
 
 export interface ContentNavigationLinkProps {
-  node: NavLink;
+  node: SidebarLink;
 }
 
 export function ContentNavigationLink(props: ContentNavigationLinkProps) {

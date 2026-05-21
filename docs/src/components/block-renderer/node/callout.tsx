@@ -1,4 +1,4 @@
-import type { CalloutBlock } from '#lib/content';
+import type { CalloutBlock } from '@yapyak/doc-extractor';
 
 import { Callout } from '#components/callout';
 
