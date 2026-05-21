@@ -88,7 +88,7 @@ export const doc = {
   manifest,
   getPage: (collection, path) => _getPage(manifest, collection, path),
   resolvePath: (collection, path) => _resolvePath(manifest, collection, path),
-  findAdjacentPages: (collection, href) => _findAdjacentPages(manifest, collection, href),
+  findAdjacentPages: (page) => _findAdjacentPages(manifest, page),
   getSidebar: (collection) => _getSidebar(manifest, collection),
   resolveSymbol: (name) => _resolveSymbol(manifest, name),
   getAllPages: () => _getAllPages(manifest),

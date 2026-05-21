@@ -8,28 +8,35 @@ import type {
 
 export function findAdjacentPages(
   manifest: Manifest,
-  collection: string,
-  href: string,
+  page: Page,
 ): AdjacentPages {
+  const collection = collectionFromHref(page.href);
+  if (collection === null) {
+    return { next: null, previous: null };
+  }
   const collectionData = manifest.collections[collection];
   if (collectionData === undefined) {
     return { next: null, previous: null };
   }
   const flat = flattenLinks(collectionData.sidebar);
-  const index = flat.findIndex((link) => link.href === href);
+  const index = flat.findIndex((link) => link.href === page.href);
   if (index === -1) {
     return { next: null, previous: null };
   }
   const previousLink = index > 0 ? flat[index - 1] : undefined;
   const nextLink = index < flat.length - 1 ? flat[index + 1] : undefined;
   return {
-    next:
-      nextLink === undefined ? null : findPageByHref(manifest, nextLink.href),
+    next: nextLink === undefined ? null : findPageByHref(manifest, nextLink.href),
     previous:
       previousLink === undefined
         ? null
         : findPageByHref(manifest, previousLink.href),
   };
+}
+
+function collectionFromHref(href: string): string | null {
+  const match = href.match(/^\/([^/]+)(?:\/|$)/);
+  return match?.[1] ?? null;
 }
 
 function findPageByHref(manifest: Manifest, href: string): Page | null {

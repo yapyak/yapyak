@@ -18,7 +18,7 @@ declare module 'virtual:doc-extractor' {
 
   export const doc: {
     blockToText(block: Block): string;
-    findAdjacentPages(collection: string, href: string): AdjacentPages;
+    findAdjacentPages(page: Page): AdjacentPages;
     getAllPages(): Iterable<PageEntry>;
     getCodeBlocks(page: Page): CodeBlock[];
     getCollection(collection: string): Collection | null;

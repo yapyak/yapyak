@@ -16,7 +16,7 @@ export const Route = createFileRoute('/reference/')({
     if (page === null) {
       throw notFound();
     }
-    const { next, previous } = doc.findAdjacentPages('reference', '/reference');
+    const { next, previous } = doc.findAdjacentPages(page);
     return { next, page, previous };
   },
 });

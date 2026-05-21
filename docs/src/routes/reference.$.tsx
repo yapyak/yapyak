@@ -32,10 +32,7 @@ export const Route = createFileRoute('/reference/$')({
         to: '/reference/$',
       });
     }
-    const { next, previous } = doc.findAdjacentPages(
-      'reference',
-      `/reference/${path}`,
-    );
+    const { next, previous } = doc.findAdjacentPages(result.page);
     return { next, page: result.page, previous };
   },
 });

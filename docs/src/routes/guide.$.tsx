@@ -31,7 +31,7 @@ export const Route = createFileRoute('/guide/$')({
       throw redirect({ replace: true, to: result.target });
     }
 
-    const { next, previous } = doc.findAdjacentPages('guide', `/guide/${slug}`);
+    const { next, previous } = doc.findAdjacentPages(result.page);
 
     return { next, page: result.page, previous };
   },
