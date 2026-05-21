@@ -6,13 +6,11 @@
       "#components/*": ["./src/components/*"],
       "#docs/*": ["./src/docs/*"],
       "#hooks/*": ["./src/hooks/*"],
-      "#lib/*": ["./src/lib/*"],
       "#types": ["./src/types.ts"],
       "#utils/*": ["./src/utils/*"]
     },
-    "resolveJsonModule": true,
-    "types": ["node", "vite/client"]
+    "types": ["node", "vite/client", "@yapyak/doc-extractor/virtual"]
   },
   "extends": "@yapyak/typescript-config/react",
-  "include": ["src/**/*", "manifest.json"]
+  "include": ["src/**/*"]
 }

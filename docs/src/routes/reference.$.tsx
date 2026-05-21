@@ -4,13 +4,13 @@ import {
   notFound,
   redirect,
 } from '@tanstack/react-router';
-import { findAdjacentPages, resolvePath } from '@yapyak/doc-extractor';
 
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
 import { ContentPagination } from '#components/content-pagination';
 import { PageArticle } from '#components/page-article';
-import { manifest } from '#lib/manifest';
+
+import { doc } from 'virtual:doc-extractor';
 
 const referenceRouteApi = getRouteApi('/reference');
 
@@ -21,7 +21,7 @@ export const Route = createFileRoute('/reference/$')({
     if (!path) {
       throw notFound();
     }
-    const result = resolvePath(manifest, 'reference', path);
+    const result = doc.resolvePath('reference', path);
     if (result.kind === 'not-found') {
       throw notFound();
     }
@@ -32,8 +32,7 @@ export const Route = createFileRoute('/reference/$')({
         to: '/reference/$',
       });
     }
-    const { next, previous } = findAdjacentPages(
-      manifest,
+    const { next, previous } = doc.findAdjacentPages(
       'reference',
       `/reference/${path}`,
     );

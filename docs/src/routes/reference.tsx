@@ -1,13 +1,13 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router';
-import { getSidebar } from '@yapyak/doc-extractor';
 
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
-import { manifest } from '#lib/manifest';
+
+import { doc } from 'virtual:doc-extractor';
 
 export const Route = createFileRoute('/reference')({
   beforeLoad() {
-    return { sidebar: getSidebar(manifest, 'reference') };
+    return { sidebar: doc.getSidebar('reference') };
   },
   component: Component,
 });

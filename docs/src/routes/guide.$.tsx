@@ -4,13 +4,13 @@ import {
   notFound,
   redirect,
 } from '@tanstack/react-router';
-import { findAdjacentPages, resolvePath } from '@yapyak/doc-extractor';
 
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
 import { ContentPagination } from '#components/content-pagination';
 import { PageArticle } from '#components/page-article';
-import { manifest } from '#lib/manifest';
+
+import { doc } from 'virtual:doc-extractor';
 
 const guideRouteApi = getRouteApi('/guide');
 
@@ -22,7 +22,7 @@ export const Route = createFileRoute('/guide/$')({
       throw notFound();
     }
 
-    const result = resolvePath(manifest, 'guide', slug);
+    const result = doc.resolvePath('guide', slug);
 
     if (result.kind === 'not-found') {
       throw notFound();
@@ -31,17 +31,9 @@ export const Route = createFileRoute('/guide/$')({
       throw redirect({ replace: true, to: result.target });
     }
 
-    const { next, previous } = findAdjacentPages(
-      manifest,
-      'guide',
-      `/guide/${slug}`,
-    );
+    const { next, previous } = doc.findAdjacentPages('guide', `/guide/${slug}`);
 
-    return {
-      next,
-      page: result.page,
-      previous,
-    };
+    return { next, page: result.page, previous };
   },
 });
 

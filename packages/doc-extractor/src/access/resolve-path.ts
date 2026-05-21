@@ -4,7 +4,7 @@ import type { Manifest } from '../types/manifest.ts';
 export function resolvePath(
   manifest: Manifest,
   collection: string,
-  path: string,
+  path = '',
 ): LoadResult {
   const collectionData = manifest.collections[collection];
   if (collectionData === undefined) {
