@@ -2,6 +2,8 @@ import type { EyebrowBlock } from '#lib/content';
 
 import { Box } from '#components/box';
 
+import { KindBadge } from './eyebrow/kind-badge';
+
 import styles from './eyebrow.module.css';
 
 export interface NodeEyebrowProps {
@@ -15,7 +17,15 @@ export function NodeEyebrow(props: NodeEyebrowProps) {
       as="p"
       className={styles.Eyebrow}
     >
-      {block.text}
+      <KindBadge variant={block.kind} />
+      {block.module && (
+        <Box
+          as="span"
+          className={styles.ModuleText}
+        >
+          {block.module}
+        </Box>
+      )}
     </Box>
   );
 }

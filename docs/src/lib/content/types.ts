@@ -132,8 +132,16 @@ export interface CalloutBlock {
   variant: 'danger' | 'info' | 'tip' | 'warning';
 }
 
+export type ExportKind =
+  | 'class'
+  | 'function'
+  | 'interface'
+  | 'type'
+  | 'variable';
+
 export interface EyebrowBlock {
-  text: string;
+  kind: ExportKind;
+  module: string | null;
   type: 'eyebrow';
 }
 

@@ -1,4 +1,4 @@
-import type { Block, Page, TableRowBlock } from '#lib/content';
+import type { Block, Page, ExportKind, TableRowBlock } from '#lib/content';
 import type {
   ReferenceExample,
   ReferenceExport,
@@ -186,8 +186,9 @@ function unifyParameters(overloads: ReferenceOverload[]): ReferenceParameter[] {
   return unified;
 }
 
-function eyebrow(moduleId: string, kind: string): Block {
-  return { text: `${moduleId} · ${kind}`, type: 'eyebrow' };
+function eyebrow(moduleId: string, kind: ExportKind): Block {
+  const module = moduleId === 'yapyak' ? null : moduleId.replace(/^yapyak\//, '');
+  return { kind, module, type: 'eyebrow' };
 }
 
 function heading2(text: string): Block {

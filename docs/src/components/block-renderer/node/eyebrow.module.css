@@ -1,9 +1,14 @@
 @layer components {
   .Eyebrow {
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-semibold);
-    color: var(--foreground-softer);
-    text-transform: uppercase;
-    letter-spacing: var(--letter-spacing-wide);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+
+    .ModuleText {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--foreground-softer);
+      letter-spacing: var(--letter-spacing-tight);
+    }
   }
 }
