@@ -1,5 +1,6 @@
 import type { ExtractedMessage } from '../parser';
 
+import { stringifyCanonical } from './json';
 import {
   existsSync,
   mkdirSync,
@@ -146,8 +147,7 @@ export function readLocaleFile(path: string): LocaleFile {
 
 export function writeLocaleFile(path: string, data: LocaleFile): void {
   mkdirSync(dirname(path), { recursive: true });
-  const content = `${JSON.stringify(data, null, 2)}\n`;
-  writeFileSync(path, content);
+  writeFileSync(path, stringifyCanonical(data));
 }
 
 export function discoverLocales(

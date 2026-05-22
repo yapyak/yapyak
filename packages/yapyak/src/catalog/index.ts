@@ -17,3 +17,4 @@ export {
   type SyncLocaleFilesOptions,
   syncLocaleFiles,
 } from './files';
+export { stringifyCanonical } from './json';

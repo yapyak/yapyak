@@ -1,7 +1,7 @@
 import type { LocaleFile } from '../../catalog';
 import type { YapyakCliConfig } from '../load-config';
 
-import { readLocaleFile } from '../../catalog';
+import { readLocaleFile, stringifyCanonical } from '../../catalog';
 import { collect } from '../collect';
 import { color, symbol } from '../tui';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -71,7 +71,10 @@ export function exportCommand(options: ExportOptions): number {
     }
     for (const [locale, data] of Object.entries(snapshot)) {
       const wrapped = { [locale]: data };
-      writeFileSync(join(outDir, `${locale}.json`), stringify(wrapped));
+      writeFileSync(
+        join(outDir, `${locale}.json`),
+        stringifyCanonical(wrapped),
+      );
     }
     process.stdout.write(
       `  ${symbol.check} Exported ${color.bold(String(Object.keys(snapshot).length))} locale${Object.keys(snapshot).length === 1 ? '' : 's'} to ${color.bold(out as string)}/\n`,
@@ -79,7 +82,7 @@ export function exportCommand(options: ExportOptions): number {
     return 0;
   }
 
-  const payload = stringify(snapshot);
+  const payload = stringifyCanonical(snapshot);
   if (out === undefined) {
     process.stdout.write(`${payload}\n`);
     return 0;
@@ -158,8 +161,4 @@ function isInsideLocalesDir(
   const absOut = isAbsolute(out) ? out : resolve(projectRoot, out);
   const absLocales = resolve(projectRoot, localesDir);
   return absOut === absLocales || absOut.startsWith(`${absLocales}/`);
-}
-
-function stringify(value: unknown): string {
-  return `${JSON.stringify(value, null, 2)}\n`;
 }
