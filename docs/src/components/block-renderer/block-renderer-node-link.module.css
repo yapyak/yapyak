@@ -1,0 +1,16 @@
+@layer components {
+  .BlockRendererNodeLink {
+    --inline-code-color: currentColor;
+    color: var(--brand);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 4px;
+    transition: text-decoration-color var(--transition);
+
+    @media (hover: hover) {
+      &:hover {
+        text-decoration-color: currentColor;
+      }
+    }
+  }
+}

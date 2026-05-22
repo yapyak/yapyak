@@ -1,0 +1,57 @@
+@layer components {
+  .BlockRendererNodeEyebrowKindBadge {
+    padding: 2px 8px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    border-radius: var(--border-radius-sm);
+
+    &[data-variant="function"] {
+      color: var(--kind-function);
+      background-color: color-mix(
+        in oklab,
+        var(--kind-function) 14%,
+        transparent
+      );
+      box-shadow: inset 0 0 0 var(--px)
+        color-mix(in oklab, var(--kind-function) 4%, transparent);
+    }
+
+    &[data-variant="interface"] {
+      color: var(--kind-interface);
+      background-color: color-mix(
+        in oklab,
+        var(--kind-interface) 12%,
+        transparent
+      );
+      box-shadow: inset 0 0 0 var(--px)
+        color-mix(in oklab, var(--kind-interface) 4%, transparent);
+    }
+
+    &[data-variant="type"] {
+      color: var(--kind-type);
+      background-color: color-mix(in oklab, var(--kind-type) 12%, transparent);
+      box-shadow: inset 0 0 0 var(--px)
+        color-mix(in oklab, var(--kind-type) 4%, transparent);
+    }
+
+    &[data-variant="variable"] {
+      color: var(--kind-variable);
+      background-color: color-mix(
+        in oklab,
+        var(--kind-variable) 12%,
+        transparent
+      );
+      box-shadow: inset 0 0 0 var(--px)
+        color-mix(in oklab, var(--kind-variable) 4%, transparent);
+    }
+
+    &[data-variant="class"] {
+      color: var(--kind-class);
+      background-color: color-mix(in oklab, var(--kind-class) 14%, transparent);
+      box-shadow: inset 0 0 0 var(--px)
+        color-mix(in oklab, var(--kind-class) 4%, transparent);
+    }
+  }
+}

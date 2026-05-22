@@ -1,0 +1,7 @@
+@layer components {
+  .BlockRendererNodeTable {
+    width: 100%;
+    font-size: var(--font-size-sm);
+    border-collapse: collapse;
+  }
+}

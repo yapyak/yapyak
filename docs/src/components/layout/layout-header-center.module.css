@@ -1,0 +1,10 @@
+@layer components {
+  .LayoutHeaderCenter {
+    display: none;
+    justify-self: center;
+
+    @media (min-width: 1024px) {
+      display: block;
+    }
+  }
+}

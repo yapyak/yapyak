@@ -1,25 +1,25 @@
 {
-  "src/components/callout.tsx": {
+  "src/components/callout/callout.tsx": {
     "Danger": "",
     "Info": "",
     "Tip": "",
     "Warning": ""
   },
-  "src/components/colophon.tsx": {
+  "src/components/colophon/colophon.tsx": {
     "MIT license": "",
     "Who's yakking in the back? That's yapyak.": ""
   },
-  "src/components/content-layout/toolbar.tsx": {
+  "src/components/content-layout/content-layout-toolbar.tsx": {
     "Close outline": "",
     "Next": "",
     "Open outline": "",
     "Previous": ""
   },
-  "src/components/content-pagination.tsx": {
+  "src/components/content-pagination/content-pagination.tsx": {
     "Next": "",
     "Previous": ""
   },
-  "src/components/feature-section.tsx": {
+  "src/components/feature-section/feature-section.tsx": {
     "Anthropic, OpenAI, Gemini, Ollama out of the box. A custom one in 30 lines. Or skip AI entirely and fill the JSON yourself — old habits are welcome.": "",
     "Auto-translation on save": "",
     "Bring your own AI. Or none.": "",
@@ -41,20 +41,20 @@
     "Type-safe params": "",
     "What Tailwind did for class names, yapyak did for keys. Just write t('Save changes') — the English is your key, your value, your single source of truth.": ""
   },
-  "src/components/hero.tsx": {
+  "src/components/hero/hero.tsx": {
     "Get Started": "",
     "Open source. Use any LLM. No vendor lock-in.": "",
     "View on GitHub": ""
   },
-  "src/components/layout/header.tsx": {
+  "src/components/layout/layout-header-menu-button.tsx": {
+    "Close menu": "",
+    "Open menu": ""
+  },
+  "src/components/layout/layout-header.tsx": {
     "Guide": "",
     "Home": "",
     "Reference": "",
     "View on GitHub": ""
-  },
-  "src/components/layout/header/menu-button.tsx": {
-    "Close menu": "",
-    "Open menu": ""
   },
   "src/routes/__root.tsx": {
     "Guide": "",

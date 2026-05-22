@@ -1,0 +1,6 @@
+@layer components {
+  .BlockRendererNodeStrong {
+    font-weight: var(--font-weight-semibold);
+    color: var(--foreground);
+  }
+}

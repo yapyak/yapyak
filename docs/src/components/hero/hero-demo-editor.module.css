@@ -1,0 +1,186 @@
+@layer components {
+  .HeroDemoEditor {
+    --demo-editor-tab-indicator-width: 0;
+    --demo-editor-tab-indicator-x: 0;
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--surface);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-ring-inset);
+    transform-origin: center;
+
+    &[data-saving] {
+      animation: editor-pulse 600ms var(--ease-snappy) 400ms;
+    }
+
+    .TabRow {
+      position: relative;
+      display: flex;
+      align-items: stretch;
+      box-shadow: inset 0 calc(var(--px) * -1) 0 var(--rule);
+    }
+
+    .TabIndicatorBar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: var(--demo-editor-tab-indicator-width);
+      height: var(--px);
+      pointer-events: none;
+      background-color: var(--brand);
+      transform: translateX(var(--demo-editor-tab-indicator-x));
+      transform-origin: center;
+
+      &[data-ready] {
+        transition:
+          transform 320ms var(--ease-snappy),
+          width 320ms var(--ease-snappy);
+      }
+    }
+
+    &[data-saving] .TabDot[data-dirty] {
+      animation: dot-pulse 950ms var(--ease-snappy) 400ms forwards;
+    }
+
+    .TabButton {
+      position: relative;
+      display: inline-flex;
+      gap: var(--spacing-2);
+      align-items: center;
+      padding: var(--spacing-3) var(--spacing-4);
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-xs);
+      color: var(--foreground-softer);
+      box-shadow: inset calc(var(--px) * -1) 0 0 var(--rule);
+      transition:
+        background-color var(--transition),
+        box-shadow var(--transition),
+        color var(--transition);
+
+      @media (hover: hover) {
+        &:hover {
+          color: var(--foreground-soft);
+          background-color: var(--surface);
+          box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
+        }
+
+        &:has(+ .TabButton:hover) {
+          box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
+        }
+      }
+
+      &[data-active] {
+        color: var(--foreground);
+        background-color: var(--surface);
+      }
+
+      &[data-active],
+      &:has(+ .TabButton[data-active]) {
+        box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring-strong);
+      }
+    }
+
+    .TabFilenameText {
+      letter-spacing: var(--letter-spacing-tight);
+    }
+
+    .TabDot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+
+      &[data-dirty] {
+        background-color: var(--brand);
+        animation: dot-show 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+    }
+
+    .PreformattedText {
+      padding: var(--spacing-5) var(--spacing-6);
+      overflow: hidden;
+    }
+
+    .Code {
+      display: block;
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-sm);
+      line-height: var(--line-height-loose);
+      white-space: pre;
+    }
+
+    .Caret {
+      display: inline-block;
+      width: 2px;
+      height: 1.05em;
+      vertical-align: text-bottom;
+      background-color: var(--foreground);
+      border-radius: var(--px);
+      animation: caret-blink 1.06s steps(2, end) infinite;
+
+      &[data-typing] {
+        opacity: 1;
+        animation: none;
+      }
+    }
+  }
+
+  @keyframes caret-blink {
+    0%,
+    50% {
+      opacity: 1;
+    }
+    50.01%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes dot-show {
+    0% {
+      transform: scale(0);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes dot-pulse {
+    0% {
+      opacity: 1;
+      transform: scale(1);
+      animation-timing-function: cubic-bezier(0.34, 1.7, 0.5, 1);
+    }
+    16% {
+      opacity: 1;
+      transform: scale(1.55);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.55);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0);
+    }
+  }
+
+  @keyframes editor-pulse {
+    0% {
+      transform: scale(1);
+      animation-timing-function: cubic-bezier(0.34, 1.7, 0.5, 1);
+    }
+    25% {
+      transform: scale(0.985);
+    }
+    80% {
+      transform: scale(0.985);
+      animation-timing-function: cubic-bezier(0.34, 1.7, 0.5, 1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+}

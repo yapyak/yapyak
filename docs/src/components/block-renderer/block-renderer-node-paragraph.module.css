@@ -1,0 +1,9 @@
+@layer components {
+  .BlockRendererNodeParagraph {
+    &:first-of-type {
+      font-size: var(--font-size-lg);
+      line-height: var(--line-height-normal);
+      color: var(--foreground);
+    }
+  }
+}

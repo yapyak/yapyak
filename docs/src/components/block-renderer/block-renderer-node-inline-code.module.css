@@ -1,0 +1,11 @@
+@layer components {
+  .BlockRendererNodeInlineCode {
+    padding: 2px 6px;
+    font-family: var(--font-family-mono);
+    font-size: 0.9em;
+    color: var(--inline-code-color, var(--foreground-soft));
+    background-color: var(--surface-strong);
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-ring-inset);
+  }
+}

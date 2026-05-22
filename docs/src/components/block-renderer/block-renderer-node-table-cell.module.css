@@ -1,0 +1,17 @@
+@layer components {
+  .BlockRendererNodeTableCell {
+    padding: var(--spacing-3) var(--spacing-4);
+    vertical-align: top;
+    color: var(--foreground-soft);
+    border-bottom: var(--px) solid var(--rule);
+
+    &[data-header] {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--foreground-softer);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-wider);
+      border-bottom-color: var(--ring);
+    }
+  }
+}
