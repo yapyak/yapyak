@@ -16,20 +16,14 @@
       &[data-link] {
         transition: color var(--transition);
 
-        &:enabled {
-          @media (hover: hover) {
-            &:hover {
-              color: var(--foreground);
-            }
-          }
-
-          &:active {
+        @media (hover: hover) {
+          &:hover {
             color: var(--foreground);
           }
         }
 
-        &[data-active] {
-          color: var(--brand);
+        &:active {
+          color: var(--foreground);
         }
       }
     }
@@ -60,6 +54,10 @@
         &:active {
           color: var(--foreground);
         }
+      }
+
+      &[data-on-path] .GroupLabel {
+        color: var(--foreground);
       }
 
       &[data-active] .GroupLabel {
@@ -111,10 +109,6 @@
         color: var(--foreground-softer);
         text-transform: uppercase;
         letter-spacing: var(--letter-spacing-wide);
-
-        &[data-link][data-active] {
-          color: var(--brand);
-        }
       }
 
       > .ItemList {

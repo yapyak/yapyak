@@ -102,6 +102,7 @@ function CollapsibleGroup(props: ContentNavigationGroupProps) {
       <Box
         className={styles.GroupHeader}
         data-active={isActive}
+        data-on-path={isOnPath && !isActive}
         data-open={isOpen}
       >
         {node.href !== undefined ? (
