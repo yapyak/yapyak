@@ -20,7 +20,7 @@ export function HeroDemo(props: HeroDemoProps) {
 
   useEffect(() => {
     const $element = element.current;
-    if (!$element) {
+    if ($element === null) {
       return;
     }
     const observer = new IntersectionObserver(

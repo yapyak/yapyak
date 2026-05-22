@@ -48,20 +48,20 @@ function StaticGroup(props: ContentNavigationGroupProps) {
       className={[styles.ContentNavigationGroup, className]}
       data-depth={depth}
     >
-      {node.href !== undefined ? (
+      {node.href === undefined ? (
+        <Box
+          as="h3"
+          className={styles.TitleHeading}
+        >
+          {node.label}
+        </Box>
+      ) : (
         <Box
           as={Link}
           className={styles.TitleHeading}
           data-active={isActive}
           data-link
           to={node.href}
-        >
-          {node.label}
-        </Box>
-      ) : (
-        <Box
-          as="h3"
-          className={styles.TitleHeading}
         >
           {node.label}
         </Box>
@@ -105,21 +105,21 @@ function CollapsibleGroup(props: ContentNavigationGroupProps) {
         data-on-path={isOnPath && !isActive}
         data-open={isOpen}
       >
-        {node.href !== undefined ? (
-          <Box
-            as={Link}
-            className={styles.GroupLabel}
-            onClick={() => setIsOpen(true)}
-            to={node.href}
-          >
-            {node.label}
-          </Box>
-        ) : (
+        {node.href === undefined ? (
           <Box
             as="button"
             className={styles.GroupLabel}
             onClick={() => setIsOpen((current) => !current)}
             type="button"
+          >
+            {node.label}
+          </Box>
+        ) : (
+          <Box
+            as={Link}
+            className={styles.GroupLabel}
+            onClick={() => setIsOpen(true)}
+            to={node.href}
           >
             {node.label}
           </Box>

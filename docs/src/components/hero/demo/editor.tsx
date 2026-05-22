@@ -62,7 +62,7 @@ export function DemoEditor(props: DemoEditorProps) {
   // biome-ignore lint/correctness/useExhaustiveDependencies: yap yap yap
   useLayoutEffect(() => {
     const $tabsElement = tabsElement.current;
-    if (!$tabsElement) {
+    if ($tabsElement === null) {
       return;
     }
     const activeTabElement = $tabsElement.querySelector('[data-active]');

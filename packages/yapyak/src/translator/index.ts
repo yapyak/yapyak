@@ -266,7 +266,7 @@ function preview(value: unknown): string {
   }
 }
 
-export { anthropic, type AnthropicOptions } from './anthropic';
-export { gemini, type GeminiOptions } from './gemini';
-export { ollama, type OllamaOptions } from './ollama';
-export { openai, type OpenAIOptions } from './openai';
+export { type AnthropicOptions, anthropic } from './anthropic';
+export { type GeminiOptions, gemini } from './gemini';
+export { type OllamaOptions, ollama } from './ollama';
+export { type OpenAIOptions, openai } from './openai';

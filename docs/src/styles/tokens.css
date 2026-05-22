@@ -152,4 +152,14 @@
   --syntax-literal: var(--color-amber);
   --syntax-number: var(--color-amber);
   --syntax-string: var(--color-sand);
+
+  /* export kinds — per-kind badge color */
+  --kind-function: var(--color-iris);
+  --kind-interface: var(--color-steel);
+  --kind-type: var(--color-lilac);
+  --kind-variable: var(--color-amber);
+  --kind-class: var(--color-sand);
+
+  /* scrim — overlay backdrop */
+  --scrim: var(--color-black);
 }

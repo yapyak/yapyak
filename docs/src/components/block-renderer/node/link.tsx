@@ -2,9 +2,9 @@ import type { LinkBlock } from '@yapyak/doc-extractor';
 
 import { Link } from '@tanstack/react-router';
 
+import { BlockRendererNode } from '../node';
 import { Box } from '#components/box';
 
-import { BlockRendererNode } from '../node';
 import styles from './link.module.css';
 
 export interface NodeLinkProps {

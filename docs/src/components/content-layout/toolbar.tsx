@@ -7,9 +7,9 @@ import { t } from 'yapyak';
 
 import { Box } from '#components/box';
 import { ChevronIcon } from '#components/chevron-icon';
+import { useContentLayout } from '../content-layout';
 import { OutlineIcon } from '#components/outline-icon';
 
-import { useContentLayout } from '../content-layout';
 import styles from './toolbar.module.css';
 import { doc } from 'virtual:doc-extractor';
 

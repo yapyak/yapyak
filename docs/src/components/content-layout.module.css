@@ -18,11 +18,7 @@
         inset: 0;
         z-index: 110;
         display: block;
-        background-color: color-mix(
-          in oklab,
-          var(--color-black) 50%,
-          transparent
-        );
+        background-color: color-mix(in oklab, var(--scrim) 50%, transparent);
       }
     }
 

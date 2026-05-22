@@ -13,7 +13,7 @@ export interface CodeBlockProps extends BoxProps {
   source: string;
 }
 
-const SUPPORTED_LANGUAGES = new Set<Language>([
+const SUPPORTED_LANGUAGES: ReadonlySet<string> = new Set<Language>([
   'tsx',
   'ts',
   'jsx',
@@ -28,12 +28,17 @@ const SUPPORTED_LANGUAGES = new Set<Language>([
   'yaml',
 ]);
 
+function isSupportedLanguage(value: string | undefined): value is Language {
+  return value !== undefined && SUPPORTED_LANGUAGES.has(value);
+}
+
 export function CodeBlock(props: CodeBlockProps) {
   const { className, label, language, source, ...restProps } = props;
 
-  const isHighlighted =
-    language && SUPPORTED_LANGUAGES.has(language as Language);
   const tag = label ?? language;
+  const highlighted = isSupportedLanguage(language)
+    ? tokenize(source, language)
+    : null;
 
   return (
     <Box
@@ -41,7 +46,7 @@ export function CodeBlock(props: CodeBlockProps) {
       className={[styles.CodeBlock, className]}
       data-language={language}
     >
-      {tag && (
+      {tag !== undefined && (
         <Box
           as="span"
           className={styles.LanguageText}
@@ -54,16 +59,16 @@ export function CodeBlock(props: CodeBlockProps) {
         className={styles.PreformattedText}
       >
         <Box as="code">
-          {isHighlighted
-            ? tokenize(source, language as Language).map((token, index) => (
+          {highlighted === null
+            ? source
+            : highlighted.map((token, index) => (
                 <CodeBlockToken
                   key={index}
                   type={token.type}
                 >
                   {token.value}
                 </CodeBlockToken>
-              ))
-            : source}
+              ))}
         </Box>
       </Box>
     </Box>

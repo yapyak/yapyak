@@ -30,7 +30,7 @@ export function Navigation(props: NavigationProps) {
 
   useLayoutEffect(() => {
     const $element = element.current;
-    if (!$element) {
+    if ($element === null) {
       return;
     }
 

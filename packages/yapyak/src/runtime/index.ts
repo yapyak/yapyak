@@ -1,4 +1,4 @@
-export type { TParams, T, TIn } from './t';
+export type { T, TIn, TParams } from './t';
 
 export { hasPlaceholder, interpolate } from './interpolate';
 export { t } from './t';

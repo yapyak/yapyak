@@ -1,7 +1,7 @@
-import type { Ref, RefObject } from 'react';
+import type { Ref } from 'react';
 import type { ComposableRef } from '#types';
 
-export function mergeRefs<T>(...refs: ComposableRef<T>[]): Ref<T> | undefined {
+export function mergeRefs<T>(...refs: ComposableRef<T>[]) {
   const flatRefs: Ref<T>[] = [];
 
   function flatten(input: ComposableRef<T>) {
@@ -9,7 +9,9 @@ export function mergeRefs<T>(...refs: ComposableRef<T>[]): Ref<T> | undefined {
       for (const item of input) {
         flatten(item);
       }
-    } else if (input) {
+      return;
+    }
+    if (input !== undefined && input !== null) {
       flatRefs.push(input);
     }
   }
@@ -22,8 +24,8 @@ export function mergeRefs<T>(...refs: ComposableRef<T>[]): Ref<T> | undefined {
     for (const ref of flatRefs) {
       if (typeof ref === 'function') {
         ref(value);
-      } else if (ref && typeof ref === 'object') {
-        (ref as RefObject<T>).current = value;
+      } else if (ref !== null) {
+        ref.current = value;
       }
     }
   };

@@ -1,10 +1,4 @@
-import type {
-  ComponentProps,
-  ComponentRef,
-  ElementType,
-  ReactElement,
-  Ref,
-} from 'react';
+import type { ComponentProps, ComponentRef, ElementType, Ref } from 'react';
 import type { ClassName, ComposableRef, Style } from '#types';
 
 import { mergeClassNames } from '#utils/merge-class-names';
@@ -25,9 +19,7 @@ export type BoxPropsWithAs<T extends ElementType> = {
   as?: T;
 } & BoxProps<T>;
 
-export function Box<T extends ElementType = 'div'>(
-  props: BoxPropsWithAs<T>,
-): ReactElement {
+export function Box<T extends ElementType = 'div'>(props: BoxPropsWithAs<T>) {
   const { as: Element = 'div', className, ref, style, ...restProps } = props;
 
   return (

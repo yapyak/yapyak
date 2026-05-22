@@ -1,8 +1,8 @@
 import type { ParagraphBlock } from '@yapyak/doc-extractor';
 
+import { BlockRendererNode } from '../node';
 import { Box } from '#components/box';
 
-import { BlockRendererNode } from '../node';
 import styles from './paragraph.module.css';
 
 export interface NodeParagraphProps {

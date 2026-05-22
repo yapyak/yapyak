@@ -1,11 +1,11 @@
 @layer components {
   .Link {
+    --inline-code-color: currentColor;
     color: var(--brand);
     text-decoration: underline;
     text-decoration-color: transparent;
     text-underline-offset: 4px;
     transition: text-decoration-color var(--transition);
-    --inline-code-color: currentColor;
 
     @media (hover: hover) {
       &:hover {
