@@ -436,14 +436,28 @@ function convertMember(
   reflection: DeclarationReflection,
   context: Context,
 ): ReferenceMember {
-  const comment = reflection.comment ?? null;
+  const comment =
+    reflection.comment ?? reflection.signatures?.[0]?.comment ?? null;
   return {
     defaultValue: readDefaultValue(reflection, context),
     description: comment ? partsToMarkdown(comment.summary, context) : '',
     name: reflection.name,
     optional: Boolean(reflection.flags.isOptional),
-    type: reflection.type === undefined ? [] : convertType(reflection.type),
+    type: memberType(reflection),
   };
+}
+
+function memberType(reflection: DeclarationReflection): TypeToken[] {
+  const signature = reflection.signatures?.[0];
+  if (signature !== undefined) {
+    const tokens: TypeToken[] = [];
+    appendSignatureType(signature, tokens);
+    return mergeAdjacentText(tokens);
+  }
+  if (reflection.type === undefined) {
+    return [];
+  }
+  return convertType(reflection.type);
 }
 
 function convertTypeParameter(

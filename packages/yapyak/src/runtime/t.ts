@@ -24,6 +24,7 @@ export interface TIn {
 
 /** The runtime translation function. */
 export interface T extends TIn {
+  /** Returns a `t` function locked to the given locale. */
   in(locale: string): TIn;
 }
 
