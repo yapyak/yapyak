@@ -2,13 +2,14 @@
   .Link {
     color: var(--brand);
     text-decoration: underline;
-    text-decoration-color: var(--rule);
+    text-decoration-color: transparent;
     text-underline-offset: 4px;
     transition: text-decoration-color var(--transition);
+    --inline-code-color: currentColor;
 
     @media (hover: hover) {
       &:hover {
-        text-decoration-color: var(--brand);
+        text-decoration-color: currentColor;
       }
     }
   }
