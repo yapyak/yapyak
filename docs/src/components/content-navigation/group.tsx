@@ -1,12 +1,9 @@
 import type { SidebarGroup, SidebarNode } from '@yapyak/doc-extractor';
+import type { ReactNode } from 'react';
 import type { BoxProps } from '#components/box';
 
-import { Link, useLocation } from '@tanstack/react-router';
-import { useState } from 'react';
-
-import { Box } from '#components/box';
-
-import styles from './group.module.css';
+import { ContentNavigationGroupCollapsible } from './group/collapsible';
+import { ContentNavigationGroupStatic } from './group/static';
 import { ContentNavigationLink } from './link';
 
 export interface ContentNavigationGroupProps extends BoxProps {
@@ -15,146 +12,13 @@ export interface ContentNavigationGroupProps extends BoxProps {
 }
 
 export function ContentNavigationGroup(props: ContentNavigationGroupProps) {
-  const { className, depth, node, ...restProps } = props;
-
-  if (node.collapsible) {
-    return (
-      <CollapsibleGroup
-        {...restProps}
-        className={className}
-        depth={depth}
-        node={node}
-      />
-    );
+  if (props.node.collapsible) {
+    return <ContentNavigationGroupCollapsible {...props} />;
   }
-  return (
-    <StaticGroup
-      {...restProps}
-      className={className}
-      depth={depth}
-      node={node}
-    />
-  );
+  return <ContentNavigationGroupStatic {...props} />;
 }
 
-function StaticGroup(props: ContentNavigationGroupProps) {
-  const { className, depth, node, ...restProps } = props;
-  const location = useLocation();
-  const isActive = node.href !== undefined && location.pathname === node.href;
-
-  return (
-    <Box
-      {...restProps}
-      className={[styles.ContentNavigationGroup, className]}
-      data-depth={depth}
-    >
-      {node.href === undefined ? (
-        <Box
-          as="h3"
-          className={styles.TitleHeading}
-        >
-          {node.label}
-        </Box>
-      ) : (
-        <Box
-          as={Link}
-          className={styles.TitleHeading}
-          data-active={isActive}
-          data-link
-          to={node.href}
-        >
-          {node.label}
-        </Box>
-      )}
-      <Box
-        as="ul"
-        className={styles.ItemList}
-      >
-        {node.children.map((child) => (
-          <Box
-            as="li"
-            key={getKey(child)}
-          >
-            {renderChild(child, depth + 1)}
-          </Box>
-        ))}
-      </Box>
-    </Box>
-  );
-}
-
-function CollapsibleGroup(props: ContentNavigationGroupProps) {
-  const { className, depth, node, ...restProps } = props;
-  const location = useLocation();
-  const isOnPath = childrenContainPath(node.children, location.pathname);
-  const isActive = node.href !== undefined && location.pathname === node.href;
-  const [isOpen, setIsOpen] = useState(
-    isOnPath || isActive || (node.defaultOpen ?? false),
-  );
-
-  return (
-    <Box
-      {...restProps}
-      className={[styles.ContentNavigationGroup, className]}
-      data-collapsible
-      data-depth={depth}
-    >
-      <Box
-        className={styles.GroupHeader}
-        data-active={isActive}
-        data-on-path={isOnPath && !isActive}
-        data-open={isOpen}
-      >
-        {node.href === undefined ? (
-          <Box
-            as="button"
-            className={styles.GroupLabel}
-            onClick={() => setIsOpen((current) => !current)}
-            type="button"
-          >
-            {node.label}
-          </Box>
-        ) : (
-          <Box
-            as={Link}
-            className={styles.GroupLabel}
-            onClick={() => setIsOpen(true)}
-            to={node.href}
-          >
-            {node.label}
-          </Box>
-        )}
-        <Box
-          aria-expanded={isOpen}
-          aria-label={isOpen ? 'Collapse section' : 'Expand section'}
-          as="button"
-          className={styles.ChevronButton}
-          onClick={() => setIsOpen((current) => !current)}
-          type="button"
-        >
-          <ChevronIcon />
-        </Box>
-      </Box>
-      {isOpen && (
-        <Box
-          as="ul"
-          className={styles.ItemList}
-        >
-          {node.children.map((child) => (
-            <Box
-              as="li"
-              key={getKey(child)}
-            >
-              {renderChild(child, depth + 1)}
-            </Box>
-          ))}
-        </Box>
-      )}
-    </Box>
-  );
-}
-
-function renderChild(child: SidebarNode, depth: number) {
+export function renderChild(child: SidebarNode, depth: number): ReactNode {
   if (child.type === 'group') {
     return (
       <ContentNavigationGroup
@@ -166,14 +30,17 @@ function renderChild(child: SidebarNode, depth: number) {
   return <ContentNavigationLink node={child} />;
 }
 
-function getKey(node: SidebarNode) {
+export function getKey(node: SidebarNode): string {
   if (node.type === 'link') {
     return node.href;
   }
   return `group:${node.label}`;
 }
 
-function childrenContainPath(nodes: SidebarNode[], pathname: string): boolean {
+export function childrenContainPath(
+  nodes: SidebarNode[],
+  pathname: string,
+): boolean {
   for (const node of nodes) {
     if (node.type === 'link' && pathname.startsWith(node.href)) {
       return true;
@@ -183,25 +50,4 @@ function childrenContainPath(nodes: SidebarNode[], pathname: string): boolean {
     }
   }
   return false;
-}
-
-function ChevronIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      className={styles.ChevronIcon}
-      height="10"
-      viewBox="0 0 10 10"
-      width="10"
-    >
-      <path
-        d="M3.5 2L7 5L3.5 8"
-        fill="none"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.25"
-      />
-    </svg>
-  );
 }

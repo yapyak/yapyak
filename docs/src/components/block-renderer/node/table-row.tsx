@@ -1,7 +1,8 @@
 import type { TableRowBlock } from '@yapyak/doc-extractor';
 
-import { BlockRendererNode } from '../node';
 import { Box } from '#components/box';
+
+import { BlockRendererNode } from '../node';
 
 export interface NodeTableRowProps {
   block: TableRowBlock;

@@ -1,8 +1,8 @@
 import type { StrongBlock } from '@yapyak/doc-extractor';
 
-import { BlockRendererNode } from '../node';
 import { Box } from '#components/box';
 
+import { BlockRendererNode } from '../node';
 import styles from './strong.module.css';
 
 export interface NodeStrongProps {

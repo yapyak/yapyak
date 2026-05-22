@@ -1,8 +1,8 @@
 import type { TableCellBlock } from '@yapyak/doc-extractor';
 
-import { BlockRendererNode } from '../node';
 import { Box } from '#components/box';
 
+import { BlockRendererNode } from '../node';
 import styles from './table-cell.module.css';
 
 export interface NodeTableCellProps {
