@@ -88,7 +88,9 @@ function CollapsibleGroup(props: ContentNavigationGroupProps) {
   const location = useLocation();
   const isOnPath = childrenContainPath(node.children, location.pathname);
   const isActive = node.href !== undefined && location.pathname === node.href;
-  const [isOpen, setIsOpen] = useState(isOnPath || isActive);
+  const [isOpen, setIsOpen] = useState(
+    isOnPath || isActive || (node.defaultOpen ?? false),
+  );
 
   return (
     <Box

@@ -6,7 +6,7 @@ import { loadPage } from '#utils/load-page';
 export const Route = createFileRoute('/guide/$')({
   component: Component,
   loader({ params }) {
-    return loadPage('guide', params._splat);
+    return loadPage('guide', params._splat ?? '');
   },
 });
 

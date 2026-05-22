@@ -40,8 +40,8 @@
 
       .GroupLabel {
         display: block;
-        padding: var(--spacing-1) calc(28px + var(--spacing-3))
-          var(--spacing-1) var(--spacing-3);
+        padding: var(--spacing-1) calc(28px + var(--spacing-3)) var(--spacing-1)
+          var(--spacing-3);
         overflow: hidden;
         text-overflow: ellipsis;
         font-size: var(--font-size-sm);
@@ -136,7 +136,9 @@
       }
     }
 
-    &[data-depth="0"] > .ItemList > li:has(> [data-collapsible]):not(:first-child) {
+    &[data-depth="0"]
+      > .ItemList
+      > li:has(> [data-collapsible]):not(:first-child) {
       padding-top: var(--spacing-2);
       margin-top: var(--spacing-2);
       border-top: var(--px) solid var(--rule);

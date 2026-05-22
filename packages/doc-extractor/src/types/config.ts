@@ -12,9 +12,15 @@ export interface MarkdocSource {
 }
 
 export interface TypedocSource {
-  label?: string;
-  packageDir: string;
+  packages: TypedocPackage[];
   source: 'typedoc';
+}
+
+export interface TypedocPackage {
+  collapsible?: boolean;
+  expanded?: boolean;
+  name?: string;
+  root: string;
 }
 
 export type DocExtractorOptions = Config;

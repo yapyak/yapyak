@@ -44,6 +44,7 @@ export interface SidebarGroup {
   badge?: SidebarBadge;
   children: SidebarNode[];
   collapsible: boolean;
+  defaultOpen?: boolean;
   href?: string;
   label: string;
   type: 'group';

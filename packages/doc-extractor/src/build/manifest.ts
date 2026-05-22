@@ -1,8 +1,13 @@
-import type { CollectionConfig, Config } from '../types/config.ts';
+import type {
+  CollectionConfig,
+  Config,
+  TypedocPackage,
+} from '../types/config.ts';
 import type {
   Collection,
   Manifest,
   Page,
+  SidebarNode,
   SymbolEntry,
 } from '../types/manifest.ts';
 
@@ -13,7 +18,9 @@ import {
   buildSymbolPage,
 } from '../extract/typedoc/build-page.ts';
 import { extractTypedoc } from '../extract/typedoc/extract.ts';
-import { buildMarkdocSidebar, buildTypedocSidebar } from './sidebar.ts';
+import { buildMarkdocSidebar, buildTypedocPackageRoot } from './sidebar.ts';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 export async function buildManifest(config: Config): Promise<Manifest> {
   const collections: Record<string, Collection> = {};
@@ -39,12 +46,7 @@ async function buildCollection(
   if (config.source === 'markdoc') {
     return buildMarkdocCollection(collectionName, config.root);
   }
-  return buildTypedocCollection(
-    collectionName,
-    config.packageDir,
-    config.label,
-    symbols,
-  );
+  return buildTypedocCollection(collectionName, config.packages, symbols);
 }
 
 async function buildMarkdocCollection(
@@ -73,78 +75,91 @@ async function buildMarkdocCollection(
 
 async function buildTypedocCollection(
   collectionName: string,
-  packageDir: string,
-  label: string | undefined,
+  packages: TypedocPackage[],
   symbols: Record<string, SymbolEntry>,
 ): Promise<Collection> {
-  const refManifest = await extractTypedoc({
-    collectionName,
-    packageDir,
-  });
-  const index = buildSymbolIndex(refManifest);
-  const rootModule = findRootModule(refManifest);
-  const rootLabel = label ?? refManifest.packageName;
-
   const pages: Record<string, Page> = {};
   const redirects: Record<string, string> = {};
+  const sidebar: SidebarNode[] = [];
 
-  for (const module of refManifest.modules) {
-    const modulePath =
-      module.id === rootModule ? '' : module.id.slice(rootModule.length + 1);
-    const moduleHref =
-      modulePath === ''
-        ? `/${collectionName}`
-        : `/${collectionName}/${modulePath}`;
-    const moduleLabel = module.id === rootModule ? rootLabel : modulePath;
+  for (const pkg of packages) {
+    const packageName = await readPackageName(pkg.root);
+    const packageSlug = pkg.name ?? packageName;
+    validateSlug(packageSlug);
 
-    for (const symbol of module.exports) {
-      const path = pathFor(module.id, symbol.name, rootModule);
-      const href = `/${collectionName}/${path}`;
-      const page = buildSymbolPage(symbol, {
+    const refManifest = await extractTypedoc({
+      collectionName,
+      packageDir: pkg.root,
+      packageSlug,
+    });
+    const index = buildSymbolIndex(refManifest);
+
+    for (const module of refManifest.modules) {
+      const isRootModule = module.id === packageName;
+      const subSlug = isRootModule
+        ? ''
+        : module.id.slice(packageName.length + 1);
+      const modulePath = isRootModule
+        ? packageSlug
+        : `${packageSlug}/${subSlug}`;
+      const moduleHref = `/${collectionName}/${modulePath}`;
+      const moduleLabel = isRootModule ? packageName : subSlug;
+
+      for (const symbol of module.exports) {
+        const path = isRootModule
+          ? `${packageSlug}/${symbol.name}`
+          : `${packageSlug}/${subSlug}/${symbol.name}`;
+        const href = `/${collectionName}/${path}`;
+        const page = buildSymbolPage(symbol, {
+          collectionName,
+          href,
+          index,
+          moduleId: module.id,
+          packageName,
+          packageSlug,
+        });
+        pages[path] = page;
+        symbols[`${packageSlug}/${symbol.name}`] = {
+          collection: collectionName,
+          path,
+        };
+      }
+
+      pages[modulePath] = buildModulePage(module, {
         collectionName,
-        href,
+        href: moduleHref,
         index,
-        moduleId: module.id,
-        rootModule,
+        label: moduleLabel,
+        packageName,
+        packageSlug,
       });
-      pages[path] = page;
-      symbols[symbol.name] = { collection: collectionName, path };
     }
 
-    pages[modulePath] = buildModulePage(module, {
-      collectionName,
-      href: moduleHref,
-      index,
-      label: moduleLabel,
-      rootModule,
-    });
+    sidebar.push(
+      buildTypedocPackageRoot(refManifest, {
+        collapsible: pkg.collapsible ?? false,
+        collectionName,
+        expanded: pkg.expanded ?? false,
+        label: packageName,
+        packageName,
+        packageSlug,
+      }),
+    );
   }
-
-  const sidebar = buildTypedocSidebar(refManifest, {
-    collectionName,
-    rootLabel,
-    rootModule,
-  });
 
   return { pages, redirects, sidebar };
 }
 
-function findRootModule(refManifest: {
-  modules: Array<{ id: string }>;
-}): string {
-  const ids = refManifest.modules.map((module) => module.id);
-  if (ids.length === 0) {
-    return '';
-  }
-  return ids.reduce((shortest, current) =>
-    current.length < shortest.length ? current : shortest,
-  );
+async function readPackageName(packageDir: string): Promise<string> {
+  const raw = await readFile(join(packageDir, 'package.json'), 'utf8');
+  const parsed = JSON.parse(raw) as { name: string };
+  return parsed.name;
 }
 
-function pathFor(moduleId: string, name: string, rootModule: string): string {
-  if (moduleId === rootModule) {
-    return name;
+function validateSlug(slug: string): void {
+  if (!/^[A-Za-z0-9@/_-]+$/.test(slug)) {
+    throw new Error(
+      `[doc-extractor] Invalid package name "${slug}". Use letters, digits, "@", "/", "_", or "-".`,
+    );
   }
-  const slug = moduleId.slice(rootModule.length + 1);
-  return `${slug}/${name}`;
 }

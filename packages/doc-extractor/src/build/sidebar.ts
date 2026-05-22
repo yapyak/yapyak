@@ -139,17 +139,27 @@ function capitalize(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
-export interface BuildTypedocSidebarOptions {
+export interface BuildTypedocPackageRootOptions {
+  collapsible: boolean;
   collectionName: string;
-  rootLabel: string;
-  rootModule: string;
+  expanded: boolean;
+  label: string;
+  packageName: string;
+  packageSlug: string;
 }
 
-export function buildTypedocSidebar(
+export function buildTypedocPackageRoot(
   manifest: ReferenceManifest,
-  options: BuildTypedocSidebarOptions,
-): SidebarNode[] {
-  const { collectionName, rootLabel, rootModule } = options;
+  options: BuildTypedocPackageRootOptions,
+): SidebarNode {
+  const {
+    collapsible,
+    collectionName,
+    expanded,
+    label,
+    packageName,
+    packageSlug,
+  } = options;
   const byId = new Map<string, ReferenceModule>();
   for (const module of manifest.modules) {
     byId.set(module.id, module);
@@ -171,25 +181,27 @@ export function buildTypedocSidebar(
     }
   }
 
-  const root = byId.get(rootModule);
-  if (root === undefined) {
-    return [];
-  }
-  return [
-    {
-      children: moduleChildren(
-        root,
-        byId,
-        childrenById,
-        collectionName,
-        rootModule,
-      ),
-      collapsible: false,
-      href: `/${collectionName}`,
-      label: rootLabel,
-      type: 'group',
-    },
-  ];
+  const root = byId.get(packageName);
+  const children =
+    root === undefined
+      ? []
+      : moduleChildren(
+          root,
+          byId,
+          childrenById,
+          collectionName,
+          packageName,
+          packageSlug,
+        );
+
+  return {
+    children,
+    collapsible,
+    defaultOpen: collapsible ? expanded : undefined,
+    href: `/${collectionName}/${packageSlug}`,
+    label,
+    type: 'group',
+  };
 }
 
 function moduleChildren(
@@ -197,13 +209,20 @@ function moduleChildren(
   byId: Map<string, ReferenceModule>,
   childrenById: Map<string, ReferenceModule[]>,
   collectionName: string,
-  rootModule: string,
+  packageName: string,
+  packageSlug: string,
 ): SidebarNode[] {
   const nodes: SidebarNode[] = [];
   for (const api of module.exports) {
     nodes.push({
       badge: api.deprecated !== null ? { variant: 'deprecated' } : undefined,
-      href: symbolHref(module.id, api.name, collectionName, rootModule),
+      href: symbolHref(
+        module.id,
+        api.name,
+        collectionName,
+        packageName,
+        packageSlug,
+      ),
       label: api.kind === 'function' ? `${api.name}()` : api.name,
       type: 'link',
     });
@@ -212,17 +231,18 @@ function moduleChildren(
     .slice()
     .sort((a, b) => a.id.localeCompare(b.id));
   for (const child of subModules) {
-    const childSlug = child.id.slice(rootModule.length + 1);
+    const childSlug = child.id.slice(packageName.length + 1);
     nodes.push({
       children: moduleChildren(
         child,
         byId,
         childrenById,
         collectionName,
-        rootModule,
+        packageName,
+        packageSlug,
       ),
       collapsible: true,
-      href: `/${collectionName}/${childSlug}`,
+      href: `/${collectionName}/${packageSlug}/${childSlug}`,
       label: lastSegment(child.id),
       type: 'group',
     });
@@ -248,13 +268,14 @@ function symbolHref(
   moduleId: string,
   name: string,
   collectionName: string,
-  rootModule: string,
+  packageName: string,
+  packageSlug: string,
 ) {
-  if (moduleId === rootModule) {
-    return `/${collectionName}/${name}`;
+  if (moduleId === packageName) {
+    return `/${collectionName}/${packageSlug}/${name}`;
   }
-  const slug = moduleId.slice(rootModule.length + 1);
-  return `/${collectionName}/${slug}/${name}`;
+  const subSlug = moduleId.slice(packageName.length + 1);
+  return `/${collectionName}/${packageSlug}/${subSlug}/${name}`;
 }
 
 function lastSegment(id: string) {

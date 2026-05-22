@@ -36,6 +36,7 @@ import { join, relative, resolve } from 'node:path';
 export interface TypedocExtractOptions {
   collectionName: string;
   packageDir: string;
+  packageSlug: string;
 }
 
 interface EntryPoint {
@@ -68,7 +69,7 @@ interface CommentLike {
 export async function extractTypedoc(
   options: TypedocExtractOptions,
 ): Promise<ReferenceManifest> {
-  const { collectionName, packageDir } = options;
+  const { collectionName, packageDir, packageSlug } = options;
   const { entries, packageName } = await loadEntries(packageDir);
   const project = await loadProject(packageDir, entries);
   const { nameIndex, registry } = buildLinkRegistry(
@@ -76,6 +77,8 @@ export async function extractTypedoc(
     entries,
     packageDir,
     collectionName,
+    packageName,
+    packageSlug,
   );
   const context: Context = {
     collectionName,
@@ -143,6 +146,8 @@ function buildLinkRegistry(
   entries: EntryPoint[],
   packageDir: string,
   collectionName: string,
+  packageName: string,
+  packageSlug: string,
 ): {
   nameIndex: Map<string, string | 'ambiguous'>;
   registry: Map<number, string>;
@@ -159,7 +164,13 @@ function buildLinkRegistry(
       continue;
     }
     for (const symbol of child.children ?? []) {
-      const url = buildSymbolUrl(entry.id, symbol.name, collectionName);
+      const url = buildSymbolUrl(
+        entry.id,
+        symbol.name,
+        collectionName,
+        packageName,
+        packageSlug,
+      );
       registry.set(symbol.id, url);
       const existing = nameIndex.get(symbol.name);
       if (existing === undefined) {
@@ -176,18 +187,14 @@ function buildSymbolUrl(
   moduleId: string,
   symbolName: string,
   collectionName: string,
+  packageName: string,
+  packageSlug: string,
 ): string {
-  const rootModule = moduleIdRoot(moduleId);
-  if (moduleId === rootModule) {
-    return `/${collectionName}/${symbolName}`;
+  if (moduleId === packageName) {
+    return `/${collectionName}/${packageSlug}/${symbolName}`;
   }
-  const slug = moduleId.slice(rootModule.length + 1);
-  return `/${collectionName}/${slug}/${symbolName}`;
-}
-
-function moduleIdRoot(moduleId: string): string {
-  const slashIndex = moduleId.indexOf('/');
-  return slashIndex === -1 ? moduleId : moduleId.slice(0, slashIndex);
+  const subSlug = moduleId.slice(packageName.length + 1);
+  return `/${collectionName}/${packageSlug}/${subSlug}/${symbolName}`;
 }
 
 function collectModules(

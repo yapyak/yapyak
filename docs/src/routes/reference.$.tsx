@@ -6,7 +6,7 @@ import { loadPage } from '#utils/load-page';
 export const Route = createFileRoute('/reference/$')({
   component: Component,
   loader({ params }) {
-    return loadPage('reference', params._splat);
+    return loadPage('reference', params._splat ?? '');
   },
 });
 

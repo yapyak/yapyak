@@ -22,7 +22,8 @@ type SymbolIndex = Map<string, string>;
 
 let currentIndex: SymbolIndex = new Map();
 let currentCollection = 'reference';
-let currentRootModule = '';
+let currentPackageName = '';
+let currentPackageSlug = '';
 
 export function buildSymbolIndex(manifest: ReferenceManifest): SymbolIndex {
   const index: SymbolIndex = new Map();
@@ -43,7 +44,8 @@ export interface BuildSymbolPageOptions {
   href: string;
   index: SymbolIndex;
   moduleId: string;
-  rootModule: string;
+  packageName: string;
+  packageSlug: string;
 }
 
 export function buildSymbolPage(
@@ -52,10 +54,11 @@ export function buildSymbolPage(
 ): Page {
   currentIndex = options.index;
   currentCollection = options.collectionName;
-  currentRootModule = options.rootModule;
+  currentPackageName = options.packageName;
+  currentPackageSlug = options.packageSlug;
   const blocks: Block[] = [];
 
-  blocks.push(eyebrow(options.moduleId, symbol.kind, options.rootModule));
+  blocks.push(eyebrow(options.moduleId, symbol.kind, options.packageName));
 
   if (symbol.deprecated !== null) {
     blocks.push({
@@ -180,7 +183,8 @@ export interface BuildModulePageOptions {
   href: string;
   index: SymbolIndex;
   label: string;
-  rootModule: string;
+  packageName: string;
+  packageSlug: string;
 }
 
 export function buildModulePage(
@@ -189,7 +193,8 @@ export function buildModulePage(
 ): Page {
   currentIndex = options.index;
   currentCollection = options.collectionName;
-  currentRootModule = options.rootModule;
+  currentPackageName = options.packageName;
+  currentPackageSlug = options.packageSlug;
   const blocks: Block[] = [];
 
   if (module.description) {
@@ -300,10 +305,10 @@ function unifyParameters(overloads: ReferenceOverload[]): ReferenceParameter[] {
 function eyebrow(
   moduleId: string,
   kind: ExportKind,
-  rootModule: string,
+  packageName: string,
 ): Block {
   const module =
-    moduleId === rootModule ? null : moduleId.slice(rootModule.length + 1);
+    moduleId === packageName ? null : moduleId.slice(packageName.length + 1);
   return { kind, module, type: 'eyebrow' };
 }
 
@@ -476,11 +481,11 @@ function isVoidTokens(tokens: TypeToken[]) {
 }
 
 function symbolHref(moduleId: string, name: string) {
-  if (moduleId === currentRootModule) {
-    return `/${currentCollection}/${name}`;
+  if (moduleId === currentPackageName) {
+    return `/${currentCollection}/${currentPackageSlug}/${name}`;
   }
-  const slug = moduleId.slice(currentRootModule.length + 1);
-  return `/${currentCollection}/${slug}/${name}`;
+  const subSlug = moduleId.slice(currentPackageName.length + 1);
+  return `/${currentCollection}/${currentPackageSlug}/${subSlug}/${name}`;
 }
 
 function markdownToInline(source: string): Block[] {

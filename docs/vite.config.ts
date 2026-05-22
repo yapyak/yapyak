@@ -17,7 +17,11 @@ export default defineConfig({
           source: 'markdoc',
         },
         reference: {
-          packageDir: resolve(import.meta.dirname, '../packages/yapyak'),
+          packages: [
+            {
+              root: resolve(import.meta.dirname, '../packages/yapyak'),
+            },
+          ],
           source: 'typedoc',
         },
       },

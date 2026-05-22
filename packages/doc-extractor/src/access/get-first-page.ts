@@ -1,9 +1,4 @@
-import type {
-  Manifest,
-  Page,
-  SidebarLink,
-  SidebarNode,
-} from '../types/manifest.ts';
+import type { Manifest, Page, SidebarNode } from '../types/manifest.ts';
 
 export function getFirstPage(
   manifest: Manifest,
@@ -13,26 +8,29 @@ export function getFirstPage(
   if (collectionData === undefined) {
     return null;
   }
-  const firstLink = findFirstLink(collectionData.sidebar);
-  if (firstLink === null) {
+  const firstHref = findFirstHref(collectionData.sidebar);
+  if (firstHref === null) {
     return null;
   }
   for (const page of Object.values(collectionData.pages)) {
-    if (page.href === firstLink.href) {
+    if (page.href === firstHref) {
       return page;
     }
   }
   return null;
 }
 
-function findFirstLink(nodes: SidebarNode[]): SidebarLink | null {
+function findFirstHref(nodes: SidebarNode[]): string | null {
   for (const node of nodes) {
     if (node.type === 'link') {
-      return node;
+      return node.href;
     }
-    const found = findFirstLink(node.children);
-    if (found !== null) {
-      return found;
+    if (node.href !== undefined) {
+      return node.href;
+    }
+    const nested = findFirstHref(node.children);
+    if (nested !== null) {
+      return nested;
     }
   }
   return null;

@@ -1,9 +1,11 @@
-import { createFileRoute, Outlet, useMatch } from '@tanstack/react-router';
+import { createFileRoute, getRouteApi, Outlet } from '@tanstack/react-router';
 
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
 
 import { doc } from 'virtual:doc-extractor';
+
+const splatRoute = getRouteApi('/guide/$');
 
 export const Route = createFileRoute('/guide')({
   beforeLoad() {
@@ -14,10 +16,7 @@ export const Route = createFileRoute('/guide')({
 
 function Component() {
   const { sidebar } = Route.useRouteContext();
-  const splatMatch = useMatch({ from: '/guide/$', shouldThrow: false });
-  const indexMatch = useMatch({ from: '/guide/', shouldThrow: false });
-  const page =
-    splatMatch?.loaderData?.page ?? indexMatch?.loaderData?.page ?? null;
+  const { page } = splatRoute.useLoaderData();
 
   const navigation = (
     <ContentNavigation

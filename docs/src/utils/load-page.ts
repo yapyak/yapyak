@@ -4,19 +4,16 @@ import { notFound, redirect } from '@tanstack/react-router';
 
 import { doc } from 'virtual:doc-extractor';
 
-export function loadPage(collection: string, path?: string) {
-  if (path === undefined) {
-    const entry = doc.getEntry(collection, '');
-    if (entry.kind === 'not-found') {
-      const first = doc.getFirstPage(collection);
-      if (first === null) {
-        throw notFound();
-      }
-      throw redirect({ replace: true, to: first.href });
-    }
-    return pageOrThrow(entry);
-  }
+export function loadPage(collection: string, path: string): { page: Page } {
   return pageOrThrow(doc.getEntry(collection, path));
+}
+
+export function redirectToFirstPage(collection: string): never {
+  const first = doc.getFirstPage(collection);
+  if (first === null) {
+    throw notFound();
+  }
+  throw redirect({ replace: true, to: first.href });
 }
 
 function pageOrThrow(entry: Entry): { page: Page } {

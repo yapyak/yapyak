@@ -132,7 +132,9 @@ function collectWatchedDirectories(config: Config): string[] {
     if (collection.source === 'markdoc') {
       directories.push(resolve(collection.root));
     } else {
-      directories.push(resolve(collection.packageDir, 'src'));
+      for (const pkg of collection.packages) {
+        directories.push(resolve(pkg.root, 'src'));
+      }
     }
   }
   return directories;
