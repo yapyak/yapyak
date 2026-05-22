@@ -1,9 +1,11 @@
-import { createFileRoute, Outlet, useParams } from '@tanstack/react-router';
+import { createFileRoute, getRouteApi, Outlet } from '@tanstack/react-router';
 
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
 
 import { doc } from 'virtual:doc-extractor';
+
+const referenceSplatRoute = getRouteApi('/reference/$');
 
 export const Route = createFileRoute('/reference')({
   beforeLoad() {
@@ -14,26 +16,22 @@ export const Route = createFileRoute('/reference')({
 
 function Component() {
   const { sidebar } = Route.useRouteContext();
-  const { _splat } = useParams({ strict: false });
-  const page = doc.getPage('reference', _splat);
+  const { page } = referenceSplatRoute.useLoaderData();
+
+  const navigation = (
+    <ContentNavigation
+      aria-label="Reference navigation"
+      tree={sidebar}
+    />
+  );
 
   return (
     <ContentLayout>
-      <ContentLayout.Sidebar>
-        <ContentNavigation
-          aria-label="Reference navigation"
-          tree={sidebar}
-        />
-      </ContentLayout.Sidebar>
+      <ContentLayout.Sidebar>{navigation}</ContentLayout.Sidebar>
       <ContentLayout.Content>
         <Outlet />
       </ContentLayout.Content>
-      <ContentLayout.Toolbar page={page}>
-        <ContentNavigation
-          aria-label="Reference navigation"
-          tree={sidebar}
-        />
-      </ContentLayout.Toolbar>
+      <ContentLayout.Toolbar page={page}>{navigation}</ContentLayout.Toolbar>
     </ContentLayout>
   );
 }

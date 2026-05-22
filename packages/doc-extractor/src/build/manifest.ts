@@ -104,14 +104,25 @@ async function buildTypedocCollection(
     }
   }
 
+  let introPage: Page | null = null;
   if (introPath !== undefined) {
-    const intro = await loadMarkdocPage(introPath, `/${collectionName}`);
-    if (intro !== null) {
-      pages[''] = intro;
+    introPage = await loadMarkdocPage(
+      introPath,
+      `/${collectionName}/introduction`,
+    );
+    if (introPage !== null) {
+      pages.introduction = introPage;
     }
   }
 
   const sidebar = buildTypedocSidebar(refManifest, collectionName, rootModule);
+  if (introPage !== null) {
+    sidebar.unshift({
+      href: `/${collectionName}/introduction`,
+      label: introPage.title || 'Introduction',
+      type: 'link',
+    });
+  }
 
   return { pages, redirects, sidebar };
 }
