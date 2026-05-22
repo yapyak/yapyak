@@ -129,10 +129,7 @@ async function buildGroup(
 
 function deriveLabel(href: string) {
   const last = href.split('/').pop() ?? '';
-  return last
-    .split('-')
-    .map((part) => capitalize(part))
-    .join(' ');
+  return last.split('-').map(capitalize).join(' ');
 }
 
 function capitalize(value: string) {

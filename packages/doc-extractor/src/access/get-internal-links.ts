@@ -15,7 +15,7 @@ export function getInternalLinks(page: Page): InternalLinkEntry[] {
       if (current.type === 'link' && current.kind === 'internal') {
         links.push({
           href: current.href,
-          text: current.children.map((child) => blockToText(child)).join(''),
+          text: current.children.map(blockToText).join(''),
         });
       }
     });

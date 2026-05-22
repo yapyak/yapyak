@@ -14,9 +14,9 @@ export function blockToText(block: Block): string {
     case 'quote':
     case 'list-item':
     case 'callout':
-      return block.children.map((child) => blockToText(child)).join('');
+      return block.children.map(blockToText).join('');
     case 'list':
-      return block.children.map((child) => blockToText(child)).join('\n');
+      return block.children.map(blockToText).join('\n');
     case 'code-block':
       return block.source;
     case 'code-group':
@@ -25,13 +25,13 @@ export function blockToText(block: Block): string {
       const rows =
         block.head === null ? block.body : [block.head, ...block.body];
       return rows
-        .map((row) => row.children.map((cell) => blockToText(cell)).join(' | '))
+        .map((row) => row.children.map(blockToText).join(' | '))
         .join('\n');
     }
     case 'table-row':
-      return block.children.map((cell) => blockToText(cell)).join(' | ');
+      return block.children.map(blockToText).join(' | ');
     case 'table-cell':
-      return block.children.map((child) => blockToText(child)).join('');
+      return block.children.map(blockToText).join('');
     case 'image':
       return block.alt ?? '';
     case 'eyebrow':

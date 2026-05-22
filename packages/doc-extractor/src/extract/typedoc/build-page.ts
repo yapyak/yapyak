@@ -261,9 +261,7 @@ function unifyTypeParameters(
 
 function typeParametersTable(typeParameters: ReferenceTypeParameter[]): Block {
   return {
-    body: typeParameters.map((typeParameter) =>
-      typeParameterRow(typeParameter),
-    ),
+    body: typeParameters.map(typeParameterRow),
     head: tableHeaderRow(['Name', 'Constraint', 'Default', 'Description']),
     type: 'table',
   };
@@ -293,7 +291,7 @@ function typeParameterRow(
 
 function parametersTable(parameters: ReferenceParameter[]): Block {
   return {
-    body: parameters.map((parameter) => paramRow(parameter)),
+    body: parameters.map(paramRow),
     head: tableHeaderRow(['Name', 'Type', 'Description']),
     type: 'table',
   };
@@ -301,7 +299,7 @@ function parametersTable(parameters: ReferenceParameter[]): Block {
 
 function membersTable(members: ReferenceMember[]): Block {
   return {
-    body: members.map((member) => memberRow(member)),
+    body: members.map(memberRow),
     head: tableHeaderRow(['Name', 'Type', 'Description']),
     type: 'table',
   };
@@ -448,7 +446,7 @@ function exampleBlocks(example: ReferenceExample): Block[] {
 
 function throwsTable(throws: ReferenceThrows[]): Block {
   return {
-    body: throws.map((entry) => throwsRow(entry)),
+    body: throws.map(throwsRow),
     head: tableHeaderRow(['Error', 'When']),
     type: 'table',
   };

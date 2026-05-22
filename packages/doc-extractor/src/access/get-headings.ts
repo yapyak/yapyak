@@ -41,7 +41,7 @@ function collect(
     result.push({
       id: block.id,
       level: block.level,
-      text: block.children.map((child) => blockToText(child)).join(''),
+      text: block.children.map(blockToText).join(''),
     });
   }
 }

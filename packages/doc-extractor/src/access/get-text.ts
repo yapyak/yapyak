@@ -4,7 +4,7 @@ import { blockToText } from './block-to-text.ts';
 
 export function getText(page: Page): string {
   return page.blocks
-    .map((block) => blockToText(block))
+    .map(blockToText)
     .filter((text) => text.length > 0)
     .join('\n');
 }

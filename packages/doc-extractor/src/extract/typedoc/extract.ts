@@ -397,7 +397,7 @@ function convertCallSignature(
     parameters,
     returnType,
     signature: `${buildTypeParameterList(typeParameters)}(${parameters
-      .map((param) => paramToText(param))
+      .map(paramToText)
       .join(', ')}): ${stringifyTokens(returnType)};`,
     typeParameters,
   };
@@ -659,7 +659,7 @@ function buildFunctionSignature(
   returnType: TypeToken[],
 ): string {
   const tp = buildTypeParameterList(typeParameters);
-  const params = parameters.map((param) => paramToText(param)).join(', ');
+  const params = parameters.map(paramToText).join(', ');
   return `function ${name}${tp}(${params}): ${stringifyTokens(returnType)};`;
 }
 
