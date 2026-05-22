@@ -1,9 +1,20 @@
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 
+import { PageArticle } from '#components/page-article';
+
 import { doc } from 'virtual:doc-extractor';
 
 export const Route = createFileRoute('/guide/')({
-  beforeLoad() {
+  component: Component,
+  loader() {
+    const result = doc.resolvePath('guide');
+    if (result.kind === 'page') {
+      return { page: result.page };
+    }
+    if (result.kind === 'redirect') {
+      throw redirect({ replace: true, to: result.target });
+    }
+
     const firstPage = doc.getFirstPage('guide');
     if (firstPage === null) {
       throw notFound();
@@ -11,3 +22,8 @@ export const Route = createFileRoute('/guide/')({
     throw redirect({ replace: true, to: firstPage.href });
   },
 });
+
+function Component() {
+  const { page } = Route.useLoaderData();
+  return <PageArticle page={page} />;
+}

@@ -6,6 +6,7 @@ import { join, relative, sep } from 'node:path';
 
 export interface MarkdocExtractResult {
   pages: Map<string, Page>;
+  redirects: Map<string, string>;
   watchedFiles: string[];
 }
 
@@ -15,6 +16,7 @@ export async function extractMarkdoc(
 ): Promise<MarkdocExtractResult> {
   const files = await walkMarkdownFiles(root);
   const pages = new Map<string, Page>();
+  const redirects = new Map<string, string>();
   for (const absolutePath of files) {
     const path = filePathToRoutePath(absolutePath, root);
     const href =
@@ -23,9 +25,14 @@ export async function extractMarkdoc(
     if (page === null) {
       continue;
     }
+    const redirectTarget = pageRedirectTarget(page, path, collectionName);
+    if (redirectTarget !== null) {
+      redirects.set(path, redirectTarget);
+      continue;
+    }
     pages.set(path, page);
   }
-  return { pages, watchedFiles: files };
+  return { pages, redirects, watchedFiles: files };
 }
 
 export async function loadMarkdocPage(
@@ -44,6 +51,34 @@ export async function loadMarkdocPage(
     meta: frontmatter,
     title: (frontmatter.title as string | undefined) ?? '',
   };
+}
+
+function pageRedirectTarget(
+  page: Page,
+  path: string,
+  collectionName: string,
+): string | null {
+  const raw = page.meta.redirect;
+  if (typeof raw !== 'string' || raw.length === 0) {
+    return null;
+  }
+  if (raw.startsWith('/')) {
+    return raw;
+  }
+  const baseSegments = path === '' ? [] : path.split('/');
+  const targetSegments = raw.split('/');
+  const result = [...baseSegments];
+  for (const segment of targetSegments) {
+    if (segment === '' || segment === '.') {
+      continue;
+    }
+    if (segment === '..') {
+      result.pop();
+      continue;
+    }
+    result.push(segment);
+  }
+  return `/${collectionName}/${result.join('/')}`;
 }
 
 function filePathToRoutePath(absolutePath: string, root: string): string {

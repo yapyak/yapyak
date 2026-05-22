@@ -50,15 +50,22 @@ async function buildMarkdocCollection(
   collectionName: string,
   root: string,
 ): Promise<Collection> {
-  const { pages: pagesMap } = await extractMarkdoc(root, collectionName);
+  const { pages: pagesMap, redirects: redirectsMap } = await extractMarkdoc(
+    root,
+    collectionName,
+  );
   const pages: Record<string, Page> = {};
   for (const [path, page] of pagesMap) {
     pages[path] = page;
   }
+  const redirects: Record<string, string> = {};
+  for (const [path, target] of redirectsMap) {
+    redirects[path] = target;
+  }
   const sidebar = await buildMarkdocSidebar(root, collectionName);
   return {
     pages,
-    redirects: {},
+    redirects,
     sidebar,
   };
 }
@@ -106,19 +113,16 @@ async function buildTypedocCollection(
 
   let introPage: Page | null = null;
   if (introPath !== undefined) {
-    introPage = await loadMarkdocPage(
-      introPath,
-      `/${collectionName}/introduction`,
-    );
+    introPage = await loadMarkdocPage(introPath, `/${collectionName}`);
     if (introPage !== null) {
-      pages.introduction = introPage;
+      pages[''] = introPage;
     }
   }
 
   const sidebar = buildTypedocSidebar(refManifest, collectionName, rootModule);
   if (introPage !== null) {
     sidebar.unshift({
-      href: `/${collectionName}/introduction`,
+      href: `/${collectionName}`,
       label: introPage.title || 'Introduction',
       type: 'link',
     });
