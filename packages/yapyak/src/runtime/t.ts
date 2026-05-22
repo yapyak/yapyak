@@ -1,23 +1,25 @@
-import type { ExtractParamDict } from './extract-params';
+import type { ExtractTParams } from './extract-params';
 
 import { getLocale } from '../locale';
 import { hasPlaceholder, interpolate } from './interpolate';
 import { runTrackers } from './tracker';
 
 /**
- * The param dict. Maps placeholder names to expected value types for the source string `T`.
+ * The params shape for a `t` call with source string `T`. Maps placeholder names to expected value types.
  *
  * @remarks
+ * Used by `t` and `TIn` to type-check params from the source literal. Most users never reference this directly — TypeScript inference handles it. Useful when building wrappers around `t` that need to preserve placeholder-to-type inference.
+ *
  * Empty when `T` contains no placeholders.
  */
-export type ParamDict<T extends string> = T extends `${string}{${string}`
-  ? ExtractParamDict<T>
+export type TParams<T extends string> = T extends `${string}{${string}`
+  ? ExtractTParams<T>
   : {};
 
 /** A `t` function locked to a specific locale. */
 export interface TIn {
   <T extends string>(source: T): string;
-  <T extends string>(source: T, params: ParamDict<T>): string;
+  <T extends string>(source: T, params: TParams<T>): string;
 }
 
 /** The runtime translation function. */
@@ -34,7 +36,7 @@ function translate(source: string, params: unknown, locale: string): string {
 
 function tIn(locale: string): TIn {
   function scoped<T extends string>(source: T): string;
-  function scoped<T extends string>(source: T, params: ParamDict<T>): string;
+  function scoped<T extends string>(source: T, params: TParams<T>): string;
   function scoped(source: string, params?: unknown): string {
     return translate(source, params, locale);
   }

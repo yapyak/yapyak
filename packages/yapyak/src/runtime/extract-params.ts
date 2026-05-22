@@ -28,18 +28,18 @@ type ResolveIcuPattern<
   TSource extends string,
   TAccumulator,
 > = TSource extends `${string}{${infer Name},${infer Format},${string}}}${infer Rest}`
-  ? ExtractParamDict<Rest, TAccumulator & IcuParam<Name, Format>>
+  ? ExtractTParams<Rest, TAccumulator & IcuParam<Name, Format>>
   : TSource extends `${string}{${infer Name},${infer Format},${string}}${infer Rest}`
-    ? ExtractParamDict<Rest, TAccumulator & IcuParam<Name, Format>>
+    ? ExtractTParams<Rest, TAccumulator & IcuParam<Name, Format>>
     : TSource extends `${string}{${infer Name},${string}}${infer Rest}`
-      ? ExtractParamDict<Rest, TAccumulator & IcuParam<Name>>
+      ? ExtractTParams<Rest, TAccumulator & IcuParam<Name>>
       : TAccumulator;
 
-export type ExtractParamDict<
+export type ExtractTParams<
   TSource extends string,
   TAccumulator = unknown,
 > = TSource extends `${string}{${infer Placeholder}}${infer Rest}`
   ? Placeholder extends `${string},${string}`
     ? ResolveIcuPattern<TSource, TAccumulator>
-    : ExtractParamDict<Rest, TAccumulator & SimpleParam<Placeholder>>
+    : ExtractTParams<Rest, TAccumulator & SimpleParam<Placeholder>>
   : TAccumulator;

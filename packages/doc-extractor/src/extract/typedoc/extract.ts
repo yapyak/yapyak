@@ -482,13 +482,16 @@ function appendType(type: SomeType, tokens: TypeToken[]): void {
       });
       return;
     case 'reference': {
-      const module = referenceModuleName(type);
-      tokens.push({
-        kind: 'ref',
-        module,
-        name: type.name,
-        text: type.name,
-      });
+      if (type.refersToTypeParameter === true) {
+        tokens.push({ kind: 'text', text: type.name });
+      } else {
+        tokens.push({
+          kind: 'ref',
+          module: referenceModuleName(type),
+          name: type.name,
+          text: type.name,
+        });
+      }
       if (type.typeArguments && type.typeArguments.length > 0) {
         tokens.push({ kind: 'text', text: '<' });
         for (let index = 0; index < type.typeArguments.length; index++) {

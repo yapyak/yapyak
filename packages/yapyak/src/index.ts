@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-export type { ParamDict, T, TIn } from './runtime';
+export type { TParams, T, TIn } from './runtime';
 
 export {
   defaultLocale,
