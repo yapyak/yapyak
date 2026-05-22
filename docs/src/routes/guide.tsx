@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router';
+import { createFileRoute, Outlet, useParams } from '@tanstack/react-router';
 
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
@@ -14,6 +14,9 @@ export const Route = createFileRoute('/guide')({
 
 function Component() {
   const { sidebar } = Route.useRouteContext();
+  const { _splat } = useParams({ strict: false });
+  const page = doc.getPage('guide', _splat);
+
   return (
     <ContentLayout>
       <ContentLayout.Sidebar>
@@ -25,6 +28,12 @@ function Component() {
       <ContentLayout.Content>
         <Outlet />
       </ContentLayout.Content>
+      <ContentLayout.Toolbar page={page}>
+        <ContentNavigation
+          aria-label="Guide navigation"
+          tree={sidebar}
+        />
+      </ContentLayout.Toolbar>
     </ContentLayout>
   );
 }

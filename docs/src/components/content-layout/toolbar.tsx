@@ -11,15 +11,18 @@ import { OutlineIcon } from '#components/outline-icon';
 
 import { useContentLayout } from '../content-layout';
 import styles from './toolbar.module.css';
+import { doc } from 'virtual:doc-extractor';
 
 export interface ContentLayoutToolbarProps {
   children: ReactNode;
-  nextPage: Page | null;
-  previousPage: Page | null;
+  page: Page | null;
 }
 
 export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
-  const { children, nextPage, previousPage } = props;
+  const { children, page } = props;
+  const { nextPage, previousPage } = page
+    ? doc.findAdjacentPages(page)
+    : { nextPage: null, previousPage: null };
   const {
     closeSidebar,
     openSidebar,
