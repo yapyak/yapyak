@@ -4,11 +4,11 @@ declare module 'virtual:doc-extractor' {
     Block,
     CodeBlock,
     Collection,
+    Entry,
     GetExcerptOptions,
     GetHeadingsOptions,
     HeadingEntry,
     InternalLinkEntry,
-    LoadResult,
     Manifest,
     Page,
     PageEntry,
@@ -22,6 +22,7 @@ declare module 'virtual:doc-extractor' {
     getAllPages(): Iterable<PageEntry>;
     getCodeBlocks(page: Page): CodeBlock[];
     getCollection(collection: string): Collection | null;
+    getEntry(collection: string, path?: string): Entry;
     getExcerpt(page: Page, options?: GetExcerptOptions): string;
     getFirstPage(collection: string): Page | null;
     getHeadings(page: Page, options?: GetHeadingsOptions): HeadingEntry[];
@@ -31,7 +32,6 @@ declare module 'virtual:doc-extractor' {
     getText(page: Page): string;
     isBlock(value: unknown): value is Block;
     manifest: Manifest;
-    resolvePath(collection: string, path?: string): LoadResult;
     resolveSymbol(name: string): SymbolEntry | null;
     walkBlocks(block: Block | Block[], visit: (block: Block) => void): void;
   };

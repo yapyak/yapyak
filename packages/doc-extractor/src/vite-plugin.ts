@@ -72,6 +72,7 @@ import {
   getAllPages as _getAllPages,
   getCodeBlocks as _getCodeBlocks,
   getCollection as _getCollection,
+  getEntry as _getEntry,
   getExcerpt as _getExcerpt,
   getFirstPage as _getFirstPage,
   getHeadings as _getHeadings,
@@ -80,7 +81,6 @@ import {
   getSidebar as _getSidebar,
   getText as _getText,
   isBlock as _isBlock,
-  resolvePath as _resolvePath,
   resolveSymbol as _resolveSymbol,
   walkBlocks as _walkBlocks,
 } from '@yapyak/doc-extractor';
@@ -88,7 +88,7 @@ import {
 export const doc = {
   manifest,
   getPage: (collection, path) => _getPage(manifest, collection, path),
-  resolvePath: (collection, path) => _resolvePath(manifest, collection, path),
+  getEntry: (collection, path) => _getEntry(manifest, collection, path),
   findAdjacentPages: (page) => _findAdjacentPages(manifest, page),
   getSidebar: (collection) => _getSidebar(manifest, collection),
   resolveSymbol: (name) => _resolveSymbol(manifest, name),

@@ -1,11 +1,11 @@
-import type { LoadResult } from '../types/access.ts';
+import type { Entry } from '../types/access.ts';
 import type { Manifest } from '../types/manifest.ts';
 
-export function resolvePath(
+export function getEntry(
   manifest: Manifest,
   collection: string,
   path = '',
-): LoadResult {
+): Entry {
   const collectionData = manifest.collections[collection];
   if (collectionData === undefined) {
     return { kind: 'not-found' };

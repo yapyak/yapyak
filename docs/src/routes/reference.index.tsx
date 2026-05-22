@@ -1,12 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router';
 
 import { PageArticle } from '#components/page-article';
-import { loadIndex } from '#utils/load';
+import { loadPage } from '#utils/load-page';
 
 export const Route = createFileRoute('/reference/')({
   component: Component,
   loader() {
-    return loadIndex('reference');
+    return loadPage('reference');
   },
 });
 

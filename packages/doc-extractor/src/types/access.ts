@@ -1,6 +1,6 @@
 import type { Page } from './manifest.ts';
 
-export type LoadResult =
+export type Entry =
   | { kind: 'page'; page: Page }
   | { kind: 'redirect'; target: string }
   | { kind: 'not-found' };
