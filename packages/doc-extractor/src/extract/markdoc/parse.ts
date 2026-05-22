@@ -107,7 +107,7 @@ function toBlocks(node: unknown): Block[] {
     case 'code':
       return [{ type: 'inline-code', value: extractText(node.children) }];
     case 'blockquote':
-      return [{ children, type: 'blockquote' }];
+      return [{ children, type: 'quote' }];
     case 'hr':
       return [{ type: 'divider' }];
     case 'br':

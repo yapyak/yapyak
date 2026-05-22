@@ -11,7 +11,6 @@ export type {
 } from './types/access.ts';
 export type {
   Block,
-  BlockquoteBlock,
   CalloutBlock,
   CodeBlock,
   CodeGroupBlock,
@@ -28,6 +27,7 @@ export type {
   ListBlock,
   ListItemBlock,
   ParagraphBlock,
+  QuoteBlock,
   StrikethroughBlock,
   StrongBlock,
   TableBlock,

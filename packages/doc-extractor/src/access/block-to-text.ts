@@ -11,7 +11,7 @@ export function blockToText(block: Block): string {
     case 'emphasis':
     case 'strong':
     case 'strikethrough':
-    case 'blockquote':
+    case 'quote':
     case 'list-item':
     case 'callout':
       return block.children.map((child) => blockToText(child)).join('');
@@ -23,7 +23,7 @@ export function blockToText(block: Block): string {
       return block.tabs.map((tab) => tab.source).join('\n\n');
     case 'table': {
       const rows =
-        block.head !== null ? [block.head, ...block.body] : block.body;
+        block.head === null ? block.body : [block.head, ...block.body];
       return rows
         .map((row) => row.children.map((cell) => blockToText(cell)).join(' | '))
         .join('\n');

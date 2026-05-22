@@ -1,6 +1,5 @@
 import type { Block } from '@yapyak/doc-extractor';
 
-import { NodeBlockquote } from './node/blockquote';
 import { NodeCallout } from './node/callout';
 import { NodeCodeBlock } from './node/code-block';
 import { NodeCodeGroup } from './node/code-group';
@@ -16,6 +15,7 @@ import { NodeLink } from './node/link';
 import { NodeList } from './node/list';
 import { NodeListItem } from './node/list-item';
 import { NodeParagraph } from './node/paragraph';
+import { NodeQuote } from './node/quote';
 import { NodeStrikethrough } from './node/strikethrough';
 import { NodeStrong } from './node/strong';
 import { NodeTable } from './node/table';
@@ -52,8 +52,8 @@ export function BlockRendererNode(props: BlockRendererNodeProps) {
       return <NodeStrikethrough block={block} />;
     case 'inline-code':
       return <NodeInlineCode block={block} />;
-    case 'blockquote':
-      return <NodeBlockquote block={block} />;
+    case 'quote':
+      return <NodeQuote block={block} />;
     case 'divider':
       return <NodeDivider />;
     case 'line-break':

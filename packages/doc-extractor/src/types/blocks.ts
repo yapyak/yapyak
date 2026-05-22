@@ -1,5 +1,5 @@
 export type Block =
-  | BlockquoteBlock
+  | QuoteBlock
   | CalloutBlock
   | CodeBlock
   | CodeGroupBlock
@@ -83,9 +83,9 @@ export interface InlineCodeBlock {
   value: string;
 }
 
-export interface BlockquoteBlock {
+export interface QuoteBlock {
   children: Block[];
-  type: 'blockquote';
+  type: 'quote';
 }
 
 export interface DividerBlock {

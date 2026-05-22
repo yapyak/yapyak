@@ -1,7 +1,7 @@
 import type { Block } from '../types/blocks.ts';
 
 const BLOCK_TYPES = new Set<Block['type']>([
-  'blockquote',
+  'quote',
   'callout',
   'code-block',
   'code-group',
