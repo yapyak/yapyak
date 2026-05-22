@@ -7,7 +7,6 @@ import {
 
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
-import { ContentPagination } from '#components/content-pagination';
 import { PageArticle } from '#components/page-article';
 
 import { doc } from 'virtual:doc-extractor';
@@ -42,9 +41,9 @@ function Component() {
   const { sidebar } = referenceRouteApi.useRouteContext();
   return (
     <>
-      <PageArticle page={page} />
-      <ContentPagination
+      <PageArticle
         nextPage={nextPage}
+        page={page}
         previousPage={previousPage}
       />
       <ContentLayout.Toolbar
