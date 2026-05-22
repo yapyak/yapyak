@@ -1,7 +1,7 @@
 import type { SidebarGroup, SidebarNode } from '@yapyak/doc-extractor';
 import type { BoxProps } from '#components/box';
 
-import { useLocation } from '@tanstack/react-router';
+import { Link, useLocation } from '@tanstack/react-router';
 import { useState } from 'react';
 
 import { Box } from '#components/box';
@@ -39,18 +39,33 @@ export function ContentNavigationGroup(props: ContentNavigationGroupProps) {
 
 function StaticGroup(props: ContentNavigationGroupProps) {
   const { className, depth, node, ...restProps } = props;
+  const location = useLocation();
+  const isActive = node.href !== undefined && location.pathname === node.href;
+
   return (
     <Box
       {...restProps}
       className={[styles.ContentNavigationGroup, className]}
       data-depth={depth}
     >
-      <Box
-        as="h3"
-        className={styles.TitleHeading}
-      >
-        {node.label}
-      </Box>
+      {node.href !== undefined ? (
+        <Box
+          as={Link}
+          className={styles.TitleHeading}
+          data-active={isActive}
+          data-link
+          to={node.href}
+        >
+          {node.label}
+        </Box>
+      ) : (
+        <Box
+          as="h3"
+          className={styles.TitleHeading}
+        >
+          {node.label}
+        </Box>
+      )}
       <Box
         as="ul"
         className={styles.ItemList}
@@ -72,7 +87,8 @@ function CollapsibleGroup(props: ContentNavigationGroupProps) {
   const { className, depth, node, ...restProps } = props;
   const location = useLocation();
   const isOnPath = childrenContainPath(node.children, location.pathname);
-  const [isOpen, setIsOpen] = useState(isOnPath);
+  const isActive = node.href !== undefined && location.pathname === node.href;
+  const [isOpen, setIsOpen] = useState(isOnPath || isActive);
 
   return (
     <Box
@@ -82,20 +98,39 @@ function CollapsibleGroup(props: ContentNavigationGroupProps) {
       data-depth={depth}
     >
       <Box
-        aria-expanded={isOpen}
-        as="button"
-        className={styles.ToggleButton}
+        className={styles.GroupHeader}
+        data-active={isActive}
         data-open={isOpen}
-        onClick={() => setIsOpen((current) => !current)}
-        type="button"
       >
+        {node.href !== undefined ? (
+          <Box
+            as={Link}
+            className={styles.GroupLabel}
+            onClick={() => setIsOpen(true)}
+            to={node.href}
+          >
+            {node.label}
+          </Box>
+        ) : (
+          <Box
+            as="button"
+            className={styles.GroupLabel}
+            onClick={() => setIsOpen((current) => !current)}
+            type="button"
+          >
+            {node.label}
+          </Box>
+        )}
         <Box
-          as="span"
-          className={styles.ToggleLabel}
+          aria-expanded={isOpen}
+          aria-label={isOpen ? 'Collapse section' : 'Expand section'}
+          as="button"
+          className={styles.ChevronButton}
+          onClick={() => setIsOpen((current) => !current)}
+          type="button"
         >
-          {node.label}
+          <ChevronIcon />
         </Box>
-        <ChevronIcon />
       </Box>
       {isOpen && (
         <Box

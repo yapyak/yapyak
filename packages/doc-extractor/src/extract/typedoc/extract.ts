@@ -69,7 +69,7 @@ export async function extractTypedoc(
   options: TypedocExtractOptions,
 ): Promise<ReferenceManifest> {
   const { collectionName, packageDir } = options;
-  const entries = await loadEntries(packageDir);
+  const { entries, packageName } = await loadEntries(packageDir);
   const project = await loadProject(packageDir, entries);
   const { nameIndex, registry } = buildLinkRegistry(
     project,
@@ -84,10 +84,12 @@ export async function extractTypedoc(
     registry,
   };
   const modules = collectModules(project, entries, context);
-  return { modules };
+  return { modules, packageName };
 }
 
-async function loadEntries(packageDir: string): Promise<EntryPoint[]> {
+async function loadEntries(
+  packageDir: string,
+): Promise<{ entries: EntryPoint[]; packageName: string }> {
   const raw = await readFile(join(packageDir, 'package.json'), 'utf8');
   const pkg = JSON.parse(raw) as PackageJson;
 
@@ -111,7 +113,7 @@ async function loadEntries(packageDir: string): Promise<EntryPoint[]> {
     const id = subpath === '.' ? pkg.name : `${pkg.name}${subpath.slice(1)}`;
     entries.push({ filePath, id, subpath });
   }
-  return entries;
+  return { entries, packageName: pkg.name };
 }
 
 async function loadProject(
@@ -208,7 +210,11 @@ function collectModules(
       .flatMap((symbol) => convertExport(symbol, context) ?? [])
       .filter((value): value is ReferenceExport => value !== null);
     exports.sort(compareExports);
+    const description = child.comment
+      ? partsToMarkdown(child.comment.summary, context)
+      : '';
     modules.push({
+      description,
       exports,
       id: entry.id,
       sourcePath: relative(context.packageDir, entry.filePath).replaceAll(
@@ -568,7 +574,7 @@ function appendSignatureType(
       if (index > 0) {
         tokens.push({ kind: 'text', text: ', ' });
       }
-      tokens.push({ kind: 'text', text: typeParameters[index]?.name });
+      tokens.push({ kind: 'text', text: typeParameters[index]?.name ?? '' });
     }
     tokens.push({ kind: 'text', text: '>' });
   }

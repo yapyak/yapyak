@@ -5,6 +5,7 @@ import type {
   ReferenceExport,
   ReferenceManifest,
   ReferenceMember,
+  ReferenceModule,
   ReferenceOverload,
   ReferenceParameter,
   ReferenceThrows,
@@ -172,6 +173,79 @@ export function buildSymbolPage(
     meta: {},
     title: symbol.kind === 'function' ? `${symbol.name}()` : symbol.name,
   };
+}
+
+export interface BuildModulePageOptions {
+  collectionName: string;
+  href: string;
+  index: SymbolIndex;
+  label: string;
+  rootModule: string;
+}
+
+export function buildModulePage(
+  module: ReferenceModule,
+  options: BuildModulePageOptions,
+): Page {
+  currentIndex = options.index;
+  currentCollection = options.collectionName;
+  currentRootModule = options.rootModule;
+  const blocks: Block[] = [];
+
+  if (module.description) {
+    const parsed = parseMarkdoc(module.description);
+    blocks.push(...parsed.blocks);
+  }
+
+  if (module.exports.length > 0) {
+    blocks.push(heading2('Exports'));
+    blocks.push(exportsTable(module.exports, module.id));
+  }
+
+  return {
+    blocks,
+    description: firstSentence(module.description),
+    href: options.href,
+    meta: {},
+    title: options.label,
+  };
+}
+
+function exportsTable(exports: ReferenceExport[], moduleId: string): Block {
+  return {
+    body: exports.map((entry) => exportRow(entry, moduleId)),
+    head: tableHeaderRow(['Name', 'Kind', 'Description']),
+    type: 'table',
+  };
+}
+
+function exportRow(entry: ReferenceExport, moduleId: string): TableRowBlock {
+  const label = entry.kind === 'function' ? `${entry.name}()` : entry.name;
+  const href = symbolHref(moduleId, entry.name);
+  return {
+    children: [
+      bodyCell([
+        {
+          children: [{ type: 'inline-code', value: label }],
+          href,
+          kind: 'internal',
+          type: 'link',
+        },
+      ]),
+      bodyCell([{ type: 'text', value: entry.kind }]),
+      bodyCell(markdownToInline(firstSentence(entry.description))),
+    ],
+    type: 'table-row',
+  };
+}
+
+function firstSentence(text: string): string {
+  if (text === '') {
+    return '';
+  }
+  const trimmed = text.trim();
+  const match = trimmed.match(/^.*?[.!?](?:\s|$)/);
+  return match ? match[0].trim() : trimmed;
 }
 
 function functionSignatureBlock(overloads: ReferenceOverload[]): Block {

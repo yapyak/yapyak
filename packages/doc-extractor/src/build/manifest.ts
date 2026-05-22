@@ -6,8 +6,9 @@ import type {
   SymbolEntry,
 } from '../types/manifest.ts';
 
-import { extractMarkdoc, loadMarkdocPage } from '../extract/markdoc/extract.ts';
+import { extractMarkdoc } from '../extract/markdoc/extract.ts';
 import {
+  buildModulePage,
   buildSymbolIndex,
   buildSymbolPage,
 } from '../extract/typedoc/build-page.ts';
@@ -41,7 +42,7 @@ async function buildCollection(
   return buildTypedocCollection(
     collectionName,
     config.packageDir,
-    config.intro,
+    config.label,
     symbols,
   );
 }
@@ -73,7 +74,7 @@ async function buildMarkdocCollection(
 async function buildTypedocCollection(
   collectionName: string,
   packageDir: string,
-  introPath: string | undefined,
+  label: string | undefined,
   symbols: Record<string, SymbolEntry>,
 ): Promise<Collection> {
   const refManifest = await extractTypedoc({
@@ -82,11 +83,20 @@ async function buildTypedocCollection(
   });
   const index = buildSymbolIndex(refManifest);
   const rootModule = findRootModule(refManifest);
+  const rootLabel = label ?? refManifest.packageName;
 
   const pages: Record<string, Page> = {};
   const redirects: Record<string, string> = {};
 
   for (const module of refManifest.modules) {
+    const modulePath =
+      module.id === rootModule ? '' : module.id.slice(rootModule.length + 1);
+    const moduleHref =
+      modulePath === ''
+        ? `/${collectionName}`
+        : `/${collectionName}/${modulePath}`;
+    const moduleLabel = module.id === rootModule ? rootLabel : modulePath;
+
     for (const symbol of module.exports) {
       const path = pathFor(module.id, symbol.name, rootModule);
       const href = `/${collectionName}/${path}`;
@@ -101,32 +111,20 @@ async function buildTypedocCollection(
       symbols[symbol.name] = { collection: collectionName, path };
     }
 
-    if (module.id !== rootModule) {
-      const moduleSlug = module.id.slice(rootModule.length + 1);
-      const firstExport = module.exports[0];
-      if (firstExport !== undefined) {
-        redirects[moduleSlug] =
-          `/${collectionName}/${moduleSlug}/${firstExport.name}`;
-      }
-    }
-  }
-
-  let introPage: Page | null = null;
-  if (introPath !== undefined) {
-    introPage = await loadMarkdocPage(introPath, `/${collectionName}`);
-    if (introPage !== null) {
-      pages[''] = introPage;
-    }
-  }
-
-  const sidebar = buildTypedocSidebar(refManifest, collectionName, rootModule);
-  if (introPage !== null) {
-    sidebar.unshift({
-      href: `/${collectionName}`,
-      label: introPage.title || 'Introduction',
-      type: 'link',
+    pages[modulePath] = buildModulePage(module, {
+      collectionName,
+      href: moduleHref,
+      index,
+      label: moduleLabel,
+      rootModule,
     });
   }
+
+  const sidebar = buildTypedocSidebar(refManifest, {
+    collectionName,
+    rootLabel,
+    rootModule,
+  });
 
   return { pages, redirects, sidebar };
 }

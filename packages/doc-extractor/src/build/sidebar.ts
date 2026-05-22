@@ -139,11 +139,17 @@ function capitalize(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
+export interface BuildTypedocSidebarOptions {
+  collectionName: string;
+  rootLabel: string;
+  rootModule: string;
+}
+
 export function buildTypedocSidebar(
   manifest: ReferenceManifest,
-  collectionName: string,
-  rootModule: string,
+  options: BuildTypedocSidebarOptions,
 ): SidebarNode[] {
+  const { collectionName, rootLabel, rootModule } = options;
   const byId = new Map<string, ReferenceModule>();
   for (const module of manifest.modules) {
     byId.set(module.id, module);
@@ -169,7 +175,21 @@ export function buildTypedocSidebar(
   if (root === undefined) {
     return [];
   }
-  return moduleChildren(root, byId, childrenById, collectionName, rootModule);
+  return [
+    {
+      children: moduleChildren(
+        root,
+        byId,
+        childrenById,
+        collectionName,
+        rootModule,
+      ),
+      collapsible: false,
+      href: `/${collectionName}`,
+      label: rootLabel,
+      type: 'group',
+    },
+  ];
 }
 
 function moduleChildren(
@@ -192,6 +212,7 @@ function moduleChildren(
     .slice()
     .sort((a, b) => a.id.localeCompare(b.id));
   for (const child of subModules) {
+    const childSlug = child.id.slice(rootModule.length + 1);
     nodes.push({
       children: moduleChildren(
         child,
@@ -201,6 +222,7 @@ function moduleChildren(
         rootModule,
       ),
       collapsible: true,
+      href: `/${collectionName}/${childSlug}`,
       label: lastSegment(child.id),
       type: 'group',
     });

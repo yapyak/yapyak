@@ -133,9 +133,6 @@ function collectWatchedDirectories(config: Config): string[] {
       directories.push(resolve(collection.root));
     } else {
       directories.push(resolve(collection.packageDir, 'src'));
-      if (collection.intro !== undefined) {
-        directories.push(resolve(dirname(collection.intro)));
-      }
     }
   }
   return directories;

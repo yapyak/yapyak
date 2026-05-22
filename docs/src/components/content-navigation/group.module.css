@@ -5,52 +5,96 @@
     gap: var(--spacing-2);
 
     .TitleHeading {
+      display: block;
       padding: 0 var(--spacing-3);
       overflow: hidden;
       text-overflow: ellipsis;
       font-weight: var(--font-weight-semibold);
+      color: inherit;
       white-space: nowrap;
+
+      &[data-link] {
+        transition: color var(--transition);
+
+        &:enabled {
+          @media (hover: hover) {
+            &:hover {
+              color: var(--foreground);
+            }
+          }
+
+          &:active {
+            color: var(--foreground);
+          }
+        }
+
+        &[data-active] {
+          color: var(--brand);
+        }
+      }
     }
 
-    .ToggleButton {
+    .GroupHeader {
       display: flex;
       gap: var(--spacing-2);
-      align-items: center;
+      align-items: stretch;
       width: 100%;
-      padding: var(--spacing-1) var(--spacing-3);
-      font-size: var(--font-size-sm);
-      color: var(--foreground-soft);
-      text-align: left;
-      transition: color var(--transition);
+      padding: 0 0 0 var(--spacing-3);
 
-      @media (hover: hover) {
-        &:hover {
+      .GroupLabel {
+        flex: 1;
+        min-width: 0;
+        padding: var(--spacing-1) 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        color: var(--foreground-soft);
+        text-align: left;
+        white-space: nowrap;
+        transition: color var(--transition);
+
+        @media (hover: hover) {
+          &:hover {
+            color: var(--foreground);
+          }
+        }
+
+        &:active {
           color: var(--foreground);
         }
       }
 
-      &:active {
-        color: var(--foreground);
+      &[data-active] .GroupLabel {
+        color: var(--brand);
       }
 
-      .ChevronIcon {
+      .ChevronButton {
+        display: flex;
         flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        padding: 0;
         color: var(--foreground-softer);
-        transform-origin: center;
-        transition: transform var(--transition);
+        background: transparent;
+        transition: color var(--transition);
+
+        @media (hover: hover) {
+          &:hover {
+            color: var(--foreground);
+          }
+        }
+
+        .ChevronIcon {
+          transform-origin: center;
+          transition: transform var(--transition);
+        }
       }
 
       &[data-open] .ChevronIcon {
         transform: rotate(90deg);
-      }
-
-      .ToggleLabel {
-        flex: 1;
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-weight: var(--font-weight-medium);
-        white-space: nowrap;
       }
     }
 
@@ -68,6 +112,10 @@
         color: var(--foreground-softer);
         text-transform: uppercase;
         letter-spacing: var(--letter-spacing-wide);
+
+        &[data-link][data-active] {
+          color: var(--brand);
+        }
       }
 
       > .ItemList {
@@ -84,15 +132,15 @@
     &[data-collapsible] {
       gap: 0;
 
-      &:not(:first-child) {
-        padding-top: var(--spacing-2);
-        margin-top: var(--spacing-2);
-        border-top: var(--px) solid var(--rule);
-      }
-
       > .ItemList {
         padding-left: var(--spacing-3);
       }
+    }
+
+    &[data-depth="0"] > .ItemList > li:has(> [data-collapsible]):not(:first-child) {
+      padding-top: var(--spacing-2);
+      margin-top: var(--spacing-2);
+      border-top: var(--px) solid var(--rule);
     }
 
     &:not([data-depth="0"]):not([data-collapsible]) {

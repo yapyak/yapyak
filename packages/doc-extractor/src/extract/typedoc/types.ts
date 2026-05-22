@@ -1,8 +1,10 @@
 export interface ReferenceManifest {
   modules: ReferenceModule[];
+  packageName: string;
 }
 
 export interface ReferenceModule {
+  description: string;
   exports: ReferenceExport[];
   id: string;
   sourcePath: string;

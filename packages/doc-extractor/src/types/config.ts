@@ -7,13 +7,12 @@ export interface Config {
 export type CollectionConfig = MarkdocSource | TypedocSource;
 
 export interface MarkdocSource {
-  intro?: never;
   root: string;
   source: 'markdoc';
 }
 
 export interface TypedocSource {
-  intro?: string;
+  label?: string;
   packageDir: string;
   source: 'typedoc';
 }
