@@ -35,16 +35,13 @@
     }
 
     .GroupHeader {
-      display: flex;
-      gap: var(--spacing-2);
-      align-items: stretch;
+      position: relative;
       width: 100%;
-      padding: 0 0 0 var(--spacing-3);
 
       .GroupLabel {
-        flex: 1;
-        min-width: 0;
-        padding: var(--spacing-1) 0;
+        display: block;
+        padding: var(--spacing-1) calc(28px + var(--spacing-3))
+          var(--spacing-1) var(--spacing-3);
         overflow: hidden;
         text-overflow: ellipsis;
         font-size: var(--font-size-sm);
@@ -70,12 +67,14 @@
       }
 
       .ChevronButton {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
         display: flex;
-        flex: 0 0 auto;
         align-items: center;
         justify-content: center;
         width: 28px;
-        height: 28px;
         padding: 0;
         color: var(--foreground-softer);
         background: transparent;
