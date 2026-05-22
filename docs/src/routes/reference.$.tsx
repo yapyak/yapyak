@@ -22,18 +22,12 @@ export const Route = createFileRoute('/reference/$')({
         to: '/reference/$',
       });
     }
-    const { nextPage, previousPage } = doc.findAdjacentPages(result.page);
-    return { nextPage, page: result.page, previousPage };
+    return { page: result.page };
   },
 });
 
 function Component() {
-  const { page, previousPage, nextPage } = Route.useLoaderData();
-  return (
-    <PageArticle
-      nextPage={nextPage}
-      page={page}
-      previousPage={previousPage}
-    />
-  );
+  const { page } = Route.useLoaderData();
+
+  return <PageArticle page={page} />;
 }

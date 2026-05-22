@@ -6,21 +6,15 @@ import { Box } from '#components/box';
 import { ContentPagination } from '#components/content-pagination';
 
 import styles from './page-article.module.css';
+import { doc } from 'virtual:doc-extractor';
 
 export interface PageArticleProps extends BoxProps<'article'> {
-  nextPage?: Page | null;
   page: Page;
-  previousPage?: Page | null;
 }
 
 export function PageArticle(props: PageArticleProps) {
-  const {
-    className,
-    nextPage = null,
-    page,
-    previousPage = null,
-    ...restProps
-  } = props;
+  const { className, page, ...restProps } = props;
+  const { nextPage, previousPage } = doc.findAdjacentPages(page);
 
   return (
     <Box

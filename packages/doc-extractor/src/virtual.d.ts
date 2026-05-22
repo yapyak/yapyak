@@ -23,6 +23,7 @@ declare module 'virtual:doc-extractor' {
     getCodeBlocks(page: Page): CodeBlock[];
     getCollection(collection: string): Collection | null;
     getExcerpt(page: Page, options?: GetExcerptOptions): string;
+    getFirstPage(collection: string): Page | null;
     getHeadings(page: Page, options?: GetHeadingsOptions): HeadingEntry[];
     getInternalLinks(page: Page): InternalLinkEntry[];
     getPage(collection: string, path?: string): Page | null;

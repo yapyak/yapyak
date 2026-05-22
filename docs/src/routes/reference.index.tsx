@@ -1,10 +1,13 @@
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
+
+import { doc } from 'virtual:doc-extractor';
 
 export const Route = createFileRoute('/reference/')({
   beforeLoad() {
-    throw redirect({
-      params: { _splat: 'introduction' },
-      to: '/reference/$',
-    });
+    const firstPage = doc.getFirstPage('reference');
+    if (firstPage === null) {
+      throw notFound();
+    }
+    throw redirect({ replace: true, to: firstPage.href });
   },
 });

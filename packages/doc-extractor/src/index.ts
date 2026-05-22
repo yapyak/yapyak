@@ -60,6 +60,7 @@ export { getAllPages } from './access/get-all-pages.ts';
 export { getCodeBlocks } from './access/get-code-blocks.ts';
 export { getCollection } from './access/get-collection.ts';
 export { getExcerpt } from './access/get-excerpt.ts';
+export { getFirstPage } from './access/get-first-page.ts';
 export { getHeadings } from './access/get-headings.ts';
 export { getInternalLinks } from './access/get-internal-links.ts';
 export { getPage } from './access/get-page.ts';
