@@ -1,25 +1,12 @@
-import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 
 import { PageArticle } from '#components/page-article';
-
-import { doc } from 'virtual:doc-extractor';
+import { loadIndex } from '#utils/load';
 
 export const Route = createFileRoute('/reference/')({
   component: Component,
   loader() {
-    const result = doc.resolvePath('reference');
-    if (result.kind === 'page') {
-      return { page: result.page };
-    }
-    if (result.kind === 'redirect') {
-      throw redirect({ replace: true, to: result.target });
-    }
-
-    const firstPage = doc.getFirstPage('reference');
-    if (firstPage === null) {
-      throw notFound();
-    }
-    throw redirect({ replace: true, to: firstPage.href });
+    return loadIndex('reference');
   },
 });
 
