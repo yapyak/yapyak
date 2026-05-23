@@ -4,8 +4,8 @@ import { t } from 'yapyak';
 
 import { Box } from '#components/box';
 
-import { FeatureSectionItem } from './feature-section-item';
 import styles from './feature-section.module.css';
+import { FeatureSectionItem } from './feature-section-item';
 
 export interface Feature {
   description: string;

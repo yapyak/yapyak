@@ -12,5 +12,6 @@ export const Route = createFileRoute('/reference/$')({
 
 function Component() {
   const { page } = Route.useLoaderData();
+
   return <PageArticle page={page} />;
 }

@@ -11,3 +11,4 @@ docs/content/reference/manifest.json
 # AI agent rules — personal/local, imports shared conventions from ~/GitHub/agents/
 .claude/CLAUDE.md
 .claude/CLAUDE.local.md
+*.local.*

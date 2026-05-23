@@ -62,6 +62,9 @@
     "Reference": "",
     "View on GitHub": ""
   },
+  "src/routes/guide.tsx": {
+    "Guide navigation": ""
+  },
   "src/routes/index.tsx": {
     "For Vite apps moving at the speed of save.": "",
     "i18n that writes itself.": ""

@@ -1,4 +1,5 @@
 import { createFileRoute, getRouteApi, Outlet } from '@tanstack/react-router';
+import { t } from 'yapyak';
 
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
@@ -20,7 +21,7 @@ function Component() {
 
   const navigation = (
     <ContentNavigation
-      aria-label="Guide navigation"
+      aria-label={t('Guide navigation')}
       tree={sidebar}
     />
   );
