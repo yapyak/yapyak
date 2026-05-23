@@ -157,12 +157,8 @@ async function readPackageName(packageDir: string): Promise<string> {
   return parsed.name;
 }
 
-/**
- * Replaces characters that conflict with TanStack Router's path syntax — most
- * notably `$`, which Router interprets as a route parameter prefix in `<Link to>`.
- */
 function encodeSymbolSegment(name: string): string {
-  return name.replace(/\$/g, '_');
+  return name.replace(/^\$/, '');
 }
 
 function validateSlug(slug: string): void {

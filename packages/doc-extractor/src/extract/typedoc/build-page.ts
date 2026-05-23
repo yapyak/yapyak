@@ -490,7 +490,7 @@ function symbolHref(moduleId: string, name: string) {
 }
 
 function encodeSymbolSegment(name: string): string {
-  return name.replace(/\$/g, '_');
+  return name.replace(/^\$/, '');
 }
 
 function markdownToInline(source: string): Block[] {

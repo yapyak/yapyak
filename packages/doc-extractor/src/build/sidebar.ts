@@ -280,7 +280,7 @@ function symbolHref(
 }
 
 function encodeSymbolSegment(name: string): string {
-  return name.replace(/\$/g, '_');
+  return name.replace(/^\$/, '');
 }
 
 function lastSegment(id: string) {

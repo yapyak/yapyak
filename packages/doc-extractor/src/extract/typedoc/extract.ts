@@ -190,7 +190,7 @@ function buildSymbolUrl(
   packageName: string,
   packageSlug: string,
 ): string {
-  const safeName = symbolName.replace(/\$/g, '_');
+  const safeName = symbolName.replace(/^\$/, '');
   if (moduleId === packageName) {
     return `/${collectionName}/${packageSlug}/${safeName}`;
   }
@@ -252,13 +252,71 @@ function convertExport(
       return convertInterface(reflection, context);
     case ReflectionKind.TypeAlias:
       return convertTypeAlias(reflection, context);
-    case ReflectionKind.Variable:
+    case ReflectionKind.Variable: {
+      const signatures = resolveCallableSignatures(reflection);
+      if (signatures !== null) {
+        return convertCallableVariable(reflection, signatures, context);
+      }
       return convertVariable(reflection, context);
+    }
     case ReflectionKind.Class:
       return convertClass(reflection, context);
     default:
       return null;
   }
+}
+
+function resolveCallableSignatures(
+  reflection: DeclarationReflection,
+): readonly SignatureReflection[] | null {
+  const type = reflection.type;
+  if (type === undefined) {
+    return null;
+  }
+  if (type.type === 'reference') {
+    const target = type.reflection;
+    if (
+      target !== undefined &&
+      'signatures' in target &&
+      Array.isArray(
+        (target as { signatures?: SignatureReflection[] }).signatures,
+      )
+    ) {
+      const sigs = (target as { signatures: SignatureReflection[] }).signatures;
+      if (sigs.length > 0) {
+        return sigs;
+      }
+    }
+  }
+  if (type.type === 'reflection') {
+    const sigs = type.declaration.signatures;
+    if (sigs !== undefined && sigs.length > 0) {
+      return sigs;
+    }
+  }
+  return null;
+}
+
+function convertCallableVariable(
+  reflection: DeclarationReflection,
+  signatures: readonly SignatureReflection[],
+  context: Context,
+): ReferenceFunction {
+  const base = convertBase(reflection, context);
+  const overloads = signatures.map((signature) =>
+    convertOverload(signature, reflection.name, context),
+  );
+  const returnDescription = readReturnDescription(
+    signatures[0] ?? null,
+    context,
+  );
+  return {
+    ...base,
+    kind: 'function',
+    members: [],
+    overloads,
+    returnDescription,
+  };
 }
 
 function convertFunction(

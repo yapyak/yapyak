@@ -9,13 +9,11 @@ export type TParams<T extends string> = T extends `${string}{${string}`
   ? ExtractTParams<T>
   : {};
 
-/** @internal */
 export interface TIn {
   <T extends string>(source: T): string;
   <T extends string>(source: T, params: TParams<T>): string;
 }
 
-/** @internal */
 export interface T extends TIn {
   in(locale: string): TIn;
 }
