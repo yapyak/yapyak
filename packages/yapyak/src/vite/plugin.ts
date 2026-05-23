@@ -319,8 +319,7 @@ function areMessagesEqual(
     if (
       left.source !== right.source ||
       left.line !== right.line ||
-      left.column !== right.column ||
-      left.fixedLocale !== right.fixedLocale
+      left.column !== right.column
     ) {
       return false;
     }

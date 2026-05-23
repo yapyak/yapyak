@@ -2,7 +2,6 @@ export interface CallSite {
   argsStart: number;
   callEnd: number;
   callStart: number;
-  fixedLocale: string | undefined;
 }
 
 export interface ArgsRange {
@@ -48,27 +47,8 @@ export function findCallSites(code: string): CallSite[] {
       argsStart: match.index + match[0].length,
       callEnd: -1,
       callStart: match.index,
-      fixedLocale: undefined,
     });
     match = directRx.exec(scannable);
-  }
-
-  const localeRx = new RegExp(
-    `(?<![\\w.$])(?:${aliasUnion})\\s*\\.\\s*in\\s*\\(\\s*(['"])([^'"]+)\\1\\s*\\)\\s*\\(`,
-    'g',
-  );
-  let localeMatch: RegExpExecArray | null = localeRx.exec(scannable);
-  while (localeMatch !== null) {
-    const fixedLocale = localeMatch[2];
-    if (fixedLocale !== undefined) {
-      sites.push({
-        argsStart: localeMatch.index + localeMatch[0].length,
-        callEnd: -1,
-        callStart: localeMatch.index,
-        fixedLocale,
-      });
-    }
-    localeMatch = localeRx.exec(scannable);
   }
 
   return dedupeAndOrder(sites);

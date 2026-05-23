@@ -64,11 +64,9 @@ export function transformSource(
       }
       throw error;
     }
-    const paramsArg = argList[1];
     const compiled = compileCall(
       {
-        fixedLocale: site.fixedLocale,
-        paramsExpression: paramsArg,
+        restExpressions: argList.slice(1),
         source,
       },
       options,
@@ -112,8 +110,7 @@ function injectImport(code: string, importStatement: string): string {
 }
 
 interface CompileInput {
-  fixedLocale: string | undefined;
-  paramsExpression: string | undefined;
+  restExpressions: string[];
   source: string;
 }
 
@@ -132,13 +129,7 @@ function compileCall(
     variants[locale] = value ?? input.source;
   }
   const variantsLiteral = stringifyVariants(variants);
-  const args: string[] = [variantsLiteral];
-  if (input.paramsExpression !== undefined || input.fixedLocale !== undefined) {
-    args.push(input.paramsExpression ?? 'undefined');
-  }
-  if (input.fixedLocale !== undefined) {
-    args.push(JSON.stringify(input.fixedLocale));
-  }
+  const args: string[] = [variantsLiteral, ...input.restExpressions];
   return `${HELPER_NAME}(${args.join(', ')})`;
 }
 

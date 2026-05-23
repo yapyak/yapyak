@@ -16,7 +16,6 @@ export interface ExtractedMessage {
   column: number;
   context: MessageContext;
   fileId: string;
-  fixedLocale: string | undefined;
   line: number;
   source: string;
 }
@@ -74,7 +73,6 @@ export function extractMessages(
         snippet: extractSnippet({ code, line: position.line }),
       },
       fileId,
-      fixedLocale: site.fixedLocale,
       line: position.line,
       source,
     });

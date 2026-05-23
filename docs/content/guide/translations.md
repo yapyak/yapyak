@@ -58,13 +58,31 @@ $t('You have {count, plural, one {# item by {author}} other {# items by {author}
 
 ## Forced locale
 
-`$t.in()` returns a one-off translator locked to a specific locale. The locale is resolved at call time, so a variable works:
+Pass `locale` in the trailing options object to translate in a specific locale instead of the ambient one. The locale is resolved at call time, so a variable works:
 
 ```tsx
-const message = $t.in(user.locale)('Welcome back, {name}!', { name: user.name });
+const message = $t('Welcome back, {name}!', { name: user.name }, { locale: user.locale });
+```
+
+When the source has no placeholders, the options object goes in the second position:
+
+```tsx
+const message = $t('Welcome back!', { locale: user.locale });
 ```
 
 Useful when the target locale isn't the current one — sending an email in the recipient's language, generating an audit trail, or rendering a preview for another user.
+
+## Translator context
+
+Pass `context` in the options object to give the AI translator a hint about how the string is used. It's pure metadata: it never affects the runtime output, only the translation the translator generates.
+
+```tsx
+// Source has no placeholders — options is the second argument
+$t('Save', { context: 'submit button on the new-account form' });
+
+// Source has placeholders — params come first, options second
+$t('Hello, {name}!', { name: user.name }, { context: 'greeting at the top of the dashboard' });
+```
 
 ## Per-file scoping
 
