@@ -4,8 +4,6 @@
  * @packageDocumentation
  */
 
-export type { T, TIn, TParams } from './runtime';
-
 export {
   defaultLocale,
   getLocale,
