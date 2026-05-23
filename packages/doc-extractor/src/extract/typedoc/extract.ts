@@ -190,11 +190,12 @@ function buildSymbolUrl(
   packageName: string,
   packageSlug: string,
 ): string {
+  const safeName = symbolName.replace(/\$/g, '_');
   if (moduleId === packageName) {
-    return `/${collectionName}/${packageSlug}/${symbolName}`;
+    return `/${collectionName}/${packageSlug}/${safeName}`;
   }
   const subSlug = moduleId.slice(packageName.length + 1);
-  return `/${collectionName}/${packageSlug}/${subSlug}/${symbolName}`;
+  return `/${collectionName}/${packageSlug}/${subSlug}/${safeName}`;
 }
 
 function collectModules(

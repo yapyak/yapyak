@@ -106,9 +106,10 @@ async function buildTypedocCollection(
       const moduleLabel = isRootModule ? packageName : subSlug;
 
       for (const symbol of module.exports) {
+        const safeName = encodeSymbolSegment(symbol.name);
         const path = isRootModule
-          ? `${packageSlug}/${symbol.name}`
-          : `${packageSlug}/${subSlug}/${symbol.name}`;
+          ? `${packageSlug}/${safeName}`
+          : `${packageSlug}/${subSlug}/${safeName}`;
         const href = `/${collectionName}/${path}`;
         const page = buildSymbolPage(symbol, {
           collectionName,
@@ -154,6 +155,14 @@ async function readPackageName(packageDir: string): Promise<string> {
   const raw = await readFile(join(packageDir, 'package.json'), 'utf8');
   const parsed = JSON.parse(raw) as { name: string };
   return parsed.name;
+}
+
+/**
+ * Replaces characters that conflict with TanStack Router's path syntax — most
+ * notably `$`, which Router interprets as a route parameter prefix in `<Link to>`.
+ */
+function encodeSymbolSegment(name: string): string {
+  return name.replace(/\$/g, '_');
 }
 
 function validateSlug(slug: string): void {

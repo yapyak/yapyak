@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { t } from 'yapyak';
+import { $t } from 'yapyak';
 
 import { FeatureSection } from '#components/feature-section';
 import { Hero } from '#components/hero';
@@ -12,8 +12,8 @@ function Component() {
   return (
     <>
       <Hero
-        description={t('For Vite apps moving at the speed of save.')}
-        heading={t('i18n that writes itself.')}
+        description={$t('For Vite apps moving at the speed of save.')}
+        heading={$t('i18n that writes itself.')}
       />
       <FeatureSection />
     </>

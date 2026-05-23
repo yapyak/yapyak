@@ -39,25 +39,27 @@ function tIn(locale: string): TIn {
 /**
  * Translates a source string to the current locale.
  *
- * @remarks
- * Always call `t` directly with a string literal at the call site. Yapyak's Vite plugin reads the literal statically to extract translations into locale files — wrapper functions around `t` break extraction and are not supported.
+ * The leading `$` signals that `$t` is a compiler macro: yapyak's Vite plugin rewrites every call site at build time. The runtime function exported here is only the fallback for code paths the plugin didn't touch.
  *
- * Placeholders use `{name}` and are type-checked from the source literal. Re-exporting `t` under a different name is fine (the literal still appears at the call site); wrapping `t` inside another function is not.
+ * @remarks
+ * Always call `$t` directly with a string literal at the call site. Yapyak's Vite plugin reads the literal statically to extract translations into locale files — wrapper functions around `$t` break extraction and are not supported.
+ *
+ * Placeholders use `{name}` and are type-checked from the source literal. Re-exporting `$t` under a different name is fine (the literal still appears at the call site); wrapping `$t` inside another function is not.
  *
  * @example
  * ```tsx
- * import { t } from 'yapyak';
+ * import { $t } from 'yapyak';
  *
- * t('Save changes');
+ * $t('Save changes');
  *
- * t('Hello, {name}!', { name: 'Alex' });
+ * $t('Hello, {name}!', { name: 'Alex' });
  *
- * t('You have {count, plural, one {# item} other {# items}}', { count: 1 });
+ * $t('You have {count, plural, one {# item} other {# items}}', { count: 1 });
  *
- * t.in(user.locale)('Welcome back, {name}!', { name: user.name });
+ * $t.in(user.locale)('Welcome back, {name}!', { name: user.name });
  * ```
  */
-export const t: T = Object.assign(
+export const $t: T = Object.assign(
   ((source: string, params?: unknown): string => {
     runTrackers();
     return translate(source, params, getLocale());

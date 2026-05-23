@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 import { Link } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
-import { t } from 'yapyak';
+import { $t } from 'yapyak';
 
 import { Box } from '#components/box';
 import { ChevronIcon } from '#components/chevron-icon';
@@ -74,7 +74,7 @@ export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
       <Box className={styles.ButtonRow}>
         {previousPage ? (
           <Box
-            aria-label={t('Previous')}
+            aria-label={$t('Previous')}
             as={Link}
             className={styles.NavButton}
             to={previousPage.href}
@@ -83,7 +83,7 @@ export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
           </Box>
         ) : (
           <Box
-            aria-label={t('Previous')}
+            aria-label={$t('Previous')}
             as="button"
             className={styles.NavButton}
             disabled
@@ -94,7 +94,7 @@ export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
         )}
         <Box
           aria-expanded={isSidebarOpen}
-          aria-label={isSidebarOpen ? t('Close outline') : t('Open outline')}
+          aria-label={isSidebarOpen ? $t('Close outline') : $t('Open outline')}
           as="button"
           className={styles.OutlineButton}
           onClick={handleOutlineToggle}
@@ -104,7 +104,7 @@ export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
         </Box>
         {nextPage ? (
           <Box
-            aria-label={t('Next')}
+            aria-label={$t('Next')}
             as={Link}
             className={styles.NavButton}
             to={nextPage.href}
@@ -113,7 +113,7 @@ export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
           </Box>
         ) : (
           <Box
-            aria-label={t('Next')}
+            aria-label={$t('Next')}
             as="button"
             className={styles.NavButton}
             disabled

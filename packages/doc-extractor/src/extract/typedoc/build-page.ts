@@ -481,11 +481,16 @@ function isVoidTokens(tokens: TypeToken[]) {
 }
 
 function symbolHref(moduleId: string, name: string) {
+  const safeName = encodeSymbolSegment(name);
   if (moduleId === currentPackageName) {
-    return `/${currentCollection}/${currentPackageSlug}/${name}`;
+    return `/${currentCollection}/${currentPackageSlug}/${safeName}`;
   }
   const subSlug = moduleId.slice(currentPackageName.length + 1);
-  return `/${currentCollection}/${currentPackageSlug}/${subSlug}/${name}`;
+  return `/${currentCollection}/${currentPackageSlug}/${subSlug}/${safeName}`;
+}
+
+function encodeSymbolSegment(name: string): string {
+  return name.replace(/\$/g, '_');
 }
 
 function markdownToInline(source: string): Block[] {

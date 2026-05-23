@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { locales, t } from "yapyak";
+  import { locales, $t as t } from "yapyak";
   import { locale } from "yapyak/svelte";
 
   const now = new Date();

@@ -27,7 +27,9 @@ export interface Locale {
  * @example
  * ```svelte
  * <script>
- *   import { t } from 'yapyak';
+ *   // Svelte reserves `$`-prefixed identifiers for store auto-subscriptions,
+ *   // so alias the macro to a local name.
+ *   import { $t as t } from 'yapyak';
  *   import { locale } from 'yapyak/svelte';
  * </script>
  *

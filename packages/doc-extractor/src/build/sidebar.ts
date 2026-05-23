@@ -271,11 +271,16 @@ function symbolHref(
   packageName: string,
   packageSlug: string,
 ) {
+  const safeName = encodeSymbolSegment(name);
   if (moduleId === packageName) {
-    return `/${collectionName}/${packageSlug}/${name}`;
+    return `/${collectionName}/${packageSlug}/${safeName}`;
   }
   const subSlug = moduleId.slice(packageName.length + 1);
-  return `/${collectionName}/${packageSlug}/${subSlug}/${name}`;
+  return `/${collectionName}/${packageSlug}/${subSlug}/${safeName}`;
+}
+
+function encodeSymbolSegment(name: string): string {
+  return name.replace(/\$/g, '_');
 }
 
 function lastSegment(id: string) {

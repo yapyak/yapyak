@@ -47,7 +47,7 @@ export interface YapyakOptions {
     | { key?: string; type: 'localStorage' }
     | null;
   /**
-   * Whether to preserve existing translations when a `t()` call is renamed in place.
+   * Whether to preserve existing translations when a `$t()` call is renamed in place.
    *
    * @defaultValue `true` without a {@link Translator}, `false` with one
    */

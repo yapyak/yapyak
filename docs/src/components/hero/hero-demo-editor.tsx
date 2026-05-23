@@ -33,7 +33,7 @@ export interface HeroDemoEditorProps extends BoxProps {
 }
 
 const CARET_MARKER = 'CARET';
-const T_NAME = 't';
+const T_NAME = '$t';
 
 interface IndicatorState {
   width: number;

@@ -14,12 +14,12 @@ import { registerTracker } from '../runtime';
  * @example
  * ```vue
  * <script setup>
- * import { t } from 'yapyak';
+ * import { $t } from 'yapyak';
  * import { locale } from 'yapyak/vue';
  * </script>
  *
  * <template>
- *   <p>{{ t('Hello') }}: {{ locale }}</p>
+ *   <p>{{ $t('Hello') }}: {{ locale }}</p>
  *   <select v-model="locale">
  *     <option value="en">English</option>
  *     <option value="sv">Svenska</option>

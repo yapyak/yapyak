@@ -240,7 +240,7 @@ export function locate(
 export function parseSourceArg(rawArg: string): string {
   const trimmed = rawArg.trim();
   if (trimmed.length === 0) {
-    throw new DynamicSourceError('t() called with no arguments', '', {
+    throw new DynamicSourceError('$t() called with no arguments', '', {
       column: 0,
       line: 0,
     });
@@ -252,7 +252,7 @@ export function parseSourceArg(rawArg: string): string {
   if (first === "'" || first === '"') {
     if (last !== first) {
       throw new DynamicSourceError(
-        `t() first argument is not a closed string literal: ${preview(trimmed)}`,
+        `$t() first argument is not a closed string literal: ${preview(trimmed)}`,
         '',
         { column: 0, line: 0 },
       );
@@ -263,7 +263,7 @@ export function parseSourceArg(rawArg: string): string {
   if (first === '`') {
     if (last !== '`') {
       throw new DynamicSourceError(
-        `t() first argument is not a closed string literal: ${preview(trimmed)}`,
+        `$t() first argument is not a closed string literal: ${preview(trimmed)}`,
         '',
         { column: 0, line: 0 },
       );
@@ -271,7 +271,7 @@ export function parseSourceArg(rawArg: string): string {
     const body = trimmed.slice(1, -1);
     if (hasTemplateInterpolation(body)) {
       throw new DynamicSourceError(
-        't() first argument must be a static string literal; template interpolation is not allowed',
+        '$t() first argument must be a static string literal; template interpolation is not allowed',
         '',
         { column: 0, line: 0 },
       );
@@ -280,7 +280,7 @@ export function parseSourceArg(rawArg: string): string {
   }
 
   throw new DynamicSourceError(
-    `t() first argument must be a string literal, got: ${preview(trimmed)}`,
+    `$t() first argument must be a string literal, got: ${preview(trimmed)}`,
     '',
     { column: 0, line: 0 },
   );
@@ -453,17 +453,17 @@ function parseImportSpecifier(part: string): string | null {
   if (trimmed === '') {
     return null;
   }
-  const asMatch = trimmed.match(/^(\w+)\s+as\s+(\w+)$/);
+  const asMatch = trimmed.match(/^([\w$]+)\s+as\s+([\w$]+)$/);
   if (asMatch !== null) {
     const original = asMatch[1];
     const alias = asMatch[2];
-    if (original === 't' && alias !== undefined) {
+    if (original === '$t' && alias !== undefined) {
       return alias;
     }
     return null;
   }
-  if (trimmed === 't') {
-    return 't';
+  if (/^[\w$]+$/.test(trimmed) && trimmed === '$t') {
+    return '$t';
   }
   return null;
 }

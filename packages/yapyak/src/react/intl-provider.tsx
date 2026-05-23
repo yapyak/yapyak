@@ -15,7 +15,7 @@ const LocaleContext = createContext<string>('en');
  * Provides locale context to the React tree.
  *
  * @remarks
- * Mounts once at the React tree's root. Re-renders descendants when {@link setLocale} is called, so {@link t} calls inside the tree return the new locale's strings.
+ * Mounts once at the React tree's root. Re-renders descendants when {@link setLocale} is called, so {@link $t} calls inside the tree return the new locale's strings.
  *
  * @example
  * ```tsx

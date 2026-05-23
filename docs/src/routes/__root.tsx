@@ -9,7 +9,7 @@ import {
   Outlet,
   Scripts,
 } from '@tanstack/react-router';
-import { t } from 'yapyak';
+import { $t } from 'yapyak';
 import { useLocale } from 'yapyak/react';
 
 import { Colophon } from '#components/colophon';
@@ -67,14 +67,14 @@ function Component() {
         </Layout.Header.Start>
         <Layout.Header.Center>
           <Navigation>
-            <Navigation.Link to="/">{t('Home')}</Navigation.Link>
-            <Navigation.Link to="/guide">{t('Guide')}</Navigation.Link>
-            <Navigation.Link to="/reference">{t('Reference')}</Navigation.Link>
+            <Navigation.Link to="/">{$t('Home')}</Navigation.Link>
+            <Navigation.Link to="/guide">{$t('Guide')}</Navigation.Link>
+            <Navigation.Link to="/reference">{$t('Reference')}</Navigation.Link>
           </Navigation>
         </Layout.Header.Center>
         <Layout.Header.End>
           <IconLink
-            aria-label={t('View on GitHub')}
+            aria-label={$t('View on GitHub')}
             href="https://github.com/yapyak/yapyak"
           >
             <GithubIcon />

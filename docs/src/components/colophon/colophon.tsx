@@ -1,6 +1,6 @@
 import type { BoxProps } from '#components/box';
 
-import { t } from 'yapyak';
+import { $t } from 'yapyak';
 
 import { Box } from '#components/box';
 import { Wordmark } from '#components/wordmark';
@@ -28,7 +28,7 @@ export function Colophon(props: ColophonProps) {
         as="p"
         className={styles.TaglineParagraph}
       >
-        {t("Who's yakking in the back? That's yapyak.")}
+        {$t("Who's yakking in the back? That's yapyak.")}
       </Box>
       <Wordmark />
       <Box
@@ -42,7 +42,7 @@ export function Colophon(props: ColophonProps) {
         >
           ·
         </Box>
-        {t('MIT license')}
+        {$t('MIT license')}
         <Box
           as="span"
           className={styles.SeparatorText}

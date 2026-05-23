@@ -1,7 +1,7 @@
 import type { BoxProps } from '#components/box';
 
 import { Link } from '@tanstack/react-router';
-import { t } from 'yapyak';
+import { $t } from 'yapyak';
 
 import { Box } from '#components/box';
 
@@ -41,21 +41,21 @@ export function Hero(props: HeroProps) {
             className={styles.PrimaryLink}
             to="/guide"
           >
-            {t('Get Started')}
+            {$t('Get Started')}
           </Box>
           <Box
             as="a"
             className={styles.SecondaryLink}
             href="https://github.com/yapyak/yapyak"
           >
-            {t('View on GitHub')}
+            {$t('View on GitHub')}
           </Box>
         </Box>
         <Box
           as="p"
           className={styles.TrustParagraph}
         >
-          {t('Open source. Use any LLM. No vendor lock-in.')}
+          {$t('Open source. Use any LLM. No vendor lock-in.')}
         </Box>
       </Box>
       <HeroDemo />

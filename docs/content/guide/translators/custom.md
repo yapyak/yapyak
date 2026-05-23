@@ -162,7 +162,7 @@ export const pseudoLocale = createTranslator({
 
 This translator is *synchronous* — `translate` returns `string[]` directly, not a Promise. The factory handles both forms.
 
-Use case: catch hard-coded strings (without `t()` wrapping) by setting up a pseudo-locale that mangles every translated string. Anything still showing real English in your UI when running in pseudo mode is a bug.
+Use case: catch hard-coded strings (without `$t()` wrapping) by setting up a pseudo-locale that mangles every translated string. Anything still showing real English in your UI when running in pseudo mode is a bug.
 
 ## Errors and retries
 

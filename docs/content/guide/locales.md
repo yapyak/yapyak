@@ -31,7 +31,7 @@ yapyak({
 })
 ```
 
-When the default isn't `en`, you write `t('Spara ändringar')` directly. Other locales (including English, if you want it) translate from Swedish.
+When the default isn't `en`, you write `$t('Spara ändringar')` directly. Other locales (including English, if you want it) translate from Swedish.
 
 If `defaultLocale` is unset, yapyak uses `'en'`.
 
@@ -109,7 +109,7 @@ import { locale } from 'yapyak/vue';
 
 {% /code-group %}
 
-The framework-specific imports (`yapyak/react`, `yapyak/vue`, `yapyak/svelte`) only differ in *how* the locale is reactively bound — `t` and the rest of `'yapyak'`'s exports are the same everywhere.
+The framework-specific imports (`yapyak/react`, `yapyak/vue`, `yapyak/svelte`) only differ in *how* the locale is reactively bound — `$t` and the rest of `'yapyak'`'s exports are the same everywhere.
 
 ## Subscribing to locale changes
 
@@ -178,7 +178,7 @@ When `persistence: 'cookie'` is set *and* an SSR adapter is wired ([TanStack Sta
 2. **`Accept-Language` header** (browser/OS preference) — if `detectAcceptLanguage: true`
 3. **Default locale** (configured fallback)
 
-Each request picks the right locale before HTML renders. `getLocale()` returns the per-request value; `t()` calls in SSR render in that locale; the cookie matches what the client reads, so there's no hydration mismatch.
+Each request picks the right locale before HTML renders. `getLocale()` returns the per-request value; `$t()` calls in SSR render in that locale; the cookie matches what the client reads, so there's no hydration mismatch.
 
 To opt into `Accept-Language` matching:
 
@@ -233,7 +233,7 @@ The cookie wins over `Accept-Language` either way.
 When a translation is missing or empty for a target locale, the runtime renders the source string.
 
 ```tsx
-t('A new untranslated string')
+$t('A new untranslated string')
 // Rendered as 'A new untranslated string' in es, fr, de, etc.
 // until a translation lands.
 ```

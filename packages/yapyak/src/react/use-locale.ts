@@ -10,7 +10,7 @@ import { getLocale, setLocale, subscribeLocale } from '../locale';
  *
  * @example
  * ```tsx
- * import { t } from 'yapyak';
+ * import { $t } from 'yapyak';
  * import { useLocale } from 'yapyak/react';
  *
  * function LocaleToggle() {

@@ -52,7 +52,7 @@ export function extractMessages(
     const position = locate(code, site.callStart);
     if (firstArg === undefined) {
       throw new DynamicSourceError(
-        't() called with no arguments',
+        '$t() called with no arguments',
         fileId,
         position,
       );

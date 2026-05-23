@@ -3,7 +3,7 @@ title: Introduction
 order: 1
 ---
 
-A **translator** is the function yapyak calls to actually translate strings. The plugin extracts `t()` calls, batches them, and passes them to the configured translator. The translator makes the HTTP call to an AI provider and returns the translations.
+A **translator** is the function yapyak calls to actually translate strings. The plugin extracts `$t()` calls, batches them, and passes them to the configured translator. The translator makes the HTTP call to an AI provider and returns the translations.
 
 yapyak ships four translators: **Anthropic**, **OpenAI**, **Gemini**, and **Ollama**. Many other providers (Groq, DeepSeek, Mistral, OpenRouter, Together AI, Vercel AI Gateway) expose OpenAI-compatible APIs — point the OpenAI translator at their endpoint and you're done. For anything else, build a [custom translator](/guide/translators/custom).
 
@@ -47,7 +47,7 @@ See each provider's page for full details.
 
 ## Translation context
 
-`context` controls what data to send per `t()` call:
+`context` controls what data to send per `$t()` call:
 
 | Level | Sends | Use when |
 | --- | --- | --- |
@@ -124,7 +124,7 @@ Failed strings stay missing in `locales/*.json` — no partial writes. On the ne
 Nothing broken. yapyak shows the source string wherever a translation is missing:
 
 ```tsx
-t('Save changes')
+$t('Save changes')
 // Renders as 'Save changes' in sv until the translation lands.
 ```
 
