@@ -3,24 +3,13 @@ import type * as ts from 'typescript';
 
 export type Framework = 'astro' | 'svelte' | 'vanilla' | 'vue';
 
-export interface ScriptBlock {
-  code: string;
-  lang: 'js' | 'ts';
-  offsetInSource: number;
-}
-
 export type DiagnosticCode =
   | 'YPK001'
   | 'YPK002'
   | 'YPK003'
-  | 'YPK004'
   | 'YPK005'
-  | 'YPK006'
   | 'YPK007'
-  | 'YPK008'
-  | 'YPK009'
-  | 'YPK010'
-  | 'YPK011';
+  | 'YPK008';
 
 export interface Position {
   column: number;
@@ -43,15 +32,9 @@ export interface Diagnostic {
   source: string;
 }
 
-export interface StaticOptions {
-  context?: string;
-  locale?: string;
-}
-
 export interface YapyakBinding {
   declarationNode: ts.Node;
-  factoryOptions?: StaticOptions;
-  kind: 'direct' | 'factory' | 'namespace' | 'wrapper';
+  kind: 'direct' | 'namespace' | 'wrapper';
   localName: string;
 }
 
@@ -87,13 +70,11 @@ export interface Placeholder {
 
 export interface Location {
   callSiteContext: CallSiteContext;
-  factoryLocale?: string;
   fileId: string;
   range: Range;
 }
 
 export interface ExtractedMessage {
-  context?: string;
   id: string;
   locations: Location[];
   placeholders: Placeholder[];
@@ -108,10 +89,16 @@ export interface ParsedParams {
 
 export interface ParsedArguments {
   diagnostics: Diagnostic[];
-  options?: StaticOptions;
+  optionsExpression?: string;
   params?: ParsedParams;
   source: string;
   sourceRange: Range;
+}
+
+export interface ScriptBlock {
+  code: string;
+  lang: 'js' | 'ts';
+  offsetInSource: number;
 }
 
 export interface ExtractFileRequest {

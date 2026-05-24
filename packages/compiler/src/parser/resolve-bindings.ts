@@ -1,14 +1,12 @@
-import type { BindingTable, Scope, StaticOptions, YapyakBinding } from './type';
+import type { BindingTable, Scope, YapyakBinding } from './type';
 
 import * as ts from 'typescript';
 
 const YAPYAK_MODULE = '@yapyak/core';
 const RUNTIME_NAME = '$t';
-const FACTORY_NAME = '$createT';
 
 interface ImportInfo {
   directLocals: Map<string, ts.Node>;
-  factoryLocals: Map<string, ts.Node>;
   namespaceLocals: Map<string, ts.Node>;
 }
 
@@ -33,7 +31,7 @@ export function resolveBindings(sourceFile: ts.SourceFile): BindingTable {
     });
   }
 
-  walkBindings(sourceFile, root, scopeByNode, imports);
+  walkBindings(sourceFile, root, scopeByNode);
 
   return {
     find: (name, atNode) => findBinding(scopeByNode, name, atNode),
@@ -44,7 +42,6 @@ export function resolveBindings(sourceFile: ts.SourceFile): BindingTable {
 function collectImports(sourceFile: ts.SourceFile): ImportInfo {
   const info: ImportInfo = {
     directLocals: new Map(),
-    factoryLocals: new Map(),
     namespaceLocals: new Map(),
   };
   for (const statement of sourceFile.statements) {
@@ -65,8 +62,6 @@ function collectImports(sourceFile: ts.SourceFile): ImportInfo {
         const localName = element.name.text;
         if (importedName === RUNTIME_NAME) {
           info.directLocals.set(localName, element);
-        } else if (importedName === FACTORY_NAME) {
-          info.factoryLocals.set(localName, element);
         }
       }
     }
@@ -78,7 +73,6 @@ function walkBindings(
   node: ts.Node,
   parentScope: Scope,
   scopeByNode: Map<ts.Node, Scope>,
-  imports: ImportInfo,
 ): void {
   let scope = parentScope;
   if (createsBlockScope(node) && !scopeByNode.has(node)) {
@@ -87,11 +81,11 @@ function walkBindings(
   }
 
   if (ts.isVariableStatement(node)) {
-    registerVariableDeclarations(node, scope, scopeByNode, imports);
+    registerVariableDeclarations(node, scope, scopeByNode);
   }
 
   ts.forEachChild(node, (child) => {
-    walkBindings(child, scope, scopeByNode, imports);
+    walkBindings(child, scope, scopeByNode);
   });
 }
 
@@ -103,73 +97,21 @@ function registerVariableDeclarations(
   statement: ts.VariableStatement,
   scope: Scope,
   scopeByNode: Map<ts.Node, Scope>,
-  imports: ImportInfo,
 ): void {
   for (const decl of statement.declarationList.declarations) {
     if (!ts.isIdentifier(decl.name)) continue;
     const localName = decl.name.text;
     const init = decl.initializer;
     if (init === undefined) continue;
-
-    if (ts.isIdentifier(init)) {
-      const target = findBinding(scopeByNode, init.text, decl);
-      if (target === undefined) continue;
-      const wrapper: YapyakBinding = {
-        declarationNode: decl,
-        kind: 'wrapper',
-        localName,
-      };
-      if (target.factoryOptions !== undefined) {
-        wrapper.factoryOptions = target.factoryOptions;
-      }
-      scope.bindings.set(localName, wrapper);
-      continue;
-    }
-
-    if (ts.isCallExpression(init) && ts.isIdentifier(init.expression)) {
-      const calleeName = init.expression.text;
-      if (!imports.factoryLocals.has(calleeName)) continue;
-      const binding: YapyakBinding = {
-        declarationNode: decl,
-        kind: 'factory',
-        localName,
-      };
-      const firstArg = init.arguments[0];
-      const factoryOptions =
-        firstArg === undefined ? {} : extractStaticOptions(firstArg);
-      if (factoryOptions !== undefined) {
-        binding.factoryOptions = factoryOptions;
-      }
-      scope.bindings.set(localName, binding);
-    }
+    if (!ts.isIdentifier(init)) continue;
+    const target = findBinding(scopeByNode, init.text, decl);
+    if (target === undefined) continue;
+    scope.bindings.set(localName, {
+      declarationNode: decl,
+      kind: 'wrapper',
+      localName,
+    });
   }
-}
-
-function extractStaticOptions(arg: ts.Expression): StaticOptions | undefined {
-  if (!ts.isObjectLiteralExpression(arg)) return undefined;
-  const options: StaticOptions = {};
-  for (const prop of arg.properties) {
-    if (!ts.isPropertyAssignment(prop)) return undefined;
-    if (!ts.isIdentifier(prop.name) && !ts.isStringLiteral(prop.name)) {
-      return undefined;
-    }
-    const name = prop.name.text;
-    const initializer = prop.initializer;
-    if (
-      !ts.isStringLiteral(initializer) &&
-      !ts.isNoSubstitutionTemplateLiteral(initializer)
-    ) {
-      return undefined;
-    }
-    if (name === 'context') {
-      options.context = initializer.text;
-    } else if (name === 'locale') {
-      options.locale = initializer.text;
-    } else {
-      return undefined;
-    }
-  }
-  return options;
 }
 
 function findBinding(

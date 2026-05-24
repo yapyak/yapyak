@@ -1,4 +1,10 @@
 {
+  "../packages/compiler/src/parser/fixtures/multi-locale/full-pick.ts": {
+    "Bye": "",
+    "Hi {name}": "",
+    "Welcome": "",
+    "You have {count, plural, one {# item} other {# items}}": ""
+  },
   "src/components/callout/callout.tsx": {
     "Danger": "",
     "Info": "",

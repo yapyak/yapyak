@@ -1,6 +1,6 @@
-import { $createT, $t, useLocale } from '@yapyak/core';
+import { $t, useLocale } from '@yapyak/core';
 
-const $tSv = $createT({ locale: 'sv' });
+declare const previewLocale: { value: string };
 
 export function Greeting({
   name,
@@ -13,7 +13,8 @@ export function Greeting({
   setLocale(locale);
   return [
     $t('Hi {name}', { name }),
-    $tSv('Welcome'),
+    $t('Welcome', undefined, { locale: 'sv' }),
+    $t('Bye', undefined, { locale: previewLocale.value }),
     $t('You have {count, plural, one {# item} other {# items}}', { count }),
   ].join(' · ');
 }

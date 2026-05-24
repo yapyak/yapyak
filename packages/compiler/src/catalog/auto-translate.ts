@@ -134,21 +134,18 @@ function collectContexts(
     for (const location of message.locations) {
       map.set(
         `${location.fileId} ${message.source}`,
-        toLegacyContext(location, message.context),
+        toLegacyContext(location),
       );
     }
   }
   return map;
 }
 
-function toLegacyContext(
-  location: Location,
-  hint: string | undefined,
-): MessageContext {
+function toLegacyContext(location: Location): MessageContext {
   return {
     componentName: location.callSiteContext.componentName ?? '',
     enclosingElement: location.callSiteContext.enclosingJsx,
-    snippet: hint ?? '',
+    snippet: '',
   };
 }
 

@@ -92,11 +92,28 @@ describe('parseArguments', () => {
     expect(parsed?.source).toBe('');
   });
 
-  it('parses options as second arg when source has no placeholders', () => {
-    const [parsed] = parseAll('diagnostics', 'ypk009-duplicate-context.ts');
-    expect(parsed?.source).toBe('Save');
-    expect(parsed?.options).toEqual({ context: 'submit button' });
-    expect(parsed?.diagnostics).toHaveLength(0);
+  it('preserves inline options object verbatim', () => {
+    const parsed = parseAll('calls', 'dynamic-options.ts');
+    expect(parsed[0]?.source).toBe('Hello');
+    expect(parsed[0]?.optionsExpression).toBe(
+      '{ locale: previewLocale.value }',
+    );
+    expect(parsed[0]?.diagnostics).toHaveLength(0);
+  });
+
+  it('preserves options reference verbatim', () => {
+    const parsed = parseAll('calls', 'options-from-variable.ts');
+    const farewell = parsed[1];
+    expect(farewell?.source).toBe('Bye');
+    expect(farewell?.optionsExpression).toBe('svOptions');
+  });
+
+  it('preserves options as third arg when source has placeholders', () => {
+    const parsed = parseAll('calls', 'dynamic-options.ts');
+    const farewell = parsed[1];
+    expect(farewell?.source).toBe('Bye {name}');
+    expect(farewell?.params?.keys).toEqual(['name']);
+    expect(farewell?.optionsExpression).toBe('{ locale: previewLocale.value }');
   });
 
   it('extracts placeholder keys from plural blocks', () => {

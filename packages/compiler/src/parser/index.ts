@@ -16,7 +16,6 @@ export type {
   Range,
   Scope,
   ScriptBlock,
-  StaticOptions,
   TransformFileRequest,
   TransformFileResult,
   YapyakBinding,

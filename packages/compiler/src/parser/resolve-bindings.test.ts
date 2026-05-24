@@ -87,34 +87,6 @@ describe('resolveBindings', () => {
     const wrapper = table.root.bindings.get('t');
     expect(wrapper?.kind).toBe('wrapper');
     expect(wrapper?.localName).toBe('t');
-    expect(wrapper?.factoryOptions).toBeUndefined();
-  });
-
-  it('detects factory with locale option', () => {
-    const sf = loadFixture('factory-locale.ts');
-    const table = resolveBindings(sf);
-    const binding = table.root.bindings.get('$tSv');
-    expect(binding?.kind).toBe('factory');
-    expect(binding?.factoryOptions).toEqual({ locale: 'sv' });
-  });
-
-  it('detects factory with context option', () => {
-    const sf = loadFixture('factory-context.ts');
-    const table = resolveBindings(sf);
-    const binding = table.root.bindings.get('$tCtx');
-    expect(binding?.kind).toBe('factory');
-    expect(binding?.factoryOptions).toEqual({ context: 'admin panel' });
-  });
-
-  it('detects factory with both locale and context', () => {
-    const sf = loadFixture('factory-both.ts');
-    const table = resolveBindings(sf);
-    const binding = table.root.bindings.get('$tSvAdmin');
-    expect(binding?.kind).toBe('factory');
-    expect(binding?.factoryOptions).toEqual({
-      context: 'admin',
-      locale: 'sv',
-    });
   });
 
   it('keeps nested wrapper local to its block', () => {

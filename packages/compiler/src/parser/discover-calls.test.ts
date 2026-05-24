@@ -46,14 +46,6 @@ describe('discoverCalls', () => {
     expect(calls[0]?.binding.kind).toBe('wrapper');
   });
 
-  it('finds factory calls', () => {
-    const sf = loadFixture('bindings', 'factory-locale.ts');
-    const calls = discoverCalls(sf, resolveBindings(sf));
-    expect(calls).toHaveLength(1);
-    expect(calls[0]?.binding.kind).toBe('factory');
-    expect(calls[0]?.binding.factoryOptions).toEqual({ locale: 'sv' });
-  });
-
   it('finds namespace member calls (Y.$t)', () => {
     const sf = loadFixture('bindings', 'namespace-import.ts');
     const calls = discoverCalls(sf, resolveBindings(sf));

@@ -1,7 +1,7 @@
 import type { PlaceholderInfo } from './plural';
 import type {
   CallSite,
-  StaticOptions,
+  ParsedArguments,
   TransformFileRequest,
   TransformFileResult,
 } from './type';
@@ -13,7 +13,6 @@ import { toMessageId } from './id';
 import { parseArguments } from './parse-arguments';
 import { parsePlaceholders } from './plural';
 
-const FACTORY_NAME = '$createT';
 const PICK_FN = '_$pick';
 const YAPYAK_MODULE = '@yapyak/core';
 
@@ -53,7 +52,6 @@ export function transformFile(
     if (replacement.usesPick) usedPick = true;
   }
 
-  removeFactoryDeclarations(magicString, sourceFile);
   rewriteImports({ magicString, sourceFile, usedPick });
 
   return {
@@ -112,12 +110,9 @@ function renderCallReplacement(
   if (parsed.source === '') return undefined;
 
   const placeholderInfos = parsePlaceholders(parsed.source);
-  const id = toMessageId(parsed.source, parsed.options?.context);
-  const callOptions = parsed.options;
-  const factoryOptions = callSite.binding.factoryOptions;
-  const mergedLocale = mergeLocale(factoryOptions, callOptions);
+  const id = toMessageId(parsed.source);
 
-  if (isSingleLocale && canElide(placeholderInfos, callSite)) {
+  if (isSingleLocale && canElide(placeholderInfos, callSite, parsed)) {
     return {
       code: renderEliminated(parsed.source, callSite, placeholderInfos),
       usesPick: false,
@@ -133,14 +128,13 @@ function renderCallReplacement(
   });
   const hasPlaceholders = placeholderInfos.length > 0;
   const paramsArgText = hasPlaceholders ? getParamArgText(callSite) : undefined;
-  const optionsArgText = renderOptionsLiteral(mergedLocale);
 
   const args: string[] = [catalog];
-  if (paramsArgText !== undefined || optionsArgText !== undefined) {
+  if (paramsArgText !== undefined || parsed.optionsExpression !== undefined) {
     args.push(paramsArgText ?? 'undefined');
   }
-  if (optionsArgText !== undefined) {
-    args.push(optionsArgText);
+  if (parsed.optionsExpression !== undefined) {
+    args.push(parsed.optionsExpression);
   }
   return {
     code: `${PICK_FN}(${args.join(', ')})`,
@@ -148,19 +142,12 @@ function renderCallReplacement(
   };
 }
 
-function mergeLocale(
-  factoryOptions: StaticOptions | undefined,
-  callOptions: StaticOptions | undefined,
-): string | undefined {
-  if (callOptions?.locale !== undefined) return callOptions.locale;
-  if (factoryOptions?.locale !== undefined) return factoryOptions.locale;
-  return undefined;
-}
-
 function canElide(
   placeholderInfos: readonly PlaceholderInfo[],
   callSite: CallSite,
+  parsed: ParsedArguments,
 ): boolean {
+  if (parsed.optionsExpression !== undefined) return false;
   for (const info of placeholderInfos) {
     if (info.kind !== 'simple') return false;
   }
@@ -316,63 +303,6 @@ function getParamArgText(callSite: CallSite): string | undefined {
   return arg.getText();
 }
 
-function renderOptionsLiteral(locale: string | undefined): string | undefined {
-  if (locale === undefined) return undefined;
-  return `{ locale: ${JSON.stringify(locale)} }`;
-}
-
-function removeFactoryDeclarations(
-  magicString: MagicString,
-  sourceFile: ts.SourceFile,
-): void {
-  const factoryLocals = collectFactoryLocals(sourceFile);
-  if (factoryLocals.size === 0) return;
-  walkVariableStatements(sourceFile, (statement) => {
-    for (const decl of statement.declarationList.declarations) {
-      const init = decl.initializer;
-      if (init === undefined) continue;
-      if (!ts.isCallExpression(init)) continue;
-      if (!ts.isIdentifier(init.expression)) continue;
-      if (!factoryLocals.has(init.expression.text)) continue;
-      magicString.remove(statement.getStart(sourceFile), statement.getEnd());
-      return;
-    }
-  });
-}
-
-function collectFactoryLocals(sourceFile: ts.SourceFile): Set<string> {
-  const locals = new Set<string>();
-  for (const statement of sourceFile.statements) {
-    if (!ts.isImportDeclaration(statement)) continue;
-    if (!ts.isStringLiteral(statement.moduleSpecifier)) continue;
-    if (statement.moduleSpecifier.text !== YAPYAK_MODULE) continue;
-    const clause = statement.importClause;
-    if (clause === undefined) continue;
-    const namedBindings = clause.namedBindings;
-    if (namedBindings === undefined) continue;
-    if (!ts.isNamedImports(namedBindings)) continue;
-    for (const element of namedBindings.elements) {
-      const importedName = (element.propertyName ?? element.name).text;
-      if (importedName === FACTORY_NAME) {
-        locals.add(element.name.text);
-      }
-    }
-  }
-  return locals;
-}
-
-function walkVariableStatements(
-  node: ts.Node,
-  visit: (statement: ts.VariableStatement) => void,
-): void {
-  if (ts.isVariableStatement(node)) {
-    visit(node);
-  }
-  ts.forEachChild(node, (child) => {
-    walkVariableStatements(child, visit);
-  });
-}
-
 interface RewriteImportsInput {
   magicString: MagicString;
   sourceFile: ts.SourceFile;
@@ -395,7 +325,6 @@ function rewriteImports(input: RewriteImportsInput): void {
     for (const element of namedBindings.elements) {
       const importedName = (element.propertyName ?? element.name).text;
       const localName = element.name.text;
-      if (importedName === FACTORY_NAME) continue;
       const occurrences = countReferences(intermediate, localName);
       if (occurrences > 1) {
         remaining.push({ imported: importedName, local: localName });

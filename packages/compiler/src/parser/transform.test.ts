@@ -121,46 +121,56 @@ describe('transformFile — single-locale elision', () => {
   });
 });
 
-describe('transformFile — $createT factory', () => {
-  it('removes $createT declaration and elides bound calls to literal in single-locale', () => {
+describe('transformFile — dynamic options', () => {
+  it('preserves inline options object verbatim', () => {
+    const code = runTransform({
+      locales: ['en', 'sv'],
+      source: `
+        import { $t } from '@yapyak/core';
+        declare const previewLocale: { value: string };
+        export const x = $t('Hello', undefined, { locale: previewLocale.value });
+      `,
+    });
+    expect(code).toContain('_$pick(');
+    expect(code).toContain('{ locale: previewLocale.value }');
+  });
+
+  it('preserves options reference verbatim', () => {
+    const code = runTransform({
+      locales: ['en', 'sv'],
+      source: `
+        import { $t } from '@yapyak/core';
+        const svOptions = { locale: 'sv' };
+        export const x = $t('Hello', undefined, svOptions);
+      `,
+    });
+    expect(code).toContain('_$pick(');
+    expect(code).toContain('svOptions');
+  });
+
+  it('preserves options when source has no placeholders (2nd arg)', () => {
+    const code = runTransform({
+      locales: ['en', 'sv'],
+      source: `
+        import { $t } from '@yapyak/core';
+        const opts = { locale: 'sv' };
+        export const x = $t('Hello', opts);
+      `,
+    });
+    expect(code).toContain('_$pick(');
+    expect(code).toContain('opts');
+  });
+
+  it('skips elision in single-locale when options are present', () => {
     const code = runTransform({
       locales: ['en'],
       source: `
-        import { $createT } from '@yapyak/core';
-        const $tSv = $createT({ locale: 'sv' });
-        export const x = $tSv('Hello');
+        import { $t } from '@yapyak/core';
+        export const x = $t('Hello', undefined, { locale: 'sv' });
       `,
-    });
-    expect(code).not.toContain('$createT');
-    expect(code).not.toContain('$tSv');
-    expect(code).toContain('"Hello"');
-  });
-
-  it('expands $createT-bound call with locale option in multi-locale', () => {
-    const code = runTransform({
-      locales: ['en', 'sv'],
-      source: `
-        import { $createT } from '@yapyak/core';
-        const $tSv = $createT({ locale: 'sv' });
-        export const x = $tSv('Hello');
-      `,
-      translations: { sv: { [hashId('Hello')]: 'Hej' } },
     });
     expect(code).toContain('_$pick(');
-    expect(code).toContain('locale: "sv"');
-    expect(code).not.toContain('$createT');
-  });
-
-  it('per-call locale override wins over factory locale', () => {
-    const code = runTransform({
-      locales: ['en', 'sv'],
-      source: `
-        import { $createT } from '@yapyak/core';
-        const $tSv = $createT({ locale: 'sv' });
-        export const x = $tSv('Hi {name}', { name }, { locale: 'en' });
-      `,
-    });
-    expect(code).toContain('locale: "en"');
+    expect(code).toContain("{ locale: 'sv' }");
   });
 });
 
@@ -199,18 +209,6 @@ describe('transformFile — multi-locale', () => {
     });
     expect(code).toContain('_$pick(');
     expect(code).toContain('{ name }');
-  });
-
-  it('strips context option from runtime emit', () => {
-    const code = runTransform({
-      locales: ['en', 'sv'],
-      source: `
-        import { $t } from '@yapyak/core';
-        export const x = $t('Save', { context: 'submit button' });
-      `,
-    });
-    expect(code).toContain('_$pick(');
-    expect(code).not.toContain('context');
   });
 
   it('adds _$pick to existing @yapyak/core import', () => {

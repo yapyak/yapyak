@@ -3,7 +3,6 @@ import type {
   Diagnostic,
   ParsedArguments,
   ParsedParams,
-  StaticOptions,
 } from './type';
 
 import * as ts from 'typescript';
@@ -90,7 +89,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   }
 
   let params: ParsedParams | undefined;
-  let options: StaticOptions | undefined;
+  let optionsExpression: string | undefined;
 
   if (hasPlaceholders) {
     const paramArg = callArgs[1];
@@ -98,7 +97,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
       paramArg === undefined ? undefined : parseParams(paramArg, sourceFile);
     const optionsArg = callArgs[2];
     if (optionsArg !== undefined) {
-      options = extractStaticOptions(optionsArg);
+      optionsExpression = optionsArg.getText();
     }
     validateParams({
       callSite,
@@ -109,21 +108,22 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
       placeholderKeys,
     });
   } else {
-    const optionsArg = callArgs[1];
+    const optionsArg = callArgs[2] ?? callArgs[1];
     if (optionsArg !== undefined) {
-      options = extractStaticOptions(optionsArg);
+      optionsExpression = optionsArg.getText();
     }
   }
 
   const result: ParsedArguments = { diagnostics, source, sourceRange };
   if (params !== undefined) result.params = params;
-  if (options !== undefined) result.options = options;
+  if (optionsExpression !== undefined)
+    result.optionsExpression = optionsExpression;
   return result;
 }
 
 function isLiteralFirstArg(
   arg: ts.Expression,
-): arg is ts.StringLiteral | ts.NoSubstitutionTemplateLiteral {
+): arg is ts.NoSubstitutionTemplateLiteral | ts.StringLiteral {
   return ts.isStringLiteral(arg) || ts.isNoSubstitutionTemplateLiteral(arg);
 }
 
@@ -153,33 +153,6 @@ function parseParams(
     }
   }
   return { keys, kind, range: toRange(arg, sourceFile) };
-}
-
-function extractStaticOptions(arg: ts.Expression): StaticOptions | undefined {
-  if (!ts.isObjectLiteralExpression(arg)) return undefined;
-  const options: StaticOptions = {};
-  for (const prop of arg.properties) {
-    if (!ts.isPropertyAssignment(prop)) return undefined;
-    if (!ts.isIdentifier(prop.name) && !ts.isStringLiteral(prop.name)) {
-      return undefined;
-    }
-    const name = prop.name.text;
-    const initializer = prop.initializer;
-    if (
-      !ts.isStringLiteral(initializer) &&
-      !ts.isNoSubstitutionTemplateLiteral(initializer)
-    ) {
-      return undefined;
-    }
-    if (name === 'context') {
-      options.context = initializer.text;
-    } else if (name === 'locale') {
-      options.locale = initializer.text;
-    } else {
-      return undefined;
-    }
-  }
-  return options;
 }
 
 interface ValidateParamsInput {

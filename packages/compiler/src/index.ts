@@ -59,7 +59,6 @@ export {
   resolveCallSiteContext,
   type Scope,
   type ScriptBlock,
-  type StaticOptions,
   type TransformFileRequest,
   type TransformFileResult,
   toMessageId,
