@@ -221,6 +221,127 @@ describe('transformFile — multi-locale', () => {
   });
 });
 
+describe('transformFile — Vue SFC', () => {
+  function runVueTransform(input: {
+    source: string;
+    locales: readonly string[];
+    translations?: Record<string, Record<string, string>>;
+  }): string {
+    const fileId = 'app.vue';
+    const extracted = extractFile({
+      fileId,
+      locales: input.locales,
+      source: input.source,
+    });
+    const result = transformFile({
+      extracted,
+      fileId,
+      locales: input.locales,
+      source: input.source,
+      translations: input.translations ?? {},
+    });
+    return result.code;
+  }
+
+  it('elides $t in <script setup> and <template> for single-locale', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { $t } from '@yapyak/core';",
+      "const heading = $t('Hello');",
+      '</script>',
+      '<template>',
+      `  <h1>{{ $t('Welcome') }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const code = runVueTransform({ locales: ['en'], source });
+    expect(code).toContain('"Hello"');
+    expect(code).toContain('"Welcome"');
+    expect(code).not.toContain('$t(');
+    expect(code).not.toContain("from '@yapyak/core'");
+  });
+
+  it('emits _$pick for multi-locale in template and script', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { $t } from '@yapyak/core';",
+      "const heading = $t('Hello');",
+      '</script>',
+      '<template>',
+      `  <h1>{{ $t('Welcome') }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const code = runVueTransform({
+      locales: ['en', 'sv'],
+      source,
+      translations: { sv: {} },
+    });
+    expect(code).toContain('_$pick({ en: "Hello", sv: "Hello" })');
+    expect(code).toContain('_$pick({ en: "Welcome", sv: "Welcome" })');
+    expect(code).toMatch(/import \{ _\$pick.*\} from '@yapyak\/core'/);
+  });
+
+  it('rewrites :foo="..." attribute expression', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { $t } from '@yapyak/core';",
+      '</script>',
+      '<template>',
+      `  <button :aria-label="$t('Save changes')">Save</button>`,
+      '</template>',
+    ].join('\n');
+    const code = runVueTransform({ locales: ['en'], source });
+    expect(code).toContain('"Save changes"');
+    expect(code).not.toContain("$t('Save changes')");
+  });
+
+  it('rewrites @click event handler expression', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { $t } from '@yapyak/core';",
+      '</script>',
+      '<template>',
+      `  <button @click="alert($t('Hi'))">x</button>`,
+      '</template>',
+    ].join('\n');
+    const code = runVueTransform({ locales: ['en'], source });
+    expect(code).toContain('alert("Hi")');
+  });
+
+  it('inserts _$pick import inside <script setup> when missing core import', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "const heading = 'static';",
+      '</script>',
+      '<template>',
+      `  <h1>{{ heading }}</h1>`,
+      '</template>',
+    ].join('\n');
+    // No $t in source — transform should be no-op
+    const code = runVueTransform({ locales: ['en', 'sv'], source });
+    expect(code).toContain("const heading = 'static'");
+  });
+
+  it('inserts _$pick into <script setup> in multi-locale even when only template uses $t', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { $t } from '@yapyak/core';",
+      '</script>',
+      '<template>',
+      `  <h1>{{ $t('Welcome') }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const code = runVueTransform({
+      locales: ['en', 'sv'],
+      source,
+      translations: { sv: {} },
+    });
+    // _$pick added to existing @yapyak/core import inside <script setup>
+    expect(code).toMatch(
+      /<script setup[^>]*>\s*\nimport \{ _\$pick \} from '@yapyak\/core';/,
+    );
+  });
+});
+
 describe('transformFile — source map', () => {
   it('returns a magic-string source map', () => {
     const fileId = 'test.ts';

@@ -1,6 +1,7 @@
 import type { PlaceholderInfo } from './plural';
 import type {
   CallSite,
+  Fragment,
   ParsedArguments,
   TransformFileRequest,
   TransformFileResult,
@@ -12,6 +13,7 @@ import * as ts from 'typescript';
 import { toMessageId } from './id';
 import { parseArguments } from './parse-arguments';
 import { parsePlaceholders } from './plural';
+import { getProcessor, resolveFramework } from './processor';
 
 const PICK_FN = '_$pick';
 const YAPYAK_MODULE = '@yapyak/core';
@@ -30,8 +32,10 @@ export function transformFile(
       }),
     };
   }
+  const framework = request.framework ?? resolveFramework(request.fileId);
+  const processor = getProcessor(framework);
+  const fragments = processor.parseFragments(request.source);
   const isSingleLocale = request.locales.length === 1;
-  const sourceFile = resolveSourceFile(request);
   const magicString = new MagicString(request.source);
 
   let usedPick = false;
@@ -52,7 +56,20 @@ export function transformFile(
     if (replacement.usesPick) usedPick = true;
   }
 
-  rewriteImports({ magicString, sourceFile, usedPick });
+  const pickHandled = rewriteScriptImports({
+    fragments,
+    magicString,
+    request,
+    usedPick,
+  });
+
+  if (usedPick && !pickHandled) {
+    processor.applyImport(
+      magicString,
+      request.source,
+      `import { ${PICK_FN} } from '${YAPYAK_MODULE}';`,
+    );
+  }
 
   return {
     code: magicString.toString(),
@@ -61,30 +78,141 @@ export function transformFile(
   };
 }
 
-function resolveSourceFile(request: TransformFileRequest): ts.SourceFile {
-  const first = request.extracted.callSites[0];
-  if (first !== undefined) {
-    return first.node.getSourceFile();
+interface RewriteScriptImportsInput {
+  fragments: readonly Fragment[];
+  magicString: MagicString;
+  request: TransformFileRequest;
+  usedPick: boolean;
+}
+
+function rewriteScriptImports(input: RewriteScriptImportsInput): boolean {
+  const { fragments, magicString, request, usedPick } = input;
+  const intermediate = magicString.toString();
+  let pickHandled = false;
+
+  for (const fragment of fragments) {
+    if (fragment.kind !== 'script') continue;
+    const sourceFile = ts.createSourceFile(
+      request.fileId,
+      fragment.code,
+      ts.ScriptTarget.ESNext,
+      true,
+      getScriptKind(request.fileId, fragment.lang),
+    );
+    const yapyakImports = collectYapyakImports(sourceFile);
+    for (const declaration of yapyakImports) {
+      const isCoreImport = isYapyakCoreImport(declaration, sourceFile);
+      const shouldInjectPick = usedPick && isCoreImport && !pickHandled;
+      rewriteImportDeclaration({
+        declaration,
+        fragment,
+        injectPick: shouldInjectPick,
+        intermediate,
+        magicString,
+        sourceFile,
+      });
+      if (shouldInjectPick) pickHandled = true;
+    }
   }
-  return ts.createSourceFile(
-    request.fileId,
-    request.source,
-    ts.ScriptTarget.ESNext,
-    true,
-    getScriptKind(request.fileId),
+  return pickHandled;
+}
+
+function isYapyakCoreImport(
+  declaration: ts.ImportDeclaration,
+  sourceFile: ts.SourceFile,
+): boolean {
+  if (!ts.isStringLiteral(declaration.moduleSpecifier)) return false;
+  void sourceFile;
+  return declaration.moduleSpecifier.text === YAPYAK_MODULE;
+}
+
+interface RewriteImportDeclarationInput {
+  declaration: ts.ImportDeclaration;
+  fragment: Fragment;
+  injectPick: boolean;
+  intermediate: string;
+  magicString: MagicString;
+  sourceFile: ts.SourceFile;
+}
+
+function rewriteImportDeclaration(input: RewriteImportDeclarationInput): void {
+  const {
+    declaration,
+    fragment,
+    injectPick,
+    intermediate,
+    magicString,
+    sourceFile,
+  } = input;
+  const namedBindings = declaration.importClause?.namedBindings;
+  if (namedBindings === undefined || !ts.isNamedImports(namedBindings)) {
+    return;
+  }
+
+  const remaining: ImportSpecifier[] = [];
+  for (const element of namedBindings.elements) {
+    const importedName = (element.propertyName ?? element.name).text;
+    const localName = element.name.text;
+    const occurrences = countReferences(intermediate, localName);
+    if (occurrences > 1) {
+      remaining.push({ imported: importedName, local: localName });
+    }
+  }
+
+  if (injectPick) {
+    const hasPick = remaining.some(
+      (item) => item.imported === PICK_FN && item.local === PICK_FN,
+    );
+    if (!hasPick) {
+      remaining.unshift({ imported: PICK_FN, local: PICK_FN });
+    }
+  }
+
+  const startInOriginal =
+    declaration.getStart(sourceFile) + fragment.originalOffset;
+  const endInOriginal = declaration.getEnd() + fragment.originalOffset;
+
+  if (remaining.length === 0) {
+    magicString.remove(startInOriginal, endInOriginal);
+    return;
+  }
+  const specList = remaining
+    .map((item) =>
+      item.imported === item.local
+        ? item.imported
+        : `${item.imported} as ${item.local}`,
+    )
+    .join(', ');
+  const moduleSpecText = declaration.moduleSpecifier.getText(sourceFile);
+  magicString.overwrite(
+    startInOriginal,
+    endInOriginal,
+    `import { ${specList} } from ${moduleSpecText};`,
   );
 }
 
-function getScriptKind(fileId: string): ts.ScriptKind {
+interface ImportSpecifier {
+  imported: string;
+  local: string;
+}
+
+function collectYapyakImports(
+  sourceFile: ts.SourceFile,
+): ts.ImportDeclaration[] {
+  const result: ts.ImportDeclaration[] = [];
+  for (const statement of sourceFile.statements) {
+    if (!ts.isImportDeclaration(statement)) continue;
+    if (!ts.isStringLiteral(statement.moduleSpecifier)) continue;
+    if (!statement.moduleSpecifier.text.startsWith('@yapyak/')) continue;
+    result.push(statement);
+  }
+  return result;
+}
+
+function getScriptKind(fileId: string, lang: Fragment['lang']): ts.ScriptKind {
   if (fileId.endsWith('.tsx')) return ts.ScriptKind.TSX;
   if (fileId.endsWith('.jsx')) return ts.ScriptKind.JSX;
-  if (
-    fileId.endsWith('.js') ||
-    fileId.endsWith('.mjs') ||
-    fileId.endsWith('.cjs')
-  ) {
-    return ts.ScriptKind.JS;
-  }
+  if (lang === 'js') return ts.ScriptKind.JS;
   return ts.ScriptKind.TS;
 }
 
@@ -301,91 +429,6 @@ function getParamArgText(callSite: CallSite): string | undefined {
   const arg = callSite.node.arguments[1];
   if (arg === undefined) return undefined;
   return arg.getText();
-}
-
-interface RewriteImportsInput {
-  magicString: MagicString;
-  sourceFile: ts.SourceFile;
-  usedPick: boolean;
-}
-
-function rewriteImports(input: RewriteImportsInput): void {
-  const { magicString, sourceFile, usedPick } = input;
-  const intermediate = magicString.toString();
-  const yapyakImports = collectYapyakImports(sourceFile);
-
-  let pickHandled = false;
-  for (const declaration of yapyakImports) {
-    const namedBindings = declaration.importClause?.namedBindings;
-    if (namedBindings === undefined || !ts.isNamedImports(namedBindings)) {
-      continue;
-    }
-
-    const remaining: ImportSpecifier[] = [];
-    for (const element of namedBindings.elements) {
-      const importedName = (element.propertyName ?? element.name).text;
-      const localName = element.name.text;
-      const occurrences = countReferences(intermediate, localName);
-      if (occurrences > 1) {
-        remaining.push({ imported: importedName, local: localName });
-      }
-    }
-
-    const isCoreImport =
-      declaration.moduleSpecifier.getText().includes(`'${YAPYAK_MODULE}'`) ||
-      declaration.moduleSpecifier.getText().includes(`"${YAPYAK_MODULE}"`);
-    if (usedPick && isCoreImport && !pickHandled) {
-      const hasPick = remaining.some(
-        (item) => item.imported === PICK_FN && item.local === PICK_FN,
-      );
-      if (!hasPick) {
-        remaining.unshift({ imported: PICK_FN, local: PICK_FN });
-      }
-      pickHandled = true;
-    }
-
-    const start = declaration.getStart(sourceFile);
-    const end = declaration.getEnd();
-    if (remaining.length === 0) {
-      magicString.remove(start, end);
-      continue;
-    }
-    const specList = remaining
-      .map((item) =>
-        item.imported === item.local
-          ? item.imported
-          : `${item.imported} as ${item.local}`,
-      )
-      .join(', ');
-    const moduleSpecText = declaration.moduleSpecifier.getText();
-    magicString.overwrite(
-      start,
-      end,
-      `import { ${specList} } from ${moduleSpecText};`,
-    );
-  }
-
-  if (usedPick && !pickHandled) {
-    magicString.prepend(`import { ${PICK_FN} } from '${YAPYAK_MODULE}';\n`);
-  }
-}
-
-interface ImportSpecifier {
-  imported: string;
-  local: string;
-}
-
-function collectYapyakImports(
-  sourceFile: ts.SourceFile,
-): ts.ImportDeclaration[] {
-  const result: ts.ImportDeclaration[] = [];
-  for (const statement of sourceFile.statements) {
-    if (!ts.isImportDeclaration(statement)) continue;
-    if (!ts.isStringLiteral(statement.moduleSpecifier)) continue;
-    if (!statement.moduleSpecifier.text.startsWith('@yapyak/')) continue;
-    result.push(statement);
-  }
-  return result;
 }
 
 function countReferences(code: string, name: string): number {

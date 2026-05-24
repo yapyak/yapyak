@@ -10,10 +10,23 @@ interface ImportInfo {
   namespaceLocals: Map<string, ts.Node>;
 }
 
-export function resolveBindings(sourceFile: ts.SourceFile): BindingTable {
+export interface ResolveBindingsOptions {
+  ambientParent?: Scope;
+}
+
+export function resolveBindings(
+  sourceFile: ts.SourceFile,
+  options?: ResolveBindingsOptions,
+): BindingTable {
   const imports = collectImports(sourceFile);
   const scopeByNode = new Map<ts.Node, Scope>();
-  const root: Scope = { bindings: new Map(), node: sourceFile };
+  const root: Scope = {
+    bindings: new Map(),
+    node: sourceFile,
+    ...(options?.ambientParent !== undefined && {
+      parent: options.ambientParent,
+    }),
+  };
   scopeByNode.set(sourceFile, root);
 
   for (const [local, declarationNode] of imports.directLocals) {

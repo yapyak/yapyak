@@ -1,3 +1,4 @@
+import type MagicString from 'magic-string';
 import type { SourceMap } from 'magic-string';
 import type * as ts from 'typescript';
 
@@ -109,6 +110,11 @@ export interface Fragment {
 }
 
 export interface Processor {
+  applyImport(
+    magicString: MagicString,
+    source: string,
+    importStatement: string,
+  ): void;
   parseFragments(source: string): Fragment[];
 }
 

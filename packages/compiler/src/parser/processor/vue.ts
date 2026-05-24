@@ -10,9 +10,13 @@ import type {
 } from '@vue/compiler-core';
 import type * as VueSfc from '@vue/compiler-sfc';
 import type { SFCScriptBlock } from '@vue/compiler-sfc';
+import type MagicString from 'magic-string';
 import type { Fragment, Processor } from '../type';
 
 import { createRequire } from 'node:module';
+
+const SCRIPT_SETUP_RX = /<script\s+setup[^>]*>/;
+const SCRIPT_RX = /<script[^>]*>/;
 
 const NODE_TYPE_ELEMENT = 1;
 const NODE_TYPE_SIMPLE_EXPRESSION = 4;
@@ -24,6 +28,26 @@ const requireFromHere = createRequire(import.meta.url);
 let cached: typeof VueSfc | undefined;
 
 export const vueProcessor: Processor = {
+  applyImport(
+    magicString: MagicString,
+    source: string,
+    importStatement: string,
+  ): void {
+    const setupMatch = SCRIPT_SETUP_RX.exec(source);
+    if (setupMatch !== null) {
+      const insertAt = setupMatch.index + setupMatch[0].length;
+      magicString.appendRight(insertAt, `\n${importStatement}`);
+      return;
+    }
+    const scriptMatch = SCRIPT_RX.exec(source);
+    if (scriptMatch !== null) {
+      const insertAt = scriptMatch.index + scriptMatch[0].length;
+      magicString.appendRight(insertAt, `\n${importStatement}`);
+      return;
+    }
+    magicString.prepend(`<script setup>\n${importStatement}\n</script>\n`);
+  },
+
   parseFragments(source: string): Fragment[] {
     const compiler = loadCompiler();
     const { descriptor } = compiler.parse(source);

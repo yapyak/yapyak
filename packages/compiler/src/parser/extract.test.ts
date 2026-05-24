@@ -106,4 +106,116 @@ describe('extractFile', () => {
       expect(result.messages).toHaveLength(3);
     });
   });
+
+  describe('Vue cross-fragment binding-resolution', () => {
+    it('resolves template $t against <script setup> import', () => {
+      const source = [
+        '<script setup lang="ts">',
+        "import { $t } from '@yapyak/core';",
+        '</script>',
+        '<template>',
+        `  <h1>{{ $t('Welcome') }}</h1>`,
+        '</template>',
+      ].join('\n');
+      const result = extractFile({
+        fileId: 'app.vue',
+        locales: ['en'],
+        source,
+      });
+      expect(result.messages).toHaveLength(1);
+      expect(result.messages[0]?.source).toBe('Welcome');
+    });
+
+    it('extracts both script and template messages with same import', () => {
+      const source = [
+        '<script setup lang="ts">',
+        "import { $t } from '@yapyak/core';",
+        "const inScript = $t('From script');",
+        '</script>',
+        '<template>',
+        `  <h1>{{ $t('From template') }}</h1>`,
+        `  <button :aria-label="$t('Button label')">x</button>`,
+        '</template>',
+      ].join('\n');
+      const result = extractFile({
+        fileId: 'app.vue',
+        locales: ['en'],
+        source,
+      });
+      const sources = result.messages.map((m) => m.source).sort();
+      expect(sources).toEqual(['Button label', 'From script', 'From template']);
+    });
+
+    it('resolves template $t against plain <script> (not setup)', () => {
+      const source = [
+        '<script lang="ts">',
+        "import { $t } from '@yapyak/core';",
+        "export default { name: 'X' };",
+        '</script>',
+        '<template>',
+        `  <h1>{{ $t('Welcome') }}</h1>`,
+        '</template>',
+      ].join('\n');
+      const result = extractFile({
+        fileId: 'app.vue',
+        locales: ['en'],
+        source,
+      });
+      const templateMessages = result.messages.filter(
+        (m) => m.source === 'Welcome',
+      );
+      expect(templateMessages).toHaveLength(1);
+    });
+
+    it('does not resolve template $t when no script imports yapyak', () => {
+      const source = [
+        '<template>',
+        `  <h1>{{ $t('Welcome') }}</h1>`,
+        '</template>',
+      ].join('\n');
+      const result = extractFile({
+        fileId: 'app.vue',
+        locales: ['en'],
+        source,
+      });
+      expect(result.messages).toHaveLength(0);
+    });
+
+    it('resolves aliased import shared with template', () => {
+      const source = [
+        '<script setup lang="ts">',
+        "import { $t as tr } from '@yapyak/core';",
+        '</script>',
+        '<template>',
+        `  <h1>{{ tr('Welcome') }}</h1>`,
+        '</template>',
+      ].join('\n');
+      const result = extractFile({
+        fileId: 'app.vue',
+        locales: ['en'],
+        source,
+      });
+      expect(result.messages).toHaveLength(1);
+      expect(result.messages[0]?.source).toBe('Welcome');
+    });
+
+    it('dedupes same source string across script and template', () => {
+      const source = [
+        '<script setup lang="ts">',
+        "import { $t } from '@yapyak/core';",
+        "const inScript = $t('Save');",
+        '</script>',
+        '<template>',
+        `  <button>{{ $t('Save') }}</button>`,
+        '</template>',
+      ].join('\n');
+      const result = extractFile({
+        fileId: 'app.vue',
+        locales: ['en'],
+        source,
+      });
+      expect(result.messages).toHaveLength(1);
+      expect(result.messages[0]?.locations).toHaveLength(2);
+    });
+  });
 });
