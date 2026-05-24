@@ -19,7 +19,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@yapyak/core": "workspace:*"
+    "@yapyak/translator": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "catalog:",

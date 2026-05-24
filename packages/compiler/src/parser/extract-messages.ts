@@ -1,4 +1,4 @@
-import type { MessageContext } from '@yapyak/core';
+import type { MessageContext } from '@yapyak/translator';
 
 import {
   DynamicSourceError,

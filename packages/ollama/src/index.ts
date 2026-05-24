@@ -1,6 +1,10 @@
-import type { ContextLevel, Translator } from '@yapyak/core';
+import type { ContextLevel, Translator } from '@yapyak/translator';
 
-import { buildSystem, createTranslator, fetchWithRetry } from '@yapyak/core';
+import {
+  buildSystem,
+  createTranslator,
+  fetchWithRetry,
+} from '@yapyak/translator';
 
 /** Options for the {@link ollama} translator. */
 export interface OllamaOptions {

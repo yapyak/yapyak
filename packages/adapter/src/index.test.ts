@@ -8,7 +8,7 @@ vi.mock('virtual:yapyak', () => ({
   SYNC_HTML_LANG: false,
 }));
 
-const { getLocale, resetLocale } = await import('../locale/store');
+const { getLocale, resetLocale } = await import('@yapyak/core');
 const { withRequest } = await import('./index');
 
 function makeRequest(

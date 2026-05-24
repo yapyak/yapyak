@@ -1,4 +1,4 @@
-import type { Translator } from '@yapyak/core';
+import type { Translator } from '@yapyak/translator';
 import type { YapyakCliConfig } from '../load-config';
 
 import { anthropic } from '@yapyak/anthropic';

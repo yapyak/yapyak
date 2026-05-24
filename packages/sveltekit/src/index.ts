@@ -6,7 +6,8 @@
 
 import type { Handle } from '@sveltejs/kit';
 
-import { getLocale, withRequest } from '@yapyak/core';
+import { withRequest } from '@yapyak/adapter';
+import { getLocale } from '@yapyak/core';
 
 const PLACEHOLDER = '%yapyak.lang%';
 

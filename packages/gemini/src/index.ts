@@ -1,11 +1,11 @@
-import type { ContextLevel, Translator } from '@yapyak/core';
+import type { ContextLevel, Translator } from '@yapyak/translator';
 
 import {
   buildSystem,
   createTranslator,
   fetchWithRetry,
   stripCodeFence,
-} from '@yapyak/core';
+} from '@yapyak/translator';
 
 /** Options for the {@link gemini} translator. */
 export interface GeminiOptions {

@@ -6,7 +6,7 @@
 
 import type { MiddlewareFunction } from 'react-router';
 
-import { withRequest } from '@yapyak/core';
+import { withRequest } from '@yapyak/adapter';
 
 /**
  * React Router 7 framework-mode middleware. Wires yapyak's per-request locale context.

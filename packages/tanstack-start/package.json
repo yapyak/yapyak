@@ -18,7 +18,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@yapyak/core": "workspace:*"
+    "@yapyak/adapter": "workspace:*"
   },
   "peerDependencies": {
     "@tanstack/react-start": ">=1.168"

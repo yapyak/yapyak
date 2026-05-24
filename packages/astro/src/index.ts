@@ -6,7 +6,7 @@
  * @packageDocumentation
  */
 
-import { withRequest } from '@yapyak/core';
+import { withRequest } from '@yapyak/adapter';
 
 import { defineMiddleware } from 'astro:middleware';
 

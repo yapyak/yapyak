@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "@yapyak/compiler": "workspace:*",
-    "@yapyak/core": "workspace:*"
+    "@yapyak/core": "workspace:*",
+    "@yapyak/translator": "workspace:*"
   },
   "peerDependencies": {
     "vite": ">=5"

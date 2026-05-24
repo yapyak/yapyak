@@ -1,10 +1,11 @@
 /**
- * Runtime + orchestration entry point for yapyak. Exports the `$t` macro fallback, locale store, adapter primitives, translator orchestration, persistence types, and the compiler-target `_$pick` helper.
+ * Runtime entry point for yapyak. Exports the `$t` macro fallback, the locale store, persistence types, and the compiler-target `_$pick` helper — everything a yapyak app needs at runtime.
+ *
+ * Advanced consumers reach for separate packages: `@yapyak/adapter` (server SSR primitives), `@yapyak/translator` (custom translator toolkit), `@yapyak/compiler` (build-time extraction).
  *
  * @packageDocumentation
  */
 
-export { withRequest } from './adapter';
 export { _$pick } from './internal';
 export {
   defaultLocale,
@@ -32,18 +33,3 @@ export {
   runTrackers,
   type TParams,
 } from './runtime';
-export {
-  type BuildSystemOptions,
-  buildSystem,
-  type ContextLevel,
-  type CreateTranslatorOptions,
-  createTranslator,
-  type FetchWithRetryOptions,
-  fetchWithRetry,
-  type MessageContext,
-  stripCodeFence,
-  type TranslateBatchRequest,
-  type TranslateItem,
-  type TranslateRequest,
-  type Translator,
-} from './translator';

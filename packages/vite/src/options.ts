@@ -1,4 +1,5 @@
-import type { NormalizedPersistence, Translator } from '@yapyak/core';
+import type { NormalizedPersistence } from '@yapyak/core';
+import type { Translator } from '@yapyak/translator';
 import type { FilterPattern } from 'vite';
 
 import { DEFAULT_EXCLUDE, DEFAULT_INCLUDE } from '@yapyak/compiler';
