@@ -141,6 +141,52 @@ async function loadProject(
   return project;
 }
 
+interface ProjectModule {
+  children: ReadonlyArray<DeclarationReflection>;
+  comment: ProjectReflection['comment'];
+  entry: EntryPoint;
+}
+
+function eachProjectModule(
+  project: ProjectReflection,
+  entries: EntryPoint[],
+  packageDir: string,
+): ProjectModule[] {
+  const entriesByName = new Map<string, EntryPoint>();
+  for (const entry of entries) {
+    entriesByName.set(entryToModuleName(entry, packageDir), entry);
+  }
+  const moduleChildren = (project.children ?? []).filter(
+    (child) => child.kind === ReflectionKind.Module,
+  );
+  if (moduleChildren.length > 0) {
+    const result: ProjectModule[] = [];
+    for (const child of moduleChildren) {
+      const entry = entriesByName.get(child.name);
+      if (entry === undefined) {
+        continue;
+      }
+      result.push({
+        children: child.children ?? [],
+        comment: child.comment,
+        entry,
+      });
+    }
+    return result;
+  }
+  const onlyEntry = entries[0];
+  if (entries.length === 1 && onlyEntry !== undefined) {
+    return [
+      {
+        children: project.children ?? [],
+        comment: project.comment,
+        entry: onlyEntry,
+      },
+    ];
+  }
+  return [];
+}
+
 function buildLinkRegistry(
   project: ProjectReflection,
   entries: EntryPoint[],
@@ -152,20 +198,12 @@ function buildLinkRegistry(
   nameIndex: Map<string, string | 'ambiguous'>;
   registry: Map<number, string>;
 } {
-  const entriesByName = new Map<string, EntryPoint>();
-  for (const entry of entries) {
-    entriesByName.set(entryToModuleName(entry, packageDir), entry);
-  }
   const registry = new Map<number, string>();
   const nameIndex = new Map<string, string | 'ambiguous'>();
-  for (const child of project.children ?? []) {
-    const entry = entriesByName.get(child.name);
-    if (entry === undefined) {
-      continue;
-    }
-    for (const symbol of child.children ?? []) {
+  for (const module of eachProjectModule(project, entries, packageDir)) {
+    for (const symbol of module.children) {
       const url = buildSymbolUrl(
-        entry.id,
+        module.entry.id,
         symbol.name,
         collectionName,
         packageName,
@@ -203,33 +241,24 @@ function collectModules(
   entries: EntryPoint[],
   context: Context,
 ): ReferenceModule[] {
-  const entriesByName = new Map<string, EntryPoint>();
-  for (const entry of entries) {
-    entriesByName.set(entryToModuleName(entry, context.packageDir), entry);
-  }
-
   const modules: ReferenceModule[] = [];
-  for (const child of project.children ?? []) {
-    const entry = entriesByName.get(child.name);
-    if (entry === undefined) {
-      continue;
-    }
-    const exports = (child.children ?? [])
+  for (const module of eachProjectModule(project, entries, context.packageDir)) {
+    const exports = module.children
       .flatMap((symbol) => convertExport(symbol, context) ?? [])
       .filter((value): value is ReferenceExport => value !== null);
     exports.sort(compareExports);
-    const description = child.comment
-      ? partsToMarkdown(child.comment.summary, context)
+    const description = module.comment
+      ? partsToMarkdown(module.comment.summary, context)
       : '';
     modules.push({
       description,
       exports,
-      id: entry.id,
-      sourcePath: relative(context.packageDir, entry.filePath).replaceAll(
-        '\\',
-        '/',
-      ),
-      subpath: entry.subpath,
+      id: module.entry.id,
+      sourcePath: relative(
+        context.packageDir,
+        module.entry.filePath,
+      ).replaceAll('\\', '/'),
+      subpath: module.entry.subpath,
     });
   }
   return modules;
