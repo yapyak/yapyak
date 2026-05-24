@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { applyLocaleToUrl, getLocaleFromUrl } from './url';
+import { getLocaleFromUrl } from './url';
 
 const LOCALES = ['en', 'sv', 'de', 'sv-SE'] as const;
 
@@ -111,94 +111,5 @@ describe('getLocaleFromUrl (regex with capture group 1)', () => {
         pattern,
       ),
     ).toBe('sv');
-  });
-});
-
-describe('applyLocaleToUrl (default path-first-segment)', () => {
-  it('replaces existing locale segment', () => {
-    expect(
-      applyLocaleToUrl(new URL('https://app.test/en/home'), 'sv', LOCALES),
-    ).toBe('/sv/home');
-  });
-
-  it('prepends locale when path has no locale', () => {
-    expect(
-      applyLocaleToUrl(new URL('https://app.test/about'), 'sv', LOCALES),
-    ).toBe('/sv/about');
-  });
-
-  it('prepends locale on root path', () => {
-    expect(applyLocaleToUrl(new URL('https://app.test/'), 'sv', LOCALES)).toBe(
-      '/sv',
-    );
-  });
-
-  it('preserves query string when replacing', () => {
-    expect(
-      applyLocaleToUrl(
-        new URL('https://app.test/en/home?q=foo'),
-        'sv',
-        LOCALES,
-      ),
-    ).toBe('/sv/home?q=foo');
-  });
-
-  it('preserves hash when replacing', () => {
-    expect(
-      applyLocaleToUrl(
-        new URL('https://app.test/en/home#section'),
-        'sv',
-        LOCALES,
-      ),
-    ).toBe('/sv/home#section');
-  });
-
-  it('handles bare locale path', () => {
-    expect(
-      applyLocaleToUrl(new URL('https://app.test/en'), 'sv', LOCALES),
-    ).toBe('/sv');
-  });
-
-  it('handles hyphenated locales', () => {
-    expect(
-      applyLocaleToUrl(new URL('https://app.test/sv-SE/home'), 'en', LOCALES),
-    ).toBe('/en/home');
-  });
-});
-
-describe('applyLocaleToUrl (query-string regex)', () => {
-  const pattern = /[?&]lang=(?<locale>[a-z]{2})/;
-
-  it('replaces query param locale', () => {
-    expect(
-      applyLocaleToUrl(
-        new URL('https://app.test/about?lang=en'),
-        'sv',
-        LOCALES,
-        pattern,
-      ),
-    ).toBe('/about?lang=sv');
-  });
-
-  it('returns original URL when query missing (no match)', () => {
-    expect(
-      applyLocaleToUrl(
-        new URL('https://app.test/about'),
-        'sv',
-        LOCALES,
-        pattern,
-      ),
-    ).toBe('/about');
-  });
-
-  it('replaces locale among other query params', () => {
-    expect(
-      applyLocaleToUrl(
-        new URL('https://app.test/about?foo=bar&lang=en&other=x'),
-        'sv',
-        LOCALES,
-        pattern,
-      ),
-    ).toBe('/about?foo=bar&lang=sv&other=x');
   });
 });

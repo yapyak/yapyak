@@ -14,8 +14,6 @@ export function _$pick(
   paramsOrOptions?: Record<string, unknown> | PickOptions,
   maybeOptions?: PickOptions,
 ): string {
-  // Determine if the first sample variant has placeholders. We use the
-  // default-locale variant if present; fall back to whichever exists.
   const sample = variants[defaultLocale] ?? Object.values(variants)[0] ?? '';
   const sourceHasPlaceholder = hasPlaceholder(sample);
 

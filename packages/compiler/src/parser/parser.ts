@@ -411,7 +411,7 @@ function maskInactiveRegions(code: string): string {
 function collectAliases(code: string): Set<string> {
   const aliases = new Set<string>();
   const importRx =
-    /import\s*(?:type\s+)?\{\s*([^}]+)\s*\}\s*from\s*(['"])(yapyak(?:\/[^'"]+)?)\2/g;
+    /import\s*(?:type\s+)?\{\s*([^}]+)\s*\}\s*from\s*(['"])(@yapyak\/core)\2/g;
   let match: RegExpExecArray | null = importRx.exec(code);
   while (match !== null) {
     const inside = match[1];

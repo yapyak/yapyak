@@ -1,5 +1,5 @@
 /**
- * Compile-time extraction and locale-file synchronization for yapyak. Consumed by `@yapyak/vite`, `@yapyak/cli`, and future build-tool integrations.
+ * Compile-time extraction and locale-file synchronization for yapyak. Consumed by `@yapyak/vite`, `@yapyak/cli`, and maybe some future build-tool integrations.
  *
  * @packageDocumentation
  */
