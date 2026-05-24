@@ -4,7 +4,7 @@ export default defineConfig({
   resolve: {
     alias: {
       'virtual:yapyak': new URL(
-        '../core/src/__test__/virtual-yapyak.ts',
+        '../core/tests/virtual-yapyak.ts',
         import.meta.url,
       ).pathname,
     },
