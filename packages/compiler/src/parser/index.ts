@@ -35,6 +35,7 @@ export { parseSvelte } from './preprocessors/svelte';
 export {
   getProcessor,
   resolveProcessorKind,
+  svelteProcessor,
   vanillaProcessor,
   vueProcessor,
 } from './processor';

@@ -62,6 +62,7 @@ export {
   resolveProcessorKind,
   type Scope,
   type ScriptBlock,
+  svelteProcessor,
   type TransformFileRequest,
   type TransformFileResult,
   toMessageId,

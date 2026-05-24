@@ -37,8 +37,11 @@ describe('getProcessor', () => {
     expect(getProcessor('vue')).toBeDefined();
   });
 
+  it('returns svelteProcessor for svelte kind', () => {
+    expect(getProcessor('svelte')).toBeDefined();
+  });
+
   it('throws for unimplemented kinds', () => {
-    expect(() => getProcessor('svelte')).toThrow(/not yet implemented/);
     expect(() => getProcessor('astro')).toThrow(/not yet implemented/);
   });
 });

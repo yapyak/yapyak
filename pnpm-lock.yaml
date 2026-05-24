@@ -364,6 +364,9 @@ importers:
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      svelte:
+        specifier: 'catalog:'
+        version: 5.55.9
       tsup:
         specifier: 'catalog:'
         version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(typescript@6.0.3)(yaml@2.8.4)

@@ -27,6 +27,7 @@
     "@vue/compiler-core": "catalog:",
     "@vue/compiler-sfc": "catalog:",
     "@yapyak/typescript-config": "workspace:*",
+    "svelte": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
@@ -34,6 +35,7 @@
   "peerDependencies": {
     "@vue/compiler-core": ">=3.0.0",
     "@vue/compiler-sfc": ">=3.0.0",
+    "svelte": ">=5.0.0",
     "typescript": ">=5.0.0"
   },
   "peerDependenciesMeta": {
@@ -41,6 +43,9 @@
       "optional": true
     },
     "@vue/compiler-sfc": {
+      "optional": true
+    },
+    "svelte": {
       "optional": true
     }
   },
