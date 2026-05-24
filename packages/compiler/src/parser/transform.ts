@@ -145,6 +145,9 @@ function rewriteImportDeclaration(input: RewriteImportDeclarationInput): void {
     magicString,
     sourceFile,
   } = input;
+  if (declaration.importClause?.isTypeOnly === true && !injectPick) {
+    return;
+  }
   const namedBindings = declaration.importClause?.namedBindings;
   if (namedBindings === undefined || !ts.isNamedImports(namedBindings)) {
     return;
@@ -154,18 +157,32 @@ function rewriteImportDeclaration(input: RewriteImportDeclarationInput): void {
   for (const element of namedBindings.elements) {
     const importedName = (element.propertyName ?? element.name).text;
     const localName = element.name.text;
+    const isTypeOnly = element.isTypeOnly;
+    if (isTypeOnly) {
+      remaining.push({
+        imported: importedName,
+        isType: true,
+        local: localName,
+      });
+      continue;
+    }
     const occurrences = countReferences(intermediate, localName);
     if (occurrences > 1) {
-      remaining.push({ imported: importedName, local: localName });
+      remaining.push({
+        imported: importedName,
+        isType: false,
+        local: localName,
+      });
     }
   }
 
   if (injectPick) {
     const hasPick = remaining.some(
-      (item) => item.imported === PICK_FN && item.local === PICK_FN,
+      (item) =>
+        !item.isType && item.imported === PICK_FN && item.local === PICK_FN,
     );
     if (!hasPick) {
-      remaining.unshift({ imported: PICK_FN, local: PICK_FN });
+      remaining.unshift({ imported: PICK_FN, isType: false, local: PICK_FN });
     }
   }
 
@@ -177,13 +194,7 @@ function rewriteImportDeclaration(input: RewriteImportDeclarationInput): void {
     magicString.remove(startInOriginal, endInOriginal);
     return;
   }
-  const specList = remaining
-    .map((item) =>
-      item.imported === item.local
-        ? item.imported
-        : `${item.imported} as ${item.local}`,
-    )
-    .join(', ');
+  const specList = remaining.map((item) => renderSpecifier(item)).join(', ');
   const moduleSpecText = declaration.moduleSpecifier.getText(sourceFile);
   magicString.overwrite(
     startInOriginal,
@@ -192,8 +203,18 @@ function rewriteImportDeclaration(input: RewriteImportDeclarationInput): void {
   );
 }
 
+function renderSpecifier(item: ImportSpecifier): string {
+  const prefix = item.isType ? 'type ' : '';
+  const body =
+    item.imported === item.local
+      ? item.imported
+      : `${item.imported} as ${item.local}`;
+  return `${prefix}${body}`;
+}
+
 interface ImportSpecifier {
   imported: string;
+  isType: boolean;
   local: string;
 }
 

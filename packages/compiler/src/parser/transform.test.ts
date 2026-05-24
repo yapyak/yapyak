@@ -119,6 +119,46 @@ describe('transformFile — single-locale elision', () => {
     expect(code).not.toContain('$t');
     expect(code).toContain("from '@yapyak/core'");
   });
+
+  it('leaves type-only @yapyak/* import untouched', () => {
+    const source = [
+      "import type { Page } from '@yapyak/doc-extractor';",
+      "import { $t } from '@yapyak/core';",
+      'export function PageTitle(props: { page: Page }) {',
+      "  return props.page.title + $t('Hello');",
+      '}',
+    ].join('\n');
+    const code = runTransform({ locales: ['en'], source });
+    expect(code).toContain(
+      "import type { Page } from '@yapyak/doc-extractor';",
+    );
+  });
+
+  it('preserves inline type marker on @yapyak/* import specifier', () => {
+    const source = [
+      "import { type Page } from '@yapyak/doc-extractor';",
+      "import { $t } from '@yapyak/core';",
+      'export function PageTitle(props: { page: Page }) {',
+      "  return props.page.title + $t('Hello');",
+      '}',
+    ].join('\n');
+    const code = runTransform({ locales: ['en'], source });
+    expect(code).toContain(
+      "import { type Page } from '@yapyak/doc-extractor';",
+    );
+  });
+
+  it('preserves type marker when injecting _$pick into mixed import', () => {
+    const source = [
+      "import { type LocaleData, $t } from '@yapyak/core';",
+      'export function greet(data: LocaleData) {',
+      "  return data.locale + $t('Hi {name}', { name: 'a' }, { locale: 'sv' });",
+      '}',
+    ].join('\n');
+    const code = runTransform({ locales: ['en', 'sv'], source });
+    expect(code).toContain('type LocaleData');
+    expect(code).toContain('_$pick');
+  });
 });
 
 describe('transformFile — dynamic options', () => {
