@@ -276,7 +276,7 @@ function generateConfig(
     `export const DEFAULT_LOCALE = ${JSON.stringify(resolved.defaultLocale)};`,
   );
   lines.push(
-    `export const PERSISTENCE = ${JSON.stringify(normalized.persistence)};`,
+    `export const PERSISTENCE = ${JSON.stringify(serializePersistence(normalized.persistence))};`,
   );
   lines.push(
     `export const DETECT_ACCEPT_LANGUAGE = ${JSON.stringify(normalized.detectAcceptLanguage)};`,
@@ -285,6 +285,28 @@ function generateConfig(
     `export const SYNC_HTML_LANG = ${JSON.stringify(normalized.syncHtmlLang)};`,
   );
   return lines.join('\n');
+}
+
+function serializePersistence(
+  persistence: ReturnType<typeof normalizeOptions>['persistence'],
+):
+  | { type: 'cookie'; name: string }
+  | { type: 'localStorage'; key: string }
+  | { type: 'url'; match?: { flags: string; source: string } }
+  | null {
+  if (persistence === null) {
+    return null;
+  }
+  if (persistence.type !== 'url') {
+    return persistence;
+  }
+  if (persistence.match === undefined) {
+    return { type: 'url' };
+  }
+  return {
+    match: { flags: persistence.match.flags, source: persistence.match.source },
+    type: 'url',
+  };
 }
 
 function isCandidateId(id: string, filter: (id: string) => boolean): boolean {

@@ -1,5 +1,6 @@
 import { createPersistence, parseCookie } from '../persistence';
 import { resolveLocale } from './resolve';
+import { applyLocaleToUrl, getLocaleFromUrl } from './url';
 import {
   DEFAULT_LOCALE,
   DETECT_ACCEPT_LANGUAGE,
@@ -12,6 +13,7 @@ import {
 export interface RequestHeaders {
   acceptLanguage: string | undefined;
   cookieHeader: string | undefined;
+  url: string | undefined;
 }
 
 type RequestHeadersReader = () => RequestHeaders | undefined;
@@ -25,9 +27,27 @@ export function registerRequestHeadersReader(
   headersReader = reader;
 }
 
-const persistence = createPersistence(PERSISTENCE);
+const urlMatch: RegExp | undefined =
+  PERSISTENCE?.type === 'url' && PERSISTENCE.match !== undefined
+    ? new RegExp(PERSISTENCE.match.source, PERSISTENCE.match.flags)
+    : undefined;
+
+const persistence = createPersistence(
+  PERSISTENCE === null
+    ? null
+    : PERSISTENCE.type === 'url'
+      ? { type: 'url', match: urlMatch }
+      : PERSISTENCE,
+);
 
 function getInitialLocale(): string {
+  if (PERSISTENCE?.type === 'url' && typeof window !== 'undefined') {
+    const fromUrl = getLocaleFromUrl(window.location, LOCALES, urlMatch);
+    if (fromUrl !== undefined) {
+      return fromUrl;
+    }
+    return DEFAULT_LOCALE;
+  }
   const persisted = persistence?.get();
   if (persisted !== undefined && LOCALES.includes(persisted)) {
     return persisted;
@@ -67,6 +87,14 @@ export function getLocale(): string {
   if (typeof window === 'undefined' && headersReader !== null) {
     const source = headersReader();
     if (source !== undefined) {
+      if (PERSISTENCE?.type === 'url' && source.url !== undefined) {
+        const url = new URL(source.url);
+        const fromUrl = getLocaleFromUrl(url, LOCALES, urlMatch);
+        if (fromUrl !== undefined) {
+          return fromUrl;
+        }
+        return DEFAULT_LOCALE;
+      }
       const cookieName =
         PERSISTENCE?.type === 'cookie' ? PERSISTENCE.name : null;
       const persisted =
@@ -92,6 +120,8 @@ export function getLocale(): string {
  * @remarks
  * No-op if `value` is not in {@link locales}. Notifies subscribers and framework adapters.
  *
+ * With `persistence: 'url'`, locale changes are coupled to the URL. If the target URL differs from the current URL, `setLocale` falls back to a full-page navigation via `window.location.href`. Drive locale switches through your router's navigation API (e.g. `router.navigate(...)`) so the URL change happens via SPA navigation, then the route loader calls `setLocale` with the URL already matching — no reload.
+ *
  * @param value - The locale to switch to.
  *
  * @example
@@ -105,6 +135,17 @@ export function setLocale(value: string): void {
   if (!LOCALES.includes(value)) {
     return;
   }
+
+  if (PERSISTENCE?.type === 'url' && typeof window !== 'undefined') {
+    const target = applyLocaleToUrl(window.location, value, LOCALES, urlMatch);
+    const current =
+      window.location.pathname + window.location.search + window.location.hash;
+    if (target !== current) {
+      window.location.href = target;
+      return;
+    }
+  }
+
   if (value === currentLocale) {
     return;
   }

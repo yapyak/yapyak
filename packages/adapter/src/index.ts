@@ -39,6 +39,7 @@ export function withRequest<T>(request: Request, fn: () => T): T {
     {
       acceptLanguage: request.headers.get('accept-language') ?? undefined,
       cookieHeader: request.headers.get('cookie') ?? undefined,
+      url: request.url,
     },
     fn,
   );

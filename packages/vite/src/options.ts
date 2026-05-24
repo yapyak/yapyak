@@ -28,23 +28,28 @@ export interface YapyakOptions {
   /**
    * Where to persist the user's locale selection.
    *
-   * Use the string shorthand (`'cookie'` or `'localStorage'`) for defaults,
-   * or the object form (`{ type: 'cookie', name: '...' }`) to customize.
-   * Omit for no persistence.
+   * Shorthands: `'cookie'`, `'localStorage'`, `'url'`. Use the object form to customize. Omit for no persistence.
+   *
+   * `'url'` uses the URL as the source of truth: yapyak reads the locale from `window.location` (and from incoming Requests on the server via `@yapyak/adapter`). Drive locale switches through your router's navigation API — `setLocale` falls back to a full reload only when the target URL differs from the current URL.
    *
    * @example
    * ```ts
    * persistence: 'cookie'
    * persistence: 'localStorage'
+   * persistence: 'url'
    * persistence: { type: 'cookie', name: 'app:locale' }
    * persistence: { type: 'localStorage', key: 'app:locale' }
+   * persistence: { type: 'url' }
+   * persistence: { type: 'url', match: /[?&]lang=(?<locale>[a-z]{2})/ }
    * ```
    */
   persistence?:
     | 'cookie'
     | 'localStorage'
+    | 'url'
     | { name?: string; type: 'cookie' }
     | { key?: string; type: 'localStorage' }
+    | { match?: RegExp; type: 'url' }
     | null;
   /**
    * Whether to preserve existing translations when a `$t()` call is renamed in place.
@@ -88,12 +93,21 @@ function normalizePersistence(
     if (input === 'cookie') {
       return { name: DEFAULT_COOKIE_NAME, type: 'cookie' };
     }
-    return { key: DEFAULT_STORAGE_KEY, type: 'localStorage' };
+    if (input === 'localStorage') {
+      return { key: DEFAULT_STORAGE_KEY, type: 'localStorage' };
+    }
+    return { type: 'url' };
   }
   if (input.type === 'cookie') {
     return { name: input.name ?? DEFAULT_COOKIE_NAME, type: 'cookie' };
   }
-  return { key: input.key ?? DEFAULT_STORAGE_KEY, type: 'localStorage' };
+  if (input.type === 'localStorage') {
+    return { key: input.key ?? DEFAULT_STORAGE_KEY, type: 'localStorage' };
+  }
+  if (input.match !== undefined) {
+    return { match: input.match, type: 'url' };
+  }
+  return { type: 'url' };
 }
 
 export function normalizeOptions(options: YapyakOptions): NormalizedOptions {

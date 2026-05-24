@@ -5,6 +5,7 @@ import { localStorage } from './local-storage';
 export type NormalizedPersistence =
   | { type: 'cookie'; name: string }
   | { type: 'localStorage'; key: string }
+  | { type: 'url'; match?: RegExp }
   | null;
 
 /** @internal */
@@ -23,7 +24,10 @@ export function createPersistence(
   if (config.type === 'cookie') {
     return cookie(config.name);
   }
-  return localStorage(config.key);
+  if (config.type === 'localStorage') {
+    return localStorage(config.key);
+  }
+  return null;
 }
 
 export { parseCookie } from './cookie';

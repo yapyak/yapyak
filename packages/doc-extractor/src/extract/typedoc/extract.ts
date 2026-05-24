@@ -242,7 +242,11 @@ function collectModules(
   context: Context,
 ): ReferenceModule[] {
   const modules: ReferenceModule[] = [];
-  for (const module of eachProjectModule(project, entries, context.packageDir)) {
+  for (const module of eachProjectModule(
+    project,
+    entries,
+    context.packageDir,
+  )) {
     const exports = module.children
       .flatMap((symbol) => convertExport(symbol, context) ?? [])
       .filter((value): value is ReferenceExport => value !== null);
