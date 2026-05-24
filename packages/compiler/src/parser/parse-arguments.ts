@@ -1,15 +1,14 @@
 import type {
   CallSite,
   Diagnostic,
-  DiagnosticCode,
   ParsedArguments,
   ParsedParams,
-  Range,
   StaticOptions,
 } from './type';
 
 import * as ts from 'typescript';
 
+import { createDiagnostic } from './diagnostic';
 import { parsePlaceholders } from './plural';
 import { toRange } from './position';
 
@@ -23,14 +22,14 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
 
   if (firstArg === undefined) {
     diagnostics.push(
-      diagnostic(
-        'YPK001',
-        'error',
-        '$t() called without arguments',
+      createDiagnostic({
+        code: 'YPK001',
         fileId,
-        toRange(callSite.node, sourceFile),
-        fileText,
-      ),
+        message: '$t() called without arguments.',
+        range: toRange(callSite.node, sourceFile),
+        severity: 'error',
+        source: fileText,
+      }),
     );
     return {
       diagnostics,
@@ -42,15 +41,16 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   const sourceRange = toRange(firstArg, sourceFile);
   if (!isLiteralFirstArg(firstArg)) {
     diagnostics.push(
-      diagnostic(
-        'YPK001',
-        'error',
-        'Dynamic source string in $t(). Use a plain string literal with `{placeholder}` syntax.',
+      createDiagnostic({
+        code: 'YPK001',
         fileId,
-        sourceRange,
-        fileText,
-        "Replace `$t(`Hi ${name}`)` with `$t('Hi {name}', { name })`.",
-      ),
+        hint: "Replace `$t(`Hi ${name}`)` with `$t('Hi {name}', { name })`.",
+        message:
+          'Dynamic source string in $t(). Use a plain string literal with `{placeholder}` syntax.',
+        range: sourceRange,
+        severity: 'error',
+        source: fileText,
+      }),
     );
     return { diagnostics, source: '', sourceRange };
   }
@@ -58,14 +58,14 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   const source = firstArg.text;
   if (source === '') {
     diagnostics.push(
-      diagnostic(
-        'YPK008',
-        'error',
-        '$t() called with empty source string.',
+      createDiagnostic({
+        code: 'YPK008',
         fileId,
-        sourceRange,
-        fileText,
-      ),
+        message: '$t() called with empty source string.',
+        range: sourceRange,
+        severity: 'error',
+        source: fileText,
+      }),
     );
   }
 
@@ -76,15 +76,15 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   for (const info of placeholderInfos) {
     if (info.invalid === 'plural-missing-other') {
       diagnostics.push(
-        diagnostic(
-          'YPK007',
-          'error',
-          `Plural placeholder '{${info.name}}' is missing the required 'other' branch.`,
+        createDiagnostic({
+          code: 'YPK007',
           fileId,
-          sourceRange,
-          fileText,
-          'Add `other {<text>}` to the plural — every plural must have an `other` fallback.',
-        ),
+          hint: 'Add `other {<text>}` to the plural — every plural must have an `other` fallback.',
+          message: `Plural placeholder '{${info.name}}' is missing the required 'other' branch.`,
+          range: sourceRange,
+          severity: 'error',
+          source: fileText,
+        }),
       );
     }
   }
@@ -107,7 +107,6 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
       fileText,
       params,
       placeholderKeys,
-      sourceRange,
     });
   } else {
     const optionsArg = callArgs[1];
@@ -190,34 +189,26 @@ interface ValidateParamsInput {
   fileText: string;
   params: ParsedParams | undefined;
   placeholderKeys: string[];
-  sourceRange: Range;
 }
 
 function validateParams(input: ValidateParamsInput): void {
-  const {
-    callSite,
-    diagnostics,
-    fileId,
-    fileText,
-    params,
-    placeholderKeys,
-    sourceRange,
-  } = input;
+  const { callSite, diagnostics, fileId, fileText, params, placeholderKeys } =
+    input;
   const sourceFile = callSite.node.getSourceFile();
   const callRange = toRange(callSite.node, sourceFile);
 
   if (params === undefined) {
     for (const key of placeholderKeys) {
       diagnostics.push(
-        diagnostic(
-          'YPK002',
-          'error',
-          `Missing parameter '${key}' for placeholder '{${key}}'.`,
+        createDiagnostic({
+          code: 'YPK002',
           fileId,
-          callRange,
-          fileText,
-          `Add { ${key}: ... } as the second argument.`,
-        ),
+          hint: `Add { ${key}: ... } as the second argument.`,
+          message: `Missing parameter '${key}' for placeholder '{${key}}'.`,
+          range: callRange,
+          severity: 'error',
+          source: fileText,
+        }),
       );
     }
     return;
@@ -225,15 +216,15 @@ function validateParams(input: ValidateParamsInput): void {
 
   if (params.kind === 'spread') {
     diagnostics.push(
-      diagnostic(
-        'YPK005',
-        'warning',
-        'Spread params cannot be statically verified.',
+      createDiagnostic({
+        code: 'YPK005',
         fileId,
-        params.range,
-        fileText,
-        'Pass keys explicitly to enable validation.',
-      ),
+        hint: 'Pass keys explicitly to enable validation.',
+        message: 'Spread params cannot be statically verified.',
+        range: params.range,
+        severity: 'warning',
+        source: fileText,
+      }),
     );
     return;
   }
@@ -242,54 +233,31 @@ function validateParams(input: ValidateParamsInput): void {
   for (const key of placeholderKeys) {
     if (!providedKeys.has(key)) {
       diagnostics.push(
-        diagnostic(
-          'YPK002',
-          'error',
-          `Missing parameter '${key}' for placeholder '{${key}}'.`,
+        createDiagnostic({
+          code: 'YPK002',
           fileId,
-          params.range,
-          fileText,
-          `Add '${key}' to the params object.`,
-        ),
+          hint: `Add '${key}' to the params object.`,
+          message: `Missing parameter '${key}' for placeholder '{${key}}'.`,
+          range: params.range,
+          severity: 'error',
+          source: fileText,
+        }),
       );
     }
   }
   const placeholderSet = new Set(placeholderKeys);
   for (const key of params.keys) {
-    if (!placeholderSet.has(key)) {
-      diagnostics.push(
-        diagnostic(
-          'YPK003',
-          'warning',
-          `Extra parameter '${key}' with no matching placeholder.`,
-          fileId,
-          params.range,
-          fileText,
-          `Remove '${key}' from the params object or add '{${key}}' to the source string.`,
-        ),
-      );
-    }
+    if (placeholderSet.has(key)) continue;
+    diagnostics.push(
+      createDiagnostic({
+        code: 'YPK003',
+        fileId,
+        hint: `Remove '${key}' from the params object or add '{${key}}' to the source string.`,
+        message: `Extra parameter '${key}' with no matching placeholder.`,
+        range: params.range,
+        severity: 'warning',
+        source: fileText,
+      }),
+    );
   }
-  void sourceRange;
-}
-
-function diagnostic(
-  code: DiagnosticCode,
-  severity: 'error' | 'warning',
-  message: string,
-  fileId: string,
-  range: Range,
-  source: string,
-  hint?: string,
-): Diagnostic {
-  const result: Diagnostic = {
-    code,
-    fileId,
-    message,
-    range,
-    severity,
-    source,
-  };
-  if (hint !== undefined) result.hint = hint;
-  return result;
 }

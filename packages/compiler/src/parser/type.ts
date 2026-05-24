@@ -81,13 +81,13 @@ export interface Placeholder {
 
 export interface Location {
   callSiteContext: CallSiteContext;
+  factoryLocale?: string;
   fileId: string;
   range: Range;
 }
 
 export interface ExtractedMessage {
   context?: string;
-  factoryLocale?: string;
   id: string;
   locations: Location[];
   placeholders: Placeholder[];
