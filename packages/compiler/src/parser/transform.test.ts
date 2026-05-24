@@ -122,29 +122,29 @@ describe('transformFile — single-locale elision', () => {
 
   it('leaves type-only @yapyak/* import untouched', () => {
     const source = [
-      "import type { IntlProviderProps } from '@yapyak/react';",
+      "import type { LocaleProviderProps } from '@yapyak/react';",
       "import { $t } from '@yapyak/core';",
-      'export function Greeting(props: IntlProviderProps) {',
+      'export function Greeting(props: LocaleProviderProps) {',
       "  return props.defaultLocale + $t('Hello');",
       '}',
     ].join('\n');
     const code = runTransform({ locales: ['en'], source });
     expect(code).toContain(
-      "import type { IntlProviderProps } from '@yapyak/react';",
+      "import type { LocaleProviderProps } from '@yapyak/react';",
     );
   });
 
   it('preserves inline type marker on @yapyak/* import specifier', () => {
     const source = [
-      "import { type IntlProviderProps } from '@yapyak/react';",
+      "import { type LocaleProviderProps } from '@yapyak/react';",
       "import { $t } from '@yapyak/core';",
-      'export function Greeting(props: IntlProviderProps) {',
+      'export function Greeting(props: LocaleProviderProps) {',
       "  return props.defaultLocale + $t('Hello');",
       '}',
     ].join('\n');
     const code = runTransform({ locales: ['en'], source });
     expect(code).toContain(
-      "import { type IntlProviderProps } from '@yapyak/react';",
+      "import { type LocaleProviderProps } from '@yapyak/react';",
     );
   });
 

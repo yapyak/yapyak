@@ -1,10 +1,10 @@
 /**
- * React adapter. Provides {@link IntlProvider} and the {@link useLocale} hook.
+ * React adapter. Provides {@link LocaleProvider} and the {@link useLocale} hook.
  *
  * @packageDocumentation
  */
 
-export type { IntlProviderProps } from './intl-provider';
+export type { LocaleProviderProps } from './locale-provider';
 
-export { IntlProvider } from './intl-provider';
+export { LocaleProvider } from './locale-provider';
 export { useLocale } from './use-locale';

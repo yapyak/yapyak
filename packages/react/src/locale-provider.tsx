@@ -3,8 +3,8 @@ import type { ReactElement, ReactNode } from 'react';
 import { getLocale, subscribeLocale } from '@yapyak/core';
 import { createContext, useSyncExternalStore } from 'react';
 
-/** Props for {@link IntlProvider}. */
-export interface IntlProviderProps {
+/** Props for {@link LocaleProvider}. */
+export interface LocaleProviderProps {
   children: ReactNode;
 }
 
@@ -18,18 +18,18 @@ const LocaleContext = createContext<string>('en');
  *
  * @example
  * ```tsx
- * import { IntlProvider } from '@yapyak/react';
+ * import { LocaleProvider } from '@yapyak/react';
  *
  * function App() {
  *   return (
- *     <IntlProvider>
+ *     <LocaleProvider>
  *       <App />
- *     </IntlProvider>
+ *     </LocaleProvider>
  *   );
  * }
  * ```
  */
-export function IntlProvider(props: IntlProviderProps): ReactElement {
+export function LocaleProvider(props: LocaleProviderProps): ReactElement {
   const { children } = props;
 
   const current = useSyncExternalStore(subscribeLocale, getLocale, getLocale);
