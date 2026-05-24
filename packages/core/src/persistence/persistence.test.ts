@@ -1,17 +1,84 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createPersistence } from '.';
+import { cookie } from './cookie';
+import { localStorage } from './local-storage';
+import { buildPersistence, createPersistence } from '.';
 
-const COOKIE_NAME = 'locale';
-const STORAGE_KEY = 'locale';
+const LOCALES = ['en', 'sv', 'fr'] as const;
 
 describe('createPersistence', () => {
-  it('returns null when config is null', () => {
-    expect(createPersistence(null)).toBeNull();
+  it('coerces undefined return from set to false', () => {
+    const persistence = createPersistence({
+      get: () => undefined,
+      set: () => undefined,
+    });
+    expect(persistence.set('sv')).toBe(false);
+  });
+
+  it('preserves true return from set', () => {
+    const persistence = createPersistence({
+      get: () => undefined,
+      set: () => true,
+    });
+    expect(persistence.set('sv')).toBe(true);
+  });
+
+  it('coerces false return from set to false', () => {
+    const persistence = createPersistence({
+      get: () => undefined,
+      set: () => false,
+    });
+    expect(persistence.set('sv')).toBe(false);
+  });
+
+  it('omits getFromRequest when not provided', () => {
+    const persistence = createPersistence({
+      get: () => undefined,
+      set: () => undefined,
+    });
+    expect(persistence.getFromRequest).toBeUndefined();
   });
 });
 
-describe('cookie persistence', () => {
+describe('buildPersistence', () => {
+  it('returns null when config is null', () => {
+    expect(buildPersistence(null, LOCALES)).toBeNull();
+  });
+
+  it('builds cookie persistence', () => {
+    const persistence = buildPersistence(
+      { name: 'locale', type: 'cookie' },
+      LOCALES,
+    );
+    expect(persistence).not.toBeNull();
+    expect(persistence?.getFromRequest).toBeDefined();
+  });
+
+  it('builds localStorage persistence', () => {
+    const persistence = buildPersistence(
+      { key: 'locale', type: 'localStorage' },
+      LOCALES,
+    );
+    expect(persistence).not.toBeNull();
+    expect(persistence?.getFromRequest).toBeUndefined();
+  });
+
+  it('builds url persistence with default pattern', () => {
+    const persistence = buildPersistence({ type: 'url' }, LOCALES);
+    expect(persistence).not.toBeNull();
+    expect(persistence?.getFromRequest).toBeDefined();
+  });
+
+  it('builds url persistence with custom regex from source/flags', () => {
+    const persistence = buildPersistence(
+      { match: { flags: '', source: '/(en|sv)/' }, type: 'url' },
+      LOCALES,
+    );
+    expect(persistence).not.toBeNull();
+  });
+});
+
+describe('cookie() factory', () => {
   let cookieJar = '';
 
   beforeEach(() => {
@@ -41,52 +108,50 @@ describe('cookie persistence', () => {
   });
 
   it('loads value from document.cookie', () => {
-    cookieJar = `${COOKIE_NAME}=sv`;
-    const persistence = createPersistence({
-      name: COOKIE_NAME,
-      type: 'cookie',
-    });
-    expect(persistence?.get()).toBe('sv');
+    cookieJar = 'locale=sv';
+    expect(cookie({ name: 'locale' }).get()).toBe('sv');
   });
 
   it('returns undefined when cookie is missing', () => {
     cookieJar = 'theme=dark';
-    const persistence = createPersistence({
-      name: COOKIE_NAME,
-      type: 'cookie',
-    });
-    expect(persistence?.get()).toBeUndefined();
+    expect(cookie({ name: 'locale' }).get()).toBeUndefined();
   });
 
   it('returns undefined when cookie is empty string', () => {
-    cookieJar = `${COOKIE_NAME}=`;
-    const persistence = createPersistence({
-      name: COOKIE_NAME,
-      type: 'cookie',
-    });
-    expect(persistence?.get()).toBeUndefined();
+    cookieJar = 'locale=';
+    expect(cookie({ name: 'locale' }).get()).toBeUndefined();
   });
 
-  it('writes to document.cookie on save', () => {
-    const persistence = createPersistence({
-      name: COOKIE_NAME,
-      type: 'cookie',
-    });
-    persistence?.set('fr');
-    expect(cookieJar).toContain(`${COOKIE_NAME}=fr`);
+  it('writes to document.cookie on set', () => {
+    cookie({ name: 'locale' }).set('fr');
+    expect(cookieJar).toContain('locale=fr');
   });
 
   it('uses configured cookie name', () => {
-    const persistence = createPersistence({
-      name: 'app-locale',
-      type: 'cookie',
-    });
-    persistence?.set('de');
+    cookie({ name: 'app-locale' }).set('de');
     expect(cookieJar).toContain('app-locale=de');
+  });
+
+  it('returns false from set (does not navigate)', () => {
+    expect(cookie({ name: 'locale' }).set('sv')).toBe(false);
+  });
+
+  it('reads from request cookie header via getFromRequest', () => {
+    const request = new Request('http://example.test', {
+      headers: { cookie: 'locale=sv; theme=dark' },
+    });
+    expect(cookie({ name: 'locale' }).getFromRequest?.(request)).toBe('sv');
+  });
+
+  it('returns undefined from getFromRequest when cookie header is missing', () => {
+    const request = new Request('http://example.test');
+    expect(
+      cookie({ name: 'locale' }).getFromRequest?.(request),
+    ).toBeUndefined();
   });
 });
 
-describe('localStorage persistence', () => {
+describe('localStorage() factory', () => {
   let storage: Map<string, string>;
 
   beforeEach(() => {
@@ -109,38 +174,26 @@ describe('localStorage persistence', () => {
   });
 
   it('loads value from localStorage', () => {
-    storage.set(STORAGE_KEY, 'sv');
-    const persistence = createPersistence({
-      key: STORAGE_KEY,
-      type: 'localStorage',
-    });
-    expect(persistence?.get()).toBe('sv');
+    storage.set('locale', 'sv');
+    expect(localStorage({ key: 'locale' }).get()).toBe('sv');
   });
 
   it('returns undefined when key is missing', () => {
-    const persistence = createPersistence({
-      key: STORAGE_KEY,
-      type: 'localStorage',
-    });
-    expect(persistence?.get()).toBeUndefined();
+    expect(localStorage({ key: 'locale' }).get()).toBeUndefined();
   });
 
-  it('writes to localStorage on save', () => {
-    const persistence = createPersistence({
-      key: STORAGE_KEY,
-      type: 'localStorage',
-    });
-    persistence?.set('fr');
-    expect(storage.get(STORAGE_KEY)).toBe('fr');
+  it('writes to localStorage on set', () => {
+    localStorage({ key: 'locale' }).set('fr');
+    expect(storage.get('locale')).toBe('fr');
   });
 
   it('uses configured storage key', () => {
-    const persistence = createPersistence({
-      key: 'custom-key',
-      type: 'localStorage',
-    });
-    persistence?.set('de');
+    localStorage({ key: 'custom-key' }).set('de');
     expect(storage.get('custom-key')).toBe('de');
+  });
+
+  it('returns false from set (does not navigate)', () => {
+    expect(localStorage({ key: 'locale' }).set('sv')).toBe(false);
   });
 
   it('swallows getItem errors', () => {
@@ -150,11 +203,7 @@ describe('localStorage persistence', () => {
       },
       setItem() {},
     });
-    const persistence = createPersistence({
-      key: STORAGE_KEY,
-      type: 'localStorage',
-    });
-    expect(persistence?.get()).toBeUndefined();
+    expect(localStorage({ key: 'locale' }).get()).toBeUndefined();
   });
 
   it('swallows setItem errors', () => {
@@ -166,44 +215,28 @@ describe('localStorage persistence', () => {
         throw new Error('quota');
       },
     });
-    const persistence = createPersistence({
-      key: STORAGE_KEY,
-      type: 'localStorage',
-    });
-    expect(() => persistence?.set('de')).not.toThrow();
+    expect(() => localStorage({ key: 'locale' }).set('de')).not.toThrow();
+  });
+
+  it('has no getFromRequest implementation', () => {
+    expect(localStorage({ key: 'locale' }).getFromRequest).toBeUndefined();
   });
 });
 
 describe('persistence in non-browser environments', () => {
-  it('cookie persistence load returns undefined when document is missing', () => {
-    const persistence = createPersistence({
-      name: COOKIE_NAME,
-      type: 'cookie',
-    });
-    expect(persistence?.get()).toBeUndefined();
+  it('cookie get returns undefined when document is missing', () => {
+    expect(cookie({ name: 'locale' }).get()).toBeUndefined();
   });
 
-  it('cookie persistence save is a no-op when document is missing', () => {
-    const persistence = createPersistence({
-      name: COOKIE_NAME,
-      type: 'cookie',
-    });
-    expect(() => persistence?.set('sv')).not.toThrow();
+  it('cookie set is a no-op when document is missing', () => {
+    expect(() => cookie({ name: 'locale' }).set('sv')).not.toThrow();
   });
 
-  it('localStorage persistence load returns undefined when storage is missing', () => {
-    const persistence = createPersistence({
-      key: STORAGE_KEY,
-      type: 'localStorage',
-    });
-    expect(persistence?.get()).toBeUndefined();
+  it('localStorage get returns undefined when storage is missing', () => {
+    expect(localStorage({ key: 'locale' }).get()).toBeUndefined();
   });
 
-  it('localStorage persistence save is a no-op when storage is missing', () => {
-    const persistence = createPersistence({
-      key: STORAGE_KEY,
-      type: 'localStorage',
-    });
-    expect(() => persistence?.set('sv')).not.toThrow();
+  it('localStorage set is a no-op when storage is missing', () => {
+    expect(() => localStorage({ key: 'locale' }).set('sv')).not.toThrow();
   });
 });

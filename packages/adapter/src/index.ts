@@ -1,23 +1,21 @@
 /**
- * Adapter API. Provides {@link withRequest} for binding per-request locale context to async-scoped storage.
+ * Adapter API. Provides {@link withRequest} for binding the incoming Request to async-scoped storage.
  *
  * Used by the shipped framework adapter packages (`@yapyak/astro`, `@yapyak/sveltekit`, `@yapyak/tanstack-start`, `@yapyak/react-router`) and by custom SSR integrations.
  *
  * @packageDocumentation
  */
 
-import type { RequestHeaders } from '@yapyak/core';
-
-import { registerRequestHeadersReader } from '@yapyak/core';
+import { setRequestReader } from '@yapyak/core';
 
 import { AsyncLocalStorage } from 'node:async_hooks';
 
-const storage = new AsyncLocalStorage<RequestHeaders>();
+const storage = new AsyncLocalStorage<Request>();
 
-registerRequestHeadersReader(() => storage.getStore());
+setRequestReader(() => storage.getStore());
 
 /**
- * Runs `fn` with the request's locale headers bound to async-scoped storage.
+ * Runs `fn` with the incoming `Request` bound to async-scoped storage. Yapyak's persistence implementations read from this scope server-side via `getFromRequest`.
  *
  * @remarks
  * Called by the shipped framework adapter packages. Called directly only when wiring a custom SSR setup.
@@ -35,12 +33,5 @@ registerRequestHeadersReader(() => storage.getStore());
  * ```
  */
 export function withRequest<T>(request: Request, fn: () => T): T {
-  return storage.run(
-    {
-      acceptLanguage: request.headers.get('accept-language') ?? undefined,
-      cookieHeader: request.headers.get('cookie') ?? undefined,
-      url: request.url,
-    },
-    fn,
-  );
+  return storage.run(request, fn);
 }

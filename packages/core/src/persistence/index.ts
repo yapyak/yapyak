@@ -1,5 +1,6 @@
 import { cookie } from './cookie';
 import { localStorage } from './local-storage';
+import { url } from './url';
 
 /** @internal */
 export type NormalizedPersistence =
@@ -8,26 +9,50 @@ export type NormalizedPersistence =
   | { type: 'url'; match?: RegExp }
   | null;
 
-/** @internal */
+type SerializedPersistence =
+  | { type: 'cookie'; name: string }
+  | { type: 'localStorage'; key: string }
+  | { type: 'url'; match?: { flags: string; source: string } }
+  | null;
+
 export interface Persistence {
   get(): string | undefined;
-  set(locale: string): void;
+  getFromRequest?(request: Request): string | undefined;
+  set(locale: string): boolean;
 }
 
-/** @internal */
+export interface CreatePersistenceOptions {
+  get(): string | undefined;
+  getFromRequest?(request: Request): string | undefined;
+  set(locale: string): boolean | void;
+}
+
 export function createPersistence(
-  config: NormalizedPersistence,
+  options: CreatePersistenceOptions,
+): Persistence {
+  return {
+    get: options.get,
+    getFromRequest: options.getFromRequest,
+    set: (locale) => options.set(locale) === true,
+  };
+}
+
+export function buildPersistence(
+  config: SerializedPersistence,
+  locales: readonly string[],
 ): Persistence | null {
   if (config === null) {
     return null;
   }
   if (config.type === 'cookie') {
-    return cookie(config.name);
+    return cookie({ name: config.name });
   }
   if (config.type === 'localStorage') {
-    return localStorage(config.key);
+    return localStorage({ key: config.key });
   }
-  return null;
+  const match =
+    config.match !== undefined
+      ? new RegExp(config.match.source, config.match.flags)
+      : undefined;
+  return url({ locales, match });
 }
-
-export { parseCookie } from './cookie';

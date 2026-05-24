@@ -1,9 +1,7 @@
-/** @internal */
 export function hasPlaceholder(template: string): boolean {
   return template.includes('{') && template.includes('}');
 }
 
-/** @internal */
 export function interpolate(
   template: string,
   params: Record<string, unknown>,

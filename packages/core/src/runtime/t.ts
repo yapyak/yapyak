@@ -9,7 +9,6 @@ export type TParams<T extends string> = T extends `${string}{${string}`
   ? ExtractTParams<T>
   : never;
 
-/** @internal */
 export interface TOptions {
   context?: string;
   locale?: string;

@@ -1,5 +1,8 @@
-/** @internal */
-export function getLocaleFromUrl(
+import type { Persistence } from '.';
+
+import { createPersistence } from '.';
+
+function getLocaleFromUrl(
   url: URL | Location,
   locales: readonly string[],
   match?: RegExp,
@@ -20,8 +23,7 @@ export function getLocaleFromUrl(
   return undefined;
 }
 
-/** @internal */
-export function applyLocaleToUrl(
+function applyLocaleToUrl(
   url: URL | Location,
   locale: string,
   locales: readonly string[],
@@ -48,3 +50,39 @@ export function applyLocaleToUrl(
   const prefix = url.pathname === '/' ? '' : url.pathname;
   return `/${locale}${prefix}${url.search}${url.hash}`;
 }
+
+export interface UrlOptions {
+  locales: readonly string[];
+  match?: RegExp;
+}
+
+export function url(options: UrlOptions): Persistence {
+  const { locales, match } = options;
+  return createPersistence({
+    get() {
+      if (typeof window === 'undefined') {
+        return undefined;
+      }
+      return getLocaleFromUrl(window.location, locales, match);
+    },
+    getFromRequest(request) {
+      return getLocaleFromUrl(new URL(request.url), locales, match);
+    },
+    set(locale) {
+      if (typeof window === 'undefined') {
+        return;
+      }
+      const target = applyLocaleToUrl(window.location, locale, locales, match);
+      const current =
+        window.location.pathname +
+        window.location.search +
+        window.location.hash;
+      if (target !== current) {
+        window.location.href = target;
+        return true;
+      }
+    },
+  });
+}
+
+export { applyLocaleToUrl, getLocaleFromUrl };

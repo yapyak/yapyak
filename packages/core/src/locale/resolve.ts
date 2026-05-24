@@ -1,4 +1,3 @@
-/** @internal */
 export interface ResolveLocaleOptions {
   acceptLanguage?: string;
   defaultLocale: string;
@@ -7,7 +6,6 @@ export interface ResolveLocaleOptions {
   persisted?: string;
 }
 
-/** @internal */
 export function resolveLocale(options: ResolveLocaleOptions): string {
   if (
     options.persisted !== undefined &&
@@ -43,7 +41,6 @@ interface RankedCandidate {
   quality: number;
 }
 
-/** @internal */
 export function parseAcceptLanguage(header: string): string[] {
   if (header === '') {
     return [];

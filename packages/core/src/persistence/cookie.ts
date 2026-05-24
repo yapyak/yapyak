@@ -1,6 +1,7 @@
 import type { Persistence } from '.';
 
-/** @internal */
+import { createPersistence } from '.';
+
 export function parseCookie(header: string): Record<string, string> {
   const result: Record<string, string> = {};
   if (header === '') {
@@ -33,15 +34,27 @@ export function parseCookie(header: string): Record<string, string> {
   return result;
 }
 
-export function cookie(name: string): Persistence {
-  return {
+export interface CookieOptions {
+  name: string;
+}
+
+export function cookie(options: CookieOptions): Persistence {
+  const { name } = options;
+  return createPersistence({
     get() {
       if (typeof globalThis.document === 'undefined') {
         return undefined;
       }
-      const cookies = parseCookie(globalThis.document.cookie);
-      const value = cookies[name];
-      return value === '' ? undefined : value;
+      const value = parseCookie(globalThis.document.cookie)[name];
+      return value === undefined || value === '' ? undefined : value;
+    },
+    getFromRequest(request) {
+      const header = request.headers.get('cookie');
+      if (header === null) {
+        return undefined;
+      }
+      const value = parseCookie(header)[name];
+      return value === undefined || value === '' ? undefined : value;
     },
     set(locale) {
       if (typeof globalThis.document === 'undefined') {
@@ -51,5 +64,5 @@ export function cookie(name: string): Persistence {
       // biome-ignore lint/suspicious/noDocumentCookie: yap yap yap
       globalThis.document.cookie = `${name}=${value}; path=/; max-age=31536000; samesite=lax`;
     },
-  };
+  });
 }
