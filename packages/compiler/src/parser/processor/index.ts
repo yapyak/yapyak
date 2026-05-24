@@ -1,10 +1,11 @@
 import type { Processor, ProcessorKind } from '../type';
 
+import { astroProcessor } from './astro';
 import { svelteProcessor } from './svelte';
 import { vanillaProcessor } from './vanilla';
 import { vueProcessor } from './vue';
 
-export { svelteProcessor, vanillaProcessor, vueProcessor };
+export { astroProcessor, svelteProcessor, vanillaProcessor, vueProcessor };
 
 export function resolveProcessorKind(fileId: string): ProcessorKind {
   if (fileId.endsWith('.vue')) return 'vue';
@@ -22,6 +23,6 @@ export function getProcessor(kind: ProcessorKind): Processor {
     case 'svelte':
       return svelteProcessor;
     case 'astro':
-      throw new Error(`Processor for '${kind}' is not yet implemented.`);
+      return astroProcessor;
   }
 }

@@ -41,7 +41,7 @@ describe('getProcessor', () => {
     expect(getProcessor('svelte')).toBeDefined();
   });
 
-  it('throws for unimplemented kinds', () => {
-    expect(() => getProcessor('astro')).toThrow(/not yet implemented/);
+  it('returns astroProcessor for astro kind', () => {
+    expect(getProcessor('astro')).toBeDefined();
   });
 });

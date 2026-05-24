@@ -32,6 +32,7 @@ export {
   walkSourceFiles,
 } from './io';
 export {
+  astroProcessor,
   type BindingTable,
   type CallSite,
   type CallSiteContext,
@@ -53,7 +54,6 @@ export {
   type Processor,
   type ProcessorKind,
   parseArguments,
-  parseAstro,
   parsePlaceholders,
   parseSvelte,
   type Range,

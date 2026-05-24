@@ -30,9 +30,9 @@ export { extractFile } from './extract';
 export { toMessageId } from './id';
 export { parseArguments } from './parse-arguments';
 export { parsePlaceholders } from './plural';
-export { parseAstro } from './preprocessors/astro';
 export { parseSvelte } from './preprocessors/svelte';
 export {
+  astroProcessor,
   getProcessor,
   resolveProcessorKind,
   svelteProcessor,

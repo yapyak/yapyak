@@ -23,6 +23,7 @@
     "magic-string": "catalog:"
   },
   "devDependencies": {
+    "@astrojs/compiler": "catalog:",
     "@types/node": "catalog:",
     "@vue/compiler-core": "catalog:",
     "@vue/compiler-sfc": "catalog:",
@@ -33,12 +34,16 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
+    "@astrojs/compiler": ">=2.0.0",
     "@vue/compiler-core": ">=3.0.0",
     "@vue/compiler-sfc": ">=3.0.0",
     "svelte": ">=5.0.0",
     "typescript": ">=5.0.0"
   },
   "peerDependenciesMeta": {
+    "@astrojs/compiler": {
+      "optional": true
+    },
     "@vue/compiler-core": {
       "optional": true
     },
