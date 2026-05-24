@@ -101,6 +101,17 @@ export interface ScriptBlock {
   offsetInSource: number;
 }
 
+export interface Fragment {
+  code: string;
+  kind: 'script' | 'template-expression';
+  lang: 'js' | 'ts';
+  originalOffset: number;
+}
+
+export interface Processor {
+  parseFragments(source: string): Fragment[];
+}
+
 export interface ExtractFileRequest {
   fileId: string;
   framework?: Framework;

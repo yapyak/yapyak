@@ -7,12 +7,14 @@ export type {
   ExtractedMessage,
   ExtractFileRequest,
   ExtractFileResult,
+  Fragment,
   Framework,
   Location,
   ParsedArguments,
   ParsedParams,
   Placeholder,
   Position,
+  Processor,
   Range,
   Scope,
   ScriptBlock,
@@ -31,5 +33,10 @@ export { parsePlaceholders } from './plural';
 export { parseAstro } from './preprocessors/astro';
 export { parseSvelte } from './preprocessors/svelte';
 export { parseVue } from './preprocessors/vue';
+export {
+  getProcessor,
+  resolveFramework,
+  vanillaProcessor,
+} from './processor';
 export { resolveBindings } from './resolve-bindings';
 export { transformFile } from './transform';

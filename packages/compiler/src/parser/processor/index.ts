@@ -1,0 +1,23 @@
+import type { Framework, Processor } from '../type';
+
+import { vanillaProcessor } from './vanilla';
+
+export { vanillaProcessor };
+
+export function resolveFramework(fileId: string): Framework {
+  if (fileId.endsWith('.vue')) return 'vue';
+  if (fileId.endsWith('.svelte')) return 'svelte';
+  if (fileId.endsWith('.astro')) return 'astro';
+  return 'vanilla';
+}
+
+export function getProcessor(framework: Framework): Processor {
+  switch (framework) {
+    case 'vanilla':
+      return vanillaProcessor;
+    case 'astro':
+    case 'svelte':
+    case 'vue':
+      throw new Error(`Processor for '${framework}' is not yet implemented.`);
+  }
+}
