@@ -53,11 +53,13 @@ export async function translate(options: TranslateOptions): Promise<number> {
 
   const stubsToFill = force
     ? targetLocales.flatMap((locale) =>
-        report.messages.map((message) => ({
-          fileId: message.fileId,
-          locale,
-          source: message.source,
-        })),
+        report.messages.flatMap((message) =>
+          message.locations.map((location) => ({
+            fileId: location.fileId,
+            locale,
+            source: message.source,
+          })),
+        ),
       )
     : report.missing.filter((entry) => targetLocales.includes(entry.locale));
 

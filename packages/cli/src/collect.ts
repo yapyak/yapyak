@@ -3,8 +3,7 @@ import type { ExtractedMessage } from '@yapyak/compiler';
 import {
   DEFAULT_EXCLUDE,
   DEFAULT_INCLUDE,
-  DynamicMessageError,
-  extractMessages,
+  extractFile,
   readLocaleFile,
   walkSourceFiles,
 } from '@yapyak/compiler';
@@ -58,26 +57,24 @@ export function collect(options: CollectOptions): CollectResult {
 
   const messages: ExtractedMessage[] = [];
   for (const file of sourceFiles) {
-    let extracted: ExtractedMessage[];
-    try {
-      extracted = extractMessages({ code: file.code, fileId: file.fileId });
-    } catch (error) {
-      if (error instanceof DynamicMessageError) {
-        continue;
-      }
-      throw error;
-    }
-    messages.push(...extracted);
+    const result = extractFile({
+      fileId: file.fileId,
+      locales,
+      source: file.code,
+    });
+    messages.push(...result.messages);
   }
 
   const sourcesByFile: Record<string, Set<string>> = {};
   for (const message of messages) {
-    let sources = sourcesByFile[message.fileId];
-    if (sources === undefined) {
-      sources = new Set();
-      sourcesByFile[message.fileId] = sources;
+    for (const location of message.locations) {
+      let sources = sourcesByFile[location.fileId];
+      if (sources === undefined) {
+        sources = new Set();
+        sourcesByFile[location.fileId] = sources;
+      }
+      sources.add(message.source);
     }
-    sources.add(message.source);
   }
 
   const totalMessages = Object.values(sourcesByFile).reduce(

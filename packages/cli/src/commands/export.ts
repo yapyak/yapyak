@@ -1,4 +1,4 @@
-import type { LocaleFile } from '@yapyak/compiler';
+import type { ExtractedMessage, LocaleFile } from '@yapyak/compiler';
 import type { YapyakCliConfig } from '../load-config';
 
 import { readLocaleFile, stringifyCanonical } from '@yapyak/compiler';
@@ -98,16 +98,18 @@ export function exportCommand(options: ExportOptions): number {
 }
 
 function buildSourcesByFile(
-  messages: { fileId: string; source: string }[],
+  messages: ExtractedMessage[],
 ): Map<string, Set<string>> {
   const sourcesByFile = new Map<string, Set<string>>();
   for (const message of messages) {
-    let sources = sourcesByFile.get(message.fileId);
-    if (sources === undefined) {
-      sources = new Set();
-      sourcesByFile.set(message.fileId, sources);
+    for (const location of message.locations) {
+      let sources = sourcesByFile.get(location.fileId);
+      if (sources === undefined) {
+        sources = new Set();
+        sourcesByFile.set(location.fileId, sources);
+      }
+      sources.add(message.source);
     }
-    sources.add(message.source);
   }
   return sourcesByFile;
 }

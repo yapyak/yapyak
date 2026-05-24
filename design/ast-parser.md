@@ -1,89 +1,145 @@
 # AST Parser — Design Doc
 
-**Status:** Planerad. Kommer efter `@yapyak/*` paket-splitten (klar).
-**Författare:** Joakim + Claude-session 2026-05-24.
-**Ersätter:** `packages/compiler/src/parser/parser.ts` (regex-baserad).
+**Status:** Implementation in progress (PR 1–9 landed, PR 10+ pending).
+**Författare:** Joakim + Claude-sessioner 2026-05-24.
+**Implementation:** `packages/compiler/src/parser/`.
 
 ---
 
-## 1. Vision (TL;DR)
+## 1. Vision
 
-> "Wrap everything in `$t()` from day one. Yapyak compilerar bort allt du inte använder. Lägg till första översättningen när du är redo — utan en enda kodändring. Din production-bundle är **bevisbart noll** tills du faktiskt skalar till flera språk."
+```
+"Wrap everything in $t() from day one.
+ Yapyak compilerar bort allt du inte använder.
+ Lägg till första översättningen när du är redo — utan en enda kodändring.
+ Din production-bundle är bevisbart noll tills du faktiskt skalar till flera språk."
+```
 
-Två killer-features som den nya AST-parsern möjliggör:
+Killer-feature: **single-locale-elision.** Med en locale: `$t('Hello')` compilas till `'Hello'` och hela `@yapyak/core`-importen försvinner. Lägg till `sv` → samma kod blir `_$pick({en:'Hello',sv:'Hej'})` och runtime aktiveras. Användarens app-kod är **identisk** i båda fall.
 
-1. **Single-locale-elision.** Med en locale: `$t('Hello')` compilas till `'Hello'`. `$t('Hi {name}', { name })` compilas till `` `Hi ${name}` ``. Import-statements som blir tomma stryks. Resultat: noll yapyak i bundle.
-2. **`$createT` compiler-macro.** `const $tSv = $createT({ locale: 'sv' })` är compile-time-namn. Alla `$tSv(...)` får locale/context inlinad. `$createT`-raden raderas. Noll runtime-overhead.
+## 2. Hela publika API:t
 
-Plus en grund för LSP, codemods, ESLint-plugin, type-safe catalogs — allt återanvänder samma core-extractor.
+```ts
+// @yapyak/core
+export function $t<T extends string>(
+  source: T,
+  params?: ParamsForSource<T>,
+  options?: { locale?: string },
+): string;
 
-## 2. Varför — bortom regex
+export function getLocale(): string;
+export function setLocale(next: string): void;
+export function useLocale(): readonly [string, (next: string) => void];
+export function subscribeLocale(callback: (next: string) => void): () => void;
+export const defaultLocale: string;
+export const locales: readonly string[];
+```
 
-Nuvarande extractor (`parser.ts`, 587 LOC) är regex-baserad. Den klarar grundläggande extraction men kan inte:
+**Det är allt.** En översättnings-funktion. Locale-store. Inget annat.
 
-- Spåra `const t = $t; t('Hej')` (wrapper-bindning)
-- Stödja `const $tSv = $createT({ locale: 'sv' }); $tSv('Hello')` (factory-macro)
-- Validera placeholders statiskt (`$t('Hej {name}')` utan params → tyst miss, runtime error)
+Designprincip: *one way to do it. No magic. Everything composes with standard JavaScript.*
+
+### Argument-semantik för `$t`
+
+| Position | Krav | Compile-time | Runtime |
+|---|---|---|---|
+| `source` | Plain string-literal eller no-substitution template | Extraherad för översättning. Måste vara statisk (YPK001 annars). | Inlinas i catalog |
+| `params` | Object literal (statisk shape) eller reference | Keys-shape verifieras mot placeholders | Skickas verbatim till `_$pick` |
+| `options` | Object literal eller reference | Inline literal: re-renderas. Reference: preserveras verbatim | Runtime kan ha dynamiska värden (locale-byte etc) |
+
+### Exempel som täcker hela ytan
+
+```ts
+// Enklast
+$t('Hello');
+
+// Med placeholders
+$t('Hi {name}', { name });
+
+// Med plural
+$t('{count, plural, one {# item} other {# items}}', { count });
+
+// Med statiskt forced locale
+$t('Hello', undefined, { locale: 'sv' });
+
+// Med dynamiskt locale (reactive)
+$t('Hello', undefined, { locale: previewLocale.value });
+
+// Options som variable — preserveras verbatim
+const svOptions = { locale: 'sv' };
+$t('Hello', undefined, svOptions);
+
+// Options från function call
+$t('Hello', undefined, getOptions());
+
+// Wrapper för kortare namn (existerande binding-pattern)
+const t = $t;
+t('Hello');
+```
+
+Alla dessa fungerar reaktivt i Vue/Svelte-templates och computed/derived eftersom options-uttrycket evalueras vid varje `_$pick`-anrop.
+
+## 3. Varför AST-parser (inte regex)
+
+Förr använde vi en regex-baserad extractor (587 LOC). Den klarade grundläggande extraction men kunde inte:
+
+- Spåra wrapper-bindningar (`const t = $t; t('Hej')`)
+- Validera placeholders statiskt
 - Producera precis position-info för diagnostics
 - Generera korrekta source maps
-- Återanvändas i andra build-tools (Webpack, esbuild) utan duplicering
-- Driva en LSP, ESLint-plugin eller codemods
+- Stödja LSP / codemods / ESLint-plugins
 - **Strippa imports vid single-locale-elision** (kräver scope-medvetenhet)
 
-Regex = MVP. För att bygga något bortom v1 krävs en AST-grund.
+Regex = MVP. För allt bortom det krävs AST.
 
-## 3. Val av parser
+## 4. Val av parser
 
 **TypeScript Compiler API** (`typescript`-paketet, `ts.createSourceFile`).
 
 | Alternativ | Varför inte |
 |---|---|
-| Babel (`@babel/parser` + `@babel/traverse`) | Industri-standard men 3-4x större deps, långsammare parse, alla i18n-konkurrenter använder det |
-| swc | Rust-binär, komplicerade plattforms-builds, översikt-API mindre moget för traversal |
-| oxc | Lovande men för ungt 2026, breaking changes vanliga |
-| TS Compiler API | Redan i alla TS-projekts `node_modules`, ren JS, snabbare parse än Babel, **unikt val i i18n-space** |
+| Babel | 3-4x större deps, alla i18n-konkurrenter använder det (vi differentierar) |
+| swc | Rust-binär, plattforms-builds komplicerat |
+| oxc | För ungt 2026 |
+| TS Compiler API | Redan i alla TS-projekts `node_modules`, ren JS, **unikt val i i18n-space** |
 
-**Nyckelinsikt:** vi använder bara `ts.createSourceFile()` + `forEachChild()` — **inte** `createProgram` eller `TypeChecker`. Det betyder:
+**Nyckelinsikt:** vi använder bara `ts.createSourceFile()` + `forEachChild()` — **inte** `createProgram` eller `TypeChecker`. Per-fil parsing, ingen helprojekt-init.
 
-- Per-fil parsing, ingen helprojekt-init-kostnad
-- Hanterar JS lika gärna som TS (`ScriptKind.JS`/`JSX`/`TS`/`TSX`)
-- Inga type-checking-deps eller `tsconfig`-läsning
+**Framtidssäkring:** TypeScript 7 (Corsa, Go-rewrite) behåller samma JS-API. När den landar = 10x snabbare extraction utan kodändring.
 
-**Framtidssäkring:** TypeScript 7 (Corsa, Go-rewrite) behåller samma JS-API enligt Microsoft. När den landar = 10x snabbare extraction utan kodändring.
-
-## 4. Arkitektur-axiom
+## 5. Arkitektur-axiom
 
 **Extractorn är en ren funktion.**
 
 ```ts
-extractFile(input: ExtractInput): ExtractResult
+extractFile(request: ExtractFileRequest): ExtractFileResult
 ```
 
-- **Inget I/O.** Ingen filsystem-läsning. Tar text in, returnerar struktur ut.
+- **Inget I/O.** Ingen filsystem-läsning. Text in, struktur ut.
 - **Ingen Vite.** Ingen build-tool-koppling.
 - **Ingen cache.** Caching är ett shell-lager (Vite-plugin, CLI), inte parser-internt.
-- **Deterministisk.** Samma input → exakt samma output, alltid. Krävs för cache, snapshot-tester, CI-reproducerbarhet.
+- **Deterministisk.** Samma input → exakt samma output, alltid.
 
-Allt annat — Vite-plugin, CLI, HMR, locale-files, LSP, webpack-loader, ESLint-plugin — är skal runtom samma kärna.
+Allt annat — Vite-plugin, CLI, HMR, locale-files, LSP — är skal runtom samma kärna.
 
-## 5. Single-locale-first (graceful runtime scaling)
+## 6. Single-locale-first (graceful runtime scaling)
 
-**Inget binärt "mode-switch". Inga förbud. Inga errors.** Allt fungerar i båda fall — skillnaden är bara hur mycket runtime som faktiskt landar i bundle.
+**Inget binärt "mode-switch". Inga förbud. Allt fungerar i båda fall** — skillnaden är hur mycket runtime som landar i bundle.
 
-### 5.1 Compile-output sida vid sida
+### Compile-output sida vid sida
 
 | Källkod | `locales: ['en']` | `locales: ['en','sv']` |
 |---|---|---|
 | `$t('Hello')` | `'Hello'` | `_$pick({en:'Hello', sv:'Hej'})` |
 | `$t('Hi {name}', { name })` | `` `Hi ${name}` `` | `_$pick({en:'Hi {name}', sv:'Hej {name}'}, { name })` |
-| `$t('{count, plural, one{# item} other{# items}}', { count })` | `_$pick({en:'...'}, { count })` (en-only plural-fn, ~200b) | `_$pick({...}, { count })` (full CLDR, ~2kb) |
-| `$t('{date, date, medium}', { date })` | `_$pick({en:'...'}, { date })` (en-only format, liten) | `_$pick({...}, { date })` full |
+| `$t('{count, plural, ...}', { count })` | `_$pick({en:'...'}, { count })` (en-only plural-fn, ~200b) | `_$pick({...}, { count })` (full CLDR, ~2kb) |
+| `$t('Hello', undefined, { locale: 'sv' })` | `_$pick({en:'Hello'}, undefined, { locale: 'sv' })` (förbi elision pga forced locale) | `_$pick({en:'Hello',sv:'Hej'}, undefined, { locale: 'sv' })` |
+| `$t('Hello', undefined, opts)` | `_$pick({en:'Hello'}, undefined, opts)` (preserve verbatim) | `_$pick({en:'Hello',sv:'Hej'}, undefined, opts)` |
 | `getLocale()` | `'en'` (constant, inlinad) | runtime store-read |
-| `useLocale()` | returnerar `['en', noop]` (constant tuple) | full hook med subscribe |
-| `setLocale('sv')` | no-op, statement helt borttagen | skriver store + persistence |
-| `const $tSv = $createT({ locale: 'sv' })` + `$tSv('X')` | `'X'` (sv finns inte → fallback till source) | `_$pick({en:'X', sv:'Y'}, undefined, { locale: 'sv' })` |
+| `useLocale()` | `['en', () => {}]` (constant tuple) | full hook |
+| `setLocale('sv')` | no-op, statement borttagen | skriver store + persistence |
 
-### 5.2 Import-elision
+### Import-elision
 
 Efter call-site-transform räknas alla `@yapyak/*`-import-specifiers. Oreferenced specifiers stryks. Tomma import-statements tas bort.
 
@@ -104,22 +160,22 @@ function Greeting({ name }: { name: string }) {
 
 `$t` är inlinad. `useLocale` är constant-folded. Import-raden är borta. **Noll yapyak-runtime i bundle.**
 
-### 5.3 Trigger-regel
+### Trigger-regel
 
 Mode auto-detekteras från Vite-plugin-config:
 
-- `locales: ['en']` (eller bara default-locale konfigurerad) → **elision-pass aktiveras**
+- `locales: ['en']` (eller bara default-locale) → **elision-pass aktiveras**
 - `locales: ['en', 'sv', ...]` → standard `_$pick`-transform
 
-Ingen separat `singleLocale: true`-flagga. En locale = elision. Flera = full runtime.
+Ingen separat flagga. En locale = elision. Flera = full runtime.
 
-### 5.4 Marketing-position
+### Marketing-position
 
 > *"Skriv din i18n-kod som om du redan hade 10 språk. Yapyak compilerar bort allt du inte använder."*
 
-Diff:bart före/efter `yapyak add sv` — du ser exakt vad varje locale kostar. **Det är inte 'billigt'. Det är bevisbart noll.**
+Diff:bart före/efter `yapyak add sv` — du ser exakt vad varje locale kostar.
 
-## 6. Modul-layout
+## 7. Modul-layout
 
 Bor i `packages/compiler/src/parser/`:
 
@@ -127,96 +183,54 @@ Bor i `packages/compiler/src/parser/`:
 parser/
 ├── index.ts                       ← public barrel
 ├── type.ts                        ← alla publika type-contracts
-├── resolve-bindings.ts            ← resolveBindings() + BindingTable
+├── resolve-bindings.ts            ← BindingTable
 ├── resolve-bindings.test.ts
-├── discover-calls.ts              ← discoverCalls() + CallSite
+├── discover-calls.ts              ← CallSite[]
 ├── discover-calls.test.ts
-├── parse-arguments.ts             ← parseArguments() + ParsedArguments
+├── parse-arguments.ts             ← ParsedArguments + diagnostics
 ├── parse-arguments.test.ts
-├── call-site-context.ts           ← resolveCallSiteContext()
+├── call-site-context.ts           ← CallSiteContext (componentName, JSX, hook)
 ├── call-site-context.test.ts
-├── diagnostic.ts                  ← Diagnostic + DiagnosticCode catalog
-├── extract.ts                     ← extractFile() — orkestrerar allt (public)
-├── extract.test.ts
-├── transform.ts                   ← transformFile() via magic-string (public)
-├── transform.test.ts
-├── plural.ts                      ← ICU plural-parsing + validation
+├── diagnostic.ts                  ← createDiagnostic helper
+├── plural.ts                      ← ICU placeholder-parsing + validation
 ├── plural.test.ts
-├── id.ts                          ← toMessageId() generation
+├── id.ts                          ← toMessageId (sha256)
 ├── id.test.ts
-├── fixtures/                      ← snapshot-driven testharness
+├── position.ts                    ← toPosition + toRange helpers
+├── extract.ts                     ← extractFile() orchestrator
+├── extract.test.ts
+├── transform.ts                   ← transformFile() via magic-string
+├── transform.test.ts
+├── fixtures.test.ts               ← snapshot-driven testharness
+├── fixtures/
 │   ├── bindings/
 │   ├── calls/
 │   ├── diagnostics/
 │   ├── single-locale/
 │   └── multi-locale/
-└── preprocessors/
+└── framework/                     ← fragment-orienterad SFC-support
+    ├── index.ts
+    ├── adapter.ts                 ← FrameworkAdapter interface
+    ├── vanilla.ts
     ├── vue.ts
     ├── svelte.ts
     └── astro.ts
 ```
 
-Notera: ingen `walk-source-files.ts` i `parser/`. Den lever i `packages/compiler/src/io/` eftersom den gör filsystem-IO (bryter mot axiomet i §4).
+I/O lever utanför parser-mappen i `packages/compiler/src/io/`:
 
-### Försvinner
-
-- `parser/parser.ts` (regex-implementationen, 587 LOC)
-- `parser/extract-messages.ts` (ersätts av `extract.ts`)
-
-### Flyttar in
-
-- `packages/vite/src/transform-source.ts` → `parser/transform.ts`. Transformen är verktygsagnostisk magic-string-logik. Framtida webpack/esbuild-loaders ska kunna återanvända den.
-
-### Flyttar ut
-
-- `parser/walk-source-files.ts` → `io/walk-source-files.ts`. Inte parser-concern.
-
-## 7. Publik API-yta
-
-`@yapyak/compiler/parser` exporterar:
-
-```ts
-// Orkestrerande
-export function extractFile(request: ExtractFileRequest): ExtractFileResult;
-export function transformFile(request: TransformFileRequest): TransformFileResult;
-
-// Komponenter (för avancerade konsumenter — LSP, codemods)
-export function resolveBindings(sourceFile: ts.SourceFile): BindingTable;
-export function discoverCalls(sourceFile: ts.SourceFile, bindings: BindingTable): CallSite[];
-export function parseArguments(callSite: CallSite): ParsedArguments;
-export function resolveCallSiteContext(node: ts.Node, sourceFile: ts.SourceFile): CallSiteContext;
-
-// Diagnostic + ID
-export function toMessageId(source: string, context?: string): string;
-export { Diagnostic, type DiagnosticCode };
-
-// Types
-export type {
-  ExtractFileRequest, ExtractFileResult,
-  TransformFileRequest, TransformFileResult,
-  BindingTable, YapyakBinding,
-  CallSite, ParsedArguments, ParsedParams,
-  CallSiteContext, Position, Range,
-  ExtractedMessage, Framework,
-  StaticOptions, Placeholder, Location, Scope,
-};
 ```
-
-**Naming-konventioner följda:**
-- `*Request`/`*Result` för function-scoped input/output med single consumer → prefix med full funktion-namn (`extractFile` → `ExtractFileRequest`)
-- `discover*` för "scan source for set of items" (inte `visit*` — inte i verb-vokabulären)
-- `resolve*` för "compute final value from inputs" (`resolveCallSiteContext`, `resolveBindings`)
-- `to*` för "convert value to another shape" (`toMessageId`)
-- `*Site` för "location enriched with context" (`CallSite`, inte `CallVisit`)
-- `*Context` för "bundle of state" (`CallSiteContext`)
-- `Parsed*` past-participle prefix för processed form (`ParsedArguments`, `ParsedParams`)
+io/
+├── index.ts
+└── walk-source-files.ts
+```
 
 ## 8. Type contracts
 
 Alla publika types samlade. Ingen ambiguity.
 
 ```ts
-export type Framework = 'vanilla' | 'vue' | 'svelte' | 'astro';
+export type Framework = 'astro' | 'svelte' | 'vanilla' | 'vue';
 
 export interface Position {
   line: number;       // 1-based
@@ -232,8 +246,8 @@ export interface Range {
 export interface ExtractFileRequest {
   source: string;
   fileId: string;
-  framework?: Framework;       // default 'vanilla'
-  locales: readonly string[];  // for elision decisions
+  locales: readonly string[];
+  framework?: Framework;        // default 'vanilla'
 }
 
 export interface ExtractFileResult {
@@ -243,43 +257,36 @@ export interface ExtractFileResult {
 }
 
 export interface ExtractedMessage {
-  id: string;                  // stable hash (see §17)
-  source: string;              // literal first arg
-  placeholders: Placeholder[]; // parsed from source
-  locations: Location[];       // every call-site producing this message
-  context?: string;            // hint string (extraction-only)
-  factoryLocale?: string;      // from $createT, if any
+  id: string;                   // stable hash (see §14)
+  source: string;               // literal first arg
+  placeholders: Placeholder[];  // parsed from source
+  locations: Location[];        // every call-site producing this message
 }
 
 export interface Placeholder {
   name: string;
-  kind: 'simple' | 'plural' | 'select' | 'date' | 'time' | 'number';
-  variants?: Record<string, string>; // for plural/select sub-messages
+  kind: 'date' | 'number' | 'plural' | 'select' | 'simple' | 'time';
+  variants?: Record<string, string>;
 }
 
 export interface Location {
   fileId: string;
   range: Range;
   callSiteContext: CallSiteContext;
+  forcedLocale?: string;        // if call-site has static { locale: '...' }
 }
 
 export interface CallSiteContext {
   componentName?: string;       // 'Greeting', 'useFoo', etc
   enclosingFunction?: string;   // closest fn/method name
-  enclosingJsx?: string;        // closest JSX element tag, if any
   enclosingHook?: string;       // closest 'use*' fn, if any
-}
-
-export interface StaticOptions {
-  context?: string;
-  locale?: string;
+  enclosingJsx?: string;        // closest JSX element tag, if any
 }
 
 export interface YapyakBinding {
-  kind: 'direct' | 'wrapper' | 'factory' | 'namespace';
+  kind: 'direct' | 'namespace' | 'wrapper';
   localName: string;
   declarationNode: ts.Node;
-  factoryOptions?: StaticOptions;
 }
 
 export interface Scope {
@@ -302,24 +309,25 @@ export interface CallSite {
 export interface ParsedArguments {
   source: string;               // first arg literal
   sourceRange: Range;
-  params?: ParsedParams;        // second arg (if any)
-  options?: StaticOptions;      // third arg, statically resolved
   diagnostics: Diagnostic[];
+  params?: ParsedParams;        // second arg if source has placeholders
+  forcedLocale?: string;        // from static options { locale: 'sv' }
+  optionsExpression?: string;   // raw text of options arg if non-static
 }
 
 export interface ParsedParams {
   keys: string[];               // statically known
-  kind: 'static' | 'spread';    // discriminator — 'spread' means {...rest} present
+  kind: 'spread' | 'static';
   range: Range;
 }
 
 export interface TransformFileRequest {
   source: string;
   fileId: string;
-  framework?: Framework;
   locales: readonly string[];
-  translations: Record<string, Record<string, string>>; // locale → id → translation
-  extracted: ExtractFileResult; // from extractFile()
+  translations: Record<string, Record<string, string>>;  // locale → id → text
+  extracted: ExtractFileResult;
+  framework?: Framework;
 }
 
 export interface TransformFileResult {
@@ -327,335 +335,388 @@ export interface TransformFileResult {
   map: SourceMap;               // magic-string output
   diagnostics: Diagnostic[];
 }
-```
 
-## 9. `resolve-bindings.ts`
-
-Bygger en **scope-trädad** binding-table per fil. Spårar alla identifierare som resolvar till `$t`, `$createT`, eller wrapper/factory-bindningar därav.
-
-### Scope-modellen
-
-En `Scope` per fil + per funktion/block där en `const`-binding deklareras. Lookup går scope-uppåt tills binding hittas.
-
-**Ingen flat `byName: Map`**. Bara scope-trädet. Det löser nested-shadowing-problem (wrapper i en `if`-block läcker inte ut).
-
-### Bindings som detekteras
-
-```ts
-// direct
-import { $t } from '@yapyak/core';                    // { localName: '$t', kind: 'direct' }
-import { $t as t } from '@yapyak/core';               // { localName: 't', kind: 'direct' }
-
-// namespace
-import * as Y from '@yapyak/core';                    // { localName: 'Y', kind: 'namespace' }
-// → Y.$t(...) känns igen via property-access
-
-// wrapper
-const t = $t;                                          // { localName: 't', kind: 'wrapper' }
-
-// factory
-const $tSv = $createT({ locale: 'sv' });              // { kind: 'factory', factoryOptions: { locale: 'sv' } }
-const $tCtx = $createT({ context: 'admin' });         // { kind: 'factory', factoryOptions: { context: 'admin' } }
-```
-
-### Constraints på `$createT`
-
-- **Endast `const` top-level eller function-scope-top.** `let` → YPK010. `if (foo) const` → YPK010.
-- **Factory-arg måste vara statiskt analyserbart.** `$createT({ locale: someVar })` → YPK004.
-- **Får inte exporteras.** `export const $tSv = $createT(...)` → YPK011 (per-file constraint, se §15).
-
-## 10. `discover-calls.ts`
-
-Traverserar AST med `forEachChild`. För varje `CallExpression`:
-
-1. Resolva callee (identifier eller property-access) mot `BindingTable.find(name, node)`.
-2. Om binding hittas → registrera som `CallSite`.
-
-**Ingen ambient state-tracking.** `withLocale`/`withContext` är **explicit cuts**. Locale/context kommer enbart från:
-
-- `$createT(...)`-factoryns options (via `binding.factoryOptions`)
-- Tredje argumentet till call-site `$t('...', params, { locale, context })`
-
-Per-call options merges över factory-options. Per-call wins.
-
-## 11. `parse-arguments.ts`
-
-Validerar argument-strukturen vid varje `CallSite`.
-
-### Regel 1: First arg = string-literal
-
-**Endast string-literal eller no-substitution template-literal.** Inget annat.
-
-```ts
-$t('Hello')                    // ✅
-$t(`Hello`)                    // ✅ no-substitution template
-$t('Hi {name}', { name })      // ✅ literal med placeholder-syntax
-
-$t(`Hi ${name}`)               // ❌ YPK001 Dynamic source
-$t(someVar)                    // ❌ YPK001
-$t('Hi ' + name)               // ❌ YPK001
-$t('Hi ' + STATIC_CONST)       // ❌ YPK001 även om StaticConst är statisk
-```
-
-**Tagged templates stöds inte.** Bara plain string-literals. Period.
-
-### Regel 2: Placeholders extraheras från source
-
-Source-strängen parsas för `{name}`, `{name, plural, ...}`, `{name, select, ...}`, `{name, date|time|number, ...}`.
-
-### Regel 3: Params måste matcha placeholders
-
-Om source har placeholders:
-- Andra argumentet **måste** vara objekt-literal med matching keys.
-- Saknad key → **YPK002** error.
-- Extra key → **YPK003** warning.
-- `{...spread}` → **YPK005** warning ("couldn't statically verify params").
-
-### Regel 4: Options-objekt är tredje arg (eller andra om inga placeholders)
-
-```ts
-$t('Save', { context: 'submit button' });
-$t('Hi {name}', { name }, { context: 'greeting', locale: 'sv' });
-```
-
-`context` strippas alltid från runtime (extraction-only metadata).
-`locale` behålls (runtime-relevant — påverkar `_$pick`-call).
-
-## 12. `call-site-context.ts`
-
-Walka uppåt från ett `$t`-anrop. Bygg en `CallSiteContext` med:
-
-- **`componentName`** — namnet på närmaste React-komponent/`function Foo()`/`const Foo = () => ...`/`forwardRef`/`memo`/`export default function`-deklaration. Bredare än bara JSX.
-- **`enclosingFunction`** — närmaste funktion/method-namn (oavsett om komponent eller ej).
-- **`enclosingJsx`** — närmaste omslutande JSX-element-tag, om någon. Hanterar fragment, self-closing, dynamiska expressions korrekt.
-- **`enclosingHook`** — närmaste `use*`-funktion, om någon.
-
-Alla är `string | undefined`. Tomma fält är OK (top-level-anrop har inga av dem).
-
-Ersätter dagens regex-baserade backward-scan. Korrekt för alla JSX-edge-cases.
-
-## 13. `diagnostic.ts`
-
-Strukturerade diagnostics med stable codes:
-
-```ts
 export interface Diagnostic {
   severity: 'error' | 'warning';
   code: DiagnosticCode;
   message: string;
   fileId: string;
   range: Range;
+  source: string;               // file source text, for downstream code-frame rendering
   hint?: string;
-  source: string;  // file source text, for downstream code-frame rendering
 }
 
 export type DiagnosticCode =
-  | 'YPK001' | 'YPK002' | 'YPK003' | 'YPK004' | 'YPK005'
-  | 'YPK006' | 'YPK007' | 'YPK008' | 'YPK009' | 'YPK010' | 'YPK011';
+  | 'YPK001'  // dynamic source string
+  | 'YPK002'  // missing placeholder param
+  | 'YPK003'  // extra param
+  | 'YPK005'  // spread params (can't verify)
+  | 'YPK007'  // invalid plural (missing other)
+  | 'YPK008'; // empty source string
 ```
 
-**Diagnostic frame rendering** sker i shell-lagret (Vite-plugin, CLI, LSP), inte i parser-core. Pure-core ger bara `range + source`. Renderern kan vara terminal-färger, HTML, LSP-format.
+## 9. Komponenter
 
-### Katalog
+### 9.1 `resolve-bindings.ts`
 
-| Kod | Severity | Trigger | Hint |
-|---|---|---|---|
-| YPK001 | error | Dynamic source i `$t(...)` | "Use `{placeholder}` syntax + params object instead of string concatenation or template interpolation." |
-| YPK002 | error | Saknad placeholder-param | "Add `{name}` to the params object." |
-| YPK003 | warning | Extra placeholder-param | "Remove unused `{name}` from params object." |
-| YPK004 | error | Icke-statisk `$createT`-option | "`$createT` options must be statically analyzable string literals." |
-| YPK005 | warning | Spread params (`{...obj}`) | "Spread params cannot be statically verified. Pass keys explicitly to enable validation." |
-| YPK006 | warning | Wrapper deklarerad i unreachable branch | "Wrapper binding may not be applied consistently. Consider declaring at function scope." |
-| YPK007 | error | Invalid ICU plural shape | "Plural requires `other` branch. Optional: `zero`, `one`, `two`, `few`, `many`." |
-| YPK008 | error | Tom source-string | "$t('') has no meaning. Pass a non-empty string literal." |
-| YPK009 | warning | Två `$t`-calls med samma source men olika context | "Different contexts produce different message IDs. Verify this is intentional." |
-| YPK010 | error | `$createT` i `let` / conditional / non-top-of-scope | "`$createT` must be a top-level `const` declaration." |
-| YPK011 | error | `export` av `$createT`-binding | "`$createT` bindings cannot be exported. Call sites must be in the same file as the declaration." |
+Bygger en **scope-trädad** binding-table per fil. Spårar alla identifierare som resolvar till `$t` eller wrapper därav.
 
-Användare kan disable enskilda koder via shell-config (Vite-plugin options eller `.yapyak.json`).
+**Tre binding-kinds:**
 
-## 14. `transform.ts`
+```ts
+import { $t } from '@yapyak/core';            // { localName: '$t', kind: 'direct' }
+import { $t as t } from '@yapyak/core';       // { localName: 't', kind: 'direct' }
+import * as Y from '@yapyak/core';            // { localName: 'Y', kind: 'namespace' }
+const t = $t;                                  // { localName: 't', kind: 'wrapper' }
+```
 
-Använder `magic-string` för rewrite med bevarad source-map. Återanvänder offsets från `ExtractResult.calls` — ingen re-parse.
+Scope-modellen: en `Scope` per fil + per Block (function-body, if-block, etc). Lookup går scope-uppåt tills binding hittas. Nested wrappers shadowed korrekt.
+
+### 9.2 `discover-calls.ts`
+
+Traverserar AST med `forEachChild`. För varje `CallExpression`:
+
+1. Resolva callee mot `BindingTable.find(name, node)`
+2. Direkt-binding eller wrapper → registrera som `CallSite`
+3. Namespace-binding (`Y.$t(...)`) → kontrollera property-access mot `$t`
+
+### 9.3 `parse-arguments.ts`
+
+Validerar argument-strukturen vid varje `CallSite`.
+
+**Regel 1: First arg = string-literal.** YPK001 annars.
+
+```ts
+$t('Hello')                    // ✅
+$t(`Hello`)                    // ✅ no-substitution template
+$t(`Hi ${name}`)               // ❌ YPK001
+$t(someVar)                    // ❌ YPK001
+$t('Hi ' + name)               // ❌ YPK001
+```
+
+**Regel 2: Placeholders extraheras från source.** Plain `{name}`, ICU `{count, plural, ...}`, `{when, date, ...}`, etc.
+
+**Regel 3: Params måste matcha placeholders.**
+
+- Saknad key → YPK002
+- Extra key → YPK003
+- `{...spread}` → YPK005
+
+**Regel 4: Options-objekt är dynamiskt.**
+
+```ts
+$t('Save', undefined, { locale: 'sv' });               // inline static — re-rendered
+$t('Save', undefined, { locale: previewLocale.value }); // dynamic — preserved verbatim
+$t('Save', undefined, svOptions);                      // reference — preserved verbatim
+$t('Save', undefined, getOptions());                   // call result — preserved verbatim
+```
+
+För **inline static** literal: compiler läser `locale`-fältet, sätter `parsed.forcedLocale` (används av transform för att skippa single-locale-elision).
+
+För **icke-static**: compiler bevarar uttrycks-texten i `parsed.optionsExpression`. Transform inlinar verbatim vid call-site.
+
+**Disambiguering arg[1]:**
+
+```ts
+$t('Hi {name}', { name }, opts);  // source har placeholders → arg[1]=params, arg[2]=options
+$t('Save', opts);                  // source utan placeholders → arg[1]=options
+```
+
+### 9.4 `call-site-context.ts`
+
+Walka uppåt från ett `$t`-anrop. Bygg en `CallSiteContext` med:
+
+- `componentName` — närmaste React-komponent (`function Foo`, `const Foo = () => ...`, `forwardRef`, `memo`-wrap, etc)
+- `enclosingFunction` — närmaste funktion/method-namn
+- `enclosingHook` — närmaste `use*`-funktion
+- `enclosingJsx` — närmaste JSX-element-tag
+
+Detta är auto-context som skickas till translator vid auto-translation. Användaren behöver inte annotera nåt — kontext kommer från AST.
+
+### 9.5 `plural.ts`
+
+ICU placeholder-parser. Klassificerar varje placeholder som `simple` / `plural` / `select` / `date` / `time` / `number`. Validerar plural för required `other`-branch (YPK007 annars). Brace-counting för nested templates.
+
+### 9.6 `id.ts`
+
+```ts
+export function toMessageId(source: string): string {
+  return createHash('sha256').update(source).digest('hex').slice(0, 12);
+}
+```
+
+48 bits → ~16M unika ids före 1% kollisions-risk. Mer än nog.
+
+Translation-files keyas på id (kort hash), inte source (lång sträng).
+
+### 9.7 `diagnostic.ts`
+
+```ts
+export function createDiagnostic(input: {
+  code: DiagnosticCode;
+  severity: 'error' | 'warning';
+  message: string;
+  fileId: string;
+  range: Range;
+  source: string;
+  hint?: string;
+}): Diagnostic;
+```
+
+Diagnostic frame rendering sker i shell-lagret (Vite, CLI, LSP). Pure-core ger bara strukturen.
+
+## 10. `extract.ts` orchestrator
+
+```ts
+extractFile(request) →
+  1. createSourceFile (ScriptKind från fileId)
+  2. resolveBindings → BindingTable
+  3. discoverCalls → CallSite[]
+  4. för varje CallSite:
+     a. parseArguments → ParsedArguments + diagnostics
+     b. parsePlaceholders → Placeholder[]
+     c. resolveCallSiteContext → CallSiteContext
+     d. toMessageId(source) → id
+     e. merge i messagesById (dedupe på id, ackumulera locations)
+  5. return { messages, callSites, diagnostics }
+```
+
+ID är `sha256(source)` — samma source överallt = samma id = samma translation-entry. Cross-file dedupe via id.
+
+## 11. `transform.ts`
+
+Använder `magic-string` för rewrite med bevarad source-map. Återanvänder offsets från `ExtractFileResult.callSites` — ingen re-parse.
 
 ### Transform-pipeline
 
 ```
-1. Replace call-sites (from ExtractFileResult.callSites)
-   a. $t(...) → elide (single-locale) | _$pick(...) (multi-locale)
-   b. $createT() declarations → delete entire VariableStatement
-   c. $createT()-bound calls → expand to _$pick(...) with factory options
+1. Replace call-sites (från ExtractFileResult.callSites)
+   a. $t(...) → elide (single-locale + simple) | _$pick(...) (multi-locale eller komplex)
 2. Constant-fold (single-locale only)
    a. getLocale() → 'en' (literal)
    b. useLocale() → ['en', () => {}] (literal tuple)
-   c. setLocale(...) calls → remove entire ExpressionStatement
+   c. setLocale(...) calls → undefined (no-op expression)
 3. Import-elision pass
-   a. Scan all import declarations from @yapyak/*
-   b. For each specifier: count remaining references in source
-   c. Remove specifiers with 0 references
-   d. Remove import statements with empty specifier lists
+   a. Scan @yapyak/* import declarations
+   b. Räkna reference per specifier i intermediate code
+   c. Strip unreferenced specifiers
+   d. Add _$pick if needed
+   e. Remove empty import statements
 4. Emit code + source-map
 ```
 
-### Transform-specs per construct
+### Options-emit-regler
 
-#### `$t` standalone, single-locale, no placeholders
-```ts
-// in:  $t('Hello')
-// out: 'Hello'
-```
+| Källa | Emit |
+|---|---|
+| Inget options-arg | `_$pick(catalog, params)` |
+| Inline `{ locale: 'sv' }` | `_$pick(catalog, params, { locale: 'sv' })` |
+| Variable ref `opts` | `_$pick(catalog, params, opts)` |
+| Computed expr `getOpts()` | `_$pick(catalog, params, getOpts())` |
+| Reactive `ref.value` | `_$pick(catalog, params, ref.value)` |
 
-#### `$t` standalone, single-locale, with simple placeholders
-```ts
-// in:  $t('Hi {name}, you have {count} messages', { name, count })
-// out: `Hi ${name}, you have ${count} messages`
-```
+**Inga options-mutations.** Inget context-stripping (context finns inte). Det användaren skrev → det runtime ser.
 
-#### `$t` standalone, single-locale, with plurals/format
-```ts
-// in:  $t('You have {count, plural, one{# item} other{# items}}', { count })
-// out: _$pick({en:'You have {count, plural, one{# item} other{# items}}'}, { count })
-// (still requires runtime — plural rules can't be inlined as template literal)
-```
+### Single-locale elision regler
 
-#### `$t` standalone, multi-locale
-```ts
-// in:  $t('Hi {name}', { name })
-// out: _$pick({en:'Hi {name}', sv:'Hej {name}'}, { name })
-```
+| Pattern | Elision möjlig? |
+|---|---|
+| `$t('Hello')` | ✅ → `'Hello'` |
+| `$t('Hi {name}', { name })` (simple placeholders) | ✅ → `` `Hi ${name}` `` |
+| `$t('{count, plural, ...}', { count })` (komplex placeholder) | ❌ → `_$pick(...)` |
+| `$t('Hello', undefined, { locale: 'sv' })` (forced locale, statisk) | ❌ → `_$pick(...)` (catalog behövs) |
+| `$t('Hello', undefined, opts)` (dynamiska options) | ❌ → `_$pick(...)` |
 
-#### `$createT` factory, single-locale
-```ts
-// in:  const $tSv = $createT({ locale: 'sv' });
-//      $tSv('Hello');
-//      $tSv('Hi {name}', { name });
-// out: (factory declaration deleted)
-//      'Hello';
-//      `Hi ${name}`;
-```
+Elision sker ENDAST när source har bara simple placeholders OCH inga options. Vi kan inte inlina när options-uttrycket kan ändra locale runtime.
 
-#### `$createT` factory, multi-locale
-```ts
-// in:  const $tSv = $createT({ locale: 'sv', context: 'admin' });
-//      $tSv('Save');
-//      $tSv('Delete', { context: 'destructive' });
-// out: (factory declaration deleted)
-//      _$pick({en:'Save', sv:'Spara'}, undefined, { locale: 'sv', context: 'admin' });
-//      _$pick({en:'Delete', sv:'Radera'}, undefined, { locale: 'sv', context: 'destructive' });
-```
+## 12. Framework support — fragment-arkitektur
 
-Per-call options merges över factory-options. Per-call wins. `context` strippas före runtime-emit (extraction-only).
+Vanilla TS/JS-pipelinen ovan parsar en hel fil som ett enda `SourceFile`. SFC-filer (`.vue`, `.svelte`, `.astro`) har FLERA JS-fragments på olika positioner i samma fil — `<script>`-block, template-interpolations, attribut-bindings.
 
-#### `useLocale`/`getLocale`/`setLocale`, single-locale
-```ts
-// in:  const [locale, setLocale] = useLocale();
-//      console.log(getLocale());
-//      setLocale('sv');
-// out: const locale = 'en'; const setLocale = () => {};
-//      console.log('en');
-//      (setLocale call removed entirely)
-```
+För att stödja `$t()` **överallt** i SFC-filer (inte bara `<script>`) introducerar vi **fragment-orienterad pipeline**.
 
-Compiler känner igen destructure-pattern på `useLocale`-resultatet och inlinar både elements.
-
-## 15. `$createT()` — full spec
-
-### Definition
+### 12.1 Kärnabstraktionen
 
 ```ts
-// I @yapyak/core (runtime-stub)
-export function $createT(_opts?: CreateTOptions): T {
-  throw new Error(
-    'yapyak: $createT() reached runtime. The compiler plugin must be installed.',
-  );
+export interface Fragment {
+  code: string;                  // ren JS/TS kod
+  originalOffset: number;        // byte-position i original-fil där code[0] ligger
+  kind: 'script' | 'template-expression';
+  lang: 'js' | 'ts';
 }
 
-export interface CreateTOptions {
-  context?: string;
-  locale?: string;
+export interface FrameworkAdapter {
+  splitToFragments(source: string): Fragment[];
+  importTargetRange(source: string): { start: number; end: number };
+  ensureImportBlock(source: string): { code: string; offset: number };
 }
 ```
 
-Fail-loud — om compiler-pluginen inte är installerad får användaren en tydlig run-time error vid första call. Inte tyst breakage.
+### 12.2 Per-framework fragments
 
-### Semantik
+| Framework | Script-fragments | Template-fragments |
+|---|---|---|
+| **Vanilla** | hela filen som enda script-fragment | — |
+| **Vue** | varje `<script>` + `<script setup>` | varje `{{...}}`-interpolation, alla `:foo="..."` / `v-bind:foo="..."` attribut-expressions, event handlers |
+| **Svelte** | varje `<script>` | varje `{...}`-expression i markup, attribut-expressions |
+| **Astro** | `---`-frontmatter | varje `{...}`-expression i markup, attribut-expressions |
 
-`$createT` är en **compiler-macro**. Den skapar **inget** runtime. Resultatet är ett compile-time-namn.
+### 12.3 Pipeline-flow
 
-Vid compile:
-1. `const $tSv = $createT(opts)` → declaration RADERAS HELT.
-2. Varje `$tSv(...)` rewrites med `opts` som default på third-arg.
-3. Per-call third-arg merges över factory-opts. Per-call wins.
-4. `context` strippas före runtime-emit.
-
-### Constraints (per §9)
-
-- Endast `const` top-level eller function-scope-top → annars YPK010.
-- Factory-arg statiskt analyserbart → annars YPK004.
-- Får inte exporteras → annars YPK011.
-
-### Vad om factory-locale inte finns i `locales`?
-
-I single-locale-mode:
-```ts
-// locales: ['en']
-const $tSv = $createT({ locale: 'sv' });
-$tSv('Hello');
-// → 'Hello' (sv finns inte, fallback till source)
+```
+ExtractFileRequest
+       │
+       ▼
+┌──────────────────────────┐
+│ FrameworkAdapter         │ ← detekterad från fileId-extension
+│   .splitToFragments()    │
+└──────────┬───────────────┘
+           │
+           ▼
+   Fragment[]
+           │
+           ▼ (per fragment)
+┌──────────────────────────┐
+│ resolveBindings          │
+│ discoverCalls            │
+│ parseArguments           │
+│ resolveCallSiteContext   │
+└──────────┬───────────────┘
+           │
+           ▼ remap ranges to original coords
+           │
+           ▼ (aggregate)
+   ExtractFileResult
 ```
 
-Silent — ingen error, ingen warning. När `yapyak add sv` körs börjar samma kod automatiskt växla locale korrekt. **Det är hela point:en.**
+För transform: **EN `MagicString` över ORIGINAL-källan**. Varje callSite har originalkoordinater. magic-string applicerar alla edits. Källkarta automatisk och korrekt.
 
-### Inget `withLocale`/`withContext`
+### 12.4 Position-remapping — invariant
 
-Skippas helt. `$createT` täcker alla legitima use-cases. Scope-helpers skulle tvinga visit-pass att tracka ambient state — onödig komplexitet för en feature 98% av användarna aldrig rör.
-
-## 16. Framework preprocessors
-
-Pre-processorer som ger oss ren TS/JS från SFC-format:
-
-### Vue
 ```ts
-import { parse } from '@vue/compiler-sfc';
-// Extraherar descriptor.script.content + descriptor.scriptSetup.content
-// med offsetInOriginal för diagnostic-position-mapping
+function remapRange(range: Range, fragment: Fragment, originalSource: string): Range {
+  const startOffset = range.start.offset + fragment.originalOffset;
+  const endOffset = range.end.offset + fragment.originalOffset;
+  return {
+    start: offsetToPosition(originalSource, startOffset),
+    end: offsetToPosition(originalSource, endOffset),
+  };
+}
 ```
 
-### Svelte
-```ts
-import { compile } from 'svelte/compiler';
-// (eller enkel regex för <script>-block — outer shell är trivial)
+**Invariant per callSite:**
+```
+originalSource.slice(callSite.range.start.offset, callSite.range.end.offset) === <text att ersätta>
 ```
 
-### Astro
-Liknande Svelte — extrahera `---` frontmatter-script.
+Tester verifierar detta för varje fragment-baserad fixture.
 
-### Vanilla
-No-op. Source skickas direkt till parser.
+### 12.5 Cross-fragment binding-resolution
 
-**Användaren behöver INTE skriva TypeScript.** `ScriptKind` sätts från fil-typ (`.vue` utan `lang="ts"` = JS, etc). Plain JavaScript fungerar identiskt.
+Vue `<script setup>` exporterar implicit till `<template>`. Template-fragments måste se script-bindings.
 
-## 17. ID generation
+**Modell:** Bygg bindings-tabell från ALLA `<script>`-blocks först. Template-fragments använder denna gemensamma tabell.
 
-**Stable hash per (source, context).**
+Implementation: `resolveBindings` körs en gång över concatenerade script-fragments, scope-trädet sparas. Template-fragments använder tabellen för lookup utan att lägga till egna bindings (template-scope är "read-only").
+
+### 12.6 Import-elision i SFCs
+
+Templates har inga egna imports. `_$pick` (om används) läggs till i lämpligt script-block:
+
+- **Vue:** `<script setup>` om finns, annars `<script>`, annars skapa nytt `<script setup>`-block överst
+- **Svelte:** `<script>` om finns, annars skapa nytt överst
+- **Astro:** `---`-frontmatter om finns, annars skapa nytt överst
+
+`FrameworkAdapter.ensureImportBlock(source)` returnerar position + ev. ny block-skeleton.
+
+### 12.7 Dependencies per framework
+
+| Framework | Peer-dep | Vad det ger | Optional? |
+|---|---|---|---|
+| **Vue** | `@vue/compiler-sfc` | Komplett SFC-parser inkl. template-AST | ✅ |
+| **Svelte** | `svelte` (inkl. `svelte/compiler`) | Svelte AST med MustacheTag, attribute-expressions | ✅ |
+| **Astro** | `@astrojs/compiler` | WASM-baserad AST | ✅ |
+
+Alla three lazy-loadas via `createRequire`. Användare som inte använder ett framework laddar aldrig dess compiler.
+
+### 12.8 Vad fungerar i alla tre frameworks
+
+Källkod-mönster som **alla** stödjer:
 
 ```ts
-export function toMessageId(source: string, context?: string): string {
-  const input = context === undefined ? source : `${source} ${context}`;
-  return sha256(input).slice(0, 12);  // 12-char hex prefix
+// I script
+$t('Hello')
+$t('Hi {name}', { name })
+$t('Save', undefined, { locale: previewLocale.value })
+
+// I template text interpolation
+{{ $t('Hello') }}              // Vue
+{$t('Hello')}                   // Svelte / Astro
+
+// I attribute expressions
+<button :aria-label="$t('Cool')">x</button>    // Vue
+<button aria-label={$t('Cool')}>x</button>     // Svelte / Astro
+
+// I event handlers
+@click="$t('Clicked')"                          // Vue
+onclick={() => $t('Clicked')}                   // Svelte / Astro
+
+// I conditionals
+{#if active}{$t('Active')}{/if}                 // Svelte
+{active && $t('Active')}                        // Astro / Vue
+```
+
+**Begränsning:** Statiska strängliterale-attribut utan expression-syntax stöds inte:
+
+```vue
+<button aria-label="$t('Cool')">x</button>      ❌ Vue treats as literal string
+```
+
+Detta är fundamentalt — frameworks parsar inte JS i statiska attribut. Workaround: använd expression-syntax (`:foo` / `{foo}`).
+
+## 13. Diagnostic codes katalog
+
+| Kod | Severity | Trigger | Hint |
+|---|---|---|---|
+| YPK001 | error | Dynamic source i `$t(...)` | "Use `{placeholder}` syntax + params object instead of string concatenation or template interpolation." |
+| YPK002 | error | Missing placeholder-param | "Add `{name}` to the params object." |
+| YPK003 | warning | Extra placeholder-param | "Remove unused `{name}` from params object." |
+| YPK005 | warning | Spread params (`{...obj}`) | "Spread params cannot be statically verified. Pass keys explicitly to enable validation." |
+| YPK007 | error | Invalid ICU plural shape | "Plural requires `other` branch. Optional: `zero`, `one`, `two`, `few`, `many`." |
+| YPK008 | error | Tom source-string | "$t('') has no meaning. Pass a non-empty string literal." |
+
+**6 koder.** Allt om factory/createT/context borta.
+
+Användare kan disable enskilda koder via shell-config (Vite-plugin options eller `.yapyak.json`).
+
+## 14. ID generation
+
+**Stable hash per source.**
+
+```ts
+export function toMessageId(source: string): string {
+  return createHash('sha256').update(source).digest('hex').slice(0, 12);
 }
 ```
 
 Egenskaper:
 
-- **Deterministisk.** Samma input → samma id, alltid.
-- **Stabil mot kosmetiska ändringar.** Whitespace i ett komponent-namn ändrar inte id (componentName inte i hash).
-- **Kollision-resistent på praktisk skala.** 48 bits → ~16M unique ids före 1% kollisions-risk.
-- **Context-känslig.** Samma source + olika context = olika ids (intentionellt — översättningar kan variera).
+- **Deterministisk.** Samma source → samma id, alltid.
+- **Cross-file dedupe.** Samma source i olika filer = samma id = en translation-entry.
+- **Stabil mot rename.** Variabelnamn, komponentnamn, etc. påverkar inte id.
+- **Kollision-resistent på praktisk skala.** 48 bits → ~16M unika ids.
 
-Translation-files keyas på id (kort), inte source (lång). Mindre filer, snabbare lookup.
+Translation-files struktur:
+```json
+{
+  "abc123def456": "Hej",
+  "789xyz012abc": "Välkommen"
+}
+```
 
-## 18. Plurals & ICU format
+Kort, enkelt, snabbt att slå upp.
+
+## 15. Plurals & ICU format
 
 Source-syntax: standard ICU MessageFormat.
 
@@ -668,22 +729,21 @@ $t('{cost, number, currency}', { cost });
 
 ### Validering
 
-- **`plural` kräver `other`-branch.** Saknas → YPK007.
-- **`select`-branches måste vara statiska strängar.** Variables → YPK001 (dynamic source).
-- **Format-typer (`date`, `time`, `number`) kontrolleras inte djupare.** Runtime hanterar dem.
+- `plural` kräver `other`-branch → YPK007 annars
+- `select`-branches måste vara statiska strängar (variables → YPK001)
+- Format-typer (`date`, `time`, `number`) kontrolleras inte djupare; runtime hanterar
 
 ### Runtime-strategi
 
 | Pattern | Single-locale | Multi-locale |
 |---|---|---|
-| Bara `{name}` | Inline template literal | `_$pick(...)` |
+| Bara `{name}` (simple) | Inline template literal | `_$pick(...)` |
 | `{count, plural}` | `_$pick(...)` + 1-locale plural-fn (~200b) | `_$pick(...)` + full CLDR (~2kb) |
-| `{when, date}` | `_$pick(...)` + Intl.DateTimeFormat-wrapper | samma |
-| `{cost, number}` | `_$pick(...)` + Intl.NumberFormat-wrapper | samma |
+| `{when, date}` / `{cost, number}` | `_$pick(...)` + Intl wrapper | samma |
 
 **Allt funkar.** Bara enkla placeholders får literal-template-elision. Plural/format kräver runtime även för en locale.
 
-## 19. Caching
+## 16. Caching
 
 **Cache lever i shell-lagret, inte i parser-core.**
 
@@ -693,65 +753,66 @@ Vite-plugin/CLI ansvar:
 interface FileCache {
   mtime: number;
   contentHash: string;
-  extracted: ExtractResult;
-  transformed?: TransformResult;
+  extracted: ExtractFileResult;
+  transformed?: TransformFileResult;
 }
 ```
 
 Persisteras till `node_modules/.cache/yapyak/files.json`. Kallstart på stort repo: ~50ms istället för ~2s.
 
-Pure-core (§4) tar input och returnerar output — vet inte om cache existerar.
+Pure-core tar input och returnerar output — vet inte om cache existerar.
 
-## 20. Dependencies
+## 17. Dependencies
 
 | Paket | Storlek | Roll | Status |
 |---|---|---|---|
-| `typescript` | peer | parser + AST | krävs (peer i `@yapyak/compiler`) |
-| `magic-string` | 38kb | transform + source maps | ny dep |
+| `typescript` | peer | parser + AST | `>=5.0.0` peer |
+| `magic-string` | 38kb | transform + source maps | dependency |
 | `@vue/compiler-sfc` | optional peer | Vue SFC | bara om Vue-användare |
 | `svelte` | optional peer | Svelte preprocess | bara om Svelte-användare |
+| `@astrojs/compiler` | optional peer | Astro preprocess | bara om Astro-användare |
 
-**Inget Babel. Inget swc. Inget oxc.**
+**Build-time only.** Ingenting från denna lista landar i användarens bundle.
 
-## 21. Performance budget
+## 18. Performance budget
 
-Riktmärken (från andra TS-tooling-projekt, ej yapyak-mätt än):
-
-| Operation | Regex idag | TS Compiler API | Babel |
+| Operation | Regex (förr) | TS Compiler API | Babel |
 |---|---|---|---|
 | Parse 1 fil (10kb) | ~0.5ms | ~3ms | ~6ms |
 | Full scan 500 filer | ~250ms | ~1.5s | ~3s |
 | HMR enskild fil | ~1ms | ~3ms | ~6ms |
-| Memory steady-state | låg | medel (AST i cache) | hög |
+| Memory steady-state | låg | medel | hög |
 
 **3x långsammare än regex, 2x snabbare än Babel.** För dev-loop osynligt (HMR <10ms). För full build = ~1s extra.
 
-## 22. Test policy
+## 19. Test policy
 
-Parser/ ska levereras med **100% branch coverage**.
+**100% branch coverage** för parser/.
 
 Test-modell: **fixture-driven snapshot tests.**
 
 ```
 parser/fixtures/
-├── bindings/                    # one .ts file per binding pattern
+├── bindings/                    # binding patterns
 │   ├── direct-import.ts
 │   ├── aliased-import.ts
 │   ├── namespace-import.ts
 │   ├── wrapper.ts
-│   ├── factory-locale.ts
-│   ├── factory-context.ts
-│   ├── factory-both.ts
 │   └── shadowed-wrapper.ts
 ├── calls/
 │   ├── simple.ts
 │   ├── placeholders.ts
-│   ├── nested-jsx.ts
-│   └── arrow-callback.ts
+│   ├── nested-jsx.tsx
+│   ├── arrow-callback.ts
+│   ├── dynamic-options.ts          # NEW
+│   └── options-from-variable.ts    # NEW
 ├── diagnostics/
 │   ├── ypk001-dynamic-source.ts
 │   ├── ypk002-missing-param.ts
-│   └── ... (one per code)
+│   ├── ypk003-extra-param.ts
+│   ├── ypk005-spread-params.ts
+│   ├── ypk007-invalid-plural.ts
+│   └── ypk008-empty-source.ts
 ├── single-locale/
 │   ├── elision-literal.ts
 │   ├── elision-template.ts
@@ -761,11 +822,9 @@ parser/fixtures/
     └── full-pick.ts
 ```
 
-Varje fixture parsas → snapshotas. Diff = test fail. **Innan implementation** sätts hela suite upp så feature-parity är bevisbart, inte antaget.
+Plus framework-specifika fixtures i `framework/fixtures/{vue,svelte,astro}/`.
 
-Per-modul-tester (`*.test.ts`) testar enheten isolerat. Fixture-suiten är integration.
-
-## 23. Determinism + error recovery
+## 20. Determinism + error recovery
 
 ### Determinism
 
@@ -773,74 +832,65 @@ Per-modul-tester (`*.test.ts`) testar enheten isolerat. Fixture-suiten är integ
 
 ### Error recovery
 
-**Parser bailar inte vid syntax errors.** `ts.createSourceFile` producerar partial AST även för broken input. Vi extraherar vad vi kan och returnerar syntax errors som diagnostics.
+**Parser bailar inte vid syntax errors.** `ts.createSourceFile` producerar partial AST. Vi extraherar vad vi kan och returnerar syntax errors som diagnostics.
 
-`$t` i kommentarer eller inside type-positions skipas via `ts.isCallExpression` + `parent.kind`-check.
+`$t` i kommentarer eller type-positions skipas via AST-kind-check.
 
-## 24. Migration
+## 21. Migration / PR-sekvens
 
-**Inget parallellt körande med regex.** Ersätt direkt, pre-1.0 är rätt moment.
+PR 1–9 är landade (legacy regex-parser ersatt, vanilla pipeline fungerar). Återstår:
 
-PR-sekvens:
+| PR | Innehåll | Status |
+|---|---|---|
+| 10 | API-cleanup — radera `$createT`/factory/context från type.ts, resolve-bindings, parse-arguments, extract, transform, fixtures, tester. Implementera options-arg-preservation för dynamic locale. | Pending |
+| 11 | Fragment-arkitektur: refactor extract/transform till fragment-orienterade. Vanilla adapter. | Pending |
+| 12 | Vue adapter (script + template + attributes) + tester | Pending |
+| 13 | Svelte adapter (script + template + attributes) + tester | Pending |
+| 14 | Astro adapter (frontmatter + template + attributes) + tester | Pending |
+| 15 | Constant-folding av `useLocale`/`getLocale`/`setLocale` (för full single-locale-elision) | Pending |
+| 16 | Caching (FileCache i Vite-plugin) | Pending |
 
-1. **PR 0:** Doc finalization (denna fil). Approval = grön ljus.
-2. **PR 1:** `types.ts` + `fixtures/`-skeleton + test-harness. Ingen logik. Bara contracts.
-3. **PR 2:** `resolve-bindings.ts` + tester. Gröna mot bindings-fixtures.
-4. **PR 3:** `visit-calls.ts` + `parse-arguments.ts` + tester. Gröna mot calls + diagnostics fixtures.
-5. **PR 4:** `callsite-context.ts` + tester.
-6. **PR 5:** `plurals.ts` + `ids.ts` + tester.
-7. **PR 6:** `extract.ts` + integration-tester över hela flödet.
-8. **PR 7:** `transform.ts` med single-locale-elision + import-elision + tester.
-9. **PR 8:** `preprocessors/` (Vue/Svelte/Astro).
-10. **PR 9:** Wire in i `@yapyak/vite`. Riv `parser.ts` (regex) och `extract-messages.ts`. Feature-parity-gate måste vara grön.
-11. **PR 10+:** Nya features (`$createT`-macro går live, plural-validation, etc).
-
-Estimat: 2-3 veckor faktisk kod + 1 vecka stabilitet.
-
-## 25. Vad detta INTE löser
+## 22. Vad detta INTE löser
 
 Ärlighetsplikt:
 
-- **Cross-fil binding-tracking.** `export const $tSv = $createT(...)` i fil A, importerad i fil B → vi extraherar inte i B. Per-file constraint (YPK011). Kräver `createProgram` med TypeChecker, dödar performance + kallstart.
-- **Type-checking av params mot källliteral.** TypeScript gör redan det via `ExtractTParams<T>`. Plugin behöver inte göra om det.
+- **Cross-fil binding-tracking.** Wrappers exporterade från andra filer detekteras inte (per-fil parsing).
+- **Type-checking av params mot källliteral.** TypeScript gör redan det via `ParamsForSource<T>`. Plugin behöver inte göra om det.
 - **Runtime-spread:** `$t('Hi {name}', { ...obj })` — kan inte verifieras statiskt. YPK005 warning.
-- **Dynamiska factory-locales:** `$createT({ locale: someVar })` — YPK004 error. Bara statiska locales.
+- **Statiska strängliterale-attribut i SFCs** (utan `:`/`{}` expression-syntax). Framework-fundamental.
+- **Disambiguation av polysemy** ("Save" som submit-button vs file-save). Användaren ska skriva specifikare source-strings (`'Submit'`, `'Save file'`).
 
-## 26. Framtida lås-ups
+## 23. Framtida lås-ups
 
 Allt detta kan byggas ovanpå AST-extractorn:
 
 | Tier | Feature | Insats |
 |---|---|---|
-| 2 | VS Code LSP (hover + diagnostics + CodeLens) | ⭐⭐ (1v) |
-| 2 | Type-safe catalog `.d.ts` generation | ⭐ (2d) |
-| 2 | CLI `yapyak add <locale>` | ⭐ (3d) |
-| 2 | CLI `yapyak doctor` (bundle-cost preview) | ⭐ (2d) |
-| 3 | CLI `find` / `wrap` / `rename-param` | ⭐⭐ (1v) |
-| 3 | ESLint plugin | ⭐ (3d) |
-| 3 | Webpack-loader (Next.js Pages) | ⭐⭐ (1v) |
-| 4 | `yapyak studio` web-UI | ⭐⭐⭐⭐ (4v) |
-| 4 | AI auto-translate vid `yapyak add` | ⭐⭐ (1v) |
+| 2 | VS Code LSP (hover + diagnostics + CodeLens) | ⭐⭐ |
+| 2 | Type-safe catalog `.d.ts` generation | ⭐ |
+| 2 | CLI `yapyak add <locale>` | ⭐ |
+| 2 | CLI `yapyak doctor` (bundle-cost preview) | ⭐ |
+| 3 | CLI `find` / `wrap` / `rename-param` | ⭐⭐ |
+| 3 | ESLint plugin | ⭐ |
+| 3 | Webpack-loader (Next.js Pages) | ⭐⭐ |
+| 4 | `yapyak studio` web-UI | ⭐⭐⭐⭐ |
+| 4 | AI auto-translate vid `yapyak add` | ⭐⭐ |
 
 **Alla återanvänder samma core-extractor.** Det är hela poängen med pure-function-designen.
 
-## 27. Beslut sammanfattade
+## 24. Beslut sammanfattade
 
-- ✅ TypeScript Compiler API som parser
+- ✅ TypeScript Compiler API som parser (per-file, no createProgram)
 - ✅ Pure-function core, ren från I/O
-- ✅ Per-file `createSourceFile`, inget `createProgram`
 - ✅ Bor i `packages/compiler/src/parser/`
-- ✅ Frameworks som preprocessors (inte separata extractors)
 - ✅ magic-string för transform
+- ✅ **Single API: `$t(source, params?, options?)`.** Ingen `$createT`, ingen context.
+- ✅ **Options preserveras verbatim** när non-static. Dynamic locale (reactive) fungerar naturligt.
 - ✅ **Single-locale-mode = compile-time elision + import-stripping = noll yapyak i bundle**
-- ✅ **`$createT` är compiler-macro — declaration raderas, calls inlinas med options**
-- ✅ **`withLocale`/`withContext` finns inte. Cut.**
-- ✅ **Endast string-literal som first arg till `$t`. Inga tagged templates.**
-- ✅ **Inga "forbids" baserat på locale-count — allt fungerar, runtime skalar gracefully**
-- ✅ Context strippas alltid från runtime
-- ✅ Stable diagnostic codes (YPK001-YPK011)
-- ✅ ID = sha256(source + context).slice(0,12) via `toMessageId()`
-- ✅ Naming-rules: `*Request`/`*Result` på function-scoped types med full function-name-prefix; `discover*`/`resolve*`/`to*` från verb-vokabulären; `*Site`/`*Context`/`Parsed*` från type-suffix-vokabulären
+- ✅ Stable diagnostic codes (6 stycken)
+- ✅ ID = sha256(source).slice(0,12) — cross-file dedupe
 - ✅ Cache lever i shell-lagret, inte parser-core
-- ✅ Fixture-driven snapshot tests innan implementation
-- ✅ Ingen parallel-period med regex — ersätt direkt
+- ✅ Fragment-orienterad pipeline för SFC-support (Vue/Svelte/Astro)
+- ✅ `$t()` fungerar i `<script>`, `<template>`, attribute-bindings, event handlers
+- ✅ Fixture-driven snapshot tests
+- ✅ Naming-rules: `*Request`/`*Result` för function-scoped types; `discover*`/`resolve*`/`to*` från verb-vokabulären

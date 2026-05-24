@@ -1,1 +1,72 @@
-{}
+{
+  "src/components/callout/callout.tsx": {
+    "Danger": "",
+    "Info": "",
+    "Tip": "",
+    "Warning": ""
+  },
+  "src/components/colophon/colophon.tsx": {
+    "MIT license": "",
+    "Who's yakking in the back? That's yapyak.": ""
+  },
+  "src/components/content-layout/content-layout-toolbar.tsx": {
+    "Close outline": "",
+    "Next": "",
+    "Open outline": "",
+    "Previous": ""
+  },
+  "src/components/content-pagination/content-pagination.tsx": {
+    "Next": "",
+    "Previous": ""
+  },
+  "src/components/feature-section/feature-section.tsx": {
+    "Anthropic, OpenAI, Gemini, Ollama out of the box. A custom one in 30 lines. Or skip AI entirely and fill the JSON yourself — old habits are welcome.": "",
+    "Auto-translation on save": "",
+    "Bring your own AI. Or none.": "",
+    "Built for agents": "",
+    "Context-aware AI translation": "",
+    "Edit. Save. Done. Every locale updates via HMR before you blink. There is no second step.": "",
+    "Every design decision serves the agent loop. For an AI agent, each $t() carries the whole message at the call site. Renames migrate translations, extractions happen at save, the CLI scripts cleanly. Your agent writes the code. yapyak does the rest.": "",
+    "Every Intl primitive: plurals, dates, numbers, lists, ordinals. Yes, all four Polish plural forms.": "",
+    "Forget a placeholder param and TypeScript stops you before your tech lead does. Source-as-keys means types live on the call site. Same speed at 50 strings or 50,000.": "",
+    "Framework adapters": "",
+    "MIT-licensed, full functionality on npm. Bring your own LLM key and pay the model provider directly. yapyak doesn't sit between you and the AI bill; there's no upgrade tier.": "",
+    "Open source, not open core": "",
+    "Other libraries load a runtime dictionary. yapyak compiles each $t() into an inline object with every locale variant, right where it's used. Vite already splits your app — yapyak just lets translations come along for the ride.": "",
+    "Production-ready intl": "",
+    "React, Vue, and Svelte bindings. SSR adapters for Astro, React Router, SvelteKit, and TanStack Start. Next.js? Open a PR.": "",
+    "Source string is the key": "",
+    "The translator sees the component, the element, and the surrounding code. Set a voice (\"friendly\", \"terse\", \"lawyer at a dinner party\"). Pin glossary terms so \"Cart\" stays \"Korg\" — even when the AI thinks it knows better.": "",
+    "Translations compile in": "",
+    "Type-safe params": "",
+    "What Tailwind did for class names, yapyak did for keys. Just write $t('Save changes') — the English is your key, your value, your single source of truth.": ""
+  },
+  "src/components/hero/hero.tsx": {
+    "Get Started": "",
+    "Open source. Use any LLM. No vendor lock-in.": "",
+    "View on GitHub": ""
+  },
+  "src/components/layout/layout-header-menu-button.tsx": {
+    "Close menu": "",
+    "Open menu": ""
+  },
+  "src/components/layout/layout-header.tsx": {
+    "Guide": "",
+    "Home": "",
+    "Reference": "",
+    "View on GitHub": ""
+  },
+  "src/routes/__root.tsx": {
+    "Guide": "",
+    "Home": "",
+    "Reference": "",
+    "View on GitHub": ""
+  },
+  "src/routes/guide.tsx": {
+    "Guide navigation": ""
+  },
+  "src/routes/index.tsx": {
+    "For Vite apps moving at the speed of save.": "",
+    "i18n that writes itself.": ""
+  }
+}

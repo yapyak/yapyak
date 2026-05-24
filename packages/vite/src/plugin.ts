@@ -1,54 +1,36 @@
-import type { ExtractedMessage, LocaleData } from '@yapyak/compiler';
+import type {
+  ExtractedMessage,
+  ExtractFileResult,
+  LocaleData,
+} from '@yapyak/compiler';
 import type { Plugin, ResolvedConfig } from 'vite';
 import type { YapyakOptions } from './options';
 
 import {
   autoTranslate,
-  DynamicMessageError,
   detectRenames,
   discoverLocales,
-  extractMessages,
+  extractFile,
   migrateLocales,
   readLocaleData,
   syncLocaleFiles,
+  transformFile,
   walkSourceFiles,
 } from '@yapyak/compiler';
 import { createFilter } from 'vite';
 
 import { normalizeOptions } from './options';
-import { transformSource } from './transform-source';
 import { relative } from 'node:path';
 
 const CONFIG_ID = 'virtual:yapyak';
 const CONFIG_RESOLVED = `\0${CONFIG_ID}`;
 
-/**
- * Creates the yapyak Vite plugin.
- *
- * @remarks
- * Extracts {@link $t} calls at build time, syncs locale files, optionally fills
- * missing translations through a {@link Translator}, and emits per-locale chunks
- * that are lazy-loaded by the runtime — so the default locale costs zero
- * extra bytes and non-default locales ship as separate chunks.
- *
- * @param options - The plugin options.
- *
- * @example
- * ```ts
- * import { defineConfig } from 'vite';
- * import { yapyak } from '@yapyak/vite';
- * import { anthropic } from '@yapyak/anthropic';
- *
- * export default defineConfig({
- *   plugins: [
- *     yapyak({
- *       defaultLocale: 'en',
- *       translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),
- *     }),
- *   ],
- * });
- * ```
- */
+interface CallSitePosition {
+  column: number;
+  line: number;
+  source: string;
+}
+
 export function yapyak(options: YapyakOptions = {}): Plugin {
   const normalized = normalizeOptions(options);
   const filter = createFilter(normalized.include, normalized.exclude);
@@ -96,26 +78,18 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
   }
 
   function scanAllSources(): void {
-    const files = walkSourceFiles({
-      filter,
-      projectRoot,
-    });
+    const files = walkSourceFiles({ filter, projectRoot });
+    const { locales } = discover();
     messagesByFile.clear();
     for (const file of files) {
-      try {
-        const messages = extractMessages({
-          code: file.code,
-          fileId: file.fileId,
-        });
-        if (messages.length > 0) {
-          messagesByFile.set(file.fileId, messages);
-        }
-      } catch (error) {
-        if (error instanceof DynamicMessageError) {
-          console.error(error.message);
-          continue;
-        }
-        throw error;
+      const result = extractFile({
+        fileId: file.fileId,
+        locales,
+        source: file.code,
+      });
+      logErrors(result);
+      if (result.messages.length > 0) {
+        messagesByFile.set(file.fileId, result.messages);
       }
     }
     syncAll();
@@ -176,25 +150,17 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       }
       const fileId = toFileId(projectRoot, ctx.file);
       const code = await ctx.read();
+      const { defaultLocale, locales } = discover();
+      const result = extractFile({ fileId, locales, source: code });
+      logErrors(result);
       const before = messagesByFile.get(fileId) ?? [];
-      let after: ExtractedMessage[];
-      try {
-        after = extractMessages({ code, fileId });
-      } catch (error) {
-        if (error instanceof DynamicMessageError) {
-          console.error(error.message);
-          return;
-        }
-        throw error;
-      }
+      const after = result.messages;
       if (areMessagesEqual(before, after)) {
         return;
       }
-
-      const { defaultLocale, locales } = discover();
       const renames = detectRenames(
-        before.map(toPosition),
-        after.map(toPosition),
+        before.flatMap(toCallSitePositions),
+        after.flatMap(toCallSitePositions),
       );
       if (renames.length > 0) {
         migrateLocales({
@@ -208,7 +174,6 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         });
         localeCache = null;
       }
-
       if (after.length === 0) {
         messagesByFile.delete(fileId);
       } else {
@@ -235,18 +200,26 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         return null;
       }
       const fileId = toFileId(projectRoot, id);
-      const messages = extractMessages({ code, fileId });
-      if (messages.length === 0) {
+      const { locales } = discover();
+      const extracted = extractFile({ fileId, locales, source: code });
+      logErrors(extracted);
+      if (extracted.callSites.length === 0) {
         return null;
       }
-      const { defaultLocale, locales } = discover();
-      const result = transformSource(code, {
-        defaultLocale,
+      const translations = buildTranslations({
+        extracted,
         fileId,
         localeData: getLocaleData(),
         locales,
       });
-      if (!result.changed) {
+      const result = transformFile({
+        extracted,
+        fileId,
+        locales,
+        source: code,
+        translations,
+      });
+      if (result.code === code) {
         return null;
       }
       return { code: result.code };
@@ -254,16 +227,38 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
   };
 }
 
-function toPosition(message: ExtractedMessage): {
-  column: number;
-  line: number;
-  source: string;
-} {
-  return {
-    column: message.column,
-    line: message.line,
+function buildTranslations(input: {
+  extracted: ExtractFileResult;
+  fileId: string;
+  localeData: LocaleData;
+  locales: readonly string[];
+}): Record<string, Record<string, string>> {
+  const translations: Record<string, Record<string, string>> = {};
+  for (const message of input.extracted.messages) {
+    for (const locale of input.locales) {
+      const localeFile = input.localeData[locale];
+      const fileEntries = localeFile?.[input.fileId];
+      const value = fileEntries?.[message.source];
+      if (typeof value !== 'string' || value === '') {
+        continue;
+      }
+      let localeMap = translations[locale];
+      if (localeMap === undefined) {
+        localeMap = {};
+        translations[locale] = localeMap;
+      }
+      localeMap[message.id] = value;
+    }
+  }
+  return translations;
+}
+
+function toCallSitePositions(message: ExtractedMessage): CallSitePosition[] {
+  return message.locations.map((location) => ({
+    column: location.range.start.column,
+    line: location.range.start.line,
     source: message.source,
-  };
+  }));
 }
 
 function generateConfig(
@@ -336,12 +331,32 @@ function areMessagesEqual(
       return false;
     }
     if (
-      left.source !== right.source ||
-      left.line !== right.line ||
-      left.column !== right.column
+      left.id !== right.id ||
+      left.locations.length !== right.locations.length
     ) {
       return false;
     }
+    for (let j = 0; j < left.locations.length; j++) {
+      const ll = left.locations[j];
+      const rl = right.locations[j];
+      if (ll === undefined || rl === undefined) return false;
+      if (
+        ll.range.start.line !== rl.range.start.line ||
+        ll.range.start.column !== rl.range.start.column
+      ) {
+        return false;
+      }
+    }
   }
   return true;
+}
+
+function logErrors(result: ExtractFileResult): void {
+  for (const diagnostic of result.diagnostics) {
+    if (diagnostic.severity !== 'error') continue;
+    const { fileId, range, code, message } = diagnostic;
+    console.error(
+      `[yapyak] ${code} ${fileId}:${range.start.line}:${range.start.column}: ${message}`,
+    );
+  }
 }

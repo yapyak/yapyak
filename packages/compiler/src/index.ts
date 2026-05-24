@@ -1,5 +1,5 @@
 /**
- * Compile-time extraction and locale-file synchronization for yapyak. Consumed by `@yapyak/vite`, `@yapyak/cli`, and maybe some future build-tool integrations.
+ * Compile-time extraction and locale-file synchronization for yapyak. Consumed by `@yapyak/vite`, `@yapyak/cli`, and future build-tool integrations (webpack, esbuild) plus tooling (LSP, codemods, ESLint plugin).
  *
  * @packageDocumentation
  */
@@ -25,24 +25,44 @@ export {
   syncLocaleFiles,
 } from './catalog';
 export {
-  type ArgsRange,
-  type CallSite,
   DEFAULT_EXCLUDE,
   DEFAULT_INCLUDE,
-  DynamicMessageError,
-  DynamicSourceError,
-  deriveComponentName,
-  type ExtractedMessage,
-  type ExtractMessagesOptions,
-  type ExtractSnippetOptions,
-  extractMessages,
-  extractSnippet,
-  findCallSites,
-  locate,
-  parseSourceArg,
-  sliceArguments,
-  splitTopLevelArgs,
   type WalkedFile,
   type WalkSourceFilesOptions,
   walkSourceFiles,
+} from './io';
+export {
+  type BindingTable,
+  type CallSite,
+  type CallSiteContext,
+  createDiagnostic,
+  type Diagnostic,
+  type DiagnosticCode,
+  discoverCalls,
+  type ExtractedMessage,
+  type ExtractFileRequest,
+  type ExtractFileResult,
+  extractFile,
+  type Framework,
+  type Location,
+  type ParsedArguments,
+  type ParsedParams,
+  type Placeholder,
+  type Position,
+  parseArguments,
+  parseAstro,
+  parsePlaceholders,
+  parseSvelte,
+  parseVue,
+  type Range,
+  resolveBindings,
+  resolveCallSiteContext,
+  type Scope,
+  type ScriptBlock,
+  type StaticOptions,
+  type TransformFileRequest,
+  type TransformFileResult,
+  toMessageId,
+  transformFile,
+  type YapyakBinding,
 } from './parser';

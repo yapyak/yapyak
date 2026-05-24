@@ -1,4 +1,4 @@
-import type { ExtractedMessage } from '../parser';
+import type { ExtractedMessage } from '../parser/type';
 
 import { stringifyCanonical } from './json';
 import {
@@ -287,12 +287,14 @@ function groupSourcesByFile(
 ): Record<string, string[]> {
   const grouped: Record<string, Set<string>> = {};
   for (const message of messages) {
-    let set = grouped[message.fileId];
-    if (set === undefined) {
-      set = new Set<string>();
-      grouped[message.fileId] = set;
+    for (const location of message.locations) {
+      let set = grouped[location.fileId];
+      if (set === undefined) {
+        set = new Set<string>();
+        grouped[location.fileId] = set;
+      }
+      set.add(message.source);
     }
-    set.add(message.source);
   }
   const result: Record<string, string[]> = {};
   for (const [fileId, set] of Object.entries(grouped)) {
