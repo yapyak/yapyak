@@ -189,6 +189,157 @@ describe('vueProcessor', () => {
     expect(fragments[0]?.kind).toBe('template-expression');
   });
 
+  it('extracts ICU plural in {{ }} without truncating on inner }}', () => {
+    const source = [
+      '<template>',
+      `  <p>{{ $t('You have {count, plural, one {# message} other {# messages}}', { count: 3 }) }}</p>`,
+      '</template>',
+    ].join('\n');
+    const fragments = vueProcessor.parseFragments(source);
+    const exprs = fragments.filter((f) => f.kind === 'template-expression');
+    expect(exprs).toHaveLength(1);
+    expect(exprs[0]?.code).toBe(
+      `$t('You have {count, plural, one {# message} other {# messages}}', { count: 3 })`,
+    );
+    verifyOffsetInvariant(source, exprs[0] as Fragment);
+  });
+
+  it('extracts ICU select in {{ }} without truncating on inner }}', () => {
+    const source = [
+      '<template>',
+      `  <p>{{ $t('{theme, select, dark {Dark mode} other {Light mode}}', { theme: 'dark' }) }}</p>`,
+      '</template>',
+    ].join('\n');
+    const fragments = vueProcessor.parseFragments(source);
+    const exprs = fragments.filter((f) => f.kind === 'template-expression');
+    expect(exprs).toHaveLength(1);
+    expect(exprs[0]?.code).toBe(
+      `$t('{theme, select, dark {Dark mode} other {Light mode}}', { theme: 'dark' })`,
+    );
+    verifyOffsetInvariant(source, exprs[0] as Fragment);
+  });
+
+  it('extracts nested ICU (plural with embedded placeholder)', () => {
+    const source = [
+      '<template>',
+      `  <p>{{ $t('You have {count, plural, one {# by {author}} other {# by {author}}}', { count: 1, author: 'Alex' }) }}</p>`,
+      '</template>',
+    ].join('\n');
+    const fragments = vueProcessor.parseFragments(source);
+    const exprs = fragments.filter((f) => f.kind === 'template-expression');
+    expect(exprs).toHaveLength(1);
+    expect(exprs[0]?.code).toContain('author');
+    verifyOffsetInvariant(source, exprs[0] as Fragment);
+  });
+
+  it('handles double-quoted string with }} inside', () => {
+    const source = [
+      '<template>',
+      `  <p>{{ $t("Closing braces: }}", {}) }}</p>`,
+      '</template>',
+    ].join('\n');
+    const fragments = vueProcessor.parseFragments(source);
+    const exprs = fragments.filter((f) => f.kind === 'template-expression');
+    expect(exprs).toHaveLength(1);
+    expect(exprs[0]?.code).toBe(`$t("Closing braces: }}", {})`);
+    verifyOffsetInvariant(source, exprs[0] as Fragment);
+  });
+
+  it('handles template literal with ${} interpolation inside expression', () => {
+    const source = [
+      '<template>',
+      '  <p>{{ `${name}-${greeting}` }}</p>',
+      '</template>',
+    ].join('\n');
+    const fragments = vueProcessor.parseFragments(source);
+    const exprs = fragments.filter((f) => f.kind === 'template-expression');
+    expect(exprs).toHaveLength(1);
+    expect(exprs[0]?.code).toBe('`${name}-${greeting}`');
+    verifyOffsetInvariant(source, exprs[0] as Fragment);
+  });
+
+  it('handles escaped quotes inside strings', () => {
+    const source = [
+      '<template>',
+      `  <p>{{ $t('It\\'s }} a test', {}) }}</p>`,
+      '</template>',
+    ].join('\n');
+    const fragments = vueProcessor.parseFragments(source);
+    const exprs = fragments.filter((f) => f.kind === 'template-expression');
+    expect(exprs).toHaveLength(1);
+    expect(exprs[0]?.code).toBe(`$t('It\\'s }} a test', {})`);
+    verifyOffsetInvariant(source, exprs[0] as Fragment);
+  });
+
+  it('handles nested object literal in 2nd arg', () => {
+    const source = [
+      '<template>',
+      `  <p>{{ $t('Hi {user}', { user: { name: 'Alex', id: 1 } }) }}</p>`,
+      '</template>',
+    ].join('\n');
+    const fragments = vueProcessor.parseFragments(source);
+    const exprs = fragments.filter((f) => f.kind === 'template-expression');
+    expect(exprs).toHaveLength(1);
+    expect(exprs[0]?.code).toBe(
+      `$t('Hi {user}', { user: { name: 'Alex', id: 1 } })`,
+    );
+    verifyOffsetInvariant(source, exprs[0] as Fragment);
+  });
+
+  it('handles block comment containing }} inside expression', () => {
+    const source = [
+      '<template>',
+      `  <p>{{ $t('Hello' /* ignore }} this */, {}) }}</p>`,
+      '</template>',
+    ].join('\n');
+    const fragments = vueProcessor.parseFragments(source);
+    const exprs = fragments.filter((f) => f.kind === 'template-expression');
+    expect(exprs).toHaveLength(1);
+    expect(exprs[0]?.code).toBe(`$t('Hello' /* ignore }} this */, {})`);
+    verifyOffsetInvariant(source, exprs[0] as Fragment);
+  });
+
+  it('handles multiple interpolations on the same line', () => {
+    const source = [
+      '<template>',
+      `  <p>{{ $t('{count, plural, one {#} other {#}}', { count: 1 }) }} and {{ $t('{x, plural, one {1} other {n}}', { x: 2 }) }}</p>`,
+      '</template>',
+    ].join('\n');
+    const fragments = vueProcessor.parseFragments(source);
+    const exprs = fragments.filter((f) => f.kind === 'template-expression');
+    expect(exprs).toHaveLength(2);
+    expect(exprs[0]?.code).toContain('count');
+    expect(exprs[1]?.code).toContain('x: 2');
+    verifyOffsetInvariant(source, exprs[0] as Fragment);
+    verifyOffsetInvariant(source, exprs[1] as Fragment);
+  });
+
+  it('skips empty {{ }} and {{   }} interpolations', () => {
+    const source = [
+      '<template>',
+      `  <p>{{ }}</p>`,
+      `  <p>{{    }}</p>`,
+      `  <p>{{ $t('real') }}</p>`,
+      '</template>',
+    ].join('\n');
+    const fragments = vueProcessor.parseFragments(source);
+    const exprs = fragments.filter((f) => f.kind === 'template-expression');
+    expect(exprs).toHaveLength(1);
+    expect(exprs[0]?.code).toBe(`$t('real')`);
+  });
+
+  it('handles object literal as standalone expression', () => {
+    const source = [
+      '<template>',
+      `  <p>{{ ({ a: 1, b: 2 }) }}</p>`,
+      '</template>',
+    ].join('\n');
+    const fragments = vueProcessor.parseFragments(source);
+    const exprs = fragments.filter((f) => f.kind === 'template-expression');
+    expect(exprs).toHaveLength(1);
+    expect(exprs[0]?.code).toBe('({ a: 1, b: 2 })');
+  });
+
   it('handles SFC with script but no template', () => {
     const source = [
       '<script setup lang="ts">',

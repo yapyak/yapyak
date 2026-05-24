@@ -60,7 +60,7 @@ export const vueProcessor: Processor = {
       fragments.push(toScriptFragment(descriptor.scriptSetup));
     }
     if (descriptor.template !== null && descriptor.template.ast !== undefined) {
-      collectTemplateExpressions(descriptor.template.ast, fragments);
+      collectTemplateExpressions(descriptor.template.ast, source, fragments);
     }
     return fragments;
   },
@@ -90,10 +90,11 @@ function toScriptFragment(block: SFCScriptBlock): Fragment {
 
 function collectTemplateExpressions(
   node: RootNode | TemplateChildNode,
+  source: string,
   fragments: Fragment[],
 ): void {
   if (isInterpolationNode(node)) {
-    pushExpression(node.content, fragments);
+    pushInterpolationExpression(node, source, fragments);
   }
   if (isElementNode(node)) {
     for (const prop of node.props) {
@@ -102,9 +103,24 @@ function collectTemplateExpressions(
   }
   if (hasChildren(node)) {
     for (const child of node.children) {
-      collectTemplateExpressions(child, fragments);
+      collectTemplateExpressions(child, source, fragments);
     }
   }
+}
+
+function pushInterpolationExpression(
+  node: InterpolationNode,
+  source: string,
+  fragments: Fragment[],
+): void {
+  const mustache = readMustache(source, node.loc.start.offset);
+  if (mustache === undefined) return;
+  fragments.push({
+    code: mustache.code,
+    kind: 'template-expression',
+    lang: 'ts',
+    originalOffset: mustache.codeOffset,
+  });
 }
 
 function collectPropExpression(
@@ -128,6 +144,142 @@ function pushExpression(
     lang: 'ts',
     originalOffset: expression.loc.start.offset,
   });
+}
+
+interface MustacheExpression {
+  code: string;
+  codeOffset: number;
+}
+
+function readMustache(
+  source: string,
+  openOffset: number,
+): MustacheExpression | undefined {
+  if (source[openOffset] !== '{' || source[openOffset + 1] !== '{') {
+    return undefined;
+  }
+  const exprStart = openOffset + 2;
+  const exprEnd = findMustacheClose(source, exprStart);
+  if (exprEnd === -1) return undefined;
+  const raw = source.slice(exprStart, exprEnd);
+  const leading = raw.length - raw.trimStart().length;
+  const code = raw.slice(leading).trimEnd();
+  if (code === '') return undefined;
+  return { code, codeOffset: exprStart + leading };
+}
+
+function findMustacheClose(source: string, from: number): number {
+  let i = from;
+  while (i < source.length) {
+    const ch = source[i];
+    if (ch === '"' || ch === "'") {
+      i = skipString(source, i, ch);
+      continue;
+    }
+    if (ch === '`') {
+      i = skipTemplateLiteral(source, i);
+      continue;
+    }
+    if (ch === '/' && source[i + 1] === '/') {
+      i = skipLineComment(source, i);
+      continue;
+    }
+    if (ch === '/' && source[i + 1] === '*') {
+      i = skipBlockComment(source, i);
+      continue;
+    }
+    if (ch === '{') {
+      i = skipBalancedBraces(source, i);
+      continue;
+    }
+    if (ch === '}' && source[i + 1] === '}') {
+      return i;
+    }
+    if (ch === '}') {
+      return -1;
+    }
+    i += 1;
+  }
+  return -1;
+}
+
+function skipString(source: string, from: number, quote: string): number {
+  let i = from + 1;
+  while (i < source.length) {
+    const ch = source[i];
+    if (ch === '\\') {
+      i += 2;
+      continue;
+    }
+    if (ch === quote) {
+      return i + 1;
+    }
+    i += 1;
+  }
+  return i;
+}
+
+function skipTemplateLiteral(source: string, from: number): number {
+  let i = from + 1;
+  while (i < source.length) {
+    const ch = source[i];
+    if (ch === '\\') {
+      i += 2;
+      continue;
+    }
+    if (ch === '`') {
+      return i + 1;
+    }
+    if (ch === '$' && source[i + 1] === '{') {
+      i = skipBalancedBraces(source, i + 1);
+      continue;
+    }
+    i += 1;
+  }
+  return i;
+}
+
+function skipLineComment(source: string, from: number): number {
+  let i = from + 2;
+  while (i < source.length && source[i] !== '\n') i += 1;
+  return i;
+}
+
+function skipBlockComment(source: string, from: number): number {
+  let i = from + 2;
+  while (i < source.length) {
+    if (source[i] === '*' && source[i + 1] === '/') return i + 2;
+    i += 1;
+  }
+  return i;
+}
+
+function skipBalancedBraces(source: string, from: number): number {
+  let depth = 1;
+  let i = from + 1;
+  while (i < source.length && depth > 0) {
+    const ch = source[i];
+    if (ch === '"' || ch === "'") {
+      i = skipString(source, i, ch);
+      continue;
+    }
+    if (ch === '`') {
+      i = skipTemplateLiteral(source, i);
+      continue;
+    }
+    if (ch === '/' && source[i + 1] === '/') {
+      i = skipLineComment(source, i);
+      continue;
+    }
+    if (ch === '/' && source[i + 1] === '*') {
+      i = skipBlockComment(source, i);
+      continue;
+    }
+    if (ch === '{') depth += 1;
+    else if (ch === '}') depth -= 1;
+    i += 1;
+  }
+  return i;
 }
 
 function isInterpolationNode(
