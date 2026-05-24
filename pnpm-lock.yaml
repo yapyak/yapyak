@@ -39,6 +39,9 @@ catalogs:
     '@vitejs/plugin-vue':
       specifier: 6.0.7
       version: 6.0.7
+    '@vue/compiler-core':
+      specifier: 3.5.34
+      version: 3.5.34
     '@vue/compiler-sfc':
       specifier: 3.5.34
       version: 3.5.34
@@ -352,6 +355,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 25.9.1
+      '@vue/compiler-core':
+        specifier: 'catalog:'
+        version: 3.5.34
       '@vue/compiler-sfc':
         specifier: 'catalog:'
         version: 3.5.34

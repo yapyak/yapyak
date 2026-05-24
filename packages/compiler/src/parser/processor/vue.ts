@@ -1,32 +1,23 @@
+import type {
+  AttributeNode,
+  DirectiveNode,
+  ElementNode,
+  ExpressionNode,
+  InterpolationNode,
+  RootNode,
+  SimpleExpressionNode,
+  TemplateChildNode,
+} from '@vue/compiler-core';
 import type * as VueSfc from '@vue/compiler-sfc';
 import type { SFCScriptBlock } from '@vue/compiler-sfc';
 import type { Fragment, Processor } from '../type';
 
 import { createRequire } from 'node:module';
 
-const ELEMENT_NODE = 1;
-const SIMPLE_EXPRESSION = 4;
-const INTERPOLATION_NODE = 5;
-const DIRECTIVE_NODE = 7;
-
-interface VueExpression {
-  content: string;
-  loc: { start: { offset: number } };
-  type: number;
-}
-
-interface VueProp {
-  exp?: VueExpression;
-  type: number;
-}
-
-interface VueNode {
-  children?: VueNode[];
-  content?: VueExpression;
-  loc: { start: { offset: number } };
-  props?: VueProp[];
-  type: number;
-}
+const NODE_TYPE_ELEMENT = 1;
+const NODE_TYPE_SIMPLE_EXPRESSION = 4;
+const NODE_TYPE_INTERPOLATION = 5;
+const NODE_TYPE_DIRECTIVE = 7;
 
 const requireFromHere = createRequire(import.meta.url);
 
@@ -45,7 +36,7 @@ export const vueProcessor: Processor = {
       fragments.push(toScriptFragment(descriptor.scriptSetup));
     }
     if (descriptor.template !== null && descriptor.template.ast !== undefined) {
-      collectTemplateExpressions(descriptor.template.ast as VueNode, fragments);
+      collectTemplateExpressions(descriptor.template.ast, fragments);
     }
     return fragments;
   },
@@ -74,35 +65,38 @@ function toScriptFragment(block: SFCScriptBlock): Fragment {
 }
 
 function collectTemplateExpressions(
-  node: VueNode,
+  node: RootNode | TemplateChildNode,
   fragments: Fragment[],
 ): void {
-  if (node.type === INTERPOLATION_NODE && node.content !== undefined) {
+  if (isInterpolationNode(node)) {
     pushExpression(node.content, fragments);
   }
-  if (node.type === ELEMENT_NODE && node.props !== undefined) {
+  if (isElementNode(node)) {
     for (const prop of node.props) {
       collectPropExpression(prop, fragments);
     }
   }
-  if (node.children !== undefined) {
+  if (hasChildren(node)) {
     for (const child of node.children) {
       collectTemplateExpressions(child, fragments);
     }
   }
 }
 
-function collectPropExpression(prop: VueProp, fragments: Fragment[]): void {
-  if (prop.type !== DIRECTIVE_NODE) return;
+function collectPropExpression(
+  prop: AttributeNode | DirectiveNode,
+  fragments: Fragment[],
+): void {
+  if (!isDirectiveNode(prop)) return;
   if (prop.exp === undefined) return;
   pushExpression(prop.exp, fragments);
 }
 
 function pushExpression(
-  expression: VueExpression,
+  expression: ExpressionNode,
   fragments: Fragment[],
 ): void {
-  if (expression.type !== SIMPLE_EXPRESSION) return;
+  if (!isSimpleExpression(expression)) return;
   if (expression.content === '') return;
   fragments.push({
     code: expression.content,
@@ -110,4 +104,40 @@ function pushExpression(
     lang: 'ts',
     originalOffset: expression.loc.start.offset,
   });
+}
+
+function isInterpolationNode(
+  node: RootNode | TemplateChildNode,
+): node is InterpolationNode {
+  return node.type === NODE_TYPE_INTERPOLATION;
+}
+
+function isElementNode(
+  node: RootNode | TemplateChildNode,
+): node is ElementNode {
+  return node.type === NODE_TYPE_ELEMENT;
+}
+
+function isDirectiveNode(
+  prop: AttributeNode | DirectiveNode,
+): prop is DirectiveNode {
+  return prop.type === NODE_TYPE_DIRECTIVE;
+}
+
+function isSimpleExpression(
+  expression: ExpressionNode,
+): expression is SimpleExpressionNode {
+  return expression.type === NODE_TYPE_SIMPLE_EXPRESSION;
+}
+
+function hasChildren(node: RootNode | TemplateChildNode): node is (
+  | RootNode
+  | TemplateChildNode
+) & {
+  children: TemplateChildNode[];
+} {
+  return (
+    'children' in node &&
+    Array.isArray((node as { children?: unknown }).children)
+  );
 }
