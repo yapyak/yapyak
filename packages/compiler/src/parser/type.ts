@@ -3,6 +3,12 @@ import type * as ts from 'typescript';
 
 export type Framework = 'astro' | 'svelte' | 'vanilla' | 'vue';
 
+export interface ScriptBlock {
+  code: string;
+  lang: 'js' | 'ts';
+  offsetInSource: number;
+}
+
 export type DiagnosticCode =
   | 'YPK001'
   | 'YPK002'

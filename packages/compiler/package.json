@@ -24,13 +24,20 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
+    "@vue/compiler-sfc": "catalog:",
     "@yapyak/typescript-config": "workspace:*",
     "tsup": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
   "peerDependencies": {
+    "@vue/compiler-sfc": ">=3.0.0",
     "typescript": ">=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@vue/compiler-sfc": {
+      "optional": true
+    }
   },
   "engines": {
     "node": ">=22"
