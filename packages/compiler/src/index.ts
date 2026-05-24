@@ -56,7 +56,6 @@ export {
   parseAstro,
   parsePlaceholders,
   parseSvelte,
-  parseVue,
   type Range,
   resolveBindings,
   resolveCallSiteContext,
@@ -68,5 +67,6 @@ export {
   toMessageId,
   transformFile,
   vanillaProcessor,
+  vueProcessor,
   type YapyakBinding,
 } from './parser';

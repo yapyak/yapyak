@@ -33,8 +33,11 @@ describe('getProcessor', () => {
     expect(getProcessor('vanilla')).toBe(vanillaProcessor);
   });
 
+  it('returns vueProcessor for vue framework', () => {
+    expect(getProcessor('vue')).toBeDefined();
+  });
+
   it('throws for unimplemented frameworks', () => {
-    expect(() => getProcessor('vue')).toThrow(/not yet implemented/);
     expect(() => getProcessor('svelte')).toThrow(/not yet implemented/);
     expect(() => getProcessor('astro')).toThrow(/not yet implemented/);
   });

@@ -32,11 +32,11 @@ export { parseArguments } from './parse-arguments';
 export { parsePlaceholders } from './plural';
 export { parseAstro } from './preprocessors/astro';
 export { parseSvelte } from './preprocessors/svelte';
-export { parseVue } from './preprocessors/vue';
 export {
   getProcessor,
   resolveFramework,
   vanillaProcessor,
+  vueProcessor,
 } from './processor';
 export { resolveBindings } from './resolve-bindings';
 export { transformFile } from './transform';
