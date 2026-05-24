@@ -19,7 +19,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@yapyak/translator": "workspace:*"
+    "@yapyak/translator": "workspace:*",
+    "magic-string": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",
@@ -27,6 +28,9 @@
     "tsup": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
   },
   "engines": {
     "node": ">=22"

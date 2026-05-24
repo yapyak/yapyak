@@ -16,6 +16,7 @@ catalog:
   '@vitejs/plugin-react': 6.0.2
   '@vitejs/plugin-vue': 6.0.7
   astro: 6.3.7
+  'magic-string': 0.30.17
   marked: 18.0.4
   react: 19.2.6
   react-dom: 19.2.6
