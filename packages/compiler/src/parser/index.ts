@@ -8,13 +8,13 @@ export type {
   ExtractFileRequest,
   ExtractFileResult,
   Fragment,
-  Framework,
   Location,
   ParsedArguments,
   ParsedParams,
   Placeholder,
   Position,
   Processor,
+  ProcessorKind,
   Range,
   Scope,
   ScriptBlock,
@@ -34,7 +34,7 @@ export { parseAstro } from './preprocessors/astro';
 export { parseSvelte } from './preprocessors/svelte';
 export {
   getProcessor,
-  resolveFramework,
+  resolveProcessorKind,
   vanillaProcessor,
   vueProcessor,
 } from './processor';

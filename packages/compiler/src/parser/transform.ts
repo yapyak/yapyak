@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 import { toMessageId } from './id';
 import { parseArguments } from './parse-arguments';
 import { parsePlaceholders } from './plural';
-import { getProcessor, resolveFramework } from './processor';
+import { getProcessor, resolveProcessorKind } from './processor';
 
 const PICK_FN = '_$pick';
 const YAPYAK_MODULE = '@yapyak/core';
@@ -32,8 +32,9 @@ export function transformFile(
       }),
     };
   }
-  const framework = request.framework ?? resolveFramework(request.fileId);
-  const processor = getProcessor(framework);
+  const processorKind =
+    request.processor ?? resolveProcessorKind(request.fileId);
+  const processor = getProcessor(processorKind);
   const fragments = processor.parseFragments(request.source);
   const isSingleLocale = request.locales.length === 1;
   const magicString = new MagicString(request.source);

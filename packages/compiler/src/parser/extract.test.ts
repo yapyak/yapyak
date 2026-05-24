@@ -97,7 +97,7 @@ describe('extractFile', () => {
     });
   });
 
-  describe('framework detection', () => {
+  describe('processor detection', () => {
     it('parses .tsx fixtures with JSX correctly', () => {
       const result = extractFixture('calls', 'nested-jsx.tsx');
       expect(

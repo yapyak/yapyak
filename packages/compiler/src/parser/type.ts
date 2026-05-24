@@ -2,7 +2,7 @@ import type MagicString from 'magic-string';
 import type { SourceMap } from 'magic-string';
 import type * as ts from 'typescript';
 
-export type Framework = 'astro' | 'svelte' | 'vanilla' | 'vue';
+export type ProcessorKind = 'astro' | 'svelte' | 'vanilla' | 'vue';
 
 export type DiagnosticCode =
   | 'YPK001'
@@ -120,8 +120,8 @@ export interface Processor {
 
 export interface ExtractFileRequest {
   fileId: string;
-  framework?: Framework;
   locales: readonly string[];
+  processor?: ProcessorKind;
   source: string;
 }
 
@@ -134,8 +134,8 @@ export interface ExtractFileResult {
 export interface TransformFileRequest {
   extracted: ExtractFileResult;
   fileId: string;
-  framework?: Framework;
   locales: readonly string[];
+  processor?: ProcessorKind;
   source: string;
   translations: Record<string, Record<string, string>>;
 }

@@ -20,12 +20,13 @@ import { toMessageId } from './id';
 import { parseArguments } from './parse-arguments';
 import { parsePlaceholders } from './plural';
 import { remapRange } from './position';
-import { getProcessor, resolveFramework } from './processor';
+import { getProcessor, resolveProcessorKind } from './processor';
 import { resolveBindings } from './resolve-bindings';
 
 export function extractFile(request: ExtractFileRequest): ExtractFileResult {
-  const framework = request.framework ?? resolveFramework(request.fileId);
-  const processor = getProcessor(framework);
+  const processorKind =
+    request.processor ?? resolveProcessorKind(request.fileId);
+  const processor = getProcessor(processorKind);
   const fragments = processor.parseFragments(request.source);
 
   const diagnostics: Diagnostic[] = [];
