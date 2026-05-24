@@ -6,7 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./extract": "./src/extract/index.ts",
-    "./virtual": "./src/virtual.d.ts",
+    "./ambient": "./src/ambient.d.ts",
     "./vite": "./src/vite.ts"
   },
   "scripts": {

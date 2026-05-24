@@ -10,7 +10,7 @@
       "#types": ["./src/types.ts"],
       "#utils/*": ["./src/utils/*"]
     },
-    "types": ["node", "vite/client", "@yapyak/doc-extractor/virtual"]
+    "types": ["node", "vite/client", "@yapyak/doc-extractor/ambient"]
   },
   "extends": "@yapyak/typescript-config/react",
   "include": ["src/**/*"]
