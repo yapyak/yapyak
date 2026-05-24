@@ -100,10 +100,9 @@ function rewriteScriptImports(input: RewriteScriptImportsInput): boolean {
       true,
       getScriptKind(request.fileId, fragment.lang),
     );
-    const yapyakImports = collectYapyakImports(sourceFile);
-    for (const declaration of yapyakImports) {
-      const isCoreImport = isYapyakCoreImport(declaration, sourceFile);
-      const shouldInjectPick = usedPick && isCoreImport && !pickHandled;
+    const coreImports = collectCoreImports(sourceFile);
+    for (const declaration of coreImports) {
+      const shouldInjectPick = usedPick && !pickHandled;
       rewriteImportDeclaration({
         declaration,
         fragment,
@@ -116,15 +115,6 @@ function rewriteScriptImports(input: RewriteScriptImportsInput): boolean {
     }
   }
   return pickHandled;
-}
-
-function isYapyakCoreImport(
-  declaration: ts.ImportDeclaration,
-  sourceFile: ts.SourceFile,
-): boolean {
-  if (!ts.isStringLiteral(declaration.moduleSpecifier)) return false;
-  void sourceFile;
-  return declaration.moduleSpecifier.text === YAPYAK_MODULE;
 }
 
 interface RewriteImportDeclarationInput {
@@ -218,14 +208,12 @@ interface ImportSpecifier {
   local: string;
 }
 
-function collectYapyakImports(
-  sourceFile: ts.SourceFile,
-): ts.ImportDeclaration[] {
+function collectCoreImports(sourceFile: ts.SourceFile): ts.ImportDeclaration[] {
   const result: ts.ImportDeclaration[] = [];
   for (const statement of sourceFile.statements) {
     if (!ts.isImportDeclaration(statement)) continue;
     if (!ts.isStringLiteral(statement.moduleSpecifier)) continue;
-    if (!statement.moduleSpecifier.text.startsWith('@yapyak/')) continue;
+    if (statement.moduleSpecifier.text !== YAPYAK_MODULE) continue;
     result.push(statement);
   }
   return result;

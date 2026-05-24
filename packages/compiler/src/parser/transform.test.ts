@@ -122,42 +122,62 @@ describe('transformFile — single-locale elision', () => {
 
   it('leaves type-only @yapyak/* import untouched', () => {
     const source = [
-      "import type { Page } from '@yapyak/doc-extractor';",
+      "import type { IntlProviderProps } from '@yapyak/react';",
       "import { $t } from '@yapyak/core';",
-      'export function PageTitle(props: { page: Page }) {',
-      "  return props.page.title + $t('Hello');",
+      'export function Greeting(props: IntlProviderProps) {',
+      "  return props.defaultLocale + $t('Hello');",
       '}',
     ].join('\n');
     const code = runTransform({ locales: ['en'], source });
     expect(code).toContain(
-      "import type { Page } from '@yapyak/doc-extractor';",
+      "import type { IntlProviderProps } from '@yapyak/react';",
     );
   });
 
   it('preserves inline type marker on @yapyak/* import specifier', () => {
     const source = [
-      "import { type Page } from '@yapyak/doc-extractor';",
+      "import { type IntlProviderProps } from '@yapyak/react';",
       "import { $t } from '@yapyak/core';",
-      'export function PageTitle(props: { page: Page }) {',
-      "  return props.page.title + $t('Hello');",
+      'export function Greeting(props: IntlProviderProps) {',
+      "  return props.defaultLocale + $t('Hello');",
       '}',
     ].join('\n');
     const code = runTransform({ locales: ['en'], source });
     expect(code).toContain(
-      "import { type Page } from '@yapyak/doc-extractor';",
+      "import { type IntlProviderProps } from '@yapyak/react';",
     );
   });
 
   it('preserves type marker when injecting _$pick into mixed import', () => {
     const source = [
-      "import { type LocaleData, $t } from '@yapyak/core';",
-      'export function greet(data: LocaleData) {',
-      "  return data.locale + $t('Hi {name}', { name: 'a' }, { locale: 'sv' });",
+      "import { type TParams, $t } from '@yapyak/core';",
+      "export function greet(params: TParams<'Hi {name}'>) {",
+      "  return $t('Hi {name}', params, { locale: 'sv' });",
       '}',
     ].join('\n');
     const code = runTransform({ locales: ['en', 'sv'], source });
-    expect(code).toContain('type LocaleData');
+    expect(code).toContain('type TParams');
     expect(code).toContain('_$pick');
+  });
+
+  it('never touches imports from other @yapyak/* packages', () => {
+    const source = [
+      "import { useLocale } from '@yapyak/react';",
+      "import type { Translator } from '@yapyak/translator';",
+      "import { withRequest } from '@yapyak/adapter';",
+      "import { $t } from '@yapyak/core';",
+      'export function Greeting(props: { translator: Translator }) {',
+      '  void useLocale;',
+      '  void withRequest;',
+      "  return props.translator.id + $t('Hello');",
+      '}',
+    ].join('\n');
+    const code = runTransform({ locales: ['en'], source });
+    expect(code).toContain("import { useLocale } from '@yapyak/react';");
+    expect(code).toContain(
+      "import type { Translator } from '@yapyak/translator';",
+    );
+    expect(code).toContain("import { withRequest } from '@yapyak/adapter';");
   });
 });
 
