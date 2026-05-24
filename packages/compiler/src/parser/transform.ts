@@ -299,13 +299,19 @@ function renderEliminated(
   placeholderInfos: readonly PlaceholderInfo[],
 ): string {
   if (placeholderInfos.length === 0) {
-    return JSON.stringify(source);
+    return safeJsString(source);
   }
   const expressions = getParamExpressions(callSite);
   if (expressions === undefined) {
-    return JSON.stringify(source);
+    return safeJsString(source);
   }
   return buildTemplateLiteral(source, expressions);
+}
+
+function safeJsString(text: string): string {
+  return JSON.stringify(text)
+    .replaceAll('{', '\\u007b')
+    .replaceAll('}', '\\u007d');
 }
 
 function getParamExpressions(
@@ -409,7 +415,7 @@ function buildCatalogLiteral(input: BuildCatalogInput): string {
       source,
       translations,
     });
-    entries.push(`${renderLocaleKey(locale)}: ${JSON.stringify(text)}`);
+    entries.push(`${renderLocaleKey(locale)}: ${safeJsString(text)}`);
   }
   return `{ ${entries.join(', ')} }`;
 }

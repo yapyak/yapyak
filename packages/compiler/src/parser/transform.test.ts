@@ -160,6 +160,28 @@ describe('transformFile — single-locale elision', () => {
     expect(code).toContain('_$pick');
   });
 
+  it('escapes { and } in catalog strings so Vue/JSX parsers never see literal braces', () => {
+    const source = [
+      "import { $t } from '@yapyak/core';",
+      "export const x = $t('You have {count, plural, one {# msg} other {# msgs}}', { count: 1 });",
+    ].join('\n');
+    const code = runTransform({ locales: ['en', 'sv'], source });
+    expect(code).not.toMatch(/"[^"]*\}\}"/);
+    expect(code).not.toMatch(/"[^"]*\{[a-z]/);
+    expect(code).toContain('\\u007d');
+    expect(code).toContain('\\u007b');
+  });
+
+  it('escapes { and } in elided single-locale literal (no placeholders)', () => {
+    const source = [
+      "import { $t } from '@yapyak/core';",
+      "export const x = $t('Closing braces inside: }}');",
+    ].join('\n');
+    const code = runTransform({ locales: ['en'], source });
+    expect(code).not.toMatch(/"[^"]*\}\}"/);
+    expect(code).toContain('\\u007d\\u007d');
+  });
+
   it('never touches imports from other @yapyak/* packages', () => {
     const source = [
       "import { useLocale } from '@yapyak/react';",
