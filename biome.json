@@ -12,7 +12,8 @@
       "!**/dist",
       "!**/node_modules",
       "!**/routeTree.gen.*",
-      "!**/api-manifest.json"
+      "!**/api-manifest.json",
+      "!**/parser/fixtures"
     ]
   }
 }
