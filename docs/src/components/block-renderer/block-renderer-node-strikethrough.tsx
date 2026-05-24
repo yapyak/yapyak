@@ -8,7 +8,9 @@ export interface BlockRendererNodeStrikethroughProps {
   block: StrikethroughBlock;
 }
 
-export function BlockRendererNodeStrikethrough(props: BlockRendererNodeStrikethroughProps) {
+export function BlockRendererNodeStrikethrough(
+  props: BlockRendererNodeStrikethroughProps,
+) {
   const { block } = props;
   return (
     <Box as="s">

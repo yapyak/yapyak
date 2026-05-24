@@ -2,7 +2,7 @@ import type { Page } from '@yapyak/doc-extractor';
 import type { BoxProps } from '#components/box';
 
 import { Link } from '@tanstack/react-router';
-import { $t } from 'yapyak';
+import { $t } from '@yapyak/core';
 
 import { Box } from '#components/box';
 

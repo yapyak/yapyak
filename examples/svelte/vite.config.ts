@@ -1,6 +1,6 @@
 import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { yapyak } from '@yapyak/vite';
 import { defineConfig } from 'vite';
-import { yapyak } from 'yapyak/vite';
 
 export default defineConfig({
   plugins: [

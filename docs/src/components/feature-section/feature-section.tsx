@@ -1,6 +1,6 @@
 import type { BoxProps } from '#components/box';
 
-import { $t } from 'yapyak';
+import { $t } from '@yapyak/core';
 
 import { Box } from '#components/box';
 

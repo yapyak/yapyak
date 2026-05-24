@@ -6,8 +6,8 @@ order: 4
 Run translation locally — no API key, no vendor in your billing path, no data leaving your machine.
 
 ```ts
-import { yapyak } from 'yapyak/vite';
-import { ollama } from 'yapyak/translator';
+import { yapyak } from '@yapyak/vite';
+import { ollama } from '@yapyak/ollama';
 
 yapyak({
   translator: ollama({
@@ -87,8 +87,8 @@ ollama({
 For development: local Ollama. For production builds: cloud (Anthropic/OpenAI). Branch on `NODE_ENV`:
 
 ```ts
-import { anthropic } from 'yapyak/translator';
-import { ollama } from 'yapyak/translator';
+import { anthropic } from '@yapyak/anthropic';
+import { ollama } from '@yapyak/ollama';
 
 const translator = process.env.NODE_ENV === 'production'
   ? anthropic({

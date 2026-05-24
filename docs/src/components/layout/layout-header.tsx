@@ -1,18 +1,18 @@
 import type { BoxProps } from '#components/box';
 
 import { Link } from '@tanstack/react-router';
+import { $t } from '@yapyak/core';
 import { useEffect, useState } from 'react';
-import { $t } from 'yapyak';
 
 import { Box } from '#components/box';
 import { GithubIcon } from '#components/github-icon';
 import { IconLink } from '#components/icon-link';
 
+import styles from './layout-header.module.css';
 import { LayoutHeaderCenter } from './layout-header-center';
 import { LayoutHeaderEnd } from './layout-header-end';
 import { LayoutHeaderMenuButton } from './layout-header-menu-button';
 import { LayoutHeaderStart } from './layout-header-start';
-import styles from './layout-header.module.css';
 
 export interface LayoutHeaderProps extends BoxProps<'header'> {}
 

@@ -5,11 +5,14 @@ import { Box } from '#components/box';
 
 import styles from './block-renderer-node-eyebrow-kind-badge.module.css';
 
-export interface BlockRendererNodeEyebrowKindBadgeProps extends BoxProps<'span'> {
+export interface BlockRendererNodeEyebrowKindBadgeProps
+  extends BoxProps<'span'> {
   variant: ExportKind;
 }
 
-export function BlockRendererNodeEyebrowKindBadge(props: BlockRendererNodeEyebrowKindBadgeProps) {
+export function BlockRendererNodeEyebrowKindBadge(
+  props: BlockRendererNodeEyebrowKindBadgeProps,
+) {
   const { className, variant, ...restProps } = props;
   return (
     <Box

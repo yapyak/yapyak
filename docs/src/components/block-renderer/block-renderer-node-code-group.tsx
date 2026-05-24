@@ -6,7 +6,9 @@ export interface BlockRendererNodeCodeGroupProps {
   block: CodeGroupBlock;
 }
 
-export function BlockRendererNodeCodeGroup(props: BlockRendererNodeCodeGroupProps) {
+export function BlockRendererNodeCodeGroup(
+  props: BlockRendererNodeCodeGroupProps,
+) {
   const { block } = props;
 
   return (

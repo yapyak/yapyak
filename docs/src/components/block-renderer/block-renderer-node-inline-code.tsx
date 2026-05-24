@@ -8,7 +8,9 @@ export interface BlockRendererNodeInlineCodeProps {
   block: InlineCodeBlock;
 }
 
-export function BlockRendererNodeInlineCode(props: BlockRendererNodeInlineCodeProps) {
+export function BlockRendererNodeInlineCode(
+  props: BlockRendererNodeInlineCodeProps,
+) {
   const { block } = props;
   return (
     <Box

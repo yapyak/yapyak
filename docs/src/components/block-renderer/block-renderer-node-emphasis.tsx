@@ -9,7 +9,9 @@ export interface BlockRendererNodeEmphasisProps {
   block: EmphasisBlock;
 }
 
-export function BlockRendererNodeEmphasis(props: BlockRendererNodeEmphasisProps) {
+export function BlockRendererNodeEmphasis(
+  props: BlockRendererNodeEmphasisProps,
+) {
   const { block } = props;
 
   return (

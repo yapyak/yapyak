@@ -1,0 +1,41 @@
+{
+  "name": "@yapyak/cli",
+  "version": "0.0.0",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "yapyak": "./dist/run.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@yapyak/anthropic": "workspace:*",
+    "@yapyak/compiler": "workspace:*",
+    "@yapyak/core": "workspace:*",
+    "@yapyak/openai": "workspace:*"
+  },
+  "peerDependencies": {
+    "vite": ">=5"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@yapyak/typescript-config": "workspace:*",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

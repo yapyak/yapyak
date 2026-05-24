@@ -2,8 +2,8 @@ import type { EyebrowBlock } from '@yapyak/doc-extractor';
 
 import { Box } from '#components/box';
 
-import { BlockRendererNodeEyebrowKindBadge } from './block-renderer-node-eyebrow-kind-badge';
 import styles from './block-renderer-node-eyebrow.module.css';
+import { BlockRendererNodeEyebrowKindBadge } from './block-renderer-node-eyebrow-kind-badge';
 
 export interface BlockRendererNodeEyebrowProps {
   block: EyebrowBlock;

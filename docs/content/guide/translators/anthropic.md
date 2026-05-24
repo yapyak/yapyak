@@ -6,8 +6,8 @@ order: 2
 Use Claude (Sonnet, Opus, Haiku) as your translator.
 
 ```ts
-import { yapyak } from 'yapyak/vite';
-import { anthropic } from 'yapyak/translator';
+import { yapyak } from '@yapyak/vite';
+import { anthropic } from '@yapyak/anthropic';
 
 yapyak({
   translator: anthropic({

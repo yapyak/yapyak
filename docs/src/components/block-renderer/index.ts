@@ -11,14 +11,14 @@ export type { BlockRendererNodeHeadingProps } from './block-renderer-node-headin
 export type { BlockRendererNodeImageProps } from './block-renderer-node-image';
 export type { BlockRendererNodeInlineCodeProps } from './block-renderer-node-inline-code';
 export type { BlockRendererNodeLinkProps } from './block-renderer-node-link';
-export type { BlockRendererNodeListItemProps } from './block-renderer-node-list-item';
 export type { BlockRendererNodeListProps } from './block-renderer-node-list';
+export type { BlockRendererNodeListItemProps } from './block-renderer-node-list-item';
 export type { BlockRendererNodeParagraphProps } from './block-renderer-node-paragraph';
 export type { BlockRendererNodeQuoteProps } from './block-renderer-node-quote';
 export type { BlockRendererNodeStrikethroughProps } from './block-renderer-node-strikethrough';
 export type { BlockRendererNodeStrongProps } from './block-renderer-node-strong';
-export type { BlockRendererNodeTableCellProps } from './block-renderer-node-table-cell';
 export type { BlockRendererNodeTableProps } from './block-renderer-node-table';
+export type { BlockRendererNodeTableCellProps } from './block-renderer-node-table-cell';
 export type { BlockRendererNodeTableRowProps } from './block-renderer-node-table-row';
 export type { BlockRendererNodeTextProps } from './block-renderer-node-text';
 

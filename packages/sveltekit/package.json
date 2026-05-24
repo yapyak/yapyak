@@ -1,0 +1,36 @@
+{
+  "name": "@yapyak/sveltekit",
+  "version": "0.0.0",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@yapyak/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "@sveltejs/kit": ">=2"
+  },
+  "devDependencies": {
+    "@sveltejs/kit": "catalog:",
+    "@yapyak/typescript-config": "workspace:*",
+    "svelte": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

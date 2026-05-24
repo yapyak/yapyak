@@ -1,5 +1,5 @@
 import { createFileRoute, getRouteApi, Outlet } from '@tanstack/react-router';
-import { $t } from 'yapyak';
+import { $t } from '@yapyak/core';
 
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';

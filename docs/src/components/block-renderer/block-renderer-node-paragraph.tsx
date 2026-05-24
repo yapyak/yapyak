@@ -9,7 +9,9 @@ export interface BlockRendererNodeParagraphProps {
   block: ParagraphBlock;
 }
 
-export function BlockRendererNodeParagraph(props: BlockRendererNodeParagraphProps) {
+export function BlockRendererNodeParagraph(
+  props: BlockRendererNodeParagraphProps,
+) {
   const { block } = props;
   return (
     <Box

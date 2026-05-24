@@ -1,12 +1,12 @@
 import type { BoxProps } from '#components/box';
 
 import { Link } from '@tanstack/react-router';
-import { $t } from 'yapyak';
+import { $t } from '@yapyak/core';
 
 import { Box } from '#components/box';
 
-import { HeroDemo } from './hero-demo';
 import styles from './hero.module.css';
+import { HeroDemo } from './hero-demo';
 
 export interface HeroProps extends BoxProps<'section'> {
   description: string;

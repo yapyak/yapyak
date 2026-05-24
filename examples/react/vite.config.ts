@@ -1,6 +1,6 @@
 import react from '@vitejs/plugin-react';
+import { yapyak } from '@yapyak/vite';
 import { defineConfig } from 'vite';
-import { yapyak } from 'yapyak/vite';
 
 export default defineConfig({
   plugins: [

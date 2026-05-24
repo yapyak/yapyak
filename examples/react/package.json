@@ -8,15 +8,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@yapyak/core": "workspace:*",
+    "@yapyak/react": "workspace:*",
     "react": "catalog:",
-    "react-dom": "catalog:",
-    "yapyak": "workspace:*"
+    "react-dom": "catalog:"
   },
   "devDependencies": {
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
+    "@yapyak/anthropic": "workspace:*",
+    "@yapyak/cli": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
+    "@yapyak/vite": "workspace:*",
     "typescript": "catalog:",
     "vite": "catalog:"
   }

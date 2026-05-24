@@ -8,7 +8,9 @@ export interface BlockRendererNodeListItemProps {
   block: ListItemBlock;
 }
 
-export function BlockRendererNodeListItem(props: BlockRendererNodeListItemProps) {
+export function BlockRendererNodeListItem(
+  props: BlockRendererNodeListItemProps,
+) {
   const { block } = props;
   return (
     <Box as="li">

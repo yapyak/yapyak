@@ -8,8 +8,8 @@ A **translator** is the function yapyak calls to actually translate strings. The
 yapyak ships four translators: **Anthropic**, **OpenAI**, **Gemini**, and **Ollama**. Many other providers (Groq, DeepSeek, Mistral, OpenRouter, Together AI, Vercel AI Gateway) expose OpenAI-compatible APIs — point the OpenAI translator at their endpoint and you're done. For anything else, build a [custom translator](/guide/translators/custom).
 
 ```ts
-import { yapyak } from 'yapyak/vite';
-import { anthropic } from 'yapyak/translator';
+import { yapyak } from '@yapyak/vite';
+import { anthropic } from '@yapyak/anthropic';
 
 yapyak({
   translator: anthropic({

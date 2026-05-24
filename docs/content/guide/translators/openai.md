@@ -6,8 +6,8 @@ order: 5
 Use OpenAI's GPT models — or any OpenAI-compatible provider (Groq, DeepSeek, Mistral, OpenRouter, Vercel AI Gateway, Together AI) — as your translator.
 
 ```ts
-import { yapyak } from 'yapyak/vite';
-import { openai } from 'yapyak/translator';
+import { yapyak } from '@yapyak/vite';
+import { openai } from '@yapyak/openai';
 
 yapyak({
   translator: openai({

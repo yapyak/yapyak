@@ -6,7 +6,7 @@ order: 7
 If your Vite SSR setup isn't TanStack Start or SvelteKit, wrap each request with `withRequest()`.
 
 ```ts
-import { withRequest } from 'yapyak/adapter';
+import { withRequest } from '@yapyak/core';
 
 function handler(request: Request): Response | Promise<Response> {
   return withRequest(request, () => renderApp(request));
@@ -28,7 +28,7 @@ withRequest<T>(request: Request, fn: () => T): T;
 If your root component is a reactive framework binding (React/Vue/Svelte), read the locale there so it re-renders on change:
 
 ```tsx
-import { useLocale } from 'yapyak/react';
+import { useLocale } from '@yapyak/react';
 
 function Component() {
   const [locale] = useLocale();

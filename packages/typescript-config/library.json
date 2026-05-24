@@ -5,8 +5,7 @@
     "isolatedDeclarations": true,
     "jsx": "react-jsx",
     "module": "esnext",
-    "target": "es2022",
-    "types": ["node", "react", "vite/client"]
+    "target": "es2022"
   },
   "extends": "./base.json"
 }

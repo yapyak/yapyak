@@ -8,7 +8,7 @@ yapyak generates translations on save. You write a string in your code, save the
 ## Write a string
 
 ```tsx
-import { $t } from 'yapyak';
+import { $t } from '@yapyak/core';
 
 export function SaveButton() {
   return <button>{$t('Save changes')}</button>;

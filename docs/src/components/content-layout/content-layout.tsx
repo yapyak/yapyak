@@ -5,10 +5,10 @@ import { createContext, useContext, useEffect, useState } from 'react';
 
 import { Box } from '#components/box';
 
+import styles from './content-layout.module.css';
 import { ContentLayoutContent } from './content-layout-content';
 import { ContentLayoutSidebar } from './content-layout-sidebar';
 import { ContentLayoutToolbar } from './content-layout-toolbar';
-import styles from './content-layout.module.css';
 
 export interface ContentLayoutProps extends BoxProps {}
 

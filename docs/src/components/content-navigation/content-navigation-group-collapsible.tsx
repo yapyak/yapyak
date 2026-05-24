@@ -5,7 +5,11 @@ import { useState } from 'react';
 
 import { Box } from '#components/box';
 
-import { childrenContainPath, getKey, renderChild } from './content-navigation-group';
+import {
+  childrenContainPath,
+  getKey,
+  renderChild,
+} from './content-navigation-group';
 import styles from './content-navigation-group.module.css';
 import { ContentNavigationGroupChevronIcon } from './content-navigation-group-chevron-icon';
 

@@ -6,8 +6,8 @@ order: 3
 Use Google's Gemini models as your translator.
 
 ```ts
-import { yapyak } from 'yapyak/vite';
-import { gemini } from 'yapyak/translator';
+import { yapyak } from '@yapyak/vite';
+import { gemini } from '@yapyak/gemini';
 
 yapyak({
   translator: gemini({

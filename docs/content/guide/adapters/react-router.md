@@ -27,7 +27,7 @@ In `app/root.tsx`:
 ```tsx
 // app/root.tsx
 import type { Route } from './+types/root';
-import { middleware as yapyakMiddleware } from 'yapyak/adapter/react-router';
+import { middleware as yapyakMiddleware } from '@yapyak/react-router';
 
 export const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];
 ```
@@ -55,7 +55,7 @@ Read the locale via `useLocale()` inside your `Layout` component. The component 
 ```tsx
 // app/root.tsx
 import { Links, Meta, Outlet, Scripts } from 'react-router';
-import { useLocale } from 'yapyak/react';
+import { useLocale } from '@yapyak/react';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [locale] = useLocale();

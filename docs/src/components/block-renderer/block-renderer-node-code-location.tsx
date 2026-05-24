@@ -8,7 +8,9 @@ export interface BlockRendererNodeCodeLocationProps {
   block: CodeLocationBlock;
 }
 
-export function BlockRendererNodeCodeLocation(props: BlockRendererNodeCodeLocationProps) {
+export function BlockRendererNodeCodeLocation(
+  props: BlockRendererNodeCodeLocationProps,
+) {
   const { block } = props;
   const label = `${block.file}:${block.line}`;
   if (block.href !== null) {

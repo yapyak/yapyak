@@ -1,0 +1,35 @@
+{
+  "name": "@yapyak/astro",
+  "version": "0.0.0",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@yapyak/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "astro": ">=5"
+  },
+  "devDependencies": {
+    "@yapyak/typescript-config": "workspace:*",
+    "astro": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

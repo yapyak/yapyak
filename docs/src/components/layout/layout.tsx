@@ -2,10 +2,10 @@ import type { BoxProps } from '#components/box';
 
 import { Box } from '#components/box';
 
+import styles from './layout.module.css';
 import { LayoutFooter } from './layout-footer';
 import { LayoutHeader } from './layout-header';
 import { LayoutMain } from './layout-main';
-import styles from './layout.module.css';
 
 export interface LayoutProps extends BoxProps {}
 

@@ -1,0 +1,35 @@
+{
+  "name": "@yapyak/vue",
+  "version": "0.0.0",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@yapyak/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "vue": ">=3.4"
+  },
+  "devDependencies": {
+    "@yapyak/typescript-config": "workspace:*",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vue": "catalog:"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

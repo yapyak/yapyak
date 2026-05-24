@@ -6,9 +6,9 @@ import { useEffect, useRef, useState } from 'react';
 import { Box } from '#components/box';
 import { useDemoState } from '#hooks/use-demo-state';
 
+import styles from './hero-demo.module.css';
 import { HeroDemoEditor } from './hero-demo-editor';
 import { HeroDemoLocaleStack } from './hero-demo-locale-stack';
-import styles from './hero-demo.module.css';
 
 export interface HeroDemoProps extends BoxProps {}
 

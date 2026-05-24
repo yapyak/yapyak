@@ -9,7 +9,9 @@ export interface BlockRendererNodeTableCellProps {
   block: TableCellBlock;
 }
 
-export function BlockRendererNodeTableCell(props: BlockRendererNodeTableCellProps) {
+export function BlockRendererNodeTableCell(
+  props: BlockRendererNodeTableCellProps,
+) {
   const { block } = props;
   return (
     <Box

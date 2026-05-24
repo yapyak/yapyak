@@ -7,7 +7,7 @@ Re-export the `handle` hook from `hooks.server.ts`.
 
 ```ts
 // src/hooks.server.ts
-export { handle } from 'yapyak/adapter/sveltekit';
+export { handle } from '@yapyak/sveltekit';
 ```
 
 ```html
@@ -49,7 +49,7 @@ If you already export a `handle` from `hooks.server.ts` (auth, logging, etc.), c
 ```ts
 // src/hooks.server.ts
 import { sequence } from '@sveltejs/kit/hooks';
-import { handle as yapyakHandle } from 'yapyak/adapter/sveltekit';
+import { handle as yapyakHandle } from '@yapyak/sveltekit';
 import { handle as authHandle } from './auth';
 
 export const handle = sequence(yapyakHandle, authHandle);

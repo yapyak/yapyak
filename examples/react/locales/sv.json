@@ -1,5 +1,6 @@
 {
   "src/app.tsx": {
+    "{theme, select, dark {Dark mode is on} other {Light mode is on}}": "",
     "At: {when, time, short}": "",
     "Count: {amount, number, integer}": "",
     "Dates and times": "",
@@ -15,7 +16,6 @@
     "Total: {amount, number, percent}": "",
     "Updated: {when, date, long}": "",
     "Updated: {when, date, short}": "",
-    "You have {count, plural, one {# message} other {# messages}}": "",
-    "{theme, select, dark {Dark mode is on} other {Light mode is on}}": ""
+    "You have {count, plural, one {# message} other {# messages}}": ""
   }
 }

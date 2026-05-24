@@ -7,7 +7,7 @@ Re-export yapyak's middleware as `onRequest` from `src/middleware.ts`.
 
 ```ts
 // src/middleware.ts
-export { middleware as onRequest } from 'yapyak/adapter/astro';
+export { middleware as onRequest } from '@yapyak/astro';
 ```
 
 That's the entire wiring.
@@ -19,7 +19,7 @@ If you have your own middlewares (auth, logging, etc.), compose with Astro's `se
 ```ts
 // src/middleware.ts
 import { sequence } from 'astro:middleware';
-import { middleware as yapyakMiddleware } from 'yapyak/adapter/astro';
+import { middleware as yapyakMiddleware } from '@yapyak/astro';
 import { authMiddleware } from './auth';
 
 export const onRequest = sequence(yapyakMiddleware, authMiddleware);
@@ -32,7 +32,7 @@ Astro renders `<html>` once per page request as static HTML, not through a react
 ```astro
 ---
 // src/layouts/Layout.astro
-import { getLocale } from 'yapyak';
+import { getLocale } from '@yapyak/core';
 ---
 <html lang={getLocale()}>
   <head>

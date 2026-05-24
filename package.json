@@ -3,10 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "pnpm --filter yapyak build",
+    "build": "pnpm -r --filter \"@yapyak/*\" build",
     "check": "biome check .",
     "check:write": "biome check --write .",
-    "test": "pnpm --filter yapyak test",
+    "test": "pnpm -r --filter \"@yapyak/*\" test",
     "typecheck": "pnpm -r --parallel typecheck"
   },
   "devDependencies": {

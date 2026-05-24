@@ -7,7 +7,7 @@ Register yapyak's request middleware once in `src/start.ts`.
 
 ```ts
 // src/start.ts
-import { middleware } from 'yapyak/adapter/tanstack-start';
+import { middleware } from '@yapyak/tanstack-start';
 
 export default {
   requestMiddleware: [middleware],
@@ -23,7 +23,7 @@ Drive the root element's `lang` attribute from the locale via `useLocale()`. The
 ```tsx
 // src/routes/__root.tsx
 import { createRootRoute, Outlet } from '@tanstack/react-router';
-import { useLocale } from 'yapyak/react';
+import { useLocale } from '@yapyak/react';
 
 function Component() {
   const [locale] = useLocale();

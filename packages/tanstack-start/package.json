@@ -1,0 +1,35 @@
+{
+  "name": "@yapyak/tanstack-start",
+  "version": "0.0.0",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@yapyak/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "@tanstack/react-start": ">=1.168"
+  },
+  "devDependencies": {
+    "@tanstack/react-start": "catalog:",
+    "@yapyak/typescript-config": "workspace:*",
+    "tsup": "catalog:",
+    "typescript": "catalog:"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

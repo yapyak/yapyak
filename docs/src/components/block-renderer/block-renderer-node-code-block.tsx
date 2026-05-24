@@ -6,7 +6,9 @@ export interface BlockRendererNodeCodeBlockProps {
   block: CodeBlockData;
 }
 
-export function BlockRendererNodeCodeBlock(props: BlockRendererNodeCodeBlockProps) {
+export function BlockRendererNodeCodeBlock(
+  props: BlockRendererNodeCodeBlockProps,
+) {
   const { block } = props;
   return (
     <CodeBlock

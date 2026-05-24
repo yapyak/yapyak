@@ -2,8 +2,8 @@ import type { Page } from '@yapyak/doc-extractor';
 import type { ReactNode } from 'react';
 
 import { Link } from '@tanstack/react-router';
+import { $t } from '@yapyak/core';
 import { useEffect, useRef, useState } from 'react';
-import { $t } from 'yapyak';
 
 import { Box } from '#components/box';
 import { ChevronIcon } from '#components/chevron-icon';

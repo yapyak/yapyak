@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { locales, $t } from 'yapyak';
-import { locale } from 'yapyak/vue';
+import { $t, locales } from '@yapyak/core';
+import { locale } from '@yapyak/vue';
 
 const now = new Date();
 </script>

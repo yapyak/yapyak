@@ -19,8 +19,8 @@ Add the plugin to `vite.config.ts`:
 
 ```ts
 import { defineConfig } from 'vite';
-import { yapyak } from 'yapyak/vite';
-import { anthropic } from 'yapyak/translator';
+import { yapyak } from '@yapyak/vite';
+import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
   plugins: [
@@ -68,7 +68,7 @@ pnpm yapyak add es fr de ja
 {% code-group %}
 
 ```tsx [React]
-import { $t } from 'yapyak';
+import { $t } from '@yapyak/core';
 
 export function SaveButton() {
   return <button>{$t('Save changes')}</button>;
@@ -77,7 +77,7 @@ export function SaveButton() {
 
 ```vue [Vue]
 <script setup lang="ts">
-import { $t } from 'yapyak'
+import { $t } from '@yapyak/core'
 </script>
 
 <template>
@@ -88,7 +88,7 @@ import { $t } from 'yapyak'
 ```svelte [Svelte]
 <script lang="ts">
   // Svelte reserves `$`-prefixed identifiers; alias the macro.
-  import { $t as t } from 'yapyak';
+  import { $t as t } from '@yapyak/core';
 </script>
 
 <button>{t('Save changes')}</button>

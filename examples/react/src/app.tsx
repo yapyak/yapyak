@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 
-import { locales, $t } from 'yapyak';
-import { useLocale } from 'yapyak/react';
+import { $t, locales } from '@yapyak/core';
+import { useLocale } from '@yapyak/react';
 
 const now = new Date();
 
@@ -37,9 +37,12 @@ export function App(): ReactElement {
 
       <h2>{$t('Select')}</h2>
       <p>
-        {$t('{theme, select, dark {Dark mode is on} other {Light mode is on}}', {
-          theme: 'dark',
-        })}
+        {$t(
+          '{theme, select, dark {Dark mode is on} other {Light mode is on}}',
+          {
+            theme: 'dark',
+          },
+        )}
       </p>
 
       <LocaleToggle />

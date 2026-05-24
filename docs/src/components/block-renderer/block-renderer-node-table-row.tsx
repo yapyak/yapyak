@@ -8,7 +8,9 @@ export interface BlockRendererNodeTableRowProps {
   block: TableRowBlock;
 }
 
-export function BlockRendererNodeTableRow(props: BlockRendererNodeTableRowProps) {
+export function BlockRendererNodeTableRow(
+  props: BlockRendererNodeTableRowProps,
+) {
   const { block } = props;
   return (
     <Box as="tr">

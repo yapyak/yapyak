@@ -3,8 +3,8 @@ import type { BoxProps } from '#components/box';
 
 import { Box } from '#components/box';
 
-import { BlockRendererNode } from './block-renderer-node';
 import styles from './block-renderer.module.css';
+import { BlockRendererNode } from './block-renderer-node';
 
 export interface BlockRendererProps extends BoxProps {
   blocks: Block[];

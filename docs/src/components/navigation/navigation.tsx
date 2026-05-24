@@ -5,8 +5,8 @@ import { useLayoutEffect, useRef, useState } from 'react';
 
 import { Box } from '#components/box';
 
-import { NavigationLink } from './navigation-link';
 import styles from './navigation.module.css';
+import { NavigationLink } from './navigation-link';
 
 export interface NavigationProps extends BoxProps<'nav'> {}
 
