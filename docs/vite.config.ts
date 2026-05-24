@@ -16,6 +16,8 @@ const REFERENCE_PACKAGES = [
   'tanstack-start',
   'sveltekit',
   'react-router',
+  'adapter',
+  'translator',
   'anthropic',
   'openai',
   'gemini',
@@ -35,6 +37,8 @@ export default defineConfig({
         },
         reference: {
           packages: REFERENCE_PACKAGES.map((name) => ({
+            collapsible: name !== 'core',
+            expanded: name === 'core',
             root: resolve(import.meta.dirname, `../packages/${name}`),
           })),
           source: 'typedoc',
