@@ -58,7 +58,7 @@ export function buildSymbolPage(
   currentPackageSlug = options.packageSlug;
   const blocks: Block[] = [];
 
-  blocks.push(eyebrow(options.moduleId, symbol.kind, options.packageName));
+  blocks.push(eyebrow(options.moduleId, symbol.kind));
 
   if (symbol.deprecated !== null) {
     blocks.push({
@@ -83,6 +83,8 @@ export function buildSymbolPage(
     const parsed = parseMarkdoc(symbol.remarks);
     blocks.push(...parsed.blocks);
   }
+
+  blocks.push(importSnippet(options.moduleId, symbol.name, symbol.kind));
 
   if (symbol.kind === 'function') {
     blocks.push(heading2('Signature'));
@@ -202,6 +204,10 @@ export function buildModulePage(
     blocks.push(...parsed.blocks);
   }
 
+  if (module.id === options.packageName) {
+    blocks.push(installSnippet(options.packageName));
+  }
+
   if (module.exports.length > 0) {
     blocks.push(heading2('Exports'));
     blocks.push(exportsTable(module.exports, module.id));
@@ -302,14 +308,32 @@ function unifyParameters(overloads: ReferenceOverload[]): ReferenceParameter[] {
   return unified;
 }
 
-function eyebrow(
+function eyebrow(moduleId: string, kind: ExportKind): Block {
+  return { kind, module: moduleId, type: 'eyebrow' };
+}
+
+function importSnippet(
   moduleId: string,
+  symbolName: string,
   kind: ExportKind,
-  packageName: string,
 ): Block {
-  const module =
-    moduleId === packageName ? null : moduleId.slice(packageName.length + 1);
-  return { kind, module, type: 'eyebrow' };
+  const prefix =
+    kind === 'interface' || kind === 'type' ? 'import type' : 'import';
+  return {
+    label: null,
+    language: 'ts',
+    source: `${prefix} { ${symbolName} } from '${moduleId}';`,
+    type: 'code-block',
+  };
+}
+
+function installSnippet(packageName: string): Block {
+  return {
+    label: null,
+    language: 'bash',
+    source: `npm install ${packageName}\n# or\npnpm add ${packageName}`,
+    type: 'code-block',
+  };
 }
 
 function heading2(text: string): Block {
