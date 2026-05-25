@@ -1,3 +1,17 @@
+/**
+ * OpenAI translator provider for yapyak.
+ *
+ * ## Installation
+ *
+ * ```bash
+ * npm install @yapyak/openai
+ * # or
+ * pnpm add @yapyak/openai
+ * ```
+ *
+ * @packageDocumentation
+ */
+
 import type { ContextLevel, Translator } from '@yapyak/translator';
 
 import {

@@ -1,3 +1,17 @@
+/**
+ * Gemini translator provider for yapyak.
+ *
+ * ## Installation
+ *
+ * ```bash
+ * npm install @yapyak/gemini
+ * # or
+ * pnpm add @yapyak/gemini
+ * ```
+ *
+ * @packageDocumentation
+ */
+
 import type { ContextLevel, Translator } from '@yapyak/translator';
 
 import {

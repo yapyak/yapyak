@@ -1,10 +1,13 @@
 /**
- * Compile-time extraction and locale-file synchronization for yapyak.
+ * Compile-time extraction and locale-file synchronization for yapyak. Exposes catalog operations — discover locale files, read their contents, migrate keys, sync entries, and serialize them canonically.
  *
- * The public entry exposes catalog operations — discover locale files, read
- * their contents, migrate keys, sync entries, and serialize them canonically.
- * Build-tool authors and editor tooling should import the extraction and
- * transform primitives from `@yapyak/compiler/internal` instead.
+ * ## Installation
+ *
+ * ```bash
+ * npm install @yapyak/compiler
+ * # or
+ * pnpm add @yapyak/compiler
+ * ```
  *
  * @packageDocumentation
  */

@@ -225,11 +225,15 @@ function tokenizeBash(code: string) {
     }
 
     if (character === '-') {
-      const flag = /^--?[A-Za-z][\w-]*/.exec(code.slice(index));
-      if (flag) {
-        tokens.push({ type: 'bash-flag', value: flag[0] });
-        index += flag[0].length;
-        continue;
+      const previous = index > 0 ? (code[index - 1] ?? '') : '';
+      const isWordContinuation = /[A-Za-z0-9_./@-]/.test(previous);
+      if (!isWordContinuation) {
+        const flag = /^--?[A-Za-z][\w-]*/.exec(code.slice(index));
+        if (flag) {
+          tokens.push({ type: 'bash-flag', value: flag[0] });
+          index += flag[0].length;
+          continue;
+        }
       }
     }
 

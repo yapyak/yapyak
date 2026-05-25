@@ -1,7 +1,13 @@
 /**
  * Adapter API. Provides {@link withRequest} for binding the incoming Request to async-scoped storage.
  *
- * Used by the shipped framework adapter packages (`@yapyak/astro`, `@yapyak/sveltekit`, `@yapyak/tanstack-start`, `@yapyak/react-router`) and by custom SSR integrations.
+ * ## Installation
+ *
+ * ```bash
+ * npm install @yapyak/adapter
+ * # or
+ * pnpm add @yapyak/adapter
+ * ```
  *
  * @packageDocumentation
  */

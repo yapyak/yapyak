@@ -1,6 +1,22 @@
 /**
  * SvelteKit adapter. Provides the {@link handle} hook for per-request locale context and `<html lang>` substitution.
  *
+ * ## Installation
+ *
+ * ```bash
+ * npm install @yapyak/sveltekit
+ * # or
+ * pnpm add @yapyak/sveltekit
+ * ```
+ *
+ * ## Setup
+ *
+ * Re-export {@link handle} from `src/hooks.server.ts`.
+ *
+ * ```ts
+ * export { handle } from '@yapyak/sveltekit';
+ * ```
+ *
  * @packageDocumentation
  */
 

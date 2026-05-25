@@ -1,6 +1,25 @@
 /**
  * React Router 7 adapter. Provides {@link middleware} for per-request locale context.
  *
+ * ## Installation
+ *
+ * ```bash
+ * npm install @yapyak/react-router
+ * # or
+ * pnpm add @yapyak/react-router
+ * ```
+ *
+ * ## Setup
+ *
+ * Register {@link middleware} in `app/root.tsx`. Requires `future.v8_middleware: true` in `react-router.config.ts`.
+ *
+ * ```tsx
+ * import type { Route } from './+types/root';
+ * import { middleware as yapyakMiddleware } from '@yapyak/react-router';
+ *
+ * export const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];
+ * ```
+ *
  * @packageDocumentation
  */
 

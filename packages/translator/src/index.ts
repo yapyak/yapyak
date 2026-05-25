@@ -1,5 +1,13 @@
 /**
- * Translator orchestration. Provides {@link createTranslator} and the shared `fetchWithRetry` and `buildSystem` helpers used by the provider packages (`@yapyak/anthropic`, `@yapyak/openai`, `@yapyak/gemini`, `@yapyak/ollama`).
+ * Translator orchestration. Provides {@link createTranslator} and the shared `fetchWithRetry` and `buildSystem` helpers used by the provider packages.
+ *
+ * ## Installation
+ *
+ * ```bash
+ * npm install @yapyak/translator
+ * # or
+ * pnpm add @yapyak/translator
+ * ```
  *
  * @packageDocumentation
  */

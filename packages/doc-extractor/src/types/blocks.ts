@@ -140,7 +140,7 @@ export type ExportKind =
   | 'variable';
 
 export interface EyebrowBlock {
-  kind: ExportKind;
+  kind: ExportKind | null;
   module: string | null;
   type: 'eyebrow';
 }

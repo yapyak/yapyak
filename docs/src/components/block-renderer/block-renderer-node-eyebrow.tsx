@@ -16,8 +16,10 @@ export function BlockRendererNodeEyebrow(props: BlockRendererNodeEyebrowProps) {
       as="p"
       className={styles.BlockRendererNodeEyebrow}
     >
-      <BlockRendererNodeEyebrowKindBadge variant={block.kind} />
-      {block.module && (
+      {block.kind !== null && (
+        <BlockRendererNodeEyebrowKindBadge variant={block.kind} />
+      )}
+      {block.module !== null && (
         <Box
           as="span"
           className={styles.ModuleText}

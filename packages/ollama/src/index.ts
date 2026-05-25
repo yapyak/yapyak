@@ -1,3 +1,17 @@
+/**
+ * Ollama translator provider for yapyak.
+ *
+ * ## Installation
+ *
+ * ```bash
+ * npm install @yapyak/ollama
+ * # or
+ * pnpm add @yapyak/ollama
+ * ```
+ *
+ * @packageDocumentation
+ */
+
 import type { ContextLevel, Translator } from '@yapyak/translator';
 
 import {

@@ -35,7 +35,7 @@ export function blockToText(block: Block): string {
     case 'image':
       return block.alt ?? '';
     case 'eyebrow':
-      return block.kind;
+      return block.kind ?? block.module ?? '';
     case 'code-location':
       return `${block.file}:${block.line}`;
     case 'divider':

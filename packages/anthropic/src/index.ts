@@ -1,3 +1,17 @@
+/**
+ * Anthropic translator provider for yapyak.
+ *
+ * ## Installation
+ *
+ * ```bash
+ * npm install @yapyak/anthropic
+ * # or
+ * pnpm add @yapyak/anthropic
+ * ```
+ *
+ * @packageDocumentation
+ */
+
 import type { ContextLevel, Translator } from '@yapyak/translator';
 
 import {

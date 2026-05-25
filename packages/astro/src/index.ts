@@ -3,6 +3,22 @@
 /**
  * Astro adapter. Provides {@link middleware} for per-request locale context.
  *
+ * ## Installation
+ *
+ * ```bash
+ * npm install @yapyak/astro
+ * # or
+ * pnpm add @yapyak/astro
+ * ```
+ *
+ * ## Setup
+ *
+ * Re-export {@link middleware} from `src/middleware.ts` as `onRequest`.
+ *
+ * ```ts
+ * export { middleware as onRequest } from '@yapyak/astro';
+ * ```
+ *
  * @packageDocumentation
  */
 

@@ -1,6 +1,14 @@
 /**
  * Svelte 5 adapter. Provides the reactive {@link locale} store.
  *
+ * ## Installation
+ *
+ * ```bash
+ * npm install @yapyak/svelte
+ * # or
+ * pnpm add @yapyak/svelte
+ * ```
+ *
  * @packageDocumentation
  */
 

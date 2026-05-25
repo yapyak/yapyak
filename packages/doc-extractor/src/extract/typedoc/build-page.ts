@@ -199,13 +199,11 @@ export function buildModulePage(
   currentPackageSlug = options.packageSlug;
   const blocks: Block[] = [];
 
+  blocks.push({ kind: null, module: module.id, type: 'eyebrow' });
+
   if (module.description) {
     const parsed = parseMarkdoc(module.description);
     blocks.push(...parsed.blocks);
-  }
-
-  if (module.id === options.packageName) {
-    blocks.push(installSnippet(options.packageName));
   }
 
   if (module.exports.length > 0) {
@@ -323,15 +321,6 @@ function importSnippet(
     label: null,
     language: 'ts',
     source: `${prefix} { ${symbolName} } from '${moduleId}';`,
-    type: 'code-block',
-  };
-}
-
-function installSnippet(packageName: string): Block {
-  return {
-    label: null,
-    language: 'bash',
-    source: `npm install ${packageName}\n# or\npnpm add ${packageName}`,
     type: 'code-block',
   };
 }
