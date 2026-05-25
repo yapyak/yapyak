@@ -19,7 +19,8 @@ export interface TypedocSource {
 export interface TypedocPackage {
   collapsible?: boolean;
   expanded?: boolean;
-  name?: string;
+  group?: string;
+  name: string;
   root: string;
 }
 

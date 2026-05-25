@@ -18,6 +18,7 @@ import {
   buildSymbolPage,
 } from '../extract/typedoc/build-page.ts';
 import { extractTypedoc } from '../extract/typedoc/extract.ts';
+import { slugify } from '../utils/slug.ts';
 import { buildMarkdocSidebar, buildTypedocPackageRoot } from './sidebar.ts';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -80,12 +81,15 @@ async function buildTypedocCollection(
 ): Promise<Collection> {
   const pages: Record<string, Page> = {};
   const redirects: Record<string, string> = {};
-  const sidebar: SidebarNode[] = [];
+  const groupedNodes = new Map<string, SidebarNode[]>();
+  const groupOrder: string[] = [];
+  const ungroupedNodes: SidebarNode[] = [];
 
   for (const pkg of packages) {
     const packageName = await readPackageName(pkg.root);
-    const packageSlug = pkg.name ?? packageName;
+    const packageSlug = slugify(pkg.name);
     validateSlug(packageSlug);
+    const displayName = pkg.name;
 
     const refManifest = await extractTypedoc({
       collectionName,
@@ -103,7 +107,7 @@ async function buildTypedocCollection(
         ? packageSlug
         : `${packageSlug}/${subSlug}`;
       const moduleHref = `/${collectionName}/${modulePath}`;
-      const moduleLabel = isRootModule ? packageName : subSlug;
+      const moduleLabel = isRootModule ? displayName : subSlug;
 
       for (const symbol of module.exports) {
         const safeName = encodeSymbolSegment(symbol.name);
@@ -136,16 +140,37 @@ async function buildTypedocCollection(
       });
     }
 
-    sidebar.push(
-      buildTypedocPackageRoot(refManifest, {
-        collapsible: pkg.collapsible ?? false,
-        collectionName,
-        expanded: pkg.expanded ?? false,
-        label: packageName,
-        packageName,
-        packageSlug,
-      }),
-    );
+    const packageNode = buildTypedocPackageRoot(refManifest, {
+      collapsible: pkg.collapsible ?? false,
+      collectionName,
+      expanded: pkg.expanded ?? false,
+      label: displayName,
+      packageName,
+      packageSlug,
+    });
+
+    if (pkg.group === undefined) {
+      ungroupedNodes.push(packageNode);
+      continue;
+    }
+    let groupBucket = groupedNodes.get(pkg.group);
+    if (groupBucket === undefined) {
+      groupBucket = [];
+      groupedNodes.set(pkg.group, groupBucket);
+      groupOrder.push(pkg.group);
+    }
+    groupBucket.push(packageNode);
+  }
+
+  const sidebar: SidebarNode[] = [...ungroupedNodes];
+  for (const groupLabel of groupOrder) {
+    const children = groupedNodes.get(groupLabel) ?? [];
+    sidebar.push({
+      children,
+      collapsible: false,
+      label: groupLabel,
+      type: 'group',
+    });
   }
 
   return { pages, redirects, sidebar };
