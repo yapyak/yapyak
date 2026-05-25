@@ -1,4 +1,4 @@
-export type { NormalizedPersistence, NormalizedYapyakConfig } from './types';
+export type { NormalizedYapyakConfig } from './types';
 
 export { createFilter } from './filter';
 export { type LoadYapyakConfigResult, loadYapyakConfig } from './load';

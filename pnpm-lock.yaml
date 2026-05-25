@@ -394,6 +394,9 @@ importers:
 
   packages/config:
     dependencies:
+      '@yapyak/core':
+        specifier: workspace:*
+        version: link:../core
       '@yapyak/translator':
         specifier: workspace:*
         version: link:../translator

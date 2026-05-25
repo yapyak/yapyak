@@ -1,3 +1,4 @@
+import type { PersistenceConfig } from '@yapyak/core/internal';
 import type { Translator } from '@yapyak/translator';
 
 /** Glob pattern for include/exclude filtering. */
@@ -11,13 +12,6 @@ export type PersistenceOption =
   | { name?: string; type: 'cookie' }
   | { key?: string; type: 'localStorage' }
   | { match?: RegExp; type: 'url' }
-  | null;
-
-/** Normalized form of {@link PersistenceOption} with defaults applied. */
-export type NormalizedPersistence =
-  | { type: 'cookie'; name: string }
-  | { type: 'localStorage'; key: string }
-  | { type: 'url'; match?: RegExp }
   | null;
 
 /** Configuration for yapyak. */
@@ -67,7 +61,7 @@ export interface NormalizedYapyakConfig {
   exclude: YapyakFilterPattern;
   include: YapyakFilterPattern;
   localesDir: string;
-  persistence: NormalizedPersistence;
+  persistence: PersistenceConfig;
   preserveTranslationsOnRename: boolean;
   syncHtmlLang: boolean;
   translator: Translator | undefined;

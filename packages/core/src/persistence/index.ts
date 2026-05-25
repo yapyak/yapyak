@@ -2,10 +2,10 @@ import { cookie } from './cookie';
 import { localStorage } from './local-storage';
 import { url } from './url';
 
-export type SerializedPersistence =
+export type PersistenceConfig =
   | { type: 'cookie'; name: string }
   | { type: 'localStorage'; key: string }
-  | { type: 'url'; match?: { flags: string; source: string } }
+  | { type: 'url'; match?: RegExp }
   | null;
 
 export interface Persistence {
@@ -31,7 +31,7 @@ export function createPersistence(
 }
 
 export function buildPersistence(
-  config: SerializedPersistence,
+  config: PersistenceConfig,
   locales: readonly string[],
 ): Persistence | null {
   if (config === null) {
@@ -43,9 +43,5 @@ export function buildPersistence(
   if (config.type === 'localStorage') {
     return localStorage({ key: config.key });
   }
-  const match =
-    config.match !== undefined
-      ? new RegExp(config.match.source, config.match.flags)
-      : undefined;
-  return url({ locales, match });
+  return url({ locales, match: config.match });
 }

@@ -4,7 +4,7 @@ import type {
   ExtractFileResult,
 } from '@yapyak/compiler/internal';
 import type { NormalizedYapyakConfig } from '@yapyak/config/internal';
-import type { SerializedPersistence } from '@yapyak/core/internal';
+import type { PersistenceConfig } from '@yapyak/core/internal';
 import type { Plugin, ResolvedConfig } from 'vite';
 
 import {
@@ -296,7 +296,7 @@ function generateConfig(
     `export const DEFAULT_LOCALE = ${JSON.stringify(resolved.defaultLocale)};`,
   );
   lines.push(
-    `export const PERSISTENCE = ${JSON.stringify(serializePersistence(normalized.persistence))};`,
+    `export const PERSISTENCE = ${emitPersistence(normalized.persistence)};`,
   );
   lines.push(
     `export const DETECT_ACCEPT_LANGUAGE = ${JSON.stringify(normalized.detectAcceptLanguage)};`,
@@ -307,22 +307,20 @@ function generateConfig(
   return lines.join('\n');
 }
 
-function serializePersistence(
-  persistence: NormalizedYapyakConfig['persistence'],
-): SerializedPersistence {
+function emitPersistence(persistence: PersistenceConfig): string {
   if (persistence === null) {
-    return null;
+    return 'null';
   }
-  if (persistence.type !== 'url') {
-    return persistence;
+  if (persistence.type === 'cookie') {
+    return `{ type: 'cookie', name: ${JSON.stringify(persistence.name)} }`;
+  }
+  if (persistence.type === 'localStorage') {
+    return `{ type: 'localStorage', key: ${JSON.stringify(persistence.key)} }`;
   }
   if (persistence.match === undefined) {
-    return { type: 'url' };
+    return `{ type: 'url' }`;
   }
-  return {
-    match: { flags: persistence.match.flags, source: persistence.match.source },
-    type: 'url',
-  };
+  return `{ type: 'url', match: new RegExp(${JSON.stringify(persistence.match.source)}, ${JSON.stringify(persistence.match.flags)}) }`;
 }
 
 function isCandidateId(id: string, filter: (id: string) => boolean): boolean {
