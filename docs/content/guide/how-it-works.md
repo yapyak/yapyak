@@ -27,6 +27,16 @@ export function SaveButton() {
 
 The variants are inlined at the call site. At runtime, `_pick()` returns the right one for the current locale.
 
+Without any locales configured, yapyak disappears entirely and returns the string as-is:
+
+```tsx
+export function SaveButton() {
+  return <button>Save changes</button>;
+}
+```
+
+Which means you can adopt yapyak — and get everything in place — for free, even before you have any translations. The day you add a locale, nothing in your code needs to change.
+
 ## On save
 
 On save, yapyak's Vite plugin:
