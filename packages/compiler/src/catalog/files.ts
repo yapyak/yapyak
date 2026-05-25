@@ -10,10 +10,8 @@ import {
 } from 'node:fs';
 import { dirname, join } from 'node:path';
 
-/** @internal */
 export type LocaleFile = Record<string, Record<string, string>>;
 
-/** @internal */
 export interface LocaleData {
   [locale: string]: {
     [fileId: string]: { [source: string]: string };
@@ -111,7 +109,6 @@ export function getLocaleFilePath(
   return join(projectRoot, localesDir, `${locale}.json`);
 }
 
-/** @internal */
 export function readLocaleFile(path: string): LocaleFile {
   if (!existsSync(path)) {
     return {};

@@ -5,7 +5,6 @@ import type { LocaleFile } from './files';
 import { readLocaleFile, writeLocaleFile } from './files';
 import { join } from 'node:path';
 
-/** @internal */
 export interface AutoTranslateOptions {
   defaultLocale: string;
   force?: boolean;
@@ -16,7 +15,6 @@ export interface AutoTranslateOptions {
   translator: Translator;
 }
 
-/** @internal */
 export interface AutoTranslateResult {
   errors: Array<{
     error: unknown;
@@ -34,7 +32,6 @@ interface Stub {
   source: string;
 }
 
-/** @internal */
 export async function autoTranslate(
   options: AutoTranslateOptions,
 ): Promise<AutoTranslateResult> {

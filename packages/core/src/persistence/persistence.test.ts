@@ -69,9 +69,9 @@ describe('buildPersistence', () => {
     expect(persistence?.getFromRequest).toBeDefined();
   });
 
-  it('builds url persistence with custom regex from source/flags', () => {
+  it('builds url persistence with a custom RegExp', () => {
     const persistence = buildPersistence(
-      { match: { flags: '', source: '/(en|sv)/' }, type: 'url' },
+      { match: /\/(en|sv)\//, type: 'url' },
       LOCALES,
     );
     expect(persistence).not.toBeNull();

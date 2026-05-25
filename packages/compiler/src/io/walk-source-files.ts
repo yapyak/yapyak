@@ -1,12 +1,10 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
-/** @internal */
 export const DEFAULT_INCLUDE: string[] = [
   '**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,svelte,vue}',
 ];
 
-/** @internal */
 export const DEFAULT_EXCLUDE: string[] = [
   '**/.*/**',
   'node_modules/**',
@@ -30,13 +28,11 @@ export const DEFAULT_EXCLUDE: string[] = [
   '**/*.d.ts',
 ];
 
-/** @internal */
 export interface WalkSourceFilesOptions {
   filter: (id: string) => boolean;
   projectRoot: string;
 }
 
-/** @internal */
 export interface WalkedFile {
   code: string;
   fileId: string;
@@ -44,7 +40,6 @@ export interface WalkedFile {
 
 const PROBE_FILE = '__yapyak_probe__.ts';
 
-/** @internal */
 export function walkSourceFiles(options: WalkSourceFilesOptions): WalkedFile[] {
   const results: WalkedFile[] = [];
   walk(options.projectRoot, options.projectRoot, options.filter, results);
