@@ -209,12 +209,12 @@ importers:
       '@sveltejs/vite-plugin-svelte':
         specifier: 'catalog:'
         version: 7.1.2(svelte@5.55.9)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
-      '@yapyak/anthropic':
-        specifier: workspace:*
-        version: link:../../packages/anthropic
       '@yapyak/cli':
         specifier: workspace:*
         version: link:../../packages/cli
+      '@yapyak/openai':
+        specifier: workspace:*
+        version: link:../../packages/openai
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
@@ -243,12 +243,12 @@ importers:
       '@vitejs/plugin-vue':
         specifier: 'catalog:'
         version: 6.0.7(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))(vue@3.5.34(typescript@6.0.3))
-      '@yapyak/anthropic':
-        specifier: workspace:*
-        version: link:../../packages/anthropic
       '@yapyak/cli':
         specifier: workspace:*
         version: link:../../packages/cli
+      '@yapyak/ollama':
+        specifier: workspace:*
+        version: link:../../packages/ollama
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config

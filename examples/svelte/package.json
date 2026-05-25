@@ -14,8 +14,8 @@
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "catalog:",
-    "@yapyak/anthropic": "workspace:*",
     "@yapyak/cli": "workspace:*",
+    "@yapyak/openai": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "@yapyak/vite": "workspace:*",
     "typescript": "catalog:",

@@ -13,7 +13,6 @@ interface ReferencePackage {
 
 const REFERENCE_PACKAGES: ReferencePackage[] = [
   { dir: 'core', name: 'Core' },
-  { dir: 'runtime', name: 'Runtime' },
 
   { dir: 'react', group: 'Frameworks', name: 'React' },
   { dir: 'vue', group: 'Frameworks', name: 'Vue' },
@@ -32,9 +31,7 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
   { dir: 'ollama', group: 'Translators', name: 'Ollama' },
 
   { dir: 'compiler', group: 'Tooling', name: 'Compiler' },
-  { dir: 'config', group: 'Tooling', name: 'Config' },
   { dir: 'vite', group: 'Tooling', name: 'Vite' },
-  { dir: 'cli', group: 'Tooling', name: 'CLI' },
 ];
 
 export default defineConfig({

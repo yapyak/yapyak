@@ -146,7 +146,7 @@ export function setLocale(value: string): void {
 }
 
 /** The configured locales. Build-time constant. Inlined by yapyak's compiler. */
-export const locales: string[] = LOCALES;
+export const locales: readonly string[] = LOCALES;
 
 /** The default locale. Build-time constant. Inlined by yapyak's compiler. */
 export const defaultLocale: string = DEFAULT_LOCALE;

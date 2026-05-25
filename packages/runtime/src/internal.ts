@@ -1,10 +1,10 @@
-import type { PersistenceConfig } from './index';
+import type { NormalizedPersistence } from './index';
 
 export interface DefineRuntimeInput {
   defaultLocale: string;
   detectAcceptLanguage: boolean;
-  locales: string[];
-  persistence: PersistenceConfig;
+  locales: readonly string[];
+  persistence: NormalizedPersistence;
   syncHtmlLang: boolean;
 }
 
@@ -18,7 +18,7 @@ export function defineRuntime(input: DefineRuntimeInput): string {
   ].join('\n');
 }
 
-function emitPersistence(persistence: PersistenceConfig): string {
+function emitPersistence(persistence: NormalizedPersistence): string {
   if (persistence === null) {
     return 'null';
   }

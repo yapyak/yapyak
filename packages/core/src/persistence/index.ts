@@ -1,4 +1,4 @@
-import type { PersistenceConfig } from '@yapyak/runtime';
+import type { NormalizedPersistence } from '@yapyak/runtime';
 
 import { cookie } from './cookie';
 import { localStorage } from './local-storage';
@@ -27,7 +27,7 @@ export function createPersistence(
 }
 
 export function buildPersistence(
-  config: PersistenceConfig,
+  config: NormalizedPersistence,
   locales: readonly string[],
 ): Persistence | null {
   if (config === null) {

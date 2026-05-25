@@ -6,6 +6,7 @@
     "build": "pnpm -r --filter \"@yapyak/*\" build",
     "check": "biome check .",
     "check:write": "biome check --write .",
+    "generate:readmes": "node --experimental-strip-types scripts/generate-readmes.ts",
     "test": "pnpm -r --filter \"@yapyak/*\" test",
     "typecheck": "pnpm -r --parallel typecheck"
   },

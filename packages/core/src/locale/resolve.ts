@@ -1,7 +1,7 @@
 export interface ResolveLocaleOptions {
   acceptLanguage?: string;
   defaultLocale: string;
-  locales: string[];
+  locales: readonly string[];
   navigatorLanguages?: string[];
   persisted?: string;
 }

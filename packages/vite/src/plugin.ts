@@ -56,6 +56,7 @@ export function yapyak(): Plugin {
   let resolved: { defaultLocale: string; locales: string[] } | null = null;
   let normalized: NormalizedYapyakConfig | null = null;
   let filter: (path: string) => boolean = () => false;
+  let configFile: string | null = null;
 
   function getNormalized(): NormalizedYapyakConfig {
     if (normalized === null) {
@@ -164,9 +165,21 @@ export function yapyak(): Plugin {
     },
     async configResolved(config: ResolvedConfig): Promise<void> {
       projectRoot = config.root;
-      const { config: loaded } = await loadYapyakConfig(projectRoot);
-      normalized = loaded;
-      filter = createFilter(loaded.include, loaded.exclude);
+      const result = await loadYapyakConfig(projectRoot);
+      normalized = result.config;
+      configFile = result.configFile;
+      filter = createFilter(result.config.include, result.config.exclude);
+    },
+    configureServer(server): void {
+      if (configFile === null) {
+        return;
+      }
+      server.watcher.add(configFile);
+      server.watcher.on('change', (path) => {
+        if (path === configFile) {
+          server.restart();
+        }
+      });
     },
     enforce: 'pre',
     async handleHotUpdate(ctx): Promise<void> {

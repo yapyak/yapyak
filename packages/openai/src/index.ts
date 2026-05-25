@@ -14,12 +14,12 @@
 
 import type { ContextLevel, Translator } from '@yapyak/translator';
 
+import { createTranslator } from '@yapyak/translator';
 import {
   buildSystem,
-  createTranslator,
   fetchWithRetry,
   stripCodeFence,
-} from '@yapyak/translator';
+} from '@yapyak/translator/internal';
 
 /** Options for {@link openai}. */
 export interface OpenAIOptions {

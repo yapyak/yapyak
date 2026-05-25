@@ -1,4 +1,4 @@
-import type { PersistenceConfig } from '@yapyak/runtime';
+import type { NormalizedPersistence } from '@yapyak/runtime';
 import type {
   NormalizedYapyakConfig,
   PersistenceOption,
@@ -36,7 +36,7 @@ export function normalizeYapyakConfig(
 
 function normalizePersistence(
   input: PersistenceOption | undefined,
-): PersistenceConfig {
+): NormalizedPersistence {
   if (input == null) {
     return null;
   }

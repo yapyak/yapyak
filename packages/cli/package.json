@@ -3,12 +3,6 @@
   "version": "0.0.0",
   "license": "MIT",
   "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    }
-  },
   "bin": {
     "yapyak": "./dist/run.js"
   },

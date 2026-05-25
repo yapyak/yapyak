@@ -1,4 +1,4 @@
-import type { PersistenceConfig } from '@yapyak/runtime';
+import type { NormalizedPersistence } from '@yapyak/runtime';
 import type { Translator } from '@yapyak/translator';
 
 /** Glob pattern for include/exclude filtering. */
@@ -61,7 +61,7 @@ export interface NormalizedYapyakConfig {
   exclude: YapyakFilterPattern;
   include: YapyakFilterPattern;
   localesDir: string;
-  persistence: PersistenceConfig;
+  persistence: NormalizedPersistence;
   preserveTranslationsOnRename: boolean;
   syncHtmlLang: boolean;
   translator: Translator | undefined;
