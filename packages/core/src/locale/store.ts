@@ -12,7 +12,6 @@ type RequestReader = () => Request | undefined;
 
 let requestReader: RequestReader | null = null;
 
-/** @internal */
 export function setRequestReader(reader: RequestReader): void {
   requestReader = reader;
 }
@@ -109,21 +108,6 @@ export const locales: string[] = LOCALES;
 /** The default locale (build-time constant). */
 export const defaultLocale: string = DEFAULT_LOCALE;
 
-/**
- * Subscribes to locale changes.
- *
- * @param fn - Called whenever the locale changes. Receives the new locale.
- * @returns The unsubscribe function.
- *
- * @example
- * ```ts
- * import { subscribeLocale } from '@yapyak/core';
- *
- * const unsubscribe = subscribeLocale((locale) => {
- *   document.documentElement.lang = locale;
- * });
- * ```
- */
 export function subscribeLocale(fn: (locale: string) => void): () => void {
   listeners.add(fn);
   return (): void => {
@@ -131,7 +115,6 @@ export function subscribeLocale(fn: (locale: string) => void): () => void {
   };
 }
 
-/** @internal */
 export function resetLocale(): void {
   currentLocale = getInitialLocale();
   listeners.clear();

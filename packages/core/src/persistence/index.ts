@@ -2,7 +2,6 @@ import { cookie } from './cookie';
 import { localStorage } from './local-storage';
 import { url } from './url';
 
-/** @internal */
 export type NormalizedPersistence =
   | { type: 'cookie'; name: string }
   | { type: 'localStorage'; key: string }

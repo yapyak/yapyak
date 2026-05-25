@@ -4,8 +4,7 @@ import { getLocale } from '../locale';
 import { hasPlaceholder, interpolate } from './interpolate';
 import { runTrackers } from './tracker';
 
-/** @internal */
-export type TParams<T extends string> = T extends `${string}{${string}`
+type TParams<T extends string> = T extends `${string}{${string}`
   ? ExtractTParams<T>
   : never;
 
