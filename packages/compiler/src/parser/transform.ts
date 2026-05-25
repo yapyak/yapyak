@@ -48,13 +48,17 @@ export function transformFile(
       locales: request.locales,
       translations: request.translations,
     });
-    if (replacement === undefined) continue;
+    if (replacement === undefined) {
+      continue;
+    }
     magicString.overwrite(
       callSite.range.start.offset,
       callSite.range.end.offset,
       replacement.code,
     );
-    if (replacement.usesPick) usedPick = true;
+    if (replacement.usesPick) {
+      usedPick = true;
+    }
   }
 
   const pickHandled = rewriteScriptImports({
@@ -92,7 +96,9 @@ function rewriteScriptImports(input: RewriteScriptImportsInput): boolean {
   let pickHandled = false;
 
   for (const fragment of fragments) {
-    if (fragment.kind !== 'script') continue;
+    if (fragment.kind !== 'script') {
+      continue;
+    }
     const sourceFile = ts.createSourceFile(
       request.fileId,
       fragment.code,
@@ -111,7 +117,9 @@ function rewriteScriptImports(input: RewriteScriptImportsInput): boolean {
         magicString,
         sourceFile,
       });
-      if (shouldInjectPick) pickHandled = true;
+      if (shouldInjectPick) {
+        pickHandled = true;
+      }
     }
   }
   return pickHandled;
@@ -211,18 +219,30 @@ interface ImportSpecifier {
 function collectCoreImports(sourceFile: ts.SourceFile): ts.ImportDeclaration[] {
   const result: ts.ImportDeclaration[] = [];
   for (const statement of sourceFile.statements) {
-    if (!ts.isImportDeclaration(statement)) continue;
-    if (!ts.isStringLiteral(statement.moduleSpecifier)) continue;
-    if (statement.moduleSpecifier.text !== YAPYAK_MODULE) continue;
+    if (!ts.isImportDeclaration(statement)) {
+      continue;
+    }
+    if (!ts.isStringLiteral(statement.moduleSpecifier)) {
+      continue;
+    }
+    if (statement.moduleSpecifier.text !== YAPYAK_MODULE) {
+      continue;
+    }
     result.push(statement);
   }
   return result;
 }
 
 function getScriptKind(fileId: string, lang: Fragment['lang']): ts.ScriptKind {
-  if (fileId.endsWith('.tsx')) return ts.ScriptKind.TSX;
-  if (fileId.endsWith('.jsx')) return ts.ScriptKind.JSX;
-  if (lang === 'js') return ts.ScriptKind.JS;
+  if (fileId.endsWith('.tsx')) {
+    return ts.ScriptKind.TSX;
+  }
+  if (fileId.endsWith('.jsx')) {
+    return ts.ScriptKind.JSX;
+  }
+  if (lang === 'js') {
+    return ts.ScriptKind.JS;
+  }
   return ts.ScriptKind.TS;
 }
 
@@ -245,7 +265,9 @@ function renderCallReplacement(
   const { callSite, defaultLocale, isSingleLocale, locales, translations } =
     input;
   const parsed = parseArguments(callSite);
-  if (parsed.source === '') return undefined;
+  if (parsed.source === '') {
+    return undefined;
+  }
 
   const placeholderInfos = parsePlaceholders(parsed.source);
   const id = toMessageId(parsed.source);
@@ -285,11 +307,17 @@ function canElide(
   callSite: CallSite,
   parsed: ParsedArguments,
 ): boolean {
-  if (parsed.optionsExpression !== undefined) return false;
-  for (const info of placeholderInfos) {
-    if (info.kind !== 'simple') return false;
+  if (parsed.optionsExpression !== undefined) {
+    return false;
   }
-  if (placeholderInfos.length === 0) return true;
+  for (const info of placeholderInfos) {
+    if (info.kind !== 'simple') {
+      return false;
+    }
+  }
+  if (placeholderInfos.length === 0) {
+    return true;
+  }
   return getParamExpressions(callSite) !== undefined;
 }
 
@@ -318,8 +346,12 @@ function getParamExpressions(
   callSite: CallSite,
 ): Map<string, string> | undefined {
   const arg = callSite.node.arguments[1];
-  if (arg === undefined) return undefined;
-  if (!ts.isObjectLiteralExpression(arg)) return undefined;
+  if (arg === undefined) {
+    return undefined;
+  }
+  if (!ts.isObjectLiteralExpression(arg)) {
+    return undefined;
+  }
   const result = new Map<string, string>();
   for (const prop of arg.properties) {
     if (ts.isShorthandPropertyAssignment(prop)) {
@@ -380,10 +412,13 @@ function findMatchingBrace(source: string, openIdx: number): number {
   let i = openIdx + 1;
   while (i < source.length) {
     const ch = source[i];
-    if (ch === '{') depth += 1;
-    else if (ch === '}') {
+    if (ch === '{') {
+      depth += 1;
+    } else if (ch === '}') {
       depth -= 1;
-      if (depth === 0) return i;
+      if (depth === 0) {
+        return i;
+      }
     }
     i += 1;
   }
@@ -429,21 +464,29 @@ interface PickLocaleTextInput {
 }
 
 function pickLocaleText(input: PickLocaleTextInput): string {
-  if (input.locale === input.defaultLocale) return input.source;
+  if (input.locale === input.defaultLocale) {
+    return input.source;
+  }
   const localeMap = input.translations[input.locale];
-  if (localeMap === undefined) return input.source;
+  if (localeMap === undefined) {
+    return input.source;
+  }
   const text = localeMap[input.id];
   return text ?? input.source;
 }
 
 function renderLocaleKey(locale: string): string {
-  if (/^[A-Z_$a-z][\w$]*$/.test(locale)) return locale;
+  if (/^[A-Z_$a-z][\w$]*$/.test(locale)) {
+    return locale;
+  }
   return JSON.stringify(locale);
 }
 
 function getParamArgText(callSite: CallSite): string | undefined {
   const arg = callSite.node.arguments[1];
-  if (arg === undefined) return undefined;
+  if (arg === undefined) {
+    return undefined;
+  }
   return arg.getText();
 }
 
@@ -452,7 +495,9 @@ function countReferences(code: string, name: string): number {
   let i = 0;
   while (i < code.length) {
     const next = code.indexOf(name, i);
-    if (next === -1) break;
+    if (next === -1) {
+      break;
+    }
     const before = code[next - 1];
     const after = code[next + name.length];
     if (!isIdentifierChar(before) && !isIdentifierChar(after)) {
@@ -464,6 +509,8 @@ function countReferences(code: string, name: string): number {
 }
 
 function isIdentifierChar(ch: string | undefined): boolean {
-  if (ch === undefined) return false;
+  if (ch === undefined) {
+    return false;
+  }
   return /[\w$]/.test(ch);
 }

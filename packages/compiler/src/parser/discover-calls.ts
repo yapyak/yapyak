@@ -43,8 +43,12 @@ function resolveCallee(
   const callee = call.expression;
   if (ts.isIdentifier(callee)) {
     const binding = bindings.find(callee.text, call);
-    if (binding === undefined) return undefined;
-    if (binding.kind === 'namespace') return undefined;
+    if (binding === undefined) {
+      return undefined;
+    }
+    if (binding.kind === 'namespace') {
+      return undefined;
+    }
     return binding;
   }
   if (
@@ -52,9 +56,15 @@ function resolveCallee(
     ts.isIdentifier(callee.expression)
   ) {
     const namespaceBinding = bindings.find(callee.expression.text, call);
-    if (namespaceBinding === undefined) return undefined;
-    if (namespaceBinding.kind !== 'namespace') return undefined;
-    if (callee.name.text !== RUNTIME_NAME) return undefined;
+    if (namespaceBinding === undefined) {
+      return undefined;
+    }
+    if (namespaceBinding.kind !== 'namespace') {
+      return undefined;
+    }
+    if (callee.name.text !== RUNTIME_NAME) {
+      return undefined;
+    }
     return namespaceBinding;
   }
   return undefined;

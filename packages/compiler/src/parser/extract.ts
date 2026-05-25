@@ -37,9 +37,13 @@ export function extractFile(request: ExtractFileRequest): ExtractFileResult {
   let ambientAnchor: ts.SourceFile | undefined;
 
   for (const fragment of fragments) {
-    if (fragment.kind !== 'script') continue;
+    if (fragment.kind !== 'script') {
+      continue;
+    }
     const sourceFile = createFragmentSourceFile(request.fileId, fragment);
-    if (ambientAnchor === undefined) ambientAnchor = sourceFile;
+    if (ambientAnchor === undefined) {
+      ambientAnchor = sourceFile;
+    }
     const bindings = resolveBindings(sourceFile);
     for (const [name, binding] of bindings.root.bindings) {
       ambientBindings.set(name, binding);
@@ -62,7 +66,9 @@ export function extractFile(request: ExtractFileRequest): ExtractFileResult {
       : undefined;
 
   for (const fragment of fragments) {
-    if (fragment.kind === 'script') continue;
+    if (fragment.kind === 'script') {
+      continue;
+    }
     const sourceFile = createFragmentSourceFile(request.fileId, fragment);
     const bindings = resolveBindings(sourceFile, { ambientParent });
     processFragment({
@@ -121,7 +127,9 @@ function processFragment(input: ProcessFragmentInput): void {
     };
     callSites.push(callSite);
 
-    if (parsed.source === '') continue;
+    if (parsed.source === '') {
+      continue;
+    }
 
     const placeholderInfos = parsePlaceholders(parsed.source);
     const placeholders = placeholderInfos.map(toPublicPlaceholder);
@@ -172,9 +180,15 @@ function createFragmentSourceFile(
 }
 
 function getScriptKind(fileId: string, lang: Fragment['lang']): ts.ScriptKind {
-  if (fileId.endsWith('.tsx')) return ts.ScriptKind.TSX;
-  if (fileId.endsWith('.jsx')) return ts.ScriptKind.JSX;
-  if (lang === 'js') return ts.ScriptKind.JS;
+  if (fileId.endsWith('.tsx')) {
+    return ts.ScriptKind.TSX;
+  }
+  if (fileId.endsWith('.jsx')) {
+    return ts.ScriptKind.JSX;
+  }
+  if (lang === 'js') {
+    return ts.ScriptKind.JS;
+  }
   return ts.ScriptKind.TS;
 }
 
@@ -191,7 +205,9 @@ function remapDiagnostic(
   fragment: Fragment,
   originalSource: string,
 ): Diagnostic {
-  if (fragment.originalOffset === 0) return diagnostic;
+  if (fragment.originalOffset === 0) {
+    return diagnostic;
+  }
   return {
     ...diagnostic,
     range: remapRange(diagnostic.range, fragment, originalSource),

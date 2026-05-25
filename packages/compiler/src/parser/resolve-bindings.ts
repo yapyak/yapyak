@@ -58,13 +58,23 @@ function collectImports(sourceFile: ts.SourceFile): ImportInfo {
     namespaceLocals: new Map(),
   };
   for (const statement of sourceFile.statements) {
-    if (!ts.isImportDeclaration(statement)) continue;
-    if (!ts.isStringLiteral(statement.moduleSpecifier)) continue;
-    if (statement.moduleSpecifier.text !== YAPYAK_MODULE) continue;
+    if (!ts.isImportDeclaration(statement)) {
+      continue;
+    }
+    if (!ts.isStringLiteral(statement.moduleSpecifier)) {
+      continue;
+    }
+    if (statement.moduleSpecifier.text !== YAPYAK_MODULE) {
+      continue;
+    }
     const clause = statement.importClause;
-    if (clause === undefined) continue;
+    if (clause === undefined) {
+      continue;
+    }
     const namedBindings = clause.namedBindings;
-    if (namedBindings === undefined) continue;
+    if (namedBindings === undefined) {
+      continue;
+    }
     if (ts.isNamespaceImport(namedBindings)) {
       info.namespaceLocals.set(namedBindings.name.text, namedBindings);
       continue;
@@ -112,13 +122,21 @@ function registerVariableDeclarations(
   scopeByNode: Map<ts.Node, Scope>,
 ): void {
   for (const decl of statement.declarationList.declarations) {
-    if (!ts.isIdentifier(decl.name)) continue;
+    if (!ts.isIdentifier(decl.name)) {
+      continue;
+    }
     const localName = decl.name.text;
     const init = decl.initializer;
-    if (init === undefined) continue;
-    if (!ts.isIdentifier(init)) continue;
+    if (init === undefined) {
+      continue;
+    }
+    if (!ts.isIdentifier(init)) {
+      continue;
+    }
     const target = findBinding(scopeByNode, init.text, decl);
-    if (target === undefined) continue;
+    if (target === undefined) {
+      continue;
+    }
     scope.bindings.set(localName, {
       declarationNode: decl,
       kind: 'wrapper',
@@ -135,7 +153,9 @@ function findBinding(
   let scope = findEnclosingScope(scopeByNode, atNode);
   while (scope !== undefined) {
     const binding = scope.bindings.get(name);
-    if (binding !== undefined) return binding;
+    if (binding !== undefined) {
+      return binding;
+    }
     scope = scope.parent;
   }
   return undefined;
@@ -148,7 +168,9 @@ function findEnclosingScope(
   let current: ts.Node | undefined = atNode;
   while (current !== undefined) {
     const scope = scopeByNode.get(current);
-    if (scope !== undefined) return scope;
+    if (scope !== undefined) {
+      return scope;
+    }
     current = current.parent;
   }
   return undefined;

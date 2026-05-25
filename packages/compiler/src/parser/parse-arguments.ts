@@ -115,7 +115,9 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   }
 
   const result: ParsedArguments = { diagnostics, source, sourceRange };
-  if (params !== undefined) result.params = params;
+  if (params !== undefined) {
+    result.params = params;
+  }
   if (optionsExpression !== undefined)
     result.optionsExpression = optionsExpression;
   return result;
@@ -131,7 +133,9 @@ function parseParams(
   arg: ts.Expression,
   sourceFile: ts.SourceFile,
 ): ParsedParams | undefined {
-  if (!ts.isObjectLiteralExpression(arg)) return undefined;
+  if (!ts.isObjectLiteralExpression(arg)) {
+    return undefined;
+  }
   const keys: string[] = [];
   let kind: 'spread' | 'static' = 'static';
   for (const prop of arg.properties) {
@@ -220,7 +224,9 @@ function validateParams(input: ValidateParamsInput): void {
   }
   const placeholderSet = new Set(placeholderKeys);
   for (const key of params.keys) {
-    if (placeholderSet.has(key)) continue;
+    if (placeholderSet.has(key)) {
+      continue;
+    }
     diagnostics.push(
       createDiagnostic({
         code: 'YPK003',

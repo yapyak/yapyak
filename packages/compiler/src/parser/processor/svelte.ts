@@ -45,7 +45,9 @@ export const svelteProcessor: Processor = {
 };
 
 function loadCompiler(): typeof SvelteCompiler {
-  if (cached !== undefined) return cached;
+  if (cached !== undefined) {
+    return cached;
+  }
   try {
     cached = requireFromHere('svelte/compiler') as typeof SvelteCompiler;
     return cached;
@@ -64,7 +66,9 @@ function pushScriptFragment(
 ): void {
   const start = (script.content as { start?: unknown }).start;
   const end = (script.content as { end?: unknown }).end;
-  if (typeof start !== 'number' || typeof end !== 'number') return;
+  if (typeof start !== 'number' || typeof end !== 'number') {
+    return;
+  }
   fragments.push({
     code: source.slice(start, end),
     kind: 'script',
@@ -75,14 +79,22 @@ function pushScriptFragment(
 
 function getScriptLang(script: AST.Script): 'js' | 'ts' {
   for (const attr of script.attributes) {
-    if (attr.name !== 'lang') continue;
+    if (attr.name !== 'lang') {
+      continue;
+    }
     const value = attr.value;
-    if (value === true) continue;
-    if (!Array.isArray(value)) continue;
+    if (value === true) {
+      continue;
+    }
+    if (!Array.isArray(value)) {
+      continue;
+    }
     const text = value
       .map((item) => (item.type === 'Text' ? item.data : ''))
       .join('');
-    if (text === 'ts' || text === 'typescript') return 'ts';
+    if (text === 'ts' || text === 'typescript') {
+      return 'ts';
+    }
   }
   return 'js';
 }
@@ -118,7 +130,9 @@ function collectFromNode(
   }
   if (node.type === 'EachBlock') {
     pushExpression(node.expression, source, fragments);
-    if (node.key !== undefined) pushExpression(node.key, source, fragments);
+    if (node.key !== undefined) {
+      pushExpression(node.key, source, fragments);
+    }
     collectFromFragment(node.body, source, fragments);
     if (node.fallback !== undefined) {
       collectFromFragment(node.fallback, source, fragments);
@@ -221,7 +235,9 @@ function collectFromAttribute(
 ): void {
   if (attr.type === 'Attribute') {
     const value = attr.value;
-    if (value === true) return;
+    if (value === true) {
+      return;
+    }
     if (Array.isArray(value)) {
       for (const item of value) {
         if (item.type === 'ExpressionTag') {
@@ -239,7 +255,9 @@ function collectFromAttribute(
   }
   if (attr.type === 'StyleDirective') {
     const value = attr.value;
-    if (value === true) return;
+    if (value === true) {
+      return;
+    }
     if (Array.isArray(value)) {
       for (const item of value) {
         if (item.type === 'ExpressionTag') {
@@ -265,13 +283,21 @@ function pushExpression(
   source: string,
   fragments: Fragment[],
 ): void {
-  if (expression === null || expression === undefined) return;
-  if (typeof expression !== 'object') return;
+  if (expression === null || expression === undefined) {
+    return;
+  }
+  if (typeof expression !== 'object') {
+    return;
+  }
   const start = (expression as { start?: unknown }).start;
   const end = (expression as { end?: unknown }).end;
-  if (typeof start !== 'number' || typeof end !== 'number') return;
+  if (typeof start !== 'number' || typeof end !== 'number') {
+    return;
+  }
   const code = source.slice(start, end);
-  if (code === '') return;
+  if (code === '') {
+    return;
+  }
   fragments.push({
     code,
     kind: 'template-expression',

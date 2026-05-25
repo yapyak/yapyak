@@ -67,7 +67,9 @@ export const vueProcessor: Processor = {
 };
 
 function loadCompiler(): typeof VueSfc {
-  if (cached !== undefined) return cached;
+  if (cached !== undefined) {
+    return cached;
+  }
   try {
     cached = requireFromHere('@vue/compiler-sfc') as typeof VueSfc;
     return cached;
@@ -114,7 +116,9 @@ function pushInterpolationExpression(
   fragments: Fragment[],
 ): void {
   const mustache = readMustache(source, node.loc.start.offset);
-  if (mustache === undefined) return;
+  if (mustache === undefined) {
+    return;
+  }
   fragments.push({
     code: mustache.code,
     kind: 'template-expression',
@@ -127,8 +131,12 @@ function collectPropExpression(
   prop: AttributeNode | DirectiveNode,
   fragments: Fragment[],
 ): void {
-  if (!isDirectiveNode(prop)) return;
-  if (prop.exp === undefined) return;
+  if (!isDirectiveNode(prop)) {
+    return;
+  }
+  if (prop.exp === undefined) {
+    return;
+  }
   pushExpression(prop.exp, fragments);
 }
 
@@ -136,8 +144,12 @@ function pushExpression(
   expression: ExpressionNode,
   fragments: Fragment[],
 ): void {
-  if (!isSimpleExpression(expression)) return;
-  if (expression.content === '') return;
+  if (!isSimpleExpression(expression)) {
+    return;
+  }
+  if (expression.content === '') {
+    return;
+  }
   fragments.push({
     code: expression.content,
     kind: 'template-expression',
@@ -160,11 +172,15 @@ function readMustache(
   }
   const exprStart = openOffset + 2;
   const exprEnd = findMustacheClose(source, exprStart);
-  if (exprEnd === -1) return undefined;
+  if (exprEnd === -1) {
+    return undefined;
+  }
   const raw = source.slice(exprStart, exprEnd);
   const leading = raw.length - raw.trimStart().length;
   const code = raw.slice(leading).trimEnd();
-  if (code === '') return undefined;
+  if (code === '') {
+    return undefined;
+  }
   return { code, codeOffset: exprStart + leading };
 }
 
@@ -248,7 +264,9 @@ function skipLineComment(source: string, from: number): number {
 function skipBlockComment(source: string, from: number): number {
   let i = from + 2;
   while (i < source.length) {
-    if (source[i] === '*' && source[i + 1] === '/') return i + 2;
+    if (source[i] === '*' && source[i + 1] === '/') {
+      return i + 2;
+    }
     i += 1;
   }
   return i;
@@ -275,8 +293,9 @@ function skipBalancedBraces(source: string, from: number): number {
       i = skipBlockComment(source, i);
       continue;
     }
-    if (ch === '{') depth += 1;
-    else if (ch === '}') depth -= 1;
+    if (ch === '{') {
+      depth += 1;
+    } else if (ch === '}') depth -= 1;
     i += 1;
   }
   return i;

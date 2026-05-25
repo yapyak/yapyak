@@ -10,7 +10,9 @@ export function parseSvelte(source: string): ScriptBlock[] {
     const code = match[2] ?? '';
     const matchStart = match.index;
     const openTagEnd = source.indexOf('>', matchStart);
-    if (openTagEnd === -1) continue;
+    if (openTagEnd === -1) {
+      continue;
+    }
     blocks.push({
       code,
       lang: detectLang(attrs),
@@ -23,6 +25,8 @@ export function parseSvelte(source: string): ScriptBlock[] {
 function detectLang(attrs: string): 'js' | 'ts' {
   const match = LANG_ATTR_RX.exec(attrs);
   const value = match?.[1];
-  if (value === 'ts' || value === 'typescript') return 'ts';
+  if (value === 'ts' || value === 'typescript') {
+    return 'ts';
+  }
   return 'js';
 }

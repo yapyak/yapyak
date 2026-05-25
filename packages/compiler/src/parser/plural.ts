@@ -35,9 +35,13 @@ export function parsePlaceholders(source: string): PlaceholderInfo[] {
 function parsePlaceholderInner(inner: string): PlaceholderInfo | undefined {
   const trimmed = inner.trim();
   const nameMatch = /^([A-Z_$a-z][\w$]*)/.exec(trimmed);
-  if (nameMatch === null) return undefined;
+  if (nameMatch === null) {
+    return undefined;
+  }
   const name = nameMatch[1];
-  if (name === undefined) return undefined;
+  if (name === undefined) {
+    return undefined;
+  }
 
   const afterName = trimmed.slice(name.length).trimStart();
   if (afterName === '' || !afterName.startsWith(',')) {
@@ -52,7 +56,9 @@ function parsePlaceholderInner(inner: string): PlaceholderInfo | undefined {
     return { kind: 'simple', name };
   }
   const type = typeMatch[1];
-  if (type === undefined) return undefined;
+  if (type === undefined) {
+    return undefined;
+  }
   const afterType = afterComma.slice(type.length).trimStart();
 
   if (type === 'plural' || type === 'selectordinal') {
@@ -78,7 +84,9 @@ function readPluralInfo(name: string, rest: string): PlaceholderInfo {
       kind: 'plural',
       name,
     };
-    if (Object.keys(branches).length > 0) info.variants = branches;
+    if (Object.keys(branches).length > 0) {
+      info.variants = branches;
+    }
     return info;
   }
   return { kind: 'plural', name, variants: branches };
@@ -97,14 +105,22 @@ function readBranches(text: string): Record<string, string> {
   let i = 0;
   while (i < text.length) {
     while (i < text.length && isWhitespace(text[i])) i += 1;
-    if (i >= text.length) break;
+    if (i >= text.length) {
+      break;
+    }
     const keyMatch = /^(=?\w+)/.exec(text.slice(i));
-    if (keyMatch === null) break;
+    if (keyMatch === null) {
+      break;
+    }
     const key = keyMatch[1];
-    if (key === undefined) break;
+    if (key === undefined) {
+      break;
+    }
     i += key.length;
     while (i < text.length && isWhitespace(text[i])) i += 1;
-    if (text[i] !== '{') break;
+    if (text[i] !== '{') {
+      break;
+    }
     const close = findMatchingBrace(text, i);
     result[key] = text.slice(i + 1, close);
     i = close + 1;
@@ -117,10 +133,13 @@ function findMatchingBrace(source: string, openIdx: number): number {
   let i = openIdx + 1;
   while (i < source.length) {
     const ch = source[i];
-    if (ch === '{') depth += 1;
-    else if (ch === '}') {
+    if (ch === '{') {
+      depth += 1;
+    } else if (ch === '}') {
       depth -= 1;
-      if (depth === 0) return i;
+      if (depth === 0) {
+        return i;
+      }
     }
     i += 1;
   }

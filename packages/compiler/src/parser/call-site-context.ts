@@ -55,7 +55,9 @@ function readJsxTagName(
   tagName: ts.JsxTagNameExpression,
   sourceFile: ts.SourceFile,
 ): string | undefined {
-  if (ts.isIdentifier(tagName)) return tagName.text;
+  if (ts.isIdentifier(tagName)) {
+    return tagName.text;
+  }
   if (ts.isPropertyAccessExpression(tagName)) {
     return tagName.getText(sourceFile);
   }
@@ -82,12 +84,16 @@ function readFunctionExpressionName(
     return node.name.text;
   }
   const parent = node.parent;
-  if (parent === undefined) return undefined;
+  if (parent === undefined) {
+    return undefined;
+  }
   if (ts.isVariableDeclaration(parent) && ts.isIdentifier(parent.name)) {
     return parent.name.text;
   }
   if (ts.isCallExpression(parent) && ts.isIdentifier(parent.expression)) {
-    if (!HOC_NAMES.has(parent.expression.text)) return undefined;
+    if (!HOC_NAMES.has(parent.expression.text)) {
+      return undefined;
+    }
     const callParent = parent.parent;
     if (
       callParent !== undefined &&
@@ -106,8 +112,12 @@ function isComponentName(name: string): boolean {
 }
 
 function isHookName(name: string): boolean {
-  if (!name.startsWith('use')) return false;
-  if (name.length === 3) return false;
+  if (!name.startsWith('use')) {
+    return false;
+  }
+  if (name.length === 3) {
+    return false;
+  }
   const fourthChar = name[3];
   return fourthChar !== undefined && fourthChar >= 'A' && fourthChar <= 'Z';
 }

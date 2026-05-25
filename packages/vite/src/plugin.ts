@@ -339,7 +339,9 @@ function areMessagesEqual(
     for (let j = 0; j < left.locations.length; j++) {
       const ll = left.locations[j];
       const rl = right.locations[j];
-      if (ll === undefined || rl === undefined) return false;
+      if (ll === undefined || rl === undefined) {
+        return false;
+      }
       if (
         ll.range.start.line !== rl.range.start.line ||
         ll.range.start.column !== rl.range.start.column
@@ -353,7 +355,9 @@ function areMessagesEqual(
 
 function logErrors(result: ExtractFileResult): void {
   for (const diagnostic of result.diagnostics) {
-    if (diagnostic.severity !== 'error') continue;
+    if (diagnostic.severity !== 'error') {
+      continue;
+    }
     const { fileId, range, code, message } = diagnostic;
     console.error(
       `[yapyak] ${code} ${fileId}:${range.start.line}:${range.start.column}: ${message}`,

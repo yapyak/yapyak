@@ -46,7 +46,9 @@ export const astroProcessor: Processor = {
 };
 
 function loadCompiler(): typeof AstroCompilerSync {
-  if (cached !== undefined) return cached;
+  if (cached !== undefined) {
+    return cached;
+  }
   try {
     cached = requireFromHere(
       '@astrojs/compiler/sync',
@@ -95,7 +97,9 @@ function pushFrontmatterFragment(
   fragments: Fragment[],
 ): void {
   const startOfBlock = node.position?.start.offset;
-  if (typeof startOfBlock !== 'number') return;
+  if (typeof startOfBlock !== 'number') {
+    return;
+  }
   const codeStart = startOfBlock + 3;
   void source;
   fragments.push({
@@ -126,8 +130,12 @@ function pushTextExpression(
   fragments: Fragment[],
 ): void {
   const start = node.position?.start.offset;
-  if (typeof start !== 'number') return;
-  if (node.value.trim() === '') return;
+  if (typeof start !== 'number') {
+    return;
+  }
+  if (node.value.trim() === '') {
+    return;
+  }
   fragments.push({
     code: node.value,
     kind: 'template-expression',
@@ -141,11 +149,17 @@ function handleAttribute(
   source: string,
   fragments: Fragment[],
 ): void {
-  if (attr.kind === 'empty' || attr.kind === 'quoted') return;
+  if (attr.kind === 'empty' || attr.kind === 'quoted') {
+    return;
+  }
   const code = getAttributeExpressionText(attr);
-  if (code === undefined || code === '') return;
+  if (code === undefined || code === '') {
+    return;
+  }
   const offset = findExpressionOffset({ attr, code, source });
-  if (offset === undefined) return;
+  if (offset === undefined) {
+    return;
+  }
   fragments.push({
     code,
     kind: 'template-expression',
@@ -173,11 +187,15 @@ function findExpressionOffset(
   const { attr, code, source } = input;
   const start = attr.position?.start.offset;
   const end = attr.position?.end?.offset;
-  if (typeof start !== 'number') return undefined;
+  if (typeof start !== 'number') {
+    return undefined;
+  }
   const searchEnd = typeof end === 'number' ? end : source.length;
   const range = source.slice(start, searchEnd);
   const valueIndex = range.indexOf(code);
-  if (valueIndex === -1) return undefined;
+  if (valueIndex === -1) {
+    return undefined;
+  }
   return start + valueIndex;
 }
 

@@ -25,7 +25,9 @@ export function remapPosition(
   fragment: Fragment,
   originalSource: string,
 ): Position {
-  if (fragment.originalOffset === 0) return position;
+  if (fragment.originalOffset === 0) {
+    return position;
+  }
   const absoluteOffset = position.offset + fragment.originalOffset;
   return offsetToOriginalPosition(originalSource, absoluteOffset);
 }
@@ -35,7 +37,9 @@ export function remapRange(
   fragment: Fragment,
   originalSource: string,
 ): Range {
-  if (fragment.originalOffset === 0) return range;
+  if (fragment.originalOffset === 0) {
+    return range;
+  }
   return {
     end: remapPosition(range.end, fragment, originalSource),
     start: remapPosition(range.start, fragment, originalSource),
