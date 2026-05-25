@@ -14,25 +14,25 @@ interface ReferencePackage {
 const REFERENCE_PACKAGES: ReferencePackage[] = [
   { dir: 'core', name: 'Core' },
 
-  { dir: 'compiler', group: 'Tooling', name: 'Compiler' },
-  { dir: 'vite', group: 'Tooling', name: 'Vite plugin' },
-  { dir: 'cli', group: 'Tooling', name: 'CLI' },
-
   { dir: 'react', group: 'Frameworks', name: 'React' },
   { dir: 'vue', group: 'Frameworks', name: 'Vue' },
   { dir: 'svelte', group: 'Frameworks', name: 'Svelte' },
 
-  { dir: 'astro', group: 'Integrations', name: 'Astro' },
-  { dir: 'tanstack-start', group: 'Integrations', name: 'TanStack Start' },
-  { dir: 'sveltekit', group: 'Integrations', name: 'SvelteKit' },
-  { dir: 'react-router', group: 'Integrations', name: 'React Router' },
+  { dir: 'adapter', group: 'Adapters', name: 'Adapter' },
+  { dir: 'astro', group: 'Adapters', name: 'Astro' },
+  { dir: 'tanstack-start', group: 'Adapters', name: 'TanStack Start' },
+  { dir: 'sveltekit', group: 'Adapters', name: 'SvelteKit' },
+  { dir: 'react-router', group: 'Adapters', name: 'React Router' },
 
-  { dir: 'adapter', group: 'Translators', name: 'Adapter' },
   { dir: 'translator', group: 'Translators', name: 'Translator' },
   { dir: 'anthropic', group: 'Translators', name: 'Anthropic' },
   { dir: 'openai', group: 'Translators', name: 'OpenAI' },
   { dir: 'gemini', group: 'Translators', name: 'Gemini' },
   { dir: 'ollama', group: 'Translators', name: 'Ollama' },
+
+  { dir: 'compiler', group: 'Tooling', name: 'Compiler' },
+  { dir: 'vite', group: 'Tooling', name: 'Vite plugin' },
+  { dir: 'cli', group: 'Tooling', name: 'CLI' },
 ];
 
 export default defineConfig({

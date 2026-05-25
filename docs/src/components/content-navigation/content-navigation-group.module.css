@@ -118,7 +118,6 @@
       &:not([data-collapsible]):not(:first-child) {
         padding-top: var(--spacing-6);
         margin-top: var(--spacing-5);
-        border-top: var(--px) solid var(--rule);
       }
     }
 
@@ -128,14 +127,6 @@
       > .ItemList {
         padding-left: var(--spacing-3);
       }
-    }
-
-    &[data-depth="0"]
-      > .ItemList
-      > li:has(> [data-collapsible]):not(:first-child) {
-      padding-top: var(--spacing-2);
-      margin-top: var(--spacing-2);
-      border-top: var(--px) solid var(--rule);
     }
 
     &:not([data-depth="0"]):not([data-collapsible]) {
