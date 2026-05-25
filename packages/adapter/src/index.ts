@@ -1,5 +1,5 @@
 /**
- * Adapter for yapyak.
+ * Adapter base for yapyak.
  *
  * ## Installation
  *

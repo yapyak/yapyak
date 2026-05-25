@@ -18,7 +18,7 @@ import { createMiddleware } from '@tanstack/react-start';
 import { withRequest } from '@yapyak/adapter';
 
 /**
- * TanStack Start request middleware. Wires yapyak's per-request locale context.
+ * Middleware for TanStack Start. Provides yapyak's per-request locale context.
  *
  * @example Register in src/start.ts
  * ```ts

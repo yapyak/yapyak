@@ -1,5 +1,5 @@
 /**
- * Translator for yapyak.
+ * Translator base for yapyak.
  *
  * ## Installation
  *

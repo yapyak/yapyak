@@ -20,7 +20,15 @@ import { getLocale } from '@yapyak/core';
 const PLACEHOLDER = '%yapyak.lang%';
 
 /**
- * SvelteKit `Handle` hook. Binds yapyak's per-request locale context and substitutes `%yapyak.lang%` in `app.html` with the resolved locale.
+ * Handle for SvelteKit. Provides yapyak's per-request locale context.
+ *
+ * @remarks
+ * Substitutes the `%yapyak.lang%` placeholder in `app.html` with the resolved locale on each request.
+ *
+ * @example Declare the placeholder in app.html
+ * ```html
+ * <html lang="%yapyak.lang%">
+ * ```
  *
  * @example Re-export from hooks.server.ts
  * ```ts
