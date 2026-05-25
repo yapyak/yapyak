@@ -17,7 +17,6 @@ export type {
   ProcessorKind,
   Range,
   Scope,
-  ScriptBlock,
   TransformFileRequest,
   TransformFileResult,
   YapyakBinding,
@@ -30,7 +29,6 @@ export { extractFile } from './extract';
 export { toMessageId } from './id';
 export { parseArguments } from './parse-arguments';
 export { parsePlaceholders } from './plural';
-export { parseSvelte } from './preprocessors/svelte';
 export {
   astroProcessor,
   getProcessor,

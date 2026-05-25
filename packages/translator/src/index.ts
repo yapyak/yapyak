@@ -4,7 +4,11 @@
  * @packageDocumentation
  */
 
-/** Call-site context for a translation request. */
+/**
+ * Call-site context for a translation request.
+ *
+ * Sent to translators and used as input to AI prompt building for tone-correct output. Renaming or removing fields is a breaking change.
+ */
 export interface MessageContext {
   /** The component name derived from the file path. */
   componentName: string;
@@ -14,7 +18,11 @@ export interface MessageContext {
   snippet: string;
 }
 
-/** Request shape for {@link Translator}. */
+/**
+ * Request shape for {@link Translator}.
+ *
+ * The fundamental input contract for every translator implementation. Renaming or removing fields is a breaking change.
+ */
 export interface TranslateRequest {
   /** The call-site context. */
   context?: MessageContext;
@@ -33,10 +41,14 @@ export interface TranslateRequest {
  *
  * @remarks
  * Returned by {@link createTranslator} and by the provider packages (`@yapyak/anthropic`, `@yapyak/openai`, `@yapyak/gemini`, `@yapyak/ollama`). Passed to the Vite plugin's `translator` option.
+ *
+ * Public extension point. Implemented by the provider packages and by third-party translators. Adding optional fields is allowed; renaming or removing fields is a breaking change.
  */
 export interface Translator {
   /** Translates a batch of requests. */
   batch?(requests: TranslateRequest[]): Promise<string[]>;
+  /** Stable identifier for this translator. Used for logging, cost attribution, cache-key namespacing, and dashboard observability. Convention: lowercase suffix matching the package name (`'anthropic'`, `'openai'`, `'gemini'`, `'ollama'`, `'cloud'`). `createTranslator()` without an explicit `id` defaults to `'custom'`. */
+  id: string;
   (request: TranslateRequest): Promise<string>;
 }
 
@@ -118,12 +130,19 @@ export interface CreateTranslatorOptions {
    * @defaultValue `'minimal'`
    */
   context?: ContextLevel;
+  /**
+   * Stable identifier for the translator. Surfaced as {@link Translator.id} and used for logging, cost attribution, and dashboard observability.
+   *
+   * @defaultValue `'custom'`
+   */
+  id?: string;
   /** Translates a batch of items. Must return strings in the same order as `items`. */
   translate: (params: TranslateBatchRequest) => string[] | Promise<string[]>;
 }
 
 const DEFAULT_BATCH_SIZE = 10;
 const DEFAULT_CONTEXT: ContextLevel = 'minimal';
+const DEFAULT_ID = 'custom';
 
 /**
  * Builds a translator from a `translate` function.
@@ -193,6 +212,7 @@ export function createTranslator(options: CreateTranslatorOptions): Translator {
   }
 
   const translator = single as Translator;
+  translator.id = options.id ?? DEFAULT_ID;
   translator.batch = batch;
   return translator;
 }

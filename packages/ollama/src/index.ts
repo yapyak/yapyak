@@ -93,6 +93,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
   return createTranslator({
     batchSize,
     context,
+    id: 'ollama',
     async translate(params) {
       const { items, signal, sourceLocale, targetLocale } = params;
       const init: RequestInit = {

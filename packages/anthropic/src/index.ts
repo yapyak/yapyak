@@ -98,6 +98,7 @@ export function anthropic(options: AnthropicOptions): Translator {
   return createTranslator({
     batchSize,
     context,
+    id: 'anthropic',
     async translate(params) {
       const { items, signal, sourceLocale, targetLocale } = params;
       const init: RequestInit = {

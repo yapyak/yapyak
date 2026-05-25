@@ -106,6 +106,7 @@ export function openai(options: OpenAIOptions): Translator {
   return createTranslator({
     batchSize,
     context,
+    id: 'openai',
     async translate(params) {
       const { items, signal, sourceLocale, targetLocale } = params;
       const body: Record<string, unknown> = {

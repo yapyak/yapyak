@@ -97,6 +97,7 @@ export function gemini(options: GeminiOptions): Translator {
   return createTranslator({
     batchSize,
     context,
+    id: 'gemini',
     async translate(params) {
       const { items, signal, sourceLocale, targetLocale } = params;
       const url = `${endpoint}/models/${model}:generateContent`;
