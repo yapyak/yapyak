@@ -4,7 +4,7 @@ import type {
   ExtractFileResult,
 } from '@yapyak/compiler/internal';
 import type { NormalizedYapyakConfig } from '@yapyak/config';
-import type { Plugin, ResolvedConfig } from 'vite';
+import type { Plugin, ResolvedConfig, UserConfig } from 'vite';
 
 import {
   autoTranslate,
@@ -162,6 +162,16 @@ export function yapyak(): Plugin {
     buildStart(): void {
       scanAllSources();
       fillStubs();
+    },
+    config(): UserConfig {
+      return {
+        optimizeDeps: {
+          exclude: [RUNTIME_ID],
+        },
+        ssr: {
+          noExternal: [RUNTIME_ID, 'yapyak'],
+        },
+      };
     },
     async configResolved(config: ResolvedConfig): Promise<void> {
       projectRoot = config.root;

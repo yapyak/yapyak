@@ -10,12 +10,6 @@ export const PERSISTENCE: NormalizedPersistence = null;
 export const DETECT_ACCEPT_LANGUAGE = false;
 export const SYNC_HTML_LANG = false;
 
-if (process.env.NODE_ENV !== 'production' && LOCALES.length === 0) {
-  console.warn(
-    '[yapyak] @yapyak/runtime is using placeholder defaults — is the build-tool plugin (@yapyak/vite or equivalent) registered?',
-  );
-}
-
 export interface DefineRuntimeInput {
   defaultLocale: string;
   detectAcceptLanguage: boolean;
