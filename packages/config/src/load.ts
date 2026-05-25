@@ -5,6 +5,7 @@ import { createJiti } from 'jiti';
 import { normalizeYapyakConfig } from './normalize';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { loadEnvFile } from 'node:process';
 
 const CONFIG_FILES = [
   'yapyak.config.ts',
@@ -12,6 +13,8 @@ const CONFIG_FILES = [
   'yapyak.config.mjs',
   'yapyak.config.js',
 ];
+
+const ENV_FILES = ['.env.local', '.env'];
 
 export interface LoadYapyakConfigResult {
   config: NormalizedYapyakConfig;
@@ -21,6 +24,12 @@ export interface LoadYapyakConfigResult {
 export async function loadYapyakConfig(
   cwd: string = process.cwd(),
 ): Promise<LoadYapyakConfigResult> {
+  for (const name of ENV_FILES) {
+    const path = resolve(cwd, name);
+    if (existsSync(path)) {
+      loadEnvFile(path);
+    }
+  }
   for (const name of CONFIG_FILES) {
     const path = resolve(cwd, name);
     if (!existsSync(path)) {

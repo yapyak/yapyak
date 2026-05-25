@@ -97,6 +97,13 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
       next[fileId] = fileEntries;
     }
 
+    if (Object.keys(next).length === 0 && Object.keys(existing).length > 0) {
+      console.warn(
+        `[yapyak] Refusing to overwrite ${localePath}: extracted 0 messages but existing file has content. This usually indicates an extraction failure. Delete the file manually if you intended to empty it.`,
+      );
+      continue;
+    }
+
     writeLocaleFile(localePath, next);
   }
 }
