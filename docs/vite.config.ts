@@ -48,8 +48,7 @@ export default defineConfig({
         },
         reference: {
           packages: REFERENCE_PACKAGES.map((pkg) => ({
-            collapsible: pkg.group !== undefined,
-            expanded: false,
+            collapsible: !!pkg.group,
             group: pkg.group,
             name: pkg.name,
             root: resolve(import.meta.dirname, `../packages/${pkg.dir}`),

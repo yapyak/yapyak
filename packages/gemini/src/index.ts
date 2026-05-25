@@ -21,9 +21,9 @@ import {
   stripCodeFence,
 } from '@yapyak/translator';
 
-/** Options for the {@link gemini} translator. */
+/** Options for {@link gemini}. */
 export interface GeminiOptions {
-  /** The Google AI API key. */
+  /** The API key. */
   apiKey: string;
   /**
    * The maximum items per API call.
@@ -86,7 +86,7 @@ const DEFAULT_MAX_RETRIES = 2;
  *
  * @param options - The translator options.
  *
- * @example
+ * @example Configure as the translator
  * ```ts
  * import { gemini } from '@yapyak/gemini';
  *

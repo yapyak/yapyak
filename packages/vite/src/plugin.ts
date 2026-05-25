@@ -33,6 +33,21 @@ interface CallSitePosition {
   source: string;
 }
 
+/**
+ * Creates a yapyak Vite plugin.
+ *
+ * @param options - The plugin options.
+ *
+ * @example Register in vite.config.ts
+ * ```ts
+ * import { yapyak } from '@yapyak/vite';
+ * import { defineConfig } from 'vite';
+ *
+ * export default defineConfig({
+ *   plugins: [yapyak()],
+ * });
+ * ```
+ */
 export function yapyak(options: YapyakOptions = {}): Plugin {
   const normalized = normalizeOptions(options);
   const filter = createFilter(normalized.include, normalized.exclude);

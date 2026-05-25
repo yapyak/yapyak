@@ -48,7 +48,7 @@ export interface TranslateRequest {
  * Translates source strings into target locales.
  *
  * @remarks
- * Returned by {@link createTranslator} and by the provider packages (`@yapyak/anthropic`, `@yapyak/openai`, `@yapyak/gemini`, `@yapyak/ollama`). Passed to the Vite plugin's `translator` option.
+ * Returned by {@link createTranslator} and by the provider packages (`@yapyak/anthropic`, `@yapyak/openai`, `@yapyak/gemini`, `@yapyak/ollama`). Passed to yapyak's compiler via the `translator` option.
  *
  * Public extension point. Implemented by the provider packages and by third-party translators. Adding optional fields is allowed; renaming or removing fields is a breaking change.
  */

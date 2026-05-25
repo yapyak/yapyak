@@ -5,12 +5,12 @@ import { registerTracker, subscribeLocale } from '@yapyak/core/internal';
 import { customRef } from 'vue';
 
 /**
- * The reactive locale ref for Vue.
+ * Reactive locale ref.
  *
  * @remarks
- * Typed as `Ref<string>`. Auto-unwraps in templates. Reads track reactivity, writes call {@link setLocale}.
+ * Auto-unwraps in templates. Reads track reactivity; writes call {@link setLocale}.
  *
- * @example
+ * @example Read and write the locale in a template
  * ```vue
  * <script setup>
  * import { $t } from '@yapyak/core';

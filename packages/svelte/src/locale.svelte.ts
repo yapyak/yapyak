@@ -12,19 +12,16 @@ if (typeof window !== 'undefined') {
   });
 }
 
-/** The locale. Reactive handle for Svelte 5 components. */
+/** The locale. Holds the current locale string with reactive read and write. */
 export interface Locale {
-  /** The current locale. Reads track reactivity, writes call {@link setLocale}. */
+  /** The current locale. Reads track reactivity; writes call {@link setLocale}. */
   current: string;
 }
 
 /**
- * The reactive locale store for Svelte 5.
+ * Reactive locale store.
  *
- * @remarks
- * Reads to `locale.current` track reactivity. Writes call {@link setLocale}.
- *
- * @example
+ * @example Read and write the locale in a Svelte component
  * ```svelte
  * <script>
  *   // Svelte reserves `$`-prefixed identifiers for store auto-subscriptions,

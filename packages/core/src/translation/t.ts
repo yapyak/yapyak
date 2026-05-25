@@ -9,23 +9,18 @@ type TParams<T extends string> = T extends `${string}{${string}`
   : never;
 
 export interface TOptions {
-  context?: string;
   locale?: string;
 }
 
 /**
  * Translates a source string to the current locale.
  *
- * The leading `$` signals that `$t()` is a compiler macro: yapyak's Vite plugin rewrites every call site at build time. The runtime function exported here is only the fallback for code paths the plugin didn't touch.
- *
  * @remarks
- * Always call `$t()` directly with a string literal at the call site. Yapyak's Vite plugin reads the literal statically to extract translations into locale files — wrapper functions around `$t()` break extraction and are not supported.
+ * The leading `$` signals a compile-time macro: yapyak's compiler rewrites every call site at build. The runtime function is the fallback for paths the compiler didn't touch.
  *
- * Placeholders use `{name}` and are type-checked from the source literal. Re-exporting `$t()` under a different name is fine (the literal still appears at the call site); wrapping `$t()` inside another function is not.
+ * Call `$t()` with a string literal at the call site — wrapping breaks extraction; re-exporting under a different name is fine. Placeholders use `{name}` and are type-checked from the source literal. An optional final `options` argument takes `locale` (override).
  *
- * The optional final argument is an options object: `locale` overrides the ambient locale, and `context` is a translator hint that the extraction plugin can forward to the AI translator.
- *
- * @example
+ * @example Translate strings, with and without placeholders
  * ```tsx
  * import { $t } from '@yapyak/core';
  *
@@ -37,9 +32,6 @@ export interface TOptions {
  *
  * // Locale override
  * $t('Welcome back, {name}!', { name: user.name }, { locale: user.locale });
- *
- * // Translator context hint, no placeholders
- * $t('Save', { context: 'submit button' });
  * ```
  */
 export function $t<T extends string>(

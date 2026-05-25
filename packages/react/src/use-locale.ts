@@ -3,12 +3,9 @@ import { subscribeLocale } from '@yapyak/core/internal';
 import { useSyncExternalStore } from 'react';
 
 /**
- * Subscribes to locale changes and returns the current locale and a setter.
+ * Subscribes the component to locale changes.
  *
- * @remarks
- * The component re-renders whenever the locale changes.
- *
- * @example
+ * @example Switch locale with a select
  * ```tsx
  * import { $t } from '@yapyak/core';
  * import { useLocale } from '@yapyak/react';

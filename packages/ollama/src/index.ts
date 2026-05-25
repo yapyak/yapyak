@@ -20,7 +20,7 @@ import {
   fetchWithRetry,
 } from '@yapyak/translator';
 
-/** Options for the {@link ollama} translator. */
+/** Options for {@link ollama}. */
 export interface OllamaOptions {
   /**
    * The maximum items per API call.
@@ -83,7 +83,7 @@ const DEFAULT_MAX_RETRIES = 1;
  *
  * @param options - The translator options.
  *
- * @example
+ * @example Configure as the translator
  * ```ts
  * import { ollama } from '@yapyak/ollama';
  *

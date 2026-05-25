@@ -2,8 +2,11 @@ import type { Plugin, PluginOption } from 'vite';
 
 import { loadConfigFromFile } from 'vite';
 
+/** Configuration for the yapyak CLI. */
 export interface YapyakCliConfig {
+  /** The default locale. */
   defaultLocale: string | undefined;
+  /** The directory for locale JSON files, relative to the project root. */
   localesDir: string;
 }
 
@@ -14,6 +17,11 @@ const DEFAULTS: YapyakCliConfig = {
 
 let cached: { projectRoot: string; value: YapyakCliConfig } | undefined;
 
+/**
+ * Loads the yapyak CLI configuration from the project's `vite.config.ts`. Resolves to {@link YapyakCliConfig}.
+ *
+ * @param projectRoot - The project root directory.
+ */
 export async function loadYapyakConfig(
   projectRoot: string,
 ): Promise<YapyakCliConfig> {

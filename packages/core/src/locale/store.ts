@@ -34,9 +34,9 @@ if (SYNC_HTML_LANG && typeof document !== 'undefined') {
 }
 
 /**
- * The currently-active locale.
+ * The current locale.
  *
- * @example
+ * @example Read the current locale
  * ```ts
  * import { getLocale } from '@yapyak/core';
  *
@@ -65,7 +65,7 @@ export function getLocale(): string {
 }
 
 /**
- * Switches the active locale.
+ * Switches the locale.
  *
  * @remarks
  * No-op if `value` is not in {@link locales}. Notifies subscribers and framework adapters.
@@ -74,7 +74,7 @@ export function getLocale(): string {
  *
  * @param value - The locale to switch to.
  *
- * @example
+ * @example Switch to Swedish
  * ```ts
  * import { setLocale } from '@yapyak/core';
  *
@@ -102,10 +102,10 @@ export function setLocale(value: string): void {
   }
 }
 
-/** All configured locales (build-time constant). */
+/** The configured locales. Build-time constant. Inlined by yapyak's compiler. */
 export const locales: string[] = LOCALES;
 
-/** The default locale (build-time constant). */
+/** The default locale. Build-time constant. Inlined by yapyak's compiler. */
 export const defaultLocale: string = DEFAULT_LOCALE;
 
 export function subscribeLocale(fn: (locale: string) => void): () => void {

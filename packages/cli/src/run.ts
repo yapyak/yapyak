@@ -8,6 +8,11 @@ import { translate } from './commands/translate';
 import { loadYapyakConfig } from './load-config';
 import { color, symbol } from './tui';
 
+/**
+ * Runs the yapyak CLI. Resolves to the process exit code.
+ *
+ * @param argv - The command-line argument vector, excluding `node` and the script path.
+ */
 export async function run(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
   const projectRoot = process.cwd();

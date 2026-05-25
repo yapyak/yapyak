@@ -5,7 +5,6 @@ import { runTrackers } from './tracker';
 type Variants = Record<string, string>;
 
 interface PickOptions {
-  context?: string;
   locale?: string;
 }
 

@@ -6,25 +6,28 @@ import { createContext, useSyncExternalStore } from 'react';
 
 /** Props for {@link LocaleProvider}. */
 export interface LocaleProviderProps {
+  /** The children. */
   children: ReactNode;
 }
 
 const LocaleContext = createContext<string>('en');
 
 /**
- * Provides locale context to the React tree.
+ * Renders children within a locale context.
  *
  * @remarks
  * Mounts once at the React tree's root. Re-renders descendants when {@link setLocale} is called, so {@link $t} calls inside the tree return the new locale's strings.
  *
- * @example
+ * @param props - Props bundle. See {@link LocaleProviderProps}.
+ *
+ * @example Wrap the React tree
  * ```tsx
  * import { LocaleProvider } from '@yapyak/react';
  *
  * function App() {
  *   return (
  *     <LocaleProvider>
- *       <App />
+ *       <Routes />
  *     </LocaleProvider>
  *   );
  * }

@@ -21,7 +21,7 @@ const storage = new AsyncLocalStorage<Request>();
 setRequestReader(() => storage.getStore());
 
 /**
- * Runs `fn` with the incoming `Request` bound to async-scoped storage. Yapyak's persistence implementations read from this scope server-side via `getFromRequest`.
+ * Runs `fn` with `request` bound to async-scoped storage.
  *
  * @remarks
  * Called by the shipped framework adapter packages. Called directly only when wiring a custom SSR setup.
@@ -29,7 +29,7 @@ setRequestReader(() => storage.getStore());
  * @param request - The incoming Web `Request`.
  * @param fn - The function to run with the request bound.
  *
- * @example
+ * @example Bind the request in a custom handler
  * ```ts
  * import { withRequest } from '@yapyak/adapter';
  *

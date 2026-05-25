@@ -4,7 +4,7 @@ import type { FilterPattern } from 'vite';
 
 import { DEFAULT_EXCLUDE, DEFAULT_INCLUDE } from '@yapyak/compiler/internal';
 
-/** Options for the {@link yapyak} Vite plugin. */
+/** Options for {@link yapyak}. */
 export interface YapyakOptions {
   /**
    * The default locale.
