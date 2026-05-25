@@ -17,6 +17,7 @@ export function setRequestReader(reader: RequestReader): void {
 }
 
 const persistence = buildPersistence(PERSISTENCE, LOCALES);
+const URL_PERSISTENCE = PERSISTENCE?.type === 'url';
 
 function getInitialLocale(): string {
   const persisted = persistence?.get();
@@ -33,8 +34,48 @@ if (SYNC_HTML_LANG && typeof document !== 'undefined') {
   document.documentElement.lang = currentLocale;
 }
 
+function applyLocale(value: string): void {
+  if (value === currentLocale) {
+    return;
+  }
+  currentLocale = value;
+  if (SYNC_HTML_LANG && typeof document !== 'undefined') {
+    document.documentElement.lang = value;
+  }
+  for (const listener of listeners) {
+    listener(value);
+  }
+}
+
+  const fromUrl = persistence?.get();
+  if (fromUrl !== undefined && LOCALES.includes(fromUrl)) {
+    applyLocale(fromUrl);
+  }
+}
+
+if (URL_PERSISTENCE && typeof window !== 'undefined') {
+  window.addEventListener('popstate', syncFromUrl);
+  const originalPushState = window.history.pushState.bind(window.history);
+  const originalReplaceState = window.history.replaceState.bind(window.history);
+  window.history.pushState = function (
+    ...args: Parameters<typeof window.history.pushState>
+  ): void {
+    originalPushState(...args);
+    syncFromUrl();
+  };
+  window.history.replaceState = function (
+    ...args: Parameters<typeof window.history.replaceState>
+  ): void {
+    originalReplaceState(...args);
+    syncFromUrl();
+  };
+}
+
 /**
  * The current locale.
+ *
+ * @remarks
+ * Server-side, reads from the request bound by {@link withRequest} via persistence or the `Accept-Language` header. Otherwise returns the locale set by {@link setLocale}.
  *
  * @example Read the current locale
  * ```ts
@@ -68,9 +109,9 @@ export function getLocale(): string {
  * Switches the locale.
  *
  * @remarks
- * No-op if `value` is not in {@link locales}. Notifies subscribers and framework adapters.
+ * No-op if `value` is not in {@link locales}. Notifies subscribers.
  *
- * With `persistence: 'url'`, locale changes are coupled to the URL. If the target URL differs from the current URL, `setLocale` falls back to a full-page navigation via `window.location.href`. Drive locale switches through your router's navigation API (e.g. `router.navigate(...)`) so the URL change happens via SPA navigation, then the route loader calls `setLocale` with the URL already matching — no reload.
+ * No-op with `persistence: 'url'` — the URL is the source of truth. Drive locale switches through router navigation; the in-memory locale syncs automatically on URL change.
  *
  * @param value - The locale to switch to.
  *
@@ -86,20 +127,20 @@ export function setLocale(value: string): void {
     return;
   }
 
+  if (URL_PERSISTENCE) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(
+        '[yapyak] setLocale() is a no-op with persistence: "url". The URL is the source of truth — drive locale switches through router navigation.',
+      );
+    }
+    return;
+  }
+
   if (persistence?.set(value) === true) {
     return;
   }
 
-  if (value === currentLocale) {
-    return;
-  }
-  currentLocale = value;
-  if (SYNC_HTML_LANG && typeof document !== 'undefined') {
-    document.documentElement.lang = value;
-  }
-  for (const listener of listeners) {
-    listener(value);
-  }
+  applyLocale(value);
 }
 
 /** The configured locales. Build-time constant. Inlined by yapyak's compiler. */
