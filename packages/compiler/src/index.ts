@@ -1,5 +1,10 @@
 /**
- * Compile-time extraction and locale-file synchronization for yapyak. Consumed by `@yapyak/vite`, `@yapyak/cli`, and future build-tool integrations (webpack, esbuild) plus tooling (LSP, codemods, ESLint plugin).
+ * Compile-time extraction and locale-file synchronization for yapyak.
+ *
+ * The public entry exposes catalog operations — discover locale files, read
+ * their contents, migrate keys, sync entries, and serialize them canonically.
+ * Build-tool authors and editor tooling should import the extraction and
+ * transform primitives from `@yapyak/compiler/internal` instead.
  *
  * @packageDocumentation
  */
@@ -12,7 +17,6 @@ export {
   discoverLocales,
   type LocaleData,
   type LocaleFile,
-  type MessagePosition,
   type MigrateLocalesOptions,
   type MigrateLocalesResult,
   migrateLocales,
@@ -24,49 +28,3 @@ export {
   stringifyCanonical,
   syncLocaleFiles,
 } from './catalog';
-export {
-  DEFAULT_EXCLUDE,
-  DEFAULT_INCLUDE,
-  type WalkedFile,
-  type WalkSourceFilesOptions,
-  walkSourceFiles,
-} from './io';
-export {
-  astroProcessor,
-  type BindingTable,
-  type CallSite,
-  type CallSiteContext,
-  createDiagnostic,
-  type Diagnostic,
-  type DiagnosticCode,
-  discoverCalls,
-  type ElisionContext,
-  type ExtractedMessage,
-  type ExtractFileRequest,
-  type ExtractFileResult,
-  extractFile,
-  type Fragment,
-  getProcessor,
-  type Location,
-  type ParsedArguments,
-  type ParsedParams,
-  type Placeholder,
-  type Position,
-  type Processor,
-  type ProcessorKind,
-  parseArguments,
-  parsePlaceholders,
-  type Range,
-  resolveBindings,
-  resolveCallSiteContext,
-  resolveProcessorKind,
-  type Scope,
-  svelteProcessor,
-  type TransformFileRequest,
-  type TransformFileResult,
-  toMessageId,
-  transformFile,
-  vanillaProcessor,
-  vueProcessor,
-  type YapyakBinding,
-} from './parser';

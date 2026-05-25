@@ -1,8 +1,8 @@
+import type { LocaleData } from '@yapyak/compiler';
 import type {
   ExtractedMessage,
   ExtractFileResult,
-  LocaleData,
-} from '@yapyak/compiler';
+} from '@yapyak/compiler/internal';
 import type { Plugin, ResolvedConfig } from 'vite';
 import type { YapyakOptions } from './options';
 
@@ -10,13 +10,15 @@ import {
   autoTranslate,
   detectRenames,
   discoverLocales,
-  extractFile,
   migrateLocales,
   readLocaleData,
   syncLocaleFiles,
+} from '@yapyak/compiler';
+import {
+  extractFile,
   transformFile,
   walkSourceFiles,
-} from '@yapyak/compiler';
+} from '@yapyak/compiler/internal';
 import { createFilter } from 'vite';
 
 import { normalizeOptions } from './options';

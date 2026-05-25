@@ -1,12 +1,12 @@
-import type { ExtractedMessage } from '@yapyak/compiler';
+import type { ExtractedMessage } from '@yapyak/compiler/internal';
 
+import { readLocaleFile } from '@yapyak/compiler';
 import {
   DEFAULT_EXCLUDE,
   DEFAULT_INCLUDE,
   extractFile,
-  readLocaleFile,
   walkSourceFiles,
-} from '@yapyak/compiler';
+} from '@yapyak/compiler/internal';
 import { createFilter } from 'vite';
 
 import { existsSync, readdirSync } from 'node:fs';

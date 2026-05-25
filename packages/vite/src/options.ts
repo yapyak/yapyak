@@ -2,7 +2,7 @@ import type { NormalizedPersistence } from '@yapyak/core/internal';
 import type { Translator } from '@yapyak/translator';
 import type { FilterPattern } from 'vite';
 
-import { DEFAULT_EXCLUDE, DEFAULT_INCLUDE } from '@yapyak/compiler';
+import { DEFAULT_EXCLUDE, DEFAULT_INCLUDE } from '@yapyak/compiler/internal';
 
 /** Options for the {@link yapyak} Vite plugin. */
 export interface YapyakOptions {
