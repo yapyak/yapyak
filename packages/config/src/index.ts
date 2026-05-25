@@ -1,19 +1,10 @@
-/**
- * Config for yapyak.
- *
- * ## Installation
- *
- * ```bash
- * npm install @yapyak/config
- * # or
- * pnpm add @yapyak/config
- * ```
- *
- * @packageDocumentation
- */
-
 export type {
+  NormalizedYapyakConfig,
   PersistenceOption,
   YapyakConfig,
   YapyakFilterPattern,
 } from './types';
+
+export { createFilter } from './filter';
+export { type LoadYapyakConfigResult, loadYapyakConfig } from './load';
+export { normalizeYapyakConfig } from './normalize';

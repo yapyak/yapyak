@@ -2,22 +2,6 @@ import type { YapyakFilterPattern } from './types';
 
 import picomatch from 'picomatch';
 
-/**
- * Creates a path-matching filter from include/exclude glob patterns.
- *
- * @param include - Patterns to match. Path passes if at least one matches.
- * @param exclude - Patterns to reject. Path fails if any matches.
- * @returns A predicate that returns `true` when `path` should be included.
- *
- * @example Filter source files
- * ```ts
- * import { createFilter } from '@yapyak/config/internal';
- *
- * const filter = createFilter(['**\/*.ts'], ['**\/node_modules/**']);
- * filter('src/app.ts'); // => true
- * filter('node_modules/lib.ts'); // => false
- * ```
- */
 export function createFilter(
   include: YapyakFilterPattern,
   exclude: YapyakFilterPattern,

@@ -3,7 +3,7 @@ import type {
   ExtractedMessage,
   ExtractFileResult,
 } from '@yapyak/compiler/internal';
-import type { NormalizedYapyakConfig } from '@yapyak/config/internal';
+import type { NormalizedYapyakConfig } from '@yapyak/config';
 import type { Plugin, ResolvedConfig } from 'vite';
 
 import {
@@ -19,8 +19,8 @@ import {
   transformFile,
   walkSourceFiles,
 } from '@yapyak/compiler/internal';
-import { createFilter, loadYapyakConfig } from '@yapyak/config/internal';
-import { defineRuntime } from '@yapyak/runtime/internal';
+import { createFilter, loadYapyakConfig } from '@yapyak/config';
+import { defineRuntime } from '@yapyak/runtime';
 
 import { relative } from 'node:path';
 

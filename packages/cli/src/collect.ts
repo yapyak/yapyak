@@ -7,7 +7,7 @@ import {
   extractFile,
   walkSourceFiles,
 } from '@yapyak/compiler/internal';
-import { createFilter } from '@yapyak/config/internal';
+import { createFilter } from '@yapyak/config';
 
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';

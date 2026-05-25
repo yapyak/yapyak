@@ -13,29 +13,11 @@ const CONFIG_FILES = [
   'yapyak.config.js',
 ];
 
-/** Result of {@link loadYapyakConfig}. */
 export interface LoadYapyakConfigResult {
-  /** The normalized config with defaults applied. */
   config: NormalizedYapyakConfig;
-  /** The absolute path of the loaded config file, or `null` when none was found. */
   configFile: string | null;
 }
 
-/**
- * Loads the yapyak config from the project root.
- *
- * @remarks
- * Searches for `yapyak.config.{ts,mts,mjs,js}` in the given directory. Returns defaults if no file is found.
- *
- * @param cwd - The project root to search in. Defaults to `process.cwd()`.
- *
- * @example Load from project root
- * ```ts
- * import { loadYapyakConfig } from '@yapyak/config/internal';
- *
- * const { config, configFile } = await loadYapyakConfig();
- * ```
- */
 export async function loadYapyakConfig(
   cwd: string = process.cwd(),
 ): Promise<LoadYapyakConfigResult> {

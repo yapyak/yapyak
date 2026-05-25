@@ -1,6 +1,6 @@
-import type { NormalizedYapyakConfig } from '@yapyak/config/internal';
+import type { NormalizedYapyakConfig } from '@yapyak/config';
 
-import { loadYapyakConfig as loadFromFile } from '@yapyak/config/internal';
+import { loadYapyakConfig as loadFromFile } from '@yapyak/config';
 
 /** Configuration for the yapyak CLI. */
 export interface YapyakCliConfig {

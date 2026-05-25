@@ -11,12 +11,6 @@ const DEFAULT_LOCALES_DIR = 'locales';
 const DEFAULT_COOKIE_NAME = 'locale';
 const DEFAULT_STORAGE_KEY = 'locale';
 
-/**
- * Applies defaults to a {@link YapyakConfig}.
- *
- * @param config - The user-supplied config.
- * @returns The {@link NormalizedYapyakConfig} with all fields populated.
- */
 export function normalizeYapyakConfig(
   config: YapyakConfig,
 ): NormalizedYapyakConfig {
