@@ -1,4 +1,4 @@
-import type { PersistenceConfig } from '@yapyak/core/internal';
+import type { PersistenceConfig } from '@yapyak/runtime';
 import type {
   NormalizedYapyakConfig,
   PersistenceOption,

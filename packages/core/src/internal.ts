@@ -1,5 +1,3 @@
-export type { PersistenceConfig } from './persistence';
-
 export {
   resetLocale,
   setRequestReader,

@@ -1,4 +1,4 @@
-import type { PersistenceConfig } from '@yapyak/core/internal';
+import type { PersistenceConfig } from '@yapyak/runtime';
 import type { Translator } from '@yapyak/translator';
 
 /** Glob pattern for include/exclude filtering. */

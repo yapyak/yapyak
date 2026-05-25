@@ -1,12 +1,13 @@
-import { buildPersistence } from '../persistence';
-import { resolveLocale } from './resolve';
 import {
   DEFAULT_LOCALE,
   DETECT_ACCEPT_LANGUAGE,
   LOCALES,
   PERSISTENCE,
   SYNC_HTML_LANG,
-} from 'virtual:yapyak';
+} from '@yapyak/runtime';
+
+import { buildPersistence } from '../persistence';
+import { resolveLocale } from './resolve';
 
 type RequestReader = () => Request | undefined;
 

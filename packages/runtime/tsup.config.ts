@@ -3,7 +3,6 @@ import { defineConfig } from 'tsup';
 export default defineConfig({
   clean: true,
   dts: true,
-  entry: ['src/index.ts', 'src/config.ts'],
-  external: ['vite', '@yapyak/runtime'],
+  entry: ['src/index.ts', 'src/internal.ts'],
   format: 'esm',
 });

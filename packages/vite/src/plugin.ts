@@ -4,7 +4,6 @@ import type {
   ExtractFileResult,
 } from '@yapyak/compiler/internal';
 import type { NormalizedYapyakConfig } from '@yapyak/config/internal';
-import type { PersistenceConfig } from '@yapyak/core/internal';
 import type { Plugin, ResolvedConfig } from 'vite';
 
 import {
@@ -21,11 +20,12 @@ import {
   walkSourceFiles,
 } from '@yapyak/compiler/internal';
 import { createFilter, loadYapyakConfig } from '@yapyak/config/internal';
+import { defineRuntime } from '@yapyak/runtime/internal';
 
 import { relative } from 'node:path';
 
-const CONFIG_ID = 'virtual:yapyak';
-const CONFIG_RESOLVED = `\0${CONFIG_ID}`;
+const RUNTIME_ID = '@yapyak/runtime';
+const RUNTIME_RESOLVED = `\0${RUNTIME_ID}`;
 
 interface CallSitePosition {
   column: number;
@@ -208,15 +208,23 @@ export function yapyak(): Plugin {
       fillStubs();
     },
     load(id: string): string | null {
-      if (id === CONFIG_RESOLVED) {
-        return generateConfig(getNormalized(), discover());
+      if (id === RUNTIME_RESOLVED) {
+        const normalized = getNormalized();
+        const resolved = discover();
+        return defineRuntime({
+          defaultLocale: resolved.defaultLocale,
+          detectAcceptLanguage: normalized.detectAcceptLanguage,
+          locales: resolved.locales,
+          persistence: normalized.persistence,
+          syncHtmlLang: normalized.syncHtmlLang,
+        });
       }
       return null;
     },
     name: 'yapyak',
     resolveId(id: string): string | null {
-      if (id === CONFIG_ID) {
-        return CONFIG_RESOLVED;
+      if (id === RUNTIME_ID) {
+        return RUNTIME_RESOLVED;
       }
       return null;
     },
@@ -284,43 +292,6 @@ function toCallSitePositions(message: ExtractedMessage): CallSitePosition[] {
     line: location.range.start.line,
     source: message.source,
   }));
-}
-
-function generateConfig(
-  normalized: NormalizedYapyakConfig,
-  resolved: { defaultLocale: string; locales: string[] },
-): string {
-  const lines: string[] = [];
-  lines.push(`export const LOCALES = ${JSON.stringify(resolved.locales)};`);
-  lines.push(
-    `export const DEFAULT_LOCALE = ${JSON.stringify(resolved.defaultLocale)};`,
-  );
-  lines.push(
-    `export const PERSISTENCE = ${emitPersistence(normalized.persistence)};`,
-  );
-  lines.push(
-    `export const DETECT_ACCEPT_LANGUAGE = ${JSON.stringify(normalized.detectAcceptLanguage)};`,
-  );
-  lines.push(
-    `export const SYNC_HTML_LANG = ${JSON.stringify(normalized.syncHtmlLang)};`,
-  );
-  return lines.join('\n');
-}
-
-function emitPersistence(persistence: PersistenceConfig): string {
-  if (persistence === null) {
-    return 'null';
-  }
-  if (persistence.type === 'cookie') {
-    return `{ type: 'cookie', name: ${JSON.stringify(persistence.name)} }`;
-  }
-  if (persistence.type === 'localStorage') {
-    return `{ type: 'localStorage', key: ${JSON.stringify(persistence.key)} }`;
-  }
-  if (persistence.match === undefined) {
-    return `{ type: 'url' }`;
-  }
-  return `{ type: 'url', match: new RegExp(${JSON.stringify(persistence.match.source)}, ${JSON.stringify(persistence.match.flags)}) }`;
 }
 
 function isCandidateId(id: string, filter: (id: string) => boolean): boolean {

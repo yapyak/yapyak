@@ -4,6 +4,6 @@ export default defineConfig({
   clean: true,
   dts: true,
   entry: ['src/index.ts', 'src/internal.ts'],
-  external: ['virtual:yapyak'],
+  external: ['@yapyak/runtime'],
   format: 'esm',
 });

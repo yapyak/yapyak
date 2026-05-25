@@ -1,12 +1,8 @@
+import type { PersistenceConfig } from '@yapyak/runtime';
+
 import { cookie } from './cookie';
 import { localStorage } from './local-storage';
 import { url } from './url';
-
-export type PersistenceConfig =
-  | { type: 'cookie'; name: string }
-  | { type: 'localStorage'; key: string }
-  | { type: 'url'; match?: RegExp }
-  | null;
 
 export interface Persistence {
   get(): string | undefined;

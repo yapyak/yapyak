@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "types": ["node"]
+  },
+  "exclude": ["dist", "node_modules"],
+  "extends": "@yapyak/typescript-config/library",
+  "include": ["src"]
+}

@@ -1,5 +1,5 @@
 {
-  "name": "@yapyak/vite",
+  "name": "@yapyak/runtime",
   "version": "0.0.0",
   "license": "MIT",
   "type": "module",
@@ -8,9 +8,9 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./config": {
-      "types": "./dist/config.d.ts",
-      "default": "./dist/config.js"
+    "./internal": {
+      "types": "./dist/internal.d.ts",
+      "default": "./dist/internal.js"
     }
   },
   "files": [
@@ -21,22 +21,11 @@
     "build": "tsup",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "@yapyak/compiler": "workspace:*",
-    "@yapyak/config": "workspace:*",
-    "@yapyak/core": "workspace:*",
-    "@yapyak/runtime": "workspace:*",
-    "@yapyak/translator": "workspace:*"
-  },
-  "peerDependencies": {
-    "vite": ">=5"
-  },
   "devDependencies": {
     "@types/node": "catalog:",
     "@yapyak/typescript-config": "workspace:*",
     "tsup": "catalog:",
-    "typescript": "catalog:",
-    "vite": "catalog:"
+    "typescript": "catalog:"
   },
   "engines": {
     "node": ">=22"
