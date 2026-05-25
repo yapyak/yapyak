@@ -1,11 +1,7 @@
 import type { Ref } from 'vue';
 
-import {
-  getLocale,
-  registerTracker,
-  setLocale,
-  subscribeLocale,
-} from '@yapyak/core';
+import { getLocale, setLocale } from '@yapyak/core';
+import { registerTracker, subscribeLocale } from '@yapyak/core/internal';
 import { customRef } from 'vue';
 
 /**

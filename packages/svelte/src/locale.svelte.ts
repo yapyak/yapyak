@@ -1,9 +1,5 @@
-import {
-  getLocale,
-  registerTracker,
-  setLocale,
-  subscribeLocale,
-} from '@yapyak/core';
+import { getLocale, setLocale } from '@yapyak/core';
+import { registerTracker, subscribeLocale } from '@yapyak/core/internal';
 
 let active = $state(getLocale());
 

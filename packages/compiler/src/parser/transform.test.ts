@@ -293,13 +293,14 @@ describe('transformFile — multi-locale', () => {
     expect(code).toContain('{ name }');
   });
 
-  it('adds _$pick to existing @yapyak/core import', () => {
+  it('emits _$pick from @yapyak/core/internal as a separate import', () => {
     const code = runTransform({
       locales: ['en', 'sv'],
       source:
         "import { $t } from '@yapyak/core';\nexport const x = $t('Hello');\n",
     });
-    expect(code).toMatch(/import \{ _\$pick.*\} from '@yapyak\/core'/);
+    expect(code).toMatch(/import \{ _\$pick \} from '@yapyak\/core\/internal'/);
+    expect(code).not.toMatch(/import \{ _\$pick.*\$t.*\} from '@yapyak\/core'/);
   });
 });
 
@@ -359,7 +360,7 @@ describe('transformFile — Vue SFC', () => {
     });
     expect(code).toContain('_$pick({ en: "Hello", sv: "Hello" })');
     expect(code).toContain('_$pick({ en: "Welcome", sv: "Welcome" })');
-    expect(code).toMatch(/import \{ _\$pick.*\} from '@yapyak\/core'/);
+    expect(code).toMatch(/import \{ _\$pick \} from '@yapyak\/core\/internal'/);
   });
 
   it('rewrites :foo="..." attribute expression', () => {
@@ -417,9 +418,8 @@ describe('transformFile — Vue SFC', () => {
       source,
       translations: { sv: {} },
     });
-    // _$pick added to existing @yapyak/core import inside <script setup>
     expect(code).toMatch(
-      /<script setup[^>]*>\s*\nimport \{ _\$pick \} from '@yapyak\/core';/,
+      /<script setup[^>]*>\s*\nimport \{ _\$pick \} from '@yapyak\/core\/internal';/,
     );
   });
 });

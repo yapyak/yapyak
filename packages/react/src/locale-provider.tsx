@@ -1,6 +1,7 @@
 import type { ReactElement, ReactNode } from 'react';
 
-import { getLocale, subscribeLocale } from '@yapyak/core';
+import { getLocale } from '@yapyak/core';
+import { subscribeLocale } from '@yapyak/core/internal';
 import { createContext, useSyncExternalStore } from 'react';
 
 /** Props for {@link LocaleProvider}. */

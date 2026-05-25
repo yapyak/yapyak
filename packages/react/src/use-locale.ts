@@ -1,4 +1,5 @@
-import { getLocale, setLocale, subscribeLocale } from '@yapyak/core';
+import { getLocale, setLocale } from '@yapyak/core';
+import { subscribeLocale } from '@yapyak/core/internal';
 import { useSyncExternalStore } from 'react';
 
 /**

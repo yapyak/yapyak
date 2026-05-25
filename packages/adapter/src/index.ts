@@ -6,7 +6,7 @@
  * @packageDocumentation
  */
 
-import { setRequestReader } from '@yapyak/core';
+import { setRequestReader } from '@yapyak/core/internal';
 
 import { AsyncLocalStorage } from 'node:async_hooks';
 

@@ -17,6 +17,7 @@ import { getProcessor, resolveProcessorKind } from './processor';
 
 const PICK_FN = '_$pick';
 const YAPYAK_MODULE = '@yapyak/core';
+const YAPYAK_INTERNAL_MODULE = '@yapyak/core/internal';
 
 export function transformFile(
   request: TransformFileRequest,
@@ -61,18 +62,17 @@ export function transformFile(
     }
   }
 
-  const pickHandled = rewriteScriptImports({
+  rewriteScriptImports({
     fragments,
     magicString,
     request,
-    usedPick,
   });
 
-  if (usedPick && !pickHandled) {
+  if (usedPick) {
     processor.applyImport(
       magicString,
       request.source,
-      `import { ${PICK_FN} } from '${YAPYAK_MODULE}';`,
+      `import { ${PICK_FN} } from '${YAPYAK_INTERNAL_MODULE}';`,
     );
   }
 
@@ -87,13 +87,11 @@ interface RewriteScriptImportsInput {
   fragments: readonly Fragment[];
   magicString: MagicString;
   request: TransformFileRequest;
-  usedPick: boolean;
 }
 
-function rewriteScriptImports(input: RewriteScriptImportsInput): boolean {
-  const { fragments, magicString, request, usedPick } = input;
+function rewriteScriptImports(input: RewriteScriptImportsInput): void {
+  const { fragments, magicString, request } = input;
   const intermediate = magicString.toString();
-  let pickHandled = false;
 
   for (const fragment of fragments) {
     if (fragment.kind !== 'script') {
@@ -108,42 +106,29 @@ function rewriteScriptImports(input: RewriteScriptImportsInput): boolean {
     );
     const coreImports = collectCoreImports(sourceFile);
     for (const declaration of coreImports) {
-      const shouldInjectPick = usedPick && !pickHandled;
       rewriteImportDeclaration({
         declaration,
         fragment,
-        injectPick: shouldInjectPick,
         intermediate,
         magicString,
         sourceFile,
       });
-      if (shouldInjectPick) {
-        pickHandled = true;
-      }
     }
   }
-  return pickHandled;
 }
 
 interface RewriteImportDeclarationInput {
   declaration: ts.ImportDeclaration;
   fragment: Fragment;
-  injectPick: boolean;
   intermediate: string;
   magicString: MagicString;
   sourceFile: ts.SourceFile;
 }
 
 function rewriteImportDeclaration(input: RewriteImportDeclarationInput): void {
-  const {
-    declaration,
-    fragment,
-    injectPick,
-    intermediate,
-    magicString,
-    sourceFile,
-  } = input;
-  if (declaration.importClause?.isTypeOnly === true && !injectPick) {
+  const { declaration, fragment, intermediate, magicString, sourceFile } =
+    input;
+  if (declaration.importClause?.isTypeOnly === true) {
     return;
   }
   const namedBindings = declaration.importClause?.namedBindings;
@@ -171,16 +156,6 @@ function rewriteImportDeclaration(input: RewriteImportDeclarationInput): void {
         isType: false,
         local: localName,
       });
-    }
-  }
-
-  if (injectPick) {
-    const hasPick = remaining.some(
-      (item) =>
-        !item.isType && item.imported === PICK_FN && item.local === PICK_FN,
-    );
-    if (!hasPick) {
-      remaining.unshift({ imported: PICK_FN, isType: false, local: PICK_FN });
     }
   }
 
