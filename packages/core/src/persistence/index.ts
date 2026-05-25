@@ -2,13 +2,7 @@ import { cookie } from './cookie';
 import { localStorage } from './local-storage';
 import { url } from './url';
 
-export type NormalizedPersistence =
-  | { type: 'cookie'; name: string }
-  | { type: 'localStorage'; key: string }
-  | { type: 'url'; match?: RegExp }
-  | null;
-
-type SerializedPersistence =
+export type SerializedPersistence =
   | { type: 'cookie'; name: string }
   | { type: 'localStorage'; key: string }
   | { type: 'url'; match?: { flags: string; source: string } }

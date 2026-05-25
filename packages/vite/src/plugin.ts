@@ -4,6 +4,7 @@ import type {
   ExtractFileResult,
 } from '@yapyak/compiler/internal';
 import type { NormalizedYapyakConfig } from '@yapyak/config/internal';
+import type { SerializedPersistence } from '@yapyak/core/internal';
 import type { Plugin, ResolvedConfig } from 'vite';
 
 import {
@@ -308,11 +309,7 @@ function generateConfig(
 
 function serializePersistence(
   persistence: NormalizedYapyakConfig['persistence'],
-):
-  | { type: 'cookie'; name: string }
-  | { type: 'localStorage'; key: string }
-  | { type: 'url'; match?: { flags: string; source: string } }
-  | null {
+): SerializedPersistence {
   if (persistence === null) {
     return null;
   }

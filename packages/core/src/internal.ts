@@ -1,4 +1,4 @@
-export type { NormalizedPersistence } from './persistence';
+export type { SerializedPersistence } from './persistence';
 
 export {
   resetLocale,

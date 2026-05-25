@@ -31,7 +31,7 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
   { dir: 'ollama', group: 'Translators', name: 'Ollama' },
 
   { dir: 'compiler', group: 'Tooling', name: 'Compiler' },
-  { dir: 'vite', group: 'Tooling', name: 'Vite plugin' },
+  { dir: 'vite', group: 'Tooling', name: 'Vite' },
   { dir: 'cli', group: 'Tooling', name: 'CLI' },
 ];
 
