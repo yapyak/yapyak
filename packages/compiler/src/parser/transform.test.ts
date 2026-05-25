@@ -299,8 +299,44 @@ describe('transformFile — multi-locale', () => {
       source:
         "import { $t } from '@yapyak/core';\nexport const x = $t('Hello');\n",
     });
-    expect(code).toMatch(/import \{ _pick \} from '@yapyak\/core\/internal'/);
+    expect(code).toMatch(
+      /import \{ pick as _pick \} from '@yapyak\/core\/internal'/,
+    );
     expect(code).not.toMatch(/import \{ _pick.*\$t.*\} from '@yapyak\/core'/);
+  });
+
+  it('renames local alias when user already has _pick', () => {
+    const code = runTransform({
+      locales: ['en', 'sv'],
+      source: [
+        "import { $t } from '@yapyak/core';",
+        'const _pick = "user-defined";',
+        "export const x = $t('Hello');",
+        'export { _pick };',
+      ].join('\n'),
+    });
+    expect(code).toMatch(
+      /import \{ pick as _pick_\$0 \} from '@yapyak\/core\/internal'/,
+    );
+    expect(code).toContain('_pick_$0({');
+    expect(code).toContain('const _pick = "user-defined";');
+  });
+
+  it('escalates further if both _pick and _pick_$0 are taken', () => {
+    const code = runTransform({
+      locales: ['en', 'sv'],
+      source: [
+        "import { $t } from '@yapyak/core';",
+        'const _pick = 1;',
+        'const _pick_$0 = 2;',
+        "export const x = $t('Hello');",
+        'export { _pick, _pick_$0 };',
+      ].join('\n'),
+    });
+    expect(code).toMatch(
+      /import \{ pick as _pick_\$1 \} from '@yapyak\/core\/internal'/,
+    );
+    expect(code).toContain('_pick_$1({');
   });
 });
 
@@ -360,7 +396,9 @@ describe('transformFile — Vue SFC', () => {
     });
     expect(code).toContain('_pick({ en: "Hello", sv: "Hello" })');
     expect(code).toContain('_pick({ en: "Welcome", sv: "Welcome" })');
-    expect(code).toMatch(/import \{ _pick \} from '@yapyak\/core\/internal'/);
+    expect(code).toMatch(
+      /import \{ pick as _pick \} from '@yapyak\/core\/internal'/,
+    );
   });
 
   it('rewrites :foo="..." attribute expression', () => {
@@ -419,7 +457,7 @@ describe('transformFile — Vue SFC', () => {
       translations: { sv: {} },
     });
     expect(code).toMatch(
-      /<script setup[^>]*>\s*\nimport \{ _pick \} from '@yapyak\/core\/internal';/,
+      /<script setup[^>]*>\s*\nimport \{ pick as _pick \} from '@yapyak\/core\/internal';/,
     );
   });
 });

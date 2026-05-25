@@ -9,7 +9,7 @@ interface PickOptions {
   locale?: string;
 }
 
-export function _pick(
+export function pick(
   variants: Variants,
   paramsOrOptions?: Record<string, unknown> | PickOptions,
   maybeOptions?: PickOptions,

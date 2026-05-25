@@ -5,4 +5,4 @@ export {
   setRequestReader,
   subscribeLocale,
 } from './locale';
-export { _pick, registerTracker, runTrackers } from './translation';
+export { pick, registerTracker, runTrackers } from './translation';

@@ -18,7 +18,7 @@ export function SaveButton() {
 ## What yapyak compiles it to
 
 ```tsx
-import { _pick } from '@yapyak/core';
+import { pick as _pick } from '@yapyak/core/internal';
 
 export function SaveButton() {
   return <button>{_pick({ en: 'Save changes', sv: 'Spara ändringar', es: 'Guardar cambios' })}</button>;

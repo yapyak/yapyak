@@ -483,7 +483,7 @@ There's no global catalog. There's no `loadCatalog()` call. There's no namespace
 `_pick` is a 25-line helper that picks the active-locale string, interpolates if needed, and falls back to `defaultLocale`:
 
 ```ts
-export function _pick(
+export function pick(
   variants: Record<string, string>,
   params?: Record<string, unknown>,
   options?: { locale?: string },

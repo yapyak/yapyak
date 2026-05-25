@@ -15,7 +15,8 @@ import { parseArguments } from './parse-arguments';
 import { parsePlaceholders } from './plural';
 import { getProcessor, resolveProcessorKind } from './processor';
 
-const PICK_FN = '_pick';
+const PICK_EXPORT = 'pick';
+const PICK_LOCAL = '_pick';
 const YAPYAK_MODULE = '@yapyak/core';
 const YAPYAK_INTERNAL_MODULE = '@yapyak/core/internal';
 
@@ -40,6 +41,8 @@ export function transformFile(
   const isSingleLocale = request.locales.length === 1;
   const magicString = new MagicString(request.source);
 
+  const pickLocal = findFreePickLocal(request.source);
+
   let usedPick = false;
   for (const callSite of request.extracted.callSites) {
     const replacement = renderCallReplacement({
@@ -47,6 +50,7 @@ export function transformFile(
       defaultLocale,
       isSingleLocale,
       locales: request.locales,
+      pickLocal,
       translations: request.translations,
     });
     if (replacement === undefined) {
@@ -69,10 +73,14 @@ export function transformFile(
   });
 
   if (usedPick) {
+    const importSpec =
+      pickLocal === PICK_EXPORT
+        ? PICK_EXPORT
+        : `${PICK_EXPORT} as ${pickLocal}`;
     processor.applyImport(
       magicString,
       request.source,
-      `import { ${PICK_FN} } from '${YAPYAK_INTERNAL_MODULE}';`,
+      `import { ${importSpec} } from '${YAPYAK_INTERNAL_MODULE}';`,
     );
   }
 
@@ -226,6 +234,7 @@ interface RenderCallReplacementInput {
   defaultLocale: string;
   isSingleLocale: boolean;
   locales: readonly string[];
+  pickLocal: string;
   translations: Record<string, Record<string, string>>;
 }
 
@@ -237,8 +246,14 @@ interface CallReplacement {
 function renderCallReplacement(
   input: RenderCallReplacementInput,
 ): CallReplacement | undefined {
-  const { callSite, defaultLocale, isSingleLocale, locales, translations } =
-    input;
+  const {
+    callSite,
+    defaultLocale,
+    isSingleLocale,
+    locales,
+    pickLocal,
+    translations,
+  } = input;
   const parsed = parseArguments(callSite);
   if (parsed.source === '') {
     return undefined;
@@ -272,7 +287,7 @@ function renderCallReplacement(
     args.push(parsed.optionsExpression);
   }
   return {
-    code: `${PICK_FN}(${args.join(', ')})`,
+    code: `${pickLocal}(${args.join(', ')})`,
     usesPick: true,
   };
 }
@@ -488,4 +503,20 @@ function isIdentifierChar(ch: string | undefined): boolean {
     return false;
   }
   return /[\w$]/.test(ch);
+}
+
+function findFreePickLocal(source: string): string {
+  if (!hasIdentifier(source, PICK_LOCAL)) {
+    return PICK_LOCAL;
+  }
+  let i = 0;
+  while (hasIdentifier(source, `${PICK_LOCAL}_$${i}`)) {
+    i += 1;
+  }
+  return `${PICK_LOCAL}_$${i}`;
+}
+
+function hasIdentifier(source: string, name: string): boolean {
+  const escaped = name.replaceAll('$', '\\$');
+  return new RegExp(`\\b${escaped}\\b`).test(source);
 }
