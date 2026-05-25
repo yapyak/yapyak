@@ -1,5 +1,5 @@
 /**
- * OpenAI translator provider for yapyak.
+ * OpenAI translator for yapyak.
  *
  * ## Installation
  *

@@ -1,5 +1,5 @@
 /**
- * Compile-time extraction and locale-file synchronization for yapyak. Exposes catalog operations — discover locale files, read their contents, migrate keys, sync entries, and serialize them canonically.
+ * Compiler for yapyak.
  *
  * ## Installation
  *

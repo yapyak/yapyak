@@ -1,5 +1,5 @@
 /**
- * Anthropic translator provider for yapyak.
+ * Anthropic translator for yapyak.
  *
  * ## Installation
  *

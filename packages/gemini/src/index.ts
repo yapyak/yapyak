@@ -1,5 +1,5 @@
 /**
- * Gemini translator provider for yapyak.
+ * Gemini translator for yapyak.
  *
  * ## Installation
  *

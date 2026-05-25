@@ -1,5 +1,5 @@
 /**
- * Adapter API. Provides {@link withRequest} for binding the incoming Request to async-scoped storage.
+ * Adapter for yapyak.
  *
  * ## Installation
  *

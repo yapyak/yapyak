@@ -1,5 +1,5 @@
 /**
- * Vite plugin for compile-time i18n extraction and runtime translation.
+ * Vite plugin for yapyak.
  *
  * ## Installation
  *

@@ -1,5 +1,5 @@
 /**
- * Svelte 5 adapter. Provides the reactive {@link locale} store.
+ * Svelte adapter for yapyak.
  *
  * ## Installation
  *

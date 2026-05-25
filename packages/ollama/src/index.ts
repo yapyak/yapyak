@@ -1,5 +1,5 @@
 /**
- * Ollama translator provider for yapyak.
+ * Ollama translator for yapyak.
  *
  * ## Installation
  *

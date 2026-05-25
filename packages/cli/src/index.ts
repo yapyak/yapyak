@@ -1,5 +1,5 @@
 /**
- * Programmatic entry point for the `yapyak` CLI. Most users invoke the `yapyak` binary instead.
+ * CLI for yapyak.
  *
  * ## Installation
  *

@@ -1,7 +1,7 @@
 /// <reference types="astro/client" />
 
 /**
- * Astro adapter. Provides {@link middleware} for per-request locale context.
+ * Astro adapter for yapyak.
  *
  * ## Installation
  *

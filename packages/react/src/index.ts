@@ -1,5 +1,5 @@
 /**
- * React adapter. Provides {@link LocaleProvider} and the {@link useLocale} hook.
+ * React adapter for yapyak.
  *
  * ## Installation
  *

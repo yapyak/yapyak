@@ -213,7 +213,7 @@ export function buildModulePage(
 
   return {
     blocks,
-    description: firstSentence(module.description),
+    description: '',
     href: options.href,
     meta: {},
     title: options.label,

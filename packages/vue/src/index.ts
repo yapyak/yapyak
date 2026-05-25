@@ -1,5 +1,5 @@
 /**
- * Vue 3 adapter. Provides the reactive {@link locale} ref.
+ * Vue adapter for yapyak.
  *
  * ## Installation
  *

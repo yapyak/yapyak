@@ -1,5 +1,5 @@
 /**
- * Translator orchestration. Provides {@link createTranslator} and the shared `fetchWithRetry` and `buildSystem` helpers used by the provider packages.
+ * Translator for yapyak.
  *
  * ## Installation
  *

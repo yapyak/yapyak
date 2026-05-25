@@ -1,5 +1,5 @@
 /**
- * React Router 7 adapter. Provides {@link middleware} for per-request locale context.
+ * React Router adapter for yapyak.
  *
  * ## Installation
  *

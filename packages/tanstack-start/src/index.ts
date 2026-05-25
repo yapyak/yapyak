@@ -1,5 +1,5 @@
 /**
- * TanStack Start adapter. Provides {@link middleware} for per-request locale context.
+ * TanStack Start adapter for yapyak.
  *
  * ## Installation
  *

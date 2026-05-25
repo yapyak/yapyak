@@ -1,5 +1,5 @@
 /**
- * SvelteKit adapter. Provides the {@link handle} hook for per-request locale context and `<html lang>` substitution.
+ * SvelteKit adapter for yapyak.
  *
  * ## Installation
  *

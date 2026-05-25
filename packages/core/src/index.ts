@@ -1,5 +1,5 @@
 /**
- * Runtime entry point for yapyak. Exports the `$t` macro fallback and the locale store.
+ * Core for yapyak.
  *
  * ## Installation
  *
