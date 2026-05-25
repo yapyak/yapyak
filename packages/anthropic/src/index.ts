@@ -95,8 +95,16 @@ const DEFAULT_MAX_RETRIES = 2;
  *   translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! }),
  * });
  * ```
+ *
+ * @throws {Error} When `apiKey` is empty.
  */
 export function anthropic(options: AnthropicOptions): Translator {
+  if (!options.apiKey) {
+    const received = options.apiKey === undefined ? 'undefined' : 'empty string';
+    throw new Error(
+      `@yapyak/anthropic: apiKey is required, received ${received}.`,
+    );
+  }
   const {
     apiKey,
     batchSize,

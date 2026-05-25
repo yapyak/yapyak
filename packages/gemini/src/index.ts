@@ -91,11 +91,19 @@ const DEFAULT_MAX_RETRIES = 2;
  * import { gemini } from '@yapyak/gemini';
  *
  * yapyak({
- *   translator: gemini({ apiKey: process.env.GOOGLE_API_KEY! }),
+ *   translator: gemini({ apiKey: process.env.GEMINI_API_KEY! }),
  * });
  * ```
+ *
+ * @throws {Error} When `apiKey` is empty.
  */
 export function gemini(options: GeminiOptions): Translator {
+  if (!options.apiKey) {
+    const received = options.apiKey === undefined ? 'undefined' : 'empty string';
+    throw new Error(
+      `@yapyak/gemini: apiKey is required, received ${received}.`,
+    );
+  }
   const {
     apiKey,
     batchSize,
