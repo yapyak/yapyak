@@ -9,22 +9,6 @@
  * pnpm add @yapyak/react
  * ```
  *
- * ## Setup
- *
- * Wrap the React tree once at the root with {@link LocaleProvider}.
- *
- * ```tsx
- * import { LocaleProvider } from '@yapyak/react';
- *
- * export function App() {
- *   return (
- *     <LocaleProvider>
- *       <Routes />
- *     </LocaleProvider>
- *   );
- * }
- * ```
- *
  * @packageDocumentation
  */
 

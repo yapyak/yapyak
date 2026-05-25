@@ -9,14 +9,6 @@
  * pnpm add @yapyak/sveltekit
  * ```
  *
- * ## Setup
- *
- * Re-export {@link handle} from `src/hooks.server.ts`.
- *
- * ```ts
- * export { handle } from '@yapyak/sveltekit';
- * ```
- *
  * @packageDocumentation
  */
 

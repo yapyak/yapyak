@@ -9,19 +9,6 @@
  * pnpm add @yapyak/vite
  * ```
  *
- * ## Setup
- *
- * Register the plugin in `vite.config.ts`.
- *
- * ```ts
- * import { yapyak } from '@yapyak/vite';
- * import { defineConfig } from 'vite';
- *
- * export default defineConfig({
- *   plugins: [yapyak()],
- * });
- * ```
- *
  * @packageDocumentation
  */
 

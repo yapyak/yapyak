@@ -9,18 +9,6 @@
  * pnpm add @yapyak/tanstack-start
  * ```
  *
- * ## Setup
- *
- * Register {@link middleware} as a request middleware in `src/start.ts`.
- *
- * ```ts
- * import { middleware } from '@yapyak/tanstack-start';
- *
- * export default {
- *   requestMiddleware: [middleware],
- * };
- * ```
- *
  * @packageDocumentation
  */
 
