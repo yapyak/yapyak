@@ -392,7 +392,7 @@ Paraglide's compiled-function approach sidesteps reactivity entirely — its fun
 
 ### What yapyak does
 
-A single global `$t` is reactive in every framework because of a side-channel: `runTrackers()`. Every `$t()` call (and every compiled `_$pick()` call) invokes registered tracker callbacks before returning. Each framework adapter registers a tracker that touches its native reactive primitive:
+A single global `$t` is reactive in every framework because of a side-channel: `runTrackers()`. Every `$t()` call (and every compiled `_pick()` call) invokes registered tracker callbacks before returning. Each framework adapter registers a tracker that touches its native reactive primitive:
 
 ```ts
 // packages/vue/src/locale.ts
@@ -475,15 +475,15 @@ The compiler rewrites every `$t()` call to inline its own per-locale catalog:
 $t('Save changes')
 
 // Compiler emits
-_$pick({ en: "Save changes", sv: "Spara ändringar" })
+_pick({ en: "Save changes", sv: "Spara ändringar" })
 ```
 
 There's no global catalog. There's no `loadCatalog()` call. There's no namespace splitting. Each call site carries exactly the strings it needs, in every locale you compile for.
 
-`_$pick` is a 25-line helper that picks the active-locale string, interpolates if needed, and falls back to `defaultLocale`:
+`_pick` is a 25-line helper that picks the active-locale string, interpolates if needed, and falls back to `defaultLocale`:
 
 ```ts
-export function _$pick(
+export function _pick(
   variants: Record<string, string>,
   params?: Record<string, unknown>,
   options?: { locale?: string },
@@ -496,7 +496,7 @@ export function _$pick(
 
 Tree-shaking works at the call-site granularity. Code-splitting works because each chunk only carries the strings that chunk's code uses. Route-based locale loading is automatic — no namespace boilerplate.
 
-In single-locale mode, even `_$pick` disappears: `$t('Hello')` compiles to the literal `"Hello"`, and the entire `@yapyak/core` runtime gets tree-shaken away if no other features are used.
+In single-locale mode, even `_pick` disappears: `$t('Hello')` compiles to the literal `"Hello"`, and the entire `@yapyak/core` runtime gets tree-shaken away if no other features are used.
 
 ### Reviewer talking points
 

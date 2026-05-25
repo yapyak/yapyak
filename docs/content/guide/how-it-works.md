@@ -18,14 +18,14 @@ export function SaveButton() {
 ## What yapyak compiles it to
 
 ```tsx
-import { _$pick } from '@yapyak/core';
+import { _pick } from '@yapyak/core';
 
 export function SaveButton() {
-  return <button>{_$pick({ en: 'Save changes', sv: 'Spara ändringar', es: 'Guardar cambios' })}</button>;
+  return <button>{_pick({ en: 'Save changes', sv: 'Spara ändringar', es: 'Guardar cambios' })}</button>;
 }
 ```
 
-The variants are inlined at the call site. At runtime, `_$pick()` returns the right one for the current locale.
+The variants are inlined at the call site. At runtime, `_pick()` returns the right one for the current locale.
 
 ## On save
 

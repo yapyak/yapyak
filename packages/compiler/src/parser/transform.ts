@@ -15,7 +15,7 @@ import { parseArguments } from './parse-arguments';
 import { parsePlaceholders } from './plural';
 import { getProcessor, resolveProcessorKind } from './processor';
 
-const PICK_FN = '_$pick';
+const PICK_FN = '_pick';
 const YAPYAK_MODULE = '@yapyak/core';
 const YAPYAK_INTERNAL_MODULE = '@yapyak/core/internal';
 

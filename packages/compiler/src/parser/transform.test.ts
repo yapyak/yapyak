@@ -37,7 +37,7 @@ describe('transformFile — single-locale elision', () => {
     });
     expect(code).toContain('"Hello"');
     expect(code).not.toContain('$t(');
-    expect(code).not.toContain('_$pick');
+    expect(code).not.toContain('_pick');
   });
 
   it('elides $t with simple placeholders to a template literal', () => {
@@ -81,7 +81,7 @@ describe('transformFile — single-locale elision', () => {
     expect(code).toContain('`Hi ${getName()}`');
   });
 
-  it('falls back to _$pick when source contains plurals', () => {
+  it('falls back to _pick when source contains plurals', () => {
     const code = runTransform({
       locales: ['en'],
       source: `
@@ -91,7 +91,7 @@ describe('transformFile — single-locale elision', () => {
         }
       `,
     });
-    expect(code).toContain('_$pick(');
+    expect(code).toContain('_pick(');
     expect(code).toContain('{ en:');
   });
 
@@ -148,7 +148,7 @@ describe('transformFile — single-locale elision', () => {
     );
   });
 
-  it('preserves type marker when injecting _$pick into mixed import', () => {
+  it('preserves type marker when injecting _pick into mixed import', () => {
     const source = [
       "import { type TParams, $t } from '@yapyak/core';",
       "export function greet(params: TParams<'Hi {name}'>) {",
@@ -157,7 +157,7 @@ describe('transformFile — single-locale elision', () => {
     ].join('\n');
     const code = runTransform({ locales: ['en', 'sv'], source });
     expect(code).toContain('type TParams');
-    expect(code).toContain('_$pick');
+    expect(code).toContain('_pick');
   });
 
   it('escapes { and } in catalog strings so Vue/JSX parsers never see literal braces', () => {
@@ -213,7 +213,7 @@ describe('transformFile — dynamic options', () => {
         export const x = $t('Hello', undefined, { locale: previewLocale.value });
       `,
     });
-    expect(code).toContain('_$pick(');
+    expect(code).toContain('_pick(');
     expect(code).toContain('{ locale: previewLocale.value }');
   });
 
@@ -226,7 +226,7 @@ describe('transformFile — dynamic options', () => {
         export const x = $t('Hello', undefined, svOptions);
       `,
     });
-    expect(code).toContain('_$pick(');
+    expect(code).toContain('_pick(');
     expect(code).toContain('svOptions');
   });
 
@@ -239,7 +239,7 @@ describe('transformFile — dynamic options', () => {
         export const x = $t('Hello', opts);
       `,
     });
-    expect(code).toContain('_$pick(');
+    expect(code).toContain('_pick(');
     expect(code).toContain('opts');
   });
 
@@ -251,20 +251,20 @@ describe('transformFile — dynamic options', () => {
         export const x = $t('Hello', undefined, { locale: 'sv' });
       `,
     });
-    expect(code).toContain('_$pick(');
+    expect(code).toContain('_pick(');
     expect(code).toContain("{ locale: 'sv' }");
   });
 });
 
 describe('transformFile — multi-locale', () => {
-  it('emits _$pick with catalog for $t', () => {
+  it('emits _pick with catalog for $t', () => {
     const code = runTransform({
       locales: ['en', 'sv'],
       source:
         "import { $t } from '@yapyak/core';\nexport const x = $t('Hello');\n",
       translations: { sv: { [hashId('Hello')]: 'Hej' } },
     });
-    expect(code).toContain('_$pick(');
+    expect(code).toContain('_pick(');
     expect(code).toContain('en: "Hello"');
     expect(code).toContain('sv: "Hej"');
   });
@@ -289,18 +289,18 @@ describe('transformFile — multi-locale', () => {
         }
       `,
     });
-    expect(code).toContain('_$pick(');
+    expect(code).toContain('_pick(');
     expect(code).toContain('{ name }');
   });
 
-  it('emits _$pick from @yapyak/core/internal as a separate import', () => {
+  it('emits _pick from @yapyak/core/internal as a separate import', () => {
     const code = runTransform({
       locales: ['en', 'sv'],
       source:
         "import { $t } from '@yapyak/core';\nexport const x = $t('Hello');\n",
     });
-    expect(code).toMatch(/import \{ _\$pick \} from '@yapyak\/core\/internal'/);
-    expect(code).not.toMatch(/import \{ _\$pick.*\$t.*\} from '@yapyak\/core'/);
+    expect(code).toMatch(/import \{ _pick \} from '@yapyak\/core\/internal'/);
+    expect(code).not.toMatch(/import \{ _pick.*\$t.*\} from '@yapyak\/core'/);
   });
 });
 
@@ -343,7 +343,7 @@ describe('transformFile — Vue SFC', () => {
     expect(code).not.toContain("from '@yapyak/core'");
   });
 
-  it('emits _$pick for multi-locale in template and script', () => {
+  it('emits _pick for multi-locale in template and script', () => {
     const source = [
       '<script setup lang="ts">',
       "import { $t } from '@yapyak/core';",
@@ -358,9 +358,9 @@ describe('transformFile — Vue SFC', () => {
       source,
       translations: { sv: {} },
     });
-    expect(code).toContain('_$pick({ en: "Hello", sv: "Hello" })');
-    expect(code).toContain('_$pick({ en: "Welcome", sv: "Welcome" })');
-    expect(code).toMatch(/import \{ _\$pick \} from '@yapyak\/core\/internal'/);
+    expect(code).toContain('_pick({ en: "Hello", sv: "Hello" })');
+    expect(code).toContain('_pick({ en: "Welcome", sv: "Welcome" })');
+    expect(code).toMatch(/import \{ _pick \} from '@yapyak\/core\/internal'/);
   });
 
   it('rewrites :foo="..." attribute expression', () => {
@@ -390,7 +390,7 @@ describe('transformFile — Vue SFC', () => {
     expect(code).toContain('alert("Hi")');
   });
 
-  it('inserts _$pick import inside <script setup> when missing core import', () => {
+  it('inserts _pick import inside <script setup> when missing core import', () => {
     const source = [
       '<script setup lang="ts">',
       "const heading = 'static';",
@@ -404,7 +404,7 @@ describe('transformFile — Vue SFC', () => {
     expect(code).toContain("const heading = 'static'");
   });
 
-  it('inserts _$pick into <script setup> in multi-locale even when only template uses $t', () => {
+  it('inserts _pick into <script setup> in multi-locale even when only template uses $t', () => {
     const source = [
       '<script setup lang="ts">',
       "import { $t } from '@yapyak/core';",
@@ -419,7 +419,7 @@ describe('transformFile — Vue SFC', () => {
       translations: { sv: {} },
     });
     expect(code).toMatch(
-      /<script setup[^>]*>\s*\nimport \{ _\$pick \} from '@yapyak\/core\/internal';/,
+      /<script setup[^>]*>\s*\nimport \{ _pick \} from '@yapyak\/core\/internal';/,
     );
   });
 });
