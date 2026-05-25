@@ -3,6 +3,7 @@ import type * as SvelteCompiler from 'svelte/compiler';
 import type { AST } from 'svelte/compiler';
 import type { Fragment, Processor } from '../type';
 
+import { rangeFromOffsets } from '../position';
 import { createRequire } from 'node:module';
 
 const SCRIPT_RX = /<script(?:\s+[^>]*)?>/;
@@ -117,7 +118,14 @@ function collectFromNode(
   fragments: Fragment[],
 ): void {
   if (isExpressionTagLike(node)) {
-    pushExpression(node.expression, source, fragments);
+    const elision =
+      node.type === 'ExpressionTag'
+        ? {
+            mode: 'text' as const,
+            range: rangeFromOffsets(source, node.start, node.end),
+          }
+        : undefined;
+    pushExpression(node.expression, source, fragments, elision);
     return;
   }
   if (node.type === 'IfBlock') {
@@ -246,7 +254,15 @@ function collectFromAttribute(
       }
       return;
     }
-    pushExpression(value.expression, source, fragments);
+    const elision =
+      value.type === 'ExpressionTag'
+        ? {
+            attrName: attr.name,
+            mode: 'attribute' as const,
+            range: rangeFromOffsets(source, attr.start, attr.end),
+          }
+        : undefined;
+    pushExpression(value.expression, source, fragments, elision);
     return;
   }
   if (attr.type === 'SpreadAttribute') {
@@ -282,6 +298,7 @@ function pushExpression(
   expression: unknown,
   source: string,
   fragments: Fragment[],
+  elision?: Fragment['elision'],
 ): void {
   if (expression === null || expression === undefined) {
     return;
@@ -298,10 +315,14 @@ function pushExpression(
   if (code === '') {
     return;
   }
-  fragments.push({
+  const fragment: Fragment = {
     code,
     kind: 'template-expression',
     lang: 'ts',
     originalOffset: start,
-  });
+  };
+  if (elision !== undefined) {
+    fragment.elision = elision;
+  }
+  fragments.push(fragment);
 }

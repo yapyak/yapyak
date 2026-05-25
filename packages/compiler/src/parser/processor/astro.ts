@@ -13,6 +13,7 @@ import type {
 import type MagicString from 'magic-string';
 import type { Fragment, Processor } from '../type';
 
+import { rangeFromOffsets } from '../position';
 import { createRequire } from 'node:module';
 
 const FRONTMATTER_OPEN_RX = /^---\r?\n/;
@@ -116,18 +117,79 @@ function handleExpressionNode(
   fragments: Fragment[],
 ): void {
   const children = Array.isArray(node.children) ? node.children : [];
+  const elision = computeExpressionElision(node, children, source);
   for (const child of children) {
     if (child.type === 'text') {
-      pushTextExpression(child, fragments);
+      pushTextExpression(child, fragments, elision);
       continue;
     }
     walkNode(child, source, fragments);
   }
 }
 
+function computeExpressionElision(
+  node: ExpressionNode,
+  children: readonly Node[],
+  source: string,
+): Fragment['elision'] | undefined {
+  void node;
+  if (children.length !== 1) {
+    return undefined;
+  }
+  const onlyChild = children[0];
+  if (onlyChild === undefined || onlyChild.type !== 'text') {
+    return undefined;
+  }
+  const textStart = onlyChild.position?.start.offset;
+  if (typeof textStart !== 'number') {
+    return undefined;
+  }
+  const range = findEnclosingBraces(source, textStart);
+  if (range === undefined) {
+    return undefined;
+  }
+  return {
+    mode: 'text',
+    range: rangeFromOffsets(source, range.start, range.end),
+  };
+}
+
+function findEnclosingBraces(
+  source: string,
+  textStart: number,
+): { end: number; start: number } | undefined {
+  let openIdx = textStart - 1;
+  while (openIdx >= 0 && source[openIdx] !== '{') {
+    const ch = source[openIdx] ?? '';
+    if (ch !== ' ' && ch !== '\t' && ch !== '\n' && ch !== '\r') {
+      return undefined;
+    }
+    openIdx -= 1;
+  }
+  if (openIdx < 0) {
+    return undefined;
+  }
+  let depth = 1;
+  let i = textStart;
+  while (i < source.length) {
+    const ch = source[i];
+    if (ch === '{') {
+      depth += 1;
+    } else if (ch === '}') {
+      depth -= 1;
+      if (depth === 0) {
+        return { end: i + 1, start: openIdx };
+      }
+    }
+    i += 1;
+  }
+  return undefined;
+}
+
 function pushTextExpression(
   node: { position?: { start: { offset: number } }; value: string },
   fragments: Fragment[],
+  elision: Fragment['elision'],
 ): void {
   const start = node.position?.start.offset;
   if (typeof start !== 'number') {
@@ -136,12 +198,16 @@ function pushTextExpression(
   if (node.value.trim() === '') {
     return;
   }
-  fragments.push({
+  const fragment: Fragment = {
     code: node.value,
     kind: 'template-expression',
     lang: 'ts',
     originalOffset: start,
-  });
+  };
+  if (elision !== undefined) {
+    fragment.elision = elision;
+  }
+  fragments.push(fragment);
 }
 
 function handleAttribute(
@@ -160,12 +226,40 @@ function handleAttribute(
   if (offset === undefined) {
     return;
   }
-  fragments.push({
+  const fragment: Fragment = {
     code,
     kind: 'template-expression',
     lang: 'ts',
     originalOffset: offset,
-  });
+  };
+  const elision = computeAttributeElision(attr, source, offset);
+  if (elision !== undefined) {
+    fragment.elision = elision;
+  }
+  fragments.push(fragment);
+}
+
+function computeAttributeElision(
+  attr: AttributeNode,
+  source: string,
+  valueOffset: number,
+): Fragment['elision'] | undefined {
+  if (attr.kind !== 'expression') {
+    return undefined;
+  }
+  const attrStart = attr.position?.start.offset;
+  if (typeof attrStart !== 'number') {
+    return undefined;
+  }
+  const braces = findEnclosingBraces(source, valueOffset);
+  if (braces === undefined) {
+    return undefined;
+  }
+  return {
+    attrName: attr.name,
+    mode: 'attribute',
+    range: rangeFromOffsets(source, attrStart, braces.end),
+  };
 }
 
 function getAttributeExpressionText(attr: AttributeNode): string | undefined {

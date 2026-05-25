@@ -40,6 +40,7 @@ export {
   type Diagnostic,
   type DiagnosticCode,
   discoverCalls,
+  type ElisionContext,
   type ExtractedMessage,
   type ExtractFileRequest,
   type ExtractFileResult,

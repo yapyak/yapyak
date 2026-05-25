@@ -2,6 +2,7 @@ import type { PlaceholderInfo } from './plural';
 import type {
   CallSite,
   Diagnostic,
+  ElisionContext,
   ExtractedMessage,
   ExtractFileRequest,
   ExtractFileResult,
@@ -19,7 +20,7 @@ import { discoverCalls } from './discover-calls';
 import { toMessageId } from './id';
 import { parseArguments } from './parse-arguments';
 import { parsePlaceholders } from './plural';
-import { remapRange } from './position';
+import { remapRange, toRange } from './position';
 import { getProcessor, resolveProcessorKind } from './processor';
 import { resolveBindings } from './resolve-bindings';
 
@@ -125,6 +126,12 @@ function processFragment(input: ProcessFragmentInput): void {
       node: fragmentCall.node,
       range: remapRange(fragmentCall.range, fragment, originalSource),
     };
+    const elision =
+      fragment.elision ??
+      detectJsxElision(fragmentCall.node, sourceFile, fragment, originalSource);
+    if (elision !== undefined) {
+      callSite.elision = elision;
+    }
     callSites.push(callSite);
 
     if (parsed.source === '') {
@@ -198,6 +205,40 @@ function toPublicPlaceholder(info: PlaceholderInfo): Placeholder {
     result.variants = info.variants;
   }
   return result;
+}
+
+function detectJsxElision(
+  node: ts.CallExpression,
+  sourceFile: ts.SourceFile,
+  fragment: Fragment,
+  originalSource: string,
+): ElisionContext | undefined {
+  const parent = node.parent;
+  if (parent === undefined || !ts.isJsxExpression(parent)) {
+    return undefined;
+  }
+  const grandparent = parent.parent;
+  if (grandparent === undefined) {
+    return undefined;
+  }
+  if (ts.isJsxElement(grandparent) || ts.isJsxFragment(grandparent)) {
+    return {
+      mode: 'text',
+      range: remapRange(toRange(parent, sourceFile), fragment, originalSource),
+    };
+  }
+  if (ts.isJsxAttribute(grandparent) && ts.isIdentifier(grandparent.name)) {
+    return {
+      attrName: grandparent.name.text,
+      mode: 'attribute',
+      range: remapRange(
+        toRange(grandparent, sourceFile),
+        fragment,
+        originalSource,
+      ),
+    };
+  }
+  return undefined;
 }
 
 function remapDiagnostic(

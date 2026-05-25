@@ -4,6 +4,7 @@ export type {
   CallSiteContext,
   Diagnostic,
   DiagnosticCode,
+  ElisionContext,
   ExtractedMessage,
   ExtractFileRequest,
   ExtractFileResult,

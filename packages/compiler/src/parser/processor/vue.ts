@@ -13,6 +13,7 @@ import type { SFCScriptBlock } from '@vue/compiler-sfc';
 import type MagicString from 'magic-string';
 import type { Fragment, Processor } from '../type';
 
+import { rangeFromOffsets } from '../position';
 import { createRequire } from 'node:module';
 
 const SCRIPT_SETUP_RX = /<script\s+setup[^>]*>/;
@@ -100,7 +101,7 @@ function collectTemplateExpressions(
   }
   if (isElementNode(node)) {
     for (const prop of node.props) {
-      collectPropExpression(prop, fragments);
+      collectPropExpression(prop, source, fragments);
     }
   }
   if (hasChildren(node)) {
@@ -121,6 +122,14 @@ function pushInterpolationExpression(
   }
   fragments.push({
     code: mustache.code,
+    elision: {
+      mode: 'text',
+      range: rangeFromOffsets(
+        source,
+        node.loc.start.offset,
+        mustache.endOffset,
+      ),
+    },
     kind: 'template-expression',
     lang: 'ts',
     originalOffset: mustache.codeOffset,
@@ -129,6 +138,7 @@ function pushInterpolationExpression(
 
 function collectPropExpression(
   prop: AttributeNode | DirectiveNode,
+  source: string,
   fragments: Fragment[],
 ): void {
   if (!isDirectiveNode(prop)) {
@@ -137,30 +147,66 @@ function collectPropExpression(
   if (prop.exp === undefined) {
     return;
   }
-  pushExpression(prop.exp, fragments);
+  pushDirectiveExpression(prop, source, fragments);
 }
 
-function pushExpression(
-  expression: ExpressionNode,
+function pushDirectiveExpression(
+  prop: DirectiveNode,
+  source: string,
   fragments: Fragment[],
 ): void {
+  const expression = prop.exp;
+  if (expression === undefined) {
+    return;
+  }
   if (!isSimpleExpression(expression)) {
     return;
   }
   if (expression.content === '') {
     return;
   }
-  fragments.push({
+  const fragment: Fragment = {
     code: expression.content,
     kind: 'template-expression',
     lang: 'ts',
     originalOffset: expression.loc.start.offset,
-  });
+  };
+  const attrName = readVBindAttrName(prop);
+  if (attrName !== undefined) {
+    fragment.elision = {
+      attrName,
+      mode: 'attribute',
+      range: rangeFromOffsets(
+        source,
+        prop.loc.start.offset,
+        prop.loc.end.offset,
+      ),
+    };
+  }
+  fragments.push(fragment);
+}
+
+function readVBindAttrName(prop: DirectiveNode): string | undefined {
+  if (prop.name !== 'bind') {
+    return undefined;
+  }
+  const arg = prop.arg;
+  if (arg === undefined) {
+    return undefined;
+  }
+  if (!isSimpleExpression(arg)) {
+    return undefined;
+  }
+  if (!arg.isStatic) {
+    return undefined;
+  }
+  return arg.content;
 }
 
 interface MustacheExpression {
   code: string;
   codeOffset: number;
+  endOffset: number;
 }
 
 function readMustache(
@@ -181,7 +227,11 @@ function readMustache(
   if (code === '') {
     return undefined;
   }
-  return { code, codeOffset: exprStart + leading };
+  return {
+    code,
+    codeOffset: exprStart + leading,
+    endOffset: exprEnd + 2,
+  };
 }
 
 function findMustacheClose(source: string, from: number): number {

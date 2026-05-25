@@ -3,6 +3,7 @@ import type {
   CallSite,
   Fragment,
   ParsedArguments,
+  Range,
   TransformFileRequest,
   TransformFileResult,
 } from './type';
@@ -56,9 +57,10 @@ export function transformFile(
     if (replacement === undefined) {
       continue;
     }
+    const range = replacement.range ?? callSite.range;
     magicString.overwrite(
-      callSite.range.start.offset,
-      callSite.range.end.offset,
+      range.start.offset,
+      range.end.offset,
       replacement.code,
     );
     if (replacement.usesPick) {
@@ -240,6 +242,7 @@ interface RenderCallReplacementInput {
 
 interface CallReplacement {
   code: string;
+  range?: Range;
   usesPick: boolean;
 }
 
@@ -263,6 +266,10 @@ function renderCallReplacement(
   const id = toMessageId(parsed.source);
 
   if (isSingleLocale && canElide(placeholderInfos, callSite, parsed)) {
+    const bare = tryBareElision(parsed.source, callSite, placeholderInfos);
+    if (bare !== undefined) {
+      return bare;
+    }
     return {
       code: renderEliminated(parsed.source, callSite, placeholderInfos),
       usesPick: false,
@@ -503,6 +510,45 @@ function isIdentifierChar(ch: string | undefined): boolean {
     return false;
   }
   return /[\w$]/.test(ch);
+}
+
+function tryBareElision(
+  source: string,
+  callSite: CallSite,
+  placeholderInfos: readonly PlaceholderInfo[],
+): CallReplacement | undefined {
+  if (callSite.elision === undefined) {
+    return undefined;
+  }
+  if (placeholderInfos.length > 0) {
+    return undefined;
+  }
+  const { mode, range, attrName } = callSite.elision;
+  if (mode === 'text') {
+    if (!isSafeJsxText(source)) {
+      return undefined;
+    }
+    return { code: source, range, usesPick: false };
+  }
+  if (attrName === undefined) {
+    return undefined;
+  }
+  if (!isSafeAttributeValue(source)) {
+    return undefined;
+  }
+  return {
+    code: `${attrName}="${source}"`,
+    range,
+    usesPick: false,
+  };
+}
+
+function isSafeJsxText(source: string): boolean {
+  return !/[<>{}]/.test(source);
+}
+
+function isSafeAttributeValue(source: string): boolean {
+  return !/["<>]/.test(source);
 }
 
 function findFreePickLocal(source: string): string {

@@ -1,6 +1,5 @@
 {
   "src/app.vue": {
-    "{theme, select, dark {Dark mode is on} other {Light mode is on}}": "",
     "At: {when, time, short}": "Klockan: {when, time, short}",
     "Count: {amount, number, integer}": "Antal: {amount, number, integer}",
     "Dates and times": "Datum och tider",
@@ -16,6 +15,7 @@
     "Total: {amount, number, percent}": "Totalt: {amount, number, percent}",
     "Updated: {when, date, long}": "Uppdaterad: {when, date, long}",
     "Updated: {when, date, short}": "Uppdaterad: {when, date, short}",
-    "You have {count, plural, one {# message} other {# messages}}": ""
+    "You have {count, plural, one {# message} other {# messages}}": "",
+    "{theme, select, dark {Dark mode is on} other {Light mode is on}}": ""
   }
 }

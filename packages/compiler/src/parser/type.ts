@@ -61,7 +61,14 @@ export interface BindingTable {
  */
 export interface CallSite {
   binding: YapyakBinding;
+  elision?: ElisionContext;
   node: ts.CallExpression;
+  range: Range;
+}
+
+export interface ElisionContext {
+  attrName?: string;
+  mode: 'attribute' | 'text';
   range: Range;
 }
 
@@ -116,6 +123,14 @@ export interface ParsedArguments {
  */
 export interface Fragment {
   code: string;
+  /**
+   * When set, the entire fragment expression sits in a template position
+   * (e.g. a Vue mustache, a Svelte `{...}`, an Astro `{...}`, a JSX child or
+   * attribute) where a bare string literal can replace the surrounding
+   * wrappers. Used by the transform to elide call wrappers in single-locale
+   * mode. Range is relative to the original source.
+   */
+  elision?: ElisionContext;
   kind: 'script' | 'template-expression';
   lang: 'js' | 'ts';
   originalOffset: number;

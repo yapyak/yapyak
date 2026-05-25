@@ -46,6 +46,17 @@ export function remapRange(
   };
 }
 
+export function rangeFromOffsets(
+  source: string,
+  startOffset: number,
+  endOffset: number,
+): Range {
+  return {
+    end: offsetToOriginalPosition(source, endOffset),
+    start: offsetToOriginalPosition(source, startOffset),
+  };
+}
+
 function offsetToOriginalPosition(source: string, offset: number): Position {
   let line = 1;
   let column = 1;

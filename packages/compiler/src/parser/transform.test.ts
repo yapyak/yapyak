@@ -374,7 +374,7 @@ describe('transformFile — Vue SFC', () => {
     ].join('\n');
     const code = runVueTransform({ locales: ['en'], source });
     expect(code).toContain('"Hello"');
-    expect(code).toContain('"Welcome"');
+    expect(code).toContain('<h1>Welcome</h1>');
     expect(code).not.toContain('$t(');
     expect(code).not.toContain("from '@yapyak/core'");
   });
@@ -459,6 +459,204 @@ describe('transformFile — Vue SFC', () => {
     expect(code).toMatch(
       /<script setup[^>]*>\s*\nimport \{ pick as _pick \} from '@yapyak\/core\/internal';/,
     );
+  });
+});
+
+describe('transformFile — bare-string elision in templates', () => {
+  function runVueTransform(source: string, locales: readonly string[]): string {
+    const fileId = 'app.vue';
+    const extracted = extractFile({ fileId, locales, source });
+    return transformFile({
+      extracted,
+      fileId,
+      locales,
+      source,
+      translations: {},
+    }).code;
+  }
+
+  function runSvelteTransform(
+    source: string,
+    locales: readonly string[],
+  ): string {
+    const fileId = 'app.svelte';
+    const extracted = extractFile({ fileId, locales, source });
+    return transformFile({
+      extracted,
+      fileId,
+      locales,
+      source,
+      translations: {},
+    }).code;
+  }
+
+  function runAstroTransform(
+    source: string,
+    locales: readonly string[],
+  ): string {
+    const fileId = 'page.astro';
+    const extracted = extractFile({ fileId, locales, source });
+    return transformFile({
+      extracted,
+      fileId,
+      locales,
+      source,
+      translations: {},
+    }).code;
+  }
+
+  it('JSX text: <p>{$t("Hello")}</p> elides to <p>Hello</p>', () => {
+    const code = runTransform({
+      locales: ['en'],
+      source: [
+        "import { $t } from '@yapyak/core';",
+        'export function App() {',
+        "  return <p>{$t('Hello')}</p>;",
+        '}',
+      ].join('\n'),
+    });
+    expect(code).toContain('<p>Hello</p>');
+    expect(code).not.toContain('{"Hello"}');
+  });
+
+  it('JSX attribute: <button aria-label={$t("Save")}> elides to aria-label="Save"', () => {
+    const code = runTransform({
+      locales: ['en'],
+      source: [
+        "import { $t } from '@yapyak/core';",
+        'export function App() {',
+        "  return <button aria-label={$t('Save')}>x</button>;",
+        '}',
+      ].join('\n'),
+    });
+    expect(code).toContain('aria-label="Save"');
+    expect(code).not.toContain('aria-label={');
+  });
+
+  it('JSX text: falls back to quoted form when source contains { or <', () => {
+    const code = runTransform({
+      locales: ['en'],
+      source: [
+        "import { $t } from '@yapyak/core';",
+        'export function App() {',
+        "  return <p>{$t('Use <em> for emphasis')}</p>;",
+        '}',
+      ].join('\n'),
+    });
+    expect(code).toContain('{"Use <em> for emphasis"}');
+  });
+
+  it('Vue mustache: {{ $t("Hello") }} elides to bare Hello', () => {
+    const code = runVueTransform(
+      [
+        '<script setup lang="ts">',
+        "import { $t } from '@yapyak/core';",
+        '</script>',
+        '<template>',
+        `  <p>{{ $t('Hello') }}</p>`,
+        '</template>',
+      ].join('\n'),
+      ['en'],
+    );
+    expect(code).toContain('<p>Hello</p>');
+    expect(code).not.toContain('{{');
+  });
+
+  it('Vue v-bind: :aria-label="$t(\'Save\')" elides to static aria-label="Save"', () => {
+    const code = runVueTransform(
+      [
+        '<script setup lang="ts">',
+        "import { $t } from '@yapyak/core';",
+        '</script>',
+        '<template>',
+        `  <button :aria-label="$t('Save')">x</button>`,
+        '</template>',
+      ].join('\n'),
+      ['en'],
+    );
+    expect(code).toContain('aria-label="Save"');
+    expect(code).not.toContain(':aria-label');
+  });
+
+  it('Svelte mustache: {$t("Hello")} elides to bare Hello', () => {
+    const code = runSvelteTransform(
+      [
+        '<script lang="ts">',
+        "import { $t } from '@yapyak/core';",
+        '</script>',
+        `<p>{$t('Hello')}</p>`,
+      ].join('\n'),
+      ['en'],
+    );
+    expect(code).toContain('<p>Hello</p>');
+  });
+
+  it('Svelte attribute: aria-label={$t("Save")} elides to aria-label="Save"', () => {
+    const code = runSvelteTransform(
+      [
+        '<script lang="ts">',
+        "import { $t } from '@yapyak/core';",
+        '</script>',
+        `<button aria-label={$t('Save')}>x</button>`,
+      ].join('\n'),
+      ['en'],
+    );
+    expect(code).toContain('aria-label="Save"');
+    expect(code).not.toContain('aria-label={');
+  });
+
+  it('Astro mustache: {$t("Hello")} elides to bare Hello', () => {
+    const code = runAstroTransform(
+      [
+        '---',
+        "import { $t } from '@yapyak/core';",
+        '---',
+        `<p>{$t('Hello')}</p>`,
+      ].join('\n'),
+      ['en'],
+    );
+    expect(code).toContain('<p>Hello</p>');
+  });
+
+  it('Astro attribute: aria-label={$t("Save")} elides to aria-label="Save"', () => {
+    const code = runAstroTransform(
+      [
+        '---',
+        "import { $t } from '@yapyak/core';",
+        '---',
+        `<button aria-label={$t('Save')}>x</button>`,
+      ].join('\n'),
+      ['en'],
+    );
+    expect(code).toContain('aria-label="Save"');
+    expect(code).not.toContain('aria-label={');
+  });
+
+  it('attribute mode: falls back to expression form when value contains "', () => {
+    const code = runTransform({
+      locales: ['en'],
+      source: [
+        "import { $t } from '@yapyak/core';",
+        'export function App() {',
+        '  return <button title={$t(\'Say "hi"\')}>x</button>;',
+        '}',
+      ].join('\n'),
+    });
+    expect(code).toContain('title={"Say \\"hi\\""}');
+  });
+
+  it('multi-locale: keeps _pick wrappers (no bare-elision)', () => {
+    const code = runTransform({
+      locales: ['en', 'sv'],
+      source: [
+        "import { $t } from '@yapyak/core';",
+        'export function App() {',
+        "  return <p>{$t('Hello')}</p>;",
+        '}',
+      ].join('\n'),
+    });
+    expect(code).toContain('{_pick(');
+    expect(code).not.toContain('<p>Hello</p>');
   });
 });
 
