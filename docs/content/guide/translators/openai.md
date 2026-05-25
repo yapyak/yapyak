@@ -6,15 +6,16 @@ order: 5
 Use OpenAI's GPT models — or any OpenAI-compatible provider (Groq, DeepSeek, Mistral, OpenRouter, Vercel AI Gateway, Together AI) — as your translator.
 
 ```ts
-import { yapyak } from '@yapyak/vite';
+// yapyak.config.ts
+import type { YapyakConfig } from '@yapyak/vite/config';
 import { openai } from '@yapyak/openai';
 
-yapyak({
+export default {
   translator: openai({
     apiKey: process.env.OPENAI_API_KEY!,
     voice: 'Casual, thoughtful, never corporate.',
   }),
-})
+} satisfies YapyakConfig;
 ```
 
 Get an API key at [platform.openai.com](https://platform.openai.com).

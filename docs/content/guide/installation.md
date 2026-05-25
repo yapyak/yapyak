@@ -20,19 +20,25 @@ Add the plugin to `vite.config.ts`:
 ```ts
 import { defineConfig } from 'vite';
 import { yapyak } from '@yapyak/vite';
-import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
-  plugins: [
-    yapyak({
-      persistence: 'cookie',
-      translator: anthropic({
-        apiKey: process.env.ANTHROPIC_API_KEY,
-        voice: 'Casual, thoughtful, never corporate.',
-      }),
-    }),
-  ],
+  plugins: [yapyak()],
 });
+```
+
+Then create `yapyak.config.ts` in the project root:
+
+```ts
+import type { YapyakConfig } from '@yapyak/vite/config';
+import { anthropic } from '@yapyak/anthropic';
+
+export default {
+  persistence: 'cookie',
+  translator: anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+    voice: 'Casual, thoughtful, never corporate.',
+  }),
+} satisfies YapyakConfig;
 ```
 
 Add your API key to `.env.local`:

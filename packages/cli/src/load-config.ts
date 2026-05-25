@@ -1,6 +1,6 @@
-import type { Plugin, PluginOption } from 'vite';
+import type { NormalizedYapyakConfig } from '@yapyak/config/internal';
 
-import { loadConfigFromFile } from 'vite';
+import { loadYapyakConfig as loadFromFile } from '@yapyak/config/internal';
 
 /** Configuration for the yapyak CLI. */
 export interface YapyakCliConfig {
@@ -10,15 +10,10 @@ export interface YapyakCliConfig {
   localesDir: string;
 }
 
-const DEFAULTS: YapyakCliConfig = {
-  defaultLocale: undefined,
-  localesDir: 'locales',
-};
-
 let cached: { projectRoot: string; value: YapyakCliConfig } | undefined;
 
 /**
- * Loads the yapyak CLI configuration from the project's `vite.config.ts`. Resolves to {@link YapyakCliConfig}.
+ * Loads the yapyak CLI configuration from `yapyak.config.{ts,mts,mjs,js}`. Resolves to {@link YapyakCliConfig}.
  *
  * @param projectRoot - The project root directory.
  */
@@ -28,62 +23,15 @@ export async function loadYapyakConfig(
   if (cached !== undefined && cached.projectRoot === projectRoot) {
     return cached.value;
   }
-  const value = await readConfig(projectRoot);
+  const { config } = await loadFromFile(projectRoot);
+  const value = toCliConfig(config);
   cached = { projectRoot, value };
   return value;
 }
 
-async function readConfig(projectRoot: string): Promise<YapyakCliConfig> {
-  const loaded = await loadConfigFromFile(
-    { command: 'serve', mode: 'development' },
-    undefined,
-    projectRoot,
-  );
-  if (loaded === null) {
-    return DEFAULTS;
-  }
-  const options = await findYapyakOptions(loaded.config.plugins);
-  if (options === undefined) {
-    return DEFAULTS;
-  }
-  return options;
-}
-
-async function findYapyakOptions(
-  plugins: PluginOption[] | false | null | undefined,
-): Promise<YapyakCliConfig | undefined> {
-  if (!plugins) {
-    return undefined;
-  }
-  for (const entry of plugins) {
-    const found = await inspectEntry(entry);
-    if (found !== undefined) {
-      return found;
-    }
-  }
-  return undefined;
-}
-
-async function inspectEntry(
-  entry: PluginOption | PluginOption[] | Promise<PluginOption | PluginOption[]>,
-): Promise<YapyakCliConfig | undefined> {
-  const resolved = await entry;
-  if (!resolved) {
-    return undefined;
-  }
-  if (Array.isArray(resolved)) {
-    for (const nested of resolved) {
-      const found = await inspectEntry(nested);
-      if (found !== undefined) {
-        return found;
-      }
-    }
-    return undefined;
-  }
-  const plugin = resolved as Plugin;
-  if (plugin.name !== 'yapyak') {
-    return undefined;
-  }
-  const api = plugin.api as { yapyak?: YapyakCliConfig } | undefined;
-  return api?.yapyak;
+function toCliConfig(config: NormalizedYapyakConfig): YapyakCliConfig {
+  return {
+    defaultLocale: config.defaultLocale,
+    localesDir: config.localesDir,
+  };
 }

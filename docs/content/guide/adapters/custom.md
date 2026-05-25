@@ -39,10 +39,12 @@ function Component() {
 If `<html>` is static HTML (no framework binding), enable `syncHtmlLang` and yapyak will keep `document.documentElement.lang` synced with the current locale:
 
 ```ts
-// vite.config.ts
-yapyak({
+// yapyak.config.ts
+import type { YapyakConfig } from '@yapyak/vite/config';
+
+export default {
   syncHtmlLang: true,
-})
+} satisfies YapyakConfig;
 ```
 
 ## Cookie persistence
@@ -50,9 +52,12 @@ yapyak({
 For SSR locale switching to work, enable cookie persistence:
 
 ```ts
-yapyak({
+// yapyak.config.ts
+import type { YapyakConfig } from '@yapyak/vite/config';
+
+export default {
   persistence: 'cookie',
-})
+} satisfies YapyakConfig;
 ```
 
 See [Locales / Persistence](/guide/locales#persistence).

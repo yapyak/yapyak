@@ -16,7 +16,8 @@ const myTranslator = createTranslator({
   },
 });
 
-yapyak({ translator: myTranslator });
+// In yapyak.config.ts:
+// export default { translator: myTranslator } satisfies YapyakConfig;
 ```
 
 ## When to build one
@@ -131,14 +132,18 @@ export function myLLM(opts: MyLLMOptions) {
 Then use it:
 
 ```ts
-yapyak({
+// yapyak.config.ts
+import type { YapyakConfig } from '@yapyak/vite/config';
+import { myLLM } from './my-translator';
+
+export default {
   translator: myLLM({
     endpoint: 'https://my-llm.example.com/translate',
     apiKey: process.env.MY_LLM_KEY!,
     model: 'my-model-v3',
     voice: 'Casual',
   }),
-})
+} satisfies YapyakConfig;
 ```
 
 ## Example: rules-based translator (no AI)

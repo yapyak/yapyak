@@ -22,18 +22,15 @@
   "dependencies": {
     "@yapyak/anthropic": "workspace:*",
     "@yapyak/compiler": "workspace:*",
+    "@yapyak/config": "workspace:*",
     "@yapyak/openai": "workspace:*",
     "@yapyak/translator": "workspace:*"
-  },
-  "peerDependencies": {
-    "vite": ">=5"
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "@yapyak/typescript-config": "workspace:*",
     "tsup": "catalog:",
-    "typescript": "catalog:",
-    "vite": "catalog:"
+    "typescript": "catalog:"
   },
   "engines": {
     "node": ">=22"

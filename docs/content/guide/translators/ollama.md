@@ -6,14 +6,15 @@ order: 4
 Run translation locally — no API key, no vendor in your billing path, no data leaving your machine.
 
 ```ts
-import { yapyak } from '@yapyak/vite';
+// yapyak.config.ts
+import type { YapyakConfig } from '@yapyak/vite/config';
 import { ollama } from '@yapyak/ollama';
 
-yapyak({
+export default {
   translator: ollama({
     voice: 'Casual, thoughtful, never corporate.',
   }),
-})
+} satisfies YapyakConfig;
 ```
 
 Install Ollama from [ollama.com](https://ollama.com), pull a model (`ollama pull llama3.1`), and you're done.
@@ -87,6 +88,8 @@ ollama({
 For development: local Ollama. For production builds: cloud (Anthropic/OpenAI). Branch on `NODE_ENV`:
 
 ```ts
+// yapyak.config.ts
+import type { YapyakConfig } from '@yapyak/vite/config';
 import { anthropic } from '@yapyak/anthropic';
 import { ollama } from '@yapyak/ollama';
 
@@ -100,7 +103,7 @@ const translator = process.env.NODE_ENV === 'production'
       voice: '...',
     });
 
-yapyak({ translator });
+export default { translator } satisfies YapyakConfig;
 ```
 
 You'll see slight tone differences between local and cloud translations. Stick to one in production for consistency.

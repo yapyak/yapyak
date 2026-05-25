@@ -6,15 +6,16 @@ order: 2
 Use Claude (Sonnet, Opus, Haiku) as your translator.
 
 ```ts
-import { yapyak } from '@yapyak/vite';
+// yapyak.config.ts
+import type { YapyakConfig } from '@yapyak/vite/config';
 import { anthropic } from '@yapyak/anthropic';
 
-yapyak({
+export default {
   translator: anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY!,
     voice: 'Casual, thoughtful, never corporate.',
   }),
-})
+} satisfies YapyakConfig;
 ```
 
 Get an API key at [console.anthropic.com](https://console.anthropic.com).

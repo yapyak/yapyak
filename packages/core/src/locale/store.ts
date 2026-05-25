@@ -47,6 +47,7 @@ function applyLocale(value: string): void {
   }
 }
 
+function syncFromUrl(): void {
   const fromUrl = persistence?.get();
   if (fromUrl !== undefined && LOCALES.includes(fromUrl)) {
     applyLocale(fromUrl);
@@ -57,15 +58,15 @@ if (URL_PERSISTENCE && typeof window !== 'undefined') {
   window.addEventListener('popstate', syncFromUrl);
   const originalPushState = window.history.pushState.bind(window.history);
   const originalReplaceState = window.history.replaceState.bind(window.history);
-  window.history.pushState = function (
+  window.history.pushState = (
     ...args: Parameters<typeof window.history.pushState>
-  ): void {
+  ): void => {
     originalPushState(...args);
     syncFromUrl();
   };
-  window.history.replaceState = function (
+  window.history.replaceState = (
     ...args: Parameters<typeof window.history.replaceState>
-  ): void {
+  ): void => {
     originalReplaceState(...args);
     syncFromUrl();
   };

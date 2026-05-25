@@ -31,11 +31,13 @@ The hook binds each request's locale context and substitutes `%yapyak.lang%` wit
 Enable `syncHtmlLang` to make yapyak update the attribute on every `setLocale()`:
 
 ```ts
-// vite.config.ts
-yapyak({
+// yapyak.config.ts
+import type { YapyakConfig } from '@yapyak/vite/config';
+
+export default {
   persistence: 'cookie',
   syncHtmlLang: true,
-})
+} satisfies YapyakConfig;
 ```
 
 With this set, `document.documentElement.lang` follows the current locale on store init and on every `setLocale()`. SSR still uses the `%yapyak.lang%` substitution — no hydration mismatch.
@@ -59,13 +61,15 @@ yapyak's handle should run first so the `%yapyak.lang%` substitution happens bef
 
 ## Cookie persistence
 
-For SSR locale switching to work, enable cookie persistence in the Vite plugin:
+For SSR locale switching to work, enable cookie persistence:
 
 ```ts
-// vite.config.ts
-yapyak({
+// yapyak.config.ts
+import type { YapyakConfig } from '@yapyak/vite/config';
+
+export default {
   persistence: 'cookie',
-})
+} satisfies YapyakConfig;
 ```
 
 The cookie is written client-side on `setLocale()` and read server-side by the handle on every request. See [Locales / Persistence](/guide/locales#persistence).

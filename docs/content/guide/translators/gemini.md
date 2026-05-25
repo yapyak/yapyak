@@ -6,15 +6,16 @@ order: 3
 Use Google's Gemini models as your translator.
 
 ```ts
-import { yapyak } from '@yapyak/vite';
+// yapyak.config.ts
+import type { YapyakConfig } from '@yapyak/vite/config';
 import { gemini } from '@yapyak/gemini';
 
-yapyak({
+export default {
   translator: gemini({
     apiKey: process.env.GEMINI_API_KEY!,
     voice: 'Casual, thoughtful, never corporate.',
   }),
-})
+} satisfies YapyakConfig;
 ```
 
 Get an API key at [aistudio.google.com](https://aistudio.google.com).

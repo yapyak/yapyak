@@ -22,13 +22,14 @@ The default locale doesn't need a file — your source code is the file.
 
 ## The default locale
 
-You can override the default in `vite.config.ts`:
+You can override the default in `yapyak.config.ts`:
 
 ```ts
-yapyak({
+import type { YapyakConfig } from '@yapyak/vite/config';
+
+export default {
   defaultLocale: 'sv',   // Swedish-default project
-  // ...
-})
+} satisfies YapyakConfig;
 ```
 
 When the default isn't `en`, you write `$t('Spara ändringar')` directly. Other locales (including English, if you want it) translate from Swedish.
@@ -128,16 +129,18 @@ The callback receives the new locale. It fires whenever `setLocale(...)` is call
 
 ## Persistence
 
-The user's locale choice can be persisted in three ways:
+The user's locale choice can be persisted in three ways. Set in `yapyak.config.ts`:
 
 ```ts
-yapyak({
+import type { YapyakConfig } from '@yapyak/vite/config';
+
+export default {
   persistence: 'cookie',         // SSR-safe (recommended)
   // OR
   persistence: 'localStorage',   // SPA-only
   // OR
   persistence: null,             // in-memory, refresh resets (default)
-})
+} satisfies YapyakConfig;
 ```
 
 ### Cookie
@@ -147,10 +150,9 @@ The right choice for SSR apps. Sent with every request, so the server can read i
 Customize the cookie name:
 
 ```ts
-yapyak({
-  persistence: 'cookie',
-  cookieName: 'app-locale',   // default: 'locale'
-})
+export default {
+  persistence: { type: 'cookie', name: 'app-locale' },   // default: 'locale'
+} satisfies YapyakConfig;
 ```
 
 ### localStorage
@@ -160,10 +162,9 @@ For pure SPAs (no SSR) or apps avoiding cookie consent requirements.
 Tradeoff: server can't read it. First paint always renders in the default locale; the client swaps to the user's locale after hydration. Brief flash possible.
 
 ```ts
-yapyak({
-  persistence: 'localStorage',
-  storageKey: 'app:locale',   // default: 'yapyak:locale'
-})
+export default {
+  persistence: { type: 'localStorage', key: 'app:locale' },   // default: 'locale'
+} satisfies YapyakConfig;
 ```
 
 ### No persistence (default)
@@ -183,10 +184,10 @@ Each request picks the right locale before HTML renders. `getLocale()` returns t
 To opt into `Accept-Language` matching:
 
 ```ts
-yapyak({
+export default {
   persistence: 'cookie',
   detectAcceptLanguage: true,   // default: false
-})
+} satisfies YapyakConfig;
 ```
 
 Off by default because it adds a dependency on header parsing semantics. Turn it on when you want browser-language detection without writing the parser yourself.

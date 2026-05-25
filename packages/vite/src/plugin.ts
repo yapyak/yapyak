@@ -3,8 +3,8 @@ import type {
   ExtractedMessage,
   ExtractFileResult,
 } from '@yapyak/compiler/internal';
+import type { NormalizedYapyakConfig } from '@yapyak/config/internal';
 import type { Plugin, ResolvedConfig } from 'vite';
-import type { YapyakOptions } from './options';
 
 import {
   autoTranslate,
@@ -19,9 +19,8 @@ import {
   transformFile,
   walkSourceFiles,
 } from '@yapyak/compiler/internal';
-import { createFilter } from 'vite';
+import { createFilter, loadYapyakConfig } from '@yapyak/config/internal';
 
-import { normalizeOptions } from './options';
 import { relative } from 'node:path';
 
 const CONFIG_ID = 'virtual:yapyak';
@@ -36,7 +35,8 @@ interface CallSitePosition {
 /**
  * Creates a yapyak Vite plugin.
  *
- * @param options - The plugin options.
+ * @remarks
+ * Reads configuration from `yapyak.config.{ts,mts,mjs,js}` in the project root. Returns defaults if no config file is found.
  *
  * @example Register in vite.config.ts
  * ```ts
@@ -48,19 +48,29 @@ interface CallSitePosition {
  * });
  * ```
  */
-export function yapyak(options: YapyakOptions = {}): Plugin {
-  const normalized = normalizeOptions(options);
-  const filter = createFilter(normalized.include, normalized.exclude);
+export function yapyak(): Plugin {
   const messagesByFile = new Map<string, ExtractedMessage[]>();
   let projectRoot = process.cwd();
   let localeCache: LocaleData | null = null;
   let resolved: { defaultLocale: string; locales: string[] } | null = null;
+  let normalized: NormalizedYapyakConfig | null = null;
+  let filter: (path: string) => boolean = () => false;
+
+  function getNormalized(): NormalizedYapyakConfig {
+    if (normalized === null) {
+      throw new Error(
+        '[yapyak] plugin used before configResolved — config is not loaded yet.',
+      );
+    }
+    return normalized;
+  }
 
   function discover(): { defaultLocale: string; locales: string[] } {
+    const config = getNormalized();
     if (resolved === null) {
       resolved = discoverLocales({
-        defaultLocale: normalized.defaultLocale,
-        localesDir: normalized.localesDir,
+        defaultLocale: config.defaultLocale,
+        localesDir: config.localesDir,
         projectRoot,
       });
     }
@@ -71,7 +81,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
     if (localeCache === null) {
       localeCache = readLocaleData({
         locales: discover().locales,
-        localesDir: normalized.localesDir,
+        localesDir: getNormalized().localesDir,
         projectRoot,
       });
     }
@@ -87,7 +97,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
     syncLocaleFiles({
       defaultLocale,
       locales,
-      localesDir: normalized.localesDir,
+      localesDir: getNormalized().localesDir,
       messages: allMessages,
       projectRoot,
     });
@@ -113,7 +123,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
   }
 
   function fillStubs(): void {
-    const translator = normalized.translator;
+    const translator = getNormalized().translator;
     if (translator === undefined) {
       return;
     }
@@ -125,7 +135,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
     void autoTranslate({
       defaultLocale,
       locales,
-      localesDir: normalized.localesDir,
+      localesDir: getNormalized().localesDir,
       messages: allMessages,
       projectRoot,
       translator,
@@ -147,18 +157,15 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
   }
 
   return {
-    api: {
-      yapyak: {
-        defaultLocale: normalized.defaultLocale,
-        localesDir: normalized.localesDir,
-      },
-    },
     buildStart(): void {
       scanAllSources();
       fillStubs();
     },
-    configResolved(config: ResolvedConfig): void {
+    async configResolved(config: ResolvedConfig): Promise<void> {
       projectRoot = config.root;
+      const { config: loaded } = await loadYapyakConfig(projectRoot);
+      normalized = loaded;
+      filter = createFilter(loaded.include, loaded.exclude);
     },
     enforce: 'pre',
     async handleHotUpdate(ctx): Promise<void> {
@@ -184,8 +191,8 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
           defaultLocale,
           fileId,
           locales,
-          localesDir: normalized.localesDir,
-          preserveTranslations: normalized.preserveTranslationsOnRename,
+          localesDir: getNormalized().localesDir,
+          preserveTranslations: getNormalized().preserveTranslationsOnRename,
           projectRoot,
           renames,
         });
@@ -201,7 +208,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
     },
     load(id: string): string | null {
       if (id === CONFIG_RESOLVED) {
-        return generateConfig(normalized, discover());
+        return generateConfig(getNormalized(), discover());
       }
       return null;
     },
@@ -279,7 +286,7 @@ function toCallSitePositions(message: ExtractedMessage): CallSitePosition[] {
 }
 
 function generateConfig(
-  normalized: ReturnType<typeof normalizeOptions>,
+  normalized: NormalizedYapyakConfig,
   resolved: { defaultLocale: string; locales: string[] },
 ): string {
   const lines: string[] = [];
@@ -300,7 +307,7 @@ function generateConfig(
 }
 
 function serializePersistence(
-  persistence: ReturnType<typeof normalizeOptions>['persistence'],
+  persistence: NormalizedYapyakConfig['persistence'],
 ):
   | { type: 'cookie'; name: string }
   | { type: 'localStorage'; key: string }

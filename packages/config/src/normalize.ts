@@ -1,0 +1,62 @@
+import type {
+  NormalizedPersistence,
+  NormalizedYapyakConfig,
+  PersistenceOption,
+  YapyakConfig,
+} from './types';
+
+const DEFAULT_INCLUDE = ['**/*.{ts,tsx,jsx,js,vue,svelte,astro}'];
+const DEFAULT_EXCLUDE = ['**/node_modules/**', '**/dist/**'];
+const DEFAULT_LOCALES_DIR = 'locales';
+const DEFAULT_COOKIE_NAME = 'locale';
+const DEFAULT_STORAGE_KEY = 'locale';
+
+/**
+ * Applies defaults to a {@link YapyakConfig}.
+ *
+ * @param config - The user-supplied config.
+ * @returns The {@link NormalizedYapyakConfig} with all fields populated.
+ */
+export function normalizeYapyakConfig(
+  config: YapyakConfig,
+): NormalizedYapyakConfig {
+  return {
+    defaultLocale: config.defaultLocale,
+    detectAcceptLanguage: config.detectAcceptLanguage ?? false,
+    exclude: config.exclude ?? DEFAULT_EXCLUDE,
+    include: config.include ?? DEFAULT_INCLUDE,
+    localesDir: config.localesDir ?? DEFAULT_LOCALES_DIR,
+    persistence: normalizePersistence(config.persistence),
+    preserveTranslationsOnRename:
+      config.preserveTranslationsOnRename ?? config.translator === undefined,
+    syncHtmlLang: config.syncHtmlLang ?? false,
+    translator: config.translator,
+  };
+}
+
+function normalizePersistence(
+  input: PersistenceOption | undefined,
+): NormalizedPersistence {
+  if (input == null) {
+    return null;
+  }
+  if (typeof input === 'string') {
+    if (input === 'cookie') {
+      return { name: DEFAULT_COOKIE_NAME, type: 'cookie' };
+    }
+    if (input === 'localStorage') {
+      return { key: DEFAULT_STORAGE_KEY, type: 'localStorage' };
+    }
+    return { type: 'url' };
+  }
+  if (input.type === 'cookie') {
+    return { name: input.name ?? DEFAULT_COOKIE_NAME, type: 'cookie' };
+  }
+  if (input.type === 'localStorage') {
+    return { key: input.key ?? DEFAULT_STORAGE_KEY, type: 'localStorage' };
+  }
+  if (input.match !== undefined) {
+    return { match: input.match, type: 'url' };
+  }
+  return { type: 'url' };
+}

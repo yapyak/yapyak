@@ -82,13 +82,15 @@ This is the recommended pattern. No `syncHtmlLang` plugin option needed.
 
 ## Cookie persistence
 
-For SSR locale switching to work, the user's choice must be readable by the server. Enable `persistence: 'cookie'` in the Vite plugin:
+For SSR locale switching to work, the user's choice must be readable by the server. Enable `persistence: 'cookie'`:
 
 ```ts
-// vite.config.ts
-yapyak({
+// yapyak.config.ts
+import type { YapyakConfig } from '@yapyak/vite/config';
+
+export default {
   persistence: 'cookie',
-})
+} satisfies YapyakConfig;
 ```
 
 The cookie is written client-side on `setLocale()` and read server-side by the middleware. See [Locales / Persistence](/guide/locales#persistence).
