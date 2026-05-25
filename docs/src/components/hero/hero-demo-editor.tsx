@@ -188,7 +188,7 @@ function buildCode(framework: Framework, source: string) {
   const value = `${safe}${CARET_MARKER}`;
   switch (framework) {
     case 'react':
-      return `import { ${T_NAME} } from '@yapyak/core';
+      return `import { ${T_NAME} } from 'yapyak';
 
 export function Welcome() {
   return <h1>{${T_NAME}('${value}')}</h1>;
@@ -196,14 +196,14 @@ export function Welcome() {
 `;
     case 'svelte':
       return `<script>
-  import { ${T_NAME} } from '@yapyak/core';
+  import { ${T_NAME} } from 'yapyak';
 </script>
 
 <h1>{${T_NAME}('${value}')}</h1>
 `;
     case 'vue':
       return `<script setup>
-import { ${T_NAME} } from '@yapyak/core'
+import { ${T_NAME} } from 'yapyak'
 </script>
 
 <template>

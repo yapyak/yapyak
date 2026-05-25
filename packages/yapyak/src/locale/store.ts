@@ -81,7 +81,7 @@ if (URL_PERSISTENCE && typeof window !== 'undefined') {
  *
  * @example Read the current locale
  * ```ts
- * import { getLocale } from '@yapyak/core';
+ * import { getLocale } from 'yapyak';
  *
  * getLocale(); // => 'sv'
  * ```
@@ -119,7 +119,7 @@ export function getLocale(): string {
  *
  * @example Switch to Swedish
  * ```ts
- * import { setLocale } from '@yapyak/core';
+ * import { setLocale } from 'yapyak';
  *
  * setLocale('sv');
  * ```

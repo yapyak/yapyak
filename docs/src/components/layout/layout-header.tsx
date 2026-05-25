@@ -1,8 +1,8 @@
 import type { BoxProps } from '#components/box';
 
 import { Link } from '@tanstack/react-router';
-import { $t } from '@yapyak/core';
 import { useEffect, useState } from 'react';
+import { $t } from 'yapyak';
 
 import { Box } from '#components/box';
 import { GithubIcon } from '#components/github-icon';

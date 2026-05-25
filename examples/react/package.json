@@ -8,10 +8,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@yapyak/core": "workspace:*",
     "@yapyak/react": "workspace:*",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "yapyak": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "catalog:",

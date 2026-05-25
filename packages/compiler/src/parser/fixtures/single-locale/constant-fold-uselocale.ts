@@ -1,4 +1,4 @@
-import { getLocale, setLocale, useLocale } from '@yapyak/core';
+import { getLocale, setLocale, useLocale } from 'yapyak';
 
 export function current(): string {
   return getLocale();

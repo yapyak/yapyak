@@ -20,7 +20,7 @@ describe('svelteProcessor', () => {
   it('extracts <script lang="ts"> as script fragment', () => {
     const source = [
       '<script lang="ts">',
-      "  import { $t } from '@yapyak/core';",
+      "  import { $t } from 'yapyak';",
       "  const greeting = $t('Hello');",
       '</script>',
     ].join('\n');
@@ -38,7 +38,7 @@ describe('svelteProcessor', () => {
       '  export const stored = 1;',
       '</script>',
       '<script lang="ts">',
-      "  import { $t } from '@yapyak/core';",
+      "  import { $t } from 'yapyak';",
       '</script>',
     ].join('\n');
     const fragments = svelteProcessor.parseFragments(source);
@@ -49,7 +49,7 @@ describe('svelteProcessor', () => {
   it('extracts ExpressionTag {expr}', () => {
     const source = [
       '<script lang="ts">',
-      "  import { $t } from '@yapyak/core';",
+      "  import { $t } from 'yapyak';",
       '</script>',
       `<h1>{$t('Welcome')}</h1>`,
     ].join('\n');
@@ -248,7 +248,7 @@ describe('svelteProcessor', () => {
   it('handles nested elements with multiple expressions', () => {
     const source = [
       '<script lang="ts">',
-      "  import { $t } from '@yapyak/core';",
+      "  import { $t } from 'yapyak';",
       '</script>',
       `<article>`,
       `  <header><h1>{$t('Welcome')}</h1></header>`,

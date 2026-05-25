@@ -18,7 +18,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@yapyak/core": "workspace:*"
+    "yapyak": "workspace:*"
   },
   "peerDependencies": {
     "svelte": ">=5"

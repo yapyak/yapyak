@@ -12,7 +12,7 @@ interface ReferencePackage {
 }
 
 const REFERENCE_PACKAGES: ReferencePackage[] = [
-  { dir: 'core', name: 'Core' },
+  { dir: 'yapyak', name: 'yapyak' },
 
   { dir: 'react', group: 'Frameworks', name: 'React' },
   { dir: 'vue', group: 'Frameworks', name: 'Vue' },

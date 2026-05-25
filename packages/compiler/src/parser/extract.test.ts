@@ -40,7 +40,7 @@ describe('extractFile', () => {
         fileId: 'multi.ts',
         locales: ['en'],
         source: `
-          import { $t } from '@yapyak/core';
+          import { $t } from 'yapyak';
           export const a = $t('Hello');
           export const b = $t('Hello');
         `,
@@ -111,7 +111,7 @@ describe('extractFile', () => {
     it('resolves template $t against <script setup> import', () => {
       const source = [
         '<script setup lang="ts">',
-        "import { $t } from '@yapyak/core';",
+        "import { $t } from 'yapyak';",
         '</script>',
         '<template>',
         `  <h1>{{ $t('Welcome') }}</h1>`,
@@ -129,7 +129,7 @@ describe('extractFile', () => {
     it('extracts both script and template messages with same import', () => {
       const source = [
         '<script setup lang="ts">',
-        "import { $t } from '@yapyak/core';",
+        "import { $t } from 'yapyak';",
         "const inScript = $t('From script');",
         '</script>',
         '<template>',
@@ -149,7 +149,7 @@ describe('extractFile', () => {
     it('resolves template $t against plain <script> (not setup)', () => {
       const source = [
         '<script lang="ts">',
-        "import { $t } from '@yapyak/core';",
+        "import { $t } from 'yapyak';",
         "export default { name: 'X' };",
         '</script>',
         '<template>',
@@ -184,7 +184,7 @@ describe('extractFile', () => {
     it('resolves aliased import shared with template', () => {
       const source = [
         '<script setup lang="ts">',
-        "import { $t as tr } from '@yapyak/core';",
+        "import { $t as tr } from 'yapyak';",
         '</script>',
         '<template>',
         `  <h1>{{ tr('Welcome') }}</h1>`,
@@ -202,7 +202,7 @@ describe('extractFile', () => {
     it('dedupes same source string across script and template', () => {
       const source = [
         '<script setup lang="ts">',
-        "import { $t } from '@yapyak/core';",
+        "import { $t } from 'yapyak';",
         "const inScript = $t('Save');",
         '</script>',
         '<template>',

@@ -20,7 +20,7 @@ describe('vueProcessor', () => {
   it('extracts <script lang="ts"> as script fragment', () => {
     const source = [
       '<script lang="ts">',
-      "import { $t } from '@yapyak/core';",
+      "import { $t } from 'yapyak';",
       "export const x = $t('Hello');",
       '</script>',
     ].join('\n');
@@ -35,7 +35,7 @@ describe('vueProcessor', () => {
   it('extracts <script setup> as script fragment', () => {
     const source = [
       '<script setup lang="ts">',
-      "import { $t } from '@yapyak/core';",
+      "import { $t } from 'yapyak';",
       "const greeting = $t('Hello');",
       '</script>',
     ].join('\n');
@@ -50,7 +50,7 @@ describe('vueProcessor', () => {
       "export default { name: 'X' };",
       '</script>',
       '<script setup lang="ts">',
-      "import { $t } from '@yapyak/core';",
+      "import { $t } from 'yapyak';",
       '</script>',
     ].join('\n');
     const fragments = vueProcessor.parseFragments(source);
@@ -61,7 +61,7 @@ describe('vueProcessor', () => {
   it('extracts {{ ... }} interpolation as template-expression fragment', () => {
     const source = [
       '<script setup lang="ts">',
-      "import { $t } from '@yapyak/core';",
+      "import { $t } from 'yapyak';",
       '</script>',
       '<template>',
       "  <h1>{{ $t('Welcome') }}</h1>",
@@ -79,7 +79,7 @@ describe('vueProcessor', () => {
   it('extracts :foo="..." attribute (v-bind shorthand)', () => {
     const source = [
       '<script setup lang="ts">',
-      "import { $t } from '@yapyak/core';",
+      "import { $t } from 'yapyak';",
       '</script>',
       '<template>',
       `  <button :aria-label="$t('Cool')">x</button>`,
@@ -171,7 +171,7 @@ describe('vueProcessor', () => {
   it('returns lang=js for non-typescript script blocks', () => {
     const source = [
       '<script>',
-      "import { $t } from '@yapyak/core';",
+      "import { $t } from 'yapyak';",
       '</script>',
     ].join('\n');
     const fragments = vueProcessor.parseFragments(source);

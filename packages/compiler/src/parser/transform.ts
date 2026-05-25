@@ -18,8 +18,8 @@ import { getProcessor, resolveProcessorKind } from './processor';
 
 const PICK_EXPORT = 'pick';
 const PICK_LOCAL = '_pick';
-const YAPYAK_MODULE = '@yapyak/core';
-const YAPYAK_INTERNAL_MODULE = '@yapyak/core/internal';
+const YAPYAK_MODULE = 'yapyak';
+const YAPYAK_INTERNAL_MODULE = 'yapyak/internal';
 
 export function transformFile(
   request: TransformFileRequest,

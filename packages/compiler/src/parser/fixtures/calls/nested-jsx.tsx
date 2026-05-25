@@ -1,4 +1,4 @@
-import { $t } from '@yapyak/core';
+import { $t } from 'yapyak';
 
 interface GreetingProps {
   name: string;

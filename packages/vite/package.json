@@ -24,7 +24,6 @@
   "dependencies": {
     "@yapyak/compiler": "workspace:*",
     "@yapyak/config": "workspace:*",
-    "@yapyak/core": "workspace:*",
     "@yapyak/runtime": "workspace:*",
     "@yapyak/translator": "workspace:*"
   },

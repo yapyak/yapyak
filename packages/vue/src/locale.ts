@@ -1,8 +1,8 @@
 import type { Ref } from 'vue';
 
-import { getLocale, setLocale } from '@yapyak/core';
-import { registerTracker, subscribeLocale } from '@yapyak/core/internal';
 import { customRef } from 'vue';
+import { getLocale, setLocale } from 'yapyak';
+import { registerTracker, subscribeLocale } from 'yapyak/internal';
 
 /**
  * Reactive locale ref.
@@ -13,7 +13,7 @@ import { customRef } from 'vue';
  * @example Read and write the locale in a template
  * ```vue
  * <script setup>
- * import { $t } from '@yapyak/core';
+ * import { $t } from 'yapyak';
  * import { locale } from '@yapyak/vue';
  * </script>
  *

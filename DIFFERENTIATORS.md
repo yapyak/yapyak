@@ -234,7 +234,7 @@ The type extraction recursively walks the source string at the type level. ICU f
 
 ### Tests that lock this in
 
-`packages/core/src/runtime/extract-params.test-d.ts` — type-level tests for every ICU format, including mixed ICU + simple, nested placeholders, and permissive fallback.
+`packages/yapyak/src/runtime/extract-params.test-d.ts` — type-level tests for every ICU format, including mixed ICU + simple, nested placeholders, and permissive fallback.
 
 ---
 
@@ -496,7 +496,7 @@ export function pick(
 
 Tree-shaking works at the call-site granularity. Code-splitting works because each chunk only carries the strings that chunk's code uses. Route-based locale loading is automatic — no namespace boilerplate.
 
-In single-locale mode, even `_pick` disappears: `$t('Hello')` compiles to the literal `"Hello"`, and the entire `@yapyak/core` runtime gets tree-shaken away if no other features are used.
+In single-locale mode, even `_pick` disappears: `$t('Hello')` compiles to the literal `"Hello"`, and the entire `yapyak` runtime gets tree-shaken away if no other features are used.
 
 ### Reviewer talking points
 

@@ -8,7 +8,7 @@ You write `$t()` in your code. yapyak rewrites the call to inline the translatio
 ## What you write
 
 ```tsx
-import { $t } from '@yapyak/core';
+import { $t } from 'yapyak';
 
 export function SaveButton() {
   return <button>{$t('Save changes')}</button>;
@@ -18,7 +18,7 @@ export function SaveButton() {
 ## What yapyak compiles it to
 
 ```tsx
-import { pick as _pick } from '@yapyak/core/internal';
+import { pick as _pick } from 'yapyak/internal';
 
 export function SaveButton() {
   return <button>{_pick({ en: 'Save changes', sv: 'Spara ändringar', es: 'Guardar cambios' })}</button>;

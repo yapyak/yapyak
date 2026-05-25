@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { $t, locales } from '@yapyak/core';
+import { $t, locales } from 'yapyak';
 import { locale } from '@yapyak/vue';
 
 const now = new Date();

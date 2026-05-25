@@ -8,7 +8,7 @@ interface PackageRecord {
 }
 
 const PACKAGES: PackageRecord[] = [
-  { dir: 'core', docsSlug: 'core', name: '@yapyak/core' },
+  { dir: 'yapyak', docsSlug: 'yapyak', name: 'yapyak' },
   { dir: 'runtime', docsSlug: 'runtime', name: '@yapyak/runtime' },
   { dir: 'config', docsSlug: 'config', name: '@yapyak/config' },
   { dir: 'compiler', docsSlug: 'compiler', name: '@yapyak/compiler' },

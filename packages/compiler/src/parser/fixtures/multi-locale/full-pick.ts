@@ -1,4 +1,4 @@
-import { $t, useLocale } from '@yapyak/core';
+import { $t, useLocale } from 'yapyak';
 
 declare const previewLocale: { value: string };
 

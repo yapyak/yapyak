@@ -1,4 +1,4 @@
-import { $t } from '@yapyak/core';
+import { $t } from 'yapyak';
 
 export function outer(): string {
   if (Math.random() > 0.5) {

@@ -1,21 +1,21 @@
 {
   "src/App.svelte": {
-    "At: {when, time, short}": "Klockan: {when, time, short}",
-    "Count: {amount, number, integer}": "Antal: {amount, number, integer}",
-    "Dates and times": "Datum och tider",
-    "English": "Engelska",
-    "Hello there": "Hej där",
-    "Numbers": "Tal",
-    "Plurals": "Pluralis",
-    "Price: {amount, number, currency EUR}": "Pris: {amount, number, currency EUR}",
-    "Select": "Val",
-    "Swedish": "Svenska",
-    "Switch language": "Byt språk",
-    "This is the {name} example.": "Detta är {name}-exemplet.",
-    "Total: {amount, number, percent}": "Totalt: {amount, number, percent}",
-    "Updated: {when, date, long}": "Uppdaterad: {when, date, long}",
-    "Updated: {when, date, short}": "Uppdaterad: {when, date, short}",
-    "You have {count, plural, one {# message} other {# messages}}": "Du har {count, plural, one {# meddelande} other {# meddelanden}}",
-    "{theme, select, dark {Dark mode is on} other {Light mode is on}}": "{theme, select, dark {Mörkt läge är på} other {Ljust läge är på}}"
+    "At: {when, time, short}": "",
+    "Count: {amount, number, integer}": "",
+    "Dates and times": "",
+    "English": "",
+    "Hello there": "",
+    "Numbers": "",
+    "Plurals": "",
+    "Price: {amount, number, currency EUR}": "",
+    "Select": "",
+    "Swedish": "",
+    "Switch language": "",
+    "This is the {name} example.": "",
+    "Total: {amount, number, percent}": "",
+    "Updated: {when, date, long}": "",
+    "Updated: {when, date, short}": "",
+    "You have {count, plural, one {# message} other {# messages}}": "",
+    "{theme, select, dark {Dark mode is on} other {Light mode is on}}": ""
   }
 }

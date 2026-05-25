@@ -9,8 +9,8 @@ import {
   Outlet,
   Scripts,
 } from '@tanstack/react-router';
-import { $t } from '@yapyak/core';
 import { useLocale } from '@yapyak/react';
+import { $t } from 'yapyak';
 
 import { Colophon } from '#components/colophon';
 import { GithubIcon } from '#components/github-icon';

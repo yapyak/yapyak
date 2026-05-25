@@ -20,7 +20,7 @@ describe('astroProcessor', () => {
   it('extracts frontmatter as script fragment', () => {
     const source = [
       '---',
-      "import { $t } from '@yapyak/core';",
+      "import { $t } from 'yapyak';",
       "const greeting = $t('Hello');",
       '---',
       '<h1>Hi</h1>',
@@ -36,7 +36,7 @@ describe('astroProcessor', () => {
   it('extracts template expression {expr}', () => {
     const source = [
       '---',
-      "import { $t } from '@yapyak/core';",
+      "import { $t } from 'yapyak';",
       '---',
       `<h1>{$t('Welcome')}</h1>`,
     ].join('\n');
@@ -50,7 +50,7 @@ describe('astroProcessor', () => {
   it('extracts attribute expression value', () => {
     const source = [
       '---',
-      "import { $t } from '@yapyak/core';",
+      "import { $t } from 'yapyak';",
       '---',
       `<button aria-label={$t('Save')}>x</button>`,
     ].join('\n');
@@ -88,7 +88,7 @@ describe('astroProcessor', () => {
   it('recurses into nested elements', () => {
     const source = [
       '---',
-      "import { $t } from '@yapyak/core';",
+      "import { $t } from 'yapyak';",
       '---',
       `<article>`,
       `  <header><h1>{$t('Welcome')}</h1></header>`,
@@ -110,7 +110,7 @@ describe('astroProcessor', () => {
     const source = [
       '---',
       'import Button from "./Button.astro";',
-      "import { $t } from '@yapyak/core';",
+      "import { $t } from 'yapyak';",
       '---',
       `<Button label={$t('Save')} />`,
     ].join('\n');

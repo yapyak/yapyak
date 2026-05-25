@@ -8,9 +8,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@yapyak/core": "workspace:*",
     "@yapyak/svelte": "workspace:*",
-    "svelte": "catalog:"
+    "svelte": "catalog:",
+    "yapyak": "workspace:*"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "catalog:",

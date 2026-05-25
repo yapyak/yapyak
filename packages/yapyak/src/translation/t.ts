@@ -22,7 +22,7 @@ export interface TOptions {
  *
  * @example Translate strings, with and without placeholders
  * ```tsx
- * import { $t } from '@yapyak/core';
+ * import { $t } from 'yapyak';
  *
  * $t('Save changes');
  *

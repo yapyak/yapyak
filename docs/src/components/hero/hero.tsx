@@ -1,7 +1,7 @@
 import type { BoxProps } from '#components/box';
 
 import { Link } from '@tanstack/react-router';
-import { $t } from '@yapyak/core';
+import { $t } from 'yapyak';
 
 import { Box } from '#components/box';
 

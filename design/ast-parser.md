@@ -15,12 +15,12 @@
  Din production-bundle är bevisbart noll tills du faktiskt skalar till flera språk."
 ```
 
-Killer-feature: **single-locale-elision.** Med en locale: `$t('Hello')` compilas till `'Hello'` och hela `@yapyak/core`-importen försvinner. Lägg till `sv` → samma kod blir `_$pick({en:'Hello',sv:'Hej'})` och runtime aktiveras. Användarens app-kod är **identisk** i båda fall.
+Killer-feature: **single-locale-elision.** Med en locale: `$t('Hello')` compilas till `'Hello'` och hela `yapyak`-importen försvinner. Lägg till `sv` → samma kod blir `_$pick({en:'Hello',sv:'Hej'})` och runtime aktiveras. Användarens app-kod är **identisk** i båda fall.
 
 ## 2. Hela publika API:t
 
 ```ts
-// @yapyak/core
+// yapyak
 export function $t<T extends string>(
   source: T,
   params?: ParamsForSource<T>,
@@ -145,7 +145,7 @@ Efter call-site-transform räknas alla `@yapyak/*`-import-specifiers. Oreference
 
 ```ts
 // Källa
-import { $t, useLocale } from '@yapyak/core';
+import { $t, useLocale } from 'yapyak';
 function Greeting({ name }: { name: string }) {
   const [locale] = useLocale();
   return <div lang={locale}>{$t('Hi {name}', { name })}</div>;
@@ -364,9 +364,9 @@ Bygger en **scope-trädad** binding-table per fil. Spårar alla identifierare so
 **Tre binding-kinds:**
 
 ```ts
-import { $t } from '@yapyak/core';            // { localName: '$t', kind: 'direct' }
-import { $t as t } from '@yapyak/core';       // { localName: 't', kind: 'direct' }
-import * as Y from '@yapyak/core';            // { localName: 'Y', kind: 'namespace' }
+import { $t } from 'yapyak';            // { localName: '$t', kind: 'direct' }
+import { $t as t } from 'yapyak';       // { localName: 't', kind: 'direct' }
+import * as Y from 'yapyak';            // { localName: 'Y', kind: 'namespace' }
 const t = $t;                                  // { localName: 't', kind: 'wrapper' }
 ```
 

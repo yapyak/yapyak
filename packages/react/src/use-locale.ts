@@ -1,13 +1,13 @@
-import { getLocale, setLocale } from '@yapyak/core';
-import { subscribeLocale } from '@yapyak/core/internal';
 import { useSyncExternalStore } from 'react';
+import { getLocale, setLocale } from 'yapyak';
+import { subscribeLocale } from 'yapyak/internal';
 
 /**
  * Subscribes the component to locale changes.
  *
  * @example Switch locale with a select
  * ```tsx
- * import { $t } from '@yapyak/core';
+ * import { $t } from 'yapyak';
  * import { useLocale } from '@yapyak/react';
  *
  * function LocaleToggle() {

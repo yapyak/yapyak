@@ -32,7 +32,7 @@ Astro renders `<html>` once per page request as static HTML, not through a react
 ```astro
 ---
 // src/layouts/Layout.astro
-import { getLocale } from '@yapyak/core';
+import { getLocale } from 'yapyak';
 ---
 <html lang={getLocale()}>
   <head>

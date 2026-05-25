@@ -12,7 +12,7 @@
  * @packageDocumentation
  */
 
-import { setRequestReader } from '@yapyak/core/internal';
+import { setRequestReader } from 'yapyak/internal';
 
 import { AsyncLocalStorage } from 'node:async_hooks';
 

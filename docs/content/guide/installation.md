@@ -74,7 +74,7 @@ pnpm yapyak add es fr de ja
 {% code-group %}
 
 ```tsx [React]
-import { $t } from '@yapyak/core';
+import { $t } from 'yapyak';
 
 export function SaveButton() {
   return <button>{$t('Save changes')}</button>;
@@ -83,7 +83,7 @@ export function SaveButton() {
 
 ```vue [Vue]
 <script setup lang="ts">
-import { $t } from '@yapyak/core'
+import { $t } from 'yapyak'
 </script>
 
 <template>
@@ -94,7 +94,7 @@ import { $t } from '@yapyak/core'
 ```svelte [Svelte]
 <script lang="ts">
   // Svelte reserves `$`-prefixed identifiers; alias the macro.
-  import { $t as t } from '@yapyak/core';
+  import { $t as t } from 'yapyak';
 </script>
 
 <button>{t('Save changes')}</button>

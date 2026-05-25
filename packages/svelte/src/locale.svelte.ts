@@ -1,5 +1,5 @@
-import { getLocale, setLocale } from '@yapyak/core';
-import { registerTracker, subscribeLocale } from '@yapyak/core/internal';
+import { getLocale, setLocale } from 'yapyak';
+import { registerTracker, subscribeLocale } from 'yapyak/internal';
 
 let active = $state(getLocale());
 
@@ -26,7 +26,7 @@ export interface Locale {
  * <script>
  *   // Svelte reserves `$`-prefixed identifiers for store auto-subscriptions,
  *   // so alias the macro to a local name.
- *   import { $t as t } from '@yapyak/core';
+ *   import { $t as t } from 'yapyak';
  *   import { locale } from '@yapyak/svelte';
  * </script>
  *

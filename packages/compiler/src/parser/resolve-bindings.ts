@@ -2,7 +2,7 @@ import type { BindingTable, Scope, YapyakBinding } from './type';
 
 import * as ts from 'typescript';
 
-const YAPYAK_MODULE = '@yapyak/core';
+const YAPYAK_MODULE = 'yapyak';
 const RUNTIME_NAME = '$t';
 
 interface ImportInfo {

@@ -45,7 +45,7 @@ import {
   locales,
   defaultLocale,
   subscribeLocale,
-} from '@yapyak/core';
+} from 'yapyak';
 
 getLocale();                       // 'es' — currently-active locale
 setLocale('sv');                // switch
@@ -65,7 +65,7 @@ In components, import the framework-specific binding so the UI re-renders on loc
 {% code-group %}
 
 ```tsx [React]
-import { locales } from '@yapyak/core';
+import { locales } from 'yapyak';
 import { useLocale } from '@yapyak/react';
 
 export function LocaleToggle() {
@@ -82,7 +82,7 @@ export function LocaleToggle() {
 
 ```vue [Vue]
 <script setup lang="ts">
-import { locales } from '@yapyak/core';
+import { locales } from 'yapyak';
 import { locale } from '@yapyak/vue';
 </script>
 
@@ -97,7 +97,7 @@ import { locale } from '@yapyak/vue';
 
 ```svelte [Svelte]
 <script lang="ts">
-  import { locales } from '@yapyak/core';
+  import { locales } from 'yapyak';
   import { locale } from '@yapyak/svelte';
 </script>
 
@@ -117,7 +117,7 @@ The framework-specific imports (`yapyak/react`, `yapyak/vue`, `yapyak/svelte`) o
 Outside framework components — e.g. persistence layers, analytics, document.lang sync — use `subscribeLocale(fn)` to react imperatively:
 
 ```ts
-import { subscribeLocale } from '@yapyak/core';
+import { subscribeLocale } from 'yapyak';
 
 const unsubscribe = subscribeLocale((locale) => {
   document.documentElement.lang = locale;

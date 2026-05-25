@@ -8,9 +8,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@yapyak/core": "workspace:*",
     "@yapyak/vue": "workspace:*",
-    "vue": "catalog:"
+    "vue": "catalog:",
+    "yapyak": "workspace:*"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "catalog:",

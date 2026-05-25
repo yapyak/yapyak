@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@yapyak/adapter": "workspace:*",
-    "@yapyak/core": "workspace:*"
+    "yapyak": "workspace:*"
   },
   "peerDependencies": {
     "@sveltejs/kit": ">=2"

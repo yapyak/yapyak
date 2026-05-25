@@ -25,7 +25,7 @@ function findCalls(sf: ts.SourceFile): ts.CallExpression[] {
 describe('resolveCallSiteContext', () => {
   it('detects function component name', () => {
     const sf = parseInline(`
-      import { $t } from '@yapyak/core';
+      import { $t } from 'yapyak';
       export function Greeting() {
         return $t('Hello');
       }
@@ -39,7 +39,7 @@ describe('resolveCallSiteContext', () => {
 
   it('detects arrow component via variable declaration', () => {
     const sf = parseInline(`
-      import { $t } from '@yapyak/core';
+      import { $t } from 'yapyak';
       export const Greeting = () => $t('Hello');
     `);
     const [call] = findCalls(sf);
@@ -49,7 +49,7 @@ describe('resolveCallSiteContext', () => {
 
   it('detects forwardRef component', () => {
     const sf = parseInline(`
-      import { $t } from '@yapyak/core';
+      import { $t } from 'yapyak';
       const forwardRef = (fn: unknown) => fn;
       export const Greeting = forwardRef(() => $t('Hello'));
     `);
@@ -60,7 +60,7 @@ describe('resolveCallSiteContext', () => {
 
   it('detects memo component', () => {
     const sf = parseInline(`
-      import { $t } from '@yapyak/core';
+      import { $t } from 'yapyak';
       const memo = (fn: unknown) => fn;
       export const Greeting = memo(() => $t('Hello'));
     `);
@@ -71,7 +71,7 @@ describe('resolveCallSiteContext', () => {
 
   it('does not misattribute name from non-HOC callbacks', () => {
     const sf = parseInline(`
-      import { $t } from '@yapyak/core';
+      import { $t } from 'yapyak';
       const items = ['a'].map((item) => $t('Item: {item}', { item }));
     `);
     const [call] = findCalls(sf);
@@ -82,7 +82,7 @@ describe('resolveCallSiteContext', () => {
 
   it('detects hook name', () => {
     const sf = parseInline(`
-      import { $t } from '@yapyak/core';
+      import { $t } from 'yapyak';
       export function useGreeting() {
         return $t('Hello');
       }
@@ -96,7 +96,7 @@ describe('resolveCallSiteContext', () => {
 
   it('detects component AND nested hook', () => {
     const sf = parseInline(`
-      import { $t } from '@yapyak/core';
+      import { $t } from 'yapyak';
       export function Greeting() {
         function useLabel() {
           return $t('Hello');
@@ -113,7 +113,7 @@ describe('resolveCallSiteContext', () => {
 
   it('detects closest enclosing JSX element', () => {
     const sf = parseInline(`
-      import { $t } from '@yapyak/core';
+      import { $t } from 'yapyak';
       export function Greeting() {
         return <article><header><h1>{$t('Welcome')}</h1></header></article>;
       }
@@ -126,7 +126,7 @@ describe('resolveCallSiteContext', () => {
 
   it('detects JSX inside self-closing element', () => {
     const sf = parseInline(`
-      import { $t } from '@yapyak/core';
+      import { $t } from 'yapyak';
       export function Greeting() {
         return <Button label={$t('Save')} />;
       }
@@ -138,7 +138,7 @@ describe('resolveCallSiteContext', () => {
 
   it('detects namespaced JSX tag', () => {
     const sf = parseInline(`
-      import { $t } from '@yapyak/core';
+      import { $t } from 'yapyak';
       const Menu = { Item: (p: { children: unknown }) => p.children };
       export function Greeting() {
         return <Menu.Item>{$t('Save')}</Menu.Item>;
@@ -151,7 +151,7 @@ describe('resolveCallSiteContext', () => {
 
   it('returns empty context for top-level call', () => {
     const sf = parseInline(`
-      import { $t } from '@yapyak/core';
+      import { $t } from 'yapyak';
       export const greeting = $t('Hello');
     `);
     const [call] = findCalls(sf);
@@ -165,7 +165,7 @@ describe('resolveCallSiteContext', () => {
   it('records context for every call in nested-jsx fixture', () => {
     const sf = parseInline(
       `
-        import { $t } from '@yapyak/core';
+        import { $t } from 'yapyak';
         export function Greeting({ name }: { name: string }) {
           return (
             <article>

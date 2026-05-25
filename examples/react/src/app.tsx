@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 
-import { $t, locales } from '@yapyak/core';
 import { useLocale } from '@yapyak/react';
+import { $t, locales } from 'yapyak';
 
 const now = new Date();
 

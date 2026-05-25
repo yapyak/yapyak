@@ -1,12 +1,12 @@
 /**
- * Core for yapyak.
+ * Runtime API for yapyak.
  *
  * ## Installation
  *
  * ```bash
- * npm install @yapyak/core
+ * npm install yapyak
  * # or
- * pnpm add @yapyak/core
+ * pnpm add yapyak
  * ```
  *
  * @packageDocumentation
