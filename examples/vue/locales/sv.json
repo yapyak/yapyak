@@ -15,7 +15,7 @@
     "Total: {amount, number, percent}": "Totalt: {amount, number, percent}",
     "Updated: {when, date, long}": "Uppdaterad: {when, date, long}",
     "Updated: {when, date, short}": "Uppdaterad: {when, date, short}",
-    "You have {count, plural, one {# message} other {# messages}}": "",
-    "{theme, select, dark {Dark mode is on} other {Light mode is on}}": ""
+    "You have {count, plural, one {# message} other {# messages}}": "Du har {count, plural, one {# meddelande} other {# meddelanden}}",
+    "{theme, select, dark {Dark mode is on} other {Light mode is on}}": "{theme, select, dark {Mörkt läge är på} other {Ljust läge är på}}"
   }
 }

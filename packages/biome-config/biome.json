@@ -81,7 +81,7 @@
           }
         }
       },
-      "includes": ["**/package.json"]
+      "includes": ["**/package.json", "**/locales/*.json"]
     }
   ],
   "root": false,
