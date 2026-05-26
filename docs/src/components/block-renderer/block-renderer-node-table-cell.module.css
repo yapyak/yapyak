@@ -4,6 +4,7 @@
     vertical-align: top;
     color: var(--foreground-soft);
     border-bottom: var(--px) solid var(--rule);
+    overflow-wrap: anywhere;
 
     &[data-header] {
       font-size: var(--font-size-xs);

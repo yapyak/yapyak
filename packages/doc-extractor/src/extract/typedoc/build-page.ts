@@ -1,4 +1,9 @@
-import type { Block, ExportKind, TableRowBlock } from '../../types/block.ts';
+import type {
+  Block,
+  ExportKind,
+  TableCellBlock,
+  TableRowBlock,
+} from '../../types/block.ts';
 import type { Page } from '../../types/manifest.ts';
 import type {
   ReferenceExample,
@@ -383,51 +388,85 @@ function typeParameterRow(
 }
 
 function parametersTable(parameters: ReferenceParameter[]): Block {
+  const includeDefault = parameters.some(
+    (parameter) => parameter.defaultValue !== null,
+  );
   return {
-    body: parameters.map(paramRow),
-    head: tableHeaderRow(['Name', 'Type', 'Description']),
+    body: parameters.map((parameter) => paramRow(parameter, includeDefault)),
+    head: tableHeaderRow(
+      includeDefault
+        ? ['Name', 'Type', 'Default', 'Description']
+        : ['Name', 'Type', 'Description'],
+    ),
     type: 'table',
   };
 }
 
 function membersTable(members: ReferenceMember[]): Block {
+  const includeDefault = members.some(
+    (member) => member.defaultValue !== null,
+  );
   return {
-    body: members.map(memberRow),
-    head: tableHeaderRow(['Name', 'Type', 'Description']),
+    body: members.map((member) => memberRow(member, includeDefault)),
+    head: tableHeaderRow(
+      includeDefault
+        ? ['Name', 'Type', 'Default', 'Description']
+        : ['Name', 'Type', 'Description'],
+    ),
     type: 'table',
   };
 }
 
-function paramRow(parameter: ReferenceParameter): TableRowBlock {
-  return {
-    children: [
-      bodyCell([
-        {
-          type: 'inline-code',
-          value: parameter.name + (parameter.optional ? '?' : ''),
-        },
-      ]),
-      bodyCell(tokensToBlocks(parameter.type)),
-      bodyCell(markdownToInline(parameter.description)),
-    ],
-    type: 'table-row',
-  };
+function paramRow(
+  parameter: ReferenceParameter,
+  includeDefault: boolean,
+): TableRowBlock {
+  const children: TableCellBlock[] = [
+    bodyCell([
+      {
+        type: 'inline-code',
+        value: parameter.name + (parameter.optional ? '?' : ''),
+      },
+    ]),
+    bodyCell(tokensToBlocks(parameter.type)),
+  ];
+  if (includeDefault) {
+    children.push(
+      bodyCell(
+        parameter.defaultValue !== null
+          ? markdownToInline(parameter.defaultValue)
+          : [{ type: 'text', value: '' }],
+      ),
+    );
+  }
+  children.push(bodyCell(markdownToInline(parameter.description)));
+  return { children, type: 'table-row' };
 }
 
-function memberRow(member: ReferenceMember): TableRowBlock {
-  return {
-    children: [
-      bodyCell([
-        {
-          type: 'inline-code',
-          value: member.name + (member.optional ? '?' : ''),
-        },
-      ]),
-      bodyCell(tokensToBlocks(member.type)),
-      bodyCell(markdownToInline(member.description)),
-    ],
-    type: 'table-row',
-  };
+function memberRow(
+  member: ReferenceMember,
+  includeDefault: boolean,
+): TableRowBlock {
+  const children: TableCellBlock[] = [
+    bodyCell([
+      {
+        type: 'inline-code',
+        value: member.name + (member.optional ? '?' : ''),
+      },
+    ]),
+    bodyCell(tokensToBlocks(member.type)),
+  ];
+  if (includeDefault) {
+    children.push(
+      bodyCell(
+        member.defaultValue !== null
+          ? markdownToInline(member.defaultValue)
+          : [{ type: 'text', value: '' }],
+      ),
+    );
+  }
+  children.push(bodyCell(markdownToInline(member.description)));
+  return { children, type: 'table-row' };
 }
 
 function bodyCell(children: Block[]) {

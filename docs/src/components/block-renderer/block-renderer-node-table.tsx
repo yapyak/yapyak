@@ -12,22 +12,24 @@ export interface BlockRendererNodeTableProps {
 export function BlockRendererNodeTable(props: BlockRendererNodeTableProps) {
   const { block } = props;
   return (
-    <Box
-      as="table"
-      className={styles.BlockRendererNodeTable}
-    >
-      {block.head && (
-        <Box as="thead">
-          <BlockRendererNode block={block.head} />
+    <Box className={styles.BlockRendererNodeTableScroll}>
+      <Box
+        as="table"
+        className={styles.BlockRendererNodeTable}
+      >
+        {block.head && (
+          <Box as="thead">
+            <BlockRendererNode block={block.head} />
+          </Box>
+        )}
+        <Box as="tbody">
+          {block.body.map((row, index) => (
+            <BlockRendererNode
+              block={row}
+              key={index}
+            />
+          ))}
         </Box>
-      )}
-      <Box as="tbody">
-        {block.body.map((row, index) => (
-          <BlockRendererNode
-            block={row}
-            key={index}
-          />
-        ))}
       </Box>
     </Box>
   );

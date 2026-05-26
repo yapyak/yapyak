@@ -35,6 +35,22 @@ No catalog gets fetched on first paint. Each Vite chunk ships only the variants 
 
 Without any locales configured, the `_pick()` call disappears entirely. Adopting yapyak before you have translations is free.
 
+## Same `t()`, any framework
+
+`t('Save changes')` works the same in TSX, Vue's `{{ }}` interpolations, Svelte templates, and Astro components. yapyak's compiler has dedicated AST processors per framework. Each parses native template syntax through that framework's own compiler — `@vue/compiler-sfc`, `svelte/compiler`, `@astrojs/compiler`.
+
+```vue
+<template>
+  <button>{{ t('Save changes') }}</button>
+</template>
+```
+
+```svelte
+<button>{t('Save changes')}</button>
+```
+
+Vue, Svelte, and Astro aren't ports of a React design. Each gets its own AST processor and the full compile-time pipeline yapyak runs on TSX.
+
 ## Save it, see it live
 
 Hit save with one new string. Before you alt-tab back to the browser, it's been translated to every locale you've configured. Bootstrapping a new locale of 1000 strings against 9 targets takes under a minute. Single-string saves are around a second, invisible.

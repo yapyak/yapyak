@@ -39,6 +39,25 @@ export function SaveButton() {
 
 The `_pick()` call gets stripped out, leaving the source string as a plain literal. Adopt yapyak today, add locales next month, the rest of your code stays the same.
 
+## Per-framework AST processors
+
+The compile transform runs through a processor selected by file extension. Each processor wraps a framework's official compiler so extraction and rewrite happen through the same AST the framework itself uses.
+
+| File extension | Processor | AST library |
+|---|---|---|
+| `.ts`, `.tsx`, `.jsx`, `.mjs` | vanilla | TypeScript compiler |
+| `.vue` | vue | `@vue/compiler-sfc` + `@vue/compiler-core` |
+| `.svelte` | svelte | `svelte/compiler` (modern mode) |
+| `.astro` | astro | `@astrojs/compiler/sync` |
+
+Each processor knows where to inject the `pick` import, which fragments contain executable code (script blocks vs template fragments), and how template-level expressions map back to source positions. The TypeScript portions inside Vue `<script setup>`, Svelte `<script>`, or Astro frontmatter are parsed identically to plain `.ts` files because the processor hands those fragments through.
+
+This means `t('Save changes')` inside `<template>{{ t('Save changes') }}</template>` and `<button>{t('Save changes')}</button>` both get extracted, rewritten, and inlined using the framework's own understanding of the source.
+
+Vue, Svelte, and Astro share the full downstream pipeline with TSX. Once executable fragments are isolated, every downstream step works identically across frameworks.
+
+Adding a new framework is writing a processor: parse the file with the framework's AST, identify executable fragments, hand them through the TypeScript pipeline. The current four processors total around 1900 lines of TypeScript.
+
 ## The save pipeline
 
 The Vite plugin runs this on every `.tsx`/`.ts`/`.vue`/`.svelte` save:
