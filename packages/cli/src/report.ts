@@ -23,7 +23,7 @@ export interface LocaleStats {
   translated: number;
 }
 
-export interface CollectResult {
+export interface Report {
   defaultLocale: string;
   locales: string[];
   messages: ExtractedMessage[];
@@ -32,13 +32,13 @@ export interface CollectResult {
   totalMessages: number;
 }
 
-export interface CollectOptions {
+export interface BuildReportOptions {
   defaultLocale?: string;
   localesDir?: string;
   projectRoot: string;
 }
 
-export function collect(options: CollectOptions): CollectResult {
+export function buildReport(options: BuildReportOptions): Report {
   const localesDir = options.localesDir ?? 'locales';
   const localesPath = join(options.projectRoot, localesDir);
   const fileLocales = existsSync(localesPath)

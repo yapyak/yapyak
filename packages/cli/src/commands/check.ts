@@ -1,6 +1,6 @@
 import type { Config } from '../config';
 
-import { collect } from '../collect';
+import { buildReport } from '../report';
 import { color, header, symbol } from '../tui';
 
 export interface CheckOptions {
@@ -9,7 +9,7 @@ export interface CheckOptions {
 }
 
 export function check(options: CheckOptions): number {
-  const report = collect({
+  const report = buildReport({
     defaultLocale: options.config.defaultLocale,
     localesDir: options.config.localesDir,
     projectRoot: options.projectRoot,

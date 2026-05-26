@@ -1,7 +1,7 @@
 import type { Page } from '../../types/manifest.ts';
 
 import { parseMarkdoc } from './parse.ts';
-import { readdir, readFile, stat } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
 
 export interface MarkdocExtractResult {
@@ -107,10 +107,4 @@ async function walkMarkdownFiles(root: string): Promise<string[]> {
       }
     }
   }
-}
-
-export async function pathExists(absolutePath: string): Promise<boolean> {
-  return stat(absolutePath)
-    .then(() => true)
-    .catch(() => false);
 }

@@ -3,7 +3,7 @@ import type { Config } from '../config';
 
 import { autoTranslate } from '@yapyak/compiler';
 
-import { collect } from '../collect';
+import { buildReport } from '../report';
 import { color, header, progressBar, spinner, symbol } from '../tui';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -52,7 +52,7 @@ export async function add(options: AddOptions): Promise<number> {
     }
   }
 
-  const report = collect({
+  const report = buildReport({
     defaultLocale: config.defaultLocale,
     localesDir: config.localesDir,
     projectRoot,

@@ -3,7 +3,7 @@ import type { Config } from '../config';
 
 import { autoTranslate } from '@yapyak/compiler';
 
-import { collect } from '../collect';
+import { buildReport } from '../report';
 import { color, header, progressBar, spinner, symbol } from '../tui';
 
 export interface TranslateOptions {
@@ -35,7 +35,7 @@ export async function translate(options: TranslateOptions): Promise<number> {
     return 1;
   }
 
-  const report = collect({
+  const report = buildReport({
     defaultLocale: config.defaultLocale,
     localesDir: config.localesDir,
     projectRoot,

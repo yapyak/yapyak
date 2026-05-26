@@ -126,16 +126,16 @@ export async function autoTranslate(
 function collectContexts(
   messages: ExtractedMessage[],
 ): Map<string, MessageContext> {
-  const map = new Map<string, MessageContext>();
+  const contexts = new Map<string, MessageContext>();
   for (const message of messages) {
     for (const location of message.locations) {
-      map.set(
+      contexts.set(
         `${location.fileId} ${message.source}`,
         toLegacyContext(location),
       );
     }
   }
-  return map;
+  return contexts;
 }
 
 function toLegacyContext(location: Location): MessageContext {

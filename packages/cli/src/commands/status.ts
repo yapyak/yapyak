@@ -1,6 +1,6 @@
 import type { Config } from '../config';
 
-import { collect } from '../collect';
+import { buildReport } from '../report';
 import { color, header, progressBar, renderTable, symbol } from '../tui';
 
 export interface StatusOptions {
@@ -10,7 +10,7 @@ export interface StatusOptions {
 }
 
 export function status(options: StatusOptions): number {
-  const report = collect({
+  const report = buildReport({
     defaultLocale: options.config.defaultLocale,
     localesDir: options.config.localesDir,
     projectRoot: options.projectRoot,

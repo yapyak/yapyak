@@ -4,7 +4,7 @@ import type { Config } from '../config';
 
 import { readLocaleFile, stringifyCanonical } from '@yapyak/compiler';
 
-import { collect } from '../collect';
+import { buildReport } from '../report';
 import { color, symbol } from '../tui';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
@@ -36,12 +36,12 @@ export function exportCommand(options: ExportOptions): number {
     return 1;
   }
 
-  const collected = collect({
+  const report = buildReport({
     defaultLocale: config.defaultLocale,
     localesDir: config.localesDir,
     projectRoot,
   });
-  const allLocales = collected.locales;
+  const allLocales = report.locales;
   const targetLocales =
     localeFilter.length === 0
       ? allLocales
@@ -55,9 +55,9 @@ export function exportCommand(options: ExportOptions): number {
     return 1;
   }
 
-  const sourcesByFile = buildSourcesByFile(collected.messages);
+  const sourcesByFile = buildSourcesByFile(report.messages);
   const snapshot = buildSnapshot({
-    defaultLocale: collected.defaultLocale,
+    defaultLocale: report.defaultLocale,
     localesDir: join(projectRoot, config.localesDir),
     sourcesByFile,
     targetLocales,
