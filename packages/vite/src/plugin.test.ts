@@ -330,6 +330,53 @@ describe('yapyak', () => {
 
       expect(reloadModule).not.toHaveBeenCalled();
     });
+
+    it('blocks notification for nested locale paths', async () => {
+      mkdirSync(join(root, 'locales', 'sub'), { recursive: true });
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const send = vi.fn();
+      const server = createMockServer(createMockWatcher());
+      server.ws.send = send;
+      invokeConfigureServer(plugin, server);
+      const watcher = server.watcher;
+
+      const nested = join(root, 'locales', 'sub', 'fr.json');
+      writeFileSync(nested, '{}');
+      watcher.emit('add', nested);
+      await vi.advanceTimersByTimeAsync(60);
+
+      expect(send).not.toHaveBeenCalled();
+    });
+
+    it('clears pending timers on `buildEnd`', async () => {
+      writeFileSync(localePath, '{}');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+      const before = readFileSync(localePath, 'utf8');
+
+      vi.useFakeTimers();
+      const server = createMockServer(createMockWatcher());
+      invokeConfigureServer(plugin, server);
+      const watcher = server.watcher;
+
+      const newSource = join(root, 'src', 'new.tsx');
+      writeFileSync(
+        newSource,
+        "import { t } from 'yapyak';\nexport const x = () => t('Welcome');\n",
+      );
+      watcher.emit('add', newSource);
+
+      invokeBuildEnd(plugin);
+      await vi.advanceTimersByTimeAsync(60);
+
+      const after = readFileSync(localePath, 'utf8');
+      expect(after).toBe(before);
+    });
   });
 });
 
@@ -352,6 +399,14 @@ function invokeBuildStart(plugin: ReturnType<typeof yapyak>): void {
   const hook = plugin.buildStart;
   if (typeof hook !== 'function') {
     throw new Error('buildStart hook missing');
+  }
+  (hook as () => void).call(plugin);
+}
+
+function invokeBuildEnd(plugin: ReturnType<typeof yapyak>): void {
+  const hook = plugin.buildEnd;
+  if (typeof hook !== 'function') {
+    throw new Error('buildEnd hook missing');
   }
   (hook as () => void).call(plugin);
 }
