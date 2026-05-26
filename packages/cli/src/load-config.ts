@@ -1,4 +1,5 @@
 import type { NormalizedYapyakConfig } from '@yapyak/config';
+import type { Translator } from '@yapyak/translator';
 
 import { loadYapyakConfig as loadFromFile } from '@yapyak/config';
 
@@ -8,6 +9,8 @@ export interface YapyakCliConfig {
   defaultLocale: string | undefined;
   /** The directory for locale JSON files, relative to the project root. */
   localesDir: string;
+  /** The translator configured in `yapyak.config.ts`, or `undefined` if none. */
+  translator: Translator | undefined;
 }
 
 let cached: { projectRoot: string; value: YapyakCliConfig } | undefined;
@@ -33,5 +36,6 @@ function toCliConfig(config: NormalizedYapyakConfig): YapyakCliConfig {
   return {
     defaultLocale: config.defaultLocale,
     localesDir: config.localesDir,
+    translator: config.translator,
   };
 }

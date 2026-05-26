@@ -48,17 +48,12 @@ export async function run(argv: string[]): Promise<number> {
     case 'translate': {
       const config = await loadYapyakConfig(projectRoot);
       const locale = rest.find((arg) => !arg.startsWith('--'));
-      const providerArg = rest.find((arg) => arg.startsWith('--provider='));
-      const provider = providerArg
-        ? (providerArg.slice('--provider='.length) as 'anthropic' | 'openai')
-        : undefined;
       const force = rest.includes('--force') || rest.includes('-f');
       return await translate({
         config,
         force,
         locale,
         projectRoot,
-        provider,
       });
     }
     case 'export': {
@@ -86,7 +81,7 @@ function printHelp(): void {
 
   ${color.bold('Commands')}
     ${color.cyan('add')} ${color.dim('<locale...>')}       ${color.dim('Add one or more locales, auto-translate everything')}
-    ${color.cyan('translate')} ${color.dim('[locale]')}    ${color.dim('Fill missing translations via AI (uses .env API key)')}
+    ${color.cyan('translate')} ${color.dim('[locale]')}    ${color.dim('Fill missing translations via the translator in yapyak.config.ts')}
     ${color.cyan('translate --force')}     ${color.dim('Re-translate everything, including existing values')}
     ${color.cyan('export')} ${color.dim('[locale...]')}    ${color.dim('Snapshot locales as wrapped JSON to stdout')}
     ${color.cyan('export --out=path')}     ${color.dim('Write snapshot to a file')}

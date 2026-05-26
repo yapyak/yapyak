@@ -1,12 +1,9 @@
 import type { TranslateRequest, Translator } from '@yapyak/translator';
 import type { YapyakCliConfig } from '../load-config';
 
-import { anthropic } from '@yapyak/anthropic';
 import { autoTranslate } from '@yapyak/compiler';
-import { openai } from '@yapyak/openai';
 
 import { collect } from '../collect';
-import { loadEnv } from '../load-env';
 import { color, header, progressBar, spinner, symbol } from '../tui';
 
 export interface TranslateOptions {
@@ -14,30 +11,27 @@ export interface TranslateOptions {
   force?: boolean;
   locale?: string;
   projectRoot: string;
-  provider?: 'anthropic' | 'openai';
 }
 
 export async function translate(options: TranslateOptions): Promise<number> {
   const { config, force = false, locale: targetLocale, projectRoot } = options;
-  const env = loadEnv(projectRoot);
 
-  const translator = pickTranslator(env, options.provider);
-  if (translator === null) {
+  const translator = config.translator;
+  if (!translator) {
     process.stdout.write(
-      `\n  ${symbol.cross} ${color.red('No translator credentials found.')}\n\n`,
+      `\n  ${symbol.cross} ${color.red('No translator configured.')}\n\n`,
     );
     process.stdout.write(
-      `  ${color.dim('Set one of these in')} ${color.bold('.env.local')}${color.dim(':')}\n\n`,
+      `  ${color.dim('Add a translator to')} ${color.bold('yapyak.config.ts')}${color.dim(':')}\n\n`,
     );
     process.stdout.write(
-      `    ${color.cyan('ANTHROPIC_API_KEY')}${color.dim('=…')}\n`,
+      `    ${color.cyan("import { anthropic } from '@yapyak/anthropic';")}\n\n`,
     );
+    process.stdout.write(`    ${color.cyan('export default {')}\n`);
     process.stdout.write(
-      `    ${color.cyan('OPENAI_API_KEY')}${color.dim('=…')}\n\n`,
+      `    ${color.cyan('  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! }),')}\n`,
     );
-    process.stdout.write(
-      `  ${color.dim('Or run')} ${color.cyan('yapyak init')} ${color.dim('to set up.')}\n\n`,
-    );
+    process.stdout.write(`    ${color.cyan('};')}\n\n`);
     return 1;
   }
 
@@ -64,7 +58,7 @@ export async function translate(options: TranslateOptions): Promise<number> {
 
   process.stdout.write(
     header(
-      `Translating via ${color.cyan(translator.providerName)}`,
+      `Translating via ${color.cyan(translator.id)}`,
       `${stubsToFill.length} stubs across ${targetLocales.join(', ')}`,
     ),
   );
@@ -90,9 +84,7 @@ export async function translate(options: TranslateOptions): Promise<number> {
     );
   };
 
-  const localesToProcess = Array.from(
-    new Set(stubsToFill.map((s) => s.locale)),
-  );
+  const localesToProcess = [...new Set(stubsToFill.map((s) => s.locale))];
   for (const locale of localesToProcess) {
     const subResult = await autoTranslate({
       defaultLocale: report.defaultLocale,
@@ -101,7 +93,7 @@ export async function translate(options: TranslateOptions): Promise<number> {
       localesDir: config.localesDir,
       messages: report.messages,
       projectRoot,
-      translator: wrapWithProgress(translator.fn, onProgress),
+      translator: wrapWithProgress(translator, onProgress),
     });
     failed += subResult.errors.length;
   }
@@ -142,28 +134,4 @@ function wrapWithProgress(
     };
   }
   return wrapped;
-}
-
-interface PickedTranslator {
-  fn: Translator;
-  providerName: string;
-}
-
-function pickTranslator(
-  env: Record<string, string>,
-  preferred?: 'anthropic' | 'openai',
-): PickedTranslator | null {
-  if (preferred === 'anthropic' || preferred === undefined) {
-    const apiKey = env.ANTHROPIC_API_KEY;
-    if (apiKey) {
-      return { fn: anthropic({ apiKey }), providerName: 'Anthropic' };
-    }
-  }
-  if (preferred === 'openai' || preferred === undefined) {
-    const apiKey = env.OPENAI_API_KEY;
-    if (apiKey) {
-      return { fn: openai({ apiKey }), providerName: 'OpenAI' };
-    }
-  }
-  return null;
 }

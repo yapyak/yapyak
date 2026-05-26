@@ -14,10 +14,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@yapyak/anthropic": "workspace:*",
     "@yapyak/compiler": "workspace:*",
     "@yapyak/config": "workspace:*",
-    "@yapyak/openai": "workspace:*",
     "@yapyak/translator": "workspace:*"
   },
   "devDependencies": {

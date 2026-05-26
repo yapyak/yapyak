@@ -1,12 +1,9 @@
 import type { TranslateRequest, Translator } from '@yapyak/translator';
 import type { YapyakCliConfig } from '../load-config';
 
-import { anthropic } from '@yapyak/anthropic';
 import { autoTranslate } from '@yapyak/compiler';
-import { openai } from '@yapyak/openai';
 
 import { collect } from '../collect';
-import { loadEnv } from '../load-env';
 import { color, header, progressBar, spinner, symbol } from '../tui';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -81,15 +78,13 @@ export async function add(options: AddOptions): Promise<number> {
     return 0;
   }
 
-  const env = loadEnv(projectRoot);
-  const translator = pickTranslator(env);
-
-  if (translator === null) {
+  const translator = config.translator;
+  if (!translator) {
     process.stdout.write(
       `\n  ${color.dim(`${totalMissing} strings need translation.`)}\n`,
     );
     process.stdout.write(
-      `\n  ${color.dim('Set')} ${color.cyan('ANTHROPIC_API_KEY')} ${color.dim('or')} ${color.cyan('OPENAI_API_KEY')} ${color.dim('in')} ${color.bold('.env.local')} ${color.dim('to auto-translate,')}\n`,
+      `\n  ${color.dim('Add a translator to')} ${color.bold('yapyak.config.ts')} ${color.dim('to auto-translate,')}\n`,
     );
     process.stdout.write(
       `  ${color.dim('or fill in the locale files by hand.')}\n\n`,
@@ -98,7 +93,7 @@ export async function add(options: AddOptions): Promise<number> {
   }
 
   process.stdout.write(
-    `\n  ${color.dim('Found')} ${color.cyan(translator.providerName)} ${color.dim('credentials. Translating')} ${color.bold(String(totalMissing))} ${color.dim('strings…')}\n\n`,
+    `\n  ${color.dim('Translating')} ${color.bold(String(totalMissing))} ${color.dim('strings via')} ${color.cyan(translator.id)}${color.dim('…')}\n\n`,
   );
 
   let totalDone = 0;
@@ -132,7 +127,7 @@ export async function add(options: AddOptions): Promise<number> {
       localesDir: config.localesDir,
       messages: report.messages,
       projectRoot,
-      translator: wrapWithProgress(translator.fn, onProgress),
+      translator: wrapWithProgress(translator, onProgress),
     });
 
     totalDone += done;
@@ -176,24 +171,4 @@ function wrapWithProgress(
     };
   }
   return wrapped;
-}
-
-interface PickedTranslator {
-  fn: Translator;
-  providerName: string;
-}
-
-function pickTranslator(env: Record<string, string>): PickedTranslator | null {
-  const anthropicKey = env.ANTHROPIC_API_KEY;
-  if (anthropicKey) {
-    return {
-      fn: anthropic({ apiKey: anthropicKey }),
-      providerName: 'Anthropic',
-    };
-  }
-  const openaiKey = env.OPENAI_API_KEY;
-  if (openaiKey) {
-    return { fn: openai({ apiKey: openaiKey }), providerName: 'OpenAI' };
-  }
-  return null;
 }
