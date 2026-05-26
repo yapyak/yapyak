@@ -22,3 +22,9 @@ export {
   syncLocaleFiles,
 } from './file';
 export { stringifyCanonical } from './json';
+export {
+  type InvariantViolation,
+  type WriteLocaleFileInput,
+  writeLocaleFile,
+  YapyakInvariantError,
+} from './writer';

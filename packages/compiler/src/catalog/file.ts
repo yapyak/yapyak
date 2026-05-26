@@ -1,14 +1,8 @@
 import type { ExtractedMessage } from '../parser/type';
 
-import { stringifyCanonical } from './json';
-import {
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  writeFileSync,
-} from 'node:fs';
-import { dirname, join } from 'node:path';
+import { writeLocaleFile } from './writer';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 export type LocaleFile = Record<string, Record<string, string>>;
 
@@ -56,6 +50,7 @@ export interface RenameEntry {
 
 export interface MigrateLocalesOptions {
   defaultLocale: string;
+  extractedSources: Record<string, Set<string>>;
   fileId: string;
   locales: string[];
   localesDir: string;
@@ -70,6 +65,7 @@ export interface MigrateLocalesResult {
 
 export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
   const sourcesByFile = groupSourcesByFile(options.messages);
+  const extractedSources = toExtractedSourcesSet(sourcesByFile);
 
   for (const locale of options.locales) {
     if (locale === options.defaultLocale) {
@@ -104,8 +100,18 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
       continue;
     }
 
-    writeLocaleFile(localePath, next);
+    writeLocaleFile({ after: next, extractedSources, filePath: localePath });
   }
+}
+
+function toExtractedSourcesSet(
+  sourcesByFile: Record<string, string[]>,
+): Record<string, Set<string>> {
+  const result: Record<string, Set<string>> = {};
+  for (const [fileId, sources] of Object.entries(sourcesByFile)) {
+    result[fileId] = new Set(sources);
+  }
+  return result;
 }
 
 export function getLocaleFilePath(
@@ -147,11 +153,6 @@ export function readLocaleFile(path: string): LocaleFile {
     result[fileId] = fileEntries;
   }
   return result;
-}
-
-export function writeLocaleFile(path: string, data: LocaleFile): void {
-  mkdirSync(dirname(path), { recursive: true });
-  writeFileSync(path, stringifyCanonical(data));
 }
 
 export function discoverLocales(
@@ -277,7 +278,11 @@ export function migrateLocales(
     }
     if (hasChanged) {
       data[options.fileId] = next;
-      writeLocaleFile(localePath, data);
+      writeLocaleFile({
+        after: data,
+        extractedSources: options.extractedSources,
+        filePath: localePath,
+      });
     }
   }
   return { staleEntries };

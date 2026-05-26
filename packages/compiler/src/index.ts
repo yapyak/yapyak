@@ -6,6 +6,7 @@ export {
   type DiscoverLocalesResult,
   detectRenames,
   discoverLocales,
+  type InvariantViolation,
   type LocaleData,
   type LocaleFile,
   type MessagePosition,
@@ -19,6 +20,9 @@ export {
   type SyncLocaleFilesOptions,
   stringifyCanonical,
   syncLocaleFiles,
+  type WriteLocaleFileInput,
+  writeLocaleFile,
+  YapyakInvariantError,
 } from './catalog';
 export {
   DEFAULT_EXCLUDE,

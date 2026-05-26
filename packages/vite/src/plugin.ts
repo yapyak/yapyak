@@ -55,6 +55,7 @@ export function yapyak(): Plugin {
   let normalized: NormalizedYapyakConfig | null = null;
   let filter: (path: string) => boolean = () => false;
   let configFile: string | null = null;
+  let command: 'build' | 'serve' = 'serve';
 
   function getNormalized(): NormalizedYapyakConfig {
     if (normalized === null) {
@@ -158,6 +159,9 @@ export function yapyak(): Plugin {
 
   return {
     buildStart(): void {
+      if (command === 'build') {
+        return;
+      }
       scanAllSources();
       fillStubs();
     },
@@ -173,6 +177,7 @@ export function yapyak(): Plugin {
     },
     async configResolved(config: ResolvedConfig): Promise<void> {
       projectRoot = config.root;
+      command = config.command;
       const result = await loadYapyakConfig(projectRoot);
       normalized = result.config;
       configFile = result.configFile;
@@ -211,6 +216,7 @@ export function yapyak(): Plugin {
       if (renames.length > 0) {
         migrateLocales({
           defaultLocale,
+          extractedSources: toExtractedSourcesForFile(fileId, after),
           fileId,
           locales,
           localesDir: getNormalized().localesDir,
@@ -313,6 +319,17 @@ function toCallSitePositions(message: ExtractedMessage): CallSitePosition[] {
     line: location.range.start.line,
     source: message.source,
   }));
+}
+
+function toExtractedSourcesForFile(
+  fileId: string,
+  messages: ExtractedMessage[],
+): Record<string, Set<string>> {
+  const sources = new Set<string>();
+  for (const message of messages) {
+    sources.add(message.source);
+  }
+  return { [fileId]: sources };
 }
 
 function isCandidateId(id: string, filter: (id: string) => boolean): boolean {

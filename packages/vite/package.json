@@ -19,6 +19,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsup",
+    "test": "vitest --run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -34,7 +35,8 @@
     "@yapyak/typescript-config": "workspace:*",
     "tsup": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=22"

@@ -2,7 +2,8 @@ import type { MessageContext, Translator } from '@yapyak/translator';
 import type { ExtractedMessage, Location } from '../parser/type';
 import type { LocaleFile } from './file';
 
-import { readLocaleFile, writeLocaleFile } from './file';
+import { readLocaleFile } from './file';
+import { writeLocaleFile } from './writer';
 import { join } from 'node:path';
 
 export interface AutoTranslateOptions {
@@ -41,6 +42,7 @@ export async function autoTranslate(
     return { errors: [], translated: 0 };
   }
 
+  const extractedSources = toExtractedSources(options.messages);
   const byLocale = groupByLocale(stubs);
   const errors: AutoTranslateResult['errors'] = [];
   let translated = 0;
@@ -116,11 +118,32 @@ export async function autoTranslate(
     }
 
     if (touched) {
-      writeLocaleFile(localePath, data);
+      writeLocaleFile({
+        after: data,
+        extractedSources,
+        filePath: localePath,
+      });
     }
   }
 
   return { errors, translated };
+}
+
+function toExtractedSources(
+  messages: ExtractedMessage[],
+): Record<string, Set<string>> {
+  const result: Record<string, Set<string>> = {};
+  for (const message of messages) {
+    for (const location of message.locations) {
+      let set = result[location.fileId];
+      if (!set) {
+        set = new Set<string>();
+        result[location.fileId] = set;
+      }
+      set.add(message.source);
+    }
+  }
+  return result;
 }
 
 function collectContexts(
