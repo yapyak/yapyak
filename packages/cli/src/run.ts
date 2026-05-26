@@ -5,7 +5,7 @@ import { check } from './commands/check';
 import { exportCommand } from './commands/export';
 import { status } from './commands/status';
 import { translate } from './commands/translate';
-import { loadYapyakConfig } from './load-config';
+import { loadConfig } from './config';
 import { color, symbol } from './tui';
 
 /**
@@ -29,7 +29,7 @@ export async function run(argv: string[]): Promise<number> {
       process.stdout.write('yapyak 0.0.0\n');
       return 0;
     case 'status': {
-      const config = await loadYapyakConfig(projectRoot);
+      const config = await loadConfig(projectRoot);
       return status({
         config,
         json: rest.includes('--json'),
@@ -37,16 +37,16 @@ export async function run(argv: string[]): Promise<number> {
       });
     }
     case 'check': {
-      const config = await loadYapyakConfig(projectRoot);
+      const config = await loadConfig(projectRoot);
       return check({ config, projectRoot });
     }
     case 'add': {
-      const config = await loadYapyakConfig(projectRoot);
+      const config = await loadConfig(projectRoot);
       const locales = rest.filter((arg) => !arg.startsWith('--'));
       return await add({ config, locales, projectRoot });
     }
     case 'translate': {
-      const config = await loadYapyakConfig(projectRoot);
+      const config = await loadConfig(projectRoot);
       const locale = rest.find((arg) => !arg.startsWith('--'));
       const force = rest.includes('--force') || rest.includes('-f');
       return await translate({
@@ -57,7 +57,7 @@ export async function run(argv: string[]): Promise<number> {
       });
     }
     case 'export': {
-      const config = await loadYapyakConfig(projectRoot);
+      const config = await loadConfig(projectRoot);
       const locales = rest.filter((arg) => !arg.startsWith('--'));
       const outArg = rest.find((arg) => arg.startsWith('--out='));
       const out = outArg ? outArg.slice('--out='.length) : undefined;

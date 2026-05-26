@@ -1,5 +1,5 @@
 import type { TranslateRequest, Translator } from '@yapyak/translator';
-import type { YapyakCliConfig } from '../load-config';
+import type { Config } from '../config';
 
 import { autoTranslate } from '@yapyak/compiler';
 
@@ -9,7 +9,7 @@ import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 export interface AddOptions {
-  config: YapyakCliConfig;
+  config: Config;
   locales: string[];
   projectRoot: string;
 }

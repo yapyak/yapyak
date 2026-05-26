@@ -1,6 +1,6 @@
 import type { LocaleFile } from '@yapyak/compiler';
 import type { ExtractedMessage } from '@yapyak/compiler/internal';
-import type { YapyakCliConfig } from '../load-config';
+import type { Config } from '../config';
 
 import { readLocaleFile, stringifyCanonical } from '@yapyak/compiler';
 
@@ -10,7 +10,7 @@ import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 
 export interface ExportOptions {
-  config: YapyakCliConfig;
+  config: Config;
   locales: string[];
   out: string | undefined;
   projectRoot: string;

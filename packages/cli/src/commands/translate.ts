@@ -1,5 +1,5 @@
 import type { TranslateRequest, Translator } from '@yapyak/translator';
-import type { YapyakCliConfig } from '../load-config';
+import type { Config } from '../config';
 
 import { autoTranslate } from '@yapyak/compiler';
 
@@ -7,7 +7,7 @@ import { collect } from '../collect';
 import { color, header, progressBar, spinner, symbol } from '../tui';
 
 export interface TranslateOptions {
-  config: YapyakCliConfig;
+  config: Config;
   force?: boolean;
   locale?: string;
   projectRoot: string;

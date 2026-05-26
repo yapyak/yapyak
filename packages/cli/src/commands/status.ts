@@ -1,10 +1,10 @@
-import type { YapyakCliConfig } from '../load-config';
+import type { Config } from '../config';
 
 import { collect } from '../collect';
 import { color, header, progressBar, renderTable, symbol } from '../tui';
 
 export interface StatusOptions {
-  config: YapyakCliConfig;
+  config: Config;
   json?: boolean;
   projectRoot: string;
 }

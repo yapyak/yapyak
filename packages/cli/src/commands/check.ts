@@ -1,10 +1,10 @@
-import type { YapyakCliConfig } from '../load-config';
+import type { Config } from '../config';
 
 import { collect } from '../collect';
 import { color, header, symbol } from '../tui';
 
 export interface CheckOptions {
-  config: YapyakCliConfig;
+  config: Config;
   projectRoot: string;
 }
 
