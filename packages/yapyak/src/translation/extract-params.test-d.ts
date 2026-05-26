@@ -34,11 +34,19 @@ test('ICU selectordinal — typed as number', () => {
   expectTypeOf<{ n: 'one' }>().not.toMatchTypeOf<Result>();
 });
 
-test('ICU select — theme typed as string', () => {
+test('ICU select with other — theme allows known branches and any string', () => {
   type Result =
     ExtractTParams<'{theme, select, dark {Dark mode} other {Light mode}}'>;
   expectTypeOf<{ theme: 'dark' }>().toMatchTypeOf<Result>();
+  expectTypeOf<{ theme: 'custom-theme' }>().toMatchTypeOf<Result>();
   expectTypeOf<{ theme: 42 }>().not.toMatchTypeOf<Result>();
+});
+
+test('ICU select without other — theme typed as strict enum', () => {
+  type Result = ExtractTParams<'{gender, select, male {Mr.} female {Ms.}}'>;
+  expectTypeOf<{ gender: 'male' }>().toMatchTypeOf<Result>();
+  expectTypeOf<{ gender: 'female' }>().toMatchTypeOf<Result>();
+  expectTypeOf<{ gender: 'unknown' }>().not.toMatchTypeOf<Result>();
 });
 
 test('ICU number — amount typed as number', () => {
@@ -66,10 +74,23 @@ test('mixed simple and ICU', () => {
   expectTypeOf<{ name: 'A'; count: 3 }>().toMatchTypeOf<Result>();
 });
 
-test('ICU permits extra keys (nested placeholders escape)', () => {
+test('ICU plural — extracts nested placeholders from branches', () => {
   type Result =
     ExtractTParams<'You have {count, plural, one {# by {author}} other {# by {author}}}'>;
   expectTypeOf<{ count: 1; author: 'Alex' }>().toMatchTypeOf<Result>();
+  expectTypeOf<{ count: 1 }>().not.toMatchTypeOf<Result>();
+});
+
+test('ICU select — extracts nested placeholders from branches', () => {
+  type Result =
+    ExtractTParams<'{theme, select, dark {Hello {name}} other {Bye {name}}}'>;
+  expectTypeOf<{ theme: 'dark'; name: 'Alex' }>().toMatchTypeOf<Result>();
+  expectTypeOf<{ theme: 'dark' }>().not.toMatchTypeOf<Result>();
+});
+
+test('ICU branches with literal text do not introduce keys', () => {
+  type Result = ExtractTParams<'{n, selectordinal, one {1st} other {nth}}'>;
+  expectTypeOf<{ n: 1 }>().toMatchTypeOf<Result>();
 });
 
 test('unknown ICU format falls back to permissive value type', () => {

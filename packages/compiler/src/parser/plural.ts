@@ -16,6 +16,15 @@ export interface PlaceholderInfo {
 export function parsePlaceholders(source: string): PlaceholderInfo[] {
   const results: PlaceholderInfo[] = [];
   const seen = new Set<string>();
+  walkSource(source, results, seen);
+  return results;
+}
+
+function walkSource(
+  source: string,
+  results: PlaceholderInfo[],
+  seen: Set<string>,
+): void {
   let i = 0;
   while (i < source.length) {
     if (source[i] !== '{') {
@@ -29,9 +38,13 @@ export function parsePlaceholders(source: string): PlaceholderInfo[] {
       seen.add(info.name);
       results.push(info);
     }
+    if (info?.variants) {
+      for (const body of Object.values(info.variants)) {
+        walkSource(body, results, seen);
+      }
+    }
     i = close + 1;
   }
-  return results;
 }
 
 function parsePlaceholderInner(inner: string): PlaceholderInfo | undefined {

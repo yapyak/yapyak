@@ -3,5 +3,5 @@ import { yapyak } from '@yapyak/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  plugins: [yapyak(), react()],
+  plugins: [react(), yapyak()],
 });

@@ -59,12 +59,32 @@ describe('parsePlaceholders', () => {
     expect(info?.kind).toBe('time');
   });
 
-  it('parses a plural with nested braces in branches', () => {
+  it('extracts nested placeholders from plural branches', () => {
     const source = '{count, plural, one {1 {name}} other {# {name}s}}';
     const results = parsePlaceholders(source);
-    expect(results).toHaveLength(1);
+    expect(results).toHaveLength(2);
     expect(results[0]?.name).toBe('count');
     expect(results[0]?.kind).toBe('plural');
+    expect(results[1]?.name).toBe('name');
+    expect(results[1]?.kind).toBe('simple');
+  });
+
+  it('extracts nested placeholders from select branches', () => {
+    const source = '{theme, select, dark {Hello {name}} other {Bye {name}}}';
+    const results = parsePlaceholders(source);
+    expect(results).toHaveLength(2);
+    expect(results[0]?.name).toBe('theme');
+    expect(results[1]?.name).toBe('name');
+  });
+
+  it('extracts nested ICU placeholders recursively', () => {
+    const source =
+      '{count, plural, one {{when, date, short}} other {{when, date, short}}}';
+    const results = parsePlaceholders(source);
+    expect(results).toHaveLength(2);
+    expect(results[0]?.name).toBe('count');
+    expect(results[1]?.name).toBe('when');
+    expect(results[1]?.kind).toBe('date');
   });
 
   it('dedupes repeated placeholder names', () => {
