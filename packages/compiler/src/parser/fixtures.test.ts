@@ -32,7 +32,7 @@ function loadFixtureCategory(category: string): readonly FixtureFile[] {
 
 describe.each(CATEGORIES)('fixtures: %s', (category) => {
   for (const fixture of loadFixtureCategory(category)) {
-    it(fixture.name, () => {
+    it(`parses ${fixture.name}`, () => {
       const scriptKind = fixture.name.endsWith('.tsx')
         ? ts.ScriptKind.TSX
         : ts.ScriptKind.TS;

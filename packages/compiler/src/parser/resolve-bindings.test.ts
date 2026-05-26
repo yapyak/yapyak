@@ -54,7 +54,7 @@ function findFirstIfStatement(node: ts.Node): ts.IfStatement | undefined {
 }
 
 describe('resolveBindings', () => {
-  it('detects direct import', () => {
+  it('returns a direct binding for a direct import', () => {
     const sf = loadFixture('direct-import.ts');
     const table = resolveBindings(sf);
     const binding = table.root.bindings.get('$t');
@@ -63,7 +63,7 @@ describe('resolveBindings', () => {
     expect(binding?.localName).toBe('$t');
   });
 
-  it('detects aliased import', () => {
+  it('returns a direct binding for an aliased import', () => {
     const sf = loadFixture('aliased-import.ts');
     const table = resolveBindings(sf);
     const binding = table.root.bindings.get('tr');
@@ -72,7 +72,7 @@ describe('resolveBindings', () => {
     expect(table.root.bindings.has('$t')).toBe(false);
   });
 
-  it('detects namespace import', () => {
+  it('returns a namespace binding for a namespace import', () => {
     const sf = loadFixture('namespace-import.ts');
     const table = resolveBindings(sf);
     const binding = table.root.bindings.get('Y');
@@ -80,7 +80,7 @@ describe('resolveBindings', () => {
     expect(binding?.localName).toBe('Y');
   });
 
-  it('detects wrapper at root scope', () => {
+  it('returns a wrapper binding at root scope', () => {
     const sf = loadFixture('wrapper.ts');
     const table = resolveBindings(sf);
     expect(table.root.bindings.get('$t')?.kind).toBe('direct');
@@ -89,7 +89,7 @@ describe('resolveBindings', () => {
     expect(wrapper?.localName).toBe('t');
   });
 
-  it('keeps nested wrapper local to its block', () => {
+  it('returns a nested wrapper binding scoped to its block', () => {
     const sf = loadFixture('shadowed-wrapper.ts');
     const table = resolveBindings(sf);
 
@@ -107,7 +107,7 @@ describe('resolveBindings', () => {
     expect(table.find('t', sf)).toBeUndefined();
   });
 
-  it('find walks up through scope chain', () => {
+  it('returns the binding by walking up the scope chain', () => {
     const sf = loadFixture('direct-import.ts');
     const table = resolveBindings(sf);
     const call = findFirstCallExpression(sf, '$t');

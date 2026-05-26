@@ -26,18 +26,6 @@ describe('stringifyCanonical', () => {
     );
   });
 
-  it('preserves array order', () => {
-    expect(stringifyCanonical([3, 1, 2])).toBe('[\n  3,\n  1,\n  2\n]\n');
-  });
-
-  it('preserves null values', () => {
-    expect(stringifyCanonical({ a: null })).toBe('{\n  "a": null\n}\n');
-  });
-
-  it('terminates with a newline', () => {
-    expect(stringifyCanonical({})).toBe('{}\n');
-  });
-
   it('sorts keys case-insensitively to match Biome', () => {
     const output = stringifyCanonical({
       'Every design decision': '',
@@ -53,5 +41,17 @@ describe('stringifyCanonical', () => {
     const upperIndex = output.indexOf('"Apple"');
     const lowerIndex = output.indexOf('"apple"');
     expect(upperIndex).toBeLessThan(lowerIndex);
+  });
+
+  it('preserves array order', () => {
+    expect(stringifyCanonical([3, 1, 2])).toBe('[\n  3,\n  1,\n  2\n]\n');
+  });
+
+  it('preserves null values', () => {
+    expect(stringifyCanonical({ a: null })).toBe('{\n  "a": null\n}\n');
+  });
+
+  it('terminates output with a newline', () => {
+    expect(stringifyCanonical({})).toBe('{}\n');
   });
 });

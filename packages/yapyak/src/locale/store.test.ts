@@ -21,30 +21,38 @@ afterEach(() => {
   resetLocale();
 });
 
-describe('locale', () => {
-  it('starts at the default locale', () => {
-    expect(getLocale()).toBe('en');
-  });
-
-  it('returns the configured locale list', () => {
-    expect(locales).toEqual(['en', 'sv', 'fr']);
-  });
-
+describe('defaultLocale', () => {
   it('returns the configured default locale', () => {
     expect(defaultLocale).toBe('en');
   });
+});
 
-  it('updates on setLocale', () => {
+describe('getLocale', () => {
+  it('returns the default locale on startup', () => {
+    expect(getLocale()).toBe('en');
+  });
+});
+
+describe('locales', () => {
+  it('returns the configured locale list', () => {
+    expect(locales).toEqual(['en', 'sv', 'fr']);
+  });
+});
+
+describe('setLocale', () => {
+  it('updates the current locale', () => {
     setLocale('sv');
     expect(getLocale()).toBe('sv');
   });
 
-  it('ignores setLocale to unsupported locale', () => {
+  it('ignores unsupported locale', () => {
     setLocale('de');
     expect(getLocale()).toBe('en');
   });
+});
 
-  it('passes the new locale to subscribe callbacks', () => {
+describe('subscribeLocale', () => {
+  it('notifies subscribers with the new locale when changed', () => {
     const listener = vi.fn();
     subscribeLocale(listener);
     setLocale('sv');
@@ -52,7 +60,7 @@ describe('locale', () => {
     expect(listener).toHaveBeenCalledWith('sv');
   });
 
-  it('does not notify when set to same locale', () => {
+  it('does not notify when set to the same locale', () => {
     const listener = vi.fn();
     subscribeLocale(listener);
     setLocale('en');

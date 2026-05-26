@@ -22,7 +22,22 @@ describe('syncLocaleFiles', () => {
     rmSync(projectRoot, { force: true, recursive: true });
   });
 
-  it('refuses to overwrite a non-empty locale file when no messages were extracted', () => {
+  it('writes an empty locale file when no messages are extracted and existing is empty', () => {
+    const localesDir = 'locales';
+    const localePath = join(projectRoot, localesDir, 'sv.json');
+
+    syncLocaleFiles({
+      defaultLocale: 'en',
+      locales: ['en', 'sv'],
+      localesDir,
+      messages: [],
+      projectRoot,
+    });
+
+    expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({});
+  });
+
+  it('preserves an existing non-empty locale file when no messages were extracted', () => {
     const localesDir = 'locales';
     const localePath = join(projectRoot, localesDir, 'sv.json');
     const existing = { 'src/a.ts': { hello: 'hej' } };
@@ -45,20 +60,5 @@ describe('syncLocaleFiles', () => {
     );
 
     warn.mockRestore();
-  });
-
-  it('writes an empty file when no messages are extracted and existing is empty', () => {
-    const localesDir = 'locales';
-    const localePath = join(projectRoot, localesDir, 'sv.json');
-
-    syncLocaleFiles({
-      defaultLocale: 'en',
-      locales: ['en', 'sv'],
-      localesDir,
-      messages: [],
-      projectRoot,
-    });
-
-    expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({});
   });
 });

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { parsePlaceholders } from './plural';
 
 describe('parsePlaceholders', () => {
-  it('parses simple placeholder', () => {
+  it('parses a simple placeholder', () => {
     const results = parsePlaceholders('Hi {name}');
     expect(results).toEqual([{ kind: 'simple', name: 'name' }]);
   });
@@ -16,30 +16,13 @@ describe('parsePlaceholders', () => {
     for (const r of results) expect(r.kind).toBe('simple');
   });
 
-  it('deduplicates repeated placeholder names', () => {
-    const results = parsePlaceholders('{name} and {name} again');
-    expect(results).toHaveLength(1);
-    expect(results[0]?.name).toBe('name');
-  });
-
-  it('returns empty for source with no placeholders', () => {
-    expect(parsePlaceholders('Hello world')).toEqual([]);
-  });
-
-  it('parses plural with all required branches', () => {
+  it('parses a plural with all required branches', () => {
     const source = '{count, plural, one {# item} other {# items}}';
     const [info] = parsePlaceholders(source);
     expect(info?.kind).toBe('plural');
     expect(info?.name).toBe('count');
     expect(info?.invalid).toBeUndefined();
     expect(info?.variants).toEqual({ one: '# item', other: '# items' });
-  });
-
-  it('flags plural missing other branch', () => {
-    const source = '{count, plural, one {# item}}';
-    const [info] = parsePlaceholders(source);
-    expect(info?.kind).toBe('plural');
-    expect(info?.invalid).toBe('plural-missing-other');
   });
 
   it('parses selectordinal as plural-shaped', () => {
@@ -60,27 +43,44 @@ describe('parsePlaceholders', () => {
     });
   });
 
-  it('classifies date placeholder', () => {
+  it('parses a date placeholder', () => {
     const [info] = parsePlaceholders('{when, date, medium}');
     expect(info?.kind).toBe('date');
     expect(info?.name).toBe('when');
   });
 
-  it('classifies number placeholder', () => {
+  it('parses a number placeholder', () => {
     const [info] = parsePlaceholders('{cost, number, currency}');
     expect(info?.kind).toBe('number');
   });
 
-  it('classifies time placeholder', () => {
+  it('parses a time placeholder', () => {
     const [info] = parsePlaceholders('{at, time, short}');
     expect(info?.kind).toBe('time');
   });
 
-  it('handles nested braces in plural branches', () => {
+  it('parses a plural with nested braces in branches', () => {
     const source = '{count, plural, one {1 {name}} other {# {name}s}}';
     const results = parsePlaceholders(source);
     expect(results).toHaveLength(1);
     expect(results[0]?.name).toBe('count');
     expect(results[0]?.kind).toBe('plural');
+  });
+
+  it('dedupes repeated placeholder names', () => {
+    const results = parsePlaceholders('{name} and {name} again');
+    expect(results).toHaveLength(1);
+    expect(results[0]?.name).toBe('name');
+  });
+
+  it('returns empty array for source with no placeholders', () => {
+    expect(parsePlaceholders('Hello world')).toEqual([]);
+  });
+
+  it('flags plural missing other branch as invalid', () => {
+    const source = '{count, plural, one {# item}}';
+    const [info] = parsePlaceholders(source);
+    expect(info?.kind).toBe('plural');
+    expect(info?.invalid).toBe('plural-missing-other');
   });
 });

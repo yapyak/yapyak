@@ -23,7 +23,7 @@ function loadFixture(category: string, name: string): ts.SourceFile {
 }
 
 describe('discoverCalls', () => {
-  it('finds direct $t calls', () => {
+  it('returns direct $t calls', () => {
     const sf = loadFixture('calls', 'simple.ts');
     const calls = discoverCalls(sf, resolveBindings(sf));
     expect(calls).toHaveLength(2);
@@ -32,40 +32,40 @@ describe('discoverCalls', () => {
     }
   });
 
-  it('finds aliased calls', () => {
+  it('returns aliased calls', () => {
     const sf = loadFixture('bindings', 'aliased-import.ts');
     const calls = discoverCalls(sf, resolveBindings(sf));
     expect(calls).toHaveLength(1);
     expect(calls[0]?.binding.localName).toBe('tr');
   });
 
-  it('finds wrapper calls', () => {
+  it('returns wrapper calls', () => {
     const sf = loadFixture('bindings', 'wrapper.ts');
     const calls = discoverCalls(sf, resolveBindings(sf));
     expect(calls).toHaveLength(1);
     expect(calls[0]?.binding.kind).toBe('wrapper');
   });
 
-  it('finds namespace member calls (Y.$t)', () => {
+  it('returns namespace member calls (Y.$t)', () => {
     const sf = loadFixture('bindings', 'namespace-import.ts');
     const calls = discoverCalls(sf, resolveBindings(sf));
     expect(calls).toHaveLength(1);
     expect(calls[0]?.binding.kind).toBe('namespace');
   });
 
-  it('finds calls inside JSX', () => {
+  it('returns calls inside JSX', () => {
     const sf = loadFixture('calls', 'nested-jsx.tsx');
     const calls = discoverCalls(sf, resolveBindings(sf));
     expect(calls).toHaveLength(3);
   });
 
-  it('finds calls inside callbacks', () => {
+  it('returns calls inside callbacks', () => {
     const sf = loadFixture('calls', 'arrow-callback.ts');
     const calls = discoverCalls(sf, resolveBindings(sf));
     expect(calls).toHaveLength(1);
   });
 
-  it('respects scope-local wrapper in if-block', () => {
+  it('returns calls using a scope-local wrapper inside an if-block', () => {
     const sf = loadFixture('bindings', 'shadowed-wrapper.ts');
     const calls = discoverCalls(sf, resolveBindings(sf));
     expect(calls).toHaveLength(2);
@@ -73,7 +73,7 @@ describe('discoverCalls', () => {
     expect(kinds).toEqual(['direct', 'wrapper']);
   });
 
-  it('records range with line/column/offset', () => {
+  it('returns ranges with line, column, and offset', () => {
     const sf = loadFixture('calls', 'simple.ts');
     const calls = discoverCalls(sf, resolveBindings(sf));
     const first = calls[0];

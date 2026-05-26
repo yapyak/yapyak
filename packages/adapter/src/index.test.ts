@@ -50,45 +50,41 @@ describe('withRequest', () => {
     });
     expect(outerSeenAfterInner).toBe('sv');
   });
-});
 
-describe('locale resolution inside withRequest', () => {
-  afterEach(() => {
-    resetLocale();
-  });
+  describe('locale resolution', () => {
+    it('returns cookie locale from the request', () => {
+      const result = withRequest(makeRequest({ cookie: 'locale=sv' }), () =>
+        getLocale(),
+      );
+      expect(result).toBe('sv');
+    });
 
-  it('reads cookie locale from the request', () => {
-    const result = withRequest(makeRequest({ cookie: 'locale=sv' }), () =>
-      getLocale(),
-    );
-    expect(result).toBe('sv');
-  });
+    it('returns Accept-Language locale when no cookie', () => {
+      const result = withRequest(
+        makeRequest({ acceptLanguage: 'sv-SE,en;q=0.9' }),
+        () => getLocale(),
+      );
+      expect(result).toBe('sv');
+    });
 
-  it('falls back to Accept-Language when no cookie', () => {
-    const result = withRequest(
-      makeRequest({ acceptLanguage: 'sv-SE,en;q=0.9' }),
-      () => getLocale(),
-    );
-    expect(result).toBe('sv');
-  });
+    it('returns cookie locale when both cookie and Accept-Language are present', () => {
+      const result = withRequest(
+        makeRequest({ acceptLanguage: 'fr', cookie: 'locale=sv' }),
+        () => getLocale(),
+      );
+      expect(result).toBe('sv');
+    });
 
-  it('cookie takes priority over Accept-Language', () => {
-    const result = withRequest(
-      makeRequest({ acceptLanguage: 'fr', cookie: 'locale=sv' }),
-      () => getLocale(),
-    );
-    expect(result).toBe('sv');
-  });
+    it('returns default locale when no request scope', () => {
+      expect(getLocale()).toBe('en');
+    });
 
-  it('returns default when no request scope', () => {
-    expect(getLocale()).toBe('en');
-  });
-
-  it('falls back when persisted cookie is unsupported locale', () => {
-    const result = withRequest(
-      makeRequest({ acceptLanguage: 'sv', cookie: 'locale=de' }),
-      () => getLocale(),
-    );
-    expect(result).toBe('sv');
+    it('returns Accept-Language locale when persisted cookie is unsupported', () => {
+      const result = withRequest(
+        makeRequest({ acceptLanguage: 'sv', cookie: 'locale=de' }),
+        () => getLocale(),
+      );
+      expect(result).toBe('sv');
+    });
   });
 });

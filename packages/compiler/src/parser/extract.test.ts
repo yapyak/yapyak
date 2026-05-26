@@ -18,57 +18,71 @@ function extractFixture(
 }
 
 describe('extractFile', () => {
-  describe('messages', () => {
-    it('extracts simple messages from direct import', () => {
-      const result = extractFixture('calls', 'simple.ts');
-      expect(result.messages).toHaveLength(2);
-      const sources = result.messages.map((m) => m.source).sort();
-      expect(sources).toEqual(['Goodbye', 'Hello']);
-    });
+  it('returns messages from direct import calls', () => {
+    const result = extractFixture('calls', 'simple.ts');
+    expect(result.messages).toHaveLength(2);
+    const sources = result.messages.map((m) => m.source).sort();
+    expect(sources).toEqual(['Goodbye', 'Hello']);
+  });
 
-    it('extracts placeholders', () => {
-      const result = extractFixture('calls', 'placeholders.ts');
-      expect(result.messages).toHaveLength(2);
-      const greeting = result.messages.find((m) => m.source === 'Hi {name}');
-      expect(greeting?.placeholders).toEqual([
-        { kind: 'simple', name: 'name' },
-      ]);
-    });
+  it('returns placeholders for messages with interpolation', () => {
+    const result = extractFixture('calls', 'placeholders.ts');
+    expect(result.messages).toHaveLength(2);
+    const greeting = result.messages.find((m) => m.source === 'Hi {name}');
+    expect(greeting?.placeholders).toEqual([{ kind: 'simple', name: 'name' }]);
+  });
 
-    it('dedupes identical calls into one message with multiple locations', () => {
-      const result = extractFile({
-        fileId: 'multi.ts',
-        locales: ['en'],
-        source: `
-          import { $t } from 'yapyak';
-          export const a = $t('Hello');
-          export const b = $t('Hello');
-        `,
-      });
-      expect(result.messages).toHaveLength(1);
-      expect(result.messages[0]?.locations).toHaveLength(2);
+  it('dedupes identical calls into one message with multiple locations', () => {
+    const result = extractFile({
+      fileId: 'multi.ts',
+      locales: ['en'],
+      source: `
+        import { $t } from 'yapyak';
+        export const a = $t('Hello');
+        export const b = $t('Hello');
+      `,
     });
+    expect(result.messages).toHaveLength(1);
+    expect(result.messages[0]?.locations).toHaveLength(2);
+  });
 
-    it('preserves call-site context per location', () => {
-      const result = extractFixture('calls', 'nested-jsx.tsx');
-      expect(result.messages).toHaveLength(3);
-      for (const message of result.messages) {
-        expect(message.locations[0]?.callSiteContext.componentName).toBe(
-          'Greeting',
-        );
-      }
-    });
-
-    it('produces stable ids deterministically', () => {
-      const first = extractFixture('calls', 'simple.ts');
-      const second = extractFixture('calls', 'simple.ts');
-      expect(first.messages.map((m) => m.id)).toEqual(
-        second.messages.map((m) => m.id),
+  it('returns call-site context per location', () => {
+    const result = extractFixture('calls', 'nested-jsx.tsx');
+    expect(result.messages).toHaveLength(3);
+    for (const message of result.messages) {
+      expect(message.locations[0]?.callSiteContext.componentName).toBe(
+        'Greeting',
       );
-    });
+    }
+  });
+
+  it('returns stable ids deterministically across runs', () => {
+    const first = extractFixture('calls', 'simple.ts');
+    const second = extractFixture('calls', 'simple.ts');
+    expect(first.messages.map((m) => m.id)).toEqual(
+      second.messages.map((m) => m.id),
+    );
+  });
+
+  it('returns every discovered call-site in callSites for transform reuse', () => {
+    const result = extractFixture('calls', 'nested-jsx.tsx');
+    expect(result.callSites).toHaveLength(3);
+  });
+
+  it('parses .tsx fixtures with JSX', () => {
+    const result = extractFixture('calls', 'nested-jsx.tsx');
+    expect(
+      result.diagnostics.filter((d) => d.severity === 'error'),
+    ).toHaveLength(0);
+    expect(result.messages).toHaveLength(3);
   });
 
   describe('diagnostics', () => {
+    it('returns no diagnostics for clean fixtures', () => {
+      const result = extractFixture('calls', 'simple.ts');
+      expect(result.diagnostics).toHaveLength(0);
+    });
+
     it('forwards YPK001 from parse-arguments', () => {
       const result = extractFixture('diagnostics', 'ypk001-dynamic-source.ts');
       expect(result.diagnostics.some((d) => d.code === 'YPK001')).toBe(true);
@@ -83,32 +97,10 @@ describe('extractFile', () => {
       const result = extractFixture('diagnostics', 'ypk007-invalid-plural.ts');
       expect(result.diagnostics.some((d) => d.code === 'YPK007')).toBe(true);
     });
-
-    it('produces no diagnostics for clean fixtures', () => {
-      const result = extractFixture('calls', 'simple.ts');
-      expect(result.diagnostics).toHaveLength(0);
-    });
   });
 
-  describe('callSites returned', () => {
-    it('includes every discovered call-site for transform reuse', () => {
-      const result = extractFixture('calls', 'nested-jsx.tsx');
-      expect(result.callSites).toHaveLength(3);
-    });
-  });
-
-  describe('processor detection', () => {
-    it('parses .tsx fixtures with JSX correctly', () => {
-      const result = extractFixture('calls', 'nested-jsx.tsx');
-      expect(
-        result.diagnostics.filter((d) => d.severity === 'error'),
-      ).toHaveLength(0);
-      expect(result.messages).toHaveLength(3);
-    });
-  });
-
-  describe('Vue cross-fragment binding-resolution', () => {
-    it('resolves template $t against <script setup> import', () => {
+  describe('with Vue cross-fragment binding', () => {
+    it('returns template messages resolved against <script setup> import', () => {
       const source = [
         '<script setup lang="ts">',
         "import { $t } from 'yapyak';",
@@ -126,7 +118,7 @@ describe('extractFile', () => {
       expect(result.messages[0]?.source).toBe('Welcome');
     });
 
-    it('extracts both script and template messages with same import', () => {
+    it('returns messages from both script and template under one import', () => {
       const source = [
         '<script setup lang="ts">',
         "import { $t } from 'yapyak';",
@@ -146,7 +138,7 @@ describe('extractFile', () => {
       expect(sources).toEqual(['Button label', 'From script', 'From template']);
     });
 
-    it('resolves template $t against plain <script> (not setup)', () => {
+    it('returns template messages resolved against plain <script>', () => {
       const source = [
         '<script lang="ts">',
         "import { $t } from 'yapyak';",
@@ -167,21 +159,7 @@ describe('extractFile', () => {
       expect(templateMessages).toHaveLength(1);
     });
 
-    it('does not resolve template $t when no script imports yapyak', () => {
-      const source = [
-        '<template>',
-        `  <h1>{{ $t('Welcome') }}</h1>`,
-        '</template>',
-      ].join('\n');
-      const result = extractFile({
-        fileId: 'app.vue',
-        locales: ['en'],
-        source,
-      });
-      expect(result.messages).toHaveLength(0);
-    });
-
-    it('resolves aliased import shared with template', () => {
+    it('returns template messages using an aliased import shared with template', () => {
       const source = [
         '<script setup lang="ts">',
         "import { $t as tr } from 'yapyak';",
@@ -199,7 +177,7 @@ describe('extractFile', () => {
       expect(result.messages[0]?.source).toBe('Welcome');
     });
 
-    it('dedupes same source string across script and template', () => {
+    it('dedupes the same source string across script and template', () => {
       const source = [
         '<script setup lang="ts">',
         "import { $t } from 'yapyak';",
@@ -216,6 +194,20 @@ describe('extractFile', () => {
       });
       expect(result.messages).toHaveLength(1);
       expect(result.messages[0]?.locations).toHaveLength(2);
+    });
+
+    it('returns no messages when no script imports yapyak', () => {
+      const source = [
+        '<template>',
+        `  <h1>{{ $t('Welcome') }}</h1>`,
+        '</template>',
+      ].join('\n');
+      const result = extractFile({
+        fileId: 'app.vue',
+        locales: ['en'],
+        source,
+      });
+      expect(result.messages).toHaveLength(0);
     });
   });
 });

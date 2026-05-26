@@ -23,7 +23,7 @@ function findCalls(sf: ts.SourceFile): ts.CallExpression[] {
 }
 
 describe('resolveCallSiteContext', () => {
-  it('detects function component name', () => {
+  it('returns the function component name', () => {
     const sf = parseInline(`
       import { $t } from 'yapyak';
       export function Greeting() {
@@ -37,7 +37,7 @@ describe('resolveCallSiteContext', () => {
     expect(ctx.enclosingHook).toBeUndefined();
   });
 
-  it('detects arrow component via variable declaration', () => {
+  it('returns the arrow component name from its variable declaration', () => {
     const sf = parseInline(`
       import { $t } from 'yapyak';
       export const Greeting = () => $t('Hello');
@@ -47,7 +47,7 @@ describe('resolveCallSiteContext', () => {
     expect(ctx.componentName).toBe('Greeting');
   });
 
-  it('detects forwardRef component', () => {
+  it('returns the forwardRef component name', () => {
     const sf = parseInline(`
       import { $t } from 'yapyak';
       const forwardRef = (fn: unknown) => fn;
@@ -58,7 +58,7 @@ describe('resolveCallSiteContext', () => {
     expect(ctx.componentName).toBe('Greeting');
   });
 
-  it('detects memo component', () => {
+  it('returns the memo component name', () => {
     const sf = parseInline(`
       import { $t } from 'yapyak';
       const memo = (fn: unknown) => fn;
@@ -69,18 +69,7 @@ describe('resolveCallSiteContext', () => {
     expect(ctx.componentName).toBe('Greeting');
   });
 
-  it('does not misattribute name from non-HOC callbacks', () => {
-    const sf = parseInline(`
-      import { $t } from 'yapyak';
-      const items = ['a'].map((item) => $t('Item: {item}', { item }));
-    `);
-    const [call] = findCalls(sf);
-    const ctx = resolveCallSiteContext(call!, sf);
-    expect(ctx.componentName).toBeUndefined();
-    expect(ctx.enclosingFunction).toBeUndefined();
-  });
-
-  it('detects hook name', () => {
+  it('returns the hook name', () => {
     const sf = parseInline(`
       import { $t } from 'yapyak';
       export function useGreeting() {
@@ -94,7 +83,7 @@ describe('resolveCallSiteContext', () => {
     expect(ctx.componentName).toBeUndefined();
   });
 
-  it('detects component AND nested hook', () => {
+  it('returns both component and nested hook names', () => {
     const sf = parseInline(`
       import { $t } from 'yapyak';
       export function Greeting() {
@@ -111,7 +100,7 @@ describe('resolveCallSiteContext', () => {
     expect(ctx.componentName).toBe('Greeting');
   });
 
-  it('detects closest enclosing JSX element', () => {
+  it('returns the closest enclosing JSX element tag', () => {
     const sf = parseInline(`
       import { $t } from 'yapyak';
       export function Greeting() {
@@ -124,7 +113,7 @@ describe('resolveCallSiteContext', () => {
     expect(ctx.componentName).toBe('Greeting');
   });
 
-  it('detects JSX inside self-closing element', () => {
+  it('returns the JSX tag for a self-closing element', () => {
     const sf = parseInline(`
       import { $t } from 'yapyak';
       export function Greeting() {
@@ -136,7 +125,7 @@ describe('resolveCallSiteContext', () => {
     expect(ctx.enclosingJsx).toBe('Button');
   });
 
-  it('detects namespaced JSX tag', () => {
+  it('returns the full namespaced JSX tag', () => {
     const sf = parseInline(`
       import { $t } from 'yapyak';
       const Menu = { Item: (p: { children: unknown }) => p.children };
@@ -149,20 +138,7 @@ describe('resolveCallSiteContext', () => {
     expect(ctx.enclosingJsx).toBe('Menu.Item');
   });
 
-  it('returns empty context for top-level call', () => {
-    const sf = parseInline(`
-      import { $t } from 'yapyak';
-      export const greeting = $t('Hello');
-    `);
-    const [call] = findCalls(sf);
-    const ctx = resolveCallSiteContext(call!, sf);
-    expect(ctx.componentName).toBeUndefined();
-    expect(ctx.enclosingFunction).toBeUndefined();
-    expect(ctx.enclosingHook).toBeUndefined();
-    expect(ctx.enclosingJsx).toBeUndefined();
-  });
-
-  it('records context for every call in nested-jsx fixture', () => {
+  it('returns context for every call in a nested-jsx fixture', () => {
     const sf = parseInline(
       `
         import { $t } from 'yapyak';
@@ -189,5 +165,29 @@ describe('resolveCallSiteContext', () => {
     for (const ctx of contexts) {
       expect(ctx.componentName).toBe('Greeting');
     }
+  });
+
+  it('returns an empty context for a top-level call', () => {
+    const sf = parseInline(`
+      import { $t } from 'yapyak';
+      export const greeting = $t('Hello');
+    `);
+    const [call] = findCalls(sf);
+    const ctx = resolveCallSiteContext(call!, sf);
+    expect(ctx.componentName).toBeUndefined();
+    expect(ctx.enclosingFunction).toBeUndefined();
+    expect(ctx.enclosingHook).toBeUndefined();
+    expect(ctx.enclosingJsx).toBeUndefined();
+  });
+
+  it('returns no component name for non-HOC callbacks', () => {
+    const sf = parseInline(`
+      import { $t } from 'yapyak';
+      const items = ['a'].map((item) => $t('Item: {item}', { item }));
+    `);
+    const [call] = findCalls(sf);
+    const ctx = resolveCallSiteContext(call!, sf);
+    expect(ctx.componentName).toBeUndefined();
+    expect(ctx.enclosingFunction).toBeUndefined();
   });
 });

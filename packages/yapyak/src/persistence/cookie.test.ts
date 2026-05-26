@@ -3,10 +3,6 @@ import { describe, expect, it } from 'vitest';
 import { parseCookie } from './cookie';
 
 describe('parseCookie', () => {
-  it('returns empty object for empty header', () => {
-    expect(parseCookie('')).toEqual({});
-  });
-
   it('parses a single cookie', () => {
     expect(parseCookie('locale=sv')).toEqual({ locale: 'sv' });
   });
@@ -31,26 +27,30 @@ describe('parseCookie', () => {
     });
   });
 
-  it('falls back to raw value if decode fails', () => {
-    expect(parseCookie('broken=%E0%A4%A')).toEqual({ broken: '%E0%A4%A' });
-  });
-
   it('strips surrounding double quotes from values', () => {
     expect(parseCookie('locale="sv"')).toEqual({ locale: 'sv' });
   });
 
-  it('skips segments without equals sign', () => {
+  it('returns the raw value when decode fails', () => {
+    expect(parseCookie('broken=%E0%A4%A')).toEqual({ broken: '%E0%A4%A' });
+  });
+
+  it('returns an empty object for an empty header', () => {
+    expect(parseCookie('')).toEqual({});
+  });
+
+  it('skips segments without an equals sign', () => {
     expect(parseCookie('locale=sv; broken; theme=dark')).toEqual({
       locale: 'sv',
       theme: 'dark',
     });
   });
 
-  it('skips segments with empty name', () => {
+  it('skips segments with an empty name', () => {
     expect(parseCookie('=orphan; locale=sv')).toEqual({ locale: 'sv' });
   });
 
-  it('handles values with equals signs', () => {
+  it('preserves equals signs inside values', () => {
     expect(parseCookie('token=abc=def=ghi')).toEqual({
       token: 'abc=def=ghi',
     });

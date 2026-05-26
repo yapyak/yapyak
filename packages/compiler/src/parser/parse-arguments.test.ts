@@ -32,14 +32,14 @@ function parseAll(category: string, name: string): ParsedArguments[] {
 }
 
 describe('parseArguments', () => {
-  it('parses simple literal', () => {
+  it('parses a simple literal source', () => {
     const [parsed] = parseAll('calls', 'simple.ts');
     expect(parsed?.source).toBe('Hello');
     expect(parsed?.diagnostics).toHaveLength(0);
     expect(parsed?.params).toBeUndefined();
   });
 
-  it('parses single placeholder with matching params', () => {
+  it('parses a single placeholder with matching params', () => {
     const parsed = parseAll('calls', 'placeholders.ts');
     expect(parsed[0]?.source).toBe('Hi {name}');
     expect(parsed[0]?.params?.keys).toEqual(['name']);
@@ -55,41 +55,24 @@ describe('parseArguments', () => {
     expect(summary?.diagnostics).toHaveLength(0);
   });
 
-  it('emits YPK001 for dynamic source', () => {
-    const [parsed] = parseAll('diagnostics', 'ypk001-dynamic-source.ts');
-    expect(parsed?.diagnostics).toHaveLength(1);
-    expect(parsed?.diagnostics[0]?.code).toBe('YPK001');
-    expect(parsed?.diagnostics[0]?.severity).toBe('error');
+  it('parses a no-substitution template literal as the source', () => {
+    const sf = ts.createSourceFile(
+      'inline.ts',
+      "import { $t } from 'yapyak';\nexport const x = $t(`Hello`);\n",
+      ts.ScriptTarget.ESNext,
+      true,
+      ts.ScriptKind.TS,
+    );
+    const calls = discoverCalls(sf, resolveBindings(sf));
+    const parsed = parseArguments(calls[0]!);
+    expect(parsed.source).toBe('Hello');
+    expect(parsed.diagnostics).toHaveLength(0);
   });
 
-  it('emits YPK002 for missing param', () => {
-    const [parsed] = parseAll('diagnostics', 'ypk002-missing-param.ts');
-    const ypk002 = parsed?.diagnostics.filter((d) => d.code === 'YPK002');
-    expect(ypk002).toHaveLength(1);
-    expect(ypk002?.[0]?.message).toContain('name');
-  });
-
-  it('emits YPK003 for extra param', () => {
-    const [parsed] = parseAll('diagnostics', 'ypk003-extra-param.ts');
-    const ypk003 = parsed?.diagnostics.filter((d) => d.code === 'YPK003');
-    expect(ypk003).toHaveLength(1);
-    expect(ypk003?.[0]?.severity).toBe('warning');
-    expect(ypk003?.[0]?.message).toContain('age');
-  });
-
-  it('emits YPK005 for spread params', () => {
-    const [parsed] = parseAll('diagnostics', 'ypk005-spread-params.ts');
-    expect(parsed?.params?.kind).toBe('spread');
-    const ypk005 = parsed?.diagnostics.filter((d) => d.code === 'YPK005');
-    expect(ypk005).toHaveLength(1);
-    expect(ypk005?.[0]?.severity).toBe('warning');
-  });
-
-  it('emits YPK008 for empty source', () => {
-    const [parsed] = parseAll('diagnostics', 'ypk008-empty-source.ts');
-    const ypk008 = parsed?.diagnostics.filter((d) => d.code === 'YPK008');
-    expect(ypk008).toHaveLength(1);
-    expect(parsed?.source).toBe('');
+  it('parses placeholder keys from plural blocks', () => {
+    const [parsed] = parseAll('diagnostics', 'ypk007-invalid-plural.ts');
+    expect(parsed?.source).toContain('plural');
+    expect(parsed?.params?.keys).toEqual(['count']);
   });
 
   it('preserves inline options object verbatim', () => {
@@ -116,31 +99,50 @@ describe('parseArguments', () => {
     expect(farewell?.optionsExpression).toBe('{ locale: previewLocale.value }');
   });
 
-  it('extracts placeholder keys from plural blocks', () => {
-    const [parsed] = parseAll('diagnostics', 'ypk007-invalid-plural.ts');
-    expect(parsed?.source).toContain('plural');
-    expect(parsed?.params?.keys).toEqual(['count']);
-  });
+  describe('diagnostics', () => {
+    it('emits YPK001 for dynamic source', () => {
+      const [parsed] = parseAll('diagnostics', 'ypk001-dynamic-source.ts');
+      expect(parsed?.diagnostics).toHaveLength(1);
+      expect(parsed?.diagnostics[0]?.code).toBe('YPK001');
+      expect(parsed?.diagnostics[0]?.severity).toBe('error');
+    });
 
-  it('emits YPK007 for plural without other branch', () => {
-    const [parsed] = parseAll('diagnostics', 'ypk007-invalid-plural.ts');
-    const ypk007 = parsed?.diagnostics.filter((d) => d.code === 'YPK007');
-    expect(ypk007).toHaveLength(1);
-    expect(ypk007?.[0]?.severity).toBe('error');
-    expect(ypk007?.[0]?.message).toContain('count');
-  });
+    it('emits YPK002 for missing param', () => {
+      const [parsed] = parseAll('diagnostics', 'ypk002-missing-param.ts');
+      const ypk002 = parsed?.diagnostics.filter((d) => d.code === 'YPK002');
+      expect(ypk002).toHaveLength(1);
+      expect(ypk002?.[0]?.message).toContain('name');
+    });
 
-  it('treats no-substitution template literal as valid source', () => {
-    const sf = ts.createSourceFile(
-      'inline.ts',
-      "import { $t } from 'yapyak';\nexport const x = $t(`Hello`);\n",
-      ts.ScriptTarget.ESNext,
-      true,
-      ts.ScriptKind.TS,
-    );
-    const calls = discoverCalls(sf, resolveBindings(sf));
-    const parsed = parseArguments(calls[0]!);
-    expect(parsed.source).toBe('Hello');
-    expect(parsed.diagnostics).toHaveLength(0);
+    it('emits YPK003 for extra param', () => {
+      const [parsed] = parseAll('diagnostics', 'ypk003-extra-param.ts');
+      const ypk003 = parsed?.diagnostics.filter((d) => d.code === 'YPK003');
+      expect(ypk003).toHaveLength(1);
+      expect(ypk003?.[0]?.severity).toBe('warning');
+      expect(ypk003?.[0]?.message).toContain('age');
+    });
+
+    it('emits YPK005 for spread params', () => {
+      const [parsed] = parseAll('diagnostics', 'ypk005-spread-params.ts');
+      expect(parsed?.params?.kind).toBe('spread');
+      const ypk005 = parsed?.diagnostics.filter((d) => d.code === 'YPK005');
+      expect(ypk005).toHaveLength(1);
+      expect(ypk005?.[0]?.severity).toBe('warning');
+    });
+
+    it('emits YPK007 for plural without other branch', () => {
+      const [parsed] = parseAll('diagnostics', 'ypk007-invalid-plural.ts');
+      const ypk007 = parsed?.diagnostics.filter((d) => d.code === 'YPK007');
+      expect(ypk007).toHaveLength(1);
+      expect(ypk007?.[0]?.severity).toBe('error');
+      expect(ypk007?.[0]?.message).toContain('count');
+    });
+
+    it('emits YPK008 for empty source', () => {
+      const [parsed] = parseAll('diagnostics', 'ypk008-empty-source.ts');
+      const ypk008 = parsed?.diagnostics.filter((d) => d.code === 'YPK008');
+      expect(ypk008).toHaveLength(1);
+      expect(parsed?.source).toBe('');
+    });
   });
 });
