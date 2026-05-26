@@ -187,6 +187,16 @@ describe('anthropic', () => {
   });
 
   describe('batch', () => {
+    const POOL: Record<string, string> = {
+      Cancel: 'Avbryt',
+      Hello: 'Hej',
+      'Loading...': 'Laddar...',
+      Save: 'Spara',
+      'Save changes': 'Spara ändringar',
+      Settings: 'Inställningar',
+      World: 'Världen',
+    };
+
     it('returns all translations in a single call', async () => {
       let calls = 0;
       vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
@@ -254,22 +264,21 @@ describe('anthropic', () => {
     });
 
     it('preserves order when later chunks resolve before earlier chunks', async () => {
-      const callOrder: number[] = [];
       vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
         const body = JSON.parse(init.body as string);
         const items: { source: string }[] = JSON.parse(
           body.messages[0].content,
         );
-        const firstSource = items[0]?.source ?? '';
-        const chunkIndex = Number(firstSource.replace('s', '')) / 2;
-        callOrder.push(chunkIndex);
-        const delay = chunkIndex === 0 ? 30 : 0;
+        const isFirstChunk = items[0]?.source === 'Hello';
+        const delay = isFirstChunk ? 30 : 0;
         await new Promise((resolve) => setTimeout(resolve, delay));
         return new Response(
           JSON.stringify({
             content: [
               {
-                text: JSON.stringify(items.map((item) => `t-${item.source}`)),
+                text: JSON.stringify(
+                  items.map((item) => POOL[item.source] ?? ''),
+                ),
                 type: 'text',
               },
             ],
@@ -278,14 +287,29 @@ describe('anthropic', () => {
         );
       });
       const t = anthropic({ apiKey: 'k', batchSize: 2, concurrency: 3 });
-      const requests = Array.from({ length: 6 }, (_, i) => ({
+      const sources = [
+        'Hello',
+        'World',
+        'Save',
+        'Save changes',
+        'Cancel',
+        'Settings',
+      ];
+      const requests = sources.map((source) => ({
         fileId: 'x',
-        source: `s${i}`,
+        source,
         sourceLocale: 'en',
         targetLocale: 'sv',
       }));
       const results = await t.batch?.(requests);
-      expect(results).toEqual(['t-s0', 't-s1', 't-s2', 't-s3', 't-s4', 't-s5']);
+      expect(results).toEqual([
+        'Hej',
+        'Världen',
+        'Spara',
+        'Spara ändringar',
+        'Avbryt',
+        'Inställningar',
+      ]);
     });
 
     it('notifies onChunk after each chunk completes', async () => {
@@ -297,16 +321,30 @@ describe('anthropic', () => {
         return new Response(
           JSON.stringify({
             content: [
-              { text: JSON.stringify(items.map(() => 'ok')), type: 'text' },
+              {
+                text: JSON.stringify(
+                  items.map((item) => POOL[item.source] ?? ''),
+                ),
+                type: 'text',
+              },
             ],
           }),
           { status: 200 },
         );
       });
       const t = anthropic({ apiKey: 'k', batchSize: 2, concurrency: 2 });
-      const requests = Array.from({ length: 7 }, (_, i) => ({
+      const sources = [
+        'Hello',
+        'World',
+        'Save',
+        'Save changes',
+        'Cancel',
+        'Settings',
+        'Loading...',
+      ];
+      const requests = sources.map((source) => ({
         fileId: 'x',
-        source: `s${i}`,
+        source,
         sourceLocale: 'en',
         targetLocale: 'sv',
       }));

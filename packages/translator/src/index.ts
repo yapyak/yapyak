@@ -53,12 +53,17 @@ export interface TranslateRequest {
  * Public extension point. Implemented by the provider packages and by third-party translators. Adding optional fields is allowed; renaming or removing fields is a breaking change.
  */
 export interface Translator {
-  /** Translates a batch of requests. */
+  /**
+   * Translates a batch of requests.
+   *
+   * @param requests - The requests to translate.
+   * @param options - The batch options.
+   */
   batch?(
     requests: TranslateRequest[],
     options?: TranslateBatchOptions,
   ): Promise<string[]>;
-  /** Stable identifier for this translator. Used for logging, cost attribution, cache-key namespacing, and dashboard observability. Convention: lowercase suffix matching the package name (`'anthropic'`, `'openai'`, `'gemini'`, `'ollama'`, `'cloud'`). `createTranslator()` without an explicit `id` defaults to `'custom'`. */
+  /** Stable identifier for this translator. Used for logging, cost attribution, cache-key namespacing, and dashboard observability. Convention: lowercase suffix matching the package name (`'anthropic'`, `'openai'`, `'gemini'`, `'ollama'`, `'cloud'`). */
   id: string;
   (request: TranslateRequest): Promise<string>;
 }

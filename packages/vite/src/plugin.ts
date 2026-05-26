@@ -154,7 +154,7 @@ export function yapyak(): Plugin {
       return;
     }
     const { defaultLocale, locales } = discover();
-    const missing = computeMissingSources(
+    const missing = discoverMissingSources(
       allMessages,
       locales,
       defaultLocale,
@@ -511,7 +511,7 @@ function buildTranslations(input: {
   return translations;
 }
 
-function computeMissingSources(
+function discoverMissingSources(
   messages: ExtractedMessage[],
   locales: readonly string[],
   defaultLocale: string,
