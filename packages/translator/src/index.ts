@@ -63,7 +63,7 @@ export interface Translator {
     requests: TranslateRequest[],
     options?: TranslateBatchOptions,
   ): Promise<string[]>;
-  /** Stable identifier for this translator. Used for logging, cost attribution, cache-key namespacing, and dashboard observability. Convention: lowercase suffix matching the package name (`'anthropic'`, `'openai'`, `'gemini'`, `'ollama'`, `'cloud'`). */
+  /** Stable identifier for this translator. Convention: lowercase suffix matching the package name (`'anthropic'`, `'openai'`, `'gemini'`, `'ollama'`, `'cloud'`). */
   id: string;
   (request: TranslateRequest): Promise<string>;
 }
