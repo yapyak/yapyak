@@ -38,7 +38,6 @@ export type {
 export type {
   CollectionConfig,
   Config,
-  DocExtractorOptions,
   MarkdocSource,
   TypedocSource,
 } from './types/config.ts';

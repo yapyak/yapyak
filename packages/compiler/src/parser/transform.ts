@@ -11,10 +11,12 @@ import type {
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
+import { findMatchingBrace } from './braces';
 import { toMessageId } from './id';
 import { parseArguments } from './parse-arguments';
 import { parsePlaceholders } from './plural';
 import { getProcessor, resolveProcessorKind } from './processor';
+import { getScriptKind } from './script-kind';
 
 const PICK_EXPORT = 'pick';
 const PICK_LOCAL = '_pick';
@@ -218,19 +220,6 @@ function collectCoreImports(sourceFile: ts.SourceFile): ts.ImportDeclaration[] {
   return result;
 }
 
-function getScriptKind(fileId: string, lang: Fragment['lang']): ts.ScriptKind {
-  if (fileId.endsWith('.tsx')) {
-    return ts.ScriptKind.TSX;
-  }
-  if (fileId.endsWith('.jsx')) {
-    return ts.ScriptKind.JSX;
-  }
-  if (lang === 'js') {
-    return ts.ScriptKind.JS;
-  }
-  return ts.ScriptKind.TS;
-}
-
 interface RenderCallReplacementInput {
   callSite: CallSite;
   defaultLocale: string;
@@ -402,24 +391,6 @@ function buildTemplateLiteral(
   }
   result += '`';
   return result;
-}
-
-function findMatchingBrace(source: string, openIdx: number): number {
-  let depth = 1;
-  let i = openIdx + 1;
-  while (i < source.length) {
-    const ch = source[i];
-    if (ch === '{') {
-      depth += 1;
-    } else if (ch === '}') {
-      depth -= 1;
-      if (depth === 0) {
-        return i;
-      }
-    }
-    i += 1;
-  }
-  return source.length;
 }
 
 function readKey(inner: string): string | undefined {

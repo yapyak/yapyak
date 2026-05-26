@@ -1,9 +1,9 @@
-import type { TranslateRequest, Translator } from '@yapyak/translator';
 import type { Config } from '../config';
 
 import { autoTranslate } from '@yapyak/compiler';
 
 import { buildReport } from '../report';
+import { wrapWithProgress } from '../translator-progress';
 import { color, header, progressBar, spinner, symbol } from '../tui';
 
 interface TranslateOptions {
@@ -111,27 +111,4 @@ export async function translate(options: TranslateOptions): Promise<number> {
     `\n  ${color.dim('Review the locale files and tweak as needed.')}\n\n`,
   );
   return failed === 0 ? 0 : 1;
-}
-
-function wrapWithProgress(
-  base: Translator,
-  onProgress: (count: number) => void,
-): Translator {
-  const wrapped: Translator = Object.assign(
-    async (request: TranslateRequest) => {
-      const value = await base(request);
-      onProgress(1);
-      return value;
-    },
-    { id: base.id },
-  );
-  if (typeof base.batch === 'function') {
-    const batchFn = base.batch.bind(base);
-    wrapped.batch = async (requests) => {
-      const results = await batchFn(requests);
-      onProgress(results.length);
-      return results;
-    };
-  }
-  return wrapped;
 }

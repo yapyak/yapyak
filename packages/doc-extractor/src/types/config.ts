@@ -23,5 +23,3 @@ export interface TypedocPackage {
   name: string;
   root: string;
 }
-
-export type DocExtractorOptions = Config;

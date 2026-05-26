@@ -16,6 +16,7 @@ import type {
 } from './types.ts';
 
 import { slugify } from '../../utils/slug.ts';
+import { symbolHref as buildSymbolHref } from '../../utils/symbol-path.ts';
 import { parseMarkdoc } from '../markdoc/parse.ts';
 
 type SymbolIndex = Map<string, string>;
@@ -493,17 +494,14 @@ function isVoidTokens(tokens: TypeToken[]) {
   );
 }
 
-function symbolHref(moduleId: string, name: string) {
-  const safeName = encodeSymbolSegment(name);
-  if (moduleId === currentPackageName) {
-    return `/${currentCollection}/${currentPackageSlug}/${safeName}`;
-  }
-  const subSlug = moduleId.slice(currentPackageName.length + 1);
-  return `/${currentCollection}/${currentPackageSlug}/${subSlug}/${safeName}`;
-}
-
-function encodeSymbolSegment(name: string): string {
-  return name.replace(/^\$/, '');
+function symbolHref(moduleId: string, name: string): string {
+  return buildSymbolHref(
+    moduleId,
+    name,
+    currentCollection,
+    currentPackageName,
+    currentPackageSlug,
+  );
 }
 
 function markdownToInline(source: string): Block[] {

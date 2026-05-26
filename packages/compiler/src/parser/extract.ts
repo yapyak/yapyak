@@ -23,6 +23,7 @@ import { parsePlaceholders } from './plural';
 import { remapRange, toRange } from './position';
 import { getProcessor, resolveProcessorKind } from './processor';
 import { resolveBindings } from './resolve-bindings';
+import { getScriptKind } from './script-kind';
 
 export function extractFile(request: ExtractFileRequest): ExtractFileResult {
   const processorKind =
@@ -184,19 +185,6 @@ function createFragmentSourceFile(
     true,
     getScriptKind(fileId, fragment.lang),
   );
-}
-
-function getScriptKind(fileId: string, lang: Fragment['lang']): ts.ScriptKind {
-  if (fileId.endsWith('.tsx')) {
-    return ts.ScriptKind.TSX;
-  }
-  if (fileId.endsWith('.jsx')) {
-    return ts.ScriptKind.JSX;
-  }
-  if (lang === 'js') {
-    return ts.ScriptKind.JS;
-  }
-  return ts.ScriptKind.TS;
 }
 
 function toPublicPlaceholder(info: PlaceholderInfo): Placeholder {

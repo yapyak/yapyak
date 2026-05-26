@@ -5,6 +5,7 @@ import type {
 import type { SidebarNode } from '../types/manifest.ts';
 
 import { parseFrontmatterOnly } from '../extract/markdoc/parse.ts';
+import { symbolHref } from '../utils/symbol-path.ts';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -261,25 +262,6 @@ function findParentId(id: string, byId: Map<string, ReferenceModule>) {
       return cursor;
     }
   }
-}
-
-function symbolHref(
-  moduleId: string,
-  name: string,
-  collectionName: string,
-  packageName: string,
-  packageSlug: string,
-) {
-  const safeName = encodeSymbolSegment(name);
-  if (moduleId === packageName) {
-    return `/${collectionName}/${packageSlug}/${safeName}`;
-  }
-  const subSlug = moduleId.slice(packageName.length + 1);
-  return `/${collectionName}/${packageSlug}/${subSlug}/${safeName}`;
-}
-
-function encodeSymbolSegment(name: string): string {
-  return name.replace(/^\$/, '');
 }
 
 function lastSegment(id: string) {

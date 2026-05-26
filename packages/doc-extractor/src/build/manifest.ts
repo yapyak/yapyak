@@ -19,6 +19,7 @@ import {
 } from '../extract/typedoc/build-page.ts';
 import { extractTypedoc } from '../extract/typedoc/index.ts';
 import { slugify } from '../utils/slug.ts';
+import { encodeSymbolSegment } from '../utils/symbol-path.ts';
 import { buildMarkdocSidebar, buildTypedocPackageRoot } from './sidebar.ts';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -180,10 +181,6 @@ async function readPackageName(packageDir: string): Promise<string> {
   const raw = await readFile(join(packageDir, 'package.json'), 'utf8');
   const parsed = JSON.parse(raw) as { name: string };
   return parsed.name;
-}
-
-function encodeSymbolSegment(name: string): string {
-  return name.replace(/^\$/, '');
 }
 
 function validateSlug(slug: string): void {
