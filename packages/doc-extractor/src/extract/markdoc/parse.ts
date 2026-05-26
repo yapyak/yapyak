@@ -11,7 +11,7 @@ import type { MetaValue } from '../../types/manifest.ts';
 
 import Markdoc from '@markdoc/markdoc';
 
-import { slugify } from '../../utils/slug.ts';
+import { slugify } from '../../slug.ts';
 
 interface ParsedContent {
   blocks: Block[];

@@ -18,8 +18,8 @@ import {
   buildSymbolPage,
 } from '../extract/typedoc/build-page.ts';
 import { extractTypedoc } from '../extract/typedoc/index.ts';
-import { slugify } from '../utils/slug.ts';
-import { encodeSymbolSegment } from '../utils/symbol-path.ts';
+import { slugify } from '../slug.ts';
+import { encodeSymbolSegment } from '../symbol-path.ts';
 import { buildMarkdocSidebar, buildTypedocPackageRoot } from './sidebar.ts';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';

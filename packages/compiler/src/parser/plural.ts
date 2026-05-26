@@ -1,6 +1,6 @@
 import type { Placeholder } from './type';
 
-import { findMatchingBrace } from './braces';
+import { findMatchingBrace } from './find-matching-brace';
 
 export type PlaceholderKind = Placeholder['kind'];
 

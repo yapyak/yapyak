@@ -5,7 +5,7 @@ import type {
 import type { SidebarNode } from '../types/manifest.ts';
 
 import { parseFrontmatterOnly } from '../extract/markdoc/parse.ts';
-import { symbolHref } from '../utils/symbol-path.ts';
+import { symbolHref } from '../symbol-path.ts';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 

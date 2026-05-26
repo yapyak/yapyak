@@ -3,8 +3,8 @@ import type { Config } from '../config';
 import { autoTranslate } from '@yapyak/compiler';
 
 import { buildReport } from '../report';
-import { wrapWithProgress } from '../translator-progress';
 import { color, header, progressBar, spinner, symbol } from '../tui';
+import { wrapWithProgress } from '../wrap-with-progress';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 

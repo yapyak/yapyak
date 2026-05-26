@@ -15,8 +15,8 @@ import type {
   TypeToken,
 } from './types.ts';
 
-import { slugify } from '../../utils/slug.ts';
-import { symbolHref as buildSymbolHref } from '../../utils/symbol-path.ts';
+import { slugify } from '../../slug.ts';
+import { symbolHref as buildSymbolHref } from '../../symbol-path.ts';
 import { parseMarkdoc } from '../markdoc/parse.ts';
 
 type SymbolIndex = Map<string, string>;

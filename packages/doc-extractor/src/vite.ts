@@ -2,12 +2,26 @@ import type { Plugin, ViteDevServer } from 'vite';
 import type { Config } from './types/config.ts';
 
 import { buildManifest } from './build/manifest.ts';
-import { debounce } from './utils/debounce.ts';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 
 const VIRTUAL_ID = 'virtual:doc-extractor';
 const RESOLVED_ID = '\0virtual:doc-extractor';
+
+function debounce<T extends (...args: never[]) => unknown>(
+  fn: T,
+  waitMs: number,
+): (...args: Parameters<T>) => void {
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  return (...args: Parameters<T>) => {
+    if (timer !== null) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(() => {
+      fn(...args);
+    }, waitMs);
+  };
+}
 
 export function docExtractor(options: Config): Plugin {
   let outAbsolute = '';
