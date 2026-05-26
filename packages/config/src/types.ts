@@ -17,6 +17,15 @@ export type PersistenceOption =
 /** Configuration for yapyak. */
 export interface YapyakConfig {
   /**
+   * The maximum number of untranslated strings per save eligible for auto-translation.
+   *
+   * @remarks
+   * `0` disables auto-translation.
+   *
+   * @defaultValue `20`
+   */
+  autoTranslateThreshold?: number;
+  /**
    * The default locale.
    *
    * @remarks
@@ -56,6 +65,7 @@ export interface YapyakConfig {
 
 /** {@link YapyakConfig} with defaults applied. */
 export interface NormalizedYapyakConfig {
+  autoTranslateThreshold: number;
   defaultLocale: string | undefined;
   detectAcceptLanguage: boolean;
   exclude: YapyakFilterPattern;

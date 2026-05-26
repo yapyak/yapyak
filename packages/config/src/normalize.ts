@@ -5,6 +5,7 @@ import type {
   YapyakConfig,
 } from './types';
 
+const DEFAULT_AUTO_TRANSLATE_THRESHOLD = 20;
 const DEFAULT_INCLUDE = ['**/*.{ts,tsx,jsx,js,vue,svelte,astro}'];
 const DEFAULT_EXCLUDE = ['**/node_modules/**', '**/dist/**'];
 const DEFAULT_LOCALES_DIR = 'locales';
@@ -15,6 +16,8 @@ export function normalizeYapyakConfig(
   config: YapyakConfig,
 ): NormalizedYapyakConfig {
   return {
+    autoTranslateThreshold:
+      config.autoTranslateThreshold ?? DEFAULT_AUTO_TRANSLATE_THRESHOLD,
     defaultLocale: config.defaultLocale,
     detectAcceptLanguage: config.detectAcceptLanguage ?? false,
     exclude: config.exclude ?? DEFAULT_EXCLUDE,

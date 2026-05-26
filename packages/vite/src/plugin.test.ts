@@ -378,6 +378,118 @@ describe('yapyak', () => {
       expect(after).toBe(before);
     });
   });
+
+  describe('auto-translate threshold', () => {
+    function writeConfig(opts: { threshold?: number }): void {
+      const thresholdLine =
+        opts.threshold === undefined
+          ? ''
+          : `  autoTranslateThreshold: ${opts.threshold},`;
+      const config = [
+        "const map = { Hello: 'Hej', World: 'Världen', Save: 'Spara' };",
+        'const translator = Object.assign(',
+        '  async (req) => map[req.source] ?? req.source,',
+        '  {',
+        "    id: 'test',",
+        '    async batch(reqs) {',
+        '      return reqs.map((r) => map[r.source] ?? r.source);',
+        '    },',
+        '  },',
+        ');',
+        'export default {',
+        thresholdLine,
+        '  translator,',
+        '};',
+      ].join('\n');
+      writeFileSync(join(root, 'yapyak.config.ts'), config);
+    }
+
+    it('writes translations when new strings stay under the threshold', async () => {
+      writeFileSync(localePath, '{}');
+      writeConfig({});
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      const server = createMockServer(createMockWatcher());
+      invokeConfigureServer(plugin, server);
+
+      const newFile = join(root, 'src', 'foo.tsx');
+      writeFileSync(
+        newFile,
+        "import { t } from 'yapyak';\nexport const x = () => t('Hello');\n",
+      );
+      server.watcher.emit('add', newFile);
+
+      await vi.waitFor(
+        () => {
+          const data = JSON.parse(readFileSync(localePath, 'utf8'));
+          expect(data['src/foo.tsx']?.Hello).toBe('Hej');
+        },
+        { interval: 20, timeout: 2000 },
+      );
+    });
+
+    it('blocks auto-translate when new strings exceed the threshold', async () => {
+      writeFileSync(localePath, '{}');
+      writeConfig({ threshold: 1 });
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      const server = createMockServer(createMockWatcher());
+      invokeConfigureServer(plugin, server);
+
+      const newFile = join(root, 'src', 'foo.tsx');
+      writeFileSync(
+        newFile,
+        "import { t } from 'yapyak';\nexport const a = () => t('Hello');\nexport const b = () => t('World');\n",
+      );
+      server.watcher.emit('add', newFile);
+
+      await vi.waitFor(
+        () => {
+          const data = JSON.parse(readFileSync(localePath, 'utf8'));
+          expect(data['src/foo.tsx']).toBeDefined();
+        },
+        { interval: 20, timeout: 2000 },
+      );
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const data = JSON.parse(readFileSync(localePath, 'utf8'));
+      expect(data['src/foo.tsx']).toEqual({ Hello: '', World: '' });
+    });
+
+    it('blocks auto-translate when the threshold is `0`', async () => {
+      writeFileSync(localePath, '{}');
+      writeConfig({ threshold: 0 });
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      const server = createMockServer(createMockWatcher());
+      invokeConfigureServer(plugin, server);
+
+      const newFile = join(root, 'src', 'foo.tsx');
+      writeFileSync(
+        newFile,
+        "import { t } from 'yapyak';\nexport const x = () => t('Hello');\n",
+      );
+      server.watcher.emit('add', newFile);
+
+      await vi.waitFor(
+        () => {
+          const data = JSON.parse(readFileSync(localePath, 'utf8'));
+          expect(data['src/foo.tsx']).toBeDefined();
+        },
+        { interval: 20, timeout: 2000 },
+      );
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const data = JSON.parse(readFileSync(localePath, 'utf8'));
+      expect(data['src/foo.tsx']).toEqual({ Hello: '' });
+    });
+  });
 });
 
 async function invokeConfigResolved(

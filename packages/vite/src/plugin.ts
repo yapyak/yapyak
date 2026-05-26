@@ -138,20 +138,45 @@ export function yapyak(): Plugin {
   }
 
   function fillStubs(): void {
-    const translator = getNormalized().translator;
+    const config = getNormalized();
+    const translator = config.translator;
     if (!translator) {
+      return;
+    }
+    if (config.autoTranslateThreshold <= 0) {
       return;
     }
     const allMessages: ExtractedMessage[] = [];
     for (const list of messagesByFile.values()) {
       allMessages.push(...list);
     }
+    if (allMessages.length === 0) {
+      return;
+    }
     const { defaultLocale, locales } = discover();
+    const missing = computeMissingSources(
+      allMessages,
+      locales,
+      defaultLocale,
+      getLocaleData(),
+    );
+    if (missing.size === 0) {
+      return;
+    }
+    if (missing.size > config.autoTranslateThreshold) {
+      info(
+        `[yapyak] ${missing.size} new strings detected. Run \`${runYapyakCommand('translate')}\` to fill.`,
+      );
+      return;
+    }
+    const filtered = allMessages.filter((message) =>
+      missing.has(message.source),
+    );
     void autoTranslate({
       defaultLocale,
       locales,
-      localesDir: getNormalized().localesDir,
-      messages: allMessages,
+      localesDir: config.localesDir,
+      messages: filtered,
       projectRoot,
       translator,
     })
@@ -484,6 +509,39 @@ function buildTranslations(input: {
     }
   }
   return translations;
+}
+
+function computeMissingSources(
+  messages: ExtractedMessage[],
+  locales: readonly string[],
+  defaultLocale: string,
+  data: LocaleData,
+): Set<string> {
+  const missing = new Set<string>();
+  for (const message of messages) {
+    if (missing.has(message.source)) {
+      continue;
+    }
+    let flagged = false;
+    for (const locale of locales) {
+      if (locale === defaultLocale) {
+        continue;
+      }
+      const localeFile = data[locale];
+      for (const location of message.locations) {
+        const existing = localeFile?.[location.fileId]?.[message.source];
+        if (typeof existing !== 'string' || existing === '') {
+          missing.add(message.source);
+          flagged = true;
+          break;
+        }
+      }
+      if (flagged) {
+        break;
+      }
+    }
+  }
+  return missing;
 }
 
 function toCallSitePositions(message: ExtractedMessage): CallSitePosition[] {
