@@ -253,6 +253,47 @@ describe('anthropic', () => {
       expect(calls).toBe(3);
     });
 
+    it('preserves order when later chunks resolve before earlier chunks', async () => {
+      const callOrder: number[] = [];
+      vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
+        const body = JSON.parse(init.body as string);
+        const items: { source: string }[] = JSON.parse(
+          body.messages[0].content,
+        );
+        const firstSource = items[0]?.source ?? '';
+        const chunkIndex = Number(firstSource.replace('s', '')) / 2;
+        callOrder.push(chunkIndex);
+        const delay = chunkIndex === 0 ? 30 : 0;
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        return new Response(
+          JSON.stringify({
+            content: [
+              {
+                text: JSON.stringify(items.map((item) => `t-${item.source}`)),
+                type: 'text',
+              },
+            ],
+          }),
+          { status: 200 },
+        );
+      });
+      const t = anthropic({ apiKey: 'k', batchSize: 2, concurrency: 3 });
+      const requests = Array.from({ length: 6 }, (_, i) => ({
+        fileId: 'x',
+        source: `s${i}`,
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      }));
+      const results = await t.batch?.(requests);
+      expect(results).toEqual(['t-s0', 't-s1', 't-s2', 't-s3', 't-s4', 't-s5']);
+    });
+
+    it('throws when concurrency is not a positive integer', () => {
+      expect(() => anthropic({ apiKey: 'k', concurrency: 0 })).toThrow(
+        /concurrency must be a positive integer/,
+      );
+    });
+
     it('throws when batch response length does not match', async () => {
       vi.stubGlobal(
         'fetch',

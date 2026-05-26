@@ -22,9 +22,15 @@ export interface OllamaOptions {
   /**
    * The maximum items per API call.
    *
-   * @defaultValue `10`
+   * @defaultValue `25`
    */
   batchSize?: number;
+  /**
+   * The maximum number of API calls running in parallel.
+   *
+   * @defaultValue `5`
+   */
+  concurrency?: number;
   /**
    * How much call-site context to include.
    *
@@ -92,6 +98,7 @@ const DEFAULT_MAX_RETRIES = 1;
 export function ollama(options: OllamaOptions = {}): Translator {
   const {
     batchSize,
+    concurrency,
     context,
     endpoint = DEFAULT_ENDPOINT,
     headers: customHeaders,
@@ -103,6 +110,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
 
   return createTranslator({
     batchSize,
+    concurrency,
     context,
     id: 'ollama',
     async translate(params) {

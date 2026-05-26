@@ -28,9 +28,15 @@ export interface AnthropicOptions {
   /**
    * The maximum items per API call.
    *
-   * @defaultValue `10`
+   * @defaultValue `25`
    */
   batchSize?: number;
+  /**
+   * The maximum number of API calls running in parallel.
+   *
+   * @defaultValue `5`
+   */
+  concurrency?: number;
   /**
    * How much call-site context to include.
    *
@@ -81,6 +87,7 @@ const ANTHROPIC_VERSION = '2023-06-01';
 const DEFAULT_TEMPERATURE = 0.2;
 const DEFAULT_TIMEOUT = 30_000;
 const DEFAULT_MAX_RETRIES = 2;
+const MAX_TOKENS_CAP = 8000;
 
 /**
  * Creates an Anthropic translator.
@@ -109,6 +116,7 @@ export function anthropic(options: AnthropicOptions): Translator {
   const {
     apiKey,
     batchSize,
+    concurrency,
     context,
     endpoint = DEFAULT_ENDPOINT,
     headers: customHeaders,
@@ -120,13 +128,17 @@ export function anthropic(options: AnthropicOptions): Translator {
 
   return createTranslator({
     batchSize,
+    concurrency,
     context,
     id: 'anthropic',
     async translate(params) {
       const { items, signal, sourceLocale, targetLocale } = params;
       const init: RequestInit = {
         body: JSON.stringify({
-          max_tokens: Math.max(1024, items.length * 256),
+          max_tokens: Math.min(
+            MAX_TOKENS_CAP,
+            Math.max(1024, items.length * 128),
+          ),
           messages: [{ content: JSON.stringify(items), role: 'user' }],
           model,
           system: buildSystem(options, sourceLocale, targetLocale),

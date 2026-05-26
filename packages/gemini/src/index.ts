@@ -28,9 +28,15 @@ export interface GeminiOptions {
   /**
    * The maximum items per API call.
    *
-   * @defaultValue `10`
+   * @defaultValue `25`
    */
   batchSize?: number;
+  /**
+   * The maximum number of API calls running in parallel.
+   *
+   * @defaultValue `5`
+   */
+  concurrency?: number;
   /**
    * How much call-site context to include.
    *
@@ -108,6 +114,7 @@ export function gemini(options: GeminiOptions): Translator {
   const {
     apiKey,
     batchSize,
+    concurrency,
     context,
     endpoint = DEFAULT_ENDPOINT,
     headers: customHeaders,
@@ -119,6 +126,7 @@ export function gemini(options: GeminiOptions): Translator {
 
   return createTranslator({
     batchSize,
+    concurrency,
     context,
     id: 'gemini',
     async translate(params) {

@@ -129,9 +129,15 @@ export interface CreateTranslatorOptions {
   /**
    * The maximum number of items per `translate` call.
    *
-   * @defaultValue `10`
+   * @defaultValue `25`
    */
   batchSize?: number;
+  /**
+   * The maximum number of `translate` calls running in parallel.
+   *
+   * @defaultValue `5`
+   */
+  concurrency?: number;
   /**
    * How much call-site context to include.
    *
@@ -148,7 +154,8 @@ export interface CreateTranslatorOptions {
   translate: (params: TranslateBatchRequest) => string[] | Promise<string[]>;
 }
 
-const DEFAULT_BATCH_SIZE = 10;
+const DEFAULT_BATCH_SIZE = 25;
+const DEFAULT_CONCURRENCY = 5;
 const DEFAULT_CONTEXT: ContextLevel = 'minimal';
 const DEFAULT_ID = 'custom';
 
@@ -181,6 +188,12 @@ export function createTranslator(options: CreateTranslatorOptions): Translator {
       `createTranslator: batchSize must be a positive integer, got ${String(batchSize)}.`,
     );
   }
+  const concurrency = options.concurrency ?? DEFAULT_CONCURRENCY;
+  if (!Number.isInteger(concurrency) || concurrency <= 0) {
+    throw new Error(
+      `createTranslator: concurrency must be a positive integer, got ${String(concurrency)}.`,
+    );
+  }
   const contextLevel = options.context ?? DEFAULT_CONTEXT;
 
   async function runBatch(requests: TranslateRequest[]): Promise<string[]> {
@@ -205,13 +218,29 @@ export function createTranslator(options: CreateTranslatorOptions): Translator {
   }
 
   async function batch(requests: TranslateRequest[]): Promise<string[]> {
-    const results: string[] = [];
+    const chunks: TranslateRequest[][] = [];
     for (let i = 0; i < requests.length; i += batchSize) {
-      const chunk = requests.slice(i, i + batchSize);
-      const chunkResult = await runBatch(chunk);
-      results.push(...chunkResult);
+      chunks.push(requests.slice(i, i + batchSize));
     }
-    return results;
+    if (chunks.length === 0) {
+      return [];
+    }
+    const chunkResults: string[][] = new Array(chunks.length);
+    let cursor = 0;
+    async function worker(): Promise<void> {
+      while (cursor < chunks.length) {
+        const myIndex = cursor;
+        cursor += 1;
+        const chunk = chunks[myIndex];
+        if (!chunk) {
+          continue;
+        }
+        chunkResults[myIndex] = await runBatch(chunk);
+      }
+    }
+    const workerCount = Math.min(concurrency, chunks.length);
+    await Promise.all(Array.from({ length: workerCount }, () => worker()));
+    return chunkResults.flat();
   }
 
   async function single(request: TranslateRequest): Promise<string> {
