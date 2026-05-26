@@ -12,7 +12,7 @@
       "!**/dist",
       "!**/node_modules",
       "!**/routeTree.gen.*",
-      "!**/api-manifest.json",
+      "!**/manifest.json",
       "!**/parser/fixtures"
     ]
   }

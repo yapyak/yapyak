@@ -4,6 +4,7 @@ import type { LocaleFile } from './file';
 
 import { readLocaleFile } from './file';
 import { writeLocaleFile } from './writer';
+import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 export interface AutoTranslateOptions {
@@ -118,6 +119,9 @@ export async function autoTranslate(
     }
 
     if (touched) {
+      if (!existsSync(localePath)) {
+        continue;
+      }
       writeLocaleFile({
         after: data,
         extractedSources,

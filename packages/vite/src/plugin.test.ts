@@ -159,15 +159,15 @@ describe('yapyak', () => {
       expect(newFileIds).toHaveLength(5);
     });
 
-    it('restarts the server when adding a locale file', async () => {
+    it('notifies the client when adding a locale file', async () => {
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
       invokeBuildStart(plugin);
 
       vi.useFakeTimers();
-      const restart = vi.fn(() => Promise.resolve());
+      const send = vi.fn();
       const server = createMockServer(createMockWatcher());
-      server.restart = restart;
+      server.ws.send = send;
       invokeConfigureServer(plugin, server);
       const watcher = server.watcher;
 
@@ -176,19 +176,25 @@ describe('yapyak', () => {
       watcher.emit('add', newLocale);
       await vi.advanceTimersByTimeAsync(60);
 
-      expect(restart).toHaveBeenCalledTimes(1);
+      expect(send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ locale: 'fr' }),
+          event: 'yapyak:locale-added',
+          type: 'custom',
+        }),
+      );
     });
 
-    it('restarts the server when removing a locale file', async () => {
+    it('notifies the client when removing a locale file', async () => {
       writeFileSync(join(root, 'locales', 'fr.json'), '{}');
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
       invokeBuildStart(plugin);
 
       vi.useFakeTimers();
-      const restart = vi.fn(() => Promise.resolve());
+      const send = vi.fn();
       const server = createMockServer(createMockWatcher());
-      server.restart = restart;
+      server.ws.send = send;
       invokeConfigureServer(plugin, server);
       const watcher = server.watcher;
 
@@ -197,18 +203,24 @@ describe('yapyak', () => {
       watcher.emit('unlink', removed);
       await vi.advanceTimersByTimeAsync(60);
 
-      expect(restart).toHaveBeenCalledTimes(1);
+      expect(send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: { locale: 'fr' },
+          event: 'yapyak:locale-removed',
+          type: 'custom',
+        }),
+      );
     });
 
-    it('blocks restart for non-`.json` files in the locales directory', async () => {
+    it('blocks notification for non-`.json` files in the locales directory', async () => {
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
       invokeBuildStart(plugin);
 
       vi.useFakeTimers();
-      const restart = vi.fn(() => Promise.resolve());
+      const send = vi.fn();
       const server = createMockServer(createMockWatcher());
-      server.restart = restart;
+      server.ws.send = send;
       invokeConfigureServer(plugin, server);
       const watcher = server.watcher;
 
@@ -217,7 +229,30 @@ describe('yapyak', () => {
       watcher.emit('add', readme);
       await vi.advanceTimersByTimeAsync(60);
 
-      expect(restart).not.toHaveBeenCalled();
+      expect(send).not.toHaveBeenCalled();
+    });
+
+    it('writes empty stubs without translating when adding a locale file', async () => {
+      writeFileSync(
+        join(root, 'src', 'foo.tsx'),
+        "import { t } from 'yapyak';\nexport const x = () => t('Hello');\n",
+      );
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const server = createMockServer(createMockWatcher());
+      invokeConfigureServer(plugin, server);
+      const watcher = server.watcher;
+
+      const newLocale = join(root, 'locales', 'fr.json');
+      writeFileSync(newLocale, '{}');
+      watcher.emit('add', newLocale);
+      await vi.advanceTimersByTimeAsync(60);
+
+      const after = JSON.parse(readFileSync(newLocale, 'utf8'));
+      expect(after).toEqual({ 'src/foo.tsx': { Hello: '' } });
     });
 
     it('reloads candidate modules when editing a locale file', async () => {
@@ -330,11 +365,21 @@ interface MockModule {
   url: string;
 }
 
+interface MockMessage {
+  data: Record<string, unknown>;
+  event: string;
+  type: string;
+}
+
 interface MockServer {
-  moduleGraph: { idToModuleMap: Map<unknown, MockModule> };
+  moduleGraph: {
+    getModuleById: (id: string) => MockModule | undefined;
+    idToModuleMap: Map<unknown, MockModule>;
+  };
   reloadModule: (mod: unknown) => Promise<void>;
   restart: () => Promise<void>;
   watcher: MockWatcher;
+  ws: { send: (message: MockMessage) => void };
 }
 
 function createMockWatcher(): MockWatcher {
@@ -344,11 +389,16 @@ function createMockWatcher(): MockWatcher {
 }
 
 function createMockServer(watcher: MockWatcher): MockServer {
+  const idToModuleMap = new Map<unknown, MockModule>();
   return {
-    moduleGraph: { idToModuleMap: new Map() },
+    moduleGraph: {
+      getModuleById: (id: string) => idToModuleMap.get(id),
+      idToModuleMap,
+    },
     reloadModule: () => Promise.resolve(),
     restart: () => Promise.resolve(),
     watcher,
+    ws: { send: () => {} },
   };
 }
 

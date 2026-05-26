@@ -26,6 +26,17 @@ import { join, relative } from 'node:path';
 const RUNTIME_ID = '@yapyak/runtime';
 const RUNTIME_RESOLVED = `\0${RUNTIME_ID}`;
 
+const HMR_LISTENER = [
+  'if (import.meta.hot) {',
+  "  import.meta.hot.on('yapyak:locale-added', (data) => {",
+  "    console.log(`[yapyak] New locale '${data.locale}' detected. ${data.hint}`);",
+  '  });',
+  "  import.meta.hot.on('yapyak:locale-removed', (data) => {",
+  "    console.log(`[yapyak] Locale '${data.locale}' removed.`);",
+  '  });',
+  '}',
+].join('\n');
+
 interface CallSitePosition {
   column: number;
   line: number;
@@ -220,22 +231,54 @@ export function yapyak(): Plugin {
         fillStubs();
       }, 50);
 
-      const scheduleRestart = debounce(() => {
-        void server.restart();
-      }, 50);
-
       const isLocaleFile = (path: string): boolean => {
         const dir = join(projectRoot, getNormalized().localesDir);
         return path.startsWith(`${dir}/`) && path.endsWith('.json');
       };
 
-      const invalidateLocaleData = debounce(() => {
-        localeCache = null;
+      const localeFromPath = (path: string): string => {
+        const dir = join(projectRoot, getNormalized().localesDir);
+        const name = path.slice(dir.length + 1);
+        return name.slice(0, -'.json'.length);
+      };
+
+      const reloadCandidateModules = (): void => {
         for (const mod of server.moduleGraph.idToModuleMap.values()) {
           if (mod.file !== null && isCandidateId(mod.file, filter)) {
             void server.reloadModule(mod);
           }
         }
+      };
+
+      const reloadRuntimeModule = (): void => {
+        const runtimeMod = server.moduleGraph.getModuleById(RUNTIME_RESOLVED);
+        if (runtimeMod) {
+          void server.reloadModule(runtimeMod);
+        }
+      };
+
+      const invalidateLocaleData = debounce(() => {
+        localeCache = null;
+        reloadCandidateModules();
+      }, 50);
+
+      const syncLocaleStructure = debounce(() => {
+        resolved = null;
+        localeCache = null;
+        const { defaultLocale, locales } = discover();
+        const allMessages: ExtractedMessage[] = [];
+        for (const list of messagesByFile.values()) {
+          allMessages.push(...list);
+        }
+        syncLocaleFiles({
+          defaultLocale,
+          locales,
+          localesDir: getNormalized().localesDir,
+          messages: allMessages,
+          projectRoot,
+        });
+        reloadRuntimeModule();
+        reloadCandidateModules();
       }, 50);
 
       server.watcher.on('change', (path: string) => {
@@ -255,7 +298,15 @@ export function yapyak(): Plugin {
           return;
         }
         if (isLocaleFile(path)) {
-          scheduleRestart();
+          const locale = localeFromPath(path);
+          const hint = `Run \`${runYapyakCommand(`translate ${locale}`)}\` to fill the stubs.`;
+          syncLocaleStructure();
+          console.log(`[yapyak] New locale '${locale}' detected. ${hint}`);
+          server.ws.send({
+            data: { hint, locale },
+            event: 'yapyak:locale-added',
+            type: 'custom',
+          });
         }
       });
 
@@ -266,7 +317,14 @@ export function yapyak(): Plugin {
           return;
         }
         if (isLocaleFile(path)) {
-          scheduleRestart();
+          const locale = localeFromPath(path);
+          syncLocaleStructure();
+          console.log(`[yapyak] Locale '${locale}' removed.`);
+          server.ws.send({
+            data: { locale },
+            event: 'yapyak:locale-removed',
+            type: 'custom',
+          });
         }
       });
     },
@@ -314,13 +372,14 @@ export function yapyak(): Plugin {
       if (id === RUNTIME_RESOLVED) {
         const normalized = getNormalized();
         const resolved = discover();
-        return defineRuntime({
+        const runtime = defineRuntime({
           defaultLocale: resolved.defaultLocale,
           detectAcceptLanguage: normalized.detectAcceptLanguage,
           locales: resolved.locales,
           persistence: normalized.persistence,
           syncHtmlLang: normalized.syncHtmlLang,
         });
+        return `${runtime}\n${HMR_LISTENER}`;
       }
       return null;
     },
@@ -414,6 +473,20 @@ function isCandidateId(id: string, filter: (id: string) => boolean): boolean {
   }
   const path = id.split('?')[0] ?? id;
   return filter(path);
+}
+
+function runYapyakCommand(args: string): string {
+  const ua = process.env.npm_config_user_agent ?? '';
+  if (ua.startsWith('pnpm/')) {
+    return `pnpm yapyak ${args}`;
+  }
+  if (ua.startsWith('yarn/')) {
+    return `yarn yapyak ${args}`;
+  }
+  if (ua.startsWith('bun/')) {
+    return `bunx yapyak ${args}`;
+  }
+  return `npx yapyak ${args}`;
 }
 
 function toFileId(projectRoot: string, id: string): string {
