@@ -67,7 +67,11 @@ function walk(
       continue;
     }
     if (stat.isDirectory()) {
-      if (!filter(join(fullPath, PROBE_FILE))) {
+      const probeId = relative(
+        projectRoot,
+        join(fullPath, PROBE_FILE),
+      ).replaceAll('\\', '/');
+      if (!filter(probeId)) {
         continue;
       }
       walk(fullPath, projectRoot, filter, results);
@@ -76,7 +80,8 @@ function walk(
     if (!stat.isFile()) {
       continue;
     }
-    if (!filter(fullPath)) {
+    const fileId = relative(projectRoot, fullPath).replaceAll('\\', '/');
+    if (!filter(fileId)) {
       continue;
     }
     let code: string;
@@ -85,7 +90,6 @@ function walk(
     } catch {
       continue;
     }
-    const fileId = relative(projectRoot, fullPath).replaceAll('\\', '/');
     results.push({ code, fileId });
   }
 }
