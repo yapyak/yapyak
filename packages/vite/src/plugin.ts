@@ -20,7 +20,8 @@ import {
 import { createFilter, loadYapyakConfig } from '@yapyak/config';
 import { defineRuntime } from '@yapyak/runtime';
 
-import { relative } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { join, relative } from 'node:path';
 
 const RUNTIME_ID = '@yapyak/runtime';
 const RUNTIME_RESOLVED = `\0${RUNTIME_ID}`;
@@ -184,13 +185,74 @@ export function yapyak(): Plugin {
       filter = createFilter(result.config.include, result.config.exclude);
     },
     configureServer(server): void {
-      if (configFile === null) {
-        return;
+      if (configFile !== null) {
+        server.watcher.add(configFile);
+        server.watcher.on('change', (path) => {
+          if (path === configFile) {
+            server.restart();
+          }
+        });
       }
-      server.watcher.add(configFile);
-      server.watcher.on('change', (path) => {
-        if (path === configFile) {
-          server.restart();
+
+      const pending = new Map<string, 'add' | 'unlink'>();
+      const flush = debounce(() => {
+        if (pending.size === 0) {
+          return;
+        }
+        const { locales } = discover();
+        for (const [fileId, kind] of pending) {
+          if (kind === 'unlink') {
+            messagesByFile.delete(fileId);
+            continue;
+          }
+          let code: string;
+          try {
+            code = readFileSync(join(projectRoot, fileId), 'utf8');
+          } catch {
+            messagesByFile.delete(fileId);
+            continue;
+          }
+          const result = extractFile({ fileId, locales, source: code });
+          logErrors(result);
+          if (result.messages.length > 0) {
+            messagesByFile.set(fileId, result.messages);
+          } else {
+            messagesByFile.delete(fileId);
+          }
+        }
+        pending.clear();
+        syncAll();
+        fillStubs();
+      }, 50);
+
+      const scheduleRestart = debounce(() => {
+        void server.restart();
+      }, 50);
+
+      const isLocaleFile = (path: string): boolean => {
+        const dir = join(projectRoot, getNormalized().localesDir);
+        return path.startsWith(`${dir}/`) && path.endsWith('.json');
+      };
+
+      server.watcher.on('add', (path: string) => {
+        if (isCandidateId(path, filter)) {
+          pending.set(toFileId(projectRoot, path), 'add');
+          flush();
+          return;
+        }
+        if (isLocaleFile(path)) {
+          scheduleRestart();
+        }
+      });
+
+      server.watcher.on('unlink', (path: string) => {
+        if (isCandidateId(path, filter)) {
+          pending.set(toFileId(projectRoot, path), 'unlink');
+          flush();
+          return;
+        }
+        if (isLocaleFile(path)) {
+          scheduleRestart();
         }
       });
     },
@@ -391,4 +453,14 @@ function logErrors(result: ExtractFileResult): void {
       `[yapyak] ${code} ${fileId}:${range.start.line}:${range.start.column}: ${message}`,
     );
   }
+}
+
+function debounce(fn: () => void, ms: number): () => void {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  return () => {
+    if (timer !== undefined) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(fn, ms);
+  };
 }

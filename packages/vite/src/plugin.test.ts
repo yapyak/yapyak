@@ -1,8 +1,9 @@
 import type { ResolvedConfig } from 'vite';
 
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { yapyak } from './plugin';
+import { EventEmitter } from 'node:events';
 import {
   mkdirSync,
   mkdtempSync,
@@ -13,7 +14,7 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-describe('yapyak vite plugin — build mode', () => {
+describe('yapyak', () => {
   let root: string;
   let localePath: string;
 
@@ -21,43 +22,194 @@ describe('yapyak vite plugin — build mode', () => {
     root = mkdtempSync(join(tmpdir(), 'yapyak-vite-'));
     mkdirSync(join(root, 'src'), { recursive: true });
     mkdirSync(join(root, 'locales'), { recursive: true });
-    writeFileSync(
-      join(root, 'src', 'foo.tsx'),
-      "import { t } from 'yapyak';\nexport const a = () => t('Hello');\nexport const b = () => t('World');\n",
-    );
     localePath = join(root, 'locales', 'sv.json');
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     rmSync(root, { force: true, recursive: true });
   });
 
-  it('preserves locale files during `vite build`', async () => {
-    const existing = {
-      'src/foo.tsx': {
-        Hello: 'Hej',
-        World: 'Världen',
-      },
-    };
-    writeFileSync(localePath, JSON.stringify(existing, null, 2));
-    const before = readFileSync(localePath, 'utf8');
+  describe('build mode', () => {
+    beforeEach(() => {
+      writeFileSync(
+        join(root, 'src', 'foo.tsx'),
+        "import { t } from 'yapyak';\nexport const a = () => t('Hello');\nexport const b = () => t('World');\n",
+      );
+    });
 
-    const plugin = yapyak();
-    await invokeConfigResolved(plugin, root, 'build');
-    invokeBuildStart(plugin);
+    it('preserves locale files when running `vite build`', async () => {
+      const existing = {
+        'src/foo.tsx': {
+          Hello: 'Hej',
+          World: 'Världen',
+        },
+      };
+      writeFileSync(localePath, JSON.stringify(existing, null, 2));
+      const before = readFileSync(localePath, 'utf8');
 
-    const after = readFileSync(localePath, 'utf8');
-    expect(after).toBe(before);
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'build');
+      invokeBuildStart(plugin);
+
+      const after = readFileSync(localePath, 'utf8');
+      expect(after).toBe(before);
+    });
+
+    it('writes no missing locale file when running `vite build`', async () => {
+      writeFileSync(join(root, 'locales', 'en.json'), '{}');
+
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'build');
+      invokeBuildStart(plugin);
+
+      expect(() => readFileSync(join(root, 'locales', 'sv.json'))).toThrow();
+    });
   });
 
-  it('writes no missing locale file during `vite build`', async () => {
-    writeFileSync(join(root, 'locales', 'en.json'), '{}');
+  describe('dev mode', () => {
+    it('writes locale entry when adding a file with `t()` calls', async () => {
+      writeFileSync(localePath, '{}');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
 
-    const plugin = yapyak();
-    await invokeConfigResolved(plugin, root, 'build');
-    invokeBuildStart(plugin);
+      vi.useFakeTimers();
+      const watcher = createMockWatcher();
+      invokeConfigureServer(plugin, watcher);
 
-    expect(() => readFileSync(join(root, 'locales', 'sv.json'))).toThrow();
+      const newFile = join(root, 'src', 'new.tsx');
+      writeFileSync(
+        newFile,
+        "import { t } from 'yapyak';\nexport const x = () => t('Hello');\n",
+      );
+      watcher.emit('add', newFile);
+      await vi.advanceTimersByTimeAsync(60);
+
+      const after = JSON.parse(readFileSync(localePath, 'utf8'));
+      expect(after['src/new.tsx']).toEqual({ Hello: '' });
+    });
+
+    it('clears locale entries when removing a file', async () => {
+      writeFileSync(
+        join(root, 'src', 'a.tsx'),
+        "import { t } from 'yapyak';\nexport const x = () => t('Hello');\n",
+      );
+      writeFileSync(
+        join(root, 'src', 'b.tsx'),
+        "import { t } from 'yapyak';\nexport const y = () => t('World');\n",
+      );
+      writeFileSync(
+        localePath,
+        JSON.stringify({
+          'src/a.tsx': { Hello: 'Hej' },
+          'src/b.tsx': { World: 'Världen' },
+        }),
+      );
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const watcher = createMockWatcher();
+      invokeConfigureServer(plugin, watcher);
+
+      rmSync(join(root, 'src', 'a.tsx'));
+      watcher.emit('unlink', join(root, 'src', 'a.tsx'));
+      await vi.advanceTimersByTimeAsync(60);
+
+      const after = JSON.parse(readFileSync(localePath, 'utf8'));
+      expect(after['src/a.tsx']).toBeUndefined();
+      expect(after['src/b.tsx']).toEqual({ World: 'Världen' });
+    });
+
+    it('syncs once for many simultaneous add events', async () => {
+      writeFileSync(localePath, '{}');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const watcher = createMockWatcher();
+      invokeConfigureServer(plugin, watcher);
+
+      for (let i = 0; i < 5; i++) {
+        const f = join(root, 'src', `f${i}.tsx`);
+        writeFileSync(
+          f,
+          `import { t } from 'yapyak';\nexport const x = () => t('M${i}');\n`,
+        );
+        watcher.emit('add', f);
+      }
+
+      const mid = JSON.parse(readFileSync(localePath, 'utf8'));
+      expect(
+        Object.keys(mid).filter((k) => k.startsWith('src/f')),
+      ).toHaveLength(0);
+
+      await vi.advanceTimersByTimeAsync(60);
+
+      const after = JSON.parse(readFileSync(localePath, 'utf8'));
+      const newFileIds = Object.keys(after).filter((k) =>
+        k.startsWith('src/f'),
+      );
+      expect(newFileIds).toHaveLength(5);
+    });
+
+    it('restarts the server when adding a locale file', async () => {
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const restart = vi.fn(() => Promise.resolve());
+      const watcher = createMockWatcher();
+      invokeConfigureServer(plugin, watcher, restart);
+
+      const newLocale = join(root, 'locales', 'fr.json');
+      writeFileSync(newLocale, '{}');
+      watcher.emit('add', newLocale);
+      await vi.advanceTimersByTimeAsync(60);
+
+      expect(restart).toHaveBeenCalledTimes(1);
+    });
+
+    it('restarts the server when removing a locale file', async () => {
+      writeFileSync(join(root, 'locales', 'fr.json'), '{}');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const restart = vi.fn(() => Promise.resolve());
+      const watcher = createMockWatcher();
+      invokeConfigureServer(plugin, watcher, restart);
+
+      const removed = join(root, 'locales', 'fr.json');
+      rmSync(removed);
+      watcher.emit('unlink', removed);
+      await vi.advanceTimersByTimeAsync(60);
+
+      expect(restart).toHaveBeenCalledTimes(1);
+    });
+
+    it('blocks restart for non-`.json` files in the locales directory', async () => {
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const restart = vi.fn(() => Promise.resolve());
+      const watcher = createMockWatcher();
+      invokeConfigureServer(plugin, watcher, restart);
+
+      const readme = join(root, 'locales', 'README.md');
+      writeFileSync(readme, '# Locales');
+      watcher.emit('add', readme);
+      await vi.advanceTimersByTimeAsync(60);
+
+      expect(restart).not.toHaveBeenCalled();
+    });
   });
 });
 
@@ -82,4 +234,29 @@ function invokeBuildStart(plugin: ReturnType<typeof yapyak>): void {
     throw new Error('buildStart hook missing');
   }
   (hook as () => void).call(plugin);
+}
+
+interface MockWatcher extends EventEmitter {
+  add(path: string): void;
+}
+
+function createMockWatcher(): MockWatcher {
+  const emitter = new EventEmitter() as MockWatcher;
+  emitter.add = () => {};
+  return emitter;
+}
+
+function invokeConfigureServer(
+  plugin: ReturnType<typeof yapyak>,
+  watcher: MockWatcher,
+  restart: () => Promise<void> = () => Promise.resolve(),
+): void {
+  const hook = plugin.configureServer;
+  if (typeof hook !== 'function') {
+    throw new Error('configureServer hook missing');
+  }
+  (hook as (server: unknown) => void).call(plugin, {
+    restart,
+    watcher,
+  });
 }
