@@ -288,6 +288,34 @@ describe('anthropic', () => {
       expect(results).toEqual(['t-s0', 't-s1', 't-s2', 't-s3', 't-s4', 't-s5']);
     });
 
+    it('notifies onChunk after each chunk completes', async () => {
+      vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
+        const body = JSON.parse(init.body as string);
+        const items: { source: string }[] = JSON.parse(
+          body.messages[0].content,
+        );
+        return new Response(
+          JSON.stringify({
+            content: [
+              { text: JSON.stringify(items.map(() => 'ok')), type: 'text' },
+            ],
+          }),
+          { status: 200 },
+        );
+      });
+      const t = anthropic({ apiKey: 'k', batchSize: 2, concurrency: 2 });
+      const requests = Array.from({ length: 7 }, (_, i) => ({
+        fileId: 'x',
+        source: `s${i}`,
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      }));
+      const counts: number[] = [];
+      await t.batch?.(requests, { onChunk: (n) => counts.push(n) });
+      expect(counts.length).toBe(4);
+      expect(counts.reduce((a, b) => a + b, 0)).toBe(7);
+    });
+
     it('throws when concurrency is not a positive integer', () => {
       expect(() => anthropic({ apiKey: 'k', concurrency: 0 })).toThrow(
         /concurrency must be a positive integer/,

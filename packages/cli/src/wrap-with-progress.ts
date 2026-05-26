@@ -1,4 +1,8 @@
-import type { TranslateRequest, Translator } from '@yapyak/translator';
+import type {
+  TranslateBatchOptions,
+  TranslateRequest,
+  Translator,
+} from '@yapyak/translator';
 
 export function wrapWithProgress(
   base: Translator,
@@ -14,11 +18,17 @@ export function wrapWithProgress(
   );
   if (typeof base.batch === 'function') {
     const batchFn = base.batch.bind(base);
-    wrapped.batch = async (requests) => {
-      const results = await batchFn(requests);
-      onProgress(results.length);
-      return results;
-    };
+    wrapped.batch = (
+      requests: TranslateRequest[],
+      options?: TranslateBatchOptions,
+    ) =>
+      batchFn(requests, {
+        ...options,
+        onChunk: (count) => {
+          onProgress(count);
+          options?.onChunk?.(count);
+        },
+      });
   }
   return wrapped;
 }

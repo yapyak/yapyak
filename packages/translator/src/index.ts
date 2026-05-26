@@ -54,10 +54,19 @@ export interface TranslateRequest {
  */
 export interface Translator {
   /** Translates a batch of requests. */
-  batch?(requests: TranslateRequest[]): Promise<string[]>;
+  batch?(
+    requests: TranslateRequest[],
+    options?: TranslateBatchOptions,
+  ): Promise<string[]>;
   /** Stable identifier for this translator. Used for logging, cost attribution, cache-key namespacing, and dashboard observability. Convention: lowercase suffix matching the package name (`'anthropic'`, `'openai'`, `'gemini'`, `'ollama'`, `'cloud'`). `createTranslator()` without an explicit `id` defaults to `'custom'`. */
   id: string;
   (request: TranslateRequest): Promise<string>;
+}
+
+/** Options for {@link Translator.batch}. */
+export interface TranslateBatchOptions {
+  /** Called when a chunk resolves. */
+  onChunk?: (count: number) => void;
 }
 
 /**
@@ -217,7 +226,10 @@ export function createTranslator(options: CreateTranslatorOptions): Translator {
     });
   }
 
-  async function batch(requests: TranslateRequest[]): Promise<string[]> {
+  async function batch(
+    requests: TranslateRequest[],
+    batchOptions?: TranslateBatchOptions,
+  ): Promise<string[]> {
     const chunks: TranslateRequest[][] = [];
     for (let i = 0; i < requests.length; i += batchSize) {
       chunks.push(requests.slice(i, i + batchSize));
@@ -235,7 +247,9 @@ export function createTranslator(options: CreateTranslatorOptions): Translator {
         if (!chunk) {
           continue;
         }
-        chunkResults[myIndex] = await runBatch(chunk);
+        const result = await runBatch(chunk);
+        chunkResults[myIndex] = result;
+        batchOptions?.onChunk?.(result.length);
       }
     }
     const workerCount = Math.min(concurrency, chunks.length);
