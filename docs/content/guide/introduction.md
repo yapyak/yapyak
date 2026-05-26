@@ -8,10 +8,10 @@ yapyak generates translations on save. You write a string in your code, save the
 ## Write a string
 
 ```tsx
-import { $t } from 'yapyak';
+import { t } from 'yapyak';
 
 export function SaveButton() {
-  return <button>{$t('Save changes')}</button>;
+  return <button>{t('Save changes')}</button>;
 }
 ```
 
@@ -19,7 +19,7 @@ That's the whole API. The English you write is the key.
 
 ## Save the file
 
-When the file saves, yapyak finds the `$t()` call, reads the surrounding code as context, and writes entries to every locale file in your project.
+When the file saves, yapyak finds the `t()` call, reads the surrounding code as context, and writes entries to every locale file in your project.
 
 If a [translator](/guide/translators/introduction) is configured, the entries get filled in. If not, they land as empty stubs you can fill by hand. The browser updates through HMR either way.
 
@@ -55,5 +55,5 @@ yapyak has no business model. It's a library on npm, MIT-licensed, that never se
 
 - [Installation](/guide/installation) — install the package, configure the Vite plugin, add your first locale.
 - [How it works](/guide/how-it-works) — what happens on save, how the AI loop is orchestrated, how the runtime resolves locale.
-- [Translations](/guide/translations) — the $t() macro, params, plurals, forced locale, per-file scoping.
+- [Translations](/guide/translations) — the t() macro, params, plurals, forced locale, per-file scoping.
 - [Locales](/guide/locales) — adding locales, persistence, switching at runtime.

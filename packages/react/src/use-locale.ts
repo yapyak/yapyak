@@ -7,7 +7,7 @@ import { subscribeLocale } from 'yapyak/internal';
  *
  * @example Switch locale with a select
  * ```tsx
- * import { $t } from 'yapyak';
+ * import { t } from 'yapyak';
  * import { useLocale } from '@yapyak/react';
  *
  * function LocaleToggle() {

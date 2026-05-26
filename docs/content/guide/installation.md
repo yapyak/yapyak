@@ -59,7 +59,7 @@ npx yapyak add es
 pnpm yapyak add es
 ```
 
-This creates `locales/es.json` and translates all your `$t()` strings into Spanish. The default locale (`en` by default) stays in your code — it doesn't need a file.
+This creates `locales/es.json` and translates all your `t()` strings into Spanish. The default locale (`en` by default) stays in your code — it doesn't need a file.
 
 Add multiple at once:
 
@@ -74,27 +74,26 @@ pnpm yapyak add es fr de ja
 {% code-group %}
 
 ```tsx [React]
-import { $t } from 'yapyak';
+import { t } from 'yapyak';
 
 export function SaveButton() {
-  return <button>{$t('Save changes')}</button>;
+  return <button>{t('Save changes')}</button>;
 }
 ```
 
 ```vue [Vue]
 <script setup lang="ts">
-import { $t } from 'yapyak'
+import { t } from 'yapyak'
 </script>
 
 <template>
-  <button>{{ $t('Save changes') }}</button>
+  <button>{{ t('Save changes') }}</button>
 </template>
 ```
 
 ```svelte [Svelte]
 <script lang="ts">
-  // Svelte reserves `$`-prefixed identifiers; alias the macro.
-  import { $t as t } from 'yapyak';
+  import { t } from 'yapyak';
 </script>
 
 <button>{t('Save changes')}</button>
@@ -157,6 +156,6 @@ Two common CI shapes:
 ## What's next
 
 - [How it works](/guide/how-it-works) — the auto-translate pipeline, position-aware renames, compile-time rewrite
-- [Translations](/guide/translations/) — `$t()` API, params, plurals, forced locale
+- [Translations](/guide/translations/) — `t()` API, params, plurals, forced locale
 - [Locales](/guide/locales/) — adding locales, persistence, reactive bindings
 - [Translators](/guide/translators/) — Anthropic, OpenAI, Gemini, Ollama, custom

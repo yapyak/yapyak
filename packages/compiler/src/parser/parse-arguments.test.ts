@@ -58,7 +58,7 @@ describe('parseArguments', () => {
   it('parses a no-substitution template literal as the source', () => {
     const sf = ts.createSourceFile(
       'inline.ts',
-      "import { $t } from 'yapyak';\nexport const x = $t(`Hello`);\n",
+      "import { t } from 'yapyak';\nexport const x = t(`Hello`);\n",
       ts.ScriptTarget.ESNext,
       true,
       ts.ScriptKind.TS,

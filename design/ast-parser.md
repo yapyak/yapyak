@@ -9,19 +9,19 @@
 ## 1. Vision
 
 ```
-"Wrap everything in $t() from day one.
+"Wrap everything in t() from day one.
  Yapyak compilerar bort allt du inte använder.
  Lägg till första översättningen när du är redo — utan en enda kodändring.
  Din production-bundle är bevisbart noll tills du faktiskt skalar till flera språk."
 ```
 
-Killer-feature: **single-locale-elision.** Med en locale: `$t('Hello')` compilas till `'Hello'` och hela `yapyak`-importen försvinner. Lägg till `sv` → samma kod blir `_$pick({en:'Hello',sv:'Hej'})` och runtime aktiveras. Användarens app-kod är **identisk** i båda fall.
+Killer-feature: **single-locale-elision.** Med en locale: `t('Hello')` compilas till `'Hello'` och hela `yapyak`-importen försvinner. Lägg till `sv` → samma kod blir `_$pick({en:'Hello',sv:'Hej'})` och runtime aktiveras. Användarens app-kod är **identisk** i båda fall.
 
 ## 2. Hela publika API:t
 
 ```ts
 // yapyak
-export function $t<T extends string>(
+export function t<T extends string>(
   source: T,
   params?: ParamsForSource<T>,
   options?: { locale?: string },
@@ -39,7 +39,7 @@ export const locales: readonly string[];
 
 Designprincip: *one way to do it. No magic. Everything composes with standard JavaScript.*
 
-### Argument-semantik för `$t`
+### Argument-semantik för `t`
 
 | Position | Krav | Compile-time | Runtime |
 |---|---|---|---|
@@ -51,29 +51,29 @@ Designprincip: *one way to do it. No magic. Everything composes with standard Ja
 
 ```ts
 // Enklast
-$t('Hello');
+t('Hello');
 
 // Med placeholders
-$t('Hi {name}', { name });
+t('Hi {name}', { name });
 
 // Med plural
-$t('{count, plural, one {# item} other {# items}}', { count });
+t('{count, plural, one {# item} other {# items}}', { count });
 
 // Med statiskt forced locale
-$t('Hello', undefined, { locale: 'sv' });
+t('Hello', undefined, { locale: 'sv' });
 
 // Med dynamiskt locale (reactive)
-$t('Hello', undefined, { locale: previewLocale.value });
+t('Hello', undefined, { locale: previewLocale.value });
 
 // Options som variable — preserveras verbatim
 const svOptions = { locale: 'sv' };
-$t('Hello', undefined, svOptions);
+t('Hello', undefined, svOptions);
 
 // Options från function call
-$t('Hello', undefined, getOptions());
+t('Hello', undefined, getOptions());
 
 // Wrapper för kortare namn (existerande binding-pattern)
-const t = $t;
+const t = t;
 t('Hello');
 ```
 
@@ -83,7 +83,7 @@ Alla dessa fungerar reaktivt i Vue/Svelte-templates och computed/derived efterso
 
 Förr använde vi en regex-baserad extractor (587 LOC). Den klarade grundläggande extraction men kunde inte:
 
-- Spåra wrapper-bindningar (`const t = $t; t('Hej')`)
+- Spåra wrapper-bindningar (`const t = t; t('Hej')`)
 - Validera placeholders statiskt
 - Producera precis position-info för diagnostics
 - Generera korrekta source maps
@@ -130,11 +130,11 @@ Allt annat — Vite-plugin, CLI, HMR, locale-files, LSP — är skal runtom samm
 
 | Källkod | `locales: ['en']` | `locales: ['en','sv']` |
 |---|---|---|
-| `$t('Hello')` | `'Hello'` | `_$pick({en:'Hello', sv:'Hej'})` |
-| `$t('Hi {name}', { name })` | `` `Hi ${name}` `` | `_$pick({en:'Hi {name}', sv:'Hej {name}'}, { name })` |
-| `$t('{count, plural, ...}', { count })` | `_$pick({en:'...'}, { count })` (en-only plural-fn, ~200b) | `_$pick({...}, { count })` (full CLDR, ~2kb) |
-| `$t('Hello', undefined, { locale: 'sv' })` | `_$pick({en:'Hello'}, undefined, { locale: 'sv' })` (förbi elision pga forced locale) | `_$pick({en:'Hello',sv:'Hej'}, undefined, { locale: 'sv' })` |
-| `$t('Hello', undefined, opts)` | `_$pick({en:'Hello'}, undefined, opts)` (preserve verbatim) | `_$pick({en:'Hello',sv:'Hej'}, undefined, opts)` |
+| `t('Hello')` | `'Hello'` | `_$pick({en:'Hello', sv:'Hej'})` |
+| `t('Hi {name}', { name })` | `` `Hi ${name}` `` | `_$pick({en:'Hi {name}', sv:'Hej {name}'}, { name })` |
+| `t('{count, plural, ...}', { count })` | `_$pick({en:'...'}, { count })` (en-only plural-fn, ~200b) | `_$pick({...}, { count })` (full CLDR, ~2kb) |
+| `t('Hello', undefined, { locale: 'sv' })` | `_$pick({en:'Hello'}, undefined, { locale: 'sv' })` (förbi elision pga forced locale) | `_$pick({en:'Hello',sv:'Hej'}, undefined, { locale: 'sv' })` |
+| `t('Hello', undefined, opts)` | `_$pick({en:'Hello'}, undefined, opts)` (preserve verbatim) | `_$pick({en:'Hello',sv:'Hej'}, undefined, opts)` |
 | `getLocale()` | `'en'` (constant, inlinad) | runtime store-read |
 | `useLocale()` | `['en', () => {}]` (constant tuple) | full hook |
 | `setLocale('sv')` | no-op, statement borttagen | skriver store + persistence |
@@ -145,10 +145,10 @@ Efter call-site-transform räknas alla `@yapyak/*`-import-specifiers. Oreference
 
 ```ts
 // Källa
-import { $t, useLocale } from 'yapyak';
+import { t, useLocale } from 'yapyak';
 function Greeting({ name }: { name: string }) {
   const [locale] = useLocale();
-  return <div lang={locale}>{$t('Hi {name}', { name })}</div>;
+  return <div lang={locale}>{t('Hi {name}', { name })}</div>;
 }
 
 // Compiled (locales: ['en'])
@@ -158,7 +158,7 @@ function Greeting({ name }: { name: string }) {
 }
 ```
 
-`$t` är inlinad. `useLocale` är constant-folded. Import-raden är borta. **Noll yapyak-runtime i bundle.**
+`t` är inlinad. `useLocale` är constant-folded. Import-raden är borta. **Noll yapyak-runtime i bundle.**
 
 ### Trigger-regel
 
@@ -359,15 +359,15 @@ export type DiagnosticCode =
 
 ### 9.1 `resolve-bindings.ts`
 
-Bygger en **scope-trädad** binding-table per fil. Spårar alla identifierare som resolvar till `$t` eller wrapper därav.
+Bygger en **scope-trädad** binding-table per fil. Spårar alla identifierare som resolvar till `t` eller wrapper därav.
 
 **Tre binding-kinds:**
 
 ```ts
-import { $t } from 'yapyak';            // { localName: '$t', kind: 'direct' }
-import { $t as t } from 'yapyak';       // { localName: 't', kind: 'direct' }
+import { t } from 'yapyak';            // { localName: 't', kind: 'direct' }
+import { t as t } from 'yapyak';       // { localName: 't', kind: 'direct' }
 import * as Y from 'yapyak';            // { localName: 'Y', kind: 'namespace' }
-const t = $t;                                  // { localName: 't', kind: 'wrapper' }
+const t = t;                                  // { localName: 't', kind: 'wrapper' }
 ```
 
 Scope-modellen: en `Scope` per fil + per Block (function-body, if-block, etc). Lookup går scope-uppåt tills binding hittas. Nested wrappers shadowed korrekt.
@@ -378,7 +378,7 @@ Traverserar AST med `forEachChild`. För varje `CallExpression`:
 
 1. Resolva callee mot `BindingTable.find(name, node)`
 2. Direkt-binding eller wrapper → registrera som `CallSite`
-3. Namespace-binding (`Y.$t(...)`) → kontrollera property-access mot `$t`
+3. Namespace-binding (`Y.t(...)`) → kontrollera property-access mot `t`
 
 ### 9.3 `parse-arguments.ts`
 
@@ -387,11 +387,11 @@ Validerar argument-strukturen vid varje `CallSite`.
 **Regel 1: First arg = string-literal.** YPK001 annars.
 
 ```ts
-$t('Hello')                    // ✅
-$t(`Hello`)                    // ✅ no-substitution template
-$t(`Hi ${name}`)               // ❌ YPK001
-$t(someVar)                    // ❌ YPK001
-$t('Hi ' + name)               // ❌ YPK001
+t('Hello')                    // ✅
+t(`Hello`)                    // ✅ no-substitution template
+t(`Hi ${name}`)               // ❌ YPK001
+t(someVar)                    // ❌ YPK001
+t('Hi ' + name)               // ❌ YPK001
 ```
 
 **Regel 2: Placeholders extraheras från source.** Plain `{name}`, ICU `{count, plural, ...}`, `{when, date, ...}`, etc.
@@ -405,10 +405,10 @@ $t('Hi ' + name)               // ❌ YPK001
 **Regel 4: Options-objekt är dynamiskt.**
 
 ```ts
-$t('Save', undefined, { locale: 'sv' });               // inline static — re-rendered
-$t('Save', undefined, { locale: previewLocale.value }); // dynamic — preserved verbatim
-$t('Save', undefined, svOptions);                      // reference — preserved verbatim
-$t('Save', undefined, getOptions());                   // call result — preserved verbatim
+t('Save', undefined, { locale: 'sv' });               // inline static — re-rendered
+t('Save', undefined, { locale: previewLocale.value }); // dynamic — preserved verbatim
+t('Save', undefined, svOptions);                      // reference — preserved verbatim
+t('Save', undefined, getOptions());                   // call result — preserved verbatim
 ```
 
 För **inline static** literal: compiler läser `locale`-fältet, sätter `parsed.forcedLocale` (används av transform för att skippa single-locale-elision).
@@ -418,13 +418,13 @@ För **icke-static**: compiler bevarar uttrycks-texten i `parsed.optionsExpressi
 **Disambiguering arg[1]:**
 
 ```ts
-$t('Hi {name}', { name }, opts);  // source har placeholders → arg[1]=params, arg[2]=options
-$t('Save', opts);                  // source utan placeholders → arg[1]=options
+t('Hi {name}', { name }, opts);  // source har placeholders → arg[1]=params, arg[2]=options
+t('Save', opts);                  // source utan placeholders → arg[1]=options
 ```
 
 ### 9.4 `call-site-context.ts`
 
-Walka uppåt från ett `$t`-anrop. Bygg en `CallSiteContext` med:
+Walka uppåt från ett `t`-anrop. Bygg en `CallSiteContext` med:
 
 - `componentName` — närmaste React-komponent (`function Foo`, `const Foo = () => ...`, `forwardRef`, `memo`-wrap, etc)
 - `enclosingFunction` — närmaste funktion/method-namn
@@ -491,7 +491,7 @@ Använder `magic-string` för rewrite med bevarad source-map. Återanvänder off
 
 ```
 1. Replace call-sites (från ExtractFileResult.callSites)
-   a. $t(...) → elide (single-locale + simple) | _$pick(...) (multi-locale eller komplex)
+   a. t(...) → elide (single-locale + simple) | _$pick(...) (multi-locale eller komplex)
 2. Constant-fold (single-locale only)
    a. getLocale() → 'en' (literal)
    b. useLocale() → ['en', () => {}] (literal tuple)
@@ -521,11 +521,11 @@ Använder `magic-string` för rewrite med bevarad source-map. Återanvänder off
 
 | Pattern | Elision möjlig? |
 |---|---|
-| `$t('Hello')` | ✅ → `'Hello'` |
-| `$t('Hi {name}', { name })` (simple placeholders) | ✅ → `` `Hi ${name}` `` |
-| `$t('{count, plural, ...}', { count })` (komplex placeholder) | ❌ → `_$pick(...)` |
-| `$t('Hello', undefined, { locale: 'sv' })` (forced locale, statisk) | ❌ → `_$pick(...)` (catalog behövs) |
-| `$t('Hello', undefined, opts)` (dynamiska options) | ❌ → `_$pick(...)` |
+| `t('Hello')` | ✅ → `'Hello'` |
+| `t('Hi {name}', { name })` (simple placeholders) | ✅ → `` `Hi ${name}` `` |
+| `t('{count, plural, ...}', { count })` (komplex placeholder) | ❌ → `_$pick(...)` |
+| `t('Hello', undefined, { locale: 'sv' })` (forced locale, statisk) | ❌ → `_$pick(...)` (catalog behövs) |
+| `t('Hello', undefined, opts)` (dynamiska options) | ❌ → `_$pick(...)` |
 
 Elision sker ENDAST när source har bara simple placeholders OCH inga options. Vi kan inte inlina när options-uttrycket kan ändra locale runtime.
 
@@ -533,7 +533,7 @@ Elision sker ENDAST när source har bara simple placeholders OCH inga options. V
 
 Vanilla TS/JS-pipelinen ovan parsar en hel fil som ett enda `SourceFile`. SFC-filer (`.vue`, `.svelte`, `.astro`) har FLERA JS-fragments på olika positioner i samma fil — `<script>`-block, template-interpolations, attribut-bindings.
 
-För att stödja `$t()` **överallt** i SFC-filer (inte bara `<script>`) introducerar vi **fragment-orienterad pipeline**.
+För att stödja `t()` **överallt** i SFC-filer (inte bara `<script>`) introducerar vi **fragment-orienterad pipeline**.
 
 ### 12.1 Kärnabstraktionen
 
@@ -645,31 +645,31 @@ Källkod-mönster som **alla** stödjer:
 
 ```ts
 // I script
-$t('Hello')
-$t('Hi {name}', { name })
-$t('Save', undefined, { locale: previewLocale.value })
+t('Hello')
+t('Hi {name}', { name })
+t('Save', undefined, { locale: previewLocale.value })
 
 // I template text interpolation
-{{ $t('Hello') }}              // Vue
-{$t('Hello')}                   // Svelte / Astro
+{{ t('Hello') }}              // Vue
+{t('Hello')}                   // Svelte / Astro
 
 // I attribute expressions
-<button :aria-label="$t('Cool')">x</button>    // Vue
-<button aria-label={$t('Cool')}>x</button>     // Svelte / Astro
+<button :aria-label="t('Cool')">x</button>    // Vue
+<button aria-label={t('Cool')}>x</button>     // Svelte / Astro
 
 // I event handlers
-@click="$t('Clicked')"                          // Vue
-onclick={() => $t('Clicked')}                   // Svelte / Astro
+@click="t('Clicked')"                          // Vue
+onclick={() => t('Clicked')}                   // Svelte / Astro
 
 // I conditionals
-{#if active}{$t('Active')}{/if}                 // Svelte
-{active && $t('Active')}                        // Astro / Vue
+{#if active}{t('Active')}{/if}                 // Svelte
+{active && t('Active')}                        // Astro / Vue
 ```
 
 **Begränsning:** Statiska strängliterale-attribut utan expression-syntax stöds inte:
 
 ```vue
-<button aria-label="$t('Cool')">x</button>      ❌ Vue treats as literal string
+<button aria-label="t('Cool')">x</button>      ❌ Vue treats as literal string
 ```
 
 Detta är fundamentalt — frameworks parsar inte JS i statiska attribut. Workaround: använd expression-syntax (`:foo` / `{foo}`).
@@ -678,12 +678,12 @@ Detta är fundamentalt — frameworks parsar inte JS i statiska attribut. Workar
 
 | Kod | Severity | Trigger | Hint |
 |---|---|---|---|
-| YPK001 | error | Dynamic source i `$t(...)` | "Use `{placeholder}` syntax + params object instead of string concatenation or template interpolation." |
+| YPK001 | error | Dynamic source i `t(...)` | "Use `{placeholder}` syntax + params object instead of string concatenation or template interpolation." |
 | YPK002 | error | Missing placeholder-param | "Add `{name}` to the params object." |
 | YPK003 | warning | Extra placeholder-param | "Remove unused `{name}` from params object." |
 | YPK005 | warning | Spread params (`{...obj}`) | "Spread params cannot be statically verified. Pass keys explicitly to enable validation." |
 | YPK007 | error | Invalid ICU plural shape | "Plural requires `other` branch. Optional: `zero`, `one`, `two`, `few`, `many`." |
-| YPK008 | error | Tom source-string | "$t('') has no meaning. Pass a non-empty string literal." |
+| YPK008 | error | Tom source-string | "t('') has no meaning. Pass a non-empty string literal." |
 
 **6 koder.** Allt om factory/createT/context borta.
 
@@ -721,10 +721,10 @@ Kort, enkelt, snabbt att slå upp.
 Source-syntax: standard ICU MessageFormat.
 
 ```ts
-$t('{count, plural, one{# item} other{# items}}', { count });
-$t('{gender, select, male{he} female{she} other{they}}', { gender });
-$t('{when, date, medium}', { when });
-$t('{cost, number, currency}', { cost });
+t('{count, plural, one{# item} other{# items}}', { count });
+t('{gender, select, male{he} female{she} other{they}}', { gender });
+t('{when, date, medium}', { when });
+t('{cost, number, currency}', { cost });
 ```
 
 ### Validering
@@ -834,7 +834,7 @@ Plus framework-specifika fixtures i `framework/fixtures/{vue,svelte,astro}/`.
 
 **Parser bailar inte vid syntax errors.** `ts.createSourceFile` producerar partial AST. Vi extraherar vad vi kan och returnerar syntax errors som diagnostics.
 
-`$t` i kommentarer eller type-positions skipas via AST-kind-check.
+`t` i kommentarer eller type-positions skipas via AST-kind-check.
 
 ## 21. Migration / PR-sekvens
 
@@ -856,7 +856,7 @@ PR 1–9 är landade (legacy regex-parser ersatt, vanilla pipeline fungerar). Å
 
 - **Cross-fil binding-tracking.** Wrappers exporterade från andra filer detekteras inte (per-fil parsing).
 - **Type-checking av params mot källliteral.** TypeScript gör redan det via `ParamsForSource<T>`. Plugin behöver inte göra om det.
-- **Runtime-spread:** `$t('Hi {name}', { ...obj })` — kan inte verifieras statiskt. YPK005 warning.
+- **Runtime-spread:** `t('Hi {name}', { ...obj })` — kan inte verifieras statiskt. YPK005 warning.
 - **Statiska strängliterale-attribut i SFCs** (utan `:`/`{}` expression-syntax). Framework-fundamental.
 - **Disambiguation av polysemy** ("Save" som submit-button vs file-save). Användaren ska skriva specifikare source-strings (`'Submit'`, `'Save file'`).
 
@@ -884,13 +884,13 @@ Allt detta kan byggas ovanpå AST-extractorn:
 - ✅ Pure-function core, ren från I/O
 - ✅ Bor i `packages/compiler/src/parser/`
 - ✅ magic-string för transform
-- ✅ **Single API: `$t(source, params?, options?)`.** Ingen `$createT`, ingen context.
+- ✅ **Single API: `t(source, params?, options?)`.** Ingen `$createT`, ingen context.
 - ✅ **Options preserveras verbatim** när non-static. Dynamic locale (reactive) fungerar naturligt.
 - ✅ **Single-locale-mode = compile-time elision + import-stripping = noll yapyak i bundle**
 - ✅ Stable diagnostic codes (6 stycken)
 - ✅ ID = sha256(source).slice(0,12) — cross-file dedupe
 - ✅ Cache lever i shell-lagret, inte parser-core
 - ✅ Fragment-orienterad pipeline för SFC-support (Vue/Svelte/Astro)
-- ✅ `$t()` fungerar i `<script>`, `<template>`, attribute-bindings, event handlers
+- ✅ `t()` fungerar i `<script>`, `<template>`, attribute-bindings, event handlers
 - ✅ Fixture-driven snapshot tests
 - ✅ Naming-rules: `*Request`/`*Result` för function-scoped types; `discover*`/`resolve*`/`to*` från verb-vokabulären

@@ -2,7 +2,7 @@ import type { BoxProps } from '#components/box';
 
 import { Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
-import { $t } from 'yapyak';
+import { t } from 'yapyak';
 
 import { Box } from '#components/box';
 import { GithubIcon } from '#components/github-icon';
@@ -77,26 +77,26 @@ export function LayoutHeader(props: LayoutHeaderProps) {
             onClick={closeMenu}
             to="/"
           >
-            {$t('Home')}
+            {t('Home')}
           </Link>
           <Link
             className={styles.Link}
             onClick={closeMenu}
             to="/guide"
           >
-            {$t('Guide')}
+            {t('Guide')}
           </Link>
           <Link
             className={styles.Link}
             onClick={closeMenu}
             to="/reference"
           >
-            {$t('Reference')}
+            {t('Reference')}
           </Link>
         </Box>
         <Box className={styles.GithubSlot}>
           <IconLink
-            aria-label={$t('View on GitHub')}
+            aria-label={t('View on GitHub')}
             href="https://github.com/yapyak/yapyak"
             onClick={closeMenu}
             rel="noopener noreferrer"

@@ -4,7 +4,7 @@ import * as ts from 'typescript';
 
 import { toRange } from './position';
 
-const RUNTIME_NAME = '$t';
+const RUNTIME_NAME = 't';
 
 export function discoverCalls(
   sourceFile: ts.SourceFile,

@@ -57,10 +57,10 @@ describe('resolveBindings', () => {
   it('returns a direct binding for a direct import', () => {
     const sf = loadFixture('direct-import.ts');
     const table = resolveBindings(sf);
-    const binding = table.root.bindings.get('$t');
+    const binding = table.root.bindings.get('t');
     expect(binding).toBeDefined();
     expect(binding?.kind).toBe('direct');
-    expect(binding?.localName).toBe('$t');
+    expect(binding?.localName).toBe('t');
   });
 
   it('returns a direct binding for an aliased import', () => {
@@ -69,7 +69,7 @@ describe('resolveBindings', () => {
     const binding = table.root.bindings.get('tr');
     expect(binding?.kind).toBe('direct');
     expect(binding?.localName).toBe('tr');
-    expect(table.root.bindings.has('$t')).toBe(false);
+    expect(table.root.bindings.has('t')).toBe(false);
   });
 
   it('returns a namespace binding for a namespace import', () => {
@@ -83,35 +83,38 @@ describe('resolveBindings', () => {
   it('returns a wrapper binding at root scope', () => {
     const sf = loadFixture('wrapper.ts');
     const table = resolveBindings(sf);
-    expect(table.root.bindings.get('$t')?.kind).toBe('direct');
-    const wrapper = table.root.bindings.get('t');
+    expect(table.root.bindings.get('t')?.kind).toBe('direct');
+    const wrapper = table.root.bindings.get('translate');
     expect(wrapper?.kind).toBe('wrapper');
-    expect(wrapper?.localName).toBe('t');
+    expect(wrapper?.localName).toBe('translate');
   });
 
   it('returns a nested wrapper binding scoped to its block', () => {
     const sf = loadFixture('shadowed-wrapper.ts');
     const table = resolveBindings(sf);
 
-    expect(table.root.bindings.get('$t')?.kind).toBe('direct');
-    expect(table.root.bindings.has('t')).toBe(false);
+    expect(table.root.bindings.get('t')?.kind).toBe('direct');
+    expect(table.root.bindings.has('translate')).toBe(false);
 
     const ifStmt = findFirstIfStatement(sf);
     expect(ifStmt).toBeDefined();
     const thenBlock = ifStmt?.thenStatement;
     expect(thenBlock).toBeDefined();
-    const innerCall = findFirstCallExpression(thenBlock as ts.Node, 't');
+    const innerCall = findFirstCallExpression(
+      thenBlock as ts.Node,
+      'translate',
+    );
     expect(innerCall).toBeDefined();
-    expect(table.find('t', innerCall as ts.Node)?.kind).toBe('wrapper');
+    expect(table.find('translate', innerCall as ts.Node)?.kind).toBe('wrapper');
 
-    expect(table.find('t', sf)).toBeUndefined();
+    expect(table.find('translate', sf)).toBeUndefined();
   });
 
   it('returns the binding by walking up the scope chain', () => {
     const sf = loadFixture('direct-import.ts');
     const table = resolveBindings(sf);
-    const call = findFirstCallExpression(sf, '$t');
+    const call = findFirstCallExpression(sf, 't');
     expect(call).toBeDefined();
-    expect(table.find('$t', call as ts.Node)?.kind).toBe('direct');
+    expect(table.find('t', call as ts.Node)?.kind).toBe('direct');
   });
 });

@@ -17,15 +17,15 @@ describe('svelteProcessor', () => {
     it('returns a script fragment for <script lang="ts">', () => {
       const source = [
         '<script lang="ts">',
-        "  import { $t } from 'yapyak';",
-        "  const greeting = $t('Hello');",
+        "  import { t } from 'yapyak';",
+        "  const greeting = t('Hello');",
         '</script>',
       ].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       expect(fragments).toHaveLength(1);
       expect(fragments[0]?.kind).toBe('script');
       expect(fragments[0]?.lang).toBe('ts');
-      expect(fragments[0]?.code).toContain('$t');
+      expect(fragments[0]?.code).toContain('t');
       verifyOffsetInvariant(source, fragments[0] as Fragment);
     });
 
@@ -41,7 +41,7 @@ describe('svelteProcessor', () => {
         '  export const stored = 1;',
         '</script>',
         '<script lang="ts">',
-        "  import { $t } from 'yapyak';",
+        "  import { t } from 'yapyak';",
         '</script>',
       ].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
@@ -52,25 +52,25 @@ describe('svelteProcessor', () => {
     it('returns a template expression for ExpressionTag {expr}', () => {
       const source = [
         '<script lang="ts">',
-        "  import { $t } from 'yapyak';",
+        "  import { t } from 'yapyak';",
         '</script>',
-        `<h1>{$t('Welcome')}</h1>`,
+        `<h1>{t('Welcome')}</h1>`,
       ].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
       expect(exprs).toHaveLength(1);
-      expect(exprs[0]?.code).toBe("$t('Welcome')");
+      expect(exprs[0]?.code).toBe("t('Welcome')");
       verifyOffsetInvariant(source, exprs[0] as Fragment);
     });
 
     it('returns a template expression for HtmlTag {@html expr}', () => {
-      const source = [`<div>{@html $t('<strong>Bold</strong>')}</div>`].join(
+      const source = [`<div>{@html t('<strong>Bold</strong>')}</div>`].join(
         '\n',
       );
       const fragments = svelteProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
       expect(exprs).toHaveLength(1);
-      expect(exprs[0]?.code).toBe("$t('<strong>Bold</strong>')");
+      expect(exprs[0]?.code).toBe("t('<strong>Bold</strong>')");
     });
 
     it('returns a template expression for RenderTag {@render snippet()}', () => {
@@ -87,21 +87,21 @@ describe('svelteProcessor', () => {
     });
 
     it('returns a template expression for an attribute single ExpressionTag value', () => {
-      const source = [`<button aria-label={$t('Save')}>x</button>`].join('\n');
+      const source = [`<button aria-label={t('Save')}>x</button>`].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
       expect(exprs).toHaveLength(1);
-      expect(exprs[0]?.code).toBe("$t('Save')");
+      expect(exprs[0]?.code).toBe("t('Save')");
     });
 
     it('returns a template expression for ExpressionTag inside string-interpolated attribute', () => {
-      const source = [`<div class="prefix-{$t('mid')}-suffix">x</div>`].join(
+      const source = [`<div class="prefix-{t('mid')}-suffix">x</div>`].join(
         '\n',
       );
       const fragments = svelteProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
       expect(exprs).toHaveLength(1);
-      expect(exprs[0]?.code).toBe("$t('mid')");
+      expect(exprs[0]?.code).toBe("t('mid')");
     });
 
     it('returns a template expression for SpreadAttribute', () => {
@@ -113,32 +113,32 @@ describe('svelteProcessor', () => {
     });
 
     it('returns expressions from IfBlock test and body', () => {
-      const source = [`{#if cond}{$t('Yes')}{:else}{$t('No')}{/if}`].join('\n');
+      const source = [`{#if cond}{t('Yes')}{:else}{t('No')}{/if}`].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
       const codes = exprs.map((e) => e.code).sort();
       expect(codes).toContain('cond');
-      expect(codes).toContain("$t('Yes')");
-      expect(codes).toContain("$t('No')");
+      expect(codes).toContain("t('Yes')");
+      expect(codes).toContain("t('No')");
     });
 
     it('returns expressions from EachBlock expression and body', () => {
-      const source = [`{#each items as item}{$t('Item')}{/each}`].join('\n');
+      const source = [`{#each items as item}{t('Item')}{/each}`].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
       const codes = exprs.map((e) => e.code);
       expect(codes).toContain('items');
-      expect(codes).toContain("$t('Item')");
+      expect(codes).toContain("t('Item')");
     });
 
     it('returns expressions from AwaitBlock and its then/catch branches', () => {
       const source = [
         `{#await promise}`,
-        `  {$t('Loading')}`,
+        `  {t('Loading')}`,
         `{:then value}`,
-        `  {$t('Done')}`,
+        `  {t('Done')}`,
         `{:catch err}`,
-        `  {$t('Failed')}`,
+        `  {t('Failed')}`,
         `{/await}`,
       ].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
@@ -146,28 +146,28 @@ describe('svelteProcessor', () => {
         .filter((f) => f.kind === 'template-expression')
         .map((e) => e.code);
       expect(codes).toContain('promise');
-      expect(codes).toContain("$t('Loading')");
-      expect(codes).toContain("$t('Done')");
-      expect(codes).toContain("$t('Failed')");
+      expect(codes).toContain("t('Loading')");
+      expect(codes).toContain("t('Done')");
+      expect(codes).toContain("t('Failed')");
     });
 
     it('returns expressions from KeyBlock', () => {
-      const source = [`{#key x}{$t('K')}{/key}`].join('\n');
+      const source = [`{#key x}{t('K')}{/key}`].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const codes = fragments
         .filter((f) => f.kind === 'template-expression')
         .map((e) => e.code);
       expect(codes).toContain('x');
-      expect(codes).toContain("$t('K')");
+      expect(codes).toContain("t('K')");
     });
 
     it('returns expressions from SnippetBlock body', () => {
-      const source = [`{#snippet item(x)}{$t('S')}{/snippet}`].join('\n');
+      const source = [`{#snippet item(x)}{t('S')}{/snippet}`].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const codes = fragments
         .filter((f) => f.kind === 'template-expression')
         .map((e) => e.code);
-      expect(codes).toContain("$t('S')");
+      expect(codes).toContain("t('S')");
     });
 
     it('returns a template expression for ClassDirective', () => {
@@ -189,14 +189,14 @@ describe('svelteProcessor', () => {
     });
 
     it('returns a template expression for legacy OnDirective', () => {
-      const source = [`<button on:click={() => $t('Click')}>x</button>`].join(
+      const source = [`<button on:click={() => t('Click')}>x</button>`].join(
         '\n',
       );
       const fragments = svelteProcessor.parseFragments(source);
       const codes = fragments
         .filter((f) => f.kind === 'template-expression')
         .map((e) => e.code);
-      expect(codes.some((c) => c.includes("$t('Click')"))).toBe(true);
+      expect(codes.some((c) => c.includes("t('Click')"))).toBe(true);
     });
 
     it('returns a template expression for StyleDirective value', () => {
@@ -251,13 +251,13 @@ describe('svelteProcessor', () => {
     it('returns expressions from nested elements', () => {
       const source = [
         '<script lang="ts">',
-        "  import { $t } from 'yapyak';",
+        "  import { t } from 'yapyak';",
         '</script>',
         `<article>`,
-        `  <header><h1>{$t('Welcome')}</h1></header>`,
+        `  <header><h1>{t('Welcome')}</h1></header>`,
         `  <section>`,
-        `    <p>{$t('Hi {name}', { name })}</p>`,
-        `    <button aria-label={$t('Save')}>{$t('Save')}</button>`,
+        `    <p>{t('Hi {name}', { name })}</p>`,
+        `    <button aria-label={t('Save')}>{t('Save')}</button>`,
         `  </section>`,
         `</article>`,
       ].join('\n');

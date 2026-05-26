@@ -1,7 +1,7 @@
-import { $t } from 'yapyak';
+import { t } from 'yapyak';
 
-const t = $t;
+const translate = t;
 
 export function greeting(): string {
-  return t('Hello');
+  return translate('Hello');
 }

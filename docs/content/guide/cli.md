@@ -11,7 +11,7 @@ Run it via `npx yapyak` or `pnpm yapyak`.
 
 | Command | What it does |
 | --- | --- |
-| `yapyak add <locale...>` | Create locale files and translate every `$t()` string |
+| `yapyak add <locale...>` | Create locale files and translate every `t()` string |
 | `yapyak translate [locale]` | Fill missing entries for one or all locales |
 | `yapyak status` | Coverage report per locale |
 | `yapyak check` | Exit 1 if anything's missing (for CI) |
@@ -25,7 +25,7 @@ The CLI reads `vite.config.ts` — translator, locales, defaults all match the p
 npx yapyak add fr
 ```
 
-Creates `locales/fr.json` and translates every `$t()` string into French. Add multiple at once:
+Creates `locales/fr.json` and translates every `t()` string into French. Add multiple at once:
 
 ```bash
 npx yapyak add fr de ja
@@ -122,7 +122,7 @@ npx yapyak export sv | jq '.sv'
 
 ### add
 
-Creates locale files and translates every `$t()` string into each target language. Existing files are left alone and only their missing entries are filled.
+Creates locale files and translates every `t()` string into each target language. Existing files are left alone and only their missing entries are filled.
 
 ### translate
 

@@ -17,8 +17,8 @@ describe('astroProcessor', () => {
     it('returns frontmatter as a script fragment', () => {
       const source = [
         '---',
-        "import { $t } from 'yapyak';",
-        "const greeting = $t('Hello');",
+        "import { t } from 'yapyak';",
+        "const greeting = t('Hello');",
         '---',
         '<h1>Hi</h1>',
       ].join('\n');
@@ -26,35 +26,35 @@ describe('astroProcessor', () => {
       const scripts = fragments.filter((f) => f.kind === 'script');
       expect(scripts).toHaveLength(1);
       expect(scripts[0]?.lang).toBe('ts');
-      expect(scripts[0]?.code).toContain('$t');
+      expect(scripts[0]?.code).toContain('t');
       verifyOffsetInvariant(source, scripts[0] as Fragment);
     });
 
     it('returns a template expression for {expr}', () => {
       const source = [
         '---',
-        "import { $t } from 'yapyak';",
+        "import { t } from 'yapyak';",
         '---',
-        `<h1>{$t('Welcome')}</h1>`,
+        `<h1>{t('Welcome')}</h1>`,
       ].join('\n');
       const fragments = astroProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
       expect(exprs).toHaveLength(1);
-      expect(exprs[0]?.code).toBe("$t('Welcome')");
+      expect(exprs[0]?.code).toBe("t('Welcome')");
       verifyOffsetInvariant(source, exprs[0] as Fragment);
     });
 
     it('returns a fragment for an attribute expression value', () => {
       const source = [
         '---',
-        "import { $t } from 'yapyak';",
+        "import { t } from 'yapyak';",
         '---',
-        `<button aria-label={$t('Save')}>x</button>`,
+        `<button aria-label={t('Save')}>x</button>`,
       ].join('\n');
       const fragments = astroProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
       expect(exprs).toHaveLength(1);
-      expect(exprs[0]?.code).toBe("$t('Save')");
+      expect(exprs[0]?.code).toBe("t('Save')");
       verifyOffsetInvariant(source, exprs[0] as Fragment);
     });
 
@@ -85,13 +85,13 @@ describe('astroProcessor', () => {
     it('returns fragments from nested elements', () => {
       const source = [
         '---',
-        "import { $t } from 'yapyak';",
+        "import { t } from 'yapyak';",
         '---',
         `<article>`,
-        `  <header><h1>{$t('Welcome')}</h1></header>`,
+        `  <header><h1>{t('Welcome')}</h1></header>`,
         `  <section>`,
-        `    <p>{$t('Hi {name}', { name })}</p>`,
-        `    <button aria-label={$t('Save')}>{$t('Save')}</button>`,
+        `    <p>{t('Hi {name}', { name })}</p>`,
+        `    <button aria-label={t('Save')}>{t('Save')}</button>`,
         `  </section>`,
         `</article>`,
       ].join('\n');
@@ -107,14 +107,14 @@ describe('astroProcessor', () => {
       const source = [
         '---',
         'import Button from "./Button.astro";',
-        "import { $t } from 'yapyak';",
+        "import { t } from 'yapyak';",
         '---',
-        `<Button label={$t('Save')} />`,
+        `<Button label={t('Save')} />`,
       ].join('\n');
       const fragments = astroProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
       expect(exprs).toHaveLength(1);
-      expect(exprs[0]?.code).toBe("$t('Save')");
+      expect(exprs[0]?.code).toBe("t('Save')");
     });
 
     it('returns a fragment for a template-literal attribute value', () => {
@@ -130,7 +130,7 @@ describe('astroProcessor', () => {
     });
 
     it('returns expressions when there is no frontmatter', () => {
-      const source = [`<h1>{$t('Hello')}</h1>`].join('\n');
+      const source = [`<h1>{t('Hello')}</h1>`].join('\n');
       const fragments = astroProcessor.parseFragments(source);
       const scripts = fragments.filter((f) => f.kind === 'script');
       const exprs = fragments.filter((f) => f.kind === 'template-expression');

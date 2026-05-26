@@ -24,7 +24,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
       createDiagnostic({
         code: 'YPK001',
         fileId,
-        message: '$t() called without arguments.',
+        message: 't() called without arguments.',
         range: toRange(callSite.node, sourceFile),
         severity: 'error',
         source: fileText,
@@ -43,9 +43,9 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
       createDiagnostic({
         code: 'YPK001',
         fileId,
-        hint: "Replace `$t(`Hi ${name}`)` with `$t('Hi {name}', { name })`.",
+        hint: "Replace `t(`Hi ${name}`)` with `t('Hi {name}', { name })`.",
         message:
-          'Dynamic source string in $t(). Use a plain string literal with `{placeholder}` syntax.',
+          'Dynamic source string in t(). Use a plain string literal with `{placeholder}` syntax.',
         range: sourceRange,
         severity: 'error',
         source: fileText,
@@ -60,7 +60,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
       createDiagnostic({
         code: 'YPK008',
         fileId,
-        message: '$t() called with empty source string.',
+        message: 't() called with empty source string.',
         range: sourceRange,
         severity: 'error',
         source: fileText,

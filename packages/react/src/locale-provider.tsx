@@ -16,7 +16,7 @@ const LocaleContext = createContext<string>('en');
  * Renders children within a locale context.
  *
  * @remarks
- * Mounts once at the React tree's root. Re-renders descendants when {@link setLocale} is called, so {@link $t} calls inside the tree return the new locale's strings.
+ * Mounts once at the React tree's root. Re-renders descendants when {@link setLocale} is called, so {@link t} calls inside the tree return the new locale's strings.
  *
  * @param props - Props bundle. See {@link LocaleProviderProps}.
  *

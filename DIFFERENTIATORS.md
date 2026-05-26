@@ -15,10 +15,10 @@ Vue's template parser tokenizes `{{ ... }}` by scanning for the first `}}` it se
 ICU MessageFormat — the industry-standard plural and select syntax — terminates every nested branch with `}`. A plural call ends with `}}` (closing the last branch, then closing the placeholder). The conflict is structural, not edge-case:
 
 ```vue
-<p>{{ $t('You have {count, plural, one {# msg} other {# msgs}}', { count }) }}</p>
+<p>{{ t('You have {count, plural, one {# msg} other {# msgs}}', { count }) }}</p>
 ```
 
-Vue's parser sees the `}}` after `messages` as the end of the mustache. It truncates the expression to `$t('You have {count, plural, one {# msg} other {# msgs`, fails to parse the unterminated string, and emits:
+Vue's parser sees the `}}` after `messages` as the end of the mustache. It truncates the expression to `t('You have {count, plural, one {# msg} other {# msgs`, fails to parse the unterminated string, and emits:
 
 ```
 Error parsing JavaScript expression: Unterminated string constant
@@ -49,9 +49,9 @@ The first `}}` outside any of those contexts is the real end of the mustache.
 
 ```vue
 <template>
-  <p>{{ $t('You have {count, plural, one {# msg} other {# msgs}}', { count }) }}</p>
-  <p>{{ $t('{theme, select, dark {Dark mode} other {Light mode}}', { theme }) }}</p>
-  <p>{{ $t('You have {count, plural, one {# by {author}} other {# by {author}}}', { count, author }) }}</p>
+  <p>{{ t('You have {count, plural, one {# msg} other {# msgs}}', { count }) }}</p>
+  <p>{{ t('{theme, select, dark {Dark mode} other {Light mode}}', { theme }) }}</p>
+  <p>{{ t('You have {count, plural, one {# by {author}} other {# by {author}}}', { count, author }) }}</p>
 </template>
 ```
 
@@ -107,7 +107,7 @@ The English source string is the catalog key on disk. Translators see exactly wh
 }
 ```
 
-`$t('Save changes')` in code maps directly to `"Save changes"` in the locale file. No hash to look up. No namespace to remember. No collision between two files that have a `save` key — keys are scoped by file path (see "Per-file scoping" below).
+`t('Save changes')` in code maps directly to `"Save changes"` in the locale file. No hash to look up. No namespace to remember. No collision between two files that have a `save` key — keys are scoped by file path (see "Per-file scoping" below).
 
 The runtime catalog uses a 12-character SHA-256 hash for compactness, but the dev-facing artifact — the file translators edit — never exposes that hash.
 
@@ -125,7 +125,7 @@ Most libraries chose the IDs-first design and can't retrofit source-as-key witho
 ### Reviewer talking points
 
 - "Translators see the English. Developers write the English. The build figures out the rest."
-- "No `i18n.t('greeting.hello.morning')`. Just `$t('Good morning')`."
+- "No `i18n.t('greeting.hello.morning')`. Just `t('Good morning')`."
 
 ---
 
@@ -151,7 +151,7 @@ Build-time CLI translation breaks the feedback loop: save → run `npx translate
 
 The Vite plugin watches saves. On every save:
 
-1. Extracts `$t()` calls from the file
+1. Extracts `t()` calls from the file
 2. Computes the diff against the previous extraction
 3. Updates locale files (adds new keys, removes orphaned ones, migrates renamed ones)
 4. Calls the configured AI translator with the missing strings — asynchronously, with your API key, directly to the provider
@@ -207,16 +207,16 @@ The closest analogs require either a separate codegen step or stop at simple pla
 Placeholder types are inferred from the source literal **at the call site**, with full ICU support — plural, select, selectordinal, number, date, time — at compile time via TypeScript template literal types. No codegen. No `.d.ts` file to keep in sync. No build step.
 
 ```ts
-$t('Hi {name}', {});                // ❌ Property 'name' is missing
-$t('Hi {name}', { name: 42 });      // ✅ name: string | number
+t('Hi {name}', {});                // ❌ Property 'name' is missing
+t('Hi {name}', { name: 42 });      // ✅ name: string | number
 
-$t('You have {count, plural, one {# msg} other {# msgs}}', {});           // ❌ count missing
-$t('You have {count, plural, ...}', { count: 'three' });                  // ❌ count must be number
+t('You have {count, plural, one {# msg} other {# msgs}}', {});           // ❌ count missing
+t('You have {count, plural, ...}', { count: 'three' });                  // ❌ count must be number
 
-$t('Updated: {when, date, long}', { when: 'today' });    // ❌ when must be Date | number
-$t('Updated: {when, date, long}', { when: new Date() }); // ✅
+t('Updated: {when, date, long}', { when: 'today' });    // ❌ when must be Date | number
+t('Updated: {when, date, long}', { when: new Date() }); // ✅
 
-$t('{theme, select, dark {x} other {y}}', { theme: 42 }); // ❌ theme must be string
+t('{theme, select, dark {x} other {y}}', { theme: 42 }); // ❌ theme must be string
 ```
 
 The type extraction recursively walks the source string at the type level. ICU format → value type mapping:
@@ -268,7 +268,7 @@ Locale files are organized by **file path** as the primary key, source string as
 }
 ```
 
-`$t('Save')` in `button.tsx` is a different catalog entry than `$t('Save')` in `menu.tsx`. The compiler scopes automatically based on the source file. Translators see exactly which file each string lives in — useful context for choosing the right translation.
+`t('Save')` in `button.tsx` is a different catalog entry than `t('Save')` in `menu.tsx`. The compiler scopes automatically based on the source file. Translators see exactly which file each string lives in — useful context for choosing the right translation.
 
 If you actually want the same translation in two files, you write the same string in both files and translate each entry the same way. Explicit > clever default deduping.
 
@@ -289,21 +289,21 @@ In a "source IS the key" system, fixing a typo or rewording naively loses the tr
 
 ```ts
 // Before
-$t('Helo, {name}');  // sv.json: "Helo, {name}": "Hej, {name}"
+t('Helo, {name}');  // sv.json: "Helo, {name}": "Hej, {name}"
 
 // You fix the typo
-$t('Hello, {name}'); // sv.json: { "Hello, {name}": "" }  ← gone!
+t('Hello, {name}'); // sv.json: { "Hello, {name}": "" }  ← gone!
 ```
 
 Other "source-as-key" approaches (mostly Lingui via hash ID) sidestep this because the ID is hash-based — but they trade away the readability of source-as-key in the on-disk catalog. Libraries with explicit IDs don't have this problem at all (the ID is stable; you edit the value).
 
 ### What yapyak does
 
-When yapyak's Vite plugin re-extracts a file, it compares the previous snapshot with the new one. If a `$t()` call at the same `line:column` position has a changed source string, it's treated as a rename:
+When yapyak's Vite plugin re-extracts a file, it compares the previous snapshot with the new one. If a `t()` call at the same `line:column` position has a changed source string, it's treated as a rename:
 
 ```ts
 // Saved file:
-$t('Hello, {name}')  // line 14:8
+t('Hello, {name}')  // line 14:8
 
 // Previous snapshot for line 14:8: source was 'Helo, {name}'
 // → detected as rename, not deletion
@@ -336,7 +336,7 @@ Tolgee and Locize ship AI translation but rely on platform metadata. CLI tools l
 
 ### What yapyak does
 
-For each `$t()` call, the compiler walks the AST upward and records:
+For each `t()` call, the compiler walks the AST upward and records:
 
 - The nearest enclosing JSX/HTML/template tag (`button`, `h1`, `label`, `aria-label="..."` attribute)
 - The enclosing function name (`SaveButton`)
@@ -376,7 +376,7 @@ It's a lot of plumbing for a feature most libraries don't even have AI translati
 
 ---
 
-## Framework-agnostic reactivity — one `$t`, reactive everywhere
+## Framework-agnostic reactivity — one `t`, reactive everywhere
 
 ### The problem
 
@@ -392,7 +392,7 @@ Paraglide's compiled-function approach sidesteps reactivity entirely — its fun
 
 ### What yapyak does
 
-A single global `$t` is reactive in every framework because of a side-channel: `runTrackers()`. Every `$t()` call (and every compiled `_pick()` call) invokes registered tracker callbacks before returning. Each framework adapter registers a tracker that touches its native reactive primitive:
+A single global `t` is reactive in every framework because of a side-channel: `runTrackers()`. Every `t()` call (and every compiled `_pick()` call) invokes registered tracker callbacks before returning. Each framework adapter registers a tracker that touches its native reactive primitive:
 
 ```ts
 // packages/vue/src/locale.ts
@@ -405,7 +405,7 @@ registerTracker(() => { void active });               // Svelte $state read
 //   useSyncExternalStore + key-remount on locale change
 ```
 
-The act of calling `$t()` inside a component implicitly subscribes the component to locale changes. No `useT()` hook. No `<Trans>`. No Vue plugin install. Just `import { $t }` and call it.
+The act of calling `t()` inside a component implicitly subscribes the component to locale changes. No `useT()` hook. No `<Trans>`. No Vue plugin install. Just `import { t }` and call it.
 
 ### Why nobody else has done this
 
@@ -413,7 +413,7 @@ Most i18n libraries' API design predates `useSyncExternalStore` and framework si
 
 ### Reviewer talking points
 
-- "Same `$t` in React, Vue, Svelte. No hook, no provider, no component wrapper. Calling it makes the component reactive."
+- "Same `t` in React, Vue, Svelte. No hook, no provider, no component wrapper. Calling it makes the component reactive."
 
 ---
 
@@ -468,11 +468,11 @@ Paraglide solved this with compiled per-message functions. yapyak goes a step fu
 
 ### What yapyak does
 
-The compiler rewrites every `$t()` call to inline its own per-locale catalog:
+The compiler rewrites every `t()` call to inline its own per-locale catalog:
 
 ```ts
 // You write
-$t('Save changes')
+t('Save changes')
 
 // Compiler emits
 _pick({ en: "Save changes", sv: "Spara ändringar" })
@@ -496,12 +496,12 @@ export function pick(
 
 Tree-shaking works at the call-site granularity. Code-splitting works because each chunk only carries the strings that chunk's code uses. Route-based locale loading is automatic — no namespace boilerplate.
 
-In single-locale mode, even `_pick` disappears: `$t('Hello')` compiles to the literal `"Hello"`, and the entire `yapyak` runtime gets tree-shaken away if no other features are used.
+In single-locale mode, even `_pick` disappears: `t('Hello')` compiles to the literal `"Hello"`, and the entire `yapyak` runtime gets tree-shaken away if no other features are used.
 
 ### Reviewer talking points
 
 - "No catalog to load. No namespaces to manage. Code-splitting is automatic."
-- "Single-locale mode? `$t('Hello')` is literally `\"Hello\"` in your build."
+- "Single-locale mode? `t('Hello')` is literally `\"Hello\"` in your build."
 
 ---
 
@@ -544,6 +544,6 @@ These are 2026 table stakes. We do them well, but claiming them as differentiato
 - **JSON catalogs** — Everyone except Lingui (which defaults to PO).
 - **Optional peer dependencies / per-framework split packages** — Standard practice.
 - **Single-locale tree-shaking** — Paraglide's `experimentalStaticLocale` is comparable. We're more aggressive (literal-string elision in the call site) but it's not unique.
-- **Same `$t` API across frameworks** — Paraglide also markets this with compiled functions. We do it with reactivity *and* rich ICU support, but the bare headline isn't ours alone.
+- **Same `t` API across frameworks** — Paraglide also markets this with compiled functions. We do it with reactivity *and* rich ICU support, but the bare headline isn't ours alone.
 
 Lead with what's actually rare or unique. Acknowledge what's not. Readers who know the space will trust the rest of the doc more.

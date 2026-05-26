@@ -1,5 +1,5 @@
-import { $t } from 'yapyak';
+import { t } from 'yapyak';
 
 export function bad(): string {
-  return $t('');
+  return t('');
 }

@@ -6,7 +6,7 @@ describe('vanillaProcessor', () => {
   describe('parseFragments', () => {
     it('returns a single fragment covering the entire source', () => {
       const source =
-        "import { $t } from 'yapyak';\nexport const x = $t('Hello');\n";
+        "import { t } from 'yapyak';\nexport const x = t('Hello');\n";
       const fragments = vanillaProcessor.parseFragments(source);
       expect(fragments).toHaveLength(1);
       expect(fragments[0]?.code).toBe(source);

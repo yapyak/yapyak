@@ -25,9 +25,9 @@ function findCalls(sf: ts.SourceFile): ts.CallExpression[] {
 describe('resolveCallSiteContext', () => {
   it('returns the function component name', () => {
     const sf = parseInline(`
-      import { $t } from 'yapyak';
+      import { t } from 'yapyak';
       export function Greeting() {
-        return $t('Hello');
+        return t('Hello');
       }
     `);
     const [call] = findCalls(sf);
@@ -39,8 +39,8 @@ describe('resolveCallSiteContext', () => {
 
   it('returns the arrow component name from its variable declaration', () => {
     const sf = parseInline(`
-      import { $t } from 'yapyak';
-      export const Greeting = () => $t('Hello');
+      import { t } from 'yapyak';
+      export const Greeting = () => t('Hello');
     `);
     const [call] = findCalls(sf);
     const ctx = resolveCallSiteContext(call!, sf);
@@ -49,9 +49,9 @@ describe('resolveCallSiteContext', () => {
 
   it('returns the forwardRef component name', () => {
     const sf = parseInline(`
-      import { $t } from 'yapyak';
+      import { t } from 'yapyak';
       const forwardRef = (fn: unknown) => fn;
-      export const Greeting = forwardRef(() => $t('Hello'));
+      export const Greeting = forwardRef(() => t('Hello'));
     `);
     const [call] = findCalls(sf);
     const ctx = resolveCallSiteContext(call!, sf);
@@ -60,9 +60,9 @@ describe('resolveCallSiteContext', () => {
 
   it('returns the memo component name', () => {
     const sf = parseInline(`
-      import { $t } from 'yapyak';
+      import { t } from 'yapyak';
       const memo = (fn: unknown) => fn;
-      export const Greeting = memo(() => $t('Hello'));
+      export const Greeting = memo(() => t('Hello'));
     `);
     const [call] = findCalls(sf);
     const ctx = resolveCallSiteContext(call!, sf);
@@ -71,9 +71,9 @@ describe('resolveCallSiteContext', () => {
 
   it('returns the hook name', () => {
     const sf = parseInline(`
-      import { $t } from 'yapyak';
+      import { t } from 'yapyak';
       export function useGreeting() {
-        return $t('Hello');
+        return t('Hello');
       }
     `);
     const [call] = findCalls(sf);
@@ -85,10 +85,10 @@ describe('resolveCallSiteContext', () => {
 
   it('returns both component and nested hook names', () => {
     const sf = parseInline(`
-      import { $t } from 'yapyak';
+      import { t } from 'yapyak';
       export function Greeting() {
         function useLabel() {
-          return $t('Hello');
+          return t('Hello');
         }
         return useLabel();
       }
@@ -102,9 +102,9 @@ describe('resolveCallSiteContext', () => {
 
   it('returns the closest enclosing JSX element tag', () => {
     const sf = parseInline(`
-      import { $t } from 'yapyak';
+      import { t } from 'yapyak';
       export function Greeting() {
-        return <article><header><h1>{$t('Welcome')}</h1></header></article>;
+        return <article><header><h1>{t('Welcome')}</h1></header></article>;
       }
     `);
     const [call] = findCalls(sf);
@@ -115,9 +115,9 @@ describe('resolveCallSiteContext', () => {
 
   it('returns the JSX tag for a self-closing element', () => {
     const sf = parseInline(`
-      import { $t } from 'yapyak';
+      import { t } from 'yapyak';
       export function Greeting() {
-        return <Button label={$t('Save')} />;
+        return <Button label={t('Save')} />;
       }
     `);
     const [call] = findCalls(sf);
@@ -127,10 +127,10 @@ describe('resolveCallSiteContext', () => {
 
   it('returns the full namespaced JSX tag', () => {
     const sf = parseInline(`
-      import { $t } from 'yapyak';
+      import { t } from 'yapyak';
       const Menu = { Item: (p: { children: unknown }) => p.children };
       export function Greeting() {
-        return <Menu.Item>{$t('Save')}</Menu.Item>;
+        return <Menu.Item>{t('Save')}</Menu.Item>;
       }
     `);
     const [call] = findCalls(sf);
@@ -141,14 +141,14 @@ describe('resolveCallSiteContext', () => {
   it('returns context for every call in a nested-jsx fixture', () => {
     const sf = parseInline(
       `
-        import { $t } from 'yapyak';
+        import { t } from 'yapyak';
         export function Greeting({ name }: { name: string }) {
           return (
             <article>
-              <header><h1>{$t('Welcome')}</h1></header>
+              <header><h1>{t('Welcome')}</h1></header>
               <section>
-                <p>{$t('Hi {name}', { name })}</p>
-                <button type="button">{$t('Continue')}</button>
+                <p>{t('Hi {name}', { name })}</p>
+                <button type="button">{t('Continue')}</button>
               </section>
             </article>
           );
@@ -169,8 +169,8 @@ describe('resolveCallSiteContext', () => {
 
   it('returns an empty context for a top-level call', () => {
     const sf = parseInline(`
-      import { $t } from 'yapyak';
-      export const greeting = $t('Hello');
+      import { t } from 'yapyak';
+      export const greeting = t('Hello');
     `);
     const [call] = findCalls(sf);
     const ctx = resolveCallSiteContext(call!, sf);
@@ -182,8 +182,8 @@ describe('resolveCallSiteContext', () => {
 
   it('returns no component name for non-HOC callbacks', () => {
     const sf = parseInline(`
-      import { $t } from 'yapyak';
-      const items = ['a'].map((item) => $t('Item: {item}', { item }));
+      import { t } from 'yapyak';
+      const items = ['a'].map((item) => t('Item: {item}', { item }));
     `);
     const [call] = findCalls(sf);
     const ctx = resolveCallSiteContext(call!, sf);

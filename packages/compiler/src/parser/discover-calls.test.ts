@@ -23,7 +23,7 @@ function loadFixture(category: string, name: string): ts.SourceFile {
 }
 
 describe('discoverCalls', () => {
-  it('returns direct $t calls', () => {
+  it('returns direct t calls', () => {
     const sf = loadFixture('calls', 'simple.ts');
     const calls = discoverCalls(sf, resolveBindings(sf));
     expect(calls).toHaveLength(2);
@@ -46,7 +46,7 @@ describe('discoverCalls', () => {
     expect(calls[0]?.binding.kind).toBe('wrapper');
   });
 
-  it('returns namespace member calls (Y.$t)', () => {
+  it('returns namespace member calls (Y.t)', () => {
     const sf = loadFixture('bindings', 'namespace-import.ts');
     const calls = discoverCalls(sf, resolveBindings(sf));
     expect(calls).toHaveLength(1);

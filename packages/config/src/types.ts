@@ -38,7 +38,7 @@ export interface YapyakConfig {
   /** The locale persistence strategy. */
   persistence?: PersistenceOption;
   /**
-   * Whether to preserve existing translations when a `$t()` call is renamed in place.
+   * Whether to preserve existing translations when a `t()` call is renamed in place.
    *
    * @defaultValue `true` without a {@link Translator}, `false` with one
    */

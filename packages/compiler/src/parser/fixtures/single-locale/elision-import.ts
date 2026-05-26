@@ -1,6 +1,6 @@
-import { $t, useLocale } from 'yapyak';
+import { t, useLocale } from 'yapyak';
 
 export function Greeting({ name }: { name: string }): string {
   const [locale] = useLocale();
-  return `[${locale}] ${$t('Hi {name}', { name })}`;
+  return `[${locale}] ${t('Hi {name}', { name })}`;
 }

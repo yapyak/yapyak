@@ -24,9 +24,7 @@ export interface Locale {
  * @example Read and write the locale in a Svelte component
  * ```svelte
  * <script>
- *   // Svelte reserves `$`-prefixed identifiers for store auto-subscriptions,
- *   // so alias the macro to a local name.
- *   import { $t as t } from 'yapyak';
+ *   import { t } from 'yapyak';
  *   import { locale } from '@yapyak/svelte';
  * </script>
  *

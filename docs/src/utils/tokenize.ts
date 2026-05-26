@@ -585,7 +585,7 @@ function applyYapyakHighlight(tokens: Token[]) {
 
     if (
       (token.type === 'fn-call' || token.type === 'plain') &&
-      token.value === '$t'
+      token.value === 't'
     ) {
       const next = findNextSignificant(tokens, index + 1);
       if (

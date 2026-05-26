@@ -1,5 +1,5 @@
-import { $t } from 'yapyak';
+import { t } from 'yapyak';
 
 export function greeting(): string {
-  return $t('Hello');
+  return t('Hello');
 }

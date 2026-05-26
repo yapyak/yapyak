@@ -3,15 +3,15 @@ title: How it works
 order: 3
 ---
 
-You write `$t()` in your code. yapyak rewrites the call to inline the translations for every locale, right at the call site.
+You write `t()` in your code. yapyak rewrites the call to inline the translations for every locale, right at the call site.
 
 ## What you write
 
 ```tsx
-import { $t } from 'yapyak';
+import { t } from 'yapyak';
 
 export function SaveButton() {
-  return <button>{$t('Save changes')}</button>;
+  return <button>{t('Save changes')}</button>;
 }
 ```
 
@@ -41,7 +41,7 @@ Which means you can adopt yapyak — and get everything in place — for free, e
 
 On save, yapyak's Vite plugin:
 
-1. **Re-extract.** It parses the file and collects every `$t()` call: source string, line, column, and the surrounding context.
+1. **Re-extract.** It parses the file and collects every `t()` call: source string, line, column, and the surrounding context.
 2. **Detect renames.** If a string disappeared from line 23, column 12 and a new one appeared at the same position, that's a rename — not a delete plus add.
 3. **Sync locale files.** New strings get empty entries in every `locales/*.json`. Removed strings get pruned.
 4. **Translate.** If a translator is configured, missing entries are batched and sent to the AI with the call-site context attached.
@@ -51,7 +51,7 @@ If no translator is configured, step 4 is skipped — the stubs stay empty until
 
 ## Rename detection
 
-yapyak tracks `$t()` calls by *position* in the source — line and column — not by string similarity. When you edit `$t('Save')` to `$t('Save changes')` on the same line and column, the diff looks like a rename, and existing translations move with the call site.
+yapyak tracks `t()` calls by *position* in the source — line and column — not by string similarity. When you edit `t('Save')` to `t('Save changes')` on the same line and column, the diff looks like a rename, and existing translations move with the call site.
 
 ```diff
 // locales/sv.json
@@ -83,7 +83,7 @@ For every missing entry, yapyak extracts a context object from the call site:
   "source": "Save changes",
   "component": "SaveButton",
   "element": "button",
-  "snippet": "  return (\n    <button>{$t('Save changes')}</button>\n  );"
+  "snippet": "  return (\n    <button>{t('Save changes')}</button>\n  );"
 }
 ```
 

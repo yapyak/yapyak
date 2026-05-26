@@ -1,4 +1,4 @@
-import { $t } from 'yapyak';
+import { t } from 'yapyak';
 
 import { Box } from '#components/box';
 
@@ -14,7 +14,7 @@ export function LayoutHeaderMenuButton(props: LayoutHeaderMenuButtonProps) {
   return (
     <Box
       aria-expanded={open}
-      aria-label={open ? $t('Close menu') : $t('Open menu')}
+      aria-label={open ? t('Close menu') : t('Open menu')}
       as="button"
       className={styles.LayoutHeaderMenuButton}
       data-open={open}

@@ -2,7 +2,7 @@ import type { Page } from '@yapyak/doc-extractor';
 import type { BoxProps } from '#components/box';
 
 import { Link } from '@tanstack/react-router';
-import { $t } from 'yapyak';
+import { t } from 'yapyak';
 
 import { Box } from '#components/box';
 
@@ -35,7 +35,7 @@ export function ContentPagination(props: ContentPaginationProps) {
             as="span"
             className={styles.LabelText}
           >
-            {$t('Previous')}
+            {t('Previous')}
           </Box>
           <Box
             as="span"
@@ -56,7 +56,7 @@ export function ContentPagination(props: ContentPaginationProps) {
             as="span"
             className={styles.LabelText}
           >
-            {$t('Next')}
+            {t('Next')}
           </Box>
           <Box
             as="span"

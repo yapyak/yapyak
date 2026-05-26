@@ -1,6 +1,6 @@
 import type { BoxProps } from '#components/box';
 
-import { $t } from 'yapyak';
+import { t } from 'yapyak';
 
 import { Box } from '#components/box';
 
@@ -16,10 +16,10 @@ export interface CalloutProps extends BoxProps<'aside'> {
 export function Callout(props: CalloutProps) {
   const { children, className, title, variant, ...restProps } = props;
   const defaultTitles: Record<CalloutVariant, string> = {
-    danger: $t('Danger'),
-    info: $t('Info'),
-    tip: $t('Tip'),
-    warning: $t('Warning'),
+    danger: t('Danger'),
+    info: t('Info'),
+    tip: t('Tip'),
+    warning: t('Warning'),
   };
   const resolvedTitle = title ?? defaultTitles[variant];
 

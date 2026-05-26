@@ -37,9 +37,9 @@ describe('extractFile', () => {
       fileId: 'multi.ts',
       locales: ['en'],
       source: `
-        import { $t } from 'yapyak';
-        export const a = $t('Hello');
-        export const b = $t('Hello');
+        import { t } from 'yapyak';
+        export const a = t('Hello');
+        export const b = t('Hello');
       `,
     });
     expect(result.messages).toHaveLength(1);
@@ -103,10 +103,10 @@ describe('extractFile', () => {
     it('returns template messages resolved against <script setup> import', () => {
       const source = [
         '<script setup lang="ts">',
-        "import { $t } from 'yapyak';",
+        "import { t } from 'yapyak';",
         '</script>',
         '<template>',
-        `  <h1>{{ $t('Welcome') }}</h1>`,
+        `  <h1>{{ t('Welcome') }}</h1>`,
         '</template>',
       ].join('\n');
       const result = extractFile({
@@ -121,12 +121,12 @@ describe('extractFile', () => {
     it('returns messages from both script and template under one import', () => {
       const source = [
         '<script setup lang="ts">',
-        "import { $t } from 'yapyak';",
-        "const inScript = $t('From script');",
+        "import { t } from 'yapyak';",
+        "const inScript = t('From script');",
         '</script>',
         '<template>',
-        `  <h1>{{ $t('From template') }}</h1>`,
-        `  <button :aria-label="$t('Button label')">x</button>`,
+        `  <h1>{{ t('From template') }}</h1>`,
+        `  <button :aria-label="t('Button label')">x</button>`,
         '</template>',
       ].join('\n');
       const result = extractFile({
@@ -141,11 +141,11 @@ describe('extractFile', () => {
     it('returns template messages resolved against plain <script>', () => {
       const source = [
         '<script lang="ts">',
-        "import { $t } from 'yapyak';",
+        "import { t } from 'yapyak';",
         "export default { name: 'X' };",
         '</script>',
         '<template>',
-        `  <h1>{{ $t('Welcome') }}</h1>`,
+        `  <h1>{{ t('Welcome') }}</h1>`,
         '</template>',
       ].join('\n');
       const result = extractFile({
@@ -162,7 +162,7 @@ describe('extractFile', () => {
     it('returns template messages using an aliased import shared with template', () => {
       const source = [
         '<script setup lang="ts">',
-        "import { $t as tr } from 'yapyak';",
+        "import { t as tr } from 'yapyak';",
         '</script>',
         '<template>',
         `  <h1>{{ tr('Welcome') }}</h1>`,
@@ -180,11 +180,11 @@ describe('extractFile', () => {
     it('dedupes the same source string across script and template', () => {
       const source = [
         '<script setup lang="ts">',
-        "import { $t } from 'yapyak';",
-        "const inScript = $t('Save');",
+        "import { t } from 'yapyak';",
+        "const inScript = t('Save');",
         '</script>',
         '<template>',
-        `  <button>{{ $t('Save') }}</button>`,
+        `  <button>{{ t('Save') }}</button>`,
         '</template>',
       ].join('\n');
       const result = extractFile({
@@ -199,7 +199,7 @@ describe('extractFile', () => {
     it('returns no messages when no script imports yapyak', () => {
       const source = [
         '<template>',
-        `  <h1>{{ $t('Welcome') }}</h1>`,
+        `  <h1>{{ t('Welcome') }}</h1>`,
         '</template>',
       ].join('\n');
       const result = extractFile({
