@@ -1,5 +1,6 @@
 import type { PlaceholderInfo } from './plural';
 import type {
+  Binding,
   CallSite,
   Diagnostic,
   ElisionContext,
@@ -10,7 +11,6 @@ import type {
   Location,
   Placeholder,
   Scope,
-  YapyakBinding,
 } from './type';
 
 import * as ts from 'typescript';
@@ -34,7 +34,7 @@ export function extractFile(request: ExtractFileRequest): ExtractFileResult {
   const callSites: CallSite[] = [];
   const messagesById = new Map<string, ExtractedMessage>();
 
-  const ambientBindings = new Map<string, YapyakBinding>();
+  const ambientBindings = new Map<string, Binding>();
   let ambientAnchor: ts.SourceFile | undefined;
 
   for (const fragment of fragments) {
@@ -164,7 +164,7 @@ function processFragment(input: ProcessFragmentInput): void {
 }
 
 function buildAmbientScope(
-  ambientBindings: Map<string, YapyakBinding>,
+  ambientBindings: Map<string, Binding>,
   anchor: ts.Node,
 ): Scope {
   return {

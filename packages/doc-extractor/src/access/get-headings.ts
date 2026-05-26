@@ -1,4 +1,4 @@
-import type { Block, HeadingBlock } from '../types/blocks.ts';
+import type { Block, HeadingBlock } from '../types/block.ts';
 import type { Page } from '../types/manifest.ts';
 
 import { blockToText } from './block-to-text.ts';

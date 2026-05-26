@@ -1,4 +1,4 @@
-import type { Block, ExportKind, TableRowBlock } from '../../types/blocks.ts';
+import type { Block, ExportKind, TableRowBlock } from '../../types/block.ts';
 import type { Page } from '../../types/manifest.ts';
 import type {
   ReferenceExample,

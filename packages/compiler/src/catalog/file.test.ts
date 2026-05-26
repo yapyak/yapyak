@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { syncLocaleFiles } from './files';
+import { syncLocaleFiles } from './file';
 import {
   mkdirSync,
   mkdtempSync,

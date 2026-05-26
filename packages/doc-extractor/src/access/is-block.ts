@@ -1,4 +1,4 @@
-import type { Block } from '../types/blocks.ts';
+import type { Block } from '../types/block.ts';
 
 const BLOCK_TYPES = new Set<Block['type']>([
   'quote',

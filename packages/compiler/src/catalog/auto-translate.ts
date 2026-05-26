@@ -1,8 +1,8 @@
 import type { MessageContext, Translator } from '@yapyak/translator';
 import type { ExtractedMessage, Location } from '../parser/type';
-import type { LocaleFile } from './files';
+import type { LocaleFile } from './file';
 
-import { readLocaleFile, writeLocaleFile } from './files';
+import { readLocaleFile, writeLocaleFile } from './file';
 import { join } from 'node:path';
 
 export interface AutoTranslateOptions {

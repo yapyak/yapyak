@@ -1,4 +1,4 @@
-import type { Block } from '../types/blocks.ts';
+import type { Block } from '../types/block.ts';
 
 export function blockToText(block: Block): string {
   switch (block.type) {

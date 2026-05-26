@@ -1,4 +1,4 @@
-import type { Block } from './blocks.ts';
+import type { Block } from './block.ts';
 
 export type MetaValue =
   | string

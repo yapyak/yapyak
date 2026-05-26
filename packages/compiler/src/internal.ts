@@ -9,6 +9,7 @@ export {
 } from './io';
 export {
   astroProcessor,
+  type Binding,
   type BindingTable,
   type CallSite,
   type CallSiteContext,
@@ -44,5 +45,4 @@ export {
   transformFile,
   vanillaProcessor,
   vueProcessor,
-  type YapyakBinding,
 } from './parser';

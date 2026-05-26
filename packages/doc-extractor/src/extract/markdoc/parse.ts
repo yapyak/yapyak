@@ -6,7 +6,7 @@ import type {
   TableBlock,
   TableCellBlock,
   TableRowBlock,
-} from '../../types/blocks.ts';
+} from '../../types/block.ts';
 import type { MetaValue } from '../../types/manifest.ts';
 
 import Markdoc from '@markdoc/markdoc';

@@ -39,20 +39,20 @@ export interface Diagnostic {
   source: string;
 }
 
-export interface YapyakBinding {
+export interface Binding {
   declarationNode: ts.Node;
   kind: 'direct' | 'namespace' | 'wrapper';
   localName: string;
 }
 
 export interface Scope {
-  bindings: Map<string, YapyakBinding>;
+  bindings: Map<string, Binding>;
   node: ts.Node;
   parent?: Scope;
 }
 
 export interface BindingTable {
-  find(name: string, atNode: ts.Node): YapyakBinding | undefined;
+  find(name: string, atNode: ts.Node): Binding | undefined;
   root: Scope;
 }
 
@@ -60,7 +60,7 @@ export interface BindingTable {
  * A discovered `$t()` call site. The `node` field is intentionally a `ts.CallExpression` (not a stable shape) and may only be inspected, never serialized — consumers that need to cross process boundaries should rely on `range` instead.
  */
 export interface CallSite {
-  binding: YapyakBinding;
+  binding: Binding;
   elision?: ElisionContext;
   node: ts.CallExpression;
   range: Range;

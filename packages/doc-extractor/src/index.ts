@@ -34,7 +34,7 @@ export type {
   TableCellBlock,
   TableRowBlock,
   TextBlock,
-} from './types/blocks.ts';
+} from './types/block.ts';
 export type {
   CollectionConfig,
   Config,

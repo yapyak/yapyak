@@ -1,4 +1,4 @@
-import type { CodeBlock } from '../types/blocks.ts';
+import type { CodeBlock } from '../types/block.ts';
 import type { Page } from '../types/manifest.ts';
 
 import { walkBlocks } from './walk-blocks.ts';

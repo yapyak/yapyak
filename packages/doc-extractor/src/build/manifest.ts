@@ -17,7 +17,7 @@ import {
   buildSymbolIndex,
   buildSymbolPage,
 } from '../extract/typedoc/build-page.ts';
-import { extractTypedoc } from '../extract/typedoc/extract.ts';
+import { extractTypedoc } from '../extract/typedoc/index.ts';
 import { slugify } from '../utils/slug.ts';
 import { buildMarkdocSidebar, buildTypedocPackageRoot } from './sidebar.ts';
 import { readFile } from 'node:fs/promises';

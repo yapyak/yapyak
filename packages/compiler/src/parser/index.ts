@@ -1,4 +1,5 @@
 export type {
+  Binding,
   BindingTable,
   CallSite,
   CallSiteContext,
@@ -20,7 +21,6 @@ export type {
   Scope,
   TransformFileRequest,
   TransformFileResult,
-  YapyakBinding,
 } from './type';
 
 export { resolveCallSiteContext } from './call-site-context';

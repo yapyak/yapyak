@@ -1,4 +1,4 @@
-import type { BindingTable, Scope, YapyakBinding } from './type';
+import type { Binding, BindingTable, Scope } from './type';
 
 import * as ts from 'typescript';
 
@@ -149,7 +149,7 @@ function findBinding(
   scopeByNode: Map<ts.Node, Scope>,
   name: string,
   atNode: ts.Node,
-): YapyakBinding | undefined {
+): Binding | undefined {
   let scope = findEnclosingScope(scopeByNode, atNode);
   while (scope) {
     const binding = scope.bindings.get(name);
