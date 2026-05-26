@@ -25,7 +25,7 @@ export function transformFile(
   request: TransformFileRequest,
 ): TransformFileResult {
   const defaultLocale = request.locales[0];
-  if (defaultLocale === undefined) {
+  if (!defaultLocale) {
     return {
       code: request.source,
       diagnostics: [],
@@ -54,7 +54,7 @@ export function transformFile(
       pickLocal,
       translations: request.translations,
     });
-    if (replacement === undefined) {
+    if (!replacement) {
       continue;
     }
     const range = replacement.range ?? callSite.range;
@@ -142,7 +142,7 @@ function rewriteImportDeclaration(input: RewriteImportDeclarationInput): void {
     return;
   }
   const namedBindings = declaration.importClause?.namedBindings;
-  if (namedBindings === undefined || !ts.isNamedImports(namedBindings)) {
+  if (!namedBindings || !ts.isNamedImports(namedBindings)) {
     return;
   }
 
@@ -267,7 +267,7 @@ function renderCallReplacement(
 
   if (isSingleLocale && canElide(placeholderInfos, callSite, parsed)) {
     const bare = tryBareElision(parsed.source, callSite, placeholderInfos);
-    if (bare !== undefined) {
+    if (bare) {
       return bare;
     }
     return {
@@ -287,10 +287,10 @@ function renderCallReplacement(
   const paramsArgText = hasPlaceholders ? getParamArgText(callSite) : undefined;
 
   const args: string[] = [catalog];
-  if (paramsArgText !== undefined || parsed.optionsExpression !== undefined) {
+  if (paramsArgText || parsed.optionsExpression) {
     args.push(paramsArgText ?? 'undefined');
   }
-  if (parsed.optionsExpression !== undefined) {
+  if (parsed.optionsExpression) {
     args.push(parsed.optionsExpression);
   }
   return {
@@ -304,7 +304,7 @@ function canElide(
   callSite: CallSite,
   parsed: ParsedArguments,
 ): boolean {
-  if (parsed.optionsExpression !== undefined) {
+  if (parsed.optionsExpression) {
     return false;
   }
   for (const info of placeholderInfos) {
@@ -315,7 +315,7 @@ function canElide(
   if (placeholderInfos.length === 0) {
     return true;
   }
-  return getParamExpressions(callSite) !== undefined;
+  return Boolean(getParamExpressions(callSite));
 }
 
 function renderEliminated(
@@ -327,7 +327,7 @@ function renderEliminated(
     return safeJsString(source);
   }
   const expressions = getParamExpressions(callSite);
-  if (expressions === undefined) {
+  if (!expressions) {
     return safeJsString(source);
   }
   return buildTemplateLiteral(source, expressions);
@@ -343,7 +343,7 @@ function getParamExpressions(
   callSite: CallSite,
 ): Map<string, string> | undefined {
   const arg = callSite.node.arguments[1];
-  if (arg === undefined) {
+  if (!arg) {
     return undefined;
   }
   if (!ts.isObjectLiteralExpression(arg)) {
@@ -376,7 +376,7 @@ function buildTemplateLiteral(
       const close = findMatchingBrace(source, i);
       const inner = source.slice(i + 1, close);
       const key = readKey(inner);
-      if (key !== undefined && expressions.has(key)) {
+      if (key && expressions.has(key)) {
         result += `\${${expressions.get(key) ?? key}}`;
         i = close + 1;
         continue;
@@ -465,7 +465,7 @@ function pickLocaleText(input: PickLocaleTextInput): string {
     return input.source;
   }
   const localeMap = input.translations[input.locale];
-  if (localeMap === undefined) {
+  if (!localeMap) {
     return input.source;
   }
   const text = localeMap[input.id];
@@ -481,7 +481,7 @@ function renderLocaleKey(locale: string): string {
 
 function getParamArgText(callSite: CallSite): string | undefined {
   const arg = callSite.node.arguments[1];
-  if (arg === undefined) {
+  if (!arg) {
     return undefined;
   }
   return arg.getText();
@@ -506,7 +506,7 @@ function countReferences(code: string, name: string): number {
 }
 
 function isIdentifierChar(ch: string | undefined): boolean {
-  if (ch === undefined) {
+  if (!ch) {
     return false;
   }
   return /[\w$]/.test(ch);
@@ -517,7 +517,7 @@ function tryBareElision(
   callSite: CallSite,
   placeholderInfos: readonly PlaceholderInfo[],
 ): CallReplacement | undefined {
-  if (callSite.elision === undefined) {
+  if (!callSite.elision) {
     return undefined;
   }
   if (placeholderInfos.length > 0) {
@@ -530,7 +530,7 @@ function tryBareElision(
     }
     return { code: source, range, usesPick: false };
   }
-  if (attrName === undefined) {
+  if (!attrName) {
     return undefined;
   }
   if (!isSafeAttributeValue(source)) {

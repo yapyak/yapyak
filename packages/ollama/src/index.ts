@@ -130,7 +130,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
         timeout,
         url: endpoint,
       };
-      if (signal !== undefined) {
+      if (signal) {
         fetchInit.signal = signal;
       }
       const response = await fetchWithRetry(fetchInit);

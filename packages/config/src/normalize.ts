@@ -22,7 +22,7 @@ export function normalizeYapyakConfig(
     localesDir: config.localesDir ?? DEFAULT_LOCALES_DIR,
     persistence: normalizePersistence(config.persistence),
     preserveTranslationsOnRename:
-      config.preserveTranslationsOnRename ?? config.translator === undefined,
+      config.preserveTranslationsOnRename ?? !config.translator,
     syncHtmlLang: config.syncHtmlLang ?? false,
     translator: config.translator,
   };
@@ -49,7 +49,7 @@ function normalizePersistence(
   if (input.type === 'localStorage') {
     return { key: input.key ?? DEFAULT_STORAGE_KEY, type: 'localStorage' };
   }
-  if (input.match !== undefined) {
+  if (input.match) {
     return { match: input.match, type: 'url' };
   }
   return { type: 'url' };

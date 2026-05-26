@@ -42,7 +42,7 @@ export function extractFile(request: ExtractFileRequest): ExtractFileResult {
       continue;
     }
     const sourceFile = createFragmentSourceFile(request.fileId, fragment);
-    if (ambientAnchor === undefined) {
+    if (!ambientAnchor) {
       ambientAnchor = sourceFile;
     }
     const bindings = resolveBindings(sourceFile);
@@ -62,7 +62,7 @@ export function extractFile(request: ExtractFileRequest): ExtractFileResult {
   }
 
   const ambientParent =
-    ambientBindings.size > 0 && ambientAnchor !== undefined
+    ambientBindings.size > 0 && ambientAnchor
       ? buildAmbientScope(ambientBindings, ambientAnchor)
       : undefined;
 
@@ -129,7 +129,7 @@ function processFragment(input: ProcessFragmentInput): void {
     const elision =
       fragment.elision ??
       detectJsxElision(fragmentCall.node, sourceFile, fragment, originalSource);
-    if (elision !== undefined) {
+    if (elision) {
       callSite.elision = elision;
     }
     callSites.push(callSite);
@@ -149,7 +149,7 @@ function processFragment(input: ProcessFragmentInput): void {
     };
 
     const existing = messagesById.get(id);
-    if (existing !== undefined) {
+    if (existing) {
       existing.locations.push(location);
       continue;
     }
@@ -201,7 +201,7 @@ function getScriptKind(fileId: string, lang: Fragment['lang']): ts.ScriptKind {
 
 function toPublicPlaceholder(info: PlaceholderInfo): Placeholder {
   const result: Placeholder = { kind: info.kind, name: info.name };
-  if (info.variants !== undefined) {
+  if (info.variants) {
     result.variants = info.variants;
   }
   return result;
@@ -214,11 +214,11 @@ function detectJsxElision(
   originalSource: string,
 ): ElisionContext | undefined {
   const parent = node.parent;
-  if (parent === undefined || !ts.isJsxExpression(parent)) {
+  if (!parent || !ts.isJsxExpression(parent)) {
     return undefined;
   }
   const grandparent = parent.parent;
-  if (grandparent === undefined) {
+  if (!grandparent) {
     return undefined;
   }
   if (ts.isJsxElement(grandparent) || ts.isJsxFragment(grandparent)) {

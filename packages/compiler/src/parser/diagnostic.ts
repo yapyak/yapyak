@@ -19,7 +19,7 @@ export function createDiagnostic(input: CreateDiagnosticInput): Diagnostic {
     severity: input.severity,
     source: input.source,
   };
-  if (input.hint !== undefined) {
+  if (input.hint) {
     result.hint = input.hint;
   }
   return result;

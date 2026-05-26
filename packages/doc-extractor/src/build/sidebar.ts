@@ -171,28 +171,27 @@ export function buildTypedocPackageRoot(
       continue;
     }
     let list = childrenById.get(parentId);
-    if (list === undefined) {
+    if (!list) {
       list = [];
       childrenById.set(parentId, list);
     }
     const module = byId.get(id);
-    if (module !== undefined) {
+    if (module) {
       list.push(module);
     }
   }
 
   const root = byId.get(packageName);
-  const children =
-    root === undefined
-      ? []
-      : moduleChildren(
-          root,
-          byId,
-          childrenById,
-          collectionName,
-          packageName,
-          packageSlug,
-        );
+  const children = root
+    ? moduleChildren(
+        root,
+        byId,
+        childrenById,
+        collectionName,
+        packageName,
+        packageSlug,
+      )
+    : [];
 
   return {
     children,

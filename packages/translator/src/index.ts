@@ -188,7 +188,7 @@ export function createTranslator(options: CreateTranslatorOptions): Translator {
       return [];
     }
     const reference = requests[0];
-    if (reference === undefined) {
+    if (!reference) {
       return [];
     }
     const items = requests.map((request) => toItem(request, contextLevel));
@@ -231,11 +231,11 @@ function toItem(request: TranslateRequest, level: ContextLevel): TranslateItem {
     return item;
   }
   const context = request.context;
-  if (context !== undefined) {
+  if (context) {
     if (context.componentName !== '') {
       item.component = context.componentName;
     }
-    if (context.enclosingElement !== undefined) {
+    if (context.enclosingElement) {
       item.element = context.enclosingElement;
     }
     if (level === 'rich' && context.snippet !== '') {

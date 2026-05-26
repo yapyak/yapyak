@@ -14,7 +14,7 @@ export function buildSystem(
     'Output: a JSON array of plain strings — same length, same order. Each output element MUST be a string, not an object. Do not echo the input shape. Do not include `source`, `component`, `element`, or `snippet` keys in the output. No commentary, no markdown, no code fences, no labels. Just the JSON array of translated strings.',
     'Preserve all {placeholder} tokens and ICU patterns exactly as written.',
   ];
-  if (options.voice !== undefined && options.voice !== '') {
+  if (options.voice) {
     lines.push(`Voice: ${options.voice}`);
   }
   const glossaryLines = collectGlossary(options.glossary, targetLocale);
@@ -33,7 +33,7 @@ function collectGlossary(
   glossary: BuildSystemOptions['glossary'],
   targetLocale: string,
 ): string[] {
-  if (glossary === undefined) {
+  if (!glossary) {
     return [];
   }
   const lines: string[] = [];

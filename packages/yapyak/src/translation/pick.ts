@@ -28,7 +28,7 @@ export function pick(
   runTrackers();
   const active = options?.locale ?? getLocale();
   const value = variants[active] ?? variants[defaultLocale] ?? '';
-  if (params === undefined || !hasPlaceholder(value)) {
+  if (!params || !hasPlaceholder(value)) {
     return value;
   }
   return interpolate(value, params, active);

@@ -85,7 +85,7 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
 
     for (const fileId of Object.keys(sourcesByFile).sort()) {
       const sources = sourcesByFile[fileId];
-      if (sources === undefined) {
+      if (!sources) {
         continue;
       }
       const existingFile = existing[fileId] ?? {};
@@ -164,10 +164,7 @@ export function discoverLocales(
         .map((name) => name.replace(/\.json$/, ''))
         .sort()
     : [];
-  const defaultLocale =
-    options.defaultLocale !== undefined && options.defaultLocale !== ''
-      ? options.defaultLocale
-      : 'en';
+  const defaultLocale = options.defaultLocale || 'en';
   const set = new Set<string>([defaultLocale, ...fileLocales]);
   const locales = [...set].sort();
   return { defaultLocale, locales };
@@ -261,7 +258,7 @@ export function migrateLocales(
     );
     const data = readLocaleFile(localePath);
     const fileEntries = data[options.fileId];
-    if (fileEntries === undefined) {
+    if (!fileEntries) {
       continue;
     }
     let hasChanged = false;
@@ -293,7 +290,7 @@ function groupSourcesByFile(
   for (const message of messages) {
     for (const location of message.locations) {
       let set = grouped[location.fileId];
-      if (set === undefined) {
+      if (!set) {
         set = new Set<string>();
         grouped[location.fileId] = set;
       }

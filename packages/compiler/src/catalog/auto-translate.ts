@@ -92,7 +92,7 @@ export async function autoTranslate(
       for (let i = 0; i < localeStubs.length; i++) {
         const stub = localeStubs[i];
         const request = requests[i];
-        if (stub === undefined || request === undefined) {
+        if (!stub || !request) {
           continue;
         }
         try {
@@ -203,7 +203,7 @@ function setEntry(
   value: string,
 ): void {
   let entry = data[fileId];
-  if (entry === undefined) {
+  if (!entry) {
     entry = {};
     data[fileId] = entry;
   }
@@ -214,7 +214,7 @@ function groupByLocale(stubs: Stub[]): Record<string, Stub[]> {
   const grouped: Record<string, Stub[]> = {};
   for (const stub of stubs) {
     const list = grouped[stub.locale];
-    if (list === undefined) {
+    if (!list) {
       grouped[stub.locale] = [stub];
     } else {
       list.push(stub);

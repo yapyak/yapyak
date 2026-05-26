@@ -293,11 +293,11 @@ function unifyParameters(overloads: ReferenceOverload[]): ReferenceParameter[] {
   );
   const unified: ReferenceParameter[] = [];
   for (let position = 0; position < maxLength; position++) {
-    const present = overloads.filter(
-      (overload) => overload.parameters[position] !== undefined,
+    const present = overloads.filter((overload) =>
+      Boolean(overload.parameters[position]),
     );
     const first = present[0]?.parameters[position];
-    if (first === undefined) {
+    if (!first) {
       continue;
     }
     const inAll = present.length === overloads.length;
@@ -512,11 +512,7 @@ function markdownToInline(source: string): Block[] {
   }
   const parsed = parseMarkdoc(source);
   const blocks = parsed.blocks;
-  if (
-    blocks.length === 1 &&
-    blocks[0] !== undefined &&
-    blocks[0].type === 'paragraph'
-  ) {
+  if (blocks.length === 1 && blocks[0] && blocks[0].type === 'paragraph') {
     return blocks[0].children;
   }
   return blocks;

@@ -47,7 +47,7 @@ export const astroProcessor: Processor = {
 };
 
 function loadCompiler(): typeof AstroCompilerSync {
-  if (cached !== undefined) {
+  if (cached) {
     return cached;
   }
   try {
@@ -137,7 +137,7 @@ function computeExpressionElision(
     return undefined;
   }
   const onlyChild = children[0];
-  if (onlyChild === undefined || onlyChild.type !== 'text') {
+  if (!onlyChild || onlyChild.type !== 'text') {
     return undefined;
   }
   const textStart = onlyChild.position?.start.offset;
@@ -145,7 +145,7 @@ function computeExpressionElision(
     return undefined;
   }
   const range = findEnclosingBraces(source, textStart);
-  if (range === undefined) {
+  if (!range) {
     return undefined;
   }
   return {
@@ -204,7 +204,7 @@ function pushTextExpression(
     lang: 'ts',
     originalOffset: start,
   };
-  if (elision !== undefined) {
+  if (elision) {
     fragment.elision = elision;
   }
   fragments.push(fragment);
@@ -219,7 +219,7 @@ function handleAttribute(
     return;
   }
   const code = getAttributeExpressionText(attr);
-  if (code === undefined || code === '') {
+  if (!code) {
     return;
   }
   const offset = findExpressionOffset({ attr, code, source });
@@ -233,7 +233,7 @@ function handleAttribute(
     originalOffset: offset,
   };
   const elision = computeAttributeElision(attr, source, offset);
-  if (elision !== undefined) {
+  if (elision) {
     fragment.elision = elision;
   }
   fragments.push(fragment);
@@ -252,7 +252,7 @@ function computeAttributeElision(
     return undefined;
   }
   const braces = findEnclosingBraces(source, valueOffset);
-  if (braces === undefined) {
+  if (!braces) {
     return undefined;
   }
   return {

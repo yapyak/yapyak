@@ -100,7 +100,8 @@ const DEFAULT_MAX_RETRIES = 2;
  */
 export function anthropic(options: AnthropicOptions): Translator {
   if (!options.apiKey) {
-    const received = options.apiKey === undefined ? 'undefined' : 'empty string';
+    const received =
+      options.apiKey === undefined ? 'undefined' : 'empty string';
     throw new Error(
       `@yapyak/anthropic: apiKey is required, received ${received}.`,
     );
@@ -145,7 +146,7 @@ export function anthropic(options: AnthropicOptions): Translator {
         timeout,
         url: endpoint,
       };
-      if (signal !== undefined) {
+      if (signal) {
         fetchInit.signal = signal;
       }
       const response = await fetchWithRetry(fetchInit);

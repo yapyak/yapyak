@@ -22,7 +22,7 @@ const URL_PERSISTENCE = PERSISTENCE?.type === 'url';
 
 function getInitialLocale(): string {
   const persisted = persistence?.get();
-  if (persisted !== undefined && LOCALES.includes(persisted)) {
+  if (persisted && LOCALES.includes(persisted)) {
     return persisted;
   }
   return DEFAULT_LOCALE;
@@ -50,7 +50,7 @@ function applyLocale(value: string): void {
 
 function syncFromUrl(): void {
   const fromUrl = persistence?.get();
-  if (fromUrl !== undefined && LOCALES.includes(fromUrl)) {
+  if (fromUrl && LOCALES.includes(fromUrl)) {
     applyLocale(fromUrl);
   }
 }
@@ -89,9 +89,9 @@ if (URL_PERSISTENCE && typeof window !== 'undefined') {
 export function getLocale(): string {
   if (typeof window === 'undefined' && requestReader !== null) {
     const request = requestReader();
-    if (request !== undefined) {
+    if (request) {
       const fromPersistence = persistence?.getFromRequest?.(request);
-      if (fromPersistence !== undefined && LOCALES.includes(fromPersistence)) {
+      if (fromPersistence && LOCALES.includes(fromPersistence)) {
         return fromPersistence;
       }
       if (DETECT_ACCEPT_LANGUAGE) {

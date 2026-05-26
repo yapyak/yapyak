@@ -23,7 +23,7 @@ export function parsePlaceholders(source: string): PlaceholderInfo[] {
     const close = findMatchingBrace(source, i);
     const inner = source.slice(i + 1, close);
     const info = parsePlaceholderInner(inner);
-    if (info !== undefined && !seen.has(info.name)) {
+    if (info && !seen.has(info.name)) {
       seen.add(info.name);
       results.push(info);
     }
@@ -39,7 +39,7 @@ function parsePlaceholderInner(inner: string): PlaceholderInfo | undefined {
     return undefined;
   }
   const name = nameMatch[1];
-  if (name === undefined) {
+  if (!name) {
     return undefined;
   }
 
@@ -56,7 +56,7 @@ function parsePlaceholderInner(inner: string): PlaceholderInfo | undefined {
     return { kind: 'simple', name };
   }
   const type = typeMatch[1];
-  if (type === undefined) {
+  if (!type) {
     return undefined;
   }
   const afterType = afterComma.slice(type.length).trimStart();
@@ -113,7 +113,7 @@ function readBranches(text: string): Record<string, string> {
       break;
     }
     const key = keyMatch[1];
-    if (key === undefined) {
+    if (!key) {
       break;
     }
     i += key.length;

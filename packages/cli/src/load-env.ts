@@ -30,7 +30,7 @@ export function loadEnv(projectRoot: string): Record<string, string> {
         (rawValue.startsWith("'") && rawValue.endsWith("'"))
           ? rawValue.slice(1, -1)
           : rawValue;
-      if (env[key] === undefined || env[key] === '') {
+      if (!env[key]) {
         env[key] = value;
       }
     }

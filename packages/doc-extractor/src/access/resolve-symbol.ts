@@ -5,7 +5,7 @@ export function resolveSymbol(
   symbolName: string,
 ): SymbolEntry | null {
   const direct = manifest.symbols[symbolName];
-  if (direct !== undefined) {
+  if (direct) {
     return direct;
   }
   // Allow bare-name lookup that finds any matching qualified key.

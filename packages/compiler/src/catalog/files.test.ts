@@ -1,3 +1,6 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { syncLocaleFiles } from './files';
 import {
   mkdirSync,
   mkdtempSync,
@@ -7,10 +10,6 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-
-import { syncLocaleFiles } from './files';
 
 describe('syncLocaleFiles', () => {
   let projectRoot: string;

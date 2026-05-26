@@ -23,7 +23,7 @@ function walk(
 ): void {
   if (ts.isCallExpression(node)) {
     const binding = resolveCallee(node, bindings);
-    if (binding !== undefined) {
+    if (binding) {
       out.push({
         binding,
         node,
@@ -43,7 +43,7 @@ function resolveCallee(
   const callee = call.expression;
   if (ts.isIdentifier(callee)) {
     const binding = bindings.find(callee.text, call);
-    if (binding === undefined) {
+    if (!binding) {
       return undefined;
     }
     if (binding.kind === 'namespace') {
@@ -56,7 +56,7 @@ function resolveCallee(
     ts.isIdentifier(callee.expression)
   ) {
     const namespaceBinding = bindings.find(callee.expression.text, call);
-    if (namespaceBinding === undefined) {
+    if (!namespaceBinding) {
       return undefined;
     }
     if (namespaceBinding.kind !== 'namespace') {

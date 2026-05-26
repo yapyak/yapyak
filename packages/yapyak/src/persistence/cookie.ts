@@ -46,7 +46,7 @@ export function cookie(options: CookieOptions): Persistence {
         return undefined;
       }
       const value = parseCookie(globalThis.document.cookie)[name];
-      return value === undefined || value === '' ? undefined : value;
+      return value || undefined;
     },
     getFromRequest(request) {
       const header = request.headers.get('cookie');
@@ -54,7 +54,7 @@ export function cookie(options: CookieOptions): Persistence {
         return undefined;
       }
       const value = parseCookie(header)[name];
-      return value === undefined || value === '' ? undefined : value;
+      return value || undefined;
     },
     set(locale) {
       if (typeof globalThis.document === 'undefined') {

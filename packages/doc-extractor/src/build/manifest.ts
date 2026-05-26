@@ -149,12 +149,12 @@ async function buildTypedocCollection(
       packageSlug,
     });
 
-    if (pkg.group === undefined) {
+    if (!pkg.group) {
       ungroupedNodes.push(packageNode);
       continue;
     }
     let groupBucket = groupedNodes.get(pkg.group);
-    if (groupBucket === undefined) {
+    if (!groupBucket) {
       groupBucket = [];
       groupedNodes.set(pkg.group, groupBucket);
       groupOrder.push(pkg.group);

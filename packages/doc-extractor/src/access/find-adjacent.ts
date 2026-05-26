@@ -15,7 +15,7 @@ export function findAdjacentPages(
     return { nextPage: null, previousPage: null };
   }
   const collectionData = manifest.collections[collection];
-  if (collectionData === undefined) {
+  if (!collectionData) {
     return { nextPage: null, previousPage: null };
   }
   const flat = flattenLinks(collectionData.sidebar);
@@ -26,12 +26,10 @@ export function findAdjacentPages(
   const previousLink = index > 0 ? flat[index - 1] : undefined;
   const nextLink = index < flat.length - 1 ? flat[index + 1] : undefined;
   return {
-    nextPage:
-      nextLink === undefined ? null : findPageByHref(manifest, nextLink.href),
-    previousPage:
-      previousLink === undefined
-        ? null
-        : findPageByHref(manifest, previousLink.href),
+    nextPage: nextLink ? findPageByHref(manifest, nextLink.href) : null,
+    previousPage: previousLink
+      ? findPageByHref(manifest, previousLink.href)
+      : null,
   };
 }
 

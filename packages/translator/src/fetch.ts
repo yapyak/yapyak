@@ -17,7 +17,7 @@ export async function fetchWithRetry(
     }
     const controller = new AbortController();
     const onAbort = (): void => controller.abort();
-    if (outerSignal !== undefined) {
+    if (outerSignal) {
       if (outerSignal.aborted) {
         throw outerSignal.reason ?? new Error('Aborted');
       }

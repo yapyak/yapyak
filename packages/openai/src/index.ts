@@ -105,7 +105,8 @@ const DEFAULT_MAX_RETRIES = 2;
  */
 export function openai(options: OpenAIOptions): Translator {
   if (!options.apiKey) {
-    const received = options.apiKey === undefined ? 'undefined' : 'empty string';
+    const received =
+      options.apiKey === undefined ? 'undefined' : 'empty string';
     throw new Error(
       `@yapyak/openai: apiKey is required, received ${received}.`,
     );
@@ -145,7 +146,7 @@ export function openai(options: OpenAIOptions): Translator {
       if (seed !== undefined) {
         body.seed = seed;
       }
-      if (user !== undefined) {
+      if (user) {
         body.user = user;
       }
       const headers: Record<string, string> = {
@@ -153,7 +154,7 @@ export function openai(options: OpenAIOptions): Translator {
         'content-type': 'application/json',
         ...customHeaders,
       };
-      if (organization !== undefined) {
+      if (organization) {
         headers['OpenAI-Organization'] = organization;
       }
       const init: RequestInit = {
@@ -167,7 +168,7 @@ export function openai(options: OpenAIOptions): Translator {
         timeout,
         url: endpoint,
       };
-      if (signal !== undefined) {
+      if (signal) {
         fetchInit.signal = signal;
       }
       const response = await fetchWithRetry(fetchInit);

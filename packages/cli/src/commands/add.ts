@@ -185,14 +185,14 @@ interface PickedTranslator {
 
 function pickTranslator(env: Record<string, string>): PickedTranslator | null {
   const anthropicKey = env.ANTHROPIC_API_KEY;
-  if (anthropicKey !== undefined && anthropicKey !== '') {
+  if (anthropicKey) {
     return {
       fn: anthropic({ apiKey: anthropicKey }),
       providerName: 'Anthropic',
     };
   }
   const openaiKey = env.OPENAI_API_KEY;
-  if (openaiKey !== undefined && openaiKey !== '') {
+  if (openaiKey) {
     return { fn: openai({ apiKey: openaiKey }), providerName: 'OpenAI' };
   }
   return null;

@@ -46,10 +46,9 @@ export async function translate(options: TranslateOptions): Promise<number> {
     localesDir: config.localesDir,
     projectRoot,
   });
-  const targetLocales =
-    targetLocale !== undefined && targetLocale !== ''
-      ? [targetLocale]
-      : report.locales.filter((locale) => locale !== report.defaultLocale);
+  const targetLocales = targetLocale
+    ? [targetLocale]
+    : report.locales.filter((locale) => locale !== report.defaultLocale);
 
   const stubsToFill = force
     ? targetLocales.flatMap((locale) =>
@@ -156,13 +155,13 @@ function pickTranslator(
 ): PickedTranslator | null {
   if (preferred === 'anthropic' || preferred === undefined) {
     const apiKey = env.ANTHROPIC_API_KEY;
-    if (apiKey !== undefined && apiKey !== '') {
+    if (apiKey) {
       return { fn: anthropic({ apiKey }), providerName: 'Anthropic' };
     }
   }
   if (preferred === 'openai' || preferred === undefined) {
     const apiKey = env.OPENAI_API_KEY;
-    if (apiKey !== undefined && apiKey !== '') {
+    if (apiKey) {
       return { fn: openai({ apiKey }), providerName: 'OpenAI' };
     }
   }

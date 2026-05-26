@@ -28,7 +28,7 @@ export function check(options: CheckOptions): number {
   const byLocale: Record<string, typeof report.missing> = {};
   for (const entry of report.missing) {
     const list = byLocale[entry.locale];
-    if (list === undefined) {
+    if (!list) {
       byLocale[entry.locale] = [entry];
     } else {
       list.push(entry);

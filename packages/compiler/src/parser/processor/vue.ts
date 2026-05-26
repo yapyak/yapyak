@@ -60,7 +60,7 @@ export const vueProcessor: Processor = {
     if (descriptor.scriptSetup !== null) {
       fragments.push(toScriptFragment(descriptor.scriptSetup));
     }
-    if (descriptor.template !== null && descriptor.template.ast !== undefined) {
+    if (descriptor.template !== null && descriptor.template.ast) {
       collectTemplateExpressions(descriptor.template.ast, source, fragments);
     }
     return fragments;
@@ -68,7 +68,7 @@ export const vueProcessor: Processor = {
 };
 
 function loadCompiler(): typeof VueSfc {
-  if (cached !== undefined) {
+  if (cached) {
     return cached;
   }
   try {
@@ -117,7 +117,7 @@ function pushInterpolationExpression(
   fragments: Fragment[],
 ): void {
   const mustache = readMustache(source, node.loc.start.offset);
-  if (mustache === undefined) {
+  if (!mustache) {
     return;
   }
   fragments.push({
@@ -144,7 +144,7 @@ function collectPropExpression(
   if (!isDirectiveNode(prop)) {
     return;
   }
-  if (prop.exp === undefined) {
+  if (!prop.exp) {
     return;
   }
   pushDirectiveExpression(prop, source, fragments);
@@ -156,7 +156,7 @@ function pushDirectiveExpression(
   fragments: Fragment[],
 ): void {
   const expression = prop.exp;
-  if (expression === undefined) {
+  if (!expression) {
     return;
   }
   if (!isSimpleExpression(expression)) {
@@ -172,7 +172,7 @@ function pushDirectiveExpression(
     originalOffset: expression.loc.start.offset,
   };
   const attrName = readVBindAttrName(prop);
-  if (attrName !== undefined) {
+  if (attrName) {
     fragment.elision = {
       attrName,
       mode: 'attribute',
@@ -191,7 +191,7 @@ function readVBindAttrName(prop: DirectiveNode): string | undefined {
     return undefined;
   }
   const arg = prop.arg;
-  if (arg === undefined) {
+  if (!arg) {
     return undefined;
   }
   if (!isSimpleExpression(arg)) {

@@ -7,17 +7,17 @@ function getLocaleFromUrl(
   locales: readonly string[],
   match?: RegExp,
 ): string | undefined {
-  if (match !== undefined) {
+  if (match) {
     const target = url.pathname + url.search + url.hash;
     const m = match.exec(target);
     const captured = m?.groups?.locale ?? m?.[1];
-    if (captured !== undefined && locales.includes(captured)) {
+    if (captured && locales.includes(captured)) {
       return captured;
     }
     return undefined;
   }
   const segment = url.pathname.split('/')[1];
-  if (segment !== undefined && segment !== '' && locales.includes(segment)) {
+  if (segment && locales.includes(segment)) {
     return segment;
   }
   return undefined;

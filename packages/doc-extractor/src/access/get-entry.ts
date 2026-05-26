@@ -7,17 +7,17 @@ export function getEntry(
   path = '',
 ): Entry {
   const collectionData = manifest.collections[collection];
-  if (collectionData === undefined) {
+  if (!collectionData) {
     return { kind: 'not-found' };
   }
 
   const page = collectionData.pages[path];
-  if (page !== undefined) {
+  if (page) {
     return { kind: 'page', page };
   }
 
   const redirect = collectionData.redirects[path];
-  if (redirect !== undefined) {
+  if (redirect) {
     return { kind: 'redirect', target: redirect };
   }
 

@@ -11,23 +11,23 @@ export function resolveCallSiteContext(
   const result: CallSiteContext = {};
   let current: ts.Node | undefined = node.parent;
 
-  while (current !== undefined && !ts.isSourceFile(current)) {
-    if (result.enclosingJsx === undefined) {
+  while (current && !ts.isSourceFile(current)) {
+    if (!result.enclosingJsx) {
       const jsxTag = readJsxElementTag(current, sourceFile);
-      if (jsxTag !== undefined) {
+      if (jsxTag) {
         result.enclosingJsx = jsxTag;
       }
     }
 
     const fnName = readFunctionName(current);
-    if (fnName !== undefined) {
-      if (result.enclosingFunction === undefined) {
+    if (fnName) {
+      if (!result.enclosingFunction) {
         result.enclosingFunction = fnName;
       }
-      if (result.enclosingHook === undefined && isHookName(fnName)) {
+      if (!result.enclosingHook && isHookName(fnName)) {
         result.enclosingHook = fnName;
       }
-      if (result.componentName === undefined && isComponentName(fnName)) {
+      if (!result.componentName && isComponentName(fnName)) {
         result.componentName = fnName;
       }
     }
@@ -80,11 +80,11 @@ function readFunctionName(node: ts.Node): string | undefined {
 function readFunctionExpressionName(
   node: ts.ArrowFunction | ts.FunctionExpression,
 ): string | undefined {
-  if (ts.isFunctionExpression(node) && node.name !== undefined) {
+  if (ts.isFunctionExpression(node) && node.name) {
     return node.name.text;
   }
   const parent = node.parent;
-  if (parent === undefined) {
+  if (!parent) {
     return undefined;
   }
   if (ts.isVariableDeclaration(parent) && ts.isIdentifier(parent.name)) {
@@ -96,7 +96,7 @@ function readFunctionExpressionName(
     }
     const callParent = parent.parent;
     if (
-      callParent !== undefined &&
+      callParent &&
       ts.isVariableDeclaration(callParent) &&
       ts.isIdentifier(callParent.name)
     ) {

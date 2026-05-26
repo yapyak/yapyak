@@ -120,7 +120,7 @@ export const doc = {
 
 function invalidateVirtualModule(server: ViteDevServer) {
   const mod = server.moduleGraph.getModuleById(RESOLVED_ID);
-  if (mod !== undefined) {
+  if (mod) {
     server.moduleGraph.invalidateModule(mod);
     server.ws.send({ type: 'full-reload' });
   }

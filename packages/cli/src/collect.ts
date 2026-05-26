@@ -69,7 +69,7 @@ export function collect(options: CollectOptions): CollectResult {
   for (const message of messages) {
     for (const location of message.locations) {
       let sources = sourcesByFile[location.fileId];
-      if (sources === undefined) {
+      if (!sources) {
         sources = new Set();
         sourcesByFile[location.fileId] = sources;
       }

@@ -46,7 +46,7 @@ export const svelteProcessor: Processor = {
 };
 
 function loadCompiler(): typeof SvelteCompiler {
-  if (cached !== undefined) {
+  if (cached) {
     return cached;
   }
   try {
@@ -138,11 +138,11 @@ function collectFromNode(
   }
   if (node.type === 'EachBlock') {
     pushExpression(node.expression, source, fragments);
-    if (node.key !== undefined) {
+    if (node.key) {
       pushExpression(node.key, source, fragments);
     }
     collectFromFragment(node.body, source, fragments);
-    if (node.fallback !== undefined) {
+    if (node.fallback) {
       collectFromFragment(node.fallback, source, fragments);
     }
     return;
@@ -321,7 +321,7 @@ function pushExpression(
     lang: 'ts',
     originalOffset: start,
   };
-  if (elision !== undefined) {
+  if (elision) {
     fragment.elision = elision;
   }
   fragments.push(fragment);

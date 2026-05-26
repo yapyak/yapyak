@@ -38,7 +38,7 @@ function emitPersistence(persistence: NormalizedPersistence): string {
   if (persistence.type === 'localStorage') {
     return `{ type: 'localStorage', key: ${JSON.stringify(persistence.key)} }`;
   }
-  if (persistence.match === undefined) {
+  if (!persistence.match) {
     return `{ type: 'url' }`;
   }
   return `{ type: 'url', match: new RegExp(${JSON.stringify(persistence.match.source)}, ${JSON.stringify(persistence.match.flags)}) }`;

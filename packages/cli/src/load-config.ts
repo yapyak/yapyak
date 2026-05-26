@@ -20,7 +20,7 @@ let cached: { projectRoot: string; value: YapyakCliConfig } | undefined;
 export async function loadYapyakConfig(
   projectRoot: string,
 ): Promise<YapyakCliConfig> {
-  if (cached !== undefined && cached.projectRoot === projectRoot) {
+  if (cached && cached.projectRoot === projectRoot) {
     return cached.value;
   }
   const { config } = await loadFromFile(projectRoot);

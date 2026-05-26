@@ -23,7 +23,7 @@ export function resolveBindings(
   const root: Scope = {
     bindings: new Map(),
     node: sourceFile,
-    ...(options?.ambientParent !== undefined && {
+    ...(options?.ambientParent && {
       parent: options.ambientParent,
     }),
   };
@@ -68,11 +68,11 @@ function collectImports(sourceFile: ts.SourceFile): ImportInfo {
       continue;
     }
     const clause = statement.importClause;
-    if (clause === undefined) {
+    if (!clause) {
       continue;
     }
     const namedBindings = clause.namedBindings;
-    if (namedBindings === undefined) {
+    if (!namedBindings) {
       continue;
     }
     if (ts.isNamespaceImport(namedBindings)) {
@@ -127,14 +127,14 @@ function registerVariableDeclarations(
     }
     const localName = decl.name.text;
     const init = decl.initializer;
-    if (init === undefined) {
+    if (!init) {
       continue;
     }
     if (!ts.isIdentifier(init)) {
       continue;
     }
     const target = findBinding(scopeByNode, init.text, decl);
-    if (target === undefined) {
+    if (!target) {
       continue;
     }
     scope.bindings.set(localName, {
@@ -151,9 +151,9 @@ function findBinding(
   atNode: ts.Node,
 ): YapyakBinding | undefined {
   let scope = findEnclosingScope(scopeByNode, atNode);
-  while (scope !== undefined) {
+  while (scope) {
     const binding = scope.bindings.get(name);
-    if (binding !== undefined) {
+    if (binding) {
       return binding;
     }
     scope = scope.parent;
@@ -166,9 +166,9 @@ function findEnclosingScope(
   atNode: ts.Node,
 ): Scope | undefined {
   let current: ts.Node | undefined = atNode;
-  while (current !== undefined) {
+  while (current) {
     const scope = scopeByNode.get(current);
-    if (scope !== undefined) {
+    if (scope) {
       return scope;
     }
     current = current.parent;

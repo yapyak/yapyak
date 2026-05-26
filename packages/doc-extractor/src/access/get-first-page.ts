@@ -5,7 +5,7 @@ export function getFirstPage(
   collection: string,
 ): Page | null {
   const collectionData = manifest.collections[collection];
-  if (collectionData === undefined) {
+  if (!collectionData) {
     return null;
   }
   const firstHref = findFirstHref(collectionData.sidebar);
@@ -25,7 +25,7 @@ function findFirstHref(nodes: SidebarNode[]): string | null {
     if (node.type === 'link') {
       return node.href;
     }
-    if (node.href !== undefined) {
+    if (node.href) {
       return node.href;
     }
     const nested = findFirstHref(node.children);

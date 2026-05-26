@@ -153,7 +153,7 @@ function getPluralCategory(
 ): string {
   const cacheKey = `${locale}:${type}`;
   let rules = pluralRulesCache.get(cacheKey);
-  if (rules === undefined) {
+  if (!rules) {
     rules = new Intl.PluralRules(locale, { type });
     pluralRulesCache.set(cacheKey, rules);
   }
@@ -185,7 +185,7 @@ function getDateFormatter(
   const style = parseDateTimeStyle(styleArgument);
   const cacheKey = `date:${locale}:${style}`;
   let formatter = dateTimeFormatCache.get(cacheKey);
-  if (formatter === undefined) {
+  if (!formatter) {
     formatter = new Intl.DateTimeFormat(locale, { dateStyle: style });
     dateTimeFormatCache.set(cacheKey, formatter);
   }
@@ -199,7 +199,7 @@ function getTimeFormatter(
   const style = parseDateTimeStyle(styleArgument);
   const cacheKey = `time:${locale}:${style}`;
   let formatter = dateTimeFormatCache.get(cacheKey);
-  if (formatter === undefined) {
+  if (!formatter) {
     formatter = new Intl.DateTimeFormat(locale, { timeStyle: style });
     dateTimeFormatCache.set(cacheKey, formatter);
   }
@@ -212,7 +212,7 @@ function getNumberFormatter(
 ): Intl.NumberFormat {
   const cacheKey = `number:${locale}:${styleArgument}`;
   let formatter = numberFormatCache.get(cacheKey);
-  if (formatter === undefined) {
+  if (!formatter) {
     formatter = new Intl.NumberFormat(
       locale,
       parseNumberOptions(styleArgument),

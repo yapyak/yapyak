@@ -99,7 +99,8 @@ const DEFAULT_MAX_RETRIES = 2;
  */
 export function gemini(options: GeminiOptions): Translator {
   if (!options.apiKey) {
-    const received = options.apiKey === undefined ? 'undefined' : 'empty string';
+    const received =
+      options.apiKey === undefined ? 'undefined' : 'empty string';
     throw new Error(
       `@yapyak/gemini: apiKey is required, received ${received}.`,
     );
@@ -152,7 +153,7 @@ export function gemini(options: GeminiOptions): Translator {
         timeout,
         url,
       };
-      if (signal !== undefined) {
+      if (signal) {
         fetchInit.signal = signal;
       }
       const response = await fetchWithRetry(fetchInit);

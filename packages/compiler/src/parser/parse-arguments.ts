@@ -19,7 +19,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   const firstArg = callArgs[0];
   const diagnostics: Diagnostic[] = [];
 
-  if (firstArg === undefined) {
+  if (!firstArg) {
     diagnostics.push(
       createDiagnostic({
         code: 'YPK001',
@@ -93,10 +93,9 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
 
   if (hasPlaceholders) {
     const paramArg = callArgs[1];
-    params =
-      paramArg === undefined ? undefined : parseParams(paramArg, sourceFile);
+    params = paramArg ? parseParams(paramArg, sourceFile) : undefined;
     const optionsArg = callArgs[2];
-    if (optionsArg !== undefined) {
+    if (optionsArg) {
       optionsExpression = optionsArg.getText();
     }
     validateParams({
@@ -109,17 +108,16 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
     });
   } else {
     const optionsArg = callArgs[2] ?? callArgs[1];
-    if (optionsArg !== undefined) {
+    if (optionsArg) {
       optionsExpression = optionsArg.getText();
     }
   }
 
   const result: ParsedArguments = { diagnostics, source, sourceRange };
-  if (params !== undefined) {
+  if (params) {
     result.params = params;
   }
-  if (optionsExpression !== undefined)
-    result.optionsExpression = optionsExpression;
+  if (optionsExpression) result.optionsExpression = optionsExpression;
   return result;
 }
 
@@ -174,7 +172,7 @@ function validateParams(input: ValidateParamsInput): void {
   const sourceFile = callSite.node.getSourceFile();
   const callRange = toRange(callSite.node, sourceFile);
 
-  if (params === undefined) {
+  if (!params) {
     for (const key of placeholderKeys) {
       diagnostics.push(
         createDiagnostic({

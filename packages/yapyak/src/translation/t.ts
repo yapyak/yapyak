@@ -51,7 +51,7 @@ export function $t(source: string, ...rest: unknown[]): string {
   }
   runTrackers();
   const locale = options?.locale ?? getLocale();
-  if (params === undefined) {
+  if (!params) {
     return source;
   }
   return interpolate(source, params, locale);

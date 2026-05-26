@@ -105,7 +105,7 @@ async function loadEntries(
       typeof conditions === 'string'
         ? conditions
         : (conditions.types ?? conditions.default);
-    if (distPath === undefined) {
+    if (!distPath) {
       continue;
     }
     const sourcePath = distPath
@@ -135,7 +135,7 @@ async function loadProject(
     [new TSConfigReader()],
   );
   const project = await app.convert();
-  if (project === undefined) {
+  if (!project) {
     throw new Error('extractTypedoc: TypeDoc convert failed');
   }
   return project;
@@ -163,7 +163,7 @@ function eachProjectModule(
     const result: ProjectModule[] = [];
     for (const child of moduleChildren) {
       const entry = entriesByName.get(child.name);
-      if (entry === undefined) {
+      if (!entry) {
         continue;
       }
       result.push({
@@ -175,7 +175,7 @@ function eachProjectModule(
     return result;
   }
   const onlyEntry = entries[0];
-  if (entries.length === 1 && onlyEntry !== undefined) {
+  if (entries.length === 1 && onlyEntry) {
     return [
       {
         children: project.children ?? [],
@@ -211,7 +211,7 @@ function buildLinkRegistry(
       );
       registry.set(symbol.id, url);
       const existing = nameIndex.get(symbol.name);
-      if (existing === undefined) {
+      if (!existing) {
         nameIndex.set(symbol.name, url);
       } else if (existing !== url) {
         nameIndex.set(symbol.name, 'ambiguous');
@@ -303,13 +303,13 @@ function resolveCallableSignatures(
   reflection: DeclarationReflection,
 ): readonly SignatureReflection[] | null {
   const type = reflection.type;
-  if (type === undefined) {
+  if (!type) {
     return null;
   }
   if (type.type === 'reference') {
     const target = type.reflection;
     if (
-      target !== undefined &&
+      target &&
       'signatures' in target &&
       Array.isArray(
         (target as { signatures?: SignatureReflection[] }).signatures,
@@ -323,7 +323,7 @@ function resolveCallableSignatures(
   }
   if (type.type === 'reflection') {
     const sigs = type.declaration.signatures;
-    if (sigs !== undefined && sigs.length > 0) {
+    if (sigs && sigs.length > 0) {
       return sigs;
     }
   }
@@ -398,8 +398,7 @@ function convertTypeAlias(
   context: Context,
 ): ReferenceTypeAlias {
   const base = convertBase(reflection, context);
-  const resolvedType =
-    reflection.type === undefined ? [] : convertType(reflection.type);
+  const resolvedType = reflection.type ? convertType(reflection.type) : [];
   return {
     ...base,
     kind: 'type',
@@ -413,8 +412,7 @@ function convertVariable(
   context: Context,
 ): ReferenceVariable {
   const base = convertBase(reflection, context);
-  const type =
-    reflection.type === undefined ? [] : convertType(reflection.type);
+  const type = reflection.type ? convertType(reflection.type) : [];
   return {
     ...base,
     kind: 'variable',
@@ -471,8 +469,7 @@ function convertOverload(
   const typeParameters = (signature.typeParameters ?? []).map((param) =>
     convertTypeParameter(param, context),
   );
-  const returnType =
-    signature.type === undefined ? [] : convertType(signature.type);
+  const returnType = signature.type ? convertType(signature.type) : [];
   return {
     parameters,
     returnType,
@@ -496,8 +493,7 @@ function convertCallSignature(
   const typeParameters = (signature.typeParameters ?? []).map((param) =>
     convertTypeParameter(param, context),
   );
-  const returnType =
-    signature.type === undefined ? [] : convertType(signature.type);
+  const returnType = signature.type ? convertType(signature.type) : [];
   return {
     parameters,
     returnType,
@@ -520,7 +516,7 @@ function convertParameter(
     name: param.name,
     optional:
       Boolean(param.flags.isOptional) || param.defaultValue !== undefined,
-    type: param.type === undefined ? [] : convertType(param.type),
+    type: param.type ? convertType(param.type) : [],
   };
 }
 
@@ -541,12 +537,12 @@ function convertMember(
 
 function memberType(reflection: DeclarationReflection): TypeToken[] {
   const signature = reflection.signatures?.[0];
-  if (signature !== undefined) {
+  if (signature) {
     const tokens: TypeToken[] = [];
     appendSignatureType(signature, tokens);
     return mergeAdjacentText(tokens);
   }
-  if (reflection.type === undefined) {
+  if (!reflection.type) {
     return [];
   }
   return convertType(reflection.type);
@@ -557,9 +553,8 @@ function convertTypeParameter(
   context: Context,
 ): ReferenceTypeParameter {
   return {
-    constraint: param.type === undefined ? null : convertType(param.type),
-    defaultType:
-      param.default === undefined ? null : convertType(param.default),
+    constraint: param.type ? convertType(param.type) : null,
+    defaultType: param.default ? convertType(param.default) : null,
     description: param.comment
       ? partsToMarkdown(param.comment.summary, context)
       : '',
@@ -655,12 +650,12 @@ function appendReflectionType(
 ): void {
   const declaration = type.declaration;
   const signature = declaration.signatures?.[0];
-  if (signature !== undefined) {
+  if (signature) {
     appendSignatureType(signature, tokens);
     return;
   }
   const children = declaration.children;
-  if (children !== undefined && children.length > 0) {
+  if (children && children.length > 0) {
     tokens.push({ kind: 'text', text: '{ ' });
     for (let index = 0; index < children.length; index++) {
       const child = children[index]!;
@@ -669,7 +664,7 @@ function appendReflectionType(
       }
       const optional = child.flags.isOptional ? '?' : '';
       tokens.push({ kind: 'text', text: `${child.name}${optional}: ` });
-      if (child.type !== undefined) {
+      if (child.type) {
         appendType(child.type, tokens);
       }
     }
@@ -703,12 +698,12 @@ function appendSignatureType(
     const param = parameters[index]!;
     const optional = param.flags.isOptional ? '?' : '';
     tokens.push({ kind: 'text', text: `${param.name}${optional}: ` });
-    if (param.type !== undefined) {
+    if (param.type) {
       appendType(param.type, tokens);
     }
   }
   tokens.push({ kind: 'text', text: ') => ' });
-  if (signature.type !== undefined) {
+  if (signature.type) {
     appendType(signature.type, tokens);
   } else {
     tokens.push({ kind: 'text', text: 'void' });
@@ -728,7 +723,7 @@ function referenceModuleName(type: {
   ) {
     return type.target.packageName;
   }
-  if (type.package !== undefined) {
+  if (type.package) {
     return type.package;
   }
   return 'unknown';
@@ -738,7 +733,7 @@ function mergeAdjacentText(tokens: TypeToken[]): TypeToken[] {
   const merged: TypeToken[] = [];
   for (const token of tokens) {
     const last = merged[merged.length - 1];
-    if (token.kind === 'text' && last !== undefined && last.kind === 'text') {
+    if (token.kind === 'text' && last && last.kind === 'text') {
       last.text += token.text;
       continue;
     }
@@ -799,7 +794,7 @@ function partsToMarkdown(
   parts: ReadonlyArray<CommentDisplayPart> | undefined,
   context: Context,
 ): string {
-  if (parts === undefined) {
+  if (!parts) {
     return '';
   }
   let out = '';
@@ -822,12 +817,12 @@ function resolveInlineLink(
   const targetId = resolveTargetId(part.target);
   if (targetId !== null) {
     const url = context.registry.get(targetId);
-    if (url !== undefined) {
+    if (url) {
       return `[${part.text}](${url})`;
     }
   }
   const byName = context.nameIndex.get(part.text);
-  if (byName !== undefined && byName !== 'ambiguous') {
+  if (byName && byName !== 'ambiguous') {
     return `[${part.text}](${byName})`;
   }
   return `\`${part.text}\``;
@@ -964,7 +959,7 @@ function readReturnDescription(
   signature: SignatureReflection | null,
   context: Context,
 ): string {
-  if (signature === null || signature.comment === undefined) {
+  if (!signature || !signature.comment) {
     return '';
   }
   for (const tag of signature.comment.blockTags ?? []) {
@@ -985,7 +980,7 @@ function readDefaultValue(
   const tag = reflection.comment?.blockTags?.find(
     (entry) => entry.tag === '@defaultValue',
   );
-  if (tag === undefined) {
+  if (!tag) {
     return null;
   }
   return partsToMarkdown(tag.content, context).trim() || null;
@@ -996,7 +991,7 @@ function readLocation(
   packageDir: string,
 ): ReferenceLocation {
   const source = reflection.sources?.[0];
-  if (source === undefined) {
+  if (!source) {
     return { column: 0, file: '', line: 0 };
   }
   const file = relative(

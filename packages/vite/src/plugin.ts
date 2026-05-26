@@ -126,7 +126,7 @@ export function yapyak(): Plugin {
 
   function fillStubs(): void {
     const translator = getNormalized().translator;
-    if (translator === undefined) {
+    if (!translator) {
       return;
     }
     const allMessages: ExtractedMessage[] = [];
@@ -299,7 +299,7 @@ function buildTranslations(input: {
         continue;
       }
       let localeMap = translations[locale];
-      if (localeMap === undefined) {
+      if (!localeMap) {
         localeMap = {};
         translations[locale] = localeMap;
       }
@@ -340,7 +340,7 @@ function areMessagesEqual(
   for (let i = 0; i < a.length; i++) {
     const left = a[i];
     const right = b[i];
-    if (left === undefined || right === undefined) {
+    if (!left || !right) {
       return false;
     }
     if (
@@ -352,7 +352,7 @@ function areMessagesEqual(
     for (let j = 0; j < left.locations.length; j++) {
       const ll = left.locations[j];
       const rl = right.locations[j];
-      if (ll === undefined || rl === undefined) {
+      if (!ll || !rl) {
         return false;
       }
       if (

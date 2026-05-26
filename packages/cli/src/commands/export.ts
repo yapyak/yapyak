@@ -22,17 +22,14 @@ type Snapshot = Record<string, LocaleFile>;
 export function exportCommand(options: ExportOptions): number {
   const { config, locales: localeFilter, out, projectRoot, split } = options;
 
-  if (split && out === undefined) {
+  if (split && !out) {
     process.stdout.write(
       `\n  ${symbol.cross} ${color.red('--split requires --out=<dir>')}\n\n`,
     );
     return 1;
   }
 
-  if (
-    out !== undefined &&
-    isInsideLocalesDir(out, projectRoot, config.localesDir)
-  ) {
+  if (out && isInsideLocalesDir(out, projectRoot, config.localesDir)) {
     process.stdout.write(
       `\n  ${symbol.cross} ${color.red(`yapyak export refuses to write inside ${config.localesDir}/.`)}\n  ${color.dim('That directory is owned by the plugin and represents the on-disk state, not a derived snapshot.')}\n\n`,
     );
@@ -85,7 +82,7 @@ export function exportCommand(options: ExportOptions): number {
   }
 
   const payload = stringifyCanonical(snapshot);
-  if (out === undefined) {
+  if (!out) {
     process.stdout.write(`${payload}\n`);
     return 0;
   }
@@ -105,7 +102,7 @@ function buildSourcesByFile(
   for (const message of messages) {
     for (const location of message.locations) {
       let sources = sourcesByFile.get(location.fileId);
-      if (sources === undefined) {
+      if (!sources) {
         sources = new Set();
         sourcesByFile.set(location.fileId, sources);
       }
