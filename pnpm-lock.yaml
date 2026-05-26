@@ -628,9 +628,6 @@ importers:
       '@yapyak/runtime':
         specifier: workspace:*
         version: link:../runtime
-      '@yapyak/translator':
-        specifier: workspace:*
-        version: link:../translator
     devDependencies:
       '@types/node':
         specifier: 'catalog:'

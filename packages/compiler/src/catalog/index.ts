@@ -1,4 +1,8 @@
-export { autoTranslate } from './auto-translate';
+export {
+  type AutoTranslateOptions,
+  type AutoTranslateResult,
+  autoTranslate,
+} from './auto-translate';
 export {
   type DiscoverLocalesOptions,
   type DiscoverLocalesResult,

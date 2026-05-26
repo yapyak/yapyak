@@ -9,7 +9,7 @@ import { color, symbol } from '../tui';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 
-export interface ExportOptions {
+interface ExportOptions {
   config: Config;
   locales: string[];
   out: string | undefined;

@@ -2,7 +2,7 @@ import type { Persistence } from '.';
 
 import { createPersistence } from '.';
 
-export interface LocalStorageOptions {
+interface LocalStorageOptions {
   key: string;
 }
 

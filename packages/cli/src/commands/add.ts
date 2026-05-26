@@ -8,7 +8,7 @@ import { color, header, progressBar, spinner, symbol } from '../tui';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-export interface AddOptions {
+interface AddOptions {
   config: Config;
   locales: string[];
   projectRoot: string;

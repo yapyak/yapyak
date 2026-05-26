@@ -13,6 +13,8 @@
  */
 
 export {
+  type AutoTranslateOptions,
+  type AutoTranslateResult,
   autoTranslate,
   type DiscoverLocalesOptions,
   type DiscoverLocalesResult,

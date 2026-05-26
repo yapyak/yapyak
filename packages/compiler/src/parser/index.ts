@@ -24,7 +24,10 @@ export type {
 } from './type';
 
 export { resolveCallSiteContext } from './call-site-context';
-export { createDiagnostic } from './diagnostic';
+export {
+  type CreateDiagnosticInput,
+  createDiagnostic,
+} from './diagnostic';
 export { discoverCalls } from './discover-calls';
 export { extractFile } from './extract';
 export { toMessageId } from './id';
@@ -38,5 +41,8 @@ export {
   vanillaProcessor,
   vueProcessor,
 } from './processor';
-export { resolveBindings } from './resolve-bindings';
+export {
+  type ResolveBindingsOptions,
+  resolveBindings,
+} from './resolve-bindings';
 export { transformFile } from './transform';

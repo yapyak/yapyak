@@ -39,7 +39,7 @@ export function buildSymbolIndex(manifest: ReferenceManifest): SymbolIndex {
   return index;
 }
 
-export interface BuildSymbolPageOptions {
+interface BuildSymbolPageOptions {
   collectionName: string;
   href: string;
   index: SymbolIndex;
@@ -180,7 +180,7 @@ export function buildSymbolPage(
   };
 }
 
-export interface BuildModulePageOptions {
+interface BuildModulePageOptions {
   collectionName: string;
   href: string;
   index: SymbolIndex;

@@ -1,4 +1,4 @@
-export interface ResolveLocaleOptions {
+interface ResolveLocaleOptions {
   acceptLanguage?: string;
   defaultLocale: string;
   locales: readonly string[];

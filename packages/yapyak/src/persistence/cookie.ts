@@ -34,7 +34,7 @@ export function parseCookie(header: string): Record<string, string> {
   return result;
 }
 
-export interface CookieOptions {
+interface CookieOptions {
   name: string;
 }
 

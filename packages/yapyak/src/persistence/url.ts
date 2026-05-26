@@ -23,7 +23,7 @@ function getLocaleFromUrl(
   return undefined;
 }
 
-export interface UrlOptions {
+interface UrlOptions {
   locales: readonly string[];
   match?: RegExp;
 }

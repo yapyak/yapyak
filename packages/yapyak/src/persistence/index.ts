@@ -10,7 +10,7 @@ export interface Persistence {
   set(locale: string): boolean;
 }
 
-export interface CreatePersistenceOptions {
+interface CreatePersistenceOptions {
   get(): string | undefined;
   getFromRequest?(request: Request): string | undefined;
   set(locale: string): boolean | void;

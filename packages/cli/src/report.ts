@@ -12,18 +12,18 @@ import { createFilter } from '@yapyak/config';
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-export interface MissingEntry {
+interface MissingEntry {
   fileId: string;
   locale: string;
   source: string;
 }
 
-export interface LocaleStats {
+interface LocaleStats {
   missing: number;
   translated: number;
 }
 
-export interface Report {
+interface Report {
   defaultLocale: string;
   locales: string[];
   messages: ExtractedMessage[];
@@ -32,7 +32,7 @@ export interface Report {
   totalMessages: number;
 }
 
-export interface BuildReportOptions {
+interface BuildReportOptions {
   defaultLocale?: string;
   localesDir?: string;
   projectRoot: string;

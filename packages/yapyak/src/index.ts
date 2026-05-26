@@ -15,7 +15,7 @@
 import { LOCALES } from '@yapyak/runtime';
 
 export { defaultLocale, getLocale, locales, setLocale } from './locale';
-export { $t } from './translation';
+export { $t, type TOptions } from './translation';
 
 if (process.env.NODE_ENV !== 'production' && LOCALES.length === 0) {
   console.warn(

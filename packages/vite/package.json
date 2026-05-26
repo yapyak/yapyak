@@ -24,8 +24,7 @@
   "dependencies": {
     "@yapyak/compiler": "workspace:*",
     "@yapyak/config": "workspace:*",
-    "@yapyak/runtime": "workspace:*",
-    "@yapyak/translator": "workspace:*"
+    "@yapyak/runtime": "workspace:*"
   },
   "peerDependencies": {
     "vite": ">=5"

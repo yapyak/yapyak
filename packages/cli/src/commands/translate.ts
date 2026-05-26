@@ -6,7 +6,7 @@ import { autoTranslate } from '@yapyak/compiler';
 import { buildReport } from '../report';
 import { color, header, progressBar, spinner, symbol } from '../tui';
 
-export interface TranslateOptions {
+interface TranslateOptions {
   config: Config;
   force?: boolean;
   locale?: string;

@@ -3,7 +3,7 @@ import type { Config } from '../config';
 import { buildReport } from '../report';
 import { color, header, progressBar, renderTable, symbol } from '../tui';
 
-export interface StatusOptions {
+interface StatusOptions {
   config: Config;
   json?: boolean;
   projectRoot: string;

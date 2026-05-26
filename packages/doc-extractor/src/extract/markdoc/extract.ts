@@ -4,7 +4,7 @@ import { parseMarkdoc } from './parse.ts';
 import { readdir, readFile } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
 
-export interface MarkdocExtractResult {
+interface MarkdocExtractResult {
   pages: Map<string, Page>;
   redirects: Map<string, string>;
   watchedFiles: string[];

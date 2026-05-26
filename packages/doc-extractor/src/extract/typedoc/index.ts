@@ -33,7 +33,7 @@ import { Application, ReflectionKind, TSConfigReader } from 'typedoc';
 import { readFile } from 'node:fs/promises';
 import { join, relative, resolve } from 'node:path';
 
-export interface TypedocExtractOptions {
+interface TypedocExtractOptions {
   collectionName: string;
   packageDir: string;
   packageSlug: string;

@@ -13,7 +13,7 @@ import Markdoc from '@markdoc/markdoc';
 
 import { slugify } from '../../utils/slug.ts';
 
-export interface ParsedContent {
+interface ParsedContent {
   blocks: Block[];
   frontmatter: Record<string, MetaValue>;
 }

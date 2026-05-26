@@ -139,7 +139,7 @@ function capitalize(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
-export interface BuildTypedocPackageRootOptions {
+interface BuildTypedocPackageRootOptions {
   collapsible: boolean;
   collectionName: string;
   expanded: boolean;

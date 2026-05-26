@@ -3,7 +3,7 @@ import type { Config } from '../config';
 import { buildReport } from '../report';
 import { color, header, symbol } from '../tui';
 
-export interface CheckOptions {
+interface CheckOptions {
   config: Config;
   projectRoot: string;
 }
