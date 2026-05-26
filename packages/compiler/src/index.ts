@@ -1,17 +1,3 @@
-/**
- * Compiler for yapyak.
- *
- * ## Installation
- *
- * ```bash
- * npm install @yapyak/compiler
- * # or
- * pnpm add @yapyak/compiler
- * ```
- *
- * @packageDocumentation
- */
-
 export {
   type AutoTranslateOptions,
   type AutoTranslateResult,
@@ -22,6 +8,7 @@ export {
   discoverLocales,
   type LocaleData,
   type LocaleFile,
+  type MessagePosition,
   type MigrateLocalesOptions,
   type MigrateLocalesResult,
   migrateLocales,
@@ -33,3 +20,51 @@ export {
   stringifyCanonical,
   syncLocaleFiles,
 } from './catalog';
+export {
+  DEFAULT_EXCLUDE,
+  DEFAULT_INCLUDE,
+  type WalkedFile,
+  type WalkSourceFilesOptions,
+  walkSourceFiles,
+} from './io';
+export {
+  astroProcessor,
+  type Binding,
+  type BindingTable,
+  type CallSite,
+  type CallSiteContext,
+  type CreateDiagnosticInput,
+  createDiagnostic,
+  type Diagnostic,
+  type DiagnosticCode,
+  discoverCalls,
+  type ElisionContext,
+  type ExtractedMessage,
+  type ExtractFileRequest,
+  type ExtractFileResult,
+  extractFile,
+  type Fragment,
+  getProcessor,
+  type Location,
+  type ParsedArguments,
+  type ParsedParams,
+  type Placeholder,
+  type Position,
+  type Processor,
+  type ProcessorKind,
+  parseArguments,
+  parsePlaceholders,
+  type Range,
+  type ResolveBindingsOptions,
+  resolveBindings,
+  resolveCallSiteContext,
+  resolveProcessorKind,
+  type Scope,
+  svelteProcessor,
+  type TransformFileRequest,
+  type TransformFileResult,
+  toMessageId,
+  transformFile,
+  vanillaProcessor,
+  vueProcessor,
+} from './parser';

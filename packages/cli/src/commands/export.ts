@@ -1,5 +1,4 @@
-import type { LocaleFile } from '@yapyak/compiler';
-import type { ExtractedMessage } from '@yapyak/compiler/internal';
+import type { ExtractedMessage, LocaleFile } from '@yapyak/compiler';
 import type { Config } from '../config';
 
 import { readLocaleFile, stringifyCanonical } from '@yapyak/compiler';

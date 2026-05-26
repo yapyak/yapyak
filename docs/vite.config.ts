@@ -30,7 +30,6 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
   { dir: 'gemini', group: 'Translators', name: 'Gemini' },
   { dir: 'ollama', group: 'Translators', name: 'Ollama' },
 
-  { dir: 'compiler', group: 'Tooling', name: 'Compiler' },
   { dir: 'vite', group: 'Tooling', name: 'Vite' },
 ];
 
