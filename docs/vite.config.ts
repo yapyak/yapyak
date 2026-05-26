@@ -14,6 +14,8 @@ interface ReferencePackage {
 const REFERENCE_PACKAGES: ReferencePackage[] = [
   { dir: 'yapyak', name: 'yapyak' },
 
+  { dir: 'vite', group: 'Bundlers', name: 'Vite' },
+
   { dir: 'react', group: 'Frameworks', name: 'React' },
   { dir: 'vue', group: 'Frameworks', name: 'Vue' },
   { dir: 'svelte', group: 'Frameworks', name: 'Svelte' },
@@ -29,8 +31,6 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
   { dir: 'openai', group: 'Translators', name: 'OpenAI' },
   { dir: 'gemini', group: 'Translators', name: 'Gemini' },
   { dir: 'ollama', group: 'Translators', name: 'Ollama' },
-
-  { dir: 'vite', group: 'Tooling', name: 'Vite' },
 ];
 
 export default defineConfig({
