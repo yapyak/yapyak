@@ -187,11 +187,6 @@ export function yapyak(): Plugin {
     configureServer(server): void {
       if (configFile !== null) {
         server.watcher.add(configFile);
-        server.watcher.on('change', (path) => {
-          if (path === configFile) {
-            server.restart();
-          }
-        });
       }
 
       const pending = new Map<string, 'add' | 'unlink'>();
@@ -233,6 +228,25 @@ export function yapyak(): Plugin {
         const dir = join(projectRoot, getNormalized().localesDir);
         return path.startsWith(`${dir}/`) && path.endsWith('.json');
       };
+
+      const invalidateLocaleData = debounce(() => {
+        localeCache = null;
+        for (const mod of server.moduleGraph.idToModuleMap.values()) {
+          if (mod.file !== null && isCandidateId(mod.file, filter)) {
+            void server.reloadModule(mod);
+          }
+        }
+      }, 50);
+
+      server.watcher.on('change', (path: string) => {
+        if (configFile !== null && path === configFile) {
+          void server.restart();
+          return;
+        }
+        if (isLocaleFile(path)) {
+          invalidateLocaleData();
+        }
+      });
 
       server.watcher.on('add', (path: string) => {
         if (isCandidateId(path, filter)) {
