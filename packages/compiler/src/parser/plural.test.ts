@@ -25,7 +25,7 @@ describe('parsePlaceholders', () => {
     expect(info?.variants).toEqual({ one: '# item', other: '# items' });
   });
 
-  it('parses selectordinal as plural-shaped', () => {
+  it('parses `selectordinal` as plural-shaped', () => {
     const source = '{rank, selectordinal, one {#st} other {#th}}';
     const [info] = parsePlaceholders(source);
     expect(info?.kind).toBe('plural');
@@ -59,7 +59,7 @@ describe('parsePlaceholders', () => {
     expect(info?.kind).toBe('time');
   });
 
-  it('extracts nested placeholders from plural branches', () => {
+  it('extracts nested placeholders for plural branches', () => {
     const source = '{count, plural, one {1 {name}} other {# {name}s}}';
     const results = parsePlaceholders(source);
     expect(results).toHaveLength(2);
@@ -69,7 +69,7 @@ describe('parsePlaceholders', () => {
     expect(results[1]?.kind).toBe('simple');
   });
 
-  it('extracts nested placeholders from select branches', () => {
+  it('extracts nested placeholders for select branches', () => {
     const source = '{theme, select, dark {Hello {name}} other {Bye {name}}}';
     const results = parsePlaceholders(source);
     expect(results).toHaveLength(2);
@@ -77,7 +77,7 @@ describe('parsePlaceholders', () => {
     expect(results[1]?.name).toBe('name');
   });
 
-  it('extracts nested ICU placeholders recursively', () => {
+  it('extracts nested ICU placeholders', () => {
     const source =
       '{count, plural, one {{when, date, short}} other {{when, date, short}}}';
     const results = parsePlaceholders(source);
@@ -87,17 +87,17 @@ describe('parsePlaceholders', () => {
     expect(results[1]?.kind).toBe('date');
   });
 
-  it('dedupes repeated placeholder names', () => {
+  it('folds repeated placeholder names', () => {
     const results = parsePlaceholders('{name} and {name} again');
     expect(results).toHaveLength(1);
     expect(results[0]?.name).toBe('name');
   });
 
-  it('returns empty array for source with no placeholders', () => {
+  it('returns an empty array for source with no placeholders', () => {
     expect(parsePlaceholders('Hello world')).toEqual([]);
   });
 
-  it('flags plural missing other branch as invalid', () => {
+  it('emits invalid flag for plural missing `other` branch', () => {
     const source = '{count, plural, one {# item}}';
     const [info] = parsePlaceholders(source);
     expect(info?.kind).toBe('plural');

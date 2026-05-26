@@ -30,7 +30,7 @@ describe('astroProcessor', () => {
       verifyOffsetInvariant(source, scripts[0] as Fragment);
     });
 
-    it('returns a template expression for {expr}', () => {
+    it('returns a template expression for `{expr}`', () => {
       const source = [
         '---',
         "import { t } from 'yapyak';",
@@ -58,7 +58,7 @@ describe('astroProcessor', () => {
       verifyOffsetInvariant(source, exprs[0] as Fragment);
     });
 
-    it('returns a fragment for a shorthand attribute {name}', () => {
+    it('returns a fragment for a shorthand attribute `{name}`', () => {
       const source = [
         '---',
         'const className = "btn";',
@@ -70,7 +70,7 @@ describe('astroProcessor', () => {
       expect(exprs.some((e) => e.code === 'className')).toBe(true);
     });
 
-    it('returns a fragment for a spread attribute {...obj}', () => {
+    it('returns a fragment for a spread attribute `{...obj}`', () => {
       const source = [
         '---',
         'const props = { foo: "bar" };',

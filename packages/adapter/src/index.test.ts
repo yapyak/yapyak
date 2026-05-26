@@ -42,7 +42,7 @@ describe('withRequest', () => {
     expect(result).toBe('sv');
   });
 
-  it('isolates locale across nested calls', () => {
+  it('preserves outer locale when nested call sets a different locale', () => {
     let outerSeenAfterInner = '';
     withRequest(makeRequest({ cookie: 'locale=sv' }), () => {
       withRequest(makeRequest({ cookie: 'locale=fr' }), () => {});
@@ -59,7 +59,7 @@ describe('withRequest', () => {
       expect(result).toBe('sv');
     });
 
-    it('returns Accept-Language locale when no cookie', () => {
+    it('returns `Accept-Language` locale when no cookie is present', () => {
       const result = withRequest(
         makeRequest({ acceptLanguage: 'sv-SE,en;q=0.9' }),
         () => getLocale(),
@@ -67,7 +67,7 @@ describe('withRequest', () => {
       expect(result).toBe('sv');
     });
 
-    it('returns cookie locale when both cookie and Accept-Language are present', () => {
+    it('returns cookie locale when `Accept-Language` is also present', () => {
       const result = withRequest(
         makeRequest({ acceptLanguage: 'fr', cookie: 'locale=sv' }),
         () => getLocale(),
@@ -79,7 +79,7 @@ describe('withRequest', () => {
       expect(getLocale()).toBe('en');
     });
 
-    it('returns Accept-Language locale when persisted cookie is unsupported', () => {
+    it('returns `Accept-Language` locale when persisted cookie is unsupported', () => {
       const result = withRequest(
         makeRequest({ acceptLanguage: 'sv', cookie: 'locale=de' }),
         () => getLocale(),

@@ -50,7 +50,7 @@ describe('writeLocaleFile invariant', () => {
     ).toThrow(YapyakInvariantError);
   });
 
-  it('allows clearing a value when source is no longer extracted', () => {
+  it('clears the translation when source is no longer extracted', () => {
     writeFileSync(
       path,
       JSON.stringify({ 'src/a.tsx': { Hello: 'Hej', World: 'Världen' } }),
@@ -67,7 +67,7 @@ describe('writeLocaleFile invariant', () => {
     });
   });
 
-  it('allows clearing values when fileId has no extracted sources', () => {
+  it('clears values when fileId has no extracted sources', () => {
     writeFileSync(path, JSON.stringify({ 'src/a.tsx': { Hello: 'Hej' } }));
 
     writeLocaleFile({
@@ -79,7 +79,7 @@ describe('writeLocaleFile invariant', () => {
     expect(JSON.parse(readFileSync(path, 'utf8'))).toEqual({});
   });
 
-  it('allows writing a new translation value', () => {
+  it('writes a new translation value', () => {
     writeFileSync(path, JSON.stringify({ 'src/a.tsx': { Hello: '' } }));
 
     writeLocaleFile({
@@ -133,7 +133,7 @@ describe('writeLocaleFile invariant', () => {
     }
   });
 
-  it('creates the locales directory if missing', () => {
+  it('writes to a missing nested directory', () => {
     const nested = join(dir, 'deep', 'nested', 'sv.json');
 
     writeLocaleFile({
@@ -147,7 +147,7 @@ describe('writeLocaleFile invariant', () => {
     });
   });
 
-  it('does not write the file when invariant is violated', () => {
+  it('writes no file when invariant fails', () => {
     const before = JSON.stringify({ 'src/a.tsx': { Hello: 'Hej' } });
     writeFileSync(path, before);
     mkdirSync(join(dir, 'untouched'), { recursive: true });
@@ -163,7 +163,7 @@ describe('writeLocaleFile invariant', () => {
     expect(readFileSync(path, 'utf8')).toBe(before);
   });
 
-  it('handles every combination of (before, after, extracted) for a single entry', () => {
+  it('preserves the invariant across every state combination', () => {
     const FILE_ID = 'src/x.tsx';
     const SOURCE = 'Hello';
     const OLD = 'Hej';

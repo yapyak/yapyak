@@ -3,13 +3,13 @@ import { describe, expect, it } from 'vitest';
 import { stringifyCanonical } from './json';
 
 describe('stringifyCanonical', () => {
-  it('produces identical output regardless of insertion order', () => {
+  it('returns identical output regardless of insertion order', () => {
     const first = stringifyCanonical({ a: 2, b: 1 });
     const second = stringifyCanonical({ a: 2, b: 1 });
     expect(first).toBe(second);
   });
 
-  it('sorts keys at every nesting depth', () => {
+  it('transforms keys into sorted order at every nesting depth', () => {
     const value = {
       'src/one.ts': { b: '', y: '' },
       'src/two.ts': { a: '', z: '' },
@@ -26,7 +26,7 @@ describe('stringifyCanonical', () => {
     );
   });
 
-  it('sorts keys case-insensitively to match Biome', () => {
+  it('transforms keys case-insensitively to match Biome order', () => {
     const output = stringifyCanonical({
       'Every design decision': '',
       'Every Intl primitive': '',
@@ -36,7 +36,7 @@ describe('stringifyCanonical', () => {
     expect(designIndex).toBeLessThan(intlIndex);
   });
 
-  it('breaks case-insensitive ties with case-sensitive order', () => {
+  it('transforms case-insensitive ties using case-sensitive order', () => {
     const output = stringifyCanonical({ Apple: 1, apple: 2 });
     const upperIndex = output.indexOf('"Apple"');
     const lowerIndex = output.indexOf('"apple"');
@@ -47,11 +47,11 @@ describe('stringifyCanonical', () => {
     expect(stringifyCanonical([3, 1, 2])).toBe('[\n  3,\n  1,\n  2\n]\n');
   });
 
-  it('preserves null values', () => {
+  it('preserves `null` values', () => {
     expect(stringifyCanonical({ a: null })).toBe('{\n  "a": null\n}\n');
   });
 
-  it('terminates output with a newline', () => {
+  it('writes a trailing newline', () => {
     expect(stringifyCanonical({})).toBe('{}\n');
   });
 });

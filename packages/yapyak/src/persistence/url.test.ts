@@ -36,25 +36,25 @@ describe('getLocaleFromUrl', () => {
       ).toBe('en');
     });
 
-    it('returns hyphenated locales', () => {
+    it('returns the locale for hyphenated locales', () => {
       expect(
         getLocaleFromUrl(new URL('https://app.test/sv-SE/home'), LOCALES),
       ).toBe('sv-SE');
     });
 
-    it('returns undefined for the root path', () => {
+    it('returns `undefined` for the root path', () => {
       expect(getLocaleFromUrl(new URL('https://app.test/'), LOCALES)).toBe(
         undefined,
       );
     });
 
-    it('returns undefined when the first segment is not a known locale', () => {
+    it('returns `undefined` when the first segment is not a known locale', () => {
       expect(getLocaleFromUrl(new URL('https://app.test/about'), LOCALES)).toBe(
         undefined,
       );
     });
 
-    it('returns undefined when locale case does not match', () => {
+    it('returns `undefined` when locale case does not match', () => {
       expect(
         getLocaleFromUrl(new URL('https://app.test/SV/home'), LOCALES),
       ).toBe(undefined);
@@ -84,13 +84,13 @@ describe('getLocaleFromUrl', () => {
       ).toBe('de');
     });
 
-    it('returns undefined when the query is missing', () => {
+    it('returns `undefined` when the query is missing', () => {
       expect(
         getLocaleFromUrl(new URL('https://app.test/about'), LOCALES, pattern),
       ).toBe(undefined);
     });
 
-    it('returns undefined when captured value is not a known locale', () => {
+    it('returns `undefined` when captured value is not a known locale', () => {
       expect(
         getLocaleFromUrl(
           new URL('https://app.test/about?lang=fr'),

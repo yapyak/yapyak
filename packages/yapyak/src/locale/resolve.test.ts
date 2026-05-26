@@ -11,7 +11,7 @@ describe('parseAcceptLanguage', () => {
     expect(parseAcceptLanguage('sv,fr,en')).toEqual(['sv', 'fr', 'en']);
   });
 
-  it('sorts by q-value descending', () => {
+  it('returns locales in `q`-value descending order', () => {
     expect(parseAcceptLanguage('sv;q=0.5,fr;q=0.9,en;q=0.7')).toEqual([
       'fr',
       'en',
@@ -19,7 +19,7 @@ describe('parseAcceptLanguage', () => {
     ]);
   });
 
-  it('treats missing q as 1.0', () => {
+  it('parses missing q as 1.0', () => {
     expect(parseAcceptLanguage('en;q=0.5,sv')).toEqual(['sv', 'en']);
   });
 
@@ -27,11 +27,11 @@ describe('parseAcceptLanguage', () => {
     expect(parseAcceptLanguage('')).toEqual([]);
   });
 
-  it('skips wildcard *', () => {
+  it('blocks wildcard `*`', () => {
     expect(parseAcceptLanguage('sv,*;q=0.1')).toEqual(['sv']);
   });
 
-  it('skips entries with q=0', () => {
+  it('blocks entries with q=0', () => {
     expect(parseAcceptLanguage('sv;q=0,fr')).toEqual(['fr']);
   });
 });

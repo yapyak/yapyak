@@ -34,7 +34,7 @@ function hashId(source: string): string {
 
 describe('transformFile', () => {
   describe('single-locale elision', () => {
-    it('elides t(literal) to a plain string literal', () => {
+    it('elides `t(literal)` to a plain string literal', () => {
       const code = runTransform({
         locales: ['en'],
         source: "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
@@ -44,7 +44,7 @@ describe('transformFile', () => {
       expect(code).not.toContain('_pick');
     });
 
-    it('elides t with simple placeholders to a template literal', () => {
+    it('elides `t` with simple placeholders to a template literal', () => {
       const code = runTransform({
         locales: ['en'],
         source: `
@@ -85,7 +85,7 @@ describe('transformFile', () => {
       expect(code).toContain('`Hi ${getName()}`');
     });
 
-    it('emits _pick when source contains plurals', () => {
+    it('emits `_pick` when source contains plurals', () => {
       const code = runTransform({
         locales: ['en'],
         source: `
@@ -99,7 +99,7 @@ describe('transformFile', () => {
       expect(code).toContain('{ en:');
     });
 
-    it('removes the entire t import when no references remain', () => {
+    it('clears the entire `t` import when no references remain', () => {
       const code = runTransform({
         locales: ['en'],
         source: "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
@@ -107,7 +107,7 @@ describe('transformFile', () => {
       expect(code).not.toContain("from 'yapyak'");
     });
 
-    it('keeps useLocale specifier when still referenced', () => {
+    it('preserves `useLocale` specifier when still referenced', () => {
       const code = runTransform({
         locales: ['en'],
         source: `
@@ -123,7 +123,7 @@ describe('transformFile', () => {
       expect(code).toContain("from 'yapyak'");
     });
 
-    it('leaves type-only @yapyak/* imports untouched', () => {
+    it('preserves type-only `@yapyak/*` imports', () => {
       const source = [
         "import type { LocaleProviderProps } from '@yapyak/react';",
         "import { t } from 'yapyak';",
@@ -137,7 +137,7 @@ describe('transformFile', () => {
       );
     });
 
-    it('preserves inline type marker on @yapyak/* import specifier', () => {
+    it('preserves inline type marker on `@yapyak/*` import specifier', () => {
       const source = [
         "import { type LocaleProviderProps } from '@yapyak/react';",
         "import { t } from 'yapyak';",
@@ -151,7 +151,7 @@ describe('transformFile', () => {
       );
     });
 
-    it('preserves type marker when injecting _pick into a mixed import', () => {
+    it('preserves type marker when injecting `_pick` into a mixed import', () => {
       const source = [
         "import { type TParams, t } from 'yapyak';",
         "export function greet(params: TParams<'Hi {name}'>) {",
@@ -163,7 +163,7 @@ describe('transformFile', () => {
       expect(code).toContain('_pick');
     });
 
-    it('escapes { and } in catalog strings so Vue/JSX parsers never see literal braces', () => {
+    it('transforms `{` and `}` in catalog strings so Vue/JSX parsers never see literal braces', () => {
       const source = [
         "import { t } from 'yapyak';",
         "export const x = t('You have {count, plural, one {# msg} other {# msgs}}', { count: 1 });",
@@ -175,7 +175,7 @@ describe('transformFile', () => {
       expect(code).toContain('\\u007b');
     });
 
-    it('escapes { and } in elided single-locale literal without placeholders', () => {
+    it('transforms `{` and `}` in elided single-locale literal without placeholders', () => {
       const source = [
         "import { t } from 'yapyak';",
         "export const x = t('Closing braces inside: }}');",
@@ -185,7 +185,7 @@ describe('transformFile', () => {
       expect(code).toContain('\\u007d\\u007d');
     });
 
-    it('leaves imports from other @yapyak/* packages untouched', () => {
+    it('preserves imports from other `@yapyak/*` packages', () => {
       const source = [
         "import { useLocale } from '@yapyak/react';",
         "import type { Translator } from '@yapyak/translator';",
@@ -233,7 +233,7 @@ describe('transformFile', () => {
       expect(code).toContain('svOptions');
     });
 
-    it('preserves options when source has no placeholders (2nd arg)', () => {
+    it('preserves options when source has no placeholders as 2nd arg', () => {
       const code = runTransform({
         locales: ['en', 'sv'],
         source: `
@@ -246,7 +246,7 @@ describe('transformFile', () => {
       expect(code).toContain('opts');
     });
 
-    it('skips single-locale elision when options are present', () => {
+    it('blocks single-locale elision when options are present', () => {
       const code = runTransform({
         locales: ['en'],
         source: `
@@ -260,7 +260,7 @@ describe('transformFile', () => {
   });
 
   describe('multi-locale', () => {
-    it('emits _pick with catalog for t', () => {
+    it('emits `_pick` with catalog for `t`', () => {
       const code = runTransform({
         locales: ['en', 'sv'],
         source: "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
@@ -271,7 +271,7 @@ describe('transformFile', () => {
       expect(code).toContain('sv: "Hej"');
     });
 
-    it('emits source as the fallback when a translation is missing', () => {
+    it('emits source as fallback when a translation is missing', () => {
       const code = runTransform({
         locales: ['en', 'sv'],
         source: "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
@@ -280,7 +280,7 @@ describe('transformFile', () => {
       expect(code).toContain('sv: "Hello"');
     });
 
-    it('forwards original params object as second arg', () => {
+    it('preserves original params object as 2nd arg', () => {
       const code = runTransform({
         locales: ['en', 'sv'],
         source: `
@@ -294,7 +294,7 @@ describe('transformFile', () => {
       expect(code).toContain('{ name }');
     });
 
-    it('emits _pick from yapyak/internal as a separate import', () => {
+    it('emits `_pick` from `yapyak/internal` as a separate import', () => {
       const code = runTransform({
         locales: ['en', 'sv'],
         source: "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
@@ -305,7 +305,7 @@ describe('transformFile', () => {
       expect(code).not.toMatch(/import \{ _pick.*\t.*\} from 'yapyak'/);
     });
 
-    it('renames local alias when user already has _pick', () => {
+    it('transforms local alias when user already has `_pick`', () => {
       const code = runTransform({
         locales: ['en', 'sv'],
         source: [
@@ -322,7 +322,7 @@ describe('transformFile', () => {
       expect(code).toContain('const _pick = "user-defined";');
     });
 
-    it('escalates further if both _pick and _pick_$0 are taken', () => {
+    it('transforms alias further when both `_pick` and `_pick_$0` are taken', () => {
       const code = runTransform({
         locales: ['en', 'sv'],
         source: [
@@ -362,7 +362,7 @@ describe('transformFile', () => {
       return result.code;
     }
 
-    it('elides t in <script setup> and <template> for single-locale', () => {
+    it('elides `t` in `<script setup>` and `<template>` for single-locale', () => {
       const source = [
         '<script setup lang="ts">',
         "import { t } from 'yapyak';",
@@ -380,7 +380,7 @@ describe('transformFile', () => {
       expect(code).not.toContain("from 'yapyak'");
     });
 
-    it('emits _pick for multi-locale in template and script', () => {
+    it('emits `_pick` for multi-locale in template and script', () => {
       const source = [
         '<script setup lang="ts">',
         "import { t } from 'yapyak';",
@@ -402,7 +402,7 @@ describe('transformFile', () => {
       );
     });
 
-    it('rewrites :foo="..." attribute expression', () => {
+    it('transforms `:foo="..."` attribute expression', () => {
       const source = [
         '<script setup lang="ts">',
         "import { t } from 'yapyak';",
@@ -416,7 +416,7 @@ describe('transformFile', () => {
       expect(code).not.toContain("t('Save changes')");
     });
 
-    it('rewrites @click event handler expression', () => {
+    it('transforms `@click` event handler expression', () => {
       const source = [
         '<script setup lang="ts">',
         "import { t } from 'yapyak';",
@@ -429,7 +429,7 @@ describe('transformFile', () => {
       expect(code).toContain('alert("Hi")');
     });
 
-    it('leaves <script setup> alone when there is no core t import', () => {
+    it('preserves `<script setup>` when there is no core `t` import', () => {
       const source = [
         '<script setup lang="ts">',
         "const heading = 'static';",
@@ -442,7 +442,7 @@ describe('transformFile', () => {
       expect(code).toContain("const heading = 'static'");
     });
 
-    it('inserts _pick into <script setup> in multi-locale even when only template uses t', () => {
+    it('writes `_pick` into `<script setup>` in multi-locale even when only template uses `t`', () => {
       const source = [
         '<script setup lang="ts">',
         "import { t } from 'yapyak';",
@@ -508,7 +508,7 @@ describe('transformFile', () => {
       }).code;
     }
 
-    it('elides JSX text <p>{t("Hello")}</p> to <p>Hello</p>', () => {
+    it('elides JSX text `<p>{t("Hello")}</p>` to `<p>Hello</p>`', () => {
       const code = runTransform({
         locales: ['en'],
         source: [
@@ -522,7 +522,7 @@ describe('transformFile', () => {
       expect(code).not.toContain('{"Hello"}');
     });
 
-    it('elides JSX attribute aria-label={t("Save")} to aria-label="Save"', () => {
+    it('elides JSX attribute `aria-label={t("Save")}` to `aria-label="Save"`', () => {
       const code = runTransform({
         locales: ['en'],
         source: [
@@ -536,7 +536,7 @@ describe('transformFile', () => {
       expect(code).not.toContain('aria-label={');
     });
 
-    it('elides Vue mustache {{ t("Hello") }} to bare Hello', () => {
+    it('elides Vue mustache `{{ t("Hello") }}` to bare `Hello`', () => {
       const code = runVueTransform(
         [
           '<script setup lang="ts">',
@@ -552,7 +552,7 @@ describe('transformFile', () => {
       expect(code).not.toContain('{{');
     });
 
-    it('elides Vue v-bind :aria-label="t(\'Save\')" to static aria-label="Save"', () => {
+    it('elides Vue v-bind `:aria-label="t(\'Save\')"` to static `aria-label="Save"`', () => {
       const code = runVueTransform(
         [
           '<script setup lang="ts">',
@@ -568,7 +568,7 @@ describe('transformFile', () => {
       expect(code).not.toContain(':aria-label');
     });
 
-    it('elides Svelte mustache {t("Hello")} to bare Hello', () => {
+    it('elides Svelte mustache `{t("Hello")}` to bare `Hello`', () => {
       const code = runSvelteTransform(
         [
           '<script lang="ts">',
@@ -581,7 +581,7 @@ describe('transformFile', () => {
       expect(code).toContain('<p>Hello</p>');
     });
 
-    it('elides Svelte attribute aria-label={t("Save")} to aria-label="Save"', () => {
+    it('elides Svelte attribute `aria-label={t("Save")}` to `aria-label="Save"`', () => {
       const code = runSvelteTransform(
         [
           '<script lang="ts">',
@@ -595,7 +595,7 @@ describe('transformFile', () => {
       expect(code).not.toContain('aria-label={');
     });
 
-    it('elides Astro mustache {t("Hello")} to bare Hello', () => {
+    it('elides Astro mustache `{t("Hello")}` to bare `Hello`', () => {
       const code = runAstroTransform(
         [
           '---',
@@ -608,7 +608,7 @@ describe('transformFile', () => {
       expect(code).toContain('<p>Hello</p>');
     });
 
-    it('elides Astro attribute aria-label={t("Save")} to aria-label="Save"', () => {
+    it('elides Astro attribute `aria-label={t("Save")}` to `aria-label="Save"`', () => {
       const code = runAstroTransform(
         [
           '---',
@@ -622,7 +622,7 @@ describe('transformFile', () => {
       expect(code).not.toContain('aria-label={');
     });
 
-    it('emits quoted JSX text when source contains { or <', () => {
+    it('emits quoted JSX text when source contains `{` or `<`', () => {
       const code = runTransform({
         locales: ['en'],
         source: [
@@ -635,7 +635,7 @@ describe('transformFile', () => {
       expect(code).toContain('{"Use <em> for emphasis"}');
     });
 
-    it('emits expression-form JSX attribute when value contains "', () => {
+    it('emits expression-form JSX attribute when value contains `"`', () => {
       const code = runTransform({
         locales: ['en'],
         source: [
@@ -648,7 +648,7 @@ describe('transformFile', () => {
       expect(code).toContain('title={"Say \\"hi\\""}');
     });
 
-    it('keeps _pick wrappers in multi-locale without bare elision', () => {
+    it('preserves `_pick` wrappers in multi-locale without bare elision', () => {
       const code = runTransform({
         locales: ['en', 'sv'],
         source: [
@@ -664,7 +664,7 @@ describe('transformFile', () => {
   });
 
   describe('source map', () => {
-    it('returns a magic-string source map', () => {
+    it('returns a `magic-string` source map', () => {
       const fileId = 'test.ts';
       const source =
         "import { t } from 'yapyak';\nexport const x = t('Hello');\n";

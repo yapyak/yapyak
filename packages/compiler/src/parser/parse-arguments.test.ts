@@ -91,7 +91,7 @@ describe('parseArguments', () => {
     expect(farewell?.optionsExpression).toBe('svOptions');
   });
 
-  it('preserves options as third arg when source has placeholders', () => {
+  it('preserves options as 3rd arg when source has placeholders', () => {
     const parsed = parseAll('calls', 'dynamic-options.ts');
     const farewell = parsed[1];
     expect(farewell?.source).toBe('Bye {name}');

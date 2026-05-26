@@ -40,12 +40,12 @@ describe('locales', () => {
 });
 
 describe('setLocale', () => {
-  it('updates the current locale', () => {
+  it('writes the current locale', () => {
     setLocale('sv');
     expect(getLocale()).toBe('sv');
   });
 
-  it('ignores unsupported locale', () => {
+  it('blocks unsupported locale', () => {
     setLocale('de');
     expect(getLocale()).toBe('en');
   });
@@ -60,14 +60,14 @@ describe('subscribeLocale', () => {
     expect(listener).toHaveBeenCalledWith('sv');
   });
 
-  it('does not notify when set to the same locale', () => {
+  it('notifies no subscribers when set to the same locale', () => {
     const listener = vi.fn();
     subscribeLocale(listener);
     setLocale('en');
     expect(listener).not.toHaveBeenCalled();
   });
 
-  it('does not notify after unsubscribe', () => {
+  it('notifies no subscribers after unsubscribe', () => {
     const listener = vi.fn();
     const unsubscribe = subscribeLocale(listener);
     unsubscribe();

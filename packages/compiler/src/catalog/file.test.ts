@@ -37,7 +37,7 @@ describe('syncLocaleFiles', () => {
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({});
   });
 
-  it('preserves an existing non-empty locale file when no messages were extracted', () => {
+  it('preserves an existing non-empty locale file when no messages are extracted', () => {
     const localesDir = 'locales';
     const localePath = join(projectRoot, localesDir, 'sv.json');
     const existing = { 'src/a.ts': { hello: 'hej' } };

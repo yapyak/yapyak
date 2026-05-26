@@ -73,20 +73,20 @@ describe('setLocale', () => {
       warnSpy.mockRestore();
     });
 
-    it('ignores the call without updating the in-memory locale', () => {
+    it('preserves the in-memory locale when called', () => {
       const before = getLocale();
       setLocale('sv');
       expect(getLocale()).toBe(before);
     });
 
-    it('warns in dev mode when called', () => {
+    it('warns when called in dev mode', () => {
       setLocale('sv');
       expect(warnSpy).toHaveBeenCalledOnce();
       expect(warnSpy.mock.calls[0]?.[0]).toContain('no-op');
       expect(warnSpy.mock.calls[0]?.[0]).toContain('url');
     });
 
-    it('does not notify subscribers', () => {
+    it('notifies no subscribers', () => {
       const listener = vi.fn();
       subscribeLocale(listener);
       setLocale('sv');
@@ -97,7 +97,7 @@ describe('setLocale', () => {
 
 describe('subscribeLocale', () => {
   describe('with url persistence', () => {
-    it('notifies on popstate when URL contains a known locale', () => {
+    it('notifies on `popstate` when URL contains a known locale', () => {
       const listener = vi.fn();
       subscribeLocale(listener);
       pathname = '/sv/home';
@@ -106,7 +106,7 @@ describe('subscribeLocale', () => {
       expect(listener).toHaveBeenCalledWith('sv');
     });
 
-    it('notifies on pushState when URL contains a known locale', () => {
+    it('notifies on `pushState` when URL contains a known locale', () => {
       const listener = vi.fn();
       subscribeLocale(listener);
       mockWindow.history.pushState({}, '', '/fr/home');
@@ -114,7 +114,7 @@ describe('subscribeLocale', () => {
       expect(listener).toHaveBeenCalledWith('fr');
     });
 
-    it('notifies on replaceState when URL contains a known locale', () => {
+    it('notifies on `replaceState` when URL contains a known locale', () => {
       const listener = vi.fn();
       subscribeLocale(listener);
       mockWindow.history.replaceState({}, '', '/sv/about');
@@ -122,14 +122,14 @@ describe('subscribeLocale', () => {
       expect(listener).toHaveBeenCalledWith('sv');
     });
 
-    it('does not notify when URL has no known locale', () => {
+    it('notifies no subscribers when URL has no known locale', () => {
       const listener = vi.fn();
       subscribeLocale(listener);
       mockWindow.history.pushState({}, '', '/about');
       expect(listener).not.toHaveBeenCalled();
     });
 
-    it('does not notify when URL change keeps the same locale', () => {
+    it('notifies no subscribers when URL change keeps the same locale', () => {
       const listener = vi.fn();
       subscribeLocale(listener);
       mockWindow.history.pushState({}, '', '/en/dashboard');

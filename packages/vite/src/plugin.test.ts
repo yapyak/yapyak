@@ -32,7 +32,7 @@ describe('yapyak vite plugin — build mode', () => {
     rmSync(root, { force: true, recursive: true });
   });
 
-  it('does not modify locale files during vite build', async () => {
+  it('preserves locale files during `vite build`', async () => {
     const existing = {
       'src/foo.tsx': {
         Hello: 'Hej',
@@ -50,7 +50,7 @@ describe('yapyak vite plugin — build mode', () => {
     expect(after).toBe(before);
   });
 
-  it('does not create a missing locale file during vite build', async () => {
+  it('writes no missing locale file during `vite build`', async () => {
     writeFileSync(join(root, 'locales', 'en.json'), '{}');
 
     const plugin = yapyak();

@@ -47,7 +47,7 @@ describe('resolveCallSiteContext', () => {
     expect(ctx.componentName).toBe('Greeting');
   });
 
-  it('returns the forwardRef component name', () => {
+  it('returns the `forwardRef` component name', () => {
     const sf = parseInline(`
       import { t } from 'yapyak';
       const forwardRef = (fn: unknown) => fn;
@@ -58,7 +58,7 @@ describe('resolveCallSiteContext', () => {
     expect(ctx.componentName).toBe('Greeting');
   });
 
-  it('returns the memo component name', () => {
+  it('returns the `memo` component name', () => {
     const sf = parseInline(`
       import { t } from 'yapyak';
       const memo = (fn: unknown) => fn;
@@ -138,7 +138,7 @@ describe('resolveCallSiteContext', () => {
     expect(ctx.enclosingJsx).toBe('Menu.Item');
   });
 
-  it('returns context for every call in a nested-jsx fixture', () => {
+  it('returns context for every call in a nested JSX fixture', () => {
     const sf = parseInline(
       `
         import { t } from 'yapyak';

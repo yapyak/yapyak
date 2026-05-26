@@ -14,7 +14,7 @@ function verifyOffsetInvariant(source: string, fragment: Fragment): void {
 
 describe('svelteProcessor', () => {
   describe('parseFragments', () => {
-    it('returns a script fragment for <script lang="ts">', () => {
+    it('returns a script fragment for `<script lang="ts">`', () => {
       const source = [
         '<script lang="ts">',
         "  import { t } from 'yapyak';",
@@ -29,13 +29,13 @@ describe('svelteProcessor', () => {
       verifyOffsetInvariant(source, fragments[0] as Fragment);
     });
 
-    it('returns lang=js for non-typescript script blocks', () => {
+    it('returns `lang=js` for non-typescript script blocks', () => {
       const source = ['<script>', '  const x = 1;', '</script>'].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       expect(fragments[0]?.lang).toBe('js');
     });
 
-    it('returns a separate script fragment for <script module>', () => {
+    it('returns a separate script fragment for `<script module>`', () => {
       const source = [
         '<script module lang="ts">',
         '  export const stored = 1;',
@@ -49,7 +49,7 @@ describe('svelteProcessor', () => {
       expect(scripts).toHaveLength(2);
     });
 
-    it('returns a template expression for ExpressionTag {expr}', () => {
+    it('returns a template expression for `ExpressionTag` `{expr}`', () => {
       const source = [
         '<script lang="ts">',
         "  import { t } from 'yapyak';",
@@ -63,7 +63,7 @@ describe('svelteProcessor', () => {
       verifyOffsetInvariant(source, exprs[0] as Fragment);
     });
 
-    it('returns a template expression for HtmlTag {@html expr}', () => {
+    it('returns a template expression for `HtmlTag` `{@html expr}`', () => {
       const source = [`<div>{@html t('<strong>Bold</strong>')}</div>`].join(
         '\n',
       );
@@ -73,7 +73,7 @@ describe('svelteProcessor', () => {
       expect(exprs[0]?.code).toBe("t('<strong>Bold</strong>')");
     });
 
-    it('returns a template expression for RenderTag {@render snippet()}', () => {
+    it('returns a template expression for `RenderTag` `{@render snippet()}`', () => {
       const source = [
         '<script lang="ts">',
         `  function greet(): unknown { return null; }`,
@@ -86,7 +86,7 @@ describe('svelteProcessor', () => {
       expect(exprs[0]?.code).toBe('greet()');
     });
 
-    it('returns a template expression for an attribute single ExpressionTag value', () => {
+    it('returns a template expression for an attribute single `ExpressionTag` value', () => {
       const source = [`<button aria-label={t('Save')}>x</button>`].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
@@ -94,7 +94,7 @@ describe('svelteProcessor', () => {
       expect(exprs[0]?.code).toBe("t('Save')");
     });
 
-    it('returns a template expression for ExpressionTag inside string-interpolated attribute', () => {
+    it('returns a template expression for `ExpressionTag` inside string-interpolated attribute', () => {
       const source = [`<div class="prefix-{t('mid')}-suffix">x</div>`].join(
         '\n',
       );
@@ -104,7 +104,7 @@ describe('svelteProcessor', () => {
       expect(exprs[0]?.code).toBe("t('mid')");
     });
 
-    it('returns a template expression for SpreadAttribute', () => {
+    it('returns a template expression for `SpreadAttribute`', () => {
       const source = [`<input {...props} />`].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
@@ -112,7 +112,7 @@ describe('svelteProcessor', () => {
       expect(exprs[0]?.code).toBe('props');
     });
 
-    it('returns expressions from IfBlock test and body', () => {
+    it('returns expressions for `IfBlock` test and body', () => {
       const source = [`{#if cond}{t('Yes')}{:else}{t('No')}{/if}`].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
@@ -122,7 +122,7 @@ describe('svelteProcessor', () => {
       expect(codes).toContain("t('No')");
     });
 
-    it('returns expressions from EachBlock expression and body', () => {
+    it('returns expressions for `EachBlock` expression and body', () => {
       const source = [`{#each items as item}{t('Item')}{/each}`].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
@@ -131,7 +131,7 @@ describe('svelteProcessor', () => {
       expect(codes).toContain("t('Item')");
     });
 
-    it('returns expressions from AwaitBlock and its then/catch branches', () => {
+    it('returns expressions for `AwaitBlock` and its then/catch branches', () => {
       const source = [
         `{#await promise}`,
         `  {t('Loading')}`,
@@ -151,7 +151,7 @@ describe('svelteProcessor', () => {
       expect(codes).toContain("t('Failed')");
     });
 
-    it('returns expressions from KeyBlock', () => {
+    it('returns expressions for `KeyBlock`', () => {
       const source = [`{#key x}{t('K')}{/key}`].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const codes = fragments
@@ -161,7 +161,7 @@ describe('svelteProcessor', () => {
       expect(codes).toContain("t('K')");
     });
 
-    it('returns expressions from SnippetBlock body', () => {
+    it('returns expressions for `SnippetBlock` body', () => {
       const source = [`{#snippet item(x)}{t('S')}{/snippet}`].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const codes = fragments
@@ -170,7 +170,7 @@ describe('svelteProcessor', () => {
       expect(codes).toContain("t('S')");
     });
 
-    it('returns a template expression for ClassDirective', () => {
+    it('returns a template expression for `ClassDirective`', () => {
       const source = [`<div class:active={isActive}>x</div>`].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const codes = fragments
@@ -179,7 +179,7 @@ describe('svelteProcessor', () => {
       expect(codes).toContain('isActive');
     });
 
-    it('returns a template expression for BindDirective', () => {
+    it('returns a template expression for `BindDirective`', () => {
       const source = [`<input bind:value={text} />`].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const codes = fragments
@@ -188,7 +188,7 @@ describe('svelteProcessor', () => {
       expect(codes).toContain('text');
     });
 
-    it('returns a template expression for legacy OnDirective', () => {
+    it('returns a template expression for legacy `OnDirective`', () => {
       const source = [`<button on:click={() => t('Click')}>x</button>`].join(
         '\n',
       );
@@ -199,7 +199,7 @@ describe('svelteProcessor', () => {
       expect(codes.some((c) => c.includes("t('Click')"))).toBe(true);
     });
 
-    it('returns a template expression for StyleDirective value', () => {
+    it('returns a template expression for `StyleDirective` value', () => {
       const source = [`<div style:color={accent}>x</div>`].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const codes = fragments
@@ -208,7 +208,7 @@ describe('svelteProcessor', () => {
       expect(codes).toContain('accent');
     });
 
-    it('returns a template expression for UseDirective', () => {
+    it('returns a template expression for `UseDirective`', () => {
       const source = [`<div use:action={params}>x</div>`].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const codes = fragments
@@ -217,7 +217,7 @@ describe('svelteProcessor', () => {
       expect(codes).toContain('params');
     });
 
-    it('returns a template expression for TransitionDirective', () => {
+    it('returns a template expression for `TransitionDirective`', () => {
       const source = [`<div transition:fade={params}>x</div>`].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const codes = fragments
@@ -226,7 +226,7 @@ describe('svelteProcessor', () => {
       expect(codes).toContain('params');
     });
 
-    it('returns a template expression for AnimateDirective', () => {
+    it('returns a template expression for `AnimateDirective`', () => {
       const source = [
         `{#each items as item (item.id)}`,
         `  <div animate:flip={settings}>x</div>`,
@@ -239,7 +239,7 @@ describe('svelteProcessor', () => {
       expect(codes).toContain('settings');
     });
 
-    it('returns a template expression for SvelteElement tag', () => {
+    it('returns a template expression for `SvelteElement` tag', () => {
       const source = [`<svelte:element this={tagName} />`].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const codes = fragments
@@ -248,7 +248,7 @@ describe('svelteProcessor', () => {
       expect(codes).toContain('tagName');
     });
 
-    it('returns expressions from nested elements', () => {
+    it('returns expressions for nested elements', () => {
       const source = [
         '<script lang="ts">',
         "  import { t } from 'yapyak';",

@@ -26,7 +26,7 @@ describe('toMessageId', () => {
     );
   });
 
-  it('returns the same id when context is undefined as when omitted', () => {
+  it('returns the same id when context is `undefined` as when omitted', () => {
     expect(toMessageId('Save')).toBe(toMessageId('Save', undefined));
   });
 });

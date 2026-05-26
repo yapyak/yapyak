@@ -42,7 +42,9 @@
     {t("Switch language")}
     <select bind:value={locale.current}>
       {#each locales as locale}
-        <option value={locale}>{locale === "sv" ? t("Swedish") : t("English")}</option>
+        <option value={locale}>
+          {locale === "sv" ? t("Swedish") : t("English")}
+        </option>
       {/each}
     </select>
   </label>

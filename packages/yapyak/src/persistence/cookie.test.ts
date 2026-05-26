@@ -14,20 +14,20 @@ describe('parseCookie', () => {
     });
   });
 
-  it('trims whitespace around names and values', () => {
+  it('transforms whitespace around names and values', () => {
     expect(parseCookie('  locale  =  sv  ;  theme  =  dark  ')).toEqual({
       locale: 'sv',
       theme: 'dark',
     });
   });
 
-  it('decodes URI-encoded values', () => {
+  it('transforms URI-encoded values', () => {
     expect(parseCookie('greeting=Hej%20v%C3%A4rlden')).toEqual({
       greeting: 'Hej världen',
     });
   });
 
-  it('strips surrounding double quotes from values', () => {
+  it('clears surrounding double quotes from values', () => {
     expect(parseCookie('locale="sv"')).toEqual({ locale: 'sv' });
   });
 
@@ -39,14 +39,14 @@ describe('parseCookie', () => {
     expect(parseCookie('')).toEqual({});
   });
 
-  it('skips segments without an equals sign', () => {
+  it('blocks segments without an equals sign', () => {
     expect(parseCookie('locale=sv; broken; theme=dark')).toEqual({
       locale: 'sv',
       theme: 'dark',
     });
   });
 
-  it('skips segments with an empty name', () => {
+  it('blocks segments with an empty name', () => {
     expect(parseCookie('=orphan; locale=sv')).toEqual({ locale: 'sv' });
   });
 

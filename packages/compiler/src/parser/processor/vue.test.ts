@@ -14,7 +14,7 @@ function verifyOffsetInvariant(source: string, fragment: Fragment): void {
 
 describe('vueProcessor', () => {
   describe('parseFragments', () => {
-    it('returns a script fragment for <script lang="ts">', () => {
+    it('returns a script fragment for `<script lang="ts">`', () => {
       const source = [
         '<script lang="ts">',
         "import { t } from 'yapyak';",
@@ -29,7 +29,7 @@ describe('vueProcessor', () => {
       verifyOffsetInvariant(source, fragments[0] as Fragment);
     });
 
-    it('returns a script fragment for <script setup>', () => {
+    it('returns a script fragment for `<script setup>`', () => {
       const source = [
         '<script setup lang="ts">',
         "import { t } from 'yapyak';",
@@ -41,7 +41,7 @@ describe('vueProcessor', () => {
       expect(fragments[0]?.kind).toBe('script');
     });
 
-    it('returns lang=js for non-typescript script blocks', () => {
+    it('returns `lang=js` for non-typescript script blocks', () => {
       const source = [
         '<script>',
         "import { t } from 'yapyak';",
@@ -51,7 +51,7 @@ describe('vueProcessor', () => {
       expect(fragments[0]?.lang).toBe('js');
     });
 
-    it('returns separate fragments for <script> and <script setup>', () => {
+    it('returns separate fragments for `<script>` and `<script setup>`', () => {
       const source = [
         '<script lang="ts">',
         "export default { name: 'X' };",
@@ -65,7 +65,7 @@ describe('vueProcessor', () => {
       expect(scriptCount).toBe(2);
     });
 
-    it('returns a template-expression fragment for {{ ... }} interpolation', () => {
+    it('returns a template-expression fragment for `{{ ... }}` interpolation', () => {
       const source = [
         '<script setup lang="ts">',
         "import { t } from 'yapyak';",
@@ -83,7 +83,7 @@ describe('vueProcessor', () => {
       verifyOffsetInvariant(source, exprFragments[0] as Fragment);
     });
 
-    it('returns a template-expression fragment for v-bind shorthand :foo="..."', () => {
+    it('returns a template-expression fragment for v-bind shorthand `:foo="..."`', () => {
       const source = [
         '<script setup lang="ts">',
         "import { t } from 'yapyak';",
@@ -101,7 +101,7 @@ describe('vueProcessor', () => {
       verifyOffsetInvariant(source, exprFragments[0] as Fragment);
     });
 
-    it('returns a template-expression fragment for verbose v-bind:foo="..."', () => {
+    it('returns a template-expression fragment for verbose `v-bind:foo="..."`', () => {
       const source = [
         '<template>',
         `  <img v-bind:alt="t('Hero')" />`,
@@ -115,7 +115,7 @@ describe('vueProcessor', () => {
       expect(exprFragments[0]?.code).toBe("t('Hero')");
     });
 
-    it('returns a template-expression fragment for v-on shorthand @click="..."', () => {
+    it('returns a template-expression fragment for v-on shorthand `@click="..."`', () => {
       const source = [
         '<template>',
         `  <button @click="setLocale('sv')">x</button>`,
@@ -129,7 +129,7 @@ describe('vueProcessor', () => {
       expect(exprFragments[0]?.code).toBe("setLocale('sv')");
     });
 
-    it('returns a template-expression fragment for verbose v-on:click="..."', () => {
+    it('returns a template-expression fragment for verbose `v-on:click="..."`', () => {
       const source = [
         '<template>',
         `  <button v-on:click="handler()">x</button>`,
@@ -143,7 +143,7 @@ describe('vueProcessor', () => {
       expect(exprFragments[0]?.code).toBe('handler()');
     });
 
-    it('returns multiple expressions from nested elements', () => {
+    it('returns multiple expressions for nested elements', () => {
       const source = [
         '<template>',
         '  <article>',
@@ -187,7 +187,7 @@ describe('vueProcessor', () => {
       expect(fragments[0]?.kind).toBe('script');
     });
 
-    it('returns the full ICU plural expression without truncating on inner }}', () => {
+    it('returns the full ICU plural expression without truncating on inner `}}`', () => {
       const source = [
         '<template>',
         `  <p>{{ t('You have {count, plural, one {# message} other {# messages}}', { count: 3 }) }}</p>`,
@@ -202,7 +202,7 @@ describe('vueProcessor', () => {
       verifyOffsetInvariant(source, exprs[0] as Fragment);
     });
 
-    it('returns the full ICU select expression without truncating on inner }}', () => {
+    it('returns the full ICU select expression without truncating on inner `}}`', () => {
       const source = [
         '<template>',
         `  <p>{{ t('{theme, select, dark {Dark mode} other {Light mode}}', { theme: 'dark' }) }}</p>`,
@@ -230,7 +230,7 @@ describe('vueProcessor', () => {
       verifyOffsetInvariant(source, exprs[0] as Fragment);
     });
 
-    it('returns the full expression when double-quoted string contains }}', () => {
+    it('returns the full expression when double-quoted string contains `}}`', () => {
       const source = [
         '<template>',
         `  <p>{{ t("Closing braces: }}", {}) }}</p>`,
@@ -243,7 +243,7 @@ describe('vueProcessor', () => {
       verifyOffsetInvariant(source, exprs[0] as Fragment);
     });
 
-    it('returns the full template literal with ${} interpolation inside expression', () => {
+    it('returns the full template literal with `${}` interpolation inside expression', () => {
       const source = [
         '<template>',
         '  <p>{{ `${name}-${greeting}` }}</p>',
@@ -269,7 +269,7 @@ describe('vueProcessor', () => {
       verifyOffsetInvariant(source, exprs[0] as Fragment);
     });
 
-    it('returns the full expression with a nested object literal in 2nd arg', () => {
+    it('returns the full expression with a nested object literal as 2nd arg', () => {
       const source = [
         '<template>',
         `  <p>{{ t('Hi {user}', { user: { name: 'Alex', id: 1 } }) }}</p>`,
@@ -284,7 +284,7 @@ describe('vueProcessor', () => {
       verifyOffsetInvariant(source, exprs[0] as Fragment);
     });
 
-    it('returns the full expression when a block comment contains }} inside', () => {
+    it('returns the full expression when a block comment contains `}}` inside', () => {
       const source = [
         '<template>',
         `  <p>{{ t('Hello' /* ignore }} this */, {}) }}</p>`,
@@ -338,7 +338,7 @@ describe('vueProcessor', () => {
       expect(fragments).toHaveLength(0);
     });
 
-    it('skips empty {{ }} and {{   }} interpolations', () => {
+    it('blocks empty `{{ }}` and `{{   }}` interpolations', () => {
       const source = [
         '<template>',
         `  <p>{{ }}</p>`,

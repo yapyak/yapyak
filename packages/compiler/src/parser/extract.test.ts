@@ -32,7 +32,7 @@ describe('extractFile', () => {
     expect(greeting?.placeholders).toEqual([{ kind: 'simple', name: 'name' }]);
   });
 
-  it('dedupes identical calls into one message with multiple locations', () => {
+  it('folds identical calls into one message with multiple locations', () => {
     const result = extractFile({
       fileId: 'multi.ts',
       locales: ['en'],
@@ -56,7 +56,7 @@ describe('extractFile', () => {
     }
   });
 
-  it('returns stable ids deterministically across runs', () => {
+  it('returns stable ids across runs', () => {
     const first = extractFixture('calls', 'simple.ts');
     const second = extractFixture('calls', 'simple.ts');
     expect(first.messages.map((m) => m.id)).toEqual(
@@ -64,12 +64,12 @@ describe('extractFile', () => {
     );
   });
 
-  it('returns every discovered call-site in callSites for transform reuse', () => {
+  it('returns every discovered call-site in `callSites` for transform reuse', () => {
     const result = extractFixture('calls', 'nested-jsx.tsx');
     expect(result.callSites).toHaveLength(3);
   });
 
-  it('parses .tsx fixtures with JSX', () => {
+  it('parses `.tsx` fixtures with JSX', () => {
     const result = extractFixture('calls', 'nested-jsx.tsx');
     expect(
       result.diagnostics.filter((d) => d.severity === 'error'),
@@ -83,24 +83,24 @@ describe('extractFile', () => {
       expect(result.diagnostics).toHaveLength(0);
     });
 
-    it('forwards YPK001 from parse-arguments', () => {
+    it('emits YPK001 from `parse-arguments`', () => {
       const result = extractFixture('diagnostics', 'ypk001-dynamic-source.ts');
       expect(result.diagnostics.some((d) => d.code === 'YPK001')).toBe(true);
     });
 
-    it('forwards YPK002 from parse-arguments', () => {
+    it('emits YPK002 from `parse-arguments`', () => {
       const result = extractFixture('diagnostics', 'ypk002-missing-param.ts');
       expect(result.diagnostics.some((d) => d.code === 'YPK002')).toBe(true);
     });
 
-    it('forwards YPK007 from parse-arguments', () => {
+    it('emits YPK007 from `parse-arguments`', () => {
       const result = extractFixture('diagnostics', 'ypk007-invalid-plural.ts');
       expect(result.diagnostics.some((d) => d.code === 'YPK007')).toBe(true);
     });
   });
 
   describe('with Vue cross-fragment binding', () => {
-    it('returns template messages resolved against <script setup> import', () => {
+    it('returns template messages resolved against `<script setup>` import', () => {
       const source = [
         '<script setup lang="ts">',
         "import { t } from 'yapyak';",
@@ -138,7 +138,7 @@ describe('extractFile', () => {
       expect(sources).toEqual(['Button label', 'From script', 'From template']);
     });
 
-    it('returns template messages resolved against plain <script>', () => {
+    it('returns template messages resolved against plain `<script>`', () => {
       const source = [
         '<script lang="ts">',
         "import { t } from 'yapyak';",
@@ -177,7 +177,7 @@ describe('extractFile', () => {
       expect(result.messages[0]?.source).toBe('Welcome');
     });
 
-    it('dedupes the same source string across script and template', () => {
+    it('folds the same source string across script and template', () => {
       const source = [
         '<script setup lang="ts">',
         "import { t } from 'yapyak';",
@@ -196,7 +196,7 @@ describe('extractFile', () => {
       expect(result.messages[0]?.locations).toHaveLength(2);
     });
 
-    it('returns no messages when no script imports yapyak', () => {
+    it('returns no messages when no script imports `yapyak`', () => {
       const source = [
         '<template>',
         `  <h1>{{ t('Welcome') }}</h1>`,

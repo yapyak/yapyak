@@ -45,7 +45,7 @@ describe('anthropic', () => {
     expect(result).toBe('Hej världen');
   });
 
-  it('sends API key header', async () => {
+  it('writes the API key as `x-api-key` header', async () => {
     const stub = stubFetch('Hej');
     await anthropic({ apiKey: 'sk-test' })({
       fileId: 'src/x.tsx',
@@ -56,7 +56,7 @@ describe('anthropic', () => {
     expect(stub.headers()['x-api-key']).toBe('sk-test');
   });
 
-  it('uses claude-sonnet-4-6 as default model', async () => {
+  it('builds requests with `claude-sonnet-4-6` as default model', async () => {
     const stub = stubFetch('Hej');
     await anthropic({ apiKey: 'k' })({
       fileId: 'x',
@@ -67,7 +67,7 @@ describe('anthropic', () => {
     expect((stub.body() as { model: string }).model).toBe('claude-sonnet-4-6');
   });
 
-  it('uses custom model when specified', async () => {
+  it('builds requests with the configured model when set', async () => {
     const stub = stubFetch('Hej');
     await anthropic({ apiKey: 'k', model: 'claude-opus-4-7' })({
       fileId: 'x',
@@ -78,7 +78,7 @@ describe('anthropic', () => {
     expect((stub.body() as { model: string }).model).toBe('claude-opus-4-7');
   });
 
-  it('includes voice in system prompt', async () => {
+  it('builds system prompt with the configured voice', async () => {
     const stub = stubFetch('Hej');
     await anthropic({ apiKey: 'k', voice: 'Casual, never corporate' })({
       fileId: 'x',
@@ -91,7 +91,7 @@ describe('anthropic', () => {
     );
   });
 
-  it('includes matching glossary entries in system prompt', async () => {
+  it('builds system prompt with matching glossary entries', async () => {
     const stub = stubFetch('Skapa konto');
     await anthropic({
       apiKey: 'k',
@@ -109,7 +109,7 @@ describe('anthropic', () => {
     expect(system).not.toContain("S'inscrire");
   });
 
-  it('includes placeholder preservation reminder in system prompt', async () => {
+  it('builds system prompt with placeholder preservation reminder', async () => {
     const stub = stubFetch('Hej {name}');
     await anthropic({ apiKey: 'k' })({
       fileId: 'x',
@@ -121,7 +121,7 @@ describe('anthropic', () => {
     expect(system).toContain('{placeholder}');
   });
 
-  it('uses custom endpoint when specified', async () => {
+  it('builds requests against the configured endpoint when set', async () => {
     let capturedUrl = '';
     vi.stubGlobal('fetch', async (url: string) => {
       capturedUrl = url;
@@ -144,7 +144,7 @@ describe('anthropic', () => {
     expect(capturedUrl).toBe('https://proxy.example.com/messages');
   });
 
-  it('strips markdown code fence around JSON response', async () => {
+  it('parses translation from markdown-fenced JSON response', async () => {
     vi.stubGlobal(
       'fetch',
       async () =>
@@ -170,7 +170,7 @@ describe('anthropic', () => {
     expect(result).toBe('Hej');
   });
 
-  it('throws when API responds with non-2xx', async () => {
+  it('throws when the API responds with non-2xx', async () => {
     vi.stubGlobal(
       'fetch',
       async () => new Response('rate limited', { status: 429 }),
@@ -224,7 +224,7 @@ describe('anthropic', () => {
       expect(calls).toBe(1);
     });
 
-    it('chunks requests into smaller calls when above batchSize', async () => {
+    it('transforms requests into smaller batches when above `batchSize`', async () => {
       let calls = 0;
       vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
         calls++;
