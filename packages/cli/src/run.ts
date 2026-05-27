@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import { add } from './commands/add';
-import { check } from './commands/check';
-import { exportCommand } from './commands/export';
-import { status } from './commands/status';
-import { translate } from './commands/translate';
+import { add } from './command/add';
+import { check } from './command/check';
+import { exportCommand } from './command/export';
+import { status } from './command/status';
+import { translate } from './command/translate';
 import { loadConfig } from './config';
 import { color, symbol } from './tui';
 

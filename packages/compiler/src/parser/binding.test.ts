@@ -5,7 +5,7 @@ import { resolveBindings } from './binding';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const FIXTURES = join(import.meta.dirname, 'fixtures/bindings');
+const FIXTURES = join(import.meta.dirname, 'fixture/binding');
 
 function loadFixture(name: string): ts.SourceFile {
   const source = readFileSync(join(FIXTURES, name), 'utf-8');

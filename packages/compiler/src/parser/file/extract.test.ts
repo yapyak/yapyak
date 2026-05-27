@@ -6,7 +6,7 @@ import { extractFile } from './extract';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const ROOT = join(import.meta.dirname, '..', 'fixtures');
+const ROOT = join(import.meta.dirname, '..', 'fixture');
 
 function extractFixture(
   category: string,
@@ -19,14 +19,14 @@ function extractFixture(
 
 describe('extractFile', () => {
   it('returns messages from direct import calls', () => {
-    const result = extractFixture('calls', 'simple.ts');
+    const result = extractFixture('call', 'simple.ts');
     expect(result.messages).toHaveLength(2);
     const sources = result.messages.map((m) => m.source).sort();
     expect(sources).toEqual(['Goodbye', 'Hello']);
   });
 
   it('returns placeholders for messages with interpolation', () => {
-    const result = extractFixture('calls', 'placeholders.ts');
+    const result = extractFixture('call', 'placeholders.ts');
     expect(result.messages).toHaveLength(2);
     const greeting = result.messages.find((m) => m.source === 'Hi {name}');
     expect(greeting?.placeholders).toEqual([{ kind: 'simple', name: 'name' }]);
@@ -47,7 +47,7 @@ describe('extractFile', () => {
   });
 
   it('returns call-site context per location', () => {
-    const result = extractFixture('calls', 'nested-jsx.tsx');
+    const result = extractFixture('call', 'nested-jsx.tsx');
     expect(result.messages).toHaveLength(3);
     for (const message of result.messages) {
       expect(message.locations[0]?.callSiteContext.componentName).toBe(
@@ -57,44 +57,44 @@ describe('extractFile', () => {
   });
 
   it('returns stable ids across runs', () => {
-    const first = extractFixture('calls', 'simple.ts');
-    const second = extractFixture('calls', 'simple.ts');
+    const first = extractFixture('call', 'simple.ts');
+    const second = extractFixture('call', 'simple.ts');
     expect(first.messages.map((m) => m.id)).toEqual(
       second.messages.map((m) => m.id),
     );
   });
 
   it('returns every discovered call-site in `callSites` for transform reuse', () => {
-    const result = extractFixture('calls', 'nested-jsx.tsx');
+    const result = extractFixture('call', 'nested-jsx.tsx');
     expect(result.callSites).toHaveLength(3);
   });
 
   it('parses `.tsx` fixtures with JSX', () => {
-    const result = extractFixture('calls', 'nested-jsx.tsx');
+    const result = extractFixture('call', 'nested-jsx.tsx');
     expect(
       result.diagnostics.filter((d) => d.severity === 'error'),
     ).toHaveLength(0);
     expect(result.messages).toHaveLength(3);
   });
 
-  describe('diagnostics', () => {
+  describe('diagnostic', () => {
     it('returns no diagnostics for clean fixtures', () => {
-      const result = extractFixture('calls', 'simple.ts');
+      const result = extractFixture('call', 'simple.ts');
       expect(result.diagnostics).toHaveLength(0);
     });
 
     it('emits YPK001 from `parse-arguments`', () => {
-      const result = extractFixture('diagnostics', 'ypk001-dynamic-source.ts');
+      const result = extractFixture('diagnostic', 'ypk001-dynamic-source.ts');
       expect(result.diagnostics.some((d) => d.code === 'YPK001')).toBe(true);
     });
 
     it('emits YPK002 from `parse-arguments`', () => {
-      const result = extractFixture('diagnostics', 'ypk002-missing-param.ts');
+      const result = extractFixture('diagnostic', 'ypk002-missing-param.ts');
       expect(result.diagnostics.some((d) => d.code === 'YPK002')).toBe(true);
     });
 
     it('emits YPK007 from `parse-arguments`', () => {
-      const result = extractFixture('diagnostics', 'ypk007-invalid-plural.ts');
+      const result = extractFixture('diagnostic', 'ypk007-invalid-plural.ts');
       expect(result.diagnostics.some((d) => d.code === 'YPK007')).toBe(true);
     });
   });

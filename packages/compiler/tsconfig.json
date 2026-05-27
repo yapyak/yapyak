@@ -4,7 +4,7 @@
     "rootDir": "src",
     "types": ["node"]
   },
-  "exclude": ["dist", "node_modules", "src/parser/fixtures"],
+  "exclude": ["dist", "node_modules", "src/parser/fixture"],
   "extends": "@yapyak/typescript-config/library",
   "include": ["src"]
 }
