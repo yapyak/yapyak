@@ -101,7 +101,7 @@ export function buildSymbolPage(
   }
 
   if (symbol.kind === 'variable') {
-    blocks.push(heading2('Signature'));
+    blocks.push(heading2('Type'));
     blocks.push(variableSignatureBlock(symbol));
   }
 
@@ -256,7 +256,7 @@ function variableSignatureBlock(symbol: ReferenceVariable): Block {
   return {
     label: null,
     language: 'ts',
-    source: symbol.signature,
+    source: symbol.type.map((token) => token.text).join(''),
     type: 'code-block',
   };
 }

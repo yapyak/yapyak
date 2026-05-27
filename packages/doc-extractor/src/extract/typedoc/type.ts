@@ -77,7 +77,6 @@ export interface ReferenceTypeAlias extends ReferenceSymbolBase {
 
 export interface ReferenceVariable extends ReferenceSymbolBase {
   kind: 'variable';
-  signature: string;
   type: TypeToken[];
 }
 

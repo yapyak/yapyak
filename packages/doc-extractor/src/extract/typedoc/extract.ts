@@ -421,7 +421,6 @@ function convertVariable(
   return {
     ...base,
     kind: 'variable',
-    signature: `const ${reflection.name}: ${stringifyTokens(type)};`,
     type,
   };
 }
