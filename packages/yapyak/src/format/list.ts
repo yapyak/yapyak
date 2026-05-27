@@ -21,7 +21,6 @@ export type FormatListOptions = Intl.ListFormatOptions & {
  *
  * @param items - The items to join.
  * @param options - Optional native `Intl.ListFormatOptions` plus an optional `locale` override.
- * @returns The locale-formatted list.
  *
  * @example Join items with a locale-aware conjunction
  * ```ts

@@ -11,7 +11,6 @@ const DEFAULT: Intl.DateTimeFormatOptions = { timeStyle: 'short' };
  *
  * @param value - The date whose time portion is formatted.
  * @param options - Optional native `Intl.DateTimeFormatOptions` plus an optional `locale` override. Defaults to `{ timeStyle: 'short' }` when no options are provided.
- * @returns The locale-formatted time.
  *
  * @example Format a time with the short preset
  * ```ts

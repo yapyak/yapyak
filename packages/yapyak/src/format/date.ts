@@ -20,7 +20,6 @@ const DEFAULT: Intl.DateTimeFormatOptions = { dateStyle: 'medium' };
  *
  * @param value - The date to format.
  * @param options - Optional native `Intl.DateTimeFormatOptions` plus an optional `locale` override. Defaults to `{ dateStyle: 'medium' }` when no options are provided.
- * @returns The locale-formatted date.
  *
  * @example Format a date with the medium preset
  * ```ts

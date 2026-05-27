@@ -344,16 +344,11 @@ function convertCallableVariable(
   const overloads = signatures.map((signature) =>
     convertOverload(signature, reflection.name, context),
   );
-  const returnDescription = readReturnDescription(
-    signatures[0] ?? null,
-    context,
-  );
   return {
     ...base,
     kind: 'function',
     members: [],
     overloads,
-    returnDescription,
   };
 }
 
@@ -365,16 +360,11 @@ function convertFunction(
   const overloads = (reflection.signatures ?? []).map((signature) =>
     convertOverload(signature, reflection.name, context),
   );
-  const returnDescription = readReturnDescription(
-    reflection.signatures?.[0] ?? null,
-    context,
-  );
   return {
     ...base,
     kind: 'function',
     members: [],
     overloads,
-    returnDescription,
   };
 }
 
@@ -963,20 +953,6 @@ function readThrows(comment: CommentLike, context: Context): ReferenceThrows[] {
   return throws;
 }
 
-function readReturnDescription(
-  signature: SignatureReflection | null,
-  context: Context,
-): string {
-  if (!signature || !signature.comment) {
-    return '';
-  }
-  for (const tag of signature.comment.blockTags ?? []) {
-    if (tag.tag === '@returns') {
-      return partsToMarkdown(tag.content, context);
-    }
-  }
-  return '';
-}
 
 function readDefaultValue(
   reflection: DeclarationReflection,

@@ -89,11 +89,6 @@ export function buildSymbolPage(
       blocks.push(heading2('Parameters'));
       blocks.push(parametersTable(parameters));
     }
-    const returnType = symbol.overloads[0]?.returnType;
-    if (returnType && (!isVoidTokens(returnType) || symbol.returnDescription)) {
-      blocks.push(heading2('Returns'));
-      blocks.push(returnsParagraph(returnType, symbol.returnDescription));
-    }
     if (symbol.members.length > 0) {
       blocks.push(heading2('Members'));
       blocks.push(membersTable(symbol.members));
@@ -462,17 +457,6 @@ function tableHeaderRow(labels: string[]): TableRowBlock {
   };
 }
 
-function returnsParagraph(
-  returnType: TypeToken[],
-  returnDescription: string,
-): Block {
-  const children: Block[] = tokensToBlocks(returnType);
-  if (returnDescription) {
-    children.push({ type: 'text', value: ` — ${returnDescription}` });
-  }
-  return { children, type: 'paragraph' };
-}
-
 function tokensToBlocks(tokens: TypeToken[]): Block[] {
   const blocks: Block[] = [];
   for (const token of tokens) {
@@ -501,14 +485,6 @@ function resolveModule(token: { module: string; name: string }): string | null {
   }
   const fallback = currentIndex.get(token.name);
   return fallback ?? null;
-}
-
-function isVoidTokens(tokens: TypeToken[]) {
-  return (
-    tokens.length === 1 &&
-    tokens[0]?.kind === 'text' &&
-    tokens[0].text === 'void'
-  );
 }
 
 function symbolHref(moduleId: string, name: string): string {

@@ -14,7 +14,6 @@ const DEFAULT: Intl.DateTimeFormatOptions = {
  *
  * @param value - The date to format.
  * @param options - Optional native `Intl.DateTimeFormatOptions` plus an optional `locale` override. Defaults to `{ dateStyle: 'medium', timeStyle: 'short' }` when no options are provided.
- * @returns The locale-formatted date-time.
  *
  * @example Format a date and time together
  * ```ts

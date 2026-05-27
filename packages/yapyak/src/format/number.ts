@@ -18,7 +18,6 @@ export type FormatNumberOptions = Intl.NumberFormatOptions & {
  *
  * @param value - The numeric value to format.
  * @param options - Optional native `Intl.NumberFormatOptions` plus an optional `locale` override.
- * @returns The locale-formatted number.
  *
  * @example Format an integer with thousands separators
  * ```ts

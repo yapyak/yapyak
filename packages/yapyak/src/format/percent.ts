@@ -12,7 +12,6 @@ import { resolveLocale } from './resolve';
  *
  * @param value - The fractional value (e.g. `0.42` for 42%).
  * @param options - Optional native `Intl.NumberFormatOptions` plus an optional `locale` override. The `style` field is set automatically and overrides anything provided here.
- * @returns The locale-formatted percentage.
  *
  * @example Render a fraction as percent
  * ```ts

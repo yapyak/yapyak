@@ -22,7 +22,6 @@ export type FormatRelativeTimeOptions = Intl.RelativeTimeFormatOptions & {
  * @param value - The signed integer offset (negative for past, positive for future).
  * @param unit - The time unit (`'day'`, `'hour'`, `'minute'`, etc.).
  * @param options - Optional native `Intl.RelativeTimeFormatOptions` plus an optional `locale` override.
- * @returns The locale-formatted relative time.
  *
  * @example Render past and future offsets
  * ```ts

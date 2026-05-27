@@ -10,7 +10,6 @@ import { resolveLocale } from './resolve';
  * @param value - The numeric amount to format.
  * @param currency - The ISO 4217 currency code (e.g. `'SEK'`, `'EUR'`, `'USD'`).
  * @param options - Optional native `Intl.NumberFormatOptions` plus an optional `locale` override. The `style` and `currency` fields are set automatically and override anything provided here.
- * @returns The locale-formatted currency amount.
  *
  * @example Format an amount in Swedish kronor
  * ```ts

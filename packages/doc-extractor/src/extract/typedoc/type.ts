@@ -45,7 +45,6 @@ export interface ReferenceFunction extends ReferenceSymbolBase {
   kind: 'function';
   members: ReferenceMember[];
   overloads: ReferenceOverload[];
-  returnDescription: string;
 }
 
 export interface ReferenceOverload {
