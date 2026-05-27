@@ -1,5 +1,7 @@
 # @yapyak/gemini
 
+> Node-only
+
 Gemini translator for yapyak.
 
 ## Installation

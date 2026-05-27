@@ -1,5 +1,7 @@
 # @yapyak/vue
 
+> Universal
+
 Vue adapter for yapyak.
 
 ## Installation

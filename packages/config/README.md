@@ -1,5 +1,7 @@
 # @yapyak/config
 
+> Internal · Node-only
+
 Config for yapyak.
 
 ## Installation

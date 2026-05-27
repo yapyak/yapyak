@@ -1,5 +1,7 @@
 # @yapyak/openai
 
+> Node-only
+
 OpenAI translator for yapyak.
 
 ## Installation

@@ -1,4 +1,6 @@
-@yapyak/cli
+# @yapyak/cli
+
+> Node-only
 
 CLI for yapyak. Installs the `yapyak` binary.
 

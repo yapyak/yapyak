@@ -1,5 +1,7 @@
 # @yapyak/tanstack-start
 
+> Node-only
+
 TanStack Start adapter for yapyak.
 
 ## Installation

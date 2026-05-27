@@ -1,5 +1,7 @@
 # @yapyak/react
 
+> Universal
+
 React adapter for yapyak.
 
 ## Installation

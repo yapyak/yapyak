@@ -1,5 +1,7 @@
 # @yapyak/compiler
 
+> Internal · Node-only
+
 Compiler for yapyak.
 
 ## Installation

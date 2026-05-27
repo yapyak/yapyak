@@ -1,5 +1,7 @@
 # @yapyak/anthropic
 
+> Node-only
+
 Anthropic translator for yapyak.
 
 ## Installation

@@ -1,5 +1,7 @@
 # @yapyak/translator
 
+> Node-only
+
 Translator base for yapyak.
 
 ## Installation

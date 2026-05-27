@@ -1,5 +1,7 @@
 # @yapyak/runtime
 
+> Internal · Universal
+
 Runtime for yapyak.
 
 ## Installation

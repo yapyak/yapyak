@@ -1,5 +1,7 @@
 # @yapyak/astro
 
+> Node-only
+
 Astro adapter for yapyak.
 
 ## Installation

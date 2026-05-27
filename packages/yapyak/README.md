@@ -1,5 +1,7 @@
 # yapyak
 
+> Universal
+
 Runtime API for yapyak.
 
 ## Installation

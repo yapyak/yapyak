@@ -1,5 +1,7 @@
 # @yapyak/vite
 
+> Node-only
+
 Vite plugin for yapyak.
 
 ## Installation

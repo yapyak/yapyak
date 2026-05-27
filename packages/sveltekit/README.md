@@ -1,5 +1,7 @@
 # @yapyak/sveltekit
 
+> Node-only
+
 SvelteKit adapter for yapyak.
 
 ## Installation

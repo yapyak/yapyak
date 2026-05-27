@@ -1,5 +1,7 @@
 # @yapyak/svelte
 
+> Universal
+
 Svelte adapter for yapyak.
 
 ## Installation

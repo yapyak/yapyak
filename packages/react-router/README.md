@@ -1,5 +1,7 @@
 # @yapyak/react-router
 
+> Node-only
+
 React Router adapter for yapyak.
 
 ## Installation

@@ -1,5 +1,7 @@
 # @yapyak/adapter
 
+> Node-only
+
 Adapter base for yapyak.
 
 ## Installation

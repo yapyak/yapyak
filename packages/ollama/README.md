@@ -1,5 +1,7 @@
 # @yapyak/ollama
 
+> Node-only
+
 Ollama translator for yapyak.
 
 ## Installation
