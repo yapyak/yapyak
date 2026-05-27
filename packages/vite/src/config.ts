@@ -7,7 +7,7 @@
 export type {
   CookiePersistence,
   LocalStoragePersistence,
-  PersistenceOption,
+  Persistence,
   UrlPersistence,
   YapyakConfig,
   YapyakFilterPattern,

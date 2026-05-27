@@ -32,7 +32,7 @@ export interface UrlPersistence {
 }
 
 /** The locale persistence strategy. */
-export type PersistenceOption =
+export type Persistence =
   | 'cookie'
   | 'localStorage'
   | 'url'

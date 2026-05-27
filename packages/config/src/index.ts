@@ -1,7 +1,7 @@
 export type {
   CookiePersistence,
   LocalStoragePersistence,
-  PersistenceOption,
+  Persistence,
   UrlPersistence,
 } from './persistence';
 export type { NormalizedYapyakConfig, YapyakConfig } from './type';

@@ -1,7 +1,7 @@
 import type { NormalizedPersistence } from '@yapyak/runtime';
 import type { Translator } from '@yapyak/translator';
 import type { YapyakFilterPattern } from './filter';
-import type { PersistenceOption } from './persistence';
+import type { Persistence } from './persistence';
 
 /** Configuration for yapyak. */
 export interface YapyakConfig {
@@ -49,7 +49,7 @@ export interface YapyakConfig {
    *
    * @defaultValue `null`
    */
-  persistence?: PersistenceOption;
+  persistence?: Persistence;
   /**
    * Whether to preserve existing translations when a `t()` call is renamed in place.
    *

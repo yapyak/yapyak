@@ -1,5 +1,5 @@
 import type { NormalizedPersistence } from '@yapyak/runtime';
-import type { PersistenceOption } from './persistence';
+import type { Persistence } from './persistence';
 import type { NormalizedYapyakConfig, YapyakConfig } from './type';
 
 const DEFAULT_AUTO_TRANSLATE_THRESHOLD = 20;
@@ -29,7 +29,7 @@ export function normalizeYapyakConfig(
 }
 
 function normalizePersistence(
-  input: PersistenceOption | undefined,
+  input: Persistence | undefined,
 ): NormalizedPersistence {
   if (input == null) {
     return null;
