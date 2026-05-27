@@ -21,7 +21,7 @@ export function ContentNavigationGroupCollapsible(
   const isOnPath = childrenContainPath(node.children, location.pathname);
   const isActive = node.href !== undefined && location.pathname === node.href;
   const [isOpen, setIsOpen] = useState(
-    isOnPath || isActive || (node.defaultOpen ?? false),
+    node.defaultOpen ?? (isOnPath || isActive),
   );
 
   return (

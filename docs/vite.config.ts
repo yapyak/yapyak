@@ -7,13 +7,14 @@ import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
 
 interface ReferencePackage {
+  collapsible?: boolean;
   dir: string;
   group?: string;
   name: string;
 }
 
 const REFERENCE_PACKAGES: ReferencePackage[] = [
-  { dir: 'yapyak', name: 'yapyak' },
+  { collapsible: true, dir: 'yapyak', name: 'yapyak' },
 
   { dir: 'vite', group: 'Bundlers', name: 'Vite' },
 
@@ -56,7 +57,7 @@ export default defineConfig({
         },
         reference: {
           packages: REFERENCE_PACKAGES.map((pkg) => ({
-            collapsible: !!pkg.group,
+            collapsible: pkg.collapsible ?? !!pkg.group,
             group: pkg.group,
             name: pkg.name,
             root: resolve(import.meta.dirname, `../packages/${pkg.dir}`),
