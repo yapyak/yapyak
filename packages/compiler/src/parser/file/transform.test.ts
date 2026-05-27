@@ -1,9 +1,9 @@
-import type { TransformFileRequest } from './type';
+import type { TransformFileRequest } from '../type';
 
 import { describe, expect, it } from 'vitest';
 
-import { extractFile } from './extract-file';
-import { transformFile } from './transform-file';
+import { extractFile } from './extract';
+import { transformFile } from './transform';
 import { createHash } from 'node:crypto';
 
 function runTransform(input: {

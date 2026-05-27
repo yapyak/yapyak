@@ -1,7 +1,7 @@
 import type { LocaleFile } from './file';
 
 import { readLocaleFile } from './file';
-import { stringifyCanonical } from './json';
+import { stringifyCanonical } from './canonical';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 

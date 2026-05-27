@@ -1,8 +1,8 @@
 import * as ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 
-import { discoverCalls } from './discover-calls';
-import { resolveBindings } from './resolve-bindings';
+import { discoverCalls } from './call';
+import { resolveBindings } from './binding';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 

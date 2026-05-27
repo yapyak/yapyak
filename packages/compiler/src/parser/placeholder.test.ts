@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { parsePlaceholders } from './plural';
+import { parsePlaceholders } from './placeholder';
 
 describe('parsePlaceholders', () => {
   it('parses a simple placeholder', () => {

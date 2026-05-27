@@ -2,7 +2,7 @@ export {
   type AutoTranslateOptions,
   type AutoTranslateResult,
   autoTranslate,
-} from './auto-translate';
+} from './translate';
 export {
   type DiscoverLocalesOptions,
   type DiscoverLocalesResult,
@@ -21,7 +21,7 @@ export {
   type SyncLocaleFilesOptions,
   syncLocaleFiles,
 } from './file';
-export { stringifyCanonical } from './json';
+export { stringifyCanonical } from './canonical';
 export {
   type InvariantViolation,
   type WriteLocaleFileInput,

@@ -61,14 +61,13 @@ export { getEntry } from './access/entry.ts';
 export { getExcerpt } from './access/excerpt.ts';
 export { getHeadings } from './access/heading.ts';
 export { getInternalLinks } from './access/internal-link.ts';
-export { isBlock } from './access/is-block.ts';
+export { isBlock, walkBlocks } from './access/block.ts';
 export {
   findAdjacentPages,
   getAllPages,
   getFirstPage,
   getPage,
 } from './access/page.ts';
-export { resolveSymbol } from './access/resolve-symbol.ts';
+export { resolveSymbol } from './access/symbol.ts';
 export { getSidebar } from './access/sidebar.ts';
 export { blockToText, getText } from './access/text.ts';
-export { walkBlocks } from './access/walk-blocks.ts';

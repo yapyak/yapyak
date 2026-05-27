@@ -8,7 +8,7 @@ import type {
 import * as ts from 'typescript';
 
 import { createDiagnostic } from './diagnostic';
-import { parsePlaceholders } from './plural';
+import { parsePlaceholders } from './placeholder';
 import { toRange } from './position';
 
 export function parseArguments(callSite: CallSite): ParsedArguments {

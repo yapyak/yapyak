@@ -1,4 +1,4 @@
-import type { ExtractTParams } from './extract-params';
+import type { ExtractTParams } from './t-param';
 
 import { expectTypeOf, test } from 'vitest';
 

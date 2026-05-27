@@ -4,4 +4,4 @@ export {
   type WalkedFile,
   type WalkSourceFilesOptions,
   walkSourceFiles,
-} from './walk-source-files';
+} from './source-file';

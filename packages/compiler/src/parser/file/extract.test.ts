@@ -1,12 +1,12 @@
-import type { ExtractFileResult } from './type';
+import type { ExtractFileResult } from '../type';
 
 import { describe, expect, it } from 'vitest';
 
-import { extractFile } from './extract-file';
+import { extractFile } from './extract';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const ROOT = join(import.meta.dirname, 'fixtures');
+const ROOT = join(import.meta.dirname, '..', 'fixtures');
 
 function extractFixture(
   category: string,

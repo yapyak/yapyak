@@ -3,7 +3,7 @@ import type { ExtractedMessage } from '../parser/type';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { autoTranslate } from './auto-translate';
+import { autoTranslate } from './translate';
 import {
   existsSync,
   mkdirSync,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { stringifyCanonical } from './json';
+import { stringifyCanonical } from './canonical';
 
 describe('stringifyCanonical', () => {
   it('returns identical output regardless of insertion order', () => {

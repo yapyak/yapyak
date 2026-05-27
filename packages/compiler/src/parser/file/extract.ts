@@ -1,4 +1,4 @@
-import type { PlaceholderInfo } from './plural';
+import type { PlaceholderInfo } from '../placeholder';
 import type {
   Binding,
   CallSite,
@@ -11,19 +11,19 @@ import type {
   Location,
   Placeholder,
   Scope,
-} from './type';
+} from '../type';
 
 import * as ts from 'typescript';
 
-import { resolveCallSiteContext } from './call-site-context';
-import { discoverCalls } from './discover-calls';
-import { toMessageId } from './message-id';
-import { parseArguments } from './parse-arguments';
-import { parsePlaceholders } from './plural';
-import { remapRange, toRange } from './position';
-import { getProcessor, resolveProcessorKind } from './processor';
-import { resolveBindings } from './resolve-bindings';
-import { getScriptKind } from './script-kind';
+import { resolveCallSiteContext } from '../call-site-context';
+import { discoverCalls } from '../call';
+import { toMessageId } from '../message-id';
+import { parseArguments } from '../argument';
+import { parsePlaceholders } from '../placeholder';
+import { remapRange, toRange } from '../position';
+import { getProcessor, resolveProcessorKind } from '../processor';
+import { resolveBindings } from '../binding';
+import { getScriptKind } from '../script-kind';
 
 export function extractFile(request: ExtractFileRequest): ExtractFileResult {
   const processorKind =

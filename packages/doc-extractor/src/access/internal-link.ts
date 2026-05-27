@@ -1,7 +1,7 @@
 import type { Page } from '../types/manifest.ts';
 
 import { blockToText } from './text.ts';
-import { walkBlocks } from './walk-blocks.ts';
+import { walkBlocks } from './block.ts';
 
 export interface InternalLinkEntry {
   href: string;

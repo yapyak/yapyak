@@ -1,4 +1,4 @@
-import type { PlaceholderInfo } from './plural';
+import type { PlaceholderInfo } from '../placeholder';
 import type {
   CallSite,
   Fragment,
@@ -6,17 +6,17 @@ import type {
   Range,
   TransformFileRequest,
   TransformFileResult,
-} from './type';
+} from '../type';
 
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
-import { findMatchingBrace } from './find-matching-brace';
-import { toMessageId } from './message-id';
-import { parseArguments } from './parse-arguments';
-import { parsePlaceholders } from './plural';
-import { getProcessor, resolveProcessorKind } from './processor';
-import { getScriptKind } from './script-kind';
+import { findMatchingBrace } from '../matching-brace';
+import { toMessageId } from '../message-id';
+import { parseArguments } from '../argument';
+import { parsePlaceholders } from '../placeholder';
+import { getProcessor, resolveProcessorKind } from '../processor';
+import { getScriptKind } from '../script-kind';
 
 const PICK_EXPORT = 'pick';
 const PICK_LOCAL = '_pick';

@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 
-import { resolveBindings } from './resolve-bindings';
+import { resolveBindings } from './binding';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 

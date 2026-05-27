@@ -3,9 +3,9 @@ import type { ParsedArguments } from './type';
 import * as ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 
-import { discoverCalls } from './discover-calls';
-import { parseArguments } from './parse-arguments';
-import { resolveBindings } from './resolve-bindings';
+import { discoverCalls } from './call';
+import { parseArguments } from './argument';
+import { resolveBindings } from './binding';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 

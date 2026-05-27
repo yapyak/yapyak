@@ -4,7 +4,7 @@ import { autoTranslate } from '@yapyak/compiler';
 
 import { buildReport } from '../report';
 import { color, header, progressBar, spinner, symbol } from '../tui';
-import { wrapWithProgress } from '../wrap-with-progress';
+import { wrapWithProgress } from '../progress';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 

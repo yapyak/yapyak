@@ -28,11 +28,11 @@ export {
   type CreateDiagnosticInput,
   createDiagnostic,
 } from './diagnostic';
-export { discoverCalls } from './discover-calls';
-export { extractFile } from './extract-file';
+export { discoverCalls } from './call';
+export { extractFile } from './file/extract';
 export { toMessageId } from './message-id';
-export { parseArguments } from './parse-arguments';
-export { parsePlaceholders } from './plural';
+export { parseArguments } from './argument';
+export { parsePlaceholders } from './placeholder';
 export {
   astroProcessor,
   getProcessor,
@@ -44,5 +44,5 @@ export {
 export {
   type ResolveBindingsOptions,
   resolveBindings,
-} from './resolve-bindings';
-export { transformFile } from './transform-file';
+} from './binding';
+export { transformFile } from './file/transform';
