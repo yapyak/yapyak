@@ -403,9 +403,7 @@ function parametersTable(parameters: ReferenceParameter[]): Block {
 }
 
 function membersTable(members: ReferenceMember[]): Block {
-  const includeDefault = members.some(
-    (member) => member.defaultValue !== null,
-  );
+  const includeDefault = members.some((member) => member.defaultValue !== null);
   return {
     body: members.map((member) => memberRow(member, includeDefault)),
     head: tableHeaderRow(

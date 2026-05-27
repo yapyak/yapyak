@@ -1,9 +1,8 @@
 import type { MessageContext, Translator } from '@yapyak/translator';
 import type { ExtractedMessage, Location } from '../parser/type';
-import type { LocaleFile } from './file';
+import type { LocaleFile } from './locale';
 
-import { readLocaleFile } from './file';
-import { writeLocaleFile } from './writer';
+import { readLocaleFile, writeLocaleFile } from './locale';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 

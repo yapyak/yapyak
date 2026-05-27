@@ -2,9 +2,9 @@ import type { Config } from '../config';
 
 import { autoTranslate } from '@yapyak/compiler';
 
+import { wrapWithProgress } from '../progress';
 import { buildReport } from '../report';
 import { color, header, progressBar, spinner, symbol } from '../tui';
-import { wrapWithProgress } from '../progress';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 

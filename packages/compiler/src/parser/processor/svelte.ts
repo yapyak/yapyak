@@ -3,7 +3,7 @@ import type * as SvelteCompiler from 'svelte/compiler';
 import type { AST } from 'svelte/compiler';
 import type { Fragment, Processor } from '../type';
 
-import { rangeFromOffsets } from '../position';
+import { rangeFromOffsets } from '../range';
 import { createRequire } from 'node:module';
 
 const SCRIPT_RX = /<script(?:\s+[^>]*)?>/;

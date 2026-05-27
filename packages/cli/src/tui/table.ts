@@ -1,0 +1,51 @@
+// biome-ignore lint/suspicious/noControlCharactersInRegex: yap yap yap
+const stripAnsi = (value: string): string => value.replace(/\x1b\[\d+m/g, '');
+
+const visualLength = (value: string): number => stripAnsi(value).length;
+
+const padEndVisual = (value: string, width: number): string => {
+  const len = visualLength(value);
+  return len >= width ? value : value + ' '.repeat(width - len);
+};
+
+interface TableOptions {
+  align?: Array<'left' | 'right'>;
+  headers: string[];
+  rows: string[][];
+}
+
+export function renderTable(options: TableOptions): string {
+  const { headers, rows, align = [] } = options;
+  const widths = headers.map((header, columnIndex) => {
+    const headerWidth = visualLength(header);
+    const maxRowWidth = rows.reduce(
+      (max, row) => Math.max(max, visualLength(row[columnIndex] ?? '')),
+      0,
+    );
+    return Math.max(headerWidth, maxRowWidth);
+  });
+
+  function renderRow(cells: string[]): string {
+    const padded = cells.map((cell, columnIndex) => {
+      const width = widths[columnIndex] ?? 0;
+      const alignment = align[columnIndex] ?? 'left';
+      const len = visualLength(cell);
+      if (alignment === 'right') {
+        return ' '.repeat(Math.max(0, width - len)) + cell;
+      }
+      return padEndVisual(cell, width);
+    });
+    return `│ ${padded.join(' │ ')} │`;
+  }
+
+  const top = `┌${widths.map((width) => '─'.repeat(width + 2)).join('┬')}┐`;
+  const sep = `├${widths.map((width) => '─'.repeat(width + 2)).join('┼')}┤`;
+  const bottom = `└${widths.map((width) => '─'.repeat(width + 2)).join('┴')}┘`;
+
+  const lines = [top, renderRow(headers), sep];
+  for (const row of rows) {
+    lines.push(renderRow(row));
+  }
+  lines.push(bottom);
+  return lines.join('\n');
+}

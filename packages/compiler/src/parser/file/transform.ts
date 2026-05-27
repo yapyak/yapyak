@@ -11,9 +11,9 @@ import type {
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
+import { parseArguments } from '../argument';
 import { findMatchingBrace } from '../matching-brace';
 import { toMessageId } from '../message-id';
-import { parseArguments } from '../argument';
 import { parsePlaceholders } from '../placeholder';
 import { getProcessor, resolveProcessorKind } from '../processor';
 import { getScriptKind } from '../script-kind';

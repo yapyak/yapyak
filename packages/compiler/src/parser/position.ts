@@ -1,5 +1,7 @@
 import type * as ts from 'typescript';
-import type { Fragment, Position, Range } from './type';
+import type { Fragment, Position } from './type';
+
+import { offsetToOriginalPosition } from './offset';
 
 export function toPosition(
   sourceFile: ts.SourceFile,
@@ -13,13 +15,6 @@ export function toPosition(
   };
 }
 
-export function toRange(node: ts.Node, sourceFile: ts.SourceFile): Range {
-  return {
-    end: toPosition(sourceFile, node.getEnd()),
-    start: toPosition(sourceFile, node.getStart(sourceFile)),
-  };
-}
-
 export function remapPosition(
   position: Position,
   fragment: Fragment,
@@ -30,43 +25,4 @@ export function remapPosition(
   }
   const absoluteOffset = position.offset + fragment.originalOffset;
   return offsetToOriginalPosition(originalSource, absoluteOffset);
-}
-
-export function remapRange(
-  range: Range,
-  fragment: Fragment,
-  originalSource: string,
-): Range {
-  if (fragment.originalOffset === 0) {
-    return range;
-  }
-  return {
-    end: remapPosition(range.end, fragment, originalSource),
-    start: remapPosition(range.start, fragment, originalSource),
-  };
-}
-
-export function rangeFromOffsets(
-  source: string,
-  startOffset: number,
-  endOffset: number,
-): Range {
-  return {
-    end: offsetToOriginalPosition(source, endOffset),
-    start: offsetToOriginalPosition(source, startOffset),
-  };
-}
-
-function offsetToOriginalPosition(source: string, offset: number): Position {
-  let line = 1;
-  let column = 1;
-  for (let i = 0; i < offset; i += 1) {
-    if (source[i] === '\n') {
-      line += 1;
-      column = 1;
-      continue;
-    }
-    column += 1;
-  }
-  return { column, line, offset };
 }

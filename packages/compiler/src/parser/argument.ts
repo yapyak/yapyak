@@ -9,7 +9,7 @@ import * as ts from 'typescript';
 
 import { createDiagnostic } from './diagnostic';
 import { parsePlaceholders } from './placeholder';
-import { toRange } from './position';
+import { toRange } from './range';
 
 export function parseArguments(callSite: CallSite): ParsedArguments {
   const sourceFile = callSite.node.getSourceFile();

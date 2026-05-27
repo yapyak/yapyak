@@ -2,7 +2,7 @@ import type { BindingTable, CallSite } from './type';
 
 import * as ts from 'typescript';
 
-import { toRange } from './position';
+import { toRange } from './range';
 
 const RUNTIME_NAME = 't';
 

@@ -15,14 +15,14 @@ import type {
 
 import * as ts from 'typescript';
 
-import { resolveCallSiteContext } from '../call-site-context';
-import { discoverCalls } from '../call';
-import { toMessageId } from '../message-id';
 import { parseArguments } from '../argument';
-import { parsePlaceholders } from '../placeholder';
-import { remapRange, toRange } from '../position';
-import { getProcessor, resolveProcessorKind } from '../processor';
 import { resolveBindings } from '../binding';
+import { discoverCalls } from '../call';
+import { resolveCallSiteContext } from '../call-site-context';
+import { toMessageId } from '../message-id';
+import { parsePlaceholders } from '../placeholder';
+import { getProcessor, resolveProcessorKind } from '../processor';
+import { remapRange, toRange } from '../range';
 import { getScriptKind } from '../script-kind';
 
 export function extractFile(request: ExtractFileRequest): ExtractFileResult {

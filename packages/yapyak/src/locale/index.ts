@@ -1,4 +1,5 @@
-export { parseAcceptLanguage, resolveLocale } from './resolve';
+export { parseAcceptLanguage } from './accept-language';
+export { resolveLocale } from './resolve';
 export {
   defaultLocale,
   getLocale,

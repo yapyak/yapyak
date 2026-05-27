@@ -1,6 +1,91 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { parseCookie } from './cookie';
+import { cookie, parseCookie } from './cookie';
+
+describe('cookie', () => {
+  describe('in browser', () => {
+    let cookieJar = '';
+
+    beforeEach(() => {
+      cookieJar = '';
+      vi.stubGlobal('document', {
+        get cookie() {
+          return cookieJar;
+        },
+        set cookie(value: string) {
+          const [pair] = value.split(';');
+          if (!pair) return;
+          const [name, val = ''] = pair.split('=');
+          const trimmedName = name?.trim();
+          if (!trimmedName) return;
+          const existing = cookieJar
+            .split(';')
+            .map((p) => p.trim())
+            .filter((p) => p && !p.startsWith(`${trimmedName}=`));
+          existing.push(`${trimmedName}=${val.trim()}`);
+          cookieJar = existing.join('; ');
+        },
+      });
+    });
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it('returns the cookie value from `document.cookie`', () => {
+      cookieJar = 'locale=sv';
+      expect(cookie({ name: 'locale' }).get()).toBe('sv');
+    });
+
+    it('writes to `document.cookie` on set', () => {
+      cookie({ name: 'locale' }).set('fr');
+      expect(cookieJar).toContain('locale=fr');
+    });
+
+    it('writes under the configured cookie name', () => {
+      cookie({ name: 'app-locale' }).set('de');
+      expect(cookieJar).toContain('app-locale=de');
+    });
+
+    it('returns `false` from set', () => {
+      expect(cookie({ name: 'locale' }).set('sv')).toBe(false);
+    });
+
+    it('returns the cookie value from the request `cookie` header', () => {
+      const request = new Request('http://example.test', {
+        headers: { cookie: 'locale=sv; theme=dark' },
+      });
+      expect(cookie({ name: 'locale' }).getFromRequest?.(request)).toBe('sv');
+    });
+
+    it('returns `undefined` when cookie is missing', () => {
+      cookieJar = 'theme=dark';
+      expect(cookie({ name: 'locale' }).get()).toBeUndefined();
+    });
+
+    it('returns `undefined` when cookie is an empty string', () => {
+      cookieJar = 'locale=';
+      expect(cookie({ name: 'locale' }).get()).toBeUndefined();
+    });
+
+    it('returns `undefined` from `getFromRequest` when `cookie` header is missing', () => {
+      const request = new Request('http://example.test');
+      expect(
+        cookie({ name: 'locale' }).getFromRequest?.(request),
+      ).toBeUndefined();
+    });
+  });
+
+  describe('in non-browser environment', () => {
+    it('returns `undefined` from `get` when `document` is missing', () => {
+      expect(cookie({ name: 'locale' }).get()).toBeUndefined();
+    });
+
+    it('blocks `set` when `document` is missing', () => {
+      expect(() => cookie({ name: 'locale' }).set('sv')).not.toThrow();
+    });
+  });
+});
 
 describe('parseCookie', () => {
   it('parses a single cookie', () => {

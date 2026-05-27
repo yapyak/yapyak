@@ -20,7 +20,8 @@ import {
 import { extractTypedoc } from '../extract/typedoc/index.ts';
 import { slugify } from '../slug.ts';
 import { encodeSymbolSegment } from '../symbol-path.ts';
-import { buildMarkdocSidebar, buildTypedocPackageRoot } from './sidebar.ts';
+import { buildMarkdocSidebar } from './markdoc-sidebar.ts';
+import { buildTypedocPackageRoot } from './typedoc-package-root.ts';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 

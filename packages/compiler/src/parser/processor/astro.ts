@@ -13,7 +13,7 @@ import type {
 import type MagicString from 'magic-string';
 import type { Fragment, Processor } from '../type';
 
-import { rangeFromOffsets } from '../position';
+import { rangeFromOffsets } from '../range';
 import { createRequire } from 'node:module';
 
 const FRONTMATTER_OPEN_RX = /^---\r?\n/;

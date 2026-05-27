@@ -1,13 +1,10 @@
-export {
-  type AutoTranslateOptions,
-  type AutoTranslateResult,
-  autoTranslate,
-} from './translate';
+export { stringifyCanonical } from './canonical';
 export {
   type DiscoverLocalesOptions,
   type DiscoverLocalesResult,
   detectRenames,
   discoverLocales,
+  type InvariantViolation,
   type LocaleData,
   type LocaleFile,
   type MessagePosition,
@@ -20,11 +17,12 @@ export {
   readLocaleFile,
   type SyncLocaleFilesOptions,
   syncLocaleFiles,
-} from './file';
-export { stringifyCanonical } from './canonical';
-export {
-  type InvariantViolation,
   type WriteLocaleFileInput,
   writeLocaleFile,
   YapyakInvariantError,
-} from './writer';
+} from './locale';
+export {
+  type AutoTranslateOptions,
+  type AutoTranslateResult,
+  autoTranslate,
+} from './translate';

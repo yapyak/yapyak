@@ -23,15 +23,20 @@ export type {
   TransformFileResult,
 } from './type';
 
+export { parseArguments } from './argument';
+export {
+  type ResolveBindingsOptions,
+  resolveBindings,
+} from './binding';
+export { discoverCalls } from './call';
 export { resolveCallSiteContext } from './call-site-context';
 export {
   type CreateDiagnosticInput,
   createDiagnostic,
 } from './diagnostic';
-export { discoverCalls } from './call';
 export { extractFile } from './file/extract';
+export { transformFile } from './file/transform';
 export { toMessageId } from './message-id';
-export { parseArguments } from './argument';
 export { parsePlaceholders } from './placeholder';
 export {
   astroProcessor,
@@ -41,8 +46,3 @@ export {
   vanillaProcessor,
   vueProcessor,
 } from './processor';
-export {
-  type ResolveBindingsOptions,
-  resolveBindings,
-} from './binding';
-export { transformFile } from './file/transform';

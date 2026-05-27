@@ -1,7 +1,8 @@
 import type { ExtractTParams } from './t-param';
 
 import { getLocale } from '../locale';
-import { hasPlaceholder, interpolate } from './interpolate';
+import { interpolate } from './interpolate';
+import { hasPlaceholder } from './placeholder';
 import { runTrackers } from './tracker';
 
 type TParams<T extends string> = T extends `${string}{${string}`

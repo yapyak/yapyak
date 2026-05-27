@@ -1,9 +1,9 @@
 import * as ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 
-import { resolveCallSiteContext } from './call-site-context';
-import { discoverCalls } from './call';
 import { resolveBindings } from './binding';
+import { discoverCalls } from './call';
+import { resolveCallSiteContext } from './call-site-context';
 
 function parseInline(source: string, fileName = 'test.tsx'): ts.SourceFile {
   const scriptKind = fileName.endsWith('.tsx')
