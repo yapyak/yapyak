@@ -10,29 +10,28 @@ interface ReferencePackage {
   collapsible?: boolean;
   dir: string;
   group?: string;
-  name: string;
 }
 
 const REFERENCE_PACKAGES: ReferencePackage[] = [
-  { collapsible: true, dir: 'yapyak', name: 'yapyak' },
+  { collapsible: true, dir: 'yapyak' },
 
-  { dir: 'vite', group: 'Bundlers', name: 'Vite' },
+  { dir: 'vite', group: 'Bundlers' },
 
-  { dir: 'react', group: 'Frameworks', name: 'React' },
-  { dir: 'vue', group: 'Frameworks', name: 'Vue' },
-  { dir: 'svelte', group: 'Frameworks', name: 'Svelte' },
+  { dir: 'react', group: 'Frameworks' },
+  { dir: 'vue', group: 'Frameworks' },
+  { dir: 'svelte', group: 'Frameworks' },
 
-  { dir: 'adapter', group: 'Adapters', name: 'Adapter' },
-  { dir: 'astro', group: 'Adapters', name: 'Astro' },
-  { dir: 'tanstack-start', group: 'Adapters', name: 'TanStack Start' },
-  { dir: 'sveltekit', group: 'Adapters', name: 'SvelteKit' },
-  { dir: 'react-router', group: 'Adapters', name: 'React Router' },
+  { dir: 'adapter', group: 'Adapters' },
+  { dir: 'astro', group: 'Adapters' },
+  { dir: 'tanstack-start', group: 'Adapters' },
+  { dir: 'sveltekit', group: 'Adapters' },
+  { dir: 'react-router', group: 'Adapters' },
 
-  { dir: 'translator', group: 'Translators', name: 'Translator' },
-  { dir: 'anthropic', group: 'Translators', name: 'Anthropic' },
-  { dir: 'openai', group: 'Translators', name: 'OpenAI' },
-  { dir: 'gemini', group: 'Translators', name: 'Gemini' },
-  { dir: 'ollama', group: 'Translators', name: 'Ollama' },
+  { dir: 'translator', group: 'Translators' },
+  { dir: 'anthropic', group: 'Translators' },
+  { dir: 'openai', group: 'Translators' },
+  { dir: 'gemini', group: 'Translators' },
+  { dir: 'ollama', group: 'Translators' },
 ];
 
 export default defineConfig({
@@ -59,7 +58,7 @@ export default defineConfig({
           packages: REFERENCE_PACKAGES.map((pkg) => ({
             collapsible: pkg.collapsible ?? !!pkg.group,
             group: pkg.group,
-            name: pkg.name,
+            name: pkg.dir,
             root: resolve(import.meta.dirname, `../packages/${pkg.dir}`),
           })),
           source: 'typedoc',
