@@ -1,4 +1,4 @@
-import type { YapyakFilterPattern } from './types';
+import type { YapyakFilterPattern } from './type';
 
 import picomatch from 'picomatch';
 

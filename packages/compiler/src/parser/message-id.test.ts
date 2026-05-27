@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { toMessageId } from './id';
+import { toMessageId } from './message-id';
 
 describe('toMessageId', () => {
   it('returns a 12-char hex string', () => {

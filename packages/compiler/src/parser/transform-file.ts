@@ -12,7 +12,7 @@ import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
 import { findMatchingBrace } from './find-matching-brace';
-import { toMessageId } from './id';
+import { toMessageId } from './message-id';
 import { parseArguments } from './parse-arguments';
 import { parsePlaceholders } from './plural';
 import { getProcessor, resolveProcessorKind } from './processor';

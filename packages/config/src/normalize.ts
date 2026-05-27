@@ -3,7 +3,7 @@ import type {
   NormalizedYapyakConfig,
   PersistenceOption,
   YapyakConfig,
-} from './types';
+} from './type';
 
 const DEFAULT_AUTO_TRANSLATE_THRESHOLD = 20;
 const DEFAULT_INCLUDE = ['**/*.{ts,tsx,jsx,js,vue,svelte,astro}'];

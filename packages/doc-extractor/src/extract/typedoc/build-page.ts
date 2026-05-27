@@ -18,7 +18,7 @@ import type {
   ReferenceTypeParameter,
   ReferenceVariable,
   TypeToken,
-} from './types.ts';
+} from './type.ts';
 
 import { slugify } from '../../slug.ts';
 import { symbolHref as buildSymbolHref } from '../../symbol-path.ts';

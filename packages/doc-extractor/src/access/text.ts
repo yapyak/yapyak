@@ -1,4 +1,12 @@
 import type { Block } from '../types/block.ts';
+import type { Page } from '../types/manifest.ts';
+
+export function getText(page: Page): string {
+  return page.blocks
+    .map(blockToText)
+    .filter((text) => text.length > 0)
+    .join('\n');
+}
 
 export function blockToText(block: Block): string {
   switch (block.type) {

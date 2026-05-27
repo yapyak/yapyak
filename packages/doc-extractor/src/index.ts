@@ -1,10 +1,12 @@
-export type { PageEntry } from './access/get-all-pages.ts';
-export type { GetExcerptOptions } from './access/get-excerpt.ts';
+export type {
+  GetExcerptOptions,
+} from './access/excerpt.ts';
 export type {
   GetHeadingsOptions,
   HeadingEntry,
-} from './access/get-headings.ts';
-export type { InternalLinkEntry } from './access/get-internal-links.ts';
+} from './access/heading.ts';
+export type { InternalLinkEntry } from './access/internal-link.ts';
+export type { PageEntry } from './access/page.ts';
 export type {
   AdjacentPages,
   Entry,
@@ -53,19 +55,20 @@ export type {
   SymbolEntry,
 } from './types/manifest.ts';
 
-export { blockToText } from './access/block-to-text.ts';
-export { findAdjacentPages } from './access/find-adjacent-pages.ts';
-export { getAllPages } from './access/get-all-pages.ts';
-export { getCodeBlocks } from './access/get-code-blocks.ts';
-export { getCollection } from './access/get-collection.ts';
-export { getEntry } from './access/get-entry.ts';
-export { getExcerpt } from './access/get-excerpt.ts';
-export { getFirstPage } from './access/get-first-page.ts';
-export { getHeadings } from './access/get-headings.ts';
-export { getInternalLinks } from './access/get-internal-links.ts';
-export { getPage } from './access/get-page.ts';
-export { getSidebar } from './access/get-sidebar.ts';
-export { getText } from './access/get-text.ts';
+export { getCodeBlocks } from './access/code-block.ts';
+export { getCollection } from './access/collection.ts';
+export { getEntry } from './access/entry.ts';
+export { getExcerpt } from './access/excerpt.ts';
+export { getHeadings } from './access/heading.ts';
+export { getInternalLinks } from './access/internal-link.ts';
 export { isBlock } from './access/is-block.ts';
+export {
+  findAdjacentPages,
+  getAllPages,
+  getFirstPage,
+  getPage,
+} from './access/page.ts';
 export { resolveSymbol } from './access/resolve-symbol.ts';
+export { getSidebar } from './access/sidebar.ts';
+export { blockToText, getText } from './access/text.ts';
 export { walkBlocks } from './access/walk-blocks.ts';

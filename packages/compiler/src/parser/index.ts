@@ -29,8 +29,8 @@ export {
   createDiagnostic,
 } from './diagnostic';
 export { discoverCalls } from './discover-calls';
-export { extractFile } from './extract';
-export { toMessageId } from './id';
+export { extractFile } from './extract-file';
+export { toMessageId } from './message-id';
 export { parseArguments } from './parse-arguments';
 export { parsePlaceholders } from './plural';
 export {
@@ -45,4 +45,4 @@ export {
   type ResolveBindingsOptions,
   resolveBindings,
 } from './resolve-bindings';
-export { transformFile } from './transform';
+export { transformFile } from './transform-file';

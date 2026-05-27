@@ -1,6 +1,6 @@
 import type { Page } from '../types/manifest.ts';
 
-import { blockToText } from './block-to-text.ts';
+import { blockToText } from './text.ts';
 
 export interface GetExcerptOptions {
   maxLength?: number;

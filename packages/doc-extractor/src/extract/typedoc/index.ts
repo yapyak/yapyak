@@ -26,7 +26,7 @@ import type {
   ReferenceTypeParameter,
   ReferenceVariable,
   TypeToken,
-} from './types.ts';
+} from './type.ts';
 
 import { Application, ReflectionKind, TSConfigReader } from 'typedoc';
 

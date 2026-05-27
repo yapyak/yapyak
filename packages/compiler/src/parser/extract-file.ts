@@ -17,7 +17,7 @@ import * as ts from 'typescript';
 
 import { resolveCallSiteContext } from './call-site-context';
 import { discoverCalls } from './discover-calls';
-import { toMessageId } from './id';
+import { toMessageId } from './message-id';
 import { parseArguments } from './parse-arguments';
 import { parsePlaceholders } from './plural';
 import { remapRange, toRange } from './position';

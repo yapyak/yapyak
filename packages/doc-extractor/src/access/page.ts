@@ -6,6 +6,50 @@ import type {
   SidebarNode,
 } from '../types/manifest.ts';
 
+export interface PageEntry {
+  collection: string;
+  page: Page;
+  path: string;
+}
+
+export function getPage(
+  manifest: Manifest,
+  collection: string,
+  path = '',
+): Page | null {
+  return manifest.collections[collection]?.pages[path] ?? null;
+}
+
+export function getFirstPage(
+  manifest: Manifest,
+  collection: string,
+): Page | null {
+  const collectionData = manifest.collections[collection];
+  if (!collectionData) {
+    return null;
+  }
+  const firstHref = findFirstHref(collectionData.sidebar);
+  if (firstHref === null) {
+    return null;
+  }
+  for (const page of Object.values(collectionData.pages)) {
+    if (page.href === firstHref) {
+      return page;
+    }
+  }
+  return null;
+}
+
+export function* getAllPages(manifest: Manifest): Iterable<PageEntry> {
+  for (const [collection, collectionData] of Object.entries(
+    manifest.collections,
+  )) {
+    for (const [path, page] of Object.entries(collectionData.pages)) {
+      yield { collection, page, path };
+    }
+  }
+}
+
 export function findAdjacentPages(
   manifest: Manifest,
   page: Page,
@@ -31,6 +75,22 @@ export function findAdjacentPages(
       ? findPageByHref(manifest, previousLink.href)
       : null,
   };
+}
+
+function findFirstHref(nodes: SidebarNode[]): string | null {
+  for (const node of nodes) {
+    if (node.type === 'link') {
+      return node.href;
+    }
+    if (node.href) {
+      return node.href;
+    }
+    const nested = findFirstHref(node.children);
+    if (nested !== null) {
+      return nested;
+    }
+  }
+  return null;
 }
 
 function collectionFromHref(href: string): string | null {

@@ -2,7 +2,7 @@ import type { ExtractFileResult } from './type';
 
 import { describe, expect, it } from 'vitest';
 
-import { extractFile } from './extract';
+import { extractFile } from './extract-file';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 

@@ -6,7 +6,7 @@ export type {
   UrlPersistence,
   YapyakConfig,
   YapyakFilterPattern,
-} from './types';
+} from './type';
 
 export { createFilter } from './filter';
 export { type LoadYapyakConfigResult, loadYapyakConfig } from './load';
