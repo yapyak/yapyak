@@ -147,13 +147,15 @@ export default {
 
 The right choice for SSR apps. Sent with every request, so the server can read it and pre-render in the user's locale. The cookie is written client-side on `setLocale()`, with `path=/`, `samesite=lax`, `max-age=1y`.
 
-Customize the cookie name:
+Customize the cookie name via the object form:
 
 ```ts
 export default {
-  persistence: { type: 'cookie', name: 'app-locale' },   // default: 'locale'
+  persistence: { type: 'cookie', name: 'app-locale' },
 } satisfies YapyakConfig;
 ```
+
+See [CookiePersistence](/reference/vite/config/CookiePersistence) for all fields and defaults.
 
 ### localStorage
 
@@ -163,9 +165,39 @@ Tradeoff: server can't read it. First paint always renders in the default locale
 
 ```ts
 export default {
-  persistence: { type: 'localStorage', key: 'app:locale' },   // default: 'locale'
+  persistence: { type: 'localStorage', key: 'app:locale' },
 } satisfies YapyakConfig;
 ```
+
+See [LocalStoragePersistence](/reference/vite/config/LocalStoragePersistence) for all fields and defaults.
+
+### URL
+
+Locale lives in the URL path. The right choice for routing apps that want shareable locale URLs.
+
+The shortest form reads the first path segment:
+
+```ts
+export default {
+  persistence: 'url',
+} satisfies YapyakConfig;
+```
+
+A request to `/sv/dashboard` resolves to `sv` if `sv` is among the configured locales. Otherwise the URL contributes nothing and the locale falls back to the default.
+
+For URLs where the locale isn't the first segment, pass a `match` pattern:
+
+```ts
+export default {
+  persistence: { type: 'url', match: /\/app\/(?<locale>en|sv|fi)\// },
+} satisfies YapyakConfig;
+```
+
+The first capture group (named `locale` or unnamed) becomes the active locale, if it matches a configured locale.
+
+Unlike `cookie` or `localStorage`, URL persistence is read-only from yapyak's side. `setLocale()` updates the in-memory store but doesn't change the URL. Pair it with your router's navigation so changing locale also navigates to the right path.
+
+See [UrlPersistence](/reference/vite/config/UrlPersistence) for all fields.
 
 ### No persistence (default)
 

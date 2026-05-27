@@ -4,14 +4,47 @@ import type { Translator } from '@yapyak/translator';
 /** Glob pattern for include/exclude filtering. */
 export type YapyakFilterPattern = string | RegExp | Array<string | RegExp>;
 
+/** The cookie persistence configuration. */
+export interface CookiePersistence {
+  /**
+   * The cookie name.
+   *
+   * @defaultValue `'locale'`
+   */
+  name?: string;
+  type: 'cookie';
+}
+
+/** The localStorage persistence configuration. */
+export interface LocalStoragePersistence {
+  /**
+   * The storage key.
+   *
+   * @defaultValue `'locale'`
+   */
+  key?: string;
+  type: 'localStorage';
+}
+
+/** The URL persistence configuration. */
+export interface UrlPersistence {
+  /**
+   * The pattern that matches the locale segment in the URL.
+   *
+   * @defaultValue `/^[/](?<locale>[^/]+)/`
+   */
+  match?: RegExp;
+  type: 'url';
+}
+
 /** The locale persistence strategy. */
 export type PersistenceOption =
   | 'cookie'
   | 'localStorage'
   | 'url'
-  | { name?: string; type: 'cookie' }
-  | { key?: string; type: 'localStorage' }
-  | { match?: RegExp; type: 'url' }
+  | CookiePersistence
+  | LocalStoragePersistence
+  | UrlPersistence
   | null;
 
 /** Configuration for yapyak. */
@@ -28,15 +61,26 @@ export interface YapyakConfig {
   /**
    * The default locale.
    *
-   * @remarks
-   * Inferred from locale files if omitted.
+   * @defaultValue Inferred from `locales/*.json`; `'en'` when none exist
    */
   defaultLocale?: string;
-  /** Whether to detect locale from the `Accept-Language` header on the server. */
+  /**
+   * Whether to detect locale from the `Accept-Language` header on the server.
+   *
+   * @defaultValue `false`
+   */
   detectAcceptLanguage?: boolean;
-  /** The glob patterns to exclude from extraction. */
+  /**
+   * The glob patterns to exclude from extraction.
+   *
+   * @defaultValue `['**\/node_modules/**', '**\/dist/**']`
+   */
   exclude?: YapyakFilterPattern;
-  /** The glob patterns to include for extraction. */
+  /**
+   * The glob patterns to include for extraction.
+   *
+   * @defaultValue `['**\/*.{ts,tsx,jsx,js,vue,svelte,astro}']`
+   */
   include?: YapyakFilterPattern;
   /**
    * The directory for locale JSON files, relative to the project root.
@@ -44,7 +88,11 @@ export interface YapyakConfig {
    * @defaultValue `'locales'`
    */
   localesDir?: string;
-  /** The locale persistence strategy. */
+  /**
+   * The locale persistence strategy.
+   *
+   * @defaultValue `null`
+   */
   persistence?: PersistenceOption;
   /**
    * Whether to preserve existing translations when a `t()` call is renamed in place.
@@ -57,6 +105,8 @@ export interface YapyakConfig {
    *
    * @remarks
    * Without it, yapyak does not touch the DOM. Enable for SvelteKit, Astro, and SPA setups where the `<html>` element isn't owned by a reactive framework binding.
+   *
+   * @defaultValue `false`
    */
   syncHtmlLang?: boolean;
   /** The translator used to fill missing entries. Stubs stay empty without one. */
