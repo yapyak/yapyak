@@ -503,8 +503,22 @@ async function invokeConfigResolved(
   }
   await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
     command,
+    logger: createSilentLogger(),
     root,
   } as ResolvedConfig);
+}
+
+function createSilentLogger(): ResolvedConfig['logger'] {
+  const noop = (): void => undefined;
+  return {
+    clearScreen: noop,
+    error: noop,
+    hasErrorLogged: () => false,
+    hasWarned: false,
+    info: noop,
+    warn: noop,
+    warnOnce: noop,
+  };
 }
 
 function invokeBuildStart(plugin: ReturnType<typeof yapyak>): void {
