@@ -12,13 +12,5 @@
  * @packageDocumentation
  */
 
-import { LOCALES } from '@yapyak/runtime';
-
 export { defaultLocale, getLocale, locales, setLocale } from './locale';
 export { type TOptions, t } from './translation';
-
-if (process.env.NODE_ENV !== 'production' && LOCALES.length === 0) {
-  console.warn(
-    '[yapyak] yapyak runtime not initialized — register the build-tool plugin (@yapyak/vite) in your bundler config.',
-  );
-}

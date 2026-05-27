@@ -10,6 +10,12 @@ import { buildPersistence } from '../persistence';
 import { readRequest } from './request-reader';
 import { resolveLocale } from './resolve';
 
+if (process.env.NODE_ENV !== 'production' && LOCALES.length === 0) {
+  console.warn(
+    '[yapyak] yapyak runtime not initialized — register the build-tool plugin (@yapyak/vite) in your bundler config.',
+  );
+}
+
 const persistence = buildPersistence(PERSISTENCE, LOCALES);
 const URL_PERSISTENCE = PERSISTENCE?.type === 'url';
 
