@@ -63,6 +63,7 @@ interface CommentLike {
     name?: string;
     tag: string;
   }>;
+  modifierTags?: ReadonlySet<string>;
   summary?: ReadonlyArray<CommentDisplayPart>;
 }
 
@@ -126,7 +127,7 @@ async function loadProject(
   const app = await Application.bootstrap(
     {
       entryPoints: entries.map((entry) => entry.filePath),
-      excludeInternal: true,
+      excludeInternal: false,
       excludePrivate: true,
       excludeProtected: true,
       skipErrorChecking: true,
@@ -202,6 +203,9 @@ function buildLinkRegistry(
   const nameIndex = new Map<string, string | 'ambiguous'>();
   for (const module of eachProjectModule(project, entries, packageDir)) {
     for (const symbol of module.children) {
+      if (isInternal(symbol)) {
+        continue;
+      }
       const url = buildSymbolUrl(
         module.entry.id,
         symbol.name,
@@ -248,6 +252,7 @@ function collectModules(
     context.packageDir,
   )) {
     const exports = module.children
+      .filter((symbol) => !isInternal(symbol))
       .flatMap((symbol) => convertExport(symbol, context) ?? [])
       .filter((value): value is ReferenceExport => value !== null);
     exports.sort(compareExports);
@@ -413,13 +418,44 @@ function convertVariable(
 ): ReferenceVariable {
   const base = convertBase(reflection, context);
   const type = reflection.type ? convertType(reflection.type) : [];
+  const members = expandPrivateTypeMembers(reflection, context);
   return {
     ...base,
     kind: 'variable',
-    members: [],
+    members,
     signature: `const ${reflection.name}: ${stringifyTokens(type)};`,
     type,
   };
+}
+
+function isInternal(reflection: DeclarationReflection): boolean {
+  const comment = reflection.comment ?? reflection.signatures?.[0]?.comment;
+  return Boolean(comment?.modifierTags?.has('@internal'));
+}
+
+function expandPrivateTypeMembers(
+  reflection: DeclarationReflection,
+  context: Context,
+): ReferenceMember[] {
+  const type = reflection.type;
+  if (type === undefined) {
+    return [];
+  }
+  if (type.type !== 'reference') {
+    return [];
+  }
+  const target = type.reflection;
+  if (target === undefined) {
+    return [];
+  }
+  if (context.registry.has(target.id)) {
+    return [];
+  }
+  const children = (target as { children?: DeclarationReflection[] }).children;
+  if (children === undefined) {
+    return [];
+  }
+  return children.map((child) => convertMember(child, context));
 }
 
 function convertClass(
