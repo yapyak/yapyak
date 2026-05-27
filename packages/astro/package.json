@@ -24,6 +24,7 @@
     "astro": ">=5"
   },
   "devDependencies": {
+    "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "astro": "catalog:",
     "tsup": "catalog:",

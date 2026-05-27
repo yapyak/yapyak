@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
+    "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "tsup": "catalog:",
     "typescript": "catalog:"

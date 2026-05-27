@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@tanstack/react-start": "catalog:",
+    "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "tsup": "catalog:",
     "typescript": "catalog:"

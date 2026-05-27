@@ -274,6 +274,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 25.9.1
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -293,6 +296,9 @@ importers:
         specifier: workspace:*
         version: link:../translator
     devDependencies:
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -312,6 +318,9 @@ importers:
         specifier: workspace:*
         version: link:../adapter
     devDependencies:
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -342,6 +351,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 25.9.1
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -373,6 +385,9 @@ importers:
       '@vue/compiler-sfc':
         specifier: 'catalog:'
         version: 3.5.34
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -410,6 +425,9 @@ importers:
       '@types/picomatch':
         specifier: 'catalog:'
         version: 4.0.3
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -448,6 +466,9 @@ importers:
         specifier: workspace:*
         version: link:../translator
     devDependencies:
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -464,6 +485,9 @@ importers:
         specifier: workspace:*
         version: link:../translator
     devDependencies:
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -480,6 +504,9 @@ importers:
         specifier: workspace:*
         version: link:../translator
     devDependencies:
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -499,6 +526,9 @@ importers:
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.15
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -518,6 +548,9 @@ importers:
         specifier: workspace:*
         version: link:../adapter
     devDependencies:
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -536,6 +569,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 25.9.1
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -552,6 +588,9 @@ importers:
         specifier: workspace:*
         version: link:../yapyak
     devDependencies:
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -574,6 +613,9 @@ importers:
       '@sveltejs/kit':
         specifier: 'catalog:'
         version: 2.61.1(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.9)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)))(svelte@5.55.9)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -596,6 +638,9 @@ importers:
       '@tanstack/react-start':
         specifier: 'catalog:'
         version: 1.168.14(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -608,6 +653,24 @@ importers:
 
   packages/translator:
     devDependencies:
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
+      '@yapyak/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      tsup:
+        specifier: 'catalog:'
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(typescript@6.0.3)(yaml@2.8.4)
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+
+  packages/tsup-config:
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.9.1
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -635,6 +698,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 25.9.1
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -657,6 +723,9 @@ importers:
         specifier: workspace:*
         version: link:../yapyak
     devDependencies:
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -679,6 +748,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 25.9.1
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config

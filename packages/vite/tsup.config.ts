@@ -1,9 +1,6 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from '@yapyak/tsup-config';
 
 export default defineConfig({
-  clean: true,
-  dts: true,
   entry: ['src/index.ts', 'src/config.ts'],
   external: ['vite', '@yapyak/runtime'],
-  format: 'esm',
 });

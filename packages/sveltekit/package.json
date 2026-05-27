@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@sveltejs/kit": "catalog:",
+    "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "svelte": "catalog:",
     "tsup": "catalog:",

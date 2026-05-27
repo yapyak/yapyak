@@ -1,8 +1,6 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from '@yapyak/tsup-config';
 
 export default defineConfig({
-  clean: true,
   dts: false,
   entry: ['src/run.ts'],
-  format: 'esm',
 });

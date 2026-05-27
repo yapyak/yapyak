@@ -26,6 +26,7 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:",
+    "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "tsup": "catalog:",
     "typescript": "catalog:"
