@@ -1,6 +1,6 @@
 export type NormalizedPersistence =
   | { type: 'cookie'; name: string }
-  | { type: 'localStorage'; key: string }
+  | { type: 'local-storage'; key: string }
   | { type: 'url'; match?: RegExp }
   | null;
 
@@ -11,8 +11,8 @@ export function emitPersistence(persistence: NormalizedPersistence): string {
   if (persistence.type === 'cookie') {
     return `{ type: 'cookie', name: ${JSON.stringify(persistence.name)} }`;
   }
-  if (persistence.type === 'localStorage') {
-    return `{ type: 'localStorage', key: ${JSON.stringify(persistence.key)} }`;
+  if (persistence.type === 'local-storage') {
+    return `{ type: 'local-storage', key: ${JSON.stringify(persistence.key)} }`;
   }
   if (!persistence.match) {
     return `{ type: 'url' }`;

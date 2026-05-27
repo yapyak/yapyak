@@ -10,5 +10,5 @@ export type {
   Persistence,
   UrlPersistence,
   YapyakConfig,
-  YapyakFilterPattern,
+  FilterPattern,
 } from '@yapyak/config';

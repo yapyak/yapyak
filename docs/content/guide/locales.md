@@ -137,7 +137,7 @@ import type { YapyakConfig } from '@yapyak/vite/config';
 export default {
   persistence: 'cookie',         // SSR-safe (recommended)
   // OR
-  persistence: 'localStorage',   // SPA-only
+  persistence: 'local-storage',   // SPA-only
   // OR
   persistence: null,             // in-memory, refresh resets (default)
 } satisfies YapyakConfig;
@@ -165,7 +165,7 @@ Tradeoff: server can't read it. First paint always renders in the default locale
 
 ```ts
 export default {
-  persistence: { type: 'localStorage', key: 'app:locale' },
+  persistence: { type: 'local-storage', key: 'app:locale' },
 } satisfies YapyakConfig;
 ```
 

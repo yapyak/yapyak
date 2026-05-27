@@ -1,11 +1,11 @@
 import picomatch from 'picomatch';
 
 /** Glob pattern for include/exclude filtering. */
-export type YapyakFilterPattern = string | RegExp | Array<string | RegExp>;
+export type FilterPattern = string | RegExp | Array<string | RegExp>;
 
 export function createFilter(
-  include: YapyakFilterPattern,
-  exclude: YapyakFilterPattern,
+  include: FilterPattern,
+  exclude: FilterPattern,
 ): (path: string) => boolean {
   const includeMatchers = toMatchers(include);
   const excludeMatchers = toMatchers(exclude);
@@ -28,7 +28,7 @@ export function createFilter(
 }
 
 function toMatchers(
-  pattern: YapyakFilterPattern,
+  pattern: FilterPattern,
 ): Array<(path: string) => boolean> {
   const patterns = Array.isArray(pattern) ? pattern : [pattern];
   return patterns.map((entry) => {

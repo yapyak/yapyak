@@ -17,7 +17,7 @@ export interface LocalStoragePersistence {
    * @defaultValue `'locale'`
    */
   key?: string;
-  type: 'localStorage';
+  type: 'local-storage';
 }
 
 /** The URL persistence configuration. */
@@ -34,7 +34,7 @@ export interface UrlPersistence {
 /** The locale persistence strategy. */
 export type Persistence =
   | 'cookie'
-  | 'localStorage'
+  | 'local-storage'
   | 'url'
   | CookiePersistence
   | LocalStoragePersistence

@@ -1,6 +1,6 @@
 import type { NormalizedPersistence } from '@yapyak/runtime';
 import type { Translator } from '@yapyak/translator';
-import type { YapyakFilterPattern } from './filter';
+import type { FilterPattern } from './filter';
 import type { Persistence } from './persistence';
 
 /** Configuration for yapyak. */
@@ -31,13 +31,13 @@ export interface YapyakConfig {
    *
    * @defaultValue `['**\/node_modules/**', '**\/dist/**']`
    */
-  exclude?: YapyakFilterPattern;
+  exclude?: FilterPattern;
   /**
    * The glob patterns to include for extraction.
    *
    * @defaultValue `['**\/*.{ts,tsx,jsx,js,vue,svelte,astro}']`
    */
-  include?: YapyakFilterPattern;
+  include?: FilterPattern;
   /**
    * The directory for locale JSON files, relative to the project root.
    *
@@ -74,8 +74,8 @@ export interface NormalizedYapyakConfig {
   autoTranslateThreshold: number;
   defaultLocale: string | undefined;
   detectAcceptLanguage: boolean;
-  exclude: YapyakFilterPattern;
-  include: YapyakFilterPattern;
+  exclude: FilterPattern;
+  include: FilterPattern;
   localesDir: string;
   persistence: NormalizedPersistence;
   preserveTranslationsOnRename: boolean;

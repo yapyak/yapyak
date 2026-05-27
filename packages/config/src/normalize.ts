@@ -38,16 +38,16 @@ function normalizePersistence(
     if (input === 'cookie') {
       return { name: DEFAULT_COOKIE_NAME, type: 'cookie' };
     }
-    if (input === 'localStorage') {
-      return { key: DEFAULT_STORAGE_KEY, type: 'localStorage' };
+    if (input === 'local-storage') {
+      return { key: DEFAULT_STORAGE_KEY, type: 'local-storage' };
     }
     return { type: 'url' };
   }
   if (input.type === 'cookie') {
     return { name: input.name ?? DEFAULT_COOKIE_NAME, type: 'cookie' };
   }
-  if (input.type === 'localStorage') {
-    return { key: input.key ?? DEFAULT_STORAGE_KEY, type: 'localStorage' };
+  if (input.type === 'local-storage') {
+    return { key: input.key ?? DEFAULT_STORAGE_KEY, type: 'local-storage' };
   }
   if (input.match) {
     return { match: input.match, type: 'url' };

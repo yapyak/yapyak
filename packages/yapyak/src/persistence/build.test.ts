@@ -16,7 +16,7 @@ describe('buildPersistence', () => {
 
   it('builds `localStorage` persistence', () => {
     const persistence = buildPersistence(
-      { key: 'locale', type: 'localStorage' },
+      { key: 'locale', type: 'local-storage' },
       LOCALES,
     );
     expect(persistence).not.toBeNull();
