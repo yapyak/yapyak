@@ -1,4 +1,5 @@
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
+import react from '@vitejs/plugin-react';
 import { docExtractor } from '@yapyak/doc-extractor/vite';
 import { yapyak } from '@yapyak/vite';
 import { defineConfig } from 'vite';
@@ -38,6 +39,15 @@ export default defineConfig({
     transformer: 'lightningcss',
   },
   plugins: [
+    tanstackStart({
+      prerender: {
+        crawlLinks: true,
+        enabled: true,
+        failOnError: true,
+      },
+    }),
+    react(),
+
     docExtractor({
       collections: {
         guide: {
@@ -57,13 +67,6 @@ export default defineConfig({
       out: resolve(import.meta.dirname, 'manifest.json'),
     }),
     yapyak(),
-    tanstackStart({
-      prerender: {
-        crawlLinks: true,
-        enabled: true,
-        failOnError: true,
-      },
-    }),
   ],
   server: {
     port: 3000,
