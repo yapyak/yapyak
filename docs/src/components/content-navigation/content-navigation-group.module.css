@@ -126,7 +126,11 @@
       gap: 0;
 
       > .ItemList {
-        padding-left: var(--spacing-3);
+        padding-left: var(--spacing-2);
+
+        > li > a {
+          font-size: var(--font-size-xs);
+        }
       }
     }
 
@@ -134,7 +138,7 @@
       gap: 0;
 
       > .ItemList {
-        padding-left: var(--spacing-3);
+        padding-left: var(--spacing-2);
       }
     }
   }
