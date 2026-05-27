@@ -1,4 +1,4 @@
-export interface FetchWithRetryOptions {
+export interface RetryableFetchOptions {
   init: RequestInit;
   maxRetries: number;
   signal?: AbortSignal;
@@ -6,8 +6,8 @@ export interface FetchWithRetryOptions {
   url: string;
 }
 
-export async function fetchWithRetry(
-  options: FetchWithRetryOptions,
+export async function retryableFetch(
+  options: RetryableFetchOptions,
 ): Promise<Response> {
   const { init, maxRetries, signal: outerSignal, timeout, url } = options;
   let lastError: unknown;
@@ -47,7 +47,7 @@ export async function fetchWithRetry(
       outerSignal?.removeEventListener('abort', onAbort);
     }
   }
-  throw lastError ?? new Error('fetchWithRetry: exhausted retries');
+  throw lastError ?? new Error('retryableFetch: exhausted retries');
 }
 
 function isRetryable(status: number): boolean {

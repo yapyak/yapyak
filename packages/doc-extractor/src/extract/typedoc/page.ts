@@ -5,10 +5,10 @@ import type {
   TableRowBlock,
 } from '../../types/block.ts';
 import type { Page } from '../../types/manifest.ts';
+import type { SymbolIndex } from './symbol-index.ts';
 import type {
   ReferenceExample,
   ReferenceExport,
-  ReferenceManifest,
   ReferenceMember,
   ReferenceModule,
   ReferenceOverload,
@@ -24,26 +24,10 @@ import { slugify } from '../../slug.ts';
 import { symbolHref as buildSymbolHref } from '../../symbol-path.ts';
 import { parseMarkdoc } from '../markdoc/parse.ts';
 
-type SymbolIndex = Map<string, string>;
-
 let currentIndex: SymbolIndex = new Map();
 let currentCollection = 'reference';
 let currentPackageName = '';
 let currentPackageSlug = '';
-
-export function buildSymbolIndex(manifest: ReferenceManifest): SymbolIndex {
-  const index: SymbolIndex = new Map();
-  for (const module of manifest.modules) {
-    for (const entry of module.exports) {
-      const key = `${module.id}::${entry.name}`;
-      index.set(key, module.id);
-      if (!index.has(entry.name)) {
-        index.set(entry.name, module.id);
-      }
-    }
-  }
-  return index;
-}
 
 interface BuildSymbolPageOptions {
   collectionName: string;

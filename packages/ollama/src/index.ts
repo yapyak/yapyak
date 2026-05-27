@@ -15,7 +15,7 @@
 import type { ContextLevel, Translator } from '@yapyak/translator';
 
 import { createTranslator } from '@yapyak/translator';
-import { buildSystem, fetchWithRetry } from '@yapyak/translator/internal';
+import { buildSystem, retryableFetch } from '@yapyak/translator/internal';
 
 /** Options for {@link ollama}. */
 export interface OllamaOptions {
@@ -132,7 +132,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
         },
         method: 'POST',
       };
-      const fetchInit: Parameters<typeof fetchWithRetry>[0] = {
+      const fetchInit: Parameters<typeof retryableFetch>[0] = {
         init,
         maxRetries,
         timeout,
@@ -141,7 +141,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
       if (signal) {
         fetchInit.signal = signal;
       }
-      const response = await fetchWithRetry(fetchInit);
+      const response = await retryableFetch(fetchInit);
       if (!response.ok) {
         const text = await response.text();
         throw new Error(`yapyak ollama: ${response.status} ${text}`);

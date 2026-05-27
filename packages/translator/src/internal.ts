@@ -1,2 +1,2 @@
-export { type FetchWithRetryOptions, fetchWithRetry } from './fetch-with-retry';
+export { type RetryableFetchOptions, retryableFetch } from './fetch';
 export { type BuildSystemOptions, buildSystem, stripCodeFence } from './prompt';

@@ -1,4 +1,5 @@
 export { parseAcceptLanguage } from './accept-language';
+export { setRequestReader } from './request-reader';
 export { resolveLocale } from './resolve';
 export {
   defaultLocale,
@@ -6,6 +7,5 @@ export {
   locales,
   resetLocale,
   setLocale,
-  setRequestReader,
   subscribeLocale,
 } from './store';

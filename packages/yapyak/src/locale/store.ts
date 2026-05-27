@@ -7,15 +7,8 @@ import {
 } from '@yapyak/runtime';
 
 import { buildPersistence } from '../persistence';
+import { readRequest } from './request-reader';
 import { resolveLocale } from './resolve';
-
-type RequestReader = () => Request | undefined;
-
-let requestReader: RequestReader | null = null;
-
-export function setRequestReader(reader: RequestReader): void {
-  requestReader = reader;
-}
 
 const persistence = buildPersistence(PERSISTENCE, LOCALES);
 const URL_PERSISTENCE = PERSISTENCE?.type === 'url';
@@ -87,8 +80,8 @@ if (URL_PERSISTENCE && typeof window !== 'undefined') {
  * ```
  */
 export function getLocale(): string {
-  if (typeof window === 'undefined' && requestReader !== null) {
-    const request = requestReader();
+  if (typeof window === 'undefined') {
+    const request = readRequest();
     if (request) {
       const fromPersistence = persistence?.getFromRequest?.(request);
       if (fromPersistence && LOCALES.includes(fromPersistence)) {

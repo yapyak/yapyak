@@ -12,12 +12,9 @@ import type {
 } from '../types/manifest.ts';
 
 import { extractMarkdoc } from '../extract/markdoc/extract.ts';
-import {
-  buildModulePage,
-  buildSymbolIndex,
-  buildSymbolPage,
-} from '../extract/typedoc/build-page.ts';
 import { extractTypedoc } from '../extract/typedoc/index.ts';
+import { buildModulePage, buildSymbolPage } from '../extract/typedoc/page.ts';
+import { buildSymbolIndex } from '../extract/typedoc/symbol-index.ts';
 import { slugify } from '../slug.ts';
 import { encodeSymbolSegment } from '../symbol-path.ts';
 import { buildMarkdocSidebar } from './markdoc-sidebar.ts';
