@@ -9,7 +9,7 @@ import { tokenize } from '#utils/tokenize';
 
 import styles from './hero-demo-editor.module.css';
 
-export type Framework = 'react' | 'svelte' | 'vue';
+export type Framework = 'astro' | 'react' | 'svelte' | 'vue';
 
 interface FrameworkConfig {
   filename: string;
@@ -18,10 +18,16 @@ interface FrameworkConfig {
   language: Language;
 }
 
-export const FRAMEWORKS: [FrameworkConfig, FrameworkConfig, FrameworkConfig] = [
+export const FRAMEWORKS: [
+  FrameworkConfig,
+  FrameworkConfig,
+  FrameworkConfig,
+  FrameworkConfig,
+] = [
   { filename: 'app.tsx', id: 'react', label: 'React', language: 'tsx' },
   { filename: 'app.vue', id: 'vue', label: 'Vue', language: 'vue' },
   { filename: 'app.svelte', id: 'svelte', label: 'Svelte', language: 'svelte' },
+  { filename: 'app.astro', id: 'astro', label: 'Astro', language: 'astro' },
 ];
 
 export interface HeroDemoEditorProps extends BoxProps {
@@ -187,6 +193,13 @@ function buildCode(framework: Framework, source: string) {
   const safe = source.replace(/'/g, "\\'");
   const value = `${safe}${CARET_MARKER}`;
   switch (framework) {
+    case 'astro':
+      return `---
+import { ${T_NAME} } from 'yapyak';
+---
+
+<h1>{${T_NAME}('${value}')}</h1>
+`;
     case 'react':
       return `import { ${T_NAME} } from 'yapyak';
 

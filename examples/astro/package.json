@@ -1,0 +1,22 @@
+{
+  "name": "@yapyak-examples/astro",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/node": "catalog:",
+    "@yapyak/astro": "workspace:*",
+    "astro": "catalog:",
+    "yapyak": "workspace:*"
+  },
+  "devDependencies": {
+    "@yapyak/cli": "workspace:*",
+    "@yapyak/typescript-config": "workspace:*",
+    "@yapyak/vite": "workspace:*",
+    "typescript": "catalog:"
+  }
+}
