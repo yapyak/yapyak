@@ -29,7 +29,7 @@ describe('walkSourceFiles', () => {
     ]);
   });
 
-  it('passes relative ids to the filter', () => {
+  it('normalizes ids to relative paths before calling the filter', () => {
     mkdirSync(join(projectRoot, 'src'), { recursive: true });
     writeFileSync(join(projectRoot, 'src', 'a.tsx'), '');
 

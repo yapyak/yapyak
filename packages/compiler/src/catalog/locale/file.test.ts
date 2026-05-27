@@ -260,7 +260,7 @@ describe('writeLocaleFile invariant', () => {
     }
   });
 
-  it('is idempotent on successful writes', () => {
+  it('preserves the file on a second successful write', () => {
     const data: LocaleFile = { 'src/a.tsx': { Hello: 'Hej' } };
     writeFileSync(path, JSON.stringify(data));
     const input = {

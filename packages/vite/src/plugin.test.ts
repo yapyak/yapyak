@@ -255,7 +255,7 @@ describe('yapyak', () => {
       expect(after).toEqual({ 'src/foo.tsx': { Hello: '' } });
     });
 
-    it('reloads candidate modules when editing a locale file', async () => {
+    it('notifies candidate modules when editing a locale file', async () => {
       writeFileSync(localePath, '{}');
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
