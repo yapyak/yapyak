@@ -1,5 +1,5 @@
 import type { MessageContext, Translator } from '@yapyak/translator';
-import type { ExtractedMessage, Location } from '../parser/type';
+import type { ExtractedMessage, Location } from '../parser/file/extract';
 import type { LocaleFile } from './locale';
 
 import { readLocaleFile, writeLocaleFile } from './locale';

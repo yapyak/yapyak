@@ -1,15 +1,26 @@
-import type {
-  CallSite,
-  Diagnostic,
-  ParsedArguments,
-  ParsedParams,
-} from './type';
+import type { CallSite } from './call';
+import type { Diagnostic } from './diagnostic';
+import type { Range } from './range';
 
 import * as ts from 'typescript';
 
 import { createDiagnostic } from './diagnostic';
 import { parsePlaceholders } from './placeholder';
 import { toRange } from './range';
+
+export interface ParsedParams {
+  keys: string[];
+  kind: 'spread' | 'static';
+  range: Range;
+}
+
+export interface ParsedArguments {
+  diagnostics: Diagnostic[];
+  optionsExpression?: string;
+  params?: ParsedParams;
+  source: string;
+  sourceRange: Range;
+}
 
 export function parseArguments(callSite: CallSite): ParsedArguments {
   const sourceFile = callSite.node.getSourceFile();

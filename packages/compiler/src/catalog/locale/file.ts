@@ -1,4 +1,4 @@
-import type { ExtractedMessage } from '../../parser/type';
+import type { ExtractedMessage } from '../../parser/file/extract';
 
 import { stringifyCanonical } from '../canonical';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';

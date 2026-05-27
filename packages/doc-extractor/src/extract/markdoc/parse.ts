@@ -6,8 +6,8 @@ import type {
   TableBlock,
   TableCellBlock,
   TableRowBlock,
-} from '../../types/block.ts';
-import type { MetaValue } from '../../types/manifest.ts';
+} from '../../access/block.ts';
+import type { MetaValue } from '../../build/manifest.ts';
 
 import Markdoc from '@markdoc/markdoc';
 

@@ -3,8 +3,8 @@ import type {
   ExportKind,
   TableCellBlock,
   TableRowBlock,
-} from '../../types/block.ts';
-import type { Page } from '../../types/manifest.ts';
+} from '../../access/block.ts';
+import type { Page } from '../../build/manifest.ts';
 import type { SymbolIndex } from './symbol-index.ts';
 import type {
   ReferenceExample,

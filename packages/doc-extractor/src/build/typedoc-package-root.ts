@@ -1,8 +1,8 @@
+import type { SidebarNode } from '../build/manifest.ts';
 import type {
   ReferenceManifest,
   ReferenceModule,
 } from '../extract/typedoc/type.ts';
-import type { SidebarNode } from '../types/manifest.ts';
 
 import { symbolHref } from '../symbol-path.ts';
 

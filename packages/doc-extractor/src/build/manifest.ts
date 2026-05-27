@@ -1,15 +1,5 @@
-import type {
-  CollectionConfig,
-  Config,
-  TypedocPackage,
-} from '../types/config.ts';
-import type {
-  Collection,
-  Manifest,
-  Page,
-  SidebarNode,
-  SymbolEntry,
-} from '../types/manifest.ts';
+import type { Block } from '../access/block.ts';
+import type { CollectionConfig, Config, TypedocPackage } from '../config.ts';
 
 import { extractMarkdoc } from '../extract/markdoc/extract.ts';
 import { extractTypedoc } from '../extract/typedoc/index.ts';
@@ -21,6 +11,63 @@ import { buildMarkdocSidebar } from './markdoc-sidebar.ts';
 import { buildTypedocPackageRoot } from './typedoc-package-root.ts';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+
+export type MetaValue =
+  | string
+  | number
+  | boolean
+  | null
+  | MetaValue[]
+  | { [key: string]: MetaValue };
+
+export interface Page {
+  blocks: Block[];
+  description: string;
+  href: string;
+  meta: Record<string, MetaValue>;
+  title: string;
+}
+
+export interface Manifest {
+  collections: Record<string, Collection>;
+  symbols: Record<string, SymbolEntry>;
+  version: 1;
+}
+
+export interface Collection {
+  pages: Record<string, Page>;
+  redirects: Record<string, string>;
+  sidebar: SidebarNode[];
+}
+
+export interface SymbolEntry {
+  collection: string;
+  path: string;
+}
+
+export type SidebarNode = SidebarGroup | SidebarLink;
+
+export interface SidebarBadge {
+  text?: string;
+  variant: 'deprecated' | 'kind';
+}
+
+export interface SidebarGroup {
+  badge?: SidebarBadge;
+  children: SidebarNode[];
+  collapsible: boolean;
+  defaultOpen?: boolean;
+  href?: string;
+  label: string;
+  type: 'group';
+}
+
+export interface SidebarLink {
+  badge?: SidebarBadge;
+  href: string;
+  label: string;
+  type: 'link';
+}
 
 export async function buildManifest(config: Config): Promise<Manifest> {
   const collections: Record<string, Collection> = {};

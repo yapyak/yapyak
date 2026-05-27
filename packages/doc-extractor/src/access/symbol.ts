@@ -1,4 +1,4 @@
-import type { Manifest, SymbolEntry } from '../types/manifest.ts';
+import type { Manifest, SymbolEntry } from '../build/manifest.ts';
 
 export function resolveSymbol(
   manifest: Manifest,

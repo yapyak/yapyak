@@ -1,14 +1,3 @@
-export type { GetExcerptOptions } from './access/excerpt.ts';
-export type {
-  GetHeadingsOptions,
-  HeadingEntry,
-} from './access/heading.ts';
-export type { InternalLinkEntry } from './access/internal-link.ts';
-export type { PageEntry } from './access/page.ts';
-export type {
-  AdjacentPages,
-  Entry,
-} from './types/access.ts';
 export type {
   Block,
   CalloutBlock,
@@ -34,13 +23,15 @@ export type {
   TableCellBlock,
   TableRowBlock,
   TextBlock,
-} from './types/block.ts';
+} from './access/block.ts';
+export type { Entry } from './access/entry.ts';
+export type { GetExcerptOptions } from './access/excerpt.ts';
 export type {
-  CollectionConfig,
-  Config,
-  MarkdocSource,
-  TypedocSource,
-} from './types/config.ts';
+  GetHeadingsOptions,
+  HeadingEntry,
+} from './access/heading.ts';
+export type { InternalLinkEntry } from './access/internal-link.ts';
+export type { AdjacentPages, PageEntry } from './access/page.ts';
 export type {
   Collection,
   Manifest,
@@ -51,7 +42,13 @@ export type {
   SidebarLink,
   SidebarNode,
   SymbolEntry,
-} from './types/manifest.ts';
+} from './build/manifest.ts';
+export type {
+  CollectionConfig,
+  Config,
+  MarkdocSource,
+  TypedocSource,
+} from './config.ts';
 
 export { isBlock, walkBlocks } from './access/block.ts';
 export { getCodeBlocks } from './access/code-block.ts';

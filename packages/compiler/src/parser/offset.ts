@@ -1,4 +1,4 @@
-import type { Position } from './type';
+import type { Position } from './position';
 
 export function offsetToOriginalPosition(
   source: string,

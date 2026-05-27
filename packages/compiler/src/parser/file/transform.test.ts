@@ -1,4 +1,4 @@
-import type { TransformFileRequest } from '../type';
+import type { TransformFileRequest } from './transform';
 
 import { describe, expect, it } from 'vitest';
 

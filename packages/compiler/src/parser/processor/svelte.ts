@@ -1,7 +1,8 @@
 import type MagicString from 'magic-string';
 import type * as SvelteCompiler from 'svelte/compiler';
 import type { AST } from 'svelte/compiler';
-import type { Fragment, Processor } from '../type';
+import type { Fragment } from '../fragment';
+import type { Processor } from './kind';
 
 import { rangeFromOffsets } from '../range';
 import { createRequire } from 'node:module';

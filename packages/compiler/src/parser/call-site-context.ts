@@ -1,6 +1,11 @@
-import type { CallSiteContext } from './type';
-
 import * as ts from 'typescript';
+
+export interface CallSiteContext {
+  componentName?: string;
+  enclosingFunction?: string;
+  enclosingHook?: string;
+  enclosingJsx?: string;
+}
 
 const HOC_NAMES = new Set(['forwardRef', 'lazy', 'memo', 'observer']);
 

@@ -1,5 +1,9 @@
-import type { Entry } from '../types/access.ts';
-import type { Manifest } from '../types/manifest.ts';
+import type { Manifest, Page } from '../build/manifest.ts';
+
+export type Entry =
+  | { kind: 'page'; page: Page }
+  | { kind: 'redirect'; target: string }
+  | { kind: 'not-found' };
 
 export function getEntry(
   manifest: Manifest,

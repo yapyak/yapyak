@@ -1,5 +1,6 @@
 import type MagicString from 'magic-string';
-import type { Fragment, Processor } from '../type';
+import type { Fragment } from '../fragment';
+import type { Processor } from './kind';
 
 export const vanillaProcessor: Processor = {
   applyImport(

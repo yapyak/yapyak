@@ -1,4 +1,22 @@
-import type { Diagnostic, DiagnosticCode, Range } from './type';
+import type { Range } from './range';
+
+export type DiagnosticCode =
+  | 'YPK001'
+  | 'YPK002'
+  | 'YPK003'
+  | 'YPK005'
+  | 'YPK007'
+  | 'YPK008';
+
+export interface Diagnostic {
+  code: DiagnosticCode;
+  fileId: string;
+  hint?: string;
+  message: string;
+  range: Range;
+  severity: 'error' | 'warning';
+  source: string;
+}
 
 export interface CreateDiagnosticInput {
   code: DiagnosticCode;

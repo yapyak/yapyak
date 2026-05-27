@@ -1,13 +1,11 @@
 export type {
   CookiePersistence,
   LocalStoragePersistence,
-  NormalizedYapyakConfig,
   PersistenceOption,
   UrlPersistence,
-  YapyakConfig,
-  YapyakFilterPattern,
-} from './type';
+} from './persistence';
+export type { NormalizedYapyakConfig, YapyakConfig } from './type';
 
-export { createFilter } from './filter';
+export { createFilter, type YapyakFilterPattern } from './filter';
 export { type LoadYapyakConfigResult, loadYapyakConfig } from './load';
 export { normalizeYapyakConfig } from './normalize';

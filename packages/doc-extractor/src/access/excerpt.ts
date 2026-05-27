@@ -1,4 +1,4 @@
-import type { Page } from '../types/manifest.ts';
+import type { Page } from '../build/manifest.ts';
 
 import { blockToText } from './text.ts';
 

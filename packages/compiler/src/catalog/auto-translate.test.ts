@@ -1,5 +1,5 @@
 import type { Translator } from '@yapyak/translator';
-import type { ExtractedMessage } from '../parser/type';
+import type { ExtractedMessage } from '../parser/file/extract';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 

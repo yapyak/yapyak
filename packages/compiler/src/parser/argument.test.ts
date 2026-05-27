@@ -1,4 +1,4 @@
-import type { ParsedArguments } from './type';
+import type { ParsedArguments } from './argument';
 
 import * as ts from 'typescript';
 import { describe, expect, it } from 'vitest';

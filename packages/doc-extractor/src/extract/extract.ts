@@ -1,5 +1,5 @@
-import type { Config } from '../types/config.ts';
-import type { Manifest } from '../types/manifest.ts';
+import type { Manifest } from '../build/manifest.ts';
+import type { Config } from '../config.ts';
 
 import { buildManifest } from '../build/manifest.ts';
 

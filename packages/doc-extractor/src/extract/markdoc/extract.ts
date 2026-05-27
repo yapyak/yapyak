@@ -1,4 +1,4 @@
-import type { Page } from '../../types/manifest.ts';
+import type { Page } from '../../build/manifest.ts';
 
 import { parseMarkdoc } from './parse.ts';
 import { readdir, readFile } from 'node:fs/promises';

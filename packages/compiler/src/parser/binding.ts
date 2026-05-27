@@ -1,6 +1,21 @@
-import type { Binding, BindingTable, Scope } from './type';
-
 import * as ts from 'typescript';
+
+export interface Binding {
+  declarationNode: ts.Node;
+  kind: 'direct' | 'namespace' | 'wrapper';
+  localName: string;
+}
+
+export interface Scope {
+  bindings: Map<string, Binding>;
+  node: ts.Node;
+  parent?: Scope;
+}
+
+export interface BindingTable {
+  find(name: string, atNode: ts.Node): Binding | undefined;
+  root: Scope;
+}
 
 const YAPYAK_MODULE = 'yapyak';
 const RUNTIME_NAME = 't';

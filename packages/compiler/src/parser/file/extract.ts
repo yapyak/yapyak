@@ -1,17 +1,11 @@
-import type { PlaceholderInfo } from '../placeholder';
-import type {
-  Binding,
-  CallSite,
-  Diagnostic,
-  ElisionContext,
-  ExtractedMessage,
-  ExtractFileRequest,
-  ExtractFileResult,
-  Fragment,
-  Location,
-  Placeholder,
-  Scope,
-} from '../type';
+import type { Binding, Scope } from '../binding';
+import type { CallSite } from '../call';
+import type { CallSiteContext } from '../call-site-context';
+import type { Diagnostic } from '../diagnostic';
+import type { ElisionContext, Fragment } from '../fragment';
+import type { Placeholder, PlaceholderInfo } from '../placeholder';
+import type { ProcessorKind } from '../processor/kind';
+import type { Range } from '../range';
 
 import * as ts from 'typescript';
 
@@ -24,6 +18,32 @@ import { parsePlaceholders } from '../placeholder';
 import { getProcessor, resolveProcessorKind } from '../processor';
 import { remapRange, toRange } from '../range';
 import { getScriptKind } from '../script-kind';
+
+export interface Location {
+  callSiteContext: CallSiteContext;
+  fileId: string;
+  range: Range;
+}
+
+export interface ExtractedMessage {
+  id: string;
+  locations: Location[];
+  placeholders: Placeholder[];
+  source: string;
+}
+
+export interface ExtractFileRequest {
+  fileId: string;
+  locales: readonly string[];
+  processor?: ProcessorKind;
+  source: string;
+}
+
+export interface ExtractFileResult {
+  callSites: CallSite[];
+  diagnostics: Diagnostic[];
+  messages: ExtractedMessage[];
+}
 
 export function extractFile(request: ExtractFileRequest): ExtractFileResult {
   const processorKind =

@@ -1,6 +1,10 @@
-import type { Placeholder } from './type';
-
 import { findMatchingBrace } from './matching-brace';
+
+export interface Placeholder {
+  kind: 'date' | 'number' | 'plural' | 'select' | 'simple' | 'time';
+  name: string;
+  variants?: Record<string, string>;
+}
 
 export type PlaceholderKind = Placeholder['kind'];
 

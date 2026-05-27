@@ -1,10 +1,14 @@
-import type { AdjacentPages } from '../types/access.ts';
 import type {
   Manifest,
   Page,
   SidebarLink,
   SidebarNode,
-} from '../types/manifest.ts';
+} from '../build/manifest.ts';
+
+export interface AdjacentPages {
+  nextPage: Page | null;
+  previousPage: Page | null;
+}
 
 export interface PageEntry {
   collection: string;

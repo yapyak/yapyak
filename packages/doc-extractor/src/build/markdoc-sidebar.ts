@@ -1,4 +1,4 @@
-import type { SidebarNode } from '../types/manifest.ts';
+import type { SidebarNode } from '../build/manifest.ts';
 
 import { parseFrontmatterOnly } from '../extract/markdoc/parse.ts';
 import { readdir, readFile } from 'node:fs/promises';

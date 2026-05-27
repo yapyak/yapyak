@@ -1,6 +1,7 @@
-import type { YapyakFilterPattern } from './type';
-
 import picomatch from 'picomatch';
+
+/** Glob pattern for include/exclude filtering. */
+export type YapyakFilterPattern = string | RegExp | Array<string | RegExp>;
 
 export function createFilter(
   include: YapyakFilterPattern,

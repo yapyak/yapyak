@@ -1,5 +1,5 @@
 import type { Plugin, ViteDevServer } from 'vite';
-import type { Config } from './types/config.ts';
+import type { Config } from './config.ts';
 
 import { buildManifest } from './build/manifest.ts';
 import { mkdir, writeFile } from 'node:fs/promises';

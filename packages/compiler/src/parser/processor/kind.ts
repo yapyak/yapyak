@@ -1,9 +1,21 @@
-import type { Processor, ProcessorKind } from '../type';
+import type MagicString from 'magic-string';
+import type { Fragment } from '../fragment';
 
 import { astroProcessor } from './astro';
 import { svelteProcessor } from './svelte';
 import { vanillaProcessor } from './vanilla';
 import { vueProcessor } from './vue';
+
+export type ProcessorKind = 'astro' | 'svelte' | 'vanilla' | 'vue';
+
+export interface Processor {
+  applyImport(
+    magicString: MagicString,
+    source: string,
+    importStatement: string,
+  ): void;
+  parseFragments(source: string): Fragment[];
+}
 
 export function resolveProcessorKind(fileId: string): ProcessorKind {
   if (fileId.endsWith('.vue')) return 'vue';

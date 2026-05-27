@@ -1,8 +1,17 @@
-import type { BindingTable, CallSite } from './type';
+import type { Binding, BindingTable } from './binding';
+import type { ElisionContext } from './fragment';
+import type { Range } from './range';
 
 import * as ts from 'typescript';
 
 import { toRange } from './range';
+
+export interface CallSite {
+  binding: Binding;
+  elision?: ElisionContext;
+  node: ts.CallExpression;
+  range: Range;
+}
 
 const RUNTIME_NAME = 't';
 

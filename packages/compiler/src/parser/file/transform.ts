@@ -1,15 +1,30 @@
+import type { SourceMap } from 'magic-string';
+import type { ParsedArguments } from '../argument';
+import type { CallSite } from '../call';
+import type { Diagnostic } from '../diagnostic';
+import type { Fragment } from '../fragment';
 import type { PlaceholderInfo } from '../placeholder';
-import type {
-  CallSite,
-  Fragment,
-  ParsedArguments,
-  Range,
-  TransformFileRequest,
-  TransformFileResult,
-} from '../type';
+import type { ProcessorKind } from '../processor/kind';
+import type { Range } from '../range';
+import type { ExtractFileResult } from './extract';
 
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
+
+export interface TransformFileRequest {
+  extracted: ExtractFileResult;
+  fileId: string;
+  locales: readonly string[];
+  processor?: ProcessorKind;
+  source: string;
+  translations: Record<string, Record<string, string>>;
+}
+
+export interface TransformFileResult {
+  code: string;
+  diagnostics: Diagnostic[];
+  map: SourceMap;
+}
 
 import { parseArguments } from '../argument';
 import { findMatchingBrace } from '../matching-brace';

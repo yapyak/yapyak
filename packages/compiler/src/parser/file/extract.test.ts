@@ -1,4 +1,4 @@
-import type { ExtractFileResult } from '../type';
+import type { ExtractFileResult } from './extract';
 
 import { describe, expect, it } from 'vitest';
 

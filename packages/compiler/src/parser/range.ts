@@ -1,8 +1,14 @@
 import type * as ts from 'typescript';
-import type { Fragment, Range } from './type';
+import type { Fragment } from './fragment';
+import type { Position } from './position';
 
 import { offsetToOriginalPosition } from './offset';
 import { remapPosition, toPosition } from './position';
+
+export interface Range {
+  end: Position;
+  start: Position;
+}
 
 export function toRange(node: ts.Node, sourceFile: ts.SourceFile): Range {
   return {

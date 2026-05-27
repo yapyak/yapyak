@@ -1,9 +1,6 @@
 import type { NormalizedPersistence } from '@yapyak/runtime';
-import type {
-  NormalizedYapyakConfig,
-  PersistenceOption,
-  YapyakConfig,
-} from './type';
+import type { PersistenceOption } from './persistence';
+import type { NormalizedYapyakConfig, YapyakConfig } from './type';
 
 const DEFAULT_AUTO_TRANSLATE_THRESHOLD = 20;
 const DEFAULT_INCLUDE = ['**/*.{ts,tsx,jsx,js,vue,svelte,astro}'];
