@@ -33,14 +33,14 @@ describe('yapyak', () => {
   describe('build mode', () => {
     beforeEach(() => {
       writeFileSync(
-        join(root, 'src', 'foo.tsx'),
+        join(root, 'src', 'a.tsx'),
         "import { t } from 'yapyak';\nexport const a = () => t('Hello');\nexport const b = () => t('World');\n",
       );
     });
 
     it('preserves locale files when running `vite build`', async () => {
       const existing = {
-        'src/foo.tsx': {
+        'src/a.tsx': {
           Hello: 'Hej',
           World: 'Världen',
         },
@@ -79,7 +79,7 @@ describe('yapyak', () => {
       invokeConfigureServer(plugin, server);
       const watcher = server.watcher;
 
-      const newFile = join(root, 'src', 'new.tsx');
+      const newFile = join(root, 'src', 'b.tsx');
       writeFileSync(
         newFile,
         "import { t } from 'yapyak';\nexport const x = () => t('Hello');\n",
@@ -88,7 +88,7 @@ describe('yapyak', () => {
       await vi.advanceTimersByTimeAsync(60);
 
       const after = JSON.parse(readFileSync(localePath, 'utf8'));
-      expect(after['src/new.tsx']).toEqual({ Hello: '' });
+      expect(after['src/b.tsx']).toEqual({ Hello: '' });
     });
 
     it('clears locale entries when removing a file', async () => {
@@ -234,7 +234,7 @@ describe('yapyak', () => {
 
     it('writes empty stubs without translating when adding a locale file', async () => {
       writeFileSync(
-        join(root, 'src', 'foo.tsx'),
+        join(root, 'src', 'a.tsx'),
         "import { t } from 'yapyak';\nexport const x = () => t('Hello');\n",
       );
       const plugin = yapyak();
@@ -252,7 +252,7 @@ describe('yapyak', () => {
       await vi.advanceTimersByTimeAsync(60);
 
       const after = JSON.parse(readFileSync(newLocale, 'utf8'));
-      expect(after).toEqual({ 'src/foo.tsx': { Hello: '' } });
+      expect(after).toEqual({ 'src/a.tsx': { Hello: '' } });
     });
 
     it('notifies candidate modules when editing a locale file', async () => {
@@ -263,7 +263,7 @@ describe('yapyak', () => {
 
       vi.useFakeTimers();
       const reloadModule = vi.fn(() => Promise.resolve());
-      const sourcePath = join(root, 'src', 'foo.tsx');
+      const sourcePath = join(root, 'src', 'a.tsx');
       const server = createMockServer(createMockWatcher());
       server.reloadModule = reloadModule;
       server.moduleGraph.idToModuleMap.set('m1', {
@@ -275,7 +275,7 @@ describe('yapyak', () => {
 
       writeFileSync(
         localePath,
-        JSON.stringify({ 'src/foo.tsx': { Hello: 'Hej' } }),
+        JSON.stringify({ 'src/a.tsx': { Hello: 'Hej' } }),
       );
       watcher.emit('change', localePath);
       await vi.advanceTimersByTimeAsync(60);
@@ -290,7 +290,7 @@ describe('yapyak', () => {
 
       vi.useFakeTimers();
       const reloadModule = vi.fn(() => Promise.resolve());
-      const sourcePath = join(root, 'src', 'foo.tsx');
+      const sourcePath = join(root, 'src', 'a.tsx');
       const server = createMockServer(createMockWatcher());
       server.reloadModule = reloadModule;
       server.moduleGraph.idToModuleMap.set('m1', {
@@ -300,7 +300,7 @@ describe('yapyak', () => {
       invokeConfigureServer(plugin, server);
       const watcher = server.watcher;
 
-      const otherPath = join(root, 'src', 'foo.tsx');
+      const otherPath = join(root, 'src', 'a.tsx');
       writeFileSync(otherPath, 'x');
       watcher.emit('change', otherPath);
       await vi.advanceTimersByTimeAsync(60);
@@ -364,10 +364,10 @@ describe('yapyak', () => {
       invokeConfigureServer(plugin, server);
       const watcher = server.watcher;
 
-      const newSource = join(root, 'src', 'new.tsx');
+      const newSource = join(root, 'src', 'b.tsx');
       writeFileSync(
         newSource,
-        "import { t } from 'yapyak';\nexport const x = () => t('Welcome');\n",
+        "import { t } from 'yapyak';\nexport const x = () => t('Hello');\n",
       );
       watcher.emit('add', newSource);
 
@@ -414,7 +414,7 @@ describe('yapyak', () => {
       const server = createMockServer(createMockWatcher());
       invokeConfigureServer(plugin, server);
 
-      const newFile = join(root, 'src', 'foo.tsx');
+      const newFile = join(root, 'src', 'a.tsx');
       writeFileSync(
         newFile,
         "import { t } from 'yapyak';\nexport const x = () => t('Hello');\n",
@@ -424,7 +424,7 @@ describe('yapyak', () => {
       await vi.waitFor(
         () => {
           const data = JSON.parse(readFileSync(localePath, 'utf8'));
-          expect(data['src/foo.tsx']?.Hello).toBe('Hej');
+          expect(data['src/a.tsx']?.Hello).toBe('Hej');
         },
         { interval: 20, timeout: 2000 },
       );
@@ -440,7 +440,7 @@ describe('yapyak', () => {
       const server = createMockServer(createMockWatcher());
       invokeConfigureServer(plugin, server);
 
-      const newFile = join(root, 'src', 'foo.tsx');
+      const newFile = join(root, 'src', 'a.tsx');
       writeFileSync(
         newFile,
         "import { t } from 'yapyak';\nexport const a = () => t('Hello');\nexport const b = () => t('World');\n",
@@ -450,14 +450,14 @@ describe('yapyak', () => {
       await vi.waitFor(
         () => {
           const data = JSON.parse(readFileSync(localePath, 'utf8'));
-          expect(data['src/foo.tsx']).toBeDefined();
+          expect(data['src/a.tsx']).toBeDefined();
         },
         { interval: 20, timeout: 2000 },
       );
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       const data = JSON.parse(readFileSync(localePath, 'utf8'));
-      expect(data['src/foo.tsx']).toEqual({ Hello: '', World: '' });
+      expect(data['src/a.tsx']).toEqual({ Hello: '', World: '' });
     });
 
     it('blocks auto-translate when the threshold is `0`', async () => {
@@ -470,7 +470,7 @@ describe('yapyak', () => {
       const server = createMockServer(createMockWatcher());
       invokeConfigureServer(plugin, server);
 
-      const newFile = join(root, 'src', 'foo.tsx');
+      const newFile = join(root, 'src', 'a.tsx');
       writeFileSync(
         newFile,
         "import { t } from 'yapyak';\nexport const x = () => t('Hello');\n",
@@ -480,14 +480,14 @@ describe('yapyak', () => {
       await vi.waitFor(
         () => {
           const data = JSON.parse(readFileSync(localePath, 'utf8'));
-          expect(data['src/foo.tsx']).toBeDefined();
+          expect(data['src/a.tsx']).toBeDefined();
         },
         { interval: 20, timeout: 2000 },
       );
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       const data = JSON.parse(readFileSync(localePath, 'utf8'));
-      expect(data['src/foo.tsx']).toEqual({ Hello: '' });
+      expect(data['src/a.tsx']).toEqual({ Hello: '' });
     });
   });
 });

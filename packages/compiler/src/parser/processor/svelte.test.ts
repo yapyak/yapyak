@@ -54,12 +54,12 @@ describe('svelteProcessor', () => {
         '<script lang="ts">',
         "  import { t } from 'yapyak';",
         '</script>',
-        `<h1>{t('Welcome')}</h1>`,
+        `<h1>{t('Hello')}</h1>`,
       ].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
       expect(exprs).toHaveLength(1);
-      expect(exprs[0]?.code).toBe("t('Welcome')");
+      expect(exprs[0]?.code).toBe("t('Hello')");
       verifyOffsetInvariant(source, exprs[0] as Fragment);
     });
 
@@ -113,32 +113,34 @@ describe('svelteProcessor', () => {
     });
 
     it('returns expressions for `IfBlock` test and body', () => {
-      const source = [`{#if cond}{t('Yes')}{:else}{t('No')}{/if}`].join('\n');
+      const source = [`{#if cond}{t('Save')}{:else}{t('Cancel')}{/if}`].join(
+        '\n',
+      );
       const fragments = svelteProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
       const codes = exprs.map((e) => e.code).sort();
       expect(codes).toContain('cond');
-      expect(codes).toContain("t('Yes')");
-      expect(codes).toContain("t('No')");
+      expect(codes).toContain("t('Save')");
+      expect(codes).toContain("t('Cancel')");
     });
 
     it('returns expressions for `EachBlock` expression and body', () => {
-      const source = [`{#each items as item}{t('Item')}{/each}`].join('\n');
+      const source = [`{#each items as item}{t('Hello')}{/each}`].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
       const codes = exprs.map((e) => e.code);
       expect(codes).toContain('items');
-      expect(codes).toContain("t('Item')");
+      expect(codes).toContain("t('Hello')");
     });
 
     it('returns expressions for `AwaitBlock` and its then/catch branches', () => {
       const source = [
         `{#await promise}`,
-        `  {t('Loading')}`,
+        `  {t('Loading...')}`,
         `{:then value}`,
-        `  {t('Done')}`,
+        `  {t('Save')}`,
         `{:catch err}`,
-        `  {t('Failed')}`,
+        `  {t('Hello')}`,
         `{/await}`,
       ].join('\n');
       const fragments = svelteProcessor.parseFragments(source);
@@ -146,9 +148,9 @@ describe('svelteProcessor', () => {
         .filter((f) => f.kind === 'template-expression')
         .map((e) => e.code);
       expect(codes).toContain('promise');
-      expect(codes).toContain("t('Loading')");
-      expect(codes).toContain("t('Done')");
-      expect(codes).toContain("t('Failed')");
+      expect(codes).toContain("t('Loading...')");
+      expect(codes).toContain("t('Save')");
+      expect(codes).toContain("t('Hello')");
     });
 
     it('returns expressions for `KeyBlock`', () => {
@@ -189,14 +191,14 @@ describe('svelteProcessor', () => {
     });
 
     it('returns a template expression for legacy `OnDirective`', () => {
-      const source = [`<button on:click={() => t('Click')}>x</button>`].join(
+      const source = [`<button on:click={() => t('Save')}>x</button>`].join(
         '\n',
       );
       const fragments = svelteProcessor.parseFragments(source);
       const codes = fragments
         .filter((f) => f.kind === 'template-expression')
         .map((e) => e.code);
-      expect(codes.some((c) => c.includes("t('Click')"))).toBe(true);
+      expect(codes.some((c) => c.includes("t('Save')"))).toBe(true);
     });
 
     it('returns a template expression for `StyleDirective` value', () => {
@@ -254,7 +256,7 @@ describe('svelteProcessor', () => {
         "  import { t } from 'yapyak';",
         '</script>',
         `<article>`,
-        `  <header><h1>{t('Welcome')}</h1></header>`,
+        `  <header><h1>{t('Hello')}</h1></header>`,
         `  <section>`,
         `    <p>{t('Hi {name}', { name })}</p>`,
         `    <button aria-label={t('Save')}>{t('Save')}</button>`,

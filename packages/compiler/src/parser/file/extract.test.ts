@@ -106,36 +106,36 @@ describe('extractFile', () => {
         "import { t } from 'yapyak';",
         '</script>',
         '<template>',
-        `  <h1>{{ t('Welcome') }}</h1>`,
+        `  <h1>{{ t('Hello') }}</h1>`,
         '</template>',
       ].join('\n');
       const result = extractFile({
-        fileId: 'app.vue',
+        fileId: 'src/a.vue',
         locales: ['en'],
         source,
       });
       expect(result.messages).toHaveLength(1);
-      expect(result.messages[0]?.source).toBe('Welcome');
+      expect(result.messages[0]?.source).toBe('Hello');
     });
 
     it('returns messages from both script and template under one import', () => {
       const source = [
         '<script setup lang="ts">',
         "import { t } from 'yapyak';",
-        "const inScript = t('From script');",
+        "const inScript = t('Hello');",
         '</script>',
         '<template>',
-        `  <h1>{{ t('From template') }}</h1>`,
-        `  <button :aria-label="t('Button label')">x</button>`,
+        `  <h1>{{ t('World') }}</h1>`,
+        `  <button :aria-label="t('Save')">x</button>`,
         '</template>',
       ].join('\n');
       const result = extractFile({
-        fileId: 'app.vue',
+        fileId: 'src/a.vue',
         locales: ['en'],
         source,
       });
       const sources = result.messages.map((m) => m.source).sort();
-      expect(sources).toEqual(['Button label', 'From script', 'From template']);
+      expect(sources).toEqual(['Hello', 'Save', 'World']);
     });
 
     it('returns template messages resolved against plain `<script>`', () => {
@@ -145,16 +145,16 @@ describe('extractFile', () => {
         "export default { name: 'X' };",
         '</script>',
         '<template>',
-        `  <h1>{{ t('Welcome') }}</h1>`,
+        `  <h1>{{ t('Hello') }}</h1>`,
         '</template>',
       ].join('\n');
       const result = extractFile({
-        fileId: 'app.vue',
+        fileId: 'src/a.vue',
         locales: ['en'],
         source,
       });
       const templateMessages = result.messages.filter(
-        (m) => m.source === 'Welcome',
+        (m) => m.source === 'Hello',
       );
       expect(templateMessages).toHaveLength(1);
     });
@@ -165,16 +165,16 @@ describe('extractFile', () => {
         "import { t as tr } from 'yapyak';",
         '</script>',
         '<template>',
-        `  <h1>{{ tr('Welcome') }}</h1>`,
+        `  <h1>{{ tr('Hello') }}</h1>`,
         '</template>',
       ].join('\n');
       const result = extractFile({
-        fileId: 'app.vue',
+        fileId: 'src/a.vue',
         locales: ['en'],
         source,
       });
       expect(result.messages).toHaveLength(1);
-      expect(result.messages[0]?.source).toBe('Welcome');
+      expect(result.messages[0]?.source).toBe('Hello');
     });
 
     it('folds the same source string across script and template', () => {
@@ -188,7 +188,7 @@ describe('extractFile', () => {
         '</template>',
       ].join('\n');
       const result = extractFile({
-        fileId: 'app.vue',
+        fileId: 'src/a.vue',
         locales: ['en'],
         source,
       });
@@ -199,11 +199,11 @@ describe('extractFile', () => {
     it('returns no messages when no script imports `yapyak`', () => {
       const source = [
         '<template>',
-        `  <h1>{{ t('Welcome') }}</h1>`,
+        `  <h1>{{ t('Hello') }}</h1>`,
         '</template>',
       ].join('\n');
       const result = extractFile({
-        fileId: 'app.vue',
+        fileId: 'src/a.vue',
         locales: ['en'],
         source,
       });

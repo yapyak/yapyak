@@ -27,9 +27,7 @@ export function createFilter(
   };
 }
 
-function toMatchers(
-  pattern: FilterPattern,
-): Array<(path: string) => boolean> {
+function toMatchers(pattern: FilterPattern): Array<(path: string) => boolean> {
   const patterns = Array.isArray(pattern) ? pattern : [pattern];
   return patterns.map((entry) => {
     if (entry instanceof RegExp) {

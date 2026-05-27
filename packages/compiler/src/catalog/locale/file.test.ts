@@ -216,7 +216,7 @@ describe('writeLocaleFile invariant', () => {
   });
 
   it('preserves the invariant across every state combination', () => {
-    const FILE_ID = 'src/x.tsx';
+    const FILE_ID = 'src/a.tsx';
     const SOURCE = 'Hello';
     const OLD = 'Hej';
     const NEW = 'NyttHej';

@@ -35,12 +35,12 @@ describe('astroProcessor', () => {
         '---',
         "import { t } from 'yapyak';",
         '---',
-        `<h1>{t('Welcome')}</h1>`,
+        `<h1>{t('Hello')}</h1>`,
       ].join('\n');
       const fragments = astroProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
       expect(exprs).toHaveLength(1);
-      expect(exprs[0]?.code).toBe("t('Welcome')");
+      expect(exprs[0]?.code).toBe("t('Hello')");
       verifyOffsetInvariant(source, exprs[0] as Fragment);
     });
 
@@ -88,7 +88,7 @@ describe('astroProcessor', () => {
         "import { t } from 'yapyak';",
         '---',
         `<article>`,
-        `  <header><h1>{t('Welcome')}</h1></header>`,
+        `  <header><h1>{t('Hello')}</h1></header>`,
         `  <section>`,
         `    <p>{t('Hi {name}', { name })}</p>`,
         `    <button aria-label={t('Save')}>{t('Save')}</button>`,

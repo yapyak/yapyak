@@ -71,7 +71,7 @@ describe('vueProcessor', () => {
         "import { t } from 'yapyak';",
         '</script>',
         '<template>',
-        "  <h1>{{ t('Welcome') }}</h1>",
+        "  <h1>{{ t('Hello') }}</h1>",
         '</template>',
       ].join('\n');
       const fragments = vueProcessor.parseFragments(source);
@@ -79,7 +79,7 @@ describe('vueProcessor', () => {
         (f) => f.kind === 'template-expression',
       );
       expect(exprFragments).toHaveLength(1);
-      expect(exprFragments[0]?.code).toBe("t('Welcome')");
+      expect(exprFragments[0]?.code).toBe("t('Hello')");
       verifyOffsetInvariant(source, exprFragments[0] as Fragment);
     });
 
@@ -89,7 +89,7 @@ describe('vueProcessor', () => {
         "import { t } from 'yapyak';",
         '</script>',
         '<template>',
-        `  <button :aria-label="t('Cool')">x</button>`,
+        `  <button :aria-label="t('Hello')">x</button>`,
         '</template>',
       ].join('\n');
       const fragments = vueProcessor.parseFragments(source);
@@ -97,14 +97,14 @@ describe('vueProcessor', () => {
         (f) => f.kind === 'template-expression',
       );
       expect(exprFragments).toHaveLength(1);
-      expect(exprFragments[0]?.code).toBe("t('Cool')");
+      expect(exprFragments[0]?.code).toBe("t('Hello')");
       verifyOffsetInvariant(source, exprFragments[0] as Fragment);
     });
 
     it('returns a template-expression fragment for verbose `v-bind:foo="..."`', () => {
       const source = [
         '<template>',
-        `  <img v-bind:alt="t('Hero')" />`,
+        `  <img v-bind:alt="t('Hello')" />`,
         '</template>',
       ].join('\n');
       const fragments = vueProcessor.parseFragments(source);
@@ -112,7 +112,7 @@ describe('vueProcessor', () => {
         (f) => f.kind === 'template-expression',
       );
       expect(exprFragments).toHaveLength(1);
-      expect(exprFragments[0]?.code).toBe("t('Hero')");
+      expect(exprFragments[0]?.code).toBe("t('Hello')");
     });
 
     it('returns a template-expression fragment for v-on shorthand `@click="..."`', () => {
@@ -147,7 +147,7 @@ describe('vueProcessor', () => {
       const source = [
         '<template>',
         '  <article>',
-        `    <header><h1>{{ t('Welcome') }}</h1></header>`,
+        `    <header><h1>{{ t('Hello') }}</h1></header>`,
         '    <section>',
         `      <p>{{ t('Hi {name}', { name }) }}</p>`,
         `      <button :aria-label="t('Save')">{{ t('Save') }}</button>`,
@@ -190,14 +190,14 @@ describe('vueProcessor', () => {
     it('returns the full ICU plural expression without truncating on inner `}}`', () => {
       const source = [
         '<template>',
-        `  <p>{{ t('You have {count, plural, one {# message} other {# messages}}', { count: 3 }) }}</p>`,
+        `  <p>{{ t('You have {count, plural, one {# item} other {# items}}', { count: 3 }) }}</p>`,
         '</template>',
       ].join('\n');
       const fragments = vueProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
       expect(exprs).toHaveLength(1);
       expect(exprs[0]?.code).toBe(
-        `t('You have {count, plural, one {# message} other {# messages}}', { count: 3 })`,
+        `t('You have {count, plural, one {# item} other {# items}}', { count: 3 })`,
       );
       verifyOffsetInvariant(source, exprs[0] as Fragment);
     });
@@ -272,14 +272,14 @@ describe('vueProcessor', () => {
     it('returns the full expression with a nested object literal as 2nd arg', () => {
       const source = [
         '<template>',
-        `  <p>{{ t('Hi {user}', { user: { name: 'Alex', id: 1 } }) }}</p>`,
+        `  <p>{{ t('Hi {name}', { name: { name: 'Alex', id: 1 } }) }}</p>`,
         '</template>',
       ].join('\n');
       const fragments = vueProcessor.parseFragments(source);
       const exprs = fragments.filter((f) => f.kind === 'template-expression');
       expect(exprs).toHaveLength(1);
       expect(exprs[0]?.code).toBe(
-        `t('Hi {user}', { user: { name: 'Alex', id: 1 } })`,
+        `t('Hi {name}', { name: { name: 'Alex', id: 1 } })`,
       );
       verifyOffsetInvariant(source, exprs[0] as Fragment);
     });

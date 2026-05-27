@@ -11,14 +11,14 @@ describe('stringifyCanonical', () => {
 
   it('transforms keys into sorted order at every nesting depth', () => {
     const value = {
-      'src/one.ts': { b: '', y: '' },
-      'src/two.ts': { a: '', z: '' },
+      'src/a.ts': { b: '', y: '' },
+      'src/b.ts': { a: '', z: '' },
     };
     expect(stringifyCanonical(value)).toBe(
       `${JSON.stringify(
         {
-          'src/one.ts': { b: '', y: '' },
-          'src/two.ts': { a: '', z: '' },
+          'src/a.ts': { b: '', y: '' },
+          'src/b.ts': { a: '', z: '' },
         },
         null,
         2,

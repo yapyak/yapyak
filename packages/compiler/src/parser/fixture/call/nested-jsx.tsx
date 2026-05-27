@@ -8,11 +8,11 @@ export function Greeting({ name }: GreetingProps): JSX.Element {
   return (
     <article>
       <header>
-        <h1>{t('Welcome')}</h1>
+        <h1>{t('Hello')}</h1>
       </header>
       <section>
         <p>{t('Hi {name}', { name })}</p>
-        <button type="button">{t('Continue')}</button>
+        <button type="button">{t('Save')}</button>
       </section>
     </article>
   );

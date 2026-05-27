@@ -13,7 +13,7 @@ export function Greeting({
   setLocale(locale);
   return [
     t('Hi {name}', { name }),
-    t('Welcome', undefined, { locale: 'sv' }),
+    t('Hello', undefined, { locale: 'sv' }),
     t('Bye', undefined, { locale: previewLocale.value }),
     t('You have {count, plural, one {# item} other {# items}}', { count }),
   ].join(' · ');

@@ -49,7 +49,7 @@ describe('autoTranslate', () => {
         locations: [
           {
             callSiteContext: {},
-            fileId: 'src/foo.tsx',
+            fileId: 'src/a.tsx',
             range: {
               end: { column: 10, line: 1, offset: 10 },
               start: { column: 1, line: 1, offset: 0 },

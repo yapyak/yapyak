@@ -37,7 +37,7 @@ describe('anthropic', () => {
     stubFetch('  Hej världen  ');
     const t = anthropic({ apiKey: 'k' });
     const result = await t({
-      fileId: 'src/x.tsx',
+      fileId: 'src/a.tsx',
       source: 'Hello world',
       sourceLocale: 'en',
       targetLocale: 'sv',
@@ -48,7 +48,7 @@ describe('anthropic', () => {
   it('writes the API key as `x-api-key` header', async () => {
     const stub = stubFetch('Hej');
     await anthropic({ apiKey: 'sk-test' })({
-      fileId: 'src/x.tsx',
+      fileId: 'src/a.tsx',
       source: 'Hi',
       sourceLocale: 'en',
       targetLocale: 'sv',

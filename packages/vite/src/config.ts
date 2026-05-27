@@ -6,9 +6,9 @@
 
 export type {
   CookiePersistence,
+  FilterPattern,
   LocalStoragePersistence,
   Persistence,
   UrlPersistence,
   YapyakConfig,
-  FilterPattern,
 } from '@yapyak/config';

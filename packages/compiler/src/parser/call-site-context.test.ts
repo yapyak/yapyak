@@ -5,7 +5,7 @@ import { resolveBindings } from './binding';
 import { discoverCalls } from './call';
 import { resolveCallSiteContext } from './call-site-context';
 
-function parseInline(source: string, fileName = 'test.tsx'): ts.SourceFile {
+function parseInline(source: string, fileName = 'src/a.tsx'): ts.SourceFile {
   const scriptKind = fileName.endsWith('.tsx')
     ? ts.ScriptKind.TSX
     : ts.ScriptKind.TS;
@@ -104,7 +104,7 @@ describe('resolveCallSiteContext', () => {
     const sf = parseInline(`
       import { t } from 'yapyak';
       export function Greeting() {
-        return <article><header><h1>{t('Welcome')}</h1></header></article>;
+        return <article><header><h1>{t('Hello')}</h1></header></article>;
       }
     `);
     const [call] = findCalls(sf);
@@ -145,16 +145,16 @@ describe('resolveCallSiteContext', () => {
         export function Greeting({ name }: { name: string }) {
           return (
             <article>
-              <header><h1>{t('Welcome')}</h1></header>
+              <header><h1>{t('Hello')}</h1></header>
               <section>
                 <p>{t('Hi {name}', { name })}</p>
-                <button type="button">{t('Continue')}</button>
+                <button type="button">{t('Save')}</button>
               </section>
             </article>
           );
         }
       `,
-      'test.tsx',
+      'src/a.tsx',
     );
     const calls = findCalls(sf);
     expect(calls).toHaveLength(3);

@@ -12,7 +12,7 @@ function runTransform(input: {
   translations?: Record<string, Record<string, string>>;
   fileId?: string;
 }): string {
-  const fileId = input.fileId ?? 'test.tsx';
+  const fileId = input.fileId ?? 'src/a.tsx';
   const extracted = extractFile({
     fileId,
     locales: input.locales,
@@ -166,7 +166,7 @@ describe('transformFile', () => {
     it('transforms `{` and `}` in catalog strings so Vue/JSX parsers never see literal braces', () => {
       const source = [
         "import { t } from 'yapyak';",
-        "export const x = t('You have {count, plural, one {# msg} other {# msgs}}', { count: 1 });",
+        "export const x = t('You have {count, plural, one {# item} other {# items}}', { count: 1 });",
       ].join('\n');
       const code = runTransform({ locales: ['en', 'sv'], source });
       expect(code).not.toMatch(/"[^"]*\}\}"/);
@@ -346,7 +346,7 @@ describe('transformFile', () => {
       locales: readonly string[];
       translations?: Record<string, Record<string, string>>;
     }): string {
-      const fileId = 'app.vue';
+      const fileId = 'src/a.vue';
       const extracted = extractFile({
         fileId,
         locales: input.locales,
@@ -369,14 +369,14 @@ describe('transformFile', () => {
         "const heading = t('Hello');",
         '</script>',
         '<template>',
-        `  <h1>{{ t('Welcome') }}</h1>`,
+        `  <h1>{{ t('Hello') }}</h1>`,
         '</template>',
       ].join('\n');
       const code = runVueTransform({ locales: ['en'], source });
       expect(code).toContain('"Hello"');
-      expect(code).toContain('<h1>Welcome</h1>');
+      expect(code).toContain('<h1>Hello</h1>');
       expect(code).not.toContain("t('Hello')");
-      expect(code).not.toContain("t('Welcome')");
+      expect(code).not.toContain("t('Hello')");
       expect(code).not.toContain("from 'yapyak'");
     });
 
@@ -387,7 +387,7 @@ describe('transformFile', () => {
         "const heading = t('Hello');",
         '</script>',
         '<template>',
-        `  <h1>{{ t('Welcome') }}</h1>`,
+        `  <h1>{{ t('Hello') }}</h1>`,
         '</template>',
       ].join('\n');
       const code = runVueTransform({
@@ -396,7 +396,7 @@ describe('transformFile', () => {
         translations: { sv: {} },
       });
       expect(code).toContain('_pick({ en: "Hello", sv: "Hello" })');
-      expect(code).toContain('_pick({ en: "Welcome", sv: "Welcome" })');
+      expect(code).toContain('_pick({ en: "Hello", sv: "Hello" })');
       expect(code).toMatch(
         /import \{ pick as _pick \} from 'yapyak\/internal'/,
       );
@@ -448,7 +448,7 @@ describe('transformFile', () => {
         "import { t } from 'yapyak';",
         '</script>',
         '<template>',
-        `  <h1>{{ t('Welcome') }}</h1>`,
+        `  <h1>{{ t('Hello') }}</h1>`,
         '</template>',
       ].join('\n');
       const code = runVueTransform({
@@ -467,7 +467,7 @@ describe('transformFile', () => {
       source: string,
       locales: readonly string[],
     ): string {
-      const fileId = 'app.vue';
+      const fileId = 'src/a.vue';
       const extracted = extractFile({ fileId, locales, source });
       return transformFile({
         extracted,
@@ -482,7 +482,7 @@ describe('transformFile', () => {
       source: string,
       locales: readonly string[],
     ): string {
-      const fileId = 'app.svelte';
+      const fileId = 'src/a.svelte';
       const extracted = extractFile({ fileId, locales, source });
       return transformFile({
         extracted,
@@ -497,7 +497,7 @@ describe('transformFile', () => {
       source: string,
       locales: readonly string[],
     ): string {
-      const fileId = 'page.astro';
+      const fileId = 'src/a.astro';
       const extracted = extractFile({ fileId, locales, source });
       return transformFile({
         extracted,
@@ -665,7 +665,7 @@ describe('transformFile', () => {
 
   describe('source map', () => {
     it('returns a `magic-string` source map', () => {
-      const fileId = 'test.ts';
+      const fileId = 'src/a.ts';
       const source =
         "import { t } from 'yapyak';\nexport const x = t('Hello');\n";
       const extracted = extractFile({ fileId, locales: ['en'], source });
