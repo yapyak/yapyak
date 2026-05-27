@@ -418,11 +418,9 @@ function convertVariable(
 ): ReferenceVariable {
   const base = convertBase(reflection, context);
   const type = reflection.type ? convertType(reflection.type) : [];
-  const members = expandPrivateTypeMembers(reflection, context);
   return {
     ...base,
     kind: 'variable',
-    members,
     signature: `const ${reflection.name}: ${stringifyTokens(type)};`,
     type,
   };
@@ -431,31 +429,6 @@ function convertVariable(
 function isInternal(reflection: DeclarationReflection): boolean {
   const comment = reflection.comment ?? reflection.signatures?.[0]?.comment;
   return Boolean(comment?.modifierTags?.has('@internal'));
-}
-
-function expandPrivateTypeMembers(
-  reflection: DeclarationReflection,
-  context: Context,
-): ReferenceMember[] {
-  const type = reflection.type;
-  if (type === undefined) {
-    return [];
-  }
-  if (type.type !== 'reference') {
-    return [];
-  }
-  const target = type.reflection;
-  if (target === undefined) {
-    return [];
-  }
-  if (context.registry.has(target.id)) {
-    return [];
-  }
-  const children = (target as { children?: DeclarationReflection[] }).children;
-  if (children === undefined) {
-    return [];
-  }
-  return children.map((child) => convertMember(child, context));
 }
 
 function convertClass(

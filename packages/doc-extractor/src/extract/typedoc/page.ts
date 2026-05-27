@@ -103,10 +103,6 @@ export function buildSymbolPage(
   if (symbol.kind === 'variable') {
     blocks.push(heading2('Signature'));
     blocks.push(variableSignatureBlock(symbol));
-    if (symbol.members.length > 0) {
-      blocks.push(heading2('Members'));
-      blocks.push(membersTable(symbol.members));
-    }
   }
 
   if (symbol.kind === 'interface') {
