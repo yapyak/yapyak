@@ -1,10 +1,13 @@
 import type { AnyRequestMiddleware } from '@tanstack/react-start';
 
 import { createMiddleware } from '@tanstack/react-start';
-import { withRequest } from '@yapyak/adapter';
+import { getPendingResponseHeaders, withRequest } from '@yapyak/adapter';
 
 /**
  * Middleware for TanStack Start. Provides yapyak's per-request locale context.
+ *
+ * @remarks
+ * Drains pending response headers buffered by yapyak (e.g. `Set-Cookie` from a server-side `setLocale()` call) onto the outgoing `Response`.
  *
  * @example Register in src/start.ts
  * ```ts
@@ -16,5 +19,12 @@ import { withRequest } from '@yapyak/adapter';
  * ```
  */
 export const middleware: AnyRequestMiddleware = createMiddleware().server(
-  ({ request, next }) => withRequest(request, () => next()),
+  ({ next, request }) =>
+    withRequest(request, async () => {
+      const result = await next();
+      for (const [name, value] of getPendingResponseHeaders()) {
+        result.response.headers.append(name, value);
+      }
+      return result;
+    }),
 );

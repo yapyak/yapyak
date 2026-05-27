@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { setResponseHeaderWriter } from '../locale/response-header-writer';
 import { cookie, parseCookie } from './cookie';
 
 describe('cookie', () => {
@@ -77,12 +78,60 @@ describe('cookie', () => {
   });
 
   describe('in non-browser environment', () => {
+    let writes: Array<[string, string]> = [];
+
+    beforeEach(() => {
+      writes = [];
+    });
+
+    afterEach(() => {
+      setResponseHeaderWriter(null);
+    });
+
     it('returns `undefined` from `get` when `document` is missing', () => {
       expect(cookie({ name: 'locale' }).get()).toBeUndefined();
     });
 
-    it('blocks `set` when `document` is missing', () => {
-      expect(() => cookie({ name: 'locale' }).set('sv')).not.toThrow();
+    it('appends `Set-Cookie` via the registered writer', () => {
+      setResponseHeaderWriter((name, value) => writes.push([name, value]));
+      cookie({ name: 'locale' }).set('sv');
+      expect(writes).toEqual([
+        ['Set-Cookie', 'locale=sv; path=/; max-age=31536000; samesite=lax'],
+      ]);
+    });
+
+    it('encodes the locale value when writing the cookie string', () => {
+      setResponseHeaderWriter((name, value) => writes.push([name, value]));
+      cookie({ name: 'locale' }).set('en-US');
+      expect(writes[0]?.[1]).toContain('locale=en-US');
+    });
+
+    it('uses the configured cookie name in the writer call', () => {
+      setResponseHeaderWriter((name, value) => writes.push([name, value]));
+      cookie({ name: 'app-locale' }).set('de');
+      expect(writes[0]?.[1]).toContain('app-locale=de');
+    });
+
+    it('returns `true` from set when a writer is registered', () => {
+      setResponseHeaderWriter((name, value) => writes.push([name, value]));
+      expect(cookie({ name: 'locale' }).set('sv')).toBe(true);
+    });
+
+    it('returns `true` from set when no writer is registered', () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      expect(cookie({ name: 'locale' }).set('sv')).toBe(true);
+      warn.mockRestore();
+    });
+
+    it('warns in dev when set is called without a writer', () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      cookie({ name: 'locale' }).set('sv');
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          '[yapyak] setLocale() called server-side outside a withRequest scope',
+        ),
+      );
+      warn.mockRestore();
     });
   });
 });

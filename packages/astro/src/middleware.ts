@@ -1,6 +1,6 @@
 /// <reference types="astro/client" />
 
-import { withRequest } from '@yapyak/adapter';
+import { getPendingResponseHeaders, withRequest } from '@yapyak/adapter';
 
 import { defineMiddleware } from 'astro:middleware';
 
@@ -8,6 +8,9 @@ type AstroMiddleware = ReturnType<typeof defineMiddleware>;
 
 /**
  * Middleware for Astro. Provides yapyak's per-request locale context.
+ *
+ * @remarks
+ * Drains pending response headers buffered by yapyak (e.g. `Set-Cookie` from a server-side `setLocale()` call) onto the outgoing `Response`.
  *
  * @example Re-export from src/middleware.ts
  * ```ts
@@ -24,5 +27,11 @@ type AstroMiddleware = ReturnType<typeof defineMiddleware>;
  * ```
  */
 export const middleware: AstroMiddleware = defineMiddleware((context, next) =>
-  withRequest(context.request, () => next()),
+  withRequest(context.request, async () => {
+    const response = await next();
+    for (const [name, value] of getPendingResponseHeaders()) {
+      response.headers.append(name, value);
+    }
+    return response;
+  }),
 );

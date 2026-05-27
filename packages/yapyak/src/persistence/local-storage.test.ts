@@ -81,7 +81,26 @@ describe('localStorage', () => {
     });
 
     it('blocks `set` when storage is missing', () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       expect(() => localStorage({ key: 'locale' }).set('sv')).not.toThrow();
+      warn.mockRestore();
+    });
+
+    it('returns `true` from `set` when storage is missing', () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      expect(localStorage({ key: 'locale' }).set('sv')).toBe(true);
+      warn.mockRestore();
+    });
+
+    it('warns in dev that local-storage is browser-only', () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      localStorage({ key: 'locale' }).set('sv');
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          '[yapyak] setLocale() is a no-op server-side with persistence: "local-storage"',
+        ),
+      );
+      warn.mockRestore();
     });
   });
 });

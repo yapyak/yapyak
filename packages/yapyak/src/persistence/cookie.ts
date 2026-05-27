@@ -1,5 +1,6 @@
 import type { Persistence } from '.';
 
+import { appendResponseHeader } from '../locale/response-header-writer';
 import { createPersistence } from '.';
 
 export function parseCookie(header: string): Record<string, string> {
@@ -57,12 +58,19 @@ export function cookie(options: CookieOptions): Persistence {
       return value || undefined;
     },
     set(locale) {
-      if (typeof globalThis.document === 'undefined') {
-        return;
-      }
       const value = encodeURIComponent(locale);
+      const cookieString = `${name}=${value}; path=/; max-age=31536000; samesite=lax`;
+      if (typeof globalThis.document === 'undefined') {
+        const applied = appendResponseHeader('Set-Cookie', cookieString);
+        if (!applied && process.env.NODE_ENV !== 'production') {
+          console.warn(
+            '[yapyak] setLocale() called server-side outside a withRequest scope. The cookie was not set. Install the matching adapter middleware (e.g. @yapyak/astro, @yapyak/sveltekit).',
+          );
+        }
+        return true;
+      }
       // biome-ignore lint/suspicious/noDocumentCookie: yap yap yap
-      globalThis.document.cookie = `${name}=${value}; path=/; max-age=31536000; samesite=lax`;
+      globalThis.document.cookie = cookieString;
     },
   });
 }

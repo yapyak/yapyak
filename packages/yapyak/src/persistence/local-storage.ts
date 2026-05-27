@@ -22,7 +22,12 @@ export function localStorage(options: LocalStorageOptions): Persistence {
     },
     set(locale) {
       if (typeof globalThis.localStorage === 'undefined') {
-        return;
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn(
+            '[yapyak] setLocale() is a no-op server-side with persistence: "local-storage". localStorage is browser-only. Use persistence: "cookie" for SSR-compatible locale switching.',
+          );
+        }
+        return true;
       }
       try {
         globalThis.localStorage.setItem(key, locale);

@@ -12,4 +12,4 @@
  * @packageDocumentation
  */
 
-export { withRequest } from './request';
+export { getPendingResponseHeaders, withRequest } from './request';

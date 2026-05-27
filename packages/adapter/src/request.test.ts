@@ -8,9 +8,9 @@ vi.mock('@yapyak/runtime', () => ({
   SYNC_HTML_LANG: false,
 }));
 
-const { getLocale } = await import('yapyak');
+const { getLocale, setLocale } = await import('yapyak');
 const { resetLocale } = await import('yapyak/internal');
-const { withRequest } = await import('./index');
+const { getPendingResponseHeaders, withRequest } = await import('./index');
 
 function makeRequest(
   headers: { acceptLanguage?: string; cookie?: string } = {},
@@ -85,6 +85,42 @@ describe('withRequest', () => {
         () => getLocale(),
       );
       expect(result).toBe('sv');
+    });
+  });
+
+  describe('pending response headers', () => {
+    it('returns an empty `Headers` instance when called outside a scope', () => {
+      const headers = getPendingResponseHeaders();
+      expect(Array.from(headers)).toEqual([]);
+    });
+
+    it('buffers `Set-Cookie` from `setLocale` inside the scope', () => {
+      const collected = withRequest(makeRequest(), () => {
+        setLocale('sv');
+        return Array.from(getPendingResponseHeaders());
+      });
+      expect(collected).toEqual([
+        ['set-cookie', 'locale=sv; path=/; max-age=31536000; samesite=lax'],
+      ]);
+    });
+
+    it('isolates pending headers between concurrent scopes', () => {
+      let outer: Array<[string, string]> = [];
+      let inner: Array<[string, string]> = [];
+      withRequest(makeRequest(), () => {
+        setLocale('sv');
+        withRequest(makeRequest(), () => {
+          setLocale('fr');
+          inner = Array.from(getPendingResponseHeaders());
+        });
+        outer = Array.from(getPendingResponseHeaders());
+      });
+      expect(inner).toEqual([
+        ['set-cookie', 'locale=fr; path=/; max-age=31536000; samesite=lax'],
+      ]);
+      expect(outer).toEqual([
+        ['set-cookie', 'locale=sv; path=/; max-age=31536000; samesite=lax'],
+      ]);
     });
   });
 });
