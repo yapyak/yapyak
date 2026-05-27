@@ -1,4 +1,4 @@
-import type { NormalizedPersistence } from './type';
+import type { NormalizedPersistence } from './persistence';
 
 export const LOCALES: readonly string[] = Object.freeze([]);
 export const DEFAULT_LOCALE = 'en';

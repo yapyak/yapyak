@@ -1,4 +1,4 @@
-export type { NormalizedPersistence } from './type';
+export type { NormalizedPersistence } from './persistence';
 
 export {
   DEFAULT_LOCALE,
