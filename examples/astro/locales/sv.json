@@ -16,6 +16,6 @@
     "Updated: {when, date, long}": "Uppdaterad: {when, date, long}",
     "Updated: {when, date, short}": "Uppdaterad: {when, date, short}",
     "You have {count, plural, one {# message} other {# messages}}": "Du har {count, plural, one {# meddelande} other {# meddelanden}}",
-    "{theme, select, dark {Dark mode is on} other {Light mode is on}}": "{theme, select, dark {Mörkt läge är på} other {Ljust läge är på}}"
+    "{role, select, admin {Administrator} editor {Editor} other {Viewer}}": "{role, select, admin {Administratör} editor {Redaktör} other {Besökare}}"
   }
 }

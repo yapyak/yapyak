@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { t, locales } from 'yapyak';
+import { locales, t } from 'yapyak';
 import { locale } from '@yapyak/vue';
 
 const now = new Date();
@@ -25,15 +25,19 @@ const now = new Date();
     <p>{{ t('At: {when, time, short}', { when: now }) }}</p>
 
     <h2>{{ t('Select') }}</h2>
-    <p>{{ t('{theme, select, dark {Dark mode is on} other {Light mode is on}}', { theme: 'dark' }) }}</p>
+    <p>{{ t('{role, select, admin {Administrator} editor {Editor} other {Viewer}}', { role: 'editor' }) }}</p>
 
-    <label>
-      {{ t('Switch language') }}
-      <select v-model="locale">
-        <option v-for="locale in locales" :key="locale" :value="locale">
-          {{ locale === 'sv' ? t('Swedish') : t('English') }}
-        </option>
-      </select>
-    </label>
+    <h2>{{ t('Switch language') }}</h2>
+    <div style="display: flex; gap: 0.5rem;">
+      <button
+        v-for="value in locales"
+        :key="value"
+        type="button"
+        :disabled="value === locale"
+        @click="locale = value"
+      >
+        {{ value === 'sv' ? t('Swedish') : t('English') }}
+      </button>
+    </div>
   </main>
 </template>

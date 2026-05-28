@@ -30,20 +30,22 @@ const currentLocale = getLocale();
 
   <h2>{t('Select')}</h2>
   <p>
-    {t('{theme, select, dark {Dark mode is on} other {Light mode is on}}', { theme: 'dark' })}
+    {t('{role, select, admin {Administrator} editor {Editor} other {Viewer}}', { role: 'editor' })}
   </p>
 
   <h2>{t('Switch language')}</h2>
   <form method="POST" action="/api/locale">
-    {locales.map((locale) => (
-      <button
-        type="submit"
-        name="locale"
-        value={locale}
-        disabled={locale === currentLocale}
-      >
-        {locale === 'sv' ? t('Swedish') : t('English')}
-      </button>
-    ))}
+    <div style="display: flex; gap: 0.5rem;">
+      {locales.map((value) => (
+        <button
+          type="submit"
+          name="locale"
+          value={value}
+          disabled={value === currentLocale}
+        >
+          {value === 'sv' ? t('Swedish') : t('English')}
+        </button>
+      ))}
+    </div>
   </form>
 </Layout>

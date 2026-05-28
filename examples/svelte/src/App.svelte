@@ -33,19 +33,21 @@
 
   <h2>{t("Select")}</h2>
   <p>
-    {t("{theme, select, dark {Dark mode is on} other {Light mode is on}}", {
-      theme: "dark",
+    {t("{role, select, admin {Administrator} editor {Editor} other {Viewer}}", {
+      role: "editor",
     })}
   </p>
 
-  <label>
-    {t("Switch language")}
-    <select bind:value={locale.current}>
-      {#each locales as locale}
-        <option value={locale}>
-          {locale === "sv" ? t("Swedish") : t("English")}
-        </option>
-      {/each}
-    </select>
-  </label>
+  <h2>{t("Switch language")}</h2>
+  <div style="display: flex; gap: 0.5rem;">
+    {#each locales as value}
+      <button
+        type="button"
+        disabled={value === locale.current}
+        onclick={() => (locale.current = value)}
+      >
+        {value === "sv" ? t("Swedish") : t("English")}
+      </button>
+    {/each}
+  </div>
 </main>

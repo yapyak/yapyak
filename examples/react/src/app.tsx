@@ -37,11 +37,13 @@ export function App(): ReactElement {
 
       <h2>{t('Select')}</h2>
       <p>
-        {t('{theme, select, dark {Dark mode is on} other {Light mode is on}}', {
-          theme: 'dark',
-        })}
+        {t(
+          '{role, select, admin {Administrator} editor {Editor} other {Viewer}}',
+          { role: 'editor' },
+        )}
       </p>
 
+      <h2>{t('Switch language')}</h2>
       <LocaleToggle />
     </main>
   );
@@ -50,21 +52,17 @@ export function App(): ReactElement {
 function LocaleToggle(): ReactElement {
   const [locale, setLocale] = useLocale();
   return (
-    <label>
-      {t('Switch language')}
-      <select
-        onChange={(event) => setLocale(event.target.value)}
-        value={locale}
-      >
-        {locales.map((locale) => (
-          <option
-            key={locale}
-            value={locale}
-          >
-            {locale === 'sv' ? t('Swedish') : t('English')}
-          </option>
-        ))}
-      </select>
-    </label>
+    <div style={{ display: 'flex', gap: '0.5rem' }}>
+      {locales.map((value) => (
+        <button
+          disabled={value === locale}
+          key={value}
+          onClick={() => setLocale(value)}
+          type="button"
+        >
+          {value === 'sv' ? t('Swedish') : t('English')}
+        </button>
+      ))}
+    </div>
   );
 }
