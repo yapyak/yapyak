@@ -17,7 +17,7 @@ Run translation locally — no API key, no vendor in your billing path, no data 
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from '@yapyak/vite/config';
+import type { YapyakConfig } from 'yapyak';
 import { ollama } from '@yapyak/ollama';
 
 export default {
@@ -99,7 +99,7 @@ For development: local Ollama. For production builds: cloud (Anthropic/OpenAI). 
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from '@yapyak/vite/config';
+import type { YapyakConfig } from 'yapyak';
 import { anthropic } from '@yapyak/anthropic';
 import { ollama } from '@yapyak/ollama';
 

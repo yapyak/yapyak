@@ -7,10 +7,6 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    },
-    "./config": {
-      "types": "./dist/config.d.ts",
-      "default": "./dist/config.js"
     }
   },
   "files": [
@@ -25,7 +21,7 @@
   "dependencies": {
     "@yapyak/compiler": "workspace:*",
     "@yapyak/config": "workspace:*",
-    "@yapyak/runtime": "workspace:*"
+    "@yapyak/shared": "workspace:*"
   },
   "peerDependencies": {
     "vite": ">=5"

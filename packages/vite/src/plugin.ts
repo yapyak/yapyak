@@ -3,7 +3,7 @@ import type {
   ExtractFileResult,
   LocaleData,
 } from '@yapyak/compiler';
-import type { NormalizedYapyakConfig } from '@yapyak/config';
+import type { NormalizedYapyakConfig } from '@yapyak/shared';
 import type { Plugin, ResolvedConfig, UserConfig } from 'vite';
 
 import {
@@ -18,12 +18,12 @@ import {
   walkSourceFiles,
 } from '@yapyak/compiler';
 import { createFilter, loadYapyakConfig } from '@yapyak/config';
-import { defineRuntime } from '@yapyak/runtime';
+import { defineRuntime } from '@yapyak/shared';
 
 import { readFileSync } from 'node:fs';
 import { basename, extname, join, relative, sep } from 'node:path';
 
-const RUNTIME_ID = '@yapyak/runtime';
+const RUNTIME_ID = '@yapyak/shared';
 const RUNTIME_RESOLVED = `\0${RUNTIME_ID}`;
 
 const HMR_LISTENER = [

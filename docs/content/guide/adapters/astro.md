@@ -56,7 +56,7 @@ Enable `syncHtmlLang` to make yapyak update the attribute on every `setLocale()`
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from '@yapyak/vite/config';
+import type { YapyakConfig } from 'yapyak';
 
 export default {
   persistence: 'cookie',
@@ -74,7 +74,7 @@ For SSR locale switching to work, enable cookie persistence:
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from '@yapyak/vite/config';
+import type { YapyakConfig } from 'yapyak';
 
 export default {
   persistence: 'cookie',

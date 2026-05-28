@@ -1,4 +1,4 @@
-import type { NormalizedYapyakConfig } from '@yapyak/config';
+import type { NormalizedYapyakConfig } from '@yapyak/shared';
 import type { Translator } from '@yapyak/translator';
 
 import { loadYapyakConfig } from '@yapyak/config';

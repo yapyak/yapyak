@@ -1,4 +1,4 @@
-import type { YapyakConfig } from '@yapyak/vite/config';
+import type { YapyakConfig } from 'yapyak';
 
 export default {
   detectAcceptLanguage: true,

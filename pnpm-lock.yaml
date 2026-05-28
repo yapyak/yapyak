@@ -319,7 +319,7 @@ importers:
         version: 6.0.3
       vitest:
         specifier: 'catalog:'
-        version: 4.1.7(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
+        version: 4.1.7(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
 
   packages/anthropic:
     dependencies:
@@ -378,6 +378,9 @@ importers:
       '@yapyak/config':
         specifier: workspace:*
         version: link:../config
+      '@yapyak/shared':
+        specifier: workspace:*
+        version: link:../shared
       '@yapyak/translator':
         specifier: workspace:*
         version: link:../translator
@@ -440,12 +443,9 @@ importers:
 
   packages/config:
     dependencies:
-      '@yapyak/runtime':
+      '@yapyak/shared':
         specifier: workspace:*
-        version: link:../runtime
-      '@yapyak/translator':
-        specifier: workspace:*
-        version: link:../translator
+        version: link:../shared
       jiti:
         specifier: 'catalog:'
         version: 2.7.0
@@ -598,7 +598,11 @@ importers:
         specifier: 'catalog:'
         version: 6.0.3
 
-  packages/runtime:
+  packages/shared:
+    dependencies:
+      '@yapyak/translator':
+        specifier: workspace:*
+        version: link:../translator
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -725,9 +729,9 @@ importers:
       '@yapyak/config':
         specifier: workspace:*
         version: link:../config
-      '@yapyak/runtime':
+      '@yapyak/shared':
         specifier: workspace:*
-        version: link:../runtime
+        version: link:../shared
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -775,9 +779,9 @@ importers:
 
   packages/yapyak:
     dependencies:
-      '@yapyak/runtime':
+      '@yapyak/shared':
         specifier: workspace:*
-        version: link:../runtime
+        version: link:../shared
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -4794,14 +4798,6 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.0
 
-  '@vitest/mocker@4.1.7(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))':
-    dependencies:
-      '@vitest/spy': 4.1.7
-      estree-walker: 3.0.3
-      magic-string: 0.30.21
-    optionalDependencies:
-      vite: 8.0.14(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)
-
   '@vitest/mocker@4.1.7(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))':
     dependencies:
       '@vitest/spy': 4.1.7
@@ -6623,21 +6619,6 @@ snapshots:
       terser: 5.47.1
       yaml: 2.8.4
 
-  vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4):
-    dependencies:
-      lightningcss: 1.32.0
-      picomatch: 4.0.4
-      postcss: 8.5.15
-      rolldown: 1.0.2
-      tinyglobby: 0.2.16
-    optionalDependencies:
-      '@types/node': 25.9.1
-      esbuild: 0.27.7
-      fsevents: 2.3.3
-      jiti: 2.7.0
-      terser: 5.47.1
-      yaml: 2.8.4
-
   vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4):
     dependencies:
       lightningcss: 1.32.0
@@ -6660,33 +6641,6 @@ snapshots:
   vitefu@1.1.3(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)):
     optionalDependencies:
       vite: 8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)
-
-  vitest@4.1.7(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)):
-    dependencies:
-      '@vitest/expect': 4.1.7
-      '@vitest/mocker': 4.1.7(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
-      '@vitest/pretty-format': 4.1.7
-      '@vitest/runner': 4.1.7
-      '@vitest/snapshot': 4.1.7
-      '@vitest/spy': 4.1.7
-      '@vitest/utils': 4.1.7
-      es-module-lexer: 2.1.0
-      expect-type: 1.3.0
-      magic-string: 0.30.21
-      obug: 2.1.1
-      pathe: 2.0.3
-      picomatch: 4.0.4
-      std-env: 4.1.0
-      tinybench: 2.9.0
-      tinyexec: 1.1.2
-      tinyglobby: 0.2.16
-      tinyrainbow: 3.1.0
-      vite: 8.0.14(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)
-      why-is-node-running: 2.3.0
-    optionalDependencies:
-      '@types/node': 25.9.1
-    transitivePeerDependencies:
-      - msw
 
   vitest@4.1.7(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)):
     dependencies:

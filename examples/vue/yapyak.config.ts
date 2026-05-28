@@ -1,6 +1,6 @@
-import type { YapyakConfig } from '@yapyak/vite/config';
+import type { YapyakConfig } from 'yapyak';
 
 export default {
-  persistence: { name: 'app-locale', type: 'cookie' },
+  persistence: 'cookie',
   syncHtmlLang: true,
 } satisfies YapyakConfig;

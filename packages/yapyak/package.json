@@ -23,7 +23,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@yapyak/runtime": "workspace:*"
+    "@yapyak/shared": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "catalog:",

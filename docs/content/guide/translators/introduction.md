@@ -9,7 +9,7 @@ yapyak ships four translators: **Anthropic**, **OpenAI**, **Gemini**, and **Olla
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from '@yapyak/vite/config';
+import type { YapyakConfig } from 'yapyak';
 import { anthropic } from '@yapyak/anthropic';
 
 export default {

@@ -16,6 +16,7 @@
   "dependencies": {
     "@yapyak/compiler": "workspace:*",
     "@yapyak/config": "workspace:*",
+    "@yapyak/shared": "workspace:*",
     "@yapyak/translator": "workspace:*"
   },
   "devDependencies": {

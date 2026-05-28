@@ -12,6 +12,15 @@
  * @packageDocumentation
  */
 
+export type {
+  CookiePersistence,
+  FilterPattern,
+  LocalStoragePersistence,
+  Persistence,
+  UrlPersistence,
+  YapyakConfig,
+} from '@yapyak/shared';
+
 export {
   type FormatDateOptions,
   type FormatListOptions,

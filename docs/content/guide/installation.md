@@ -8,9 +8,9 @@ Three steps to a translated string.
 ## Install
 
 ```bash
-npm install yapyak
+npm install yapyak @yapyak/vite
 # or
-pnpm add yapyak
+pnpm add yapyak @yapyak/vite
 ```
 
 ## Configure Vite
@@ -29,7 +29,7 @@ export default defineConfig({
 Then create `yapyak.config.ts` in the project root:
 
 ```ts
-import type { YapyakConfig } from '@yapyak/vite/config';
+import type { YapyakConfig } from 'yapyak';
 import { anthropic } from '@yapyak/anthropic';
 
 export default {

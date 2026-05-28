@@ -25,7 +25,7 @@ The default locale doesn't need a file — your source code is the file.
 You can override the default in `yapyak.config.ts`:
 
 ```ts
-import type { YapyakConfig } from '@yapyak/vite/config';
+import type { YapyakConfig } from 'yapyak';
 
 export default {
   defaultLocale: 'sv',   // Swedish-default project
@@ -132,7 +132,7 @@ The callback receives the new locale. It fires whenever `setLocale(...)` is call
 The user's locale choice can be persisted in three ways. Set in `yapyak.config.ts`:
 
 ```ts
-import type { YapyakConfig } from '@yapyak/vite/config';
+import type { YapyakConfig } from 'yapyak';
 
 export default {
   persistence: 'cookie',         // SSR-safe (recommended)
@@ -155,7 +155,7 @@ export default {
 } satisfies YapyakConfig;
 ```
 
-See [CookiePersistence](/reference/vite/config/CookiePersistence) for all fields and defaults.
+See [CookiePersistence](/reference/yapyak/CookiePersistence) for all fields and defaults.
 
 ### localStorage
 
@@ -169,7 +169,7 @@ export default {
 } satisfies YapyakConfig;
 ```
 
-See [LocalStoragePersistence](/reference/vite/config/LocalStoragePersistence) for all fields and defaults.
+See [LocalStoragePersistence](/reference/yapyak/LocalStoragePersistence) for all fields and defaults.
 
 ### URL
 
@@ -197,7 +197,7 @@ The first capture group (named `locale` or unnamed) becomes the active locale, i
 
 Unlike `cookie` or `localStorage`, URL persistence is read-only from yapyak's side. `setLocale()` updates the in-memory store but doesn't change the URL. Pair it with your router's navigation so changing locale also navigates to the right path.
 
-See [UrlPersistence](/reference/vite/config/UrlPersistence) for all fields.
+See [UrlPersistence](/reference/yapyak/UrlPersistence) for all fields.
 
 ### No persistence (default)
 

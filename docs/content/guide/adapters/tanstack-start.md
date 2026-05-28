@@ -58,7 +58,7 @@ For SSR locale switching to work, the user's choice must be readable by the serv
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from '@yapyak/vite/config';
+import type { YapyakConfig } from 'yapyak';
 
 export default {
   persistence: 'cookie',

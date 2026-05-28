@@ -17,7 +17,7 @@ Use Claude (Sonnet, Opus, Haiku) as your translator.
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from '@yapyak/vite/config';
+import type { YapyakConfig } from 'yapyak';
 import { anthropic } from '@yapyak/anthropic';
 
 export default {

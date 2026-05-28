@@ -1,5 +1,5 @@
 {
-  "name": "@yapyak/runtime",
+  "name": "@yapyak/shared",
   "version": "0.0.0",
   "license": "MIT",
   "type": "module",
@@ -16,6 +16,9 @@
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@yapyak/translator": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "catalog:",

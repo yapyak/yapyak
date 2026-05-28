@@ -50,7 +50,7 @@ If `<html>` is static HTML (no framework binding), enable `syncHtmlLang` and yap
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from '@yapyak/vite/config';
+import type { YapyakConfig } from 'yapyak';
 
 export default {
   syncHtmlLang: true,
@@ -63,7 +63,7 @@ For SSR locale switching to work, enable cookie persistence:
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from '@yapyak/vite/config';
+import type { YapyakConfig } from 'yapyak';
 
 export default {
   persistence: 'cookie',

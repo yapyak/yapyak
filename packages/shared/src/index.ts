@@ -1,3 +1,12 @@
+export type {
+  CookiePersistence,
+  FilterPattern,
+  LocalStoragePersistence,
+  NormalizedYapyakConfig,
+  Persistence,
+  UrlPersistence,
+  YapyakConfig,
+} from './config';
 export type { NormalizedPersistence } from './persistence';
 
 export {

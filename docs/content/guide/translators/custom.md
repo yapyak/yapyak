@@ -142,7 +142,7 @@ Then use it:
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from '@yapyak/vite/config';
+import type { YapyakConfig } from 'yapyak';
 import { myLLM } from './my-translator';
 
 export default {

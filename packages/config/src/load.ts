@@ -1,4 +1,4 @@
-import type { NormalizedYapyakConfig, YapyakConfig } from './type';
+import type { NormalizedYapyakConfig, YapyakConfig } from '@yapyak/shared';
 
 import { createJiti } from 'jiti';
 

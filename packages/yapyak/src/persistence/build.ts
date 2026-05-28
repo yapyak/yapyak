@@ -1,4 +1,4 @@
-import type { NormalizedPersistence } from '@yapyak/runtime';
+import type { NormalizedPersistence } from '@yapyak/shared';
 import type { Persistence } from './create';
 
 import { cookie } from './cookie';
