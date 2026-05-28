@@ -60,14 +60,16 @@ yapyak's middleware should run first so subsequent middlewares can read the loca
 
 ## Set the page language
 
-Read the locale via `useLocale()` inside your `Layout` component. The component re-renders when the locale changes, both on the server (per-request locale) and the client:
+Read the locale via `useLocale()` inside your `Layout` to drive `<html lang>`, and wrap the routed tree in `LocaleProvider` so `t()` calls re-render when the locale changes — both on the server (per-request locale) and the client:
 
 ```tsx
 // app/root.tsx
-import { Links, Meta, Outlet, Scripts } from 'react-router';
-import { useLocale } from '@yapyak/react';
+import type { ReactNode } from 'react';
 
-export function Layout({ children }: { children: React.ReactNode }) {
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
+import { LocaleProvider, useLocale } from '@yapyak/react';
+
+export function Layout({ children }: { children: ReactNode }) {
   const [locale] = useLocale();
   return (
     <html lang={locale}>
@@ -76,7 +78,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <LocaleProvider>{children}</LocaleProvider>
+        <ScrollRestoration />
         <Scripts />
       </body>
     </html>
@@ -88,7 +91,7 @@ export default function App() {
 }
 ```
 
-This is the recommended pattern. No `syncHtmlLang` plugin option needed.
+This is the recommended pattern. The `lang` attribute updates reactively, `LocaleProvider` re-renders the routed tree so `t()` returns the new locale's strings, and SSR renders the correct `lang` per request. No `syncHtmlLang` plugin option needed.
 
 ## Cookie persistence
 

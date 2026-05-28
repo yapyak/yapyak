@@ -6,6 +6,9 @@ packages:
 catalog:
   '@biomejs/biome': 2.4.15
   '@markdoc/markdoc': 0.5.7
+  '@react-router/dev': 7.15.1
+  '@react-router/node': 7.15.1
+  '@react-router/serve': 7.15.1
   '@sveltejs/adapter-node': 5.5.4
   '@sveltejs/kit': 2.61.1
   '@astrojs/compiler': 4.0.0
@@ -22,6 +25,7 @@ catalog:
   '@vue/compiler-core': 3.5.34
   '@vue/compiler-sfc': 3.5.34
   astro: 6.3.8
+  isbot: 5.1.40
   jiti: 2.7.0
   'magic-string': 0.30.21
   picomatch: 4.0.4
