@@ -1,5 +1,5 @@
 {
-  "name": "@yapyak-examples/svelte",
+  "name": "@yapyak-examples/react-vanilla-local-storage",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,14 +8,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@yapyak/svelte": "workspace:*",
-    "svelte": "catalog:",
+    "@yapyak/react": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:",
     "yapyak": "workspace:*"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "@yapyak/anthropic": "workspace:*",
     "@yapyak/cli": "workspace:*",
-    "@yapyak/openai": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "@yapyak/vite": "workspace:*",
     "typescript": "catalog:",

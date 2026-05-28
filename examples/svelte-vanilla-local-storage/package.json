@@ -1,5 +1,5 @@
 {
-  "name": "@yapyak-examples/vue",
+  "name": "@yapyak-examples/svelte-vanilla-local-storage",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,14 +8,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@yapyak/vue": "workspace:*",
-    "vue": "catalog:",
+    "@yapyak/svelte": "workspace:*",
+    "svelte": "catalog:",
     "yapyak": "workspace:*"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "catalog:",
+    "@sveltejs/vite-plugin-svelte": "catalog:",
     "@yapyak/cli": "workspace:*",
-    "@yapyak/ollama": "workspace:*",
+    "@yapyak/openai": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "@yapyak/vite": "workspace:*",
     "typescript": "catalog:",

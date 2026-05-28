@@ -1,5 +1,5 @@
 {
-  "name": "@yapyak-examples/svelte-sveltekit",
+  "name": "@yapyak-examples/svelte-sveltekit-cookie",
   "private": true,
   "type": "module",
   "scripts": {

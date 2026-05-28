@@ -1,26 +1,28 @@
 {
-  "name": "@yapyak-examples/react-tanstack-start",
+  "name": "@yapyak-examples/react-react-router-cookie",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "react-router dev",
+    "build": "react-router build",
+    "start": "react-router-serve ./build/server/index.js"
   },
   "dependencies": {
-    "@tanstack/react-router": "catalog:",
-    "@tanstack/react-start": "catalog:",
+    "@react-router/node": "catalog:",
+    "@react-router/serve": "catalog:",
     "@yapyak/react": "workspace:*",
-    "@yapyak/tanstack-start": "workspace:*",
+    "@yapyak/react-router": "workspace:*",
+    "isbot": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "react-router": "catalog:",
     "yapyak": "workspace:*"
   },
   "devDependencies": {
+    "@react-router/dev": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@vitejs/plugin-react": "catalog:",
     "@yapyak/cli": "workspace:*",
     "@yapyak/vite": "workspace:*",
     "typescript": "catalog:",

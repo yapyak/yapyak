@@ -1,5 +1,5 @@
 {
-  "name": "@yapyak-examples/astro",
+  "name": "@yapyak-examples/astro-cookie",
   "private": true,
   "type": "module",
   "scripts": {
