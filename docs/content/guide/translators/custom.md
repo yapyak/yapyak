@@ -26,7 +26,7 @@ const myTranslator = createTranslator({
 });
 
 // In yapyak.config.ts:
-// export default { translator: myTranslator } satisfies YapyakConfig;
+// export default defineConfig({ translator: myTranslator });
 ```
 
 ## When to build one
@@ -142,17 +142,17 @@ Then use it:
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from 'yapyak';
+import { defineConfig } from 'yapyak';
 import { myLLM } from './my-translator';
 
-export default {
+export default defineConfig({
   translator: myLLM({
     endpoint: 'https://my-llm.example.com/translate',
     apiKey: process.env.MY_LLM_KEY!,
     model: 'my-model-v3',
     voice: 'Casual',
   }),
-} satisfies YapyakConfig;
+});
 ```
 
 ## Example: rules-based translator (no AI)

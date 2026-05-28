@@ -10,7 +10,17 @@ import { buildPersistence } from '../persistence';
 import { readRequest } from './request-reader';
 import { resolveLocale } from './resolve';
 
-if (process.env.NODE_ENV !== 'production' && LOCALES.length === 0) {
+let warnedUninitialized = false;
+
+function warnUninitialized(): void {
+  if (
+    warnedUninitialized ||
+    process.env.NODE_ENV === 'production' ||
+    LOCALES.length > 0
+  ) {
+    return;
+  }
+  warnedUninitialized = true;
   console.warn(
     '[yapyak] yapyak runtime not initialized — register the build-tool plugin (@yapyak/vite) in your bundler config.',
   );
@@ -86,6 +96,7 @@ if (URL_PERSISTENCE && typeof window !== 'undefined') {
  * ```
  */
 export function getLocale(): string {
+  warnUninitialized();
   if (typeof window === 'undefined') {
     const request = readRequest();
     if (request) {
@@ -160,4 +171,5 @@ export function subscribeLocale(fn: (locale: string) => void): () => void {
 export function resetLocale(): void {
   currentLocale = getInitialLocale();
   listeners.clear();
+  warnedUninitialized = false;
 }

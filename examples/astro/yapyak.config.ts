@@ -1,6 +1,6 @@
-import type { YapyakConfig } from 'yapyak';
+import { defineConfig } from 'yapyak';
 
-export default {
+export default defineConfig({
   detectAcceptLanguage: true,
   persistence: 'cookie',
-} satisfies YapyakConfig;
+});

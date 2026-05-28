@@ -50,11 +50,11 @@ If `<html>` is static HTML (no framework binding), enable `syncHtmlLang` and yap
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from 'yapyak';
+import { defineConfig } from 'yapyak';
 
-export default {
+export default defineConfig({
   syncHtmlLang: true,
-} satisfies YapyakConfig;
+});
 ```
 
 ## Cookie persistence
@@ -63,11 +63,11 @@ For SSR locale switching to work, enable cookie persistence:
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from 'yapyak';
+import { defineConfig } from 'yapyak';
 
-export default {
+export default defineConfig({
   persistence: 'cookie',
-} satisfies YapyakConfig;
+});
 ```
 
 See [Locales / Persistence](/guide/locales#persistence).

@@ -25,11 +25,11 @@ The default locale doesn't need a file — your source code is the file.
 You can override the default in `yapyak.config.ts`:
 
 ```ts
-import type { YapyakConfig } from 'yapyak';
+import { defineConfig } from 'yapyak';
 
-export default {
+export default defineConfig({
   defaultLocale: 'sv',   // Swedish-default project
-} satisfies YapyakConfig;
+});
 ```
 
 When the default isn't `en`, you write `t('Spara ändringar')` directly. Other locales (including English, if you want it) translate from Swedish.
@@ -132,15 +132,15 @@ The callback receives the new locale. It fires whenever `setLocale(...)` is call
 The user's locale choice can be persisted in three ways. Set in `yapyak.config.ts`:
 
 ```ts
-import type { YapyakConfig } from 'yapyak';
+import { defineConfig } from 'yapyak';
 
-export default {
+export default defineConfig({
   persistence: 'cookie',         // SSR-safe (recommended)
   // OR
   persistence: 'local-storage',   // SPA-only
   // OR
   persistence: null,             // in-memory, refresh resets (default)
-} satisfies YapyakConfig;
+});
 ```
 
 ### Cookie
@@ -150,9 +150,9 @@ The right choice for SSR apps. Sent with every request, so the server can read i
 Customize the cookie name via the object form:
 
 ```ts
-export default {
+export default defineConfig({
   persistence: { type: 'cookie', name: 'app-locale' },
-} satisfies YapyakConfig;
+});
 ```
 
 See [CookiePersistence](/reference/yapyak/CookiePersistence) for all fields and defaults.
@@ -164,9 +164,9 @@ For pure SPAs (no SSR) or apps avoiding cookie consent requirements.
 Tradeoff: server can't read it. First paint always renders in the default locale; the client swaps to the user's locale after hydration. Brief flash possible.
 
 ```ts
-export default {
+export default defineConfig({
   persistence: { type: 'local-storage', key: 'app:locale' },
-} satisfies YapyakConfig;
+});
 ```
 
 See [LocalStoragePersistence](/reference/yapyak/LocalStoragePersistence) for all fields and defaults.
@@ -178,9 +178,9 @@ Locale lives in the URL path. The right choice for routing apps that want sharea
 The shortest form reads the first path segment:
 
 ```ts
-export default {
+export default defineConfig({
   persistence: 'url',
-} satisfies YapyakConfig;
+});
 ```
 
 A request to `/sv/dashboard` resolves to `sv` if `sv` is among the configured locales. Otherwise the URL contributes nothing and the locale falls back to the default.
@@ -188,9 +188,9 @@ A request to `/sv/dashboard` resolves to `sv` if `sv` is among the configured lo
 For URLs where the locale isn't the first segment, pass a `match` pattern:
 
 ```ts
-export default {
+export default defineConfig({
   persistence: { type: 'url', match: /\/app\/(?<locale>en|sv|fi)\// },
-} satisfies YapyakConfig;
+});
 ```
 
 The first capture group (named `locale` or unnamed) becomes the active locale, if it matches a configured locale.
@@ -216,10 +216,10 @@ Each request picks the right locale before HTML renders. `getLocale()` returns t
 To opt into `Accept-Language` matching:
 
 ```ts
-export default {
+export default defineConfig({
   persistence: 'cookie',
   detectAcceptLanguage: true,   // default: false
-} satisfies YapyakConfig;
+});
 ```
 
 Off by default because it adds a dependency on header parsing semantics. Turn it on when you want browser-language detection without writing the parser yourself.

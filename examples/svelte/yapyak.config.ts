@@ -1,6 +1,6 @@
-import type { YapyakConfig } from 'yapyak';
+import { defineConfig } from 'yapyak';
 
-export default {
-  defaultLocale: 'en',
+export default defineConfig({
   persistence: 'local-storage',
-} satisfies YapyakConfig;
+  syncHtmlLang: true,
+});

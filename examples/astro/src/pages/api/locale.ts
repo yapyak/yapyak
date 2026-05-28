@@ -3,10 +3,12 @@ import type { APIRoute } from 'astro';
 import { setLocale } from 'yapyak';
 
 export const POST: APIRoute = async ({ redirect, request }) => {
-  const data = await request.formData();
-  const submitted = data.get('locale');
-  if (typeof submitted === 'string') {
-    setLocale(submitted);
+  const formData = await request.formData();
+  const locale = formData.get('locale') as string | null;
+
+  if (locale) {
+    setLocale(locale);
   }
-  return redirect(request.headers.get('referer') ?? '/', 303);
+
+  return redirect('/', 303);
 };

@@ -17,15 +17,15 @@ Use OpenAI's GPT models — or any OpenAI-compatible provider (Groq, DeepSeek, M
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from 'yapyak';
+import { defineConfig } from 'yapyak';
 import { openai } from '@yapyak/openai';
 
-export default {
+export default defineConfig({
   translator: openai({
     apiKey: process.env.OPENAI_API_KEY!,
     voice: 'Casual, thoughtful, never corporate.',
   }),
-} satisfies YapyakConfig;
+});
 ```
 
 Get an API key at [platform.openai.com](https://platform.openai.com).

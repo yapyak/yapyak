@@ -29,16 +29,16 @@ export default defineConfig({
 Then create `yapyak.config.ts` in the project root:
 
 ```ts
-import type { YapyakConfig } from 'yapyak';
+import { defineConfig } from 'yapyak';
 import { anthropic } from '@yapyak/anthropic';
 
-export default {
+export default defineConfig({
   persistence: 'cookie',
   translator: anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY,
     voice: 'Casual, thoughtful, never corporate.',
   }),
-} satisfies YapyakConfig;
+});
 ```
 
 Add your API key to `.env.local`:

@@ -21,6 +21,7 @@ export type {
   YapyakConfig,
 } from '@yapyak/shared';
 
+export { defineConfig } from './config';
 export {
   type FormatDateOptions,
   type FormatListOptions,

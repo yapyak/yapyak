@@ -96,11 +96,11 @@ For SSR locale switching to work, the user's choice must be readable by the serv
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from 'yapyak';
+import { defineConfig } from 'yapyak';
 
-export default {
+export default defineConfig({
   persistence: 'cookie',
-} satisfies YapyakConfig;
+});
 ```
 
 The cookie is written client-side on `setLocale()` and read server-side by the middleware. See [Locales / Persistence](/guide/locales#persistence).

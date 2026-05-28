@@ -17,15 +17,15 @@ Use Claude (Sonnet, Opus, Haiku) as your translator.
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from 'yapyak';
+import { defineConfig } from 'yapyak';
 import { anthropic } from '@yapyak/anthropic';
 
-export default {
+export default defineConfig({
   translator: anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY!,
     voice: 'Casual, thoughtful, never corporate.',
   }),
-} satisfies YapyakConfig;
+});
 ```
 
 Get an API key at [console.anthropic.com](https://console.anthropic.com).

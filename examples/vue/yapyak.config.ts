@@ -1,6 +1,6 @@
-import type { YapyakConfig } from 'yapyak';
+import { defineConfig } from 'yapyak';
 
-export default {
-  persistence: 'cookie',
+export default defineConfig({
+  persistence: 'local-storage',
   syncHtmlLang: true,
-} satisfies YapyakConfig;
+});

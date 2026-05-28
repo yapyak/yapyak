@@ -17,15 +17,15 @@ Use Google's Gemini models as your translator.
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from 'yapyak';
+import { defineConfig } from 'yapyak';
 import { gemini } from '@yapyak/gemini';
 
-export default {
+export default defineConfig({
   translator: gemini({
     apiKey: process.env.GEMINI_API_KEY!,
     voice: 'Casual, thoughtful, never corporate.',
   }),
-} satisfies YapyakConfig;
+});
 ```
 
 Get an API key at [aistudio.google.com](https://aistudio.google.com).

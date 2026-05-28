@@ -56,12 +56,12 @@ Enable `syncHtmlLang` to make yapyak update the attribute on every `setLocale()`
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from 'yapyak';
+import { defineConfig } from 'yapyak';
 
-export default {
+export default defineConfig({
   persistence: 'cookie',
   syncHtmlLang: true,
-} satisfies YapyakConfig;
+});
 ```
 
 With this set, `document.documentElement.lang` follows the current locale on store init and on every `setLocale()`. SSR still renders the right `lang` via your layout's `getLocale()` — no hydration mismatch.
@@ -74,11 +74,11 @@ For SSR locale switching to work, enable cookie persistence:
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from 'yapyak';
+import { defineConfig } from 'yapyak';
 
-export default {
+export default defineConfig({
   persistence: 'cookie',
-} satisfies YapyakConfig;
+});
 ```
 
 The cookie is written client-side on `setLocale()` and read server-side by the middleware on every request. See [Locales / Persistence](/guide/locales#persistence).

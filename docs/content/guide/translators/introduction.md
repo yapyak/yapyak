@@ -9,15 +9,15 @@ yapyak ships four translators: **Anthropic**, **OpenAI**, **Gemini**, and **Olla
 
 ```ts
 // yapyak.config.ts
-import type { YapyakConfig } from 'yapyak';
+import { defineConfig } from 'yapyak';
 import { anthropic } from '@yapyak/anthropic';
 
-export default {
+export default defineConfig({
   translator: anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY!,
     voice: 'Casual, thoughtful, never corporate.',
   }),
-} satisfies YapyakConfig;
+});
 ```
 
 ## Shared options
