@@ -70,18 +70,34 @@ type IcuParam<
   [Key in Trim<TName>]: IcuValueType<TFormat, TBody>;
 };
 
+type ExtractBranchParams<TBody extends string, TAccumulator = unknown> =
+  Trim<TBody> extends `${string} {${infer Tail}`
+    ? Tail extends `${infer BeforeClose}}${string}`
+      ? BeforeClose extends `${string}{${string}`
+        ? Tail extends `${infer Pre}{${infer Inner}}}${infer Rest}`
+          ? ExtractBranchParams<
+              Rest,
+              TAccumulator & ExtractTParams<`${Pre}{${Inner}}`>
+            >
+          : TAccumulator & ExtractTParams<Tail>
+        : Tail extends `${infer Content}}${infer Rest}`
+          ? ExtractBranchParams<Rest, TAccumulator & ExtractTParams<Content>>
+          : TAccumulator
+      : TAccumulator
+    : TAccumulator;
+
 type ResolveIcuPattern<
   TSource extends string,
   TAccumulator,
 > = TSource extends `${string}{${infer Name},${infer Format},${infer Body}}}${infer Rest}`
   ? ExtractTParams<
       Rest,
-      TAccumulator & IcuParam<Name, Format, Body> & ExtractTParams<Body>
+      TAccumulator & IcuParam<Name, Format, Body> & ExtractBranchParams<Body>
     >
   : TSource extends `${string}{${infer Name},${infer Format},${infer Body}}${infer Rest}`
     ? ExtractTParams<
         Rest,
-        TAccumulator & IcuParam<Name, Format, Body> & ExtractTParams<Body>
+        TAccumulator & IcuParam<Name, Format, Body> & ExtractBranchParams<Body>
       >
     : TSource extends `${string}{${infer Name},${string}}${infer Rest}`
       ? ExtractTParams<Rest, TAccumulator & IcuParam<Name>>

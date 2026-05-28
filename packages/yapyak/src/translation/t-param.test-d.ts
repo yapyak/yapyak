@@ -93,6 +93,13 @@ test('ICU branches with literal text do not introduce keys', () => {
   expectTypeOf<{ n: 1 }>().toMatchTypeOf<Result>();
 });
 
+test('ICU select with single-word branches does not require branch bodies', () => {
+  type Result =
+    ExtractTParams<'{role, select, admin {Administrator} editor {Editor} other {Viewer}}'>;
+  expectTypeOf<{ role: 'editor' }>().toMatchTypeOf<Result>();
+  expectTypeOf<{ role: 'admin' }>().toMatchTypeOf<Result>();
+});
+
 test('unknown ICU format falls back to permissive value type', () => {
   type Result = ExtractTParams<'{x, mystery, body}'>;
   expectTypeOf<{ x: 'string-or-num' }>().toMatchTypeOf<Result>();
