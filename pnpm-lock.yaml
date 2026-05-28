@@ -387,6 +387,46 @@ importers:
         specifier: 'catalog:'
         version: 8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)
 
+  examples/svelte-sveltekit-url:
+    dependencies:
+      '@yapyak/svelte':
+        specifier: workspace:*
+        version: link:../../packages/svelte
+      '@yapyak/sveltekit':
+        specifier: workspace:*
+        version: link:../../packages/sveltekit
+      yapyak:
+        specifier: workspace:*
+        version: link:../../packages/yapyak
+    devDependencies:
+      '@sveltejs/adapter-node':
+        specifier: 'catalog:'
+        version: 5.5.4(@sveltejs/kit@2.61.1(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.9)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)))(svelte@5.55.9)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)))
+      '@sveltejs/kit':
+        specifier: 'catalog:'
+        version: 2.61.1(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.55.9)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)))(svelte@5.55.9)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
+      '@sveltejs/vite-plugin-svelte':
+        specifier: 'catalog:'
+        version: 7.1.2(svelte@5.55.9)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.9.1
+      '@yapyak/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
+      '@yapyak/vite':
+        specifier: workspace:*
+        version: link:../../packages/vite
+      svelte:
+        specifier: 'catalog:'
+        version: 5.55.9
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+      vite:
+        specifier: 'catalog:'
+        version: 8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)
+
   examples/svelte-vanilla-local-storage:
     dependencies:
       '@yapyak/svelte':

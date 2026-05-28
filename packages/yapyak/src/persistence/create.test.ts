@@ -19,18 +19,10 @@ describe('createPersistence', () => {
     expect(persistence.set('sv')).toBe(false);
   });
 
-  it('returns `false` from set when underlying set returns `undefined`', () => {
-    const persistence = createPersistence({
-      get: () => undefined,
-      set: () => undefined,
-    });
-    expect(persistence.set('sv')).toBe(false);
-  });
-
   it('returns `undefined` for `getFromRequest` when not provided', () => {
     const persistence = createPersistence({
       get: () => undefined,
-      set: () => undefined,
+      set: () => false,
     });
     expect(persistence.getFromRequest).toBeUndefined();
   });

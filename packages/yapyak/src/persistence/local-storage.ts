@@ -32,6 +32,7 @@ export function localStorage(options: LocalStorageOptions): Persistence {
       try {
         globalThis.localStorage.setItem(key, locale);
       } catch {}
+      return false;
     },
   });
 }

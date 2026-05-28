@@ -103,6 +103,7 @@ export function cookie(options: CookieOptions): Persistence {
       }
       // biome-ignore lint/suspicious/noDocumentCookie: yap yap yap
       globalThis.document.cookie = cookieString;
+      return false;
     },
     subscribe(onChange) {
       if (typeof window === 'undefined') {

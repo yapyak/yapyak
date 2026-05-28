@@ -5,20 +5,11 @@ export interface Persistence {
   subscribe?(onChange: () => void): () => void;
 }
 
-interface CreatePersistenceOptions {
-  get(): string | undefined;
-  getFromRequest?(request: Request): string | undefined;
-  set(locale: string): boolean | void;
-  subscribe?(onChange: () => void): () => void;
-}
-
-export function createPersistence(
-  options: CreatePersistenceOptions,
-): Persistence {
+export function createPersistence(options: Persistence): Persistence {
   return {
     get: options.get,
     getFromRequest: options.getFromRequest,
-    set: (locale) => options.set(locale) === true,
+    set: options.set,
     subscribe: options.subscribe,
   };
 }
