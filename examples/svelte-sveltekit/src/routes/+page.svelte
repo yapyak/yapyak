@@ -1,7 +1,7 @@
 <script lang="ts">
   import { locales, t } from "yapyak";
   import { locale } from "@yapyak/svelte";
-  import { switchLocale } from "./locale.remote";
+  import { localeForm } from "./locale.remote";
 
   const now = new Date();
 </script>
@@ -55,7 +55,7 @@
   </div>
 
   <p>{t("From the server")}</p>
-  <form {...switchLocale} style="display: flex; gap: 0.5rem;">
+  <form {...localeForm} style="display: flex; gap: 0.5rem;">
     {#each locales as value (value)}
       <button name="locale" {value} disabled={value === locale.current}>
         {value === "sv" ? t("Swedish") : t("English")}

@@ -3,7 +3,7 @@ import { setLocale } from 'yapyak';
 
 import { form } from '$app/server';
 
-export const switchLocale = form('unchecked', async (data) => {
+export const localeForm = form('unchecked', async (data) => {
   setLocale(String(data.locale));
   redirect(303, '/');
 });
