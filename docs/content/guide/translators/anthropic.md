@@ -3,6 +3,16 @@ title: Anthropic
 order: 2
 ---
 
+## Install
+
+```bash
+npm install @yapyak/anthropic
+# or
+pnpm add @yapyak/anthropic
+```
+
+## Setup
+
 Use Claude (Sonnet, Opus, Haiku) as your translator.
 
 ```ts

@@ -3,6 +3,16 @@ title: SvelteKit
 order: 5
 ---
 
+## Install
+
+```bash
+npm install @yapyak/sveltekit
+# or
+pnpm add @yapyak/sveltekit
+```
+
+## Setup
+
 Re-export the `handle` hook from `hooks.server.ts`.
 
 ```ts

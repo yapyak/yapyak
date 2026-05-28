@@ -3,6 +3,16 @@ title: Ollama
 order: 4
 ---
 
+## Install
+
+```bash
+npm install @yapyak/ollama
+# or
+pnpm add @yapyak/ollama
+```
+
+## Setup
+
 Run translation locally — no API key, no vendor in your billing path, no data leaving your machine.
 
 ```ts

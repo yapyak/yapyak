@@ -3,6 +3,16 @@ title: React Router
 order: 4
 ---
 
+## Install
+
+```bash
+npm install @yapyak/react-router
+# or
+pnpm add @yapyak/react-router
+```
+
+## Setup
+
 Register yapyak's middleware in your root route. React Router 7 framework mode required, with `v8_middleware` enabled.
 
 ## Enable middleware

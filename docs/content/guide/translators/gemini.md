@@ -3,6 +3,16 @@ title: Gemini
 order: 3
 ---
 
+## Install
+
+```bash
+npm install @yapyak/gemini
+# or
+pnpm add @yapyak/gemini
+```
+
+## Setup
+
 Use Google's Gemini models as your translator.
 
 ```ts

@@ -3,6 +3,16 @@ title: TanStack Start
 order: 6
 ---
 
+## Install
+
+```bash
+npm install @yapyak/tanstack-start
+# or
+pnpm add @yapyak/tanstack-start
+```
+
+## Setup
+
 Register yapyak's request middleware once in `src/start.ts`.
 
 ```ts

@@ -3,6 +3,16 @@ title: OpenAI
 order: 5
 ---
 
+## Install
+
+```bash
+npm install @yapyak/openai
+# or
+pnpm add @yapyak/openai
+```
+
+## Setup
+
 Use OpenAI's GPT models — or any OpenAI-compatible provider (Groq, DeepSeek, Mistral, OpenRouter, Vercel AI Gateway, Together AI) — as your translator.
 
 ```ts

@@ -3,6 +3,16 @@ title: Astro
 order: 2
 ---
 
+## Install
+
+```bash
+npm install @yapyak/astro
+# or
+pnpm add @yapyak/astro
+```
+
+## Setup
+
 Add the integration to `astro.config.ts`.
 
 ```ts
