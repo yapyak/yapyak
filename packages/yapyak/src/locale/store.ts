@@ -14,6 +14,8 @@ let hasWarnedUninitialized = false;
 
 const persistence = buildPersistence(PERSISTENCE, LOCALES);
 const URL_PERSISTENCE = PERSISTENCE?.type === 'url';
+const COOKIE_PERSISTENCE = PERSISTENCE?.type === 'cookie';
+const POLL_INTERVAL_MS = 1000;
 
 function getInitialLocale(): string {
   const persisted = persistence?.get();
@@ -43,29 +45,69 @@ function applyLocale(value: string): void {
   }
 }
 
-function syncFromUrl(): void {
-  const fromUrl = persistence?.get();
-  if (fromUrl && LOCALES.includes(fromUrl)) {
-    applyLocale(fromUrl);
+function syncFromPersistence(): void {
+  const persisted = persistence?.get();
+  if (persisted && LOCALES.includes(persisted)) {
+    applyLocale(persisted);
   }
 }
 
-if (URL_PERSISTENCE && typeof window !== 'undefined') {
-  window.addEventListener('popstate', syncFromUrl);
+function watchHistory(onChange: () => void): void {
+  window.addEventListener('popstate', onChange);
   const originalPushState = window.history.pushState.bind(window.history);
   const originalReplaceState = window.history.replaceState.bind(window.history);
   window.history.pushState = (
     ...args: Parameters<typeof window.history.pushState>
   ): void => {
     originalPushState(...args);
-    syncFromUrl();
+    onChange();
   };
   window.history.replaceState = (
     ...args: Parameters<typeof window.history.replaceState>
   ): void => {
     originalReplaceState(...args);
-    syncFromUrl();
+    onChange();
   };
+}
+
+function pollWhileVisible(onChange: () => void): void {
+  let intervalId: number | undefined;
+  const start = (): void => {
+    intervalId ??= window.setInterval(onChange, POLL_INTERVAL_MS);
+  };
+  const stop = (): void => {
+    if (intervalId !== undefined) {
+      window.clearInterval(intervalId);
+      intervalId = undefined;
+    }
+  };
+  document.addEventListener('visibilitychange', (): void => {
+    if (document.visibilityState === 'visible') {
+      onChange();
+      start();
+    } else {
+      stop();
+    }
+  });
+  if (document.visibilityState === 'visible') {
+    start();
+  }
+}
+
+if (URL_PERSISTENCE && typeof window !== 'undefined') {
+  watchHistory(syncFromPersistence);
+}
+
+if (COOKIE_PERSISTENCE && typeof window !== 'undefined') {
+  const { cookieStore } = window as typeof window & {
+    cookieStore?: EventTarget;
+  };
+  if (cookieStore) {
+    cookieStore.addEventListener('change', syncFromPersistence);
+  } else {
+    watchHistory(syncFromPersistence);
+    pollWhileVisible(syncFromPersistence);
+  }
 }
 
 /**

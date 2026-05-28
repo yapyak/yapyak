@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "strict": true,
+    "verbatimModuleSyntax": true
+  },
+  "extends": "./.svelte-kit/tsconfig.json"
+}

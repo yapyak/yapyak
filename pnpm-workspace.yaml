@@ -6,6 +6,7 @@ packages:
 catalog:
   '@biomejs/biome': 2.4.15
   '@markdoc/markdoc': 0.5.7
+  '@sveltejs/adapter-node': 5.5.4
   '@sveltejs/kit': 2.61.1
   '@astrojs/compiler': 4.0.0
   '@astrojs/node': 10.1.1
