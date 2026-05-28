@@ -1,108 +1,143 @@
 import type { ExtractTParams } from './t-param';
 
-import { expectTypeOf, test } from 'vitest';
+import { describe, expectTypeOf, it } from 'vitest';
 
-test('no placeholders → unknown', () => {
-  expectTypeOf<ExtractTParams<'Save changes'>>().toEqualTypeOf<unknown>();
-});
+describe('ExtractTParams', () => {
+  it('infers `unknown` when the source has no placeholders', () => {
+    expectTypeOf<ExtractTParams<'Save changes'>>().toEqualTypeOf<unknown>();
+  });
 
-test('single simple placeholder', () => {
-  expectTypeOf<ExtractTParams<'Hello, {name}!'>>().toEqualTypeOf<{
-    name: string | number;
-  }>();
-});
+  it('infers a string-or-number param for a simple placeholder', () => {
+    expectTypeOf<ExtractTParams<'Hello, {name}!'>>().toEqualTypeOf<{
+      name: string | number;
+    }>();
+  });
 
-test('multiple simple placeholders', () => {
-  expectTypeOf<{ a: 'x'; b: 1 }>().toMatchTypeOf<ExtractTParams<'{a} {b}'>>();
-});
+  it('infers params for multiple simple placeholders', () => {
+    expectTypeOf<{ a: 'x'; b: 1 }>().toExtend<ExtractTParams<'{a} {b}'>>();
+  });
 
-test('ICU plural — count typed as number', () => {
-  type Result =
-    ExtractTParams<'You have {count, plural, one {# message} other {# messages}}'>;
-  expectTypeOf<{ count: 3 }>().toMatchTypeOf<Result>();
-});
+  it('types a plural argument as `number`', () => {
+    type Result =
+      ExtractTParams<'You have {count, plural, one {# message} other {# messages}}'>;
+    expectTypeOf<{ count: 3 }>().toExtend<Result>();
+  });
 
-test('ICU plural — string for count is rejected', () => {
-  type Result =
-    ExtractTParams<'You have {count, plural, one {# message} other {# messages}}'>;
-  expectTypeOf<{ count: 'three' }>().not.toMatchTypeOf<Result>();
-});
+  it('rejects a string for a plural argument', () => {
+    type Result =
+      ExtractTParams<'You have {count, plural, one {# message} other {# messages}}'>;
+    expectTypeOf<{ count: 'three' }>().not.toExtend<Result>();
+  });
 
-test('ICU selectordinal — typed as number', () => {
-  type Result = ExtractTParams<'{n, selectordinal, one {1st} other {nth}}'>;
-  expectTypeOf<{ n: 1 }>().toMatchTypeOf<Result>();
-  expectTypeOf<{ n: 'one' }>().not.toMatchTypeOf<Result>();
-});
+  it('types a selectordinal argument as `number`', () => {
+    type Result = ExtractTParams<'{n, selectordinal, one {1st} other {nth}}'>;
+    expectTypeOf<{ n: 1 }>().toExtend<Result>();
+    expectTypeOf<{ n: 'one' }>().not.toExtend<Result>();
+  });
 
-test('ICU select with other — theme allows known branches and any string', () => {
-  type Result =
-    ExtractTParams<'{theme, select, dark {Dark mode} other {Light mode}}'>;
-  expectTypeOf<{ theme: 'dark' }>().toMatchTypeOf<Result>();
-  expectTypeOf<{ theme: 'custom-theme' }>().toMatchTypeOf<Result>();
-  expectTypeOf<{ theme: 42 }>().not.toMatchTypeOf<Result>();
-});
+  it('types a number argument as `number`', () => {
+    type Result = ExtractTParams<'Price: {amount, number, currency EUR}'>;
+    expectTypeOf<{ amount: 10 }>().toExtend<Result>();
+    expectTypeOf<{ amount: 'ten' }>().not.toExtend<Result>();
+  });
 
-test('ICU select without other — theme typed as strict enum', () => {
-  type Result = ExtractTParams<'{gender, select, male {Mr.} female {Ms.}}'>;
-  expectTypeOf<{ gender: 'male' }>().toMatchTypeOf<Result>();
-  expectTypeOf<{ gender: 'female' }>().toMatchTypeOf<Result>();
-  expectTypeOf<{ gender: 'unknown' }>().not.toMatchTypeOf<Result>();
-});
+  it('types a `number, percent` argument as `number`', () => {
+    type Result = ExtractTParams<'Total: {amount, number, percent}'>;
+    expectTypeOf<{ amount: 0.42 }>().toExtend<Result>();
+    expectTypeOf<{ amount: 'ten' }>().not.toExtend<Result>();
+  });
 
-test('ICU number — amount typed as number', () => {
-  type Result = ExtractTParams<'Price: {amount, number, currency EUR}'>;
-  expectTypeOf<{ amount: 10 }>().toMatchTypeOf<Result>();
-  expectTypeOf<{ amount: 'ten' }>().not.toMatchTypeOf<Result>();
-});
+  it('types a `number, integer` argument as `number`', () => {
+    type Result = ExtractTParams<'Count: {amount, number, integer}'>;
+    expectTypeOf<{ amount: 42 }>().toExtend<Result>();
+  });
 
-test('ICU date — when typed as Date | number', () => {
-  type Result = ExtractTParams<'Updated: {when, date, long}'>;
-  expectTypeOf<{ when: Date }>().toMatchTypeOf<Result>();
-  expectTypeOf<{ when: 1700000000000 }>().toMatchTypeOf<Result>();
-  expectTypeOf<{ when: 'today' }>().not.toMatchTypeOf<Result>();
-});
+  it('types a date argument as `Date` or `number`', () => {
+    type Result = ExtractTParams<'Updated: {when, date, long}'>;
+    expectTypeOf<{ when: Date }>().toExtend<Result>();
+    expectTypeOf<{ when: 1700000000000 }>().toExtend<Result>();
+    expectTypeOf<{ when: 'today' }>().not.toExtend<Result>();
+  });
 
-test('ICU time — when typed as Date | number', () => {
-  type Result = ExtractTParams<'At: {when, time, short}'>;
-  expectTypeOf<{ when: Date }>().toMatchTypeOf<Result>();
-  expectTypeOf<{ when: 'now' }>().not.toMatchTypeOf<Result>();
-});
+  it('types a time argument as `Date` or `number`', () => {
+    type Result = ExtractTParams<'At: {when, time, short}'>;
+    expectTypeOf<{ when: Date }>().toExtend<Result>();
+    expectTypeOf<{ when: 'now' }>().not.toExtend<Result>();
+  });
 
-test('mixed simple and ICU', () => {
-  type Result =
-    ExtractTParams<'Hi {name}, you have {count, plural, one {# msg} other {# msgs}}'>;
-  expectTypeOf<{ name: 'A'; count: 3 }>().toMatchTypeOf<Result>();
-});
+  it('allows known branches and any string for a select with `other`', () => {
+    type Result =
+      ExtractTParams<'{theme, select, dark {Dark mode} other {Light mode}}'>;
+    expectTypeOf<{ theme: 'dark' }>().toExtend<Result>();
+    expectTypeOf<{ theme: 'custom-theme' }>().toExtend<Result>();
+    expectTypeOf<{ theme: 42 }>().not.toExtend<Result>();
+  });
 
-test('ICU plural — extracts nested placeholders from branches', () => {
-  type Result =
-    ExtractTParams<'You have {count, plural, one {# by {author}} other {# by {author}}}'>;
-  expectTypeOf<{ count: 1; author: 'Alex' }>().toMatchTypeOf<Result>();
-  expectTypeOf<{ count: 1 }>().not.toMatchTypeOf<Result>();
-});
+  it('restricts a select without `other` to its branch union', () => {
+    type Result = ExtractTParams<'{gender, select, male {Mr.} female {Ms.}}'>;
+    expectTypeOf<{ gender: 'male' }>().toExtend<Result>();
+    expectTypeOf<{ gender: 'female' }>().toExtend<Result>();
+    expectTypeOf<{ gender: 'unknown' }>().not.toExtend<Result>();
+  });
 
-test('ICU select — extracts nested placeholders from branches', () => {
-  type Result =
-    ExtractTParams<'{theme, select, dark {Hello {name}} other {Bye {name}}}'>;
-  expectTypeOf<{ theme: 'dark'; name: 'Alex' }>().toMatchTypeOf<Result>();
-  expectTypeOf<{ theme: 'dark' }>().not.toMatchTypeOf<Result>();
-});
+  it('requires only the selector for single-word select branches', () => {
+    type Result =
+      ExtractTParams<'{role, select, admin {Administrator} editor {Editor} other {Viewer}}'>;
+    expectTypeOf<{ role: 'editor' }>().toExtend<Result>();
+    expectTypeOf<{ role: 'admin' }>().toExtend<Result>();
+  });
 
-test('ICU branches with literal text do not introduce keys', () => {
-  type Result = ExtractTParams<'{n, selectordinal, one {1st} other {nth}}'>;
-  expectTypeOf<{ n: 1 }>().toMatchTypeOf<Result>();
-});
+  it('infers params from mixed simple and ICU placeholders', () => {
+    type Result =
+      ExtractTParams<'Hi {name}, you have {count, plural, one {# msg} other {# msgs}}'>;
+    expectTypeOf<{ name: 'A'; count: 3 }>().toExtend<Result>();
+  });
 
-test('ICU select with single-word branches does not require branch bodies', () => {
-  type Result =
-    ExtractTParams<'{role, select, admin {Administrator} editor {Editor} other {Viewer}}'>;
-  expectTypeOf<{ role: 'editor' }>().toMatchTypeOf<Result>();
-  expectTypeOf<{ role: 'admin' }>().toMatchTypeOf<Result>();
-});
+  it('infers params for two ICU arguments in one source', () => {
+    type Result =
+      ExtractTParams<'You have {count, plural, one {# msg} other {# msgs}} in {folder, select, inbox {Inbox} other {Folder}}'>;
+    expectTypeOf<{ count: 3; folder: 'inbox' }>().toExtend<Result>();
+    expectTypeOf<{ count: 3; folder: 'custom' }>().toExtend<Result>();
+  });
 
-test('unknown ICU format falls back to permissive value type', () => {
-  type Result = ExtractTParams<'{x, mystery, body}'>;
-  expectTypeOf<{ x: 'string-or-num' }>().toMatchTypeOf<Result>();
-  expectTypeOf<{ x: 42 }>().toMatchTypeOf<Result>();
-  expectTypeOf<{ x: Date }>().toMatchTypeOf<Result>();
+  it('extracts nested placeholders from plural branches', () => {
+    type Result =
+      ExtractTParams<'You have {count, plural, one {# by {author}} other {# by {author}}}'>;
+    expectTypeOf<{ count: 1; author: 'Alex' }>().toExtend<Result>();
+    expectTypeOf<{ count: 1 }>().not.toExtend<Result>();
+  });
+
+  it('extracts nested placeholders from select branches', () => {
+    type Result =
+      ExtractTParams<'{theme, select, dark {Hello {name}} other {Bye {name}}}'>;
+    expectTypeOf<{ theme: 'dark'; name: 'Alex' }>().toExtend<Result>();
+    expectTypeOf<{ theme: 'dark' }>().not.toExtend<Result>();
+  });
+
+  it('extracts nested placeholders from selectordinal branches', () => {
+    type Result =
+      ExtractTParams<'{place, selectordinal, one {#st: {prize}} other {#th: {prize}}}'>;
+    expectTypeOf<{ place: 1; prize: 'Gold' }>().toExtend<Result>();
+    expectTypeOf<{ place: 1 }>().not.toExtend<Result>();
+  });
+
+  it('ignores literal text in ICU branches', () => {
+    type Result = ExtractTParams<'{n, selectordinal, one {1st} other {nth}}'>;
+    expectTypeOf<{ n: 1 }>().toExtend<Result>();
+  });
+
+  it('falls back to a permissive type for an unknown ICU format', () => {
+    type Result = ExtractTParams<'{x, mystery, body}'>;
+    expectTypeOf<{ x: 'string-or-num' }>().toExtend<Result>();
+    expectTypeOf<{ x: 42 }>().toExtend<Result>();
+    expectTypeOf<{ x: Date }>().toExtend<Result>();
+  });
+
+  it('infers `unknown` for a placeholder that starts with a digit', () => {
+    expectTypeOf<ExtractTParams<'Item {0}'>>().toEqualTypeOf<unknown>();
+  });
+
+  it('infers `unknown` for a placeholder with non-identifier characters', () => {
+    expectTypeOf<ExtractTParams<'Hi {user.name}'>>().toEqualTypeOf<unknown>();
+  });
 });
