@@ -1,7 +1,6 @@
 import type { Persistence } from '.';
 
 import { subscribeHistory } from './history';
-import { createPersistence } from '.';
 
 function getLocaleFromUrl(
   url: URL | Location,
@@ -31,7 +30,7 @@ interface UrlOptions {
 
 export function url(options: UrlOptions): Persistence {
   const { locales, match } = options;
-  return createPersistence({
+  return {
     get() {
       if (typeof window === 'undefined') {
         return undefined;
@@ -55,7 +54,7 @@ export function url(options: UrlOptions): Persistence {
       }
       return subscribeHistory(onChange);
     },
-  });
+  };
 }
 
 export { getLocaleFromUrl };

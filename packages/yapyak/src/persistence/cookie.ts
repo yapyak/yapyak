@@ -2,7 +2,6 @@ import type { Persistence } from '.';
 
 import { appendResponseHeader } from '../locale/response-header-writer';
 import { subscribeHistory } from './history';
-import { createPersistence } from '.';
 
 const POLL_INTERVAL_MS = 1000;
 
@@ -73,7 +72,7 @@ interface CookieOptions {
 
 export function cookie(options: CookieOptions): Persistence {
   const { name } = options;
-  return createPersistence({
+  return {
     get() {
       if (typeof globalThis.document === 'undefined') {
         return undefined;
@@ -125,5 +124,5 @@ export function cookie(options: CookieOptions): Persistence {
         unsubscribePoll();
       };
     },
-  });
+  };
 }

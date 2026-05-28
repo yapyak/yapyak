@@ -1,5 +1,5 @@
 import type { NormalizedPersistence } from '@yapyak/shared';
-import type { Persistence } from './create';
+import type { Persistence } from './type';
 
 import { cookie } from './cookie';
 import { localStorage } from './local-storage';

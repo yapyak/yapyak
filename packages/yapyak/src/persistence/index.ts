@@ -1,2 +1,3 @@
+export type { Persistence } from './type';
+
 export { buildPersistence } from './build';
-export { createPersistence, type Persistence } from './create';

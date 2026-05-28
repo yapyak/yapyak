@@ -1,14 +1,12 @@
 import type { Persistence } from '.';
 
-import { createPersistence } from '.';
-
 interface LocalStorageOptions {
   key: string;
 }
 
 export function localStorage(options: LocalStorageOptions): Persistence {
   const { key } = options;
-  return createPersistence({
+  return {
     get() {
       if (typeof globalThis.localStorage === 'undefined') {
         return undefined;
@@ -34,5 +32,5 @@ export function localStorage(options: LocalStorageOptions): Persistence {
       } catch {}
       return false;
     },
-  });
+  };
 }
