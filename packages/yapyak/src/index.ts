@@ -37,4 +37,4 @@ export {
   formatTime,
 } from './format';
 export { defaultLocale, getLocale, locales, setLocale } from './locale';
-export { type TOptions, t } from './translation';
+export { type TOptions, type TReturn, t } from './translation';

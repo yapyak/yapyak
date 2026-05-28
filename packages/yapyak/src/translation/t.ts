@@ -1,4 +1,5 @@
 import type { ExtractTParams } from './t-param';
+import type { ExtractTags } from './tag';
 
 import { getLocale } from '../locale';
 import { interpolate } from './interpolate';
@@ -12,6 +13,12 @@ type TParams<T extends string> = T extends `${string}{${string}`
 export interface TOptions {
   locale?: string;
 }
+
+declare const brand: unique symbol;
+
+export type TReturn<T extends string = never> = [T] extends [never]
+  ? string
+  : string & { readonly [brand]?: T };
 
 /**
  * Translates a source string to the current locale.
@@ -40,7 +47,7 @@ export function t<T extends string>(
   ...rest: T extends `${string}{${string}`
     ? [params: TParams<T>, options?: TOptions]
     : [options?: TOptions]
-): string;
+): TReturn<ExtractTags<T>>;
 export function t(source: string, ...rest: unknown[]): string {
   let params: Record<string, unknown> | undefined;
   let options: TOptions | undefined;

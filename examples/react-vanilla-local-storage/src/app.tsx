@@ -1,4 +1,4 @@
-import { useLocale } from '@yapyak/react';
+import { RichText, useLocale } from '@yapyak/react';
 import { locales, t } from 'yapyak';
 
 const date = new Date('2024-01-01T08:30:00Z');
@@ -40,6 +40,15 @@ export function App() {
           '{role, select, admin {Administrator} editor {Editor} other {Viewer}}',
           { role: 'editor' },
         )}
+      </p>
+
+      <h2>{t('Rich text')}</h2>
+      <p>
+        <RichText
+          b={(children) => <strong>{children}</strong>}
+          link={(children) => <a href="https://yapyak.dev">{children}</a>}
+          value={t('Translate <b>everything</b> with <link>yapyak</link>')}
+        />
       </p>
 
       <h2>{t('Switch language')}</h2>
