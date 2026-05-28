@@ -25,6 +25,13 @@ import { basename, extname, join, relative, sep } from 'node:path';
 
 const RUNTIME_ID = '@yapyak/shared';
 const RUNTIME_RESOLVED = `\0${RUNTIME_ID}`;
+const RUNTIME_NO_EXTERNAL: (string | RegExp)[] = ['yapyak', /^@yapyak\//];
+
+function isRuntimeExternal(id: string): boolean {
+  return RUNTIME_NO_EXTERNAL.some((pattern) =>
+    typeof pattern === 'string' ? pattern === id : pattern.test(id),
+  );
+}
 
 const HMR_LISTENER = [
   'if (import.meta.hot) {',
@@ -239,7 +246,7 @@ export function yapyak(): Plugin {
           exclude: [RUNTIME_ID],
         },
         ssr: {
-          noExternal: [/^@yapyak\//, 'yapyak'],
+          noExternal: RUNTIME_NO_EXTERNAL,
         },
       };
     },
@@ -251,6 +258,11 @@ export function yapyak(): Plugin {
       normalized = result.config;
       configFile = result.configFile;
       filter = createFilter(result.config.include, result.config.exclude);
+      const ssrExternal = config.ssr?.external;
+      if (Array.isArray(ssrExternal)) {
+        const kept = ssrExternal.filter((id) => !isRuntimeExternal(id));
+        ssrExternal.splice(0, ssrExternal.length, ...kept);
+      }
     },
     configureServer(server): void {
       if (configFile !== null) {

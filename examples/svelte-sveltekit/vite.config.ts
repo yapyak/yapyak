@@ -4,7 +4,4 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [sveltekit(), yapyak()],
-  ssr: {
-    noExternal: ['yapyak', /^@yapyak\//],
-  },
 });
