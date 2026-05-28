@@ -32,7 +32,7 @@ export function yapyak(): AstroIntegration {
           },
         });
         addMiddleware({
-          entrypoint: '@yapyak/astro/middleware',
+          entrypoint: '@yapyak/astro/internal',
           order: 'pre',
         });
       },

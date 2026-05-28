@@ -8,9 +8,9 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./middleware": {
-      "types": "./dist/middleware.d.ts",
-      "default": "./dist/middleware.js"
+    "./internal": {
+      "types": "./dist/internal.d.ts",
+      "default": "./dist/internal.js"
     }
   },
   "files": [
