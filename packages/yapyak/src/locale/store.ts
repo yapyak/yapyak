@@ -13,9 +13,6 @@ import { resolveLocale } from './resolve';
 let hasWarnedUninitialized = false;
 
 const persistence = buildPersistence(PERSISTENCE, LOCALES);
-const URL_PERSISTENCE = PERSISTENCE?.type === 'url';
-const COOKIE_PERSISTENCE = PERSISTENCE?.type === 'cookie';
-const POLL_INTERVAL_MS = 1000;
 
 function getInitialLocale(): string {
   const persisted = persistence?.get();
@@ -52,63 +49,7 @@ function syncFromPersistence(): void {
   }
 }
 
-function watchHistory(onChange: () => void): void {
-  window.addEventListener('popstate', onChange);
-  const originalPushState = window.history.pushState.bind(window.history);
-  const originalReplaceState = window.history.replaceState.bind(window.history);
-  window.history.pushState = (
-    ...args: Parameters<typeof window.history.pushState>
-  ): void => {
-    originalPushState(...args);
-    onChange();
-  };
-  window.history.replaceState = (
-    ...args: Parameters<typeof window.history.replaceState>
-  ): void => {
-    originalReplaceState(...args);
-    onChange();
-  };
-}
-
-function pollWhileVisible(onChange: () => void): void {
-  let intervalId: number | undefined;
-  const start = (): void => {
-    intervalId ??= window.setInterval(onChange, POLL_INTERVAL_MS);
-  };
-  const stop = (): void => {
-    if (intervalId !== undefined) {
-      window.clearInterval(intervalId);
-      intervalId = undefined;
-    }
-  };
-  document.addEventListener('visibilitychange', (): void => {
-    if (document.visibilityState === 'visible') {
-      onChange();
-      start();
-    } else {
-      stop();
-    }
-  });
-  if (document.visibilityState === 'visible') {
-    start();
-  }
-}
-
-if (URL_PERSISTENCE && typeof window !== 'undefined') {
-  watchHistory(syncFromPersistence);
-}
-
-if (COOKIE_PERSISTENCE && typeof window !== 'undefined') {
-  const { cookieStore } = window as typeof window & {
-    cookieStore?: EventTarget;
-  };
-  if (cookieStore) {
-    cookieStore.addEventListener('change', syncFromPersistence);
-  } else {
-    watchHistory(syncFromPersistence);
-    pollWhileVisible(syncFromPersistence);
-  }
-}
+persistence?.subscribe?.(syncFromPersistence);
 
 /**
  * The current locale.
@@ -173,15 +114,6 @@ export function getLocale(): string {
  */
 export function setLocale(value: string): void {
   if (!LOCALES.includes(value)) {
-    return;
-  }
-
-  if (URL_PERSISTENCE) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn(
-        '[yapyak] setLocale() is a no-op with persistence: "url". The URL is the source of truth — drive locale switches through router navigation.',
-      );
-    }
     return;
   }
 

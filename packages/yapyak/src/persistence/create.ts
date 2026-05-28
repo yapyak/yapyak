@@ -2,12 +2,14 @@ export interface Persistence {
   get(): string | undefined;
   getFromRequest?(request: Request): string | undefined;
   set(locale: string): boolean;
+  subscribe?(onChange: () => void): () => void;
 }
 
 interface CreatePersistenceOptions {
   get(): string | undefined;
   getFromRequest?(request: Request): string | undefined;
   set(locale: string): boolean | void;
+  subscribe?(onChange: () => void): () => void;
 }
 
 export function createPersistence(
@@ -17,5 +19,6 @@ export function createPersistence(
     get: options.get,
     getFromRequest: options.getFromRequest,
     set: (locale) => options.set(locale) === true,
+    subscribe: options.subscribe,
   };
 }

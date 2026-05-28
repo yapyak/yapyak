@@ -1,7 +1,39 @@
 import type { Persistence } from '.';
 
 import { appendResponseHeader } from '../locale/response-header-writer';
+import { subscribeHistory } from './history';
 import { createPersistence } from '.';
+
+const POLL_INTERVAL_MS = 1000;
+
+function subscribePoll(onChange: () => void): () => void {
+  let intervalId: number | undefined;
+  const start = (): void => {
+    intervalId ??= window.setInterval(onChange, POLL_INTERVAL_MS);
+  };
+  const stop = (): void => {
+    if (intervalId !== undefined) {
+      window.clearInterval(intervalId);
+      intervalId = undefined;
+    }
+  };
+  const sync = (): void => {
+    if (document.visibilityState === 'visible') {
+      onChange();
+      start();
+    } else {
+      stop();
+    }
+  };
+  document.addEventListener('visibilitychange', sync);
+  if (document.visibilityState === 'visible') {
+    start();
+  }
+  return (): void => {
+    document.removeEventListener('visibilitychange', sync);
+    stop();
+  };
+}
 
 export function parseCookie(header: string): Record<string, string> {
   const result: Record<string, string> = {};
@@ -71,6 +103,26 @@ export function cookie(options: CookieOptions): Persistence {
       }
       // biome-ignore lint/suspicious/noDocumentCookie: yap yap yap
       globalThis.document.cookie = cookieString;
+    },
+    subscribe(onChange) {
+      if (typeof window === 'undefined') {
+        return () => {};
+      }
+      const { cookieStore } = window as typeof window & {
+        cookieStore?: EventTarget;
+      };
+      if (cookieStore) {
+        cookieStore.addEventListener('change', onChange);
+        return () => {
+          cookieStore.removeEventListener('change', onChange);
+        };
+      }
+      const unsubscribeHistory = subscribeHistory(onChange);
+      const unsubscribePoll = subscribePoll(onChange);
+      return () => {
+        unsubscribeHistory();
+        unsubscribePoll();
+      };
     },
   });
 }

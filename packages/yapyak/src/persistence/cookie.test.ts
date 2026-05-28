@@ -134,6 +134,106 @@ describe('cookie', () => {
       warn.mockRestore();
     });
   });
+
+  describe('subscribe', () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      vi.useRealTimers();
+    });
+
+    it('does nothing in a non-browser environment', () => {
+      const onChange = vi.fn();
+      cookie({ name: 'locale' }).subscribe?.(onChange);
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('invokes the callback on a Cookie Store change', () => {
+      const cookieStore = new EventTarget();
+      vi.stubGlobal('window', { cookieStore });
+      const onChange = vi.fn();
+      cookie({ name: 'locale' }).subscribe?.(onChange);
+      cookieStore.dispatchEvent(new Event('change'));
+      expect(onChange).toHaveBeenCalledOnce();
+    });
+
+    it('stops invoking the callback after unsubscribe', () => {
+      const cookieStore = new EventTarget();
+      vi.stubGlobal('window', { cookieStore });
+      const onChange = vi.fn();
+      const unsubscribe = cookie({ name: 'locale' }).subscribe?.(onChange);
+      unsubscribe?.();
+      cookieStore.dispatchEvent(new Event('change'));
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    describe('without the Cookie Store API', () => {
+      let documentListeners: Map<string, Array<(event: Event) => void>>;
+      let visibilityState: DocumentVisibilityState;
+      let history: {
+        pushState: (state: unknown, title: string, url: string) => void;
+        replaceState: (state: unknown, title: string, url: string) => void;
+      };
+
+      beforeEach(() => {
+        vi.useFakeTimers();
+        visibilityState = 'visible';
+        documentListeners = new Map();
+        history = { pushState() {}, replaceState() {} };
+        vi.stubGlobal('window', {
+          addEventListener() {},
+          clearInterval(id?: number) {
+            globalThis.clearInterval(id);
+          },
+          history,
+          setInterval(handler: () => void, ms?: number) {
+            return globalThis.setInterval(handler, ms);
+          },
+        });
+        vi.stubGlobal('document', {
+          addEventListener(type: string, fn: (event: Event) => void) {
+            const arr = documentListeners.get(type) ?? [];
+            arr.push(fn);
+            documentListeners.set(type, arr);
+          },
+          get visibilityState() {
+            return visibilityState;
+          },
+        });
+      });
+
+      function dispatchDocument(type: string): void {
+        for (const fn of documentListeners.get(type) ?? []) {
+          fn(new Event(type));
+        }
+      }
+
+      it('invokes the callback on a history navigation', () => {
+        const onChange = vi.fn();
+        cookie({ name: 'locale' }).subscribe?.(onChange);
+        history.pushState({}, '', '/');
+        expect(onChange).toHaveBeenCalledOnce();
+      });
+
+      it('invokes the callback while polling when visible', () => {
+        const onChange = vi.fn();
+        cookie({ name: 'locale' }).subscribe?.(onChange);
+        vi.advanceTimersByTime(1000);
+        expect(onChange).toHaveBeenCalled();
+      });
+
+      it('stops polling when hidden and resumes when visible again', () => {
+        const onChange = vi.fn();
+        cookie({ name: 'locale' }).subscribe?.(onChange);
+        visibilityState = 'hidden';
+        dispatchDocument('visibilitychange');
+        vi.advanceTimersByTime(5000);
+        expect(onChange).not.toHaveBeenCalled();
+        visibilityState = 'visible';
+        dispatchDocument('visibilitychange');
+        expect(onChange).toHaveBeenCalledOnce();
+      });
+    });
+  });
 });
 
 describe('parseCookie', () => {

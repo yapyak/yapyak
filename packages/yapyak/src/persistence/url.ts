@@ -1,5 +1,6 @@
 import type { Persistence } from '.';
 
+import { subscribeHistory } from './history';
 import { createPersistence } from '.';
 
 function getLocaleFromUrl(
@@ -40,7 +41,20 @@ export function url(options: UrlOptions): Persistence {
     getFromRequest(request) {
       return getLocaleFromUrl(new URL(request.url), locales, match);
     },
-    set() {},
+    set() {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(
+          '[yapyak] setLocale() is a no-op with persistence: "url". The URL is the source of truth — drive locale switches through router navigation.',
+        );
+      }
+      return true;
+    },
+    subscribe(onChange) {
+      if (typeof window === 'undefined') {
+        return () => {};
+      }
+      return subscribeHistory(onChange);
+    },
   });
 }
 
