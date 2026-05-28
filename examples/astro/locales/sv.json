@@ -1,7 +1,4 @@
 {
-  "src/layouts/Layout.astro": {
-    "yapyak Astro example": "yapyak Astro-exempel"
-  },
   "src/pages/index.astro": {
     "At: {when, time, short}": "Klockan: {when, time, short}",
     "Count: {amount, number, integer}": "Antal: {amount, number, integer}",

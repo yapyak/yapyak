@@ -348,6 +348,9 @@ importers:
       '@yapyak/adapter':
         specifier: workspace:*
         version: link:../adapter
+      '@yapyak/vite':
+        specifier: workspace:*
+        version: link:../vite
     devDependencies:
       '@yapyak/tsup-config':
         specifier: workspace:*

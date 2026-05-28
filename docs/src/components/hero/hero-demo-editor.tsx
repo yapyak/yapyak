@@ -203,7 +203,7 @@ import { ${T_NAME} } from 'yapyak';
     case 'react':
       return `import { ${T_NAME} } from 'yapyak';
 
-export function Welcome() {
+export function App() {
   return <h1>{${T_NAME}('${value}')}</h1>;
 }
 `;

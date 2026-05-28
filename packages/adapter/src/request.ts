@@ -36,7 +36,9 @@ setResponseHeaderWriter((name, value) => {
  * ```
  */
 export function withRequest<T>(request: Request, fn: () => T): T {
-  return requestStorage.run(request, () => headersStorage.run(new Headers(), fn));
+  return requestStorage.run(request, () =>
+    headersStorage.run(new Headers(), fn),
+  );
 }
 
 /**

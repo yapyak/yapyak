@@ -17,11 +17,23 @@ export interface Processor {
   parseFragments(source: string): Fragment[];
 }
 
-export function resolveProcessorKind(fileId: string): ProcessorKind {
+export function resolveProcessorKind(
+  fileId: string,
+  source?: string,
+): ProcessorKind {
   if (fileId.endsWith('.vue')) return 'vue';
   if (fileId.endsWith('.svelte')) return 'svelte';
-  if (fileId.endsWith('.astro')) return 'astro';
+  if (fileId.endsWith('.astro')) {
+    if (source !== undefined && isCompiledAstro(source)) {
+      return 'vanilla';
+    }
+    return 'astro';
+  }
   return 'vanilla';
+}
+
+function isCompiledAstro(source: string): boolean {
+  return source.trimStart().startsWith('import');
 }
 
 export function getProcessor(kind: ProcessorKind): Processor {

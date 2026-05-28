@@ -12,4 +12,4 @@
  * @packageDocumentation
  */
 
-export { middleware } from './middleware';
+export { yapyak } from './integration';

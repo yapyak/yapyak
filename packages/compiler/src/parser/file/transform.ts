@@ -53,7 +53,7 @@ export function transformFile(
     };
   }
   const processorKind =
-    request.processor ?? resolveProcessorKind(request.fileId);
+    request.processor ?? resolveProcessorKind(request.fileId, request.source);
   const processor = getProcessor(processorKind);
   const fragments = processor.parseFragments(request.source);
   const isSingleLocale = request.locales.length === 1;

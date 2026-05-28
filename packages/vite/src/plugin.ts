@@ -239,7 +239,7 @@ export function yapyak(): Plugin {
           exclude: [RUNTIME_ID],
         },
         ssr: {
-          noExternal: [RUNTIME_ID, 'yapyak'],
+          noExternal: [/^@yapyak\//, 'yapyak'],
         },
       };
     },

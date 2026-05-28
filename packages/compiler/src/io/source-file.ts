@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 export const DEFAULT_INCLUDE: string[] = [
-  '**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,svelte,vue}',
+  '**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,svelte,vue,astro}',
 ];
 
 export const DEFAULT_EXCLUDE: string[] = [

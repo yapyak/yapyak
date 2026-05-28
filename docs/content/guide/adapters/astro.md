@@ -3,27 +3,19 @@ title: Astro
 order: 2
 ---
 
-Re-export yapyak's middleware as `onRequest` from `src/middleware.ts`.
+Add the integration to `astro.config.ts`.
 
 ```ts
-// src/middleware.ts
-export { middleware as onRequest } from '@yapyak/astro';
+// astro.config.ts
+import { yapyak } from '@yapyak/astro';
+import { defineConfig } from 'astro/config';
+
+export default defineConfig({
+  integrations: [yapyak()],
+});
 ```
 
-That's the entire wiring.
-
-## Composing with other middlewares
-
-If you have your own middlewares (auth, logging, etc.), compose with Astro's `sequence`:
-
-```ts
-// src/middleware.ts
-import { sequence } from 'astro:middleware';
-import { middleware as yapyakMiddleware } from '@yapyak/astro';
-import { authMiddleware } from './auth';
-
-export const onRequest = sequence(yapyakMiddleware, authMiddleware);
-```
+That's the entire wiring. The integration registers the build-time plugin and injects a per-request locale middleware that binds the incoming request — so `getLocale()` and `t()` resolve the right locale during rendering — and flushes any cookie written by a server-side `setLocale()` onto the response.
 
 ## Set the page language
 

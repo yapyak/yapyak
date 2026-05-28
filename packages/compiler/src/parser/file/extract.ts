@@ -47,7 +47,7 @@ export interface ExtractFileResult {
 
 export function extractFile(request: ExtractFileRequest): ExtractFileResult {
   const processorKind =
-    request.processor ?? resolveProcessorKind(request.fileId);
+    request.processor ?? resolveProcessorKind(request.fileId, request.source);
   const processor = getProcessor(processorKind);
   const fragments = processor.parseFragments(request.source);
 

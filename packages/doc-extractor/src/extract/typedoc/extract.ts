@@ -953,7 +953,6 @@ function readThrows(comment: CommentLike, context: Context): ReferenceThrows[] {
   return throws;
 }
 
-
 function readDefaultValue(
   reflection: DeclarationReflection,
   context: Context,

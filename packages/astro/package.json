@@ -7,6 +7,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./middleware": {
+      "types": "./dist/middleware.d.ts",
+      "default": "./dist/middleware.js"
     }
   },
   "files": [
@@ -18,7 +22,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@yapyak/adapter": "workspace:*"
+    "@yapyak/adapter": "workspace:*",
+    "@yapyak/vite": "workspace:*"
   },
   "peerDependencies": {
     "astro": ">=5"

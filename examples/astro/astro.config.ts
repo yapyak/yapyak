@@ -1,11 +1,9 @@
 import node from '@astrojs/node';
-import { yapyak } from '@yapyak/vite';
+import { yapyak } from '@yapyak/astro';
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
   adapter: node({ mode: 'standalone' }),
+  integrations: [yapyak()],
   output: 'server',
-  vite: {
-    plugins: [yapyak()],
-  },
 });
