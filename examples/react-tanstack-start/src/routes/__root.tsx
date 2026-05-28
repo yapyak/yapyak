@@ -1,15 +1,9 @@
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 
-import {
-  createRootRoute,
-  HeadContent,
-  Outlet,
-  Scripts,
-} from '@tanstack/react-router';
+import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router';
 import { LocaleProvider, useLocale } from '@yapyak/react';
 
 export const Route = createRootRoute({
-  component: RootComponent,
   head: () => ({
     meta: [
       { charSet: 'utf-8' },
@@ -17,9 +11,10 @@ export const Route = createRootRoute({
       { title: 'yapyak — TanStack Start example' },
     ],
   }),
+  shellComponent: RootDocument,
 });
 
-function RootComponent(): ReactElement {
+function RootDocument({ children }: { children: ReactNode }) {
   const [locale] = useLocale();
   return (
     <html lang={locale}>
@@ -27,9 +22,7 @@ function RootComponent(): ReactElement {
         <HeadContent />
       </head>
       <body>
-        <LocaleProvider>
-          <Outlet />
-        </LocaleProvider>
+        <LocaleProvider>{children}</LocaleProvider>
         <Scripts />
       </body>
     </html>

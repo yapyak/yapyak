@@ -1,11 +1,10 @@
-import type { ReactElement } from 'react';
-
 import { useLocale } from '@yapyak/react';
 import { locales, t } from 'yapyak';
 
-const now = new Date();
+const date = new Date('2024-01-01T08:30:00Z');
 
-export function App(): ReactElement {
+export function App() {
+  const [locale, setLocale] = useLocale();
   return (
     <main
       style={{ fontFamily: 'system-ui', maxWidth: '720px', padding: '2rem' }}
@@ -31,9 +30,9 @@ export function App(): ReactElement {
       <p>{t('Count: {amount, number, integer}', { amount: 42.7 })}</p>
 
       <h2>{t('Dates and times')}</h2>
-      <p>{t('Updated: {when, date, long}', { when: now })}</p>
-      <p>{t('Updated: {when, date, short}', { when: now })}</p>
-      <p>{t('At: {when, time, short}', { when: now })}</p>
+      <p>{t('Updated: {when, date, long}', { when: date })}</p>
+      <p>{t('Updated: {when, date, short}', { when: date })}</p>
+      <p>{t('At: {when, time, short}', { when: date })}</p>
 
       <h2>{t('Select')}</h2>
       <p>
@@ -44,25 +43,18 @@ export function App(): ReactElement {
       </p>
 
       <h2>{t('Switch language')}</h2>
-      <LocaleToggle />
+      <div style={{ display: 'flex', gap: '0.5rem' }}>
+        {locales.map((value) => (
+          <button
+            disabled={value === locale}
+            key={value}
+            onClick={() => setLocale(value)}
+            type="button"
+          >
+            {value === 'sv' ? t('Swedish') : t('English')}
+          </button>
+        ))}
+      </div>
     </main>
-  );
-}
-
-function LocaleToggle(): ReactElement {
-  const [locale, setLocale] = useLocale();
-  return (
-    <div style={{ display: 'flex', gap: '0.5rem' }}>
-      {locales.map((value) => (
-        <button
-          disabled={value === locale}
-          key={value}
-          onClick={() => setLocale(value)}
-          type="button"
-        >
-          {value === 'sv' ? t('Swedish') : t('English')}
-        </button>
-      ))}
-    </div>
   );
 }

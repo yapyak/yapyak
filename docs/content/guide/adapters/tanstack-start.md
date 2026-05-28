@@ -17,40 +17,46 @@ Register yapyak's request middleware once in `src/start.ts`.
 
 ```ts
 // src/start.ts
+import { createStart } from '@tanstack/react-start';
 import { middleware } from '@yapyak/tanstack-start';
 
-export default {
+export const startInstance = createStart(() => ({
   requestMiddleware: [middleware],
-};
+}));
 ```
 
 That's the entire wiring.
 
 ## Set the page language
 
-Drive the root element's `lang` attribute from the locale via `useLocale()`. The component re-renders when the locale changes:
+Drive the document's `lang` attribute from the locale via `useLocale()` in the shell component, and wrap the routed tree in `LocaleProvider` so `t()` calls re-render when the locale changes:
 
 ```tsx
 // src/routes/__root.tsx
-import { createRootRoute, Outlet } from '@tanstack/react-router';
-import { useLocale } from '@yapyak/react';
+import type { ReactNode } from 'react';
 
-function Component() {
+import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router';
+import { LocaleProvider, useLocale } from '@yapyak/react';
+
+export const Route = createRootRoute({ shellComponent: RootDocument });
+
+function RootDocument({ children }: { children: ReactNode }) {
   const [locale] = useLocale();
   return (
     <html lang={locale}>
-      <head>{/* ... */}</head>
+      <head>
+        <HeadContent />
+      </head>
       <body>
-        <Outlet />
+        <LocaleProvider>{children}</LocaleProvider>
+        <Scripts />
       </body>
     </html>
   );
 }
-
-export const Route = createRootRoute({ component: Component });
 ```
 
-This is the recommended pattern for TanStack Start. React re-renders the root component on locale change, the `lang` attribute updates reactively, and SSR renders the correct `lang` per request. No extra plugin option needed.
+This is the recommended pattern for TanStack Start. The shell re-renders on locale change so `lang` updates reactively, `LocaleProvider` re-renders the routed tree so `t()` returns the new locale's strings, and SSR renders the correct `lang` per request. No extra plugin option needed.
 
 ## Cookie persistence
 

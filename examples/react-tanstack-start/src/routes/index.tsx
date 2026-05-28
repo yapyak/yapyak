@@ -1,11 +1,9 @@
-import type { ReactElement } from 'react';
-
 import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn, useServerFn } from '@tanstack/react-start';
 import { useLocale } from '@yapyak/react';
 import { locales, setLocale, t } from 'yapyak';
 
-const now = new Date();
+const date = new Date('2024-01-01T08:30:00Z');
 
 const switchLocale = createServerFn({ method: 'POST' })
   .inputValidator((locale: string) => locale)
@@ -13,9 +11,13 @@ const switchLocale = createServerFn({ method: 'POST' })
     setLocale(data);
   });
 
-export const Route = createFileRoute('/')({ component: Home });
+export const Route = createFileRoute('/')({
+  component: Component,
+});
 
-function Home(): ReactElement {
+function Component() {
+  const [locale, setLocale] = useLocale();
+  const submit = useServerFn(switchLocale);
   return (
     <main
       style={{ fontFamily: 'system-ui', maxWidth: '720px', padding: '2rem' }}
@@ -41,9 +43,9 @@ function Home(): ReactElement {
       <p>{t('Count: {amount, number, integer}', { amount: 42.7 })}</p>
 
       <h2>{t('Dates and times')}</h2>
-      <p>{t('Updated: {when, date, long}', { when: now })}</p>
-      <p>{t('Updated: {when, date, short}', { when: now })}</p>
-      <p>{t('At: {when, time, short}', { when: now })}</p>
+      <p>{t('Updated: {when, date, long}', { when: date })}</p>
+      <p>{t('Updated: {when, date, short}', { when: date })}</p>
+      <p>{t('At: {when, time, short}', { when: date })}</p>
 
       <h2>{t('Select')}</h2>
       <p>
@@ -56,47 +58,32 @@ function Home(): ReactElement {
       <h2>{t('Switch language')}</h2>
 
       <p>{t('From the client')}</p>
-      <ClientToggle />
+      <div style={{ display: 'flex', gap: '0.5rem' }}>
+        {locales.map((value) => (
+          <button
+            disabled={value === locale}
+            key={value}
+            onClick={() => setLocale(value)}
+            type="button"
+          >
+            {value === 'sv' ? t('Swedish') : t('English')}
+          </button>
+        ))}
+      </div>
 
       <p>{t('From the server')}</p>
-      <ServerToggle />
+      <div style={{ display: 'flex', gap: '0.5rem' }}>
+        {locales.map((value) => (
+          <button
+            disabled={value === locale}
+            key={value}
+            onClick={() => submit({ data: value })}
+            type="button"
+          >
+            {value === 'sv' ? t('Swedish') : t('English')}
+          </button>
+        ))}
+      </div>
     </main>
-  );
-}
-
-function ClientToggle(): ReactElement {
-  const [locale, setLocale] = useLocale();
-  return (
-    <div style={{ display: 'flex', gap: '0.5rem' }}>
-      {locales.map((value) => (
-        <button
-          disabled={value === locale}
-          key={value}
-          onClick={() => setLocale(value)}
-          type="button"
-        >
-          {value === 'sv' ? t('Swedish') : t('English')}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function ServerToggle(): ReactElement {
-  const [locale] = useLocale();
-  const submit = useServerFn(switchLocale);
-  return (
-    <div style={{ display: 'flex', gap: '0.5rem' }}>
-      {locales.map((value) => (
-        <button
-          disabled={value === locale}
-          key={value}
-          onClick={() => submit({ data: value })}
-          type="button"
-        >
-          {value === 'sv' ? t('Swedish') : t('English')}
-        </button>
-      ))}
-    </div>
   );
 }

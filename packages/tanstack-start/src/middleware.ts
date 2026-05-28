@@ -11,11 +11,12 @@ import { getPendingResponseHeaders, withRequest } from '@yapyak/adapter';
  *
  * @example Register in src/start.ts
  * ```ts
+ * import { createStart } from '@tanstack/react-start';
  * import { middleware } from '@yapyak/tanstack-start';
  *
- * export default {
+ * export const startInstance = createStart(() => ({
  *   requestMiddleware: [middleware],
- * };
+ * }));
  * ```
  */
 export const middleware: AnyRequestMiddleware = createMiddleware().server(

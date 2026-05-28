@@ -2,7 +2,7 @@
 import { locales, t } from 'yapyak';
 import { locale } from '@yapyak/vue';
 
-const now = new Date();
+const date = new Date('2024-01-01T08:30:00Z');
 </script>
 
 <template>
@@ -20,9 +20,9 @@ const now = new Date();
     <p>{{ t('Count: {amount, number, integer}', { amount: 42.7 }) }}</p>
 
     <h2>{{ t('Dates and times') }}</h2>
-    <p>{{ t('Updated: {when, date, long}', { when: now }) }}</p>
-    <p>{{ t('Updated: {when, date, short}', { when: now }) }}</p>
-    <p>{{ t('At: {when, time, short}', { when: now }) }}</p>
+    <p>{{ t('Updated: {when, date, long}', { when: date }) }}</p>
+    <p>{{ t('Updated: {when, date, short}', { when: date }) }}</p>
+    <p>{{ t('At: {when, time, short}', { when: date }) }}</p>
 
     <h2>{{ t('Select') }}</h2>
     <p>{{ t('{role, select, admin {Administrator} editor {Editor} other {Viewer}}', { role: 'editor' }) }}</p>
