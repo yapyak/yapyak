@@ -75,9 +75,9 @@ export interface TFn {
  * sv('Welcome back, {name}!', { name: 'Alex' });
  * ```
  */
-export const t: TFn = makeTFn();
+export const t: TFn = createTFn();
 
-function makeTFn(boundLocale?: string): TFn {
+function createTFn(boundLocale?: string): TFn {
   const translate = Object.assign(
     <T extends string>(
       source: T,
@@ -95,7 +95,7 @@ function makeTFn(boundLocale?: string): TFn {
       ) as TReturn<ExtractTags<T>>;
     },
     {
-      in: (locale: string): TFn => makeTFn(locale),
+      in: (locale: string): TFn => createTFn(locale),
     },
   );
   return translate;

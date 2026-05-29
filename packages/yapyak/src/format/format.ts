@@ -59,7 +59,7 @@ export interface Format {
   in(locale: string): Format;
 
   /**
-   * Formats a list of strings as a locale-aware enumeration.
+   * Formats a list of strings as an enumeration for the active locale.
    *
    * @remarks
    * Joins with the active locale's conventions. Use `type: 'disjunction'` for `'or'`-style joins and `type: 'unit'` for unit lists.
@@ -78,7 +78,7 @@ export interface Format {
   number(value: number, options?: Intl.NumberFormatOptions): string;
 
   /**
-   * Formats a fraction as a locale-aware percentage.
+   * Formats a fraction as a percentage for the active locale.
    *
    * @remarks
    * The input is a fraction — `0.42` renders as `'42%'` (or the locale equivalent). The `style` field is set to `'percent'` and overrides any provided in `options`.
@@ -126,9 +126,9 @@ export interface Format {
  * format.in('sv').currency(200, 'SEK');
  * ```
  */
-export const format: Format = makeFormat();
+export const format: Format = createFormat();
 
-function makeFormat(boundLocale?: string): Format {
+function createFormat(boundLocale?: string): Format {
   return {
     currency: (value, currency, options) =>
       formatCurrency(value, boundLocale ?? getLocale(), currency, options),
@@ -136,7 +136,7 @@ function makeFormat(boundLocale?: string): Format {
       formatDate(value, boundLocale ?? getLocale(), options),
     dateTime: (value, options) =>
       formatDateTime(value, boundLocale ?? getLocale(), options),
-    in: (locale) => makeFormat(locale),
+    in: (locale) => createFormat(locale),
     list: (items, options) =>
       formatList(items, boundLocale ?? getLocale(), options),
     number: (value, options) =>

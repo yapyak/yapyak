@@ -44,5 +44,12 @@ describe('t', () => {
       expect(sv('Hej')).toBe('Hej');
       expect(sv('Hej, {name}!', { name: 'Alex' })).toBe('Hej, Alex!');
     });
+
+    it('honors the last locale when chained', () => {
+      setLocale('en');
+      expect(t.in('sv').in('en')('{count, number}', { count: 1000 })).toBe(
+        '1,000',
+      );
+    });
   });
 });

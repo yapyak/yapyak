@@ -83,7 +83,7 @@ describe('format', () => {
   });
 
   describe('in', () => {
-    it('scopes formatting to a fixed locale regardless of the active locale', () => {
+    it('formats for the scoped locale regardless of the active locale', () => {
       setLocale('en');
       expect(format.in('sv').number(123456.78)).toMatch(/123.456,78/);
     });
