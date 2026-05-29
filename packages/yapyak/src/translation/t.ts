@@ -44,6 +44,11 @@ export interface TFn {
    * @param locale - The locale code, e.g. `'sv'`.
    */
   in(locale: string): TFn;
+
+  /**
+   * @param source - The source string literal.
+   * @param params - The placeholder params. Required when the source has placeholders.
+   */
   <T extends string>(source: T, params?: TParams<T>): TReturn<ExtractTags<T>>;
 }
 
