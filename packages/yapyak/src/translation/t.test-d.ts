@@ -13,9 +13,17 @@ describe('t', () => {
     expectTypeOf(t('Read <link>terms</link>')).toEqualTypeOf<TReturn<'link'>>();
   });
 
-  it('accepts params and a trailing options argument', () => {
-    expectTypeOf(
-      t('Hello, {name}!', { name: 'Alex' }, { locale: 'sv' }),
-    ).toExtend<string>();
+  it('accepts params for a source with placeholders', () => {
+    expectTypeOf(t('Hello, {name}!', { name: 'Alex' })).toExtend<string>();
+  });
+
+  it('returns a `TFn` scoped to a locale from `in`', () => {
+    expectTypeOf(t.in('sv')).toEqualTypeOf<typeof t>();
+  });
+
+  it('preserves tag extraction through `in`', () => {
+    expectTypeOf(t.in('sv')('Read <link>terms</link>')).toEqualTypeOf<
+      TReturn<'link'>
+    >();
   });
 });

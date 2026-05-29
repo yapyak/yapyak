@@ -155,7 +155,7 @@ describe('transformFile', () => {
       const source = [
         "import { type TParams, t } from 'yapyak';",
         "export function greet(params: TParams<'Hi {name}'>) {",
-        "  return t('Hi {name}', params, { locale: 'sv' });",
+        "  return t.in('sv')('Hi {name}', params);",
         '}',
       ].join('\n');
       const code = runTransform({ locales: ['en', 'sv'], source });
@@ -206,52 +206,54 @@ describe('transformFile', () => {
     });
   });
 
-  describe('with dynamic options', () => {
-    it('preserves inline options object verbatim', () => {
+  describe('with locale scoping', () => {
+    it('threads an inline `t.in(expr)` locale into `_pick`', () => {
       const code = runTransform({
         locales: ['en', 'sv'],
         source: `
           import { t } from 'yapyak';
           declare const previewLocale: { value: string };
-          export const x = t('Hello', undefined, { locale: previewLocale.value });
+          export const x = t.in(previewLocale.value)('Hello');
         `,
       });
       expect(code).toContain('_pick(');
       expect(code).toContain('{ locale: previewLocale.value }');
     });
 
-    it('preserves options reference verbatim', () => {
+    it('threads a scoped-binding locale into `_pick`', () => {
       const code = runTransform({
         locales: ['en', 'sv'],
         source: `
           import { t } from 'yapyak';
-          const svOptions = { locale: 'sv' };
-          export const x = t('Hello', undefined, svOptions);
+          const sv = t.in('sv');
+          export const x = sv('Hello');
         `,
       });
       expect(code).toContain('_pick(');
-      expect(code).toContain('svOptions');
+      expect(code).toContain("{ locale: 'sv' }");
     });
 
-    it('preserves options when source has no placeholders as 2nd arg', () => {
+    it('threads a scoped locale alongside placeholder params into `_pick`', () => {
       const code = runTransform({
         locales: ['en', 'sv'],
         source: `
           import { t } from 'yapyak';
-          const opts = { locale: 'sv' };
-          export const x = t('Hello', opts);
+          export function greet(name) {
+            return t.in('sv')('Hi {name}', { name });
+          }
         `,
       });
       expect(code).toContain('_pick(');
-      expect(code).toContain('opts');
+      expect(code).toContain('{ name }');
+      expect(code).toContain("{ locale: 'sv' }");
     });
 
-    it('blocks single-locale elision when options are present', () => {
+    it('blocks single-locale elision when a locale is scoped', () => {
       const code = runTransform({
         locales: ['en'],
         source: `
           import { t } from 'yapyak';
-          export const x = t('Hello', undefined, { locale: 'sv' });
+          export const x = t.in('sv')('Hello');
         `,
       });
       expect(code).toContain('_pick(');

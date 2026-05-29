@@ -17,7 +17,6 @@ export interface ParsedParams {
 
 export interface ParsedArguments {
   diagnostics: Diagnostic[];
-  optionsExpression?: string;
   params?: ParsedParams;
   source: string;
   sourceRange: Range;
@@ -92,15 +91,10 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   }
 
   let params: ParsedParams | undefined;
-  let optionsExpression: string | undefined;
 
   if (hasPlaceholders) {
     const paramArg = callArgs[1];
     params = paramArg ? parseParams(paramArg, sourceFile) : undefined;
-    const optionsArg = callArgs[2];
-    if (optionsArg) {
-      optionsExpression = optionsArg.getText();
-    }
     validateParams({
       callSite,
       diagnostics,
@@ -110,18 +104,12 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
       params,
       placeholderKeys,
     });
-  } else {
-    const optionsArg = callArgs[2] ?? callArgs[1];
-    if (optionsArg) {
-      optionsExpression = optionsArg.getText();
-    }
   }
 
   const result: ParsedArguments = { diagnostics, source, sourceRange };
   if (params) {
     result.params = params;
   }
-  if (optionsExpression) result.optionsExpression = optionsExpression;
   return result;
 }
 

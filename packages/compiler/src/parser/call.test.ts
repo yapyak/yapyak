@@ -73,6 +73,22 @@ describe('discoverCalls', () => {
     expect(kinds).toEqual(['direct', 'wrapper']);
   });
 
+  it('captures the locale expression from an inline `t.in(...)` call', () => {
+    const sf = loadFixture('call', 'scoped-inline.ts');
+    const calls = discoverCalls(sf, resolveBindings(sf));
+    expect(calls).toHaveLength(2);
+    expect(calls[0]?.localeExpression?.getText()).toBe('previewLocale.value');
+  });
+
+  it('captures the locale expression from a scoped binding', () => {
+    const sf = loadFixture('call', 'scoped-binding.ts');
+    const calls = discoverCalls(sf, resolveBindings(sf));
+    expect(calls).toHaveLength(2);
+    for (const call of calls) {
+      expect(call.localeExpression?.getText()).toBe("'sv'");
+    }
+  });
+
   it('returns ranges with line, column, and offset', () => {
     const sf = loadFixture('call', 'simple.ts');
     const calls = discoverCalls(sf, resolveBindings(sf));

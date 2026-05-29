@@ -1,5 +1,4 @@
 import type { SourceMap } from 'magic-string';
-import type { ParsedArguments } from '../argument';
 import type { CallSite } from '../call';
 import type { Diagnostic } from '../diagnostic';
 import type { Fragment } from '../fragment';
@@ -269,7 +268,7 @@ function renderCallReplacement(
   const { placeholders } = parsePlaceholders(parsed.source);
   const id = toMessageId(parsed.source);
 
-  if (isSingleLocale && canElide(placeholders, callSite, parsed)) {
+  if (isSingleLocale && canElide(placeholders, callSite)) {
     const bare = tryBareElision(parsed.source, callSite, placeholders);
     if (bare) {
       return bare;
@@ -289,13 +288,14 @@ function renderCallReplacement(
   });
   const hasPlaceholders = placeholders.length > 0;
   const paramsArgText = hasPlaceholders ? getParamArgText(callSite) : undefined;
+  const localeText = callSite.localeExpression?.getText();
 
   const args: string[] = [catalog];
-  if (paramsArgText || parsed.optionsExpression) {
+  if (paramsArgText || localeText) {
     args.push(paramsArgText ?? 'undefined');
   }
-  if (parsed.optionsExpression) {
-    args.push(parsed.optionsExpression);
+  if (localeText) {
+    args.push(`{ locale: ${localeText} }`);
   }
   return {
     code: `${pickLocal}(${args.join(', ')})`,
@@ -306,9 +306,8 @@ function renderCallReplacement(
 function canElide(
   placeholders: readonly Placeholder[],
   callSite: CallSite,
-  parsed: ParsedArguments,
 ): boolean {
-  if (parsed.optionsExpression) {
+  if (callSite.localeExpression) {
     return false;
   }
   for (const placeholder of placeholders) {

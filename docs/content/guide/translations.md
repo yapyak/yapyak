@@ -64,13 +64,14 @@ Everything outside the supported set is a build error, not a silent fallback. Th
 
 Two layers check a `t()` call, and they catch different things.
 
-TypeScript reads the placeholders from the source literal and enforces the params in your editor: both presence and value type. It covers flat and shallowly-nested messages, which is almost everything you write.
+TypeScript reads the placeholders from the source literal and type-checks the values you pass against them. It covers flat and shallowly-nested messages, which is almost everything you write.
 
 ```tsx
-t('Hello, {name}!');                                            // name is required
-t('{count, plural, one {#} other {#}}', { count: 'three' });    // error: count is a number
-t('{count, plural, one {# by {author}} other {# by {author}}}', { count: 1, author: 'Alex' }); // both enforced
+t('{count, plural, one {#} other {#}}', { count: 'three' });    // editor error: count is a number
+t('{count, plural, one {# by {author}} other {# by {author}}}', { count: 1, author: 'Alex' }); // both checked
 ```
+
+Presence is the compiler's job. Write `t('Hello, {name}!')` with no params and the build fails with `YPK002` — and since the compiler runs in the Vite loop, you see it the moment you save.
 
 Deeply-nested ICU is the one place the type layer stops. Template-literal types bottom out a few levels deep, so the innermost param drops from the inferred type. The compiler covers it: it validates every param name at every depth and fails the build on a mismatch. Nothing slips to runtime.
 
@@ -85,16 +86,18 @@ t('{count, plural, one {# by {author}} other {# by {author}}}', params); // TS-c
 
 ## Forced locale
 
-Pass `locale` in the trailing options object to translate in a specific locale instead of the ambient one. The locale is resolved at call time, so a variable works:
+Scope a translator to a specific locale with `t.in(locale)` instead of the ambient one. The locale is resolved at call time, so a variable works:
 
 ```tsx
-const message = t('Welcome back, {name}!', { name: user.name }, { locale: user.locale });
+const message = t.in(user.locale)('Welcome back, {name}!', { name: user.name });
 ```
 
-When the source has no placeholders, the options object goes in the second position:
+`t.in(locale)` returns a translator you can reuse — bind it once and call it as often as you like:
 
 ```tsx
-const message = t('Welcome back!', { locale: user.locale });
+const inRecipientLocale = t.in(user.locale);
+const subject = inRecipientLocale('Welcome back!');
+const body = inRecipientLocale('You have {count} new messages', { count });
 ```
 
 Useful when the target locale isn't the current one — sending an email in the recipient's language, generating an audit trail, or rendering a preview for another user.

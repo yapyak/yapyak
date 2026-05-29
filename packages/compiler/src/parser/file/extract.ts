@@ -147,6 +147,9 @@ function processFragment(input: ProcessFragmentInput): void {
       node: fragmentCall.node,
       range: remapRange(fragmentCall.range, fragment, originalSource),
     };
+    if (fragmentCall.localeExpression) {
+      callSite.localeExpression = fragmentCall.localeExpression;
+    }
     const elision =
       fragment.elision ??
       detectJsxElision(fragmentCall.node, sourceFile, fragment, originalSource);

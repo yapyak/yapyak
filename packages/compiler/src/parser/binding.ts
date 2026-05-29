@@ -2,7 +2,8 @@ import * as ts from 'typescript';
 
 export interface Binding {
   declarationNode: ts.Node;
-  kind: 'direct' | 'namespace' | 'wrapper';
+  kind: 'direct' | 'namespace' | 'scoped' | 'wrapper';
+  localeExpression?: ts.Expression;
   localName: string;
 }
 
@@ -19,6 +20,7 @@ export interface BindingTable {
 
 const YAPYAK_MODULE = 'yapyak';
 const RUNTIME_NAME = 't';
+const SCOPE_NAME = 'in';
 
 interface ImportInfo {
   directLocals: Map<string, ts.Node>;
@@ -145,19 +147,53 @@ function registerVariableDeclarations(
     if (!init) {
       continue;
     }
-    if (!ts.isIdentifier(init)) {
+    if (ts.isIdentifier(init)) {
+      const target = findBinding(scopeByNode, init.text, decl);
+      if (!target) {
+        continue;
+      }
+      scope.bindings.set(localName, {
+        declarationNode: decl,
+        kind: 'wrapper',
+        localName,
+      });
       continue;
     }
-    const target = findBinding(scopeByNode, init.text, decl);
-    if (!target) {
-      continue;
+    const localeExpression = readScopedInit(init, decl, scopeByNode);
+    if (localeExpression) {
+      scope.bindings.set(localName, {
+        declarationNode: decl,
+        kind: 'scoped',
+        localeExpression,
+        localName,
+      });
     }
-    scope.bindings.set(localName, {
-      declarationNode: decl,
-      kind: 'wrapper',
-      localName,
-    });
   }
+}
+
+function readScopedInit(
+  init: ts.Expression,
+  atNode: ts.Node,
+  scopeByNode: Map<ts.Node, Scope>,
+): ts.Expression | undefined {
+  if (!ts.isCallExpression(init)) {
+    return undefined;
+  }
+  const callee = init.expression;
+  if (!ts.isPropertyAccessExpression(callee)) {
+    return undefined;
+  }
+  if (callee.name.text !== SCOPE_NAME) {
+    return undefined;
+  }
+  if (!ts.isIdentifier(callee.expression)) {
+    return undefined;
+  }
+  const target = findBinding(scopeByNode, callee.expression.text, atNode);
+  if (!target || target.kind === 'namespace') {
+    return undefined;
+  }
+  return init.arguments[0];
 }
 
 function findBinding(

@@ -80,28 +80,18 @@ describe('parseArguments', () => {
     expect(parsed?.params?.keys).toEqual(['count']);
   });
 
-  it('preserves inline options object verbatim', () => {
-    const parsed = parseAll('call', 'dynamic-options.ts');
-    expect(parsed[0]?.source).toBe('Hello');
-    expect(parsed[0]?.optionsExpression).toBe(
-      '{ locale: previewLocale.value }',
-    );
-    expect(parsed[0]?.diagnostics).toHaveLength(0);
+  it('parses the source from an inline `t.in(...)` call', () => {
+    const [parsed] = parseAll('call', 'scoped-inline.ts');
+    expect(parsed?.source).toBe('Hello');
+    expect(parsed?.diagnostics).toHaveLength(0);
   });
 
-  it('preserves options reference verbatim', () => {
-    const parsed = parseAll('call', 'options-from-variable.ts');
-    const farewell = parsed[1];
-    expect(farewell?.source).toBe('Bye');
-    expect(farewell?.optionsExpression).toBe('svOptions');
-  });
-
-  it('preserves options as 3rd arg when source has placeholders', () => {
-    const parsed = parseAll('call', 'dynamic-options.ts');
+  it('parses params from a scoped call with placeholders', () => {
+    const parsed = parseAll('call', 'scoped-inline.ts');
     const farewell = parsed[1];
     expect(farewell?.source).toBe('Bye {name}');
     expect(farewell?.params?.keys).toEqual(['name']);
-    expect(farewell?.optionsExpression).toBe('{ locale: previewLocale.value }');
+    expect(farewell?.diagnostics).toHaveLength(0);
   });
 
   describe('diagnostic', () => {
