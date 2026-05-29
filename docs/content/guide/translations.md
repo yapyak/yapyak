@@ -72,18 +72,6 @@ const message = t('Welcome back!', { locale: user.locale });
 
 Useful when the target locale isn't the current one — sending an email in the recipient's language, generating an audit trail, or rendering a preview for another user.
 
-## Translator context
-
-Pass `context` in the options object to give the AI translator a hint about how the string is used. It's pure metadata: it never affects the runtime output, only the translation the translator generates.
-
-```tsx
-// Source has no placeholders — options is the second argument
-t('Save', { context: 'submit button on the new-account form' });
-
-// Source has placeholders — params come first, options second
-t('Hello, {name}!', { name: user.name }, { context: 'greeting at the top of the dashboard' });
-```
-
 ## Per-file scoping
 
 The same source string in two files becomes two independent entries. yapyak keys translations by `(file path, source string)`, so "Save" in a button can translate differently from "Save" in a menu.
