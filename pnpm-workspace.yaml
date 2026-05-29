@@ -5,6 +5,7 @@ packages:
 
 catalog:
   '@biomejs/biome': 2.4.15
+  '@formatjs/icu-messageformat-parser': 3.5.10
   '@markdoc/markdoc': 0.5.7
   '@react-router/dev': 7.15.1
   '@react-router/node': 7.15.1

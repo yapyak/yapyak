@@ -6,7 +6,9 @@ export type DiagnosticCode =
   | 'YPK003'
   | 'YPK005'
   | 'YPK007'
-  | 'YPK008';
+  | 'YPK008'
+  | 'YPK009'
+  | 'YPK010';
 
 export interface Diagnostic {
   code: DiagnosticCode;

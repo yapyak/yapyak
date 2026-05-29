@@ -1,152 +1,167 @@
-import { findMatchingBrace } from './matching-brace';
+import type { MessageFormatElement } from '@formatjs/icu-messageformat-parser';
+
+import {
+  isArgumentElement,
+  isDateElement,
+  isNumberElement,
+  isPluralElement,
+  isSelectElement,
+  isTimeElement,
+  parse,
+} from '@formatjs/icu-messageformat-parser';
+
+export type PlaceholderKind =
+  | 'date'
+  | 'number'
+  | 'plural'
+  | 'select'
+  | 'selectordinal'
+  | 'simple'
+  | 'time';
 
 export interface Placeholder {
-  kind: 'date' | 'number' | 'plural' | 'select' | 'simple' | 'time';
-  name: string;
-  variants?: Record<string, string>;
-}
-
-export type PlaceholderKind = Placeholder['kind'];
-
-export type PlaceholderInvalidReason = 'plural-missing-other';
-
-export interface PlaceholderInfo {
-  invalid?: PlaceholderInvalidReason;
   kind: PlaceholderKind;
   name: string;
-  variants?: Record<string, string>;
 }
 
-export function parsePlaceholders(source: string): PlaceholderInfo[] {
-  const results: PlaceholderInfo[] = [];
-  const seen = new Set<string>();
-  walkSource(source, results, seen);
-  return results;
+export type IcuIssue =
+  | { message: string; reason: 'malformed' }
+  | { name: string; reason: 'missing-other' }
+  | { feature: string; name: string; reason: 'unsupported' };
+
+export interface ParsedMessage {
+  issues: IcuIssue[];
+  placeholders: Placeholder[];
 }
 
-function walkSource(
-  source: string,
-  results: PlaceholderInfo[],
-  seen: Set<string>,
-): void {
-  let i = 0;
-  while (i < source.length) {
-    if (source[i] !== '{') {
-      i += 1;
-      continue;
-    }
-    const close = findMatchingBrace(source, i);
-    const inner = source.slice(i + 1, close);
-    const info = parsePlaceholderInner(inner);
-    if (info && !seen.has(info.name)) {
-      seen.add(info.name);
-      results.push(info);
-    }
-    if (info?.variants) {
-      for (const body of Object.values(info.variants)) {
-        walkSource(body, results, seen);
-      }
-    }
-    i = close + 1;
-  }
-}
+const NUMBER_STYLES = new Set(['decimal', 'integer', 'percent']);
+const DATE_TIME_STYLES = new Set(['full', 'long', 'medium', 'short']);
+const CURRENCY_WITH_CODE = /^currency\s+\S+$/;
+const ESCAPE = /'[#'<>{}]/;
 
-function parsePlaceholderInner(inner: string): PlaceholderInfo | undefined {
-  const trimmed = inner.trim();
-  const nameMatch = /^([A-Z_$a-z][\w$]*)/.exec(trimmed);
-  if (nameMatch === null) {
-    return undefined;
-  }
-  const name = nameMatch[1];
-  if (!name) {
-    return undefined;
-  }
-
-  const afterName = trimmed.slice(name.length).trimStart();
-  if (afterName === '' || !afterName.startsWith(',')) {
-    return { kind: 'simple', name };
-  }
-
-  const afterComma = afterName.slice(1).trimStart();
-  const typeMatch = /^(date|number|plural|select|selectordinal|time)\b/.exec(
-    afterComma,
-  );
-  if (typeMatch === null) {
-    return { kind: 'simple', name };
-  }
-  const type = typeMatch[1];
-  if (!type) {
-    return undefined;
-  }
-  const afterType = afterComma.slice(type.length).trimStart();
-
-  if (type === 'plural' || type === 'selectordinal') {
-    return readPluralInfo(name, afterType);
-  }
-  if (type === 'select') {
-    return readSelectInfo(name, afterType);
-  }
-  if (type === 'date' || type === 'number' || type === 'time') {
-    return { kind: type, name };
-  }
-  return { kind: 'simple', name };
-}
-
-function readPluralInfo(name: string, rest: string): PlaceholderInfo {
-  if (!rest.startsWith(',')) {
-    return { invalid: 'plural-missing-other', kind: 'plural', name };
-  }
-  const branches = readBranches(rest.slice(1).trimStart());
-  if (!Object.hasOwn(branches, 'other')) {
-    const info: PlaceholderInfo = {
-      invalid: 'plural-missing-other',
-      kind: 'plural',
-      name,
+export function parsePlaceholders(source: string): ParsedMessage {
+  if (ESCAPE.test(source)) {
+    return {
+      issues: [
+        { feature: 'apostrophe escaping', name: '', reason: 'unsupported' },
+      ],
+      placeholders: [],
     };
-    if (Object.keys(branches).length > 0) {
-      info.variants = branches;
-    }
-    return info;
   }
-  return { kind: 'plural', name, variants: branches };
+  let elements: MessageFormatElement[];
+  try {
+    elements = parse(source, { ignoreTag: true, requiresOtherClause: false });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return { issues: [{ message, reason: 'malformed' }], placeholders: [] };
+  }
+  const placeholdersByName = new Map<string, Placeholder>();
+  const issues: IcuIssue[] = [];
+  walkElements(elements, placeholdersByName, issues);
+  return { issues, placeholders: [...placeholdersByName.values()] };
 }
 
-function readSelectInfo(name: string, rest: string): PlaceholderInfo {
-  if (!rest.startsWith(',')) {
-    return { kind: 'select', name };
+function walkElements(
+  elements: readonly MessageFormatElement[],
+  placeholdersByName: Map<string, Placeholder>,
+  issues: IcuIssue[],
+): void {
+  for (const element of elements) {
+    if (isNumberElement(element)) {
+      const feature = detectUnsupportedNumberStyle(element.style);
+      if (feature) {
+        issues.push({ feature, name: element.value, reason: 'unsupported' });
+      }
+      registerPlaceholder(placeholdersByName, element.value, 'number');
+    } else if (isDateElement(element)) {
+      if (isUnsupportedDateTimeStyle(element.style)) {
+        issues.push({
+          feature: 'date skeleton or custom pattern',
+          name: element.value,
+          reason: 'unsupported',
+        });
+      }
+      registerPlaceholder(placeholdersByName, element.value, 'date');
+    } else if (isTimeElement(element)) {
+      if (isUnsupportedDateTimeStyle(element.style)) {
+        issues.push({
+          feature: 'time skeleton or custom pattern',
+          name: element.value,
+          reason: 'unsupported',
+        });
+      }
+      registerPlaceholder(placeholdersByName, element.value, 'time');
+    } else if (isPluralElement(element)) {
+      if (element.offset !== 0) {
+        issues.push({
+          feature: 'plural offset',
+          name: element.value,
+          reason: 'unsupported',
+        });
+      }
+      if (!Object.hasOwn(element.options, 'other')) {
+        issues.push({ name: element.value, reason: 'missing-other' });
+      }
+      registerPlaceholder(
+        placeholdersByName,
+        element.value,
+        element.pluralType === 'ordinal' ? 'selectordinal' : 'plural',
+      );
+      walkOptions(element.options, placeholdersByName, issues);
+    } else if (isSelectElement(element)) {
+      if (!Object.hasOwn(element.options, 'other')) {
+        issues.push({ name: element.value, reason: 'missing-other' });
+      }
+      registerPlaceholder(placeholdersByName, element.value, 'select');
+      walkOptions(element.options, placeholdersByName, issues);
+    } else if (isArgumentElement(element)) {
+      registerPlaceholder(placeholdersByName, element.value, 'simple');
+    }
   }
-  const branches = readBranches(rest.slice(1).trimStart());
-  return { kind: 'select', name, variants: branches };
 }
 
-function readBranches(text: string): Record<string, string> {
-  const result: Record<string, string> = {};
-  let i = 0;
-  while (i < text.length) {
-    while (i < text.length && isWhitespace(text[i])) i += 1;
-    if (i >= text.length) {
-      break;
-    }
-    const keyMatch = /^(=?\w+)/.exec(text.slice(i));
-    if (keyMatch === null) {
-      break;
-    }
-    const key = keyMatch[1];
-    if (!key) {
-      break;
-    }
-    i += key.length;
-    while (i < text.length && isWhitespace(text[i])) i += 1;
-    if (text[i] !== '{') {
-      break;
-    }
-    const close = findMatchingBrace(text, i);
-    result[key] = text.slice(i + 1, close);
-    i = close + 1;
+function walkOptions(
+  options: Record<string, { value: MessageFormatElement[] }>,
+  placeholdersByName: Map<string, Placeholder>,
+  issues: IcuIssue[],
+): void {
+  for (const option of Object.values(options)) {
+    walkElements(option.value, placeholdersByName, issues);
   }
-  return result;
 }
 
-function isWhitespace(ch: string | undefined): boolean {
-  return ch === ' ' || ch === '\t' || ch === '\n' || ch === '\r';
+function registerPlaceholder(
+  placeholdersByName: Map<string, Placeholder>,
+  name: string,
+  kind: PlaceholderKind,
+): void {
+  if (!placeholdersByName.has(name)) {
+    placeholdersByName.set(name, { kind, name });
+  }
+}
+
+function detectUnsupportedNumberStyle(style: unknown): string | undefined {
+  if (style === undefined || style === null) {
+    return undefined;
+  }
+  if (typeof style !== 'string') {
+    return 'number skeleton';
+  }
+  if (NUMBER_STYLES.has(style) || CURRENCY_WITH_CODE.test(style)) {
+    return undefined;
+  }
+  if (style === 'currency') {
+    return 'currency without a code';
+  }
+  return `number style "${style}"`;
+}
+
+function isUnsupportedDateTimeStyle(style: unknown): boolean {
+  if (style === undefined || style === null) {
+    return false;
+  }
+  if (typeof style !== 'string') {
+    return true;
+  }
+  return !DATE_TIME_STYLES.has(style);
 }

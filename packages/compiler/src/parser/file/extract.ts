@@ -3,7 +3,7 @@ import type { CallSite } from '../call';
 import type { CallSiteContext } from '../call-site-context';
 import type { Diagnostic } from '../diagnostic';
 import type { ElisionContext, Fragment } from '../fragment';
-import type { Placeholder, PlaceholderInfo } from '../placeholder';
+import type { Placeholder } from '../placeholder';
 import type { ProcessorKind } from '../processor/kind';
 import type { Range } from '../range';
 
@@ -159,8 +159,7 @@ function processFragment(input: ProcessFragmentInput): void {
       continue;
     }
 
-    const placeholderInfos = parsePlaceholders(parsed.source);
-    const placeholders = placeholderInfos.map(toPublicPlaceholder);
+    const { placeholders } = parsePlaceholders(parsed.source);
     const id = toMessageId(parsed.source);
 
     const location: Location = {
@@ -205,14 +204,6 @@ function createFragmentSourceFile(
     true,
     getScriptKind(fileId, fragment.lang),
   );
-}
-
-function toPublicPlaceholder(info: PlaceholderInfo): Placeholder {
-  const result: Placeholder = { kind: info.kind, name: info.name };
-  if (info.variants) {
-    result.variants = info.variants;
-  }
-  return result;
 }
 
 function detectJsxElision(

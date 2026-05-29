@@ -87,13 +87,22 @@ function resolvePlural(
   type: 'cardinal' | 'ordinal',
 ): string {
   const branches = parseBranches(body);
+  const formattedCount = getNumberFormatter(locale, '').format(count);
   const exact = branches.get(`=${count}`);
   if (exact !== undefined) {
-    return interpolate(exact.replace(/#/g, String(count)), params, locale);
+    return interpolate(
+      exact.replace(/#/g, () => formattedCount),
+      params,
+      locale,
+    );
   }
   const category = getPluralCategory(locale, count, type);
   const branch = branches.get(category) ?? branches.get('other') ?? '';
-  return interpolate(branch.replace(/#/g, String(count)), params, locale);
+  return interpolate(
+    branch.replace(/#/g, () => formattedCount),
+    params,
+    locale,
+  );
 }
 
 function resolveSelect(
@@ -230,8 +239,10 @@ function parseNumberOptions(styleArgument: string): Intl.NumberFormatOptions {
     return { maximumFractionDigits: 0 };
   }
   if (trimmed.startsWith('currency')) {
-    const currencyCode = trimmed.slice('currency'.length).trim() || 'USD';
-    return { currency: currencyCode, style: 'currency' };
+    const currencyCode = trimmed.slice('currency'.length).trim();
+    if (currencyCode !== '') {
+      return { currency: currencyCode, style: 'currency' };
+    }
   }
   return {};
 }

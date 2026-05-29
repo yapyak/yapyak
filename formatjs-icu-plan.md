@@ -1,7 +1,10 @@
 # Plan: FormatJS ICU parser + exact compatibility matrix
 
-> Status: **plan, not yet implemented.** Captures the decision + the exact ICU
-> surface yapyak supports, so it can be turned into docs.
+> Status: **Fas 1 implemented.** The FormatJS swap, the gated subset, the new
+> diagnostics, and both deviation fixes (`#` locale formatting, `currency`-code
+> required) have landed with full parser + runtime test coverage. This document
+> captures the decision + the exact ICU surface yapyak supports, so it can be turned
+> into docs.
 > Drafted 2026-05-29.
 
 ## Principles (the contract)
@@ -146,20 +149,16 @@ t('Read our <link>terms</link> and <b>privacy</b>')
 > treats `'{'` as a literal brace, the runtime treats `{` as a token start. Must be
 > caught at build, never shipped.
 
-### ⚠️ Known deviations from the ICU spec (document or fix)
+### ✅ Former deviations from the ICU spec (now resolved)
 
-| Deviation | Spec says | yapyak does |
+Both deviations that previously made yapyak silently spec-incorrect are fixed. Per
+**Principle 2, neither may stay silent** — each now resolves to *correct or error*,
+never silent-wrong:
+
+| Was | Spec says | yapyak now |
 |---|---|---|
-| `#` inside plural | format the count per locale (`Intl.NumberFormat`), minus `offset` | replaces `#` with the **raw** `String(count)`, no locale formatting, no offset |
-| `currency` without a code | currency comes from the value/locale; `Intl` **throws** without a code | silently hardcodes **`USD`** (`… \|\| 'USD'`) — a band-aid for the `Intl` throw. Plan: **reject** `{x, number, currency}` without an explicit code at build, and drop the `USD` fallback. |
-
-Per **Principle 2, neither deviation may stay silent.** They resolve to *correct or
-error*, never silent-wrong:
-
-- **`currency` without a code → build error** (require an explicit code; drop the
-  `USD` fallback).
-- **`#` → fixed** to format via `Intl.NumberFormat` (honouring `offset`), so it
-  matches the spec instead of emitting a raw number.
+| `#` inside plural emitted the **raw** `String(count)` (no locale formatting) | format the count per locale (`Intl.NumberFormat`), minus `offset` | formats the count per locale via `Intl.NumberFormat` (e.g. `1,234` / `1 234`). `offset` is **rejected at build**, so there is nothing to subtract — the spec result is reached. |
+| `currency` without a code silently hardcoded **`USD`** (`… \|\| 'USD'`) | currency comes from the value/locale; `Intl` **throws** without a code | **build error** (`YPK010`) — an explicit code is required (`currency EUR`). The runtime `USD` fallback is removed; a code-less `currency` now degrades to the decimal default rather than guessing. |
 
 ---
 
@@ -335,12 +334,10 @@ That is the "we own it" guarantee: the matrix and the test suite are the same ar
   `@formatjs/icu-skeleton-parser` maps skeletons → `Intl` options — that is exactly
   "1:1 with Intl" and would let us support `::currency/EUR` etc. Recommendation:
   reject now (clear errors, ship correctness), extend skeletons next if demanded.
-- **`#` formatting**: fix the runtime to format `#` via `Intl.NumberFormat` (and
-  honour `offset`) or document the deviation.
-- **`currency` default**: replace the hardcoded `USD` fallback with a build
-  diagnostic that **requires an explicit code** (`currency EUR`). Optionally add a
-  `defaultCurrency` config if a default is genuinely wanted — but a silent `USD`
-  guess must go.
+
+Resolved (see *Former deviations* above): **`#` formatting** (now locale-formatted
+via `Intl.NumberFormat`) and the **`currency` default** (code now required at build;
+`USD` fallback removed).
 
 ## Docs to write from this
 

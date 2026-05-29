@@ -39,7 +39,13 @@ export {
 export { extractFile } from './file/extract';
 export { transformFile } from './file/transform';
 export { toMessageId } from './message-id';
-export { type Placeholder, parsePlaceholders } from './placeholder';
+export {
+  type IcuIssue,
+  type ParsedMessage,
+  type Placeholder,
+  type PlaceholderKind,
+  parsePlaceholders,
+} from './placeholder';
 export {
   astroProcessor,
   getProcessor,

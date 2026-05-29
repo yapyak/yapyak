@@ -3,7 +3,7 @@ import type { ParsedArguments } from '../argument';
 import type { CallSite } from '../call';
 import type { Diagnostic } from '../diagnostic';
 import type { Fragment } from '../fragment';
-import type { PlaceholderInfo } from '../placeholder';
+import type { Placeholder } from '../placeholder';
 import type { ProcessorKind } from '../processor/kind';
 import type { Range } from '../range';
 import type { ExtractFileResult } from './extract';
@@ -266,16 +266,16 @@ function renderCallReplacement(
     return undefined;
   }
 
-  const placeholderInfos = parsePlaceholders(parsed.source);
+  const { placeholders } = parsePlaceholders(parsed.source);
   const id = toMessageId(parsed.source);
 
-  if (isSingleLocale && canElide(placeholderInfos, callSite, parsed)) {
-    const bare = tryBareElision(parsed.source, callSite, placeholderInfos);
+  if (isSingleLocale && canElide(placeholders, callSite, parsed)) {
+    const bare = tryBareElision(parsed.source, callSite, placeholders);
     if (bare) {
       return bare;
     }
     return {
-      code: renderEliminated(parsed.source, callSite, placeholderInfos),
+      code: renderEliminated(parsed.source, callSite, placeholders),
       usesPick: false,
     };
   }
@@ -287,7 +287,7 @@ function renderCallReplacement(
     source: parsed.source,
     translations,
   });
-  const hasPlaceholders = placeholderInfos.length > 0;
+  const hasPlaceholders = placeholders.length > 0;
   const paramsArgText = hasPlaceholders ? getParamArgText(callSite) : undefined;
 
   const args: string[] = [catalog];
@@ -304,19 +304,19 @@ function renderCallReplacement(
 }
 
 function canElide(
-  placeholderInfos: readonly PlaceholderInfo[],
+  placeholders: readonly Placeholder[],
   callSite: CallSite,
   parsed: ParsedArguments,
 ): boolean {
   if (parsed.optionsExpression) {
     return false;
   }
-  for (const info of placeholderInfos) {
-    if (info.kind !== 'simple') {
+  for (const placeholder of placeholders) {
+    if (placeholder.kind !== 'simple') {
       return false;
     }
   }
-  if (placeholderInfos.length === 0) {
+  if (placeholders.length === 0) {
     return true;
   }
   return Boolean(getParamExpressions(callSite));
@@ -325,9 +325,9 @@ function canElide(
 function renderEliminated(
   source: string,
   callSite: CallSite,
-  placeholderInfos: readonly PlaceholderInfo[],
+  placeholders: readonly Placeholder[],
 ): string {
-  if (placeholderInfos.length === 0) {
+  if (placeholders.length === 0) {
     return safeJsString(source);
   }
   const expressions = getParamExpressions(callSite);
@@ -501,12 +501,12 @@ function isIdentifierChar(ch: string | undefined): boolean {
 function tryBareElision(
   source: string,
   callSite: CallSite,
-  placeholderInfos: readonly PlaceholderInfo[],
+  placeholders: readonly Placeholder[],
 ): CallReplacement | undefined {
   if (!callSite.elision) {
     return undefined;
   }
-  if (placeholderInfos.length > 0) {
+  if (placeholders.length > 0) {
     return undefined;
   }
   const { mode, range, attrName } = callSite.elision;

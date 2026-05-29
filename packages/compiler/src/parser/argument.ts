@@ -1,5 +1,6 @@
 import type { CallSite } from './call';
 import type { Diagnostic } from './diagnostic';
+import type { IcuIssue } from './placeholder';
 import type { Range } from './range';
 
 import * as ts from 'typescript';
@@ -54,6 +55,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
       createDiagnostic({
         code: 'YPK001',
         fileId,
+        // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
         hint: "Replace `t(`Hi ${name}`)` with `t('Hi {name}', { name })`.",
         message:
           'Dynamic source string in t(). Use a plain string literal with `{placeholder}` syntax.',
@@ -79,24 +81,14 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
     );
   }
 
-  const placeholderInfos = parsePlaceholders(source);
-  const placeholderKeys = placeholderInfos.map((info) => info.name);
+  const { issues, placeholders } = parsePlaceholders(source);
+  const placeholderKeys = placeholders.map((placeholder) => placeholder.name);
   const hasPlaceholders = placeholderKeys.length > 0;
 
-  for (const info of placeholderInfos) {
-    if (info.invalid === 'plural-missing-other') {
-      diagnostics.push(
-        createDiagnostic({
-          code: 'YPK007',
-          fileId,
-          hint: 'Add `other {<text>}` to the plural — every plural must have an `other` fallback.',
-          message: `Plural placeholder '{${info.name}}' is missing the required 'other' branch.`,
-          range: sourceRange,
-          severity: 'error',
-          source: fileText,
-        }),
-      );
-    }
+  for (const issue of issues) {
+    diagnostics.push(
+      toIcuDiagnostic(issue, { fileId, fileText, range: sourceRange }),
+    );
   }
 
   let params: ParsedParams | undefined;
@@ -114,6 +106,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
       diagnostics,
       fileId,
       fileText,
+      hasParamArg: Boolean(paramArg),
       params,
       placeholderKeys,
     });
@@ -130,6 +123,51 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   }
   if (optionsExpression) result.optionsExpression = optionsExpression;
   return result;
+}
+
+interface IcuDiagnosticContext {
+  fileId: string;
+  fileText: string;
+  range: Range;
+}
+
+function toIcuDiagnostic(
+  issue: IcuIssue,
+  context: IcuDiagnosticContext,
+): Diagnostic {
+  if (issue.reason === 'missing-other') {
+    return createDiagnostic({
+      code: 'YPK007',
+      fileId: context.fileId,
+      hint: 'Add an `other {<text>}` branch — plural, selectordinal, and select all require an `other` fallback.',
+      message: `Placeholder '{${issue.name}}' is missing the required 'other' branch.`,
+      range: context.range,
+      severity: 'error',
+      source: context.fileText,
+    });
+  }
+  if (issue.reason === 'malformed') {
+    return createDiagnostic({
+      code: 'YPK009',
+      fileId: context.fileId,
+      hint: 'Check the ICU syntax — every `{` needs a matching `}`.',
+      message: `Malformed ICU message (${issue.message}).`,
+      range: context.range,
+      severity: 'error',
+      source: context.fileText,
+    });
+  }
+  return createDiagnostic({
+    code: 'YPK010',
+    fileId: context.fileId,
+    hint: 'Use a supported ICU feature, or format the value before passing it in.',
+    message: issue.name
+      ? `Unsupported ICU feature in '{${issue.name}}': ${issue.feature}.`
+      : `Unsupported ICU feature: ${issue.feature}.`,
+    range: context.range,
+    severity: 'error',
+    source: context.fileText,
+  });
 }
 
 function isLiteralFirstArg(
@@ -173,17 +211,39 @@ interface ValidateParamsInput {
   diagnostics: Diagnostic[];
   fileId: string;
   fileText: string;
+  hasParamArg: boolean;
   params: ParsedParams | undefined;
   placeholderKeys: string[];
 }
 
 function validateParams(input: ValidateParamsInput): void {
-  const { callSite, diagnostics, fileId, fileText, params, placeholderKeys } =
-    input;
+  const {
+    callSite,
+    diagnostics,
+    fileId,
+    fileText,
+    hasParamArg,
+    params,
+    placeholderKeys,
+  } = input;
   const sourceFile = callSite.node.getSourceFile();
   const callRange = toRange(callSite.node, sourceFile);
 
   if (!params) {
+    if (hasParamArg) {
+      diagnostics.push(
+        createDiagnostic({
+          code: 'YPK005',
+          fileId,
+          hint: 'Pass params as an inline object literal to enable validation.',
+          message: 'Params passed dynamically cannot be statically verified.',
+          range: callRange,
+          severity: 'warning',
+          source: fileText,
+        }),
+      );
+      return;
+    }
     for (const key of placeholderKeys) {
       diagnostics.push(
         createDiagnostic({

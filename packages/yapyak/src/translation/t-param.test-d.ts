@@ -52,6 +52,25 @@ describe('ExtractTParams', () => {
     expectTypeOf<{ amount: 42 }>().toExtend<Result>();
   });
 
+  it('types a bare `number` argument as `number`', () => {
+    type Result = ExtractTParams<'Total: {amount, number}'>;
+    expectTypeOf<{ amount: 42 }>().toExtend<Result>();
+    expectTypeOf<{ amount: 'ten' }>().not.toExtend<Result>();
+  });
+
+  it('types a bare `date` argument as `Date` or `number`', () => {
+    type Result = ExtractTParams<'Updated: {when, date}'>;
+    expectTypeOf<{ when: Date }>().toExtend<Result>();
+    expectTypeOf<{ when: 1700000000000 }>().toExtend<Result>();
+    expectTypeOf<{ when: 'today' }>().not.toExtend<Result>();
+  });
+
+  it('types a bare `time` argument as `Date` or `number`', () => {
+    type Result = ExtractTParams<'At: {when, time}'>;
+    expectTypeOf<{ when: Date }>().toExtend<Result>();
+    expectTypeOf<{ when: 'now' }>().not.toExtend<Result>();
+  });
+
   it('types a date argument as `Date` or `number`', () => {
     type Result = ExtractTParams<'Updated: {when, date, long}'>;
     expectTypeOf<{ when: Date }>().toExtend<Result>();

@@ -19,6 +19,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@formatjs/icu-messageformat-parser": "catalog:",
     "@yapyak/translator": "workspace:*",
     "magic-string": "catalog:"
   },

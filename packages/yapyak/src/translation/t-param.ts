@@ -99,8 +99,8 @@ type ResolveIcuPattern<
         Rest,
         TAccumulator & IcuParam<Name, Format, Body> & ExtractBranchParams<Body>
       >
-    : TSource extends `${string}{${infer Name},${string}}${infer Rest}`
-      ? ExtractTParams<Rest, TAccumulator & IcuParam<Name>>
+    : TSource extends `${string}{${infer Name},${infer Format}}${infer Rest}`
+      ? ExtractTParams<Rest, TAccumulator & IcuParam<Name, Format>>
       : TAccumulator;
 
 export type ExtractTParams<
