@@ -77,7 +77,7 @@ pnpm yapyak add es fr de ja
 import { t } from 'yapyak';
 
 export function SaveButton() {
-  return <button>{t`Save changes`}</button>;
+  return <button>{t('Save changes')}</button>;
 }
 ```
 
