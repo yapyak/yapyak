@@ -1,0 +1,12 @@
+
+> @yapyak-examples/vue-vanilla-local-storage@ build /Users/joakim/GitHub/yapyak/examples/vue-vanilla-local-storage
+> vite build
+
+vite v8.0.14 building client environment for production...
+[2Ktransforming...✓ 16 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                 0.33 kB │ gzip:  0.25 kB
+dist/assets/index-BSlyeG0B.js  68.40 kB │ gzip: 26.63 kB
+
+✓ built in 278ms

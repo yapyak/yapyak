@@ -28,32 +28,59 @@ t('{gender, select, male {his} female {her} other {their}} cart', { gender: 'fem
 
 CLDR plural categories resolve per-locale via `Intl.PluralRules`. All categories ship in, including the four Polish plural forms.
 
-### Type-checking limits
+## Supported syntax
 
-TypeScript reads placeholders straight from the source literal. Template-literal types can't fully parse nested ICU, so a few edge cases slip through.
+yapyak owns a fixed subset of ICU MessageFormat. Everything in this table parses, type-checks, extracts, translates, and formats. The source string is the contract, so what you write here is what the compiler and runtime honor.
 
-**Caught at compile time:**
+| Syntax | Example | Param type |
+|---|---|---|
+| Simple | `t('Hello, {name}!')` | `string \| number` |
+| Number | `{n, number}`, `integer`, `percent`, `currency EUR` | `number` |
+| Date | `{d, date}`, `short`, `medium`, `long`, `full` | `Date \| number` |
+| Time | `{d, time, short}` | `Date \| number` |
+| Plural | `{count, plural, one {# item} other {# items}}` | `number` |
+| Selectordinal | `{place, selectordinal, one {#st} other {#th}}` | `number` |
+| Select | `{gender, select, female {her} other {their}}` | branch names, or any string when `other` is present |
+| Nested | placeholders inside plural or select branches | the inner placeholder's type |
 
-- Missing simple placeholder: `t('Hello {name}')` without `name`.
-- Typo in placeholder name: `{ nme: 'Alex' }`.
-- Missing ICU outer key: `t('{count, plural, ...}')` without `count`.
-- Wrong value type for ICU: `{ count: 'three' }` for a plural pattern. Plural and number formats expect `number`, date and time expect `Date | number`, select expects `string`.
+`#` formats the count for the active locale through `Intl.NumberFormat`. A Swedish `{count}` of 1234 renders `1 234`. Currency needs an explicit code, so `currency EUR`, not bare `currency`.
 
-**Not caught:**
+## What fails the build
 
-Nested placeholders inside ICU branches. The type system extracts the outer key only; inner placeholders work at runtime but TypeScript doesn't enforce them.
+Everything outside the supported set is a build error, not a silent fallback. The compiler reads every `t()` call and points at the line.
+
+| Rejected | Example | Reason |
+|---|---|---|
+| Number skeleton | `{n, number, ::currency/EUR}` | no `Intl` mapping |
+| Legacy number pattern | `{n, number, #,##0.00}` | no `Intl` mapping |
+| Date or time skeleton or pattern | `{d, date, ::yyyyMMdd}`, `{d, date, dd/MM/yyyy}` | no `Intl` mapping |
+| Currency without a code | `{cost, number, currency}` | no locale-safe default |
+| Plural offset | `{n, plural, offset:1 other {#}}` | not supported |
+| Apostrophe escaping | `Send '{count}' files` | the runtime reads `{` as a placeholder |
+| Missing `other` branch | `{count, plural, one {# item}}` | plural, selectordinal, and select each need a fallback |
+| Malformed ICU | `Hello {name`, `{}`, `{x, mystery, y}` | unbalanced or unknown |
+
+## Type checking
+
+Two layers check a `t()` call, and they catch different things.
+
+TypeScript reads the placeholders from the source literal and enforces the params in your editor: both presence and value type. It covers flat and shallowly-nested messages, which is almost everything you write.
 
 ```tsx
-// `author` runs fine at runtime, but TS only enforces `count`
-t('You have {count, plural, one {# item by {author}} other {# items by {author}}}',
-  { count: 1, author: 'Alex' });
+t('Hello, {name}!');                                            // name is required
+t('{count, plural, one {#} other {#}}', { count: 'three' });    // error: count is a number
+t('{count, plural, one {# by {author}} other {# by {author}}}', { count: 1, author: 'Alex' }); // both enforced
 ```
 
-For strict typing on nested ICU, declare a typed variable:
+Deeply-nested ICU is the one place the type layer stops. Template-literal types bottom out a few levels deep, so the innermost param drops from the inferred type. The compiler covers it: it validates every param name at every depth and fails the build on a mismatch. Nothing slips to runtime.
+
+The division runs the other way too. ICU validity, the rejected set above, is a build check rather than an editor check. The editor stays green and the build reports the error.
+
+When params come from a variable instead of an inline object, the compiler can't read the keys statically, so it warns instead of verifying. TypeScript still checks the variable against the source.
 
 ```tsx
-const params: { count: number; author: string } = { count: 1, author: 'Alex' };
-t('You have {count, plural, one {# item by {author}} other {# items by {author}}}', params);
+const params = { count: 1, author: 'Alex' };
+t('{count, plural, one {# by {author}} other {# by {author}}}', params); // TS-checked; build warns it can't re-verify
 ```
 
 ## Forced locale

@@ -9,7 +9,7 @@ yapyak generates translations on save. You write a string in your code, save the
 import { t } from 'yapyak';
 
 export function SaveButton() {
-  return <button>{t('Save changes')}</button>;
+  return <button>{t`Save changes`}</button>;
 }
 ```
 
