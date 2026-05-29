@@ -9,8 +9,7 @@ import { runTrackers } from './tracker';
  * The params for a source string's placeholders.
  *
  * @remarks
- * Resolves to the placeholder names and value types read from the source literal. `never` when
- * the source has no placeholders.
+ * Resolves to the placeholder names and value types read from the source literal. `never` if the source has no placeholders.
  *
  * @typeParam T - The source string literal.
  */
@@ -24,8 +23,7 @@ declare const brand: unique symbol;
  * The return type of {@link t}.
  *
  * @remarks
- * A `string` branded with the rich-text tag names found in the source, so a `<RichText>` can
- * require a handler per tag. A source with no tags returns a plain `string`.
+ * A `string` branded with the rich-text tag names found in the source, so a `<RichText>` can require a handler per tag. A source with no tags returns a plain `string`.
  *
  * @typeParam T - The rich-text tag names extracted from the source string.
  */
@@ -37,8 +35,7 @@ export type TReturn<T extends string = never> = [T] extends [never]
  * Translates a source string for the active or a scoped locale.
  *
  * @remarks
- * The type of {@link t}. Also returned by `t.in()`, so a locale-scoped translator carries the
- * same shape.
+ * The type of {@link t}. Also returned by `t.in()`, so a locale-scoped translator carries the same shape.
  */
 export interface TFn {
   /**
@@ -54,10 +51,7 @@ export interface TFn {
  * Translates a source string for the active locale.
  *
  * @remarks
- * Yapyak's compiler rewrites every `t()` call site at build; the runtime is the fallback for
- * paths the compiler did not touch. Call with a string literal — wrapping breaks extraction.
- * Placeholders use `{name}` and their values are type-checked from the source literal. Scope a
- * fixed locale with `t.in()`.
+ * Yapyak's compiler rewrites every `t()` call site at build; the runtime is the fallback for paths the compiler did not touch. Call with a string literal — wrapping breaks extraction. Placeholders use `{name}` and their values are type-checked from the source literal. Scope a fixed locale with `t.in()`.
  *
  * @example Translate, with and without placeholders
  * ```ts

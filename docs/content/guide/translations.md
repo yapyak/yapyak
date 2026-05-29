@@ -71,7 +71,7 @@ t('{count, plural, one {#} other {#}}', { count: 'three' });    // editor error:
 t('{count, plural, one {# by {author}} other {# by {author}}}', { count: 1, author: 'Alex' }); // both checked
 ```
 
-Presence is the compiler's job. Write `t('Hello, {name}!')` with no params and the build fails with `YPK002` — and since the compiler runs in the Vite loop, you see it the moment you save.
+Presence is the compiler's job. Write `t('Hello, {name}!')` with no params and the build fails with `YPK002`. Since the compiler runs in the Vite loop, you see it the moment you save.
 
 Deeply-nested ICU is the one place the type layer stops. Template-literal types bottom out a few levels deep, so the innermost param drops from the inferred type. The compiler covers it: it validates every param name at every depth and fails the build on a mismatch. Nothing slips to runtime.
 
@@ -92,7 +92,7 @@ Scope a translator to a specific locale with `t.in(locale)` instead of the ambie
 const message = t.in(user.locale)('Welcome back, {name}!', { name: user.name });
 ```
 
-`t.in(locale)` returns a translator you can reuse — bind it once and call it as often as you like:
+`t.in(locale)` returns a translator you can reuse. Bind it once and call it as often as you like:
 
 ```tsx
 const inRecipientLocale = t.in(user.locale);
@@ -100,7 +100,7 @@ const subject = inRecipientLocale('Welcome back!');
 const body = inRecipientLocale('You have {count} new messages', { count });
 ```
 
-Useful when the target locale isn't the current one — sending an email in the recipient's language, generating an audit trail, or rendering a preview for another user.
+Useful when the target locale isn't the current one: sending an email in the recipient's language, generating an audit trail, or rendering a preview for another user.
 
 ## Per-file scoping
 

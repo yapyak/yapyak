@@ -3,7 +3,7 @@ title: Formatting
 order: 5
 ---
 
-`format` renders locale-aware values — numbers, currency, dates, lists, relative time. It's the sibling of `t()`: where `t()` translates strings, `format` formats values for the active locale. Every method is backed by `Intl`, so the options are the native `Intl.*Options` — there's nothing to learn beyond the platform.
+`format` renders locale-aware values: numbers, currency, dates, lists, relative time. It's the sibling of `t()`: where `t()` translates strings, `format` formats values for the active locale. Every method is backed by `Intl`, so the options are the native `Intl.*Options`.
 
 ```tsx
 import { format } from 'yapyak';
@@ -44,7 +44,7 @@ format.relativeTime(-2, 'day'); // '2 days ago'
 format.relativeTime(3, 'hour'); // 'in 3 hours'
 ```
 
-`list` joins with the active locale's conventions — pass `{ type: 'disjunction' }` for an `'or'`-style join. `relativeTime` renders negative offsets in the past and positive ones in the future.
+`list` joins with the active locale's conventions. Pass `{ type: 'disjunction' }` for an `'or'`-style join. `relativeTime` renders negative offsets in the past and positive ones in the future.
 
 ## Forced locale
 
@@ -58,4 +58,4 @@ sv.currency(499, 'SEK');
 sv.date(new Date());
 ```
 
-Useful for the same cases as `t.in` — rendering in a recipient's locale, generating an audit trail, or previewing another user's view.
+Useful for the same cases as `t.in`: rendering in a recipient's locale, generating an audit trail, or previewing another user's view.

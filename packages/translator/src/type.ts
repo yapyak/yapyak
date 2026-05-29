@@ -95,8 +95,7 @@ export interface TranslateItem {
  * Request shape for the `translate` callback.
  *
  * @remarks
- * `items`, `sourceLocale`, and `targetLocale` are always present. Forward
- * `signal` to the underlying fetch/SDK call to honor cancellation.
+ * `items`, `sourceLocale`, and `targetLocale` are always present. Forward `signal` to the underlying fetch/SDK call to honor cancellation.
  *
  * @example
  * ```ts

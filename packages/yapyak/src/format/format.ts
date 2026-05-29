@@ -12,24 +12,14 @@ import { formatTime } from './time';
  * Locale-aware formatting backed by `Intl`.
  *
  * @remarks
- * Methods format for the active locale from {@link getLocale}. Scope a fixed locale with
- * {@link Format.in} — option types stay pure `Intl.*Options`, with no `locale` field.
- *
- * @example Active locale and a scoped locale
- * ```ts
- * import { format } from 'yapyak';
- *
- * format.number(1000);              // active locale
- * format.in('sv').currency(200, 'SEK');
- * ```
+ * Methods format for the active locale from {@link getLocale}. Scope a fixed locale with {@link Format.in} — option types stay pure `Intl.*Options`, with no `locale` field.
  */
 export interface Format {
   /**
    * Formats a currency amount for the active locale.
    *
    * @remarks
-   * The `style` and `currency` fields are set from the `currency` argument and override any
-   * provided in `options`.
+   * The `style` and `currency` fields are set from the `currency` argument and override any provided in `options`.
    *
    * @param value - The numeric amount.
    * @param currency - The ISO 4217 currency code, e.g. `'SEK'`.
@@ -72,8 +62,7 @@ export interface Format {
    * Formats a list of strings as a locale-aware enumeration.
    *
    * @remarks
-   * Joins with the active locale's conventions. Use `type: 'disjunction'` for `'or'`-style
-   * joins and `type: 'unit'` for unit lists.
+   * Joins with the active locale's conventions. Use `type: 'disjunction'` for `'or'`-style joins and `type: 'unit'` for unit lists.
    *
    * @param items - The items to join.
    * @param options - Native `Intl.ListFormatOptions`.
@@ -92,8 +81,7 @@ export interface Format {
    * Formats a fraction as a locale-aware percentage.
    *
    * @remarks
-   * The input is a fraction — `0.42` renders as `'42%'` (or the locale equivalent). The
-   * `style` field is set to `'percent'` and overrides any provided in `options`.
+   * The input is a fraction — `0.42` renders as `'42%'` (or the locale equivalent). The `style` field is set to `'percent'` and overrides any provided in `options`.
    *
    * @param value - The fractional value, e.g. `0.42`.
    * @param options - Native `Intl.NumberFormatOptions`.
