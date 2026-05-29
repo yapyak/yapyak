@@ -1,7 +1,7 @@
 import { getLocale } from '../locale';
 import { formatCurrency } from './currency';
 import { formatDate } from './date';
-import { formatDateTime } from './datetime';
+import { formatDateTime } from './date-time';
 import { formatList } from './list';
 import { formatNumber } from './number';
 import { formatPercent } from './percent';

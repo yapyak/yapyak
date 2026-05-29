@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { resetLocale, setLocale } from '../locale';
-import { format } from '.';
+import { format } from './format';
 
 vi.mock('@yapyak/shared', () => ({
   DEFAULT_LOCALE: 'en',
