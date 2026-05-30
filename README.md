@@ -1,6 +1,6 @@
 # yapyak
 
-**i18n that writes itself.**
+**i18n that keeps up.**
 
 [![npm](https://img.shields.io/npm/v/yapyak?logo=npm&color=cb3837&label=npm)](https://www.npmjs.com/package/yapyak)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

@@ -9,7 +9,7 @@ import {
   Outlet,
   Scripts,
 } from '@tanstack/react-router';
-import { useLocale } from '@yapyak/react';
+import { LocaleProvider, useLocale } from '@yapyak/react';
 import { t } from 'yapyak';
 
 import { Colophon } from '#components/colophon';
@@ -27,13 +27,13 @@ export const Route = createRootRoute({
       meta: [
         { charSet: 'utf-8' },
         { content: 'width=device-width, initial-scale=1', name: 'viewport' },
-        { title: 'yapyak — i18n that writes itself.' },
+        { title: 'yapyak — i18n that keeps up.' },
         {
           content: 'For Vite apps moving at the speed of save.',
           name: 'description',
         },
         {
-          content: 'yapyak — i18n that writes itself.',
+          content: 'yapyak — i18n that keeps up.',
           property: 'og:title',
         },
         {
@@ -43,7 +43,7 @@ export const Route = createRootRoute({
         { content: 'website', property: 'og:type' },
         { content: 'summary_large_image', name: 'twitter:card' },
         {
-          content: 'yapyak — i18n that writes itself.',
+          content: 'yapyak — i18n that keeps up.',
           name: 'twitter:title',
         },
         {
@@ -106,7 +106,7 @@ function ShellComponent(props: ShellComponentProps) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <LocaleProvider>{children}</LocaleProvider>
         <Scripts />
       </body>
     </html>
