@@ -26,7 +26,7 @@
     }
 
     .Heading {
-      font-size: 2.75rem;
+      font-size: var(--font-size-4xl);
       font-weight: var(--font-weight-medium);
       line-height: var(--line-height-none);
       color: var(--foreground);
@@ -34,11 +34,11 @@
       text-wrap: balance;
 
       @media (min-width: 640px) {
-        font-size: 3.5rem;
+        font-size: var(--font-size-5xl);
       }
 
       @media (min-width: 1024px) {
-        font-size: 4.5rem;
+        font-size: var(--font-size-6xl);
       }
     }
 

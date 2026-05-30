@@ -212,9 +212,7 @@ The same principle applies when a message contains links or other rendered eleme
 
 ```tsx
 <RichText
-  value={t(
-    'By signing up, you agree to our <terms>terms</terms> and <privacy>privacy policy</privacy>.'
-  )}
+  value={t('By signing up, you agree to our <terms>terms</terms> and <privacy>privacy policy</privacy>.')}
   terms={(children) => <Link to="/terms">{children}</Link>}
   privacy={(children) => <Link to="/privacy">{children}</Link>}
 />
