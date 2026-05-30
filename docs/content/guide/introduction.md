@@ -5,7 +5,7 @@ order: 1
 
 Most i18n tooling was designed around a handoff.
 
-Originally, that meant extracting messages and sending them to translators or localization teams. Newer tools often send the same messages to an AI service in a pipeline. The loop got faster, but the relationship stayed the same: write the interface, move its language elsewhere, and see the translated result later.
+Originally, that meant extracting messages and sending them to translators or localization teams. Newer tools often send the same messages to an AI service in a pipeline. The handoff got faster, but the relationship stayed the same: write the interface, move its language elsewhere, and see the translated result later.
 
 yapyak starts where the interface is written.
 
@@ -39,9 +39,7 @@ export default defineConfig({
 
 The *translator* runs as part of the save, and Vite reflects the result in the running application through HMR. Without one, the entry is an empty stub. Fill it in yourself, or let the coding agent already in the project complete it.
 
-The translated interface can appear while the wording, layout, and interaction are still open decisions.
-
-Translation is no longer waiting for the interface to be finished. It can shape the interface, not just describe it.
+Translation no longer waits for the interface to be finished. It shapes the interface.
 
 ## Translate while the interface can still change
 
@@ -156,19 +154,12 @@ A model connected through yapyak uses that context while translating on save. A 
 What holds across the application, like preferred terms or voice rules, belongs in the *translator*, not in the call site. The component carries the message; the *translator* carries the policy.
 
 ```ts
-import { defineConfig } from 'yapyak';
-import { anthropic } from '@yapyak/anthropic';
-
-export default defineConfig({
-  translator: anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY!,
-    glossary: {
-      Cart: { sv: 'Kundvagn', de: 'Warenkorb' },
-      Order: { sv: 'Beställning', de: 'Bestellung' },
-    },
-    voice: 'concise, never overly formal',
-  }),
-});
+// glossary in yapyak.config.ts
+glossary: {
+  Cart: { sv: 'Kundvagn', de: 'Warenkorb' },
+  Order: { sv: 'Beställning', de: 'Bestellung' },
+  Checkout: { sv: 'Kassa', de: 'Kasse' },
+}
 ```
 
 The glossary travels with every translation request. Whenever `Cart` appears in a source string, in any file, the model is told to use `Kundvagn` in Swedish. The component supplies the context; the glossary enforces what must hold across components.
@@ -183,17 +174,21 @@ t('You have {count} items', { count: 3 })
 t('{count, plural, one {# item} other {# items}}', { count })
 ```
 
-Other i18n tools turn language into JavaScript or component structure:
+Tools that fragment the message at the call site lose something. A tagged template embeds it in JavaScript:
 
 ```tsx
 t`You have ${count} items`
+```
 
+A component API distributes it across props:
+
+```tsx
 <Plural value={count} one="# item" other="# items" />
 ```
 
-Both lose something important. The first mixes the sentence with executable values: a grep cannot find it, a translator cannot read it. The message lives only as code. The second breaks the sentence into props and components: translators and models see pieces, not a sentence. The meaning is reassembled out of JSX.
+In both, the call site holds something other than the sentence: an interpolation in one case, a JSX tree in the other. The string can be extracted by a build step, but reading the component no longer means reading the message.
 
-yapyak treats text as text. Strings carry language; components carry behavior. The two do not mix.
+yapyak puts the literal at the call site. The same string is what the translator receives, what the model returns, and what the runtime renders. Strings carry language; components carry behavior. The two do not mix.
 
 Because placeholders stay in the source literal, TypeScript checks the values passed to them at the call site:
 
@@ -225,7 +220,7 @@ The same principle applies when a message contains links or other rendered eleme
 />
 ```
 
-`<RichText>` is the renderer. It receives the translated string and replaces each `<tag>...</tag>` segment with the result of the matching handler. TypeScript reads the tag names from the source literal, so every tag becomes a required, typed prop on the component, and a missing or misnamed handler is a type error at the call site.
+`<RichText>` is the renderer. It receives the translated string and replaces each `<tag>...</tag>` segment with the result of the matching handler. TypeScript reads the tag names from the source literal. Every tag becomes a required, typed prop on the component; a missing or misnamed handler is a type error at the call site.
 
 ## Translations travel with the screen
 
@@ -259,7 +254,7 @@ The variable is the number of locales, not the size of the application. A chunk 
 
 That trade is a very good fit for product applications with a focused set of locales, whether the application is small or enormous. For a product that must ship a large interface in a hundred languages, loading only the active locale may be the better design. yapyak makes a deliberate choice for the much more common case.
 
-The reward is a simpler runtime. When a screen renders, its language is already present. Locale switching is synchronous. No catalog request, no translation loading state, no async boundary between visible UI and the words it shows. No hydration mismatch, no suspense boundary, no race condition on a fast switch, no stuck loading state. An i18n architecture decides whether to have those problems.
+The reward is a simpler runtime. When a screen renders, its language is already present. Locale switching is synchronous. No catalog request, no async boundary, no race condition on a fast switch. An i18n architecture decides whether to have those problems.
 
 The bundle carries the translations because the screen should arrive ready to speak.
 
@@ -278,7 +273,7 @@ When locales are configured, yapyak writes one JSON file per locale, scoped by s
 }
 ```
 
-This is why two identical source strings can remain distinct when their meaning differs. Keys are written in a stable order, so two branches editing different components produce no overlap; two branches editing the same component produce one small JSON object to merge.
+Keys are written in a stable order, so two branches editing different components produce no overlap; two branches editing the same component produce one small JSON object to merge.
 
 The values may be written on save by a configured AI model. They may be completed by a coding agent already changing the feature. They may be written or corrected by a person. In every case, they are normal repository files: visible in a pull request, editable without a dashboard, and versioned with the code that caused them to exist. `yapyak status` reports coverage per locale; `yapyak check` exits non-zero when a locale is incomplete, so completeness can be a merge requirement instead of an afterthought.
 
@@ -366,7 +361,7 @@ Where the locale is read and persisted is configurable: a cookie, a URL segment,
 
 ## The loop is the feature
 
-Translation has usually arrived after the interface: first through a localization process, later through services and pipelines that shortened the delay without changing the relationship.
+Translation used to begin after an interface was ready to leave engineering. Pipelines made that handoff faster, but the interface was still written first and understood in other languages later.
 
 yapyak starts where the interface is still being made:
 
@@ -376,6 +371,12 @@ t('Your cart is empty')
 
 Write the message where it appears. Save the component. See another language in the running application while the wording, layout, and interaction are still yours to change.
 
+That model matters increasingly because interfaces are no longer written by developers alone. Coding agents can create, revise, and move UI code, but they work best when meaning is visible in the code they are changing. A source string at the call site gives a person and an agent the same starting point: the actual words, in the actual component, with the actual surrounding context. The compiler can validate the result, the *translator* can use the context, and the repository can record the change.
+
 Translation used to be a phase. Then it became a pipeline step.
 
 With yapyak, it is part of writing the interface.
+
+---
+
+Continue to [Installation](/guide/installation/) to wire yapyak into your project.
