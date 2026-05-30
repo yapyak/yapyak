@@ -376,7 +376,3 @@ That model matters increasingly because interfaces are no longer written by deve
 Translation used to be a phase. Then it became a pipeline step.
 
 With yapyak, it is part of writing the interface.
-
----
-
-Continue to [Installation](/guide/installation/) to wire yapyak into your project.
