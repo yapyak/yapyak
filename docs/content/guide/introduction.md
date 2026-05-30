@@ -19,7 +19,7 @@ export function EmptyCart() {
 
 The message remains in the component. Add a locale and save the file: yapyak extracts the change with its surrounding code and writes a locale file in your repo.
 
-To let yapyak fill the entry automatically, point it at a model. A translator carries the model, a tone of voice, and any terms that must stay consistent across the application:
+To let yapyak fill the entry automatically, point it at a model. A *translator* carries the model, a tone of voice, and any terms that must stay consistent across the application:
 
 ```ts
 // yapyak.config.ts
@@ -37,7 +37,7 @@ export default defineConfig({
 });
 ```
 
-The translator runs as part of the save, and Vite reflects the result in the running application through HMR. Without one, the entry is an empty stub. Fill it in yourself, or let the coding agent already in the project complete it.
+The *translator* runs as part of the save, and Vite reflects the result in the running application through HMR. Without one, the entry is an empty stub. Fill it in yourself, or let the coding agent already in the project complete it.
 
 The translated interface can appear while the wording, layout, and interaction are still open decisions.
 
@@ -153,7 +153,7 @@ The component is its own translation brief.
 
 A model connected through yapyak uses that context while translating on save. A coding agent making a wider change uses the same context when completing or updating locale files. A person translating by hand follows the source back to the exact place where it appears.
 
-What holds across the application, like preferred terms or voice rules, belongs in the translator, not in the call site. The component carries the message; the translator carries the policy.
+What holds across the application, like preferred terms or voice rules, belongs in the *translator*, not in the call site. The component carries the message; the *translator* carries the policy.
 
 ```ts
 import { defineConfig } from 'yapyak';
@@ -209,7 +209,7 @@ It is also what makes the save loop possible. A codegen step would put a gate be
 
 Wrong names or types are an editor error. Missing parameters are caught at build by the compiler (`YPK002`), which runs on save through the Vite plugin. The compiler also validates complete ICU syntax, so malformed messages never reach the application.
 
-yapyak's translator prompt makes the same constraint explicit to the model: `Preserve all {placeholder} tokens and ICU patterns exactly as written.` The constraint travels with every request.
+yapyak's *translator* prompt makes the same constraint explicit to the model: `Preserve all {placeholder} tokens and ICU patterns exactly as written.` The constraint travels with every request.
 
 ### Rich text without turning text into components
 
@@ -282,7 +282,7 @@ This is why two identical source strings can remain distinct when their meaning 
 
 The values may be written on save by a configured AI model. They may be completed by a coding agent already changing the feature. They may be written or corrected by a person. In every case, they are normal repository files: visible in a pull request, editable without a dashboard, and versioned with the code that caused them to exist. `yapyak status` reports coverage per locale; `yapyak check` exits non-zero when a locale is incomplete, so completeness can be a merge requirement instead of an afterthought.
 
-You choose the model, when a model is involved. You use your own provider and your own key. You own the loop.
+You choose the model, when a model is involved. You use your own provider and your own key. No yapyak service sits between your code and the model. You own the loop.
 
 ## First-class in every framework
 
