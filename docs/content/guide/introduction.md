@@ -5,7 +5,7 @@ order: 1
 
 Most i18n tooling was designed around a handoff.
 
-Originally, that meant extracting messages and sending them to translators or localization teams. Newer tools often send the same messages to an AI service in a pipeline. The tools got faster. The relationship stayed the same: write the interface, move its language elsewhere, and see the translated result later.
+Originally, that meant extracting messages and sending them to translators or localization teams. Newer tools often send the same messages to an AI service in a pipeline. The loop got faster, but the relationship stayed the same: write the interface, move its language elsewhere, and see the translated result later.
 
 yapyak starts where the interface is written.
 
@@ -152,15 +152,29 @@ export default {
 
 The glossary travels with every translation request. Whenever `Cart` appears in a source string, in any file, the model is told to use `Kundvagn` in Swedish. The component supplies the context; the glossary enforces what must hold across components.
 
-## Write real messages, check the syntax
+## Text stays text
 
-Simple messages should remain simple:
+yapyak uses ICU MessageFormat on purpose. It is the established syntax for pluralization, selection, numbers, dates, and the other language rules production interfaces need. The deeper reason: it keeps the message as a message — one readable string that developers can grep for, translators can read, coding agents can find, and language models trained on decades of plain text already know how to work with.
 
 ```tsx
 t('You have {count} items', { count: 3 })
+
+t('{count, plural, one {# item} other {# items}}', { count })
 ```
 
-Because the placeholder appears in the source literal, TypeScript checks the parameters you pass against it:
+Other i18n tools turn language into JavaScript or component structure:
+
+```tsx
+t`You have ${count} items`
+
+<Plural value={count} one="# item" other="# items" />
+```
+
+Both lose something important. The first mixes the sentence with executable values: a grep cannot find it, a translator cannot read it. The message lives only as code. The second breaks the sentence into props and components: translators and models see pieces, not a sentence. The meaning is reassembled out of JSX.
+
+yapyak treats text as text. Strings carry language; components carry behavior. The two do not mix.
+
+Because placeholders stay in the source literal, TypeScript checks the values passed to them at the call site:
 
 ```tsx
 t('You have {count} items', { total: 3 })
@@ -168,21 +182,29 @@ t('You have {count} items', { total: 3 })
 // Missing required parameter: count
 ```
 
-Wrong names or types are reported in the editor where the message is written. Missing parameters altogether are caught at build time by the compiler (`YPK002`), which runs on save through the Vite plugin.
+This happens with no code generation. The placeholder shape is read from the literal type: no `.d.ts` to regenerate, no watcher between writing a message and the editor understanding it. The literal is the schema.
 
-For messages that need pluralization, selection, numbers, currencies, dates, times, or ordinals, yapyak supports ICU MessageFormat:
+It is also what makes the save loop possible. A codegen step would put a gate between writing a message and the rest of the toolchain — types, compiler, translator, HMR. There is no gate. The loop has nothing to wait on.
+
+Wrong names or types are an editor error. Missing parameters are caught at build by the compiler (`YPK002`), which runs on save through the Vite plugin. The compiler also validates complete ICU syntax, so malformed messages never reach the application.
+
+yapyak's translator prompt makes the same constraint explicit to the model: `Preserve all {placeholder} tokens and ICU patterns exactly as written.` The constraint travels with every request.
+
+### Rich text without turning text into components
+
+The same principle applies when a message contains links or other rendered elements. The translatable value remains a string; rendering stays in the component layer. They are two different calls.
 
 ```tsx
-t('{count, plural, one {# item} other {# items}}', { count })
+<RichText
+  value={t(
+    'By signing up, you agree to our <terms>terms</terms> and <privacy>privacy policy</privacy>.'
+  )}
+  terms={(children) => <Link to="/terms">{children}</Link>}
+  privacy={(children) => <Link to="/privacy">{children}</Link>}
+/>
 ```
 
-ICU is the standard for the language real products need. It works for locales whose grammar cannot be squeezed into an English-shaped singular/plural switch, and it avoids inventing a private format where a standard already exists.
-
-It is also a practical choice where AI helps write the code. Models already understand ICU well; developers can review it; the compiler can validate it. yapyak's translator prompt also tells the model directly: `Preserve all {placeholder} tokens and ICU patterns exactly as written.` The constraint travels with every request.
-
-Messages can carry inline markup. `t('Read <link>our docs</link>')` extracts the tag names from the source literal at build time, and a framework helper renders them with one handler per tag — a missing handler is a type error. React's helper, `<RichText>`, ships today; the same source-string shape extends to Vue, Svelte, and Astro.
-
-TypeScript checks what can be inferred from the literal as you write it. The compiler validates the complete message syntax during development and build, before malformed output can reach the application.
+`<RichText>` is the renderer. It receives the translated string and replaces each `<tag>...</tag>` segment with the result of the matching handler. Tag names are extracted from the source literal at build time, so every tag becomes a required, typed prop on the component, and a missing or misnamed handler is a type error at the call site.
 
 ## Compile translations with the UI that uses them
 
@@ -204,7 +226,7 @@ _pick({
 });
 ```
 
-The output follows Vite's module graph. If a route becomes its own chunk, the messages used by that route travel with it. A user does not need translation data for screens they never open, and changing locale does not wait for a catalog request. Adding a twentieth language changes how many variants travel alongside a chunk, not which screens it carries. The trade is real: bundles scale with locale count, not with app size. In return, locale switching is synchronous, with no flash and no request.
+yapyak does not lazy-load locales. It does not need to: Vite already code-splits the application, and the compiled translations follow the same chunks. A user downloads what the current screen needs, translated for every configured language, and nothing else. Adding the twentieth language adds variants to the chunks already loaded; it does not add a request, an async boundary, or a state machine to coordinate. Locale switching is synchronous because there is nothing left to fetch.
 
 When a translation is missing for the active locale, the source text renders in its place. There is no flash of empty content and no catalog request to wait for.
 
@@ -241,41 +263,35 @@ The values may be written on save by a configured AI model. They may be complete
 
 You choose the model, when a model is involved. You use your own provider and your own key. yapyak does not need to own the translation service, the billing relationship, or a separate copy of your product language.
 
-## Native to the framework where the message appears
+## First-class in every framework
 
-A `t()` call in a Vue template is not the same thing as a `t()` call in a TSX file. Vue runs through its own compiler. So does Svelte. So does Astro. Treating them as one searchable text format is what makes i18n libraries feel grafted onto anything except React.
+{% code-group %}
 
-The same `t()` API runs in each framework's native syntax:
-
-```tsx
-// React
+```tsx [React]
 <button>{t('Save changes')}</button>
 ```
 
-```vue
-<!-- Vue -->
+```vue [Vue]
 <template>
   <button>{{ t('Save changes') }}</button>
 </template>
 ```
 
-```svelte
-<!-- Svelte -->
+```svelte [Svelte]
 <button>{t('Save changes')}</button>
 ```
 
-```astro
+```astro [Astro]
 ---
-// Astro
 import { t } from 'yapyak';
 ---
 
 <button>{t('Save changes')}</button>
 ```
 
-Vue files through Vue's compiler, Svelte through Svelte's, Astro through Astro's, TypeScript and TSX through the TypeScript toolchain. The model is the same; the parser is each framework's own.
+{% /code-group %}
 
-That matters once a message is more than a label. ICU belongs directly inside native framework syntax, including Vue templates:
+Each framework's own compiler does the parsing: Vue's for Vue, Svelte's for Svelte, Astro's for Astro, the TypeScript toolchain for TSX. The edge cases just work because each framework's AST is what yapyak reads:
 
 ```vue
 <template>
@@ -283,7 +299,49 @@ That matters once a message is more than a label. ICU belongs directly inside na
 </template>
 ```
 
-SSR integrations extend the model to Astro, React Router, SvelteKit, and TanStack Start.
+Vue's `{{ }}` mustache braces wrap an ICU message whose syntax also uses `{}`. There is no escape rule, no parser fallback. The Vue compiler reads the template; yapyak reads the `t()` argument inside it.
+
+### SSR with one line
+
+For server-rendered applications, yapyak ships an adapter per framework. Locale resolution plugs into the request boundary:
+
+{% code-group %}
+
+```ts [SvelteKit]
+// src/hooks.server.ts
+export { handle } from '@yapyak/sveltekit';
+```
+
+```ts [Astro]
+// astro.config.ts
+import { defineConfig } from 'astro/config';
+import { yapyak } from '@yapyak/astro';
+
+export default defineConfig({
+  integrations: [yapyak()],
+});
+```
+
+```ts [React Router]
+// app/root.tsx
+import { middleware as yapyakMiddleware } from '@yapyak/react-router';
+
+export const middleware = [yapyakMiddleware];
+```
+
+```ts [TanStack Start]
+// src/start.ts
+import { createStart } from '@tanstack/react-start';
+import { middleware } from '@yapyak/tanstack-start';
+
+export const startInstance = createStart(() => ({
+  requestMiddleware: [middleware],
+}));
+```
+
+{% /code-group %}
+
+Where the locale is read and persisted is configurable: a cookie, a URL segment, or local storage. The adapter handles the round-trip; the application stays unaware.
 
 ## The loop is the feature
 
