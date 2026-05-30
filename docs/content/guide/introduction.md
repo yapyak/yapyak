@@ -17,7 +17,27 @@ export function EmptyCart() {
 }
 ```
 
-The message remains in the component. Add a locale and save the file: yapyak extracts the change with its surrounding code and writes a locale file in your repo. Connect an AI model and the translation lands during the same save, with Vite updating the running application through HMR. Without a model, the entry is a normal file. Fill it in yourself, or let the coding agent already in the project complete it.
+The message remains in the component. Add a locale and save the file: yapyak extracts the change with its surrounding code and writes a locale file in your repo.
+
+To let yapyak fill the entry automatically, point it at a model. A translator carries the model, a tone of voice, and any terms that must stay consistent across the application:
+
+```ts
+// yapyak.config.ts
+import { defineConfig } from 'yapyak';
+import { anthropic } from '@yapyak/anthropic';
+
+export default defineConfig({
+  translator: anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY!,
+    glossary: {
+      Cart: { sv: 'Kundvagn', de: 'Warenkorb' },
+    },
+    voice: 'concise, never overly formal',
+  }),
+});
+```
+
+The translator runs as part of the save, and Vite reflects the result in the running application through HMR. Without one, the entry is an empty stub. Fill it in yourself, or let the coding agent already in the project complete it.
 
 The translated interface can appear while the wording, layout, and interaction are still open decisions.
 
@@ -136,9 +156,10 @@ A model connected through yapyak uses that context while translating on save. A 
 What holds across the application, like preferred terms or voice rules, belongs in the translator, not in the call site. The component carries the message; the translator carries the policy.
 
 ```ts
+import { defineConfig } from 'yapyak';
 import { anthropic } from '@yapyak/anthropic';
 
-export default {
+export default defineConfig({
   translator: anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY!,
     glossary: {
@@ -147,7 +168,7 @@ export default {
     },
     voice: 'concise, never overly formal',
   }),
-};
+});
 ```
 
 The glossary travels with every translation request. Whenever `Cart` appears in a source string, in any file, the model is told to use `Kundvagn` in Swedish. The component supplies the context; the glossary enforces what must hold across components.
@@ -204,43 +225,43 @@ The same principle applies when a message contains links or other rendered eleme
 />
 ```
 
-`<RichText>` is the renderer. It receives the translated string and replaces each `<tag>...</tag>` segment with the result of the matching handler. Tag names are extracted from the source literal at build time, so every tag becomes a required, typed prop on the component, and a missing or misnamed handler is a type error at the call site.
+`<RichText>` is the renderer. It receives the translated string and replaces each `<tag>...</tag>` segment with the result of the matching handler. TypeScript reads the tag names from the source literal, so every tag becomes a required, typed prop on the component, and a missing or misnamed handler is a type error at the call site.
 
-## Compile translations with the UI that uses them
+## Translations travel with the screen
 
-yapyak keeps locale files in your repository, but it does not require one global translation dictionary at runtime.
+Most i18n libraries begin with a catalog: the translatable language of the application kept apart from the code that renders it. Lazy-loading by locale, splitting by namespace, and fetching from a CDN all make that catalog cheaper to deliver. They also preserve the same runtime boundary: the screen can arrive before its language does.
 
-A source message such as:
-
-```tsx
-t('Save changes')
-```
-
-can compile into synchronous locale selection in the module that renders it:
-
-```ts
-_pick({
-  en: 'Save changes',
-  sv: 'Spara ändringar',
-  es: 'Guardar cambios',
-});
-```
-
-yapyak does not lazy-load locales. It does not need to: Vite already code-splits the application, and the compiled translations follow the same chunks. A user downloads what the current screen needs, translated for every configured language, and nothing else. Adding the twentieth language adds variants to the chunks already loaded; it does not add a request, an async boundary, or a state machine to coordinate. Locale switching is synchronous because there is nothing left to fetch.
-
-When a translation is missing for the active locale, the source text renders in its place. There is no flash of empty content and no catalog request to wait for.
-
-When no additional locales are configured, there is nothing to select:
+yapyak does not ship a catalog. A `t()` call compiles into the module that uses it.
 
 ```tsx
+// src/routes/settings.tsx
 export function SaveButton() {
-  return <button>Save changes</button>;
+  return <button>{t('Save changes')}</button>;
 }
 ```
 
-The `t()` expression compiles to the source text. A project can begin writing messages through yapyak before it needs a second locale, without designing a key hierarchy or maintaining an English catalog in advance.
+```tsx
+// compiled output
+export function SaveButton() {
+  const message = {
+    en: 'Save changes',
+    sv: 'Spara ändringar',
+    de: 'Änderungen speichern',
+  };
 
-Tests bind to a single locale without touching global state. `t.in('sv')` returns a translator scoped to one language, so a component test can assert against the language it expects.
+  return <button>{_pick(message)}</button>;
+}
+```
+
+When Vite splits the application into chunks, translations follow the same graph. Settings carries the language of settings. Checkout carries the language of checkout. A user who never opens a screen does not load its translations.
+
+The variable is the number of locales, not the size of the application. A chunk carries one variant of its own messages for each configured locale. Adding another route does not add translation weight to the route already on screen.
+
+That trade is a very good fit for product applications with a focused set of locales, whether the application is small or enormous. For a product that must ship a large interface in a hundred languages, loading only the active locale may be the better design. yapyak makes a deliberate choice for the much more common case.
+
+The reward is a simpler runtime. When a screen renders, its language is already present. Locale switching is synchronous. No catalog request, no translation loading state, no async boundary between visible UI and the words it shows. No hydration mismatch, no suspense boundary, no race condition on a fast switch, no stuck loading state. An i18n architecture decides whether to have those problems.
+
+The bundle carries the translations because the screen should arrive ready to speak.
 
 ## Keep locale files in the repository
 
@@ -261,7 +282,7 @@ This is why two identical source strings can remain distinct when their meaning 
 
 The values may be written on save by a configured AI model. They may be completed by a coding agent already changing the feature. They may be written or corrected by a person. In every case, they are normal repository files: visible in a pull request, editable without a dashboard, and versioned with the code that caused them to exist. `yapyak status` reports coverage per locale; `yapyak check` exits non-zero when a locale is incomplete, so completeness can be a merge requirement instead of an afterthought.
 
-You choose the model, when a model is involved. You use your own provider and your own key. yapyak does not need to own the translation service, the billing relationship, or a separate copy of your product language.
+You choose the model, when a model is involved. You use your own provider and your own key. You own the loop.
 
 ## First-class in every framework
 
