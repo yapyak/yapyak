@@ -93,6 +93,8 @@ A developer reading the component can read the interface directly. A coding agen
 
 Locale files follow the same movement. Rename the message at the same call site and yapyak migrates its translation. Delete the call and the entry leaves with it. A write that would silently clear an in-use translation is refused at build, not after the loss.
 
+Move the call to a different file and the message is re-translated under the new file's context. The new file gets a fresh entry; the old file's entry leaves with the source. yapyak does not transplant translations between files: the translation belongs to where the call now lives.
+
 Short strings make this more than a convenience:
 
 ```tsx
@@ -133,6 +135,23 @@ A model connected through yapyak uses that context while translating on save. A 
 
 What holds across the application, like preferred terms or voice rules, belongs in the translator, not in the call site. The component carries the message; the translator carries the policy.
 
+```ts
+import { anthropic } from '@yapyak/anthropic';
+
+export default {
+  translator: anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY!,
+    glossary: {
+      Cart: { sv: 'Kundvagn', de: 'Warenkorb' },
+      Order: { sv: 'Beställning', de: 'Bestellung' },
+    },
+    voice: 'concise, never overly formal',
+  }),
+};
+```
+
+The glossary travels with every translation request. Whenever `Cart` appears in a source string, in any file, the model is told to use `Kundvagn` in Swedish. The component supplies the context; the glossary enforces what must hold across components.
+
 ## Write real messages, check the syntax
 
 Simple messages should remain simple:
@@ -159,7 +178,7 @@ t('{count, plural, one {# item} other {# items}}', { count })
 
 ICU is the standard for the language real products need. It works for locales whose grammar cannot be squeezed into an English-shaped singular/plural switch, and it avoids inventing a private format where a standard already exists.
 
-It is also a practical choice where AI helps write the code. Models already understand ICU well; developers can review it; the compiler can validate it.
+It is also a practical choice where AI helps write the code. Models already understand ICU well; developers can review it; the compiler can validate it. yapyak's translator prompt also tells the model directly: `Preserve all {placeholder} tokens and ICU patterns exactly as written.` The constraint travels with every request.
 
 Messages can carry inline markup. `t('Read <link>our docs</link>')` extracts the tag names from the source literal at build time, and a framework helper renders them with one handler per tag — a missing handler is a type error. React's helper, `<RichText>`, ships today; the same source-string shape extends to Vue, Svelte, and Astro.
 
@@ -185,7 +204,7 @@ _pick({
 });
 ```
 
-The output follows Vite's module graph. If a route becomes its own chunk, the messages used by that route travel with it. A user does not need translation data for screens they never open, and changing locale does not wait for a catalog request. Adding a twentieth language changes how many variants travel alongside a chunk, not which screens it carries.
+The output follows Vite's module graph. If a route becomes its own chunk, the messages used by that route travel with it. A user does not need translation data for screens they never open, and changing locale does not wait for a catalog request. Adding a twentieth language changes how many variants travel alongside a chunk, not which screens it carries. The trade is real: bundles scale with locale count, not with app size. In return, locale switching is synchronous, with no flash and no request.
 
 When a translation is missing for the active locale, the source text renders in its place. There is no flash of empty content and no catalog request to wait for.
 
