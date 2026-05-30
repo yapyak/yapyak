@@ -5,7 +5,7 @@ order: 1
 
 Most i18n tooling was designed around a handoff.
 
-Originally, that meant extracting messages and sending them to translators or localization teams. Newer tools often send the same messages to an AI service somewhere in a pipeline. The tools got faster. The relationship stayed the same: write the interface, move its language elsewhere, and see the translated result later.
+Originally, that meant extracting messages and sending them to translators or localization teams. Newer tools often send the same messages to an AI service in a pipeline. The tools got faster. The relationship stayed the same: write the interface, move its language elsewhere, and see the translated result later.
 
 yapyak starts where the interface is written.
 
@@ -17,15 +17,11 @@ export function EmptyCart() {
 }
 ```
 
-The message remains in the component. Add a locale and save the file. yapyak extracts the changed message in the context of the code that uses it, and maintains locale files in your repository.
-
-Connect an AI model and it can write the translation during that same save, with Vite reflecting the result in the running application through HMR. Leave it unconfigured and the locale entry is still ordinary project output: you can fill it in yourself, or let the coding agent already working in the repository complete it.
+The message remains in the component. Add a locale and save the file: yapyak extracts the change with its surrounding code and writes a locale file in your repo. Connect an AI model and the translation lands during the same save, with Vite updating the running application through HMR. Without a model, the entry is a normal file. Fill it in yourself, or let the coding agent already in the project complete it.
 
 The translated interface can appear while the wording, layout, and interaction are still open decisions.
 
-That changes the shape of an i18n system. The source text needs to remain legible in the code. Translation needs the context the component already contains. Messages need syntax and validation that hold up in production. Output should follow Vite's module graph rather than sit behind a global runtime catalog.
-
-Translation is no longer waiting for the interface to be finished. It can take part in making it better.
+Translation is no longer waiting for the interface to be finished. It can shape the interface, not just describe it.
 
 ## Translate while the interface can still change
 
@@ -107,21 +103,35 @@ Short strings make this more than a convenience:
 <span>{t('Open')}</span>
 ```
 
-Both occurrences say "Open" in English. One is an action. The other is a state. They may need different translations, and yapyak does not make them share one simply because their source text happens to match. Messages are scoped by file, preserving the local meaning that a global key or flat source catalog can lose.
+Both occurrences say "Open" in English. One is an action. The other is a state. They may need different translations, and yapyak does not make them share one simply because their source text matches. Messages are scoped by file, preserving the local meaning that a global key or flat source catalog can lose.
 
 ## Use the context already present in the code
 
 Interface text is difficult precisely because it is small.
 
-"Continue" in a checkout flow is not necessarily "Continue" during onboarding. "Remove" on a filter chip does not carry the same meaning as "Remove" in a destructive confirmation dialog. A product term may need one preferred translation even when several alternatives would be reasonable in isolation.
+A model that only sees `Remove` cannot tell whether it is removing a filter from a list, dismissing a notification, or deleting a project. The Swedish translation differs in each case: `Ta bort filter`, `Stäng`, `Radera projekt`. None of them is `Remove` translated correctly in the abstract.
 
-Modern AI models translate well when they are given that kind of context. The application already has much of it: the message, the element that renders it, the component it belongs to, nearby copy, and the file that gives it scope. yapyak makes that information available instead of reducing translation to a list of detached phrases.
+yapyak passes the call site with every translation: the file name, the enclosing element, the surrounding code. A model that sees:
 
-A model connected through yapyak can use that context while translating on save. A coding agent making a wider change can use the same context when completing or updating locale files. A person translating by hand can still follow the source back to the exact place where it appears.
+```tsx
+<FilterChip onRemove={...}>
+  <button>{t('Remove')}</button>
+</FilterChip>
+```
 
-What must hold across the application, like preferred terms or voice rules, belongs in the translator, not in the call site. The component carries the message; the translator carries the policy.
+translates it differently than one that sees:
 
-The path differs. The source of meaning does not.
+```tsx
+<DangerDialog>
+  <button>{t('Remove')}</button>
+</DangerDialog>
+```
+
+The component is its own translation brief.
+
+A model connected through yapyak uses that context while translating on save. A coding agent making a wider change uses the same context when completing or updating locale files. A person translating by hand follows the source back to the exact place where it appears.
+
+What holds across the application, like preferred terms or voice rules, belongs in the translator, not in the call site. The component carries the message; the translator carries the policy.
 
 ## Write real messages, check the syntax
 
@@ -147,9 +157,9 @@ For messages that need pluralization, selection, numbers, currencies, dates, tim
 t('{count, plural, one {# item} other {# items}}', { count })
 ```
 
-ICU is established syntax for the language real products need to express. It works for locales whose grammar cannot be squeezed into an English-shaped singular/plural switch, and it avoids introducing a private message format where a standard already exists.
+ICU is the standard for the language real products need. It works for locales whose grammar cannot be squeezed into an English-shaped singular/plural switch, and it avoids inventing a private format where a standard already exists.
 
-It is also a practical choice in a codebase increasingly worked on with AI. Models already understand ICU well; developers can review it; the compiler can validate it.
+It is also a practical choice where AI helps write the code. Models already understand ICU well; developers can review it; the compiler can validate it.
 
 Messages can carry inline markup. `t('Read <link>our docs</link>')` extracts the tag names from the source literal at build time, and a framework helper renders them with one handler per tag — a missing handler is a type error. React's helper, `<RichText>`, ships today; the same source-string shape extends to Vue, Svelte, and Astro.
 
@@ -193,7 +203,7 @@ Tests bind to a single locale without touching global state. `t.in('sv')` return
 
 ## Keep locale files in the repository
 
-When locales are configured, yapyak maintains file-scoped translation output alongside the application:
+When locales are configured, yapyak writes one JSON file per locale, scoped by source file:
 
 ```json
 {
@@ -214,7 +224,9 @@ You choose the model, when a model is involved. You use your own provider and yo
 
 ## Native to the framework where the message appears
 
-Interface text is not written in one universal syntax. yapyak keeps the API consistent while understanding each supported source on its own terms.
+A `t()` call in a Vue template is not the same thing as a `t()` call in a TSX file. Vue runs through its own compiler. So does Svelte. So does Astro. Treating them as one searchable text format is what makes i18n libraries feel grafted onto anything except React.
+
+The same `t()` API runs in each framework's native syntax:
 
 ```tsx
 // React
@@ -242,9 +254,9 @@ import { t } from 'yapyak';
 <button>{t('Save changes')}</button>
 ```
 
-Vue files are handled through Vue's compiler, Svelte files through Svelte's compiler, Astro files through Astro's compiler, and TypeScript and TSX through the TypeScript toolchain.
+Vue files through Vue's compiler, Svelte through Svelte's, Astro through Astro's, TypeScript and TSX through the TypeScript toolchain. The model is the same; the parser is each framework's own.
 
-That matters once messages become more than labels. ICU belongs directly inside native framework syntax, including Vue templates:
+That matters once a message is more than a label. ICU belongs directly inside native framework syntax, including Vue templates:
 
 ```vue
 <template>
@@ -252,9 +264,7 @@ That matters once messages become more than labels. ICU belongs directly inside 
 </template>
 ```
 
-The message is extracted and validated with an understanding of the template around it. Framework support is not a set of wrappers around one preferred environment; it is the same source-string model applied where each framework actually expresses its interface.
-
-SSR integrations extend that model to applications built with Astro, React Router, SvelteKit, and TanStack Start.
+SSR integrations extend the model to Astro, React Router, SvelteKit, and TanStack Start.
 
 ## The loop is the feature
 
