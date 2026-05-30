@@ -31,25 +31,51 @@ Translation is no longer waiting for the interface to be finished. It can take p
 
 A translated interface often finds problems that the source language hides.
 
-A button may fit in English and wrap in German. An empty state may sound vague in Swedish. A label may appear clear only because English allows an ambiguity another language does not.
+Consider a step in a password manager setup flow:
 
 ```tsx
-export function DeleteDialog() {
+export function RecoveryKeyStep() {
   return (
-    <Dialog>
-      <h2>{t('Delete this project?')}</h2>
-      <p>{t('This action cannot be undone.')}</p>
-      <button>{t('Delete project')}</button>
-    </Dialog>
+    <div>
+      <h2>Save your recovery key</h2>
+      <p>You will need this key if you forget your master password.</p>
+
+      <div>
+        <button>Download recovery key</button>
+        <button>Finish setup</button>
+      </div>
+    </div>
   );
 }
 ```
 
-With a model connected to the save loop, an edit to this component can update its configured translations while the dialog remains open in the browser. You review language in the same place you review spacing, hierarchy, and interaction: in the interface itself.
+In English, the actions are unremarkable. They fit naturally beside each other in a compact step, a dialog footer, or a mobile setup screen.
 
-That is useful because product language moves with product work. Screens are added. Flows become shorter. Terms become clearer. Copy changes as the feature becomes better understood. Translation should be close enough to that work to inform it, not merely describe it afterwards.
+Now consider the same interface in German:
 
-Some work should still be explicit. Adding a new locale to a mature application, translating a large existing surface, or reviewing terminology across a product deserves an inspectable change set. The save loop is for the everyday decisions where immediate feedback matters.
+```tsx
+export function RecoveryKeyStep() {
+  return (
+    <div>
+      <h2>Wiederherstellungsschlüssel speichern</h2>
+      <p>Sie benötigen diesen Schlüssel, wenn Sie Ihr Master-Passwort vergessen.</p>
+
+      <div>
+        <button>Wiederherstellungsschlüssel herunterladen</button>
+        <button>Einrichtung abschließen</button>
+      </div>
+    </div>
+  );
+}
+```
+
+Nothing about the German is unusual. `Wiederherstellungsschlüssel herunterladen` is the ordinary label for downloading a recovery key. It is also almost twice as long as `Download recovery key`.
+
+The English version quietly suggests two buttons on one row. The German version makes that assumption impossible to ignore. The actions may need to stack. The step may need a wider layout. On a small screen, the whole interaction may need to be reconsidered.
+
+This is not a translation defect. It is information about the interface, and it is most valuable while the interface is still being built.
+
+With a model connected to the save loop, the German version can appear while this component is still open in the browser. You see the constraint when changing the layout is part of the work, not a follow-up task created by it.
 
 ## Keep meaning at the call site
 
@@ -67,7 +93,7 @@ With yapyak, the component contains the message it renders:
 t('Save changes')
 ```
 
-A developer reading the component can read the interface directly. A coding tool modifying it can see the language it is changing. Move the component and its text moves with it. Revise the wording and the reason for the change is visible in the same diff.
+A developer reading the component can read the interface directly. A coding agent modifying it can see the language it is changing. Move the component and its text moves with it. Revise the wording and the reason for the change is visible in the same diff.
 
 Locale files follow the same movement. Rename the message at the same call site and yapyak migrates its translation. Delete the call and the entry leaves with it. A write that would silently clear an in-use translation is refused at build, not after the loss.
 
@@ -97,7 +123,7 @@ What must hold across the application, like preferred terms or voice rules, belo
 
 The path differs. The source of meaning does not.
 
-## Write real messages, catch real mistakes
+## Write real messages, check the syntax
 
 Simple messages should remain simple:
 
