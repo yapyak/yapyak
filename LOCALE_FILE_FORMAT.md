@@ -259,7 +259,24 @@ When AI sets `needsReview: true`, it typically writes the reason into `hint` so 
 **Required:** no
 **Owner:** developers and *translators*
 
-Optional UI length constraint. Translations longer than `maxLength` characters are flagged by `yapyak validate` (diagnostic YPK112). Useful for buttons, labels, and other length-constrained UI surfaces.
+Optional UI length constraint. Useful for buttons, labels, and other length-constrained UI surfaces.
+
+**maxLength is a soft constraint, not a hard rule.** Different target languages have different length characteristics (German often 30–50% longer than English; CJK languages often shorter in code units but visually wider). yapyak treats `maxLength` as guidance to the *translator*:
+
+- The *translator* (AI or human) tries to produce a `target` within `maxLength` characters.
+- When it cannot fit naturally without losing meaning, it produces the best-fitting translation, sets `needsReview: true`, and explains the length issue in `hint`.
+- `yapyak validate` emits **YPK112 [warning]** when `target.length > maxLength`. The build does not fail. The warning surfaces in CLI output and PR review tooling so humans can decide.
+
+There is **no strict mode**. Hard-failing builds on `maxLength` overruns would force translations to be wrong in languages where the constraint is unrealistic — yapyak refuses to make that trade. If your UI cannot tolerate any overflow at all, the right fix is in the UI (truncate with ellipsis, wrap, allow variable width), not in the translation pipeline.
+
+**Measurement.** Length is measured in JavaScript `string.length` (UTF-16 code units). For ICU plural/select messages, the **longest branch** is measured. Placeholder tokens are counted as they appear in the source (`{name}` = 6 characters).
+
+**Diagnostic codes:**
+
+| Code | Severity | Meaning |
+|---|---|---|
+| YPK112 | warning | `target.length > maxLength`. Surfaces over-length translations for human review |
+| YPK113 | warning | `source.length > maxLength`. Developer set an unrealistic constraint at the call site |
 
 ### `needsReview`
 
@@ -628,21 +645,21 @@ The same nine kinds describe `t()` calls across React (TSX), Vue templates, Svel
 
 ---
 
-## Authoring API: `.hint()`
+## Authoring API: `.hint()` and `.maxLength()`
 
-The `hint` field is populated from two sources:
+The optional author-supplied entry fields (`hint`, `maxLength`) are populated from two sources:
 
-1. **The locale file directly** — anyone (human, AI agent, *translator*) can edit `hint` in `src/locales/sv.json` and yapyak preserves it on the next save loop.
-2. **The source code** — developers can attach a hint at the call site via the chainable `.hint()` method on `t()`. yapyak extracts the hint at compile time and writes it into the entry's `hint` field.
+1. **The locale file directly** — anyone (human, AI agent, *translator*) can edit these fields in `src/locales/<locale>.json` and yapyak preserves them on the next save loop.
+2. **The source code** — developers attach them at the call site via chainable methods on `t()`. yapyak extracts them at compile time and writes them into the entry.
 
-The chainable form makes annotation a code-review-visible part of authoring the UI. It is the only API surface yapyak adds beyond `t()` itself.
+The chainable form makes annotation a code-review-visible part of authoring the UI. These are the only API surfaces yapyak adds beyond `t()` itself.
 
 ### Usage
 
 ```tsx
 import { t } from 'yapyak';
 
-// Simple case — no hint
+// Simple case — no annotation
 t('Save')
 
 // With ICU parameters
@@ -651,8 +668,15 @@ t('Hello, {name}', { name: user.name })
 // Free-text hint
 t('Save').hint('Form submit button — use a confident verb')
 
-// Combined: parameters + hint
-t('Welcome, {name}', { name: user.name }).hint('Dashboard greeting heading')
+// UI length constraint
+t('Place order').maxLength(20)
+
+// Both, in any order
+t('Save').hint('Form submit button').maxLength(12)
+t('Save').maxLength(12).hint('Form submit button')
+
+// With ICU parameters
+t('Hello, {name}', { name: user.name }).hint('Dashboard greeting').maxLength(30)
 ```
 
 ### What ends up in the locale file
@@ -660,7 +684,7 @@ t('Welcome, {name}', { name: user.name }).hint('Dashboard greeting heading')
 Source code:
 
 ```tsx
-t('Save').hint('Form submit button — use a confident verb')
+t('Save').hint('Form submit button — use a confident verb').maxLength(12)
 ```
 
 After `yapyak extract` runs:
@@ -676,98 +700,117 @@ After `yapyak extract` runs:
     "position": 1
   },
   "hint": "Form submit button — use a confident verb",
+  "maxLength": 12,
   "target": ""
 }
 ```
 
-`context` is compiler-derived. `hint` is populated from `.hint()`. They never overlap.
+`context` is compiler-derived. `hint` is populated from `.hint()`. `maxLength` is populated from `.maxLength()`. The three never overlap.
 
-### `.hint()` only accepts a string
+### Argument types
 
-The argument to `.hint()` is always a single free-text string. There is no object form, no structured fields. If you need to convey a length constraint, set `maxLength` on the entry directly in the locale file (or via a separate config; future expansion).
+| Method | Argument | Example |
+|---|---|---|
+| `.hint(value)` | static string literal or const-bound string | `.hint('Form submit button')` |
+| `.maxLength(value)` | static positive integer literal or const-bound number | `.maxLength(20)` |
 
-This deliberate simplicity prevents `.hint()` from becoming a kitchen sink. A hint is a single sentence of guidance for the *translator*, not a record of metadata.
+Single-purpose methods. No object form, no overloading. Each method sets exactly one entry field.
 
 ### Compile-time behavior
 
-`.hint()` is **stripped at compile time**. There is zero runtime cost. The compiled output is identical to a plain `t()` call:
+Both methods are **stripped at compile time**. There is zero runtime cost. The compiled output is identical to a plain `t()` call:
 
 ```tsx
 // Source
-t('Save').hint('Form submit button')
+t('Save').hint('Form submit button').maxLength(12)
 
 // Compiled
 _pick({ en: 'Save', sv: 'Spara' })
 ```
 
-`.hint()` exists only as a compile-time directive that tells yapyak what to write into the entry's `hint` field. At runtime, the chainable returns the translated string just as `t('Save')` would.
+The chainable methods exist only as compile-time directives that tell yapyak what to write into the entry. At runtime, the chain returns the translated string just as `t('Save')` would.
 
 ### Static-extraction requirements
 
-The argument to `.hint()` must be a statically resolvable string at compile time. yapyak emits **YPK210** if it is not.
+Arguments must be statically resolvable at compile time. yapyak emits **YPK210** if not.
 
 | Allowed | Not allowed |
 |---|---|
-| `.hint('literal string')` | `.hint(\`template ${expr}\`)` |
-| `.hint(CONST_STRING)` (where `CONST_STRING` is a const literal) | `.hint(getValue())` |
-| | `.hint(maybeUndefined)` |
+| `.hint('literal string')` | `` .hint(`template ${expr}`) `` |
+| `.hint(CONST_STRING)` (const literal) | `.hint(getValue())` |
+| `.maxLength(20)` | `.maxLength(getMax())` |
+| `.maxLength(MAX_CONST)` (const literal) | `.maxLength(maybeUndefined)` |
+
+### Composition rules
+
+Multiple methods can be chained on the same `t()` call. Each method can be called at most **once per call**. Order doesn't matter.
+
+```tsx
+// Both methods, in any order
+t('Save').hint('Form submit button').maxLength(12)  ✓
+t('Save').maxLength(12).hint('Form submit button')  ✓
+
+// Same method twice — YPK211
+t('Save').hint('A').hint('B')  ❌ YPK211
+t('Save').maxLength(10).maxLength(20)  ❌ YPK211
+```
 
 ### Diagnostics
 
 | Code | Meaning |
 |---|---|
-| YPK210 | `.hint()` argument is not a static string literal or const-bound string |
-| YPK211 | `.hint()` called more than once on the same `t()` call |
-| YPK212 | `.hint()` called on something that is not a direct result of `t()` (e.g., `const x = t('Save'); x.hint(...)` — the chain must be in the same expression) |
+| YPK210 | `.hint()` or `.maxLength()` argument is not a static literal |
+| YPK211 | The same chainable method called more than once on the same `t()` call |
+| YPK212 | Chainable called on something that is not a direct result of `t()` (e.g., `const x = t('Save'); x.hint(...)` — the chain must be in the same expression) |
 
-### Why `.hint()` and not `.context()` or `.notes()`
+### Why these names and not others
 
-- **`.context({...})`** would suggest writing to the compiler-owned `context` field, which developers cannot do. Misleading.
-- **`.notes({...})`** would suggest a kitchen sink of structured metadata. We deliberately kept the API minimal: one free-text field.
+- **`.hint()`** matches the `hint` field it writes to. Says exactly what it is: a hint for the *translator*.
+- **`.maxLength()`** matches the `maxLength` field. Self-explanatory.
+- **No `.context({...})`**: `context` is compiler-owned. A method with that name would mislead developers about what they can write to.
+- **No `.notes({...})`**: We deliberately avoid a kitchen-sink structured-object method. Each chainable does one thing.
+- **No `.with({...})` or `.options({...})`**: Generic names hide intent. Specific names per-field make code readable.
 
-`.hint()` is what the developer is actually doing — giving the *translator* a hint about this string. The method name matches the field name. No confusion.
-
-### Why a chainable method instead of `t(source, options)`
+### Why chainable methods instead of `t(source, options)`
 
 A second argument on `t()` collides with ICU parameters:
 
 ```tsx
-t('Hello, {name}', { name: 'Joakim' })   // params — unambiguous
-t('Save', 'hint string')                  // params? hint? ambiguous
+t('Hello, {name}', { name: 'Joakim' })           // params — unambiguous
+t('Save', { hint: '...', maxLength: 20 })         // params? options? ambiguous
 ```
 
-The chainable form keeps `t(source, params)` reserved for ICU parameter binding and adds annotation as a separate, opt-in step.
-
-### Multiple hint calls
-
-A `t()` call may have at most one `.hint()` chain. Calling `.hint()` more than once on the same expression is a compile error (YPK211):
-
-```tsx
-t('Save').hint('A').hint('B')  // YPK211
-```
+Chainable methods keep `t(source, params)` reserved for ICU parameter binding and add annotation as a separate, opt-in step. Each method is self-documenting at the call site.
 
 ### TypeScript types
 
-The chainable returns a value that is both `string` (for runtime use) and exposes `.hint()` (for compile-time chaining). At runtime, only the string side exists:
+The chainable returns a value that is both `string` (for runtime use) and exposes `.hint()` / `.maxLength()` (for compile-time chaining). At runtime, only the string side exists:
 
 ```ts
 interface Translatable extends String {
-  hint(value: string): string;
+  hint(value: string): Translatable
+  maxLength(value: number): Translatable
 }
 
-declare function t(source: string): Translatable;
-declare function t(source: string, params: Record<string, unknown>): Translatable;
+declare function t(source: string): Translatable
+declare function t(source: string, params: Record<string, unknown>): Translatable
 ```
 
-The chainable returns `string` after `.hint()` is called, preventing further chaining.
+Each method returns `Translatable` so chains can continue. Calling the same method twice is a compile error (YPK211) at the type level via branding (implementation detail).
 
-### `maxLength`, `needsReview`, and other entry fields are not authored via `.hint()`
+### `needsReview` and other workflow fields are not authored at the call site
 
-`.hint()` writes only to the entry's `hint` field. It cannot set `maxLength`, `needsReview`, or other entry-level fields. Those are either:
+The chainable methods write only to **authored** fields (`hint`, `maxLength`). They cannot set:
 
-- **Project-wide** (set in `yapyak.config.ts` or via glossary)
-- **Workflow state** (set by AI / human review action)
-- **Future API additions** (e.g., `.maxLength(20)` chainable if real demand emerges)
+- **`needsReview`** — workflow state set by AI translators (when uncertain) or humans (during review). Not a code-author concern.
+- **`target`** — the translation itself, set by the *translator*.
+- **`status`** — does not exist as a stored field; state is derived.
+
+Workflow state and translations belong in the locale file (or in CLI tooling), not in source code annotations. Code declares intent; the locale file holds the workflow state.
+
+### Future chainable additions
+
+Other entry fields could become chainables if real demand emerges (`.domain()`, `.example()`, etc.). The pattern is established: one method per field, single argument, static literal, callable at most once. New methods can be added without redesigning the API.
 
 Keeping `.hint()` to a single purpose keeps the API surface honest. One method, one job: a free-text hint.
 
