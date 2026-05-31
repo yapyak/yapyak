@@ -9,7 +9,7 @@ function makeLocation(
   options: { hint?: string; maxLength?: number; tag?: string } = {},
 ): Location {
   const location: Location = {
-    callSiteContext: {} as never,
+    callSiteContext: {},
     fileId,
     range: {
       end: { column: 0, line: 1, offset: 0 },

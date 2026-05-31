@@ -39,8 +39,7 @@ interface OrphanTag {
 }
 
 export function clean(options: CleanOptions): number {
-  const localesDir = options.config.localesDir ?? 'locales';
-  const localesPath = join(options.projectRoot, localesDir);
+  const localesPath = join(options.projectRoot, options.config.localesDir);
   const fileLocales = existsSync(localesPath)
     ? readdirSync(localesPath)
         .filter((name) => name.endsWith('.json'))

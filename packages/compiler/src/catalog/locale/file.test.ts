@@ -77,13 +77,13 @@ describe('syncLocaleFiles', () => {
           id: 'Open',
           locations: [
             {
-              callSiteContext: {} as never,
+              callSiteContext: {},
               fileId: 'src/a.tsx',
               range: emptyRange(),
               tag: 'action',
             },
             {
-              callSiteContext: {} as never,
+              callSiteContext: {},
               fileId: 'src/a.tsx',
               range: emptyRange(),
               tag: 'status',
@@ -121,13 +121,13 @@ describe('syncLocaleFiles', () => {
           id: 'Open',
           locations: [
             {
-              callSiteContext: {} as never,
+              callSiteContext: {},
               fileId: 'src/a.tsx',
               range: emptyRange(),
               tag: 'action',
             },
             {
-              callSiteContext: {} as never,
+              callSiteContext: {},
               fileId: 'src/a.tsx',
               range: emptyRange(),
               tag: 'status',

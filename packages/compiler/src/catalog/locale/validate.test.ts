@@ -25,7 +25,7 @@ function makeLocation(args: {
   tag?: string;
 }): Location {
   const location: Location = {
-    callSiteContext: {} as never,
+    callSiteContext: {},
     fileId: args.fileId ?? 'src/a.tsx',
     range: emptyRange(),
   };

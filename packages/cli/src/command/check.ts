@@ -25,14 +25,13 @@ interface MissingTranslation {
 }
 
 export function check(options: CheckOptions): number {
-  const localesDir = options.config.localesDir ?? 'locales';
   const report = buildReport({
     defaultLocale: options.config.defaultLocale,
-    localesDir,
+    localesDir: options.config.localesDir,
     projectRoot: options.projectRoot,
   });
 
-  const localesPath = join(options.projectRoot, localesDir);
+  const localesPath = join(options.projectRoot, options.config.localesDir);
   const allDiagnostics: Diagnostic[] = [...report.diagnostics];
   allDiagnostics.push(...detectHomonyms(report.messages));
 
