@@ -185,13 +185,17 @@ function groupSourcesByFile(
 ): Record<string, string[]> {
   const grouped: Record<string, Set<string>> = {};
   for (const message of messages) {
+    const key =
+      message.context === undefined
+        ? message.source
+        : `${message.source}@${message.context}`;
     for (const location of message.locations) {
       let set = grouped[location.fileId];
       if (!set) {
         set = new Set<string>();
         grouped[location.fileId] = set;
       }
-      set.add(message.source);
+      set.add(key);
     }
   }
   const result: Record<string, string[]> = {};

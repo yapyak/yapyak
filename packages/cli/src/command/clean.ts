@@ -120,13 +120,17 @@ function buildExpected(
   }
   const expected: Record<string, Set<string>> = {};
   for (const message of messages) {
+    const key =
+      message.context === undefined
+        ? message.source
+        : `${message.source}@${message.context}`;
     for (const location of message.locations) {
       let perFile = expected[location.fileId];
       if (!perFile) {
         perFile = new Set<string>();
         expected[location.fileId] = perFile;
       }
-      perFile.add(message.source);
+      perFile.add(key);
     }
   }
   return expected;

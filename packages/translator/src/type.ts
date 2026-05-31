@@ -20,6 +20,8 @@ export interface MessageContext {
 export interface TranslateRequest {
   /** The call-site context. */
   context?: MessageContext;
+  /** The developer-supplied disambiguation context. Set via `t.at(context, source)` at the call site. Matches `[a-z][a-z0-9-]*`. */
+  disambiguation?: string;
   /** The file path the source string came from. */
   fileId: string;
   /** The source string to translate. */
@@ -83,6 +85,8 @@ export type ContextLevel = 'none' | 'minimal' | 'rich';
 export interface TranslateItem {
   /** The component name derived from the file path. */
   component?: string;
+  /** The developer-supplied disambiguation context. Set via `t.at(context, source)` at the call site. */
+  disambiguation?: string;
   /** The nearest enclosing JSX/HTML element. */
   element?: string;
   /** The surrounding code snippet (only with `context: 'rich'`). */

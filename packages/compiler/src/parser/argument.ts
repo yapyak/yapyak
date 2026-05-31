@@ -16,40 +16,109 @@ export interface ParsedParams {
 }
 
 export interface ParsedArguments {
+  context?: string;
   diagnostics: Diagnostic[];
   params?: ParsedParams;
   source: string;
   sourceRange: Range;
 }
 
+const CONTEXT_PATTERN = /^[a-z][a-z0-9-]*$/;
+
 export function parseArguments(callSite: CallSite): ParsedArguments {
   const sourceFile = callSite.node.getSourceFile();
   const fileText = sourceFile.text;
   const fileId = sourceFile.fileName;
   const callArgs = callSite.node.arguments;
-  const firstArg = callArgs[0];
   const diagnostics: Diagnostic[] = [];
+  const isAt = callSite.variant === 'at';
 
-  if (!firstArg) {
+  let context: string | undefined;
+
+  if (isAt) {
+    const contextArg = callArgs[0];
+    if (!contextArg) {
+      diagnostics.push(
+        createDiagnostic({
+          code: 'YPK101',
+          fileId,
+          hint: "Pass the context as the first argument: `t.at('button', 'Save')`.",
+          message:
+            't.at() called without context. Expected `t.at(context, source, params?)`.',
+          range: toRange(callSite.node, sourceFile),
+          severity: 'error',
+          source: fileText,
+        }),
+      );
+      return {
+        diagnostics,
+        source: '',
+        sourceRange: toRange(callSite.node, sourceFile),
+      };
+    }
+    if (
+      ts.isStringLiteral(contextArg) ||
+      ts.isNoSubstitutionTemplateLiteral(contextArg)
+    ) {
+      const text = contextArg.text;
+      if (!CONTEXT_PATTERN.test(text)) {
+        diagnostics.push(
+          createDiagnostic({
+            code: 'YPK402',
+            fileId,
+            hint: 'Use a lowercase identifier (kebab-case for compound names): `button`, `heading`, `primary-cta`.',
+            message: `\`t.at()\` context \`'${text}'\` must match \`[a-z][a-z0-9-]*\`.`,
+            range: toRange(contextArg, sourceFile),
+            severity: 'error',
+            source: fileText,
+          }),
+        );
+      } else {
+        context = text;
+      }
+    } else {
+      diagnostics.push(
+        createDiagnostic({
+          code: 'YPK401',
+          fileId,
+          hint: 'Pass a static string literal as the context argument.',
+          message: '`t.at()` context argument must be a static string literal.',
+          range: toRange(contextArg, sourceFile),
+          severity: 'error',
+          source: fileText,
+        }),
+      );
+    }
+  }
+
+  const sourceArg = callArgs[isAt ? 1 : 0];
+
+  if (!sourceArg) {
     diagnostics.push(
       createDiagnostic({
         code: 'YPK101',
         fileId,
-        message: 't() called without arguments.',
+        message: isAt
+          ? 't.at() called without source string.'
+          : 't() called without arguments.',
         range: toRange(callSite.node, sourceFile),
         severity: 'error',
         source: fileText,
       }),
     );
-    return {
+    const result: ParsedArguments = {
       diagnostics,
       source: '',
       sourceRange: toRange(callSite.node, sourceFile),
     };
+    if (context !== undefined) {
+      result.context = context;
+    }
+    return result;
   }
 
-  const sourceRange = toRange(firstArg, sourceFile);
-  if (!isLiteralFirstArg(firstArg)) {
+  const sourceRange = toRange(sourceArg, sourceFile);
+  if (!isLiteralFirstArg(sourceArg)) {
     diagnostics.push(
       createDiagnostic({
         code: 'YPK102',
@@ -63,10 +132,14 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
         source: fileText,
       }),
     );
-    return { diagnostics, source: '', sourceRange };
+    const result: ParsedArguments = { diagnostics, source: '', sourceRange };
+    if (context !== undefined) {
+      result.context = context;
+    }
+    return result;
   }
 
-  const source = firstArg.text;
+  const source = sourceArg.text;
   if (source === '') {
     diagnostics.push(
       createDiagnostic({
@@ -93,7 +166,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   let params: ParsedParams | undefined;
 
   if (hasPlaceholders) {
-    const paramArg = callArgs[1];
+    const paramArg = callArgs[isAt ? 2 : 1];
     params = paramArg ? parseParams(paramArg, sourceFile) : undefined;
     validateParams({
       callSite,
@@ -107,6 +180,9 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   }
 
   const result: ParsedArguments = { diagnostics, source, sourceRange };
+  if (context !== undefined) {
+    result.context = context;
+  }
   if (params) {
     result.params = params;
   }

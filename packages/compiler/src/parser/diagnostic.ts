@@ -15,7 +15,11 @@ export type DiagnosticCode =
   | 'YPK206'
   | 'YPK301'
   | 'YPK302'
-  | 'YPK303';
+  | 'YPK303'
+  | 'YPK401'
+  | 'YPK402'
+  | 'YPK403'
+  | 'YPK404';
 
 export interface Diagnostic {
   code: DiagnosticCode;

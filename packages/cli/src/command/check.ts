@@ -2,6 +2,7 @@ import type { Diagnostic } from '@yapyak/compiler';
 import type { Config } from '../config';
 
 import {
+  detectAtIssues,
   readLocaleFile,
   validateIcuPairs,
   validateLocaleFile,
@@ -31,6 +32,7 @@ export function check(options: CheckOptions): number {
 
   const localesPath = join(options.projectRoot, options.config.localesDir);
   const allDiagnostics: Diagnostic[] = [...report.diagnostics];
+  allDiagnostics.push(...detectAtIssues(report.messages));
 
   for (const locale of report.locales) {
     if (locale === report.defaultLocale) {

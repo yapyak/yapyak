@@ -683,4 +683,38 @@ describe('transformFile', () => {
       expect(typeof result.map.mappings).toBe('string');
     });
   });
+
+  describe('`t.at()` rewrites', () => {
+    it('strips `t.at` to a bare literal in single-locale mode', () => {
+      const code = runTransform({
+        locales: ['en'],
+        source:
+          "import { t } from 'yapyak';\nexport const x = t.at('button', 'Open');\n",
+      });
+      expect(code).toContain('"Open"');
+      expect(code).not.toContain('t.at(');
+    });
+
+    it('rewrites `t.at` to `_pick` and looks up by the context-disambiguated message id', () => {
+      const code = runTransform({
+        locales: ['en', 'sv'],
+        source:
+          "import { t } from 'yapyak';\nexport const x = t.at('button', 'Open');\n",
+        translations: { sv: { [hashId('Open button')]: 'Öppna' } },
+      });
+      expect(code).toContain('_pick(');
+      expect(code).not.toContain('t.at(');
+      expect(code).toContain('Öppna');
+    });
+
+    it('forwards params from the third arg of `t.at`', () => {
+      const code = runTransform({
+        locales: ['en'],
+        source:
+          "import { t } from 'yapyak';\nexport function x(name) {\n  return t.at('greeting', 'Hi {name}', { name });\n}\n",
+      });
+      expect(code).toContain('`Hi ${name}`');
+      expect(code).not.toContain('t.at(');
+    });
+  });
 });

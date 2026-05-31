@@ -1,4 +1,5 @@
 export { stringifyCanonical } from './canonical';
+export { detectAtIssues } from './disambiguation';
 export {
   type DiscoverLocalesOptions,
   type DiscoverLocalesResult,

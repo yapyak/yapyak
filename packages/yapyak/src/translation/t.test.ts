@@ -52,4 +52,20 @@ describe('t', () => {
       );
     });
   });
+
+  describe('at', () => {
+    it('returns the source unchanged when there are no params', () => {
+      expect(t.at('button', 'Save')).toBe('Save');
+    });
+
+    it('interpolates a placeholder when params are provided', () => {
+      expect(t.at('greeting', 'Hello, {name}!', { name: 'Alex' })).toBe(
+        'Hello, Alex!',
+      );
+    });
+
+    it('ignores the context argument at runtime', () => {
+      expect(t.at('button', 'Save')).toBe(t.at('heading', 'Save'));
+    });
+  });
 });

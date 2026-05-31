@@ -55,29 +55,69 @@ import { t } from 'yapyak'
 
 t('Save')
 t('Hello, {name}', { name: user.name })
+t.at('button', 'Open')
+t.at('button', 'Hello, {name}', { name: user.name })
 ```
 
-Two arguments. The source string is the key. Placeholders use `{name}` syntax and their values are passed as a typed params object.
+Two functions. `t(source, params?)` is the default. `t.at(context, source, params?)` disambiguates the same source string when it must mean different things in the same file.
 
-That is the entire authoring surface.
+### When to use `t.at()`
 
-### Source-string conventions
+Rare. The default is `t()`. Use `t.at()` only when:
 
-If two `t()` calls in the same file would have the same English with different meanings — write different English. Make the source-string the disambiguator:
+- Two or more `t()` calls in the same file use the same English source
+- AND the translations differ between them
+- AND rewriting the English to be more specific is not an option
 
 ```tsx
-// Bad — ambiguous
+// Bad — same source, ambiguous meaning, default translation forced to compromise
 <button>{t('Open')}</button>
 <Badge>{t('Open')}</Badge>
 
-// Good — the source is specific
+// Option 1 — write more specific English
 <button>{t('Open file')}</button>
 <Badge>{t('Status: open')}</Badge>
+
+// Option 2 — disambiguate with t.at
+<button>{t.at('button', 'Open')}</button>
+<Badge>{t.at('status', 'Open')}</Badge>
 ```
 
-yapyak's premise is that the English is the key. If the key is ambiguous, the key is wrong.
+Option 1 is preferred when the English can change. Option 2 is for cases where the source string is fixed by design.
 
-If a translation comes out wrong or is too long for its UI, **edit the locale file directly**. The locale file is a normal JSON file — open it, fix the string, save. No annotation API is needed for the rare case.
+### `t.at` rules
+
+- Context name must match `[a-z][a-z0-9-]*` (lowercase identifier, kebab-case for compound names)
+- Once `t.at()` is used for a source in a file, every call to that source in the same file must also use `t.at()` (YPK403)
+- Using `t.at()` where it doesn't actually disambiguate — single occurrence, or all occurrences with the same context — is a warning (YPK404)
+- `t.at()` has zero runtime cost — the compiler strips it and replaces the call with the looked-up translation
+
+### Key format in the locale file
+
+Untagged calls store the source as the key:
+
+```json
+{ "src/Foo.tsx": { "Open": "Öppna" } }
+```
+
+Tagged calls store `source@context` as the key:
+
+```json
+{
+  "src/Foo.tsx": {
+    "Open@button": "Öppna",
+    "Open@status": "Öppet"
+  }
+}
+```
+
+The locale file type does not change — it is always `Record<file, Record<string, string>>`. Some keys happen to contain `@`. The compiler builds keys; it never parses them.
+
+A human reader, CAT tool, or AI translator that wants to identify the context from a key uses the convention: everything after the last `@` is the context, and it must match `[a-z][a-z0-9-]*`. If it does not match (e.g., source like `Send to user@example.com`), the key is untagged.
+
+### Fallback when a translation is wrong
+
+If a translation comes out wrong, **edit the locale file directly**. The locale file is normal JSON. Open it, fix the value, save.
 
 ## How the translator receives context
 
@@ -153,10 +193,19 @@ Codes are organised by category. The first digit identifies the layer where the 
 | YPK302 | error | File-path key is unsafe (`..`, absolute, symlink escape) |
 | YPK303 | error | String is not Unicode NFC |
 
+### YPK4xx — `t.at()` call site
+
+| Code | Severity | Meaning |
+|---|---|---|
+| YPK401 | error | `t.at()` context argument is not a static string literal |
+| YPK402 | error | `t.at()` context name does not match `[a-z][a-z0-9-]*` |
+| YPK403 | error | Source used with both `t()` and `t.at()` in the same file — choose one |
+| YPK404 | warning | `t.at()` does not disambiguate anything — the context has no effect |
+
 ## Trade-offs
 
 - **The format depends on the source code.** A locale file alone is incomplete — yapyak validates and translates by reading both. This is a deliberate choice: the code already holds the truth; duplicating it into the file would invite drift.
-- **No annotations at the call site.** No `tag`, no `hint`, no `maxLength`. yapyak takes the position that the English is the key — if the key is ambiguous, write a less ambiguous English; if a translation is wrong or too long, edit the locale file directly. The cost is a moment of thought at the source; the benefit is a minimal, learnable API.
+- **One annotation, used rarely.** Only `t.at(context, source)` exists as an annotation, and only for the case where two `t()` calls in the same file genuinely need different translations for the same English source. Yapyak's position is that the English is the key — if the key is ambiguous, prefer rewriting the English; `t.at()` is the escape valve when the source string is fixed by design. There is no `hint` and no `maxLength` — translation issues are fixed by editing the locale file directly.
 - **No status enum, no review flag, no candidates field.** Translation is straight `source → target`. Workflow signals (uncertainty, review-needed, AI-generated) live outside the file: Git history shows what changed, `yapyak status` shows the run's results, PR review catches problems.
 - **Optional file size.** The file scales with translation count. A 500-string project is ~5–10 KB; a 10 000-string project is ~100–200 KB.
 

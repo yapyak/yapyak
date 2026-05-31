@@ -26,4 +26,24 @@ describe('t', () => {
       TReturn<'link'>
     >();
   });
+
+  it('returns an untagged string from `at` without placeholders', () => {
+    expectTypeOf(t.at('button', 'Save')).toEqualTypeOf<TReturn<never>>();
+  });
+
+  it('accepts params from `at` for a source with placeholders', () => {
+    expectTypeOf(
+      t.at('greeting', 'Hello, {name}!', { name: 'Alex' }),
+    ).toEqualTypeOf<TReturn<never>>();
+  });
+
+  it('preserves tag extraction through `at`', () => {
+    expectTypeOf(t.at('paragraph', 'Read <link>terms</link>')).toEqualTypeOf<
+      TReturn<'link'>
+    >();
+  });
+
+  it('keeps the `at` return assignable to `string`', () => {
+    expectTypeOf(t.at('button', 'Save')).toExtend<string>();
+  });
 });

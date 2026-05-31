@@ -5,6 +5,7 @@ const date = new Date('2024-01-01T08:30:00Z');
 
 export function App() {
   const [locale, setLocale] = useLocale();
+
   return (
     <main
       style={{ fontFamily: 'system-ui', maxWidth: '720px', padding: '2rem' }}

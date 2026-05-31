@@ -266,7 +266,7 @@ function renderCallReplacement(
   }
 
   const { placeholders } = parsePlaceholders(parsed.source);
-  const id = toMessageId(parsed.source);
+  const id = toMessageId(parsed.source, parsed.context);
 
   if (isSingleLocale && canElide(placeholders, callSite)) {
     const bare = tryBareElision(parsed.source, callSite, placeholders);
@@ -345,7 +345,7 @@ function safeJsString(text: string): string {
 function getParamExpressions(
   callSite: CallSite,
 ): Map<string, string> | undefined {
-  const arg = callSite.node.arguments[1];
+  const arg = callSite.node.arguments[callSite.variant === 'at' ? 2 : 1];
   if (!arg) {
     return undefined;
   }
@@ -465,7 +465,7 @@ function renderLocaleKey(locale: string): string {
 }
 
 function getParamArgText(callSite: CallSite): string | undefined {
-  const arg = callSite.node.arguments[1];
+  const arg = callSite.node.arguments[callSite.variant === 'at' ? 2 : 1];
   if (!arg) {
     return undefined;
   }

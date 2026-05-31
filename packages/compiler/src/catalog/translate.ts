@@ -28,9 +28,16 @@ export interface AutoTranslateResult {
 
 interface Stub {
   context: MessageContext | undefined;
+  disambiguation: string | undefined;
   fileId: string;
   locale: string;
   source: string;
+}
+
+function stubKey(stub: Stub): string {
+  return stub.disambiguation === undefined
+    ? stub.source
+    : `${stub.source}@${stub.disambiguation}`;
 }
 
 export async function autoTranslate(
@@ -55,13 +62,26 @@ export async function autoTranslate(
     );
     const data = readLocaleFile(localePath);
     let touched = false;
-    const requests = localeStubs.map((stub) => ({
-      context: stub.context,
-      fileId: stub.fileId,
-      source: stub.source,
-      sourceLocale: options.defaultLocale,
-      targetLocale: stub.locale,
-    }));
+    const requests = localeStubs.map((stub) => {
+      const request: {
+        context: MessageContext | undefined;
+        disambiguation?: string;
+        fileId: string;
+        source: string;
+        sourceLocale: string;
+        targetLocale: string;
+      } = {
+        context: stub.context,
+        fileId: stub.fileId,
+        source: stub.source,
+        sourceLocale: options.defaultLocale,
+        targetLocale: stub.locale,
+      };
+      if (stub.disambiguation !== undefined) {
+        request.disambiguation = stub.disambiguation;
+      }
+      return request;
+    });
 
     if (typeof options.translator.batch === 'function') {
       try {
@@ -76,7 +96,7 @@ export async function autoTranslate(
           if (trimmed === '') {
             continue;
           }
-          setEntry(data, stub.fileId, stub.source, trimmed);
+          setEntry(data, stub.fileId, stubKey(stub), trimmed);
           translated++;
           touched = true;
         }
@@ -103,7 +123,7 @@ export async function autoTranslate(
           if (trimmed === '') {
             continue;
           }
-          setEntry(data, stub.fileId, stub.source, trimmed);
+          setEntry(data, stub.fileId, stubKey(stub), trimmed);
           translated++;
           touched = true;
         } catch (error) {
@@ -137,13 +157,17 @@ function toExtractedSources(
 ): Record<string, Set<string>> {
   const result: Record<string, Set<string>> = {};
   for (const message of messages) {
+    const key =
+      message.context === undefined
+        ? message.source
+        : `${message.source}@${message.context}`;
     for (const location of message.locations) {
       let set = result[location.fileId];
       if (!set) {
         set = new Set<string>();
         result[location.fileId] = set;
       }
-      set.add(message.source);
+      set.add(key);
     }
   }
   return result;
@@ -188,16 +212,21 @@ function collectStubs(
     );
     const localeData = readLocaleFile(localePath);
     for (const message of options.messages) {
+      const key =
+        message.context === undefined
+          ? message.source
+          : `${message.source}@${message.context}`;
       for (const location of message.locations) {
         if (options.force !== true) {
           const localeFile = localeData[location.fileId];
-          const existing = localeFile?.[message.source];
+          const existing = localeFile?.[key];
           if (typeof existing === 'string' && existing !== '') {
             continue;
           }
         }
         stubs.push({
           context: contexts.get(`${location.fileId} ${message.source}`),
+          disambiguation: message.context,
           fileId: location.fileId,
           locale,
           source: message.source,
@@ -212,7 +241,7 @@ function dedupeStubs(stubs: Stub[]): Stub[] {
   const seen = new Set<string>();
   const out: Stub[] = [];
   for (const stub of stubs) {
-    const key = `${stub.locale} ${stub.fileId} ${stub.source}`;
+    const key = `${stub.locale} ${stub.fileId} ${stubKey(stub)}`;
     if (seen.has(key)) {
       continue;
     }

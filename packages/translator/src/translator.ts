@@ -114,6 +114,9 @@ export function createTranslator(options: CreateTranslatorOptions): Translator {
 
 function toItem(request: TranslateRequest, level: ContextLevel): TranslateItem {
   const item: TranslateItem = { source: request.source };
+  if (request.disambiguation !== undefined) {
+    item.disambiguation = request.disambiguation;
+  }
   if (level === 'none') {
     return item;
   }

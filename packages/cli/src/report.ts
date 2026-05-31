@@ -70,13 +70,17 @@ export function buildReport(options: BuildReportOptions): Report {
 
   const sourcesByFile: Record<string, Set<string>> = {};
   for (const message of messages) {
+    const key =
+      message.context === undefined
+        ? message.source
+        : `${message.source}@${message.context}`;
     for (const location of message.locations) {
       let sources = sourcesByFile[location.fileId];
       if (!sources) {
         sources = new Set();
         sourcesByFile[location.fileId] = sources;
       }
-      sources.add(message.source);
+      sources.add(key);
     }
   }
 

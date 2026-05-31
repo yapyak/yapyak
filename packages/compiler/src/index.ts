@@ -4,6 +4,7 @@ export {
   autoTranslate,
   type DiscoverLocalesOptions,
   type DiscoverLocalesResult,
+  detectAtIssues,
   detectRenames,
   discoverLocales,
   type InvariantViolation,

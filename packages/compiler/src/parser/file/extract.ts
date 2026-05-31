@@ -21,11 +21,13 @@ import { getScriptKind } from '../script-kind';
 
 export interface Location {
   callSiteContext: CallSiteContext;
+  context?: string;
   fileId: string;
   range: Range;
 }
 
 export interface ExtractedMessage {
+  context?: string;
   id: string;
   locations: Location[];
   placeholders: Placeholder[];
@@ -146,6 +148,7 @@ function processFragment(input: ProcessFragmentInput): void {
       binding: fragmentCall.binding,
       node: fragmentCall.node,
       range: remapRange(fragmentCall.range, fragment, originalSource),
+      variant: fragmentCall.variant,
     };
     if (fragmentCall.localeExpression) {
       callSite.localeExpression = fragmentCall.localeExpression;
@@ -163,13 +166,16 @@ function processFragment(input: ProcessFragmentInput): void {
     }
 
     const { placeholders } = parsePlaceholders(parsed.source);
-    const id = toMessageId(parsed.source);
+    const id = toMessageId(parsed.source, parsed.context);
 
     const location: Location = {
       callSiteContext: resolveCallSiteContext(fragmentCall.node, sourceFile),
       fileId: request.fileId,
       range: remapRange(parsed.sourceRange, fragment, originalSource),
     };
+    if (parsed.context !== undefined) {
+      location.context = parsed.context;
+    }
 
     const existing = messagesById.get(id);
     if (existing) {
@@ -177,12 +183,16 @@ function processFragment(input: ProcessFragmentInput): void {
       continue;
     }
 
-    messagesById.set(id, {
+    const message: ExtractedMessage = {
       id,
       locations: [location],
       placeholders,
       source: parsed.source,
-    });
+    };
+    if (parsed.context !== undefined) {
+      message.context = parsed.context;
+    }
+    messagesById.set(id, message);
   }
 }
 

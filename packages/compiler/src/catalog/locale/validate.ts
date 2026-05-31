@@ -105,12 +105,12 @@ export function validateIcuPairs(input: ValidateIcuPairsInput): Diagnostic[] {
   for (const message of input.messages) {
     const sourcePlaceholders = parsePlaceholders(message.source).placeholders;
     const sourceByName = byName(sourcePlaceholders);
+    const key =
+      message.context === undefined
+        ? message.source
+        : `${message.source}@${message.context}`;
     for (const location of message.locations) {
-      const target = readTarget(
-        input.localeFile,
-        location.fileId,
-        message.source,
-      );
+      const target = readTarget(input.localeFile, location.fileId, key);
       if (target === undefined) {
         continue;
       }
@@ -180,13 +180,13 @@ function byName(
 function readTarget(
   localeFile: LocaleFile,
   fileId: string,
-  source: string,
+  key: string,
 ): string | undefined {
   const fileEntries = localeFile[fileId];
   if (!fileEntries) {
     return undefined;
   }
-  const entry = fileEntries[source];
+  const entry = fileEntries[key];
   if (entry === undefined || entry === '') {
     return undefined;
   }

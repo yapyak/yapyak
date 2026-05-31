@@ -39,6 +39,21 @@ export type TReturn<T extends string = never> = [T] extends [never]
  */
 export interface TFn {
   /**
+   * Disambiguates a source string by context. Stripped at compile time.
+   *
+   * @remarks
+   * Use only when two or more `t()` calls in the same file share a source string but need different translations. The compiler emits {@link https://yapyak.dev/diagnostics/YPK403 YPK403} if a source is used with both `t()` and `t.at()` in the same file.
+   *
+   * @param context - The disambiguating context. Must match `[a-z][a-z0-9-]*`.
+   * @param source - The source string literal.
+   * @param params - The placeholder params. Required when the source has placeholders.
+   */
+  at<T extends string>(
+    context: string,
+    source: T,
+    params?: TParams<T>,
+  ): TReturn<ExtractTags<T>>;
+  /**
    * Scopes translation to a fixed locale.
    *
    * @param locale - The locale code, e.g. `'sv'`.
@@ -95,6 +110,11 @@ function createTFn(boundLocale?: string): TFn {
       ) as TReturn<ExtractTags<T>>;
     },
     {
+      at: <T extends string>(
+        _context: string,
+        source: T,
+        params?: TParams<T>,
+      ): TReturn<ExtractTags<T>> => translate(source, params),
       in: (locale: string): TFn => createTFn(locale),
     },
   );

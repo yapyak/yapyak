@@ -390,4 +390,35 @@ describe('anthropic', () => {
       ).rejects.toThrow(/expected 2/);
     });
   });
+
+  describe('disambiguation', () => {
+    it('forwards `disambiguation` into the request items', async () => {
+      const stub = stubFetch('Öppna');
+      await anthropic({ apiKey: 'k' })({
+        disambiguation: 'button',
+        fileId: 'src/a.tsx',
+        source: 'Open',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      });
+      const body = stub.body() as { messages: Array<{ content: string }> };
+      // biome-ignore lint/style/noNonNullAssertion: stubbed payload always has one message
+      const items = JSON.parse(body.messages[0]!.content) as Array<{
+        disambiguation?: string;
+      }>;
+      expect(items[0]?.disambiguation).toBe('button');
+    });
+
+    it('mentions `disambiguation` in the system prompt', async () => {
+      const stub = stubFetch('Öppna');
+      await anthropic({ apiKey: 'k' })({
+        fileId: 'src/a.tsx',
+        source: 'Open',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      });
+      const body = stub.body() as { system: string };
+      expect(body.system).toContain('disambiguation');
+    });
+  });
 });

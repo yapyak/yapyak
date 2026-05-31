@@ -189,4 +189,59 @@ describe('parseArguments', () => {
       expect(ypk203[0]?.severity).toBe('error');
     });
   });
+
+  describe('`t.at()` variant', () => {
+    it('parses a literal context and source', () => {
+      const parsed = parseInline("export const x = t.at('button', 'Save');");
+      expect(parsed.context).toBe('button');
+      expect(parsed.source).toBe('Save');
+      expect(parsed.diagnostics).toHaveLength(0);
+    });
+
+    it('parses params from the third argument when source has placeholders', () => {
+      const parsed = parseInline(
+        "export const x = t.at('greeting', 'Hi {name}', { name: 'Alex' });",
+      );
+      expect(parsed.context).toBe('greeting');
+      expect(parsed.source).toBe('Hi {name}');
+      expect(parsed.params?.keys).toEqual(['name']);
+      expect(parsed.diagnostics).toHaveLength(0);
+    });
+
+    it('emits YPK401 when context is a non-literal expression', () => {
+      const parsed = parseInline(
+        "const ctx = 'button'; export const x = t.at(ctx, 'Save');",
+      );
+      const ypk401 = parsed.diagnostics.filter((d) => d.code === 'YPK401');
+      expect(ypk401).toHaveLength(1);
+      expect(parsed.context).toBeUndefined();
+    });
+
+    it('emits YPK402 when context contains uppercase letters', () => {
+      const parsed = parseInline("export const x = t.at('Button', 'Save');");
+      const ypk402 = parsed.diagnostics.filter((d) => d.code === 'YPK402');
+      expect(ypk402).toHaveLength(1);
+      expect(parsed.context).toBeUndefined();
+    });
+
+    it('emits YPK402 when context contains an `@`', () => {
+      const parsed = parseInline("export const x = t.at('btn@x', 'Save');");
+      const ypk402 = parsed.diagnostics.filter((d) => d.code === 'YPK402');
+      expect(ypk402).toHaveLength(1);
+    });
+
+    it('accepts kebab-case context names', () => {
+      const parsed = parseInline(
+        "export const x = t.at('primary-cta', 'Save');",
+      );
+      expect(parsed.context).toBe('primary-cta');
+      expect(parsed.diagnostics).toHaveLength(0);
+    });
+
+    it('emits YPK101 when called without arguments', () => {
+      const parsed = parseInline('export const x = t.at();');
+      const ypk101 = parsed.diagnostics.filter((d) => d.code === 'YPK101');
+      expect(ypk101).toHaveLength(1);
+    });
+  });
 });
