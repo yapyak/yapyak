@@ -3,11 +3,15 @@ title: How it works
 order: 3
 ---
 
-yapyak is a Vite plugin and a tiny runtime. The plugin watches your source files. Each save runs a pipeline that ends with locale variants inlined at the call site. The full mechanic below.
+yapyak is a build-time compiler with a small runtime. You write source strings where they belong: in the component, route, or module that renders them. During development and build, yapyak extracts those strings, keeps translations in sync, and compiles each translated variant back into the module that uses it.
+
+At render time, the runtime has one job: return the variant for the active locale.
+
+This is the central design choice in yapyak. Translations do not live in a global catalog that the application has to locate, load, and query at runtime. They stay attached to the code that gives them meaning, and they are split into the same chunks as that code.
 
 ## The compile transform
 
-What you write:
+Given this component:
 
 ```tsx
 import { t } from 'yapyak';
@@ -17,19 +21,27 @@ export function SaveButton() {
 }
 ```
 
-What yapyak compiles it to:
+with `sv` and `es` configured, yapyak emits the equivalent of:
 
 ```tsx
 import { pick as _pick } from 'yapyak/internal';
 
 export function SaveButton() {
-  return <button>{_pick({ en: 'Save changes', sv: 'Spara ändringar', es: 'Guardar cambios' })}</button>;
+  return (
+    <button>
+      {_pick({
+        en: 'Save changes',
+        sv: 'Spara ändringar',
+        es: 'Guardar cambios',
+      })}
+    </button>
+  );
 }
 ```
 
-The variants for each locale are inlined as a const object. `_pick()` reads the current locale and returns the matching value synchronously.
+The translated variants are compiled into the same module as `SaveButton`. `_pick()` reads the active locale and returns the appropriate value synchronously. It does not resolve a key against a separate catalog, and it does not introduce a loading step between the component and the string it renders.
 
-Without any locales configured, yapyak disappears:
+This also makes incremental adoption unusually cheap. With no additional locale configured, the same call compiles down to its source string:
 
 ```tsx
 export function SaveButton() {
@@ -37,57 +49,54 @@ export function SaveButton() {
 }
 ```
 
-The `_pick()` call gets stripped out, leaving the source string as a plain literal. Adopt yapyak today, add locales next month, the rest of your code stays the same.
+Until a project adds another language, there is no runtime locale selection to ship for that string. You can start writing translatable UI before localization becomes a release requirement, without creating a migration project for later.
 
-## Per-framework AST processors
+## Frameworks are parsed as frameworks
 
-The compile transform runs through a processor selected by file extension. Each processor wraps a framework's official compiler so extraction and rewrite happen through the same AST the framework itself uses.
+A translation call is only useful if the compiler understands where it appears. A call inside a Vue template is not plain JavaScript text. Neither is one inside a Svelte component or Astro frontmatter.
 
-| File extension | Processor | AST library |
-|---|---|---|
-| `.ts`, `.tsx`, `.jsx`, `.mjs` | vanilla | TypeScript compiler |
-| `.vue` | vue | `@vue/compiler-sfc` + `@vue/compiler-core` |
-| `.svelte` | svelte | `svelte/compiler` (modern mode) |
-| `.astro` | astro | `@astrojs/compiler/sync` |
+yapyak processes each supported file type through the toolchain that understands its syntax:
 
-Each processor knows where to inject the `pick` import, which fragments contain executable code (script blocks vs template fragments), and how template-level expressions map back to source positions. The TypeScript portions inside Vue `<script setup>`, Svelte `<script>`, or Astro frontmatter are parsed identically to plain `.ts` files because the processor hands those fragments through.
+| File type | Parser |
+| --- | --- |
+| `.ts`, `.tsx`, `.jsx`, `.mjs` | TypeScript compiler |
+| `.vue` | `@vue/compiler-sfc` and `@vue/compiler-core` |
+| `.svelte` | `svelte/compiler` |
+| `.astro` | `@astrojs/compiler/sync` |
 
-This means `t('Save changes')` inside `<template>{{ t('Save changes') }}</template>` and `<button>{t('Save changes')}</button>` both get extracted, rewritten, and inlined using the framework's own understanding of the source.
+For Vue, Svelte, and Astro, executable TypeScript regions are passed through the same TypeScript extraction pipeline used for ordinary modules. Template expressions are discovered through the framework parser first, then inspected for `t()` calls.
 
-Vue, Svelte, and Astro share the full downstream pipeline with TSX. Once executable fragments are isolated, every downstream step works identically across frameworks.
+That distinction matters. Templates have their own scope rules, expression boundaries, blocks, slots, and component syntax. Parsing them as text would make the common case look simple and the edge cases unreliable. yapyak supports React, Vue, Svelte, Astro, and plain TypeScript as source formats in their own right.
 
-Adding a new framework is writing a processor: parse the file with the framework's AST, identify executable fragments, hand them through the TypeScript pipeline. The current four processors total around 1900 lines of TypeScript.
+## What happens when a file changes
 
-## The save pipeline
+During development, the Vite plugin handles each relevant file change as a small synchronization pass.
 
-The Vite plugin runs this on every `.tsx`/`.ts`/`.vue`/`.svelte` save:
+### 1. Extract calls and validate them
 
-1. **Extract.** Parse the file with the TypeScript compiler. Collect each `t()` call along with its call-site context (line, column, source string, surrounding code). Static analysis catches eight classes of mistake at this step, each with its own diagnostic code (`YPK001` dynamic source, `YPK002` missing param, `YPK003` extra param, `YPK005` spread params, `YPK007` invalid plural, `YPK008` empty source, and others).
-2. **Detect renames.** If a string disappeared from line 23, column 12 and a new one appeared at the same position, that's a rename, not a delete plus add.
-3. **Sync locale files.** New strings get empty entries in every `locales/*.json`. Removed strings get pruned.
-4. **Translate.** If a translator is configured and the new-string count is under the threshold, missing entries go to the AI in batches, each carrying its call-site context.
-5. **Inline and HMR.** Vite re-bundles, the transform reads fresh locale data and inlines the variants, the browser updates.
+yapyak parses the changed file and collects its `t()` calls together with information about where each call appears: the source string, file position, surrounding code, and enclosing element where available.
 
-If no translator is configured, step 4 is skipped. Stubs stay empty until you fill them by hand. If too many strings would translate at once (default: more than 20), step 4 also skips and logs a hint to run the CLI.
+Static diagnostics run at this point. Dynamic source strings (`YPK001`), missing parameters (`YPK002`), extra parameters (`YPK003`), spread parameters (`YPK005`), invalid plural patterns (`YPK007`), empty sources (`YPK008`), and other malformed calls are reported during development or build rather than becoming localization bugs in a running application.
 
-## The auto-translate threshold
+### 2. Preserve translations across ordinary edits
 
-To keep saves snappy, yapyak applies a per-save translation cap:
+When a source string changes at the same line and column as an existing call, yapyak can recognize the edit as a rename rather than treating it as an unrelated deletion and addition.
 
-| Scenario | Behavior |
-|---|---|
-| Save adds 1-20 new strings | Translated immediately, invisible (~1s) |
-| Save adds 50 new strings (paste-bomb) | Bail. `[yapyak] 50 new strings detected. Run \`pnpm yapyak translate\` to fill.` |
-| Empty `ru.json` created, no edits | Stubs sync, no translation. `pnpm yapyak translate ru` fills 1000 strings in under a minute with a live progress bar |
+Changing:
 
-Set `autoTranslateThreshold: 0` in your plugin config to disable on-save translation entirely. The configured translator is still used by the CLI, which is useful for manual control over when API calls happen.
+```tsx
+t('Save')
+```
 
-## Rename detection
+to:
 
-yapyak tracks `t()` calls by **position** in the source: line and column, not string similarity. When you edit `t('Save')` to `t('Save changes')` on the same line and column, the diff looks like a rename, and existing translations move with the call site.
+```tsx
+t('Save changes')
+```
+
+in place produces a locale-file diff shaped like this:
 
 ```diff
-// locales/sv.json
 {
   "src/components/save-button.tsx": {
 -    "Save": "Spara",
@@ -96,20 +105,40 @@ yapyak tracks `t()` calls by **position** in the source: line and column, not st
 }
 ```
 
-The non-default locales get one of two treatments, depending on `preserveTranslationsOnRename`:
+The handling of non-default locales depends on the workflow:
 
-| Setting | Behavior |
-|---|---|
-| `true` (default when no translator is configured) | Old translation carried to the new key. Your handwritten Swedish "Spara" survives. |
-| `false` (default when a translator is configured) | New key gets an empty stub. The AI re-translates from the new source. |
+| Configuration | Rename behavior |
+| --- | --- |
+| `preserveTranslationsOnRename: true` | The existing translation is moved to the new source string |
+| `preserveTranslationsOnRename: false` | The new source string receives an empty entry and can be translated again |
 
-The split exists because intent differs. Manual workflows want handwritten translations preserved across small edits. AI workflows usually want a re-translation because the new source string may mean something subtly different.
+Without a configured *translator*, preserving an existing translation is usually the least surprising behavior. With a *translator* configured, translating again is often safer: a small wording change in the source language may carry a meaningful change in intent.
 
-If a string is moved *and* renamed in the same save, position-matching fails. yapyak treats it as a delete plus add, and the translation is lost. Rename detection is line+column-strict by design. Fuzzy matching would happily rebind "Submit" to "Sign me up" and call it a feature.
+Rename matching is deliberately strict. If a call moves and changes text in the same save, yapyak treats it as a removed message and a new message. Guessing based on string similarity would make edits appear convenient while creating a much worse failure mode: attaching a valid translation to the wrong meaning.
 
-## Call-site context
+### 3. Synchronize locale files
 
-For every missing entry, yapyak extracts a context object from the call site and attaches it to the translation request:
+After extraction and rename detection, yapyak updates the locale files. New messages receive entries in each configured locale. Removed messages are pruned. Files are written atomically and in stable order, so the Git diff reflects the source change rather than incidental rewriting.
+
+Locale files remain ordinary project files. They can be reviewed, edited, versioned, and restored with the same tools as the rest of the codebase.
+
+### 4. Translate missing entries when configured
+
+When a *translator* is configured, new missing entries can be translated as part of the save loop. Each translation request includes the source message and, depending on configuration, the context collected from its call site.
+
+When no *translator* is configured, the synchronization still happens. The new locale entries remain empty until they are filled by hand or through the CLI.
+
+### 5. Recompile and update the running app
+
+Once locale data is current, Vite reruns the transform with the updated variants. In development, yapyak sends custom events over Vite's WebSocket connection — `yapyak:locale-added` and `yapyak:locale-removed` — and the runtime listens for them via `import.meta.hot.on()` to update its active locale state.
+
+The result is that a translated edit can appear in the running application as part of the same save cycle, without requiring a page reload or a separate catalog refresh.
+
+## Context comes from the code
+
+A source string is often enough to locate a translation, but not always enough to translate it well. A short message such as `Save`, `Open`, or `Close` can mean different things depending on where it appears.
+
+For a missing translation, yapyak can construct context from the call site:
 
 ```json
 {
@@ -120,26 +149,88 @@ For every missing entry, yapyak extracts a context object from the call site and
 }
 ```
 
-- **component**: derived from the file path (`save-button.tsx` becomes `SaveButton`).
-- **element**: the nearest opening JSX tag above the call (`button`, `h1`, `label`).
-- **snippet**: three lines above and below the call site, dedented.
+`component` is derived from the source file, `element` is the nearest relevant template or JSX element, and `snippet` contains nearby code around the call.
 
-The translator uses this to disambiguate intent. "Save" in a `<button>` reads differently from "Save" in an `<h1>`. How much of the context the translator passes to the model is configurable. See [Translators / Translation context](/guide/translators#translation-context).
+This is one of the practical advantages of keeping the source message in the component. The component already describes what the string is doing. A button label, a heading, an empty state, and an error message are different translation tasks even when some of their words overlap.
 
-## Batching, concurrency, order
+The amount of context sent to a *translator* is configurable:
 
-yapyak batches AI calls. Default: 25 strings per request, 5 requests in parallel via a worker pool. Concretely: 1000 strings divide into 40 batches, executed across 5 parallel workers.
+| Mode | Context included |
+| --- | --- |
+| `none` | Source string only |
+| `minimal` | Source string, component, and element |
+| `rich` | Source string, component, element, and surrounding snippet |
 
-The worker pool preserves order. Translations come back in the exact order requested, regardless of which batch resolved first. Per-chunk progress streams live to the CLI:
+The code becomes useful translation context without requiring developers to maintain a second layer of descriptions beside their messages.
 
-```shell
+## Batching and retries
+
+Interactive saves and large translation backfills have different needs. A small edit should complete quickly; an initial locale import may involve hundreds or thousands of missing entries.
+
+yapyak sends translation work through a worker pool. By default, it groups twenty-five messages per request and runs up to five batches concurrently. These values can be adjusted for the provider, model, and rate limits used by a project.
+
+Results are written back in request order, even when batches finish in a different order. For larger runs, progress is reported as each batch completes:
+
+```txt
 fi · 478/1000 · ███████████░░░░░░░░░░░░░
 ```
 
-All four knobs (`batchSize`, `concurrency`, `autoTranslateThreshold`, per-provider `max_tokens`) are configurable. The defaults are tuned to land big batches in seconds without blowing rate limits.
+Provider requests may fail for reasons that are safe to retry. Responses such as `408`, `429`, and `5xx` are retried with exponential backoff:
 
-## Why the call-site inline matters
+| Attempt | Delay before request |
+| --- | --- |
+| 1 | none |
+| 2 | 250ms |
+| 3 | 500ms |
+| 4 | 1s |
+| 5 | 2s |
+| 6 | 4s |
+| 7 and later | 8s |
 
-Translations travel with the code that uses them. Vite splits your app into chunks per route. yapyak's translations split with it: same chunks, same boundaries.
+The default `maxRetries` value is `2`, giving each request up to three attempts. Requests time out after thirty seconds and accept an abort signal, so interrupted work does not continue writing translations after it is no longer relevant.
 
-A runtime catalog is the wrong shape for a code-splitting world. Ship everything to every chunk and you waste bandwidth. Async-load the catalog on first render and you get a waterfall. yapyak does neither.
+Client and authentication errors such as `400`, `401`, `403`, and `404` are returned immediately. They indicate a request or configuration problem rather than a temporary provider failure.
+
+## Keeping the save loop small
+
+Automatic translation during development is intended for normal editing, not for silently processing an entire application after a large import or generated change.
+
+By default, yapyak translates up to twenty new messages created by a single save. Larger changes still synchronize the locale files, but translation is left to an explicit CLI run.
+
+| Change | Result |
+| --- | --- |
+| Save adds 1–20 new messages | Missing entries are translated immediately |
+| Save adds more than 20 (large paste or generated change) | Entries are synchronized; translation is deferred to the CLI |
+| New locale added against an existing backlog of messages | Entries are created; `yapyak translate <locale>` fills them |
+
+Set the threshold to `0` to disable translation during saves while keeping CLI translation available.
+
+This boundary is intentional. A save should remain a predictable development action. Large translation work is useful, but it should be visible and deliberate.
+
+## Why translations are compiled into modules
+
+Most i18n systems are organized around a catalog: a collection of every message known to the application, usually loaded per locale and sometimes divided into namespaces. That model works, but it gives translations a runtime shape that is separate from the UI that uses them.
+
+Modern Vite applications already have a better unit of delivery: the module graph. Routes and features become chunks. Code that the user never reaches does not need to be downloaded on the initial path.
+
+yapyak follows that graph. If a settings route contains thirty translated messages, its chunk carries those messages for the configured locales. A user who never opens settings does not download its translations merely because the application supports them elsewhere.
+
+This property becomes more useful as an application grows. Adding routes increases the number of chunks; it does not turn every visited screen into a delivery vehicle for the application's full translation surface. The amount of translated text shipped for a screen remains tied to the UI that screen actually renders.
+
+The same model also keeps locale switching synchronous for code that is already loaded. Once a component's chunk is present, its translated variants are present with it. Switching locale does not require that component to find or fetch another runtime dependency before it can render.
+
+SSR follows the same rule. The server renders from the compiled variants already associated with the modules it executes, rather than depending on a separate catalog-loading phase.
+
+## A compiler where the meaning already is
+
+The important part of yapyak is not that it can call a translation provider during development. It is that localization begins at the call site.
+
+```tsx
+t('Save changes')
+```
+
+A developer can read that line without resolving a key elsewhere. TypeScript can infer parameters from the message being called. The compiler can validate message syntax while it still knows the file and expression that produced it. A *translator* can receive the component and surrounding code that explain what the words are for. A coding agent can change or move UI without having to discover an unrelated catalog structure first.
+
+Then, once the source is valid and translations exist, Vite ships them in the same shape as the application itself: alongside the code that renders them.
+
+That is the model yapyak is built around. The source string is written once, in its real context. Translation becomes part of the development loop, and the compiled result stays local to the interface the user can actually reach.
