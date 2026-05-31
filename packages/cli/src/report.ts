@@ -1,4 +1,4 @@
-import type { ExtractedMessage } from '@yapyak/compiler';
+import type { Diagnostic, ExtractedMessage } from '@yapyak/compiler';
 
 import {
   DEFAULT_EXCLUDE,
@@ -25,6 +25,7 @@ interface LocaleStats {
 
 interface Report {
   defaultLocale: string;
+  diagnostics: Diagnostic[];
   locales: string[];
   messages: ExtractedMessage[];
   missing: MissingEntry[];
@@ -56,6 +57,7 @@ export function buildReport(options: BuildReportOptions): Report {
   });
 
   const messages: ExtractedMessage[] = [];
+  const diagnostics: Diagnostic[] = [];
   for (const file of sourceFiles) {
     const result = extractFile({
       fileId: file.fileId,
@@ -63,6 +65,7 @@ export function buildReport(options: BuildReportOptions): Report {
       source: file.code,
     });
     messages.push(...result.messages);
+    diagnostics.push(...result.diagnostics);
   }
 
   const sourcesByFile: Record<string, Set<string>> = {};
@@ -110,6 +113,7 @@ export function buildReport(options: BuildReportOptions): Report {
 
   return {
     defaultLocale,
+    diagnostics,
     locales,
     messages,
     missing,

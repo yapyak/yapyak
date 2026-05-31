@@ -11,7 +11,9 @@ export function buildSystem(
   const lines: string[] = [
     `You are a professional translator. Translate the source string in each input from ${sourceLocale} to ${targetLocale}.`,
     'Input is a JSON array. Each item has a `source` string to translate and optional `component`, `element`, and `snippet` fields giving usage context (use them to inform tone — a `button` element wants concise imperatives, a `h1` wants strong nouns, a `label` wants direct nouns; the `snippet` shows surrounding source code when provided).',
-    'Output: a JSON array of plain strings — same length, same order. Each output element MUST be a string, not an object. Do not echo the input shape. Do not include `source`, `component`, `element`, or `snippet` keys in the output. No commentary, no markdown, no code fences, no labels. Just the JSON array of translated strings.',
+    'When an item has a `hint` field, treat it as authoritative developer guidance for how to translate that specific source — follow it.',
+    'When an item has a `maxLength` field, the translated string MUST NOT exceed that character count. Shorten or rephrase as needed while preserving meaning.',
+    'Output: a JSON array of plain strings — same length, same order. Each output element MUST be a string, not an object. Do not echo the input shape. Do not include `source`, `component`, `element`, `snippet`, `hint`, or `maxLength` keys in the output. No commentary, no markdown, no code fences, no labels. Just the JSON array of translated strings.',
     'Preserve all {placeholder} tokens and ICU patterns exactly as written.',
   ];
   if (options.voice) {

@@ -665,6 +665,61 @@ describe('transformFile', () => {
     });
   });
 
+  describe('chainables', () => {
+    it('strips `.tag()` from a single-locale call', () => {
+      const code = runTransform({
+        locales: ['en'],
+        source:
+          "import { t } from 'yapyak';\nexport const x = t('Open').tag('action');\n",
+      });
+      expect(code).toContain('"Open"');
+      expect(code).not.toContain('.tag(');
+    });
+
+    it('strips `.hint()` from a single-locale call', () => {
+      const code = runTransform({
+        locales: ['en'],
+        source:
+          "import { t } from 'yapyak';\nexport const x = t('Save').hint('Form submit');\n",
+      });
+      expect(code).toContain('"Save"');
+      expect(code).not.toContain('.hint(');
+    });
+
+    it('strips `.maxLength()` from a single-locale call', () => {
+      const code = runTransform({
+        locales: ['en'],
+        source:
+          "import { t } from 'yapyak';\nexport const x = t('Save').maxLength(20);\n",
+      });
+      expect(code).toContain('"Save"');
+      expect(code).not.toContain('.maxLength(');
+    });
+
+    it('strips a chain of all three chainables', () => {
+      const code = runTransform({
+        locales: ['en'],
+        source:
+          "import { t } from 'yapyak';\nexport const x = t('Open').tag('action').hint('Primary').maxLength(12);\n",
+      });
+      expect(code).toContain('"Open"');
+      expect(code).not.toContain('.tag(');
+      expect(code).not.toContain('.hint(');
+      expect(code).not.toContain('.maxLength(');
+    });
+
+    it('strips chainables in a multi-locale `_pick` rewrite', () => {
+      const code = runTransform({
+        locales: ['en', 'sv'],
+        source:
+          "import { t } from 'yapyak';\nexport const x = t('Open').tag('action');\n",
+        translations: { sv: { [hashId('Open')]: 'Öppna' } },
+      });
+      expect(code).toContain('_pick(');
+      expect(code).not.toContain('.tag(');
+    });
+  });
+
   describe('source map', () => {
     it('returns a `magic-string` source map', () => {
       const fileId = 'src/a.ts';

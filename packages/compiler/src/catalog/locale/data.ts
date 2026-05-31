@@ -1,11 +1,9 @@
+import type { LocaleFile } from './file';
+
 import { readLocaleFile } from './file';
 import { join } from 'node:path';
 
-export interface LocaleData {
-  [locale: string]: {
-    [fileId: string]: { [source: string]: string };
-  };
-}
+export type LocaleData = Record<string, LocaleFile>;
 
 export interface ReadLocaleDataOptions {
   locales: string[];

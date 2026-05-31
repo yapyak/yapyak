@@ -1,4 +1,5 @@
 export { stringifyCanonical } from './canonical';
+export { detectHomonyms } from './homonym';
 export {
   type DiscoverLocalesOptions,
   type DiscoverLocalesResult,
@@ -7,6 +8,7 @@ export {
   type InvariantViolation,
   type LocaleData,
   type LocaleFile,
+  type LocaleFileEntry,
   type MessagePosition,
   type MigrateLocalesOptions,
   type MigrateLocalesResult,
@@ -17,6 +19,12 @@ export {
   readLocaleFile,
   type SyncLocaleFilesOptions,
   syncLocaleFiles,
+  type ValidateIcuPairsInput,
+  type ValidateLengthsInput,
+  type ValidateLocaleFileInput,
+  validateIcuPairs,
+  validateLengths,
+  validateLocaleFile,
   type WriteLocaleFileInput,
   writeLocaleFile,
   YapyakInvariantError,

@@ -83,19 +83,19 @@ describe('extractFile', () => {
       expect(result.diagnostics).toHaveLength(0);
     });
 
-    it('emits YPK001 from `parse-arguments`', () => {
-      const result = extractFixture('diagnostic', 'ypk001-dynamic-source.ts');
-      expect(result.diagnostics.some((d) => d.code === 'YPK001')).toBe(true);
+    it('emits YPK102 from `parse-arguments`', () => {
+      const result = extractFixture('diagnostic', 'ypk102-dynamic-source.ts');
+      expect(result.diagnostics.some((d) => d.code === 'YPK102')).toBe(true);
     });
 
-    it('emits YPK002 from `parse-arguments`', () => {
-      const result = extractFixture('diagnostic', 'ypk002-missing-param.ts');
-      expect(result.diagnostics.some((d) => d.code === 'YPK002')).toBe(true);
+    it('emits YPK104 from `parse-arguments`', () => {
+      const result = extractFixture('diagnostic', 'ypk104-missing-param.ts');
+      expect(result.diagnostics.some((d) => d.code === 'YPK104')).toBe(true);
     });
 
-    it('emits YPK007 from `parse-arguments`', () => {
-      const result = extractFixture('diagnostic', 'ypk007-invalid-plural.ts');
-      expect(result.diagnostics.some((d) => d.code === 'YPK007')).toBe(true);
+    it('emits YPK202 from `parse-arguments`', () => {
+      const result = extractFixture('diagnostic', 'ypk202-invalid-plural.ts');
+      expect(result.diagnostics.some((d) => d.code === 'YPK202')).toBe(true);
     });
   });
 

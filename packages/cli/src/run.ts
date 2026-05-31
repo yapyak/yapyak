@@ -2,6 +2,7 @@
 
 import { add } from './command/add';
 import { check } from './command/check';
+import { clean } from './command/clean';
 import { exportCommand } from './command/export';
 import { status } from './command/status';
 import { translate } from './command/translate';
@@ -39,6 +40,11 @@ export async function run(argv: string[]): Promise<number> {
     case 'check': {
       const config = await loadConfig(projectRoot);
       return check({ config, projectRoot });
+    }
+    case 'clean': {
+      const config = await loadConfig(projectRoot);
+      const write = rest.includes('--write');
+      return clean({ config, projectRoot, write });
     }
     case 'add': {
       const config = await loadConfig(projectRoot);
@@ -89,6 +95,8 @@ function printHelp(): void {
     ${color.cyan('status')}                ${color.dim('Coverage report')}
     ${color.cyan('status --json')}         ${color.dim('Machine-readable, exits 1 if any missing')}
     ${color.cyan('check')}                 ${color.dim('Exits 1 if anything is missing — for CI')}
+    ${color.cyan('clean')}                 ${color.dim('List orphan locale entries (no matching t() call)')}
+    ${color.cyan('clean --write')}         ${color.dim('Remove orphan entries from the locale files')}
 
 `);
 }

@@ -33,7 +33,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   if (!firstArg) {
     diagnostics.push(
       createDiagnostic({
-        code: 'YPK001',
+        code: 'YPK101',
         fileId,
         message: 't() called without arguments.',
         range: toRange(callSite.node, sourceFile),
@@ -52,7 +52,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   if (!isLiteralFirstArg(firstArg)) {
     diagnostics.push(
       createDiagnostic({
-        code: 'YPK001',
+        code: 'YPK102',
         fileId,
         // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
         hint: "Replace `t(`Hi ${name}`)` with `t('Hi {name}', { name })`.",
@@ -70,7 +70,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   if (source === '') {
     diagnostics.push(
       createDiagnostic({
-        code: 'YPK008',
+        code: 'YPK103',
         fileId,
         message: 't() called with empty source string.',
         range: sourceRange,
@@ -125,7 +125,7 @@ function toIcuDiagnostic(
 ): Diagnostic {
   if (issue.reason === 'missing-other') {
     return createDiagnostic({
-      code: 'YPK007',
+      code: 'YPK202',
       fileId: context.fileId,
       hint: 'Add an `other {<text>}` branch — plural, selectordinal, and select all require an `other` fallback.',
       message: `Placeholder '{${issue.name}}' is missing the required 'other' branch.`,
@@ -136,7 +136,7 @@ function toIcuDiagnostic(
   }
   if (issue.reason === 'malformed') {
     return createDiagnostic({
-      code: 'YPK009',
+      code: 'YPK201',
       fileId: context.fileId,
       hint: 'Check the ICU syntax — every `{` needs a matching `}`.',
       message: `Malformed ICU message (${issue.message}).`,
@@ -146,7 +146,7 @@ function toIcuDiagnostic(
     });
   }
   return createDiagnostic({
-    code: 'YPK010',
+    code: 'YPK203',
     fileId: context.fileId,
     hint: 'Use a supported ICU feature, or format the value before passing it in.',
     message: issue.name
@@ -221,7 +221,7 @@ function validateParams(input: ValidateParamsInput): void {
     if (hasParamArg) {
       diagnostics.push(
         createDiagnostic({
-          code: 'YPK005',
+          code: 'YPK106',
           fileId,
           hint: 'Pass params as an inline object literal to enable validation.',
           message: 'Params passed dynamically cannot be statically verified.',
@@ -235,7 +235,7 @@ function validateParams(input: ValidateParamsInput): void {
     for (const key of placeholderKeys) {
       diagnostics.push(
         createDiagnostic({
-          code: 'YPK002',
+          code: 'YPK104',
           fileId,
           hint: `Add { ${key}: ... } as the second argument.`,
           message: `Missing parameter '${key}' for placeholder '{${key}}'.`,
@@ -251,7 +251,7 @@ function validateParams(input: ValidateParamsInput): void {
   if (params.kind === 'spread') {
     diagnostics.push(
       createDiagnostic({
-        code: 'YPK005',
+        code: 'YPK106',
         fileId,
         hint: 'Pass keys explicitly to enable validation.',
         message: 'Spread params cannot be statically verified.',
@@ -268,7 +268,7 @@ function validateParams(input: ValidateParamsInput): void {
     if (!providedKeys.has(key)) {
       diagnostics.push(
         createDiagnostic({
-          code: 'YPK002',
+          code: 'YPK104',
           fileId,
           hint: `Add '${key}' to the params object.`,
           message: `Missing parameter '${key}' for placeholder '{${key}}'.`,
@@ -286,7 +286,7 @@ function validateParams(input: ValidateParamsInput): void {
     }
     diagnostics.push(
       createDiagnostic({
-        code: 'YPK003',
+        code: 'YPK105',
         fileId,
         hint: `Remove '${key}' from the params object or add '{${key}}' to the source string.`,
         message: `Extra parameter '${key}' with no matching placeholder.`,

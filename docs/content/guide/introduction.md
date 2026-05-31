@@ -202,7 +202,7 @@ This happens with no code generation. The placeholder shape is read from the lit
 
 It is also what makes the save loop possible. A codegen step would put a gate between writing a message and the rest of the toolchain — types, compiler, translator, HMR. There is no gate. The loop has nothing to wait on.
 
-Wrong names or types are an editor error. Missing parameters are caught at build by the compiler (`YPK002`), which runs on save through the Vite plugin. The compiler also validates complete ICU syntax, so malformed messages never reach the application.
+Wrong names or types are an editor error. Missing parameters are caught at build by the compiler (`YPK104`), which runs on save through the Vite plugin. The compiler also validates complete ICU syntax, so malformed messages never reach the application.
 
 yapyak's *translator* prompt makes the same constraint explicit to the model: `Preserve all {placeholder} tokens and ICU patterns exactly as written.` The constraint travels with every request.
 

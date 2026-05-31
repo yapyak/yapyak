@@ -22,6 +22,10 @@ export interface TranslateRequest {
   context?: MessageContext;
   /** The file path the source string came from. */
   fileId: string;
+  /** The developer-supplied translator guidance. Set via `.hint()` on the `t()` call. */
+  hint?: string;
+  /** The maximum character length of the translation. Set via `.maxLength()` on the `t()` call. */
+  maxLength?: number;
   /** The source string to translate. */
   source: string;
   /** The source locale. */
@@ -85,6 +89,10 @@ export interface TranslateItem {
   component?: string;
   /** The nearest enclosing JSX/HTML element. */
   element?: string;
+  /** The developer-supplied translator guidance. Set via `.hint()` on the `t()` call. */
+  hint?: string;
+  /** The maximum character length of the translation. Set via `.maxLength()` on the `t()` call. */
+  maxLength?: number;
   /** The surrounding code snippet (only with `context: 'rich'`). */
   snippet?: string;
   /** The source string to translate. */

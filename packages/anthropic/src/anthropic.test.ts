@@ -390,4 +390,57 @@ describe('anthropic', () => {
       ).rejects.toThrow(/expected 2/);
     });
   });
+
+  describe('chainable metadata', () => {
+    it('forwards `hint` into the request items', async () => {
+      const stub = stubFetch('Spara');
+      await anthropic({ apiKey: 'k' })({
+        fileId: 'src/a.tsx',
+        hint: 'Primary form submit',
+        source: 'Save',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      });
+      const body = stub.body() as {
+        messages: Array<{ content: string }>;
+      };
+      // biome-ignore lint/style/noNonNullAssertion: stubbed payload always has one message
+      const items = JSON.parse(body.messages[0]!.content) as Array<{
+        hint?: string;
+      }>;
+      expect(items[0]?.hint).toBe('Primary form submit');
+    });
+
+    it('forwards `maxLength` into the request items', async () => {
+      const stub = stubFetch('Spara');
+      await anthropic({ apiKey: 'k' })({
+        fileId: 'src/a.tsx',
+        maxLength: 12,
+        source: 'Save',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      });
+      const body = stub.body() as {
+        messages: Array<{ content: string }>;
+      };
+      // biome-ignore lint/style/noNonNullAssertion: stubbed payload always has one message
+      const items = JSON.parse(body.messages[0]!.content) as Array<{
+        maxLength?: number;
+      }>;
+      expect(items[0]?.maxLength).toBe(12);
+    });
+
+    it('mentions `hint` and `maxLength` in the system prompt', async () => {
+      const stub = stubFetch('Spara');
+      await anthropic({ apiKey: 'k' })({
+        fileId: 'src/a.tsx',
+        source: 'Save',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      });
+      const body = stub.body() as { system: string };
+      expect(body.system).toContain('hint');
+      expect(body.system).toContain('maxLength');
+    });
+  });
 });

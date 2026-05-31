@@ -57,8 +57,8 @@ For each source string in each file:
 | 1 | no `.tag()` | `"Save": "Spara"` (string) |
 | 1 | `.tag('x')` | `"Save": { "x": "Spara" }` (object) |
 | 2+ | all tagged | `"Save": { "a": "...", "b": "..." }` (object) |
-| 2+ | any untagged | **YPK009 error** — homonym must be disambiguated |
-| 2+ | mixed tagged/untagged | **YPK009 error** — all-or-none |
+| 2+ | any untagged | **YPK404 error** — homonym must be disambiguated |
+| 2+ | mixed tagged/untagged | **YPK404 error** — all-or-none |
 
 A `.tag()` on any occurrence promotes the entry to object-form, even when there is only one occurrence today. This is deliberate: it future-proofs the JSON shape. Adding a second tagged occurrence later just adds a key under the existing object — no shape mutation, no diff churn on the original entry.
 
@@ -70,7 +70,7 @@ Tags should describe **what the call means**, not what it looks like. Good tag n
 
 ### When to add `.tag()`
 
-Add `.tag()` only when you have (or will have) multiple `t()` calls with the same source string in the same file that need different translations. yapyak's compiler emits **YPK009** when it detects an untagged homonym, telling you exactly which call sites need tagging. You do not have to anticipate homonyms — let the compiler tell you when you have one.
+Add `.tag()` only when you have (or will have) multiple `t()` calls with the same source string in the same file that need different translations. yapyak's compiler emits **YPK404** when it detects an untagged homonym, telling you exactly which call sites need tagging. You do not have to anticipate homonyms — let the compiler tell you when you have one.
 
 ## What's NOT in the file
 
@@ -177,27 +177,60 @@ Code-aware translators (Claude Code, Cursor, any agent with filesystem access) m
 
 ## Diagnostic codes
 
+Codes are organised by category. The first digit identifies the layer where the rule lives.
+
+### YPK1xx — Call site
+
 | Code | Severity | Meaning |
 |---|---|---|
-| YPK001 | error | Dynamic `source` argument at `t()` call site (must be a static literal) |
-| YPK009 | error | Homonym: multiple `t()` calls with the same source in the same file must all be tagged with `.tag()`, with distinct tag names |
-| YPK101 | error | Locale-file entry value is not a string or a string-valued object |
-| YPK102 | error | File path key is unsafe (`..`, absolute, symlink escape) |
-| YPK103 | error | String is not Unicode NFC |
-| YPK104 | error | ICU is malformed or argument-incompatible between source and target |
-| YPK105 | error | Placeholder in source missing from target (data loss at render time) |
-| YPK106 | error | Placeholder in target missing from source |
-| YPK110 | error | Locale-file entry shape does not match the source: tagged in code but string in file, or vice versa; or tag keys do not match the `.tag()` values in source |
-| YPK120 | warning | `target.length > maxLength` (soft constraint) |
-| YPK121 | warning | `source.length > maxLength` (developer-side constraint mismatch) |
-| YPK210 | error | `.hint()`, `.maxLength()`, or `.tag()` argument is not a static literal |
-| YPK211 | error | Same chainable called more than once on the same `t()` call |
-| YPK212 | error | Chainable called on something that is not a direct result of `t()` |
+| YPK101 | error | `t()` called without arguments |
+| YPK102 | error | Dynamic `source` argument at `t()` call site (must be a static literal) |
+| YPK103 | error | Empty source string at `t()` call site |
+| YPK104 | error | Missing parameter for placeholder in the params object |
+| YPK105 | warning | Extra parameter in the params object with no matching placeholder |
+| YPK106 | warning | Params passed dynamically (spread or non-literal) cannot be statically verified |
+
+### YPK2xx — ICU
+
+| Code | Severity | Meaning |
+|---|---|---|
+| YPK201 | error | Malformed ICU (unmatched braces, syntax error) |
+| YPK202 | error | `plural`, `selectordinal`, or `select` is missing the required `other` branch |
+| YPK203 | error | Unsupported ICU feature |
+| YPK204 | error | ICU argument name or type incompatible between source and target |
+| YPK205 | error | Placeholder in source missing from target (data loss at render time) |
+| YPK206 | error | Placeholder in target missing from source |
+
+### YPK3xx — Locale file integrity
+
+| Code | Severity | Meaning |
+|---|---|---|
+| YPK301 | error | Locale-file entry value is not a string or a string-valued object |
+| YPK302 | error | File-path key is unsafe (`..`, absolute, symlink escape) |
+| YPK303 | error | String is not Unicode NFC |
+| YPK304 | error | Locale-file entry shape does not match the source: tagged in code but string in file, or vice versa; or tag keys do not match the `.tag()` values in source |
+
+### YPK4xx — Chainables and homonyms
+
+| Code | Severity | Meaning |
+|---|---|---|
+| YPK401 | error | `.hint()`, `.maxLength()`, or `.tag()` argument is not a static literal |
+| YPK402 | error | Same chainable called more than once on the same `t()` call |
+| YPK403 | error | Chainable called on something that is not a direct result of `t()` |
+| YPK404 | error | Homonym: multiple `t()` calls with the same source in the same file must all be tagged with `.tag()` |
+| YPK406 | error | Two `t()` calls with the same source (and tag) in the same file carry conflicting `.hint()` or `.maxLength()` values |
+
+### YPK5xx — Length constraints
+
+| Code | Severity | Meaning |
+|---|---|---|
+| YPK501 | warning | `target.length > maxLength` |
+| YPK502 | warning | `source.length > maxLength` (developer-side constraint mismatch) |
 
 ## Trade-offs
 
 - **The format depends on the source code.** A locale file alone is incomplete — yapyak validates and translates by reading both. This is a deliberate choice: the code already holds the truth; duplicating it into the file would invite drift.
-- **Homonyms require explicit `.tag()`.** yapyak does not silently disambiguate by position or by AST element. When the compiler detects two `t()` calls with the same source in one file, it errors (YPK009) until the developer names the distinction. The cost is a moment of thought per homonym; the benefit is drift-safe, reorder-safe, refactor-safe entries with human-readable disambiguation keys.
+- **Homonyms require explicit `.tag()`.** yapyak does not silently disambiguate by position or by AST element. When the compiler detects two `t()` calls with the same source in one file, it errors (YPK404) until the developer names the distinction. The cost is a moment of thought per homonym; the benefit is drift-safe, reorder-safe, refactor-safe entries with human-readable disambiguation keys.
 - **No status enum, no review flag, no candidates field.** Translation is straight `source → target`. Workflow signals (uncertainty, review-needed, AI-generated) live outside the file: Git history shows what changed, `yapyak status` shows the run's results, PR review catches problems.
 - **Optional file size.** The file scales with translation count, not with structural metadata. A 500-string project is ~5–10 KB; a 10 000-string project is ~100–200 KB.
 

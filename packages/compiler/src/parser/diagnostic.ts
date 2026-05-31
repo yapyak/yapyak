@@ -1,14 +1,29 @@
 import type { Range } from './range';
 
 export type DiagnosticCode =
-  | 'YPK001'
-  | 'YPK002'
-  | 'YPK003'
-  | 'YPK005'
-  | 'YPK007'
-  | 'YPK008'
-  | 'YPK009'
-  | 'YPK010';
+  | 'YPK101'
+  | 'YPK102'
+  | 'YPK103'
+  | 'YPK104'
+  | 'YPK105'
+  | 'YPK106'
+  | 'YPK201'
+  | 'YPK202'
+  | 'YPK203'
+  | 'YPK204'
+  | 'YPK205'
+  | 'YPK206'
+  | 'YPK301'
+  | 'YPK302'
+  | 'YPK303'
+  | 'YPK304'
+  | 'YPK401'
+  | 'YPK402'
+  | 'YPK403'
+  | 'YPK404'
+  | 'YPK406'
+  | 'YPK501'
+  | 'YPK502';
 
 export interface Diagnostic {
   code: DiagnosticCode;

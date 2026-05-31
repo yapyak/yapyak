@@ -63,7 +63,95 @@ describe('syncLocaleFiles', () => {
 
     warn.mockRestore();
   });
+
+  it('writes a tag-keyed object entry when locations carry tags', () => {
+    const localesDir = 'locales';
+    const localePath = join(projectRoot, localesDir, 'sv.json');
+
+    syncLocaleFiles({
+      defaultLocale: 'en',
+      locales: ['en', 'sv'],
+      localesDir,
+      messages: [
+        {
+          id: 'Open',
+          locations: [
+            {
+              callSiteContext: {} as never,
+              fileId: 'src/a.tsx',
+              range: emptyRange(),
+              tag: 'action',
+            },
+            {
+              callSiteContext: {} as never,
+              fileId: 'src/a.tsx',
+              range: emptyRange(),
+              tag: 'status',
+            },
+          ],
+          placeholders: [],
+          source: 'Open',
+        },
+      ],
+      projectRoot,
+    });
+
+    expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
+      'src/a.tsx': { Open: { action: '', status: '' } },
+    });
+  });
+
+  it('preserves existing tag values across re-sync', () => {
+    const localesDir = 'locales';
+    const localePath = join(projectRoot, localesDir, 'sv.json');
+    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    writeFileSync(
+      localePath,
+      JSON.stringify({
+        'src/a.tsx': { Open: { action: 'Öppna', status: 'Öppet' } },
+      }),
+    );
+
+    syncLocaleFiles({
+      defaultLocale: 'en',
+      locales: ['en', 'sv'],
+      localesDir,
+      messages: [
+        {
+          id: 'Open',
+          locations: [
+            {
+              callSiteContext: {} as never,
+              fileId: 'src/a.tsx',
+              range: emptyRange(),
+              tag: 'action',
+            },
+            {
+              callSiteContext: {} as never,
+              fileId: 'src/a.tsx',
+              range: emptyRange(),
+              tag: 'status',
+            },
+          ],
+          placeholders: [],
+          source: 'Open',
+        },
+      ],
+      projectRoot,
+    });
+
+    expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
+      'src/a.tsx': { Open: { action: 'Öppna', status: 'Öppet' } },
+    });
+  });
 });
+
+function emptyRange() {
+  return {
+    end: { column: 0, line: 1, offset: 0 },
+    start: { column: 0, line: 1, offset: 0 },
+  };
+}
 
 describe('writeLocaleFile invariant', () => {
   let dir: string;
@@ -258,6 +346,25 @@ describe('writeLocaleFile invariant', () => {
         }
       }
     }
+  });
+
+  it('throws when a single tag of an object entry would be cleared', () => {
+    writeFileSync(
+      path,
+      JSON.stringify({
+        'src/a.tsx': { Open: { action: 'Öppna', status: 'Öppet' } },
+      }),
+    );
+
+    expect(() =>
+      writeLocaleFile({
+        after: {
+          'src/a.tsx': { Open: { action: 'Öppna', status: '' } },
+        },
+        extractedSources: { 'src/a.tsx': new Set(['Open']) },
+        filePath: path,
+      }),
+    ).toThrow(YapyakInvariantError);
   });
 
   it('preserves the file on a second successful write', () => {

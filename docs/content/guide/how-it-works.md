@@ -76,7 +76,7 @@ During development, the Vite plugin handles each relevant file change as a small
 
 yapyak parses the changed file and collects its `t()` calls together with information about where each call appears: the source string, file position, surrounding code, and enclosing element where available.
 
-Static diagnostics run at this point. Dynamic source strings (`YPK001`), missing parameters (`YPK002`), extra parameters (`YPK003`), spread parameters (`YPK005`), invalid plural patterns (`YPK007`), empty sources (`YPK008`), and other malformed calls are reported during development or build rather than becoming localization bugs in a running application.
+Static diagnostics run at this point. Dynamic source strings (`YPK102`), missing parameters (`YPK104`), extra parameters (`YPK105`), spread parameters (`YPK106`), invalid plural patterns (`YPK202`), empty sources (`YPK103`), and other malformed calls are reported during development or build rather than becoming localization bugs in a running application.
 
 ### 2. Preserve translations across ordinary edits
 

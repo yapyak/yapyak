@@ -71,7 +71,7 @@ t('{count, plural, one {#} other {#}}', { count: 'three' });    // editor error:
 t('{count, plural, one {# by {author}} other {# by {author}}}', { count: 1, author: 'Alex' }); // both checked
 ```
 
-Presence is the compiler's job. Write `t('Hello, {name}!')` with no params and the build fails with `YPK002`. Since the compiler runs in the Vite loop, you see it the moment you save.
+Presence is the compiler's job. Write `t('Hello, {name}!')` with no params and the build fails with `YPK104`. Since the compiler runs in the Vite loop, you see it the moment you save.
 
 Deeply-nested ICU is the one place the type layer stops. Template-literal types bottom out a few levels deep, so the innermost param drops from the inferred type. The compiler covers it: it validates every param name at every depth and fails the build on a mismatch. Nothing slips to runtime.
 
