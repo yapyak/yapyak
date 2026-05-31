@@ -13,11 +13,6 @@ import { parseArguments } from '../argument';
 import { resolveBindings } from '../binding';
 import { discoverCalls } from '../call';
 import { resolveCallSiteContext } from '../call-site-context';
-import {
-  detectOrphanChainables,
-  getOuterChainableCall,
-  parseChainables,
-} from '../chainable';
 import { toMessageId } from '../message-id';
 import { parsePlaceholders } from '../placeholder';
 import { getProcessor, resolveProcessorKind } from '../processor';
@@ -27,10 +22,7 @@ import { getScriptKind } from '../script-kind';
 export interface Location {
   callSiteContext: CallSiteContext;
   fileId: string;
-  hint?: string;
-  maxLength?: number;
   range: Range;
-  tag?: string;
 }
 
 export interface ExtractedMessage {
@@ -143,38 +135,24 @@ function processFragment(input: ProcessFragmentInput): void {
     sourceFile,
   } = input;
   const fragmentCalls = discoverCalls(sourceFile, bindings);
-  const validTCalls = new Set(fragmentCalls.map((call) => call.node));
-  for (const diagnostic of detectOrphanChainables(sourceFile, validTCalls)) {
-    diagnostics.push(remapDiagnostic(diagnostic, fragment, originalSource));
-  }
 
   for (const fragmentCall of fragmentCalls) {
     const parsed = parseArguments(fragmentCall);
     for (const diagnostic of parsed.diagnostics) {
       diagnostics.push(remapDiagnostic(diagnostic, fragment, originalSource));
     }
-    const chainables = parseChainables(fragmentCall);
-    for (const diagnostic of chainables.diagnostics) {
-      diagnostics.push(remapDiagnostic(diagnostic, fragment, originalSource));
-    }
-
-    const outerCall = getOuterChainableCall(fragmentCall.node);
-    const outerRangeInFragment =
-      outerCall === fragmentCall.node
-        ? fragmentCall.range
-        : toRange(outerCall, sourceFile);
 
     const callSite: CallSite = {
       binding: fragmentCall.binding,
       node: fragmentCall.node,
-      range: remapRange(outerRangeInFragment, fragment, originalSource),
+      range: remapRange(fragmentCall.range, fragment, originalSource),
     };
     if (fragmentCall.localeExpression) {
       callSite.localeExpression = fragmentCall.localeExpression;
     }
     const elision =
       fragment.elision ??
-      detectJsxElision(outerCall, sourceFile, fragment, originalSource);
+      detectJsxElision(fragmentCall.node, sourceFile, fragment, originalSource);
     if (elision) {
       callSite.elision = elision;
     }
@@ -192,15 +170,6 @@ function processFragment(input: ProcessFragmentInput): void {
       fileId: request.fileId,
       range: remapRange(parsed.sourceRange, fragment, originalSource),
     };
-    if (chainables.hint !== undefined) {
-      location.hint = chainables.hint;
-    }
-    if (chainables.maxLength !== undefined) {
-      location.maxLength = chainables.maxLength;
-    }
-    if (chainables.tag !== undefined) {
-      location.tag = chainables.tag;
-    }
 
     const existing = messagesById.get(id);
     if (existing) {

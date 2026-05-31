@@ -30,7 +30,6 @@ export {
   type CallSiteContext,
   resolveCallSiteContext,
 } from './call-site-context';
-export { type ParsedChainables, parseChainables } from './chainable';
 export {
   type CreateDiagnosticInput,
   createDiagnostic,

@@ -1,7 +1,7 @@
 import type { Diagnostic } from '../../parser/diagnostic';
 import type { ExtractedMessage } from '../../parser/file/extract';
 import type { Placeholder } from '../../parser/placeholder';
-import type { LocaleFile, LocaleFileEntry } from './file';
+import type { LocaleFile } from './file';
 
 import { createDiagnostic } from '../../parser/diagnostic';
 import { parsePlaceholders } from '../../parser/placeholder';
@@ -64,12 +64,12 @@ export function validateLocaleFile(
       continue;
     }
     for (const [source, value] of Object.entries(entries)) {
-      if (!isValidEntry(value)) {
+      if (typeof value !== 'string') {
         diagnostics.push(
           createDiagnostic({
             code: 'YPK301',
             fileId: input.fileId,
-            message: `Entry "${pathKey}".${JSON.stringify(source)} must be a string or an object whose values are strings.`,
+            message: `Entry "${pathKey}".${JSON.stringify(source)} must be a string.`,
             range: STUB_RANGE,
             severity: 'error',
             source: '',
@@ -77,53 +77,14 @@ export function validateLocaleFile(
         );
         continue;
       }
-      diagnostics.push(...checkNfc(input.fileId, pathKey, source, value));
-    }
-  }
-  return diagnostics;
-}
-
-export interface ValidateLengthsInput {
-  fileId: string;
-  localeFile: LocaleFile;
-  messages: readonly ExtractedMessage[];
-}
-
-export function validateLengths(input: ValidateLengthsInput): Diagnostic[] {
-  const diagnostics: Diagnostic[] = [];
-  for (const message of input.messages) {
-    for (const location of message.locations) {
-      if (location.maxLength === undefined) {
-        continue;
-      }
-      if (message.source.length > location.maxLength) {
+      if (value !== value.normalize('NFC')) {
         diagnostics.push(
           createDiagnostic({
-            code: 'YPK502',
+            code: 'YPK303',
             fileId: input.fileId,
-            hint: 'Increase the `.maxLength()` value or shorten the source string.',
-            message: `Source string is ${message.source.length} characters but \`.maxLength(${location.maxLength})\` is set.`,
-            range: location.range,
-            severity: 'warning',
-            source: '',
-          }),
-        );
-      }
-      const target = readTarget(
-        input.localeFile,
-        location.fileId,
-        message.source,
-        location.tag,
-      );
-      if (target !== undefined && target.length > location.maxLength) {
-        diagnostics.push(
-          createDiagnostic({
-            code: 'YPK501',
-            fileId: input.fileId,
-            hint: 'Tighten the translation or relax the `.maxLength()` bound.',
-            message: `Translation is ${target.length} characters but \`.maxLength(${location.maxLength})\` is set.`,
-            range: location.range,
-            severity: 'warning',
+            message: `Translation at "${pathKey}".${JSON.stringify(source)} is not Unicode NFC.`,
+            range: STUB_RANGE,
+            severity: 'error',
             source: '',
           }),
         );
@@ -149,7 +110,6 @@ export function validateIcuPairs(input: ValidateIcuPairsInput): Diagnostic[] {
         input.localeFile,
         location.fileId,
         message.source,
-        location.tag,
       );
       if (target === undefined) {
         continue;
@@ -221,87 +181,20 @@ function readTarget(
   localeFile: LocaleFile,
   fileId: string,
   source: string,
-  tag: string | undefined,
 ): string | undefined {
   const fileEntries = localeFile[fileId];
   if (!fileEntries) {
     return undefined;
   }
   const entry = fileEntries[source];
-  if (entry === undefined) {
+  if (entry === undefined || entry === '') {
     return undefined;
   }
-  if (typeof entry === 'string') {
-    return entry === '' ? undefined : entry;
-  }
-  if (tag === undefined) {
-    return undefined;
-  }
-  const tagValue = entry[tag];
-  if (tagValue === undefined || tagValue === '') {
-    return undefined;
-  }
-  return tagValue;
-}
-
-function checkNfc(
-  fileId: string,
-  pathKey: string,
-  source: string,
-  value: LocaleFileEntry,
-): Diagnostic[] {
-  const diagnostics: Diagnostic[] = [];
-  if (typeof value === 'string') {
-    if (value !== value.normalize('NFC')) {
-      diagnostics.push(makeNfcDiagnostic(fileId, pathKey, source));
-    }
-    return diagnostics;
-  }
-  for (const [tag, translation] of Object.entries(value)) {
-    if (translation !== translation.normalize('NFC')) {
-      diagnostics.push(makeNfcDiagnostic(fileId, pathKey, source, tag));
-    }
-  }
-  return diagnostics;
-}
-
-function makeNfcDiagnostic(
-  fileId: string,
-  pathKey: string,
-  source: string,
-  tag?: string,
-): Diagnostic {
-  const key =
-    tag === undefined
-      ? `"${pathKey}".${JSON.stringify(source)}`
-      : `"${pathKey}".${JSON.stringify(source)}.${tag}`;
-  return createDiagnostic({
-    code: 'YPK303',
-    fileId,
-    message: `Translation at ${key} is not Unicode NFC.`,
-    range: STUB_RANGE,
-    severity: 'error',
-    source: '',
-  });
+  return entry;
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function isValidEntry(value: unknown): value is LocaleFileEntry {
-  if (typeof value === 'string') {
-    return true;
-  }
-  if (!isPlainObject(value)) {
-    return false;
-  }
-  for (const v of Object.values(value)) {
-    if (typeof v !== 'string') {
-      return false;
-    }
-  }
-  return true;
 }
 
 function isUnsafePath(path: string): boolean {

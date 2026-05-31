@@ -2,10 +2,8 @@ import type { Diagnostic } from '@yapyak/compiler';
 import type { Config } from '../config';
 
 import {
-  detectHomonyms,
   readLocaleFile,
   validateIcuPairs,
-  validateLengths,
   validateLocaleFile,
 } from '@yapyak/compiler';
 
@@ -33,7 +31,6 @@ export function check(options: CheckOptions): number {
 
   const localesPath = join(options.projectRoot, options.config.localesDir);
   const allDiagnostics: Diagnostic[] = [...report.diagnostics];
-  allDiagnostics.push(...detectHomonyms(report.messages));
 
   for (const locale of report.locales) {
     if (locale === report.defaultLocale) {
@@ -45,9 +42,6 @@ export function check(options: CheckOptions): number {
       ...validateLocaleFile({ fileId, path: localeFilePath }),
     );
     const localeFile = readLocaleFile(localeFilePath);
-    allDiagnostics.push(
-      ...validateLengths({ fileId, localeFile, messages: report.messages }),
-    );
     allDiagnostics.push(
       ...validateIcuPairs({ fileId, localeFile, messages: report.messages }),
     );

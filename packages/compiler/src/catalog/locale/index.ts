@@ -12,7 +12,6 @@ export {
   getLocaleFilePath,
   type InvariantViolation,
   type LocaleFile,
-  type LocaleFileEntry,
   readLocaleFile,
   type SyncLocaleFilesOptions,
   syncLocaleFiles,
@@ -30,9 +29,7 @@ export {
 } from './migrate';
 export {
   type ValidateIcuPairsInput,
-  type ValidateLengthsInput,
   type ValidateLocaleFileInput,
   validateIcuPairs,
-  validateLengths,
   validateLocaleFile,
 } from './validate';

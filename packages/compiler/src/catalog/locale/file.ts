@@ -4,9 +4,7 @@ import { stringifyCanonical } from '../canonical';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
-export type LocaleFileEntry = string | Record<string, string>;
-
-export type LocaleFile = Record<string, Record<string, LocaleFileEntry>>;
+export type LocaleFile = Record<string, Record<string, string>>;
 
 export interface SyncLocaleFilesOptions {
   defaultLocale: string;
@@ -23,11 +21,10 @@ export interface WriteLocaleFileInput {
 }
 
 export interface InvariantViolation {
-  afterValue: LocaleFileEntry | undefined;
-  beforeValue: LocaleFileEntry;
+  afterValue: string | undefined;
+  beforeValue: string;
   fileId: string;
   source: string;
-  tag?: string;
 }
 
 export class YapyakInvariantError extends Error {
@@ -37,10 +34,8 @@ export class YapyakInvariantError extends Error {
   constructor(filePath: string, violations: InvariantViolation[]) {
     const lines = violations.map((v) => {
       const target =
-        v.afterValue === undefined ? 'missing' : formatEntry(v.afterValue);
-      const key =
-        v.tag === undefined ? `"${v.source}"` : `"${v.source}".${v.tag}`;
-      return `  - ${v.fileId}: ${key} was ${formatEntry(v.beforeValue)}, would become ${target}`;
+        v.afterValue === undefined ? 'missing' : `"${v.afterValue}"`;
+      return `  - ${v.fileId}: "${v.source}" was "${v.beforeValue}", would become ${target}`;
     });
     super(
       `[yapyak] Refusing to write ${filePath}: would silently clear ${violations.length} translation(s) for source string(s) that are still in use.\n${lines.join('\n')}`,
@@ -49,13 +44,6 @@ export class YapyakInvariantError extends Error {
     this.filePath = filePath;
     this.violations = violations;
   }
-}
-
-function formatEntry(value: LocaleFileEntry): string {
-  if (typeof value === 'string') {
-    return `"${value}"`;
-  }
-  return JSON.stringify(value);
 }
 
 export function getLocaleFilePath(
@@ -88,26 +76,10 @@ export function readLocaleFile(path: string): LocaleFile {
     if (typeof entries !== 'object' || entries === null) {
       continue;
     }
-    const fileEntries: Record<string, LocaleFileEntry> = {};
+    const fileEntries: Record<string, string> = {};
     for (const [source, value] of Object.entries(entries)) {
       if (typeof value === 'string') {
         fileEntries[source] = value;
-        continue;
-      }
-      if (
-        typeof value === 'object' &&
-        value !== null &&
-        !Array.isArray(value)
-      ) {
-        const tagEntries: Record<string, string> = {};
-        for (const [tag, translation] of Object.entries(value)) {
-          if (typeof translation === 'string') {
-            tagEntries[tag] = translation;
-          }
-        }
-        if (Object.keys(tagEntries).length > 0) {
-          fileEntries[source] = tagEntries;
-        }
       }
     }
     result[fileId] = fileEntries;
@@ -142,54 +114,24 @@ function findInvariantViolations(
     }
     const afterEntries = after[fileId] ?? {};
     for (const [source, beforeValue] of Object.entries(beforeEntries)) {
-      if (isEmptyEntry(beforeValue)) {
+      if (beforeValue === '') {
         continue;
       }
       if (!stillUsed.has(source)) {
         continue;
       }
       const afterValue = afterEntries[source];
-      if (afterValue === undefined || isEmptyEntry(afterValue)) {
+      if (afterValue === undefined || afterValue === '') {
         violations.push({ afterValue, beforeValue, fileId, source });
-        continue;
-      }
-      if (typeof beforeValue === 'object' && typeof afterValue === 'object') {
-        for (const [tag, beforeTagValue] of Object.entries(beforeValue)) {
-          if (beforeTagValue === '') {
-            continue;
-          }
-          const afterTagValue = afterValue[tag];
-          if (afterTagValue === undefined || afterTagValue === '') {
-            violations.push({
-              afterValue,
-              beforeValue,
-              fileId,
-              source,
-              tag,
-            });
-          }
-        }
       }
     }
   }
   return violations;
 }
 
-function isEmptyEntry(value: LocaleFileEntry): boolean {
-  if (typeof value === 'string') {
-    return value === '';
-  }
-  for (const translation of Object.values(value)) {
-    if (translation !== '') {
-      return false;
-    }
-  }
-  return true;
-}
-
 export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
-  const shape = groupSourcesByFile(options.messages);
-  const extractedSources = toExtractedSourcesSet(shape);
+  const sourcesByFile = groupSourcesByFile(options.messages);
+  const extractedSources = toExtractedSourcesSet(sourcesByFile);
 
   for (const locale of options.locales) {
     if (locale === options.defaultLocale) {
@@ -203,17 +145,16 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
     const existing = readLocaleFile(localePath);
     const next: LocaleFile = {};
 
-    for (const fileId of Object.keys(shape).sort()) {
-      const sourceShape = shape[fileId];
-      if (!sourceShape) {
+    for (const fileId of Object.keys(sourcesByFile).sort()) {
+      const sources = sourcesByFile[fileId];
+      if (!sources) {
         continue;
       }
       const existingFile = existing[fileId] ?? {};
-      const fileEntries: Record<string, LocaleFileEntry> = {};
-      for (const source of Object.keys(sourceShape).sort()) {
-        const tags = sourceShape[source];
-        const existingValue = existingFile[source];
-        fileEntries[source] = buildEntry(tags ?? null, existingValue);
+      const fileEntries: Record<string, string> = {};
+      for (const source of sources) {
+        const value = existingFile[source];
+        fileEntries[source] = typeof value === 'string' ? value : '';
       }
       next[fileId] = fileEntries;
     }
@@ -229,67 +170,33 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
   }
 }
 
-function buildEntry(
-  tags: readonly string[] | null,
-  existing: LocaleFileEntry | undefined,
-): LocaleFileEntry {
-  if (tags === null) {
-    if (typeof existing === 'string') {
-      return existing;
-    }
-    return '';
-  }
-  const entry: Record<string, string> = {};
-  for (const tag of tags) {
-    const previous =
-      existing && typeof existing === 'object' ? existing[tag] : undefined;
-    entry[tag] = typeof previous === 'string' ? previous : '';
-  }
-  return entry;
-}
-
 function toExtractedSourcesSet(
-  shape: Record<string, Record<string, string[] | null>>,
+  sourcesByFile: Record<string, string[]>,
 ): Record<string, Set<string>> {
   const result: Record<string, Set<string>> = {};
-  for (const [fileId, sources] of Object.entries(shape)) {
-    result[fileId] = new Set(Object.keys(sources));
+  for (const [fileId, sources] of Object.entries(sourcesByFile)) {
+    result[fileId] = new Set(sources);
   }
   return result;
 }
 
 function groupSourcesByFile(
   messages: ExtractedMessage[],
-): Record<string, Record<string, string[] | null>> {
-  const tagsByFile: Record<string, Record<string, Set<string> | null>> = {};
+): Record<string, string[]> {
+  const grouped: Record<string, Set<string>> = {};
   for (const message of messages) {
     for (const location of message.locations) {
-      let bySource = tagsByFile[location.fileId];
-      if (!bySource) {
-        bySource = {};
-        tagsByFile[location.fileId] = bySource;
+      let set = grouped[location.fileId];
+      if (!set) {
+        set = new Set<string>();
+        grouped[location.fileId] = set;
       }
-      if (location.tag === undefined) {
-        if (!(message.source in bySource)) {
-          bySource[message.source] = null;
-        }
-        continue;
-      }
-      let tagSet = bySource[message.source];
-      if (!tagSet || tagSet instanceof Set === false) {
-        tagSet = new Set<string>();
-        bySource[message.source] = tagSet;
-      }
-      tagSet.add(location.tag);
+      set.add(message.source);
     }
   }
-  const result: Record<string, Record<string, string[] | null>> = {};
-  for (const [fileId, bySource] of Object.entries(tagsByFile)) {
-    const sourceShape: Record<string, string[] | null> = {};
-    for (const [source, tagSet] of Object.entries(bySource)) {
-      sourceShape[source] = tagSet === null ? null : [...tagSet].sort();
-    }
-    result[fileId] = sourceShape;
+  const result: Record<string, string[]> = {};
+  for (const [fileId, set] of Object.entries(grouped)) {
+    result[fileId] = [...set].sort();
   }
   return result;
 }

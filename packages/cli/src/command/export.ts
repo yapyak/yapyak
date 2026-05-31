@@ -1,8 +1,4 @@
-import type {
-  ExtractedMessage,
-  LocaleFile,
-  LocaleFileEntry,
-} from '@yapyak/compiler';
+import type { ExtractedMessage, LocaleFile } from '@yapyak/compiler';
 import type { Config } from '../config';
 
 import { readLocaleFile, stringifyCanonical } from '@yapyak/compiler';
@@ -143,15 +139,14 @@ function buildLocaleFile(args: {
   const onDisk = isDefault ? {} : readLocaleFile(args.localePath);
   const localeFile: LocaleFile = {};
   for (const [fileId, sources] of args.sourcesByFile) {
-    const entries: Record<string, LocaleFileEntry> = {};
+    const entries: Record<string, string> = {};
     const fileEntries = onDisk[fileId] ?? {};
     for (const source of sources) {
       if (isDefault) {
         entries[source] = source;
-        continue;
+      } else {
+        entries[source] = fileEntries[source] ?? '';
       }
-      const value = fileEntries[source];
-      entries[source] = value ?? '';
     }
     localeFile[fileId] = entries;
   }

@@ -29,9 +29,7 @@ export interface AutoTranslateResult {
 interface Stub {
   context: MessageContext | undefined;
   fileId: string;
-  hint: string | undefined;
   locale: string;
-  maxLength: number | undefined;
   source: string;
 }
 
@@ -57,30 +55,13 @@ export async function autoTranslate(
     );
     const data = readLocaleFile(localePath);
     let touched = false;
-    const requests = localeStubs.map((stub) => {
-      const request: {
-        context: MessageContext | undefined;
-        fileId: string;
-        hint?: string;
-        maxLength?: number;
-        source: string;
-        sourceLocale: string;
-        targetLocale: string;
-      } = {
-        context: stub.context,
-        fileId: stub.fileId,
-        source: stub.source,
-        sourceLocale: options.defaultLocale,
-        targetLocale: stub.locale,
-      };
-      if (stub.hint !== undefined) {
-        request.hint = stub.hint;
-      }
-      if (stub.maxLength !== undefined) {
-        request.maxLength = stub.maxLength;
-      }
-      return request;
-    });
+    const requests = localeStubs.map((stub) => ({
+      context: stub.context,
+      fileId: stub.fileId,
+      source: stub.source,
+      sourceLocale: options.defaultLocale,
+      targetLocale: stub.locale,
+    }));
 
     if (typeof options.translator.batch === 'function') {
       try {
@@ -195,7 +176,6 @@ function collectStubs(
   options: AutoTranslateOptions,
   contexts: Map<string, MessageContext>,
 ): Stub[] {
-  const metadataBySource = collectMetadata(options.messages);
   const stubs: Stub[] = [];
   for (const locale of options.locales) {
     if (locale === options.defaultLocale) {
@@ -216,44 +196,16 @@ function collectStubs(
             continue;
           }
         }
-        const metadata = metadataBySource.get(
-          `${location.fileId} ${message.source}`,
-        );
         stubs.push({
           context: contexts.get(`${location.fileId} ${message.source}`),
           fileId: location.fileId,
-          hint: metadata?.hint,
           locale,
-          maxLength: metadata?.maxLength,
           source: message.source,
         });
       }
     }
   }
   return dedupeStubs(stubs);
-}
-
-function collectMetadata(
-  messages: ExtractedMessage[],
-): Map<string, { hint?: string; maxLength?: number }> {
-  const result = new Map<string, { hint?: string; maxLength?: number }>();
-  for (const message of messages) {
-    for (const location of message.locations) {
-      const key = `${location.fileId} ${message.source}`;
-      const existing = result.get(key) ?? {};
-      if (location.hint !== undefined && existing.hint === undefined) {
-        existing.hint = location.hint;
-      }
-      if (
-        location.maxLength !== undefined &&
-        existing.maxLength === undefined
-      ) {
-        existing.maxLength = location.maxLength;
-      }
-      result.set(key, existing);
-    }
-  }
-  return result;
 }
 
 function dedupeStubs(stubs: Stub[]): Stub[] {

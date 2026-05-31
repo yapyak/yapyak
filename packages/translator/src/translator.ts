@@ -114,12 +114,6 @@ export function createTranslator(options: CreateTranslatorOptions): Translator {
 
 function toItem(request: TranslateRequest, level: ContextLevel): TranslateItem {
   const item: TranslateItem = { source: request.source };
-  if (request.hint !== undefined) {
-    item.hint = request.hint;
-  }
-  if (request.maxLength !== undefined) {
-    item.maxLength = request.maxLength;
-  }
   if (level === 'none') {
     return item;
   }

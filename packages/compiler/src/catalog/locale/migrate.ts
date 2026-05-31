@@ -1,5 +1,3 @@
-import type { LocaleFileEntry } from './file';
-
 import { readLocaleFile, writeLocaleFile } from './file';
 import { join } from 'node:path';
 
@@ -111,7 +109,7 @@ export function migrateLocales(
       continue;
     }
     let hasChanged = false;
-    const next: Record<string, LocaleFileEntry> = { ...fileEntries };
+    const next: Record<string, string> = { ...fileEntries };
     for (const rename of options.renames) {
       if (!Object.hasOwn(next, rename.from)) {
         continue;
