@@ -37,17 +37,17 @@ No layer of human-managed mapping exists between the file and the work to be don
 ```jsonc
 {
   "$schema": "https://yapyak.dev/locale/v1",
-  "locale": "sv",
   "sourceLocale": "en",
+  "targetLocale": "sv",
   "instructions": { /* ... */ },
-  "glossary": { /* ... */ },
+  "glossary": [ /* ... */ ],
   "files": { /* ... */ }
 }
 ```
 
-Every locale file has exactly these six top-level fields: `$schema`, `locale`, `sourceLocale`, `instructions`, `glossary`, `files`. Order is conventional (schema first, files last) but not enforced. Unknown top-level fields are preserved on write (for forward compatibility with future versions).
+Every locale file has exactly these six top-level fields: `$schema`, `sourceLocale`, `targetLocale`, `instructions`, `glossary`, `files`. Order is conventional (schema first, files last) but not enforced. Unknown top-level fields are preserved on write (for forward compatibility with future versions).
 
-**String encoding.** All string values (sources, translations, glossary terms, notes) are normalized to Unicode NFC on write. yapyak enforces this on save; consumers writing the file by hand should do the same. This prevents identity drift between visually identical but byte-different strings (e.g., NFC `café` vs NFD `café`).
+**String encoding.** All string values (sources, targets, glossary terms, hints) are normalized to Unicode NFC on write. yapyak enforces this on save; consumers writing the file by hand should do the same. This prevents identity drift between visually identical but byte-different strings (e.g., NFC `café` vs NFD `café`).
 
 ---
 
@@ -61,23 +61,23 @@ Every locale file has exactly these six top-level fields: `$schema`, `locale`, `
 
 Identifies the schema version of this file. The URI is an **identifier**, not a download URL — tools match on the literal string. The actual JSON Schema document is bundled with yapyak and published at the (separately versioned and replaceable) URL `https://yapyak.dev/schemas/locale-v1.json`. Version family is part of the identifier — `v1`, `v2`, etc. yapyak guarantees forward compatibility within a major version (`v1.0`, `v1.1`, ... all share the `v1` identifier and remain mutually readable).
 
-### `locale`
+### `sourceLocale`
+
+**Type:** BCP 47 language tag (canonical form)
+**Required:** yes
+**Example:** `"en"`, `"en-US"`
+
+The source locale that `source` fields are written in. For most projects this is `"en"`. Set in `yapyak.config.ts` once, emitted in every locale file.
+
+### `targetLocale`
 
 **Type:** BCP 47 language tag (canonical form)
 **Required:** yes
 **Example:** `"sv"`, `"sv-SE"`, `"pt-BR"`
 
-The target locale this file contains translations for. One file per locale.
+The target locale this file contains translations into. One file per target locale.
 
 **Canonical form.** yapyak accepts and emits BCP 47 tags with hyphen separators (`pt-BR`, never `pt_BR`), with language subtags lowercase and region subtags uppercase (`pt-BR`, not `pt-br`). All subtags must be registered in the IANA Language Subtag Registry. yapyak normalizes inputs on save.
-
-### `sourceLocale`
-
-**Type:** BCP 47 language tag
-**Required:** yes
-**Example:** `"en"`, `"en-US"`
-
-The source locale that `source` fields are written in. For most projects this is `"en"`. Set in `yapyak.config.ts` once, emitted in every locale file.
 
 ### `instructions`
 
@@ -89,9 +89,7 @@ Translation instructions that apply to every entry in this file. Inline so that 
 ```jsonc
 "instructions": {
   "tone": "Friendly, professional. Use 'du' (singular) not 'ni' (formal).",
-  "preservePlaceholders": true,
-  "preferShortForms": false,
-  "notes": "This is a B2B product. Avoid casual idioms."
+  "hint": "This is a B2B product. Avoid casual idioms."
 }
 ```
 
@@ -100,13 +98,11 @@ Translation instructions that apply to every entry in this file. Inline so that 
 | Field | Type | Purpose |
 |---|---|---|
 | `tone` | string | Free-text description of voice and register |
-| `preservePlaceholders` | boolean | Whether `{placeholder}` tokens must be preserved exactly (default true) |
-| `preferShortForms` | boolean | Whether translations should be shorter than source where possible |
-| `notes` | string | Additional free-text guidance for translators |
+| `hint` | string | Additional free-text guidance for translators |
 
 **Custom instruction fields are allowed.** Any additional key/value pair is accepted and forwarded to the AI verbatim in its system prompt. yapyak does not interpret unknown fields but preserves them.
 
-**Why no `preserveICU` instruction.** ICU MessageFormat is designed so that *plural branches differ per locale* (Swedish `one`/`other`; Polish `one`/`few`/`many`/`other`; Arabic `zero`/`one`/`two`/`few`/`many`/`other`). A literal "preserve ICU patterns exactly" instruction would produce wrong output for the very languages ICU exists to support. Instead, yapyak enforces ICU well-formedness, argument-name preservation, and argument-type preservation as **compiler invariants** validated by `yapyak validate` — see the [Validation](#validation) section. *Translators* and AI may legitimately emit target-locale-correct plural/select branches.
+**Why no `preserveICU`, `preservePlaceholders`, or similar instructions.** ICU MessageFormat argument names, argument types, and well-formedness, plus all `{placeholder}` tokens, are **compiler invariants** validated by `yapyak validate` — not translator preferences. ICU plural/select **branches** may legitimately differ per target-locale CLDR rules (Swedish `one`/`other`; Polish `one`/`few`/`many`/`other`; Arabic six categories). A literal "preserve exactly" instruction would force wrong output. See the [Validation](#validation) section for the actual invariants. *Translators* and AI may legitimately emit target-locale-correct plural/select branches; they MUST preserve argument names, types, and placeholder tokens.
 
 ### `glossary`
 
@@ -117,10 +113,11 @@ Project-specific term translations that must be applied consistently. Each recor
 
 ```jsonc
 "glossary": [
-  { "source": "checkout", "target": "kassa", "notes": "Noun form — the page/section." },
-  { "source": "checkout", "target": "Slutför köp", "notes": "Imperative button label.", "domain": "billing" },
+  { "source": "checkout", "target": "kassa", "hint": "Noun form — the page/section." },
+  { "source": "checkout", "target": "Slutför köp", "hint": "Imperative button label.", "domain": "billing" },
   { "source": "shipping", "target": "leverans" },
-  { "source": "subscription", "target": "abonnemang" }
+  { "source": "subscription", "target": "abonnemang" },
+  { "source": "Stripe", "target": "Stripe", "hint": "Brand name — never translate." }
 ]
 ```
 
@@ -130,14 +127,16 @@ Project-specific term translations that must be applied consistently. Each recor
 |---|---|---|---|
 | `source` | string | yes | Source term in the source locale |
 | `target` | string | yes | Target-locale translation |
-| `notes` | string | no | Free-text disambiguation/usage guidance |
+| `hint` | string | no | Free-text disambiguation/usage guidance |
 | `domain` | string | no | Business-domain tag (`"billing"`, `"onboarding"`) |
 
 **Forward-compatible extension fields** (not normative in v1.1 but preserved on write): `partOfSpeech`, `caseSensitive` (boolean, default false → case-folded match), `forbidden` (array of strings → never use these renderings), `alternatives` (array of strings → acceptable but less preferred). Unknown fields on glossary records are preserved on write.
 
 **Case folding.** Matching is case-insensitive by default. Set `caseSensitive: true` to require exact-case matching.
 
-**Multiple entries per source.** Two records may share `source` if they differ in `domain`, `notes`, or other disambiguators. The AI applies the record whose context best matches the entry being translated.
+**Multiple entries per source.** Two records may share `source` if they differ in `domain`, `hint`, or other disambiguators. The AI applies the record whose context best matches the entry being translated.
+
+**Brand names and untranslatable terms.** Glossary is the canonical mechanism for "do not translate" decisions. Add the term with `source === target` and an explanatory `hint`. The AI applies the glossary; no per-entry "locked" flag is needed.
 
 Glossary lives inline so AI agents do not need to load a separate glossary file. When the same project has multiple locales, each locale file has its own glossary (translated for that target locale).
 
@@ -151,7 +150,7 @@ The actual translation entries, grouped by source file path. Each value is an **
 ```jsonc
 "files": {
   "src/CoolButton.tsx": [
-    { "source": "Save", "context": { /* ... */ }, "value": "Spara" }
+    { "source": "Save", "context": { /* ... */ }, "target": "Spara" }
   ],
   "src/StorePanel.tsx": [
     /* ... */
@@ -174,23 +173,45 @@ Each entry is a JSON object with a fixed set of ownership zones, each owned by a
 
 ```jsonc
 {
-  "source": "Save",                                       // identity — never edited by humans or agents
-  "context": { "element": "button", "role": "content" }, // compiler-owned — regenerated each save
-  "notes": { "domain": "settings", "maxLength": 12 },    // author-owned — preserved verbatim
-  "status": "translated",                                 // workflow — see status field
-  "value": "Spara"                                        // translation
+  "source": "Save",                                              // identity — never edited by humans or agents
+  "context": {                                                    // compiler-owned — regenerated each save
+    "kind": "elementChild",
+    "container": "button",
+    "enclosing": "SaveButton",
+    "ancestors": [],
+    "position": 1
+  },
+  "hint": "Form submit button — use a confident verb",            // optional free-text guidance
+  "maxLength": 12,                                                // optional UI length constraint
+  "needsReview": false,                                           // optional; true when human attention is needed
+  "candidates": [ /* optional — see candidates field */ ],        // compiler-injected arbitration hints
+  "target": "Spara"                                               // translation (empty string means not yet translated)
 }
 ```
 
 | Field | Owner | Lifetime |
 |---|---|---|
 | `source` | yapyak compiler (derived from the `t()` call site) | Replaced only when source code's literal changes; never authored by hand |
-| `context` | yapyak compiler (AST-derived) | Regenerated on every save. Authored edits to `context` are overwritten — use `notes` for authored guidance |
-| `notes` | Developers and *translators* | Preserved verbatim across saves. Open-extension zone |
-| `status` | Mixed (compiler sets initial, author updates) | Persists across saves |
-| `value` | *Translator* / AI / developer | The translation (or `""` if missing) |
+| `context` | yapyak compiler (AST-derived) | Regenerated on every save. Authored edits to `context` are overwritten — use `hint` for authored guidance |
+| `hint` | Developers and *translators* | Preserved verbatim across saves |
+| `maxLength` | Developers and *translators* | Preserved verbatim across saves |
+| `needsReview` | AI, compiler, or developers | Set to flag the entry for human attention; cleared by manual review |
+| `candidates` | yapyak compiler (injected for arbitration) | Present only when arbitration is needed; removed after the *translator* decides |
+| `target` | *Translator* / AI / developer | The translation. Empty string `""` means "not yet translated" |
 
-Unknown fields at the entry root are preserved on write but have no defined semantics — consumers are encouraged to put authored data under `notes` rather than at the root.
+Unknown fields at the entry root are preserved on write but have no defined semantics — consumers are encouraged to put authored data in `hint` rather than inventing root-level fields.
+
+**State is derived, not stored.** yapyak does not store an explicit `status` enum (e.g., `"missing"`, `"translated"`, `"needs-arbitration"`). Instead, the workflow state is **computed** from the existing fields:
+
+| Derived state | Condition |
+|---|---|
+| `missing` | `target === ""` and no `candidates` field |
+| `needs-arbitration` | `target === ""` and `candidates` field is present |
+| `translated` | `target !== ""` and `needsReview` is absent or false |
+| `needs-review` | `needsReview === true` (regardless of `target`) |
+| `outdated` | `source` has changed since the last translation (detected by the compiler's rename detection; surfaced in CLI output) |
+
+This keeps the file minimal: only fields carrying genuine information are stored. State is reported by `yapyak status` and `yapyak validate`, not duplicated in the JSON.
 
 ### `source`
 
@@ -209,69 +230,126 @@ Sources must be static literals at the call site. Dynamic sources are rejected a
 
 ### `context`
 
-**Type:** object
-**Required:** yes (may be empty `{}` if no context can be derived)
+**Type:** discriminated union object
+**Required:** yes
 **Owner:** compiler — regenerated each save
 
-Structural context derived from the AST at the call site. Provides translation context for human and AI *translators*. **This field is compiler-owned. Edits made by hand will be overwritten on the next save.** Authored guidance belongs in `notes`.
+Structural context derived from the AST at the call site. Provides translation context for human and AI *translators*. **This field is compiler-owned. Edits made by hand will be overwritten on the next save.** Authored guidance belongs in `hint`.
 
 See [The context Field](#the-context-field) for full specification.
 
-### `notes`
+### `hint`
 
-**Type:** object
-**Required:** no (omit or use `{}` if empty)
+**Type:** string
+**Required:** no
 **Owner:** developers and *translators* — preserved verbatim by the compiler
 
-Author-owned guidance and project metadata. yapyak never writes to `notes` and never drops fields it does not understand. This is the open-extension zone for project-specific data: domain tags, length constraints, *translator* instructions, screenshots, links to design specs.
+Optional free-text guidance for the *translator*. Authored by developers (typically via the `.hint()` chainable in source code) or by humans editing the locale file directly.
 
-**Known author fields (v1.1):**
+Examples:
+- `"Form submit button — use a confident verb"`
+- `"Could also be 'tillämpa' depending on context. Verify."`
+- `"Rich text with formatting tags — preserve <b> and <link> exactly."`
 
-| Field | Type | Purpose |
-|---|---|---|
-| `description` | string | Free-text guidance for this specific entry |
-| `domain` | string | Business domain tag (`"billing"`, `"onboarding"`) |
-| `priority` | string | Translation priority (`"high"`, `"low"`) |
-| `maxLength` | number | Length constraint (for UI fit) |
-| `screenshot` | string | URL or path to a reference screenshot |
-| `question` | string | *Translator*/AI escalation request — pair with `status: "needs-review"` |
+When AI sets `needsReview: true`, it typically writes the reason into `hint` so reviewers know what to check.
 
-Custom fields (any other keys) are preserved on write and forwarded to the AI as translation context.
+### `maxLength`
 
-### `status`
+**Type:** number (positive integer)
+**Required:** no
+**Owner:** developers and *translators*
 
-**Type:** string enum
-**Required:** no (defaults to derived; see below)
-**Owner:** mixed — compiler sets initial state; humans/agents update during workflow
+Optional UI length constraint. Translations longer than `maxLength` characters are flagged by `yapyak validate` (diagnostic YPK112). Useful for buttons, labels, and other length-constrained UI surfaces.
 
-Lifecycle state of this entry. Distinguishes "never translated" from "intentionally same as source" from "locked do-not-translate", which empty-string `value` alone cannot express.
+### `needsReview`
 
-**Enum values:**
+**Type:** boolean
+**Required:** no (default `false` / omitted)
+**Owner:** AI translators, compiler, developers, humans
 
-| Status | Meaning | Who sets it |
-|---|---|---|
-| `missing` | No translation yet — needs work. Equivalent to `value === ""` for new entries. | Compiler on extraction |
-| `translated` | A translation exists. | *Translator* / AI / developer |
-| `locked` | Do not translate — value is intentionally the source, a brand name, or otherwise fixed. | Developer (manual) |
-| `needs-review` | Translation exists but is flagged for human review (e.g., AI was uncertain, ambiguity detected, source recently changed). | AI or compiler |
+When `true`, the entry is flagged for human attention. Set by:
 
-**Derived status `outdated`.** When the source string changes after a translation was written, the entry is *derived* outdated by comparing the current `source` against an optional `notes.lastTranslatedFrom` snapshot. `outdated` is **not stored** as a status value — it is computed by `yapyak validate` and surfaced in CLI output. (Storing it would create the same compiler-vs-author write conflict that motivated splitting ownership zones.)
+- **AI translator** when uncertain about a translation (typically pairs with a `hint` explaining the uncertainty)
+- **Yapyak compiler** when source changes after translation (preserves the `target` and flags for review)
+- **Humans** during PR review or manual inspection ("this looks wrong, someone verify")
+- **External CAT tools** integrating with yapyak
 
-**Defaults.** A new entry materialized by `yapyak extract` defaults to `status: "missing"`. An entry whose `value` is filled in but whose `status` is omitted is treated as `translated` for validation purposes — `status` is opt-in for projects that don't need workflow tracking.
+Cleared by a human review action: either by editing the locale file directly (remove the field or set to false), or via `yapyak review` CLI.
 
-### `value`
+Filter for entries needing review: search for `"needsReview": true` in the locale file, or run `yapyak status --needs-review`.
+
+### `target`
 
 **Type:** string (Unicode NFC)
-**Required:** yes (empty string `""` permitted when `status` is `missing` or `locked`)
+**Required:** yes (may be empty `""`)
 
 The translation in the target locale.
 
-**Empty value semantics:**
-- `value: ""` with `status: "missing"` (or no status) → needs translation
-- `value: ""` with `status: "translated"` → the correct translation IS the empty string (rare but legitimate — e.g., a locale-specific separator that collapses to nothing)
-- `value: ""` with `status: "locked"` → intentionally untranslated
+**Empty target semantics:**
+- `target: ""` and no `candidates` → entry is `missing` (derived). Awaiting translation.
+- `target: ""` and `candidates` present → entry is `needs-arbitration` (derived). *Translator* must decide between candidates or translate fresh.
+- `target: "any value"` → entry is `translated` (derived). Leave alone unless `needsReview: true` is also set.
 
-The relationship between `value` and `source` is constrained by **compiler invariants** validated by `yapyak validate` — see the [Validation](#validation) section. In summary: ICU argument names and types must match, ICU well-formedness must hold, but plural/select **branches** may legitimately differ per target locale.
+There is **no `locked` state**. Brand names and other "do not translate" terms are handled via the project's `glossary` (with `source === target`), not via per-entry flags.
+
+The relationship between `target` and `source` is constrained by **compiler invariants** validated by `yapyak validate` — see the [Validation](#validation) section. In summary: ICU argument names and types must match between `source` and `target`, ICU well-formedness must hold, and all named placeholders in `source` must appear in `target`. Plural/select **branches** may legitimately differ per target-locale CLDR rules.
+
+### `candidates`
+
+**Type:** array of candidate records
+**Required:** no (present only when arbitration is needed)
+**Owner:** yapyak compiler — injected before translation, removed after the *translator* decides
+
+When yapyak extracts a new entry whose source string already has translations elsewhere in the project but in a **different structural context**, it injects candidate translations into the entry. This lets the *translator* (any AI, including external coding agents) see prior translations of the same source and decide whether to reuse them or translate fresh.
+
+```jsonc
+{
+  "source": "Open",
+  "context": {
+    "kind": "elementChild",
+    "container": "Badge",
+    "enclosing": "HoursBadge",
+    "ancestors": [],
+    "position": 1
+  },
+  "candidates": [
+    {
+      "target": "Öppna",
+      "fromContext": {
+        "kind": "elementChild",
+        "container": "button",
+        "enclosing": "StoreButton",
+        "ancestors": [],
+        "position": 1
+      },
+      "fromFile": "src/store/StoreButton.tsx"
+    }
+  ],
+  "target": ""
+}
+```
+
+**Candidate record fields:**
+
+| Field | Type | Required | Purpose |
+|---|---|---|---|
+| `target` | string | yes | The translation from the related entry |
+| `fromContext` | object | yes | The `context` of the entry this candidate came from |
+| `fromFile` | string | yes | The source file containing the related entry |
+
+**Lifecycle.**
+
+1. Yapyak extracts a new `t()` call.
+2. Project memory finds one or more translations of the same source in different contexts.
+3. Yapyak writes the entry with `candidates` populated and `target: ""`. The derived state is `needs-arbitration`.
+4. The *translator* (any AI implementing the translator interface) reads the entry.
+5. The AI decides: use a candidate's `target`, or translate fresh.
+6. The AI writes the chosen `target` and **removes the `candidates` field**.
+7. Yapyak validates and persists. Derived state is now `translated` (or `needs-review` if AI also set `needsReview: true`).
+
+**Why the field is removed after decision.** `candidates` is ephemeral arbitration scaffolding, not persistent state. Once the *translator* has decided, the chosen value (or the new translation) is canonical. Keeping `candidates` would bloat the file and confuse later readers about whether arbitration is still pending. The decision is implicit in the presence of a non-empty `target`.
+
+**Why this lives in the locale file instead of in a prompt.** Earlier drafts had yapyak construct a "candidate-passing prompt" in code, sending source + context + candidates to the AI as a structured API request. v1.1 moves this into the JSON file itself. The locale file is the protocol — see [TRANSLATOR_INTERFACE.md](./TRANSLATOR_INTERFACE.md) and ADAPTIVE_IDENTITY_MODEL.md §6 for the architectural rationale. Any AI (Anthropic, OpenAI, local LLMs, coding agents like Claude Code or Cursor) sees the same structure and can perform arbitration without provider-specific yapyak adapters.
 
 ---
 
@@ -279,44 +357,266 @@ The relationship between `value` and `source` is constrained by **compiler invar
 
 The `context` object provides per-string structural and semantic context, derived from the AST at the call site by yapyak's compiler. It is **compiler-owned**: yapyak regenerates it on every save, and any hand-written edits will be overwritten. Authored guidance and project metadata belong in `notes` instead.
 
-### Known Fields (yapyak-emitted)
+### Discriminated union over 9 kinds
 
-These fields are emitted by yapyak when the AST can derive them. AI agents and tools may rely on their presence and type.
+`context` is a **discriminated union** keyed by the `kind` field. The compiler emits one of nine fixed shapes — each kind has only the fields meaningful for that AST construct. Consumers narrow on `kind` (TypeScript, JSON Schema discriminator) to know exactly which fields are present.
 
-| Field | Type | Description |
-|---|---|---|
-| `element` | string | The HTML element, component, or AST node type that wraps the call. Lowercase for DOM elements (`"button"`, `"input"`), PascalCase for components (`"Dialog"`, `"Badge"`). |
-| `role` | string | The structural role within the element. `"content"` for children, attribute names for attributes (`"placeholder"`, `"aria-label"`, `"title"`). |
-| `kind` | string | One of `"jsx-child"`, `"jsx-attribute"`, `"object-property"`, `"variable"`, `"call-argument"`, `"return"`, `"throw"`. Identifies the AST shape that contains the call. |
-| `component` | string | The immediate enclosing component or function name. Always emitted when derivable. |
-| `ancestors` | array of strings | Enclosing component names beyond the immediate parent, ordered from outermost down to the next-outer scope (i.e., **excluding** `component`, which is the immediate parent). Emitted only when needed to break collisions with `element` + `role` + `component`. |
-| `propertyKey` | string | When `kind` is `"object-property"`, the key under which the call appears. |
-| `variableName` | string | When `kind` is `"variable"`, the name of the variable being assigned. |
-| `functionName` | string | When `kind` is `"return"` or `"call-argument"`, the name of the enclosing function or callee. |
-| `position` | object `{ "index": number }` | **True-twins disambiguator.** Emitted only when two or more entries in the same file would otherwise be indistinguishable on every other context field. `index` is the 1-based occurrence number in source order. See [ADAPTIVE_IDENTITY_MODEL.md §2.3 and §13.2](./ADAPTIVE_IDENTITY_MODEL.md#23-the-5-case--object-form). |
+This gives:
+- **Compactness** — no forced-empty fields. A `variable` entry doesn't carry an empty `ancestors` array.
+- **Semantic accuracy** — each kind uses field names that fit its AST shape.
+- **Consistent semantics across kinds** — when two kinds share a field name, the field means the same thing.
 
-**Examples:**
+### Universal field semantics
+
+Six field names appear across the kinds. Each one means the same thing wherever it appears:
+
+| Field | Meaning |
+|---|---|
+| `kind` | AST construct type (the discriminator). Always present. |
+| `container` | The immediate AST construct's identifier name. Always present. |
+| `slot` | Named position within `container`, when applicable. |
+| `enclosing` | The next enclosing scope (function or component) above `container`. Always present (may be empty string for module-level). |
+| `ancestors` | Enclosing components above `enclosing`. Only present for markup kinds. |
+| `position` | Disambiguation ordinal (1-based) among calls with identical other-context fields. Always present. |
+
+**The single rule:** Within a kind, the field set is fixed. Between kinds, fields vary — but a given field name always means the same thing.
+
+### The nine kinds and their shapes
+
+#### Markup kinds
 
 ```jsonc
-// JSX child of a button
-{ "element": "button", "role": "content", "kind": "jsx-child", "component": "SaveButton" }
+// elementChild — t() is in element/component children
+{
+  "kind": "elementChild",
+  "container": "<element or component name>",
+  "enclosing": "<enclosing component>",
+  "ancestors": [<enclosing components above enclosing>],
+  "position": <integer ≥ 1>
+}
 
-// JSX attribute on an input
-{ "element": "input", "role": "placeholder", "kind": "jsx-attribute", "component": "SearchField" }
-
-// Object property in plain TypeScript
-{ "kind": "object-property", "propertyKey": "submit", "variableName": "labels" }
-
-// Throw expression
-{ "kind": "throw", "functionName": "validateEmail" }
-
-// Disambiguated by ancestor when element + role + component collides
-{ "element": "button", "role": "content", "component": "OK", "ancestors": ["Dialog"] }
-
-// True twins — two identical t('OK') buttons in the same parent
-{ "element": "button", "role": "content", "component": "ConfirmDialog", "position": { "index": 1 } }
-{ "element": "button", "role": "content", "component": "ConfirmDialog", "position": { "index": 2 } }
+// elementAttribute — t() is in an element/component attribute or prop value
+{
+  "kind": "elementAttribute",
+  "container": "<element or component name>",
+  "slot": "<attribute or prop name, camelCased>",
+  "enclosing": "<enclosing component>",
+  "ancestors": [<enclosing components above enclosing>],
+  "position": <integer ≥ 1>
+}
 ```
+
+#### Object kinds
+
+```jsonc
+// objectProperty — t() is a value in an object literal
+{
+  "kind": "objectProperty",
+  "container": "<variable name holding the object, or empty if anonymous>",
+  "slot": "<property key>",
+  "enclosing": "<enclosing function or empty>",
+  "position": <integer ≥ 1>
+}
+
+// classProperty — t() is in a class field initializer
+{
+  "kind": "classProperty",
+  "container": "<class name>",
+  "slot": "<field name>",
+  "enclosing": "<enclosing function or empty>",
+  "position": <integer ≥ 1>
+}
+```
+
+#### Variable / assignment
+
+```jsonc
+// variable — t() is the value of a const/let/var declaration
+{
+  "kind": "variable",
+  "container": "<variable name>",
+  "enclosing": "<enclosing function or empty>",
+  "position": <integer ≥ 1>
+}
+```
+
+#### Function-related kinds
+
+```jsonc
+// callArgument — t() is an argument to another function call
+{
+  "kind": "callArgument",
+  "container": "<callee name; method name for member expressions>",
+  "enclosing": "<enclosing function or empty>",
+  "position": <integer ≥ 1>
+}
+
+// return — t() is a return statement value
+{
+  "kind": "return",
+  "container": "<function name whose return this is>",
+  "enclosing": "<outer enclosing function or class, or empty>",
+  "position": <integer ≥ 1>
+}
+
+// throw — t() is in a throw expression (typically throw new ErrorClass(t(...)))
+{
+  "kind": "throw",
+  "container": "<constructor or error class name>",
+  "enclosing": "<enclosing function or empty>",
+  "position": <integer ≥ 1>
+}
+
+// defaultParameter — t() is a default value of a function parameter
+{
+  "kind": "defaultParameter",
+  "container": "<function name>",
+  "slot": "<parameter name>",
+  "enclosing": "<enclosing function or empty>",
+  "position": <integer ≥ 1>
+}
+```
+
+### Per-kind reference table
+
+| `kind` | Required fields | `container` is... | `slot` is... | Notes |
+|---|---|---|---|---|
+| `elementChild` | container, enclosing, ancestors, position | HTML element or component name | (n/a) | Markup only |
+| `elementAttribute` | container, slot, enclosing, ancestors, position | HTML element or component name | Attribute/prop name (camelCase) | Markup only |
+| `objectProperty` | container, slot, enclosing, position | Variable name holding the object (empty if anonymous) | Property key | |
+| `classProperty` | container, slot, enclosing, position | Class name | Field name | |
+| `variable` | container, enclosing, position | Variable name itself | (n/a) | |
+| `callArgument` | container, enclosing, position | Callee or method name | (n/a) | Argument index implicit via position when ambiguous |
+| `return` | container, enclosing, position | Function name whose return this is | (n/a) | |
+| `throw` | container, enclosing, position | Constructor class name (`Error`, `ValidationError`) | (n/a) | |
+| `defaultParameter` | container, slot, enclosing, position | Function name | Parameter name | |
+
+### Naming conventions
+
+To keep the format extremely consistent:
+
+- **CamelCase everywhere.** Both `kind` enum values and `slot` attribute names use camelCase. `aria-label` in source becomes `slot: "ariaLabel"`. `data-testid` becomes `slot: "dataTestid"`.
+- **No dashes in JSON values.** The reverse mapping (camelCase → kebab-case attribute) is deterministic; yapyak handles it.
+- **Container is an identifier, not a path.** `toast.error(t(...))` produces `container: "error"` (the method name), not `"toast.error"`.
+- **PascalCase for components and constructors.** HTML elements stay lowercase (`button`, `h1`); React/Vue/Svelte components and constructors stay as written (`Dialog`, `ValidationError`).
+- **Position is always present, always ≥ 1.** For most entries `position: 1`. Higher values appear only when true-twin disambiguation is needed (triggers diagnostic YPK009).
+
+### Examples
+
+```jsonc
+// <button>{t('Save')}</button> inside App, wrapped in a Form
+{
+  "kind": "elementChild",
+  "container": "button",
+  "enclosing": "App",
+  "ancestors": ["Form"],
+  "position": 1
+}
+
+// <input placeholder={t('Search')} />
+{
+  "kind": "elementAttribute",
+  "container": "input",
+  "slot": "placeholder",
+  "enclosing": "SearchField",
+  "ancestors": [],
+  "position": 1
+}
+
+// <button aria-label={t('Close')} />
+{
+  "kind": "elementAttribute",
+  "container": "button",
+  "slot": "ariaLabel",
+  "enclosing": "Dialog",
+  "ancestors": [],
+  "position": 1
+}
+
+// const labels = { submit: t('Save') }
+{
+  "kind": "objectProperty",
+  "container": "labels",
+  "slot": "submit",
+  "enclosing": "",
+  "position": 1
+}
+
+// class Notification { title = t('New') }
+{
+  "kind": "classProperty",
+  "container": "Notification",
+  "slot": "title",
+  "enclosing": "",
+  "position": 1
+}
+
+// const SAVE_SUCCESS = t('Changes saved')
+{
+  "kind": "variable",
+  "container": "SAVE_SUCCESS",
+  "enclosing": "",
+  "position": 1
+}
+
+// toast.error(t('Failed to save')) inside submitOrder function
+{
+  "kind": "callArgument",
+  "container": "error",
+  "enclosing": "submitOrder",
+  "position": 1
+}
+
+// function getShiftLabel() { return t('Done') }
+{
+  "kind": "return",
+  "container": "getShiftLabel",
+  "enclosing": "",
+  "position": 1
+}
+
+// throw new ValidationError(t('Invalid input')) inside validateEmail
+{
+  "kind": "throw",
+  "container": "ValidationError",
+  "enclosing": "validateEmail",
+  "position": 1
+}
+
+// function greet(name = t('Friend'))
+{
+  "kind": "defaultParameter",
+  "container": "greet",
+  "slot": "name",
+  "enclosing": "",
+  "position": 1
+}
+
+// True twins — two identical buttons in same parent (triggers YPK009)
+{ "kind": "elementChild", "container": "button", "enclosing": "ConfirmDialog", "ancestors": [], "position": 1 }
+{ "kind": "elementChild", "container": "button", "enclosing": "ConfirmDialog", "ancestors": [], "position": 2 }
+```
+
+### Transparent AST nodes
+
+When a `t()` call sits inside expression-wrapper nodes that have no meaningful semantic role of their own, yapyak walks through them and stops at the next meaningful container. These transparent nodes include:
+
+- `BinaryExpression` (string concatenation: `'Hi ' + t('user')`)
+- `LogicalExpression` (`flag && t('msg')`)
+- `ConditionalExpression` (`a ? t('A') : t('B')`)
+- `TemplateLiteral` (`` `Hi ${t('user')}` ``)
+- `ArrayExpression` (`[t('A'), t('B')]`)
+- `ParenthesizedExpression` (`(t('x'))`)
+- `JSXFragment` (`<>{t('Hi')}</>`)
+- `JSXExpressionContainer` (`{t('x')}` inside JSX)
+- `SpreadElement` (`...t('x')` if statically resolvable)
+- `TSAsExpression`, `TSSatisfiesExpression`, `TSNonNullExpression` (TypeScript assertions)
+
+Walking through these means: a `t()` call in `flag ? t('A') : t('B')` inside a `<button>` ends up as `kind: "elementChild"` with `container: "button"` — the ConditionalExpression and JSXExpressionContainer are skipped.
+
+### Framework-agnostic by design
+
+The same nine kinds describe `t()` calls across React (TSX), Vue templates, Svelte markup, and Astro pages. Per-framework processors translate their AST into these canonical kinds; the locale file is identical regardless of source framework. See [ADAPTIVE_IDENTITY_MODEL.md §11](./ADAPTIVE_IDENTITY_MODEL.md#11-per-framework-specifics) for how each framework's constructs map.
 
 ### Why context is compiler-owned
 
@@ -328,6 +628,151 @@ These fields are emitted by yapyak when the AST can derive them. AI agents and t
 
 ---
 
+## Authoring API: `.hint()`
+
+The `hint` field is populated from two sources:
+
+1. **The locale file directly** — anyone (human, AI agent, *translator*) can edit `hint` in `src/locales/sv.json` and yapyak preserves it on the next save loop.
+2. **The source code** — developers can attach a hint at the call site via the chainable `.hint()` method on `t()`. yapyak extracts the hint at compile time and writes it into the entry's `hint` field.
+
+The chainable form makes annotation a code-review-visible part of authoring the UI. It is the only API surface yapyak adds beyond `t()` itself.
+
+### Usage
+
+```tsx
+import { t } from 'yapyak';
+
+// Simple case — no hint
+t('Save')
+
+// With ICU parameters
+t('Hello, {name}', { name: user.name })
+
+// Free-text hint
+t('Save').hint('Form submit button — use a confident verb')
+
+// Combined: parameters + hint
+t('Welcome, {name}', { name: user.name }).hint('Dashboard greeting heading')
+```
+
+### What ends up in the locale file
+
+Source code:
+
+```tsx
+t('Save').hint('Form submit button — use a confident verb')
+```
+
+After `yapyak extract` runs:
+
+```jsonc
+{
+  "source": "Save",
+  "context": {
+    "kind": "elementChild",
+    "container": "button",
+    "enclosing": "CheckoutForm",
+    "ancestors": [],
+    "position": 1
+  },
+  "hint": "Form submit button — use a confident verb",
+  "target": ""
+}
+```
+
+`context` is compiler-derived. `hint` is populated from `.hint()`. They never overlap.
+
+### `.hint()` only accepts a string
+
+The argument to `.hint()` is always a single free-text string. There is no object form, no structured fields. If you need to convey a length constraint, set `maxLength` on the entry directly in the locale file (or via a separate config; future expansion).
+
+This deliberate simplicity prevents `.hint()` from becoming a kitchen sink. A hint is a single sentence of guidance for the *translator*, not a record of metadata.
+
+### Compile-time behavior
+
+`.hint()` is **stripped at compile time**. There is zero runtime cost. The compiled output is identical to a plain `t()` call:
+
+```tsx
+// Source
+t('Save').hint('Form submit button')
+
+// Compiled
+_pick({ en: 'Save', sv: 'Spara' })
+```
+
+`.hint()` exists only as a compile-time directive that tells yapyak what to write into the entry's `hint` field. At runtime, the chainable returns the translated string just as `t('Save')` would.
+
+### Static-extraction requirements
+
+The argument to `.hint()` must be a statically resolvable string at compile time. yapyak emits **YPK210** if it is not.
+
+| Allowed | Not allowed |
+|---|---|
+| `.hint('literal string')` | `.hint(\`template ${expr}\`)` |
+| `.hint(CONST_STRING)` (where `CONST_STRING` is a const literal) | `.hint(getValue())` |
+| | `.hint(maybeUndefined)` |
+
+### Diagnostics
+
+| Code | Meaning |
+|---|---|
+| YPK210 | `.hint()` argument is not a static string literal or const-bound string |
+| YPK211 | `.hint()` called more than once on the same `t()` call |
+| YPK212 | `.hint()` called on something that is not a direct result of `t()` (e.g., `const x = t('Save'); x.hint(...)` — the chain must be in the same expression) |
+
+### Why `.hint()` and not `.context()` or `.notes()`
+
+- **`.context({...})`** would suggest writing to the compiler-owned `context` field, which developers cannot do. Misleading.
+- **`.notes({...})`** would suggest a kitchen sink of structured metadata. We deliberately kept the API minimal: one free-text field.
+
+`.hint()` is what the developer is actually doing — giving the *translator* a hint about this string. The method name matches the field name. No confusion.
+
+### Why a chainable method instead of `t(source, options)`
+
+A second argument on `t()` collides with ICU parameters:
+
+```tsx
+t('Hello, {name}', { name: 'Joakim' })   // params — unambiguous
+t('Save', 'hint string')                  // params? hint? ambiguous
+```
+
+The chainable form keeps `t(source, params)` reserved for ICU parameter binding and adds annotation as a separate, opt-in step.
+
+### Multiple hint calls
+
+A `t()` call may have at most one `.hint()` chain. Calling `.hint()` more than once on the same expression is a compile error (YPK211):
+
+```tsx
+t('Save').hint('A').hint('B')  // YPK211
+```
+
+### TypeScript types
+
+The chainable returns a value that is both `string` (for runtime use) and exposes `.hint()` (for compile-time chaining). At runtime, only the string side exists:
+
+```ts
+interface Translatable extends String {
+  hint(value: string): string;
+}
+
+declare function t(source: string): Translatable;
+declare function t(source: string, params: Record<string, unknown>): Translatable;
+```
+
+The chainable returns `string` after `.hint()` is called, preventing further chaining.
+
+### `maxLength`, `needsReview`, and other entry fields are not authored via `.hint()`
+
+`.hint()` writes only to the entry's `hint` field. It cannot set `maxLength`, `needsReview`, or other entry-level fields. Those are either:
+
+- **Project-wide** (set in `yapyak.config.ts` or via glossary)
+- **Workflow state** (set by AI / human review action)
+- **Future API additions** (e.g., `.maxLength(20)` chainable if real demand emerges)
+
+Keeping `.hint()` to a single purpose keeps the API surface honest. One method, one job: a free-text hint.
+
+---
+
 ## Common Patterns
 
 ### Simple translation
@@ -335,98 +780,233 @@ These fields are emitted by yapyak when the AST can derive them. AI agents and t
 ```jsonc
 {
   "source": "Save",
-  "context": { "element": "button", "role": "content", "component": "SaveButton" },
-  "status": "translated",
-  "value": "Spara"
+  "context": {
+    "kind": "elementChild",
+    "container": "button",
+    "enclosing": "SaveButton",
+    "ancestors": [],
+    "position": 1
+  },
+  "target": "Spara"
 }
 ```
 
 ### Same source, different contexts (homonyms)
 
-When two `t('Open')` calls exist in the same file with different roles, they appear as **separate entries in the array**:
+When two `t('Open')` calls exist in the same file with different `container` (different element), they appear as **separate parallel records**:
 
 ```jsonc
 "src/StorePanel.tsx": [
   {
     "source": "Open",
-    "context": { "element": "button", "role": "content", "component": "StorePanel" },
-    "status": "translated",
-    "value": "Öppna"
+    "context": {
+      "kind": "elementChild",
+      "container": "button",
+      "enclosing": "StorePanel",
+      "ancestors": [],
+      "position": 1
+    },
+    "target": "Öppna"
   },
   {
     "source": "Open",
-    "context": { "element": "Badge", "role": "content", "component": "StorePanel" },
-    "status": "translated",
-    "value": "Öppet"
+    "context": {
+      "kind": "elementChild",
+      "container": "Badge",
+      "enclosing": "StorePanel",
+      "ancestors": [],
+      "position": 1
+    },
+    "target": "Öppet"
   }
 ]
 ```
 
-No object form, no sub-keys. Just two records. The `context` distinguishes them naturally.
+No object form, no sub-keys. Just two records. The `context.container` distinguishes them naturally.
 
-### True twins (positional fallback)
+### True twins (positional disambiguation)
 
-When two `t('OK')` calls share element, role, AND component with no other distinguishing context, the compiler emits `position.index` (see [ADAPTIVE_IDENTITY_MODEL.md §13.2](./ADAPTIVE_IDENTITY_MODEL.md#132-true-twins-same-source-same-role-same-parent)):
+When two calls share `kind`, `container`, `enclosing`, AND `ancestors` with no other distinguishing context, only `position` separates them:
 
 ```jsonc
 "src/dialogs/ConfirmDialog.tsx": [
   {
     "source": "OK",
-    "context": { "element": "button", "role": "content", "component": "ConfirmDialog", "position": { "index": 1 } },
-    "status": "translated",
-    "value": "OK"
+    "context": {
+      "kind": "elementChild",
+      "container": "button",
+      "enclosing": "ConfirmDialog",
+      "ancestors": [],
+      "position": 1
+    },
+    "target": "OK"
   },
   {
     "source": "OK",
-    "context": { "element": "button", "role": "content", "component": "ConfirmDialog", "position": { "index": 2 } },
-    "status": "translated",
-    "value": "OK"
+    "context": {
+      "kind": "elementChild",
+      "container": "button",
+      "enclosing": "ConfirmDialog",
+      "ancestors": [],
+      "position": 2
+    },
+    "target": "OK"
   }
 ]
 ```
 
-Reordering true twins is a known limitation — see ADAPTIVE_IDENTITY_MODEL.md §13.2.
+This emits diagnostic YPK009 — see [ADAPTIVE_IDENTITY_MODEL.md §13.2](./ADAPTIVE_IDENTITY_MODEL.md#132-true-twins-same-source-same-role-same-parent). Reordering breaks the mapping; the developer should refactor to distinct sources or wrap in distinguishing components.
 
-### Plain TypeScript context
+### Plain TypeScript — call argument
 
 ```jsonc
 {
   "source": "Order placed",
   "context": {
-    "kind": "call-argument",
-    "functionName": "toast.success",
-    "component": "submitOrder"
+    "kind": "callArgument",
+    "container": "success",
+    "enclosing": "submitOrder",
+    "position": 1
   },
-  "status": "translated",
-  "value": "Beställning lagd"
+  "target": "Beställning lagd"
 }
 ```
+
+`container` is the method name (`success` from `toast.success`).
+
+### Plain TypeScript — throw
 
 ```jsonc
 {
   "source": "Invalid email",
   "context": {
     "kind": "throw",
-    "functionName": "validateEmail"
+    "container": "ValidationError",
+    "enclosing": "validateEmail",
+    "position": 1
   },
-  "status": "translated",
-  "value": "Ogiltig e-postadress"
+  "target": "Ogiltig e-postadress"
 }
 ```
 
-### Translator notes inline (authored guidance in `notes`)
+### Plain TypeScript — object property
 
 ```jsonc
 {
   "source": "Save",
-  "context": { "element": "button", "role": "content", "component": "SaveButton" },
-  "notes": {
-    "description": "This save commits to the database. Use a definitive verb, not a tentative one.",
-    "domain": "settings",
-    "maxLength": 12
+  "context": {
+    "kind": "objectProperty",
+    "container": "labels",
+    "slot": "submit",
+    "enclosing": "",
+    "position": 1
   },
-  "status": "translated",
-  "value": "Spara"
+  "target": "Spara"
+}
+```
+
+`container` is the variable binding the object (`labels`); `slot` is the property key.
+
+### Plain TypeScript — class property
+
+```jsonc
+{
+  "source": "New notification",
+  "context": {
+    "kind": "classProperty",
+    "container": "Notification",
+    "slot": "title",
+    "enclosing": "",
+    "position": 1
+  },
+  "target": "Ny notis"
+}
+```
+
+### Plain TypeScript — variable
+
+```jsonc
+{
+  "source": "Changes saved",
+  "context": {
+    "kind": "variable",
+    "container": "SAVE_SUCCESS",
+    "enclosing": "",
+    "position": 1
+  },
+  "target": "Ändringar sparade"
+}
+```
+
+### Plain TypeScript — return
+
+```jsonc
+{
+  "source": "Done",
+  "context": {
+    "kind": "return",
+    "container": "getShiftLabel",
+    "enclosing": "",
+    "position": 1
+  },
+  "target": "Klar"
+}
+```
+
+### Plain TypeScript — default parameter
+
+```jsonc
+{
+  "source": "Friend",
+  "context": {
+    "kind": "defaultParameter",
+    "container": "greet",
+    "slot": "name",
+    "enclosing": "",
+    "position": 1
+  },
+  "target": "Vän"
+}
+```
+
+### Attribute with camelCased aria-name
+
+```tsx
+<button aria-label={t('Close dialog')} />
+```
+
+```jsonc
+{
+  "source": "Close dialog",
+  "context": {
+    "kind": "elementAttribute",
+    "container": "button",
+    "slot": "ariaLabel",
+    "enclosing": "Dialog",
+    "ancestors": [],
+    "position": 1
+  },
+  "target": "Stäng dialogen"
+}
+```
+
+The source code uses `aria-label` (with dash). The `slot` field stores `ariaLabel` (camelCased). Yapyak handles the reverse mapping deterministically.
+
+### Inline hint and maxLength (authored guidance)
+
+```jsonc
+{
+  "source": "Save",
+  "context": {
+    "kind": "elementChild",
+    "container": "button",
+    "enclosing": "SaveButton",
+    "ancestors": [],
+    "position": 1
+  },
+  "hint": "This save commits to the database. Use a definitive verb, not a tentative one.",
+  "maxLength": 12,
+  "target": "Spara"
 }
 ```
 
@@ -435,43 +1015,68 @@ Reordering true twins is a known limitation — see ADAPTIVE_IDENTITY_MODEL.md �
 ```jsonc
 {
   "source": "Loading...",
-  "context": { "element": "div", "role": "content", "component": "LoadingState" },
-  "status": "missing",
-  "value": ""
+  "context": {
+    "kind": "elementChild",
+    "container": "div",
+    "enclosing": "LoadingState",
+    "ancestors": [],
+    "position": 1
+  },
+  "target": ""
 }
 ```
 
-New entries materialized by `yapyak extract` carry `status: "missing"` until filled.
+New entries materialized by `yapyak extract` are derived as `missing` (target empty, no candidates) until filled.
 
-### Locked (e.g., brand names, untranslatable terms)
+### Brand names (handled by glossary, not per-entry locking)
 
 ```jsonc
 {
   "source": "Stripe",
-  "context": { "element": "span", "role": "content", "component": "PaymentFooter" },
-  "notes": { "description": "Brand name — do not translate." },
-  "status": "locked",
-  "value": "Stripe"
+  "context": {
+    "kind": "elementChild",
+    "container": "span",
+    "enclosing": "PaymentFooter",
+    "ancestors": [],
+    "position": 1
+  },
+  "target": "Stripe"
 }
 ```
 
-`status: "locked"` is the unambiguous signal to *translators*, AI, and validation that this entry must not be retranslated. Free-text notes alone (as in v1.0 drafts) are too fragile — see the [`status`](#status) field.
+This looks like any other translated entry. The `target === source` value is the result of applying the project's glossary:
 
-### Escalation: AI flags ambiguity for human review
+```jsonc
+"glossary": [
+  { "source": "Stripe", "target": "Stripe", "hint": "Brand name — never translate" }
+]
+```
+
+There is **no `status: "locked"` flag**. The AI doesn't retranslate existing entries with non-empty `target` by default. If the glossary says "Stripe → Stripe", the *translator* applies that consistently. Brand-name "locking" is a glossary concern, not a per-entry one.
+
+### AI flags ambiguity for human review
 
 ```jsonc
 {
   "source": "Apply",
-  "context": { "element": "button", "role": "content", "component": "FiltersPanel" },
-  "notes": {
-    "question": "Apply could mean 'använd' (use), 'tillämpa' (enforce), or 'lägg till' (add). Which meaning here?"
+  "context": {
+    "kind": "elementChild",
+    "container": "button",
+    "enclosing": "FiltersPanel",
+    "ancestors": [],
+    "position": 1
   },
-  "status": "needs-review",
-  "value": ""
+  "hint": "Could be 'använd' (use), 'tillämpa' (enforce), or 'lägg till' (add). I chose 'använd' for filter-apply context — please verify.",
+  "needsReview": true,
+  "target": "Använd"
 }
 ```
 
-When the AI cannot confidently translate from context alone, it writes a `notes.question` and sets `status: "needs-review"` rather than guessing silently.
+When the AI cannot confidently translate from context alone, it produces a best-guess `target`, writes the rationale and uncertainty into `hint`, and sets `needsReview: true`. The derived state is `needs-review`.
+
+A human reviewer can find these via `yapyak status --needs-review` or by filtering on `"needsReview": true`. After review:
+- If correct: remove `needsReview` (or set to false). Derived state becomes `translated`.
+- If wrong: edit `target`, remove `needsReview`. Derived state becomes `translated`.
 
 ---
 
@@ -480,21 +1085,21 @@ When the AI cannot confidently translate from context alone, it writes a `notes.
 ```jsonc
 {
   "$schema": "https://yapyak.dev/locale/v1",
-  "locale": "sv",
   "sourceLocale": "en",
+  "targetLocale": "sv",
 
   "instructions": {
     "tone": "Friendly, professional. Use 'du' not 'ni'.",
-    "preservePlaceholders": true,
-    "notes": "B2B product. Avoid casual idioms. Match Stripe's Swedish for billing terms."
+    "hint": "B2B product. Avoid casual idioms. Match Stripe's Swedish for billing terms."
   },
 
   "glossary": [
-    { "source": "checkout", "target": "kassa", "notes": "Noun form — the section/page." },
-    { "source": "checkout", "target": "Slutför köp", "notes": "Imperative button label.", "domain": "billing" },
+    { "source": "checkout", "target": "kassa", "hint": "Noun form — the section/page." },
+    { "source": "checkout", "target": "Slutför köp", "hint": "Imperative button label.", "domain": "billing" },
     { "source": "shipping", "target": "leverans" },
     { "source": "subscription", "target": "abonnemang" },
-    { "source": "invoice", "target": "faktura" }
+    { "source": "invoice", "target": "faktura" },
+    { "source": "Stripe", "target": "Stripe", "hint": "Brand name — never translate." }
   ],
 
   "files": {
@@ -502,13 +1107,13 @@ When the AI cannot confidently translate from context alone, it writes a `notes.
       {
         "source": "Save changes",
         "context": {
-          "element": "button",
-          "role": "content",
-          "component": "SaveButton",
-          "kind": "jsx-child"
+          "kind": "elementChild",
+          "container": "button",
+          "enclosing": "SaveButton",
+          "ancestors": [],
+          "position": 1
         },
-        "status": "translated",
-        "value": "Spara ändringar"
+        "target": "Spara ändringar"
       }
     ],
 
@@ -516,24 +1121,24 @@ When the AI cannot confidently translate from context alone, it writes a `notes.
       {
         "source": "Open",
         "context": {
-          "element": "button",
-          "role": "content",
-          "component": "StorePanel",
-          "kind": "jsx-child"
+          "kind": "elementChild",
+          "container": "button",
+          "enclosing": "StorePanel",
+          "ancestors": [],
+          "position": 1
         },
-        "status": "translated",
-        "value": "Öppna"
+        "target": "Öppna"
       },
       {
         "source": "Open",
         "context": {
-          "element": "Badge",
-          "role": "content",
-          "component": "StorePanel",
-          "kind": "jsx-child"
+          "kind": "elementChild",
+          "container": "Badge",
+          "enclosing": "StorePanel",
+          "ancestors": [],
+          "position": 1
         },
-        "status": "translated",
-        "value": "Öppet"
+        "target": "Öppet"
       }
     ],
 
@@ -541,14 +1146,15 @@ When the AI cannot confidently translate from context alone, it writes a `notes.
       {
         "source": "Place order",
         "context": {
-          "element": "button",
-          "role": "content",
-          "component": "CheckoutForm",
-          "kind": "jsx-child"
+          "kind": "elementChild",
+          "container": "button",
+          "enclosing": "CheckoutForm",
+          "ancestors": [],
+          "position": 1
         },
-        "notes": { "domain": "billing", "maxLength": 20 },
-        "status": "translated",
-        "value": "Lägg beställning"
+        "hint": "Primary checkout action. Strong, confident verb.",
+        "maxLength": 20,
+        "target": "Lägg beställning"
       }
     ],
 
@@ -556,37 +1162,46 @@ When the AI cannot confidently translate from context alone, it writes a `notes.
       {
         "source": "Order placed",
         "context": {
-          "kind": "call-argument",
-          "functionName": "toast.success",
-          "component": "submitOrder"
+          "kind": "callArgument",
+          "container": "success",
+          "enclosing": "submitOrder",
+          "position": 1
         },
-        "status": "translated",
-        "value": "Beställning lagd"
+        "target": "Beställning lagd"
       },
       {
         "source": "Could not place order",
         "context": {
-          "kind": "call-argument",
-          "functionName": "toast.error",
-          "component": "submitOrder"
+          "kind": "callArgument",
+          "container": "error",
+          "enclosing": "submitOrder",
+          "position": 1
         },
-        "status": "translated",
-        "value": "Kunde inte lägga beställning"
+        "target": "Kunde inte lägga beställning"
       }
     ],
 
     "src/payment/PaymentFooter.tsx": [
       {
         "source": "Stripe",
-        "context": { "element": "span", "role": "content", "component": "PaymentFooter", "kind": "jsx-child" },
-        "notes": { "description": "Brand name — do not translate." },
-        "status": "locked",
-        "value": "Stripe"
+        "context": {
+          "kind": "elementChild",
+          "container": "span",
+          "enclosing": "PaymentFooter",
+          "ancestors": [],
+          "position": 1
+        },
+        "target": "Stripe"
       }
     ]
   }
 }
 ```
+
+Notes on this example:
+- **`Stripe` is "locked" via the glossary.** The entry itself looks identical to any other translated entry. The glossary applies `Stripe → Stripe` consistently across all entries.
+- **`Place order` has `hint` and `maxLength`.** These are optional flat fields, not a `notes` zone.
+- **No `status` field anywhere.** State (`missing`, `translated`, etc.) is derived from the existing fields.
 
 This single file gives any consumer — AI agent, human translator, CAT tool — everything they need.
 
@@ -613,8 +1228,16 @@ The v1 format converts this to records-per-file:
 {
   "files": {
     "src/StorePanel.tsx": [
-      { "source": "Open", "context": { "element": "button", "role": "content" }, "value": "Öppna" },
-      { "source": "Open", "context": { "element": "Badge", "role": "content" }, "value": "Öppet" }
+      {
+        "source": "Open",
+        "context": { "kind": "elementChild", "container": "button", "enclosing": "StorePanel", "ancestors": [], "position": 1 },
+        "target": "Öppna"
+      },
+      {
+        "source": "Open",
+        "context": { "kind": "elementChild", "container": "Badge", "enclosing": "StorePanel", "ancestors": [], "position": 1 },
+        "target": "Öppet"
+      }
     ]
   }
 }
@@ -926,39 +1549,36 @@ These are deliberately out of scope for v1.1 but are anticipated for future mino
 ### Embedded source position
 
 ```jsonc
-"context": { "element": "button", "sourcePosition": { "line": 12, "column": 24 } }
+"context": { "kind": "elementChild", "container": "button", "enclosing": "App", "ancestors": [], "position": 1, "sourcePosition": { "line": 12, "column": 24 } }
 ```
 
 Useful for precise refactor detection and IDE jumping. Distinct from `context.position.index` (the true-twins disambiguator). Likely added to `context` as an optional known field in a future minor version.
 
 ### Per-entry history
 
-Per-entry history of previous translations and source revisions:
+Per-entry history of previous translations and source revisions could be persisted as an underscore-prefixed metadata field:
 
 ```jsonc
 {
   "source": "Save",
-  "notes": {
-    "lastTranslatedFrom": "Save",
-    "history": [
-      { "value": "Spara", "translatedAt": "2025-08-01" },
-      { "value": "Spara ändringar", "translatedAt": "2025-09-15", "reason": "source-rename" }
-    ]
-  },
-  "status": "translated",
-  "value": "Spara"
+  "_lastTranslatedFrom": "Save",
+  "_history": [
+    { "target": "Spara", "translatedAt": "2025-08-01" },
+    { "target": "Spara ändringar", "translatedAt": "2025-09-15", "reason": "source-rename" }
+  ],
+  "target": "Spara"
 }
 ```
 
-v1.1's `notes.lastTranslatedFrom` is the minimum hook for deriving `outdated` status. Richer history records are a future opt-in.
+A `_lastTranslatedFrom` field would be the minimum hook for deriving the `outdated` state durably. Richer history records are a future opt-in.
 
 ### Provenance per entry
 
 ```jsonc
-"notes": { "provenance": "ai-translated:claude-sonnet-4.5" }
+"_provenance": "ai-translated:claude-sonnet-4.5"
 ```
 
-Track which model translated each entry. Per ADAPTIVE_IDENTITY_MODEL.md §9, provenance is currently computed per save and emitted to CLI / `.yapyak/provenance.json` (gitignored). Promoting it into `notes` for durable storage is a future opt-in.
+Track which model translated each entry. Per ADAPTIVE_IDENTITY_MODEL.md §9, provenance is currently computed per save and emitted to CLI / `.yapyak/provenance.json` (gitignored). Promoting it into the entry as a durable `_provenance` field is a future opt-in.
 
 ### Plural / ICU explicit forms
 
@@ -967,7 +1587,7 @@ Currently ICU patterns are inside `source` and `value` strings. A future version
 ```jsonc
 {
   "source": { "pattern": "{count, plural, one {# item} other {# items}}", "params": ["count"] },
-  "value": { "pattern": "{count, plural, one {# vara} other {# varor}}", "params": ["count"] }
+  "target": { "pattern": "{count, plural, one {# vara} other {# varor}}", "params": ["count"] }
 }
 ```
 

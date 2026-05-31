@@ -20,13 +20,15 @@ Every mechanism in this specification is a direct consequence of this principle,
 
 This document specifies the **adaptive identity model** for yapyak — a five-pillar architecture for translation identity that is, as far as we know, a novel combination of mechanisms in the open-source i18n landscape.
 
-The model uses **source string as primary identity**, with **AST-derived context as a secondary disambiguator that appears in locale files only when source-string collisions exist within a file**. It supports **project-wide translation memory** from the locale files themselves (no separate cache), **cross-file refactor detection** that carries translations across moves without AI calls, **AI-as-arbiter** for ambiguous new call sites with candidate-passing prompts, **orphan retention** so translations remain queryable even after their source disappears, and **provenance tracking** so every translation entry can be traced to how it arrived.
+The model uses **source string as primary identity**, with **AST-derived context attached to every entry as structured data**. It supports **project-wide translation memory** from the locale files themselves (no separate cache), **cross-file refactor detection** that carries translations across moves without AI calls, **AI-as-arbiter** for ambiguous new call sites via candidates injected into the locale file itself (no provider-specific prompts), **orphan retention** so translations remain queryable even after their source disappears, and **provenance tracking** so every translation entry can be traced to how it arrived.
 
-The model solves the five concrete failure modes of the current `(fileId, source)` model: same-file homonyms, refactor churn, missing cross-file memory, silent semantic misses on first new use, and unnecessary AI calls. It does so while keeping the developer-facing API unchanged (`t('Save')` still works), the runtime unchanged (compiled `_pick({...})` per call site), and locale files clean and translator-friendly in the 95% case where source strings are unambiguous.
+The model solves the five concrete failure modes of the previous `(fileId, source)` model: same-file homonyms, refactor churn, missing cross-file memory, silent semantic misses on first new use, and unnecessary AI calls. It does so while keeping the developer-facing API minimal (`t('Save')` plus the chainable `.notes()` annotation), the runtime unchanged (compiled `_pick({...})` per call site), and locale files self-contained as portable translation work items — readable by any AI, agent, or translator without external context.
 
-**Implementation estimate:** ~570 lines of production TypeScript across four phases, ~3-5 weeks with tests and documentation.
+The locale file shape and the *translator* interface are specified in companion documents: [LOCALE_FILE_FORMAT.md](./LOCALE_FILE_FORMAT.md) (v1.1) and [TRANSLATOR_INTERFACE.md](./TRANSLATOR_INTERFACE.md) (v1.0). This document focuses on the identity logic; those documents focus on storage and translation protocol respectively.
 
-**Novelty claim:** The combination of (1) automatic AST-context derivation, (2) adaptive emission of context only on collision, (3) project-wide locale-files-as-memory with no external cache, (4) AI-as-arbiter with candidate-passing for semantic disambiguation, and (5) refactor detection across file boundaries with orphan retention has not been done systematically in any mainstream open-source i18n tool we are aware of.
+**Implementation estimate:** ~570 lines of production TypeScript across four phases, ~3–5 weeks with tests and documentation.
+
+**Novelty claim:** The combination of (1) automatic AST-context derivation, (2) source as primary identity with same-source homonyms represented as parallel records, (3) project-wide locale-files-as-memory with no external cache, (4) format-as-protocol AI arbitration via candidates inlined in the locale file, and (5) refactor detection across file boundaries with orphan retention has not been done systematically in any mainstream open-source i18n tool we are aware of.
 
 ---
 
@@ -38,13 +40,13 @@ The architecture rests on five distinct mechanisms that work together but are co
 
 **Identity is the source string.** A translation entry is identified primarily by the literal English (or default-locale) text that appears at the call site. This makes identity stable against the operations that happen most often during development: wrapper insertion, element-type change, attribute change, sibling reordering, layout restructuring.
 
-### 1.2 Adaptive AST Suffix
+### 1.2 AST-Derived Context Per Entry
 
-**Context disambiguates only when source alone is insufficient.** When two `t()` calls in the same file share a source string, yapyak emits an object-form entry where sub-keys are the AST-derived roles (element name, attribute name, parent component) that distinguish them. Single-occurrence source strings stay as bare keys. Locale files contain structural noise only where structure is the only differentiator.
+**Every entry carries its structural context as compiler-owned data.** When the AST is parsed, yapyak derives the element type, role (children vs attribute), enclosing component, and call kind for each `t()` call. This context is stored alongside the source in the locale file's `context` field, regenerated on every save. Same-source homonyms ([Save] in a button vs in a heading) become **parallel records** with the same `source` and different `context`. Disambiguation is structural and visible — never hidden behind a stable ID or a manual key.
 
 ### 1.3 Project-Wide Translation Memory
 
-**Locale files are the cache.** When a translation is needed, yapyak builds an in-memory map from all locale files: `source → [{translation, context, fileId}]`. No external cache, no separate store. The repository is the source of truth, and the same JSON files that translators edit are what powers cross-file consistency.
+**Locale files are the cache.** When a translation is needed, yapyak builds an in-memory map from all locale files: `source → [{value, context, file}]`. No external cache, no separate store. The repository is the source of truth, and the same JSON files that *translators* edit are what powers cross-file consistency.
 
 ### 1.4 Cross-File Refactor Detection
 
@@ -60,41 +62,70 @@ These five pillars are independent enough to be implemented in stages but design
 
 ## 2. Identity & Storage
 
-### 2.1 Schema
+The on-disk representation is specified in full detail in [LOCALE_FILE_FORMAT.md](./LOCALE_FILE_FORMAT.md) (v1.1). This section explains the **identity model itself** — what uniquely identifies a translation, and how identity maps to the storage shape.
 
-```ts
-type LocaleFile = Record<FileId, FileEntries>;
-type FileEntries = Record<SourceString, Translation | TranslationsByContext>;
-type Translation = string;
-type TranslationsByContext = Record<ContextKey, string>;
+### 2.1 Identity Tuple
 
-type FileId = string;          // e.g. "src/checkout/CartReview.tsx"
-type SourceString = string;    // e.g. "Open", "Welcome back"
-type ContextKey = string;      // e.g. "button", "input.placeholder", "CartReview.button"
+The identity of a translation is the tuple:
+
+```
+identity = (file, source, context)
 ```
 
-- **Bare string value:** the source has a single occurrence in the file. No homonym.
-- **Object value:** the source has multiple occurrences in the file with distinguishing AST roles. Sub-keys are the minimal disambiguators.
+Where:
+- **`file`** is the source file path of the `t()` call site (e.g., `"src/checkout/CartReview.tsx"`)
+- **`source`** is the literal English (or default-locale) text passed to `t()` (e.g., `"Open"`)
+- **`context`** is the AST-derived structural context (element, role, component, kind)
 
-### 2.2 The 95% Case — Bare Keys
+Two `t()` calls with the same identity tuple represent the same logical message and share a single locale entry. Two `t()` calls that differ in any one of the three dimensions are distinct logical messages and live as parallel entries.
 
-```json
+This is the model. Everything else in this document — the algorithm, the memory build, the refactor detection, the arbitration — is a consequence of operating on this identity tuple.
+
+### 2.2 Storage Shape
+
+Identity is materialized in the locale file as a **records-array per file**. Each record is one entry; each entry corresponds to one identity tuple. Same-source homonyms appear as parallel records with the same `source` and different `context`.
+
+```jsonc
 {
-  "src/components/EmptyCart.tsx": {
-    "Your cart is empty": "Din kundvagn är tom",
-    "Start shopping to add items": "Börja handla för att lägga till varor",
-    "Browse products": "Bläddra bland produkter"
+  "$schema": "https://yapyak.dev/locale/v1",
+  "sourceLocale": "en",
+  "targetLocale": "sv",
+  "instructions": { /* ... */ },
+  "glossary": [ /* ... */ ],
+  "files": {
+    "src/components/EmptyCart.tsx": [
+      {
+        "source": "Your cart is empty",
+        "context": {
+          "kind": "elementChild",
+          "container": "h2",
+          "enclosing": "EmptyCart",
+          "ancestors": [],
+          "position": 1
+        },
+        "target": "Din kundvagn är tom"
+      },
+      {
+        "source": "Browse products",
+        "context": {
+          "kind": "elementChild",
+          "container": "button",
+          "enclosing": "EmptyCart",
+          "ancestors": [],
+          "position": 1
+        },
+        "target": "Bläddra bland produkter"
+      }
+    ]
   }
 }
 ```
 
-No suffixes. No nesting. Locale files in the common case are pure source-string → translation maps. This matches translator expectations and standard tooling (Crowdin, Phrase, Lokalise all support flat JSON natively).
+Each record is owned by multiple actors across zones (`source`, `context` compiler-owned; `notes`, `value`, `status` author/translator-owned). See LOCALE_FILE_FORMAT.md for the full zone breakdown and the full discriminated-union shape of `context`.
 
-### 2.3 The 5% Case — Object Form
+### 2.3 Same-Source Homonyms
 
-When two `t()` calls in the same file share a source string, the entry becomes an object:
-
-**Element-based disambiguation:**
+When two `t()` calls in the same file share a source string but appear in different structural contexts, they materialize as two records with the same `source`:
 
 ```tsx
 // src/store/StorePanel.tsx
@@ -102,66 +133,97 @@ When two `t()` calls in the same file share a source string, the entry becomes a
 <Badge>{t('Open')}</Badge>
 ```
 
-```json
-{
-  "src/store/StorePanel.tsx": {
-    "Open": {
-      "button": "Öppna",
-      "Badge": "Öppet"
-    }
+```jsonc
+"src/store/StorePanel.tsx": [
+  {
+    "source": "Open",
+    "context": {
+      "kind": "elementChild",
+      "container": "button",
+      "enclosing": "StorePanel",
+      "ancestors": [],
+      "position": 1
+    },
+    "target": "Öppna"
+  },
+  {
+    "source": "Open",
+    "context": {
+      "kind": "elementChild",
+      "container": "Badge",
+      "enclosing": "StorePanel",
+      "ancestors": [],
+      "position": 1
+    },
+    "target": "Öppet"
   }
-}
+]
 ```
 
-**Element + property disambiguation:**
+Identity disambiguation is **structural and visible**. A *translator* reading the file sees two parallel records, knows they are different uses of the same source (`container` differs), and can translate each appropriately. No nested sub-keys, no positional suffixes, no hidden disambiguation — just data.
+
+### 2.4 Attribute Disambiguation
+
+Same source in different attribute roles disambiguates the same way — but via `kind: "elementAttribute"` with the attribute name in `slot`:
 
 ```tsx
 // src/forms/SearchForm.tsx
-<input
-  placeholder={t('Search')}
-  aria-label={t('Search')}
-/>
-<button aria-label={t('Search')}>
-  <SearchIcon />
-</button>
+<input placeholder={t('Search')} aria-label={t('Search')} />
+<button aria-label={t('Search')}><SearchIcon /></button>
 ```
 
-```json
-{
-  "src/forms/SearchForm.tsx": {
-    "Search": {
-      "input.placeholder": "Sök",
-      "input.aria-label": "Sök",
-      "button.aria-label": "Sök"
-    }
+```jsonc
+"src/forms/SearchForm.tsx": [
+  {
+    "source": "Search",
+    "context": { "kind": "elementAttribute", "container": "input", "slot": "placeholder", "enclosing": "SearchForm", "ancestors": [], "position": 1 },
+    "target": "Sök"
+  },
+  {
+    "source": "Search",
+    "context": { "kind": "elementAttribute", "container": "input", "slot": "ariaLabel", "enclosing": "SearchForm", "ancestors": [], "position": 1 },
+    "target": "Sök"
+  },
+  {
+    "source": "Search",
+    "context": { "kind": "elementAttribute", "container": "button", "slot": "ariaLabel", "enclosing": "SearchForm", "ancestors": [], "position": 1 },
+    "target": "Sök"
   }
-}
+]
 ```
 
-**Parent-component disambiguation:**
+Three distinct records, three identities, three potentially distinct translations. `aria-label` becomes `slot: "ariaLabel"` (camelCased — see LOCALE_FILE_FORMAT.md naming conventions).
+
+### 2.5 Parent-Component Disambiguation
+
+When the same `<button>{t('Continue')}</button>` appears in two different parent components in the same file, parent-component context separates them via `ancestors`:
 
 ```tsx
 // src/checkout/Checkout.tsx
-<CartReview>
-  <button>{t('Continue')}</button>
-</CartReview>
-<PaymentReview>
-  <button>{t('Continue')}</button>
-</PaymentReview>
+<CartReview><button>{t('Continue')}</button></CartReview>
+<PaymentReview><button>{t('Continue')}</button></PaymentReview>
 ```
 
-```json
-{
-  "src/checkout/Checkout.tsx": {
-    "Continue": {
-      "CartReview.button": "Fortsätt",
-      "PaymentReview.button": "Bekräfta"
-    }
+```jsonc
+"src/checkout/Checkout.tsx": [
+  {
+    "source": "Continue",
+    "context": { "kind": "elementChild", "container": "button", "enclosing": "Checkout", "ancestors": ["CartReview"], "position": 1 },
+    "target": "Fortsätt"
+  },
+  {
+    "source": "Continue",
+    "context": { "kind": "elementChild", "container": "button", "enclosing": "Checkout", "ancestors": ["PaymentReview"], "position": 1 },
+    "target": "Bekräfta"
   }
-}
+]
 ```
 
-**Positional fallback (rare true twins):**
+`ancestors` is always present for markup kinds (empty array when there are no relevant enclosing components). The disambiguation strategy is documented in §3.3 below.
+
+### 2.6 True Twins (Positional Disambiguation)
+
+When two `t()` calls have identical `source`, `kind`, `container`, `enclosing`, AND `ancestors`, only `position` separates them:
 
 ```tsx
 // src/dialogs/ConfirmDialog.tsx
@@ -171,89 +233,113 @@ When two `t()` calls in the same file share a source string, the entry becomes a
 </Dialog>
 ```
 
-```json
-{
-  "src/dialogs/ConfirmDialog.tsx": {
-    "OK": {
-      "#1": "OK",
-      "#2": "OK"
-    }
+```jsonc
+"src/dialogs/ConfirmDialog.tsx": [
+  {
+    "source": "OK",
+    "context": { "kind": "elementChild", "container": "button", "enclosing": "ConfirmDialog", "ancestors": [], "position": 1 },
+    "target": "OK"
+  },
+  {
+    "source": "OK",
+    "context": { "kind": "elementChild", "container": "button", "enclosing": "ConfirmDialog", "ancestors": [], "position": 2 },
+    "target": "OK"
   }
-}
+]
 ```
 
-### 2.4 Why Object Form Instead of Delimiter
+Position-based disambiguation is **the last resort** and triggers diagnostic **YPK009** (`Two t() calls have identical context — consider extracting a constant or distinguishing by element/attribute`). It exists for completeness, not as an encouraged pattern.
 
-A naive design might use a delimiter in the key: `"Open@button"`, `"Open::Badge"`. We use object form instead because:
+### 2.7 Adding a Homonym to an Existing Source
 
-- **Source strings can contain any character.** `"you@example.com"`, `"Use :: for namespace"`, `"7-Zip"` are all legitimate sources. A delimiter conflicts.
-- **Object form mirrors gettext semantics.** A source string with multiple contexts (msgctxt in PO files) maps naturally to a nested object.
-- **Tooling parses it cleanly.** All standard JSON tooling, all CAT tools that support JSON, all translation services that read structured data handle nested objects without escaping.
-- **The shape itself signals "this source has homonyms."** Reading the locale file, the presence of an object value flags semantic ambiguity that needed structural disambiguation.
+When a homonym is introduced for a source that previously had a single entry:
 
-### 2.5 Schema Migration: Bare → Object
-
-When a homonym is introduced for a previously-bare source:
-
-**Before:**
-```json
-{ "src/StorePanel.tsx": { "Open": "Öppna" } }
+**Before** (single record):
+```jsonc
+"src/StorePanel.tsx": [
+  {
+    "source": "Open",
+    "context": { "kind": "elementChild", "container": "button", "enclosing": "StorePanel", "ancestors": [], "position": 1 },
+    "target": "Öppna"
+  }
+]
 ```
 
 **Developer adds `<Badge>{t('Open')}</Badge>` to the same file.**
 
-**Migration during sync:**
-1. Detect collision in the new extraction
-2. Migrate the existing entry from string to object using the existing call's AST role as the sub-key
-3. Add the new occurrence with its own sub-key
-
-**After:**
-```json
-{
-  "src/StorePanel.tsx": {
-    "Open": {
-      "button": "Öppna",
-      "Badge": ""
-    }
+**After extraction**:
+```jsonc
+"src/StorePanel.tsx": [
+  {
+    "source": "Open",
+    "context": { "kind": "elementChild", "container": "button", "enclosing": "StorePanel", "ancestors": [], "position": 1 },
+    "target": "Öppna"
+  },
+  {
+    "source": "Open",
+    "context": { "kind": "elementChild", "container": "Badge", "enclosing": "StorePanel", "ancestors": [], "position": 1 },
+    "target": ""
   }
-}
+]
 ```
 
-The previously-implicit role is now explicit. The new occurrence becomes an empty stub for the translator (or AI-as-arbiter) to fill.
+The existing entry is untouched; a new record is appended for the new occurrence. No migration step, no representation change — adding a homonym is just appending a record.
 
-### 2.6 Schema Migration: Object → Bare
+### 2.8 Removing a Homonym
 
-When a homonym is resolved by removing one occurrence:
+When a homonym is removed:
 
 **Before:**
-```json
-{
-  "src/StorePanel.tsx": {
-    "Open": {
-      "button": "Öppna",
-      "Badge": "Öppet"
-    }
+```jsonc
+"src/StorePanel.tsx": [
+  {
+    "source": "Open",
+    "context": { "kind": "elementChild", "container": "button", "enclosing": "StorePanel", "ancestors": [], "position": 1 },
+    "target": "Öppna"
+  },
+  {
+    "source": "Open",
+    "context": { "kind": "elementChild", "container": "Badge", "enclosing": "StorePanel", "ancestors": [], "position": 1 },
+    "target": "Öppet"
   }
-}
+]
 ```
 
 **Developer removes `<Badge>{t('Open')}</Badge>`.**
 
-**Migration during sync:**
-1. Detect that only one occurrence remains
-2. Migrate back to bare-string form using the remaining occurrence's translation
-3. The removed occurrence's translation is retained as orphan (separate handling)
-
-**After:**
-```json
-{
-  "src/StorePanel.tsx": {
-    "Open": "Öppna"
+**After extraction:**
+```jsonc
+"src/StorePanel.tsx": [
+  {
+    "source": "Open",
+    "context": { "kind": "elementChild", "container": "button", "enclosing": "StorePanel", "ancestors": [], "position": 1 },
+    "target": "Öppna"
   }
-}
+]
 ```
 
-Locale files stay minimal at all times — disambiguating only when structure forces it, reverting when structure no longer requires it.
+The removed record is moved to orphan retention (see §8). It does not vanish silently — it can be inspected via `yapyak status` and explicitly removed via `yapyak clean`.
+
+### 2.9 Why Records-Array, Not Map
+
+An obvious alternative is a map keyed by `source`, with homonyms represented as nested sub-keys. Earlier yapyak drafts used such an "adaptive object form". v1.1 replaces it with records-array for these reasons:
+
+- **Uniform shape.** Every entry is a record. Consumers do not branch on "is this value a string or an object?" — the structure is the same for every entry, regardless of homonym status.
+- **Self-contained per entry.** Each record carries its own `context`, `notes`, `status`, and `value`. Locale files become readable by AI agents without external context construction.
+- **Same-source homonyms are first-class.** Parallel records are the natural shape; sub-keys were a workaround.
+- **Author-owned data has a stable location.** With the four-zone model (`source` / `context` / `notes` / `status` / `value`), authored guidance lives in `notes` and is never overwritten by the compiler.
+
+The cost is larger files (~3× the old form for typical projects) and source-as-key-lookup becoming array iteration. These costs are accepted and documented in LOCALE_FILE_FORMAT.md §Trade-Offs.
+
+### 2.10 What Identity Is Not
+
+To prevent backsliding into anti-patterns documented in §20 (Rejected Alternatives):
+
+- **Identity is NOT a stable yapyak-generated ID.** No ULID, no hash, no opaque handle. The triple `(file, source, context)` is the identity.
+- **Identity is NOT a manually-authored key.** Developers do not invent `'profile.save_button'` paths.
+- **Identity is NOT preserved across source-text edits without yapyak's refactor detection.** When `source` changes, identity changes — and yapyak detects renames structurally (§7), not via a hidden ID.
+
+These rejections are permanent. They are not future work.
 
 ---
 
@@ -303,64 +389,96 @@ function detectCollisions(calls: ExtractedCall[]): SourceGroups {
 
 A "collision" is any source string with more than one occurrence in the same file.
 
-### 3.3 Minimal Disambiguator Selection
+### 3.3 Disambiguation Granularity
 
-For each collision, find the shortest unique disambiguator. Tiers are tried in order; the first tier that produces unique values for all occurrences wins:
+When a source has multiple occurrences in the same file (a collision), yapyak must ensure each occurrence's emitted `context` is unique within the file. The context fields are added in tiers; yapyak adds the smallest set of fields that makes the records unique:
 
 ```ts
-function findMinimalDisambiguator(occurrences: ExtractedCall[]): string[] {
-  const tiers: Array<(c: ExtractedCall) => string> = [
-    c => c.role.element,
-    c => `${c.role.element}.${c.role.property}`,
-    c => c.role.enclosingComponent
-      ? `${c.role.enclosingComponent}.${c.role.element}`
-      : c.role.element,
-    c => c.role.enclosingComponent
-      ? `${c.role.enclosingComponent}.${c.role.element}.${c.role.property}`
-      : `${c.role.element}.${c.role.property}`,
+function computeContextGranularity(occurrences: ExtractedCall[]): ContextRole[] {
+  const tiers: Array<(c: ExtractedCall) => ContextRole> = [
+    // Tier 1: element + role
+    c => ({ element: c.role.element, role: c.role.property }),
+    // Tier 2: + immediate component
+    c => ({ element: c.role.element, role: c.role.property, component: c.role.enclosingComponent }),
+    // Tier 3: + ancestor chain (one level)
+    c => ({
+      element: c.role.element,
+      role: c.role.property,
+      component: c.role.enclosingComponent,
+      ancestors: c.role.ancestors?.slice(-1) ?? [],
+    }),
+    // Tier 4: + full ancestor chain
+    c => ({
+      element: c.role.element,
+      role: c.role.property,
+      component: c.role.enclosingComponent,
+      ancestors: c.role.ancestors ?? [],
+    }),
   ];
 
   for (const tier of tiers) {
-    const keys = occurrences.map(tier);
-    if (new Set(keys).size === occurrences.length) {
-      return keys;
+    const candidates = occurrences.map(tier);
+    if (new Set(candidates.map(serialize)).size === occurrences.length) {
+      return candidates;
     }
   }
 
-  // Positional fallback for true twins
-  return occurrences.map((_, i) => `#${i + 1}`);
+  // Positional fallback: identical AST contexts → add position 1, 2, ...
+  return occurrences.map((c, i) => ({
+    element: c.role.element,
+    role: c.role.property,
+    component: c.role.enclosingComponent,
+    ancestors: c.role.ancestors ?? [],
+    position: i + 1,
+  }));
 }
 ```
 
-This greedy minimization produces the shortest meaningful disambiguator. The positional fallback is reached only when no structural signal distinguishes occurrences — a genuinely rare case in real codebases.
+The positional fallback is reached only when no structural signal distinguishes occurrences. It triggers diagnostic YPK009 (see §2.6).
 
-### 3.4 Object-Form Emission
+### 3.4 Record Emission
 
-The output of extraction-with-disambiguation is a per-file map ready for locale file emission:
+The output of extraction is a list of records ready to write into the locale file's `files[fileId]` array:
 
 ```ts
-function emitFileEntries(calls: ExtractedCall[]): FileEntries {
+function emitFileRecords(calls: ExtractedCall[]): LocaleRecord[] {
   const groups = detectCollisions(calls);
-  const entries: FileEntries = {};
+  const records: LocaleRecord[] = [];
 
   for (const [source, occurrences] of groups) {
     if (occurrences.length === 1) {
-      entries[source] = ''; // bare entry, empty stub
+      // Single occurrence: emit with minimal context (no ancestors/position)
+      records.push({
+        source,
+        context: {
+          element: occurrences[0].role.element,
+          role: occurrences[0].role.property,
+          component: occurrences[0].role.enclosingComponent,
+          kind: occurrences[0].role.kind,
+        },
+        status: 'missing',
+        value: '',
+      });
       continue;
     }
-    const disambiguators = findMinimalDisambiguator(occurrences);
-    const obj: Record<string, string> = {};
+
+    // Multiple occurrences: compute disambiguating context per record
+    const contexts = computeContextGranularity(occurrences);
     for (let i = 0; i < occurrences.length; i++) {
-      obj[disambiguators[i]] = '';
+      records.push({
+        source,
+        context: { ...contexts[i], kind: occurrences[i].role.kind },
+        status: 'missing',
+        value: '',
+      });
     }
-    entries[source] = obj;
   }
 
-  return entries;
+  return records;
 }
 ```
 
-Empty stubs are then filled via translation memory lookup, refactor detection, or AI invocation (next sections).
+Newly emitted records have `status: "missing"` and `value: ""`. They are then filled via translation memory lookup (§4), refactor detection (§5), or AI arbitration (§6).
 
 ---
 
@@ -368,93 +486,104 @@ Empty stubs are then filled via translation memory lookup, refactor detection, o
 
 ### 4.1 Memory Construction
 
-At extraction time, yapyak reads all existing locale files and builds an in-memory map:
+At extraction time, yapyak reads all existing locale files and builds an in-memory map indexed by source string. Memory is populated only from records with non-empty `value` and `status: "translated"` (the established translations of the project):
 
 ```ts
 interface MemoryEntry {
-  translation: string;
-  context: ContextRole | null;  // null for bare-key entries
-  fileId: FileId;
+  value: string;
+  context: ContextRole;
+  fileId: string;
+  notes?: NotesObject;
 }
 
 type ProjectMemory = Map<Locale, Map<SourceString, MemoryEntry[]>>;
 
-function buildMemory(localeFiles: LocaleFile[]): ProjectMemory {
+function buildMemory(localeFiles: LocaleFileV1[]): ProjectMemory {
   const memory: ProjectMemory = new Map();
 
-  for (const { locale, data } of localeFiles) {
+  for (const file of localeFiles) {
     const sourceMap = new Map<SourceString, MemoryEntry[]>();
 
-    for (const [fileId, fileEntries] of Object.entries(data)) {
-      for (const [source, value] of Object.entries(fileEntries)) {
-        if (typeof value === 'string') {
-          if (value === '') continue;
-          push(sourceMap, source, {
-            translation: value,
-            context: null,
-            fileId,
-          });
-        } else {
-          for (const [contextStr, translation] of Object.entries(value)) {
-            if (translation === '') continue;
-            push(sourceMap, source, {
-              translation,
-              context: parseContextKey(contextStr),
-              fileId,
-            });
-          }
+    for (const [fileId, records] of Object.entries(file.files)) {
+      for (const record of records) {
+        // Skip entries that are not yet established translations
+        if (record.value === '' || record.status === 'missing' || record.status === 'needs-arbitration') {
+          continue;
         }
+
+        const list = sourceMap.get(record.source) ?? [];
+        list.push({
+          value: record.value,
+          context: record.context,
+          fileId,
+          notes: record.notes,
+        });
+        sourceMap.set(record.source, list);
       }
     }
 
-    memory.set(locale, sourceMap);
+    memory.set(file.locale, sourceMap);
   }
 
   return memory;
 }
 ```
 
-The memory is built once per save cycle and lives in RAM. No persistent index files. The locale files themselves are the source of truth.
+The memory is built once per save cycle and lives in RAM. No persistent index files. The locale files themselves are the source of truth. Orphans (`status: "orphaned"` or removed source) are excluded — they appear elsewhere in the orphan retention pass (§8).
 
 ### 4.2 Lookup Classifications
 
-When yapyak needs to fill a new locale entry, lookup classifies the source/role pair into one of five categories:
+When yapyak needs to fill a missing record, lookup classifies the (source, context) pair into one of five outcomes:
 
 ```ts
 type LookupResult =
-  | { kind: 'exact-match'; translation: string }       // same source AND same context exists
-  | { kind: 'role-only-match'; translation: string }   // same source, same role (different file)
-  | { kind: 'unique-candidate'; candidate: string }    // same source, only one translation across project
-  | { kind: 'multiple-candidates'; candidates: Array<{ translation: string; context: ContextRole | null }> }
-  | { kind: 'new' };                                    // source not seen before
+  | { kind: 'exact-match'; value: string; fromFileId: string }
+  | { kind: 'context-match'; value: string; fromFileId: string }
+  | { kind: 'unique-candidate'; candidate: MemoryEntry }
+  | { kind: 'multiple-candidates'; candidates: MemoryEntry[] }
+  | { kind: 'new' };
 
-function lookup(source: string, role: ContextRole, locale: Locale, memory: ProjectMemory): LookupResult {
+function lookup(source: string, context: ContextRole, locale: Locale, memory: ProjectMemory): LookupResult {
   const entries = memory.get(locale)?.get(source) ?? [];
 
   if (entries.length === 0) return { kind: 'new' };
 
-  // Exact context match (same role, regardless of file)
-  const exact = entries.find(e => e.context && roleEquals(e.context, role));
-  if (exact) return { kind: 'exact-match', translation: exact.translation };
-
-  // Bare entry (no context) with matching translation
-  if (entries.length === 1 && entries[0].context === null) {
-    return { kind: 'role-only-match', translation: entries[0].translation };
+  // Exact-match: same source + identical context (element + role + component + ancestors)
+  const exact = entries.find(e => contextEquals(e.context, context));
+  if (exact) {
+    return { kind: 'exact-match', value: exact.value, fromFileId: exact.fileId };
   }
 
-  // Single unique translation across all entries
-  const unique = new Set(entries.map(e => e.translation));
-  if (unique.size === 1) {
-    return { kind: 'unique-candidate', candidate: [...unique][0] };
+  // Context-match: same source + same element + same role (looser than exact, but structurally close)
+  const contextMatch = entries.find(
+    e => e.context.element === context.element && e.context.role === context.role
+  );
+  if (contextMatch) {
+    return { kind: 'context-match', value: contextMatch.value, fromFileId: contextMatch.fileId };
   }
 
-  // Multiple translations exist (known homonym across project)
-  return {
-    kind: 'multiple-candidates',
-    candidates: entries.map(e => ({ translation: e.translation, context: e.context })),
-  };
+  // Unique candidate: only one translation exists across all matches
+  const uniqueValues = new Set(entries.map(e => e.value));
+  if (uniqueValues.size === 1) {
+    return { kind: 'unique-candidate', candidate: entries[0] };
+  }
+
+  // Multiple candidates: known homonyms across the project
+  return { kind: 'multiple-candidates', candidates: entries };
 }
 ```
+
+**Outcome handling.** The five outcomes drive different behavior when filling the missing record:
+
+| Outcome | Action |
+|---|---|
+| `new` | Leave `status: "missing"` and `value: ""`. The *translator* will translate fresh. |
+| `exact-match` | Set `value` directly. `status: "translated"`. Provenance: `inherited` (no AI). |
+| `context-match` | Set `value` directly. `status: "translated"`. Provenance: `inherited`. |
+| `unique-candidate` | Inject `candidates` field, set `status: "needs-arbitration"`. The *translator* decides. |
+| `multiple-candidates` | Inject all `candidates`, set `status: "needs-arbitration"`. The *translator* decides. |
+
+Direct-carry outcomes (`exact-match`, `context-match`) avoid AI calls entirely. Arbitration outcomes require one *translator* call but provide full candidate information so the AI does not have to guess.
 
 ### 4.3 Memory-as-Cache
 
@@ -573,28 +702,49 @@ function detectRefactors(diff: DiffWindow): Refactor[] {
 
 ### 5.4 Refactor Resolution
 
-Each refactor produces a translation action:
+Each refactor produces a translation-carry action that writes a `value` (and `status: "translated"`) into the new record:
 
 ```ts
-function applyRefactors(refactors: Refactor[], memory: ProjectMemory): Map<EntryKey, string> {
-  const actions = new Map<EntryKey, string>();
+interface CarryAction {
+  fileId: string;
+  source: string;
+  context: ContextRole;
+  value: string;
+  provenance: 'moved' | 'split' | 'merged';
+}
+
+function applyRefactors(refactors: Refactor[], memory: ProjectMemory): CarryAction[] {
+  const actions: CarryAction[] = [];
 
   for (const r of refactors) {
     if (r.kind === 'move') {
       const existing = lookupExact(r.source, r.role, memory);
-      if (existing) actions.set({ fileId: r.to, key: r.source, context: r.role }, existing);
+      if (existing) {
+        actions.push({
+          fileId: r.to, source: r.source, context: r.role,
+          value: existing.value, provenance: 'moved',
+        });
+      }
     } else if (r.kind === 'split') {
       // Same translation goes to each new location with its respective role
       const existing = lookupAny(r.source, memory);
       if (existing) {
         for (let i = 0; i < r.to.length; i++) {
-          actions.set({ fileId: r.to[i], key: r.source, context: r.roles[i] }, existing);
+          actions.push({
+            fileId: r.to[i], source: r.source, context: r.roles[i],
+            value: existing.value, provenance: 'split',
+          });
         }
       }
     } else if (r.kind === 'merge') {
       // Pick translation from any of the source files (typically all should match)
       const existing = lookupFromAny(r.source, r.from, memory);
-      if (existing) actions.set({ fileId: r.to, key: r.source }, existing);
+      if (existing) {
+        actions.push({
+          fileId: r.to, source: r.source, context: r.role,
+          value: existing.value, provenance: 'merged',
+        });
+      }
     } else if (r.kind === 'rename-at-position') {
       // Position-based rename (see Section 7)
       handleRenameAtPosition(r, actions, memory);
@@ -604,6 +754,8 @@ function applyRefactors(refactors: Refactor[], memory: ProjectMemory): Map<Entry
   return actions;
 }
 ```
+
+These actions are applied to the v1.1 records-array: yapyak finds the new record (by `fileId`, `source`, `context`) and sets its `value` directly, bypassing the *translator*. No AI call. No `candidates`. Provenance is recorded in `.yapyak/provenance.json`.
 
 ### 5.5 Confidence Levels
 
@@ -624,65 +776,111 @@ Currently the model uses high-confidence signals only. Medium-confidence detecti
 
 ## 6. AI-as-Arbiter
 
-### 6.1 When AI Is Invoked
+### 6.1 The Format Is the Protocol
 
-AI translation is invoked **only** in these cases:
+Earlier drafts of this section described AI-as-arbiter as a yapyak-constructed API call with candidate-passing wrapped in provider-specific prompt engineering. **v1.1 inverts this.** Arbitration is not a yapyak prompt-construction concern; it is a **shape of the locale file**.
 
-1. **New source string** with no project memory (lookup returns `'new'`)
-2. **Unique-candidate** lookup where the new context's role differs from the existing entry's role (lookup returns `'unique-candidate'` and roles diverge)
-3. **Multiple-candidates** lookup where the project has established homonyms and the new context could match any
+When the compiler determines that arbitration is needed, it writes the necessary information into the locale file as data: the `candidates` field, the new `context`, and `status: "needs-arbitration"`. Any *translator* — including external AIs that yapyak does not control — sees the same JSON, performs the same arbitration, and writes the result back.
 
-AI is **not** invoked when:
-- Exact match (same source + same role) exists in project — direct carry
-- Role-only match exists — direct carry
-- Refactor detection has identified a move — direct carry
-- Position-based rename detection has identified a source-edit — direct carry (or re-translate based on `preserveTranslationsOnRename`)
+The arbiter is not in yapyak. The arbiter is whatever AI reads the file.
 
-### 6.2 Candidate-Passing Prompt Extension
+This change is consistent with the central insight of this specification: **the code is the identity, and the locale file is the work item**. Translation intelligence belongs in the AI that reads the file, not in the tool that produces it.
 
-The translator prompt is extended with candidate-handling instructions when candidates exist:
+### 6.2 When Arbitration Is Triggered
 
-```ts
-interface TranslateRequest {
-  source: string;
-  context?: ContextRole;
-  candidates?: Array<{ translation: string; context?: ContextRole }>;
-  instruction?: 'use-or-reject' | 'pick-or-create';
+The compiler emits `candidates` and `status: "needs-arbitration"` only in these cases:
+
+1. **Unique-candidate** lookup where the new context's role differs from the existing entry's role (lookup returns `'unique-candidate'` and roles diverge)
+2. **Multiple-candidates** lookup where the project has established homonyms and the new context could match any
+
+For these cases the compiler does not pre-decide. It exposes the situation to the *translator* via the JSON file.
+
+Arbitration is **not** triggered when:
+- Exact match (same source + same role) exists in project — direct carry, `status: "translated"`
+- Role-only match exists — direct carry, `status: "translated"`
+- Refactor detection has identified a move — direct carry, `status: "translated"`
+- Position-based rename detection has identified a source-edit — direct carry or fresh translation per `preserveTranslationsOnRename`
+- No prior translations of the source exist — `status: "missing"`, no candidates field (the *translator* will translate fresh)
+
+### 6.3 Candidate Injection
+
+When arbitration is triggered, the compiler writes the entry as:
+
+```jsonc
+{
+  "source": "Open",
+  "context": {
+    "kind": "elementChild",
+    "container": "Badge",
+    "enclosing": "HoursBadge",
+    "ancestors": [],
+    "position": 1
+  },
+  "candidates": [
+    {
+      "target": "Öppna",
+      "fromContext": {
+        "kind": "elementChild",
+        "container": "button",
+        "enclosing": "StoreButton",
+        "ancestors": [],
+        "position": 1
+      },
+      "fromFile": "src/store/StoreButton.tsx"
+    }
+  ],
+  "target": ""
 }
 ```
 
-System prompt addition:
+The candidate carries:
+- The prior `target` (the translation under consideration)
+- The `fromContext` that produced it (so the AI can compare structural meaning)
+- The `fromFile` (for traceability)
 
-```
-Preserve all {placeholder} tokens and ICU patterns exactly as written.
+The derived state is `needs-arbitration` (target empty + candidates present). The translator system prompt provides the default instruction; per-candidate prose is no longer stored in the file. The `candidates` field is documented in LOCALE_FILE_FORMAT.md under the entry record format. yapyak's compiler is the only writer of `candidates`. *Translators* read it and remove it after deciding.
 
-When a candidate translation is provided, evaluate whether its meaning matches
-the new call site's context. If it does, return the candidate unchanged.
-If the context indicates a different meaning, translate fresh based on the
-new context.
+### 6.4 What the *Translator* Does
 
-When multiple candidate translations are provided (the source has known homonyms
-in this project), select the candidate whose existing context best matches the
-new call site's context. If none match, translate fresh.
-```
+A v1.1-conformant *translator* receives the locale file (or a subset of its entries) and processes each entry with `status: "needs-arbitration"` as follows:
 
-This pushes the semantic decision to the model with all relevant information. The model — which already has the context, the source, and the existing translations — is in the best position to decide.
+1. Read `source`, `context`, and each `candidates[].value` + `candidates[].fromContext`.
+2. Decide whether any candidate's meaning matches the new context.
+3. If a candidate matches → write `value: candidate.value`, `status: "translated"`.
+4. If no candidate matches → translate fresh based on `source` + `context` (with project `instructions` and `glossary` applied), write the new `value`, `status: "translated"`.
+5. **Remove** the `candidates` field from the entry.
 
-### 6.3 Decision Categories
+The *translator* does not need to understand yapyak's identity model, project memory algorithm, or refactor detection. It just reads JSON, makes one of two decisions per entry, and writes JSON back. The interface is documented in `TRANSLATOR_INTERFACE.md`.
 
-The model's response is categorized as:
+### 6.5 Decision Categories Are Derived, Not Authored
 
-- **Confirmed:** model returned the candidate unchanged → existing translation reused
-- **Rejected:** model returned a new translation → fresh translation
-- **Selected:** (multiple candidates) model picked one of the existing → that one used
+Earlier drafts categorized the *translator*'s response as `confirmed`, `rejected`, or `selected`. v1.1 derives these from the resulting file:
 
-All three are logged in provenance.
+| Outcome | How yapyak detects it |
+|---|---|
+| **Confirmed** | `value` equals one of the candidate values from before the call |
+| **Selected** (multi-candidate) | Same as confirmed; the chosen candidate identifies which |
+| **Rejected** | `value` is something other than any candidate value |
 
-### 6.4 Why This Matters
+The categorization is computed by yapyak after the *translator* completes, recorded in `.yapyak/provenance.json` (gitignored), and surfaced in CLI output. It is not part of the locale file format — the locale file shows only the resulting `value` and `status`. Provenance is ephemeral; the locale file is durable.
 
-Without AI-as-arbiter, a naive "unique source = carry across files" rule has a silent failure mode: the **first new semantic use** of an existing source string would inherit the wrong translation. For short UI text (`Open`, `Close`, `Save`, `Remove`, `Done`) this is exactly the case where homonyms emerge.
+### 6.6 Why This Matters
 
-With AI-as-arbiter, the system makes a deliberate semantic decision instead of a structural assumption. The cost is one AI call per new call site that shares a source with existing entries (a small fraction of total saves). The benefit is correctness.
+Without arbitration, a naive "unique source = carry across files" rule has a silent failure mode: the **first new semantic use** of an existing source string would inherit the wrong translation. For short UI text (`Open`, `Close`, `Save`, `Remove`, `Done`) this is exactly the case where homonyms emerge.
+
+With format-as-protocol arbitration, the system makes a deliberate semantic decision through the *translator* of the user's choice — without yapyak having to know which provider, which prompt format, or which API. The cost is one AI call per new call site that shares a source with existing entries (a small fraction of total saves). The benefit is correctness, and the architectural cost is borne by the **format**, not the **tool**.
+
+### 6.7 Why Move Arbitration Into the Format
+
+Three concrete consequences flow from this design:
+
+1. **Provider-agnostic.** Anthropic, OpenAI, Google, Mistral, local LLMs, and editor agents like Claude Code / Cursor all see the same `candidates` structure. yapyak does not ship provider-specific arbitration code.
+
+2. **Inspectable.** Before the *translator* runs, the locale file shows exactly which arbitration decisions are pending. A developer can inspect them, override them by hand, or skip arbitration entirely for a particular entry.
+
+3. **Replayable.** Arbitration is no longer a transient event inside an API call. It is a state in the locale file. If a *translator* fails or returns garbage, yapyak can re-run arbitration without losing the input.
+
+These three properties — provider-agnostic, inspectable, replayable — are why arbitration belongs in the format and not in a prompt builder.
 
 ---
 
@@ -914,7 +1112,7 @@ Provenance is **not** stored in locale files (which stay clean and translator-fr
 
 ## 10. Plain TypeScript Support
 
-The model is not JSX-specific. Plain TypeScript code is supported via the same primitives.
+The model is not JSX-specific. Plain TypeScript code is supported via the same primitives — same records-array shape, same `context` zone, same identity rules.
 
 ### 10.1 Object Literals
 
@@ -927,26 +1125,29 @@ export const statusLabels = {
 };
 ```
 
-Each `t()` call's role is derived from the surrounding object property:
+Each `t()` call gets `kind: "objectProperty"`. `container` is the object's variable binding name (`statusLabels`); `slot` is the property key.
 
-```ts
-// Extracted roles:
-// { element: 'statusLabels', property: 'open',      ... }
-// { element: 'statusLabels', property: 'closed',    ... }
-// { element: 'statusLabels', property: 'cancelled', ... }
-```
-
-No collisions (different sources). Locale file:
-
-```json
-{
-  "src/status/labels.ts": {
-    "Open": "Öppet",
-    "Closed": "Stängt",
-    "Cancelled": "Avbrutet"
+```jsonc
+"src/status/labels.ts": [
+  {
+    "source": "Open",
+    "context": { "kind": "objectProperty", "container": "statusLabels", "slot": "open", "enclosing": "", "position": 1 },
+    "target": "Öppet"
+  },
+  {
+    "source": "Closed",
+    "context": { "kind": "objectProperty", "container": "statusLabels", "slot": "closed", "enclosing": "", "position": 1 },
+    "target": "Stängt"
+  },
+  {
+    "source": "Cancelled",
+    "context": { "kind": "objectProperty", "container": "statusLabels", "slot": "cancelled", "enclosing": "", "position": 1 },
+    "target": "Avbrutet"
   }
-}
+]
 ```
+
+No collisions (different sources). Each entry is a record with its own context.
 
 ### 10.2 Multi-Object Collision Handling
 
@@ -960,20 +1161,26 @@ export const statusLabels = {
 };
 ```
 
-Collision detected. AST disambiguation uses parent object name:
+Same source `"Open"` in two distinct enclosing objects. Disambiguation comes via `context.container`:
 
-```json
-{
-  "src/labels/all.ts": {
-    "Open": {
-      "buttonLabels": "Öppna",
-      "statusLabels": "Öppet"
-    }
+```jsonc
+"src/labels/all.ts": [
+  {
+    "source": "Open",
+    "context": { "kind": "objectProperty", "container": "buttonLabels", "slot": "open", "enclosing": "", "position": 1 },
+    "target": "Öppna"
+  },
+  {
+    "source": "Open",
+    "context": { "kind": "objectProperty", "container": "statusLabels", "slot": "open", "enclosing": "", "position": 1 },
+    "target": "Öppet"
   }
-}
+]
 ```
 
-### 10.3 Function Bodies
+Two parallel records, distinguished by `context.container`. The *translator* sees both contexts in the same file and can translate them appropriately.
+
+### 10.3 Function Bodies (Throw Statements)
 
 ```ts
 // src/payment/submit.ts
@@ -988,18 +1195,24 @@ export async function submitPayment(payment) {
 }
 ```
 
-Role derivation falls back to enclosing function name:
+`context.kind` is `"throw"`. `container` is the constructor name (`Error`); `enclosing` is the function containing the throw:
 
-```json
-{
-  "src/payment/submit.ts": {
-    "Card information is required": "Kortinformation krävs",
-    "Payment failed": "Betalningen misslyckades"
+```jsonc
+"src/payment/submit.ts": [
+  {
+    "source": "Card information is required",
+    "context": { "kind": "throw", "container": "Error", "enclosing": "submitPayment", "position": 1 },
+    "target": "Kortinformation krävs"
+  },
+  {
+    "source": "Payment failed",
+    "context": { "kind": "throw", "container": "Error", "enclosing": "submitPayment", "position": 1 },
+    "target": "Betalningen misslyckades"
   }
-}
+]
 ```
 
-Different sources, no collisions, bare keys.
+Different sources, no collisions, two parallel records with the same `container` (the error class) and `enclosing` (the function).
 
 ### 10.4 Module-Level Constants
 
@@ -1009,18 +1222,24 @@ export const SAVE_SUCCESS = t('Changes saved');
 export const SAVE_FAILURE = t('Could not save changes');
 ```
 
-Role: variable name.
+`context.kind` is `"variable"`. `container` is the variable's own binding name:
 
-```json
-{
-  "src/copy/messages.ts": {
-    "Changes saved": "Ändringar sparade",
-    "Could not save changes": "Kunde inte spara ändringar"
+```jsonc
+"src/copy/messages.ts": [
+  {
+    "source": "Changes saved",
+    "context": { "kind": "variable", "container": "SAVE_SUCCESS", "enclosing": "", "position": 1 },
+    "target": "Ändringar sparade"
+  },
+  {
+    "source": "Could not save changes",
+    "context": { "kind": "variable", "container": "SAVE_FAILURE", "enclosing": "", "position": 1 },
+    "target": "Kunde inte spara ändringar"
   }
-}
+]
 ```
 
-### 10.5 Validation Messages (Edge Case)
+### 10.5 Validation Messages (Same Source, Different Function)
 
 ```ts
 export function validateEmail(email: string) {
@@ -1032,22 +1251,26 @@ export function validateName(name: string) {
 }
 ```
 
-Both calls have source `"Required"`, both at the function-body level, in different functions. Role derivation can use the enclosing function name:
+Both calls have source `"Required"`, both at function-body level, in different functions. Disambiguation comes via `context.container` (the function whose return this is):
 
-```json
-{
-  "src/validation/all.ts": {
-    "Required": {
-      "validateEmail": "E-postadress krävs",
-      "validateName": "Namn krävs"
-    }
+```jsonc
+"src/validation/all.ts": [
+  {
+    "source": "Required",
+    "context": { "kind": "return", "container": "validateEmail", "enclosing": "", "position": 1 },
+    "target": "E-postadress krävs"
+  },
+  {
+    "source": "Required",
+    "context": { "kind": "return", "container": "validateName", "enclosing": "", "position": 1 },
+    "target": "Namn krävs"
   }
-}
+]
 ```
 
-The function name becomes the disambiguator. Two different validation contexts get two different translations.
+Two parallel records, distinguished by `functionName`. The *translator* reads both records and emits target-locale-appropriate translations for each context.
 
-This is the case where the semantic-selector model claimed superiority. The adaptive model handles it via function-name disambiguation. The translation in Swedish naturally differs because the AI sees the enclosing function context as part of the role.
+This is the case where the semantic-selector model claimed superiority. The adaptive model handles it via function-name disambiguation as compiler-owned `context` — without manual annotation, without selectors, and without a manifest.
 
 ---
 
@@ -1248,21 +1471,21 @@ The individual mechanisms in this model are not all new. Their combination, appl
 
 These are the elements we believe to be uncommon or novel:
 
-1. **Adaptive emission of disambiguation context.** Every other i18n tool we know of either always includes context (gettext with msgctxt, every entry has it or doesn't) or never includes context (Lingui macros, react-intl auto-IDs). The adaptive approach — bare keys when source is unique, object form when it isn't, with automatic migration in both directions — is unusual.
+1. **AST-derived context per entry, materialized as data.** Most tools that use context require developers to write it manually (gettext: `pgettext("button", "Open")`) or omit context entirely (Lingui macros, react-intl auto-IDs). Yapyak derives context from the AST automatically and stores it as structured data alongside the source — visible to humans, AIs, and tools without parsing source code.
 
-2. **AST-derived context for disambiguation.** Most tools that use context require developers to write it manually (gettext: `pgettext("button", "Open")`). Auto-derivation from AST role is uncommon.
+2. **Records-array storage with parallel homonyms.** Same-source homonyms are represented as parallel records with the same `source` and different `context` — first-class entries, not nested sub-keys behind a single source. This makes the locale file uniform: every entry has the same shape regardless of whether homonyms exist.
 
-3. **Locale files as queryable translation memory.** No separate index file, no external service. The same JSON that translators edit is what powers cross-file lookups. This is structurally simple but rarely done.
+3. **Locale files as queryable translation memory.** No separate index file, no external service. The same JSON that *translators* edit is what powers cross-file lookups. This is structurally simple but rarely done.
 
-4. **AI-as-arbiter with candidate-passing.** The translator prompt extension that includes existing translations as evaluable candidates, with explicit instructions to confirm-or-reject based on new context, is a novel use of AI in translation workflows.
+4. **Format-as-protocol AI arbitration.** Candidate translations are injected into the locale file itself as a `candidates` field, with `status: "needs-arbitration"`. Any AI — Anthropic, OpenAI, Gemini, local LLMs, coding agents like Claude Code or Cursor — reads the same JSON and performs arbitration without yapyak shipping provider-specific prompt code. The format carries the intelligence.
 
 5. **Refactor detection across file boundaries with orphan retention.** Detecting cross-file moves at save time, and retaining orphans as queryable memory so non-atomic moves still work, is a combination we have not seen elsewhere.
 
 ### 14.3 The Claim
 
-We do not claim "first of its kind" in an absolute sense — proving that would require omniscience about all proprietary in-house systems and obscure academic work. We claim: the combination of (1) source-as-key with adaptive AST disambiguation, (2) locale-files-as-memory, (3) candidate-passing AI arbitration, (4) cross-file refactor detection, and (5) orphan retention as a single integrated open-source i18n compiler architecture is, to our knowledge, unprecedented.
+We do not claim "first of its kind" in an absolute sense — proving that would require omniscience about all proprietary in-house systems and obscure academic work. We claim: the combination of (1) source-as-key with AST-derived context per entry, (2) locale-files-as-memory, (3) format-as-protocol arbitration via inlined candidates, (4) cross-file refactor detection, and (5) orphan retention as a single integrated open-source i18n compiler architecture is, to our knowledge, unprecedented.
 
-Even if some elements have been explored in isolation elsewhere, the integrated whole is what creates the developer experience: write `t('Save')`, get refactor-stable translations, no manual keys, no hosted service, predictable AI usage, and locale files that translators can read directly.
+Even if some elements have been explored in isolation elsewhere, the integrated whole is what creates the developer experience: write `t('Save')` (or `t('Save').notes({...})` for occasional annotation), get refactor-stable translations, no manual keys, no hosted service, predictable AI usage, and locale files that *translators* and AI agents can read directly without provider-specific tooling.
 
 ### 14.4 Comparison to Existing Tools
 
@@ -1274,13 +1497,13 @@ Even if some elements have been explored in isolation elsewhere, the integrated 
 | Same-file homonym handling | 🟡 via context | 🟡 via context | 🟡 via context | ❌ requires IDs | ✅ automatic |
 | Cross-file translation memory | ❌ | ❌ | ❌ | ❌ | ✅ |
 | Refactor detection | ❌ | ❌ | ❌ | ❌ | ✅ |
-| AI-as-arbiter with candidate-passing | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Format-as-protocol AI arbitration | ❌ | ❌ | ❌ | ❌ | ✅ |
 | Orphan retention | ❌ | ❌ | ❌ | ❌ | ✅ |
 | Provenance tracking | ❌ | ❌ | ❌ | ❌ | ✅ |
 | No external service required | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Multi-framework | 🟡 | 🟡 React-focused | 🟡 React-focused | ✅ | ✅ |
 
-The cluster of unique checkmarks across rows 4–9 is not accidental. Each of those capabilities follows directly from the central insight of source-as-identity plus AST-role-as-disambiguator. They cannot easily be retrofitted onto tools whose identity model is manual or runtime-catalog-based — those tools would need to change shape, not just add features.
+The cluster of unique checkmarks across rows 4–9 is not accidental. Each of those capabilities follows directly from the central insight of source-as-identity plus AST-derived context plus locale-file-as-protocol. They cannot easily be retrofitted onto tools whose identity model is manual or runtime-catalog-based — those tools would need to change shape, not just add features.
 
 This is what "novel combination" means in practice: a set of properties that come together only when the underlying identity model supports them.
 
@@ -1290,129 +1513,164 @@ These are not designed features. They are consequences of the five mechanisms op
 
 | Property | What the user sees |
 |---|---|
-| **Refactor stability** | Wrap an element in a div, change `<button>` to `<a>`, reorder siblings — locale file is untouched |
+| **Refactor stability for translations** | Wrap an element in a div, reorder siblings, move a component to a new file — the `value` field is preserved. The `context` field may update to reflect the new structure (this is visible in diff but does not require re-translation). |
 | **Cross-file consistency** | Same English text everywhere → same translation by default, automatically |
 | **Predictable AI cost** | Refactors cost zero AI calls. New strings cost one. Homonym arbitration costs one. No surprises |
-| **Translator UX** | Locale files read like dictionaries. Source text *is* the key. CAT tools work out of the box |
+| **AI-agent-native files** | Any AI — Claude Code, Cursor, the configured *translator* — opens the locale file and has everything it needs: source, context, glossary, tone, candidates. No external lookups. |
 | **Self-documenting** | An AI coding agent reading the code months later understands the i18n without side-channel docs |
-| **PR review clarity** | Provenance shown per entry: translated, inherited, moved, arbitrated. Reviewer knows what cost AI time |
+| **PR review clarity** | Provenance shown per entry: translated, inherited, moved, arbitrated. Reviewer knows what cost AI time. Context changes from refactor are visible in the diff. |
 | **Restart resilience** | Translations survive `node_modules` deletion, branch switches, machine moves — they're in Git as plain JSON |
-| **Self-verifying** | Source text and identity cannot drift apart. They are the same thing |
+| **Self-verifying** | Source text and identity cannot drift apart. They are the same thing. The compiler regenerates `context`; authored `notes` are preserved verbatim. |
 
-The developer never reads this specification. The developer writes `t('Save')`. Everything above happens silently.
+The developer never reads this specification. The developer writes `t('Save')` — or `t('Save').notes({ maxLength: 20 })` for the occasional annotation. Everything above happens silently.
 
 ---
 
 ## 15. Implementation Plan
 
-### 15.1 Phase 1 — Translation Memory + AI-as-Arbiter (1 week)
+### 15.1 Phase 1 — Locale File Format v1 + Translator Interface (1 week)
 
-**Goal:** Cross-file translation reuse without changing locale file format.
-
-Modules:
-- `packages/compiler/src/catalog/memory.ts` (new): build memory from locale files, expose `lookup()`
-- `packages/compiler/src/catalog/sync.ts` (modified): use lookup before invoking translator
-- `packages/translator/src/type.ts` (extended): add `candidates` field to `TranslateRequest`
-- `packages/translator/src/prompt.ts` (extended): add candidate-handling instructions to system prompt
-
-Tests: ~30 unit tests covering all five lookup classifications, candidate prompt construction, AI response handling.
-
-**Estimated: ~150 lines production, ~300 lines tests.**
-
-### 15.2 Phase 2 — AST Roles + Collision Detection (1 week)
-
-**Goal:** Compute AST roles per call, detect same-file homonyms, emit object-form locale entries.
+**Goal:** Read/write the v1.1 records-array locale file format. Define the thin *translator* interface.
 
 Modules:
-- `packages/compiler/src/parser/role.ts` (new): generic role computation
+- `packages/compiler/src/catalog/locale/v1.ts` (new): read/write/validate v1 schema (records-array, four-zone entries)
+- `packages/compiler/src/catalog/locale/migrate.ts` (new): one-shot migration tool from earlier draft formats to v1
+- `packages/translator/src/type.ts` (new): minimal `Translator` interface (one method: `translate(file, options?) → file`)
+- `packages/translator/src/select.ts` (new): selection helpers (by file, status, source) for partial translation
+- `packages/translator/src/merge.ts` (new): merge translator-returned subset back into the full file
+
+Tests: ~40 unit tests covering schema validation, NFC normalization, BCP 47 normalization, ICU/placeholder invariants, partial selection round-trips, migration from earlier-draft formats.
+
+**Estimated: ~180 lines production, ~350 lines tests.**
+
+### 15.2 Phase 2 — Translation Memory + Arbitration (1 week)
+
+**Goal:** Project-wide memory from existing v1 locale files; arbitration via inlined candidates.
+
+Modules:
+- `packages/compiler/src/catalog/memory.ts` (new): build memory by reading v1 records (status filter, source→entries index), expose `lookup()`
+- `packages/compiler/src/catalog/sync.ts` (modified): use lookup before emitting new records; inject `candidates` and set `status: "needs-arbitration"` when arbitration outcomes apply
+- `packages/compiler/src/catalog/provenance.ts` (new): categorize *translator* response into `inherited` / `confirmed` / `selected` / `re-translated` and write to `.yapyak/provenance.json`
+
+Tests: ~50 tests covering all five lookup outcomes, candidate-injection on `unique-candidate` and `multiple-candidates`, provenance categorization after *translator* return.
+
+**Estimated: ~140 lines production, ~300 lines tests.**
+
+### 15.3 Phase 3 — AST Roles + Records Emission (1 week)
+
+**Goal:** Compute AST-derived context per `t()` call, detect same-file homonyms, emit records with disambiguating context.
+
+Modules:
+- `packages/compiler/src/parser/role.ts` (new): generic role computation (element, role, component, kind, ancestors)
 - `packages/compiler/src/parser/processor/typescript.ts` (modified): TSX role extraction
 - `packages/compiler/src/parser/processor/vue.ts` (modified): Vue template role extraction
 - `packages/compiler/src/parser/processor/svelte.ts` (modified): Svelte markup role extraction
 - `packages/compiler/src/parser/processor/astro.ts` (modified): Astro frontmatter + template role extraction
-- `packages/compiler/src/catalog/keys.ts` (new): minimal disambiguator algorithm
-- `packages/compiler/src/catalog/locale/file.ts` (modified): read/write object-form entries
+- `packages/compiler/src/parser/notes.ts` (new): extract `.notes()` chainable arguments and merge into record `notes` zone
+- `packages/compiler/src/catalog/disambiguate.ts` (new): per-collision context-granularity escalation (element+role → +component → +ancestors → +position)
+- `packages/compiler/src/catalog/emit.ts` (new): `emitFileRecords()` — convert extracted calls into v1 records
 
-Tests: ~80 tests covering each framework's role extraction, all four disambiguator tiers, positional fallback, bare↔object migration in both directions.
+Tests: ~90 tests covering each framework's role extraction, all four granularity tiers, positional fallback (YPK009), `.notes()` argument extraction including const-spread, YPK210/YPK211/YPK212 diagnostics.
 
-**Estimated: ~250 lines production, ~500 lines tests.**
+**Estimated: ~280 lines production, ~520 lines tests.**
 
-### 15.3 Phase 3 — Refactor Detection + Orphan Retention + Clean Command (1 week)
+### 15.4 Phase 4 — Refactor Detection + Orphan Retention + Clean Command (1 week)
 
 **Goal:** Cross-file moves carry translations; orphans retained; explicit cleanup via CLI.
 
 Modules:
-- `packages/compiler/src/catalog/refactor.ts` (new): move/split/merge detection
-- `packages/compiler/src/catalog/sync.ts` (modified): orphan retention (no auto-prune)
-- `packages/cli/src/command/clean.ts` (new): `yapyak clean` command
-- `packages/cli/src/command/translate.ts` (extended): provenance in CLI output
-- `packages/vite/src/plugin.ts` (modified): integrate refactor detection into save loop
+- `packages/compiler/src/catalog/refactor.ts` (new): move/split/merge detection across the diff window
+- `packages/compiler/src/catalog/orphans.ts` (new): retain removed records with `status: "orphaned"`; promote on subsequent re-extraction
+- `packages/cli/src/command/clean.ts` (new): `yapyak clean` command (with `--yes` flag)
+- `packages/cli/src/command/add.ts` (new): `yapyak add <locale>` initializes a new locale file from `yapyak.config.ts`
+- `packages/cli/src/command/translate.ts` (extended): drive the configured *translator* and surface provenance in output
+- `packages/vite/src/plugin.ts` (modified): integrate save-loop, refactor detection, HMR (`yapyak:locale-added`, `yapyak:locale-removed`)
 
-Tests: ~50 tests covering 1-to-1 moves, splits, merges, orphan retention across saves, clean command behavior with and without confirmation.
+Tests: ~60 tests covering 1-to-1 moves, splits, merges, orphan retention across multiple saves, `yapyak clean` behavior, `yapyak add` initialization.
 
-**Estimated: ~120 lines production, ~300 lines tests.**
+**Estimated: ~140 lines production, ~320 lines tests.**
 
-### 15.4 Phase 4 — Polish & Edge Cases (1–2 weeks)
+### 15.5 Phase 5 — Polish & Edge Cases (1–2 weeks)
 
 **Goal:** Production-ready behavior across all supported frameworks and edge cases.
 
 Activities:
 - Real-world component testing across React, Vue, Svelte, Astro
 - Performance benchmarks on 10k+ message projects
-- Migration tool for existing locale files (no destructive changes; just schema validation)
+- Reference *translator* implementations (Claude, OpenAI, manual no-op)
 - Edge case fixes (Svelte reactive blocks, Vue v-for context, Astro frontmatter expressions, etc.)
 - Documentation: introduction.md, how-it-works.md, FAQ updates
-- Example projects demonstrating each scenario
+- Example projects demonstrating each scenario (records-array, .notes(), arbitration, refactor migration)
 
-**Estimated: ~50 lines production fixes, ~200 lines additional tests, significant manual testing.**
+**Estimated: ~80 lines production fixes, ~230 lines additional tests, significant manual testing.**
 
-### 15.5 Total
+### 15.6 Total
 
 | Phase | Production | Tests | Time |
 |---|---|---|---|
-| 1: Memory + Arbiter | ~150 | ~300 | 1 week |
-| 2: Roles + Collisions | ~250 | ~500 | 1 week |
-| 3: Refactor + Orphans | ~120 | ~300 | 1 week |
-| 4: Polish | ~50 | ~200 | 1–2 weeks |
-| **Total** | **~570** | **~1300** | **4–5 weeks** |
+| 1: Format + Translator interface | ~180 | ~350 | 1 week |
+| 2: Memory + Arbitration | ~140 | ~300 | 1 week |
+| 3: AST Roles + Records emission | ~280 | ~520 | 1 week |
+| 4: Refactor + Orphans + CLI | ~140 | ~320 | 1 week |
+| 5: Polish + reference translators | ~80 | ~230 | 1–2 weeks |
+| **Total** | **~820** | **~1720** | **5–6 weeks** |
 
 Plus ~1–2 weeks for documentation updates.
+
+Estimates increased from the previous plan (~570 production lines, 4–5 weeks) to reflect the format-as-protocol architecture: the *translator* interface and v1 format reader/writer are now first-class modules rather than incidental support code. The total remains modest — under 1,000 lines of production TypeScript for the entire identity-and-storage layer.
 
 ---
 
 ## 16. Migration
 
-### 16.1 Backward Compatibility
+### 16.1 From Earlier Yapyak Drafts (pre-v1.1) to v1.1
 
-The new schema is a strict superset of the old. Existing locale files in the format `{ "src/file.tsx": { "Save": "Spara" } }` are valid in the new format and require no migration.
+Earlier yapyak drafts used a flat per-file object map (`{ "src/file.tsx": { "Save": "Spara" } }`) with an "adaptive object form" for same-file homonyms (`{ "Open": { "button": "Öppna", "Badge": "Öppet" } }`). v1.1 replaces both with the records-array form documented throughout this specification and in [LOCALE_FILE_FORMAT.md](./LOCALE_FILE_FORMAT.md).
 
-When a homonym is first introduced for a source that has a bare-key entry, the migration runs automatically during sync (see Section 2.5). The existing translation moves to the appropriate sub-key based on the previously-extracted call's AST role.
+The migration is **one-shot, non-destructive, and tool-driven**:
 
-### 16.2 No Manual Intervention Required
+```bash
+$ yapyak migrate-locale-format
+Migrating src/locales/sv.json from earlier-draft format to v1.1...
+  127 entries converted
+  3 same-source homonyms expanded to parallel records
+  0 entries dropped
+Backup written to src/locales/sv.json.backup
+```
 
-Projects upgrading to the adaptive model do not need to:
-- Edit existing locale files
-- Re-run translation
-- Reorganize their source code
+The tool reads the earlier format, derives `context` from the keyed sub-form (or single-occurrence inference), and writes the equivalent v1.1 records-array. All translation `value`s are preserved.
 
-The model adopts itself.
+After migration, the earlier format is no longer read. Projects that committed to v1.1 should remove backups once they have verified the migration.
+
+### 16.2 From Other i18n Libraries
+
+Migration from i18next, FormatJS, Lingui, or Paraglide is **not automatic in v1.1**. yapyak provides converters for common shapes (flat key-value JSON, descriptor JSON, Paraglide message files) as part of the `yapyak migrate-from <tool>` family of commands, scheduled for a v1.1.x patch release.
+
+For now, projects coming from other tools should:
+1. Add yapyak to their build
+2. Add `t()` calls in source code (replacing the previous i18n call style)
+3. Run `yapyak extract` to materialize v1.1 records with `status: "missing"`
+4. Copy `value`s from the old locale files to the new records (this is the only manual step)
+5. Run `yapyak translate` or have a *translator* fill remaining missing values
 
 ### 16.3 Tooling for Inspection
 
-A new CLI command can audit a project for potential homonyms:
+`yapyak audit` reports potential issues without modifying anything:
 
 ```bash
 $ yapyak audit
-Potential same-file homonyms (translation may be ambiguous):
+Same-file homonyms with translation drift:
   src/store/StorePanel.tsx:
-    "Open" appears 2 times — used by both <button> and <Badge>
+    "Open" appears 2 times (button, Badge) with translations "Öppna" / "Öppet" — this is fine if intentional
   src/forms/SearchForm.tsx:
-    "Search" appears 3 times — same input element, different attributes
+    "Search" appears 3 times across <input placeholder>, <input aria-label>, <button aria-label> with identical translation "Sök" — consider whether they should diverge
 
-Recommendation: these entries may benefit from object-form entries.
-Run `yapyak translate` to migrate them automatically.
+True-twins (positional fallback) entries:
+  src/dialogs/ConfirmDialog.tsx:
+    "OK" appears 2 times with identical context — YPK009 suggests refactoring to distinct sources or wrapping in distinguishing components
 ```
 
-This is informational. It does not change anything.
+Audit is informational. It does not change anything.
 
 ---
 
@@ -1422,39 +1680,43 @@ The following scenarios must all be covered by the test suite. Each tests a spec
 
 ### 17.1 Identity & Storage
 
-- Bare key emission for single-occurrence source
-- Object-form emission for same-file homonyms (element-disambiguated)
-- Object-form emission for same-file homonyms (property-disambiguated)
-- Object-form emission for same-file homonyms (parent-disambiguated)
-- Positional fallback for true twins
-- Bare → object migration when homonym is introduced
-- Object → bare migration when homonym is resolved
+- Records emission for single-occurrence source (minimal context: element + role + component)
+- Parallel records for same-file homonyms (element-disambiguated)
+- Parallel records for same-file homonyms (role-disambiguated, e.g., placeholder vs aria-label)
+- Parallel records for same-file homonyms (component+ancestors-disambiguated)
+- Positional fallback (`context.position`) for true twins; YPK009 diagnostic emitted
+- Adding a homonym appends a record without changing the existing one
+- Removing a homonym moves the record to orphan retention (does not silently delete)
 
 ### 17.2 Translation Memory
 
-- Cross-file lookup returns unique translation for repeated source
-- Cross-file lookup returns multiple translations when project has homonyms
-- New source returns `'new'`
-- Role-based exact match takes priority over general match
-- Empty translations are excluded from memory
+- Cross-file lookup returns `exact-match` when source + identical context exist
+- Cross-file lookup returns `context-match` when source + element + role match (looser)
+- Cross-file lookup returns `unique-candidate` when source has one translation across the project
+- Cross-file lookup returns `multiple-candidates` for known cross-file homonyms
+- New source returns `new`
+- Records with empty `value` or `status: "missing"` / `"needs-arbitration"` are excluded from memory
 
 ### 17.3 Refactor Detection
 
-- 1-to-1 move carries translation
-- 1-to-N split distributes translation
-- N-to-1 merge consolidates translation
-- Move within same atomic save
+- 1-to-1 move carries `value` to new file
+- 1-to-N split distributes `value` to each new location
+- N-to-1 merge consolidates `value`
+- Move within same atomic save (no orphan needed)
 - Move across multiple saves (via orphan retention)
-- Move + source-edit simultaneously (treated as new)
+- Move + source-edit simultaneously (treated as new entry; documented limitation §13.1)
 - Position-based rename at same line/column
-- Position-based rename across line changes (currently not supported)
+- Position-based rename across line changes (currently not supported; documented in §7)
 
-### 17.4 AI-as-Arbiter
+### 17.4 Arbitration (Format-as-Protocol)
 
-- New call site, no candidates → fresh translation
-- New call site, one candidate, matching role → direct carry (no AI)
-- New call site, one candidate, different role → AI confirms or rejects
-- New call site, multiple candidates → AI selects or invents
+- New call site, no candidates → `status: "missing"`, *translator* translates fresh
+- New call site, `exact-match` → direct carry, no AI invocation
+- New call site, `context-match` → direct carry, no AI invocation
+- New call site, `unique-candidate` → `candidates` field injected, `status: "needs-arbitration"`, *translator* decides
+- New call site, `multiple-candidates` → all candidates injected, `status: "needs-arbitration"`, *translator* decides
+- After *translator* returns: `candidates` field removed, `value` set, `status: "translated"` (or `"needs-review"` if *translator* flagged uncertainty)
+- Provenance categorization writes to `.yapyak/provenance.json` (gitignored)
 
 ### 17.5 Orphan Management
 
@@ -1507,14 +1769,14 @@ Add a new section after the existing "Preserve translations across ordinary edit
 > When yapyak fills a missing locale entry, it follows one of three paths:
 >
 > 1. **Refactor.** The source string disappeared from another file in the same save. yapyak carries the translation directly. No *translator* call.
-> 2. **New call site with an existing translation.** yapyak sends the source, the new call site's context, and the existing translation as a candidate to the *translator*. The *translator* uses the candidate when the meaning matches and re-translates otherwise.
-> 3. **Genuinely new source.** No prior translation exists in the project. yapyak sends the source and call-site context as a fresh translation request.
+> 2. **New call site with an existing translation.** yapyak injects the existing translation as a `candidates` field in the new entry and sets its status to `needs-arbitration`. The *translator* reads the file, sees the candidate alongside the new context, and decides whether to reuse it or translate fresh.
+> 3. **Genuinely new source.** No prior translation exists in the project. The entry is left with `status: "missing"` and the *translator* translates fresh.
 >
-> Refactoring code does not re-translate text the project already knows. Adding a new call site for an existing short string — `Open`, `Close`, `Save`, `Done` — does not silently assume the first registered meaning. The *translator* sees both contexts and decides.
+> Refactoring code does not re-translate text the project already knows. Adding a new call site for an existing short string — `Open`, `Close`, `Save`, `Done` — does not silently assume the first registered meaning. The *translator* sees both contexts in the locale file itself and decides.
 >
 > Orphaned entries — translations whose source string has disappeared from the codebase — are kept as project memory but never auto-applied. `yapyak clean` removes them explicitly.
 
-Also update the locale file format section to show object-form entries.
+Also update the locale file format section to show the v1.1 records-array shape (one record per `t()` call, with `source`, `context`, `notes`, `status`, `value` zones).
 
 ### 18.3 `docs/content/guide/faq.md`
 
@@ -1647,7 +1909,7 @@ An earlier exploration: store translations in a persistent component-hierarchy t
 
 The adaptive model uses the locale files themselves as memory, with no separate tree. Source-as-key plus AST role makes identity stable without reconciliation.
 
-### 20.5 Positional Arrays
+### 20.5 Positional-as-Identity Arrays
 
 ```json
 {
@@ -1657,16 +1919,15 @@ The adaptive model uses the locale files themselves as memory, with no separate 
 }
 ```
 
-Storing entries as ordered arrays with positions.
+Storing entries as ordered arrays where **line position** is the disambiguating identity. Distinct from v1.1 records-array, which uses arrays as storage shape but identifies entries by `(source, context)` — position is only an emergency fallback (`context.position` with YPK009 diagnostic).
 
-**Why rejected:**
+**Why position-as-identity was rejected:**
 
-- Positions change with every edit unrelated to translation.
-- Reordering siblings breaks entries.
-- JSON arrays do not support direct key lookup.
-- Translator tools and CAT services expect key-value maps.
+- Positions change with every edit unrelated to translation. A blank line above your `t()` call invalidates identity.
+- Reordering siblings would silently re-map translations to wrong calls.
+- Refactor detection becomes impossible — line numbers do not carry semantic meaning.
 
-Maps with source-as-key are the correct shape.
+v1.1 uses the array as a **container**, not as the identity mechanism. The identity is the tuple `(file, source, context)` documented in §2.1.
 
 ### 20.6 Hosted Translation Service
 
@@ -1695,59 +1956,63 @@ An alternative where each `t()` call had an auto-generated semantic selector (e.
 
 The AST role in the adaptive model is a much simpler version of this idea — used only when needed, embedded directly in the locale file, with the source text as the primary handle.
 
-### 20.8 Always-On AST Disambiguation
-
-Always emitting object-form entries, even when source strings are unique within their file:
+### 20.8 Adaptive-Object-Form-on-Collision-Only
 
 ```json
 {
-  "Save": { "button": "Spara" }
+  "Save": "Spara",
+  "Open": {
+    "button": "Öppna",
+    "Badge": "Öppet"
+  }
 }
 ```
 
-Considered for uniformity. Every entry would have a role sub-key whether or not it was needed for disambiguation.
+The original adaptive model: bare keys for unique sources, nested object form only when the same source collides within a file. This is what earlier drafts of this specification described.
 
-**Why rejected:**
+**Why rejected for v1.1 (note: this is a historical rejection — earlier drafts of yapyak proposed this form, v1.1 replaces it with records-array):**
 
-- Locale files become noisier without semantic benefit in the 95% case.
-- Translators lose the simple "source → translation" mental model.
-- Refactors that change role (e.g., button → a) appear in diffs unnecessarily.
-- The model's adaptiveness — bare when possible, structured when necessary — is what makes it elegant.
+- Variable entry shape (`string | object`) requires every consumer (yapyak, *translators*, AI agents, CAT tools) to branch on shape.
+- AI agents must read both the entry value AND infer the entry's structural context — context is implicit, not data.
+- Authored data (notes, domain tags, status) has no clean place to live without polluting the disambiguation sub-keys.
+- The format requires two-way migration logic (bare↔object) on every save when collisions are introduced or resolved.
 
-The chosen design emits object form only when collision exists. This is the entire reason "adaptive" is in the name.
+v1.1 makes a different choice: **always emit a record with explicit `context`**, even for unique sources. Locale files are larger, but every entry has the same shape, AI agents have full context inline, and authored data has its own zone (`notes`). The trade-off is documented in LOCALE_FILE_FORMAT.md §Trade-Offs.
+
+This is **not** a rejection of always-on disambiguation in v1.1 — that is what v1.1 does. It is a rejection of the specific bare-vs-object adaptive form, in favor of uniform records-array.
 
 ---
 
 ## 21. Conclusion
 
-The adaptive identity model is the result of extended architectural exploration. The alternatives that were considered and rejected — explicit context annotation, manual message IDs, pure hierarchy keys, persistent tree storage with reconciliation, positional arrays, hosted services, semantic selectors with manifests, always-on disambiguation — are documented in Section 20.
+The adaptive identity model is the result of extended architectural exploration. The alternatives that were considered and rejected — explicit context annotation, stable per-entry IDs, manual message IDs, pure hierarchy keys, persistent tree storage with reconciliation, positional-as-identity arrays, hosted services, semantic selectors with manifests, always-on disambiguation — are documented in Section 20.
 
 What remains is a model that:
 
-- **Keeps the developer-facing API trivial.** `t('Save')` works. No keys to maintain.
-- **Keeps locale files clean.** Bare strings for 95% of entries, object form only when structure requires it.
+- **Keeps the developer-facing API minimal.** `t('Save')` for the common case; `t('Save').notes({...})` for the occasional annotation. No keys to maintain.
+- **Stores every entry uniformly.** Every locale record has the same four-zone shape (`source`, `context`, `notes`, `status`, `value`). No adaptive shape-shifting, no nested sub-keys.
 - **Keeps the runtime small.** Compiled `_pick({...})` per call site, no change.
-- **Keeps translations stable across refactors.** File moves, wrapper insertions, element changes, sibling reorders, source-text edits at same position — all preserve translations.
+- **Keeps translations stable across refactors.** File moves, wrapper insertions, element changes, sibling reorders, source-text edits at same position — all preserve the translation `value`. Structural changes update the `context` field (visible in diff) without re-translation.
 - **Keeps translation memory in the repo.** No external cache, no service, no vendor.
-- **Keeps semantic decisions explicit.** AI-as-arbiter decides reuse vs. fresh when context shifts.
-- **Keeps orphans queryable.** Translations remain available after their source disappears, until explicit cleanup.
-- **Keeps provenance visible.** Every entry's origin is traceable.
+- **Pushes semantic decisions into the format.** Arbitration is a `candidates` field with `status: "needs-arbitration"` — any *translator* (Anthropic, OpenAI, Gemini, Claude Code, Cursor, manual) sees the same JSON and decides.
+- **Keeps orphans queryable.** Translations remain available after their source disappears, until explicit cleanup via `yapyak clean`.
+- **Keeps provenance visible.** Every entry's origin is traceable (translated / inherited / moved / arbitrated / re-translated).
 
-The combination is novel as far as we know. The implementation is achievable in ~570 lines of production TypeScript across four phases. The model is backward compatible with existing locale files and requires no manual migration.
+The combination is novel as far as we know. The implementation is achievable in ~820 lines of production TypeScript across five phases (5–6 weeks). The v1.1 locale file format is a one-shot migration from earlier-draft formats; no manual edits required for the migration itself.
 
 ### 21.1 One-Sentence Summary
 
-> yapyak's adaptive identity model lets developers write `t('Save')` and never think about i18n again — because the model derives translation identity from the code itself, lets the locale files double as translation memory, and uses the AI as a semantic arbiter rather than a blind translator.
+> yapyak's adaptive identity model lets developers write `t('Save')` and never think about i18n again — because the model derives translation identity from the code itself, lets locale files double as both translation memory and AI-readable work items, and pushes semantic arbitration into the JSON format rather than into provider-specific prompt code.
 
 That is the model. Everything else in this specification is consequence.
 
 ### 21.2 The Compression Ratio
 
-The model is ~570 lines of production code. The full specification of why it works is ~1,700 lines of documentation. The 3× ratio of explanation to implementation is the signature of design that has been carefully thought through — every line of code is justified by paragraphs of reasoning, every rejected alternative is documented, every limitation is honest.
+The model is ~820 lines of production code. The full specification of why it works is ~1,800 lines of documentation, with the companion locale-format and translator-interface specs adding another ~1,700 lines combined. The 4× ratio of explanation to implementation is the signature of design that has been carefully thought through — every line of code is justified by paragraphs of reasoning, every rejected alternative is documented, every limitation is honest.
 
-For comparison: `i18next` is ~6,500 lines of production code. `react-intl` is ~25,000. yapyak's core identity model is **9% the size of i18next** and **2.3% the size of react-intl** — and does more than either, with mechanisms neither has.
+For comparison: `i18next` is ~6,500 lines of production code. `react-intl` is ~25,000. yapyak's core identity-and-storage layer is **~13% the size of i18next** and **~3% the size of react-intl** — and does more than either, with mechanisms neither has.
 
-That compression is what well-fitted design produces. Not because the implementation is clever, but because the central insight is right.
+That compression is what well-fitted design produces. Not because the implementation is clever, but because the central insight is right and the format does the heavy lifting.
 
 ---
 
