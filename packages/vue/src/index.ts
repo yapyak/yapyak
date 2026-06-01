@@ -12,4 +12,7 @@
  * @packageDocumentation
  */
 
+export type { RichTextProps, RichTextSlots, TagSlot } from './rich-text';
+
 export { locale } from './locale';
+export { RichText } from './rich-text';

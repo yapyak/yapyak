@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { locales, t } from 'yapyak';
-import { locale } from '@yapyak/vue';
+import { locale, RichText } from '@yapyak/vue';
 
 const date = new Date('2024-01-01T08:30:00Z');
+const richMessage = t('Translate <b>everything</b> with <link>yapyak</link>');
 </script>
 
 <template>
@@ -26,6 +27,18 @@ const date = new Date('2024-01-01T08:30:00Z');
 
     <h2>{{ t('Select') }}</h2>
     <p>{{ t('{role, select, admin {Administrator} editor {Editor} other {Viewer}}', { role: 'editor' }) }}</p>
+
+    <h2>{{ t('Rich text') }}</h2>
+    <p>
+      <RichText :value="richMessage">
+        <template #b="{ children }">
+          <strong><component :is="children" /></strong>
+        </template>
+        <template #link="{ children }">
+          <a href="https://yapyak.dev"><component :is="children" /></a>
+        </template>
+      </RichText>
+    </p>
 
     <h2>{{ t('Switch language') }}</h2>
     <div style="display: flex; gap: 0.5rem;">
