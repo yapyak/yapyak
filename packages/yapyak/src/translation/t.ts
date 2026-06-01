@@ -75,28 +75,6 @@ export interface TAtChain {
  */
 export interface TFn {
   /**
-   * Translates `source` for the active locale.
-   *
-   * @param source - The source string literal.
-   * @param params - The placeholder params. Required when the source has placeholders.
-   */
-  <T extends string>(source: T, params?: TParams<T>): TReturn<ExtractTags<T>>;
-
-  /**
-   * Forces a fixed locale for one translation call, or returns a chain that requires `.at()` to complete.
-   *
-   * @param locale - The locale code, e.g. `'sv'`.
-   * @param source - The source string literal. Pass to translate inline.
-   * @param params - The placeholder params. Required when the source has placeholders.
-   */
-  in<T extends string>(
-    locale: string,
-    source: T,
-    params?: TParams<T>,
-  ): TReturn<ExtractTags<T>>;
-  in(locale: string): TInChain;
-
-  /**
    * Disambiguates a source string by context, or returns a chain that requires `.in()` to complete.
    *
    * @remarks
@@ -112,6 +90,27 @@ export interface TFn {
     params?: TParams<T>,
   ): TReturn<ExtractTags<T>>;
   at(context: string): TAtChain;
+
+  /**
+   * Forces a fixed locale for one translation call, or returns a chain that requires `.at()` to complete.
+   *
+   * @param locale - The locale code, e.g. `'sv'`.
+   * @param source - The source string literal. Pass to translate inline.
+   * @param params - The placeholder params. Required when the source has placeholders.
+   */
+  in<T extends string>(
+    locale: string,
+    source: T,
+    params?: TParams<T>,
+  ): TReturn<ExtractTags<T>>;
+  in(locale: string): TInChain;
+  /**
+   * Translates `source` for the active locale.
+   *
+   * @param source - The source string literal.
+   * @param params - The placeholder params. Required when the source has placeholders.
+   */
+  <T extends string>(source: T, params?: TParams<T>): TReturn<ExtractTags<T>>;
 }
 
 /**
