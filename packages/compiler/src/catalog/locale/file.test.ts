@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { syncLocaleFiles, writeLocaleFile, YapyakInvariantError } from './file';
 import {
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -137,6 +138,55 @@ describe('syncLocaleFiles', () => {
     ).toEqual({});
   });
 
+  it('migrates translations through a same-flush file rename', () => {
+    const localesDir = 'locales';
+    const cacheDir = join(projectRoot, 'cache');
+    const localePath = join(projectRoot, localesDir, 'sv.json');
+    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    writeFileSync(
+      localePath,
+      JSON.stringify({
+        'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
+      }),
+    );
+
+    syncLocaleFiles({
+      cacheDir,
+      defaultLocale: 'en',
+      locales: ['en', 'sv'],
+      localesDir,
+      messages: [
+        makeMessage('Save', 'src/b.tsx'),
+        makeMessage('Cancel', 'src/b.tsx'),
+      ],
+      now: () => '2026-01-01T00:00:00.000Z',
+      projectRoot,
+    });
+
+    expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
+      'src/b.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
+    });
+    expect(existsSync(join(cacheDir, 'orphans.json'))).toBe(false);
+
+    syncLocaleFiles({
+      cacheDir,
+      defaultLocale: 'en',
+      locales: ['en', 'sv'],
+      localesDir,
+      messages: [
+        makeMessage('Save', 'src/a.tsx'),
+        makeMessage('Cancel', 'src/a.tsx'),
+      ],
+      now: () => '2026-01-02T00:00:00.000Z',
+      projectRoot,
+    });
+
+    expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
+      'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
+    });
+    expect(existsSync(join(cacheDir, 'orphans.json'))).toBe(false);
+  });
+
   it('migrates orphan translations to a renamed file via cross-file lookup', () => {
     const localesDir = 'locales';
     const cacheDir = join(projectRoot, 'cache');
@@ -180,7 +230,7 @@ describe('syncLocaleFiles', () => {
     ).toEqual({});
   });
 
-  it('refuses to silently drop a translation when extraction is partial', () => {
+  it('writes dropped translations to the orphan cache when extraction is partial', () => {
     const localesDir = 'locales';
     const cacheDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');

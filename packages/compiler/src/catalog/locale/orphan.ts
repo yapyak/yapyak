@@ -134,7 +134,7 @@ function normalizeEntry(value: unknown): OrphanEntry | undefined {
   for (const [locale, translation] of Object.entries(
     translations as Record<string, unknown>,
   )) {
-    if (typeof translation === 'string' && translation !== '') {
+    if (typeof translation === 'string' && translation) {
       cleanTranslations[locale] = translation;
     }
   }

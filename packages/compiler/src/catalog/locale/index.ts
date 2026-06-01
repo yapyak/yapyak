@@ -28,15 +28,6 @@ export {
   type RenameEntry,
 } from './migrate';
 export {
-  getDefaultCacheDir,
-  getOrphansFilePath,
-  type OrphanCache,
-  type OrphanEntry,
-  type OrphanLookup,
-  readOrphans,
-  writeOrphans,
-} from './orphan';
-export {
   type ValidateIcuPairsInput,
   type ValidateLocaleFileInput,
   validateIcuPairs,
