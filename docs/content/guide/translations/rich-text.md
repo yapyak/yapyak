@@ -46,7 +46,7 @@ import { t } from 'yapyak';
 
 <RichText value={t('Read the <link>documentation</link> to get started.')}>
   {#snippet link(children)}
-    <a href="/docs">{children}</a>
+    <a href="/docs">{@render children()}</a>
   {/snippet}
 </RichText>
 ```

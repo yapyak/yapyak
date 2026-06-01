@@ -1,15 +1,15 @@
-export function walkRichText<T>(
-  source: string,
-  handlers: Record<string, (children: T) => T>,
-  renderer: { leaf: (text: string) => T; concat: (parts: T[]) => T },
-): T {
-  const parts: T[] = [];
+export type RichTextNode =
+  | { type: 'tag'; name: string; children: RichTextNode[] }
+  | { type: 'text'; text: string };
+
+export function parseRichTextTree(source: string): RichTextNode[] {
+  const nodes: RichTextNode[] = [];
   let text = '';
   let index = 0;
 
   const flush = (): void => {
     if (text !== '') {
-      parts.push(renderer.leaf(text));
+      nodes.push({ text, type: 'text' });
       text = '';
     }
   };
@@ -18,17 +18,15 @@ export function walkRichText<T>(
     const open = source.startsWith('<', index)
       ? readOpenTag(source, index)
       : undefined;
-    const handler = open ? handlers[open.name] : undefined;
-    if (open && handler) {
+    if (open) {
       const close = findClosingTag(source, open.end, open.name);
       if (close) {
         flush();
-        const inner = walkRichText(
-          source.slice(open.end, close.start),
-          handlers,
-          renderer,
-        );
-        parts.push(handler(inner));
+        nodes.push({
+          children: parseRichTextTree(source.slice(open.end, close.start)),
+          name: open.name,
+          type: 'tag',
+        });
         index = close.end;
         continue;
       }
@@ -37,6 +35,38 @@ export function walkRichText<T>(
     index += 1;
   }
   flush();
+  return nodes;
+}
+
+export function walkRichText<T>(
+  source: string,
+  handlers: Record<string, (children: T) => T>,
+  renderer: { leaf: (text: string) => T; concat: (parts: T[]) => T },
+): T {
+  return renderNodes(parseRichTextTree(source), handlers, renderer);
+}
+
+function renderNodes<T>(
+  nodes: RichTextNode[],
+  handlers: Record<string, (children: T) => T>,
+  renderer: { leaf: (text: string) => T; concat: (parts: T[]) => T },
+): T {
+  const parts: T[] = [];
+  for (const node of nodes) {
+    if (node.type === 'text') {
+      parts.push(renderer.leaf(node.text));
+      continue;
+    }
+    const handler = handlers[node.name];
+    if (handler) {
+      const inner = renderNodes(node.children, handlers, renderer);
+      parts.push(handler(inner));
+      continue;
+    }
+    parts.push(renderer.leaf(`<${node.name}>`));
+    parts.push(renderNodes(node.children, handlers, renderer));
+    parts.push(renderer.leaf(`</${node.name}>`));
+  }
   return renderer.concat(parts);
 }
 

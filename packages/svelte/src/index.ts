@@ -13,5 +13,7 @@
  */
 
 export type { Locale } from './locale.svelte';
+export type { RichTextProps } from './rich-text';
 
 export { locale } from './locale.svelte';
+export { default as RichText } from './rich-text.svelte';
