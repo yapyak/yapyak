@@ -3,19 +3,30 @@ title: Rich text
 order: 6
 ---
 
-yapyak treats translation and rich text as two different concerns.
-
-Translation is compiled ahead of time. Rich text is rendered at runtime. Keeping those two things separate makes the model simpler, both in how it is implemented and, perhaps more importantly, in how you think about it.
-
-A translated message may still contain named tags:
+Sometimes a message needs to contain a link, emphasized text, or another interface element.
 
 ```ts
 t('Read the <link>documentation</link> to get started.')
 ```
 
-Those tags are part of the message, so a translator can move the linked words wherever the target language wants them. But `t()` doesn't render components. It still produces a string.
+The `<link>` tag belongs in the message because it is part of what the sentence means. A translation may need to move the linked words, just like it may need to move any other part of the sentence.
 
-To render the tagged parts of that string, use `<RichText>`:
+```
+Read the <link>documentation</link> to get started.
+Lies zum Einstieg die <link>Dokumentation</link>.
+```
+
+What the tag does not say is how that link should be rendered. It might become an `<a>` element in one place, a router link in another, or plain text somewhere else.
+
+This is why yapyak keeps translation and rich text rendering separate.
+
+`t()` translates the message. It is compiled ahead of time and still returns a string:
+
+```ts
+const message = t('Read the <link>documentation</link> to get started.');
+```
+
+When that message is rendered in a component-based interface, `<RichText>` turns its named tags into the components you provide:
 
 {% code-group %}
 
@@ -26,7 +37,7 @@ import { t } from 'yapyak';
 export function Notice() {
   return (
     <RichText
-      source={t('Read the <link>documentation</link> to get started.')}
+      value={t('Read the <link>documentation</link> to get started.')}
       link={(children) => <a href="/docs">{children}</a>}
     />
   );
@@ -40,7 +51,7 @@ import { t } from 'yapyak';
 </script>
 
 <template>
-  <RichText :source="t('Read the <link>documentation</link> to get started.')">
+  <RichText :value="t('Read the <link>documentation</link> to get started.')">
     <template #link="{ children }">
       <a href="/docs">{{ children }}</a>
     </template>
@@ -54,7 +65,7 @@ import { t } from 'yapyak';
   import { t } from 'yapyak';
 </script>
 
-<RichText source={t('Read the <link>documentation</link> to get started.')}>
+<RichText value={t('Read the <link>documentation</link> to get started.')}>
   {#snippet link(children)}
     <a href="/docs">{children}</a>
   {/snippet}
@@ -63,21 +74,60 @@ import { t } from 'yapyak';
 
 {% /code-group %}
 
-`<RichText>` doesn't depend on translation. It accepts any string. That is kind of the point: `t()` decides what the message says, and `<RichText>` decides how the marked parts of that message are rendered.
+`<RichText>` reads the `<link>...</link>` tag and passes its contents to the `link` renderer. The translated message owns where the linked words appear. The component owns what they become in the interface.
 
-And, as the source is statically known, yapyak can also check the named tags for you. In React and Svelte, a `<link>` tag in the source means a matching `link` renderer must be provided, and TypeScript refuses to compile if you forget one. Vue exposes the corresponding slots, but its type system can't require them in the same way.
+`<RichText>` works well with `t()`, but it is not part of translation. It accepts any string that contains named tags:
 
-## In non-component environments
+```tsx
+<RichText
+  value="Read the <link>documentation</link> to get started."
+  link={(children) => <a href="/docs">{children}</a>}
+/>
+```
 
-For Astro, server scripts, or plain HTML generation, use `richText()` — the string-returning counterpart to `<RichText>`:
+That distinction matters. Translation is concerned with the message and its structure. Rendering is concerned with what that structure becomes on screen. Keeping those jobs separate leaves `t()` small and predictable, while rich text can follow the natural component model of each framework.
+
+## Static tag checking
+
+Although rich text is rendered at runtime, yapyak knows the tag names at authoring time. React and Svelte use that to require a matching renderer for each one. A value containing `<link>...</link>` must be given a `link` renderer:
+
+```tsx
+<RichText
+  value={t('Read the <link>documentation</link> to get started.')}
+/>
+// TypeScript error: missing `link` renderer
+```
+
+Vue exposes the corresponding named slots. Because of the way Vue types slots, it cannot require those slots in quite the same way as React and Svelte.
+
+## Rendering to a string
+
+A component is not always the output you need. You may be generating HTML on the server, producing markup outside a component tree, or rendering inside an environment where a string is the more natural result.
+
+For those cases, yapyak provides `richText()`. It uses the same named-tag model as `<RichText>`, but its handlers return strings:
 
 ```ts
 import { richText, t } from 'yapyak';
 
 const html = richText(
   t('Read the <link>documentation</link> to get started.'),
-  { link: (children) => `<a href="/docs">${children}</a>` },
+  {
+    link: (children) => `<a href="/docs">${children}</a>`,
+  },
 );
 ```
 
-The same static check applies: TypeScript verifies that every named tag has a matching handler. Pass `(children) => children` to render a tag as plain text.
+The same check applies here. If the message contains `<link>...</link>`, a `link` handler must be provided.
+
+A handler can also remove the markup while keeping the text inside it:
+
+```ts
+const text = richText(
+  t('Read the <link>documentation</link> to get started.'),
+  {
+    link: (children) => children,
+  },
+);
+```
+
+The message decides where its named parts belong. The renderer decides what those parts become.

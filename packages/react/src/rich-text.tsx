@@ -8,14 +8,14 @@ type TagsOf<T> = T extends TReturn<infer Tags> ? Tags : never;
 
 type TagHandler = (children: ReactNode) => ReactNode;
 
-export type RichTextProps<T extends string> = { source: T } & {
+export type RichTextProps<T extends string> = { value: T } & {
   [Tag in TagsOf<T>]: TagHandler;
 };
 
 export function RichText<T extends string>(props: RichTextProps<T>): ReactNode {
-  const { source, ...handlers } = props;
+  const { value, ...handlers } = props;
   return walkRichText<ReactNode>(
-    source,
+    value,
     handlers as Record<string, TagHandler>,
     reactRenderer,
   );

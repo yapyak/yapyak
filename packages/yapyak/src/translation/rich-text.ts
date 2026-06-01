@@ -16,10 +16,10 @@ export type RichTextHandlers<T extends string> = {
  * framework-specific `<RichText>` components in `@yapyak/react`, `@yapyak/vue`,
  * and `@yapyak/svelte`.
  *
- * When the source comes from `t()`, the handlers object is statically checked
+ * When the value comes from `t()`, the handlers object is statically checked
  * against the tag names found in the source.
  *
- * @param source - The string to render. May contain `<tag>...</tag>` markers.
+ * @param value - The string to render. May contain `<tag>...</tag>` markers.
  * @param handlers - A handler per tag name. Each handler receives the resolved
  *   text between the tags and returns the rendered string.
  *
@@ -34,11 +34,11 @@ export type RichTextHandlers<T extends string> = {
  * ```
  */
 export function richText<T extends string>(
-  source: T,
+  value: T,
   handlers: RichTextHandlers<T>,
 ): string {
   return walkRichText<string>(
-    source,
+    value,
     handlers as Record<string, RichTextHandler>,
     stringRenderer,
   );
