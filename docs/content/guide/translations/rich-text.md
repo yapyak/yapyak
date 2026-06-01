@@ -69,11 +69,15 @@ And, as the source is statically known, yapyak can also check the named tags for
 
 ## In non-component environments
 
-For Astro, server scripts, or plain HTML generation, replace the markers yourself:
+For Astro, server scripts, or plain HTML generation, use `richText()` — the string-returning counterpart to `<RichText>`:
 
 ```ts
-import { t } from 'yapyak';
+import { richText, t } from 'yapyak';
 
-const html = t('Read the <link>documentation</link> to get started.')
-  .replace(/<link>(.+?)<\/link>/, '<a href="/docs">$1</a>');
+const html = richText(
+  t('Read the <link>documentation</link> to get started.'),
+  { link: (children) => `<a href="/docs">${children}</a>` },
+);
 ```
+
+The same static check applies: TypeScript verifies that every named tag has a matching handler. Pass `(children) => children` to render a tag as plain text.

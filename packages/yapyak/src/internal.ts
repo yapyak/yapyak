@@ -4,4 +4,9 @@ export {
   setResponseHeaderWriter,
   subscribeLocale,
 } from './locale';
-export { pick, registerTracker, runTrackers } from './translation';
+export {
+  pick,
+  registerTracker,
+  runTrackers,
+  walkRichText,
+} from './translation';

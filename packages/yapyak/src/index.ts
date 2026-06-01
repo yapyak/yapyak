@@ -24,4 +24,11 @@ export type {
 export { defineConfig } from './config';
 export { type Format, format } from './format';
 export { defaultLocale, getLocale, locales, setLocale } from './locale';
-export { type TFn, type TParams, type TReturn, t } from './translation';
+export {
+  type RichTextHandlers,
+  type TFn,
+  type TParams,
+  type TReturn,
+  richText,
+  t,
+} from './translation';
