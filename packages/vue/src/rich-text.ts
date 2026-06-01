@@ -1,9 +1,7 @@
 import type { FunctionalComponent, VNodeChild } from 'vue';
+import type { RichTextNode as Node } from 'yapyak/internal';
 
-import {
-  parseRichText,
-  type RichTextNode as Node,
-} from 'yapyak/internal';
+import { parseRichText } from 'yapyak/internal';
 
 /**
  * The shape of a slot exposed by {@link RichText}. Each named tag in the

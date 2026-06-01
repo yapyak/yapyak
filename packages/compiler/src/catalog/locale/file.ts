@@ -1,16 +1,27 @@
 import type { ExtractedMessage } from '../../parser/file/extract';
+import type { OrphanCache } from './orphan';
 
 import { stringifyCanonical } from '../canonical';
+import {
+  addOrphan,
+  findOrphan,
+  getDefaultCacheDir,
+  readOrphans,
+  removeOrphan,
+  writeOrphans,
+} from './orphan';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 export type LocaleFile = Record<string, Record<string, string>>;
 
 export interface SyncLocaleFilesOptions {
+  cacheDir?: string;
   defaultLocale: string;
   locales: string[];
   localesDir: string;
   messages: ExtractedMessage[];
+  now?: () => string;
   projectRoot: string;
 }
 
@@ -133,16 +144,27 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
   const sourcesByFile = groupSourcesByFile(options.messages);
   const extractedSources = toExtractedSourcesSet(sourcesByFile);
 
-  for (const locale of options.locales) {
-    if (locale === options.defaultLocale) {
-      continue;
-    }
-    const localePath = getLocaleFilePath(
-      options.projectRoot,
-      options.localesDir,
+  const cacheDir = options.cacheDir ?? getDefaultCacheDir(options.projectRoot);
+  const orphans = readOrphans(cacheDir);
+  const nonDefaultLocales = options.locales.filter(
+    (locale) => locale !== options.defaultLocale,
+  );
+
+  const existingByLocale = new Map<string, LocaleFile>();
+  for (const locale of nonDefaultLocales) {
+    existingByLocale.set(
       locale,
+      readLocaleFile(
+        getLocaleFilePath(options.projectRoot, options.localesDir, locale),
+      ),
     );
-    const existing = readLocaleFile(localePath);
+  }
+
+  const nextByLocale = new Map<string, LocaleFile>();
+  const restoredOrphans = new Map<string, Set<string>>();
+
+  for (const locale of nonDefaultLocales) {
+    const existing = existingByLocale.get(locale) ?? {};
     const next: LocaleFile = {};
 
     for (const fileId of Object.keys(sourcesByFile).sort()) {
@@ -153,11 +175,75 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
       const existingFile = existing[fileId] ?? {};
       const fileEntries: Record<string, string> = {};
       for (const source of sources) {
-        const value = existingFile[source];
-        fileEntries[source] = typeof value === 'string' ? value : '';
+        const existingValue = existingFile[source];
+        if (typeof existingValue === 'string' && existingValue !== '') {
+          fileEntries[source] = existingValue;
+          continue;
+        }
+        const orphan = findOrphan(orphans, fileId, source);
+        const orphanValue = orphan?.entry.translations[locale];
+        if (orphan && typeof orphanValue === 'string' && orphanValue !== '') {
+          fileEntries[source] = orphanValue;
+          recordPair(restoredOrphans, orphan.fileId, source);
+          continue;
+        }
+        fileEntries[source] = '';
       }
       next[fileId] = fileEntries;
     }
+
+    nextByLocale.set(locale, next);
+  }
+
+  const droppedTranslations = new Map<string, Map<string, Record<string, string>>>();
+  for (const locale of nonDefaultLocales) {
+    const existing = existingByLocale.get(locale) ?? {};
+    for (const [fileId, entries] of Object.entries(existing)) {
+      const extractedForFile = extractedSources[fileId] ?? new Set<string>();
+      for (const [source, value] of Object.entries(entries)) {
+        if (value === '') {
+          continue;
+        }
+        if (extractedForFile.has(source)) {
+          continue;
+        }
+        if (restoredOrphans.get(fileId)?.has(source) === true) {
+          continue;
+        }
+        let bySource = droppedTranslations.get(fileId);
+        if (!bySource) {
+          bySource = new Map();
+          droppedTranslations.set(fileId, bySource);
+        }
+        let translations = bySource.get(source);
+        if (!translations) {
+          translations = {};
+          bySource.set(source, translations);
+        }
+        translations[locale] = value;
+      }
+    }
+  }
+
+  const orphansChanged = applyOrphanMutations({
+    droppedTranslations,
+    now: options.now ?? (() => new Date().toISOString()),
+    orphans,
+    restoredOrphans,
+  });
+
+  if (orphansChanged) {
+    writeOrphans(cacheDir, orphans);
+  }
+
+  for (const locale of nonDefaultLocales) {
+    const next = nextByLocale.get(locale) ?? {};
+    const existing = existingByLocale.get(locale) ?? {};
+    const localePath = getLocaleFilePath(
+      options.projectRoot,
+      options.localesDir,
+      locale,
+    );
 
     if (Object.keys(next).length === 0 && Object.keys(existing).length > 0) {
       console.warn(
@@ -168,6 +254,48 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
 
     writeLocaleFile({ after: next, extractedSources, filePath: localePath });
   }
+}
+
+function recordPair(
+  pairs: Map<string, Set<string>>,
+  fileId: string,
+  source: string,
+): void {
+  let sources = pairs.get(fileId);
+  if (!sources) {
+    sources = new Set();
+    pairs.set(fileId, sources);
+  }
+  sources.add(source);
+}
+
+interface ApplyOrphanMutationsInput {
+  droppedTranslations: Map<string, Map<string, Record<string, string>>>;
+  now: () => string;
+  orphans: OrphanCache;
+  restoredOrphans: Map<string, Set<string>>;
+}
+
+function applyOrphanMutations(input: ApplyOrphanMutationsInput): boolean {
+  let changed = false;
+  for (const [fileId, sources] of input.restoredOrphans) {
+    for (const source of sources) {
+      if (removeOrphan(input.orphans, fileId, source)) {
+        changed = true;
+      }
+    }
+  }
+  const timestamp = input.now();
+  for (const [fileId, bySource] of input.droppedTranslations) {
+    for (const [source, translations] of bySource) {
+      addOrphan(input.orphans, fileId, source, {
+        deletedAt: timestamp,
+        translations,
+      });
+      changed = true;
+    }
+  }
+  return changed;
 }
 
 function toExtractedSourcesSet(

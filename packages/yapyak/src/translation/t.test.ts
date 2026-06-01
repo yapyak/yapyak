@@ -67,16 +67,16 @@ describe('t', () => {
   describe('inline chain', () => {
     it('combines in and at via t.in(locale).at(context, source)', () => {
       setLocale('en');
-      expect(t.in('sv').at('action', 'You have {count, number}', { count: 1000 })).toMatch(
-        /1.000/,
-      );
+      expect(
+        t.in('sv').at('action', 'You have {count, number}', { count: 1000 }),
+      ).toMatch(/1.000/);
     });
 
     it('combines at and in via t.at(context).in(locale, source)', () => {
       setLocale('en');
-      expect(t.at('action').in('sv', 'You have {count, number}', { count: 1000 })).toMatch(
-        /1.000/,
-      );
+      expect(
+        t.at('action').in('sv', 'You have {count, number}', { count: 1000 }),
+      ).toMatch(/1.000/);
     });
 
     it('returns the source unchanged when chained without params', () => {

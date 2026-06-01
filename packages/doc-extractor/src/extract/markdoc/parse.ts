@@ -31,10 +31,7 @@ export function parseMarkdoc(source: string): ParsedContent {
 }
 
 function preprocessFenceLabels(source: string): string {
-  return source.replace(
-    /^(```)(\S+) +(\[[^\]]+\])[ \t]*$/gm,
-    '$1$2$3',
-  );
+  return source.replace(/^(```)(\S+) +(\[[^\]]+\])[ \t]*$/gm, '$1$2$3');
 }
 
 export function parseFrontmatterOnly(

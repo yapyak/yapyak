@@ -1,3 +1,4 @@
+import type { ExtractedMessage, Location } from '../../parser/file/extract';
 import type { LocaleFile } from './file';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -12,6 +13,23 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+
+function makeMessage(source: string, fileId: string): ExtractedMessage {
+  const location: Location = {
+    callSiteContext: {},
+    fileId,
+    range: {
+      end: { column: 0, line: 1, offset: 0 },
+      start: { column: 0, line: 1, offset: 0 },
+    },
+  };
+  return {
+    id: source,
+    locations: [location],
+    placeholders: [],
+    source,
+  };
+}
 
 describe('syncLocaleFiles', () => {
   let projectRoot: string;
@@ -62,6 +80,195 @@ describe('syncLocaleFiles', () => {
     );
 
     warn.mockRestore();
+  });
+
+  it('preserves a translation when its source briefly disappears via the orphan cache', () => {
+    const localesDir = 'locales';
+    const cacheDir = join(projectRoot, 'cache');
+    const localePath = join(projectRoot, localesDir, 'sv.json');
+    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    writeFileSync(
+      localePath,
+      JSON.stringify({ 'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' } }),
+    );
+
+    syncLocaleFiles({
+      cacheDir,
+      defaultLocale: 'en',
+      locales: ['en', 'sv'],
+      localesDir,
+      messages: [makeMessage('Save', 'src/a.tsx')],
+      now: () => '2026-01-01T00:00:00.000Z',
+      projectRoot,
+    });
+
+    expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
+      'src/a.tsx': { Save: 'Spara' },
+    });
+    expect(
+      JSON.parse(readFileSync(join(cacheDir, 'orphans.json'), 'utf8')),
+    ).toEqual({
+      'src/a.tsx': {
+        Cancel: {
+          deletedAt: '2026-01-01T00:00:00.000Z',
+          translations: { sv: 'Avbryt' },
+        },
+      },
+    });
+
+    syncLocaleFiles({
+      cacheDir,
+      defaultLocale: 'en',
+      locales: ['en', 'sv'],
+      localesDir,
+      messages: [
+        makeMessage('Save', 'src/a.tsx'),
+        makeMessage('Cancel', 'src/a.tsx'),
+      ],
+      now: () => '2026-01-02T00:00:00.000Z',
+      projectRoot,
+    });
+
+    expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
+      'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
+    });
+    expect(
+      JSON.parse(readFileSync(join(cacheDir, 'orphans.json'), 'utf8')),
+    ).toEqual({});
+  });
+
+  it('migrates orphan translations to a renamed file via cross-file lookup', () => {
+    const localesDir = 'locales';
+    const cacheDir = join(projectRoot, 'cache');
+    const localePath = join(projectRoot, localesDir, 'sv.json');
+    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    writeFileSync(
+      localePath,
+      JSON.stringify({
+        'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
+      }),
+    );
+
+    syncLocaleFiles({
+      cacheDir,
+      defaultLocale: 'en',
+      locales: ['en', 'sv'],
+      localesDir,
+      messages: [],
+      now: () => '2026-01-01T00:00:00.000Z',
+      projectRoot,
+    });
+
+    syncLocaleFiles({
+      cacheDir,
+      defaultLocale: 'en',
+      locales: ['en', 'sv'],
+      localesDir,
+      messages: [
+        makeMessage('Save', 'src/b.tsx'),
+        makeMessage('Cancel', 'src/b.tsx'),
+      ],
+      now: () => '2026-01-02T00:00:00.000Z',
+      projectRoot,
+    });
+
+    expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
+      'src/b.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
+    });
+    expect(
+      JSON.parse(readFileSync(join(cacheDir, 'orphans.json'), 'utf8')),
+    ).toEqual({});
+  });
+
+  it('refuses to silently drop a translation when extraction is partial', () => {
+    const localesDir = 'locales';
+    const cacheDir = join(projectRoot, 'cache');
+    const localePath = join(projectRoot, localesDir, 'sv.json');
+    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    writeFileSync(
+      localePath,
+      JSON.stringify({
+        'src/a.tsx': { Cancel: 'Avbryt', Hello: 'Hej', Save: 'Spara' },
+      }),
+    );
+
+    syncLocaleFiles({
+      cacheDir,
+      defaultLocale: 'en',
+      locales: ['en', 'sv'],
+      localesDir,
+      messages: [makeMessage('Save', 'src/a.tsx')],
+      now: () => '2026-01-01T00:00:00.000Z',
+      projectRoot,
+    });
+
+    const orphans = JSON.parse(
+      readFileSync(join(cacheDir, 'orphans.json'), 'utf8'),
+    );
+    expect(orphans['src/a.tsx']).toEqual({
+      Cancel: {
+        deletedAt: '2026-01-01T00:00:00.000Z',
+        translations: { sv: 'Avbryt' },
+      },
+      Hello: {
+        deletedAt: '2026-01-01T00:00:00.000Z',
+        translations: { sv: 'Hej' },
+      },
+    });
+  });
+
+  it('holds the most recent orphan when the same source exists across files', () => {
+    const localesDir = 'locales';
+    const cacheDir = join(projectRoot, 'cache');
+    const localePath = join(projectRoot, localesDir, 'sv.json');
+    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    writeFileSync(
+      localePath,
+      JSON.stringify({
+        'src/a.tsx': { Save: 'Spara' },
+      }),
+    );
+
+    syncLocaleFiles({
+      cacheDir,
+      defaultLocale: 'en',
+      locales: ['en', 'sv'],
+      localesDir,
+      messages: [],
+      now: () => '2026-01-01T00:00:00.000Z',
+      projectRoot,
+    });
+
+    writeFileSync(
+      localePath,
+      JSON.stringify({
+        'src/b.tsx': { Save: 'Spara ändringar' },
+      }),
+    );
+
+    syncLocaleFiles({
+      cacheDir,
+      defaultLocale: 'en',
+      locales: ['en', 'sv'],
+      localesDir,
+      messages: [],
+      now: () => '2026-01-02T00:00:00.000Z',
+      projectRoot,
+    });
+
+    syncLocaleFiles({
+      cacheDir,
+      defaultLocale: 'en',
+      locales: ['en', 'sv'],
+      localesDir,
+      messages: [makeMessage('Save', 'src/components/c.tsx')],
+      now: () => '2026-01-03T00:00:00.000Z',
+      projectRoot,
+    });
+
+    expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
+      'src/components/c.tsx': { Save: 'Spara ändringar' },
+    });
   });
 });
 

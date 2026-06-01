@@ -7,8 +7,8 @@ export {
 export {
   parseRichText,
   pick,
-  registerTracker,
   type RichTextNode,
+  registerTracker,
   runTrackers,
   walkRichText,
 } from './translation';

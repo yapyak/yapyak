@@ -19,8 +19,8 @@ describe('richText', () => {
     const result = richText(
       'Read the <link>docs</link> for <bold>everything</bold>.',
       {
-        link: (c) => `[${c}]`,
         bold: (c) => `*${c}*`,
+        link: (c) => `[${c}]`,
       } as Record<string, (c: string) => string>,
     );
     expect(result).toBe('Read the [docs] for *everything*.');
@@ -38,17 +38,20 @@ describe('richText', () => {
     const result = richText(
       'A <outer>nested <inner>tag</inner> inside</outer>.',
       {
-        outer: (c) => `[${c}]`,
         inner: (c) => `(${c})`,
+        outer: (c) => `[${c}]`,
       } as Record<string, (c: string) => string>,
     );
     expect(result).toBe('A [nested (tag) inside].');
   });
 
   it('leaves unknown tags as literal text', () => {
-    const result = richText('<unknown>kept</unknown> and <link>replaced</link>.', {
-      link: (c) => `[${c}]`,
-    } as Record<string, (c: string) => string>);
+    const result = richText(
+      '<unknown>kept</unknown> and <link>replaced</link>.',
+      {
+        link: (c) => `[${c}]`,
+      } as Record<string, (c: string) => string>,
+    );
     expect(result).toBe('<unknown>kept</unknown> and [replaced].');
   });
 
@@ -60,13 +63,10 @@ describe('richText', () => {
   });
 
   it('supports plain-text rendering by returning the children unchanged', () => {
-    const result = richText(
-      'Click <link>here</link> and <bold>here</bold>.',
-      {
-        link: (c) => c,
-        bold: (c) => c,
-      } as Record<string, (c: string) => string>,
-    );
+    const result = richText('Click <link>here</link> and <bold>here</bold>.', {
+      bold: (c) => c,
+      link: (c) => c,
+    } as Record<string, (c: string) => string>);
     expect(result).toBe('Click here and here.');
   });
 

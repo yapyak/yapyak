@@ -77,7 +77,9 @@ describe('discoverCalls', () => {
     const sf = loadFixture('call', 'scoped-inline.ts');
     const { callSites } = discoverCalls(sf, resolveBindings(sf));
     expect(callSites).toHaveLength(2);
-    expect(callSites[0]?.localeExpression?.getText()).toBe('previewLocale.value');
+    expect(callSites[0]?.localeExpression?.getText()).toBe(
+      'previewLocale.value',
+    );
   });
 
   it('extracts a chained `t.in(loc).at(ctx, src)` call', () => {

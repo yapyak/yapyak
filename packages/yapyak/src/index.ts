@@ -26,9 +26,9 @@ export { type Format, format } from './format';
 export { defaultLocale, getLocale, locales, setLocale } from './locale';
 export {
   type RichTextHandlers,
+  richText,
   type TFn,
   type TParams,
   type TReturn,
-  richText,
   t,
 } from './translation';
