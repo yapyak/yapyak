@@ -49,7 +49,7 @@ ANTHROPIC_API_KEY=sk-ant-...
 
 OpenAI, Ollama, or any custom translator works the same way — see [Translators](/guide/translators/).
 
-The plugin has more options for advanced cases (custom locale folder, include/exclude patterns, rename behavior). See [Translations](/guide/core/translations).
+The plugin has more options for advanced cases (custom locale folder, include/exclude patterns, rename behavior). See [Translations](/guide/translations/).
 
 ## Add a locale
 
@@ -113,7 +113,7 @@ HMR pushes the new copy live. Edit the string. Save again. Every locale re-trans
 
 ## Switch language at runtime
 
-`useLocale()` in React, `locale` in Vue and Svelte. The full pattern with code samples for each framework lives in [Locales / Switching locale](/guide/core/locales#switching-locale).
+`useLocale()` in React, `locale` in Vue and Svelte. The full pattern with code samples for each framework lives in [Locales / Runtime](/guide/locales/runtime).
 
 ## SSR setup
 
@@ -156,6 +156,6 @@ Two common CI shapes:
 ## What's next
 
 - [How it works](/guide/getting-started/how-it-works) — the auto-translate pipeline, position-aware renames, compile-time rewrite
-- [Translations](/guide/core/translations/) — `t()` API, params, plurals, forced locale
-- [Locales](/guide/core/locales/) — adding locales, persistence, reactive bindings
+- [Translations](/guide/translations/) — `t()` API, params, plurals, forced locale
+- [Locales](/guide/locales/) — adding locales, persistence, reactive bindings
 - [Translators](/guide/translators/) — Anthropic, OpenAI, Gemini, Ollama, custom

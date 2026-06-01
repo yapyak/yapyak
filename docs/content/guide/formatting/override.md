@@ -50,4 +50,4 @@ sv.number(1234.5);                       // '1 234,5' — still sv
 en.number(1234.5);                       // '1,234.5'
 ```
 
-The translation-side equivalent is [t.in()](/guide/core/translations#forced-locale).
+The translation-side equivalent is [t.in()](/guide/translations/override).

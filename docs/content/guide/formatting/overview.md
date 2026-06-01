@@ -31,7 +31,7 @@ Topics by page: [Numbers](./numbers.md), [Dates](./dates.md), [Lists](./lists.md
 
 ## Locale resolution
 
-`format.X(...)` reads the active locale from [getLocale()](/guide/core/locales#switching-locale) on every call. Switching locale at runtime affects the next call immediately — there is no captured value.
+`format.X(...)` reads the active locale from [getLocale()](/guide/locales/runtime) on every call. Switching locale at runtime affects the next call immediately — there is no captured value.
 
 ```ts
 import { format, setLocale } from 'yapyak';

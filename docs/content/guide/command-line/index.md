@@ -1,5 +1,5 @@
 ---
-title: Formatting
-order: 3
+title: Command Line
+order: 7
 redirect: ./overview
 ---
