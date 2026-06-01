@@ -3,7 +3,7 @@ export { pick } from './pick';
 export { hasPlaceholder } from './placeholder';
 export { type RichTextHandlers, richText } from './rich-text';
 export {
-  parseRichTextTree,
+  parseRichText,
   type RichTextNode,
   walkRichText,
 } from './rich-text-walker';

@@ -5,7 +5,7 @@ export {
   subscribeLocale,
 } from './locale';
 export {
-  parseRichTextTree,
+  parseRichText,
   pick,
   registerTracker,
   type RichTextNode,

@@ -2,7 +2,7 @@ export type RichTextNode =
   | { type: 'tag'; name: string; children: RichTextNode[] }
   | { type: 'text'; text: string };
 
-export function parseRichTextTree(source: string): RichTextNode[] {
+export function parseRichText(source: string): RichTextNode[] {
   const nodes: RichTextNode[] = [];
   let text = '';
   let index = 0;
@@ -23,7 +23,7 @@ export function parseRichTextTree(source: string): RichTextNode[] {
       if (close) {
         flush();
         nodes.push({
-          children: parseRichTextTree(source.slice(open.end, close.start)),
+          children: parseRichText(source.slice(open.end, close.start)),
           name: open.name,
           type: 'tag',
         });
@@ -43,7 +43,7 @@ export function walkRichText<T>(
   handlers: Record<string, (children: T) => T>,
   renderer: { leaf: (text: string) => T; concat: (parts: T[]) => T },
 ): T {
-  return renderNodes(parseRichTextTree(source), handlers, renderer);
+  return renderNodes(parseRichText(source), handlers, renderer);
 }
 
 function renderNodes<T>(
