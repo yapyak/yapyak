@@ -1,6 +1,6 @@
 ---
 title: Translations
-order: 4
+order: 1
 ---
 
 `t()` is the runtime API. It takes a source string literal and optional params, and returns the right variant for the current locale.

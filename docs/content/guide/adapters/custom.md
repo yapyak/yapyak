@@ -70,4 +70,4 @@ export default defineConfig({
 });
 ```
 
-See [Locales / Persistence](/guide/locales#persistence).
+See [Locales / Persistence](/guide/core/locales#persistence).

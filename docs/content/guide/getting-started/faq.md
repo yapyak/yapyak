@@ -1,6 +1,6 @@
 ---
 title: FAQ
-order: 8
+order: 4
 ---
 
 Common questions about adopting yapyak.

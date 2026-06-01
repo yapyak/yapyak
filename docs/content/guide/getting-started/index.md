@@ -1,5 +1,5 @@
 ---
-title: Translators
-order: 3
+title: Getting started
+order: 1
 redirect: ./introduction
 ---

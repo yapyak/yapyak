@@ -22,4 +22,4 @@ npx yapyak status
 
 ## Documentation
 
-[yapyak.dev/guide/cli](https://yapyak.dev/guide/cli)
+[yapyak.dev/guide/core/cli](https://yapyak.dev/guide/core/cli)

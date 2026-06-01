@@ -1,6 +1,6 @@
 ---
 title: CLI
-order: 7
+order: 4
 ---
 
 The Vite plugin handles the dev loop: edit a string, save, translations update. The CLI handles everything that happens outside that loop — adding locales, re-translating after a voice change, snapshotting for handoff, gating CI on completeness.

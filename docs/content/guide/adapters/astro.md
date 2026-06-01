@@ -81,4 +81,4 @@ export default defineConfig({
 });
 ```
 
-The cookie is written client-side on `setLocale()` and read server-side by the middleware on every request. See [Locales / Persistence](/guide/locales#persistence).
+The cookie is written client-side on `setLocale()` and read server-side by the middleware on every request. See [Locales / Persistence](/guide/core/locales#persistence).

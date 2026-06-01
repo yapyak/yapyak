@@ -1,5 +1,5 @@
 ---
 title: Adapters
-order: 9
+order: 4
 redirect: ./introduction
 ---

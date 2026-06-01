@@ -1,6 +1,6 @@
 ---
 title: Formatting
-order: 5
+order: 2
 ---
 
 `format` renders locale-aware values: numbers, currency, dates, lists, relative time. It's the sibling of `t()`: where `t()` translates strings, `format` formats values for the active locale. Every method is backed by `Intl`, so the options are the native `Intl.*Options`.
