@@ -48,7 +48,7 @@ export function App() {
         <RichText
           b={(children) => <strong>{children}</strong>}
           link={(children) => <a href="https://yapyak.dev">{children}</a>}
-          value={t('Translate <b>everything</b> with <link>yapyak</link>')}
+          source={t('Translate <b>everything</b> with <link>yapyak</link>')}
         />
       </p>
 

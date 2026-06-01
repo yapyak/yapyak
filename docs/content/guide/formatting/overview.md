@@ -1,7 +1,6 @@
 ---
 title: Overview
 order: 1
-description: format is a thin layer over the platform Intl constructors. Eight formatting methods plus a locale-scoping factory.
 ---
 
 `format` is a thin layer over the platform [`Intl`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl) constructors. It reads the active locale on every call, applies a default only to the date methods, and never validates input — pass it `NaN` and you get whatever your locale's `Intl` decided `NaN` looks like.
