@@ -2,6 +2,7 @@ export {
   type AutoTranslateOptions,
   type AutoTranslateResult,
   autoTranslate,
+  CorruptLocaleFileError,
   type DiscoverLocalesOptions,
   type DiscoverLocalesResult,
   detectAtIssues,

@@ -1,9 +1,15 @@
 import type { ExtractedMessage, Location } from '../../parser/file/extract';
 import type { LocaleFile } from './file';
 
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { syncLocaleFiles, writeLocaleFile, YapyakInvariantError } from './file';
+import {
+  CorruptLocaleFileError,
+  readLocaleFile,
+  syncLocaleFiles,
+  writeLocaleFile,
+  YapyakInvariantError,
+} from './file';
 import {
   existsSync,
   mkdirSync,
@@ -327,6 +333,64 @@ describe('syncLocaleFiles', () => {
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
       'src/components/c.tsx': { Save: 'Spara ändringar' },
     });
+  });
+
+  it('preserves a corrupt locale file untouched when sync is requested', () => {
+    const localesDir = 'locales';
+    const cacheDir = join(projectRoot, 'cache');
+    const localePath = join(projectRoot, localesDir, 'sv.json');
+    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    const corruptContent = '{ "src/a.tsx": { "Save": "Spara"';
+    writeFileSync(localePath, corruptContent);
+
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    syncLocaleFiles({
+      cacheDir,
+      defaultLocale: 'en',
+      locales: ['en', 'sv'],
+      localesDir,
+      messages: [makeMessage('Save', 'src/a.tsx')],
+      now: () => '2026-01-01T00:00:00.000Z',
+      projectRoot,
+    });
+
+    expect(readFileSync(localePath, 'utf8')).toBe(corruptContent);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('Failed to parse locale file'),
+    );
+
+    warn.mockRestore();
+  });
+});
+
+describe('readLocaleFile', () => {
+  let dir: string;
+  let path: string;
+
+  beforeEach(() => {
+    dir = mkdtempSync(join(tmpdir(), 'yapyak-corrupt-'));
+    path = join(dir, 'sv.json');
+  });
+
+  afterEach(() => {
+    rmSync(dir, { force: true, recursive: true });
+  });
+
+  it('throws CorruptLocaleFileError when the JSON is malformed', () => {
+    writeFileSync(path, '{ "src/a.tsx": { "Save": "Spara"');
+
+    expect(() => readLocaleFile(path)).toThrow(CorruptLocaleFileError);
+  });
+
+  it('returns an empty object when the file is missing', () => {
+    expect(readLocaleFile(path)).toEqual({});
+  });
+
+  it('returns an empty object when the file contains only whitespace', () => {
+    writeFileSync(path, '   \n  ');
+
+    expect(readLocaleFile(path)).toEqual({});
   });
 });
 

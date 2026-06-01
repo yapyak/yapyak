@@ -9,6 +9,7 @@ export {
   discoverLocales,
 } from './discover';
 export {
+  CorruptLocaleFileError,
   getLocaleFilePath,
   type InvariantViolation,
   type LocaleFile,

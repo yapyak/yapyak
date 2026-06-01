@@ -1,6 +1,7 @@
 export { stringifyCanonical } from './canonical';
 export { detectAtIssues } from './disambiguation';
 export {
+  CorruptLocaleFileError,
   type DiscoverLocalesOptions,
   type DiscoverLocalesResult,
   detectRenames,

@@ -57,6 +57,27 @@ export class YapyakInvariantError extends Error {
   }
 }
 
+/**
+ * Error thrown when a locale file cannot be parsed as JSON.
+ *
+ * @remarks
+ * Yapyak refuses to silently clobber a malformed locale file. The error
+ * carries the absolute path of the offending file and the underlying parse
+ * error as its `cause`.
+ */
+export class CorruptLocaleFileError extends Error {
+  readonly filePath: string;
+
+  constructor(filePath: string, cause: unknown) {
+    super(
+      `[yapyak] Failed to parse locale file ${filePath}. Check the JSON syntax — yapyak will skip syncing this locale until it is fixed.`,
+      { cause },
+    );
+    this.name = 'CorruptLocaleFileError';
+    this.filePath = filePath;
+  }
+}
+
 export function getLocaleFilePath(
   projectRoot: string,
   localesDir: string,
@@ -70,14 +91,14 @@ export function readLocaleFile(path: string): LocaleFile {
     return {};
   }
   const content = readFileSync(path, 'utf-8');
-  if (content.trim() === '') {
+  if (!content.trim()) {
     return {};
   }
   let parsed: unknown;
   try {
     parsed = JSON.parse(content);
-  } catch {
-    return {};
+  } catch (cause) {
+    throw new CorruptLocaleFileError(path, cause);
   }
   if (typeof parsed !== 'object' || parsed === null) {
     return {};
@@ -151,26 +172,39 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
   );
 
   const existingByLocale = new Map<string, LocaleFile>();
+  const corruptLocales = new Set<string>();
   for (const locale of nonDefaultLocales) {
-    existingByLocale.set(
+    const localePath = getLocaleFilePath(
+      options.projectRoot,
+      options.localesDir,
       locale,
-      readLocaleFile(
-        getLocaleFilePath(options.projectRoot, options.localesDir, locale),
-      ),
     );
+    try {
+      existingByLocale.set(locale, readLocaleFile(localePath));
+    } catch (error) {
+      if (error instanceof CorruptLocaleFileError) {
+        console.warn(error.message);
+        corruptLocales.add(locale);
+        continue;
+      }
+      throw error;
+    }
   }
+  const healthyLocales = nonDefaultLocales.filter(
+    (locale) => !corruptLocales.has(locale),
+  );
 
   const inFlightDrops = collectInFlightDrops(
     existingByLocale,
     extractedSources,
-    nonDefaultLocales,
+    healthyLocales,
   );
 
   const nextByLocale = new Map<string, LocaleFile>();
   const restoredOrphans = new Map<string, Set<string>>();
   const restoredInFlight = new Map<string, Set<string>>();
 
-  for (const locale of nonDefaultLocales) {
+  for (const locale of healthyLocales) {
     const existing = existingByLocale.get(locale) ?? {};
     const next: LocaleFile = {};
 
@@ -241,7 +275,7 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
     writeOrphans(cacheDir, orphans);
   }
 
-  for (const locale of nonDefaultLocales) {
+  for (const locale of healthyLocales) {
     const next = nextByLocale.get(locale) ?? {};
     const localePath = getLocaleFilePath(
       options.projectRoot,
