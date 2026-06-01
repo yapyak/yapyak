@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { locales, t } from 'yapyak';
 import { locale, RichText } from '@yapyak/vue';
 
 const date = new Date('2024-01-01T08:30:00Z');
-const richMessage = t('Translate <b>everything</b> with <link>yapyak</link>');
+
+const richMessage = computed(() =>
+  t('Translate <b>everything</b> with <link>yapyak</link>'),
+);
 </script>
 
 <template>
@@ -30,7 +34,7 @@ const richMessage = t('Translate <b>everything</b> with <link>yapyak</link>');
 
     <h2>{{ t('Rich text') }}</h2>
     <p>
-      <RichText :value="richMessage">
+      <RichText :value="t('Translate <b>everything</b> with <link>yapyak</link>')">
         <template #b="{ children }">
           <strong><component :is="children" /></strong>
         </template>

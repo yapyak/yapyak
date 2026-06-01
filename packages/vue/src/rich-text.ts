@@ -1,6 +1,5 @@
-import type { FunctionalComponent, VNode } from 'vue';
+import type { FunctionalComponent, VNodeChild } from 'vue';
 
-import { h } from 'vue';
 import {
   parseRichText,
   type RichTextNode as Node,
@@ -13,7 +12,7 @@ import {
  * The slot receives a `children` render function that emits the inner content,
  * which the consumer wraps in the desired element.
  */
-export type TagSlot = (props: { children: () => VNode[] }) => VNode[];
+export type TagSlot = (props: { children: () => VNodeChild[] }) => VNodeChild[];
 
 /**
  * Slots exposed by {@link RichText}.
@@ -64,22 +63,22 @@ export const RichText: FunctionalComponent<
 function renderNodes(
   nodes: Node[],
   slots: Readonly<Record<string, TagSlot | undefined>>,
-): VNode[] {
-  const out: VNode[] = [];
+): VNodeChild[] {
+  const out: VNodeChild[] = [];
   for (const node of nodes) {
     if (node.type === 'text') {
-      out.push(h('span', node.text) as VNode);
+      out.push(node.text);
       continue;
     }
     const slot = slots[node.name];
     if (slot) {
-      const children = (): VNode[] => renderNodes(node.children, slots);
+      const children = (): VNodeChild[] => renderNodes(node.children, slots);
       out.push(...slot({ children }));
       continue;
     }
-    out.push(h('span', `<${node.name}>`) as VNode);
+    out.push(`<${node.name}>`);
     out.push(...renderNodes(node.children, slots));
-    out.push(h('span', `</${node.name}>`) as VNode);
+    out.push(`</${node.name}>`);
   }
   return out;
 }
