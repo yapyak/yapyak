@@ -23,8 +23,7 @@ export function pick(
     params = paramsOrOptions as Record<string, unknown> | undefined;
     options = maybeOptions;
   } else {
-    options =
-      (paramsOrOptions as PickOptions | undefined) ?? maybeOptions;
+    options = (paramsOrOptions as PickOptions | undefined) ?? maybeOptions;
   }
 
   runTrackers();

@@ -35,10 +35,10 @@ export function FeatureSection(props: FeatureSectionProps) {
     },
     {
       description: t(
-        "Other libraries load a runtime dictionary. yapyak compiles each t() into an inline object with every locale variant, right where it's used. Vite already splits your app — yapyak just lets translations come along for the ride.",
+        'Every t() is rewritten in place. Ship all locales together and Vite code-splits the catalogs along your routes. Or target a single locale at build time — the others are physically gone from the bundle, and plain text collapses to a string literal.',
       ),
       number: '03',
-      title: t('Translations compile in'),
+      title: t('Translations compile in. You choose how much.'),
     },
     {
       description: t(

@@ -33,9 +33,9 @@ describe('pick', () => {
 
   it('honors a forced locale via options when params slot is undefined', () => {
     setLocale('en');
-    expect(
-      pick({ en: 'Save', sv: 'Spara' }, undefined, { locale: 'sv' }),
-    ).toBe('Spara');
+    expect(pick({ en: 'Save', sv: 'Spara' }, undefined, { locale: 'sv' })).toBe(
+      'Spara',
+    );
   });
 
   it('interpolates params for a source with placeholders', () => {

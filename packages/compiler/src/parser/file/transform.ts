@@ -11,6 +11,7 @@ import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
 export interface TransformFileRequest {
+  defaultLocale?: string;
   extracted: ExtractFileResult;
   fileId: string;
   locales: readonly string[];
@@ -40,7 +41,7 @@ const YAPYAK_INTERNAL_MODULE = 'yapyak/internal';
 export function transformFile(
   request: TransformFileRequest,
 ): TransformFileResult {
-  const defaultLocale = request.locales[0];
+  const defaultLocale = request.defaultLocale ?? request.locales[0];
   if (!defaultLocale) {
     return {
       code: request.source,
@@ -269,12 +270,22 @@ function renderCallReplacement(
   const id = toMessageId(parsed.source, parsed.context);
 
   if (isSingleLocale && canElide(placeholders, callSite)) {
-    const bare = tryBareElision(parsed.source, callSite, placeholders);
+    const singleLocale = locales[0];
+    const targetText = singleLocale
+      ? pickLocaleText({
+          defaultLocale,
+          id,
+          locale: singleLocale,
+          source: parsed.source,
+          translations,
+        })
+      : parsed.source;
+    const bare = tryBareElision(targetText, callSite, placeholders);
     if (bare) {
       return bare;
     }
     return {
-      code: renderEliminated(parsed.source, callSite, placeholders),
+      code: renderEliminated(targetText, callSite, placeholders),
       usesPick: false,
     };
   }

@@ -51,10 +51,39 @@ interface CallSitePosition {
 }
 
 /**
+ * Options for {@link yapyak}.
+ */
+export interface YapyakPluginOptions {
+  /**
+   * Locks the build to a single locale. Stripped at compile time.
+   *
+   * @remarks
+   * When set, every `t()` and `t.at()` call is rewritten to the matching translation literal for this locale, the `_pick` runtime is tree-shaken away, and the resulting bundle contains zero i18n overhead. Useful for static SPA deploys where each artifact serves one locale.
+   *
+   * Must be one of the locales configured in the project (i.e., a `<locale>.json` file under the locales directory). Throws at config-resolution time if not.
+   *
+   * Leave unset (or use `process.env.YAPYAK_LOCALE` for CI control) to keep the default multi-locale behavior where every call site emits a catalog of all available locales.
+   *
+   * @example Per-build static locale via CI
+   * ```ts
+   * import { yapyak } from '@yapyak/vite';
+   * import { defineConfig } from 'vite';
+   *
+   * export default defineConfig({
+   *   plugins: [yapyak({ fixedLocale: process.env.YAPYAK_LOCALE })],
+   * });
+   * ```
+   */
+  fixedLocale?: string;
+}
+
+/**
  * Creates a Vite plugin.
  *
  * @remarks
  * Configuration is read from `yapyak.config.{ts,mts,mjs,js}` in the project root. Returns defaults if no config file is found.
+ *
+ * @param options - The plugin options.
  *
  * @example Register in vite.config.ts
  * ```ts
@@ -65,8 +94,22 @@ interface CallSitePosition {
  *   plugins: [yapyak()],
  * });
  * ```
+ *
+ * @example Lock the build to a single locale
+ * ```ts
+ * import { yapyak } from '@yapyak/vite';
+ * import { defineConfig } from 'vite';
+ *
+ * export default defineConfig({
+ *   plugins: [yapyak({ fixedLocale: process.env.YAPYAK_LOCALE })],
+ * });
+ * ```
  */
-export function yapyak(): Plugin {
+export function yapyak(options: YapyakPluginOptions = {}): Plugin {
+  const fixedLocale =
+    options.fixedLocale && options.fixedLocale.length > 0
+      ? options.fixedLocale
+      : undefined;
   const messagesByFile = new Map<string, ExtractedMessage[]>();
   let projectRoot = process.cwd();
   let localeCache: LocaleData | null = null;
@@ -90,11 +133,19 @@ export function yapyak(): Plugin {
   function discover(): { defaultLocale: string; locales: string[] } {
     const config = getNormalized();
     if (resolved === null) {
-      resolved = discoverLocales({
+      const base = discoverLocales({
         defaultLocale: config.defaultLocale,
         localesDir: config.localesDir,
         projectRoot,
       });
+      if (fixedLocale !== undefined) {
+        resolved = {
+          defaultLocale: base.defaultLocale,
+          locales: [fixedLocale],
+        };
+      } else {
+        resolved = base;
+      }
     }
     return resolved;
   }
@@ -262,6 +313,20 @@ export function yapyak(): Plugin {
       if (Array.isArray(ssrExternal)) {
         const kept = ssrExternal.filter((id) => !isRuntimeExternal(id));
         ssrExternal.splice(0, ssrExternal.length, ...kept);
+      }
+      if (fixedLocale !== undefined) {
+        const available = discoverLocales({
+          defaultLocale: result.config.defaultLocale,
+          localesDir: result.config.localesDir,
+          projectRoot,
+        }).locales;
+        if (!available.includes(fixedLocale)) {
+          throw new Error(
+            `[yapyak] fixedLocale '${fixedLocale}' is not configured in this project. ` +
+              `Available locales: ${available.join(', ')}. ` +
+              `Either add '${fixedLocale}' to your locales/ directory or pick an existing locale.`,
+          );
+        }
       }
     },
     configureServer(server): void {
@@ -483,6 +548,7 @@ export function yapyak(): Plugin {
         locales,
       });
       const result = transformFile({
+        defaultLocale: discover().defaultLocale,
         extracted,
         fileId,
         locales,

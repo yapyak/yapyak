@@ -490,6 +490,63 @@ describe('yapyak', () => {
       expect(data['src/a.tsx']).toEqual({ Hello: '' });
     });
   });
+
+  describe('fixedLocale', () => {
+    beforeEach(() => {
+      writeFileSync(
+        join(root, 'src', 'a.tsx'),
+        "import { t } from 'yapyak';\nexport const a = () => t('Hello');\n",
+      );
+      writeFileSync(
+        join(root, 'locales', 'sv.json'),
+        JSON.stringify({ 'src/a.tsx': { Hello: 'Hej' } }),
+      );
+      writeFileSync(join(root, 'locales', 'en.json'), '{}');
+    });
+
+    it('accepts a fixedLocale that exists in the project', async () => {
+      const plugin = yapyak({ fixedLocale: 'sv' });
+      await expect(
+        invokeConfigResolved(plugin, root, 'build'),
+      ).resolves.toBeUndefined();
+    });
+
+    it('throws when fixedLocale is not in the project locales', async () => {
+      const plugin = yapyak({ fixedLocale: 'fr' });
+      await expect(invokeConfigResolved(plugin, root, 'build')).rejects.toThrow(
+        /fixedLocale 'fr' is not configured/,
+      );
+    });
+
+    it('treats empty string as no fixedLocale', async () => {
+      const plugin = yapyak({ fixedLocale: '' });
+      await expect(
+        invokeConfigResolved(plugin, root, 'build'),
+      ).resolves.toBeUndefined();
+    });
+
+    it('treats undefined as no fixedLocale (default behavior)', async () => {
+      const plugin = yapyak({});
+      await expect(
+        invokeConfigResolved(plugin, root, 'build'),
+      ).resolves.toBeUndefined();
+    });
+
+    it('rewrites `t()` to the locale literal when fixedLocale is set', async () => {
+      const plugin = yapyak({ fixedLocale: 'sv' });
+      await invokeConfigResolved(plugin, root, 'build');
+      const output = await invokeTransform(plugin, join(root, 'src', 'a.tsx'));
+      expect(output).toContain('Hej');
+      expect(output).not.toContain('_pick');
+    });
+
+    it('leaves `_pick` in place when fixedLocale is not set', async () => {
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'build');
+      const output = await invokeTransform(plugin, join(root, 'src', 'a.tsx'));
+      expect(output).toContain('_pick');
+    });
+  });
 });
 
 async function invokeConfigResolved(
@@ -519,6 +576,24 @@ function createSilentLogger(): ResolvedConfig['logger'] {
     warn: noop,
     warnOnce: noop,
   };
+}
+
+type TransformHook = (
+  code: string,
+  id: string,
+) => { code: string } | null | Promise<{ code: string } | null>;
+
+async function invokeTransform(
+  plugin: ReturnType<typeof yapyak>,
+  filePath: string,
+): Promise<string> {
+  const hook = plugin.transform;
+  if (typeof hook !== 'function') {
+    throw new Error('transform hook missing');
+  }
+  const code = readFileSync(filePath, 'utf8');
+  const result = await (hook as TransformHook).call(plugin, code, filePath);
+  return result?.code ?? code;
 }
 
 function invokeBuildStart(plugin: ReturnType<typeof yapyak>): void {
