@@ -29,33 +29,12 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   const sourceFile = callSite.node.getSourceFile();
   const fileText = sourceFile.text;
   const fileId = sourceFile.fileName;
-  const callArgs = callSite.node.arguments;
   const diagnostics: Diagnostic[] = [];
-  const isAt = callSite.variant === 'at';
 
   let context: string | undefined;
 
-  if (isAt) {
-    const contextArg = callArgs[0];
-    if (!contextArg) {
-      diagnostics.push(
-        createDiagnostic({
-          code: 'YPK101',
-          fileId,
-          hint: "Pass the context as the first argument: `t.at('button', 'Save')`.",
-          message:
-            't.at() called without context. Expected `t.at(context, source, params?)`.',
-          range: toRange(callSite.node, sourceFile),
-          severity: 'error',
-          source: fileText,
-        }),
-      );
-      return {
-        diagnostics,
-        source: '',
-        sourceRange: toRange(callSite.node, sourceFile),
-      };
-    }
+  if (callSite.contextArg) {
+    const contextArg = callSite.contextArg;
     if (
       ts.isStringLiteral(contextArg) ||
       ts.isNoSubstitutionTemplateLiteral(contextArg)
@@ -91,14 +70,13 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
     }
   }
 
-  const sourceArg = callArgs[isAt ? 1 : 0];
-
+  const sourceArg = callSite.sourceArg;
   if (!sourceArg) {
     diagnostics.push(
       createDiagnostic({
         code: 'YPK101',
         fileId,
-        message: isAt
+        message: callSite.contextArg
           ? 't.at() called without source string.'
           : 't() called without arguments.',
         range: toRange(callSite.node, sourceFile),
@@ -166,14 +144,14 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   let params: ParsedParams | undefined;
 
   if (hasPlaceholders) {
-    const paramArg = callArgs[isAt ? 2 : 1];
+    const paramArg = callSite.paramsArg;
     params = paramArg ? parseParams(paramArg, sourceFile) : undefined;
     validateParams({
       callSite,
       diagnostics,
       fileId,
       fileText,
-      hasParamArg: Boolean(paramArg),
+      hasParamArg: paramArg !== undefined,
       params,
       placeholderKeys,
     });

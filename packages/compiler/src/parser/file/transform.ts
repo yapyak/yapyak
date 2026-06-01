@@ -356,7 +356,7 @@ function safeJsString(text: string): string {
 function getParamExpressions(
   callSite: CallSite,
 ): Map<string, string> | undefined {
-  const arg = callSite.node.arguments[callSite.variant === 'at' ? 2 : 1];
+  const arg = callSite.paramsArg;
   if (!arg) {
     return undefined;
   }
@@ -476,7 +476,7 @@ function renderLocaleKey(locale: string): string {
 }
 
 function getParamArgText(callSite: CallSite): string | undefined {
-  const arg = callSite.node.arguments[callSite.variant === 'at' ? 2 : 1];
+  const arg = callSite.paramsArg;
   if (!arg) {
     return undefined;
   }

@@ -32,20 +32,78 @@ export type TReturn<T extends string = never> = [T] extends [never]
   : string & { [brand]?: T };
 
 /**
- * Translates a source string for the active or a scoped locale.
+ * An inline chain that started with `t.in(locale)` and expects `.at(context, source)` to complete the call.
  *
  * @remarks
- * The type of {@link t}. Also returned by `t.in()`, so a locale-scoped translator carries the same shape.
+ * Has no callable signature, so it cannot be captured and used as a translator. Use inline only:
+ *
+ * ```ts
+ * t.in('sv').at('action', 'Open');
+ * ```
+ */
+export interface TInChain {
+  at<T extends string>(
+    context: string,
+    source: T,
+    params?: TParams<T>,
+  ): TReturn<ExtractTags<T>>;
+}
+
+/**
+ * An inline chain that started with `t.at(context)` and expects `.in(locale, source)` to complete the call.
+ *
+ * @remarks
+ * Has no callable signature, so it cannot be captured and used as a translator. Use inline only:
+ *
+ * ```ts
+ * t.at('action').in('sv', 'Open');
+ * ```
+ */
+export interface TAtChain {
+  in<T extends string>(
+    locale: string,
+    source: T,
+    params?: TParams<T>,
+  ): TReturn<ExtractTags<T>>;
+}
+
+/**
+ * Translates a source string for the active locale.
+ *
+ * @remarks
+ * The type of {@link t}. Modifiers `in` and `at` are inline: they accept the source directly, or return a constrained chain that requires the other modifier to complete the call. They do not return translators and cannot be captured.
  */
 export interface TFn {
   /**
-   * Disambiguates a source string by context. Stripped at compile time.
+   * Translates `source` for the active locale.
+   *
+   * @param source - The source string literal.
+   * @param params - The placeholder params. Required when the source has placeholders.
+   */
+  <T extends string>(source: T, params?: TParams<T>): TReturn<ExtractTags<T>>;
+
+  /**
+   * Forces a fixed locale for one translation call, or returns a chain that requires `.at()` to complete.
+   *
+   * @param locale - The locale code, e.g. `'sv'`.
+   * @param source - The source string literal. Pass to translate inline.
+   * @param params - The placeholder params. Required when the source has placeholders.
+   */
+  in<T extends string>(
+    locale: string,
+    source: T,
+    params?: TParams<T>,
+  ): TReturn<ExtractTags<T>>;
+  in(locale: string): TInChain;
+
+  /**
+   * Disambiguates a source string by context, or returns a chain that requires `.in()` to complete.
    *
    * @remarks
-   * Use only when two or more `t()` calls in the same file share a source string but need different translations. The compiler emits {@link https://yapyak.dev/diagnostics/YPK403 YPK403} if a source is used with both `t()` and `t.at()` in the same file.
+   * The compiler emits {@link https://yapyak.dev/diagnostics/YPK403 YPK403} if a source is used with both `t()` and `t.at()` in the same file.
    *
    * @param context - The disambiguating context. Must match `[a-z][a-z0-9-]*`.
-   * @param source - The source string literal.
+   * @param source - The source string literal. Pass to translate inline.
    * @param params - The placeholder params. Required when the source has placeholders.
    */
   at<T extends string>(
@@ -53,25 +111,14 @@ export interface TFn {
     source: T,
     params?: TParams<T>,
   ): TReturn<ExtractTags<T>>;
-  /**
-   * Scopes translation to a fixed locale.
-   *
-   * @param locale - The locale code, e.g. `'sv'`.
-   */
-  in(locale: string): TFn;
-
-  /**
-   * @param source - The source string literal.
-   * @param params - The placeholder params. Required when the source has placeholders.
-   */
-  <T extends string>(source: T, params?: TParams<T>): TReturn<ExtractTags<T>>;
+  at(context: string): TAtChain;
 }
 
 /**
  * Translates a source string for the active locale.
  *
  * @remarks
- * Yapyak's compiler rewrites every `t()` call site at build; the runtime is the fallback for paths the compiler did not touch. Call with a string literal — wrapping breaks extraction. Placeholders use `{name}` and their values are type-checked from the source literal. Scope a fixed locale with `t.in()`.
+ * Yapyak's compiler rewrites every `t()` call site at build; the runtime is the fallback for paths the compiler did not touch. Call with a string literal — wrapping breaks extraction. Placeholders use `{name}` and their values are type-checked from the source literal. Pin a fixed locale with `t.in(locale, source)`, or chain modifiers inline: `t.in('sv').at('action', 'Open')`.
  *
  * @example Translate, with and without placeholders
  * ```ts
@@ -86,37 +133,98 @@ export interface TFn {
  * ```ts
  * import { t } from 'yapyak';
  *
- * const sv = t.in('sv');
- * sv('Welcome back, {name}!', { name: 'Alex' });
+ * t.in('sv', 'Welcome back, {name}!', { name: 'Alex' });
+ * ```
+ *
+ * @example Disambiguating homonyms
+ * ```ts
+ * import { t } from 'yapyak';
+ *
+ * t.at('action', 'Open');
+ * t.at('status', 'Open');
+ * ```
+ *
+ * @example Combining forced locale and disambiguation
+ * ```ts
+ * import { t } from 'yapyak';
+ *
+ * t.in('sv').at('action', 'Open');
  * ```
  */
 export const t: TFn = createTFn();
 
 function createTFn(boundLocale?: string): TFn {
-  const translate = Object.assign(
-    <T extends string>(
-      source: T,
-      params?: TParams<T>,
-    ): TReturn<ExtractTags<T>> => {
-      runTrackers();
-      if (params === undefined) {
-        return source as TReturn<ExtractTags<T>>;
-      }
-      const locale = boundLocale ?? getLocale();
-      return interpolate(
-        source,
-        params as Record<string, unknown>,
-        locale,
-      ) as TReturn<ExtractTags<T>>;
-    },
-    {
-      at: <T extends string>(
-        _context: string,
-        source: T,
-        params?: TParams<T>,
-      ): TReturn<ExtractTags<T>> => translate(source, params),
-      in: (locale: string): TFn => createTFn(locale),
-    },
-  );
-  return translate;
+  const translate = <T extends string>(
+    source: T,
+    params?: TParams<T>,
+  ): TReturn<ExtractTags<T>> => {
+    runTrackers();
+    if (params === undefined) {
+      return source as TReturn<ExtractTags<T>>;
+    }
+    const locale = boundLocale ?? getLocale();
+    return interpolate(
+      source,
+      params as Record<string, unknown>,
+      locale,
+    ) as TReturn<ExtractTags<T>>;
+  };
+
+  function inMethod<T extends string>(
+    locale: string,
+    source: T,
+    params?: TParams<T>,
+  ): TReturn<ExtractTags<T>>;
+  function inMethod(locale: string): TInChain;
+  function inMethod<T extends string>(
+    locale: string,
+    source?: T,
+    params?: TParams<T>,
+  ): TReturn<ExtractTags<T>> | TInChain {
+    if (source === undefined) {
+      return {
+        at: <U extends string>(
+          _context: string,
+          atSource: U,
+          atParams?: TParams<U>,
+        ): TReturn<ExtractTags<U>> => {
+          const scoped = createTFn(locale);
+          return scoped(atSource, atParams);
+        },
+      };
+    }
+    const scoped = createTFn(locale);
+    return scoped(source, params);
+  }
+
+  function atMethod<T extends string>(
+    context: string,
+    source: T,
+    params?: TParams<T>,
+  ): TReturn<ExtractTags<T>>;
+  function atMethod(context: string): TAtChain;
+  function atMethod<T extends string>(
+    _context: string,
+    source?: T,
+    params?: TParams<T>,
+  ): TReturn<ExtractTags<T>> | TAtChain {
+    if (source === undefined) {
+      return {
+        in: <U extends string>(
+          locale: string,
+          inSource: U,
+          inParams?: TParams<U>,
+        ): TReturn<ExtractTags<U>> => {
+          const scoped = createTFn(locale);
+          return scoped(inSource, inParams);
+        },
+      };
+    }
+    return translate(source, params);
+  }
+
+  return Object.assign(translate, {
+    at: atMethod,
+    in: inMethod,
+  }) as TFn;
 }

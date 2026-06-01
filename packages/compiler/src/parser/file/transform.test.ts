@@ -155,7 +155,7 @@ describe('transformFile', () => {
       const source = [
         "import { type TParams, t } from 'yapyak';",
         "export function greet(params: TParams<'Hi {name}'>) {",
-        "  return t.in('sv')('Hi {name}', params);",
+        "  return t.in('sv', 'Hi {name}', params);",
         '}',
       ].join('\n');
       const code = runTransform({ locales: ['en', 'sv'], source });
@@ -213,20 +213,19 @@ describe('transformFile', () => {
         source: `
           import { t } from 'yapyak';
           declare const previewLocale: { value: string };
-          export const x = t.in(previewLocale.value)('Hello');
+          export const x = t.in(previewLocale.value, 'Hello');
         `,
       });
       expect(code).toContain('_pick(');
       expect(code).toContain('{ locale: previewLocale.value }');
     });
 
-    it('threads a scoped-binding locale into `_pick`', () => {
+    it('threads a chained `t.in(...).at(...)` locale into `_pick`', () => {
       const code = runTransform({
         locales: ['en', 'sv'],
         source: `
           import { t } from 'yapyak';
-          const sv = t.in('sv');
-          export const x = sv('Hello');
+          export const x = t.in('sv').at('button', 'Open');
         `,
       });
       expect(code).toContain('_pick(');
@@ -239,7 +238,7 @@ describe('transformFile', () => {
         source: `
           import { t } from 'yapyak';
           export function greet(name) {
-            return t.in('sv')('Hi {name}', { name });
+            return t.in('sv', 'Hi {name}', { name });
           }
         `,
       });
@@ -253,7 +252,7 @@ describe('transformFile', () => {
         locales: ['en'],
         source: `
           import { t } from 'yapyak';
-          export const x = t.in('sv')('Hello');
+          export const x = t.in('sv', 'Hello');
         `,
       });
       expect(code).toContain('_pick(');

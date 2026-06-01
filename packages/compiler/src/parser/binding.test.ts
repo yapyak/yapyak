@@ -110,22 +110,6 @@ describe('resolveBindings', () => {
     expect(table.find('translate', sf)).toBeUndefined();
   });
 
-  it('returns a scoped binding for a `t.in(...)` initializer', () => {
-    const sf = loadFixture('scoped.ts');
-    const table = resolveBindings(sf);
-    const sv = table.root.bindings.get('sv');
-    expect(sv?.kind).toBe('scoped');
-    expect(sv?.localeExpression?.getText()).toBe("'sv'");
-  });
-
-  it('returns a scoped binding for a chained `.in(...)`', () => {
-    const sf = loadFixture('scoped.ts');
-    const table = resolveBindings(sf);
-    const en = table.root.bindings.get('en');
-    expect(en?.kind).toBe('scoped');
-    expect(en?.localeExpression?.getText()).toBe("'en'");
-  });
-
   it('returns the binding by walking up the scope chain', () => {
     const sf = loadFixture('direct-import.ts');
     const table = resolveBindings(sf);

@@ -34,22 +34,17 @@ describe('t', () => {
   describe('in', () => {
     it('formats for the scoped locale regardless of the active locale', () => {
       setLocale('en');
-      expect(t.in('sv')('You have {count, number}', { count: 1000 })).toMatch(
+      expect(t.in('sv', 'You have {count, number}', { count: 1000 })).toMatch(
         /1.000/,
       );
     });
 
-    it('returns a reusable translator', () => {
-      const sv = t.in('sv');
-      expect(sv('Hej')).toBe('Hej');
-      expect(sv('Hej, {name}!', { name: 'Alex' })).toBe('Hej, Alex!');
+    it('returns the source unchanged when there are no params', () => {
+      expect(t.in('sv', 'Hej')).toBe('Hej');
     });
 
-    it('honors the last locale when chained', () => {
-      setLocale('en');
-      expect(t.in('sv').in('en')('{count, number}', { count: 1000 })).toBe(
-        '1,000',
-      );
+    it('interpolates a placeholder when params are provided', () => {
+      expect(t.in('sv', 'Hej, {name}!', { name: 'Alex' })).toBe('Hej, Alex!');
     });
   });
 
@@ -66,6 +61,27 @@ describe('t', () => {
 
     it('ignores the context argument at runtime', () => {
       expect(t.at('button', 'Save')).toBe(t.at('heading', 'Save'));
+    });
+  });
+
+  describe('inline chain', () => {
+    it('combines in and at via t.in(locale).at(context, source)', () => {
+      setLocale('en');
+      expect(t.in('sv').at('action', 'You have {count, number}', { count: 1000 })).toMatch(
+        /1.000/,
+      );
+    });
+
+    it('combines at and in via t.at(context).in(locale, source)', () => {
+      setLocale('en');
+      expect(t.at('action').in('sv', 'You have {count, number}', { count: 1000 })).toMatch(
+        /1.000/,
+      );
+    });
+
+    it('returns the source unchanged when chained without params', () => {
+      expect(t.in('sv').at('action', 'Open')).toBe('Open');
+      expect(t.at('action').in('sv', 'Open')).toBe('Open');
     });
   });
 });

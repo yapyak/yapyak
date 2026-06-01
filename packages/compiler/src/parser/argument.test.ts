@@ -27,8 +27,8 @@ function loadFixture(category: string, name: string): ts.SourceFile {
 
 function parseAll(category: string, name: string): ParsedArguments[] {
   const sf = loadFixture(category, name);
-  const calls = discoverCalls(sf, resolveBindings(sf));
-  return calls.map((call) => parseArguments(call));
+  const { callSites } = discoverCalls(sf, resolveBindings(sf));
+  return callSites.map((call) => parseArguments(call));
 }
 
 function parseInline(body: string): ParsedArguments {
@@ -39,9 +39,9 @@ function parseInline(body: string): ParsedArguments {
     true,
     ts.ScriptKind.TS,
   );
-  const calls = discoverCalls(sf, resolveBindings(sf));
+  const { callSites } = discoverCalls(sf, resolveBindings(sf));
   // biome-ignore lint/style/noNonNullAssertion: yap yap yap
-  return parseArguments(calls[0]!);
+  return parseArguments(callSites[0]!);
 }
 
 describe('parseArguments', () => {

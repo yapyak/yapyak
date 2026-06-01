@@ -19,7 +19,7 @@ function parseInline(source: string, fileName = 'src/a.tsx'): ts.SourceFile {
 }
 
 function findCalls(sf: ts.SourceFile): ts.CallExpression[] {
-  return discoverCalls(sf, resolveBindings(sf)).map((c) => c.node);
+  return discoverCalls(sf, resolveBindings(sf)).callSites.map((c) => c.node);
 }
 
 describe('resolveCallSiteContext', () => {

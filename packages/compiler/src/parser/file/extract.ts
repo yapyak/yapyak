@@ -136,7 +136,11 @@ function processFragment(input: ProcessFragmentInput): void {
     request,
     sourceFile,
   } = input;
-  const fragmentCalls = discoverCalls(sourceFile, bindings);
+  const { callSites: fragmentCalls, diagnostics: fragmentDiagnostics } =
+    discoverCalls(sourceFile, bindings);
+  for (const diagnostic of fragmentDiagnostics) {
+    diagnostics.push(remapDiagnostic(diagnostic, fragment, originalSource));
+  }
 
   for (const fragmentCall of fragmentCalls) {
     const parsed = parseArguments(fragmentCall);
@@ -148,10 +152,16 @@ function processFragment(input: ProcessFragmentInput): void {
       binding: fragmentCall.binding,
       node: fragmentCall.node,
       range: remapRange(fragmentCall.range, fragment, originalSource),
-      variant: fragmentCall.variant,
+      sourceArg: fragmentCall.sourceArg,
     };
+    if (fragmentCall.contextArg) {
+      callSite.contextArg = fragmentCall.contextArg;
+    }
     if (fragmentCall.localeExpression) {
       callSite.localeExpression = fragmentCall.localeExpression;
+    }
+    if (fragmentCall.paramsArg) {
+      callSite.paramsArg = fragmentCall.paramsArg;
     }
     const elision =
       fragment.elision ??

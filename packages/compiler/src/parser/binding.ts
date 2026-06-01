@@ -2,8 +2,7 @@ import * as ts from 'typescript';
 
 export interface Binding {
   declarationNode: ts.Node;
-  kind: 'direct' | 'namespace' | 'scoped' | 'wrapper';
-  localeExpression?: ts.Expression;
+  kind: 'direct' | 'namespace' | 'wrapper';
   localName: string;
 }
 
@@ -20,7 +19,6 @@ export interface BindingTable {
 
 const YAPYAK_MODULE = 'yapyak';
 const RUNTIME_NAME = 't';
-const SCOPE_NAME = 'in';
 
 interface ImportInfo {
   directLocals: Map<string, ts.Node>;
@@ -157,43 +155,8 @@ function registerVariableDeclarations(
         kind: 'wrapper',
         localName,
       });
-      continue;
-    }
-    const localeExpression = readScopedInit(init, decl, scopeByNode);
-    if (localeExpression) {
-      scope.bindings.set(localName, {
-        declarationNode: decl,
-        kind: 'scoped',
-        localeExpression,
-        localName,
-      });
     }
   }
-}
-
-function readScopedInit(
-  init: ts.Expression,
-  atNode: ts.Node,
-  scopeByNode: Map<ts.Node, Scope>,
-): ts.Expression | undefined {
-  if (!ts.isCallExpression(init)) {
-    return undefined;
-  }
-  const callee = init.expression;
-  if (!ts.isPropertyAccessExpression(callee)) {
-    return undefined;
-  }
-  if (callee.name.text !== SCOPE_NAME) {
-    return undefined;
-  }
-  if (!ts.isIdentifier(callee.expression)) {
-    return undefined;
-  }
-  const target = findBinding(scopeByNode, callee.expression.text, atNode);
-  if (!target || target.kind === 'namespace') {
-    return undefined;
-  }
-  return init.arguments[0];
 }
 
 function findBinding(
