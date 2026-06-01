@@ -1,6 +1,6 @@
 ---
 title: Locales
-order: 3
+order: 2
 ---
 
 Locales are configured implicitly. The default lives in your code; the others live as files in `locales/`.
