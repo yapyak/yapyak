@@ -1,7 +1,7 @@
 import type { ExtractedMessage, Location } from '../../parser/file/extract';
 import type { LocaleFile } from './file';
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { syncLocaleFiles, writeLocaleFile, YapyakInvariantError } from './file';
 import {
@@ -58,29 +58,37 @@ describe('syncLocaleFiles', () => {
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({});
   });
 
-  it('preserves an existing non-empty locale file when no messages are extracted', () => {
+  it('clears the locale file and moves translations to the orphan cache when no messages are extracted', () => {
     const localesDir = 'locales';
+    const cacheDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');
-    const existing = { 'src/a.ts': { hello: 'hej' } };
     mkdirSync(join(projectRoot, localesDir), { recursive: true });
-    writeFileSync(localePath, JSON.stringify(existing));
-
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    writeFileSync(
+      localePath,
+      JSON.stringify({ 'src/a.tsx': { Save: 'Spara' } }),
+    );
 
     syncLocaleFiles({
+      cacheDir,
       defaultLocale: 'en',
       locales: ['en', 'sv'],
       localesDir,
       messages: [],
+      now: () => '2026-01-01T00:00:00.000Z',
       projectRoot,
     });
 
-    expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual(existing);
-    expect(warn).toHaveBeenCalledWith(
-      expect.stringContaining('Refusing to overwrite'),
-    );
-
-    warn.mockRestore();
+    expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({});
+    expect(
+      JSON.parse(readFileSync(join(cacheDir, 'orphans.json'), 'utf8')),
+    ).toEqual({
+      'src/a.tsx': {
+        Save: {
+          deletedAt: '2026-01-01T00:00:00.000Z',
+          translations: { sv: 'Spara' },
+        },
+      },
+    });
   });
 
   it('preserves a translation when its source briefly disappears via the orphan cache', () => {

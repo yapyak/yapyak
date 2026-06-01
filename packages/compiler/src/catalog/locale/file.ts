@@ -243,20 +243,11 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
 
   for (const locale of nonDefaultLocales) {
     const next = nextByLocale.get(locale) ?? {};
-    const existing = existingByLocale.get(locale) ?? {};
     const localePath = getLocaleFilePath(
       options.projectRoot,
       options.localesDir,
       locale,
     );
-
-    if (Object.keys(next).length === 0 && Object.keys(existing).length > 0) {
-      console.warn(
-        `[yapyak] Refusing to overwrite ${localePath}: extracted 0 messages but existing file has content. This usually indicates an extraction failure. Delete the file manually if you intended to empty it.`,
-      );
-      continue;
-    }
-
     writeLocaleFile({ after: next, extractedSources, filePath: localePath });
   }
 }
