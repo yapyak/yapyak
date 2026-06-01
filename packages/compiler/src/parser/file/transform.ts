@@ -348,9 +348,50 @@ function renderEliminated(
 }
 
 function safeJsString(text: string): string {
-  return JSON.stringify(text)
-    .replaceAll('{', '\\u007b')
-    .replaceAll('}', '\\u007d');
+  let out = "'";
+  for (const ch of text) {
+    const code = ch.charCodeAt(0);
+    switch (ch) {
+      case '\\':
+        out += '\\\\';
+        break;
+      case "'":
+        out += '\\u0027';
+        break;
+      case '"':
+        out += '\\u0022';
+        break;
+      case '{':
+        out += '\\u007b';
+        break;
+      case '}':
+        out += '\\u007d';
+        break;
+      case '\n':
+        out += '\\n';
+        break;
+      case '\r':
+        out += '\\r';
+        break;
+      case '\t':
+        out += '\\t';
+        break;
+      case '\b':
+        out += '\\b';
+        break;
+      case '\f':
+        out += '\\f';
+        break;
+      default:
+        if (code < 0x20 || code === 0x2028 || code === 0x2029) {
+          out += `\\u${code.toString(16).padStart(4, '0')}`;
+        } else {
+          out += ch;
+        }
+    }
+  }
+  out += "'";
+  return out;
 }
 
 function getParamExpressions(

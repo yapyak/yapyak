@@ -39,7 +39,7 @@ describe('transformFile', () => {
         locales: ['en'],
         source: "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
       });
-      expect(code).toContain('"Hello"');
+      expect(code).toContain("'Hello'");
       expect(code).not.toContain("t('Hello')");
       expect(code).not.toContain('_pick');
     });
@@ -268,8 +268,8 @@ describe('transformFile', () => {
         translations: { sv: { [hashId('Hello')]: 'Hej' } },
       });
       expect(code).toContain('_pick(');
-      expect(code).toContain('en: "Hello"');
-      expect(code).toContain('sv: "Hej"');
+      expect(code).toContain("en: 'Hello'");
+      expect(code).toContain("sv: 'Hej'");
     });
 
     it('emits source as fallback when a translation is missing', () => {
@@ -278,7 +278,7 @@ describe('transformFile', () => {
         source: "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
         translations: {},
       });
-      expect(code).toContain('sv: "Hello"');
+      expect(code).toContain("sv: 'Hello'");
     });
 
     it('preserves original params object as 2nd arg', () => {
@@ -374,7 +374,7 @@ describe('transformFile', () => {
         '</template>',
       ].join('\n');
       const code = runVueTransform({ locales: ['en'], source });
-      expect(code).toContain('"Hello"');
+      expect(code).toContain("'Hello'");
       expect(code).toContain('<h1>Hello</h1>');
       expect(code).not.toContain("t('Hello')");
       expect(code).not.toContain("t('Hello')");
@@ -396,8 +396,8 @@ describe('transformFile', () => {
         source,
         translations: { sv: {} },
       });
-      expect(code).toContain('_pick({ en: "Hello", sv: "Hello" })');
-      expect(code).toContain('_pick({ en: "Hello", sv: "Hello" })');
+      expect(code).toContain("_pick({ en: 'Hello', sv: 'Hello' })");
+      expect(code).toContain("_pick({ en: 'Hello', sv: 'Hello' })");
       expect(code).toMatch(
         /import \{ pick as _pick \} from 'yapyak\/internal'/,
       );
@@ -413,7 +413,7 @@ describe('transformFile', () => {
         '</template>',
       ].join('\n');
       const code = runVueTransform({ locales: ['en'], source });
-      expect(code).toContain('"Save changes"');
+      expect(code).toContain('aria-label="Save changes"');
       expect(code).not.toContain("t('Save changes')");
     });
 
@@ -427,7 +427,7 @@ describe('transformFile', () => {
         '</template>',
       ].join('\n');
       const code = runVueTransform({ locales: ['en'], source });
-      expect(code).toContain('alert("Hi")');
+      expect(code).toContain("alert('Hi')");
     });
 
     it('preserves `<script setup>` when there is no core `t` import', () => {
@@ -633,7 +633,7 @@ describe('transformFile', () => {
           '}',
         ].join('\n'),
       });
-      expect(code).toContain('{"Use <em> for emphasis"}');
+      expect(code).toContain("{'Use <em> for emphasis'}");
     });
 
     it('emits expression-form JSX attribute when value contains `"`', () => {
@@ -646,7 +646,7 @@ describe('transformFile', () => {
           '}',
         ].join('\n'),
       });
-      expect(code).toContain('title={"Say \\"hi\\""}');
+      expect(code).toContain("title={'Say \\u0022hi\\u0022'}");
     });
 
     it('preserves `_pick` wrappers in multi-locale without bare elision', () => {
@@ -690,7 +690,7 @@ describe('transformFile', () => {
         source:
           "import { t } from 'yapyak';\nexport const x = t.at('button', 'Open');\n",
       });
-      expect(code).toContain('"Open"');
+      expect(code).toContain("'Open'");
       expect(code).not.toContain('t.at(');
     });
 
