@@ -1,7 +1,6 @@
 ---
 title: Override
 order: 5
-description: format.in scopes formatting to a forced locale, returning a reusable Format.
 ---
 
 Forces a locale for one call or for the rest of the module's life. `format.in('sv')` returns a [`Format`](./overview.md#the-format-type) that behaves exactly like the unscoped one — same eight methods — except every result comes out in Swedish regardless of who is looking.

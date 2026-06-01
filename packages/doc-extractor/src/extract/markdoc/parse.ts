@@ -19,7 +19,7 @@ interface ParsedContent {
 }
 
 export function parseMarkdoc(source: string): ParsedContent {
-  const ast = Markdoc.parse(source);
+  const ast = Markdoc.parse(preprocessFenceLabels(source));
   const frontmatterSource = ast.attributes.frontmatter as string | undefined;
   const frontmatter = frontmatterSource
     ? parseFrontmatter(frontmatterSource)
@@ -28,6 +28,13 @@ export function parseMarkdoc(source: string): ParsedContent {
   const raw = Array.isArray(transformed) ? transformed : [transformed];
   const blocks = raw.flatMap(toBlocks);
   return { blocks, frontmatter };
+}
+
+function preprocessFenceLabels(source: string): string {
+  return source.replace(
+    /^(```)(\S+) +(\[[^\]]+\])[ \t]*$/gm,
+    '$1$2$3',
+  );
 }
 
 export function parseFrontmatterOnly(

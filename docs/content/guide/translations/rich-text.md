@@ -3,11 +3,7 @@ title: Rich text
 order: 6
 ---
 
-Rich text and translation are different problems in yapyak.
-
-Translation is a compile-time concern: extract the strings, store them per locale, emit the right one when the bundle ships. Rich text is a runtime concern: take a string with markers in it and turn the markers into actual components when the page renders.
-
-Keeping the two apart means the `t()` pipeline never has to think about JSX, and your components never have to think about how the string got translated. The string flows through one system. The markers are picked up by another.
+yapyak treats rich text and translation as two different concerns. Translation happens at compile time. Rich text happens at runtime. Keeping those two things separate makes the model much simpler, both in how it is implemented and, perhaps more importantly, in how you think about it.
 
 yapyak ships a `<RichText>` component for React, Vue, and Svelte:
 
@@ -57,13 +53,11 @@ import { t } from 'yapyak';
 
 {% /code-group %}
 
-`<RichText>` scans the `source` for `<tag>...</tag>` patterns and substitutes the matching prop or snippet you've passed in. The tag names are arbitrary. `<bold>`, `<link>`, `<emoji>`, `<icon>` — yapyak has no fixed vocabulary, it looks up whatever names appear in the string.
+It scans the source for `<tag>...</tag>` markers and replaces them with the components you pass in. The tag names are entirely up to you — `<bold>`, `<link>`, `<emoji>`, anything that helps you make sense of the string.
 
-In React and Svelte, the tags are required: TypeScript reads the source string at compile time, extracts the tag names, and refuses to compile if any are missing. Vue can't enforce this through its template system, so the tags are listed as available but optional. Forgetting one doesn't trigger a compile error in Vue.
+In React and Svelte, those tags are required props. TypeScript reads the source at compile time and refuses to compile if you forget one. Vue can't enforce the same thing through its template system, so the tags are listed as available but not required. If you forget one in Vue, the literal `<link>...</link>` ends up in the rendered output.
 
-## Works with any string
-
-The `source` doesn't have to come from `t()`. `<RichText>` takes whatever you give it:
+You don't have to pass a `t()` string either. `<RichText>` works on any string at all, which is the whole point of keeping the two systems apart:
 
 ```tsx
 <RichText
@@ -72,11 +66,9 @@ The `source` doesn't have to come from `t()`. `<RichText>` takes whatever you gi
 />
 ```
 
-This is the upshot of keeping rich text and translation in different boxes. One system produces strings, the other renders them. Neither depends on the other.
+## In non-component environments
 
-## Outside React, Vue, and Svelte
-
-In non-component environments like Astro pages, server scripts, or HTML generation, there's no `<RichText>` to reach for. We recommend replacing the markers directly:
+For Astro, server scripts, or plain HTML generation, replace the markers yourself:
 
 ```ts
 import { t } from 'yapyak';
@@ -84,5 +76,3 @@ import { t } from 'yapyak';
 const html = t('Click <link>here</link> to continue.')
   .replace(/<link>(.+?)<\/link>/, '<a href="/next">$1</a>');
 ```
-
-The translation step is the same. The render step is whatever your environment provides.

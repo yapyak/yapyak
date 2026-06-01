@@ -1,7 +1,6 @@
 ---
 title: Dates
 order: 3
-description: format.date, format.time, format.dateTime, and format.relativeTime — locale-aware date and time rendering.
 ---
 
 Date and time formatting through [`Intl.DateTimeFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat), plus `relativeTime` for "yesterday"-style phrasing via [`Intl.RelativeTimeFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/RelativeTimeFormat). The three plain-date methods carry defaults — there is no neutral way to render a `Date`, so yapyak picks `medium`.

@@ -1,7 +1,6 @@
 ---
 title: Lists
 order: 4
-description: format.list joins string lists using locale-aware separators.
 ---
 
 Joining strings the way the locale would. `'a, b, and c'` on `en`, `'a, b och c'` on `sv`. One [`Intl.ListFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat) per `(locale, options)` combination, cached until the process restarts.

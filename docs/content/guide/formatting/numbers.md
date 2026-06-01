@@ -1,7 +1,6 @@
 ---
 title: Numbers
 order: 2
-description: format.number, format.currency, and format.percent — Intl.NumberFormat with yapyak's locale resolution.
 ---
 
 Three methods, one [`Intl.NumberFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat) underneath. `currency` and `percent` lock the `style` you would otherwise set yourself; `number` passes options through to `Intl` and gets out of the way.
