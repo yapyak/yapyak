@@ -34,22 +34,15 @@ export type RichTextProps<T extends string> = { value: T };
 
 /**
  * Renders rich text from a string with named tags into scoped slots supplied
- * by the caller. See {@link RichTextSlots} for the slot signature.
+ * by the caller. See {@link RichTextSlots} for the slot shape.
  *
  * @example
  * ```vue
- * <script setup lang="ts">
- * import { t } from 'yapyak';
- * import { RichText } from '@yapyak/vue';
- * </script>
- *
- * <template>
- *   <RichText :value="t('Click <link>here</link>.')">
- *     <template #link="{ children }">
- *       <a href="/docs"><component :is="children" /></a>
- *     </template>
- *   </RichText>
- * </template>
+ * <RichText :value="t('Click <link>here</link>.')">
+ *   <template #link="{ children }">
+ *     <a href="/docs"><component :is="children" /></a>
+ *   </template>
+ * </RichText>
  * ```
  */
 export const RichText: FunctionalComponent<

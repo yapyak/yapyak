@@ -34,7 +34,7 @@ const richMessage = computed(() =>
 
     <h2>{{ t('Rich text') }}</h2>
     <p>
-      <RichText :value="t('Translate <b>everything</b> with <link>yapyak</link>')">
+      <RichText :value="richMessage">
         <template #b="{ children }">
           <strong><component :is="children" /></strong>
         </template>
