@@ -118,7 +118,7 @@ Rename matching is deliberately strict. If a call moves and changes text in the 
 
 ### 3. Synchronize locale files
 
-After extraction and rename detection, yapyak updates the locale files. New messages receive entries in each configured locale. Removed messages are pruned. Files are written atomically and in stable order, so the Git diff reflects the source change rather than incidental rewriting.
+After extraction and rename detection, yapyak updates the locale files. New messages receive entries in each configured locale. Removed messages move to a local cache rather than disappearing, ready for yapyak to restore them if the same source reappears (see [When files move or disappear](#when-files-move-or-disappear)). Files are written atomically and in stable order, so the Git diff reflects the source change rather than incidental rewriting.
 
 Locale files remain ordinary project files. They can be reviewed, edited, versioned, and restored with the same tools as the rest of the codebase.
 
@@ -133,6 +133,23 @@ When no *translator* is configured, the synchronization still happens. The new l
 Once locale data is current, Vite reruns the transform with the updated variants. In development, yapyak sends custom events over Vite's WebSocket connection — `yapyak:locale-added` and `yapyak:locale-removed` — and the runtime listens for them via `import.meta.hot.on()` to update its active locale state.
 
 The result is that a translated edit can appear in the running application as part of the same save cycle, without requiring a page reload or a separate catalog refresh.
+
+## When files move or disappear
+
+The numbered flow above covers the common case: a single source string in a single file changes. Source strings also move with files, disappear when files do, and sometimes get briefly orphaned when a parser fails mid-edit. yapyak preserves translations across these events through a local orphan cache.
+
+Before removing an entry from a locale file, yapyak writes it to `node_modules/.cache/yapyak/orphans.json` along with the file path it came from. When the same source string appears in any file at a later sync, yapyak restores the cached translation automatically.
+
+| Event | Outcome |
+| --- | --- |
+| File renamed (`save-button.tsx` → `submit-button.tsx`) | Translations follow the new path |
+| File moved to a different folder | Same as a rename — path changes, translations follow |
+| File deleted | Translations move to the cache; restoring the file restores the translations |
+| Parser fails mid-edit | Translations from the affected file move to the cache, then restore once the parser succeeds |
+
+Restoration matches by exact source string, not similarity. A file rename that also reworks a button label resolves as one ordinary rename within the file and one delete-plus-add for the reworked string. Guessing based on similarity would silently rebind unrelated strings.
+
+The cache lives under `node_modules/.cache/`, so `npm install` evicts it. For deliberate cleanup, delete `node_modules/.cache/yapyak/orphans.json` directly.
 
 ## Context comes from the code
 
