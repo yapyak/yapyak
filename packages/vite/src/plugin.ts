@@ -53,7 +53,7 @@ interface CallSitePosition {
 /**
  * Options for {@link yapyak}.
  */
-export interface YapyakPluginOptions {
+export interface YapyakOptions {
   /**
    * Locks the build to a single locale. Stripped at compile time.
    *
@@ -105,7 +105,7 @@ export interface YapyakPluginOptions {
  * });
  * ```
  */
-export function yapyak(options: YapyakPluginOptions = {}): Plugin {
+export function yapyak(options: YapyakOptions = {}): Plugin {
   const fixedLocale =
     options.fixedLocale && options.fixedLocale.length > 0
       ? options.fixedLocale
