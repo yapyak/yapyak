@@ -69,10 +69,10 @@
   --color-aqua: oklab(0.88 -0.21 0.01);
   --color-coral: oklab(0.83 0.12 0.03);
 
-  --color-lilac: oklab(0.75 0.045 -0.04);
-  --color-iris: oklab(0.77 0.046 -0.065);
-  --color-steel: oklab(0.75 -0.025 -0.054);
-  --color-amber: oklab(0.75 0.047 0.088);
+  --color-lilac: oklab(0.74 0.1 -0.03);
+  --color-iris: oklab(0.78 -0.04 -0.14);
+  --color-steel: oklab(0.72 -0.02 -0.05);
+  --color-amber: oklab(0.78 0.05 0.1);
   --color-sand: oklab(0.84 -0.007 0.07);
 
   --color-silver: #e6e6e6;
