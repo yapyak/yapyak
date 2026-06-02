@@ -22,7 +22,7 @@
       padding: var(--spacing-5) var(--spacing-6);
       overflow-x: auto;
       font-family: var(--font-family-mono);
-      font-size: var(--font-size-sm);
+      font-size: 0.875rem;
       line-height: var(--line-height-normal);
       color: var(--foreground-soft);
       scrollbar-color: var(--ring-stronger) transparent;

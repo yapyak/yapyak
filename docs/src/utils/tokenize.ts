@@ -130,6 +130,9 @@ export function tokenize(code: string, language: Language): Token[] {
   if (language === 'yaml') {
     return tokenizeYaml(code);
   }
+  if (language === 'json') {
+    return tokenizeJson(code);
+  }
   const tokens: Token[] = [];
   let index = 0;
   while (index < code.length) {
@@ -143,6 +146,7 @@ export function tokenize(code: string, language: Language): Token[] {
     }
   }
   applyYapyakHighlight(tokens);
+  reclassifyJsxText(tokens);
   return mergePlainTokens(tokens);
 }
 
@@ -457,6 +461,97 @@ function tokenizeYaml(code: string) {
   return mergePlainTokens(tokens);
 }
 
+function tokenizeJson(code: string) {
+  const tokens: Token[] = [];
+  let index = 0;
+  let lastWas: 'open' | 'colon' | 'comma' | 'value' | null = null;
+
+  while (index < code.length) {
+    const character = code[index] ?? '';
+
+    if (
+      character === ' ' ||
+      character === '\t' ||
+      character === '\n' ||
+      character === '\r'
+    ) {
+      const match = /^[\s]+/.exec(code.slice(index));
+      if (match) {
+        tokens.push({ type: 'plain', value: match[0] });
+        index += match[0].length;
+        continue;
+      }
+    }
+
+    if (character === '{' || character === '[') {
+      tokens.push({ type: 'punct', value: character });
+      lastWas = 'open';
+      index++;
+      continue;
+    }
+
+    if (character === '}' || character === ']') {
+      tokens.push({ type: 'punct', value: character });
+      lastWas = 'value';
+      index++;
+      continue;
+    }
+
+    if (character === ':') {
+      tokens.push({ type: 'punct', value: character });
+      lastWas = 'colon';
+      index++;
+      continue;
+    }
+
+    if (character === ',') {
+      tokens.push({ type: 'punct', value: character });
+      lastWas = 'comma';
+      index++;
+      continue;
+    }
+
+    if (character === '"') {
+      const match = /^"(?:\\.|[^"\\])*"/.exec(code.slice(index));
+      if (match) {
+        const isValue = lastWas === 'colon';
+        tokens.push({
+          type: isValue ? 'tx-source' : 'string',
+          value: match[0],
+        });
+        lastWas = 'value';
+        index += match[0].length;
+        continue;
+      }
+    }
+
+    if (/[0-9-]/.test(character)) {
+      const match = /^-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/.exec(code.slice(index));
+      if (match) {
+        tokens.push({ type: 'number', value: match[0] });
+        lastWas = 'value';
+        index += match[0].length;
+        continue;
+      }
+    }
+
+    if (/[a-z]/.test(character)) {
+      const match = /^(true|false|null)\b/.exec(code.slice(index));
+      if (match) {
+        tokens.push({ type: 'literal', value: match[0] });
+        lastWas = 'value';
+        index += match[0].length;
+        continue;
+      }
+    }
+
+    tokens.push({ type: 'plain', value: character });
+    index++;
+  }
+
+  return mergePlainTokens(tokens);
+}
+
 interface ScanResult {
   end: number;
   token: Token;
@@ -633,6 +728,66 @@ function applyYapyakHighlight(tokens: Token[]) {
           }
           cursor++;
         }
+      }
+    }
+  }
+}
+
+function reclassifyJsxText(tokens: Token[]) {
+  let depth = 0;
+  let inText = false;
+  let exprDepth = 0;
+
+  for (const token of tokens) {
+    if (token.type === 'jsx-tag') {
+      inText = false;
+      if (token.value === '/>') {
+        depth = Math.max(0, depth - 1);
+        if (depth > 0 && exprDepth === 0) {
+          inText = true;
+        }
+      } else if (token.value.startsWith('</')) {
+        depth = Math.max(0, depth - 1);
+      } else {
+        depth++;
+      }
+      continue;
+    }
+
+    if (token.type === 'punct') {
+      const value = token.value;
+      if (value === '>') {
+        if (depth > 0 && exprDepth === 0) {
+          inText = true;
+        }
+        continue;
+      }
+      if (value === '<') {
+        inText = false;
+        continue;
+      }
+      if (value === '{' && inText) {
+        exprDepth++;
+        inText = false;
+        continue;
+      }
+      if (value === '}' && exprDepth > 0) {
+        exprDepth--;
+        if (exprDepth === 0 && depth > 0) {
+          inText = true;
+        }
+        continue;
+      }
+    }
+
+    if (inText) {
+      if (
+        token.type === 'keyword' ||
+        token.type === 'literal' ||
+        token.type === 'type' ||
+        token.type === 'fn-call'
+      ) {
+        token.type = 'plain';
       }
     }
   }
