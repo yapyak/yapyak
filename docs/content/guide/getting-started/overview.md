@@ -109,9 +109,9 @@ t('Save changes')
 
 A developer reading the component can read the interface directly. A coding agent modifying it can see the language it is changing. Move the component and its text moves with it. Revise the wording and the reason for the change is visible in the same diff.
 
-Locale files follow the same movement. Rename the message at the same call site and yapyak migrates its translation. Delete the call and the entry leaves with it. A write that would silently clear an in-use translation is refused at build, not after the loss.
+Locale files follow the same movement. Rename the message at the same call site and yapyak migrates its translation. Remove the call and the entry moves to a local cache, ready for restoration if the source reappears. A write that would silently clear an in-use translation is refused at build, not after the loss.
 
-Move the call to a different file and the message is re-translated under the new file's context. The new file gets a fresh entry; the old file's entry leaves with the source. yapyak does not transplant translations between files: the translation belongs to where the call now lives.
+Move the call to a different file and yapyak restores the cached translation under the new file's path. Translations are scoped per file, so the new location owns the entry from then on. To force a fresh translation reflecting the new context, clear the new entry and the *translator* refills it on save.
 
 Short strings make this more than a convenience:
 

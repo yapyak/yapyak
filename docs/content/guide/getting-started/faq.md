@@ -47,7 +47,7 @@ Semantic mistakes — a translation that is grammatically valid but wrong in ton
 
 Change the source string at the same call site. yapyak detects the rename by position and migrates the existing translation. The old entry is removed on the next sync.
 
-A write that would silently clear an in-use translation is refused at build, not after the loss. If the message moves to a different file, yapyak does not transplant the translation; the new file gets a fresh entry under the new file's context, which the *translator* re-translates on save.
+A write that would silently clear an in-use translation is refused at build, not after the loss. If the message moves to a different file — or the file is renamed, moved, or deleted and reappears — yapyak restores the cached translation under the new path. To force a re-translation under the new context, clear the new entry and the *translator* refills it on save.
 
 ## Source strings as keys — does that hold up at scale?
 
