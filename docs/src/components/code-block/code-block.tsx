@@ -26,6 +26,11 @@ const SUPPORTED_LANGUAGES: ReadonlySet<string> = new Set<Language>([
   'diff',
   'html',
   'yaml',
+  'translation',
+]);
+
+const HIDDEN_LABEL_LANGUAGES: ReadonlySet<string> = new Set<Language>([
+  'translation',
 ]);
 
 function isSupportedLanguage(value: string | undefined): value is Language {
@@ -35,6 +40,9 @@ function isSupportedLanguage(value: string | undefined): value is Language {
 export function CodeBlock(props: CodeBlockProps) {
   const { className, label, language, source, ...restProps } = props;
 
+  const showLabel =
+    label !== undefined ||
+    (language !== undefined && !HIDDEN_LABEL_LANGUAGES.has(language));
   const tag = label ?? language;
   const highlighted = isSupportedLanguage(language)
     ? tokenize(source, language)
@@ -46,7 +54,7 @@ export function CodeBlock(props: CodeBlockProps) {
       className={[styles.CodeBlock, className]}
       data-language={language}
     >
-      {tag !== undefined && (
+      {showLabel && tag !== undefined && (
         <Box
           as="span"
           className={styles.LanguageText}

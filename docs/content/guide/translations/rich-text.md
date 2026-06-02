@@ -59,7 +59,7 @@ In each example, `<RichText>` interprets `<link>...</link>` as a named part of i
 
 That separation is useful. The tag remains inside the translated message, where it can move with the language:
 
-```
+```translation
 en: Read the <link>documentation</link> to get started.
 de: Lies zum Einstieg die <link>Dokumentation</link>.
 ```
@@ -82,9 +82,7 @@ Rich text is rendered at runtime, but when the value is statically known, yapyak
 In React and Svelte, a value containing `<link>...</link>` requires a matching `link` renderer:
 
 ```tsx
-<RichText
-  value={t('Read the <link>documentation</link> to get started.')}
-/>
+<RichText value={t('Read the <link>documentation</link> to get started.')} />
 // TypeScript error: missing `link` renderer
 ```
 

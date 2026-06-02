@@ -25,13 +25,13 @@ In English, both messages are *Open*. They look identical in the source code, bu
 
 In Swedish, the button is an action:
 
-```
+```translation
 Öppna
 ```
 
 The status is a state:
 
-```
+```translation
 Öppen
 ```
 

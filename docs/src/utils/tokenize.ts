@@ -10,7 +10,8 @@ export type Language =
   | 'json'
   | 'diff'
   | 'html'
-  | 'yaml';
+  | 'yaml'
+  | 'translation';
 
 export type TokenType =
   | 'plain'
@@ -135,6 +136,9 @@ export function tokenize(code: string, language: Language): Token[] {
   if (language === 'json') {
     return tokenizeJson(code);
   }
+  if (language === 'translation') {
+    return tokenizeTranslation(code);
+  }
   const tokens: Token[] = [];
   let index = 0;
   while (index < code.length) {
@@ -149,7 +153,9 @@ export function tokenize(code: string, language: Language): Token[] {
   }
   applyYapyakHighlight(tokens);
   reclassifyJsxText(tokens);
-  return mergePlainTokens(tokens);
+  const expanded =
+    language === 'vue' ? expandVueAttributeBindings(tokens) : tokens;
+  return mergePlainTokens(expanded);
 }
 
 function tokenizeDiff(code: string) {
@@ -456,6 +462,38 @@ function tokenizeYaml(code: string) {
     }
 
     if (trailing) {
+      tokens.push({ type: 'plain', value: trailing });
+    }
+  }
+
+  return mergePlainTokens(tokens);
+}
+
+const LOCALE_PREFIX = /^([a-z]{2,3}(?:-[a-z]{2})?:[ \t]+)(.*)$/;
+
+function tokenizeTranslation(code: string): Token[] {
+  const tokens: Token[] = [];
+  const lines = code.split('\n');
+
+  for (let index = 0; index < lines.length; index++) {
+    const line = lines[index] ?? '';
+    const trailing = index < lines.length - 1 ? '\n' : '';
+
+    if (line.length > 0) {
+      const match = LOCALE_PREFIX.exec(line);
+      if (match) {
+        const prefix = match[1] ?? '';
+        const content = match[2] ?? '';
+        tokens.push({ type: 'comment', value: prefix });
+        if (content.length > 0) {
+          tokens.push({ type: 'tx-source', value: content });
+        }
+      } else {
+        tokens.push({ type: 'tx-source', value: line });
+      }
+    }
+
+    if (trailing.length > 0) {
       tokens.push({ type: 'plain', value: trailing });
     }
   }
@@ -847,6 +885,83 @@ function reclassifyJsxText(tokens: Token[]) {
 function isDottedKey(value: string): boolean {
   const inner = value.slice(1, -1);
   return DOTTED_KEY_PATTERN.test(inner);
+}
+
+function expandVueAttributeBindings(tokens: Token[]): Token[] {
+  const result: Token[] = [];
+  let index = 0;
+
+  while (index < tokens.length) {
+    const token = tokens[index];
+    if (token === undefined) {
+      index++;
+      continue;
+    }
+
+    if (token.type === 'punct' && (token.value === ':' || token.value === '@')) {
+      const identIndex = findNextNonWhitespace(tokens, index + 1);
+      if (identIndex !== -1) {
+        const ident = tokens[identIndex];
+        if (
+          ident !== undefined &&
+          (ident.type === 'fn-call' ||
+            ident.type === 'plain' ||
+            ident.type === 'keyword')
+        ) {
+          const equalsIndex = findNextNonWhitespace(tokens, identIndex + 1);
+          if (equalsIndex !== -1) {
+            const equals = tokens[equalsIndex];
+            if (equals?.type === 'punct' && equals.value === '=') {
+              const stringIndex = findNextNonWhitespace(
+                tokens,
+                equalsIndex + 1,
+              );
+              if (stringIndex !== -1) {
+                const str = tokens[stringIndex];
+                if (str?.type === 'string' && str.value.length >= 2) {
+                  for (let cursor = index; cursor < stringIndex; cursor++) {
+                    const passthrough = tokens[cursor];
+                    if (passthrough !== undefined) {
+                      result.push(passthrough);
+                    }
+                  }
+                  const quote = str.value[0] ?? '"';
+                  const inner = str.value.slice(1, -1);
+                  const innerTokens = tokenize(inner, 'ts');
+                  result.push({ type: 'string', value: quote });
+                  for (const innerToken of innerTokens) {
+                    result.push(innerToken);
+                  }
+                  result.push({ type: 'string', value: quote });
+                  index = stringIndex + 1;
+                  continue;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    result.push(token);
+    index++;
+  }
+
+  return result;
+}
+
+function findNextNonWhitespace(tokens: Token[], from: number): number {
+  for (let index = from; index < tokens.length; index++) {
+    const token = tokens[index];
+    if (token === undefined) {
+      continue;
+    }
+    if (token.type === 'plain' && /^\s+$/.test(token.value)) {
+      continue;
+    }
+    return index;
+  }
+  return -1;
 }
 
 function findTopLevelComma(tokens: Token[], from: number): number | null {
