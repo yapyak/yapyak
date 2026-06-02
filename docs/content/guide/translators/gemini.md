@@ -39,6 +39,7 @@ interface GeminiOptions {
   glossary?: Record<string, Record<string, string>>;
   context?: 'none' | 'minimal' | 'rich';
   batchSize?: number;
+  concurrency?: number;
   model?: string;
   temperature?: number;
   endpoint?: string;
@@ -54,7 +55,7 @@ interface GeminiOptions {
 | `model` | `'gemini-2.5-flash'` | Any Gemini model. |
 | `endpoint` | `'https://generativelanguage.googleapis.com/v1beta'` | Base URL — model name is appended automatically. |
 
-See [Shared options](/guide/translators#shared-options) for `voice`, `glossary`, `context`, `batchSize`, `temperature`, `headers`, `timeout`, `maxRetries`.
+See [Shared options](/guide/translators#shared-options) for `voice`, `glossary`, `context`, `batchSize`, `concurrency`, `temperature`, `headers`, `timeout`, `maxRetries`.
 
 ## Vertex AI
 

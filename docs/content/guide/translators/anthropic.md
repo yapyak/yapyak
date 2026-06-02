@@ -39,6 +39,7 @@ interface AnthropicOptions {
   glossary?: Record<string, Record<string, string>>;
   context?: 'none' | 'minimal' | 'rich';
   batchSize?: number;
+  concurrency?: number;
   model?: string;
   temperature?: number;
   endpoint?: string;
@@ -54,4 +55,4 @@ interface AnthropicOptions {
 | `model` | `'claude-sonnet-4-6'` | Any Claude model. |
 | `endpoint` | `'https://api.anthropic.com/v1/messages'` | Override for private deployments or proxies. |
 
-See [Shared options](/guide/translators#shared-options) for `voice`, `glossary`, `context`, `batchSize`, `temperature`, `headers`, `timeout`, `maxRetries`.
+See [Shared options](/guide/translators#shared-options) for `voice`, `glossary`, `context`, `batchSize`, `concurrency`, `temperature`, `headers`, `timeout`, `maxRetries`.

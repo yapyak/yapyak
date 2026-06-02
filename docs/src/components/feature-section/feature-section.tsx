@@ -21,7 +21,7 @@ export function FeatureSection(props: FeatureSectionProps) {
   const features: Feature[] = [
     {
       description: t(
-        'Edit. Save. Done. Every locale updates via HMR before you blink. There is no second step.',
+        'Every configured locale, translated in the same model call and hot-reloaded into the browser. "Cart" becomes "Korg" and "Warenkorb" in the same response — same context, same generation step. The save is the only step.',
       ),
       number: '01',
       title: t('Auto-translation on save'),

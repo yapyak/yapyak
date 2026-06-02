@@ -37,6 +37,7 @@ interface OllamaOptions {
   glossary?: Record<string, Record<string, string>>;
   context?: 'none' | 'minimal' | 'rich';
   batchSize?: number;
+  concurrency?: number;
   model?: string;
   temperature?: number;
   endpoint?: string;
@@ -55,7 +56,7 @@ interface OllamaOptions {
 
 No `apiKey`. Ollama runs locally without auth.
 
-See [Shared options](/guide/translators#shared-options) for `voice`, `glossary`, `context`, `batchSize`, `temperature`, `headers`.
+See [Shared options](/guide/translators#shared-options) for `voice`, `glossary`, `context`, `batchSize`, `concurrency`, `temperature`, `headers`.
 
 ## Picking a model
 

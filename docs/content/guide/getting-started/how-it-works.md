@@ -142,7 +142,7 @@ Before removing an entry from a locale file, yapyak writes it to `node_modules/.
 
 | Event | Outcome |
 | --- | --- |
-| File renamed (`save-button.tsx` → `submit-button.tsx`) | Translations follow the new path |
+| File renamed (`save-button.tsx` becomes `submit-button.tsx`) | Translations follow the new path |
 | File moved to a different folder | Same as a rename — path changes, translations follow |
 | File deleted | Translations move to the cache; restoring the file restores the translations |
 | Parser fails mid-edit | Translations from the affected file move to the cache, then restore once the parser succeeds |
@@ -184,7 +184,19 @@ The code becomes useful translation context without requiring developers to main
 
 Interactive saves and large translation backfills have different needs. A small edit should complete quickly; an initial locale import may involve hundreds or thousands of missing entries.
 
-yapyak sends translation work through a worker pool. By default, it groups twenty-five messages per request and runs up to five batches concurrently. These values can be adjusted for the provider, model, and rate limits used by a project.
+yapyak sends translation work through a worker pool. By default, it groups twenty-five source strings per request and runs up to five requests concurrently. These values can be adjusted for the provider, model, and rate limits used by a project.
+
+Each request carries every configured target locale. The model receives a source string once and returns its translation in every locale in the same response. For a project with ten configured locales, the save loop is one round-trip per twenty-five source strings, not ten:
+
+```json
+[
+  { "sv": "Spara ändringar", "de": "Änderungen speichern", "ja": "変更を保存" }
+]
+```
+
+Terminology stays consistent across languages: the same `Save` becomes `Spara` for Swedish and `Speichern` for German in the same generation step, with both choices visible in the same context.
+
+The same source string appearing across multiple locales is deduplicated before the request. yapyak only ever asks the model for each unique source once per save, regardless of how many languages the project ships.
 
 Results are written back in request order, even when batches finish in a different order. For larger runs, progress is reported as each batch completes:
 

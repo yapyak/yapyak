@@ -39,6 +39,7 @@ interface OpenAIOptions {
   glossary?: Record<string, Record<string, string>>;
   context?: 'none' | 'minimal' | 'rich';
   batchSize?: number;
+  concurrency?: number;
   model?: string;
   temperature?: number;
   endpoint?: string;
@@ -60,7 +61,7 @@ interface OpenAIOptions {
 | `seed` | — | Reproducible outputs. Same `(prompt, seed)` gives the same result. |
 | `user` | — | End-user tracking string, included in request payload. |
 
-See [Shared options](/guide/translators#shared-options) for `voice`, `glossary`, `context`, `batchSize`, `temperature`, `headers`, `timeout`, `maxRetries`.
+See [Shared options](/guide/translators#shared-options) for `voice`, `glossary`, `context`, `batchSize`, `concurrency`, `temperature`, `headers`, `timeout`, `maxRetries`.
 
 ## OpenAI-compatible providers
 

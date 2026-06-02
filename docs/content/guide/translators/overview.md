@@ -29,7 +29,8 @@ Every shipped translator accepts the same core options:
 | `voice` | `string` | — | Tone prompt prepended to every translation request |
 | `glossary` | `Record<string, Record<string, string>>` | — | Forced translations per locale for specific source terms |
 | `context` | `'none' \| 'minimal' \| 'rich'` | `'minimal'` | How much call-site context to send to the AI |
-| `batchSize` | `number` | `10` | Strings translated per request |
+| `batchSize` | `number` | `25` | Source strings per request. Each request asks for every configured locale at once |
+| `concurrency` | `number` | `5` | Maximum requests running in parallel |
 | `model` | `string` | provider-specific | Which model to use |
 | `temperature` | `number` | `0.2` | Randomness of output (low = deterministic) |
 | `endpoint` | `string` | provider-specific | HTTP endpoint override |
