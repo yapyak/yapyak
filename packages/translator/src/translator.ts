@@ -108,6 +108,7 @@ export function createTranslator(options: CreateTranslatorOptions): Translator {
 
   const translator = single as Translator;
   translator.id = options.id ?? DEFAULT_ID;
+  translator.context = contextLevel;
   translator.batch = batch;
   return translator;
 }

@@ -58,6 +58,8 @@ See each provider's page for full details.
 
 For most UI translation, `'minimal'` is the sweet spot — disambiguation without leakage. `'rich'` helps for translations where layout matters (e.g. a tooltip needs to fit a specific width). `'none'` is for teams that can't ship code samples to third-party AI.
 
+Setting `context: 'none'` also disables [translation examples](#translation-examples) by default, so no prior translations leak alongside the source string. To opt back in, set `examples` to a positive number in `yapyak.config.ts`.
+
 ## Voice
 
 Set the tone for every translation:
@@ -86,6 +88,32 @@ anthropic({
 ```
 
 When a source string contains a glossary key, the AI uses the configured translation. For brand terms, regulated language, product vocabulary.
+
+## Translation examples
+
+yapyak passes a few of the project's prior translations to the AI as style reference, so terminology stays consistent across the codebase. When the project already translated `Save` as `Spara`, a new `t('Save changes')` lands on `Spara ändringar` rather than `Lagra ändringar` or `Bevara ändringar`.
+
+Configured on the yapyak config, not the translator:
+
+```ts
+// yapyak.config.ts
+import { defineConfig } from 'yapyak';
+
+export default defineConfig({
+  examples: 5,  // default
+  translator: anthropic({ apiKey: '...' }),
+});
+```
+
+| Value | Behavior |
+| --- | --- |
+| `0` | Disabled — no prior translations sent |
+| `5` (default) | Up to 5 examples per request, picked by source-similarity |
+| Higher | More context, more tokens — diminishing returns above ~10 |
+
+Examples come from the project's existing locale files and the orphan cache, scoped to the target locale. Same-file entries rank first, then fuzzy word-level similarity. The AI receives them as hints, not constraints — it deviates when a source genuinely calls for different wording.
+
+When the translator's `context` is `'none'`, this defaults to `0` so no prior translations leak alongside the source string. Set `examples` explicitly to opt back in.
 
 ## When things go wrong
 

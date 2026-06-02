@@ -21,7 +21,7 @@ export function normalizeYapyakConfig(
       config.autoTranslateThreshold ?? DEFAULT_AUTO_TRANSLATE_THRESHOLD,
     defaultLocale: config.defaultLocale,
     detectAcceptLanguage: config.detectAcceptLanguage ?? false,
-    examples: config.examples ?? DEFAULT_EXAMPLES,
+    examples: resolveExamples(config),
     exclude: config.exclude ?? DEFAULT_EXCLUDE,
     include: config.include ?? DEFAULT_INCLUDE,
     localesDir: config.localesDir ?? DEFAULT_LOCALES_DIR,
@@ -31,6 +31,16 @@ export function normalizeYapyakConfig(
     syncHtmlLang: config.syncHtmlLang ?? false,
     translator: config.translator,
   };
+}
+
+function resolveExamples(config: YapyakConfig): number {
+  if (config.examples !== undefined) {
+    return config.examples;
+  }
+  if (config.translator?.context === 'none') {
+    return 0;
+  }
+  return DEFAULT_EXAMPLES;
 }
 
 function normalizePersistence(

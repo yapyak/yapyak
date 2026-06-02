@@ -124,7 +124,7 @@ Locale files remain ordinary project files. They can be reviewed, edited, versio
 
 ### 4. Translate missing entries when configured
 
-When a *translator* is configured, new missing entries can be translated as part of the save loop. Each translation request includes the source message and, depending on configuration, the context collected from its call site.
+When a *translator* is configured, new missing entries can be translated as part of the save loop. Each translation request includes the source message, the call-site context, and a few of the project's prior translations as style reference (see [translation examples](/guide/translators/overview#translation-examples)) so terminology stays consistent across the codebase.
 
 When no *translator* is configured, the synchronization still happens. The new locale entries remain empty until they are filled by hand or through the CLI.
 

@@ -74,9 +74,9 @@ export interface YapyakConfig {
    * The maximum number of prior project translations passed to the translator as style reference per request.
    *
    * @remarks
-   * Drawn from the project's existing locale files and orphan cache, scoped to the same locale. Same-file entries rank first, then fuzzy similarity. `0` disables the feature entirely. Keep small — 5 matches Smartling's production default.
+   * Drawn from the project's existing locale files and orphan cache, scoped to the same locale. Same-file entries rank first, then fuzzy similarity. `0` disables the feature entirely. Keep small — 5 matches Smartling's production default. When the configured translator's `context` is `'none'`, this defaults to `0` so no prior translations leak alongside the source string; set it explicitly to opt back in.
    *
-   * @defaultValue `5`
+   * @defaultValue `5`, or `0` when the translator's `context` is `'none'`
    */
   examples?: number;
   /**

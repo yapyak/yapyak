@@ -66,6 +66,13 @@ export interface Translator {
     requests: TranslateRequest[],
     options?: TranslateBatchOptions,
   ): Promise<string[]>;
+  /**
+   * The resolved context level for this translator.
+   *
+   * @remarks
+   * Set by {@link createTranslator} from its `context` option. The compiler reads this field to align privacy-sensitive defaults — when set to `'none'`, the `examples` default falls to `0` so no prior translations leak alongside the source string. Custom translators that bypass {@link createTranslator} should set this field to match their effective context level.
+   */
+  context?: ContextLevel;
   /** Stable identifier for this translator. Convention: lowercase suffix matching the package name (`'anthropic'`, `'openai'`, `'gemini'`, `'ollama'`, `'cloud'`). */
   id: string;
   (request: TranslateRequest): Promise<string>;
@@ -85,7 +92,7 @@ export interface TranslateBatchOptions {
  * - `'rich'` — sends the source string, the component name, the enclosing element, and the surrounding code snippet.
  *
  * @remarks
- * Choose `'none'` when nothing about the calling code may leave the project.
+ * Choose `'none'` when nothing about the calling code may leave the project. The compiler reads the resolved level off {@link Translator.context} and aligns privacy-sensitive defaults — at `'none'`, the `examples` setting also defaults to `0`.
  *
  * @example
  * ```ts
