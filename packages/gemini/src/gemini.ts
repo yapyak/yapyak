@@ -1,4 +1,8 @@
-import type { ContextLevel, Translator } from '@yapyak/translator';
+import type {
+  ContextLevel,
+  LocaleTranslations,
+  Translator,
+} from '@yapyak/translator';
 
 import { createTranslator } from '@yapyak/translator';
 import {
@@ -116,7 +120,7 @@ export function gemini(options: GeminiOptions): Translator {
     context,
     id: 'gemini',
     async translate(params) {
-      const { items, signal, sourceLocale, targetLocale } = params;
+      const { items, signal, sourceLocale, targetLocales } = params;
       const url = `${endpoint}/models/${model}:generateContent`;
       const init: RequestInit = {
         body: JSON.stringify({
@@ -131,7 +135,9 @@ export function gemini(options: GeminiOptions): Translator {
             temperature,
           },
           systemInstruction: {
-            parts: [{ text: buildSystem(options, sourceLocale, targetLocale) }],
+            parts: [
+              { text: buildSystem(options, sourceLocale, targetLocales) },
+            ],
           },
         }),
         headers: {
@@ -161,7 +167,7 @@ export function gemini(options: GeminiOptions): Translator {
         throw new Error('yapyak gemini: response did not contain a text part');
       }
       const cleaned = stripCodeFence(text.trim());
-      return JSON.parse(cleaned) as string[];
+      return JSON.parse(cleaned) as LocaleTranslations[];
     },
   });
 }

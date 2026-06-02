@@ -120,14 +120,22 @@ export interface TranslateItem {
 }
 
 /**
+ * The translations for one input item, keyed by target locale.
+ *
+ * @remarks
+ * Keys match `targetLocales` from the request. Each value is the translated string. The `translate` callback returns one of these per input item.
+ */
+export type LocaleTranslations = Record<string, string>;
+
+/**
  * Request shape for the `translate` callback.
  *
  * @remarks
- * `items`, `sourceLocale`, and `targetLocale` are always present. Forward `signal` to the underlying fetch/SDK call to honor cancellation.
+ * `items`, `sourceLocale`, and `targetLocales` are always present. The callback returns one {@link LocaleTranslations} per item, with a key per locale in `targetLocales`. Forward `signal` to the underlying fetch/SDK call to honor cancellation.
  *
  * @example
  * ```ts
- * async function myTranslate(params: TranslateBatchRequest): Promise<string[]> {
+ * async function myTranslate(params: TranslateBatchRequest) {
  *   const response = await fetch('https://api.example/translate', {
  *     method: 'POST',
  *     body: JSON.stringify(params),
@@ -141,14 +149,14 @@ export interface TranslateItem {
  * ```
  */
 export interface TranslateBatchRequest {
-  /** The items to translate. Translations must be returned in the same order. */
+  /** The items to translate. Each item's result must include a translation for every locale in `targetLocales`. */
   items: TranslateItem[];
   /** The abort signal for cancellation. Forwarded to the underlying fetch/SDK call. */
   signal?: AbortSignal;
   /** The source locale. */
   sourceLocale: string;
-  /** The target locale. */
-  targetLocale: string;
+  /** The target locales. Each item's result must include a translation for each of these. */
+  targetLocales: string[];
 }
 
 /** Options for {@link createTranslator}. */
@@ -177,6 +185,8 @@ export interface CreateTranslatorOptions {
    * @defaultValue `'custom'`
    */
   id?: string;
-  /** Translates a batch of items. Must return strings in the same order as `items`. */
-  translate: (params: TranslateBatchRequest) => string[] | Promise<string[]>;
+  /** Translates a batch of items into every target locale. Must return one {@link LocaleTranslations} per item, in the same order as `items`. */
+  translate: (
+    params: TranslateBatchRequest,
+  ) => LocaleTranslations[] | Promise<LocaleTranslations[]>;
 }

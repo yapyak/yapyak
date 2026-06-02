@@ -1,5 +1,6 @@
 import type {
   MessageContext,
+  TranslateRequest,
   TranslationExample,
   Translator,
 } from '@yapyak/translator';
@@ -63,114 +64,136 @@ export async function autoTranslate(
   }
 
   const extractedSources = toExtractedSources(options.messages);
-  const byLocale = groupByLocale(stubs);
   const errors: AutoTranslateResult['errors'] = [];
   let translated = 0;
 
   const examplesMax = options.examples ?? 0;
   const exampleCache = loadExampleCache(options, examplesMax);
 
-  for (const [locale, localeStubs] of Object.entries(byLocale)) {
+  const requests = stubs.map((stub) =>
+    buildRequest(stub, options, exampleCache, examplesMax),
+  );
+
+  let results: string[];
+  try {
+    results =
+      typeof options.translator.batch === 'function'
+        ? await options.translator.batch(requests)
+        : await runOneByOne(stubs, requests, options.translator, errors);
+  } catch (error) {
+    for (const stub of stubs) {
+      errors.push({
+        error,
+        fileId: stub.fileId,
+        locale: stub.locale,
+        source: stub.source,
+      });
+    }
+    return { errors, translated };
+  }
+
+  const localeFiles = new Map<string, LocaleFile>();
+  const touchedLocales = new Set<string>();
+  for (let i = 0; i < stubs.length; i++) {
+    const stub = stubs[i];
+    const value = results[i];
+    if (!stub || value === undefined) {
+      continue;
+    }
+    const trimmed = value.trim();
+    if (!trimmed) {
+      continue;
+    }
+    let data = localeFiles.get(stub.locale);
+    if (!data) {
+      const localePath = join(
+        options.projectRoot,
+        options.localesDir,
+        `${stub.locale}.json`,
+      );
+      data = readLocaleFile(localePath);
+      localeFiles.set(stub.locale, data);
+    }
+    setEntry(data, stub.fileId, stubKey(stub), trimmed);
+    translated++;
+    touchedLocales.add(stub.locale);
+  }
+
+  for (const locale of touchedLocales) {
+    const data = localeFiles.get(locale);
+    if (!data) {
+      continue;
+    }
     const localePath = join(
       options.projectRoot,
       options.localesDir,
       `${locale}.json`,
     );
-    const data = readLocaleFile(localePath);
-    let touched = false;
-    const requests = localeStubs.map((stub) => {
-      const request: {
-        context: MessageContext | undefined;
-        disambiguation?: string;
-        examples?: TranslationExample[];
-        fileId: string;
-        source: string;
-        sourceLocale: string;
-        targetLocale: string;
-      } = {
-        context: stub.context,
-        fileId: stub.fileId,
-        source: stub.source,
-        sourceLocale: options.defaultLocale,
-        targetLocale: stub.locale,
-      };
-      if (stub.disambiguation !== undefined) {
-        request.disambiguation = stub.disambiguation;
-      }
-      const examples = collectExamplesForStub(exampleCache, stub, examplesMax);
-      if (examples.length > 0) {
-        request.examples = examples;
-      }
-      return request;
+    if (!existsSync(localePath)) {
+      continue;
+    }
+    writeLocaleFile({
+      after: data,
+      extractedSources,
+      filePath: localePath,
     });
-
-    if (typeof options.translator.batch === 'function') {
-      try {
-        const results = await options.translator.batch(requests);
-        for (let i = 0; i < localeStubs.length; i++) {
-          const stub = localeStubs[i];
-          const value = results[i];
-          if (stub === undefined || value === undefined) {
-            continue;
-          }
-          const trimmed = value.trim();
-          if (trimmed === '') {
-            continue;
-          }
-          setEntry(data, stub.fileId, stubKey(stub), trimmed);
-          translated++;
-          touched = true;
-        }
-      } catch (error) {
-        for (const stub of localeStubs) {
-          errors.push({
-            error,
-            fileId: stub.fileId,
-            locale: stub.locale,
-            source: stub.source,
-          });
-        }
-      }
-    } else {
-      for (let i = 0; i < localeStubs.length; i++) {
-        const stub = localeStubs[i];
-        const request = requests[i];
-        if (!stub || !request) {
-          continue;
-        }
-        try {
-          const result = await options.translator(request);
-          const trimmed = result.trim();
-          if (trimmed === '') {
-            continue;
-          }
-          setEntry(data, stub.fileId, stubKey(stub), trimmed);
-          translated++;
-          touched = true;
-        } catch (error) {
-          errors.push({
-            error,
-            fileId: stub.fileId,
-            locale: stub.locale,
-            source: stub.source,
-          });
-        }
-      }
-    }
-
-    if (touched) {
-      if (!existsSync(localePath)) {
-        continue;
-      }
-      writeLocaleFile({
-        after: data,
-        extractedSources,
-        filePath: localePath,
-      });
-    }
   }
 
   return { errors, translated };
+}
+
+async function runOneByOne(
+  stubs: Stub[],
+  requests: TranslateRequest[],
+  translator: Translator,
+  errors: AutoTranslateResult['errors'],
+): Promise<string[]> {
+  const results: string[] = [];
+  for (let i = 0; i < stubs.length; i++) {
+    const stub = stubs[i];
+    const request = requests[i];
+    if (!stub || !request) {
+      results.push('');
+      continue;
+    }
+    try {
+      results.push(await translator(request));
+    } catch (error) {
+      results.push('');
+      errors.push({
+        error,
+        fileId: stub.fileId,
+        locale: stub.locale,
+        source: stub.source,
+      });
+    }
+  }
+  return results;
+}
+
+function buildRequest(
+  stub: Stub,
+  options: AutoTranslateOptions,
+  exampleCache: ExampleCache,
+  examplesMax: number,
+): TranslateRequest {
+  const request: TranslateRequest = {
+    fileId: stub.fileId,
+    source: stub.source,
+    sourceLocale: options.defaultLocale,
+    targetLocale: stub.locale,
+  };
+  if (stub.context !== undefined) {
+    request.context = stub.context;
+  }
+  if (stub.disambiguation !== undefined) {
+    request.disambiguation = stub.disambiguation;
+  }
+  const examples = collectExamplesForStub(exampleCache, stub, examplesMax);
+  if (examples.length > 0) {
+    request.examples = examples;
+  }
+  return request;
 }
 
 function toExtractedSources(
@@ -287,19 +310,6 @@ function setEntry(
     data[fileId] = entry;
   }
   entry[source] = value;
-}
-
-function groupByLocale(stubs: Stub[]): Record<string, Stub[]> {
-  const grouped: Record<string, Stub[]> = {};
-  for (const stub of stubs) {
-    const list = grouped[stub.locale];
-    if (!list) {
-      grouped[stub.locale] = [stub];
-    } else {
-      list.push(stub);
-    }
-  }
-  return grouped;
 }
 
 interface ExampleCache {

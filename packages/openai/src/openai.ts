@@ -1,4 +1,8 @@
-import type { ContextLevel, Translator } from '@yapyak/translator';
+import type {
+  ContextLevel,
+  LocaleTranslations,
+  Translator,
+} from '@yapyak/translator';
 
 import { createTranslator } from '@yapyak/translator';
 import {
@@ -125,11 +129,11 @@ export function openai(options: OpenAIOptions): Translator {
     context,
     id: 'openai',
     async translate(params) {
-      const { items, signal, sourceLocale, targetLocale } = params;
+      const { items, signal, sourceLocale, targetLocales } = params;
       const body: Record<string, unknown> = {
         messages: [
           {
-            content: buildSystem(options, sourceLocale, targetLocale),
+            content: buildSystem(options, sourceLocale, targetLocales),
             role: 'system',
           },
           { content: JSON.stringify(items), role: 'user' },
@@ -176,7 +180,7 @@ export function openai(options: OpenAIOptions): Translator {
         throw new Error('yapyak openai: response did not contain a text block');
       }
       const cleaned = stripCodeFence(text.trim());
-      return JSON.parse(cleaned) as string[];
+      return JSON.parse(cleaned) as LocaleTranslations[];
     },
   });
 }

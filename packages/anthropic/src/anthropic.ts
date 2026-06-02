@@ -1,4 +1,8 @@
-import type { ContextLevel, Translator } from '@yapyak/translator';
+import type {
+  ContextLevel,
+  LocaleTranslations,
+  Translator,
+} from '@yapyak/translator';
 
 import { createTranslator } from '@yapyak/translator';
 import {
@@ -118,16 +122,16 @@ export function anthropic(options: AnthropicOptions): Translator {
     context,
     id: 'anthropic',
     async translate(params) {
-      const { items, signal, sourceLocale, targetLocale } = params;
+      const { items, signal, sourceLocale, targetLocales } = params;
       const init: RequestInit = {
         body: JSON.stringify({
           max_tokens: Math.min(
             MAX_TOKENS_CAP,
-            Math.max(1024, items.length * 128),
+            Math.max(1024, items.length * targetLocales.length * 96),
           ),
           messages: [{ content: JSON.stringify(items), role: 'user' }],
           model,
-          system: buildSystem(options, sourceLocale, targetLocale),
+          system: buildSystem(options, sourceLocale, targetLocales),
           temperature,
         }),
         headers: {
@@ -160,7 +164,7 @@ export function anthropic(options: AnthropicOptions): Translator {
         );
       }
       const cleaned = stripCodeFence(text.trim());
-      return JSON.parse(cleaned) as string[];
+      return JSON.parse(cleaned) as LocaleTranslations[];
     },
   });
 }

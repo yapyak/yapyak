@@ -21,7 +21,7 @@ function stubFetch(text: string): {
     };
     return new Response(
       JSON.stringify({
-        content: [{ text: JSON.stringify([text]), type: 'text' }],
+        content: [{ text: JSON.stringify([{ sv: text }]), type: 'text' }],
       }),
       { status: 200 },
     );
@@ -105,7 +105,7 @@ describe('anthropic', () => {
       targetLocale: 'sv',
     });
     const system = (stub.body() as { system: string }).system;
-    expect(system).toContain('"Sign up" → "Skapa konto"');
+    expect(system).toContain('"Sign up" → sv="Skapa konto"');
     expect(system).not.toContain("S'inscrire");
   });
 
@@ -127,7 +127,7 @@ describe('anthropic', () => {
       capturedUrl = url;
       return new Response(
         JSON.stringify({
-          content: [{ text: JSON.stringify(['Hej']), type: 'text' }],
+          content: [{ text: JSON.stringify([{ sv: 'Hej' }]), type: 'text' }],
         }),
         { status: 200 },
       );
@@ -152,7 +152,7 @@ describe('anthropic', () => {
           JSON.stringify({
             content: [
               {
-                text: '```json\n["Hej"]\n```',
+                text: '```json\n[{"sv": "Hej"}]\n```',
                 type: 'text',
               },
             ],
@@ -205,9 +205,9 @@ describe('anthropic', () => {
         const items: { source: string }[] = JSON.parse(
           body.messages[0].content,
         );
-        const translations = items.map((item) =>
-          item.source.replace(/Hello/g, 'Hej'),
-        );
+        const translations = items.map((item) => ({
+          sv: item.source.replace(/Hello/g, 'Hej'),
+        }));
         return new Response(
           JSON.stringify({
             content: [{ text: JSON.stringify(translations), type: 'text' }],
@@ -245,7 +245,10 @@ describe('anthropic', () => {
         return new Response(
           JSON.stringify({
             content: [
-              { text: JSON.stringify(items.map(() => 'ok')), type: 'text' },
+              {
+                text: JSON.stringify(items.map(() => ({ sv: 'ok' }))),
+                type: 'text',
+              },
             ],
           }),
           { status: 200 },
@@ -277,7 +280,7 @@ describe('anthropic', () => {
             content: [
               {
                 text: JSON.stringify(
-                  items.map((item) => POOL[item.source] ?? ''),
+                  items.map((item) => ({ sv: POOL[item.source] ?? '' })),
                 ),
                 type: 'text',
               },
@@ -323,7 +326,7 @@ describe('anthropic', () => {
             content: [
               {
                 text: JSON.stringify(
-                  items.map((item) => POOL[item.source] ?? ''),
+                  items.map((item) => ({ sv: POOL[item.source] ?? '' })),
                 ),
                 type: 'text',
               },
@@ -366,7 +369,9 @@ describe('anthropic', () => {
         async () =>
           new Response(
             JSON.stringify({
-              content: [{ text: JSON.stringify(['only-one']), type: 'text' }],
+              content: [
+                { text: JSON.stringify([{ sv: 'only-one' }]), type: 'text' },
+              ],
             }),
             { status: 200 },
           ),

@@ -1,6 +1,7 @@
 import type {
   ContextLevel,
   CreateTranslatorOptions,
+  LocaleTranslations,
   TranslateBatchOptions,
   TranslateItem,
   TranslateRequest,
@@ -16,17 +17,17 @@ const DEFAULT_ID = 'custom';
  * Builds a translator from a `translate` function.
  *
  * @remarks
- * Handles batching, context shaping, and result validation. The provided function talks to the AI.
+ * Handles batching, context shaping, deduplication across target locales, and result validation. The provided function talks to the AI and receives every target locale in one call so terminology stays consistent and round-trips stay minimal.
  *
  * @param options - The translator options.
  *
  * @example
  * ```ts
  * const myTranslator = createTranslator({
- *   async translate({ items, sourceLocale, targetLocale }) {
+ *   async translate({ items, sourceLocale, targetLocales }) {
  *     const response = await fetch('https://my-api.example/translate', {
  *       method: 'POST',
- *       body: JSON.stringify({ items, sourceLocale, targetLocale }),
+ *       body: JSON.stringify({ items, sourceLocale, targetLocales }),
  *     });
  *     const { translations } = await response.json();
  *     return translations;
@@ -49,39 +50,44 @@ export function createTranslator(options: CreateTranslatorOptions): Translator {
   }
   const contextLevel = options.context ?? DEFAULT_CONTEXT;
 
-  async function runBatch(requests: TranslateRequest[]): Promise<string[]> {
-    if (requests.length === 0) {
-      return [];
-    }
-    const reference = requests[0];
-    if (!reference) {
-      return [];
-    }
-    const items = requests.map((request) => toItem(request, contextLevel));
-    const result = await options.translate({
-      items,
-      sourceLocale: reference.sourceLocale,
-      targetLocale: reference.targetLocale,
-    });
-    return validateBatch(result, {
-      items,
-      sourceLocale: reference.sourceLocale,
-      targetLocale: reference.targetLocale,
-    });
-  }
-
   async function batch(
     requests: TranslateRequest[],
     batchOptions?: TranslateBatchOptions,
   ): Promise<string[]> {
+    if (requests.length === 0) {
+      return [];
+    }
+
+    const uniqueRequests: TranslateRequest[] = [];
+    const indexOfUnique = new Map<string, number>();
+    const requestToUnique = new Array<number>(requests.length);
+    const targetLocaleSet = new Set<string>();
+    for (let i = 0; i < requests.length; i++) {
+      const request = requests[i];
+      if (!request) {
+        continue;
+      }
+      const key = uniqueKey(request);
+      let index = indexOfUnique.get(key);
+      if (index === undefined) {
+        index = uniqueRequests.length;
+        indexOfUnique.set(key, index);
+        uniqueRequests.push(request);
+      }
+      requestToUnique[i] = index;
+      targetLocaleSet.add(request.targetLocale);
+    }
+    const targetLocales = [...targetLocaleSet].sort();
+
     const chunks: TranslateRequest[][] = [];
-    for (let i = 0; i < requests.length; i += batchSize) {
-      chunks.push(requests.slice(i, i + batchSize));
+    for (let i = 0; i < uniqueRequests.length; i += batchSize) {
+      chunks.push(uniqueRequests.slice(i, i + batchSize));
     }
     if (chunks.length === 0) {
       return [];
     }
-    const chunkResults: string[][] = new Array(chunks.length);
+
+    const chunkResults: LocaleTranslations[][] = new Array(chunks.length);
     let cursor = 0;
     async function worker(): Promise<void> {
       while (cursor < chunks.length) {
@@ -91,26 +97,62 @@ export function createTranslator(options: CreateTranslatorOptions): Translator {
         if (!chunk) {
           continue;
         }
-        const result = await runBatch(chunk);
+        const result = await runChunk(chunk, targetLocales);
         chunkResults[myIndex] = result;
-        batchOptions?.onChunk?.(result.length);
+        batchOptions?.onChunk?.(result.length * targetLocales.length);
       }
     }
     const workerCount = Math.min(concurrency, chunks.length);
     await Promise.all(Array.from({ length: workerCount }, () => worker()));
-    return chunkResults.flat();
+
+    const uniqueTranslations = chunkResults.flat();
+    return requests.map((request, i) => {
+      const uniqueIndex = requestToUnique[i] ?? -1;
+      const translations = uniqueTranslations[uniqueIndex];
+      if (!translations) {
+        return '';
+      }
+      return translations[request.targetLocale] ?? '';
+    });
+  }
+
+  async function runChunk(
+    uniqueRequests: TranslateRequest[],
+    targetLocales: string[],
+  ): Promise<LocaleTranslations[]> {
+    const reference = uniqueRequests[0];
+    if (!reference) {
+      return [];
+    }
+    const items = uniqueRequests.map((request) =>
+      toItem(request, contextLevel),
+    );
+    const result = await options.translate({
+      items,
+      sourceLocale: reference.sourceLocale,
+      targetLocales,
+    });
+    return validateBatch(result, {
+      items,
+      sourceLocale: reference.sourceLocale,
+      targetLocales,
+    });
   }
 
   async function single(request: TranslateRequest): Promise<string> {
-    const [first] = await runBatch([request]);
+    const [first] = await batch([request]);
     return first ?? '';
   }
 
-  const translator = single as Translator;
-  translator.id = options.id ?? DEFAULT_ID;
-  translator.context = contextLevel;
-  translator.batch = batch;
-  return translator;
+  return Object.assign(single, {
+    batch,
+    context: contextLevel,
+    id: options.id ?? DEFAULT_ID,
+  });
+}
+
+function uniqueKey(request: TranslateRequest): string {
+  return `${request.fileId}\x00${request.source}\x00${request.disambiguation ?? ''}`;
 }
 
 function toItem(request: TranslateRequest, level: ContextLevel): TranslateItem {
@@ -142,48 +184,51 @@ function toItem(request: TranslateRequest, level: ContextLevel): TranslateItem {
 interface BatchContext {
   items: TranslateItem[];
   sourceLocale: string;
-  targetLocale: string;
+  targetLocales: string[];
 }
 
-function validateBatch(result: unknown, context: BatchContext): string[] {
+function validateBatch(
+  result: unknown,
+  context: BatchContext,
+): LocaleTranslations[] {
   const expectedLength = context.items.length;
-  const locales = `${context.sourceLocale} → ${context.targetLocale}`;
+  const localeSummary = `${context.sourceLocale} → ${context.targetLocales.join(', ')}`;
   const sources = context.items
     .map((item) => JSON.stringify(item.source))
     .join(', ');
 
   if (!Array.isArray(result)) {
     throw new Error(
-      `translate (${locales}) must return an array of ${expectedLength} string${expectedLength === 1 ? '' : 's'}, got ${typeof result}.\n` +
+      `translate (${localeSummary}) must return an array of ${expectedLength} object${expectedLength === 1 ? '' : 's'}, got ${typeof result}.\n` +
         `Sources: ${sources}`,
     );
   }
   if (result.length !== expectedLength) {
     throw new Error(
-      `translate (${locales}) returned ${result.length} item${result.length === 1 ? '' : 's'}, expected ${expectedLength}.\n` +
+      `translate (${localeSummary}) returned ${result.length} item${result.length === 1 ? '' : 's'}, expected ${expectedLength}.\n` +
         `Sources: ${sources}`,
     );
   }
-  const validated: string[] = [];
-  for (let i = 0; i < result.length; i++) {
-    const value = result[i];
-    if (typeof value !== 'string') {
-      const source = JSON.stringify(context.items[i]?.source ?? '');
-      throw new Error(
-        `translate (${locales}) item ${i} was not a string: ${preview(value)}.\n` +
-          `Source: ${source}`,
-      );
-    }
-    validated.push(value.trim());
-  }
-  return validated;
+  return result.map((entry) => normalizeEntry(entry, context.targetLocales));
 }
 
-function preview(value: unknown): string {
-  try {
-    const text = JSON.stringify(value);
-    return text.length > 100 ? `${text.slice(0, 100)}…` : text;
-  } catch {
-    return String(value);
+function normalizeEntry(
+  entry: unknown,
+  targetLocales: string[],
+): LocaleTranslations {
+  if (typeof entry !== 'object' || entry === null) {
+    return {};
   }
+  const record = entry as Record<string, unknown>;
+  const translations: LocaleTranslations = {};
+  for (const locale of targetLocales) {
+    const value = record[locale];
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (trimmed !== '') {
+        translations[locale] = trimmed;
+      }
+    }
+  }
+  return translations;
 }
