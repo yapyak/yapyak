@@ -77,6 +77,17 @@
       transition: color 400ms ease;
     }
 
+    .InlineCode {
+      padding: 4px 6px;
+      font-family: var(--font-family-mono);
+      font-size: 0.78em;
+      color: var(--foreground-soft);
+      white-space: nowrap;
+      background-color: var(--surface-strong);
+      border-radius: var(--border-radius-sm);
+      box-shadow: var(--shadow-ring-inset);
+    }
+
     @media (hover: hover) {
       &:hover {
         .NumeralText {

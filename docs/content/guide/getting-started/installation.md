@@ -3,15 +3,19 @@ title: Installation
 order: 2
 ---
 
-Three steps to a translated string.
+Add yapyak to a Vite project.
 
 ## Install
 
 ```bash
-npm install yapyak @yapyak/vite
+npm install yapyak @yapyak/vite @yapyak/cli
 # or
-pnpm add yapyak @yapyak/vite
+pnpm add yapyak @yapyak/vite @yapyak/cli
 ```
+
+- `yapyak` — the runtime (`t()`, format helpers, the raw locale API)
+- `@yapyak/vite` — the Vite plugin (extraction, HMR, compile-time inlining)
+- `@yapyak/cli` — the `yapyak` command (add locales, status, batch translate)
 
 ## Configure Vite
 
@@ -26,48 +30,19 @@ export default defineConfig({
 });
 ```
 
-Then create `yapyak.config.ts` in the project root:
+## Configure yapyak
+
+Create `yapyak.config.ts` in the project root:
 
 ```ts
 import { defineConfig } from 'yapyak';
-import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
   persistence: 'cookie',
-  translator: anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-    voice: 'Casual, thoughtful, never corporate.',
-  }),
 });
 ```
 
-Add your API key to `.env.local`:
-
-```bash
-ANTHROPIC_API_KEY=sk-ant-...
-```
-
-OpenAI, Ollama, or any custom translator works the same way — see [Translators](/guide/translators/).
-
-The plugin has more options for advanced cases (custom locale folder, include/exclude patterns, rename behavior). See [Translations](/guide/translations/).
-
-## Add a locale
-
-```bash
-npx yapyak add es
-# or
-pnpm yapyak add es
-```
-
-This creates `locales/es.json` and translates all your `t()` strings into Spanish. The default locale (`en` by default) stays in your code — it doesn't need a file.
-
-Add multiple at once:
-
-```bash
-npx yapyak add es fr de ja
-# or
-pnpm yapyak add es fr de ja
-```
+Bare minimum. Without a translator, new locale entries land as empty stubs you fill in yourself. To auto-translate on save, [pick a translator](#pick-a-translator) below.
 
 ## Write your first translation
 
@@ -99,33 +74,83 @@ import { t } from 'yapyak'
 <button>{t('Save changes')}</button>
 ```
 
+```astro [Astro]
+---
+import { t } from 'yapyak';
+---
+
+<button>{t('Save changes')}</button>
+```
+
 {% /code-group %}
 
-Save the file. `locales/es.json` updates automatically:
+## Add a locale
+
+```bash
+npx yapyak add sv
+# or
+pnpm yapyak add sv
+```
+
+Creates `locales/sv.json` and stubs every existing `t()` source string. Run with multiple at once:
+
+```bash
+pnpm yapyak add sv de es ja
+```
+
+The default locale (`en`) stays in your code — it doesn't need a file.
+
+If a translator is configured, the stubs fill automatically on save:
 
 ```json
 {
-  "Save changes": "Guardar cambios"
+  "Save changes": "Spara ändringar"
 }
 ```
 
-HMR pushes the new copy live. Edit the string. Save again. Every locale re-translates.
+HMR pushes the new copy live. Edit the source string, save again, every locale re-translates.
+
+## Pick a translator
+
+To translate automatically on save, install one of yapyak's translators:
+
+| Provider | Package | Setup |
+|---|---|---|
+| Anthropic (Claude) | `@yapyak/anthropic` | [Anthropic](/guide/translators/anthropic) |
+| OpenAI (or compatible) | `@yapyak/openai` | [OpenAI](/guide/translators/openai) |
+| Google Gemini | `@yapyak/gemini` | [Gemini](/guide/translators/gemini) |
+| Ollama (local) | `@yapyak/ollama` | [Ollama](/guide/translators/ollama) |
+| Custom (any LLM) | `@yapyak/translator` | [Custom](/guide/translators/custom) |
+
+Each ships first-class. Same shared config interface across providers. See [Translators overview](/guide/translators) for tradeoffs.
+
+## Pick a framework adapter
+
+For server-rendered apps. Skip if your app never renders on a server.
+
+| Framework | Package | Setup |
+|---|---|---|
+| Astro | `@yapyak/astro` | [Astro adapter](/guide/adapters/astro) |
+| React Router | `@yapyak/react-router` | [React Router adapter](/guide/adapters/react-router) |
+| SvelteKit | `@yapyak/sveltekit` | [SvelteKit adapter](/guide/adapters/sveltekit) |
+| TanStack Start | `@yapyak/tanstack-start` | [TanStack Start adapter](/guide/adapters/tanstack-start) |
+| Other Vite SSR | — | [Custom adapter](/guide/adapters/custom) |
+
+## UI bindings
+
+The runtime ships `t()` and the raw locale API (`getLocale`, `setLocale`). For framework-aware features — reactive locale subscriptions, the `<RichText>` component — install the binding for your framework:
+
+| Framework | Package | Provides |
+|---|---|---|
+| React | `@yapyak/react` | `useLocale()`, `<LocaleProvider>`, `<RichText>` |
+| Vue | `@yapyak/vue` | `locale`, `<RichText>` |
+| Svelte | `@yapyak/svelte` | `locale`, `<RichText>` |
+
+If you only render static `t()` calls (no locale switching, no rich text), the runtime alone is enough.
 
 ## Switch language at runtime
 
-`useLocale()` in React, `locale` in Vue and Svelte. The full pattern with code samples for each framework lives in [Locales / Runtime](/guide/locales/runtime).
-
-## SSR setup
-
-If your app is server-rendered, wire the adapter once. Pick the page for your framework:
-
-- [Astro](/guide/adapters/astro)
-- [React Router](/guide/adapters/react-router)
-- [TanStack Start](/guide/adapters/tanstack-start)
-- [SvelteKit](/guide/adapters/sveltekit)
-- [Custom](/guide/adapters/custom) — any other Vite SSR setup
-
-If your app never renders on a server, skip this step.
+Each framework binds locale state to its idiomatic primitive. See [Locales / Runtime](/guide/locales/runtime) for the full pattern per framework.
 
 ## Verify
 
@@ -135,7 +160,7 @@ npx yapyak status
 pnpm yapyak status
 ```
 
-Lists every locale, how many strings each has, and which entries are missing.
+Lists every locale, coverage per locale, missing entries.
 
 ## CI
 
@@ -155,7 +180,7 @@ Two common CI shapes:
 
 ## What's next
 
-- [How it works](/guide/getting-started/how-it-works) — the auto-translate pipeline, position-aware renames, compile-time rewrite
+- [How it works](/guide/getting-started/how-it-works) — the save-loop pipeline, position-aware renames, compile-time rewrite
 - [Translations](/guide/translations/) — `t()` API, params, plurals, forced locale
 - [Locales](/guide/locales/) — adding locales, persistence, reactive bindings
 - [Translators](/guide/translators/) — Anthropic, OpenAI, Gemini, Ollama, custom

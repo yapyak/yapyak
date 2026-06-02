@@ -17,9 +17,17 @@ export function EmptyCart() {
 }
 ```
 
-The message remains in the component. Add a locale and save the file: yapyak extracts the change with its surrounding code and writes a locale file in your repo.
+The message stays in the component. yapyak writes it to a locale file in your repo:
 
-To let yapyak fill the entry automatically, point it at a model. A *translator* carries the model, a tone of voice, and any terms that must stay consistent across the application:
+```json
+{
+  "src/empty-cart.tsx": {
+    "Your cart is empty": ""
+  }
+}
+```
+
+The empty string is the stub. Fill it by hand, let a coding agent complete it, or point yapyak at a translator that fills it on save. A *translator* carries the model, a tone of voice, and any terms that must stay consistent across the application:
 
 ```ts
 // yapyak.config.ts
@@ -37,7 +45,17 @@ export default defineConfig({
 });
 ```
 
-The *translator* runs as part of the save, and Vite reflects the result in the running application through HMR. Without one, the entry is an empty stub. Fill it in yourself, or let the coding agent already in the project complete it.
+On save, yapyak calls the translator and fills the stub:
+
+```json
+{
+  "src/empty-cart.tsx": {
+    "Your cart is empty": "Din kundvagn är tom"
+  }
+}
+```
+
+Vite HMR pushes the new copy live in your browser before the save loop closes.
 
 Translation no longer waits for the interface to be finished. It shapes the interface.
 
