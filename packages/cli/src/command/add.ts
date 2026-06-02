@@ -1,6 +1,6 @@
 import type { Config } from '../config';
 
-import { autoTranslate } from '@yapyak/compiler';
+import { autoTranslate, validateLocaleCode } from '@yapyak/compiler';
 
 import { wrapWithProgress } from '../progress';
 import { buildReport } from '../report';
@@ -26,6 +26,31 @@ export async function add(options: AddOptions): Promise<number> {
     );
     process.stdout.write(
       `  ${color.dim('Or multiple:')} ${color.cyan('yapyak add fr de sv')}\n\n`,
+    );
+    return 1;
+  }
+
+  const invalid: Array<{ code: string; suggestion?: string }> = [];
+  for (const code of locales) {
+    const result = validateLocaleCode(code);
+    if (!result.valid) {
+      invalid.push({ code, suggestion: result.suggestion });
+    }
+  }
+  if (invalid.length > 0) {
+    process.stdout.write(
+      `\n  ${symbol.cross} ${color.red('Invalid locale code.')}\n\n`,
+    );
+    for (const entry of invalid) {
+      const hint = entry.suggestion
+        ? ` ${color.dim('— did you mean')} ${color.cyan(entry.suggestion)}${color.dim('?')}`
+        : '';
+      process.stdout.write(
+        `    ${color.bold(entry.code)} is not a recognized ISO 639-1 language code.${hint}\n`,
+      );
+    }
+    process.stdout.write(
+      `\n  ${color.dim('Use a standard locale code (')}${color.cyan('en')}${color.dim(', ')}${color.cyan('sv')}${color.dim(', ')}${color.cyan('pt-BR')}${color.dim(', etc.) or a BCP 47 variant.')}\n\n`,
     );
     return 1;
   }

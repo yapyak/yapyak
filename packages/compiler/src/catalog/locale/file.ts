@@ -2,6 +2,7 @@ import type { ExtractedMessage } from '../../parser/file/extract';
 import type { OrphanCache } from './orphan';
 
 import { stringifyCanonical } from '../canonical';
+import { validateLocaleCode } from './code';
 import {
   addOrphan,
   findOrphan,
@@ -168,7 +169,8 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
   const cacheDir = options.cacheDir ?? getDefaultCacheDir(options.projectRoot);
   const orphans = readOrphans(cacheDir);
   const nonDefaultLocales = options.locales.filter(
-    (locale) => locale !== options.defaultLocale,
+    (locale) =>
+      locale !== options.defaultLocale && validateLocaleCode(locale).valid,
   );
 
   const existingByLocale = new Map<string, LocaleFile>();

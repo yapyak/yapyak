@@ -2,6 +2,7 @@ import type {
   ExtractedMessage,
   ExtractFileResult,
   LocaleData,
+  LocaleWarning,
 } from '@yapyak/compiler';
 import type { NormalizedYapyakConfig } from '@yapyak/shared';
 import type { Plugin, ResolvedConfig, UserConfig } from 'vite';
@@ -15,6 +16,7 @@ import {
   readLocaleData,
   syncLocaleFiles,
   transformFile,
+  validateLocaleCode,
   walkSourceFiles,
 } from '@yapyak/compiler';
 import { createFilter, loadYapyakConfig } from '@yapyak/config';
@@ -214,9 +216,12 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       return;
     }
     const { defaultLocale, locales } = discover();
+    const translatableLocales = locales.filter(
+      (locale) => validateLocaleCode(locale).valid,
+    );
     const missing = discoverMissingSources(
       allMessages,
-      locales,
+      translatableLocales,
       defaultLocale,
       getLocaleData(),
     );
@@ -232,7 +237,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
     const filtered = allMessages.filter((message) =>
       missing.has(message.source),
     );
-    const targetLocaleCount = locales.filter(
+    const targetLocaleCount = translatableLocales.filter(
       (locale) => locale !== defaultLocale,
     ).length;
     const startedAt = Date.now();
@@ -336,19 +341,23 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         const kept = ssrExternal.filter((id) => !isRuntimeExternal(id));
         ssrExternal.splice(0, ssrExternal.length, ...kept);
       }
-      if (fixedLocale !== undefined) {
-        const available = discoverLocales({
-          defaultLocale: result.config.defaultLocale,
-          localesDir: result.config.localesDir,
-          projectRoot,
-        }).locales;
-        if (!available.includes(fixedLocale)) {
-          throw new Error(
-            `[yapyak] fixedLocale '${fixedLocale}' is not configured in this project. ` +
-              `Available locales: ${available.join(', ')}. ` +
-              `Either add '${fixedLocale}' to your locales/ directory or pick an existing locale.`,
-          );
-        }
+      const discovered = discoverLocales({
+        defaultLocale: result.config.defaultLocale,
+        localesDir: result.config.localesDir,
+        projectRoot,
+      });
+      for (const warning of discovered.warnings) {
+        warn(renderLocaleWarning(warning, result.config.localesDir));
+      }
+      if (
+        fixedLocale !== undefined &&
+        !discovered.locales.includes(fixedLocale)
+      ) {
+        throw new Error(
+          `[yapyak] fixedLocale '${fixedLocale}' is not configured in this project. ` +
+            `Available locales: ${discovered.locales.join(', ')}. ` +
+            `Either add '${fixedLocale}' to your locales/ directory or pick an existing locale.`,
+        );
       }
     },
     configureServer(server): void {
@@ -462,6 +471,18 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         }
         if (isLocaleFile(path)) {
           const locale = localeFromPath(path);
+          const validation = validateLocaleCode(locale);
+          if (!validation.valid && validation.issue) {
+            const warning: LocaleWarning = {
+              code: locale,
+              issue: validation.issue,
+            };
+            if (validation.suggestion !== undefined) {
+              warning.suggestion = validation.suggestion;
+            }
+            warn(renderLocaleWarning(warning, getNormalized().localesDir));
+            return;
+          }
           const hint = `Run \`${runYapyakCommand(`translate ${locale}`)}\` to fill the stubs.`;
           syncLocaleStructure();
           info(`[yapyak] New locale '${locale}' detected. ${hint}`);
@@ -693,6 +714,21 @@ function toFileId(projectRoot: string, id: string): string {
 
 function pluralize(word: string, count: number): string {
   return count === 1 ? word : `${word}s`;
+}
+
+function renderLocaleWarning(
+  warning: LocaleWarning,
+  localesDir: string,
+): string {
+  const reason =
+    warning.issue === 'invalid-structure'
+      ? `does not look like a BCP 47 locale tag`
+      : `is not a recognized ISO 639-1 language code`;
+  const action = `yapyak will skip syncing stubs and translating for this locale.`;
+  const hint = warning.suggestion
+    ? ` Did you mean '${warning.suggestion}'? Rename \`${localesDir}/${warning.code}.json\` to \`${localesDir}/${warning.suggestion}.json\` to enable.`
+    : ` Rename \`${localesDir}/${warning.code}.json\` to a valid locale code, or remove the file.`;
+  return `[yapyak] locale '${warning.code}' ${reason}. ${action}${hint}`;
 }
 
 function formatElapsed(ms: number): string {

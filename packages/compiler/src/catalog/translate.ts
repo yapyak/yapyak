@@ -11,6 +11,7 @@ import {
   getDefaultCacheDir,
   readLocaleFile,
   readOrphans,
+  validateLocaleCode,
   writeLocaleFile,
 } from './locale';
 import { existsSync } from 'node:fs';
@@ -223,6 +224,9 @@ function collectStubs(
   const stubs: Stub[] = [];
   for (const locale of options.locales) {
     if (locale === options.defaultLocale) {
+      continue;
+    }
+    if (!validateLocaleCode(locale).valid) {
       continue;
     }
     const localePath = join(

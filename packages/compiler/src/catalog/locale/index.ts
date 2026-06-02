@@ -1,4 +1,9 @@
 export {
+  type LocaleIssue,
+  type LocaleValidation,
+  validateLocaleCode,
+} from './code';
+export {
   type LocaleData,
   type ReadLocaleDataOptions,
   readLocaleData,
@@ -7,6 +12,7 @@ export {
   type DiscoverLocalesOptions,
   type DiscoverLocalesResult,
   discoverLocales,
+  type LocaleWarning,
 } from './discover';
 export {
   CorruptLocaleFileError,
