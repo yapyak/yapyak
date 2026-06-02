@@ -117,6 +117,8 @@ const LITERALS = new Set(['true', 'false', 'null', 'undefined']);
 
 const YAPYAK_STRING = /^(["'`])yapyak(?:\/[\w-]+)*\1$/;
 
+const DOTTED_KEY_PATTERN = /^[a-zA-Z_][\w]*(?:\.[a-zA-Z_][\w]*)+$/;
+
 export function tokenize(code: string, language: Language): Token[] {
   if (language === 'diff') {
     return tokenizeDiff(code);
@@ -683,8 +685,12 @@ function applyYapyakHighlight(tokens: Token[]) {
       token.value === 't'
     ) {
       const next = findNextSignificant(tokens, index + 1);
+      if (next === null) {
+        continue;
+      }
+
+      // Case 1: t('source')
       if (
-        next !== null &&
         tokens[next]?.type === 'punct' &&
         tokens[next]?.value === '('
       ) {
@@ -693,11 +699,56 @@ function applyYapyakHighlight(tokens: Token[]) {
           const argToken = tokens[arg];
           if (
             argToken !== undefined &&
-            (argToken.type === 'string' || argToken.type === 'template')
+            (argToken.type === 'string' || argToken.type === 'template') &&
+            !isDottedKey(argToken.value)
           ) {
             token.type = 'tx-call';
             argToken.type = 'tx-source';
           }
+        }
+        continue;
+      }
+
+      // Case 2: t.at('context', 'source') or t.in('locale', 'source')
+      if (
+        tokens[next]?.type === 'punct' &&
+        tokens[next]?.value === '.'
+      ) {
+        const method = findNextSignificant(tokens, next + 1);
+        if (method === null) {
+          continue;
+        }
+        const methodValue = tokens[method]?.value;
+        if (methodValue !== 'at' && methodValue !== 'in') {
+          continue;
+        }
+        const paren = findNextSignificant(tokens, method + 1);
+        if (
+          paren === null ||
+          tokens[paren]?.type !== 'punct' ||
+          tokens[paren]?.value !== '('
+        ) {
+          continue;
+        }
+        const firstArg = findNextSignificant(tokens, paren + 1);
+        if (firstArg === null) {
+          continue;
+        }
+        const comma = findTopLevelComma(tokens, firstArg + 1);
+        if (comma === null) {
+          continue;
+        }
+        const secondArg = findNextSignificant(tokens, comma + 1);
+        if (secondArg === null) {
+          continue;
+        }
+        const secondToken = tokens[secondArg];
+        if (
+          secondToken !== undefined &&
+          (secondToken.type === 'string' || secondToken.type === 'template') &&
+          !isDottedKey(secondToken.value)
+        ) {
+          secondToken.type = 'tx-source';
         }
       }
     }
@@ -791,6 +842,38 @@ function reclassifyJsxText(tokens: Token[]) {
       }
     }
   }
+}
+
+function isDottedKey(value: string): boolean {
+  const inner = value.slice(1, -1);
+  return DOTTED_KEY_PATTERN.test(inner);
+}
+
+function findTopLevelComma(tokens: Token[], from: number): number | null {
+  let depth = 0;
+  for (let index = from; index < tokens.length; index++) {
+    const token = tokens[index];
+    if (token === undefined) {
+      continue;
+    }
+    if (token.type === 'punct') {
+      if (token.value === '(' || token.value === '[' || token.value === '{') {
+        depth++;
+        continue;
+      }
+      if (token.value === ')' || token.value === ']' || token.value === '}') {
+        if (depth === 0) {
+          return null;
+        }
+        depth--;
+        continue;
+      }
+      if (token.value === ',' && depth === 0) {
+        return index;
+      }
+    }
+  }
+  return null;
 }
 
 function findNextSignificant(tokens: Token[], from: number) {

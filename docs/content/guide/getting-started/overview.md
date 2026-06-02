@@ -236,13 +236,15 @@ export function SaveButton() {
 ```tsx
 // compiled output
 export function SaveButton() {
-  const message = {
-    en: 'Save changes',
-    sv: 'Spara ändringar',
-    de: 'Änderungen speichern',
-  };
-
-  return <button>{_pick(message)}</button>;
+  return (
+    <button>
+      {_pick({
+        en: 'Save changes',
+        sv: 'Spara ändringar',
+        de: 'Änderungen speichern',
+      })}
+    </button>
+  );
 }
 ```
 
