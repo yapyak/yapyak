@@ -70,10 +70,10 @@ export function FeatureSection(props: FeatureSectionProps) {
     },
     {
       description: t(
-        'React, Vue, and Svelte bindings. SSR adapters for Astro, React Router, SvelteKit, and TanStack Start. Next.js? Open a PR.',
+        'React, Vue, and Svelte bindings. SSR adapters for Astro, React Router, SvelteKit, and TanStack Start. Each gets its own parser, bindings, and tests.',
       ),
       number: '08',
-      title: t('Framework adapters'),
+      title: t('Frameworks, first-class'),
     },
     {
       description: t(

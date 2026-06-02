@@ -19,9 +19,9 @@
   --spacing-32: 128px;
 
   --border-radius-sm: 8px;
-  --border-radius-md: 16px;
-  --border-radius-lg: 20px;
-  --border-radius-full: 999px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
+  --border-radius-full: 9999px;
 
   --font-size-xs: 0.8125rem;
   --font-size-sm: 0.9375rem;
