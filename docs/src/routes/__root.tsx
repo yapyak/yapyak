@@ -29,7 +29,7 @@ export const Route = createRootRoute({
         { content: 'width=device-width, initial-scale=1', name: 'viewport' },
         { title: 'yapyak — i18n that keeps up.' },
         {
-          content: 'For Vite apps moving at the speed of save.',
+          content: 'For Vite apps built at the speed of save.',
           name: 'description',
         },
         {
@@ -37,7 +37,7 @@ export const Route = createRootRoute({
           property: 'og:title',
         },
         {
-          content: 'For Vite apps moving at the speed of save.',
+          content: 'For Vite apps built at the speed of save.',
           property: 'og:description',
         },
         { content: 'website', property: 'og:type' },
@@ -47,7 +47,7 @@ export const Route = createRootRoute({
           name: 'twitter:title',
         },
         {
-          content: 'For Vite apps moving at the speed of save.',
+          content: 'For Vite apps built at the speed of save.',
           name: 'twitter:description',
         },
       ],
