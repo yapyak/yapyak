@@ -232,6 +232,13 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
     const filtered = allMessages.filter((message) =>
       missing.has(message.source),
     );
+    const targetLocaleCount = locales.filter(
+      (locale) => locale !== defaultLocale,
+    ).length;
+    const startedAt = Date.now();
+    info(
+      `[yapyak] translating ${filtered.length} ${pluralize('string', filtered.length)} × ${targetLocaleCount} ${pluralize('locale', targetLocaleCount)} via ${translator.id}…`,
+    );
     void autoTranslate({
       cacheDir,
       defaultLocale,
@@ -246,14 +253,21 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         if (result.translated > 0) {
           localeCache = null;
         }
-        for (const error of result.errors) {
-          warn(
-            `[yapyak] translation failed: ${error.locale} ${error.fileId} "${error.source}" ${String(error.error)}`,
+        const elapsed = formatElapsed(Date.now() - startedAt);
+        if (result.errors.length === 0) {
+          info(`[yapyak] ✓ ${result.translated} translated · ${elapsed}`);
+        } else {
+          info(
+            `[yapyak] ${result.translated} translated, ${result.errors.length} failed · ${elapsed}`,
           );
+        }
+        for (const group of groupTranslationErrors(result.errors)) {
+          warn(renderTranslationErrorGroup(group));
         }
       })
       .catch((error: unknown) => {
-        warn(`[yapyak] auto-translate error: ${String(error)}`);
+        const elapsed = formatElapsed(Date.now() - startedAt);
+        warn(`[yapyak] auto-translate error · ${elapsed} · ${String(error)}`);
       });
   }
 
@@ -675,6 +689,64 @@ function runYapyakCommand(args: string): string {
 function toFileId(projectRoot: string, id: string): string {
   const path = id.split('?')[0] ?? id;
   return relative(projectRoot, path).replaceAll('\\', '/');
+}
+
+function pluralize(word: string, count: number): string {
+  return count === 1 ? word : `${word}s`;
+}
+
+function formatElapsed(ms: number): string {
+  if (ms < 1000) {
+    return `${ms}ms`;
+  }
+  return `${(ms / 1000).toFixed(1)}s`;
+}
+
+interface TranslationErrorEntry {
+  error: unknown;
+  fileId: string;
+  locale: string;
+  source: string;
+}
+
+interface TranslationErrorGroup {
+  entries: TranslationErrorEntry[];
+  error: unknown;
+  locale: string;
+}
+
+function groupTranslationErrors(
+  errors: TranslationErrorEntry[],
+): TranslationErrorGroup[] {
+  const groups = new Map<string, TranslationErrorGroup>();
+  for (const entry of errors) {
+    const key = `${entry.locale}\0${String(entry.error)}`;
+    let group = groups.get(key);
+    if (!group) {
+      group = { entries: [], error: entry.error, locale: entry.locale };
+      groups.set(key, group);
+    }
+    group.entries.push(entry);
+  }
+  return [...groups.values()];
+}
+
+function renderTranslationErrorGroup(group: TranslationErrorGroup): string {
+  const message = String(group.error);
+  if (group.entries.length === 1) {
+    const entry = group.entries[0];
+    if (!entry) {
+      return `[yapyak] translation failed: ${group.locale} — ${message}`;
+    }
+    return `[yapyak] translation failed: ${entry.locale} ${entry.fileId} "${entry.source}" — ${message}`;
+  }
+  const fileCount = new Set(group.entries.map((entry) => entry.fileId)).size;
+  const stringPart = `${group.entries.length} ${pluralize('string', group.entries.length)}`;
+  const filePart =
+    fileCount === 1
+      ? `in ${group.entries[0]?.fileId ?? '?'}`
+      : `across ${fileCount} ${pluralize('file', fileCount)}`;
+  return `[yapyak] batch failed: ${group.locale} (${stringPart} ${filePart}) — ${message}`;
 }
 
 function areMessagesEqual(
