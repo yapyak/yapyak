@@ -20,6 +20,7 @@ export type {
   TranslateBatchRequest,
   TranslateItem,
   TranslateRequest,
+  TranslationExample,
   Translator,
 } from './type';
 

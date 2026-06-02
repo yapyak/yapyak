@@ -88,6 +88,7 @@ export async function translate(options: TranslateOptions): Promise<number> {
   for (const locale of localesToProcess) {
     const subResult = await autoTranslate({
       defaultLocale: report.defaultLocale,
+      examples: config.examples,
       force,
       locales: [report.defaultLocale, locale],
       localesDir: config.localesDir,

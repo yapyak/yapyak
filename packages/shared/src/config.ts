@@ -71,6 +71,15 @@ export interface YapyakConfig {
    */
   detectAcceptLanguage?: boolean;
   /**
+   * The maximum number of prior project translations passed to the translator as style reference per request.
+   *
+   * @remarks
+   * Drawn from the project's existing locale files and orphan cache, scoped to the same locale. Same-file entries rank first, then fuzzy similarity. `0` disables the feature entirely. Keep small — 5 matches Smartling's production default.
+   *
+   * @defaultValue `5`
+   */
+  examples?: number;
+  /**
    * The glob patterns to exclude from extraction.
    *
    * @defaultValue `['**\/node_modules/**', '**\/dist/**']`
@@ -118,6 +127,7 @@ export interface NormalizedYapyakConfig {
   autoTranslateThreshold: number;
   defaultLocale: string | undefined;
   detectAcceptLanguage: boolean;
+  examples: number;
   exclude: FilterPattern;
   include: FilterPattern;
   localesDir: string;

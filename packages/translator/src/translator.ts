@@ -117,6 +117,9 @@ function toItem(request: TranslateRequest, level: ContextLevel): TranslateItem {
   if (request.disambiguation !== undefined) {
     item.disambiguation = request.disambiguation;
   }
+  if (request.examples && request.examples.length > 0) {
+    item.examples = request.examples;
+  }
   if (level === 'none') {
     return item;
   }

@@ -233,7 +233,9 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       missing.has(message.source),
     );
     void autoTranslate({
+      cacheDir,
       defaultLocale,
+      examples: config.examples,
       locales,
       localesDir: config.localesDir,
       messages: filtered,

@@ -7,6 +7,8 @@ import { loadYapyakConfig } from '@yapyak/config';
 export interface Config {
   /** The default locale. */
   defaultLocale: string | undefined;
+  /** The maximum number of prior translations passed to the translator as style reference. */
+  examples: number;
   /** The directory for locale JSON files, relative to the project root. */
   localesDir: string;
   /** The translator configured in `yapyak.config.ts`, or `undefined` if none. */
@@ -33,6 +35,7 @@ export async function loadConfig(projectRoot: string): Promise<Config> {
 function toCliConfig(config: NormalizedYapyakConfig): Config {
   return {
     defaultLocale: config.defaultLocale,
+    examples: config.examples,
     localesDir: config.localesDir,
     translator: config.translator,
   };

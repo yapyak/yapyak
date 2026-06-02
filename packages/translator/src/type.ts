@@ -13,6 +13,19 @@ export interface MessageContext {
 }
 
 /**
+ * An example translation drawn from the project's existing locale files.
+ *
+ * @remarks
+ * Passed to translators as style reference so the AI keeps terminology consistent with prior choices. yapyak collects these from the active locale files and the orphan cache; consumers do not construct them by hand.
+ */
+export interface TranslationExample {
+  /** The source string from a prior call. */
+  source: string;
+  /** The translation that was chosen for it. */
+  translation: string;
+}
+
+/**
  * Request shape for {@link Translator}.
  *
  * The fundamental input contract for every translator implementation. Renaming or removing fields is a breaking change.
@@ -22,6 +35,8 @@ export interface TranslateRequest {
   context?: MessageContext;
   /** The developer-supplied disambiguation context. Set via `t.at(context, source)` at the call site. Matches `[a-z][a-z0-9-]*`. */
   disambiguation?: string;
+  /** Example translations from the project, supplied as style reference. */
+  examples?: TranslationExample[];
   /** The file path the source string came from. */
   fileId: string;
   /** The source string to translate. */
@@ -89,6 +104,8 @@ export interface TranslateItem {
   disambiguation?: string;
   /** The nearest enclosing JSX/HTML element. */
   element?: string;
+  /** Example translations from the project, supplied as style reference. */
+  examples?: TranslationExample[];
   /** The surrounding code snippet (only with `context: 'rich'`). */
   snippet?: string;
   /** The source string to translate. */

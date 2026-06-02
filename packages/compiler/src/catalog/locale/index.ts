@@ -29,6 +29,13 @@ export {
   type RenameEntry,
 } from './migrate';
 export {
+  getDefaultCacheDir,
+  type OrphanCache,
+  type OrphanEntry,
+  type OrphanLookup,
+  readOrphans,
+} from './orphan';
+export {
   type ValidateIcuPairsInput,
   type ValidateLocaleFileInput,
   validateIcuPairs,

@@ -1,13 +1,25 @@
-import type { MessageContext, Translator } from '@yapyak/translator';
+import type {
+  MessageContext,
+  TranslationExample,
+  Translator,
+} from '@yapyak/translator';
 import type { ExtractedMessage, Location } from '../parser/file/extract';
-import type { LocaleFile } from './locale';
+import type { LocaleData, LocaleFile, OrphanCache } from './locale';
 
-import { readLocaleFile, writeLocaleFile } from './locale';
+import { collectExamples } from './example';
+import {
+  getDefaultCacheDir,
+  readLocaleFile,
+  readOrphans,
+  writeLocaleFile,
+} from './locale';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 export interface AutoTranslateOptions {
+  cacheDir?: string;
   defaultLocale: string;
+  examples?: number;
   force?: boolean;
   locales: string[];
   localesDir: string;
@@ -54,6 +66,9 @@ export async function autoTranslate(
   const errors: AutoTranslateResult['errors'] = [];
   let translated = 0;
 
+  const examplesMax = options.examples ?? 0;
+  const exampleCache = loadExampleCache(options, examplesMax);
+
   for (const [locale, localeStubs] of Object.entries(byLocale)) {
     const localePath = join(
       options.projectRoot,
@@ -66,6 +81,7 @@ export async function autoTranslate(
       const request: {
         context: MessageContext | undefined;
         disambiguation?: string;
+        examples?: TranslationExample[];
         fileId: string;
         source: string;
         sourceLocale: string;
@@ -79,6 +95,10 @@ export async function autoTranslate(
       };
       if (stub.disambiguation !== undefined) {
         request.disambiguation = stub.disambiguation;
+      }
+      const examples = collectExamplesForStub(exampleCache, stub, examplesMax);
+      if (examples.length > 0) {
+        request.examples = examples;
       }
       return request;
     });
@@ -276,4 +296,52 @@ function groupByLocale(stubs: Stub[]): Record<string, Stub[]> {
     }
   }
   return grouped;
+}
+
+interface ExampleCache {
+  localeData: LocaleData;
+  orphans: OrphanCache;
+}
+
+function loadExampleCache(
+  options: AutoTranslateOptions,
+  max: number,
+): ExampleCache {
+  if (max <= 0) {
+    return { localeData: {}, orphans: {} };
+  }
+  const localeData: LocaleData = {};
+  for (const locale of options.locales) {
+    if (locale === options.defaultLocale) {
+      continue;
+    }
+    const path = join(
+      options.projectRoot,
+      options.localesDir,
+      `${locale}.json`,
+    );
+    localeData[locale] = readLocaleFile(path);
+  }
+  const cacheDir = options.cacheDir ?? getDefaultCacheDir(options.projectRoot);
+  const orphans = readOrphans(cacheDir);
+  return { localeData, orphans };
+}
+
+function collectExamplesForStub(
+  cache: ExampleCache,
+  stub: Stub,
+  max: number,
+): TranslationExample[] {
+  if (max <= 0) {
+    return [];
+  }
+  return collectExamples({
+    currentFileId: stub.fileId,
+    excludeKey: stubKey(stub),
+    locale: stub.locale,
+    localeData: cache.localeData,
+    max,
+    orphans: cache.orphans,
+    source: stub.source,
+  });
 }
