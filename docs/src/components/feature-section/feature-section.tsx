@@ -21,14 +21,14 @@ export function FeatureSection(props: FeatureSectionProps) {
   const features: Feature[] = [
     {
       description: t(
-        'Every configured locale, translated in the same model call and hot-reloaded into the browser. "Cart" becomes "Korg" and "Warenkorb" in the same response — same context, same generation step. The save is the only step.',
+        'Write t(\'Edit\'). Save. Your browser shows "Redigera" in Swedish and "Bearbeiten" in German via HMR. When "Bearbeiten" overflows your button, you see it while the layout is still yours to change.',
       ),
       number: '01',
       title: t('Auto-translation on save'),
     },
     {
       description: t(
-        "What Tailwind did for class names, yapyak did for keys. Just write t('Save changes') — the English is your key, your value, your single source of truth.",
+        "What Tailwind did for class names, yapyak does for translation keys. No more inventing names for words that already say what they mean. Write t('Save changes') — the message is the source of truth.",
       ),
       number: '02',
       title: t('Source string is the key'),
@@ -42,7 +42,7 @@ export function FeatureSection(props: FeatureSectionProps) {
     },
     {
       description: t(
-        'The translator sees the component, the element, and the surrounding code. Set a voice ("friendly", "terse", "lawyer at a dinner party"). Pin glossary terms so "Cart" stays "Korg" — even when the AI thinks it knows better.',
+        'The translator sees the component, the element, and the surrounding code. Set a voice ("friendly", "terse", "lawyer at a dinner party"). Pin glossary terms so "Cart" stays "Korg", even when the AI thinks it knows better. The AI learns your app\'s language from every past translation.',
       ),
       number: '04',
       title: t('Context-aware AI translation'),
@@ -63,7 +63,7 @@ export function FeatureSection(props: FeatureSectionProps) {
     },
     {
       description: t(
-        'Every Intl primitive: plurals, dates, numbers, lists, ordinals. Yes, all four Polish plural forms.',
+        'Inside t(): plurals, dates, numbers, lists, ordinals. Outside t(): a format namespace with eight helpers from currency to relative time. Yes, all four Polish plural forms.',
       ),
       number: '07',
       title: t('Production-ready intl'),
