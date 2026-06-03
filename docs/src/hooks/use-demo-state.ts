@@ -115,30 +115,16 @@ export function useDemoState(active: boolean) {
         }));
         await sleep(360);
         setState((previous) => ({ ...previous, saving: false }));
-        await sleep(120);
-
-        for (let index = 0; index < LOCALES.length; index++) {
-          const locale = LOCALES[index];
-          if (locale === undefined) {
-            continue;
-          }
-          setState((previous) => {
-            const nextShimmering = new Set(previous.shimmering);
-            nextShimmering.delete(locale.code);
-            return {
-              ...previous,
-              shimmering: nextShimmering,
-              translations: {
-                ...previous.translations,
-                [locale.code]: scene.translations[locale.code],
-              },
-            };
-          });
-          if (isCancelled) {
-            return;
-          }
-          await sleep(130);
+        await sleep(700);
+        if (isCancelled) {
+          return;
         }
+
+        setState((previous) => ({
+          ...previous,
+          shimmering: new Set(),
+          translations: scene.translations,
+        }));
 
         setState((previous) => ({ ...previous, receiving: false }));
         await sleep(1100);
