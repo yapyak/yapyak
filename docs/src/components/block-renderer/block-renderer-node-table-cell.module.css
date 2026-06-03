@@ -3,7 +3,7 @@
     padding: var(--spacing-3) var(--spacing-4);
     vertical-align: top;
     color: var(--foreground-soft);
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
     border-bottom: var(--px) solid var(--rule);
 
     &[data-header] {
@@ -12,6 +12,7 @@
       color: var(--foreground-softer);
       text-transform: uppercase;
       letter-spacing: var(--letter-spacing-wider);
+      white-space: nowrap;
       border-bottom-color: var(--ring);
     }
   }

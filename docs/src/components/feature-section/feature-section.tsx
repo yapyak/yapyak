@@ -38,7 +38,7 @@ export function FeatureSection(props: FeatureSectionProps) {
         'Every t() is rewritten in place. Ship all locales together and Vite code-splits the catalogs along your routes. Or target a single locale at build time — the others are physically gone from the bundle, and plain text collapses to a string literal.',
       ),
       number: '03',
-      title: t('Translations compile in. Choose how much.'),
+      title: t('Compiled in. Choose how much.'),
     },
     {
       description: t(

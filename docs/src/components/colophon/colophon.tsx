@@ -33,42 +33,9 @@ export function Colophon(props: ColophonProps) {
       <Wordmark />
       <Box
         as="p"
-        className={styles.CopyrightParagraph}
+        className={styles.LicenseParagraph}
       >
-        © 2026 yapyak
-        <Box
-          as="span"
-          className={styles.SeparatorText}
-        >
-          ·
-        </Box>
-        {t('MIT license')}
-        <Box
-          as="span"
-          className={styles.SeparatorText}
-        >
-          ·
-        </Box>
-        <Box
-          as="a"
-          className={styles.Link}
-          href="https://github.com/yapyak/yapyak"
-        >
-          GitHub
-        </Box>
-        <Box
-          as="span"
-          className={styles.SeparatorText}
-        >
-          ·
-        </Box>
-        <Box
-          as="a"
-          className={styles.Link}
-          href="https://www.npmjs.com/package/yapyak"
-        >
-          npm
-        </Box>
+        {t('MIT-licensed')}
       </Box>
     </Box>
   );

@@ -21,30 +21,10 @@
       text-wrap: balance;
     }
 
-    .CopyrightParagraph {
-      display: inline-flex;
-      flex-wrap: wrap;
-      gap: var(--spacing-2);
-      align-items: center;
-      justify-content: center;
+    .LicenseParagraph {
       padding-top: var(--spacing-2);
       font-size: var(--font-size-xs);
       color: var(--foreground-softer);
-    }
-
-    .SeparatorText {
-      opacity: 0.5;
-    }
-
-    .Link {
-      color: var(--foreground-softer);
-      transition: color var(--transition);
-
-      @media (hover: hover) {
-        &:hover {
-          color: var(--foreground-soft);
-        }
-      }
     }
   }
 }
