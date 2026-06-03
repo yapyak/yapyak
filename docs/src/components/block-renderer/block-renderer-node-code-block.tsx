@@ -14,6 +14,7 @@ export function BlockRendererNodeCodeBlock(
     <CodeBlock
       label={block.label ?? undefined}
       language={block.language ?? undefined}
+      path={block.path ?? undefined}
       source={block.source}
     />
   );

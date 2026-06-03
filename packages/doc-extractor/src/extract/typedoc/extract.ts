@@ -857,6 +857,7 @@ function collectExamples(
     examples.push({
       code: fenced.code,
       language: fenced.language,
+      path: fenced.path,
       title: tag.name ? tag.name : null,
     });
     void context;
@@ -864,16 +865,28 @@ function collectExamples(
   return examples;
 }
 
-function parseCodeFence(raw: string): { code: string; language: string } {
+function parseCodeFence(raw: string): {
+  code: string;
+  language: string;
+  path: string | null;
+} {
   const trimmed = raw.trim();
-  const fenceMatch = trimmed.match(/^```(\S*)\n([\s\S]*?)\n```$/);
+  const fenceMatch = trimmed.match(
+    /^```(\S+)(?:[ \t]+\[([^\]]+)\])?\n([\s\S]*?)\n```$/,
+  );
   if (fenceMatch !== null) {
+    const bracket = fenceMatch[2];
     return {
-      code: fenceMatch[2] ?? '',
+      code: fenceMatch[3] ?? '',
       language: fenceMatch[1] ?? 'ts',
+      path: bracket && looksLikePath(bracket) ? bracket : null,
     };
   }
-  return { code: trimmed, language: 'ts' };
+  return { code: trimmed, language: 'ts', path: null };
+}
+
+function looksLikePath(value: string): boolean {
+  return /^[\w./-]+\.[a-z]\w*$/i.test(value);
 }
 
 function collectTags(comment: CommentLike, context: Context): ReferenceTag[] {

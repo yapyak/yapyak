@@ -6,6 +6,33 @@
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-ring-inset);
 
+    .Header {
+      display: flex;
+      gap: var(--spacing-3);
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--spacing-3) var(--spacing-4);
+      border-bottom: var(--px) solid var(--rule);
+    }
+
+    .PathText {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-xs);
+      color: var(--foreground-soft);
+      white-space: nowrap;
+    }
+
+    .LanguageBadge {
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-xs);
+      color: var(--foreground-softer);
+      text-transform: lowercase;
+      pointer-events: none;
+      user-select: none;
+    }
+
     .LanguageText {
       position: absolute;
       top: var(--spacing-3);

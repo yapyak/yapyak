@@ -121,6 +121,7 @@ export function buildSymbolPage(
       blocks.push({
         label: null,
         language: 'ts',
+        path: null,
         source: symbol.callSignatures.map((sig) => sig.signature).join('\n'),
         type: 'code-block',
       });
@@ -274,6 +275,7 @@ function functionSignatureBlock(overloads: ReferenceOverload[]): Block {
   return {
     label: null,
     language: 'ts',
+    path: null,
     source: overloads.map((overload) => overload.signature).join('\n'),
     type: 'code-block',
   };
@@ -283,6 +285,7 @@ function variableSignatureBlock(symbol: ReferenceVariable): Block {
   return {
     label: null,
     language: 'ts',
+    path: null,
     source: symbol.type.map((token) => token.text).join(''),
     type: 'code-block',
   };
@@ -292,6 +295,7 @@ function typeAliasBlock(symbol: ReferenceTypeAlias): Block {
   return {
     label: null,
     language: 'ts',
+    path: null,
     source: symbol.resolvedType.map((token) => token.text).join(''),
     type: 'code-block',
   };
@@ -337,6 +341,7 @@ function importSnippet(
   return {
     label: null,
     language: 'ts',
+    path: null,
     source: `${prefix} { ${symbolName} } from '${moduleId}';`,
     type: 'code-block',
   };
@@ -558,6 +563,7 @@ function exampleBlocks(example: ReferenceExample): Block[] {
   result.push({
     label: null,
     language: example.language,
+    path: example.path,
     source: example.code,
     type: 'code-block',
   });

@@ -9,7 +9,7 @@ yapyak is an i18n library for Vite applications using React, Vue, Svelte, or Ast
 
 In yapyak, you write the source-language message directly in the code that uses it:
 
-```tsx
+```tsx [src/components/empty-cart.tsx]
 import { t } from 'yapyak';
 
 export function EmptyCart() {
@@ -19,9 +19,9 @@ export function EmptyCart() {
 
 On save, yapyak writes any new message to your locale files in `locales/` as an empty stub:
 
-```json
+```json [locales/sv.json]
 {
-  "src/components/EmptyCart.tsx": {
+  "src/components/empty-cart.tsx": {
     "Your cart is empty": ""
   }
 }
@@ -35,8 +35,7 @@ The stub can be filled in by you or your coding agent. It can also be filled aut
 
 A translator connects directly to an AI model of your choice, using your own provider key:
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak';
 import { anthropic } from '@yapyak/anthropic';
 
@@ -53,9 +52,9 @@ export default defineConfig({
 
 On save, yapyak sends new messages with their source context, configured voice, glossary and relevant translation examples from the application. The returned values are written to the locale files:
 
-```json
+```json [locales/sv.json]
 {
-  "src/cart/EmptyCart.tsx": {
+  "src/components/empty-cart.tsx": {
     "Your cart is empty": "Din kundvagn är tom"
   }
 }

@@ -116,6 +116,7 @@ export interface TableCellBlock {
 export interface CodeBlock {
   label: string | null;
   language: string | null;
+  path: string | null;
   source: string;
   type: 'code-block';
 }

@@ -173,6 +173,7 @@ function buildCodeBlock(attributes: Record<string, unknown>): CodeBlock {
   return {
     label: stringAttribute(attributes.label),
     language: stringAttribute(attributes.language),
+    path: stringAttribute(attributes.path),
     source: stringAttribute(attributes.source) ?? '',
     type: 'code-block',
   };
@@ -258,10 +259,11 @@ const fence: Schema = {
   transform(node) {
     const rawLanguage = node.attributes.language as string | undefined;
     const content = node.attributes.content as string;
-    const { label, language } = parseLanguageLabel(rawLanguage);
+    const { label, language, path } = parseLanguageLabel(rawLanguage);
     return new Markdoc.Tag('CodeBlock', {
       label,
       language,
+      path,
       source: content,
     });
   },
@@ -299,16 +301,29 @@ const markdocConfig: Config = {
 
 function parseLanguageLabel(raw: string | undefined) {
   if (!raw) {
-    return { label: undefined, language: undefined };
+    return { label: undefined, language: undefined, path: undefined };
   }
   const match = raw.match(/^(\S*)\s*\[([^\]]+)\]$/);
   if (match) {
+    const bracket = match[2] ?? '';
+    if (looksLikePath(bracket)) {
+      return {
+        label: undefined,
+        language: match[1] || undefined,
+        path: bracket,
+      };
+    }
     return {
-      label: match[2],
+      label: bracket,
       language: match[1] || undefined,
+      path: undefined,
     };
   }
-  return { label: undefined, language: raw };
+  return { label: undefined, language: raw, path: undefined };
+}
+
+function looksLikePath(value: string): boolean {
+  return /^[\w./-]+\.[a-z]\w*$/i.test(value);
 }
 
 function extractText(children: unknown[]) {

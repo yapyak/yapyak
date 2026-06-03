@@ -33,6 +33,7 @@ export interface ReferenceSymbolBase {
 export interface ReferenceExample {
   code: string;
   language: string;
+  path: string | null;
   title: string | null;
 }
 

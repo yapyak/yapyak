@@ -10,6 +10,7 @@ import styles from './code-block.module.css';
 export interface CodeBlockProps extends BoxProps {
   label?: string;
   language?: string;
+  path?: string;
   source: string;
 }
 
@@ -38,12 +39,14 @@ function isSupportedLanguage(value: string | undefined): value is Language {
 }
 
 export function CodeBlock(props: CodeBlockProps) {
-  const { className, label, language, source, ...restProps } = props;
+  const { className, label, language, path, source, ...restProps } = props;
 
-  const showLabel =
-    label !== undefined ||
-    (language !== undefined && !HIDDEN_LABEL_LANGUAGES.has(language));
+  const showLanguageTag =
+    language !== undefined && !HIDDEN_LABEL_LANGUAGES.has(language);
   const tag = label ?? language;
+  const showHeader = path !== undefined;
+  const showCornerLabel =
+    !showHeader && (label !== undefined || showLanguageTag);
   const highlighted = isSupportedLanguage(language)
     ? tokenize(source, language)
     : null;
@@ -54,7 +57,25 @@ export function CodeBlock(props: CodeBlockProps) {
       className={[styles.CodeBlock, className]}
       data-language={language}
     >
-      {showLabel && tag !== undefined && (
+      {showHeader && (
+        <Box className={styles.Header}>
+          <Box
+            as="span"
+            className={styles.PathText}
+          >
+            {path}
+          </Box>
+          {showLanguageTag && language !== undefined && (
+            <Box
+              as="span"
+              className={styles.LanguageBadge}
+            >
+              {language}
+            </Box>
+          )}
+        </Box>
+      )}
+      {showCornerLabel && tag !== undefined && (
         <Box
           as="span"
           className={styles.LanguageText}
