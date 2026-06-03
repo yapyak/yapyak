@@ -5,11 +5,21 @@ order: 7
 
 ## Install
 
-```bash
+{% code-group %}
+
+```bash [npm]
 npm install @yapyak/adapter
-# or
+```
+
+```bash [pnpm]
 pnpm add @yapyak/adapter
 ```
+
+```bash [bun]
+bun add @yapyak/adapter
+```
+
+{% /code-group %}
 
 ## Setup
 

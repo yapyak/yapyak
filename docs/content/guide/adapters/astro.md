@@ -5,11 +5,21 @@ order: 2
 
 ## Install
 
-```bash
+{% code-group %}
+
+```bash [npm]
 npm install @yapyak/astro
-# or
+```
+
+```bash [pnpm]
 pnpm add @yapyak/astro
 ```
+
+```bash [bun]
+bun add @yapyak/astro
+```
+
+{% /code-group %}
 
 ## Setup
 

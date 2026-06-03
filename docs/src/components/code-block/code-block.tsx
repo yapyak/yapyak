@@ -8,6 +8,7 @@ import { tokenize } from '#utils/tokenize';
 import styles from './code-block.module.css';
 
 export interface CodeBlockProps extends BoxProps {
+  bare?: boolean;
   label?: string;
   language?: string;
   path?: string;
@@ -39,14 +40,15 @@ function isSupportedLanguage(value: string | undefined): value is Language {
 }
 
 export function CodeBlock(props: CodeBlockProps) {
-  const { className, label, language, path, source, ...restProps } = props;
+  const { bare, className, label, language, path, source, ...restProps } =
+    props;
 
   const showLanguageTag =
     language !== undefined && !HIDDEN_LABEL_LANGUAGES.has(language);
   const tag = label ?? language;
   const showHeader = path !== undefined;
   const showCornerLabel =
-    !showHeader && (label !== undefined || showLanguageTag);
+    !showHeader && !bare && (label !== undefined || showLanguageTag);
   const highlighted = isSupportedLanguage(language)
     ? tokenize(source, language)
     : null;
@@ -55,6 +57,7 @@ export function CodeBlock(props: CodeBlockProps) {
     <Box
       {...restProps}
       className={[styles.CodeBlock, className]}
+      data-bare={bare === true ? '' : undefined}
       data-language={language}
     >
       {showHeader && (

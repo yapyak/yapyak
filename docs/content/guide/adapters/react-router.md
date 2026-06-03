@@ -5,11 +5,21 @@ order: 4
 
 ## Install
 
-```bash
+{% code-group %}
+
+```bash [npm]
 npm install @yapyak/react-router
-# or
+```
+
+```bash [pnpm]
 pnpm add @yapyak/react-router
 ```
+
+```bash [bun]
+bun add @yapyak/react-router
+```
+
+{% /code-group %}
 
 ## Setup
 

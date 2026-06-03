@@ -61,6 +61,7 @@ export function CodeGroup(props: CodeGroupProps) {
             key={index}
           >
             <CodeBlock
+              bare
               language={tab.language}
               source={tab.source}
             />

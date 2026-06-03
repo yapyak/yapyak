@@ -7,11 +7,21 @@ Add yapyak to a Vite project.
 
 ## Install
 
-```bash
+{% code-group %}
+
+```bash [npm]
 npm install yapyak @yapyak/vite @yapyak/cli
-# or
+```
+
+```bash [pnpm]
 pnpm add yapyak @yapyak/vite @yapyak/cli
 ```
+
+```bash [bun]
+bun add yapyak @yapyak/vite @yapyak/cli
+```
+
+{% /code-group %}
 
 - `yapyak` — the runtime (`t()`, format helpers, the raw locale API)
 - `@yapyak/vite` — the Vite plugin (extraction, HMR, compile-time inlining)
@@ -86,17 +96,39 @@ import { t } from 'yapyak';
 
 ## Add a locale
 
-```bash
+{% code-group %}
+
+```bash [npm]
 npx yapyak add sv
-# or
+```
+
+```bash [pnpm]
 pnpm yapyak add sv
 ```
 
+```bash [bun]
+bunx yapyak add sv
+```
+
+{% /code-group %}
+
 Creates `locales/sv.json` and stubs every existing `t()` source string. Run with multiple at once:
 
-```bash
+{% code-group %}
+
+```bash [npm]
+npx yapyak add sv de es ja
+```
+
+```bash [pnpm]
 pnpm yapyak add sv de es ja
 ```
+
+```bash [bun]
+bunx yapyak add sv de es ja
+```
+
+{% /code-group %}
 
 The default locale (`en`) stays in your code — it doesn't need a file.
 
@@ -154,11 +186,21 @@ Each framework binds locale state to its idiomatic primitive. See [Locales / Run
 
 ## Verify
 
-```bash
+{% code-group %}
+
+```bash [npm]
 npx yapyak status
-# or
+```
+
+```bash [pnpm]
 pnpm yapyak status
 ```
+
+```bash [bun]
+bunx yapyak status
+```
+
+{% /code-group %}
 
 Lists every locale, coverage per locale, missing entries.
 
@@ -166,11 +208,21 @@ Lists every locale, coverage per locale, missing entries.
 
 Fail builds on missing translations:
 
-```bash
+{% code-group %}
+
+```bash [npm]
 npx yapyak check
-# or
+```
+
+```bash [pnpm]
 pnpm yapyak check
 ```
+
+```bash [bun]
+bunx yapyak check
+```
+
+{% /code-group %}
 
 Two common CI shapes:
 

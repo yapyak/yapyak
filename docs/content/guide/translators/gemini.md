@@ -5,11 +5,21 @@ order: 3
 
 ## Install
 
-```bash
+{% code-group %}
+
+```bash [npm]
 npm install @yapyak/gemini
-# or
+```
+
+```bash [pnpm]
 pnpm add @yapyak/gemini
 ```
+
+```bash [bun]
+bun add @yapyak/gemini
+```
+
+{% /code-group %}
 
 ## Setup
 

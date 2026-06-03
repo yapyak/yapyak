@@ -5,11 +5,21 @@ order: 4
 
 ## Install
 
-```bash
+{% code-group %}
+
+```bash [npm]
 npm install @yapyak/ollama
-# or
+```
+
+```bash [pnpm]
 pnpm add @yapyak/ollama
 ```
+
+```bash [bun]
+bun add @yapyak/ollama
+```
+
+{% /code-group %}
 
 ## Setup
 

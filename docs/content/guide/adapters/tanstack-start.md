@@ -5,11 +5,21 @@ order: 6
 
 ## Install
 
-```bash
+{% code-group %}
+
+```bash [npm]
 npm install @yapyak/tanstack-start
-# or
+```
+
+```bash [pnpm]
 pnpm add @yapyak/tanstack-start
 ```
+
+```bash [bun]
+bun add @yapyak/tanstack-start
+```
+
+{% /code-group %}
 
 ## Setup
 

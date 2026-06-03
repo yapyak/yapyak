@@ -5,11 +5,21 @@ order: 6
 
 ## Install
 
-```bash
+{% code-group %}
+
+```bash [npm]
 npm install @yapyak/translator
-# or
+```
+
+```bash [pnpm]
 pnpm add @yapyak/translator
 ```
+
+```bash [bun]
+bun add @yapyak/translator
+```
+
+{% /code-group %}
 
 ## Setup
 

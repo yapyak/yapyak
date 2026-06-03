@@ -5,11 +5,21 @@ order: 5
 
 ## Install
 
-```bash
+{% code-group %}
+
+```bash [npm]
 npm install @yapyak/openai
-# or
+```
+
+```bash [pnpm]
 pnpm add @yapyak/openai
 ```
+
+```bash [bun]
+bun add @yapyak/openai
+```
+
+{% /code-group %}
 
 ## Setup
 

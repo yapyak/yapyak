@@ -5,11 +5,21 @@ order: 5
 
 ## Install
 
-```bash
+{% code-group %}
+
+```bash [npm]
 npm install @yapyak/sveltekit
-# or
+```
+
+```bash [pnpm]
 pnpm add @yapyak/sveltekit
 ```
+
+```bash [bun]
+bun add @yapyak/sveltekit
+```
+
+{% /code-group %}
 
 ## Setup
 

@@ -5,11 +5,21 @@ order: 2
 
 ## Install
 
-```bash
+{% code-group %}
+
+```bash [npm]
 npm install @yapyak/anthropic
-# or
+```
+
+```bash [pnpm]
 pnpm add @yapyak/anthropic
 ```
+
+```bash [bun]
+bun add @yapyak/anthropic
+```
+
+{% /code-group %}
 
 ## Setup
 
