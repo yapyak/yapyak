@@ -21,7 +21,7 @@ pnpm add yapyak @yapyak/vite @yapyak/cli
 
 Add the plugin to `vite.config.ts`:
 
-```ts
+```ts [vite.config.ts]
 import { defineConfig } from 'vite';
 import { yapyak } from '@yapyak/vite';
 
@@ -34,7 +34,7 @@ export default defineConfig({
 
 Create `yapyak.config.ts` in the project root:
 
-```ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak';
 
 export default defineConfig({
