@@ -1,0 +1,18 @@
+@layer components {
+  .ContentLayoutOutline {
+    display: none;
+
+    @media (min-width: 1280px) {
+      position: sticky;
+      top: var(--header-height);
+      display: block;
+      align-self: start;
+      max-height: calc(100vh - var(--header-height));
+      padding: var(--spacing-8) 0 var(--spacing-8) var(--spacing-8);
+      overflow-y: auto;
+      scrollbar-color: var(--ring-stronger) transparent;
+      scrollbar-width: thin;
+      background-color: transparent;
+    }
+  }
+}

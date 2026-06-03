@@ -31,6 +31,7 @@ function Component() {
       <ContentLayout.Content>
         <Outlet />
       </ContentLayout.Content>
+      <ContentLayout.Outline />
       <ContentLayout.Toolbar page={page}>{navigation}</ContentLayout.Toolbar>
     </ContentLayout>
   );

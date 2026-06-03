@@ -27,5 +27,10 @@
       grid-template-columns: 220px 1fr;
       gap: 0;
     }
+
+    @media (min-width: 1280px) {
+      grid-template-columns: 220px 1fr 220px;
+      max-width: 1280px;
+    }
   }
 }

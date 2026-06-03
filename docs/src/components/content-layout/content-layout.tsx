@@ -7,6 +7,7 @@ import { Box } from '#components/box';
 
 import styles from './content-layout.module.css';
 import { ContentLayoutContent } from './content-layout-content';
+import { ContentLayoutOutline } from './content-layout-outline';
 import { ContentLayoutSidebar } from './content-layout-sidebar';
 import { ContentLayoutToolbar } from './content-layout-toolbar';
 
@@ -82,4 +83,5 @@ export function ContentLayout(props: ContentLayoutProps) {
 
 ContentLayout.Sidebar = ContentLayoutSidebar;
 ContentLayout.Content = ContentLayoutContent;
+ContentLayout.Outline = ContentLayoutOutline;
 ContentLayout.Toolbar = ContentLayoutToolbar;
