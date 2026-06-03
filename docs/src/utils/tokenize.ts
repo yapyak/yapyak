@@ -728,10 +728,7 @@ function applyYapyakHighlight(tokens: Token[]) {
       }
 
       // Case 1: t('source')
-      if (
-        tokens[next]?.type === 'punct' &&
-        tokens[next]?.value === '('
-      ) {
+      if (tokens[next]?.type === 'punct' && tokens[next]?.value === '(') {
         const arg = findNextSignificant(tokens, next + 1);
         if (arg !== null) {
           const argToken = tokens[arg];
@@ -748,10 +745,7 @@ function applyYapyakHighlight(tokens: Token[]) {
       }
 
       // Case 2: t.at('context', 'source') or t.in('locale', 'source')
-      if (
-        tokens[next]?.type === 'punct' &&
-        tokens[next]?.value === '.'
-      ) {
+      if (tokens[next]?.type === 'punct' && tokens[next]?.value === '.') {
         const method = findNextSignificant(tokens, next + 1);
         if (method === null) {
           continue;
@@ -898,7 +892,10 @@ function expandVueAttributeBindings(tokens: Token[]): Token[] {
       continue;
     }
 
-    if (token.type === 'punct' && (token.value === ':' || token.value === '@')) {
+    if (
+      token.type === 'punct' &&
+      (token.value === ':' || token.value === '@')
+    ) {
       const identIndex = findNextNonWhitespace(tokens, index + 1);
       if (identIndex !== -1) {
         const ident = tokens[identIndex];

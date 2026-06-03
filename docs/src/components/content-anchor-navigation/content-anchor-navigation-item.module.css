@@ -1,0 +1,42 @@
+@layer components {
+  .ContentAnchorNavigationItem {
+    display: block;
+    padding: var(--spacing-1) var(--spacing-3);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: var(--font-size-xs);
+    color: var(--foreground-soft);
+    white-space: nowrap;
+    text-decoration: none;
+    outline: var(--spacing-2) solid transparent;
+    outline-offset: 0;
+    border-radius: var(--border-radius-sm);
+    transition:
+      color var(--transition),
+      outline 400ms;
+
+    &[data-level="3"] {
+      padding-left: var(--spacing-6);
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        color: var(--foreground);
+      }
+    }
+
+    &:active {
+      color: var(--foreground);
+    }
+
+    &:focus-visible {
+      color: var(--foreground);
+      outline-width: 2px;
+      outline-color: var(--accent-soft);
+    }
+
+    &[data-active] {
+      color: var(--brand);
+    }
+  }
+}
