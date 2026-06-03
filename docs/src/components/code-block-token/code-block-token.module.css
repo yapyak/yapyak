@@ -93,5 +93,13 @@
     &[data-type="bash-flag"] {
       color: var(--syntax-type);
     }
+
+    &[data-type="bash-subcommand"] {
+      color: var(--syntax-keyword);
+    }
+
+    &[data-type="bash-package"] {
+      color: var(--syntax-string);
+    }
   }
 }

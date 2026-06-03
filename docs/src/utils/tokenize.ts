@@ -36,7 +36,9 @@ export type TokenType =
   | 'diff-remove'
   | 'diff-hunk'
   | 'bash-var'
-  | 'bash-flag';
+  | 'bash-flag'
+  | 'bash-subcommand'
+  | 'bash-package';
 
 export interface Token {
   type: TokenType;
@@ -205,10 +207,25 @@ function tokenizeDiff(code: string) {
   return mergePlainTokens(tokens);
 }
 
+const SUBCOMMAND_TOOLS = new Set([
+  'npm',
+  'pnpm',
+  'yarn',
+  'bun',
+  'npx',
+  'pnpx',
+  'git',
+  'yapyak',
+  'docker',
+  'kubectl',
+]);
+
 function tokenizeBash(code: string) {
   const tokens: Token[] = [];
   let index = 0;
   let atLineStart = true;
+  let expectSubcommand = false;
+  let inArgs = false;
   while (index < code.length) {
     const character = code[index] ?? '';
 
@@ -223,6 +240,8 @@ function tokenizeBash(code: string) {
         tokens.push({ type: 'plain', value: match[0] });
         if (match[0].includes('\n')) {
           atLineStart = true;
+          expectSubcommand = false;
+          inArgs = false;
         }
         index += match[0].length;
         continue;
@@ -291,6 +310,29 @@ function tokenizeBash(code: string) {
       if (match) {
         tokens.push({ type: 'fn-call', value: match[0] });
         atLineStart = false;
+        if (SUBCOMMAND_TOOLS.has(match[0])) {
+          expectSubcommand = true;
+        }
+        index += match[0].length;
+        continue;
+      }
+    }
+
+    if (expectSubcommand && /[A-Za-z_]/.test(character)) {
+      const match = /^[A-Za-z_][\w-]*/.exec(code.slice(index));
+      if (match) {
+        tokens.push({ type: 'bash-subcommand', value: match[0] });
+        expectSubcommand = false;
+        inArgs = true;
+        index += match[0].length;
+        continue;
+      }
+    }
+
+    if (inArgs && /[@A-Za-z_]/.test(character)) {
+      const match = /^@?[\w][\w./@-]*/.exec(code.slice(index));
+      if (match) {
+        tokens.push({ type: 'bash-package', value: match[0] });
         index += match[0].length;
         continue;
       }
