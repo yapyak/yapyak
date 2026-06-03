@@ -34,8 +34,7 @@ export default {
 
 In `app/root.tsx`:
 
-```tsx
-// app/root.tsx
+```tsx [app/root.tsx]
 import type { Route } from './+types/root';
 import { middleware as yapyakMiddleware } from '@yapyak/react-router';
 
@@ -62,8 +61,7 @@ yapyak's middleware should run first so subsequent middlewares can read the loca
 
 Read the locale via `useLocale()` inside your `Layout` to drive `<html lang>`, and wrap the routed tree in `LocaleProvider` so `t()` calls re-render when the locale changes — both on the server (per-request locale) and the client:
 
-```tsx
-// app/root.tsx
+```tsx [app/root.tsx]
 import type { ReactNode } from 'react';
 
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
@@ -97,8 +95,7 @@ This is the recommended pattern. The `lang` attribute updates reactively, `Local
 
 For SSR locale switching to work, the user's choice must be readable by the server. Enable `persistence: 'cookie'`:
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak';
 
 export default defineConfig({

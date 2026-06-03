@@ -9,7 +9,7 @@ import { yapyak as yapyakVitePlugin } from '@yapyak/vite';
  * Registers yapyak's Vite plugin so `.astro` files are extracted and rewritten during compilation, and injects the per-request locale middleware. `t()` calls in `.astro` frontmatter and templates are translated at render time with no further wiring.
  *
  * @example Register in astro.config.ts
- * ```ts
+ * ```ts [astro.config.ts]
  * import { yapyak } from '@yapyak/astro';
  * import { defineConfig } from 'astro/config';
  *

@@ -9,7 +9,7 @@ import { getPendingResponseHeaders, withRequest } from '@yapyak/adapter';
  * Requires `future.v8_middleware: true` in `react-router.config.ts`. Drains pending response headers buffered by yapyak (e.g. `Set-Cookie` from a server-side `setLocale()` call) onto the outgoing `Response`.
  *
  * @example Register in app/root.tsx
- * ```tsx
+ * ```tsx [app/root.tsx]
  * import type { Route } from './+types/root';
  * import { middleware as yapyakMiddleware } from '@yapyak/react-router';
  *

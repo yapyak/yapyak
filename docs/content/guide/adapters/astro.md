@@ -15,8 +15,7 @@ pnpm add @yapyak/astro
 
 Add the integration to `astro.config.ts`.
 
-```ts
-// astro.config.ts
+```ts [astro.config.ts]
 import { yapyak } from '@yapyak/astro';
 import { defineConfig } from 'astro/config';
 
@@ -31,9 +30,8 @@ That's the entire wiring. The integration registers the build-time plugin and in
 
 Astro renders `<html>` once per page request as static HTML, not through a reactive framework binding. Server-side, read `getLocale()` in your layout:
 
-```astro
+```astro [src/layouts/Layout.astro]
 ---
-// src/layouts/Layout.astro
 import { getLocale } from 'yapyak';
 ---
 <html lang={getLocale()}>
@@ -54,8 +52,7 @@ If a React/Vue/Svelte island calls `setLocale()` without triggering a navigation
 
 Enable `syncHtmlLang` to make yapyak update the attribute on every `setLocale()`:
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak';
 
 export default defineConfig({
@@ -72,8 +69,7 @@ If you only switch locale via full navigations (e.g. `<a href="/sv/...">`), leav
 
 For SSR locale switching to work, enable cookie persistence:
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak';
 
 export default defineConfig({

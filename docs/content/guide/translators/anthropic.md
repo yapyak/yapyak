@@ -15,8 +15,7 @@ pnpm add @yapyak/anthropic
 
 Use Claude (Sonnet, Opus, Haiku) as your translator.
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak';
 import { anthropic } from '@yapyak/anthropic';
 

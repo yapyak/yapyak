@@ -48,8 +48,7 @@ function Component() {
 
 If `<html>` is static HTML (no framework binding), enable `syncHtmlLang` and yapyak will keep `document.documentElement.lang` synced with the current locale:
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak';
 
 export default defineConfig({
@@ -61,8 +60,7 @@ export default defineConfig({
 
 For SSR locale switching to work, enable cookie persistence:
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak';
 
 export default defineConfig({

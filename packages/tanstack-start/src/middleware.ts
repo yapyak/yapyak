@@ -10,7 +10,7 @@ import { getPendingResponseHeaders, withRequest } from '@yapyak/adapter';
  * Drains pending response headers buffered by yapyak (e.g. `Set-Cookie` from a server-side `setLocale()` call) onto the outgoing `Response`.
  *
  * @example Register in src/start.ts
- * ```ts
+ * ```ts [src/start.ts]
  * import { createStart } from '@tanstack/react-start';
  * import { middleware } from '@yapyak/tanstack-start';
  *

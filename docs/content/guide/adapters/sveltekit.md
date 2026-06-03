@@ -15,13 +15,11 @@ pnpm add @yapyak/sveltekit
 
 Re-export the `handle` hook from `hooks.server.ts`.
 
-```ts
-// src/hooks.server.ts
+```ts [src/hooks.server.ts]
 export { handle } from '@yapyak/sveltekit';
 ```
 
-```html
-<!-- src/app.html -->
+```html [src/app.html]
 <html lang="%yapyak.lang%">
   <head>
     <!-- ... -->
@@ -40,8 +38,7 @@ The hook binds each request's locale context and substitutes `%yapyak.lang%` wit
 
 Enable `syncHtmlLang` to make yapyak update the attribute on every `setLocale()`:
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak';
 
 export default defineConfig({
@@ -58,8 +55,7 @@ If you only ever switch locale via full page navigations (e.g. `<a href="?lang=s
 
 If you already export a `handle` from `hooks.server.ts` (auth, logging, etc.), compose with SvelteKit's `sequence`:
 
-```ts
-// src/hooks.server.ts
+```ts [src/hooks.server.ts]
 import { sequence } from '@sveltejs/kit/hooks';
 import { handle as yapyakHandle } from '@yapyak/sveltekit';
 import { handle as authHandle } from './auth';
@@ -73,8 +69,7 @@ yapyak's handle should run first so the `%yapyak.lang%` substitution happens bef
 
 For SSR locale switching to work, enable cookie persistence:
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak';
 
 export default defineConfig({

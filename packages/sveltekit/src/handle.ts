@@ -12,17 +12,17 @@ const PLACEHOLDER = '%yapyak.lang%';
  * Substitutes the `%yapyak.lang%` placeholder in `app.html` with the resolved locale on each request. Drains pending response headers buffered by yapyak (e.g. `Set-Cookie` from a server-side `setLocale()` call) onto the outgoing `Response`.
  *
  * @example Declare the placeholder in app.html
- * ```html
+ * ```html [src/app.html]
  * <html lang="%yapyak.lang%">
  * ```
  *
  * @example Re-export from hooks.server.ts
- * ```ts
+ * ```ts [src/hooks.server.ts]
  * export { handle } from '@yapyak/sveltekit';
  * ```
  *
  * @example Compose with other handles
- * ```ts
+ * ```ts [src/hooks.server.ts]
  * import { sequence } from '@sveltejs/kit/hooks';
  * import { handle as yapyakHandle } from '@yapyak/sveltekit';
  * import { handle as authHandle } from './auth';

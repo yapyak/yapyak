@@ -15,8 +15,7 @@ pnpm add @yapyak/tanstack-start
 
 Register yapyak's request middleware once in `src/start.ts`.
 
-```ts
-// src/start.ts
+```ts [src/start.ts]
 import { createStart } from '@tanstack/react-start';
 import { middleware } from '@yapyak/tanstack-start';
 
@@ -31,8 +30,7 @@ That's the entire wiring.
 
 Drive the document's `lang` attribute from the locale via `useLocale()` in the shell component, and wrap the routed tree in `LocaleProvider` so `t()` calls re-render when the locale changes:
 
-```tsx
-// src/routes/__root.tsx
+```tsx [src/routes/__root.tsx]
 import type { ReactNode } from 'react';
 
 import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router';
@@ -62,8 +60,7 @@ This is the recommended pattern for TanStack Start. The shell re-renders on loca
 
 For SSR locale switching to work, the user's choice must be readable by the server. Enable `persistence: 'cookie'`:
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak';
 
 export default defineConfig({

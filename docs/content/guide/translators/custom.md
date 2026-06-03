@@ -171,8 +171,7 @@ export function myLLM(opts: MyLLMOptions) {
 
 Then use it:
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak';
 import { myLLM } from './my-translator';
 

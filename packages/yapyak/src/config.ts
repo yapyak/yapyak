@@ -9,7 +9,7 @@ import type { YapyakConfig } from '@yapyak/shared';
  * @param config - The yapyak configuration.
  *
  * @example Define the config
- * ```ts
+ * ```ts [yapyak.config.ts]
  * import { defineConfig } from 'yapyak';
  *
  * export default defineConfig({

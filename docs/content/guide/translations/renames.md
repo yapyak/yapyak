@@ -17,8 +17,7 @@ Comparison is character-exact. Capitalization, punctuation, whitespace, and plac
 
 When yapyak detects a rename, it either moves the existing translation to the new key or clears it for re-translation. The choice is `preserveTranslationsOnRename` in your config:
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 defineConfig({
   preserveTranslationsOnRename: true,
 })

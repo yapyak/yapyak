@@ -15,8 +15,7 @@ pnpm add @yapyak/ollama
 
 Run translation locally — no API key, no vendor in your billing path, no data leaving your machine.
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak';
 import { ollama } from '@yapyak/ollama';
 
@@ -98,8 +97,7 @@ ollama({
 
 For development: local Ollama. For production builds: cloud (Anthropic/OpenAI). Branch on `NODE_ENV`:
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak';
 import { anthropic } from '@yapyak/anthropic';
 import { ollama } from '@yapyak/ollama';

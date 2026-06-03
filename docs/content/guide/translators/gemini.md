@@ -15,8 +15,7 @@ pnpm add @yapyak/gemini
 
 Use Google's Gemini models as your translator.
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak';
 import { gemini } from '@yapyak/gemini';
 

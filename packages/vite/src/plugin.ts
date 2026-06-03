@@ -67,7 +67,7 @@ export interface YapyakOptions {
    * Leave unset (or use `process.env.YAPYAK_LOCALE` for CI control) to keep the default multi-locale behavior where every call site emits a catalog of all available locales.
    *
    * @example Per-build static locale via CI
-   * ```ts
+   * ```ts [vite.config.ts]
    * import { yapyak } from '@yapyak/vite';
    * import { defineConfig } from 'vite';
    *
@@ -88,7 +88,7 @@ export interface YapyakOptions {
  * @param options - The plugin options.
  *
  * @example Register in vite.config.ts
- * ```ts
+ * ```ts [vite.config.ts]
  * import { yapyak } from '@yapyak/vite';
  * import { defineConfig } from 'vite';
  *
@@ -98,7 +98,7 @@ export interface YapyakOptions {
  * ```
  *
  * @example Lock the build to a single locale
- * ```ts
+ * ```ts [vite.config.ts]
  * import { yapyak } from '@yapyak/vite';
  * import { defineConfig } from 'vite';
  *
