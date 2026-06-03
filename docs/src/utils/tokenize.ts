@@ -24,7 +24,11 @@ export type TokenType =
   | 'comment'
   | 'fn-call'
   | 'jsx-tag'
+  | 'jsx-brace'
   | 'punct'
+  | 'spread'
+  | 'regex'
+  | 'decorator'
   | 'tx-call'
   | 'tx-source'
   | 'tx-yapyak'
@@ -116,6 +120,19 @@ const BUILTIN_TYPES = new Set([
 
 const LITERALS = new Set(['true', 'false', 'null', 'undefined']);
 
+const TYPE_KEYWORDS = new Set([
+  'as',
+  'extends',
+  'implements',
+  'keyof',
+  'typeof',
+  'infer',
+  'is',
+  'in',
+  'type',
+  'interface',
+]);
+
 const YAPYAK_STRING = /^(["'`])yapyak(?:\/[\w-]+)*\1$/;
 
 const DOTTED_KEY_PATTERN = /^[a-zA-Z_][\w]*(?:\.[a-zA-Z_][\w]*)+$/;
@@ -141,21 +158,32 @@ export function tokenize(code: string, language: Language): Token[] {
   }
   const tokens: Token[] = [];
   let index = 0;
+  let lastSignificant: Token | undefined;
   while (index < code.length) {
-    const result = scanToken(code, index, language);
+    const result = scanToken(code, index, language, lastSignificant);
     if (result === null) {
-      tokens.push({ type: 'plain', value: code[index] ?? '' });
+      const fallback: Token = { type: 'plain', value: code[index] ?? '' };
+      tokens.push(fallback);
+      if (!/^\s+$/.test(fallback.value)) {
+        lastSignificant = fallback;
+      }
       index++;
     } else {
       tokens.push(result.token);
+      if (result.token.type !== 'plain' || !/^\s+$/.test(result.token.value)) {
+        lastSignificant = result.token;
+      }
       index = result.end;
     }
   }
   applyYapyakHighlight(tokens);
+  applyTypePositions(tokens);
+  markTaggedTemplates(tokens);
   reclassifyJsxText(tokens);
-  const expanded =
+  const vueExpanded =
     language === 'vue' ? expandVueAttributeBindings(tokens) : tokens;
-  return mergePlainTokens(expanded);
+  const templateExpanded = expandTemplateInterpolations(vueExpanded, language);
+  return mergePlainTokens(templateExpanded);
 }
 
 function tokenizeDiff(code: string) {
@@ -597,10 +625,49 @@ interface ScanResult {
   token: Token;
 }
 
+const JSX_LANGUAGES = new Set<Language>([
+  'tsx',
+  'jsx',
+  'svelte',
+  'vue',
+  'astro',
+  'html',
+]);
+
+const REGEX_PREV_PUNCT = /^(?:[(,=;:[{!&|?~^%]|=>)$/;
+const REGEX_PREV_KEYWORDS = new Set([
+  'return',
+  'typeof',
+  'in',
+  'of',
+  'new',
+  'throw',
+  'await',
+  'yield',
+  'case',
+  'delete',
+  'void',
+  'instanceof',
+]);
+
+function isRegexContext(previous: Token | undefined): boolean {
+  if (previous === undefined) {
+    return true;
+  }
+  if (previous.type === 'punct' && REGEX_PREV_PUNCT.test(previous.value)) {
+    return true;
+  }
+  if (previous.type === 'keyword' && REGEX_PREV_KEYWORDS.has(previous.value)) {
+    return true;
+  }
+  return false;
+}
+
 function scanToken(
   code: string,
   index: number,
-  _language: Language,
+  language: Language,
+  previous: Token | undefined,
 ): ScanResult | null {
   const character = code[index];
   if (character === undefined) {
@@ -635,6 +702,18 @@ function scanToken(
     return { end, token: { type: 'comment', value: code.slice(index, end) } };
   }
 
+  if (character === '/' && isRegexContext(previous)) {
+    const match = /^\/(?:\\.|\[(?:\\.|[^\]\\\n])*\]|[^/\\\n])+\/[gimsuy]*/.exec(
+      code.slice(index),
+    );
+    if (match) {
+      return {
+        end: index + match[0].length,
+        token: { type: 'regex', value: match[0] },
+      };
+    }
+  }
+
   if (character === "'" || character === '"') {
     const re =
       character === "'" ? /^'(?:\\.|[^'\\\n])*'/ : /^"(?:\\.|[^"\\\n])*"/;
@@ -657,7 +736,7 @@ function scanToken(
     }
   }
 
-  if (character === '<') {
+  if (character === '<' && JSX_LANGUAGES.has(language)) {
     const match = /^<\/?[A-Za-z][\w.-]*/.exec(code.slice(index));
     if (match) {
       return {
@@ -667,16 +746,57 @@ function scanToken(
     }
   }
 
-  if (character === '/' && code[index + 1] === '>') {
+  if (
+    character === '/' &&
+    code[index + 1] === '>' &&
+    JSX_LANGUAGES.has(language)
+  ) {
     return { end: index + 2, token: { type: 'jsx-tag', value: '/>' } };
   }
 
   if (character >= '0' && character <= '9') {
-    const match = /^\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/.exec(code.slice(index));
+    const tail = code.slice(index);
+    const hex = /^0[xX][\da-fA-F](?:_?[\da-fA-F])*n?/.exec(tail);
+    if (hex) {
+      return {
+        end: index + hex[0].length,
+        token: { type: 'number', value: hex[0] },
+      };
+    }
+    const bin = /^0[bB][01](?:_?[01])*n?/.exec(tail);
+    if (bin) {
+      return {
+        end: index + bin[0].length,
+        token: { type: 'number', value: bin[0] },
+      };
+    }
+    const oct = /^0[oO][0-7](?:_?[0-7])*n?/.exec(tail);
+    if (oct) {
+      return {
+        end: index + oct[0].length,
+        token: { type: 'number', value: oct[0] },
+      };
+    }
+    const decimal =
+      /^\d(?:_?\d)*(?:\.\d(?:_?\d)*)?(?:[eE][+-]?\d(?:_?\d)*)?n?/.exec(tail);
+    if (decimal) {
+      return {
+        end: index + decimal[0].length,
+        token: { type: 'number', value: decimal[0] },
+      };
+    }
+  }
+
+  if (character === '.' && code[index + 1] === '.' && code[index + 2] === '.') {
+    return { end: index + 3, token: { type: 'spread', value: '...' } };
+  }
+
+  if (character === '@') {
+    const match = /^@[A-Za-z_][\w$]*/.exec(code.slice(index));
     if (match) {
       return {
         end: index + match[0].length,
-        token: { type: 'number', value: match[0] },
+        token: { type: 'decorator', value: match[0] },
       };
     }
   }
@@ -816,6 +936,39 @@ function applyYapyakHighlight(tokens: Token[]) {
   }
 }
 
+function markTaggedTemplates(tokens: Token[]) {
+  for (let index = 0; index < tokens.length; index++) {
+    const token = tokens[index];
+    if (token === undefined || token.type !== 'template') {
+      continue;
+    }
+    let cursor = index - 1;
+    while (cursor >= 0) {
+      const previous = tokens[cursor];
+      if (previous === undefined) {
+        break;
+      }
+      if (previous.type === 'plain' && /^\s+$/.test(previous.value)) {
+        break;
+      }
+      if (
+        previous.type === 'plain' ||
+        previous.type === 'fn-call' ||
+        previous.type === 'type'
+      ) {
+        previous.type = 'fn-call';
+        cursor--;
+        continue;
+      }
+      if (previous.type === 'punct' && previous.value === '.') {
+        cursor--;
+        continue;
+      }
+      break;
+    }
+  }
+}
+
 function reclassifyJsxText(tokens: Token[]) {
   let depth = 0;
   let inText = false;
@@ -852,12 +1005,17 @@ function reclassifyJsxText(tokens: Token[]) {
       if (value === '{' && inText) {
         exprDepth++;
         inText = false;
+        token.type = 'jsx-brace';
         continue;
       }
       if (value === '}' && exprDepth > 0) {
+        const wasOutermost = exprDepth === 1;
         exprDepth--;
         if (exprDepth === 0 && depth > 0) {
           inText = true;
+        }
+        if (wasOutermost && depth > 0) {
+          token.type = 'jsx-brace';
         }
         continue;
       }
@@ -947,6 +1105,96 @@ function expandVueAttributeBindings(tokens: Token[]): Token[] {
   return result;
 }
 
+function expandTemplateInterpolations(
+  tokens: Token[],
+  language: Language,
+): Token[] {
+  const result: Token[] = [];
+
+  for (const token of tokens) {
+    if (token.type !== 'template') {
+      result.push(token);
+      continue;
+    }
+
+    const value = token.value;
+    if (
+      value.length < 2 ||
+      value[0] !== '`' ||
+      value[value.length - 1] !== '`'
+    ) {
+      result.push(token);
+      continue;
+    }
+
+    const body = value.slice(1, -1);
+    const segments: Token[] = [];
+    let lastEnd = 0;
+    let cursor = 0;
+    let hasInterpolation = false;
+
+    while (cursor < body.length) {
+      if (body[cursor] === '\\') {
+        cursor += 2;
+        continue;
+      }
+      if (body[cursor] === '$' && body[cursor + 1] === '{') {
+        hasInterpolation = true;
+        if (cursor > lastEnd) {
+          segments.push({
+            type: 'template',
+            value: body.slice(lastEnd, cursor),
+          });
+        }
+        let depth = 1;
+        let end = cursor + 2;
+        while (end < body.length && depth > 0) {
+          if (body[end] === '\\') {
+            end += 2;
+            continue;
+          }
+          if (body[end] === '{') {
+            depth++;
+          } else if (body[end] === '}') {
+            depth--;
+            if (depth === 0) {
+              break;
+            }
+          }
+          end++;
+        }
+        segments.push({ type: 'punct', value: '${' });
+        const inner = body.slice(cursor + 2, end);
+        for (const innerToken of tokenize(inner, language)) {
+          segments.push(innerToken);
+        }
+        segments.push({ type: 'punct', value: '}' });
+        cursor = end + 1;
+        lastEnd = cursor;
+        continue;
+      }
+      cursor++;
+    }
+
+    if (!hasInterpolation) {
+      result.push(token);
+      continue;
+    }
+
+    if (lastEnd < body.length) {
+      segments.push({ type: 'template', value: body.slice(lastEnd) });
+    }
+
+    result.push({ type: 'template', value: '`' });
+    for (const segment of segments) {
+      result.push(segment);
+    }
+    result.push({ type: 'template', value: '`' });
+  }
+
+  return result;
+}
+
 function findNextNonWhitespace(tokens: Token[], from: number): number {
   for (let index = from; index < tokens.length; index++) {
     const token = tokens[index];
@@ -984,6 +1232,92 @@ function findTopLevelComma(tokens: Token[], from: number): number | null {
         return index;
       }
     }
+  }
+  return null;
+}
+
+function applyTypePositions(tokens: Token[]) {
+  let genericDepth = 0;
+
+  for (let index = 0; index < tokens.length; index++) {
+    const token = tokens[index];
+    if (token === undefined) {
+      continue;
+    }
+
+    if (token.type === 'punct' && token.value === '<') {
+      const previousIndex = findPreviousSignificant(tokens, index - 1);
+      const previous =
+        previousIndex === null ? undefined : tokens[previousIndex];
+      const isGenericOpen =
+        previous !== undefined &&
+        (previous.type === 'type' ||
+          previous.type === 'fn-call' ||
+          (previous.type === 'plain' && /^[A-Z][\w$]*$/.test(previous.value)));
+      if (isGenericOpen) {
+        genericDepth++;
+      }
+    } else if (
+      token.type === 'punct' &&
+      token.value === '>' &&
+      genericDepth > 0
+    ) {
+      genericDepth--;
+    }
+
+    if (token.type !== 'plain' && token.type !== 'fn-call') {
+      continue;
+    }
+    if (!/^[A-Z][\w$]*$/.test(token.value)) {
+      continue;
+    }
+
+    if (genericDepth > 0) {
+      token.type = 'type';
+      continue;
+    }
+
+    const previousIndex = findPreviousSignificant(tokens, index - 1);
+    if (previousIndex === null) {
+      continue;
+    }
+    const previous = tokens[previousIndex];
+    if (previous === undefined) {
+      continue;
+    }
+
+    const isTriggered =
+      (previous.type === 'punct' && /^[:<|&?]$/.test(previous.value)) ||
+      (previous.type === 'keyword' && TYPE_KEYWORDS.has(previous.value));
+
+    if (isTriggered) {
+      token.type = 'type';
+      continue;
+    }
+
+    const nextIndex = findNextSignificant(tokens, index + 1);
+    if (nextIndex !== null) {
+      const next = tokens[nextIndex];
+      if (next?.type === 'keyword' && next.value === 'in') {
+        token.type = 'type';
+      }
+    }
+  }
+}
+
+function findPreviousSignificant(tokens: Token[], from: number) {
+  for (let index = from; index >= 0; index--) {
+    const token = tokens[index];
+    if (token === undefined) {
+      continue;
+    }
+    if (token.type === 'plain' && /^\s*$/.test(token.value)) {
+      continue;
+    }
+    if (token.type === 'comment') {
+      continue;
+    }
+    return index;
   }
   return null;
 }

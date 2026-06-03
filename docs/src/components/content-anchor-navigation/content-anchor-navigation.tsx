@@ -33,23 +33,18 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     headings[0]?.id ?? null,
   );
 
-  // Scrollspy via IntersectionObserver.
-  // rootMargin pushes top of viewport down by header height and bottom up by 70%,
-  // creating a narrow active band just below the header.
   useEffect(() => {
     if (headings.length === 0) return;
 
     const intersecting = new Map<string, boolean>();
 
     const recompute = () => {
-      // Prefer the topmost intersecting heading.
       for (const heading of headings) {
         if (intersecting.get(heading.id)) {
           setActiveId(heading.id);
           return;
         }
       }
-      // None intersecting: pick the last heading whose top is above the active line.
       let lastAbove: string | null = null;
       for (const heading of headings) {
         const element = document.getElementById(heading.id);
@@ -82,13 +77,11 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
       if (element) observer.observe(element);
     }
 
-    // Initial pass so we have a sensible active state before the first scroll.
     recompute();
 
     return () => observer.disconnect();
   }, [headings]);
 
-  // Slide indicator: write CSS vars on the container based on active item's box.
   useLayoutEffect(() => {
     if (!activeId) return;
     const container = containerRef.current;
@@ -99,7 +92,6 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     container.style.setProperty('--indicator-height', `${item.offsetHeight}px`);
   }, [activeId, headings]);
 
-  // Deep-link on mount: if URL has a matching hash, scroll into view with our offset.
   useEffect(() => {
     const hash = window.location.hash.slice(1);
     if (!hash) return;

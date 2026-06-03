@@ -39,8 +39,24 @@
       color: var(--syntax-jsx-tag);
     }
 
+    &[data-type="jsx-brace"] {
+      color: var(--syntax-jsx-tag);
+    }
+
     &[data-type="punct"] {
       color: var(--foreground-softer);
+    }
+
+    &[data-type="spread"] {
+      color: var(--syntax-keyword);
+    }
+
+    &[data-type="regex"] {
+      color: var(--syntax-string);
+    }
+
+    &[data-type="decorator"] {
+      color: var(--syntax-fn-call);
     }
 
     &[data-type="tx-yapyak"] {
