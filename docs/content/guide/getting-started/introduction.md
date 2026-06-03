@@ -3,11 +3,11 @@ title: Introduction
 order: 1
 ---
 
-Most i18n tooling was designed around a handoff.
+yapyak is an i18n library for Vite. It supports React, Vue, Svelte, and Astro, with SSR adapters for Astro, React Router, SvelteKit, and TanStack Start. You write interface text in source code, and yapyak keeps your locale files in sync while you or your coding agent builds the application.
 
-Originally, that meant extracting messages and sending them to translators or localization teams. Newer tools often send the same messages to an AI service in a pipeline. The handoff got faster, but the relationship stayed the same: write the interface, move its language elsewhere, and see the translated result later.
+## Translations follow code
 
-yapyak starts where the interface is written.
+In yapyak, you write the source-language message directly in the code that uses it:
 
 ```tsx
 import { t } from 'yapyak';
@@ -17,17 +17,23 @@ export function EmptyCart() {
 }
 ```
 
-The message stays in the component. yapyak writes it to a locale file in your repo:
+On save, yapyak writes any new message to your locale files in `locales/` as an empty stub:
 
 ```json
 {
-  "src/empty-cart.tsx": {
+  "src/components/EmptyCart.tsx": {
     "Your cart is empty": ""
   }
 }
 ```
 
-The empty string is the stub. Fill it by hand, let a coding agent complete it, or point yapyak at a translator that fills it on save. A *translator* carries the model, a tone of voice, and any terms that must stay consistent across the application:
+Translations stay connected to the source code that uses them. Move or rename a source file, and yapyak restores its translations under the new path. Copy markup to a new file, remove it, or bring it back later, and yapyak reuses translations it already knows.
+
+## AI translation
+
+The stub can be filled in by you or your coding agent. It can also be filled automatically by a *translator*.
+
+A translator connects directly to an AI model of your choice, using your own provider key:
 
 ```ts
 // yapyak.config.ts
@@ -36,361 +42,30 @@ import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
   translator: anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY!,
+    apiKey: process.env.ANTHROPIC_API_KEY,
+    voice: 'Concise and friendly',
     glossary: {
-      Cart: { sv: 'Kundvagn', de: 'Warenkorb' },
+      cart: { sv: 'kundvagn' },
     },
-    voice: 'concise, never overly formal',
   }),
 });
 ```
 
-On save, yapyak calls the translator and fills the stub:
+On save, yapyak sends new messages with their source context, configured voice, glossary and relevant translation examples from the application. The returned values are written to the locale files:
 
 ```json
 {
-  "src/empty-cart.tsx": {
+  "src/cart/EmptyCart.tsx": {
     "Your cart is empty": "Din kundvagn är tom"
   }
 }
 ```
 
-Vite HMR pushes the new copy live in your browser before the save loop closes.
+Vite HMR updates the running application with the translated text.
 
-Translation no longer waits for the interface to be finished. It shapes the interface.
+## Direct AI calls
 
-## Translate while the interface can still change
+yapyak sends new messages directly to your AI provider. One request can carry multiple messages and every configured locale at once, with optional source context. Request size, concurrency, and context are configurable.
 
-A translated interface often finds problems that the source language hides.
+Source context comes from your code. Locale files and translation memory live in your project. No yapyak service sits between your project and the model.
 
-Consider a step in a password manager setup flow:
-
-```tsx
-export function RecoveryKeyStep() {
-  return (
-    <div>
-      <h2>Save your recovery key</h2>
-      <p>You will need this key if you forget your master password.</p>
-
-      <div>
-        <button>Download recovery key</button>
-        <button>Finish setup</button>
-      </div>
-    </div>
-  );
-}
-```
-
-In English, the actions are unremarkable. They fit naturally beside each other in a compact step, a dialog footer, or a mobile setup screen.
-
-Now consider the same interface in German:
-
-```tsx
-export function RecoveryKeyStep() {
-  return (
-    <div>
-      <h2>Wiederherstellungsschlüssel speichern</h2>
-      <p>Sie benötigen diesen Schlüssel, wenn Sie Ihr Master-Passwort vergessen.</p>
-
-      <div>
-        <button>Wiederherstellungsschlüssel herunterladen</button>
-        <button>Einrichtung abschließen</button>
-      </div>
-    </div>
-  );
-}
-```
-
-Nothing about the German is unusual. `Wiederherstellungsschlüssel herunterladen` is the ordinary label for downloading a recovery key. It is also almost twice as long as `Download recovery key`.
-
-The English version quietly suggests two buttons on one row. The German version makes that assumption impossible to ignore. The actions may need to stack. The step may need a wider layout. On a small screen, the whole interaction may need to be reconsidered.
-
-This is not a translation defect. It is information about the interface, and it is most valuable while the interface is still being built.
-
-With a model connected to the save loop, the German version can appear while this component is still open in the browser. You see the constraint when changing the layout is part of the work, not a follow-up task created by it.
-
-## Keep meaning at the call site
-
-A key-based translation call points away from the interface:
-
-```tsx
-t('settings.profile.actions.save')
-```
-
-The key may be organized, but it does not tell you what the interface says. Humans have to look it up. Agents do too. Changing the copy means coordinating the component, a source catalog, translated catalogs, and the naming system that holds them together.
-
-With yapyak, the component contains the message it renders:
-
-```tsx
-t('Save changes')
-```
-
-A developer reading the component can read the interface directly. A coding agent modifying it can see the language it is changing. Move the component and its text moves with it. Revise the wording and the reason for the change is visible in the same diff.
-
-Locale files follow the same movement. Rename the message at the same call site and yapyak migrates its translation. Remove the call and the entry moves to a local cache, ready for restoration if the source reappears. A write that would silently clear an in-use translation is refused at build, not after the loss.
-
-Move the call to a different file and yapyak restores the cached translation under the new file's path. Translations are scoped per file, so the new location owns the entry from then on. To force a fresh translation reflecting the new context, clear the new entry and the *translator* refills it on save.
-
-Short strings make this more than a convenience:
-
-```tsx
-// src/files/OpenButton.tsx
-<button>{t('Open')}</button>
-
-// src/store/HoursBadge.tsx
-<span>{t('Open')}</span>
-```
-
-Both occurrences say "Open" in English. One is an action. The other is a state. They may need different translations, and yapyak does not make them share one simply because their source text matches. Messages are scoped by file, preserving the local meaning that a global key or flat source catalog can lose.
-
-## Use the context already present in the code
-
-Interface text is difficult precisely because it is small.
-
-A model that only sees `Remove` cannot tell whether it is removing a filter from a list, dismissing a notification, or deleting a project. The Swedish translation differs in each case: `Ta bort filter`, `Stäng`, `Radera projekt`. None of them is `Remove` translated correctly in the abstract.
-
-yapyak passes the call site with every translation: the file name, the enclosing element, the surrounding code. A model that sees:
-
-```tsx
-<FilterChip onRemove={...}>
-  <button>{t('Remove')}</button>
-</FilterChip>
-```
-
-translates it differently than one that sees:
-
-```tsx
-<DangerDialog>
-  <button>{t('Remove')}</button>
-</DangerDialog>
-```
-
-The component is its own translation brief.
-
-A model connected through yapyak uses that context while translating on save. A coding agent making a wider change uses the same context when completing or updating locale files. A person translating by hand follows the source back to the exact place where it appears.
-
-What holds across the application, like preferred terms or voice rules, belongs in the *translator*, not in the call site. The component carries the message; the *translator* carries the policy.
-
-```ts
-// glossary in yapyak.config.ts
-glossary: {
-  Cart: { sv: 'Kundvagn', de: 'Warenkorb' },
-  Order: { sv: 'Beställning', de: 'Bestellung' },
-  Checkout: { sv: 'Kassa', de: 'Kasse' },
-}
-```
-
-The glossary travels with every translation request. Whenever `Cart` appears in a source string, in any file, the model is told to use `Kundvagn` in Swedish. The component supplies the context; the glossary enforces what must hold across components.
-
-## Text stays text
-
-yapyak uses ICU MessageFormat on purpose. It is the established syntax for pluralization, selection, numbers, dates, and the other language rules production interfaces need. The deeper reason: it keeps the message as a message — one readable string that developers can grep for, translators can read, coding agents can find, and language models trained on decades of plain text already know how to work with.
-
-```tsx
-t('You have {count} items', { count: 3 })
-
-t('{count, plural, one {# item} other {# items}}', { count })
-```
-
-Tools that fragment the message at the call site lose something. A tagged template embeds it in JavaScript:
-
-```tsx
-t`You have ${count} items`
-```
-
-A component API distributes it across props:
-
-```tsx
-<Plural value={count} one="# item" other="# items" />
-```
-
-In both, the call site holds something other than the sentence: an interpolation in one case, a JSX tree in the other. The string can be extracted by a build step, but reading the component no longer means reading the message.
-
-yapyak puts the literal at the call site. The same string is what the translator receives, what the model returns, and what the runtime renders. Strings carry language; components carry behavior. The two do not mix.
-
-Because placeholders stay in the source literal, TypeScript checks the values passed to them at the call site:
-
-```tsx
-t('You have {count} items', { total: 3 })
-//                             ^^^^^
-// Missing required parameter: count
-```
-
-This happens with no code generation. The placeholder shape is read from the literal type: no `.d.ts` to regenerate, no watcher between writing a message and the editor understanding it. The literal is the schema.
-
-It is also what makes the save loop possible. A codegen step would put a gate between writing a message and the rest of the toolchain — types, compiler, translator, HMR. There is no gate. The loop has nothing to wait on.
-
-Wrong names or types are an editor error. Missing parameters are caught at build by the compiler (`YPK104`), which runs on save through the Vite plugin. The compiler also validates complete ICU syntax, so malformed messages never reach the application.
-
-yapyak's *translator* prompt makes the same constraint explicit to the model: `Preserve all {placeholder} tokens and ICU patterns exactly as written.` The constraint travels with every request.
-
-### Rich text without turning text into components
-
-The same principle applies when a message contains links or other rendered elements. The translatable value remains a string; rendering stays in the component layer. They are two different calls.
-
-```tsx
-<RichText
-  value={t('By signing up, you agree to our <terms>terms</terms> and <privacy>privacy policy</privacy>.')}
-  terms={(children) => <Link to="/terms">{children}</Link>}
-  privacy={(children) => <Link to="/privacy">{children}</Link>}
-/>
-```
-
-`<RichText>` is the renderer. It receives the translated string and replaces each `<tag>...</tag>` segment with the result of the matching handler. TypeScript reads the tag names from the source literal. Every tag becomes a required, typed prop on the component; a missing or misnamed handler is a type error at the call site.
-
-## Translations travel with the screen
-
-Most i18n libraries begin with a catalog: the translatable language of the application kept apart from the code that renders it. Lazy-loading by locale, splitting by namespace, and fetching from a CDN all make that catalog cheaper to deliver. They also preserve the same runtime boundary: the screen can arrive before its language does.
-
-yapyak does not ship a catalog. A `t()` call compiles into the module that uses it.
-
-```tsx
-// src/routes/settings.tsx
-export function SaveButton() {
-  return <button>{t('Save changes')}</button>;
-}
-```
-
-```tsx
-// compiled output
-export function SaveButton() {
-  return (
-    <button>
-      {_pick({
-        en: 'Save changes',
-        sv: 'Spara ändringar',
-        de: 'Änderungen speichern',
-      })}
-    </button>
-  );
-}
-```
-
-When Vite splits the application into chunks, translations follow the same graph. Settings carries the language of settings. Checkout carries the language of checkout. A user who never opens a screen does not load its translations.
-
-The variable is the number of locales, not the size of the application. A chunk carries one variant of its own messages for each configured locale. Adding another route does not add translation weight to the route already on screen.
-
-That trade is a very good fit for product applications with a focused set of locales, whether the application is small or enormous. For a product that must ship a large interface in a hundred languages, loading only the active locale may be the better design. yapyak makes a deliberate choice for the much more common case.
-
-The reward is a simpler runtime. When a screen renders, its language is already present. Locale switching is synchronous. No catalog request, no async boundary, no race condition on a fast switch. An i18n architecture decides whether to have those problems.
-
-The bundle carries the translations because the screen should arrive ready to speak.
-
-## Keep locale files in the repository
-
-When locales are configured, yapyak writes one JSON file per locale, scoped by source file:
-
-```json
-{
-  "src/files/OpenButton.tsx": {
-    "Open": "Öppna"
-  },
-  "src/store/HoursBadge.tsx": {
-    "Open": "Öppet"
-  }
-}
-```
-
-Keys are written in a stable order, so two branches editing different components produce no overlap; two branches editing the same component produce one small JSON object to merge.
-
-The values may be written on save by a configured AI model. They may be completed by a coding agent already changing the feature. They may be written or corrected by a person. In every case, they are normal repository files: visible in a pull request, editable without a dashboard, and versioned with the code that caused them to exist. `yapyak status` reports coverage per locale; `yapyak check` exits non-zero when a locale is incomplete, so completeness can be a merge requirement instead of an afterthought.
-
-You choose the model, when a model is involved. You use your own provider and your own key. No yapyak service sits between your code and the model. You own the loop.
-
-## First-class in every framework
-
-{% code-group %}
-
-```tsx [React]
-<button>{t('Save changes')}</button>
-```
-
-```vue [Vue]
-<template>
-  <button>{{ t('Save changes') }}</button>
-</template>
-```
-
-```svelte [Svelte]
-<button>{t('Save changes')}</button>
-```
-
-```astro [Astro]
----
-import { t } from 'yapyak';
----
-
-<button>{t('Save changes')}</button>
-```
-
-{% /code-group %}
-
-Each framework's own compiler does the parsing: Vue's for Vue, Svelte's for Svelte, Astro's for Astro, the TypeScript toolchain for TSX. The edge cases just work because each framework's AST is what yapyak reads:
-
-```vue
-<template>
-  <p>{{ t('{count, plural, one {# item} other {# items}}', { count }) }}</p>
-</template>
-```
-
-Vue's `{{ }}` mustache braces wrap an ICU message whose syntax also uses `{}`. There is no escape rule, no parser fallback. The Vue compiler reads the template; yapyak reads the `t()` argument inside it.
-
-### SSR with one line
-
-For server-rendered applications, yapyak ships an adapter per framework. Locale resolution plugs into the request boundary:
-
-{% code-group %}
-
-```ts [SvelteKit]
-// src/hooks.server.ts
-export { handle } from '@yapyak/sveltekit';
-```
-
-```ts [Astro]
-// astro.config.ts
-import { defineConfig } from 'astro/config';
-import { yapyak } from '@yapyak/astro';
-
-export default defineConfig({
-  integrations: [yapyak()],
-});
-```
-
-```ts [React Router]
-// app/root.tsx
-import { middleware as yapyakMiddleware } from '@yapyak/react-router';
-
-export const middleware = [yapyakMiddleware];
-```
-
-```ts [TanStack Start]
-// src/start.ts
-import { createStart } from '@tanstack/react-start';
-import { middleware } from '@yapyak/tanstack-start';
-
-export const startInstance = createStart(() => ({
-  requestMiddleware: [middleware],
-}));
-```
-
-{% /code-group %}
-
-Where the locale is read and persisted is configurable: a cookie, a URL segment, or local storage. The adapter handles the round-trip; the application stays unaware.
-
-## The loop is the feature
-
-Translation used to begin after an interface was ready to leave engineering. Pipelines made that handoff faster, but the interface was still written first and understood in other languages later.
-
-yapyak starts where the interface is still being made:
-
-```tsx
-t('Your cart is empty')
-```
-
-Write the message where it appears. Save the component. See another language in the running application while the wording, layout, and interaction are still yours to change.
-
-That model matters increasingly because interfaces are no longer written by developers alone. Coding agents can create, revise, and move UI code, but they work best when meaning is visible in the code they are changing. A source string at the call site gives a person and an agent the same starting point: the actual words, in the actual component, with the actual surrounding context. The compiler can validate the result, the *translator* can use the context, and the repository can record the change.
-
-Translation used to be a phase. Then it became a pipeline step.
-
-With yapyak, it is part of writing the interface.
