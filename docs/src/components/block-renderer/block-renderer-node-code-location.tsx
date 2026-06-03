@@ -12,7 +12,6 @@ export function BlockRendererNodeCodeLocation(
   props: BlockRendererNodeCodeLocationProps,
 ) {
   const { block } = props;
-  const label = `${block.file}:${block.line}`;
   if (block.href !== null) {
     return (
       <Box
@@ -22,7 +21,7 @@ export function BlockRendererNodeCodeLocation(
         rel="noreferrer"
         target="_blank"
       >
-        {label}
+        GitHub
       </Box>
     );
   }
@@ -31,7 +30,7 @@ export function BlockRendererNodeCodeLocation(
       as="span"
       className={styles.BlockRendererNodeCodeLocation}
     >
-      {label}
+      {`${block.file}:${block.line}`}
     </Box>
   );
 }

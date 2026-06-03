@@ -1,6 +1,7 @@
 @layer components {
   .BlockRendererNodeCodeLocation {
     display: inline-block;
+    align-self: flex-start;
     padding-top: var(--spacing-4);
     margin-top: var(--spacing-8);
     font-family: var(--font-family-mono);

@@ -1,7 +1,13 @@
 export interface Config {
   collections: Record<string, CollectionConfig>;
   out: string;
+  sourceUrl?: SourceUrlConfig;
   validate?: boolean;
+}
+
+export interface SourceUrlConfig {
+  template: string;
+  workspaceRoot: string;
 }
 
 export type CollectionConfig = MarkdocSource | TypedocSource;

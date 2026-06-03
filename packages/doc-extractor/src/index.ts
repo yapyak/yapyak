@@ -47,6 +47,7 @@ export type {
   CollectionConfig,
   Config,
   MarkdocSource,
+  SourceUrlConfig,
   TypedocSource,
 } from './config.ts';
 

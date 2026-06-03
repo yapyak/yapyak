@@ -65,6 +65,10 @@ export default defineConfig({
         },
       },
       out: resolve(import.meta.dirname, 'manifest.json'),
+      sourceUrl: {
+        template: 'https://github.com/yapyak/yapyak/blob/main/{path}#L{line}',
+        workspaceRoot: resolve(import.meta.dirname, '..'),
+      },
     }),
     yapyak(),
   ],

@@ -142,6 +142,7 @@ export type ExportKind =
 export interface EyebrowBlock {
   kind: ExportKind | null;
   module: string | null;
+  sourceHref: string | null;
   type: 'eyebrow';
 }
 

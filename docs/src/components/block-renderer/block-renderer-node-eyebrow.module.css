@@ -10,5 +10,33 @@
       color: var(--foreground-softer);
       letter-spacing: var(--letter-spacing-tight);
     }
+
+    .SourceLink {
+      --inline-code-color: currentColor;
+      display: inline-flex;
+      gap: var(--spacing-1);
+      align-items: center;
+      margin-left: auto;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--brand);
+      letter-spacing: var(--letter-spacing-tight);
+      text-decoration: underline;
+      text-decoration-color: transparent;
+      text-underline-offset: 4px;
+      cursor: pointer;
+      transition: text-decoration-color var(--transition);
+
+      @media (hover: hover) {
+        &:hover {
+          text-decoration-color: currentColor;
+        }
+      }
+    }
+
+    .SourceLinkIcon {
+      width: 0.875em;
+      height: 0.875em;
+    }
   }
 }

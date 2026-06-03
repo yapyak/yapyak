@@ -1,5 +1,10 @@
 import type { Block } from '../access/block.ts';
-import type { CollectionConfig, Config, TypedocPackage } from '../config.ts';
+import type {
+  CollectionConfig,
+  Config,
+  SourceUrlConfig,
+  TypedocPackage,
+} from '../config.ts';
 
 import { extractMarkdoc } from '../extract/markdoc/extract.ts';
 import { extractTypedoc } from '../extract/typedoc/index.ts';
@@ -74,7 +79,12 @@ export async function buildManifest(config: Config): Promise<Manifest> {
   const symbols: Record<string, SymbolEntry> = {};
 
   for (const [name, collectionConfig] of Object.entries(config.collections)) {
-    const collection = await buildCollection(name, collectionConfig, symbols);
+    const collection = await buildCollection(
+      name,
+      collectionConfig,
+      symbols,
+      config.sourceUrl,
+    );
     collections[name] = collection;
   }
 
@@ -89,11 +99,17 @@ async function buildCollection(
   collectionName: string,
   config: CollectionConfig,
   symbols: Record<string, SymbolEntry>,
+  sourceUrl: SourceUrlConfig | undefined,
 ): Promise<Collection> {
   if (config.source === 'markdoc') {
     return buildMarkdocCollection(collectionName, config.root);
   }
-  return buildTypedocCollection(collectionName, config.packages, symbols);
+  return buildTypedocCollection(
+    collectionName,
+    config.packages,
+    symbols,
+    sourceUrl,
+  );
 }
 
 async function buildMarkdocCollection(
@@ -124,6 +140,7 @@ async function buildTypedocCollection(
   collectionName: string,
   packages: TypedocPackage[],
   symbols: Record<string, SymbolEntry>,
+  sourceUrl: SourceUrlConfig | undefined,
 ): Promise<Collection> {
   const pages: Record<string, Page> = {};
   const redirects: Record<string, string> = {};
@@ -166,8 +183,10 @@ async function buildTypedocCollection(
           href,
           index,
           moduleId: module.id,
+          packageDir: pkg.root,
           packageName,
           packageSlug,
+          sourceUrl,
         });
         pages[path] = page;
         symbols[`${packageSlug}/${symbol.name}`] = {

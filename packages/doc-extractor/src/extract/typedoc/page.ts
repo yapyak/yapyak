@@ -5,6 +5,7 @@ import type {
   TableRowBlock,
 } from '../../access/block.ts';
 import type { Page } from '../../build/manifest.ts';
+import type { SourceUrlConfig } from '../../config.ts';
 import type { SymbolIndex } from './symbol-index.ts';
 import type {
   ReferenceExample,
@@ -23,6 +24,7 @@ import type {
 import { slugify } from '../../slug.ts';
 import { symbolHref as buildSymbolHref } from '../../symbol-path.ts';
 import { parseMarkdoc } from '../markdoc/parse.ts';
+import { relative, resolve } from 'node:path';
 
 let currentIndex: SymbolIndex = new Map();
 let currentCollection = 'reference';
@@ -34,8 +36,10 @@ interface BuildSymbolPageOptions {
   href: string;
   index: SymbolIndex;
   moduleId: string;
+  packageDir: string;
   packageName: string;
   packageSlug: string;
+  sourceUrl: SourceUrlConfig | undefined;
 }
 
 export function buildSymbolPage(
@@ -48,7 +52,18 @@ export function buildSymbolPage(
   currentPackageSlug = options.packageSlug;
   const blocks: Block[] = [];
 
-  blocks.push(eyebrow(options.moduleId, symbol.kind));
+  blocks.push(
+    eyebrow(
+      options.moduleId,
+      symbol.kind,
+      resolveSourceHref(
+        symbol.location.file,
+        symbol.location.line,
+        options.packageDir,
+        options.sourceUrl,
+      ),
+    ),
+  );
 
   if (symbol.deprecated !== null) {
     blocks.push({
@@ -145,13 +160,6 @@ export function buildSymbolPage(
     blocks.push(seeAlsoList(symbol.seeAlso));
   }
 
-  blocks.push({
-    file: symbol.location.file,
-    href: null,
-    line: symbol.location.line,
-    type: 'code-location',
-  });
-
   return {
     blocks,
     description: '',
@@ -159,6 +167,25 @@ export function buildSymbolPage(
     meta: {},
     title: symbol.kind === 'function' ? `${symbol.name}()` : symbol.name,
   };
+}
+
+function resolveSourceHref(
+  file: string,
+  line: number,
+  packageDir: string,
+  sourceUrl: SourceUrlConfig | undefined,
+): string | null {
+  if (sourceUrl === undefined || file === '') {
+    return null;
+  }
+  const absolute = resolve(packageDir, file);
+  const path = relative(sourceUrl.workspaceRoot, absolute).replaceAll(
+    '\\',
+    '/',
+  );
+  return sourceUrl.template
+    .replaceAll('{path}', path)
+    .replaceAll('{line}', String(line));
 }
 
 interface BuildModulePageOptions {
@@ -180,7 +207,12 @@ export function buildModulePage(
   currentPackageSlug = options.packageSlug;
   const blocks: Block[] = [];
 
-  blocks.push({ kind: null, module: module.id, type: 'eyebrow' });
+  blocks.push({
+    kind: null,
+    module: module.id,
+    sourceHref: null,
+    type: 'eyebrow',
+  });
 
   if (module.description) {
     const parsed = parseMarkdoc(module.description);
@@ -287,8 +319,12 @@ function unifyParameters(overloads: ReferenceOverload[]): ReferenceParameter[] {
   return unified;
 }
 
-function eyebrow(moduleId: string, kind: ExportKind): Block {
-  return { kind, module: moduleId, type: 'eyebrow' };
+function eyebrow(
+  moduleId: string,
+  kind: ExportKind,
+  sourceHref: string | null,
+): Block {
+  return { kind, module: moduleId, sourceHref, type: 'eyebrow' };
 }
 
 function importSnippet(
