@@ -24,7 +24,7 @@ export function FeatureSection(props: FeatureSectionProps) {
         'Write t(\'Edit\'). Save. Your browser shows "Redigera" in Swedish and "Bearbeiten" in German via HMR. When "Bearbeiten" overflows your button, you see it while the layout is still yours to change.',
       ),
       number: '01',
-      title: t('Auto-translation on save'),
+      title: t('AI translation on save'),
     },
     {
       description: t(
