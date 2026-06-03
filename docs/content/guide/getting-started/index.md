@@ -1,5 +1,5 @@
 ---
 title: Getting started
 order: 1
-redirect: ./overview
+redirect: ./introduction
 ---
