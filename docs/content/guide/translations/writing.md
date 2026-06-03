@@ -92,16 +92,16 @@ t.in('sv', 'Hello');          // OK
 
 | Code | Means |
 |---|---|
-| YPK101 | `t()` called without a source argument |
-| YPK102 | Source is not a string literal, or template has interpolation |
-| YPK103 | Source is an empty string |
-| YPK104 | Placeholder has no matching params key |
-| YPK105 | Params key has no matching placeholder |
-| YPK106 | Params passed as variable or spread, cannot be statically verified |
-| YPK401 | `t.at()` context is not a static string literal |
-| YPK402 | Context does not match `[a-z][a-z0-9-]*` |
-| YPK403 | Same source used with both `t()` and `t.at()` in the same file |
-| YPK404 | `t.at()` has no other context to disambiguate from |
-| YPK405 | Modifier captured instead of used inline |
+| [YPK101](./diagnostics#ypk101) | `t()` called without a source argument |
+| [YPK102](./diagnostics#ypk102) | Source is not a string literal, or template has interpolation |
+| [YPK103](./diagnostics#ypk103) | Source is an empty string |
+| [YPK104](./diagnostics#ypk104) | Placeholder has no matching params key |
+| [YPK105](./diagnostics#ypk105) | Params key has no matching placeholder |
+| [YPK106](./diagnostics#ypk106) | Params passed as variable or spread, cannot be statically verified |
+| [YPK401](./diagnostics#ypk401) | `t.at()` context is not a static string literal |
+| [YPK402](./diagnostics#ypk402) | Context does not match `[a-z][a-z0-9-]*` |
+| [YPK403](./diagnostics#ypk403) | Same source used with both `t()` and `t.at()` in the same file |
+| [YPK404](./diagnostics#ypk404) | `t.at()` has no other context to disambiguate from |
+| [YPK405](./diagnostics#ypk405) | Modifier captured instead of used inline |
 
-ICU-specific diagnostics (YPK201-203) live in [ICU](./icu).
+See [Diagnostics](./diagnostics) for the full code list, including ICU and locale-file validation codes.

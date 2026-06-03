@@ -3,7 +3,7 @@ title: Introduction
 order: 1
 ---
 
-yapyak is an i18n library for Vite. It supports React, Vue, Svelte, and Astro, with SSR adapters for Astro, React Router, SvelteKit, and TanStack Start. You write interface text in source code, and yapyak keeps your locale files in sync while you or your coding agent builds the application.
+yapyak is an i18n library for Vite applications using React, Vue, Svelte, or Astro. It includes SSR support for Astro, React Router, SvelteKit, and TanStack Start. You write interface text in source code, and yapyak keeps your locale files in sync as you build your application.
 
 ## Translations follow code
 

@@ -108,6 +108,6 @@ Some ICU features are not supported by the compiler. Each one emits YPK203 at pa
 
 | Code | Means |
 |---|---|
-| YPK201 | Malformed ICU syntax |
-| YPK202 | Missing required `other` branch |
-| YPK203 | Unsupported ICU feature |
+| [YPK201](./diagnostics#ypk201) | Malformed ICU syntax |
+| [YPK202](./diagnostics#ypk202) | Missing required `other` branch |
+| [YPK203](./diagnostics#ypk203) | Unsupported ICU feature |
