@@ -5,7 +5,7 @@ order: 6
 
 Sometimes a message needs to contain more than text: a link, an emphasized phrase, or another interface element placed inside the sentence.
 
-For React, Vue, and Svelte, yapyak provides a `<RichText>` component. It takes a string containing named tags and renders those tags using the components you provide:
+yapyak provides a `<RichText>` component for React, Vue, Svelte, and Astro. It takes a string containing named tags and renders those tags using the handlers you provide:
 
 {% switch group="framework" %}
 
@@ -58,7 +58,17 @@ import { t } from 'yapyak';
 {% /when %}
 
 {% when value="astro" %}
-For Astro islands, use one of the framework bindings (React/Vue/Svelte) inside an island component. `RichText` requires a reactive runtime, so it is not directly available in `.astro` files. For static rich-text rendering in a `.astro` file, use [`richText()`](#rendering-to-a-string) below to render directly to a string.
+```astro [Notice.astro]
+---
+import { RichText } from '@yapyak/astro';
+import { t } from 'yapyak';
+---
+
+<RichText
+  value={t('Read the <link>documentation</link> to get started.')}
+  link={(children) => `<a href="/docs">${children}</a>`}
+/>
+```
 {% /when %}
 
 {% /switch %}
@@ -108,7 +118,12 @@ Its renderer remains in your component code, free to operate on any string conta
 {% /when %}
 
 {% when value="astro" %}
-In `.astro` files, prefer [`richText()`](#rendering-to-a-string) — it renders to a string directly without a reactive runtime.
+```astro
+<RichText
+  value="Read the <link>documentation</link> to get started."
+  link={(children) => `<a href="/docs">${children}</a>`}
+/>
+```
 {% /when %}
 
 {% /switch %}
@@ -126,7 +141,7 @@ In React and Svelte, a value containing `<link>...</link>` requires a matching `
 // TypeScript error: missing `link` renderer
 ```
 
-Vue exposes the corresponding named slots, but cannot require them in the same way.
+Vue and Astro expose handlers as loose props/slots and cannot require them at the type level. A tag with no matching handler renders as its inner text.
 
 ## Rendering to a string
 

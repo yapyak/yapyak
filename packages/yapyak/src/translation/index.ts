@@ -1,7 +1,11 @@
 export { interpolate } from './interpolate';
 export { pick } from './pick';
 export { hasPlaceholder } from './placeholder';
-export { type RichTextHandlers, richText } from './rich-text';
+export {
+  type RichTextHandler,
+  type RichTextHandlers,
+  richText,
+} from './rich-text';
 export {
   parseRichText,
   type RichTextNode,

@@ -1,0 +1,15 @@
+---
+import type { RichTextHandler } from 'yapyak';
+
+import { richText } from 'yapyak';
+
+interface Props {
+  value: string;
+  [tagName: string]: RichTextHandler | string;
+}
+
+const { value, ...restProps } = Astro.props;
+const html = richText(value, restProps);
+---
+
+<Fragment set:html={html} />

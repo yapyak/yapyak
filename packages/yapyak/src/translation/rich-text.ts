@@ -4,7 +4,13 @@ import { walkRichText } from './rich-text-walker';
 
 type TagsOf<T> = T extends TReturn<infer Tags> ? Tags : never;
 
-type RichTextHandler = (children: string) => string;
+/**
+ * Handler for a single named tag in a rich-text string.
+ *
+ * @remarks
+ * Receives the resolved text between the tag's opening and closing markers and returns the rendered string. The shape used by every entry of a `richText()` handlers object.
+ */
+export type RichTextHandler = (children: string) => string;
 
 export type RichTextHandlers<T extends string> = {
   [Tag in TagsOf<T>]: RichTextHandler;
