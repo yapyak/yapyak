@@ -18,7 +18,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@yapyak/adapter": "workspace:*"
+    "yapyak": "workspace:*"
   },
   "peerDependencies": {
     "react-router": ">=7.9"

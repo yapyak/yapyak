@@ -1,4 +1,4 @@
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
   detectAcceptLanguage: true,

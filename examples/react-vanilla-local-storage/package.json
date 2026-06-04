@@ -18,7 +18,6 @@
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "@yapyak/anthropic": "workspace:*",
-    "@yapyak/cli": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "@yapyak/vite": "workspace:*",
     "typescript": "catalog:",

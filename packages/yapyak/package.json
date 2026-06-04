@@ -8,10 +8,41 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./adapter": {
+      "types": "./dist/adapter/index.d.ts",
+      "default": "./dist/adapter/index.js"
+    },
+    "./compiler": {
+      "types": "./dist/compiler/index.d.ts",
+      "default": "./dist/compiler/index.js"
+    },
+    "./config": {
+      "types": "./dist/config/index.d.ts",
+      "default": "./dist/config/index.js"
+    },
+    "./config/internal": {
+      "types": "./dist/config/internal/index.d.ts",
+      "default": "./dist/config/internal/index.js"
+    },
     "./internal": {
       "types": "./dist/internal.d.ts",
       "default": "./dist/internal.js"
+    },
+    "./runtime": {
+      "types": "./dist/runtime.d.ts",
+      "default": "./dist/runtime.js"
+    },
+    "./translator": {
+      "types": "./dist/translator/index.d.ts",
+      "default": "./dist/translator/index.js"
+    },
+    "./translator/internal": {
+      "types": "./dist/translator/internal/index.d.ts",
+      "default": "./dist/translator/internal/index.js"
     }
+  },
+  "bin": {
+    "yapyak": "./dist/cli/run.js"
   },
   "files": [
     "dist"
@@ -23,12 +54,41 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@yapyak/shared": "workspace:*"
+    "@formatjs/icu-messageformat-parser": "catalog:",
+    "jiti": "catalog:",
+    "magic-string": "catalog:",
+    "picomatch": "catalog:"
+  },
+  "peerDependencies": {
+    "@astrojs/compiler": ">=2.0.0",
+    "@vue/compiler-core": ">=3.0.0",
+    "@vue/compiler-sfc": ">=3.0.0",
+    "svelte": ">=5.0.0",
+    "typescript": ">=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@astrojs/compiler": {
+      "optional": true
+    },
+    "@vue/compiler-core": {
+      "optional": true
+    },
+    "@vue/compiler-sfc": {
+      "optional": true
+    },
+    "svelte": {
+      "optional": true
+    }
   },
   "devDependencies": {
+    "@astrojs/compiler": "catalog:",
     "@types/node": "catalog:",
+    "@types/picomatch": "catalog:",
+    "@vue/compiler-core": "catalog:",
+    "@vue/compiler-sfc": "catalog:",
     "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
+    "svelte": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",

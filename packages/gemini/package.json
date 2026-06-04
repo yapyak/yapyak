@@ -18,7 +18,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@yapyak/translator": "workspace:*"
+    "yapyak": "workspace:*"
   },
   "devDependencies": {
     "@yapyak/tsup-config": "workspace:*",

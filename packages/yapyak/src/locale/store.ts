@@ -4,7 +4,7 @@ import {
   LOCALES,
   PERSISTENCE,
   SYNC_HTML_LANG,
-} from '@yapyak/shared';
+} from 'yapyak/runtime';
 
 import { buildPersistence } from '../persistence';
 import { readRequest } from './request-reader';

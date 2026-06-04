@@ -19,9 +19,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@yapyak/compiler": "workspace:*",
-    "@yapyak/config": "workspace:*",
-    "@yapyak/shared": "workspace:*"
+    "yapyak": "workspace:*"
   },
   "peerDependencies": {
     "vite": ">=5"

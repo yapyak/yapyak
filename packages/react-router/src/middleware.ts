@@ -1,6 +1,6 @@
 import type { MiddlewareFunction } from 'react-router';
 
-import { getPendingResponseHeaders, withRequest } from '@yapyak/adapter';
+import { getPendingResponseHeaders, withRequest } from 'yapyak/adapter';
 
 /**
  * Middleware for React Router. Provides yapyak's per-request locale context.

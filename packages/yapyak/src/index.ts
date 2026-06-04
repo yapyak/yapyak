@@ -12,16 +12,6 @@
  * @packageDocumentation
  */
 
-export type {
-  CookiePersistence,
-  FilterPattern,
-  LocalStoragePersistence,
-  Persistence,
-  UrlPersistence,
-  YapyakConfig,
-} from '@yapyak/shared';
-
-export { defineConfig } from './config';
 export { type Format, format } from './format';
 export { defaultLocale, getLocale, locales, setLocale } from './locale';
 export {

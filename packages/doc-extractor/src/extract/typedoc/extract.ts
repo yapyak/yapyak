@@ -99,7 +99,7 @@ async function loadEntries(
 
   const entries: EntryPoint[] = [];
   for (const [subpath, conditions] of Object.entries(pkg.exports)) {
-    if (subpath === './internal') {
+    if (isInternalSubpath(subpath)) {
       continue;
     }
     const distPath =
@@ -118,6 +118,14 @@ async function loadEntries(
     entries.push({ filePath, id, subpath });
   }
   return { entries, packageName: pkg.name };
+}
+
+function isInternalSubpath(subpath: string): boolean {
+  return subpath === './internal' || subpath.endsWith('/internal');
+}
+
+function isInternalModule(module: ProjectModule): boolean {
+  return Boolean(module.comment?.modifierTags?.has('@internal'));
 }
 
 async function loadProject(
@@ -202,6 +210,9 @@ function buildLinkRegistry(
   const registry = new Map<number, string>();
   const nameIndex = new Map<string, string | 'ambiguous'>();
   for (const module of eachProjectModule(project, entries, packageDir)) {
+    if (isInternalModule(module)) {
+      continue;
+    }
     for (const symbol of module.children) {
       if (isInternal(symbol)) {
         continue;
@@ -251,6 +262,9 @@ function collectModules(
     entries,
     context.packageDir,
   )) {
+    if (isInternalModule(module)) {
+      continue;
+    }
     const exports = module.children
       .filter((symbol) => !isInternal(symbol))
       .flatMap((symbol) => convertExport(symbol, context) ?? [])

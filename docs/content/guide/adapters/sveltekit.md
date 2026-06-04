@@ -49,7 +49,7 @@ The hook binds each request's locale context and substitutes `%yapyak.lang%` wit
 Enable `syncHtmlLang` to make yapyak update the attribute on every `setLocale()`:
 
 ```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
   persistence: 'cookie',
@@ -80,7 +80,7 @@ yapyak's handle should run first so the `%yapyak.lang%` substitution happens bef
 For SSR locale switching to work, enable cookie persistence:
 
 ```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
   persistence: 'cookie',

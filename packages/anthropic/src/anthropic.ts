@@ -2,14 +2,14 @@ import type {
   ContextLevel,
   LocaleTranslations,
   Translator,
-} from '@yapyak/translator';
+} from 'yapyak/translator';
 
-import { createTranslator } from '@yapyak/translator';
+import { createTranslator } from 'yapyak/translator';
 import {
   buildSystem,
   retryableFetch,
   stripCodeFence,
-} from '@yapyak/translator/internal';
+} from 'yapyak/translator/internal';
 
 /** Options for {@link anthropic}. */
 export interface AnthropicOptions {

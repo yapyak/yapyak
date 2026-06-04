@@ -23,7 +23,6 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@yapyak/cli": "workspace:*",
     "@yapyak/vite": "workspace:*",
     "typescript": "catalog:",
     "vite": "catalog:"

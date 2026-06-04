@@ -1,11 +1,11 @@
+import type { Plugin, ResolvedConfig, UserConfig } from 'vite';
 import type {
   ExtractedMessage,
   ExtractFileResult,
   LocaleData,
   LocaleWarning,
-} from '@yapyak/compiler';
-import type { NormalizedYapyakConfig } from '@yapyak/shared';
-import type { Plugin, ResolvedConfig, UserConfig } from 'vite';
+} from 'yapyak/compiler';
+import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
 
 import {
   autoTranslate,
@@ -18,15 +18,18 @@ import {
   transformFile,
   validateLocaleCode,
   walkSourceFiles,
-} from '@yapyak/compiler';
-import { createFilter, loadYapyakConfig } from '@yapyak/config';
-import { defineRuntime } from '@yapyak/shared';
+} from 'yapyak/compiler';
+import {
+  createFilter,
+  defineRuntime,
+  loadYapyakConfig,
+} from 'yapyak/config/internal';
 
 import { readFileSync } from 'node:fs';
 import { basename, extname, join, relative, sep } from 'node:path';
 
-const RUNTIME_ID = '@yapyak/shared';
-const RUNTIME_RESOLVED = `\0${RUNTIME_ID}`;
+const RUNTIME_ID = 'yapyak/runtime';
+const RUNTIME_RESOLVED = '\0yapyak:runtime';
 const RUNTIME_NO_EXTERNAL: (string | RegExp)[] = ['yapyak', /^@yapyak\//];
 
 function isRuntimeExternal(id: string): boolean {

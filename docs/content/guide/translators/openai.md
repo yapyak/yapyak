@@ -26,7 +26,7 @@ bun add @yapyak/openai
 Use OpenAI's GPT models — or any OpenAI-compatible provider (Groq, DeepSeek, Mistral, OpenRouter, Vercel AI Gateway, Together AI) — as your translator.
 
 ```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 import { openai } from '@yapyak/openai';
 
 export default defineConfig({

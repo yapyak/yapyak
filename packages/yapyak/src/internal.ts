@@ -1,9 +1,4 @@
-export {
-  resetLocale,
-  setRequestReader,
-  setResponseHeaderWriter,
-  subscribeLocale,
-} from './locale';
+export { resetLocale, subscribeLocale } from './locale';
 export {
   parseRichText,
   pick,

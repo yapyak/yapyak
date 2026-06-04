@@ -21,13 +21,11 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
   { dir: 'vue', group: 'Frameworks' },
   { dir: 'svelte', group: 'Frameworks' },
 
-  { dir: 'adapter', group: 'Adapters' },
   { dir: 'astro', group: 'Adapters' },
   { dir: 'tanstack-start', group: 'Adapters' },
   { dir: 'sveltekit', group: 'Adapters' },
   { dir: 'react-router', group: 'Adapters' },
 
-  { dir: 'translator', group: 'Translators' },
   { dir: 'anthropic', group: 'Translators' },
   { dir: 'openai', group: 'Translators' },
   { dir: 'gemini', group: 'Translators' },

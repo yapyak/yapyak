@@ -14,7 +14,6 @@
     "yapyak": "workspace:*"
   },
   "devDependencies": {
-    "@yapyak/cli": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "@yapyak/vite": "workspace:*",
     "typescript": "catalog:"

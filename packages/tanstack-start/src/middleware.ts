@@ -1,7 +1,7 @@
 import type { AnyRequestMiddleware } from '@tanstack/react-start';
 
 import { createMiddleware } from '@tanstack/react-start';
-import { getPendingResponseHeaders, withRequest } from '@yapyak/adapter';
+import { getPendingResponseHeaders, withRequest } from 'yapyak/adapter';
 
 /**
  * Middleware for TanStack Start. Provides yapyak's per-request locale context.

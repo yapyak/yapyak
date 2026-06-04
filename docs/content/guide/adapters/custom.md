@@ -3,30 +3,14 @@ title: Custom
 order: 7
 ---
 
-## Install
-
-{% code-group %}
-
-```bash [npm]
-npm install @yapyak/adapter
-```
-
-```bash [pnpm]
-pnpm add @yapyak/adapter
-```
-
-```bash [bun]
-bun add @yapyak/adapter
-```
-
-{% /code-group %}
+`withRequest` ships in the `yapyak` package under the `yapyak/adapter` subpath — no extra install needed.
 
 ## Setup
 
 If your Vite SSR setup isn't TanStack Start or SvelteKit, wrap each request with `withRequest()`.
 
 ```ts
-import { withRequest } from '@yapyak/adapter';
+import { withRequest } from 'yapyak/adapter';
 
 function handler(request: Request): Response | Promise<Response> {
   return withRequest(request, () => renderApp(request));
@@ -59,7 +43,7 @@ function Component() {
 If `<html>` is static HTML (no framework binding), enable `syncHtmlLang` and yapyak will keep `document.documentElement.lang` synced with the current locale:
 
 ```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
   syncHtmlLang: true,
@@ -71,7 +55,7 @@ export default defineConfig({
 For SSR locale switching to work, enable cookie persistence:
 
 ```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
   persistence: 'cookie',

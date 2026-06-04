@@ -31,7 +31,7 @@ For environments where no provider call is acceptable, a custom *translator* rep
 
 ## Can I use my own model, an internal LLM, or no model at all?
 
-Yes. `createTranslator()` from `@yapyak/translator` wraps any async function returning translated strings into a yapyak-compatible *translator*. A private model behind an internal endpoint, a queue that emails a human translator, a CLI prompt that asks for input — each is a function.
+Yes. `createTranslator()` from `yapyak/translator` wraps any async function returning translated strings into a yapyak-compatible *translator*. A private model behind an internal endpoint, a queue that emails a human translator, a CLI prompt that asks for input — each is a function.
 
 The built-in *translators* (`@yapyak/anthropic`, `@yapyak/openai`, `@yapyak/gemini`, `@yapyak/ollama`) are reference implementations on top of the same primitive.
 
@@ -61,7 +61,7 @@ For terms that must stay consistent across the application — a product name, a
 
 The save loop (extraction on change, HMR, locale file writing) runs in the Vite plugin today. No equivalent plugin exists for Webpack, Turbopack, esbuild, or Rspack.
 
-The compiler is a separate package (`@yapyak/compiler`) and is not bound to Vite. A loader for another bundler is possible to build on top of it; it has not been built. Until then, yapyak is a Vite-first tool.
+The compiler ships in the `yapyak` package under the `yapyak/compiler` subpath and is not bound to Vite. A loader for another bundler is possible to build on top of it; it has not been built. Until then, yapyak is a Vite-first tool.
 
 ## How are plurals in languages with multiple plural rules handled?
 

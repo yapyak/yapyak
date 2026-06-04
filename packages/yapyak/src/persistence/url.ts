@@ -1,4 +1,4 @@
-import type { Persistence } from '.';
+import type { Persistence } from './type';
 
 import { subscribeHistory } from './history';
 

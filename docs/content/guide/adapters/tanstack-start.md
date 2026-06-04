@@ -71,7 +71,7 @@ This is the recommended pattern for TanStack Start. The shell re-renders on loca
 For SSR locale switching to work, the user's choice must be readable by the server. Enable `persistence: 'cookie'`:
 
 ```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
   persistence: 'cookie',

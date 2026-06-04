@@ -3,30 +3,14 @@ title: Custom
 order: 6
 ---
 
-## Install
-
-{% code-group %}
-
-```bash [npm]
-npm install @yapyak/translator
-```
-
-```bash [pnpm]
-pnpm add @yapyak/translator
-```
-
-```bash [bun]
-bun add @yapyak/translator
-```
-
-{% /code-group %}
+`createTranslator` ships in the `yapyak` package under the `yapyak/translator` subpath — no extra install needed.
 
 ## Setup
 
 Anything that can return translated strings can be a yapyak translator. Use `createTranslator` to build one. It handles batching, deduplication across target locales, validation, and error handling so you only have to wire the LLM call.
 
 ```ts
-import { createTranslator } from '@yapyak/translator';
+import { createTranslator } from 'yapyak/translator';
 
 const myTranslator = createTranslator({
   async translate({ items, sourceLocale, targetLocales, signal }) {
@@ -139,7 +123,7 @@ No automatic coercion. If your AI returns weird shapes, normalize them inside `t
 For a reusable translator with configurable options:
 
 ```ts
-import { createTranslator } from '@yapyak/translator';
+import { createTranslator } from 'yapyak/translator';
 
 interface MyLLMOptions {
   endpoint: string;
@@ -182,7 +166,7 @@ export function myLLM(opts: MyLLMOptions) {
 Then use it:
 
 ```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 import { myLLM } from './my-translator';
 
 export default defineConfig({
@@ -200,7 +184,7 @@ export default defineConfig({
 For testing, pseudo-locales, or specific deterministic transforms:
 
 ```ts
-import { createTranslator } from '@yapyak/translator';
+import { createTranslator } from 'yapyak/translator';
 
 export const pseudoLocale = createTranslator({
   translate({ items, targetLocales }) {
@@ -243,4 +227,4 @@ it('translates a batch', async () => {
 });
 ```
 
-The outer `translator.batch(requests)` API stays per-locale on input and output. yapyak's compiler hands it the full list of `(file, source, locale)` requests it needs filled, and the factory deduplicates them before reaching your `translate` callback. The shipped translators have similar tests. Open the source under `packages/translator/src/` for examples.
+The outer `translator.batch(requests)` API stays per-locale on input and output. yapyak's compiler hands it the full list of `(file, source, locale)` requests it needs filled, and the factory deduplicates them before reaching your `translate` callback. The shipped translators have similar tests. Open the source under `packages/yapyak/src/translator/` for examples.

@@ -1,10 +1,11 @@
 import { defineConfig } from 'vitest/config';
 
+import { resolve } from 'node:path';
+
 export default defineConfig({
   resolve: {
     alias: {
-      '@yapyak/shared': new URL('./fixture/runtime.ts', import.meta.url)
-        .pathname,
+      'yapyak/runtime': resolve(import.meta.dirname, 'src/runtime.ts'),
     },
   },
 });

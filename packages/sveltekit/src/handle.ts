@@ -1,7 +1,7 @@
 import type { Handle } from '@sveltejs/kit';
 
-import { getPendingResponseHeaders, withRequest } from '@yapyak/adapter';
 import { getLocale } from 'yapyak';
+import { getPendingResponseHeaders, withRequest } from 'yapyak/adapter';
 
 const PLACEHOLDER = '%yapyak.lang%';
 

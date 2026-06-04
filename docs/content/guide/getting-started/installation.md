@@ -10,22 +10,21 @@ Add yapyak to a Vite project.
 {% code-group %}
 
 ```bash [npm]
-npm install yapyak @yapyak/vite @yapyak/cli
+npm install yapyak @yapyak/vite
 ```
 
 ```bash [pnpm]
-pnpm add yapyak @yapyak/vite @yapyak/cli
+pnpm add yapyak @yapyak/vite
 ```
 
 ```bash [bun]
-bun add yapyak @yapyak/vite @yapyak/cli
+bun add yapyak @yapyak/vite
 ```
 
 {% /code-group %}
 
-- `yapyak` — the runtime (`t()`, format helpers, the raw locale API)
+- `yapyak` — the runtime (`t()`, format helpers, the raw locale API) plus the `yapyak` CLI command (add locales, status, batch translate)
 - `@yapyak/vite` — the Vite plugin (extraction, HMR, compile-time inlining)
-- `@yapyak/cli` — the `yapyak` command (add locales, status, batch translate)
 
 ## Configure Vite
 
@@ -45,7 +44,7 @@ export default defineConfig({
 Create `yapyak.config.ts` in the project root:
 
 ```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
   persistence: 'cookie',
@@ -152,7 +151,7 @@ To translate automatically on save, install one of yapyak's translators:
 | OpenAI (or compatible) | `@yapyak/openai` | [OpenAI](/guide/translators/openai) |
 | Google Gemini | `@yapyak/gemini` | [Gemini](/guide/translators/gemini) |
 | Ollama (local) | `@yapyak/ollama` | [Ollama](/guide/translators/ollama) |
-| Custom (any LLM) | `@yapyak/translator` | [Custom](/guide/translators/custom) |
+| Custom (any LLM) | `yapyak/translator` subpath | [Custom](/guide/translators/custom) |
 
 Each ships first-class. Same shared config interface across providers. See [Translators overview](/guide/translators) for tradeoffs.
 
@@ -166,7 +165,7 @@ For server-rendered apps. Skip if your app never renders on a server.
 | React Router | `@yapyak/react-router` | [React Router adapter](/guide/adapters/react-router) |
 | SvelteKit | `@yapyak/sveltekit` | [SvelteKit adapter](/guide/adapters/sveltekit) |
 | TanStack Start | `@yapyak/tanstack-start` | [TanStack Start adapter](/guide/adapters/tanstack-start) |
-| Other Vite SSR | — | [Custom adapter](/guide/adapters/custom) |
+| Other Vite SSR | `yapyak/adapter` subpath | [Custom adapter](/guide/adapters/custom) |
 
 ## UI bindings
 

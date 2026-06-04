@@ -22,8 +22,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@yapyak/adapter": "workspace:*",
-    "@yapyak/vite": "workspace:*"
+    "@yapyak/vite": "workspace:*",
+    "yapyak": "workspace:*"
   },
   "peerDependencies": {
     "astro": ">=5"

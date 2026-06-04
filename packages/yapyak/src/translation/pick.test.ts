@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { resetLocale, setLocale } from '../locale';
 import { pick } from './pick';
 
-vi.mock('@yapyak/shared', () => ({
+vi.mock('yapyak/runtime', () => ({
   DEFAULT_LOCALE: 'en',
   DETECT_ACCEPT_LANGUAGE: false,
   LOCALES: ['en', 'sv'],

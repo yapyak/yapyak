@@ -1,6 +1,6 @@
 import type { MiddlewareHandler } from 'astro';
 
-import { getPendingResponseHeaders, withRequest } from '@yapyak/adapter';
+import { getPendingResponseHeaders, withRequest } from 'yapyak/adapter';
 
 export const onRequest: MiddlewareHandler = (context, next) =>
   withRequest(context.request, async () => {

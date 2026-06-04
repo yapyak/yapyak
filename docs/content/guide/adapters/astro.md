@@ -42,7 +42,7 @@ Astro renders `<html>` once per page request as static HTML, not through a react
 
 ```astro [src/layouts/Layout.astro]
 ---
-import { getLocale } from 'yapyak';
+import { getLocale } from 'yapyak/config';
 ---
 <html lang={getLocale()}>
   <head>
@@ -63,7 +63,7 @@ If a React/Vue/Svelte island calls `setLocale()` without triggering a navigation
 Enable `syncHtmlLang` to make yapyak update the attribute on every `setLocale()`:
 
 ```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
   persistence: 'cookie',
@@ -80,7 +80,7 @@ If you only switch locale via full navigations (e.g. `<a href="/sv/...">`), leav
 For SSR locale switching to work, enable cookie persistence:
 
 ```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
   persistence: 'cookie',

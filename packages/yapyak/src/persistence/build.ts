@@ -1,4 +1,4 @@
-import type { NormalizedPersistence } from '@yapyak/shared';
+import type { NormalizedPersistence } from '../config/internal';
 import type { Persistence } from './type';
 
 import { cookie } from './cookie';

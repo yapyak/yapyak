@@ -2,10 +2,10 @@ import type {
   ContextLevel,
   LocaleTranslations,
   Translator,
-} from '@yapyak/translator';
+} from 'yapyak/translator';
 
-import { createTranslator } from '@yapyak/translator';
-import { buildSystem, retryableFetch } from '@yapyak/translator/internal';
+import { createTranslator } from 'yapyak/translator';
+import { buildSystem, retryableFetch } from 'yapyak/translator/internal';
 
 /** Options for {@link ollama}. */
 export interface OllamaOptions {

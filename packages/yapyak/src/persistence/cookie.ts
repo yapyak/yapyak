@@ -1,4 +1,4 @@
-import type { Persistence } from '.';
+import type { Persistence } from './type';
 
 import { appendResponseHeader } from '../locale/response-header-writer';
 import { subscribeHistory } from './history';

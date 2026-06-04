@@ -26,7 +26,7 @@ bun add @yapyak/ollama
 Run translation locally — no API key, no vendor in your billing path, no data leaving your machine.
 
 ```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 import { ollama } from '@yapyak/ollama';
 
 export default defineConfig({
@@ -108,7 +108,7 @@ ollama({
 For development: local Ollama. For production builds: cloud (Anthropic/OpenAI). Branch on `NODE_ENV`:
 
 ```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 import { anthropic } from '@yapyak/anthropic';
 import { ollama } from '@yapyak/ollama';
 

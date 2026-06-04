@@ -26,7 +26,7 @@ bun add @yapyak/gemini
 Use Google's Gemini models as your translator.
 
 ```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 import { gemini } from '@yapyak/gemini';
 
 export default defineConfig({
