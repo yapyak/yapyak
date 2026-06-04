@@ -10,7 +10,7 @@ import { yapyak as yapyakVitePlugin } from '@yapyak/vite';
  *
  * @example Register in astro.config.ts
  * ```ts [astro.config.ts]
- * import { yapyak } from '@yapyak/astro';
+ * import { yapyak } from '@yapyak/astro/integration';
  * import { defineConfig } from 'astro/config';
  *
  * export default defineConfig({

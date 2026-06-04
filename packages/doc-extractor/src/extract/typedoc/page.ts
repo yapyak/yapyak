@@ -198,6 +198,72 @@ interface BuildModulePageOptions {
   packageSlug: string;
 }
 
+interface BuildPackageIndexPageOptions {
+  collectionName: string;
+  href: string;
+  label: string;
+  packageName: string;
+  packageSlug: string;
+  subpaths: ReadonlyArray<{
+    description: string;
+    href: string;
+    subpath: string;
+  }>;
+}
+
+export function buildTypedocPackageIndexPage(
+  options: BuildPackageIndexPageOptions,
+): Page {
+  const blocks: Block[] = [];
+
+  blocks.push({
+    kind: null,
+    module: options.packageName,
+    sourceHref: null,
+    type: 'eyebrow',
+  });
+
+  if (options.subpaths.length > 0) {
+    blocks.push(heading2('Subpaths'));
+    blocks.push(subpathsTable(options.subpaths));
+  }
+
+  return {
+    blocks,
+    description: '',
+    href: options.href,
+    meta: {},
+    title: options.label,
+  };
+}
+
+function subpathsTable(
+  subpaths: ReadonlyArray<{
+    description: string;
+    href: string;
+    subpath: string;
+  }>,
+): Block {
+  return {
+    body: subpaths.map((entry) => ({
+      children: [
+        bodyCell([
+          {
+            children: [{ type: 'inline-code', value: entry.subpath }],
+            href: entry.href,
+            kind: 'internal',
+            type: 'link',
+          },
+        ]),
+        bodyCell(markdownToInline(firstSentence(entry.description))),
+      ],
+      type: 'table-row',
+    })),
+    head: tableHeaderRow(['Subpath', 'Description']),
+    type: 'table',
+  };
+}
+
 export function buildModulePage(
   module: ReferenceModule,
   options: BuildModulePageOptions,

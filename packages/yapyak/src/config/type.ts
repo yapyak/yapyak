@@ -104,6 +104,12 @@ export interface YapyakConfig {
    */
   persistence?: Persistence;
   /**
+   * Whether to preserve existing translations when a `t()` call is renamed in place.
+   *
+   * @defaultValue `true` without a {@link Translator}, `false` with one
+   */
+  preserveTranslationsOnRename?: boolean;
+  /**
    * Processors for framework-specific file formats (`.vue`, `.svelte`, `.astro`, etc.).
    *
    * @remarks
@@ -112,12 +118,6 @@ export interface YapyakConfig {
    * @defaultValue `[]`
    */
   processors?: Processor[];
-  /**
-   * Whether to preserve existing translations when a `t()` call is renamed in place.
-   *
-   * @defaultValue `true` without a {@link Translator}, `false` with one
-   */
-  preserveTranslationsOnRename?: boolean;
   /**
    * Whether to keep `document.documentElement.lang` synced with the current locale.
    *

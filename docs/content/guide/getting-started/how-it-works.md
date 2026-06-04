@@ -45,16 +45,17 @@ export function SaveButton() {
 
 ## Files
 
-yapyak extracts messages from TypeScript, JSX, Vue, Svelte and Astro files.
+yapyak extracts messages from TypeScript and JSX out of the box. Framework-specific file formats (`.vue`, `.svelte`, `.astro`) are handled by [processors](/guide/getting-started/installation#register-framework-processors) registered in `yapyak.config.ts`.
 
-| File type                     | Parsed as         |
-| ----------------------------- | ----------------- |
-| `.ts`, `.tsx`, `.jsx`, `.mjs` | TypeScript or JSX |
-| `.vue`                        | Vue component     |
-| `.svelte`                     | Svelte component  |
-| `.astro`                      | Astro component   |
+| File type                     | Parsed by                             |
+| ----------------------------- | ------------------------------------- |
+| `.ts`, `.tsx`, `.jsx`, `.mjs` | Built-in (TypeScript or JSX)          |
+| `.vue`                        | `@yapyak/vue/processor`               |
+| `.svelte`                     | `@yapyak/svelte/processor`            |
+| `.astro`                      | `@yapyak/astro/processor`             |
+| Custom format                 | Your own via `createProcessor()`      |
 
-A message inside a template is read as part of that template, not as text in a file. This lets yapyak understand where the message appears and report invalid calls during development or build.
+A message inside a template is read as part of that template, not as text in a file. This lets yapyak understand where the message appears and report invalid calls during development or build. Processors define how each format's `<script>`/frontmatter and template expressions are split into TypeScript-parseable fragments.
 
 ## Save loop
 

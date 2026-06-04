@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
-
 import type { ContextLevel, Translator } from '../../translator';
+
+import { describe, expect, it } from 'vitest';
 
 import { createTranslator } from '../../translator';
 import { normalizeYapyakConfig } from './normalize';

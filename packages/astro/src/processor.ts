@@ -22,7 +22,7 @@ const requireFromHere = createRequire(import.meta.url);
 
 let cached: typeof AstroCompilerSync | undefined;
 
-export interface AstroProcessorOptions {}
+export type AstroProcessorOptions = {};
 
 /**
  * Creates an Astro processor for yapyak's compiler.

@@ -28,10 +28,14 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
   },
   { dir: 'vue', group: 'Frameworks', subpaths: ['./processor'] },
   { dir: 'svelte', group: 'Frameworks', subpaths: ['./processor'] },
+  {
+    dir: 'astro',
+    group: 'Frameworks',
+    subpaths: ['./integration', './processor'],
+  },
 
-  { dir: 'astro', group: 'Adapters', subpaths: ['./processor'] },
-  { dir: 'tanstack-start', group: 'Adapters' },
   { dir: 'sveltekit', group: 'Adapters' },
+  { dir: 'tanstack-start', group: 'Adapters' },
   { dir: 'react-router', group: 'Adapters' },
 
   { dir: 'anthropic', group: 'Translators' },

@@ -1,12 +1,12 @@
+import type { YapyakConfig } from '../type';
+import type { NormalizedYapyakConfig } from './type';
+
 import { createJiti } from 'jiti';
 
+import { normalizeYapyakConfig } from './normalize';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadEnvFile } from 'node:process';
-
-import type { YapyakConfig } from '../type';
-import { normalizeYapyakConfig } from './normalize';
-import type { NormalizedYapyakConfig } from './type';
 
 const CONFIG_FILES = [
   'yapyak.config.ts',

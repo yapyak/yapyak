@@ -12,7 +12,7 @@ const requireFromHere = createRequire(import.meta.url);
 
 let cached: typeof SvelteCompiler | undefined;
 
-export interface SvelteProcessorOptions {}
+export type SvelteProcessorOptions = {};
 
 /**
  * Creates a Svelte processor for yapyak's compiler.

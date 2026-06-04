@@ -26,7 +26,7 @@ bun add @yapyak/astro
 Add the integration to `astro.config.ts`.
 
 ```ts [astro.config.ts]
-import { yapyak } from '@yapyak/astro';
+import { yapyak } from '@yapyak/astro/integration';
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
@@ -34,7 +34,18 @@ export default defineConfig({
 });
 ```
 
-That's the entire wiring. The integration registers the build-time plugin and injects a per-request locale middleware that binds the incoming request — so `getLocale()` and `t()` resolve the right locale during rendering — and flushes any cookie written by a server-side `setLocale()` onto the response.
+Register the Astro processor in `yapyak.config.ts` so `.astro` files are scanned for `t()` calls:
+
+```ts [yapyak.config.ts]
+import { astro } from '@yapyak/astro/processor';
+import { defineConfig } from 'yapyak/config';
+
+export default defineConfig({
+  processors: [astro()],
+});
+```
+
+That's the entire wiring. The integration registers the build-time plugin and injects a per-request locale middleware that binds the incoming request — so `getLocale()` and `t()` resolve the right locale during rendering — and flushes any cookie written by a server-side `setLocale()` onto the response. The processor handles `.astro` frontmatter and template extraction.
 
 ## Set the page language
 
@@ -42,7 +53,7 @@ Astro renders `<html>` once per page request as static HTML, not through a react
 
 ```astro [src/layouts/Layout.astro]
 ---
-import { getLocale } from 'yapyak/config';
+import { getLocale } from 'yapyak';
 ---
 <html lang={getLocale()}>
   <head>

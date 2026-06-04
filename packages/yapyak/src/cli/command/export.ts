@@ -2,7 +2,6 @@ import type { ExtractedMessage, LocaleFile } from '../../compiler';
 import type { Config } from '../config';
 
 import { readLocaleFile, stringifyCanonical } from '../../compiler';
-
 import { buildReport } from '../report';
 import { color, symbol } from '../tui';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';

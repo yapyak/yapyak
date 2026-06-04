@@ -1,5 +1,5 @@
 import node from '@astrojs/node';
-import { yapyak } from '@yapyak/astro';
+import { yapyak } from '@yapyak/astro/integration';
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({

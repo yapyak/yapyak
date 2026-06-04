@@ -1,4 +1,3 @@
-export { createTranslator } from './create';
 export type {
   ContextLevel,
   CreateTranslatorOptions,
@@ -11,3 +10,5 @@ export type {
   TranslationExample,
   Translator,
 } from './type';
+
+export { createTranslator } from './create';

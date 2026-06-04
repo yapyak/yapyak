@@ -1,5 +1,3 @@
-export { createProcessor } from './create';
-export { offsetToOriginalPosition, rangeFromOffsets } from './offset';
 export type {
   CreateProcessorOptions,
   ElisionContext,
@@ -8,3 +6,6 @@ export type {
   Processor,
   Range,
 } from './type';
+
+export { createProcessor } from './create';
+export { offsetToOriginalPosition, rangeFromOffsets } from './offset';

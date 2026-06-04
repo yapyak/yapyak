@@ -1,6 +1,6 @@
+import type { NormalizedYapyakConfig } from '../config/internal';
 import type { Processor } from '../processor';
 import type { Translator } from '../translator';
-import type { NormalizedYapyakConfig } from '../config/internal';
 
 import { loadYapyakConfig } from '../config/internal';
 

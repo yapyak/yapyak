@@ -9,7 +9,6 @@ import {
   walkSourceFiles,
 } from '../compiler';
 import { createFilter } from '../config/internal';
-
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 

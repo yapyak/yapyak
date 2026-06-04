@@ -8,7 +8,11 @@ import type {
 
 import { extractMarkdoc } from '../extract/markdoc/extract.ts';
 import { extractTypedoc } from '../extract/typedoc/index.ts';
-import { buildModulePage, buildSymbolPage } from '../extract/typedoc/page.ts';
+import {
+  buildModulePage,
+  buildSymbolPage,
+  buildTypedocPackageIndexPage,
+} from '../extract/typedoc/page.ts';
 import { buildSymbolIndex } from '../extract/typedoc/symbol-index.ts';
 import { slugify } from '../slug.ts';
 import { encodeSymbolSegment } from '../symbol-path.ts';
@@ -203,6 +207,35 @@ async function buildTypedocCollection(
         label: moduleLabel,
         packageName,
         packageSlug,
+      });
+    }
+
+    const hasRootModule = refManifest.modules.some(
+      (m) => m.id === packageName,
+    );
+    if (!hasRootModule) {
+      const prefix = `${packageName}/`;
+      const topLevelSubModules = refManifest.modules
+        .filter(
+          (m) =>
+            m.id.startsWith(prefix) && !m.id.slice(prefix.length).includes('/'),
+        )
+        .sort((a, b) => a.id.localeCompare(b.id));
+      const subpaths = topLevelSubModules.map((m) => {
+        const tail = m.id.slice(prefix.length);
+        return {
+          description: m.description,
+          href: `/${collectionName}/${packageSlug}/${tail}`,
+          subpath: `./${tail}`,
+        };
+      });
+      pages[packageSlug] = buildTypedocPackageIndexPage({
+        collectionName,
+        href: `/${collectionName}/${packageSlug}`,
+        label: displayName,
+        packageName,
+        packageSlug,
+        subpaths,
       });
     }
 

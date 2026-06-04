@@ -1,6 +1,6 @@
-import picomatch from 'picomatch';
-
 import type { FilterPattern } from '../type';
+
+import picomatch from 'picomatch';
 
 export function createFilter(
   include: FilterPattern,

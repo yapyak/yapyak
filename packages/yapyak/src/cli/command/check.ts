@@ -7,7 +7,6 @@ import {
   validateIcuPairs,
   validateLocaleFile,
 } from '../../compiler';
-
 import { buildReport } from '../report';
 import { color, header, symbol } from '../tui';
 import { join } from 'node:path';

@@ -675,7 +675,12 @@ describe('transformFile', () => {
       const fileId = 'src/a.ts';
       const source =
         "import { t } from 'yapyak';\nexport const x = t('Hello');\n";
-      const extracted = extractFile({ fileId, locales: ['en'], processors, source });
+      const extracted = extractFile({
+        fileId,
+        locales: ['en'],
+        processors,
+        source,
+      });
       const result = transformFile({
         extracted,
         fileId,

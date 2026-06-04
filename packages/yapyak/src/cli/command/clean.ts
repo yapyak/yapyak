@@ -11,7 +11,6 @@ import {
   walkSourceFiles,
 } from '../../compiler';
 import { createFilter } from '../../config/internal';
-
 import { color, header, symbol } from '../tui';
 import { existsSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';

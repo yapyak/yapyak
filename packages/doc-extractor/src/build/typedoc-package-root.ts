@@ -58,7 +58,13 @@ export function buildTypedocPackageRoot(
         packageName,
         packageSlug,
       )
-    : [];
+    : topLevelSubpathChildren(
+        byId,
+        childrenById,
+        collectionName,
+        packageName,
+        packageSlug,
+      );
 
   return {
     children,
@@ -114,6 +120,38 @@ function moduleChildren(
     });
   }
   return nodes;
+}
+
+function topLevelSubpathChildren(
+  byId: Map<string, ReferenceModule>,
+  childrenById: Map<string, ReferenceModule[]>,
+  collectionName: string,
+  packageName: string,
+  packageSlug: string,
+): SidebarNode[] {
+  const prefix = `${packageName}/`;
+  const tops: ReferenceModule[] = [];
+  for (const module of byId.values()) {
+    if (!module.id.startsWith(prefix)) continue;
+    const tail = module.id.slice(prefix.length);
+    if (tail.includes('/')) continue;
+    tops.push(module);
+  }
+  tops.sort((a, b) => a.id.localeCompare(b.id));
+  return tops.map((child) => ({
+    children: moduleChildren(
+      child,
+      byId,
+      childrenById,
+      collectionName,
+      packageName,
+      packageSlug,
+    ),
+    collapsible: true,
+    href: `/${collectionName}/${packageSlug}/${child.id.slice(prefix.length)}`,
+    label: lastSegment(child.id),
+    type: 'group',
+  }));
 }
 
 function findParentId(id: string, byId: Map<string, ReferenceModule>) {

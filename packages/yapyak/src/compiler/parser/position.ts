@@ -1,5 +1,4 @@
 import type * as ts from 'typescript';
-
 import type { Fragment, Position } from '../../processor';
 
 import { offsetToOriginalPosition } from '../../processor';

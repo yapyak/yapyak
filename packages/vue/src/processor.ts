@@ -28,7 +28,7 @@ const requireFromHere = createRequire(import.meta.url);
 
 let cached: typeof VueSfc | undefined;
 
-export interface VueProcessorOptions {}
+export type VueProcessorOptions = {};
 
 /**
  * Creates a Vue processor for yapyak's compiler.

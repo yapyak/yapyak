@@ -1,4 +1,3 @@
-export { defineConfig } from './define';
 export type {
   CookiePersistence,
   FilterPattern,
@@ -7,3 +6,5 @@ export type {
   UrlPersistence,
   YapyakConfig,
 } from './type';
+
+export { defineConfig } from './define';

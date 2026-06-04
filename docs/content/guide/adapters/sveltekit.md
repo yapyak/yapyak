@@ -40,7 +40,18 @@ export { handle } from '@yapyak/sveltekit';
 </html>
 ```
 
-The hook binds each request's locale context and substitutes `%yapyak.lang%` with the resolved locale before HTML reaches the browser.
+Register the Svelte processor in `yapyak.config.ts` so `.svelte` files are scanned for `t()` calls:
+
+```ts [yapyak.config.ts]
+import { svelte } from '@yapyak/svelte/processor';
+import { defineConfig } from 'yapyak/config';
+
+export default defineConfig({
+  processors: [svelte()],
+});
+```
+
+The hook binds each request's locale context and substitutes `%yapyak.lang%` with the resolved locale before HTML reaches the browser. The processor handles `<script>` blocks and template expressions in `.svelte` files.
 
 ## Set the page language on client-side switches
 
