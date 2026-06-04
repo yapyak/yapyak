@@ -1,9 +1,9 @@
 import type { SourceMap } from 'magic-string';
+import type { Processor } from '../../../processor';
 import type { CallSite } from '../call';
 import type { Diagnostic } from '../diagnostic';
 import type { Fragment } from '../fragment';
 import type { Placeholder } from '../placeholder';
-import type { ProcessorKind } from '../processor/kind';
 import type { Range } from '../range';
 import type { ExtractFileResult } from './extract';
 
@@ -15,7 +15,7 @@ export interface TransformFileRequest {
   extracted: ExtractFileResult;
   fileId: string;
   locales: readonly string[];
-  processor?: ProcessorKind;
+  processors?: readonly Processor[];
   source: string;
   translations: Record<string, Record<string, string>>;
 }
@@ -30,7 +30,7 @@ import { parseArguments } from '../argument';
 import { findMatchingBrace } from '../matching-brace';
 import { toMessageId } from '../message-id';
 import { parsePlaceholders } from '../placeholder';
-import { getProcessor, resolveProcessorKind } from '../processor';
+import { dispatchProcessor } from '../processor';
 import { getScriptKind } from '../script-kind';
 
 const PICK_EXPORT = 'pick';
@@ -52,9 +52,11 @@ export function transformFile(
       }),
     };
   }
-  const processorKind =
-    request.processor ?? resolveProcessorKind(request.fileId, request.source);
-  const processor = getProcessor(processorKind);
+  const processor = dispatchProcessor(
+    request.fileId,
+    request.source,
+    request.processors ?? [],
+  );
   const fragments = processor.parseFragments(request.source);
   const isSingleLocale = request.locales.length === 1;
   const magicString = new MagicString(request.source);

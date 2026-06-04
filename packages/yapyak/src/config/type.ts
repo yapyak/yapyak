@@ -1,3 +1,4 @@
+import type { Processor } from '../processor';
 import type { Translator } from '../translator';
 
 /** The cookie persistence configuration. */
@@ -102,6 +103,15 @@ export interface YapyakConfig {
    * @defaultValue `null`
    */
   persistence?: Persistence;
+  /**
+   * Processors for framework-specific file formats (`.vue`, `.svelte`, `.astro`, etc.).
+   *
+   * @remarks
+   * Each processor handles a set of file extensions. Vanilla `.ts`/`.tsx`/`.js`/`.jsx` are handled by the built-in processor without registration. Register the shipped processor packages (`@yapyak/vue/processor`, `@yapyak/svelte/processor`, `@yapyak/astro/processor`) or implement your own with {@link Processor}.
+   *
+   * @defaultValue `[]`
+   */
+  processors?: Processor[];
   /**
    * Whether to preserve existing translations when a `t()` call is renamed in place.
    *

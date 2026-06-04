@@ -1,4 +1,5 @@
 import type { ExtractedMessage, LocaleFile } from '../../compiler';
+import type { Processor } from '../../processor';
 import type { Config } from '../config';
 
 import {
@@ -39,7 +40,11 @@ export function clean(options: CleanOptions): number {
 
   process.stdout.write(header('Locale cleanup'));
 
-  const expected = buildExpected(options.projectRoot, locales);
+  const expected = buildExpected(
+    options.projectRoot,
+    locales,
+    options.config.processors,
+  );
   const orphanSources: OrphanSource[] = [];
   const filesToWrite: Array<{ next: LocaleFile; path: string }> = [];
 
@@ -106,6 +111,7 @@ export function clean(options: CleanOptions): number {
 function buildExpected(
   projectRoot: string,
   locales: string[],
+  processors: readonly Processor[],
 ): Record<string, Set<string>> {
   const filter = createFilter(DEFAULT_INCLUDE, DEFAULT_EXCLUDE);
   const sourceFiles = walkSourceFiles({ filter, projectRoot });
@@ -114,6 +120,7 @@ function buildExpected(
     const result = extractFile({
       fileId: file.fileId,
       locales,
+      processors,
       source: file.code,
     });
     messages.push(...result.messages);

@@ -155,6 +155,23 @@ To translate automatically on save, install one of yapyak's translators:
 
 Each ships first-class. Same shared config interface across providers. See [Translators overview](/guide/translators) for tradeoffs.
 
+## Register framework processors
+
+If your project has `.vue`, `.svelte`, or `.astro` files, register the matching processor in `yapyak.config.ts`. Plain `.ts`/`.tsx`/`.js`/`.jsx` is handled by the built-in vanilla processor — no registration needed.
+
+```ts [yapyak.config.ts]
+import { astro } from '@yapyak/astro/processor';
+import { svelte } from '@yapyak/svelte/processor';
+import { vue } from '@yapyak/vue/processor';
+import { defineConfig } from 'yapyak/config';
+
+export default defineConfig({
+  processors: [vue(), svelte(), astro()],
+});
+```
+
+Register only the ones your project uses. The processor subpath lives in the framework binding package — no extra install. Build your own with [`createProcessor`](/reference/yapyak/processor/createProcessor).
+
 ## Pick a framework adapter
 
 For server-rendered apps. Skip if your app never renders on a server.

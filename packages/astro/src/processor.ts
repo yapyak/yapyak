@@ -10,11 +10,10 @@ import type {
   Node,
   RootNode,
 } from '@astrojs/compiler/types';
-import type MagicString from 'magic-string';
-import type { Fragment } from '../fragment';
-import type { Processor } from './kind';
+import type { Fragment, Processor } from 'yapyak/processor';
 
-import { rangeFromOffsets } from '../range';
+import { createProcessor, rangeFromOffsets } from 'yapyak/processor';
+
 import { createRequire } from 'node:module';
 
 const FRONTMATTER_OPEN_RX = /^---\r?\n/;
@@ -23,29 +22,49 @@ const requireFromHere = createRequire(import.meta.url);
 
 let cached: typeof AstroCompilerSync | undefined;
 
-export const astroProcessor: Processor = {
-  applyImport(
-    magicString: MagicString,
-    source: string,
-    importStatement: string,
-  ): void {
-    const match = FRONTMATTER_OPEN_RX.exec(source);
-    if (match !== null) {
-      const insertAt = match.index + match[0].length;
-      magicString.appendRight(insertAt, `${importStatement}\n`);
-      return;
-    }
-    magicString.prepend(`---\n${importStatement}\n---\n`);
-  },
+export interface AstroProcessorOptions {}
 
-  parseFragments(source: string): Fragment[] {
-    const compiler = loadCompiler();
-    const { ast } = compiler.parse(source, undefined);
-    const fragments: Fragment[] = [];
-    walkNode(ast, source, fragments);
-    return fragments;
-  },
-};
+/**
+ * Creates an Astro processor for yapyak's compiler.
+ *
+ * @remarks
+ * Handles `.astro` components. Extracts frontmatter and template expressions for yapyak's `t()` scanning.
+ *
+ * @param options - The processor options.
+ *
+ * @example Register in yapyak.config.ts
+ * ```ts [yapyak.config.ts]
+ * import { defineConfig } from 'yapyak/config';
+ * import { astro } from '@yapyak/astro/processor';
+ *
+ * export default defineConfig({
+ *   processors: [astro()],
+ * });
+ * ```
+ */
+export function astro(options: AstroProcessorOptions = {}): Processor {
+  void options;
+  return createProcessor({
+    applyImport(magicString, source, importStatement) {
+      const match = FRONTMATTER_OPEN_RX.exec(source);
+      if (match !== null) {
+        const insertAt = match.index + match[0].length;
+        magicString.appendRight(insertAt, `${importStatement}\n`);
+        return;
+      }
+      magicString.prepend(`---\n${importStatement}\n---\n`);
+    },
+    extensions: ['.astro'],
+    id: 'astro',
+    parseFragments(source) {
+      const compiler = loadCompiler();
+      const { ast } = compiler.parse(source, undefined);
+      const fragments: Fragment[] = [];
+      walkNode(ast, source, fragments);
+      return fragments;
+    },
+  });
+}
 
 function loadCompiler(): typeof AstroCompilerSync {
   if (cached) {

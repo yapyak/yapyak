@@ -11,6 +11,10 @@
     "./internal": {
       "types": "./dist/internal.d.ts",
       "default": "./dist/internal.js"
+    },
+    "./processor": {
+      "types": "./dist/processor.d.ts",
+      "default": "./dist/processor.js"
     }
   },
   "files": [
@@ -26,9 +30,17 @@
     "yapyak": "workspace:*"
   },
   "peerDependencies": {
+    "@astrojs/compiler": ">=2.0.0",
     "astro": ">=5"
   },
+  "peerDependenciesMeta": {
+    "@astrojs/compiler": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@astrojs/compiler": "catalog:",
+    "@types/node": "catalog:",
     "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "astro": "catalog:",

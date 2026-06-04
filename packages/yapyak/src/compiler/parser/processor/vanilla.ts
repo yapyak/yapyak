@@ -1,18 +1,15 @@
-import type MagicString from 'magic-string';
-import type { Fragment } from '../fragment';
-import type { Processor } from './kind';
+import type { Processor } from '../../../processor';
 
-export const vanillaProcessor: Processor = {
-  applyImport(
-    magicString: MagicString,
-    source: string,
-    importStatement: string,
-  ): void {
+import { createProcessor } from '../../../processor';
+
+export const vanillaProcessor: Processor = createProcessor({
+  applyImport(magicString, source, importStatement) {
     void source;
     magicString.prepend(`${importStatement}\n`);
   },
-
-  parseFragments(source: string): Fragment[] {
+  extensions: ['.ts', '.tsx', '.js', '.jsx', '.mts', '.mjs', '.cts', '.cjs'],
+  id: 'vanilla',
+  parseFragments(source) {
     return [
       {
         code: source,
@@ -22,4 +19,4 @@ export const vanillaProcessor: Processor = {
       },
     ];
   },
-};
+});

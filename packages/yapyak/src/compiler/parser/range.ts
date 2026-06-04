@@ -1,14 +1,12 @@
 import type * as ts from 'typescript';
-import type { Fragment } from './fragment';
-import type { Position } from './position';
 
-import { offsetToOriginalPosition } from './offset';
+import type { Fragment, Range } from '../../processor';
+
+import { rangeFromOffsets } from '../../processor';
 import { remapPosition, toPosition } from './position';
 
-export interface Range {
-  end: Position;
-  start: Position;
-}
+export type { Range };
+export { rangeFromOffsets };
 
 export function toRange(node: ts.Node, sourceFile: ts.SourceFile): Range {
   return {
@@ -28,16 +26,5 @@ export function remapRange(
   return {
     end: remapPosition(range.end, fragment, originalSource),
     start: remapPosition(range.start, fragment, originalSource),
-  };
-}
-
-export function rangeFromOffsets(
-  source: string,
-  startOffset: number,
-  endOffset: number,
-): Range {
-  return {
-    end: offsetToOriginalPosition(source, endOffset),
-    start: offsetToOriginalPosition(source, startOffset),
   };
 }

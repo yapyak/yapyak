@@ -24,6 +24,7 @@ export function normalizeYapyakConfig(
     persistence: normalizePersistence(config.persistence),
     preserveTranslationsOnRename:
       config.preserveTranslationsOnRename ?? !config.translator,
+    processors: config.processors ?? [],
     syncHtmlLang: config.syncHtmlLang ?? false,
     translator: config.translator,
   };

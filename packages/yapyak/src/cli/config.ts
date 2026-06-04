@@ -1,3 +1,4 @@
+import type { Processor } from '../processor';
 import type { Translator } from '../translator';
 import type { NormalizedYapyakConfig } from '../config/internal';
 
@@ -11,6 +12,8 @@ export interface Config {
   examples: number;
   /** The directory for locale JSON files, relative to the project root. */
   localesDir: string;
+  /** Processors registered for framework-specific file formats. */
+  processors: Processor[];
   /** The translator configured in `yapyak.config.ts`, or `undefined` if none. */
   translator: Translator | undefined;
 }
@@ -37,6 +40,7 @@ function toCliConfig(config: NormalizedYapyakConfig): Config {
     defaultLocale: config.defaultLocale,
     examples: config.examples,
     localesDir: config.localesDir,
+    processors: config.processors,
     translator: config.translator,
   };
 }

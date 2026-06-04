@@ -10,7 +10,6 @@ export type {
 } from './file/transform';
 export type { ElisionContext, Fragment } from './fragment';
 export type { Position } from './position';
-export type { Processor, ProcessorKind } from './processor/kind';
 export type { Range } from './range';
 
 export {
@@ -46,11 +45,4 @@ export {
   type PlaceholderKind,
   parsePlaceholders,
 } from './placeholder';
-export {
-  astroProcessor,
-  getProcessor,
-  resolveProcessorKind,
-  svelteProcessor,
-  vanillaProcessor,
-  vueProcessor,
-} from './processor';
+export { dispatchProcessor, vanillaProcessor } from './processor';

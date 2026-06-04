@@ -1,4 +1,5 @@
 import type { Diagnostic, ExtractedMessage } from '../compiler';
+import type { Processor } from '../processor';
 
 import {
   DEFAULT_EXCLUDE,
@@ -36,6 +37,7 @@ interface Report {
 interface BuildReportOptions {
   defaultLocale?: string;
   localesDir?: string;
+  processors?: readonly Processor[];
   projectRoot: string;
 }
 
@@ -62,6 +64,7 @@ export function buildReport(options: BuildReportOptions): Report {
     const result = extractFile({
       fileId: file.fileId,
       locales,
+      processors: options.processors,
       source: file.code,
     });
     messages.push(...result.messages);

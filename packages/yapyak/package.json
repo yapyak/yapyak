@@ -28,6 +28,10 @@
       "types": "./dist/internal.d.ts",
       "default": "./dist/internal.js"
     },
+    "./processor": {
+      "types": "./dist/processor/index.d.ts",
+      "default": "./dist/processor/index.js"
+    },
     "./runtime": {
       "types": "./dist/runtime.d.ts",
       "default": "./dist/runtime.js"
@@ -60,35 +64,16 @@
     "picomatch": "catalog:"
   },
   "peerDependencies": {
-    "@astrojs/compiler": ">=2.0.0",
-    "@vue/compiler-core": ">=3.0.0",
-    "@vue/compiler-sfc": ">=3.0.0",
-    "svelte": ">=5.0.0",
     "typescript": ">=5.0.0"
   },
-  "peerDependenciesMeta": {
-    "@astrojs/compiler": {
-      "optional": true
-    },
-    "@vue/compiler-core": {
-      "optional": true
-    },
-    "@vue/compiler-sfc": {
-      "optional": true
-    },
-    "svelte": {
-      "optional": true
-    }
-  },
   "devDependencies": {
-    "@astrojs/compiler": "catalog:",
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:",
-    "@vue/compiler-core": "catalog:",
-    "@vue/compiler-sfc": "catalog:",
+    "@yapyak/astro": "workspace:*",
+    "@yapyak/svelte": "workspace:*",
     "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
-    "svelte": "catalog:",
+    "@yapyak/vue": "workspace:*",
     "tsup": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",

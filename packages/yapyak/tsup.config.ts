@@ -10,6 +10,7 @@ export default defineConfig({
     'src/compiler/index.ts',
     'src/config/index.ts',
     'src/config/internal/index.ts',
+    'src/processor/index.ts',
     'src/translator/index.ts',
     'src/translator/internal/index.ts',
   ],

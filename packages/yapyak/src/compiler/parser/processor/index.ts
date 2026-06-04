@@ -1,5 +1,2 @@
-export { astroProcessor } from './astro';
-export { getProcessor, resolveProcessorKind } from './kind';
-export { svelteProcessor } from './svelte';
+export { dispatchProcessor } from './dispatch';
 export { vanillaProcessor } from './vanilla';
-export { vueProcessor } from './vue';

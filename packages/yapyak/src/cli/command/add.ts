@@ -79,6 +79,7 @@ export async function add(options: AddOptions): Promise<number> {
   const report = buildReport({
     defaultLocale: config.defaultLocale,
     localesDir: config.localesDir,
+    processors: config.processors,
     projectRoot,
   });
 

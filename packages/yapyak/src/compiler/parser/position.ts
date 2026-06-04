@@ -1,13 +1,10 @@
 import type * as ts from 'typescript';
-import type { Fragment } from './fragment';
 
-import { offsetToOriginalPosition } from './offset';
+import type { Fragment, Position } from '../../processor';
 
-export interface Position {
-  column: number;
-  line: number;
-  offset: number;
-}
+import { offsetToOriginalPosition } from '../../processor';
+
+export type { Position };
 
 export function toPosition(
   sourceFile: ts.SourceFile,

@@ -1,5 +1,9 @@
+import type { Processor } from '../../../processor';
 import type { ExtractFileResult } from './extract';
 
+import { astro } from '@yapyak/astro/processor';
+import { svelte } from '@yapyak/svelte/processor';
+import { vue } from '@yapyak/vue/processor';
 import { describe, expect, it } from 'vitest';
 
 import { extractFile } from './extract';
@@ -7,6 +11,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const ROOT = join(import.meta.dirname, '..', 'fixture');
+const processors: Processor[] = [vue(), svelte(), astro()];
 
 function extractFixture(
   category: string,
@@ -14,7 +19,7 @@ function extractFixture(
   locales: readonly string[] = ['en'],
 ): ExtractFileResult {
   const source = readFileSync(join(ROOT, category, name), 'utf-8');
-  return extractFile({ fileId: name, locales, source });
+  return extractFile({ fileId: name, locales, processors, source });
 }
 
 describe('extractFile', () => {
@@ -112,6 +117,7 @@ describe('extractFile', () => {
       const result = extractFile({
         fileId: 'src/a.vue',
         locales: ['en'],
+        processors,
         source,
       });
       expect(result.messages).toHaveLength(1);
@@ -132,6 +138,7 @@ describe('extractFile', () => {
       const result = extractFile({
         fileId: 'src/a.vue',
         locales: ['en'],
+        processors,
         source,
       });
       const sources = result.messages.map((m) => m.source).sort();
@@ -151,6 +158,7 @@ describe('extractFile', () => {
       const result = extractFile({
         fileId: 'src/a.vue',
         locales: ['en'],
+        processors,
         source,
       });
       const templateMessages = result.messages.filter(
@@ -171,6 +179,7 @@ describe('extractFile', () => {
       const result = extractFile({
         fileId: 'src/a.vue',
         locales: ['en'],
+        processors,
         source,
       });
       expect(result.messages).toHaveLength(1);
@@ -190,6 +199,7 @@ describe('extractFile', () => {
       const result = extractFile({
         fileId: 'src/a.vue',
         locales: ['en'],
+        processors,
         source,
       });
       expect(result.messages).toHaveLength(1);
@@ -205,6 +215,7 @@ describe('extractFile', () => {
       const result = extractFile({
         fileId: 'src/a.vue',
         locales: ['en'],
+        processors,
         source,
       });
       expect(result.messages).toHaveLength(0);

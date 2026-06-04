@@ -10,11 +10,10 @@ import type {
 } from '@vue/compiler-core';
 import type * as VueSfc from '@vue/compiler-sfc';
 import type { SFCScriptBlock } from '@vue/compiler-sfc';
-import type MagicString from 'magic-string';
-import type { Fragment } from '../fragment';
-import type { Processor } from './kind';
+import type { Fragment, Processor } from 'yapyak/processor';
 
-import { rangeFromOffsets } from '../range';
+import { createProcessor, rangeFromOffsets } from 'yapyak/processor';
+
 import { createRequire } from 'node:module';
 
 const SCRIPT_SETUP_RX = /<script\s+setup[^>]*>/;
@@ -29,44 +28,64 @@ const requireFromHere = createRequire(import.meta.url);
 
 let cached: typeof VueSfc | undefined;
 
-export const vueProcessor: Processor = {
-  applyImport(
-    magicString: MagicString,
-    source: string,
-    importStatement: string,
-  ): void {
-    const setupMatch = SCRIPT_SETUP_RX.exec(source);
-    if (setupMatch !== null) {
-      const insertAt = setupMatch.index + setupMatch[0].length;
-      magicString.appendRight(insertAt, `\n${importStatement}`);
-      return;
-    }
-    const scriptMatch = SCRIPT_RX.exec(source);
-    if (scriptMatch !== null) {
-      const insertAt = scriptMatch.index + scriptMatch[0].length;
-      magicString.appendRight(insertAt, `\n${importStatement}`);
-      return;
-    }
-    magicString.prepend(`<script setup>\n${importStatement}\n</script>\n`);
-  },
+export interface VueProcessorOptions {}
 
-  parseFragments(source: string): Fragment[] {
-    const compiler = loadCompiler();
-    const { descriptor } = compiler.parse(source);
-    const fragments: Fragment[] = [];
+/**
+ * Creates a Vue processor for yapyak's compiler.
+ *
+ * @remarks
+ * Handles `.vue` single-file components. Extracts `<script>`/`<script setup>` blocks and template expressions for yapyak's `t()` scanning.
+ *
+ * @param options - The processor options.
+ *
+ * @example Register in yapyak.config.ts
+ * ```ts [yapyak.config.ts]
+ * import { defineConfig } from 'yapyak/config';
+ * import { vue } from '@yapyak/vue/processor';
+ *
+ * export default defineConfig({
+ *   processors: [vue()],
+ * });
+ * ```
+ */
+export function vue(options: VueProcessorOptions = {}): Processor {
+  void options;
+  return createProcessor({
+    applyImport(magicString, source, importStatement) {
+      const setupMatch = SCRIPT_SETUP_RX.exec(source);
+      if (setupMatch !== null) {
+        const insertAt = setupMatch.index + setupMatch[0].length;
+        magicString.appendRight(insertAt, `\n${importStatement}`);
+        return;
+      }
+      const scriptMatch = SCRIPT_RX.exec(source);
+      if (scriptMatch !== null) {
+        const insertAt = scriptMatch.index + scriptMatch[0].length;
+        magicString.appendRight(insertAt, `\n${importStatement}`);
+        return;
+      }
+      magicString.prepend(`<script setup>\n${importStatement}\n</script>\n`);
+    },
+    extensions: ['.vue'],
+    id: 'vue',
+    parseFragments(source) {
+      const compiler = loadCompiler();
+      const { descriptor } = compiler.parse(source);
+      const fragments: Fragment[] = [];
 
-    if (descriptor.script !== null) {
-      fragments.push(toScriptFragment(descriptor.script));
-    }
-    if (descriptor.scriptSetup !== null) {
-      fragments.push(toScriptFragment(descriptor.scriptSetup));
-    }
-    if (descriptor.template !== null && descriptor.template.ast) {
-      collectTemplateExpressions(descriptor.template.ast, source, fragments);
-    }
-    return fragments;
-  },
-};
+      if (descriptor.script !== null) {
+        fragments.push(toScriptFragment(descriptor.script));
+      }
+      if (descriptor.scriptSetup !== null) {
+        fragments.push(toScriptFragment(descriptor.scriptSetup));
+      }
+      if (descriptor.template !== null && descriptor.template.ast) {
+        collectTemplateExpressions(descriptor.template.ast, source, fragments);
+      }
+      return fragments;
+    },
+  });
+}
 
 function loadCompiler(): typeof VueSfc {
   if (cached) {

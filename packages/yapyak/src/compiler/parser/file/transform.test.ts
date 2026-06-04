@@ -1,10 +1,16 @@
+import type { Processor } from '../../../processor';
 import type { TransformFileRequest } from './transform';
 
+import { astro } from '@yapyak/astro/processor';
+import { svelte } from '@yapyak/svelte/processor';
+import { vue } from '@yapyak/vue/processor';
 import { describe, expect, it } from 'vitest';
 
 import { extractFile } from './extract';
 import { transformFile } from './transform';
 import { createHash } from 'node:crypto';
+
+const processors: Processor[] = [vue(), svelte(), astro()];
 
 function runTransform(input: {
   source: string;
@@ -16,12 +22,14 @@ function runTransform(input: {
   const extracted = extractFile({
     fileId,
     locales: input.locales,
+    processors,
     source: input.source,
   });
   const request: TransformFileRequest = {
     extracted,
     fileId,
     locales: input.locales,
+    processors,
     source: input.source,
     translations: input.translations ?? {},
   };
@@ -347,12 +355,14 @@ describe('transformFile', () => {
       const extracted = extractFile({
         fileId,
         locales: input.locales,
+        processors,
         source: input.source,
       });
       const result = transformFile({
         extracted,
         fileId,
         locales: input.locales,
+        processors,
         source: input.source,
         translations: input.translations ?? {},
       });
@@ -465,7 +475,7 @@ describe('transformFile', () => {
       locales: readonly string[],
     ): string {
       const fileId = 'src/a.vue';
-      const extracted = extractFile({ fileId, locales, source });
+      const extracted = extractFile({ fileId, locales, processors, source });
       return transformFile({
         extracted,
         fileId,
@@ -480,7 +490,7 @@ describe('transformFile', () => {
       locales: readonly string[],
     ): string {
       const fileId = 'src/a.svelte';
-      const extracted = extractFile({ fileId, locales, source });
+      const extracted = extractFile({ fileId, locales, processors, source });
       return transformFile({
         extracted,
         fileId,
@@ -495,7 +505,7 @@ describe('transformFile', () => {
       locales: readonly string[],
     ): string {
       const fileId = 'src/a.astro';
-      const extracted = extractFile({ fileId, locales, source });
+      const extracted = extractFile({ fileId, locales, processors, source });
       return transformFile({
         extracted,
         fileId,
@@ -665,7 +675,7 @@ describe('transformFile', () => {
       const fileId = 'src/a.ts';
       const source =
         "import { t } from 'yapyak';\nexport const x = t('Hello');\n";
-      const extracted = extractFile({ fileId, locales: ['en'], source });
+      const extracted = extractFile({ fileId, locales: ['en'], processors, source });
       const result = transformFile({
         extracted,
         fileId,

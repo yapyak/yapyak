@@ -187,11 +187,13 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
   function scanAllSources(): void {
     const files = walkSourceFiles({ filter, projectRoot });
     const { locales } = discover();
+    const processors = getNormalized().processors;
     messagesByFile.clear();
     for (const file of files) {
       const result = extractFile({
         fileId: file.fileId,
         locales,
+        processors,
         source: file.code,
       });
       logErrors(result, error);
@@ -386,7 +388,12 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
             messagesByFile.delete(fileId);
             continue;
           }
-          const result = extractFile({ fileId, locales, source: code });
+          const result = extractFile({
+            fileId,
+            locales,
+            processors: getNormalized().processors,
+            source: code,
+          });
           logErrors(result, error);
           if (result.messages.length > 0) {
             messagesByFile.set(fileId, result.messages);
@@ -523,7 +530,12 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       const fileId = toFileId(projectRoot, ctx.file);
       const code = await ctx.read();
       const { defaultLocale, locales } = discover();
-      const result = extractFile({ fileId, locales, source: code });
+      const result = extractFile({
+        fileId,
+        locales,
+        processors: getNormalized().processors,
+        source: code,
+      });
       logErrors(result, error);
       const before = messagesByFile.get(fileId) ?? [];
       const after = result.messages;
@@ -583,7 +595,13 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       }
       const fileId = toFileId(projectRoot, id);
       const { locales } = discover();
-      const extracted = extractFile({ fileId, locales, source: code });
+      const processors = getNormalized().processors;
+      const extracted = extractFile({
+        fileId,
+        locales,
+        processors,
+        source: code,
+      });
       logErrors(extracted, error);
       if (extracted.callSites.length === 0) {
         return null;
@@ -599,6 +617,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         extracted,
         fileId,
         locales,
+        processors,
         source: code,
         translations,
       });

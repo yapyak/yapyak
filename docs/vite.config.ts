@@ -17,16 +17,19 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
   {
     collapsible: true,
     dir: 'yapyak',
-    subpaths: ['./adapter', './config', './translator'],
+    subpaths: ['./adapter', './config', './processor', './translator'],
   },
 
   { dir: 'vite', group: 'Bundlers' },
 
-  { dir: 'react', group: 'Frameworks' },
-  { dir: 'vue', group: 'Frameworks' },
-  { dir: 'svelte', group: 'Frameworks' },
+  {
+    dir: 'react',
+    group: 'Frameworks',
+  },
+  { dir: 'vue', group: 'Frameworks', subpaths: ['./processor'] },
+  { dir: 'svelte', group: 'Frameworks', subpaths: ['./processor'] },
 
-  { dir: 'astro', group: 'Adapters' },
+  { dir: 'astro', group: 'Adapters', subpaths: ['./processor'] },
   { dir: 'tanstack-start', group: 'Adapters' },
   { dir: 'sveltekit', group: 'Adapters' },
   { dir: 'react-router', group: 'Adapters' },

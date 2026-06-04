@@ -13,6 +13,7 @@ export function status(options: StatusOptions): number {
   const report = buildReport({
     defaultLocale: options.config.defaultLocale,
     localesDir: options.config.localesDir,
+    processors: options.config.processors,
     projectRoot: options.projectRoot,
   });
 

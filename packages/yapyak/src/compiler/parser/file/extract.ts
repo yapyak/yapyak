@@ -1,10 +1,10 @@
+import type { Processor } from '../../../processor';
 import type { Binding, Scope } from '../binding';
 import type { CallSite } from '../call';
 import type { CallSiteContext } from '../call-site-context';
 import type { Diagnostic } from '../diagnostic';
 import type { ElisionContext, Fragment } from '../fragment';
 import type { Placeholder } from '../placeholder';
-import type { ProcessorKind } from '../processor/kind';
 import type { Range } from '../range';
 
 import * as ts from 'typescript';
@@ -15,7 +15,7 @@ import { discoverCalls } from '../call';
 import { resolveCallSiteContext } from '../call-site-context';
 import { toMessageId } from '../message-id';
 import { parsePlaceholders } from '../placeholder';
-import { getProcessor, resolveProcessorKind } from '../processor';
+import { dispatchProcessor } from '../processor';
 import { remapRange, toRange } from '../range';
 import { getScriptKind } from '../script-kind';
 
@@ -37,7 +37,7 @@ export interface ExtractedMessage {
 export interface ExtractFileRequest {
   fileId: string;
   locales: readonly string[];
-  processor?: ProcessorKind;
+  processors?: readonly Processor[];
   source: string;
 }
 
@@ -48,9 +48,11 @@ export interface ExtractFileResult {
 }
 
 export function extractFile(request: ExtractFileRequest): ExtractFileResult {
-  const processorKind =
-    request.processor ?? resolveProcessorKind(request.fileId, request.source);
-  const processor = getProcessor(processorKind);
+  const processor = dispatchProcessor(
+    request.fileId,
+    request.source,
+    request.processors ?? [],
+  );
   const fragments = processor.parseFragments(request.source);
 
   const diagnostics: Diagnostic[] = [];

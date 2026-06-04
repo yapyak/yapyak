@@ -1,4 +1,4 @@
-import type { Position } from './position';
+import type { Position, Range } from './type';
 
 export function offsetToOriginalPosition(
   source: string,
@@ -15,4 +15,15 @@ export function offsetToOriginalPosition(
     column += 1;
   }
   return { column, line, offset };
+}
+
+export function rangeFromOffsets(
+  source: string,
+  startOffset: number,
+  endOffset: number,
+): Range {
+  return {
+    end: offsetToOriginalPosition(source, endOffset),
+    start: offsetToOriginalPosition(source, startOffset),
+  };
 }

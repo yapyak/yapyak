@@ -1,10 +1,9 @@
-import type MagicString from 'magic-string';
 import type * as SvelteCompiler from 'svelte/compiler';
 import type { AST } from 'svelte/compiler';
-import type { Fragment } from '../fragment';
-import type { Processor } from './kind';
+import type { Fragment, Processor } from 'yapyak/processor';
 
-import { rangeFromOffsets } from '../range';
+import { createProcessor, rangeFromOffsets } from 'yapyak/processor';
+
 import { createRequire } from 'node:module';
 
 const SCRIPT_RX = /<script(?:\s+[^>]*)?>/;
@@ -13,38 +12,58 @@ const requireFromHere = createRequire(import.meta.url);
 
 let cached: typeof SvelteCompiler | undefined;
 
-export const svelteProcessor: Processor = {
-  applyImport(
-    magicString: MagicString,
-    source: string,
-    importStatement: string,
-  ): void {
-    const match = SCRIPT_RX.exec(source);
-    if (match !== null) {
-      const insertAt = match.index + match[0].length;
-      magicString.appendRight(insertAt, `\n${importStatement}`);
-      return;
-    }
-    magicString.prepend(`<script>\n${importStatement}\n</script>\n`);
-  },
+export interface SvelteProcessorOptions {}
 
-  parseFragments(source: string): Fragment[] {
-    const compiler = loadCompiler();
-    const ast = compiler.parse(source, { modern: true });
-    const fragments: Fragment[] = [];
+/**
+ * Creates a Svelte processor for yapyak's compiler.
+ *
+ * @remarks
+ * Handles `.svelte` components. Extracts `<script>` blocks and template expressions for yapyak's `t()` scanning.
+ *
+ * @param options - The processor options.
+ *
+ * @example Register in yapyak.config.ts
+ * ```ts [yapyak.config.ts]
+ * import { defineConfig } from 'yapyak/config';
+ * import { svelte } from '@yapyak/svelte/processor';
+ *
+ * export default defineConfig({
+ *   processors: [svelte()],
+ * });
+ * ```
+ */
+export function svelte(options: SvelteProcessorOptions = {}): Processor {
+  void options;
+  return createProcessor({
+    applyImport(magicString, source, importStatement) {
+      const match = SCRIPT_RX.exec(source);
+      if (match !== null) {
+        const insertAt = match.index + match[0].length;
+        magicString.appendRight(insertAt, `\n${importStatement}`);
+        return;
+      }
+      magicString.prepend(`<script>\n${importStatement}\n</script>\n`);
+    },
+    extensions: ['.svelte'],
+    id: 'svelte',
+    parseFragments(source) {
+      const compiler = loadCompiler();
+      const ast = compiler.parse(source, { modern: true });
+      const fragments: Fragment[] = [];
 
-    if (ast.instance != null) {
-      pushScriptFragment(ast.instance, source, fragments);
-    }
-    if (ast.module != null) {
-      pushScriptFragment(ast.module, source, fragments);
-    }
-    if (ast.fragment != null) {
-      collectFromFragment(ast.fragment, source, fragments);
-    }
-    return fragments;
-  },
-};
+      if (ast.instance != null) {
+        pushScriptFragment(ast.instance, source, fragments);
+      }
+      if (ast.module != null) {
+        pushScriptFragment(ast.module, source, fragments);
+      }
+      if (ast.fragment != null) {
+        collectFromFragment(ast.fragment, source, fragments);
+      }
+      return fragments;
+    },
+  });
+}
 
 function loadCompiler(): typeof SvelteCompiler {
   if (cached) {

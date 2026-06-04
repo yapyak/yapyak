@@ -38,6 +38,7 @@ export function exportCommand(options: ExportOptions): number {
   const report = buildReport({
     defaultLocale: config.defaultLocale,
     localesDir: config.localesDir,
+    processors: config.processors,
     projectRoot,
   });
   const allLocales = report.locales;

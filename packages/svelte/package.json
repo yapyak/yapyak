@@ -8,13 +8,19 @@
       "types": "./src/index.ts",
       "svelte": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./processor": {
+      "types": "./dist/processor.d.ts",
+      "default": "./dist/processor.js"
     }
   },
   "files": [
+    "dist",
     "src"
   ],
   "sideEffects": false,
   "scripts": {
+    "build": "tsup",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -24,9 +30,11 @@
     "svelte": ">=5"
   },
   "devDependencies": {
+    "@types/node": "catalog:",
     "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "svelte": "catalog:",
+    "tsup": "catalog:",
     "typescript": "catalog:"
   },
   "engines": {
