@@ -29,6 +29,12 @@ export function blockToText(block: Block): string {
       return block.source;
     case 'code-group':
       return block.tabs.map((tab) => tab.source).join('\n\n');
+    case 'switch':
+      return Object.values(block.branches)
+        .map((branchBlocks) => branchBlocks.map(blockToText).join(''))
+        .join('\n\n');
+    case 'only':
+      return block.children.map(blockToText).join('');
     case 'table': {
       const rows =
         block.head === null ? block.body : [block.head, ...block.body];

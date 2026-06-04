@@ -10,6 +10,8 @@ declare module 'virtual:doc-extractor' {
     HeadingEntry,
     InternalLinkEntry,
     Manifest,
+    OptionsGroup,
+    OptionsRegistry,
     Page,
     PageEntry,
     SidebarNode,
@@ -27,6 +29,8 @@ declare module 'virtual:doc-extractor' {
     getFirstPage(collection: string): Page | null;
     getHeadings(page: Page, options?: GetHeadingsOptions): HeadingEntry[];
     getInternalLinks(page: Page): InternalLinkEntry[];
+    getOptions(): OptionsRegistry;
+    getOptionsGroup(groupId: string): OptionsGroup | null;
     getPage(collection: string, path?: string): Page | null;
     getSidebar(collection: string): SidebarNode[];
     getText(page: Page): string;

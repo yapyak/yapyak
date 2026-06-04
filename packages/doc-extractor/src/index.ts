@@ -15,10 +15,12 @@ export type {
   LinkBlock,
   ListBlock,
   ListItemBlock,
+  OnlyBlock,
   ParagraphBlock,
   QuoteBlock,
   StrikethroughBlock,
   StrongBlock,
+  SwitchBlock,
   TableBlock,
   TableCellBlock,
   TableRowBlock,
@@ -47,6 +49,9 @@ export type {
   CollectionConfig,
   Config,
   MarkdocSource,
+  OptionItem,
+  OptionsGroup,
+  OptionsRegistry,
   SourceUrlConfig,
   TypedocSource,
 } from './config.ts';
@@ -58,6 +63,7 @@ export { getEntry } from './access/entry.ts';
 export { getExcerpt } from './access/excerpt.ts';
 export { getHeadings } from './access/heading.ts';
 export { getInternalLinks } from './access/internal-link.ts';
+export { getOptions, getOptionsGroup } from './access/options.ts';
 export {
   findAdjacentPages,
   getAllPages,

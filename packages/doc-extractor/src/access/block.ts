@@ -14,9 +14,11 @@ export type Block =
   | LinkBlock
   | ListBlock
   | ListItemBlock
+  | OnlyBlock
   | ParagraphBlock
   | StrikethroughBlock
   | StrongBlock
+  | SwitchBlock
   | TableBlock
   | TableCellBlock
   | TableRowBlock
@@ -126,6 +128,19 @@ export interface CodeGroupBlock {
   type: 'code-group';
 }
 
+export interface SwitchBlock {
+  branches: Record<string, Block[]>;
+  group: string;
+  type: 'switch';
+}
+
+export interface OnlyBlock {
+  children: Block[];
+  group: string;
+  type: 'only';
+  value: string;
+}
+
 export interface CalloutBlock {
   children: Block[];
   title: string | null;
@@ -170,9 +185,11 @@ const BLOCK_TYPES = new Set<Block['type']>([
   'link',
   'list',
   'list-item',
+  'only',
   'paragraph',
   'strikethrough',
   'strong',
+  'switch',
   'table',
   'table-cell',
   'table-row',
@@ -216,5 +233,11 @@ export function walkBlocks(
 
   if (block.type === 'code-group') {
     walkBlocks(block.tabs, visit);
+  }
+
+  if (block.type === 'switch') {
+    for (const branchBlocks of Object.values(block.branches)) {
+      walkBlocks(branchBlocks, visit);
+    }
   }
 }

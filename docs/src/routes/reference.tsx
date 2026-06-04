@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { ContentAnchorNavigation } from '#components/content-anchor-navigation';
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
+import { OptionsSelectors } from '#components/options';
 
 import { doc } from 'virtual:doc-extractor';
 
@@ -35,7 +36,10 @@ function Component() {
 
   return (
     <ContentLayout>
-      <ContentLayout.Sidebar>{navigation}</ContentLayout.Sidebar>
+      <ContentLayout.Sidebar>
+        <OptionsSelectors />
+        {navigation}
+      </ContentLayout.Sidebar>
       <ContentLayout.Content>
         <Outlet />
       </ContentLayout.Content>

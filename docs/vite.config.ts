@@ -75,6 +75,27 @@ export default defineConfig({
           source: 'typedoc',
         },
       },
+      options: {
+        framework: {
+          default: 'react',
+          label: 'Framework',
+          options: [
+            { label: 'React', value: 'react' },
+            { label: 'Vue', value: 'vue' },
+            { label: 'Svelte', value: 'svelte' },
+            { label: 'Astro', value: 'astro' },
+          ],
+        },
+        pkg: {
+          default: 'pnpm',
+          label: 'Package manager',
+          options: [
+            { label: 'npm', value: 'npm' },
+            { label: 'pnpm', value: 'pnpm' },
+            { label: 'bun', value: 'bun' },
+          ],
+        },
+      },
       out: resolve(import.meta.dirname, 'manifest.json'),
       sourceUrl: {
         template: 'https://github.com/yapyak/yapyak/blob/main/{path}#L{line}',

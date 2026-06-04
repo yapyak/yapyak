@@ -1,5 +1,6 @@
 export interface Config {
   collections: Record<string, CollectionConfig>;
+  options?: OptionsRegistry;
   out: string;
   sourceUrl?: SourceUrlConfig;
   validate?: boolean;
@@ -29,4 +30,18 @@ export interface TypedocPackage {
   name: string;
   root: string;
   subpaths?: string[];
+}
+
+export type OptionsRegistry = Record<string, OptionsGroup>;
+
+export interface OptionsGroup {
+  default: string;
+  label: string;
+  options: OptionItem[];
+}
+
+export interface OptionItem {
+  icon?: string;
+  label: string;
+  value: string;
 }

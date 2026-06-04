@@ -14,10 +14,12 @@ import { BlockRendererNodeLineBreak } from './block-renderer-node-line-break';
 import { BlockRendererNodeLink } from './block-renderer-node-link';
 import { BlockRendererNodeList } from './block-renderer-node-list';
 import { BlockRendererNodeListItem } from './block-renderer-node-list-item';
+import { BlockRendererNodeOnly } from './block-renderer-node-only';
 import { BlockRendererNodeParagraph } from './block-renderer-node-paragraph';
 import { BlockRendererNodeQuote } from './block-renderer-node-quote';
 import { BlockRendererNodeStrikethrough } from './block-renderer-node-strikethrough';
 import { BlockRendererNodeStrong } from './block-renderer-node-strong';
+import { BlockRendererNodeSwitch } from './block-renderer-node-switch';
 import { BlockRendererNodeTable } from './block-renderer-node-table';
 import { BlockRendererNodeTableCell } from './block-renderer-node-table-cell';
 import { BlockRendererNodeTableRow } from './block-renderer-node-table-row';
@@ -68,6 +70,10 @@ export function BlockRendererNode(props: BlockRendererNodeProps) {
       return <BlockRendererNodeCodeBlock block={block} />;
     case 'code-group':
       return <BlockRendererNodeCodeGroup block={block} />;
+    case 'switch':
+      return <BlockRendererNodeSwitch block={block} />;
+    case 'only':
+      return <BlockRendererNodeOnly block={block} />;
     case 'callout':
       return <BlockRendererNodeCallout block={block} />;
     case 'eyebrow':

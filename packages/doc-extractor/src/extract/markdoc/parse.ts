@@ -138,6 +138,32 @@ function toBlocks(node: unknown): Block[] {
           type: 'code-group',
         },
       ];
+    case 'Switch': {
+      const group = stringAttribute(node.attributes.group) ?? '';
+      const branches: Record<string, Block[]> = {};
+      for (const child of node.children) {
+        if (!Markdoc.Tag.isTag(child) || child.name !== 'When') {
+          continue;
+        }
+        const value = stringAttribute(child.attributes.value) ?? '';
+        if (value === '') {
+          continue;
+        }
+        branches[value] = child.children.flatMap(toBlocks);
+      }
+      return [{ branches, group, type: 'switch' }];
+    }
+    case 'When':
+      return children;
+    case 'Only':
+      return [
+        {
+          children,
+          group: stringAttribute(node.attributes.group) ?? '',
+          type: 'only',
+          value: stringAttribute(node.attributes.value) ?? '',
+        },
+      ];
     case 'Callout':
       return [buildCallout(node.attributes, children)];
     default:
@@ -287,6 +313,40 @@ const codeGroup: Schema = {
   render: 'CodeGroup',
 };
 
+const switchTag: Schema = {
+  attributes: {
+    group: {
+      required: true,
+      type: String,
+    },
+  },
+  render: 'Switch',
+};
+
+const whenTag: Schema = {
+  attributes: {
+    value: {
+      required: true,
+      type: String,
+    },
+  },
+  render: 'When',
+};
+
+const onlyTag: Schema = {
+  attributes: {
+    group: {
+      required: true,
+      type: String,
+    },
+    value: {
+      required: true,
+      type: String,
+    },
+  },
+  render: 'Only',
+};
+
 const markdocConfig: Config = {
   nodes: {
     document,
@@ -296,6 +356,9 @@ const markdocConfig: Config = {
   tags: {
     callout,
     'code-group': codeGroup,
+    only: onlyTag,
+    switch: switchTag,
+    when: whenTag,
   },
 };
 

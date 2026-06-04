@@ -17,7 +17,10 @@ import { GithubIcon } from '#components/github-icon';
 import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
 import { Navigation } from '#components/navigation';
+import { buildPrepaintScript, OptionsProvider } from '#components/options';
 import { Wordmark } from '#components/wordmark';
+
+import { doc } from 'virtual:doc-extractor';
 
 export const Route = createRootRoute({
   component: Component,
@@ -99,14 +102,21 @@ function ShellComponent(props: ShellComponentProps) {
   const { children } = props;
 
   const [locale] = useLocale();
+  const optionsPrepaintScript = buildPrepaintScript(doc.getOptions());
 
   return (
     <html lang={locale}>
       <head>
         <HeadContent />
+        <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: pre-paint options sync
+          dangerouslySetInnerHTML={{ __html: optionsPrepaintScript }}
+        />
       </head>
       <body>
-        <LocaleProvider>{children}</LocaleProvider>
+        <LocaleProvider>
+          <OptionsProvider>{children}</OptionsProvider>
+        </LocaleProvider>
         <Scripts />
       </body>
     </html>

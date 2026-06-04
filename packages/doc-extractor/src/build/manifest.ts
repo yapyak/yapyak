@@ -2,6 +2,7 @@ import type { Block } from '../access/block.ts';
 import type {
   CollectionConfig,
   Config,
+  OptionsRegistry,
   SourceUrlConfig,
   TypedocPackage,
 } from '../config.ts';
@@ -39,6 +40,7 @@ export interface Page {
 
 export interface Manifest {
   collections: Record<string, Collection>;
+  options: OptionsRegistry;
   symbols: Record<string, SymbolEntry>;
   version: 1;
 }
@@ -94,6 +96,7 @@ export async function buildManifest(config: Config): Promise<Manifest> {
 
   return {
     collections,
+    options: config.options ?? {},
     symbols,
     version: 1,
   };

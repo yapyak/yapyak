@@ -3,30 +3,33 @@ title: Installation
 order: 2
 ---
 
-Add yapyak to a Vite project.
+Add yapyak to a Vite project. Pick your framework in the sidebar — the install command, the build-tool wiring and the processor differ. Everything below the install step is shared.
 
 ## Install
 
-{% code-group %}
+{% switch group="framework" %}
 
-```bash [npm]
-npm install yapyak @yapyak/vite
+{% when value="react" %}
+
+Install the runtime, the Vite plugin and the React binding:
+
+{% switch group="pkg" %}
+{% when value="npm" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/react
 ```
-
-```bash [pnpm]
-pnpm add yapyak @yapyak/vite
+{% /when %}
+{% when value="pnpm" %}
+```bash
+pnpm add yapyak @yapyak/vite @yapyak/react
 ```
-
-```bash [bun]
-bun add yapyak @yapyak/vite
+{% /when %}
+{% when value="bun" %}
+```bash
+bun add yapyak @yapyak/vite @yapyak/react
 ```
-
-{% /code-group %}
-
-- `yapyak` — the runtime (`t()`, format helpers, the raw locale API) plus the `yapyak` CLI command (add locales, status, batch translate)
-- `@yapyak/vite` — the Vite plugin (extraction, HMR, compile-time inlining)
-
-## Configure Vite
+{% /when %}
+{% /switch %}
 
 Add the plugin to `vite.config.ts`:
 
@@ -39,9 +42,153 @@ export default defineConfig({
 });
 ```
 
+`.ts`/`.tsx` is handled by the built-in vanilla processor — no further wiring needed.
+
+{% /when %}
+
+{% when value="vue" %}
+
+Install the runtime, the Vite plugin and the Vue binding:
+
+{% switch group="pkg" %}
+{% when value="npm" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/vue
+```
+{% /when %}
+{% when value="pnpm" %}
+```bash
+pnpm add yapyak @yapyak/vite @yapyak/vue
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bun add yapyak @yapyak/vite @yapyak/vue
+```
+{% /when %}
+{% /switch %}
+
+Add the plugin to `vite.config.ts`:
+
+```ts [vite.config.ts]
+import { defineConfig } from 'vite';
+import { yapyak } from '@yapyak/vite';
+
+export default defineConfig({
+  plugins: [yapyak()],
+});
+```
+
+Register the Vue processor in `yapyak.config.ts` so `.vue` files are scanned:
+
+```ts [yapyak.config.ts]
+import { vue } from '@yapyak/vue/processor';
+import { defineConfig } from 'yapyak/config';
+
+export default defineConfig({
+  processors: [vue()],
+});
+```
+
+{% /when %}
+
+{% when value="svelte" %}
+
+Install the runtime, the Vite plugin and the Svelte binding:
+
+{% switch group="pkg" %}
+{% when value="npm" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/svelte
+```
+{% /when %}
+{% when value="pnpm" %}
+```bash
+pnpm add yapyak @yapyak/vite @yapyak/svelte
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bun add yapyak @yapyak/vite @yapyak/svelte
+```
+{% /when %}
+{% /switch %}
+
+Add the plugin to `vite.config.ts`:
+
+```ts [vite.config.ts]
+import { defineConfig } from 'vite';
+import { yapyak } from '@yapyak/vite';
+
+export default defineConfig({
+  plugins: [yapyak()],
+});
+```
+
+Register the Svelte processor in `yapyak.config.ts` so `.svelte` files are scanned:
+
+```ts [yapyak.config.ts]
+import { svelte } from '@yapyak/svelte/processor';
+import { defineConfig } from 'yapyak/config';
+
+export default defineConfig({
+  processors: [svelte()],
+});
+```
+
+{% /when %}
+
+{% when value="astro" %}
+
+Install the runtime and the Astro integration — the integration brings the Vite plugin and the processor host along with it:
+
+{% switch group="pkg" %}
+{% when value="npm" %}
+```bash
+npm install yapyak @yapyak/astro
+```
+{% /when %}
+{% when value="pnpm" %}
+```bash
+pnpm add yapyak @yapyak/astro
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bun add yapyak @yapyak/astro
+```
+{% /when %}
+{% /switch %}
+
+Add the integration to `astro.config.ts` — it registers the Vite plugin and injects the per-request locale middleware:
+
+```ts [astro.config.ts]
+import { yapyak } from '@yapyak/astro/integration';
+import { defineConfig } from 'astro/config';
+
+export default defineConfig({
+  integrations: [yapyak()],
+});
+```
+
+Register the Astro processor in `yapyak.config.ts` so `.astro` files are scanned:
+
+```ts [yapyak.config.ts]
+import { astro } from '@yapyak/astro/processor';
+import { defineConfig } from 'yapyak/config';
+
+export default defineConfig({
+  processors: [astro()],
+});
+```
+
+{% /when %}
+
+{% /switch %}
+
 ## Configure yapyak
 
-Create `yapyak.config.ts` in the project root:
+Create `yapyak.config.ts` in the project root (merge with the processor registration above if it already exists):
 
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
@@ -55,9 +202,11 @@ Bare minimum. Without a translator, new locale entries land as empty stubs you f
 
 ## Write your first translation
 
-{% code-group %}
+{% switch group="framework" %}
 
-```tsx [React]
+{% when value="react" %}
+
+```tsx [SaveButton.tsx]
 import { t } from 'yapyak';
 
 export function SaveButton() {
@@ -65,7 +214,11 @@ export function SaveButton() {
 }
 ```
 
-```vue [Vue]
+{% /when %}
+
+{% when value="vue" %}
+
+```vue [SaveButton.vue]
 <script setup lang="ts">
 import { t } from 'yapyak'
 </script>
@@ -75,7 +228,11 @@ import { t } from 'yapyak'
 </template>
 ```
 
-```svelte [Svelte]
+{% /when %}
+
+{% when value="svelte" %}
+
+```svelte [SaveButton.svelte]
 <script lang="ts">
   import { t } from 'yapyak';
 </script>
@@ -83,7 +240,11 @@ import { t } from 'yapyak'
 <button>{t('Save changes')}</button>
 ```
 
-```astro [Astro]
+{% /when %}
+
+{% when value="astro" %}
+
+```astro [SaveButton.astro]
 ---
 import { t } from 'yapyak';
 ---
@@ -91,43 +252,49 @@ import { t } from 'yapyak';
 <button>{t('Save changes')}</button>
 ```
 
-{% /code-group %}
+{% /when %}
+
+{% /switch %}
 
 ## Add a locale
 
-{% code-group %}
-
-```bash [npm]
+{% switch group="pkg" %}
+{% when value="npm" %}
+```bash
 npx yapyak add sv
 ```
-
-```bash [pnpm]
+{% /when %}
+{% when value="pnpm" %}
+```bash
 pnpm yapyak add sv
 ```
-
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bunx yapyak add sv
 ```
-
-{% /code-group %}
+{% /when %}
+{% /switch %}
 
 Creates `locales/sv.json` and stubs every existing `t()` source string. Run with multiple at once:
 
-{% code-group %}
-
-```bash [npm]
+{% switch group="pkg" %}
+{% when value="npm" %}
+```bash
 npx yapyak add sv de es ja
 ```
-
-```bash [pnpm]
+{% /when %}
+{% when value="pnpm" %}
+```bash
 pnpm yapyak add sv de es ja
 ```
-
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bunx yapyak add sv de es ja
 ```
-
-{% /code-group %}
+{% /when %}
+{% /switch %}
 
 The default locale (`en`) stays in your code — it doesn't need a file.
 
@@ -155,46 +322,16 @@ To translate automatically on save, install one of yapyak's translators:
 
 Each ships first-class. Same shared config interface across providers. See [Translators overview](/guide/translators) for tradeoffs.
 
-## Register framework processors
-
-If your project has `.vue`, `.svelte`, or `.astro` files, register the matching processor in `yapyak.config.ts`. Plain `.ts`/`.tsx`/`.js`/`.jsx` is handled by the built-in vanilla processor — no registration needed.
-
-```ts [yapyak.config.ts]
-import { astro } from '@yapyak/astro/processor';
-import { svelte } from '@yapyak/svelte/processor';
-import { vue } from '@yapyak/vue/processor';
-import { defineConfig } from 'yapyak/config';
-
-export default defineConfig({
-  processors: [vue(), svelte(), astro()],
-});
-```
-
-Register only the ones your project uses. The processor subpath lives in the framework binding package — no extra install. Build your own with [`createProcessor`](/reference/yapyak/processor/createProcessor).
-
 ## Pick a framework adapter
 
-For server-rendered apps. Skip if your app never renders on a server.
+For server-rendered apps. Skip if your app never renders on a server, or if you're on Astro — the Astro integration above already handles SSR.
 
 | Framework | Package | Setup |
 |---|---|---|
-| Astro | `@yapyak/astro` | [Astro adapter](/guide/adapters/astro) |
 | React Router | `@yapyak/react-router` | [React Router adapter](/guide/adapters/react-router) |
 | SvelteKit | `@yapyak/sveltekit` | [SvelteKit adapter](/guide/adapters/sveltekit) |
 | TanStack Start | `@yapyak/tanstack-start` | [TanStack Start adapter](/guide/adapters/tanstack-start) |
 | Other Vite SSR | `yapyak/adapter` subpath | [Custom adapter](/guide/adapters/custom) |
-
-## UI bindings
-
-The runtime ships `t()` and the raw locale API (`getLocale`, `setLocale`). For framework-aware features — reactive locale subscriptions, the `<RichText>` component — install the binding for your framework:
-
-| Framework | Package | Provides |
-|---|---|---|
-| React | `@yapyak/react` | `useLocale()`, `<LocaleProvider>`, `<RichText>` |
-| Vue | `@yapyak/vue` | `locale`, `<RichText>` |
-| Svelte | `@yapyak/svelte` | `locale`, `<RichText>` |
-
-If you only render static `t()` calls (no locale switching, no rich text), the runtime alone is enough.
 
 ## Switch language at runtime
 
@@ -202,21 +339,23 @@ Each framework binds locale state to its idiomatic primitive. See [Locales / Run
 
 ## Verify
 
-{% code-group %}
-
-```bash [npm]
+{% switch group="pkg" %}
+{% when value="npm" %}
+```bash
 npx yapyak status
 ```
-
-```bash [pnpm]
+{% /when %}
+{% when value="pnpm" %}
+```bash
 pnpm yapyak status
 ```
-
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bunx yapyak status
 ```
-
-{% /code-group %}
+{% /when %}
+{% /switch %}
 
 Lists every locale, coverage per locale, missing entries.
 
@@ -224,21 +363,23 @@ Lists every locale, coverage per locale, missing entries.
 
 Fail builds on missing translations:
 
-{% code-group %}
-
-```bash [npm]
+{% switch group="pkg" %}
+{% when value="npm" %}
+```bash
 npx yapyak check
 ```
-
-```bash [pnpm]
+{% /when %}
+{% when value="pnpm" %}
+```bash
 pnpm yapyak check
 ```
-
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bunx yapyak check
 ```
-
-{% /code-group %}
+{% /when %}
+{% /switch %}
 
 Two common CI shapes:
 
