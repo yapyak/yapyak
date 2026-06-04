@@ -1,6 +1,8 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import { RichText } from '@yapyak/astro';
 import { getLocale, locales, t } from 'yapyak';
+
+import Layout from '../layouts/Layout.astro';
 
 const date = new Date('2024-01-01T08:30:00Z');
 const currentLocale = getLocale();
@@ -31,6 +33,15 @@ const currentLocale = getLocale();
   <h2>{t('Select')}</h2>
   <p>
     {t('{role, select, admin {Administrator} editor {Editor} other {Viewer}}', { role: 'editor' })}
+  </p>
+
+  <h2>{t('Rich text')}</h2>
+  <p>
+    <RichText
+      value={t('Translate <b>everything</b> with <link>yapyak</link>')}
+      b={(children) => `<strong>${children}</strong>`}
+      link={(children) => `<a href="https://yapyak.dev">${children}</a>`}
+    />
   </p>
 
   <h2>{t('Switch language')}</h2>
