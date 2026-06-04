@@ -23,11 +23,14 @@ function Component() {
   const { sidebar } = Route.useRouteContext();
   const { page } = splatRoute.useLoaderData();
 
-  const navigation = (
-    <ContentNavigation
-      aria-label={t('Guide navigation')}
-      tree={sidebar}
-    />
+  const sidebarContent = (
+    <>
+      <OptionsSelectors />
+      <ContentNavigation
+        aria-label={t('Guide navigation')}
+        tree={sidebar}
+      />
+    </>
   );
 
   const headings = useMemo(
@@ -37,17 +40,14 @@ function Component() {
 
   return (
     <ContentLayout>
-      <ContentLayout.Sidebar>
-        <OptionsSelectors />
-        {navigation}
-      </ContentLayout.Sidebar>
+      <ContentLayout.Sidebar>{sidebarContent}</ContentLayout.Sidebar>
       <ContentLayout.Content>
         <Outlet />
       </ContentLayout.Content>
       <ContentLayout.Outline>
         <ContentAnchorNavigation headings={headings} />
       </ContentLayout.Outline>
-      <ContentLayout.Toolbar page={page}>{navigation}</ContentLayout.Toolbar>
+      <ContentLayout.Toolbar page={page}>{sidebarContent}</ContentLayout.Toolbar>
     </ContentLayout>
   );
 }

@@ -5,7 +5,9 @@
     @media (min-width: 1024px) {
       position: sticky;
       top: var(--header-height);
-      display: block;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-6);
       align-self: start;
       max-height: calc(100vh - var(--header-height));
       padding: var(--spacing-8) var(--spacing-3);

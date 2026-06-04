@@ -3,9 +3,10 @@ import type { BoxProps } from '#components/box';
 
 import { Box } from '#components/box';
 
-import { useOptionsContext } from './options-context';
-import styles from './options-selector.module.css';
 import { doc } from 'virtual:doc-extractor';
+
+import styles from './options-selector.module.css';
+import { useOptionsContext } from './options-context';
 
 export interface OptionsSelectorsProps extends BoxProps {}
 
@@ -45,7 +46,7 @@ function OptionsSelector(props: OptionsSelectorProps) {
     return null;
   }
   const active = get(groupId);
-  const activeOption = group.options.find((option) => option.value === active);
+
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     set(groupId, event.currentTarget.value);
   };
@@ -53,61 +54,21 @@ function OptionsSelector(props: OptionsSelectorProps) {
   return (
     <Box
       aria-label={group.label}
+      as="select"
       className={styles.OptionsSelector}
+      onChange={handleChange}
+      value={active}
     >
-      {activeOption?.icon ? (
+      {group.options.map((option) => (
         <Box
-          alt=""
-          as="img"
-          className={styles.Icon}
-          src={activeOption.icon}
-        />
-      ) : null}
-      <Box
-        as="span"
-        className={styles.Label}
-      >
-        {activeOption?.label ?? group.label}
-      </Box>
-      <CaretIcon className={styles.Caret} />
-      <Box
-        aria-label={group.label}
-        as="select"
-        className={styles.NativeSelect}
-        onChange={handleChange}
-        value={active}
-      >
-        {group.options.map((option) => (
-          <option
-            key={option.value}
-            value={option.value}
-          >
-            {option.label}
-          </option>
-        ))}
-      </Box>
+          as="option"
+          className={styles.Option}
+          key={option.value}
+          value={option.value}
+        >
+          {option.label}
+        </Box>
+      ))}
     </Box>
-  );
-}
-
-interface CaretIconProps {
-  className?: string;
-}
-
-function CaretIcon(props: CaretIconProps) {
-  const { className } = props;
-  return (
-    <svg
-      aria-hidden="true"
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      viewBox="0 0 24 24"
-    >
-      <polyline points="6 9 12 15 18 9" />
-    </svg>
   );
 }
