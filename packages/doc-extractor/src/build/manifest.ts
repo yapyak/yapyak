@@ -210,9 +210,7 @@ async function buildTypedocCollection(
       });
     }
 
-    const hasRootModule = refManifest.modules.some(
-      (m) => m.id === packageName,
-    );
+    const hasRootModule = refManifest.modules.some((m) => m.id === packageName);
     if (!hasRootModule) {
       const prefix = `${packageName}/`;
       const topLevelSubModules = refManifest.modules
