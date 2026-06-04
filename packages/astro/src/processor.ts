@@ -22,15 +22,11 @@ const requireFromHere = createRequire(import.meta.url);
 
 let cached: typeof AstroCompilerSync | undefined;
 
-export type AstroProcessorOptions = {};
-
 /**
  * Creates an Astro processor for yapyak's compiler.
  *
  * @remarks
  * Handles `.astro` components. Extracts frontmatter and template expressions for yapyak's `t()` scanning.
- *
- * @param options - The processor options.
  *
  * @example Register in yapyak.config.ts
  * ```ts [yapyak.config.ts]
@@ -42,8 +38,7 @@ export type AstroProcessorOptions = {};
  * });
  * ```
  */
-export function astro(options: AstroProcessorOptions = {}): Processor {
-  void options;
+export function astro(): Processor {
   return createProcessor({
     applyImport(magicString, source, importStatement) {
       const match = FRONTMATTER_OPEN_RX.exec(source);

@@ -28,15 +28,11 @@ const requireFromHere = createRequire(import.meta.url);
 
 let cached: typeof VueSfc | undefined;
 
-export type VueProcessorOptions = {};
-
 /**
  * Creates a Vue processor for yapyak's compiler.
  *
  * @remarks
  * Handles `.vue` single-file components. Extracts `<script>`/`<script setup>` blocks and template expressions for yapyak's `t()` scanning.
- *
- * @param options - The processor options.
  *
  * @example Register in yapyak.config.ts
  * ```ts [yapyak.config.ts]
@@ -48,8 +44,7 @@ export type VueProcessorOptions = {};
  * });
  * ```
  */
-export function vue(options: VueProcessorOptions = {}): Processor {
-  void options;
+export function vue(): Processor {
   return createProcessor({
     applyImport(magicString, source, importStatement) {
       const setupMatch = SCRIPT_SETUP_RX.exec(source);

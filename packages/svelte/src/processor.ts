@@ -12,15 +12,11 @@ const requireFromHere = createRequire(import.meta.url);
 
 let cached: typeof SvelteCompiler | undefined;
 
-export type SvelteProcessorOptions = {};
-
 /**
  * Creates a Svelte processor for yapyak's compiler.
  *
  * @remarks
  * Handles `.svelte` components. Extracts `<script>` blocks and template expressions for yapyak's `t()` scanning.
- *
- * @param options - The processor options.
  *
  * @example Register in yapyak.config.ts
  * ```ts [yapyak.config.ts]
@@ -32,8 +28,7 @@ export type SvelteProcessorOptions = {};
  * });
  * ```
  */
-export function svelte(options: SvelteProcessorOptions = {}): Processor {
-  void options;
+export function svelte(): Processor {
   return createProcessor({
     applyImport(magicString, source, importStatement) {
       const match = SCRIPT_RX.exec(source);
