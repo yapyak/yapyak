@@ -7,9 +7,10 @@ Sometimes a message needs to contain more than text: a link, an emphasized phras
 
 For React, Vue, and Svelte, yapyak provides a `<RichText>` component. It takes a string containing named tags and renders those tags using the components you provide:
 
-{% code-group %}
+{% switch group="framework" %}
 
-```tsx [React]
+{% when value="react" %}
+```tsx [Notice.tsx]
 import { RichText } from '@yapyak/react';
 import { t } from 'yapyak';
 
@@ -22,8 +23,10 @@ export function Notice() {
   );
 }
 ```
+{% /when %}
 
-```vue [Vue]
+{% when value="vue" %}
+```vue [Notice.vue]
 <script setup lang="ts">
 import { RichText } from '@yapyak/vue';
 import { t } from 'yapyak';
@@ -37,8 +40,10 @@ import { t } from 'yapyak';
   </RichText>
 </template>
 ```
+{% /when %}
 
-```svelte [Svelte]
+{% when value="svelte" %}
+```svelte [Notice.svelte]
 <script lang="ts">
   import { RichText } from '@yapyak/svelte';
   import { t } from 'yapyak';
@@ -50,8 +55,13 @@ import { t } from 'yapyak';
   {/snippet}
 </RichText>
 ```
+{% /when %}
 
-{% /code-group %}
+{% when value="astro" %}
+For Astro islands, use one of the framework bindings (React/Vue/Svelte) inside an island component. `RichText` requires a reactive runtime, so it is not directly available in `.astro` files. For static rich-text rendering in a `.astro` file, use [`richText()`](#rendering-to-a-string) below to render directly to a string.
+{% /when %}
+
+{% /switch %}
 
 In each example, `<RichText>` interprets `<link>...</link>` as a named part of its `value` and passes its contents to the `link` renderer. The string happens to come from `t()`, but the tag convention does not belong to translation.
 
@@ -66,12 +76,42 @@ de: Lies zum Einstieg die <link>Dokumentation</link>.
 
 Its renderer remains in your component code, free to operate on any string containing named tags:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```tsx
 <RichText
   value="Read the <link>documentation</link> to get started."
   link={(children) => <a href="/docs">{children}</a>}
 />
 ```
+{% /when %}
+
+{% when value="vue" %}
+```vue
+<RichText value="Read the <link>documentation</link> to get started.">
+  <template #link="{ children }">
+    <a href="/docs">{{ children }}</a>
+  </template>
+</RichText>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte
+<RichText value="Read the <link>documentation</link> to get started.">
+  {#snippet link(children)}
+    <a href="/docs">{@render children()}</a>
+  {/snippet}
+</RichText>
+```
+{% /when %}
+
+{% when value="astro" %}
+In `.astro` files, prefer [`richText()`](#rendering-to-a-string) — it renders to a string directly without a reactive runtime.
+{% /when %}
+
+{% /switch %}
 
 `<RichText>` works whether the string came from `t()` or somewhere else.
 

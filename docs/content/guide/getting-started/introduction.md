@@ -9,16 +9,57 @@ yapyak is an i18n library for Vite applications using React, Vue, Svelte, or Ast
 
 In yapyak, you write the source-language message directly in the code that uses it:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```tsx [src/components/empty-cart.tsx]
-import { t } from 'yapyak/config';
+import { t } from 'yapyak';
 
 export function EmptyCart() {
   return <p>{t('Your cart is empty')}</p>;
 }
 ```
+{% /when %}
+
+{% when value="vue" %}
+```vue [src/components/EmptyCart.vue]
+<script setup lang="ts">
+import { t } from 'yapyak';
+</script>
+
+<template>
+  <p>{{ t('Your cart is empty') }}</p>
+</template>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte [src/components/EmptyCart.svelte]
+<script lang="ts">
+  import { t } from 'yapyak';
+</script>
+
+<p>{t('Your cart is empty')}</p>
+```
+{% /when %}
+
+{% when value="astro" %}
+```astro [src/components/EmptyCart.astro]
+---
+import { t } from 'yapyak';
+---
+
+<p>{t('Your cart is empty')}</p>
+```
+{% /when %}
+
+{% /switch %}
 
 On save, yapyak writes any new message to your locale files in `locales/` as an empty stub:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```json [locales/sv.json]
 {
   "src/components/empty-cart.tsx": {
@@ -26,6 +67,39 @@ On save, yapyak writes any new message to your locale files in `locales/` as an 
   }
 }
 ```
+{% /when %}
+
+{% when value="vue" %}
+```json [locales/sv.json]
+{
+  "src/components/EmptyCart.vue": {
+    "Your cart is empty": ""
+  }
+}
+```
+{% /when %}
+
+{% when value="svelte" %}
+```json [locales/sv.json]
+{
+  "src/components/EmptyCart.svelte": {
+    "Your cart is empty": ""
+  }
+}
+```
+{% /when %}
+
+{% when value="astro" %}
+```json [locales/sv.json]
+{
+  "src/components/EmptyCart.astro": {
+    "Your cart is empty": ""
+  }
+}
+```
+{% /when %}
+
+{% /switch %}
 
 Translations stay connected to the source code that uses them. Move or rename a source file, and yapyak restores its translations under the new path. Copy markup to a new file, remove it, or bring it back later, and yapyak reuses translations it already knows.
 
@@ -52,6 +126,9 @@ export default defineConfig({
 
 On save, yapyak sends new messages with their source context, configured voice, glossary and relevant translation examples from the application. The returned values are written to the locale files:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```json [locales/sv.json]
 {
   "src/components/empty-cart.tsx": {
@@ -59,6 +136,39 @@ On save, yapyak sends new messages with their source context, configured voice, 
   }
 }
 ```
+{% /when %}
+
+{% when value="vue" %}
+```json [locales/sv.json]
+{
+  "src/components/EmptyCart.vue": {
+    "Your cart is empty": "Din kundvagn är tom"
+  }
+}
+```
+{% /when %}
+
+{% when value="svelte" %}
+```json [locales/sv.json]
+{
+  "src/components/EmptyCart.svelte": {
+    "Your cart is empty": "Din kundvagn är tom"
+  }
+}
+```
+{% /when %}
+
+{% when value="astro" %}
+```json [locales/sv.json]
+{
+  "src/components/EmptyCart.astro": {
+    "Your cart is empty": "Din kundvagn är tom"
+  }
+}
+```
+{% /when %}
+
+{% /switch %}
 
 Vite HMR updates the running application with the translated text.
 

@@ -7,7 +7,10 @@ Using the source message as the key works because the words usually carry enough
 
 Consider a ticket view with an action for opening a ticket and a badge showing that the ticket is currently open:
 
-```tsx
+{% switch group="framework" %}
+
+{% when value="react" %}
+```tsx [Ticket.tsx]
 import { t } from 'yapyak';
 import { Status } from './status';
 
@@ -20,6 +23,47 @@ export function Ticket() {
   );
 }
 ```
+{% /when %}
+
+{% when value="vue" %}
+```vue [Ticket.vue]
+<script setup lang="ts">
+import Status from './Status.vue';
+import { t } from 'yapyak';
+</script>
+
+<template>
+  <button>{{ t('Open') }}</button>
+  <Status>{{ t('Open') }}</Status>
+</template>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte [Ticket.svelte]
+<script lang="ts">
+  import Status from './Status.svelte';
+  import { t } from 'yapyak';
+</script>
+
+<button>{t('Open')}</button>
+<Status>{t('Open')}</Status>
+```
+{% /when %}
+
+{% when value="astro" %}
+```astro [Ticket.astro]
+---
+import Status from './Status.astro';
+import { t } from 'yapyak';
+---
+
+<button>{t('Open')}</button>
+<Status>{t('Open')}</Status>
+```
+{% /when %}
+
+{% /switch %}
 
 In English, both messages are *Open*. They look identical in the source code, but they do not mean the same thing.
 
@@ -39,7 +83,10 @@ A single translation for *Open* cannot be correct in both places.
 
 When a source message needs a more specific meaning, use `t.at()`:
 
-```tsx
+{% switch group="framework" %}
+
+{% when value="react" %}
+```tsx [Ticket.tsx]
 import { t } from 'yapyak';
 import { Status } from './status';
 
@@ -52,11 +99,55 @@ export function Ticket() {
   );
 }
 ```
+{% /when %}
+
+{% when value="vue" %}
+```vue [Ticket.vue]
+<script setup lang="ts">
+import Status from './Status.vue';
+import { t } from 'yapyak';
+</script>
+
+<template>
+  <button>{{ t.at('action', 'Open') }}</button>
+  <Status>{{ t.at('status', 'Open') }}</Status>
+</template>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte [Ticket.svelte]
+<script lang="ts">
+  import Status from './Status.svelte';
+  import { t } from 'yapyak';
+</script>
+
+<button>{t.at('action', 'Open')}</button>
+<Status>{t.at('status', 'Open')}</Status>
+```
+{% /when %}
+
+{% when value="astro" %}
+```astro [Ticket.astro]
+---
+import Status from './Status.astro';
+import { t } from 'yapyak';
+---
+
+<button>{t.at('action', 'Open')}</button>
+<Status>{t.at('status', 'Open')}</Status>
+```
+{% /when %}
+
+{% /switch %}
 
 The first argument tells yapyak how the message is being used. It is not a translation key, and it does not replace the source string. It distinguishes two meanings that happen to be written the same way in the source language.
 
 The translation file can now keep both messages separately:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```json
 {
   "src/Ticket.tsx": {
@@ -65,6 +156,42 @@ The translation file can now keep both messages separately:
   }
 }
 ```
+{% /when %}
+
+{% when value="vue" %}
+```json
+{
+  "src/Ticket.vue": {
+    "Open@action": "Öppna",
+    "Open@status": "Öppen"
+  }
+}
+```
+{% /when %}
+
+{% when value="svelte" %}
+```json
+{
+  "src/Ticket.svelte": {
+    "Open@action": "Öppna",
+    "Open@status": "Öppen"
+  }
+}
+```
+{% /when %}
+
+{% when value="astro" %}
+```json
+{
+  "src/Ticket.astro": {
+    "Open@action": "Öppna",
+    "Open@status": "Öppen"
+  }
+}
+```
+{% /when %}
+
+{% /switch %}
 
 ## Diagnostics
 

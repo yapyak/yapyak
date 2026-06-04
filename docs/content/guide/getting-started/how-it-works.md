@@ -9,14 +9,55 @@ yapyak includes a small runtime and a build-time compiler. At its core, it is a 
 
 For a component with Swedish and Spanish translations:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```tsx
 export function SaveButton() {
   return <button>{t('Save changes')}</button>;
 }
 ```
+{% /when %}
+
+{% when value="vue" %}
+```vue
+<script setup lang="ts">
+import { t } from 'yapyak';
+</script>
+
+<template>
+  <button>{{ t('Save changes') }}</button>
+</template>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte
+<script lang="ts">
+  import { t } from 'yapyak';
+</script>
+
+<button>{t('Save changes')}</button>
+```
+{% /when %}
+
+{% when value="astro" %}
+```astro
+---
+import { t } from 'yapyak';
+---
+
+<button>{t('Save changes')}</button>
+```
+{% /when %}
+
+{% /switch %}
 
 yapyak emits the equivalent of:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```tsx
 import { pick as _pick } from 'yapyak/internal';
 
@@ -32,16 +73,89 @@ export function SaveButton() {
   );
 }
 ```
+{% /when %}
+
+{% when value="vue" %}
+```vue
+<script setup lang="ts">
+import { pick as _pick } from 'yapyak/internal';
+</script>
+
+<template>
+  <button>{{ _pick({
+    en: 'Save changes',
+    sv: 'Spara ändringar',
+    es: 'Guardar cambios',
+  }) }}</button>
+</template>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte
+<script lang="ts">
+  import { pick as _pick } from 'yapyak/internal';
+</script>
+
+<button>{_pick({
+  en: 'Save changes',
+  sv: 'Spara ändringar',
+  es: 'Guardar cambios',
+})}</button>
+```
+{% /when %}
+
+{% when value="astro" %}
+```astro
+---
+import { pick as _pick } from 'yapyak/internal';
+---
+
+<button>{_pick({
+  en: 'Save changes',
+  sv: 'Spara ändringar',
+  es: 'Guardar cambios',
+})}</button>
+```
+{% /when %}
+
+{% /switch %}
 
 `_pick()` selects the compiled value synchronously. It does not load or query a separate translation catalog.
 
 With no additional locale configured, the same message compiles to its source value:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```tsx
 export function SaveButton() {
   return <button>Save changes</button>;
 }
 ```
+{% /when %}
+
+{% when value="vue" %}
+```vue
+<template>
+  <button>Save changes</button>
+</template>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte
+<button>Save changes</button>
+```
+{% /when %}
+
+{% when value="astro" %}
+```astro
+<button>Save changes</button>
+```
+{% /when %}
+
+{% /switch %}
 
 ## Files
 

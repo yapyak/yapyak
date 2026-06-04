@@ -58,10 +58,39 @@ Two modifiers refine how a source is extracted or which locale is used.
 
 **`t.at(context, source)`** disambiguates identical sources that mean different things in different places:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```tsx
 <button>{t.at('action', 'Open')}</button>
 <span>{t.at('state', 'Open')}</span>
 ```
+{% /when %}
+
+{% when value="vue" %}
+```vue
+<template>
+  <button>{{ t.at('action', 'Open') }}</button>
+  <span>{{ t.at('state', 'Open') }}</span>
+</template>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte
+<button>{t.at('action', 'Open')}</button>
+<span>{t.at('state', 'Open')}</span>
+```
+{% /when %}
+
+{% when value="astro" %}
+```astro
+<button>{t.at('action', 'Open')}</button>
+<span>{t.at('state', 'Open')}</span>
+```
+{% /when %}
+
+{% /switch %}
 
 Both calls extract separate entries. See [Homonyms](./homonyms) for the full mechanics.
 

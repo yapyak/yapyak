@@ -151,7 +151,7 @@ Failed strings stay missing in `locales/*.json` — no partial writes. On the ne
 
 Nothing broken. yapyak shows the source string wherever a translation is missing:
 
-```tsx
+```ts
 t('Save changes')
 // Renders as 'Save changes' in sv until the translation lands.
 ```

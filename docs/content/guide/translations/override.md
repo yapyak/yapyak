@@ -7,7 +7,7 @@ order: 4
 
 Consider sending a notification to another user:
 
-```tsx
+```ts [notify.ts]
 import { t } from 'yapyak';
 import { sendEmail } from './email';
 
@@ -21,7 +21,7 @@ If the active locale doesn't match the user's, the subject comes out in the wron
 
 To translate into a specific locale regardless of the active one, use `t.in()`:
 
-```tsx
+```ts [notify.ts]
 import { t } from 'yapyak';
 import { sendEmail } from './email';
 
@@ -37,13 +37,13 @@ The first argument is the locale, the second is the source. Every modifier in ya
 
 The same call can carry both a forced locale and a [homonym context](./homonyms.md):
 
-```tsx
+```ts
 t.in('sv').at('action', 'Open');
 ```
 
 Read it left to right: *in Swedish, at the action context, the source is `Open`.* The reverse order works the same way:
 
-```tsx
+```ts
 t.at('action').in('sv', 'Open');
 ```
 
@@ -60,7 +60,7 @@ const sv = t.in('sv');
 
 The same restriction applies to any non-inline use — return values, object properties, function arguments. When a modifier needs the same locale or context twice, write it twice:
 
-```tsx
+```ts
 const subject = t.in(user.locale, 'You have a new message');
 const body = t.in(user.locale, 'Click below to read it.');
 ```

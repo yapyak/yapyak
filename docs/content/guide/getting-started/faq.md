@@ -67,7 +67,7 @@ The compiler ships in the `yapyak` package under the `yapyak/compiler` subpath a
 
 yapyak uses ICU MessageFormat, which is built for the grammars real locales require. Whether a language has two plural forms (English) or six (Arabic, Welsh), each category expresses as a branch in the message:
 
-```tsx
+```ts
 t('{count, plural, one {# książka} few {# książki} many {# książek} other {# książki}}', { count })
 ```
 
@@ -77,7 +77,7 @@ The compiler validates the syntax during the build. The runtime picks the right 
 
 ICU handles them directly inside the message:
 
-```tsx
+```ts
 t('Total: {amount, number, ::currency/USD}', { amount: 19.99 })
 t('Last seen {date, date, medium}', { date: new Date() })
 ```
@@ -149,11 +149,43 @@ The threshold also caps save-time translation when it is on. The default is twen
 
 `t()` returns a string. Any string-valued prop accepts it directly:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```tsx
 <button aria-label={t('Close dialog')} title={t('Close')}>×</button>
 <img alt={t('Profile photo')} src={src} />
 <input placeholder={t('Search products')} />
 ```
+{% /when %}
+
+{% when value="vue" %}
+```vue
+<template>
+  <button :aria-label="t('Close dialog')" :title="t('Close')">×</button>
+  <img :alt="t('Profile photo')" :src="src" />
+  <input :placeholder="t('Search products')" />
+</template>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte
+<button aria-label={t('Close dialog')} title={t('Close')}>×</button>
+<img alt={t('Profile photo')} {src} />
+<input placeholder={t('Search products')} />
+```
+{% /when %}
+
+{% when value="astro" %}
+```astro
+<button aria-label={t('Close dialog')} title={t('Close')}>×</button>
+<img alt={t('Profile photo')} src={src} />
+<input placeholder={t('Search products')} />
+```
+{% /when %}
+
+{% /switch %}
 
 No special API or wrapper is needed. Accessibility text, image alts, placeholder text, and any other attribute that takes a string works the same way component children do.
 

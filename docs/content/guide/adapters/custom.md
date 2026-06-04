@@ -31,14 +31,50 @@ withRequest<T>(request: Request, fn: () => T): T;
 
 If your root component is a reactive framework binding (React/Vue/Svelte), read the locale there so it re-renders on change:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```tsx
 import { useLocale } from '@yapyak/react';
 
-function Component() {
+function RootLayout() {
   const [locale] = useLocale();
   return <html lang={locale}>{/* ... */}</html>;
 }
 ```
+{% /when %}
+
+{% when value="vue" %}
+```vue
+<script setup lang="ts">
+import { locale } from '@yapyak/vue';
+</script>
+
+<template>
+  <html :lang="locale">
+    <!-- ... -->
+  </html>
+</template>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte
+<script lang="ts">
+  import { locale } from '@yapyak/svelte';
+</script>
+
+<svelte:element this="html" lang={$locale}>
+  <!-- ... -->
+</svelte:element>
+```
+{% /when %}
+
+{% when value="astro" %}
+Astro renders `<html>` server-side once per request. Read the locale via `getLocale()` from `yapyak` in your layout — see [Astro adapter](/guide/adapters/astro#set-the-page-language).
+{% /when %}
+
+{% /switch %}
 
 If `<html>` is static HTML (no framework binding), enable `syncHtmlLang` and yapyak will keep `document.documentElement.lang` synced with the current locale:
 
