@@ -158,6 +158,7 @@ async function buildTypedocCollection(
       collectionName,
       packageDir: pkg.root,
       packageSlug,
+      subpaths: pkg.subpaths,
     });
     const index = buildSymbolIndex(refManifest);
 

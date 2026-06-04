@@ -28,4 +28,5 @@ export interface TypedocPackage {
   group?: string;
   name: string;
   root: string;
+  subpaths?: string[];
 }

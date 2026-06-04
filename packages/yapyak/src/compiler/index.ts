@@ -1,11 +1,3 @@
-/**
- * Compiler internals consumed by the Vite plugin and the CLI. Not part of the public runtime surface.
- *
- * @internal
- *
- * @packageDocumentation
- */
-
 export {
   type AutoTranslateOptions,
   type AutoTranslateResult,

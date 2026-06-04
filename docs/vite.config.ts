@@ -10,10 +10,15 @@ interface ReferencePackage {
   collapsible?: boolean;
   dir: string;
   group?: string;
+  subpaths?: string[];
 }
 
 const REFERENCE_PACKAGES: ReferencePackage[] = [
-  { collapsible: true, dir: 'yapyak' },
+  {
+    collapsible: true,
+    dir: 'yapyak',
+    subpaths: ['./adapter', './config', './translator'],
+  },
 
   { dir: 'vite', group: 'Bundlers' },
 
@@ -58,6 +63,7 @@ export default defineConfig({
             group: pkg.group,
             name: pkg.dir,
             root: resolve(import.meta.dirname, `../packages/${pkg.dir}`),
+            subpaths: pkg.subpaths,
           })),
           source: 'typedoc',
         },

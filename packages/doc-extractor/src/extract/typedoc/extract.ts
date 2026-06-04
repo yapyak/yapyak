@@ -37,6 +37,7 @@ interface TypedocExtractOptions {
   collectionName: string;
   packageDir: string;
   packageSlug: string;
+  subpaths?: readonly string[];
 }
 
 interface EntryPoint {
@@ -70,8 +71,8 @@ interface CommentLike {
 export async function extractTypedoc(
   options: TypedocExtractOptions,
 ): Promise<ReferenceManifest> {
-  const { collectionName, packageDir, packageSlug } = options;
-  const { entries, packageName } = await loadEntries(packageDir);
+  const { collectionName, packageDir, packageSlug, subpaths } = options;
+  const { entries, packageName } = await loadEntries(packageDir, subpaths);
   const project = await loadProject(packageDir, entries);
   const { nameIndex, registry } = buildLinkRegistry(
     project,
@@ -93,13 +94,21 @@ export async function extractTypedoc(
 
 async function loadEntries(
   packageDir: string,
+  subpaths: readonly string[] | undefined,
 ): Promise<{ entries: EntryPoint[]; packageName: string }> {
   const raw = await readFile(join(packageDir, 'package.json'), 'utf8');
   const pkg = JSON.parse(raw) as PackageJson;
 
+  const allowed = new Set<string>(['.']);
+  if (subpaths) {
+    for (const subpath of subpaths) {
+      allowed.add(subpath);
+    }
+  }
+
   const entries: EntryPoint[] = [];
   for (const [subpath, conditions] of Object.entries(pkg.exports)) {
-    if (isInternalSubpath(subpath)) {
+    if (!allowed.has(subpath)) {
       continue;
     }
     const distPath =
@@ -118,14 +127,6 @@ async function loadEntries(
     entries.push({ filePath, id, subpath });
   }
   return { entries, packageName: pkg.name };
-}
-
-function isInternalSubpath(subpath: string): boolean {
-  return subpath === './internal' || subpath.endsWith('/internal');
-}
-
-function isInternalModule(module: ProjectModule): boolean {
-  return Boolean(module.comment?.modifierTags?.has('@internal'));
 }
 
 async function loadProject(
@@ -210,9 +211,6 @@ function buildLinkRegistry(
   const registry = new Map<number, string>();
   const nameIndex = new Map<string, string | 'ambiguous'>();
   for (const module of eachProjectModule(project, entries, packageDir)) {
-    if (isInternalModule(module)) {
-      continue;
-    }
     for (const symbol of module.children) {
       if (isInternal(symbol)) {
         continue;
@@ -262,9 +260,6 @@ function collectModules(
     entries,
     context.packageDir,
   )) {
-    if (isInternalModule(module)) {
-      continue;
-    }
     const exports = module.children
       .filter((symbol) => !isInternal(symbol))
       .flatMap((symbol) => convertExport(symbol, context) ?? [])
