@@ -62,14 +62,14 @@ describe('getLocaleFromUrl', () => {
   });
 
   describe('with query-string regex matcher', () => {
-    const pattern = /[?&]lang=(?<locale>[a-z]{2})/;
+    const patternRx = /[?&]lang=(?<locale>[a-z]{2})/;
 
     it('returns the locale from the query param', () => {
       expect(
         getLocaleFromUrl(
           new URL('https://app.test/about?lang=sv'),
           LOCALES,
-          pattern,
+          patternRx,
         ),
       ).toBe('sv');
     });
@@ -79,14 +79,14 @@ describe('getLocaleFromUrl', () => {
         getLocaleFromUrl(
           new URL('https://app.test/about?foo=bar&lang=de'),
           LOCALES,
-          pattern,
+          patternRx,
         ),
       ).toBe('de');
     });
 
     it('returns `undefined` when the query is missing', () => {
       expect(
-        getLocaleFromUrl(new URL('https://app.test/about'), LOCALES, pattern),
+        getLocaleFromUrl(new URL('https://app.test/about'), LOCALES, patternRx),
       ).toBe(undefined);
     });
 
@@ -95,21 +95,21 @@ describe('getLocaleFromUrl', () => {
         getLocaleFromUrl(
           new URL('https://app.test/about?lang=fr'),
           LOCALES,
-          pattern,
+          patternRx,
         ),
       ).toBe(undefined);
     });
   });
 
   describe('with capture-group regex matcher', () => {
-    const pattern = /^\/app\/([a-z]{2})/;
+    const patternRx = /^\/app\/([a-z]{2})/;
 
     it('returns the locale from group 1 when no named group', () => {
       expect(
         getLocaleFromUrl(
           new URL('https://app.test/app/sv/home'),
           LOCALES,
-          pattern,
+          patternRx,
         ),
       ).toBe('sv');
     });

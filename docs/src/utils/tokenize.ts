@@ -135,9 +135,9 @@ const TYPE_KEYWORDS = new Set([
   'interface',
 ]);
 
-const YAPYAK_STRING = /^(["'`])yapyak(?:\/[\w-]+)*\1$/;
+const YAPYAK_STRING_RX = /^(["'`])yapyak(?:\/[\w-]+)*\1$/;
 
-const DOTTED_KEY_PATTERN = /^[a-zA-Z_][\w]*(?:\.[a-zA-Z_][\w]*)+$/;
+const DOTTED_KEY_RX = /^[a-zA-Z_][\w]*(?:\.[a-zA-Z_][\w]*)+$/;
 
 export function tokenize(code: string, language: Language): Token[] {
   if (language === 'diff') {
@@ -539,7 +539,7 @@ function tokenizeYaml(code: string) {
   return mergePlainTokens(tokens);
 }
 
-const LOCALE_PREFIX = /^([a-z]{2,3}(?:-[a-z]{2})?:[ \t]+)(.*)$/;
+const LOCALE_PREFIX_RX = /^([a-z]{2,3}(?:-[a-z]{2})?:[ \t]+)(.*)$/;
 
 function tokenizeTranslation(code: string): Token[] {
   const tokens: Token[] = [];
@@ -550,7 +550,7 @@ function tokenizeTranslation(code: string): Token[] {
     const trailing = index < lines.length - 1 ? '\n' : '';
 
     if (line.length > 0) {
-      const match = LOCALE_PREFIX.exec(line);
+      const match = LOCALE_PREFIX_RX.exec(line);
       if (match) {
         const prefix = match[1] ?? '';
         const content = match[2] ?? '';
@@ -676,7 +676,7 @@ const JSX_LANGUAGES = new Set<Language>([
   'html',
 ]);
 
-const REGEX_PREV_PUNCT = /^(?:[(,=;:[{!&|?~^%]|=>)$/;
+const REGEX_PREV_PUNCT_RX = /^(?:[(,=;:[{!&|?~^%]|=>)$/;
 const REGEX_PREV_KEYWORDS = new Set([
   'return',
   'typeof',
@@ -696,7 +696,7 @@ function isRegexContext(previous: Token | undefined): boolean {
   if (previous === undefined) {
     return true;
   }
-  if (previous.type === 'punct' && REGEX_PREV_PUNCT.test(previous.value)) {
+  if (previous.type === 'punct' && REGEX_PREV_PUNCT_RX.test(previous.value)) {
     return true;
   }
   if (previous.type === 'keyword' && REGEX_PREV_KEYWORDS.has(previous.value)) {
@@ -875,7 +875,7 @@ function applyYapyakHighlight(tokens: Token[]) {
       continue;
     }
 
-    if (token.type === 'string' && YAPYAK_STRING.test(token.value)) {
+    if (token.type === 'string' && YAPYAK_STRING_RX.test(token.value)) {
       token.type = 'tx-yapyak';
       continue;
     }
@@ -1088,7 +1088,7 @@ function reclassifyJsxText(tokens: Token[]) {
 
 function isDottedKey(value: string): boolean {
   const inner = value.slice(1, -1);
-  return DOTTED_KEY_PATTERN.test(inner);
+  return DOTTED_KEY_RX.test(inner);
 }
 
 function expandVueAttributeBindings(tokens: Token[]): Token[] {

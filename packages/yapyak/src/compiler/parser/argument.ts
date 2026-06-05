@@ -23,7 +23,7 @@ export interface ParsedArguments {
   sourceRange: Range;
 }
 
-const CONTEXT_PATTERN = /^[a-z][a-z0-9-]*$/;
+const CONTEXT_RX = /^[a-z][a-z0-9-]*$/;
 
 export function parseArguments(callSite: CallSite): ParsedArguments {
   const sourceFile = callSite.node.getSourceFile();
@@ -40,7 +40,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
       ts.isNoSubstitutionTemplateLiteral(contextArg)
     ) {
       const text = contextArg.text;
-      if (!CONTEXT_PATTERN.test(text)) {
+      if (!CONTEXT_RX.test(text)) {
         diagnostics.push(
           createDiagnostic({
             code: 'YPK402',

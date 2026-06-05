@@ -36,11 +36,11 @@ export interface ParsedMessage {
 
 const NUMBER_STYLES = new Set(['decimal', 'integer', 'percent']);
 const DATE_TIME_STYLES = new Set(['full', 'long', 'medium', 'short']);
-const CURRENCY_WITH_CODE = /^currency\s+\S+$/;
-const ESCAPE = /'[#'<>{}]/;
+const CURRENCY_WITH_CODE_RX = /^currency\s+\S+$/;
+const ESCAPE_RX = /'[#'<>{}]/;
 
 export function parsePlaceholders(source: string): ParsedMessage {
-  if (ESCAPE.test(source)) {
+  if (ESCAPE_RX.test(source)) {
     return {
       issues: [
         { feature: 'apostrophe escaping', name: '', reason: 'unsupported' },
@@ -147,7 +147,7 @@ function detectUnsupportedNumberStyle(style: unknown): string | undefined {
   if (typeof style !== 'string') {
     return 'number skeleton';
   }
-  if (NUMBER_STYLES.has(style) || CURRENCY_WITH_CODE.test(style)) {
+  if (NUMBER_STYLES.has(style) || CURRENCY_WITH_CODE_RX.test(style)) {
     return undefined;
   }
   if (style === 'currency') {
