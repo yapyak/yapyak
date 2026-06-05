@@ -10,10 +10,10 @@ interface ColorPalette {
 }
 
 export const color: ColorPalette = {
-  bold: (s) => `${ESC}1m${s}${ESC}0m`,
-  cyan: (s) => `${ESC}36m${s}${ESC}0m`,
-  dim: (s) => `${ESC}2m${s}${ESC}0m`,
-  green: (s) => `${ESC}32m${s}${ESC}0m`,
-  red: (s) => `${ESC}31m${s}${ESC}0m`,
-  yellow: (s) => `${ESC}33m${s}${ESC}0m`,
+  bold: (text) => `${ESC}1m${text}${ESC}0m`,
+  cyan: (text) => `${ESC}36m${text}${ESC}0m`,
+  dim: (text) => `${ESC}2m${text}${ESC}0m`,
+  green: (text) => `${ESC}32m${text}${ESC}0m`,
+  red: (text) => `${ESC}31m${text}${ESC}0m`,
+  yellow: (text) => `${ESC}33m${text}${ESC}0m`,
 };

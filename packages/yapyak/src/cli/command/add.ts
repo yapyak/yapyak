@@ -59,7 +59,7 @@ export async function add(options: AddOptions): Promise<number> {
     mkdirSync(localesDirAbs, { recursive: true });
   }
 
-  const labelLine = locales.map((l) => color.cyan(l)).join(', ');
+  const labelLine = locales.map((locale) => color.cyan(locale)).join(', ');
   process.stdout.write(header(`Adding locales: ${labelLine}`));
 
   for (const locale of locales) {

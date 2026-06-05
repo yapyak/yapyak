@@ -49,8 +49,12 @@ export function check(options: CheckOptions): number {
     );
   }
 
-  const errors = allDiagnostics.filter((d) => d.severity === 'error');
-  const warnings = allDiagnostics.filter((d) => d.severity === 'warning');
+  const errors = allDiagnostics.filter(
+    (diagnostic) => diagnostic.severity === 'error',
+  );
+  const warnings = allDiagnostics.filter(
+    (diagnostic) => diagnostic.severity === 'warning',
+  );
 
   process.stdout.write(header('Translation check'));
 

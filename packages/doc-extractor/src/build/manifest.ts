@@ -213,19 +213,22 @@ async function buildTypedocCollection(
       });
     }
 
-    const hasRootModule = refManifest.modules.some((m) => m.id === packageName);
+    const hasRootModule = refManifest.modules.some(
+      (module) => module.id === packageName,
+    );
     if (!hasRootModule) {
       const prefix = `${packageName}/`;
       const topLevelSubModules = refManifest.modules
         .filter(
-          (m) =>
-            m.id.startsWith(prefix) && !m.id.slice(prefix.length).includes('/'),
+          (module) =>
+            module.id.startsWith(prefix) &&
+            !module.id.slice(prefix.length).includes('/'),
         )
         .sort((a, b) => a.id.localeCompare(b.id));
-      const subpaths = topLevelSubModules.map((m) => {
-        const tail = m.id.slice(prefix.length);
+      const subpaths = topLevelSubModules.map((module) => {
+        const tail = module.id.slice(prefix.length);
         return {
-          description: m.description,
+          description: module.description,
           href: `/${collectionName}/${packageSlug}/${tail}`,
           subpath: `./${tail}`,
         };

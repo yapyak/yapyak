@@ -84,7 +84,7 @@ export async function translate(options: TranslateOptions): Promise<number> {
     );
   };
 
-  const localesToProcess = [...new Set(stubsToFill.map((s) => s.locale))];
+  const localesToProcess = [...new Set(stubsToFill.map((stub) => stub.locale))];
   for (const locale of localesToProcess) {
     const subResult = await autoTranslate({
       defaultLocale: report.defaultLocale,

@@ -44,10 +44,12 @@ export class YapyakInvariantError extends Error {
   violations: InvariantViolation[];
 
   constructor(filePath: string, violations: InvariantViolation[]) {
-    const lines = violations.map((v) => {
+    const lines = violations.map((violation) => {
       const target =
-        v.afterValue === undefined ? 'missing' : `"${v.afterValue}"`;
-      return `  - ${v.fileId}: "${v.source}" was "${v.beforeValue}", would become ${target}`;
+        violation.afterValue === undefined
+          ? 'missing'
+          : `"${violation.afterValue}"`;
+      return `  - ${violation.fileId}: "${violation.source}" was "${violation.beforeValue}", would become ${target}`;
     });
     super(
       `[yapyak] Refusing to write ${filePath}: would silently clear ${violations.length} translation(s) for source string(s) that are still in use.\n${lines.join('\n')}`,

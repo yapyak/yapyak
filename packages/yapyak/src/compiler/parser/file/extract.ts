@@ -74,7 +74,7 @@ export function extractFile(request: ExtractFileRequest): ExtractFileResult {
     for (const [name, binding] of bindings.root.bindings) {
       ambientBindings.set(name, binding);
     }
-    processFragment({
+    extractFromFragment({
       bindings,
       callSites,
       diagnostics,
@@ -97,7 +97,7 @@ export function extractFile(request: ExtractFileRequest): ExtractFileResult {
     }
     const sourceFile = createFragmentSourceFile(request.fileId, fragment);
     const bindings = resolveBindings(sourceFile, { ambientParent });
-    processFragment({
+    extractFromFragment({
       bindings,
       callSites,
       diagnostics,
@@ -116,7 +116,7 @@ export function extractFile(request: ExtractFileRequest): ExtractFileResult {
   };
 }
 
-interface ProcessFragmentInput {
+interface ExtractFromFragmentInput {
   bindings: ReturnType<typeof resolveBindings>;
   callSites: CallSite[];
   diagnostics: Diagnostic[];
@@ -127,7 +127,7 @@ interface ProcessFragmentInput {
   sourceFile: ts.SourceFile;
 }
 
-function processFragment(input: ProcessFragmentInput): void {
+function extractFromFragment(input: ExtractFromFragmentInput): void {
   const {
     bindings,
     callSites,
