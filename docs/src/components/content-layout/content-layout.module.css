@@ -30,8 +30,8 @@
       padding-inline: 0;
     }
 
-    @media (min-width: 1224px) {
-      grid-template-columns: 220px minmax(0, 1fr) 220px;
+    @media (min-width: 1304px) {
+      grid-template-columns: 220px minmax(0, 1fr) 300px;
       max-width: 1440px;
     }
   }

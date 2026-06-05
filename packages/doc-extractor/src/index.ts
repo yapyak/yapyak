@@ -56,20 +56,8 @@ export type {
   TypedocSource,
 } from './config.ts';
 
-export { isBlock, walkBlocks } from './access/block.ts';
-export { getCodeBlocks } from './access/code-block.ts';
-export { getCollection } from './access/collection.ts';
 export { getEntry } from './access/entry.ts';
-export { getExcerpt } from './access/excerpt.ts';
 export { getHeadings } from './access/heading.ts';
-export { getInternalLinks } from './access/internal-link.ts';
 export { getOptions, getOptionsGroup } from './access/options.ts';
-export {
-  findAdjacentPages,
-  getAllPages,
-  getFirstPage,
-  getPage,
-} from './access/page.ts';
+export { findAdjacentPages, getFirstPage } from './access/page.ts';
 export { getSidebar } from './access/sidebar.ts';
-export { resolveSymbol } from './access/symbol.ts';
-export { blockToText, getText } from './access/text.ts';

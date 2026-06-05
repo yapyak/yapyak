@@ -13,7 +13,7 @@
       padding-inline: var(--spacing-12);
     }
 
-    @media (min-width: 1224px) {
+    @media (min-width: 1304px) {
       max-width: 784px;
       margin-inline: auto;
     }
