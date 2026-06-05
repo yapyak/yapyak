@@ -1,0 +1,150 @@
+@layer components {
+  .Trigger {
+    display: inline-flex;
+    gap: var(--spacing-2);
+    align-items: center;
+    padding: var(--spacing-2) var(--spacing-3);
+    font-family: inherit;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--foreground-soft);
+    cursor: pointer;
+    background-color: transparent;
+    border: 0;
+    border-radius: var(--border-radius-full);
+    outline: var(--spacing-2) solid transparent;
+    outline-offset: 0;
+    anchor-name: --doc-options-anchor;
+    transition:
+      color var(--transition),
+      background-color var(--transition),
+      box-shadow var(--transition),
+      outline 400ms,
+      transform var(--transition);
+
+    @media (hover: hover) {
+      &:hover {
+        color: var(--foreground);
+        background-color: var(--surface-stronger);
+        box-shadow:
+          inset 0 0 0 var(--px) var(--ring-strong),
+          inset 0 var(--px) var(--ring-strong);
+      }
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+
+    &:focus-visible {
+      outline-width: 4px;
+      outline-color: var(--accent-soft);
+    }
+  }
+
+  .TriggerLabel {
+    line-height: 1;
+  }
+
+  .Popover {
+    inset: auto;
+    top: anchor(bottom);
+    right: anchor(right);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    min-width: 200px;
+    margin: 0;
+    margin-top: var(--spacing-2);
+    padding: var(--spacing-3);
+    background: var(--canvas);
+    border: var(--px) solid var(--rule);
+    border-radius: var(--border-radius-md);
+    box-shadow: 0 12px 60px 0 #0000007d;
+
+    opacity: 0;
+    translate: 0 calc(var(--spacing-1) * -1);
+    position-anchor: --doc-options-anchor;
+    transition:
+      opacity var(--transition),
+      translate var(--transition),
+      display var(--transition) allow-discrete,
+      overlay var(--transition) allow-discrete;
+
+    &:popover-open {
+      opacity: 1;
+      translate: 0 0;
+    }
+
+    @starting-style {
+      &:popover-open {
+        opacity: 0;
+        translate: 0 calc(var(--spacing-1) * -1);
+      }
+    }
+  }
+
+  .Group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .GroupLabel {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--foreground-softer);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .GroupOptions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+
+  .Option {
+    display: flex;
+    gap: var(--spacing-2);
+    align-items: center;
+    padding: var(--spacing-2) var(--spacing-3);
+    font-family: inherit;
+    font-size: var(--font-size-xs);
+    color: var(--foreground);
+    text-align: left;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-radius: var(--border-radius-sm);
+    transition:
+      background-color var(--transition),
+      color var(--transition);
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: var(--surface-stronger);
+      }
+    }
+
+    &[data-active="true"] {
+      font-weight: var(--font-weight-medium);
+      color: var(--brand-contrast);
+      background: var(--gradient-brand);
+    }
+  }
+
+  .OptionLabel {
+    line-height: 1;
+  }
+
+  .OptionCheck {
+    display: inline-flex;
+    margin-left: auto;
+    color: var(--foreground-softer);
+  }
+
+  .Option[data-active="true"] .OptionCheck {
+    color: inherit;
+  }
+}

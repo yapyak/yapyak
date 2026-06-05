@@ -5,7 +5,6 @@ import { useMemo } from 'react';
 import { ContentAnchorNavigation } from '#components/content-anchor-navigation';
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
-import { OptionsSelectors } from '#components/options';
 
 import { doc } from 'virtual:doc-extractor';
 
@@ -23,13 +22,10 @@ function Component() {
   const { page } = splatRoute.useLoaderData();
 
   const sidebarContent = (
-    <>
-      <OptionsSelectors />
-      <ContentNavigation
-        aria-label="Reference navigation"
-        tree={sidebar}
-      />
-    </>
+    <ContentNavigation
+      aria-label="Reference navigation"
+      tree={sidebar}
+    />
   );
 
   const headings = useMemo(
@@ -46,7 +42,9 @@ function Component() {
       <ContentLayout.Outline>
         <ContentAnchorNavigation headings={headings} />
       </ContentLayout.Outline>
-      <ContentLayout.Toolbar page={page}>{sidebarContent}</ContentLayout.Toolbar>
+      <ContentLayout.Toolbar page={page}>
+        {sidebarContent}
+      </ContentLayout.Toolbar>
     </ContentLayout>
   );
 }

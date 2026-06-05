@@ -7,6 +7,7 @@ import { t } from 'yapyak';
 import { Box } from '#components/box';
 import { GithubIcon } from '#components/github-icon';
 import { IconLink } from '#components/icon-link';
+import { DocOptions } from '#components/options';
 
 import styles from './layout-header.module.css';
 import { LayoutHeaderCenter } from './layout-header-center';
@@ -95,6 +96,7 @@ export function LayoutHeader(props: LayoutHeaderProps) {
           </Link>
         </Box>
         <Box className={styles.GithubSlot}>
+          <DocOptions />
           <IconLink
             aria-label={t('View on GitHub')}
             href="https://github.com/yapyak/yapyak"

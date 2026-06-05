@@ -17,7 +17,11 @@ import { GithubIcon } from '#components/github-icon';
 import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
 import { Navigation } from '#components/navigation';
-import { buildPrepaintScript, OptionsProvider } from '#components/options';
+import {
+  buildPrepaintScript,
+  DocOptions,
+  OptionsProvider,
+} from '#components/options';
 import { Wordmark } from '#components/wordmark';
 
 import { doc } from 'virtual:doc-extractor';
@@ -76,6 +80,7 @@ function Component() {
           </Navigation>
         </Layout.Header.Center>
         <Layout.Header.End>
+          <DocOptions />
           <IconLink
             aria-label={t('View on GitHub')}
             href="https://github.com/yapyak/yapyak"

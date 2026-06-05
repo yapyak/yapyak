@@ -4,7 +4,9 @@
     justify-self: end;
 
     @media (min-width: 1024px) {
-      display: block;
+      display: flex;
+      gap: var(--spacing-3);
+      align-items: center;
     }
   }
 }

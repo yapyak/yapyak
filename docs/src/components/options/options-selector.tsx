@@ -3,10 +3,9 @@ import type { BoxProps } from '#components/box';
 
 import { Box } from '#components/box';
 
-import { doc } from 'virtual:doc-extractor';
-
-import styles from './options-selector.module.css';
 import { useOptionsContext } from './options-context';
+import styles from './options-selector.module.css';
+import { doc } from 'virtual:doc-extractor';
 
 export interface OptionsSelectorsProps extends BoxProps {}
 
