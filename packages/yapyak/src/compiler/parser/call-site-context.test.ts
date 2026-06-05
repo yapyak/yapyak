@@ -33,8 +33,6 @@ describe('resolveCallSiteContext', () => {
     const [call] = findCalls(sf);
     const ctx = resolveCallSiteContext(call!, sf);
     expect(ctx.componentName).toBe('Greeting');
-    expect(ctx.enclosingFunction).toBe('Greeting');
-    expect(ctx.enclosingHook).toBeUndefined();
   });
 
   it('returns the arrow component name from its variable declaration', () => {
@@ -69,7 +67,7 @@ describe('resolveCallSiteContext', () => {
     expect(ctx.componentName).toBe('Greeting');
   });
 
-  it('returns the hook name', () => {
+  it('returns no component name for a hook', () => {
     const sf = parseInline(`
       import { t } from 'yapyak';
       export function useGreeting() {
@@ -78,12 +76,10 @@ describe('resolveCallSiteContext', () => {
     `);
     const [call] = findCalls(sf);
     const ctx = resolveCallSiteContext(call!, sf);
-    expect(ctx.enclosingHook).toBe('useGreeting');
-    expect(ctx.enclosingFunction).toBe('useGreeting');
     expect(ctx.componentName).toBeUndefined();
   });
 
-  it('returns both component and nested hook names', () => {
+  it('returns the outer component name through a nested hook', () => {
     const sf = parseInline(`
       import { t } from 'yapyak';
       export function Greeting() {
@@ -95,8 +91,6 @@ describe('resolveCallSiteContext', () => {
     `);
     const [call] = findCalls(sf);
     const ctx = resolveCallSiteContext(call!, sf);
-    expect(ctx.enclosingFunction).toBe('useLabel');
-    expect(ctx.enclosingHook).toBe('useLabel');
     expect(ctx.componentName).toBe('Greeting');
   });
 
@@ -175,8 +169,6 @@ describe('resolveCallSiteContext', () => {
     const [call] = findCalls(sf);
     const ctx = resolveCallSiteContext(call!, sf);
     expect(ctx.componentName).toBeUndefined();
-    expect(ctx.enclosingFunction).toBeUndefined();
-    expect(ctx.enclosingHook).toBeUndefined();
     expect(ctx.enclosingJsx).toBeUndefined();
   });
 
@@ -188,6 +180,5 @@ describe('resolveCallSiteContext', () => {
     const [call] = findCalls(sf);
     const ctx = resolveCallSiteContext(call!, sf);
     expect(ctx.componentName).toBeUndefined();
-    expect(ctx.enclosingFunction).toBeUndefined();
   });
 });

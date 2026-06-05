@@ -46,7 +46,6 @@ export {
   type BindingTable,
   type CallSite,
   type CallSiteContext,
-  type CreateDiagnosticInput,
   createDiagnostic,
   type Diagnostic,
   type DiagnosticCode,

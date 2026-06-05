@@ -2,8 +2,6 @@ import * as ts from 'typescript';
 
 export interface CallSiteContext {
   componentName?: string;
-  enclosingFunction?: string;
-  enclosingHook?: string;
   enclosingJsx?: string;
 }
 
@@ -25,16 +23,8 @@ export function resolveCallSiteContext(
     }
 
     const fnName = readFunctionName(current);
-    if (fnName) {
-      if (!result.enclosingFunction) {
-        result.enclosingFunction = fnName;
-      }
-      if (!result.enclosingHook && isHookName(fnName)) {
-        result.enclosingHook = fnName;
-      }
-      if (!result.componentName && isComponentName(fnName)) {
-        result.componentName = fnName;
-      }
+    if (fnName && !result.componentName && isComponentName(fnName)) {
+      result.componentName = fnName;
     }
 
     current = current.parent;
@@ -114,15 +104,4 @@ function readFunctionExpressionName(
 function isComponentName(name: string): boolean {
   const firstChar = name[0];
   return firstChar !== undefined && firstChar >= 'A' && firstChar <= 'Z';
-}
-
-function isHookName(name: string): boolean {
-  if (!name.startsWith('use')) {
-    return false;
-  }
-  if (name.length === 3) {
-    return false;
-  }
-  const fourthChar = name[3];
-  return fourthChar !== undefined && fourthChar >= 'A' && fourthChar <= 'Z';
 }

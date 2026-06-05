@@ -30,7 +30,6 @@ export {
   resolveCallSiteContext,
 } from './call-site-context';
 export {
-  type CreateDiagnosticInput,
   createDiagnostic,
   type Diagnostic,
   type DiagnosticCode,
