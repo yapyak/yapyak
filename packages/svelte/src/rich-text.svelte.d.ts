@@ -1,5 +1,8 @@
-import type { ComponentConstructorOptions, SvelteComponent } from 'svelte';
-
+import type {
+  Component,
+  ComponentConstructorOptions,
+  SvelteComponent,
+} from 'svelte';
 import type { RichTextProps } from './rich-text';
 
 interface RichTextComponent {
@@ -7,13 +10,8 @@ interface RichTextComponent {
     options: ComponentConstructorOptions<RichTextProps<T>>,
   ): SvelteComponent<RichTextProps<T>>;
   <T extends string>(
-    internal: unknown,
-    props: RichTextProps<T>,
-  ): {
-    $on?(type: string, callback: (e: unknown) => void): () => void;
-    $set?(props: Partial<RichTextProps<T>>): void;
-  };
-  z_$$bindings?: '';
+    ...args: Parameters<Component<RichTextProps<T>>>
+  ): ReturnType<Component<RichTextProps<T>>>;
 }
 
 /**
