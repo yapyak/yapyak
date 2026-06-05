@@ -10,13 +10,12 @@
   .Inner {
     @media (min-width: 1024px) {
       width: 100%;
-      max-width: 784px;
-      padding-left: var(--spacing-12);
-      margin-inline: auto;
+      padding-inline: var(--spacing-12);
     }
 
-    @media (min-width: 1280px) {
-      padding-right: var(--spacing-12);
+    @media (min-width: 1224px) {
+      max-width: 784px;
+      margin-inline: auto;
     }
   }
 }
