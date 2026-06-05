@@ -1,18 +1,17 @@
 <script lang="ts">
+  import type { Snippet } from "svelte";
   import type { RichTextNode } from "yapyak/internal";
 
-  import type { TagHandler } from "./rich-text.svelte";
+  import type { TagHandler } from "./rich-text";
   import RichTextWalker from "./rich-text-walker.svelte";
 
-  interface RichTextWalkerProps {
-    handlers: Record<string, TagHandler>;
-    nodes: RichTextNode[];
-  }
-
-  const { handlers, nodes }: RichTextWalkerProps = $props();
+  let {
+    handlers,
+    nodes,
+  }: { handlers: Record<string, TagHandler>; nodes: RichTextNode[] } = $props();
 </script>
 
-{#each nodes as node}
+{#each nodes as node, index (index)}
   {#if node.type === "text"}
     {node.text}
   {:else if handlers[node.name]}
@@ -20,7 +19,7 @@
     {#snippet children()}
       <RichTextWalker {handlers} nodes={node.children} />
     {/snippet}
-    {@render handler?.(children)}
+    {@render handler?.(children as Snippet)}
   {:else}
     {`<${node.name}>`}<RichTextWalker
       {handlers}

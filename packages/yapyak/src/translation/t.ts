@@ -29,7 +29,7 @@ declare const brand: unique symbol;
  */
 export type TReturn<T extends string = never> = [T] extends [never]
   ? string
-  : string & { [brand]?: T };
+  : string & { readonly [brand]: T };
 
 /**
  * An inline chain that started with `t.in(locale)` and expects `.at(context, source)` to complete the call.
@@ -159,14 +159,14 @@ function createTFn(boundLocale?: string): TFn {
   ): TReturn<ExtractTags<T>> => {
     runTrackers();
     if (params === undefined) {
-      return source as TReturn<ExtractTags<T>>;
+      return source as unknown as TReturn<ExtractTags<T>>;
     }
     const locale = boundLocale ?? getLocale();
     return interpolate(
       source,
       params as Record<string, unknown>,
       locale,
-    ) as TReturn<ExtractTags<T>>;
+    ) as unknown as TReturn<ExtractTags<T>>;
   };
 
   function inMethod<T extends string>(

@@ -1,19 +1,20 @@
-import type { Component, Snippet } from 'svelte';
-import type { TReturn } from 'yapyak';
+import type { ComponentConstructorOptions, SvelteComponent } from 'svelte';
 
-type TagsOf<T> = T extends TReturn<infer Tags> ? Tags : never;
+import type { RichTextProps } from './rich-text';
 
-export type TagHandler = Snippet<[Snippet]>;
-
-/**
- * Props for the `RichText` component. Carries the source `value` and a snippet
- * per named tag found in it.
- *
- * @typeParam T - The source string literal. Tag names are extracted from it.
- */
-export type RichTextProps<T extends string> = { value: T } & {
-  [Tag in TagsOf<T>]: TagHandler;
-};
+interface RichTextComponent {
+  new <T extends string>(
+    options: ComponentConstructorOptions<RichTextProps<T>>,
+  ): SvelteComponent<RichTextProps<T>>;
+  <T extends string>(
+    internal: unknown,
+    props: RichTextProps<T>,
+  ): {
+    $on?(type: string, callback: (e: unknown) => void): () => void;
+    $set?(props: Partial<RichTextProps<T>>): void;
+  };
+  z_$$bindings?: '';
+}
 
 /**
  * Renders rich text from a string with named tags into snippets supplied by the
@@ -28,5 +29,5 @@ export type RichTextProps<T extends string> = { value: T } & {
  * </RichText>
  * ```
  */
-declare const RichText: Component<RichTextProps<string>>;
+declare const RichText: RichTextComponent;
 export default RichText;

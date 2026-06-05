@@ -1,5 +1,5 @@
 <script lang="ts" generics="T extends string">
-  import type { RichTextProps } from "./rich-text.svelte";
+  import type { RichTextProps } from "./rich-text";
 
   import { parseRichText } from "yapyak/internal";
 
