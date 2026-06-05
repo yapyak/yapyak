@@ -1,7 +1,6 @@
 import * as ts from 'typescript';
 
 export interface Binding {
-  declarationNode: ts.Node;
   kind: 'direct' | 'namespace' | 'wrapper';
   localName: string;
 }
@@ -21,8 +20,8 @@ const YAPYAK_MODULE = 'yapyak';
 const RUNTIME_NAME = 't';
 
 interface ImportInfo {
-  directLocals: Map<string, ts.Node>;
-  namespaceLocals: Map<string, ts.Node>;
+  directLocals: Set<string>;
+  namespaceLocals: Set<string>;
 }
 
 export interface ResolveBindingsOptions {
@@ -44,16 +43,14 @@ export function resolveBindings(
   };
   scopeByNode.set(sourceFile, root);
 
-  for (const [local, declarationNode] of imports.directLocals) {
+  for (const local of imports.directLocals) {
     root.bindings.set(local, {
-      declarationNode,
       kind: 'direct',
       localName: local,
     });
   }
-  for (const [local, declarationNode] of imports.namespaceLocals) {
+  for (const local of imports.namespaceLocals) {
     root.bindings.set(local, {
-      declarationNode,
       kind: 'namespace',
       localName: local,
     });
@@ -69,8 +66,8 @@ export function resolveBindings(
 
 function collectImports(sourceFile: ts.SourceFile): ImportInfo {
   const info: ImportInfo = {
-    directLocals: new Map(),
-    namespaceLocals: new Map(),
+    directLocals: new Set(),
+    namespaceLocals: new Set(),
   };
   for (const statement of sourceFile.statements) {
     if (!ts.isImportDeclaration(statement)) {
@@ -91,7 +88,7 @@ function collectImports(sourceFile: ts.SourceFile): ImportInfo {
       continue;
     }
     if (ts.isNamespaceImport(namedBindings)) {
-      info.namespaceLocals.set(namedBindings.name.text, namedBindings);
+      info.namespaceLocals.add(namedBindings.name.text);
       continue;
     }
     if (ts.isNamedImports(namedBindings)) {
@@ -99,7 +96,7 @@ function collectImports(sourceFile: ts.SourceFile): ImportInfo {
         const importedName = (element.propertyName ?? element.name).text;
         const localName = element.name.text;
         if (importedName === RUNTIME_NAME) {
-          info.directLocals.set(localName, element);
+          info.directLocals.add(localName);
         }
       }
     }
@@ -151,7 +148,6 @@ function registerVariableDeclarations(
         continue;
       }
       scope.bindings.set(localName, {
-        declarationNode: decl,
         kind: 'wrapper',
         localName,
       });
