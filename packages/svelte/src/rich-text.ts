@@ -4,18 +4,20 @@ import type { TReturn } from 'yapyak';
 type TagsOf<T> = T extends TReturn<infer Tags> ? Tags : never;
 
 /**
- * Handler for a single named tag in a rich-text string.
+ * The tag handler. Receives a `children` snippet for the resolved inner content.
  *
  * @remarks
- * Receives a `children` snippet for the resolved inner content. Each snippet on `<RichText>` matching a tag in `value` has this signature.
+ * Each snippet on {@link RichText} matching a tag in `value` has this signature.
  */
 export type TagHandler = Snippet<[Snippet]>;
 
 /**
- * Props for the `RichText` component. Carries the source `value` and a snippet
- * per named tag found in it.
+ * Props for {@link RichText}.
  *
- * @typeParam T - The source string literal. Tag names are extracted from it.
+ * @remarks
+ * Carries the source `value` and a snippet per named tag extracted from it.
+ *
+ * @typeParam T - The source string literal carrying the tag names.
  */
 export type RichTextProps<T extends string> = { value: T } & {
   [Tag in TagsOf<T>]: TagHandler;

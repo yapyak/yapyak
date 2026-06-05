@@ -4,7 +4,7 @@ import type { CreateProcessorOptions, Processor } from './type';
  * Builds a processor from per-framework hooks.
  *
  * @remarks
- * Returns a processor that yapyak's compiler dispatches to based on file extension. The shipped processor packages (`@yapyak/vue/processor`, `@yapyak/svelte/processor`, `@yapyak/astro/processor`) wrap this factory. Register processors in `yapyak.config.ts` via the `processors` field.
+ * Yapyak's compiler dispatches to the resulting processor based on file extension. The shipped processor packages (`@yapyak/vue/processor`, `@yapyak/svelte/processor`, `@yapyak/astro/processor`) wrap this factory. Processors are registered in `yapyak.config.ts` via the `processors` field.
  *
  * @param options - The processor options.
  *

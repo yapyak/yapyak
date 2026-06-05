@@ -74,7 +74,7 @@ export interface YapyakConfig {
    * The maximum number of prior project translations passed to the translator as style reference per request.
    *
    * @remarks
-   * Drawn from the project's existing locale files and orphan cache, scoped to the same locale. Same-file entries rank first, then fuzzy similarity. `0` disables the feature entirely. Keep small — 5 matches Smartling's production default. When the configured translator's `context` is `'none'`, this defaults to `0` so no prior translations leak alongside the source string; set it explicitly to opt back in.
+   * Drawn from the project's existing locale files and orphan cache, scoped to the same locale. Same-file entries rank first, then fuzzy similarity. A value of `0` disables the feature entirely. The default tracks the translator's privacy posture so no prior translations leak alongside the source string when context is suppressed.
    *
    * @defaultValue `5`, or `0` when the translator's `context` is `'none'`
    */
@@ -113,7 +113,7 @@ export interface YapyakConfig {
    * Processors for framework-specific file formats (`.vue`, `.svelte`, `.astro`, etc.).
    *
    * @remarks
-   * Each processor handles a set of file extensions. Vanilla `.ts`/`.tsx`/`.js`/`.jsx` are handled by the built-in processor without registration. Register the shipped processor packages (`@yapyak/vue/processor`, `@yapyak/svelte/processor`, `@yapyak/astro/processor`) or implement your own with {@link Processor}.
+   * Each processor handles a set of file extensions. Vanilla `.ts`/`.tsx`/`.js`/`.jsx` are handled by the built-in processor without registration. The shipped processor packages (`@yapyak/vue/processor`, `@yapyak/svelte/processor`, `@yapyak/astro/processor`) cover the listed frameworks; custom processors implement {@link Processor}.
    *
    * @defaultValue `[]`
    */

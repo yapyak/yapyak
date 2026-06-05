@@ -5,29 +5,32 @@ import { walkRichText } from './rich-text-walker';
 type TagsOf<T> = T extends TReturn<infer Tags> ? Tags : never;
 
 /**
- * Handler for a single named tag in a rich-text string.
+ * The rich-text handler. Receives the resolved text between a tag's markers and returns the rendered string.
  *
  * @remarks
- * Receives the resolved text between the tag's opening and closing markers and returns the rendered string. The shape used by every entry of a `richText()` handlers object.
+ * The shape used by every entry of a {@link RichTextHandlers} object.
  */
 export type RichTextHandler = (children: string) => string;
 
+/**
+ * The rich-text handlers. Maps tag names extracted from `T` to their {@link RichTextHandler}.
+ *
+ * @typeParam T - The source string literal carrying the tag names.
+ */
 export type RichTextHandlers<T extends string> = {
   [Tag in TagsOf<T>]: RichTextHandler;
 };
 
 /**
- * Resolves `<tag>...</tag>` markers in a string by calling the matching handler
- * for each tag. Returns a string. The string-side counterpart to the
- * framework-specific `<RichText>` components in `@yapyak/react`, `@yapyak/vue`,
- * and `@yapyak/svelte`.
+ * Renders a rich-text string by resolving `<tag>...</tag>` markers via handlers.
  *
- * When the value comes from `t()`, the handlers object is statically checked
- * against the tag names found in the source.
+ * @remarks
+ * The string-side counterpart to the framework `<RichText>` components in `@yapyak/react`, `@yapyak/vue`, and `@yapyak/svelte`. When `value` comes from {@link t}, the handlers object is statically checked against the tag names found in the source.
+ *
+ * @typeParam T - The source string literal carrying the tag names.
  *
  * @param value - The string to render. May contain `<tag>...</tag>` markers.
- * @param handlers - A handler per tag name. Each handler receives the resolved
- *   text between the tags and returns the rendered string.
+ * @param handlers - A handler per tag name.
  *
  * @example
  * ```ts

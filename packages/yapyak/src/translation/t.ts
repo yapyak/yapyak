@@ -32,12 +32,15 @@ export type TReturn<T extends string = never> = [T] extends [never]
   : string & { [brand]: T };
 
 /**
- * An inline chain that started with `t.in(locale)` and expects `.at(context, source)` to complete the call.
+ * The inline chain returned by `t.in(locale)`. Completes via `.at(context, source)`.
  *
  * @remarks
- * Has no callable signature, so it cannot be captured and used as a translator. Use inline only:
+ * Has no callable signature, so it cannot be captured and used as a translator.
  *
+ * @example Forced locale with disambiguation
  * ```ts
+ * import { t } from 'yapyak';
+ *
  * t.in('sv').at('action', 'Open');
  * ```
  */
@@ -50,12 +53,15 @@ export interface TInChain {
 }
 
 /**
- * An inline chain that started with `t.at(context)` and expects `.in(locale, source)` to complete the call.
+ * The inline chain returned by `t.at(context)`. Completes via `.in(locale, source)`.
  *
  * @remarks
- * Has no callable signature, so it cannot be captured and used as a translator. Use inline only:
+ * Has no callable signature, so it cannot be captured and used as a translator.
  *
+ * @example Disambiguation with forced locale
  * ```ts
+ * import { t } from 'yapyak';
+ *
  * t.at('action').in('sv', 'Open');
  * ```
  */
@@ -81,7 +87,7 @@ export interface TFn {
    * The compiler emits {@link https://yapyak.dev/diagnostics/YPK403 YPK403} if a source is used with both `t()` and `t.at()` in the same file.
    *
    * @param context - The disambiguating context. Must match `[a-z][a-z0-9-]*`.
-   * @param source - The source string literal. Pass to translate inline.
+   * @param source - The source string literal, supplied to translate inline.
    * @param params - The placeholder params. Required when the source has placeholders.
    */
   at<T extends string>(
@@ -95,7 +101,7 @@ export interface TFn {
    * Forces a fixed locale for one translation call, or returns a chain that requires `.at()` to complete.
    *
    * @param locale - The locale code, e.g. `'sv'`.
-   * @param source - The source string literal. Pass to translate inline.
+   * @param source - The source string literal, supplied to translate inline.
    * @param params - The placeholder params. Required when the source has placeholders.
    */
   in<T extends string>(
@@ -117,7 +123,7 @@ export interface TFn {
  * Translates a source string for the active locale.
  *
  * @remarks
- * Yapyak's compiler rewrites every `t()` call site at build; the runtime is the fallback for paths the compiler did not touch. Call with a string literal — wrapping breaks extraction. Placeholders use `{name}` and their values are type-checked from the source literal. Pin a fixed locale with `t.in(locale, source)`, or chain modifiers inline: `t.in('sv').at('action', 'Open')`.
+ * Yapyak's compiler rewrites every `t()` call site at build; the runtime is the fallback for paths the compiler did not touch. The source argument must be a string literal — wrapping breaks extraction. Placeholders use `{name}` and their values are type-checked from the source literal. A fixed locale is pinned via `t.in(locale, source)`, and modifiers chain inline: `t.in('sv').at('action', 'Open')`.
  *
  * @example Translate, with and without placeholders
  * ```ts

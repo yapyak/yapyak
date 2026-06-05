@@ -1,12 +1,12 @@
 import { getStorage } from './storage';
 
 /**
- * Returns the pending response headers buffered during the current `withRequest` scope.
+ * The pending response headers buffered during the current `withRequest` scope.
  *
  * @remarks
- * Called by the shipped framework adapter packages after the inner pipeline returns its `Response`, to merge yapyak-emitted headers (e.g. `Set-Cookie` from a server-side `setLocale()` call) onto the outgoing response. Returns an empty `Headers` instance when called outside a {@link withRequest} scope.
+ * Called by the shipped framework adapter packages after the inner pipeline returns its `Response`, to merge yapyak-emitted headers (e.g. `Set-Cookie` from a server-side `setLocale()` call) onto the outgoing response. Resolves to an empty `Headers` instance when called outside a {@link withRequest} scope.
  *
- * @example Drain pending headers onto an Astro response
+ * @example Pending headers on an Astro response
  * ```ts
  * import { defineMiddleware } from 'astro:middleware';
  * import { getPendingResponseHeaders, withRequest } from 'yapyak/adapter';

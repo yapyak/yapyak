@@ -15,8 +15,10 @@ interface RichTextComponent {
 }
 
 /**
- * Renders rich text from a string with named tags into snippets supplied by the
- * caller. See {@link RichTextProps} for the prop shape.
+ * Renders rich text by resolving named tags via snippet props.
+ *
+ * @remarks
+ * The prop shape is {@link RichTextProps}.
  *
  * @example
  * ```svelte

@@ -92,7 +92,7 @@ export interface TranslateBatchOptions {
  * - `'rich'` — sends the source string, the component name, the enclosing element, and the surrounding code snippet.
  *
  * @remarks
- * Choose `'none'` when nothing about the calling code may leave the project. The compiler reads the resolved level off {@link Translator.context} and aligns privacy-sensitive defaults — at `'none'`, the `examples` setting also defaults to `0`.
+ * Selecting `'none'` keeps the calling code from leaving the project. The compiler reads the resolved level off {@link Translator.context} and aligns privacy-sensitive defaults — at `'none'`, the `examples` setting also resolves to `0`.
  *
  * @example
  * ```ts
@@ -131,10 +131,13 @@ export type LocaleTranslations = Record<string, string>;
  * Request shape for the `translate` callback.
  *
  * @remarks
- * `items`, `sourceLocale`, and `targetLocales` are always present. The callback returns one {@link LocaleTranslations} per item, with a key per locale in `targetLocales`. Forward `signal` to the underlying fetch/SDK call to honor cancellation.
+ * `items`, `sourceLocale`, and `targetLocales` are always present. The callback returns one {@link LocaleTranslations} per item, with a key per locale in `targetLocales`. The `signal` field forwards cancellation through to the underlying fetch/SDK call.
  *
- * @example
+ * @example Custom translate callback wired to a fetch endpoint
  * ```ts
+ * import { createTranslator } from 'yapyak/translator';
+ * import type { TranslateBatchRequest } from 'yapyak/translator';
+ *
  * async function myTranslate(params: TranslateBatchRequest) {
  *   const response = await fetch('https://api.example/translate', {
  *     method: 'POST',

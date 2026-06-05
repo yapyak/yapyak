@@ -1,3 +1,17 @@
+/**
+ * Doc extractor for yapyak.
+ *
+ * ## Installation
+ *
+ * ```bash
+ * npm install @yapyak/doc-extractor
+ * # or
+ * pnpm add @yapyak/doc-extractor
+ * ```
+ *
+ * @packageDocumentation
+ */
+
 export type {
   Block,
   CalloutBlock,

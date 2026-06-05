@@ -99,9 +99,7 @@ export function getLocale(): string {
  * Switches the locale.
  *
  * @remarks
- * No-op if `value` is not in {@link locales}. Notifies subscribers.
- *
- * No-op with `persistence: 'url'` — the URL is the source of truth. Drive locale switches through router navigation; the in-memory locale syncs automatically on URL change.
+ * No-op if `value` is not in {@link locales}. Notifies subscribers. No-op with `persistence: 'url'` — the URL is the source of truth, and the in-memory locale syncs on URL change driven by router navigation.
  *
  * @param value - The locale to switch to.
  *
