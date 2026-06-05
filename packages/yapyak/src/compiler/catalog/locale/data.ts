@@ -12,7 +12,7 @@ export interface ReadLocaleDataOptions {
 }
 
 export function readLocaleData(options: ReadLocaleDataOptions): LocaleData {
-  const data: LocaleData = {};
+  const localeData: LocaleData = {};
   for (const locale of options.locales) {
     const path = join(
       options.projectRoot,
@@ -20,15 +20,15 @@ export function readLocaleData(options: ReadLocaleDataOptions): LocaleData {
       `${locale}.json`,
     );
     try {
-      data[locale] = readLocaleFile(path);
+      localeData[locale] = readLocaleFile(path);
     } catch (error) {
       if (error instanceof CorruptLocaleFileError) {
         console.warn(error.message);
-        data[locale] = {};
+        localeData[locale] = {};
         continue;
       }
       throw error;
     }
   }
-  return data;
+  return localeData;
 }

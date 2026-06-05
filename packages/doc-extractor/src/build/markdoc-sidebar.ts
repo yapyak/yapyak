@@ -1,6 +1,6 @@
-import type { SidebarNode } from '../build/manifest.ts';
+import type { SidebarNode } from '../build/manifest';
 
-import { parseFrontmatterOnly } from '../extract/markdoc/parse.ts';
+import { parseFrontmatterOnly } from '../extract/markdoc/parse';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -8,27 +8,27 @@ export async function buildMarkdocSidebar(
   root: string,
   collectionName: string,
 ): Promise<SidebarNode[]> {
-  return walkDir(root, `/${collectionName}`);
+  return walkDirectory(root, `/${collectionName}`);
 }
 
-async function walkDir(
-  absDir: string,
+async function walkDirectory(
+  absoluteDirectory: string,
   urlPrefix: string,
 ): Promise<SidebarNode[]> {
-  const entries = await readdir(absDir, { withFileTypes: true }).catch(
-    () => [],
-  );
+  const entries = await readdir(absoluteDirectory, {
+    withFileTypes: true,
+  }).catch(() => []);
   const collected: { node: SidebarNode; order: number; name: string }[] = [];
 
   for (const entry of entries) {
     if (entry.name.startsWith('.') || entry.name.startsWith('_')) {
       continue;
     }
-    const full = join(absDir, entry.name);
+    const fullPath = join(absoluteDirectory, entry.name);
 
     if (entry.isDirectory()) {
       const group = await buildGroup(
-        full,
+        fullPath,
         `${urlPrefix}/${entry.name}`,
         entry.name,
       );
@@ -48,7 +48,7 @@ async function walkDir(
       entry.name !== 'index.md'
     ) {
       const slug = entry.name.replace(/\.md$/, '');
-      const link = await buildLink(full, `${urlPrefix}/${slug}`);
+      const link = await buildLink(fullPath, `${urlPrefix}/${slug}`);
       if (link !== null) {
         collected.push({ name: slug, node: link.node, order: link.order });
       }
@@ -87,16 +87,16 @@ async function buildLink(absPath: string, href: string) {
 }
 
 async function buildGroup(
-  absDir: string,
+  absoluteDirectory: string,
   urlPrefix: string,
   folderName: string,
 ) {
-  const indexPath = join(absDir, 'index.md');
+  const indexPath = join(absoluteDirectory, 'index.md');
   const indexSource = await readFile(indexPath, 'utf8').catch(() => null);
   const indexFrontmatter =
     indexSource !== null ? parseFrontmatterOnly(indexSource) : {};
 
-  const items = await walkDir(absDir, urlPrefix);
+  const items = await walkDirectory(absoluteDirectory, urlPrefix);
   if (items.length === 0) {
     return null;
   }

@@ -96,7 +96,10 @@ export function buildReport(options: BuildReportOptions): Report {
 
   for (const locale of locales) {
     if (locale === defaultLocale) {
-      perLocale[locale] = { missing: 0, translated: totalMessages };
+      perLocale[locale] = {
+        missing: 0,
+        translated: totalMessages,
+      };
       continue;
     }
     const localeFile = readLocaleFile(join(localesPath, `${locale}.json`));

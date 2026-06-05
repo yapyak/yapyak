@@ -4,6 +4,7 @@ import { appendResponseHeader } from '../locale';
 import { subscribeHistory } from './history';
 
 const POLL_INTERVAL_MS = 1000;
+const COOKIE_MAX_AGE_SECONDS = 31_536_000;
 
 function subscribePoll(onChange: () => void): () => void {
   let intervalId: number | undefined;
@@ -90,7 +91,7 @@ export function cookie(options: CookieOptions): Persistence {
     },
     set(locale) {
       const value = encodeURIComponent(locale);
-      const cookieString = `${name}=${value}; path=/; max-age=31536000; samesite=lax`;
+      const cookieString = `${name}=${value}; path=/; max-age=${COOKIE_MAX_AGE_SECONDS}; samesite=lax`;
       if (typeof globalThis.document === 'undefined') {
         const applied = appendResponseHeader('Set-Cookie', cookieString);
         if (!applied && process.env.NODE_ENV !== 'production') {

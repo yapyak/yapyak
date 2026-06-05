@@ -63,14 +63,14 @@ export function exportCommand(options: ExportOptions): number {
   });
 
   if (split) {
-    const outDir = resolve(projectRoot, out as string);
-    if (!existsSync(outDir)) {
-      mkdirSync(outDir, { recursive: true });
+    const outputDirectory = resolve(projectRoot, out as string);
+    if (!existsSync(outputDirectory)) {
+      mkdirSync(outputDirectory, { recursive: true });
     }
     for (const [locale, data] of Object.entries(snapshot)) {
       const wrapped = { [locale]: data };
       writeFileSync(
-        join(outDir, `${locale}.json`),
+        join(outputDirectory, `${locale}.json`),
         stringifyCanonical(wrapped),
       );
     }

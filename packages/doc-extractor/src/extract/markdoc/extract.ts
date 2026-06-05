@@ -1,6 +1,6 @@
-import type { Page } from '../../build/manifest.ts';
+import type { Page } from '../../build/manifest';
 
-import { parseMarkdoc } from './parse.ts';
+import { parseMarkdoc } from './parse';
 import { readdir, readFile } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
 
@@ -82,29 +82,32 @@ function pageRedirectTarget(
 }
 
 function filePathToRoutePath(absolutePath: string, root: string): string {
-  const rel = relative(root, absolutePath).split(sep).join('/');
-  const withoutExtension = rel.replace(/\.md$/, '');
+  const relativePath = relative(root, absolutePath).split(sep).join('/');
+  const withoutExtension = relativePath.replace(/\.md$/, '');
   return withoutExtension.replace(/\/index$/, '');
 }
 
 async function walkMarkdownFiles(root: string): Promise<string[]> {
-  const result: string[] = [];
-  await collect(root);
-  return result;
+  const paths: string[] = [];
+  await collectMarkdownFiles(root, paths);
+  return paths;
+}
 
-  async function collect(directory: string) {
-    const entries = await readdir(directory, { withFileTypes: true }).catch(
-      () => [],
-    );
-    for (const entry of entries) {
-      const full = join(directory, entry.name);
-      if (entry.isDirectory()) {
-        await collect(full);
-        continue;
-      }
-      if (entry.isFile() && entry.name.endsWith('.md')) {
-        result.push(full);
-      }
+async function collectMarkdownFiles(
+  directory: string,
+  paths: string[],
+): Promise<void> {
+  const entries = await readdir(directory, { withFileTypes: true }).catch(
+    () => [],
+  );
+  for (const entry of entries) {
+    const fullPath = join(directory, entry.name);
+    if (entry.isDirectory()) {
+      await collectMarkdownFiles(fullPath, paths);
+      continue;
+    }
+    if (entry.isFile() && entry.name.endsWith('.md')) {
+      paths.push(fullPath);
     }
   }
 }

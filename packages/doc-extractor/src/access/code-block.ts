@@ -1,7 +1,7 @@
-import type { CodeBlock } from '../access/block.ts';
-import type { Page } from '../build/manifest.ts';
+import type { CodeBlock } from '../access/block';
+import type { Page } from '../build/manifest';
 
-import { walkBlocks } from './block.ts';
+import { walkBlocks } from './block';
 
 export function getCodeBlocks(page: Page): CodeBlock[] {
   const blocks: CodeBlock[] = [];

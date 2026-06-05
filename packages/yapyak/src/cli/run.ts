@@ -102,6 +102,7 @@ function printHelp(): void {
 `);
 }
 
-void run(process.argv.slice(2)).then((code) => {
+void (async (): Promise<void> => {
+  const code = await run(process.argv.slice(2));
   process.exit(code);
-});
+})();

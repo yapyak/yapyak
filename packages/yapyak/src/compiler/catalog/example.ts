@@ -89,14 +89,14 @@ function sourceFromKey(key: string): string {
 }
 
 function dedupeBySource(candidates: Candidate[]): Candidate[] {
-  const seen = new Map<string, Candidate>();
+  const bestBySource = new Map<string, Candidate>();
   for (const candidate of candidates) {
-    const existing = seen.get(candidate.source);
+    const existing = bestBySource.get(candidate.source);
     if (!existing || candidate.score > existing.score) {
-      seen.set(candidate.source, candidate);
+      bestBySource.set(candidate.source, candidate);
     }
   }
-  return [...seen.values()];
+  return [...bestBySource.values()];
 }
 
 function compareCandidates(
@@ -135,8 +135,8 @@ function similarity(a: string, b: string): number {
     return 0;
   }
   const distance = wordLevenshtein(wordsA, wordsB);
-  const max = Math.max(wordsA.length, wordsB.length);
-  return 1 - distance / max;
+  const maxLength = Math.max(wordsA.length, wordsB.length);
+  return 1 - distance / maxLength;
 }
 
 function tokenize(text: string): string[] {

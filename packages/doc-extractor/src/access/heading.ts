@@ -1,7 +1,7 @@
-import type { Block, HeadingBlock } from '../access/block.ts';
-import type { Page } from '../build/manifest.ts';
+import type { Block, HeadingBlock } from '../access/block';
+import type { Page } from '../build/manifest';
 
-import { blockToText } from './text.ts';
+import { blockToText } from './text';
 
 export interface HeadingEntry {
   id: string;

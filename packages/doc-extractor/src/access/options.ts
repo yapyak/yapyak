@@ -1,5 +1,5 @@
-import type { Manifest } from '../build/manifest.ts';
-import type { OptionsGroup, OptionsRegistry } from '../config.ts';
+import type { Manifest } from '../build/manifest';
+import type { OptionsGroup, OptionsRegistry } from '../config';
 
 export function getOptions(manifest: Manifest): OptionsRegistry {
   return manifest.options;

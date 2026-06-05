@@ -1,1 +1,1 @@
-export { extract } from './extract.ts';
+export { extract } from './extract';

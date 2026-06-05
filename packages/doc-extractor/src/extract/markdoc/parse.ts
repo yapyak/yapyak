@@ -6,12 +6,12 @@ import type {
   TableBlock,
   TableCellBlock,
   TableRowBlock,
-} from '../../access/block.ts';
-import type { MetaValue } from '../../build/manifest.ts';
+} from '../../access/block';
+import type { MetaValue } from '../../build/manifest';
 
 import Markdoc from '@markdoc/markdoc';
 
-import { slugify } from '../../slug.ts';
+import { slugify } from '../../slug';
 
 interface ParsedContent {
   blocks: Block[];

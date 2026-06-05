@@ -1,4 +1,4 @@
-import type { ReferenceManifest } from './type.ts';
+import type { ReferenceManifest } from './type';
 
 export type SymbolIndex = Map<string, string>;
 

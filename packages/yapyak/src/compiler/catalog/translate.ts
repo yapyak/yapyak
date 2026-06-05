@@ -285,29 +285,29 @@ function collectStubs(
 }
 
 function dedupeStubs(stubs: TranslationStub[]): TranslationStub[] {
-  const seen = new Set<string>();
-  const out: TranslationStub[] = [];
+  const seenKeys = new Set<string>();
+  const deduped: TranslationStub[] = [];
   for (const stub of stubs) {
     const key = `${stub.locale} ${stub.fileId} ${stubKey(stub)}`;
-    if (seen.has(key)) {
+    if (seenKeys.has(key)) {
       continue;
     }
-    seen.add(key);
-    out.push(stub);
+    seenKeys.add(key);
+    deduped.push(stub);
   }
-  return out;
+  return deduped;
 }
 
 function setEntry(
-  data: LocaleFile,
+  localeFile: LocaleFile,
   fileId: string,
   source: string,
   value: string,
 ): void {
-  let entry = data[fileId];
+  let entry = localeFile[fileId];
   if (!entry) {
     entry = {};
-    data[fileId] = entry;
+    localeFile[fileId] = entry;
   }
   entry[source] = value;
 }

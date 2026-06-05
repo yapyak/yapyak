@@ -252,31 +252,31 @@ function readMustache(
 function findMustacheClose(source: string, from: number): number {
   let i = from;
   while (i < source.length) {
-    const ch = source[i];
-    if (ch === '"' || ch === "'") {
-      i = skipString(source, i, ch);
+    const char = source[i];
+    if (char === '"' || char === "'") {
+      i = skipString(source, i, char);
       continue;
     }
-    if (ch === '`') {
+    if (char === '`') {
       i = skipTemplateLiteral(source, i);
       continue;
     }
-    if (ch === '/' && source[i + 1] === '/') {
+    if (char === '/' && source[i + 1] === '/') {
       i = skipLineComment(source, i);
       continue;
     }
-    if (ch === '/' && source[i + 1] === '*') {
+    if (char === '/' && source[i + 1] === '*') {
       i = skipBlockComment(source, i);
       continue;
     }
-    if (ch === '{') {
+    if (char === '{') {
       i = skipBalancedBraces(source, i);
       continue;
     }
-    if (ch === '}' && source[i + 1] === '}') {
+    if (char === '}' && source[i + 1] === '}') {
       return i;
     }
-    if (ch === '}') {
+    if (char === '}') {
       return -1;
     }
     i += 1;
@@ -287,12 +287,12 @@ function findMustacheClose(source: string, from: number): number {
 function skipString(source: string, from: number, quote: string): number {
   let i = from + 1;
   while (i < source.length) {
-    const ch = source[i];
-    if (ch === '\\') {
+    const char = source[i];
+    if (char === '\\') {
       i += 2;
       continue;
     }
-    if (ch === quote) {
+    if (char === quote) {
       return i + 1;
     }
     i += 1;
@@ -303,15 +303,15 @@ function skipString(source: string, from: number, quote: string): number {
 function skipTemplateLiteral(source: string, from: number): number {
   let i = from + 1;
   while (i < source.length) {
-    const ch = source[i];
-    if (ch === '\\') {
+    const char = source[i];
+    if (char === '\\') {
       i += 2;
       continue;
     }
-    if (ch === '`') {
+    if (char === '`') {
       return i + 1;
     }
-    if (ch === '$' && source[i + 1] === '{') {
+    if (char === '$' && source[i + 1] === '{') {
       i = skipBalancedBraces(source, i + 1);
       continue;
     }
@@ -341,26 +341,26 @@ function skipBalancedBraces(source: string, from: number): number {
   let depth = 1;
   let i = from + 1;
   while (i < source.length && depth > 0) {
-    const ch = source[i];
-    if (ch === '"' || ch === "'") {
-      i = skipString(source, i, ch);
+    const char = source[i];
+    if (char === '"' || char === "'") {
+      i = skipString(source, i, char);
       continue;
     }
-    if (ch === '`') {
+    if (char === '`') {
       i = skipTemplateLiteral(source, i);
       continue;
     }
-    if (ch === '/' && source[i + 1] === '/') {
+    if (char === '/' && source[i + 1] === '/') {
       i = skipLineComment(source, i);
       continue;
     }
-    if (ch === '/' && source[i + 1] === '*') {
+    if (char === '/' && source[i + 1] === '*') {
       i = skipBlockComment(source, i);
       continue;
     }
-    if (ch === '{') {
+    if (char === '{') {
       depth += 1;
-    } else if (ch === '}') depth -= 1;
+    } else if (char === '}') depth -= 1;
     i += 1;
   }
   return i;

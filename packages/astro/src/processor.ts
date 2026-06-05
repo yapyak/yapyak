@@ -175,8 +175,8 @@ function findEnclosingBraces(
 ): { end: number; start: number } | undefined {
   let openIdx = textStart - 1;
   while (openIdx >= 0 && source[openIdx] !== '{') {
-    const ch = source[openIdx] ?? '';
-    if (ch !== ' ' && ch !== '\t' && ch !== '\n' && ch !== '\r') {
+    const char = source[openIdx] ?? '';
+    if (char !== ' ' && char !== '\t' && char !== '\n' && char !== '\r') {
       return undefined;
     }
     openIdx -= 1;
@@ -187,10 +187,10 @@ function findEnclosingBraces(
   let depth = 1;
   let i = textStart;
   while (i < source.length) {
-    const ch = source[i];
-    if (ch === '{') {
+    const char = source[i];
+    if (char === '{') {
       depth += 1;
-    } else if (ch === '}') {
+    } else if (char === '}') {
       depth -= 1;
       if (depth === 0) {
         return { end: i + 1, start: openIdx };

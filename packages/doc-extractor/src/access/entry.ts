@@ -1,4 +1,4 @@
-import type { Manifest, Page } from '../build/manifest.ts';
+import type { Manifest, Page } from '../build/manifest';
 
 export type Entry =
   | { kind: 'page'; page: Page }

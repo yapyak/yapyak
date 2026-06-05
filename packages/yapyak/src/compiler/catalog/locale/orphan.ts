@@ -9,7 +9,7 @@ export interface OrphanEntry {
 
 export type OrphanCache = Record<string, Record<string, OrphanEntry>>;
 
-export interface OrphanLookup {
+interface OrphanLookup {
   entry: OrphanEntry;
   fileId: string;
 }

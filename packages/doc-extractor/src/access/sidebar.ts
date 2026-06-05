@@ -1,4 +1,4 @@
-import type { Manifest, SidebarNode } from '../build/manifest.ts';
+import type { Manifest, SidebarNode } from '../build/manifest';
 
 export function getSidebar(
   manifest: Manifest,

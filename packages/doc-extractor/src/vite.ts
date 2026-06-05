@@ -1,12 +1,13 @@
 import type { Plugin, ViteDevServer } from 'vite';
-import type { Config } from './config.ts';
+import type { Config } from './config';
 
-import { buildManifest } from './build/manifest.ts';
+import { buildManifest } from './build/manifest';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 
 const VIRTUAL_ID = 'virtual:doc-extractor';
 const RESOLVED_ID = '\0virtual:doc-extractor';
+const REBUILD_DEBOUNCE_MS = 200;
 
 function debounce<T extends (...args: never[]) => unknown>(
   fn: T,
@@ -50,7 +51,7 @@ export function docExtractor(options: Config): Plugin {
             `[doc-extractor] rebuild failed: ${String(error)}`,
           );
         }
-      }, 200);
+      }, REBUILD_DEBOUNCE_MS);
 
       const watchedDirectories = collectWatchedDirectories(options);
       for (const directory of watchedDirectories) {

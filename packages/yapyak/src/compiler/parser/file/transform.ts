@@ -527,16 +527,16 @@ function countReferences(code: string, name: string): number {
   let count = 0;
   let i = 0;
   while (i < code.length) {
-    const next = code.indexOf(name, i);
-    if (next === -1) {
+    const nextIndex = code.indexOf(name, i);
+    if (nextIndex === -1) {
       break;
     }
-    const before = code[next - 1];
-    const after = code[next + name.length];
+    const before = code[nextIndex - 1];
+    const after = code[nextIndex + name.length];
     if (!isIdentifierChar(before) && !isIdentifierChar(after)) {
       count += 1;
     }
-    i = next + name.length;
+    i = nextIndex + name.length;
   }
   return count;
 }

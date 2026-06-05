@@ -1,7 +1,7 @@
 import { setRequestReader, setResponseHeaderWriter } from '../locale';
 import { AsyncLocalStorage } from 'node:async_hooks';
 
-export interface Storage {
+interface Storage {
   headers: AsyncLocalStorage<Headers>;
   requests: AsyncLocalStorage<Request>;
 }

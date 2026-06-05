@@ -1,10 +1,10 @@
-import type { SidebarNode } from '../build/manifest.ts';
+import type { SidebarNode } from '../build/manifest';
 import type {
   ReferenceManifest,
   ReferenceModule,
-} from '../extract/typedoc/type.ts';
+} from '../extract/typedoc/type';
 
-import { symbolHref } from '../symbol-path.ts';
+import { symbolHref } from '../symbol-path';
 
 interface BuildTypedocPackageRootOptions {
   collapsible: boolean;
@@ -132,9 +132,13 @@ function topLevelSubpathChildren(
   const prefix = `${packageName}/`;
   const tops: ReferenceModule[] = [];
   for (const module of byId.values()) {
-    if (!module.id.startsWith(prefix)) continue;
+    if (!module.id.startsWith(prefix)) {
+      continue;
+    }
     const tail = module.id.slice(prefix.length);
-    if (tail.includes('/')) continue;
+    if (tail.includes('/')) {
+      continue;
+    }
     tops.push(module);
   }
   tops.sort((a, b) => a.id.localeCompare(b.id));

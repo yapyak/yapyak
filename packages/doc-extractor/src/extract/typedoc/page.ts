@@ -3,10 +3,10 @@ import type {
   ExportKind,
   TableCellBlock,
   TableRowBlock,
-} from '../../access/block.ts';
-import type { Page } from '../../build/manifest.ts';
-import type { SourceUrlConfig } from '../../config.ts';
-import type { SymbolIndex } from './symbol-index.ts';
+} from '../../access/block';
+import type { Page } from '../../build/manifest';
+import type { SourceUrlConfig } from '../../config';
+import type { SymbolIndex } from './symbol-index';
 import type {
   ReferenceExample,
   ReferenceExport,
@@ -19,11 +19,11 @@ import type {
   ReferenceTypeParameter,
   ReferenceVariable,
   TypeToken,
-} from './type.ts';
+} from './type';
 
-import { slugify } from '../../slug.ts';
-import { symbolHref as buildSymbolHref } from '../../symbol-path.ts';
-import { parseMarkdoc } from '../markdoc/parse.ts';
+import { slugify } from '../../slug';
+import { symbolHref as buildSymbolHref } from '../../symbol-path';
+import { parseMarkdoc } from '../markdoc/parse';
 import { relative, resolve } from 'node:path';
 
 let currentIndex: SymbolIndex = new Map();
@@ -425,14 +425,14 @@ function heading2(text: string): Block {
 function unifyTypeParameters(
   overloads: ReferenceOverload[],
 ): ReferenceTypeParameter[] {
-  const seen = new Set<string>();
+  const seenNames = new Set<string>();
   const unified: ReferenceTypeParameter[] = [];
   for (const overload of overloads) {
     for (const typeParameter of overload.typeParameters) {
-      if (seen.has(typeParameter.name)) {
+      if (seenNames.has(typeParameter.name)) {
         continue;
       }
-      seen.add(typeParameter.name);
+      seenNames.add(typeParameter.name);
       unified.push(typeParameter);
     }
   }

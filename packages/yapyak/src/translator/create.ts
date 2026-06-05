@@ -61,7 +61,7 @@ export function createTranslator(options: CreateTranslatorOptions): Translator {
     const uniqueRequests: TranslateRequest[] = [];
     const indexOfUnique = new Map<string, number>();
     const requestToUnique = new Array<number>(requests.length);
-    const targetLocaleSet = new Set<string>();
+    const uniqueTargetLocales = new Set<string>();
     for (let i = 0; i < requests.length; i++) {
       const request = requests[i];
       if (!request) {
@@ -75,9 +75,9 @@ export function createTranslator(options: CreateTranslatorOptions): Translator {
         uniqueRequests.push(request);
       }
       requestToUnique[i] = index;
-      targetLocaleSet.add(request.targetLocale);
+      uniqueTargetLocales.add(request.targetLocale);
     }
-    const targetLocales = [...targetLocaleSet].sort();
+    const targetLocales = [...uniqueTargetLocales].sort();
 
     const chunks: TranslateRequest[][] = [];
     for (let i = 0; i < uniqueRequests.length; i += batchSize) {

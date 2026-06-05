@@ -4,8 +4,8 @@ const stripAnsi = (value: string): string => value.replace(/\x1b\[\d+m/g, '');
 const visualLength = (value: string): number => stripAnsi(value).length;
 
 const padEndVisual = (value: string, width: number): string => {
-  const len = visualLength(value);
-  return len >= width ? value : value + ' '.repeat(width - len);
+  const length = visualLength(value);
+  return length >= width ? value : value + ' '.repeat(width - length);
 };
 
 interface TableOptions {
@@ -29,9 +29,9 @@ export function renderTable(options: TableOptions): string {
     const padded = cells.map((cell, columnIndex) => {
       const width = widths[columnIndex] ?? 0;
       const alignment = align[columnIndex] ?? 'left';
-      const len = visualLength(cell);
+      const length = visualLength(cell);
       if (alignment === 'right') {
-        return ' '.repeat(Math.max(0, width - len)) + cell;
+        return ' '.repeat(Math.max(0, width - length)) + cell;
       }
       return padEndVisual(cell, width);
     });

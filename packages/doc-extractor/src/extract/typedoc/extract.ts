@@ -26,7 +26,7 @@ import type {
   ReferenceTypeParameter,
   ReferenceVariable,
   TypeToken,
-} from './type.ts';
+} from './type';
 
 import { Application, ReflectionKind, TSConfigReader } from 'typedoc';
 
@@ -99,16 +99,16 @@ async function loadEntries(
   const raw = await readFile(join(packageDir, 'package.json'), 'utf8');
   const pkg = JSON.parse(raw) as PackageJson;
 
-  const allowed = new Set<string>(['.']);
+  const allowedSubpaths = new Set<string>(['.']);
   if (subpaths) {
     for (const subpath of subpaths) {
-      allowed.add(subpath);
+      allowedSubpaths.add(subpath);
     }
   }
 
   const entries: EntryPoint[] = [];
   for (const [subpath, conditions] of Object.entries(pkg.exports)) {
-    if (!allowed.has(subpath)) {
+    if (!allowedSubpaths.has(subpath)) {
       continue;
     }
     const distPath =
@@ -782,19 +782,19 @@ function buildFunctionSignature(
   parameters: ReferenceParameter[],
   returnType: TypeToken[],
 ): string {
-  const tp = buildTypeParameterList(typeParameters);
+  const typeParameterList = buildTypeParameterList(typeParameters);
   const params = parameters.map(paramToText).join(', ');
-  return `function ${name}${tp}(${params}): ${stringifyTokens(returnType)};`;
+  return `function ${name}${typeParameterList}(${params}): ${stringifyTokens(returnType)};`;
 }
 
 function buildInterfaceSignature(
   reflection: DeclarationReflection,
   context: ExtractContext,
 ): string {
-  const tp = (reflection.typeParameters ?? []).map((param) =>
+  const typeParameters = (reflection.typeParameters ?? []).map((param) =>
     convertTypeParameter(param, context),
   );
-  return `interface ${reflection.name}${buildTypeParameterList(tp)}`;
+  return `interface ${reflection.name}${buildTypeParameterList(typeParameters)}`;
 }
 
 function partsToMarkdown(

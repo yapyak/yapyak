@@ -1,1 +1,1 @@
-export { extractTypedoc } from './extract.ts';
+export { extractTypedoc } from './extract';

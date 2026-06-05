@@ -6,6 +6,7 @@ import type {
   LocaleWarning,
 } from 'yapyak/compiler';
 import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
+import type { Translator } from 'yapyak/translator';
 
 import {
   autoTranslate,
@@ -249,36 +250,55 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
     info(
       `[yapyak] translating ${filtered.length} ${pluralize('string', filtered.length)} × ${targetLocaleCount} ${pluralize('locale', targetLocaleCount)} via ${translator.id}…`,
     );
-    void autoTranslate({
-      cacheDir,
+    void runAutoTranslate({
       defaultLocale,
-      examples: config.examples,
+      filtered,
       locales,
-      localesDir: config.localesDir,
-      messages: filtered,
-      projectRoot,
+      startedAt,
       translator,
-    })
-      .then((result) => {
-        if (result.translated > 0) {
-          localeCache = null;
-        }
-        const elapsed = formatElapsed(Date.now() - startedAt);
-        if (result.errors.length === 0) {
-          info(`[yapyak] ✓ ${result.translated} translated · ${elapsed}`);
-        } else {
-          info(
-            `[yapyak] ${result.translated} translated, ${result.errors.length} failed · ${elapsed}`,
-          );
-        }
-        for (const group of groupTranslationErrors(result.errors)) {
-          warn(renderTranslationErrorGroup(group));
-        }
-      })
-      .catch((error: unknown) => {
-        const elapsed = formatElapsed(Date.now() - startedAt);
-        warn(`[yapyak] auto-translate error · ${elapsed} · ${String(error)}`);
+    });
+  }
+
+  async function runAutoTranslate(input: {
+    defaultLocale: string;
+    filtered: ExtractedMessage[];
+    locales: string[];
+    startedAt: number;
+    translator: Translator;
+  }): Promise<void> {
+    const config = getNormalized();
+    if (!input.translator) {
+      return;
+    }
+    try {
+      const result = await autoTranslate({
+        cacheDir,
+        defaultLocale: input.defaultLocale,
+        examples: config.examples,
+        locales: input.locales,
+        localesDir: config.localesDir,
+        messages: input.filtered,
+        projectRoot,
+        translator: input.translator,
       });
+      if (result.translated > 0) {
+        localeCache = null;
+      }
+      const elapsed = formatElapsed(Date.now() - input.startedAt);
+      if (result.errors.length === 0) {
+        info(`[yapyak] ✓ ${result.translated} translated · ${elapsed}`);
+      } else {
+        info(
+          `[yapyak] ${result.translated} translated, ${result.errors.length} failed · ${elapsed}`,
+        );
+      }
+      for (const group of groupTranslationErrors(result.errors)) {
+        warn(renderTranslationErrorGroup(group));
+      }
+    } catch (error: unknown) {
+      const elapsed = formatElapsed(Date.now() - input.startedAt);
+      warn(`[yapyak] auto-translate error · ${elapsed} · ${String(error)}`);
+    }
   }
 
   function info(message: string): void {
@@ -370,13 +390,13 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         server.watcher.add(configFile);
       }
 
-      const pending = new Map<string, 'add' | 'unlink'>();
+      const pendingActionByFileId = new Map<string, 'add' | 'unlink'>();
       const flush = debounce(() => {
-        if (pending.size === 0) {
+        if (pendingActionByFileId.size === 0) {
           return;
         }
         const { locales } = discover();
-        for (const [fileId, kind] of pending) {
+        for (const [fileId, kind] of pendingActionByFileId) {
           if (kind === 'unlink') {
             messagesByFile.delete(fileId);
             continue;
@@ -401,19 +421,23 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
             messagesByFile.delete(fileId);
           }
         }
-        pending.clear();
+        pendingActionByFileId.clear();
         syncAll();
         fillStubs();
       }, 50);
       teardownCallbacks.push(flush.cancel);
 
       const isLocaleFile = (path: string): boolean => {
-        const dir = join(projectRoot, getNormalized().localesDir);
-        const rel = relative(dir, path);
-        if (rel === '' || rel.startsWith('..') || rel.includes(sep)) {
+        const directory = join(projectRoot, getNormalized().localesDir);
+        const relativePath = relative(directory, path);
+        if (
+          relativePath === '' ||
+          relativePath.startsWith('..') ||
+          relativePath.includes(sep)
+        ) {
           return false;
         }
-        return extname(rel) === '.json';
+        return extname(relativePath) === '.json';
       };
 
       const localeFromPath = (path: string): string => {
@@ -475,7 +499,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
 
       server.watcher.on('add', (path: string) => {
         if (isCandidateId(path, filter)) {
-          pending.set(toFileId(projectRoot, path), 'add');
+          pendingActionByFileId.set(toFileId(projectRoot, path), 'add');
           flush();
           return;
         }
@@ -506,7 +530,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
 
       server.watcher.on('unlink', (path: string) => {
         if (isCandidateId(path, filter)) {
-          pending.set(toFileId(projectRoot, path), 'unlink');
+          pendingActionByFileId.set(toFileId(projectRoot, path), 'unlink');
           flush();
           return;
         }
@@ -659,7 +683,7 @@ function discoverMissingSources(
   messages: ExtractedMessage[],
   locales: string[],
   defaultLocale: string,
-  data: LocaleData,
+  localeData: LocaleData,
 ): Set<string> {
   const missing = new Set<string>();
   for (const message of messages) {
@@ -671,7 +695,7 @@ function discoverMissingSources(
       if (locale === defaultLocale) {
         continue;
       }
-      const localeFile = data[locale];
+      const localeFile = localeData[locale];
       for (const location of message.locations) {
         const existing = localeFile?.[location.fileId]?.[message.source];
         if (typeof existing !== 'string' || existing === '') {
@@ -716,14 +740,14 @@ function isCandidateId(id: string, filter: (id: string) => boolean): boolean {
 }
 
 function runYapyakCommand(args: string): string {
-  const ua = process.env.npm_config_user_agent ?? '';
-  if (ua.startsWith('pnpm/')) {
+  const userAgent = process.env.npm_config_user_agent ?? '';
+  if (userAgent.startsWith('pnpm/')) {
     return `pnpm yapyak ${args}`;
   }
-  if (ua.startsWith('yarn/')) {
+  if (userAgent.startsWith('yarn/')) {
     return `yarn yapyak ${args}`;
   }
-  if (ua.startsWith('bun/')) {
+  if (userAgent.startsWith('bun/')) {
     return `bunx yapyak ${args}`;
   }
   return `npx yapyak ${args}`;
@@ -781,7 +805,11 @@ function groupTranslationErrors(
     const key = `${entry.locale}\0${String(entry.error)}`;
     let group = groups.get(key);
     if (!group) {
-      group = { entries: [], error: entry.error, locale: entry.locale };
+      group = {
+        entries: [],
+        error: entry.error,
+        locale: entry.locale,
+      };
       groups.set(key, group);
     }
     group.entries.push(entry);
@@ -827,14 +855,14 @@ function areMessagesEqual(
       return false;
     }
     for (let j = 0; j < left.locations.length; j++) {
-      const ll = left.locations[j];
-      const rl = right.locations[j];
-      if (!ll || !rl) {
+      const leftLocation = left.locations[j];
+      const rightLocation = right.locations[j];
+      if (!leftLocation || !rightLocation) {
         return false;
       }
       if (
-        ll.range.start.line !== rl.range.start.line ||
-        ll.range.start.column !== rl.range.start.column
+        leftLocation.range.start.line !== rightLocation.range.start.line ||
+        leftLocation.range.start.column !== rightLocation.range.start.column
       ) {
         return false;
       }

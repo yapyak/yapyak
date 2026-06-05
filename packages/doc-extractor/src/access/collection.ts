@@ -1,4 +1,4 @@
-import type { Collection, Manifest } from '../build/manifest.ts';
+import type { Collection, Manifest } from '../build/manifest';
 
 export function getCollection(
   manifest: Manifest,

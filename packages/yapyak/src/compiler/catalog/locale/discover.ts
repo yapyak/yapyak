@@ -25,9 +25,9 @@ export interface DiscoverLocalesResult {
 export function discoverLocales(
   options: DiscoverLocalesOptions,
 ): DiscoverLocalesResult {
-  const dir = join(options.projectRoot, options.localesDir);
-  const fileLocales = existsSync(dir)
-    ? readdirSync(dir)
+  const directory = join(options.projectRoot, options.localesDir);
+  const fileLocales = existsSync(directory)
+    ? readdirSync(directory)
         .filter((name) => name.endsWith('.json'))
         .map((name) => name.replace(/\.json$/, ''))
         .sort()

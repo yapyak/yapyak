@@ -3,7 +3,7 @@ import type {
   Page,
   SidebarLink,
   SidebarNode,
-} from '../build/manifest.ts';
+} from '../build/manifest';
 
 export interface AdjacentPages {
   nextPage: Page | null;

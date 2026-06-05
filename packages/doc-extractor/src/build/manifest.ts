@@ -1,24 +1,24 @@
-import type { Block } from '../access/block.ts';
+import type { Block } from '../access/block';
 import type {
   CollectionConfig,
   Config,
   OptionsRegistry,
   SourceUrlConfig,
   TypedocPackage,
-} from '../config.ts';
+} from '../config';
 
-import { extractMarkdoc } from '../extract/markdoc/extract.ts';
-import { extractTypedoc } from '../extract/typedoc/index.ts';
+import { extractMarkdoc } from '../extract/markdoc/extract';
+import { extractTypedoc } from '../extract/typedoc';
 import {
   buildModulePage,
   buildSymbolPage,
   buildTypedocPackageIndexPage,
-} from '../extract/typedoc/page.ts';
-import { buildSymbolIndex } from '../extract/typedoc/symbol-index.ts';
-import { slugify } from '../slug.ts';
-import { encodeSymbolSegment } from '../symbol-path.ts';
-import { buildMarkdocSidebar } from './markdoc-sidebar.ts';
-import { buildTypedocPackageRoot } from './typedoc-package-root.ts';
+} from '../extract/typedoc/page';
+import { buildSymbolIndex } from '../extract/typedoc/symbol-index';
+import { slugify } from '../slug';
+import { encodeSymbolSegment } from '../symbol-path';
+import { buildMarkdocSidebar } from './markdoc-sidebar';
+import { buildTypedocPackageRoot } from './typedoc-package-root';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 

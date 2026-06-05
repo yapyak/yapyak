@@ -111,7 +111,11 @@ function walkBindings(
 ): void {
   let scope = parentScope;
   if (createsBlockScope(node) && !scopeByNode.has(node)) {
-    scope = { bindings: new Map(), node, parent: parentScope };
+    scope = {
+      bindings: new Map(),
+      node,
+      parent: parentScope,
+    };
     scopeByNode.set(node, scope);
   }
 
