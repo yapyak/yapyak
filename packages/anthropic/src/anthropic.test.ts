@@ -407,7 +407,7 @@ describe('anthropic', () => {
         targetLocale: 'sv',
       });
       const body = stub.body() as { messages: Array<{ content: string }> };
-      // biome-ignore lint/style/noNonNullAssertion: stubbed payload always has one message
+      // biome-ignore lint/style/noNonNullAssertion: yap yap yap
       const items = JSON.parse(body.messages[0]!.content) as Array<{
         disambiguation?: string;
       }>;

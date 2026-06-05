@@ -33,8 +33,8 @@ export function discoverLocales(
         .sort()
     : [];
   const defaultLocale = options.defaultLocale || 'en';
-  const set = new Set<string>([defaultLocale, ...fileLocales]);
-  const locales = [...set].sort();
+  const uniqueLocales = new Set<string>([defaultLocale, ...fileLocales]);
+  const locales = [...uniqueLocales].sort();
   const warnings: LocaleWarning[] = [];
   for (const code of locales) {
     const result = validateLocaleCode(code);

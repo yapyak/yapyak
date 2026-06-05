@@ -182,11 +182,11 @@ function createTFn(boundLocale?: string): TFn {
   ): TReturn<ExtractTags<T>> | TInChain {
     if (source === undefined) {
       return {
-        at: <U extends string>(
+        at: <TSource extends string>(
           _context: string,
-          atSource: U,
-          atParams?: TParams<U>,
-        ): TReturn<ExtractTags<U>> => {
+          atSource: TSource,
+          atParams?: TParams<TSource>,
+        ): TReturn<ExtractTags<TSource>> => {
           const scoped = createTFn(locale);
           return scoped(atSource, atParams);
         },
@@ -209,11 +209,11 @@ function createTFn(boundLocale?: string): TFn {
   ): TReturn<ExtractTags<T>> | TAtChain {
     if (source === undefined) {
       return {
-        in: <U extends string>(
+        in: <TSource extends string>(
           locale: string,
-          inSource: U,
-          inParams?: TParams<U>,
-        ): TReturn<ExtractTags<U>> => {
+          inSource: TSource,
+          inParams?: TParams<TSource>,
+        ): TReturn<ExtractTags<TSource>> => {
           const scoped = createTFn(locale);
           return scoped(inSource, inParams);
         },

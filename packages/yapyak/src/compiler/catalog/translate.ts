@@ -120,8 +120,8 @@ export async function autoTranslate(
   }
 
   for (const locale of touchedLocales) {
-    const data = localeFiles.get(locale);
-    if (!data) {
+    const localeFile = localeFiles.get(locale);
+    if (!localeFile) {
       continue;
     }
     const localePath = join(
@@ -133,7 +133,7 @@ export async function autoTranslate(
       continue;
     }
     writeLocaleFile({
-      after: data,
+      after: localeFile,
       extractedSources,
       filePath: localePath,
     });

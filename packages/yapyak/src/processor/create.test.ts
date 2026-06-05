@@ -27,7 +27,7 @@ describe('createProcessor', () => {
     });
 
     processor.applyImport(
-      // biome-ignore lint/suspicious/noExplicitAny: needed
+      // biome-ignore lint/suspicious/noExplicitAny: yap yap yap
       {} as any,
       'source',
       "import { t } from 'yapyak';",

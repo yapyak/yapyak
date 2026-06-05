@@ -423,8 +423,8 @@ describe('yapyak', () => {
 
       await vi.waitFor(
         () => {
-          const data = JSON.parse(readFileSync(localePath, 'utf8'));
-          expect(data['src/a.tsx']?.Hello).toBe('Hej');
+          const localeJson = JSON.parse(readFileSync(localePath, 'utf8'));
+          expect(localeJson['src/a.tsx']?.Hello).toBe('Hej');
         },
         { interval: 20, timeout: 2000 },
       );
@@ -449,15 +449,15 @@ describe('yapyak', () => {
 
       await vi.waitFor(
         () => {
-          const data = JSON.parse(readFileSync(localePath, 'utf8'));
-          expect(data['src/a.tsx']).toBeDefined();
+          const localeJson = JSON.parse(readFileSync(localePath, 'utf8'));
+          expect(localeJson['src/a.tsx']).toBeDefined();
         },
         { interval: 20, timeout: 2000 },
       );
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      const data = JSON.parse(readFileSync(localePath, 'utf8'));
-      expect(data['src/a.tsx']).toEqual({ Hello: '', World: '' });
+      const localeJson = JSON.parse(readFileSync(localePath, 'utf8'));
+      expect(localeJson['src/a.tsx']).toEqual({ Hello: '', World: '' });
     });
 
     it('blocks auto-translate when the threshold is `0`', async () => {
@@ -479,15 +479,15 @@ describe('yapyak', () => {
 
       await vi.waitFor(
         () => {
-          const data = JSON.parse(readFileSync(localePath, 'utf8'));
-          expect(data['src/a.tsx']).toBeDefined();
+          const localeJson = JSON.parse(readFileSync(localePath, 'utf8'));
+          expect(localeJson['src/a.tsx']).toBeDefined();
         },
         { interval: 20, timeout: 2000 },
       );
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      const data = JSON.parse(readFileSync(localePath, 'utf8'));
-      expect(data['src/a.tsx']).toEqual({ Hello: '' });
+      const localeJson = JSON.parse(readFileSync(localePath, 'utf8'));
+      expect(localeJson['src/a.tsx']).toEqual({ Hello: '' });
     });
   });
 

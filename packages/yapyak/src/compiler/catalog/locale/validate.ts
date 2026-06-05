@@ -170,11 +170,11 @@ export function validateIcuPairs(input: ValidateIcuPairsInput): Diagnostic[] {
 function byName(
   placeholders: readonly Placeholder[],
 ): Map<string, Placeholder> {
-  const map = new Map<string, Placeholder>();
+  const placeholdersByName = new Map<string, Placeholder>();
   for (const placeholder of placeholders) {
-    map.set(placeholder.name, placeholder);
+    placeholdersByName.set(placeholder.name, placeholder);
   }
-  return map;
+  return placeholdersByName;
 }
 
 function readTarget(

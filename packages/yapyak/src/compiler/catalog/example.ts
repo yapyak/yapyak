@@ -1,6 +1,5 @@
 import type { TranslationExample } from '../../translator';
-import type { LocaleData } from './locale/data';
-import type { OrphanCache } from './locale/orphan';
+import type { LocaleData, OrphanCache } from './locale';
 
 export interface CollectExamplesInput {
   currentFileId: string;

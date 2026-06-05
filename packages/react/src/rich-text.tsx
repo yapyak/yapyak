@@ -48,7 +48,7 @@ const reactRenderer = {
       typeof part === 'string' ? (
         part
       ) : (
-        // biome-ignore lint/suspicious/noArrayIndexKey: needed
+        // biome-ignore lint/suspicious/noArrayIndexKey: yap yap yap
         <Fragment key={index}>{part}</Fragment>
       ),
     );

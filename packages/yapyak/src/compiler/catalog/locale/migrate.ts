@@ -103,8 +103,8 @@ export function migrateLocales(
       options.localesDir,
       `${locale}.json`,
     );
-    const data = readLocaleFile(localePath);
-    const fileEntries = data[options.fileId];
+    const localeFile = readLocaleFile(localePath);
+    const fileEntries = localeFile[options.fileId];
     if (!fileEntries) {
       continue;
     }
@@ -123,9 +123,9 @@ export function migrateLocales(
       hasChanged = true;
     }
     if (hasChanged) {
-      data[options.fileId] = next;
+      localeFile[options.fileId] = next;
       writeLocaleFile({
-        after: data,
+        after: localeFile,
         extractedSources: options.extractedSources,
         filePath: localePath,
       });
