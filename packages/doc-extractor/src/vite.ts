@@ -81,46 +81,24 @@ export function docExtractor(options: Config): Plugin {
       return `
 import manifest from ${manifestPath};
 import {
-  blockToText as _blockToText,
   findAdjacentPages as _findAdjacentPages,
-  getAllPages as _getAllPages,
-  getCodeBlocks as _getCodeBlocks,
-  getCollection as _getCollection,
   getEntry as _getEntry,
-  getExcerpt as _getExcerpt,
   getFirstPage as _getFirstPage,
   getHeadings as _getHeadings,
-  getInternalLinks as _getInternalLinks,
   getOptions as _getOptions,
   getOptionsGroup as _getOptionsGroup,
-  getPage as _getPage,
   getSidebar as _getSidebar,
-  getText as _getText,
-  isBlock as _isBlock,
-  resolveSymbol as _resolveSymbol,
-  walkBlocks as _walkBlocks,
 } from '@yapyak/doc-extractor';
 
 export const doc = {
   manifest,
-  getPage: (collection, path) => _getPage(manifest, collection, path),
   getEntry: (collection, path) => _getEntry(manifest, collection, path),
   findAdjacentPages: (page) => _findAdjacentPages(manifest, page),
   getSidebar: (collection) => _getSidebar(manifest, collection),
-  resolveSymbol: (name) => _resolveSymbol(manifest, name),
-  getAllPages: () => _getAllPages(manifest),
-  getCollection: (collection) => _getCollection(manifest, collection),
   getFirstPage: (collection) => _getFirstPage(manifest, collection),
   getOptions: () => _getOptions(manifest),
   getOptionsGroup: (groupId) => _getOptionsGroup(manifest, groupId),
   getHeadings: _getHeadings,
-  getText: _getText,
-  getExcerpt: _getExcerpt,
-  getInternalLinks: _getInternalLinks,
-  getCodeBlocks: _getCodeBlocks,
-  isBlock: _isBlock,
-  blockToText: _blockToText,
-  walkBlocks: _walkBlocks,
 };
 `;
     },

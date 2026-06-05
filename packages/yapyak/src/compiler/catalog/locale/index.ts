@@ -38,7 +38,6 @@ export {
   getDefaultCacheDir,
   type OrphanCache,
   type OrphanEntry,
-  type OrphanLookup,
   readOrphans,
 } from './orphan';
 export {
