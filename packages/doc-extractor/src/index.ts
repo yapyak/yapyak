@@ -70,8 +70,13 @@ export type {
   TypedocSource,
 } from './config';
 
+export { getCodeBlocks } from './access/code-block';
+export { getCollection } from './access/collection';
 export { getEntry } from './access/entry';
+export { getExcerpt } from './access/excerpt';
 export { getHeadings } from './access/heading';
+export { getInternalLinks } from './access/internal-link';
 export { getOptions, getOptionsGroup } from './access/options';
-export { findAdjacentPages, getFirstPage } from './access/page';
+export { findAdjacentPages, getFirstPage, getPage } from './access/page';
 export { getSidebar } from './access/sidebar';
+export { resolveSymbol } from './access/symbol';

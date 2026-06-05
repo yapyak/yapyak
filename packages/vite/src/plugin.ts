@@ -42,9 +42,11 @@ function isRuntimeExternal(id: string): boolean {
 const HMR_LISTENER = [
   'if (import.meta.hot) {',
   "  import.meta.hot.on('yapyak:locale-added', (data) => {",
+  // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
   "    console.log(`[yapyak] New locale '${data.locale}' detected. ${data.hint}`);",
   '  });',
   "  import.meta.hot.on('yapyak:locale-removed', (data) => {",
+  // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
   "    console.log(`[yapyak] Locale '${data.locale}' removed.`);",
   '  });',
   '}',

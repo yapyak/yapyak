@@ -22,6 +22,14 @@ function findCalls(sf: ts.SourceFile): ts.CallExpression[] {
   return discoverCalls(sf, resolveBindings(sf)).callSites.map((c) => c.node);
 }
 
+function findFirstCall(sf: ts.SourceFile): ts.CallExpression {
+  const [call] = findCalls(sf);
+  if (!call) {
+    throw new Error('expected at least one call site');
+  }
+  return call;
+}
+
 describe('resolveCallSiteContext', () => {
   it('returns the function component name', () => {
     const sf = parseInline(`
@@ -30,8 +38,7 @@ describe('resolveCallSiteContext', () => {
         return t('Hello');
       }
     `);
-    const [call] = findCalls(sf);
-    const ctx = resolveCallSiteContext(call!, sf);
+    const ctx = resolveCallSiteContext(findFirstCall(sf), sf);
     expect(ctx.componentName).toBe('Greeting');
   });
 
@@ -40,8 +47,7 @@ describe('resolveCallSiteContext', () => {
       import { t } from 'yapyak';
       export const Greeting = () => t('Hello');
     `);
-    const [call] = findCalls(sf);
-    const ctx = resolveCallSiteContext(call!, sf);
+    const ctx = resolveCallSiteContext(findFirstCall(sf), sf);
     expect(ctx.componentName).toBe('Greeting');
   });
 
@@ -51,8 +57,7 @@ describe('resolveCallSiteContext', () => {
       const forwardRef = (fn: unknown) => fn;
       export const Greeting = forwardRef(() => t('Hello'));
     `);
-    const [call] = findCalls(sf);
-    const ctx = resolveCallSiteContext(call!, sf);
+    const ctx = resolveCallSiteContext(findFirstCall(sf), sf);
     expect(ctx.componentName).toBe('Greeting');
   });
 
@@ -62,8 +67,7 @@ describe('resolveCallSiteContext', () => {
       const memo = (fn: unknown) => fn;
       export const Greeting = memo(() => t('Hello'));
     `);
-    const [call] = findCalls(sf);
-    const ctx = resolveCallSiteContext(call!, sf);
+    const ctx = resolveCallSiteContext(findFirstCall(sf), sf);
     expect(ctx.componentName).toBe('Greeting');
   });
 
@@ -74,8 +78,7 @@ describe('resolveCallSiteContext', () => {
         return t('Hello');
       }
     `);
-    const [call] = findCalls(sf);
-    const ctx = resolveCallSiteContext(call!, sf);
+    const ctx = resolveCallSiteContext(findFirstCall(sf), sf);
     expect(ctx.componentName).toBeUndefined();
   });
 
@@ -89,8 +92,7 @@ describe('resolveCallSiteContext', () => {
         return useLabel();
       }
     `);
-    const [call] = findCalls(sf);
-    const ctx = resolveCallSiteContext(call!, sf);
+    const ctx = resolveCallSiteContext(findFirstCall(sf), sf);
     expect(ctx.componentName).toBe('Greeting');
   });
 
@@ -101,8 +103,7 @@ describe('resolveCallSiteContext', () => {
         return <article><header><h1>{t('Hello')}</h1></header></article>;
       }
     `);
-    const [call] = findCalls(sf);
-    const ctx = resolveCallSiteContext(call!, sf);
+    const ctx = resolveCallSiteContext(findFirstCall(sf), sf);
     expect(ctx.enclosingJsx).toBe('h1');
     expect(ctx.componentName).toBe('Greeting');
   });
@@ -114,8 +115,7 @@ describe('resolveCallSiteContext', () => {
         return <Button label={t('Save')} />;
       }
     `);
-    const [call] = findCalls(sf);
-    const ctx = resolveCallSiteContext(call!, sf);
+    const ctx = resolveCallSiteContext(findFirstCall(sf), sf);
     expect(ctx.enclosingJsx).toBe('Button');
   });
 
@@ -127,8 +127,7 @@ describe('resolveCallSiteContext', () => {
         return <Menu.Item>{t('Save')}</Menu.Item>;
       }
     `);
-    const [call] = findCalls(sf);
-    const ctx = resolveCallSiteContext(call!, sf);
+    const ctx = resolveCallSiteContext(findFirstCall(sf), sf);
     expect(ctx.enclosingJsx).toBe('Menu.Item');
   });
 
@@ -166,8 +165,7 @@ describe('resolveCallSiteContext', () => {
       import { t } from 'yapyak';
       export const greeting = t('Hello');
     `);
-    const [call] = findCalls(sf);
-    const ctx = resolveCallSiteContext(call!, sf);
+    const ctx = resolveCallSiteContext(findFirstCall(sf), sf);
     expect(ctx.componentName).toBeUndefined();
     expect(ctx.enclosingJsx).toBeUndefined();
   });
@@ -177,8 +175,7 @@ describe('resolveCallSiteContext', () => {
       import { t } from 'yapyak';
       const items = ['a'].map((item) => t('Item: {item}', { item }));
     `);
-    const [call] = findCalls(sf);
-    const ctx = resolveCallSiteContext(call!, sf);
+    const ctx = resolveCallSiteContext(findFirstCall(sf), sf);
     expect(ctx.componentName).toBeUndefined();
   });
 });

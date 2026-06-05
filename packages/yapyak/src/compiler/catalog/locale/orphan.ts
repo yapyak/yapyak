@@ -18,7 +18,7 @@ export function getDefaultCacheDir(projectRoot: string): string {
   return join(projectRoot, 'node_modules', '.cache', 'yapyak');
 }
 
-export function getOrphansFilePath(cacheDir: string): string {
+function getOrphansFilePath(cacheDir: string): string {
   return join(cacheDir, 'orphans.json');
 }
 

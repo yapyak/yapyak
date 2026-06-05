@@ -54,6 +54,7 @@ describe('transformFile', () => {
           }
         `,
       });
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
       expect(code).toContain('`Hi ${name}`');
       expect(code).not.toContain("t('Hi {name}'");
     });
@@ -68,6 +69,7 @@ describe('transformFile', () => {
           }
         `,
       });
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
       expect(code).toContain('`Hi ${name}, you have ${count} messages`');
     });
 
@@ -82,6 +84,7 @@ describe('transformFile', () => {
           declare function getName(): string;
         `,
       });
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
       expect(code).toContain('`Hi ${getName()}`');
     });
 
@@ -459,6 +462,7 @@ describe('transformFile', () => {
         source:
           "import { t } from 'yapyak';\nexport function x(name) {\n  return t.at('greeting', 'Hi {name}', { name });\n}\n",
       });
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
       expect(code).toContain('`Hi ${name}`');
       expect(code).not.toContain('t.at(');
     });

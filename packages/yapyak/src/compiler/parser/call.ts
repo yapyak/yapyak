@@ -114,7 +114,7 @@ function extractMemberCall(
   }
 
   if (ts.isIdentifier(receiver)) {
-    extractDirectModifier(call, callee, receiver, methodName, context);
+    extractDirectModifier(call, receiver, methodName, context);
     return;
   }
 
@@ -157,7 +157,6 @@ function extractNamespaceBase(
 
 function extractDirectModifier(
   call: ts.CallExpression,
-  callee: ts.PropertyAccessExpression,
   receiver: ts.Identifier,
   methodName: string,
   context: DiscoveryContext,

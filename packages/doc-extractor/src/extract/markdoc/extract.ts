@@ -35,7 +35,7 @@ export async function extractMarkdoc(
   return { pages, redirects, watchedFiles: files };
 }
 
-export async function loadMarkdocPage(
+async function loadMarkdocPage(
   absolutePath: string,
   href: string,
 ): Promise<Page | null> {
