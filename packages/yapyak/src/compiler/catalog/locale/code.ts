@@ -254,14 +254,14 @@ function suggestClosest(input: string): string | undefined {
   if (input.length === 0) {
     return undefined;
   }
-  const fromCommon = closestIn(input, COMMON_CODES);
+  const fromCommon = findClosestIn(input, COMMON_CODES);
   if (fromCommon) {
     return fromCommon;
   }
-  return closestIn(input, ISO_639_1);
+  return findClosestIn(input, ISO_639_1);
 }
 
-function closestIn(
+function findClosestIn(
   input: string,
   candidates: Iterable<string>,
 ): string | undefined {

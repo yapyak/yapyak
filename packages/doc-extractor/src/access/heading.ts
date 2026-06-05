@@ -22,12 +22,12 @@ export function getHeadings(
   const maxLevel = options.maxLevel ?? 6;
   const result: HeadingEntry[] = [];
   for (const block of page.blocks) {
-    collect(block, minLevel, maxLevel, result);
+    collectHeadings(block, minLevel, maxLevel, result);
   }
   return result;
 }
 
-function collect(
+function collectHeadings(
   block: Block,
   minLevel: number,
   maxLevel: number,

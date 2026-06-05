@@ -40,7 +40,7 @@ export interface AutoTranslateResult {
   translated: number;
 }
 
-interface Stub {
+interface TranslationStub {
   context: MessageContext | undefined;
   disambiguation: string | undefined;
   fileId: string;
@@ -48,7 +48,7 @@ interface Stub {
   source: string;
 }
 
-function stubKey(stub: Stub): string {
+function stubKey(stub: TranslationStub): string {
   return stub.disambiguation === undefined
     ? stub.source
     : `${stub.source}@${stub.disambiguation}`;
@@ -143,7 +143,7 @@ export async function autoTranslate(
 }
 
 async function runOneByOne(
-  stubs: Stub[],
+  stubs: TranslationStub[],
   requests: TranslateRequest[],
   translator: Translator,
   errors: AutoTranslateResult['errors'],
@@ -172,7 +172,7 @@ async function runOneByOne(
 }
 
 function buildRequest(
-  stub: Stub,
+  stub: TranslationStub,
   options: AutoTranslateOptions,
   exampleCache: ExampleCache,
   examplesMax: number,
@@ -243,8 +243,8 @@ function toLegacyContext(location: Location): MessageContext {
 function collectStubs(
   options: AutoTranslateOptions,
   contexts: Map<string, MessageContext>,
-): Stub[] {
-  const stubs: Stub[] = [];
+): TranslationStub[] {
+  const stubs: TranslationStub[] = [];
   for (const locale of options.locales) {
     if (locale === options.defaultLocale) {
       continue;
@@ -284,9 +284,9 @@ function collectStubs(
   return dedupeStubs(stubs);
 }
 
-function dedupeStubs(stubs: Stub[]): Stub[] {
+function dedupeStubs(stubs: TranslationStub[]): TranslationStub[] {
   const seen = new Set<string>();
-  const out: Stub[] = [];
+  const out: TranslationStub[] = [];
   for (const stub of stubs) {
     const key = `${stub.locale} ${stub.fileId} ${stubKey(stub)}`;
     if (seen.has(key)) {
@@ -343,7 +343,7 @@ function loadExampleCache(
 
 function collectExamplesForStub(
   cache: ExampleCache,
-  stub: Stub,
+  stub: TranslationStub,
   max: number,
 ): TranslationExample[] {
   if (max <= 0) {

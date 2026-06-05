@@ -1,6 +1,6 @@
 import type { Persistence } from './type';
 
-import { appendResponseHeader } from '../locale/response-header-writer';
+import { appendResponseHeader } from '../locale';
 import { subscribeHistory } from './history';
 
 const POLL_INTERVAL_MS = 1000;

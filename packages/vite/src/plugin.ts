@@ -666,7 +666,7 @@ function discoverMissingSources(
     if (missing.has(message.source)) {
       continue;
     }
-    let flagged = false;
+    let isFlagged = false;
     for (const locale of locales) {
       if (locale === defaultLocale) {
         continue;
@@ -676,11 +676,11 @@ function discoverMissingSources(
         const existing = localeFile?.[location.fileId]?.[message.source];
         if (typeof existing !== 'string' || existing === '') {
           missing.add(message.source);
-          flagged = true;
+          isFlagged = true;
           break;
         }
       }
-      if (flagged) {
+      if (isFlagged) {
         break;
       }
     }

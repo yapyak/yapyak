@@ -63,7 +63,7 @@ export function transformFile(
 
   const pickLocal = findFreePickLocal(request.source);
 
-  let usedPick = false;
+  let hasUsedPick = false;
   for (const callSite of request.extracted.callSites) {
     const replacement = renderCallReplacement({
       callSite,
@@ -83,7 +83,7 @@ export function transformFile(
       replacement.code,
     );
     if (replacement.usesPick) {
-      usedPick = true;
+      hasUsedPick = true;
     }
   }
 
@@ -93,7 +93,7 @@ export function transformFile(
     request,
   });
 
-  if (usedPick) {
+  if (hasUsedPick) {
     const importSpec =
       pickLocal === PICK_EXPORT
         ? PICK_EXPORT

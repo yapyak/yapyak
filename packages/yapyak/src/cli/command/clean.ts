@@ -51,15 +51,15 @@ export function clean(options: CleanOptions): number {
     const localePath = join(localesPath, `${locale}.json`);
     const existing = readLocaleFile(localePath);
     const next: LocaleFile = {};
-    let changed = false;
+    let hasChanged = false;
 
     for (const [fileId, entries] of Object.entries(existing)) {
       const expectedSources = expected[fileId];
       const nextEntries: Record<string, string> = {};
       for (const [source, value] of Object.entries(entries)) {
-        if (!expectedSources || !expectedSources.has(source)) {
+        if (!expectedSources?.has(source)) {
           orphanSources.push({ fileId, locale, source });
-          changed = true;
+          hasChanged = true;
           continue;
         }
         nextEntries[source] = value;
@@ -69,7 +69,7 @@ export function clean(options: CleanOptions): number {
       }
     }
 
-    if (changed && options.write) {
+    if (hasChanged && options.write) {
       filesToWrite.push({ next, path: localePath });
     }
   }

@@ -9,8 +9,8 @@ function getLocaleFromUrl(
 ): string | undefined {
   if (match) {
     const target = url.pathname + url.search + url.hash;
-    const m = match.exec(target);
-    const captured = m?.groups?.locale ?? m?.[1];
+    const matched = match.exec(target);
+    const captured = matched?.groups?.locale ?? matched?.[1];
     if (captured && locales.includes(captured)) {
       return captured;
     }

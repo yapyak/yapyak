@@ -368,11 +368,11 @@ interface ApplyOrphanMutationsInput {
 }
 
 function applyOrphanMutations(input: ApplyOrphanMutationsInput): boolean {
-  let changed = false;
+  let hasChanged = false;
   for (const [fileId, sources] of input.restoredOrphans) {
     for (const source of sources) {
       if (removeOrphan(input.orphans, fileId, source)) {
-        changed = true;
+        hasChanged = true;
       }
     }
   }
@@ -383,10 +383,10 @@ function applyOrphanMutations(input: ApplyOrphanMutationsInput): boolean {
         deletedAt: timestamp,
         translations,
       });
-      changed = true;
+      hasChanged = true;
     }
   }
-  return changed;
+  return hasChanged;
 }
 
 function toExtractedSourcesSet(

@@ -75,9 +75,7 @@ async function buildLink(absPath: string, href: string) {
     return null;
   }
   const label =
-    typeof frontmatter.title === 'string'
-      ? frontmatter.title
-      : deriveLabel(href);
+    typeof frontmatter.title === 'string' ? frontmatter.title : getLabel(href);
   const order =
     typeof frontmatter.order === 'number'
       ? frontmatter.order
@@ -123,7 +121,7 @@ async function buildGroup(
   };
 }
 
-function deriveLabel(href: string) {
+function getLabel(href: string) {
   const last = href.split('/').pop() ?? '';
   return last.split('-').map(capitalize).join(' ');
 }

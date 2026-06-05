@@ -13,7 +13,7 @@ export async function retryableFetch(
   let lastError: unknown;
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     if (attempt > 0) {
-      await delay(backoffMs(attempt));
+      await delay(getBackoffMs(attempt));
     }
     const controller = new AbortController();
     const onAbort = (): void => controller.abort();
@@ -64,7 +64,7 @@ function isNetworkError(error: unknown): boolean {
   return error instanceof TypeError;
 }
 
-function backoffMs(attempt: number): number {
+function getBackoffMs(attempt: number): number {
   return Math.min(8_000, 250 * 2 ** (attempt - 1));
 }
 

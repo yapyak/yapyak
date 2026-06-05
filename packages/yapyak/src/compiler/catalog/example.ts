@@ -111,7 +111,13 @@ function compareCandidates(
     if (aSame !== bSame) {
       return aSame - bSame;
     }
-    return a.source < b.source ? -1 : a.source > b.source ? 1 : 0;
+    if (a.source < b.source) {
+      return -1;
+    }
+    if (a.source > b.source) {
+      return 1;
+    }
+    return 0;
   };
 }
 

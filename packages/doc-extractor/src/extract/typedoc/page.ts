@@ -383,8 +383,8 @@ function unifyParameters(overloads: ReferenceOverload[]): ReferenceParameter[] {
     if (!first) {
       continue;
     }
-    const inAll = present.length === overloads.length;
-    unified.push({ ...first, optional: !inAll || first.optional });
+    const isInAllOverloads = present.length === overloads.length;
+    unified.push({ ...first, optional: !isInAllOverloads || first.optional });
   }
   return unified;
 }
@@ -470,13 +470,13 @@ function typeParameterRow(
 }
 
 function parametersTable(parameters: ReferenceParameter[]): Block {
-  const includeDefault = parameters.some(
+  const hasDefault = parameters.some(
     (parameter) => parameter.defaultValue !== null,
   );
   return {
-    body: parameters.map((parameter) => paramRow(parameter, includeDefault)),
+    body: parameters.map((parameter) => paramRow(parameter, hasDefault)),
     head: tableHeaderRow(
-      includeDefault
+      hasDefault
         ? ['Name', 'Type', 'Default', 'Description']
         : ['Name', 'Type', 'Description'],
     ),
@@ -485,11 +485,11 @@ function parametersTable(parameters: ReferenceParameter[]): Block {
 }
 
 function membersTable(members: ReferenceMember[]): Block {
-  const includeDefault = members.some((member) => member.defaultValue !== null);
+  const hasDefault = members.some((member) => member.defaultValue !== null);
   return {
-    body: members.map((member) => memberRow(member, includeDefault)),
+    body: members.map((member) => memberRow(member, hasDefault)),
     head: tableHeaderRow(
-      includeDefault
+      hasDefault
         ? ['Name', 'Type', 'Default', 'Description']
         : ['Name', 'Type', 'Description'],
     ),

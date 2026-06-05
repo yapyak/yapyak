@@ -1,11 +1,6 @@
 #!/usr/bin/env node
 
-import { add } from './command/add';
-import { check } from './command/check';
-import { clean } from './command/clean';
-import { exportCommand } from './command/export';
-import { status } from './command/status';
-import { translate } from './command/translate';
+import { add, check, clean, exportCommand, status, translate } from './command';
 import { loadConfig } from './config';
 import { color, symbol } from './tui';
 
@@ -43,8 +38,8 @@ export async function run(argv: string[]): Promise<number> {
     }
     case 'clean': {
       const config = await loadConfig(projectRoot);
-      const write = rest.includes('--write');
-      return clean({ config, projectRoot, write });
+      const shouldWrite = rest.includes('--write');
+      return clean({ config, projectRoot, write: shouldWrite });
     }
     case 'add': {
       const config = await loadConfig(projectRoot);
@@ -54,10 +49,10 @@ export async function run(argv: string[]): Promise<number> {
     case 'translate': {
       const config = await loadConfig(projectRoot);
       const locale = rest.find((arg) => !arg.startsWith('--'));
-      const force = rest.includes('--force') || rest.includes('-f');
+      const shouldForce = rest.includes('--force') || rest.includes('-f');
       return await translate({
         config,
-        force,
+        force: shouldForce,
         locale,
         projectRoot,
       });
@@ -67,8 +62,14 @@ export async function run(argv: string[]): Promise<number> {
       const locales = rest.filter((arg) => !arg.startsWith('--'));
       const outArg = rest.find((arg) => arg.startsWith('--out='));
       const out = outArg ? outArg.slice('--out='.length) : undefined;
-      const split = rest.includes('--split');
-      return exportCommand({ config, locales, out, projectRoot, split });
+      const shouldSplit = rest.includes('--split');
+      return exportCommand({
+        config,
+        locales,
+        out,
+        projectRoot,
+        split: shouldSplit,
+      });
     }
     default:
       process.stdout.write(

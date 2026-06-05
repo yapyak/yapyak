@@ -104,7 +104,7 @@ export function validateIcuPairs(input: ValidateIcuPairsInput): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
   for (const message of input.messages) {
     const sourcePlaceholders = parsePlaceholders(message.source).placeholders;
-    const sourceByName = byName(sourcePlaceholders);
+    const sourceByName = indexByName(sourcePlaceholders);
     const key =
       message.context === undefined
         ? message.source
@@ -115,7 +115,7 @@ export function validateIcuPairs(input: ValidateIcuPairsInput): Diagnostic[] {
         continue;
       }
       const targetPlaceholders = parsePlaceholders(target).placeholders;
-      const targetByName = byName(targetPlaceholders);
+      const targetByName = indexByName(targetPlaceholders);
 
       for (const [name, placeholder] of sourceByName) {
         if (!targetByName.has(name)) {
@@ -167,7 +167,7 @@ export function validateIcuPairs(input: ValidateIcuPairsInput): Diagnostic[] {
   return diagnostics;
 }
 
-function byName(placeholders: Placeholder[]): Map<string, Placeholder> {
+function indexByName(placeholders: Placeholder[]): Map<string, Placeholder> {
   const placeholdersByName = new Map<string, Placeholder>();
   for (const placeholder of placeholders) {
     placeholdersByName.set(placeholder.name, placeholder);

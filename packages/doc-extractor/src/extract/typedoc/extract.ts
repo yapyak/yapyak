@@ -51,7 +51,7 @@ interface PackageJson {
   name: string;
 }
 
-interface Context {
+interface ExtractContext {
   collectionName: string;
   nameIndex: Map<string, string | 'ambiguous'>;
   packageDir: string;
@@ -82,7 +82,7 @@ export async function extractTypedoc(
     packageName,
     packageSlug,
   );
-  const context: Context = {
+  const context: ExtractContext = {
     collectionName,
     nameIndex,
     packageDir,
@@ -157,7 +157,7 @@ interface ProjectModule {
   entry: EntryPoint;
 }
 
-function eachProjectModule(
+function collectProjectModules(
   project: ProjectReflection,
   entries: EntryPoint[],
   packageDir: string,
@@ -210,7 +210,7 @@ function buildLinkRegistry(
 } {
   const registry = new Map<number, string>();
   const nameIndex = new Map<string, string | 'ambiguous'>();
-  for (const module of eachProjectModule(project, entries, packageDir)) {
+  for (const module of collectProjectModules(project, entries, packageDir)) {
     for (const symbol of module.children) {
       if (isInternal(symbol)) {
         continue;
@@ -252,10 +252,10 @@ function buildSymbolUrl(
 function collectModules(
   project: ProjectReflection,
   entries: EntryPoint[],
-  context: Context,
+  context: ExtractContext,
 ): ReferenceModule[] {
   const modules: ReferenceModule[] = [];
-  for (const module of eachProjectModule(
+  for (const module of collectProjectModules(
     project,
     entries,
     context.packageDir,
@@ -290,7 +290,7 @@ function entryToModuleName(entry: EntryPoint, packageDir: string): string {
 
 function convertExport(
   reflection: DeclarationReflection,
-  context: Context,
+  context: ExtractContext,
 ): ReferenceExport | null {
   switch (reflection.kind) {
     case ReflectionKind.Function:
@@ -347,7 +347,7 @@ function resolveCallableSignatures(
 function convertCallableVariable(
   reflection: DeclarationReflection,
   signatures: SignatureReflection[],
-  context: Context,
+  context: ExtractContext,
 ): ReferenceFunction {
   const base = convertBase(reflection, context);
   const overloads = signatures.map((signature) =>
@@ -363,7 +363,7 @@ function convertCallableVariable(
 
 function convertFunction(
   reflection: DeclarationReflection,
-  context: Context,
+  context: ExtractContext,
 ): ReferenceFunction {
   const base = convertBase(reflection, context);
   const overloads = (reflection.signatures ?? []).map((signature) =>
@@ -379,7 +379,7 @@ function convertFunction(
 
 function convertInterface(
   reflection: DeclarationReflection,
-  context: Context,
+  context: ExtractContext,
 ): ReferenceInterface {
   const base = convertBase(reflection, context);
   const callSignatures = (reflection.signatures ?? []).map((signature) =>
@@ -399,7 +399,7 @@ function convertInterface(
 
 function convertTypeAlias(
   reflection: DeclarationReflection,
-  context: Context,
+  context: ExtractContext,
 ): ReferenceTypeAlias {
   const base = convertBase(reflection, context);
   const resolvedType = reflection.type ? convertType(reflection.type) : [];
@@ -413,7 +413,7 @@ function convertTypeAlias(
 
 function convertVariable(
   reflection: DeclarationReflection,
-  context: Context,
+  context: ExtractContext,
 ): ReferenceVariable {
   const base = convertBase(reflection, context);
   const type = reflection.type ? convertType(reflection.type) : [];
@@ -431,7 +431,7 @@ function isInternal(reflection: DeclarationReflection): boolean {
 
 function convertClass(
   reflection: DeclarationReflection,
-  context: Context,
+  context: ExtractContext,
 ): ReferenceExport {
   const base = convertBase(reflection, context);
   const members = (reflection.children ?? []).map((child) =>
@@ -447,7 +447,7 @@ function convertClass(
 
 function convertBase(
   reflection: DeclarationReflection,
-  context: Context,
+  context: ExtractContext,
 ): ReferenceSymbolBase {
   const comment = reflection.comment ?? null;
   const signature = reflection.signatures?.[0]?.comment ?? null;
@@ -468,7 +468,7 @@ function convertBase(
 function convertOverload(
   signature: SignatureReflection,
   functionName: string,
-  context: Context,
+  context: ExtractContext,
 ): ReferenceOverload {
   const parameters = (signature.parameters ?? []).map((param) =>
     convertParameter(param, context),
@@ -492,7 +492,7 @@ function convertOverload(
 
 function convertCallSignature(
   signature: SignatureReflection,
-  context: Context,
+  context: ExtractContext,
 ): ReferenceCallSignature {
   const parameters = (signature.parameters ?? []).map((param) =>
     convertParameter(param, context),
@@ -513,7 +513,7 @@ function convertCallSignature(
 
 function convertParameter(
   param: ParameterReflection,
-  context: Context,
+  context: ExtractContext,
 ): ReferenceParameter {
   return {
     defaultValue: param.defaultValue ?? null,
@@ -529,7 +529,7 @@ function convertParameter(
 
 function convertMember(
   reflection: DeclarationReflection,
-  context: Context,
+  context: ExtractContext,
 ): ReferenceMember {
   const comment =
     reflection.comment ?? reflection.signatures?.[0]?.comment ?? null;
@@ -557,7 +557,7 @@ function memberType(reflection: DeclarationReflection): TypeToken[] {
 
 function convertTypeParameter(
   param: TypeParameterReflection,
-  context: Context,
+  context: ExtractContext,
 ): ReferenceTypeParameter {
   return {
     constraint: param.type ? convertType(param.type) : null,
@@ -789,7 +789,7 @@ function buildFunctionSignature(
 
 function buildInterfaceSignature(
   reflection: DeclarationReflection,
-  context: Context,
+  context: ExtractContext,
 ): string {
   const tp = (reflection.typeParameters ?? []).map((param) =>
     convertTypeParameter(param, context),
@@ -799,7 +799,7 @@ function buildInterfaceSignature(
 
 function partsToMarkdown(
   parts: ReadonlyArray<CommentDisplayPart> | undefined,
-  context: Context,
+  context: ExtractContext,
 ): string {
   if (!parts) {
     return '';
@@ -819,7 +819,7 @@ function partsToMarkdown(
 
 function resolveInlineLink(
   part: { target?: unknown; text: string },
-  context: Context,
+  context: ExtractContext,
 ): string {
   const targetId = resolveTargetId(part.target);
   if (targetId !== null) {
@@ -852,7 +852,7 @@ function resolveTargetId(target: unknown): number | null {
 
 function collectExamples(
   comment: CommentLike,
-  context: Context,
+  context: ExtractContext,
 ): ReferenceExample[] {
   const examples: ReferenceExample[] = [];
   for (const tag of comment.blockTags ?? []) {
@@ -898,7 +898,10 @@ function looksLikePath(value: string): boolean {
   return /^[\w./-]+\.[a-z]\w*$/i.test(value);
 }
 
-function collectTags(comment: CommentLike, context: Context): ReferenceTag[] {
+function collectTags(
+  comment: CommentLike,
+  context: ExtractContext,
+): ReferenceTag[] {
   const tags: ReferenceTag[] = [];
   for (const tag of comment.blockTags ?? []) {
     if (
@@ -925,7 +928,7 @@ function collectTags(comment: CommentLike, context: Context): ReferenceTag[] {
 function readBlockTag(
   comment: CommentLike,
   tagName: string,
-  context: Context,
+  context: ExtractContext,
 ): string {
   for (const tag of comment.blockTags ?? []) {
     if (tag.tag === tagName) {
@@ -935,7 +938,10 @@ function readBlockTag(
   return '';
 }
 
-function readDeprecated(comment: CommentLike, context: Context): string | null {
+function readDeprecated(
+  comment: CommentLike,
+  context: ExtractContext,
+): string | null {
   for (const tag of comment.blockTags ?? []) {
     if (tag.tag === '@deprecated') {
       return partsToMarkdown(tag.content, context);
@@ -944,7 +950,7 @@ function readDeprecated(comment: CommentLike, context: Context): string | null {
   return null;
 }
 
-function readSeeAlso(comment: CommentLike, context: Context): string[] {
+function readSeeAlso(comment: CommentLike, context: ExtractContext): string[] {
   const entries: string[] = [];
   for (const tag of comment.blockTags ?? []) {
     if (tag.tag !== '@see') {
@@ -955,7 +961,10 @@ function readSeeAlso(comment: CommentLike, context: Context): string[] {
   return entries;
 }
 
-function readThrows(comment: CommentLike, context: Context): ReferenceThrows[] {
+function readThrows(
+  comment: CommentLike,
+  context: ExtractContext,
+): ReferenceThrows[] {
   const throws: ReferenceThrows[] = [];
   for (const tag of comment.blockTags ?? []) {
     if (tag.tag !== '@throws') {
@@ -977,7 +986,7 @@ function readThrows(comment: CommentLike, context: Context): ReferenceThrows[] {
 
 function readDefaultValue(
   reflection: DeclarationReflection,
-  context: Context,
+  context: ExtractContext,
 ): string | null {
   if (reflection.defaultValue !== undefined) {
     return reflection.defaultValue;
