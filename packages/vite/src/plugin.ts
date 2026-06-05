@@ -633,7 +633,7 @@ function buildTranslations(input: {
   extracted: ExtractFileResult;
   fileId: string;
   localeData: LocaleData;
-  locales: readonly string[];
+  locales: string[];
 }): Record<string, Record<string, string>> {
   const translations: Record<string, Record<string, string>> = {};
   for (const message of input.extracted.messages) {
@@ -657,7 +657,7 @@ function buildTranslations(input: {
 
 function discoverMissingSources(
   messages: ExtractedMessage[],
-  locales: readonly string[],
+  locales: string[],
   defaultLocale: string,
   data: LocaleData,
 ): Set<string> {

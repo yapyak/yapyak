@@ -40,8 +40,8 @@ export interface InvariantViolation {
 }
 
 export class YapyakInvariantError extends Error {
-  readonly filePath: string;
-  readonly violations: InvariantViolation[];
+  filePath: string;
+  violations: InvariantViolation[];
 
   constructor(filePath: string, violations: InvariantViolation[]) {
     const lines = violations.map((v) => {
@@ -67,7 +67,7 @@ export class YapyakInvariantError extends Error {
  * error as its `cause`.
  */
 export class CorruptLocaleFileError extends Error {
-  readonly filePath: string;
+  filePath: string;
 
   constructor(filePath: string, cause: unknown) {
     super(
@@ -311,7 +311,7 @@ interface InFlightDropLookup {
 function collectInFlightDrops(
   existingByLocale: Map<string, LocaleFile>,
   extractedSources: Record<string, Set<string>>,
-  nonDefaultLocales: readonly string[],
+  nonDefaultLocales: string[],
 ): InFlightDrops {
   const drops: InFlightDrops = new Map();
   for (const locale of nonDefaultLocales) {

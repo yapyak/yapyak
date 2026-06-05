@@ -13,16 +13,27 @@
       "default": "./dist/processor.js"
     }
   },
+  "sideEffects": false,
   "files": [
     "dist"
   ],
-  "sideEffects": false,
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "yapyak": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@vue/compiler-core": "catalog:",
+    "@vue/compiler-sfc": "catalog:",
+    "@yapyak/tsup-config": "workspace:*",
+    "@yapyak/typescript-config": "workspace:*",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "vue": "catalog:"
   },
   "peerDependencies": {
     "@vue/compiler-core": ">=3.0.0",
@@ -36,17 +47,6 @@
     "@vue/compiler-sfc": {
       "optional": true
     }
-  },
-  "devDependencies": {
-    "@types/node": "catalog:",
-    "@vue/compiler-core": "catalog:",
-    "@vue/compiler-sfc": "catalog:",
-    "@yapyak/tsup-config": "workspace:*",
-    "@yapyak/typescript-config": "workspace:*",
-    "tsup": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "catalog:",
-    "vue": "catalog:"
   },
   "engines": {
     "node": ">=22"

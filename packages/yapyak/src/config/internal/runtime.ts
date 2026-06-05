@@ -3,7 +3,7 @@ import type { NormalizedPersistence } from './type';
 export interface DefineRuntimeInput {
   defaultLocale: string;
   detectAcceptLanguage: boolean;
-  locales: readonly string[];
+  locales: string[];
   persistence: NormalizedPersistence;
   syncHtmlLang: boolean;
 }

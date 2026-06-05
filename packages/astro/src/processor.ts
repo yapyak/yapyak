@@ -144,7 +144,7 @@ function handleExpressionNode(
 
 function computeExpressionElision(
   node: ExpressionNode,
-  children: readonly Node[],
+  children: Node[],
   source: string,
 ): Fragment['elision'] | undefined {
   void node;

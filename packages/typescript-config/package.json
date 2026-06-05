@@ -1,7 +1,7 @@
 {
   "name": "@yapyak/typescript-config",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "exports": {
     "./base": "./base.json",
     "./library": "./library.json",

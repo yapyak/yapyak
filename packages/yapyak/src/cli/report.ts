@@ -36,7 +36,7 @@ interface Report {
 interface BuildReportOptions {
   defaultLocale?: string;
   localesDir?: string;
-  processors?: readonly Processor[];
+  processors?: Processor[];
   projectRoot: string;
 }
 

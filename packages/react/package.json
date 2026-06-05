@@ -9,19 +9,16 @@
       "default": "./dist/index.js"
     }
   },
+  "sideEffects": false,
   "files": [
     "dist"
   ],
-  "sideEffects": false,
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "yapyak": "workspace:*"
-  },
-  "peerDependencies": {
-    "react": ">=19"
   },
   "devDependencies": {
     "@types/react": "catalog:",
@@ -30,6 +27,9 @@
     "react": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "react": ">=19"
   },
   "engines": {
     "node": ">=22"

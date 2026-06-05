@@ -9,19 +9,16 @@
       "default": "./dist/index.js"
     }
   },
+  "sideEffects": false,
   "files": [
     "dist"
   ],
-  "sideEffects": false,
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "yapyak": "workspace:*"
-  },
-  "peerDependencies": {
-    "@sveltejs/kit": ">=2"
   },
   "devDependencies": {
     "@sveltejs/kit": "catalog:",
@@ -30,6 +27,9 @@
     "svelte": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "@sveltejs/kit": ">=2"
   },
   "engines": {
     "node": ">=22"

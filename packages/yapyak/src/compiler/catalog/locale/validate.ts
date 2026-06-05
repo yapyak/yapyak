@@ -97,7 +97,7 @@ export function validateLocaleFile(
 export interface ValidateIcuPairsInput {
   fileId: string;
   localeFile: LocaleFile;
-  messages: readonly ExtractedMessage[];
+  messages: ExtractedMessage[];
 }
 
 export function validateIcuPairs(input: ValidateIcuPairsInput): Diagnostic[] {
@@ -167,9 +167,7 @@ export function validateIcuPairs(input: ValidateIcuPairsInput): Diagnostic[] {
   return diagnostics;
 }
 
-function byName(
-  placeholders: readonly Placeholder[],
-): Map<string, Placeholder> {
+function byName(placeholders: Placeholder[]): Map<string, Placeholder> {
   const placeholdersByName = new Map<string, Placeholder>();
   for (const placeholder of placeholders) {
     placeholdersByName.set(placeholder.name, placeholder);

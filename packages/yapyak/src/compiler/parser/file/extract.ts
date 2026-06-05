@@ -36,8 +36,8 @@ export interface ExtractedMessage {
 
 export interface ExtractFileRequest {
   fileId: string;
-  locales: readonly string[];
-  processors?: readonly Processor[];
+  locales: string[];
+  processors?: Processor[];
   source: string;
 }
 

@@ -29,7 +29,7 @@ declare const brand: unique symbol;
  */
 export type TReturn<T extends string = never> = [T] extends [never]
   ? string
-  : string & { readonly [brand]: T };
+  : string & { [brand]: T };
 
 /**
  * An inline chain that started with `t.in(locale)` and expects `.at(context, source)` to complete the call.

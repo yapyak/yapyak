@@ -45,13 +45,13 @@
       "default": "./dist/translator/internal/index.js"
     }
   },
-  "bin": {
-    "yapyak": "./dist/cli/run.js"
-  },
+  "sideEffects": false,
   "files": [
     "dist"
   ],
-  "sideEffects": false,
+  "bin": {
+    "yapyak": "./dist/cli/run.js"
+  },
   "scripts": {
     "build": "tsup",
     "test": "vitest --run",
@@ -62,9 +62,6 @@
     "jiti": "catalog:",
     "magic-string": "catalog:",
     "picomatch": "catalog:"
-  },
-  "peerDependencies": {
-    "typescript": ">=5.0.0"
   },
   "devDependencies": {
     "@types/node": "catalog:",
@@ -78,6 +75,9 @@
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
   },
   "engines": {
     "node": ">=22"

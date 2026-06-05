@@ -44,7 +44,7 @@ export interface CreateProcessorOptions {
     importStatement: string,
   ) => void;
   /** File extensions this processor handles, e.g. `['.vue']`. */
-  extensions: readonly string[];
+  extensions: string[];
   /** Stable identifier for diagnostics. Convention: lowercase suffix matching the package name. */
   id: string;
   /**
@@ -71,7 +71,7 @@ export interface Processor {
     importStatement: string,
   ): void;
   /** File extensions this processor handles. */
-  extensions: readonly string[];
+  extensions: string[];
   /** Stable identifier for diagnostics. */
   id: string;
   /** Breaks framework-specific source into TS-parseable fragments. */

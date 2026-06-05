@@ -5,7 +5,7 @@ import { vanillaProcessor } from './vanilla';
 export function dispatchProcessor(
   fileId: string,
   source: string,
-  customProcessors: readonly Processor[],
+  customProcessors: Processor[],
 ): Processor {
   for (const processor of customProcessors) {
     for (const extension of processor.extensions) {

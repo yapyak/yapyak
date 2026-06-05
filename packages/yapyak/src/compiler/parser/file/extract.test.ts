@@ -16,7 +16,7 @@ const processors: Processor[] = [vue(), svelte(), astro()];
 function extractFixture(
   category: string,
   name: string,
-  locales: readonly string[] = ['en'],
+  locales: string[] = ['en'],
 ): ExtractFileResult {
   const source = readFileSync(join(ROOT, category, name), 'utf-8');
   return extractFile({ fileId: name, locales, processors, source });

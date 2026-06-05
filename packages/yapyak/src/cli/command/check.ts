@@ -136,7 +136,7 @@ export function check(options: CheckOptions): number {
 
 function printDiagnosticGroup(input: {
   colorize: (text: string) => string;
-  diagnostics: readonly Diagnostic[];
+  diagnostics: Diagnostic[];
   label: string;
 }): void {
   process.stdout.write(`  ${symbol.cross} ${input.colorize(input.label)}\n\n`);

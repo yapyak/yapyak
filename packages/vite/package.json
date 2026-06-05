@@ -9,10 +9,10 @@
       "default": "./dist/index.js"
     }
   },
+  "sideEffects": false,
   "files": [
     "dist"
   ],
-  "sideEffects": false,
   "scripts": {
     "build": "tsup",
     "test": "vitest --run",
@@ -20,9 +20,6 @@
   },
   "dependencies": {
     "yapyak": "workspace:*"
-  },
-  "peerDependencies": {
-    "vite": ">=5"
   },
   "devDependencies": {
     "@types/node": "catalog:",
@@ -32,6 +29,9 @@
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "vite": ">=5"
   },
   "engines": {
     "node": ">=22"

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { getLocaleFromUrl } from './url';
 
-const LOCALES = ['en', 'sv', 'de', 'sv-SE'] as const;
+const LOCALES = ['en', 'sv', 'de', 'sv-SE'];
 
 describe('getLocaleFromUrl', () => {
   describe('with default path-first-segment matcher', () => {

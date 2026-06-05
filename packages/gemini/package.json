@@ -9,10 +9,10 @@
       "default": "./dist/index.js"
     }
   },
+  "sideEffects": false,
   "files": [
     "dist"
   ],
-  "sideEffects": false,
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit"

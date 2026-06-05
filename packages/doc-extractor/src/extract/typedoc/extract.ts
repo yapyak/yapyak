@@ -37,7 +37,7 @@ interface TypedocExtractOptions {
   collectionName: string;
   packageDir: string;
   packageSlug: string;
-  subpaths?: readonly string[];
+  subpaths?: string[];
 }
 
 interface EntryPoint {
@@ -94,7 +94,7 @@ export async function extractTypedoc(
 
 async function loadEntries(
   packageDir: string,
-  subpaths: readonly string[] | undefined,
+  subpaths: string[] | undefined,
 ): Promise<{ entries: EntryPoint[]; packageName: string }> {
   const raw = await readFile(join(packageDir, 'package.json'), 'utf8');
   const pkg = JSON.parse(raw) as PackageJson;
@@ -315,7 +315,7 @@ function convertExport(
 
 function resolveCallableSignatures(
   reflection: DeclarationReflection,
-): readonly SignatureReflection[] | null {
+): SignatureReflection[] | null {
   const type = reflection.type;
   if (!type) {
     return null;
@@ -346,7 +346,7 @@ function resolveCallableSignatures(
 
 function convertCallableVariable(
   reflection: DeclarationReflection,
-  signatures: readonly SignatureReflection[],
+  signatures: SignatureReflection[],
   context: Context,
 ): ReferenceFunction {
   const base = convertBase(reflection, context);

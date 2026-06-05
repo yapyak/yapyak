@@ -21,13 +21,13 @@
       "default": "./dist/processor.js"
     }
   },
+  "sideEffects": false,
   "files": [
     "dist",
     "src/RichText.astro",
     "src/RichText.astro.d.ts",
     "src/index.ts"
   ],
-  "sideEffects": false,
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit"
@@ -35,15 +35,6 @@
   "dependencies": {
     "@yapyak/vite": "workspace:*",
     "yapyak": "workspace:*"
-  },
-  "peerDependencies": {
-    "@astrojs/compiler": ">=2.0.0",
-    "astro": ">=5"
-  },
-  "peerDependenciesMeta": {
-    "@astrojs/compiler": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "@astrojs/compiler": "catalog:",
@@ -53,6 +44,15 @@
     "astro": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "@astrojs/compiler": ">=2.0.0",
+    "astro": ">=5"
+  },
+  "peerDependenciesMeta": {
+    "@astrojs/compiler": {
+      "optional": true
+    }
   },
   "engines": {
     "node": ">=22"

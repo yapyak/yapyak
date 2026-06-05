@@ -14,20 +14,17 @@
       "default": "./dist/processor.js"
     }
   },
+  "sideEffects": false,
   "files": [
     "dist",
     "src"
   ],
-  "sideEffects": false,
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "yapyak": "workspace:*"
-  },
-  "peerDependencies": {
-    "svelte": ">=5"
   },
   "devDependencies": {
     "@types/node": "catalog:",
@@ -36,6 +33,9 @@
     "svelte": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "svelte": ">=5"
   },
   "engines": {
     "node": ">=22"

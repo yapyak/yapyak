@@ -1,7 +1,7 @@
 {
   "name": "@yapyak/doc-extractor",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -16,12 +16,12 @@
     "@markdoc/markdoc": "catalog:",
     "typedoc": "catalog:"
   },
-  "peerDependencies": {
-    "vite": "catalog:"
-  },
   "devDependencies": {
     "@types/node": "catalog:",
     "@yapyak/typescript-config": "workspace:*",
     "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "vite": ">=5"
   }
 }

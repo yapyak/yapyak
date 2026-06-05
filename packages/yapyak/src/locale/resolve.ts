@@ -3,7 +3,7 @@ import { parseAcceptLanguage } from './accept-language';
 interface ResolveLocaleOptions {
   acceptLanguage?: string;
   defaultLocale: string;
-  locales: readonly string[];
+  locales: string[];
   navigatorLanguages?: string[];
   persisted?: string;
 }

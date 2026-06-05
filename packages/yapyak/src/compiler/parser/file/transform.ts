@@ -14,8 +14,8 @@ export interface TransformFileRequest {
   defaultLocale?: string;
   extracted: ExtractFileResult;
   fileId: string;
-  locales: readonly string[];
-  processors?: readonly Processor[];
+  locales: string[];
+  processors?: Processor[];
   source: string;
   translations: Record<string, Record<string, string>>;
 }
@@ -113,7 +113,7 @@ export function transformFile(
 }
 
 interface RewriteScriptImportsInput {
-  fragments: readonly Fragment[];
+  fragments: Fragment[];
   magicString: MagicString;
   request: TransformFileRequest;
 }
@@ -241,7 +241,7 @@ interface RenderCallReplacementInput {
   callSite: CallSite;
   defaultLocale: string;
   isSingleLocale: boolean;
-  locales: readonly string[];
+  locales: string[];
   pickLocal: string;
   translations: Record<string, Record<string, string>>;
 }
@@ -316,10 +316,7 @@ function renderCallReplacement(
   };
 }
 
-function canElide(
-  placeholders: readonly Placeholder[],
-  callSite: CallSite,
-): boolean {
+function canElide(placeholders: Placeholder[], callSite: CallSite): boolean {
   if (callSite.localeExpression) {
     return false;
   }
@@ -337,7 +334,7 @@ function canElide(
 function renderEliminated(
   source: string,
   callSite: CallSite,
-  placeholders: readonly Placeholder[],
+  placeholders: Placeholder[],
 ): string {
   if (placeholders.length === 0) {
     return safeJsString(source);
@@ -470,7 +467,7 @@ function readKey(inner: string): string | undefined {
 interface BuildCatalogInput {
   defaultLocale: string;
   id: string;
-  locales: readonly string[];
+  locales: string[];
   source: string;
   translations: Record<string, Record<string, string>>;
 }
@@ -554,7 +551,7 @@ function isIdentifierChar(ch: string | undefined): boolean {
 function tryBareElision(
   source: string,
   callSite: CallSite,
-  placeholders: readonly Placeholder[],
+  placeholders: Placeholder[],
 ): CallReplacement | undefined {
   if (!callSite.elision) {
     return undefined;

@@ -215,7 +215,7 @@ export function validateLocaleCode(code: string): LocaleValidation {
   return { issue: 'unknown-language', valid: false };
 }
 
-const COMMON_CODES: readonly string[] = [
+const COMMON_CODES: string[] = [
   'ar',
   'cs',
   'da',

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { buildPersistence } from './build';
 
-const LOCALES = ['en', 'sv', 'fr'] as const;
+const LOCALES = ['en', 'sv', 'fr'];
 
 describe('buildPersistence', () => {
   it('builds `cookie` persistence', () => {

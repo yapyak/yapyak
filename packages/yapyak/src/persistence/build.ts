@@ -7,7 +7,7 @@ import { url } from './url';
 
 export function buildPersistence(
   config: NormalizedPersistence,
-  locales: readonly string[],
+  locales: string[],
 ): Persistence | null {
   if (config === null) {
     return null;

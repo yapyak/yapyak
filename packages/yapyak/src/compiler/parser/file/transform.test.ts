@@ -14,7 +14,7 @@ const processors: Processor[] = [vue(), svelte(), astro()];
 
 function runTransform(input: {
   source: string;
-  locales: readonly string[];
+  locales: string[];
   translations?: Record<string, Record<string, string>>;
   fileId?: string;
 }): string {
@@ -348,7 +348,7 @@ describe('transformFile', () => {
   describe('with Vue SFC', () => {
     function runVueTransform(input: {
       source: string;
-      locales: readonly string[];
+      locales: string[];
       translations?: Record<string, Record<string, string>>;
     }): string {
       const fileId = 'src/a.vue';
@@ -470,10 +470,7 @@ describe('transformFile', () => {
   });
 
   describe('with bare-string elision in templates', () => {
-    function runVueTransform(
-      source: string,
-      locales: readonly string[],
-    ): string {
+    function runVueTransform(source: string, locales: string[]): string {
       const fileId = 'src/a.vue';
       const extracted = extractFile({ fileId, locales, processors, source });
       return transformFile({
@@ -485,10 +482,7 @@ describe('transformFile', () => {
       }).code;
     }
 
-    function runSvelteTransform(
-      source: string,
-      locales: readonly string[],
-    ): string {
+    function runSvelteTransform(source: string, locales: string[]): string {
       const fileId = 'src/a.svelte';
       const extracted = extractFile({ fileId, locales, processors, source });
       return transformFile({
@@ -500,10 +494,7 @@ describe('transformFile', () => {
       }).code;
     }
 
-    function runAstroTransform(
-      source: string,
-      locales: readonly string[],
-    ): string {
+    function runAstroTransform(source: string, locales: string[]): string {
       const fileId = 'src/a.astro';
       const extracted = extractFile({ fileId, locales, processors, source });
       return transformFile({

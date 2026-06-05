@@ -110,7 +110,7 @@ export function clean(options: CleanOptions): number {
 function buildExpected(
   projectRoot: string,
   locales: string[],
-  processors: readonly Processor[],
+  processors: Processor[],
 ): Record<string, Set<string>> {
   const filter = createFilter(DEFAULT_INCLUDE, DEFAULT_EXCLUDE);
   const sourceFiles = walkSourceFiles({ filter, projectRoot });

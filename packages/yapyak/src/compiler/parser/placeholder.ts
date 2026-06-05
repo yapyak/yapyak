@@ -62,7 +62,7 @@ export function parsePlaceholders(source: string): ParsedMessage {
 }
 
 function walkElements(
-  elements: readonly MessageFormatElement[],
+  elements: MessageFormatElement[],
   placeholdersByName: Map<string, Placeholder>,
   issues: IcuIssue[],
 ): void {

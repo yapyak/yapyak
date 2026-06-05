@@ -4,7 +4,7 @@ import { subscribeHistory } from './history';
 
 function getLocaleFromUrl(
   url: URL | Location,
-  locales: readonly string[],
+  locales: string[],
   match?: RegExp,
 ): string | undefined {
   if (match) {
@@ -24,7 +24,7 @@ function getLocaleFromUrl(
 }
 
 interface UrlOptions {
-  locales: readonly string[];
+  locales: string[];
   match?: RegExp;
 }
 
