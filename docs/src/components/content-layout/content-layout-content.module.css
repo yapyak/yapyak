@@ -3,13 +3,20 @@
     padding: var(--spacing-8) 0 var(--spacing-32);
 
     @media (min-width: 1024px) {
-      padding-left: var(--spacing-12);
       border-left: var(--px) solid var(--rule);
+    }
+  }
+
+  .Inner {
+    @media (min-width: 1024px) {
+      width: 100%;
+      max-width: 784px;
+      padding-left: var(--spacing-12);
+      margin-inline: auto;
     }
 
     @media (min-width: 1280px) {
       padding-right: var(--spacing-12);
-      border-right: var(--px) solid var(--rule);
     }
   }
 }

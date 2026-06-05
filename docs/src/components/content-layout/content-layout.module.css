@@ -24,15 +24,15 @@
 
     @media (min-width: 1024px) {
       display: grid;
-      grid-template-columns: 220px 800px;
+      grid-template-columns: 240px minmax(0, 1fr);
       gap: 0;
-      max-width: 1020px;
+      max-width: 1240px;
       padding-inline: 0;
     }
 
     @media (min-width: 1280px) {
-      grid-template-columns: 220px 800px 220px;
-      max-width: 1240px;
+      grid-template-columns: 240px minmax(0, 1fr) 240px;
+      max-width: 1440px;
     }
   }
 }

@@ -7,13 +7,15 @@ import styles from './content-layout-content.module.css';
 export interface ContentLayoutContentProps extends BoxProps<'main'> {}
 
 export function ContentLayoutContent(props: ContentLayoutContentProps) {
-  const { className, ...restProps } = props;
+  const { children, className, ...restProps } = props;
 
   return (
     <Box
       {...restProps}
       as="main"
       className={[styles.ContentLayoutContent, className]}
-    />
+    >
+      <div className={styles.Inner}>{children}</div>
+    </Box>
   );
 }
