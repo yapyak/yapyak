@@ -66,11 +66,8 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:",
-    "@yapyak/astro": "workspace:*",
-    "@yapyak/svelte": "workspace:*",
     "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
-    "@yapyak/vue": "workspace:*",
     "tsup": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",

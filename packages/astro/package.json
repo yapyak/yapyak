@@ -30,6 +30,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "test": "vitest --run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -43,7 +44,8 @@
     "@yapyak/typescript-config": "workspace:*",
     "astro": "catalog:",
     "tsup": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "@astrojs/compiler": ">=2.0.0",

@@ -526,6 +526,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.7(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
 
   packages/biome-config: {}
 
@@ -538,7 +541,7 @@ importers:
         specifier: 'catalog:'
         version: 0.28.19(typescript@6.0.3)
       vite:
-        specifier: 'catalog:'
+        specifier: '>=5'
         version: 8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)
     devDependencies:
       '@types/node':
@@ -679,6 +682,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.7(@types/node@25.9.1)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
 
   packages/sveltekit:
     dependencies:
@@ -827,21 +833,12 @@ importers:
       '@types/picomatch':
         specifier: 'catalog:'
         version: 4.0.3
-      '@yapyak/astro':
-        specifier: workspace:*
-        version: link:../astro
-      '@yapyak/svelte':
-        specifier: workspace:*
-        version: link:../svelte
       '@yapyak/tsup-config':
         specifier: workspace:*
         version: link:../tsup-config
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      '@yapyak/vue':
-        specifier: workspace:*
-        version: link:../vue
       tsup:
         specifier: 'catalog:'
         version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(typescript@6.0.3)(yaml@2.8.4)

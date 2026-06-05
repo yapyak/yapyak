@@ -1,0 +1,255 @@
+import { describe, expect, it } from 'vitest';
+import { extractFile, transformFile } from 'yapyak/compiler';
+
+import { vue } from './processor';
+
+const processors = [vue()];
+
+function extractVue(source: string, locales: string[] = ['en']) {
+  return extractFile({
+    fileId: 'src/a.vue',
+    locales,
+    processors,
+    source,
+  });
+}
+
+function runVueTransform(input: {
+  source: string;
+  locales: string[];
+  translations?: Record<string, Record<string, string>>;
+}): string {
+  const fileId = 'src/a.vue';
+  const extracted = extractFile({
+    fileId,
+    locales: input.locales,
+    processors,
+    source: input.source,
+  });
+  const result = transformFile({
+    extracted,
+    fileId,
+    locales: input.locales,
+    processors,
+    source: input.source,
+    translations: input.translations ?? {},
+  });
+  return result.code;
+}
+
+describe('vue processor — extract', () => {
+  it('returns template messages resolved against `<script setup>` import', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <h1>{{ t('Hello') }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(result.messages).toHaveLength(1);
+    expect(result.messages[0]?.source).toBe('Hello');
+  });
+
+  it('returns messages from both script and template under one import', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      "const inScript = t('Hello');",
+      '</script>',
+      '<template>',
+      `  <h1>{{ t('World') }}</h1>`,
+      `  <button :aria-label="t('Save')">x</button>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    const sources = result.messages.map((m) => m.source).sort();
+    expect(sources).toEqual(['Hello', 'Save', 'World']);
+  });
+
+  it('returns template messages resolved against plain `<script>`', () => {
+    const source = [
+      '<script lang="ts">',
+      "import { t } from 'yapyak';",
+      "export default { name: 'X' };",
+      '</script>',
+      '<template>',
+      `  <h1>{{ t('Hello') }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    const templateMessages = result.messages.filter(
+      (m) => m.source === 'Hello',
+    );
+    expect(templateMessages).toHaveLength(1);
+  });
+
+  it('returns template messages using an aliased import shared with template', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t as tr } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <h1>{{ tr('Hello') }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(result.messages).toHaveLength(1);
+    expect(result.messages[0]?.source).toBe('Hello');
+  });
+
+  it('folds the same source string across script and template', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      "const inScript = t('Save');",
+      '</script>',
+      '<template>',
+      `  <button>{{ t('Save') }}</button>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(result.messages).toHaveLength(1);
+    expect(result.messages[0]?.locations).toHaveLength(2);
+  });
+
+  it('returns no messages when no script imports `yapyak`', () => {
+    const source = [
+      '<template>',
+      `  <h1>{{ t('Hello') }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(result.messages).toHaveLength(0);
+  });
+});
+
+describe('vue processor — transform', () => {
+  it('elides `t` in `<script setup>` and `<template>` for single-locale', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      "const heading = t('Hello');",
+      '</script>',
+      '<template>',
+      `  <h1>{{ t('Hello') }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const code = runVueTransform({ locales: ['en'], source });
+    expect(code).toContain("'Hello'");
+    expect(code).toContain('<h1>Hello</h1>');
+    expect(code).not.toContain("t('Hello')");
+    expect(code).not.toContain("from 'yapyak'");
+  });
+
+  it('emits `_pick` for multi-locale in template and script', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      "const heading = t('Hello');",
+      '</script>',
+      '<template>',
+      `  <h1>{{ t('Hello') }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const code = runVueTransform({
+      locales: ['en', 'sv'],
+      source,
+      translations: { sv: {} },
+    });
+    expect(code).toContain("_pick({ en: 'Hello', sv: 'Hello' })");
+    expect(code).toMatch(/import \{ pick as _pick \} from 'yapyak\/internal'/);
+  });
+
+  it('transforms `:foo="..."` attribute expression', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <button :aria-label="t('Save changes')">Save</button>`,
+      '</template>',
+    ].join('\n');
+    const code = runVueTransform({ locales: ['en'], source });
+    expect(code).toContain('aria-label="Save changes"');
+    expect(code).not.toContain("t('Save changes')");
+  });
+
+  it('transforms `@click` event handler expression', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <button @click="alert(t('Hi'))">x</button>`,
+      '</template>',
+    ].join('\n');
+    const code = runVueTransform({ locales: ['en'], source });
+    expect(code).toContain("alert('Hi')");
+  });
+
+  it('preserves `<script setup>` when there is no core `t` import', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "const heading = 'static';",
+      '</script>',
+      '<template>',
+      `  <h1>{{ heading }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const code = runVueTransform({ locales: ['en', 'sv'], source });
+    expect(code).toContain("const heading = 'static'");
+  });
+
+  it('writes `_pick` into `<script setup>` in multi-locale even when only template uses `t`', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <h1>{{ t('Hello') }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const code = runVueTransform({
+      locales: ['en', 'sv'],
+      source,
+      translations: { sv: {} },
+    });
+    expect(code).toMatch(
+      /<script setup[^>]*>\s*\nimport \{ pick as _pick \} from 'yapyak\/internal';/,
+    );
+  });
+
+  it('elides Vue mustache `{{ t("Hello") }}` to bare `Hello`', () => {
+    const code = runVueTransform({
+      locales: ['en'],
+      source: [
+        '<script setup lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        '<template>',
+        `  <p>{{ t('Hello') }}</p>`,
+        '</template>',
+      ].join('\n'),
+    });
+    expect(code).toContain('<p>Hello</p>');
+    expect(code).not.toContain('{{');
+  });
+
+  it('elides Vue v-bind `:aria-label="t(\'Save\')"` to static `aria-label="Save"`', () => {
+    const code = runVueTransform({
+      locales: ['en'],
+      source: [
+        '<script setup lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        '<template>',
+        `  <button :aria-label="t('Save')">x</button>`,
+        '</template>',
+      ].join('\n'),
+    });
+    expect(code).toContain('aria-label="Save"');
+    expect(code).not.toContain(':aria-label');
+  });
+});

@@ -1,16 +1,10 @@
-import type { Processor } from '../../../processor';
 import type { TransformFileRequest } from './transform';
 
-import { astro } from '@yapyak/astro/processor';
-import { svelte } from '@yapyak/svelte/processor';
-import { vue } from '@yapyak/vue/processor';
 import { describe, expect, it } from 'vitest';
 
 import { extractFile } from './extract';
 import { transformFile } from './transform';
 import { createHash } from 'node:crypto';
-
-const processors: Processor[] = [vue(), svelte(), astro()];
 
 function runTransform(input: {
   source: string;
@@ -22,14 +16,12 @@ function runTransform(input: {
   const extracted = extractFile({
     fileId,
     locales: input.locales,
-    processors,
     source: input.source,
   });
   const request: TransformFileRequest = {
     extracted,
     fileId,
     locales: input.locales,
-    processors,
     source: input.source,
     translations: input.translations ?? {},
   };
@@ -345,167 +337,7 @@ describe('transformFile', () => {
     });
   });
 
-  describe('with Vue SFC', () => {
-    function runVueTransform(input: {
-      source: string;
-      locales: string[];
-      translations?: Record<string, Record<string, string>>;
-    }): string {
-      const fileId = 'src/a.vue';
-      const extracted = extractFile({
-        fileId,
-        locales: input.locales,
-        processors,
-        source: input.source,
-      });
-      const result = transformFile({
-        extracted,
-        fileId,
-        locales: input.locales,
-        processors,
-        source: input.source,
-        translations: input.translations ?? {},
-      });
-      return result.code;
-    }
-
-    it('elides `t` in `<script setup>` and `<template>` for single-locale', () => {
-      const source = [
-        '<script setup lang="ts">',
-        "import { t } from 'yapyak';",
-        "const heading = t('Hello');",
-        '</script>',
-        '<template>',
-        `  <h1>{{ t('Hello') }}</h1>`,
-        '</template>',
-      ].join('\n');
-      const code = runVueTransform({ locales: ['en'], source });
-      expect(code).toContain("'Hello'");
-      expect(code).toContain('<h1>Hello</h1>');
-      expect(code).not.toContain("t('Hello')");
-      expect(code).not.toContain("t('Hello')");
-      expect(code).not.toContain("from 'yapyak'");
-    });
-
-    it('emits `_pick` for multi-locale in template and script', () => {
-      const source = [
-        '<script setup lang="ts">',
-        "import { t } from 'yapyak';",
-        "const heading = t('Hello');",
-        '</script>',
-        '<template>',
-        `  <h1>{{ t('Hello') }}</h1>`,
-        '</template>',
-      ].join('\n');
-      const code = runVueTransform({
-        locales: ['en', 'sv'],
-        source,
-        translations: { sv: {} },
-      });
-      expect(code).toContain("_pick({ en: 'Hello', sv: 'Hello' })");
-      expect(code).toContain("_pick({ en: 'Hello', sv: 'Hello' })");
-      expect(code).toMatch(
-        /import \{ pick as _pick \} from 'yapyak\/internal'/,
-      );
-    });
-
-    it('transforms `:foo="..."` attribute expression', () => {
-      const source = [
-        '<script setup lang="ts">',
-        "import { t } from 'yapyak';",
-        '</script>',
-        '<template>',
-        `  <button :aria-label="t('Save changes')">Save</button>`,
-        '</template>',
-      ].join('\n');
-      const code = runVueTransform({ locales: ['en'], source });
-      expect(code).toContain('aria-label="Save changes"');
-      expect(code).not.toContain("t('Save changes')");
-    });
-
-    it('transforms `@click` event handler expression', () => {
-      const source = [
-        '<script setup lang="ts">',
-        "import { t } from 'yapyak';",
-        '</script>',
-        '<template>',
-        `  <button @click="alert(t('Hi'))">x</button>`,
-        '</template>',
-      ].join('\n');
-      const code = runVueTransform({ locales: ['en'], source });
-      expect(code).toContain("alert('Hi')");
-    });
-
-    it('preserves `<script setup>` when there is no core `t` import', () => {
-      const source = [
-        '<script setup lang="ts">',
-        "const heading = 'static';",
-        '</script>',
-        '<template>',
-        `  <h1>{{ heading }}</h1>`,
-        '</template>',
-      ].join('\n');
-      const code = runVueTransform({ locales: ['en', 'sv'], source });
-      expect(code).toContain("const heading = 'static'");
-    });
-
-    it('writes `_pick` into `<script setup>` in multi-locale even when only template uses `t`', () => {
-      const source = [
-        '<script setup lang="ts">',
-        "import { t } from 'yapyak';",
-        '</script>',
-        '<template>',
-        `  <h1>{{ t('Hello') }}</h1>`,
-        '</template>',
-      ].join('\n');
-      const code = runVueTransform({
-        locales: ['en', 'sv'],
-        source,
-        translations: { sv: {} },
-      });
-      expect(code).toMatch(
-        /<script setup[^>]*>\s*\nimport \{ pick as _pick \} from 'yapyak\/internal';/,
-      );
-    });
-  });
-
   describe('with bare-string elision in templates', () => {
-    function runVueTransform(source: string, locales: string[]): string {
-      const fileId = 'src/a.vue';
-      const extracted = extractFile({ fileId, locales, processors, source });
-      return transformFile({
-        extracted,
-        fileId,
-        locales,
-        source,
-        translations: {},
-      }).code;
-    }
-
-    function runSvelteTransform(source: string, locales: string[]): string {
-      const fileId = 'src/a.svelte';
-      const extracted = extractFile({ fileId, locales, processors, source });
-      return transformFile({
-        extracted,
-        fileId,
-        locales,
-        source,
-        translations: {},
-      }).code;
-    }
-
-    function runAstroTransform(source: string, locales: string[]): string {
-      const fileId = 'src/a.astro';
-      const extracted = extractFile({ fileId, locales, processors, source });
-      return transformFile({
-        extracted,
-        fileId,
-        locales,
-        source,
-        translations: {},
-      }).code;
-    }
-
     it('elides JSX text `<p>{t("Hello")}</p>` to `<p>Hello</p>`', () => {
       const code = runTransform({
         locales: ['en'],
@@ -530,92 +362,6 @@ describe('transformFile', () => {
           '}',
         ].join('\n'),
       });
-      expect(code).toContain('aria-label="Save"');
-      expect(code).not.toContain('aria-label={');
-    });
-
-    it('elides Vue mustache `{{ t("Hello") }}` to bare `Hello`', () => {
-      const code = runVueTransform(
-        [
-          '<script setup lang="ts">',
-          "import { t } from 'yapyak';",
-          '</script>',
-          '<template>',
-          `  <p>{{ t('Hello') }}</p>`,
-          '</template>',
-        ].join('\n'),
-        ['en'],
-      );
-      expect(code).toContain('<p>Hello</p>');
-      expect(code).not.toContain('{{');
-    });
-
-    it('elides Vue v-bind `:aria-label="t(\'Save\')"` to static `aria-label="Save"`', () => {
-      const code = runVueTransform(
-        [
-          '<script setup lang="ts">',
-          "import { t } from 'yapyak';",
-          '</script>',
-          '<template>',
-          `  <button :aria-label="t('Save')">x</button>`,
-          '</template>',
-        ].join('\n'),
-        ['en'],
-      );
-      expect(code).toContain('aria-label="Save"');
-      expect(code).not.toContain(':aria-label');
-    });
-
-    it('elides Svelte mustache `{t("Hello")}` to bare `Hello`', () => {
-      const code = runSvelteTransform(
-        [
-          '<script lang="ts">',
-          "import { t } from 'yapyak';",
-          '</script>',
-          `<p>{t('Hello')}</p>`,
-        ].join('\n'),
-        ['en'],
-      );
-      expect(code).toContain('<p>Hello</p>');
-    });
-
-    it('elides Svelte attribute `aria-label={t("Save")}` to `aria-label="Save"`', () => {
-      const code = runSvelteTransform(
-        [
-          '<script lang="ts">',
-          "import { t } from 'yapyak';",
-          '</script>',
-          `<button aria-label={t('Save')}>x</button>`,
-        ].join('\n'),
-        ['en'],
-      );
-      expect(code).toContain('aria-label="Save"');
-      expect(code).not.toContain('aria-label={');
-    });
-
-    it('elides Astro mustache `{t("Hello")}` to bare `Hello`', () => {
-      const code = runAstroTransform(
-        [
-          '---',
-          "import { t } from 'yapyak';",
-          '---',
-          `<p>{t('Hello')}</p>`,
-        ].join('\n'),
-        ['en'],
-      );
-      expect(code).toContain('<p>Hello</p>');
-    });
-
-    it('elides Astro attribute `aria-label={t("Save")}` to `aria-label="Save"`', () => {
-      const code = runAstroTransform(
-        [
-          '---',
-          "import { t } from 'yapyak';",
-          '---',
-          `<button aria-label={t('Save')}>x</button>`,
-        ].join('\n'),
-        ['en'],
-      );
       expect(code).toContain('aria-label="Save"');
       expect(code).not.toContain('aria-label={');
     });
@@ -669,7 +415,6 @@ describe('transformFile', () => {
       const extracted = extractFile({
         fileId,
         locales: ['en'],
-        processors,
         source,
       });
       const result = transformFile({
