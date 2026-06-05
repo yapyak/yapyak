@@ -3,7 +3,7 @@ import type { Persistence } from './type';
 import { appendResponseHeader } from '../locale';
 import { subscribeHistory } from './history';
 
-const POLL_INTERVAL_MS = 1000;
+const POLL_INTERVAL_MS = 1_000;
 const COOKIE_MAX_AGE_SECONDS = 31_536_000;
 
 function subscribePoll(onChange: () => void): () => void {

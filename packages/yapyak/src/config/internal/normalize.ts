@@ -43,7 +43,7 @@ function resolveExamples(config: YapyakConfig): number {
 function normalizePersistence(
   input: Persistence | undefined,
 ): NormalizedPersistence {
-  if (input == null) {
+  if (input === null || input === undefined) {
     return null;
   }
   if (typeof input === 'string') {

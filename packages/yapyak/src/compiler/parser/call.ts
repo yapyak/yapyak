@@ -168,7 +168,7 @@ function extractDirectModifier(
   }
 
   if (call.arguments.length === 1) {
-    reportCapture(call, callee, methodName, context);
+    reportCapture(call, methodName, context);
     return;
   }
 
@@ -262,7 +262,7 @@ function extractNamespaceModifier(
   }
 
   if (call.arguments.length === 1) {
-    reportCapture(call, receiver, methodName, context);
+    reportCapture(call, methodName, context);
     return;
   }
 
@@ -319,7 +319,6 @@ function resolveChainBinding(
 
 function reportCapture(
   call: ts.CallExpression,
-  _callee: ts.Node,
   methodName: string,
   context: DiscoveryContext,
 ): void {

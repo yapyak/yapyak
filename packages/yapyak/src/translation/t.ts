@@ -189,10 +189,11 @@ function createTFn(boundLocale?: string): TFn {
     if (source === undefined) {
       return {
         at: <TSource extends string>(
-          _context: string,
+          context: string,
           atSource: TSource,
           atParams?: TParams<TSource>,
         ): TReturn<ExtractTags<TSource>> => {
+          void context;
           const scoped = createTFn(locale);
           return scoped(atSource, atParams);
         },
@@ -209,10 +210,11 @@ function createTFn(boundLocale?: string): TFn {
   ): TReturn<ExtractTags<T>>;
   function atMethod(context: string): TAtChain;
   function atMethod<T extends string>(
-    _context: string,
+    context: string,
     source?: T,
     params?: TParams<T>,
   ): TReturn<ExtractTags<T>> | TAtChain {
+    void context;
     if (source === undefined) {
       return {
         in: <TSource extends string>(

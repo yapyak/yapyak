@@ -74,7 +74,7 @@ export function vue(): Processor {
       if (descriptor.scriptSetup !== null) {
         fragments.push(toScriptFragment(descriptor.scriptSetup));
       }
-      if (descriptor.template !== null && descriptor.template.ast) {
+      if (descriptor.template?.ast) {
         collectTemplateExpressions(descriptor.template.ast, source, fragments);
       }
       return fragments;

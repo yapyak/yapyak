@@ -44,13 +44,13 @@ export async function run(argv: string[]): Promise<number> {
     case 'add': {
       const config = await loadConfig(projectRoot);
       const locales = rest.filter((arg) => !arg.startsWith('--'));
-      return await add({ config, locales, projectRoot });
+      return add({ config, locales, projectRoot });
     }
     case 'translate': {
       const config = await loadConfig(projectRoot);
       const locale = rest.find((arg) => !arg.startsWith('--'));
       const shouldForce = rest.includes('--force') || rest.includes('-f');
-      return await translate({
+      return translate({
         config,
         force: shouldForce,
         locale,

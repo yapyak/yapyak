@@ -196,7 +196,7 @@ function rewriteImportDeclaration(input: RewriteImportDeclarationInput): void {
     magicString.remove(startInOriginal, endInOriginal);
     return;
   }
-  const specList = remaining.map((item) => renderSpecifier(item)).join(', ');
+  const specList = remaining.map(renderSpecifier).join(', ');
   const moduleSpecText = declaration.moduleSpecifier.getText(sourceFile);
   magicString.overwrite(
     startInOriginal,

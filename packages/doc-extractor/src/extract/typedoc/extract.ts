@@ -602,11 +602,11 @@ function appendType(type: SomeType, tokens: TypeToken[]): void {
       }
       if (type.typeArguments && type.typeArguments.length > 0) {
         tokens.push({ kind: 'text', text: '<' });
-        for (let index = 0; index < type.typeArguments.length; index++) {
+        for (const [index, typeArg] of type.typeArguments.entries()) {
           if (index > 0) {
             tokens.push({ kind: 'text', text: ', ' });
           }
-          appendType(type.typeArguments[index]!, tokens);
+          appendType(typeArg, tokens);
         }
         tokens.push({ kind: 'text', text: '>' });
       }
@@ -617,28 +617,28 @@ function appendType(type: SomeType, tokens: TypeToken[]): void {
       tokens.push({ kind: 'text', text: '[]' });
       return;
     case 'union':
-      for (let index = 0; index < type.types.length; index++) {
+      for (const [index, member] of type.types.entries()) {
         if (index > 0) {
           tokens.push({ kind: 'text', text: ' | ' });
         }
-        appendType(type.types[index]!, tokens);
+        appendType(member, tokens);
       }
       return;
     case 'intersection':
-      for (let index = 0; index < type.types.length; index++) {
+      for (const [index, member] of type.types.entries()) {
         if (index > 0) {
           tokens.push({ kind: 'text', text: ' & ' });
         }
-        appendType(type.types[index]!, tokens);
+        appendType(member, tokens);
       }
       return;
     case 'tuple':
       tokens.push({ kind: 'text', text: '[' });
-      for (let index = 0; index < type.elements.length; index++) {
+      for (const [index, element] of type.elements.entries()) {
         if (index > 0) {
           tokens.push({ kind: 'text', text: ', ' });
         }
-        appendType(type.elements[index]!, tokens);
+        appendType(element, tokens);
       }
       tokens.push({ kind: 'text', text: ']' });
       return;
@@ -664,8 +664,7 @@ function appendReflectionType(
   const children = declaration.children;
   if (children && children.length > 0) {
     tokens.push({ kind: 'text', text: '{ ' });
-    for (let index = 0; index < children.length; index++) {
-      const child = children[index]!;
+    for (const [index, child] of children.entries()) {
       if (index > 0) {
         tokens.push({ kind: 'text', text: '; ' });
       }
@@ -698,11 +697,10 @@ function appendSignatureType(
   }
   tokens.push({ kind: 'text', text: '(' });
   const parameters = signature.parameters ?? [];
-  for (let index = 0; index < parameters.length; index++) {
+  for (const [index, param] of parameters.entries()) {
     if (index > 0) {
       tokens.push({ kind: 'text', text: ', ' });
     }
-    const param = parameters[index]!;
     const optional = param.flags.isOptional ? '?' : '';
     tokens.push({ kind: 'text', text: `${param.name}${optional}: ` });
     if (param.type) {
@@ -806,9 +804,7 @@ function partsToMarkdown(
   }
   let out = '';
   for (const part of parts) {
-    if (part.kind === 'text') {
-      out += part.text;
-    } else if (part.kind === 'code') {
+    if (part.kind === 'text' || part.kind === 'code') {
       out += part.text;
     } else if (part.kind === 'inline-tag' && part.tag === '@link') {
       out += resolveInlineLink(part, context);
