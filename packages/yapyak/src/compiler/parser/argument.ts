@@ -23,7 +23,7 @@ export interface ParsedArguments {
   sourceRange: Range;
 }
 
-const CONTEXT_RX = /^[a-z][a-z0-9-]*$/;
+const CONTEXT_SEPARATOR = '@';
 
 export function parseArguments(callSite: CallSite): ParsedArguments {
   const sourceFile = callSite.node.getSourceFile();
@@ -40,13 +40,13 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
       ts.isNoSubstitutionTemplateLiteral(contextArg)
     ) {
       const text = contextArg.text;
-      if (!CONTEXT_RX.test(text)) {
+      if (text.includes(CONTEXT_SEPARATOR)) {
         diagnostics.push(
           createDiagnostic({
             code: 'YPK402',
             fileId,
-            hint: 'Use a lowercase identifier (kebab-case for compound names): `button`, `heading`, `primary-cta`.',
-            message: `\`t.at()\` context \`'${text}'\` must match \`[a-z][a-z0-9-]*\`.`,
+            hint: "Remove the '@' — it is reserved as the source/context separator.",
+            message: `\`t.at()\` context \`'${text}'\` must not contain \`'@'\`.`,
             range: toRange(contextArg, sourceFile),
             severity: 'error',
             source: fileText,

@@ -217,17 +217,11 @@ describe('parseArguments', () => {
       expect(parsed.context).toBeUndefined();
     });
 
-    it('emits YPK402 when context contains uppercase letters', () => {
-      const parsed = parseInline("export const x = t.at('Button', 'Save');");
-      const ypk402 = parsed.diagnostics.filter((d) => d.code === 'YPK402');
-      expect(ypk402).toHaveLength(1);
-      expect(parsed.context).toBeUndefined();
-    });
-
     it('emits YPK402 when context contains an `@`', () => {
       const parsed = parseInline("export const x = t.at('btn@x', 'Save');");
       const ypk402 = parsed.diagnostics.filter((d) => d.code === 'YPK402');
       expect(ypk402).toHaveLength(1);
+      expect(parsed.context).toBeUndefined();
     });
 
     it('accepts kebab-case context names', () => {

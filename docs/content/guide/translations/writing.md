@@ -128,7 +128,7 @@ t.in('sv', 'Hello');          // OK
 | [YPK105](./diagnostics#ypk105) | Params key has no matching placeholder |
 | [YPK106](./diagnostics#ypk106) | Params passed as variable or spread, cannot be statically verified |
 | [YPK401](./diagnostics#ypk401) | `t.at()` context is not a static string literal |
-| [YPK402](./diagnostics#ypk402) | Context does not match `[a-z][a-z0-9-]*` |
+| [YPK402](./diagnostics#ypk402) | Context contains `'@'` (reserved separator) |
 | [YPK403](./diagnostics#ypk403) | Same source used with both `t()` and `t.at()` in the same file |
 | [YPK404](./diagnostics#ypk404) | `t.at()` has no other context to disambiguate from |
 | [YPK405](./diagnostics#ypk405) | Modifier captured instead of used inline |

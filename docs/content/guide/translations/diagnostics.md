@@ -122,10 +122,10 @@ t.at('action', 'Open');       // ✓
 
 ### YPK402
 
-The `t.at()` context does not match `[a-z][a-z0-9-]*` (error). The context must start with a lowercase letter and may contain digits and hyphens.
+The `t.at()` context contains an `'@'` (error). `'@'` is reserved as the source/context separator.
 
 ```ts
-t.at('Button', 'Open');       // ✗ YPK402 (uppercase)
+t.at('btn@x', 'Open');        // ✗ YPK402 (contains '@')
 t.at('primary-cta', 'Open');  // ✓
 ```
 

@@ -21,6 +21,12 @@ export type TParams<T extends string> = T extends `${string}{${string}`
 type TArgs<T extends string> =
   TParams<T> extends never ? [] : [params: TParams<T>];
 
+type ValidContext<T extends string> = string extends T
+  ? T
+  : T extends `${string}@${string}`
+    ? `Invalid context "${T}": '@' is reserved as the source/context separator`
+    : T;
+
 declare const brand: unique symbol;
 
 /**
@@ -49,11 +55,11 @@ export type TReturn<T extends string = never> = [T] extends [never]
  * ```
  */
 export interface TInChain {
-  at<T extends string>(
-    context: string,
-    source: T,
-    ...args: TArgs<T>
-  ): TReturn<ExtractTags<T>>;
+  at<TContext extends string, TSource extends string>(
+    context: ValidContext<TContext>,
+    source: TSource,
+    ...args: TArgs<TSource>
+  ): TReturn<ExtractTags<TSource>>;
 }
 
 /**
@@ -90,16 +96,16 @@ export interface TFn {
    * @remarks
    * The compiler emits {@link https://yapyak.dev/diagnostics/YPK403 YPK403} if a source is used with both `t()` and `t.at()` in the same file.
    *
-   * @param context - The disambiguating context. Must match `[a-z][a-z0-9-]*`.
+   * @param context - The disambiguating context. Must not contain `'@'` (reserved as the source/context separator).
    * @param source - The source string literal, supplied to translate inline.
    * @param args - The placeholder params tuple. Required when the source has placeholders.
    */
-  at<T extends string>(
-    context: string,
-    source: T,
-    ...args: TArgs<T>
-  ): TReturn<ExtractTags<T>>;
-  at(context: string): TAtChain;
+  at<TContext extends string, TSource extends string>(
+    context: ValidContext<TContext>,
+    source: TSource,
+    ...args: TArgs<TSource>
+  ): TReturn<ExtractTags<TSource>>;
+  at<TContext extends string>(context: ValidContext<TContext>): TAtChain;
 
   /**
    * Forces a fixed locale for one translation call, or returns a chain that requires `.at()` to complete.

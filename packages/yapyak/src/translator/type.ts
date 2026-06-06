@@ -39,7 +39,7 @@ export interface TranslateRequest {
    * The developer-supplied disambiguation context.
    *
    * @remarks
-   * Set via `t.at(context, source)` at the call site. Matches `[a-z][a-z0-9-]*`.
+   * Set via `t.at(context, source)` at the call site. Must not contain `'@'`.
    */
   disambiguation?: string;
   /** Example translations from the project, supplied as style reference. */

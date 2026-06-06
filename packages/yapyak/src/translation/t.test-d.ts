@@ -85,8 +85,26 @@ describe('t', () => {
   });
 
   it('holds context, source, and params on `t.at()` with placeholders', () => {
-    expectTypeOf(t.at<'Hello, {name}!'>).parameters.toEqualTypeOf<
+    expectTypeOf(t.at<string, 'Hello, {name}!'>).parameters.toEqualTypeOf<
       [string, 'Hello, {name}!', { name: string | number }]
+    >();
+  });
+
+  it('refuses a context literal that contains an `@`', () => {
+    expectTypeOf(t.at<'btn@x', 'Save'>).parameters.toEqualTypeOf<
+      [
+        `Invalid context "btn@x": '@' is reserved as the source/context separator`,
+        'Save',
+      ]
+    >();
+  });
+
+  it('refuses an `@` in the context on the `t.in(locale).at()` chain', () => {
+    expectTypeOf(t.in('sv').at<'btn@x', 'Save'>).parameters.toEqualTypeOf<
+      [
+        `Invalid context "btn@x": '@' is reserved as the source/context separator`,
+        'Save',
+      ]
     >();
   });
 });
