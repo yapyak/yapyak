@@ -213,39 +213,42 @@ function toIcuDiagnostic(
 }
 
 function isLiteralFirstArg(
-  arg: ts.Expression,
-): arg is ts.NoSubstitutionTemplateLiteral | ts.StringLiteral {
-  return ts.isStringLiteral(arg) || ts.isNoSubstitutionTemplateLiteral(arg);
+  expression: ts.Expression,
+): expression is ts.NoSubstitutionTemplateLiteral | ts.StringLiteral {
+  return (
+    ts.isStringLiteral(expression) ||
+    ts.isNoSubstitutionTemplateLiteral(expression)
+  );
 }
 
 function parseParams(
-  arg: ts.Expression,
+  expression: ts.Expression,
   sourceFile: ts.SourceFile,
 ): ParsedParams | undefined {
-  if (!ts.isObjectLiteralExpression(arg)) {
+  if (!ts.isObjectLiteralExpression(expression)) {
     return undefined;
   }
   const keys: string[] = [];
   let kind: 'spread' | 'static' = 'static';
-  for (const prop of arg.properties) {
-    if (ts.isSpreadAssignment(prop)) {
+  for (const property of expression.properties) {
+    if (ts.isSpreadAssignment(property)) {
       kind = 'spread';
       continue;
     }
     if (
-      ts.isShorthandPropertyAssignment(prop) ||
-      ts.isPropertyAssignment(prop)
+      ts.isShorthandPropertyAssignment(property) ||
+      ts.isPropertyAssignment(property)
     ) {
-      if (ts.isIdentifier(prop.name)) {
-        keys.push(prop.name.text);
+      if (ts.isIdentifier(property.name)) {
+        keys.push(property.name.text);
         continue;
       }
-      if (ts.isStringLiteral(prop.name)) {
-        keys.push(prop.name.text);
+      if (ts.isStringLiteral(property.name)) {
+        keys.push(property.name.text);
       }
     }
   }
-  return { keys, kind, range: toRange(arg, sourceFile) };
+  return { keys, kind, range: toRange(expression, sourceFile) };
 }
 
 interface ValidateParamsInput {

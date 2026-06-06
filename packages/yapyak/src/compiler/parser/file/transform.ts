@@ -559,21 +559,21 @@ function tryBareElision(
   if (placeholders.length > 0) {
     return undefined;
   }
-  const { mode, range, attrName } = callSite.elision;
+  const { mode, range, attributeName } = callSite.elision;
   if (mode === 'text') {
     if (!isSafeJsxText(source)) {
       return undefined;
     }
     return { code: source, range, usesPick: false };
   }
-  if (!attrName) {
+  if (!attributeName) {
     return undefined;
   }
   if (!isSafeAttributeValue(source)) {
     return undefined;
   }
   return {
-    code: `${attrName}="${source}"`,
+    code: `${attributeName}="${source}"`,
     range,
     usesPick: false,
   };

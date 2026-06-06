@@ -253,7 +253,7 @@ function detectJsxElision(
   }
   if (ts.isJsxAttribute(grandparent) && ts.isIdentifier(grandparent.name)) {
     return {
-      attrName: grandparent.name.text,
+      attributeName: grandparent.name.text,
       mode: 'attribute',
       range: remapRange(
         toRange(grandparent, sourceFile),

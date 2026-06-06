@@ -844,9 +844,9 @@ function areMessagesEqual(
   if (a.length !== b.length) {
     return false;
   }
-  for (let i = 0; i < a.length; i++) {
-    const left = a[i];
-    const right = b[i];
+  for (let index = 0; index < a.length; index++) {
+    const left = a[index];
+    const right = b[index];
     if (!left || !right) {
       return false;
     }
@@ -856,9 +856,13 @@ function areMessagesEqual(
     ) {
       return false;
     }
-    for (let j = 0; j < left.locations.length; j++) {
-      const leftLocation = left.locations[j];
-      const rightLocation = right.locations[j];
+    for (
+      let locationIndex = 0;
+      locationIndex < left.locations.length;
+      locationIndex++
+    ) {
+      const leftLocation = left.locations[locationIndex];
+      const rightLocation = right.locations[locationIndex];
       if (!leftLocation || !rightLocation) {
         return false;
       }

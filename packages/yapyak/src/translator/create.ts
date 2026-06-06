@@ -62,26 +62,30 @@ export function createTranslator(options: CreateTranslatorOptions): Translator {
     const indexOfUnique = new Map<string, number>();
     const requestToUnique = new Array<number>(requests.length);
     const uniqueTargetLocales = new Set<string>();
-    for (let i = 0; i < requests.length; i++) {
-      const request = requests[i];
+    for (let requestIndex = 0; requestIndex < requests.length; requestIndex++) {
+      const request = requests[requestIndex];
       if (!request) {
         continue;
       }
       const key = uniqueKey(request);
-      let index = indexOfUnique.get(key);
-      if (index === undefined) {
-        index = uniqueRequests.length;
-        indexOfUnique.set(key, index);
+      let uniqueIndex = indexOfUnique.get(key);
+      if (uniqueIndex === undefined) {
+        uniqueIndex = uniqueRequests.length;
+        indexOfUnique.set(key, uniqueIndex);
         uniqueRequests.push(request);
       }
-      requestToUnique[i] = index;
+      requestToUnique[requestIndex] = uniqueIndex;
       uniqueTargetLocales.add(request.targetLocale);
     }
     const targetLocales = [...uniqueTargetLocales].sort();
 
     const chunks: TranslateRequest[][] = [];
-    for (let i = 0; i < uniqueRequests.length; i += batchSize) {
-      chunks.push(uniqueRequests.slice(i, i + batchSize));
+    for (
+      let chunkStart = 0;
+      chunkStart < uniqueRequests.length;
+      chunkStart += batchSize
+    ) {
+      chunks.push(uniqueRequests.slice(chunkStart, chunkStart + batchSize));
     }
     if (chunks.length === 0) {
       return [];

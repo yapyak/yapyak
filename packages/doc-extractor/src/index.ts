@@ -80,3 +80,4 @@ export { getOptions, getOptionsGroup } from './access/options';
 export { findAdjacentPages, getFirstPage, getPage } from './access/page';
 export { getSidebar } from './access/sidebar';
 export { resolveSymbol } from './access/symbol';
+export { getText } from './access/text';

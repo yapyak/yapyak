@@ -15,7 +15,7 @@ export interface Range {
 
 /** Marks a portion of source text that should be elided when reading the surrounding code. */
 export interface ElisionContext {
-  attrName?: string;
+  attributeName?: string;
   mode: 'attribute' | 'text';
   range: Range;
 }

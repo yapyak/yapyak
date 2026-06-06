@@ -89,8 +89,8 @@ function walkNode(node: Node, source: string, fragments: Fragment[]): void {
   }
   if (isTagLikeNode(node)) {
     if (Array.isArray(node.attributes)) {
-      for (const attr of node.attributes) {
-        handleAttribute(attr, source, fragments);
+      for (const attribute of node.attributes) {
+        handleAttribute(attribute, source, fragments);
       }
     }
     if (Array.isArray(node.children)) {
@@ -226,18 +226,18 @@ function pushTextExpression(
 }
 
 function handleAttribute(
-  attr: AttributeNode,
+  node: AttributeNode,
   source: string,
   fragments: Fragment[],
 ): void {
-  if (attr.kind === 'empty' || attr.kind === 'quoted') {
+  if (node.kind === 'empty' || node.kind === 'quoted') {
     return;
   }
-  const code = getAttributeExpressionText(attr);
+  const code = getAttributeExpressionText(node);
   if (!code) {
     return;
   }
-  const offset = findExpressionOffset({ attr, code, source });
+  const offset = findExpressionOffset({ attributeNode: node, code, source });
   if (offset === undefined) {
     return;
   }
@@ -247,7 +247,7 @@ function handleAttribute(
     lang: 'ts',
     originalOffset: offset,
   };
-  const elision = computeAttributeElision(attr, source, offset);
+  const elision = computeAttributeElision(node, source, offset);
   if (elision) {
     fragment.elision = elision;
   }
@@ -255,15 +255,15 @@ function handleAttribute(
 }
 
 function computeAttributeElision(
-  attr: AttributeNode,
+  node: AttributeNode,
   source: string,
   valueOffset: number,
 ): Fragment['elision'] | undefined {
-  if (attr.kind !== 'expression') {
+  if (node.kind !== 'expression') {
     return undefined;
   }
-  const attrStart = attr.position?.start.offset;
-  if (typeof attrStart !== 'number') {
+  const attributeStart = node.position?.start.offset;
+  if (typeof attributeStart !== 'number') {
     return undefined;
   }
   const braces = findEnclosingBraces(source, valueOffset);
@@ -271,21 +271,21 @@ function computeAttributeElision(
     return undefined;
   }
   return {
-    attrName: attr.name,
+    attributeName: node.name,
     mode: 'attribute',
-    range: rangeFromOffsets(source, attrStart, braces.end),
+    range: rangeFromOffsets(source, attributeStart, braces.end),
   };
 }
 
-function getAttributeExpressionText(attr: AttributeNode): string | undefined {
-  if (attr.kind === 'shorthand' || attr.kind === 'spread') {
-    return attr.value !== '' ? attr.value : attr.name;
+function getAttributeExpressionText(node: AttributeNode): string | undefined {
+  if (node.kind === 'shorthand' || node.kind === 'spread') {
+    return node.value !== '' ? node.value : node.name;
   }
-  return attr.value;
+  return node.value;
 }
 
 interface FindExpressionOffsetInput {
-  attr: AttributeNode;
+  attributeNode: AttributeNode;
   code: string;
   source: string;
 }
@@ -293,9 +293,9 @@ interface FindExpressionOffsetInput {
 function findExpressionOffset(
   input: FindExpressionOffsetInput,
 ): number | undefined {
-  const { attr, code, source } = input;
-  const start = attr.position?.start.offset;
-  const end = attr.position?.end?.offset;
+  const { attributeNode, code, source } = input;
+  const start = attributeNode.position?.start.offset;
+  const end = attributeNode.position?.end?.offset;
   if (typeof start !== 'number') {
     return undefined;
   }

@@ -186,10 +186,10 @@ function pushDirectiveExpression(
     lang: 'ts',
     originalOffset: expression.loc.start.offset,
   };
-  const attrName = readVBindAttrName(prop);
-  if (attrName) {
+  const attributeName = readVBindAttributeName(prop);
+  if (attributeName) {
     fragment.elision = {
-      attrName,
+      attributeName,
       mode: 'attribute',
       range: rangeFromOffsets(
         source,
@@ -201,7 +201,7 @@ function pushDirectiveExpression(
   fragments.push(fragment);
 }
 
-function readVBindAttrName(prop: DirectiveNode): string | undefined {
+function readVBindAttributeName(prop: DirectiveNode): string | undefined {
   if (prop.name !== 'bind') {
     return undefined;
   }

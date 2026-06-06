@@ -505,25 +505,26 @@ function convertCallSignature(
     parameters,
     returnType,
     signature: `${buildTypeParameterList(typeParameters)}(${parameters
-      .map(paramToText)
+      .map(parameterToText)
       .join(', ')}): ${stringifyTokens(returnType)};`,
     typeParameters,
   };
 }
 
 function convertParameter(
-  param: ParameterReflection,
+  reflection: ParameterReflection,
   context: ExtractContext,
 ): ReferenceParameter {
   return {
-    defaultValue: param.defaultValue ?? null,
-    description: param.comment
-      ? partsToMarkdown(param.comment.summary, context)
+    defaultValue: reflection.defaultValue ?? null,
+    description: reflection.comment
+      ? partsToMarkdown(reflection.comment.summary, context)
       : '',
-    name: param.name,
+    name: reflection.name,
     optional:
-      Boolean(param.flags.isOptional) || param.defaultValue !== undefined,
-    type: param.type ? convertType(param.type) : [],
+      Boolean(reflection.flags.isOptional) ||
+      reflection.defaultValue !== undefined,
+    type: reflection.type ? convertType(reflection.type) : [],
   };
 }
 
@@ -556,16 +557,16 @@ function memberType(reflection: DeclarationReflection): TypeToken[] {
 }
 
 function convertTypeParameter(
-  param: TypeParameterReflection,
+  reflection: TypeParameterReflection,
   context: ExtractContext,
 ): ReferenceTypeParameter {
   return {
-    constraint: param.type ? convertType(param.type) : null,
-    defaultType: param.default ? convertType(param.default) : null,
-    description: param.comment
-      ? partsToMarkdown(param.comment.summary, context)
+    constraint: reflection.type ? convertType(reflection.type) : null,
+    defaultType: reflection.default ? convertType(reflection.default) : null,
+    description: reflection.comment
+      ? partsToMarkdown(reflection.comment.summary, context)
       : '',
-    name: param.name,
+    name: reflection.name,
   };
 }
 
@@ -751,10 +752,10 @@ function stringifyTokens(tokens: TypeToken[]): string {
   return tokens.map((token) => token.text).join('');
 }
 
-function paramToText(param: ReferenceParameter): string {
-  const optional = param.optional ? '?' : '';
-  const typeText = stringifyTokens(param.type);
-  return `${param.name}${optional}: ${typeText}`;
+function parameterToText(parameter: ReferenceParameter): string {
+  const optional = parameter.optional ? '?' : '';
+  const typeText = stringifyTokens(parameter.type);
+  return `${parameter.name}${optional}: ${typeText}`;
 }
 
 function buildTypeParameterList(params: ReferenceTypeParameter[]): string {
@@ -781,7 +782,7 @@ function buildFunctionSignature(
   returnType: TypeToken[],
 ): string {
   const typeParameterList = buildTypeParameterList(typeParameters);
-  const params = parameters.map(paramToText).join(', ');
+  const params = parameters.map(parameterToText).join(', ');
   return `function ${name}${typeParameterList}(${params}): ${stringifyTokens(returnType)};`;
 }
 

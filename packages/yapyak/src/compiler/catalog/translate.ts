@@ -94,9 +94,9 @@ export async function autoTranslate(
 
   const localeFiles = new Map<string, LocaleFile>();
   const touchedLocales = new Set<string>();
-  for (let i = 0; i < stubs.length; i++) {
-    const stub = stubs[i];
-    const value = results[i];
+  for (let index = 0; index < stubs.length; index++) {
+    const stub = stubs[index];
+    const value = results[index];
     if (!stub || value === undefined) {
       continue;
     }
@@ -149,9 +149,9 @@ async function runOneByOne(
   errors: AutoTranslateResult['errors'],
 ): Promise<string[]> {
   const results: string[] = [];
-  for (let i = 0; i < stubs.length; i++) {
-    const stub = stubs[i];
-    const request = requests[i];
+  for (let index = 0; index < stubs.length; index++) {
+    const stub = stubs[index];
+    const request = requests[index];
     if (!stub || !request) {
       results.push('');
       continue;

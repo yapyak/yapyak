@@ -6,8 +6,8 @@ export function offsetToOriginalPosition(
 ): Position {
   let line = 1;
   let column = 1;
-  for (let i = 0; i < offset; i += 1) {
-    if (source[i] === '\n') {
+  for (let index = 0; index < offset; index += 1) {
+    if (source[index] === '\n') {
       line += 1;
       column = 1;
       continue;

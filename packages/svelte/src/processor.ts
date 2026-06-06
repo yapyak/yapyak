@@ -94,11 +94,11 @@ function pushScriptFragment(
 }
 
 function getScriptLang(script: AST.Script): 'js' | 'ts' {
-  for (const attr of script.attributes) {
-    if (attr.name !== 'lang') {
+  for (const attribute of script.attributes) {
+    if (attribute.name !== 'lang') {
       continue;
     }
-    const value = attr.value;
+    const value = attribute.value;
     if (value === true) {
       continue;
     }
@@ -237,8 +237,8 @@ function collectFromElement(
   source: string,
   fragments: Fragment[],
 ): void {
-  for (const attr of element.attributes) {
-    collectFromAttribute(attr, source, fragments);
+  for (const attribute of element.attributes) {
+    collectFromAttribute(attribute, source, fragments);
   }
   collectFromFragment(element.fragment, source, fragments);
   if (element.type === 'SvelteElement') {
@@ -252,12 +252,12 @@ function collectFromElement(
 type AttributeNode = ElementLikeNode['attributes'][number];
 
 function collectFromAttribute(
-  attr: AttributeNode,
+  node: AttributeNode,
   source: string,
   fragments: Fragment[],
 ): void {
-  if (attr.type === 'Attribute') {
-    const value = attr.value;
+  if (node.type === 'Attribute') {
+    const value = node.value;
     if (value === true) {
       return;
     }
@@ -272,20 +272,20 @@ function collectFromAttribute(
     const elision =
       value.type === 'ExpressionTag'
         ? {
-            attrName: attr.name,
+            attributeName: node.name,
             mode: 'attribute' as const,
-            range: rangeFromOffsets(source, attr.start, attr.end),
+            range: rangeFromOffsets(source, node.start, node.end),
           }
         : undefined;
     pushExpression(value.expression, source, fragments, elision);
     return;
   }
-  if (attr.type === 'SpreadAttribute') {
-    pushExpression(attr.expression, source, fragments);
+  if (node.type === 'SpreadAttribute') {
+    pushExpression(node.expression, source, fragments);
     return;
   }
-  if (attr.type === 'StyleDirective') {
-    const value = attr.value;
+  if (node.type === 'StyleDirective') {
+    const value = node.value;
     if (value === true) {
       return;
     }
@@ -300,12 +300,12 @@ function collectFromAttribute(
     pushExpression(value.expression, source, fragments);
     return;
   }
-  if (attr.type === 'AttachTag') {
-    pushExpression(attr.expression, source, fragments);
+  if (node.type === 'AttachTag') {
+    pushExpression(node.expression, source, fragments);
     return;
   }
-  if ('expression' in attr && attr.expression !== null) {
-    pushExpression(attr.expression, source, fragments);
+  if ('expression' in node && node.expression !== null) {
+    pushExpression(node.expression, source, fragments);
   }
 }
 
