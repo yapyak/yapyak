@@ -6,7 +6,7 @@ import { validateLocaleCode } from './code';
 import {
   addOrphan,
   findOrphan,
-  getDefaultCacheDir,
+  getDefaultYapyakDir,
   readOrphans,
   removeOrphan,
   writeOrphans,
@@ -17,13 +17,13 @@ import { dirname, join } from 'node:path';
 export type LocaleFile = Record<string, Record<string, string>>;
 
 export interface SyncLocaleFilesOptions {
-  cacheDir?: string;
   defaultLocale: string;
   locales: string[];
   localesDir: string;
   messages: ExtractedMessage[];
   now?: () => string;
   projectRoot: string;
+  yapyakDir?: string;
 }
 
 export interface WriteLocaleFileInput {
@@ -168,8 +168,9 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
   const sourcesByFile = groupSourcesByFile(options.messages);
   const extractedSources = toExtractedSourcesSet(sourcesByFile);
 
-  const cacheDir = options.cacheDir ?? getDefaultCacheDir(options.projectRoot);
-  const orphans = readOrphans(cacheDir);
+  const yapyakDir =
+    options.yapyakDir ?? getDefaultYapyakDir(options.projectRoot);
+  const orphans = readOrphans(yapyakDir);
   const nonDefaultLocales = options.locales.filter(
     (locale) =>
       locale !== options.defaultLocale && validateLocaleCode(locale).valid,
@@ -276,7 +277,7 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
   });
 
   if (orphansChanged) {
-    writeOrphans(cacheDir, orphans);
+    writeOrphans(yapyakDir, orphans);
   }
 
   for (const locale of healthyLocales) {

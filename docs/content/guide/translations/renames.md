@@ -32,6 +32,6 @@ The default depends on your setup: `true` when no translator is configured, `fal
 
 ## Fallback
 
-When a rename is not detected — moved between files, several edits at once, or the position shifted — the translation is moved to a local cache in `node_modules/.cache/yapyak/`. If the same source string appears again, yapyak restores the translation from the cache.
+When a rename is not detected — moved between files, several edits at once, or the position shifted — the translation is moved to local storage in `.yapyak/`. If the same source string appears again, yapyak restores the translation from there.
 
 This recovery is exact-match. yapyak does not guess that similar text has the same meaning.

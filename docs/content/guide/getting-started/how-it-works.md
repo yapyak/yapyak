@@ -189,7 +189,7 @@ Translations follow ordinary code changes.
 
 Rename or move a file, and its translations are restored under the new path. Remove translated markup and add it back later, and yapyak restores the translations it already has.
 
-Removed translations are kept locally in `node_modules/.cache/yapyak/`.
+Removed translations are kept locally in `.yapyak/`.
 
 When a source message changes in place, yapyak can either preserve its existing translation or create an empty entry for translation again. Preserving is useful for small edits. Translating again is safer when the meaning may have changed.
 
@@ -223,7 +223,7 @@ Before a request is sent, yapyak reuses translations it already knows. Only miss
 
 Requests go directly to your AI provider using your own API key. No yapyak service receives or forwards their content.
 
-Locale files are stored in your repository. Translation memory and request cache are stored locally in `node_modules/.cache/yapyak/`.
+Locale files are stored in your repository. Translation memory and request cache are stored locally in `.yapyak/`.
 
 During normal development, automatic translation on save is limited to small changes. By default, a save that adds more than 20 new messages updates the locale files but leaves translation to an explicit CLI run.
 

@@ -120,7 +120,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       : undefined;
   const messagesByFile = new Map<string, ExtractedMessage[]>();
   let projectRoot = process.cwd();
-  let cacheDir: string | undefined;
+  let yapyakDir = '';
   let localeCache: LocaleData | null = null;
   let resolved: { defaultLocale: string; locales: string[] } | null = null;
   let normalized: NormalizedYapyakConfig | null = null;
@@ -177,12 +177,12 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
     }
     const { defaultLocale, locales } = discover();
     syncLocaleFiles({
-      cacheDir,
       defaultLocale,
       locales,
       localesDir: getNormalized().localesDir,
       messages: allMessages,
       projectRoot,
+      yapyakDir,
     });
     localeCache = null;
   }
@@ -274,7 +274,6 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
     }
     try {
       const result = await autoTranslate({
-        cacheDir,
         defaultLocale: input.defaultLocale,
         examples: config.examples,
         locales: input.locales,
@@ -282,6 +281,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         messages: input.filtered,
         projectRoot,
         translator: input.translator,
+        yapyakDir,
       });
       if (result.translated > 0) {
         localeCache = null;
@@ -353,10 +353,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
     },
     async configResolved(config: ResolvedConfig): Promise<void> {
       projectRoot = config.root;
-      cacheDir =
-        typeof config.cacheDir === 'string'
-          ? join(config.cacheDir, 'yapyak')
-          : undefined;
+      yapyakDir = join(projectRoot, '.yapyak');
       command = config.command;
       logger = config.logger ?? null;
       const result = await loadYapyakConfig(projectRoot);
@@ -477,12 +474,12 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
           allMessages.push(...list);
         }
         syncLocaleFiles({
-          cacheDir,
           defaultLocale,
           locales,
           localesDir: getNormalized().localesDir,
           messages: allMessages,
           projectRoot,
+          yapyakDir,
         });
         reloadRuntimeModule();
         reloadCandidateModules();

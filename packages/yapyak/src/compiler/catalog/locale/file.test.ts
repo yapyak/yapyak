@@ -66,7 +66,7 @@ describe('syncLocaleFiles', () => {
 
   it('clears the locale file and moves translations to the orphan cache when no messages are extracted', () => {
     const localesDir = 'locales';
-    const cacheDir = join(projectRoot, 'cache');
+    const yapyakDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');
     mkdirSync(join(projectRoot, localesDir), { recursive: true });
     writeFileSync(
@@ -75,18 +75,18 @@ describe('syncLocaleFiles', () => {
     );
 
     syncLocaleFiles({
-      cacheDir,
       defaultLocale: 'en',
       locales: ['en', 'sv'],
       localesDir,
       messages: [],
       now: () => '2026-01-01T00:00:00.000Z',
       projectRoot,
+      yapyakDir,
     });
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({});
     expect(
-      JSON.parse(readFileSync(join(cacheDir, 'orphans.json'), 'utf8')),
+      JSON.parse(readFileSync(join(yapyakDir, 'orphans.json'), 'utf8')),
     ).toEqual({
       'src/a.tsx': {
         Save: {
@@ -99,7 +99,7 @@ describe('syncLocaleFiles', () => {
 
   it('preserves a translation when its source briefly disappears via the orphan cache', () => {
     const localesDir = 'locales';
-    const cacheDir = join(projectRoot, 'cache');
+    const yapyakDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');
     mkdirSync(join(projectRoot, localesDir), { recursive: true });
     writeFileSync(
@@ -108,20 +108,20 @@ describe('syncLocaleFiles', () => {
     );
 
     syncLocaleFiles({
-      cacheDir,
       defaultLocale: 'en',
       locales: ['en', 'sv'],
       localesDir,
       messages: [makeMessage('Save', 'src/a.tsx')],
       now: () => '2026-01-01T00:00:00.000Z',
       projectRoot,
+      yapyakDir,
     });
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
       'src/a.tsx': { Save: 'Spara' },
     });
     expect(
-      JSON.parse(readFileSync(join(cacheDir, 'orphans.json'), 'utf8')),
+      JSON.parse(readFileSync(join(yapyakDir, 'orphans.json'), 'utf8')),
     ).toEqual({
       'src/a.tsx': {
         Cancel: {
@@ -132,7 +132,6 @@ describe('syncLocaleFiles', () => {
     });
 
     syncLocaleFiles({
-      cacheDir,
       defaultLocale: 'en',
       locales: ['en', 'sv'],
       localesDir,
@@ -142,19 +141,20 @@ describe('syncLocaleFiles', () => {
       ],
       now: () => '2026-01-02T00:00:00.000Z',
       projectRoot,
+      yapyakDir,
     });
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
       'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
     });
     expect(
-      JSON.parse(readFileSync(join(cacheDir, 'orphans.json'), 'utf8')),
+      JSON.parse(readFileSync(join(yapyakDir, 'orphans.json'), 'utf8')),
     ).toEqual({});
   });
 
   it('migrates translations through a same-flush file rename', () => {
     const localesDir = 'locales';
-    const cacheDir = join(projectRoot, 'cache');
+    const yapyakDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');
     mkdirSync(join(projectRoot, localesDir), { recursive: true });
     writeFileSync(
@@ -165,7 +165,6 @@ describe('syncLocaleFiles', () => {
     );
 
     syncLocaleFiles({
-      cacheDir,
       defaultLocale: 'en',
       locales: ['en', 'sv'],
       localesDir,
@@ -175,15 +174,15 @@ describe('syncLocaleFiles', () => {
       ],
       now: () => '2026-01-01T00:00:00.000Z',
       projectRoot,
+      yapyakDir,
     });
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
       'src/b.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
     });
-    expect(existsSync(join(cacheDir, 'orphans.json'))).toBe(false);
+    expect(existsSync(join(yapyakDir, 'orphans.json'))).toBe(false);
 
     syncLocaleFiles({
-      cacheDir,
       defaultLocale: 'en',
       locales: ['en', 'sv'],
       localesDir,
@@ -193,17 +192,18 @@ describe('syncLocaleFiles', () => {
       ],
       now: () => '2026-01-02T00:00:00.000Z',
       projectRoot,
+      yapyakDir,
     });
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
       'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
     });
-    expect(existsSync(join(cacheDir, 'orphans.json'))).toBe(false);
+    expect(existsSync(join(yapyakDir, 'orphans.json'))).toBe(false);
   });
 
   it('migrates orphan translations to a renamed file via cross-file lookup', () => {
     const localesDir = 'locales';
-    const cacheDir = join(projectRoot, 'cache');
+    const yapyakDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');
     mkdirSync(join(projectRoot, localesDir), { recursive: true });
     writeFileSync(
@@ -214,17 +214,16 @@ describe('syncLocaleFiles', () => {
     );
 
     syncLocaleFiles({
-      cacheDir,
       defaultLocale: 'en',
       locales: ['en', 'sv'],
       localesDir,
       messages: [],
       now: () => '2026-01-01T00:00:00.000Z',
       projectRoot,
+      yapyakDir,
     });
 
     syncLocaleFiles({
-      cacheDir,
       defaultLocale: 'en',
       locales: ['en', 'sv'],
       localesDir,
@@ -234,19 +233,20 @@ describe('syncLocaleFiles', () => {
       ],
       now: () => '2026-01-02T00:00:00.000Z',
       projectRoot,
+      yapyakDir,
     });
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
       'src/b.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
     });
     expect(
-      JSON.parse(readFileSync(join(cacheDir, 'orphans.json'), 'utf8')),
+      JSON.parse(readFileSync(join(yapyakDir, 'orphans.json'), 'utf8')),
     ).toEqual({});
   });
 
   it('writes dropped translations to the orphan cache when extraction is partial', () => {
     const localesDir = 'locales';
-    const cacheDir = join(projectRoot, 'cache');
+    const yapyakDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');
     mkdirSync(join(projectRoot, localesDir), { recursive: true });
     writeFileSync(
@@ -257,17 +257,17 @@ describe('syncLocaleFiles', () => {
     );
 
     syncLocaleFiles({
-      cacheDir,
       defaultLocale: 'en',
       locales: ['en', 'sv'],
       localesDir,
       messages: [makeMessage('Save', 'src/a.tsx')],
       now: () => '2026-01-01T00:00:00.000Z',
       projectRoot,
+      yapyakDir,
     });
 
     const orphans = JSON.parse(
-      readFileSync(join(cacheDir, 'orphans.json'), 'utf8'),
+      readFileSync(join(yapyakDir, 'orphans.json'), 'utf8'),
     );
     expect(orphans['src/a.tsx']).toEqual({
       Cancel: {
@@ -283,7 +283,7 @@ describe('syncLocaleFiles', () => {
 
   it('holds the most recent orphan when the same source exists across files', () => {
     const localesDir = 'locales';
-    const cacheDir = join(projectRoot, 'cache');
+    const yapyakDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');
     mkdirSync(join(projectRoot, localesDir), { recursive: true });
     writeFileSync(
@@ -294,13 +294,13 @@ describe('syncLocaleFiles', () => {
     );
 
     syncLocaleFiles({
-      cacheDir,
       defaultLocale: 'en',
       locales: ['en', 'sv'],
       localesDir,
       messages: [],
       now: () => '2026-01-01T00:00:00.000Z',
       projectRoot,
+      yapyakDir,
     });
 
     writeFileSync(
@@ -311,23 +311,23 @@ describe('syncLocaleFiles', () => {
     );
 
     syncLocaleFiles({
-      cacheDir,
       defaultLocale: 'en',
       locales: ['en', 'sv'],
       localesDir,
       messages: [],
       now: () => '2026-01-02T00:00:00.000Z',
       projectRoot,
+      yapyakDir,
     });
 
     syncLocaleFiles({
-      cacheDir,
       defaultLocale: 'en',
       locales: ['en', 'sv'],
       localesDir,
       messages: [makeMessage('Save', 'src/components/c.tsx')],
       now: () => '2026-01-03T00:00:00.000Z',
       projectRoot,
+      yapyakDir,
     });
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
@@ -337,7 +337,7 @@ describe('syncLocaleFiles', () => {
 
   it('preserves a corrupt locale file untouched when sync is requested', () => {
     const localesDir = 'locales';
-    const cacheDir = join(projectRoot, 'cache');
+    const yapyakDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');
     mkdirSync(join(projectRoot, localesDir), { recursive: true });
     const corruptContent = '{ "src/a.tsx": { "Save": "Spara"';
@@ -346,13 +346,13 @@ describe('syncLocaleFiles', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     syncLocaleFiles({
-      cacheDir,
       defaultLocale: 'en',
       locales: ['en', 'sv'],
       localesDir,
       messages: [makeMessage('Save', 'src/a.tsx')],
       now: () => '2026-01-01T00:00:00.000Z',
       projectRoot,
+      yapyakDir,
     });
 
     expect(readFileSync(localePath, 'utf8')).toBe(corruptContent);

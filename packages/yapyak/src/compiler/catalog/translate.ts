@@ -9,7 +9,7 @@ import type { LocaleData, LocaleFile, OrphanCache } from './locale';
 
 import { extractExamples } from './example';
 import {
-  getDefaultCacheDir,
+  getDefaultYapyakDir,
   readLocaleFile,
   readOrphans,
   validateLocaleCode,
@@ -19,7 +19,6 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 export interface AutoTranslateOptions {
-  cacheDir?: string;
   defaultLocale: string;
   examples?: number;
   force?: boolean;
@@ -28,6 +27,7 @@ export interface AutoTranslateOptions {
   messages: ExtractedMessage[];
   projectRoot: string;
   translator: Translator;
+  yapyakDir?: string;
 }
 
 export interface AutoTranslateResult {
@@ -336,8 +336,9 @@ function loadExampleCache(
     );
     localeData[locale] = readLocaleFile(path);
   }
-  const cacheDir = options.cacheDir ?? getDefaultCacheDir(options.projectRoot);
-  const orphans = readOrphans(cacheDir);
+  const yapyakDir =
+    options.yapyakDir ?? getDefaultYapyakDir(options.projectRoot);
+  const orphans = readOrphans(yapyakDir);
   return { localeData, orphans };
 }
 

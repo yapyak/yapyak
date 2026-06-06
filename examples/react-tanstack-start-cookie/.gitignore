@@ -1,4 +1,5 @@
-.output
+node_modules
+dist
 .tanstack
-.nitro
 src/routeTree.gen.ts
+.yapyak/

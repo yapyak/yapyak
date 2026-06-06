@@ -12,6 +12,7 @@
     "Price: {amount, number, currency EUR}": "Pris: {amount, number, currency EUR}",
     "Select": "Val",
     "Swedish": "Svenska",
+
     "Switch language": "Byt språk",
     "This is the {name} example.": "Detta är {name}-exemplet.",
     "Total: {amount, number, percent}": "Totalt: {amount, number, percent}",

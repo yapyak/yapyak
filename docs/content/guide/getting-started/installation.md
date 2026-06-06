@@ -200,6 +200,14 @@ export default defineConfig({
 
 Bare minimum. Without a translator, new locale entries land as empty stubs you fill in yourself. To auto-translate on save, [pick a translator](#pick-a-translator) below.
 
+## Ignore the `.yapyak/` directory
+
+Yapyak writes local state (rename history, in-flight translations, generated types) to `.yapyak/` in your project root. It is per-developer working state and must not be committed.
+
+```sh [.gitignore]
+.yapyak/
+```
+
 ## Write your first translation
 
 {% switch group="framework" %}

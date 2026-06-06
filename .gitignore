@@ -4,12 +4,6 @@ dist
 .DS_Store
 .env
 .env.local
-.astro/
-site/content/reference/api-manifest.json
 docs/manifest.json
 docs/content/reference/manifest.json
-
-# AI agent rules — personal/local, imports shared conventions from ~/GitHub/agents/
-.claude/CLAUDE.md
-.claude/CLAUDE.local.md
 *.local.*

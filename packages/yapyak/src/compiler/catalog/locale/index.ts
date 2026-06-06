@@ -35,7 +35,7 @@ export {
   type RenameEntry,
 } from './migrate';
 export {
-  getDefaultCacheDir,
+  getDefaultYapyakDir,
   type OrphanCache,
   type OrphanEntry,
   readOrphans,

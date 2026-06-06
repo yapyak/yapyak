@@ -14,16 +14,16 @@ interface OrphanLookup {
   fileId: string;
 }
 
-export function getDefaultCacheDir(projectRoot: string): string {
-  return join(projectRoot, 'node_modules', '.cache', 'yapyak');
+export function getDefaultYapyakDir(projectRoot: string): string {
+  return join(projectRoot, '.yapyak');
 }
 
-function getOrphansFilePath(cacheDir: string): string {
-  return join(cacheDir, 'orphans.json');
+function getOrphansFilePath(yapyakDir: string): string {
+  return join(yapyakDir, 'orphans.json');
 }
 
-export function readOrphans(cacheDir: string): OrphanCache {
-  const path = getOrphansFilePath(cacheDir);
+export function readOrphans(yapyakDir: string): OrphanCache {
+  const path = getOrphansFilePath(yapyakDir);
   if (!existsSync(path)) {
     return {};
   }
@@ -59,8 +59,8 @@ export function readOrphans(cacheDir: string): OrphanCache {
   return result;
 }
 
-export function writeOrphans(cacheDir: string, cache: OrphanCache): void {
-  const path = getOrphansFilePath(cacheDir);
+export function writeOrphans(yapyakDir: string, cache: OrphanCache): void {
+  const path = getOrphansFilePath(yapyakDir);
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, stringifyCanonical(cache));
 }
