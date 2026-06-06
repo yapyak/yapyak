@@ -9,6 +9,7 @@ export const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];
 
 export function Layout({ children }: { children: ReactNode }) {
   const [locale] = useLocale();
+
   return (
     <html lang={locale}>
       <head>

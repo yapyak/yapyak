@@ -16,7 +16,7 @@ describe('writeRegister', () => {
     rmSync(yapyakDir, { force: true, recursive: true });
   });
 
-  it('emits a single-locale union', () => {
+  it('writes a single-locale union', () => {
     writeRegister({ locales: ['en'], yapyakDir });
     const content = readFileSync(join(yapyakDir, 'types.d.ts'), 'utf8');
     expect(content).toBe(
@@ -31,13 +31,13 @@ export {};
     );
   });
 
-  it('emits a multi-locale union in the order given', () => {
-    writeRegister({ locales: ['en', 'sv', 'dk'], yapyakDir });
+  it('writes a multi-locale union in the order given', () => {
+    writeRegister({ locales: ['en', 'sv', 'da'], yapyakDir });
     const content = readFileSync(join(yapyakDir, 'types.d.ts'), 'utf8');
-    expect(content).toContain(`Locale: 'en' | 'sv' | 'dk';`);
+    expect(content).toContain(`Locale: 'en' | 'sv' | 'da';`);
   });
 
-  it('emits BCP 47 region and script variants verbatim', () => {
+  it('writes BCP 47 region and script variants verbatim', () => {
     writeRegister({
       locales: ['en-US', 'pt-BR', 'zh-Hans-CN'],
       yapyakDir,
@@ -46,18 +46,18 @@ export {};
     expect(content).toContain(`Locale: 'en-US' | 'pt-BR' | 'zh-Hans-CN';`);
   });
 
-  it('skips writing when locales is empty', () => {
+  it('writes no file when locales is empty', () => {
     writeRegister({ locales: [], yapyakDir });
     expect(existsSync(join(yapyakDir, 'types.d.ts'))).toBe(false);
   });
 
-  it('creates yapyakDir when it does not exist', () => {
+  it('writes the file when yapyakDir is missing', () => {
     const nested = join(yapyakDir, 'does', 'not', 'exist');
     writeRegister({ locales: ['en'], yapyakDir: nested });
     expect(existsSync(join(nested, 'types.d.ts'))).toBe(true);
   });
 
-  it('overwrites an existing file', () => {
+  it('writes the new union when called twice', () => {
     writeRegister({ locales: ['en'], yapyakDir });
     writeRegister({ locales: ['sv'], yapyakDir });
     const content = readFileSync(join(yapyakDir, 'types.d.ts'), 'utf8');

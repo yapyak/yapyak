@@ -7,7 +7,7 @@ import { subscribeLocale } from 'yapyak/internal';
 /**
  * Subscribes the component to locale changes.
  *
- * @example Switch locale by mapping over `locales`
+ * @example Switch locale by mapping over locales
  * ```tsx
  * import { locales, t } from 'yapyak';
  * import { useLocale } from '@yapyak/react';

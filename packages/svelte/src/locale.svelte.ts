@@ -15,7 +15,10 @@ if (typeof window !== 'undefined') {
 }
 
 /**
- * Reactive locale store. Reads track reactivity; writes call {@link setLocale}.
+ * Reactive locale store.
+ *
+ * @remarks
+ * Reads track reactivity; writes call {@link setLocale}.
  *
  * @example Read and write the locale in a Svelte component
  * ```svelte
@@ -38,7 +41,7 @@ if (typeof window !== 'undefined') {
  */
 export const locale: { current: Locale } = {
   get current(): Locale {
-    return typeof window === 'undefined' ? getLocale() : (active as Locale);
+    return typeof window === 'undefined' ? getLocale() : active;
   },
   set current(value: Locale) {
     setLocale(value);

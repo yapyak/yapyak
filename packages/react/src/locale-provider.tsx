@@ -11,7 +11,7 @@ export interface LocaleProviderProps {
   children: ReactNode;
 }
 
-const LocaleContext = createContext<Locale>('en' as Locale);
+const LocaleContext = createContext<Locale | null>(null);
 
 /**
  * Renders children within a locale context.

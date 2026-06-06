@@ -2,17 +2,17 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 export interface WriteRegisterInput {
-  locales: readonly string[];
+  locales: string[];
   yapyakDir: string;
 }
 
 /**
- * Writes `<yapyakDir>/types.d.ts` with a module augmentation that narrows yapyak's `Locale` type to the project's configured locales.
+ * Writes the locale-type augmentation to `<yapyakDir>/types.d.ts`.
  *
  * @remarks
- * The generated file uses `declare module 'yapyak' { interface Register { Locale: ... } }`. TypeScript picks it up when the consuming project includes `<yapyakDir>` in its `tsconfig.json`. When no locales are configured, the file is not written and `Locale` falls back to `string`.
+ * Emits a `declare module 'yapyak'` block that narrows `Locale` to the configured locales. TypeScript picks it up when the consuming project includes the file in its `tsconfig.json`. No file is written when locales is empty.
  *
- * @param input - Where to write and which locales to emit.
+ * @param input - Input bundle. See {@link WriteRegisterInput}.
  */
 export function writeRegister(input: WriteRegisterInput): void {
   if (input.locales.length === 0) {

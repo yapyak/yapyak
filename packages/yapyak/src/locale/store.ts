@@ -17,12 +17,11 @@ let hasWarnedUninitialized = false;
 const persistence = buildPersistence(PERSISTENCE_CONFIG, LOCALES);
 
 /**
- * Type guard for {@link Locale}. Checks `value` against the configured locales.
+ * Type guard — narrows `string` to {@link Locale} when value matches a configured locale.
  *
- * @param value - A candidate string.
- * @returns `true` if `value` is one of the configured locales.
+ * @param value - The candidate string.
  *
- * @example Narrow a URL parameter to `Locale`
+ * @example Narrow a URL parameter to Locale
  * ```ts
  * import { isLocale } from 'yapyak';
  *
@@ -40,7 +39,7 @@ function getInitialLocale(): Locale {
   if (persisted !== undefined && isLocale(persisted)) {
     return persisted;
   }
-  return DEFAULT_LOCALE as Locale;
+  return DEFAULT_LOCALE;
 }
 
 let currentLocale: Locale = getInitialLocale();
@@ -104,13 +103,14 @@ export function getLocale(): Locale {
         return fromPersistence;
       }
       if (DETECT_ACCEPT_LANGUAGE) {
-        return resolveLocale({
+        const resolved = resolveLocale({
           acceptLanguage: request.headers.get('accept-language') ?? undefined,
           defaultLocale: DEFAULT_LOCALE,
           locales: LOCALES,
-        }) as Locale;
+        });
+        return isLocale(resolved) ? resolved : DEFAULT_LOCALE;
       }
-      return DEFAULT_LOCALE as Locale;
+      return DEFAULT_LOCALE;
     }
   }
   return currentLocale;
@@ -144,10 +144,10 @@ export function setLocale(value: Locale): void {
 }
 
 /** The configured locales. Build-time constant. Inlined by yapyak's compiler. */
-export const locales: readonly Locale[] = LOCALES as readonly Locale[];
+export const locales: Locale[] = LOCALES;
 
 /** The default locale. Build-time constant. Inlined by yapyak's compiler. */
-export const defaultLocale: Locale = DEFAULT_LOCALE as Locale;
+export const defaultLocale: Locale = DEFAULT_LOCALE;
 
 export function subscribeLocale(fn: (locale: Locale) => void): () => void {
   listeners.add(fn);
