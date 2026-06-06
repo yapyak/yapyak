@@ -8,7 +8,7 @@ interface Storage {
 
 let storage: Storage | undefined;
 
-export function install(): Storage {
+export function createStorage(): Storage {
   if (storage) {
     return storage;
   }

@@ -1,7 +1,7 @@
 import type { Config } from '../config';
 
 import { autoTranslate, validateLocaleCode } from '../../compiler';
-import { wrapWithProgress } from '../progress';
+import { withProgress } from '../progress';
 import { buildReport } from '../report';
 import { color, header, progressBar, spinner, symbol } from '../tui';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -152,7 +152,7 @@ export async function add(options: AddOptions): Promise<number> {
       localesDir: config.localesDir,
       messages: report.messages,
       projectRoot,
-      translator: wrapWithProgress(translator, onProgress),
+      translator: withProgress(translator, onProgress),
     });
 
     totalDone += done;

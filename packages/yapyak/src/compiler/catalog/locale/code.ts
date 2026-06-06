@@ -198,7 +198,9 @@ export interface LocaleValidation {
 export function validateLocaleCode(code: string): LocaleValidation {
   if (!BCP47_RX.test(code)) {
     const lowered = code.toLowerCase();
-    const suggestion = suggestClosest(lowered.split(/[-_]/)[0] ?? lowered);
+    const suggestion = findClosestSuggestion(
+      lowered.split(/[-_]/)[0] ?? lowered,
+    );
     if (suggestion) {
       return { issue: 'invalid-structure', suggestion, valid: false };
     }
@@ -208,7 +210,7 @@ export function validateLocaleCode(code: string): LocaleValidation {
   if (ISO_639_1.has(language)) {
     return { valid: true };
   }
-  const suggestion = suggestClosest(language);
+  const suggestion = findClosestSuggestion(language);
   if (suggestion) {
     return { issue: 'unknown-language', suggestion, valid: false };
   }
@@ -250,7 +252,7 @@ const COMMON_CODES: string[] = [
   'zh',
 ];
 
-function suggestClosest(input: string): string | undefined {
+function findClosestSuggestion(input: string): string | undefined {
   if (input.length === 0) {
     return undefined;
   }

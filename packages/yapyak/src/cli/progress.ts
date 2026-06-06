@@ -4,7 +4,7 @@ import type {
   Translator,
 } from '../translator';
 
-export function wrapWithProgress(
+export function withProgress(
   base: Translator,
   onProgress: (count: number) => void,
 ): Translator {

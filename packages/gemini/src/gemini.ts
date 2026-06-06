@@ -7,7 +7,7 @@ import type {
 import { createTranslator } from 'yapyak/translator';
 import {
   buildSystem,
-  retryableFetch,
+  fetchWithRetry,
   stripCodeFence,
 } from 'yapyak/translator/internal';
 
@@ -147,7 +147,7 @@ export function gemini(options: GeminiOptions): Translator {
         },
         method: 'POST',
       };
-      const fetchInit: Parameters<typeof retryableFetch>[0] = {
+      const fetchInit: Parameters<typeof fetchWithRetry>[0] = {
         init,
         maxRetries,
         timeout,
@@ -156,7 +156,7 @@ export function gemini(options: GeminiOptions): Translator {
       if (signal) {
         fetchInit.signal = signal;
       }
-      const response = await retryableFetch(fetchInit);
+      const response = await fetchWithRetry(fetchInit);
       if (!response.ok) {
         const text = await response.text();
         throw new Error(`yapyak gemini: ${response.status} ${text}`);

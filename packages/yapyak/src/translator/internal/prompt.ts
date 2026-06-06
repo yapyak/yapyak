@@ -21,7 +21,7 @@ export function buildSystem(
   if (options.voice) {
     lines.push(`Voice: ${options.voice}`);
   }
-  const glossarySection = collectGlossary(options.glossary, targetLocales);
+  const glossarySection = extractGlossary(options.glossary, targetLocales);
   if (glossarySection.length > 0) {
     lines.push(
       'Use these glossary terms strictly when they appear in the source, picking the entry for the active target locale:',
@@ -33,7 +33,7 @@ export function buildSystem(
   return lines.join('\n');
 }
 
-function collectGlossary(
+function extractGlossary(
   glossary: BuildSystemOptions['glossary'],
   targetLocales: string[],
 ): string[] {

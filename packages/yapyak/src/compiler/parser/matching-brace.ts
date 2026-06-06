@@ -1,4 +1,7 @@
-export function findMatchingBrace(source: string, openIdx: number): number {
+export function findMatchingBraceIndex(
+  source: string,
+  openIdx: number,
+): number {
   let depth = 1;
   let i = openIdx + 1;
   while (i < source.length) {

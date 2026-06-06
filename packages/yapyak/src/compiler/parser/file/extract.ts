@@ -15,7 +15,7 @@ import { discoverCalls } from '../call';
 import { resolveCallSiteContext } from '../call-site-context';
 import { toMessageId } from '../message-id';
 import { parsePlaceholders } from '../placeholder';
-import { dispatchProcessor } from '../processor';
+import { resolveProcessor } from '../processor';
 import { remapRange, toRange } from '../range';
 import { getScriptKind } from '../script-kind';
 
@@ -48,7 +48,7 @@ export interface ExtractFileResult {
 }
 
 export function extractFile(request: ExtractFileRequest): ExtractFileResult {
-  const processor = dispatchProcessor(
+  const processor = resolveProcessor(
     request.fileId,
     request.source,
     request.processors ?? [],

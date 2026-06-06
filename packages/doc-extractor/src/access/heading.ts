@@ -1,4 +1,4 @@
-import type { Block, HeadingBlock } from '../access/block';
+import type { HeadingBlock } from '../access/block';
 import type { Page } from '../build/manifest';
 
 import { blockToText } from './text';
@@ -22,26 +22,17 @@ export function getHeadings(
   const maxLevel = options.maxLevel ?? 6;
   const result: HeadingEntry[] = [];
   for (const block of page.blocks) {
-    collectHeadings(block, minLevel, maxLevel, result);
+    if (
+      block.type === 'heading' &&
+      block.level >= minLevel &&
+      block.level <= maxLevel
+    ) {
+      result.push({
+        id: block.id,
+        level: block.level,
+        text: block.children.map(blockToText).join(''),
+      });
+    }
   }
   return result;
-}
-
-function collectHeadings(
-  block: Block,
-  minLevel: number,
-  maxLevel: number,
-  result: HeadingEntry[],
-) {
-  if (
-    block.type === 'heading' &&
-    block.level >= minLevel &&
-    block.level <= maxLevel
-  ) {
-    result.push({
-      id: block.id,
-      level: block.level,
-      text: block.children.map(blockToText).join(''),
-    });
-  }
 }

@@ -75,7 +75,9 @@ export function vue(): Processor {
         fragments.push(toScriptFragment(descriptor.scriptSetup));
       }
       if (descriptor.template?.ast) {
-        collectTemplateExpressions(descriptor.template.ast, source, fragments);
+        fragments.push(
+          ...fragmentsFromTemplate(descriptor.template.ast, source),
+        );
       }
       return fragments;
     },
@@ -106,79 +108,79 @@ function toScriptFragment(block: SFCScriptBlock): Fragment {
   };
 }
 
-function collectTemplateExpressions(
+function fragmentsFromTemplate(
   node: RootNode | TemplateChildNode,
   source: string,
-  fragments: Fragment[],
-): void {
+): Fragment[] {
+  const fragments: Fragment[] = [];
   if (isInterpolationNode(node)) {
-    pushInterpolationExpression(node, source, fragments);
+    fragments.push(...fragmentsFromInterpolation(node, source));
   }
   if (isElementNode(node)) {
     for (const prop of node.props) {
-      collectPropExpression(prop, source, fragments);
+      fragments.push(...fragmentsFromProp(prop, source));
     }
   }
   if (hasChildren(node)) {
     for (const child of node.children) {
-      collectTemplateExpressions(child, source, fragments);
+      fragments.push(...fragmentsFromTemplate(child, source));
     }
   }
+  return fragments;
 }
 
-function pushInterpolationExpression(
+function fragmentsFromInterpolation(
   node: InterpolationNode,
   source: string,
-  fragments: Fragment[],
-): void {
+): Fragment[] {
   const mustache = readMustache(source, node.loc.start.offset);
   if (!mustache) {
-    return;
+    return [];
   }
-  fragments.push({
-    code: mustache.code,
-    elision: {
-      mode: 'text',
-      range: rangeFromOffsets(
-        source,
-        node.loc.start.offset,
-        mustache.endOffset,
-      ),
+  return [
+    {
+      code: mustache.code,
+      elision: {
+        mode: 'text',
+        range: rangeFromOffsets(
+          source,
+          node.loc.start.offset,
+          mustache.endOffset,
+        ),
+      },
+      kind: 'template-expression',
+      lang: 'ts',
+      originalOffset: mustache.codeOffset,
     },
-    kind: 'template-expression',
-    lang: 'ts',
-    originalOffset: mustache.codeOffset,
-  });
+  ];
 }
 
-function collectPropExpression(
+function fragmentsFromProp(
   prop: AttributeNode | DirectiveNode,
   source: string,
-  fragments: Fragment[],
-): void {
+): Fragment[] {
   if (!isDirectiveNode(prop)) {
-    return;
+    return [];
   }
   if (!prop.exp) {
-    return;
+    return [];
   }
-  pushDirectiveExpression(prop, source, fragments);
+  return fragmentsFromDirective(prop, source);
 }
 
-function pushDirectiveExpression(
+function fragmentsFromDirective(
   prop: DirectiveNode,
   source: string,
-  fragments: Fragment[],
-): void {
+): Fragment[] {
   const expression = prop.exp;
   if (!expression) {
-    return;
+    return [];
   }
   if (!isSimpleExpression(expression)) {
-    return;
+    return [];
   }
   if (expression.content === '') {
-    return;
+    return [];
   }
   const fragment: Fragment = {
     code: expression.content,
@@ -198,7 +200,7 @@ function pushDirectiveExpression(
       ),
     };
   }
-  fragments.push(fragment);
+  return [fragment];
 }
 
 function readVBindAttributeName(prop: DirectiveNode): string | undefined {

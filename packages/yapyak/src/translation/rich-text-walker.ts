@@ -19,7 +19,7 @@ export function parseRichText(source: string): RichTextNode[] {
       ? readOpenTag(source, index)
       : undefined;
     if (open) {
-      const close = findClosingTag(source, open.end, open.name);
+      const close = findClosingTagRange(source, open.end, open.name);
       if (close) {
         flush();
         nodes.push({
@@ -85,7 +85,7 @@ function readOpenTag(
   return { end: close + 1, name };
 }
 
-function findClosingTag(
+function findClosingTagRange(
   source: string,
   from: number,
   name: string,

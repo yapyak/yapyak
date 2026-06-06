@@ -22,7 +22,7 @@ import type {
 } from './type';
 
 import { slugify } from '../../slug';
-import { symbolHref as buildSymbolHref } from '../../symbol-path';
+import { buildSymbolHref } from '../../symbol-path';
 import { parseMarkdoc } from '../markdoc/parse';
 import { relative, resolve } from 'node:path';
 
@@ -53,7 +53,7 @@ export function buildSymbolPage(
   const blocks: Block[] = [];
 
   blocks.push(
-    eyebrow(
+    buildEyebrowBlock(
       options.moduleId,
       symbol.kind,
       resolveSourceHref(
@@ -89,35 +89,35 @@ export function buildSymbolPage(
     blocks.push(...parsed.blocks);
   }
 
-  blocks.push(importSnippet(options.moduleId, symbol.name, symbol.kind));
+  blocks.push(buildImportSnippet(options.moduleId, symbol.name, symbol.kind));
 
   if (symbol.kind === 'function') {
-    blocks.push(heading2('Signature'));
-    blocks.push(functionSignatureBlock(symbol.overloads));
-    const typeParameters = unifyTypeParameters(symbol.overloads);
+    blocks.push(buildHeading2Block('Signature'));
+    blocks.push(buildFunctionSignatureBlock(symbol.overloads));
+    const typeParameters = normalizeOverloadTypeParameters(symbol.overloads);
     if (typeParameters.length > 0) {
-      blocks.push(heading2('Type Parameters'));
-      blocks.push(typeParametersTable(typeParameters));
+      blocks.push(buildHeading2Block('Type Parameters'));
+      blocks.push(buildTypeParametersTable(typeParameters));
     }
-    const parameters = unifyParameters(symbol.overloads);
+    const parameters = normalizeOverloadParameters(symbol.overloads);
     if (parameters.length > 0) {
-      blocks.push(heading2('Parameters'));
-      blocks.push(parametersTable(parameters));
+      blocks.push(buildHeading2Block('Parameters'));
+      blocks.push(buildParametersTable(parameters));
     }
     if (symbol.members.length > 0) {
-      blocks.push(heading2('Members'));
-      blocks.push(membersTable(symbol.members));
+      blocks.push(buildHeading2Block('Members'));
+      blocks.push(buildMembersTable(symbol.members));
     }
   }
 
   if (symbol.kind === 'variable') {
-    blocks.push(heading2('Type'));
-    blocks.push(variableSignatureBlock(symbol));
+    blocks.push(buildHeading2Block('Type'));
+    blocks.push(buildVariableSignatureBlock(symbol));
   }
 
   if (symbol.kind === 'interface') {
     if (symbol.callSignatures.length > 0) {
-      blocks.push(heading2('Call signatures'));
+      blocks.push(buildHeading2Block('Call signatures'));
       blocks.push({
         label: null,
         language: 'ts',
@@ -127,38 +127,38 @@ export function buildSymbolPage(
       });
     }
     if (symbol.members.length > 0) {
-      blocks.push(heading2('Members'));
-      blocks.push(membersTable(symbol.members));
+      blocks.push(buildHeading2Block('Members'));
+      blocks.push(buildMembersTable(symbol.members));
     }
   }
 
   if (symbol.kind === 'type' && symbol.resolvedType.length > 0) {
-    blocks.push(heading2('Type'));
-    blocks.push(typeAliasBlock(symbol));
+    blocks.push(buildHeading2Block('Type'));
+    blocks.push(buildTypeAliasBlock(symbol));
   }
 
   if (symbol.kind === 'class') {
     if (symbol.members.length > 0) {
-      blocks.push(heading2('Members'));
-      blocks.push(membersTable(symbol.members));
+      blocks.push(buildHeading2Block('Members'));
+      blocks.push(buildMembersTable(symbol.members));
     }
   }
 
   if (symbol.throws.length > 0) {
-    blocks.push(heading2('Throws'));
-    blocks.push(throwsTable(symbol.throws));
+    blocks.push(buildHeading2Block('Throws'));
+    blocks.push(buildThrowsTable(symbol.throws));
   }
 
   if (symbol.examples.length > 0) {
-    blocks.push(heading2('Examples'));
+    blocks.push(buildHeading2Block('Examples'));
     for (const example of symbol.examples) {
-      blocks.push(...exampleBlocks(example));
+      blocks.push(...buildExampleBlocks(example));
     }
   }
 
   if (symbol.seeAlso.length > 0) {
-    blocks.push(heading2('See also'));
-    blocks.push(seeAlsoList(symbol.seeAlso));
+    blocks.push(buildHeading2Block('See also'));
+    blocks.push(buildSeeAlsoList(symbol.seeAlso));
   }
 
   return {
@@ -224,8 +224,8 @@ export function buildTypedocPackageIndexPage(
   });
 
   if (options.subpaths.length > 0) {
-    blocks.push(heading2('Subpaths'));
-    blocks.push(subpathsTable(options.subpaths));
+    blocks.push(buildHeading2Block('Subpaths'));
+    blocks.push(buildSubpathsTable(options.subpaths));
   }
 
   return {
@@ -237,7 +237,7 @@ export function buildTypedocPackageIndexPage(
   };
 }
 
-function subpathsTable(
+function buildSubpathsTable(
   subpaths: ReadonlyArray<{
     description: string;
     href: string;
@@ -247,7 +247,7 @@ function subpathsTable(
   return {
     body: subpaths.map((entry) => ({
       children: [
-        bodyCell([
+        buildTableBodyCell([
           {
             children: [{ type: 'inline-code', value: entry.subpath }],
             href: entry.href,
@@ -255,11 +255,13 @@ function subpathsTable(
             type: 'link',
           },
         ]),
-        bodyCell(markdownToInline(firstSentence(entry.description))),
+        buildTableBodyCell(
+          markdownToInline(getFirstSentence(entry.description)),
+        ),
       ],
       type: 'table-row',
     })),
-    head: tableHeaderRow(['Subpath', 'Description']),
+    head: buildTableHeaderRow(['Subpath', 'Description']),
     type: 'table',
   };
 }
@@ -287,8 +289,8 @@ export function buildModulePage(
   }
 
   if (module.exports.length > 0) {
-    blocks.push(heading2('Exports'));
-    blocks.push(exportsTable(module.exports, module.id));
+    blocks.push(buildHeading2Block('Exports'));
+    blocks.push(buildExportsTable(module.exports, module.id));
   }
 
   return {
@@ -300,20 +302,26 @@ export function buildModulePage(
   };
 }
 
-function exportsTable(exports: ReferenceExport[], moduleId: string): Block {
+function buildExportsTable(
+  exports: ReferenceExport[],
+  moduleId: string,
+): Block {
   return {
-    body: exports.map((entry) => exportRow(entry, moduleId)),
-    head: tableHeaderRow(['Name', 'Kind', 'Description']),
+    body: exports.map((entry) => buildExportRow(entry, moduleId)),
+    head: buildTableHeaderRow(['Name', 'Kind', 'Description']),
     type: 'table',
   };
 }
 
-function exportRow(entry: ReferenceExport, moduleId: string): TableRowBlock {
+function buildExportRow(
+  entry: ReferenceExport,
+  moduleId: string,
+): TableRowBlock {
   const label = entry.kind === 'function' ? `${entry.name}()` : entry.name;
-  const href = symbolHref(moduleId, entry.name);
+  const href = resolveSymbolHref(moduleId, entry.name);
   return {
     children: [
-      bodyCell([
+      buildTableBodyCell([
         {
           children: [{ type: 'inline-code', value: label }],
           href,
@@ -321,14 +329,14 @@ function exportRow(entry: ReferenceExport, moduleId: string): TableRowBlock {
           type: 'link',
         },
       ]),
-      bodyCell([{ type: 'text', value: entry.kind }]),
-      bodyCell(markdownToInline(firstSentence(entry.description))),
+      buildTableBodyCell([{ type: 'text', value: entry.kind }]),
+      buildTableBodyCell(markdownToInline(getFirstSentence(entry.description))),
     ],
     type: 'table-row',
   };
 }
 
-function firstSentence(text: string): string {
+function getFirstSentence(text: string): string {
   if (text === '') {
     return '';
   }
@@ -337,7 +345,7 @@ function firstSentence(text: string): string {
   return match ? match[0].trim() : trimmed;
 }
 
-function functionSignatureBlock(overloads: ReferenceOverload[]): Block {
+function buildFunctionSignatureBlock(overloads: ReferenceOverload[]): Block {
   return {
     label: null,
     language: 'ts',
@@ -347,7 +355,7 @@ function functionSignatureBlock(overloads: ReferenceOverload[]): Block {
   };
 }
 
-function variableSignatureBlock(symbol: ReferenceVariable): Block {
+function buildVariableSignatureBlock(symbol: ReferenceVariable): Block {
   return {
     label: null,
     language: 'ts',
@@ -357,7 +365,7 @@ function variableSignatureBlock(symbol: ReferenceVariable): Block {
   };
 }
 
-function typeAliasBlock(symbol: ReferenceTypeAlias): Block {
+function buildTypeAliasBlock(symbol: ReferenceTypeAlias): Block {
   return {
     label: null,
     language: 'ts',
@@ -367,7 +375,9 @@ function typeAliasBlock(symbol: ReferenceTypeAlias): Block {
   };
 }
 
-function unifyParameters(overloads: ReferenceOverload[]): ReferenceParameter[] {
+function normalizeOverloadParameters(
+  overloads: ReferenceOverload[],
+): ReferenceParameter[] {
   if (overloads.length === 0) {
     return [];
   }
@@ -389,7 +399,7 @@ function unifyParameters(overloads: ReferenceOverload[]): ReferenceParameter[] {
   return unified;
 }
 
-function eyebrow(
+function buildEyebrowBlock(
   moduleId: string,
   kind: ExportKind,
   sourceHref: string | null,
@@ -397,7 +407,7 @@ function eyebrow(
   return { kind, module: moduleId, sourceHref, type: 'eyebrow' };
 }
 
-function importSnippet(
+function buildImportSnippet(
   moduleId: string,
   symbolName: string,
   kind: ExportKind,
@@ -413,7 +423,7 @@ function importSnippet(
   };
 }
 
-function heading2(text: string): Block {
+function buildHeading2Block(text: string): Block {
   return {
     children: [{ type: 'text', value: text }],
     id: slugify(text),
@@ -422,7 +432,7 @@ function heading2(text: string): Block {
   };
 }
 
-function unifyTypeParameters(
+function normalizeOverloadTypeParameters(
   overloads: ReferenceOverload[],
 ): ReferenceTypeParameter[] {
   const seenNames = new Set<string>();
@@ -439,43 +449,47 @@ function unifyTypeParameters(
   return unified;
 }
 
-function typeParametersTable(typeParameters: ReferenceTypeParameter[]): Block {
+function buildTypeParametersTable(
+  typeParameters: ReferenceTypeParameter[],
+): Block {
   return {
-    body: typeParameters.map(typeParameterRow),
-    head: tableHeaderRow(['Name', 'Constraint', 'Default', 'Description']),
+    body: typeParameters.map(buildTypeParameterRow),
+    head: buildTableHeaderRow(['Name', 'Constraint', 'Default', 'Description']),
     type: 'table',
   };
 }
 
-function typeParameterRow(
+function buildTypeParameterRow(
   typeParameter: ReferenceTypeParameter,
 ): TableRowBlock {
   return {
     children: [
-      bodyCell([{ type: 'inline-code', value: typeParameter.name }]),
-      bodyCell(
+      buildTableBodyCell([{ type: 'inline-code', value: typeParameter.name }]),
+      buildTableBodyCell(
         typeParameter.constraint !== null
           ? tokensToBlocks(typeParameter.constraint)
           : [{ type: 'text', value: '' }],
       ),
-      bodyCell(
+      buildTableBodyCell(
         typeParameter.defaultType !== null
           ? tokensToBlocks(typeParameter.defaultType)
           : [{ type: 'text', value: '' }],
       ),
-      bodyCell(markdownToInline(typeParameter.description)),
+      buildTableBodyCell(markdownToInline(typeParameter.description)),
     ],
     type: 'table-row',
   };
 }
 
-function parametersTable(parameters: ReferenceParameter[]): Block {
+function buildParametersTable(parameters: ReferenceParameter[]): Block {
   const hasDefault = parameters.some(
     (parameter) => parameter.defaultValue !== null,
   );
   return {
-    body: parameters.map((parameter) => paramRow(parameter, hasDefault)),
-    head: tableHeaderRow(
+    body: parameters.map((parameter) =>
+      buildParameterRow(parameter, hasDefault),
+    ),
+    head: buildTableHeaderRow(
       hasDefault
         ? ['Name', 'Type', 'Default', 'Description']
         : ['Name', 'Type', 'Description'],
@@ -484,11 +498,11 @@ function parametersTable(parameters: ReferenceParameter[]): Block {
   };
 }
 
-function membersTable(members: ReferenceMember[]): Block {
+function buildMembersTable(members: ReferenceMember[]): Block {
   const hasDefault = members.some((member) => member.defaultValue !== null);
   return {
-    body: members.map((member) => memberRow(member, hasDefault)),
-    head: tableHeaderRow(
+    body: members.map((member) => buildMemberRow(member, hasDefault)),
+    head: buildTableHeaderRow(
       hasDefault
         ? ['Name', 'Type', 'Default', 'Description']
         : ['Name', 'Type', 'Description'],
@@ -497,63 +511,63 @@ function membersTable(members: ReferenceMember[]): Block {
   };
 }
 
-function paramRow(
+function buildParameterRow(
   parameter: ReferenceParameter,
   includeDefault: boolean,
 ): TableRowBlock {
   const children: TableCellBlock[] = [
-    bodyCell([
+    buildTableBodyCell([
       {
         type: 'inline-code',
         value: parameter.name + (parameter.optional ? '?' : ''),
       },
     ]),
-    bodyCell(tokensToBlocks(parameter.type)),
+    buildTableBodyCell(tokensToBlocks(parameter.type)),
   ];
   if (includeDefault) {
     children.push(
-      bodyCell(
+      buildTableBodyCell(
         parameter.defaultValue !== null
           ? markdownToInline(parameter.defaultValue)
           : [{ type: 'text', value: '' }],
       ),
     );
   }
-  children.push(bodyCell(markdownToInline(parameter.description)));
+  children.push(buildTableBodyCell(markdownToInline(parameter.description)));
   return { children, type: 'table-row' };
 }
 
-function memberRow(
+function buildMemberRow(
   member: ReferenceMember,
   includeDefault: boolean,
 ): TableRowBlock {
   const children: TableCellBlock[] = [
-    bodyCell([
+    buildTableBodyCell([
       {
         type: 'inline-code',
         value: member.name + (member.optional ? '?' : ''),
       },
     ]),
-    bodyCell(tokensToBlocks(member.type)),
+    buildTableBodyCell(tokensToBlocks(member.type)),
   ];
   if (includeDefault) {
     children.push(
-      bodyCell(
+      buildTableBodyCell(
         member.defaultValue !== null
           ? markdownToInline(member.defaultValue)
           : [{ type: 'text', value: '' }],
       ),
     );
   }
-  children.push(bodyCell(markdownToInline(member.description)));
+  children.push(buildTableBodyCell(markdownToInline(member.description)));
   return { children, type: 'table-row' };
 }
 
-function bodyCell(children: Block[]) {
+function buildTableBodyCell(children: Block[]) {
   return { children, header: false, type: 'table-cell' as const };
 }
 
-function tableHeaderRow(labels: string[]): TableRowBlock {
+function buildTableHeaderRow(labels: string[]): TableRowBlock {
   return {
     children: labels.map((label) => ({
       children: [{ type: 'text' as const, value: label }],
@@ -571,7 +585,7 @@ function tokensToBlocks(tokens: TypeToken[]): Block[] {
     if (token.kind === 'ref' && resolvedModule !== null) {
       blocks.push({
         children: [{ type: 'inline-code', value: token.text }],
-        href: symbolHref(resolvedModule, token.name),
+        href: resolveSymbolHref(resolvedModule, token.name),
         kind: 'internal',
         type: 'link',
       });
@@ -594,7 +608,7 @@ function resolveModule(token: { module: string; name: string }): string | null {
   return fallback ?? null;
 }
 
-function symbolHref(moduleId: string, name: string): string {
+function resolveSymbolHref(moduleId: string, name: string): string {
   return buildSymbolHref(
     moduleId,
     name,
@@ -616,7 +630,7 @@ function markdownToInline(source: string): Block[] {
   return blocks;
 }
 
-function exampleBlocks(example: ReferenceExample): Block[] {
+function buildExampleBlocks(example: ReferenceExample): Block[] {
   const result: Block[] = [];
   if (example.title !== null) {
     result.push({
@@ -636,29 +650,29 @@ function exampleBlocks(example: ReferenceExample): Block[] {
   return result;
 }
 
-function throwsTable(throws: ReferenceThrows[]): Block {
+function buildThrowsTable(throws: ReferenceThrows[]): Block {
   return {
-    body: throws.map(throwsRow),
-    head: tableHeaderRow(['Error', 'When']),
+    body: throws.map(buildThrowsRow),
+    head: buildTableHeaderRow(['Error', 'When']),
     type: 'table',
   };
 }
 
-function throwsRow(entry: ReferenceThrows): TableRowBlock {
+function buildThrowsRow(entry: ReferenceThrows): TableRowBlock {
   return {
     children: [
-      bodyCell(
+      buildTableBodyCell(
         entry.errorClass
           ? [{ type: 'inline-code', value: entry.errorClass }]
           : [{ type: 'text', value: '' }],
       ),
-      bodyCell(markdownToInline(entry.condition)),
+      buildTableBodyCell(markdownToInline(entry.condition)),
     ],
     type: 'table-row',
   };
 }
 
-function seeAlsoList(entries: string[]): Block {
+function buildSeeAlsoList(entries: string[]): Block {
   return {
     children: entries.map((entry) => ({
       children: markdownToInline(entry),

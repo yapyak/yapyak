@@ -8,7 +8,7 @@ export function interpolate(
   while (index < template.length) {
     const character = template[index];
     if (character === '{') {
-      const end = findMatchingBrace(template, index);
+      const end = findMatchingBraceIndex(template, index);
       const token = template.slice(index + 1, end);
       result += renderToken(token, params, locale);
       index = end + 1;
@@ -20,7 +20,7 @@ export function interpolate(
   return result;
 }
 
-function findMatchingBrace(template: string, openIndex: number): number {
+function findMatchingBraceIndex(template: string, openIndex: number): number {
   let depth = 1;
   let index = openIndex + 1;
   while (index < template.length && depth > 0) {
@@ -142,7 +142,7 @@ function parseBranches(body: string): Map<string, string> {
     if (body[index] !== '{') {
       break;
     }
-    const end = findMatchingBrace(body, index);
+    const end = findMatchingBraceIndex(body, index);
     branches.set(name, body.slice(index + 1, end));
     index = end + 1;
   }

@@ -88,7 +88,7 @@ export async function extractTypedoc(
     packageDir,
     registry,
   };
-  const modules = collectModules(project, entries, context);
+  const modules = extractReferenceModules(project, entries, context);
   return { modules, packageName };
 }
 
@@ -157,7 +157,7 @@ interface ProjectModule {
   entry: EntryPoint;
 }
 
-function collectProjectModules(
+function extractProjectModules(
   project: ProjectReflection,
   entries: EntryPoint[],
   packageDir: string,
@@ -210,7 +210,7 @@ function buildLinkRegistry(
 } {
   const registry = new Map<number, string>();
   const nameIndex = new Map<string, string | 'ambiguous'>();
-  for (const module of collectProjectModules(project, entries, packageDir)) {
+  for (const module of extractProjectModules(project, entries, packageDir)) {
     for (const symbol of module.children) {
       if (isInternal(symbol)) {
         continue;
@@ -249,20 +249,20 @@ function buildSymbolUrl(
   return `/${collectionName}/${packageSlug}/${subSlug}/${safeName}`;
 }
 
-function collectModules(
+function extractReferenceModules(
   project: ProjectReflection,
   entries: EntryPoint[],
   context: ExtractContext,
 ): ReferenceModule[] {
   const modules: ReferenceModule[] = [];
-  for (const module of collectProjectModules(
+  for (const module of extractProjectModules(
     project,
     entries,
     context.packageDir,
   )) {
     const exports = module.children
       .filter((symbol) => !isInternal(symbol))
-      .flatMap((symbol) => convertExport(symbol, context) ?? [])
+      .flatMap((symbol) => toReferenceExport(symbol, context) ?? [])
       .filter((value): value is ReferenceExport => value !== null);
     exports.sort(compareExports);
     const description = module.comment
@@ -288,26 +288,30 @@ function entryToModuleName(entry: EntryPoint, packageDir: string): string {
   return noExt.replace(/\/index$/, '') || 'index';
 }
 
-function convertExport(
+function toReferenceExport(
   reflection: DeclarationReflection,
   context: ExtractContext,
 ): ReferenceExport | null {
   switch (reflection.kind) {
     case ReflectionKind.Function:
-      return convertFunction(reflection, context);
+      return toReferenceFunction(reflection, context);
     case ReflectionKind.Interface:
-      return convertInterface(reflection, context);
+      return toReferenceInterface(reflection, context);
     case ReflectionKind.TypeAlias:
-      return convertTypeAlias(reflection, context);
+      return toReferenceTypeAlias(reflection, context);
     case ReflectionKind.Variable: {
       const signatures = resolveCallableSignatures(reflection);
       if (signatures !== null) {
-        return convertCallableVariable(reflection, signatures, context);
+        return callableVariableToReferenceFunction(
+          reflection,
+          signatures,
+          context,
+        );
       }
-      return convertVariable(reflection, context);
+      return toReferenceVariable(reflection, context);
     }
     case ReflectionKind.Class:
-      return convertClass(reflection, context);
+      return classToReferenceExport(reflection, context);
     default:
       return null;
   }
@@ -344,14 +348,14 @@ function resolveCallableSignatures(
   return null;
 }
 
-function convertCallableVariable(
+function callableVariableToReferenceFunction(
   reflection: DeclarationReflection,
   signatures: SignatureReflection[],
   context: ExtractContext,
 ): ReferenceFunction {
-  const base = convertBase(reflection, context);
+  const base = toReferenceSymbolBase(reflection, context);
   const overloads = signatures.map((signature) =>
-    convertOverload(signature, reflection.name, context),
+    toReferenceOverload(signature, reflection.name, context),
   );
   return {
     ...base,
@@ -361,13 +365,13 @@ function convertCallableVariable(
   };
 }
 
-function convertFunction(
+function toReferenceFunction(
   reflection: DeclarationReflection,
   context: ExtractContext,
 ): ReferenceFunction {
-  const base = convertBase(reflection, context);
+  const base = toReferenceSymbolBase(reflection, context);
   const overloads = (reflection.signatures ?? []).map((signature) =>
-    convertOverload(signature, reflection.name, context),
+    toReferenceOverload(signature, reflection.name, context),
   );
   return {
     ...base,
@@ -377,16 +381,16 @@ function convertFunction(
   };
 }
 
-function convertInterface(
+function toReferenceInterface(
   reflection: DeclarationReflection,
   context: ExtractContext,
 ): ReferenceInterface {
-  const base = convertBase(reflection, context);
+  const base = toReferenceSymbolBase(reflection, context);
   const callSignatures = (reflection.signatures ?? []).map((signature) =>
-    convertCallSignature(signature, context),
+    toReferenceCallSignature(signature, context),
   );
   const members = (reflection.children ?? []).map((child) =>
-    convertMember(child, context),
+    toReferenceMember(child, context),
   );
   return {
     ...base,
@@ -397,12 +401,12 @@ function convertInterface(
   };
 }
 
-function convertTypeAlias(
+function toReferenceTypeAlias(
   reflection: DeclarationReflection,
   context: ExtractContext,
 ): ReferenceTypeAlias {
-  const base = convertBase(reflection, context);
-  const resolvedType = reflection.type ? convertType(reflection.type) : [];
+  const base = toReferenceSymbolBase(reflection, context);
+  const resolvedType = reflection.type ? toTypeTokens(reflection.type) : [];
   return {
     ...base,
     kind: 'type',
@@ -411,12 +415,12 @@ function convertTypeAlias(
   };
 }
 
-function convertVariable(
+function toReferenceVariable(
   reflection: DeclarationReflection,
   context: ExtractContext,
 ): ReferenceVariable {
-  const base = convertBase(reflection, context);
-  const type = reflection.type ? convertType(reflection.type) : [];
+  const base = toReferenceSymbolBase(reflection, context);
+  const type = reflection.type ? toTypeTokens(reflection.type) : [];
   return {
     ...base,
     kind: 'variable',
@@ -429,13 +433,13 @@ function isInternal(reflection: DeclarationReflection): boolean {
   return Boolean(comment?.modifierTags?.has('@internal'));
 }
 
-function convertClass(
+function classToReferenceExport(
   reflection: DeclarationReflection,
   context: ExtractContext,
 ): ReferenceExport {
-  const base = convertBase(reflection, context);
+  const base = toReferenceSymbolBase(reflection, context);
   const members = (reflection.children ?? []).map((child) =>
-    convertMember(child, context),
+    toReferenceMember(child, context),
   );
   return {
     ...base,
@@ -445,7 +449,7 @@ function convertClass(
   };
 }
 
-function convertBase(
+function toReferenceSymbolBase(
   reflection: DeclarationReflection,
   context: ExtractContext,
 ): ReferenceSymbolBase {
@@ -455,28 +459,28 @@ function convertBase(
   return {
     deprecated: effective ? readDeprecated(effective, context) : null,
     description: effective ? partsToMarkdown(effective.summary, context) : '',
-    examples: effective ? collectExamples(effective, context) : [],
+    examples: effective ? extractExamples(effective, context) : [],
     location: readLocation(reflection, context.packageDir),
     name: reflection.name,
     remarks: effective ? readBlockTag(effective, '@remarks', context) : '',
     seeAlso: effective ? readSeeAlso(effective, context) : [],
-    tags: effective ? collectTags(effective, context) : [],
+    tags: effective ? extractTags(effective, context) : [],
     throws: effective ? readThrows(effective, context) : [],
   };
 }
 
-function convertOverload(
+function toReferenceOverload(
   signature: SignatureReflection,
   functionName: string,
   context: ExtractContext,
 ): ReferenceOverload {
   const parameters = (signature.parameters ?? []).map((param) =>
-    convertParameter(param, context),
+    toReferenceParameter(param, context),
   );
   const typeParameters = (signature.typeParameters ?? []).map((param) =>
-    convertTypeParameter(param, context),
+    toReferenceTypeParameter(param, context),
   );
-  const returnType = signature.type ? convertType(signature.type) : [];
+  const returnType = signature.type ? toTypeTokens(signature.type) : [];
   return {
     parameters,
     returnType,
@@ -490,17 +494,17 @@ function convertOverload(
   };
 }
 
-function convertCallSignature(
+function toReferenceCallSignature(
   signature: SignatureReflection,
   context: ExtractContext,
 ): ReferenceCallSignature {
   const parameters = (signature.parameters ?? []).map((param) =>
-    convertParameter(param, context),
+    toReferenceParameter(param, context),
   );
   const typeParameters = (signature.typeParameters ?? []).map((param) =>
-    convertTypeParameter(param, context),
+    toReferenceTypeParameter(param, context),
   );
-  const returnType = signature.type ? convertType(signature.type) : [];
+  const returnType = signature.type ? toTypeTokens(signature.type) : [];
   return {
     parameters,
     returnType,
@@ -511,7 +515,7 @@ function convertCallSignature(
   };
 }
 
-function convertParameter(
+function toReferenceParameter(
   reflection: ParameterReflection,
   context: ExtractContext,
 ): ReferenceParameter {
@@ -524,11 +528,11 @@ function convertParameter(
     optional:
       Boolean(reflection.flags.isOptional) ||
       reflection.defaultValue !== undefined,
-    type: reflection.type ? convertType(reflection.type) : [],
+    type: reflection.type ? toTypeTokens(reflection.type) : [],
   };
 }
 
-function convertMember(
+function toReferenceMember(
   reflection: DeclarationReflection,
   context: ExtractContext,
 ): ReferenceMember {
@@ -539,30 +543,28 @@ function convertMember(
     description: comment ? partsToMarkdown(comment.summary, context) : '',
     name: reflection.name,
     optional: Boolean(reflection.flags.isOptional),
-    type: memberType(reflection),
+    type: getMemberType(reflection),
   };
 }
 
-function memberType(reflection: DeclarationReflection): TypeToken[] {
+function getMemberType(reflection: DeclarationReflection): TypeToken[] {
   const signature = reflection.signatures?.[0];
   if (signature) {
-    const tokens: TypeToken[] = [];
-    appendSignatureType(signature, tokens);
-    return mergeAdjacentText(tokens);
+    return normalizeTokens(tokensFromSignature(signature));
   }
   if (!reflection.type) {
     return [];
   }
-  return convertType(reflection.type);
+  return toTypeTokens(reflection.type);
 }
 
-function convertTypeParameter(
+function toReferenceTypeParameter(
   reflection: TypeParameterReflection,
   context: ExtractContext,
 ): ReferenceTypeParameter {
   return {
-    constraint: reflection.type ? convertType(reflection.type) : null,
-    defaultType: reflection.default ? convertType(reflection.default) : null,
+    constraint: reflection.type ? toTypeTokens(reflection.type) : null,
+    defaultType: reflection.default ? toTypeTokens(reflection.default) : null,
     description: reflection.comment
       ? partsToMarkdown(reflection.comment.summary, context)
       : '',
@@ -570,101 +572,101 @@ function convertTypeParameter(
   };
 }
 
-function convertType(type: SomeType): TypeToken[] {
-  const tokens: TypeToken[] = [];
-  appendType(type, tokens);
-  return mergeAdjacentText(tokens);
+function toTypeTokens(type: SomeType): TypeToken[] {
+  return normalizeTokens(tokensFromType(type));
 }
 
-function appendType(type: SomeType, tokens: TypeToken[]): void {
+function tokensFromType(type: SomeType): TypeToken[] {
   switch (type.type) {
     case 'intrinsic':
-      tokens.push({ kind: 'text', text: type.name });
-      return;
+      return [{ kind: 'text', text: type.name }];
     case 'literal':
-      tokens.push({
-        kind: 'text',
-        text:
-          typeof type.value === 'string'
-            ? `'${type.value}'`
-            : String(type.value),
-      });
-      return;
+      return [
+        {
+          kind: 'text',
+          text:
+            typeof type.value === 'string'
+              ? `'${type.value}'`
+              : String(type.value),
+        },
+      ];
     case 'reference': {
-      if (type.refersToTypeParameter === true) {
-        tokens.push({ kind: 'text', text: type.name });
-      } else {
-        tokens.push({
-          kind: 'ref',
-          module: referenceModuleName(type),
-          name: type.name,
-          text: type.name,
-        });
-      }
+      const head: TypeToken =
+        type.refersToTypeParameter === true
+          ? { kind: 'text', text: type.name }
+          : {
+              kind: 'ref',
+              module: resolveReferenceModuleName(type),
+              name: type.name,
+              text: type.name,
+            };
+      const tokens: TypeToken[] = [head];
       if (type.typeArguments && type.typeArguments.length > 0) {
         tokens.push({ kind: 'text', text: '<' });
         for (const [index, typeArg] of type.typeArguments.entries()) {
           if (index > 0) {
             tokens.push({ kind: 'text', text: ', ' });
           }
-          appendType(typeArg, tokens);
+          tokens.push(...tokensFromType(typeArg));
         }
         tokens.push({ kind: 'text', text: '>' });
       }
-      return;
+      return tokens;
     }
     case 'array':
-      appendType(type.elementType, tokens);
-      tokens.push({ kind: 'text', text: '[]' });
-      return;
-    case 'union':
+      return [
+        ...tokensFromType(type.elementType),
+        { kind: 'text', text: '[]' },
+      ];
+    case 'union': {
+      const tokens: TypeToken[] = [];
       for (const [index, member] of type.types.entries()) {
         if (index > 0) {
           tokens.push({ kind: 'text', text: ' | ' });
         }
-        appendType(member, tokens);
+        tokens.push(...tokensFromType(member));
       }
-      return;
-    case 'intersection':
+      return tokens;
+    }
+    case 'intersection': {
+      const tokens: TypeToken[] = [];
       for (const [index, member] of type.types.entries()) {
         if (index > 0) {
           tokens.push({ kind: 'text', text: ' & ' });
         }
-        appendType(member, tokens);
+        tokens.push(...tokensFromType(member));
       }
-      return;
-    case 'tuple':
-      tokens.push({ kind: 'text', text: '[' });
+      return tokens;
+    }
+    case 'tuple': {
+      const tokens: TypeToken[] = [{ kind: 'text', text: '[' }];
       for (const [index, element] of type.elements.entries()) {
         if (index > 0) {
           tokens.push({ kind: 'text', text: ', ' });
         }
-        appendType(element, tokens);
+        tokens.push(...tokensFromType(element));
       }
       tokens.push({ kind: 'text', text: ']' });
-      return;
-    case 'reflection': {
-      appendReflectionType(type, tokens);
-      return;
+      return tokens;
     }
+    case 'reflection':
+      return tokensFromReflectionType(type);
     default:
-      tokens.push({ kind: 'text', text: type.toString() });
+      return [{ kind: 'text', text: type.toString() }];
   }
 }
 
-function appendReflectionType(
-  type: { declaration: DeclarationReflection },
-  tokens: TypeToken[],
-): void {
+function tokensFromReflectionType(type: {
+  declaration: DeclarationReflection;
+}): TypeToken[] {
   const declaration = type.declaration;
   const signature = declaration.signatures?.[0];
   if (signature) {
-    appendSignatureType(signature, tokens);
-    return;
+    return tokensFromSignature(signature);
   }
   const children = declaration.children;
   if (children && children.length > 0) {
-    tokens.push({ kind: 'text', text: '{ ' });
+    const tokens: TypeToken[] = [{ kind: 'text', text: '{ ' }];
     for (const [index, child] of children.entries()) {
       if (index > 0) {
         tokens.push({ kind: 'text', text: '; ' });
@@ -672,19 +674,17 @@ function appendReflectionType(
       const optional = child.flags.isOptional ? '?' : '';
       tokens.push({ kind: 'text', text: `${child.name}${optional}: ` });
       if (child.type) {
-        appendType(child.type, tokens);
+        tokens.push(...tokensFromType(child.type));
       }
     }
     tokens.push({ kind: 'text', text: ' }' });
-    return;
+    return tokens;
   }
-  tokens.push({ kind: 'text', text: '{}' });
+  return [{ kind: 'text', text: '{}' }];
 }
 
-function appendSignatureType(
-  signature: SignatureReflection,
-  tokens: TypeToken[],
-): void {
+function tokensFromSignature(signature: SignatureReflection): TypeToken[] {
+  const tokens: TypeToken[] = [];
   const typeParameters = signature.typeParameters ?? [];
   if (typeParameters.length > 0) {
     tokens.push({ kind: 'text', text: '<' });
@@ -705,18 +705,19 @@ function appendSignatureType(
     const optional = param.flags.isOptional ? '?' : '';
     tokens.push({ kind: 'text', text: `${param.name}${optional}: ` });
     if (param.type) {
-      appendType(param.type, tokens);
+      tokens.push(...tokensFromType(param.type));
     }
   }
   tokens.push({ kind: 'text', text: ') => ' });
   if (signature.type) {
-    appendType(signature.type, tokens);
+    tokens.push(...tokensFromType(signature.type));
   } else {
     tokens.push({ kind: 'text', text: 'void' });
   }
+  return tokens;
 }
 
-function referenceModuleName(type: {
+function resolveReferenceModuleName(type: {
   package?: string;
   qualifiedName?: string;
   refersToTypeParameter?: boolean;
@@ -735,7 +736,7 @@ function referenceModuleName(type: {
   return 'unknown';
 }
 
-function mergeAdjacentText(tokens: TypeToken[]): TypeToken[] {
+function normalizeTokens(tokens: TypeToken[]): TypeToken[] {
   const merged: TypeToken[] = [];
   for (const token of tokens) {
     const last = merged[merged.length - 1];
@@ -791,7 +792,7 @@ function buildInterfaceSignature(
   context: ExtractContext,
 ): string {
   const typeParameters = (reflection.typeParameters ?? []).map((param) =>
-    convertTypeParameter(param, context),
+    toReferenceTypeParameter(param, context),
   );
   return `interface ${reflection.name}${buildTypeParameterList(typeParameters)}`;
 }
@@ -847,7 +848,7 @@ function resolveTargetId(target: unknown): number | null {
   return null;
 }
 
-function collectExamples(
+function extractExamples(
   comment: CommentLike,
   context: ExtractContext,
 ): ReferenceExample[] {
@@ -885,17 +886,17 @@ function parseCodeFence(raw: string): {
     return {
       code: fenceMatch[3] ?? '',
       language: fenceMatch[1] ?? 'ts',
-      path: bracket && looksLikePath(bracket) ? bracket : null,
+      path: bracket && isPathLike(bracket) ? bracket : null,
     };
   }
   return { code: trimmed, language: 'ts', path: null };
 }
 
-function looksLikePath(value: string): boolean {
+function isPathLike(value: string): boolean {
   return /^[\w./-]+\.[a-z]\w*$/i.test(value);
 }
 
-function collectTags(
+function extractTags(
   comment: CommentLike,
   context: ExtractContext,
 ): ReferenceTag[] {

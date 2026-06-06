@@ -294,7 +294,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
           `[yapyak] ${result.translated} translated, ${result.errors.length} failed · ${elapsed}`,
         );
       }
-      for (const group of groupTranslationErrors(result.errors)) {
+      for (const group of buildErrorGroups(result.errors)) {
         warn(renderTranslationErrorGroup(group));
       }
     } catch (error: unknown) {
@@ -799,7 +799,7 @@ interface TranslationErrorGroup {
   locale: string;
 }
 
-function groupTranslationErrors(
+function buildErrorGroups(
   errors: TranslationErrorEntry[],
 ): TranslationErrorGroup[] {
   const groups = new Map<string, TranslationErrorGroup>();

@@ -4,7 +4,7 @@ import type {
   ReferenceModule,
 } from '../extract/typedoc/type';
 
-import { symbolHref } from '../symbol-path';
+import { buildSymbolHref } from '../symbol-path';
 
 interface BuildTypedocPackageRootOptions {
   collapsible: boolean;
@@ -88,7 +88,7 @@ function moduleChildren(
   for (const api of module.exports) {
     nodes.push({
       badge: api.deprecated !== null ? { variant: 'deprecated' } : undefined,
-      href: symbolHref(
+      href: buildSymbolHref(
         module.id,
         api.name,
         collectionName,

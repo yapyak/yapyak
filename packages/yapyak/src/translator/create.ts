@@ -67,7 +67,7 @@ export function createTranslator(options: CreateTranslatorOptions): Translator {
       if (!request) {
         continue;
       }
-      const key = uniqueKey(request);
+      const key = toUniqueKey(request);
       let uniqueIndex = indexOfUnique.get(key);
       if (uniqueIndex === undefined) {
         uniqueIndex = uniqueRequests.length;
@@ -155,7 +155,7 @@ export function createTranslator(options: CreateTranslatorOptions): Translator {
   });
 }
 
-function uniqueKey(request: TranslateRequest): string {
+function toUniqueKey(request: TranslateRequest): string {
   return `${request.fileId}\x00${request.source}\x00${request.disambiguation ?? ''}`;
 }
 

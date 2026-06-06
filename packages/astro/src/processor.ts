@@ -54,9 +54,7 @@ export function astro(): Processor {
     parseFragments(source) {
       const compiler = loadCompiler();
       const { ast } = compiler.parse(source, undefined);
-      const fragments: Fragment[] = [];
-      walkNode(ast, source, fragments);
-      return fragments;
+      return fragmentsFromNode(ast, source);
     },
   });
 }
@@ -78,71 +76,71 @@ function loadCompiler(): typeof AstroCompilerSync {
   }
 }
 
-function walkNode(node: Node, source: string, fragments: Fragment[]): void {
+function fragmentsFromNode(node: Node, source: string): Fragment[] {
   if (isFrontmatterNode(node)) {
-    pushFrontmatterFragment(node, source, fragments);
-    return;
+    return fragmentsFromFrontmatter(node);
   }
   if (isExpressionNode(node)) {
-    handleExpressionNode(node, source, fragments);
-    return;
+    return fragmentsFromExpressionNode(node, source);
   }
   if (isTagLikeNode(node)) {
+    const fragments: Fragment[] = [];
     if (Array.isArray(node.attributes)) {
       for (const attribute of node.attributes) {
-        handleAttribute(attribute, source, fragments);
+        fragments.push(...fragmentsFromAttribute(attribute, source));
       }
     }
     if (Array.isArray(node.children)) {
       for (const child of node.children) {
-        walkNode(child, source, fragments);
+        fragments.push(...fragmentsFromNode(child, source));
       }
     }
-    return;
+    return fragments;
   }
   if (isRootNode(node) && Array.isArray(node.children)) {
+    const fragments: Fragment[] = [];
     for (const child of node.children) {
-      walkNode(child, source, fragments);
+      fragments.push(...fragmentsFromNode(child, source));
     }
+    return fragments;
   }
+  return [];
 }
 
-function pushFrontmatterFragment(
-  node: FrontmatterNode,
-  source: string,
-  fragments: Fragment[],
-): void {
+function fragmentsFromFrontmatter(node: FrontmatterNode): Fragment[] {
   const startOfBlock = node.position?.start.offset;
   if (typeof startOfBlock !== 'number') {
-    return;
+    return [];
   }
   const codeStart = startOfBlock + 3;
-  void source;
-  fragments.push({
-    code: node.value,
-    kind: 'script',
-    lang: 'ts',
-    originalOffset: codeStart,
-  });
+  return [
+    {
+      code: node.value,
+      kind: 'script',
+      lang: 'ts',
+      originalOffset: codeStart,
+    },
+  ];
 }
 
-function handleExpressionNode(
+function fragmentsFromExpressionNode(
   node: ExpressionNode,
   source: string,
-  fragments: Fragment[],
-): void {
+): Fragment[] {
   const children = Array.isArray(node.children) ? node.children : [];
-  const elision = computeExpressionElision(node, children, source);
+  const elision = resolveExpressionElision(node, children, source);
+  const fragments: Fragment[] = [];
   for (const child of children) {
     if (child.type === 'text') {
-      pushTextExpression(child, fragments, elision);
+      fragments.push(...fragmentsFromTextExpression(child, elision));
       continue;
     }
-    walkNode(child, source, fragments);
+    fragments.push(...fragmentsFromNode(child, source));
   }
+  return fragments;
 }
 
-function computeExpressionElision(
+function resolveExpressionElision(
   node: ExpressionNode,
   children: Node[],
   source: string,
@@ -201,17 +199,16 @@ function findEnclosingBraces(
   return undefined;
 }
 
-function pushTextExpression(
+function fragmentsFromTextExpression(
   node: { position?: { start: { offset: number } }; value: string },
-  fragments: Fragment[],
   elision: Fragment['elision'],
-): void {
+): Fragment[] {
   const start = node.position?.start.offset;
   if (typeof start !== 'number') {
-    return;
+    return [];
   }
   if (node.value.trim() === '') {
-    return;
+    return [];
   }
   const fragment: Fragment = {
     code: node.value,
@@ -222,24 +219,23 @@ function pushTextExpression(
   if (elision) {
     fragment.elision = elision;
   }
-  fragments.push(fragment);
+  return [fragment];
 }
 
-function handleAttribute(
+function fragmentsFromAttribute(
   node: AttributeNode,
   source: string,
-  fragments: Fragment[],
-): void {
+): Fragment[] {
   if (node.kind === 'empty' || node.kind === 'quoted') {
-    return;
+    return [];
   }
   const code = getAttributeExpressionText(node);
   if (!code) {
-    return;
+    return [];
   }
   const offset = findExpressionOffset({ attributeNode: node, code, source });
   if (offset === undefined) {
-    return;
+    return [];
   }
   const fragment: Fragment = {
     code,
@@ -247,14 +243,14 @@ function handleAttribute(
     lang: 'ts',
     originalOffset: offset,
   };
-  const elision = computeAttributeElision(node, source, offset);
+  const elision = resolveAttributeElision(node, source, offset);
   if (elision) {
     fragment.elision = elision;
   }
-  fragments.push(fragment);
+  return [fragment];
 }
 
-function computeAttributeElision(
+function resolveAttributeElision(
   node: AttributeNode,
   source: string,
   valueOffset: number,

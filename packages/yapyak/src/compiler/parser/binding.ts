@@ -32,7 +32,7 @@ export function resolveBindings(
   sourceFile: ts.SourceFile,
   options?: ResolveBindingsOptions,
 ): BindingTable {
-  const imports = collectImports(sourceFile);
+  const imports = extractImports(sourceFile);
   const scopeByNode = new Map<ts.Node, Scope>();
   const root: Scope = {
     bindings: new Map(),
@@ -64,7 +64,7 @@ export function resolveBindings(
   };
 }
 
-function collectImports(sourceFile: ts.SourceFile): ImportInfo {
+function extractImports(sourceFile: ts.SourceFile): ImportInfo {
   const info: ImportInfo = {
     directLocals: new Set(),
     namespaceLocals: new Set(),
@@ -110,7 +110,7 @@ function walkBindings(
   scopeByNode: Map<ts.Node, Scope>,
 ): void {
   let scope = parentScope;
-  if (createsBlockScope(node) && !scopeByNode.has(node)) {
+  if (isBlockScopeCreator(node) && !scopeByNode.has(node)) {
     scope = {
       bindings: new Map(),
       node,
@@ -128,7 +128,7 @@ function walkBindings(
   });
 }
 
-function createsBlockScope(node: ts.Node): boolean {
+function isBlockScopeCreator(node: ts.Node): boolean {
   return ts.isBlock(node);
 }
 

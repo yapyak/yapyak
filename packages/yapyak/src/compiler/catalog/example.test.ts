@@ -2,17 +2,17 @@ import type { LocaleData, OrphanCache } from './locale';
 
 import { describe, expect, it } from 'vitest';
 
-import { collectExamples } from './example';
+import { extractExamples } from './example';
 
 const emptyOrphans: OrphanCache = {};
 
-describe('collectExamples', () => {
+describe('extractExamples', () => {
   it('returns an empty list when max is 0', () => {
     const localeData: LocaleData = {
       sv: { 'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' } },
     };
 
-    const examples = collectExamples({
+    const examples = extractExamples({
       currentFileId: 'src/b.tsx',
       excludeKey: 'Hello',
       locale: 'sv',
@@ -33,7 +33,7 @@ describe('collectExamples', () => {
       },
     };
 
-    const examples = collectExamples({
+    const examples = extractExamples({
       currentFileId: 'src/components/c.tsx',
       excludeKey: 'World',
       locale: 'sv',
@@ -57,7 +57,7 @@ describe('collectExamples', () => {
       },
     };
 
-    const examples = collectExamples({
+    const examples = extractExamples({
       currentFileId: 'src/a.tsx',
       excludeKey: 'Save',
       locale: 'sv',
@@ -78,7 +78,7 @@ describe('collectExamples', () => {
       },
     };
 
-    const examples = collectExamples({
+    const examples = extractExamples({
       currentFileId: 'src/b.tsx',
       excludeKey: 'Hello',
       locale: 'sv',
@@ -106,7 +106,7 @@ describe('collectExamples', () => {
       },
     };
 
-    const examples = collectExamples({
+    const examples = extractExamples({
       currentFileId: 'src/b.tsx',
       excludeKey: 'Save changes',
       locale: 'sv',
@@ -129,7 +129,7 @@ describe('collectExamples', () => {
       },
     };
 
-    const examples = collectExamples({
+    const examples = extractExamples({
       currentFileId: 'src/b.tsx',
       excludeKey: 'Hello',
       locale: 'sv',
@@ -150,7 +150,7 @@ describe('collectExamples', () => {
       },
     };
 
-    const examples = collectExamples({
+    const examples = extractExamples({
       currentFileId: 'src/components/c.tsx',
       excludeKey: 'Hello',
       locale: 'sv',
@@ -173,7 +173,7 @@ describe('collectExamples', () => {
       },
     };
 
-    const examples = collectExamples({
+    const examples = extractExamples({
       currentFileId: 'src/b.tsx',
       excludeKey: 'Save changes',
       locale: 'sv',
@@ -193,7 +193,7 @@ describe('collectExamples', () => {
       },
     };
 
-    const examples = collectExamples({
+    const examples = extractExamples({
       currentFileId: 'src/b.tsx',
       excludeKey: 'Hello',
       locale: 'sv',

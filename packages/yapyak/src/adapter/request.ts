@@ -1,4 +1,4 @@
-import { install } from './storage';
+import { createStorage } from './storage';
 
 /**
  * Runs `fn` with `request` bound to async-scoped storage.
@@ -25,6 +25,6 @@ import { install } from './storage';
  * ```
  */
 export function withRequest<T>(request: Request, fn: () => T): T {
-  const { headers, requests } = install();
+  const { headers, requests } = createStorage();
   return requests.run(request, () => headers.run(new Headers(), fn));
 }

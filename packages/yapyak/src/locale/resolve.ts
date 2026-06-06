@@ -12,7 +12,7 @@ export function resolveLocale(options: ResolveLocaleOptions): string {
   if (options.persisted && options.locales.includes(options.persisted)) {
     return options.persisted;
   }
-  const candidates = collectCandidates(options);
+  const candidates = extractCandidates(options);
   for (const candidate of candidates) {
     if (options.locales.includes(candidate)) {
       return candidate;
@@ -25,7 +25,7 @@ export function resolveLocale(options: ResolveLocaleOptions): string {
   return options.defaultLocale;
 }
 
-function collectCandidates(options: ResolveLocaleOptions): string[] {
+function extractCandidates(options: ResolveLocaleOptions): string[] {
   if (options.acceptLanguage) {
     return parseAcceptLanguage(options.acceptLanguage);
   }

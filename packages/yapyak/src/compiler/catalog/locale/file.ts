@@ -198,7 +198,7 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
     (locale) => !corruptLocales.has(locale),
   );
 
-  const inFlightDrops = collectInFlightDrops(
+  const inFlightDrops = extractInFlightDrops(
     existingByLocale,
     extractedSources,
     healthyLocales,
@@ -229,9 +229,9 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
         const orphanValue = orphan?.entry.translations[locale];
         if (orphan && orphanValue) {
           fileEntries[source] = orphanValue;
-          recordPair(restoredOrphans, orphan.fileId, source);
+          registerPair(restoredOrphans, orphan.fileId, source);
           if (inFlightDrops.get(orphan.fileId)?.has(source)) {
-            recordPair(restoredInFlight, orphan.fileId, source);
+            registerPair(restoredInFlight, orphan.fileId, source);
           }
           continue;
         }
@@ -239,7 +239,7 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
         const inFlightValue = inFlight?.translations[locale];
         if (inFlight && inFlightValue) {
           fileEntries[source] = inFlightValue;
-          recordPair(restoredInFlight, inFlight.fileId, source);
+          registerPair(restoredInFlight, inFlight.fileId, source);
           continue;
         }
         fileEntries[source] = '';
@@ -290,7 +290,7 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
   }
 }
 
-function recordPair(
+function registerPair(
   pairs: Map<string, Set<string>>,
   fileId: string,
   source: string,
@@ -310,7 +310,7 @@ interface InFlightDropLookup {
   translations: Record<string, string>;
 }
 
-function collectInFlightDrops(
+function extractInFlightDrops(
   existingByLocale: Map<string, LocaleFile>,
   extractedSources: Record<string, Set<string>>,
   nonDefaultLocales: string[],

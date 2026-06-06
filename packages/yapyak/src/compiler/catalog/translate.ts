@@ -7,7 +7,7 @@ import type {
 import type { ExtractedMessage, Location } from '../parser/file/extract';
 import type { LocaleData, LocaleFile, OrphanCache } from './locale';
 
-import { collectExamples } from './example';
+import { extractExamples } from './example';
 import {
   getDefaultCacheDir,
   readLocaleFile,
@@ -48,7 +48,7 @@ interface TranslationStub {
   source: string;
 }
 
-function stubKey(stub: TranslationStub): string {
+function getStubKey(stub: TranslationStub): string {
   return stub.disambiguation === undefined
     ? stub.source
     : `${stub.source}@${stub.disambiguation}`;
@@ -57,8 +57,8 @@ function stubKey(stub: TranslationStub): string {
 export async function autoTranslate(
   options: AutoTranslateOptions,
 ): Promise<AutoTranslateResult> {
-  const contextBySource = collectContexts(options.messages);
-  const stubs = collectStubs(options, contextBySource);
+  const contextBySource = extractContexts(options.messages);
+  const stubs = extractStubs(options, contextBySource);
   if (stubs.length === 0) {
     return { errors: [], translated: 0 };
   }
@@ -114,7 +114,7 @@ export async function autoTranslate(
       data = readLocaleFile(localePath);
       localeFiles.set(stub.locale, data);
     }
-    setEntry(data, stub.fileId, stubKey(stub), trimmed);
+    setEntry(data, stub.fileId, getStubKey(stub), trimmed);
     translated++;
     touchedLocales.add(stub.locale);
   }
@@ -189,7 +189,7 @@ function buildRequest(
   if (stub.disambiguation !== undefined) {
     request.disambiguation = stub.disambiguation;
   }
-  const examples = collectExamplesForStub(exampleCache, stub, examplesMax);
+  const examples = extractExamplesForStub(exampleCache, stub, examplesMax);
   if (examples.length > 0) {
     request.examples = examples;
   }
@@ -217,7 +217,7 @@ function toExtractedSources(
   return result;
 }
 
-function collectContexts(
+function extractContexts(
   messages: ExtractedMessage[],
 ): Map<string, MessageContext> {
   const contexts = new Map<string, MessageContext>();
@@ -240,7 +240,7 @@ function toLegacyContext(location: Location): MessageContext {
   };
 }
 
-function collectStubs(
+function extractStubs(
   options: AutoTranslateOptions,
   contexts: Map<string, MessageContext>,
 ): TranslationStub[] {
@@ -288,7 +288,7 @@ function dedupeStubs(stubs: TranslationStub[]): TranslationStub[] {
   const seenKeys = new Set<string>();
   const deduped: TranslationStub[] = [];
   for (const stub of stubs) {
-    const key = `${stub.locale} ${stub.fileId} ${stubKey(stub)}`;
+    const key = `${stub.locale} ${stub.fileId} ${getStubKey(stub)}`;
     if (seenKeys.has(key)) {
       continue;
     }
@@ -341,7 +341,7 @@ function loadExampleCache(
   return { localeData, orphans };
 }
 
-function collectExamplesForStub(
+function extractExamplesForStub(
   cache: ExampleCache,
   stub: TranslationStub,
   max: number,
@@ -349,9 +349,9 @@ function collectExamplesForStub(
   if (max <= 0) {
     return [];
   }
-  return collectExamples({
+  return extractExamples({
     currentFileId: stub.fileId,
-    excludeKey: stubKey(stub),
+    excludeKey: getStubKey(stub),
     locale: stub.locale,
     localeData: cache.localeData,
     max,

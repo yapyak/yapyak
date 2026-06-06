@@ -19,7 +19,7 @@ interface ParsedContent {
 }
 
 export function parseMarkdoc(source: string): ParsedContent {
-  const ast = Markdoc.parse(preprocessFenceLabels(source));
+  const ast = Markdoc.parse(transformFenceLabels(source));
   const frontmatterSource = ast.attributes.frontmatter as string | undefined;
   const frontmatter = frontmatterSource
     ? parseFrontmatter(frontmatterSource)
@@ -30,7 +30,7 @@ export function parseMarkdoc(source: string): ParsedContent {
   return { blocks, frontmatter };
 }
 
-function preprocessFenceLabels(source: string): string {
+function transformFenceLabels(source: string): string {
   return source.replace(/^(```)(\S+) +(\[[^\]]+\])[ \t]*$/gm, '$1$2$3');
 }
 
@@ -65,7 +65,7 @@ function toBlocks(node: unknown): Block[] {
       return [
         {
           children,
-          id: stringAttribute(node.attributes.id) ?? '',
+          id: getStringAttribute(node.attributes.id) ?? '',
           level: Number(node.name.slice(1)) as 1 | 2 | 3 | 4 | 5 | 6,
           type: 'heading',
         },
@@ -73,7 +73,7 @@ function toBlocks(node: unknown): Block[] {
     case 'p':
       return [{ children, type: 'paragraph' }];
     case 'a': {
-      const href = stringAttribute(node.attributes.href) ?? '';
+      const href = getStringAttribute(node.attributes.href) ?? '';
       return [
         {
           children,
@@ -86,8 +86,8 @@ function toBlocks(node: unknown): Block[] {
     case 'img':
       return [
         {
-          alt: stringAttribute(node.attributes.alt),
-          src: stringAttribute(node.attributes.src) ?? '',
+          alt: getStringAttribute(node.attributes.alt),
+          src: getStringAttribute(node.attributes.src) ?? '',
           type: 'image',
         },
       ];
@@ -139,13 +139,13 @@ function toBlocks(node: unknown): Block[] {
         },
       ];
     case 'Switch': {
-      const group = stringAttribute(node.attributes.group) ?? '';
+      const group = getStringAttribute(node.attributes.group) ?? '';
       const branches: Record<string, Block[]> = {};
       for (const child of node.children) {
         if (!Markdoc.Tag.isTag(child) || child.name !== 'When') {
           continue;
         }
-        const value = stringAttribute(child.attributes.value) ?? '';
+        const value = getStringAttribute(child.attributes.value) ?? '';
         if (value === '') {
           continue;
         }
@@ -159,9 +159,9 @@ function toBlocks(node: unknown): Block[] {
       return [
         {
           children,
-          group: stringAttribute(node.attributes.group) ?? '',
+          group: getStringAttribute(node.attributes.group) ?? '',
           type: 'only',
-          value: stringAttribute(node.attributes.value) ?? '',
+          value: getStringAttribute(node.attributes.value) ?? '',
         },
       ];
     case 'Callout':
@@ -197,10 +197,10 @@ function buildTable(children: unknown[]): TableBlock {
 
 function buildCodeBlock(attributes: Record<string, unknown>): CodeBlock {
   return {
-    label: stringAttribute(attributes.label),
-    language: stringAttribute(attributes.language),
-    path: stringAttribute(attributes.path),
-    source: stringAttribute(attributes.source) ?? '',
+    label: getStringAttribute(attributes.label),
+    language: getStringAttribute(attributes.language),
+    path: getStringAttribute(attributes.path),
+    source: getStringAttribute(attributes.source) ?? '',
     type: 'code-block',
   };
 }
@@ -220,7 +220,7 @@ function buildCallout(
   }
   return {
     children,
-    title: stringAttribute(attributes.title),
+    title: getStringAttribute(attributes.title),
     type: 'callout',
     variant,
   };
@@ -236,7 +236,7 @@ function isCell(block: Block): block is TableCellBlock {
   return block.type === 'table-cell';
 }
 
-function stringAttribute(value: unknown): string | null {
+function getStringAttribute(value: unknown): string | null {
   return typeof value === 'string' && value.length > 0 ? value : null;
 }
 
@@ -369,7 +369,7 @@ function parseLanguageLabel(raw: string | undefined) {
   const match = raw.match(/^(\S*)\s*\[([^\]]+)\]$/);
   if (match) {
     const bracket = match[2] ?? '';
-    if (looksLikePath(bracket)) {
+    if (isPathLike(bracket)) {
       return {
         label: undefined,
         language: match[1] || undefined,
@@ -385,7 +385,7 @@ function parseLanguageLabel(raw: string | undefined) {
   return { label: undefined, language: raw, path: undefined };
 }
 
-function looksLikePath(value: string): boolean {
+function isPathLike(value: string): boolean {
   return /^[\w./-]+\.[a-z]\w*$/i.test(value);
 }
 

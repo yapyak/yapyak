@@ -27,10 +27,10 @@ export interface TransformFileResult {
 }
 
 import { parseArguments } from '../argument';
-import { findMatchingBrace } from '../matching-brace';
+import { findMatchingBraceIndex } from '../matching-brace';
 import { toMessageId } from '../message-id';
 import { parsePlaceholders } from '../placeholder';
-import { dispatchProcessor } from '../processor';
+import { resolveProcessor } from '../processor';
 import { getScriptKind } from '../script-kind';
 
 const PICK_EXPORT = 'pick';
@@ -52,7 +52,7 @@ export function transformFile(
       }),
     };
   }
-  const processor = dispatchProcessor(
+  const processor = resolveProcessor(
     request.fileId,
     request.source,
     request.processors ?? [],
@@ -87,7 +87,7 @@ export function transformFile(
     }
   }
 
-  rewriteScriptImports({
+  transformScriptImports({
     fragments,
     magicString,
     request,
@@ -112,13 +112,13 @@ export function transformFile(
   };
 }
 
-interface RewriteScriptImportsInput {
+interface TransformScriptImportsInput {
   fragments: Fragment[];
   magicString: MagicString;
   request: TransformFileRequest;
 }
 
-function rewriteScriptImports(input: RewriteScriptImportsInput): void {
+function transformScriptImports(input: TransformScriptImportsInput): void {
   const { fragments, magicString, request } = input;
   const intermediate = magicString.toString();
 
@@ -133,9 +133,9 @@ function rewriteScriptImports(input: RewriteScriptImportsInput): void {
       true,
       getScriptKind(request.fileId, fragment.lang),
     );
-    const coreImports = collectCoreImports(sourceFile);
+    const coreImports = extractCoreImports(sourceFile);
     for (const declaration of coreImports) {
-      rewriteImportDeclaration({
+      transformImportDeclaration({
         declaration,
         fragment,
         intermediate,
@@ -146,7 +146,7 @@ function rewriteScriptImports(input: RewriteScriptImportsInput): void {
   }
 }
 
-interface RewriteImportDeclarationInput {
+interface TransformImportDeclarationInput {
   declaration: ts.ImportDeclaration;
   fragment: Fragment;
   intermediate: string;
@@ -154,7 +154,9 @@ interface RewriteImportDeclarationInput {
   sourceFile: ts.SourceFile;
 }
 
-function rewriteImportDeclaration(input: RewriteImportDeclarationInput): void {
+function transformImportDeclaration(
+  input: TransformImportDeclarationInput,
+): void {
   const { declaration, fragment, intermediate, magicString, sourceFile } =
     input;
   if (declaration.importClause?.isTypeOnly === true) {
@@ -178,7 +180,7 @@ function rewriteImportDeclaration(input: RewriteImportDeclarationInput): void {
       });
       continue;
     }
-    const occurrences = countReferences(intermediate, localName);
+    const occurrences = getReferenceCount(intermediate, localName);
     if (occurrences > 1) {
       remaining.push({
         imported: importedName,
@@ -220,7 +222,7 @@ interface ImportSpecifier {
   local: string;
 }
 
-function collectCoreImports(sourceFile: ts.SourceFile): ts.ImportDeclaration[] {
+function extractCoreImports(sourceFile: ts.SourceFile): ts.ImportDeclaration[] {
   const result: ts.ImportDeclaration[] = [];
   for (const statement of sourceFile.statements) {
     if (!ts.isImportDeclaration(statement)) {
@@ -337,16 +339,16 @@ function renderEliminated(
   placeholders: Placeholder[],
 ): string {
   if (placeholders.length === 0) {
-    return safeJsString(source);
+    return toSafeJsString(source);
   }
   const expressions = getParamExpressions(callSite);
   if (!expressions) {
-    return safeJsString(source);
+    return toSafeJsString(source);
   }
   return buildTemplateLiteral(source, expressions);
 }
 
-function safeJsString(text: string): string {
+function toSafeJsString(text: string): string {
   let out = "'";
   for (const ch of text) {
     const code = ch.charCodeAt(0);
@@ -427,7 +429,7 @@ function buildTemplateLiteral(
   while (i < source.length) {
     const ch = source[i];
     if (ch === '{') {
-      const close = findMatchingBrace(source, i);
+      const close = findMatchingBraceIndex(source, i);
       const inner = source.slice(i + 1, close);
       const key = readKey(inner);
       if (key && expressions.has(key)) {
@@ -483,7 +485,7 @@ function buildCatalogLiteral(input: BuildCatalogInput): string {
       source,
       translations,
     });
-    entries.push(`${renderLocaleKey(locale)}: ${safeJsString(text)}`);
+    entries.push(`${renderLocaleKey(locale)}: ${toSafeJsString(text)}`);
   }
   return `{ ${entries.join(', ')} }`;
 }
@@ -523,7 +525,7 @@ function getParamArgText(callSite: CallSite): string | undefined {
   return arg.getText();
 }
 
-function countReferences(code: string, name: string): number {
+function getReferenceCount(code: string, name: string): number {
   let count = 0;
   let i = 0;
   while (i < code.length) {

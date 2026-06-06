@@ -2,7 +2,7 @@ export function encodeSymbolSegment(name: string): string {
   return name.replace(/^\$/, '');
 }
 
-export function symbolHref(
+export function buildSymbolHref(
   moduleId: string,
   name: string,
   collectionName: string,

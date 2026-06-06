@@ -53,7 +53,7 @@ export function docExtractor(options: Config): Plugin {
         }
       }, REBUILD_DEBOUNCE_MS);
 
-      const watchedDirectories = collectWatchedDirectories(options);
+      const watchedDirectories = getWatchedDirectories(options);
       for (const directory of watchedDirectories) {
         server.watcher.add(directory);
       }
@@ -123,7 +123,7 @@ function invalidateVirtualModule(server: ViteDevServer) {
   }
 }
 
-function collectWatchedDirectories(config: Config): string[] {
+function getWatchedDirectories(config: Config): string[] {
   const directories: string[] = [];
   for (const collection of Object.values(config.collections)) {
     if (collection.source === 'markdoc') {

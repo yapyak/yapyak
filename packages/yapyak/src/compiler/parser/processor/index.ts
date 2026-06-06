@@ -1,2 +1,2 @@
-export { dispatchProcessor } from './dispatch';
+export { resolveProcessor } from './dispatch';
 export { vanillaProcessor } from './vanilla';

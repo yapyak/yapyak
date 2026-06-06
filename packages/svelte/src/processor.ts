@@ -47,13 +47,13 @@ export function svelte(): Processor {
       const fragments: Fragment[] = [];
 
       if (ast.instance != null) {
-        pushScriptFragment(ast.instance, source, fragments);
+        fragments.push(...fragmentsFromScript(ast.instance, source));
       }
       if (ast.module != null) {
-        pushScriptFragment(ast.module, source, fragments);
+        fragments.push(...fragmentsFromScript(ast.module, source));
       }
       if (ast.fragment != null) {
-        collectFromFragment(ast.fragment, source, fragments);
+        fragments.push(...fragmentsFromAst(ast.fragment, source));
       }
       return fragments;
     },
@@ -75,22 +75,20 @@ function loadCompiler(): typeof SvelteCompiler {
   }
 }
 
-function pushScriptFragment(
-  script: AST.Script,
-  source: string,
-  fragments: Fragment[],
-): void {
+function fragmentsFromScript(script: AST.Script, source: string): Fragment[] {
   const start = (script.content as { start?: unknown }).start;
   const end = (script.content as { end?: unknown }).end;
   if (typeof start !== 'number' || typeof end !== 'number') {
-    return;
+    return [];
   }
-  fragments.push({
-    code: source.slice(start, end),
-    kind: 'script',
-    lang: getScriptLang(script),
-    originalOffset: start,
-  });
+  return [
+    {
+      code: source.slice(start, end),
+      kind: 'script',
+      lang: getScriptLang(script),
+      originalOffset: start,
+    },
+  ];
 }
 
 function getScriptLang(script: AST.Script): 'js' | 'ts' {
@@ -115,23 +113,17 @@ function getScriptLang(script: AST.Script): 'js' | 'ts' {
   return 'js';
 }
 
-function collectFromFragment(
-  fragment: AST.Fragment,
-  source: string,
-  fragments: Fragment[],
-): void {
-  for (const node of fragment.nodes) {
-    collectFromNode(node, source, fragments);
+function fragmentsFromAst(ast: AST.Fragment, source: string): Fragment[] {
+  const fragments: Fragment[] = [];
+  for (const node of ast.nodes) {
+    fragments.push(...fragmentsFromNode(node, source));
   }
+  return fragments;
 }
 
 type FragmentNode = AST.Fragment['nodes'][number];
 
-function collectFromNode(
-  node: FragmentNode,
-  source: string,
-  fragments: Fragment[],
-): void {
+function fragmentsFromNode(node: FragmentNode, source: string): Fragment[] {
   if (isExpressionTagLike(node)) {
     const elision =
       node.type === 'ExpressionTag'
@@ -140,53 +132,52 @@ function collectFromNode(
             range: rangeFromOffsets(source, node.start, node.end),
           }
         : undefined;
-    pushExpression(node.expression, source, fragments, elision);
-    return;
+    return fragmentsFromExpression(node.expression, source, elision);
   }
   if (node.type === 'IfBlock') {
-    pushExpression(node.test, source, fragments);
-    collectFromFragment(node.consequent, source, fragments);
+    const fragments = fragmentsFromExpression(node.test, source);
+    fragments.push(...fragmentsFromAst(node.consequent, source));
     if (node.alternate !== null) {
-      collectFromFragment(node.alternate, source, fragments);
+      fragments.push(...fragmentsFromAst(node.alternate, source));
     }
-    return;
+    return fragments;
   }
   if (node.type === 'EachBlock') {
-    pushExpression(node.expression, source, fragments);
+    const fragments = fragmentsFromExpression(node.expression, source);
     if (node.key) {
-      pushExpression(node.key, source, fragments);
+      fragments.push(...fragmentsFromExpression(node.key, source));
     }
-    collectFromFragment(node.body, source, fragments);
+    fragments.push(...fragmentsFromAst(node.body, source));
     if (node.fallback) {
-      collectFromFragment(node.fallback, source, fragments);
+      fragments.push(...fragmentsFromAst(node.fallback, source));
     }
-    return;
+    return fragments;
   }
   if (node.type === 'AwaitBlock') {
-    pushExpression(node.expression, source, fragments);
+    const fragments = fragmentsFromExpression(node.expression, source);
     if (node.pending !== null) {
-      collectFromFragment(node.pending, source, fragments);
+      fragments.push(...fragmentsFromAst(node.pending, source));
     }
     if (node.then !== null) {
-      collectFromFragment(node.then, source, fragments);
+      fragments.push(...fragmentsFromAst(node.then, source));
     }
     if (node.catch !== null) {
-      collectFromFragment(node.catch, source, fragments);
+      fragments.push(...fragmentsFromAst(node.catch, source));
     }
-    return;
+    return fragments;
   }
   if (node.type === 'KeyBlock') {
-    pushExpression(node.expression, source, fragments);
-    collectFromFragment(node.fragment, source, fragments);
-    return;
+    const fragments = fragmentsFromExpression(node.expression, source);
+    fragments.push(...fragmentsFromAst(node.fragment, source));
+    return fragments;
   }
   if (node.type === 'SnippetBlock') {
-    collectFromFragment(node.body, source, fragments);
-    return;
+    return fragmentsFromAst(node.body, source);
   }
   if (isElementLike(node)) {
-    collectFromElement(node, source, fragments);
+    return fragmentsFromElement(node, source);
   }
+  return [];
 }
 
 function isExpressionTagLike(
@@ -232,42 +223,43 @@ type ElementLikeNode =
   | AST.SvelteWindow
   | AST.TitleElement;
 
-function collectFromElement(
+function fragmentsFromElement(
   element: ElementLikeNode,
   source: string,
-  fragments: Fragment[],
-): void {
+): Fragment[] {
+  const fragments: Fragment[] = [];
   for (const attribute of element.attributes) {
-    collectFromAttribute(attribute, source, fragments);
+    fragments.push(...fragmentsFromAttribute(attribute, source));
   }
-  collectFromFragment(element.fragment, source, fragments);
+  fragments.push(...fragmentsFromAst(element.fragment, source));
   if (element.type === 'SvelteElement') {
-    pushExpression(element.tag, source, fragments);
+    fragments.push(...fragmentsFromExpression(element.tag, source));
   }
   if (element.type === 'SvelteComponent') {
-    pushExpression(element.expression, source, fragments);
+    fragments.push(...fragmentsFromExpression(element.expression, source));
   }
+  return fragments;
 }
 
 type AttributeNode = ElementLikeNode['attributes'][number];
 
-function collectFromAttribute(
+function fragmentsFromAttribute(
   node: AttributeNode,
   source: string,
-  fragments: Fragment[],
-): void {
+): Fragment[] {
   if (node.type === 'Attribute') {
     const value = node.value;
     if (value === true) {
-      return;
+      return [];
     }
     if (Array.isArray(value)) {
+      const fragments: Fragment[] = [];
       for (const item of value) {
         if (item.type === 'ExpressionTag') {
-          pushExpression(item.expression, source, fragments);
+          fragments.push(...fragmentsFromExpression(item.expression, source));
         }
       }
-      return;
+      return fragments;
     }
     const elision =
       value.type === 'ExpressionTag'
@@ -277,58 +269,55 @@ function collectFromAttribute(
             range: rangeFromOffsets(source, node.start, node.end),
           }
         : undefined;
-    pushExpression(value.expression, source, fragments, elision);
-    return;
+    return fragmentsFromExpression(value.expression, source, elision);
   }
   if (node.type === 'SpreadAttribute') {
-    pushExpression(node.expression, source, fragments);
-    return;
+    return fragmentsFromExpression(node.expression, source);
   }
   if (node.type === 'StyleDirective') {
     const value = node.value;
     if (value === true) {
-      return;
+      return [];
     }
     if (Array.isArray(value)) {
+      const fragments: Fragment[] = [];
       for (const item of value) {
         if (item.type === 'ExpressionTag') {
-          pushExpression(item.expression, source, fragments);
+          fragments.push(...fragmentsFromExpression(item.expression, source));
         }
       }
-      return;
+      return fragments;
     }
-    pushExpression(value.expression, source, fragments);
-    return;
+    return fragmentsFromExpression(value.expression, source);
   }
   if (node.type === 'AttachTag') {
-    pushExpression(node.expression, source, fragments);
-    return;
+    return fragmentsFromExpression(node.expression, source);
   }
   if ('expression' in node && node.expression !== null) {
-    pushExpression(node.expression, source, fragments);
+    return fragmentsFromExpression(node.expression, source);
   }
+  return [];
 }
 
-function pushExpression(
+function fragmentsFromExpression(
   expression: unknown,
   source: string,
-  fragments: Fragment[],
   elision?: Fragment['elision'],
-): void {
+): Fragment[] {
   if (expression === null || expression === undefined) {
-    return;
+    return [];
   }
   if (typeof expression !== 'object') {
-    return;
+    return [];
   }
   const start = (expression as { start?: unknown }).start;
   const end = (expression as { end?: unknown }).end;
   if (typeof start !== 'number' || typeof end !== 'number') {
-    return;
+    return [];
   }
   const code = source.slice(start, end);
   if (code === '') {
-    return;
+    return [];
   }
   const fragment: Fragment = {
     code,
@@ -339,5 +328,5 @@ function pushExpression(
   if (elision) {
     fragment.elision = elision;
   }
-  fragments.push(fragment);
+  return [fragment];
 }

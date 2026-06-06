@@ -18,28 +18,27 @@ interface Candidate {
   translation: string;
 }
 
-export function collectExamples(
+export function extractExamples(
   input: CollectExamplesInput,
 ): TranslationExample[] {
   if (input.max <= 0) {
     return [];
   }
-  const candidates: Candidate[] = [];
-  collectFromLocaleData(candidates, input);
-  collectFromOrphans(candidates, input);
+  const candidates: Candidate[] = [
+    ...candidatesFromLocaleData(input),
+    ...candidatesFromOrphans(input),
+  ];
   const deduped = dedupeBySource(candidates);
-  deduped.sort(compareCandidates(input.currentFileId));
+  deduped.sort(makeCandidateComparator(input.currentFileId));
   return deduped.slice(0, input.max).map(toExample);
 }
 
-function collectFromLocaleData(
-  candidates: Candidate[],
-  input: CollectExamplesInput,
-): void {
+function candidatesFromLocaleData(input: CollectExamplesInput): Candidate[] {
   const localeFile = input.localeData[input.locale];
   if (!localeFile) {
-    return;
+    return [];
   }
+  const candidates: Candidate[] = [];
   for (const [fileId, entries] of Object.entries(localeFile)) {
     for (const [key, translation] of Object.entries(entries)) {
       if (!translation) {
@@ -57,12 +56,11 @@ function collectFromLocaleData(
       });
     }
   }
+  return candidates;
 }
 
-function collectFromOrphans(
-  candidates: Candidate[],
-  input: CollectExamplesInput,
-): void {
+function candidatesFromOrphans(input: CollectExamplesInput): Candidate[] {
+  const candidates: Candidate[] = [];
   for (const [fileId, entries] of Object.entries(input.orphans)) {
     for (const [key, entry] of Object.entries(entries)) {
       const translation = entry.translations[input.locale];
@@ -81,6 +79,7 @@ function collectFromOrphans(
       });
     }
   }
+  return candidates;
 }
 
 function sourceFromKey(key: string): string {
@@ -99,7 +98,7 @@ function dedupeBySource(candidates: Candidate[]): Candidate[] {
   return [...bestBySource.values()];
 }
 
-function compareCandidates(
+function makeCandidateComparator(
   currentFileId: string,
 ): (a: Candidate, b: Candidate) => number {
   return (a, b) => {

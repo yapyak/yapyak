@@ -1,7 +1,7 @@
 import type { Config } from '../config';
 
 import { autoTranslate } from '../../compiler';
-import { wrapWithProgress } from '../progress';
+import { withProgress } from '../progress';
 import { buildReport } from '../report';
 import { color, header, progressBar, spinner, symbol } from '../tui';
 
@@ -94,7 +94,7 @@ export async function translate(options: TranslateOptions): Promise<number> {
       localesDir: config.localesDir,
       messages: report.messages,
       projectRoot,
-      translator: wrapWithProgress(translator, onProgress),
+      translator: withProgress(translator, onProgress),
     });
     failed += subResult.errors.length;
   }

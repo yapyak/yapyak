@@ -44,4 +44,4 @@ export {
   type PlaceholderKind,
   parsePlaceholders,
 } from './placeholder';
-export { dispatchProcessor, vanillaProcessor } from './processor';
+export { resolveProcessor, vanillaProcessor } from './processor';
