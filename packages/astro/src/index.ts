@@ -22,7 +22,7 @@ export type { RichTextProps } from './RichText.astro';
  * @remarks
  * Each named tag found in `value` is matched against a prop of the same name. The matching handler receives the tag's inner content and returns the HTML to emit at that position. A tag with no matching handler renders as its inner text.
  *
- * @example Render a translated string with a `<link>` tag
+ * @example Render a translated string with a link tag
  * ```astro
  * ---
  * import { RichText } from '@yapyak/astro';

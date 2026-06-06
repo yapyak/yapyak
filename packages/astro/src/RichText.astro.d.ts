@@ -15,7 +15,7 @@ export interface RichTextProps {
 /**
  * Renders rich text by resolving named tags via handler props.
  *
- * @example Render a translated string with a `<link>` tag
+ * @example Render a translated string with a link tag
  * ```astro
  * <RichText
  *   value={t('Click <link>here</link>.')}

@@ -1,3 +1,4 @@
+import type { Block } from '../../access/block';
 import type { Page } from '../../build/manifest';
 
 import { parseMarkdoc } from './parse';
@@ -45,11 +46,103 @@ async function loadMarkdocPage(
   }
   const { blocks, frontmatter } = parseMarkdoc(source);
   return {
-    blocks,
+    blocks: resolveBlocks(blocks, href),
     description: (frontmatter.description as string | undefined) ?? '',
     href,
     meta: frontmatter,
     title: (frontmatter.title as string | undefined) ?? '',
+  };
+}
+
+function resolveBlocks(blocks: Block[], pageHref: string): Block[] {
+  return blocks.map((block) => resolveBlock(block, pageHref));
+}
+
+function resolveBlock(block: Block, pageHref: string): Block {
+  if (block.type === 'link') {
+    const { href, kind } = resolveLinkData(block.href, pageHref);
+    return {
+      ...block,
+      children: resolveBlocks(block.children, pageHref),
+      href,
+      kind,
+    };
+  }
+  if (block.type === 'table') {
+    return {
+      ...block,
+      body: block.body.map(
+        (row) => resolveBlock(row, pageHref) as typeof row,
+      ),
+      head: block.head
+        ? (resolveBlock(block.head, pageHref) as typeof block.head)
+        : null,
+    };
+  }
+  if (block.type === 'code-group') {
+    return {
+      ...block,
+      tabs: block.tabs.map(
+        (tab) => resolveBlock(tab, pageHref) as typeof tab,
+      ),
+    };
+  }
+  if (block.type === 'switch') {
+    return {
+      ...block,
+      branches: Object.fromEntries(
+        Object.entries(block.branches).map(([key, value]) => [
+          key,
+          resolveBlocks(value, pageHref),
+        ]),
+      ),
+    };
+  }
+  if ('children' in block && Array.isArray(block.children)) {
+    return {
+      ...block,
+      children: resolveBlocks(block.children, pageHref) as never,
+    };
+  }
+  return block;
+}
+
+interface LinkData {
+  href: string;
+  kind: 'external' | 'internal';
+}
+
+function resolveLinkData(href: string, pageHref: string): LinkData {
+  if (/^([a-z][a-z0-9+.-]*:|\/\/)/i.test(href)) {
+    return { href, kind: 'external' };
+  }
+  if (href.startsWith('/')) {
+    return { href, kind: 'internal' };
+  }
+  if (href.startsWith('#')) {
+    return { href: `${pageHref}${href}`, kind: 'internal' };
+  }
+  const [pathPart = '', fragment = ''] = href.split('#');
+  const segments = pageHref.split('/').slice(0, -1);
+  for (const segment of pathPart.split('/')) {
+    if (segment === '' || segment === '.') {
+      continue;
+    }
+    if (segment === '..') {
+      segments.pop();
+      continue;
+    }
+    segments.push(segment);
+  }
+  const last = segments.at(-1);
+  if (last !== undefined) {
+    const stripped = last.replace(/\.md$/, '');
+    segments[segments.length - 1] = stripped === 'index' ? '' : stripped;
+  }
+  const resolved = segments.filter((s, i) => s || i === 0).join('/') || '/';
+  return {
+    href: fragment ? `${resolved}#${fragment}` : resolved,
+    kind: 'internal',
   };
 }
 
