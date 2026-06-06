@@ -1,3 +1,5 @@
+import type { Locale } from './type';
+
 import {
   DEFAULT_LOCALE,
   DETECT_ACCEPT_LANGUAGE,
@@ -14,22 +16,41 @@ let hasWarnedUninitialized = false;
 
 const persistence = buildPersistence(PERSISTENCE_CONFIG, LOCALES);
 
-function getInitialLocale(): string {
-  const persisted = persistence?.get();
-  if (persisted && LOCALES.includes(persisted)) {
-    return persisted;
-  }
-  return DEFAULT_LOCALE;
+/**
+ * Type guard for {@link Locale}. Checks `value` against the configured locales.
+ *
+ * @param value - A candidate string.
+ * @returns `true` if `value` is one of the configured locales.
+ *
+ * @example Narrow a URL parameter to `Locale`
+ * ```ts
+ * import { isLocale } from 'yapyak';
+ *
+ * if (isLocale(params.locale)) {
+ *   // params.locale is now typed as Locale
+ * }
+ * ```
+ */
+export function isLocale(value: string): value is Locale {
+  return LOCALES.includes(value);
 }
 
-let currentLocale = getInitialLocale();
-const listeners = new Set<(locale: string) => void>();
+function getInitialLocale(): Locale {
+  const persisted = persistence?.get();
+  if (persisted !== undefined && isLocale(persisted)) {
+    return persisted;
+  }
+  return DEFAULT_LOCALE as Locale;
+}
+
+let currentLocale: Locale = getInitialLocale();
+const listeners = new Set<(locale: Locale) => void>();
 
 if (SYNC_HTML_LANG && typeof document !== 'undefined') {
   document.documentElement.lang = currentLocale;
 }
 
-function applyLocale(value: string): void {
+function applyLocale(value: Locale): void {
   if (value === currentLocale) {
     return;
   }
@@ -44,7 +65,7 @@ function applyLocale(value: string): void {
 
 function syncFromPersistence(): void {
   const persisted = persistence?.get();
-  if (persisted && LOCALES.includes(persisted)) {
+  if (persisted !== undefined && isLocale(persisted)) {
     applyLocale(persisted);
   }
 }
@@ -64,7 +85,7 @@ persistence?.subscribe?.(syncFromPersistence);
  * getLocale(); // => 'sv'
  * ```
  */
-export function getLocale(): string {
+export function getLocale(): Locale {
   if (
     !hasWarnedUninitialized &&
     process.env.NODE_ENV !== 'production' &&
@@ -79,7 +100,7 @@ export function getLocale(): string {
     const request = readRequest();
     if (request) {
       const fromPersistence = persistence?.getFromRequest?.(request);
-      if (fromPersistence && LOCALES.includes(fromPersistence)) {
+      if (fromPersistence !== undefined && isLocale(fromPersistence)) {
         return fromPersistence;
       }
       if (DETECT_ACCEPT_LANGUAGE) {
@@ -87,9 +108,9 @@ export function getLocale(): string {
           acceptLanguage: request.headers.get('accept-language') ?? undefined,
           defaultLocale: DEFAULT_LOCALE,
           locales: LOCALES,
-        });
+        }) as Locale;
       }
-      return DEFAULT_LOCALE;
+      return DEFAULT_LOCALE as Locale;
     }
   }
   return currentLocale;
@@ -110,7 +131,7 @@ export function getLocale(): string {
  * setLocale('sv');
  * ```
  */
-export function setLocale(value: string): void {
+export function setLocale(value: Locale): void {
   if (!LOCALES.includes(value)) {
     return;
   }
@@ -123,12 +144,12 @@ export function setLocale(value: string): void {
 }
 
 /** The configured locales. Build-time constant. Inlined by yapyak's compiler. */
-export const locales: string[] = LOCALES;
+export const locales: readonly Locale[] = LOCALES as readonly Locale[];
 
 /** The default locale. Build-time constant. Inlined by yapyak's compiler. */
-export const defaultLocale: string = DEFAULT_LOCALE;
+export const defaultLocale: Locale = DEFAULT_LOCALE as Locale;
 
-export function subscribeLocale(fn: (locale: string) => void): () => void {
+export function subscribeLocale(fn: (locale: Locale) => void): () => void {
   listeners.add(fn);
   return (): void => {
     listeners.delete(fn);

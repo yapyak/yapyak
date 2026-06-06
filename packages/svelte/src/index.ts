@@ -12,7 +12,6 @@
  * @packageDocumentation
  */
 
-export type { Locale } from './locale.svelte';
 export type { RichTextProps, TagHandler } from './rich-text';
 
 export { locale } from './locale.svelte';

@@ -1,14 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn, useServerFn } from '@tanstack/react-start';
 import { RichText, useLocale } from '@yapyak/react';
-import { format, locales, setLocale, t } from 'yapyak';
+import { format, isLocale, locales, setLocale, t } from 'yapyak';
 
 const date = new Date('2024-01-01T08:30:00Z');
 
 const switchLocale = createServerFn({ method: 'POST' })
   .inputValidator((locale: string) => locale)
   .handler(({ data }) => {
-    setLocale(data);
+    if (isLocale(data)) {
+      setLocale(data);
+    }
   });
 
 export const Route = createFileRoute('/')({

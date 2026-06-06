@@ -12,5 +12,10 @@
     "types": ["node", "vite/client"],
     "verbatimModuleSyntax": true
   },
-  "include": [".react-router/types", ".yapyak", "app", "vite.config.ts"]
+  "include": [
+    ".react-router/types",
+    ".yapyak/types.d.ts",
+    "app",
+    "vite.config.ts"
+  ]
 }

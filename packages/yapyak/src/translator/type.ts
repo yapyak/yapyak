@@ -1,3 +1,5 @@
+import type { Locale } from '../locale';
+
 /**
  * Call-site context for a translation request.
  *
@@ -47,9 +49,9 @@ export interface TranslateRequest {
   /** The source string to translate. */
   source: string;
   /** The source locale. */
-  sourceLocale: string;
+  sourceLocale: Locale;
   /** The target locale. */
-  targetLocale: string;
+  targetLocale: Locale;
 }
 
 /**
@@ -177,9 +179,9 @@ export interface TranslateBatchRequest {
    */
   signal?: AbortSignal;
   /** The source locale. */
-  sourceLocale: string;
+  sourceLocale: Locale;
   /** The target locales required in every item's result. */
-  targetLocales: string[];
+  targetLocales: Locale[];
 }
 
 /** Options for {@link createTranslator}. */

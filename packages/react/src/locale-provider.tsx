@@ -1,4 +1,5 @@
 import type { ReactElement, ReactNode } from 'react';
+import type { Locale } from 'yapyak';
 
 import { createContext, useSyncExternalStore } from 'react';
 import { getLocale } from 'yapyak';
@@ -10,7 +11,7 @@ export interface LocaleProviderProps {
   children: ReactNode;
 }
 
-const LocaleContext = createContext<string>('en');
+const LocaleContext = createContext<Locale>('en' as Locale);
 
 /**
  * Renders children within a locale context.

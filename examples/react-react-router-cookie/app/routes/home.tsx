@@ -2,13 +2,16 @@ import type { Route } from './+types/home';
 
 import { RichText, useLocale } from '@yapyak/react';
 import { Form } from 'react-router';
-import { format, locales, setLocale, t } from 'yapyak';
+import { format, isLocale, locales, setLocale, t } from 'yapyak';
 
 const date = new Date('2024-01-01T08:30:00Z');
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
-  setLocale(String(formData.get('locale')));
+  const value = String(formData.get('locale'));
+  if (isLocale(value)) {
+    setLocale(value);
+  }
   return null;
 }
 

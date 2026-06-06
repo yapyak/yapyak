@@ -1,3 +1,5 @@
+import type { Locale } from 'yapyak';
+
 import { getLocale, setLocale } from 'yapyak';
 import { registerTracker, subscribeLocale } from 'yapyak/internal';
 
@@ -12,34 +14,33 @@ if (typeof window !== 'undefined') {
   });
 }
 
-/** The locale. Holds the current locale string with reactive read and write. */
-export interface Locale {
-  /** The current locale. Reads track reactivity; writes call {@link setLocale}. */
-  current: string;
-}
-
 /**
- * Reactive locale store.
+ * Reactive locale store. Reads track reactivity; writes call {@link setLocale}.
  *
  * @example Read and write the locale in a Svelte component
  * ```svelte
  * <script>
- *   import { t } from 'yapyak';
+ *   import { locales, t } from 'yapyak';
  *   import { locale } from '@yapyak/svelte';
  * </script>
  *
  * <p>{t('Hello')}</p>
- * <select bind:value={locale.current}>
- *   <option value="en">English</option>
- *   <option value="sv">Svenska</option>
- * </select>
+ * {#each locales as value (value)}
+ *   <button
+ *     disabled={value === locale.current}
+ *     onclick={() => (locale.current = value)}
+ *     type="button"
+ *   >
+ *     {value}
+ *   </button>
+ * {/each}
  * ```
  */
-export const locale: Locale = {
-  get current(): string {
-    return typeof window === 'undefined' ? getLocale() : active;
+export const locale: { current: Locale } = {
+  get current(): Locale {
+    return typeof window === 'undefined' ? getLocale() : (active as Locale);
   },
-  set current(value: string) {
+  set current(value: Locale) {
     setLocale(value);
   },
 };

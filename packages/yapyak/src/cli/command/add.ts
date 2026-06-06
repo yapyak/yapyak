@@ -1,10 +1,15 @@
 import type { Config } from '../config';
 
-import { autoTranslate, validateLocaleCode } from '../../compiler';
+import {
+  autoTranslate,
+  getDefaultYapyakDir,
+  validateLocaleCode,
+  writeRegister,
+} from '../../compiler';
 import { withProgress } from '../progress';
 import { buildReport } from '../report';
 import { color, header, progressBar, spinner, symbol } from '../tui';
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 interface AddOptions {
@@ -75,6 +80,18 @@ export async function add(options: AddOptions): Promise<number> {
       );
     }
   }
+
+  const defaultLocale = config.defaultLocale ?? 'en';
+  const allLocales = readdirSync(localesDirAbs)
+    .filter((name) => name.endsWith('.json'))
+    .map((name) => name.replace(/\.json$/, ''));
+  if (!allLocales.includes(defaultLocale)) {
+    allLocales.unshift(defaultLocale);
+  }
+  writeRegister({
+    locales: allLocales,
+    yapyakDir: getDefaultYapyakDir(projectRoot),
+  });
 
   const report = buildReport({
     defaultLocale: config.defaultLocale,

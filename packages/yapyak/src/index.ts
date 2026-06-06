@@ -13,7 +13,15 @@
  */
 
 export { type Format, format } from './format';
-export { defaultLocale, getLocale, locales, setLocale } from './locale';
+export {
+  defaultLocale,
+  getLocale,
+  isLocale,
+  type Locale,
+  locales,
+  type Register,
+  setLocale,
+} from './locale';
 export {
   type RichTextHandler,
   type RichTextHandlers,

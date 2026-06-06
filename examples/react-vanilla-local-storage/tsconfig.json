@@ -11,5 +11,5 @@
     "types": ["vite/client"],
     "verbatimModuleSyntax": true
   },
-  "include": [".yapyak", "src"]
+  "include": [".yapyak/types.d.ts", "src"]
 }

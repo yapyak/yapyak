@@ -6,6 +6,7 @@ export {
   type DiscoverLocalesResult,
   detectRenames,
   discoverLocales,
+  getDefaultYapyakDir,
   type InvariantViolation,
   type LocaleData,
   type LocaleFile,
@@ -28,7 +29,9 @@ export {
   validateLocaleCode,
   validateLocaleFile,
   type WriteLocaleFileInput,
+  type WriteRegisterInput,
   writeLocaleFile,
+  writeRegister,
   YapyakInvariantError,
 } from './locale';
 export {

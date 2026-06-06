@@ -19,6 +19,7 @@ import {
   transformFile,
   validateLocaleCode,
   walkSourceFiles,
+  writeRegister,
 } from 'yapyak/compiler';
 import {
   createFilter,
@@ -383,6 +384,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
             `Either add '${fixedLocale}' to your locales/ directory or pick an existing locale.`,
         );
       }
+      writeRegister({ locales: discover().locales, yapyakDir });
     },
     configureServer(server): void {
       if (configFile !== null) {
@@ -481,6 +483,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
           projectRoot,
           yapyakDir,
         });
+        writeRegister({ locales, yapyakDir });
         reloadRuntimeModule();
         reloadCandidateModules();
       }, 50);

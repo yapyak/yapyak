@@ -1,12 +1,12 @@
 import { createFileRoute, Link, redirect } from '@tanstack/react-router';
-import { RichText, useLocale } from '@yapyak/react';
-import { format, locales, t } from 'yapyak';
+import { RichText } from '@yapyak/react';
+import { format, isLocale, locales, t } from 'yapyak';
 
 const date = new Date('2024-01-01T08:30:00Z');
 
 export const Route = createFileRoute('/$locale')({
   beforeLoad: ({ params }) => {
-    if (!locales.includes(params.locale)) {
+    if (!isLocale(params.locale)) {
       throw redirect({ to: '/' });
     }
   },
@@ -14,7 +14,6 @@ export const Route = createFileRoute('/$locale')({
 });
 
 function Component() {
-  const [locale] = useLocale();
   return (
     <main style={{ fontFamily: 'system-ui', maxWidth: 720, padding: 32 }}>
       <h1>{t('Hello there')}</h1>

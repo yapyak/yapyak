@@ -1,3 +1,5 @@
+export type { Locale, Register } from './type';
+
 export { parseAcceptLanguage } from './accept-language';
 export { setRequestReader } from './request-reader';
 export { resolveLocale } from './resolve';
@@ -8,6 +10,7 @@ export {
 export {
   defaultLocale,
   getLocale,
+  isLocale,
   locales,
   resetLocale,
   setLocale,

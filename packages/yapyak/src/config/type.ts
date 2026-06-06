@@ -1,3 +1,4 @@
+import type { Locale } from '../locale';
 import type { PersistenceConfig } from '../persistence';
 import type { Processor } from '../processor';
 import type { Translator } from '../translator';
@@ -29,7 +30,7 @@ export interface YapyakConfig {
    *
    * @defaultValue Inferred from `locales/*.json`; `'en'` when none exist
    */
-  defaultLocale?: string;
+  defaultLocale?: Locale;
   /**
    * Whether to detect locale from the `Accept-Language` header on the server.
    *

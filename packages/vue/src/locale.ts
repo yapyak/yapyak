@@ -1,4 +1,5 @@
 import type { Ref } from 'vue';
+import type { Locale } from 'yapyak';
 
 import { customRef } from 'vue';
 import { getLocale, setLocale } from 'yapyak';
@@ -26,7 +27,7 @@ import { registerTracker, subscribeLocale } from 'yapyak/internal';
  * </template>
  * ```
  */
-export const locale: Ref<string> = customRef<string>((track, trigger) => {
+export const locale: Ref<Locale> = customRef<Locale>((track, trigger) => {
   if (typeof window !== 'undefined') {
     subscribeLocale(trigger);
     registerTracker(() => {
@@ -34,11 +35,11 @@ export const locale: Ref<string> = customRef<string>((track, trigger) => {
     });
   }
   return {
-    get(): string {
+    get(): Locale {
       track();
       return getLocale();
     },
-    set(value: string): void {
+    set(value: Locale): void {
       setLocale(value);
     },
   };

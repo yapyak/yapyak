@@ -216,11 +216,11 @@ Yapyak generates declaration files into `.yapyak/` for locale narrowing and othe
 
 {% when value="react" %}
 
-Add `.yapyak` to the `include` array in `tsconfig.json`:
+Add `.yapyak/types.d.ts` to the `include` array in `tsconfig.json`:
 
 ```json [tsconfig.json]
 {
-  "include": [".yapyak", "src/**/*"]
+  "include": [".yapyak/types.d.ts", "src"]
 }
 ```
 
@@ -228,11 +228,11 @@ Add `.yapyak` to the `include` array in `tsconfig.json`:
 
 {% when value="vue" %}
 
-Add `.yapyak` to the `include` array in `tsconfig.json`:
+Add `.yapyak/types.d.ts` to the `include` array in `tsconfig.json`:
 
 ```json [tsconfig.json]
 {
-  "include": [".yapyak", "src/**/*"]
+  "include": [".yapyak/types.d.ts", "src"]
 }
 ```
 
@@ -240,10 +240,10 @@ Add `.yapyak` to the `include` array in `tsconfig.json`:
 
 {% when value="svelte" %}
 
-Add a reference at the top of `src/app.d.ts`:
+SvelteKit owns its `tsconfig.json` (auto-generated under `.svelte-kit/`). Add a reference at the top of `src/app.d.ts` instead — same path, just a different syntax:
 
 ```ts [src/app.d.ts]
-/// <reference types="../.yapyak" />
+/// <reference path="../.yapyak/types.d.ts" />
 
 declare global {
   namespace App {}
@@ -252,23 +252,23 @@ declare global {
 export {};
 ```
 
-SvelteKit auto-includes `src/app.d.ts` via its generated tsconfig.
-
 {% /when %}
 
 {% when value="astro" %}
 
-Add `.yapyak` to the `include` array in `tsconfig.json`:
+Add `.yapyak/types.d.ts` to the `include` array in `tsconfig.json`:
 
 ```json [tsconfig.json]
 {
-  "include": [".yapyak", "src/**/*"]
+  "include": [".yapyak/types.d.ts", "src"]
 }
 ```
 
 {% /when %}
 
 {% /switch %}
+
+With this in place, yapyak's `Locale` type narrows to a literal union of your configured locales — `setLocale('xx')` becomes a TypeScript error, `useLocale()` returns the union, and `isLocale()` narrows arbitrary strings.
 
 ## Write your first translation
 

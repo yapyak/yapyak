@@ -2,12 +2,12 @@ import type { Route } from './+types/locale';
 
 import { RichText, useLocale } from '@yapyak/react';
 import { Link, redirect } from 'react-router';
-import { defaultLocale, format, locales, t } from 'yapyak';
+import { defaultLocale, format, isLocale, locales, t } from 'yapyak';
 
 const date = new Date('2024-01-01T08:30:00Z');
 
 export async function loader({ params }: Route.LoaderArgs) {
-  if (!locales.includes(params.locale)) {
+  if (!isLocale(params.locale)) {
     throw redirect(`/${defaultLocale}`);
   }
   return null;

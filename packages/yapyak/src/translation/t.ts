@@ -1,3 +1,4 @@
+import type { Locale } from '../locale';
 import type { ExtractTParams } from './t-param';
 import type { ExtractTags } from './tag';
 
@@ -67,7 +68,7 @@ export interface TInChain {
  */
 export interface TAtChain {
   in<T extends string>(
-    locale: string,
+    locale: Locale,
     source: T,
     params?: TParams<T>,
   ): TReturn<ExtractTags<T>>;
@@ -105,11 +106,11 @@ export interface TFn {
    * @param params - The placeholder params. Required when the source has placeholders.
    */
   in<T extends string>(
-    locale: string,
+    locale: Locale,
     source: T,
     params?: TParams<T>,
   ): TReturn<ExtractTags<T>>;
-  in(locale: string): TInChain;
+  in(locale: Locale): TInChain;
   /**
    * Translates `source` for the active locale.
    *

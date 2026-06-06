@@ -1,8 +1,8 @@
 import { error } from '@sveltejs/kit';
-import { locales } from 'yapyak';
+import { isLocale } from 'yapyak';
 
 export const load = ({ params }) => {
-  if (!locales.includes(params.locale)) {
+  if (!isLocale(params.locale)) {
     error(404, 'Unknown locale');
   }
 };

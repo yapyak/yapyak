@@ -40,6 +40,7 @@ export {
   type OrphanEntry,
   readOrphans,
 } from './orphan';
+export { type WriteRegisterInput, writeRegister } from './register';
 export {
   type ValidateIcuPairsInput,
   type ValidateLocaleFileInput,
