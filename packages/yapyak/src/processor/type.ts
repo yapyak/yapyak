@@ -1,26 +1,34 @@
 import type MagicString from 'magic-string';
 
-/** A position in a source file, 1-based. */
+/**
+ * The position. Locates a point in source by line, column, and byte offset (1-based).
+ */
 export interface Position {
   column: number;
   line: number;
   offset: number;
 }
 
-/** A range in a source file. */
+/**
+ * The range. Spans from a start to an end position in source.
+ */
 export interface Range {
   end: Position;
   start: Position;
 }
 
-/** Marks a portion of source text that should be elided when reading the surrounding code. */
+/**
+ * Elision context for source-text portions that should be skipped when reading the surrounding code.
+ */
 export interface ElisionContext {
   attributeName?: string;
   mode: 'attribute' | 'text';
   range: Range;
 }
 
-/** A fragment of TS-parseable code extracted from a framework-specific source file. */
+/**
+ * The fragment. Holds TS-parseable code extracted from a framework-specific source file.
+ */
 export interface Fragment {
   code: string;
   elision?: ElisionContext;
@@ -56,7 +64,7 @@ export interface CreateProcessorOptions {
 }
 
 /**
- * Extracts framework-specific source into fragments yapyak's compiler can read.
+ * The processor. Extracts framework-specific source into fragments yapyak's compiler can read.
  *
  * @remarks
  * Returned by {@link createProcessor} and by the framework processor packages (`@yapyak/vue/processor`, `@yapyak/svelte/processor`, `@yapyak/astro/processor`). Registered in `yapyak.config.ts` via the `processors` field.

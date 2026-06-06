@@ -33,7 +33,12 @@ export interface TranslationExample {
 export interface TranslateRequest {
   /** The call-site context. */
   context?: MessageContext;
-  /** The developer-supplied disambiguation context. Set via `t.at(context, source)` at the call site. Matches `[a-z][a-z0-9-]*`. */
+  /**
+   * The developer-supplied disambiguation context.
+   *
+   * @remarks
+   * Set via `t.at(context, source)` at the call site. Matches `[a-z][a-z0-9-]*`.
+   */
   disambiguation?: string;
   /** Example translations from the project, supplied as style reference. */
   examples?: TranslationExample[];
@@ -73,7 +78,12 @@ export interface Translator {
    * Set by {@link createTranslator} from its `context` option. The compiler reads this field to align privacy-sensitive defaults — when set to `'none'`, the `examples` default falls to `0` so no prior translations leak alongside the source string. Custom translators that bypass {@link createTranslator} should set this field to match their effective context level.
    */
   context?: ContextLevel;
-  /** Stable identifier for this translator. Convention: lowercase suffix matching the package name (`'anthropic'`, `'openai'`, `'gemini'`, `'ollama'`, `'cloud'`). */
+  /**
+   * The stable identifier for this translator.
+   *
+   * @remarks
+   * Convention: lowercase suffix matching the package name (`'anthropic'`, `'openai'`, `'gemini'`, `'ollama'`, `'cloud'`).
+   */
   id: string;
   (request: TranslateRequest): Promise<string>;
 }
@@ -152,13 +162,23 @@ export type LocaleTranslations = Record<string, string>;
  * ```
  */
 export interface TranslateBatchRequest {
-  /** The items to translate. Each item's result must include a translation for every locale in `targetLocales`. */
+  /**
+   * The items to translate.
+   *
+   * @remarks
+   * Each item's result must include a translation for every locale in `targetLocales`.
+   */
   items: TranslateItem[];
-  /** The abort signal for cancellation. Forwarded to the underlying fetch/SDK call. */
+  /**
+   * The abort signal for cancellation.
+   *
+   * @remarks
+   * Forwarded to the underlying fetch/SDK call.
+   */
   signal?: AbortSignal;
   /** The source locale. */
   sourceLocale: string;
-  /** The target locales. Each item's result must include a translation for each of these. */
+  /** The target locales required in every item's result. */
   targetLocales: string[];
 }
 
@@ -188,7 +208,12 @@ export interface CreateTranslatorOptions {
    * @defaultValue `'custom'`
    */
   id?: string;
-  /** Translates a batch of items into every target locale. Must return one {@link LocaleTranslations} per item, in the same order as `items`. */
+  /**
+   * Translates a batch of items into every target locale.
+   *
+   * @remarks
+   * Must return one {@link LocaleTranslations} per item, in the same order as `items`.
+   */
   translate: (
     params: TranslateBatchRequest,
   ) => LocaleTranslations[] | Promise<LocaleTranslations[]>;

@@ -5,10 +5,10 @@ import { walkRichText } from './rich-text-walker';
 type TagsOf<T> = T extends TReturn<infer Tags> ? Tags : never;
 
 /**
- * The rich-text handler. Receives the resolved text between a tag's markers and returns the rendered string.
+ * The rich-text handler.
  *
  * @remarks
- * The shape used by every entry of a {@link RichTextHandlers} object.
+ * Receives the resolved text between a tag's markers and returns the rendered string. The shape used by every entry of a {@link RichTextHandlers} object.
  */
 export type RichTextHandler = (children: string) => string;
 

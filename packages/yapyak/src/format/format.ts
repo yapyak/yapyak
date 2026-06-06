@@ -9,7 +9,7 @@ import { formatRelativeTime } from './relative-time';
 import { formatTime } from './time';
 
 /**
- * Locale-aware formatting backed by `Intl`.
+ * The format. Formats values for the active locale via `Intl`.
  *
  * @remarks
  * Methods format for the active locale from {@link getLocale}. Scope a fixed locale with {@link Format.in} — option types stay pure `Intl.*Options`, with no `locale` field.
