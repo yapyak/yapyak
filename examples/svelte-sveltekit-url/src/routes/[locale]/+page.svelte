@@ -6,7 +6,7 @@
   const date = new Date("2024-01-01T08:30:00Z");
 </script>
 
-<main style="font-family: system-ui; padding: 2rem; max-width: 720px;">
+<main style="font-family: system-ui; max-width: 720px; padding: 32px;">
   <h1>{t("Hello there")}</h1>
   <p>{t("This is the {name} example.", { name: "yapyak" })}</p>
 
@@ -59,7 +59,7 @@
   </p>
 
   <h2>{t("Switch language")}</h2>
-  <div style="display: flex; gap: 0.5rem;">
+  <div style="display: flex; gap: 8px;">
     {#each locales as value (value)}
       <a
         href={resolve("/[locale]", { locale: value })}

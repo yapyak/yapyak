@@ -19,9 +19,7 @@ function Component() {
   const [locale, setLocale] = useLocale();
   const submit = useServerFn(switchLocale);
   return (
-    <main
-      style={{ fontFamily: 'system-ui', maxWidth: '720px', padding: '2rem' }}
-    >
+    <main style={{ fontFamily: 'system-ui', maxWidth: 720, padding: 32 }}>
       <h1>{t('Hello there')}</h1>
       <p>{t('This is the {name} example.', { name: 'yapyak' })}</p>
 
@@ -74,7 +72,7 @@ function Component() {
       <h2>{t('Switch language')}</h2>
 
       <p>{t('From the client')}</p>
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
+      <div style={{ display: 'flex', gap: 8 }}>
         {locales.map((value) => (
           <button
             disabled={value === locale}
@@ -88,7 +86,7 @@ function Component() {
       </div>
 
       <p>{t('From the server')}</p>
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
+      <div style={{ display: 'flex', gap: 8 }}>
         {locales.map((value) => (
           <button
             disabled={value === locale}

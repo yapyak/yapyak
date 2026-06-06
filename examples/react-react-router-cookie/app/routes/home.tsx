@@ -15,9 +15,7 @@ export async function action({ request }: Route.ActionArgs) {
 export default function Home() {
   const [locale, setLocale] = useLocale();
   return (
-    <main
-      style={{ fontFamily: 'system-ui', maxWidth: '720px', padding: '2rem' }}
-    >
+    <main style={{ fontFamily: 'system-ui', maxWidth: 720, padding: 32 }}>
       <h1>{t('Hello there')}</h1>
       <p>{t('This is the {name} example.', { name: 'yapyak' })}</p>
 
@@ -70,7 +68,7 @@ export default function Home() {
       <h2>{t('Switch language')}</h2>
 
       <p>{t('From the client')}</p>
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
+      <div style={{ display: 'flex', gap: 8 }}>
         {locales.map((value) => (
           <button
             disabled={value === locale}
@@ -86,7 +84,7 @@ export default function Home() {
       <p>{t('From the server')}</p>
       <Form
         method="post"
-        style={{ display: 'flex', gap: '0.5rem' }}
+        style={{ display: 'flex', gap: 8 }}
       >
         {locales.map((value) => (
           <button

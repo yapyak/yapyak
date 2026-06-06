@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { format, locales, t } from 'yapyak';
 import { locale, RichText } from '@yapyak/vue';
 
 const date = new Date('2024-01-01T08:30:00Z');
-
 </script>
 
 <template>
-  <main style="font-family: system-ui; padding: 2rem; max-width: 720px;">
+  <main style="font-family: system-ui; max-width: 720px; padding: 32px;">
     <h1>{{ t('Hello there') }}</h1>
     <p>{{ t('This is the {name} example.', { name: 'yapyak' }) }}</p>
 
@@ -49,7 +47,7 @@ const date = new Date('2024-01-01T08:30:00Z');
     </p>
 
     <h2>{{ t('Switch language') }}</h2>
-    <div style="display: flex; gap: 0.5rem;">
+    <div style="display: flex; gap: 8px;">
       <button
         v-for="value in locales"
         :key="value"

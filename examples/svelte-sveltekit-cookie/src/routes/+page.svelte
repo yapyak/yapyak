@@ -6,7 +6,7 @@
   const date = new Date("2024-01-01T08:30:00Z");
 </script>
 
-<main style="font-family: system-ui; padding: 2rem; max-width: 720px;">
+<main style="font-family: system-ui; max-width: 720px; padding: 32px;">
   <h1>{t("Hello there")}</h1>
   <p>{t("This is the {name} example.", { name: "yapyak" })}</p>
 
@@ -61,7 +61,7 @@
   <h2>{t("Switch language")}</h2>
 
   <p>{t("From the client")}</p>
-  <div style="display: flex; gap: 0.5rem;">
+  <div style="display: flex; gap: 8px;">
     {#each locales as value (value)}
       <button
         type="button"
@@ -74,7 +74,7 @@
   </div>
 
   <p>{t("From the server")}</p>
-  <form {...localeForm} style="display: flex; gap: 0.5rem;">
+  <form {...localeForm} style="display: flex; gap: 8px;">
     {#each locales as value (value)}
       <button name="locale" {value} disabled={value === locale.current}>
         {value === "sv" ? t("Swedish") : t("English")}
