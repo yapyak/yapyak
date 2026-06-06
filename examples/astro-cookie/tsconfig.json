@@ -1,10 +1,4 @@
 {
   "extends": "astro/tsconfigs/strict",
-  "include": [
-    ".astro/types.d.ts",
-    ".yapyak",
-    "astro.config.ts",
-    "src/**/*",
-    "yapyak.config.ts"
-  ]
+  "include": [".astro", ".yapyak", "astro.config.ts", "src", "yapyak.config.ts"]
 }

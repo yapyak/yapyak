@@ -13,5 +13,5 @@
     "types": ["node", "vite/client", "@yapyak/doc-extractor/ambient"]
   },
   "extends": "@yapyak/typescript-config/react",
-  "include": ["src/**/*"]
+  "include": ["src"]
 }

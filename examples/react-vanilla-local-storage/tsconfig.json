@@ -1,4 +1,4 @@
 {
   "extends": "@yapyak/typescript-config/react",
-  "include": [".yapyak", "src/**/*"]
+  "include": [".yapyak", "src"]
 }

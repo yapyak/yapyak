@@ -1,4 +1,4 @@
 {
   "extends": "@yapyak/typescript-config/vue",
-  "include": [".yapyak", "src/**/*", "src/**/*.vue"]
+  "include": [".yapyak", "src", "src/**/*.vue"]
 }
