@@ -1,5 +1,6 @@
 import type { Persistence, YapyakConfig } from '../type';
-import type { NormalizedPersistence, NormalizedYapyakConfig } from './type';
+import type { NormalizedPersistence } from '../../persistence';
+import type { NormalizedYapyakConfig } from './type';
 
 const DEFAULT_AUTO_TRANSLATE_THRESHOLD = 20;
 const DEFAULT_EXAMPLES = 5;

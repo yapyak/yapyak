@@ -1,4 +1,4 @@
-import type { NormalizedPersistence } from './config/internal';
+import type { NormalizedPersistence } from './persistence';
 
 export const LOCALES: string[] = [];
 export const DEFAULT_LOCALE = 'en';

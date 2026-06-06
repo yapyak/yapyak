@@ -1,5 +1,4 @@
-import type { NormalizedPersistence } from '../config/internal';
-import type { Persistence } from './type';
+import type { NormalizedPersistence, Persistence } from './type';
 
 import { cookie } from './cookie';
 import { localStorage } from './local-storage';

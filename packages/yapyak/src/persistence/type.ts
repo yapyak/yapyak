@@ -4,3 +4,9 @@ export interface Persistence {
   set(locale: string): boolean;
   subscribe?(onChange: () => void): () => void;
 }
+
+export type NormalizedPersistence =
+  | { type: 'cookie'; name: string }
+  | { type: 'local-storage'; key: string }
+  | { type: 'url'; match?: RegExp }
+  | null;

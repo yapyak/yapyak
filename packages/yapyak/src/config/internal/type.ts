@@ -1,12 +1,7 @@
+import type { NormalizedPersistence } from '../../persistence';
 import type { Processor } from '../../processor';
 import type { Translator } from '../../translator';
 import type { FilterPattern } from '../type';
-
-export type NormalizedPersistence =
-  | { type: 'cookie'; name: string }
-  | { type: 'local-storage'; key: string }
-  | { type: 'url'; match?: RegExp }
-  | null;
 
 export interface NormalizedYapyakConfig {
   autoTranslateThreshold: number;

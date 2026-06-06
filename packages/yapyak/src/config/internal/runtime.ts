@@ -1,4 +1,4 @@
-import type { NormalizedPersistence } from './type';
+import type { NormalizedPersistence } from '../../persistence';
 
 export interface DefineRuntimeInput {
   defaultLocale: string;
