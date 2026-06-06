@@ -5,6 +5,7 @@ import type { Translator } from '../translator';
 export type {
   CookiePersistenceOptions,
   LocalStoragePersistenceOptions,
+  NonePersistenceOptions,
   PersistenceConfig,
   UrlPersistenceOptions,
 } from '../persistence';

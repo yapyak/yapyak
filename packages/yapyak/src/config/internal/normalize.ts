@@ -47,29 +47,31 @@ function resolveExamples(config: YapyakConfig): number {
 function normalizePersistenceConfig(
   config: PersistenceConfig | undefined,
 ): NormalizedPersistenceConfig {
-  if (config === undefined) {
+  if (!config) {
     return { type: 'none' };
   }
   if (typeof config === 'string') {
-    if (config === 'cookie') {
-      return { name: DEFAULT_COOKIE_NAME, type: 'cookie' };
+    switch (config) {
+      case 'cookie':
+        return { name: DEFAULT_COOKIE_NAME, type: 'cookie' };
+      case 'local-storage':
+        return { key: DEFAULT_STORAGE_KEY, type: 'local-storage' };
+      case 'url':
+        return { type: 'url' };
+      case 'none':
+        return { type: 'none' };
     }
-    if (config === 'local-storage') {
-      return { key: DEFAULT_STORAGE_KEY, type: 'local-storage' };
-    }
-    if (config === 'url') {
-      return { type: 'url' };
-    }
-    return { type: 'none' };
   }
-  if (config.type === 'cookie') {
-    return { name: config.name ?? DEFAULT_COOKIE_NAME, type: 'cookie' };
+  switch (config.type) {
+    case 'cookie':
+      return { name: config.name ?? DEFAULT_COOKIE_NAME, type: 'cookie' };
+    case 'local-storage':
+      return { key: config.key ?? DEFAULT_STORAGE_KEY, type: 'local-storage' };
+    case 'url':
+      return config.match
+        ? { match: config.match, type: 'url' }
+        : { type: 'url' };
+    case 'none':
+      return { type: 'none' };
   }
-  if (config.type === 'local-storage') {
-    return { key: config.key ?? DEFAULT_STORAGE_KEY, type: 'local-storage' };
-  }
-  if (config.match) {
-    return { match: config.match, type: 'url' };
-  }
-  return { type: 'url' };
 }

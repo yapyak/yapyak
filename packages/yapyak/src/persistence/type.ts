@@ -39,6 +39,11 @@ export interface UrlPersistenceOptions {
   type: 'url';
 }
 
+/** The none persistence configuration. */
+export interface NonePersistenceOptions {
+  type: 'none';
+}
+
 /** The locale persistence strategy. */
 export type PersistenceConfig =
   | 'cookie'
@@ -47,7 +52,8 @@ export type PersistenceConfig =
   | 'none'
   | CookiePersistenceOptions
   | LocalStoragePersistenceOptions
-  | UrlPersistenceOptions;
+  | UrlPersistenceOptions
+  | NonePersistenceOptions;
 
 export type NormalizedPersistenceConfig =
   | { type: 'cookie'; name: string }

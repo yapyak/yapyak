@@ -1,6 +1,7 @@
 export type {
   CookiePersistenceOptions,
   LocalStoragePersistenceOptions,
+  NonePersistenceOptions,
   NormalizedPersistenceConfig,
   Persistence,
   PersistenceConfig,
