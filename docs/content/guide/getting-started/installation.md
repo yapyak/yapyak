@@ -208,6 +208,68 @@ Yapyak writes local state (rename history, in-flight translations, generated typ
 .yapyak/
 ```
 
+## Wire up the generated types
+
+Yapyak generates declaration files into `.yapyak/` for locale narrowing and other type augmentations. They need to be visible to TypeScript.
+
+{% switch group="framework" %}
+
+{% when value="react" %}
+
+Add `.yapyak` to the `include` array in `tsconfig.json`:
+
+```json [tsconfig.json]
+{
+  "include": [".yapyak", "src/**/*"]
+}
+```
+
+{% /when %}
+
+{% when value="vue" %}
+
+Add `.yapyak` to the `include` array in `tsconfig.json`:
+
+```json [tsconfig.json]
+{
+  "include": [".yapyak", "src/**/*"]
+}
+```
+
+{% /when %}
+
+{% when value="svelte" %}
+
+Add a reference at the top of `src/app.d.ts`:
+
+```ts [src/app.d.ts]
+/// <reference types="../.yapyak" />
+
+declare global {
+  namespace App {}
+}
+
+export {};
+```
+
+SvelteKit auto-includes `src/app.d.ts` via its generated tsconfig.
+
+{% /when %}
+
+{% when value="astro" %}
+
+Add `.yapyak` to the `include` array in `tsconfig.json`:
+
+```json [tsconfig.json]
+{
+  "include": [".yapyak", "src/**/*"]
+}
+```
+
+{% /when %}
+
+{% /switch %}
+
 ## Write your first translation
 
 {% switch group="framework" %}
