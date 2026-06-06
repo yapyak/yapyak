@@ -2,8 +2,8 @@ import type { ExtractTParams } from './t-param';
 import type { ExtractTags } from './tag';
 
 import { getLocale } from '../locale';
+import { runTrackers } from '../tracker';
 import { interpolate } from './interpolate';
-import { runTrackers } from './tracker';
 
 /**
  * The params for a source string's placeholders.

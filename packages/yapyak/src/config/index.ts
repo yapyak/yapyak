@@ -1,9 +1,9 @@
 export type {
-  CookiePersistence,
+  CookiePersistenceOptions,
   FilterPattern,
-  LocalStoragePersistence,
-  Persistence,
-  UrlPersistence,
+  LocalStoragePersistenceOptions,
+  PersistenceConfig,
+  UrlPersistenceOptions,
   YapyakConfig,
 } from './type';
 

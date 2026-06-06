@@ -1,4 +1,4 @@
-import { runTrackers } from '../translation';
+import { runTrackers } from '../tracker';
 import { getFormatter } from './cache';
 
 const DEFAULT: Intl.DateTimeFormatOptions = { timeStyle: 'short' };

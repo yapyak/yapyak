@@ -1,7 +1,7 @@
 import { defaultLocale, getLocale } from '../locale';
+import { runTrackers } from '../tracker';
 import { interpolate } from './interpolate';
 import { hasPlaceholder } from './placeholder';
-import { runTrackers } from './tracker';
 
 type Variants = Record<string, string>;
 

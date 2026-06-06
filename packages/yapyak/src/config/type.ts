@@ -1,48 +1,13 @@
+import type { PersistenceConfig } from '../persistence';
 import type { Processor } from '../processor';
 import type { Translator } from '../translator';
 
-/** The cookie persistence configuration. */
-export interface CookiePersistence {
-  /**
-   * The cookie name.
-   *
-   * @defaultValue `'locale'`
-   */
-  name?: string;
-  type: 'cookie';
-}
-
-/** The localStorage persistence configuration. */
-export interface LocalStoragePersistence {
-  /**
-   * The storage key.
-   *
-   * @defaultValue `'locale'`
-   */
-  key?: string;
-  type: 'local-storage';
-}
-
-/** The URL persistence configuration. */
-export interface UrlPersistence {
-  /**
-   * The pattern that matches the locale segment in the URL.
-   *
-   * @defaultValue `/^[/](?<locale>[^/]+)/`
-   */
-  match?: RegExp;
-  type: 'url';
-}
-
-/** The locale persistence strategy. */
-export type Persistence =
-  | 'cookie'
-  | 'local-storage'
-  | 'url'
-  | CookiePersistence
-  | LocalStoragePersistence
-  | UrlPersistence
-  | null;
+export type {
+  CookiePersistenceOptions,
+  LocalStoragePersistenceOptions,
+  PersistenceConfig,
+  UrlPersistenceOptions,
+} from '../persistence';
 
 /** Glob pattern for include/exclude filtering. */
 export type FilterPattern = string | RegExp | Array<string | RegExp>;
@@ -102,7 +67,7 @@ export interface YapyakConfig {
    *
    * @defaultValue `null`
    */
-  persistence?: Persistence;
+  persistence?: PersistenceConfig;
   /**
    * Whether to preserve existing translations when a `t()` call is renamed in place.
    *

@@ -1,5 +1,8 @@
-import type { Persistence, YapyakConfig } from '../type';
-import type { NormalizedPersistence } from '../../persistence';
+import type {
+  NormalizedPersistenceConfig,
+  PersistenceConfig,
+} from '../../persistence';
+import type { YapyakConfig } from '../type';
 import type { NormalizedYapyakConfig } from './type';
 
 const DEFAULT_AUTO_TRANSLATE_THRESHOLD = 20;
@@ -42,8 +45,8 @@ function resolveExamples(config: YapyakConfig): number {
 }
 
 function normalizePersistence(
-  input: Persistence | undefined,
-): NormalizedPersistence {
+  input: PersistenceConfig | undefined,
+): NormalizedPersistenceConfig {
   if (input === null || input === undefined) {
     return null;
   }

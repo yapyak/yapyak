@@ -1,4 +1,4 @@
-import type { NormalizedPersistence } from '../../persistence';
+import type { NormalizedPersistenceConfig } from '../../persistence';
 import type { Processor } from '../../processor';
 import type { Translator } from '../../translator';
 import type { FilterPattern } from '../type';
@@ -11,7 +11,7 @@ export interface NormalizedYapyakConfig {
   exclude: FilterPattern;
   include: FilterPattern;
   localesDir: string;
-  persistence: NormalizedPersistence;
+  persistence: NormalizedPersistenceConfig;
   preserveTranslationsOnRename: boolean;
   processors: Processor[];
   syncHtmlLang: boolean;

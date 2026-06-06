@@ -1,11 +1,11 @@
-import type { NormalizedPersistence, Persistence } from './type';
+import type { NormalizedPersistenceConfig, Persistence } from './type';
 
 import { cookie } from './cookie';
 import { localStorage } from './local-storage';
 import { url } from './url';
 
 export function buildPersistence(
-  config: NormalizedPersistence,
+  config: NormalizedPersistenceConfig,
   locales: string[],
 ): Persistence | null {
   if (config === null) {

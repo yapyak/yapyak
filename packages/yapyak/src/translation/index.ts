@@ -12,4 +12,3 @@ export {
   walkRichText,
 } from './rich-text-walker';
 export { type TFn, type TParams, type TReturn, t } from './t';
-export { registerTracker, runTrackers } from './tracker';
