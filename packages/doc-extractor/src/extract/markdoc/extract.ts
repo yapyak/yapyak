@@ -26,7 +26,7 @@ export async function extractMarkdoc(
     if (page === null) {
       continue;
     }
-    const redirectTarget = pageRedirectTarget(page, path, collectionName);
+    const redirectTarget = resolvePageRedirectTarget(page, path, collectionName);
     if (redirectTarget !== null) {
       redirects.set(path, redirectTarget);
       continue;
@@ -146,7 +146,7 @@ function resolveLinkData(href: string, pageHref: string): LinkData {
   };
 }
 
-function pageRedirectTarget(
+function resolvePageRedirectTarget(
   page: Page,
   path: string,
   collectionName: string,
