@@ -1,0 +1,25 @@
+{
+  "app/routes/locale.tsx": {
+    "At: {when, time, short}": "Klockan: {when, time, short}",
+    "Count: {amount, number, integer}": "Antal: {amount, number, integer}",
+    "Dates and times": "Datum och tider",
+    "English": "Engelska",
+    "Hello there": "Hej där",
+    "Lists": "Listor",
+    "Numbers": "Tal",
+    "Plurals": "Pluralis",
+    "Price: {amount, number, currency EUR}": "Pris: {amount, number, currency EUR}",
+    "Relative time": "Relativ tid",
+    "Rich text": "Formaterad text",
+    "Select": "Val",
+    "Swedish": "Svenska",
+    "Switch language": "Byt språk",
+    "This is the {name} example.": "Detta är {name}-exemplet.",
+    "Total: {amount, number, percent}": "Totalt: {amount, number, percent}",
+    "Translate <b>everything</b> with <link>yapyak</link>": "Översätt <b>allt</b> med <link>yapyak</link>",
+    "Updated: {when, date, long}": "Uppdaterad: {when, date, long}",
+    "Updated: {when, date, short}": "Uppdaterad: {when, date, short}",
+    "You have {count, plural, one {# message} other {# messages}}": "Du har {count, plural, one {# meddelande} other {# meddelanden}}",
+    "{role, select, admin {Administrator} editor {Editor} other {Viewer}}": "{role, select, admin {Administratör} editor {Redaktör} other {Besökare}}"
+  }
+}
