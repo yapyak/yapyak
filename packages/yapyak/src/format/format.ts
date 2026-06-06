@@ -1,3 +1,5 @@
+import type { Locale } from '../locale';
+
 import { getLocale } from '../locale';
 import { formatCurrency } from './currency';
 import { formatDate } from './date';
@@ -56,7 +58,7 @@ export interface Format {
    *
    * @param locale - The locale code, e.g. `'sv'`.
    */
-  in(locale: string): Format;
+  in(locale: Locale): Format;
 
   /**
    * Formats a list of strings as an enumeration for the active locale.
