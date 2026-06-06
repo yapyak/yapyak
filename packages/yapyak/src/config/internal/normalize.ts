@@ -25,7 +25,7 @@ export function normalizeYapyakConfig(
     exclude: config.exclude ?? DEFAULT_EXCLUDE,
     include: config.include ?? DEFAULT_INCLUDE,
     localesDir: config.localesDir ?? DEFAULT_LOCALES_DIR,
-    persistence: normalizePersistence(config.persistence),
+    persistence: normalizePersistenceConfig(config.persistence),
     preserveTranslationsOnRename:
       config.preserveTranslationsOnRename ?? !config.translator,
     processors: config.processors ?? [],
@@ -44,29 +44,29 @@ function resolveExamples(config: YapyakConfig): number {
   return DEFAULT_EXAMPLES;
 }
 
-function normalizePersistence(
-  input: PersistenceConfig | undefined,
+function normalizePersistenceConfig(
+  config: PersistenceConfig | undefined,
 ): NormalizedPersistenceConfig {
-  if (input === null || input === undefined) {
+  if (config === null || config === undefined) {
     return null;
   }
-  if (typeof input === 'string') {
-    if (input === 'cookie') {
+  if (typeof config === 'string') {
+    if (config === 'cookie') {
       return { name: DEFAULT_COOKIE_NAME, type: 'cookie' };
     }
-    if (input === 'local-storage') {
+    if (config === 'local-storage') {
       return { key: DEFAULT_STORAGE_KEY, type: 'local-storage' };
     }
     return { type: 'url' };
   }
-  if (input.type === 'cookie') {
-    return { name: input.name ?? DEFAULT_COOKIE_NAME, type: 'cookie' };
+  if (config.type === 'cookie') {
+    return { name: config.name ?? DEFAULT_COOKIE_NAME, type: 'cookie' };
   }
-  if (input.type === 'local-storage') {
-    return { key: input.key ?? DEFAULT_STORAGE_KEY, type: 'local-storage' };
+  if (config.type === 'local-storage') {
+    return { key: config.key ?? DEFAULT_STORAGE_KEY, type: 'local-storage' };
   }
-  if (input.match) {
-    return { match: input.match, type: 'url' };
+  if (config.match) {
+    return { match: config.match, type: 'url' };
   }
   return { type: 'url' };
 }

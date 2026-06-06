@@ -2,7 +2,7 @@ import {
   DEFAULT_LOCALE,
   DETECT_ACCEPT_LANGUAGE,
   LOCALES,
-  PERSISTENCE,
+  PERSISTENCE_CONFIG,
   SYNC_HTML_LANG,
 } from 'yapyak/runtime';
 
@@ -12,7 +12,7 @@ import { resolveLocale } from './resolve';
 
 let hasWarnedUninitialized = false;
 
-const persistence = buildPersistence(PERSISTENCE, LOCALES);
+const persistence = buildPersistence(PERSISTENCE_CONFIG, LOCALES);
 
 function getInitialLocale(): string {
   const persisted = persistence?.get();
