@@ -1,4 +1,14 @@
 {
-  "extends": "@yapyak/typescript-config/svelte",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2023",
+    "types": ["vite/client"],
+    "verbatimModuleSyntax": true
+  },
   "include": [".yapyak", "src", "src/**/*.svelte"]
 }

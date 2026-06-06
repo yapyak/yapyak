@@ -15,7 +15,6 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "catalog:",
     "@yapyak/ollama": "workspace:*",
-    "@yapyak/typescript-config": "workspace:*",
     "@yapyak/vite": "workspace:*",
     "typescript": "catalog:",
     "vite": "catalog:"

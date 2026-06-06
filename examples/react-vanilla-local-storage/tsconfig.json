@@ -1,4 +1,15 @@
 {
-  "extends": "@yapyak/typescript-config/react",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2023",
+    "types": ["vite/client"],
+    "verbatimModuleSyntax": true
+  },
   "include": [".yapyak", "src"]
 }
