@@ -6,7 +6,19 @@ export interface Persistence {
   subscribe?(onChange: () => void): () => void;
 }
 
-/** The cookie persistence configuration. */
+/**
+ * The cookie persistence configuration.
+ *
+ * @example Store locale under a custom cookie name
+ * ```ts [yapyak.config.ts]
+ * import { defineConfig } from 'yapyak';
+ *
+ * export default defineConfig({
+ *   defaultLocale: 'sv',
+ *   persistence: { type: 'cookie', name: 'lang' },
+ * });
+ * ```
+ */
 export interface CookiePersistenceOptions {
   /**
    * The cookie name.
@@ -17,7 +29,19 @@ export interface CookiePersistenceOptions {
   type: 'cookie';
 }
 
-/** The localStorage persistence configuration. */
+/**
+ * The localStorage persistence configuration.
+ *
+ * @example Store locale under a custom storage key
+ * ```ts [yapyak.config.ts]
+ * import { defineConfig } from 'yapyak';
+ *
+ * export default defineConfig({
+ *   defaultLocale: 'sv',
+ *   persistence: { type: 'local-storage', key: 'lang' },
+ * });
+ * ```
+ */
 export interface LocalStoragePersistenceOptions {
   /**
    * The storage key.
@@ -28,7 +52,22 @@ export interface LocalStoragePersistenceOptions {
   type: 'local-storage';
 }
 
-/** The URL persistence configuration. */
+/**
+ * The URL persistence configuration.
+ *
+ * @example Read locale from a query parameter
+ * ```ts [yapyak.config.ts]
+ * import { defineConfig } from 'yapyak';
+ *
+ * export default defineConfig({
+ *   defaultLocale: 'sv',
+ *   persistence: {
+ *     type: 'url',
+ *     match: /[?&]lang=(?<locale>[^&]+)/,
+ *   },
+ * });
+ * ```
+ */
 export interface UrlPersistenceOptions {
   /**
    * The pattern that matches the locale segment in the URL.
