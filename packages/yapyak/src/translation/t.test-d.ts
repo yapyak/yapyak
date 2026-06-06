@@ -1,3 +1,4 @@
+import type { Locale } from '../locale';
 import type { TAtChain, TInChain, TReturn } from './t';
 
 import { describe, expectTypeOf, it } from 'vitest';
@@ -65,5 +66,27 @@ describe('t', () => {
 
   it('keeps the `at` return assignable to `string`', () => {
     expectTypeOf(t.at('button', 'Save')).toExtend<string>();
+  });
+
+  it('holds a single source argument when source has no placeholders', () => {
+    expectTypeOf(t<'Save'>).parameters.toEqualTypeOf<['Save']>();
+  });
+
+  it('holds source and a required params tuple when source has placeholders', () => {
+    expectTypeOf(t<'Hello, {name}!'>).parameters.toEqualTypeOf<
+      ['Hello, {name}!', { name: string | number }]
+    >();
+  });
+
+  it('holds locale, source, and params on `t.in()` with placeholders', () => {
+    expectTypeOf(t.in<'Hello, {name}!'>).parameters.toEqualTypeOf<
+      [Locale, 'Hello, {name}!', { name: string | number }]
+    >();
+  });
+
+  it('holds context, source, and params on `t.at()` with placeholders', () => {
+    expectTypeOf(t.at<'Hello, {name}!'>).parameters.toEqualTypeOf<
+      [string, 'Hello, {name}!', { name: string | number }]
+    >();
   });
 });

@@ -18,6 +18,9 @@ export type TParams<T extends string> = T extends `${string}{${string}`
   ? ExtractTParams<T>
   : never;
 
+type TArgs<T extends string> =
+  TParams<T> extends never ? [] : [params: TParams<T>];
+
 declare const brand: unique symbol;
 
 /**
@@ -49,7 +52,7 @@ export interface TInChain {
   at<T extends string>(
     context: string,
     source: T,
-    params?: TParams<T>,
+    ...args: TArgs<T>
   ): TReturn<ExtractTags<T>>;
 }
 
@@ -70,7 +73,7 @@ export interface TAtChain {
   in<T extends string>(
     locale: Locale,
     source: T,
-    params?: TParams<T>,
+    ...args: TArgs<T>
   ): TReturn<ExtractTags<T>>;
 }
 
@@ -89,12 +92,12 @@ export interface TFn {
    *
    * @param context - The disambiguating context. Must match `[a-z][a-z0-9-]*`.
    * @param source - The source string literal, supplied to translate inline.
-   * @param params - The placeholder params. Required when the source has placeholders.
+   * @param args - The placeholder params tuple. Required when the source has placeholders.
    */
   at<T extends string>(
     context: string,
     source: T,
-    params?: TParams<T>,
+    ...args: TArgs<T>
   ): TReturn<ExtractTags<T>>;
   at(context: string): TAtChain;
 
@@ -103,21 +106,21 @@ export interface TFn {
    *
    * @param locale - The locale code, e.g. `'sv'`.
    * @param source - The source string literal, supplied to translate inline.
-   * @param params - The placeholder params. Required when the source has placeholders.
+   * @param args - The placeholder params tuple. Required when the source has placeholders.
    */
   in<T extends string>(
     locale: Locale,
     source: T,
-    params?: TParams<T>,
+    ...args: TArgs<T>
   ): TReturn<ExtractTags<T>>;
   in(locale: Locale): TInChain;
   /**
    * Translates `source` for the active locale.
    *
    * @param source - The source string literal.
-   * @param params - The placeholder params. Required when the source has placeholders.
+   * @param args - The placeholder params tuple. Required when the source has placeholders.
    */
-  <T extends string>(source: T, params?: TParams<T>): TReturn<ExtractTags<T>>;
+  <T extends string>(source: T, ...args: TArgs<T>): TReturn<ExtractTags<T>>;
 }
 
 /**
@@ -160,75 +163,94 @@ export interface TFn {
 export const t: TFn = createTFn();
 
 function createTFn(boundLocale?: string): TFn {
-  const translate = <T extends string>(
-    source: T,
-    params?: TParams<T>,
-  ): TReturn<ExtractTags<T>> => {
+  function makeTranslation(
+    locale: string | undefined,
+    source: string,
+    params: Record<string, unknown> | undefined,
+  ): string {
     runTrackers();
     if (params === undefined) {
-      return source as unknown as TReturn<ExtractTags<T>>;
+      return source;
     }
-    const locale = boundLocale ?? getLocale();
-    return interpolate(
+    return interpolate(source, params, locale ?? getLocale());
+  }
+
+  const translate = <T extends string>(
+    source: T,
+    ...args: TArgs<T>
+  ): TReturn<ExtractTags<T>> =>
+    makeTranslation(
+      boundLocale,
       source,
-      params as Record<string, unknown>,
-      locale,
-    ) as unknown as TReturn<ExtractTags<T>>;
-  };
+      args[0] as Record<string, unknown> | undefined,
+    ) as TReturn<ExtractTags<T>>;
 
   function inMethod<T extends string>(
     locale: string,
     source: T,
-    params?: TParams<T>,
+    ...args: TArgs<T>
   ): TReturn<ExtractTags<T>>;
   function inMethod(locale: string): TInChain;
-  function inMethod<T extends string>(
+  function inMethod(
     locale: string,
-    source?: T,
-    params?: TParams<T>,
-  ): TReturn<ExtractTags<T>> | TInChain {
+    source?: string,
+    ...args: unknown[]
+  ): unknown {
     if (source === undefined) {
       return {
-        at: <TSource extends string>(
+        at: (
           context: string,
-          atSource: TSource,
-          atParams?: TParams<TSource>,
-        ): TReturn<ExtractTags<TSource>> => {
+          atSource: string,
+          ...atArgs: unknown[]
+        ): string => {
           void context;
-          const scoped = createTFn(locale);
-          return scoped(atSource, atParams);
+          return makeTranslation(
+            locale,
+            atSource,
+            atArgs[0] as Record<string, unknown> | undefined,
+          );
         },
       };
     }
-    const scoped = createTFn(locale);
-    return scoped(source, params);
+    return makeTranslation(
+      locale,
+      source,
+      args[0] as Record<string, unknown> | undefined,
+    );
   }
 
   function atMethod<T extends string>(
     context: string,
     source: T,
-    params?: TParams<T>,
+    ...args: TArgs<T>
   ): TReturn<ExtractTags<T>>;
   function atMethod(context: string): TAtChain;
-  function atMethod<T extends string>(
+  function atMethod(
     context: string,
-    source?: T,
-    params?: TParams<T>,
-  ): TReturn<ExtractTags<T>> | TAtChain {
+    source?: string,
+    ...args: unknown[]
+  ): unknown {
     void context;
     if (source === undefined) {
       return {
-        in: <TSource extends string>(
+        in: (
           locale: string,
-          inSource: TSource,
-          inParams?: TParams<TSource>,
-        ): TReturn<ExtractTags<TSource>> => {
-          const scoped = createTFn(locale);
-          return scoped(inSource, inParams);
+          inSource: string,
+          ...inArgs: unknown[]
+        ): string => {
+          return makeTranslation(
+            locale,
+            inSource,
+            inArgs[0] as Record<string, unknown> | undefined,
+          );
         },
       };
     }
-    return translate(source, params);
+    return makeTranslation(
+      boundLocale,
+      source,
+      args[0] as Record<string, unknown> | undefined,
+    );
   }
 
   return Object.assign(translate, {
