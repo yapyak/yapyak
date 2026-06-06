@@ -8,7 +8,7 @@ export function buildPersistence(
   config: NormalizedPersistenceConfig,
   locales: string[],
 ): Persistence | null {
-  if (config === null) {
+  if (config.type === 'none') {
     return null;
   }
   if (config.type === 'cookie') {

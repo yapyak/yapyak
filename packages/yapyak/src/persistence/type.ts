@@ -44,13 +44,13 @@ export type PersistenceConfig =
   | 'cookie'
   | 'local-storage'
   | 'url'
+  | 'none'
   | CookiePersistenceOptions
   | LocalStoragePersistenceOptions
-  | UrlPersistenceOptions
-  | null;
+  | UrlPersistenceOptions;
 
 export type NormalizedPersistenceConfig =
   | { type: 'cookie'; name: string }
   | { type: 'local-storage'; key: string }
   | { type: 'url'; match?: RegExp }
-  | null;
+  | { type: 'none' };

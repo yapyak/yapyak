@@ -65,7 +65,7 @@ export interface YapyakConfig {
   /**
    * The locale persistence strategy.
    *
-   * @defaultValue `null`
+   * @defaultValue `'none'`
    */
   persistence?: PersistenceConfig;
   /**

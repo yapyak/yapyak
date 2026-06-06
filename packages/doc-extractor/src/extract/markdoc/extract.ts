@@ -26,7 +26,11 @@ export async function extractMarkdoc(
     if (page === null) {
       continue;
     }
-    const redirectTarget = resolvePageRedirectTarget(page, path, collectionName);
+    const redirectTarget = resolvePageRedirectTarget(
+      page,
+      path,
+      collectionName,
+    );
     if (redirectTarget !== null) {
       redirects.set(path, redirectTarget);
       continue;
@@ -71,9 +75,7 @@ function resolveBlock(block: Block, pageHref: string): Block {
   if (block.type === 'table') {
     return {
       ...block,
-      body: block.body.map(
-        (row) => resolveBlock(row, pageHref) as typeof row,
-      ),
+      body: block.body.map((row) => resolveBlock(row, pageHref) as typeof row),
       head: block.head
         ? (resolveBlock(block.head, pageHref) as typeof block.head)
         : null,
@@ -82,9 +84,7 @@ function resolveBlock(block: Block, pageHref: string): Block {
   if (block.type === 'code-group') {
     return {
       ...block,
-      tabs: block.tabs.map(
-        (tab) => resolveBlock(tab, pageHref) as typeof tab,
-      ),
+      tabs: block.tabs.map((tab) => resolveBlock(tab, pageHref) as typeof tab),
     };
   }
   if (block.type === 'switch') {

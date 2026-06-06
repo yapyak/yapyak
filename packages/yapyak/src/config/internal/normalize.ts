@@ -47,8 +47,8 @@ function resolveExamples(config: YapyakConfig): number {
 function normalizePersistenceConfig(
   config: PersistenceConfig | undefined,
 ): NormalizedPersistenceConfig {
-  if (config === null || config === undefined) {
-    return null;
+  if (config === undefined) {
+    return { type: 'none' };
   }
   if (typeof config === 'string') {
     if (config === 'cookie') {
@@ -57,7 +57,10 @@ function normalizePersistenceConfig(
     if (config === 'local-storage') {
       return { key: DEFAULT_STORAGE_KEY, type: 'local-storage' };
     }
-    return { type: 'url' };
+    if (config === 'url') {
+      return { type: 'url' };
+    }
+    return { type: 'none' };
   }
   if (config.type === 'cookie') {
     return { name: config.name ?? DEFAULT_COOKIE_NAME, type: 'cookie' };

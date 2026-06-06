@@ -4,7 +4,7 @@ vi.mock('yapyak/runtime', () => ({
   DEFAULT_LOCALE: 'en',
   DETECT_ACCEPT_LANGUAGE: false,
   LOCALES: ['en', 'sv', 'fr'],
-  PERSISTENCE_CONFIG: null,
+  PERSISTENCE_CONFIG: { type: 'none' },
   SYNC_HTML_LANG: false,
 }));
 

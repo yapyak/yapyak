@@ -37,7 +37,7 @@ describe('buildPersistence', () => {
     expect(persistence).not.toBeNull();
   });
 
-  it('returns `null` when config is `null`', () => {
-    expect(buildPersistence(null, LOCALES)).toBeNull();
+  it('returns `null` when config type is `none`', () => {
+    expect(buildPersistence({ type: 'none' }, LOCALES)).toBeNull();
   });
 });

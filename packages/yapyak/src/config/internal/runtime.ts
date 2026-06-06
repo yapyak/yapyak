@@ -19,8 +19,8 @@ export function defineRuntime(input: DefineRuntimeInput): string {
 }
 
 function emitPersistenceConfig(config: NormalizedPersistenceConfig): string {
-  if (config === null) {
-    return 'null';
+  if (config.type === 'none') {
+    return `{ type: 'none' }`;
   }
   if (config.type === 'cookie') {
     return `{ type: 'cookie', name: ${JSON.stringify(config.name)} }`;
