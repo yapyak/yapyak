@@ -4,12 +4,23 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./extract": "./src/extract/index.ts",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
     "./ambient": "./src/ambient.d.ts",
-    "./vite": "./src/vite.ts"
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "default": "./dist/vite.js"
+    }
   },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "src/ambient.d.ts"
+  ],
   "scripts": {
+    "build": "tsup",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -18,7 +29,9 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
+    "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
+    "tsup": "catalog:",
     "typescript": "catalog:"
   },
   "peerDependencies": {

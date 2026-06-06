@@ -57,7 +57,6 @@ export default defineConfig({
       },
     }),
     react(),
-
     docExtractor({
       collections: {
         guide: {
