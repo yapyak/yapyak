@@ -1,5 +1,5 @@
-node_modules
-dist
 .tanstack
-src/routeTree.gen.ts
 .yapyak/
+dist
+node_modules
+src/routeTree.gen.ts

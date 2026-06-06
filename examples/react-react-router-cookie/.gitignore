@@ -1,4 +1,4 @@
-node_modules
 .react-router
-build
 .yapyak/
+build
+node_modules

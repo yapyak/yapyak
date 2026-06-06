@@ -1,4 +1,4 @@
-node_modules
-dist
 .astro/
 .yapyak/
+dist
+node_modules
