@@ -5,6 +5,8 @@ order: 8
 
 yapyak emits diagnostic codes prefixed `YPK` for invalid call sites, malformed translations, and unsupported features. Errors block the build. Warnings surface in the log but do not block.
 
+Several diagnostics are also surfaced as **TypeScript errors** at the call site — they show up under a red squiggle in the IDE before you save. Look for the "Also a TS error" note on each code below.
+
 ## Call-site
 
 ### YPK101
@@ -31,6 +33,8 @@ t('Hi {name}', { name });      // ✓
 ### YPK103
 
 Source is an empty string (error). Pass a non-empty string literal.
+
+> **Also a TS error.** `t('')` fails type-checking with `Invalid source: must not be an empty string`.
 
 ### YPK104
 
@@ -75,9 +79,13 @@ Add `other {<text>}` as one of the branches:
 t('{n, plural, one {# item} other {# items}}', { n });
 ```
 
+> **Also a TS error.** `t('{n, plural, one {x}}')` fails type-checking with `Plural "{n}" is missing the required 'other' branch`.
+
 ### YPK203
 
 Unsupported ICU feature (error). See [ICU § Limits](./icu#limits) for the full list of unsupported features and their workarounds.
+
+> **Also a TS error (partial).** Unknown ICU format keywords (e.g. `{x, plurral, ...}`) fail type-checking with `Unknown ICU format "plurral" — expected one of: plural, selectordinal, select, number, date, time`. Other YPK203 variants (number skeleton, plural offset, etc.) are caught only at build time.
 
 ## Locale files
 
@@ -128,6 +136,8 @@ The `t.at()` context contains an `'@'` (error). `'@'` is reserved as the source/
 t.at('btn@x', 'Open');        // ✗ YPK402 (contains '@')
 t.at('primary-cta', 'Open');  // ✓
 ```
+
+> **Also a TS error.** `t.at('btn@x', ...)` fails type-checking with `Invalid context "btn@x": '@' is reserved as the source/context separator`.
 
 ### YPK403
 

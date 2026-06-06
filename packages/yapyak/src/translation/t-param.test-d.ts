@@ -152,11 +152,11 @@ describe('ExtractTParams', () => {
     expectTypeOf<{ x: Date }>().toExtend<Result>();
   });
 
-  it('infers `unknown` for a placeholder that starts with a digit', () => {
+  it('preserves `unknown` for a placeholder that starts with a digit', () => {
     expectTypeOf<ExtractTParams<'Item {0}'>>().toEqualTypeOf<unknown>();
   });
 
-  it('infers `unknown` for a placeholder with non-identifier characters', () => {
+  it('preserves `unknown` for a placeholder with non-identifier characters', () => {
     expectTypeOf<ExtractTParams<'Hi {user.name}'>>().toEqualTypeOf<unknown>();
   });
 });

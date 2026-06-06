@@ -1,10 +1,10 @@
-type Trim<T extends string> = T extends ` ${infer Rest}`
-  ? Trim<Rest>
-  : T extends `${infer Rest} `
-    ? Trim<Rest>
+export type Trim<T extends string> = T extends ` ${infer TRest}`
+  ? Trim<TRest>
+  : T extends `${infer TRest} `
+    ? Trim<TRest>
     : T;
 
-type NonIdentifierChar =
+export type NonIdentifierChar =
   | ' '
   | '.'
   | ','
@@ -22,6 +22,8 @@ type NonIdentifierChar =
   | '['
   | ']';
 
+export type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+
 type SimpleParam<T extends string> =
   Trim<T> extends ''
     ? unknown
@@ -31,7 +33,7 @@ type SimpleParam<T extends string> =
         ? unknown
         : Trim<T> extends `#${string}`
           ? unknown
-          : Trim<T> extends `${0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}${string}`
+          : Trim<T> extends `${Digit}${string}`
             ? unknown
             : { [Key in Trim<T>]: string | number };
 

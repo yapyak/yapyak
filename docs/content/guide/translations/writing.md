@@ -134,3 +134,15 @@ t.in('sv', 'Hello');          // OK
 | [YPK405](./diagnostics#ypk405) | Modifier captured instead of used inline |
 
 See [Diagnostics](./diagnostics) for the full code list, including ICU and locale-file validation codes.
+
+### TypeScript-level errors
+
+Several validations are also enforced by TypeScript at the call site — you get a red squiggle in the IDE before the file saves, with a human-readable error sentence inline. Covered today:
+
+- **YPK103** — empty source string
+- **YPK202** — missing `'other'` branch in plural / selectordinal / select
+- **YPK203** — unknown ICU format keyword (`plurral`, `selct`, …)
+- **YPK402** — `t.at()` context containing `'@'`
+- **Placeholder name validity** — digit-first names (`{0}`), names with punctuation (`{user.name}`), spaces (`{first name}`), empty (`{}`)
+
+Other diagnostics surface at build time only — the compiler catches them when you run `pnpm yapyak compile` or via the Vite plugin.

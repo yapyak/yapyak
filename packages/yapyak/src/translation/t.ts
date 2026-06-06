@@ -1,6 +1,8 @@
 import type { Locale } from '../locale';
 import type { ExtractTParams } from './t-param';
 import type { ExtractTags } from './tag';
+import type { ContextSeparatorError } from './type-error';
+import type { ValidateSource } from './validate-source';
 
 import { getLocale } from '../locale';
 import { runTrackers } from '../tracker';
@@ -24,7 +26,7 @@ type TArgs<T extends string> =
 type ValidContext<T extends string> = string extends T
   ? T
   : T extends `${string}@${string}`
-    ? `Invalid context "${T}": '@' is reserved as the source/context separator`
+    ? ContextSeparatorError<T>
     : T;
 
 declare const brand: unique symbol;
@@ -57,7 +59,7 @@ export type TReturn<T extends string = never> = [T] extends [never]
 export interface TInChain {
   at<TContext extends string, TSource extends string>(
     context: ValidContext<TContext>,
-    source: TSource,
+    source: ValidateSource<TSource>,
     ...args: TArgs<TSource>
   ): TReturn<ExtractTags<TSource>>;
 }
@@ -78,7 +80,7 @@ export interface TInChain {
 export interface TAtChain {
   in<T extends string>(
     locale: Locale,
-    source: T,
+    source: ValidateSource<T>,
     ...args: TArgs<T>
   ): TReturn<ExtractTags<T>>;
 }
@@ -102,10 +104,10 @@ export interface TFn {
    */
   at<TContext extends string, TSource extends string>(
     context: ValidContext<TContext>,
-    source: TSource,
+    source: ValidateSource<TSource>,
     ...args: TArgs<TSource>
   ): TReturn<ExtractTags<TSource>>;
-  at<TContext extends string>(context: ValidContext<TContext>): TAtChain;
+  at<T extends string>(context: ValidContext<T>): TAtChain;
 
   /**
    * Forces a fixed locale for one translation call, or returns a chain that requires `.at()` to complete.
@@ -116,7 +118,7 @@ export interface TFn {
    */
   in<T extends string>(
     locale: Locale,
-    source: T,
+    source: ValidateSource<T>,
     ...args: TArgs<T>
   ): TReturn<ExtractTags<T>>;
   in(locale: Locale): TInChain;
@@ -126,7 +128,10 @@ export interface TFn {
    * @param source - The source string literal.
    * @param args - The placeholder params tuple. Required when the source has placeholders.
    */
-  <T extends string>(source: T, ...args: TArgs<T>): TReturn<ExtractTags<T>>;
+  <T extends string>(
+    source: ValidateSource<T>,
+    ...args: TArgs<T>
+  ): TReturn<ExtractTags<T>>;
 }
 
 /**
