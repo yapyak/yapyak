@@ -16,13 +16,11 @@ import { getPendingResponseHeaders, withRequest } from 'yapyak/adapter';
  * export const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];
  * ```
  */
-export const middleware: MiddlewareFunction = ({ request }, next) =>
+export const middleware: MiddlewareFunction<Response> = ({ request }, next) =>
   withRequest(request, async () => {
     const result = await next();
-    if (result instanceof Response) {
-      for (const [name, value] of getPendingResponseHeaders()) {
-        result.headers.append(name, value);
-      }
+    for (const [name, value] of getPendingResponseHeaders()) {
+      result.headers.append(name, value);
     }
     return result;
   });
