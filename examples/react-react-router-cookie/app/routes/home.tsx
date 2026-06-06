@@ -1,8 +1,8 @@
 import type { Route } from './+types/home';
 
-import { useLocale } from '@yapyak/react';
+import { RichText, useLocale } from '@yapyak/react';
 import { Form } from 'react-router';
-import { locales, setLocale, t } from 'yapyak';
+import { format, locales, setLocale, t } from 'yapyak';
 
 const date = new Date('2024-01-01T08:30:00Z');
 
@@ -49,6 +49,22 @@ export default function Home() {
           '{role, select, admin {Administrator} editor {Editor} other {Viewer}}',
           { role: 'editor' },
         )}
+      </p>
+
+      <h2>{t('Lists')}</h2>
+      <p>{format.list(['apple', 'pear', 'banana'])}</p>
+
+      <h2>{t('Relative time')}</h2>
+      <p>{format.relativeTime(-2, 'day')}</p>
+      <p>{format.relativeTime(3, 'hour')}</p>
+
+      <h2>{t('Rich text')}</h2>
+      <p>
+        <RichText
+          b={(children) => <strong>{children}</strong>}
+          link={(children) => <a href="https://yapyak.dev">{children}</a>}
+          value={t('Translate <b>everything</b> with <link>yapyak</link>')}
+        />
       </p>
 
       <h2>{t('Switch language')}</h2>

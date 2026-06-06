@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t, locales } from "yapyak";
+  import { format, t, locales } from "yapyak";
   import { locale, RichText } from "@yapyak/svelte";
 
   const date = new Date("2024-01-01T08:30:00Z");
@@ -37,6 +37,13 @@
       role: "editor",
     })}
   </p>
+
+  <h2>{t("Lists")}</h2>
+  <p>{format.list(["apple", "pear", "banana"])}</p>
+
+  <h2>{t("Relative time")}</h2>
+  <p>{format.relativeTime(-2, "day")}</p>
+  <p>{format.relativeTime(3, "hour")}</p>
 
   <h2>{t("Rich text")}</h2>
   <p>

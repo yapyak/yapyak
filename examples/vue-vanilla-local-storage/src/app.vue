@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { locales, t } from 'yapyak';
+import { format, locales, t } from 'yapyak';
 import { locale, RichText } from '@yapyak/vue';
 
 const date = new Date('2024-01-01T08:30:00Z');
@@ -28,6 +28,13 @@ const date = new Date('2024-01-01T08:30:00Z');
 
     <h2>{{ t('Select') }}</h2>
     <p>{{ t('{role, select, admin {Administrator} editor {Editor} other {Viewer}}', { role: 'editor' }) }}</p>
+
+    <h2>{{ t('Lists') }}</h2>
+    <p>{{ format.list(['apple', 'pear', 'banana']) }}</p>
+
+    <h2>{{ t('Relative time') }}</h2>
+    <p>{{ format.relativeTime(-2, 'day') }}</p>
+    <p>{{ format.relativeTime(3, 'hour') }}</p>
 
     <h2>{{ t('Rich text') }}</h2>
     <p>
