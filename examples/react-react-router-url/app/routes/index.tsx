@@ -1,8 +1,8 @@
-import { redirect } from 'react-router';
+import { replace } from 'react-router';
 import { defaultLocale } from 'yapyak';
 
 export async function loader() {
-  throw redirect(`/${defaultLocale}`);
+  throw replace(`/${defaultLocale}`);
 }
 
 export default function Index() {

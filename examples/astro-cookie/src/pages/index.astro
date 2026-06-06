@@ -12,6 +12,22 @@ const currentLocale = getLocale();
   <h1>{t('Hello there')}</h1>
   <p>{t('This is the {name} example.', { name: 'yapyak' })}</p>
 
+  <h2>{t('Switch language')}</h2>
+  <form method="POST" action="/api/locale">
+    <div style="display: flex; gap: 8px;">
+      {locales.map((value) => (
+        <button
+          type="submit"
+          name="locale"
+          value={value}
+          disabled={value === currentLocale}
+        >
+          {value === 'sv' ? t('Swedish') : t('English')}
+        </button>
+      ))}
+    </div>
+  </form>
+
   <h2>{t('Plurals')}</h2>
   <p>
     {t('You have {count, plural, one {# message} other {# messages}}', { count: 3 })}
@@ -50,20 +66,4 @@ const currentLocale = getLocale();
       link={(children) => `<a href="https://yapyak.dev">${children}</a>`}
     />
   </p>
-
-  <h2>{t('Switch language')}</h2>
-  <form method="POST" action="/api/locale">
-    <div style="display: flex; gap: 8px;">
-      {locales.map((value) => (
-        <button
-          type="submit"
-          name="locale"
-          value={value}
-          disabled={value === currentLocale}
-        >
-          {value === 'sv' ? t('Swedish') : t('English')}
-        </button>
-      ))}
-    </div>
-  </form>
 </Layout>

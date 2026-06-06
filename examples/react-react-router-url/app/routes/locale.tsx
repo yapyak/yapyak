@@ -20,6 +20,19 @@ export default function LocalePage() {
       <h1>{t('Hello there')}</h1>
       <p>{t('This is the {name} example.', { name: 'yapyak' })}</p>
 
+      <h2>{t('Switch language')}</h2>
+      <div style={{ display: 'flex', gap: 8 }}>
+        {locales.map((value) => (
+          <Link
+            aria-current={value === locale ? 'page' : undefined}
+            key={value}
+            to={`/${value}`}
+          >
+            {value === 'sv' ? t('Swedish') : t('English')}
+          </Link>
+        ))}
+      </div>
+
       <h2>{t('Plurals')}</h2>
       <p>
         {t('You have {count, plural, one {# message} other {# messages}}', {
@@ -65,19 +78,6 @@ export default function LocalePage() {
           value={t('Translate <b>everything</b> with <link>yapyak</link>')}
         />
       </p>
-
-      <h2>{t('Switch language')}</h2>
-      <div style={{ display: 'flex', gap: 8 }}>
-        {locales.map((value) => (
-          <Link
-            aria-current={value === locale ? 'page' : undefined}
-            key={value}
-            to={`/${value}`}
-          >
-            {value === 'sv' ? t('Swedish') : t('English')}
-          </Link>
-        ))}
-      </div>
     </main>
   );
 }

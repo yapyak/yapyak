@@ -9,6 +9,19 @@
   <h1>{t("Hello there")}</h1>
   <p>{t("This is the {name} example.", { name: "yapyak" })}</p>
 
+  <h2>{t("Switch language")}</h2>
+  <div style="display: flex; gap: 8px;">
+    {#each locales as value}
+      <button
+        type="button"
+        disabled={value === locale.current}
+        onclick={() => (locale.current = value)}
+      >
+        {value === "sv" ? t("Swedish") : t("English")}
+      </button>
+    {/each}
+  </div>
+
   <h2>{t("Plurals")}</h2>
   <p>
     {t("You have {count, plural, one {# message} other {# messages}}", {
@@ -56,17 +69,4 @@
       {/snippet}
     </RichText>
   </p>
-
-  <h2>{t("Switch language")}</h2>
-  <div style="display: flex; gap: 8px;">
-    {#each locales as value}
-      <button
-        type="button"
-        disabled={value === locale.current}
-        onclick={() => (locale.current = value)}
-      >
-        {value === "sv" ? t("Swedish") : t("English")}
-      </button>
-    {/each}
-  </div>
 </main>

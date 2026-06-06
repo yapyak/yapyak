@@ -19,6 +19,40 @@ export default function Home() {
       <h1>{t('Hello there')}</h1>
       <p>{t('This is the {name} example.', { name: 'yapyak' })}</p>
 
+      <h2>{t('Switch language')}</h2>
+
+      <p>{t('From the client')}</p>
+      <div style={{ display: 'flex', gap: 8 }}>
+        {locales.map((value) => (
+          <button
+            disabled={value === locale}
+            key={value}
+            onClick={() => setLocale(value)}
+            type="button"
+          >
+            {value === 'sv' ? t('Swedish') : t('English')}
+          </button>
+        ))}
+      </div>
+
+      <p>{t('From the server')}</p>
+      <Form
+        method="post"
+        style={{ display: 'flex', gap: 8 }}
+      >
+        {locales.map((value) => (
+          <button
+            disabled={value === locale}
+            key={value}
+            name="locale"
+            type="submit"
+            value={value}
+          >
+            {value === 'sv' ? t('Swedish') : t('English')}
+          </button>
+        ))}
+      </Form>
+
       <h2>{t('Plurals')}</h2>
       <p>
         {t('You have {count, plural, one {# message} other {# messages}}', {
@@ -64,40 +98,6 @@ export default function Home() {
           value={t('Translate <b>everything</b> with <link>yapyak</link>')}
         />
       </p>
-
-      <h2>{t('Switch language')}</h2>
-
-      <p>{t('From the client')}</p>
-      <div style={{ display: 'flex', gap: 8 }}>
-        {locales.map((value) => (
-          <button
-            disabled={value === locale}
-            key={value}
-            onClick={() => setLocale(value)}
-            type="button"
-          >
-            {value === 'sv' ? t('Swedish') : t('English')}
-          </button>
-        ))}
-      </div>
-
-      <p>{t('From the server')}</p>
-      <Form
-        method="post"
-        style={{ display: 'flex', gap: 8 }}
-      >
-        {locales.map((value) => (
-          <button
-            disabled={value === locale}
-            key={value}
-            name="locale"
-            type="submit"
-            value={value}
-          >
-            {value === 'sv' ? t('Swedish') : t('English')}
-          </button>
-        ))}
-      </Form>
     </main>
   );
 }
