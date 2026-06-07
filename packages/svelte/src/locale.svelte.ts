@@ -18,7 +18,7 @@ if (typeof window !== 'undefined') {
  * Reactive locale store.
  *
  * @remarks
- * Reads track reactivity; writes call {@link setLocale}.
+ * On the client, reads track reactivity and writes call {@link setLocale}. On the server, reads return {@link getLocale} directly with no reactivity hook-up — Svelte's `$state` and yapyak's subscriber are wired only when `typeof window !== 'undefined'`.
  *
  * @example Read and write the locale in a Svelte component
  * ```svelte

@@ -1,7 +1,6 @@
 import type { ReactElement, ReactNode } from 'react';
-import type { Locale } from 'yapyak';
 
-import { createContext, useSyncExternalStore } from 'react';
+import { useSyncExternalStore } from 'react';
 import { getLocale } from 'yapyak';
 import { subscribeLocale } from 'yapyak/internal';
 
@@ -11,13 +10,11 @@ export interface LocaleProviderProps {
   children: ReactNode;
 }
 
-const LocaleContext = createContext<Locale | null>(null);
-
 /**
- * Renders children within a locale context.
+ * Triggers descendant re-renders whenever the active locale changes.
  *
  * @remarks
- * Mounts once at the React tree's root. Re-renders descendants when {@link setLocale} is called, so {@link t} calls inside the tree return the new locale's strings.
+ * Wraps the React tree's root and subscribes to {@link setLocale}. On every locale switch, this component re-renders, cascading a render through its subtree so {@link t} calls inside descendants return the new locale's strings.
  *
  * @param props - Props bundle. See {@link LocaleProviderProps}.
  *
@@ -36,7 +33,6 @@ const LocaleContext = createContext<Locale | null>(null);
  */
 export function LocaleProvider(props: LocaleProviderProps): ReactElement {
   const { children } = props;
-
-  const current = useSyncExternalStore(subscribeLocale, getLocale, getLocale);
-  return <LocaleContext value={current}>{children}</LocaleContext>;
+  useSyncExternalStore(subscribeLocale, getLocale, getLocale);
+  return <>{children}</>;
 }

@@ -36,20 +36,22 @@ export interface Format {
   /**
    * Formats a date value for the active locale.
    *
+   * @remarks
+   * When `options` is omitted, falls back to `{ dateStyle: 'medium' }`. Any supplied `options` object replaces the fallback wholesale — partial options do not merge with the default.
+   *
    * @param value - The date or timestamp.
    * @param options - Native `Intl.DateTimeFormatOptions`.
-   *
-   * @defaultValue `{ dateStyle: 'medium' }`
    */
   date(value: Date | number, options?: Intl.DateTimeFormatOptions): string;
 
   /**
    * Formats a combined date and time value for the active locale.
    *
+   * @remarks
+   * When `options` is omitted, falls back to `{ dateStyle: 'medium', timeStyle: 'short' }`. Any supplied `options` object replaces the fallback wholesale — partial options do not merge with the default.
+   *
    * @param value - The date or timestamp.
    * @param options - Native `Intl.DateTimeFormatOptions`.
-   *
-   * @defaultValue `{ dateStyle: 'medium', timeStyle: 'short' }`
    */
   dateTime(value: Date | number, options?: Intl.DateTimeFormatOptions): string;
 
@@ -109,10 +111,11 @@ export interface Format {
   /**
    * Formats a time-of-day value for the active locale.
    *
+   * @remarks
+   * When `options` is omitted, falls back to `{ timeStyle: 'short' }`. Any supplied `options` object replaces the fallback wholesale — partial options do not merge with the default.
+   *
    * @param value - The date or timestamp whose time portion is formatted.
    * @param options - Native `Intl.DateTimeFormatOptions`.
-   *
-   * @defaultValue `{ timeStyle: 'short' }`
    */
   time(value: Date | number, options?: Intl.DateTimeFormatOptions): string;
 }

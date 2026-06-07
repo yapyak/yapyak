@@ -72,7 +72,8 @@ export interface UrlPersistenceOptions {
   /**
    * The pattern that matches the locale segment in the URL.
    *
-   * @defaultValue `/^[/](?<locale>[^/]+)/`
+   * @remarks
+   * The first capture group (named `locale` or positional `$1`) supplies the locale string. When omitted, the locale is read from the first path segment via `url.pathname.split('/')[1]` and only accepted when it's in the configured locales.
    */
   match?: RegExp;
   type: 'url';

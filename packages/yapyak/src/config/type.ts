@@ -17,10 +17,10 @@ export type FilterPattern = string | RegExp | Array<string | RegExp>;
 /** Configuration for yapyak. */
 export interface YapyakConfig {
   /**
-   * The maximum number of untranslated strings per save eligible for auto-translation.
+   * The maximum number of cumulative project-wide untranslated strings eligible for auto-translation during dev.
    *
    * @remarks
-   * `0` disables auto-translation.
+   * Compared against the total untranslated count across all extracted messages. When the count exceeds the threshold, auto-translate is skipped and the user is prompted to run `yapyak translate` manually. `0` disables auto-translation entirely.
    *
    * @defaultValue `20`
    */
@@ -41,7 +41,7 @@ export interface YapyakConfig {
    * The maximum number of prior project translations passed to the translator as style reference per request.
    *
    * @remarks
-   * Drawn from the project's existing locale files and orphan cache, scoped to the same locale. Same-file entries rank first, then fuzzy similarity. A value of `0` disables the feature entirely. The default tracks the translator's privacy posture so no prior translations leak alongside the source string when context is suppressed.
+   * Drawn from the project's existing locale files and orphan cache, scoped to the same locale. Ranked by fuzzy similarity to the source string, with same-file entries used as a tiebreaker when similarity scores are equal. A value of `0` disables the feature entirely. The default tracks the translator's privacy posture so no prior translations leak alongside the source string when context is suppressed.
    *
    * @defaultValue `5`, or `0` when the translator's `context` is `'none'`
    */
@@ -56,7 +56,7 @@ export interface YapyakConfig {
    *
    * @example Directory shortcut, glob, and `RegExp` entries
    * ```ts
-   * defineConfig({ exclude: ['legacy'] });                    // expands to 'legacy/**\/*.{ts,tsx,...}'
+   * defineConfig({ exclude: ['legacy'] });                    // expands to 'legacy/**\/*.{cjs,cts,...,tsx}'
    * defineConfig({ exclude: ['legacy', 'sandbox'] });         // multiple directories
    * defineConfig({ exclude: ['**\/*.test.*'] });              // explicit glob, used as-is
    * defineConfig({ exclude: [/\.deprecated\.ts$/] });         // RegExp, used as-is
@@ -82,7 +82,7 @@ export interface YapyakConfig {
    *
    * @example Directory shortcut, glob, and `RegExp` entries
    * ```ts
-   * defineConfig({ include: ['src'] });                       // expands to 'src/**\/*.{ts,tsx,...}'
+   * defineConfig({ include: ['src'] });                       // expands to 'src/**\/*.{cjs,cts,...,tsx}'
    * defineConfig({ include: ['src', 'app'] });                // multiple roots
    * defineConfig({ include: ['src/components/**\/*.tsx'] });  // explicit glob, used as-is
    * defineConfig({ include: [/\.svelte$/] });                 // RegExp, used as-is
@@ -120,7 +120,7 @@ export interface YapyakConfig {
    * Processors for framework-specific file formats (`.vue`, `.svelte`, `.astro`, etc.).
    *
    * @remarks
-   * Each processor handles a set of file extensions. Vanilla `.ts`/`.tsx`/`.js`/`.jsx` are handled by the built-in processor without registration. The shipped processor packages (`@yapyak/vue/processor`, `@yapyak/svelte/processor`, `@yapyak/astro/processor`) cover the listed frameworks; custom processors implement {@link Processor}.
+   * Each processor handles a set of file extensions. Vanilla `.ts`, `.tsx`, `.js`, `.jsx`, `.mts`, `.mjs`, `.cts`, `.cjs` are handled by the built-in processor without registration. The shipped processor packages (`@yapyak/vue/processor`, `@yapyak/svelte/processor`, `@yapyak/astro/processor`) cover the listed frameworks; custom processors implement {@link Processor}.
    *
    * @defaultValue `[]`
    */

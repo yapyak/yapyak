@@ -8,7 +8,7 @@ type TagsOf<T> = T extends TReturn<infer Tags> ? Tags : never;
  * The rich-text handler.
  *
  * @remarks
- * Receives the resolved text between a tag's markers and returns the rendered string. The shape used by every entry of a {@link RichTextHandlers} object.
+ * Receives the recursively-rendered children of the tag (the concatenated output of inner handlers, or the raw text when no nested tags exist) and returns the rendered string. The shape used by every entry of a {@link RichTextHandlers} object.
  */
 export type RichTextHandler = (children: string) => string;
 

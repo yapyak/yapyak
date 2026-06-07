@@ -85,7 +85,7 @@ export class CorruptLocaleFileError extends Error {
 
   constructor(filePath: string, cause: unknown) {
     super(
-      `[yapyak] Failed to parse locale file ${filePath}. Check the JSON syntax — yapyak will skip syncing this locale until it is fixed.`,
+      `[yapyak] Failed to parse locale file ${filePath}. Fix the JSON syntax to proceed.`,
       { cause },
     );
     this.name = 'CorruptLocaleFileError';

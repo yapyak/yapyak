@@ -139,7 +139,7 @@ export interface TFn {
  * Translates a source string for the active locale.
  *
  * @remarks
- * Yapyak's compiler rewrites every `t()` call site at build; the runtime is the fallback for paths the compiler did not touch. The source argument must be a string literal — wrapping breaks extraction. Placeholders use `{name}` and their values are type-checked from the source literal. A fixed locale is pinned via `t.in(locale, source)`, and modifiers chain inline: `t.in('sv').at('action', 'Open')`.
+ * Yapyak's compiler rewrites every `t()` call site at build to inline the active-locale's catalog lookup. The runtime returns the source string verbatim (after interpolating any placeholders) for paths the compiler did not touch — it does not perform translation lookups. The source argument must be a string literal — wrapping breaks extraction. Placeholders use `{name}` and their values are type-checked from the source literal. A fixed locale is pinned via `t.in(locale, source)`, and modifiers chain inline: `t.in('sv').at('action', 'Save')`.
  *
  * @example Translate, with and without placeholders
  * ```ts

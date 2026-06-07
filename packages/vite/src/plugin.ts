@@ -69,7 +69,7 @@ export interface YapyakOptions {
    * Locks the build to a single locale. Stripped at compile time.
    *
    * @remarks
-   * When set, every `t()` and `t.at()` call is rewritten to the matching translation literal for this locale, the `_pick` runtime is tree-shaken away, and the resulting bundle contains zero i18n overhead. Useful for static SPA deploys where each artifact serves one locale.
+   * When set, eligible `t()` calls (with no `t.at(...)` context and only simple `{name}` placeholders) are rewritten to the matching translation literal for this locale and the `_pick` runtime is tree-shaken away. Calls that use `t.at(...)` or ICU patterns (plural, select, selectordinal, number, date, time) still emit a `_pick` runtime call so the runtime is preserved for those sites. Useful for static SPA deploys where each artifact serves one locale.
    *
    * Must be one of the locales configured in the project (i.e., a `<locale>.json` file under the locales directory). Throws at config-resolution time if not.
    *
