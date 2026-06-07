@@ -96,15 +96,24 @@ function expandEntry(
   if (entry instanceof RegExp) {
     return entry;
   }
-  if (isGlobPattern(entry)) {
+  if (!isDirectoryShortcut(entry, extensions)) {
     return entry;
   }
   const trimmed = entry.replace(/\/+$/, '');
   return `${trimmed}/**/*.{${extensions.join(',')}}`;
 }
 
-function isGlobPattern(pattern: string): boolean {
-  return /[*?{[]/.test(pattern);
+function isDirectoryShortcut(pattern: string, extensions: string[]): boolean {
+  if (/[*?{[]/.test(pattern)) {
+    return false;
+  }
+  const lastSegment = pattern.split('/').pop() ?? pattern;
+  for (const extension of extensions) {
+    if (lastSegment.endsWith(`.${extension}`)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function collectExtensions(processors: Processor[]): string[] {

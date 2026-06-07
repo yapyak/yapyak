@@ -176,6 +176,33 @@ describe('normalizeYapyakConfig', () => {
 
     expect(result.exclude).toBe(pattern);
   });
+
+  it('preserves an explicit file path with a registered extension verbatim', () => {
+    const result = normalizeYapyakConfig({
+      include: ['src/Button.tsx'],
+    });
+
+    expect(result.include).toEqual(['src/Button.tsx']);
+  });
+
+  it('extends a directory path whose name contains a dot that is not a registered extension', () => {
+    const result = normalizeYapyakConfig({
+      include: ['src/feature.module'],
+    });
+
+    expect(result.include).toEqual([
+      'src/feature.module/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}',
+    ]);
+  });
+
+  it('preserves an explicit file path whose extension comes from a registered processor', () => {
+    const result = normalizeYapyakConfig({
+      include: ['src/App.vue'],
+      processors: [makeProcessor('vue', ['.vue'])],
+    });
+
+    expect(result.include).toEqual(['src/App.vue']);
+  });
 });
 
 function makeProcessor(id: string, extensions: string[]): Processor {
