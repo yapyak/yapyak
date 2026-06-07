@@ -5,6 +5,7 @@ import type {
   LocaleData,
   LocaleWarning,
   SyncLocaleFilesResult,
+  TransformFileResult,
 } from 'yapyak/compiler';
 import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
 import type { Translator } from 'yapyak/translator';
@@ -636,7 +637,10 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       }
       return null;
     },
-    transform(code: string, id: string): { code: string } | null {
+    transform(
+      code: string,
+      id: string,
+    ): { code: string; map: TransformFileResult['map'] } | null {
       if (!isCandidateId(id, filter, projectRoot)) {
         return null;
       }
@@ -671,7 +675,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       if (result.code === code) {
         return null;
       }
-      return { code: result.code };
+      return { code: result.code, map: result.map };
     },
   };
 }

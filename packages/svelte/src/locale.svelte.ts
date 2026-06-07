@@ -3,15 +3,29 @@ import type { Locale } from 'yapyak';
 import { getLocale, setLocale } from 'yapyak';
 import { registerTracker, subscribeLocale } from 'yapyak/internal';
 
+declare global {
+  interface ImportMeta {
+    hot?: {
+      dispose(callback: () => void): void;
+    };
+  }
+}
+
 let active = $state(getLocale());
 
 if (typeof window !== 'undefined') {
-  subscribeLocale((next) => {
+  const unsubscribe = subscribeLocale((next) => {
     active = next;
   });
-  registerTracker(() => {
+  const untrack = registerTracker(() => {
     void active;
   });
+  if (import.meta.hot) {
+    import.meta.hot.dispose(() => {
+      unsubscribe();
+      untrack();
+    });
+  }
 }
 
 /**

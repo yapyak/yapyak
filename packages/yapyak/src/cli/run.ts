@@ -43,12 +43,12 @@ export async function run(argv: string[]): Promise<number> {
     }
     case 'add': {
       const config = await loadConfig(projectRoot);
-      const locales = rest.filter((arg) => !arg.startsWith('--'));
+      const locales = rest.filter((arg) => !arg.startsWith('-'));
       return add({ config, locales, projectRoot });
     }
     case 'translate': {
       const config = await loadConfig(projectRoot);
-      const locale = rest.find((arg) => !arg.startsWith('--'));
+      const locale = rest.find((arg) => !arg.startsWith('-'));
       const shouldForce = rest.includes('--force') || rest.includes('-f');
       return translate({
         config,
@@ -59,7 +59,7 @@ export async function run(argv: string[]): Promise<number> {
     }
     case 'export': {
       const config = await loadConfig(projectRoot);
-      const locales = rest.filter((arg) => !arg.startsWith('--'));
+      const locales = rest.filter((arg) => !arg.startsWith('-'));
       const outArg = rest.find((arg) => arg.startsWith('--out='));
       const out = outArg ? outArg.slice('--out='.length) : undefined;
       const shouldSplit = rest.includes('--split');

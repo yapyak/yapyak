@@ -5,6 +5,14 @@ import { customRef } from 'vue';
 import { getLocale, setLocale } from 'yapyak';
 import { registerTracker, subscribeLocale } from 'yapyak/internal';
 
+declare global {
+  interface ImportMeta {
+    hot?: {
+      dispose(callback: () => void): void;
+    };
+  }
+}
+
 /**
  * Reactive locale ref.
  *
@@ -29,10 +37,16 @@ import { registerTracker, subscribeLocale } from 'yapyak/internal';
  */
 export const locale: Ref<Locale> = customRef<Locale>((track, trigger) => {
   if (typeof window !== 'undefined') {
-    subscribeLocale(trigger);
-    registerTracker(() => {
+    const unsubscribe = subscribeLocale(trigger);
+    const untrack = registerTracker(() => {
       void locale.value;
     });
+    if (import.meta.hot) {
+      import.meta.hot.dispose(() => {
+        unsubscribe();
+        untrack();
+      });
+    }
   }
   return {
     get(): Locale {

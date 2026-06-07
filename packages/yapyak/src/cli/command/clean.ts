@@ -4,12 +4,12 @@ import type { Config } from '../config';
 import {
   extractFile,
   readLocaleFile,
-  stringifyCanonical,
   walkSourceFiles,
+  writeLocaleFile,
 } from '../../compiler';
 import { createFilter } from '../../config/internal';
 import { color, header, symbol } from '../tui';
-import { existsSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 interface CleanOptions {
@@ -24,6 +24,11 @@ interface OrphanSource {
   source: string;
 }
 
+interface BuildExpectedResult {
+  expected: Record<string, Set<string>>;
+  inScope: (fileId: string) => boolean;
+}
+
 export function clean(options: CleanOptions): number {
   const localesPath = join(options.projectRoot, options.config.localesDir);
   const fileLocales = existsSync(localesPath)
@@ -36,7 +41,11 @@ export function clean(options: CleanOptions): number {
 
   process.stdout.write(header('Locale cleanup'));
 
-  const expected = buildExpected(options.projectRoot, locales, options.config);
+  const { expected, inScope } = buildExpected(
+    options.projectRoot,
+    locales,
+    options.config,
+  );
   const orphanSources: OrphanSource[] = [];
   const filesToWrite: Array<{ next: LocaleFile; path: string }> = [];
 
@@ -47,6 +56,10 @@ export function clean(options: CleanOptions): number {
     let hasChanged = false;
 
     for (const [fileId, entries] of Object.entries(existing)) {
+      if (!inScope(fileId)) {
+        next[fileId] = { ...entries };
+        continue;
+      }
       const expectedSources = expected[fileId];
       const nextEntries: Record<string, string> = {};
       for (const [source, value] of Object.entries(entries)) {
@@ -92,7 +105,11 @@ export function clean(options: CleanOptions): number {
   }
 
   for (const file of filesToWrite) {
-    writeFileSync(file.path, stringifyCanonical(file.next));
+    writeLocaleFile({
+      after: file.next,
+      extractedSources: expected,
+      filePath: file.path,
+    });
   }
   process.stdout.write(
     `  ${symbol.check} ${color.green(`Removed ${orphanSources.length} entry/entries from ${filesToWrite.length} locale file(s).`)}\n\n`,
@@ -104,9 +121,10 @@ function buildExpected(
   projectRoot: string,
   locales: string[],
   config: Config,
-): Record<string, Set<string>> {
+): BuildExpectedResult {
   const filter = createFilter(config.include, config.exclude);
   const sourceFiles = walkSourceFiles({ filter, projectRoot });
+  const scopedFileIds = new Set<string>(sourceFiles.map((file) => file.fileId));
   const messages: ExtractedMessage[] = [];
   for (const file of sourceFiles) {
     const result = extractFile({
@@ -132,5 +150,8 @@ function buildExpected(
       perFile.add(key);
     }
   }
-  return expected;
+  return {
+    expected,
+    inScope: (fileId): boolean => scopedFileIds.has(fileId),
+  };
 }
