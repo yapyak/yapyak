@@ -111,10 +111,11 @@ t.at('button').in('sv', 'Open');
 Modifiers must be used inline. Capturing the result in a variable, returning it from a function, or passing it as an argument is YPK405:
 
 ```ts
-const sv = t.in('sv');        // YPK405
-sv('Hello');
+const sv = t.in('sv');        // YPK405 — chain captured
+sv.at('button', 'Hello');
 
-t.in('sv', 'Hello');          // OK
+t.in('sv', 'Hello');          // OK — inline call
+t.in('sv').at('button', 'Save'); // OK — inline chain
 ```
 
 ## Diagnostics

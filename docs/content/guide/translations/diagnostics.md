@@ -154,9 +154,9 @@ A modifier (`t.at` or `t.in`) is captured in a variable, returned, or passed as 
 Use modifiers inline:
 
 ```ts
-const sv = t.in('sv');           // ✗ YPK405
-sv('Hello');
+const sv = t.in('sv');           // ✗ YPK405 — chain captured
+sv.at('button', 'Hello');
 
-t.in('sv', 'Hello');             // ✓
-t.in('sv').at('button', 'Open'); // ✓
+t.in('sv', 'Hello');             // ✓ — inline call
+t.in('sv').at('button', 'Save'); // ✓ — inline chain
 ```
