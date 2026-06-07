@@ -384,8 +384,8 @@ describe('syncLocaleFiles', () => {
     writeFileSync(
       localePath,
       JSON.stringify({
-        'src/app.tsx': { Hello: 'Hej' },
-        'src/app.vue': { Welcome: 'Välkommen' },
+        'src/a.tsx': { Hello: 'Hej' },
+        'src/a.vue': { Hello: 'Hej' },
       }),
     );
 
@@ -394,15 +394,15 @@ describe('syncLocaleFiles', () => {
       filter: (fileId) => fileId.endsWith('.tsx'),
       locales: ['en', 'sv'],
       localesDir,
-      messages: [makeMessage('Hello', 'src/app.tsx')],
+      messages: [makeMessage('Hello', 'src/a.tsx')],
       now: () => '2026-01-01T00:00:00.000Z',
       projectRoot,
       yapyakDir,
     });
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
-      'src/app.tsx': { Hello: 'Hej' },
-      'src/app.vue': { Welcome: 'Välkommen' },
+      'src/a.tsx': { Hello: 'Hej' },
+      'src/a.vue': { Hello: 'Hej' },
     });
     expect(result.orphaned).toEqual([]);
     expect(existsSync(join(yapyakDir, 'orphans.json'))).toBe(false);

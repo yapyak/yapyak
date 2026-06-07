@@ -29,23 +29,22 @@ interface Report {
 }
 
 interface BuildReportOptions {
-  defaultLocale?: string;
+  defaultLocale: string;
   exclude: FilterPattern;
   include: FilterPattern;
-  localesDir?: string;
+  localesDir: string;
   processors?: Processor[];
   projectRoot: string;
 }
 
 export function buildReport(options: BuildReportOptions): Report {
-  const localesDir = options.localesDir ?? 'locales';
-  const localesPath = join(options.projectRoot, localesDir);
+  const localesPath = join(options.projectRoot, options.localesDir);
   const fileLocales = existsSync(localesPath)
     ? readdirSync(localesPath)
         .filter((name) => name.endsWith('.json'))
         .map((name) => name.replace(/\.json$/, ''))
     : [];
-  const defaultLocale = options.defaultLocale ?? 'en';
+  const { defaultLocale } = options;
   const locales = [...new Set([defaultLocale, ...fileLocales])].sort();
 
   const filter = createFilter(options.include, options.exclude);

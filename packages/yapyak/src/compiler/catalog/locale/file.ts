@@ -1,7 +1,7 @@
 import type { ExtractedMessage } from '../../parser/file/extract';
 import type { OrphanCache } from './orphan';
 
-import { stringifyCanonical } from '../canonical';
+import { compareKeys, stringifyCanonical } from '../canonical';
 import { validateLocaleCode } from './code';
 import {
   addOrphan,
@@ -236,7 +236,7 @@ export function syncLocaleFiles(
       next[fileId] = entries;
     }
 
-    for (const fileId of Object.keys(sourcesByFile).sort()) {
+    for (const fileId of Object.keys(sourcesByFile).sort(compareKeys)) {
       const sources = sourcesByFile[fileId];
       if (!sources) {
         continue;
@@ -309,6 +309,7 @@ export function syncLocaleFiles(
     writeOrphans(yapyakDir, orphans);
   }
 
+  const pendingWrites: Array<{ after: LocaleFile; filePath: string }> = [];
   for (const locale of healthyLocales) {
     const next = nextByLocale.get(locale) ?? {};
     const localePath = getLocaleFilePath(
@@ -316,7 +317,16 @@ export function syncLocaleFiles(
       options.localesDir,
       locale,
     );
-    writeLocaleFile({ after: next, extractedSources, filePath: localePath });
+    const before = readLocaleFile(localePath);
+    const violations = findInvariantViolations(before, next, extractedSources);
+    if (violations.length > 0) {
+      throw new YapyakInvariantError(localePath, violations);
+    }
+    pendingWrites.push({ after: next, filePath: localePath });
+  }
+  for (const write of pendingWrites) {
+    mkdirSync(dirname(write.filePath), { recursive: true });
+    writeFileSync(write.filePath, stringifyCanonical(write.after));
   }
 
   return { orphaned, restored };
@@ -448,7 +458,7 @@ function groupSourcesByFile(
     const key =
       message.context === undefined
         ? message.source
-        : `${message.source}@${message.context}`;
+        : `${message.source} ${message.context}`;
     for (const location of message.locations) {
       let set = grouped[location.fileId];
       if (!set) {

@@ -15,7 +15,7 @@ describe('createProcessor', () => {
     expect(processor.extensions).toEqual(['.foo']);
   });
 
-  it('forwards calls to the provided applyImport hook', () => {
+  it('writes calls through to the provided applyImport hook', () => {
     const calls: string[] = [];
     const processor = createProcessor({
       applyImport: (_, source, importStatement) => {
@@ -35,7 +35,7 @@ describe('createProcessor', () => {
     expect(calls).toEqual(["source|import { t } from 'yapyak';"]);
   });
 
-  it('forwards calls to the provided parseFragments hook', () => {
+  it('writes calls through to the provided parseFragments hook', () => {
     const processor = createProcessor({
       applyImport: () => {},
       extensions: ['.foo'],

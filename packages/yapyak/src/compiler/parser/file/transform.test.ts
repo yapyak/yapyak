@@ -206,7 +206,7 @@ describe('transformFile', () => {
   });
 
   describe('with locale scoping', () => {
-    it('threads an inline `t.in(expr)` locale into `_pick`', () => {
+    it('preserves an inline `t.in(expr)` locale into `_pick`', () => {
       const code = runTransform({
         locales: ['en', 'sv'],
         source: `
@@ -219,19 +219,19 @@ describe('transformFile', () => {
       expect(code).toContain('{ locale: previewLocale.value }');
     });
 
-    it('threads a chained `t.in(...).at(...)` locale into `_pick`', () => {
+    it('preserves a chained `t.in(...).at(...)` locale into `_pick`', () => {
       const code = runTransform({
         locales: ['en', 'sv'],
         source: `
           import { t } from 'yapyak';
-          export const x = t.in('sv').at('button', 'Open');
+          export const x = t.in('sv').at('button', 'Save');
         `,
       });
       expect(code).toContain('_pick(');
       expect(code).toContain("{ locale: 'sv' }");
     });
 
-    it('threads a scoped locale alongside placeholder params into `_pick`', () => {
+    it('preserves a scoped locale alongside placeholder params into `_pick`', () => {
       const code = runTransform({
         locales: ['en', 'sv'],
         source: `
@@ -434,29 +434,29 @@ describe('transformFile', () => {
   });
 
   describe('`t.at()` rewrites', () => {
-    it('strips `t.at` to a bare literal in single-locale mode', () => {
+    it('transforms `t.at` to a bare literal in single-locale mode', () => {
       const code = runTransform({
         locales: ['en'],
         source:
-          "import { t } from 'yapyak';\nexport const x = t.at('button', 'Open');\n",
+          "import { t } from 'yapyak';\nexport const x = t.at('button', 'Save');\n",
       });
-      expect(code).toContain("'Open'");
+      expect(code).toContain("'Save'");
       expect(code).not.toContain('t.at(');
     });
 
-    it('rewrites `t.at` to `_pick` and looks up by the context-disambiguated message id', () => {
+    it('transforms `t.at` to `_pick` and looks up by the context-disambiguated message id', () => {
       const code = runTransform({
         locales: ['en', 'sv'],
         source:
-          "import { t } from 'yapyak';\nexport const x = t.at('button', 'Open');\n",
-        translations: { sv: { [hashId('Open button')]: 'Öppna' } },
+          "import { t } from 'yapyak';\nexport const x = t.at('button', 'Save');\n",
+        translations: { sv: { [hashId('Save button')]: 'Spara' } },
       });
       expect(code).toContain('_pick(');
       expect(code).not.toContain('t.at(');
-      expect(code).toContain('Öppna');
+      expect(code).toContain('Spara');
     });
 
-    it('forwards params from the third arg of `t.at`', () => {
+    it('writes params from the third arg of `t.at`', () => {
       const code = runTransform({
         locales: ['en'],
         source:

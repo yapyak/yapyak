@@ -174,7 +174,7 @@ export interface TFn {
  */
 export const t: TFn = createTFn();
 
-function createTFn(boundLocale?: string): TFn {
+function createTFn(): TFn {
   function makeTranslation(
     locale: string | undefined,
     source: string,
@@ -192,7 +192,7 @@ function createTFn(boundLocale?: string): TFn {
     ...args: TArgs<T>
   ): TReturn<ExtractTags<T>> =>
     makeTranslation(
-      boundLocale,
+      undefined,
       source,
       args[0] as Record<string, unknown> | undefined,
     ) as TReturn<ExtractTags<T>>;
@@ -259,7 +259,7 @@ function createTFn(boundLocale?: string): TFn {
       };
     }
     return makeTranslation(
-      boundLocale,
+      undefined,
       source,
       args[0] as Record<string, unknown> | undefined,
     );

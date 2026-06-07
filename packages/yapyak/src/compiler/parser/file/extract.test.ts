@@ -22,7 +22,7 @@ describe('extractFile', () => {
     const result = extractFixture('call', 'simple.ts');
     expect(result.messages).toHaveLength(2);
     const sources = result.messages.map((m) => m.source).sort();
-    expect(sources).toEqual(['Goodbye', 'Hello']);
+    expect(sources).toEqual(['Hello', 'Save']);
   });
 
   it('returns placeholders for messages with interpolation', () => {

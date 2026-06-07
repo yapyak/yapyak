@@ -81,7 +81,7 @@ export async function add(options: AddOptions): Promise<number> {
     }
   }
 
-  const defaultLocale = config.defaultLocale ?? 'en';
+  const { defaultLocale } = config;
   const allLocales = readdirSync(localesDirAbs)
     .filter((name) => name.endsWith('.json'))
     .map((name) => name.replace(/\.json$/, ''));
@@ -167,6 +167,7 @@ export async function add(options: AddOptions): Promise<number> {
 
     const subResult = await autoTranslate({
       defaultLocale: report.defaultLocale,
+      examples: config.examples,
       locales: [report.defaultLocale, locale],
       localesDir: config.localesDir,
       messages: report.messages,

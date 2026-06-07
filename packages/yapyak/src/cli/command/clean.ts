@@ -36,7 +36,7 @@ export function clean(options: CleanOptions): number {
         .filter((name) => name.endsWith('.json'))
         .map((name) => name.replace(/\.json$/, ''))
     : [];
-  const defaultLocale = options.config.defaultLocale ?? 'en';
+  const { defaultLocale } = options.config;
   const locales = fileLocales.filter((locale) => locale !== defaultLocale);
 
   process.stdout.write(header('Locale cleanup'));

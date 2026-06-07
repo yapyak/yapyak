@@ -8,7 +8,7 @@ import { loadYapyakConfig } from '../config/internal';
 /** Configuration for the yapyak CLI. */
 export interface Config {
   /** The default locale. */
-  defaultLocale: string | undefined;
+  defaultLocale: string;
   /** The maximum number of prior translations passed to the translator as style reference. */
   examples: number;
   /** Glob patterns to exclude from source scanning. */
@@ -38,6 +38,10 @@ export async function loadConfig(projectRoot: string): Promise<Config> {
   const value = toCliConfig(config);
   cached = { projectRoot, value };
   return value;
+}
+
+export function resetConfigCache(): void {
+  cached = undefined;
 }
 
 function toCliConfig(config: NormalizedYapyakConfig): Config {

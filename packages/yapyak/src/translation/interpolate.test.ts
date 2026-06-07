@@ -7,17 +7,17 @@ describe('interpolate', () => {
     expect(interpolate('Hello world', {}, 'en')).toBe('Hello world');
   });
 
-  it('substitutes a simple placeholder with its value', () => {
+  it('interpolates a simple placeholder with its value', () => {
     expect(interpolate('Hi {name}', { name: 'Ada' }, 'en')).toBe('Hi Ada');
   });
 
-  it('substitutes the same placeholder everywhere it appears', () => {
+  it('interpolates the same placeholder everywhere it appears', () => {
     expect(interpolate('{name} and {name}', { name: 'Bo' }, 'en')).toBe(
       'Bo and Bo',
     );
   });
 
-  it('substitutes multiple distinct placeholders', () => {
+  it('interpolates multiple distinct placeholders', () => {
     expect(
       interpolate(
         'Hi {name}, you have {count} left',
@@ -31,35 +31,35 @@ describe('interpolate', () => {
     expect(interpolate('Hi {name}', {}, 'en')).toBe('Hi ');
   });
 
-  it('coerces a numeric value to a string', () => {
+  it('transforms a numeric value to a string', () => {
     expect(interpolate('n={n}', { n: 42 }, 'en')).toBe('n=42');
   });
 
   describe('plural', () => {
     const template = '{count, plural, =0 {none} one {# item} other {# items}}';
 
-    it('selects the `one` branch when count is 1', () => {
+    it('picks the `one` branch when count is 1', () => {
       expect(interpolate(template, { count: 1 }, 'en')).toBe('1 item');
     });
 
-    it('selects the `other` branch when count is 5', () => {
+    it('picks the `other` branch when count is 5', () => {
       expect(interpolate(template, { count: 5 }, 'en')).toBe('5 items');
     });
 
-    it('prefers an exact `=N` branch over a category branch', () => {
+    it('resolves an exact `=N` branch over a category branch', () => {
       expect(interpolate(template, { count: 0 }, 'en')).toBe('none');
     });
 
-    it('formats `#` with locale grouping for `en`', () => {
+    it('interpolates `#` with locale grouping for `en`', () => {
       expect(
         interpolate('{count, plural, other {# items}}', { count: 1234 }, 'en'),
       ).toBe('1,234 items');
     });
 
-    it('formats `#` with locale grouping for `sv`', () => {
+    it('interpolates `#` with locale grouping for `sv`', () => {
       expect(
         interpolate('{count, plural, other {# items}}', { count: 1234 }, 'sv'),
-      ).toMatch(/1.234 items/);
+      ).toMatch(/1\D234 items/);
     });
 
     it('resolves nested placeholders inside a branch', () => {
@@ -85,19 +85,19 @@ describe('interpolate', () => {
     const template =
       '{rank, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}';
 
-    it('selects the `one` ordinal category', () => {
+    it('picks the `one` ordinal category', () => {
       expect(interpolate(template, { rank: 1 }, 'en')).toBe('1st');
     });
 
-    it('selects the `two` ordinal category', () => {
+    it('picks the `two` ordinal category', () => {
       expect(interpolate(template, { rank: 2 }, 'en')).toBe('2nd');
     });
 
-    it('selects the `few` ordinal category', () => {
+    it('picks the `few` ordinal category', () => {
       expect(interpolate(template, { rank: 3 }, 'en')).toBe('3rd');
     });
 
-    it('falls back to the `other` ordinal category', () => {
+    it('resolves the `other` ordinal category as a fallback', () => {
       expect(interpolate(template, { rank: 11 }, 'en')).toBe('11th');
     });
   });
@@ -105,43 +105,43 @@ describe('interpolate', () => {
   describe('select', () => {
     const template = '{gender, select, male {he} female {she} other {they}}';
 
-    it('selects the branch matching the value', () => {
+    it('picks the branch matching the value', () => {
       expect(interpolate(template, { gender: 'female' }, 'en')).toBe('she');
     });
 
-    it('falls back to the `other` branch for an unknown value', () => {
+    it('resolves the `other` branch for an unknown value', () => {
       expect(interpolate(template, { gender: 'nonbinary' }, 'en')).toBe('they');
     });
   });
 
   describe('number', () => {
-    it('groups thousands for the `en` locale by default', () => {
+    it('folds thousands with grouping for the `en` locale by default', () => {
       expect(interpolate('{n, number}', { n: 1234.5 }, 'en')).toBe('1,234.5');
     });
 
-    it('groups thousands for the `sv` locale', () => {
+    it('folds thousands with grouping for the `sv` locale', () => {
       expect(interpolate('{n, number}', { n: 1234.5 }, 'sv')).toMatch(
-        /1.234,5/,
+        /1\D234,5/,
       );
     });
 
-    it('drops the fraction for the `integer` style', () => {
+    it('clears the fraction for the `integer` style', () => {
       expect(interpolate('{n, number, integer}', { n: 1234.7 }, 'en')).toBe(
         '1,235',
       );
     });
 
-    it('formats the `percent` style', () => {
+    it('interpolates the `percent` style', () => {
       expect(interpolate('{p, number, percent}', { p: 0.5 }, 'en')).toBe('50%');
     });
 
-    it('formats a currency with an explicit code', () => {
+    it('interpolates a currency with an explicit code', () => {
       expect(
         interpolate('{cost, number, currency EUR}', { cost: 1234.5 }, 'en'),
       ).toBe('€1,234.50');
     });
 
-    it('falls back to the decimal default for a currency without a code', () => {
+    it('resolves the decimal default for a currency without a code', () => {
       expect(
         interpolate('{cost, number, currency}', { cost: 1234.5 }, 'en'),
       ).toBe('1,234.5');
@@ -155,21 +155,21 @@ describe('interpolate', () => {
   describe('date', () => {
     const date = new Date('2020-01-02T03:04:05Z');
 
-    it('formats with the `long` date style for the active locale', () => {
+    it('interpolates with the `long` date style for the active locale', () => {
       const expected = new Intl.DateTimeFormat('en', {
         dateStyle: 'long',
       }).format(date);
       expect(interpolate('{d, date, long}', { d: date }, 'en')).toBe(expected);
     });
 
-    it('formats with the `short` date style for the active locale', () => {
+    it('interpolates with the `short` date style for the active locale', () => {
       const expected = new Intl.DateTimeFormat('en', {
         dateStyle: 'short',
       }).format(date);
       expect(interpolate('{d, date, short}', { d: date }, 'en')).toBe(expected);
     });
 
-    it('accepts a millisecond timestamp', () => {
+    it('transforms a millisecond timestamp', () => {
       const expected = new Intl.DateTimeFormat('en', {
         dateStyle: 'medium',
       }).format(date);
@@ -178,7 +178,7 @@ describe('interpolate', () => {
       ).toBe(expected);
     });
 
-    it('falls back to the `medium` date style when none is given', () => {
+    it('resolves the `medium` date style when none is given', () => {
       const expected = new Intl.DateTimeFormat('en', {
         dateStyle: 'medium',
       }).format(date);
@@ -195,7 +195,7 @@ describe('interpolate', () => {
   describe('time', () => {
     const date = new Date('2020-01-02T03:04:05Z');
 
-    it('formats with the `short` time style for the active locale', () => {
+    it('interpolates with the `short` time style for the active locale', () => {
       const expected = new Intl.DateTimeFormat('en', {
         timeStyle: 'short',
       }).format(date);

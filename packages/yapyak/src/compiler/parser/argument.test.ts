@@ -224,7 +224,7 @@ describe('parseArguments', () => {
       expect(parsed.context).toBeUndefined();
     });
 
-    it('accepts kebab-case context names', () => {
+    it('holds kebab-case context names', () => {
       const parsed = parseInline(
         "export const x = t.at('primary-cta', 'Save');",
       );

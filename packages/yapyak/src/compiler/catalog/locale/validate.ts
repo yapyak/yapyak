@@ -64,6 +64,18 @@ export function validateLocaleFile(
       continue;
     }
     for (const [source, value] of Object.entries(entries)) {
+      if (source !== source.normalize('NFC')) {
+        diagnostics.push(
+          createDiagnostic({
+            code: 'YPK303',
+            fileId: input.fileId,
+            message: `Source key at "${pathKey}".${JSON.stringify(source)} is not Unicode NFC — it will not match extracted source strings.`,
+            range: STUB_RANGE,
+            severity: 'error',
+            source: '',
+          }),
+        );
+      }
       if (typeof value !== 'string') {
         diagnostics.push(
           createDiagnostic({

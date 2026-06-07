@@ -27,7 +27,7 @@ describe('getPendingResponseHeaders', () => {
     expect(Array.from(headers)).toEqual([]);
   });
 
-  it('buffers `Set-Cookie` from `setLocale` inside the scope', () => {
+  it('holds `Set-Cookie` from `setLocale` inside the scope', () => {
     const collected = withRequest(makeRequest(), () => {
       setLocale('sv');
       return Array.from(getPendingResponseHeaders());
@@ -37,7 +37,7 @@ describe('getPendingResponseHeaders', () => {
     ]);
   });
 
-  it('isolates pending headers between concurrent scopes', () => {
+  it('preserves pending headers between concurrent scopes', () => {
     let outer: Array<[string, string]> = [];
     let inner: Array<[string, string]> = [];
     withRequest(makeRequest(), () => {

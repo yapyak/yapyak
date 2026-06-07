@@ -28,7 +28,7 @@ export interface YapyakConfig {
   /**
    * The default locale.
    *
-   * @defaultValue Inferred from `locales/*.json`; `'en'` when none exist
+   * @defaultValue `'en'`
    */
   defaultLocale?: Locale;
   /**

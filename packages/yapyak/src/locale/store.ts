@@ -121,7 +121,7 @@ export function getLocale(): Locale {
  * Switches the locale.
  *
  * @remarks
- * No-op if `value` is not in {@link locales}. Notifies subscribers. No-op with `persistence: 'url'` — the URL is the source of truth, and the in-memory locale syncs on URL change driven by router navigation.
+ * Warns and no-ops if `value` is not in {@link locales}. Notifies subscribers. Under `persistence: 'url'`, the URL is the source of truth: `setLocale` schedules a navigation but does not notify subscribers synchronously — `getLocale()` keeps returning the previous value until the URL event fires and the in-memory store syncs.
  *
  * @param value - The locale to switch to.
  *
@@ -134,6 +134,11 @@ export function getLocale(): Locale {
  */
 export function setLocale(value: Locale): void {
   if (!LOCALES.includes(value)) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(
+        `[yapyak] setLocale('${value}') ignored — not in configured locales: ${LOCALES.join(', ')}.`,
+      );
+    }
     return;
   }
 
@@ -145,7 +150,7 @@ export function setLocale(value: Locale): void {
 }
 
 /** The configured locales. Build-time constant. Inlined by yapyak's compiler. */
-export const locales: Locale[] = LOCALES;
+export const locales: Locale[] = Object.freeze([...LOCALES]) as Locale[];
 
 /** The default locale. Build-time constant. Inlined by yapyak's compiler. */
 export const defaultLocale: Locale = DEFAULT_LOCALE;
@@ -167,5 +172,4 @@ export function autoSubscribeLocale(
 
 export function resetLocale(): void {
   currentLocale = getInitialLocale();
-  listeners.clear();
 }

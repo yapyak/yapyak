@@ -5,7 +5,7 @@ import type { FilterPattern } from '../type';
 
 export interface NormalizedYapyakConfig {
   autoTranslateThreshold: number;
-  defaultLocale: string | undefined;
+  defaultLocale: string;
   detectAcceptLanguage: boolean;
   examples: number;
   exclude: FilterPattern;

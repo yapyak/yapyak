@@ -19,7 +19,7 @@ export function parseAcceptLanguage(header: string): string[] {
       const trimmed = param.trim();
       if (trimmed.startsWith('q=')) {
         const parsed = Number.parseFloat(trimmed.slice(2));
-        if (Number.isFinite(parsed)) {
+        if (Number.isFinite(parsed) && parsed >= 0 && parsed <= 1) {
           quality = parsed;
         }
       }

@@ -1,7 +1,7 @@
 import type { TranslationExample } from '../../translator';
 import type { LocaleData, OrphanCache } from './locale';
 
-export interface CollectExamplesInput {
+export interface ExtractExamplesInput {
   currentFileId: string;
   excludeKey: string;
   locale: string;
@@ -19,7 +19,7 @@ interface Candidate {
 }
 
 export function extractExamples(
-  input: CollectExamplesInput,
+  input: ExtractExamplesInput,
 ): TranslationExample[] {
   if (input.max <= 0) {
     return [];
@@ -33,7 +33,7 @@ export function extractExamples(
   return deduped.slice(0, input.max).map(toExample);
 }
 
-function candidatesFromLocaleData(input: CollectExamplesInput): Candidate[] {
+function candidatesFromLocaleData(input: ExtractExamplesInput): Candidate[] {
   const localeFile = input.localeData[input.locale];
   if (!localeFile) {
     return [];
@@ -59,7 +59,7 @@ function candidatesFromLocaleData(input: CollectExamplesInput): Candidate[] {
   return candidates;
 }
 
-function candidatesFromOrphans(input: CollectExamplesInput): Candidate[] {
+function candidatesFromOrphans(input: ExtractExamplesInput): Candidate[] {
   const candidates: Candidate[] = [];
   for (const [fileId, entries] of Object.entries(input.orphans)) {
     for (const [key, entry] of Object.entries(entries)) {

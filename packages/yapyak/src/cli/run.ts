@@ -103,6 +103,12 @@ function printHelp(): void {
 }
 
 void (async (): Promise<void> => {
-  const code = await run(process.argv.slice(2));
-  process.exit(code);
+  try {
+    const code = await run(process.argv.slice(2));
+    process.exit(code);
+  } catch (cause) {
+    const message = cause instanceof Error ? cause.message : String(cause);
+    process.stderr.write(`\n  ${symbol.cross} ${color.red(message)}\n\n`);
+    process.exit(1);
+  }
 })();

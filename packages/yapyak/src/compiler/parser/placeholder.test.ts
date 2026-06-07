@@ -149,29 +149,29 @@ describe('parsePlaceholders', () => {
     expect(issues).toEqual([]);
   });
 
-  it('flags a plural missing the `other` branch', () => {
+  it('warns on a plural missing the `other` branch', () => {
     const { issues } = parsePlaceholders('{count, plural, one {# item}}');
     expect(issues).toEqual([{ name: 'count', reason: 'missing-other' }]);
   });
 
-  it('flags a selectordinal missing the `other` branch', () => {
+  it('warns on a selectordinal missing the `other` branch', () => {
     const { issues } = parsePlaceholders('{rank, selectordinal, one {#st}}');
     expect(issues).toEqual([{ name: 'rank', reason: 'missing-other' }]);
   });
 
-  it('flags a select missing the `other` branch', () => {
+  it('warns on a select missing the `other` branch', () => {
     const { issues } = parsePlaceholders('{gender, select, male {he}}');
     expect(issues).toEqual([{ name: 'gender', reason: 'missing-other' }]);
   });
 
-  it('flags a number skeleton as unsupported', () => {
+  it('warns on a number skeleton as unsupported', () => {
     const { issues } = parsePlaceholders('{amount, number, ::currency/EUR}');
     expect(issues).toEqual([
       { feature: 'number skeleton', name: 'amount', reason: 'unsupported' },
     ]);
   });
 
-  it('flags a currency without a code as unsupported', () => {
+  it('warns on a currency without a code as unsupported', () => {
     const { issues } = parsePlaceholders('{cost, number, currency}');
     expect(issues).toEqual([
       {
@@ -182,12 +182,12 @@ describe('parsePlaceholders', () => {
     ]);
   });
 
-  it('flags a legacy number pattern as unsupported', () => {
+  it('warns on a legacy number pattern as unsupported', () => {
     const { issues } = parsePlaceholders('{n, number, #,##0.00}');
     expect(issues[0]?.reason).toBe('unsupported');
   });
 
-  it('flags a date skeleton as unsupported', () => {
+  it('warns on a date skeleton as unsupported', () => {
     const { issues } = parsePlaceholders('{when, date, ::yyyyMMdd}');
     expect(issues).toEqual([
       {
@@ -198,7 +198,7 @@ describe('parsePlaceholders', () => {
     ]);
   });
 
-  it('flags a date custom pattern as unsupported', () => {
+  it('warns on a date custom pattern as unsupported', () => {
     const { issues } = parsePlaceholders('{when, date, dd/MM/yyyy}');
     expect(issues).toEqual([
       {
@@ -209,7 +209,7 @@ describe('parsePlaceholders', () => {
     ]);
   });
 
-  it('flags a time skeleton as unsupported', () => {
+  it('warns on a time skeleton as unsupported', () => {
     const { issues } = parsePlaceholders('{at, time, ::Hms}');
     expect(issues).toEqual([
       {
@@ -220,7 +220,7 @@ describe('parsePlaceholders', () => {
     ]);
   });
 
-  it('flags an unsupported time style', () => {
+  it('warns on an unsupported time style', () => {
     const { issues } = parsePlaceholders('{at, time, fancy}');
     expect(issues).toEqual([
       {
@@ -231,7 +231,7 @@ describe('parsePlaceholders', () => {
     ]);
   });
 
-  it('flags a plural offset as unsupported', () => {
+  it('warns on a plural offset as unsupported', () => {
     const { issues } = parsePlaceholders(
       '{count, plural, offset:1 one {#} other {# more}}',
     );
@@ -240,24 +240,24 @@ describe('parsePlaceholders', () => {
     ]);
   });
 
-  it('flags apostrophe escaping as unsupported', () => {
+  it('warns on apostrophe escaping as unsupported', () => {
     const { issues } = parsePlaceholders("Send '{count}' files");
     expect(issues).toEqual([
       { feature: 'apostrophe escaping', name: '', reason: 'unsupported' },
     ]);
   });
 
-  it('flags an unbalanced brace as malformed', () => {
+  it('warns on an unbalanced brace as malformed', () => {
     const { issues } = parsePlaceholders('Hello {name');
     expect(issues[0]?.reason).toBe('malformed');
   });
 
-  it('flags an empty argument as malformed', () => {
+  it('warns on an empty argument as malformed', () => {
     const { issues } = parsePlaceholders('a {} b');
     expect(issues[0]?.reason).toBe('malformed');
   });
 
-  it('flags an unknown argument type as malformed', () => {
+  it('warns on an unknown argument type as malformed', () => {
     const { issues } = parsePlaceholders('{x, mystery, body}');
     expect(issues[0]?.reason).toBe('malformed');
   });

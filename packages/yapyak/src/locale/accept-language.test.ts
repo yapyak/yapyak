@@ -34,4 +34,20 @@ describe('parseAcceptLanguage', () => {
   it('blocks entries with q=0', () => {
     expect(parseAcceptLanguage('sv;q=0,fr')).toEqual(['fr']);
   });
+
+  it('preserves the default weight when q is non-numeric', () => {
+    expect(parseAcceptLanguage('sv;q=abc,fr')).toEqual(['sv', 'fr']);
+  });
+
+  it('preserves the default weight when q is above 1', () => {
+    expect(parseAcceptLanguage('sv;q=5,fr;q=0.5')).toEqual(['sv', 'fr']);
+  });
+
+  it('preserves the default weight when q is negative', () => {
+    expect(parseAcceptLanguage('sv;q=-1,fr')).toEqual(['sv', 'fr']);
+  });
+
+  it('blocks whitespace-only segments', () => {
+    expect(parseAcceptLanguage(' , ,sv')).toEqual(['sv']);
+  });
 });

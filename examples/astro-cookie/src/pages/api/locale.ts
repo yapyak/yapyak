@@ -4,9 +4,9 @@ import { isLocale, setLocale } from 'yapyak';
 
 export const POST: APIRoute = async ({ redirect, request }) => {
   const formData = await request.formData();
-  const value = String(formData.get('locale'));
-  if (isLocale(value)) {
-    setLocale(value);
+  const locale = String(formData.get('locale'));
+  if (isLocale(locale)) {
+    setLocale(locale);
   }
 
   return redirect('/', 303);

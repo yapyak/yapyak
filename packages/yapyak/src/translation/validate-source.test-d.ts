@@ -193,7 +193,7 @@ describe('ValidateSource', () => {
     }>();
   });
 
-  it('skips plural keyword validation when a branch contains a nested placeholder', () => {
+  it('blocks plural keyword validation when a branch contains a nested placeholder', () => {
     expectTypeOf<
       ValidateSource<'{c, plural, one {Have {item} now} other {Have {items} now}}'>
     >().toEqualTypeOf<'{c, plural, one {Have {item} now} other {Have {items} now}}'>();

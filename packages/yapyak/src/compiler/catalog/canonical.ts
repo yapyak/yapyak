@@ -17,7 +17,7 @@ function sortKeys(_: string, current: unknown): unknown {
   return sorted;
 }
 
-function compareKeys(a: string, b: string): number {
+export function compareKeys(a: string, b: string): number {
   const aLower = a.toLowerCase();
   const bLower = b.toLowerCase();
   if (aLower !== bLower) {

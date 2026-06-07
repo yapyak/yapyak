@@ -9,7 +9,10 @@ interface ResolveLocaleOptions {
 }
 
 export function resolveLocale(options: ResolveLocaleOptions): string {
-  if (options.persisted && options.locales.includes(options.persisted)) {
+  if (
+    options.persisted !== undefined &&
+    options.locales.includes(options.persisted)
+  ) {
     return options.persisted;
   }
   const candidates = extractCandidates(options);
@@ -26,7 +29,7 @@ export function resolveLocale(options: ResolveLocaleOptions): string {
 }
 
 function extractCandidates(options: ResolveLocaleOptions): string[] {
-  if (options.acceptLanguage) {
+  if (options.acceptLanguage !== undefined) {
     return parseAcceptLanguage(options.acceptLanguage);
   }
   if (options.navigatorLanguages) {

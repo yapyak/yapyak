@@ -26,12 +26,12 @@ describe('pick', () => {
     expect(pick({ en: 'Save', sv: 'Spara' })).toBe('Save');
   });
 
-  it('honors a forced locale via options', () => {
+  it('preserves a forced locale via options', () => {
     setLocale('en');
     expect(pick({ en: 'Save', sv: 'Spara' }, { locale: 'sv' })).toBe('Spara');
   });
 
-  it('honors a forced locale via options when params slot is undefined', () => {
+  it('preserves a forced locale via options when params slot is undefined', () => {
     setLocale('en');
     expect(pick({ en: 'Save', sv: 'Spara' }, undefined, { locale: 'sv' })).toBe(
       'Spara',
@@ -45,7 +45,7 @@ describe('pick', () => {
     ).toBe('Hi, Alex!');
   });
 
-  it('honors a forced locale together with params', () => {
+  it('preserves a forced locale together with params', () => {
     setLocale('en');
     expect(
       pick(

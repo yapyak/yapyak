@@ -5,5 +5,5 @@ export function greeting(): string {
 }
 
 export function farewell(): string {
-  return t('Goodbye');
+  return t('Save');
 }

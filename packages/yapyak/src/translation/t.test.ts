@@ -24,7 +24,7 @@ describe('t', () => {
     expect(t('Hello, {name}!', { name: 'Alex' })).toBe('Hello, Alex!');
   });
 
-  it('formats a number placeholder for the active locale', () => {
+  it('interpolates a number placeholder for the active locale', () => {
     setLocale('en');
     expect(t('You have {count, number} points', { count: 1000 })).toContain(
       '1,000',
@@ -32,10 +32,10 @@ describe('t', () => {
   });
 
   describe('in', () => {
-    it('formats for the scoped locale regardless of the active locale', () => {
+    it('interpolates for the scoped locale regardless of the active locale', () => {
       setLocale('en');
       expect(t.in('sv', 'You have {count, number}', { count: 1000 })).toMatch(
-        /1.000/,
+        /1\D000/,
       );
     });
 
@@ -59,29 +59,29 @@ describe('t', () => {
       );
     });
 
-    it('ignores the context argument at runtime', () => {
+    it('blocks the context argument from affecting runtime output', () => {
       expect(t.at('button', 'Save')).toBe(t.at('heading', 'Save'));
     });
   });
 
   describe('inline chain', () => {
-    it('combines in and at via t.in(locale).at(context, source)', () => {
+    it('folds in and at via t.in(locale).at(context, source)', () => {
       setLocale('en');
       expect(
         t.in('sv').at('action', 'You have {count, number}', { count: 1000 }),
-      ).toMatch(/1.000/);
+      ).toMatch(/1\D000/);
     });
 
-    it('combines at and in via t.at(context).in(locale, source)', () => {
+    it('folds at and in via t.at(context).in(locale, source)', () => {
       setLocale('en');
       expect(
         t.at('action').in('sv', 'You have {count, number}', { count: 1000 }),
-      ).toMatch(/1.000/);
+      ).toMatch(/1\D000/);
     });
 
     it('returns the source unchanged when chained without params', () => {
-      expect(t.in('sv').at('action', 'Open')).toBe('Open');
-      expect(t.at('action').in('sv', 'Open')).toBe('Open');
+      expect(t.in('sv').at('action', 'Save')).toBe('Save');
+      expect(t.at('action').in('sv', 'Save')).toBe('Save');
     });
   });
 });

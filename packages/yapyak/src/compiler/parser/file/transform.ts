@@ -601,6 +601,14 @@ function findFreePickLocal(source: string): string {
 }
 
 function hasIdentifier(source: string, name: string): boolean {
-  const escaped = name.replaceAll('$', '\\$');
-  return new RegExp(`\\b${escaped}\\b`).test(source);
+  let index = source.indexOf(name);
+  while (index !== -1) {
+    const before = source[index - 1];
+    const after = source[index + name.length];
+    if (!isIdentifierChar(before) && !isIdentifierChar(after)) {
+      return true;
+    }
+    index = source.indexOf(name, index + name.length);
+  }
+  return false;
 }

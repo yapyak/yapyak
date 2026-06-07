@@ -142,10 +142,11 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   }
 
   let params: ParsedParams | undefined;
-
-  if (hasPlaceholders) {
-    const paramArg = callSite.paramsArg;
-    params = paramArg ? parseParams(paramArg, sourceFile) : undefined;
+  const paramArg = callSite.paramsArg;
+  if (paramArg) {
+    params = parseParams(paramArg, sourceFile);
+  }
+  if (hasPlaceholders || paramArg !== undefined) {
     validateParams({
       callSite,
       diagnostics,
@@ -245,8 +246,10 @@ function parseParams(
       }
       if (ts.isStringLiteral(property.name)) {
         keys.push(property.name.text);
+        continue;
       }
     }
+    kind = 'spread';
   }
   return { keys, kind, range: toRange(expression, sourceFile) };
 }

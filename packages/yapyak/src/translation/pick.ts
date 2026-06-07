@@ -14,8 +14,7 @@ export function pick(
   paramsOrOptions?: Record<string, unknown> | PickOptions,
   maybeOptions?: PickOptions,
 ): string {
-  const sample = variants[defaultLocale] ?? Object.values(variants)[0] ?? '';
-  const sourceHasPlaceholder = hasPlaceholder(sample);
+  const sourceHasPlaceholder = Object.values(variants).some(hasPlaceholder);
 
   let params: Record<string, unknown> | undefined;
   let options: PickOptions | undefined;

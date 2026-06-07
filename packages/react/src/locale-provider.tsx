@@ -38,12 +38,5 @@ export function LocaleProvider(props: LocaleProviderProps): ReactElement {
   const { children } = props;
 
   const current = useSyncExternalStore(subscribeLocale, getLocale, getLocale);
-  return (
-    <LocaleContext
-      key={current}
-      value={current}
-    >
-      {children}
-    </LocaleContext>
-  );
+  return <LocaleContext value={current}>{children}</LocaleContext>;
 }

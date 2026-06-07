@@ -6,6 +6,11 @@ export function createFilter(
   include: FilterPattern,
   exclude: FilterPattern,
 ): (path: string) => boolean {
+  if (Array.isArray(include) && include.length === 0) {
+    throw new Error(
+      '[yapyak] include cannot be an empty array — no source files would be scanned.',
+    );
+  }
   const includeMatcher = toMatcher(include);
   const excludeMatcher = toMatcher(exclude);
   return (path: string): boolean => {

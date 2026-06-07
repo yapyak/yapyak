@@ -10,15 +10,15 @@ describe('t', () => {
     expectTypeOf(t('Save changes')).toEqualTypeOf<TReturn<never>>();
   });
 
-  it('brands the return with the tag names in the source', () => {
+  it('returns a tagged type for the tag names in the source', () => {
     expectTypeOf(t('Read <link>terms</link>')).toEqualTypeOf<TReturn<'link'>>();
   });
 
-  it('accepts params for a source with placeholders', () => {
+  it('holds params for a source with placeholders', () => {
     expectTypeOf(t('Hello, {name}!', { name: 'Alex' })).toExtend<string>();
   });
 
-  it('translates inline with `t.in(locale, source)`', () => {
+  it('returns an untagged string from `t.in(locale, source)`', () => {
     expectTypeOf(t.in('sv', 'Save')).toEqualTypeOf<TReturn<never>>();
   });
 
@@ -32,8 +32,8 @@ describe('t', () => {
     expectTypeOf(t.in('sv')).toEqualTypeOf<TInChain>();
   });
 
-  it('translates from `t.in(locale).at(context, source)`', () => {
-    expectTypeOf(t.in('sv').at('action', 'Open')).toEqualTypeOf<
+  it('returns an untagged string from `t.in(locale).at(context, source)`', () => {
+    expectTypeOf(t.in('sv').at('action', 'Save')).toEqualTypeOf<
       TReturn<never>
     >();
   });
@@ -42,7 +42,7 @@ describe('t', () => {
     expectTypeOf(t.at('button', 'Save')).toEqualTypeOf<TReturn<never>>();
   });
 
-  it('accepts params from `at` for a source with placeholders', () => {
+  it('holds params from `at` for a source with placeholders', () => {
     expectTypeOf(
       t.at('greeting', 'Hello, {name}!', { name: 'Alex' }),
     ).toEqualTypeOf<TReturn<never>>();
@@ -58,13 +58,13 @@ describe('t', () => {
     expectTypeOf(t.at('action')).toEqualTypeOf<TAtChain>();
   });
 
-  it('translates from `t.at(context).in(locale, source)`', () => {
-    expectTypeOf(t.at('action').in('sv', 'Open')).toEqualTypeOf<
+  it('returns an untagged string from `t.at(context).in(locale, source)`', () => {
+    expectTypeOf(t.at('action').in('sv', 'Save')).toEqualTypeOf<
       TReturn<never>
     >();
   });
 
-  it('keeps the `at` return assignable to `string`', () => {
+  it('preserves the `at` return assignable to `string`', () => {
     expectTypeOf(t.at('button', 'Save')).toExtend<string>();
   });
 

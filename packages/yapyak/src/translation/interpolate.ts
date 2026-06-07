@@ -34,6 +34,11 @@ function findMatchingBraceIndex(template: string, openIndex: number): number {
       index++;
     }
   }
+  if (depth > 0) {
+    throw new Error(
+      `Unbalanced '{' at index ${openIndex} in interpolation template: missing closing '}'.`,
+    );
+  }
   return index;
 }
 
@@ -243,6 +248,11 @@ function parseNumberOptions(styleArgument: string): Intl.NumberFormatOptions {
     if (currencyCode !== '') {
       return { currency: currencyCode, style: 'currency' };
     }
+  }
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn(
+      `[yapyak] Unknown number style "${trimmed}" — falling back to default formatting. Expected one of: decimal, percent, currency, integer.`,
+    );
   }
   return {};
 }

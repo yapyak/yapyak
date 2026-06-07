@@ -10,6 +10,7 @@ import { vanillaProcessor } from '../../compiler';
 
 const DEFAULT_AUTO_TRANSLATE_THRESHOLD = 20;
 const DEFAULT_EXAMPLES = 5;
+const DEFAULT_LOCALE = 'en';
 const DEFAULT_LOCALES_DIR = 'locales';
 const DEFAULT_COOKIE_NAME = 'locale';
 const DEFAULT_STORAGE_KEY = 'locale';
@@ -60,7 +61,7 @@ export function normalizeYapyakConfig(
   return {
     autoTranslateThreshold:
       config.autoTranslateThreshold ?? DEFAULT_AUTO_TRANSLATE_THRESHOLD,
-    defaultLocale: config.defaultLocale,
+    defaultLocale: config.defaultLocale ?? DEFAULT_LOCALE,
     detectAcceptLanguage: config.detectAcceptLanguage ?? false,
     examples: resolveExamples(config),
     exclude: resolvePatterns(config.exclude ?? DEFAULT_EXCLUDE, processors),
@@ -95,6 +96,11 @@ function normalizeEntry(
 ): string | RegExp {
   if (entry instanceof RegExp) {
     return entry;
+  }
+  if (entry === '') {
+    throw new Error(
+      '[yapyak] include/exclude entry cannot be an empty string.',
+    );
   }
   if (!isDirectoryShortcut(entry, extensions)) {
     return entry;

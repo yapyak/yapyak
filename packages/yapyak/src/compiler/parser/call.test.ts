@@ -73,7 +73,7 @@ describe('discoverCalls', () => {
     expect(kinds).toEqual(['direct', 'wrapper']);
   });
 
-  it('captures the locale expression from a direct `t.in(...)` call', () => {
+  it('extracts the locale expression from a direct `t.in(...)` call', () => {
     const sf = loadFixture('call', 'scoped-inline.ts');
     const { callSites } = discoverCalls(sf, resolveBindings(sf));
     expect(callSites).toHaveLength(2);
@@ -85,7 +85,7 @@ describe('discoverCalls', () => {
   it('extracts a chained `t.in(loc).at(ctx, src)` call', () => {
     const sf = ts.createSourceFile(
       'inline.ts',
-      "import { t } from 'yapyak';\nexport const x = t.in('sv').at('button', 'Open');\n",
+      "import { t } from 'yapyak';\nexport const x = t.in('sv').at('button', 'Save');\n",
       ts.ScriptTarget.ESNext,
       true,
       ts.ScriptKind.TS,
@@ -94,13 +94,13 @@ describe('discoverCalls', () => {
     expect(callSites).toHaveLength(1);
     expect(callSites[0]?.localeExpression?.getText()).toBe("'sv'");
     expect(callSites[0]?.contextArg?.getText()).toBe("'button'");
-    expect(callSites[0]?.sourceArg?.getText()).toBe("'Open'");
+    expect(callSites[0]?.sourceArg?.getText()).toBe("'Save'");
   });
 
   it('extracts a chained `t.at(ctx).in(loc, src)` call', () => {
     const sf = ts.createSourceFile(
       'inline.ts',
-      "import { t } from 'yapyak';\nexport const x = t.at('button').in('sv', 'Open');\n",
+      "import { t } from 'yapyak';\nexport const x = t.at('button').in('sv', 'Save');\n",
       ts.ScriptTarget.ESNext,
       true,
       ts.ScriptKind.TS,
@@ -109,7 +109,7 @@ describe('discoverCalls', () => {
     expect(callSites).toHaveLength(1);
     expect(callSites[0]?.localeExpression?.getText()).toBe("'sv'");
     expect(callSites[0]?.contextArg?.getText()).toBe("'button'");
-    expect(callSites[0]?.sourceArg?.getText()).toBe("'Open'");
+    expect(callSites[0]?.sourceArg?.getText()).toBe("'Save'");
   });
 
   it('emits YPK405 when `t.in()` result is captured in a variable', () => {
@@ -162,10 +162,10 @@ describe('discoverCalls', () => {
     expect(diagnostics.some((d) => d.code === 'YPK405')).toBe(true);
   });
 
-  it('does not emit YPK405 when `t.in()` is followed inline by `.at(...)`', () => {
+  it('emits no YPK405 when `t.in()` is followed inline by `.at(...)`', () => {
     const sf = ts.createSourceFile(
       'inline.ts',
-      "import { t } from 'yapyak';\nexport const x = t.in('sv').at('button', 'Open');\n",
+      "import { t } from 'yapyak';\nexport const x = t.in('sv').at('button', 'Save');\n",
       ts.ScriptTarget.ESNext,
       true,
       ts.ScriptKind.TS,

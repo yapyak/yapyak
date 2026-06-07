@@ -80,7 +80,11 @@ export function findOrphan(
     if (!entry) {
       continue;
     }
-    if (!best || entry.deletedAt > best.entry.deletedAt) {
+    if (
+      !best ||
+      entry.deletedAt > best.entry.deletedAt ||
+      (entry.deletedAt === best.entry.deletedAt && otherFileId < best.fileId)
+    ) {
       best = { entry, fileId: otherFileId };
     }
   }

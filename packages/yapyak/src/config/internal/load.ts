@@ -37,13 +37,29 @@ export async function loadYapyakConfig(
       continue;
     }
     const jiti = createJiti(cwd, { interopDefault: true });
-    const loaded = (await jiti.import(path)) as
-      | YapyakConfig
-      | { default: YapyakConfig };
+    let loaded: unknown;
+    try {
+      loaded = await jiti.import(path);
+    } catch (cause) {
+      const detail = cause instanceof Error ? cause.message : String(cause);
+      throw new Error(`Failed to load yapyak config from ${path}: ${detail}`, {
+        cause,
+      });
+    }
+    if (typeof loaded !== 'object' || loaded === null) {
+      throw new Error(
+        `Invalid yapyak config in ${path}: expected an object, got ${loaded === null ? 'null' : typeof loaded}.`,
+      );
+    }
     const raw =
-      typeof loaded === 'object' && loaded !== null && 'default' in loaded
-        ? loaded.default
+      'default' in loaded
+        ? (loaded as { default: YapyakConfig }).default
         : (loaded as YapyakConfig);
+    if (typeof raw !== 'object' || raw === null) {
+      throw new Error(
+        `Invalid yapyak config default export in ${path}: expected an object, got ${raw === null ? 'null' : typeof raw}.`,
+      );
+    }
     return { config: normalizeYapyakConfig(raw), configFile: path };
   }
   return { config: normalizeYapyakConfig({}), configFile: null };

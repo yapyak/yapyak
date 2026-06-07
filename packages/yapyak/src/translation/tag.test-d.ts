@@ -3,7 +3,7 @@ import type { ExtractTags } from './tag';
 import { describe, expectTypeOf, it } from 'vitest';
 
 describe('ExtractTags', () => {
-  it('infers `never` when the source has no tags', () => {
+  it('resolves `never` when the source has no tags', () => {
     expectTypeOf<ExtractTags<'Save changes'>>().toEqualTypeOf<never>();
   });
 
@@ -31,7 +31,7 @@ describe('ExtractTags', () => {
     >().toEqualTypeOf<'b'>();
   });
 
-  it('ignores closing tags and tags with attributes', () => {
+  it('blocks closing tags and tags with attributes', () => {
     expectTypeOf<
       ExtractTags<'an <a href="x">html</a> link'>
     >().toEqualTypeOf<never>();

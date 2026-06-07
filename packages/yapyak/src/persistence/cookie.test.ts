@@ -92,7 +92,7 @@ describe('cookie', () => {
       expect(cookie({ name: 'locale' }).get()).toBeUndefined();
     });
 
-    it('appends `Set-Cookie` via the registered writer', () => {
+    it('writes `Set-Cookie` via the registered writer', () => {
       setResponseHeaderWriter((name, value) => writes.push([name, value]));
       cookie({ name: 'locale' }).set('sv');
       expect(writes).toEqual([
@@ -100,13 +100,13 @@ describe('cookie', () => {
       ]);
     });
 
-    it('encodes the locale value when writing the cookie string', () => {
+    it('transforms the locale value when writing the cookie string', () => {
       setResponseHeaderWriter((name, value) => writes.push([name, value]));
       cookie({ name: 'locale' }).set('en-US');
       expect(writes[0]?.[1]).toContain('locale=en-US');
     });
 
-    it('uses the configured cookie name in the writer call', () => {
+    it('holds the configured cookie name in the writer call', () => {
       setResponseHeaderWriter((name, value) => writes.push([name, value]));
       cookie({ name: 'app-locale' }).set('de');
       expect(writes[0]?.[1]).toContain('app-locale=de');
@@ -141,13 +141,13 @@ describe('cookie', () => {
       vi.useRealTimers();
     });
 
-    it('does nothing in a non-browser environment', () => {
+    it('blocks subscription in a non-browser environment', () => {
       const onChange = vi.fn();
       cookie({ name: 'locale' }).subscribe?.(onChange);
       expect(onChange).not.toHaveBeenCalled();
     });
 
-    it('invokes the callback on a Cookie Store change', () => {
+    it('notifies the callback on a Cookie Store change', () => {
       const cookieStore = new EventTarget();
       vi.stubGlobal('window', { cookieStore });
       const onChange = vi.fn();
@@ -156,7 +156,7 @@ describe('cookie', () => {
       expect(onChange).toHaveBeenCalledOnce();
     });
 
-    it('stops invoking the callback after unsubscribe', () => {
+    it('blocks invoking the callback after unsubscribe', () => {
       const cookieStore = new EventTarget();
       vi.stubGlobal('window', { cookieStore });
       const onChange = vi.fn();
@@ -207,21 +207,21 @@ describe('cookie', () => {
         }
       }
 
-      it('invokes the callback on a history navigation', () => {
+      it('notifies the callback on a history navigation', () => {
         const onChange = vi.fn();
         cookie({ name: 'locale' }).subscribe?.(onChange);
         history.pushState({}, '', '/');
         expect(onChange).toHaveBeenCalledOnce();
       });
 
-      it('invokes the callback while polling when visible', () => {
+      it('notifies the callback while polling when visible', () => {
         const onChange = vi.fn();
         cookie({ name: 'locale' }).subscribe?.(onChange);
         vi.advanceTimersByTime(1000);
         expect(onChange).toHaveBeenCalled();
       });
 
-      it('stops polling when hidden and resumes when visible again', () => {
+      it('blocks polling when hidden and resumes when visible again', () => {
         const onChange = vi.fn();
         cookie({ name: 'locale' }).subscribe?.(onChange);
         visibilityState = 'hidden';

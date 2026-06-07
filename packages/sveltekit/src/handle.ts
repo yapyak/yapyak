@@ -11,6 +11,8 @@ const PLACEHOLDER = '%yapyak.lang%';
  * @remarks
  * Substitutes the `%yapyak.lang%` placeholder in `app.html` with the resolved locale on each request. Drains pending response headers buffered by yapyak (e.g. `Set-Cookie` from a server-side `setLocale()` call) onto the outgoing `Response`.
  *
+ * Substitution requires the placeholder to fall within a single streamed chunk. Placing it in `<html lang="%yapyak.lang%">` at the top of `app.html` keeps it in the first chunk; long head content that pushes the placeholder past a chunk boundary skips substitution.
+ *
  * @example Placeholder in app.html
  * ```html [src/app.html]
  * <html lang="%yapyak.lang%">
