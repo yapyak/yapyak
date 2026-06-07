@@ -1,10 +1,7 @@
 import type { ExtractedMessage, LocaleFile } from '../../compiler';
-import type { Processor } from '../../processor';
 import type { Config } from '../config';
 
 import {
-  DEFAULT_EXCLUDE,
-  DEFAULT_INCLUDE,
   extractFile,
   readLocaleFile,
   stringifyCanonical,
@@ -39,11 +36,7 @@ export function clean(options: CleanOptions): number {
 
   process.stdout.write(header('Locale cleanup'));
 
-  const expected = buildExpected(
-    options.projectRoot,
-    locales,
-    options.config.processors,
-  );
+  const expected = buildExpected(options.projectRoot, locales, options.config);
   const orphanSources: OrphanSource[] = [];
   const filesToWrite: Array<{ next: LocaleFile; path: string }> = [];
 
@@ -110,16 +103,16 @@ export function clean(options: CleanOptions): number {
 function buildExpected(
   projectRoot: string,
   locales: string[],
-  processors: Processor[],
+  config: Config,
 ): Record<string, Set<string>> {
-  const filter = createFilter(DEFAULT_INCLUDE, DEFAULT_EXCLUDE);
+  const filter = createFilter(config.include, config.exclude);
   const sourceFiles = walkSourceFiles({ filter, projectRoot });
   const messages: ExtractedMessage[] = [];
   for (const file of sourceFiles) {
     const result = extractFile({
       fileId: file.fileId,
       locales,
-      processors,
+      processors: config.processors,
       source: file.code,
     });
     messages.push(...result.messages);

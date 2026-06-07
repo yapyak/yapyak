@@ -55,6 +55,7 @@ describe('syncLocaleFiles', () => {
 
     syncLocaleFiles({
       defaultLocale: 'en',
+      filter: () => true,
       locales: ['en', 'sv'],
       localesDir,
       messages: [],
@@ -76,6 +77,7 @@ describe('syncLocaleFiles', () => {
 
     syncLocaleFiles({
       defaultLocale: 'en',
+      filter: () => true,
       locales: ['en', 'sv'],
       localesDir,
       messages: [],
@@ -109,6 +111,7 @@ describe('syncLocaleFiles', () => {
 
     syncLocaleFiles({
       defaultLocale: 'en',
+      filter: () => true,
       locales: ['en', 'sv'],
       localesDir,
       messages: [makeMessage('Save', 'src/a.tsx')],
@@ -133,6 +136,7 @@ describe('syncLocaleFiles', () => {
 
     syncLocaleFiles({
       defaultLocale: 'en',
+      filter: () => true,
       locales: ['en', 'sv'],
       localesDir,
       messages: [
@@ -166,6 +170,7 @@ describe('syncLocaleFiles', () => {
 
     syncLocaleFiles({
       defaultLocale: 'en',
+      filter: () => true,
       locales: ['en', 'sv'],
       localesDir,
       messages: [
@@ -184,6 +189,7 @@ describe('syncLocaleFiles', () => {
 
     syncLocaleFiles({
       defaultLocale: 'en',
+      filter: () => true,
       locales: ['en', 'sv'],
       localesDir,
       messages: [
@@ -215,6 +221,7 @@ describe('syncLocaleFiles', () => {
 
     syncLocaleFiles({
       defaultLocale: 'en',
+      filter: () => true,
       locales: ['en', 'sv'],
       localesDir,
       messages: [],
@@ -225,6 +232,7 @@ describe('syncLocaleFiles', () => {
 
     syncLocaleFiles({
       defaultLocale: 'en',
+      filter: () => true,
       locales: ['en', 'sv'],
       localesDir,
       messages: [
@@ -258,6 +266,7 @@ describe('syncLocaleFiles', () => {
 
     syncLocaleFiles({
       defaultLocale: 'en',
+      filter: () => true,
       locales: ['en', 'sv'],
       localesDir,
       messages: [makeMessage('Save', 'src/a.tsx')],
@@ -295,6 +304,7 @@ describe('syncLocaleFiles', () => {
 
     syncLocaleFiles({
       defaultLocale: 'en',
+      filter: () => true,
       locales: ['en', 'sv'],
       localesDir,
       messages: [],
@@ -312,6 +322,7 @@ describe('syncLocaleFiles', () => {
 
     syncLocaleFiles({
       defaultLocale: 'en',
+      filter: () => true,
       locales: ['en', 'sv'],
       localesDir,
       messages: [],
@@ -322,6 +333,7 @@ describe('syncLocaleFiles', () => {
 
     syncLocaleFiles({
       defaultLocale: 'en',
+      filter: () => true,
       locales: ['en', 'sv'],
       localesDir,
       messages: [makeMessage('Save', 'src/components/c.tsx')],
@@ -347,6 +359,7 @@ describe('syncLocaleFiles', () => {
 
     syncLocaleFiles({
       defaultLocale: 'en',
+      filter: () => true,
       locales: ['en', 'sv'],
       localesDir,
       messages: [makeMessage('Save', 'src/a.tsx')],
@@ -361,6 +374,104 @@ describe('syncLocaleFiles', () => {
     );
 
     warn.mockRestore();
+  });
+
+  it('preserves entries for files outside the filter scope', () => {
+    const localesDir = 'locales';
+    const yapyakDir = join(projectRoot, 'cache');
+    const localePath = join(projectRoot, localesDir, 'sv.json');
+    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    writeFileSync(
+      localePath,
+      JSON.stringify({
+        'src/app.tsx': { Hello: 'Hej' },
+        'src/app.vue': { Welcome: 'Välkommen' },
+      }),
+    );
+
+    const result = syncLocaleFiles({
+      defaultLocale: 'en',
+      filter: (fileId) => fileId.endsWith('.tsx'),
+      locales: ['en', 'sv'],
+      localesDir,
+      messages: [makeMessage('Hello', 'src/app.tsx')],
+      now: () => '2026-01-01T00:00:00.000Z',
+      projectRoot,
+      yapyakDir,
+    });
+
+    expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
+      'src/app.tsx': { Hello: 'Hej' },
+      'src/app.vue': { Welcome: 'Välkommen' },
+    });
+    expect(result.orphaned).toEqual([]);
+    expect(existsSync(join(yapyakDir, 'orphans.json'))).toBe(false);
+  });
+
+  it('returns orphaned diagnostics for sources removed from scoped files', () => {
+    const localesDir = 'locales';
+    const yapyakDir = join(projectRoot, 'cache');
+    const localePath = join(projectRoot, localesDir, 'sv.json');
+    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    writeFileSync(
+      localePath,
+      JSON.stringify({ 'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' } }),
+    );
+
+    const result = syncLocaleFiles({
+      defaultLocale: 'en',
+      filter: () => true,
+      locales: ['en', 'sv'],
+      localesDir,
+      messages: [makeMessage('Save', 'src/a.tsx')],
+      now: () => '2026-01-01T00:00:00.000Z',
+      projectRoot,
+      yapyakDir,
+    });
+
+    expect(result.orphaned).toEqual([
+      { fileId: 'src/a.tsx', locale: 'sv', source: 'Cancel' },
+    ]);
+  });
+
+  it('returns restored diagnostics when a source reappears from the orphan cache', () => {
+    const localesDir = 'locales';
+    const yapyakDir = join(projectRoot, 'cache');
+    const localePath = join(projectRoot, localesDir, 'sv.json');
+    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    writeFileSync(
+      localePath,
+      JSON.stringify({ 'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' } }),
+    );
+
+    syncLocaleFiles({
+      defaultLocale: 'en',
+      filter: () => true,
+      locales: ['en', 'sv'],
+      localesDir,
+      messages: [makeMessage('Save', 'src/a.tsx')],
+      now: () => '2026-01-01T00:00:00.000Z',
+      projectRoot,
+      yapyakDir,
+    });
+
+    const result = syncLocaleFiles({
+      defaultLocale: 'en',
+      filter: () => true,
+      locales: ['en', 'sv'],
+      localesDir,
+      messages: [
+        makeMessage('Save', 'src/a.tsx'),
+        makeMessage('Cancel', 'src/a.tsx'),
+      ],
+      now: () => '2026-01-02T00:00:00.000Z',
+      projectRoot,
+      yapyakDir,
+    });
+
+    expect(result.restored).toEqual([
+      { fileId: 'src/a.tsx', locale: 'sv', source: 'Cancel' },
+    ]);
   });
 });
 

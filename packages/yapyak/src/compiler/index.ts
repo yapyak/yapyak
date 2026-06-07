@@ -23,7 +23,9 @@ export {
   type RenameEntry,
   readLocaleData,
   readLocaleFile,
+  type SyncedSource,
   type SyncLocaleFilesOptions,
+  type SyncLocaleFilesResult,
   stringifyCanonical,
   syncLocaleFiles,
   type ValidateIcuPairsInput,
@@ -38,8 +40,6 @@ export {
   YapyakInvariantError,
 } from './catalog';
 export {
-  DEFAULT_EXCLUDE,
-  DEFAULT_INCLUDE,
   type WalkedFile,
   type WalkSourceFilesOptions,
   walkSourceFiles,

@@ -1,13 +1,8 @@
 import type { Diagnostic, ExtractedMessage } from '../compiler';
+import type { FilterPattern } from '../config';
 import type { Processor } from '../processor';
 
-import {
-  DEFAULT_EXCLUDE,
-  DEFAULT_INCLUDE,
-  extractFile,
-  readLocaleFile,
-  walkSourceFiles,
-} from '../compiler';
+import { extractFile, readLocaleFile, walkSourceFiles } from '../compiler';
 import { createFilter } from '../config/internal';
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -35,6 +30,8 @@ interface Report {
 
 interface BuildReportOptions {
   defaultLocale?: string;
+  exclude: FilterPattern;
+  include: FilterPattern;
   localesDir?: string;
   processors?: Processor[];
   projectRoot: string;
@@ -51,7 +48,7 @@ export function buildReport(options: BuildReportOptions): Report {
   const defaultLocale = options.defaultLocale ?? 'en';
   const locales = [...new Set([defaultLocale, ...fileLocales])].sort();
 
-  const filter = createFilter(DEFAULT_INCLUDE, DEFAULT_EXCLUDE);
+  const filter = createFilter(options.include, options.exclude);
   const sourceFiles = walkSourceFiles({
     filter,
     projectRoot: options.projectRoot,

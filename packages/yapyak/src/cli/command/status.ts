@@ -12,6 +12,8 @@ interface StatusOptions {
 export function status(options: StatusOptions): number {
   const report = buildReport({
     defaultLocale: options.config.defaultLocale,
+    exclude: options.config.exclude,
+    include: options.config.include,
     localesDir: options.config.localesDir,
     processors: options.config.processors,
     projectRoot: options.projectRoot,

@@ -4,6 +4,7 @@ import type {
   ExtractFileResult,
   LocaleData,
   LocaleWarning,
+  SyncLocaleFilesResult,
 } from 'yapyak/compiler';
 import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
 import type { Translator } from 'yapyak/translator';
@@ -177,15 +178,30 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       allMessages.push(...list);
     }
     const { defaultLocale, locales } = discover();
-    syncLocaleFiles({
+    const result = syncLocaleFiles({
       defaultLocale,
+      filter,
       locales,
       localesDir: getNormalized().localesDir,
       messages: allMessages,
       projectRoot,
       yapyakDir,
     });
+    reportSyncDiagnostics(result);
     localeCache = null;
+  }
+
+  function reportSyncDiagnostics(result: SyncLocaleFilesResult): void {
+    for (const entry of result.orphaned) {
+      warn(
+        `[yapyak] orphaned '${entry.source}' in ${entry.fileId} (${entry.locale}) → moved to .yapyak/orphans.json`,
+      );
+    }
+    for (const entry of result.restored) {
+      info(
+        `[yapyak] restored '${entry.source}' in ${entry.fileId} (${entry.locale}) from orphan cache`,
+      );
+    }
   }
 
   function scanAllSources(): void {
@@ -475,14 +491,16 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         for (const list of messagesByFile.values()) {
           allMessages.push(...list);
         }
-        syncLocaleFiles({
+        const result = syncLocaleFiles({
           defaultLocale,
+          filter,
           locales,
           localesDir: getNormalized().localesDir,
           messages: allMessages,
           projectRoot,
           yapyakDir,
         });
+        reportSyncDiagnostics(result);
         writeRegister({ locales, yapyakDir });
         reloadRuntimeModule();
         reloadCandidateModules();

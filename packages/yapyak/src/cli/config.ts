@@ -1,3 +1,4 @@
+import type { FilterPattern } from '../config';
 import type { NormalizedYapyakConfig } from '../config/internal';
 import type { Processor } from '../processor';
 import type { Translator } from '../translator';
@@ -10,6 +11,10 @@ export interface Config {
   defaultLocale: string | undefined;
   /** The maximum number of prior translations passed to the translator as style reference. */
   examples: number;
+  /** Glob patterns to exclude from source scanning. */
+  exclude: FilterPattern;
+  /** Glob patterns to include in source scanning. */
+  include: FilterPattern;
   /** The directory for locale JSON files, relative to the project root. */
   localesDir: string;
   /** Processors registered for framework-specific file formats. */
@@ -39,6 +44,8 @@ function toCliConfig(config: NormalizedYapyakConfig): Config {
   return {
     defaultLocale: config.defaultLocale,
     examples: config.examples,
+    exclude: config.exclude,
+    include: config.include,
     localesDir: config.localesDir,
     processors: config.processors,
     translator: config.translator,

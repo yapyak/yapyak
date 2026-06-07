@@ -18,12 +18,24 @@ export type LocaleFile = Record<string, Record<string, string>>;
 
 export interface SyncLocaleFilesOptions {
   defaultLocale: string;
+  filter: (fileId: string) => boolean;
   locales: string[];
   localesDir: string;
   messages: ExtractedMessage[];
   now?: () => string;
   projectRoot: string;
   yapyakDir?: string;
+}
+
+export interface SyncedSource {
+  fileId: string;
+  locale: string;
+  source: string;
+}
+
+export interface SyncLocaleFilesResult {
+  orphaned: SyncedSource[];
+  restored: SyncedSource[];
 }
 
 export interface WriteLocaleFileInput {
@@ -164,7 +176,9 @@ function findInvariantViolations(
   return violations;
 }
 
-export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
+export function syncLocaleFiles(
+  options: SyncLocaleFilesOptions,
+): SyncLocaleFilesResult {
   const sourcesByFile = groupSourcesByFile(options.messages);
   const extractedSources = toExtractedSourcesSet(sourcesByFile);
 
@@ -199,19 +213,28 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
     (locale) => !corruptLocales.has(locale),
   );
 
-  const inFlightDrops = extractInFlightDrops(
+  const inFlightDrops = extractInFlightDrops({
     existingByLocale,
     extractedSources,
-    healthyLocales,
-  );
+    filter: options.filter,
+    nonDefaultLocales: healthyLocales,
+  });
 
   const nextByLocale = new Map<string, LocaleFile>();
   const restoredOrphans = new Map<string, Set<string>>();
   const restoredInFlight = new Map<string, Set<string>>();
+  const restored: SyncedSource[] = [];
 
   for (const locale of healthyLocales) {
     const existing = existingByLocale.get(locale) ?? {};
     const next: LocaleFile = {};
+
+    for (const [fileId, entries] of Object.entries(existing)) {
+      if (options.filter(fileId)) {
+        continue;
+      }
+      next[fileId] = entries;
+    }
 
     for (const fileId of Object.keys(sourcesByFile).sort()) {
       const sources = sourcesByFile[fileId];
@@ -234,6 +257,7 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
           if (inFlightDrops.get(orphan.fileId)?.has(source)) {
             registerPair(restoredInFlight, orphan.fileId, source);
           }
+          restored.push({ fileId, locale, source });
           continue;
         }
         const inFlight = findInFlightDrop(inFlightDrops, fileId, source);
@@ -241,6 +265,7 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
         if (inFlight && inFlightValue) {
           fileEntries[source] = inFlightValue;
           registerPair(restoredInFlight, inFlight.fileId, source);
+          restored.push({ fileId, locale, source });
           continue;
         }
         fileEntries[source] = '';
@@ -255,6 +280,7 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
     string,
     Map<string, Record<string, string>>
   >();
+  const orphaned: SyncedSource[] = [];
   for (const [fileId, bySource] of inFlightDrops) {
     for (const [source, translations] of bySource) {
       if (restoredInFlight.get(fileId)?.has(source)) {
@@ -266,6 +292,9 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
         droppedTranslations.set(fileId, nextBySource);
       }
       nextBySource.set(source, translations);
+      for (const locale of Object.keys(translations)) {
+        orphaned.push({ fileId, locale, source });
+      }
     }
   }
 
@@ -289,6 +318,8 @@ export function syncLocaleFiles(options: SyncLocaleFilesOptions): void {
     );
     writeLocaleFile({ after: next, extractedSources, filePath: localePath });
   }
+
+  return { orphaned, restored };
 }
 
 function registerPair(
@@ -311,16 +342,23 @@ interface InFlightDropLookup {
   translations: Record<string, string>;
 }
 
-function extractInFlightDrops(
-  existingByLocale: Map<string, LocaleFile>,
-  extractedSources: Record<string, Set<string>>,
-  nonDefaultLocales: string[],
-): InFlightDrops {
+interface ExtractInFlightDropsInput {
+  existingByLocale: Map<string, LocaleFile>;
+  extractedSources: Record<string, Set<string>>;
+  filter: (fileId: string) => boolean;
+  nonDefaultLocales: string[];
+}
+
+function extractInFlightDrops(input: ExtractInFlightDropsInput): InFlightDrops {
   const drops: InFlightDrops = new Map();
-  for (const locale of nonDefaultLocales) {
-    const existing = existingByLocale.get(locale) ?? {};
+  for (const locale of input.nonDefaultLocales) {
+    const existing = input.existingByLocale.get(locale) ?? {};
     for (const [fileId, entries] of Object.entries(existing)) {
-      const extractedForFile = extractedSources[fileId] ?? new Set<string>();
+      if (!input.filter(fileId)) {
+        continue;
+      }
+      const extractedForFile =
+        input.extractedSources[fileId] ?? new Set<string>();
       for (const [source, value] of Object.entries(entries)) {
         if (!value) {
           continue;

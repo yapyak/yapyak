@@ -1,33 +1,6 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
-export const DEFAULT_INCLUDE: string[] = [
-  '**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,svelte,vue,astro}',
-];
-
-export const DEFAULT_EXCLUDE: string[] = [
-  '**/.*/**',
-  'node_modules/**',
-  'dist/**',
-  'build/**',
-  'out/**',
-  'coverage/**',
-  'playwright-report/**',
-  'test-results/**',
-  'storybook-static/**',
-  'public/**',
-  '**/routeTree.gen.*',
-  '**/*.gen.{ts,tsx,js,jsx,mjs,cjs}',
-  '**/*.test.*',
-  '**/*.spec.*',
-  '**/__tests__/**',
-  '**/cypress/**',
-  '**/playwright/**',
-  '**/e2e/**',
-  '*.config.{ts,js,mjs,cjs}',
-  '**/*.d.ts',
-];
-
 export interface WalkSourceFilesOptions {
   filter: (id: string) => boolean;
   projectRoot: string;

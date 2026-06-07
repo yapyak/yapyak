@@ -10,7 +10,28 @@ import { vanillaProcessor } from '../../compiler';
 
 const DEFAULT_AUTO_TRANSLATE_THRESHOLD = 20;
 const DEFAULT_EXAMPLES = 5;
-const DEFAULT_EXCLUDE = ['**/node_modules/**', '**/dist/**'];
+const DEFAULT_EXCLUDE = [
+  '**/.*/**',
+  'node_modules/**',
+  'dist/**',
+  'build/**',
+  'out/**',
+  'coverage/**',
+  'playwright-report/**',
+  'test-results/**',
+  'storybook-static/**',
+  'public/**',
+  '**/routeTree.gen.*',
+  '**/*.gen.{ts,tsx,js,jsx,mjs,cjs}',
+  '**/*.test.*',
+  '**/*.spec.*',
+  '**/__tests__/**',
+  '**/cypress/**',
+  '**/playwright/**',
+  '**/e2e/**',
+  '*.config.{ts,js,mjs,cjs}',
+  '**/*.d.ts',
+];
 const DEFAULT_LOCALES_DIR = 'locales';
 const DEFAULT_COOKIE_NAME = 'locale';
 const DEFAULT_STORAGE_KEY = 'locale';

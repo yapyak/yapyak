@@ -36,6 +36,8 @@ export async function translate(options: TranslateOptions): Promise<number> {
 
   const report = buildReport({
     defaultLocale: config.defaultLocale,
+    exclude: config.exclude,
+    include: config.include,
     localesDir: config.localesDir,
     processors: config.processors,
     projectRoot,
