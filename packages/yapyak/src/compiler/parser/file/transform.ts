@@ -1,11 +1,10 @@
 import type { SourceMap } from 'magic-string';
 import type { Processor } from '../../../processor';
-import type { CallSite } from '../call';
 import type { Diagnostic } from '../diagnostic';
 import type { Fragment } from '../fragment';
 import type { Placeholder } from '../placeholder';
 import type { Range } from '../range';
-import type { ExtractFileResult } from './extract';
+import type { ExtractFileResult, ParsedCallSite } from './extract';
 
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
@@ -27,10 +26,7 @@ export interface TransformFileResult {
   map: SourceMap;
 }
 
-import { parseArguments } from '../argument';
 import { findMatchingBraceIndex } from '../matching-brace';
-import { toMessageId } from '../message-id';
-import { parsePlaceholders } from '../placeholder';
 import { resolveProcessor } from '../processor';
 import { getScriptKind } from '../script-kind';
 
@@ -244,7 +240,7 @@ function extractCoreImports(sourceFile: ts.SourceFile): ts.ImportDeclaration[] {
 }
 
 interface RenderCallReplacementInput {
-  callSite: CallSite;
+  callSite: ParsedCallSite;
   defaultLocale: string;
   isSingleLocale: boolean;
   locales: string[];
@@ -269,13 +265,10 @@ function renderCallReplacement(
     pickLocal,
     translations,
   } = input;
-  const parsed = parseArguments(callSite);
-  if (parsed.source === '') {
+  if (callSite.source === '') {
     return undefined;
   }
-
-  const { placeholders } = parsePlaceholders(parsed.source);
-  const id = toMessageId(parsed.source, parsed.context);
+  const { id, placeholders, source } = callSite;
 
   if (isSingleLocale && canElide(placeholders, callSite)) {
     const singleLocale = locales[0];
@@ -284,10 +277,10 @@ function renderCallReplacement(
           defaultLocale,
           id,
           locale: singleLocale,
-          source: parsed.source,
+          source,
           translations,
         })
-      : parsed.source;
+      : source;
     const bare = tryBareElision(targetText, callSite, placeholders);
     if (bare) {
       return bare;
@@ -302,7 +295,7 @@ function renderCallReplacement(
     defaultLocale,
     id,
     locales,
-    source: parsed.source,
+    source,
     translations,
   });
   const hasPlaceholders = placeholders.length > 0;
@@ -322,7 +315,10 @@ function renderCallReplacement(
   };
 }
 
-function canElide(placeholders: Placeholder[], callSite: CallSite): boolean {
+function canElide(
+  placeholders: Placeholder[],
+  callSite: ParsedCallSite,
+): boolean {
   if (callSite.localeExpression) {
     return false;
   }
@@ -339,7 +335,7 @@ function canElide(placeholders: Placeholder[], callSite: CallSite): boolean {
 
 function renderEliminated(
   source: string,
-  callSite: CallSite,
+  callSite: ParsedCallSite,
   placeholders: Placeholder[],
 ): string {
   if (placeholders.length === 0) {
@@ -400,7 +396,7 @@ function toSafeJsString(text: string): string {
 }
 
 function getParamExpressions(
-  callSite: CallSite,
+  callSite: ParsedCallSite,
 ): Map<string, string> | undefined {
   const arg = callSite.paramsArg;
   if (!arg) {
@@ -521,7 +517,7 @@ function renderLocaleKey(locale: string): string {
   return JSON.stringify(locale);
 }
 
-function getParamArgText(callSite: CallSite): string | undefined {
+function getParamArgText(callSite: ParsedCallSite): string | undefined {
   const arg = callSite.paramsArg;
   if (!arg) {
     return undefined;
@@ -556,7 +552,7 @@ function isIdentifierChar(character: string | undefined): boolean {
 
 function tryBareElision(
   source: string,
-  callSite: CallSite,
+  callSite: ParsedCallSite,
   placeholders: Placeholder[],
 ): CallReplacement | undefined {
   if (!callSite.elision) {

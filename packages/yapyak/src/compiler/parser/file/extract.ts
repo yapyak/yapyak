@@ -41,8 +41,15 @@ export interface ExtractFileRequest {
   source: string;
 }
 
+export interface ParsedCallSite extends CallSite {
+  context?: string;
+  id: string;
+  placeholders: Placeholder[];
+  source: string;
+}
+
 export interface ExtractFileResult {
-  callSites: CallSite[];
+  callSites: ParsedCallSite[];
   diagnostics: Diagnostic[];
   messages: ExtractedMessage[];
 }
@@ -56,7 +63,7 @@ export function extractFile(request: ExtractFileRequest): ExtractFileResult {
   const fragments = processor.parseFragments(request.source);
 
   const diagnostics: Diagnostic[] = [];
-  const callSites: CallSite[] = [];
+  const callSites: ParsedCallSite[] = [];
   const messagesById = new Map<string, ExtractedMessage>();
 
   const ambientBindings = new Map<string, Binding>();
@@ -118,7 +125,7 @@ export function extractFile(request: ExtractFileRequest): ExtractFileResult {
 
 interface ExtractFromFragmentInput {
   bindings: ReturnType<typeof resolveBindings>;
-  callSites: CallSite[];
+  callSites: ParsedCallSite[];
   diagnostics: Diagnostic[];
   fragment: Fragment;
   messagesById: Map<string, ExtractedMessage>;
@@ -150,12 +157,22 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
       diagnostics.push(remapDiagnostic(diagnostic, fragment, originalSource));
     }
 
-    const callSite: CallSite = {
+    const { placeholders } = parsePlaceholders(parsed.source);
+    const id =
+      parsed.source === '' ? '' : toMessageId(parsed.source, parsed.context);
+
+    const callSite: ParsedCallSite = {
       binding: fragmentCall.binding,
+      id,
       node: fragmentCall.node,
+      placeholders,
       range: remapRange(fragmentCall.range, fragment, originalSource),
+      source: parsed.source,
       sourceArg: fragmentCall.sourceArg,
     };
+    if (parsed.context !== undefined) {
+      callSite.context = parsed.context;
+    }
     if (fragmentCall.contextArg) {
       callSite.contextArg = fragmentCall.contextArg;
     }
@@ -176,9 +193,6 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
     if (parsed.source === '') {
       continue;
     }
-
-    const { placeholders } = parsePlaceholders(parsed.source);
-    const id = toMessageId(parsed.source, parsed.context);
 
     const location: Location = {
       callSiteContext: resolveCallSiteContext(fragmentCall.node, sourceFile),
