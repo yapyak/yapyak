@@ -47,15 +47,29 @@ export interface YapyakConfig {
    */
   examples?: number;
   /**
-   * The glob patterns to exclude from extraction.
+   * The patterns to exclude from extraction.
    *
-   * @defaultValue `['**\/node_modules/**', '**\/dist/**']`
+   * @remarks
+   * Applied after {@link YapyakConfig.include}. The default covers files that legitimately live alongside source code but never contain real translation calls: tests, stories, generated code, and type declarations.
+   *
+   * @defaultValue `['**\/*.test.*', '**\/*.spec.*', '**\/__tests__/**', '**\/*.stories.{ts,tsx,js,jsx}', '**\/*.gen.{ts,tsx,js,jsx,mjs,cjs}', '**\/*.d.ts']`
    */
   exclude?: FilterPattern;
   /**
-   * The glob patterns to include for extraction.
+   * The patterns to include for extraction.
    *
-   * @defaultValue `['**\/*.{ts,tsx,jsx,js,vue,svelte,astro}']`
+   * @remarks
+   * Each string entry is either a directory shortcut (no glob characters) or an explicit glob. Directory shortcuts expand to `<entry>/**\/*.{<extensions>}` using the extensions from `processors`. Explicit globs and `RegExp` entries pass through unchanged.
+   *
+   * @defaultValue `['src']`
+   *
+   * @example Directory shortcut, glob, and `RegExp` entries
+   * ```ts
+   * defineConfig({ include: ['src'] });                       // expands to 'src/**\/*.{ts,tsx,...}'
+   * defineConfig({ include: ['src', 'app'] });                // multiple roots
+   * defineConfig({ include: ['src/components/**\/*.tsx'] });  // explicit glob, used as-is
+   * defineConfig({ include: [/\.svelte$/] });                 // RegExp, used as-is
+   * ```
    */
   include?: FilterPattern;
   /**

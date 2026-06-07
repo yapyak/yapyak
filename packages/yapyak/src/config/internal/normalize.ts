@@ -3,33 +3,20 @@ import type {
   PersistenceConfig,
 } from '../../persistence';
 import type { Processor } from '../../processor';
-import type { YapyakConfig } from '../type';
+import type { FilterPattern, YapyakConfig } from '../type';
 import type { NormalizedYapyakConfig } from './type';
 
 import { vanillaProcessor } from '../../compiler';
 
 const DEFAULT_AUTO_TRANSLATE_THRESHOLD = 20;
 const DEFAULT_EXAMPLES = 5;
+const DEFAULT_INCLUDE: FilterPattern = ['src'];
 const DEFAULT_EXCLUDE = [
-  '**/.*/**',
-  'node_modules/**',
-  'dist/**',
-  'build/**',
-  'out/**',
-  'coverage/**',
-  'playwright-report/**',
-  'test-results/**',
-  'storybook-static/**',
-  'public/**',
-  '**/routeTree.gen.*',
-  '**/*.gen.{ts,tsx,js,jsx,mjs,cjs}',
   '**/*.test.*',
   '**/*.spec.*',
   '**/__tests__/**',
-  '**/cypress/**',
-  '**/playwright/**',
-  '**/e2e/**',
-  '*.config.{ts,js,mjs,cjs}',
+  '**/*.stories.{ts,tsx,js,jsx}',
+  '**/*.gen.{ts,tsx,js,jsx,mjs,cjs}',
   '**/*.d.ts',
 ];
 const DEFAULT_LOCALES_DIR = 'locales';
@@ -47,7 +34,10 @@ export function normalizeYapyakConfig(
     detectAcceptLanguage: config.detectAcceptLanguage ?? false,
     examples: resolveExamples(config),
     exclude: config.exclude ?? DEFAULT_EXCLUDE,
-    include: config.include ?? buildDefaultInclude(processors),
+    include: resolveIncludePatterns(
+      config.include ?? DEFAULT_INCLUDE,
+      processors,
+    ),
     localesDir: config.localesDir ?? DEFAULT_LOCALES_DIR,
     persistence: normalizePersistenceConfig(config.persistence),
     preserveTranslationsOnRename:
@@ -58,7 +48,39 @@ export function normalizeYapyakConfig(
   };
 }
 
-function buildDefaultInclude(processors: Processor[]): string[] {
+function resolveIncludePatterns(
+  input: FilterPattern,
+  processors: Processor[],
+): FilterPattern {
+  const extensions = collectExtensions(processors);
+  if (input instanceof RegExp) {
+    return input;
+  }
+  if (Array.isArray(input)) {
+    return input.map((entry) => expandEntry(entry, extensions));
+  }
+  return expandEntry(input, extensions);
+}
+
+function expandEntry(
+  entry: string | RegExp,
+  extensions: string[],
+): string | RegExp {
+  if (entry instanceof RegExp) {
+    return entry;
+  }
+  if (isGlobPattern(entry)) {
+    return entry;
+  }
+  const trimmed = entry.replace(/\/+$/, '');
+  return `${trimmed}/**/*.{${extensions.join(',')}}`;
+}
+
+function isGlobPattern(pattern: string): boolean {
+  return /[*?{[]/.test(pattern);
+}
+
+function collectExtensions(processors: Processor[]): string[] {
   const allExtensions = new Set<string>();
   for (const extension of vanillaProcessor.extensions) {
     allExtensions.add(extension.replace(/^\./, ''));
@@ -68,7 +90,7 @@ function buildDefaultInclude(processors: Processor[]): string[] {
       allExtensions.add(extension.replace(/^\./, ''));
     }
   }
-  return [`**/*.{${[...allExtensions].sort().join(',')}}`];
+  return [...allExtensions].sort();
 }
 
 function resolveExamples(config: YapyakConfig): number {

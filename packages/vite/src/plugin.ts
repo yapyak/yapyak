@@ -464,7 +464,10 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
 
       const reloadCandidateModules = (): void => {
         for (const mod of server.moduleGraph.idToModuleMap.values()) {
-          if (mod.file !== null && isCandidateId(mod.file, filter)) {
+          if (
+            mod.file !== null &&
+            isCandidateId(mod.file, filter, projectRoot)
+          ) {
             void server.reloadModule(mod);
           }
         }
@@ -518,7 +521,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       });
 
       server.watcher.on('add', (path: string) => {
-        if (isCandidateId(path, filter)) {
+        if (isCandidateId(path, filter, projectRoot)) {
           pendingActionByFileId.set(toFileId(projectRoot, path), 'add');
           flush();
           return;
@@ -549,7 +552,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       });
 
       server.watcher.on('unlink', (path: string) => {
-        if (isCandidateId(path, filter)) {
+        if (isCandidateId(path, filter, projectRoot)) {
           pendingActionByFileId.set(toFileId(projectRoot, path), 'unlink');
           flush();
           return;
@@ -568,7 +571,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
     },
     enforce: 'pre',
     async handleHotUpdate(ctx): Promise<void> {
-      if (!isCandidateId(ctx.file, filter)) {
+      if (!isCandidateId(ctx.file, filter, projectRoot)) {
         return;
       }
       const fileId = toFileId(projectRoot, ctx.file);
@@ -634,7 +637,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       return null;
     },
     transform(code: string, id: string): { code: string } | null {
-      if (!isCandidateId(id, filter)) {
+      if (!isCandidateId(id, filter, projectRoot)) {
         return null;
       }
       const fileId = toFileId(projectRoot, id);
@@ -751,12 +754,15 @@ function toExtractedSourcesForFile(
   return { [fileId]: sources };
 }
 
-function isCandidateId(id: string, filter: (id: string) => boolean): boolean {
+function isCandidateId(
+  id: string,
+  filter: (fileId: string) => boolean,
+  projectRoot: string,
+): boolean {
   if (id.startsWith('\0')) {
     return false;
   }
-  const path = id.split('?')[0] ?? id;
-  return filter(path);
+  return filter(toFileId(projectRoot, id));
 }
 
 function runYapyakCommand(args: string): string {

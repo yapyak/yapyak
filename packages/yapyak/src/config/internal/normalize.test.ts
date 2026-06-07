@@ -67,7 +67,9 @@ describe('normalizeYapyakConfig', () => {
   it('holds only vanilla extensions in the include glob when no processors are registered', () => {
     const result = normalizeYapyakConfig({});
 
-    expect(result.include).toEqual(['**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}']);
+    expect(result.include).toEqual([
+      'src/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}',
+    ]);
   });
 
   it("builds the include glob from each registered processor's extensions", () => {
@@ -76,7 +78,7 @@ describe('normalizeYapyakConfig', () => {
     });
 
     expect(result.include).toEqual([
-      '**/*.{cjs,cts,js,jsx,mjs,mts,svelte,ts,tsx}',
+      'src/**/*.{cjs,cts,js,jsx,mjs,mts,svelte,ts,tsx}',
     ]);
   });
 
@@ -89,7 +91,7 @@ describe('normalizeYapyakConfig', () => {
     });
 
     expect(result.include).toEqual([
-      '**/*.{cjs,cts,js,jsx,mjs,mts,svelte,ts,tsx,vue}',
+      'src/**/*.{cjs,cts,js,jsx,mjs,mts,svelte,ts,tsx,vue}',
     ]);
   });
 
@@ -99,7 +101,7 @@ describe('normalizeYapyakConfig', () => {
     });
 
     expect(result.include).toEqual([
-      '**/*.{cjs,cts,js,jsx,mjs,mts,svelte,ts,tsx}',
+      'src/**/*.{cjs,cts,js,jsx,mjs,mts,svelte,ts,tsx}',
     ]);
   });
 
@@ -110,6 +112,43 @@ describe('normalizeYapyakConfig', () => {
     });
 
     expect(result.include).toEqual(['src/**/*.ts']);
+  });
+
+  it('extends a directory shortcut into a glob with the registered extensions', () => {
+    const result = normalizeYapyakConfig({
+      include: ['app'],
+      processors: [makeProcessor('vue', ['.vue'])],
+    });
+
+    expect(result.include).toEqual([
+      'app/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx,vue}',
+    ]);
+  });
+
+  it('preserves glob entries verbatim while extending directory entries in the same array', () => {
+    const result = normalizeYapyakConfig({
+      include: ['src', 'app/**/*.tsx'],
+    });
+
+    expect(result.include).toEqual([
+      'src/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}',
+      'app/**/*.tsx',
+    ]);
+  });
+
+  it('preserves a trailing-slash directory shortcut without doubling separators', () => {
+    const result = normalizeYapyakConfig({ include: ['src/'] });
+
+    expect(result.include).toEqual([
+      'src/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}',
+    ]);
+  });
+
+  it('preserves a `RegExp` include verbatim', () => {
+    const pattern = /\.svelte$/;
+    const result = normalizeYapyakConfig({ include: pattern });
+
+    expect(result.include).toBe(pattern);
   });
 });
 
