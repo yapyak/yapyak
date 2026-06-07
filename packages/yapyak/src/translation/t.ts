@@ -3,10 +3,6 @@ import type { ExtractTParams } from './t-param';
 import type { ExtractTags } from './tag';
 import type { ValidateSource } from './validate-source';
 
-import { getLocale } from '../locale';
-import { runTrackers } from '../tracker';
-import { interpolate } from './interpolate';
-
 /**
  * The params for a source string's placeholders.
  *
@@ -139,7 +135,9 @@ export interface TFn {
  * Translates a source string for the active locale.
  *
  * @remarks
- * Yapyak's compiler rewrites every `t()` call site at build to inline the active-locale's catalog lookup. The runtime returns the source string verbatim (after interpolating any placeholders) for paths the compiler did not touch — it does not perform translation lookups. The source argument must be a string literal — wrapping breaks extraction. Placeholders use `{name}` and their values are type-checked from the source literal. A fixed locale is pinned via `t.in(locale, source)`, and modifiers chain inline: `t.in('sv').at('action', 'Save')`.
+ * Yapyak's compiler rewrites every `t()` call site at build to inline the active-locale's catalog lookup. The source argument must be a string literal — wrapping breaks extraction. Placeholders use `{name}` and their values are type-checked from the source literal. A fixed locale is pinned via `t.in(locale, source)`, and modifiers chain inline: `t.in('sv').at('action', 'Save')`.
+ *
+ * Every `t.*` call is a compile-time construct — the runtime form throws if it was not rewritten by the build-tool plugin. Yapyak requires the plugin to be registered; the runtime is not a fallback translator.
  *
  * @example Translate, with and without placeholders
  * ```ts
@@ -172,101 +170,13 @@ export interface TFn {
  * t.in('sv').at('action', 'Open');
  * ```
  */
-export const t: TFn = createTFn();
+export const t: TFn = (() => throwNotCompiled('t')) as unknown as TFn;
+t.at = (() => throwNotCompiled('t.at')) as TFn['at'];
+t.in = (() => throwNotCompiled('t.in')) as TFn['in'];
 
-function createTFn(): TFn {
-  function makeTranslation(
-    locale: string | undefined,
-    source: string,
-    params: Record<string, unknown> | undefined,
-  ): string {
-    runTrackers();
-    if (params === undefined) {
-      return source;
-    }
-    return interpolate(source, params, locale ?? getLocale());
-  }
-
-  const translate = <T extends string>(
-    source: T,
-    ...args: TArgs<T>
-  ): TReturn<ExtractTags<T>> =>
-    makeTranslation(
-      undefined,
-      source,
-      args[0] as Record<string, unknown> | undefined,
-    ) as TReturn<ExtractTags<T>>;
-
-  function inMethod<T extends string>(
-    locale: string,
-    source: T,
-    ...args: TArgs<T>
-  ): TReturn<ExtractTags<T>>;
-  function inMethod(locale: string): TInChain;
-  function inMethod(
-    locale: string,
-    source?: string,
-    ...args: unknown[]
-  ): unknown {
-    if (source === undefined) {
-      return {
-        at: (
-          context: string,
-          atSource: string,
-          ...atArgs: unknown[]
-        ): string => {
-          void context;
-          return makeTranslation(
-            locale,
-            atSource,
-            atArgs[0] as Record<string, unknown> | undefined,
-          );
-        },
-      };
-    }
-    return makeTranslation(
-      locale,
-      source,
-      args[0] as Record<string, unknown> | undefined,
-    );
-  }
-
-  function atMethod<T extends string>(
-    context: string,
-    source: T,
-    ...args: TArgs<T>
-  ): TReturn<ExtractTags<T>>;
-  function atMethod(context: string): TAtChain;
-  function atMethod(
-    context: string,
-    source?: string,
-    ...args: unknown[]
-  ): unknown {
-    void context;
-    if (source === undefined) {
-      return {
-        in: (
-          locale: string,
-          inSource: string,
-          ...inArgs: unknown[]
-        ): string => {
-          return makeTranslation(
-            locale,
-            inSource,
-            inArgs[0] as Record<string, unknown> | undefined,
-          );
-        },
-      };
-    }
-    return makeTranslation(
-      undefined,
-      source,
-      args[0] as Record<string, unknown> | undefined,
-    );
-  }
-
-  return Object.assign(translate, {
-    at: atMethod,
-    in: inMethod,
-  }) as TFn;
+function throwNotCompiled(method: 't' | 't.at' | 't.in'): never {
+  throw new Error(
+    `[yapyak] ${method}() was not rewritten at build time. ` +
+      `Install and register a yapyak build-tool plugin (e.g. @yapyak/vite) in your bundler config.`,
+  );
 }
