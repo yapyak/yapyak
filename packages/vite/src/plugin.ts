@@ -9,14 +9,13 @@ import type {
 } from 'yapyak/compiler';
 import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
 import type { Translator } from 'yapyak/translator';
+import type { LocaleResolver } from './locale-resolver';
 
 import {
   autoTranslate,
   detectRenames,
-  discoverLocales,
   extractFile,
   migrateLocales,
-  readLocaleData,
   syncLocaleFiles,
   transformFile,
   validateLocaleCode,
@@ -29,31 +28,16 @@ import {
   loadYapyakConfig,
 } from 'yapyak/config/internal';
 
+import { createLocaleResolver } from './locale-resolver';
+import {
+  HMR_LISTENER,
+  isRuntimeExternal,
+  RUNTIME_ID,
+  RUNTIME_NO_EXTERNAL,
+  RUNTIME_RESOLVED,
+} from './virtual-runtime';
 import { readFileSync } from 'node:fs';
 import { basename, extname, join, relative, sep } from 'node:path';
-
-const RUNTIME_ID = 'yapyak/runtime';
-const RUNTIME_RESOLVED = '\0yapyak:runtime';
-const RUNTIME_NO_EXTERNAL: (string | RegExp)[] = ['yapyak', /^@yapyak\//];
-
-function isRuntimeExternal(id: string): boolean {
-  return RUNTIME_NO_EXTERNAL.some((pattern) =>
-    typeof pattern === 'string' ? pattern === id : pattern.test(id),
-  );
-}
-
-const HMR_LISTENER = [
-  'if (import.meta.hot) {',
-  "  import.meta.hot.on('yapyak:locale-added', (data) => {",
-  // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
-  "    console.log(`[yapyak] New locale '${data.locale}' detected. ${data.hint}`);",
-  '  });',
-  "  import.meta.hot.on('yapyak:locale-removed', (data) => {",
-  // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
-  "    console.log(`[yapyak] Locale '${data.locale}' removed.`);",
-  '  });',
-  '}',
-].join('\n');
 
 interface CallSitePosition {
   column: number;
@@ -124,9 +108,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
   const messagesByFile = new Map<string, ExtractedMessage[]>();
   let projectRoot = process.cwd();
   let yapyakDir = '';
-  let localeCache: LocaleData | null = null;
-  let resolved: { defaultLocale: string; locales: string[] } | null = null;
-  let base: { defaultLocale: string; locales: string[] } | null = null;
+  let resolver: LocaleResolver | null = null;
   let normalized: NormalizedYapyakConfig | null = null;
   let filter: (path: string) => boolean = () => false;
   let configFile: string | null = null;
@@ -143,42 +125,13 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
     return normalized;
   }
 
-  function discoverFull(): { defaultLocale: string; locales: string[] } {
-    if (base === null) {
-      const config = getNormalized();
-      base = discoverLocales({
-        defaultLocale: config.defaultLocale,
-        localesDir: config.localesDir,
-        projectRoot,
-      });
+  function getResolver(): LocaleResolver {
+    if (resolver === null) {
+      throw new Error(
+        '[yapyak] plugin used before configResolved — config is not loaded yet.',
+      );
     }
-    return base;
-  }
-
-  function discover(): { defaultLocale: string; locales: string[] } {
-    if (resolved === null) {
-      const full = discoverFull();
-      if (fixedLocale !== undefined) {
-        resolved = {
-          defaultLocale: full.defaultLocale,
-          locales: [fixedLocale],
-        };
-      } else {
-        resolved = full;
-      }
-    }
-    return resolved;
-  }
-
-  function getLocaleData(): LocaleData {
-    if (localeCache === null) {
-      localeCache = readLocaleData({
-        locales: discover().locales,
-        localesDir: getNormalized().localesDir,
-        projectRoot,
-      });
-    }
-    return localeCache;
+    return resolver;
   }
 
   function syncAll(): void {
@@ -186,7 +139,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
     for (const list of messagesByFile.values()) {
       allMessages.push(...list);
     }
-    const { defaultLocale, locales } = discoverFull();
+    const { defaultLocale, locales } = getResolver().getProjectLocales();
     const result = syncLocaleFiles({
       defaultLocale,
       filter,
@@ -197,7 +150,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       yapyakDir,
     });
     emitSyncDiagnostics(result);
-    localeCache = null;
+    getResolver().invalidateData();
   }
 
   function emitSyncDiagnostics(result: SyncLocaleFilesResult): void {
@@ -215,7 +168,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
 
   function scanAllSources(): void {
     const files = walkSourceFiles({ filter, projectRoot });
-    const { locales } = discover();
+    const { locales } = getResolver().getEmittedLocales();
     const processors = getNormalized().processors;
     messagesByFile.clear();
     for (const file of files) {
@@ -249,7 +202,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
     if (allMessages.length === 0) {
       return;
     }
-    const { defaultLocale, locales } = discoverFull();
+    const { defaultLocale, locales } = getResolver().getProjectLocales();
     const translatableLocales = locales.filter(
       (locale) => validateLocaleCode(locale).valid,
     );
@@ -257,7 +210,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       allMessages,
       translatableLocales,
       defaultLocale,
-      getLocaleData(),
+      getResolver().getLocaleData(),
     );
     if (missing.size === 0) {
       return;
@@ -310,7 +263,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         yapyakDir,
       });
       if (result.translated > 0) {
-        localeCache = null;
+        getResolver().invalidateData();
       }
       const elapsed = formatElapsed(Date.now() - input.startedAt);
       if (result.errors.length === 0) {
@@ -399,25 +352,30 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
             `Use an array form for ssr.external, or have your function return false/null for 'yapyak' and 'yapyak/runtime'.`,
         );
       }
-      const discovered = discoverLocales({
+      resolver = createLocaleResolver({
         defaultLocale: result.config.defaultLocale,
+        fixedLocale,
         localesDir: result.config.localesDir,
         projectRoot,
       });
-      for (const warning of discovered.warnings) {
+      const discovery = resolver.getDiscovery();
+      for (const warning of discovery.warnings) {
         warn(renderLocaleWarning(warning, result.config.localesDir));
       }
       if (
         fixedLocale !== undefined &&
-        !discovered.locales.includes(fixedLocale)
+        !discovery.locales.includes(fixedLocale)
       ) {
         throw new Error(
           `[yapyak] fixedLocale '${fixedLocale}' is not configured in this project. ` +
-            `Available locales: ${discovered.locales.join(', ')}. ` +
+            `Available locales: ${discovery.locales.join(', ')}. ` +
             `Either add '${fixedLocale}' to your locales/ directory or pick an existing locale.`,
         );
       }
-      writeRegister({ locales: discover().locales, yapyakDir });
+      writeRegister({
+        locales: resolver.getEmittedLocales().locales,
+        yapyakDir,
+      });
     },
     configureServer(server): void {
       if (configFile !== null) {
@@ -429,7 +387,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         if (pendingActionByFileId.size === 0) {
           return;
         }
-        const { locales } = discover();
+        const { locales } = getResolver().getEmittedLocales();
         for (const [fileId, kind] of pendingActionByFileId) {
           if (kind === 'unlink') {
             messagesByFile.delete(fileId);
@@ -498,16 +456,14 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       };
 
       const invalidateLocaleData = debounce(() => {
-        localeCache = null;
+        getResolver().invalidateData();
         reloadCandidateModules();
       }, 50);
       teardownCallbacks.push(invalidateLocaleData.cancel);
 
       const syncLocaleStructure = debounce(() => {
-        resolved = null;
-        base = null;
-        localeCache = null;
-        const { defaultLocale, locales } = discoverFull();
+        getResolver().invalidateStructure();
+        const { defaultLocale, locales } = getResolver().getProjectLocales();
         const allMessages: ExtractedMessage[] = [];
         for (const list of messagesByFile.values()) {
           allMessages.push(...list);
@@ -522,7 +478,10 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
           yapyakDir,
         });
         emitSyncDiagnostics(result);
-        writeRegister({ locales: discover().locales, yapyakDir });
+        writeRegister({
+          locales: getResolver().getEmittedLocales().locales,
+          yapyakDir,
+        });
         reloadRuntimeModule();
         reloadCandidateModules();
       }, 50);
@@ -594,7 +553,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       }
       const fileId = toFileId(projectRoot, ctx.file);
       const code = await ctx.read();
-      const { defaultLocale, locales } = discover();
+      const { defaultLocale, locales } = getResolver().getEmittedLocales();
       const result = extractFile({
         fileId,
         locales,
@@ -622,7 +581,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
           projectRoot,
           renames,
         });
-        localeCache = null;
+        getResolver().invalidateData();
       }
       if (after.length === 0) {
         messagesByFile.delete(fileId);
@@ -635,11 +594,11 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
     load(id: string): string | null {
       if (id === RUNTIME_RESOLVED) {
         const normalized = getNormalized();
-        const resolved = discover();
+        const emitted = getResolver().getEmittedLocales();
         const runtime = defineRuntime({
-          defaultLocale: resolved.defaultLocale,
+          defaultLocale: emitted.defaultLocale,
           detectAcceptLanguage: normalized.detectAcceptLanguage,
-          locales: resolved.locales,
+          locales: emitted.locales,
           persistence: normalized.persistence,
           syncHtmlLang: normalized.syncHtmlLang,
         });
@@ -662,7 +621,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         return null;
       }
       const fileId = toFileId(projectRoot, id);
-      const { locales } = discover();
+      const { locales } = getResolver().getEmittedLocales();
       const processors = getNormalized().processors;
       const extracted = extractFile({
         fileId,
@@ -677,11 +636,11 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       const translations = buildTranslations({
         extracted,
         fileId,
-        localeData: getLocaleData(),
+        localeData: getResolver().getLocaleData(),
         locales,
       });
       const result = transformFile({
-        defaultLocale: discover().defaultLocale,
+        defaultLocale: getResolver().getEmittedLocales().defaultLocale,
         extracted,
         fileId,
         locales,
