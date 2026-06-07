@@ -1,7 +1,9 @@
+import type { Processor } from '../../processor';
 import type { ContextLevel, Translator } from '../../translator';
 
 import { describe, expect, it } from 'vitest';
 
+import { createProcessor } from '../../processor';
 import { createTranslator } from '../../translator';
 import { normalizeYapyakConfig } from './normalize';
 
@@ -61,4 +63,61 @@ describe('normalizeYapyakConfig', () => {
 
     expect(result.examples).toBe(0);
   });
+
+  it('holds only vanilla extensions in the include glob when no processors are registered', () => {
+    const result = normalizeYapyakConfig({});
+
+    expect(result.include).toEqual(['**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}']);
+  });
+
+  it("builds the include glob from each registered processor's extensions", () => {
+    const result = normalizeYapyakConfig({
+      processors: [makeProcessor('svelte', ['.svelte'])],
+    });
+
+    expect(result.include).toEqual([
+      '**/*.{cjs,cts,js,jsx,mjs,mts,svelte,ts,tsx}',
+    ]);
+  });
+
+  it('builds the include glob from extensions across multiple processors', () => {
+    const result = normalizeYapyakConfig({
+      processors: [
+        makeProcessor('svelte', ['.svelte']),
+        makeProcessor('vue', ['.vue']),
+      ],
+    });
+
+    expect(result.include).toEqual([
+      '**/*.{cjs,cts,js,jsx,mjs,mts,svelte,ts,tsx,vue}',
+    ]);
+  });
+
+  it('folds overlapping extensions across processors into a single glob entry', () => {
+    const result = normalizeYapyakConfig({
+      processors: [makeProcessor('custom', ['.ts', '.svelte'])],
+    });
+
+    expect(result.include).toEqual([
+      '**/*.{cjs,cts,js,jsx,mjs,mts,svelte,ts,tsx}',
+    ]);
+  });
+
+  it('preserves an explicit include over the derived default', () => {
+    const result = normalizeYapyakConfig({
+      include: ['src/**/*.ts'],
+      processors: [makeProcessor('svelte', ['.svelte'])],
+    });
+
+    expect(result.include).toEqual(['src/**/*.ts']);
+  });
 });
+
+function makeProcessor(id: string, extensions: string[]): Processor {
+  return createProcessor({
+    applyImport: () => undefined,
+    extensions,
+    id,
+    parseFragments: () => [],
+  });
+}

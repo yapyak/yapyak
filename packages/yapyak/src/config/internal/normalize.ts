@@ -2,12 +2,14 @@ import type {
   NormalizedPersistenceConfig,
   PersistenceConfig,
 } from '../../persistence';
+import type { Processor } from '../../processor';
 import type { YapyakConfig } from '../type';
 import type { NormalizedYapyakConfig } from './type';
 
+import { vanillaProcessor } from '../../compiler';
+
 const DEFAULT_AUTO_TRANSLATE_THRESHOLD = 20;
 const DEFAULT_EXAMPLES = 5;
-const DEFAULT_INCLUDE = ['**/*.{ts,tsx,jsx,js,vue,svelte,astro}'];
 const DEFAULT_EXCLUDE = ['**/node_modules/**', '**/dist/**'];
 const DEFAULT_LOCALES_DIR = 'locales';
 const DEFAULT_COOKIE_NAME = 'locale';
@@ -16,6 +18,7 @@ const DEFAULT_STORAGE_KEY = 'locale';
 export function normalizeYapyakConfig(
   config: YapyakConfig,
 ): NormalizedYapyakConfig {
+  const processors = config.processors ?? [];
   return {
     autoTranslateThreshold:
       config.autoTranslateThreshold ?? DEFAULT_AUTO_TRANSLATE_THRESHOLD,
@@ -23,15 +26,28 @@ export function normalizeYapyakConfig(
     detectAcceptLanguage: config.detectAcceptLanguage ?? false,
     examples: resolveExamples(config),
     exclude: config.exclude ?? DEFAULT_EXCLUDE,
-    include: config.include ?? DEFAULT_INCLUDE,
+    include: config.include ?? buildDefaultInclude(processors),
     localesDir: config.localesDir ?? DEFAULT_LOCALES_DIR,
     persistence: normalizePersistenceConfig(config.persistence),
     preserveTranslationsOnRename:
       config.preserveTranslationsOnRename ?? !config.translator,
-    processors: config.processors ?? [],
+    processors,
     syncHtmlLang: config.syncHtmlLang ?? false,
     translator: config.translator,
   };
+}
+
+function buildDefaultInclude(processors: Processor[]): string[] {
+  const allExtensions = new Set<string>();
+  for (const extension of vanillaProcessor.extensions) {
+    allExtensions.add(extension.replace(/^\./, ''));
+  }
+  for (const processor of processors) {
+    for (const extension of processor.extensions) {
+      allExtensions.add(extension.replace(/^\./, ''));
+    }
+  }
+  return [`**/*.{${[...allExtensions].sort().join(',')}}`];
 }
 
 function resolveExamples(config: YapyakConfig): number {
