@@ -8,6 +8,7 @@ import {
   SYNC_HTML_LANG,
 } from 'yapyak/runtime';
 
+import { registerHotDispose } from '../hot-dispose';
 import { buildPersistence } from '../persistence';
 import { readRequest } from './request-reader';
 import { resolveLocale } from './resolve';
@@ -154,6 +155,14 @@ export function subscribeLocale(fn: (locale: Locale) => void): () => void {
   return (): void => {
     listeners.delete(fn);
   };
+}
+
+export function autoSubscribeLocale(
+  meta: ImportMeta,
+  fn: (locale: Locale) => void,
+): void {
+  const unsubscribe = subscribeLocale(fn);
+  registerHotDispose(meta, unsubscribe);
 }
 
 export function resetLocale(): void {

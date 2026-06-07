@@ -3,15 +3,7 @@ import type { Locale } from 'yapyak';
 
 import { customRef } from 'vue';
 import { getLocale, setLocale } from 'yapyak';
-import { registerTracker, subscribeLocale } from 'yapyak/internal';
-
-declare global {
-  interface ImportMeta {
-    hot?: {
-      dispose(callback: () => void): void;
-    };
-  }
-}
+import { autoRegisterTracker, autoSubscribeLocale } from 'yapyak/internal';
 
 /**
  * Reactive locale ref.
@@ -37,16 +29,10 @@ declare global {
  */
 export const locale: Ref<Locale> = customRef<Locale>((track, trigger) => {
   if (typeof window !== 'undefined') {
-    const unsubscribe = subscribeLocale(trigger);
-    const untrack = registerTracker(() => {
+    autoSubscribeLocale(import.meta, trigger);
+    autoRegisterTracker(import.meta, () => {
       void locale.value;
     });
-    if (import.meta.hot) {
-      import.meta.hot.dispose(() => {
-        unsubscribe();
-        untrack();
-      });
-    }
   }
   return {
     get(): Locale {

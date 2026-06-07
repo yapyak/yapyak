@@ -9,6 +9,7 @@ vi.mock('yapyak/runtime', () => ({
 }));
 
 const {
+  autoSubscribeLocale,
   defaultLocale,
   getLocale,
   locales,
@@ -16,6 +17,12 @@ const {
   setLocale,
   subscribeLocale,
 } = await import('./store');
+
+function makeMeta(
+  hot?: { dispose(callback: () => void): void } | undefined,
+): ImportMeta {
+  return { ...import.meta, hot };
+}
 
 afterEach(() => {
   resetLocale();
@@ -71,6 +78,29 @@ describe('subscribeLocale', () => {
     const listener = vi.fn();
     const unsubscribe = subscribeLocale(listener);
     unsubscribe();
+    setLocale('sv');
+    expect(listener).not.toHaveBeenCalled();
+  });
+});
+
+describe('autoSubscribeLocale', () => {
+  it('notifies the subscriber on locale change', () => {
+    const listener = vi.fn();
+    autoSubscribeLocale(makeMeta(), listener);
+    setLocale('sv');
+    expect(listener).toHaveBeenCalledWith('sv');
+  });
+
+  it('notifies meta.hot.dispose with an unsubscribe handle', () => {
+    const dispose = vi.fn();
+    const listener = vi.fn();
+
+    autoSubscribeLocale(makeMeta({ dispose }), listener);
+
+    expect(dispose).toHaveBeenCalledOnce();
+    const unsubscribe = dispose.mock.calls[0]?.[0];
+    expect(unsubscribe).toBeTypeOf('function');
+    unsubscribe?.();
     setLocale('sv');
     expect(listener).not.toHaveBeenCalled();
   });

@@ -1,5 +1,10 @@
-export { resetLocale, subscribeLocale } from './locale';
-export { registerTracker, runTrackers } from './tracker';
+export { registerHotDispose } from './hot-dispose';
+export {
+  autoSubscribeLocale,
+  resetLocale,
+  subscribeLocale,
+} from './locale';
+export { autoRegisterTracker, registerTracker, runTrackers } from './tracker';
 export {
   parseRichText,
   pick,

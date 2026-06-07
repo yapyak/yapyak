@@ -8,6 +8,7 @@ export {
   setResponseHeaderWriter,
 } from './response-header-writer';
 export {
+  autoSubscribeLocale,
   defaultLocale,
   getLocale,
   isLocale,

@@ -1,31 +1,17 @@
 import type { Locale } from 'yapyak';
 
 import { getLocale, setLocale } from 'yapyak';
-import { registerTracker, subscribeLocale } from 'yapyak/internal';
-
-declare global {
-  interface ImportMeta {
-    hot?: {
-      dispose(callback: () => void): void;
-    };
-  }
-}
+import { autoRegisterTracker, autoSubscribeLocale } from 'yapyak/internal';
 
 let active = $state(getLocale());
 
 if (typeof window !== 'undefined') {
-  const unsubscribe = subscribeLocale((next) => {
+  autoSubscribeLocale(import.meta, (next) => {
     active = next;
   });
-  const untrack = registerTracker(() => {
+  autoRegisterTracker(import.meta, () => {
     void active;
   });
-  if (import.meta.hot) {
-    import.meta.hot.dispose(() => {
-      unsubscribe();
-      untrack();
-    });
-  }
 }
 
 /**
