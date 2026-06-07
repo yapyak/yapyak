@@ -50,15 +50,25 @@ export interface YapyakConfig {
    * The patterns to exclude from extraction.
    *
    * @remarks
-   * Applied after {@link YapyakConfig.include}. Each string entry is either a directory shortcut (no glob characters) or an explicit glob. Directory shortcuts expand to `<entry>/**\/*.{<extensions>}` using the extensions from `processors`. Explicit globs and `RegExp` entries pass through unchanged. The default covers files that legitimately live alongside source code but never contain real translation calls: tests, stories, generated code, and type declarations.
+   * Applied after {@link YapyakConfig.include}. Each string entry is either a directory shortcut (no glob characters) or an explicit glob. Directory shortcuts expand to `<entry>/**\/*.{<extensions>}` using the extensions from `processors`. Explicit globs and `RegExp` entries pass through unchanged. The default covers files that legitimately live alongside source code but never contain real translation calls: tests, stories, generated code, and type declarations. Set the field to replace the default entirely; spread `DEFAULT_EXCLUDE` to keep the defaults and add entries on top.
    *
-   * @defaultValue `['**\/*.test.*', '**\/*.spec.*', '**\/__tests__/**', '**\/*.stories.{ts,tsx,js,jsx}', '**\/*.gen.{ts,tsx,js,jsx,mjs,cjs}', '**\/*.d.ts']`
+   * @defaultValue `['**\/*.{test,spec}.*', '**\/__tests__/**', '**\/*.{stories,gen}.{ts,tsx,js,jsx,mjs,cjs}', '**\/*.d.ts']`
    *
    * @example Directory shortcut, glob, and `RegExp` entries
    * ```ts
    * defineConfig({ exclude: ['legacy'] });                    // expands to 'legacy/**\/*.{ts,tsx,...}'
-   * defineConfig({ exclude: ['legacy', '**\/*.test.*'] });    // mixed shortcut and explicit glob
+   * defineConfig({ exclude: ['legacy', 'sandbox'] });         // multiple directories
+   * defineConfig({ exclude: ['**\/*.test.*'] });              // explicit glob, used as-is
    * defineConfig({ exclude: [/\.deprecated\.ts$/] });         // RegExp, used as-is
+   * ```
+   *
+   * @example Extend the defaults
+   * ```ts
+   * import { DEFAULT_EXCLUDE, defineConfig } from 'yapyak/config';
+   *
+   * export default defineConfig({
+   *   exclude: [...DEFAULT_EXCLUDE, 'legacy'],
+   * });
    * ```
    */
   exclude?: FilterPattern;
@@ -66,7 +76,7 @@ export interface YapyakConfig {
    * The patterns to include for extraction.
    *
    * @remarks
-   * Each string entry is either a directory shortcut (no glob characters) or an explicit glob. Directory shortcuts expand to `<entry>/**\/*.{<extensions>}` using the extensions from `processors`. Explicit globs and `RegExp` entries pass through unchanged.
+   * Each string entry is either a directory shortcut (no glob characters) or an explicit glob. Directory shortcuts expand to `<entry>/**\/*.{<extensions>}` using the extensions from `processors`. Explicit globs and `RegExp` entries pass through unchanged. Set the field to replace the default entirely; spread `DEFAULT_INCLUDE` to keep the defaults and add entries on top.
    *
    * @defaultValue `['src']`
    *
@@ -76,6 +86,15 @@ export interface YapyakConfig {
    * defineConfig({ include: ['src', 'app'] });                // multiple roots
    * defineConfig({ include: ['src/components/**\/*.tsx'] });  // explicit glob, used as-is
    * defineConfig({ include: [/\.svelte$/] });                 // RegExp, used as-is
+   * ```
+   *
+   * @example Extend the defaults
+   * ```ts
+   * import { DEFAULT_INCLUDE, defineConfig } from 'yapyak/config';
+   *
+   * export default defineConfig({
+   *   include: [...DEFAULT_INCLUDE, 'app'],
+   * });
    * ```
    */
   include?: FilterPattern;

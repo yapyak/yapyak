@@ -10,18 +10,48 @@ import { vanillaProcessor } from '../../compiler';
 
 const DEFAULT_AUTO_TRANSLATE_THRESHOLD = 20;
 const DEFAULT_EXAMPLES = 5;
-const DEFAULT_INCLUDE: FilterPattern = ['src'];
-const DEFAULT_EXCLUDE = [
-  '**/*.test.*',
-  '**/*.spec.*',
-  '**/__tests__/**',
-  '**/*.stories.{ts,tsx,js,jsx}',
-  '**/*.gen.{ts,tsx,js,jsx,mjs,cjs}',
-  '**/*.d.ts',
-];
 const DEFAULT_LOCALES_DIR = 'locales';
 const DEFAULT_COOKIE_NAME = 'locale';
 const DEFAULT_STORAGE_KEY = 'locale';
+
+/**
+ * The default patterns included for source extraction.
+ *
+ * @remarks
+ * Exposed as a spread-friendly constant so a project can keep yapyak's defaults and add its own entries on top.
+ *
+ * @example Extend the default include list
+ * ```ts
+ * import { DEFAULT_INCLUDE, defineConfig } from 'yapyak/config';
+ *
+ * export default defineConfig({
+ *   include: [...DEFAULT_INCLUDE, 'app'],
+ * });
+ * ```
+ */
+export const DEFAULT_INCLUDE: FilterPattern = ['src'];
+
+/**
+ * The default patterns excluded from source extraction.
+ *
+ * @remarks
+ * Exposed as a spread-friendly constant so a project can keep yapyak's defaults and add its own entries on top. Covers files that legitimately live alongside source code but never contain real translation calls: tests, stories, generated code, and type declarations.
+ *
+ * @example Extend the default exclude list
+ * ```ts
+ * import { DEFAULT_EXCLUDE, defineConfig } from 'yapyak/config';
+ *
+ * export default defineConfig({
+ *   exclude: [...DEFAULT_EXCLUDE, 'legacy'],
+ * });
+ * ```
+ */
+export const DEFAULT_EXCLUDE: FilterPattern = [
+  '**/*.{test,spec}.*',
+  '**/__tests__/**',
+  '**/*.{stories,gen}.{ts,tsx,js,jsx,mjs,cjs}',
+  '**/*.d.ts',
+];
 
 export function normalizeYapyakConfig(
   config: YapyakConfig,

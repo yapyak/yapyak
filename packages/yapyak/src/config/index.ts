@@ -8,3 +8,4 @@ export type {
 } from './type';
 
 export { defineConfig } from './define';
+export { DEFAULT_EXCLUDE, DEFAULT_INCLUDE } from './internal/normalize';
