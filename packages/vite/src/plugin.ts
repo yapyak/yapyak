@@ -187,11 +187,11 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       projectRoot,
       yapyakDir,
     });
-    renderSyncDiagnostics(result);
+    emitSyncDiagnostics(result);
     localeCache = null;
   }
 
-  function renderSyncDiagnostics(result: SyncLocaleFilesResult): void {
+  function emitSyncDiagnostics(result: SyncLocaleFilesResult): void {
     for (const entry of result.orphaned) {
       warn(
         `[yapyak] orphaned '${entry.source}' in ${entry.fileId} (${entry.locale}) → moved to .yapyak/orphans.json`,
@@ -503,7 +503,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
           projectRoot,
           yapyakDir,
         });
-        renderSyncDiagnostics(result);
+        emitSyncDiagnostics(result);
         writeRegister({ locales, yapyakDir });
         reloadRuntimeModule();
         reloadCandidateModules();

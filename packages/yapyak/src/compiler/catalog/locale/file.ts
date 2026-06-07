@@ -27,15 +27,15 @@ export interface SyncLocaleFilesOptions {
   yapyakDir?: string;
 }
 
-export interface SyncedSource {
+export interface SyncEntry {
   fileId: string;
   locale: string;
   source: string;
 }
 
 export interface SyncLocaleFilesResult {
-  orphaned: SyncedSource[];
-  restored: SyncedSource[];
+  orphaned: SyncEntry[];
+  restored: SyncEntry[];
 }
 
 export interface WriteLocaleFileInput {
@@ -223,7 +223,7 @@ export function syncLocaleFiles(
   const nextByLocale = new Map<string, LocaleFile>();
   const restoredOrphans = new Map<string, Set<string>>();
   const restoredInFlight = new Map<string, Set<string>>();
-  const restored: SyncedSource[] = [];
+  const restored: SyncEntry[] = [];
 
   for (const locale of healthyLocales) {
     const existing = existingByLocale.get(locale) ?? {};
@@ -280,7 +280,7 @@ export function syncLocaleFiles(
     string,
     Map<string, Record<string, string>>
   >();
-  const orphaned: SyncedSource[] = [];
+  const orphaned: SyncEntry[] = [];
   for (const [fileId, bySource] of inFlightDrops) {
     for (const [source, translations] of bySource) {
       if (restoredInFlight.get(fileId)?.has(source)) {

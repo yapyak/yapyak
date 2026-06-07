@@ -20,7 +20,7 @@ export {
   type InvariantViolation,
   type LocaleFile,
   readLocaleFile,
-  type SyncedSource,
+  type SyncEntry,
   type SyncLocaleFilesOptions,
   type SyncLocaleFilesResult,
   syncLocaleFiles,

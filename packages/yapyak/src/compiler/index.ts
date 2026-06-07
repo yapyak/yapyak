@@ -23,7 +23,7 @@ export {
   type RenameEntry,
   readLocaleData,
   readLocaleFile,
-  type SyncedSource,
+  type SyncEntry,
   type SyncLocaleFilesOptions,
   type SyncLocaleFilesResult,
   stringifyCanonical,
