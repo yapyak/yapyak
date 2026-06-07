@@ -50,9 +50,16 @@ export interface YapyakConfig {
    * The patterns to exclude from extraction.
    *
    * @remarks
-   * Applied after {@link YapyakConfig.include}. The default covers files that legitimately live alongside source code but never contain real translation calls: tests, stories, generated code, and type declarations.
+   * Applied after {@link YapyakConfig.include}. Each string entry is either a directory shortcut (no glob characters) or an explicit glob. Directory shortcuts expand to `<entry>/**\/*.{<extensions>}` using the extensions from `processors`. Explicit globs and `RegExp` entries pass through unchanged. The default covers files that legitimately live alongside source code but never contain real translation calls: tests, stories, generated code, and type declarations.
    *
    * @defaultValue `['**\/*.test.*', '**\/*.spec.*', '**\/__tests__/**', '**\/*.stories.{ts,tsx,js,jsx}', '**\/*.gen.{ts,tsx,js,jsx,mjs,cjs}', '**\/*.d.ts']`
+   *
+   * @example Directory shortcut, glob, and `RegExp` entries
+   * ```ts
+   * defineConfig({ exclude: ['legacy'] });                    // expands to 'legacy/**\/*.{ts,tsx,...}'
+   * defineConfig({ exclude: ['legacy', '**\/*.test.*'] });    // mixed shortcut and explicit glob
+   * defineConfig({ exclude: [/\.deprecated\.ts$/] });         // RegExp, used as-is
+   * ```
    */
   exclude?: FilterPattern;
   /**

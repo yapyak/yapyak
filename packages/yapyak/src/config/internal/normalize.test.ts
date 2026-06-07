@@ -150,6 +150,32 @@ describe('normalizeYapyakConfig', () => {
 
     expect(result.include).toBe(pattern);
   });
+
+  it('extends a directory shortcut in `exclude` into a glob with the registered extensions', () => {
+    const result = normalizeYapyakConfig({ exclude: ['legacy'] });
+
+    expect(result.exclude).toEqual([
+      'legacy/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}',
+    ]);
+  });
+
+  it('preserves glob entries in `exclude` verbatim while extending directory entries', () => {
+    const result = normalizeYapyakConfig({
+      exclude: ['legacy', '**/*.test.*'],
+    });
+
+    expect(result.exclude).toEqual([
+      'legacy/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}',
+      '**/*.test.*',
+    ]);
+  });
+
+  it('preserves a `RegExp` exclude verbatim', () => {
+    const pattern = /\.deprecated\.ts$/;
+    const result = normalizeYapyakConfig({ exclude: pattern });
+
+    expect(result.exclude).toBe(pattern);
+  });
 });
 
 function makeProcessor(id: string, extensions: string[]): Processor {

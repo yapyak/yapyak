@@ -33,11 +33,8 @@ export function normalizeYapyakConfig(
     defaultLocale: config.defaultLocale,
     detectAcceptLanguage: config.detectAcceptLanguage ?? false,
     examples: resolveExamples(config),
-    exclude: config.exclude ?? DEFAULT_EXCLUDE,
-    include: resolveIncludePatterns(
-      config.include ?? DEFAULT_INCLUDE,
-      processors,
-    ),
+    exclude: resolvePatterns(config.exclude ?? DEFAULT_EXCLUDE, processors),
+    include: resolvePatterns(config.include ?? DEFAULT_INCLUDE, processors),
     localesDir: config.localesDir ?? DEFAULT_LOCALES_DIR,
     persistence: normalizePersistenceConfig(config.persistence),
     preserveTranslationsOnRename:
@@ -48,7 +45,7 @@ export function normalizeYapyakConfig(
   };
 }
 
-function resolveIncludePatterns(
+function resolvePatterns(
   input: FilterPattern,
   processors: Processor[],
 ): FilterPattern {
