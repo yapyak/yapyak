@@ -121,7 +121,7 @@ export function getLocale(): Locale {
  * Switches the locale.
  *
  * @remarks
- * Warns and no-ops if `value` is not in {@link locales}. Notifies subscribers. Under `persistence: 'url'`, the URL is the source of truth: `setLocale` schedules a navigation but does not notify subscribers synchronously — `getLocale()` keeps returning the previous value until the URL event fires and the in-memory store syncs.
+ * Warns and no-ops if `value` is not in {@link locales}. Notifies subscribers. Warns and no-ops under `persistence: 'url'` — the URL is the source of truth and the in-memory locale syncs on URL change driven by router navigation.
  *
  * @param value - The locale to switch to.
  *
