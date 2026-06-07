@@ -1,6 +1,9 @@
 {
   "src/App.svelte": {
+    "apple": "äpple",
+    "banana": "banan",
     "English": "Engelska",
+    "pear": "päron",
     "Swedish": "Svenska",
     "Translate <b>everything</b> with <link>yapyak</link>": "Översätt <b>allt</b> med <link>yapyak</link>",
     "You have {count, plural, one {# message} other {# messages}}": "Du har {count, plural, one {# meddelande} other {# meddelanden}}",

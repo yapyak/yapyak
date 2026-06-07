@@ -64,7 +64,7 @@ function Component() {
       </p>
 
       <h2>{t('Lists')}</h2>
-      <p>{format.list(['apple', 'pear', 'banana'])}</p>
+      <p>{format.list([t('apple'), t('pear'), t('banana')])}</p>
 
       <h2>{t('Relative time')}</h2>
       <p>{format.relativeTime(-2, 'day')}</p>

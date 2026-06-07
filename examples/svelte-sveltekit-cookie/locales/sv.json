@@ -1,6 +1,8 @@
 {
   "src/routes/+page.svelte": {
+    "apple": "äpple",
     "At: {when, time, short}": "Klockan: {when, time, short}",
+    "banana": "banan",
     "Count: {amount, number, integer}": "Antal: {amount, number, integer}",
     "Dates and times": "Datum och tider",
     "English": "Engelska",
@@ -9,6 +11,7 @@
     "Hello there": "Hej där",
     "Lists": "Listor",
     "Numbers": "Tal",
+    "pear": "päron",
     "Plurals": "Pluralis",
     "Price: {amount, number, currency EUR}": "Pris: {amount, number, currency EUR}",
     "Relative time": "Relativ tid",
