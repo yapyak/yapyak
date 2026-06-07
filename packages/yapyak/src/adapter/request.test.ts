@@ -15,14 +15,14 @@ const { withRequest } = await import('./request');
 function makeRequest(
   headers: { acceptLanguage?: string; cookie?: string } = {},
 ): Request {
-  const h = new Headers();
+  const newHeaders = new Headers();
   if (headers.acceptLanguage !== undefined) {
-    h.set('accept-language', headers.acceptLanguage);
+    newHeaders.set('accept-language', headers.acceptLanguage);
   }
   if (headers.cookie !== undefined) {
-    h.set('cookie', headers.cookie);
+    newHeaders.set('cookie', headers.cookie);
   }
-  return new Request('http://example.test', { headers: h });
+  return new Request('http://example.test', { headers: newHeaders });
 }
 
 describe('withRequest', () => {

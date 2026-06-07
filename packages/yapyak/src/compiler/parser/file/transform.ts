@@ -425,36 +425,36 @@ function buildTemplateLiteral(
   expressions: Map<string, string>,
 ): string {
   let result = '`';
-  let i = 0;
-  while (i < source.length) {
-    const ch = source[i];
-    if (ch === '{') {
-      const close = findMatchingBraceIndex(source, i);
-      const inner = source.slice(i + 1, close);
+  let index = 0;
+  while (index < source.length) {
+    const character = source[index];
+    if (character === '{') {
+      const close = findMatchingBraceIndex(source, index);
+      const inner = source.slice(index + 1, close);
       const key = readKey(inner);
       if (key && expressions.has(key)) {
         result += `\${${expressions.get(key) ?? key}}`;
-        i = close + 1;
+        index = close + 1;
         continue;
       }
     }
-    if (ch === '`') {
+    if (character === '`') {
       result += '\\`';
-      i += 1;
+      index += 1;
       continue;
     }
-    if (ch === '\\') {
+    if (character === '\\') {
       result += '\\\\';
-      i += 1;
+      index += 1;
       continue;
     }
-    if (ch === '$' && source[i + 1] === '{') {
+    if (character === '$' && source[index + 1] === '{') {
       result += '\\${';
-      i += 2;
+      index += 2;
       continue;
     }
-    result += ch;
-    i += 1;
+    result += character;
+    index += 1;
   }
   result += '`';
   return result;
@@ -527,9 +527,9 @@ function getParamArgText(callSite: CallSite): string | undefined {
 
 function getReferenceCount(code: string, name: string): number {
   let count = 0;
-  let i = 0;
-  while (i < code.length) {
-    const nextIndex = code.indexOf(name, i);
+  let index = 0;
+  while (index < code.length) {
+    const nextIndex = code.indexOf(name, index);
     if (nextIndex === -1) {
       break;
     }
@@ -538,16 +538,16 @@ function getReferenceCount(code: string, name: string): number {
     if (!isIdentifierChar(before) && !isIdentifierChar(after)) {
       count += 1;
     }
-    i = nextIndex + name.length;
+    index = nextIndex + name.length;
   }
   return count;
 }
 
-function isIdentifierChar(ch: string | undefined): boolean {
-  if (!ch) {
+function isIdentifierChar(character: string | undefined): boolean {
+  if (!character) {
     return false;
   }
-  return /[\w$]/.test(ch);
+  return /[\w$]/.test(character);
 }
 
 function tryBareElision(
@@ -593,11 +593,11 @@ function findFreePickLocal(source: string): string {
   if (!hasIdentifier(source, PICK_LOCAL)) {
     return PICK_LOCAL;
   }
-  let i = 0;
-  while (hasIdentifier(source, `${PICK_LOCAL}_$${i}`)) {
-    i += 1;
+  let suffix = 0;
+  while (hasIdentifier(source, `${PICK_LOCAL}_$${suffix}`)) {
+    suffix += 1;
   }
-  return `${PICK_LOCAL}_$${i}`;
+  return `${PICK_LOCAL}_$${suffix}`;
 }
 
 function hasIdentifier(source: string, name: string): boolean {

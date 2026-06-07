@@ -252,120 +252,122 @@ function readMustache(
 }
 
 function findMustacheClose(source: string, from: number): number {
-  let i = from;
-  while (i < source.length) {
-    const char = source[i];
+  let index = from;
+  while (index < source.length) {
+    const char = source[index];
     if (char === '"' || char === "'") {
-      i = skipString(source, i, char);
+      index = skipString(source, index, char);
       continue;
     }
     if (char === '`') {
-      i = skipTemplateLiteral(source, i);
+      index = skipTemplateLiteral(source, index);
       continue;
     }
-    if (char === '/' && source[i + 1] === '/') {
-      i = skipLineComment(source, i);
+    if (char === '/' && source[index + 1] === '/') {
+      index = skipLineComment(source, index);
       continue;
     }
-    if (char === '/' && source[i + 1] === '*') {
-      i = skipBlockComment(source, i);
+    if (char === '/' && source[index + 1] === '*') {
+      index = skipBlockComment(source, index);
       continue;
     }
     if (char === '{') {
-      i = skipBalancedBraces(source, i);
+      index = skipBalancedBraces(source, index);
       continue;
     }
-    if (char === '}' && source[i + 1] === '}') {
-      return i;
+    if (char === '}' && source[index + 1] === '}') {
+      return index;
     }
     if (char === '}') {
       return -1;
     }
-    i += 1;
+    index += 1;
   }
   return -1;
 }
 
 function skipString(source: string, from: number, quote: string): number {
-  let i = from + 1;
-  while (i < source.length) {
-    const char = source[i];
+  let index = from + 1;
+  while (index < source.length) {
+    const char = source[index];
     if (char === '\\') {
-      i += 2;
+      index += 2;
       continue;
     }
     if (char === quote) {
-      return i + 1;
+      return index + 1;
     }
-    i += 1;
+    index += 1;
   }
-  return i;
+  return index;
 }
 
 function skipTemplateLiteral(source: string, from: number): number {
-  let i = from + 1;
-  while (i < source.length) {
-    const char = source[i];
+  let index = from + 1;
+  while (index < source.length) {
+    const char = source[index];
     if (char === '\\') {
-      i += 2;
+      index += 2;
       continue;
     }
     if (char === '`') {
-      return i + 1;
+      return index + 1;
     }
-    if (char === '$' && source[i + 1] === '{') {
-      i = skipBalancedBraces(source, i + 1);
+    if (char === '$' && source[index + 1] === '{') {
+      index = skipBalancedBraces(source, index + 1);
       continue;
     }
-    i += 1;
+    index += 1;
   }
-  return i;
+  return index;
 }
 
 function skipLineComment(source: string, from: number): number {
-  let i = from + 2;
-  while (i < source.length && source[i] !== '\n') i += 1;
-  return i;
+  let index = from + 2;
+  while (index < source.length && source[index] !== '\n') index += 1;
+  return index;
 }
 
 function skipBlockComment(source: string, from: number): number {
-  let i = from + 2;
-  while (i < source.length) {
-    if (source[i] === '*' && source[i + 1] === '/') {
-      return i + 2;
+  let index = from + 2;
+  while (index < source.length) {
+    if (source[index] === '*' && source[index + 1] === '/') {
+      return index + 2;
     }
-    i += 1;
+    index += 1;
   }
-  return i;
+  return index;
 }
 
 function skipBalancedBraces(source: string, from: number): number {
   let depth = 1;
-  let i = from + 1;
-  while (i < source.length && depth > 0) {
-    const char = source[i];
+  let index = from + 1;
+  while (index < source.length && depth > 0) {
+    const char = source[index];
     if (char === '"' || char === "'") {
-      i = skipString(source, i, char);
+      index = skipString(source, index, char);
       continue;
     }
     if (char === '`') {
-      i = skipTemplateLiteral(source, i);
+      index = skipTemplateLiteral(source, index);
       continue;
     }
-    if (char === '/' && source[i + 1] === '/') {
-      i = skipLineComment(source, i);
+    if (char === '/' && source[index + 1] === '/') {
+      index = skipLineComment(source, index);
       continue;
     }
-    if (char === '/' && source[i + 1] === '*') {
-      i = skipBlockComment(source, i);
+    if (char === '/' && source[index + 1] === '*') {
+      index = skipBlockComment(source, index);
       continue;
     }
     if (char === '{') {
       depth += 1;
-    } else if (char === '}') depth -= 1;
-    i += 1;
+    } else if (char === '}') {
+      depth -= 1;
+    }
+    index += 1;
   }
-  return i;
+  return index;
 }
 
 function isInterpolationNode(

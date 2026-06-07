@@ -136,13 +136,13 @@ describe('yapyak', () => {
       invokeConfigureServer(plugin, server);
       const watcher = server.watcher;
 
-      for (let i = 0; i < 5; i++) {
-        const f = join(root, 'src', `f${i}.tsx`);
+      for (let index = 0; index < 5; index++) {
+        const filePath = join(root, 'src', `f${index}.tsx`);
         writeFileSync(
-          f,
-          `import { t } from 'yapyak';\nexport const x = () => t('M${i}');\n`,
+          filePath,
+          `import { t } from 'yapyak';\nexport const x = () => t('M${index}');\n`,
         );
-        watcher.emit('add', f);
+        watcher.emit('add', filePath);
       }
 
       const mid = JSON.parse(readFileSync(localePath, 'utf8'));

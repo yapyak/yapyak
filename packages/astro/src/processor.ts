@@ -183,18 +183,18 @@ function findEnclosingBraces(
     return undefined;
   }
   let depth = 1;
-  let i = textStart;
-  while (i < source.length) {
-    const char = source[i];
+  let index = textStart;
+  while (index < source.length) {
+    const char = source[index];
     if (char === '{') {
       depth += 1;
     } else if (char === '}') {
       depth -= 1;
       if (depth === 0) {
-        return { end: i + 1, start: openIdx };
+        return { end: index + 1, start: openIdx };
       }
     }
-    i += 1;
+    index += 1;
   }
   return undefined;
 }

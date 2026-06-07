@@ -3,18 +3,18 @@ export function findMatchingBraceIndex(
   openIdx: number,
 ): number {
   let depth = 1;
-  let i = openIdx + 1;
-  while (i < source.length) {
-    const ch = source[i];
-    if (ch === '{') {
+  let index = openIdx + 1;
+  while (index < source.length) {
+    const character = source[index];
+    if (character === '{') {
       depth += 1;
-    } else if (ch === '}') {
+    } else if (character === '}') {
       depth -= 1;
       if (depth === 0) {
-        return i;
+        return index;
       }
     }
-    i += 1;
+    index += 1;
   }
   return source.length;
 }
