@@ -111,17 +111,25 @@ describe('ValidateSource', () => {
     >().toEqualTypeOf<'At: {when, time, full}'>();
   });
 
-  it('preserves a number skeleton style starting with `::`', () => {
+  it('preserves a `currency <code>` number style', () => {
+    expectTypeOf<
+      ValidateSource<'Price: {amount, number, currency USD}'>
+    >().toEqualTypeOf<'Price: {amount, number, currency USD}'>();
+  });
+
+  it('refuses an ICU number skeleton style (not supported at runtime)', () => {
     expectTypeOf<
       ValidateSource<'Price: {amount, number, ::compact-short}'>
-    >().toEqualTypeOf<'Price: {amount, number, ::compact-short}'>();
+    >().toEqualTypeOf<{
+      $yapyakTypeError: 'Unknown number style "::compact-short" — expected one of: decimal, percent, currency, integer (or "currency <code>")';
+    }>();
   });
 
   it('refuses an unknown number style', () => {
     expectTypeOf<
       ValidateSource<'Price: {amount, number, foo}'>
     >().toEqualTypeOf<{
-      $yapyakTypeError: 'Unknown number style "foo" — expected one of: decimal, percent, currency, integer';
+      $yapyakTypeError: 'Unknown number style "foo" — expected one of: decimal, percent, currency, integer (or "currency <code>")';
     }>();
   });
 
@@ -143,6 +151,22 @@ describe('ValidateSource', () => {
     expectTypeOf<
       ValidateSource<'{c, plural, =0 {none} one {# msg} other {# msgs}}'>
     >().toEqualTypeOf<'{c, plural, =0 {none} one {# msg} other {# msgs}}'>();
+  });
+
+  it('refuses a `=N` literal where N contains non-digit characters', () => {
+    expectTypeOf<
+      ValidateSource<'{c, plural, =foo {x} other {y}}'>
+    >().toEqualTypeOf<{
+      $yapyakTypeError: 'Invalid =N literal "=foo": N must be a non-negative integer';
+    }>();
+  });
+
+  it('refuses a bare `=` with no N', () => {
+    expectTypeOf<
+      ValidateSource<'{c, plural, = {x} other {y}}'>
+    >().toEqualTypeOf<{
+      $yapyakTypeError: 'Invalid =N literal "=": N must be a non-negative integer';
+    }>();
   });
 
   it('refuses an unknown plural keyword', () => {
