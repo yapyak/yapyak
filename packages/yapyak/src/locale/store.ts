@@ -149,7 +149,8 @@ export function setLocale(value: Locale): void {
     return;
   }
 
-  if (persistence?.set(value) === true) {
+  const shouldApplyInMemory = persistence?.set(value) ?? true;
+  if (!shouldApplyInMemory) {
     return;
   }
 

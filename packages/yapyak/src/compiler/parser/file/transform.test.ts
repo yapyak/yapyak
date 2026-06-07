@@ -2,9 +2,9 @@ import type { TransformFileRequest } from './transform';
 
 import { describe, expect, it } from 'vitest';
 
+import { toMessageId } from '../message-id';
 import { extractFile } from './extract';
 import { transformFile } from './transform';
-import { createHash } from 'node:crypto';
 
 function runTransform(input: {
   source: string;
@@ -28,8 +28,8 @@ function runTransform(input: {
   return transformFile(request).code;
 }
 
-function hashId(source: string): string {
-  return createHash('sha256').update(source).digest('hex').slice(0, 12);
+function hashId(source: string, context?: string): string {
+  return toMessageId(source, context);
 }
 
 describe('transformFile', () => {
@@ -449,7 +449,7 @@ describe('transformFile', () => {
         locales: ['en', 'sv'],
         source:
           "import { t } from 'yapyak';\nexport const x = t.at('button', 'Save');\n",
-        translations: { sv: { [hashId('Save button')]: 'Spara' } },
+        translations: { sv: { [hashId('Save', 'button')]: 'Spara' } },
       });
       expect(code).toContain('_pick(');
       expect(code).not.toContain('t.at(');

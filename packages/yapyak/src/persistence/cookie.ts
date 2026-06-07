@@ -99,11 +99,11 @@ export function cookie(options: CookieOptions): Persistence {
             '[yapyak] setLocale() called server-side outside a withRequest scope. The cookie was not set. Install the matching adapter middleware (e.g. @yapyak/astro, @yapyak/sveltekit).',
           );
         }
-        return true;
+        return false;
       }
       // biome-ignore lint/suspicious/noDocumentCookie: yap yap yap
       globalThis.document.cookie = cookieString;
-      return false;
+      return true;
     },
     subscribe(onChange) {
       if (typeof window === 'undefined') {

@@ -37,6 +37,7 @@ export {
 export { extractFile } from './file/extract';
 export { transformFile } from './file/transform';
 export { toMessageId } from './message-id';
+export { parseMessageKey, toMessageKey } from './message-key';
 export {
   type IcuIssue,
   type ParsedMessage,

@@ -25,12 +25,12 @@ export function localStorage(options: LocalStorageOptions): Persistence {
             '[yapyak] setLocale() is a no-op server-side with persistence: "local-storage". localStorage is browser-only. Use persistence: "cookie" for SSR-compatible locale switching.',
           );
         }
-        return true;
+        return false;
       }
       try {
         globalThis.localStorage.setItem(key, locale);
       } catch {}
-      return false;
+      return true;
     },
   };
 }

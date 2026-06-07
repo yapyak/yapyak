@@ -26,6 +26,7 @@ export {
   syncLocaleFiles,
   type WriteLocaleFileInput,
   writeLocaleFile,
+  writeLocaleFiles,
   YapyakInvariantError,
 } from './file';
 export {

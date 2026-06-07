@@ -33,6 +33,7 @@ export {
   type WriteLocaleFileInput,
   type WriteRegisterInput,
   writeLocaleFile,
+  writeLocaleFiles,
   writeRegister,
   YapyakInvariantError,
 } from './locale';

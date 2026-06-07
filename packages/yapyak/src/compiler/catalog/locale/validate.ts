@@ -4,6 +4,7 @@ import type { Placeholder } from '../../parser/placeholder';
 import type { LocaleFile } from './file';
 
 import { createDiagnostic } from '../../parser/diagnostic';
+import { toMessageKey } from '../../parser/message-key';
 import { parsePlaceholders } from '../../parser/placeholder';
 import { existsSync, readFileSync } from 'node:fs';
 
@@ -117,10 +118,7 @@ export function validateIcuPairs(input: ValidateIcuPairsInput): Diagnostic[] {
   for (const message of input.messages) {
     const sourcePlaceholders = parsePlaceholders(message.source).placeholders;
     const sourceByName = buildPlaceholderIndex(sourcePlaceholders);
-    const key =
-      message.context === undefined
-        ? message.source
-        : `${message.source}@${message.context}`;
+    const key = toMessageKey(message.source, message.context);
     for (const location of message.locations) {
       const target = readTarget(input.localeFile, location.fileId, key);
       if (target === undefined) {

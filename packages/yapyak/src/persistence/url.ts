@@ -46,7 +46,7 @@ export function url(options: UrlOptions): Persistence {
           '[yapyak] setLocale() is a no-op with persistence: "url". The URL is the source of truth — drive locale switches through router navigation.',
         );
       }
-      return true;
+      return false;
     },
     subscribe(onChange) {
       if (typeof window === 'undefined') {

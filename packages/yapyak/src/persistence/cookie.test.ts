@@ -48,8 +48,8 @@ describe('cookie', () => {
       expect(cookieJar).toContain('app-locale=de');
     });
 
-    it('returns `false` from set', () => {
-      expect(cookie({ name: 'locale' }).set('sv')).toBe(false);
+    it('returns true from set in the browser', () => {
+      expect(cookie({ name: 'locale' }).set('sv')).toBe(true);
     });
 
     it('returns the cookie value from the request `cookie` header', () => {
@@ -112,14 +112,14 @@ describe('cookie', () => {
       expect(writes[0]?.[1]).toContain('app-locale=de');
     });
 
-    it('returns `true` from set when a writer is registered', () => {
+    it('returns false from set when a writer is registered', () => {
       setResponseHeaderWriter((name, value) => writes.push([name, value]));
-      expect(cookie({ name: 'locale' }).set('sv')).toBe(true);
+      expect(cookie({ name: 'locale' }).set('sv')).toBe(false);
     });
 
-    it('returns `true` from set when no writer is registered', () => {
+    it('returns false from set when no writer is registered', () => {
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-      expect(cookie({ name: 'locale' }).set('sv')).toBe(true);
+      expect(cookie({ name: 'locale' }).set('sv')).toBe(false);
       warn.mockRestore();
     });
 

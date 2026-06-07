@@ -1,6 +1,7 @@
 import type { ExtractedMessage } from '../../parser/file/extract';
 import type { OrphanCache } from './orphan';
 
+import { toMessageKey } from '../../parser';
 import { compareKeys, stringifyCanonical } from '../canonical';
 import { validateLocaleCode } from './code';
 import {
@@ -134,18 +135,26 @@ export function readLocaleFile(path: string): LocaleFile {
   return result;
 }
 
-export function writeLocaleFile(input: WriteLocaleFileInput): void {
-  const before = readLocaleFile(input.filePath);
-  const violations = findInvariantViolations(
-    before,
-    input.after,
-    input.extractedSources,
-  );
-  if (violations.length > 0) {
-    throw new YapyakInvariantError(input.filePath, violations);
+export function writeLocaleFiles(writes: WriteLocaleFileInput[]): void {
+  for (const write of writes) {
+    const before = readLocaleFile(write.filePath);
+    const violations = findInvariantViolations(
+      before,
+      write.after,
+      write.extractedSources,
+    );
+    if (violations.length > 0) {
+      throw new YapyakInvariantError(write.filePath, violations);
+    }
   }
-  mkdirSync(dirname(input.filePath), { recursive: true });
-  writeFileSync(input.filePath, stringifyCanonical(input.after));
+  for (const write of writes) {
+    mkdirSync(dirname(write.filePath), { recursive: true });
+    writeFileSync(write.filePath, stringifyCanonical(write.after));
+  }
+}
+
+export function writeLocaleFile(input: WriteLocaleFileInput): void {
+  writeLocaleFiles([input]);
 }
 
 function findInvariantViolations(
@@ -309,7 +318,7 @@ export function syncLocaleFiles(
     writeOrphans(yapyakDir, orphans);
   }
 
-  const pendingWrites: Array<{ after: LocaleFile; filePath: string }> = [];
+  const writes: WriteLocaleFileInput[] = [];
   for (const locale of healthyLocales) {
     const next = nextByLocale.get(locale) ?? {};
     const localePath = getLocaleFilePath(
@@ -317,17 +326,9 @@ export function syncLocaleFiles(
       options.localesDir,
       locale,
     );
-    const before = readLocaleFile(localePath);
-    const violations = findInvariantViolations(before, next, extractedSources);
-    if (violations.length > 0) {
-      throw new YapyakInvariantError(localePath, violations);
-    }
-    pendingWrites.push({ after: next, filePath: localePath });
+    writes.push({ after: next, extractedSources, filePath: localePath });
   }
-  for (const write of pendingWrites) {
-    mkdirSync(dirname(write.filePath), { recursive: true });
-    writeFileSync(write.filePath, stringifyCanonical(write.after));
-  }
+  writeLocaleFiles(writes);
 
   return { orphaned, restored };
 }
@@ -455,10 +456,7 @@ function groupSourcesByFile(
 ): Record<string, string[]> {
   const grouped: Record<string, Set<string>> = {};
   for (const message of messages) {
-    const key =
-      message.context === undefined
-        ? message.source
-        : `${message.source} ${message.context}`;
+    const key = toMessageKey(message.source, message.context);
     for (const location of message.locations) {
       let set = grouped[location.fileId];
       if (!set) {
