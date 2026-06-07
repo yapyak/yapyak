@@ -431,6 +431,27 @@ describe('transformFile', () => {
       expect(result.map.sources).toContain(fileId);
       expect(typeof result.map.mappings).toBe('string');
     });
+
+    it('emits sources from `sourcePath` when provided', () => {
+      const fileId = 'src/a.ts';
+      const sourcePath = '/abs/src/a.ts';
+      const source =
+        "import { t } from 'yapyak';\nexport const x = t('Hello');\n";
+      const extracted = extractFile({
+        fileId,
+        locales: ['en'],
+        source,
+      });
+      const result = transformFile({
+        extracted,
+        fileId,
+        locales: ['en'],
+        source,
+        sourcePath,
+        translations: {},
+      });
+      expect(result.map.sources).toEqual([sourcePath]);
+    });
   });
 
   describe('`t.at()` rewrites', () => {

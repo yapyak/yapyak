@@ -17,6 +17,7 @@ export interface TransformFileRequest {
   locales: string[];
   processors?: Processor[];
   source: string;
+  sourcePath?: string;
   translations: Record<string, Record<string, string>>;
 }
 
@@ -48,7 +49,7 @@ export function transformFile(
       diagnostics: [],
       map: new MagicString(request.source).generateMap({
         hires: true,
-        source: request.fileId,
+        source: request.sourcePath ?? request.fileId,
       }),
     };
   }
@@ -108,7 +109,10 @@ export function transformFile(
   return {
     code: magicString.toString(),
     diagnostics: [],
-    map: magicString.generateMap({ hires: true, source: request.fileId }),
+    map: magicString.generateMap({
+      hires: true,
+      source: request.sourcePath ?? request.fileId,
+    }),
   };
 }
 

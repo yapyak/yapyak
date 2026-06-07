@@ -646,6 +646,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         locales,
         processors,
         source: code,
+        sourcePath: id,
         translations,
       });
       if (result.code === code) {

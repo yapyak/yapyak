@@ -1,4 +1,5 @@
 import type { ResolvedConfig } from 'vite';
+import type { TransformFileResult } from 'yapyak/compiler';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -13,6 +14,8 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+
+type SourceMap = TransformFileResult['map'];
 
 describe('yapyak', () => {
   let root: string;
@@ -547,6 +550,24 @@ describe('yapyak', () => {
       expect(output).toContain('_pick');
     });
   });
+
+  describe('sourcemap', () => {
+    beforeEach(() => {
+      writeFileSync(
+        join(root, 'src', 'a.tsx'),
+        "import { t } from 'yapyak';\nexport const a = () => t('Hello');\n",
+      );
+      writeFileSync(localePath, '{}');
+    });
+
+    it('emits sources as the absolute file path', async () => {
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'build');
+      const filePath = join(root, 'src', 'a.tsx');
+      const map = await invokeTransformMap(plugin, filePath);
+      expect(map?.sources).toEqual([filePath]);
+    });
+  });
 });
 
 async function invokeConfigResolved(
@@ -581,7 +602,10 @@ function createSilentLogger(): ResolvedConfig['logger'] {
 type TransformHook = (
   code: string,
   id: string,
-) => { code: string } | null | Promise<{ code: string } | null>;
+) =>
+  | { code: string; map?: SourceMap }
+  | null
+  | Promise<{ code: string; map?: SourceMap } | null>;
 
 async function invokeTransform(
   plugin: ReturnType<typeof yapyak>,
@@ -594,6 +618,19 @@ async function invokeTransform(
   const code = readFileSync(filePath, 'utf8');
   const result = await (hook as TransformHook).call(plugin, code, filePath);
   return result?.code ?? code;
+}
+
+async function invokeTransformMap(
+  plugin: ReturnType<typeof yapyak>,
+  filePath: string,
+): Promise<SourceMap | undefined> {
+  const hook = plugin.transform;
+  if (typeof hook !== 'function') {
+    throw new Error('transform hook missing');
+  }
+  const code = readFileSync(filePath, 'utf8');
+  const result = await (hook as TransformHook).call(plugin, code, filePath);
+  return result?.map;
 }
 
 function invokeBuildStart(plugin: ReturnType<typeof yapyak>): void {
