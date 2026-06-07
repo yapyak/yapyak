@@ -1,5 +1,5 @@
+import { getFormatter } from '../intl-cache';
 import { runTrackers } from '../tracker';
-import { getFormatter } from './cache';
 
 export function formatList(
   items: Iterable<string>,

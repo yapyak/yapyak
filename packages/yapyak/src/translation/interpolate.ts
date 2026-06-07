@@ -1,3 +1,5 @@
+import { getFormatter } from '../intl-cache';
+
 export function interpolate(
   template: string,
   params: Record<string, unknown>,
@@ -92,7 +94,9 @@ function resolvePlural(
   type: 'cardinal' | 'ordinal',
 ): string {
   const branches = parseBranches(body);
-  const formattedCount = getNumberFormatter(locale, '').format(count);
+  const formattedCount = getFormatter(Intl.NumberFormat, locale, {}).format(
+    count,
+  );
   const exact = branches.get(`=${count}`);
   if (exact !== undefined) {
     return interpolate(
@@ -101,7 +105,9 @@ function resolvePlural(
       locale,
     );
   }
-  const category = getPluralCategory(locale, count, type);
+  const category = getFormatter(Intl.PluralRules, locale, { type }).select(
+    count,
+  );
   const branch = branches.get(category) ?? branches.get('other') ?? '';
   return interpolate(
     branch.replace(/#/g, () => formattedCount),
@@ -154,25 +160,6 @@ function parseBranches(body: string): Map<string, string> {
   return branches;
 }
 
-const pluralRulesCache = new Map<string, Intl.PluralRules>();
-
-function getPluralCategory(
-  locale: string,
-  count: number,
-  type: 'cardinal' | 'ordinal',
-): string {
-  const cacheKey = `${locale}:${type}`;
-  let rules = pluralRulesCache.get(cacheKey);
-  if (!rules) {
-    rules = new Intl.PluralRules(locale, { type });
-    pluralRulesCache.set(cacheKey, rules);
-  }
-  return rules.select(count);
-}
-
-const dateTimeFormatCache = new Map<string, Intl.DateTimeFormat>();
-const numberFormatCache = new Map<string, Intl.NumberFormat>();
-
 type DateTimeStyle = 'short' | 'medium' | 'long' | 'full';
 
 function parseDateTimeStyle(style: string): DateTimeStyle {
@@ -186,50 +173,6 @@ function parseDateTimeStyle(style: string): DateTimeStyle {
     return trimmed;
   }
   return 'medium';
-}
-
-function getDateFormatter(
-  locale: string,
-  styleArgument: string,
-): Intl.DateTimeFormat {
-  const style = parseDateTimeStyle(styleArgument);
-  const cacheKey = `date:${locale}:${style}`;
-  let formatter = dateTimeFormatCache.get(cacheKey);
-  if (!formatter) {
-    formatter = new Intl.DateTimeFormat(locale, { dateStyle: style });
-    dateTimeFormatCache.set(cacheKey, formatter);
-  }
-  return formatter;
-}
-
-function getTimeFormatter(
-  locale: string,
-  styleArgument: string,
-): Intl.DateTimeFormat {
-  const style = parseDateTimeStyle(styleArgument);
-  const cacheKey = `time:${locale}:${style}`;
-  let formatter = dateTimeFormatCache.get(cacheKey);
-  if (!formatter) {
-    formatter = new Intl.DateTimeFormat(locale, { timeStyle: style });
-    dateTimeFormatCache.set(cacheKey, formatter);
-  }
-  return formatter;
-}
-
-function getNumberFormatter(
-  locale: string,
-  styleArgument: string,
-): Intl.NumberFormat {
-  const cacheKey = `number:${locale}:${styleArgument}`;
-  let formatter = numberFormatCache.get(cacheKey);
-  if (!formatter) {
-    formatter = new Intl.NumberFormat(
-      locale,
-      parseNumberOptions(styleArgument),
-    );
-    numberFormatCache.set(cacheKey, formatter);
-  }
-  return formatter;
 }
 
 function parseNumberOptions(styleArgument: string): Intl.NumberFormatOptions {
@@ -273,7 +216,9 @@ function formatDate(value: unknown, body: string, locale: string): string {
   if (date === null) {
     return '';
   }
-  return getDateFormatter(locale, body).format(date);
+  return getFormatter(Intl.DateTimeFormat, locale, {
+    dateStyle: parseDateTimeStyle(body),
+  }).format(date);
 }
 
 function formatTime(value: unknown, body: string, locale: string): string {
@@ -281,7 +226,9 @@ function formatTime(value: unknown, body: string, locale: string): string {
   if (date === null) {
     return '';
   }
-  return getTimeFormatter(locale, body).format(date);
+  return getFormatter(Intl.DateTimeFormat, locale, {
+    timeStyle: parseDateTimeStyle(body),
+  }).format(date);
 }
 
 function formatNumber(value: unknown, body: string, locale: string): string {
@@ -292,5 +239,9 @@ function formatNumber(value: unknown, body: string, locale: string): string {
   if (Number.isNaN(numericValue)) {
     return String(value);
   }
-  return getNumberFormatter(locale, body).format(numericValue);
+  return getFormatter(
+    Intl.NumberFormat,
+    locale,
+    parseNumberOptions(body),
+  ).format(numericValue);
 }

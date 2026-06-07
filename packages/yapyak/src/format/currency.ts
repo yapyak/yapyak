@@ -1,5 +1,5 @@
+import { getFormatter } from '../intl-cache';
 import { runTrackers } from '../tracker';
-import { getFormatter } from './cache';
 
 const CURRENCY_CODE_RX = /^[A-Za-z]{3}$/;
 
