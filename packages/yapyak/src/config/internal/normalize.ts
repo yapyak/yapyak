@@ -15,10 +15,10 @@ const DEFAULT_COOKIE_NAME = 'locale';
 const DEFAULT_STORAGE_KEY = 'locale';
 
 /**
- * The default patterns included for source extraction.
+ * The default include patterns.
  *
  * @remarks
- * Exposed as a spread-friendly constant so a project can keep yapyak's defaults and add its own entries on top.
+ * Spreading this constant into a `defineConfig` call's `include` keeps yapyak's defaults and adds entries on top.
  *
  * @example Extend the default include list
  * ```ts
@@ -32,10 +32,10 @@ const DEFAULT_STORAGE_KEY = 'locale';
 export const DEFAULT_INCLUDE: FilterPattern = ['src'];
 
 /**
- * The default patterns excluded from source extraction.
+ * The default exclude patterns.
  *
  * @remarks
- * Exposed as a spread-friendly constant so a project can keep yapyak's defaults and add its own entries on top. Covers files that legitimately live alongside source code but never contain real translation calls: tests, stories, generated code, and type declarations.
+ * Spreading this constant into a `defineConfig` call's `exclude` keeps yapyak's defaults and adds entries on top. The default covers files that legitimately live alongside source code but never contain real translation calls: tests, stories, generated code, and type declarations.
  *
  * @example Extend the default exclude list
  * ```ts
@@ -79,17 +79,17 @@ function resolvePatterns(
   input: FilterPattern,
   processors: Processor[],
 ): FilterPattern {
-  const extensions = collectExtensions(processors);
+  const extensions = resolveExtensions(processors);
   if (input instanceof RegExp) {
     return input;
   }
   if (Array.isArray(input)) {
-    return input.map((entry) => expandEntry(entry, extensions));
+    return input.map((entry) => normalizeEntry(entry, extensions));
   }
-  return expandEntry(input, extensions);
+  return normalizeEntry(input, extensions);
 }
 
-function expandEntry(
+function normalizeEntry(
   entry: string | RegExp,
   extensions: string[],
 ): string | RegExp {
@@ -116,7 +116,7 @@ function isDirectoryShortcut(pattern: string, extensions: string[]): boolean {
   return true;
 }
 
-function collectExtensions(processors: Processor[]): string[] {
+function resolveExtensions(processors: Processor[]): string[] {
   const allExtensions = new Set<string>();
   for (const extension of vanillaProcessor.extensions) {
     allExtensions.add(extension.replace(/^\./, ''));

@@ -50,7 +50,7 @@ export interface YapyakConfig {
    * The patterns to exclude from extraction.
    *
    * @remarks
-   * Applied after {@link YapyakConfig.include}. Each string entry is either a directory shortcut (no glob characters) or an explicit glob. Directory shortcuts expand to `<entry>/**\/*.{<extensions>}` using the extensions from `processors`. Explicit globs and `RegExp` entries pass through unchanged. The default covers files that legitimately live alongside source code but never contain real translation calls: tests, stories, generated code, and type declarations. Set the field to replace the default entirely; spread `DEFAULT_EXCLUDE` to keep the defaults and add entries on top.
+   * yapyak applies these patterns after {@link YapyakConfig.include}. Each string entry is either a directory shortcut (no glob characters) or an explicit glob. Directory shortcuts expand to `<entry>/**\/*.{<extensions>}` using the extensions from `processors`. Explicit globs and `RegExp` entries pass through unchanged. The default covers files that legitimately live alongside source code but never contain real translation calls: tests, stories, generated code, and type declarations. Setting the field replaces the default entirely; spreading `DEFAULT_EXCLUDE` keeps the defaults and adds entries on top.
    *
    * @defaultValue `['**\/*.{test,spec}.*', '**\/__tests__/**', '**\/*.{stories,gen}.{ts,tsx,js,jsx,mjs,cjs}', '**\/*.d.ts']`
    *
@@ -76,7 +76,7 @@ export interface YapyakConfig {
    * The patterns to include for extraction.
    *
    * @remarks
-   * Each string entry is either a directory shortcut (no glob characters) or an explicit glob. Directory shortcuts expand to `<entry>/**\/*.{<extensions>}` using the extensions from `processors`. Explicit globs and `RegExp` entries pass through unchanged. Set the field to replace the default entirely; spread `DEFAULT_INCLUDE` to keep the defaults and add entries on top.
+   * Each string entry is either a directory shortcut (no glob characters) or an explicit glob. Directory shortcuts expand to `<entry>/**\/*.{<extensions>}` using the extensions from `processors`. Explicit globs and `RegExp` entries pass through unchanged. Setting the field replaces the default entirely; spreading `DEFAULT_INCLUDE` keeps the defaults and adds entries on top.
    *
    * @defaultValue `['src']`
    *

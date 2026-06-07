@@ -114,7 +114,7 @@ describe('normalizeYapyakConfig', () => {
     expect(result.include).toEqual(['src/**/*.ts']);
   });
 
-  it('extends a directory shortcut into a glob with the registered extensions', () => {
+  it('normalizes a directory shortcut into a glob with the registered extensions', () => {
     const result = normalizeYapyakConfig({
       include: ['app'],
       processors: [makeProcessor('vue', ['.vue'])],
@@ -125,7 +125,7 @@ describe('normalizeYapyakConfig', () => {
     ]);
   });
 
-  it('preserves glob entries verbatim while extending directory entries in the same array', () => {
+  it('normalizes directory entries while preserving glob entries verbatim in the same array', () => {
     const result = normalizeYapyakConfig({
       include: ['src', 'app/**/*.tsx'],
     });
@@ -151,7 +151,7 @@ describe('normalizeYapyakConfig', () => {
     expect(result.include).toBe(pattern);
   });
 
-  it('extends a directory shortcut in `exclude` into a glob with the registered extensions', () => {
+  it('normalizes a directory shortcut in `exclude` into a glob with the registered extensions', () => {
     const result = normalizeYapyakConfig({ exclude: ['legacy'] });
 
     expect(result.exclude).toEqual([
@@ -159,7 +159,7 @@ describe('normalizeYapyakConfig', () => {
     ]);
   });
 
-  it('preserves glob entries in `exclude` verbatim while extending directory entries', () => {
+  it('normalizes directory entries in `exclude` while preserving glob entries verbatim', () => {
     const result = normalizeYapyakConfig({
       exclude: ['legacy', '**/*.test.*'],
     });
@@ -185,7 +185,7 @@ describe('normalizeYapyakConfig', () => {
     expect(result.include).toEqual(['src/Button.tsx']);
   });
 
-  it('extends a directory path whose name contains a dot that is not a registered extension', () => {
+  it('normalizes a directory path whose name contains a dot that is not a registered extension', () => {
     const result = normalizeYapyakConfig({
       include: ['src/feature.module'],
     });
