@@ -1,10 +1,4 @@
 import type { Digit, NonIdentifierChar, Trim } from './t-param';
-import type {
-  EmptySourceError,
-  InvalidPlaceholderError,
-  MissingOtherBranchError,
-  UnknownIcuFormatError,
-} from './type-error';
 
 type OrElse<TValue, TFallback> = [TValue] extends [never] ? TFallback : TValue;
 
@@ -17,22 +11,22 @@ type KnownIcuFormat =
   | 'time';
 
 type ValidateName<T extends string> = T extends ''
-  ? InvalidPlaceholderError<'', 'name cannot be empty'>
+  ? { $yapyakTypeError: 'Invalid placeholder "": name cannot be empty' }
   : T extends `${Digit}${string}`
-    ? InvalidPlaceholderError<
-        T,
-        'must start with a letter or underscore (not a digit)'
-      >
+    ? {
+        $yapyakTypeError: `Invalid placeholder "${T}": must start with a letter or underscore (not a digit)`;
+      }
     : T extends `${string}${NonIdentifierChar}${string}`
-      ? InvalidPlaceholderError<
-          T,
-          'cannot contain spaces, dots, or other punctuation'
-        >
+      ? {
+          $yapyakTypeError: `Invalid placeholder "${T}": cannot contain spaces, dots, or other punctuation`;
+        }
       : never;
 
 type ValidateFormat<T extends string> = T extends KnownIcuFormat
   ? never
-  : UnknownIcuFormatError<T>;
+  : {
+      $yapyakTypeError: `Unknown ICU format "${T}" — expected one of: plural, selectordinal, select, number, date, time`;
+    };
 
 type HasOtherBranch<T extends string> = T extends
   | `${string}other ${string}{${string}`
@@ -47,15 +41,21 @@ type ValidateBranches<
 > = TFormat extends 'plural'
   ? HasOtherBranch<TBody> extends true
     ? never
-    : MissingOtherBranchError<TName, 'Plural'>
+    : {
+        $yapyakTypeError: `Plural "{${TName}}" is missing the required 'other' branch`;
+      }
   : TFormat extends 'selectordinal'
     ? HasOtherBranch<TBody> extends true
       ? never
-      : MissingOtherBranchError<TName, 'Selectordinal'>
+      : {
+          $yapyakTypeError: `Selectordinal "{${TName}}" is missing the required 'other' branch`;
+        }
     : TFormat extends 'select'
       ? HasOtherBranch<TBody> extends true
         ? never
-        : MissingOtherBranchError<TName, 'Select'>
+        : {
+            $yapyakTypeError: `Select "{${TName}}" is missing the required 'other' branch`;
+          }
       : never;
 
 type ValidatePlaceholder<T extends string> =
@@ -89,5 +89,5 @@ type FindFirstSourceError<T extends string> =
 export type ValidateSource<T extends string> = string extends T
   ? T
   : T extends ''
-    ? EmptySourceError
+    ? { $yapyakTypeError: 'Invalid source: must not be an empty string' }
     : OrElse<FindFirstSourceError<T>, T>;

@@ -1,7 +1,6 @@
 import type { Locale } from '../locale';
 import type { ExtractTParams } from './t-param';
 import type { ExtractTags } from './tag';
-import type { ContextSeparatorError } from './type-error';
 import type { ValidateSource } from './validate-source';
 
 import { getLocale } from '../locale';
@@ -26,7 +25,9 @@ type TArgs<T extends string> =
 type ValidContext<T extends string> = string extends T
   ? T
   : T extends `${string}@${string}`
-    ? ContextSeparatorError<T>
+    ? {
+        $yapyakTypeError: `Invalid context "${T}": '@' is reserved as the source/context separator`;
+      }
     : T;
 
 declare const brand: unique symbol;

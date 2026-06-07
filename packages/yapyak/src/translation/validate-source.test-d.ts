@@ -1,10 +1,3 @@
-import type {
-  ContextSeparatorError,
-  EmptySourceError,
-  InvalidPlaceholderError,
-  MissingOtherBranchError,
-  UnknownIcuFormatError,
-} from './type-error';
 import type { ValidateSource } from './validate-source';
 
 import { describe, expectTypeOf, it } from 'vitest';
@@ -27,40 +20,33 @@ describe('ValidateSource', () => {
   });
 
   it('refuses an empty source literal', () => {
-    expectTypeOf<ValidateSource<''>>().toEqualTypeOf<EmptySourceError>();
+    expectTypeOf<ValidateSource<''>>().toEqualTypeOf<{
+      $yapyakTypeError: 'Invalid source: must not be an empty string';
+    }>();
   });
 
   it('refuses a digit-first placeholder name', () => {
-    expectTypeOf<ValidateSource<'Item {0}'>>().toEqualTypeOf<
-      InvalidPlaceholderError<
-        '0',
-        'must start with a letter or underscore (not a digit)'
-      >
-    >();
+    expectTypeOf<ValidateSource<'Item {0}'>>().toEqualTypeOf<{
+      $yapyakTypeError: 'Invalid placeholder "0": must start with a letter or underscore (not a digit)';
+    }>();
   });
 
   it('refuses a dotted placeholder name', () => {
-    expectTypeOf<ValidateSource<'Hi {user.name}'>>().toEqualTypeOf<
-      InvalidPlaceholderError<
-        'user.name',
-        'cannot contain spaces, dots, or other punctuation'
-      >
-    >();
+    expectTypeOf<ValidateSource<'Hi {user.name}'>>().toEqualTypeOf<{
+      $yapyakTypeError: 'Invalid placeholder "user.name": cannot contain spaces, dots, or other punctuation';
+    }>();
   });
 
   it('refuses a spaced placeholder name', () => {
-    expectTypeOf<ValidateSource<'Hi {first name}'>>().toEqualTypeOf<
-      InvalidPlaceholderError<
-        'first name',
-        'cannot contain spaces, dots, or other punctuation'
-      >
-    >();
+    expectTypeOf<ValidateSource<'Hi {first name}'>>().toEqualTypeOf<{
+      $yapyakTypeError: 'Invalid placeholder "first name": cannot contain spaces, dots, or other punctuation';
+    }>();
   });
 
   it('refuses an empty placeholder name', () => {
-    expectTypeOf<ValidateSource<'Hello {}'>>().toEqualTypeOf<
-      InvalidPlaceholderError<'', 'name cannot be empty'>
-    >();
+    expectTypeOf<ValidateSource<'Hello {}'>>().toEqualTypeOf<{
+      $yapyakTypeError: 'Invalid placeholder "": name cannot be empty';
+    }>();
   });
 
   it('preserves a valid plural placeholder', () => {
@@ -72,25 +58,33 @@ describe('ValidateSource', () => {
   it('refuses a plural placeholder missing the `other` branch', () => {
     expectTypeOf<
       ValidateSource<'{count, plural, one {# msg} two {# msgs}}'>
-    >().toEqualTypeOf<MissingOtherBranchError<'count', 'Plural'>>();
+    >().toEqualTypeOf<{
+      $yapyakTypeError: `Plural "{count}" is missing the required 'other' branch`;
+    }>();
   });
 
   it('refuses a selectordinal placeholder missing the `other` branch', () => {
     expectTypeOf<
       ValidateSource<'{n, selectordinal, one {1st} two {2nd}}'>
-    >().toEqualTypeOf<MissingOtherBranchError<'n', 'Selectordinal'>>();
+    >().toEqualTypeOf<{
+      $yapyakTypeError: `Selectordinal "{n}" is missing the required 'other' branch`;
+    }>();
   });
 
   it('refuses a select placeholder missing the `other` branch', () => {
     expectTypeOf<
       ValidateSource<'{theme, select, dark {Dark} light {Light}}'>
-    >().toEqualTypeOf<MissingOtherBranchError<'theme', 'Select'>>();
+    >().toEqualTypeOf<{
+      $yapyakTypeError: `Select "{theme}" is missing the required 'other' branch`;
+    }>();
   });
 
   it('refuses an unknown ICU format keyword', () => {
     expectTypeOf<
       ValidateSource<'{x, plurral, one {a} other {b}}'>
-    >().toEqualTypeOf<UnknownIcuFormatError<'plurral'>>();
+    >().toEqualTypeOf<{
+      $yapyakTypeError: 'Unknown ICU format "plurral" — expected one of: plural, selectordinal, select, number, date, time';
+    }>();
   });
 
   it('preserves a valid bare ICU format placeholder', () => {
@@ -100,19 +94,8 @@ describe('ValidateSource', () => {
   });
 
   it('holds the first error when a source has multiple violations', () => {
-    expectTypeOf<ValidateSource<'Hi {0}, {user.name}'>>().toEqualTypeOf<
-      InvalidPlaceholderError<
-        '0',
-        'must start with a letter or underscore (not a digit)'
-      >
-    >();
-  });
-});
-
-describe('ContextSeparatorError', () => {
-  it('holds the offending context in the message body', () => {
-    expectTypeOf<
-      ContextSeparatorError<'btn@x'>
-    >().toEqualTypeOf<`Invalid context "btn@x": '@' is reserved as the source/context separator`>();
+    expectTypeOf<ValidateSource<'Hi {0}, {user.name}'>>().toEqualTypeOf<{
+      $yapyakTypeError: 'Invalid placeholder "0": must start with a letter or underscore (not a digit)';
+    }>();
   });
 });
