@@ -285,7 +285,7 @@ describe('writeOrphans', () => {
     expect(written).toEqual(cache);
   });
 
-  it('creates the parent directory when missing', () => {
+  it('writes the parent directory when missing', () => {
     const nested = join(dir, 'nested', 'path');
     writeOrphans(nested, {});
     expect(

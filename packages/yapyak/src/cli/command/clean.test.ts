@@ -80,7 +80,7 @@ describe('clean', () => {
     );
   });
 
-  it('removes orphan entries from the locale files when `write` is `true`', () => {
+  it('clears orphan entries from the locale files when `write` is `true`', () => {
     writeFileSync(join(root, 'src', 'app.ts'), '');
     writeFileSync(
       join(root, 'locales', 'sv.json'),

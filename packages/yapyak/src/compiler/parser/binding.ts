@@ -65,7 +65,7 @@ export function resolveBindings(
 }
 
 function extractImports(sourceFile: ts.SourceFile): ImportInfo {
-  const info: ImportInfo = {
+  const imports: ImportInfo = {
     directLocals: new Set(),
     namespaceLocals: new Set(),
   };
@@ -88,7 +88,7 @@ function extractImports(sourceFile: ts.SourceFile): ImportInfo {
       continue;
     }
     if (ts.isNamespaceImport(namedBindings)) {
-      info.namespaceLocals.add(namedBindings.name.text);
+      imports.namespaceLocals.add(namedBindings.name.text);
       continue;
     }
     if (ts.isNamedImports(namedBindings)) {
@@ -96,12 +96,12 @@ function extractImports(sourceFile: ts.SourceFile): ImportInfo {
         const importedName = (element.propertyName ?? element.name).text;
         const localName = element.name.text;
         if (importedName === RUNTIME_NAME) {
-          info.directLocals.add(localName);
+          imports.directLocals.add(localName);
         }
       }
     }
   }
-  return info;
+  return imports;
 }
 
 function walkBindings(

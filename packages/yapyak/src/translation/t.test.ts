@@ -28,7 +28,7 @@ describe('t', () => {
     );
   });
 
-  it('points to the build-tool plugin in the error message', () => {
+  it('writes to the build-tool plugin in the error message', () => {
     expect(() => t('Save')).toThrow(/register a yapyak build-tool plugin/);
   });
 });

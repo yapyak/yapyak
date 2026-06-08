@@ -22,8 +22,12 @@ export function detectAtIssues(messages: ExtractedMessage[]): Diagnostic[] {
   }
 
   for (const messagesForSource of groups.values()) {
-    const tagged = messagesForSource.filter((message) => message.context !== undefined);
-    const untagged = messagesForSource.filter((message) => message.context === undefined);
+    const tagged = messagesForSource.filter(
+      (message) => message.context !== undefined,
+    );
+    const untagged = messagesForSource.filter(
+      (message) => message.context === undefined,
+    );
 
     if (tagged.length > 0 && untagged.length > 0) {
       const allLocations: Location[] = [];
@@ -32,9 +36,9 @@ export function detectAtIssues(messages: ExtractedMessage[]): Diagnostic[] {
           allLocations.push(location);
         }
       }
-      // biome-ignore lint/style/noNonNullAssertion: messagesForSource is guaranteed non-empty
+      // biome-ignore lint/style/noNonNullAssertion: yap yap yap
       const first = messagesForSource[0]!;
-      // biome-ignore lint/style/noNonNullAssertion: locations of a message are guaranteed non-empty
+      // biome-ignore lint/style/noNonNullAssertion: yap yap yap
       const firstLocation = first.locations[0]!;
       diagnostics.push(
         createDiagnostic({
@@ -51,9 +55,9 @@ export function detectAtIssues(messages: ExtractedMessage[]): Diagnostic[] {
     }
 
     if (tagged.length === 1) {
-      // biome-ignore lint/style/noNonNullAssertion: tagged.length === 1 guarantees this exists
+      // biome-ignore lint/style/noNonNullAssertion: yap yap yap
       const onlyMessage = tagged[0]!;
-      // biome-ignore lint/style/noNonNullAssertion: a message's locations array is non-empty
+      // biome-ignore lint/style/noNonNullAssertion: yap yap yap
       const firstLocation = onlyMessage.locations[0]!;
       diagnostics.push(
         createDiagnostic({

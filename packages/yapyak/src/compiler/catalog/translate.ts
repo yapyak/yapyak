@@ -104,17 +104,17 @@ export async function autoTranslate(
     if (!trimmed) {
       continue;
     }
-    let data = localeFiles.get(stub.locale);
-    if (!data) {
+    let localeFile = localeFiles.get(stub.locale);
+    if (!localeFile) {
       const localePath = join(
         options.projectRoot,
         options.localesDir,
         `${stub.locale}.json`,
       );
-      data = readLocaleFile(localePath);
-      localeFiles.set(stub.locale, data);
+      localeFile = readLocaleFile(localePath);
+      localeFiles.set(stub.locale, localeFile);
     }
-    setEntry(data, stub.fileId, getStubKey(stub), trimmed);
+    setEntry(localeFile, stub.fileId, getStubKey(stub), trimmed);
     translated++;
     touchedLocales.add(stub.locale);
   }

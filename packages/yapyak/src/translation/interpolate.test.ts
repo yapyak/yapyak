@@ -27,7 +27,7 @@ describe('interpolate', () => {
     ).toBe('Hi Ada, you have 3 left');
   });
 
-  it('renders a missing param as an empty string', () => {
+  it('returns a missing param as an empty string', () => {
     expect(interpolate('Hi {name}', {}, 'en')).toBe('Hi ');
   });
 
@@ -147,7 +147,7 @@ describe('interpolate', () => {
       ).toBe('1,234.5');
     });
 
-    it('renders a missing number param as an empty string', () => {
+    it('returns a missing number param as an empty string', () => {
       expect(interpolate('{n, number}', {}, 'en')).toBe('');
     });
   });
@@ -185,7 +185,7 @@ describe('interpolate', () => {
       expect(interpolate('{d, date}', { d: date }, 'en')).toBe(expected);
     });
 
-    it('renders an invalid date as an empty string', () => {
+    it('returns an invalid date as an empty string', () => {
       expect(interpolate('{d, date, long}', { d: 'not-a-date' }, 'en')).toBe(
         '',
       );

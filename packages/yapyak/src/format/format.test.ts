@@ -33,12 +33,12 @@ describe('format', () => {
   });
 
   describe('currency', () => {
-    it('renders the currency symbol', () => {
+    it('returns the currency symbol', () => {
       setLocale('en');
       expect(format.currency(499, 'EUR')).toContain('€');
     });
 
-    it('renders a narrow symbol when `currencyDisplay` is `narrowSymbol`', () => {
+    it('returns a narrow symbol when `currencyDisplay` is `narrowSymbol`', () => {
       setLocale('en');
       expect(
         format.currency(499, 'EUR', { currencyDisplay: 'narrowSymbol' }),
@@ -59,7 +59,7 @@ describe('format', () => {
   });
 
   describe('percent', () => {
-    it('renders a fraction as a percentage', () => {
+    it('returns a fraction as a percentage', () => {
       setLocale('en');
       expect(format.percent(0.42)).toBe('42%');
     });
@@ -127,12 +127,12 @@ describe('format', () => {
   });
 
   describe('relativeTime', () => {
-    it('renders a past offset for a negative value', () => {
+    it('returns a past offset for a negative value', () => {
       setLocale('en');
       expect(format.relativeTime(-2, 'day')).toBe('2 days ago');
     });
 
-    it('renders a future offset for a positive value', () => {
+    it('returns a future offset for a positive value', () => {
       setLocale('en');
       expect(format.relativeTime(3, 'hour')).toBe('in 3 hours');
     });

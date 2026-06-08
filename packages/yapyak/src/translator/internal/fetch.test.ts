@@ -33,7 +33,7 @@ describe('fetchWithRetry', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it('retries a 5xx response and returns the eventual success', async () => {
+  it('returns a 5xx response and returns the eventual success', async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(new Response('', { status: 500 }))

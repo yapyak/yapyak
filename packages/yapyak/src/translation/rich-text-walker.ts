@@ -15,16 +15,16 @@ export function parseRichText(source: string): RichTextNode[] {
   };
 
   while (index < source.length) {
-    const open = source.startsWith('<', index)
+    const openTag = source.startsWith('<', index)
       ? readOpenTag(source, index)
       : undefined;
-    if (open) {
-      const close = findClosingTagRange(source, open.end, open.name);
+    if (openTag) {
+      const close = findClosingTagRange(source, openTag.end, openTag.name);
       if (close) {
         flush();
         nodes.push({
-          children: parseRichText(source.slice(open.end, close.start)),
-          name: open.name,
+          children: parseRichText(source.slice(openTag.end, close.start)),
+          name: openTag.name,
           type: 'tag',
         });
         index = close.end;
@@ -90,7 +90,7 @@ function findClosingTagRange(
   from: number,
   name: string,
 ): { start: number; end: number } | undefined {
-  const open = `<${name}>`;
+  const openMarker = `<${name}>`;
   const close = `</${name}>`;
   let depth = 1;
   let index = from;
@@ -103,9 +103,9 @@ function findClosingTagRange(
       index += close.length;
       continue;
     }
-    if (source.startsWith(open, index)) {
+    if (source.startsWith(openMarker, index)) {
       depth += 1;
-      index += open.length;
+      index += openMarker.length;
       continue;
     }
     index += 1;

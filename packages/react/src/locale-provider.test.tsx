@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { LocaleProvider } from './locale-provider';
 
 describe('LocaleProvider', () => {
-  it('renders its children verbatim', () => {
+  it('returns its children verbatim', () => {
     const html = renderToString(
       <LocaleProvider>
         <span>child</span>

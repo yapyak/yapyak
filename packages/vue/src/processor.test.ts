@@ -351,11 +351,11 @@ describe('vue processor — transform', () => {
       "import { t } from 'yapyak';",
       '</script>',
       '<template>',
-      `  <button @click="alert(t('Hi'))">x</button>`,
+      `  <button @click="alert(t('Hello'))">x</button>`,
       '</template>',
     ].join('\n');
     const code = runVueTransform({ locales: ['en'], source });
-    expect(code).toContain("alert('Hi')");
+    expect(code).toContain("alert('Hello')");
   });
 
   it('preserves `<script setup>` when there is no core `t` import', () => {

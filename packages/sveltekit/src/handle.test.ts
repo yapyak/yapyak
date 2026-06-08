@@ -15,7 +15,7 @@ function makeEvent(request: Request): Parameters<typeof handle>[0]['event'] {
 }
 
 describe('handle', () => {
-  it('substitutes `%yapyak.lang%` with the current locale in the page chunk', async () => {
+  it('transforms `%yapyak.lang%` with the current locale in the page chunk', async () => {
     const calls: ResolveCall[] = [];
     const event = makeEvent(new Request('http://example.com/'));
     await handle({
@@ -33,7 +33,7 @@ describe('handle', () => {
     setLocale('en');
   });
 
-  it('appends every pending yapyak header onto the response', async () => {
+  it('writes every pending yapyak header onto the response', async () => {
     const event = makeEvent(new Request('http://example.com/'));
     const response = new Response('body');
     await handle({

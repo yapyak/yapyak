@@ -14,12 +14,12 @@ describe('buildSystem', () => {
     expect(result).not.toMatch(/^Voice: /m);
   });
 
-  it('appends a `Voice:` line when a voice is given', () => {
+  it('writes a `Voice:` line when a voice is given', () => {
     const result = buildSystem({ voice: 'formal' }, 'en', ['sv']);
     expect(result).toContain('Voice: formal');
   });
 
-  it('appends a glossary section when entries match a target locale', () => {
+  it('writes a glossary section when entries match a target locale', () => {
     const result = buildSystem(
       { glossary: { Save: { de: 'Speichern', sv: 'Spara' } } },
       'en',
@@ -44,11 +44,11 @@ describe('stripCodeFence', () => {
     expect(stripCodeFence('[{"sv": "Hej"}]')).toBe('[{"sv": "Hej"}]');
   });
 
-  it('strips a plain ``` fence wrapping the payload', () => {
+  it('transforms a plain ``` fence wrapping the payload', () => {
     expect(stripCodeFence('```\n[1, 2]\n```')).toBe('[1, 2]');
   });
 
-  it('strips a ```json fence wrapping the payload', () => {
+  it('transforms a ```json fence wrapping the payload', () => {
     expect(stripCodeFence('```json\n[1, 2]\n```')).toBe('[1, 2]');
   });
 });

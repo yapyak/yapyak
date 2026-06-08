@@ -436,7 +436,7 @@ describe('anthropic', () => {
   });
 
   describe('disambiguation', () => {
-    it('forwards `disambiguation` into the request items', async () => {
+    it('writes `disambiguation` into the request items', async () => {
       const stub = stubFetch('Öppna');
       await anthropic({ apiKey: 'k' })({
         disambiguation: 'button',
@@ -453,7 +453,7 @@ describe('anthropic', () => {
       expect(items[0]?.disambiguation).toBe('button');
     });
 
-    it('mentions `disambiguation` in the system prompt', async () => {
+    it('writes `disambiguation` in the system prompt', async () => {
       const stub = stubFetch('Öppna');
       await anthropic({ apiKey: 'k' })({
         fileId: 'src/a.tsx',

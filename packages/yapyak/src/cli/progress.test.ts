@@ -26,7 +26,7 @@ describe('withProgress', () => {
     expect(onProgress).toHaveBeenCalledWith(1);
   });
 
-  it('forwards every chunk count through `onChunk` when batching', async () => {
+  it('writes every chunk count through `onChunk` when batching', async () => {
     const onProgress = vi.fn();
     const innerBatch = vi.fn(async (_requests, options) => {
       options?.onChunk?.(3);

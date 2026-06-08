@@ -19,7 +19,7 @@ describe('renderTable', () => {
     );
   });
 
-  it('pads a column to the width of its widest cell across all rows', () => {
+  it('builds a column to the width of its widest cell across all rows', () => {
     const out = renderTable({
       headers: ['Name'],
       rows: [['Save'], ['Save changes']],

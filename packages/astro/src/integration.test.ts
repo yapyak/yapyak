@@ -7,7 +7,7 @@ describe('yapyak', () => {
     expect(yapyak().name).toBe('@yapyak/astro');
   });
 
-  it('registers a hook for `astro:config:setup`', () => {
+  it('binds a hook for `astro:config:setup`', () => {
     expect(yapyak().hooks['astro:config:setup']).toBeInstanceOf(Function);
   });
 
@@ -30,7 +30,7 @@ describe('yapyak', () => {
     expect(config.vite.plugins).toHaveLength(1);
   });
 
-  it('adds the `@yapyak/astro/internal` middleware with `pre` order on setup', () => {
+  it('writes the `@yapyak/astro/internal` middleware with `pre` order on setup', () => {
     const updateConfig = vi.fn();
     const addMiddleware = vi.fn();
     const integration = yapyak();

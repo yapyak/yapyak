@@ -8,8 +8,6 @@ export function resolveSymbol(
   if (direct) {
     return direct;
   }
-  // Allow bare-name lookup that finds any matching qualified key.
-  // Returns null if multiple packages export the same name (ambiguous).
   let match: SymbolEntry | null = null;
   for (const [key, entry] of Object.entries(manifest.symbols)) {
     const slashIndex = key.lastIndexOf('/');

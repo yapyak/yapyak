@@ -31,7 +31,7 @@ describe('middleware', () => {
     expect(result).toBe(expected);
   });
 
-  it('appends every pending yapyak header onto the response', async () => {
+  it('writes every pending yapyak header onto the response', async () => {
     const server = getServer();
     const request = new Request('http://example.com/');
     const response = new Response('body');
