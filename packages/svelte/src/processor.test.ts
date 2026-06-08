@@ -134,14 +134,13 @@ describe('svelte processor — extract', () => {
     expect(result.messages.map((m) => m.source)).toContain('Hello');
   });
 
-  it('extracts `t()` from a spread attribute', () => {
+  it('extracts `t()` from inside a spread attribute expression', () => {
     const result = extractSvelte(
       [
         '<script lang="ts">',
         "import { t } from 'yapyak';",
-        "  const attrs = { title: t('Save') };",
         '</script>',
-        '<button {...attrs}>x</button>',
+        "<button {...{ title: t('Save') }}>x</button>",
       ].join('\n'),
     );
     expect(result.messages.map((m) => m.source)).toContain('Save');
@@ -159,13 +158,122 @@ describe('svelte processor — extract', () => {
     expect(result.messages.map((m) => m.source)).toContain('Hello');
   });
 
-  it('returns `ts` lang for `<script lang="typescript">`', () => {
+  it('extracts `t()` from a `<script lang="typescript">` block', () => {
     const result = extractSvelte(
       [
         '<script lang="typescript">',
         "import { t } from 'yapyak';",
         "const x = t('Hello');",
         '</script>',
+      ].join('\n'),
+    );
+    expect(result.messages.map((m) => m.source)).toContain('Hello');
+  });
+
+  it('extracts `t()` from a `<script>` block without `lang`', () => {
+    const result = extractSvelte(
+      [
+        '<script>',
+        "import { t } from 'yapyak';",
+        "const x = t('Hello');",
+        '</script>',
+      ].join('\n'),
+    );
+    expect(result.messages.map((m) => m.source)).toContain('Hello');
+  });
+
+  it('extracts `t()` from a `<script module>` block', () => {
+    const result = extractSvelte(
+      [
+        '<script module lang="ts">',
+        "import { t } from 'yapyak';",
+        "const x = t('Hello');",
+        '</script>',
+      ].join('\n'),
+    );
+    expect(result.messages.map((m) => m.source)).toContain('Hello');
+  });
+
+  it('extracts `t()` from a `<svelte:element>` `this` expression', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        "<svelte:element this={t('div')}>x</svelte:element>",
+      ].join('\n'),
+    );
+    expect(result.messages.map((m) => m.source)).toContain('div');
+  });
+
+  it('extracts `t()` from a `<svelte:component>` `this` expression', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '  let Comp;',
+        '</script>',
+        "<svelte:component this={Comp ?? t('Hello')}>x</svelte:component>",
+      ].join('\n'),
+    );
+    expect(result.messages.map((m) => m.source)).toContain('Hello');
+  });
+
+  it('extracts `t()` from a multi-expression attribute', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        `<button title="a{t('Save')}b">x</button>`,
+      ].join('\n'),
+    );
+    expect(result.messages.map((m) => m.source)).toContain('Save');
+  });
+
+  it('extracts `t()` from a multi-expression `style:` directive', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        `<div style:color="a{t('Hello')}b">x</div>`,
+      ].join('\n'),
+    );
+    expect(result.messages.map((m) => m.source)).toContain('Hello');
+  });
+
+  it('extracts `t()` from an `on:` directive expression', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        "<button on:click={() => t('Save')}>x</button>",
+      ].join('\n'),
+    );
+    expect(result.messages.map((m) => m.source)).toContain('Save');
+  });
+
+  it('extracts `t()` from children when an attribute is boolean', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        `<button disabled>{t('Cancel')}</button>`,
+      ].join('\n'),
+    );
+    expect(result.messages.map((m) => m.source)).toContain('Cancel');
+  });
+
+  it('extracts `t()` from children when a `style:` directive is boolean', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        `<div style:color>{t('Hello')}</div>`,
       ].join('\n'),
     );
     expect(result.messages.map((m) => m.source)).toContain('Hello');
