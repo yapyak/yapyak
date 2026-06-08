@@ -303,7 +303,7 @@ describe('createTranslator', () => {
     await translator.batch?.([
       {
         disambiguation: 'button',
-        examples: ['Click to save'],
+        examples: [{ source: 'Save', translation: 'Spara' }],
         fileId: 'src/a.tsx',
         source: 'Save',
         sourceLocale: 'en',
@@ -313,7 +313,7 @@ describe('createTranslator', () => {
     expect(receivedItems).toEqual([
       {
         disambiguation: 'button',
-        examples: ['Click to save'],
+        examples: [{ source: 'Save', translation: 'Spara' }],
         source: 'Save',
       },
     ]);

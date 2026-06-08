@@ -7,15 +7,17 @@ interface Spinner {
   update(text: string): void;
 }
 
+const FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'] as const;
+
 export function spinner(initial: string): Spinner {
-  const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
   let message = initial;
   let frameIndex = 0;
-  process.stdout.write(`  ${color.cyan(frames[0] ?? '')} ${message}`);
+  process.stdout.write(`  ${color.cyan(FRAMES[0])} ${message}`);
   const id = setInterval(() => {
-    frameIndex = (frameIndex + 1) % frames.length;
+    frameIndex = (frameIndex + 1) % FRAMES.length;
     process.stdout.write(
-      `\r\x1b[K  ${color.cyan(frames[frameIndex] ?? '')} ${message}`,
+      // biome-ignore lint/style/noNonNullAssertion: yap yap yap
+      `\r\x1b[K  ${color.cyan(FRAMES[frameIndex]!)} ${message}`,
     );
   }, 80);
   return {

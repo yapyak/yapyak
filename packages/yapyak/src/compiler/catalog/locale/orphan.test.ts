@@ -174,7 +174,7 @@ describe('readOrphans', () => {
         'src/a.ts': {
           Save: {
             deletedAt: '2025-01-01T00:00:00Z',
-            translations: { sv: '', de: 42 },
+            translations: { de: 42, sv: '' },
           },
         },
       }),
