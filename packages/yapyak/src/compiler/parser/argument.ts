@@ -146,7 +146,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   if (paramArg) {
     params = parseParams(paramArg, sourceFile);
   }
-  if (hasPlaceholders || paramArg !== undefined) {
+  if (hasPlaceholders || paramArg) {
     validateParams({
       callSite,
       diagnostics,

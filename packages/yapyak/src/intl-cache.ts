@@ -10,13 +10,13 @@ export function getFormatter<T>(
   options: object | undefined,
 ): T {
   let cache = caches.get(ctor) as Map<string, T> | undefined;
-  if (cache === undefined) {
+  if (!cache) {
     cache = new Map();
     caches.set(ctor, cache as Map<string, unknown>);
   }
   const key = buildCanonicalKey(locale, options);
   const cached = cache.get(key);
-  if (cached !== undefined) {
+  if (cached) {
     cache.delete(key);
     cache.set(key, cached);
     return cached;
@@ -36,7 +36,7 @@ function buildCanonicalKey(
   locale: string,
   options: object | undefined,
 ): string {
-  if (options === undefined) {
+  if (!options) {
     return locale;
   }
   const optionEntries = Object.entries(options).sort(([a], [b]) =>

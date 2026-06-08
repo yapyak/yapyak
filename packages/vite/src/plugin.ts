@@ -905,13 +905,13 @@ interface Debounced {
 function debounce(fn: () => void, ms: number): Debounced {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const debounced = (() => {
-    if (timer !== undefined) {
+    if (timer) {
       clearTimeout(timer);
     }
     timer = setTimeout(fn, ms);
   }) as Debounced;
   debounced.cancel = () => {
-    if (timer !== undefined) {
+    if (timer) {
       clearTimeout(timer);
       timer = undefined;
     }
