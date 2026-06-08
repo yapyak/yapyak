@@ -11,7 +11,7 @@ Several diagnostics are also surfaced as **TypeScript errors** at the call site 
 
 ### YPK101
 
-`t()` or `t.at()` called without a source argument (error).
+`t()` or `t.as()` called without a source argument (error).
 
 Pass the source as the first argument:
 
@@ -119,44 +119,44 @@ A translation string is not in Unicode NFC normalization form (error). Normalize
 
 ### YPK401
 
-The `context` argument to `t.at()` is not a static string literal (error).
+The `context` argument to `t.as()` is not a static string literal (error).
 
 Pass a literal string:
 
 ```ts
-t.at(prefix, 'Open');         // ✗ YPK401
-t.at('action', 'Open');       // ✓
+t.as(prefix, 'Open');         // ✗ YPK401
+t.as('action', 'Open');       // ✓
 ```
 
 ### YPK402
 
-The `t.at()` context contains an `'@'` (error). `'@'` is reserved as the source/context separator.
+The `t.as()` context contains an `'@'` (error). `'@'` is reserved as the source/context separator.
 
 ```ts
-t.at('btn@x', 'Open');        // ✗ YPK402 (contains '@')
-t.at('primary-cta', 'Open');  // ✓
+t.as('btn@x', 'Open');        // ✗ YPK402 (contains '@')
+t.as('primary-cta', 'Open');  // ✓
 ```
 
-> **Also a TS error.** `t.at('btn@x', ...)` fails type-checking with `Invalid context "btn@x": '@' is reserved as the source/context separator`.
+> **Also a TS error.** `t.as('btn@x', ...)` fails type-checking with `Invalid context "btn@x": '@' is reserved as the source/context separator`.
 
 ### YPK403
 
-The same source string is used with both `t()` and `t.at()` in the same file (error). Pick one form for every occurrence.
+The same source string is used with both `t()` and `t.as()` in the same file (error). Pick one form for every occurrence.
 
 ### YPK404
 
-`t.at(context, source)` has no other context to disambiguate from (warning). If only one occurrence of the source exists, `t.at()` has no effect — drop it.
+`t.as(context, source)` has no other context to disambiguate from (warning). If only one occurrence of the source exists, `t.as()` has no effect — drop it.
 
 ### YPK405
 
-A modifier (`t.at` or `t.in`) is captured in a variable, returned, or passed as an argument instead of used inline (error).
+A modifier (`t.as` or `t.in`) is captured in a variable, returned, or passed as an argument instead of used inline (error).
 
 Use modifiers inline:
 
 ```ts
 const sv = t.in('sv');           // ✗ YPK405 — chain captured
-sv.at('button', 'Hello');
+sv.as('button', 'Hello');
 
 t.in('sv', 'Hello');             // ✓ — inline call
-t.in('sv').at('button', 'Save'); // ✓ — inline chain
+t.in('sv').as('button', 'Save'); // ✓ — inline chain
 ```

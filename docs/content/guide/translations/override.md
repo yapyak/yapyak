@@ -38,20 +38,20 @@ The first argument is the locale, the second is the source. Every modifier in ya
 The same call can carry both a forced locale and a [homonym context](./homonyms.md):
 
 ```ts
-t.in('sv').at('action', 'Open');
+t.in('sv').as('action', 'Open');
 ```
 
 Read it left to right: *in Swedish, at the action context, the source is `Open`.* The reverse order works the same way:
 
 ```ts
-t.at('action').in('sv', 'Open');
+t.as('action').in('sv', 'Open');
 ```
 
 Both expressions produce the same result.
 
 ## Modifiers are inline
 
-`t.in()` and `t.at()` are not factories. They cannot be captured and reused:
+`t.in()` and `t.as()` are not factories. They cannot be captured and reused:
 
 ```ts
 const sv = t.in('sv');

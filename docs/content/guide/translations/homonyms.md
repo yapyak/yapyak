@@ -81,7 +81,7 @@ The status is a state:
 
 A single translation for *Open* cannot be correct in both places.
 
-When a source message needs a more specific meaning, use `t.at()`:
+When a source message needs a more specific meaning, use `t.as()`:
 
 {% switch group="framework" %}
 
@@ -93,8 +93,8 @@ import { Status } from './status';
 export function Ticket() {
   return (
     <>
-      <button>{t.at('action', 'Open')}</button>
-      <Status>{t.at('status', 'Open')}</Status>
+      <button>{t.as('action', 'Open')}</button>
+      <Status>{t.as('status', 'Open')}</Status>
     </>
   );
 }
@@ -109,8 +109,8 @@ import { t } from 'yapyak';
 </script>
 
 <template>
-  <button>{{ t.at('action', 'Open') }}</button>
-  <Status>{{ t.at('status', 'Open') }}</Status>
+  <button>{{ t.as('action', 'Open') }}</button>
+  <Status>{{ t.as('status', 'Open') }}</Status>
 </template>
 ```
 {% /when %}
@@ -122,8 +122,8 @@ import { t } from 'yapyak';
   import { t } from 'yapyak';
 </script>
 
-<button>{t.at('action', 'Open')}</button>
-<Status>{t.at('status', 'Open')}</Status>
+<button>{t.as('action', 'Open')}</button>
+<Status>{t.as('status', 'Open')}</Status>
 ```
 {% /when %}
 
@@ -134,8 +134,8 @@ import Status from './Status.astro';
 import { t } from 'yapyak';
 ---
 
-<button>{t.at('action', 'Open')}</button>
-<Status>{t.at('status', 'Open')}</Status>
+<button>{t.as('action', 'Open')}</button>
+<Status>{t.as('status', 'Open')}</Status>
 ```
 {% /when %}
 
@@ -195,9 +195,9 @@ The translation file can now keep both messages separately:
 
 ## Diagnostics
 
-yapyak emits two diagnostics around `t.at()`:
+yapyak emits two diagnostics around `t.as()`:
 
-- **YPK403** — a source is used with both `t()` and `t.at()` in the same file. Choose one form for every occurrence.
-- **YPK404** — a single `t.at()` with no other context to disambiguate from. Drop the `.at()` since it has no effect.
+- **YPK403** — a source is used with both `t()` and `t.as()` in the same file. Choose one form for every occurrence.
+- **YPK404** — a single `t.as()` with no other context to disambiguate from. Drop the `.as()` since it has no effect.
 
 Both keep the per-file translation scope intact. Two `t('Save')` calls in the same file are not flagged, because they may reasonably share one translation.

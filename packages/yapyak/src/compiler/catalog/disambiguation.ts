@@ -40,8 +40,8 @@ export function detectAtIssues(messages: ExtractedMessage[]): Diagnostic[] {
         createDiagnostic({
           code: 'YPK403',
           fileId: firstLocation.fileId,
-          hint: 'Either use `t.at(context, ...)` for every occurrence, or remove `t.at` from all of them.',
-          message: `Source "${first.source}" is used with both \`t()\` and \`t.at()\` in ${firstLocation.fileId}. Choose one form for every occurrence.`,
+          hint: 'Either use `t.as(context, ...)` for every occurrence, or remove `t.as` from all of them.',
+          message: `Source "${first.source}" is used with both \`t()\` and \`t.as()\` in ${firstLocation.fileId}. Choose one form for every occurrence.`,
           range: firstLocation.range,
           severity: 'error',
           source: '',
@@ -59,8 +59,8 @@ export function detectAtIssues(messages: ExtractedMessage[]): Diagnostic[] {
         createDiagnostic({
           code: 'YPK404',
           fileId: firstLocation.fileId,
-          hint: `Drop \`.at('${onlyMessage.context}', ...)\` — without another context for "${onlyMessage.source}", it has no effect.`,
-          message: `\`t.at('${onlyMessage.context}', '${onlyMessage.source}')\` in ${firstLocation.fileId} has no other context to disambiguate from.`,
+          hint: `Drop \`.as('${onlyMessage.context}', ...)\` — without another context for "${onlyMessage.source}", it has no effect.`,
+          message: `\`t.as('${onlyMessage.context}', '${onlyMessage.source}')\` in ${firstLocation.fileId} has no other context to disambiguate from.`,
           range: firstLocation.range,
           severity: 'warning',
           source: '',

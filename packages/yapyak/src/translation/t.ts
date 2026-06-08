@@ -41,7 +41,7 @@ export type TReturn<T extends string = never> = [T] extends [never]
   : string & { [brand]: T };
 
 /**
- * The inline chain returned by `t.in(locale)`. Completes via `.at(context, source)`.
+ * The inline chain returned by `t.in(locale)`. Completes via `.as(context, source)`.
  *
  * @remarks
  * Has no callable signature, so it cannot be captured and used as a translator.
@@ -50,11 +50,11 @@ export type TReturn<T extends string = never> = [T] extends [never]
  * ```ts
  * import { t } from 'yapyak';
  *
- * t.in('sv').at('action', 'Open');
+ * t.in('sv').as('action', 'Open');
  * ```
  */
 export interface TInChain {
-  at<TContext extends string, TSource extends string>(
+  as<TContext extends string, TSource extends string>(
     context: ValidContext<TContext>,
     source: ValidateSource<TSource>,
     ...args: TArgs<TSource>
@@ -62,7 +62,7 @@ export interface TInChain {
 }
 
 /**
- * The inline chain returned by `t.at(context)`. Completes via `.in(locale, source)`.
+ * The inline chain returned by `t.as(context)`. Completes via `.in(locale, source)`.
  *
  * @remarks
  * Has no callable signature, so it cannot be captured and used as a translator.
@@ -71,10 +71,10 @@ export interface TInChain {
  * ```ts
  * import { t } from 'yapyak';
  *
- * t.at('action').in('sv', 'Open');
+ * t.as('action').in('sv', 'Open');
  * ```
  */
-export interface TAtChain {
+export interface TAsChain {
   in<T extends string>(
     locale: Locale,
     source: ValidateSource<T>,
@@ -86,28 +86,28 @@ export interface TAtChain {
  * Translates a source string for the active locale.
  *
  * @remarks
- * The type of {@link t}. Modifiers `in` and `at` are inline: they accept the source directly, or return a constrained chain that requires the other modifier to complete the call. They do not return translators and cannot be captured.
+ * The type of {@link t}. Modifiers `in` and `as` are inline: they accept the source directly, or return a constrained chain that requires the other modifier to complete the call. They do not return translators and cannot be captured.
  */
 export interface TFn {
   /**
    * Disambiguates a source string by context, or returns a chain that requires `.in()` to complete.
    *
    * @remarks
-   * The compiler emits `YPK403` if a source is used with both `t()` and `t.at()` in the same file.
+   * The compiler emits `YPK403` if a source is used with both `t()` and `t.as()` in the same file.
    *
    * @param context - The disambiguating context. Must not contain `'@'` (reserved as the source/context separator).
    * @param source - The source string literal, supplied to translate inline.
    * @param args - The placeholder params tuple. Required when the source has placeholders.
    */
-  at<TContext extends string, TSource extends string>(
+  as<TContext extends string, TSource extends string>(
     context: ValidContext<TContext>,
     source: ValidateSource<TSource>,
     ...args: TArgs<TSource>
   ): TReturn<ExtractTags<TSource>>;
-  at<T extends string>(context: ValidContext<T>): TAtChain;
+  as<T extends string>(context: ValidContext<T>): TAsChain;
 
   /**
-   * Forces a fixed locale for one translation call, or returns a chain that requires `.at()` to complete.
+   * Forces a fixed locale for one translation call, or returns a chain that requires `.as()` to complete.
    *
    * @param locale - The locale code, e.g. `'sv'`.
    * @param source - The source string literal, supplied to translate inline.
@@ -135,7 +135,7 @@ export interface TFn {
  * Translates a source string for the active locale.
  *
  * @remarks
- * Yapyak's compiler rewrites every `t()` call site at build to inline the active-locale's catalog lookup. The source argument must be a string literal — wrapping breaks extraction. Placeholders use `{name}` and their values are type-checked from the source literal. A fixed locale is pinned via `t.in(locale, source)`, and modifiers chain inline: `t.in('sv').at('action', 'Save')`.
+ * Yapyak's compiler rewrites every `t()` call site at build to inline the active-locale's catalog lookup. The source argument must be a string literal — wrapping breaks extraction. Placeholders use `{name}` and their values are type-checked from the source literal. A fixed locale is pinned via `t.in(locale, source)`, and modifiers chain inline: `t.in('sv').as('action', 'Save')`.
  *
  * Every `t.*` call is a compile-time construct — the runtime form throws if it was not rewritten by the build-tool plugin. Yapyak requires the plugin to be registered; the runtime is not a fallback translator.
  *
@@ -159,23 +159,23 @@ export interface TFn {
  * ```ts
  * import { t } from 'yapyak';
  *
- * t.at('action', 'Open');
- * t.at('status', 'Open');
+ * t.as('action', 'Open');
+ * t.as('status', 'Open');
  * ```
  *
  * @example Combining forced locale and disambiguation
  * ```ts
  * import { t } from 'yapyak';
  *
- * t.in('sv').at('action', 'Open');
+ * t.in('sv').as('action', 'Open');
  * ```
  */
 export const t = Object.assign(() => throwNotCompiled('t'), {
-  at: () => throwNotCompiled('t.at'),
+  as: () => throwNotCompiled('t.as'),
   in: () => throwNotCompiled('t.in'),
 }) as TFn;
 
-function throwNotCompiled(method: 't' | 't.at' | 't.in'): never {
+function throwNotCompiled(method: 't' | 't.as' | 't.in'): never {
   throw new Error(
     `[yapyak] ${method}() was not rewritten at build time. ` +
       `Install and register a yapyak build-tool plugin (e.g. @yapyak/vite) in your bundler config.`,

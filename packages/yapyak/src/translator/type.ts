@@ -39,7 +39,7 @@ export interface TranslateRequest {
    * The developer-supplied disambiguation context.
    *
    * @remarks
-   * Set via `t.at(context, source)` at the call site. Must not contain `'@'`.
+   * Set via `t.as(context, source)` at the call site. Must not contain `'@'`.
    */
   disambiguation?: string;
   /** Example translations from the project, supplied as style reference. */
@@ -119,7 +119,7 @@ export type ContextLevel = 'none' | 'minimal' | 'rich';
 export interface TranslateItem {
   /** The component name derived from the file path. */
   component?: string;
-  /** The developer-supplied disambiguation context. Set via `t.at(context, source)` at the call site. */
+  /** The developer-supplied disambiguation context. Set via `t.as(context, source)` at the call site. */
   disambiguation?: string;
   /** The nearest enclosing JSX/HTML element. */
   element?: string;

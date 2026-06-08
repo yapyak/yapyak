@@ -219,12 +219,12 @@ describe('transformFile', () => {
       expect(code).toContain('{ locale: previewLocale.value }');
     });
 
-    it('preserves a chained `t.in(...).at(...)` locale into `_pick`', () => {
+    it('preserves a chained `t.in(...).as(...)` locale into `_pick`', () => {
       const code = runTransform({
         locales: ['en', 'sv'],
         source: `
           import { t } from 'yapyak';
-          export const x = t.in('sv').at('button', 'Save');
+          export const x = t.in('sv').as('button', 'Save');
         `,
       });
       expect(code).toContain('_pick(');
@@ -454,38 +454,38 @@ describe('transformFile', () => {
     });
   });
 
-  describe('`t.at()` rewrites', () => {
-    it('transforms `t.at` to a bare literal in single-locale mode', () => {
+  describe('`t.as()` rewrites', () => {
+    it('transforms `t.as` to a bare literal in single-locale mode', () => {
       const code = runTransform({
         locales: ['en'],
         source:
-          "import { t } from 'yapyak';\nexport const x = t.at('button', 'Save');\n",
+          "import { t } from 'yapyak';\nexport const x = t.as('button', 'Save');\n",
       });
       expect(code).toContain("'Save'");
-      expect(code).not.toContain('t.at(');
+      expect(code).not.toContain('t.as(');
     });
 
-    it('transforms `t.at` to `_pick` and looks up by the context-disambiguated message id', () => {
+    it('transforms `t.as` to `_pick` and looks up by the context-disambiguated message id', () => {
       const code = runTransform({
         locales: ['en', 'sv'],
         source:
-          "import { t } from 'yapyak';\nexport const x = t.at('button', 'Save');\n",
+          "import { t } from 'yapyak';\nexport const x = t.as('button', 'Save');\n",
         translations: { sv: { [hashId('Save', 'button')]: 'Spara' } },
       });
       expect(code).toContain('_pick(');
-      expect(code).not.toContain('t.at(');
+      expect(code).not.toContain('t.as(');
       expect(code).toContain('Spara');
     });
 
-    it('writes params from the third arg of `t.at`', () => {
+    it('writes params from the third arg of `t.as`', () => {
       const code = runTransform({
         locales: ['en'],
         source:
-          "import { t } from 'yapyak';\nexport function x(name) {\n  return t.at('greeting', 'Hi {name}', { name });\n}\n",
+          "import { t } from 'yapyak';\nexport function x(name) {\n  return t.as('greeting', 'Hi {name}', { name });\n}\n",
       });
       // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
       expect(code).toContain('`Hi ${name}`');
-      expect(code).not.toContain('t.at(');
+      expect(code).not.toContain('t.as(');
     });
   });
 });

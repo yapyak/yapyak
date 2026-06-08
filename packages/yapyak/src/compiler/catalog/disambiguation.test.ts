@@ -60,7 +60,7 @@ describe('detectAtIssues', () => {
     expect(detectAtIssues(messages)).toHaveLength(0);
   });
 
-  it('emits YPK403 when a source is used with both `t()` and `t.at()` in the same file', () => {
+  it('emits YPK403 when a source is used with both `t()` and `t.as()` in the same file', () => {
     const messages = [
       makeMessage('Save', [makeLocation('src/a.tsx')]),
       makeMessage('Save', [makeLocation('src/a.tsx', 'button')], 'button'),
@@ -69,7 +69,7 @@ describe('detectAtIssues', () => {
     expect(diagnostics.some((d) => d.code === 'YPK403')).toBe(true);
   });
 
-  it('emits no YPK403 when t() and t.at() are used in different files', () => {
+  it('emits no YPK403 when t() and t.as() are used in different files', () => {
     const messages = [
       makeMessage('Save', [makeLocation('src/a.tsx')]),
       makeMessage('Save', [makeLocation('src/b.tsx', 'button')], 'button'),
@@ -79,7 +79,7 @@ describe('detectAtIssues', () => {
     expect(diagnostics.some((d) => d.code === 'YPK403')).toBe(false);
   });
 
-  it('emits YPK404 when only one `t.at()` exists for a source with no other context', () => {
+  it('emits YPK404 when only one `t.as()` exists for a source with no other context', () => {
     const messages = [
       makeMessage('Save', [makeLocation('src/a.tsx', 'button')], 'button'),
     ];

@@ -56,37 +56,37 @@ t('Hi {name}', { ...data });  // OK at runtime, YPK106 warning
 
 Two modifiers refine how a source is extracted or which locale is used.
 
-**`t.at(context, source)`** disambiguates identical sources that mean different things in different places:
+**`t.as(context, source)`** disambiguates identical sources that mean different things in different places:
 
 {% switch group="framework" %}
 
 {% when value="react" %}
 ```tsx
-<button>{t.at('action', 'Open')}</button>
-<span>{t.at('state', 'Open')}</span>
+<button>{t.as('action', 'Open')}</button>
+<span>{t.as('state', 'Open')}</span>
 ```
 {% /when %}
 
 {% when value="vue" %}
 ```vue
 <template>
-  <button>{{ t.at('action', 'Open') }}</button>
-  <span>{{ t.at('state', 'Open') }}</span>
+  <button>{{ t.as('action', 'Open') }}</button>
+  <span>{{ t.as('state', 'Open') }}</span>
 </template>
 ```
 {% /when %}
 
 {% when value="svelte" %}
 ```svelte
-<button>{t.at('action', 'Open')}</button>
-<span>{t.at('state', 'Open')}</span>
+<button>{t.as('action', 'Open')}</button>
+<span>{t.as('state', 'Open')}</span>
 ```
 {% /when %}
 
 {% when value="astro" %}
 ```astro
-<button>{t.at('action', 'Open')}</button>
-<span>{t.at('state', 'Open')}</span>
+<button>{t.as('action', 'Open')}</button>
+<span>{t.as('state', 'Open')}</span>
 ```
 {% /when %}
 
@@ -104,18 +104,18 @@ t.in('sv', 'Hej, {name}', { name: 'Alex' });
 The two modifiers can be chained:
 
 ```ts
-t.in('sv').at('button', 'Open');
-t.at('button').in('sv', 'Open');
+t.in('sv').as('button', 'Open');
+t.as('button').in('sv', 'Open');
 ```
 
 Modifiers must be used inline. Capturing the result in a variable, returning it from a function, or passing it as an argument is YPK405:
 
 ```ts
 const sv = t.in('sv');        // YPK405 — chain captured
-sv.at('button', 'Hello');
+sv.as('button', 'Hello');
 
 t.in('sv', 'Hello');          // OK — inline call
-t.in('sv').at('button', 'Save'); // OK — inline chain
+t.in('sv').as('button', 'Save'); // OK — inline chain
 ```
 
 ## Diagnostics
@@ -128,10 +128,10 @@ t.in('sv').at('button', 'Save'); // OK — inline chain
 | [YPK104](./diagnostics#ypk104) | Placeholder has no matching params key |
 | [YPK105](./diagnostics#ypk105) | Params key has no matching placeholder |
 | [YPK106](./diagnostics#ypk106) | Params passed as variable or spread, cannot be statically verified |
-| [YPK401](./diagnostics#ypk401) | `t.at()` context is not a static string literal |
+| [YPK401](./diagnostics#ypk401) | `t.as()` context is not a static string literal |
 | [YPK402](./diagnostics#ypk402) | Context contains `'@'` (reserved separator) |
-| [YPK403](./diagnostics#ypk403) | Same source used with both `t()` and `t.at()` in the same file |
-| [YPK404](./diagnostics#ypk404) | `t.at()` has no other context to disambiguate from |
+| [YPK403](./diagnostics#ypk403) | Same source used with both `t()` and `t.as()` in the same file |
+| [YPK404](./diagnostics#ypk404) | `t.as()` has no other context to disambiguate from |
 | [YPK405](./diagnostics#ypk405) | Modifier captured instead of used inline |
 
 See [Diagnostics](./diagnostics) for the full code list, including ICU and locale-file validation codes.
@@ -143,7 +143,7 @@ Several validations are also enforced by TypeScript at the call site — you get
 - **YPK103** — empty source string
 - **YPK202** — missing `'other'` branch in plural / selectordinal / select
 - **YPK203** — unknown ICU format keyword (`plurral`, `selct`, …)
-- **YPK402** — `t.at()` context containing `'@'`
+- **YPK402** — `t.as()` context containing `'@'`
 - **Placeholder name validity** — digit-first names (`{0}`), names with punctuation (`{user.name}`), spaces (`{first name}`), empty (`{}`)
 
 Other diagnostics surface at build time only — the compiler catches them when you run `pnpm yapyak compile` or via the Vite plugin.

@@ -7,9 +7,9 @@ describe('t', () => {
     expect(() => t('Save')).toThrow(/t\(\) was not rewritten at build time/);
   });
 
-  it('throws a clear error when `.at` is called without compiler rewrite', () => {
-    expect(() => t.at('button', 'Save')).toThrow(
-      /t\.at\(\) was not rewritten at build time/,
+  it('throws a clear error when `.as` is called without compiler rewrite', () => {
+    expect(() => t.as('button', 'Save')).toThrow(
+      /t\.as\(\) was not rewritten at build time/,
     );
   });
 
@@ -20,11 +20,11 @@ describe('t', () => {
   });
 
   it('throws on chain forms because the inner call throws first', () => {
-    expect(() => t.in('sv').at('action', 'Save')).toThrow(
+    expect(() => t.in('sv').as('action', 'Save')).toThrow(
       /t\.in\(\) was not rewritten at build time/,
     );
-    expect(() => t.at('button').in('sv', 'Save')).toThrow(
-      /t\.at\(\) was not rewritten at build time/,
+    expect(() => t.as('button').in('sv', 'Save')).toThrow(
+      /t\.as\(\) was not rewritten at build time/,
     );
   });
 

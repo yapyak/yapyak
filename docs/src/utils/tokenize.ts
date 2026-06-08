@@ -906,14 +906,14 @@ function applyYapyakHighlight(tokens: Token[]) {
         continue;
       }
 
-      // Case 2: t.at('context', 'source') or t.in('locale', 'source')
+      // Case 2: t.as('context', 'source') or t.in('locale', 'source')
       if (tokens[next]?.type === 'punct' && tokens[next]?.value === '.') {
         const method = findNextSignificant(tokens, next + 1);
         if (method === null) {
           continue;
         }
         const methodValue = tokens[method]?.value;
-        if (methodValue !== 'at' && methodValue !== 'in') {
+        if (methodValue !== 'as' && methodValue !== 'in') {
           continue;
         }
         const paren = findNextSignificant(tokens, method + 1);

@@ -25,7 +25,7 @@ export interface DiscoverCallsResult {
 
 const RUNTIME_NAME = 't';
 const IN_NAME = 'in';
-const AT_NAME = 'at';
+const AS_NAME = 'as';
 
 interface DiscoveryContext {
   bindings: BindingTable;
@@ -108,7 +108,7 @@ function extractMemberCall(
     return;
   }
 
-  if (methodName !== IN_NAME && methodName !== AT_NAME) {
+  if (methodName !== IN_NAME && methodName !== AS_NAME) {
     return;
   }
 
@@ -207,7 +207,7 @@ function extractChainedModifier(
   if (innerMethod === outerMethod) {
     return;
   }
-  if (innerMethod !== IN_NAME && innerMethod !== AT_NAME) {
+  if (innerMethod !== IN_NAME && innerMethod !== AS_NAME) {
     return;
   }
 
@@ -330,8 +330,8 @@ function reportCapture(
       fileId: sourceFile.fileName,
       hint:
         methodName === IN_NAME
-          ? "Pass the source inline: `t.in('sv', 'source')` or chain with `.at()`: `t.in('sv').at('context', 'source')`."
-          : "Pass the source inline: `t.at('context', 'source')` or chain with `.in()`: `t.at('context').in('sv', 'source')`.",
+          ? "Pass the source inline: `t.in('sv', 'source')` or chain with `.as()`: `t.in('sv').as('context', 'source')`."
+          : "Pass the source inline: `t.as('context', 'source')` or chain with `.in()`: `t.as('context').in('sv', 'source')`.",
       message: `\`t.${methodName}()\` captured. Modifiers must be used inline — see the hint for valid forms.`,
       range: toRange(call, sourceFile),
       severity: 'error',
@@ -356,7 +356,7 @@ function isInlineChain(call: ts.CallExpression): boolean {
     return false;
   }
   const propertyName = parent.name.text;
-  if (propertyName !== IN_NAME && propertyName !== AT_NAME) {
+  if (propertyName !== IN_NAME && propertyName !== AS_NAME) {
     return false;
   }
   return grandparent.arguments.length >= 2;

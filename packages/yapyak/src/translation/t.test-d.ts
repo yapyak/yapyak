@@ -1,5 +1,5 @@
 import type { Locale } from '../locale';
-import type { TAtChain, TInChain, TReturn } from './t';
+import type { TAsChain, TInChain, TReturn } from './t';
 
 import { describe, expectTypeOf, it } from 'vitest';
 
@@ -32,40 +32,40 @@ describe('t', () => {
     expectTypeOf(t.in('sv')).toEqualTypeOf<TInChain>();
   });
 
-  it('returns an untagged string from `t.in(locale).at(context, source)`', () => {
-    expectTypeOf(t.in('sv').at('action', 'Save')).toEqualTypeOf<
+  it('returns an untagged string from `t.in(locale).as(context, source)`', () => {
+    expectTypeOf(t.in('sv').as('action', 'Save')).toEqualTypeOf<
       TReturn<never>
     >();
   });
 
   it('returns an untagged string from `at` without placeholders', () => {
-    expectTypeOf(t.at('button', 'Save')).toEqualTypeOf<TReturn<never>>();
+    expectTypeOf(t.as('button', 'Save')).toEqualTypeOf<TReturn<never>>();
   });
 
   it('holds params from `at` for a source with placeholders', () => {
     expectTypeOf(
-      t.at('greeting', 'Hello, {name}!', { name: 'Alex' }),
+      t.as('greeting', 'Hello, {name}!', { name: 'Alex' }),
     ).toEqualTypeOf<TReturn<never>>();
   });
 
   it('preserves tag extraction through `at`', () => {
-    expectTypeOf(t.at('paragraph', 'Read <link>terms</link>')).toEqualTypeOf<
+    expectTypeOf(t.as('paragraph', 'Read <link>terms</link>')).toEqualTypeOf<
       TReturn<'link'>
     >();
   });
 
-  it('returns a TAtChain when `at` is called with only a context', () => {
-    expectTypeOf(t.at('action')).toEqualTypeOf<TAtChain>();
+  it('returns a TAsChain when `at` is called with only a context', () => {
+    expectTypeOf(t.as('action')).toEqualTypeOf<TAsChain>();
   });
 
-  it('returns an untagged string from `t.at(context).in(locale, source)`', () => {
-    expectTypeOf(t.at('action').in('sv', 'Save')).toEqualTypeOf<
+  it('returns an untagged string from `t.as(context).in(locale, source)`', () => {
+    expectTypeOf(t.as('action').in('sv', 'Save')).toEqualTypeOf<
       TReturn<never>
     >();
   });
 
   it('preserves the `at` return assignable to `string`', () => {
-    expectTypeOf(t.at('button', 'Save')).toExtend<string>();
+    expectTypeOf(t.as('button', 'Save')).toExtend<string>();
   });
 
   it('holds a single source argument when source has no placeholders', () => {
@@ -84,14 +84,14 @@ describe('t', () => {
     >();
   });
 
-  it('holds context, source, and params on `t.at()` with placeholders', () => {
-    expectTypeOf(t.at<string, 'Hello, {name}!'>).parameters.toEqualTypeOf<
+  it('holds context, source, and params on `t.as()` with placeholders', () => {
+    expectTypeOf(t.as<string, 'Hello, {name}!'>).parameters.toEqualTypeOf<
       [string, 'Hello, {name}!', { name: string | number }]
     >();
   });
 
   it('refuses a context literal that contains an `@`', () => {
-    expectTypeOf(t.at<'btn@x', 'Save'>).parameters.toEqualTypeOf<
+    expectTypeOf(t.as<'btn@x', 'Save'>).parameters.toEqualTypeOf<
       [
         {
           $yapyakTypeError: `Invalid context "btn@x": '@' is reserved as the source/context separator`;
@@ -101,8 +101,8 @@ describe('t', () => {
     >();
   });
 
-  it('refuses an `@` in the context on the `t.in(locale).at()` chain', () => {
-    expectTypeOf(t.in('sv').at<'btn@x', 'Save'>).parameters.toEqualTypeOf<
+  it('refuses an `@` in the context on the `t.in(locale).as()` chain', () => {
+    expectTypeOf(t.in('sv').as<'btn@x', 'Save'>).parameters.toEqualTypeOf<
       [
         {
           $yapyakTypeError: `Invalid context "btn@x": '@' is reserved as the source/context separator`;

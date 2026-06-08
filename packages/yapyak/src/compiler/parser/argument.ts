@@ -46,7 +46,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
             code: 'YPK402',
             fileId,
             hint: "Remove the '@' — it is reserved as the source/context separator.",
-            message: `\`t.at()\` context \`'${text}'\` must not contain \`'@'\`.`,
+            message: `\`t.as()\` context \`'${text}'\` must not contain \`'@'\`.`,
             range: toRange(contextArg, sourceFile),
             severity: 'error',
             source: fileText,
@@ -61,7 +61,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
           code: 'YPK401',
           fileId,
           hint: 'Pass a static string literal as the context argument.',
-          message: '`t.at()` context argument must be a static string literal.',
+          message: '`t.as()` context argument must be a static string literal.',
           range: toRange(contextArg, sourceFile),
           severity: 'error',
           source: fileText,
@@ -77,7 +77,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
         code: 'YPK101',
         fileId,
         message: callSite.contextArg
-          ? 't.at() called without source string.'
+          ? 't.as() called without source string.'
           : 't() called without arguments.',
         range: toRange(callSite.node, sourceFile),
         severity: 'error',
