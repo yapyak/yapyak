@@ -85,15 +85,11 @@ function fragmentsFromNode(node: Node, source: string): Fragment[] {
   }
   if (isTagLikeNode(node)) {
     const fragments: Fragment[] = [];
-    if (Array.isArray(node.attributes)) {
-      for (const attribute of node.attributes) {
-        fragments.push(...fragmentsFromAttribute(attribute, source));
-      }
+    for (const attribute of node.attributes) {
+      fragments.push(...fragmentsFromAttribute(attribute, source));
     }
-    if (Array.isArray(node.children)) {
-      for (const child of node.children) {
-        fragments.push(...fragmentsFromNode(child, source));
-      }
+    for (const child of node.children) {
+      fragments.push(...fragmentsFromNode(child, source));
     }
     return fragments;
   }

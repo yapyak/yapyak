@@ -101,7 +101,9 @@ describe('format', () => {
 
     it('returns a formatted date and time with default options', () => {
       setLocale('en');
-      expect(format.dateTime(new Date('2026-01-15T12:00:00Z'))).toMatch(/2026/);
+      const formatted = format.dateTime(new Date('2026-01-15T12:00:00Z'));
+      expect(formatted).toMatch(/2026/);
+      expect(formatted).toMatch(/\d{1,2}:\d{2}/);
     });
   });
 
@@ -118,7 +120,9 @@ describe('format', () => {
 
     it('returns a formatted time-of-day with default options', () => {
       setLocale('en');
-      expect(format.time(new Date('2026-01-15T12:30:00Z'))).toMatch(/\d/);
+      expect(format.time(new Date('2026-01-15T12:30:00Z'))).toMatch(
+        /\d{1,2}:\d{2}/,
+      );
     });
   });
 

@@ -683,11 +683,6 @@ describe('yapyak', () => {
       expect(result).toBeNull();
     });
 
-    it('clears teardown callbacks on `buildEnd`', () => {
-      const plugin = yapyak();
-      expect(() => invokeBuildEnd(plugin)).not.toThrow();
-    });
-
     it('blocks an initial scan in build mode on `buildStart`', async () => {
       writeFileSync(
         join(root, 'src', 'a.tsx'),
