@@ -185,7 +185,35 @@ describe('vue processor — extract', () => {
       "import { t } from 'yapyak';",
       '</script>',
       '<template>',
-      `  <h1>{{ ({ a: t('Hello') }).a }}</h1>`,
+      `  <h1>{{ ({ a: { b: t('Hello') } }).a.b }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(result.messages).toHaveLength(1);
+    expect(result.messages[0]?.source).toBe('Hello');
+  });
+
+  it('extracts `t()` from a mustache holding a block comment inside object braces', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <h1>{{ ({ a: /* note */ t('Hello') }).a }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(result.messages).toHaveLength(1);
+    expect(result.messages[0]?.source).toBe('Hello');
+  });
+
+  it('extracts `t()` from a mustache holding a template literal inside object braces', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      "  <h1>{{ ({ a: `tpl ${1}` }).a + t('Hello') }}</h1>",
       '</template>',
     ].join('\n');
     const result = extractVue(source);
