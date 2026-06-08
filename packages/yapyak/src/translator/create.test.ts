@@ -241,7 +241,7 @@ describe('createTranslator', () => {
     expect(results).toEqual(['']);
   });
 
-  it('discards translations whose value is not a string', async () => {
+  it('returns an empty string for a translation whose value is not a string', async () => {
     const translator = createTranslator({
       translate: () => [{ sv: 42 as unknown as string }],
     });
@@ -256,7 +256,7 @@ describe('createTranslator', () => {
     expect(results).toEqual(['']);
   });
 
-  it('discards translations whose value is an empty string after trim', async () => {
+  it('returns an empty string for a translation that is blank after trim', async () => {
     const translator = createTranslator({
       translate: () => [{ sv: '   ' }],
     });
@@ -292,7 +292,7 @@ describe('createTranslator', () => {
     expect(result).toEqual([]);
   });
 
-  it('forwards `disambiguation` and `examples` to the item', async () => {
+  it('builds an item with `disambiguation` and `examples` from the request', async () => {
     let receivedItems: unknown[] | undefined;
     const translator = createTranslator({
       translate: (params) => {
@@ -319,7 +319,7 @@ describe('createTranslator', () => {
     ]);
   });
 
-  it('drops context fields when `context` is `none`', async () => {
+  it('builds an item without context fields when `context` is `none`', async () => {
     let receivedItems: unknown[] | undefined;
     const translator = createTranslator({
       context: 'none',
@@ -344,7 +344,7 @@ describe('createTranslator', () => {
     expect(receivedItems).toEqual([{ source: 'Save' }]);
   });
 
-  it('forwards `componentName` and `enclosingElement` at `minimal` context', async () => {
+  it('builds an item with `componentName` and `enclosingElement` at `minimal` context', async () => {
     let receivedItems: unknown[] | undefined;
     const translator = createTranslator({
       translate: (params) => {
@@ -371,7 +371,7 @@ describe('createTranslator', () => {
     expect(item.snippet).toBeUndefined();
   });
 
-  it('forwards `snippet` only when context is `rich`', async () => {
+  it('builds an item with `snippet` only when context is `rich`', async () => {
     let receivedItems: unknown[] | undefined;
     const translator = createTranslator({
       context: 'rich',

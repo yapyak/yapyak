@@ -688,7 +688,7 @@ describe('yapyak', () => {
       expect(() => invokeBuildEnd(plugin)).not.toThrow();
     });
 
-    it('skips an initial scan in build mode on `buildStart`', async () => {
+    it('blocks an initial scan in build mode on `buildStart`', async () => {
       writeFileSync(
         join(root, 'src', 'a.tsx'),
         "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
@@ -739,7 +739,7 @@ describe('yapyak', () => {
       expect(warnings.some((line) => line.includes('a function'))).toBe(true);
     });
 
-    it('filters yapyak entries out of an `ssr.external` array', async () => {
+    it('preserves only non-yapyak entries in an `ssr.external` array', async () => {
       const external = ['react', 'yapyak', '@yapyak/react', 'lodash'];
       const plugin = yapyak();
       const hook = plugin.configResolved;
@@ -795,7 +795,7 @@ describe('yapyak', () => {
       expect(after).toBe(before);
     });
 
-    it('deletes the file entry when the changed file no longer has `t()` calls', async () => {
+    it('clears the file entry when the changed file no longer has `t()` calls', async () => {
       const filePath = join(root, 'src', 'a.tsx');
       writeFileSync(
         filePath,
@@ -814,7 +814,7 @@ describe('yapyak', () => {
       expect(sv['src/a.tsx']).toBeUndefined();
     });
 
-    it('rewrites the file entry when the messages change', async () => {
+    it('writes the new file entry when the messages change', async () => {
       const filePath = join(root, 'src', 'a.tsx');
       writeFileSync(
         filePath,

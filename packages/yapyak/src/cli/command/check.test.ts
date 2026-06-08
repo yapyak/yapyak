@@ -87,7 +87,7 @@ describe('check', () => {
     expect(writes.join('')).toMatch(/warning|error/);
   });
 
-  it('groups multiple missing translations under each locale', () => {
+  it('writes every missing translation under its locale heading', () => {
     mkdirSync(join(root, 'src'), { recursive: true });
     mkdirSync(join(root, 'locales'), { recursive: true });
     writeFileSync(
@@ -114,11 +114,11 @@ describe('check', () => {
     mkdirSync(join(root, 'locales'), { recursive: true });
     writeFileSync(
       join(root, 'src', 'app.ts'),
-      `import { t } from 'yapyak';\nexport const x = t('Hello {name}');\n`,
+      `import { t } from 'yapyak';\nexport const x = t('Hi {name}');\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
-      JSON.stringify({ 'src/app.ts': { 'Hello {name}': 'Hej {namn}' } }),
+      JSON.stringify({ 'src/app.ts': { 'Hi {name}': 'Hej {namn}' } }),
     );
     const code = check({ config: makeConfig(), projectRoot: root });
     expect(code).toBe(1);

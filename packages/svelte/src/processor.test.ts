@@ -332,7 +332,7 @@ describe('svelte processor — transform', () => {
     expect(code).not.toContain('aria-label={');
   });
 
-  it('prepends a `<script>` block when the source has none', () => {
+  it('writes a `<script>` block when the source has none', () => {
     const code = runSvelteTransform(
       [
         '<script lang="ts">',
