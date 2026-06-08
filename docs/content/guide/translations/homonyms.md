@@ -12,13 +12,13 @@ Consider a ticket view with an action for opening a ticket and a badge showing t
 {% when value="react" %}
 ```tsx [Ticket.tsx]
 import { t } from 'yapyak';
-import { Status } from './status';
+import { Badge } from './badge';
 
 export function Ticket() {
   return (
     <>
       <button>{t('Open')}</button>
-      <Status>{t('Open')}</Status>
+      <Badge>{t('Open')}</Badge>
     </>
   );
 }
@@ -28,13 +28,13 @@ export function Ticket() {
 {% when value="vue" %}
 ```vue [Ticket.vue]
 <script setup lang="ts">
-import Status from './Status.vue';
+import Badge from './Badge.vue';
 import { t } from 'yapyak';
 </script>
 
 <template>
   <button>{{ t('Open') }}</button>
-  <Status>{{ t('Open') }}</Status>
+  <Badge>{{ t('Open') }}</Badge>
 </template>
 ```
 {% /when %}
@@ -42,24 +42,24 @@ import { t } from 'yapyak';
 {% when value="svelte" %}
 ```svelte [Ticket.svelte]
 <script lang="ts">
-  import Status from './Status.svelte';
+  import Badge from './Badge.svelte';
   import { t } from 'yapyak';
 </script>
 
 <button>{t('Open')}</button>
-<Status>{t('Open')}</Status>
+<Badge>{t('Open')}</Badge>
 ```
 {% /when %}
 
 {% when value="astro" %}
 ```astro [Ticket.astro]
 ---
-import Status from './Status.astro';
+import Badge from './Badge.astro';
 import { t } from 'yapyak';
 ---
 
 <button>{t('Open')}</button>
-<Status>{t('Open')}</Status>
+<Badge>{t('Open')}</Badge>
 ```
 {% /when %}
 
@@ -73,7 +73,7 @@ In Swedish, the button is an action:
 Öppna
 ```
 
-The status is a state:
+The badge is a state:
 
 ```translation
 Öppen
@@ -88,13 +88,13 @@ When a source message needs a more specific meaning, use `t.as()`:
 {% when value="react" %}
 ```tsx [Ticket.tsx]
 import { t } from 'yapyak';
-import { Status } from './status';
+import { Badge } from './badge';
 
 export function Ticket() {
   return (
     <>
-      <button>{t.as('action', 'Open')}</button>
-      <Status>{t.as('status', 'Open')}</Status>
+      <button>{t.as('button', 'Open')}</button>
+      <Badge>{t.as('badge', 'Open')}</Badge>
     </>
   );
 }
@@ -104,13 +104,13 @@ export function Ticket() {
 {% when value="vue" %}
 ```vue [Ticket.vue]
 <script setup lang="ts">
-import Status from './Status.vue';
+import Badge from './Badge.vue';
 import { t } from 'yapyak';
 </script>
 
 <template>
-  <button>{{ t.as('action', 'Open') }}</button>
-  <Status>{{ t.as('status', 'Open') }}</Status>
+  <button>{{ t.as('button', 'Open') }}</button>
+  <Badge>{{ t.as('badge', 'Open') }}</Badge>
 </template>
 ```
 {% /when %}
@@ -118,24 +118,24 @@ import { t } from 'yapyak';
 {% when value="svelte" %}
 ```svelte [Ticket.svelte]
 <script lang="ts">
-  import Status from './Status.svelte';
+  import Badge from './Badge.svelte';
   import { t } from 'yapyak';
 </script>
 
-<button>{t.as('action', 'Open')}</button>
-<Status>{t.as('status', 'Open')}</Status>
+<button>{t.as('button', 'Open')}</button>
+<Badge>{t.as('badge', 'Open')}</Badge>
 ```
 {% /when %}
 
 {% when value="astro" %}
 ```astro [Ticket.astro]
 ---
-import Status from './Status.astro';
+import Badge from './Badge.astro';
 import { t } from 'yapyak';
 ---
 
-<button>{t.as('action', 'Open')}</button>
-<Status>{t.as('status', 'Open')}</Status>
+<button>{t.as('button', 'Open')}</button>
+<Badge>{t.as('badge', 'Open')}</Badge>
 ```
 {% /when %}
 
@@ -151,8 +151,8 @@ The translation file can now keep both messages separately:
 ```json
 {
   "src/Ticket.tsx": {
-    "Open@action": "Öppna",
-    "Open@status": "Öppen"
+    "Open@button": "Öppna",
+    "Open@badge": "Öppen"
   }
 }
 ```
@@ -162,8 +162,8 @@ The translation file can now keep both messages separately:
 ```json
 {
   "src/Ticket.vue": {
-    "Open@action": "Öppna",
-    "Open@status": "Öppen"
+    "Open@button": "Öppna",
+    "Open@badge": "Öppen"
   }
 }
 ```
@@ -173,8 +173,8 @@ The translation file can now keep both messages separately:
 ```json
 {
   "src/Ticket.svelte": {
-    "Open@action": "Öppna",
-    "Open@status": "Öppen"
+    "Open@button": "Öppna",
+    "Open@badge": "Öppen"
   }
 }
 ```
@@ -184,8 +184,8 @@ The translation file can now keep both messages separately:
 ```json
 {
   "src/Ticket.astro": {
-    "Open@action": "Öppna",
-    "Open@status": "Öppen"
+    "Open@button": "Öppna",
+    "Open@badge": "Öppen"
   }
 }
 ```

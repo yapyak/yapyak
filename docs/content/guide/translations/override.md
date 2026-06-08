@@ -44,7 +44,7 @@ t.in('sv').as('action', 'Open');
 Read it left to right: *in Swedish, at the action context, the source is `Open`.* The reverse order works the same way:
 
 ```ts
-t.as('action').in('sv', 'Open');
+t.as('button').in('sv', 'Open');
 ```
 
 Both expressions produce the same result.

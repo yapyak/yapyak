@@ -125,7 +125,7 @@ Pass a literal string:
 
 ```ts
 t.as(prefix, 'Open');         // ✗ YPK401
-t.as('action', 'Open');       // ✓
+t.as('button', 'Open');       // ✓
 ```
 
 ### YPK402

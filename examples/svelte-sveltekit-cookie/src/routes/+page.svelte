@@ -35,8 +35,8 @@
   </form>
 
   <h2>{t("Homonyms")}</h2>
-  <div><button type="button">{t.as("action", "Open")}</button></div>
-  <p>{t("Door is")} {t.as("state", "Open")}</p>
+  <div><button type="button">{t.as("button", "Open")}</button></div>
+  <div><span>{t.as("badge", "Open")}</span></div>
 
   <h2>{t("Language preview")}</h2>
   <p>{t.in("en", "Hello there")}</p>

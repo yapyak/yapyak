@@ -62,31 +62,31 @@ Two modifiers refine how a source is extracted or which locale is used.
 
 {% when value="react" %}
 ```tsx
-<button>{t.as('action', 'Open')}</button>
-<span>{t.as('state', 'Open')}</span>
+<button>{t.as('button', 'Open')}</button>
+<span>{t.as('badge', 'Open')}</span>
 ```
 {% /when %}
 
 {% when value="vue" %}
 ```vue
 <template>
-  <button>{{ t.as('action', 'Open') }}</button>
-  <span>{{ t.as('state', 'Open') }}</span>
+  <button>{{ t.as('button', 'Open') }}</button>
+  <span>{{ t.as('badge', 'Open') }}</span>
 </template>
 ```
 {% /when %}
 
 {% when value="svelte" %}
 ```svelte
-<button>{t.as('action', 'Open')}</button>
-<span>{t.as('state', 'Open')}</span>
+<button>{t.as('button', 'Open')}</button>
+<span>{t.as('badge', 'Open')}</span>
 ```
 {% /when %}
 
 {% when value="astro" %}
 ```astro
-<button>{t.as('action', 'Open')}</button>
-<span>{t.as('state', 'Open')}</span>
+<button>{t.as('button', 'Open')}</button>
+<span>{t.as('badge', 'Open')}</span>
 ```
 {% /when %}
 
