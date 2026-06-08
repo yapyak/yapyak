@@ -1,11 +1,10 @@
-import type { Processor } from '../../../processor';
+import type { Processor, Range } from '../../../processor';
 import type { Binding, Scope } from '../binding';
 import type { CallSite } from '../call';
 import type { CallSiteContext } from '../call-site-context';
 import type { Diagnostic } from '../diagnostic';
 import type { ElisionContext, Fragment } from '../fragment';
 import type { Placeholder } from '../placeholder';
-import type { Range } from '../range';
 
 import * as ts from 'typescript';
 

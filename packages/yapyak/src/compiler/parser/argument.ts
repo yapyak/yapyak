@@ -1,7 +1,7 @@
+import type { Range } from '../../processor';
 import type { CallSite } from './call';
 import type { Diagnostic } from './diagnostic';
 import type { IcuIssue } from './placeholder';
-import type { Range } from './range';
 
 import * as ts from 'typescript';
 

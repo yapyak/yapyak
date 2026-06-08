@@ -10,7 +10,6 @@ export type {
 } from './file/transform';
 export type { ElisionContext, Fragment } from './fragment';
 export type { Position } from './position';
-export type { Range } from './range';
 
 export {
   type ParsedArguments,

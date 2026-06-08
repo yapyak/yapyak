@@ -1,9 +1,8 @@
 import type { SourceMap } from 'magic-string';
-import type { Processor } from '../../../processor';
+import type { Processor, Range } from '../../../processor';
 import type { Diagnostic } from '../diagnostic';
 import type { Fragment } from '../fragment';
 import type { Placeholder } from '../placeholder';
-import type { Range } from '../range';
 import type { ExtractFileResult, ParsedCallSite } from './extract';
 
 import MagicString from 'magic-string';

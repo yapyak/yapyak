@@ -70,7 +70,6 @@ export {
   type Position,
   parseArguments,
   parsePlaceholders,
-  type Range,
   type ResolveBindingsOptions,
   resolveBindings,
   resolveCallSiteContext,
