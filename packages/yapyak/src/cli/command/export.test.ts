@@ -108,6 +108,30 @@ describe('exportCommand', () => {
     });
   });
 
+  it('returns `1` when the locale filter includes an unknown locale', () => {
+    const code = exportCommand({
+      config: makeConfig(),
+      locales: ['de'],
+      out: undefined,
+      projectRoot: root,
+      split: false,
+    });
+    expect(code).toBe(1);
+    expect(writes.join('')).toContain('Unknown locale');
+  });
+
+  it('returns `1` when the locale filter includes multiple unknown locales', () => {
+    const code = exportCommand({
+      config: makeConfig(),
+      locales: ['de', 'fr'],
+      out: undefined,
+      projectRoot: root,
+      split: false,
+    });
+    expect(code).toBe(1);
+    expect(writes.join('')).toContain('Unknown locales');
+  });
+
   it('writes one file per locale when `--split` and `--out` are given', () => {
     const code = exportCommand({
       config: makeConfig(),

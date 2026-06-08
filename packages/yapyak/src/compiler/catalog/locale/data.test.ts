@@ -53,4 +53,18 @@ describe('readLocaleData', () => {
     );
     warn.mockRestore();
   });
+
+  it('throws when reading a locale file fails for a non-corrupt reason', () => {
+    writeFileSync(join(root, 'locales', 'sv.json'), '{}');
+    const path = join(root, 'locales', 'sv.json');
+    rmSync(path);
+    mkdirSync(path);
+    expect(() =>
+      readLocaleData({
+        locales: ['sv'],
+        localesDir: 'locales',
+        projectRoot: root,
+      }),
+    ).toThrow();
+  });
 });

@@ -47,4 +47,21 @@ describe('loadYapyakConfig', () => {
     );
     await expect(loadYapyakConfig(cwd)).rejects.toThrow(/expected an object/);
   });
+
+  it('loads environment variables from `.env` when present', async () => {
+    writeFileSync(join(cwd, '.env'), 'YAPYAK_TEST_LOAD=loaded\n');
+    delete process.env.YAPYAK_TEST_LOAD;
+    await loadYapyakConfig(cwd);
+    expect(process.env.YAPYAK_TEST_LOAD).toBe('loaded');
+    delete process.env.YAPYAK_TEST_LOAD;
+  });
+
+  it('loads environment variables from `.env.local` ahead of `.env`', async () => {
+    writeFileSync(join(cwd, '.env'), 'YAPYAK_TEST_LOCAL=base\n');
+    writeFileSync(join(cwd, '.env.local'), 'YAPYAK_TEST_LOCAL=override\n');
+    delete process.env.YAPYAK_TEST_LOCAL;
+    await loadYapyakConfig(cwd);
+    expect(process.env.YAPYAK_TEST_LOCAL).toBe('override');
+    delete process.env.YAPYAK_TEST_LOCAL;
+  });
 });

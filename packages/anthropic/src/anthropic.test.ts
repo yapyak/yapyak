@@ -170,6 +170,62 @@ describe('anthropic', () => {
     expect(result).toBe('Hej');
   });
 
+  it('throws when `apiKey` is `undefined`', () => {
+    expect(() => anthropic({ apiKey: undefined as unknown as string })).toThrow(
+      /apiKey is required, received undefined/,
+    );
+  });
+
+  it('throws when `apiKey` is an empty string', () => {
+    expect(() => anthropic({ apiKey: '' })).toThrow(
+      /apiKey is required, received empty string/,
+    );
+  });
+
+  it('throws when the API response has no text block', async () => {
+    vi.stubGlobal(
+      'fetch',
+      async () =>
+        new Response(JSON.stringify({ content: [] }), { status: 200 }),
+    );
+    const t = anthropic({ apiKey: 'k' });
+    await expect(
+      t({
+        fileId: 'x',
+        source: 'Hi',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      }),
+    ).rejects.toThrow(/did not contain a text block/);
+  });
+
+  it('writes the abort `signal` into the fetch init when provided', async () => {
+    let receivedSignal: AbortSignal | undefined;
+    vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
+      receivedSignal = init.signal ?? undefined;
+      return new Response(
+        JSON.stringify({
+          content: [{ text: JSON.stringify([{ sv: 'Hej' }]), type: 'text' }],
+        }),
+        { status: 200 },
+      );
+    });
+    const controller = new AbortController();
+    const t = anthropic({ apiKey: 'k' });
+    await t.batch?.(
+      [
+        {
+          fileId: 'x',
+          source: 'Hi',
+          sourceLocale: 'en',
+          targetLocale: 'sv',
+        },
+      ],
+      { signal: controller.signal },
+    );
+    expect(receivedSignal).toBeDefined();
+  });
+
   it('throws when the API responds with non-2xx', async () => {
     vi.stubGlobal(
       'fetch',

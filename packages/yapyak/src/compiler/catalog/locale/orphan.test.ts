@@ -137,6 +137,59 @@ describe('readOrphans', () => {
     expect(readOrphans(dir)).toEqual({});
   });
 
+  it('blocks an entry whose value is not an object', () => {
+    writeFileSync(
+      join(dir, 'orphans.json'),
+      JSON.stringify({ 'src/a.ts': { Save: 'not-an-object' } }),
+    );
+    expect(readOrphans(dir)).toEqual({});
+  });
+
+  it('blocks an entry whose `deletedAt` is not a string', () => {
+    writeFileSync(
+      join(dir, 'orphans.json'),
+      JSON.stringify({
+        'src/a.ts': { Save: { deletedAt: 123, translations: { sv: 'Spara' } } },
+      }),
+    );
+    expect(readOrphans(dir)).toEqual({});
+  });
+
+  it('blocks an entry whose `translations` is not an object', () => {
+    writeFileSync(
+      join(dir, 'orphans.json'),
+      JSON.stringify({
+        'src/a.ts': {
+          Save: { deletedAt: '2025-01-01T00:00:00Z', translations: null },
+        },
+      }),
+    );
+    expect(readOrphans(dir)).toEqual({});
+  });
+
+  it('blocks an entry whose `translations` map is empty after cleaning', () => {
+    writeFileSync(
+      join(dir, 'orphans.json'),
+      JSON.stringify({
+        'src/a.ts': {
+          Save: {
+            deletedAt: '2025-01-01T00:00:00Z',
+            translations: { sv: '', de: 42 },
+          },
+        },
+      }),
+    );
+    expect(readOrphans(dir)).toEqual({});
+  });
+
+  it('blocks a fileId whose value is not an object', () => {
+    writeFileSync(
+      join(dir, 'orphans.json'),
+      JSON.stringify({ 'src/a.ts': 'not-an-object' }),
+    );
+    expect(readOrphans(dir)).toEqual({});
+  });
+
   it('returns the parsed cache when the file holds valid entries', () => {
     const cache: OrphanCache = {
       'src/a.ts': {
