@@ -1,3 +1,5 @@
+// @vitest-environment node
+
 import { render } from 'svelte/server';
 import { describe, expect, it } from 'vitest';
 

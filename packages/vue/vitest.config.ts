@@ -1,3 +1,3 @@
 import { defineConfig } from '@yapyak/vitest-config';
 
-export default defineConfig();
+export default defineConfig({ environment: 'happy-dom' });
