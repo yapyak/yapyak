@@ -114,7 +114,7 @@ function ShellComponent(props: ShellComponentProps) {
       <head>
         <HeadContent />
         <script
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: pre-paint options sync
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: yap yap yap
           dangerouslySetInnerHTML={{ __html: optionsPrepaintScript }}
         />
       </head>

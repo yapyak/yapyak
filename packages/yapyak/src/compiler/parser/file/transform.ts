@@ -7,6 +7,10 @@ import type { ExtractFileResult, ParsedCallSite } from './extract';
 import MagicString from 'magic-string';
 import ts from 'typescript';
 
+import { findMatchingBraceIndex } from '../matching-brace';
+import { resolveProcessor } from '../processor';
+import { getScriptKind } from '../script-kind';
+
 export interface TransformFileRequest {
   defaultLocale?: string;
   extracted: ExtractFileResult;
@@ -23,10 +27,6 @@ export interface TransformFileResult {
   diagnostics: Diagnostic[];
   map: SourceMap;
 }
-
-import { findMatchingBraceIndex } from '../matching-brace';
-import { resolveProcessor } from '../processor';
-import { getScriptKind } from '../script-kind';
 
 const PICK_EXPORT = 'pick';
 const PICK_LOCAL = '_pick';
@@ -63,9 +63,9 @@ export function transformFile(
     const replacement = renderCallReplacement({
       callSite,
       defaultLocale,
-      isSingleLocale,
       locales: request.locales,
       pickLocal,
+      singleLocale: isSingleLocale,
       translations: request.translations,
     });
     if (!replacement) {
@@ -173,8 +173,8 @@ function transformImportDeclaration(
     if (isTypeOnly) {
       remaining.push({
         imported: importedName,
-        isType: true,
         local: localName,
+        typeOnly: true,
       });
       continue;
     }
@@ -182,8 +182,8 @@ function transformImportDeclaration(
     if (occurrences > 1) {
       remaining.push({
         imported: importedName,
-        isType: false,
         local: localName,
+        typeOnly: false,
       });
     }
   }
@@ -206,7 +206,7 @@ function transformImportDeclaration(
 }
 
 function renderSpecifier(item: ImportSpecifier): string {
-  const prefix = item.isType ? 'type ' : '';
+  const prefix = item.typeOnly ? 'type ' : '';
   const body =
     item.imported === item.local
       ? item.imported
@@ -216,8 +216,8 @@ function renderSpecifier(item: ImportSpecifier): string {
 
 interface ImportSpecifier {
   imported: string;
-  isType: boolean;
   local: string;
+  typeOnly: boolean;
 }
 
 function extractCoreImports(sourceFile: ts.SourceFile): ts.ImportDeclaration[] {
@@ -240,9 +240,9 @@ function extractCoreImports(sourceFile: ts.SourceFile): ts.ImportDeclaration[] {
 interface RenderCallReplacementInput {
   callSite: ParsedCallSite;
   defaultLocale: string;
-  isSingleLocale: boolean;
   locales: string[];
   pickLocal: string;
+  singleLocale: boolean;
   translations: Record<string, Record<string, string>>;
 }
 
@@ -258,7 +258,7 @@ function renderCallReplacement(
   const {
     callSite,
     defaultLocale,
-    isSingleLocale,
+    singleLocale: isSingleLocale,
     locales,
     pickLocal,
     translations,

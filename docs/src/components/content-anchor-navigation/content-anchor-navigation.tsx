@@ -90,7 +90,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
 
     container.style.setProperty('--indicator-top', `${item.offsetTop}px`);
     container.style.setProperty('--indicator-height', `${item.offsetHeight}px`);
-  }, [activeId, headings]);
+  }, [activeId]);
 
   useEffect(() => {
     const hash = window.location.hash.slice(1);

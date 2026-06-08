@@ -152,7 +152,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
       diagnostics,
       fileId,
       fileText,
-      hasParamArg: paramArg !== undefined,
+      paramArgPresent: paramArg !== undefined,
       params,
       placeholderKeys,
     });
@@ -259,7 +259,7 @@ interface ValidateParamsInput {
   diagnostics: Diagnostic[];
   fileId: string;
   fileText: string;
-  hasParamArg: boolean;
+  paramArgPresent: boolean;
   params: ParsedParams | undefined;
   placeholderKeys: string[];
 }
@@ -270,7 +270,7 @@ function validateParams(input: ValidateParamsInput): void {
     diagnostics,
     fileId,
     fileText,
-    hasParamArg,
+    paramArgPresent: hasParamArg,
     params,
     placeholderKeys,
   } = input;

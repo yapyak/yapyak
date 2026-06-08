@@ -171,6 +171,7 @@ describe('vue processor — extract', () => {
       "const name = 'Yapyak';",
       '</script>',
       '<template>',
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
       "  <h1>{{ `prefix ${name}` + t('Hello') }}</h1>",
       '</template>',
     ].join('\n');
@@ -213,6 +214,7 @@ describe('vue processor — extract', () => {
       "import { t } from 'yapyak';",
       '</script>',
       '<template>',
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
       "  <h1>{{ ({ a: `tpl ${1}` }).a + t('Hello') }}</h1>",
       '</template>',
     ].join('\n');
