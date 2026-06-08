@@ -15,6 +15,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "test": "pnpm -w vitest --run --project=@yapyak/react",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -22,11 +23,14 @@
   },
   "devDependencies": {
     "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "react": "catalog:",
+    "react-dom": "catalog:",
     "tsup": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "react": ">=19"

@@ -3,6 +3,7 @@
 import { add, check, clean, exportCommand, status, translate } from './command';
 import { loadConfig } from './config';
 import { color, symbol } from './tui';
+import { fileURLToPath } from 'node:url';
 
 /**
  * Runs the yapyak CLI. Resolves to the process exit code.
@@ -102,13 +103,15 @@ function printHelp(): void {
 `);
 }
 
-void (async (): Promise<void> => {
-  try {
-    const code = await run(process.argv.slice(2));
-    process.exit(code);
-  } catch (cause) {
-    const message = cause instanceof Error ? cause.message : String(cause);
-    process.stderr.write(`\n  ${symbol.cross} ${color.red(message)}\n\n`);
-    process.exit(1);
-  }
-})();
+if (process.argv[1] && process.argv[1] === fileURLToPath(import.meta.url)) {
+  void (async (): Promise<void> => {
+    try {
+      const code = await run(process.argv.slice(2));
+      process.exit(code);
+    } catch (cause) {
+      const message = cause instanceof Error ? cause.message : String(cause);
+      process.stderr.write(`\n  ${symbol.cross} ${color.red(message)}\n\n`);
+      process.exit(1);
+    }
+  })();
+}

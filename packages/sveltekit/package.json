@@ -15,6 +15,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "test": "pnpm -w vitest --run --project=@yapyak/sveltekit",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -26,7 +27,8 @@
     "@yapyak/typescript-config": "workspace:*",
     "svelte": "catalog:",
     "tsup": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "@sveltejs/kit": ">=2"

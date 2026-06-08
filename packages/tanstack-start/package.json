@@ -15,6 +15,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "test": "pnpm -w vitest --run --project=@yapyak/tanstack-start",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -25,7 +26,8 @@
     "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "tsup": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "@tanstack/react-start": ">=1.168"
