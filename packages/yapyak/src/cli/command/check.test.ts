@@ -60,4 +60,30 @@ describe('check', () => {
     expect(code).toBe(1);
     expect(writes.join('')).toContain('missing translations');
   });
+
+  it('returns `0` when every translation is present', () => {
+    mkdirSync(join(root, 'src'), { recursive: true });
+    mkdirSync(join(root, 'locales'), { recursive: true });
+    writeFileSync(
+      join(root, 'src', 'app.ts'),
+      `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
+    );
+    writeFileSync(
+      join(root, 'locales', 'sv.json'),
+      JSON.stringify({ 'src/app.ts': { Save: 'Spara' } }),
+    );
+    const code = check({ config: makeConfig(), projectRoot: root });
+    expect(code).toBe(0);
+    expect(writes.join('')).toContain('translations present');
+  });
+
+  it('emits a diagnostic when source has `@` in disambiguation', () => {
+    mkdirSync(join(root, 'src'), { recursive: true });
+    writeFileSync(
+      join(root, 'src', 'app.ts'),
+      `import { t } from 'yapyak';\nexport const x = t.as('bad@ctx', 'Save');\n`,
+    );
+    check({ config: makeConfig(), projectRoot: root });
+    expect(writes.join('')).toMatch(/warning|error/);
+  });
 });

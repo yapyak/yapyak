@@ -3,7 +3,13 @@ import type { Config } from '../config';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { translate } from './translate';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -67,5 +73,80 @@ describe('translate', () => {
     expect(code).toBe(0);
     expect(writes.join('')).toContain('Nothing to translate');
     expect(translatorFn).not.toHaveBeenCalled();
+  });
+
+  it('returns `0` when every missing translation is filled', async () => {
+    writeFileSync(
+      join(root, 'src', 'app.ts'),
+      `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
+    );
+    writeFileSync(
+      join(root, 'locales', 'sv.json'),
+      JSON.stringify({ 'src/app.ts': { Save: '' } }),
+    );
+    const translator = Object.assign(
+      vi.fn(async () => 'Spara'),
+      {
+        id: 'fake',
+      },
+    );
+    const code = await translate({
+      config: makeConfig({ translator }),
+      projectRoot: root,
+    });
+    expect(code).toBe(0);
+    const written = JSON.parse(
+      readFileSync(join(root, 'locales', 'sv.json'), 'utf-8'),
+    );
+    expect(written['src/app.ts'].Save).toBe('Spara');
+  });
+
+  it('writes every translation when `force` is set', async () => {
+    writeFileSync(
+      join(root, 'src', 'app.ts'),
+      `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
+    );
+    writeFileSync(
+      join(root, 'locales', 'sv.json'),
+      JSON.stringify({ 'src/app.ts': { Save: 'Old' } }),
+    );
+    const translator = Object.assign(
+      vi.fn(async () => 'Spara'),
+      {
+        id: 'fake',
+      },
+    );
+    const code = await translate({
+      config: makeConfig({ translator }),
+      force: true,
+      projectRoot: root,
+    });
+    expect(code).toBe(0);
+    const written = JSON.parse(
+      readFileSync(join(root, 'locales', 'sv.json'), 'utf-8'),
+    );
+    expect(written['src/app.ts'].Save).toBe('Spara');
+  });
+
+  it('returns `1` when the translator throws', async () => {
+    writeFileSync(
+      join(root, 'src', 'app.ts'),
+      `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
+    );
+    writeFileSync(
+      join(root, 'locales', 'sv.json'),
+      JSON.stringify({ 'src/app.ts': { Save: '' } }),
+    );
+    const translator = Object.assign(
+      vi.fn(async () => {
+        throw new Error('boom');
+      }),
+      { id: 'fake' },
+    );
+    const code = await translate({
+      config: makeConfig({ translator }),
+      projectRoot: root,
+    });
+    expect(code).toBe(1);
   });
 });

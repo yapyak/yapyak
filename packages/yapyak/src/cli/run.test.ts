@@ -1,5 +1,27 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+vi.mock('./command', () => ({
+  add: vi.fn(async () => 0),
+  check: vi.fn(() => 0),
+  clean: vi.fn(() => 0),
+  exportCommand: vi.fn(() => 0),
+  status: vi.fn(() => 0),
+  translate: vi.fn(async () => 0),
+}));
+
+vi.mock('./config', () => ({
+  loadConfig: vi.fn(async () => ({
+    defaultLocale: 'en',
+    examples: 0,
+    exclude: [],
+    include: ['src/**/*.ts'],
+    localesDir: 'locales',
+    processors: [],
+    translator: undefined,
+  })),
+}));
+
+import { add, check, clean, exportCommand, status, translate } from './command';
 import { run } from './run';
 
 describe('run', () => {
@@ -15,6 +37,7 @@ describe('run', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.clearAllMocks();
   });
 
   it('returns `0` and prints help when no command is given', async () => {
@@ -40,5 +63,84 @@ describe('run', () => {
     const code = await run(['bogus']);
     expect(code).toBe(1);
     expect(writes.join('')).toContain('Unknown command: bogus');
+  });
+
+  it('picks the `status` command', async () => {
+    await run(['status']);
+    expect(status).toHaveBeenCalledTimes(1);
+  });
+
+  it('picks the `check` command', async () => {
+    await run(['check']);
+    expect(check).toHaveBeenCalledTimes(1);
+  });
+
+  it('picks the `clean` command', async () => {
+    await run(['clean']);
+    expect(clean).toHaveBeenCalledTimes(1);
+  });
+
+  it('picks the `add` command', async () => {
+    await run(['add']);
+    expect(add).toHaveBeenCalledTimes(1);
+  });
+
+  it('picks the `translate` command', async () => {
+    await run(['translate']);
+    expect(translate).toHaveBeenCalledTimes(1);
+  });
+
+  it('picks the `export` command', async () => {
+    await run(['export']);
+    expect(exportCommand).toHaveBeenCalledTimes(1);
+  });
+
+  it('extracts `--json` into the `status` options', async () => {
+    await run(['status', '--json']);
+    expect(status).toHaveBeenCalledWith(
+      expect.objectContaining({ json: true }),
+    );
+  });
+
+  it('extracts `--write` into the `clean` options', async () => {
+    await run(['clean', '--write']);
+    expect(clean).toHaveBeenCalledWith(
+      expect.objectContaining({ write: true }),
+    );
+  });
+
+  it('extracts non-flag args into the `add` locales', async () => {
+    await run(['add', 'sv', 'fr']);
+    expect(add).toHaveBeenCalledWith(
+      expect.objectContaining({ locales: ['sv', 'fr'] }),
+    );
+  });
+
+  it('extracts `--force` into the `translate` options', async () => {
+    await run(['translate', '--force']);
+    expect(translate).toHaveBeenCalledWith(
+      expect.objectContaining({ force: true }),
+    );
+  });
+
+  it('extracts the locale arg into the `translate` options', async () => {
+    await run(['translate', 'sv']);
+    expect(translate).toHaveBeenCalledWith(
+      expect.objectContaining({ locale: 'sv' }),
+    );
+  });
+
+  it('extracts `--out=path` into the `export` options', async () => {
+    await run(['export', '--out=snapshot.json']);
+    expect(exportCommand).toHaveBeenCalledWith(
+      expect.objectContaining({ out: 'snapshot.json' }),
+    );
+  });
+
+  it('extracts `--split` into the `export` options', async () => {
+    await run(['export', '--split', '--out=out-dir']);
+    expect(exportCommand).toHaveBeenCalledWith(
+      expect.objectContaining({ split: true }),
+    );
   });
 });
