@@ -60,7 +60,9 @@ export default function Home() {
       <div>
         <button type="button">{t.as('action', 'Open')}</button>
       </div>
-      <p>{t('Door is')} {t.as('state', 'Open')}</p>
+      <p>
+        {t('Door is')} {t.as('state', 'Open')}
+      </p>
 
       <h2>{t('Language preview')}</h2>
       <p>{t.in('en', 'Hello there')}</p>

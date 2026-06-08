@@ -156,12 +156,12 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
   function emitSyncDiagnostics(result: SyncLocaleFilesResult): void {
     for (const entry of result.orphaned) {
       warn(
-        `[yapyak] orphaned '${entry.source}' in ${entry.fileId} (${entry.locale}) → moved to .yapyak/orphans.json`,
+        `[yapyak] preserved '${entry.source}' (${entry.locale}) — call site removed from ${entry.fileId}, translation saved in case it returns.`,
       );
     }
     for (const entry of result.restored) {
       info(
-        `[yapyak] restored '${entry.source}' in ${entry.fileId} (${entry.locale}) from orphan cache`,
+        `[yapyak] restored '${entry.source}' (${entry.locale}) in ${entry.fileId} — translation kept from when the call site was removed earlier.`,
       );
     }
   }
