@@ -75,6 +75,7 @@ export {
   type TransformFileRequest,
   type TransformFileResult,
   toMessageId,
+  toMessageKey,
   transformFile,
   vanillaProcessor,
 } from './parser';

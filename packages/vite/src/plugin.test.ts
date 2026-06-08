@@ -568,6 +568,59 @@ describe('yapyak', () => {
       expect(map?.sources).toEqual([filePath]);
     });
   });
+
+  describe('context disambiguation', () => {
+    it('emits the context-disambiguated translation when source uses `t.as()`', async () => {
+      writeFileSync(
+        join(root, 'src', 'a.tsx'),
+        "import { t } from 'yapyak';\nexport const x = t.as('button', 'Save');\n",
+      );
+      writeFileSync(
+        localePath,
+        JSON.stringify({ 'src/a.tsx': { 'Save@button': 'Lagra' } }),
+      );
+
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'build');
+      const output = await invokeTransform(plugin, join(root, 'src', 'a.tsx'));
+
+      expect(output).toContain('Lagra');
+    });
+
+    it('emits the plain translation when source has no context', async () => {
+      writeFileSync(
+        join(root, 'src', 'a.tsx'),
+        "import { t } from 'yapyak';\nexport const x = t('Save');\n",
+      );
+      writeFileSync(
+        localePath,
+        JSON.stringify({ 'src/a.tsx': { Save: 'Spara' } }),
+      );
+
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'build');
+      const output = await invokeTransform(plugin, join(root, 'src', 'a.tsx'));
+
+      expect(output).toContain('Spara');
+    });
+
+    it('emits the source verbatim when the context key is missing from the catalog', async () => {
+      writeFileSync(
+        join(root, 'src', 'a.tsx'),
+        "import { t } from 'yapyak';\nexport const x = t.as('button', 'Save');\n",
+      );
+      writeFileSync(
+        localePath,
+        JSON.stringify({ 'src/a.tsx': { Save: 'Spara' } }),
+      );
+
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'build');
+      const output = await invokeTransform(plugin, join(root, 'src', 'a.tsx'));
+
+      expect(output).not.toContain('Spara');
+    });
+  });
 });
 
 async function invokeConfigResolved(

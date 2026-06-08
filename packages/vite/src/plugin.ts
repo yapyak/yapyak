@@ -17,6 +17,7 @@ import {
   extractFile,
   migrateLocales,
   syncLocaleFiles,
+  toMessageKey,
   transformFile,
   validateLocaleCode,
   walkSourceFiles,
@@ -665,10 +666,11 @@ function buildTranslations(input: {
 }): Record<string, Record<string, string>> {
   const translations: Record<string, Record<string, string>> = {};
   for (const message of input.extracted.messages) {
+    const messageKey = toMessageKey(message.source, message.context);
     for (const locale of input.locales) {
       const localeFile = input.localeData[locale];
       const fileEntries = localeFile?.[input.fileId];
-      const value = fileEntries?.[message.source];
+      const value = fileEntries?.[messageKey];
       if (typeof value !== 'string' || value === '') {
         continue;
       }
