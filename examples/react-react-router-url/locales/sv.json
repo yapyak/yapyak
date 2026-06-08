@@ -1,15 +1,17 @@
 {
   "app/routes/locale.tsx": {
-    "apple": "äpple",
     "At: {when, time, short}": "Klockan: {when, time, short}",
-    "banana": "banan",
     "Count: {amount, number, integer}": "Antal: {amount, number, integer}",
     "Dates and times": "Datum och tider",
+    "Door is": "Dörren är",
     "English": "Engelska",
     "Hello there": "Hej där",
+    "Homonyms": "Homonymer",
+    "Language preview": "Språkförhandsvisning",
     "Lists": "Listor",
     "Numbers": "Tal",
-    "pear": "päron",
+    "Open@action": "Öppna",
+    "Open@state": "Öppen",
     "Plurals": "Pluralis",
     "Price: {amount, number, currency EUR}": "Pris: {amount, number, currency EUR}",
     "Relative time": "Relativ tid",
@@ -23,6 +25,9 @@
     "Updated: {when, date, long}": "Uppdaterad: {when, date, long}",
     "Updated: {when, date, short}": "Uppdaterad: {when, date, short}",
     "You have {count, plural, one {# message} other {# messages}}": "Du har {count, plural, one {# meddelande} other {# meddelanden}}",
+    "apple": "äpple",
+    "banana": "banan",
+    "pear": "päron",
     "{role, select, admin {Administrator} editor {Editor} other {Viewer}}": "{role, select, admin {Administratör} editor {Redaktör} other {Besökare}}"
   }
 }

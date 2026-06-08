@@ -23,6 +23,14 @@ const date = new Date('2024-01-01T08:30:00Z');
       </button>
     </div>
 
+    <h2>{{ t('Homonyms') }}</h2>
+    <div><button type="button">{{ t.as('action', 'Open') }}</button></div>
+    <p>{{ t('Door is') }} {{ t.as('state', 'Open') }}</p>
+
+    <h2>{{ t('Language preview') }}</h2>
+    <p>{{ t.in('en', 'Hello there') }}</p>
+    <p>{{ t.in('sv', 'Hello there') }}</p>
+
     <h2>{{ t('Plurals') }}</h2>
     <p>{{ t('You have {count, plural, one {# message} other {# messages}}', { count: 3 }) }}</p>
     <p>{{ t('You have {count, plural, one {# message} other {# messages}}', { count: 1 }) }}</p>
