@@ -21,7 +21,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "vitest --run",
+    "test": "pnpm -w vitest --run --project=@yapyak/svelte",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -54,7 +54,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "test": "vitest --run",
+    "test": "pnpm -w vitest --run --project=yapyak",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

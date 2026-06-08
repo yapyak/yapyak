@@ -6,12 +6,16 @@
     "build": "pnpm -r --filter \"./packages/*\" build",
     "check": "biome check .",
     "check:write": "biome check . --write",
-    "test": "pnpm -r --filter \"./packages/*\" test",
+    "coverage": "vitest --run --coverage",
+    "test": "vitest --run",
+    "test:watch": "vitest",
     "typecheck": "pnpm -r --parallel typecheck"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",
-    "@yapyak/biome-config": "workspace:*"
+    "@vitest/coverage-v8": "catalog:",
+    "@yapyak/biome-config": "workspace:*",
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=22"
