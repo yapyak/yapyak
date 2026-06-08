@@ -93,7 +93,7 @@ export interface TFn {
    * Disambiguates a source string by context, or returns a chain that requires `.in()` to complete.
    *
    * @remarks
-   * The compiler emits {@link https://yapyak.dev/diagnostics/YPK403 YPK403} if a source is used with both `t()` and `t.at()` in the same file.
+   * The compiler emits `YPK403` if a source is used with both `t()` and `t.at()` in the same file.
    *
    * @param context - The disambiguating context. Must not contain `'@'` (reserved as the source/context separator).
    * @param source - The source string literal, supplied to translate inline.
@@ -170,9 +170,10 @@ export interface TFn {
  * t.in('sv').at('action', 'Open');
  * ```
  */
-export const t: TFn = (() => throwNotCompiled('t')) as unknown as TFn;
-t.at = (() => throwNotCompiled('t.at')) as TFn['at'];
-t.in = (() => throwNotCompiled('t.in')) as TFn['in'];
+export const t = Object.assign(() => throwNotCompiled('t'), {
+  at: () => throwNotCompiled('t.at'),
+  in: () => throwNotCompiled('t.in'),
+}) as TFn;
 
 function throwNotCompiled(method: 't' | 't.at' | 't.in'): never {
   throw new Error(
