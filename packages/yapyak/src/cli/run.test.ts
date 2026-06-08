@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { add, check, clean, exportCommand, status, translate } from './command';
+import { run } from './run';
+
 vi.mock('./command', () => ({
   add: vi.fn(async () => 0),
   check: vi.fn(() => 0),
@@ -20,9 +23,6 @@ vi.mock('./config', () => ({
     translator: undefined,
   })),
 }));
-
-import { add, check, clean, exportCommand, status, translate } from './command';
-import { run } from './run';
 
 describe('run', () => {
   let writes: string[];

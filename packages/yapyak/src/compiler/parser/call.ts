@@ -2,7 +2,7 @@ import type { ElisionContext, Range } from '../../processor';
 import type { Binding, BindingTable } from './binding';
 import type { Diagnostic } from './diagnostic';
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import { createDiagnostic } from './diagnostic';
 import { toRange } from './range';

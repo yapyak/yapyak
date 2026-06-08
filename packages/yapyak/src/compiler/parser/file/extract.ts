@@ -10,7 +10,7 @@ import type { CallSiteContext } from '../call-site-context';
 import type { Diagnostic } from '../diagnostic';
 import type { Placeholder } from '../placeholder';
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import { parseArguments } from '../argument';
 import { resolveBindings } from '../binding';

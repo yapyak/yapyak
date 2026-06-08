@@ -3,7 +3,7 @@ import type { CallSite } from './call';
 import type { Diagnostic } from './diagnostic';
 import type { IcuIssue } from './placeholder';
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import { createDiagnostic } from './diagnostic';
 import { parsePlaceholders } from './placeholder';

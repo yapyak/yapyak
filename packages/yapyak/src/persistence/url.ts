@@ -2,27 +2,6 @@ import type { Persistence } from './type';
 
 import { subscribeHistory } from './history';
 
-function getLocaleFromUrl(
-  url: URL | Location,
-  locales: string[],
-  match?: RegExp,
-): string | undefined {
-  if (match) {
-    const target = url.pathname + url.search + url.hash;
-    const matched = match.exec(target);
-    const captured = matched?.groups?.locale ?? matched?.[1];
-    if (captured && locales.includes(captured)) {
-      return captured;
-    }
-    return undefined;
-  }
-  const segment = url.pathname.split('/')[1];
-  if (segment && locales.includes(segment)) {
-    return segment;
-  }
-  return undefined;
-}
-
 interface UrlOptions {
   locales: string[];
   match?: RegExp;
@@ -55,4 +34,25 @@ export function url(options: UrlOptions): Persistence {
       return subscribeHistory(onChange);
     },
   };
+}
+
+function getLocaleFromUrl(
+  url: URL | Location,
+  locales: string[],
+  match?: RegExp,
+): string | undefined {
+  if (match) {
+    const target = url.pathname + url.search + url.hash;
+    const matched = match.exec(target);
+    const captured = matched?.groups?.locale ?? matched?.[1];
+    if (captured && locales.includes(captured)) {
+      return captured;
+    }
+    return undefined;
+  }
+  const segment = url.pathname.split('/')[1];
+  if (segment && locales.includes(segment)) {
+    return segment;
+  }
+  return undefined;
 }

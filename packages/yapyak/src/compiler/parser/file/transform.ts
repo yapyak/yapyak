@@ -5,7 +5,7 @@ import type { Placeholder } from '../placeholder';
 import type { ExtractFileResult, ParsedCallSite } from './extract';
 
 import MagicString from 'magic-string';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 export interface TransformFileRequest {
   defaultLocale?: string;

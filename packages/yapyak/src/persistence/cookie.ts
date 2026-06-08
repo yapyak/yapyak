@@ -3,37 +3,12 @@ import type { Persistence } from './type';
 import { appendResponseHeader } from '../locale';
 import { subscribeHistory } from './history';
 
+interface CookieOptions {
+  name: string;
+}
+
 const POLL_INTERVAL_MS = 1_000;
 const COOKIE_MAX_AGE_SECONDS = 31_536_000;
-
-function subscribePoll(onChange: () => void): () => void {
-  let intervalId: number | undefined;
-  const start = (): void => {
-    intervalId ??= window.setInterval(onChange, POLL_INTERVAL_MS);
-  };
-  const stop = (): void => {
-    if (intervalId !== undefined) {
-      window.clearInterval(intervalId);
-      intervalId = undefined;
-    }
-  };
-  const sync = (): void => {
-    if (document.visibilityState === 'visible') {
-      onChange();
-      start();
-    } else {
-      stop();
-    }
-  };
-  document.addEventListener('visibilitychange', sync);
-  if (document.visibilityState === 'visible') {
-    start();
-  }
-  return (): void => {
-    document.removeEventListener('visibilitychange', sync);
-    stop();
-  };
-}
 
 export function parseCookie(header: string): Record<string, string> {
   const result: Record<string, string> = {};
@@ -65,10 +40,6 @@ export function parseCookie(header: string): Record<string, string> {
     }
   }
   return result;
-}
-
-interface CookieOptions {
-  name: string;
 }
 
 export function cookie(options: CookieOptions): Persistence {
@@ -125,5 +96,34 @@ export function cookie(options: CookieOptions): Persistence {
         unsubscribePoll();
       };
     },
+  };
+}
+
+function subscribePoll(onChange: () => void): () => void {
+  let intervalId: number | undefined;
+  const start = (): void => {
+    intervalId ??= window.setInterval(onChange, POLL_INTERVAL_MS);
+  };
+  const stop = (): void => {
+    if (intervalId !== undefined) {
+      window.clearInterval(intervalId);
+      intervalId = undefined;
+    }
+  };
+  const sync = (): void => {
+    if (document.visibilityState === 'visible') {
+      onChange();
+      start();
+    } else {
+      stop();
+    }
+  };
+  document.addEventListener('visibilitychange', sync);
+  if (document.visibilityState === 'visible') {
+    start();
+  }
+  return (): void => {
+    document.removeEventListener('visibilitychange', sync);
+    stop();
   };
 }

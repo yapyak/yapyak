@@ -1,6 +1,6 @@
 import type { Fragment } from '../../processor';
 
-import * as ts from 'typescript';
+import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 
 import { remapRange, toRange } from './range';
