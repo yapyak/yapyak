@@ -1,16 +1,8 @@
 import { act, renderHook } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
+import { setLocale } from 'yapyak';
 
-vi.mock('yapyak/runtime', () => ({
-  DEFAULT_LOCALE: 'en',
-  DETECT_ACCEPT_LANGUAGE: false,
-  LOCALES: ['en', 'sv'],
-  PERSISTENCE_CONFIG: { type: 'none' },
-  SYNC_HTML_LANG: false,
-}));
-
-const { setLocale } = await import('yapyak');
-const { useLocale } = await import('./use-locale');
+import { useLocale } from './use-locale';
 
 afterEach(() => {
   setLocale('en');

@@ -5,7 +5,10 @@ import { resolve } from 'node:path';
 export default defineConfig({
   resolve: {
     alias: {
-      'yapyak/runtime': resolve(import.meta.dirname, 'src/runtime.ts'),
+      'yapyak/runtime': resolve(
+        import.meta.dirname,
+        '../yapyak/src/runtime.ts',
+      ),
     },
   },
   test: {

@@ -1,15 +1,7 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
+import { getLocale, setLocale } from 'yapyak';
 
-vi.mock('yapyak/runtime', () => ({
-  DEFAULT_LOCALE: 'en',
-  DETECT_ACCEPT_LANGUAGE: false,
-  LOCALES: ['en', 'sv'],
-  PERSISTENCE_CONFIG: { type: 'none' },
-  SYNC_HTML_LANG: false,
-}));
-
-const { getLocale, setLocale } = await import('yapyak');
-const { locale } = await import('./locale');
+import { locale } from './locale';
 
 afterEach(() => {
   setLocale('en');
