@@ -267,6 +267,32 @@ describe('svelte processor — extract', () => {
     expect(result.messages.map((m) => m.source)).toContain('Cancel');
   });
 
+  it('extracts `t()` from a `{@render}` tag expression', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '  const snip = (label: string) => label;',
+        '</script>',
+        "{@render snip(t('Hello'))}",
+      ].join('\n'),
+    );
+    expect(result.messages.map((m) => m.source)).toContain('Hello');
+  });
+
+  it('extracts `t()` from an `{@attach}` tag', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '  function attach(node: HTMLElement, value: string) { node.title = value; }',
+        '</script>',
+        "<button {@attach attach(t('Save'))}>x</button>",
+      ].join('\n'),
+    );
+    expect(result.messages.map((m) => m.source)).toContain('Save');
+  });
+
   it('extracts `t()` from children when a `style:` directive is boolean', () => {
     const result = extractSvelte(
       [

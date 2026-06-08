@@ -174,6 +174,111 @@ describe('discoverCalls', () => {
     expect(diagnostics).toHaveLength(0);
   });
 
+  it('extracts a direct `Y.t.in(loc, src)` namespace modifier call', () => {
+    const sf = ts.createSourceFile(
+      'inline.ts',
+      "import * as Y from 'yapyak';\nexport const x = Y.t.in('sv', 'Save');\n",
+      ts.ScriptTarget.ESNext,
+      true,
+      ts.ScriptKind.TS,
+    );
+    const { callSites } = discoverCalls(sf, resolveBindings(sf));
+    expect(callSites).toHaveLength(1);
+    expect(callSites[0]?.localeExpression?.getText()).toBe("'sv'");
+    expect(callSites[0]?.sourceArg?.getText()).toBe("'Save'");
+  });
+
+  it('extracts a direct `Y.t.as(ctx, src)` namespace modifier call', () => {
+    const sf = ts.createSourceFile(
+      'inline.ts',
+      "import * as Y from 'yapyak';\nexport const x = Y.t.as('button', 'Save');\n",
+      ts.ScriptTarget.ESNext,
+      true,
+      ts.ScriptKind.TS,
+    );
+    const { callSites } = discoverCalls(sf, resolveBindings(sf));
+    expect(callSites).toHaveLength(1);
+    expect(callSites[0]?.contextArg?.getText()).toBe("'button'");
+    expect(callSites[0]?.sourceArg?.getText()).toBe("'Save'");
+  });
+
+  it('extracts a chained `Y.t.in(loc).as(ctx, src)` namespace call', () => {
+    const sf = ts.createSourceFile(
+      'inline.ts',
+      "import * as Y from 'yapyak';\nexport const x = Y.t.in('sv').as('button', 'Save');\n",
+      ts.ScriptTarget.ESNext,
+      true,
+      ts.ScriptKind.TS,
+    );
+    const { callSites } = discoverCalls(sf, resolveBindings(sf));
+    expect(callSites).toHaveLength(1);
+    expect(callSites[0]?.localeExpression?.getText()).toBe("'sv'");
+    expect(callSites[0]?.contextArg?.getText()).toBe("'button'");
+  });
+
+  it('emits YPK405 when `Y.t.in()` result is captured in a variable', () => {
+    const sf = ts.createSourceFile(
+      'inline.ts',
+      "import * as Y from 'yapyak';\nconst sv = Y.t.in('sv');\n",
+      ts.ScriptTarget.ESNext,
+      true,
+      ts.ScriptKind.TS,
+    );
+    const { callSites, diagnostics } = discoverCalls(sf, resolveBindings(sf));
+    expect(callSites).toHaveLength(0);
+    expect(diagnostics.some((d) => d.code === 'YPK405')).toBe(true);
+  });
+
+  it('returns no call sites for a non-`in`/`as` method on `t`', () => {
+    const sf = ts.createSourceFile(
+      'inline.ts',
+      "import { t } from 'yapyak';\nexport const x = (t as { foo: () => string }).foo();\n",
+      ts.ScriptTarget.ESNext,
+      true,
+      ts.ScriptKind.TS,
+    );
+    const { callSites } = discoverCalls(sf, resolveBindings(sf));
+    expect(callSites).toHaveLength(0);
+  });
+
+  it('returns no call sites for a chain where inner method matches outer', () => {
+    const sf = ts.createSourceFile(
+      'inline.ts',
+      "import { t } from 'yapyak';\nexport const x = t.in('sv').in('en', 'Save');\n",
+      ts.ScriptTarget.ESNext,
+      true,
+      ts.ScriptKind.TS,
+    );
+    const { callSites } = discoverCalls(sf, resolveBindings(sf));
+    expect(callSites).toHaveLength(0);
+  });
+
+  it('returns only the inner call when an outer chain has an inner with multiple args', () => {
+    const sf = ts.createSourceFile(
+      'inline.ts',
+      "import { t } from 'yapyak';\nexport const x = t.in('sv', 'extra').as('button', 'Save');\n",
+      ts.ScriptTarget.ESNext,
+      true,
+      ts.ScriptKind.TS,
+    );
+    const { callSites } = discoverCalls(sf, resolveBindings(sf));
+    expect(callSites).toHaveLength(1);
+    expect(callSites[0]?.localeExpression?.getText()).toBe("'sv'");
+    expect(callSites[0]?.sourceArg?.getText()).toBe("'extra'");
+  });
+
+  it('returns no call sites for a chain on an unknown receiver', () => {
+    const sf = ts.createSourceFile(
+      'inline.ts',
+      "export const x = unknown.in('sv').as('button', 'Save');\n",
+      ts.ScriptTarget.ESNext,
+      true,
+      ts.ScriptKind.TS,
+    );
+    const { callSites } = discoverCalls(sf, resolveBindings(sf));
+    expect(callSites).toHaveLength(0);
+  });
+
   it('returns ranges with line, column, and offset', () => {
     const sf = loadFixture('call', 'simple.ts');
     const { callSites } = discoverCalls(sf, resolveBindings(sf));

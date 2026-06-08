@@ -98,6 +98,11 @@ describe('format', () => {
         }),
       ).toContain('2026');
     });
+
+    it('returns a formatted date and time with default options', () => {
+      setLocale('en');
+      expect(format.dateTime(new Date('2026-01-15T12:00:00Z'))).toMatch(/2026/);
+    });
   });
 
   describe('time', () => {
@@ -109,6 +114,11 @@ describe('format', () => {
           timeZone: 'UTC',
         }),
       ).toMatch(/12:30/);
+    });
+
+    it('returns a formatted time-of-day with default options', () => {
+      setLocale('en');
+      expect(format.time(new Date('2026-01-15T12:30:00Z'))).toMatch(/\d/);
     });
   });
 
@@ -133,6 +143,11 @@ describe('format', () => {
           timeZone: 'UTC',
         }),
       ).toContain('2026');
+    });
+
+    it('returns a formatted date with default options', () => {
+      setLocale('en');
+      expect(format.date(new Date('2026-01-15T12:00:00Z'))).toMatch(/2026/);
     });
   });
 

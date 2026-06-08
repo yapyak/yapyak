@@ -621,6 +621,218 @@ describe('yapyak', () => {
       expect(output).not.toContain('Spara');
     });
   });
+
+  describe('plugin hooks', () => {
+    it('builds a `config` with `yapyak/runtime` excluded from `optimizeDeps`', () => {
+      const plugin = yapyak();
+      const result = invokeConfig(plugin);
+      expect(result.optimizeDeps?.exclude).toContain('yapyak/runtime');
+    });
+
+    it('builds a `config` with `yapyak/runtime` kept in SSR no-external', () => {
+      const plugin = yapyak();
+      const result = invokeConfig(plugin);
+      expect(result.ssr?.noExternal).toBeDefined();
+    });
+
+    it('resolves `yapyak/runtime` to the virtual id', () => {
+      const plugin = yapyak();
+      expect(invokeResolveId(plugin, 'yapyak/runtime')).toBe(' yapyak:runtime');
+    });
+
+    it('returns `null` for `resolveId` on an unrelated module', () => {
+      const plugin = yapyak();
+      expect(invokeResolveId(plugin, 'react')).toBeNull();
+    });
+
+    it('loads the resolved runtime virtual id with HMR listener', async () => {
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      const result = invokeLoad(plugin, ' yapyak:runtime');
+      expect(result).toContain('export const');
+      expect(result).toContain('yapyak:locale-added');
+    });
+
+    it('returns `null` for `load` on an unrelated id', async () => {
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      expect(invokeLoad(plugin, '/some/other/id.ts')).toBeNull();
+    });
+
+    it('returns `null` for `transform` on a non-candidate file', async () => {
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'build');
+      const result = await invokeTransformRaw(
+        plugin,
+        ' virtual-module',
+        'export const x = 1;',
+      );
+      expect(result).toBeNull();
+    });
+
+    it('returns `null` for `transform` when source has no `t()` calls', async () => {
+      writeFileSync(join(root, 'src', 'plain.tsx'), 'export const x = 1;\n');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'build');
+      const filePath = join(root, 'src', 'plain.tsx');
+      const result = await invokeTransformRaw(
+        plugin,
+        filePath,
+        readFileSync(filePath, 'utf8'),
+      );
+      expect(result).toBeNull();
+    });
+
+    it('clears teardown callbacks on `buildEnd`', () => {
+      const plugin = yapyak();
+      expect(() => invokeBuildEnd(plugin)).not.toThrow();
+    });
+
+    it('skips an initial scan in build mode on `buildStart`', async () => {
+      writeFileSync(
+        join(root, 'src', 'a.tsx'),
+        "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
+      );
+      writeFileSync(localePath, '{}');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'build');
+      invokeBuildStart(plugin);
+      const sv = JSON.parse(readFileSync(localePath, 'utf8'));
+      expect(sv['src/a.tsx']).toBeUndefined();
+    });
+
+    it('warns when `ssr.external` is set to `true`', async () => {
+      const warnings: string[] = [];
+      const logger = createSilentLogger();
+      logger.warn = (message: string) => {
+        warnings.push(message);
+      };
+      const plugin = yapyak();
+      const hook = plugin.configResolved;
+      if (typeof hook !== 'function') throw new Error('missing');
+      await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
+        command: 'serve',
+        logger,
+        root,
+        ssr: { external: true },
+      } as unknown as ResolvedConfig);
+      expect(
+        warnings.some((line) => line.includes('config.ssr.external')),
+      ).toBe(true);
+    });
+
+    it('warns when `ssr.external` is set to a function', async () => {
+      const warnings: string[] = [];
+      const logger = createSilentLogger();
+      logger.warn = (message: string) => {
+        warnings.push(message);
+      };
+      const plugin = yapyak();
+      const hook = plugin.configResolved;
+      if (typeof hook !== 'function') throw new Error('missing');
+      await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
+        command: 'serve',
+        logger,
+        root,
+        ssr: { external: () => false },
+      } as unknown as ResolvedConfig);
+      expect(warnings.some((line) => line.includes('a function'))).toBe(true);
+    });
+
+    it('filters yapyak entries out of an `ssr.external` array', async () => {
+      const external = ['react', 'yapyak', '@yapyak/react', 'lodash'];
+      const plugin = yapyak();
+      const hook = plugin.configResolved;
+      if (typeof hook !== 'function') throw new Error('missing');
+      await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
+        command: 'serve',
+        logger: createSilentLogger(),
+        root,
+        ssr: { external },
+      } as unknown as ResolvedConfig);
+      expect(external).toEqual(['react', 'lodash']);
+    });
+
+    it('throws when `fixedLocale` is not in the discovered locales', async () => {
+      writeFileSync(join(root, 'locales', 'en.json'), '{}');
+      const plugin = yapyak({ fixedLocale: 'de' });
+      const hook = plugin.configResolved;
+      if (typeof hook !== 'function') throw new Error('missing');
+      await expect(
+        (hook as (config: ResolvedConfig) => unknown).call(plugin, {
+          command: 'build',
+          logger: createSilentLogger(),
+          root,
+        } as ResolvedConfig),
+      ).rejects.toThrow(/fixedLocale 'de' is not configured/);
+    });
+  });
+
+  describe('handleHotUpdate', () => {
+    it('returns early when the changed file is not a candidate', async () => {
+      writeFileSync(localePath, '{}');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+      const before = readFileSync(localePath, 'utf8');
+      await invokeHandleHotUpdate(plugin, join(root, 'src', 'static.css'), 'x');
+      const after = readFileSync(localePath, 'utf8');
+      expect(after).toBe(before);
+    });
+
+    it('returns early when the messages are unchanged', async () => {
+      const filePath = join(root, 'src', 'a.tsx');
+      const source =
+        "import { t } from 'yapyak';\nexport const x = t('Hello');\n";
+      writeFileSync(filePath, source);
+      writeFileSync(localePath, '{}');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+      const before = readFileSync(localePath, 'utf8');
+      await invokeHandleHotUpdate(plugin, filePath, source);
+      const after = readFileSync(localePath, 'utf8');
+      expect(after).toBe(before);
+    });
+
+    it('deletes the file entry when the changed file no longer has `t()` calls', async () => {
+      const filePath = join(root, 'src', 'a.tsx');
+      writeFileSync(
+        filePath,
+        "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
+      );
+      writeFileSync(localePath, '{}');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+      await invokeHandleHotUpdate(
+        plugin,
+        filePath,
+        "export const x = 'static';\n",
+      );
+      const sv = JSON.parse(readFileSync(localePath, 'utf8'));
+      expect(sv['src/a.tsx']).toBeUndefined();
+    });
+
+    it('rewrites the file entry when the messages change', async () => {
+      const filePath = join(root, 'src', 'a.tsx');
+      writeFileSync(
+        filePath,
+        "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
+      );
+      writeFileSync(localePath, '{}');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+      await invokeHandleHotUpdate(
+        plugin,
+        filePath,
+        "import { t } from 'yapyak';\nexport const x = t('World');\n",
+      );
+      const sv = JSON.parse(readFileSync(localePath, 'utf8'));
+      expect(sv['src/a.tsx']).toEqual({ World: '' });
+    });
+  });
 });
 
 async function invokeConfigResolved(
@@ -694,12 +906,82 @@ function invokeBuildStart(plugin: ReturnType<typeof yapyak>): void {
   (hook as () => void).call(plugin);
 }
 
+function invokeConfig(plugin: ReturnType<typeof yapyak>): {
+  optimizeDeps?: { exclude?: string[] };
+  ssr?: { noExternal?: unknown };
+} {
+  const hook = plugin.config;
+  if (typeof hook !== 'function') {
+    throw new Error('config hook missing');
+  }
+  return (
+    hook as () => {
+      optimizeDeps?: { exclude?: string[] };
+      ssr?: { noExternal?: unknown };
+    }
+  ).call(plugin);
+}
+
+function invokeResolveId(
+  plugin: ReturnType<typeof yapyak>,
+  id: string,
+): string | null {
+  const hook = plugin.resolveId;
+  if (typeof hook !== 'function') {
+    throw new Error('resolveId hook missing');
+  }
+  return (hook as (id: string) => string | null).call(plugin, id);
+}
+
+function invokeLoad(
+  plugin: ReturnType<typeof yapyak>,
+  id: string,
+): string | null {
+  const hook = plugin.load;
+  if (typeof hook !== 'function') {
+    throw new Error('load hook missing');
+  }
+  return (hook as (id: string) => string | null).call(plugin, id);
+}
+
+async function invokeTransformRaw(
+  plugin: ReturnType<typeof yapyak>,
+  filePath: string,
+  code: string,
+): Promise<{ code: string; map?: SourceMap } | null> {
+  const hook = plugin.transform;
+  if (typeof hook !== 'function') {
+    throw new Error('transform hook missing');
+  }
+  return (await (hook as TransformHook).call(plugin, code, filePath)) ?? null;
+}
+
 function invokeBuildEnd(plugin: ReturnType<typeof yapyak>): void {
   const hook = plugin.buildEnd;
   if (typeof hook !== 'function') {
     throw new Error('buildEnd hook missing');
   }
   (hook as () => void).call(plugin);
+}
+
+async function invokeHandleHotUpdate(
+  plugin: ReturnType<typeof yapyak>,
+  file: string,
+  code: string,
+): Promise<void> {
+  const hook = plugin.handleHotUpdate;
+  if (typeof hook !== 'function') {
+    throw new Error('handleHotUpdate hook missing');
+  }
+  await (
+    hook as (ctx: {
+      file: string;
+      read: () => Promise<string>;
+    }) => Promise<void>
+  ).call(plugin, {
+    file,
+    read: () => Promise.resolve(code),
+  });
 }
 
 interface MockWatcher extends EventEmitter {

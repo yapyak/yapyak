@@ -203,6 +203,81 @@ describe('normalizeYapyakConfig', () => {
 
     expect(result.include).toEqual(['src/App.vue']);
   });
+
+  it('throws when an include entry is an empty string', () => {
+    expect(() => normalizeYapyakConfig({ include: [''] })).toThrow(
+      /include\/exclude entry cannot be an empty string/,
+    );
+  });
+
+  it('preserves a `RegExp` inside an include array verbatim', () => {
+    const pattern = /\.special$/;
+    const result = normalizeYapyakConfig({ include: [pattern] });
+    expect(result.include).toEqual([pattern]);
+  });
+
+  it('normalizes a single non-array include string into a directory glob', () => {
+    const result = normalizeYapyakConfig({ include: 'src' });
+    expect(result.include).toBe('src/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}');
+  });
+
+  it('returns a `none` persistence config when none is configured', () => {
+    const result = normalizeYapyakConfig({});
+    expect(result.persistence).toEqual({ type: 'none' });
+  });
+
+  it('returns the default cookie config for the `cookie` shorthand', () => {
+    const result = normalizeYapyakConfig({ persistence: 'cookie' });
+    expect(result.persistence).toEqual({ name: 'locale', type: 'cookie' });
+  });
+
+  it('returns the default local-storage config for the `local-storage` shorthand', () => {
+    const result = normalizeYapyakConfig({ persistence: 'local-storage' });
+    expect(result.persistence).toEqual({
+      key: 'locale',
+      type: 'local-storage',
+    });
+  });
+
+  it('returns the default url config for the `url` shorthand', () => {
+    const result = normalizeYapyakConfig({ persistence: 'url' });
+    expect(result.persistence).toEqual({ type: 'url' });
+  });
+
+  it('returns the explicit `none` config for the `none` shorthand', () => {
+    const result = normalizeYapyakConfig({ persistence: 'none' });
+    expect(result.persistence).toEqual({ type: 'none' });
+  });
+
+  it('preserves an explicit cookie name on a cookie persistence config', () => {
+    const result = normalizeYapyakConfig({
+      persistence: { name: 'my_locale', type: 'cookie' },
+    });
+    expect(result.persistence).toEqual({ name: 'my_locale', type: 'cookie' });
+  });
+
+  it('preserves an explicit local-storage key on a local-storage config', () => {
+    const result = normalizeYapyakConfig({
+      persistence: { key: 'my.locale', type: 'local-storage' },
+    });
+    expect(result.persistence).toEqual({
+      key: 'my.locale',
+      type: 'local-storage',
+    });
+  });
+
+  it('preserves a `match` matcher on a url persistence config', () => {
+    const match = /^\/(en|sv)/;
+    const result = normalizeYapyakConfig({
+      persistence: { match, type: 'url' },
+    });
+    expect(result.persistence).toEqual({ match, type: 'url' });
+  });
+
+  it('returns the explicit `none` type on an object-form persistence config', () => {
+    const result = normalizeYapyakConfig({ persistence: { type: 'none' } });
+    expect(result.persistence).toEqual({ type: 'none' });
+  });
 });
 
 function makeProcessor(id: string, extensions: string[]): Processor {

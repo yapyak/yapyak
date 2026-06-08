@@ -86,4 +86,42 @@ describe('check', () => {
     check({ config: makeConfig(), projectRoot: root });
     expect(writes.join('')).toMatch(/warning|error/);
   });
+
+  it('groups multiple missing translations under each locale', () => {
+    mkdirSync(join(root, 'src'), { recursive: true });
+    mkdirSync(join(root, 'locales'), { recursive: true });
+    writeFileSync(
+      join(root, 'src', 'app.ts'),
+      `import { t } from 'yapyak';\nexport const a = t('Save');\nexport const b = t('Cancel');\n`,
+    );
+    writeFileSync(
+      join(root, 'locales', 'sv.json'),
+      JSON.stringify({ 'src/app.ts': { Cancel: '', Save: '' } }),
+    );
+    writeFileSync(
+      join(root, 'locales', 'de.json'),
+      JSON.stringify({ 'src/app.ts': { Cancel: '', Save: '' } }),
+    );
+    const code = check({ config: makeConfig(), projectRoot: root });
+    expect(code).toBe(1);
+    const output = writes.join('');
+    expect(output).toContain('sv');
+    expect(output).toContain('de');
+  });
+
+  it('returns `1` when an error-level diagnostic fires', () => {
+    mkdirSync(join(root, 'src'), { recursive: true });
+    mkdirSync(join(root, 'locales'), { recursive: true });
+    writeFileSync(
+      join(root, 'src', 'app.ts'),
+      `import { t } from 'yapyak';\nexport const x = t('Hello {name}');\n`,
+    );
+    writeFileSync(
+      join(root, 'locales', 'sv.json'),
+      JSON.stringify({ 'src/app.ts': { 'Hello {name}': 'Hej {namn}' } }),
+    );
+    const code = check({ config: makeConfig(), projectRoot: root });
+    expect(code).toBe(1);
+    expect(writes.join('')).toMatch(/error/);
+  });
 });

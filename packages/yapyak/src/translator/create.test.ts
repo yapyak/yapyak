@@ -193,4 +193,208 @@ describe('createTranslator', () => {
       createTranslator({ concurrency: -1, translate: () => [] }),
     ).toThrow(/concurrency must be a positive integer/);
   });
+
+  it('throws when the translate response is not an array', async () => {
+    const translator = createTranslator({
+      translate: () => ({ not: 'array' }) as unknown as never,
+    });
+    await expect(
+      translator.batch?.([
+        {
+          fileId: 'src/a.tsx',
+          source: 'Save',
+          sourceLocale: 'en',
+          targetLocale: 'sv',
+        },
+      ]),
+    ).rejects.toThrow(/must return an array/);
+  });
+
+  it('throws when the translate response has the wrong length', async () => {
+    const translator = createTranslator({
+      translate: () => [{ sv: 'Spara' }, { sv: 'extra' }],
+    });
+    await expect(
+      translator.batch?.([
+        {
+          fileId: 'src/a.tsx',
+          source: 'Save',
+          sourceLocale: 'en',
+          targetLocale: 'sv',
+        },
+      ]),
+    ).rejects.toThrow(/returned 2 items, expected 1/);
+  });
+
+  it('returns an empty string when a translate response entry is not an object', async () => {
+    const translator = createTranslator({
+      translate: () => [null as unknown as never],
+    });
+    const results = await translator.batch?.([
+      {
+        fileId: 'src/a.tsx',
+        source: 'Save',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      },
+    ]);
+    expect(results).toEqual(['']);
+  });
+
+  it('discards translations whose value is not a string', async () => {
+    const translator = createTranslator({
+      translate: () => [{ sv: 42 as unknown as string }],
+    });
+    const results = await translator.batch?.([
+      {
+        fileId: 'src/a.tsx',
+        source: 'Save',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      },
+    ]);
+    expect(results).toEqual(['']);
+  });
+
+  it('discards translations whose value is an empty string after trim', async () => {
+    const translator = createTranslator({
+      translate: () => [{ sv: '   ' }],
+    });
+    const results = await translator.batch?.([
+      {
+        fileId: 'src/a.tsx',
+        source: 'Save',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      },
+    ]);
+    expect(results).toEqual(['']);
+  });
+
+  it('returns an empty string when calling `single` on an unknown source', async () => {
+    const translator = createTranslator({
+      translate: () => [{ sv: 'Spara' }],
+    });
+    const result = await translator({
+      fileId: 'src/a.tsx',
+      source: 'Save',
+      sourceLocale: 'en',
+      targetLocale: 'de',
+    });
+    expect(result).toBe('');
+  });
+
+  it('returns an empty array when given no requests', async () => {
+    const translator = createTranslator({
+      translate: () => [],
+    });
+    const result = await translator.batch?.([]);
+    expect(result).toEqual([]);
+  });
+
+  it('forwards `disambiguation` and `examples` to the item', async () => {
+    let receivedItems: unknown[] | undefined;
+    const translator = createTranslator({
+      translate: (params) => {
+        receivedItems = params.items;
+        return params.items.map(() => ({ sv: 'Spara' }));
+      },
+    });
+    await translator.batch?.([
+      {
+        disambiguation: 'button',
+        examples: ['Click to save'],
+        fileId: 'src/a.tsx',
+        source: 'Save',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      },
+    ]);
+    expect(receivedItems).toEqual([
+      {
+        disambiguation: 'button',
+        examples: ['Click to save'],
+        source: 'Save',
+      },
+    ]);
+  });
+
+  it('drops context fields when `context` is `none`', async () => {
+    let receivedItems: unknown[] | undefined;
+    const translator = createTranslator({
+      context: 'none',
+      translate: (params) => {
+        receivedItems = params.items;
+        return params.items.map(() => ({ sv: 'Spara' }));
+      },
+    });
+    await translator.batch?.([
+      {
+        context: {
+          componentName: 'Header',
+          enclosingElement: 'h1',
+          snippet: '<h1>Save</h1>',
+        },
+        fileId: 'src/a.tsx',
+        source: 'Save',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      },
+    ]);
+    expect(receivedItems).toEqual([{ source: 'Save' }]);
+  });
+
+  it('forwards `componentName` and `enclosingElement` at `minimal` context', async () => {
+    let receivedItems: unknown[] | undefined;
+    const translator = createTranslator({
+      translate: (params) => {
+        receivedItems = params.items;
+        return params.items.map(() => ({ sv: 'Spara' }));
+      },
+    });
+    await translator.batch?.([
+      {
+        context: {
+          componentName: 'Header',
+          enclosingElement: 'h1',
+          snippet: '<h1>Save</h1>',
+        },
+        fileId: 'src/a.tsx',
+        source: 'Save',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      },
+    ]);
+    const item = receivedItems?.[0] as Record<string, unknown>;
+    expect(item.component).toBe('Header');
+    expect(item.element).toBe('h1');
+    expect(item.snippet).toBeUndefined();
+  });
+
+  it('forwards `snippet` only when context is `rich`', async () => {
+    let receivedItems: unknown[] | undefined;
+    const translator = createTranslator({
+      context: 'rich',
+      translate: (params) => {
+        receivedItems = params.items;
+        return params.items.map(() => ({ sv: 'Spara' }));
+      },
+    });
+    await translator.batch?.([
+      {
+        context: {
+          componentName: '',
+          enclosingElement: '',
+          snippet: '<h1>Save</h1>',
+        },
+        fileId: 'src/a.tsx',
+        source: 'Save',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      },
+    ]);
+    const item = receivedItems?.[0] as Record<string, unknown>;
+    expect(item.snippet).toBe('<h1>Save</h1>');
+    expect(item.component).toBeUndefined();
+  });
 });
