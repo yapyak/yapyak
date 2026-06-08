@@ -8,7 +8,7 @@ vi.mock('yapyak/runtime', () => ({
   SYNC_HTML_LANG: false,
 }));
 
-const {
+import {
   autoSubscribeLocale,
   defaultLocale,
   getLocale,
@@ -16,7 +16,7 @@ const {
   resetLocale,
   setLocale,
   subscribeLocale,
-} = await import('./store');
+} from './store';
 
 function makeMeta(
   hot?: { dispose(callback: () => void): void } | undefined,

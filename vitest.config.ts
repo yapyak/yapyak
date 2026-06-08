@@ -6,7 +6,7 @@ export default defineConfig({
       exclude: [
         '**/*.test-d.ts',
         '**/fixture/**',
-        'packages/{biome-config,doc-extractor,tsup-config,typescript-config}/**',
+        'packages/{biome-config,doc-extractor,tsup-config,typescript-config,vitest-config}/**',
       ],
       include: ['packages/*/src/**'],
     },

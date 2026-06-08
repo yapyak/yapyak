@@ -8,9 +8,9 @@ vi.mock('yapyak/runtime', () => ({
   SYNC_HTML_LANG: false,
 }));
 
-const { getLocale } = await import('../index');
-const { resetLocale } = await import('../internal');
-const { withRequest } = await import('./request');
+import { getLocale } from '../index';
+import { resetLocale } from '../internal';
+import { withRequest } from './request';
 
 function makeRequest(
   headers: { acceptLanguage?: string; cookie?: string } = {},

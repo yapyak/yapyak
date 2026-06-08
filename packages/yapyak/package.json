@@ -68,6 +68,7 @@
     "@types/picomatch": "catalog:",
     "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
+    "@yapyak/vitest-config": "workspace:*",
     "tsup": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",

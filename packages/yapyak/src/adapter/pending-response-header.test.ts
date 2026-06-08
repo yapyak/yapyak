@@ -8,10 +8,10 @@ vi.mock('yapyak/runtime', () => ({
   SYNC_HTML_LANG: false,
 }));
 
-const { setLocale } = await import('../index');
-const { resetLocale } = await import('../internal');
-const { getPendingResponseHeaders } = await import('./pending-response-header');
-const { withRequest } = await import('./request');
+import { setLocale } from '../index';
+import { resetLocale } from '../internal';
+import { getPendingResponseHeaders } from './pending-response-header';
+import { withRequest } from './request';
 
 function makeRequest(): Request {
   return new Request('http://example.test');

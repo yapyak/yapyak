@@ -32,6 +32,7 @@
     "@types/node": "catalog:",
     "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
+    "@yapyak/vitest-config": "workspace:*",
     "svelte": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:",

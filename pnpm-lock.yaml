@@ -589,7 +589,7 @@ importers:
         version: 6.0.3
       vitest:
         specifier: 'catalog:'
-        version: 4.1.7(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(happy-dom@20.10.2)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
+        version: 4.1.7(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(happy-dom@20.10.2)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
 
   packages/astro:
     dependencies:
@@ -742,6 +742,9 @@ importers:
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@yapyak/vitest-config':
+        specifier: workspace:*
+        version: link:../vitest-config
       happy-dom:
         specifier: 'catalog:'
         version: 20.10.2
@@ -804,6 +807,9 @@ importers:
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@yapyak/vitest-config':
+        specifier: workspace:*
+        version: link:../vitest-config
       svelte:
         specifier: 'catalog:'
         version: 5.55.9
@@ -918,6 +924,34 @@ importers:
         specifier: 'catalog:'
         version: 4.1.7(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(happy-dom@20.10.2)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
 
+  packages/vitest-config:
+    dependencies:
+      yapyak:
+        specifier: workspace:*
+        version: link:../yapyak
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.9.1
+      '@yapyak/tsup-config':
+        specifier: workspace:*
+        version: link:../tsup-config
+      '@yapyak/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      tsup:
+        specifier: 'catalog:'
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(typescript@6.0.3)(yaml@2.8.4)
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+      vite:
+        specifier: 'catalog:'
+        version: 8.0.14(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4)
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.7(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(happy-dom@20.10.2)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(terser@5.47.1)(yaml@2.8.4))
+
   packages/vue:
     dependencies:
       yapyak:
@@ -939,6 +973,9 @@ importers:
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@yapyak/vitest-config':
+        specifier: workspace:*
+        version: link:../vitest-config
       tsup:
         specifier: 'catalog:'
         version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(typescript@6.0.3)(yaml@2.8.4)
@@ -979,6 +1016,9 @@ importers:
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@yapyak/vitest-config':
+        specifier: workspace:*
+        version: link:../vitest-config
       tsup:
         specifier: 'catalog:'
         version: 8.5.1(jiti@2.7.0)(postcss@8.5.15)(typescript@6.0.3)(yaml@2.8.4)

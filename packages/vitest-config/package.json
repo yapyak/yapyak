@@ -1,16 +1,13 @@
 {
-  "name": "@yapyak/vue",
+  "name": "@yapyak/vitest-config",
   "version": "0.0.0",
+  "private": true,
   "license": "MIT",
   "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    },
-    "./processor": {
-      "types": "./dist/processor.d.ts",
-      "default": "./dist/processor.js"
     }
   },
   "sideEffects": false,
@@ -19,7 +16,6 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "pnpm -w vitest --run --project=@yapyak/vue",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -27,28 +23,15 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "@vue/compiler-core": "catalog:",
-    "@vue/compiler-sfc": "catalog:",
     "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
-    "@yapyak/vitest-config": "workspace:*",
     "tsup": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:",
-    "vue": "catalog:"
+    "vite": "catalog:",
+    "vitest": "catalog:"
   },
   "peerDependencies": {
-    "@vue/compiler-core": ">=3.0.0",
-    "@vue/compiler-sfc": ">=3.0.0",
-    "vue": ">=3.4"
-  },
-  "peerDependenciesMeta": {
-    "@vue/compiler-core": {
-      "optional": true
-    },
-    "@vue/compiler-sfc": {
-      "optional": true
-    }
+    "vitest": ">=4"
   },
   "engines": {
     "node": ">=22"
