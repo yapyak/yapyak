@@ -3,8 +3,6 @@ import type { Fragment, Position } from '../../processor';
 
 import { offsetToOriginalPosition } from '../../processor';
 
-export type { Position };
-
 export function toPosition(
   sourceFile: ts.SourceFile,
   offset: number,

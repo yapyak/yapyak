@@ -1,4 +1,4 @@
-import type { Fragment } from './fragment';
+import type { Fragment } from '../../processor';
 
 import * as ts from 'typescript';
 

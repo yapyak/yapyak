@@ -8,8 +8,6 @@ export type {
   TransformFileRequest,
   TransformFileResult,
 } from './file/transform';
-export type { ElisionContext, Fragment } from './fragment';
-export type { Position } from './position';
 
 export {
   type ParsedArguments,

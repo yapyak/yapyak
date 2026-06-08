@@ -1,7 +1,6 @@
-import type { Range } from '../../processor';
+import type { ElisionContext, Range } from '../../processor';
 import type { Binding, BindingTable } from './binding';
 import type { Diagnostic } from './diagnostic';
-import type { ElisionContext } from './fragment';
 
 import * as ts from 'typescript';
 
