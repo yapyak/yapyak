@@ -21,14 +21,16 @@ describe('extractFile', () => {
   it('returns messages from direct import calls', () => {
     const result = extractFixture('call', 'simple.ts');
     expect(result.messages).toHaveLength(2);
-    const sources = result.messages.map((m) => m.source).sort();
+    const sources = result.messages.map((message) => message.source).sort();
     expect(sources).toEqual(['Hello', 'Save']);
   });
 
   it('returns placeholders for messages with interpolation', () => {
     const result = extractFixture('call', 'placeholders.ts');
     expect(result.messages).toHaveLength(2);
-    const greeting = result.messages.find((m) => m.source === 'Hi {name}');
+    const greeting = result.messages.find(
+      (message) => message.source === 'Hi {name}',
+    );
     expect(greeting?.placeholders).toEqual([{ kind: 'simple', name: 'name' }]);
   });
 
@@ -59,8 +61,8 @@ describe('extractFile', () => {
   it('returns stable ids across runs', () => {
     const first = extractFixture('call', 'simple.ts');
     const second = extractFixture('call', 'simple.ts');
-    expect(first.messages.map((m) => m.id)).toEqual(
-      second.messages.map((m) => m.id),
+    expect(first.messages.map((message) => message.id)).toEqual(
+      second.messages.map((message) => message.id),
     );
   });
 
@@ -72,7 +74,9 @@ describe('extractFile', () => {
   it('parses `.tsx` fixtures with JSX', () => {
     const result = extractFixture('call', 'nested-jsx.tsx');
     expect(
-      result.diagnostics.filter((d) => d.severity === 'error'),
+      result.diagnostics.filter(
+        (diagnostic) => diagnostic.severity === 'error',
+      ),
     ).toHaveLength(0);
     expect(result.messages).toHaveLength(3);
   });
@@ -85,17 +89,23 @@ describe('extractFile', () => {
 
     it('emits YPK102 from `parse-arguments`', () => {
       const result = extractFixture('diagnostic', 'ypk102-dynamic-source.ts');
-      expect(result.diagnostics.some((d) => d.code === 'YPK102')).toBe(true);
+      expect(
+        result.diagnostics.some((diagnostic) => diagnostic.code === 'YPK102'),
+      ).toBe(true);
     });
 
     it('emits YPK104 from `parse-arguments`', () => {
       const result = extractFixture('diagnostic', 'ypk104-missing-param.ts');
-      expect(result.diagnostics.some((d) => d.code === 'YPK104')).toBe(true);
+      expect(
+        result.diagnostics.some((diagnostic) => diagnostic.code === 'YPK104'),
+      ).toBe(true);
     });
 
     it('emits YPK202 from `parse-arguments`', () => {
       const result = extractFixture('diagnostic', 'ypk202-invalid-plural.ts');
-      expect(result.diagnostics.some((d) => d.code === 'YPK202')).toBe(true);
+      expect(
+        result.diagnostics.some((diagnostic) => diagnostic.code === 'YPK202'),
+      ).toBe(true);
     });
   });
 });

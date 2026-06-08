@@ -66,7 +66,9 @@ describe('detectAtIssues', () => {
       makeMessage('Save', [makeLocation('src/a.tsx', 'button')], 'button'),
     ];
     const diagnostics = detectAtIssues(messages);
-    expect(diagnostics.some((d) => d.code === 'YPK403')).toBe(true);
+    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK403')).toBe(
+      true,
+    );
   });
 
   it('emits no YPK403 when t() and t.as() are used in different files', () => {
@@ -76,7 +78,9 @@ describe('detectAtIssues', () => {
       makeMessage('Save', [makeLocation('src/b.tsx', 'status')], 'status'),
     ];
     const diagnostics = detectAtIssues(messages);
-    expect(diagnostics.some((d) => d.code === 'YPK403')).toBe(false);
+    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK403')).toBe(
+      false,
+    );
   });
 
   it('emits YPK404 when only one `t.as()` exists for a source with no other context', () => {
@@ -84,7 +88,9 @@ describe('detectAtIssues', () => {
       makeMessage('Save', [makeLocation('src/a.tsx', 'button')], 'button'),
     ];
     const diagnostics = detectAtIssues(messages);
-    const ypk404 = diagnostics.filter((d) => d.code === 'YPK404');
+    const ypk404 = diagnostics.filter(
+      (diagnostic) => diagnostic.code === 'YPK404',
+    );
     expect(ypk404).toHaveLength(1);
     expect(ypk404[0]?.severity).toBe('warning');
   });

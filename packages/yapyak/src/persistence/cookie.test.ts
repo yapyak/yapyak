@@ -21,8 +21,8 @@ describe('cookie', () => {
           if (!trimmedName) return;
           const existing = cookieJar
             .split(';')
-            .map((p) => p.trim())
-            .filter((p) => p && !p.startsWith(`${trimmedName}=`));
+            .map((part) => part.trim())
+            .filter((part) => part && !part.startsWith(`${trimmedName}=`));
           existing.push(`${trimmedName}=${val.trim()}`);
           cookieJar = existing.join('; ');
         },

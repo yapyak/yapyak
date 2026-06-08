@@ -59,7 +59,7 @@ describe('discoverLocales', () => {
       localesDir: 'locales',
       projectRoot: root,
     });
-    const warning = result.warnings.find((w) => w.code === 'EN_US');
+    const warning = result.warnings.find((warning) => warning.code === 'EN_US');
     expect(warning?.issue).toBe('invalid-structure');
   });
 
@@ -71,7 +71,7 @@ describe('discoverLocales', () => {
       localesDir: 'locales',
       projectRoot: root,
     });
-    const warning = result.warnings.find((w) => w.code === 'xx');
+    const warning = result.warnings.find((warning) => warning.code === 'xx');
     expect(warning?.issue).toBe('unknown-language');
   });
 });

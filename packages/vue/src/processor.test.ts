@@ -64,7 +64,7 @@ describe('vue processor — extract', () => {
       '</template>',
     ].join('\n');
     const result = extractVue(source);
-    const sources = result.messages.map((m) => m.source).sort();
+    const sources = result.messages.map((message) => message.source).sort();
     expect(sources).toEqual(['Hello', 'Save', 'World']);
   });
 
@@ -80,7 +80,7 @@ describe('vue processor — extract', () => {
     ].join('\n');
     const result = extractVue(source);
     const templateMessages = result.messages.filter(
-      (m) => m.source === 'Hello',
+      (message) => message.source === 'Hello',
     );
     expect(templateMessages).toHaveLength(1);
   });

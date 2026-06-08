@@ -42,7 +42,7 @@ describe('svelte processor — extract', () => {
         "{#if show}<p>{t('Hello')}</p>{/if}",
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('extracts `t()` from the `else` branch of an `{#if}` block', () => {
@@ -55,7 +55,7 @@ describe('svelte processor — extract', () => {
         "{#if show}foo{:else}<p>{t('Save')}</p>{/if}",
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Save');
+    expect(result.messages.map((message) => message.source)).toContain('Save');
   });
 
   it('extracts `t()` from inside an `{#each}` block', () => {
@@ -68,7 +68,7 @@ describe('svelte processor — extract', () => {
         "{#each items as item (item)}<p>{t('Hello')}</p>{/each}",
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('extracts `t()` from an `{#each}` block fallback', () => {
@@ -81,7 +81,9 @@ describe('svelte processor — extract', () => {
         "{#each items as item}body{:else}<p>{t('Cancel')}</p>{/each}",
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Cancel');
+    expect(result.messages.map((message) => message.source)).toContain(
+      'Cancel',
+    );
   });
 
   it('extracts `t()` from an `{#await}` block', () => {
@@ -94,7 +96,9 @@ describe('svelte processor — extract', () => {
         "{#await p}<p>{t('Loading...')}</p>{:then v}done{:catch e}err{/await}",
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Loading...');
+    expect(result.messages.map((message) => message.source)).toContain(
+      'Loading...',
+    );
   });
 
   it('extracts `t()` from a `{#key}` block', () => {
@@ -107,7 +111,7 @@ describe('svelte processor — extract', () => {
         "{#key value}<p>{t('Hello')}</p>{/key}",
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('extracts `t()` from a `{#snippet}` block', () => {
@@ -119,7 +123,7 @@ describe('svelte processor — extract', () => {
         "{#snippet greet()}<p>{t('Hello')}</p>{/snippet}",
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('extracts `t()` from an `{@html}` tag', () => {
@@ -131,7 +135,7 @@ describe('svelte processor — extract', () => {
         "{@html t('Hello')}",
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('extracts `t()` from inside a spread attribute expression', () => {
@@ -143,7 +147,7 @@ describe('svelte processor — extract', () => {
         "<button {...{ title: t('Save') }}>x</button>",
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Save');
+    expect(result.messages.map((message) => message.source)).toContain('Save');
   });
 
   it('extracts `t()` from a `style:` directive', () => {
@@ -155,7 +159,7 @@ describe('svelte processor — extract', () => {
         "<div style:color={t('Hello')}>x</div>",
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('extracts `t()` from a `<script lang="typescript">` block', () => {
@@ -167,7 +171,7 @@ describe('svelte processor — extract', () => {
         '</script>',
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('extracts `t()` from a `<script>` block without `lang`', () => {
@@ -179,7 +183,7 @@ describe('svelte processor — extract', () => {
         '</script>',
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('extracts `t()` from a `<script module>` block', () => {
@@ -191,7 +195,7 @@ describe('svelte processor — extract', () => {
         '</script>',
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('extracts `t()` from a `<svelte:element>` `this` expression', () => {
@@ -203,7 +207,7 @@ describe('svelte processor — extract', () => {
         "<svelte:element this={t('div')}>x</svelte:element>",
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('div');
+    expect(result.messages.map((message) => message.source)).toContain('div');
   });
 
   it('extracts `t()` from a `<svelte:component>` `this` expression', () => {
@@ -216,7 +220,7 @@ describe('svelte processor — extract', () => {
         "<svelte:component this={Comp ?? t('Hello')}>x</svelte:component>",
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('extracts `t()` from a multi-expression attribute', () => {
@@ -228,7 +232,7 @@ describe('svelte processor — extract', () => {
         `<button title="a{t('Save')}b">x</button>`,
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Save');
+    expect(result.messages.map((message) => message.source)).toContain('Save');
   });
 
   it('extracts `t()` from a multi-expression `style:` directive', () => {
@@ -240,7 +244,7 @@ describe('svelte processor — extract', () => {
         `<div style:color="a{t('Hello')}b">x</div>`,
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('extracts `t()` from an `on:` directive expression', () => {
@@ -252,7 +256,7 @@ describe('svelte processor — extract', () => {
         "<button on:click={() => t('Save')}>x</button>",
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Save');
+    expect(result.messages.map((message) => message.source)).toContain('Save');
   });
 
   it('extracts `t()` from children when an attribute is boolean', () => {
@@ -264,7 +268,9 @@ describe('svelte processor — extract', () => {
         `<button disabled>{t('Cancel')}</button>`,
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Cancel');
+    expect(result.messages.map((message) => message.source)).toContain(
+      'Cancel',
+    );
   });
 
   it('extracts `t()` from a `{@render}` tag expression', () => {
@@ -277,7 +283,7 @@ describe('svelte processor — extract', () => {
         "{@render snip(t('Hello'))}",
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('extracts `t()` from an `{@attach}` tag', () => {
@@ -290,7 +296,7 @@ describe('svelte processor — extract', () => {
         "<button {@attach attach(t('Save'))}>x</button>",
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Save');
+    expect(result.messages.map((message) => message.source)).toContain('Save');
   });
 
   it('extracts `t()` from children when a `style:` directive is boolean', () => {
@@ -302,7 +308,7 @@ describe('svelte processor — extract', () => {
         `<div style:color>{t('Hello')}</div>`,
       ].join('\n'),
     );
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 });
 

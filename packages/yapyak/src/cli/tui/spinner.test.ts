@@ -25,8 +25,8 @@ describe('spinner', () => {
   });
 
   it('writes a check mark on `succeed` and stops the interval', () => {
-    const sp = spinner('Save');
-    sp.succeed('Save changes');
+    const instance = spinner('Save');
+    instance.succeed('Save changes');
     vi.advanceTimersByTime(1000);
     const final = writes.join('');
     expect(final).toContain('Save changes');
@@ -34,8 +34,8 @@ describe('spinner', () => {
   });
 
   it('writes a cross on `fail` and stops the interval', () => {
-    const sp = spinner('Save');
-    sp.fail('Cancel');
+    const instance = spinner('Save');
+    instance.fail('Cancel');
     vi.advanceTimersByTime(1000);
     const final = writes.join('');
     expect(final).toContain('Cancel');
@@ -43,10 +43,10 @@ describe('spinner', () => {
   });
 
   it('picks up the new message on the next frame after `update`', () => {
-    const sp = spinner('Loading...');
-    sp.update('Switch account');
+    const instance = spinner('Loading...');
+    instance.update('Switch account');
     vi.advanceTimersByTime(80);
     expect(writes.join('')).toContain('Switch account');
-    sp.succeed('Settings');
+    instance.succeed('Settings');
   });
 });

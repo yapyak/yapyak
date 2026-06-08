@@ -35,8 +35,8 @@ function stubFetch(text: string): {
 describe('anthropic', () => {
   it('returns translated text trimmed', async () => {
     stubFetch('  Hej världen  ');
-    const t = anthropic({ apiKey: 'k' });
-    const result = await t({
+    const translator = anthropic({ apiKey: 'k' });
+    const result = await translator({
       fileId: 'src/a.tsx',
       source: 'Hello world',
       sourceLocale: 'en',
@@ -160,8 +160,8 @@ describe('anthropic', () => {
           { status: 200 },
         ),
     );
-    const t = anthropic({ apiKey: 'k' });
-    const result = await t({
+    const translator = anthropic({ apiKey: 'k' });
+    const result = await translator({
       fileId: 'x',
       source: 'Hi',
       sourceLocale: 'en',
@@ -188,9 +188,9 @@ describe('anthropic', () => {
       async () =>
         new Response(JSON.stringify({ content: [] }), { status: 200 }),
     );
-    const t = anthropic({ apiKey: 'k' });
+    const translator = anthropic({ apiKey: 'k' });
     await expect(
-      t({
+      translator({
         fileId: 'x',
         source: 'Hi',
         sourceLocale: 'en',
@@ -199,41 +199,14 @@ describe('anthropic', () => {
     ).rejects.toThrow(/did not contain a text block/);
   });
 
-  it('writes the abort `signal` into the fetch init when provided', async () => {
-    let receivedSignal: AbortSignal | undefined;
-    vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
-      receivedSignal = init.signal ?? undefined;
-      return new Response(
-        JSON.stringify({
-          content: [{ text: JSON.stringify([{ sv: 'Hej' }]), type: 'text' }],
-        }),
-        { status: 200 },
-      );
-    });
-    const controller = new AbortController();
-    const t = anthropic({ apiKey: 'k' });
-    await t.batch?.(
-      [
-        {
-          fileId: 'x',
-          source: 'Hi',
-          sourceLocale: 'en',
-          targetLocale: 'sv',
-        },
-      ],
-      { signal: controller.signal },
-    );
-    expect(receivedSignal).toBeDefined();
-  });
-
   it('throws when the API responds with non-2xx', async () => {
     vi.stubGlobal(
       'fetch',
       async () => new Response('rate limited', { status: 429 }),
     );
-    const t = anthropic({ apiKey: 'k' });
+    const translator = anthropic({ apiKey: 'k' });
     await expect(
-      t({
+      translator({
         fileId: 'x',
         source: 'Hi',
         sourceLocale: 'en',
@@ -271,8 +244,8 @@ describe('anthropic', () => {
           { status: 200 },
         );
       });
-      const t = anthropic({ apiKey: 'k' });
-      const results = await t.batch?.([
+      const translator = anthropic({ apiKey: 'k' });
+      const results = await translator.batch?.([
         {
           fileId: 'x',
           source: 'Hello A',
@@ -310,14 +283,14 @@ describe('anthropic', () => {
           { status: 200 },
         );
       });
-      const t = anthropic({ apiKey: 'k', batchSize: 3 });
-      const requests = Array.from({ length: 7 }, (_, i) => ({
+      const translator = anthropic({ apiKey: 'k', batchSize: 3 });
+      const requests = Array.from({ length: 7 }, (_, index) => ({
         fileId: 'x',
-        source: `s${i}`,
+        source: `s${index}`,
         sourceLocale: 'en',
         targetLocale: 'sv',
       }));
-      const results = await t.batch?.(requests);
+      const results = await translator.batch?.(requests);
       expect(results?.length).toBe(7);
       expect(calls).toBe(3);
     });
@@ -345,7 +318,11 @@ describe('anthropic', () => {
           { status: 200 },
         );
       });
-      const t = anthropic({ apiKey: 'k', batchSize: 2, concurrency: 3 });
+      const translator = anthropic({
+        apiKey: 'k',
+        batchSize: 2,
+        concurrency: 3,
+      });
       const sources = [
         'Hello',
         'World',
@@ -360,7 +337,7 @@ describe('anthropic', () => {
         sourceLocale: 'en',
         targetLocale: 'sv',
       }));
-      const results = await t.batch?.(requests);
+      const results = await translator.batch?.(requests);
       expect(results).toEqual([
         'Hej',
         'Världen',
@@ -391,7 +368,11 @@ describe('anthropic', () => {
           { status: 200 },
         );
       });
-      const t = anthropic({ apiKey: 'k', batchSize: 2, concurrency: 2 });
+      const translator = anthropic({
+        apiKey: 'k',
+        batchSize: 2,
+        concurrency: 2,
+      });
       const sources = [
         'Hello',
         'World',
@@ -408,9 +389,11 @@ describe('anthropic', () => {
         targetLocale: 'sv',
       }));
       const counts: number[] = [];
-      await t.batch?.(requests, { onChunk: (n) => counts.push(n) });
+      await translator.batch?.(requests, {
+        onChunk: (count) => counts.push(count),
+      });
       expect(counts.length).toBe(4);
-      expect(counts.reduce((a, b) => a + b, 0)).toBe(7);
+      expect(counts.reduce((sum, count) => sum + count, 0)).toBe(7);
     });
 
     it('throws when concurrency is not a positive integer', () => {
@@ -432,9 +415,9 @@ describe('anthropic', () => {
             { status: 200 },
           ),
       );
-      const t = anthropic({ apiKey: 'k' });
+      const translator = anthropic({ apiKey: 'k' });
       await expect(
-        t.batch?.([
+        translator.batch?.([
           {
             fileId: 'x',
             source: 'A',

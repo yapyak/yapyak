@@ -548,12 +548,12 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       });
     },
     enforce: 'pre',
-    async handleHotUpdate(ctx): Promise<void> {
-      if (!isCandidateId(ctx.file, filter, projectRoot)) {
+    async handleHotUpdate(context): Promise<void> {
+      if (!isCandidateId(context.file, filter, projectRoot)) {
         return;
       }
-      const fileId = toFileId(projectRoot, ctx.file);
-      const code = await ctx.read();
+      const fileId = toFileId(projectRoot, context.file);
+      const code = await context.read();
       const { defaultLocale, locales } = getResolver().getEmittedLocales();
       const result = extractFile({
         fileId,

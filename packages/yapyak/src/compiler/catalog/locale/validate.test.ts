@@ -52,7 +52,9 @@ describe('validateLocaleFile', () => {
   it('emits YPK301 when entry value is a number', () => {
     writeFileSync(path, JSON.stringify({ 'src/a.tsx': { Hello: 42 } }));
     const diagnostics = validateLocaleFile({ fileId: 'sv.json', path });
-    expect(diagnostics.some((d) => d.code === 'YPK301')).toBe(true);
+    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK301')).toBe(
+      true,
+    );
   });
 
   it('emits YPK301 when entry value is an object', () => {
@@ -61,31 +63,41 @@ describe('validateLocaleFile', () => {
       JSON.stringify({ 'src/a.tsx': { Hello: { sv: 'Hej' } } }),
     );
     const diagnostics = validateLocaleFile({ fileId: 'sv.json', path });
-    expect(diagnostics.some((d) => d.code === 'YPK301')).toBe(true);
+    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK301')).toBe(
+      true,
+    );
   });
 
   it('emits YPK302 for an absolute file-path key', () => {
     writeFileSync(path, JSON.stringify({ '/etc/passwd': { x: 'y' } }));
     const diagnostics = validateLocaleFile({ fileId: 'sv.json', path });
-    expect(diagnostics.some((d) => d.code === 'YPK302')).toBe(true);
+    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK302')).toBe(
+      true,
+    );
   });
 
   it('emits YPK302 for a file-path key with `..`', () => {
     writeFileSync(path, JSON.stringify({ '../etc/passwd': { x: 'y' } }));
     const diagnostics = validateLocaleFile({ fileId: 'sv.json', path });
-    expect(diagnostics.some((d) => d.code === 'YPK302')).toBe(true);
+    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK302')).toBe(
+      true,
+    );
   });
 
   it('emits YPK302 for a file-path key with backslashes', () => {
     writeFileSync(path, JSON.stringify({ 'src\\a.tsx': { x: 'y' } }));
     const diagnostics = validateLocaleFile({ fileId: 'sv.json', path });
-    expect(diagnostics.some((d) => d.code === 'YPK302')).toBe(true);
+    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK302')).toBe(
+      true,
+    );
   });
 
   it('emits YPK303 when a translation string is not Unicode NFC', () => {
     writeFileSync(path, JSON.stringify({ 'src/a.tsx': { Hello: 'Ä' } }));
     const diagnostics = validateLocaleFile({ fileId: 'sv.json', path });
-    expect(diagnostics.some((d) => d.code === 'YPK303')).toBe(true);
+    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK303')).toBe(
+      true,
+    );
   });
 });
 
@@ -118,7 +130,9 @@ describe('validateIcuPairs', () => {
       localeFile,
       messages,
     });
-    expect(diagnostics.some((d) => d.code === 'YPK205')).toBe(true);
+    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK205')).toBe(
+      true,
+    );
   });
 
   it('emits YPK206 when the translation has an extra placeholder', () => {
@@ -131,7 +145,9 @@ describe('validateIcuPairs', () => {
       localeFile,
       messages,
     });
-    expect(diagnostics.some((d) => d.code === 'YPK206')).toBe(true);
+    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK206')).toBe(
+      true,
+    );
   });
 
   it('emits YPK204 when a placeholder kind differs between source and target', () => {
@@ -151,6 +167,8 @@ describe('validateIcuPairs', () => {
       localeFile,
       messages,
     });
-    expect(diagnostics.some((d) => d.code === 'YPK204')).toBe(true);
+    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK204')).toBe(
+      true,
+    );
   });
 });

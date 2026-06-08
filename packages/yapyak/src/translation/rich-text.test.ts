@@ -6,7 +6,7 @@ describe('richText', () => {
   it('transforms a single tag with the handler output', () => {
     const result = richText('Click <link>here</link>.', {
       link: (children) => `<a href="/x">${children}</a>`,
-    } as Record<string, (c: string) => string>);
+    } as Record<string, (children: string) => string>);
     expect(result).toBe('Click <a href="/x">here</a>.');
   });
 
@@ -19,9 +19,9 @@ describe('richText', () => {
     const result = richText(
       'Read the <link>docs</link> for <bold>everything</bold>.',
       {
-        bold: (c) => `*${c}*`,
-        link: (c) => `[${c}]`,
-      } as Record<string, (c: string) => string>,
+        bold: (children) => `*${children}*`,
+        link: (children) => `[${children}]`,
+      } as Record<string, (children: string) => string>,
     );
     expect(result).toBe('Read the [docs] for *everything*.');
   });
@@ -29,7 +29,10 @@ describe('richText', () => {
   it('transforms the same tag used multiple times', () => {
     const result = richText(
       '<em>One</em> and <em>two</em> and <em>three</em>.',
-      { em: (c) => `_${c}_` } as Record<string, (c: string) => string>,
+      { em: (children) => `_${children}_` } as Record<
+        string,
+        (children: string) => string
+      >,
     );
     expect(result).toBe('_One_ and _two_ and _three_.');
   });
@@ -38,9 +41,9 @@ describe('richText', () => {
     const result = richText(
       'A <outer>nested <inner>tag</inner> inside</outer>.',
       {
-        inner: (c) => `(${c})`,
-        outer: (c) => `[${c}]`,
-      } as Record<string, (c: string) => string>,
+        inner: (children) => `(${children})`,
+        outer: (children) => `[${children}]`,
+      } as Record<string, (children: string) => string>,
     );
     expect(result).toBe('A [nested (tag) inside].');
   });
@@ -49,31 +52,31 @@ describe('richText', () => {
     const result = richText(
       '<unknown>kept</unknown> and <link>replaced</link>.',
       {
-        link: (c) => `[${c}]`,
-      } as Record<string, (c: string) => string>,
+        link: (children) => `[${children}]`,
+      } as Record<string, (children: string) => string>,
     );
     expect(result).toBe('<unknown>kept</unknown> and [replaced].');
   });
 
   it('preserves unclosed tags as literal text', () => {
     const result = richText('A <link>unclosed string', {
-      link: (c) => `[${c}]`,
-    } as Record<string, (c: string) => string>);
+      link: (children) => `[${children}]`,
+    } as Record<string, (children: string) => string>);
     expect(result).toBe('A <link>unclosed string');
   });
 
   it('preserves children unchanged when handlers return them as-is', () => {
     const result = richText('Click <link>here</link> and <bold>here</bold>.', {
-      bold: (c) => c,
-      link: (c) => c,
-    } as Record<string, (c: string) => string>);
+      bold: (children) => children,
+      link: (children) => children,
+    } as Record<string, (children: string) => string>);
     expect(result).toBe('Click here and here.');
   });
 
   it('transforms empty tag contents', () => {
     const result = richText('Before<break></break>after.', {
       break: () => '<br>',
-    } as Record<string, (c: string) => string>);
+    } as Record<string, (children: string) => string>);
     expect(result).toBe('Before<br>after.');
   });
 });

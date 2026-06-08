@@ -33,12 +33,12 @@ describe('response-header-writer', () => {
   });
 
   it('writes through only the latest writer when called twice', () => {
-    const a: string[] = [];
-    const b: string[] = [];
-    setResponseHeaderWriter((_, value) => a.push(value));
-    setResponseHeaderWriter((_, value) => b.push(value));
+    const firstWriterCalls: string[] = [];
+    const secondWriterCalls: string[] = [];
+    setResponseHeaderWriter((_, value) => firstWriterCalls.push(value));
+    setResponseHeaderWriter((_, value) => secondWriterCalls.push(value));
     appendResponseHeader('Set-Cookie', 'locale=sv');
-    expect(a).toEqual([]);
-    expect(b).toEqual(['locale=sv']);
+    expect(firstWriterCalls).toEqual([]);
+    expect(secondWriterCalls).toEqual(['locale=sv']);
   });
 });

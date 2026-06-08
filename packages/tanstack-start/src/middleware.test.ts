@@ -3,15 +3,17 @@ import { getPendingResponseHeaders } from 'yapyak/adapter';
 
 import { middleware } from './middleware';
 
-interface MiddlewareCtx {
+interface MiddlewareContext {
   next: () => Promise<{ response: Response }>;
   request: Request;
 }
 
-function getServer(): (ctx: MiddlewareCtx) => Promise<{ response: Response }> {
+function getServer(): (
+  context: MiddlewareContext,
+) => Promise<{ response: Response }> {
   const def = middleware as unknown as {
     options?: {
-      server?: (ctx: MiddlewareCtx) => Promise<{ response: Response }>;
+      server?: (context: MiddlewareContext) => Promise<{ response: Response }>;
     };
   };
   if (!def.options?.server) {

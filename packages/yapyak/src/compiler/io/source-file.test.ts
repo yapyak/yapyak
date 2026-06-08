@@ -23,7 +23,7 @@ describe('walkSourceFiles', () => {
 
     const files = walkSourceFiles({ filter: () => true, projectRoot });
 
-    expect(files.map((f) => f.fileId).sort()).toEqual([
+    expect(files.map((file) => file.fileId).sort()).toEqual([
       'src/a.tsx',
       'src/b.ts',
     ]);
@@ -56,6 +56,6 @@ describe('walkSourceFiles', () => {
     const filter = (id: string): boolean => !id.startsWith('node_modules/');
     const files = walkSourceFiles({ filter, projectRoot });
 
-    expect(files.map((f) => f.fileId)).toEqual(['src/a.tsx']);
+    expect(files.map((file) => file.fileId)).toEqual(['src/a.tsx']);
   });
 });

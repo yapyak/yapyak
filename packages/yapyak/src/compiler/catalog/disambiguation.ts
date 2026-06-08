@@ -22,8 +22,8 @@ export function detectAtIssues(messages: ExtractedMessage[]): Diagnostic[] {
   }
 
   for (const messagesForSource of groups.values()) {
-    const tagged = messagesForSource.filter((m) => m.context !== undefined);
-    const untagged = messagesForSource.filter((m) => m.context === undefined);
+    const tagged = messagesForSource.filter((message) => message.context !== undefined);
+    const untagged = messagesForSource.filter((message) => message.context === undefined);
 
     if (tagged.length > 0 && untagged.length > 0) {
       const allLocations: Location[] = [];

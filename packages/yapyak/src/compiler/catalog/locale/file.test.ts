@@ -618,10 +618,9 @@ describe('writeLocaleFile invariant', () => {
       expect(error).toBeInstanceOf(YapyakInvariantError);
       const invariantError = error as YapyakInvariantError;
       expect(invariantError.violations).toHaveLength(2);
-      expect(invariantError.violations.map((v) => v.source).sort()).toEqual([
-        'Hello',
-        'World',
-      ]);
+      expect(
+        invariantError.violations.map((violation) => violation.source).sort(),
+      ).toEqual(['Hello', 'World']);
     }
   });
 

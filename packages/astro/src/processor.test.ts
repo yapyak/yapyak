@@ -36,7 +36,7 @@ describe('astro processor — extract', () => {
       '---',
     ].join('\n');
     const result = extractAstro(source);
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('returns template `t()` calls when frontmatter imports yapyak', () => {
@@ -47,7 +47,7 @@ describe('astro processor — extract', () => {
       "<p>{t('Hello')}</p>",
     ].join('\n');
     const result = extractAstro(source);
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('returns no messages when the frontmatter does not import yapyak', () => {
@@ -69,7 +69,7 @@ describe('astro processor — extract', () => {
       "<button title={t('Save')}>x</button>",
     ].join('\n');
     const result = extractAstro(source);
-    expect(result.messages.map((m) => m.source)).toContain('Save');
+    expect(result.messages.map((message) => message.source)).toContain('Save');
   });
 
   it('extracts `t()` from a shorthand attribute expression', () => {
@@ -81,7 +81,7 @@ describe('astro processor — extract', () => {
       '<button {title}>x</button>',
     ].join('\n');
     const result = extractAstro(source);
-    expect(result.messages.map((m) => m.source)).toContain('Save');
+    expect(result.messages.map((message) => message.source)).toContain('Save');
   });
 
   it('extracts `t()` from a spread attribute expression', () => {
@@ -93,7 +93,7 @@ describe('astro processor — extract', () => {
       '<button {...props}>x</button>',
     ].join('\n');
     const result = extractAstro(source);
-    expect(result.messages.map((m) => m.source)).toContain('Save');
+    expect(result.messages.map((message) => message.source)).toContain('Save');
   });
 
   it('extracts `t()` from a deeply nested element', () => {
@@ -104,7 +104,7 @@ describe('astro processor — extract', () => {
       "<section><div><p><span>{t('Hello')}</span></p></div></section>",
     ].join('\n');
     const result = extractAstro(source);
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('extracts `t()` from inside a `<Fragment>` element', () => {
@@ -115,7 +115,7 @@ describe('astro processor — extract', () => {
       "<Fragment>{t('Hello')}</Fragment>",
     ].join('\n');
     const result = extractAstro(source);
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('extracts `t()` from inside a `<Component>` element', () => {
@@ -127,7 +127,7 @@ describe('astro processor — extract', () => {
       "<Button>{t('Save')}</Button>",
     ].join('\n');
     const result = extractAstro(source);
-    expect(result.messages.map((m) => m.source)).toContain('Save');
+    expect(result.messages.map((message) => message.source)).toContain('Save');
   });
 
   it('extracts `t()` from inside a `<custom-element>`', () => {
@@ -138,7 +138,7 @@ describe('astro processor — extract', () => {
       "<my-button>{t('Save')}</my-button>",
     ].join('\n');
     const result = extractAstro(source);
-    expect(result.messages.map((m) => m.source)).toContain('Save');
+    expect(result.messages.map((message) => message.source)).toContain('Save');
   });
 
   it('extracts `t()` only from an expression attribute beside a quoted attribute', () => {
@@ -149,7 +149,7 @@ describe('astro processor — extract', () => {
       `<button title="static" aria-label={t('Save')}>x</button>`,
     ].join('\n');
     const result = extractAstro(source);
-    expect(result.messages.map((m) => m.source)).toEqual(['Save']);
+    expect(result.messages.map((message) => message.source)).toEqual(['Save']);
   });
 
   it('extracts `t()` from an expression attribute beside a boolean attribute', () => {
@@ -160,7 +160,7 @@ describe('astro processor — extract', () => {
       `<button disabled aria-label={t('Save')}>x</button>`,
     ].join('\n');
     const result = extractAstro(source);
-    expect(result.messages.map((m) => m.source)).toEqual(['Save']);
+    expect(result.messages.map((message) => message.source)).toEqual(['Save']);
   });
 
   it('extracts every `t()` from a template with multiple expressions', () => {
@@ -171,7 +171,7 @@ describe('astro processor — extract', () => {
       `<p>{t('Hello')}</p><p>{t('World')}</p><p>{t('Cancel')}</p>`,
     ].join('\n');
     const result = extractAstro(source);
-    const sources = result.messages.map((m) => m.source).sort();
+    const sources = result.messages.map((message) => message.source).sort();
     expect(sources).toEqual(['Cancel', 'Hello', 'World']);
   });
 
@@ -187,7 +187,7 @@ describe('astro processor — extract', () => {
       '---',
     ].join('\n');
     const result = extractAstro(source);
-    const sources = result.messages.map((m) => m.source).sort();
+    const sources = result.messages.map((message) => message.source).sort();
     expect(sources).toEqual(['Hello', 'Save']);
   });
 
@@ -199,7 +199,7 @@ describe('astro processor — extract', () => {
       `<div>{t('Hello')}<span>middle</span>{t('Cancel')}</div>`,
     ].join('\n');
     const result = extractAstro(source);
-    const sources = result.messages.map((m) => m.source).sort();
+    const sources = result.messages.map((message) => message.source).sort();
     expect(sources).toEqual(['Cancel', 'Hello']);
   });
 
@@ -212,7 +212,7 @@ describe('astro processor — extract', () => {
       `<div>{flag && <span>{t('Hello')}</span>}</div>`,
     ].join('\n');
     const result = extractAstro(source);
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('extracts `t()` from a mustache with leading and trailing whitespace', () => {
@@ -223,7 +223,7 @@ describe('astro processor — extract', () => {
       "<p>{ t('Hello') }</p>",
     ].join('\n');
     const result = extractAstro(source);
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('returns no messages from an empty mustache `{}`', () => {
@@ -245,7 +245,7 @@ describe('astro processor — extract', () => {
       `<p>prefix {t('Hello')}</p>`,
     ].join('\n');
     const result = extractAstro(source);
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('returns no messages from a mustache whose only child is an element', () => {
@@ -267,7 +267,7 @@ describe('astro processor — extract', () => {
       `<p>{ ({ key: t('Hello') }).key }</p>`,
     ].join('\n');
     const result = extractAstro(source);
-    expect(result.messages.map((m) => m.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
   it('extracts `t()` from a self-closing element attribute', () => {
@@ -278,7 +278,9 @@ describe('astro processor — extract', () => {
       `<img alt={t('Settings')} src="/x.png" />`,
     ].join('\n');
     const result = extractAstro(source);
-    expect(result.messages.map((m) => m.source)).toContain('Settings');
+    expect(result.messages.map((message) => message.source)).toContain(
+      'Settings',
+    );
   });
 });
 

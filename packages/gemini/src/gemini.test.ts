@@ -43,8 +43,8 @@ function stubFetch(text: string): {
 describe('gemini', () => {
   it('returns translated text trimmed', async () => {
     stubFetch('  Hej  ');
-    const t = gemini({ apiKey: 'k' });
-    const result = await t({
+    const translator = gemini({ apiKey: 'k' });
+    const result = await translator({
       fileId: 'src/a.tsx',
       source: 'Hello',
       sourceLocale: 'en',

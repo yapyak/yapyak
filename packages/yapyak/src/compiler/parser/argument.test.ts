@@ -26,20 +26,20 @@ function loadFixture(category: string, name: string): ts.SourceFile {
 }
 
 function parseAll(category: string, name: string): ParsedArguments[] {
-  const sf = loadFixture(category, name);
-  const { callSites } = discoverCalls(sf, resolveBindings(sf));
+  const sourceFile = loadFixture(category, name);
+  const { callSites } = discoverCalls(sourceFile, resolveBindings(sourceFile));
   return callSites.map((call) => parseArguments(call));
 }
 
 function parseInline(body: string): ParsedArguments {
-  const sf = ts.createSourceFile(
+  const sourceFile = ts.createSourceFile(
     'inline.ts',
     `import { t } from 'yapyak';\n${body}\n`,
     ts.ScriptTarget.ESNext,
     true,
     ts.ScriptKind.TS,
   );
-  const { callSites } = discoverCalls(sf, resolveBindings(sf));
+  const { callSites } = discoverCalls(sourceFile, resolveBindings(sourceFile));
   // biome-ignore lint/style/noNonNullAssertion: yap yap yap
   return parseArguments(callSites[0]!);
 }
@@ -111,21 +111,27 @@ describe('parseArguments', () => {
 
     it('emits YPK103 for empty source', () => {
       const [parsed] = parseAll('diagnostic', 'ypk103-empty-source.ts');
-      const ypk103 = parsed?.diagnostics.filter((d) => d.code === 'YPK103');
+      const ypk103 = parsed?.diagnostics.filter(
+        (diagnostic) => diagnostic.code === 'YPK103',
+      );
       expect(ypk103).toHaveLength(1);
       expect(parsed?.source).toBe('');
     });
 
     it('emits YPK104 for missing param', () => {
       const [parsed] = parseAll('diagnostic', 'ypk104-missing-param.ts');
-      const ypk104 = parsed?.diagnostics.filter((d) => d.code === 'YPK104');
+      const ypk104 = parsed?.diagnostics.filter(
+        (diagnostic) => diagnostic.code === 'YPK104',
+      );
       expect(ypk104).toHaveLength(1);
       expect(ypk104?.[0]?.message).toContain('name');
     });
 
     it('emits YPK105 for extra param', () => {
       const [parsed] = parseAll('diagnostic', 'ypk105-extra-param.ts');
-      const ypk105 = parsed?.diagnostics.filter((d) => d.code === 'YPK105');
+      const ypk105 = parsed?.diagnostics.filter(
+        (diagnostic) => diagnostic.code === 'YPK105',
+      );
       expect(ypk105).toHaveLength(1);
       expect(ypk105?.[0]?.severity).toBe('warning');
       expect(ypk105?.[0]?.message).toContain('age');
@@ -134,7 +140,9 @@ describe('parseArguments', () => {
     it('emits YPK106 for spread params', () => {
       const [parsed] = parseAll('diagnostic', 'ypk106-spread-params.ts');
       expect(parsed?.params?.kind).toBe('spread');
-      const ypk106 = parsed?.diagnostics.filter((d) => d.code === 'YPK106');
+      const ypk106 = parsed?.diagnostics.filter(
+        (diagnostic) => diagnostic.code === 'YPK106',
+      );
       expect(ypk106).toHaveLength(1);
       expect(ypk106?.[0]?.severity).toBe('warning');
     });
@@ -143,7 +151,9 @@ describe('parseArguments', () => {
       const parsed = parseInline(
         "const props = { name: 'x' };\nexport const y = t('Hi {name}', props);",
       );
-      expect(parsed.diagnostics.map((d) => d.code)).toEqual(['YPK106']);
+      expect(parsed.diagnostics.map((diagnostic) => diagnostic.code)).toEqual([
+        'YPK106',
+      ]);
       expect(parsed.diagnostics[0]?.severity).toBe('warning');
     });
 
@@ -151,20 +161,26 @@ describe('parseArguments', () => {
       const parsed = parseInline(
         "const props = { name: 'x' };\nexport const y = t('Hi {name}', props);",
       );
-      const ypk104 = parsed.diagnostics.filter((d) => d.code === 'YPK104');
+      const ypk104 = parsed.diagnostics.filter(
+        (diagnostic) => diagnostic.code === 'YPK104',
+      );
       expect(ypk104).toHaveLength(0);
     });
 
     it('emits YPK201 for malformed ICU', () => {
       const parsed = parseInline("export const x = t('Hello {name');");
-      const ypk201 = parsed.diagnostics.filter((d) => d.code === 'YPK201');
+      const ypk201 = parsed.diagnostics.filter(
+        (diagnostic) => diagnostic.code === 'YPK201',
+      );
       expect(ypk201).toHaveLength(1);
       expect(ypk201[0]?.severity).toBe('error');
     });
 
     it('emits YPK202 for plural without other branch', () => {
       const [parsed] = parseAll('diagnostic', 'ypk202-invalid-plural.ts');
-      const ypk202 = parsed?.diagnostics.filter((d) => d.code === 'YPK202');
+      const ypk202 = parsed?.diagnostics.filter(
+        (diagnostic) => diagnostic.code === 'YPK202',
+      );
       expect(ypk202).toHaveLength(1);
       expect(ypk202?.[0]?.severity).toBe('error');
       expect(ypk202?.[0]?.message).toContain('count');
@@ -174,7 +190,9 @@ describe('parseArguments', () => {
       const parsed = parseInline(
         "export const x = t('{g, select, male {he}}', { g: 'male' });",
       );
-      const ypk202 = parsed.diagnostics.filter((d) => d.code === 'YPK202');
+      const ypk202 = parsed.diagnostics.filter(
+        (diagnostic) => diagnostic.code === 'YPK202',
+      );
       expect(ypk202).toHaveLength(1);
       expect(ypk202[0]?.severity).toBe('error');
       expect(ypk202[0]?.message).toContain('g');
@@ -184,7 +202,9 @@ describe('parseArguments', () => {
       const parsed = parseInline(
         "export const x = t('{n, number, ::currency/EUR}', { n: 1 });",
       );
-      const ypk203 = parsed.diagnostics.filter((d) => d.code === 'YPK203');
+      const ypk203 = parsed.diagnostics.filter(
+        (diagnostic) => diagnostic.code === 'YPK203',
+      );
       expect(ypk203).toHaveLength(1);
       expect(ypk203[0]?.severity).toBe('error');
     });
@@ -212,14 +232,18 @@ describe('parseArguments', () => {
       const parsed = parseInline(
         "const ctx = 'button'; export const x = t.as(ctx, 'Save');",
       );
-      const ypk401 = parsed.diagnostics.filter((d) => d.code === 'YPK401');
+      const ypk401 = parsed.diagnostics.filter(
+        (diagnostic) => diagnostic.code === 'YPK401',
+      );
       expect(ypk401).toHaveLength(1);
       expect(parsed.context).toBeUndefined();
     });
 
     it('emits YPK402 when context contains an `@`', () => {
       const parsed = parseInline("export const x = t.as('btn@x', 'Save');");
-      const ypk402 = parsed.diagnostics.filter((d) => d.code === 'YPK402');
+      const ypk402 = parsed.diagnostics.filter(
+        (diagnostic) => diagnostic.code === 'YPK402',
+      );
       expect(ypk402).toHaveLength(1);
       expect(parsed.context).toBeUndefined();
     });
@@ -234,7 +258,9 @@ describe('parseArguments', () => {
 
     it('emits YPK101 when called without arguments', () => {
       const parsed = parseInline('export const x = t.as();');
-      const ypk101 = parsed.diagnostics.filter((d) => d.code === 'YPK101');
+      const ypk101 = parsed.diagnostics.filter(
+        (diagnostic) => diagnostic.code === 'YPK101',
+      );
       expect(ypk101).toHaveLength(1);
     });
   });
