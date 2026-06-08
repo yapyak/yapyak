@@ -18,9 +18,6 @@
     "test": "pnpm -w vitest --run --project=@yapyak/react-router",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "yapyak": "workspace:*"
-  },
   "devDependencies": {
     "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
@@ -30,7 +27,8 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "react-router": ">=7.9"
+    "react-router": ">=7.9",
+    "yapyak": "workspace:*"
   },
   "engines": {
     "node": ">=22"

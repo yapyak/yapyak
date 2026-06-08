@@ -22,9 +22,6 @@
     "test": "pnpm -w vitest --run --project=@yapyak/vue",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "yapyak": "workspace:*"
-  },
   "devDependencies": {
     "@testing-library/vue": "catalog:",
     "@types/node": "catalog:",
@@ -42,7 +39,8 @@
   "peerDependencies": {
     "@vue/compiler-core": ">=3.0.0",
     "@vue/compiler-sfc": ">=3.0.0",
-    "vue": ">=3.4"
+    "vue": ">=3.4",
+    "yapyak": "workspace:*"
   },
   "peerDependenciesMeta": {
     "@vue/compiler-core": {

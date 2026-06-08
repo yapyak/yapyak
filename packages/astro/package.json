@@ -34,8 +34,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@yapyak/vite": "workspace:*",
-    "yapyak": "workspace:*"
+    "@yapyak/vite": "workspace:*"
   },
   "devDependencies": {
     "@astrojs/compiler": "catalog:",
@@ -49,7 +48,8 @@
   },
   "peerDependencies": {
     "@astrojs/compiler": ">=2.0.0",
-    "astro": ">=5"
+    "astro": ">=5",
+    "yapyak": "workspace:*"
   },
   "peerDependenciesMeta": {
     "@astrojs/compiler": {

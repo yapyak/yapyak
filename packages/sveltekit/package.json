@@ -18,9 +18,6 @@
     "test": "pnpm -w vitest --run --project=@yapyak/sveltekit",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "yapyak": "workspace:*"
-  },
   "devDependencies": {
     "@sveltejs/kit": "catalog:",
     "@yapyak/tsup-config": "workspace:*",
@@ -31,7 +28,8 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "@sveltejs/kit": ">=2"
+    "@sveltejs/kit": ">=2",
+    "yapyak": "workspace:*"
   },
   "engines": {
     "node": ">=22"

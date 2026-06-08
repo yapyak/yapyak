@@ -18,9 +18,6 @@
     "test": "pnpm -w vitest --run --project=@yapyak/vite",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "yapyak": "workspace:*"
-  },
   "devDependencies": {
     "@types/node": "catalog:",
     "@yapyak/tsup-config": "workspace:*",
@@ -31,7 +28,8 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "vite": ">=5"
+    "vite": ">=5",
+    "yapyak": "workspace:*"
   },
   "engines": {
     "node": ">=22"
