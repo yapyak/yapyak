@@ -1,4 +1,4 @@
-import { getFormatter } from '../intl-cache';
+import { resolveFormatter } from '../formatter';
 import { runTrackers } from '../tracker';
 
 const DEFAULT: Intl.DateTimeFormatOptions = { dateStyle: 'medium' };
@@ -10,5 +10,5 @@ export function formatDate(
 ): string {
   runTrackers();
   const resolved = options ?? DEFAULT;
-  return getFormatter(Intl.DateTimeFormat, locale, resolved).format(value);
+  return resolveFormatter(Intl.DateTimeFormat, locale, resolved).format(value);
 }

@@ -4,7 +4,7 @@ const MAX_FORMATTERS_PER_CTOR = 64;
 
 const caches = new Map<IntlFormatterCtor<unknown>, Map<string, unknown>>();
 
-export function getFormatter<T>(
+export function resolveFormatter<T>(
   ctor: IntlFormatterCtor<T>,
   locale: string,
   options: object | undefined,

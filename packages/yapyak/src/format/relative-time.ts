@@ -1,4 +1,4 @@
-import { getFormatter } from '../intl-cache';
+import { resolveFormatter } from '../formatter';
 import { runTrackers } from '../tracker';
 
 export function formatRelativeTime(
@@ -8,7 +8,7 @@ export function formatRelativeTime(
   options?: Intl.RelativeTimeFormatOptions,
 ): string {
   runTrackers();
-  return getFormatter(Intl.RelativeTimeFormat, locale, options).format(
+  return resolveFormatter(Intl.RelativeTimeFormat, locale, options).format(
     value,
     unit,
   );

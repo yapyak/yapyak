@@ -1,4 +1,4 @@
-import { getFormatter } from '../intl-cache';
+import { resolveFormatter } from '../formatter';
 import { runTrackers } from '../tracker';
 
 export function formatPercent(
@@ -7,7 +7,7 @@ export function formatPercent(
   options?: Intl.NumberFormatOptions,
 ): string {
   runTrackers();
-  return getFormatter(Intl.NumberFormat, locale, {
+  return resolveFormatter(Intl.NumberFormat, locale, {
     ...options,
     style: 'percent',
   }).format(value);

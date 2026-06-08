@@ -1,4 +1,4 @@
-import { getFormatter } from '../intl-cache';
+import { resolveFormatter } from '../formatter';
 
 export function interpolate(
   template: string,
@@ -94,7 +94,7 @@ function resolvePlural(
   type: 'cardinal' | 'ordinal',
 ): string {
   const branches = parseBranches(body);
-  const formattedCount = getFormatter(Intl.NumberFormat, locale, {}).format(
+  const formattedCount = resolveFormatter(Intl.NumberFormat, locale, {}).format(
     count,
   );
   const exact = branches.get(`=${count}`);
@@ -105,7 +105,7 @@ function resolvePlural(
       locale,
     );
   }
-  const category = getFormatter(Intl.PluralRules, locale, { type }).select(
+  const category = resolveFormatter(Intl.PluralRules, locale, { type }).select(
     count,
   );
   const branch = branches.get(category) ?? branches.get('other') ?? '';
@@ -216,7 +216,7 @@ function formatDate(value: unknown, body: string, locale: string): string {
   if (date === null) {
     return '';
   }
-  return getFormatter(Intl.DateTimeFormat, locale, {
+  return resolveFormatter(Intl.DateTimeFormat, locale, {
     dateStyle: parseDateTimeStyle(body),
   }).format(date);
 }
@@ -226,7 +226,7 @@ function formatTime(value: unknown, body: string, locale: string): string {
   if (date === null) {
     return '';
   }
-  return getFormatter(Intl.DateTimeFormat, locale, {
+  return resolveFormatter(Intl.DateTimeFormat, locale, {
     timeStyle: parseDateTimeStyle(body),
   }).format(date);
 }
@@ -239,7 +239,7 @@ function formatNumber(value: unknown, body: string, locale: string): string {
   if (Number.isNaN(numericValue)) {
     return String(value);
   }
-  return getFormatter(
+  return resolveFormatter(
     Intl.NumberFormat,
     locale,
     parseNumberOptions(body),

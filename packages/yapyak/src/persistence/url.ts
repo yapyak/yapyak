@@ -2,7 +2,7 @@ import type { Persistence } from './type';
 
 import { subscribeHistory } from './history';
 
-export function getLocaleFromUrl(
+function getLocaleFromUrl(
   url: URL | Location,
   locales: string[],
   match?: RegExp,

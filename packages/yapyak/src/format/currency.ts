@@ -1,4 +1,4 @@
-import { getFormatter } from '../intl-cache';
+import { resolveFormatter } from '../formatter';
 import { runTrackers } from '../tracker';
 
 const CURRENCY_CODE_RX = /^[A-Za-z]{3}$/;
@@ -15,7 +15,7 @@ export function formatCurrency(
     );
   }
   runTrackers();
-  return getFormatter(Intl.NumberFormat, locale, {
+  return resolveFormatter(Intl.NumberFormat, locale, {
     ...options,
     currency,
     style: 'currency',

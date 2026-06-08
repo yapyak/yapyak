@@ -1,4 +1,4 @@
-import { getFormatter } from '../intl-cache';
+import { resolveFormatter } from '../formatter';
 import { runTrackers } from '../tracker';
 
 export function formatNumber(
@@ -7,5 +7,5 @@ export function formatNumber(
   options?: Intl.NumberFormatOptions,
 ): string {
   runTrackers();
-  return getFormatter(Intl.NumberFormat, locale, options).format(value);
+  return resolveFormatter(Intl.NumberFormat, locale, options).format(value);
 }
