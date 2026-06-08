@@ -25,10 +25,10 @@ export function App() {
         ))}
       </div>
 
+      <h2>{t('Homonyms')}</h2>
       <div>
         <button type="button">{t.as('button', 'Open')}</button>
       </div>
-
       <div>
         <span>{t.as('badge', 'Open')}</span>
       </div>
