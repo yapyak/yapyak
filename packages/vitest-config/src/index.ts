@@ -1,4 +1,4 @@
-import type { Plugin } from 'vite';
+import type { Plugin, PluginOption } from 'vite';
 import type { ViteUserConfig } from 'vitest/config';
 import type { RuntimeMock } from 'yapyak/internal';
 
@@ -7,7 +7,7 @@ import { buildRuntimeMock } from 'yapyak/internal';
 
 export interface Options extends Partial<RuntimeMock> {
   environment?: 'node' | 'happy-dom' | 'jsdom';
-  plugins?: Plugin[];
+  plugins?: PluginOption[];
   setupFiles?: string[];
 }
 
