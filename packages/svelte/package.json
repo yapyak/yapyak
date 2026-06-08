@@ -28,12 +28,14 @@
     "yapyak": "workspace:*"
   },
   "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "catalog:",
     "@types/node": "catalog:",
     "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "svelte": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:",
+    "vite": "catalog:",
     "vitest": "catalog:"
   },
   "peerDependencies": {

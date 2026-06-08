@@ -15,6 +15,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "test": "pnpm -w vitest --run --project=@yapyak/openai",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -24,7 +25,8 @@
     "@yapyak/tsup-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "tsup": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=22"

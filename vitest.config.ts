@@ -3,7 +3,11 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     coverage: {
-      exclude: ['**/fixture/**', '**/*.test-d.ts'],
+      exclude: [
+        '**/*.test-d.ts',
+        '**/fixture/**',
+        'packages/{biome-config,doc-extractor,tsup-config,typescript-config}/**',
+      ],
       include: ['packages/*/src/**'],
     },
     projects: ['packages/*'],
