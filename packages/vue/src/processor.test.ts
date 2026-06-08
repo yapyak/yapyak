@@ -123,6 +123,104 @@ describe('vue processor — extract', () => {
     const result = extractVue(source);
     expect(result.messages).toHaveLength(0);
   });
+
+  it('returns no messages when a mustache is empty', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <h1>{{ }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(result.messages).toHaveLength(0);
+  });
+
+  it('returns no messages when a mustache is unclosed', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <h1>{{ t('Hello')`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(result.messages).toHaveLength(0);
+  });
+
+  it('extracts `t()` from a mustache holding a string with `}`', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <h1>{{ t('Hello') + "with}brace" }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(result.messages).toHaveLength(1);
+    expect(result.messages[0]?.source).toBe('Hello');
+  });
+
+  it('extracts `t()` from a mustache holding a template literal', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      "const name = 'Yapyak';",
+      '</script>',
+      '<template>',
+      "  <h1>{{ `prefix ${name}` + t('Hello') }}</h1>",
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(result.messages).toHaveLength(1);
+    expect(result.messages[0]?.source).toBe('Hello');
+  });
+
+  it('extracts `t()` from a mustache holding nested object braces', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <h1>{{ ({ a: t('Hello') }).a }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(result.messages).toHaveLength(1);
+    expect(result.messages[0]?.source).toBe('Hello');
+  });
+
+  it('extracts `t()` from a mustache holding a block comment', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <h1>{{ /* a note */ t('Hello') }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(result.messages).toHaveLength(1);
+    expect(result.messages[0]?.source).toBe('Hello');
+  });
+
+  it('extracts `t()` from a `v-bind` with a dynamic arg', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      "const key = 'aria-label';",
+      '</script>',
+      '<template>',
+      `  <button :[key]="t('Save')">x</button>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(result.messages).toHaveLength(1);
+    expect(result.messages[0]?.source).toBe('Save');
+  });
 });
 
 describe('vue processor — transform', () => {
