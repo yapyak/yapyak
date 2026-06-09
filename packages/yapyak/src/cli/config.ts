@@ -5,31 +5,18 @@ import type { Translator } from '../translator';
 
 import { loadYapyakConfig } from '../config/internal';
 
-/** Configuration for the yapyak CLI. */
 export interface Config {
-  /** The default locale. */
   defaultLocale: string;
-  /** The maximum number of prior translations passed to the translator as style reference. */
   examples: number;
-  /** Glob patterns to exclude from source scanning. */
   exclude: FilterPattern;
-  /** Glob patterns to include in source scanning. */
   include: FilterPattern;
-  /** The directory for locale JSON files, relative to the project root. */
   localesDir: string;
-  /** Processors registered for framework-specific file formats. */
   processors: Processor[];
-  /** The translator configured in `yapyak.config.ts`, or `undefined` if none. */
   translator: Translator | undefined;
 }
 
 let cached: { projectRoot: string; value: Config } | undefined;
 
-/**
- * Loads the yapyak CLI configuration from `yapyak.config.{ts,mts,mjs,js}`. Resolves to {@link Config}.
- *
- * @param projectRoot - The project root directory.
- */
 export async function loadConfig(projectRoot: string): Promise<Config> {
   if (cached?.projectRoot === projectRoot) {
     return cached.value;

@@ -73,14 +73,6 @@ export class YapyakInvariantError extends Error {
   }
 }
 
-/**
- * Error thrown when a locale file cannot be parsed as JSON.
- *
- * @remarks
- * Yapyak refuses to silently clobber a malformed locale file. The error
- * carries the absolute path of the offending file and the underlying parse
- * error as its `cause`.
- */
 export class CorruptLocaleFileError extends Error {
   filePath: string;
 

@@ -108,8 +108,8 @@ export interface TranslateBatchOptions {
  *
  * @example
  * ```ts
- * function buildTranslator(level: ContextLevel) {
- *   return createTranslator({ context: level, translate: ... });
+ * function buildTranslator(translate: TranslateFn, level: ContextLevel): Translator {
+ *   return createTranslator(translate, { context: level });
  * }
  * ```
  */
@@ -160,7 +160,7 @@ export type LocaleTranslations = Record<string, string>;
  *   return translations;
  * }
  *
- * createTranslator({ translate: myTranslate });
+ * createTranslator(myTranslate);
  * ```
  */
 export interface TranslateBatchRequest {

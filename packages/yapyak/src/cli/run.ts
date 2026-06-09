@@ -5,11 +5,6 @@ import { loadConfig } from './config';
 import { color, symbol } from './tui';
 import { fileURLToPath } from 'node:url';
 
-/**
- * Runs the yapyak CLI. Resolves to the process exit code.
- *
- * @param argv - The command-line argument vector, excluding `node` and the script path.
- */
 export async function run(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
   const projectRoot = process.cwd();
