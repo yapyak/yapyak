@@ -1,12 +1,27 @@
 import type {
   NormalizedPersistenceConfig,
   PersistenceConfig,
-} from '../../persistence';
-import type { Processor } from '../../processor';
-import type { FilterPattern, YapyakConfig } from '../type';
-import type { NormalizedYapyakConfig } from './type';
+} from '../persistence';
+import type { Processor } from '../processor';
+import type { Translator } from '../translator';
+import type { FilterPattern, YapyakConfig } from './type';
 
-import { vanillaProcessor } from '../../compiler';
+import { vanillaProcessor } from '../compiler';
+
+export interface NormalizedYapyakConfig {
+  autoTranslateThreshold: number;
+  defaultLocale: string;
+  detectAcceptLanguage: boolean;
+  examples: number;
+  exclude: FilterPattern;
+  include: FilterPattern;
+  localesDir: string;
+  persistence: NormalizedPersistenceConfig;
+  preserveTranslationsOnRename: boolean;
+  processors: Processor[];
+  syncHtmlLang: boolean;
+  translator: Translator | undefined;
+}
 
 const DEFAULT_AUTO_TRANSLATE_THRESHOLD = 20;
 const DEFAULT_EXAMPLES = 5;

@@ -1,4 +1,4 @@
-import type { FilterPattern } from '../type';
+import type { FilterPattern } from './type';
 
 import picomatch from 'picomatch';
 

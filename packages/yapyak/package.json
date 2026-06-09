@@ -21,8 +21,8 @@
       "default": "./dist/config/index.js"
     },
     "./config/internal": {
-      "types": "./dist/config/internal/index.d.ts",
-      "default": "./dist/config/internal/index.js"
+      "types": "./dist/config/internal.d.ts",
+      "default": "./dist/config/internal.js"
     },
     "./internal": {
       "types": "./dist/internal.d.ts",
@@ -41,8 +41,8 @@
       "default": "./dist/translator/index.js"
     },
     "./translator/internal": {
-      "types": "./dist/translator/internal/index.d.ts",
-      "default": "./dist/translator/internal/index.js"
+      "types": "./dist/translator/internal.d.ts",
+      "default": "./dist/translator/internal.js"
     }
   },
   "sideEffects": false,

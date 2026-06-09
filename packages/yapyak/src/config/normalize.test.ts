@@ -1,10 +1,10 @@
-import type { Processor } from '../../processor';
-import type { ContextLevel, Translator } from '../../translator';
+import type { Processor } from '../processor';
+import type { ContextLevel, Translator } from '../translator';
 
 import { describe, expect, it } from 'vitest';
 
-import { createProcessor } from '../../processor';
-import { createTranslator } from '../../translator';
+import { createProcessor } from '../processor';
+import { createTranslator } from '../translator';
 import { normalizeYapyakConfig } from './normalize';
 
 function makeTranslator(context?: ContextLevel): Translator {

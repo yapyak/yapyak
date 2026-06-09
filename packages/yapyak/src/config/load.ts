@@ -1,5 +1,5 @@
-import type { YapyakConfig } from '../type';
-import type { NormalizedYapyakConfig } from './type';
+import type { NormalizedYapyakConfig } from './normalize';
+import type { YapyakConfig } from './type';
 
 import { createJiti } from 'jiti';
 

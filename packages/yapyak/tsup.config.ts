@@ -9,10 +9,10 @@ export default defineConfig({
     'src/cli/run.ts',
     'src/compiler/index.ts',
     'src/config/index.ts',
-    'src/config/internal/index.ts',
+    'src/config/internal.ts',
     'src/processor/index.ts',
     'src/translator/index.ts',
-    'src/translator/internal/index.ts',
+    'src/translator/internal.ts',
   ],
   external: ['yapyak/runtime'],
 });
