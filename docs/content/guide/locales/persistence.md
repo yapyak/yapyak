@@ -19,7 +19,7 @@ Persistence controls where the user's chosen locale is stored between visits. Th
 If you omit the field, the default is `'none'`. Locale lives in memory only and resets on reload. Pick one of the other three strategies if the user's choice should survive a page refresh.
 
 ```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
   defaultLocale: 'sv',
@@ -31,7 +31,7 @@ export default defineConfig({
 Pass the strategy as a string to use default keys and patterns.
 
 ```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
   defaultLocale: 'sv',
@@ -44,7 +44,7 @@ export default defineConfig({
 To override the cookie name, storage key, or URL pattern, pass an object with `type` plus the strategy-specific field.
 
 ```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
   defaultLocale: 'sv',
@@ -53,7 +53,7 @@ export default defineConfig({
 ```
 
 ```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
   defaultLocale: 'sv',
@@ -62,7 +62,7 @@ export default defineConfig({
 ```
 
 ```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak';
+import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
   defaultLocale: 'sv',
