@@ -160,11 +160,9 @@ async function buildTypedocCollection(
     const packageSlug = slugify(pkg.name);
     validateSlug(packageSlug);
     const displayName = pkg.name;
+    const context = { collectionName, packageName, packageSlug };
 
-    const refManifest = await extractTypedoc({
-      collectionName,
-      packageDir: pkg.root,
-      packageSlug,
+    const refManifest = await extractTypedoc(pkg.root, context, {
       subpaths: pkg.subpaths,
     });
     const index = buildSymbolIndex(refManifest);
@@ -186,16 +184,17 @@ async function buildTypedocCollection(
           ? `${packageSlug}/${safeName}`
           : `${packageSlug}/${subSlug}/${safeName}`;
         const href = `/${collectionName}/${path}`;
-        const page = buildSymbolPage(symbol, {
-          collectionName,
-          href,
-          index,
-          moduleId: module.id,
-          packageDir: pkg.root,
-          packageName,
-          packageSlug,
-          sourceUrl,
-        });
+        const page = buildSymbolPage(
+          symbol,
+          context,
+          {
+            href,
+            index,
+            moduleId: module.id,
+            packageDir: pkg.root,
+          },
+          { sourceUrl },
+        );
         pages[path] = page;
         symbols[`${packageSlug}/${symbol.name}`] = {
           collection: collectionName,
@@ -203,13 +202,10 @@ async function buildTypedocCollection(
         };
       }
 
-      pages[modulePath] = buildModulePage(module, {
-        collectionName,
+      pages[modulePath] = buildModulePage(module, context, {
         href: moduleHref,
         index,
         label: moduleLabel,
-        packageName,
-        packageSlug,
       });
     }
 
@@ -233,23 +229,17 @@ async function buildTypedocCollection(
           subpath: `./${tail}`,
         };
       });
-      pages[packageSlug] = buildTypedocPackageIndexPage({
-        collectionName,
+      pages[packageSlug] = buildTypedocPackageIndexPage(context, {
         href: `/${collectionName}/${packageSlug}`,
         label: displayName,
-        packageName,
-        packageSlug,
         subpaths,
       });
     }
 
-    const packageNode = buildTypedocPackageRoot(refManifest, {
+    const packageNode = buildTypedocPackageRoot(refManifest, context, {
       collapsible: pkg.collapsible ?? false,
-      collectionName,
       expanded: pkg.expanded ?? false,
       label: displayName,
-      packageName,
-      packageSlug,
     });
 
     if (!pkg.group) {

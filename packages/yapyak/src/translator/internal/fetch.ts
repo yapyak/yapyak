@@ -1,4 +1,4 @@
-export interface FetchWithRetryOptions {
+export interface FetchWithRetryInput {
   init: RequestInit;
   maxRetries: number;
   signal?: AbortSignal;
@@ -7,9 +7,9 @@ export interface FetchWithRetryOptions {
 }
 
 export async function fetchWithRetry(
-  options: FetchWithRetryOptions,
+  input: FetchWithRetryInput,
 ): Promise<Response> {
-  const { init, maxRetries, signal: outerSignal, timeout, url } = options;
+  const { init, maxRetries, signal: outerSignal, timeout, url } = input;
   let lastError: unknown;
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     if (attempt > 0) {

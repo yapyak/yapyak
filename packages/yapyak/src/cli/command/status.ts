@@ -3,23 +3,23 @@ import type { Config } from '../config';
 import { buildReport } from '../report';
 import { color, header, progressBar, renderTable, symbol } from '../tui';
 
-interface StatusOptions {
+interface StatusInput {
   config: Config;
   json?: boolean;
   projectRoot: string;
 }
 
-export function status(options: StatusOptions): number {
+export function status(input: StatusInput): number {
   const report = buildReport({
-    defaultLocale: options.config.defaultLocale,
-    exclude: options.config.exclude,
-    include: options.config.include,
-    localesDir: options.config.localesDir,
-    processors: options.config.processors,
-    projectRoot: options.projectRoot,
+    defaultLocale: input.config.defaultLocale,
+    exclude: input.config.exclude,
+    include: input.config.include,
+    localesDir: input.config.localesDir,
+    processors: input.config.processors,
+    projectRoot: input.projectRoot,
   });
 
-  if (options.json === true) {
+  if (input.json === true) {
     process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
     return report.missing.length === 0 ? 0 : 1;
   }

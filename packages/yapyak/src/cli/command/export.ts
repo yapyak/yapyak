@@ -7,7 +7,7 @@ import { color, symbol } from '../tui';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 
-interface ExportOptions {
+interface ExportInput {
   config: Config;
   locales: string[];
   out: string | undefined;
@@ -17,8 +17,8 @@ interface ExportOptions {
 
 type Snapshot = Record<string, LocaleFile>;
 
-export function exportCommand(options: ExportOptions): number {
-  const { config, locales: localeFilter, out, projectRoot, split } = options;
+export function exportCommand(input: ExportInput): number {
+  const { config, locales: localeFilter, out, projectRoot, split } = input;
 
   if (split && !out) {
     process.stdout.write(

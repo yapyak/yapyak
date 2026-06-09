@@ -12,14 +12,14 @@ import { color, header, progressBar, spinner, symbol } from '../tui';
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-interface AddOptions {
+interface AddInput {
   config: Config;
   locales: string[];
   projectRoot: string;
 }
 
-export async function add(options: AddOptions): Promise<number> {
-  const { config, locales, projectRoot } = options;
+export async function add(input: AddInput): Promise<number> {
+  const { config, locales, projectRoot } = input;
 
   if (locales.length === 0) {
     process.stdout.write(

@@ -67,10 +67,22 @@ function renderToken(
     secondComma === -1 ? '' : afterName.slice(secondComma + 1).trim();
   const value = params[name];
   if (kind === 'plural') {
-    return resolvePlural(body, Number(value), params, locale, 'cardinal');
+    return resolvePlural({
+      body,
+      count: Number(value),
+      locale,
+      params,
+      type: 'cardinal',
+    });
   }
   if (kind === 'selectordinal') {
-    return resolvePlural(body, Number(value), params, locale, 'ordinal');
+    return resolvePlural({
+      body,
+      count: Number(value),
+      locale,
+      params,
+      type: 'ordinal',
+    });
   }
   if (kind === 'select') {
     return resolveSelect(body, String(value), params, locale);
@@ -87,13 +99,16 @@ function renderToken(
   return value === undefined ? '' : String(value);
 }
 
-function resolvePlural(
-  body: string,
-  count: number,
-  params: Record<string, unknown>,
-  locale: string,
-  type: 'cardinal' | 'ordinal',
-): string {
+interface ResolvePluralInput {
+  body: string;
+  count: number;
+  locale: string;
+  params: Record<string, unknown>;
+  type: 'cardinal' | 'ordinal';
+}
+
+function resolvePlural(input: ResolvePluralInput): string {
+  const { body, count, locale, params, type } = input;
   const branches = parseBranches(body);
   const formattedCount = resolveFormatter(Intl.NumberFormat, locale, {}).format(
     count,

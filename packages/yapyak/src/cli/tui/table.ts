@@ -8,14 +8,14 @@ const padEndVisual = (value: string, width: number): string => {
   return length >= width ? value : value + ' '.repeat(width - length);
 };
 
-interface TableOptions {
+interface RenderTableInput {
   align?: Array<'left' | 'right'>;
   headers: string[];
   rows: string[][];
 }
 
-export function renderTable(options: TableOptions): string {
-  const { headers, rows, align = [] } = options;
+export function renderTable(input: RenderTableInput): string {
+  const { headers, rows, align = [] } = input;
   const widths = headers.map((header, columnIndex) => {
     const headerWidth = visualLength(header);
     const maxRowWidth = rows.reduce(

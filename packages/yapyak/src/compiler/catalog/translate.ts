@@ -68,11 +68,13 @@ export async function autoTranslate(
   const examplesMax = options?.examples ?? 0;
   const contextBySource = extractContexts(input.messages);
   const stubs = extractStubs(
-    input,
+    {
+      contexts: contextBySource,
+      force,
+      messages: input.messages,
+    },
     context,
     projectRoot,
-    force,
-    contextBySource,
   );
   if (stubs.length === 0) {
     return { errors: [], translated: 0 };
@@ -252,12 +254,16 @@ function toLegacyContext(location: Location): MessageContext {
   };
 }
 
+interface ExtractStubsInput {
+  contexts: Map<string, MessageContext>;
+  force: boolean;
+  messages: ExtractedMessage[];
+}
+
 function extractStubs(
-  input: AutoTranslateInput,
+  input: ExtractStubsInput,
   context: LocaleContext,
   projectRoot: string,
-  force: boolean,
-  contexts: Map<string, MessageContext>,
 ): TranslationStub[] {
   const stubs: TranslationStub[] = [];
   for (const locale of context.locales) {
@@ -272,7 +278,7 @@ function extractStubs(
     for (const message of input.messages) {
       const key = toMessageKey(message.source, message.context);
       for (const location of message.locations) {
-        if (!force) {
+        if (!input.force) {
           const localeFile = localeData[location.fileId];
           const existing = localeFile?.[key];
           if (typeof existing === 'string' && existing !== '') {
@@ -280,7 +286,9 @@ function extractStubs(
           }
         }
         stubs.push({
-          context: contexts.get(toLocationKey(location.fileId, message.source)),
+          context: input.contexts.get(
+            toLocationKey(location.fileId, message.source),
+          ),
           disambiguation: message.context,
           fileId: location.fileId,
           locale,

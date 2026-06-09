@@ -11,7 +11,7 @@ import { buildReport } from '../report';
 import { color, header, symbol } from '../tui';
 import { join } from 'node:path';
 
-interface CheckOptions {
+interface CheckInput {
   config: Config;
   projectRoot: string;
 }
@@ -22,17 +22,17 @@ interface MissingTranslation {
   source: string;
 }
 
-export function check(options: CheckOptions): number {
+export function check(input: CheckInput): number {
   const report = buildReport({
-    defaultLocale: options.config.defaultLocale,
-    exclude: options.config.exclude,
-    include: options.config.include,
-    localesDir: options.config.localesDir,
-    processors: options.config.processors,
-    projectRoot: options.projectRoot,
+    defaultLocale: input.config.defaultLocale,
+    exclude: input.config.exclude,
+    include: input.config.include,
+    localesDir: input.config.localesDir,
+    processors: input.config.processors,
+    projectRoot: input.projectRoot,
   });
 
-  const localesPath = join(options.projectRoot, options.config.localesDir);
+  const localesPath = join(input.projectRoot, input.config.localesDir);
   const allDiagnostics: Diagnostic[] = [...report.diagnostics];
   allDiagnostics.push(...detectAtIssues(report.messages));
 

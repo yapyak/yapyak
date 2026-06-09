@@ -28,7 +28,7 @@ interface Report {
   totalMessages: number;
 }
 
-interface BuildReportOptions {
+interface BuildReportInput {
   defaultLocale: string;
   exclude: FilterPattern;
   include: FilterPattern;
@@ -37,20 +37,20 @@ interface BuildReportOptions {
   projectRoot: string;
 }
 
-export function buildReport(options: BuildReportOptions): Report {
-  const localesPath = join(options.projectRoot, options.localesDir);
+export function buildReport(input: BuildReportInput): Report {
+  const localesPath = join(input.projectRoot, input.localesDir);
   const fileLocales = existsSync(localesPath)
     ? readdirSync(localesPath)
         .filter((name) => name.endsWith('.json'))
         .map((name) => name.replace(/\.json$/, ''))
     : [];
-  const { defaultLocale } = options;
+  const { defaultLocale } = input;
   const locales = [...new Set([defaultLocale, ...fileLocales])].sort();
 
-  const filter = createFilter(options.include, options.exclude);
+  const filter = createFilter(input.include, input.exclude);
   const sourceFiles = walkSourceFiles({
     filter,
-    projectRoot: options.projectRoot,
+    projectRoot: input.projectRoot,
   });
 
   const messages: ExtractedMessage[] = [];
@@ -59,7 +59,7 @@ export function buildReport(options: BuildReportOptions): Report {
     const result = extractFile({
       fileId: file.fileId,
       locales,
-      processors: options.processors,
+      processors: input.processors,
       source: file.code,
     });
     messages.push(...result.messages);

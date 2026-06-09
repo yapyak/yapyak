@@ -1,4 +1,4 @@
-import type { CreateProcessorOptions, Processor } from './type';
+import type { CreateProcessorInput, Processor } from './type';
 
 /**
  * Builds a processor from per-framework hooks.
@@ -6,7 +6,7 @@ import type { CreateProcessorOptions, Processor } from './type';
  * @remarks
  * Yapyak's compiler dispatches to the resulting processor based on file extension. The shipped processor packages (`@yapyak/vue/processor`, `@yapyak/svelte/processor`, `@yapyak/astro/processor`) wrap this factory. Processors are registered in `yapyak.config.ts` via the `processors` field.
  *
- * @param options - The processor options.
+ * @param input - The processor's hooks and identity. See {@link CreateProcessorInput}.
  *
  * @example
  * ```ts
@@ -27,17 +27,17 @@ import type { CreateProcessorOptions, Processor } from './type';
  * @throws {Error} When `id` is empty.
  * @throws {Error} When `extensions` is empty.
  */
-export function createProcessor(options: CreateProcessorOptions): Processor {
-  if (options.id === '') {
+export function createProcessor(input: CreateProcessorInput): Processor {
+  if (input.id === '') {
     throw new Error('createProcessor: id must be a non-empty string.');
   }
-  if (options.extensions.length === 0) {
+  if (input.extensions.length === 0) {
     throw new Error('createProcessor: extensions must be a non-empty array.');
   }
   return {
-    applyImport: options.applyImport,
-    extensions: options.extensions,
-    id: options.id,
-    parseFragments: options.parseFragments,
+    applyImport: input.applyImport,
+    extensions: input.extensions,
+    id: input.id,
+    parseFragments: input.parseFragments,
   };
 }

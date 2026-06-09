@@ -1,5 +1,5 @@
 export type {
-  CreateProcessorOptions,
+  CreateProcessorInput,
   ElisionContext,
   Fragment,
   Position,

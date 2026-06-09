@@ -12,7 +12,7 @@ import { color, header, symbol } from '../tui';
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-interface CleanOptions {
+interface CleanInput {
   config: Config;
   projectRoot: string;
   write: boolean;
@@ -29,22 +29,22 @@ interface BuildExpectedResult {
   inScope: (fileId: string) => boolean;
 }
 
-export function clean(options: CleanOptions): number {
-  const localesPath = join(options.projectRoot, options.config.localesDir);
+export function clean(input: CleanInput): number {
+  const localesPath = join(input.projectRoot, input.config.localesDir);
   const fileLocales = existsSync(localesPath)
     ? readdirSync(localesPath)
         .filter((name) => name.endsWith('.json'))
         .map((name) => name.replace(/\.json$/, ''))
     : [];
-  const { defaultLocale } = options.config;
+  const { defaultLocale } = input.config;
   const locales = fileLocales.filter((locale) => locale !== defaultLocale);
 
   process.stdout.write(header('Locale cleanup'));
 
   const { expected, inScope } = buildExpected(
-    options.projectRoot,
+    input.projectRoot,
     locales,
-    options.config,
+    input.config,
   );
   const orphanSources: OrphanSource[] = [];
   const filesToWrite: Array<{ next: LocaleFile; path: string }> = [];
@@ -75,7 +75,7 @@ export function clean(options: CleanOptions): number {
       }
     }
 
-    if (hasChanged && options.write) {
+    if (hasChanged && input.write) {
       filesToWrite.push({ next, path: localePath });
     }
   }
@@ -97,7 +97,7 @@ export function clean(options: CleanOptions): number {
   }
   process.stdout.write('\n');
 
-  if (!options.write) {
+  if (!input.write) {
     process.stdout.write(
       `  ${color.dim('Run')} ${color.cyan('yapyak clean --write')} ${color.dim('to remove these entries.')}\n\n`,
     );

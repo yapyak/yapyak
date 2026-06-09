@@ -1,5 +1,5 @@
 export {
   type WalkedFile,
-  type WalkSourceFilesOptions,
+  type WalkSourceFilesInput,
   walkSourceFiles,
 } from './source-file';

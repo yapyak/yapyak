@@ -185,7 +185,7 @@ export interface TranslateBatchRequest {
 }
 
 /** Options for {@link createTranslator}. */
-export interface CreateTranslatorOptions {
+export interface CreateTranslatorInput {
   /**
    * The maximum number of items per `translate` call.
    *

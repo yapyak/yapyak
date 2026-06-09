@@ -1,6 +1,6 @@
 import { parseAcceptLanguage } from './accept-language';
 
-interface ResolveLocaleOptions {
+interface ResolveLocaleInput {
   acceptLanguage?: string;
   defaultLocale: string;
   locales: string[];
@@ -8,32 +8,32 @@ interface ResolveLocaleOptions {
   persisted?: string;
 }
 
-export function resolveLocale(options: ResolveLocaleOptions): string {
+export function resolveLocale(input: ResolveLocaleInput): string {
   if (
-    options.persisted !== undefined &&
-    options.locales.includes(options.persisted)
+    input.persisted !== undefined &&
+    input.locales.includes(input.persisted)
   ) {
-    return options.persisted;
+    return input.persisted;
   }
-  const candidates = extractCandidates(options);
+  const candidates = extractCandidates(input);
   for (const candidate of candidates) {
-    if (options.locales.includes(candidate)) {
+    if (input.locales.includes(candidate)) {
       return candidate;
     }
     const prefix = candidate.split('-')[0];
-    if (prefix && options.locales.includes(prefix)) {
+    if (prefix && input.locales.includes(prefix)) {
       return prefix;
     }
   }
-  return options.defaultLocale;
+  return input.defaultLocale;
 }
 
-function extractCandidates(options: ResolveLocaleOptions): string[] {
-  if (options.acceptLanguage !== undefined) {
-    return parseAcceptLanguage(options.acceptLanguage);
+function extractCandidates(input: ResolveLocaleInput): string[] {
+  if (input.acceptLanguage !== undefined) {
+    return parseAcceptLanguage(input.acceptLanguage);
   }
-  if (options.navigatorLanguages) {
-    return options.navigatorLanguages.map((language) => language.trim());
+  if (input.navigatorLanguages) {
+    return input.navigatorLanguages.map((language) => language.trim());
   }
   return [];
 }

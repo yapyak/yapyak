@@ -7,6 +7,7 @@ import type {
   SomeType,
   TypeParameterReflection,
 } from 'typedoc';
+import type { PackageContext } from './package-context';
 import type {
   ReferenceCallSignature,
   ReferenceExample,
@@ -33,10 +34,7 @@ import { Application, ReflectionKind, TSConfigReader } from 'typedoc';
 import { readFile } from 'node:fs/promises';
 import { join, relative, resolve } from 'node:path';
 
-interface TypedocExtractOptions {
-  collectionName: string;
-  packageDir: string;
-  packageSlug: string;
+interface ExtractTypedocOptions {
   subpaths?: string[];
 }
 
@@ -69,26 +67,29 @@ interface CommentLike {
 }
 
 export async function extractTypedoc(
-  options: TypedocExtractOptions,
+  packageDir: string,
+  context: PackageContext,
+  options: ExtractTypedocOptions = {},
 ): Promise<ReferenceManifest> {
-  const { collectionName, packageDir, packageSlug, subpaths } = options;
-  const { entries, packageName } = await loadEntries(packageDir, subpaths);
+  const { collectionName } = context;
+  const { entries, packageName } = await loadEntries(
+    packageDir,
+    options.subpaths,
+  );
   const project = await loadProject(packageDir, entries);
   const { nameIndex, registry } = buildLinkRegistry(
     project,
     entries,
     packageDir,
-    collectionName,
-    packageName,
-    packageSlug,
+    context,
   );
-  const context: ExtractContext = {
+  const extractContext: ExtractContext = {
     collectionName,
     nameIndex,
     packageDir,
     registry,
   };
-  const modules = extractReferenceModules(project, entries, context);
+  const modules = extractReferenceModules(project, entries, extractContext);
   return { modules, packageName };
 }
 
@@ -201,9 +202,7 @@ function buildLinkRegistry(
   project: ProjectReflection,
   entries: EntryPoint[],
   packageDir: string,
-  collectionName: string,
-  packageName: string,
-  packageSlug: string,
+  context: PackageContext,
 ): {
   nameIndex: Map<string, string | 'ambiguous'>;
   registry: Map<number, string>;
@@ -215,13 +214,7 @@ function buildLinkRegistry(
       if (isInternal(symbol)) {
         continue;
       }
-      const url = buildSymbolUrl(
-        module.entry.id,
-        symbol.name,
-        collectionName,
-        packageName,
-        packageSlug,
-      );
+      const url = buildSymbolUrl(module.entry.id, symbol.name, context);
       registry.set(symbol.id, url);
       const existing = nameIndex.get(symbol.name);
       if (!existing) {
@@ -237,10 +230,9 @@ function buildLinkRegistry(
 function buildSymbolUrl(
   moduleId: string,
   symbolName: string,
-  collectionName: string,
-  packageName: string,
-  packageSlug: string,
+  context: PackageContext,
 ): string {
+  const { collectionName, packageName, packageSlug } = context;
   const safeName = symbolName.replace(/^\$/, '');
   if (moduleId === packageName) {
     return `/${collectionName}/${packageSlug}/${safeName}`;

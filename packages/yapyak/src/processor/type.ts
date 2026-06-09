@@ -38,7 +38,7 @@ export interface Fragment {
 }
 
 /** Options for {@link createProcessor}. */
-export interface CreateProcessorOptions {
+export interface CreateProcessorInput {
   /**
    * Injects a `yapyak` import into framework-specific source.
    *

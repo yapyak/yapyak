@@ -45,7 +45,7 @@ export {
 } from './catalog';
 export {
   type WalkedFile,
-  type WalkSourceFilesOptions,
+  type WalkSourceFilesInput,
   walkSourceFiles,
 } from './io';
 export {

@@ -6,6 +6,7 @@ import type {
 } from '../../access/block';
 import type { Page } from '../../build/manifest';
 import type { SourceUrlConfig } from '../../config';
+import type { PackageContext } from './package-context';
 import type { SymbolIndex } from './symbol-index';
 import type {
   ReferenceExample,
@@ -31,35 +32,37 @@ let currentCollection = 'reference';
 let currentPackageName = '';
 let currentPackageSlug = '';
 
-interface BuildSymbolPageOptions {
-  collectionName: string;
+interface BuildSymbolPageInput {
   href: string;
   index: SymbolIndex;
   moduleId: string;
   packageDir: string;
-  packageName: string;
-  packageSlug: string;
-  sourceUrl: SourceUrlConfig | undefined;
+}
+
+interface BuildSymbolPageOptions {
+  sourceUrl?: SourceUrlConfig;
 }
 
 export function buildSymbolPage(
   symbol: ReferenceExport,
-  options: BuildSymbolPageOptions,
+  context: PackageContext,
+  input: BuildSymbolPageInput,
+  options: BuildSymbolPageOptions = {},
 ): Page {
-  currentIndex = options.index;
-  currentCollection = options.collectionName;
-  currentPackageName = options.packageName;
-  currentPackageSlug = options.packageSlug;
+  currentIndex = input.index;
+  currentCollection = context.collectionName;
+  currentPackageName = context.packageName;
+  currentPackageSlug = context.packageSlug;
   const blocks: Block[] = [];
 
   blocks.push(
     buildEyebrowBlock(
-      options.moduleId,
+      input.moduleId,
       symbol.kind,
       resolveSourceHref(
         symbol.location.file,
         symbol.location.line,
-        options.packageDir,
+        input.packageDir,
         options.sourceUrl,
       ),
     ),
@@ -89,7 +92,7 @@ export function buildSymbolPage(
     blocks.push(...parsed.blocks);
   }
 
-  blocks.push(buildImportSnippet(options.moduleId, symbol.name, symbol.kind));
+  blocks.push(buildImportSnippet(input.moduleId, symbol.name, symbol.kind));
 
   if (symbol.kind === 'function') {
     blocks.push(buildHeading2Block('Signature'));
@@ -164,7 +167,7 @@ export function buildSymbolPage(
   return {
     blocks,
     description: '',
-    href: options.href,
+    href: input.href,
     meta: {},
     title: symbol.kind === 'function' ? `${symbol.name}()` : symbol.name,
   };
@@ -189,21 +192,15 @@ function resolveSourceHref(
     .replaceAll('{line}', String(line));
 }
 
-interface BuildModulePageOptions {
-  collectionName: string;
+interface BuildModulePageInput {
   href: string;
   index: SymbolIndex;
   label: string;
-  packageName: string;
-  packageSlug: string;
 }
 
-interface BuildPackageIndexPageOptions {
-  collectionName: string;
+interface BuildPackageIndexPageInput {
   href: string;
   label: string;
-  packageName: string;
-  packageSlug: string;
   subpaths: ReadonlyArray<{
     description: string;
     href: string;
@@ -212,28 +209,29 @@ interface BuildPackageIndexPageOptions {
 }
 
 export function buildTypedocPackageIndexPage(
-  options: BuildPackageIndexPageOptions,
+  context: PackageContext,
+  input: BuildPackageIndexPageInput,
 ): Page {
   const blocks: Block[] = [];
 
   blocks.push({
     kind: null,
-    module: options.packageName,
+    module: context.packageName,
     sourceHref: null,
     type: 'eyebrow',
   });
 
-  if (options.subpaths.length > 0) {
+  if (input.subpaths.length > 0) {
     blocks.push(buildHeading2Block('Subpaths'));
-    blocks.push(buildSubpathsTable(options.subpaths));
+    blocks.push(buildSubpathsTable(input.subpaths));
   }
 
   return {
     blocks,
     description: '',
-    href: options.href,
+    href: input.href,
     meta: {},
-    title: options.label,
+    title: input.label,
   };
 }
 
@@ -268,12 +266,13 @@ function buildSubpathsTable(
 
 export function buildModulePage(
   module: ReferenceModule,
-  options: BuildModulePageOptions,
+  context: PackageContext,
+  input: BuildModulePageInput,
 ): Page {
-  currentIndex = options.index;
-  currentCollection = options.collectionName;
-  currentPackageName = options.packageName;
-  currentPackageSlug = options.packageSlug;
+  currentIndex = input.index;
+  currentCollection = context.collectionName;
+  currentPackageName = context.packageName;
+  currentPackageSlug = context.packageSlug;
   const blocks: Block[] = [];
 
   blocks.push({
@@ -296,9 +295,9 @@ export function buildModulePage(
   return {
     blocks,
     description: '',
-    href: options.href,
+    href: input.href,
     meta: {},
-    title: options.label,
+    title: input.label,
   };
 }
 
@@ -609,13 +608,11 @@ function resolveModule(token: { module: string; name: string }): string | null {
 }
 
 function resolveSymbolHref(moduleId: string, name: string): string {
-  return buildSymbolHref(
-    moduleId,
-    name,
-    currentCollection,
-    currentPackageName,
-    currentPackageSlug,
-  );
+  return buildSymbolHref(moduleId, name, {
+    collectionName: currentCollection,
+    packageName: currentPackageName,
+    packageSlug: currentPackageSlug,
+  });
 }
 
 function markdownToInline(source: string): Block[] {
