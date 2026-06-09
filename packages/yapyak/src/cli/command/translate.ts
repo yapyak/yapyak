@@ -5,15 +5,18 @@ import { withProgress } from '../progress';
 import { buildReport } from '../report';
 import { color, header, progressBar, spinner, symbol } from '../tui';
 
-interface TranslateInput {
-  config: Config;
+export interface TranslateOptions {
   force?: boolean;
   locale?: string;
-  projectRoot: string;
 }
 
-export async function translate(input: TranslateInput): Promise<number> {
-  const { config, force = false, locale: targetLocale, projectRoot } = input;
+export async function translate(
+  config: Config,
+  projectRoot: string,
+  options?: TranslateOptions,
+): Promise<number> {
+  const force = options?.force ?? false;
+  const targetLocale = options?.locale;
 
   const translator = config.translator;
   if (!translator) {

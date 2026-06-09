@@ -13,18 +13,11 @@ const STUB_RANGE = {
   start: { column: 0, line: 1, offset: 0 },
 };
 
-export interface ValidateLocaleFileInput {
-  fileId: string;
-  path: string;
-}
-
-export function validateLocaleFile(
-  input: ValidateLocaleFileInput,
-): Diagnostic[] {
-  if (!existsSync(input.path)) {
+export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
+  if (!existsSync(path)) {
     return [];
   }
-  const content = readFileSync(input.path, 'utf-8');
+  const content = readFileSync(path, 'utf-8');
   if (content.trim() === '') {
     return [];
   }
@@ -43,7 +36,7 @@ export function validateLocaleFile(
       diagnostics.push(
         createDiagnostic({
           code: 'YPK302',
-          fileId: input.fileId,
+          fileId,
           message: `Unsafe file-path key "${pathKey}" — must be relative, use forward slashes, and contain no ".." segments.`,
           range: STUB_RANGE,
           severity: 'error',
@@ -55,7 +48,7 @@ export function validateLocaleFile(
       diagnostics.push(
         createDiagnostic({
           code: 'YPK301',
-          fileId: input.fileId,
+          fileId,
           message: `Entries under "${pathKey}" must be an object mapping source to translation.`,
           range: STUB_RANGE,
           severity: 'error',
@@ -69,7 +62,7 @@ export function validateLocaleFile(
         diagnostics.push(
           createDiagnostic({
             code: 'YPK303',
-            fileId: input.fileId,
+            fileId,
             message: `Source key at "${pathKey}".${JSON.stringify(source)} is not Unicode NFC — it will not match extracted source strings.`,
             range: STUB_RANGE,
             severity: 'error',
@@ -81,7 +74,7 @@ export function validateLocaleFile(
         diagnostics.push(
           createDiagnostic({
             code: 'YPK301',
-            fileId: input.fileId,
+            fileId,
             message: `Entry "${pathKey}".${JSON.stringify(source)} must be a string.`,
             range: STUB_RANGE,
             severity: 'error',
@@ -94,7 +87,7 @@ export function validateLocaleFile(
         diagnostics.push(
           createDiagnostic({
             code: 'YPK303',
-            fileId: input.fileId,
+            fileId,
             message: `Translation at "${pathKey}".${JSON.stringify(source)} is not Unicode NFC.`,
             range: STUB_RANGE,
             severity: 'error',
@@ -107,20 +100,18 @@ export function validateLocaleFile(
   return diagnostics;
 }
 
-export interface ValidateIcuPairsInput {
-  fileId: string;
-  localeFile: LocaleFile;
-  messages: ExtractedMessage[];
-}
-
-export function validateIcuPairs(input: ValidateIcuPairsInput): Diagnostic[] {
+export function validateIcuPairs(
+  fileId: string,
+  localeFile: LocaleFile,
+  messages: ExtractedMessage[],
+): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
-  for (const message of input.messages) {
+  for (const message of messages) {
     const sourcePlaceholders = parsePlaceholders(message.source).placeholders;
     const sourceByName = buildPlaceholderIndex(sourcePlaceholders);
     const key = toMessageKey(message.source, message.context);
     for (const location of message.locations) {
-      const target = readTarget(input.localeFile, location.fileId, key);
+      const target = readTarget(localeFile, location.fileId, key);
       if (target === undefined) {
         continue;
       }
@@ -132,7 +123,7 @@ export function validateIcuPairs(input: ValidateIcuPairsInput): Diagnostic[] {
           diagnostics.push(
             createDiagnostic({
               code: 'YPK205',
-              fileId: input.fileId,
+              fileId,
               hint: `Include \`{${name}}\` in the translation.`,
               message: `Placeholder \`{${name}}\` is in the source but missing from the translation.`,
               range: location.range,
@@ -147,7 +138,7 @@ export function validateIcuPairs(input: ValidateIcuPairsInput): Diagnostic[] {
           diagnostics.push(
             createDiagnostic({
               code: 'YPK204',
-              fileId: input.fileId,
+              fileId,
               hint: `Match the placeholder kind \`${placeholder.kind}\` from the source.`,
               message: `Placeholder \`{${name}}\` is \`${placeholder.kind}\` in the source but \`${targetPlaceholder.kind}\` in the translation.`,
               range: location.range,
@@ -162,7 +153,7 @@ export function validateIcuPairs(input: ValidateIcuPairsInput): Diagnostic[] {
           diagnostics.push(
             createDiagnostic({
               code: 'YPK206',
-              fileId: input.fileId,
+              fileId,
               hint: `Remove \`{${name}}\` from the translation or add it to the source.`,
               message: `Placeholder \`{${name}}\` is in the translation but missing from the source.`,
               range: location.range,

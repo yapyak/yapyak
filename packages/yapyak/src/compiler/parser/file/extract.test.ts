@@ -14,7 +14,7 @@ function extractFixture(
   locales: string[] = ['en'],
 ): ExtractFileResult {
   const source = readFileSync(join(ROOT, category, name), 'utf-8');
-  return extractFile({ fileId: name, locales, source });
+  return extractFile(name, locales, source);
 }
 
 describe('extractFile', () => {
@@ -35,15 +35,15 @@ describe('extractFile', () => {
   });
 
   it('folds identical calls into one message with multiple locations', () => {
-    const result = extractFile({
-      fileId: 'multi.ts',
-      locales: ['en'],
-      source: `
+    const result = extractFile(
+      'multi.ts',
+      ['en'],
+      `
         import { t } from 'yapyak';
         export const a = t('Hello');
         export const b = t('Hello');
       `,
-    });
+    );
     expect(result.messages).toHaveLength(1);
     expect(result.messages[0]?.locations).toHaveLength(2);
   });

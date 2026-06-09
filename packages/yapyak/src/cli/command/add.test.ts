@@ -45,21 +45,13 @@ describe('add', () => {
   });
 
   it('returns `1` when no locales are given', async () => {
-    const code = await add({
-      config: makeConfig(),
-      locales: [],
-      projectRoot: root,
-    });
+    const code = await add(makeConfig(), [], root);
     expect(code).toBe(1);
     expect(writes.join('')).toContain('Locale code required');
   });
 
   it('returns `1` when a locale code is invalid', async () => {
-    const code = await add({
-      config: makeConfig(),
-      locales: ['EN_US'],
-      projectRoot: root,
-    });
+    const code = await add(makeConfig(), ['EN_US'], root);
     expect(code).toBe(1);
     expect(writes.join('')).toContain('Invalid locale code');
   });
@@ -67,11 +59,7 @@ describe('add', () => {
   it('writes the locale file and returns `0` when no source strings exist', async () => {
     mkdirSync(join(root, 'src'), { recursive: true });
     writeFileSync(join(root, 'src', 'app.ts'), '');
-    const code = await add({
-      config: makeConfig(),
-      locales: ['sv'],
-      projectRoot: root,
-    });
+    const code = await add(makeConfig(), ['sv'], root);
     expect(code).toBe(0);
     expect(writes.join('')).toContain('locales/sv.json');
   });
@@ -87,11 +75,7 @@ describe('add', () => {
       join(root, 'locales', 'sv.json'),
       JSON.stringify({ 'src/app.ts': { Save: 'Spara' } }),
     );
-    const code = await add({
-      config: makeConfig(),
-      locales: ['sv'],
-      projectRoot: root,
-    });
+    const code = await add(makeConfig(), ['sv'], root);
     expect(code).toBe(0);
     expect(writes.join('')).toContain('All translations present already');
   });
@@ -102,11 +86,7 @@ describe('add', () => {
       join(root, 'src', 'app.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
-    const code = await add({
-      config: makeConfig(),
-      locales: ['sv'],
-      projectRoot: root,
-    });
+    const code = await add(makeConfig(), ['sv'], root);
     expect(code).toBe(0);
     expect(writes.join('')).toContain('strings need translation');
   });
@@ -123,11 +103,7 @@ describe('add', () => {
         id: 'fake',
       },
     );
-    const code = await add({
-      config: makeConfig({ translator }),
-      locales: ['sv'],
-      projectRoot: root,
-    });
+    const code = await add(makeConfig({ translator }), ['sv'], root);
     expect(code).toBe(0);
     const written = JSON.parse(
       readFileSync(join(root, 'locales', 'sv.json'), 'utf-8'),
@@ -147,11 +123,7 @@ describe('add', () => {
       }),
       { id: 'fake' },
     );
-    const code = await add({
-      config: makeConfig({ translator }),
-      locales: ['sv'],
-      projectRoot: root,
-    });
+    const code = await add(makeConfig({ translator }), ['sv'], root);
     expect(code).toBe(1);
   });
 });

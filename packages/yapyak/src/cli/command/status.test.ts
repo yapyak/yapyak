@@ -49,7 +49,7 @@ describe('status', () => {
       join(root, 'locales', 'sv.json'),
       JSON.stringify({ 'src/app.ts': { Save: 'Spara' } }),
     );
-    const code = status({ config: makeConfig(), projectRoot: root });
+    const code = status(makeConfig(), root);
     expect(code).toBe(0);
     expect(writes.join('')).toContain('All translations present');
   });
@@ -63,7 +63,7 @@ describe('status', () => {
       join(root, 'locales', 'sv.json'),
       JSON.stringify({ 'src/app.ts': { Save: '' } }),
     );
-    const code = status({ config: makeConfig(), projectRoot: root });
+    const code = status(makeConfig(), root);
     expect(code).toBe(1);
     expect(writes.join('')).toContain('missing in');
   });
@@ -77,7 +77,7 @@ describe('status', () => {
       join(root, 'locales', 'sv.json'),
       JSON.stringify({ 'src/app.ts': { Cancel: '', Save: '' } }),
     );
-    const code = status({ config: makeConfig(), projectRoot: root });
+    const code = status(makeConfig(), root);
     expect(code).toBe(1);
     const output = writes.join('');
     expect(output).toContain('Save');
@@ -121,7 +121,7 @@ describe('status', () => {
         },
       }),
     );
-    const code = status({ config: makeConfig(), projectRoot: root });
+    const code = status(makeConfig(), root);
     expect(code).toBe(1);
     expect(writes.join('')).toContain('more');
   });
@@ -135,11 +135,7 @@ describe('status', () => {
       join(root, 'locales', 'sv.json'),
       JSON.stringify({ 'src/app.ts': { Save: 'Spara' } }),
     );
-    const code = status({
-      config: makeConfig(),
-      json: true,
-      projectRoot: root,
-    });
+    const code = status(makeConfig(), root, { json: true });
     expect(code).toBe(0);
     const parsed = JSON.parse(writes.join('').trim());
     expect(parsed.totalMessages).toBeGreaterThanOrEqual(1);

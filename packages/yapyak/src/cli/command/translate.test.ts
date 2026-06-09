@@ -47,10 +47,7 @@ describe('translate', () => {
   });
 
   it('returns `1` when no translator is configured', async () => {
-    const code = await translate({
-      config: makeConfig(),
-      projectRoot: root,
-    });
+    const code = await translate(makeConfig(), root);
     expect(code).toBe(1);
     expect(writes.join('')).toContain('No translator configured');
   });
@@ -66,10 +63,7 @@ describe('translate', () => {
     );
     const translatorFn = vi.fn(async () => '');
     const translator = Object.assign(translatorFn, { id: 'fake' });
-    const code = await translate({
-      config: makeConfig({ translator }),
-      projectRoot: root,
-    });
+    const code = await translate(makeConfig({ translator }), root);
     expect(code).toBe(0);
     expect(writes.join('')).toContain('Nothing to translate');
     expect(translatorFn).not.toHaveBeenCalled();
@@ -90,10 +84,7 @@ describe('translate', () => {
         id: 'fake',
       },
     );
-    const code = await translate({
-      config: makeConfig({ translator }),
-      projectRoot: root,
-    });
+    const code = await translate(makeConfig({ translator }), root);
     expect(code).toBe(0);
     const written = JSON.parse(
       readFileSync(join(root, 'locales', 'sv.json'), 'utf-8'),
@@ -116,10 +107,8 @@ describe('translate', () => {
         id: 'fake',
       },
     );
-    const code = await translate({
-      config: makeConfig({ translator }),
+    const code = await translate(makeConfig({ translator }), root, {
       force: true,
-      projectRoot: root,
     });
     expect(code).toBe(0);
     const written = JSON.parse(
@@ -143,10 +132,7 @@ describe('translate', () => {
       }),
       { id: 'fake' },
     );
-    const code = await translate({
-      config: makeConfig({ translator }),
-      projectRoot: root,
-    });
+    const code = await translate(makeConfig({ translator }), root);
     expect(code).toBe(1);
   });
 });

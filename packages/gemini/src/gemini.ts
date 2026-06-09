@@ -132,7 +132,7 @@ export function gemini(options: GeminiOptions): Translator {
           },
           systemInstruction: {
             parts: [
-              { text: buildSystem(options, sourceLocale, targetLocales) },
+              { text: buildSystem(sourceLocale, targetLocales, options) },
             ],
           },
         }),

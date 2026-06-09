@@ -127,7 +127,7 @@ export function anthropic(options: AnthropicOptions): Translator {
           ),
           messages: [{ content: JSON.stringify(items), role: 'user' }],
           model,
-          system: buildSystem(options, sourceLocale, targetLocales),
+          system: buildSystem(sourceLocale, targetLocales, options),
           temperature,
         }),
         headers: {

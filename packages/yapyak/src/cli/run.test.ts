@@ -98,27 +98,35 @@ describe('run', () => {
   it('extracts `--json` into the `status` options', async () => {
     await run(['status', '--json']);
     expect(status).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
       expect.objectContaining({ json: true }),
     );
   });
 
-  it('extracts `--write` into the `clean` options', async () => {
+  it('extracts `--write` into the `clean` arg', async () => {
     await run(['clean', '--write']);
     expect(clean).toHaveBeenCalledWith(
-      expect.objectContaining({ write: true }),
+      expect.anything(),
+      expect.any(String),
+      true,
     );
   });
 
   it('extracts non-flag args into the `add` locales', async () => {
     await run(['add', 'sv', 'fr']);
     expect(add).toHaveBeenCalledWith(
-      expect.objectContaining({ locales: ['sv', 'fr'] }),
+      expect.anything(),
+      ['sv', 'fr'],
+      expect.any(String),
     );
   });
 
   it('extracts `--force` into the `translate` options', async () => {
     await run(['translate', '--force']);
     expect(translate).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
       expect.objectContaining({ force: true }),
     );
   });
@@ -126,6 +134,8 @@ describe('run', () => {
   it('extracts the locale arg into the `translate` options', async () => {
     await run(['translate', 'sv']);
     expect(translate).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
       expect.objectContaining({ locale: 'sv' }),
     );
   });

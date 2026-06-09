@@ -7,7 +7,7 @@ const processors = [astro()];
 
 function runAstroTransform(source: string, locales: string[] = ['en']): string {
   const fileId = 'src/a.astro';
-  const extracted = extractFile({ fileId, locales, processors, source });
+  const extracted = extractFile(fileId, locales, source, { processors });
   return transformFile({
     extracted,
     fileId,
@@ -19,12 +19,7 @@ function runAstroTransform(source: string, locales: string[] = ['en']): string {
 }
 
 function extractAstro(source: string, locales: string[] = ['en']) {
-  return extractFile({
-    fileId: 'src/a.astro',
-    locales,
-    processors,
-    source,
-  });
+  return extractFile('src/a.astro', locales, source, { processors });
 }
 
 describe('astro processor — extract', () => {

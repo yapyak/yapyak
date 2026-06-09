@@ -224,12 +224,12 @@ export function syncLocaleFiles(
     (locale) => !corruptLocales.has(locale),
   );
 
-  const inFlightDrops = extractInFlightDrops({
+  const inFlightDrops = extractInFlightDrops(
     existingByLocale,
     extractedSources,
-    filter: input.filter,
-    nonDefaultLocales: healthyLocales,
-  });
+    input.filter,
+    healthyLocales,
+  );
 
   const nextByLocale = new Map<string, LocaleFile>();
   const restoredOrphans = new Map<string, Set<string>>();
@@ -309,12 +309,12 @@ export function syncLocaleFiles(
     }
   }
 
-  const orphansChanged = applyOrphanMutations({
+  const orphansChanged = applyOrphanMutations(
     droppedTranslations,
-    now: options?.now ?? (() => new Date().toISOString()),
+    options?.now ?? (() => new Date().toISOString()),
     orphans,
     restoredOrphans,
-  });
+  );
 
   if (orphansChanged) {
     writeOrphans(yapyakDir, orphans);
@@ -355,23 +355,20 @@ interface InFlightDropLookup {
   translations: Record<string, string>;
 }
 
-interface ExtractInFlightDropsInput {
-  existingByLocale: Map<string, LocaleFile>;
-  extractedSources: Record<string, Set<string>>;
-  filter: (fileId: string) => boolean;
-  nonDefaultLocales: string[];
-}
-
-function extractInFlightDrops(input: ExtractInFlightDropsInput): InFlightDrops {
+function extractInFlightDrops(
+  existingByLocale: Map<string, LocaleFile>,
+  extractedSources: Record<string, Set<string>>,
+  filter: (fileId: string) => boolean,
+  nonDefaultLocales: string[],
+): InFlightDrops {
   const drops: InFlightDrops = new Map();
-  for (const locale of input.nonDefaultLocales) {
-    const existing = input.existingByLocale.get(locale) ?? {};
+  for (const locale of nonDefaultLocales) {
+    const existing = existingByLocale.get(locale) ?? {};
     for (const [fileId, entries] of Object.entries(existing)) {
-      if (!input.filter(fileId)) {
+      if (!filter(fileId)) {
         continue;
       }
-      const extractedForFile =
-        input.extractedSources[fileId] ?? new Set<string>();
+      const extractedForFile = extractedSources[fileId] ?? new Set<string>();
       for (const [source, value] of Object.entries(entries)) {
         if (!value) {
           continue;
@@ -414,26 +411,24 @@ function findInFlightDrop(
   return undefined;
 }
 
-interface ApplyOrphanMutationsInput {
-  droppedTranslations: Map<string, Map<string, Record<string, string>>>;
-  now: () => string;
-  orphans: OrphanCache;
-  restoredOrphans: Map<string, Set<string>>;
-}
-
-function applyOrphanMutations(input: ApplyOrphanMutationsInput): boolean {
+function applyOrphanMutations(
+  droppedTranslations: Map<string, Map<string, Record<string, string>>>,
+  now: () => string,
+  orphans: OrphanCache,
+  restoredOrphans: Map<string, Set<string>>,
+): boolean {
   let hasChanged = false;
-  for (const [fileId, sources] of input.restoredOrphans) {
+  for (const [fileId, sources] of restoredOrphans) {
     for (const source of sources) {
-      if (removeOrphan(input.orphans, fileId, source)) {
+      if (removeOrphan(orphans, fileId, source)) {
         hasChanged = true;
       }
     }
   }
-  const timestamp = input.now();
-  for (const [fileId, bySource] of input.droppedTranslations) {
+  const timestamp = now();
+  for (const [fileId, bySource] of droppedTranslations) {
     for (const [source, translations] of bySource) {
-      addOrphan(input.orphans, fileId, source, {
+      addOrphan(orphans, fileId, source, {
         deletedAt: timestamp,
         translations,
       });

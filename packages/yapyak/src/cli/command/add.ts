@@ -12,15 +12,11 @@ import { color, header, progressBar, spinner, symbol } from '../tui';
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-interface AddInput {
-  config: Config;
-  locales: string[];
-  projectRoot: string;
-}
-
-export async function add(input: AddInput): Promise<number> {
-  const { config, locales, projectRoot } = input;
-
+export async function add(
+  config: Config,
+  locales: string[],
+  projectRoot: string,
+): Promise<number> {
   if (locales.length === 0) {
     process.stdout.write(
       `\n  ${symbol.cross} ${color.red('Locale code required.')}\n`,
@@ -88,10 +84,7 @@ export async function add(input: AddInput): Promise<number> {
   if (!allLocales.includes(defaultLocale)) {
     allLocales.unshift(defaultLocale);
   }
-  writeRegister({
-    locales: allLocales,
-    yapyakDir: getDefaultYapyakDir(projectRoot),
-  });
+  writeRegister(allLocales, getDefaultYapyakDir(projectRoot));
 
   const report = buildReport({
     defaultLocale: config.defaultLocale,

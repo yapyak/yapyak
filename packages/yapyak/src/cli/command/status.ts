@@ -3,23 +3,25 @@ import type { Config } from '../config';
 import { buildReport } from '../report';
 import { color, header, progressBar, renderTable, symbol } from '../tui';
 
-interface StatusInput {
-  config: Config;
+export interface StatusOptions {
   json?: boolean;
-  projectRoot: string;
 }
 
-export function status(input: StatusInput): number {
+export function status(
+  config: Config,
+  projectRoot: string,
+  options?: StatusOptions,
+): number {
   const report = buildReport({
-    defaultLocale: input.config.defaultLocale,
-    exclude: input.config.exclude,
-    include: input.config.include,
-    localesDir: input.config.localesDir,
-    processors: input.config.processors,
-    projectRoot: input.projectRoot,
+    defaultLocale: config.defaultLocale,
+    exclude: config.exclude,
+    include: config.include,
+    localesDir: config.localesDir,
+    processors: config.processors,
+    projectRoot,
   });
 
-  if (input.json === true) {
+  if (options?.json === true) {
     process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
     return report.missing.length === 0 ? 0 : 1;
   }

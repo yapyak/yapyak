@@ -12,12 +12,6 @@ import { color, header, symbol } from '../tui';
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-interface CleanInput {
-  config: Config;
-  projectRoot: string;
-  write: boolean;
-}
-
 interface OrphanSource {
   fileId: string;
   locale: string;
@@ -29,23 +23,23 @@ interface BuildExpectedResult {
   inScope: (fileId: string) => boolean;
 }
 
-export function clean(input: CleanInput): number {
-  const localesPath = join(input.projectRoot, input.config.localesDir);
+export function clean(
+  config: Config,
+  projectRoot: string,
+  write: boolean,
+): number {
+  const localesPath = join(projectRoot, config.localesDir);
   const fileLocales = existsSync(localesPath)
     ? readdirSync(localesPath)
         .filter((name) => name.endsWith('.json'))
         .map((name) => name.replace(/\.json$/, ''))
     : [];
-  const { defaultLocale } = input.config;
+  const { defaultLocale } = config;
   const locales = fileLocales.filter((locale) => locale !== defaultLocale);
 
   process.stdout.write(header('Locale cleanup'));
 
-  const { expected, inScope } = buildExpected(
-    input.projectRoot,
-    locales,
-    input.config,
-  );
+  const { expected, inScope } = buildExpected(projectRoot, locales, config);
   const orphanSources: OrphanSource[] = [];
   const filesToWrite: Array<{ next: LocaleFile; path: string }> = [];
 
@@ -75,7 +69,7 @@ export function clean(input: CleanInput): number {
       }
     }
 
-    if (hasChanged && input.write) {
+    if (hasChanged && write) {
       filesToWrite.push({ next, path: localePath });
     }
   }
@@ -97,7 +91,7 @@ export function clean(input: CleanInput): number {
   }
   process.stdout.write('\n');
 
-  if (!input.write) {
+  if (!write) {
     process.stdout.write(
       `  ${color.dim('Run')} ${color.cyan('yapyak clean --write')} ${color.dim('to remove these entries.')}\n\n`,
     );
@@ -127,11 +121,8 @@ function buildExpected(
   const scopedFileIds = new Set<string>(sourceFiles.map((file) => file.fileId));
   const messages: ExtractedMessage[] = [];
   for (const file of sourceFiles) {
-    const result = extractFile({
-      fileId: file.fileId,
-      locales,
+    const result = extractFile(file.fileId, locales, file.code, {
       processors: config.processors,
-      source: file.code,
     });
     messages.push(...result.messages);
   }

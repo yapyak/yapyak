@@ -4,9 +4,9 @@ export interface BuildSystemOptions {
 }
 
 export function buildSystem(
-  options: BuildSystemOptions,
   sourceLocale: string,
   targetLocales: string[],
+  options?: BuildSystemOptions,
 ): string {
   const targetList = targetLocales.join(', ');
   const lines: string[] = [
@@ -18,10 +18,10 @@ export function buildSystem(
     `Example for target locales \`sv, de\`: input \`[{"source": "Save"}]\` → output \`[{"sv": "Spara", "de": "Speichern"}]\`.`,
     'Preserve all {placeholder} tokens and ICU patterns exactly as written, identically in every target locale.',
   ];
-  if (options.voice) {
+  if (options?.voice) {
     lines.push(`Voice: ${options.voice}`);
   }
-  const glossarySection = extractGlossary(options.glossary, targetLocales);
+  const glossarySection = extractGlossary(options?.glossary, targetLocales);
   if (glossarySection.length > 0) {
     lines.push(
       'Use these glossary terms strictly when they appear in the source, picking the entry for the active target locale:',

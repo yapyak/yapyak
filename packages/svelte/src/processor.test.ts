@@ -7,12 +7,7 @@ import { svelte } from './processor';
 const processors = [svelte()];
 
 function extractSvelte(source: string, locales: string[] = ['en']) {
-  return extractFile({
-    fileId: 'src/a.svelte',
-    locales,
-    processors,
-    source,
-  });
+  return extractFile('src/a.svelte', locales, source, { processors });
 }
 
 function runSvelteTransform(
@@ -20,7 +15,7 @@ function runSvelteTransform(
   locales: string[] = ['en'],
 ): string {
   const fileId = 'src/a.svelte';
-  const extracted = extractFile({ fileId, locales, processors, source });
+  const extracted = extractFile(fileId, locales, source, { processors });
   return transformFile({
     extracted,
     fileId,

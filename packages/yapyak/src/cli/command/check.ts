@@ -11,28 +11,23 @@ import { buildReport } from '../report';
 import { color, header, symbol } from '../tui';
 import { join } from 'node:path';
 
-interface CheckInput {
-  config: Config;
-  projectRoot: string;
-}
-
 interface MissingTranslation {
   fileId: string;
   locale: string;
   source: string;
 }
 
-export function check(input: CheckInput): number {
+export function check(config: Config, projectRoot: string): number {
   const report = buildReport({
-    defaultLocale: input.config.defaultLocale,
-    exclude: input.config.exclude,
-    include: input.config.include,
-    localesDir: input.config.localesDir,
-    processors: input.config.processors,
-    projectRoot: input.projectRoot,
+    defaultLocale: config.defaultLocale,
+    exclude: config.exclude,
+    include: config.include,
+    localesDir: config.localesDir,
+    processors: config.processors,
+    projectRoot,
   });
 
-  const localesPath = join(input.projectRoot, input.config.localesDir);
+  const localesPath = join(projectRoot, config.localesDir);
   const allDiagnostics: Diagnostic[] = [...report.diagnostics];
   allDiagnostics.push(...detectAtIssues(report.messages));
 
@@ -42,12 +37,10 @@ export function check(input: CheckInput): number {
     }
     const localeFilePath = join(localesPath, `${locale}.json`);
     const fileId = `${locale}.json`;
-    allDiagnostics.push(
-      ...validateLocaleFile({ fileId, path: localeFilePath }),
-    );
+    allDiagnostics.push(...validateLocaleFile(fileId, localeFilePath));
     const localeFile = readLocaleFile(localeFilePath);
     allDiagnostics.push(
-      ...validateIcuPairs({ fileId, localeFile, messages: report.messages }),
+      ...validateIcuPairs(fileId, localeFile, report.messages),
     );
   }
 

@@ -110,7 +110,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
           },
           prompt: JSON.stringify(items),
           stream: false,
-          system: buildSystem(options, sourceLocale, targetLocales),
+          system: buildSystem(sourceLocale, targetLocales, options),
         }),
         headers: {
           'content-type': 'application/json',

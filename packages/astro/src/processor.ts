@@ -229,7 +229,7 @@ function fragmentsFromAttribute(
   if (!code) {
     return [];
   }
-  const offset = findExpressionOffset({ attributeNode: node, code, source });
+  const offset = findExpressionOffset(node, code, source);
   if (offset === undefined) {
     return [];
   }
@@ -276,16 +276,11 @@ function getAttributeExpressionText(node: AttributeNode): string | undefined {
   return node.value;
 }
 
-interface FindExpressionOffsetInput {
-  attributeNode: AttributeNode;
-  code: string;
-  source: string;
-}
-
 function findExpressionOffset(
-  input: FindExpressionOffsetInput,
+  attributeNode: AttributeNode,
+  code: string,
+  source: string,
 ): number | undefined {
-  const { attributeNode, code, source } = input;
   const start = attributeNode.position?.start.offset;
   const end = attributeNode.position?.end?.offset;
   if (typeof start !== 'number') {

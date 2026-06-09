@@ -37,11 +37,8 @@ export interface ExtractedMessage {
   source: string;
 }
 
-export interface ExtractFileRequest {
-  fileId: string;
-  locales: string[];
+export interface ExtractFileOptions {
   processors?: Processor[];
-  source: string;
 }
 
 export interface ParsedCallSite extends CallSite {
@@ -57,13 +54,14 @@ export interface ExtractFileResult {
   messages: ExtractedMessage[];
 }
 
-export function extractFile(request: ExtractFileRequest): ExtractFileResult {
-  const processor = resolveProcessor(
-    request.fileId,
-    request.source,
-    request.processors ?? [],
-  );
-  const fragments = processor.parseFragments(request.source);
+export function extractFile(
+  fileId: string,
+  locales: string[],
+  source: string,
+  options?: ExtractFileOptions,
+): ExtractFileResult {
+  const processor = resolveProcessor(fileId, source, options?.processors ?? []);
+  const fragments = processor.parseFragments(source);
 
   const diagnostics: Diagnostic[] = [];
   const callSites: ParsedCallSite[] = [];
@@ -76,7 +74,7 @@ export function extractFile(request: ExtractFileRequest): ExtractFileResult {
     if (fragment.kind !== 'script') {
       continue;
     }
-    const sourceFile = createFragmentSourceFile(request.fileId, fragment);
+    const sourceFile = createFragmentSourceFile(fileId, fragment);
     if (!ambientAnchor) {
       ambientAnchor = sourceFile;
     }
@@ -88,10 +86,10 @@ export function extractFile(request: ExtractFileRequest): ExtractFileResult {
       bindings,
       callSites,
       diagnostics,
+      fileId,
       fragment,
       messagesById,
-      originalSource: request.source,
-      request,
+      originalSource: source,
       sourceFile,
     });
   }
@@ -105,16 +103,16 @@ export function extractFile(request: ExtractFileRequest): ExtractFileResult {
     if (fragment.kind === 'script') {
       continue;
     }
-    const sourceFile = createFragmentSourceFile(request.fileId, fragment);
+    const sourceFile = createFragmentSourceFile(fileId, fragment);
     const bindings = resolveBindings(sourceFile, { ambientParent });
     extractFromFragment({
       bindings,
       callSites,
       diagnostics,
+      fileId,
       fragment,
       messagesById,
-      originalSource: request.source,
-      request,
+      originalSource: source,
       sourceFile,
     });
   }
@@ -130,10 +128,10 @@ interface ExtractFromFragmentInput {
   bindings: ReturnType<typeof resolveBindings>;
   callSites: ParsedCallSite[];
   diagnostics: Diagnostic[];
+  fileId: string;
   fragment: Fragment;
   messagesById: Map<string, ExtractedMessage>;
   originalSource: string;
-  request: ExtractFileRequest;
   sourceFile: ts.SourceFile;
 }
 
@@ -142,10 +140,10 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
     bindings,
     callSites,
     diagnostics,
+    fileId,
     fragment,
     messagesById,
     originalSource,
-    request,
     sourceFile,
   } = input;
   const { callSites: fragmentCalls, diagnostics: fragmentDiagnostics } =
@@ -199,7 +197,7 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
 
     const location: Location = {
       callSiteContext: resolveCallSiteContext(fragmentCall.node, sourceFile),
-      fileId: request.fileId,
+      fileId,
       range: remapRange(parsed.sourceRange, fragment, originalSource),
     };
     if (parsed.context !== undefined) {

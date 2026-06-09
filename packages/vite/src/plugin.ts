@@ -170,11 +170,8 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
     const processors = getNormalized().processors;
     messagesByFile.clear();
     for (const file of files) {
-      const result = extractFile({
-        fileId: file.fileId,
-        locales,
+      const result = extractFile(file.fileId, locales, file.code, {
         processors,
-        source: file.code,
       });
       logErrors(result, error);
       if (result.messages.length > 0) {
@@ -372,10 +369,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
             `Either add '${fixedLocale}' to your locales/ directory or pick an existing locale.`,
         );
       }
-      writeRegister({
-        locales: resolver.getEmittedLocales().locales,
-        yapyakDir,
-      });
+      writeRegister(resolver.getEmittedLocales().locales, yapyakDir);
     },
     configureServer(server): void {
       if (configFile !== null) {
@@ -400,11 +394,8 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
             messagesByFile.delete(fileId);
             continue;
           }
-          const result = extractFile({
-            fileId,
-            locales,
+          const result = extractFile(fileId, locales, code, {
             processors: getNormalized().processors,
-            source: code,
           });
           logErrors(result, error);
           if (result.messages.length > 0) {
@@ -475,10 +466,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
           { yapyakDir },
         );
         emitSyncDiagnostics(result);
-        writeRegister({
-          locales: getResolver().getEmittedLocales().locales,
-          yapyakDir,
-        });
+        writeRegister(getResolver().getEmittedLocales().locales, yapyakDir);
         reloadRuntimeModule();
         reloadCandidateModules();
       }, 50);
@@ -551,11 +539,8 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       const fileId = toFileId(projectRoot, context.file);
       const code = await context.read();
       const { defaultLocale, locales } = getResolver().getEmittedLocales();
-      const result = extractFile({
-        fileId,
-        locales,
+      const result = extractFile(fileId, locales, code, {
         processors: getNormalized().processors,
-        source: code,
       });
       logErrors(result, error);
       const before = messagesByFile.get(fileId) ?? [];
@@ -626,12 +611,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       const fileId = toFileId(projectRoot, id);
       const { locales } = getResolver().getEmittedLocales();
       const processors = getNormalized().processors;
-      const extracted = extractFile({
-        fileId,
-        locales,
-        processors,
-        source: code,
-      });
+      const extracted = extractFile(fileId, locales, code, { processors });
       logErrors(extracted, error);
       if (extracted.callSites.length === 0) {
         return null;

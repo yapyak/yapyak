@@ -13,11 +13,7 @@ function runTransform(input: {
   fileId?: string;
 }): string {
   const fileId = input.fileId ?? 'src/a.tsx';
-  const extracted = extractFile({
-    fileId,
-    locales: input.locales,
-    source: input.source,
-  });
+  const extracted = extractFile(fileId, input.locales, input.source);
   const request: TransformFileRequest = {
     extracted,
     fileId,
@@ -415,11 +411,7 @@ describe('transformFile', () => {
       const fileId = 'src/a.ts';
       const source =
         "import { t } from 'yapyak';\nexport const x = t('Hello');\n";
-      const extracted = extractFile({
-        fileId,
-        locales: ['en'],
-        source,
-      });
+      const extracted = extractFile(fileId, ['en'], source);
       const result = transformFile({
         extracted,
         fileId,
@@ -437,11 +429,7 @@ describe('transformFile', () => {
       const sourcePath = '/abs/src/a.ts';
       const source =
         "import { t } from 'yapyak';\nexport const x = t('Hello');\n";
-      const extracted = extractFile({
-        fileId,
-        locales: ['en'],
-        source,
-      });
+      const extracted = extractFile(fileId, ['en'], source);
       const result = transformFile({
         extracted,
         fileId,

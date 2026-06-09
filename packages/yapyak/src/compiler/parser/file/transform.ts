@@ -82,11 +82,7 @@ export function transformFile(
     }
   }
 
-  transformScriptImports({
-    fragments,
-    magicString,
-    request,
-  });
+  transformScriptImports(fragments, magicString, request);
 
   if (hasUsedPick) {
     const importSpec =
@@ -110,14 +106,11 @@ export function transformFile(
   };
 }
 
-interface TransformScriptImportsInput {
-  fragments: Fragment[];
-  magicString: MagicString;
-  request: TransformFileRequest;
-}
-
-function transformScriptImports(input: TransformScriptImportsInput): void {
-  const { fragments, magicString, request } = input;
+function transformScriptImports(
+  fragments: Fragment[],
+  magicString: MagicString,
+  request: TransformFileRequest,
+): void {
   const intermediate = magicString.toString();
 
   for (const fragment of fragments) {

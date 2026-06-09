@@ -27,35 +27,29 @@ export async function run(argv: string[]): Promise<number> {
       return 0;
     case 'status': {
       const config = await loadConfig(projectRoot);
-      return status({
-        config,
-        json: rest.includes('--json'),
-        projectRoot,
-      });
+      return status(config, projectRoot, { json: rest.includes('--json') });
     }
     case 'check': {
       const config = await loadConfig(projectRoot);
-      return check({ config, projectRoot });
+      return check(config, projectRoot);
     }
     case 'clean': {
       const config = await loadConfig(projectRoot);
       const shouldWrite = rest.includes('--write');
-      return clean({ config, projectRoot, write: shouldWrite });
+      return clean(config, projectRoot, shouldWrite);
     }
     case 'add': {
       const config = await loadConfig(projectRoot);
       const locales = rest.filter((arg) => !arg.startsWith('-'));
-      return add({ config, locales, projectRoot });
+      return add(config, locales, projectRoot);
     }
     case 'translate': {
       const config = await loadConfig(projectRoot);
       const locale = rest.find((arg) => !arg.startsWith('-'));
       const shouldForce = rest.includes('--force') || rest.includes('-f');
-      return translate({
-        config,
+      return translate(config, projectRoot, {
         force: shouldForce,
         locale,
-        projectRoot,
       });
     }
     case 'export': {

@@ -41,7 +41,7 @@ describe('check', () => {
   it('returns `0` when no messages exist and no diagnostics fire', () => {
     mkdirSync(join(root, 'src'), { recursive: true });
     writeFileSync(join(root, 'src', 'app.ts'), '');
-    const code = check({ config: makeConfig(), projectRoot: root });
+    const code = check(makeConfig(), root);
     expect(code).toBe(0);
   });
 
@@ -56,7 +56,7 @@ describe('check', () => {
       join(root, 'locales', 'sv.json'),
       JSON.stringify({ 'src/app.ts': { Save: '' } }),
     );
-    const code = check({ config: makeConfig(), projectRoot: root });
+    const code = check(makeConfig(), root);
     expect(code).toBe(1);
     expect(writes.join('')).toContain('missing translations');
   });
@@ -72,7 +72,7 @@ describe('check', () => {
       join(root, 'locales', 'sv.json'),
       JSON.stringify({ 'src/app.ts': { Save: 'Spara' } }),
     );
-    const code = check({ config: makeConfig(), projectRoot: root });
+    const code = check(makeConfig(), root);
     expect(code).toBe(0);
     expect(writes.join('')).toContain('translations present');
   });
@@ -83,7 +83,7 @@ describe('check', () => {
       join(root, 'src', 'app.ts'),
       `import { t } from 'yapyak';\nexport const x = t.as('bad@ctx', 'Save');\n`,
     );
-    check({ config: makeConfig(), projectRoot: root });
+    check(makeConfig(), root);
     expect(writes.join('')).toMatch(/warning|error/);
   });
 
@@ -102,7 +102,7 @@ describe('check', () => {
       join(root, 'locales', 'de.json'),
       JSON.stringify({ 'src/app.ts': { Cancel: '', Save: '' } }),
     );
-    const code = check({ config: makeConfig(), projectRoot: root });
+    const code = check(makeConfig(), root);
     expect(code).toBe(1);
     const output = writes.join('');
     expect(output).toContain('sv');
@@ -120,7 +120,7 @@ describe('check', () => {
       join(root, 'locales', 'sv.json'),
       JSON.stringify({ 'src/app.ts': { 'Hi {name}': 'Hej {namn}' } }),
     );
-    const code = check({ config: makeConfig(), projectRoot: root });
+    const code = check(makeConfig(), root);
     expect(code).toBe(1);
     expect(writes.join('')).toMatch(/error/);
   });

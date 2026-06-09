@@ -6,12 +6,7 @@ import { vue } from './processor';
 const processors = [vue()];
 
 function extractVue(source: string, locales: string[] = ['en']) {
-  return extractFile({
-    fileId: 'src/a.vue',
-    locales,
-    processors,
-    source,
-  });
+  return extractFile('src/a.vue', locales, source, { processors });
 }
 
 function runVueTransform(input: {
@@ -20,11 +15,8 @@ function runVueTransform(input: {
   translations?: Record<string, Record<string, string>>;
 }): string {
   const fileId = 'src/a.vue';
-  const extracted = extractFile({
-    fileId,
-    locales: input.locales,
+  const extracted = extractFile(fileId, input.locales, input.source, {
     processors,
-    source: input.source,
   });
   const result = transformFile({
     extracted,

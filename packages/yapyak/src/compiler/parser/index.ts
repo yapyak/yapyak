@@ -1,6 +1,6 @@
 export type {
   ExtractedMessage,
-  ExtractFileRequest,
+  ExtractFileOptions,
   ExtractFileResult,
   Location,
 } from './file/extract';

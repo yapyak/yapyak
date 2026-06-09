@@ -129,7 +129,7 @@ export function openai(options: OpenAIOptions): Translator {
       const body: Record<string, unknown> = {
         messages: [
           {
-            content: buildSystem(options, sourceLocale, targetLocales),
+            content: buildSystem(sourceLocale, targetLocales, options),
             role: 'system',
           },
           { content: JSON.stringify(items), role: 'user' },
