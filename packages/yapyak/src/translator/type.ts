@@ -84,7 +84,7 @@ export interface Translator {
    * The stable identifier for this translator.
    *
    * @remarks
-   * Convention: lowercase suffix matching the package name (`'anthropic'`, `'openai'`, `'gemini'`, `'ollama'`, `'cloud'`).
+   * Convention: lowercase suffix matching the package name (`'anthropic'`, `'openai'`, `'gemini'`, `'ollama'`).
    */
   id: string;
   (request: TranslateRequest): Promise<string>;

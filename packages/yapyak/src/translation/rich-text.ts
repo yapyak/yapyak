@@ -25,7 +25,7 @@ export type RichTextHandlers<T extends string> = {
  * Renders a rich-text string by resolving `<tag>...</tag>` markers via handlers.
  *
  * @remarks
- * The string-side counterpart to the framework `<RichText>` components in `@yapyak/react`, `@yapyak/vue`, and `@yapyak/svelte`. When `value` comes from {@link t}, the handlers object is statically checked against the tag names found in the source.
+ * The string-side counterpart to the framework `<RichText>` components in `@yapyak/react`, `@yapyak/vue`, `@yapyak/svelte`, and `@yapyak/astro`. When `value` comes from {@link t}, the handlers object is statically checked against the tag names found in the source.
  *
  * @typeParam T - The source string literal carrying the tag names.
  *

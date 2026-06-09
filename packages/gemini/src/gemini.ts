@@ -92,7 +92,7 @@ const DEFAULT_MAX_RETRIES = 2;
  * });
  * ```
  *
- * @throws {Error} When `apiKey` is empty.
+ * @throws {Error} When `apiKey` is missing or empty.
  */
 export function gemini(options: GeminiOptions): Translator {
   if (!options.apiKey) {

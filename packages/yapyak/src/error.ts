@@ -25,10 +25,10 @@ interface YapyakErrorOptions {
  * @example
  * ```ts
  * try {
- *   await setLocale(userInput);
+ *   // some yapyak operation
  * } catch (err) {
- *   if (err instanceof YapyakError && err.code === 'YPK_INVALID_LOCALE') {
- *     showLocalePicker();
+ *   if (err instanceof YapyakError) {
+ *     console.error(`yapyak [${err.code}] ${err.message}`, err.meta);
  *     return;
  *   }
  *   throw err;

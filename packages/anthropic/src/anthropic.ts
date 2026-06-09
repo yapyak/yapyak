@@ -94,7 +94,7 @@ const MAX_TOKENS_CAP = 8_000;
  * });
  * ```
  *
- * @throws {Error} When `apiKey` is empty.
+ * @throws {Error} When `apiKey` is missing or empty.
  */
 export function anthropic(options: AnthropicOptions): Translator {
   if (!options.apiKey) {
