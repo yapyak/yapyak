@@ -56,10 +56,8 @@ export function status(input: StatusInput): number {
   });
 
   process.stdout.write(
-    `${renderTable({
+    `${renderTable([color.bold('Locale'), color.bold('Coverage'), ''], rows, {
       align: ['left', 'right', 'left'],
-      headers: [color.bold('Locale'), color.bold('Coverage'), ''],
-      rows,
     })
       .split('\n')
       .map((line) => `  ${line}`)

@@ -1,15 +1,20 @@
-export interface FetchWithRetryInput {
-  init: RequestInit;
-  maxRetries: number;
+export interface FetchWithRetryOptions {
+  maxRetries?: number;
   signal?: AbortSignal;
-  timeout: number;
-  url: string;
+  timeout?: number;
 }
 
+const DEFAULT_MAX_RETRIES = 3;
+const DEFAULT_TIMEOUT = 30_000;
+
 export async function fetchWithRetry(
-  input: FetchWithRetryInput,
+  url: string,
+  init: RequestInit,
+  options?: FetchWithRetryOptions,
 ): Promise<Response> {
-  const { init, maxRetries, signal: outerSignal, timeout, url } = input;
+  const maxRetries = options?.maxRetries ?? DEFAULT_MAX_RETRIES;
+  const timeout = options?.timeout ?? DEFAULT_TIMEOUT;
+  const outerSignal = options?.signal;
   let lastError: unknown;
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     if (attempt > 0) {

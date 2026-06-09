@@ -21,7 +21,7 @@ describe('walkSourceFiles', () => {
     writeFileSync(join(projectRoot, 'src', 'a.tsx'), '');
     writeFileSync(join(projectRoot, 'src', 'b.ts'), '');
 
-    const files = walkSourceFiles({ filter: () => true, projectRoot });
+    const files = walkSourceFiles(() => true, projectRoot);
 
     expect(files.map((file) => file.fileId).sort()).toEqual([
       'src/a.tsx',
@@ -34,13 +34,10 @@ describe('walkSourceFiles', () => {
     writeFileSync(join(projectRoot, 'src', 'a.tsx'), '');
 
     const seen: string[] = [];
-    walkSourceFiles({
-      filter: (id) => {
-        seen.push(id);
-        return true;
-      },
-      projectRoot,
-    });
+    walkSourceFiles((id) => {
+      seen.push(id);
+      return true;
+    }, projectRoot);
 
     for (const id of seen) {
       expect(id.startsWith('/')).toBe(false);
@@ -54,7 +51,7 @@ describe('walkSourceFiles', () => {
     writeFileSync(join(projectRoot, 'node_modules', 'foo', 'index.ts'), '');
 
     const filter = (id: string): boolean => !id.startsWith('node_modules/');
-    const files = walkSourceFiles({ filter, projectRoot });
+    const files = walkSourceFiles(filter, projectRoot);
 
     expect(files.map((file) => file.fileId)).toEqual(['src/a.tsx']);
   });

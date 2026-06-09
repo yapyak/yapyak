@@ -123,12 +123,8 @@ export function openai(options: OpenAIOptions): Translator {
     user,
   } = options;
 
-  return createTranslator({
-    batchSize,
-    concurrency,
-    context,
-    id: 'openai',
-    async translate(params) {
+  return createTranslator(
+    async (params) => {
       const { items, signal, sourceLocale, targetLocales } = params;
       const body: Record<string, unknown> = {
         messages: [
@@ -160,16 +156,14 @@ export function openai(options: OpenAIOptions): Translator {
         headers,
         method: 'POST',
       };
-      const fetchInit: Parameters<typeof fetchWithRetry>[0] = {
-        init,
+      const fetchOptions: Parameters<typeof fetchWithRetry>[2] = {
         maxRetries,
         timeout,
-        url: endpoint,
       };
       if (signal) {
-        fetchInit.signal = signal;
+        fetchOptions.signal = signal;
       }
-      const response = await fetchWithRetry(fetchInit);
+      const response = await fetchWithRetry(endpoint, init, fetchOptions);
       if (!response.ok) {
         const text = await response.text();
         throw new Error(`yapyak openai: ${response.status} ${text}`);
@@ -182,7 +176,8 @@ export function openai(options: OpenAIOptions): Translator {
       const cleaned = stripCodeFence(text.trim());
       return JSON.parse(cleaned) as LocaleTranslations[];
     },
-  });
+    { batchSize, concurrency, context, id: 'openai' },
+  );
 }
 
 interface OpenAIChatResponse {

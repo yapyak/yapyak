@@ -165,7 +165,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
   }
 
   function scanAllSources(): void {
-    const files = walkSourceFiles({ filter, projectRoot });
+    const files = walkSourceFiles(filter, projectRoot);
     const { locales } = getResolver().getEmittedLocales();
     const processors = getNormalized().processors;
     messagesByFile.clear();

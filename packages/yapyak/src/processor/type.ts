@@ -37,31 +37,25 @@ export interface Fragment {
   originalOffset: number;
 }
 
-/** Options for {@link createProcessor}. */
-export interface CreateProcessorInput {
-  /**
-   * Injects a `yapyak` import into framework-specific source.
-   *
-   * @param magicString - The {@link MagicString} instance to mutate.
-   * @param source - The original source text.
-   * @param importStatement - The import statement to inject.
-   */
-  applyImport: (
-    magicString: MagicString,
-    source: string,
-    importStatement: string,
-  ) => void;
-  /** File extensions this processor handles, e.g. `['.vue']`. */
-  extensions: string[];
-  /** Stable identifier for diagnostics. Convention: lowercase suffix matching the package name. */
-  id: string;
-  /**
-   * Breaks framework-specific source into TS-parseable fragments.
-   *
-   * @param source - The source text.
-   */
-  parseFragments: (source: string) => Fragment[];
-}
+/**
+ * Injects a `yapyak` import into framework-specific source.
+ *
+ * @param magicString - The {@link MagicString} instance to mutate.
+ * @param source - The original source text.
+ * @param importStatement - The import statement to inject.
+ */
+export type ApplyImportFn = (
+  magicString: MagicString,
+  source: string,
+  importStatement: string,
+) => void;
+
+/**
+ * Breaks framework-specific source into TS-parseable fragments.
+ *
+ * @param source - The source text.
+ */
+export type ParseFragmentsFn = (source: string) => Fragment[];
 
 /**
  * The processor. Extracts framework-specific source into fragments yapyak's compiler can read.

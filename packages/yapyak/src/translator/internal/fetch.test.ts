@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { fetchWithRetry } from './fetch';
 
-const baseOptions = { init: {}, maxRetries: 2, timeout: 1000, url: 'http://x' };
+const URL = 'http://x';
+const INIT: RequestInit = {};
 
 describe('fetchWithRetry', () => {
   beforeEach(() => {
@@ -19,7 +20,10 @@ describe('fetchWithRetry', () => {
       'fetch',
       vi.fn().mockResolvedValue(new Response('ok', { status: 200 })),
     );
-    const result = await fetchWithRetry({ ...baseOptions, maxRetries: 0 });
+    const result = await fetchWithRetry(URL, INIT, {
+      maxRetries: 0,
+      timeout: 1000,
+    });
     expect(result.ok).toBe(true);
   });
 
@@ -28,7 +32,10 @@ describe('fetchWithRetry', () => {
       .fn()
       .mockResolvedValue(new Response('bad', { status: 400 }));
     vi.stubGlobal('fetch', fetchMock);
-    const result = await fetchWithRetry({ ...baseOptions, maxRetries: 3 });
+    const result = await fetchWithRetry(URL, INIT, {
+      maxRetries: 3,
+      timeout: 1000,
+    });
     expect(result.status).toBe(400);
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
@@ -39,7 +46,10 @@ describe('fetchWithRetry', () => {
       .mockResolvedValueOnce(new Response('', { status: 500 }))
       .mockResolvedValueOnce(new Response('ok', { status: 200 }));
     vi.stubGlobal('fetch', fetchMock);
-    const promise = fetchWithRetry({ ...baseOptions, maxRetries: 2 });
+    const promise = fetchWithRetry(URL, INIT, {
+      maxRetries: 2,
+      timeout: 1000,
+    });
     await vi.runAllTimersAsync();
     const result = await promise;
     expect(result.status).toBe(200);
@@ -51,13 +61,20 @@ describe('fetchWithRetry', () => {
     const controller = new AbortController();
     controller.abort(new Error('user aborted'));
     await expect(
-      fetchWithRetry({ ...baseOptions, signal: controller.signal }),
+      fetchWithRetry(URL, INIT, {
+        maxRetries: 2,
+        signal: controller.signal,
+        timeout: 1000,
+      }),
     ).rejects.toThrow('user aborted');
   });
 
   it('throws a network error after exhausting retries', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('boom')));
-    const promise = fetchWithRetry({ ...baseOptions, maxRetries: 1 });
+    const promise = fetchWithRetry(URL, INIT, {
+      maxRetries: 1,
+      timeout: 1000,
+    });
     const expectation = expect(promise).rejects.toThrow('boom');
     await vi.runAllTimersAsync();
     await expectation;

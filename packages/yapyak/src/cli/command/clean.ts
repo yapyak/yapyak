@@ -123,7 +123,7 @@ function buildExpected(
   config: Config,
 ): BuildExpectedResult {
   const filter = createFilter(config.include, config.exclude);
-  const sourceFiles = walkSourceFiles({ filter, projectRoot });
+  const sourceFiles = walkSourceFiles(filter, projectRoot);
   const scopedFileIds = new Set<string>(sourceFiles.map((file) => file.fileId));
   const messages: ExtractedMessage[] = [];
   for (const file of sourceFiles) {

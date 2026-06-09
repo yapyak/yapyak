@@ -114,12 +114,8 @@ export function gemini(options: GeminiOptions): Translator {
     timeout = DEFAULT_TIMEOUT,
   } = options;
 
-  return createTranslator({
-    batchSize,
-    concurrency,
-    context,
-    id: 'gemini',
-    async translate(params) {
+  return createTranslator(
+    async (params) => {
       const { items, signal, sourceLocale, targetLocales } = params;
       const url = `${endpoint}/models/${model}:generateContent`;
       const init: RequestInit = {
@@ -147,16 +143,14 @@ export function gemini(options: GeminiOptions): Translator {
         },
         method: 'POST',
       };
-      const fetchInit: Parameters<typeof fetchWithRetry>[0] = {
-        init,
+      const fetchOptions: Parameters<typeof fetchWithRetry>[2] = {
         maxRetries,
         timeout,
-        url,
       };
       if (signal) {
-        fetchInit.signal = signal;
+        fetchOptions.signal = signal;
       }
-      const response = await fetchWithRetry(fetchInit);
+      const response = await fetchWithRetry(url, init, fetchOptions);
       if (!response.ok) {
         const text = await response.text();
         throw new Error(`yapyak gemini: ${response.status} ${text}`);
@@ -169,7 +163,8 @@ export function gemini(options: GeminiOptions): Translator {
       const cleaned = stripCodeFence(text.trim());
       return JSON.parse(cleaned) as LocaleTranslations[];
     },
-  });
+    { batchSize, concurrency, context, id: 'gemini' },
+  );
 }
 
 interface GeminiResponse {

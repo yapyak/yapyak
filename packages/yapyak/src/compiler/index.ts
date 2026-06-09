@@ -43,11 +43,7 @@ export {
   writeRegister,
   YapyakInvariantError,
 } from './catalog';
-export {
-  type WalkedFile,
-  type WalkSourceFilesInput,
-  walkSourceFiles,
-} from './io';
+export { type WalkedFile, walkSourceFiles } from './io';
 export {
   type Binding,
   type BindingTable,

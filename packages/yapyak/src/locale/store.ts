@@ -102,10 +102,8 @@ export function getLocale(): Locale {
         return fromPersistence;
       }
       if (DETECT_ACCEPT_LANGUAGE) {
-        const resolved = resolveLocale({
+        const resolved = resolveLocale(DEFAULT_LOCALE, LOCALES, {
           acceptLanguage: request.headers.get('accept-language') ?? undefined,
-          defaultLocale: DEFAULT_LOCALE,
-          locales: LOCALES,
         });
         return isLocale(resolved) ? resolved : DEFAULT_LOCALE;
       }

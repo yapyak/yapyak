@@ -98,12 +98,8 @@ export function ollama(options: OllamaOptions = {}): Translator {
     timeout = DEFAULT_TIMEOUT,
   } = options;
 
-  return createTranslator({
-    batchSize,
-    concurrency,
-    context,
-    id: 'ollama',
-    async translate(params) {
+  return createTranslator(
+    async (params) => {
       const { items, signal, sourceLocale, targetLocales } = params;
       const init: RequestInit = {
         body: JSON.stringify({
@@ -122,16 +118,14 @@ export function ollama(options: OllamaOptions = {}): Translator {
         },
         method: 'POST',
       };
-      const fetchInit: Parameters<typeof fetchWithRetry>[0] = {
-        init,
+      const fetchOptions: Parameters<typeof fetchWithRetry>[2] = {
         maxRetries,
         timeout,
-        url: endpoint,
       };
       if (signal) {
-        fetchInit.signal = signal;
+        fetchOptions.signal = signal;
       }
-      const response = await fetchWithRetry(fetchInit);
+      const response = await fetchWithRetry(endpoint, init, fetchOptions);
       if (!response.ok) {
         const text = await response.text();
         throw new Error(`yapyak ollama: ${response.status} ${text}`);
@@ -145,7 +139,8 @@ export function ollama(options: OllamaOptions = {}): Translator {
       }
       return JSON.parse(text.trim()) as LocaleTranslations[];
     },
-  });
+    { batchSize, concurrency, context, id: 'ollama' },
+  );
 }
 
 interface OllamaResponse {

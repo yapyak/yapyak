@@ -1,10 +1,11 @@
 export type {
   ContextLevel,
-  CreateTranslatorInput,
+  CreateTranslatorOptions,
   LocaleTranslations,
   MessageContext,
   TranslateBatchOptions,
   TranslateBatchRequest,
+  TranslateFn,
   TranslateItem,
   TranslateRequest,
   TranslationExample,

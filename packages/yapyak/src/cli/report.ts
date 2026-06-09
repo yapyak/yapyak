@@ -48,10 +48,7 @@ export function buildReport(input: BuildReportInput): Report {
   const locales = [...new Set([defaultLocale, ...fileLocales])].sort();
 
   const filter = createFilter(input.include, input.exclude);
-  const sourceFiles = walkSourceFiles({
-    filter,
-    projectRoot: input.projectRoot,
-  });
+  const sourceFiles = walkSourceFiles(filter, input.projectRoot);
 
   const messages: ExtractedMessage[] = [];
   const diagnostics: Diagnostic[] = [];

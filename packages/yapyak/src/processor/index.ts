@@ -1,7 +1,8 @@
 export type {
-  CreateProcessorInput,
+  ApplyImportFn,
   ElisionContext,
   Fragment,
+  ParseFragmentsFn,
   Position,
   Processor,
   Range,

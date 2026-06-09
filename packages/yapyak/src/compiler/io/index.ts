@@ -1,5 +1,1 @@
-export {
-  type WalkedFile,
-  type WalkSourceFilesInput,
-  walkSourceFiles,
-} from './source-file';
+export { type WalkedFile, walkSourceFiles } from './source-file';

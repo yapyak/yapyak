@@ -184,8 +184,18 @@ export interface TranslateBatchRequest {
   targetLocales: Locale[];
 }
 
+/**
+ * Translates a batch of items into every target locale.
+ *
+ * @remarks
+ * Must return one {@link LocaleTranslations} per item, in the same order as `items`.
+ */
+export type TranslateFn = (
+  params: TranslateBatchRequest,
+) => LocaleTranslations[] | Promise<LocaleTranslations[]>;
+
 /** Options for {@link createTranslator}. */
-export interface CreateTranslatorInput {
+export interface CreateTranslatorOptions {
   /**
    * The maximum number of items per `translate` call.
    *
@@ -210,13 +220,4 @@ export interface CreateTranslatorInput {
    * @defaultValue `'custom'`
    */
   id?: string;
-  /**
-   * Translates a batch of items into every target locale.
-   *
-   * @remarks
-   * Must return one {@link LocaleTranslations} per item, in the same order as `items`.
-   */
-  translate: (
-    params: TranslateBatchRequest,
-  ) => LocaleTranslations[] | Promise<LocaleTranslations[]>;
 }

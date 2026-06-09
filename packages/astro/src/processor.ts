@@ -39,8 +39,8 @@ let cached: typeof AstroCompilerSync | undefined;
  * ```
  */
 export function astro(): Processor {
-  return createProcessor({
-    applyImport(magicString, source, importStatement) {
+  return createProcessor(
+    (magicString, source, importStatement) => {
       const match = FRONTMATTER_OPEN_RX.exec(source);
       if (match !== null) {
         const insertAt = match.index + match[0].length;
@@ -49,14 +49,14 @@ export function astro(): Processor {
       }
       magicString.prepend(`---\n${importStatement}\n---\n`);
     },
-    extensions: ['.astro'],
-    id: 'astro',
-    parseFragments(source) {
+    ['.astro'],
+    'astro',
+    (source) => {
       const compiler = loadCompiler();
       const { ast } = compiler.parse(source, undefined);
       return fragmentsFromNode(ast, source);
     },
-  });
+  );
 }
 
 function loadCompiler(): typeof AstroCompilerSync {
