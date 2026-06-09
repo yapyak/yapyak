@@ -1,4 +1,5 @@
 import { resolveFormatter } from '../formatter';
+import { warn } from '../warn';
 
 export function interpolate(
   template: string,
@@ -192,11 +193,10 @@ function parseNumberOptions(styleArgument: string): Intl.NumberFormatOptions {
       return { currency: currencyCode, style: 'currency' };
     }
   }
-  if (process.env.NODE_ENV !== 'production') {
-    console.warn(
-      `[yapyak] Unknown number style "${trimmed}" — falling back to default formatting. Expected one of: decimal, percent, currency, integer.`,
-    );
-  }
+  warn(
+    'Unknown number style — falling back to default formatting. Expected one of: decimal, percent, currency, integer.',
+    { code: 'YPK_UNKNOWN_NUMBER_STYLE', received: trimmed },
+  );
   return {};
 }
 

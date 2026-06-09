@@ -1,6 +1,7 @@
 import type { Persistence } from './type';
 
 import { appendResponseHeader } from '../locale';
+import { warn } from '../warn';
 import { subscribeHistory } from './history';
 
 interface CookieOptions {
@@ -65,9 +66,10 @@ export function cookie(options: CookieOptions): Persistence {
       const cookieString = `${name}=${value}; path=/; max-age=${COOKIE_MAX_AGE_SECONDS}; samesite=lax`;
       if (typeof globalThis.document === 'undefined') {
         const applied = appendResponseHeader('Set-Cookie', cookieString);
-        if (!applied && process.env.NODE_ENV !== 'production') {
-          console.warn(
-            '[yapyak] setLocale() called server-side outside a withRequest scope. The cookie was not set. Install the matching adapter middleware (e.g. @yapyak/astro, @yapyak/sveltekit).',
+        if (!applied) {
+          warn(
+            'setLocale() called server-side outside a withRequest scope. The cookie was not set. Install the matching adapter middleware (e.g. @yapyak/astro, @yapyak/sveltekit).',
+            { code: 'YPK_PERSISTENCE_COOKIE_NO_WRITER' },
           );
         }
         return false;

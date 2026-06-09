@@ -1,5 +1,7 @@
 import type { Persistence } from './type';
 
+import { warn } from '../warn';
+
 interface LocalStorageOptions {
   key: string;
 }
@@ -20,11 +22,10 @@ export function localStorage(options: LocalStorageOptions): Persistence {
     },
     set(locale) {
       if (typeof globalThis.localStorage === 'undefined') {
-        if (process.env.NODE_ENV !== 'production') {
-          console.warn(
-            '[yapyak] setLocale() is a no-op server-side with persistence: "local-storage". localStorage is browser-only. Use persistence: "cookie" for SSR-compatible locale switching.',
-          );
-        }
+        warn(
+          'setLocale() is a no-op server-side with persistence: "local-storage". localStorage is browser-only. Use persistence: "cookie" for SSR-compatible locale switching.',
+          { code: 'YPK_PERSISTENCE_LOCAL_STORAGE_SSR_NOOP' },
+        );
         return false;
       }
       try {

@@ -1,5 +1,6 @@
 import type { Persistence } from './type';
 
+import { warn } from '../warn';
 import { subscribeHistory } from './history';
 
 interface UrlOptions {
@@ -20,11 +21,10 @@ export function url(options: UrlOptions): Persistence {
       return getLocaleFromUrl(new URL(request.url), locales, match);
     },
     set() {
-      if (process.env.NODE_ENV !== 'production') {
-        console.warn(
-          '[yapyak] setLocale() is a no-op with persistence: "url". The URL is the source of truth — drive locale switches through router navigation.',
-        );
-      }
+      warn(
+        'setLocale() is a no-op with persistence: "url". The URL is the source of truth — drive locale switches through router navigation.',
+        { code: 'YPK_PERSISTENCE_URL_NOOP' },
+      );
       return false;
     },
     subscribe(onChange) {

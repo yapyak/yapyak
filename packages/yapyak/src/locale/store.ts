@@ -10,6 +10,7 @@ import {
 
 import { registerHotDispose } from '../hot-dispose';
 import { buildPersistence } from '../persistence';
+import { warn } from '../warn';
 import { readRequest } from './request-reader';
 import { resolveLocale } from './resolve';
 
@@ -86,14 +87,11 @@ persistence?.subscribe?.(syncFromPersistence);
  * ```
  */
 export function getLocale(): Locale {
-  if (
-    !hasWarnedUninitialized &&
-    process.env.NODE_ENV !== 'production' &&
-    LOCALES.length === 0
-  ) {
+  if (!hasWarnedUninitialized && LOCALES.length === 0) {
     hasWarnedUninitialized = true;
-    console.warn(
-      '[yapyak] yapyak runtime not initialized — register the build-tool plugin (@yapyak/vite) in your bundler config.',
+    warn(
+      'yapyak runtime not initialized — register the build-tool plugin (@yapyak/vite) in your bundler config.',
+      { code: 'YPK_RUNTIME_NOT_INITIALIZED' },
     );
   }
   if (typeof window === 'undefined') {
@@ -141,11 +139,11 @@ export function getLocale(): Locale {
  */
 export function setLocale(value: Locale): void {
   if (!LOCALES.includes(value)) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn(
-        `[yapyak] setLocale('${value}') ignored — not in configured locales: ${LOCALES.join(', ')}.`,
-      );
-    }
+    warn('setLocale ignored — value not in configured locales.', {
+      code: 'YPK_SET_LOCALE_IGNORED',
+      configured: LOCALES,
+      requested: value,
+    });
     return;
   }
 
@@ -180,4 +178,5 @@ export function autoSubscribeLocale(
 
 export function resetLocale(): void {
   currentLocale = getInitialLocale();
+  hasWarnedUninitialized = false;
 }

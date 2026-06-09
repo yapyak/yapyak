@@ -1,3 +1,4 @@
+export { type SerializedYapyakError, YapyakError } from './error';
 export { registerHotDispose } from './hot-dispose';
 export {
   autoSubscribeLocale,
@@ -12,3 +13,4 @@ export {
   type RichTextNode,
   walkRichText,
 } from './translation';
+export { resetWarn, setWarn, type WarnFn, warn } from './warn';

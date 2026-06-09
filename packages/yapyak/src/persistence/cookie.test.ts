@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { setResponseHeaderWriter } from '../locale/response-header-writer';
+import { resetWarn, setWarn } from '../warn';
 import { cookie, parseCookie } from './cookie';
 
 describe('cookie', () => {
@@ -86,6 +87,7 @@ describe('cookie', () => {
 
     afterEach(() => {
       setResponseHeaderWriter(null);
+      resetWarn();
     });
 
     it('returns `undefined` from `get` when `document` is missing', () => {
@@ -118,20 +120,24 @@ describe('cookie', () => {
     });
 
     it('returns false from set when no writer is registered', () => {
-      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      setWarn(vi.fn());
       expect(cookie({ name: 'locale' }).set('sv')).toBe(false);
-      warn.mockRestore();
     });
 
-    it('warns in dev when set is called without a writer', () => {
-      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    it('warns when set is called without a writer', () => {
+      const stub = vi.fn();
+      setWarn(stub);
+
       cookie({ name: 'locale' }).set('sv');
-      expect(warn).toHaveBeenCalledWith(
+
+      expect(stub).toHaveBeenCalledWith(
         expect.stringContaining(
-          '[yapyak] setLocale() called server-side outside a withRequest scope',
+          'setLocale() called server-side outside a withRequest scope',
         ),
+        expect.objectContaining({
+          code: 'YPK_PERSISTENCE_COOKIE_NO_WRITER',
+        }),
       );
-      warn.mockRestore();
     });
   });
 

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { resetWarn, setWarn } from '../warn';
 import { localStorage } from './local-storage';
 
 describe('localStorage', () => {
@@ -76,31 +77,38 @@ describe('localStorage', () => {
   });
 
   describe('in non-browser environment', () => {
+    afterEach(() => {
+      resetWarn();
+    });
+
     it('returns `undefined` from `get` when storage is missing', () => {
       expect(localStorage({ key: 'locale' }).get()).toBeUndefined();
     });
 
     it('blocks `set` when storage is missing', () => {
-      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      setWarn(vi.fn());
       expect(() => localStorage({ key: 'locale' }).set('sv')).not.toThrow();
-      warn.mockRestore();
     });
 
     it('returns false from `set` when storage is missing', () => {
-      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      setWarn(vi.fn());
       expect(localStorage({ key: 'locale' }).set('sv')).toBe(false);
-      warn.mockRestore();
     });
 
-    it('warns in dev that local-storage is browser-only', () => {
-      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    it('warns that local-storage is browser-only', () => {
+      const stub = vi.fn();
+      setWarn(stub);
+
       localStorage({ key: 'locale' }).set('sv');
-      expect(warn).toHaveBeenCalledWith(
+
+      expect(stub).toHaveBeenCalledWith(
         expect.stringContaining(
-          '[yapyak] setLocale() is a no-op server-side with persistence: "local-storage"',
+          'setLocale() is a no-op server-side with persistence: "local-storage"',
         ),
+        expect.objectContaining({
+          code: 'YPK_PERSISTENCE_LOCAL_STORAGE_SSR_NOOP',
+        }),
       );
-      warn.mockRestore();
     });
   });
 });
