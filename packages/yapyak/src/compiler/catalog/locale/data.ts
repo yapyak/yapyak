@@ -1,3 +1,4 @@
+import type { LocaleContext } from './context';
 import type { LocaleFile } from './file';
 
 import { CorruptLocaleFileError, readLocaleFile } from './file';
@@ -5,20 +6,13 @@ import { join } from 'node:path';
 
 export type LocaleData = Record<string, LocaleFile>;
 
-export interface ReadLocaleDataOptions {
-  locales: string[];
-  localesDir: string;
-  projectRoot: string;
-}
-
-export function readLocaleData(options: ReadLocaleDataOptions): LocaleData {
+export function readLocaleData(
+  context: Pick<LocaleContext, 'locales' | 'localesDir'>,
+  projectRoot: string,
+): LocaleData {
   const localeData: LocaleData = {};
-  for (const locale of options.locales) {
-    const path = join(
-      options.projectRoot,
-      options.localesDir,
-      `${locale}.json`,
-    );
+  for (const locale of context.locales) {
+    const path = join(projectRoot, context.localesDir, `${locale}.json`);
     try {
       localeData[locale] = readLocaleFile(path);
     } catch (error) {

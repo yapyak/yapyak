@@ -61,14 +61,11 @@ describe('autoTranslate', () => {
       },
     ];
 
-    const promise = autoTranslate({
-      defaultLocale: 'en',
-      locales: ['en', 'sv'],
-      localesDir: 'locales',
-      messages,
+    const promise = autoTranslate(
+      { messages, translator },
+      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir: 'locales' },
       projectRoot,
-      translator,
-    });
+    );
 
     rmSync(localePath);
     resolveTranslation(['Hej']);

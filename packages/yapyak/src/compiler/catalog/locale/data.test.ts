@@ -22,31 +22,28 @@ describe('readLocaleData', () => {
       join(root, 'locales', 'sv.json'),
       JSON.stringify({ 'src/a.ts': { Hello: 'Hej' } }),
     );
-    const result = readLocaleData({
-      locales: ['sv'],
-      localesDir: 'locales',
-      projectRoot: root,
-    });
+    const result = readLocaleData(
+      { locales: ['sv'], localesDir: 'locales' },
+      root,
+    );
     expect(result.sv).toEqual({ 'src/a.ts': { Hello: 'Hej' } });
   });
 
   it('returns an empty entry when a locale file is missing', () => {
-    const result = readLocaleData({
-      locales: ['sv'],
-      localesDir: 'locales',
-      projectRoot: root,
-    });
+    const result = readLocaleData(
+      { locales: ['sv'], localesDir: 'locales' },
+      root,
+    );
     expect(result.sv).toEqual({});
   });
 
   it('warns and yields an empty entry when a locale file is corrupt', () => {
     writeFileSync(join(root, 'locales', 'sv.json'), '{not valid');
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    const result = readLocaleData({
-      locales: ['sv'],
-      localesDir: 'locales',
-      projectRoot: root,
-    });
+    const result = readLocaleData(
+      { locales: ['sv'], localesDir: 'locales' },
+      root,
+    );
     expect(result.sv).toEqual({});
     expect(warn).toHaveBeenCalledWith(
       expect.stringContaining('Failed to parse locale file'),
@@ -60,11 +57,7 @@ describe('readLocaleData', () => {
     rmSync(path);
     mkdirSync(path);
     expect(() =>
-      readLocaleData({
-        locales: ['sv'],
-        localesDir: 'locales',
-        projectRoot: root,
-      }),
+      readLocaleData({ locales: ['sv'], localesDir: 'locales' }, root),
     ).toThrow();
   });
 });

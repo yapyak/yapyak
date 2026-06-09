@@ -1,4 +1,8 @@
-import type { DiscoverLocalesResult, LocaleData } from 'yapyak/compiler';
+import type {
+  DiscoverLocalesResult,
+  LocaleContext,
+  LocaleData,
+} from 'yapyak/compiler';
 
 import { discoverLocales, readLocaleData } from 'yapyak/compiler';
 
@@ -8,10 +12,7 @@ interface EmittedLocales {
 }
 
 export interface CreateLocaleResolverOptions {
-  defaultLocale: string;
-  fixedLocale: string | undefined;
-  localesDir: string;
-  projectRoot: string;
+  fixedLocale?: string;
 }
 
 export interface LocaleResolver {
@@ -24,18 +25,19 @@ export interface LocaleResolver {
 }
 
 export function createLocaleResolver(
-  options: CreateLocaleResolverOptions,
+  context: Pick<LocaleContext, 'defaultLocale' | 'localesDir'>,
+  projectRoot: string,
+  options?: CreateLocaleResolverOptions,
 ): LocaleResolver {
+  const fixedLocale = options?.fixedLocale;
   let discovery: DiscoverLocalesResult | null = null;
   let emitted: EmittedLocales | null = null;
   let localeData: LocaleData | null = null;
 
   function getDiscovery(): DiscoverLocalesResult {
     if (discovery === null) {
-      discovery = discoverLocales({
-        defaultLocale: options.defaultLocale,
-        localesDir: options.localesDir,
-        projectRoot: options.projectRoot,
+      discovery = discoverLocales(context.localesDir, projectRoot, {
+        defaultLocale: context.defaultLocale,
       });
     }
     return discovery;
@@ -50,10 +52,10 @@ export function createLocaleResolver(
     if (emitted === null) {
       const project = getProjectLocales();
       emitted =
-        options.fixedLocale !== undefined
+        fixedLocale !== undefined
           ? {
               defaultLocale: project.defaultLocale,
-              locales: [options.fixedLocale],
+              locales: [fixedLocale],
             }
           : project;
     }
@@ -62,11 +64,13 @@ export function createLocaleResolver(
 
   function getLocaleData(): LocaleData {
     if (localeData === null) {
-      localeData = readLocaleData({
-        locales: getEmittedLocales().locales,
-        localesDir: options.localesDir,
-        projectRoot: options.projectRoot,
-      });
+      localeData = readLocaleData(
+        {
+          locales: getEmittedLocales().locales,
+          localesDir: context.localesDir,
+        },
+        projectRoot,
+      );
     }
     return localeData;
   }

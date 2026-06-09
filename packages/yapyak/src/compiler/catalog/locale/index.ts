@@ -1,13 +1,11 @@
+export type { LocaleContext } from './context';
+
 export {
   type LocaleIssue,
   type LocaleValidation,
   validateLocaleCode,
 } from './code';
-export {
-  type LocaleData,
-  type ReadLocaleDataOptions,
-  readLocaleData,
-} from './data';
+export { type LocaleData, readLocaleData } from './data';
 export {
   type DiscoverLocalesOptions,
   type DiscoverLocalesResult,
@@ -21,6 +19,7 @@ export {
   type LocaleFile,
   readLocaleFile,
   type SyncEntry,
+  type SyncLocaleFilesInput,
   type SyncLocaleFilesOptions,
   type SyncLocaleFilesResult,
   syncLocaleFiles,
@@ -32,6 +31,7 @@ export {
 export {
   detectRenames,
   type MessagePosition,
+  type MigrateLocalesInput,
   type MigrateLocalesOptions,
   type MigrateLocalesResult,
   migrateLocales,

@@ -86,16 +86,19 @@ export async function translate(options: TranslateOptions): Promise<number> {
 
   const localesToProcess = [...new Set(stubsToFill.map((stub) => stub.locale))];
   for (const locale of localesToProcess) {
-    const subResult = await autoTranslate({
-      defaultLocale: report.defaultLocale,
-      examples: config.examples,
-      force,
-      locales: [report.defaultLocale, locale],
-      localesDir: config.localesDir,
-      messages: report.messages,
+    const subResult = await autoTranslate(
+      {
+        messages: report.messages,
+        translator: withProgress(translator, onProgress),
+      },
+      {
+        defaultLocale: report.defaultLocale,
+        locales: [report.defaultLocale, locale],
+        localesDir: config.localesDir,
+      },
       projectRoot,
-      translator: withProgress(translator, onProgress),
-    });
+      { examples: config.examples, force },
+    );
     failed += subResult.errors.length;
   }
 

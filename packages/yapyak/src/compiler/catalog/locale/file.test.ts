@@ -53,14 +53,11 @@ describe('syncLocaleFiles', () => {
     const localesDir = 'locales';
     const localePath = join(projectRoot, localesDir, 'sv.json');
 
-    syncLocaleFiles({
-      defaultLocale: 'en',
-      filter: () => true,
-      locales: ['en', 'sv'],
-      localesDir,
-      messages: [],
+    syncLocaleFiles(
+      { filter: () => true, messages: [] },
+      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
       projectRoot,
-    });
+    );
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({});
   });
@@ -75,16 +72,12 @@ describe('syncLocaleFiles', () => {
       JSON.stringify({ 'src/a.tsx': { Save: 'Spara' } }),
     );
 
-    syncLocaleFiles({
-      defaultLocale: 'en',
-      filter: () => true,
-      locales: ['en', 'sv'],
-      localesDir,
-      messages: [],
-      now: () => '2026-01-01T00:00:00.000Z',
+    syncLocaleFiles(
+      { filter: () => true, messages: [] },
+      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
       projectRoot,
-      yapyakDir,
-    });
+      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+    );
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({});
     expect(
@@ -109,16 +102,15 @@ describe('syncLocaleFiles', () => {
       JSON.stringify({ 'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' } }),
     );
 
-    syncLocaleFiles({
-      defaultLocale: 'en',
-      filter: () => true,
-      locales: ['en', 'sv'],
-      localesDir,
-      messages: [makeMessage('Save', 'src/a.tsx')],
-      now: () => '2026-01-01T00:00:00.000Z',
+    syncLocaleFiles(
+      {
+        filter: () => true,
+        messages: [makeMessage('Save', 'src/a.tsx')],
+      },
+      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
       projectRoot,
-      yapyakDir,
-    });
+      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+    );
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
       'src/a.tsx': { Save: 'Spara' },
@@ -134,19 +126,18 @@ describe('syncLocaleFiles', () => {
       },
     });
 
-    syncLocaleFiles({
-      defaultLocale: 'en',
-      filter: () => true,
-      locales: ['en', 'sv'],
-      localesDir,
-      messages: [
-        makeMessage('Save', 'src/a.tsx'),
-        makeMessage('Cancel', 'src/a.tsx'),
-      ],
-      now: () => '2026-01-02T00:00:00.000Z',
+    syncLocaleFiles(
+      {
+        filter: () => true,
+        messages: [
+          makeMessage('Save', 'src/a.tsx'),
+          makeMessage('Cancel', 'src/a.tsx'),
+        ],
+      },
+      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
       projectRoot,
-      yapyakDir,
-    });
+      { now: () => '2026-01-02T00:00:00.000Z', yapyakDir },
+    );
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
       'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
@@ -168,38 +159,36 @@ describe('syncLocaleFiles', () => {
       }),
     );
 
-    syncLocaleFiles({
-      defaultLocale: 'en',
-      filter: () => true,
-      locales: ['en', 'sv'],
-      localesDir,
-      messages: [
-        makeMessage('Save', 'src/b.tsx'),
-        makeMessage('Cancel', 'src/b.tsx'),
-      ],
-      now: () => '2026-01-01T00:00:00.000Z',
+    syncLocaleFiles(
+      {
+        filter: () => true,
+        messages: [
+          makeMessage('Save', 'src/b.tsx'),
+          makeMessage('Cancel', 'src/b.tsx'),
+        ],
+      },
+      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
       projectRoot,
-      yapyakDir,
-    });
+      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+    );
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
       'src/b.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
     });
     expect(existsSync(join(yapyakDir, 'orphans.json'))).toBe(false);
 
-    syncLocaleFiles({
-      defaultLocale: 'en',
-      filter: () => true,
-      locales: ['en', 'sv'],
-      localesDir,
-      messages: [
-        makeMessage('Save', 'src/a.tsx'),
-        makeMessage('Cancel', 'src/a.tsx'),
-      ],
-      now: () => '2026-01-02T00:00:00.000Z',
+    syncLocaleFiles(
+      {
+        filter: () => true,
+        messages: [
+          makeMessage('Save', 'src/a.tsx'),
+          makeMessage('Cancel', 'src/a.tsx'),
+        ],
+      },
+      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
       projectRoot,
-      yapyakDir,
-    });
+      { now: () => '2026-01-02T00:00:00.000Z', yapyakDir },
+    );
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
       'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
@@ -219,30 +208,25 @@ describe('syncLocaleFiles', () => {
       }),
     );
 
-    syncLocaleFiles({
-      defaultLocale: 'en',
-      filter: () => true,
-      locales: ['en', 'sv'],
-      localesDir,
-      messages: [],
-      now: () => '2026-01-01T00:00:00.000Z',
+    syncLocaleFiles(
+      { filter: () => true, messages: [] },
+      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
       projectRoot,
-      yapyakDir,
-    });
+      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+    );
 
-    syncLocaleFiles({
-      defaultLocale: 'en',
-      filter: () => true,
-      locales: ['en', 'sv'],
-      localesDir,
-      messages: [
-        makeMessage('Save', 'src/b.tsx'),
-        makeMessage('Cancel', 'src/b.tsx'),
-      ],
-      now: () => '2026-01-02T00:00:00.000Z',
+    syncLocaleFiles(
+      {
+        filter: () => true,
+        messages: [
+          makeMessage('Save', 'src/b.tsx'),
+          makeMessage('Cancel', 'src/b.tsx'),
+        ],
+      },
+      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
       projectRoot,
-      yapyakDir,
-    });
+      { now: () => '2026-01-02T00:00:00.000Z', yapyakDir },
+    );
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
       'src/b.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
@@ -264,16 +248,15 @@ describe('syncLocaleFiles', () => {
       }),
     );
 
-    syncLocaleFiles({
-      defaultLocale: 'en',
-      filter: () => true,
-      locales: ['en', 'sv'],
-      localesDir,
-      messages: [makeMessage('Save', 'src/a.tsx')],
-      now: () => '2026-01-01T00:00:00.000Z',
+    syncLocaleFiles(
+      {
+        filter: () => true,
+        messages: [makeMessage('Save', 'src/a.tsx')],
+      },
+      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
       projectRoot,
-      yapyakDir,
-    });
+      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+    );
 
     const orphans = JSON.parse(
       readFileSync(join(yapyakDir, 'orphans.json'), 'utf8'),
@@ -302,16 +285,12 @@ describe('syncLocaleFiles', () => {
       }),
     );
 
-    syncLocaleFiles({
-      defaultLocale: 'en',
-      filter: () => true,
-      locales: ['en', 'sv'],
-      localesDir,
-      messages: [],
-      now: () => '2026-01-01T00:00:00.000Z',
+    syncLocaleFiles(
+      { filter: () => true, messages: [] },
+      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
       projectRoot,
-      yapyakDir,
-    });
+      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+    );
 
     writeFileSync(
       localePath,
@@ -320,27 +299,22 @@ describe('syncLocaleFiles', () => {
       }),
     );
 
-    syncLocaleFiles({
-      defaultLocale: 'en',
-      filter: () => true,
-      locales: ['en', 'sv'],
-      localesDir,
-      messages: [],
-      now: () => '2026-01-02T00:00:00.000Z',
+    syncLocaleFiles(
+      { filter: () => true, messages: [] },
+      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
       projectRoot,
-      yapyakDir,
-    });
+      { now: () => '2026-01-02T00:00:00.000Z', yapyakDir },
+    );
 
-    syncLocaleFiles({
-      defaultLocale: 'en',
-      filter: () => true,
-      locales: ['en', 'sv'],
-      localesDir,
-      messages: [makeMessage('Save', 'src/components/c.tsx')],
-      now: () => '2026-01-03T00:00:00.000Z',
+    syncLocaleFiles(
+      {
+        filter: () => true,
+        messages: [makeMessage('Save', 'src/components/c.tsx')],
+      },
+      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
       projectRoot,
-      yapyakDir,
-    });
+      { now: () => '2026-01-03T00:00:00.000Z', yapyakDir },
+    );
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
       'src/components/c.tsx': { Save: 'Spara ändringar' },
@@ -357,16 +331,15 @@ describe('syncLocaleFiles', () => {
 
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-    syncLocaleFiles({
-      defaultLocale: 'en',
-      filter: () => true,
-      locales: ['en', 'sv'],
-      localesDir,
-      messages: [makeMessage('Save', 'src/a.tsx')],
-      now: () => '2026-01-01T00:00:00.000Z',
+    syncLocaleFiles(
+      {
+        filter: () => true,
+        messages: [makeMessage('Save', 'src/a.tsx')],
+      },
+      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
       projectRoot,
-      yapyakDir,
-    });
+      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+    );
 
     expect(readFileSync(localePath, 'utf8')).toBe(corruptContent);
     expect(warn).toHaveBeenCalledWith(
@@ -389,16 +362,15 @@ describe('syncLocaleFiles', () => {
       }),
     );
 
-    const result = syncLocaleFiles({
-      defaultLocale: 'en',
-      filter: (fileId) => fileId.endsWith('.tsx'),
-      locales: ['en', 'sv'],
-      localesDir,
-      messages: [makeMessage('Hello', 'src/a.tsx')],
-      now: () => '2026-01-01T00:00:00.000Z',
+    const result = syncLocaleFiles(
+      {
+        filter: (fileId) => fileId.endsWith('.tsx'),
+        messages: [makeMessage('Hello', 'src/a.tsx')],
+      },
+      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
       projectRoot,
-      yapyakDir,
-    });
+      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+    );
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
       'src/a.tsx': { Hello: 'Hej' },
@@ -418,16 +390,15 @@ describe('syncLocaleFiles', () => {
       JSON.stringify({ 'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' } }),
     );
 
-    const result = syncLocaleFiles({
-      defaultLocale: 'en',
-      filter: () => true,
-      locales: ['en', 'sv'],
-      localesDir,
-      messages: [makeMessage('Save', 'src/a.tsx')],
-      now: () => '2026-01-01T00:00:00.000Z',
+    const result = syncLocaleFiles(
+      {
+        filter: () => true,
+        messages: [makeMessage('Save', 'src/a.tsx')],
+      },
+      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
       projectRoot,
-      yapyakDir,
-    });
+      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+    );
 
     expect(result.orphaned).toEqual([
       { fileId: 'src/a.tsx', locale: 'sv', source: 'Cancel' },
@@ -444,30 +415,28 @@ describe('syncLocaleFiles', () => {
       JSON.stringify({ 'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' } }),
     );
 
-    syncLocaleFiles({
-      defaultLocale: 'en',
-      filter: () => true,
-      locales: ['en', 'sv'],
-      localesDir,
-      messages: [makeMessage('Save', 'src/a.tsx')],
-      now: () => '2026-01-01T00:00:00.000Z',
+    syncLocaleFiles(
+      {
+        filter: () => true,
+        messages: [makeMessage('Save', 'src/a.tsx')],
+      },
+      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
       projectRoot,
-      yapyakDir,
-    });
+      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+    );
 
-    const result = syncLocaleFiles({
-      defaultLocale: 'en',
-      filter: () => true,
-      locales: ['en', 'sv'],
-      localesDir,
-      messages: [
-        makeMessage('Save', 'src/a.tsx'),
-        makeMessage('Cancel', 'src/a.tsx'),
-      ],
-      now: () => '2026-01-02T00:00:00.000Z',
+    const result = syncLocaleFiles(
+      {
+        filter: () => true,
+        messages: [
+          makeMessage('Save', 'src/a.tsx'),
+          makeMessage('Cancel', 'src/a.tsx'),
+        ],
+      },
+      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
       projectRoot,
-      yapyakDir,
-    });
+      { now: () => '2026-01-02T00:00:00.000Z', yapyakDir },
+    );
 
     expect(result.restored).toEqual([
       { fileId: 'src/a.tsx', locale: 'sv', source: 'Cancel' },

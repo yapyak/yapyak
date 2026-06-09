@@ -5,7 +5,12 @@ import type {
   Translator,
 } from '../../translator';
 import type { ExtractedMessage, Location } from '../parser/file/extract';
-import type { LocaleData, LocaleFile, OrphanCache } from './locale';
+import type {
+  LocaleContext,
+  LocaleData,
+  LocaleFile,
+  OrphanCache,
+} from './locale';
 
 import { toMessageKey } from '../parser';
 import { extractExamples } from './example';
@@ -20,15 +25,14 @@ import { toLocationKey } from './location-key';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
+export interface AutoTranslateInput {
+  messages: ExtractedMessage[];
+  translator: Translator;
+}
+
 export interface AutoTranslateOptions {
-  defaultLocale: string;
   examples?: number;
   force?: boolean;
-  locales: string[];
-  localesDir: string;
-  messages: ExtractedMessage[];
-  projectRoot: string;
-  translator: Translator;
   yapyakDir?: string;
 }
 
@@ -55,31 +59,46 @@ function getStubKey(stub: TranslationStub): string {
 }
 
 export async function autoTranslate(
-  options: AutoTranslateOptions,
+  input: AutoTranslateInput,
+  context: LocaleContext,
+  projectRoot: string,
+  options?: AutoTranslateOptions,
 ): Promise<AutoTranslateResult> {
-  const contextBySource = extractContexts(options.messages);
-  const stubs = extractStubs(options, contextBySource);
+  const force = options?.force ?? false;
+  const examplesMax = options?.examples ?? 0;
+  const contextBySource = extractContexts(input.messages);
+  const stubs = extractStubs(
+    input,
+    context,
+    projectRoot,
+    force,
+    contextBySource,
+  );
   if (stubs.length === 0) {
     return { errors: [], translated: 0 };
   }
 
-  const extractedSources = toExtractedSources(options.messages);
+  const extractedSources = toExtractedSources(input.messages);
   const errors: AutoTranslateResult['errors'] = [];
   let translated = 0;
 
-  const examplesMax = options.examples ?? 0;
-  const exampleCache = loadExampleCache(options, examplesMax);
+  const exampleCache = loadExampleCache(
+    context,
+    projectRoot,
+    options?.yapyakDir,
+    examplesMax,
+  );
 
   const requests = stubs.map((stub) =>
-    buildRequest(stub, options, exampleCache, examplesMax),
+    buildRequest(stub, context.defaultLocale, exampleCache, examplesMax),
   );
 
   let results: string[];
   try {
     results =
-      typeof options.translator.batch === 'function'
-        ? await options.translator.batch(requests)
-        : await runOneByOne(stubs, requests, options.translator, errors);
+      typeof input.translator.batch === 'function'
+        ? await input.translator.batch(requests)
+        : await runOneByOne(stubs, requests, input.translator, errors);
   } catch (error) {
     for (const stub of stubs) {
       errors.push({
@@ -107,8 +126,8 @@ export async function autoTranslate(
     let localeFile = localeFiles.get(stub.locale);
     if (!localeFile) {
       const localePath = join(
-        options.projectRoot,
-        options.localesDir,
+        projectRoot,
+        context.localesDir,
         `${stub.locale}.json`,
       );
       localeFile = readLocaleFile(localePath);
@@ -124,11 +143,7 @@ export async function autoTranslate(
     if (!localeFile) {
       continue;
     }
-    const localePath = join(
-      options.projectRoot,
-      options.localesDir,
-      `${locale}.json`,
-    );
+    const localePath = join(projectRoot, context.localesDir, `${locale}.json`);
     if (!existsSync(localePath)) {
       continue;
     }
@@ -173,14 +188,14 @@ async function runOneByOne(
 
 function buildRequest(
   stub: TranslationStub,
-  options: AutoTranslateOptions,
+  defaultLocale: string,
   exampleCache: ExampleCache,
   examplesMax: number,
 ): TranslateRequest {
   const request: TranslateRequest = {
     fileId: stub.fileId,
     source: stub.source,
-    sourceLocale: options.defaultLocale,
+    sourceLocale: defaultLocale,
     targetLocale: stub.locale,
   };
   if (stub.context !== undefined) {
@@ -238,27 +253,26 @@ function toLegacyContext(location: Location): MessageContext {
 }
 
 function extractStubs(
-  options: AutoTranslateOptions,
+  input: AutoTranslateInput,
+  context: LocaleContext,
+  projectRoot: string,
+  force: boolean,
   contexts: Map<string, MessageContext>,
 ): TranslationStub[] {
   const stubs: TranslationStub[] = [];
-  for (const locale of options.locales) {
-    if (locale === options.defaultLocale) {
+  for (const locale of context.locales) {
+    if (locale === context.defaultLocale) {
       continue;
     }
     if (!validateLocaleCode(locale).valid) {
       continue;
     }
-    const localePath = join(
-      options.projectRoot,
-      options.localesDir,
-      `${locale}.json`,
-    );
+    const localePath = join(projectRoot, context.localesDir, `${locale}.json`);
     const localeData = readLocaleFile(localePath);
-    for (const message of options.messages) {
+    for (const message of input.messages) {
       const key = toMessageKey(message.source, message.context);
       for (const location of message.locations) {
-        if (options.force !== true) {
+        if (!force) {
           const localeFile = localeData[location.fileId];
           const existing = localeFile?.[key];
           if (typeof existing === 'string' && existing !== '') {
@@ -312,27 +326,24 @@ interface ExampleCache {
 }
 
 function loadExampleCache(
-  options: AutoTranslateOptions,
+  context: LocaleContext,
+  projectRoot: string,
+  yapyakDir: string | undefined,
   max: number,
 ): ExampleCache {
   if (max <= 0) {
     return { localeData: {}, orphans: {} };
   }
   const localeData: LocaleData = {};
-  for (const locale of options.locales) {
-    if (locale === options.defaultLocale) {
+  for (const locale of context.locales) {
+    if (locale === context.defaultLocale) {
       continue;
     }
-    const path = join(
-      options.projectRoot,
-      options.localesDir,
-      `${locale}.json`,
-    );
+    const path = join(projectRoot, context.localesDir, `${locale}.json`);
     localeData[locale] = readLocaleFile(path);
   }
-  const yapyakDir =
-    options.yapyakDir ?? getDefaultYapyakDir(options.projectRoot);
-  const orphans = readOrphans(yapyakDir);
+  const resolvedYapyakDir = yapyakDir ?? getDefaultYapyakDir(projectRoot);
+  const orphans = readOrphans(resolvedYapyakDir);
   return { localeData, orphans };
 }
 

@@ -141,15 +141,12 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       allMessages.push(...list);
     }
     const { defaultLocale, locales } = getResolver().getProjectLocales();
-    const result = syncLocaleFiles({
-      defaultLocale,
-      filter,
-      locales,
-      localesDir: getNormalized().localesDir,
-      messages: allMessages,
+    const result = syncLocaleFiles(
+      { filter, messages: allMessages },
+      { defaultLocale, locales, localesDir: getNormalized().localesDir },
       projectRoot,
-      yapyakDir,
-    });
+      { yapyakDir },
+    );
     emitSyncDiagnostics(result);
     getResolver().invalidateData();
   }
@@ -253,16 +250,16 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       return;
     }
     try {
-      const result = await autoTranslate({
-        defaultLocale: input.defaultLocale,
-        examples: config.examples,
-        locales: input.locales,
-        localesDir: config.localesDir,
-        messages: input.filtered,
+      const result = await autoTranslate(
+        { messages: input.filtered, translator: input.translator },
+        {
+          defaultLocale: input.defaultLocale,
+          locales: input.locales,
+          localesDir: config.localesDir,
+        },
         projectRoot,
-        translator: input.translator,
-        yapyakDir,
-      });
+        { examples: config.examples, yapyakDir },
+      );
       if (result.translated > 0) {
         getResolver().invalidateData();
       }
@@ -353,12 +350,14 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
             `Use an array form for ssr.external, or have your function return false/null for 'yapyak' and 'yapyak/runtime'.`,
         );
       }
-      resolver = createLocaleResolver({
-        defaultLocale: result.config.defaultLocale,
-        fixedLocale,
-        localesDir: result.config.localesDir,
+      resolver = createLocaleResolver(
+        {
+          defaultLocale: result.config.defaultLocale,
+          localesDir: result.config.localesDir,
+        },
         projectRoot,
-      });
+        { fixedLocale },
+      );
       const discovery = resolver.getDiscovery();
       for (const warning of discovery.warnings) {
         warn(renderLocaleWarning(warning, result.config.localesDir));
@@ -469,15 +468,12 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         for (const list of messagesByFile.values()) {
           allMessages.push(...list);
         }
-        const result = syncLocaleFiles({
-          defaultLocale,
-          filter,
-          locales,
-          localesDir: getNormalized().localesDir,
-          messages: allMessages,
+        const result = syncLocaleFiles(
+          { filter, messages: allMessages },
+          { defaultLocale, locales, localesDir: getNormalized().localesDir },
           projectRoot,
-          yapyakDir,
-        });
+          { yapyakDir },
+        );
         emitSyncDiagnostics(result);
         writeRegister({
           locales: getResolver().getEmittedLocales().locales,
@@ -572,16 +568,22 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         after.flatMap(toCallSitePositions),
       );
       if (renames.length > 0) {
-        migrateLocales({
-          defaultLocale,
-          extractedSources: toExtractedSourcesForFile(fileId, after),
-          fileId,
-          locales,
-          localesDir: getNormalized().localesDir,
-          preserveTranslations: getNormalized().preserveTranslationsOnRename,
+        migrateLocales(
+          {
+            extractedSources: toExtractedSourcesForFile(fileId, after),
+            fileId,
+            renames,
+          },
+          {
+            defaultLocale,
+            locales,
+            localesDir: getNormalized().localesDir,
+          },
           projectRoot,
-          renames,
-        });
+          {
+            preserveTranslations: getNormalized().preserveTranslationsOnRename,
+          },
+        );
         getResolver().invalidateData();
       }
       if (after.length === 0) {

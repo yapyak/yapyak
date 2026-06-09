@@ -6,8 +6,6 @@ import { join } from 'node:path';
 
 export interface DiscoverLocalesOptions {
   defaultLocale?: string;
-  localesDir: string;
-  projectRoot: string;
 }
 
 export interface LocaleWarning {
@@ -23,16 +21,18 @@ export interface DiscoverLocalesResult {
 }
 
 export function discoverLocales(
-  options: DiscoverLocalesOptions,
+  localesDir: string,
+  projectRoot: string,
+  options?: DiscoverLocalesOptions,
 ): DiscoverLocalesResult {
-  const directory = join(options.projectRoot, options.localesDir);
+  const directory = join(projectRoot, localesDir);
   const fileLocales = existsSync(directory)
     ? readdirSync(directory)
         .filter((name) => name.endsWith('.json'))
         .map((name) => name.replace(/\.json$/, ''))
         .sort()
     : [];
-  const defaultLocale = options.defaultLocale || 'en';
+  const defaultLocale = options?.defaultLocale || 'en';
   const uniqueLocales = new Set<string>([defaultLocale, ...fileLocales]);
   const locales = [...uniqueLocales].sort();
   const warnings: LocaleWarning[] = [];

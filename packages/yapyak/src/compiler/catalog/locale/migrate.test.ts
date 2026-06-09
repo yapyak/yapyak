@@ -1,3 +1,6 @@
+import type { LocaleContext } from './context';
+import type { MigrateLocalesInput, MigrateLocalesOptions } from './migrate';
+
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { detectRenames, migrateLocales } from './migrate';
@@ -94,24 +97,36 @@ describe('migrateLocales', () => {
   }
 
   function runMigrate(
-    overrides: Partial<Parameters<typeof migrateLocales>[0]> = {},
+    overrides: {
+      context?: Partial<LocaleContext>;
+      input?: Partial<MigrateLocalesInput>;
+      options?: Partial<MigrateLocalesOptions>;
+    } = {},
   ): ReturnType<typeof migrateLocales> {
-    return migrateLocales({
-      defaultLocale: 'en',
-      extractedSources: { 'src/a.ts': new Set(['Save changes']) },
-      fileId: 'src/a.ts',
-      locales: ['en', 'sv'],
-      localesDir: 'locales',
-      preserveTranslations: true,
-      projectRoot: root,
-      renames: [{ from: 'Save', to: 'Save changes' }],
-      ...overrides,
-    });
+    return migrateLocales(
+      {
+        extractedSources: { 'src/a.ts': new Set(['Save changes']) },
+        fileId: 'src/a.ts',
+        renames: [{ from: 'Save', to: 'Save changes' }],
+        ...overrides.input,
+      },
+      {
+        defaultLocale: 'en',
+        locales: ['en', 'sv'],
+        localesDir: 'locales',
+        ...overrides.context,
+      },
+      root,
+      {
+        preserveTranslations: true,
+        ...overrides.options,
+      },
+    );
   }
 
   it('migrates no entries when renames is empty', () => {
     writeLocale('sv', { 'src/a.ts': { Save: 'Spara' } });
-    const result = runMigrate({ renames: [] });
+    const result = runMigrate({ input: { renames: [] } });
     expect(result.staleEntries).toEqual([]);
     expect(readLocale('sv')).toEqual({ 'src/a.ts': { Save: 'Spara' } });
   });
@@ -119,7 +134,7 @@ describe('migrateLocales', () => {
   it('migrates no entries for the default locale', () => {
     writeLocale('en', { 'src/a.ts': { Save: 'Save' } });
     writeLocale('sv', {});
-    const result = runMigrate({ locales: ['en'] });
+    const result = runMigrate({ context: { locales: ['en'] } });
     expect(result.staleEntries).toEqual([]);
     expect(readLocale('en')).toEqual({ 'src/a.ts': { Save: 'Save' } });
   });
@@ -140,7 +155,7 @@ describe('migrateLocales', () => {
 
   it('preserves the previous translation when `preserveTranslations` is true', () => {
     writeLocale('sv', { 'src/a.ts': { Save: 'Spara' } });
-    const result = runMigrate({ preserveTranslations: true });
+    const result = runMigrate({ options: { preserveTranslations: true } });
     expect(result.staleEntries).toEqual([
       { locale: 'sv', source: 'Save changes' },
     ]);
@@ -151,7 +166,7 @@ describe('migrateLocales', () => {
 
   it('clears the translation when `preserveTranslations` is false', () => {
     writeLocale('sv', { 'src/a.ts': { Save: 'Spara' } });
-    const result = runMigrate({ preserveTranslations: false });
+    const result = runMigrate({ options: { preserveTranslations: false } });
     expect(result.staleEntries).toEqual([
       { locale: 'sv', source: 'Save changes' },
     ]);
@@ -163,13 +178,15 @@ describe('migrateLocales', () => {
   it('lists every migration in `staleEntries`', () => {
     writeLocale('sv', { 'src/a.ts': { Cancel: 'Avbryt', Save: 'Spara' } });
     const result = runMigrate({
-      extractedSources: {
-        'src/a.ts': new Set(['Save changes', 'Loading...']),
+      input: {
+        extractedSources: {
+          'src/a.ts': new Set(['Save changes', 'Loading...']),
+        },
+        renames: [
+          { from: 'Save', to: 'Save changes' },
+          { from: 'Cancel', to: 'Loading...' },
+        ],
       },
-      renames: [
-        { from: 'Save', to: 'Save changes' },
-        { from: 'Cancel', to: 'Loading...' },
-      ],
     });
     expect(result.staleEntries).toEqual([
       { locale: 'sv', source: 'Save changes' },

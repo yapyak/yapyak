@@ -1,3 +1,5 @@
+import type { LocaleContext } from './context';
+
 import { readLocaleFile, writeLocaleFile } from './file';
 import { join } from 'node:path';
 
@@ -12,15 +14,14 @@ export interface RenameEntry {
   to: string;
 }
 
-export interface MigrateLocalesOptions {
-  defaultLocale: string;
+export interface MigrateLocalesInput {
   extractedSources: Record<string, Set<string>>;
   fileId: string;
-  locales: string[];
-  localesDir: string;
-  preserveTranslations: boolean;
-  projectRoot: string;
   renames: RenameEntry[];
+}
+
+export interface MigrateLocalesOptions {
+  preserveTranslations?: boolean;
 }
 
 export interface MigrateLocalesResult {
@@ -87,46 +88,45 @@ export function detectRenames(
 }
 
 export function migrateLocales(
-  options: MigrateLocalesOptions,
+  input: MigrateLocalesInput,
+  context: LocaleContext,
+  projectRoot: string,
+  options?: MigrateLocalesOptions,
 ): MigrateLocalesResult {
   const staleEntries: MigrateLocalesResult['staleEntries'] = [];
-  if (options.renames.length === 0) {
+  if (input.renames.length === 0) {
     return { staleEntries };
   }
 
-  for (const locale of options.locales) {
-    if (locale === options.defaultLocale) {
+  const preserveTranslations = options?.preserveTranslations ?? false;
+
+  for (const locale of context.locales) {
+    if (locale === context.defaultLocale) {
       continue;
     }
-    const localePath = join(
-      options.projectRoot,
-      options.localesDir,
-      `${locale}.json`,
-    );
+    const localePath = join(projectRoot, context.localesDir, `${locale}.json`);
     const localeFile = readLocaleFile(localePath);
-    const fileEntries = localeFile[options.fileId];
+    const fileEntries = localeFile[input.fileId];
     if (!fileEntries) {
       continue;
     }
     let hasChanged = false;
     const next: Record<string, string> = { ...fileEntries };
-    for (const rename of options.renames) {
+    for (const rename of input.renames) {
       if (!Object.hasOwn(next, rename.from)) {
         continue;
       }
       const previousValue = next[rename.from];
       delete next[rename.from];
-      next[rename.to] = options.preserveTranslations
-        ? (previousValue ?? '')
-        : '';
+      next[rename.to] = preserveTranslations ? (previousValue ?? '') : '';
       staleEntries.push({ locale, source: rename.to });
       hasChanged = true;
     }
     if (hasChanged) {
-      localeFile[options.fileId] = next;
+      localeFile[input.fileId] = next;
       writeLocaleFile({
         after: localeFile,
-        extractedSources: options.extractedSources,
+        extractedSources: input.extractedSources,
         filePath: localePath,
       });
     }

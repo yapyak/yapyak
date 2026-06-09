@@ -1,4 +1,5 @@
 import type { ExtractedMessage } from '../../parser/file/extract';
+import type { LocaleContext } from './context';
 import type { OrphanCache } from './orphan';
 
 import { toMessageKey } from '../../parser';
@@ -17,14 +18,13 @@ import { dirname, join } from 'node:path';
 
 export type LocaleFile = Record<string, Record<string, string>>;
 
-export interface SyncLocaleFilesOptions {
-  defaultLocale: string;
+export interface SyncLocaleFilesInput {
   filter: (fileId: string) => boolean;
-  locales: string[];
-  localesDir: string;
   messages: ExtractedMessage[];
+}
+
+export interface SyncLocaleFilesOptions {
   now?: () => string;
-  projectRoot: string;
   yapyakDir?: string;
 }
 
@@ -186,25 +186,27 @@ function findInvariantViolations(
 }
 
 export function syncLocaleFiles(
-  options: SyncLocaleFilesOptions,
+  input: SyncLocaleFilesInput,
+  context: LocaleContext,
+  projectRoot: string,
+  options?: SyncLocaleFilesOptions,
 ): SyncLocaleFilesResult {
-  const sourcesByFile = groupSourcesByFile(options.messages);
+  const sourcesByFile = groupSourcesByFile(input.messages);
   const extractedSources = toExtractedSourcesSet(sourcesByFile);
 
-  const yapyakDir =
-    options.yapyakDir ?? getDefaultYapyakDir(options.projectRoot);
+  const yapyakDir = options?.yapyakDir ?? getDefaultYapyakDir(projectRoot);
   const orphans = readOrphans(yapyakDir);
-  const nonDefaultLocales = options.locales.filter(
+  const nonDefaultLocales = context.locales.filter(
     (locale) =>
-      locale !== options.defaultLocale && validateLocaleCode(locale).valid,
+      locale !== context.defaultLocale && validateLocaleCode(locale).valid,
   );
 
   const existingByLocale = new Map<string, LocaleFile>();
   const corruptLocales = new Set<string>();
   for (const locale of nonDefaultLocales) {
     const localePath = getLocaleFilePath(
-      options.projectRoot,
-      options.localesDir,
+      projectRoot,
+      context.localesDir,
       locale,
     );
     try {
@@ -225,7 +227,7 @@ export function syncLocaleFiles(
   const inFlightDrops = extractInFlightDrops({
     existingByLocale,
     extractedSources,
-    filter: options.filter,
+    filter: input.filter,
     nonDefaultLocales: healthyLocales,
   });
 
@@ -239,7 +241,7 @@ export function syncLocaleFiles(
     const next: LocaleFile = {};
 
     for (const [fileId, entries] of Object.entries(existing)) {
-      if (options.filter(fileId)) {
+      if (input.filter(fileId)) {
         continue;
       }
       next[fileId] = entries;
@@ -309,7 +311,7 @@ export function syncLocaleFiles(
 
   const orphansChanged = applyOrphanMutations({
     droppedTranslations,
-    now: options.now ?? (() => new Date().toISOString()),
+    now: options?.now ?? (() => new Date().toISOString()),
     orphans,
     restoredOrphans,
   });
@@ -322,8 +324,8 @@ export function syncLocaleFiles(
   for (const locale of healthyLocales) {
     const next = nextByLocale.get(locale) ?? {};
     const localePath = getLocaleFilePath(
-      options.projectRoot,
-      options.localesDir,
+      projectRoot,
+      context.localesDir,
       locale,
     );
     writes.push({ after: next, extractedSources, filePath: localePath });
