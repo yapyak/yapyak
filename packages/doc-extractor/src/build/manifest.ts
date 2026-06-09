@@ -1,4 +1,4 @@
-import type { Block } from '../access/block';
+import type { Block } from '../access';
 import type {
   CollectionConfig,
   Config,
@@ -7,14 +7,14 @@ import type {
   TypedocPackage,
 } from '../config';
 
-import { extractMarkdoc } from '../extract/markdoc/extract';
-import { extractTypedoc } from '../extract/typedoc';
+import { extractMarkdoc } from '../extract/markdoc';
 import {
   buildModulePage,
+  buildSymbolIndex,
   buildSymbolPage,
   buildTypedocPackageIndexPage,
-} from '../extract/typedoc/page';
-import { buildSymbolIndex } from '../extract/typedoc/symbol-index';
+  extractTypedoc,
+} from '../extract/typedoc';
 import { slugify } from '../slug';
 import { encodeSymbolSegment } from '../symbol-path';
 import { buildMarkdocSidebar } from './markdoc-sidebar';

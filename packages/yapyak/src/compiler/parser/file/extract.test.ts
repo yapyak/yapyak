@@ -8,13 +8,9 @@ import { join } from 'node:path';
 
 const ROOT = join(import.meta.dirname, '..', 'fixture');
 
-function extractFixture(
-  category: string,
-  name: string,
-  locales: string[] = ['en'],
-): ExtractFileResult {
+function extractFixture(category: string, name: string): ExtractFileResult {
   const source = readFileSync(join(ROOT, category, name), 'utf-8');
-  return extractFile(name, locales, source);
+  return extractFile(name, source);
 }
 
 describe('extractFile', () => {
@@ -37,7 +33,6 @@ describe('extractFile', () => {
   it('folds identical calls into one message with multiple locations', () => {
     const result = extractFile(
       'multi.ts',
-      ['en'],
       `
         import { t } from 'yapyak';
         export const a = t('Hello');

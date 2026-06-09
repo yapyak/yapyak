@@ -1,6 +1,6 @@
-import type { SidebarNode } from '../build/manifest';
+import type { SidebarNode } from './manifest';
 
-import { parseFrontmatterOnly } from '../extract/markdoc/parse';
+import { parseFrontmatterOnly } from '../extract/markdoc';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 

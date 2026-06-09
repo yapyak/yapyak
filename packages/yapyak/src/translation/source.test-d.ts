@@ -1,4 +1,4 @@
-import type { ValidateSource } from './validate-source';
+import type { ValidateSource } from './source';
 
 import { describe, expectTypeOf, it } from 'vitest';
 

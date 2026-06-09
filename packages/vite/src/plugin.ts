@@ -166,11 +166,10 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
 
   function scanAllSources(): void {
     const files = walkSourceFiles(filter, projectRoot);
-    const { locales } = getResolver().getEmittedLocales();
     const processors = getNormalized().processors;
     messagesByFile.clear();
     for (const file of files) {
-      const result = extractFile(file.fileId, locales, file.code, {
+      const result = extractFile(file.fileId, file.code, {
         processors,
       });
       logErrors(result, error);
@@ -381,7 +380,6 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
         if (pendingActionByFileId.size === 0) {
           return;
         }
-        const { locales } = getResolver().getEmittedLocales();
         for (const [fileId, kind] of pendingActionByFileId) {
           if (kind === 'unlink') {
             messagesByFile.delete(fileId);
@@ -394,7 +392,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
             messagesByFile.delete(fileId);
             continue;
           }
-          const result = extractFile(fileId, locales, code, {
+          const result = extractFile(fileId, code, {
             processors: getNormalized().processors,
           });
           logErrors(result, error);
@@ -539,7 +537,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       const fileId = toFileId(projectRoot, context.file);
       const code = await context.read();
       const { defaultLocale, locales } = getResolver().getEmittedLocales();
-      const result = extractFile(fileId, locales, code, {
+      const result = extractFile(fileId, code, {
         processors: getNormalized().processors,
       });
       logErrors(result, error);
@@ -611,7 +609,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       const fileId = toFileId(projectRoot, id);
       const { locales } = getResolver().getEmittedLocales();
       const processors = getNormalized().processors;
-      const extracted = extractFile(fileId, locales, code, { processors });
+      const extracted = extractFile(fileId, code, { processors });
       logErrors(extracted, error);
       if (extracted.callSites.length === 0) {
         return null;

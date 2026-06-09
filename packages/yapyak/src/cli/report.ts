@@ -53,7 +53,7 @@ export function buildReport(input: BuildReportInput): Report {
   const messages: ExtractedMessage[] = [];
   const diagnostics: Diagnostic[] = [];
   for (const file of sourceFiles) {
-    const result = extractFile(file.fileId, locales, file.code, {
+    const result = extractFile(file.fileId, file.code, {
       processors: input.processors,
     });
     messages.push(...result.messages);

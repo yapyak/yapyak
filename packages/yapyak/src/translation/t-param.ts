@@ -47,7 +47,7 @@ type ExtractSelectBranches<
       ? TAccumulator | Trim<Key>
       : TAccumulator;
 
-type SelectValueType<TBody extends string> = [
+type SelectValue<TBody extends string> = [
   ExtractSelectBranches<TBody>,
 ] extends [never]
   ? string
@@ -55,13 +55,13 @@ type SelectValueType<TBody extends string> = [
     ? Exclude<ExtractSelectBranches<TBody>, 'other'> | (string & {})
     : ExtractSelectBranches<TBody>;
 
-type IcuValueType<TFormat extends string, TBody extends string = ''> =
+type IcuValue<TFormat extends string, TBody extends string = ''> =
   Trim<TFormat> extends 'plural' | 'selectordinal' | 'number'
     ? number
     : Trim<TFormat> extends 'date' | 'time'
       ? Date | number
       : Trim<TFormat> extends 'select'
-        ? SelectValueType<TBody>
+        ? SelectValue<TBody>
         : string | number | Date;
 
 type IcuParam<
@@ -69,7 +69,7 @@ type IcuParam<
   TFormat extends string = '',
   TBody extends string = '',
 > = {
-  [Key in Trim<TName>]: IcuValueType<TFormat, TBody>;
+  [Key in Trim<TName>]: IcuValue<TFormat, TBody>;
 };
 
 type ExtractBranchParams<TBody extends string, TAccumulator = unknown> =

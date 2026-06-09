@@ -1,5 +1,5 @@
-import type { CodeBlock } from '../access/block';
-import type { Page } from '../build/manifest';
+import type { Page } from '../build';
+import type { CodeBlock } from './block';
 
 import { walkBlocks } from './block';
 

@@ -56,7 +56,6 @@ export interface ExtractFileResult {
 
 export function extractFile(
   fileId: string,
-  locales: string[],
   source: string,
   options?: ExtractFileOptions,
 ): ExtractFileResult {
@@ -169,19 +168,19 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
       placeholders,
       range: remapRange(fragmentCall.range, fragment, originalSource),
       source: parsed.source,
-      sourceArg: fragmentCall.sourceArg,
+      sourceExpression: fragmentCall.sourceExpression,
     };
     if (parsed.context !== undefined) {
       callSite.context = parsed.context;
     }
-    if (fragmentCall.contextArg) {
-      callSite.contextArg = fragmentCall.contextArg;
+    if (fragmentCall.contextExpression) {
+      callSite.contextExpression = fragmentCall.contextExpression;
     }
     if (fragmentCall.localeExpression) {
       callSite.localeExpression = fragmentCall.localeExpression;
     }
-    if (fragmentCall.paramsArg) {
-      callSite.paramsArg = fragmentCall.paramsArg;
+    if (fragmentCall.paramsExpression) {
+      callSite.paramsExpression = fragmentCall.paramsExpression;
     }
     const elision =
       fragment.elision ??

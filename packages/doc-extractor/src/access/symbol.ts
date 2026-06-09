@@ -1,4 +1,4 @@
-import type { Manifest, SymbolEntry } from '../build/manifest';
+import type { Manifest, SymbolEntry } from '../build';
 
 export function resolveSymbol(
   manifest: Manifest,

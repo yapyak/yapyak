@@ -290,12 +290,14 @@ function renderCallReplacement(
     translations,
   });
   const hasPlaceholders = placeholders.length > 0;
-  const paramsArgText = hasPlaceholders ? getParamArgText(callSite) : undefined;
+  const paramsExpressionText = hasPlaceholders
+    ? getParamArgText(callSite)
+    : undefined;
   const localeText = callSite.localeExpression?.getText();
 
   const args: string[] = [catalog];
-  if (paramsArgText || localeText) {
-    args.push(paramsArgText ?? 'undefined');
+  if (paramsExpressionText || localeText) {
+    args.push(paramsExpressionText ?? 'undefined');
   }
   if (localeText) {
     args.push(`{ locale: ${localeText} }`);
@@ -389,15 +391,15 @@ function toSafeJsString(text: string): string {
 function getParamExpressions(
   callSite: ParsedCallSite,
 ): Map<string, string> | undefined {
-  const arg = callSite.paramsArg;
-  if (!arg) {
+  const paramsExpression = callSite.paramsExpression;
+  if (!paramsExpression) {
     return undefined;
   }
-  if (!ts.isObjectLiteralExpression(arg)) {
+  if (!ts.isObjectLiteralExpression(paramsExpression)) {
     return undefined;
   }
   const result = new Map<string, string>();
-  for (const prop of arg.properties) {
+  for (const prop of paramsExpression.properties) {
     if (ts.isShorthandPropertyAssignment(prop)) {
       result.set(prop.name.text, prop.name.text);
       continue;
@@ -509,11 +511,11 @@ function renderLocaleKey(locale: string): string {
 }
 
 function getParamArgText(callSite: ParsedCallSite): string | undefined {
-  const arg = callSite.paramsArg;
-  if (!arg) {
+  const paramsExpression = callSite.paramsExpression;
+  if (!paramsExpression) {
     return undefined;
   }
-  return arg.getText();
+  return paramsExpression.getText();
 }
 
 function getReferenceCount(code: string, name: string): number {

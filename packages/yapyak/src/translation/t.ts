@@ -1,7 +1,7 @@
 import type { Locale } from '../locale';
+import type { ValidateSource } from './source';
 import type { ExtractTParams } from './t-param';
 import type { ExtractTags } from './tag';
-import type { ValidateSource } from './validate-source';
 
 /**
  * The params for a source string's placeholders.

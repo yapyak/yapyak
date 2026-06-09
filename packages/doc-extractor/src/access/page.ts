@@ -1,9 +1,4 @@
-import type {
-  Manifest,
-  Page,
-  SidebarLink,
-  SidebarNode,
-} from '../build/manifest';
+import type { Manifest, Page, SidebarLink, SidebarNode } from '../build';
 
 export interface AdjacentPages {
   nextPage: Page | null;

@@ -4,7 +4,7 @@ import type {
   TableCellBlock,
   TableRowBlock,
 } from '../../access/block';
-import type { Page } from '../../build/manifest';
+import type { Page } from '../../build';
 import type { SourceUrlConfig } from '../../config';
 import type { PackageContext } from './package-context';
 import type { SymbolIndex } from './symbol-index';
@@ -24,7 +24,7 @@ import type {
 
 import { slugify } from '../../slug';
 import { buildSymbolHref } from '../../symbol-path';
-import { parseMarkdoc } from '../markdoc/parse';
+import { parseMarkdoc } from '../markdoc';
 import { relative, resolve } from 'node:path';
 
 let currentIndex: SymbolIndex = new Map();

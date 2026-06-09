@@ -1,4 +1,4 @@
-import type { Manifest } from '../build/manifest';
+import type { Manifest } from '../build';
 import type { OptionsGroup, OptionsRegistry } from '../config';
 
 export function getOptions(manifest: Manifest): OptionsRegistry {

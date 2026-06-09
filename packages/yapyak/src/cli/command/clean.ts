@@ -39,7 +39,7 @@ export function clean(
 
   process.stdout.write(header('Locale cleanup'));
 
-  const { expected, inScope } = buildExpected(projectRoot, locales, config);
+  const { expected, inScope } = buildExpected(projectRoot, config);
   const orphanSources: OrphanSource[] = [];
   const filesToWrite: Array<{ next: LocaleFile; path: string }> = [];
 
@@ -113,7 +113,6 @@ export function clean(
 
 function buildExpected(
   projectRoot: string,
-  locales: string[],
   config: Config,
 ): BuildExpectedResult {
   const filter = createFilter(config.include, config.exclude);
@@ -121,7 +120,7 @@ function buildExpected(
   const scopedFileIds = new Set<string>(sourceFiles.map((file) => file.fileId));
   const messages: ExtractedMessage[] = [];
   for (const file of sourceFiles) {
-    const result = extractFile(file.fileId, locales, file.code, {
+    const result = extractFile(file.fileId, file.code, {
       processors: config.processors,
     });
     messages.push(...result.messages);

@@ -1,4 +1,4 @@
-import type { ExtractedMessage } from '../../parser/file/extract';
+import type { ExtractedMessage } from '../../parser';
 import type { LocaleContext } from './context';
 import type { OrphanCache } from './orphan';
 

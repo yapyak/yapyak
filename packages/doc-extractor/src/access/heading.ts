@@ -1,5 +1,5 @@
-import type { HeadingBlock } from '../access/block';
-import type { Page } from '../build/manifest';
+import type { Page } from '../build';
+import type { HeadingBlock } from './block';
 
 import { blockToText } from './text';
 

@@ -120,8 +120,8 @@ describe('discoverCalls', () => {
     );
     expect(callSites).toHaveLength(1);
     expect(callSites[0]?.localeExpression?.getText()).toBe("'sv'");
-    expect(callSites[0]?.contextArg?.getText()).toBe("'button'");
-    expect(callSites[0]?.sourceArg?.getText()).toBe("'Save'");
+    expect(callSites[0]?.contextExpression?.getText()).toBe("'button'");
+    expect(callSites[0]?.sourceExpression?.getText()).toBe("'Save'");
   });
 
   it('extracts a chained `t.as(ctx).in(loc, src)` call', () => {
@@ -138,8 +138,8 @@ describe('discoverCalls', () => {
     );
     expect(callSites).toHaveLength(1);
     expect(callSites[0]?.localeExpression?.getText()).toBe("'sv'");
-    expect(callSites[0]?.contextArg?.getText()).toBe("'button'");
-    expect(callSites[0]?.sourceArg?.getText()).toBe("'Save'");
+    expect(callSites[0]?.contextExpression?.getText()).toBe("'button'");
+    expect(callSites[0]?.sourceExpression?.getText()).toBe("'Save'");
   });
 
   it('emits YPK405 when `t.in()` result is captured in a variable', () => {
@@ -241,7 +241,7 @@ describe('discoverCalls', () => {
     );
     expect(callSites).toHaveLength(1);
     expect(callSites[0]?.localeExpression?.getText()).toBe("'sv'");
-    expect(callSites[0]?.sourceArg?.getText()).toBe("'Save'");
+    expect(callSites[0]?.sourceExpression?.getText()).toBe("'Save'");
   });
 
   it('extracts a direct `Y.t.as(ctx, src)` namespace modifier call', () => {
@@ -257,8 +257,8 @@ describe('discoverCalls', () => {
       resolveBindings(sourceFile),
     );
     expect(callSites).toHaveLength(1);
-    expect(callSites[0]?.contextArg?.getText()).toBe("'button'");
-    expect(callSites[0]?.sourceArg?.getText()).toBe("'Save'");
+    expect(callSites[0]?.contextExpression?.getText()).toBe("'button'");
+    expect(callSites[0]?.sourceExpression?.getText()).toBe("'Save'");
   });
 
   it('extracts a chained `Y.t.in(loc).as(ctx, src)` namespace call', () => {
@@ -275,7 +275,7 @@ describe('discoverCalls', () => {
     );
     expect(callSites).toHaveLength(1);
     expect(callSites[0]?.localeExpression?.getText()).toBe("'sv'");
-    expect(callSites[0]?.contextArg?.getText()).toBe("'button'");
+    expect(callSites[0]?.contextExpression?.getText()).toBe("'button'");
   });
 
   it('emits YPK405 when `Y.t.in()` result is captured in a variable', () => {
@@ -340,7 +340,7 @@ describe('discoverCalls', () => {
     );
     expect(callSites).toHaveLength(1);
     expect(callSites[0]?.localeExpression?.getText()).toBe("'sv'");
-    expect(callSites[0]?.sourceArg?.getText()).toBe("'extra'");
+    expect(callSites[0]?.sourceExpression?.getText()).toBe("'extra'");
   });
 
   it('returns no call sites for a chain on an unknown receiver', () => {

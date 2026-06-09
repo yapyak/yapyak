@@ -13,6 +13,7 @@
  */
 
 export type {
+  AdjacentPages,
   Block,
   CalloutBlock,
   CodeBlock,
@@ -20,16 +21,22 @@ export type {
   CodeLocationBlock,
   DividerBlock,
   EmphasisBlock,
+  Entry,
   ExportKind,
   EyebrowBlock,
+  GetExcerptOptions,
+  GetHeadingsOptions,
   HeadingBlock,
+  HeadingEntry,
   ImageBlock,
   InlineCodeBlock,
+  InternalLinkEntry,
   LineBreakBlock,
   LinkBlock,
   ListBlock,
   ListItemBlock,
   OnlyBlock,
+  PageEntry,
   ParagraphBlock,
   QuoteBlock,
   StrikethroughBlock,
@@ -39,15 +46,7 @@ export type {
   TableCellBlock,
   TableRowBlock,
   TextBlock,
-} from './access/block';
-export type { Entry } from './access/entry';
-export type { GetExcerptOptions } from './access/excerpt';
-export type {
-  GetHeadingsOptions,
-  HeadingEntry,
-} from './access/heading';
-export type { InternalLinkEntry } from './access/internal-link';
-export type { AdjacentPages, PageEntry } from './access/page';
+} from './access';
 export type {
   Collection,
   Manifest,
@@ -58,7 +57,7 @@ export type {
   SidebarLink,
   SidebarNode,
   SymbolEntry,
-} from './build/manifest';
+} from './build';
 export type {
   CollectionConfig,
   Config,
@@ -70,14 +69,19 @@ export type {
   TypedocSource,
 } from './config';
 
-export { getCodeBlocks } from './access/code-block';
-export { getCollection } from './access/collection';
-export { getEntry } from './access/entry';
-export { getExcerpt } from './access/excerpt';
-export { getHeadings } from './access/heading';
-export { getInternalLinks } from './access/internal-link';
-export { getOptions, getOptionsGroup } from './access/options';
-export { findAdjacentPages, getFirstPage, getPage } from './access/page';
-export { getSidebar } from './access/sidebar';
-export { resolveSymbol } from './access/symbol';
-export { getText } from './access/text';
+export {
+  findAdjacentPages,
+  getCodeBlocks,
+  getCollection,
+  getEntry,
+  getExcerpt,
+  getFirstPage,
+  getHeadings,
+  getInternalLinks,
+  getOptions,
+  getOptionsGroup,
+  getPage,
+  getSidebar,
+  getText,
+  resolveSymbol,
+} from './access';

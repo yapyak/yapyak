@@ -1,5 +1,5 @@
-import type { Block } from '../access/block';
-import type { Page } from '../build/manifest';
+import type { Page } from '../build';
+import type { Block } from './block';
 
 export function getText(page: Page): string {
   return page.blocks

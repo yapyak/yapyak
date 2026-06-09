@@ -9,13 +9,13 @@ import { toRange } from './range';
 
 export interface CallSite {
   binding: Binding;
-  contextArg?: ts.Expression;
+  contextExpression?: ts.Expression;
   elision?: ElisionContext;
   localeExpression?: ts.Expression;
   node: ts.CallExpression;
-  paramsArg?: ts.Expression;
+  paramsExpression?: ts.Expression;
   range: Range;
-  sourceArg?: ts.Expression;
+  sourceExpression?: ts.Expression;
 }
 
 export interface DiscoverCallsResult {
@@ -87,10 +87,10 @@ function extractBaseCall(
     range: toRange(call, context.sourceFile),
   };
   if (call.arguments[0]) {
-    callSite.sourceArg = call.arguments[0];
+    callSite.sourceExpression = call.arguments[0];
   }
   if (call.arguments[1]) {
-    callSite.paramsArg = call.arguments[1];
+    callSite.paramsExpression = call.arguments[1];
   }
   context.callSites.push(callSite);
 }
@@ -146,10 +146,10 @@ function extractNamespaceBase(
     range: toRange(call, context.sourceFile),
   };
   if (call.arguments[0]) {
-    callSite.sourceArg = call.arguments[0];
+    callSite.sourceExpression = call.arguments[0];
   }
   if (call.arguments[1]) {
-    callSite.paramsArg = call.arguments[1];
+    callSite.paramsExpression = call.arguments[1];
   }
   context.callSites.push(callSite);
 }
@@ -177,16 +177,16 @@ function extractDirectModifier(
   };
 
   if (call.arguments[1]) {
-    callSite.sourceArg = call.arguments[1];
+    callSite.sourceExpression = call.arguments[1];
   }
   if (call.arguments[2]) {
-    callSite.paramsArg = call.arguments[2];
+    callSite.paramsExpression = call.arguments[2];
   }
 
   if (methodName === IN_NAME) {
     callSite.localeExpression = call.arguments[0];
   } else {
-    callSite.contextArg = call.arguments[0];
+    callSite.contextExpression = call.arguments[0];
   }
 
   context.callSites.push(callSite);
@@ -227,17 +227,17 @@ function extractChainedModifier(
   };
 
   if (call.arguments[1]) {
-    callSite.sourceArg = call.arguments[1];
+    callSite.sourceExpression = call.arguments[1];
   }
   if (call.arguments[2]) {
-    callSite.paramsArg = call.arguments[2];
+    callSite.paramsExpression = call.arguments[2];
   }
 
   if (innerMethod === IN_NAME) {
     callSite.localeExpression = innerCall.arguments[0];
-    callSite.contextArg = call.arguments[0];
+    callSite.contextExpression = call.arguments[0];
   } else {
-    callSite.contextArg = innerCall.arguments[0];
+    callSite.contextExpression = innerCall.arguments[0];
     callSite.localeExpression = call.arguments[0];
   }
 
@@ -271,16 +271,16 @@ function extractNamespaceModifier(
   };
 
   if (call.arguments[1]) {
-    callSite.sourceArg = call.arguments[1];
+    callSite.sourceExpression = call.arguments[1];
   }
   if (call.arguments[2]) {
-    callSite.paramsArg = call.arguments[2];
+    callSite.paramsExpression = call.arguments[2];
   }
 
   if (methodName === IN_NAME) {
     callSite.localeExpression = call.arguments[0];
   } else {
-    callSite.contextArg = call.arguments[0];
+    callSite.contextExpression = call.arguments[0];
   }
 
   context.callSites.push(callSite);

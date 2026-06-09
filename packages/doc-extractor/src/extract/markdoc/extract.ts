@@ -1,5 +1,5 @@
-import type { Block } from '../../access/block';
-import type { Page } from '../../build/manifest';
+import type { Block } from '../../access';
+import type { Page } from '../../build';
 
 import { parseMarkdoc } from './parse';
 import { readdir, readFile } from 'node:fs/promises';
@@ -139,7 +139,9 @@ function resolveLinkData(href: string, pageHref: string): LinkData {
     const stripped = last.replace(/\.md$/, '');
     segments[segments.length - 1] = stripped === 'index' ? '' : stripped;
   }
-  const resolved = segments.filter((s, i) => s || i === 0).join('/') || '/';
+  const resolved =
+    segments.filter((segment, index) => segment || index === 0).join('/') ||
+    '/';
   return {
     href: fragment ? `${resolved}#${fragment}` : resolved,
     kind: 'internal',

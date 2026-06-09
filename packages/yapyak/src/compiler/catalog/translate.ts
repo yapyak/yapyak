@@ -4,7 +4,7 @@ import type {
   TranslationExample,
   Translator,
 } from '../../translator';
-import type { ExtractedMessage, Location } from '../parser/file/extract';
+import type { ExtractedMessage, Location } from '../parser';
 import type {
   LocaleContext,
   LocaleData,

@@ -207,17 +207,17 @@ function readVBindAttributeName(prop: DirectiveNode): string | undefined {
   if (prop.name !== 'bind') {
     return undefined;
   }
-  const arg = prop.arg;
-  if (!arg) {
+  const directiveArgument = prop.arg;
+  if (!directiveArgument) {
     return undefined;
   }
-  if (!isSimpleExpression(arg)) {
+  if (!isSimpleExpression(directiveArgument)) {
     return undefined;
   }
-  if (!arg.isStatic) {
+  if (!directiveArgument.isStatic) {
     return undefined;
   }
-  return arg.content;
+  return directiveArgument.content;
 }
 
 interface MustacheExpression {

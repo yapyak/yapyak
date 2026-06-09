@@ -1,3 +1,9 @@
+/**
+ * The JSON-safe shape produced by {@link YapyakError.toJSON}.
+ *
+ * @remarks
+ * Lets you log, serialize, or transport yapyak errors across boundaries (network, worker, structured logs) without losing the `code` or `meta` fields.
+ */
 export interface SerializedYapyakError {
   cause: unknown;
   code: string;

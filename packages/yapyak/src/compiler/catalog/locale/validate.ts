@@ -1,11 +1,11 @@
-import type { Diagnostic } from '../../parser/diagnostic';
-import type { ExtractedMessage } from '../../parser/file/extract';
-import type { Placeholder } from '../../parser/placeholder';
+import type { Diagnostic, ExtractedMessage, Placeholder } from '../../parser';
 import type { LocaleFile } from './file';
 
-import { createDiagnostic } from '../../parser/diagnostic';
-import { toMessageKey } from '../../parser/message-key';
-import { parsePlaceholders } from '../../parser/placeholder';
+import {
+  createDiagnostic,
+  parsePlaceholders,
+  toMessageKey,
+} from '../../parser';
 import { existsSync, readFileSync } from 'node:fs';
 
 const STUB_RANGE = {

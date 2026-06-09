@@ -115,8 +115,8 @@ export function createTranslator(
     await Promise.all(Array.from({ length: workerCount }, () => worker()));
 
     const uniqueTranslations = chunkResults.flat();
-    return requests.map((request, i) => {
-      const uniqueIndex = requestToUnique[i] ?? -1;
+    return requests.map((request, index) => {
+      const uniqueIndex = requestToUnique[index] ?? -1;
       const translations = uniqueTranslations[uniqueIndex];
       if (!translations) {
         return '';

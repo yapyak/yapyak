@@ -153,16 +153,19 @@ function wordLevenshtein(a: string[], b: string[]): number {
   if (b.length === 0) {
     return a.length;
   }
-  let previous: number[] = Array.from({ length: b.length + 1 }, (_, i) => i);
+  let previous: number[] = Array.from(
+    { length: b.length + 1 },
+    (_, index) => index,
+  );
   let current: number[] = new Array(b.length + 1).fill(0);
-  for (let i = 1; i <= a.length; i++) {
-    current[0] = i;
-    for (let j = 1; j <= b.length; j++) {
-      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-      current[j] = Math.min(
-        (current[j - 1] ?? 0) + 1,
-        (previous[j] ?? 0) + 1,
-        (previous[j - 1] ?? 0) + cost,
+  for (let aIndex = 1; aIndex <= a.length; aIndex++) {
+    current[0] = aIndex;
+    for (let bIndex = 1; bIndex <= b.length; bIndex++) {
+      const cost = a[aIndex - 1] === b[bIndex - 1] ? 0 : 1;
+      current[bIndex] = Math.min(
+        (current[bIndex - 1] ?? 0) + 1,
+        (previous[bIndex] ?? 0) + 1,
+        (previous[bIndex - 1] ?? 0) + cost,
       );
     }
     [previous, current] = [current, previous];

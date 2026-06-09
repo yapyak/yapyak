@@ -1,4 +1,4 @@
-import type { Page } from '../build/manifest';
+import type { Page } from '../build';
 
 import { walkBlocks } from './block';
 import { blockToText } from './text';

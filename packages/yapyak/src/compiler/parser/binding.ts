@@ -19,7 +19,7 @@ export interface BindingTable {
 const YAPYAK_MODULE = 'yapyak';
 const RUNTIME_NAME = 't';
 
-interface ImportInfo {
+interface ImportData {
   directLocals: Set<string>;
   namespaceLocals: Set<string>;
 }
@@ -64,8 +64,8 @@ export function resolveBindings(
   };
 }
 
-function extractImports(sourceFile: ts.SourceFile): ImportInfo {
-  const imports: ImportInfo = {
+function extractImports(sourceFile: ts.SourceFile): ImportData {
+  const imports: ImportData = {
     directLocals: new Set(),
     namespaceLocals: new Set(),
   };

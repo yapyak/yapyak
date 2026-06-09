@@ -6,8 +6,8 @@ import type {
   TableBlock,
   TableCellBlock,
   TableRowBlock,
-} from '../../access/block';
-import type { MetaValue } from '../../build/manifest';
+} from '../../access';
+import type { MetaValue } from '../../build';
 
 import Markdoc from '@markdoc/markdoc';
 

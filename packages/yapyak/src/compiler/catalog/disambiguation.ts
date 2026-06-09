@@ -1,7 +1,6 @@
-import type { Diagnostic } from '../parser/diagnostic';
-import type { ExtractedMessage, Location } from '../parser/file/extract';
+import type { Diagnostic, ExtractedMessage, Location } from '../parser';
 
-import { createDiagnostic } from '../parser/diagnostic';
+import { createDiagnostic } from '../parser';
 import { toLocationKey } from './location-key';
 
 export function detectAtIssues(messages: ExtractedMessage[]): Diagnostic[] {

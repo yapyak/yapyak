@@ -113,10 +113,7 @@ function ShellComponent(props: ShellComponentProps) {
     <html lang={locale}>
       <head>
         <HeadContent />
-        <script
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: yap yap yap
-          dangerouslySetInnerHTML={{ __html: optionsPrepaintScript }}
-        />
+        <script dangerouslySetInnerHTML={{ __html: optionsPrepaintScript }} />
       </head>
       <body>
         <LocaleProvider>

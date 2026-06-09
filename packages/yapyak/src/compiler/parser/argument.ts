@@ -33,13 +33,13 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
 
   let context: string | undefined;
 
-  if (callSite.contextArg) {
-    const contextArg = callSite.contextArg;
+  if (callSite.contextExpression) {
+    const contextExpression = callSite.contextExpression;
     if (
-      ts.isStringLiteral(contextArg) ||
-      ts.isNoSubstitutionTemplateLiteral(contextArg)
+      ts.isStringLiteral(contextExpression) ||
+      ts.isNoSubstitutionTemplateLiteral(contextExpression)
     ) {
-      const text = contextArg.text;
+      const text = contextExpression.text;
       if (text.includes(CONTEXT_SEPARATOR)) {
         diagnostics.push(
           createDiagnostic({
@@ -47,7 +47,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
             fileId,
             hint: "Remove the '@' — it is reserved as the source/context separator.",
             message: `\`t.as()\` context \`'${text}'\` must not contain \`'@'\`.`,
-            range: toRange(contextArg, sourceFile),
+            range: toRange(contextExpression, sourceFile),
             severity: 'error',
             source: fileText,
           }),
@@ -62,7 +62,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
           fileId,
           hint: 'Pass a static string literal as the context argument.',
           message: '`t.as()` context argument must be a static string literal.',
-          range: toRange(contextArg, sourceFile),
+          range: toRange(contextExpression, sourceFile),
           severity: 'error',
           source: fileText,
         }),
@@ -70,13 +70,13 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
     }
   }
 
-  const sourceArg = callSite.sourceArg;
-  if (!sourceArg) {
+  const sourceExpression = callSite.sourceExpression;
+  if (!sourceExpression) {
     diagnostics.push(
       createDiagnostic({
         code: 'YPK101',
         fileId,
-        message: callSite.contextArg
+        message: callSite.contextExpression
           ? 't.as() called without source string.'
           : 't() called without arguments.',
         range: toRange(callSite.node, sourceFile),
@@ -95,8 +95,8 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
     return result;
   }
 
-  const sourceRange = toRange(sourceArg, sourceFile);
-  if (!isLiteralFirstArg(sourceArg)) {
+  const sourceRange = toRange(sourceExpression, sourceFile);
+  if (!isLiteralFirstArg(sourceExpression)) {
     diagnostics.push(
       createDiagnostic({
         code: 'YPK102',
@@ -117,7 +117,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
     return result;
   }
 
-  const source = sourceArg.text;
+  const source = sourceExpression.text;
   if (source === '') {
     diagnostics.push(
       createDiagnostic({
@@ -142,18 +142,18 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   }
 
   let params: ParsedParams | undefined;
-  const paramArg = callSite.paramsArg;
-  if (paramArg) {
-    params = parseParams(paramArg, sourceFile);
+  const paramsExpression = callSite.paramsExpression;
+  if (paramsExpression) {
+    params = parseParams(paramsExpression, sourceFile);
   }
-  if (hasPlaceholders || paramArg) {
+  if (hasPlaceholders || paramsExpression) {
     validateParams({
       callSite,
       diagnostics,
       fileId,
       fileText,
-      paramArgPresent: paramArg !== undefined,
       params,
+      paramsExpressionPresent: paramsExpression !== undefined,
       placeholderKeys,
     });
   }
@@ -259,8 +259,8 @@ interface ValidateParamsInput {
   diagnostics: Diagnostic[];
   fileId: string;
   fileText: string;
-  paramArgPresent: boolean;
   params: ParsedParams | undefined;
+  paramsExpressionPresent: boolean;
   placeholderKeys: string[];
 }
 
@@ -270,7 +270,7 @@ function validateParams(input: ValidateParamsInput): void {
     diagnostics,
     fileId,
     fileText,
-    paramArgPresent: hasParamArg,
+    paramsExpressionPresent: hasParamsExpression,
     params,
     placeholderKeys,
   } = input;
@@ -278,7 +278,7 @@ function validateParams(input: ValidateParamsInput): void {
   const callRange = toRange(callSite.node, sourceFile);
 
   if (!params) {
-    if (hasParamArg) {
+    if (hasParamsExpression) {
       diagnostics.push(
         createDiagnostic({
           code: 'YPK106',
