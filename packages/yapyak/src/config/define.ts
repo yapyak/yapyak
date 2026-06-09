@@ -10,7 +10,7 @@ import type { YapyakConfig } from './type';
  *
  * @example Define the config
  * ```ts [yapyak.config.ts]
- * import { defineConfig } from 'yapyak';
+ * import { defineConfig } from 'yapyak/config';
  *
  * export default defineConfig({
  *   persistence: 'cookie',

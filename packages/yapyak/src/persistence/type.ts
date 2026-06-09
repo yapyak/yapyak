@@ -11,7 +11,7 @@ export interface Persistence {
  *
  * @example Store locale under a custom cookie name
  * ```ts [yapyak.config.ts]
- * import { defineConfig } from 'yapyak';
+ * import { defineConfig } from 'yapyak/config';
  *
  * export default defineConfig({
  *   defaultLocale: 'sv',
@@ -34,7 +34,7 @@ export interface CookiePersistenceOptions {
  *
  * @example Store locale under a custom storage key
  * ```ts [yapyak.config.ts]
- * import { defineConfig } from 'yapyak';
+ * import { defineConfig } from 'yapyak/config';
  *
  * export default defineConfig({
  *   defaultLocale: 'sv',
@@ -57,7 +57,7 @@ export interface LocalStoragePersistenceOptions {
  *
  * @example Read locale from a query parameter
  * ```ts [yapyak.config.ts]
- * import { defineConfig } from 'yapyak';
+ * import { defineConfig } from 'yapyak/config';
  *
  * export default defineConfig({
  *   defaultLocale: 'sv',
