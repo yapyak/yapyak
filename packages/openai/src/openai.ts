@@ -89,10 +89,11 @@ const DEFAULT_MAX_RETRIES = 2;
  * @param options - The translator options.
  *
  * @example Configure as the translator
- * ```ts
+ * ```ts [yapyak.config.ts]
+ * import { defineConfig } from 'yapyak/config';
  * import { openai } from '@yapyak/openai';
  *
- * yapyak({
+ * export default defineConfig({
  *   translator: openai({ apiKey: process.env.OPENAI_API_KEY! }),
  * });
  * ```

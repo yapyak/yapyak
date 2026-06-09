@@ -85,10 +85,11 @@ const MAX_TOKENS_CAP = 8_000;
  * @param options - The translator options.
  *
  * @example Configure as the translator
- * ```ts
+ * ```ts [yapyak.config.ts]
+ * import { defineConfig } from 'yapyak/config';
  * import { anthropic } from '@yapyak/anthropic';
  *
- * yapyak({
+ * export default defineConfig({
  *   translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! }),
  * });
  * ```

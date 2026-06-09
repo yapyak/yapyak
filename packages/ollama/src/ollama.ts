@@ -77,10 +77,11 @@ const DEFAULT_MAX_RETRIES = 1;
  * @param options - The translator options.
  *
  * @example Configure as the translator
- * ```ts
+ * ```ts [yapyak.config.ts]
+ * import { defineConfig } from 'yapyak/config';
  * import { ollama } from '@yapyak/ollama';
  *
- * yapyak({
+ * export default defineConfig({
  *   translator: ollama({ model: 'llama3.1' }),
  * });
  * ```

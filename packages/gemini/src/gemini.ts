@@ -83,10 +83,11 @@ const DEFAULT_MAX_RETRIES = 2;
  * @param options - The translator options.
  *
  * @example Configure as the translator
- * ```ts
+ * ```ts [yapyak.config.ts]
+ * import { defineConfig } from 'yapyak/config';
  * import { gemini } from '@yapyak/gemini';
  *
- * yapyak({
+ * export default defineConfig({
  *   translator: gemini({ apiKey: process.env.GEMINI_API_KEY! }),
  * });
  * ```
