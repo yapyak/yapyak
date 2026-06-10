@@ -41,7 +41,7 @@ export function createConfigPlugin(state: State): Plugin {
       } else if (ssrExternal === true || typeof ssrExternal === 'function') {
         const description =
           typeof ssrExternal === 'function' ? 'a function' : '`true`';
-        state.warn(
+        state.logger.warn(
           `[yapyak] config.ssr.external is set to ${description}. ` +
             `yapyak's runtime must not be externalized for SSR — translations would not inline. ` +
             `Use an array form for ssr.external, or have your function return false/null for 'yapyak' and 'yapyak/runtime'.`,
@@ -57,7 +57,9 @@ export function createConfigPlugin(state: State): Plugin {
       );
       const discovery = state.resolver.getDiscovery();
       for (const warning of discovery.warnings) {
-        state.warn(renderLocaleWarning(warning, result.config.localesDir));
+        state.logger.warn(
+          renderLocaleWarning(warning, result.config.localesDir),
+        );
       }
       if (
         state.fixedLocale !== undefined &&

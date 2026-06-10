@@ -9,7 +9,9 @@ import type { State } from './state';
 import { extractFile, toMessageKey, transformFile } from 'yapyak/compiler';
 
 import { isCandidateId } from './candidate-id';
+import { renderErrorDiagnostics } from './error-diagnostic';
 import { toFileId } from './file-id';
+import { getNormalized, getResolver } from './state';
 
 export function createTransformPlugin(state: State): Plugin {
   return {
@@ -23,28 +25,21 @@ export function createTransformPlugin(state: State): Plugin {
         return null;
       }
       const fileId = toFileId(state.projectRoot, id);
-      const { locales } = state.getResolver().getEmittedLocales();
-      const processors = state.getNormalized().processors;
+      const { locales } = getResolver(state).getEmittedLocales();
+      const processors = getNormalized(state).processors;
       const extracted = extractFile(fileId, code, { processors });
-      for (const diagnostic of extracted.diagnostics) {
-        if (diagnostic.severity !== 'error') {
-          continue;
-        }
-        state.error(
-          `[yapyak] ${diagnostic.code} ${diagnostic.fileId}:${diagnostic.range.start.line}:${diagnostic.range.start.column}: ${diagnostic.message}`,
-        );
-      }
+      renderErrorDiagnostics(state.logger, extracted);
       if (extracted.callSites.length === 0) {
         return null;
       }
       const translations = buildTranslations({
         extracted,
         fileId,
-        localeData: state.getResolver().getLocaleData(),
+        localeData: getResolver(state).getLocaleData(),
         locales,
       });
       const result = transformFile({
-        defaultLocale: state.getResolver().getEmittedLocales().defaultLocale,
+        defaultLocale: getResolver(state).getEmittedLocales().defaultLocale,
         extracted,
         fileId,
         locales,

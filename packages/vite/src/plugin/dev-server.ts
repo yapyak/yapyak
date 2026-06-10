@@ -13,9 +13,12 @@ import {
 
 import { RUNTIME_RESOLVED } from '../virtual-runtime';
 import { isCandidateId } from './candidate-id';
+import { renderErrorDiagnostics } from './error-diagnostic';
 import { toFileId } from './file-id';
 import { renderLocaleWarning } from './locale-warning';
-import { fillStubs, syncAll } from './scan';
+import { getNormalized, getResolver } from './state';
+import { fillStubs } from './stub';
+import { syncAll } from './sync';
 import { runYapyakCommand } from './yapyak-command';
 import { readFileSync } from 'node:fs';
 import { basename, extname, join, relative, sep } from 'node:path';
@@ -62,16 +65,9 @@ export function createDevServerPlugin(state: State): Plugin {
             continue;
           }
           const result = extractFile(fileId, code, {
-            processors: state.getNormalized().processors,
+            processors: getNormalized(state).processors,
           });
-          for (const diagnostic of result.diagnostics) {
-            if (diagnostic.severity !== 'error') {
-              continue;
-            }
-            state.error(
-              `[yapyak] ${diagnostic.code} ${diagnostic.fileId}:${diagnostic.range.start.line}:${diagnostic.range.start.column}: ${diagnostic.message}`,
-            );
-          }
+          renderErrorDiagnostics(state.logger, result);
           if (result.messages.length > 0) {
             state.messagesByFile.set(fileId, result.messages);
           } else {
@@ -103,16 +99,15 @@ export function createDevServerPlugin(state: State): Plugin {
       };
 
       const invalidateLocaleData = debounce(() => {
-        state.getResolver().invalidateData();
+        getResolver(state).invalidateData();
         reloadCandidateModules();
       }, 50);
       state.teardownCallbacks.push(invalidateLocaleData.cancel);
 
       const syncLocaleStructure = debounce(() => {
-        state.getResolver().invalidateStructure();
-        const { defaultLocale, locales } = state
-          .getResolver()
-          .getProjectLocales();
+        getResolver(state).invalidateStructure();
+        const { defaultLocale, locales } =
+          getResolver(state).getProjectLocales();
         const allMessages: ExtractedMessage[] = [];
         for (const list of state.messagesByFile.values()) {
           allMessages.push(...list);
@@ -122,23 +117,23 @@ export function createDevServerPlugin(state: State): Plugin {
           {
             defaultLocale,
             locales,
-            localesDir: state.getNormalized().localesDir,
+            localesDir: getNormalized(state).localesDir,
           },
           state.projectRoot,
           { yapyakDir: state.yapyakDir },
         );
         for (const entry of result.orphaned) {
-          state.warn(
+          state.logger.warn(
             `[yapyak] preserved '${entry.source}' (${entry.locale}) — call site removed from ${entry.fileId}, translation saved in case it returns.`,
           );
         }
         for (const entry of result.restored) {
-          state.info(
+          state.logger.info(
             `[yapyak] restored '${entry.source}' (${entry.locale}) in ${entry.fileId} — translation kept from when the call site was removed earlier.`,
           );
         }
         writeRegister(
-          state.getResolver().getEmittedLocales().locales,
+          getResolver(state).getEmittedLocales().locales,
           state.yapyakDir,
         );
         reloadRuntimeModule();
@@ -173,14 +168,16 @@ export function createDevServerPlugin(state: State): Plugin {
             if (validation.suggestion !== undefined) {
               warning.suggestion = validation.suggestion;
             }
-            state.warn(
-              renderLocaleWarning(warning, state.getNormalized().localesDir),
+            state.logger.warn(
+              renderLocaleWarning(warning, getNormalized(state).localesDir),
             );
             return;
           }
           const hint = `Run \`${runYapyakCommand(`translate ${locale}`)}\` to fill the stubs.`;
           syncLocaleStructure();
-          state.info(`[yapyak] New locale '${locale}' detected. ${hint}`);
+          state.logger.info(
+            `[yapyak] New locale '${locale}' detected. ${hint}`,
+          );
           server.ws.send({
             data: { hint, locale },
             event: 'yapyak:locale-added',
@@ -201,7 +198,7 @@ export function createDevServerPlugin(state: State): Plugin {
         if (isLocaleFile(state, path)) {
           const locale = localeFromPath(path);
           syncLocaleStructure();
-          state.info(`[yapyak] Locale '${locale}' removed.`);
+          state.logger.info(`[yapyak] Locale '${locale}' removed.`);
           server.ws.send({
             data: { locale },
             event: 'yapyak:locale-removed',
@@ -216,20 +213,11 @@ export function createDevServerPlugin(state: State): Plugin {
       }
       const fileId = toFileId(state.projectRoot, context.file);
       const code = await context.read();
-      const { defaultLocale, locales } = state
-        .getResolver()
-        .getEmittedLocales();
+      const { defaultLocale, locales } = getResolver(state).getEmittedLocales();
       const result = extractFile(fileId, code, {
-        processors: state.getNormalized().processors,
+        processors: getNormalized(state).processors,
       });
-      for (const diagnostic of result.diagnostics) {
-        if (diagnostic.severity !== 'error') {
-          continue;
-        }
-        state.error(
-          `[yapyak] ${diagnostic.code} ${diagnostic.fileId}:${diagnostic.range.start.line}:${diagnostic.range.start.column}: ${diagnostic.message}`,
-        );
-      }
+      renderErrorDiagnostics(state.logger, result);
       const before = state.messagesByFile.get(fileId) ?? [];
       const after = result.messages;
       if (areMessagesEqual(before, after)) {
@@ -249,15 +237,15 @@ export function createDevServerPlugin(state: State): Plugin {
           {
             defaultLocale,
             locales,
-            localesDir: state.getNormalized().localesDir,
+            localesDir: getNormalized(state).localesDir,
           },
           state.projectRoot,
           {
             preserveTranslations:
-              state.getNormalized().preserveTranslationsOnRename,
+              getNormalized(state).preserveTranslationsOnRename,
           },
         );
-        state.getResolver().invalidateData();
+        getResolver(state).invalidateData();
       }
       if (after.length === 0) {
         state.messagesByFile.delete(fileId);
@@ -272,7 +260,7 @@ export function createDevServerPlugin(state: State): Plugin {
 }
 
 function isLocaleFile(state: State, path: string): boolean {
-  const directory = join(state.projectRoot, state.getNormalized().localesDir);
+  const directory = join(state.projectRoot, getNormalized(state).localesDir);
   const relativePath = relative(directory, path);
   if (
     relativePath === '' ||
