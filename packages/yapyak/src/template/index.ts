@@ -1,4 +1,4 @@
-export type { TemplateDiagnostic } from './diagnostic';
+export type { TemplateDiagnostic, TemplateRange } from './diagnostic';
 export type {
   CountNode,
   DateNode,

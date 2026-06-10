@@ -1,4 +1,4 @@
-import type { TemplateDiagnostic } from './diagnostic';
+import type { TemplateDiagnostic, TemplateRange } from './diagnostic';
 import type {
   CountNode,
   DateNode,
@@ -22,10 +22,15 @@ export interface ParseTemplateResult {
 
 export function parseTemplate(source: string): ParseTemplateResult {
   const diagnostics: TemplateDiagnostic[] = [];
-  if (APOSTROPHE_ESCAPE_RX.test(source)) {
+  const apostropheMatch = APOSTROPHE_ESCAPE_RX.exec(source);
+  if (apostropheMatch) {
     diagnostics.push({
       feature: 'apostrophe escaping',
       name: '',
+      range: {
+        end: apostropheMatch.index + apostropheMatch[0].length,
+        start: apostropheMatch.index,
+      },
       reason: 'unsupported',
     });
   }
@@ -60,6 +65,7 @@ function parseNodes(
     if (character === '}' && terminator === null) {
       context.diagnostics.push({
         message: `unbalanced '}' at index ${position}: missing opening '{'`,
+        range: { end: position + 1, start: position },
         reason: 'malformed',
       });
       nodes.push({ kind: 'literal', value: '}' });
@@ -141,6 +147,7 @@ function parseToken(
   if (closeIndex === undefined) {
     context.diagnostics.push({
       message: `unbalanced '{' at index ${position}: missing closing '}'`,
+      range: { end: context.source.length, start: position },
       reason: 'malformed',
     });
     const node: LiteralNode = {
@@ -149,85 +156,85 @@ function parseToken(
     };
     return { next: context.source.length, value: node };
   }
-  const node = parseTokenBody(
-    context,
-    position + 1,
-    closeIndex,
+  const node = parseTokenBody(context, {
+    innerEnd: closeIndex,
+    innerStart: position + 1,
     isInPluralBranch,
-  );
+    tokenRange: { end: closeIndex + 1, start: position },
+  });
   return { next: closeIndex + 1, value: node };
+}
+
+interface ParseTokenBodyInput {
+  innerEnd: number;
+  innerStart: number;
+  isInPluralBranch: boolean;
+  tokenRange: TemplateRange;
 }
 
 function parseTokenBody(
   context: ParseContext,
-  start: number,
-  end: number,
-  isInPluralBranch: boolean,
+  input: ParseTokenBodyInput,
 ): TemplateNode {
-  const firstComma = findTopLevelComma(context.source, start, end);
+  const { innerEnd, innerStart, isInPluralBranch, tokenRange } = input;
+  const firstComma = findTopLevelComma(context.source, innerStart, innerEnd);
   if (firstComma === undefined) {
-    const name = context.source.slice(start, end).trim();
+    const name = context.source.slice(innerStart, innerEnd).trim();
     if (name === '') {
       context.diagnostics.push({
         message: 'empty argument',
+        range: tokenRange,
         reason: 'malformed',
       });
     }
     return { kind: 'placeholder', name };
   }
-  const name = context.source.slice(start, firstComma).trim();
+  const name = context.source.slice(innerStart, firstComma).trim();
   const afterName = firstComma + 1;
-  const secondComma = findTopLevelComma(context.source, afterName, end);
-  const kindEnd = secondComma === undefined ? end : secondComma;
+  const secondComma = findTopLevelComma(context.source, afterName, innerEnd);
+  const kindEnd = secondComma === undefined ? innerEnd : secondComma;
   const kind = context.source.slice(afterName, kindEnd).trim();
-  const bodyStart = secondComma === undefined ? end : secondComma + 1;
+  const bodyStart = secondComma === undefined ? innerEnd : secondComma + 1;
   if (kind === 'plural') {
     return buildPluralNode(context, {
-      bodyEnd: end,
+      bodyEnd: innerEnd,
       bodyStart,
       name,
+      tokenRange,
       type: 'cardinal',
     });
   }
   if (kind === 'selectordinal') {
     return buildPluralNode(context, {
-      bodyEnd: end,
+      bodyEnd: innerEnd,
       bodyStart,
       name,
+      tokenRange,
       type: 'ordinal',
     });
   }
   if (kind === 'select') {
     return buildSelectNode(context, {
-      bodyEnd: end,
+      bodyEnd: innerEnd,
       bodyStart,
       isInPluralBranch,
       name,
+      tokenRange,
     });
   }
+  const bodyRange = trimmedRange(context.source, bodyStart, innerEnd);
   if (kind === 'number') {
-    return buildNumberNode(
-      context,
-      name,
-      context.source.slice(bodyStart, end).trim(),
-    );
+    return buildNumberNode(context, { bodyRange, name });
   }
   if (kind === 'date') {
-    return buildDateNode(
-      context,
-      name,
-      context.source.slice(bodyStart, end).trim(),
-    );
+    return buildDateNode(context, { bodyRange, name });
   }
   if (kind === 'time') {
-    return buildTimeNode(
-      context,
-      name,
-      context.source.slice(bodyStart, end).trim(),
-    );
+    return buildTimeNode(context, { bodyRange, name });
   }
   context.diagnostics.push({
     message: `unknown argument type "${kind}"`,
+    range: trimmedRange(context.source, afterName, kindEnd),
     reason: 'malformed',
   });
   return { kind: 'placeholder', name };
@@ -237,6 +244,7 @@ interface BuildPluralNodeInput {
   bodyEnd: number;
   bodyStart: number;
   name: string;
+  tokenRange: TemplateRange;
   type: 'cardinal' | 'ordinal';
 }
 
@@ -245,16 +253,25 @@ function buildPluralNode(
   input: BuildPluralNodeInput,
 ): PluralNode {
   const bodyText = context.source.slice(input.bodyStart, input.bodyEnd);
-  if (PLURAL_OFFSET_RX.test(bodyText)) {
+  const offsetMatch = PLURAL_OFFSET_RX.exec(bodyText);
+  if (offsetMatch) {
     context.diagnostics.push({
       feature: 'plural offset',
       name: input.name,
+      range: {
+        end: input.bodyStart + offsetMatch.index + offsetMatch[0].length,
+        start: input.bodyStart + offsetMatch.index,
+      },
       reason: 'unsupported',
     });
   }
   const branches = parseBranches(context, input.bodyStart, input.bodyEnd, true);
   if (!('other' in branches)) {
-    context.diagnostics.push({ name: input.name, reason: 'missing-other' });
+    context.diagnostics.push({
+      name: input.name,
+      range: input.tokenRange,
+      reason: 'missing-other',
+    });
   }
   return { branches, kind: 'plural', name: input.name, type: input.type };
 }
@@ -264,6 +281,7 @@ interface BuildSelectNodeInput {
   bodyStart: number;
   isInPluralBranch: boolean;
   name: string;
+  tokenRange: TemplateRange;
 }
 
 function buildSelectNode(
@@ -277,44 +295,50 @@ function buildSelectNode(
     input.isInPluralBranch,
   );
   if (!('other' in branches)) {
-    context.diagnostics.push({ name: input.name, reason: 'missing-other' });
+    context.diagnostics.push({
+      name: input.name,
+      range: input.tokenRange,
+      reason: 'missing-other',
+    });
   }
   return { branches, kind: 'select', name: input.name };
 }
 
+interface BuildFormatNodeInput {
+  bodyRange: TemplateRange;
+  name: string;
+}
+
 function buildNumberNode(
   context: ParseContext,
-  name: string,
-  body: string,
+  input: BuildFormatNodeInput,
 ): NumberNode {
   return {
     kind: 'number',
-    name,
-    options: resolveNumberOptions(context, name, body),
+    name: input.name,
+    options: resolveNumberOptions(context, input),
   };
 }
 
 function buildDateNode(
   context: ParseContext,
-  name: string,
-  body: string,
+  input: BuildFormatNodeInput,
 ): DateNode {
   return {
     kind: 'date',
-    name,
-    style: resolveDateTimeStyle(context, name, 'date', body),
+    name: input.name,
+    style: resolveDateTimeStyle(context, 'date', input),
   };
 }
 
 function buildTimeNode(
   context: ParseContext,
-  name: string,
-  body: string,
+  input: BuildFormatNodeInput,
 ): TimeNode {
   return {
     kind: 'time',
-    name,
-    style: resolveDateTimeStyle(context, name, 'time', body),
+    name: input.name,
+    style: resolveDateTimeStyle(context, 'time', input),
   };
 }
 
@@ -353,6 +377,7 @@ function parseBranches(
     if (closeIndex === undefined) {
       context.diagnostics.push({
         message: `unbalanced '{' at index ${position}: missing closing '}'`,
+        range: { end: context.source.length, start: position },
         reason: 'malformed',
       });
       break;
@@ -415,11 +440,32 @@ function isWhitespace(character: string | undefined): boolean {
   );
 }
 
+function trimmedRange(
+  source: string,
+  start: number,
+  end: number,
+): TemplateRange {
+  let trimmedStart = start;
+  while (trimmedStart < end && isWhitespace(source[trimmedStart])) {
+    trimmedStart++;
+  }
+  let trimmedEnd = end;
+  while (trimmedEnd > trimmedStart && isWhitespace(source[trimmedEnd - 1])) {
+    trimmedEnd--;
+  }
+  if (trimmedStart === trimmedEnd) {
+    return { end, start };
+  }
+  return { end: trimmedEnd, start: trimmedStart };
+}
+
 function resolveNumberOptions(
   context: ParseContext,
-  name: string,
-  body: string,
+  input: BuildFormatNodeInput,
 ): Intl.NumberFormatOptions {
+  const body = context.source
+    .slice(input.bodyRange.start, input.bodyRange.end)
+    .trim();
   if (body === '' || body === 'decimal') {
     return {};
   }
@@ -432,7 +478,8 @@ function resolveNumberOptions(
   if (body === 'currency') {
     context.diagnostics.push({
       feature: 'currency without a code',
-      name,
+      name: input.name,
+      range: input.bodyRange,
       reason: 'unsupported',
     });
     return {};
@@ -446,14 +493,16 @@ function resolveNumberOptions(
   if (body.startsWith('::')) {
     context.diagnostics.push({
       feature: 'number skeleton',
-      name,
+      name: input.name,
+      range: input.bodyRange,
       reason: 'unsupported',
     });
     return {};
   }
   context.diagnostics.push({
     feature: `number style "${body}"`,
-    name,
+    name: input.name,
+    range: input.bodyRange,
     reason: 'unsupported',
   });
   return {};
@@ -461,10 +510,12 @@ function resolveNumberOptions(
 
 function resolveDateTimeStyle(
   context: ParseContext,
-  name: string,
   kind: 'date' | 'time',
-  body: string,
+  input: BuildFormatNodeInput,
 ): DateTimeStyle {
+  const body = context.source
+    .slice(input.bodyRange.start, input.bodyRange.end)
+    .trim();
   if (body === '') {
     return 'medium';
   }
@@ -478,7 +529,8 @@ function resolveDateTimeStyle(
   }
   context.diagnostics.push({
     feature: `${kind} skeleton or custom pattern`,
-    name,
+    name: input.name,
+    range: input.bodyRange,
     reason: 'unsupported',
   });
   return 'medium';

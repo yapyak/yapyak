@@ -117,17 +117,25 @@ describe('parseTemplate', () => {
     });
 
     it('emits missing-other when the plural has no `other` branch', () => {
-      const { diagnostics } = parseTemplate('{count, plural, one {# item}}');
-      expect(diagnostics).toEqual([{ name: 'count', reason: 'missing-other' }]);
+      const source = '{count, plural, one {# item}}';
+      const { diagnostics } = parseTemplate(source);
+      expect(diagnostics).toEqual([
+        {
+          name: 'count',
+          range: { end: source.length, start: 0 },
+          reason: 'missing-other',
+        },
+      ]);
     });
 
     it('emits unsupported when the plural body has `offset:N`', () => {
-      const { diagnostics } = parseTemplate(
-        '{count, plural, offset:1 one {#} other {# more}}',
-      );
+      const source = '{count, plural, offset:1 one {#} other {# more}}';
+      const { diagnostics } = parseTemplate(source);
+      const offsetStart = source.indexOf('offset:1');
       expect(diagnostics).toContainEqual({
         feature: 'plural offset',
         name: 'count',
+        range: { end: offsetStart + 'offset:1'.length, start: offsetStart },
         reason: 'unsupported',
       });
     });
@@ -164,9 +172,14 @@ describe('parseTemplate', () => {
     });
 
     it('emits missing-other when the select has no `other` branch', () => {
-      const { diagnostics } = parseTemplate('{gender, select, male {he}}');
+      const source = '{gender, select, male {he}}';
+      const { diagnostics } = parseTemplate(source);
       expect(diagnostics).toEqual([
-        { name: 'gender', reason: 'missing-other' },
+        {
+          name: 'gender',
+          range: { end: source.length, start: 0 },
+          reason: 'missing-other',
+        },
       ]);
     });
   });
@@ -217,18 +230,30 @@ describe('parseTemplate', () => {
     });
 
     it('emits unsupported for a number skeleton (`::`)', () => {
-      const { diagnostics } = parseTemplate('{amount, number, ::currency/EUR}');
+      const source = '{amount, number, ::currency/EUR}';
+      const { diagnostics } = parseTemplate(source);
+      const bodyStart = source.indexOf('::');
+      const bodyEnd = source.length - 1;
       expect(diagnostics).toEqual([
-        { feature: 'number skeleton', name: 'amount', reason: 'unsupported' },
+        {
+          feature: 'number skeleton',
+          name: 'amount',
+          range: { end: bodyEnd, start: bodyStart },
+          reason: 'unsupported',
+        },
       ]);
     });
 
     it('emits unsupported for currency without a code', () => {
-      const { diagnostics } = parseTemplate('{cost, number, currency}');
+      const source = '{cost, number, currency}';
+      const { diagnostics } = parseTemplate(source);
+      const bodyStart = source.indexOf('currency');
+      const bodyEnd = source.length - 1;
       expect(diagnostics).toEqual([
         {
           feature: 'currency without a code',
           name: 'cost',
+          range: { end: bodyEnd, start: bodyStart },
           reason: 'unsupported',
         },
       ]);
@@ -249,14 +274,18 @@ describe('parseTemplate', () => {
     });
 
     it('falls back to medium for unknown style and emits unsupported', () => {
-      const { diagnostics, template } = parseTemplate('{when, date, weird}');
+      const source = '{when, date, weird}';
+      const { diagnostics, template } = parseTemplate(source);
       expect(template).toEqual([
         { kind: 'date', name: 'when', style: 'medium' },
       ]);
+      const bodyStart = source.indexOf('weird');
+      const bodyEnd = bodyStart + 'weird'.length;
       expect(diagnostics).toEqual([
         {
           feature: 'date skeleton or custom pattern',
           name: 'when',
+          range: { end: bodyEnd, start: bodyStart },
           reason: 'unsupported',
         },
       ]);
@@ -300,10 +329,119 @@ describe('parseTemplate', () => {
     });
 
     it('emits unsupported for apostrophe escaping', () => {
-      const { diagnostics } = parseTemplate("Send '{count}' files");
+      const source = "Send '{count}' files";
+      const { diagnostics } = parseTemplate(source);
+      const start = source.indexOf("'{");
       expect(diagnostics).toContainEqual({
         feature: 'apostrophe escaping',
         name: '',
+        range: { end: start + 2, start },
+        reason: 'unsupported',
+      });
+    });
+  });
+
+  describe('range', () => {
+    it('points at the offending `}` for an unbalanced closing brace', () => {
+      const source = 'Hi name}';
+      const { diagnostics } = parseTemplate(source);
+      const start = source.indexOf('}');
+      expect(diagnostics).toContainEqual({
+        message: `unbalanced '}' at index ${start}: missing opening '{'`,
+        range: { end: start + 1, start },
+        reason: 'malformed',
+      });
+    });
+
+    it('spans from `{` to end of source for an unbalanced opening brace', () => {
+      const source = 'Hi {name';
+      const { diagnostics } = parseTemplate(source);
+      const start = source.indexOf('{');
+      expect(diagnostics).toContainEqual({
+        message: `unbalanced '{' at index ${start}: missing closing '}'`,
+        range: { end: source.length, start },
+        reason: 'malformed',
+      });
+    });
+
+    it('spans the whole `{}` token for an empty argument', () => {
+      const source = 'a {} b';
+      const { diagnostics } = parseTemplate(source);
+      const start = source.indexOf('{');
+      expect(diagnostics).toContainEqual({
+        message: 'empty argument',
+        range: { end: start + 2, start },
+        reason: 'malformed',
+      });
+    });
+
+    it('points at the kind keyword for an unknown argument type', () => {
+      const source = '{x, mystery, body}';
+      const { diagnostics } = parseTemplate(source);
+      const start = source.indexOf('mystery');
+      expect(diagnostics).toContainEqual({
+        message: 'unknown argument type "mystery"',
+        range: { end: start + 'mystery'.length, start },
+        reason: 'malformed',
+      });
+    });
+
+    it('spans the whole token for a plural missing `other`', () => {
+      const source = 'before {n, plural, one {#}} after';
+      const { diagnostics } = parseTemplate(source);
+      const start = source.indexOf('{n');
+      const end = source.indexOf('}}') + 2;
+      expect(diagnostics).toContainEqual({
+        name: 'n',
+        range: { end, start },
+        reason: 'missing-other',
+      });
+    });
+
+    it('spans the whole token for a select missing `other`', () => {
+      const source = 'x {g, select, male {he}} y';
+      const { diagnostics } = parseTemplate(source);
+      const start = source.indexOf('{g');
+      const end = source.indexOf('}}') + 2;
+      expect(diagnostics).toContainEqual({
+        name: 'g',
+        range: { end, start },
+        reason: 'missing-other',
+      });
+    });
+
+    it('points at the `offset:N` text inside a plural body', () => {
+      const source = '{c, plural, offset:2 one {#} other {# more}}';
+      const { diagnostics } = parseTemplate(source);
+      const start = source.indexOf('offset:2');
+      expect(diagnostics).toContainEqual({
+        feature: 'plural offset',
+        name: 'c',
+        range: { end: start + 'offset:2'.length, start },
+        reason: 'unsupported',
+      });
+    });
+
+    it('points at the body for a `time` skeleton', () => {
+      const source = '{when, time, weird}';
+      const { diagnostics } = parseTemplate(source);
+      const start = source.indexOf('weird');
+      expect(diagnostics).toContainEqual({
+        feature: 'time skeleton or custom pattern',
+        name: 'when',
+        range: { end: start + 'weird'.length, start },
+        reason: 'unsupported',
+      });
+    });
+
+    it('points at the body for a legacy number pattern', () => {
+      const source = '{n, number, #,##0.00}';
+      const { diagnostics } = parseTemplate(source);
+      const start = source.indexOf('#,##0.00');
+      expect(diagnostics).toContainEqual({
+        feature: 'number style "#,##0.00"',
+        name: 'n',
+        range: { end: start + '#,##0.00'.length, start },
         reason: 'unsupported',
       });
     });

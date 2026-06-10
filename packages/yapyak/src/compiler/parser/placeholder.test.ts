@@ -151,29 +151,29 @@ describe('parsePlaceholders', () => {
 
   it('warns on a plural missing the `other` branch', () => {
     const { issues } = parsePlaceholders('{count, plural, one {# item}}');
-    expect(issues).toEqual([{ name: 'count', reason: 'missing-other' }]);
+    expect(issues).toMatchObject([{ name: 'count', reason: 'missing-other' }]);
   });
 
   it('warns on a selectordinal missing the `other` branch', () => {
     const { issues } = parsePlaceholders('{rank, selectordinal, one {#st}}');
-    expect(issues).toEqual([{ name: 'rank', reason: 'missing-other' }]);
+    expect(issues).toMatchObject([{ name: 'rank', reason: 'missing-other' }]);
   });
 
   it('warns on a select missing the `other` branch', () => {
     const { issues } = parsePlaceholders('{gender, select, male {he}}');
-    expect(issues).toEqual([{ name: 'gender', reason: 'missing-other' }]);
+    expect(issues).toMatchObject([{ name: 'gender', reason: 'missing-other' }]);
   });
 
   it('warns on a number skeleton as unsupported', () => {
     const { issues } = parsePlaceholders('{amount, number, ::currency/EUR}');
-    expect(issues).toEqual([
+    expect(issues).toMatchObject([
       { feature: 'number skeleton', name: 'amount', reason: 'unsupported' },
     ]);
   });
 
   it('warns on a currency without a code as unsupported', () => {
     const { issues } = parsePlaceholders('{cost, number, currency}');
-    expect(issues).toEqual([
+    expect(issues).toMatchObject([
       {
         feature: 'currency without a code',
         name: 'cost',
@@ -189,7 +189,7 @@ describe('parsePlaceholders', () => {
 
   it('warns on a date skeleton as unsupported', () => {
     const { issues } = parsePlaceholders('{when, date, ::yyyyMMdd}');
-    expect(issues).toEqual([
+    expect(issues).toMatchObject([
       {
         feature: 'date skeleton or custom pattern',
         name: 'when',
@@ -200,7 +200,7 @@ describe('parsePlaceholders', () => {
 
   it('warns on a date custom pattern as unsupported', () => {
     const { issues } = parsePlaceholders('{when, date, dd/MM/yyyy}');
-    expect(issues).toEqual([
+    expect(issues).toMatchObject([
       {
         feature: 'date skeleton or custom pattern',
         name: 'when',
@@ -211,7 +211,7 @@ describe('parsePlaceholders', () => {
 
   it('warns on a time skeleton as unsupported', () => {
     const { issues } = parsePlaceholders('{at, time, ::Hms}');
-    expect(issues).toEqual([
+    expect(issues).toMatchObject([
       {
         feature: 'time skeleton or custom pattern',
         name: 'at',
@@ -222,7 +222,7 @@ describe('parsePlaceholders', () => {
 
   it('warns on an unsupported time style', () => {
     const { issues } = parsePlaceholders('{at, time, fancy}');
-    expect(issues).toEqual([
+    expect(issues).toMatchObject([
       {
         feature: 'time skeleton or custom pattern',
         name: 'at',
@@ -235,14 +235,14 @@ describe('parsePlaceholders', () => {
     const { issues } = parsePlaceholders(
       '{count, plural, offset:1 one {#} other {# more}}',
     );
-    expect(issues).toEqual([
+    expect(issues).toMatchObject([
       { feature: 'plural offset', name: 'count', reason: 'unsupported' },
     ]);
   });
 
   it('warns on apostrophe escaping as unsupported', () => {
     const { issues } = parsePlaceholders("Send '{count}' files");
-    expect(issues).toEqual([
+    expect(issues).toMatchObject([
       { feature: 'apostrophe escaping', name: '', reason: 'unsupported' },
     ]);
   });

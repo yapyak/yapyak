@@ -1,4 +1,14 @@
+export interface TemplateRange {
+  end: number;
+  start: number;
+}
+
 export type TemplateDiagnostic =
-  | { message: string; reason: 'malformed' }
-  | { name: string; reason: 'missing-other' }
-  | { feature: string; name: string; reason: 'unsupported' };
+  | { message: string; range: TemplateRange; reason: 'malformed' }
+  | { name: string; range: TemplateRange; reason: 'missing-other' }
+  | {
+      feature: string;
+      name: string;
+      range: TemplateRange;
+      reason: 'unsupported';
+    };
