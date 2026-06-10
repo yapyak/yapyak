@@ -140,9 +140,6 @@ importers:
       '@vitest/coverage-v8':
         specifier: 'catalog:'
         version: 4.1.7(vitest@4.1.7)
-      '@yapyak/biome-config':
-        specifier: workspace:*
-        version: link:packages/biome-config
       knip:
         specifier: 'catalog:'
         version: 6.16.1
@@ -627,8 +624,6 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.1.7(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(happy-dom@20.10.2)(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0))
-
-  packages/biome-config: {}
 
   packages/doc-extractor:
     dependencies:

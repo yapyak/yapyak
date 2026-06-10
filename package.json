@@ -15,7 +15,6 @@
   "devDependencies": {
     "@biomejs/biome": "catalog:",
     "@vitest/coverage-v8": "catalog:",
-    "@yapyak/biome-config": "workspace:*",
     "knip": "catalog:",
     "vitest": "catalog:"
   },
