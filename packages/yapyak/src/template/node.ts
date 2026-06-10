@@ -25,14 +25,14 @@ export interface CountNode {
 }
 
 export interface PluralNode {
-  branches: Map<string, Template>;
+  branches: Record<string, Template>;
   kind: 'plural';
   name: string;
   type: 'cardinal' | 'ordinal';
 }
 
 export interface SelectNode {
-  branches: Map<string, Template>;
+  branches: Record<string, Template>;
   kind: 'select';
   name: string;
 }

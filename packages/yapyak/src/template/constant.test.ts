@@ -62,24 +62,18 @@ describe('resolveConstants', () => {
     it('recurses into plural branches and folds placeholders there', () => {
       const template: Template = [
         {
-          branches: new Map([
-            [
-              'one',
-              [
-                { kind: 'count' },
-                { kind: 'literal', value: ' from ' },
-                { kind: 'placeholder', name: 'name' },
-              ],
+          branches: {
+            one: [
+              { kind: 'count' },
+              { kind: 'literal', value: ' from ' },
+              { kind: 'placeholder', name: 'name' },
             ],
-            [
-              'other',
-              [
-                { kind: 'count' },
-                { kind: 'literal', value: ' from ' },
-                { kind: 'placeholder', name: 'name' },
-              ],
+            other: [
+              { kind: 'count' },
+              { kind: 'literal', value: ' from ' },
+              { kind: 'placeholder', name: 'name' },
             ],
-          ]),
+          },
           kind: 'plural',
           name: 'count',
           type: 'cardinal',
@@ -91,7 +85,7 @@ describe('resolveConstants', () => {
       if (node?.kind !== 'plural') {
         return;
       }
-      expect(node.branches.get('one')).toEqual([
+      expect(node.branches['one']).toEqual([
         { kind: 'count' },
         { kind: 'literal', value: ' from Ada' },
       ]);
@@ -100,7 +94,7 @@ describe('resolveConstants', () => {
     it('keeps the plural node intact when the count param is unknown', () => {
       const template: Template = [
         {
-          branches: new Map([['other', [{ kind: 'literal', value: 'items' }]]]),
+          branches: { other: [{ kind: 'literal', value: 'items' }] },
           kind: 'plural',
           name: 'count',
           type: 'cardinal',
@@ -114,22 +108,16 @@ describe('resolveConstants', () => {
     it('recurses into select branches and folds placeholders', () => {
       const template: Template = [
         {
-          branches: new Map([
-            [
-              'male',
-              [
-                { kind: 'literal', value: 'he is ' },
-                { kind: 'placeholder', name: 'role' },
-              ],
+          branches: {
+            male: [
+              { kind: 'literal', value: 'he is ' },
+              { kind: 'placeholder', name: 'role' },
             ],
-            [
-              'other',
-              [
-                { kind: 'literal', value: 'they are ' },
-                { kind: 'placeholder', name: 'role' },
-              ],
+            other: [
+              { kind: 'literal', value: 'they are ' },
+              { kind: 'placeholder', name: 'role' },
             ],
-          ]),
+          },
           kind: 'select',
           name: 'gender',
         },
@@ -139,7 +127,7 @@ describe('resolveConstants', () => {
       if (node?.kind !== 'select') {
         return;
       }
-      expect(node.branches.get('male')).toEqual([
+      expect(node.branches['male']).toEqual([
         { kind: 'literal', value: 'he is admin' },
       ]);
     });

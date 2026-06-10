@@ -14,7 +14,16 @@ export type {
 } from './node';
 
 export { resolveConstants } from './constant';
-export { generateTemplate } from './generate';
+export {
+  count,
+  date,
+  literal,
+  number,
+  placeholder,
+  plural,
+  select,
+  time,
+} from './factory';
 export { interpret } from './interpret';
 export { type ParseTemplateResult, parseTemplate } from './parse';
 export {

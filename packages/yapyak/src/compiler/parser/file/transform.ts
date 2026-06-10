@@ -1,5 +1,6 @@
 import type { SourceMap } from 'magic-string';
 import type { Fragment, Processor, Range } from '../../../processor';
+import type { Template, TemplateNode } from '../../../template';
 import type { Diagnostic } from '../diagnostic';
 import type { Placeholder } from '../placeholder';
 import type { ExtractFileResult, ParsedCallSite } from './extract';
@@ -7,6 +8,7 @@ import type { ExtractFileResult, ParsedCallSite } from './extract';
 import MagicString from 'magic-string';
 import ts from 'typescript';
 
+import { parseTemplate } from '../../../template';
 import { YAPYAK_INTERNAL_MODULE, YAPYAK_MODULE } from '../binding';
 import { findMatchingBraceIndex } from '../matching-brace';
 import { resolveProcessor } from '../processor';
@@ -31,6 +33,16 @@ export interface TransformFileResult {
 
 const PICK_EXPORT = 'pick';
 const PICK_LOCAL = '_pick';
+const FACTORY_ORDER = [
+  'literal',
+  'placeholder',
+  'count',
+  'plural',
+  'select',
+  'number',
+  'date',
+  'time',
+] as const;
 
 export function transformFile(
   request: TransformFileRequest,
@@ -58,6 +70,7 @@ export function transformFile(
   const pickLocal = findFreePickLocal(request.source);
 
   let hasUsedPick = false;
+  const usedFactories = new Set<string>();
   for (const callSite of request.extracted.callSites) {
     const replacement = renderCallReplacement({
       callSite,
@@ -79,19 +92,31 @@ export function transformFile(
     if (replacement.usesPick) {
       hasUsedPick = true;
     }
+    for (const factory of replacement.usedFactories) {
+      usedFactories.add(factory);
+    }
   }
 
   transformScriptImports(fragments, magicString, request);
 
+  const importSpecs: string[] = [];
   if (hasUsedPick) {
-    const importSpec =
+    importSpecs.push(
       pickLocal === PICK_EXPORT
         ? PICK_EXPORT
-        : `${PICK_EXPORT} as ${pickLocal}`;
+        : `${PICK_EXPORT} as ${pickLocal}`,
+    );
+  }
+  for (const factory of FACTORY_ORDER) {
+    if (usedFactories.has(factory)) {
+      importSpecs.push(`${factory} as _${factory}`);
+    }
+  }
+  if (importSpecs.length > 0) {
     processor.applyImport(
       magicString,
       request.source,
-      `import { ${importSpec} } from '${YAPYAK_INTERNAL_MODULE}';`,
+      `import { ${importSpecs.join(', ')} } from '${YAPYAK_INTERNAL_MODULE}';`,
     );
   }
 
@@ -241,6 +266,7 @@ interface RenderCallReplacementInput {
 interface CallReplacement {
   code: string;
   range?: Range;
+  usedFactories: Set<string>;
   usesPick: boolean;
 }
 
@@ -277,17 +303,22 @@ function renderCallReplacement(
     }
     return {
       code: renderEliminated(targetText, callSite, placeholders),
+      usedFactories: new Set(),
       usesPick: false,
     };
   }
 
-  const catalog = buildCatalogLiteral({
-    defaultLocale,
-    id,
-    locales,
-    source,
-    translations,
-  });
+  const usedFactories = new Set<string>();
+  const catalog = buildCatalogLiteral(
+    {
+      defaultLocale,
+      id,
+      locales,
+      source,
+      translations,
+    },
+    usedFactories,
+  );
   const hasPlaceholders = placeholders.length > 0;
   const paramsExpressionText = hasPlaceholders
     ? getParamArgText(callSite)
@@ -303,6 +334,7 @@ function renderCallReplacement(
   }
   return {
     code: `${pickLocal}(${args.join(', ')})`,
+    usedFactories,
     usesPick: true,
   };
 }
@@ -466,7 +498,10 @@ interface BuildCatalogInput {
   translations: Record<string, Record<string, string>>;
 }
 
-function buildCatalogLiteral(input: BuildCatalogInput): string {
+function buildCatalogLiteral(
+  input: BuildCatalogInput,
+  usedFactories: Set<string>,
+): string {
   const { defaultLocale, id, locales, source, translations } = input;
   const entries: string[] = [];
   for (const locale of locales) {
@@ -477,9 +512,78 @@ function buildCatalogLiteral(input: BuildCatalogInput): string {
       source,
       translations,
     });
-    entries.push(`${renderLocaleKey(locale)}: ${toSafeJsString(text)}`);
+    entries.push(
+      `${renderLocaleKey(locale)}: ${renderVariantValue(text, usedFactories)}`,
+    );
   }
   return `{ ${entries.join(', ')} }`;
+}
+
+function renderVariantValue(text: string, usedFactories: Set<string>): string {
+  const { template } = parseTemplate(text);
+  if (isStaticTemplate(template)) {
+    return toSafeJsString(text);
+  }
+  return renderTemplateLiteral(template, usedFactories);
+}
+
+function isStaticTemplate(template: Template): boolean {
+  if (template.length === 0) {
+    return true;
+  }
+  for (const node of template) {
+    if (node.kind !== 'literal') {
+      return false;
+    }
+  }
+  return true;
+}
+
+function renderTemplateLiteral(
+  template: Template,
+  usedFactories: Set<string>,
+): string {
+  return `[${template.map((node) => renderNode(node, usedFactories)).join(',')}]`;
+}
+
+function renderNode(node: TemplateNode, usedFactories: Set<string>): string {
+  switch (node.kind) {
+    case 'literal':
+      usedFactories.add('literal');
+      return `_literal(${JSON.stringify(node.value)})`;
+    case 'placeholder':
+      usedFactories.add('placeholder');
+      return `_placeholder(${JSON.stringify(node.name)})`;
+    case 'count':
+      usedFactories.add('count');
+      return '_count()';
+    case 'plural':
+      usedFactories.add('plural');
+      return `_plural(${JSON.stringify(node.name)},${JSON.stringify(node.type)},${renderBranches(node.branches, usedFactories)})`;
+    case 'select':
+      usedFactories.add('select');
+      return `_select(${JSON.stringify(node.name)},${renderBranches(node.branches, usedFactories)})`;
+    case 'number':
+      usedFactories.add('number');
+      return `_number(${JSON.stringify(node.name)},${JSON.stringify(node.options)})`;
+    case 'date':
+      usedFactories.add('date');
+      return `_date(${JSON.stringify(node.name)},${JSON.stringify(node.style)})`;
+    case 'time':
+      usedFactories.add('time');
+      return `_time(${JSON.stringify(node.name)},${JSON.stringify(node.style)})`;
+  }
+}
+
+function renderBranches(
+  branches: Record<string, Template>,
+  usedFactories: Set<string>,
+): string {
+  const entries = Object.entries(branches).map(
+    ([name, template]) =>
+      `${JSON.stringify(name)}:${renderTemplateLiteral(template, usedFactories)}`,
+  );
+  return `{${entries.join(',')}}`;
 }
 
 interface PickLocaleTextInput {
@@ -558,7 +662,7 @@ function tryBareElision(
     if (!isSafeJsxText(source)) {
       return undefined;
     }
-    return { code: source, range, usesPick: false };
+    return { code: source, range, usedFactories: new Set(), usesPick: false };
   }
   if (!attributeName) {
     return undefined;
@@ -569,6 +673,7 @@ function tryBareElision(
   return {
     code: `${attributeName}="${source}"`,
     range,
+    usedFactories: new Set(),
     usesPick: false,
   };
 }

@@ -162,15 +162,15 @@ describe('transformFile', () => {
       expect(code).toContain('_pick');
     });
 
-    it('transforms `{` and `}` in catalog strings so Vue/JSX parsers never see literal braces', () => {
+    it('escapes `{` and `}` in static catalog string variants so Vue/JSX parsers never see literal braces', () => {
       const source = [
         "import { t } from 'yapyak';",
-        "export const x = t('You have {count, plural, one {# item} other {# items}}', { count: 1 });",
+        "export const x = t('Closing }} pattern with { open');",
       ].join('\n');
       const code = runTransform({ locales: ['en', 'sv'], source });
       expect(code).not.toMatch(/"[^"]*\}\}"/);
       expect(code).not.toMatch(/"[^"]*\{[a-z]/);
-      expect(code).toContain('\\u007d');
+      expect(code).toContain('\\u007d\\u007d');
       expect(code).toContain('\\u007b');
     });
 
@@ -333,6 +333,117 @@ describe('transformFile', () => {
         /import \{ pick as _pick_\$1 \} from 'yapyak\/internal'/,
       );
       expect(code).toContain('_pick_$1({');
+    });
+  });
+
+  describe('AST variants', () => {
+    it('emits a string variant for a literal-only template', () => {
+      const code = runTransform({
+        locales: ['en', 'sv'],
+        source: "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
+        translations: { sv: { [hashId('Hello')]: 'Hej' } },
+      });
+      expect(code).toContain("en: 'Hello'");
+      expect(code).toContain("sv: 'Hej'");
+      expect(code).not.toContain('_literal(');
+    });
+
+    it('emits builder-call AST for a template with a placeholder', () => {
+      const code = runTransform({
+        locales: ['en', 'sv'],
+        source: `
+          import { t } from 'yapyak';
+          export function greet(name) {
+            return t('Hi {name}', { name });
+          }
+        `,
+      });
+      expect(code).toContain('_literal("Hi ")');
+      expect(code).toContain('_placeholder("name")');
+      expect(code).toMatch(
+        /import \{[^}]*literal as _literal[^}]*\} from 'yapyak\/internal'/,
+      );
+      expect(code).toMatch(
+        /import \{[^}]*placeholder as _placeholder[^}]*\} from 'yapyak\/internal'/,
+      );
+    });
+
+    it('emits _plural and _count for a plural template', () => {
+      const code = runTransform({
+        locales: ['en'],
+        source: `
+          import { t } from 'yapyak';
+          export function items(count) {
+            return t('{count, plural, one {# item} other {# items}}', { count });
+          }
+        `,
+      });
+      expect(code).toContain('_plural("count","cardinal"');
+      expect(code).toContain('_count()');
+      expect(code).toContain('_literal(" item")');
+      expect(code).toMatch(
+        /import \{[^}]*plural as _plural[^}]*\} from 'yapyak\/internal'/,
+      );
+      expect(code).toMatch(
+        /import \{[^}]*count as _count[^}]*\} from 'yapyak\/internal'/,
+      );
+    });
+
+    it('emits _number for a number template', () => {
+      const code = runTransform({
+        locales: ['en'],
+        source: `
+          import { t } from 'yapyak';
+          export function show(value) {
+            return t('{value, number, percent}', { value });
+          }
+        `,
+      });
+      expect(code).toContain('_number("value"');
+      expect(code).toContain('"style":"percent"');
+      expect(code).toMatch(
+        /import \{[^}]*number as _number[^}]*\} from 'yapyak\/internal'/,
+      );
+    });
+
+    it('emits _date for a date template', () => {
+      const code = runTransform({
+        locales: ['en'],
+        source: `
+          import { t } from 'yapyak';
+          export function show(when) {
+            return t('Updated {when, date, short}', { when });
+          }
+        `,
+      });
+      expect(code).toContain('_date("when","short")');
+      expect(code).toMatch(
+        /import \{[^}]*date as _date[^}]*\} from 'yapyak\/internal'/,
+      );
+    });
+
+    it('does not import factories when no template needs them', () => {
+      const code = runTransform({
+        locales: ['en', 'sv'],
+        source: "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
+      });
+      expect(code).not.toContain('_literal');
+      expect(code).not.toContain('_placeholder');
+    });
+
+    it('combines pick + multiple factory imports in one statement', () => {
+      const code = runTransform({
+        locales: ['en'],
+        source: `
+          import { t } from 'yapyak';
+          export function items(count) {
+            return t('{count, plural, one {# item} other {# items}}', { count });
+          }
+        `,
+      });
+      expect(code).toMatch(
+        /import \{ pick as _pick, literal as _literal, count as _count, plural as _plural \} from 'yapyak\/internal'/,
+      );
     });
   });
 

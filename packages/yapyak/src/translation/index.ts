@@ -1,6 +1,4 @@
-export { interpolate } from './interpolate';
 export { pick } from './pick';
-export { hasPlaceholder } from './placeholder';
 export {
   type RichTextHandler,
   type RichTextHandlers,

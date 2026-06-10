@@ -58,10 +58,10 @@ describe('parseTemplate', () => {
       }
       expect(node.name).toBe('count');
       expect(node.type).toBe('cardinal');
-      expect(node.branches.get('one')).toEqual([
+      expect(node.branches['one']).toEqual([
         { kind: 'literal', value: 'one item' },
       ]);
-      expect(node.branches.get('other')).toEqual([
+      expect(node.branches['other']).toEqual([
         { kind: 'literal', value: 'many items' },
       ]);
     });
@@ -86,9 +86,7 @@ describe('parseTemplate', () => {
       if (node?.kind !== 'plural') {
         return;
       }
-      expect(node.branches.get('=0')).toEqual([
-        { kind: 'literal', value: 'none' },
-      ]);
+      expect(node.branches['=0']).toEqual([{ kind: 'literal', value: 'none' }]);
     });
 
     it('parses `#` inside a plural branch as a CountNode', () => {
@@ -97,7 +95,7 @@ describe('parseTemplate', () => {
       if (node?.kind !== 'plural') {
         return;
       }
-      expect(node.branches.get('other')).toEqual([
+      expect(node.branches['other']).toEqual([
         { kind: 'count' },
         { kind: 'literal', value: ' items' },
       ]);
@@ -111,7 +109,7 @@ describe('parseTemplate', () => {
       if (node?.kind !== 'plural') {
         return;
       }
-      expect(node.branches.get('one')).toEqual([
+      expect(node.branches['one']).toEqual([
         { kind: 'count' },
         { kind: 'literal', value: ' message from ' },
         { kind: 'placeholder', name: 'name' },
@@ -146,10 +144,8 @@ describe('parseTemplate', () => {
         return;
       }
       expect(node.name).toBe('gender');
-      expect(node.branches.get('male')).toEqual([
-        { kind: 'literal', value: 'he' },
-      ]);
-      expect(node.branches.get('other')).toEqual([
+      expect(node.branches['male']).toEqual([{ kind: 'literal', value: 'he' }]);
+      expect(node.branches['other']).toEqual([
         { kind: 'literal', value: 'they' },
       ]);
     });
@@ -162,7 +158,7 @@ describe('parseTemplate', () => {
       if (plural?.kind !== 'plural') {
         return;
       }
-      const branch = plural.branches.get('one');
+      const branch = plural.branches['one'];
       expect(branch?.[0]?.kind).toBe('select');
       expect(branch?.[2]).toEqual({ kind: 'count' });
     });

@@ -253,7 +253,7 @@ function buildPluralNode(
     });
   }
   const branches = parseBranches(context, input.bodyStart, input.bodyEnd, true);
-  if (!branches.has('other')) {
+  if (!('other' in branches)) {
     context.diagnostics.push({ name: input.name, reason: 'missing-other' });
   }
   return { branches, kind: 'plural', name: input.name, type: input.type };
@@ -276,7 +276,7 @@ function buildSelectNode(
     input.bodyEnd,
     input.isInPluralBranch,
   );
-  if (!branches.has('other')) {
+  if (!('other' in branches)) {
     context.diagnostics.push({ name: input.name, reason: 'missing-other' });
   }
   return { branches, kind: 'select', name: input.name };
@@ -323,8 +323,8 @@ function parseBranches(
   start: number,
   end: number,
   isInPluralBranch: boolean,
-): Map<string, Template> {
-  const branches = new Map<string, Template>();
+): Record<string, Template> {
+  const branches: Record<string, Template> = {};
   let position = start;
   while (position < end) {
     while (position < end && isWhitespace(context.source[position])) {
@@ -358,7 +358,7 @@ function parseBranches(
       break;
     }
     const inner = parseNodes(context, position + 1, isInPluralBranch, '}');
-    branches.set(branchName, inner.value);
+    branches[branchName] = inner.value;
     position = closeIndex + 1;
   }
   return branches;

@@ -1,9 +1,10 @@
-import { defaultLocale, getLocale } from '../locale';
-import { runTrackers } from '../tracker';
-import { interpolate } from './interpolate';
-import { hasPlaceholder } from './placeholder';
+import type { Template } from '../template';
 
-type Variants = Record<string, string>;
+import { defaultLocale, getLocale } from '../locale';
+import { interpret } from '../template';
+import { runTrackers } from '../tracker';
+
+type Variants = Record<string, string | Template>;
 
 interface PickOptions {
   locale?: string;
@@ -11,14 +12,16 @@ interface PickOptions {
 
 export function pick(
   variants: Variants,
-  paramsOrOptions?: Record<string, unknown> | PickOptions,
+  paramsOrOptions?: PickOptions | Record<string, unknown>,
   maybeOptions?: PickOptions,
 ): string {
-  const sourceHasPlaceholder = Object.values(variants).some(hasPlaceholder);
+  const hasDynamicVariant = Object.values(variants).some(
+    (variant) => typeof variant !== 'string',
+  );
 
   let params: Record<string, unknown> | undefined;
   let options: PickOptions | undefined;
-  if (sourceHasPlaceholder) {
+  if (hasDynamicVariant) {
     params = paramsOrOptions as Record<string, unknown> | undefined;
     options = maybeOptions;
   } else {
@@ -27,9 +30,9 @@ export function pick(
 
   runTrackers();
   const active = options?.locale ?? getLocale();
-  const value = variants[active] ?? variants[defaultLocale] ?? '';
-  if (!params || !hasPlaceholder(value)) {
-    return value;
+  const variant = variants[active] ?? variants[defaultLocale] ?? '';
+  if (typeof variant === 'string') {
+    return variant;
   }
-  return interpolate(value, params, active);
+  return interpret(variant, params ?? {}, active);
 }

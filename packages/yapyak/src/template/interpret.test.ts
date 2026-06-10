@@ -41,12 +41,9 @@ describe('interpret', () => {
     it('renders the formatted count inside a plural branch', () => {
       const template: Template = [
         {
-          branches: new Map([
-            [
-              'other',
-              [{ kind: 'count' }, { kind: 'literal', value: ' items' }],
-            ],
-          ]),
+          branches: {
+            other: [{ kind: 'count' }, { kind: 'literal', value: ' items' }],
+          },
           kind: 'plural',
           name: 'count',
           type: 'cardinal',
@@ -59,10 +56,10 @@ describe('interpret', () => {
   describe('plural', () => {
     const oneOrMany: Template = [
       {
-        branches: new Map([
-          ['one', [{ kind: 'count' }, { kind: 'literal', value: ' item' }]],
-          ['other', [{ kind: 'count' }, { kind: 'literal', value: ' items' }]],
-        ]),
+        branches: {
+          one: [{ kind: 'count' }, { kind: 'literal', value: ' item' }],
+          other: [{ kind: 'count' }, { kind: 'literal', value: ' items' }],
+        },
         kind: 'plural',
         name: 'count',
         type: 'cardinal',
@@ -80,14 +77,11 @@ describe('interpret', () => {
     it('picks an exact `=N` branch over the category branch', () => {
       const template: Template = [
         {
-          branches: new Map([
-            ['=0', [{ kind: 'literal', value: 'none' }]],
-            ['one', [{ kind: 'count' }, { kind: 'literal', value: ' item' }]],
-            [
-              'other',
-              [{ kind: 'count' }, { kind: 'literal', value: ' items' }],
-            ],
-          ]),
+          branches: {
+            '=0': [{ kind: 'literal', value: 'none' }],
+            one: [{ kind: 'count' }, { kind: 'literal', value: ' item' }],
+            other: [{ kind: 'count' }, { kind: 'literal', value: ' items' }],
+          },
           kind: 'plural',
           name: 'count',
           type: 'cardinal',
@@ -99,7 +93,9 @@ describe('interpret', () => {
     it('falls back to `other` when the category has no branch', () => {
       const template: Template = [
         {
-          branches: new Map([['other', [{ kind: 'literal', value: 'many' }]]]),
+          branches: {
+            other: [{ kind: 'literal', value: 'many' }],
+          },
           kind: 'plural',
           name: 'count',
           type: 'cardinal',
@@ -111,24 +107,18 @@ describe('interpret', () => {
     it('renders nested placeholders inside a plural branch', () => {
       const template: Template = [
         {
-          branches: new Map([
-            [
-              'one',
-              [
-                { kind: 'count' },
-                { kind: 'literal', value: ' from ' },
-                { kind: 'placeholder', name: 'name' },
-              ],
+          branches: {
+            one: [
+              { kind: 'count' },
+              { kind: 'literal', value: ' from ' },
+              { kind: 'placeholder', name: 'name' },
             ],
-            [
-              'other',
-              [
-                { kind: 'count' },
-                { kind: 'literal', value: ' from ' },
-                { kind: 'placeholder', name: 'name' },
-              ],
+            other: [
+              { kind: 'count' },
+              { kind: 'literal', value: ' from ' },
+              { kind: 'placeholder', name: 'name' },
             ],
-          ]),
+          },
           kind: 'plural',
           name: 'count',
           type: 'cardinal',
@@ -143,11 +133,11 @@ describe('interpret', () => {
   describe('select', () => {
     const template: Template = [
       {
-        branches: new Map([
-          ['male', [{ kind: 'literal', value: 'he' }]],
-          ['female', [{ kind: 'literal', value: 'she' }]],
-          ['other', [{ kind: 'literal', value: 'they' }]],
-        ]),
+        branches: {
+          female: [{ kind: 'literal', value: 'she' }],
+          male: [{ kind: 'literal', value: 'he' }],
+          other: [{ kind: 'literal', value: 'they' }],
+        },
         kind: 'select',
         name: 'gender',
       },
@@ -164,23 +154,20 @@ describe('interpret', () => {
     it('inherits the plural context through a nested select', () => {
       const nested: Template = [
         {
-          branches: new Map([
-            [
-              'one',
-              [
-                {
-                  branches: new Map([
-                    ['male', [{ kind: 'literal', value: 'he' }]],
-                    ['other', [{ kind: 'literal', value: 'they' }]],
-                  ]),
-                  kind: 'select',
-                  name: 'g',
+          branches: {
+            one: [
+              {
+                branches: {
+                  male: [{ kind: 'literal', value: 'he' }],
+                  other: [{ kind: 'literal', value: 'they' }],
                 },
-                { kind: 'literal', value: ' sent ' },
-                { kind: 'count' },
-              ],
+                kind: 'select',
+                name: 'g',
+              },
+              { kind: 'literal', value: ' sent ' },
+              { kind: 'count' },
             ],
-          ]),
+          },
           kind: 'plural',
           name: 'count',
           type: 'cardinal',

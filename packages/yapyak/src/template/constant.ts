@@ -63,12 +63,12 @@ function resolveNode(
 }
 
 function resolveBranches(
-  branches: Map<string, Template>,
+  branches: Record<string, Template>,
   params: Record<string, unknown>,
-): Map<string, Template> {
-  const resolved = new Map<string, Template>();
-  for (const [name, template] of branches) {
-    resolved.set(name, resolveNodes(template, params));
+): Record<string, Template> {
+  const resolved: Record<string, Template> = {};
+  for (const [name, template] of Object.entries(branches)) {
+    resolved[name] = resolveNodes(template, params);
   }
   return resolved;
 }

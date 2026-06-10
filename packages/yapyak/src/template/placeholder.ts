@@ -55,13 +55,13 @@ function walkNode(
         node.name,
         node.type === 'ordinal' ? 'selectordinal' : 'plural',
       );
-      for (const branch of node.branches.values()) {
+      for (const branch of Object.values(node.branches)) {
         walkTemplate(branch, placeholdersByName);
       }
       return;
     case 'select':
       registerPlaceholder(placeholdersByName, node.name, 'select');
-      for (const branch of node.branches.values()) {
+      for (const branch of Object.values(node.branches)) {
         walkTemplate(branch, placeholdersByName);
       }
       return;

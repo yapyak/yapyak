@@ -68,15 +68,14 @@ function interpretPlural(
   const formattedCount = resolveFormatter(Intl.NumberFormat, locale, {}).format(
     count,
   );
-  const exact = node.branches.get(`=${count}`);
+  const exact = node.branches[`=${count}`];
   if (exact !== undefined) {
     return interpretNodes(exact, params, locale, formattedCount);
   }
   const category = resolveFormatter(Intl.PluralRules, locale, {
     type: node.type,
   }).select(count);
-  const branch =
-    node.branches.get(category) ?? node.branches.get('other') ?? [];
+  const branch = node.branches[category] ?? node.branches['other'] ?? [];
   return interpretNodes(branch, params, locale, formattedCount);
 }
 
@@ -87,7 +86,7 @@ function interpretSelect(
   formattedCount: string | undefined,
 ): string {
   const value = String(params[node.name]);
-  const branch = node.branches.get(value) ?? node.branches.get('other') ?? [];
+  const branch = node.branches[value] ?? node.branches['other'] ?? [];
   return interpretNodes(branch, params, locale, formattedCount);
 }
 
