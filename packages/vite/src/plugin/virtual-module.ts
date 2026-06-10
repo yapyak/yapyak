@@ -8,6 +8,7 @@ import { getNormalized, getResolver } from './state';
 
 export function createVirtualModulePlugin(state: State): Plugin {
   return {
+    enforce: 'pre',
     load(id: string): string | null {
       if (id === RUNTIME_RESOLVED) {
         const normalized = getNormalized(state);
