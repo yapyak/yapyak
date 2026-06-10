@@ -17,7 +17,6 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "@yapyak/anthropic": "workspace:*",
     "@yapyak/vite": "workspace:*",
     "typescript": "catalog:",
     "vite": "catalog:"

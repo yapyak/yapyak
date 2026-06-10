@@ -12,9 +12,10 @@
     "typecheck": "pnpm -r --parallel typecheck"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.16",
+    "@biomejs/biome": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "@yapyak/biome-config": "workspace:*",
+    "knip": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {

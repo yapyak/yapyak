@@ -234,6 +234,18 @@
       "includes": [
         "**/locales/*.json"
       ]
+    },
+    {
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedKeys": "off"
+          }
+        }
+      },
+      "includes": [
+        "**/knip.json"
+      ]
     }
   ],
 

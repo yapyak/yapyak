@@ -1,7 +1,7 @@
 export type { Locale, Register } from './type';
 
 export { parseAcceptLanguage } from './accept-language';
-export { resetRequestReader, setRequestReader } from './request-reader';
+export { setRequestReader } from './request-reader';
 export { resolveLocale } from './resolve';
 export {
   appendResponseHeader,

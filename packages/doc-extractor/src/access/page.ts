@@ -39,20 +39,6 @@ export function getFirstPage(
   return undefined;
 }
 
-export function* getAllPages(manifest: Manifest): Iterable<PageEntry> {
-  for (const [collection, collectionData] of Object.entries(
-    manifest.collections,
-  )) {
-    for (const [path, page] of Object.entries(collectionData.pages)) {
-      yield {
-        collection,
-        page,
-        path,
-      };
-    }
-  }
-}
-
 export function findAdjacentPages(
   manifest: Manifest,
   page: Page,

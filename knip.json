@@ -1,0 +1,41 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "ignore": [
+    "**/.yapyak/**",
+    "**/yapyak.config.ts",
+    "examples/react-tanstack-start-*/src/router.tsx",
+    "examples/react-tanstack-start-*/src/routes/**",
+    "examples/react-tanstack-start-*/src/start.ts",
+    "packages/yapyak/src/compiler/parser/fixture/**"
+  ],
+  "ignoreDependencies": [
+    "@tanstack/react-router",
+    "@yapyak/react",
+    "@yapyak/tanstack-start"
+  ],
+  "ignoreExportsUsedInFile": true,
+  "workspaces": {
+    ".": {
+      "ignoreDependencies": [
+        "knip"
+      ]
+    },
+    "packages/yapyak": {
+      "entry": [
+        "src/index.ts",
+        "src/internal.ts",
+        "src/cli/index.ts",
+        "src/runtime.ts",
+        "src/adapter/index.ts",
+        "src/translator/index.ts",
+        "src/compiler/index.ts"
+      ]
+    },
+    "packages/*": {
+      "entry": [
+        "src/index.ts",
+        "src/internal.ts"
+      ]
+    }
+  }
+}
