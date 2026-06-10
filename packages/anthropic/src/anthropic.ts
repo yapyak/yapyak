@@ -1,13 +1,10 @@
-import type {
-  ContextLevel,
-  LocaleTranslations,
-  Translator,
-} from 'yapyak/translator';
+import type { ContextLevel, Translator } from 'yapyak/translator';
 
 import { createTranslator } from 'yapyak/translator';
 import {
   buildSystem,
   fetchWithRetry,
+  parseResponse,
   stripCodeFence,
 } from 'yapyak/translator/internal';
 
@@ -163,8 +160,7 @@ export function anthropic(options: AnthropicOptions): Translator {
           'yapyak anthropic: response did not contain a text block',
         );
       }
-      const cleaned = stripCodeFence(text.trim());
-      return JSON.parse(cleaned) as LocaleTranslations[];
+      return parseResponse(stripCodeFence(text.trim()), 'anthropic');
     },
     {
       batchSize,

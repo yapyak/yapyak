@@ -1,13 +1,10 @@
-import type {
-  ContextLevel,
-  LocaleTranslations,
-  Translator,
-} from 'yapyak/translator';
+import type { ContextLevel, Translator } from 'yapyak/translator';
 
 import { createTranslator } from 'yapyak/translator';
 import {
   buildSystem,
   fetchWithRetry,
+  parseResponse,
   stripCodeFence,
 } from 'yapyak/translator/internal';
 
@@ -167,8 +164,7 @@ export function gemini(options: GeminiOptions): Translator {
       if (typeof text !== 'string') {
         throw new Error('yapyak gemini: response did not contain a text part');
       }
-      const cleaned = stripCodeFence(text.trim());
-      return JSON.parse(cleaned) as LocaleTranslations[];
+      return parseResponse(stripCodeFence(text.trim()), 'gemini');
     },
     {
       batchSize,

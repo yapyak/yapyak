@@ -1,11 +1,11 @@
-import type {
-  ContextLevel,
-  LocaleTranslations,
-  Translator,
-} from 'yapyak/translator';
+import type { ContextLevel, Translator } from 'yapyak/translator';
 
 import { createTranslator } from 'yapyak/translator';
-import { buildSystem, fetchWithRetry } from 'yapyak/translator/internal';
+import {
+  buildSystem,
+  fetchWithRetry,
+  parseResponse,
+} from 'yapyak/translator/internal';
 
 /** Options for {@link ollama}. */
 export type OllamaOptions = {
@@ -138,7 +138,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
           'yapyak ollama: response did not contain a response field',
         );
       }
-      return JSON.parse(text.trim()) as LocaleTranslations[];
+      return parseResponse(text.trim(), 'ollama');
     },
     {
       batchSize,
