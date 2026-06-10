@@ -10,7 +10,7 @@ describe('buildPersistence', () => {
       { name: 'locale', type: 'cookie' },
       LOCALES,
     );
-    expect(persistence).not.toBeNull();
+    expect(persistence).toBeDefined();
     expect(persistence?.getFromRequest).toBeDefined();
   });
 
@@ -19,13 +19,13 @@ describe('buildPersistence', () => {
       { key: 'locale', type: 'local-storage' },
       LOCALES,
     );
-    expect(persistence).not.toBeNull();
+    expect(persistence).toBeDefined();
     expect(persistence?.getFromRequest).toBeUndefined();
   });
 
   it('builds `url` persistence with default pattern', () => {
     const persistence = buildPersistence({ type: 'url' }, LOCALES);
-    expect(persistence).not.toBeNull();
+    expect(persistence).toBeDefined();
     expect(persistence?.getFromRequest).toBeDefined();
   });
 
@@ -34,10 +34,10 @@ describe('buildPersistence', () => {
       { match: /\/(en|sv)\//, type: 'url' },
       LOCALES,
     );
-    expect(persistence).not.toBeNull();
+    expect(persistence).toBeDefined();
   });
 
-  it('returns `null` when config type is `none`', () => {
-    expect(buildPersistence({ type: 'none' }, LOCALES)).toBeNull();
+  it('returns `undefined` when config type is `none`', () => {
+    expect(buildPersistence({ type: 'none' }, LOCALES)).toBeUndefined();
   });
 });

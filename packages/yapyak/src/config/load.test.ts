@@ -18,7 +18,7 @@ describe('loadYapyakConfig', () => {
 
   it('returns the normalized default config when no config file exists', async () => {
     const result = await loadYapyakConfig(cwd);
-    expect(result.configFile).toBeNull();
+    expect(result.configFile).toBeUndefined();
     expect(result.config.defaultLocale).toBe('en');
   });
 

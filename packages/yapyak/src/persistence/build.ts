@@ -7,9 +7,9 @@ import { url } from './url';
 export function buildPersistence(
   config: NormalizedPersistenceConfig,
   locales: string[],
-): Persistence | null {
+): Persistence | undefined {
   if (config.type === 'none') {
-    return null;
+    return undefined;
   }
   if (config.type === 'cookie') {
     return cookie({ name: config.name });

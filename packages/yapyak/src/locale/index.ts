@@ -5,6 +5,7 @@ export { setRequestReader } from './request-reader';
 export { resolveLocale } from './resolve';
 export {
   appendResponseHeader,
+  resetResponseHeaderWriter,
   setResponseHeaderWriter,
 } from './response-header-writer';
 export {

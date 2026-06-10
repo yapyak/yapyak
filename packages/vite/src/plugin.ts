@@ -112,7 +112,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
   let resolver: LocaleResolver | null = null;
   let normalized: NormalizedYapyakConfig | null = null;
   let filter: (path: string) => boolean = () => false;
-  let configFile: string | null = null;
+  let configFile: string | undefined;
   let command: 'build' | 'serve' = 'serve';
   let logger: ResolvedConfig['logger'] | null = null;
   const teardownCallbacks: Array<() => void> = [];
@@ -371,7 +371,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       writeRegister(resolver.getEmittedLocales().locales, yapyakDir);
     },
     configureServer(server): void {
-      if (configFile !== null) {
+      if (configFile !== undefined) {
         server.watcher.add(configFile);
       }
 
@@ -471,7 +471,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
       teardownCallbacks.push(syncLocaleStructure.cancel);
 
       server.watcher.on('change', (path: string) => {
-        if (configFile !== null && path === configFile) {
+        if (configFile !== undefined && path === configFile) {
           void server.restart();
           return;
         }

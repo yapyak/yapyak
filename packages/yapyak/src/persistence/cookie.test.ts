@@ -1,6 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { setResponseHeaderWriter } from '../locale/response-header-writer';
+import {
+  resetResponseHeaderWriter,
+  setResponseHeaderWriter,
+} from '../locale/response-header-writer';
 import { resetWarn, setWarn } from '../warn';
 import { cookie, parseCookie } from './cookie';
 
@@ -86,7 +89,7 @@ describe('cookie', () => {
     });
 
     afterEach(() => {
-      setResponseHeaderWriter(null);
+      resetResponseHeaderWriter();
       resetWarn();
     });
 

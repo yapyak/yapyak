@@ -2,12 +2,13 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import {
   appendResponseHeader,
+  resetResponseHeaderWriter,
   setResponseHeaderWriter,
 } from './response-header-writer';
 
 describe('response-header-writer', () => {
   afterEach(() => {
-    setResponseHeaderWriter(null);
+    resetResponseHeaderWriter();
   });
 
   it('returns `false` from `appendResponseHeader` when no writer is registered', () => {
@@ -26,9 +27,9 @@ describe('response-header-writer', () => {
     expect(appendResponseHeader('Set-Cookie', 'locale=sv')).toBe(true);
   });
 
-  it('clears the writer when `setResponseHeaderWriter` receives `null`', () => {
+  it('clears the writer when `resetResponseHeaderWriter` is called', () => {
     setResponseHeaderWriter(() => {});
-    setResponseHeaderWriter(null);
+    resetResponseHeaderWriter();
     expect(appendResponseHeader('Set-Cookie', 'locale=sv')).toBe(false);
   });
 

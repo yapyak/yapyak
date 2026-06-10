@@ -215,20 +215,20 @@ function parseNumberOptions(styleArgument: string): Intl.NumberFormatOptions {
   return {};
 }
 
-function toDate(value: unknown): Date | null {
+function toDate(value: unknown): Date | undefined {
   if (value instanceof Date) {
-    return Number.isNaN(value.getTime()) ? null : value;
+    return Number.isNaN(value.getTime()) ? undefined : value;
   }
   if (typeof value === 'number' || typeof value === 'string') {
     const parsed = new Date(value);
-    return Number.isNaN(parsed.getTime()) ? null : parsed;
+    return Number.isNaN(parsed.getTime()) ? undefined : parsed;
   }
-  return null;
+  return undefined;
 }
 
 function formatDate(value: unknown, body: string, locale: string): string {
   const date = toDate(value);
-  if (date === null) {
+  if (date === undefined) {
     return '';
   }
   return resolveFormatter(Intl.DateTimeFormat, locale, {
@@ -238,7 +238,7 @@ function formatDate(value: unknown, body: string, locale: string): string {
 
 function formatTime(value: unknown, body: string, locale: string): string {
   const date = toDate(value);
-  if (date === null) {
+  if (date === undefined) {
     return '';
   }
   return resolveFormatter(Intl.DateTimeFormat, locale, {

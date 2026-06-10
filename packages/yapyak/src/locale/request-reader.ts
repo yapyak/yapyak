@@ -1,6 +1,6 @@
 type RequestReader = () => Request | undefined;
 
-let requestReader: RequestReader | null = null;
+let requestReader: RequestReader | undefined;
 
 export function setRequestReader(reader: RequestReader): void {
   requestReader = reader;

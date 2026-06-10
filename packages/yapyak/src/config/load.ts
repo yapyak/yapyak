@@ -19,7 +19,7 @@ const ENV_FILES = ['.env.local', '.env'];
 
 export interface LoadYapyakConfigResult {
   config: NormalizedYapyakConfig;
-  configFile: string | null;
+  configFile?: string;
 }
 
 export async function loadYapyakConfig(
@@ -62,5 +62,5 @@ export async function loadYapyakConfig(
     }
     return { config: normalizeYapyakConfig(raw), configFile: path };
   }
-  return { config: normalizeYapyakConfig({}), configFile: null };
+  return { config: normalizeYapyakConfig({}) };
 }

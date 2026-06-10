@@ -1,15 +1,17 @@
 type ResponseHeaderWriter = (name: string, value: string) => void;
 
-let responseHeaderWriter: ResponseHeaderWriter | null = null;
+let responseHeaderWriter: ResponseHeaderWriter | undefined;
 
-export function setResponseHeaderWriter(
-  writer: ResponseHeaderWriter | null,
-): void {
+export function setResponseHeaderWriter(writer: ResponseHeaderWriter): void {
   responseHeaderWriter = writer;
 }
 
+export function resetResponseHeaderWriter(): void {
+  responseHeaderWriter = undefined;
+}
+
 export function appendResponseHeader(name: string, value: string): boolean {
-  if (responseHeaderWriter === null) {
+  if (responseHeaderWriter === undefined) {
     return false;
   }
   responseHeaderWriter(name, value);
