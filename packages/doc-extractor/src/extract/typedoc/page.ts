@@ -516,24 +516,24 @@ function buildTypeParameterRow(
         },
       ]),
       buildTableBodyCell(
-        typeParameter.constraint !== null
-          ? tokensToBlocks(typeParameter.constraint)
-          : [
+        typeParameter.constraint === null
+          ? [
               {
                 type: 'text',
                 value: '',
               },
-            ],
+            ]
+          : tokensToBlocks(typeParameter.constraint),
       ),
       buildTableBodyCell(
-        typeParameter.defaultType !== null
-          ? tokensToBlocks(typeParameter.defaultType)
-          : [
+        typeParameter.defaultType === null
+          ? [
               {
                 type: 'text',
                 value: '',
               },
-            ],
+            ]
+          : tokensToBlocks(typeParameter.defaultType),
       ),
       buildTableBodyCell(markdownToInline(typeParameter.description)),
     ],
@@ -605,14 +605,14 @@ function buildParameterRow(
   if (includeDefault) {
     children.push(
       buildTableBodyCell(
-        parameter.defaultValue !== null
-          ? markdownToInline(parameter.defaultValue)
-          : [
+        parameter.defaultValue === null
+          ? [
               {
                 type: 'text',
                 value: '',
               },
-            ],
+            ]
+          : markdownToInline(parameter.defaultValue),
       ),
     );
   }
@@ -639,14 +639,14 @@ function buildMemberRow(
   if (includeDefault) {
     children.push(
       buildTableBodyCell(
-        member.defaultValue !== null
-          ? markdownToInline(member.defaultValue)
-          : [
+        member.defaultValue === null
+          ? [
               {
                 type: 'text',
                 value: '',
               },
-            ],
+            ]
+          : markdownToInline(member.defaultValue),
       ),
     );
   }

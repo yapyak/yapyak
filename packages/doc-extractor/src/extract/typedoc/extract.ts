@@ -1110,15 +1110,15 @@ function readThrows(
     }
     const text = partsToMarkdown(tag.content, context).trim();
     const match = text.match(/^\{(?:@link\s+)?([^}]+)\}\s*(.*)$/s);
-    if (match !== null) {
-      throws.push({
-        condition: (match[2] ?? '').trim(),
-        errorClass: (match[1] ?? '').trim(),
-      });
-    } else {
+    if (match === null) {
       throws.push({
         condition: text,
         errorClass: '',
+      });
+    } else {
+      throws.push({
+        condition: (match[2] ?? '').trim(),
+        errorClass: (match[1] ?? '').trim(),
       });
     }
   }

@@ -294,7 +294,7 @@ function resolveAttributeElision(
 
 function getAttributeExpressionText(node: AttributeNode): string | undefined {
   if (node.kind === 'shorthand' || node.kind === 'spread') {
-    return node.value !== '' ? node.value : node.name;
+    return node.value === '' ? node.name : node.value;
   }
   return node.value;
 }

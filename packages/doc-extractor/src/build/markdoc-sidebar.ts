@@ -106,7 +106,7 @@ async function buildGroup(
   const indexPath = join(absoluteDirectory, 'index.md');
   const indexSource = await readFile(indexPath, 'utf8').catch(() => null);
   const indexFrontmatter =
-    indexSource !== null ? parseFrontmatterOnly(indexSource) : {};
+    indexSource === null ? {} : parseFrontmatterOnly(indexSource);
 
   const items = await walkDirectory(absoluteDirectory, urlPrefix);
   if (items.length === 0) {

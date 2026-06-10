@@ -55,14 +55,14 @@ export function createLocaleResolver(
     if (emitted === undefined) {
       const project = getProjectLocales();
       emitted =
-        fixedLocale !== undefined
-          ? {
+        fixedLocale === undefined
+          ? project
+          : {
               defaultLocale: project.defaultLocale,
               locales: [
                 fixedLocale,
               ],
-            }
-          : project;
+            };
     }
     return emitted;
   }

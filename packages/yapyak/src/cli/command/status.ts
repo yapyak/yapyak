@@ -88,12 +88,12 @@ export function status(
   const byLocale: Record<string, typeof report.missing> = {};
   for (const entry of report.missing) {
     const list = byLocale[entry.locale];
-    if (!list) {
+    if (list) {
+      list.push(entry);
+    } else {
       byLocale[entry.locale] = [
         entry,
       ];
-    } else {
-      list.push(entry);
     }
   }
 
