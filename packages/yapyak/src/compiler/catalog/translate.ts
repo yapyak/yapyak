@@ -25,18 +25,18 @@ import { toLocationKey } from './location-key';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-export interface AutoTranslateInput {
+export type AutoTranslateInput = {
   messages: ExtractedMessage[];
   translator: Translator;
-}
+};
 
-export interface AutoTranslateOptions {
+export type AutoTranslateOptions = {
   examples?: number;
   force?: boolean;
   yapyakDir?: string;
-}
+};
 
-export interface AutoTranslateResult {
+export type AutoTranslateResult = {
   errors: Array<{
     error: unknown;
     fileId: string;
@@ -44,15 +44,15 @@ export interface AutoTranslateResult {
     source: string;
   }>;
   translated: number;
-}
+};
 
-interface TranslationStub {
+type TranslationStub = {
   context: MessageContext | undefined;
   disambiguation: string | undefined;
   fileId: string;
   locale: string;
   source: string;
-}
+};
 
 function getStubKey(stub: TranslationStub): string {
   return toMessageKey(stub.source, stub.disambiguation);
@@ -77,7 +77,10 @@ export async function autoTranslate(
     projectRoot,
   );
   if (stubs.length === 0) {
-    return { errors: [], translated: 0 };
+    return {
+      errors: [],
+      translated: 0,
+    };
   }
 
   const extractedSources = toExtractedSources(input.messages);
@@ -110,7 +113,10 @@ export async function autoTranslate(
         source: stub.source,
       });
     }
-    return { errors, translated };
+    return {
+      errors,
+      translated,
+    };
   }
 
   const localeFiles = new Map<string, LocaleFile>();
@@ -156,7 +162,10 @@ export async function autoTranslate(
     });
   }
 
-  return { errors, translated };
+  return {
+    errors,
+    translated,
+  };
 }
 
 async function runOneByOne(
@@ -254,11 +263,11 @@ function toLegacyContext(location: Location): MessageContext {
   };
 }
 
-interface ExtractStubsInput {
+type ExtractStubsInput = {
   contexts: Map<string, MessageContext>;
   force: boolean;
   messages: ExtractedMessage[];
-}
+};
 
 function extractStubs(
   input: ExtractStubsInput,
@@ -328,10 +337,10 @@ function setEntry(
   entry[source] = value;
 }
 
-interface ExampleCache {
+type ExampleCache = {
   localeData: LocaleData;
   orphans: OrphanCache;
-}
+};
 
 function loadExampleCache(
   context: LocaleContext,
@@ -340,7 +349,10 @@ function loadExampleCache(
   max: number,
 ): ExampleCache {
   if (max <= 0) {
-    return { localeData: {}, orphans: {} };
+    return {
+      localeData: {},
+      orphans: {},
+    };
   }
   const localeData: LocaleData = {};
   for (const locale of context.locales) {
@@ -352,7 +364,10 @@ function loadExampleCache(
   }
   const resolvedYapyakDir = yapyakDir ?? getDefaultYapyakDir(projectRoot);
   const orphans = readOrphans(resolvedYapyakDir);
-  return { localeData, orphans };
+  return {
+    localeData,
+    orphans,
+  };
 }
 
 function extractExamplesForStub(

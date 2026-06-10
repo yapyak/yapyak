@@ -4,9 +4,9 @@ import { Box } from '#components/box';
 
 import styles from './block-renderer-node-inline-code.module.css';
 
-export interface BlockRendererNodeInlineCodeProps {
+export type BlockRendererNodeInlineCodeProps = {
   block: InlineCodeBlock;
-}
+};
 
 export function BlockRendererNodeInlineCode(
   props: BlockRendererNodeInlineCodeProps,

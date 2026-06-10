@@ -13,7 +13,10 @@ export function ContentLayoutContent(props: ContentLayoutContentProps) {
     <Box
       {...restProps}
       as="main"
-      className={[styles.ContentLayoutContent, className]}
+      className={[
+        styles.ContentLayoutContent,
+        className,
+      ]}
     >
       <div className={styles.Inner}>{children}</div>
     </Box>

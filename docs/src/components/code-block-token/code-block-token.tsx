@@ -16,7 +16,10 @@ export function CodeBlockToken(props: CodeBlockTokenProps) {
     <Box
       {...restProps}
       as="span"
-      className={[styles.CodeBlockToken, className]}
+      className={[
+        styles.CodeBlockToken,
+        className,
+      ]}
       data-type={type}
     />
   );

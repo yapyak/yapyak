@@ -3,39 +3,39 @@ import type MagicString from 'magic-string';
 /**
  * The position. Locates a point in source by line, column, and byte offset (1-based).
  */
-export interface Position {
+export type Position = {
   column: number;
   line: number;
   offset: number;
-}
+};
 
 /**
  * The range. Spans from a start to an end position in source.
  */
-export interface Range {
+export type Range = {
   end: Position;
   start: Position;
-}
+};
 
 /**
  * Elision context for source-text portions that should be skipped when reading the surrounding code.
  */
-export interface ElisionContext {
+export type ElisionContext = {
   attributeName?: string;
   mode: 'attribute' | 'text';
   range: Range;
-}
+};
 
 /**
  * The fragment. Holds TS-parseable code extracted from a framework-specific source file.
  */
-export interface Fragment {
+export type Fragment = {
   code: string;
   elision?: ElisionContext;
   kind: 'script' | 'template-expression';
   lang: 'js' | 'ts';
   originalOffset: number;
-}
+};
 
 /**
  * Injects a `yapyak` import into framework-specific source.
@@ -65,7 +65,7 @@ export type ParseFragmentsFn = (source: string) => Fragment[];
  *
  * Public extension point. Implemented by the framework processor packages and by third-party processors.
  */
-export interface Processor {
+export type Processor = {
   /** Injects a `yapyak` import into framework-specific source. */
   applyImport(
     magicString: MagicString,
@@ -78,4 +78,4 @@ export interface Processor {
   id: string;
   /** Breaks framework-specific source into TS-parseable fragments. */
   parseFragments(source: string): Fragment[];
-}
+};

@@ -4,7 +4,9 @@ import { parseMessageKey, toMessageKey } from './message-key';
 
 describe('parseMessageKey', () => {
   it('parses a key with no context into a bare source', () => {
-    expect(parseMessageKey('Save')).toEqual({ source: 'Save' });
+    expect(parseMessageKey('Save')).toEqual({
+      source: 'Save',
+    });
   });
 
   it('parses a key with context into source and context', () => {

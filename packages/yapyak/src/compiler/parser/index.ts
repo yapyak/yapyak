@@ -1,8 +1,8 @@
 export type { Diagnostic, DiagnosticCode } from './diagnostic';
 export type {
-  ExtractedMessage,
   ExtractFileOptions,
   ExtractFileResult,
+  ExtractedMessage,
   Location,
 } from './file/extract';
 export type {
@@ -19,8 +19,8 @@ export {
   type Binding,
   type BindingTable,
   type ResolveBindingsOptions,
-  resolveBindings,
   type Scope,
+  resolveBindings,
 } from './binding';
 export { type CallSite, discoverCalls } from './call';
 export {
@@ -35,7 +35,7 @@ export {
   type ParsedMessage,
   type Placeholder,
   type PlaceholderKind,
-  parsePlaceholders,
   type TemplateDiagnostic,
+  parsePlaceholders,
 } from './placeholder';
 export { resolveProcessor, vanillaProcessor } from './processor';

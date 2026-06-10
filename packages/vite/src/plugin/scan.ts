@@ -26,7 +26,9 @@ function scanAllSources(state: State): void {
   const processors = getNormalized(state).processors;
   state.messagesByFile.clear();
   for (const file of files) {
-    const result = extractFile(file.fileId, file.code, { processors });
+    const result = extractFile(file.fileId, file.code, {
+      processors,
+    });
     renderErrorDiagnostics(state.logger, result);
     if (result.messages.length > 0) {
       state.messagesByFile.set(file.fileId, result.messages);

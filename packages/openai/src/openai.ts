@@ -12,7 +12,7 @@ import {
 } from 'yapyak/translator/internal';
 
 /** Options for {@link openai}. */
-export interface OpenAIOptions {
+export type OpenAIOptions = {
   /** The API key. */
   apiKey: string;
   /**
@@ -75,7 +75,7 @@ export interface OpenAIOptions {
   user?: string;
   /** The voice and tone guidance passed to the model. */
   voice?: string;
-}
+};
 
 const DEFAULT_MODEL = 'gpt-5-mini';
 const DEFAULT_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
@@ -133,7 +133,10 @@ export function openai(options: OpenAIOptions): Translator {
             content: buildSystem(sourceLocale, targetLocales, options),
             role: 'system',
           },
-          { content: JSON.stringify(items), role: 'user' },
+          {
+            content: JSON.stringify(items),
+            role: 'user',
+          },
         ],
         model,
         temperature,
@@ -177,12 +180,20 @@ export function openai(options: OpenAIOptions): Translator {
       const cleaned = stripCodeFence(text.trim());
       return JSON.parse(cleaned) as LocaleTranslations[];
     },
-    { batchSize, concurrency, context, id: 'openai' },
+    {
+      batchSize,
+      concurrency,
+      context,
+      id: 'openai',
+    },
   );
 }
 
-interface OpenAIChatResponse {
+type OpenAIChatResponse = {
   choices?: Array<{
-    message?: { content?: string; role: string };
+    message?: {
+      content?: string;
+      role: string;
+    };
   }>;
-}
+};

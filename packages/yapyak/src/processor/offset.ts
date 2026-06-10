@@ -23,7 +23,11 @@ export function offsetToOriginalPosition(
     }
     column += 1;
   }
-  return { column, line, offset };
+  return {
+    column,
+    line,
+    offset,
+  };
 }
 
 /**

@@ -4,9 +4,9 @@ import styles from './hero-demo-locale-flag.module.css';
 
 export type HeroDemoLocaleFlagCode = 'sv' | 'es' | 'ja' | 'de';
 
-export interface HeroDemoLocaleFlagProps {
+export type HeroDemoLocaleFlagProps = {
   code: HeroDemoLocaleFlagCode;
-}
+};
 
 export function HeroDemoLocaleFlag(props: HeroDemoLocaleFlagProps) {
   const { code } = props;

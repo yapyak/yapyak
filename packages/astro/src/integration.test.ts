@@ -25,7 +25,9 @@ describe('yapyak', () => {
     } as unknown as Parameters<typeof hook>[0]);
     expect(updateConfig).toHaveBeenCalledTimes(1);
     const config = updateConfig.mock.calls[0]?.[0] as {
-      vite: { plugins: unknown[] };
+      vite: {
+        plugins: unknown[];
+      };
     };
     expect(config.vite.plugins).toHaveLength(1);
   });

@@ -23,16 +23,16 @@ import { runYapyakCommand } from './yapyak-command';
 import { readFileSync } from 'node:fs';
 import { basename, extname, join, relative, sep } from 'node:path';
 
-interface CallSitePosition {
+type CallSitePosition = {
   column: number;
   line: number;
   source: string;
-}
+};
 
-interface Debounced {
+type Debounced = {
   cancel(): void;
   (): void;
-}
+};
 
 export function createDevServerPlugin(state: State): Plugin {
   return {
@@ -113,14 +113,19 @@ export function createDevServerPlugin(state: State): Plugin {
           allMessages.push(...list);
         }
         const result = syncLocaleFiles(
-          { filter: state.filter, messages: allMessages },
+          {
+            filter: state.filter,
+            messages: allMessages,
+          },
           {
             defaultLocale,
             locales,
             localesDir: getNormalized(state).localesDir,
           },
           state.projectRoot,
-          { yapyakDir: state.yapyakDir },
+          {
+            yapyakDir: state.yapyakDir,
+          },
         );
         for (const entry of result.orphaned) {
           state.logger.warn(
@@ -179,7 +184,10 @@ export function createDevServerPlugin(state: State): Plugin {
             `[yapyak] New locale '${locale}' detected. ${hint}`,
           );
           server.ws.send({
-            data: { hint, locale },
+            data: {
+              hint,
+              locale,
+            },
             event: 'yapyak:locale-added',
             type: 'custom',
           });
@@ -200,7 +208,9 @@ export function createDevServerPlugin(state: State): Plugin {
           syncLocaleStructure();
           state.logger.info(`[yapyak] Locale '${locale}' removed.`);
           server.ws.send({
-            data: { locale },
+            data: {
+              locale,
+            },
             event: 'yapyak:locale-removed',
             type: 'custom',
           });
@@ -293,7 +303,9 @@ function toExtractedSourcesForFile(
   for (const message of messages) {
     sources.add(message.source);
   }
-  return { [fileId]: sources };
+  return {
+    [fileId]: sources,
+  };
 }
 
 function areMessagesEqual(

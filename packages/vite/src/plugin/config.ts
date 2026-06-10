@@ -6,9 +6,9 @@ import { createFilter, loadYapyakConfig } from 'yapyak/config/internal';
 
 import { createLocaleResolver } from '../locale-resolver';
 import {
-  isRuntimeExternal,
   RUNTIME_ID,
   RUNTIME_NO_EXTERNAL,
+  isRuntimeExternal,
 } from '../virtual-runtime';
 import { renderLocaleWarning } from './locale-warning';
 import { join } from 'node:path';
@@ -18,7 +18,9 @@ export function createConfigPlugin(state: State): Plugin {
     config(): UserConfig {
       return {
         optimizeDeps: {
-          exclude: [RUNTIME_ID],
+          exclude: [
+            RUNTIME_ID,
+          ],
         },
         ssr: {
           noExternal: RUNTIME_NO_EXTERNAL,
@@ -53,7 +55,9 @@ export function createConfigPlugin(state: State): Plugin {
           localesDir: result.config.localesDir,
         },
         state.projectRoot,
-        { fixedLocale: state.fixedLocale },
+        {
+          fixedLocale: state.fixedLocale,
+        },
       );
       const discovery = state.resolver.getDiscovery();
       for (const warning of discovery.warnings) {

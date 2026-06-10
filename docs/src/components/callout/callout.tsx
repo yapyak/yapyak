@@ -27,7 +27,10 @@ export function Callout(props: CalloutProps) {
     <Box
       {...restProps}
       as="aside"
-      className={[styles.Callout, className]}
+      className={[
+        styles.Callout,
+        className,
+      ]}
       data-variant={variant}
     >
       <Box

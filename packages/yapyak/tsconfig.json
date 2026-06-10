@@ -2,12 +2,22 @@
   "compilerOptions": {
     "outDir": "dist",
     "paths": {
-      "yapyak/runtime": ["./src/runtime.ts"]
+      "yapyak/runtime": [
+        "./src/runtime.ts"
+      ]
     },
     "rootDir": "src",
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "exclude": ["dist", "node_modules", "src/compiler/parser/fixture"],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "src/compiler/parser/fixture"
+  ],
   "extends": "@yapyak/typescript-config/library",
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

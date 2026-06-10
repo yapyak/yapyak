@@ -1,6 +1,8 @@
 import { t, useLocale } from 'yapyak';
 
-declare const previewLocale: { value: string };
+declare const previewLocale: {
+  value: string;
+};
 
 export function Greeting({
   name,
@@ -12,9 +14,13 @@ export function Greeting({
   const [locale, setLocale] = useLocale();
   setLocale(locale);
   return [
-    t('Hi {name}', { name }),
+    t('Hi {name}', {
+      name,
+    }),
     t.in('sv', 'Hello'),
     t.in(previewLocale.value, 'Bye'),
-    t('You have {count, plural, one {# item} other {# items}}', { count }),
+    t('You have {count, plural, one {# item} other {# items}}', {
+      count,
+    }),
   ].join(' · ');
 }

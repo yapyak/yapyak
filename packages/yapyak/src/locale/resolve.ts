@@ -1,10 +1,10 @@
 import { parseAcceptLanguage } from './accept-language';
 
-export interface ResolveLocaleOptions {
+export type ResolveLocaleOptions = {
   acceptLanguage?: string;
   navigatorLanguages?: string[];
   persisted?: string;
-}
+};
 
 export function resolveLocale(
   defaultLocale: string,

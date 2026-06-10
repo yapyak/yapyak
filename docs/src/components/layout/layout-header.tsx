@@ -27,7 +27,9 @@ export function LayoutHeader(props: LayoutHeaderProps) {
       setIsScrolled(window.scrollY > 0);
     };
     update();
-    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('scroll', update, {
+      passive: true,
+    });
     return () => window.removeEventListener('scroll', update);
   }, []);
 
@@ -47,7 +49,9 @@ export function LayoutHeader(props: LayoutHeaderProps) {
       document.removeEventListener('keydown', handleKeydown);
       document.body.style.overflow = previousOverflow;
     };
-  }, [isMenuOpen]);
+  }, [
+    isMenuOpen,
+  ]);
 
   const closeMenu = () => setIsMenuOpen(false);
 
@@ -55,7 +59,10 @@ export function LayoutHeader(props: LayoutHeaderProps) {
     <Box
       {...restProps}
       as="header"
-      className={[styles.LayoutHeader, className]}
+      className={[
+        styles.LayoutHeader,
+        className,
+      ]}
       data-menu-open={isMenuOpen}
       data-scrolled={isScrolled}
     >

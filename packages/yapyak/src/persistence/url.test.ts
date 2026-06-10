@@ -2,10 +2,18 @@ import { describe, expect, it } from 'vitest';
 
 import { url } from './url';
 
-const LOCALES = ['en', 'sv', 'de', 'sv-SE'];
+const LOCALES = [
+  'en',
+  'sv',
+  'de',
+  'sv-SE',
+];
 
 function getFromUrl(href: string, match?: RegExp): string | undefined {
-  return url({ locales: LOCALES, match }).getFromRequest?.(new Request(href));
+  return url({
+    locales: LOCALES,
+    match,
+  }).getFromRequest?.(new Request(href));
 }
 
 describe('url', () => {

@@ -13,7 +13,10 @@ export function LayoutMain(props: LayoutMainProps) {
     <Box
       {...restProps}
       as="main"
-      className={[styles.LayoutMain, className]}
+      className={[
+        styles.LayoutMain,
+        className,
+      ]}
     />
   );
 }

@@ -18,7 +18,9 @@ function makeConfig(overrides: Partial<Config> = {}): Config {
     defaultLocale: 'en',
     examples: 0,
     exclude: [],
-    include: ['src/**/*.ts'],
+    include: [
+      'src/**/*.ts',
+    ],
     localesDir: 'locales',
     processors: [],
     translator: undefined,
@@ -33,8 +35,12 @@ describe('translate', () => {
   beforeEach(() => {
     root = mkdtempSync(join(tmpdir(), 'yapyak-translate-'));
     writes = [];
-    mkdirSync(join(root, 'src'), { recursive: true });
-    mkdirSync(join(root, 'locales'), { recursive: true });
+    mkdirSync(join(root, 'src'), {
+      recursive: true,
+    });
+    mkdirSync(join(root, 'locales'), {
+      recursive: true,
+    });
     vi.spyOn(process.stdout, 'write').mockImplementation((chunk) => {
       writes.push(String(chunk));
       return true;
@@ -42,7 +48,10 @@ describe('translate', () => {
   });
 
   afterEach(() => {
-    rmSync(root, { force: true, recursive: true });
+    rmSync(root, {
+      force: true,
+      recursive: true,
+    });
     vi.restoreAllMocks();
   });
 
@@ -59,11 +68,22 @@ describe('translate', () => {
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
-      JSON.stringify({ 'src/app.ts': { Save: 'Spara' } }),
+      JSON.stringify({
+        'src/app.ts': {
+          Save: 'Spara',
+        },
+      }),
     );
     const translatorFn = vi.fn(async () => '');
-    const translator = Object.assign(translatorFn, { id: 'fake' });
-    const code = await translate(makeConfig({ translator }), root);
+    const translator = Object.assign(translatorFn, {
+      id: 'fake',
+    });
+    const code = await translate(
+      makeConfig({
+        translator,
+      }),
+      root,
+    );
     expect(code).toBe(0);
     expect(writes.join('')).toContain('Nothing to translate');
     expect(translatorFn).not.toHaveBeenCalled();
@@ -76,7 +96,11 @@ describe('translate', () => {
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
-      JSON.stringify({ 'src/app.ts': { Save: '' } }),
+      JSON.stringify({
+        'src/app.ts': {
+          Save: '',
+        },
+      }),
     );
     const translator = Object.assign(
       vi.fn(async () => 'Spara'),
@@ -84,7 +108,12 @@ describe('translate', () => {
         id: 'fake',
       },
     );
-    const code = await translate(makeConfig({ translator }), root);
+    const code = await translate(
+      makeConfig({
+        translator,
+      }),
+      root,
+    );
     expect(code).toBe(0);
     const written = JSON.parse(
       readFileSync(join(root, 'locales', 'sv.json'), 'utf-8'),
@@ -99,7 +128,11 @@ describe('translate', () => {
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
-      JSON.stringify({ 'src/app.ts': { Save: 'Old' } }),
+      JSON.stringify({
+        'src/app.ts': {
+          Save: 'Old',
+        },
+      }),
     );
     const translator = Object.assign(
       vi.fn(async () => 'Spara'),
@@ -107,9 +140,15 @@ describe('translate', () => {
         id: 'fake',
       },
     );
-    const code = await translate(makeConfig({ translator }), root, {
-      force: true,
-    });
+    const code = await translate(
+      makeConfig({
+        translator,
+      }),
+      root,
+      {
+        force: true,
+      },
+    );
     expect(code).toBe(0);
     const written = JSON.parse(
       readFileSync(join(root, 'locales', 'sv.json'), 'utf-8'),
@@ -124,15 +163,26 @@ describe('translate', () => {
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
-      JSON.stringify({ 'src/app.ts': { Save: '' } }),
+      JSON.stringify({
+        'src/app.ts': {
+          Save: '',
+        },
+      }),
     );
     const translator = Object.assign(
       vi.fn(async () => {
         throw new Error('boom');
       }),
-      { id: 'fake' },
+      {
+        id: 'fake',
+      },
     );
-    const code = await translate(makeConfig({ translator }), root);
+    const code = await translate(
+      makeConfig({
+        translator,
+      }),
+      root,
+    );
     expect(code).toBe(1);
   });
 });

@@ -10,7 +10,10 @@ function stubFetch(text: string): {
   body: () => unknown;
   headers: () => Record<string, string>;
 } {
-  let captured: { body: unknown; headers: Record<string, string> } = {
+  let captured: {
+    body: unknown;
+    headers: Record<string, string>;
+  } = {
     body: undefined,
     headers: {},
   };
@@ -21,9 +24,20 @@ function stubFetch(text: string): {
     };
     return new Response(
       JSON.stringify({
-        content: [{ text: JSON.stringify([{ sv: text }]), type: 'text' }],
+        content: [
+          {
+            text: JSON.stringify([
+              {
+                sv: text,
+              },
+            ]),
+            type: 'text',
+          },
+        ],
       }),
-      { status: 200 },
+      {
+        status: 200,
+      },
     );
   });
   return {
@@ -35,7 +49,9 @@ function stubFetch(text: string): {
 describe('anthropic', () => {
   it('returns translated text trimmed', async () => {
     stubFetch('  Hej världen  ');
-    const translator = anthropic({ apiKey: 'k' });
+    const translator = anthropic({
+      apiKey: 'k',
+    });
     const result = await translator({
       fileId: 'src/a.tsx',
       source: 'Hello world',
@@ -47,7 +63,9 @@ describe('anthropic', () => {
 
   it('writes the API key as `x-api-key` header', async () => {
     const stub = stubFetch('Hej');
-    await anthropic({ apiKey: 'sk-test' })({
+    await anthropic({
+      apiKey: 'sk-test',
+    })({
       fileId: 'src/a.tsx',
       source: 'Hi',
       sourceLocale: 'en',
@@ -58,37 +76,61 @@ describe('anthropic', () => {
 
   it('builds requests with `claude-sonnet-4-6` as default model', async () => {
     const stub = stubFetch('Hej');
-    await anthropic({ apiKey: 'k' })({
+    await anthropic({
+      apiKey: 'k',
+    })({
       fileId: 'x',
       source: 'Hi',
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
-    expect((stub.body() as { model: string }).model).toBe('claude-sonnet-4-6');
+    expect(
+      (
+        stub.body() as {
+          model: string;
+        }
+      ).model,
+    ).toBe('claude-sonnet-4-6');
   });
 
   it('builds requests with the configured model when set', async () => {
     const stub = stubFetch('Hej');
-    await anthropic({ apiKey: 'k', model: 'claude-opus-4-7' })({
+    await anthropic({
+      apiKey: 'k',
+      model: 'claude-opus-4-7',
+    })({
       fileId: 'x',
       source: 'Hi',
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
-    expect((stub.body() as { model: string }).model).toBe('claude-opus-4-7');
+    expect(
+      (
+        stub.body() as {
+          model: string;
+        }
+      ).model,
+    ).toBe('claude-opus-4-7');
   });
 
   it('builds system prompt with the configured voice', async () => {
     const stub = stubFetch('Hej');
-    await anthropic({ apiKey: 'k', voice: 'Casual, never corporate' })({
+    await anthropic({
+      apiKey: 'k',
+      voice: 'Casual, never corporate',
+    })({
       fileId: 'x',
       source: 'Hi',
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
-    expect((stub.body() as { system: string }).system).toContain(
-      'Casual, never corporate',
-    );
+    expect(
+      (
+        stub.body() as {
+          system: string;
+        }
+      ).system,
+    ).toContain('Casual, never corporate');
   });
 
   it('builds system prompt with matching glossary entries', async () => {
@@ -96,7 +138,10 @@ describe('anthropic', () => {
     await anthropic({
       apiKey: 'k',
       glossary: {
-        'Sign up': { fr: "S'inscrire", sv: 'Skapa konto' },
+        'Sign up': {
+          fr: "S'inscrire",
+          sv: 'Skapa konto',
+        },
       },
     })({
       fileId: 'x',
@@ -104,20 +149,30 @@ describe('anthropic', () => {
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
-    const system = (stub.body() as { system: string }).system;
+    const system = (
+      stub.body() as {
+        system: string;
+      }
+    ).system;
     expect(system).toContain('"Sign up" → sv="Skapa konto"');
     expect(system).not.toContain("S'inscrire");
   });
 
   it('builds system prompt with placeholder preservation reminder', async () => {
     const stub = stubFetch('Hej {name}');
-    await anthropic({ apiKey: 'k' })({
+    await anthropic({
+      apiKey: 'k',
+    })({
       fileId: 'x',
       source: 'Hi {name}',
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
-    const system = (stub.body() as { system: string }).system;
+    const system = (
+      stub.body() as {
+        system: string;
+      }
+    ).system;
     expect(system).toContain('{placeholder}');
   });
 
@@ -127,9 +182,20 @@ describe('anthropic', () => {
       capturedUrl = url;
       return new Response(
         JSON.stringify({
-          content: [{ text: JSON.stringify([{ sv: 'Hej' }]), type: 'text' }],
+          content: [
+            {
+              text: JSON.stringify([
+                {
+                  sv: 'Hej',
+                },
+              ]),
+              type: 'text',
+            },
+          ],
         }),
-        { status: 200 },
+        {
+          status: 200,
+        },
       );
     });
     await anthropic({
@@ -157,10 +223,14 @@ describe('anthropic', () => {
               },
             ],
           }),
-          { status: 200 },
+          {
+            status: 200,
+          },
         ),
     );
-    const translator = anthropic({ apiKey: 'k' });
+    const translator = anthropic({
+      apiKey: 'k',
+    });
     const result = await translator({
       fileId: 'x',
       source: 'Hi',
@@ -171,24 +241,37 @@ describe('anthropic', () => {
   });
 
   it('throws when `apiKey` is `undefined`', () => {
-    expect(() => anthropic({ apiKey: undefined as unknown as string })).toThrow(
-      /apiKey is required, received undefined/,
-    );
+    expect(() =>
+      anthropic({
+        apiKey: undefined as unknown as string,
+      }),
+    ).toThrow(/apiKey is required, received undefined/);
   });
 
   it('throws when `apiKey` is an empty string', () => {
-    expect(() => anthropic({ apiKey: '' })).toThrow(
-      /apiKey is required, received empty string/,
-    );
+    expect(() =>
+      anthropic({
+        apiKey: '',
+      }),
+    ).toThrow(/apiKey is required, received empty string/);
   });
 
   it('throws when the API response has no text block', async () => {
     vi.stubGlobal(
       'fetch',
       async () =>
-        new Response(JSON.stringify({ content: [] }), { status: 200 }),
+        new Response(
+          JSON.stringify({
+            content: [],
+          }),
+          {
+            status: 200,
+          },
+        ),
     );
-    const translator = anthropic({ apiKey: 'k' });
+    const translator = anthropic({
+      apiKey: 'k',
+    });
     await expect(
       translator({
         fileId: 'x',
@@ -202,9 +285,14 @@ describe('anthropic', () => {
   it('throws when the API responds with non-2xx', async () => {
     vi.stubGlobal(
       'fetch',
-      async () => new Response('rate limited', { status: 429 }),
+      async () =>
+        new Response('rate limited', {
+          status: 429,
+        }),
     );
-    const translator = anthropic({ apiKey: 'k' });
+    const translator = anthropic({
+      apiKey: 'k',
+    });
     await expect(
       translator({
         fileId: 'x',
@@ -231,20 +319,29 @@ describe('anthropic', () => {
       vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
         calls++;
         const body = JSON.parse(init.body as string);
-        const items: { source: string }[] = JSON.parse(
-          body.messages[0].content,
-        );
+        const items: {
+          source: string;
+        }[] = JSON.parse(body.messages[0].content);
         const translations = items.map((item) => ({
           sv: item.source.replace(/Hello/g, 'Hej'),
         }));
         return new Response(
           JSON.stringify({
-            content: [{ text: JSON.stringify(translations), type: 'text' }],
+            content: [
+              {
+                text: JSON.stringify(translations),
+                type: 'text',
+              },
+            ],
           }),
-          { status: 200 },
+          {
+            status: 200,
+          },
         );
       });
-      const translator = anthropic({ apiKey: 'k' });
+      const translator = anthropic({
+        apiKey: 'k',
+      });
       const results = await translator.batch?.([
         {
           fileId: 'x',
@@ -259,7 +356,10 @@ describe('anthropic', () => {
           targetLocale: 'sv',
         },
       ]);
-      expect(results).toEqual(['Hej A', 'Hej B']);
+      expect(results).toEqual([
+        'Hej A',
+        'Hej B',
+      ]);
       expect(calls).toBe(1);
     });
 
@@ -268,28 +368,42 @@ describe('anthropic', () => {
       vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
         calls++;
         const body = JSON.parse(init.body as string);
-        const items: { source: string }[] = JSON.parse(
-          body.messages[0].content,
-        );
+        const items: {
+          source: string;
+        }[] = JSON.parse(body.messages[0].content);
         return new Response(
           JSON.stringify({
             content: [
               {
-                text: JSON.stringify(items.map(() => ({ sv: 'ok' }))),
+                text: JSON.stringify(
+                  items.map(() => ({
+                    sv: 'ok',
+                  })),
+                ),
                 type: 'text',
               },
             ],
           }),
-          { status: 200 },
+          {
+            status: 200,
+          },
         );
       });
-      const translator = anthropic({ apiKey: 'k', batchSize: 3 });
-      const requests = Array.from({ length: 7 }, (_, index) => ({
-        fileId: 'x',
-        source: `s${index}`,
-        sourceLocale: 'en',
-        targetLocale: 'sv',
-      }));
+      const translator = anthropic({
+        apiKey: 'k',
+        batchSize: 3,
+      });
+      const requests = Array.from(
+        {
+          length: 7,
+        },
+        (_, index) => ({
+          fileId: 'x',
+          source: `s${index}`,
+          sourceLocale: 'en',
+          targetLocale: 'sv',
+        }),
+      );
       const results = await translator.batch?.(requests);
       expect(results?.length).toBe(7);
       expect(calls).toBe(3);
@@ -298,9 +412,9 @@ describe('anthropic', () => {
     it('preserves order when later chunks resolve before earlier chunks', async () => {
       vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
         const body = JSON.parse(init.body as string);
-        const items: { source: string }[] = JSON.parse(
-          body.messages[0].content,
-        );
+        const items: {
+          source: string;
+        }[] = JSON.parse(body.messages[0].content);
         const isFirstChunk = items[0]?.source === 'Hello';
         const delay = isFirstChunk ? 30 : 0;
         await new Promise((resolve) => setTimeout(resolve, delay));
@@ -309,13 +423,17 @@ describe('anthropic', () => {
             content: [
               {
                 text: JSON.stringify(
-                  items.map((item) => ({ sv: POOL[item.source] ?? '' })),
+                  items.map((item) => ({
+                    sv: POOL[item.source] ?? '',
+                  })),
                 ),
                 type: 'text',
               },
             ],
           }),
-          { status: 200 },
+          {
+            status: 200,
+          },
         );
       });
       const translator = anthropic({
@@ -351,21 +469,25 @@ describe('anthropic', () => {
     it('notifies onChunk after each chunk completes', async () => {
       vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
         const body = JSON.parse(init.body as string);
-        const items: { source: string }[] = JSON.parse(
-          body.messages[0].content,
-        );
+        const items: {
+          source: string;
+        }[] = JSON.parse(body.messages[0].content);
         return new Response(
           JSON.stringify({
             content: [
               {
                 text: JSON.stringify(
-                  items.map((item) => ({ sv: POOL[item.source] ?? '' })),
+                  items.map((item) => ({
+                    sv: POOL[item.source] ?? '',
+                  })),
                 ),
                 type: 'text',
               },
             ],
           }),
-          { status: 200 },
+          {
+            status: 200,
+          },
         );
       });
       const translator = anthropic({
@@ -397,9 +519,12 @@ describe('anthropic', () => {
     });
 
     it('throws when concurrency is not a positive integer', () => {
-      expect(() => anthropic({ apiKey: 'k', concurrency: 0 })).toThrow(
-        /concurrency must be a positive integer/,
-      );
+      expect(() =>
+        anthropic({
+          apiKey: 'k',
+          concurrency: 0,
+        }),
+      ).toThrow(/concurrency must be a positive integer/);
     });
 
     it('throws when batch response length does not match', async () => {
@@ -409,13 +534,24 @@ describe('anthropic', () => {
           new Response(
             JSON.stringify({
               content: [
-                { text: JSON.stringify([{ sv: 'only-one' }]), type: 'text' },
+                {
+                  text: JSON.stringify([
+                    {
+                      sv: 'only-one',
+                    },
+                  ]),
+                  type: 'text',
+                },
               ],
             }),
-            { status: 200 },
+            {
+              status: 200,
+            },
           ),
       );
-      const translator = anthropic({ apiKey: 'k' });
+      const translator = anthropic({
+        apiKey: 'k',
+      });
       await expect(
         translator.batch?.([
           {
@@ -438,14 +574,20 @@ describe('anthropic', () => {
   describe('disambiguation', () => {
     it('writes `disambiguation` into the request items', async () => {
       const stub = stubFetch('Öppna');
-      await anthropic({ apiKey: 'k' })({
+      await anthropic({
+        apiKey: 'k',
+      })({
         disambiguation: 'button',
         fileId: 'src/a.tsx',
         source: 'Open',
         sourceLocale: 'en',
         targetLocale: 'sv',
       });
-      const body = stub.body() as { messages: Array<{ content: string }> };
+      const body = stub.body() as {
+        messages: Array<{
+          content: string;
+        }>;
+      };
       // biome-ignore lint/style/noNonNullAssertion: yap yap yap
       const items = JSON.parse(body.messages[0]!.content) as Array<{
         disambiguation?: string;
@@ -455,13 +597,17 @@ describe('anthropic', () => {
 
     it('writes `disambiguation` in the system prompt', async () => {
       const stub = stubFetch('Öppna');
-      await anthropic({ apiKey: 'k' })({
+      await anthropic({
+        apiKey: 'k',
+      })({
         fileId: 'src/a.tsx',
         source: 'Open',
         sourceLocale: 'en',
         targetLocale: 'sv',
       });
-      const body = stub.body() as { system: string };
+      const body = stub.body() as {
+        system: string;
+      };
       expect(body.system).toContain('disambiguation');
     });
   });

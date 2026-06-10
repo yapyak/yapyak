@@ -7,7 +7,7 @@ import ts from 'typescript';
 import { RUNTIME_NAME } from './binding';
 import { toRange } from './range';
 
-export interface CallSite {
+export type CallSite = {
   binding: Binding;
   contextExpression?: ts.Expression;
   elision?: ElisionContext;
@@ -16,23 +16,23 @@ export interface CallSite {
   paramsExpression?: ts.Expression;
   range: Range;
   sourceExpression?: ts.Expression;
-}
+};
 
-export interface DiscoverCallsResult {
+export type DiscoverCallsResult = {
   callSites: CallSite[];
   diagnostics: Diagnostic[];
-}
+};
 
 const IN_NAME = 'in';
 const AS_NAME = 'as';
 
-interface DiscoveryContext {
+type DiscoveryContext = {
   bindings: BindingTable;
   callSites: CallSite[];
   consumed: Set<ts.CallExpression>;
   diagnostics: Diagnostic[];
   sourceFile: ts.SourceFile;
-}
+};
 
 export function discoverCalls(
   sourceFile: ts.SourceFile,
@@ -46,7 +46,10 @@ export function discoverCalls(
     sourceFile,
   };
   walk(sourceFile, context);
-  return { callSites: context.callSites, diagnostics: context.diagnostics };
+  return {
+    callSites: context.callSites,
+    diagnostics: context.diagnostics,
+  };
 }
 
 function walk(node: ts.Node, context: DiscoveryContext): void {

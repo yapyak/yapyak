@@ -7,10 +7,10 @@ import type { RichTextHandler } from 'yapyak';
  * @remarks
  * Each named tag found in `value` is matched against a prop of the same name carrying a {@link RichTextHandler}. A tag with no matching handler renders as its inner text. Tag names are not extracted at the type level — the React or Svelte binding provides static tag-checking.
  */
-export interface RichTextProps {
+export type RichTextProps = {
   value: string;
   [tagName: string]: RichTextHandler | string;
-}
+};
 
 /**
  * Renders rich text by resolving named tags via handler props.

@@ -1,14 +1,24 @@
 {
   "compilerOptions": {
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "noEmit": true,
     "skipLibCheck": true,
     "strict": true,
     "target": "ES2023",
-    "types": ["vite/client"],
+    "types": [
+      "vite/client"
+    ],
     "verbatimModuleSyntax": true
   },
-  "include": [".yapyak/types.d.ts", "src", "src/**/*.vue"]
+  "include": [
+    ".yapyak/types.d.ts",
+    "src",
+    "src/**/*.vue"
+  ]
 }

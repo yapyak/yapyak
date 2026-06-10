@@ -1,77 +1,221 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.15/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
   "assist": {
     "actions": {
       "source": {
         "noDuplicateClasses": "on",
+
         "organizeImports": {
           "level": "on",
           "options": {
             "groups": [
-              { "type": true },
+              {
+                "type": true
+              },
               ":BLANK_LINE:",
               ":PACKAGE:",
               ":BLANK_LINE:",
               ":ALIAS:",
               ":BLANK_LINE:",
-              ["./**", "../**"]
-            ]
+              [
+                "./**",
+                "../**"
+              ]
+            ],
+            "identifierOrder": "lexicographic"
           }
         },
+
         "useSortedAttributes": "on",
         "useSortedInterfaceMembers": "on",
-        "useSortedKeys": "on",
+
+        "useSortedKeys": {
+          "level": "on",
+          "options": {
+            "groupByNesting": false,
+            "sortOrder": "lexicographic"
+          }
+        },
+
         "useSortedProperties": "on"
       }
-    }
+    },
+    "enabled": true
   },
+
   "css": {
     "parser": {
       "cssModules": true
     }
   },
+
   "formatter": {
+    "attributePosition": "multiline",
+    "bracketSpacing": true,
+    "enabled": true,
+    "expand": "always",
+    "formatWithErrors": false,
     "indentStyle": "space",
     "indentWidth": 2,
     "lineEnding": "lf",
-    "lineWidth": 80
+    "lineWidth": 80,
+    "trailingNewline": true,
+    "useEditorconfig": false
   },
+
   "javascript": {
+    "experimentalEmbeddedSnippetsEnabled": true,
     "formatter": {
+      "arrowParentheses": "always",
       "attributePosition": "multiline",
+      "bracketSameLine": false,
+      "bracketSpacing": true,
+      "expand": "always",
+      "jsxQuoteStyle": "double",
+      "operatorLinebreak": "after",
+      "quoteProperties": "asNeeded",
       "quoteStyle": "single",
       "semicolons": "always",
-      "trailingCommas": "all"
+      "trailingCommas": "all",
+      "trailingNewline": true
+    },
+    "parser": {
+      "jsxEverywhere": false
     }
   },
+
   "json": {
     "parser": {
       "allowComments": true
     }
   },
+
   "linter": {
     "enabled": true,
     "rules": {
       "complexity": {
-        "noBannedTypes": "off"
+        "noArguments": "error",
+        "noBannedTypes": "off",
+        "noCommaOperator": "error",
+        "noImplicitCoercions": "error",
+        "useLiteralKeys": "error",
+        "useOptionalChain": "error",
+        "useRegexLiterals": "error",
+        "useSimpleNumberKeys": "error"
       },
+
       "correctness": {
+        "noUndeclaredDependencies": "error",
+        "noUndeclaredVariables": "error",
+        "noUnusedFunctionParameters": "error",
         "noUnusedImports": "error",
-        "useExhaustiveDependencies": "warn"
+        "noUnusedVariables": "error",
+        "useExhaustiveDependencies": "error",
+        "useJsonImportAttributes": "error",
+        "useParseIntRadix": "error"
+      },
+
+      "nursery": {
+        "noFloatingPromises": "error",
+        "noMisusedPromises": "error",
+        "useAwaitThenable": "error",
+        "useExhaustiveSwitchCases": "error",
+        "useImportsFirst": "error",
+        "useSortedClasses": "error",
+        "useTestHooksInOrder": "error",
+        "useTestHooksOnTop": "error"
+      },
+
+      "performance": {
+        "noNamespaceImport": "error",
+        "noReExportAll": "error"
       },
       "recommended": true,
+
       "style": {
+        "noCommonJs": "error",
+        "noDefaultExport": "error",
         "noDescendingSpecificity": "off",
+        "noEnum": "error",
+        "noImplicitBoolean": "error",
+        "noNamespace": "error",
+        "noNonNullAssertion": "error",
+        "noParameterAssign": "error",
+        "noParameterProperties": "error",
+        "noUnusedTemplateLiteral": "error",
+
+        "useArrayLiterals": "error",
+        "useAsConstAssertion": "error",
+        "useBlockStatements": "error",
+        "useCollapsedElseIf": "error",
+        "useConsistentArrayType": {
+          "level": "error",
+          "options": {
+            "syntax": "shorthand"
+          }
+        },
+        "useConsistentArrowReturn": "error",
+        "useConsistentBuiltinInstantiation": "error",
         "useConsistentCurlyBraces": "error",
+        "useConsistentMemberAccessibility": {
+          "level": "error",
+          "options": {
+            "accessibility": "noPublic"
+          }
+        },
+        "useConsistentObjectDefinitions": {
+          "level": "error",
+          "options": {
+            "syntax": "shorthand"
+          }
+        },
+        "useConsistentTypeDefinitions": {
+          "level": "error",
+          "options": {
+            "style": "type"
+          }
+        },
+        "useConst": "error",
+        "useDefaultParameterLast": "error",
+        "useDefaultSwitchClause": "error",
+        "useEnumInitializers": "error",
+        "useExportType": "error",
+        "useExportsLast": "error",
+        "useFragmentSyntax": "error",
+        "useGroupedAccessorPairs": "error",
         "useImportType": {
           "level": "error",
           "options": {
             "style": "separatedType"
           }
-        }
+        },
+        "useLiteralEnumMembers": "error",
+        "useNodejsImportProtocol": "error",
+        "useNumberNamespace": "error",
+        "useNumericSeparators": "error",
+        "useObjectSpread": "error",
+        "useReadonlyClassProperties": "error",
+        "useSelfClosingElements": "error",
+        "useShorthandAssign": "error",
+        "useShorthandFunctionType": "error",
+        "useSingleVarDeclarator": "error",
+        "useTemplate": "error",
+        "useThrowNewError": "error"
+      },
+
+      "suspicious": {
+        "noConstEnum": "error",
+        "noDoubleEquals": "error",
+        "noEvolvingTypes": "error",
+        "noExplicitAny": "error",
+        "noImplicitAnyLet": "error",
+        "noUnsafeDeclarationMerging": "error",
+        "noVar": "error",
+        "useDefaultSwitchClauseLast": "error"
       }
     }
   },
+
   "overrides": [
     {
       "assist": {
@@ -81,10 +225,26 @@
           }
         }
       },
-      "includes": ["**/package.json", "**/locales/*.json"]
+      "includes": [
+        "**/package.json"
+      ]
+    },
+    {
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedKeys": "off"
+          }
+        }
+      },
+      "includes": [
+        "**/locales/*.json"
+      ]
     }
   ],
+
   "root": false,
+
   "vcs": {
     "clientKind": "git",
     "enabled": true,

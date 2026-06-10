@@ -8,19 +8,19 @@ import ts from 'typescript';
 import { parsePlaceholders } from './placeholder';
 import { toRange } from './range';
 
-export interface ParsedParams {
+export type ParsedParams = {
   keys: string[];
   kind: 'spread' | 'static';
   range: Range;
-}
+};
 
-export interface ParsedArguments {
+export type ParsedArguments = {
   context?: string;
   diagnostics: Diagnostic[];
   params?: ParsedParams;
   source: string;
   sourceRange: Range;
-}
+};
 
 const CONTEXT_SEPARATOR = '@';
 
@@ -101,7 +101,11 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
       severity: 'error',
       source: fileText,
     });
-    const result: ParsedArguments = { diagnostics, source: '', sourceRange };
+    const result: ParsedArguments = {
+      diagnostics,
+      source: '',
+      sourceRange,
+    };
     if (context !== undefined) {
       result.context = context;
     }
@@ -126,7 +130,11 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
 
   for (const issue of issues) {
     diagnostics.push(
-      toIcuDiagnostic(issue, { fileId, fileText, range: sourceRange }),
+      toIcuDiagnostic(issue, {
+        fileId,
+        fileText,
+        range: sourceRange,
+      }),
     );
   }
 
@@ -147,7 +155,11 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
     });
   }
 
-  const result: ParsedArguments = { diagnostics, source, sourceRange };
+  const result: ParsedArguments = {
+    diagnostics,
+    source,
+    sourceRange,
+  };
   if (context !== undefined) {
     result.context = context;
   }
@@ -157,11 +169,11 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   return result;
 }
 
-interface IcuDiagnosticContext {
+type IcuDiagnosticContext = {
   fileId: string;
   fileText: string;
   range: Range;
-}
+};
 
 function toIcuDiagnostic(
   issue: TemplateDiagnostic,
@@ -240,10 +252,14 @@ function parseParams(
     }
     kind = 'spread';
   }
-  return { keys, kind, range: toRange(expression, sourceFile) };
+  return {
+    keys,
+    kind,
+    range: toRange(expression, sourceFile),
+  };
 }
 
-interface ValidateParamsInput {
+type ValidateParamsInput = {
   callSite: CallSite;
   diagnostics: Diagnostic[];
   fileId: string;
@@ -251,7 +267,7 @@ interface ValidateParamsInput {
   params: ParsedParams | undefined;
   paramsExpressionPresent: boolean;
   placeholderKeys: string[];
-}
+};
 
 function validateParams(input: ValidateParamsInput): void {
   const {

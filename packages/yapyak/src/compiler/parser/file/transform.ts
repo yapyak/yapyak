@@ -14,7 +14,7 @@ import { findMatchingBraceIndex } from '../matching-brace';
 import { resolveProcessor } from '../processor';
 import { getScriptKind } from '../script-kind';
 
-export interface TransformFileRequest {
+export type TransformFileRequest = {
   defaultLocale?: string;
   extracted: ExtractFileResult;
   fileId: string;
@@ -23,13 +23,13 @@ export interface TransformFileRequest {
   source: string;
   sourcePath?: string;
   translations: Record<string, Record<string, string>>;
-}
+};
 
-export interface TransformFileResult {
+export type TransformFileResult = {
   code: string;
   diagnostics: Diagnostic[];
   map: SourceMap;
-}
+};
 
 const PICK_EXPORT = 'pick';
 const PICK_LOCAL = '_pick';
@@ -161,13 +161,13 @@ function transformScriptImports(
   }
 }
 
-interface TransformImportDeclarationInput {
+type TransformImportDeclarationInput = {
   declaration: ts.ImportDeclaration;
   fragment: Fragment;
   intermediate: string;
   magicString: MagicString;
   sourceFile: ts.SourceFile;
-}
+};
 
 function transformImportDeclaration(
   input: TransformImportDeclarationInput,
@@ -231,11 +231,11 @@ function renderSpecifier(item: ImportSpecifier): string {
   return `${prefix}${body}`;
 }
 
-interface ImportSpecifier {
+type ImportSpecifier = {
   imported: string;
   local: string;
   typeOnly: boolean;
-}
+};
 
 function extractCoreImports(sourceFile: ts.SourceFile): ts.ImportDeclaration[] {
   const result: ts.ImportDeclaration[] = [];
@@ -254,21 +254,21 @@ function extractCoreImports(sourceFile: ts.SourceFile): ts.ImportDeclaration[] {
   return result;
 }
 
-interface RenderCallReplacementInput {
+type RenderCallReplacementInput = {
   callSite: ParsedCallSite;
   defaultLocale: string;
   locales: string[];
   pickLocal: string;
   singleLocale: boolean;
   translations: Record<string, Record<string, string>>;
-}
+};
 
-interface CallReplacement {
+type CallReplacement = {
   code: string;
   range?: Range;
   usedFactories: Set<string>;
   usesPick: boolean;
-}
+};
 
 function renderCallReplacement(
   input: RenderCallReplacementInput,
@@ -325,7 +325,9 @@ function renderCallReplacement(
     : undefined;
   const localeText = callSite.localeExpression?.getText();
 
-  const args: string[] = [catalog];
+  const args: string[] = [
+    catalog,
+  ];
   if (paramsExpressionText || localeText) {
     args.push(paramsExpressionText ?? 'undefined');
   }
@@ -408,7 +410,7 @@ function toSafeJsString(text: string): string {
         out += '\\f';
         break;
       default:
-        if (code < 0x20 || code === 0x2028 || code === 0x2029) {
+        if (code < 0x20 || code === 0x20_28 || code === 0x20_29) {
           out += `\\u${code.toString(16).padStart(4, '0')}`;
         } else {
           out += ch;
@@ -490,13 +492,13 @@ function readKey(inner: string): string | undefined {
   return match?.[1];
 }
 
-interface BuildCatalogInput {
+type BuildCatalogInput = {
   defaultLocale: string;
   id: string;
   locales: string[];
   source: string;
   translations: Record<string, Record<string, string>>;
-}
+};
 
 function buildCatalogLiteral(
   input: BuildCatalogInput,
@@ -586,13 +588,13 @@ function renderBranches(
   return `{${entries.join(',')}}`;
 }
 
-interface PickLocaleTextInput {
+type PickLocaleTextInput = {
   defaultLocale: string;
   id: string;
   locale: string;
   source: string;
   translations: Record<string, Record<string, string>>;
-}
+};
 
 function pickLocaleText(input: PickLocaleTextInput): string {
   if (input.locale === input.defaultLocale) {
@@ -662,7 +664,12 @@ function tryBareElision(
     if (!isSafeJsxText(source)) {
       return undefined;
     }
-    return { code: source, range, usedFactories: new Set(), usesPick: false };
+    return {
+      code: source,
+      range,
+      usedFactories: new Set(),
+      usesPick: false,
+    };
   }
   if (!attributeName) {
     return undefined;

@@ -27,7 +27,7 @@ export {
 export { interpret } from './interpret';
 export { type ParseTemplateResult, parseTemplate } from './parse';
 export {
-  extractPlaceholders,
   type Placeholder,
   type PlaceholderKind,
+  extractPlaceholders,
 } from './placeholder';

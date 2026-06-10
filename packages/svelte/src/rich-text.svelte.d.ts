@@ -5,14 +5,14 @@ import type {
 } from 'svelte';
 import type { RichTextProps } from './rich-text';
 
-interface RichTextComponent {
+type RichTextComponent = {
   new <T extends string>(
     options: ComponentConstructorOptions<RichTextProps<T>>,
   ): SvelteComponent<RichTextProps<T>>;
   <T extends string>(
     ...args: Parameters<Component<RichTextProps<T>>>
   ): ReturnType<Component<RichTextProps<T>>>;
-}
+};
 
 /**
  * Renders rich text by resolving named tags via snippet props.

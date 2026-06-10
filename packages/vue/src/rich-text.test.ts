@@ -8,16 +8,28 @@ import { RichText } from './rich-text';
 
 describe('RichText', () => {
   it('returns the source string when it holds no tags', () => {
-    const { container } = render(RichText, { props: { value: 'Hello' } });
+    const { container } = render(RichText, {
+      props: {
+        value: 'Hello',
+      },
+    });
     expect(container.textContent).toBe('Hello');
   });
 
   it('binds every named tag to the matching handler', () => {
     const { container } = render(RichText, {
-      props: { value: 'Click <link>here</link>.' },
+      props: {
+        value: 'Click <link>here</link>.',
+      },
       slots: {
         link: ({ children }: { children: () => VNodeChild[] }) =>
-          h('a', { href: '/x' }, children() as VNodeArrayChildren),
+          h(
+            'a',
+            {
+              href: '/x',
+            },
+            children() as VNodeArrayChildren,
+          ),
       },
     });
     const link = container.querySelector('a');
@@ -27,7 +39,9 @@ describe('RichText', () => {
 
   it('emits every tag when multiple are present', () => {
     const { container } = render(RichText, {
-      props: { value: '<a>one</a> <b>two</b>' },
+      props: {
+        value: '<a>one</a> <b>two</b>',
+      },
     });
     expect(container.textContent).toContain('<a>');
     expect(container.textContent).toContain('one');
@@ -39,7 +53,9 @@ describe('RichText', () => {
 
   it('emits the unmatched tag as literal text', () => {
     const { container } = render(RichText, {
-      props: { value: '<unknown>Hi</unknown>' },
+      props: {
+        value: '<unknown>Hi</unknown>',
+      },
     });
     expect(container.textContent).toContain('<unknown>');
     expect(container.textContent).toContain('Hi');
@@ -48,7 +64,9 @@ describe('RichText', () => {
 
   it('preserves text between tags', () => {
     const { container } = render(RichText, {
-      props: { value: 'before <tag>middle</tag> after' },
+      props: {
+        value: 'before <tag>middle</tag> after',
+      },
     });
     expect(container.textContent).toContain('before');
     expect(container.textContent).toContain('middle');
@@ -57,7 +75,9 @@ describe('RichText', () => {
 
   it('walks nested tags recursively', () => {
     const { container } = render(RichText, {
-      props: { value: '<outer>before <inner>nested</inner> after</outer>' },
+      props: {
+        value: '<outer>before <inner>nested</inner> after</outer>',
+      },
     });
     expect(container.textContent).toContain('<outer>');
     expect(container.textContent).toContain('<inner>');

@@ -189,11 +189,11 @@ const BCP47_RX = /^[a-z]{2,3}(-[A-Z][a-z]{3})?(-[A-Z]{2})?$/;
 
 export type LocaleIssue = 'invalid-structure' | 'unknown-language';
 
-export interface LocaleValidation {
+export type LocaleValidation = {
   issue?: LocaleIssue;
   suggestion?: string;
   valid: boolean;
-}
+};
 
 export function validateLocaleCode(code: string): LocaleValidation {
   if (!BCP47_RX.test(code)) {
@@ -202,19 +202,35 @@ export function validateLocaleCode(code: string): LocaleValidation {
       lowered.split(/[-_]/)[0] ?? lowered,
     );
     if (suggestion) {
-      return { issue: 'invalid-structure', suggestion, valid: false };
+      return {
+        issue: 'invalid-structure',
+        suggestion,
+        valid: false,
+      };
     }
-    return { issue: 'invalid-structure', valid: false };
+    return {
+      issue: 'invalid-structure',
+      valid: false,
+    };
   }
   const language = (code.split('-')[0] ?? code).toLowerCase();
   if (ISO_639_1.has(language)) {
-    return { valid: true };
+    return {
+      valid: true,
+    };
   }
   const suggestion = findClosestSuggestion(language);
   if (suggestion) {
-    return { issue: 'unknown-language', suggestion, valid: false };
+    return {
+      issue: 'unknown-language',
+      suggestion,
+      valid: false,
+    };
   }
-  return { issue: 'unknown-language', valid: false };
+  return {
+    issue: 'unknown-language',
+    valid: false,
+  };
 }
 
 const COMMON_CODES: string[] = [
@@ -267,14 +283,22 @@ function findClosestIn(
   input: string,
   candidates: Iterable<string>,
 ): string | undefined {
-  let best: { code: string; distance: number } | undefined;
+  let best:
+    | {
+        code: string;
+        distance: number;
+      }
+    | undefined;
   for (const code of candidates) {
     const distance = levenshtein(input, code);
     if (distance > 2) {
       continue;
     }
     if (!best || distance < best.distance) {
-      best = { code, distance };
+      best = {
+        code,
+        distance,
+      };
     }
   }
   return best?.code;
@@ -291,7 +315,9 @@ function levenshtein(a: string, b: string): number {
     return a.length;
   }
   let previous: number[] = Array.from(
-    { length: b.length + 1 },
+    {
+      length: b.length + 1,
+    },
     (_, index) => index,
   );
   let current: number[] = new Array(b.length + 1).fill(0);
@@ -305,7 +331,10 @@ function levenshtein(a: string, b: string): number {
         (previous[bIndex - 1] ?? 0) + cost,
       );
     }
-    [previous, current] = [current, previous];
+    [previous, current] = [
+      current,
+      previous,
+    ];
   }
   return previous[b.length] ?? 0;
 }

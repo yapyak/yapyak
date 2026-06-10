@@ -1,6 +1,10 @@
 import { defineConfig } from '@yapyak/tsup-config';
 
 export default defineConfig({
-  entry: ['src/index.ts'],
-  external: ['@tanstack/react-start'],
+  entry: [
+    'src/index.ts',
+  ],
+  external: [
+    '@tanstack/react-start',
+  ],
 });

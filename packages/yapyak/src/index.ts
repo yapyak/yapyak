@@ -14,20 +14,20 @@
 
 export { type Format, format } from './format';
 export {
+  type Locale,
+  type Register,
   defaultLocale,
   getLocale,
   isLocale,
-  type Locale,
   locales,
-  type Register,
   setLocale,
 } from './locale';
 export {
   type RichTextHandler,
   type RichTextHandlers,
-  richText,
   type TFn,
   type TParams,
   type TReturn,
+  richText,
   t,
 } from './translation';

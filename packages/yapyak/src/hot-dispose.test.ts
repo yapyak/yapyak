@@ -3,9 +3,16 @@ import { describe, expect, it, vi } from 'vitest';
 import { registerHotDispose } from './hot-dispose';
 
 function makeMeta(
-  hot?: { dispose(callback: () => void): void } | undefined,
+  hot?:
+    | {
+        dispose(callback: () => void): void;
+      }
+    | undefined,
 ): ImportMeta {
-  return { ...import.meta, hot };
+  return {
+    ...import.meta,
+    hot,
+  };
 }
 
 describe('registerHotDispose', () => {
@@ -13,7 +20,12 @@ describe('registerHotDispose', () => {
     const dispose = vi.fn();
     const cleanup = (): void => {};
 
-    registerHotDispose(makeMeta({ dispose }), cleanup);
+    registerHotDispose(
+      makeMeta({
+        dispose,
+      }),
+      cleanup,
+    );
 
     expect(dispose).toHaveBeenCalledWith(cleanup);
   });

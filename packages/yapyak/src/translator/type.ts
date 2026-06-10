@@ -5,14 +5,14 @@ import type { Locale } from '../locale';
  *
  * Sent to translators and used as input to AI prompt building for tone-correct output. Renaming or removing fields is a breaking change.
  */
-export interface MessageContext {
+export type MessageContext = {
   /** The component name derived from the file path. */
   componentName: string;
   /** The nearest enclosing JSX/HTML element above the call. */
   enclosingElement: string | undefined;
   /** The surrounding code snippet, three lines above and below. */
   snippet: string;
-}
+};
 
 /**
  * An example translation drawn from the project's existing locale files.
@@ -20,19 +20,19 @@ export interface MessageContext {
  * @remarks
  * Passed to translators as style reference so the AI keeps terminology consistent with prior choices. yapyak collects these from the active locale files and the orphan cache; consumers do not construct them by hand.
  */
-export interface TranslationExample {
+export type TranslationExample = {
   /** The source string from a prior call. */
   source: string;
   /** The translation that was chosen for it. */
   translation: string;
-}
+};
 
 /**
  * Request shape for {@link Translator}.
  *
  * The fundamental input contract for every translator implementation. Renaming or removing fields is a breaking change.
  */
-export interface TranslateRequest {
+export type TranslateRequest = {
   /** The call-site context. */
   context?: MessageContext;
   /**
@@ -52,7 +52,7 @@ export interface TranslateRequest {
   sourceLocale: Locale;
   /** The target locale. */
   targetLocale: Locale;
-}
+};
 
 /**
  * Translates source strings into target locales.
@@ -62,7 +62,7 @@ export interface TranslateRequest {
  *
  * Public extension point. Implemented by the provider packages and by third-party translators. Adding optional fields is allowed; renaming or removing fields is a breaking change.
  */
-export interface Translator {
+export type Translator = {
   /**
    * Translates a batch of requests.
    *
@@ -88,13 +88,13 @@ export interface Translator {
    */
   id: string;
   (request: TranslateRequest): Promise<string>;
-}
+};
 
 /** Options for {@link Translator.batch}. */
-export interface TranslateBatchOptions {
+export type TranslateBatchOptions = {
   /** Called when a chunk resolves. */
   onChunk?: (count: number) => void;
-}
+};
 
 /**
  * The context level. Determines how much call-site context is passed to the translator.
@@ -116,7 +116,7 @@ export interface TranslateBatchOptions {
 export type ContextLevel = 'none' | 'minimal' | 'rich';
 
 /** An item in a translate batch. */
-export interface TranslateItem {
+export type TranslateItem = {
   /** The component name derived from the file path. */
   component?: string;
   /** The developer-supplied disambiguation context. Set via `t.as(context, source)` at the call site. */
@@ -129,7 +129,7 @@ export interface TranslateItem {
   snippet?: string;
   /** The source string to translate. */
   source: string;
-}
+};
 
 /**
  * The translations for one input item, keyed by target locale.
@@ -163,7 +163,7 @@ export type LocaleTranslations = Record<string, string>;
  * createTranslator(myTranslate);
  * ```
  */
-export interface TranslateBatchRequest {
+export type TranslateBatchRequest = {
   /**
    * The items to translate.
    *
@@ -182,7 +182,7 @@ export interface TranslateBatchRequest {
   sourceLocale: Locale;
   /** The target locales required in every item's result. */
   targetLocales: Locale[];
-}
+};
 
 /**
  * Translates a batch of items into every target locale.
@@ -195,7 +195,7 @@ export type TranslateFn = (
 ) => LocaleTranslations[] | Promise<LocaleTranslations[]>;
 
 /** Options for {@link createTranslator}. */
-export interface CreateTranslatorOptions {
+export type CreateTranslatorOptions = {
   /**
    * The maximum number of items per `translate` call.
    *
@@ -220,4 +220,4 @@ export interface CreateTranslatorOptions {
    * @defaultValue `'custom'`
    */
   id?: string;
-}
+};

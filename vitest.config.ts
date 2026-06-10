@@ -10,8 +10,12 @@ export default defineConfig({
         'packages/yapyak/src/runtime.ts',
         'packages/{biome-config,doc-extractor,tsup-config,typescript-config,vitest-config}/**',
       ],
-      include: ['packages/*/src/**'],
+      include: [
+        'packages/*/src/**',
+      ],
     },
-    projects: ['packages/*'],
+    projects: [
+      'packages/*',
+    ],
   },
 });

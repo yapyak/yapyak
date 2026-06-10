@@ -75,7 +75,7 @@ function interpretPlural(
   const category = resolveFormatter(Intl.PluralRules, locale, {
     type: node.type,
   }).select(count);
-  const branch = node.branches[category] ?? node.branches['other'] ?? [];
+  const branch = node.branches[category] ?? node.branches.other ?? [];
   return interpretNodes(branch, params, locale, formattedCount);
 }
 
@@ -86,7 +86,7 @@ function interpretSelect(
   formattedCount: string | undefined,
 ): string {
   const value = String(params[node.name]);
-  const branch = node.branches[value] ?? node.branches['other'] ?? [];
+  const branch = node.branches[value] ?? node.branches.other ?? [];
   return interpretNodes(branch, params, locale, formattedCount);
 }
 

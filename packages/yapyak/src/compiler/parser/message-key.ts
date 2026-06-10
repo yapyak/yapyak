@@ -13,7 +13,9 @@ export function parseMessageKey(key: string): {
 } {
   const index = key.indexOf(MESSAGE_KEY_SEPARATOR);
   if (index === -1) {
-    return { source: key };
+    return {
+      source: key,
+    };
   }
   return {
     context: key.slice(index + 1),

@@ -28,7 +28,10 @@ export function HeroDemoLocaleStack(props: HeroDemoLocaleStackProps) {
   return (
     <Box
       {...restProps}
-      className={[styles.HeroDemoLocaleStack, className]}
+      className={[
+        styles.HeroDemoLocaleStack,
+        className,
+      ]}
       data-receiving={receiving}
     >
       <Box

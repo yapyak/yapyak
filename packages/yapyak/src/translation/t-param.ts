@@ -49,7 +49,9 @@ type ExtractSelectBranches<
 
 type SelectValue<TBody extends string> = [
   ExtractSelectBranches<TBody>,
-] extends [never]
+] extends [
+  never,
+]
   ? string
   : 'other' extends ExtractSelectBranches<TBody>
     ? Exclude<ExtractSelectBranches<TBody>, 'other'> | (string & {})

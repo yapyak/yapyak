@@ -5,12 +5,12 @@ import { Box } from '#components/box';
 
 import styles from './content-anchor-navigation-item.module.css';
 
-export interface ContentAnchorNavigationItemProps {
+export type ContentAnchorNavigationItemProps = {
   heading: HeadingEntry;
   isActive: boolean;
   onActivate: (event: MouseEvent<HTMLAnchorElement>, id: string) => void;
   ref?: Ref<HTMLAnchorElement>;
-}
+};
 
 export function ContentAnchorNavigationItem(
   props: ContentAnchorNavigationItemProps,

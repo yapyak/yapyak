@@ -1,6 +1,13 @@
 export type RichTextNode =
-  | { type: 'tag'; name: string; children: RichTextNode[] }
-  | { type: 'text'; text: string };
+  | {
+      type: 'tag';
+      name: string;
+      children: RichTextNode[];
+    }
+  | {
+      type: 'text';
+      text: string;
+    };
 
 export function parseRichText(source: string): RichTextNode[] {
   const nodes: RichTextNode[] = [];
@@ -9,7 +16,10 @@ export function parseRichText(source: string): RichTextNode[] {
 
   const flush = (): void => {
     if (text !== '') {
-      nodes.push({ text, type: 'text' });
+      nodes.push({
+        text,
+        type: 'text',
+      });
       text = '';
     }
   };
@@ -41,7 +51,10 @@ export function parseRichText(source: string): RichTextNode[] {
 export function walkRichText<T>(
   source: string,
   handlers: Record<string, (children: T) => T>,
-  renderer: { leaf: (text: string) => T; concat: (parts: T[]) => T },
+  renderer: {
+    leaf: (text: string) => T;
+    concat: (parts: T[]) => T;
+  },
 ): T {
   return renderNodes(parseRichText(source), handlers, renderer);
 }
@@ -49,7 +62,10 @@ export function walkRichText<T>(
 function renderNodes<T>(
   nodes: RichTextNode[],
   handlers: Record<string, (children: T) => T>,
-  renderer: { leaf: (text: string) => T; concat: (parts: T[]) => T },
+  renderer: {
+    leaf: (text: string) => T;
+    concat: (parts: T[]) => T;
+  },
 ): T {
   const parts: T[] = [];
   for (const node of nodes) {
@@ -73,7 +89,12 @@ function renderNodes<T>(
 function readOpenTag(
   source: string,
   index: number,
-): { name: string; end: number } | undefined {
+):
+  | {
+      name: string;
+      end: number;
+    }
+  | undefined {
   const close = source.indexOf('>', index + 1);
   if (close === -1) {
     return undefined;
@@ -82,14 +103,22 @@ function readOpenTag(
   if (!/^[A-Za-z][A-Za-z0-9]*$/.test(name)) {
     return undefined;
   }
-  return { end: close + 1, name };
+  return {
+    end: close + 1,
+    name,
+  };
 }
 
 function findClosingTagRange(
   source: string,
   from: number,
   name: string,
-): { start: number; end: number } | undefined {
+):
+  | {
+      start: number;
+      end: number;
+    }
+  | undefined {
   const openMarker = `<${name}>`;
   const close = `</${name}>`;
   let depth = 1;
@@ -98,7 +127,10 @@ function findClosingTagRange(
     if (source.startsWith(close, index)) {
       depth -= 1;
       if (depth === 0) {
-        return { end: index + close.length, start: index };
+        return {
+          end: index + close.length,
+          start: index,
+        };
       }
       index += close.length;
       continue;

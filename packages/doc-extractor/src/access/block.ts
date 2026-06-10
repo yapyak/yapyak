@@ -24,129 +24,129 @@ export type Block =
   | TableRowBlock
   | TextBlock;
 
-export interface TextBlock {
+export type TextBlock = {
   type: 'text';
   value: string;
-}
+};
 
-export interface HeadingBlock {
+export type HeadingBlock = {
   children: Block[];
   id: string;
   level: 1 | 2 | 3 | 4 | 5 | 6;
   type: 'heading';
-}
+};
 
-export interface ParagraphBlock {
+export type ParagraphBlock = {
   children: Block[];
   type: 'paragraph';
-}
+};
 
-export interface LinkBlock {
+export type LinkBlock = {
   children: Block[];
   href: string;
   kind: 'external' | 'internal';
   type: 'link';
-}
+};
 
-export interface ImageBlock {
+export type ImageBlock = {
   alt: string | null;
   src: string;
   type: 'image';
-}
+};
 
-export interface ListBlock {
+export type ListBlock = {
   children: ListItemBlock[];
   ordered: boolean;
   type: 'list';
-}
+};
 
-export interface ListItemBlock {
+export type ListItemBlock = {
   children: Block[];
   type: 'list-item';
-}
+};
 
-export interface EmphasisBlock {
+export type EmphasisBlock = {
   children: Block[];
   type: 'emphasis';
-}
+};
 
-export interface StrongBlock {
+export type StrongBlock = {
   children: Block[];
   type: 'strong';
-}
+};
 
-export interface StrikethroughBlock {
+export type StrikethroughBlock = {
   children: Block[];
   type: 'strikethrough';
-}
+};
 
-export interface InlineCodeBlock {
+export type InlineCodeBlock = {
   type: 'inline-code';
   value: string;
-}
+};
 
-export interface QuoteBlock {
+export type QuoteBlock = {
   children: Block[];
   type: 'quote';
-}
+};
 
-export interface DividerBlock {
+export type DividerBlock = {
   type: 'divider';
-}
+};
 
-export interface LineBreakBlock {
+export type LineBreakBlock = {
   type: 'line-break';
-}
+};
 
-export interface TableBlock {
+export type TableBlock = {
   body: TableRowBlock[];
   head: TableRowBlock | null;
   type: 'table';
-}
+};
 
-export interface TableRowBlock {
+export type TableRowBlock = {
   children: TableCellBlock[];
   type: 'table-row';
-}
+};
 
-export interface TableCellBlock {
+export type TableCellBlock = {
   children: Block[];
   header: boolean;
   type: 'table-cell';
-}
+};
 
-export interface CodeBlock {
+export type CodeBlock = {
   label: string | null;
   language: string | null;
   path: string | null;
   source: string;
   type: 'code-block';
-}
+};
 
-export interface CodeGroupBlock {
+export type CodeGroupBlock = {
   tabs: CodeBlock[];
   type: 'code-group';
-}
+};
 
-export interface SwitchBlock {
+export type SwitchBlock = {
   branches: Record<string, Block[]>;
   group: string;
   type: 'switch';
-}
+};
 
-export interface OnlyBlock {
+export type OnlyBlock = {
   children: Block[];
   group: string;
   type: 'only';
   value: string;
-}
+};
 
-export interface CalloutBlock {
+export type CalloutBlock = {
   children: Block[];
   title: string | null;
   type: 'callout';
   variant: 'danger' | 'info' | 'tip' | 'warning';
-}
+};
 
 export type ExportKind =
   | 'class'
@@ -155,19 +155,19 @@ export type ExportKind =
   | 'type'
   | 'variable';
 
-export interface EyebrowBlock {
+export type EyebrowBlock = {
   kind: ExportKind | null;
   module: string | null;
   sourceHref: string | null;
   type: 'eyebrow';
-}
+};
 
-export interface CodeLocationBlock {
+export type CodeLocationBlock = {
   file: string;
   href: string | null;
   line: number;
   type: 'code-location';
-}
+};
 
 const BLOCK_TYPES = new Set<Block['type']>([
   'quote',
@@ -201,8 +201,18 @@ export function isBlock(value: unknown): value is Block {
     typeof value === 'object' &&
     value !== null &&
     'type' in value &&
-    typeof (value as { type: unknown }).type === 'string' &&
-    BLOCK_TYPES.has((value as { type: Block['type'] }).type)
+    typeof (
+      value as {
+        type: unknown;
+      }
+    ).type === 'string' &&
+    BLOCK_TYPES.has(
+      (
+        value as {
+          type: Block['type'];
+        }
+      ).type,
+    )
   );
 }
 

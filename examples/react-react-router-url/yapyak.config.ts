@@ -1,6 +1,8 @@
 import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
-  include: ['app'],
+  include: [
+    'app',
+  ],
   persistence: 'url',
 });

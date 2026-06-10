@@ -3,16 +3,16 @@ import type { HeadingBlock } from './block';
 
 import { blockToText } from './text';
 
-export interface HeadingEntry {
+export type HeadingEntry = {
   id: string;
   level: HeadingBlock['level'];
   text: string;
-}
+};
 
-export interface GetHeadingsOptions {
+export type GetHeadingsOptions = {
   maxLevel?: number;
   minLevel?: number;
-}
+};
 
 export function getHeadings(
   page: Page,

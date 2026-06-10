@@ -13,16 +13,19 @@ import { useContentLayout } from './content-layout';
 import styles from './content-layout-toolbar.module.css';
 import { doc } from 'virtual:doc-extractor';
 
-export interface ContentLayoutToolbarProps {
+export type ContentLayoutToolbarProps = {
   children: ReactNode;
   page?: Page;
-}
+};
 
 export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
   const { children, page } = props;
   const { nextPage, previousPage } = page
     ? doc.findAdjacentPages(page)
-    : { nextPage: null, previousPage: null };
+    : {
+        nextPage: null,
+        previousPage: null,
+      };
   const {
     closeSidebar,
     openSidebar,
@@ -49,9 +52,13 @@ export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
       }
       lastScrollYRef.current = currentScrollY;
     };
-    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('scroll', update, {
+      passive: true,
+    });
     return () => window.removeEventListener('scroll', update);
-  }, [isSidebarOpen]);
+  }, [
+    isSidebarOpen,
+  ]);
 
   const handleOutlineToggle = () => {
     if (isSidebarOpen) {
@@ -86,7 +93,7 @@ export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
             aria-label={t('Previous')}
             as="button"
             className={styles.NavButton}
-            disabled
+            disabled={true}
             type="button"
           >
             <ChevronIcon direction="left" />
@@ -116,7 +123,7 @@ export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
             aria-label={t('Next')}
             as="button"
             className={styles.NavButton}
-            disabled
+            disabled={true}
             type="button"
           >
             <ChevronIcon direction="right" />

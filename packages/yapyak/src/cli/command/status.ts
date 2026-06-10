@@ -3,9 +3,9 @@ import type { Config } from '../config';
 import { buildReport } from '../report';
 import { color, header, progressBar, renderTable, symbol } from '../tui';
 
-export interface StatusOptions {
+export type StatusOptions = {
   json?: boolean;
-}
+};
 
 export function status(
   config: Config,
@@ -58,9 +58,21 @@ export function status(
   });
 
   process.stdout.write(
-    `${renderTable([color.bold('Locale'), color.bold('Coverage'), ''], rows, {
-      align: ['left', 'right', 'left'],
-    })
+    `${renderTable(
+      [
+        color.bold('Locale'),
+        color.bold('Coverage'),
+        '',
+      ],
+      rows,
+      {
+        align: [
+          'left',
+          'right',
+          'left',
+        ],
+      },
+    )
       .split('\n')
       .map((line) => `  ${line}`)
       .join('\n')}\n\n`,
@@ -77,7 +89,9 @@ export function status(
   for (const entry of report.missing) {
     const list = byLocale[entry.locale];
     if (!list) {
-      byLocale[entry.locale] = [entry];
+      byLocale[entry.locale] = [
+        entry,
+      ];
     } else {
       list.push(entry);
     }

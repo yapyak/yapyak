@@ -12,7 +12,7 @@ import {
 } from 'yapyak/translator/internal';
 
 /** Options for {@link anthropic}. */
-export interface AnthropicOptions {
+export type AnthropicOptions = {
   /** The API key. */
   apiKey: string;
   /**
@@ -69,7 +69,7 @@ export interface AnthropicOptions {
   timeout?: number;
   /** The voice and tone guidance passed to the model. */
   voice?: string;
-}
+};
 
 const DEFAULT_MODEL = 'claude-sonnet-4-6';
 const DEFAULT_ENDPOINT = 'https://api.anthropic.com/v1/messages';
@@ -77,7 +77,7 @@ const ANTHROPIC_VERSION = '2023-06-01';
 const DEFAULT_TEMPERATURE = 0.2;
 const DEFAULT_TIMEOUT = 30_000;
 const DEFAULT_MAX_RETRIES = 2;
-const MAX_TOKENS_CAP = 8_000;
+const MAX_TOKENS_CAP = 8000;
 
 /**
  * Creates an Anthropic translator.
@@ -126,7 +126,12 @@ export function anthropic(options: AnthropicOptions): Translator {
             MAX_TOKENS_CAP,
             Math.max(1024, items.length * targetLocales.length * 96),
           ),
-          messages: [{ content: JSON.stringify(items), role: 'user' }],
+          messages: [
+            {
+              content: JSON.stringify(items),
+              role: 'user',
+            },
+          ],
           model,
           system: buildSystem(sourceLocale, targetLocales, options),
           temperature,
@@ -161,10 +166,18 @@ export function anthropic(options: AnthropicOptions): Translator {
       const cleaned = stripCodeFence(text.trim());
       return JSON.parse(cleaned) as LocaleTranslations[];
     },
-    { batchSize, concurrency, context, id: 'anthropic' },
+    {
+      batchSize,
+      concurrency,
+      context,
+      id: 'anthropic',
+    },
   );
 }
 
-interface AnthropicMessageResponse {
-  content?: Array<{ text?: string; type: string }>;
-}
+type AnthropicMessageResponse = {
+  content?: Array<{
+    text?: string;
+    type: string;
+  }>;
+};

@@ -3,11 +3,11 @@ import '#styles/index.css';
 import type { ReactNode } from 'react';
 
 import {
-  createRootRoute,
   HeadContent,
   Link,
   Outlet,
   Scripts,
+  createRootRoute,
 } from '@tanstack/react-router';
 import { LocaleProvider, useLocale } from '@yapyak/react';
 import { t } from 'yapyak';
@@ -18,9 +18,9 @@ import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
 import { Navigation } from '#components/navigation';
 import {
-  buildPrepaintScript,
   DocOptions,
   OptionsProvider,
+  buildPrepaintScript,
 } from '#components/options';
 import { Wordmark } from '#components/wordmark';
 
@@ -30,11 +30,24 @@ export const Route = createRootRoute({
   component: Component,
   head() {
     return {
-      links: [{ href: '/favicon.svg', rel: 'icon', type: 'image/svg+xml' }],
+      links: [
+        {
+          href: '/favicon.svg',
+          rel: 'icon',
+          type: 'image/svg+xml',
+        },
+      ],
       meta: [
-        { charSet: 'utf-8' },
-        { content: 'width=device-width, initial-scale=1', name: 'viewport' },
-        { title: 'yapyak — i18n that keeps up.' },
+        {
+          charSet: 'utf-8',
+        },
+        {
+          content: 'width=device-width, initial-scale=1',
+          name: 'viewport',
+        },
+        {
+          title: 'yapyak — i18n that keeps up.',
+        },
         {
           content: 'For Vite apps built at the speed of save.',
           name: 'description',
@@ -47,8 +60,14 @@ export const Route = createRootRoute({
           content: 'For Vite apps built at the speed of save.',
           property: 'og:description',
         },
-        { content: 'website', property: 'og:type' },
-        { content: 'summary_large_image', name: 'twitter:card' },
+        {
+          content: 'website',
+          property: 'og:type',
+        },
+        {
+          content: 'summary_large_image',
+          name: 'twitter:card',
+        },
         {
           content: 'yapyak — i18n that keeps up.',
           name: 'twitter:title',
@@ -99,9 +118,9 @@ function Component() {
   );
 }
 
-interface ShellComponentProps {
+type ShellComponentProps = {
   children: ReactNode;
-}
+};
 
 function ShellComponent(props: ShellComponentProps) {
   const { children } = props;
@@ -113,7 +132,11 @@ function ShellComponent(props: ShellComponentProps) {
     <html lang={locale}>
       <head>
         <HeadContent />
-        <script dangerouslySetInnerHTML={{ __html: optionsPrepaintScript }} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: optionsPrepaintScript,
+          }}
+        />
       </head>
       <body>
         <LocaleProvider>

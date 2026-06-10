@@ -1,6 +1,12 @@
 import type { Digit, NonIdentifierChar, Trim } from './t-param';
 
-type OrElse<TValue, TFallback> = [TValue] extends [never] ? TFallback : TValue;
+type OrElse<TValue, TFallback> = [
+  TValue,
+] extends [
+  never,
+]
+  ? TFallback
+  : TValue;
 
 type KnownIcuFormat =
   | 'date'
@@ -17,7 +23,9 @@ type KnownDateTimeStyle = 'full' | 'long' | 'medium' | 'short';
 type KnownPluralKeyword = 'few' | 'many' | 'one' | 'other' | 'two' | 'zero';
 
 type ValidateName<T extends string> = T extends ''
-  ? { $yapyakTypeError: 'Invalid placeholder "": name cannot be empty' }
+  ? {
+      $yapyakTypeError: 'Invalid placeholder "": name cannot be empty';
+    }
   : T extends `${Digit}${string}`
     ? {
         $yapyakTypeError: `Invalid placeholder "${T}": must start with a letter or underscore (not a digit)`;
@@ -180,5 +188,7 @@ type FindFirstSourceError<T extends string> =
 export type ValidateSource<T extends string> = string extends T
   ? T
   : T extends ''
-    ? { $yapyakTypeError: 'Invalid source: must not be an empty string' }
+    ? {
+        $yapyakTypeError: 'Invalid source: must not be an empty string';
+      }
     : OrElse<FindFirstSourceError<T>, T>;

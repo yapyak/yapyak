@@ -24,7 +24,9 @@ function findFirstCallExpression(
 ): ts.CallExpression | undefined {
   let found: ts.CallExpression | undefined;
   const visit = (n: ts.Node): void => {
-    if (found !== undefined) return;
+    if (found !== undefined) {
+      return;
+    }
     if (
       ts.isCallExpression(n) &&
       ts.isIdentifier(n.expression) &&
@@ -42,7 +44,9 @@ function findFirstCallExpression(
 function findFirstIfStatement(node: ts.Node): ts.IfStatement | undefined {
   let found: ts.IfStatement | undefined;
   const visit = (n: ts.Node): void => {
-    if (found !== undefined) return;
+    if (found !== undefined) {
+      return;
+    }
     if (ts.isIfStatement(n)) {
       found = n;
       return;

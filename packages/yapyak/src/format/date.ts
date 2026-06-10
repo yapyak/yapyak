@@ -1,7 +1,9 @@
 import { resolveFormatter } from '../formatter';
 import { runTrackers } from '../tracker';
 
-const DEFAULT: Intl.DateTimeFormatOptions = { dateStyle: 'medium' };
+const DEFAULT: Intl.DateTimeFormatOptions = {
+  dateStyle: 'medium',
+};
 
 export function formatDate(
   value: Date | number,

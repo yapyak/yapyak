@@ -4,9 +4,9 @@ import { Box } from '#components/box';
 
 import { BlockRendererNode } from './block-renderer-node';
 
-export interface BlockRendererNodeListItemProps {
+export type BlockRendererNodeListItemProps = {
   block: ListItemBlock;
-}
+};
 
 export function BlockRendererNodeListItem(
   props: BlockRendererNodeListItemProps,

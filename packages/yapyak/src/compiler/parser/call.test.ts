@@ -91,7 +91,10 @@ describe('discoverCalls', () => {
     );
     expect(callSites).toHaveLength(2);
     const kinds = callSites.map((callSite) => callSite.binding.kind).sort();
-    expect(kinds).toEqual(['direct', 'wrapper']);
+    expect(kinds).toEqual([
+      'direct',
+      'wrapper',
+    ]);
   });
 
   it('extracts the locale expression from a direct `t.in(...)` call', () => {

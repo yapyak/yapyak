@@ -3,9 +3,16 @@ import { describe, expect, it, vi } from 'vitest';
 import { autoRegisterTracker, registerTracker, runTrackers } from './tracker';
 
 function makeMeta(
-  hot?: { dispose(callback: () => void): void } | undefined,
+  hot?:
+    | {
+        dispose(callback: () => void): void;
+      }
+    | undefined,
 ): ImportMeta {
-  return { ...import.meta, hot };
+  return {
+    ...import.meta,
+    hot,
+  };
 }
 
 describe('registerTracker', () => {
@@ -44,7 +51,12 @@ describe('autoRegisterTracker', () => {
     const dispose = vi.fn();
     const tracker = vi.fn();
 
-    autoRegisterTracker(makeMeta({ dispose }), tracker);
+    autoRegisterTracker(
+      makeMeta({
+        dispose,
+      }),
+      tracker,
+    );
 
     expect(dispose).toHaveBeenCalledOnce();
     const unregister = dispose.mock.calls[0]?.[0];

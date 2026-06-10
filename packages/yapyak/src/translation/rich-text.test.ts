@@ -29,10 +29,9 @@ describe('richText', () => {
   it('transforms the same tag used multiple times', () => {
     const result = richText(
       '<em>One</em> and <em>two</em> and <em>three</em>.',
-      { em: (children) => `_${children}_` } as Record<
-        string,
-        (children: string) => string
-      >,
+      {
+        em: (children) => `_${children}_`,
+      } as Record<string, (children: string) => string>,
     );
     expect(result).toBe('_One_ and _two_ and _three_.');
   });

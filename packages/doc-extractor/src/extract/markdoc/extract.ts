@@ -2,14 +2,14 @@ import type { Block } from '../../access';
 import type { Page } from '../../build';
 
 import { parseMarkdoc } from './parse';
-import { readdir, readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
 
-interface MarkdocExtractResult {
+type MarkdocExtractResult = {
   pages: Map<string, Page>;
   redirects: Map<string, string>;
   watchedFiles: string[];
-}
+};
 
 export async function extractMarkdoc(
   root: string,
@@ -37,7 +37,11 @@ export async function extractMarkdoc(
     }
     pages.set(path, page);
   }
-  return { pages, redirects, watchedFiles: files };
+  return {
+    pages,
+    redirects,
+    watchedFiles: files,
+  };
 }
 
 async function loadMarkdocPage(
@@ -107,20 +111,29 @@ function resolveBlock(block: Block, pageHref: string): Block {
   return block;
 }
 
-interface LinkData {
+type LinkData = {
   href: string;
   kind: 'external' | 'internal';
-}
+};
 
 function resolveLinkData(href: string, pageHref: string): LinkData {
   if (/^([a-z][a-z0-9+.-]*:|\/\/)/i.test(href)) {
-    return { href, kind: 'external' };
+    return {
+      href,
+      kind: 'external',
+    };
   }
   if (href.startsWith('/')) {
-    return { href, kind: 'internal' };
+    return {
+      href,
+      kind: 'internal',
+    };
   }
   if (href.startsWith('#')) {
-    return { href: `${pageHref}${href}`, kind: 'internal' };
+    return {
+      href: `${pageHref}${href}`,
+      kind: 'internal',
+    };
   }
   const [pathPart = '', fragment = ''] = href.split('#');
   const segments = pageHref.split('/').slice(0, -1);
@@ -162,7 +175,9 @@ function resolvePageRedirectTarget(
   }
   const baseSegments = path === '' ? [] : path.split('/');
   const targetSegments = raw.split('/');
-  const result = [...baseSegments];
+  const result = [
+    ...baseSegments,
+  ];
   for (const segment of targetSegments) {
     if (segment === '' || segment === '.') {
       continue;
@@ -192,9 +207,9 @@ async function collectMarkdownFiles(
   directory: string,
   paths: string[],
 ): Promise<void> {
-  const entries = await readdir(directory, { withFileTypes: true }).catch(
-    () => [],
-  );
+  const entries = await readdir(directory, {
+    withFileTypes: true,
+  }).catch(() => []);
   for (const entry of entries) {
     const fullPath = join(directory, entry.name);
     if (entry.isDirectory()) {

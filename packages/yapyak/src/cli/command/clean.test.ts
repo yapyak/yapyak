@@ -18,7 +18,9 @@ function makeConfig(overrides: Partial<Config> = {}): Config {
     defaultLocale: 'en',
     examples: 0,
     exclude: [],
-    include: ['src/**/*.ts'],
+    include: [
+      'src/**/*.ts',
+    ],
     localesDir: 'locales',
     processors: [],
     translator: undefined,
@@ -33,8 +35,12 @@ describe('clean', () => {
   beforeEach(() => {
     root = mkdtempSync(join(tmpdir(), 'yapyak-clean-'));
     writes = [];
-    mkdirSync(join(root, 'src'), { recursive: true });
-    mkdirSync(join(root, 'locales'), { recursive: true });
+    mkdirSync(join(root, 'src'), {
+      recursive: true,
+    });
+    mkdirSync(join(root, 'locales'), {
+      recursive: true,
+    });
     vi.spyOn(process.stdout, 'write').mockImplementation((chunk) => {
       writes.push(String(chunk));
       return true;
@@ -42,7 +48,10 @@ describe('clean', () => {
   });
 
   afterEach(() => {
-    rmSync(root, { force: true, recursive: true });
+    rmSync(root, {
+      force: true,
+      recursive: true,
+    });
     vi.restoreAllMocks();
   });
 
@@ -53,18 +62,30 @@ describe('clean', () => {
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
-      JSON.stringify({ 'src/app.ts': { Save: 'Spara' } }),
+      JSON.stringify({
+        'src/app.ts': {
+          Save: 'Spara',
+        },
+      }),
     );
-    const code = clean(makeConfig(), root, { write: false });
+    const code = clean(makeConfig(), root, {
+      write: false,
+    });
     expect(code).toBe(0);
     expect(writes.join('')).toContain('No orphan entries');
   });
 
   it('lists orphan entries without writing when `write` is `false`', () => {
     writeFileSync(join(root, 'src', 'app.ts'), '');
-    const before = JSON.stringify({ 'src/app.ts': { Save: 'Spara' } });
+    const before = JSON.stringify({
+      'src/app.ts': {
+        Save: 'Spara',
+      },
+    });
     writeFileSync(join(root, 'locales', 'sv.json'), before);
-    const code = clean(makeConfig(), root, { write: false });
+    const code = clean(makeConfig(), root, {
+      write: false,
+    });
     expect(code).toBe(0);
     expect(writes.join('')).toContain('orphan source');
     expect(readFileSync(join(root, 'locales', 'sv.json'), 'utf-8')).toBe(
@@ -76,9 +97,15 @@ describe('clean', () => {
     writeFileSync(join(root, 'src', 'app.ts'), '');
     writeFileSync(
       join(root, 'locales', 'sv.json'),
-      JSON.stringify({ 'src/app.ts': { Save: 'Spara' } }),
+      JSON.stringify({
+        'src/app.ts': {
+          Save: 'Spara',
+        },
+      }),
     );
-    const code = clean(makeConfig(), root, { write: true });
+    const code = clean(makeConfig(), root, {
+      write: true,
+    });
     expect(code).toBe(0);
     const after = JSON.parse(
       readFileSync(join(root, 'locales', 'sv.json'), 'utf-8'),

@@ -56,7 +56,10 @@ export function CodeBlock(props: CodeBlockProps) {
   return (
     <Box
       {...restProps}
-      className={[styles.CodeBlock, className]}
+      className={[
+        styles.CodeBlock,
+        className,
+      ]}
       data-bare={bare === true ? '' : undefined}
       data-language={language}
     >

@@ -34,7 +34,9 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
   );
 
   useEffect(() => {
-    if (headings.length === 0) return;
+    if (headings.length === 0) {
+      return;
+    }
 
     const intersecting = new Map<string, boolean>();
 
@@ -48,7 +50,9 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
       let lastAbove: string | undefined;
       for (const heading of headings) {
         const element = document.getElementById(heading.id);
-        if (!element) continue;
+        if (!element) {
+          continue;
+        }
         if (element.getBoundingClientRect().top < ACTIVE_LINE_PX) {
           lastAbove = heading.id;
         }
@@ -74,29 +78,43 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
 
     for (const heading of headings) {
       const element = document.getElementById(heading.id);
-      if (element) observer.observe(element);
+      if (element) {
+        observer.observe(element);
+      }
     }
 
     recompute();
 
     return () => observer.disconnect();
-  }, [headings]);
+  }, [
+    headings,
+  ]);
 
   useLayoutEffect(() => {
-    if (!activeId) return;
+    if (!activeId) {
+      return;
+    }
     const container = containerRef.current;
     const item = itemRefs.current.get(activeId);
-    if (!container || !item) return;
+    if (!container || !item) {
+      return;
+    }
 
     container.style.setProperty('--indicator-top', `${item.offsetTop}px`);
     container.style.setProperty('--indicator-height', `${item.offsetHeight}px`);
-  }, [activeId]);
+  }, [
+    activeId,
+  ]);
 
   useEffect(() => {
     const hash = window.location.hash.slice(1);
-    if (!hash) return;
+    if (!hash) {
+      return;
+    }
     const element = document.getElementById(hash);
-    if (!element) return;
+    if (!element) {
+      return;
+    }
 
     requestAnimationFrame(() => {
       const top =
@@ -104,7 +122,10 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
         window.scrollY -
         HEADER_OFFSET -
         SCROLL_GAP;
-      window.scrollTo({ behavior: 'auto', top });
+      window.scrollTo({
+        behavior: 'auto',
+        top,
+      });
       setActiveId(hash);
     });
   }, []);
@@ -113,28 +134,38 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     (event: MouseEvent<HTMLAnchorElement>, id: string) => {
       event.preventDefault();
       const element = document.getElementById(id);
-      if (!element) return;
+      if (!element) {
+        return;
+      }
 
       const top =
         element.getBoundingClientRect().top +
         window.scrollY -
         HEADER_OFFSET -
         SCROLL_GAP;
-      window.scrollTo({ behavior: 'smooth', top });
+      window.scrollTo({
+        behavior: 'smooth',
+        top,
+      });
       setActiveId(id);
       window.history.pushState(null, '', `#${id}`);
     },
     [],
   );
 
-  if (headings.length === 0) return null;
+  if (headings.length === 0) {
+    return null;
+  }
 
   return (
     <Box
       {...restProps}
       aria-label={t('On this page')}
       as="nav"
-      className={[styles.ContentAnchorNavigation, className]}
+      className={[
+        styles.ContentAnchorNavigation,
+        className,
+      ]}
       ref={containerRef}
     >
       <Box className={styles.Rail}>

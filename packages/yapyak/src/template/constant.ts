@@ -47,7 +47,10 @@ function resolveNode(
       if (value === undefined) {
         return node;
       }
-      return { kind: 'literal', value: String(value) };
+      return {
+        kind: 'literal',
+        value: String(value),
+      };
     }
     case 'plural':
       return {

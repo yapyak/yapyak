@@ -1,47 +1,47 @@
-export interface Config {
+export type Config = {
   collections: Record<string, CollectionConfig>;
   options?: OptionsRegistry;
   out: string;
   sourceUrl?: SourceUrlConfig;
   validate?: boolean;
-}
+};
 
-export interface SourceUrlConfig {
+export type SourceUrlConfig = {
   template: string;
   workspaceRoot: string;
-}
+};
 
 export type CollectionConfig = MarkdocSource | TypedocSource;
 
-export interface MarkdocSource {
+export type MarkdocSource = {
   root: string;
   source: 'markdoc';
-}
+};
 
-export interface TypedocSource {
+export type TypedocSource = {
   packages: TypedocPackage[];
   source: 'typedoc';
-}
+};
 
-export interface TypedocPackage {
+export type TypedocPackage = {
   collapsible?: boolean;
   expanded?: boolean;
   group?: string;
   name: string;
   root: string;
   subpaths?: string[];
-}
+};
 
 export type OptionsRegistry = Record<string, OptionsGroup>;
 
-export interface OptionsGroup {
+export type OptionsGroup = {
   default: string;
   label: string;
   options: OptionItem[];
-}
+};
 
-export interface OptionItem {
+export type OptionItem = {
   icon?: string;
   label: string;
   value: string;
-}
+};

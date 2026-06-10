@@ -12,7 +12,7 @@ import {
 /**
  * Options for {@link yapyak}.
  */
-export interface YapyakOptions {
+export type YapyakOptions = {
   /**
    * Locks the build to a single locale. Stripped at compile time.
    *
@@ -34,7 +34,7 @@ export interface YapyakOptions {
    * ```
    */
   fixedLocale?: string;
-}
+};
 
 /**
  * Creates the yapyak Vite plugin.
@@ -67,7 +67,9 @@ export interface YapyakOptions {
  * ```
  */
 export function yapyak(options: YapyakOptions = {}): Plugin[] {
-  const state = createState({ fixedLocale: options.fixedLocale });
+  const state = createState({
+    fixedLocale: options.fixedLocale,
+  });
   return [
     createConfigPlugin(state),
     createVirtualModulePlugin(state),

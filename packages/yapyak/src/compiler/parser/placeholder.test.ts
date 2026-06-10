@@ -5,39 +5,70 @@ import { parsePlaceholders } from './placeholder';
 describe('parsePlaceholders', () => {
   it('parses a simple placeholder', () => {
     const { issues, placeholders } = parsePlaceholders('Hi {name}');
-    expect(placeholders).toEqual([{ kind: 'simple', name: 'name' }]);
+    expect(placeholders).toEqual([
+      {
+        kind: 'simple',
+        name: 'name',
+      },
+    ]);
     expect(issues).toEqual([]);
   });
 
   it('parses multiple simple placeholders', () => {
     const { placeholders } = parsePlaceholders('Hi {name}, you have {count}');
     expect(placeholders).toEqual([
-      { kind: 'simple', name: 'name' },
-      { kind: 'simple', name: 'count' },
+      {
+        kind: 'simple',
+        name: 'name',
+      },
+      {
+        kind: 'simple',
+        name: 'count',
+      },
     ]);
   });
 
   it('parses a number placeholder', () => {
     const { issues, placeholders } = parsePlaceholders('{n, number, integer}');
-    expect(placeholders).toEqual([{ kind: 'number', name: 'n' }]);
+    expect(placeholders).toEqual([
+      {
+        kind: 'number',
+        name: 'n',
+      },
+    ]);
     expect(issues).toEqual([]);
   });
 
   it('parses a bare number placeholder', () => {
     const { issues, placeholders } = parsePlaceholders('{n, number}');
-    expect(placeholders).toEqual([{ kind: 'number', name: 'n' }]);
+    expect(placeholders).toEqual([
+      {
+        kind: 'number',
+        name: 'n',
+      },
+    ]);
     expect(issues).toEqual([]);
   });
 
   it('parses a `decimal` number placeholder', () => {
     const { issues, placeholders } = parsePlaceholders('{n, number, decimal}');
-    expect(placeholders).toEqual([{ kind: 'number', name: 'n' }]);
+    expect(placeholders).toEqual([
+      {
+        kind: 'number',
+        name: 'n',
+      },
+    ]);
     expect(issues).toEqual([]);
   });
 
   it('parses a `percent` number placeholder', () => {
     const { issues, placeholders } = parsePlaceholders('{p, number, percent}');
-    expect(placeholders).toEqual([{ kind: 'number', name: 'p' }]);
+    expect(placeholders).toEqual([
+      {
+        kind: 'number',
+        name: 'p',
+      },
+    ]);
     expect(issues).toEqual([]);
   });
 
@@ -45,29 +76,54 @@ describe('parsePlaceholders', () => {
     const { issues, placeholders } = parsePlaceholders(
       '{cost, number, currency EUR}',
     );
-    expect(placeholders).toEqual([{ kind: 'number', name: 'cost' }]);
+    expect(placeholders).toEqual([
+      {
+        kind: 'number',
+        name: 'cost',
+      },
+    ]);
     expect(issues).toEqual([]);
   });
 
   it('parses a date placeholder', () => {
     const { placeholders } = parsePlaceholders('{when, date, long}');
-    expect(placeholders).toEqual([{ kind: 'date', name: 'when' }]);
+    expect(placeholders).toEqual([
+      {
+        kind: 'date',
+        name: 'when',
+      },
+    ]);
   });
 
   it('parses a bare date placeholder', () => {
     const { issues, placeholders } = parsePlaceholders('{when, date}');
-    expect(placeholders).toEqual([{ kind: 'date', name: 'when' }]);
+    expect(placeholders).toEqual([
+      {
+        kind: 'date',
+        name: 'when',
+      },
+    ]);
     expect(issues).toEqual([]);
   });
 
   it('parses a time placeholder', () => {
     const { placeholders } = parsePlaceholders('{at, time, short}');
-    expect(placeholders).toEqual([{ kind: 'time', name: 'at' }]);
+    expect(placeholders).toEqual([
+      {
+        kind: 'time',
+        name: 'at',
+      },
+    ]);
   });
 
   it('parses a bare time placeholder', () => {
     const { issues, placeholders } = parsePlaceholders('{at, time}');
-    expect(placeholders).toEqual([{ kind: 'time', name: 'at' }]);
+    expect(placeholders).toEqual([
+      {
+        kind: 'time',
+        name: 'at',
+      },
+    ]);
     expect(issues).toEqual([]);
   });
 
@@ -75,7 +131,12 @@ describe('parsePlaceholders', () => {
     const { issues, placeholders } = parsePlaceholders(
       '{count, plural, one {# item} other {# items}}',
     );
-    expect(placeholders).toEqual([{ kind: 'plural', name: 'count' }]);
+    expect(placeholders).toEqual([
+      {
+        kind: 'plural',
+        name: 'count',
+      },
+    ]);
     expect(issues).toEqual([]);
   });
 
@@ -83,14 +144,24 @@ describe('parsePlaceholders', () => {
     const { placeholders } = parsePlaceholders(
       '{rank, selectordinal, one {#st} other {#th}}',
     );
-    expect(placeholders).toEqual([{ kind: 'selectordinal', name: 'rank' }]);
+    expect(placeholders).toEqual([
+      {
+        kind: 'selectordinal',
+        name: 'rank',
+      },
+    ]);
   });
 
   it('parses a select placeholder', () => {
     const { placeholders } = parsePlaceholders(
       '{gender, select, male {he} other {they}}',
     );
-    expect(placeholders).toEqual([{ kind: 'select', name: 'gender' }]);
+    expect(placeholders).toEqual([
+      {
+        kind: 'select',
+        name: 'gender',
+      },
+    ]);
   });
 
   it('extracts nested placeholders from select branches', () => {
@@ -98,8 +169,14 @@ describe('parsePlaceholders', () => {
       '{role, select, admin {Admin {name}} other {User {name}}}',
     );
     expect(placeholders).toEqual([
-      { kind: 'select', name: 'role' },
-      { kind: 'simple', name: 'name' },
+      {
+        kind: 'select',
+        name: 'role',
+      },
+      {
+        kind: 'simple',
+        name: 'name',
+      },
     ]);
     expect(issues).toEqual([]);
   });
@@ -109,8 +186,14 @@ describe('parsePlaceholders', () => {
       '{count, plural, one {# from {author}} other {# from {author}}}',
     );
     expect(placeholders).toEqual([
-      { kind: 'plural', name: 'count' },
-      { kind: 'simple', name: 'author' },
+      {
+        kind: 'plural',
+        name: 'count',
+      },
+      {
+        kind: 'simple',
+        name: 'author',
+      },
     ]);
   });
 
@@ -119,14 +202,25 @@ describe('parsePlaceholders', () => {
       '{count, plural, one {{g, select, male {he} other {they}} sent #} other {{g, select, male {he} other {they}} sent #}}',
     );
     expect(placeholders).toEqual([
-      { kind: 'plural', name: 'count' },
-      { kind: 'select', name: 'g' },
+      {
+        kind: 'plural',
+        name: 'count',
+      },
+      {
+        kind: 'select',
+        name: 'g',
+      },
     ]);
   });
 
   it('folds repeated placeholder names', () => {
     const { placeholders } = parsePlaceholders('{name} and {name} again');
-    expect(placeholders).toEqual([{ kind: 'simple', name: 'name' }]);
+    expect(placeholders).toEqual([
+      {
+        kind: 'simple',
+        name: 'name',
+      },
+    ]);
   });
 
   it('returns no placeholders for a source with none', () => {
@@ -145,29 +239,53 @@ describe('parsePlaceholders', () => {
 
   it('parses a placeholder wrapped in markup tags', () => {
     const { issues, placeholders } = parsePlaceholders('Hi <b>{name}</b>');
-    expect(placeholders).toEqual([{ kind: 'simple', name: 'name' }]);
+    expect(placeholders).toEqual([
+      {
+        kind: 'simple',
+        name: 'name',
+      },
+    ]);
     expect(issues).toEqual([]);
   });
 
   it('warns on a plural missing the `other` branch', () => {
     const { issues } = parsePlaceholders('{count, plural, one {# item}}');
-    expect(issues).toMatchObject([{ name: 'count', reason: 'missing-other' }]);
+    expect(issues).toMatchObject([
+      {
+        name: 'count',
+        reason: 'missing-other',
+      },
+    ]);
   });
 
   it('warns on a selectordinal missing the `other` branch', () => {
     const { issues } = parsePlaceholders('{rank, selectordinal, one {#st}}');
-    expect(issues).toMatchObject([{ name: 'rank', reason: 'missing-other' }]);
+    expect(issues).toMatchObject([
+      {
+        name: 'rank',
+        reason: 'missing-other',
+      },
+    ]);
   });
 
   it('warns on a select missing the `other` branch', () => {
     const { issues } = parsePlaceholders('{gender, select, male {he}}');
-    expect(issues).toMatchObject([{ name: 'gender', reason: 'missing-other' }]);
+    expect(issues).toMatchObject([
+      {
+        name: 'gender',
+        reason: 'missing-other',
+      },
+    ]);
   });
 
   it('warns on a number skeleton as unsupported', () => {
     const { issues } = parsePlaceholders('{amount, number, ::currency/EUR}');
     expect(issues).toMatchObject([
-      { feature: 'number skeleton', name: 'amount', reason: 'unsupported' },
+      {
+        feature: 'number skeleton',
+        name: 'amount',
+        reason: 'unsupported',
+      },
     ]);
   });
 
@@ -236,14 +354,22 @@ describe('parsePlaceholders', () => {
       '{count, plural, offset:1 one {#} other {# more}}',
     );
     expect(issues).toMatchObject([
-      { feature: 'plural offset', name: 'count', reason: 'unsupported' },
+      {
+        feature: 'plural offset',
+        name: 'count',
+        reason: 'unsupported',
+      },
     ]);
   });
 
   it('warns on apostrophe escaping as unsupported', () => {
     const { issues } = parsePlaceholders("Send '{count}' files");
     expect(issues).toMatchObject([
-      { feature: 'apostrophe escaping', name: '', reason: 'unsupported' },
+      {
+        feature: 'apostrophe escaping',
+        name: '',
+        reason: 'unsupported',
+      },
     ]);
   });
 

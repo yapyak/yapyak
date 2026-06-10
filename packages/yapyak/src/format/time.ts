@@ -1,7 +1,9 @@
 import { resolveFormatter } from '../formatter';
 import { runTrackers } from '../tracker';
 
-const DEFAULT: Intl.DateTimeFormatOptions = { timeStyle: 'short' };
+const DEFAULT: Intl.DateTimeFormatOptions = {
+  timeStyle: 'short',
+};
 
 export function formatTime(
   value: Date | number,

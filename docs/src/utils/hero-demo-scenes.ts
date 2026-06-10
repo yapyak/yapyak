@@ -1,21 +1,33 @@
 export type LocaleCode = 'sv' | 'es' | 'ja' | 'de';
 
-export interface Locale {
+export type Locale = {
   code: LocaleCode;
   filename: string;
-}
+};
 
 export const LOCALES: Locale[] = [
-  { code: 'sv', filename: 'sv.json' },
-  { code: 'es', filename: 'es.json' },
-  { code: 'ja', filename: 'ja.json' },
-  { code: 'de', filename: 'de.json' },
+  {
+    code: 'sv',
+    filename: 'sv.json',
+  },
+  {
+    code: 'es',
+    filename: 'es.json',
+  },
+  {
+    code: 'ja',
+    filename: 'ja.json',
+  },
+  {
+    code: 'de',
+    filename: 'de.json',
+  },
 ];
 
-export interface Scene {
+export type Scene = {
   source: string;
   translations: Record<LocaleCode, string>;
-}
+};
 
 export const INITIAL_SCENE: Scene = {
   source: 'Welcome',

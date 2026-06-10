@@ -2,9 +2,9 @@ import type { CodeGroupBlock } from '@yapyak/doc-extractor';
 
 import { CodeGroup } from '#components/code-group';
 
-export interface BlockRendererNodeCodeGroupProps {
+export type BlockRendererNodeCodeGroupProps = {
   block: CodeGroupBlock;
-}
+};
 
 export function BlockRendererNodeCodeGroup(
   props: BlockRendererNodeCodeGroupProps,

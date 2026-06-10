@@ -33,7 +33,9 @@ export function HeroDemo(props: HeroDemoProps) {
           }
         }
       },
-      { threshold: 0.3 },
+      {
+        threshold: 0.3,
+      },
     );
     observer.observe($element);
     return () => observer.disconnect();
@@ -44,7 +46,10 @@ export function HeroDemo(props: HeroDemoProps) {
   return (
     <Box
       {...restProps}
-      className={[styles.HeroDemo, className]}
+      className={[
+        styles.HeroDemo,
+        className,
+      ]}
       data-active={isActive}
       ref={element}
     >

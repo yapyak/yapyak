@@ -14,7 +14,7 @@
  * ```
  */
 // biome-ignore lint/suspicious/noEmptyInterface: yap yap yap
-export interface Register {}
+export type Register = {};
 
 /**
  * The locale. Narrows to a project's configured locales when {@link Register} is augmented; falls back to `string` otherwise.
@@ -28,6 +28,8 @@ export interface Register {}
  * }
  * ```
  */
-export type Locale = Register extends { Locale: infer L extends string }
+export type Locale = Register extends {
+  Locale: infer L extends string;
+}
   ? L
   : string;

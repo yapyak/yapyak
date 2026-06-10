@@ -8,7 +8,7 @@ import { createTranslator } from 'yapyak/translator';
 import { buildSystem, fetchWithRetry } from 'yapyak/translator/internal';
 
 /** Options for {@link ollama}. */
-export interface OllamaOptions {
+export type OllamaOptions = {
   /**
    * The maximum items per API call.
    *
@@ -63,7 +63,7 @@ export interface OllamaOptions {
   timeout?: number;
   /** The voice and tone guidance passed to the model. */
   voice?: string;
-}
+};
 
 const DEFAULT_MODEL = 'llama3.1';
 const DEFAULT_ENDPOINT = 'http://localhost:11434/api/generate';
@@ -140,10 +140,15 @@ export function ollama(options: OllamaOptions = {}): Translator {
       }
       return JSON.parse(text.trim()) as LocaleTranslations[];
     },
-    { batchSize, concurrency, context, id: 'ollama' },
+    {
+      batchSize,
+      concurrency,
+      context,
+      id: 'ollama',
+    },
   );
 }
 
-interface OllamaResponse {
+type OllamaResponse = {
   response?: string;
-}
+};

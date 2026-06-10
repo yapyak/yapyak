@@ -15,12 +15,15 @@ const CONFIG_FILES = [
   'yapyak.config.js',
 ];
 
-const ENV_FILES = ['.env.local', '.env'];
+const ENV_FILES = [
+  '.env.local',
+  '.env',
+];
 
-export interface LoadYapyakConfigResult {
+export type LoadYapyakConfigResult = {
   config: NormalizedYapyakConfig;
   configFile?: string;
-}
+};
 
 export async function loadYapyakConfig(
   cwd: string = process.cwd(),
@@ -36,7 +39,9 @@ export async function loadYapyakConfig(
     if (!existsSync(path)) {
       continue;
     }
-    const jiti = createJiti(cwd, { interopDefault: true });
+    const jiti = createJiti(cwd, {
+      interopDefault: true,
+    });
     let loaded: unknown;
     try {
       loaded = await jiti.import(path);
@@ -53,14 +58,23 @@ export async function loadYapyakConfig(
     }
     const raw =
       'default' in loaded
-        ? (loaded as { default: YapyakConfig }).default
+        ? (
+            loaded as {
+              default: YapyakConfig;
+            }
+          ).default
         : (loaded as YapyakConfig);
     if (typeof raw !== 'object' || raw === null) {
       throw new Error(
         `Invalid yapyak config default export in ${path}: expected an object, got ${raw === null ? 'null' : typeof raw}.`,
       );
     }
-    return { config: normalizeYapyakConfig(raw), configFile: path };
+    return {
+      config: normalizeYapyakConfig(raw),
+      configFile: path,
+    };
   }
-  return { config: normalizeYapyakConfig({}) };
+  return {
+    config: normalizeYapyakConfig({}),
+  };
 }

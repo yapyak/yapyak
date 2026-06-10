@@ -1,9 +1,9 @@
 import type { ReactElement } from 'react';
 
-export interface PackageManagerIconProps {
+export type PackageManagerIconProps = {
   name: string;
   size?: number;
-}
+};
 
 export function PackageManagerIcon(
   props: PackageManagerIconProps,

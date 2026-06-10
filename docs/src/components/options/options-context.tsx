@@ -11,10 +11,10 @@ import {
 
 import { doc } from 'virtual:doc-extractor';
 
-interface OptionsContextValue {
+type OptionsContextValue = {
   get: (groupId: string) => string;
   set: (groupId: string, value: string) => void;
-}
+};
 
 const OptionsContext = createContext<OptionsContextValue>({
   get: () => '',
@@ -29,6 +29,7 @@ export const OPTIONS_STORAGE_PREFIX = 'yapyak.option.';
 export const OPTIONS_PREPAINT_STYLE_ID = 'yapyak-options-prepaint';
 
 declare global {
+  // biome-ignore lint/style/useConsistentTypeDefinitions: needed
   interface Window {
     __yapyakOptions?: Record<string, string>;
   }
@@ -42,9 +43,9 @@ function readDefaults(registry: OptionsRegistry): Record<string, string> {
   return initial;
 }
 
-export interface OptionsProviderProps {
+export type OptionsProviderProps = {
   children: ReactNode;
-}
+};
 
 export function OptionsProvider(props: OptionsProviderProps) {
   const { children } = props;
@@ -57,7 +58,9 @@ export function OptionsProvider(props: OptionsProviderProps) {
     const stored = window.__yapyakOptions ?? {};
     setState((previous) => {
       let changed = false;
-      const next = { ...previous };
+      const next = {
+        ...previous,
+      };
       for (const [groupId, value] of Object.entries(stored)) {
         if (
           groupId in registry &&
@@ -72,15 +75,23 @@ export function OptionsProvider(props: OptionsProviderProps) {
       return changed ? next : previous;
     });
     document.getElementById(OPTIONS_PREPAINT_STYLE_ID)?.remove();
-  }, [registry]);
+  }, [
+    registry,
+  ]);
 
   const get = useCallback(
     (groupId: string) => state[groupId] ?? registry[groupId]?.default ?? '',
-    [registry, state],
+    [
+      registry,
+      state,
+    ],
   );
 
   const set = useCallback((groupId: string, value: string) => {
-    setState((previous) => ({ ...previous, [groupId]: value }));
+    setState((previous) => ({
+      ...previous,
+      [groupId]: value,
+    }));
     if (typeof window === 'undefined') {
       return;
     }
@@ -89,7 +100,16 @@ export function OptionsProvider(props: OptionsProviderProps) {
     } catch {}
   }, []);
 
-  return <OptionsContext value={{ get, set }}>{children}</OptionsContext>;
+  return (
+    <OptionsContext
+      value={{
+        get,
+        set,
+      }}
+    >
+      {children}
+    </OptionsContext>
+  );
 }
 
 export function buildPrepaintScript(registry: OptionsRegistry): string {

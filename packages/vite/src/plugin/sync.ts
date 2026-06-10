@@ -12,14 +12,19 @@ export function syncAll(state: State): void {
   }
   const { defaultLocale, locales } = getResolver(state).getProjectLocales();
   const result = syncLocaleFiles(
-    { filter: state.filter, messages: allMessages },
+    {
+      filter: state.filter,
+      messages: allMessages,
+    },
     {
       defaultLocale,
       locales,
       localesDir: getNormalized(state).localesDir,
     },
     state.projectRoot,
-    { yapyakDir: state.yapyakDir },
+    {
+      yapyakDir: state.yapyakDir,
+    },
   );
   emitSyncDiagnostics(state, result);
   getResolver(state).invalidateData();

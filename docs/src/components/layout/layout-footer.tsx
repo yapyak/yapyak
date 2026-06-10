@@ -13,7 +13,10 @@ export function LayoutFooter(props: LayoutFooterProps) {
     <Box
       {...restProps}
       as="footer"
-      className={[styles.LayoutFooter, className]}
+      className={[
+        styles.LayoutFooter,
+        className,
+      ]}
     />
   );
 }

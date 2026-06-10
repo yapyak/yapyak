@@ -13,7 +13,10 @@ export function ContentLayoutSidebar(props: ContentLayoutSidebarProps) {
     <Box
       {...restProps}
       as="aside"
-      className={[styles.ContentLayoutSidebar, className]}
+      className={[
+        styles.ContentLayoutSidebar,
+        className,
+      ]}
     />
   );
 }

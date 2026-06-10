@@ -82,7 +82,9 @@ export function createTranslator(
       requestToUnique[requestIndex] = uniqueIndex;
       uniqueTargetLocales.add(request.targetLocale);
     }
-    const targetLocales = [...uniqueTargetLocales].sort();
+    const targetLocales = [
+      ...uniqueTargetLocales,
+    ].sort();
 
     const chunks: TranslateRequest[][] = [];
     for (
@@ -112,7 +114,14 @@ export function createTranslator(
       }
     }
     const workerCount = Math.min(concurrency, chunks.length);
-    await Promise.all(Array.from({ length: workerCount }, () => worker()));
+    await Promise.all(
+      Array.from(
+        {
+          length: workerCount,
+        },
+        () => worker(),
+      ),
+    );
 
     const uniqueTranslations = chunkResults.flat();
     return requests.map((request, index) => {
@@ -149,7 +158,9 @@ export function createTranslator(
   }
 
   async function single(request: TranslateRequest): Promise<string> {
-    const [first] = await batch([request]);
+    const [first] = await batch([
+      request,
+    ]);
     return first ?? '';
   }
 
@@ -165,7 +176,9 @@ function toUniqueKey(request: TranslateRequest): string {
 }
 
 function toItem(request: TranslateRequest, level: ContextLevel): TranslateItem {
-  const item: TranslateItem = { source: request.source };
+  const item: TranslateItem = {
+    source: request.source,
+  };
   if (request.disambiguation !== undefined) {
     item.disambiguation = request.disambiguation;
   }
@@ -190,11 +203,11 @@ function toItem(request: TranslateRequest, level: ContextLevel): TranslateItem {
   return item;
 }
 
-interface BatchContext {
+type BatchContext = {
   items: TranslateItem[];
   sourceLocale: string;
   targetLocales: string[];
-}
+};
 
 function validateBatch(
   result: unknown,

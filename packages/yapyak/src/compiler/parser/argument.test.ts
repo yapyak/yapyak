@@ -55,7 +55,9 @@ describe('parseArguments', () => {
   it('parses a single placeholder with matching params', () => {
     const parsed = parseAll('call', 'placeholders.ts');
     expect(parsed[0]?.source).toBe('Hi {name}');
-    expect(parsed[0]?.params?.keys).toEqual(['name']);
+    expect(parsed[0]?.params?.keys).toEqual([
+      'name',
+    ]);
     expect(parsed[0]?.params?.kind).toBe('static');
     expect(parsed[0]?.diagnostics).toHaveLength(0);
   });
@@ -64,7 +66,10 @@ describe('parseArguments', () => {
     const parsed = parseAll('call', 'placeholders.ts');
     const summary = parsed[1];
     expect(summary?.source).toBe('Hi {name}, you have {count} messages');
-    expect(summary?.params?.keys.sort()).toEqual(['count', 'name']);
+    expect(summary?.params?.keys.sort()).toEqual([
+      'count',
+      'name',
+    ]);
     expect(summary?.diagnostics).toHaveLength(0);
   });
 
@@ -77,7 +82,9 @@ describe('parseArguments', () => {
   it('parses placeholder keys from plural blocks', () => {
     const [parsed] = parseAll('diagnostic', 'ypk202-invalid-plural.ts');
     expect(parsed?.source).toContain('plural');
-    expect(parsed?.params?.keys).toEqual(['count']);
+    expect(parsed?.params?.keys).toEqual([
+      'count',
+    ]);
   });
 
   it('parses the source from an inline `t.in(...)` call', () => {
@@ -90,7 +97,9 @@ describe('parseArguments', () => {
     const parsed = parseAll('call', 'scoped-inline.ts');
     const farewell = parsed[1];
     expect(farewell?.source).toBe('Bye {name}');
-    expect(farewell?.params?.keys).toEqual(['name']);
+    expect(farewell?.params?.keys).toEqual([
+      'name',
+    ]);
     expect(farewell?.diagnostics).toHaveLength(0);
   });
 
@@ -224,7 +233,9 @@ describe('parseArguments', () => {
       );
       expect(parsed.context).toBe('greeting');
       expect(parsed.source).toBe('Hi {name}');
-      expect(parsed.params?.keys).toEqual(['name']);
+      expect(parsed.params?.keys).toEqual([
+        'name',
+      ]);
       expect(parsed.diagnostics).toHaveLength(0);
     });
 

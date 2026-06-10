@@ -12,9 +12,9 @@ import { color, header, progressBar, spinner, symbol } from '../tui';
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-export interface AddOptions {
+export type AddOptions = {
   locales: string[];
-}
+};
 
 export async function add(
   config: Config,
@@ -35,11 +35,17 @@ export async function add(
     return 1;
   }
 
-  const invalid: Array<{ code: string; suggestion?: string }> = [];
+  const invalid: Array<{
+    code: string;
+    suggestion?: string;
+  }> = [];
   for (const code of locales) {
     const result = validateLocaleCode(code);
     if (!result.valid) {
-      invalid.push({ code, suggestion: result.suggestion });
+      invalid.push({
+        code,
+        suggestion: result.suggestion,
+      });
     }
   }
   if (invalid.length > 0) {
@@ -62,7 +68,9 @@ export async function add(
 
   const localesDirAbs = join(projectRoot, config.localesDir);
   if (!existsSync(localesDirAbs)) {
-    mkdirSync(localesDirAbs, { recursive: true });
+    mkdirSync(localesDirAbs, {
+      recursive: true,
+    });
   }
 
   const labelLine = locales.map((locale) => color.cyan(locale)).join(', ');
@@ -170,11 +178,16 @@ export async function add(
       },
       {
         defaultLocale: report.defaultLocale,
-        locales: [report.defaultLocale, locale],
+        locales: [
+          report.defaultLocale,
+          locale,
+        ],
         localesDir: config.localesDir,
       },
       projectRoot,
-      { examples: config.examples },
+      {
+        examples: config.examples,
+      },
     );
 
     totalDone += done;

@@ -1,13 +1,13 @@
 const ESC = '\x1b[';
 
-interface ColorPalette {
+type ColorPalette = {
   bold(text: string): string;
   cyan(text: string): string;
   dim(text: string): string;
   green(text: string): string;
   red(text: string): string;
   yellow(text: string): string;
-}
+};
 
 export const color: ColorPalette = {
   bold: (text) => `${ESC}1m${text}${ESC}0m`,

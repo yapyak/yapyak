@@ -19,7 +19,10 @@ export function FeatureSectionItem(props: FeatureSectionItemProps) {
     <Box
       {...restProps}
       as="li"
-      className={[styles.FeatureSectionItem, className]}
+      className={[
+        styles.FeatureSectionItem,
+        className,
+      ]}
     >
       <Box
         aria-hidden="true"

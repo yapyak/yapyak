@@ -1,13 +1,24 @@
 import { color } from './color';
 import { symbol } from './symbol';
 
-interface Spinner {
+type Spinner = {
   fail(text: string): void;
   succeed(text: string): void;
   update(text: string): void;
-}
+};
 
-const FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'] as const;
+const FRAMES = [
+  '⠋',
+  '⠙',
+  '⠹',
+  '⠸',
+  '⠼',
+  '⠴',
+  '⠦',
+  '⠧',
+  '⠇',
+  '⠏',
+] as const;
 
 export function spinner(initial: string): Spinner {
   let message = initial;

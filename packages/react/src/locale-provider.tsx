@@ -5,10 +5,10 @@ import { getLocale } from 'yapyak';
 import { subscribeLocale } from 'yapyak/internal';
 
 /** Props for {@link LocaleProvider}. */
-export interface LocaleProviderProps {
+export type LocaleProviderProps = {
   /** The children. */
   children: ReactNode;
-}
+};
 
 /**
  * Triggers descendant re-renders whenever the active locale changes.

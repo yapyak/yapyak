@@ -15,7 +15,10 @@ export function Colophon(props: ColophonProps) {
   return (
     <Box
       {...restProps}
-      className={[styles.Colophon, className]}
+      className={[
+        styles.Colophon,
+        className,
+      ]}
     >
       <Box
         alt=""

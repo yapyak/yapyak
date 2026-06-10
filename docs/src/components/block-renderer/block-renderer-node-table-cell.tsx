@@ -5,9 +5,9 @@ import { Box } from '#components/box';
 import { BlockRendererNode } from './block-renderer-node';
 import styles from './block-renderer-node-table-cell.module.css';
 
-export interface BlockRendererNodeTableCellProps {
+export type BlockRendererNodeTableCellProps = {
   block: TableCellBlock;
-}
+};
 
 export function BlockRendererNodeTableCell(
   props: BlockRendererNodeTableCellProps,

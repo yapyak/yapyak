@@ -4,10 +4,10 @@ import { Box } from '#components/box';
 
 import styles from './layout-header-menu-button.module.css';
 
-export interface LayoutHeaderMenuButtonProps {
+export type LayoutHeaderMenuButtonProps = {
   onToggle: () => void;
   open: boolean;
-}
+};
 
 export function LayoutHeaderMenuButton(props: LayoutHeaderMenuButtonProps) {
   const { open, onToggle } = props;

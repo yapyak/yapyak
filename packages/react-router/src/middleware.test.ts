@@ -6,9 +6,13 @@ import { middleware } from './middleware';
 describe('middleware', () => {
   it('returns the response returned by `next`', async () => {
     const request = new Request('http://example.com/');
-    const expected = new Response('body', { status: 200 });
+    const expected = new Response('body', {
+      status: 200,
+    });
     const result = await middleware(
-      { request } as Parameters<typeof middleware>[0],
+      {
+        request,
+      } as Parameters<typeof middleware>[0],
       async () => expected,
     );
     expect(result).toBe(expected);
@@ -18,7 +22,9 @@ describe('middleware', () => {
     const request = new Request('http://example.com/');
     const response = new Response('body');
     await middleware(
-      { request } as Parameters<typeof middleware>[0],
+      {
+        request,
+      } as Parameters<typeof middleware>[0],
       async () => {
         getPendingResponseHeaders().append('Set-Cookie', 'lang=sv');
         return response;

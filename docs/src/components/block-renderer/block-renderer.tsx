@@ -16,7 +16,10 @@ export function BlockRenderer(props: BlockRendererProps) {
   return (
     <Box
       {...restProps}
-      className={[styles.BlockRenderer, className]}
+      className={[
+        styles.BlockRenderer,
+        className,
+      ]}
     >
       {blocks.map((block, index) => (
         <BlockRendererNode

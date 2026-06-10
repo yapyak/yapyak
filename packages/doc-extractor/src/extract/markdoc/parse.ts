@@ -14,10 +14,10 @@ import Markdoc from '@markdoc/markdoc';
 import { nullify } from '../../nullify';
 import { slugify } from '../../slugify';
 
-interface ParsedContent {
+type ParsedContent = {
   blocks: Block[];
   frontmatter: Record<string, MetaValue>;
-}
+};
 
 export function parseMarkdoc(source: string): ParsedContent {
   const ast = Markdoc.parse(transformFenceLabels(source));
@@ -26,9 +26,16 @@ export function parseMarkdoc(source: string): ParsedContent {
     ? parseFrontmatter(frontmatterSource)
     : {};
   const transformed = Markdoc.transform(ast, markdocConfig);
-  const raw = Array.isArray(transformed) ? transformed : [transformed];
+  const raw = Array.isArray(transformed)
+    ? transformed
+    : [
+        transformed,
+      ];
   const blocks = raw.flatMap(toBlocks);
-  return { blocks, frontmatter };
+  return {
+    blocks,
+    frontmatter,
+  };
 }
 
 function transformFenceLabels(source: string): string {
@@ -45,10 +52,20 @@ export function parseFrontmatterOnly(
 
 function toBlocks(node: unknown): Block[] {
   if (typeof node === 'string') {
-    return [{ type: 'text', value: node }];
+    return [
+      {
+        type: 'text',
+        value: node,
+      },
+    ];
   }
   if (typeof node === 'number' || typeof node === 'boolean') {
-    return [{ type: 'text', value: String(node) }];
+    return [
+      {
+        type: 'text',
+        value: String(node),
+      },
+    ];
   }
   if (!Markdoc.Tag.isTag(node)) {
     return [];
@@ -72,7 +89,12 @@ function toBlocks(node: unknown): Block[] {
         },
       ];
     case 'p':
-      return [{ children, type: 'paragraph' }];
+      return [
+        {
+          children,
+          type: 'paragraph',
+        },
+      ];
     case 'a': {
       const href = getStringAttribute(node.attributes.href) ?? '';
       return [
@@ -102,34 +124,93 @@ function toBlocks(node: unknown): Block[] {
         },
       ];
     case 'li':
-      return [{ children, type: 'list-item' }];
+      return [
+        {
+          children,
+          type: 'list-item',
+        },
+      ];
     case 'em':
-      return [{ children, type: 'emphasis' }];
+      return [
+        {
+          children,
+          type: 'emphasis',
+        },
+      ];
     case 'strong':
-      return [{ children, type: 'strong' }];
+      return [
+        {
+          children,
+          type: 'strong',
+        },
+      ];
     case 's':
-      return [{ children, type: 'strikethrough' }];
+      return [
+        {
+          children,
+          type: 'strikethrough',
+        },
+      ];
     case 'code':
-      return [{ type: 'inline-code', value: extractText(node.children) }];
+      return [
+        {
+          type: 'inline-code',
+          value: extractText(node.children),
+        },
+      ];
     case 'blockquote':
-      return [{ children, type: 'quote' }];
+      return [
+        {
+          children,
+          type: 'quote',
+        },
+      ];
     case 'hr':
-      return [{ type: 'divider' }];
+      return [
+        {
+          type: 'divider',
+        },
+      ];
     case 'br':
-      return [{ type: 'line-break' }];
+      return [
+        {
+          type: 'line-break',
+        },
+      ];
     case 'table':
-      return [buildTable(node.children)];
+      return [
+        buildTable(node.children),
+      ];
     case 'thead':
     case 'tbody':
       return children;
     case 'tr':
-      return [{ children: children.filter(isCell), type: 'table-row' }];
+      return [
+        {
+          children: children.filter(isCell),
+          type: 'table-row',
+        },
+      ];
     case 'th':
-      return [{ children, header: true, type: 'table-cell' }];
+      return [
+        {
+          children,
+          header: true,
+          type: 'table-cell',
+        },
+      ];
     case 'td':
-      return [{ children, header: false, type: 'table-cell' }];
+      return [
+        {
+          children,
+          header: false,
+          type: 'table-cell',
+        },
+      ];
     case 'CodeBlock':
-      return [buildCodeBlock(node.attributes)];
+      return [
+        buildCodeBlock(node.attributes),
+      ];
     case 'CodeGroup':
       return [
         {
@@ -152,7 +233,13 @@ function toBlocks(node: unknown): Block[] {
         }
         branches[value] = child.children.flatMap(toBlocks);
       }
-      return [{ branches, group, type: 'switch' }];
+      return [
+        {
+          branches,
+          group,
+          type: 'switch',
+        },
+      ];
     }
     case 'When':
       return children;
@@ -166,7 +253,9 @@ function toBlocks(node: unknown): Block[] {
         },
       ];
     case 'Callout':
-      return [buildCallout(node.attributes, children)];
+      return [
+        buildCallout(node.attributes, children),
+      ];
     default:
       throw new Error(`parseMarkdoc: unknown tag "${node.name}"`);
   }
@@ -193,7 +282,11 @@ function buildTable(children: unknown[]): TableBlock {
     }
   }
 
-  return { body, head: nullify(head), type: 'table' };
+  return {
+    body,
+    head: nullify(head),
+    type: 'table',
+  };
 }
 
 function buildCodeBlock(attributes: Record<string, unknown>): CodeBlock {
@@ -227,9 +320,12 @@ function buildCallout(
   };
 }
 
-function isListItem(
-  block: Block,
-): block is Extract<Block, { type: 'list-item' }> {
+function isListItem(block: Block): block is Extract<
+  Block,
+  {
+    type: 'list-item';
+  }
+> {
   return block.type === 'list-item';
 }
 
@@ -261,13 +357,22 @@ const heading: Schema = {
       type: Number,
     },
   },
-  children: ['inline'],
+  children: [
+    'inline',
+  ],
   transform(node, config) {
     const attributes = node.transformAttributes(config);
     const children = node.transformChildren(config);
     const level = node.attributes.level as number;
     const slug = slugify(extractText(children));
-    return new Markdoc.Tag(`h${level}`, { ...attributes, id: slug }, children);
+    return new Markdoc.Tag(
+      `h${level}`,
+      {
+        ...attributes,
+        id: slug,
+      },
+      children,
+    );
   },
 };
 
@@ -287,7 +392,10 @@ const fence: Schema = {
     const rawLanguage = node.attributes.language as string | undefined;
     const content = node.attributes.content as string;
     const parsed = parseLanguageLabel(rawLanguage);
-    return new Markdoc.Tag('CodeBlock', { source: content, ...parsed });
+    return new Markdoc.Tag('CodeBlock', {
+      source: content,
+      ...parsed,
+    });
   },
 };
 
@@ -297,7 +405,12 @@ const callout: Schema = {
       type: String,
     },
     variant: {
-      matches: ['tip', 'info', 'warning', 'danger'],
+      matches: [
+        'tip',
+        'info',
+        'warning',
+        'danger',
+      ],
       required: true,
       type: String,
     },
@@ -358,11 +471,11 @@ const markdocConfig: Config = {
   },
 };
 
-interface ParsedLanguageLabel {
+type ParsedLanguageLabel = {
   label?: string;
   language?: string;
   path?: string;
-}
+};
 
 function parseLanguageLabel(raw: string | undefined): ParsedLanguageLabel {
   if (!raw) {
@@ -370,7 +483,9 @@ function parseLanguageLabel(raw: string | undefined): ParsedLanguageLabel {
   }
   const match = raw.match(/^(\S*)\s*\[([^\]]+)\]$/);
   if (!match) {
-    return { language: raw };
+    return {
+      language: raw,
+    };
   }
   const bracket = match[2] ?? '';
   const language = match[1];

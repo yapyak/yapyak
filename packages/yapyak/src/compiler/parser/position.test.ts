@@ -18,18 +18,33 @@ const fragment: Fragment = {
 
 describe('remapPosition', () => {
   it('returns the position unchanged when the fragment originalOffset is zero', () => {
-    const position = { column: 1, line: 1, offset: 0 };
+    const position = {
+      column: 1,
+      line: 1,
+      offset: 0,
+    };
     expect(remapPosition(position, fragment, 'source')).toEqual(position);
   });
 
   it('returns a position remapped into the original source when offset is non-zero', () => {
     const original = 'first\nsecond';
     const result = remapPosition(
-      { column: 1, line: 1, offset: 0 },
-      { ...fragment, originalOffset: 6 },
+      {
+        column: 1,
+        line: 1,
+        offset: 0,
+      },
+      {
+        ...fragment,
+        originalOffset: 6,
+      },
       original,
     );
-    expect(result).toEqual({ column: 1, line: 2, offset: 6 });
+    expect(result).toEqual({
+      column: 1,
+      line: 2,
+      offset: 6,
+    });
   });
 });
 

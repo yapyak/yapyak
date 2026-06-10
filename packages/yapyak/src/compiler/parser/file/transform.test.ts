@@ -32,7 +32,9 @@ describe('transformFile', () => {
   describe('single-locale elision', () => {
     it('elides `t(literal)` to a plain string literal', () => {
       const code = runTransform({
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source: "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
       });
       expect(code).toContain("'Hello'");
@@ -42,7 +44,9 @@ describe('transformFile', () => {
 
     it('elides `t` with simple placeholders to a template literal', () => {
       const code = runTransform({
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source: `
           import { t } from 'yapyak';
           export function greet(name) {
@@ -57,7 +61,9 @@ describe('transformFile', () => {
 
     it('elides multiple placeholders with named expressions', () => {
       const code = runTransform({
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source: `
           import { t } from 'yapyak';
           export function summary(name, count) {
@@ -71,7 +77,9 @@ describe('transformFile', () => {
 
     it('preserves arbitrary param expressions in template literal', () => {
       const code = runTransform({
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source: `
           import { t } from 'yapyak';
           export function greet() {
@@ -86,7 +94,9 @@ describe('transformFile', () => {
 
     it('emits `_pick` when source contains plurals', () => {
       const code = runTransform({
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source: `
           import { t } from 'yapyak';
           export function items(count) {
@@ -100,7 +110,9 @@ describe('transformFile', () => {
 
     it('clears the entire `t` import when no references remain', () => {
       const code = runTransform({
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source: "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
       });
       expect(code).not.toContain("from 'yapyak'");
@@ -108,7 +120,9 @@ describe('transformFile', () => {
 
     it('preserves `useLocale` specifier when still referenced', () => {
       const code = runTransform({
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source: `
           import { t, useLocale } from 'yapyak';
           export function Greeting() {
@@ -130,7 +144,12 @@ describe('transformFile', () => {
         "  return props.defaultLocale + t('Hello');",
         '}',
       ].join('\n');
-      const code = runTransform({ locales: ['en'], source });
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source,
+      });
       expect(code).toContain(
         "import type { LocaleProviderProps } from '@yapyak/react';",
       );
@@ -144,7 +163,12 @@ describe('transformFile', () => {
         "  return props.defaultLocale + t('Hello');",
         '}',
       ].join('\n');
-      const code = runTransform({ locales: ['en'], source });
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source,
+      });
       expect(code).toContain(
         "import { type LocaleProviderProps } from '@yapyak/react';",
       );
@@ -157,7 +181,13 @@ describe('transformFile', () => {
         "  return t.in('sv', 'Hi {name}', params);",
         '}',
       ].join('\n');
-      const code = runTransform({ locales: ['en', 'sv'], source });
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source,
+      });
       expect(code).toContain('type TParams');
       expect(code).toContain('_pick');
     });
@@ -167,7 +197,13 @@ describe('transformFile', () => {
         "import { t } from 'yapyak';",
         "export const x = t('Closing }} pattern with { open');",
       ].join('\n');
-      const code = runTransform({ locales: ['en', 'sv'], source });
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source,
+      });
       expect(code).not.toMatch(/"[^"]*\}\}"/);
       expect(code).not.toMatch(/"[^"]*\{[a-z]/);
       expect(code).toContain('\\u007d\\u007d');
@@ -179,7 +215,12 @@ describe('transformFile', () => {
         "import { t } from 'yapyak';",
         "export const x = t('Closing braces inside: }}');",
       ].join('\n');
-      const code = runTransform({ locales: ['en'], source });
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source,
+      });
       expect(code).not.toMatch(/"[^"]*\}\}"/);
       expect(code).toContain('\\u007d\\u007d');
     });
@@ -195,7 +236,12 @@ describe('transformFile', () => {
         "  return t('Hello');",
         '}',
       ].join('\n');
-      const code = runTransform({ locales: ['en'], source });
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source,
+      });
       expect(code).toContain("import { useLocale } from '@yapyak/react';");
       expect(code).toContain("import { anthropic } from '@yapyak/anthropic';");
     });
@@ -204,7 +250,10 @@ describe('transformFile', () => {
   describe('with locale scoping', () => {
     it('preserves an inline `t.in(expr)` locale into `_pick`', () => {
       const code = runTransform({
-        locales: ['en', 'sv'],
+        locales: [
+          'en',
+          'sv',
+        ],
         source: `
           import { t } from 'yapyak';
           declare const previewLocale: { value: string };
@@ -217,7 +266,10 @@ describe('transformFile', () => {
 
     it('preserves a chained `t.in(...).as(...)` locale into `_pick`', () => {
       const code = runTransform({
-        locales: ['en', 'sv'],
+        locales: [
+          'en',
+          'sv',
+        ],
         source: `
           import { t } from 'yapyak';
           export const x = t.in('sv').as('button', 'Save');
@@ -229,7 +281,10 @@ describe('transformFile', () => {
 
     it('preserves a scoped locale alongside placeholder params into `_pick`', () => {
       const code = runTransform({
-        locales: ['en', 'sv'],
+        locales: [
+          'en',
+          'sv',
+        ],
         source: `
           import { t } from 'yapyak';
           export function greet(name) {
@@ -244,7 +299,9 @@ describe('transformFile', () => {
 
     it('blocks single-locale elision when a locale is scoped', () => {
       const code = runTransform({
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source: `
           import { t } from 'yapyak';
           export const x = t.in('sv', 'Hello');
@@ -258,9 +315,16 @@ describe('transformFile', () => {
   describe('multi-locale', () => {
     it('emits `_pick` with catalog for `t`', () => {
       const code = runTransform({
-        locales: ['en', 'sv'],
+        locales: [
+          'en',
+          'sv',
+        ],
         source: "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
-        translations: { sv: { [hashId('Hello')]: 'Hej' } },
+        translations: {
+          sv: {
+            [hashId('Hello')]: 'Hej',
+          },
+        },
       });
       expect(code).toContain('_pick(');
       expect(code).toContain("en: 'Hello'");
@@ -269,7 +333,10 @@ describe('transformFile', () => {
 
     it('emits source as fallback when a translation is missing', () => {
       const code = runTransform({
-        locales: ['en', 'sv'],
+        locales: [
+          'en',
+          'sv',
+        ],
         source: "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
         translations: {},
       });
@@ -278,7 +345,10 @@ describe('transformFile', () => {
 
     it('preserves original params object as 2nd arg', () => {
       const code = runTransform({
-        locales: ['en', 'sv'],
+        locales: [
+          'en',
+          'sv',
+        ],
         source: `
           import { t } from 'yapyak';
           export function greet(name) {
@@ -292,7 +362,10 @@ describe('transformFile', () => {
 
     it('emits `_pick` from `yapyak/internal` as a separate import', () => {
       const code = runTransform({
-        locales: ['en', 'sv'],
+        locales: [
+          'en',
+          'sv',
+        ],
         source: "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
       });
       expect(code).toMatch(
@@ -303,7 +376,10 @@ describe('transformFile', () => {
 
     it('transforms local alias when user already has `_pick`', () => {
       const code = runTransform({
-        locales: ['en', 'sv'],
+        locales: [
+          'en',
+          'sv',
+        ],
         source: [
           "import { t } from 'yapyak';",
           'const _pick = "user-defined";',
@@ -320,7 +396,10 @@ describe('transformFile', () => {
 
     it('transforms alias further when both `_pick` and `_pick_$0` are taken', () => {
       const code = runTransform({
-        locales: ['en', 'sv'],
+        locales: [
+          'en',
+          'sv',
+        ],
         source: [
           "import { t } from 'yapyak';",
           'const _pick = 1;',
@@ -339,9 +418,16 @@ describe('transformFile', () => {
   describe('AST variants', () => {
     it('emits a string variant for a literal-only template', () => {
       const code = runTransform({
-        locales: ['en', 'sv'],
+        locales: [
+          'en',
+          'sv',
+        ],
         source: "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
-        translations: { sv: { [hashId('Hello')]: 'Hej' } },
+        translations: {
+          sv: {
+            [hashId('Hello')]: 'Hej',
+          },
+        },
       });
       expect(code).toContain("en: 'Hello'");
       expect(code).toContain("sv: 'Hej'");
@@ -350,7 +436,10 @@ describe('transformFile', () => {
 
     it('emits builder-call AST for a template with a placeholder', () => {
       const code = runTransform({
-        locales: ['en', 'sv'],
+        locales: [
+          'en',
+          'sv',
+        ],
         source: `
           import { t } from 'yapyak';
           export function greet(name) {
@@ -370,7 +459,9 @@ describe('transformFile', () => {
 
     it('emits _plural and _count for a plural template', () => {
       const code = runTransform({
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source: `
           import { t } from 'yapyak';
           export function items(count) {
@@ -391,7 +482,9 @@ describe('transformFile', () => {
 
     it('emits _number for a number template', () => {
       const code = runTransform({
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source: `
           import { t } from 'yapyak';
           export function show(value) {
@@ -408,7 +501,9 @@ describe('transformFile', () => {
 
     it('emits _date for a date template', () => {
       const code = runTransform({
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source: `
           import { t } from 'yapyak';
           export function show(when) {
@@ -424,7 +519,10 @@ describe('transformFile', () => {
 
     it('does not import factories when no template needs them', () => {
       const code = runTransform({
-        locales: ['en', 'sv'],
+        locales: [
+          'en',
+          'sv',
+        ],
         source: "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
       });
       expect(code).not.toContain('_literal');
@@ -433,7 +531,9 @@ describe('transformFile', () => {
 
     it('combines pick + multiple factory imports in one statement', () => {
       const code = runTransform({
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source: `
           import { t } from 'yapyak';
           export function items(count) {
@@ -450,7 +550,9 @@ describe('transformFile', () => {
   describe('with bare-string elision in templates', () => {
     it('elides JSX text `<p>{t("Hello")}</p>` to `<p>Hello</p>`', () => {
       const code = runTransform({
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source: [
           "import { t } from 'yapyak';",
           'export function App() {',
@@ -464,7 +566,9 @@ describe('transformFile', () => {
 
     it('elides JSX attribute `aria-label={t("Save")}` to `aria-label="Save"`', () => {
       const code = runTransform({
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source: [
           "import { t } from 'yapyak';",
           'export function App() {',
@@ -478,7 +582,9 @@ describe('transformFile', () => {
 
     it('emits quoted JSX text when source contains `{` or `<`', () => {
       const code = runTransform({
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source: [
           "import { t } from 'yapyak';",
           'export function App() {',
@@ -491,7 +597,9 @@ describe('transformFile', () => {
 
     it('emits expression-form JSX attribute when value contains `"`', () => {
       const code = runTransform({
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source: [
           "import { t } from 'yapyak';",
           'export function App() {',
@@ -504,7 +612,10 @@ describe('transformFile', () => {
 
     it('preserves `_pick` wrappers in multi-locale without bare elision', () => {
       const code = runTransform({
-        locales: ['en', 'sv'],
+        locales: [
+          'en',
+          'sv',
+        ],
         source: [
           "import { t } from 'yapyak';",
           'export function App() {',
@@ -526,7 +637,9 @@ describe('transformFile', () => {
       const result = transformFile({
         extracted,
         fileId,
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source,
         translations: {},
       });
@@ -544,19 +657,25 @@ describe('transformFile', () => {
       const result = transformFile({
         extracted,
         fileId,
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source,
         sourcePath,
         translations: {},
       });
-      expect(result.map.sources).toEqual([sourcePath]);
+      expect(result.map.sources).toEqual([
+        sourcePath,
+      ]);
     });
   });
 
   describe('`t.as()` rewrites', () => {
     it('transforms `t.as` to a bare literal in single-locale mode', () => {
       const code = runTransform({
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source:
           "import { t } from 'yapyak';\nexport const x = t.as('button', 'Save');\n",
       });
@@ -566,10 +685,17 @@ describe('transformFile', () => {
 
     it('transforms `t.as` to `_pick` and looks up by the context-disambiguated message id', () => {
       const code = runTransform({
-        locales: ['en', 'sv'],
+        locales: [
+          'en',
+          'sv',
+        ],
         source:
           "import { t } from 'yapyak';\nexport const x = t.as('button', 'Save');\n",
-        translations: { sv: { [hashId('Save', 'button')]: 'Spara' } },
+        translations: {
+          sv: {
+            [hashId('Save', 'button')]: 'Spara',
+          },
+        },
       });
       expect(code).toContain('_pick(');
       expect(code).not.toContain('t.as(');
@@ -578,7 +704,9 @@ describe('transformFile', () => {
 
     it('writes params from the third arg of `t.as`', () => {
       const code = runTransform({
-        locales: ['en'],
+        locales: [
+          'en',
+        ],
         source:
           "import { t } from 'yapyak';\nexport function x(name) {\n  return t.as('greeting', 'Hi {name}', { name });\n}\n",
       });

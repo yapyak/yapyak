@@ -9,35 +9,62 @@ describe('parseTemplate', () => {
 
   it('parses plain text as a single literal node', () => {
     expect(parseTemplate('Hello world').template).toEqual([
-      { kind: 'literal', value: 'Hello world' },
+      {
+        kind: 'literal',
+        value: 'Hello world',
+      },
     ]);
   });
 
   it('parses a single placeholder', () => {
     expect(parseTemplate('{name}').template).toEqual([
-      { kind: 'placeholder', name: 'name' },
+      {
+        kind: 'placeholder',
+        name: 'name',
+      },
     ]);
   });
 
   it('trims whitespace inside a placeholder name', () => {
     expect(parseTemplate('{  name  }').template).toEqual([
-      { kind: 'placeholder', name: 'name' },
+      {
+        kind: 'placeholder',
+        name: 'name',
+      },
     ]);
   });
 
   it('parses literal-placeholder-literal sequence', () => {
     expect(parseTemplate('Hi {name}!').template).toEqual([
-      { kind: 'literal', value: 'Hi ' },
-      { kind: 'placeholder', name: 'name' },
-      { kind: 'literal', value: '!' },
+      {
+        kind: 'literal',
+        value: 'Hi ',
+      },
+      {
+        kind: 'placeholder',
+        name: 'name',
+      },
+      {
+        kind: 'literal',
+        value: '!',
+      },
     ]);
   });
 
   it('parses multiple distinct placeholders', () => {
     expect(parseTemplate('{a} {b}').template).toEqual([
-      { kind: 'placeholder', name: 'a' },
-      { kind: 'literal', value: ' ' },
-      { kind: 'placeholder', name: 'b' },
+      {
+        kind: 'placeholder',
+        name: 'a',
+      },
+      {
+        kind: 'literal',
+        value: ' ',
+      },
+      {
+        kind: 'placeholder',
+        name: 'b',
+      },
     ]);
   });
 
@@ -58,11 +85,17 @@ describe('parseTemplate', () => {
       }
       expect(node.name).toBe('count');
       expect(node.type).toBe('cardinal');
-      expect(node.branches['one']).toEqual([
-        { kind: 'literal', value: 'one item' },
+      expect(node.branches.one).toEqual([
+        {
+          kind: 'literal',
+          value: 'one item',
+        },
       ]);
-      expect(node.branches['other']).toEqual([
-        { kind: 'literal', value: 'many items' },
+      expect(node.branches.other).toEqual([
+        {
+          kind: 'literal',
+          value: 'many items',
+        },
       ]);
     });
 
@@ -86,7 +119,12 @@ describe('parseTemplate', () => {
       if (node?.kind !== 'plural') {
         return;
       }
-      expect(node.branches['=0']).toEqual([{ kind: 'literal', value: 'none' }]);
+      expect(node.branches['=0']).toEqual([
+        {
+          kind: 'literal',
+          value: 'none',
+        },
+      ]);
     });
 
     it('parses `#` inside a plural branch as a CountNode', () => {
@@ -95,9 +133,14 @@ describe('parseTemplate', () => {
       if (node?.kind !== 'plural') {
         return;
       }
-      expect(node.branches['other']).toEqual([
-        { kind: 'count' },
-        { kind: 'literal', value: ' items' },
+      expect(node.branches.other).toEqual([
+        {
+          kind: 'count',
+        },
+        {
+          kind: 'literal',
+          value: ' items',
+        },
       ]);
     });
 
@@ -109,10 +152,18 @@ describe('parseTemplate', () => {
       if (node?.kind !== 'plural') {
         return;
       }
-      expect(node.branches['one']).toEqual([
-        { kind: 'count' },
-        { kind: 'literal', value: ' message from ' },
-        { kind: 'placeholder', name: 'name' },
+      expect(node.branches.one).toEqual([
+        {
+          kind: 'count',
+        },
+        {
+          kind: 'literal',
+          value: ' message from ',
+        },
+        {
+          kind: 'placeholder',
+          name: 'name',
+        },
       ]);
     });
 
@@ -122,7 +173,10 @@ describe('parseTemplate', () => {
       expect(diagnostics).toEqual([
         {
           name: 'count',
-          range: { end: source.length, start: 0 },
+          range: {
+            end: source.length,
+            start: 0,
+          },
           reason: 'missing-other',
         },
       ]);
@@ -135,7 +189,10 @@ describe('parseTemplate', () => {
       expect(diagnostics).toContainEqual({
         feature: 'plural offset',
         name: 'count',
-        range: { end: offsetStart + 'offset:1'.length, start: offsetStart },
+        range: {
+          end: offsetStart + 'offset:1'.length,
+          start: offsetStart,
+        },
         reason: 'unsupported',
       });
     });
@@ -152,9 +209,17 @@ describe('parseTemplate', () => {
         return;
       }
       expect(node.name).toBe('gender');
-      expect(node.branches['male']).toEqual([{ kind: 'literal', value: 'he' }]);
-      expect(node.branches['other']).toEqual([
-        { kind: 'literal', value: 'they' },
+      expect(node.branches.male).toEqual([
+        {
+          kind: 'literal',
+          value: 'he',
+        },
+      ]);
+      expect(node.branches.other).toEqual([
+        {
+          kind: 'literal',
+          value: 'they',
+        },
       ]);
     });
 
@@ -166,9 +231,11 @@ describe('parseTemplate', () => {
       if (plural?.kind !== 'plural') {
         return;
       }
-      const branch = plural.branches['one'];
+      const branch = plural.branches.one;
       expect(branch?.[0]?.kind).toBe('select');
-      expect(branch?.[2]).toEqual({ kind: 'count' });
+      expect(branch?.[2]).toEqual({
+        kind: 'count',
+      });
     });
 
     it('emits missing-other when the select has no `other` branch', () => {
@@ -177,7 +244,10 @@ describe('parseTemplate', () => {
       expect(diagnostics).toEqual([
         {
           name: 'gender',
-          range: { end: source.length, start: 0 },
+          range: {
+            end: source.length,
+            start: 0,
+          },
           reason: 'missing-other',
         },
       ]);
@@ -187,7 +257,10 @@ describe('parseTemplate', () => {
   describe('count', () => {
     it('treats `#` outside any plural branch as a literal', () => {
       expect(parseTemplate('# hash').template).toEqual([
-        { kind: 'literal', value: '# hash' },
+        {
+          kind: 'literal',
+          value: '# hash',
+        },
       ]);
     });
   });
@@ -196,14 +269,24 @@ describe('parseTemplate', () => {
     it('parses `number` with no style as decimal default', () => {
       const { template } = parseTemplate('{value, number}');
       expect(template).toEqual([
-        { kind: 'number', name: 'value', options: {} },
+        {
+          kind: 'number',
+          name: 'value',
+          options: {},
+        },
       ]);
     });
 
     it('parses `number, percent`', () => {
       const { template } = parseTemplate('{value, number, percent}');
       expect(template).toEqual([
-        { kind: 'number', name: 'value', options: { style: 'percent' } },
+        {
+          kind: 'number',
+          name: 'value',
+          options: {
+            style: 'percent',
+          },
+        },
       ]);
     });
 
@@ -213,7 +296,9 @@ describe('parseTemplate', () => {
         {
           kind: 'number',
           name: 'value',
-          options: { maximumFractionDigits: 0 },
+          options: {
+            maximumFractionDigits: 0,
+          },
         },
       ]);
     });
@@ -224,7 +309,10 @@ describe('parseTemplate', () => {
         {
           kind: 'number',
           name: 'value',
-          options: { currency: 'SEK', style: 'currency' },
+          options: {
+            currency: 'SEK',
+            style: 'currency',
+          },
         },
       ]);
     });
@@ -238,7 +326,10 @@ describe('parseTemplate', () => {
         {
           feature: 'number skeleton',
           name: 'amount',
-          range: { end: bodyEnd, start: bodyStart },
+          range: {
+            end: bodyEnd,
+            start: bodyStart,
+          },
           reason: 'unsupported',
         },
       ]);
@@ -253,7 +344,10 @@ describe('parseTemplate', () => {
         {
           feature: 'currency without a code',
           name: 'cost',
-          range: { end: bodyEnd, start: bodyStart },
+          range: {
+            end: bodyEnd,
+            start: bodyStart,
+          },
           reason: 'unsupported',
         },
       ]);
@@ -269,7 +363,11 @@ describe('parseTemplate', () => {
     it('parses `date` with style', () => {
       const { template } = parseTemplate('{when, date, short}');
       expect(template).toEqual([
-        { kind: 'date', name: 'when', style: 'short' },
+        {
+          kind: 'date',
+          name: 'when',
+          style: 'short',
+        },
       ]);
     });
 
@@ -277,7 +375,11 @@ describe('parseTemplate', () => {
       const source = '{when, date, weird}';
       const { diagnostics, template } = parseTemplate(source);
       expect(template).toEqual([
-        { kind: 'date', name: 'when', style: 'medium' },
+        {
+          kind: 'date',
+          name: 'when',
+          style: 'medium',
+        },
       ]);
       const bodyStart = source.indexOf('weird');
       const bodyEnd = bodyStart + 'weird'.length;
@@ -285,7 +387,10 @@ describe('parseTemplate', () => {
         {
           feature: 'date skeleton or custom pattern',
           name: 'when',
-          range: { end: bodyEnd, start: bodyStart },
+          range: {
+            end: bodyEnd,
+            start: bodyStart,
+          },
           reason: 'unsupported',
         },
       ]);
@@ -294,7 +399,11 @@ describe('parseTemplate', () => {
     it('treats bare `date` as medium with no diagnostic', () => {
       const { diagnostics, template } = parseTemplate('{when, date}');
       expect(template).toEqual([
-        { kind: 'date', name: 'when', style: 'medium' },
+        {
+          kind: 'date',
+          name: 'when',
+          style: 'medium',
+        },
       ]);
       expect(diagnostics).toEqual([]);
     });
@@ -303,7 +412,13 @@ describe('parseTemplate', () => {
   describe('time', () => {
     it('parses `time` with style', () => {
       const { template } = parseTemplate('{when, time, full}');
-      expect(template).toEqual([{ kind: 'time', name: 'when', style: 'full' }]);
+      expect(template).toEqual([
+        {
+          kind: 'time',
+          name: 'when',
+          style: 'full',
+        },
+      ]);
     });
   });
 
@@ -335,7 +450,10 @@ describe('parseTemplate', () => {
       expect(diagnostics).toContainEqual({
         feature: 'apostrophe escaping',
         name: '',
-        range: { end: start + 2, start },
+        range: {
+          end: start + 2,
+          start,
+        },
         reason: 'unsupported',
       });
     });
@@ -348,7 +466,10 @@ describe('parseTemplate', () => {
       const start = source.indexOf('}');
       expect(diagnostics).toContainEqual({
         message: `unbalanced '}' at index ${start}: missing opening '{'`,
-        range: { end: start + 1, start },
+        range: {
+          end: start + 1,
+          start,
+        },
         reason: 'malformed',
       });
     });
@@ -359,7 +480,10 @@ describe('parseTemplate', () => {
       const start = source.indexOf('{');
       expect(diagnostics).toContainEqual({
         message: `unbalanced '{' at index ${start}: missing closing '}'`,
-        range: { end: source.length, start },
+        range: {
+          end: source.length,
+          start,
+        },
         reason: 'malformed',
       });
     });
@@ -370,7 +494,10 @@ describe('parseTemplate', () => {
       const start = source.indexOf('{');
       expect(diagnostics).toContainEqual({
         message: 'empty argument',
-        range: { end: start + 2, start },
+        range: {
+          end: start + 2,
+          start,
+        },
         reason: 'malformed',
       });
     });
@@ -381,7 +508,10 @@ describe('parseTemplate', () => {
       const start = source.indexOf('mystery');
       expect(diagnostics).toContainEqual({
         message: 'unknown argument type "mystery"',
-        range: { end: start + 'mystery'.length, start },
+        range: {
+          end: start + 'mystery'.length,
+          start,
+        },
         reason: 'malformed',
       });
     });
@@ -393,7 +523,10 @@ describe('parseTemplate', () => {
       const end = source.indexOf('}}') + 2;
       expect(diagnostics).toContainEqual({
         name: 'n',
-        range: { end, start },
+        range: {
+          end,
+          start,
+        },
         reason: 'missing-other',
       });
     });
@@ -405,7 +538,10 @@ describe('parseTemplate', () => {
       const end = source.indexOf('}}') + 2;
       expect(diagnostics).toContainEqual({
         name: 'g',
-        range: { end, start },
+        range: {
+          end,
+          start,
+        },
         reason: 'missing-other',
       });
     });
@@ -417,7 +553,10 @@ describe('parseTemplate', () => {
       expect(diagnostics).toContainEqual({
         feature: 'plural offset',
         name: 'c',
-        range: { end: start + 'offset:2'.length, start },
+        range: {
+          end: start + 'offset:2'.length,
+          start,
+        },
         reason: 'unsupported',
       });
     });
@@ -429,7 +568,10 @@ describe('parseTemplate', () => {
       expect(diagnostics).toContainEqual({
         feature: 'time skeleton or custom pattern',
         name: 'when',
-        range: { end: start + 'weird'.length, start },
+        range: {
+          end: start + 'weird'.length,
+          start,
+        },
         reason: 'unsupported',
       });
     });
@@ -441,7 +583,10 @@ describe('parseTemplate', () => {
       expect(diagnostics).toContainEqual({
         feature: 'number style "#,##0.00"',
         name: 'n',
-        range: { end: start + '#,##0.00'.length, start },
+        range: {
+          end: start + '#,##0.00'.length,
+          start,
+        },
         reason: 'unsupported',
       });
     });
@@ -450,7 +595,12 @@ describe('parseTemplate', () => {
   describe('unknown format kind', () => {
     it('falls back to a plain placeholder for an unknown kind', () => {
       const { template } = parseTemplate('{value, weird, stuff}');
-      expect(template).toEqual([{ kind: 'placeholder', name: 'value' }]);
+      expect(template).toEqual([
+        {
+          kind: 'placeholder',
+          name: 'value',
+        },
+      ]);
     });
   });
 });

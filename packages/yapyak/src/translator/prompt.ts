@@ -1,7 +1,7 @@
-export interface BuildSystemOptions {
+export type BuildSystemOptions = {
   glossary?: Record<string, Record<string, string>>;
   voice?: string;
-}
+};
 
 export function buildSystem(
   sourceLocale: string,

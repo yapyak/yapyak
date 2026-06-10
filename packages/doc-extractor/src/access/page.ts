@@ -1,15 +1,15 @@
 import type { Manifest, Page, SidebarLink, SidebarNode } from '../build';
 
-export interface AdjacentPages {
+export type AdjacentPages = {
   nextPage?: Page;
   previousPage?: Page;
-}
+};
 
-export interface PageEntry {
+export type PageEntry = {
   collection: string;
   page: Page;
   path: string;
-}
+};
 
 export function getPage(
   manifest: Manifest,
@@ -44,7 +44,11 @@ export function* getAllPages(manifest: Manifest): Iterable<PageEntry> {
     manifest.collections,
   )) {
     for (const [path, page] of Object.entries(collectionData.pages)) {
-      yield { collection, page, path };
+      yield {
+        collection,
+        page,
+        path,
+      };
     }
   }
 }

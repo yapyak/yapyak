@@ -18,7 +18,10 @@ export function ContentNavigation(props: ContentNavigationProps) {
     <Box
       {...restProps}
       as="nav"
-      className={[styles.ContentNavigation, className]}
+      className={[
+        styles.ContentNavigation,
+        className,
+      ]}
     >
       {tree.map((node) =>
         node.type === 'group' ? (

@@ -16,7 +16,7 @@ import { formatTime } from './time';
  * @remarks
  * Methods format for the active locale from {@link getLocale}. Scope a fixed locale with {@link Format.in} — option types stay pure `Intl.*Options`, with no `locale` field.
  */
-export interface Format {
+export type Format = {
   /**
    * Formats a currency amount for the active locale.
    *
@@ -118,7 +118,7 @@ export interface Format {
    * @param options - Native `Intl.DateTimeFormatOptions`.
    */
   time(value: Date | number, options?: Intl.DateTimeFormatOptions): string;
-}
+};
 
 /**
  * Locale-aware formatting backed by `Intl`.

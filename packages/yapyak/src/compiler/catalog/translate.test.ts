@@ -20,12 +20,17 @@ describe('autoTranslate', () => {
 
   beforeEach(() => {
     projectRoot = mkdtempSync(join(tmpdir(), 'yapyak-auto-translate-'));
-    mkdirSync(join(projectRoot, 'locales'), { recursive: true });
+    mkdirSync(join(projectRoot, 'locales'), {
+      recursive: true,
+    });
     localePath = join(projectRoot, 'locales', 'sv.json');
   });
 
   afterEach(() => {
-    rmSync(projectRoot, { force: true, recursive: true });
+    rmSync(projectRoot, {
+      force: true,
+      recursive: true,
+    });
   });
 
   it('blocks the write when locale file is deleted mid-translation', async () => {
@@ -51,8 +56,16 @@ describe('autoTranslate', () => {
             callSiteContext: {},
             fileId: 'src/a.tsx',
             range: {
-              end: { column: 10, line: 1, offset: 10 },
-              start: { column: 1, line: 1, offset: 0 },
+              end: {
+                column: 10,
+                line: 1,
+                offset: 10,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
             },
           },
         ],
@@ -62,13 +75,25 @@ describe('autoTranslate', () => {
     ];
 
     const promise = autoTranslate(
-      { messages, translator },
-      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir: 'locales' },
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
       projectRoot,
     );
 
     rmSync(localePath);
-    resolveTranslation(['Hej']);
+    resolveTranslation([
+      'Hej',
+    ]);
     await promise;
 
     expect(existsSync(localePath)).toBe(false);

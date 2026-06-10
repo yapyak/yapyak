@@ -27,8 +27,11 @@ export function ContentNavigationGroupCollapsible(
   return (
     <Box
       {...restProps}
-      className={[styles.ContentNavigationGroup, className]}
-      data-collapsible
+      className={[
+        styles.ContentNavigationGroup,
+        className,
+      ]}
+      data-collapsible={true}
       data-depth={depth}
     >
       <Box

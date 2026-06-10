@@ -5,7 +5,9 @@ export function writeRegister(locales: string[], yapyakDir: string): void {
   if (locales.length === 0) {
     return;
   }
-  mkdirSync(yapyakDir, { recursive: true });
+  mkdirSync(yapyakDir, {
+    recursive: true,
+  });
   const localeUnion = locales.map((locale) => `'${locale}'`).join(' | ');
   const content = [
     `declare module 'yapyak' {`,

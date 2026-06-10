@@ -13,7 +13,10 @@ export function Wordmark(props: WordmarkProps) {
     <Box
       {...restProps}
       as="span"
-      className={[styles.Wordmark, className]}
+      className={[
+        styles.Wordmark,
+        className,
+      ]}
     >
       <Box
         as="span"

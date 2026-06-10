@@ -7,9 +7,9 @@ import { Box } from '#components/box';
 import { BlockRendererNode } from './block-renderer-node';
 import styles from './block-renderer-node-link.module.css';
 
-export interface BlockRendererNodeLinkProps {
+export type BlockRendererNodeLinkProps = {
   block: LinkBlock;
-}
+};
 
 export function BlockRendererNodeLink(props: BlockRendererNodeLinkProps) {
   const { block } = props;

@@ -5,9 +5,9 @@ import { Box } from '#components/box';
 import { BlockRendererNode } from './block-renderer-node';
 import styles from './block-renderer-node-emphasis.module.css';
 
-export interface BlockRendererNodeEmphasisProps {
+export type BlockRendererNodeEmphasisProps = {
   block: EmphasisBlock;
-}
+};
 
 export function BlockRendererNodeEmphasis(
   props: BlockRendererNodeEmphasisProps,

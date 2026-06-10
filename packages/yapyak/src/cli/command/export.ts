@@ -7,11 +7,11 @@ import { color, symbol } from '../tui';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 
-export interface ExportOptions {
+export type ExportOptions = {
   locales: string[];
   out?: string;
   split: boolean;
-}
+};
 
 type Snapshot = Record<string, LocaleFile>;
 
@@ -69,10 +69,14 @@ export function exportCommand(
   if (split) {
     const outputDirectory = resolve(projectRoot, out as string);
     if (!existsSync(outputDirectory)) {
-      mkdirSync(outputDirectory, { recursive: true });
+      mkdirSync(outputDirectory, {
+        recursive: true,
+      });
     }
     for (const [locale, data] of Object.entries(snapshot)) {
-      const wrapped = { [locale]: data };
+      const wrapped = {
+        [locale]: data,
+      };
       writeFileSync(
         join(outputDirectory, `${locale}.json`),
         stringifyCanonical(wrapped),
@@ -90,7 +94,9 @@ export function exportCommand(
     return 0;
   }
   const outPath = resolve(projectRoot, out);
-  mkdirSync(dirname(outPath), { recursive: true });
+  mkdirSync(dirname(outPath), {
+    recursive: true,
+  });
   writeFileSync(outPath, payload);
   process.stdout.write(
     `  ${symbol.check} Wrote ${color.bold(out)} (${Object.keys(snapshot).length} locale${Object.keys(snapshot).length === 1 ? '' : 's'})\n`,

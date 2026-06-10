@@ -22,7 +22,7 @@ export type DiagnosticCode =
   | 'YPK404'
   | 'YPK405';
 
-export interface Diagnostic {
+export type Diagnostic = {
   code: DiagnosticCode;
   fileId: string;
   hint?: string;
@@ -30,4 +30,4 @@ export interface Diagnostic {
   range: Range;
   severity: 'error' | 'warning';
   source: string;
-}
+};

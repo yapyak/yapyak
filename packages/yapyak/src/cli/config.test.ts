@@ -14,7 +14,10 @@ describe('loadConfig', () => {
   });
 
   afterEach(() => {
-    rmSync(root, { force: true, recursive: true });
+    rmSync(root, {
+      force: true,
+      recursive: true,
+    });
     resetConfigCache();
   });
 

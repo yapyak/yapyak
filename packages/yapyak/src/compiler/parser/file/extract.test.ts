@@ -18,7 +18,10 @@ describe('extractFile', () => {
     const result = extractFixture('call', 'simple.ts');
     expect(result.messages).toHaveLength(2);
     const sources = result.messages.map((message) => message.source).sort();
-    expect(sources).toEqual(['Hello', 'Save']);
+    expect(sources).toEqual([
+      'Hello',
+      'Save',
+    ]);
   });
 
   it('returns placeholders for messages with interpolation', () => {
@@ -27,7 +30,12 @@ describe('extractFile', () => {
     const greeting = result.messages.find(
       (message) => message.source === 'Hi {name}',
     );
-    expect(greeting?.placeholders).toEqual([{ kind: 'simple', name: 'name' }]);
+    expect(greeting?.placeholders).toEqual([
+      {
+        kind: 'simple',
+        name: 'name',
+      },
+    ]);
   });
 
   it('folds identical calls into one message with multiple locations', () => {

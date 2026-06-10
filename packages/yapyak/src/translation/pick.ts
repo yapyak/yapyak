@@ -6,9 +6,9 @@ import { runTrackers } from '../tracker';
 
 type Variants = Record<string, string | Template>;
 
-interface PickOptions {
+type PickOptions = {
   locale?: string;
-}
+};
 
 export function pick(
   variants: Variants,

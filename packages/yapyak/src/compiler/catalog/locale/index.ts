@@ -9,38 +9,38 @@ export { type LocaleData, readLocaleData } from './data';
 export {
   type DiscoverLocalesOptions,
   type DiscoverLocalesResult,
-  discoverLocales,
   type LocaleWarning,
+  discoverLocales,
 } from './discover';
 export {
   CorruptLocaleFileError,
-  getLocaleFilePath,
   type InvariantViolation,
   type LocaleFile,
-  readLocaleFile,
   type SyncEntry,
   type SyncLocaleFilesInput,
   type SyncLocaleFilesOptions,
   type SyncLocaleFilesResult,
-  syncLocaleFiles,
   type WriteLocaleFileInput,
+  YapyakInvariantError,
+  getLocaleFilePath,
+  readLocaleFile,
+  syncLocaleFiles,
   writeLocaleFile,
   writeLocaleFiles,
-  YapyakInvariantError,
 } from './file';
 export {
-  detectRenames,
   type MessagePosition,
   type MigrateLocalesInput,
   type MigrateLocalesOptions,
   type MigrateLocalesResult,
-  migrateLocales,
   type RenameEntry,
+  detectRenames,
+  migrateLocales,
 } from './migrate';
 export {
-  getDefaultYapyakDir,
   type OrphanCache,
   type OrphanEntry,
+  getDefaultYapyakDir,
   readOrphans,
 } from './orphan';
 export { writeRegister } from './register';

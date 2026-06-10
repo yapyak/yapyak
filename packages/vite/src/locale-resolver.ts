@@ -6,23 +6,23 @@ import type {
 
 import { discoverLocales, readLocaleData } from 'yapyak/compiler';
 
-interface EmittedLocales {
+type EmittedLocales = {
   defaultLocale: string;
   locales: string[];
-}
+};
 
-export interface CreateLocaleResolverOptions {
+export type CreateLocaleResolverOptions = {
   fixedLocale?: string;
-}
+};
 
-export interface LocaleResolver {
+export type LocaleResolver = {
   getDiscovery(): DiscoverLocalesResult;
   getEmittedLocales(): EmittedLocales;
   getLocaleData(): LocaleData;
   getProjectLocales(): EmittedLocales;
   invalidateData(): void;
   invalidateStructure(): void;
-}
+};
 
 export function createLocaleResolver(
   context: Pick<LocaleContext, 'defaultLocale' | 'localesDir'>,
@@ -45,7 +45,10 @@ export function createLocaleResolver(
 
   function getProjectLocales(): EmittedLocales {
     const result = getDiscovery();
-    return { defaultLocale: result.defaultLocale, locales: result.locales };
+    return {
+      defaultLocale: result.defaultLocale,
+      locales: result.locales,
+    };
   }
 
   function getEmittedLocales(): EmittedLocales {
@@ -55,7 +58,9 @@ export function createLocaleResolver(
         fixedLocale !== undefined
           ? {
               defaultLocale: project.defaultLocale,
-              locales: [fixedLocale],
+              locales: [
+                fixedLocale,
+              ],
             }
           : project;
     }

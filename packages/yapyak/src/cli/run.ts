@@ -22,7 +22,9 @@ export async function run(argv: string[]): Promise<number> {
       return 0;
     case 'status': {
       const config = await loadConfig(projectRoot);
-      return status(config, projectRoot, { json: rest.includes('--json') });
+      return status(config, projectRoot, {
+        json: rest.includes('--json'),
+      });
     }
     case 'check': {
       const config = await loadConfig(projectRoot);
@@ -30,12 +32,16 @@ export async function run(argv: string[]): Promise<number> {
     }
     case 'clean': {
       const config = await loadConfig(projectRoot);
-      return clean(config, projectRoot, { write: rest.includes('--write') });
+      return clean(config, projectRoot, {
+        write: rest.includes('--write'),
+      });
     }
     case 'add': {
       const config = await loadConfig(projectRoot);
       const locales = rest.filter((entry) => !entry.startsWith('-'));
-      return add(config, projectRoot, { locales });
+      return add(config, projectRoot, {
+        locales,
+      });
     }
     case 'translate': {
       const config = await loadConfig(projectRoot);
@@ -53,7 +59,9 @@ export async function run(argv: string[]): Promise<number> {
       return exportCommand(config, projectRoot, {
         locales,
         split: rest.includes('--split'),
-        ...(out !== undefined && { out }),
+        ...(out !== undefined && {
+          out,
+        }),
       });
     }
     default:

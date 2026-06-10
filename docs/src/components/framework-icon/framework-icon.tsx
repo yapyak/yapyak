@@ -1,9 +1,9 @@
 import type { ReactElement } from 'react';
 
-export interface FrameworkIconProps {
+export type FrameworkIconProps = {
   name: string;
   size?: number;
-}
+};
 
 export function FrameworkIcon(props: FrameworkIconProps): ReactElement | null {
   const { name, size = 16 } = props;

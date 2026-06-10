@@ -13,11 +13,11 @@ import { ContentLayoutToolbar } from './content-layout-toolbar';
 
 export interface ContentLayoutProps extends BoxProps {}
 
-interface ContentLayoutContextValue {
+type ContentLayoutContextValue = {
   closeSidebar: () => void;
   openSidebar: () => void;
   sidebarOpen: boolean;
-}
+};
 
 const ContentLayoutContext = createContext<ContentLayoutContextValue>({
   closeSidebar: () => {},
@@ -37,7 +37,9 @@ export function ContentLayout(props: ContentLayoutProps) {
   // biome-ignore lint/correctness/useExhaustiveDependencies: yap yap yap
   useEffect(() => {
     setIsSidebarOpen(false);
-  }, [location.pathname]);
+  }, [
+    location.pathname,
+  ]);
 
   useEffect(() => {
     if (!isSidebarOpen) {
@@ -55,7 +57,9 @@ export function ContentLayout(props: ContentLayoutProps) {
       document.removeEventListener('keydown', handleKeydown);
       document.body.style.overflow = previousOverflow;
     };
-  }, [isSidebarOpen]);
+  }, [
+    isSidebarOpen,
+  ]);
 
   return (
     <ContentLayoutContext
@@ -67,7 +71,10 @@ export function ContentLayout(props: ContentLayoutProps) {
     >
       <Box
         {...restProps}
-        className={[styles.ContentLayout, className]}
+        className={[
+          styles.ContentLayout,
+          className,
+        ]}
         data-sidebar-open={isSidebarOpen}
       >
         <Box

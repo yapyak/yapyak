@@ -12,7 +12,9 @@ function makeConfig(overrides: Partial<Config> = {}): Config {
     defaultLocale: 'en',
     examples: 0,
     exclude: [],
-    include: ['src/**/*.ts'],
+    include: [
+      'src/**/*.ts',
+    ],
     localesDir: 'locales',
     processors: [],
     translator: undefined,
@@ -27,8 +29,12 @@ describe('status', () => {
   beforeEach(() => {
     root = mkdtempSync(join(tmpdir(), 'yapyak-status-'));
     writes = [];
-    mkdirSync(join(root, 'src'), { recursive: true });
-    mkdirSync(join(root, 'locales'), { recursive: true });
+    mkdirSync(join(root, 'src'), {
+      recursive: true,
+    });
+    mkdirSync(join(root, 'locales'), {
+      recursive: true,
+    });
     vi.spyOn(process.stdout, 'write').mockImplementation((chunk) => {
       writes.push(String(chunk));
       return true;
@@ -36,7 +42,10 @@ describe('status', () => {
   });
 
   afterEach(() => {
-    rmSync(root, { force: true, recursive: true });
+    rmSync(root, {
+      force: true,
+      recursive: true,
+    });
     vi.restoreAllMocks();
   });
 
@@ -47,7 +56,11 @@ describe('status', () => {
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
-      JSON.stringify({ 'src/app.ts': { Save: 'Spara' } }),
+      JSON.stringify({
+        'src/app.ts': {
+          Save: 'Spara',
+        },
+      }),
     );
     const code = status(makeConfig(), root);
     expect(code).toBe(0);
@@ -61,7 +74,11 @@ describe('status', () => {
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
-      JSON.stringify({ 'src/app.ts': { Save: '' } }),
+      JSON.stringify({
+        'src/app.ts': {
+          Save: '',
+        },
+      }),
     );
     const code = status(makeConfig(), root);
     expect(code).toBe(1);
@@ -75,7 +92,12 @@ describe('status', () => {
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
-      JSON.stringify({ 'src/app.ts': { Cancel: '', Save: '' } }),
+      JSON.stringify({
+        'src/app.ts': {
+          Cancel: '',
+          Save: '',
+        },
+      }),
     );
     const code = status(makeConfig(), root);
     expect(code).toBe(1);
@@ -133,9 +155,15 @@ describe('status', () => {
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
-      JSON.stringify({ 'src/app.ts': { Save: 'Spara' } }),
+      JSON.stringify({
+        'src/app.ts': {
+          Save: 'Spara',
+        },
+      }),
     );
-    const code = status(makeConfig(), root, { json: true });
+    const code = status(makeConfig(), root, {
+      json: true,
+    });
     expect(code).toBe(0);
     const parsed = JSON.parse(writes.join('').trim());
     expect(parsed.totalMessages).toBeGreaterThanOrEqual(1);

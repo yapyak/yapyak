@@ -28,42 +28,44 @@ export type MetaValue =
   | boolean
   | null
   | MetaValue[]
-  | { [key: string]: MetaValue };
+  | {
+      [key: string]: MetaValue;
+    };
 
-export interface Page {
+export type Page = {
   blocks: Block[];
   description: string;
   href: string;
   meta: Record<string, MetaValue>;
   title: string;
-}
+};
 
-export interface Manifest {
+export type Manifest = {
   collections: Record<string, Collection>;
   options: OptionsRegistry;
   symbols: Record<string, SymbolEntry>;
   version: 1;
-}
+};
 
-export interface Collection {
+export type Collection = {
   pages: Record<string, Page>;
   redirects: Record<string, string>;
   sidebar: SidebarNode[];
-}
+};
 
-export interface SymbolEntry {
+export type SymbolEntry = {
   collection: string;
   path: string;
-}
+};
 
 export type SidebarNode = SidebarGroup | SidebarLink;
 
-export interface SidebarBadge {
+export type SidebarBadge = {
   text?: string;
   variant: 'deprecated' | 'kind';
-}
+};
 
-export interface SidebarGroup {
+export type SidebarGroup = {
   badge?: SidebarBadge;
   children: SidebarNode[];
   collapsible: boolean;
@@ -71,14 +73,14 @@ export interface SidebarGroup {
   href?: string;
   label: string;
   type: 'group';
-}
+};
 
-export interface SidebarLink {
+export type SidebarLink = {
   badge?: SidebarBadge;
   href: string;
   label: string;
   type: 'link';
-}
+};
 
 export async function buildManifest(config: Config): Promise<Manifest> {
   const collections: Record<string, Collection> = {};
@@ -160,7 +162,11 @@ async function buildTypedocCollection(
     const packageSlug = slugify(pkg.name);
     validateSlug(packageSlug);
     const displayName = pkg.name;
-    const context = { collectionName, packageName, packageSlug };
+    const context = {
+      collectionName,
+      packageName,
+      packageSlug,
+    };
 
     const refManifest = await extractTypedoc(pkg.root, context, {
       subpaths: pkg.subpaths,
@@ -193,7 +199,9 @@ async function buildTypedocCollection(
             moduleId: module.id,
             packageDir: pkg.root,
           },
-          { sourceUrl },
+          {
+            sourceUrl,
+          },
         );
         pages[path] = page;
         symbols[`${packageSlug}/${symbol.name}`] = {
@@ -255,7 +263,9 @@ async function buildTypedocCollection(
     groupBucket.push(packageNode);
   }
 
-  const sidebar: SidebarNode[] = [...ungroupedNodes];
+  const sidebar: SidebarNode[] = [
+    ...ungroupedNodes,
+  ];
   for (const groupLabel of groupOrder) {
     const children = groupedNodes.get(groupLabel) ?? [];
     sidebar.push({
@@ -266,12 +276,18 @@ async function buildTypedocCollection(
     });
   }
 
-  return { pages, redirects, sidebar };
+  return {
+    pages,
+    redirects,
+    sidebar,
+  };
 }
 
 async function readPackageName(packageDir: string): Promise<string> {
   const raw = await readFile(join(packageDir, 'package.json'), 'utf8');
-  const parsed = JSON.parse(raw) as { name: string };
+  const parsed = JSON.parse(raw) as {
+    name: string;
+  };
   return parsed.name;
 }
 

@@ -10,15 +10,29 @@ function stubFetch(text: string): {
   body: () => unknown;
   url: () => string;
 } {
-  let captured: { body: unknown; url: string } = { body: undefined, url: '' };
+  let captured: {
+    body: unknown;
+    url: string;
+  } = {
+    body: undefined,
+    url: '',
+  };
   vi.stubGlobal('fetch', async (url: string, init: RequestInit) => {
     captured = {
       body: JSON.parse(init.body as string),
       url,
     };
     return new Response(
-      JSON.stringify({ response: JSON.stringify([{ sv: text }]) }),
-      { status: 200 },
+      JSON.stringify({
+        response: JSON.stringify([
+          {
+            sv: text,
+          },
+        ]),
+      }),
+      {
+        status: 200,
+      },
     );
   });
   return {
@@ -47,18 +61,32 @@ describe('ollama', () => {
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
-    expect((stub.body() as { model: string }).model).toBe('llama3.1');
+    expect(
+      (
+        stub.body() as {
+          model: string;
+        }
+      ).model,
+    ).toBe('llama3.1');
   });
 
   it('builds requests with the configured model when set', async () => {
     const stub = stubFetch('Hej');
-    await ollama({ model: 'qwen2.5' })({
+    await ollama({
+      model: 'qwen2.5',
+    })({
       fileId: 'x',
       source: 'Hello',
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
-    expect((stub.body() as { model: string }).model).toBe('qwen2.5');
+    expect(
+      (
+        stub.body() as {
+          model: string;
+        }
+      ).model,
+    ).toBe('qwen2.5');
   });
 
   it('builds requests against `http://localhost:11434/api/generate` by default', async () => {
@@ -74,7 +102,9 @@ describe('ollama', () => {
 
   it('builds requests against the configured endpoint when set', async () => {
     const stub = stubFetch('Hej');
-    await ollama({ endpoint: 'http://gpu.local:11434/api/generate' })({
+    await ollama({
+      endpoint: 'http://gpu.local:11434/api/generate',
+    })({
       fileId: 'x',
       source: 'Hello',
       sourceLocale: 'en',
@@ -91,28 +121,40 @@ describe('ollama', () => {
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
-    const body = stub.body() as { format: string; stream: boolean };
+    const body = stub.body() as {
+      format: string;
+      stream: boolean;
+    };
     expect(body.format).toBe('json');
     expect(body.stream).toBe(false);
   });
 
   it('builds the system prompt into the top-level `system` field', async () => {
     const stub = stubFetch('Hej');
-    await ollama({ voice: 'Casual, never corporate' })({
+    await ollama({
+      voice: 'Casual, never corporate',
+    })({
       fileId: 'x',
       source: 'Hello',
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
-    expect((stub.body() as { system: string }).system).toContain(
-      'Casual, never corporate',
-    );
+    expect(
+      (
+        stub.body() as {
+          system: string;
+        }
+      ).system,
+    ).toContain('Casual, never corporate');
   });
 
   it('throws when the API responds with non-2xx', async () => {
     vi.stubGlobal(
       'fetch',
-      async () => new Response('unavailable', { status: 503 }),
+      async () =>
+        new Response('unavailable', {
+          status: 503,
+        }),
     );
     await expect(
       ollama()({
@@ -127,7 +169,10 @@ describe('ollama', () => {
   it('throws when the response holds no `response` field', async () => {
     vi.stubGlobal(
       'fetch',
-      async () => new Response(JSON.stringify({}), { status: 200 }),
+      async () =>
+        new Response(JSON.stringify({}), {
+          status: 200,
+        }),
     );
     await expect(
       ollama()({

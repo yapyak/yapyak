@@ -5,10 +5,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   CorruptLocaleFileError,
+  YapyakInvariantError,
   readLocaleFile,
   syncLocaleFiles,
   writeLocaleFile,
-  YapyakInvariantError,
 } from './file';
 import {
   existsSync,
@@ -26,13 +26,23 @@ function makeMessage(source: string, fileId: string): ExtractedMessage {
     callSiteContext: {},
     fileId,
     range: {
-      end: { column: 0, line: 1, offset: 0 },
-      start: { column: 0, line: 1, offset: 0 },
+      end: {
+        column: 0,
+        line: 1,
+        offset: 0,
+      },
+      start: {
+        column: 0,
+        line: 1,
+        offset: 0,
+      },
     },
   };
   return {
     id: source,
-    locations: [location],
+    locations: [
+      location,
+    ],
     placeholders: [],
     source,
   };
@@ -46,7 +56,10 @@ describe('syncLocaleFiles', () => {
   });
 
   afterEach(() => {
-    rmSync(projectRoot, { force: true, recursive: true });
+    rmSync(projectRoot, {
+      force: true,
+      recursive: true,
+    });
   });
 
   it('writes an empty locale file when no messages are extracted and existing is empty', () => {
@@ -54,8 +67,18 @@ describe('syncLocaleFiles', () => {
     const localePath = join(projectRoot, localesDir, 'sv.json');
 
     syncLocaleFiles(
-      { filter: () => true, messages: [] },
-      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
+      {
+        filter: () => true,
+        messages: [],
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir,
+      },
       projectRoot,
     );
 
@@ -66,17 +89,36 @@ describe('syncLocaleFiles', () => {
     const localesDir = 'locales';
     const yapyakDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');
-    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    mkdirSync(join(projectRoot, localesDir), {
+      recursive: true,
+    });
     writeFileSync(
       localePath,
-      JSON.stringify({ 'src/a.tsx': { Save: 'Spara' } }),
+      JSON.stringify({
+        'src/a.tsx': {
+          Save: 'Spara',
+        },
+      }),
     );
 
     syncLocaleFiles(
-      { filter: () => true, messages: [] },
-      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
+      {
+        filter: () => true,
+        messages: [],
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir,
+      },
       projectRoot,
-      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+      {
+        now: () => '2026-01-01T00:00:00.000Z',
+        yapyakDir,
+      },
     );
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({});
@@ -86,7 +128,9 @@ describe('syncLocaleFiles', () => {
       'src/a.tsx': {
         Save: {
           deletedAt: '2026-01-01T00:00:00.000Z',
-          translations: { sv: 'Spara' },
+          translations: {
+            sv: 'Spara',
+          },
         },
       },
     });
@@ -96,24 +140,45 @@ describe('syncLocaleFiles', () => {
     const localesDir = 'locales';
     const yapyakDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');
-    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    mkdirSync(join(projectRoot, localesDir), {
+      recursive: true,
+    });
     writeFileSync(
       localePath,
-      JSON.stringify({ 'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' } }),
+      JSON.stringify({
+        'src/a.tsx': {
+          Cancel: 'Avbryt',
+          Save: 'Spara',
+        },
+      }),
     );
 
     syncLocaleFiles(
       {
         filter: () => true,
-        messages: [makeMessage('Save', 'src/a.tsx')],
+        messages: [
+          makeMessage('Save', 'src/a.tsx'),
+        ],
       },
-      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir,
+      },
       projectRoot,
-      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+      {
+        now: () => '2026-01-01T00:00:00.000Z',
+        yapyakDir,
+      },
     );
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
-      'src/a.tsx': { Save: 'Spara' },
+      'src/a.tsx': {
+        Save: 'Spara',
+      },
     });
     expect(
       JSON.parse(readFileSync(join(yapyakDir, 'orphans.json'), 'utf8')),
@@ -121,7 +186,9 @@ describe('syncLocaleFiles', () => {
       'src/a.tsx': {
         Cancel: {
           deletedAt: '2026-01-01T00:00:00.000Z',
-          translations: { sv: 'Avbryt' },
+          translations: {
+            sv: 'Avbryt',
+          },
         },
       },
     });
@@ -134,13 +201,26 @@ describe('syncLocaleFiles', () => {
           makeMessage('Cancel', 'src/a.tsx'),
         ],
       },
-      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir,
+      },
       projectRoot,
-      { now: () => '2026-01-02T00:00:00.000Z', yapyakDir },
+      {
+        now: () => '2026-01-02T00:00:00.000Z',
+        yapyakDir,
+      },
     );
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
-      'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
+      'src/a.tsx': {
+        Cancel: 'Avbryt',
+        Save: 'Spara',
+      },
     });
     expect(
       JSON.parse(readFileSync(join(yapyakDir, 'orphans.json'), 'utf8')),
@@ -151,11 +231,16 @@ describe('syncLocaleFiles', () => {
     const localesDir = 'locales';
     const yapyakDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');
-    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    mkdirSync(join(projectRoot, localesDir), {
+      recursive: true,
+    });
     writeFileSync(
       localePath,
       JSON.stringify({
-        'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
+        'src/a.tsx': {
+          Cancel: 'Avbryt',
+          Save: 'Spara',
+        },
       }),
     );
 
@@ -167,13 +252,26 @@ describe('syncLocaleFiles', () => {
           makeMessage('Cancel', 'src/b.tsx'),
         ],
       },
-      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir,
+      },
       projectRoot,
-      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+      {
+        now: () => '2026-01-01T00:00:00.000Z',
+        yapyakDir,
+      },
     );
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
-      'src/b.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
+      'src/b.tsx': {
+        Cancel: 'Avbryt',
+        Save: 'Spara',
+      },
     });
     expect(existsSync(join(yapyakDir, 'orphans.json'))).toBe(false);
 
@@ -185,13 +283,26 @@ describe('syncLocaleFiles', () => {
           makeMessage('Cancel', 'src/a.tsx'),
         ],
       },
-      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir,
+      },
       projectRoot,
-      { now: () => '2026-01-02T00:00:00.000Z', yapyakDir },
+      {
+        now: () => '2026-01-02T00:00:00.000Z',
+        yapyakDir,
+      },
     );
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
-      'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
+      'src/a.tsx': {
+        Cancel: 'Avbryt',
+        Save: 'Spara',
+      },
     });
     expect(existsSync(join(yapyakDir, 'orphans.json'))).toBe(false);
   });
@@ -200,19 +311,37 @@ describe('syncLocaleFiles', () => {
     const localesDir = 'locales';
     const yapyakDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');
-    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    mkdirSync(join(projectRoot, localesDir), {
+      recursive: true,
+    });
     writeFileSync(
       localePath,
       JSON.stringify({
-        'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
+        'src/a.tsx': {
+          Cancel: 'Avbryt',
+          Save: 'Spara',
+        },
       }),
     );
 
     syncLocaleFiles(
-      { filter: () => true, messages: [] },
-      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
+      {
+        filter: () => true,
+        messages: [],
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir,
+      },
       projectRoot,
-      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+      {
+        now: () => '2026-01-01T00:00:00.000Z',
+        yapyakDir,
+      },
     );
 
     syncLocaleFiles(
@@ -223,13 +352,26 @@ describe('syncLocaleFiles', () => {
           makeMessage('Cancel', 'src/b.tsx'),
         ],
       },
-      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir,
+      },
       projectRoot,
-      { now: () => '2026-01-02T00:00:00.000Z', yapyakDir },
+      {
+        now: () => '2026-01-02T00:00:00.000Z',
+        yapyakDir,
+      },
     );
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
-      'src/b.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
+      'src/b.tsx': {
+        Cancel: 'Avbryt',
+        Save: 'Spara',
+      },
     });
     expect(
       JSON.parse(readFileSync(join(yapyakDir, 'orphans.json'), 'utf8')),
@@ -240,22 +382,40 @@ describe('syncLocaleFiles', () => {
     const localesDir = 'locales';
     const yapyakDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');
-    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    mkdirSync(join(projectRoot, localesDir), {
+      recursive: true,
+    });
     writeFileSync(
       localePath,
       JSON.stringify({
-        'src/a.tsx': { Cancel: 'Avbryt', Hello: 'Hej', Save: 'Spara' },
+        'src/a.tsx': {
+          Cancel: 'Avbryt',
+          Hello: 'Hej',
+          Save: 'Spara',
+        },
       }),
     );
 
     syncLocaleFiles(
       {
         filter: () => true,
-        messages: [makeMessage('Save', 'src/a.tsx')],
+        messages: [
+          makeMessage('Save', 'src/a.tsx'),
+        ],
       },
-      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir,
+      },
       projectRoot,
-      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+      {
+        now: () => '2026-01-01T00:00:00.000Z',
+        yapyakDir,
+      },
     );
 
     const orphans = JSON.parse(
@@ -264,11 +424,15 @@ describe('syncLocaleFiles', () => {
     expect(orphans['src/a.tsx']).toEqual({
       Cancel: {
         deletedAt: '2026-01-01T00:00:00.000Z',
-        translations: { sv: 'Avbryt' },
+        translations: {
+          sv: 'Avbryt',
+        },
       },
       Hello: {
         deletedAt: '2026-01-01T00:00:00.000Z',
-        translations: { sv: 'Hej' },
+        translations: {
+          sv: 'Hej',
+        },
       },
     });
   });
@@ -277,47 +441,93 @@ describe('syncLocaleFiles', () => {
     const localesDir = 'locales';
     const yapyakDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');
-    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    mkdirSync(join(projectRoot, localesDir), {
+      recursive: true,
+    });
     writeFileSync(
       localePath,
       JSON.stringify({
-        'src/a.tsx': { Save: 'Spara' },
+        'src/a.tsx': {
+          Save: 'Spara',
+        },
       }),
-    );
-
-    syncLocaleFiles(
-      { filter: () => true, messages: [] },
-      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
-      projectRoot,
-      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
-    );
-
-    writeFileSync(
-      localePath,
-      JSON.stringify({
-        'src/b.tsx': { Save: 'Spara ändringar' },
-      }),
-    );
-
-    syncLocaleFiles(
-      { filter: () => true, messages: [] },
-      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
-      projectRoot,
-      { now: () => '2026-01-02T00:00:00.000Z', yapyakDir },
     );
 
     syncLocaleFiles(
       {
         filter: () => true,
-        messages: [makeMessage('Save', 'src/components/c.tsx')],
+        messages: [],
       },
-      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir,
+      },
       projectRoot,
-      { now: () => '2026-01-03T00:00:00.000Z', yapyakDir },
+      {
+        now: () => '2026-01-01T00:00:00.000Z',
+        yapyakDir,
+      },
+    );
+
+    writeFileSync(
+      localePath,
+      JSON.stringify({
+        'src/b.tsx': {
+          Save: 'Spara ändringar',
+        },
+      }),
+    );
+
+    syncLocaleFiles(
+      {
+        filter: () => true,
+        messages: [],
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir,
+      },
+      projectRoot,
+      {
+        now: () => '2026-01-02T00:00:00.000Z',
+        yapyakDir,
+      },
+    );
+
+    syncLocaleFiles(
+      {
+        filter: () => true,
+        messages: [
+          makeMessage('Save', 'src/components/c.tsx'),
+        ],
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir,
+      },
+      projectRoot,
+      {
+        now: () => '2026-01-03T00:00:00.000Z',
+        yapyakDir,
+      },
     );
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
-      'src/components/c.tsx': { Save: 'Spara ändringar' },
+      'src/components/c.tsx': {
+        Save: 'Spara ändringar',
+      },
     });
   });
 
@@ -325,7 +535,9 @@ describe('syncLocaleFiles', () => {
     const localesDir = 'locales';
     const yapyakDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');
-    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    mkdirSync(join(projectRoot, localesDir), {
+      recursive: true,
+    });
     const corruptContent = '{ "src/a.tsx": { "Save": "Spara"';
     writeFileSync(localePath, corruptContent);
 
@@ -334,11 +546,23 @@ describe('syncLocaleFiles', () => {
     syncLocaleFiles(
       {
         filter: () => true,
-        messages: [makeMessage('Save', 'src/a.tsx')],
+        messages: [
+          makeMessage('Save', 'src/a.tsx'),
+        ],
       },
-      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir,
+      },
       projectRoot,
-      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+      {
+        now: () => '2026-01-01T00:00:00.000Z',
+        yapyakDir,
+      },
     );
 
     expect(readFileSync(localePath, 'utf8')).toBe(corruptContent);
@@ -353,28 +577,50 @@ describe('syncLocaleFiles', () => {
     const localesDir = 'locales';
     const yapyakDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');
-    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    mkdirSync(join(projectRoot, localesDir), {
+      recursive: true,
+    });
     writeFileSync(
       localePath,
       JSON.stringify({
-        'src/a.tsx': { Hello: 'Hej' },
-        'src/a.vue': { Hello: 'Hej' },
+        'src/a.tsx': {
+          Hello: 'Hej',
+        },
+        'src/a.vue': {
+          Hello: 'Hej',
+        },
       }),
     );
 
     const result = syncLocaleFiles(
       {
         filter: (fileId) => fileId.endsWith('.tsx'),
-        messages: [makeMessage('Hello', 'src/a.tsx')],
+        messages: [
+          makeMessage('Hello', 'src/a.tsx'),
+        ],
       },
-      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir,
+      },
       projectRoot,
-      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+      {
+        now: () => '2026-01-01T00:00:00.000Z',
+        yapyakDir,
+      },
     );
 
     expect(JSON.parse(readFileSync(localePath, 'utf8'))).toEqual({
-      'src/a.tsx': { Hello: 'Hej' },
-      'src/a.vue': { Hello: 'Hej' },
+      'src/a.tsx': {
+        Hello: 'Hej',
+      },
+      'src/a.vue': {
+        Hello: 'Hej',
+      },
     });
     expect(result.orphaned).toEqual([]);
     expect(existsSync(join(yapyakDir, 'orphans.json'))).toBe(false);
@@ -384,24 +630,47 @@ describe('syncLocaleFiles', () => {
     const localesDir = 'locales';
     const yapyakDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');
-    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    mkdirSync(join(projectRoot, localesDir), {
+      recursive: true,
+    });
     writeFileSync(
       localePath,
-      JSON.stringify({ 'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' } }),
+      JSON.stringify({
+        'src/a.tsx': {
+          Cancel: 'Avbryt',
+          Save: 'Spara',
+        },
+      }),
     );
 
     const result = syncLocaleFiles(
       {
         filter: () => true,
-        messages: [makeMessage('Save', 'src/a.tsx')],
+        messages: [
+          makeMessage('Save', 'src/a.tsx'),
+        ],
       },
-      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir,
+      },
       projectRoot,
-      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+      {
+        now: () => '2026-01-01T00:00:00.000Z',
+        yapyakDir,
+      },
     );
 
     expect(result.orphaned).toEqual([
-      { fileId: 'src/a.tsx', locale: 'sv', source: 'Cancel' },
+      {
+        fileId: 'src/a.tsx',
+        locale: 'sv',
+        source: 'Cancel',
+      },
     ]);
   });
 
@@ -409,20 +678,39 @@ describe('syncLocaleFiles', () => {
     const localesDir = 'locales';
     const yapyakDir = join(projectRoot, 'cache');
     const localePath = join(projectRoot, localesDir, 'sv.json');
-    mkdirSync(join(projectRoot, localesDir), { recursive: true });
+    mkdirSync(join(projectRoot, localesDir), {
+      recursive: true,
+    });
     writeFileSync(
       localePath,
-      JSON.stringify({ 'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' } }),
+      JSON.stringify({
+        'src/a.tsx': {
+          Cancel: 'Avbryt',
+          Save: 'Spara',
+        },
+      }),
     );
 
     syncLocaleFiles(
       {
         filter: () => true,
-        messages: [makeMessage('Save', 'src/a.tsx')],
+        messages: [
+          makeMessage('Save', 'src/a.tsx'),
+        ],
       },
-      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir,
+      },
       projectRoot,
-      { now: () => '2026-01-01T00:00:00.000Z', yapyakDir },
+      {
+        now: () => '2026-01-01T00:00:00.000Z',
+        yapyakDir,
+      },
     );
 
     const result = syncLocaleFiles(
@@ -433,13 +721,27 @@ describe('syncLocaleFiles', () => {
           makeMessage('Cancel', 'src/a.tsx'),
         ],
       },
-      { defaultLocale: 'en', locales: ['en', 'sv'], localesDir },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir,
+      },
       projectRoot,
-      { now: () => '2026-01-02T00:00:00.000Z', yapyakDir },
+      {
+        now: () => '2026-01-02T00:00:00.000Z',
+        yapyakDir,
+      },
     );
 
     expect(result.restored).toEqual([
-      { fileId: 'src/a.tsx', locale: 'sv', source: 'Cancel' },
+      {
+        fileId: 'src/a.tsx',
+        locale: 'sv',
+        source: 'Cancel',
+      },
     ]);
   });
 });
@@ -454,7 +756,10 @@ describe('readLocaleFile', () => {
   });
 
   afterEach(() => {
-    rmSync(dir, { force: true, recursive: true });
+    rmSync(dir, {
+      force: true,
+      recursive: true,
+    });
   });
 
   it('throws CorruptLocaleFileError when the JSON is malformed', () => {
@@ -484,28 +789,59 @@ describe('writeLocaleFile invariant', () => {
   });
 
   afterEach(() => {
-    rmSync(dir, { force: true, recursive: true });
+    rmSync(dir, {
+      force: true,
+      recursive: true,
+    });
   });
 
   it('throws when a still-used non-empty value would be cleared to empty string', () => {
-    writeFileSync(path, JSON.stringify({ 'src/a.tsx': { Hello: 'Hej' } }));
+    writeFileSync(
+      path,
+      JSON.stringify({
+        'src/a.tsx': {
+          Hello: 'Hej',
+        },
+      }),
+    );
 
     expect(() =>
       writeLocaleFile({
-        after: { 'src/a.tsx': { Hello: '' } },
-        extractedSources: { 'src/a.tsx': new Set(['Hello']) },
+        after: {
+          'src/a.tsx': {
+            Hello: '',
+          },
+        },
+        extractedSources: {
+          'src/a.tsx': new Set([
+            'Hello',
+          ]),
+        },
         filePath: path,
       }),
     ).toThrow(YapyakInvariantError);
   });
 
   it('throws when a still-used non-empty value would be removed entirely', () => {
-    writeFileSync(path, JSON.stringify({ 'src/a.tsx': { Hello: 'Hej' } }));
+    writeFileSync(
+      path,
+      JSON.stringify({
+        'src/a.tsx': {
+          Hello: 'Hej',
+        },
+      }),
+    );
 
     expect(() =>
       writeLocaleFile({
-        after: { 'src/a.tsx': {} },
-        extractedSources: { 'src/a.tsx': new Set(['Hello']) },
+        after: {
+          'src/a.tsx': {},
+        },
+        extractedSources: {
+          'src/a.tsx': new Set([
+            'Hello',
+          ]),
+        },
         filePath: path,
       }),
     ).toThrow(YapyakInvariantError);
@@ -514,22 +850,44 @@ describe('writeLocaleFile invariant', () => {
   it('clears the translation when source is no longer extracted', () => {
     writeFileSync(
       path,
-      JSON.stringify({ 'src/a.tsx': { Hello: 'Hej', World: 'Världen' } }),
+      JSON.stringify({
+        'src/a.tsx': {
+          Hello: 'Hej',
+          World: 'Världen',
+        },
+      }),
     );
 
     writeLocaleFile({
-      after: { 'src/a.tsx': { World: 'Världen' } },
-      extractedSources: { 'src/a.tsx': new Set(['World']) },
+      after: {
+        'src/a.tsx': {
+          World: 'Världen',
+        },
+      },
+      extractedSources: {
+        'src/a.tsx': new Set([
+          'World',
+        ]),
+      },
       filePath: path,
     });
 
     expect(JSON.parse(readFileSync(path, 'utf8'))).toEqual({
-      'src/a.tsx': { World: 'Världen' },
+      'src/a.tsx': {
+        World: 'Världen',
+      },
     });
   });
 
   it('clears values when fileId has no extracted sources', () => {
-    writeFileSync(path, JSON.stringify({ 'src/a.tsx': { Hello: 'Hej' } }));
+    writeFileSync(
+      path,
+      JSON.stringify({
+        'src/a.tsx': {
+          Hello: 'Hej',
+        },
+      }),
+    );
 
     writeLocaleFile({
       after: {},
@@ -541,30 +899,64 @@ describe('writeLocaleFile invariant', () => {
   });
 
   it('writes a new translation value', () => {
-    writeFileSync(path, JSON.stringify({ 'src/a.tsx': { Hello: '' } }));
+    writeFileSync(
+      path,
+      JSON.stringify({
+        'src/a.tsx': {
+          Hello: '',
+        },
+      }),
+    );
 
     writeLocaleFile({
-      after: { 'src/a.tsx': { Hello: 'Hej' } },
-      extractedSources: { 'src/a.tsx': new Set(['Hello']) },
+      after: {
+        'src/a.tsx': {
+          Hello: 'Hej',
+        },
+      },
+      extractedSources: {
+        'src/a.tsx': new Set([
+          'Hello',
+        ]),
+      },
       filePath: path,
     });
 
     expect(JSON.parse(readFileSync(path, 'utf8'))).toEqual({
-      'src/a.tsx': { Hello: 'Hej' },
+      'src/a.tsx': {
+        Hello: 'Hej',
+      },
     });
   });
 
   it('preserves non-empty values across writes when source still extracted', () => {
-    writeFileSync(path, JSON.stringify({ 'src/a.tsx': { Hello: 'Hej' } }));
+    writeFileSync(
+      path,
+      JSON.stringify({
+        'src/a.tsx': {
+          Hello: 'Hej',
+        },
+      }),
+    );
 
     writeLocaleFile({
-      after: { 'src/a.tsx': { Hello: 'Hej' } },
-      extractedSources: { 'src/a.tsx': new Set(['Hello']) },
+      after: {
+        'src/a.tsx': {
+          Hello: 'Hej',
+        },
+      },
+      extractedSources: {
+        'src/a.tsx': new Set([
+          'Hello',
+        ]),
+      },
       filePath: path,
     });
 
     expect(JSON.parse(readFileSync(path, 'utf8'))).toEqual({
-      'src/a.tsx': { Hello: 'Hej' },
+      'src/a.tsx': {
+        Hello: 'Hej',
+      },
     });
   });
 
@@ -572,14 +964,27 @@ describe('writeLocaleFile invariant', () => {
     writeFileSync(
       path,
       JSON.stringify({
-        'src/a.tsx': { Hello: 'Hej', World: 'Världen' },
+        'src/a.tsx': {
+          Hello: 'Hej',
+          World: 'Världen',
+        },
       }),
     );
 
     try {
       writeLocaleFile({
-        after: { 'src/a.tsx': { Hello: '', World: '' } },
-        extractedSources: { 'src/a.tsx': new Set(['Hello', 'World']) },
+        after: {
+          'src/a.tsx': {
+            Hello: '',
+            World: '',
+          },
+        },
+        extractedSources: {
+          'src/a.tsx': new Set([
+            'Hello',
+            'World',
+          ]),
+        },
         filePath: path,
       });
       throw new Error('expected throw');
@@ -589,7 +994,10 @@ describe('writeLocaleFile invariant', () => {
       expect(invariantError.violations).toHaveLength(2);
       expect(
         invariantError.violations.map((violation) => violation.source).sort(),
-      ).toEqual(['Hello', 'World']);
+      ).toEqual([
+        'Hello',
+        'World',
+      ]);
     }
   });
 
@@ -597,25 +1005,49 @@ describe('writeLocaleFile invariant', () => {
     const nested = join(dir, 'deep', 'nested', 'sv.json');
 
     writeLocaleFile({
-      after: { 'src/a.tsx': { Hello: 'Hej' } },
-      extractedSources: { 'src/a.tsx': new Set(['Hello']) },
+      after: {
+        'src/a.tsx': {
+          Hello: 'Hej',
+        },
+      },
+      extractedSources: {
+        'src/a.tsx': new Set([
+          'Hello',
+        ]),
+      },
       filePath: nested,
     });
 
     expect(JSON.parse(readFileSync(nested, 'utf8'))).toEqual({
-      'src/a.tsx': { Hello: 'Hej' },
+      'src/a.tsx': {
+        Hello: 'Hej',
+      },
     });
   });
 
   it('writes no file when invariant fails', () => {
-    const before = JSON.stringify({ 'src/a.tsx': { Hello: 'Hej' } });
+    const before = JSON.stringify({
+      'src/a.tsx': {
+        Hello: 'Hej',
+      },
+    });
     writeFileSync(path, before);
-    mkdirSync(join(dir, 'untouched'), { recursive: true });
+    mkdirSync(join(dir, 'untouched'), {
+      recursive: true,
+    });
 
     expect(() =>
       writeLocaleFile({
-        after: { 'src/a.tsx': { Hello: '' } },
-        extractedSources: { 'src/a.tsx': new Set(['Hello']) },
+        after: {
+          'src/a.tsx': {
+            Hello: '',
+          },
+        },
+        extractedSources: {
+          'src/a.tsx': new Set([
+            'Hello',
+          ]),
+        },
         filePath: path,
       }),
     ).toThrow();
@@ -669,11 +1101,19 @@ describe('writeLocaleFile invariant', () => {
   });
 
   it('preserves the file on a second successful write', () => {
-    const data: LocaleFile = { 'src/a.tsx': { Hello: 'Hej' } };
+    const data: LocaleFile = {
+      'src/a.tsx': {
+        Hello: 'Hej',
+      },
+    };
     writeFileSync(path, JSON.stringify(data));
     const input = {
       after: data,
-      extractedSources: { 'src/a.tsx': new Set(['Hello']) },
+      extractedSources: {
+        'src/a.tsx': new Set([
+          'Hello',
+        ]),
+      },
       filePath: path,
     };
 
@@ -689,7 +1129,11 @@ describe('writeLocaleFile invariant', () => {
 type EntryState = 'missing' | 'empty' | 'translated';
 type ExtractedState = 'has-source' | 'missing-source' | 'no-file';
 
-const ENTRY_STATES: EntryState[] = ['missing', 'empty', 'translated'];
+const ENTRY_STATES: EntryState[] = [
+  'missing',
+  'empty',
+  'translated',
+];
 const EXTRACTED_STATES: ExtractedState[] = [
   'has-source',
   'missing-source',
@@ -706,9 +1150,17 @@ function buildEntry(
     return {};
   }
   if (state === 'empty') {
-    return { [fileId]: { [source]: '' } };
+    return {
+      [fileId]: {
+        [source]: '',
+      },
+    };
   }
-  return { [fileId]: { [source]: value } };
+  return {
+    [fileId]: {
+      [source]: value,
+    },
+  };
 }
 
 function buildExtracted(
@@ -720,7 +1172,15 @@ function buildExtracted(
     return {};
   }
   if (state === 'missing-source') {
-    return { [fileId]: new Set(['other']) };
+    return {
+      [fileId]: new Set([
+        'other',
+      ]),
+    };
   }
-  return { [fileId]: new Set([source]) };
+  return {
+    [fileId]: new Set([
+      source,
+    ]),
+  };
 }

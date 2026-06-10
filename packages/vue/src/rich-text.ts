@@ -24,7 +24,9 @@ export type RichTextSlots = Record<string, TagSlot>;
  *
  * @typeParam T - The source string literal carrying the tag names.
  */
-export type RichTextProps<T extends string> = { value: T };
+export type RichTextProps<T extends string> = {
+  value: T;
+};
 
 /**
  * Renders rich text by resolving named tags via scoped slots.
@@ -45,9 +47,7 @@ export const RichText: FunctionalComponent<
   RichTextProps<string>,
   Record<string, never>,
   RichTextSlots
-> = (props, context) => {
-  return renderNodes(parseRichText(props.value), context.slots);
-};
+> = (props, context) => renderNodes(parseRichText(props.value), context.slots);
 
 function renderNodes(
   nodes: Node[],
@@ -62,7 +62,11 @@ function renderNodes(
     const slot = slots[node.name];
     if (slot) {
       const children = (): VNodeChild[] => renderNodes(node.children, slots);
-      out.push(...slot({ children }));
+      out.push(
+        ...slot({
+          children,
+        }),
+      );
       continue;
     }
     out.push(`<${node.name}>`);

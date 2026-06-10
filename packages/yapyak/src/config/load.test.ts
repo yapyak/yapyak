@@ -13,7 +13,10 @@ describe('loadYapyakConfig', () => {
   });
 
   afterEach(() => {
-    rmSync(cwd, { force: true, recursive: true });
+    rmSync(cwd, {
+      force: true,
+      recursive: true,
+    });
   });
 
   it('returns the normalized default config when no config file exists', async () => {

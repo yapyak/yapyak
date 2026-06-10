@@ -18,73 +18,129 @@ describe('extractPlaceholders', () => {
   });
 
   it('returns an empty list when the template has only literal nodes', () => {
-    expect(extractPlaceholders([literal('Hello'), literal(' world')])).toEqual(
-      [],
-    );
+    expect(
+      extractPlaceholders([
+        literal('Hello'),
+        literal(' world'),
+      ]),
+    ).toEqual([]);
   });
 
   it('returns an empty list for a stray count node at the top level', () => {
-    expect(extractPlaceholders([count()])).toEqual([]);
+    expect(
+      extractPlaceholders([
+        count(),
+      ]),
+    ).toEqual([]);
   });
 
   describe('node kinds', () => {
     it('extracts a simple placeholder', () => {
-      expect(extractPlaceholders([placeholder('name')])).toEqual([
-        { kind: 'simple', name: 'name' },
+      expect(
+        extractPlaceholders([
+          placeholder('name'),
+        ]),
+      ).toEqual([
+        {
+          kind: 'simple',
+          name: 'name',
+        },
       ]);
     });
 
     it('extracts a number placeholder', () => {
-      expect(extractPlaceholders([number('value', {})])).toEqual([
-        { kind: 'number', name: 'value' },
+      expect(
+        extractPlaceholders([
+          number('value', {}),
+        ]),
+      ).toEqual([
+        {
+          kind: 'number',
+          name: 'value',
+        },
       ]);
     });
 
     it('extracts a date placeholder', () => {
-      expect(extractPlaceholders([date('when', 'short')])).toEqual([
-        { kind: 'date', name: 'when' },
+      expect(
+        extractPlaceholders([
+          date('when', 'short'),
+        ]),
+      ).toEqual([
+        {
+          kind: 'date',
+          name: 'when',
+        },
       ]);
     });
 
     it('extracts a time placeholder', () => {
-      expect(extractPlaceholders([time('at', 'full')])).toEqual([
-        { kind: 'time', name: 'at' },
+      expect(
+        extractPlaceholders([
+          time('at', 'full'),
+        ]),
+      ).toEqual([
+        {
+          kind: 'time',
+          name: 'at',
+        },
       ]);
     });
 
     it('extracts a cardinal plural as kind `plural`', () => {
       const template = [
         plural('count', 'cardinal', {
-          one: [literal('one')],
-          other: [literal('many')],
+          one: [
+            literal('one'),
+          ],
+          other: [
+            literal('many'),
+          ],
         }),
       ];
       expect(extractPlaceholders(template)).toEqual([
-        { kind: 'plural', name: 'count' },
+        {
+          kind: 'plural',
+          name: 'count',
+        },
       ]);
     });
 
     it('extracts an ordinal plural as kind `selectordinal`', () => {
       const template = [
         plural('rank', 'ordinal', {
-          one: [literal('1st')],
-          other: [literal('nth')],
+          one: [
+            literal('1st'),
+          ],
+          other: [
+            literal('nth'),
+          ],
         }),
       ];
       expect(extractPlaceholders(template)).toEqual([
-        { kind: 'selectordinal', name: 'rank' },
+        {
+          kind: 'selectordinal',
+          name: 'rank',
+        },
       ]);
     });
 
     it('extracts a select placeholder', () => {
       const template = [
         select('gender', {
-          male: [literal('he')],
-          other: [literal('they')],
+          male: [
+            literal('he'),
+          ],
+          other: [
+            literal('they'),
+          ],
         }),
       ];
       expect(extractPlaceholders(template)).toEqual([
-        { kind: 'select', name: 'gender' },
+        {
+          kind: 'select',
+          name: 'gender',
+        },
       ]);
     });
   });
@@ -93,26 +149,52 @@ describe('extractPlaceholders', () => {
     it('walks placeholders nested inside plural branches', () => {
       const template = [
         plural('count', 'cardinal', {
-          one: [count(), literal(' from '), placeholder('name')],
-          other: [count(), literal(' from '), placeholder('name')],
+          one: [
+            count(),
+            literal(' from '),
+            placeholder('name'),
+          ],
+          other: [
+            count(),
+            literal(' from '),
+            placeholder('name'),
+          ],
         }),
       ];
       expect(extractPlaceholders(template)).toEqual([
-        { kind: 'plural', name: 'count' },
-        { kind: 'simple', name: 'name' },
+        {
+          kind: 'plural',
+          name: 'count',
+        },
+        {
+          kind: 'simple',
+          name: 'name',
+        },
       ]);
     });
 
     it('walks placeholders nested inside select branches', () => {
       const template = [
         select('role', {
-          admin: [literal('Admin '), placeholder('name')],
-          other: [literal('User '), placeholder('name')],
+          admin: [
+            literal('Admin '),
+            placeholder('name'),
+          ],
+          other: [
+            literal('User '),
+            placeholder('name'),
+          ],
         }),
       ];
       expect(extractPlaceholders(template)).toEqual([
-        { kind: 'select', name: 'role' },
-        { kind: 'simple', name: 'name' },
+        {
+          kind: 'select',
+          name: 'role',
+        },
+        {
+          kind: 'simple',
+          name: 'name',
+        },
       ]);
     });
 
@@ -121,18 +203,30 @@ describe('extractPlaceholders', () => {
         plural('count', 'cardinal', {
           one: [
             select('g', {
-              male: [literal('he')],
-              other: [literal('they')],
+              male: [
+                literal('he'),
+              ],
+              other: [
+                literal('they'),
+              ],
             }),
             literal(' sent '),
             count(),
           ],
-          other: [literal('many')],
+          other: [
+            literal('many'),
+          ],
         }),
       ];
       expect(extractPlaceholders(template)).toEqual([
-        { kind: 'plural', name: 'count' },
-        { kind: 'select', name: 'g' },
+        {
+          kind: 'plural',
+          name: 'count',
+        },
+        {
+          kind: 'select',
+          name: 'g',
+        },
       ]);
     });
   });
@@ -145,27 +239,39 @@ describe('extractPlaceholders', () => {
         placeholder('name'),
       ];
       expect(extractPlaceholders(template)).toEqual([
-        { kind: 'simple', name: 'name' },
+        {
+          kind: 'simple',
+          name: 'name',
+        },
       ]);
     });
 
     it('keeps the first-seen kind when the same name appears with different kinds', () => {
       const template = [
         plural('count', 'cardinal', {
-          other: [count()],
+          other: [
+            count(),
+          ],
         }),
         literal(' and '),
         placeholder('count'),
       ];
       expect(extractPlaceholders(template)).toEqual([
-        { kind: 'plural', name: 'count' },
+        {
+          kind: 'plural',
+          name: 'count',
+        },
       ]);
     });
   });
 
   describe('edge cases', () => {
     it('skips placeholders with an empty name', () => {
-      expect(extractPlaceholders([placeholder('')])).toEqual([]);
+      expect(
+        extractPlaceholders([
+          placeholder(''),
+        ]),
+      ).toEqual([]);
     });
 
     it('preserves the order of first appearance', () => {
@@ -177,9 +283,18 @@ describe('extractPlaceholders', () => {
         placeholder('third'),
       ];
       expect(extractPlaceholders(template)).toEqual([
-        { kind: 'simple', name: 'first' },
-        { kind: 'simple', name: 'second' },
-        { kind: 'simple', name: 'third' },
+        {
+          kind: 'simple',
+          name: 'first',
+        },
+        {
+          kind: 'simple',
+          name: 'second',
+        },
+        {
+          kind: 'simple',
+          name: 'third',
+        },
       ]);
     });
   });

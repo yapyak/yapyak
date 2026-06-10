@@ -5,7 +5,9 @@ import { LocaleProvider, useLocale } from '@yapyak/react';
 import { middleware as yapyakMiddleware } from '@yapyak/react-router';
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
 
-export const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];
+export const middleware: Route.MiddlewareFunction[] = [
+  yapyakMiddleware,
+];
 
 export function Layout({ children }: { children: ReactNode }) {
   const [locale] = useLocale();

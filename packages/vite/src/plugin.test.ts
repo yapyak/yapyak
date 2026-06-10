@@ -23,14 +23,21 @@ describe('yapyak', () => {
 
   beforeEach(() => {
     root = mkdtempSync(join(tmpdir(), 'yapyak-vite-'));
-    mkdirSync(join(root, 'src'), { recursive: true });
-    mkdirSync(join(root, 'locales'), { recursive: true });
+    mkdirSync(join(root, 'src'), {
+      recursive: true,
+    });
+    mkdirSync(join(root, 'locales'), {
+      recursive: true,
+    });
     localePath = join(root, 'locales', 'sv.json');
   });
 
   afterEach(() => {
     vi.useRealTimers();
-    rmSync(root, { force: true, recursive: true });
+    rmSync(root, {
+      force: true,
+      recursive: true,
+    });
   });
 
   describe('build mode', () => {
@@ -91,7 +98,9 @@ describe('yapyak', () => {
       await vi.advanceTimersByTimeAsync(60);
 
       const after = JSON.parse(readFileSync(localePath, 'utf8'));
-      expect(after['src/b.tsx']).toEqual({ Hello: '' });
+      expect(after['src/b.tsx']).toEqual({
+        Hello: '',
+      });
     });
 
     it('clears locale entries when removing a file', async () => {
@@ -106,8 +115,12 @@ describe('yapyak', () => {
       writeFileSync(
         localePath,
         JSON.stringify({
-          'src/a.tsx': { Hello: 'Hej' },
-          'src/b.tsx': { World: 'Världen' },
+          'src/a.tsx': {
+            Hello: 'Hej',
+          },
+          'src/b.tsx': {
+            World: 'Världen',
+          },
         }),
       );
       const plugin = yapyak();
@@ -125,7 +138,9 @@ describe('yapyak', () => {
 
       const after = JSON.parse(readFileSync(localePath, 'utf8'));
       expect(after['src/a.tsx']).toBeUndefined();
-      expect(after['src/b.tsx']).toEqual({ World: 'Världen' });
+      expect(after['src/b.tsx']).toEqual({
+        World: 'Världen',
+      });
     });
 
     it('syncs once for many simultaneous add events', async () => {
@@ -181,7 +196,9 @@ describe('yapyak', () => {
 
       expect(send).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({ locale: 'fr' }),
+          data: expect.objectContaining({
+            locale: 'fr',
+          }),
           event: 'yapyak:locale-added',
           type: 'custom',
         }),
@@ -208,7 +225,9 @@ describe('yapyak', () => {
 
       expect(send).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: { locale: 'fr' },
+          data: {
+            locale: 'fr',
+          },
           event: 'yapyak:locale-removed',
           type: 'custom',
         }),
@@ -255,7 +274,11 @@ describe('yapyak', () => {
       await vi.advanceTimersByTimeAsync(60);
 
       const after = JSON.parse(readFileSync(newLocale, 'utf8'));
-      expect(after).toEqual({ 'src/a.tsx': { Hello: '' } });
+      expect(after).toEqual({
+        'src/a.tsx': {
+          Hello: '',
+        },
+      });
     });
 
     it('notifies candidate modules when editing a locale file', async () => {
@@ -278,7 +301,11 @@ describe('yapyak', () => {
 
       writeFileSync(
         localePath,
-        JSON.stringify({ 'src/a.tsx': { Hello: 'Hej' } }),
+        JSON.stringify({
+          'src/a.tsx': {
+            Hello: 'Hej',
+          },
+        }),
       );
       watcher.emit('change', localePath);
       await vi.advanceTimersByTimeAsync(60);
@@ -335,7 +362,9 @@ describe('yapyak', () => {
     });
 
     it('blocks notification for nested locale paths', async () => {
-      mkdirSync(join(root, 'locales', 'sub'), { recursive: true });
+      mkdirSync(join(root, 'locales', 'sub'), {
+        recursive: true,
+      });
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
       invokeBuildStart(plugin);
@@ -407,7 +436,9 @@ describe('yapyak', () => {
       };
       const plugin = yapyak();
       const hook = findHook(plugin, 'configResolved');
-      if (typeof hook !== 'function') throw new Error('missing');
+      if (typeof hook !== 'function') {
+        throw new Error('missing');
+      }
       await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
         command: 'serve',
         logger,
@@ -508,13 +539,18 @@ describe('yapyak', () => {
           const localeJson = JSON.parse(readFileSync(localePath, 'utf8'));
           expect(localeJson['src/a.tsx']?.Hello).toBe('Hej');
         },
-        { interval: 20, timeout: 2000 },
+        {
+          interval: 20,
+          timeout: 2000,
+        },
       );
     });
 
     it('blocks auto-translate when new strings exceed the threshold', async () => {
       writeFileSync(localePath, '{}');
-      writeConfig({ threshold: 1 });
+      writeConfig({
+        threshold: 1,
+      });
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
       invokeBuildStart(plugin);
@@ -534,17 +570,25 @@ describe('yapyak', () => {
           const localeJson = JSON.parse(readFileSync(localePath, 'utf8'));
           expect(localeJson['src/a.tsx']).toBeDefined();
         },
-        { interval: 20, timeout: 2000 },
+        {
+          interval: 20,
+          timeout: 2000,
+        },
       );
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       const localeJson = JSON.parse(readFileSync(localePath, 'utf8'));
-      expect(localeJson['src/a.tsx']).toEqual({ Hello: '', World: '' });
+      expect(localeJson['src/a.tsx']).toEqual({
+        Hello: '',
+        World: '',
+      });
     });
 
     it('warns when the translator throws during auto-translate', async () => {
       writeFileSync(localePath, '{}');
-      writeConfig({ failing: true });
+      writeConfig({
+        failing: true,
+      });
       const warnings: string[] = [];
       const logger = createSilentLogger();
       logger.warn = (message: string) => {
@@ -552,7 +596,9 @@ describe('yapyak', () => {
       };
       const plugin = yapyak();
       const hook = findHook(plugin, 'configResolved');
-      if (typeof hook !== 'function') throw new Error('missing');
+      if (typeof hook !== 'function') {
+        throw new Error('missing');
+      }
       await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
         command: 'serve',
         logger,
@@ -576,13 +622,18 @@ describe('yapyak', () => {
             warnings.some((message) => message.includes('translation failed')),
           ).toBe(true);
         },
-        { interval: 20, timeout: 2000 },
+        {
+          interval: 20,
+          timeout: 2000,
+        },
       );
     });
 
     it('warns about a batch failure when many sources in one file fail', async () => {
       writeFileSync(localePath, '{}');
-      writeConfig({ failing: true });
+      writeConfig({
+        failing: true,
+      });
       const warnings: string[] = [];
       const logger = createSilentLogger();
       logger.warn = (message: string) => {
@@ -590,7 +641,9 @@ describe('yapyak', () => {
       };
       const plugin = yapyak();
       const hook = findHook(plugin, 'configResolved');
-      if (typeof hook !== 'function') throw new Error('missing');
+      if (typeof hook !== 'function') {
+        throw new Error('missing');
+      }
       await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
         command: 'serve',
         logger,
@@ -614,13 +667,18 @@ describe('yapyak', () => {
             warnings.some((message) => message.includes('batch failed')),
           ).toBe(true);
         },
-        { interval: 20, timeout: 2000 },
+        {
+          interval: 20,
+          timeout: 2000,
+        },
       );
     });
 
     it('warns about a batch failure across many files when sources span them', async () => {
       writeFileSync(localePath, '{}');
-      writeConfig({ failing: true });
+      writeConfig({
+        failing: true,
+      });
       writeFileSync(
         join(root, 'src', 'a.tsx'),
         "import { t } from 'yapyak';\nexport const a = t('Hello');\n",
@@ -636,7 +694,9 @@ describe('yapyak', () => {
       };
       const plugin = yapyak();
       const hook = findHook(plugin, 'configResolved');
-      if (typeof hook !== 'function') throw new Error('missing');
+      if (typeof hook !== 'function') {
+        throw new Error('missing');
+      }
       await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
         command: 'serve',
         logger,
@@ -650,13 +710,18 @@ describe('yapyak', () => {
             warnings.some((message) => message.includes('across 2 files')),
           ).toBe(true);
         },
-        { interval: 20, timeout: 2000 },
+        {
+          interval: 20,
+          timeout: 2000,
+        },
       );
     });
 
     it('blocks auto-translate when the threshold is `0`', async () => {
       writeFileSync(localePath, '{}');
-      writeConfig({ threshold: 0 });
+      writeConfig({
+        threshold: 0,
+      });
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
       invokeBuildStart(plugin);
@@ -676,12 +741,17 @@ describe('yapyak', () => {
           const localeJson = JSON.parse(readFileSync(localePath, 'utf8'));
           expect(localeJson['src/a.tsx']).toBeDefined();
         },
-        { interval: 20, timeout: 2000 },
+        {
+          interval: 20,
+          timeout: 2000,
+        },
       );
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       const localeJson = JSON.parse(readFileSync(localePath, 'utf8'));
-      expect(localeJson['src/a.tsx']).toEqual({ Hello: '' });
+      expect(localeJson['src/a.tsx']).toEqual({
+        Hello: '',
+      });
     });
   });
 
@@ -693,27 +763,37 @@ describe('yapyak', () => {
       );
       writeFileSync(
         join(root, 'locales', 'sv.json'),
-        JSON.stringify({ 'src/a.tsx': { Hello: 'Hej' } }),
+        JSON.stringify({
+          'src/a.tsx': {
+            Hello: 'Hej',
+          },
+        }),
       );
       writeFileSync(join(root, 'locales', 'en.json'), '{}');
     });
 
     it('accepts a fixedLocale that exists in the project', async () => {
-      const plugin = yapyak({ fixedLocale: 'sv' });
+      const plugin = yapyak({
+        fixedLocale: 'sv',
+      });
       await expect(
         invokeConfigResolved(plugin, root, 'build'),
       ).resolves.toBeUndefined();
     });
 
     it('throws when fixedLocale is not in the project locales', async () => {
-      const plugin = yapyak({ fixedLocale: 'fr' });
+      const plugin = yapyak({
+        fixedLocale: 'fr',
+      });
       await expect(invokeConfigResolved(plugin, root, 'build')).rejects.toThrow(
         /fixedLocale 'fr' is not configured/,
       );
     });
 
     it('throws when fixedLocale is an empty string', async () => {
-      const plugin = yapyak({ fixedLocale: '' });
+      const plugin = yapyak({
+        fixedLocale: '',
+      });
       await expect(invokeConfigResolved(plugin, root, 'build')).rejects.toThrow(
         /fixedLocale '' is not configured/,
       );
@@ -727,7 +807,9 @@ describe('yapyak', () => {
     });
 
     it('rewrites `t()` to the locale literal when fixedLocale is set', async () => {
-      const plugin = yapyak({ fixedLocale: 'sv' });
+      const plugin = yapyak({
+        fixedLocale: 'sv',
+      });
       await invokeConfigResolved(plugin, root, 'build');
       const output = await invokeTransform(plugin, join(root, 'src', 'a.tsx'));
       expect(output).toContain('Hej');
@@ -756,7 +838,9 @@ describe('yapyak', () => {
       await invokeConfigResolved(plugin, root, 'build');
       const filePath = join(root, 'src', 'a.tsx');
       const map = await invokeTransformMap(plugin, filePath);
-      expect(map?.sources).toEqual([filePath]);
+      expect(map?.sources).toEqual([
+        filePath,
+      ]);
     });
   });
 
@@ -768,7 +852,11 @@ describe('yapyak', () => {
       );
       writeFileSync(
         localePath,
-        JSON.stringify({ 'src/a.tsx': { 'Save@button': 'Lagra' } }),
+        JSON.stringify({
+          'src/a.tsx': {
+            'Save@button': 'Lagra',
+          },
+        }),
       );
 
       const plugin = yapyak();
@@ -785,7 +873,11 @@ describe('yapyak', () => {
       );
       writeFileSync(
         localePath,
-        JSON.stringify({ 'src/a.tsx': { Save: 'Spara' } }),
+        JSON.stringify({
+          'src/a.tsx': {
+            Save: 'Spara',
+          },
+        }),
       );
 
       const plugin = yapyak();
@@ -802,7 +894,11 @@ describe('yapyak', () => {
       );
       writeFileSync(
         localePath,
-        JSON.stringify({ 'src/a.tsx': { Save: 'Spara' } }),
+        JSON.stringify({
+          'src/a.tsx': {
+            Save: 'Spara',
+          },
+        }),
       );
 
       const plugin = yapyak();
@@ -895,12 +991,16 @@ describe('yapyak', () => {
       };
       const plugin = yapyak();
       const hook = findHook(plugin, 'configResolved');
-      if (typeof hook !== 'function') throw new Error('missing');
+      if (typeof hook !== 'function') {
+        throw new Error('missing');
+      }
       await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
         command: 'serve',
         logger,
         root,
-        ssr: { external: true },
+        ssr: {
+          external: true,
+        },
       } as unknown as ResolvedConfig);
       expect(
         warnings.some((line) => line.includes('config.ssr.external')),
@@ -915,35 +1015,55 @@ describe('yapyak', () => {
       };
       const plugin = yapyak();
       const hook = findHook(plugin, 'configResolved');
-      if (typeof hook !== 'function') throw new Error('missing');
+      if (typeof hook !== 'function') {
+        throw new Error('missing');
+      }
       await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
         command: 'serve',
         logger,
         root,
-        ssr: { external: () => false },
+        ssr: {
+          external: () => false,
+        },
       } as unknown as ResolvedConfig);
       expect(warnings.some((line) => line.includes('a function'))).toBe(true);
     });
 
     it('preserves only non-yapyak entries in an `ssr.external` array', async () => {
-      const external = ['react', 'yapyak', '@yapyak/react', 'lodash'];
+      const external = [
+        'react',
+        'yapyak',
+        '@yapyak/react',
+        'lodash',
+      ];
       const plugin = yapyak();
       const hook = findHook(plugin, 'configResolved');
-      if (typeof hook !== 'function') throw new Error('missing');
+      if (typeof hook !== 'function') {
+        throw new Error('missing');
+      }
       await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
         command: 'serve',
         logger: createSilentLogger(),
         root,
-        ssr: { external },
+        ssr: {
+          external,
+        },
       } as unknown as ResolvedConfig);
-      expect(external).toEqual(['react', 'lodash']);
+      expect(external).toEqual([
+        'react',
+        'lodash',
+      ]);
     });
 
     it('throws when `fixedLocale` is not in the discovered locales', async () => {
       writeFileSync(join(root, 'locales', 'en.json'), '{}');
-      const plugin = yapyak({ fixedLocale: 'de' });
+      const plugin = yapyak({
+        fixedLocale: 'de',
+      });
       const hook = findHook(plugin, 'configResolved');
-      if (typeof hook !== 'function') throw new Error('missing');
+      if (typeof hook !== 'function') {
+        throw new Error('missing');
+      }
       await expect(
         (hook as (config: ResolvedConfig) => unknown).call(plugin, {
           command: 'build',
@@ -963,7 +1083,9 @@ describe('yapyak', () => {
       };
       const plugin = yapyak();
       const hook = findHook(plugin, 'configResolved');
-      if (typeof hook !== 'function') throw new Error('missing');
+      if (typeof hook !== 'function') {
+        throw new Error('missing');
+      }
       await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
         command: 'serve',
         logger,
@@ -1036,7 +1158,9 @@ describe('yapyak', () => {
         "import { t } from 'yapyak';\nexport const x = t('World');\n",
       );
       const sv = JSON.parse(readFileSync(localePath, 'utf8'));
-      expect(sv['src/a.tsx']).toEqual({ World: '' });
+      expect(sv['src/a.tsx']).toEqual({
+        World: '',
+      });
     });
   });
 });
@@ -1094,9 +1218,15 @@ type TransformHook = (
   code: string,
   id: string,
 ) =>
-  | { code: string; map?: SourceMap }
+  | {
+      code: string;
+      map?: SourceMap;
+    }
   | null
-  | Promise<{ code: string; map?: SourceMap } | null>;
+  | Promise<{
+      code: string;
+      map?: SourceMap;
+    } | null>;
 
 async function invokeTransform(
   plugin: YapyakPlugin,
@@ -1124,14 +1254,22 @@ function invokeBuildStart(plugin: YapyakPlugin): void {
 }
 
 function invokeConfig(plugin: YapyakPlugin): {
-  optimizeDeps?: { exclude?: string[] };
-  ssr?: { noExternal?: unknown };
+  optimizeDeps?: {
+    exclude?: string[];
+  };
+  ssr?: {
+    noExternal?: unknown;
+  };
 } {
   const hook = findHook(plugin, 'config');
   return (
     hook as () => {
-      optimizeDeps?: { exclude?: string[] };
-      ssr?: { noExternal?: unknown };
+      optimizeDeps?: {
+        exclude?: string[];
+      };
+      ssr?: {
+        noExternal?: unknown;
+      };
     }
   ).call(plugin);
 }
@@ -1150,7 +1288,10 @@ async function invokeTransformRaw(
   plugin: YapyakPlugin,
   filePath: string,
   code: string,
-): Promise<{ code: string; map?: SourceMap } | null> {
+): Promise<{
+  code: string;
+  map?: SourceMap;
+} | null> {
   const hook = findHook(plugin, 'transform');
   return (await (hook as TransformHook).call(plugin, code, filePath)) ?? null;
 }
@@ -1181,18 +1322,18 @@ interface MockWatcher extends EventEmitter {
   add(path: string): void;
 }
 
-interface MockModule {
+type MockModule = {
   file: string | null;
   url: string;
-}
+};
 
-interface MockMessage {
+type MockMessage = {
   data: Record<string, unknown>;
   event: string;
   type: string;
-}
+};
 
-interface MockServer {
+type MockServer = {
   moduleGraph: {
     getModuleById: (id: string) => MockModule | undefined;
     idToModuleMap: Map<unknown, MockModule>;
@@ -1200,8 +1341,10 @@ interface MockServer {
   reloadModule: (mod: unknown) => Promise<void>;
   restart: () => Promise<void>;
   watcher: MockWatcher;
-  ws: { send: (message: MockMessage) => void };
-}
+  ws: {
+    send: (message: MockMessage) => void;
+  };
+};
 
 function createMockWatcher(): MockWatcher {
   const emitter = new EventEmitter() as MockWatcher;
@@ -1219,7 +1362,9 @@ function createMockServer(watcher: MockWatcher): MockServer {
     reloadModule: () => Promise.resolve(),
     restart: () => Promise.resolve(),
     watcher,
-    ws: { send: () => {} },
+    ws: {
+      send: () => {},
+    },
   };
 }
 

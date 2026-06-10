@@ -3,10 +3,10 @@ import type { Persistence } from './type';
 import { warn } from '../warn';
 import { subscribeHistory } from './history';
 
-interface UrlOptions {
+type UrlOptions = {
   locales: string[];
   match?: RegExp;
-}
+};
 
 export function url(options: UrlOptions): Persistence {
   const { locales, match } = options;
@@ -23,7 +23,9 @@ export function url(options: UrlOptions): Persistence {
     set() {
       warn(
         'setLocale() is a no-op with persistence: "url". The URL is the source of truth — drive locale switches through router navigation.',
-        { code: 'YPK_PERSISTENCE_URL_NOOP' },
+        {
+          code: 'YPK_PERSISTENCE_URL_NOOP',
+        },
       );
       return false;
     },

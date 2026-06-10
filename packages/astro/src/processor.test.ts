@@ -3,11 +3,20 @@ import { extractFile, transformFile } from 'yapyak/compiler';
 
 import { astro } from './processor';
 
-const processors = [astro()];
+const processors = [
+  astro(),
+];
 
-function runAstroTransform(source: string, locales: string[] = ['en']): string {
+function runAstroTransform(
+  source: string,
+  locales: string[] = [
+    'en',
+  ],
+): string {
   const fileId = 'src/a.astro';
-  const extracted = extractFile(fileId, source, { processors });
+  const extracted = extractFile(fileId, source, {
+    processors,
+  });
   return transformFile({
     extracted,
     fileId,
@@ -19,7 +28,9 @@ function runAstroTransform(source: string, locales: string[] = ['en']): string {
 }
 
 function extractAstro(source: string) {
-  return extractFile('src/a.astro', source, { processors });
+  return extractFile('src/a.astro', source, {
+    processors,
+  });
 }
 
 describe('astro processor — extract', () => {
@@ -46,7 +57,11 @@ describe('astro processor — extract', () => {
   });
 
   it('returns no messages when the frontmatter does not import yapyak', () => {
-    const source = ['---', '---', "<p>{t('Hello')}</p>"].join('\n');
+    const source = [
+      '---',
+      '---',
+      "<p>{t('Hello')}</p>",
+    ].join('\n');
     const result = extractAstro(source);
     expect(result.messages).toHaveLength(0);
   });
@@ -144,7 +159,9 @@ describe('astro processor — extract', () => {
       `<button title="static" aria-label={t('Save')}>x</button>`,
     ].join('\n');
     const result = extractAstro(source);
-    expect(result.messages.map((message) => message.source)).toEqual(['Save']);
+    expect(result.messages.map((message) => message.source)).toEqual([
+      'Save',
+    ]);
   });
 
   it('extracts `t()` from an expression attribute beside a boolean attribute', () => {
@@ -155,7 +172,9 @@ describe('astro processor — extract', () => {
       `<button disabled aria-label={t('Save')}>x</button>`,
     ].join('\n');
     const result = extractAstro(source);
-    expect(result.messages.map((message) => message.source)).toEqual(['Save']);
+    expect(result.messages.map((message) => message.source)).toEqual([
+      'Save',
+    ]);
   });
 
   it('extracts every `t()` from a template with multiple expressions', () => {
@@ -167,7 +186,11 @@ describe('astro processor — extract', () => {
     ].join('\n');
     const result = extractAstro(source);
     const sources = result.messages.map((message) => message.source).sort();
-    expect(sources).toEqual(['Cancel', 'Hello', 'World']);
+    expect(sources).toEqual([
+      'Cancel',
+      'Hello',
+      'World',
+    ]);
   });
 
   it('extracts `t()` from a frontmatter that spans multiple lines', () => {
@@ -183,7 +206,10 @@ describe('astro processor — extract', () => {
     ].join('\n');
     const result = extractAstro(source);
     const sources = result.messages.map((message) => message.source).sort();
-    expect(sources).toEqual(['Hello', 'Save']);
+    expect(sources).toEqual([
+      'Hello',
+      'Save',
+    ]);
   });
 
   it('extracts `t()` from siblings under the same element', () => {
@@ -195,7 +221,10 @@ describe('astro processor — extract', () => {
     ].join('\n');
     const result = extractAstro(source);
     const sources = result.messages.map((message) => message.source).sort();
-    expect(sources).toEqual(['Cancel', 'Hello']);
+    expect(sources).toEqual([
+      'Cancel',
+      'Hello',
+    ]);
   });
 
   it('extracts `t()` from an expression that contains a nested element', () => {
@@ -248,7 +277,7 @@ describe('astro processor — extract', () => {
       '---',
       "import { t } from 'yapyak';",
       '---',
-      `<p>{<span>x</span>}</p>`,
+      '<p>{<span>x</span>}</p>',
     ].join('\n');
     const result = extractAstro(source);
     expect(result.messages).toHaveLength(0);
@@ -282,9 +311,12 @@ describe('astro processor — extract', () => {
 describe('astro processor — transform', () => {
   it('elides Astro mustache `{t("Hello")}` to bare `Hello`', () => {
     const code = runAstroTransform(
-      ['---', "import { t } from 'yapyak';", '---', `<p>{t('Hello')}</p>`].join(
-        '\n',
-      ),
+      [
+        '---',
+        "import { t } from 'yapyak';",
+        '---',
+        `<p>{t('Hello')}</p>`,
+      ].join('\n'),
     );
     expect(code).toContain('<p>Hello</p>');
   });
@@ -304,10 +336,16 @@ describe('astro processor — transform', () => {
 
   it('writes the multi-locale source verbatim into the frontmatter import', () => {
     const code = runAstroTransform(
-      ['---', "import { t } from 'yapyak';", '---', `<p>{t('Hello')}</p>`].join(
-        '\n',
-      ),
-      ['en', 'sv'],
+      [
+        '---',
+        "import { t } from 'yapyak';",
+        '---',
+        `<p>{t('Hello')}</p>`,
+      ].join('\n'),
+      [
+        'en',
+        'sv',
+      ],
     );
     expect(code).toMatch(/import \{ pick as _pick \} from 'yapyak\/internal'/);
   });

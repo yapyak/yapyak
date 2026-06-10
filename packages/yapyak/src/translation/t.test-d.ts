@@ -15,7 +15,11 @@ describe('t', () => {
   });
 
   it('holds params for a source with placeholders', () => {
-    expectTypeOf(t('Hello, {name}!', { name: 'Alex' })).toExtend<string>();
+    expectTypeOf(
+      t('Hello, {name}!', {
+        name: 'Alex',
+      }),
+    ).toExtend<string>();
   });
 
   it('returns an untagged string from `t.in(locale, source)`', () => {
@@ -44,7 +48,9 @@ describe('t', () => {
 
   it('holds params from `at` for a source with placeholders', () => {
     expectTypeOf(
-      t.as('greeting', 'Hello, {name}!', { name: 'Alex' }),
+      t.as('greeting', 'Hello, {name}!', {
+        name: 'Alex',
+      }),
     ).toEqualTypeOf<TReturn<never>>();
   });
 
@@ -69,24 +75,45 @@ describe('t', () => {
   });
 
   it('holds a single source argument when source has no placeholders', () => {
-    expectTypeOf(t<'Save'>).parameters.toEqualTypeOf<['Save']>();
+    expectTypeOf(t<'Save'>).parameters.toEqualTypeOf<
+      [
+        'Save',
+      ]
+    >();
   });
 
   it('holds source and a required params tuple when source has placeholders', () => {
     expectTypeOf(t<'Hello, {name}!'>).parameters.toEqualTypeOf<
-      ['Hello, {name}!', { name: string | number }]
+      [
+        'Hello, {name}!',
+        {
+          name: string | number;
+        },
+      ]
     >();
   });
 
   it('holds locale, source, and params on `t.in()` with placeholders', () => {
     expectTypeOf(t.in<'Hello, {name}!'>).parameters.toEqualTypeOf<
-      [Locale, 'Hello, {name}!', { name: string | number }]
+      [
+        Locale,
+        'Hello, {name}!',
+        {
+          name: string | number;
+        },
+      ]
     >();
   });
 
   it('holds context, source, and params on `t.as()` with placeholders', () => {
     expectTypeOf(t.as<string, 'Hello, {name}!'>).parameters.toEqualTypeOf<
-      [string, 'Hello, {name}!', { name: string | number }]
+      [
+        string,
+        'Hello, {name}!',
+        {
+          name: string | number;
+        },
+      ]
     >();
   });
 

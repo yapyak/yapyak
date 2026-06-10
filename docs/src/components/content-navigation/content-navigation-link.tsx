@@ -6,9 +6,9 @@ import { Box } from '#components/box';
 
 import styles from './content-navigation-link.module.css';
 
-export interface ContentNavigationLinkProps {
+export type ContentNavigationLinkProps = {
   node: SidebarLink;
-}
+};
 
 export function ContentNavigationLink(props: ContentNavigationLinkProps) {
   const { node } = props;
@@ -16,7 +16,9 @@ export function ContentNavigationLink(props: ContentNavigationLinkProps) {
 
   return (
     <Box
-      activeOptions={{ exact: true }}
+      activeOptions={{
+        exact: true,
+      }}
       as={Link}
       className={styles.ContentNavigationLink}
       data-deprecated={isDeprecated}

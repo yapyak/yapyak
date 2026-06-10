@@ -14,5 +14,7 @@ export default defineConfig({
     'src/translator/index.ts',
     'src/translator/internal.ts',
   ],
-  external: ['yapyak/runtime'],
+  external: [
+    'yapyak/runtime',
+  ],
 });

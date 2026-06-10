@@ -6,13 +6,17 @@ describe('createProcessor', () => {
   it('returns a processor carrying id and extensions', () => {
     const processor = createProcessor(
       () => {},
-      ['.foo'],
+      [
+        '.foo',
+      ],
       'foo',
       () => [],
     );
 
     expect(processor.id).toBe('foo');
-    expect(processor.extensions).toEqual(['.foo']);
+    expect(processor.extensions).toEqual([
+      '.foo',
+    ]);
   });
 
   it('writes calls through to the provided applyImport hook', () => {
@@ -21,7 +25,9 @@ describe('createProcessor', () => {
       (_, source, importStatement) => {
         calls.push(`${source}|${importStatement}`);
       },
-      ['.foo'],
+      [
+        '.foo',
+      ],
       'foo',
       () => [],
     );
@@ -32,22 +38,36 @@ describe('createProcessor', () => {
       'source',
       "import { t } from 'yapyak';",
     );
-    expect(calls).toEqual(["source|import { t } from 'yapyak';"]);
+    expect(calls).toEqual([
+      "source|import { t } from 'yapyak';",
+    ]);
   });
 
   it('writes calls through to the provided parseFragments hook', () => {
     const processor = createProcessor(
       () => {},
-      ['.foo'],
+      [
+        '.foo',
+      ],
       'foo',
       (source) => [
-        { code: source, kind: 'script', lang: 'ts', originalOffset: 0 },
+        {
+          code: source,
+          kind: 'script',
+          lang: 'ts',
+          originalOffset: 0,
+        },
       ],
     );
 
     const fragments = processor.parseFragments('let x = 1;');
     expect(fragments).toEqual([
-      { code: 'let x = 1;', kind: 'script', lang: 'ts', originalOffset: 0 },
+      {
+        code: 'let x = 1;',
+        kind: 'script',
+        lang: 'ts',
+        originalOffset: 0,
+      },
     ]);
   });
 
@@ -55,7 +75,9 @@ describe('createProcessor', () => {
     expect(() =>
       createProcessor(
         () => {},
-        ['.foo'],
+        [
+          '.foo',
+        ],
         '',
         () => [],
       ),

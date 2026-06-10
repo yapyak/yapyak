@@ -7,11 +7,11 @@ import { Box } from '#components/box';
 import styles from './feature-section.module.css';
 import { FeatureSectionItem } from './feature-section-item';
 
-export interface Feature {
+export type Feature = {
   description: string;
   number: string;
   title: string;
-}
+};
 
 export interface FeatureSectionProps extends BoxProps<'section'> {}
 
@@ -95,7 +95,10 @@ export function FeatureSection(props: FeatureSectionProps) {
     <Box
       {...restProps}
       as="section"
-      className={[styles.FeatureSection, className]}
+      className={[
+        styles.FeatureSection,
+        className,
+      ]}
     >
       <Box
         aria-hidden="true"

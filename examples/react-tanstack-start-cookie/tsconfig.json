@@ -1,15 +1,26 @@
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "noEmit": true,
     "skipLibCheck": true,
     "strict": true,
     "target": "ES2023",
-    "types": ["node", "vite/client"],
+    "types": [
+      "node",
+      "vite/client"
+    ],
     "verbatimModuleSyntax": true
   },
-  "include": [".yapyak/types.d.ts", "src", "vite.config.ts"]
+  "include": [
+    ".yapyak/types.d.ts",
+    "src",
+    "vite.config.ts"
+  ]
 }

@@ -7,4 +7,6 @@ if (!target) {
   throw new Error('Mount target not found');
 }
 
-mount(App, { target });
+mount(App, {
+  target,
+});

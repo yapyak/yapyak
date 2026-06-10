@@ -11,14 +11,16 @@ describe('format', () => {
   describe('number', () => {
     it('folds thousands with grouping for the active locale', () => {
       setLocale('en');
-      expect(format.number(123456.78)).toBe('123,456.78');
+      expect(format.number(123_456.78)).toBe('123,456.78');
     });
 
     it('transforms to `maximumFractionDigits`', () => {
       setLocale('en');
-      expect(format.number(123456.78, { maximumFractionDigits: 1 })).toBe(
-        '123,456.8',
-      );
+      expect(
+        format.number(123_456.78, {
+          maximumFractionDigits: 1,
+        }),
+      ).toBe('123,456.8');
     });
 
     it('returns `NaN` for `Number.NaN`', () => {
@@ -41,7 +43,9 @@ describe('format', () => {
     it('returns a narrow symbol when `currencyDisplay` is `narrowSymbol`', () => {
       setLocale('en');
       expect(
-        format.currency(499, 'EUR', { currencyDisplay: 'narrowSymbol' }),
+        format.currency(499, 'EUR', {
+          currencyDisplay: 'narrowSymbol',
+        }),
       ).toContain('€');
     });
 
@@ -73,7 +77,13 @@ describe('format', () => {
   describe('list', () => {
     it('transforms items with a locale-aware conjunction', () => {
       setLocale('en');
-      expect(format.list(['a', 'b', 'c'])).toBe('a, b, and c');
+      expect(
+        format.list([
+          'a',
+          'b',
+          'c',
+        ]),
+      ).toBe('a, b, and c');
     });
 
     it('returns an empty string for an empty iterable', () => {
@@ -83,7 +93,11 @@ describe('format', () => {
 
     it('returns the single item unchanged for a singleton iterable', () => {
       setLocale('en');
-      expect(format.list(['Hello'])).toBe('Hello');
+      expect(
+        format.list([
+          'Hello',
+        ]),
+      ).toBe('Hello');
     });
   });
 
@@ -158,7 +172,7 @@ describe('format', () => {
   describe('in', () => {
     it('returns a formatted value for the scoped locale regardless of the active locale', () => {
       setLocale('en');
-      expect(format.in('sv').number(123456.78)).toMatch(/123\D456,78/);
+      expect(format.in('sv').number(123_456.78)).toMatch(/123\D456,78/);
     });
 
     it('returns a reusable formatter', () => {

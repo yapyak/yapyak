@@ -16,10 +16,23 @@ describe('response-header-writer', () => {
   });
 
   it('notifies the registered writer with name and value', () => {
-    const writes: Array<[string, string]> = [];
-    setResponseHeaderWriter((name, value) => writes.push([name, value]));
+    const writes: [
+      string,
+      string,
+    ][] = [];
+    setResponseHeaderWriter((name, value) =>
+      writes.push([
+        name,
+        value,
+      ]),
+    );
     appendResponseHeader('Set-Cookie', 'locale=sv');
-    expect(writes).toEqual([['Set-Cookie', 'locale=sv']]);
+    expect(writes).toEqual([
+      [
+        'Set-Cookie',
+        'locale=sv',
+      ],
+    ]);
   });
 
   it('returns `true` from `appendResponseHeader` when a writer is registered', () => {
@@ -40,6 +53,8 @@ describe('response-header-writer', () => {
     setResponseHeaderWriter((_, value) => secondWriterCalls.push(value));
     appendResponseHeader('Set-Cookie', 'locale=sv');
     expect(firstWriterCalls).toEqual([]);
-    expect(secondWriterCalls).toEqual(['locale=sv']);
+    expect(secondWriterCalls).toEqual([
+      'locale=sv',
+    ]);
   });
 });

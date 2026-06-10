@@ -35,37 +35,44 @@ import { nullify } from '../../nullify';
 import { readFile } from 'node:fs/promises';
 import { join, relative, resolve } from 'node:path';
 
-interface ExtractTypedocOptions {
+type ExtractTypedocOptions = {
   subpaths?: string[];
-}
+};
 
-interface EntryPoint {
+type EntryPoint = {
   filePath: string;
   id: string;
   subpath: string;
-}
+};
 
-interface PackageJson {
-  exports: Record<string, { default?: string; types?: string } | string>;
+type PackageJson = {
+  exports: Record<
+    string,
+    | {
+        default?: string;
+        types?: string;
+      }
+    | string
+  >;
   name: string;
-}
+};
 
-interface ExtractContext {
+type ExtractContext = {
   collectionName: string;
   nameIndex: Map<string, string | 'ambiguous'>;
   packageDir: string;
   registry: Map<number, string>;
-}
+};
 
-interface CommentLike {
+type CommentLike = {
   blockTags?: ReadonlyArray<{
-    content?: ReadonlyArray<CommentDisplayPart>;
+    content?: readonly CommentDisplayPart[];
     name?: string;
     tag: string;
   }>;
   modifierTags?: ReadonlySet<string>;
-  summary?: ReadonlyArray<CommentDisplayPart>;
-}
+  summary?: readonly CommentDisplayPart[];
+};
 
 export async function extractTypedoc(
   packageDir: string,
@@ -91,17 +98,25 @@ export async function extractTypedoc(
     registry,
   };
   const modules = extractReferenceModules(project, entries, extractContext);
-  return { modules, packageName };
+  return {
+    modules,
+    packageName,
+  };
 }
 
 async function loadEntries(
   packageDir: string,
   subpaths: string[] | undefined,
-): Promise<{ entries: EntryPoint[]; packageName: string }> {
+): Promise<{
+  entries: EntryPoint[];
+  packageName: string;
+}> {
   const raw = await readFile(join(packageDir, 'package.json'), 'utf8');
   const pkg = JSON.parse(raw) as PackageJson;
 
-  const allowedSubpaths = new Set<string>(['.']);
+  const allowedSubpaths = new Set<string>([
+    '.',
+  ]);
   if (subpaths) {
     for (const subpath of subpaths) {
       allowedSubpaths.add(subpath);
@@ -126,9 +141,16 @@ async function loadEntries(
       .replace(/\.js$/, '.ts');
     const filePath = resolve(packageDir, sourcePath);
     const id = subpath === '.' ? pkg.name : `${pkg.name}${subpath.slice(1)}`;
-    entries.push({ filePath, id, subpath });
+    entries.push({
+      filePath,
+      id,
+      subpath,
+    });
   }
-  return { entries, packageName: pkg.name };
+  return {
+    entries,
+    packageName: pkg.name,
+  };
 }
 
 async function loadProject(
@@ -144,7 +166,9 @@ async function loadProject(
       skipErrorChecking: true,
       tsconfig: resolve(packageDir, 'tsconfig.json'),
     },
-    [new TSConfigReader()],
+    [
+      new TSConfigReader(),
+    ],
   );
   const project = await app.convert();
   if (!project) {
@@ -153,11 +177,11 @@ async function loadProject(
   return project;
 }
 
-interface ProjectModule {
-  children: ReadonlyArray<DeclarationReflection>;
+type ProjectModule = {
+  children: readonly DeclarationReflection[];
   comment: ProjectReflection['comment'];
   entry: EntryPoint;
-}
+};
 
 function extractProjectModules(
   project: ProjectReflection,
@@ -225,7 +249,10 @@ function buildLinkRegistry(
       }
     }
   }
-  return { nameIndex, registry };
+  return {
+    nameIndex,
+    registry,
+  };
 }
 
 function buildSymbolUrl(
@@ -323,10 +350,18 @@ function resolveCallableSignatures(
       target &&
       'signatures' in target &&
       Array.isArray(
-        (target as { signatures?: SignatureReflection[] }).signatures,
+        (
+          target as {
+            signatures?: SignatureReflection[];
+          }
+        ).signatures,
       )
     ) {
-      const sigs = (target as { signatures: SignatureReflection[] }).signatures;
+      const sigs = (
+        target as {
+          signatures: SignatureReflection[];
+        }
+      ).signatures;
       if (sigs.length > 0) {
         return sigs;
       }
@@ -571,7 +606,12 @@ function toTypeTokens(type: SomeType): TypeToken[] {
 function tokensFromType(type: SomeType): TypeToken[] {
   switch (type.type) {
     case 'intrinsic':
-      return [{ kind: 'text', text: type.name }];
+      return [
+        {
+          kind: 'text',
+          text: type.name,
+        },
+      ];
     case 'literal':
       return [
         {
@@ -585,36 +625,56 @@ function tokensFromType(type: SomeType): TypeToken[] {
     case 'reference': {
       const head: TypeToken =
         type.refersToTypeParameter === true
-          ? { kind: 'text', text: type.name }
+          ? {
+              kind: 'text',
+              text: type.name,
+            }
           : {
               kind: 'ref',
               module: resolveReferenceModuleName(type),
               name: type.name,
               text: type.name,
             };
-      const tokens: TypeToken[] = [head];
+      const tokens: TypeToken[] = [
+        head,
+      ];
       if (type.typeArguments && type.typeArguments.length > 0) {
-        tokens.push({ kind: 'text', text: '<' });
+        tokens.push({
+          kind: 'text',
+          text: '<',
+        });
         for (const [index, typeArg] of type.typeArguments.entries()) {
           if (index > 0) {
-            tokens.push({ kind: 'text', text: ', ' });
+            tokens.push({
+              kind: 'text',
+              text: ', ',
+            });
           }
           tokens.push(...tokensFromType(typeArg));
         }
-        tokens.push({ kind: 'text', text: '>' });
+        tokens.push({
+          kind: 'text',
+          text: '>',
+        });
       }
       return tokens;
     }
     case 'array':
       return [
         ...tokensFromType(type.elementType),
-        { kind: 'text', text: '[]' },
+        {
+          kind: 'text',
+          text: '[]',
+        },
       ];
     case 'union': {
       const tokens: TypeToken[] = [];
       for (const [index, member] of type.types.entries()) {
         if (index > 0) {
-          tokens.push({ kind: 'text', text: ' | ' });
+          tokens.push({
+            kind: 'text',
+            text: ' | ',
+          });
         }
         tokens.push(...tokensFromType(member));
       }
@@ -624,27 +684,46 @@ function tokensFromType(type: SomeType): TypeToken[] {
       const tokens: TypeToken[] = [];
       for (const [index, member] of type.types.entries()) {
         if (index > 0) {
-          tokens.push({ kind: 'text', text: ' & ' });
+          tokens.push({
+            kind: 'text',
+            text: ' & ',
+          });
         }
         tokens.push(...tokensFromType(member));
       }
       return tokens;
     }
     case 'tuple': {
-      const tokens: TypeToken[] = [{ kind: 'text', text: '[' }];
+      const tokens: TypeToken[] = [
+        {
+          kind: 'text',
+          text: '[',
+        },
+      ];
       for (const [index, element] of type.elements.entries()) {
         if (index > 0) {
-          tokens.push({ kind: 'text', text: ', ' });
+          tokens.push({
+            kind: 'text',
+            text: ', ',
+          });
         }
         tokens.push(...tokensFromType(element));
       }
-      tokens.push({ kind: 'text', text: ']' });
+      tokens.push({
+        kind: 'text',
+        text: ']',
+      });
       return tokens;
     }
     case 'reflection':
       return tokensFromReflectionType(type);
     default:
-      return [{ kind: 'text', text: type.toString() }];
+      return [
+        {
+          kind: 'text',
+          text: type.toString(),
+        },
+      ];
   }
 }
 
@@ -658,53 +737,99 @@ function tokensFromReflectionType(type: {
   }
   const children = declaration.children;
   if (children && children.length > 0) {
-    const tokens: TypeToken[] = [{ kind: 'text', text: '{ ' }];
+    const tokens: TypeToken[] = [
+      {
+        kind: 'text',
+        text: '{ ',
+      },
+    ];
     for (const [index, child] of children.entries()) {
       if (index > 0) {
-        tokens.push({ kind: 'text', text: '; ' });
+        tokens.push({
+          kind: 'text',
+          text: '; ',
+        });
       }
       const optional = child.flags.isOptional ? '?' : '';
-      tokens.push({ kind: 'text', text: `${child.name}${optional}: ` });
+      tokens.push({
+        kind: 'text',
+        text: `${child.name}${optional}: `,
+      });
       if (child.type) {
         tokens.push(...tokensFromType(child.type));
       }
     }
-    tokens.push({ kind: 'text', text: ' }' });
+    tokens.push({
+      kind: 'text',
+      text: ' }',
+    });
     return tokens;
   }
-  return [{ kind: 'text', text: '{}' }];
+  return [
+    {
+      kind: 'text',
+      text: '{}',
+    },
+  ];
 }
 
 function tokensFromSignature(signature: SignatureReflection): TypeToken[] {
   const tokens: TypeToken[] = [];
   const typeParameters = signature.typeParameters ?? [];
   if (typeParameters.length > 0) {
-    tokens.push({ kind: 'text', text: '<' });
+    tokens.push({
+      kind: 'text',
+      text: '<',
+    });
     for (let index = 0; index < typeParameters.length; index++) {
       if (index > 0) {
-        tokens.push({ kind: 'text', text: ', ' });
+        tokens.push({
+          kind: 'text',
+          text: ', ',
+        });
       }
-      tokens.push({ kind: 'text', text: typeParameters[index]?.name ?? '' });
+      tokens.push({
+        kind: 'text',
+        text: typeParameters[index]?.name ?? '',
+      });
     }
-    tokens.push({ kind: 'text', text: '>' });
+    tokens.push({
+      kind: 'text',
+      text: '>',
+    });
   }
-  tokens.push({ kind: 'text', text: '(' });
+  tokens.push({
+    kind: 'text',
+    text: '(',
+  });
   const parameters = signature.parameters ?? [];
   for (const [index, param] of parameters.entries()) {
     if (index > 0) {
-      tokens.push({ kind: 'text', text: ', ' });
+      tokens.push({
+        kind: 'text',
+        text: ', ',
+      });
     }
     const optional = param.flags.isOptional ? '?' : '';
-    tokens.push({ kind: 'text', text: `${param.name}${optional}: ` });
+    tokens.push({
+      kind: 'text',
+      text: `${param.name}${optional}: `,
+    });
     if (param.type) {
       tokens.push(...tokensFromType(param.type));
     }
   }
-  tokens.push({ kind: 'text', text: ') => ' });
+  tokens.push({
+    kind: 'text',
+    text: ') => ',
+  });
   if (signature.type) {
     tokens.push(...tokensFromType(signature.type));
   } else {
-    tokens.push({ kind: 'text', text: 'void' });
+    tokens.push({
+      kind: 'text',
+      text: 'void',
+    });
   }
   return tokens;
 }
@@ -713,7 +838,11 @@ function resolveReferenceModuleName(type: {
   package?: string;
   qualifiedName?: string;
   refersToTypeParameter?: boolean;
-  target?: number | { packageName?: string };
+  target?:
+    | number
+    | {
+        packageName?: string;
+      };
 }): string {
   if (
     typeof type.target === 'object' &&
@@ -736,7 +865,9 @@ function normalizeTokens(tokens: TypeToken[]): TypeToken[] {
       last.text += token.text;
       continue;
     }
-    merged.push({ ...token });
+    merged.push({
+      ...token,
+    });
   }
   return merged;
 }
@@ -790,7 +921,7 @@ function buildInterfaceSignature(
 }
 
 function partsToMarkdown(
-  parts: ReadonlyArray<CommentDisplayPart> | undefined,
+  parts: readonly CommentDisplayPart[] | undefined,
   context: ExtractContext,
 ): string {
   if (!parts) {
@@ -808,7 +939,10 @@ function partsToMarkdown(
 }
 
 function resolveInlineLink(
-  part: { target?: unknown; text: string },
+  part: {
+    target?: unknown;
+    text: string;
+  },
   context: ExtractContext,
 ): string {
   const targetId = resolveTargetId(part.target);
@@ -833,9 +967,17 @@ function resolveTargetId(target: unknown): number | undefined {
     typeof target === 'object' &&
     target !== null &&
     'id' in target &&
-    typeof (target as { id: unknown }).id === 'number'
+    typeof (
+      target as {
+        id: unknown;
+      }
+    ).id === 'number'
   ) {
-    return (target as { id: number }).id;
+    return (
+      target as {
+        id: number;
+      }
+    ).id;
   }
   return undefined;
 }
@@ -879,10 +1021,15 @@ function parseCodeFence(raw: string): {
     return {
       code: fenceMatch[3] ?? '',
       language: fenceMatch[1] ?? 'ts',
-      ...(path !== undefined && { path }),
+      ...(path !== undefined && {
+        path,
+      }),
     };
   }
-  return { code: trimmed, language: 'ts' };
+  return {
+    code: trimmed,
+    language: 'ts',
+  };
 }
 
 function isPathLike(value: string): boolean {
@@ -969,7 +1116,10 @@ function readThrows(
         errorClass: (match[1] ?? '').trim(),
       });
     } else {
-      throws.push({ condition: text, errorClass: '' });
+      throws.push({
+        condition: text,
+        errorClass: '',
+      });
     }
   }
   return throws;
@@ -997,7 +1147,11 @@ function readLocation(
 ): ReferenceLocation {
   const source = reflection.sources?.[0];
   if (!source) {
-    return { column: 0, file: '', line: 0 };
+    return {
+      column: 0,
+      file: '',
+      line: 0,
+    };
   }
   const file = relative(
     packageDir,

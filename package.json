@@ -12,7 +12,7 @@
     "typecheck": "pnpm -r --parallel typecheck"
   },
   "devDependencies": {
-    "@biomejs/biome": "catalog:",
+    "@biomejs/biome": "^2.4.16",
     "@vitest/coverage-v8": "catalog:",
     "@yapyak/biome-config": "workspace:*",
     "vitest": "catalog:"

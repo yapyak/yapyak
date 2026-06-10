@@ -13,26 +13,48 @@ import {
 
 describe('factory', () => {
   it('literal returns a LiteralNode', () => {
-    expect(literal('Hello')).toEqual({ kind: 'literal', value: 'Hello' });
+    expect(literal('Hello')).toEqual({
+      kind: 'literal',
+      value: 'Hello',
+    });
   });
 
   it('placeholder returns a PlaceholderNode', () => {
-    expect(placeholder('name')).toEqual({ kind: 'placeholder', name: 'name' });
+    expect(placeholder('name')).toEqual({
+      kind: 'placeholder',
+      name: 'name',
+    });
   });
 
   it('count returns a CountNode', () => {
-    expect(count()).toEqual({ kind: 'count' });
+    expect(count()).toEqual({
+      kind: 'count',
+    });
   });
 
   it('plural returns a PluralNode with cardinal type', () => {
     const node = plural('count', 'cardinal', {
-      one: [literal('item')],
-      other: [literal('items')],
+      one: [
+        literal('item'),
+      ],
+      other: [
+        literal('items'),
+      ],
     });
     expect(node).toEqual({
       branches: {
-        one: [{ kind: 'literal', value: 'item' }],
-        other: [{ kind: 'literal', value: 'items' }],
+        one: [
+          {
+            kind: 'literal',
+            value: 'item',
+          },
+        ],
+        other: [
+          {
+            kind: 'literal',
+            value: 'items',
+          },
+        ],
       },
       kind: 'plural',
       name: 'count',
@@ -42,13 +64,27 @@ describe('factory', () => {
 
   it('select returns a SelectNode', () => {
     const node = select('gender', {
-      male: [literal('he')],
-      other: [literal('they')],
+      male: [
+        literal('he'),
+      ],
+      other: [
+        literal('they'),
+      ],
     });
     expect(node).toEqual({
       branches: {
-        male: [{ kind: 'literal', value: 'he' }],
-        other: [{ kind: 'literal', value: 'they' }],
+        male: [
+          {
+            kind: 'literal',
+            value: 'he',
+          },
+        ],
+        other: [
+          {
+            kind: 'literal',
+            value: 'they',
+          },
+        ],
       },
       kind: 'select',
       name: 'gender',
@@ -56,10 +92,16 @@ describe('factory', () => {
   });
 
   it('number returns a NumberNode with options', () => {
-    expect(number('value', { style: 'percent' })).toEqual({
+    expect(
+      number('value', {
+        style: 'percent',
+      }),
+    ).toEqual({
       kind: 'number',
       name: 'value',
-      options: { style: 'percent' },
+      options: {
+        style: 'percent',
+      },
     });
   });
 
@@ -80,10 +122,19 @@ describe('factory', () => {
   });
 
   it('composes nodes that interpret can render correctly', () => {
-    const ast = [literal('Hi '), placeholder('name')];
+    const ast = [
+      literal('Hi '),
+      placeholder('name'),
+    ];
     expect(ast).toEqual([
-      { kind: 'literal', value: 'Hi ' },
-      { kind: 'placeholder', name: 'name' },
+      {
+        kind: 'literal',
+        value: 'Hi ',
+      },
+      {
+        kind: 'placeholder',
+        name: 'name',
+      },
     ]);
   });
 });

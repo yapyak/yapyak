@@ -12,10 +12,17 @@ export function buildPersistence(
     return undefined;
   }
   if (config.type === 'cookie') {
-    return cookie({ name: config.name });
+    return cookie({
+      name: config.name,
+    });
   }
   if (config.type === 'local-storage') {
-    return localStorage({ key: config.key });
+    return localStorage({
+      key: config.key,
+    });
   }
-  return url({ locales, match: config.match });
+  return url({
+    locales,
+    match: config.match,
+  });
 }

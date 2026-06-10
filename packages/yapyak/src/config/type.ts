@@ -15,7 +15,7 @@ export type {
 export type FilterPattern = string | RegExp | Array<string | RegExp>;
 
 /** Configuration for yapyak. */
-export interface YapyakConfig {
+export type YapyakConfig = {
   /**
    * The maximum number of cumulative project-wide untranslated strings eligible for auto-translation during dev.
    *
@@ -136,4 +136,4 @@ export interface YapyakConfig {
   syncHtmlLang?: boolean;
   /** The translator used to fill missing entries. Stubs stay empty without one. */
   translator?: Translator;
-}
+};

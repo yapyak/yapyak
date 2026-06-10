@@ -10,46 +10,114 @@ describe('interpret', () => {
   });
 
   it('renders a single literal as-is', () => {
-    expect(interpret([{ kind: 'literal', value: 'Hello' }], {}, 'en')).toBe(
-      'Hello',
-    );
+    expect(
+      interpret(
+        [
+          {
+            kind: 'literal',
+            value: 'Hello',
+          },
+        ],
+        {},
+        'en',
+      ),
+    ).toBe('Hello');
   });
 
   it('renders a placeholder from params', () => {
     expect(
-      interpret([{ kind: 'placeholder', name: 'name' }], { name: 'Ada' }, 'en'),
+      interpret(
+        [
+          {
+            kind: 'placeholder',
+            name: 'name',
+          },
+        ],
+        {
+          name: 'Ada',
+        },
+        'en',
+      ),
     ).toBe('Ada');
   });
 
   it('renders a missing placeholder as an empty string', () => {
-    expect(interpret([{ kind: 'placeholder', name: 'name' }], {}, 'en')).toBe(
-      '',
-    );
+    expect(
+      interpret(
+        [
+          {
+            kind: 'placeholder',
+            name: 'name',
+          },
+        ],
+        {},
+        'en',
+      ),
+    ).toBe('');
   });
 
   it('coerces numeric placeholder values to strings', () => {
     expect(
-      interpret([{ kind: 'placeholder', name: 'n' }], { n: 42 }, 'en'),
+      interpret(
+        [
+          {
+            kind: 'placeholder',
+            name: 'n',
+          },
+        ],
+        {
+          n: 42,
+        },
+        'en',
+      ),
     ).toBe('42');
   });
 
   describe('count', () => {
     it('renders nothing for a CountNode outside any plural context', () => {
-      expect(interpret([{ kind: 'count' }], { count: 5 }, 'en')).toBe('');
+      expect(
+        interpret(
+          [
+            {
+              kind: 'count',
+            },
+          ],
+          {
+            count: 5,
+          },
+          'en',
+        ),
+      ).toBe('');
     });
 
     it('renders the formatted count inside a plural branch', () => {
       const template: Template = [
         {
           branches: {
-            other: [{ kind: 'count' }, { kind: 'literal', value: ' items' }],
+            other: [
+              {
+                kind: 'count',
+              },
+              {
+                kind: 'literal',
+                value: ' items',
+              },
+            ],
           },
           kind: 'plural',
           name: 'count',
           type: 'cardinal',
         },
       ];
-      expect(interpret(template, { count: 1234 }, 'en')).toBe('1,234 items');
+      expect(
+        interpret(
+          template,
+          {
+            count: 1234,
+          },
+          'en',
+        ),
+      ).toBe('1,234 items');
     });
   });
 
@@ -57,8 +125,24 @@ describe('interpret', () => {
     const oneOrMany: Template = [
       {
         branches: {
-          one: [{ kind: 'count' }, { kind: 'literal', value: ' item' }],
-          other: [{ kind: 'count' }, { kind: 'literal', value: ' items' }],
+          one: [
+            {
+              kind: 'count',
+            },
+            {
+              kind: 'literal',
+              value: ' item',
+            },
+          ],
+          other: [
+            {
+              kind: 'count',
+            },
+            {
+              kind: 'literal',
+              value: ' items',
+            },
+          ],
         },
         kind: 'plural',
         name: 'count',
@@ -67,41 +151,99 @@ describe('interpret', () => {
     ];
 
     it('picks the `one` branch for cardinality one', () => {
-      expect(interpret(oneOrMany, { count: 1 }, 'en')).toBe('1 item');
+      expect(
+        interpret(
+          oneOrMany,
+          {
+            count: 1,
+          },
+          'en',
+        ),
+      ).toBe('1 item');
     });
 
     it('picks the `other` branch for cardinality many', () => {
-      expect(interpret(oneOrMany, { count: 5 }, 'en')).toBe('5 items');
+      expect(
+        interpret(
+          oneOrMany,
+          {
+            count: 5,
+          },
+          'en',
+        ),
+      ).toBe('5 items');
     });
 
     it('picks an exact `=N` branch over the category branch', () => {
       const template: Template = [
         {
           branches: {
-            '=0': [{ kind: 'literal', value: 'none' }],
-            one: [{ kind: 'count' }, { kind: 'literal', value: ' item' }],
-            other: [{ kind: 'count' }, { kind: 'literal', value: ' items' }],
+            '=0': [
+              {
+                kind: 'literal',
+                value: 'none',
+              },
+            ],
+            one: [
+              {
+                kind: 'count',
+              },
+              {
+                kind: 'literal',
+                value: ' item',
+              },
+            ],
+            other: [
+              {
+                kind: 'count',
+              },
+              {
+                kind: 'literal',
+                value: ' items',
+              },
+            ],
           },
           kind: 'plural',
           name: 'count',
           type: 'cardinal',
         },
       ];
-      expect(interpret(template, { count: 0 }, 'en')).toBe('none');
+      expect(
+        interpret(
+          template,
+          {
+            count: 0,
+          },
+          'en',
+        ),
+      ).toBe('none');
     });
 
     it('falls back to `other` when the category has no branch', () => {
       const template: Template = [
         {
           branches: {
-            other: [{ kind: 'literal', value: 'many' }],
+            other: [
+              {
+                kind: 'literal',
+                value: 'many',
+              },
+            ],
           },
           kind: 'plural',
           name: 'count',
           type: 'cardinal',
         },
       ];
-      expect(interpret(template, { count: 1 }, 'en')).toBe('many');
+      expect(
+        interpret(
+          template,
+          {
+            count: 1,
+          },
+          'en',
+        ),
+      ).toBe('many');
     });
 
     it('renders nested placeholders inside a plural branch', () => {
@@ -109,14 +251,30 @@ describe('interpret', () => {
         {
           branches: {
             one: [
-              { kind: 'count' },
-              { kind: 'literal', value: ' from ' },
-              { kind: 'placeholder', name: 'name' },
+              {
+                kind: 'count',
+              },
+              {
+                kind: 'literal',
+                value: ' from ',
+              },
+              {
+                kind: 'placeholder',
+                name: 'name',
+              },
             ],
             other: [
-              { kind: 'count' },
-              { kind: 'literal', value: ' from ' },
-              { kind: 'placeholder', name: 'name' },
+              {
+                kind: 'count',
+              },
+              {
+                kind: 'literal',
+                value: ' from ',
+              },
+              {
+                kind: 'placeholder',
+                name: 'name',
+              },
             ],
           },
           kind: 'plural',
@@ -124,9 +282,16 @@ describe('interpret', () => {
           type: 'cardinal',
         },
       ];
-      expect(interpret(template, { count: 1, name: 'Ann' }, 'en')).toBe(
-        '1 from Ann',
-      );
+      expect(
+        interpret(
+          template,
+          {
+            count: 1,
+            name: 'Ann',
+          },
+          'en',
+        ),
+      ).toBe('1 from Ann');
     });
   });
 
@@ -134,9 +299,24 @@ describe('interpret', () => {
     const template: Template = [
       {
         branches: {
-          female: [{ kind: 'literal', value: 'she' }],
-          male: [{ kind: 'literal', value: 'he' }],
-          other: [{ kind: 'literal', value: 'they' }],
+          female: [
+            {
+              kind: 'literal',
+              value: 'she',
+            },
+          ],
+          male: [
+            {
+              kind: 'literal',
+              value: 'he',
+            },
+          ],
+          other: [
+            {
+              kind: 'literal',
+              value: 'they',
+            },
+          ],
         },
         kind: 'select',
         name: 'gender',
@@ -144,11 +324,27 @@ describe('interpret', () => {
     ];
 
     it('selects the matching branch', () => {
-      expect(interpret(template, { gender: 'female' }, 'en')).toBe('she');
+      expect(
+        interpret(
+          template,
+          {
+            gender: 'female',
+          },
+          'en',
+        ),
+      ).toBe('she');
     });
 
     it('falls back to `other` when no branch matches', () => {
-      expect(interpret(template, { gender: 'unknown' }, 'en')).toBe('they');
+      expect(
+        interpret(
+          template,
+          {
+            gender: 'unknown',
+          },
+          'en',
+        ),
+      ).toBe('they');
     });
 
     it('inherits the plural context through a nested select', () => {
@@ -158,14 +354,29 @@ describe('interpret', () => {
             one: [
               {
                 branches: {
-                  male: [{ kind: 'literal', value: 'he' }],
-                  other: [{ kind: 'literal', value: 'they' }],
+                  male: [
+                    {
+                      kind: 'literal',
+                      value: 'he',
+                    },
+                  ],
+                  other: [
+                    {
+                      kind: 'literal',
+                      value: 'they',
+                    },
+                  ],
                 },
                 kind: 'select',
                 name: 'g',
               },
-              { kind: 'literal', value: ' sent ' },
-              { kind: 'count' },
+              {
+                kind: 'literal',
+                value: ' sent ',
+              },
+              {
+                kind: 'count',
+              },
             ],
           },
           kind: 'plural',
@@ -173,9 +384,16 @@ describe('interpret', () => {
           type: 'cardinal',
         },
       ];
-      expect(interpret(nested, { count: 1, g: 'male' }, 'en')).toBe(
-        'he sent 1',
-      );
+      expect(
+        interpret(
+          nested,
+          {
+            count: 1,
+            g: 'male',
+          },
+          'en',
+        ),
+      ).toBe('he sent 1');
     });
   });
 
@@ -183,8 +401,16 @@ describe('interpret', () => {
     it('formats with no options as decimal default', () => {
       expect(
         interpret(
-          [{ kind: 'number', name: 'value', options: {} }],
-          { value: 1234.5 },
+          [
+            {
+              kind: 'number',
+              name: 'value',
+              options: {},
+            },
+          ],
+          {
+            value: 1234.5,
+          },
           'en',
         ),
       ).toBe('1,234.5');
@@ -193,8 +419,18 @@ describe('interpret', () => {
     it('formats `percent` style', () => {
       expect(
         interpret(
-          [{ kind: 'number', name: 'value', options: { style: 'percent' } }],
-          { value: 0.25 },
+          [
+            {
+              kind: 'number',
+              name: 'value',
+              options: {
+                style: 'percent',
+              },
+            },
+          ],
+          {
+            value: 0.25,
+          },
           'en',
         ),
       ).toBe('25%');
@@ -203,8 +439,16 @@ describe('interpret', () => {
     it('renders an empty string for null', () => {
       expect(
         interpret(
-          [{ kind: 'number', name: 'value', options: {} }],
-          { value: null },
+          [
+            {
+              kind: 'number',
+              name: 'value',
+              options: {},
+            },
+          ],
+          {
+            value: null,
+          },
           'en',
         ),
       ).toBe('');
@@ -214,8 +458,16 @@ describe('interpret', () => {
   describe('date', () => {
     it('formats a Date with the given style', () => {
       const result = interpret(
-        [{ kind: 'date', name: 'when', style: 'short' }],
-        { when: new Date('2026-06-10T00:00:00Z') },
+        [
+          {
+            kind: 'date',
+            name: 'when',
+            style: 'short',
+          },
+        ],
+        {
+          when: new Date('2026-06-10T00:00:00Z'),
+        },
         'en',
       );
       expect(result).toMatch(/\d/);
@@ -224,8 +476,16 @@ describe('interpret', () => {
     it('renders an empty string for an invalid date input', () => {
       expect(
         interpret(
-          [{ kind: 'date', name: 'when', style: 'short' }],
-          { when: 'not-a-date' },
+          [
+            {
+              kind: 'date',
+              name: 'when',
+              style: 'short',
+            },
+          ],
+          {
+            when: 'not-a-date',
+          },
           'en',
         ),
       ).toBe('');

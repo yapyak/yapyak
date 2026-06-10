@@ -11,11 +11,11 @@ import { buildReport } from '../report';
 import { color, header, symbol } from '../tui';
 import { join } from 'node:path';
 
-interface MissingTranslation {
+type MissingTranslation = {
   fileId: string;
   locale: string;
   source: string;
-}
+};
 
 export function check(config: Config, projectRoot: string): number {
   const report = buildReport({
@@ -28,7 +28,9 @@ export function check(config: Config, projectRoot: string): number {
   });
 
   const localesPath = join(projectRoot, config.localesDir);
-  const allDiagnostics: Diagnostic[] = [...report.diagnostics];
+  const allDiagnostics: Diagnostic[] = [
+    ...report.diagnostics,
+  ];
   allDiagnostics.push(...detectAtIssues(report.messages));
 
   for (const locale of report.locales) {
@@ -70,7 +72,9 @@ export function check(config: Config, projectRoot: string): number {
     for (const entry of report.missing) {
       const list = byLocale[entry.locale];
       if (!list) {
-        byLocale[entry.locale] = [entry];
+        byLocale[entry.locale] = [
+          entry,
+        ];
       } else {
         list.push(entry);
       }
@@ -139,7 +143,9 @@ function printDiagnosticGroup(input: {
   label: string;
 }): void {
   process.stdout.write(`  ${symbol.cross} ${input.colorize(input.label)}\n\n`);
-  const sorted = [...input.diagnostics].sort((a, b) => {
+  const sorted = [
+    ...input.diagnostics,
+  ].sort((a, b) => {
     if (a.fileId !== b.fileId) {
       return a.fileId < b.fileId ? -1 : 1;
     }

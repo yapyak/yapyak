@@ -19,10 +19,14 @@ describe('cookie', () => {
         },
         set cookie(value: string) {
           const [pair] = value.split(';');
-          if (!pair) return;
+          if (!pair) {
+            return;
+          }
           const [name, val = ''] = pair.split('=');
           const trimmedName = name?.trim();
-          if (!trimmedName) return;
+          if (!trimmedName) {
+            return;
+          }
           const existing = cookieJar
             .split(';')
             .map((part) => part.trim())
@@ -39,50 +43,81 @@ describe('cookie', () => {
 
     it('returns the cookie value from `document.cookie`', () => {
       cookieJar = 'locale=sv';
-      expect(cookie({ name: 'locale' }).get()).toBe('sv');
+      expect(
+        cookie({
+          name: 'locale',
+        }).get(),
+      ).toBe('sv');
     });
 
     it('writes to `document.cookie` on set', () => {
-      cookie({ name: 'locale' }).set('fr');
+      cookie({
+        name: 'locale',
+      }).set('fr');
       expect(cookieJar).toContain('locale=fr');
     });
 
     it('writes under the configured cookie name', () => {
-      cookie({ name: 'app-locale' }).set('de');
+      cookie({
+        name: 'app-locale',
+      }).set('de');
       expect(cookieJar).toContain('app-locale=de');
     });
 
     it('returns true from set in the browser', () => {
-      expect(cookie({ name: 'locale' }).set('sv')).toBe(true);
+      expect(
+        cookie({
+          name: 'locale',
+        }).set('sv'),
+      ).toBe(true);
     });
 
     it('returns the cookie value from the request `cookie` header', () => {
       const request = new Request('http://example.test', {
-        headers: { cookie: 'locale=sv; theme=dark' },
+        headers: {
+          cookie: 'locale=sv; theme=dark',
+        },
       });
-      expect(cookie({ name: 'locale' }).getFromRequest?.(request)).toBe('sv');
+      expect(
+        cookie({
+          name: 'locale',
+        }).getFromRequest?.(request),
+      ).toBe('sv');
     });
 
     it('returns `undefined` when cookie is missing', () => {
       cookieJar = 'theme=dark';
-      expect(cookie({ name: 'locale' }).get()).toBeUndefined();
+      expect(
+        cookie({
+          name: 'locale',
+        }).get(),
+      ).toBeUndefined();
     });
 
     it('returns `undefined` when cookie is an empty string', () => {
       cookieJar = 'locale=';
-      expect(cookie({ name: 'locale' }).get()).toBeUndefined();
+      expect(
+        cookie({
+          name: 'locale',
+        }).get(),
+      ).toBeUndefined();
     });
 
     it('returns `undefined` from `getFromRequest` when `cookie` header is missing', () => {
       const request = new Request('http://example.test');
       expect(
-        cookie({ name: 'locale' }).getFromRequest?.(request),
+        cookie({
+          name: 'locale',
+        }).getFromRequest?.(request),
       ).toBeUndefined();
     });
   });
 
   describe('in non-browser environment', () => {
-    let writes: Array<[string, string]> = [];
+    let writes: [
+      string,
+      string,
+    ][] = [];
 
     beforeEach(() => {
       writes = [];
@@ -94,44 +129,87 @@ describe('cookie', () => {
     });
 
     it('returns `undefined` from `get` when `document` is missing', () => {
-      expect(cookie({ name: 'locale' }).get()).toBeUndefined();
+      expect(
+        cookie({
+          name: 'locale',
+        }).get(),
+      ).toBeUndefined();
     });
 
     it('writes `Set-Cookie` via the registered writer', () => {
-      setResponseHeaderWriter((name, value) => writes.push([name, value]));
-      cookie({ name: 'locale' }).set('sv');
+      setResponseHeaderWriter((name, value) =>
+        writes.push([
+          name,
+          value,
+        ]),
+      );
+      cookie({
+        name: 'locale',
+      }).set('sv');
       expect(writes).toEqual([
-        ['Set-Cookie', 'locale=sv; path=/; max-age=31536000; samesite=lax'],
+        [
+          'Set-Cookie',
+          'locale=sv; path=/; max-age=31536000; samesite=lax',
+        ],
       ]);
     });
 
     it('transforms the locale value when writing the cookie string', () => {
-      setResponseHeaderWriter((name, value) => writes.push([name, value]));
-      cookie({ name: 'locale' }).set('en-US');
+      setResponseHeaderWriter((name, value) =>
+        writes.push([
+          name,
+          value,
+        ]),
+      );
+      cookie({
+        name: 'locale',
+      }).set('en-US');
       expect(writes[0]?.[1]).toContain('locale=en-US');
     });
 
     it('holds the configured cookie name in the writer call', () => {
-      setResponseHeaderWriter((name, value) => writes.push([name, value]));
-      cookie({ name: 'app-locale' }).set('de');
+      setResponseHeaderWriter((name, value) =>
+        writes.push([
+          name,
+          value,
+        ]),
+      );
+      cookie({
+        name: 'app-locale',
+      }).set('de');
       expect(writes[0]?.[1]).toContain('app-locale=de');
     });
 
     it('returns false from set when a writer is registered', () => {
-      setResponseHeaderWriter((name, value) => writes.push([name, value]));
-      expect(cookie({ name: 'locale' }).set('sv')).toBe(false);
+      setResponseHeaderWriter((name, value) =>
+        writes.push([
+          name,
+          value,
+        ]),
+      );
+      expect(
+        cookie({
+          name: 'locale',
+        }).set('sv'),
+      ).toBe(false);
     });
 
     it('returns false from set when no writer is registered', () => {
       setWarn(vi.fn());
-      expect(cookie({ name: 'locale' }).set('sv')).toBe(false);
+      expect(
+        cookie({
+          name: 'locale',
+        }).set('sv'),
+      ).toBe(false);
     });
 
     it('warns when set is called without a writer', () => {
       const stub = vi.fn();
       setWarn(stub);
 
-      cookie({ name: 'locale' }).set('sv');
+      cookie({
+        name: 'locale',
+      }).set('sv');
 
       expect(stub).toHaveBeenCalledWith(
         expect.stringContaining(
@@ -152,24 +230,34 @@ describe('cookie', () => {
 
     it('blocks subscription in a non-browser environment', () => {
       const onChange = vi.fn();
-      cookie({ name: 'locale' }).subscribe?.(onChange);
+      cookie({
+        name: 'locale',
+      }).subscribe?.(onChange);
       expect(onChange).not.toHaveBeenCalled();
     });
 
     it('notifies the callback on a Cookie Store change', () => {
       const cookieStore = new EventTarget();
-      vi.stubGlobal('window', { cookieStore });
+      vi.stubGlobal('window', {
+        cookieStore,
+      });
       const onChange = vi.fn();
-      cookie({ name: 'locale' }).subscribe?.(onChange);
+      cookie({
+        name: 'locale',
+      }).subscribe?.(onChange);
       cookieStore.dispatchEvent(new Event('change'));
       expect(onChange).toHaveBeenCalledOnce();
     });
 
     it('blocks invoking the callback after unsubscribe', () => {
       const cookieStore = new EventTarget();
-      vi.stubGlobal('window', { cookieStore });
+      vi.stubGlobal('window', {
+        cookieStore,
+      });
       const onChange = vi.fn();
-      const unsubscribe = cookie({ name: 'locale' }).subscribe?.(onChange);
+      const unsubscribe = cookie({
+        name: 'locale',
+      }).subscribe?.(onChange);
       unsubscribe?.();
       cookieStore.dispatchEvent(new Event('change'));
       expect(onChange).not.toHaveBeenCalled();
@@ -187,7 +275,10 @@ describe('cookie', () => {
         vi.useFakeTimers();
         visibilityState = 'visible';
         documentListeners = new Map();
-        history = { pushState() {}, replaceState() {} };
+        history = {
+          pushState() {},
+          replaceState() {},
+        };
         vi.stubGlobal('window', {
           addEventListener() {},
           clearInterval(id?: number) {
@@ -218,21 +309,27 @@ describe('cookie', () => {
 
       it('notifies the callback on a history navigation', () => {
         const onChange = vi.fn();
-        cookie({ name: 'locale' }).subscribe?.(onChange);
+        cookie({
+          name: 'locale',
+        }).subscribe?.(onChange);
         history.pushState({}, '', '/');
         expect(onChange).toHaveBeenCalledOnce();
       });
 
       it('notifies the callback while polling when visible', () => {
         const onChange = vi.fn();
-        cookie({ name: 'locale' }).subscribe?.(onChange);
+        cookie({
+          name: 'locale',
+        }).subscribe?.(onChange);
         vi.advanceTimersByTime(1000);
         expect(onChange).toHaveBeenCalled();
       });
 
       it('blocks polling when hidden and resumes when visible again', () => {
         const onChange = vi.fn();
-        cookie({ name: 'locale' }).subscribe?.(onChange);
+        cookie({
+          name: 'locale',
+        }).subscribe?.(onChange);
         visibilityState = 'hidden';
         dispatchDocument('visibilitychange');
         vi.advanceTimersByTime(5000);
@@ -247,7 +344,9 @@ describe('cookie', () => {
 
 describe('parseCookie', () => {
   it('parses a single cookie', () => {
-    expect(parseCookie('locale=sv')).toEqual({ locale: 'sv' });
+    expect(parseCookie('locale=sv')).toEqual({
+      locale: 'sv',
+    });
   });
 
   it('parses multiple cookies', () => {
@@ -271,11 +370,15 @@ describe('parseCookie', () => {
   });
 
   it('clears surrounding double quotes from values', () => {
-    expect(parseCookie('locale="sv"')).toEqual({ locale: 'sv' });
+    expect(parseCookie('locale="sv"')).toEqual({
+      locale: 'sv',
+    });
   });
 
   it('returns the raw value when decode fails', () => {
-    expect(parseCookie('broken=%E0%A4%A')).toEqual({ broken: '%E0%A4%A' });
+    expect(parseCookie('broken=%E0%A4%A')).toEqual({
+      broken: '%E0%A4%A',
+    });
   });
 
   it('returns an empty object for an empty header', () => {
@@ -290,7 +393,9 @@ describe('parseCookie', () => {
   });
 
   it('blocks segments with an empty name', () => {
-    expect(parseCookie('=orphan; locale=sv')).toEqual({ locale: 'sv' });
+    expect(parseCookie('=orphan; locale=sv')).toEqual({
+      locale: 'sv',
+    });
   });
 
   it('preserves equals signs inside values', () => {

@@ -4,21 +4,21 @@ import { validateLocaleCode } from './code';
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-export interface DiscoverLocalesOptions {
+export type DiscoverLocalesOptions = {
   defaultLocale?: string;
-}
+};
 
-export interface LocaleWarning {
+export type LocaleWarning = {
   code: string;
   issue: LocaleIssue;
   suggestion?: string;
-}
+};
 
-export interface DiscoverLocalesResult {
+export type DiscoverLocalesResult = {
   defaultLocale: string;
   locales: string[];
   warnings: LocaleWarning[];
-}
+};
 
 export function discoverLocales(
   localesDir: string,
@@ -33,18 +33,30 @@ export function discoverLocales(
         .sort()
     : [];
   const defaultLocale = options?.defaultLocale || 'en';
-  const uniqueLocales = new Set<string>([defaultLocale, ...fileLocales]);
-  const locales = [...uniqueLocales].sort();
+  const uniqueLocales = new Set<string>([
+    defaultLocale,
+    ...fileLocales,
+  ]);
+  const locales = [
+    ...uniqueLocales,
+  ].sort();
   const warnings: LocaleWarning[] = [];
   for (const code of locales) {
     const result = validateLocaleCode(code);
     if (!result.valid && result.issue) {
-      const warning: LocaleWarning = { code, issue: result.issue };
+      const warning: LocaleWarning = {
+        code,
+        issue: result.issue,
+      };
       if (result.suggestion !== undefined) {
         warning.suggestion = result.suggestion;
       }
       warnings.push(warning);
     }
   }
-  return { defaultLocale, locales, warnings };
+  return {
+    defaultLocale,
+    locales,
+    warnings,
+  };
 }

@@ -9,8 +9,16 @@ function makeLocation(fileId = 'src/a.tsx', context?: string): Location {
     callSiteContext: {},
     fileId,
     range: {
-      end: { column: 0, line: 1, offset: 0 },
-      start: { column: 0, line: 1, offset: 0 },
+      end: {
+        column: 0,
+        line: 1,
+        offset: 0,
+      },
+      start: {
+        column: 0,
+        line: 1,
+        offset: 0,
+      },
     },
   };
   if (context !== undefined) {
@@ -38,7 +46,11 @@ function makeMessage(
 
 describe('detectAtIssues', () => {
   it('returns no diagnostics for a single untagged call', () => {
-    const messages = [makeMessage('Save', [makeLocation('src/a.tsx')])];
+    const messages = [
+      makeMessage('Save', [
+        makeLocation('src/a.tsx'),
+      ]),
+    ];
     expect(detectAtIssues(messages)).toHaveLength(0);
   });
 
@@ -54,16 +66,36 @@ describe('detectAtIssues', () => {
 
   it('returns no diagnostics when two contexts disambiguate the same source', () => {
     const messages = [
-      makeMessage('Save', [makeLocation('src/a.tsx', 'button')], 'button'),
-      makeMessage('Save', [makeLocation('src/a.tsx', 'status')], 'status'),
+      makeMessage(
+        'Save',
+        [
+          makeLocation('src/a.tsx', 'button'),
+        ],
+        'button',
+      ),
+      makeMessage(
+        'Save',
+        [
+          makeLocation('src/a.tsx', 'status'),
+        ],
+        'status',
+      ),
     ];
     expect(detectAtIssues(messages)).toHaveLength(0);
   });
 
   it('emits YPK403 when a source is used with both `t()` and `t.as()` in the same file', () => {
     const messages = [
-      makeMessage('Save', [makeLocation('src/a.tsx')]),
-      makeMessage('Save', [makeLocation('src/a.tsx', 'button')], 'button'),
+      makeMessage('Save', [
+        makeLocation('src/a.tsx'),
+      ]),
+      makeMessage(
+        'Save',
+        [
+          makeLocation('src/a.tsx', 'button'),
+        ],
+        'button',
+      ),
     ];
     const diagnostics = detectAtIssues(messages);
     expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK403')).toBe(
@@ -73,9 +105,23 @@ describe('detectAtIssues', () => {
 
   it('emits no YPK403 when t() and t.as() are used in different files', () => {
     const messages = [
-      makeMessage('Save', [makeLocation('src/a.tsx')]),
-      makeMessage('Save', [makeLocation('src/b.tsx', 'button')], 'button'),
-      makeMessage('Save', [makeLocation('src/b.tsx', 'status')], 'status'),
+      makeMessage('Save', [
+        makeLocation('src/a.tsx'),
+      ]),
+      makeMessage(
+        'Save',
+        [
+          makeLocation('src/b.tsx', 'button'),
+        ],
+        'button',
+      ),
+      makeMessage(
+        'Save',
+        [
+          makeLocation('src/b.tsx', 'status'),
+        ],
+        'status',
+      ),
     ];
     const diagnostics = detectAtIssues(messages);
     expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK403')).toBe(
@@ -85,7 +131,13 @@ describe('detectAtIssues', () => {
 
   it('emits YPK404 when only one `t.as()` exists for a source with no other context', () => {
     const messages = [
-      makeMessage('Save', [makeLocation('src/a.tsx', 'button')], 'button'),
+      makeMessage(
+        'Save',
+        [
+          makeLocation('src/a.tsx', 'button'),
+        ],
+        'button',
+      ),
     ];
     const diagnostics = detectAtIssues(messages);
     const ypk404 = diagnostics.filter(

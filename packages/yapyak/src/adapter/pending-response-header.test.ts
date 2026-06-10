@@ -3,8 +3,15 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 vi.mock('yapyak/runtime', () => ({
   DEFAULT_LOCALE: 'en',
   DETECT_ACCEPT_LANGUAGE: false,
-  LOCALES: ['en', 'sv', 'fr'],
-  PERSISTENCE_CONFIG: { name: 'locale', type: 'cookie' },
+  LOCALES: [
+    'en',
+    'sv',
+    'fr',
+  ],
+  PERSISTENCE_CONFIG: {
+    name: 'locale',
+    type: 'cookie',
+  },
   SYNC_HTML_LANG: false,
 }));
 
@@ -33,13 +40,22 @@ describe('getPendingResponseHeaders', () => {
       return Array.from(getPendingResponseHeaders());
     });
     expect(collected).toEqual([
-      ['set-cookie', 'locale=sv; path=/; max-age=31536000; samesite=lax'],
+      [
+        'set-cookie',
+        'locale=sv; path=/; max-age=31536000; samesite=lax',
+      ],
     ]);
   });
 
   it('preserves pending headers between concurrent scopes', () => {
-    let outer: Array<[string, string]> = [];
-    let inner: Array<[string, string]> = [];
+    let outer: [
+      string,
+      string,
+    ][] = [];
+    let inner: [
+      string,
+      string,
+    ][] = [];
     withRequest(makeRequest(), () => {
       setLocale('sv');
       withRequest(makeRequest(), () => {
@@ -49,10 +65,16 @@ describe('getPendingResponseHeaders', () => {
       outer = Array.from(getPendingResponseHeaders());
     });
     expect(inner).toEqual([
-      ['set-cookie', 'locale=fr; path=/; max-age=31536000; samesite=lax'],
+      [
+        'set-cookie',
+        'locale=fr; path=/; max-age=31536000; samesite=lax',
+      ],
     ]);
     expect(outer).toEqual([
-      ['set-cookie', 'locale=sv; path=/; max-age=31536000; samesite=lax'],
+      [
+        'set-cookie',
+        'locale=sv; path=/; max-age=31536000; samesite=lax',
+      ],
     ]);
   });
 });

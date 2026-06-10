@@ -1,8 +1,8 @@
-export interface FetchWithRetryOptions {
+export type FetchWithRetryOptions = {
   maxRetries?: number;
   signal?: AbortSignal;
   timeout?: number;
-}
+};
 
 const DEFAULT_MAX_RETRIES = 3;
 const DEFAULT_TIMEOUT = 30_000;
@@ -26,11 +26,16 @@ export async function fetchWithRetry(
       if (outerSignal.aborted) {
         throw outerSignal.reason ?? new Error('Aborted');
       }
-      outerSignal.addEventListener('abort', onAbort, { once: true });
+      outerSignal.addEventListener('abort', onAbort, {
+        once: true,
+      });
     }
     const timeoutId = setTimeout(() => controller.abort(), timeout);
     try {
-      const response = await fetch(url, { ...init, signal: controller.signal });
+      const response = await fetch(url, {
+        ...init,
+        signal: controller.signal,
+      });
       if (response.ok) {
         return response;
       }
@@ -70,7 +75,7 @@ function isNetworkError(error: unknown): boolean {
 }
 
 function getBackoffMs(attempt: number): number {
-  return Math.min(8_000, 250 * 2 ** (attempt - 1));
+  return Math.min(8000, 250 * 2 ** (attempt - 1));
 }
 
 function delay(ms: number): Promise<void> {

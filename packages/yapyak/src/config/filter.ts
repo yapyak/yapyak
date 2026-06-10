@@ -25,7 +25,11 @@ function toMatcher(pattern: FilterPattern): (path: string) => boolean {
   if (pattern instanceof RegExp) {
     return (path) => pattern.test(path);
   }
-  const patterns = Array.isArray(pattern) ? pattern : [pattern];
+  const patterns = Array.isArray(pattern)
+    ? pattern
+    : [
+        pattern,
+      ];
   const matchers = patterns.map((entry) => {
     if (entry instanceof RegExp) {
       return (path: string): boolean => entry.test(path);

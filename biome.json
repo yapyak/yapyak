@@ -1,6 +1,8 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.15/schema.json",
-  "extends": ["@yapyak/biome-config"],
+  "$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
+  "extends": [
+    "@yapyak/biome-config"
+  ],
   "files": {
     "ignoreUnknown": true,
     "includes": [

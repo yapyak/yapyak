@@ -1,10 +1,10 @@
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
-export interface WalkedFile {
+export type WalkedFile = {
   code: string;
   fileId: string;
-}
+};
 
 const PROBE_FILE = '__yapyak_probe__.ts';
 
@@ -61,6 +61,9 @@ function walk(
     } catch {
       continue;
     }
-    results.push({ code, fileId });
+    results.push({
+      code,
+      fileId,
+    });
   }
 }

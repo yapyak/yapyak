@@ -1,7 +1,7 @@
-interface RankedCandidate {
+type RankedCandidate = {
   locale: string;
   quality: number;
-}
+};
 
 export function parseAcceptLanguage(header: string): string[] {
   if (header === '') {
@@ -25,7 +25,10 @@ export function parseAcceptLanguage(header: string): string[] {
       }
     }
     if (quality > 0) {
-      ranked.push({ locale, quality });
+      ranked.push({
+        locale,
+        quality,
+      });
     }
   }
   ranked.sort((a, b) => b.quality - a.quality);

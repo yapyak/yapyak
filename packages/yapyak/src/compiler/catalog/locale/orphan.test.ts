@@ -19,13 +19,17 @@ describe('addOrphan', () => {
     const cache: OrphanCache = {};
     addOrphan(cache, 'src/a.ts', 'Save', {
       deletedAt: '2025-01-01T00:00:00Z',
-      translations: { sv: 'Spara' },
+      translations: {
+        sv: 'Spara',
+      },
     });
     expect(cache).toEqual({
       'src/a.ts': {
         Save: {
           deletedAt: '2025-01-01T00:00:00Z',
-          translations: { sv: 'Spara' },
+          translations: {
+            sv: 'Spara',
+          },
         },
       },
     });
@@ -36,13 +40,17 @@ describe('addOrphan', () => {
       'src/a.ts': {
         Save: {
           deletedAt: '2025-01-01T00:00:00Z',
-          translations: { sv: 'Spara' },
+          translations: {
+            sv: 'Spara',
+          },
         },
       },
     };
     addOrphan(cache, 'src/a.ts', 'Cancel', {
       deletedAt: '2025-01-02T00:00:00Z',
-      translations: { sv: 'Avbryt' },
+      translations: {
+        sv: 'Avbryt',
+      },
     });
     expect(cache['src/a.ts']).toHaveProperty('Save');
     expect(cache['src/a.ts']).toHaveProperty('Cancel');
@@ -53,9 +61,15 @@ describe('findOrphan', () => {
   it('returns the entry when found directly under the requested fileId', () => {
     const entry: OrphanEntry = {
       deletedAt: '2025-01-01T00:00:00Z',
-      translations: { sv: 'Spara' },
+      translations: {
+        sv: 'Spara',
+      },
     };
-    const cache: OrphanCache = { 'src/a.ts': { Save: entry } };
+    const cache: OrphanCache = {
+      'src/a.ts': {
+        Save: entry,
+      },
+    };
     expect(findOrphan(cache, 'src/a.ts', 'Save')).toEqual({
       entry,
       fileId: 'src/a.ts',
@@ -65,9 +79,15 @@ describe('findOrphan', () => {
   it('returns the entry from another fileId when the requested fileId lacks it', () => {
     const entry: OrphanEntry = {
       deletedAt: '2025-01-01T00:00:00Z',
-      translations: { sv: 'Spara' },
+      translations: {
+        sv: 'Spara',
+      },
     };
-    const cache: OrphanCache = { 'src/b.ts': { Save: entry } };
+    const cache: OrphanCache = {
+      'src/b.ts': {
+        Save: entry,
+      },
+    };
     expect(findOrphan(cache, 'src/a.ts', 'Save')).toEqual({
       entry,
       fileId: 'src/b.ts',
@@ -77,15 +97,23 @@ describe('findOrphan', () => {
   it('returns the most recently deleted entry when multiple fileIds match', () => {
     const older: OrphanEntry = {
       deletedAt: '2025-01-01T00:00:00Z',
-      translations: { sv: 'Spara' },
+      translations: {
+        sv: 'Spara',
+      },
     };
     const newer: OrphanEntry = {
       deletedAt: '2025-02-01T00:00:00Z',
-      translations: { sv: 'Spara' },
+      translations: {
+        sv: 'Spara',
+      },
     };
     const cache: OrphanCache = {
-      'src/a.ts': { Save: older },
-      'src/b.ts': { Save: newer },
+      'src/a.ts': {
+        Save: older,
+      },
+      'src/b.ts': {
+        Save: newer,
+      },
     };
     expect(findOrphan(cache, 'src/c.ts', 'Save')).toEqual({
       entry: newer,
@@ -98,7 +126,9 @@ describe('findOrphan', () => {
       'src/a.ts': {
         Save: {
           deletedAt: '2025-01-01T00:00:00Z',
-          translations: { sv: 'Spara' },
+          translations: {
+            sv: 'Spara',
+          },
         },
       },
     };
@@ -120,7 +150,10 @@ describe('readOrphans', () => {
   });
 
   afterEach(() => {
-    rmSync(dir, { force: true, recursive: true });
+    rmSync(dir, {
+      force: true,
+      recursive: true,
+    });
   });
 
   it('returns an empty cache when the file is missing', () => {
@@ -140,7 +173,11 @@ describe('readOrphans', () => {
   it('blocks an entry whose value is not an object', () => {
     writeFileSync(
       join(dir, 'orphans.json'),
-      JSON.stringify({ 'src/a.ts': { Save: 'not-an-object' } }),
+      JSON.stringify({
+        'src/a.ts': {
+          Save: 'not-an-object',
+        },
+      }),
     );
     expect(readOrphans(dir)).toEqual({});
   });
@@ -149,7 +186,14 @@ describe('readOrphans', () => {
     writeFileSync(
       join(dir, 'orphans.json'),
       JSON.stringify({
-        'src/a.ts': { Save: { deletedAt: 123, translations: { sv: 'Spara' } } },
+        'src/a.ts': {
+          Save: {
+            deletedAt: 123,
+            translations: {
+              sv: 'Spara',
+            },
+          },
+        },
       }),
     );
     expect(readOrphans(dir)).toEqual({});
@@ -160,7 +204,10 @@ describe('readOrphans', () => {
       join(dir, 'orphans.json'),
       JSON.stringify({
         'src/a.ts': {
-          Save: { deletedAt: '2025-01-01T00:00:00Z', translations: null },
+          Save: {
+            deletedAt: '2025-01-01T00:00:00Z',
+            translations: null,
+          },
         },
       }),
     );
@@ -174,7 +221,10 @@ describe('readOrphans', () => {
         'src/a.ts': {
           Save: {
             deletedAt: '2025-01-01T00:00:00Z',
-            translations: { de: 42, sv: '' },
+            translations: {
+              de: 42,
+              sv: '',
+            },
           },
         },
       }),
@@ -185,7 +235,9 @@ describe('readOrphans', () => {
   it('blocks a fileId whose value is not an object', () => {
     writeFileSync(
       join(dir, 'orphans.json'),
-      JSON.stringify({ 'src/a.ts': 'not-an-object' }),
+      JSON.stringify({
+        'src/a.ts': 'not-an-object',
+      }),
     );
     expect(readOrphans(dir)).toEqual({});
   });
@@ -195,7 +247,9 @@ describe('readOrphans', () => {
       'src/a.ts': {
         Save: {
           deletedAt: '2025-01-01T00:00:00Z',
-          translations: { sv: 'Spara' },
+          translations: {
+            sv: 'Spara',
+          },
         },
       },
     };
@@ -210,7 +264,9 @@ describe('removeOrphan', () => {
       'src/a.ts': {
         Save: {
           deletedAt: '2025-01-01T00:00:00Z',
-          translations: { sv: 'Spara' },
+          translations: {
+            sv: 'Spara',
+          },
         },
       },
     };
@@ -228,7 +284,9 @@ describe('removeOrphan', () => {
       'src/a.ts': {
         Cancel: {
           deletedAt: '2025-01-01T00:00:00Z',
-          translations: { sv: 'Avbryt' },
+          translations: {
+            sv: 'Avbryt',
+          },
         },
       },
     };
@@ -240,11 +298,15 @@ describe('removeOrphan', () => {
       'src/a.ts': {
         Cancel: {
           deletedAt: '2025-01-02T00:00:00Z',
-          translations: { sv: 'Avbryt' },
+          translations: {
+            sv: 'Avbryt',
+          },
         },
         Save: {
           deletedAt: '2025-01-01T00:00:00Z',
-          translations: { sv: 'Spara' },
+          translations: {
+            sv: 'Spara',
+          },
         },
       },
     };
@@ -252,7 +314,9 @@ describe('removeOrphan', () => {
     expect(cache['src/a.ts']).toEqual({
       Cancel: {
         deletedAt: '2025-01-02T00:00:00Z',
-        translations: { sv: 'Avbryt' },
+        translations: {
+          sv: 'Avbryt',
+        },
       },
     });
   });
@@ -266,7 +330,10 @@ describe('writeOrphans', () => {
   });
 
   afterEach(() => {
-    rmSync(dir, { force: true, recursive: true });
+    rmSync(dir, {
+      force: true,
+      recursive: true,
+    });
   });
 
   it('writes the cache to `orphans.json` in canonical JSON form', () => {
@@ -274,7 +341,9 @@ describe('writeOrphans', () => {
       'src/a.ts': {
         Save: {
           deletedAt: '2025-01-01T00:00:00Z',
-          translations: { sv: 'Spara' },
+          translations: {
+            sv: 'Spara',
+          },
         },
       },
     };

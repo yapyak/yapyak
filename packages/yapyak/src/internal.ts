@@ -4,7 +4,7 @@ export {
   resetLocale,
   subscribeLocale,
 } from './locale';
-export { buildRuntimeMock, type RuntimeMock } from './runtime-mock';
+export { type RuntimeMock, buildRuntimeMock } from './runtime-mock';
 export {
   count,
   date,
@@ -17,9 +17,9 @@ export {
 } from './template';
 export { autoRegisterTracker, registerTracker, runTrackers } from './tracker';
 export {
+  type RichTextNode,
   parseRichText,
   pick,
-  type RichTextNode,
   walkRichText,
 } from './translation';
-export { resetWarn, setWarn, type WarnFn, warn } from './warn';
+export { type WarnFn, resetWarn, setWarn, warn } from './warn';

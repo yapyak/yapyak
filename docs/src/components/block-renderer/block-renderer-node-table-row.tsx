@@ -4,9 +4,9 @@ import { Box } from '#components/box';
 
 import { BlockRendererNode } from './block-renderer-node';
 
-export interface BlockRendererNodeTableRowProps {
+export type BlockRendererNodeTableRowProps = {
   block: TableRowBlock;
-}
+};
 
 export function BlockRendererNodeTableRow(
   props: BlockRendererNodeTableRowProps,

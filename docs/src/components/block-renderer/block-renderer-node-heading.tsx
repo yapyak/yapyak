@@ -5,9 +5,9 @@ import { Box } from '#components/box';
 import { BlockRendererNode } from './block-renderer-node';
 import styles from './block-renderer-node-heading.module.css';
 
-export interface BlockRendererNodeHeadingProps {
+export type BlockRendererNodeHeadingProps = {
   block: HeadingBlock;
-}
+};
 
 export function BlockRendererNodeHeading(props: BlockRendererNodeHeadingProps) {
   const { block } = props;

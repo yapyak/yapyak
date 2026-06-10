@@ -25,9 +25,9 @@ import { BlockRendererNodeTableCell } from './block-renderer-node-table-cell';
 import { BlockRendererNodeTableRow } from './block-renderer-node-table-row';
 import { BlockRendererNodeText } from './block-renderer-node-text';
 
-export interface BlockRendererNodeProps {
+export type BlockRendererNodeProps = {
   block: Block;
-}
+};
 
 export function BlockRendererNode(props: BlockRendererNodeProps) {
   const { block } = props;

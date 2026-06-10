@@ -14,8 +14,14 @@ export interface Options extends Partial<RuntimeMock> {
 export function defineConfig(options: Options = {}): ViteUserConfig {
   const { environment, plugins = [], setupFiles, ...runtime } = options;
   return defineViteConfig({
-    plugins: [yapyakRuntimePlugin(runtime), ...plugins],
-    test: { environment, setupFiles },
+    plugins: [
+      yapyakRuntimePlugin(runtime),
+      ...plugins,
+    ],
+    test: {
+      environment,
+      setupFiles,
+    },
   });
 }
 
@@ -25,20 +31,26 @@ function yapyakRuntimePlugin(runtime: Partial<RuntimeMock>): Plugin {
   return {
     enforce: 'pre',
     load(id) {
-      if (id !== RESOLVED_ID) return;
+      if (id !== RESOLVED_ID) {
+        return;
+      }
       return Object.entries(buildRuntimeMock(runtime))
         .map(([key, value]) => `export const ${key} = ${stringify(value)};`)
         .join('\n');
     },
     name: '@yapyak/vitest-config:runtime',
     resolveId(source) {
-      if (source === RUNTIME_ID) return RESOLVED_ID;
+      if (source === RUNTIME_ID) {
+        return RESOLVED_ID;
+      }
     },
   };
 }
 
 function stringify(value: unknown): string {
-  if (value instanceof RegExp) return value.toString();
+  if (value instanceof RegExp) {
+    return value.toString();
+  }
   if (Array.isArray(value)) {
     return `[${value.map(stringify).join(', ')}]`;
   }

@@ -20,7 +20,10 @@ export function Hero(props: HeroProps) {
     <Box
       {...restProps}
       as="section"
-      className={[styles.Hero, className]}
+      className={[
+        styles.Hero,
+        className,
+      ]}
     >
       <Box className={styles.Stack}>
         <Box

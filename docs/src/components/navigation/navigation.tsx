@@ -10,12 +10,12 @@ import { NavigationLink } from './navigation-link';
 
 export interface NavigationProps extends BoxProps<'nav'> {}
 
-interface IndicatorState {
+type IndicatorState = {
   height: number;
   width: number;
   x: number;
   y: number;
-}
+};
 
 const SLIDE_DURATION = 320;
 
@@ -79,13 +79,18 @@ export function Navigation(props: NavigationProps) {
         window.clearTimeout(timeoutId);
       }
     };
-  }, [location.pathname]);
+  }, [
+    location.pathname,
+  ]);
 
   return (
     <Box
       {...restProps}
       as="nav"
-      className={[styles.Navigation, className]}
+      className={[
+        styles.Navigation,
+        className,
+      ]}
       data-animating={isAnimating}
       ref={element}
       style={

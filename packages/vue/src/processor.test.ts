@@ -3,10 +3,14 @@ import { extractFile, transformFile } from 'yapyak/compiler';
 
 import { vue } from './processor';
 
-const processors = [vue()];
+const processors = [
+  vue(),
+];
 
 function extractVue(source: string) {
-  return extractFile('src/a.vue', source, { processors });
+  return extractFile('src/a.vue', source, {
+    processors,
+  });
 }
 
 function runVueTransform(input: {
@@ -57,7 +61,11 @@ describe('vue processor — extract', () => {
     ].join('\n');
     const result = extractVue(source);
     const sources = result.messages.map((message) => message.source).sort();
-    expect(sources).toEqual(['Hello', 'Save', 'World']);
+    expect(sources).toEqual([
+      'Hello',
+      'Save',
+      'World',
+    ]);
   });
 
   it('returns template messages resolved against plain `<script>`', () => {
@@ -122,7 +130,7 @@ describe('vue processor — extract', () => {
       "import { t } from 'yapyak';",
       '</script>',
       '<template>',
-      `  <h1>{{ }}</h1>`,
+      '  <h1>{{ }}</h1>',
       '</template>',
     ].join('\n');
     const result = extractVue(source);
@@ -299,7 +307,12 @@ describe('vue processor — transform', () => {
       `  <h1>{{ t('Hello') }}</h1>`,
       '</template>',
     ].join('\n');
-    const code = runVueTransform({ locales: ['en'], source });
+    const code = runVueTransform({
+      locales: [
+        'en',
+      ],
+      source,
+    });
     expect(code).toContain("'Hello'");
     expect(code).toContain('<h1>Hello</h1>');
     expect(code).not.toContain("t('Hello')");
@@ -317,9 +330,14 @@ describe('vue processor — transform', () => {
       '</template>',
     ].join('\n');
     const code = runVueTransform({
-      locales: ['en', 'sv'],
+      locales: [
+        'en',
+        'sv',
+      ],
       source,
-      translations: { sv: {} },
+      translations: {
+        sv: {},
+      },
     });
     expect(code).toContain("_pick({ en: 'Hello', sv: 'Hello' })");
     expect(code).toMatch(/import \{ pick as _pick \} from 'yapyak\/internal'/);
@@ -334,7 +352,12 @@ describe('vue processor — transform', () => {
       `  <button :aria-label="t('Save changes')">Save</button>`,
       '</template>',
     ].join('\n');
-    const code = runVueTransform({ locales: ['en'], source });
+    const code = runVueTransform({
+      locales: [
+        'en',
+      ],
+      source,
+    });
     expect(code).toContain('aria-label="Save changes"');
     expect(code).not.toContain("t('Save changes')");
   });
@@ -348,7 +371,12 @@ describe('vue processor — transform', () => {
       `  <button @click="alert(t('Hello'))">x</button>`,
       '</template>',
     ].join('\n');
-    const code = runVueTransform({ locales: ['en'], source });
+    const code = runVueTransform({
+      locales: [
+        'en',
+      ],
+      source,
+    });
     expect(code).toContain("alert('Hello')");
   });
 
@@ -358,10 +386,16 @@ describe('vue processor — transform', () => {
       "const heading = 'static';",
       '</script>',
       '<template>',
-      `  <h1>{{ heading }}</h1>`,
+      '  <h1>{{ heading }}</h1>',
       '</template>',
     ].join('\n');
-    const code = runVueTransform({ locales: ['en', 'sv'], source });
+    const code = runVueTransform({
+      locales: [
+        'en',
+        'sv',
+      ],
+      source,
+    });
     expect(code).toContain("const heading = 'static'");
   });
 
@@ -375,9 +409,14 @@ describe('vue processor — transform', () => {
       '</template>',
     ].join('\n');
     const code = runVueTransform({
-      locales: ['en', 'sv'],
+      locales: [
+        'en',
+        'sv',
+      ],
       source,
-      translations: { sv: {} },
+      translations: {
+        sv: {},
+      },
     });
     expect(code).toMatch(
       /<script setup[^>]*>\s*\nimport \{ pick as _pick \} from 'yapyak\/internal';/,
@@ -386,7 +425,9 @@ describe('vue processor — transform', () => {
 
   it('elides Vue mustache `{{ t("Hello") }}` to bare `Hello`', () => {
     const code = runVueTransform({
-      locales: ['en'],
+      locales: [
+        'en',
+      ],
       source: [
         '<script setup lang="ts">',
         "import { t } from 'yapyak';",
@@ -402,7 +443,9 @@ describe('vue processor — transform', () => {
 
   it('elides Vue v-bind `:aria-label="t(\'Save\')"` to static `aria-label="Save"`', () => {
     const code = runVueTransform({
-      locales: ['en'],
+      locales: [
+        'en',
+      ],
       source: [
         '<script setup lang="ts">',
         "import { t } from 'yapyak';",

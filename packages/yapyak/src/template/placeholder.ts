@@ -9,15 +9,17 @@ export type PlaceholderKind =
   | 'simple'
   | 'time';
 
-export interface Placeholder {
+export type Placeholder = {
   kind: PlaceholderKind;
   name: string;
-}
+};
 
 export function extractPlaceholders(template: Template): Placeholder[] {
   const placeholdersByName = new Map<string, Placeholder>();
   walkTemplate(template, placeholdersByName);
-  return [...placeholdersByName.values()];
+  return [
+    ...placeholdersByName.values(),
+  ];
 }
 
 function walkTemplate(
@@ -79,5 +81,8 @@ function registerPlaceholder(
   if (placeholdersByName.has(name)) {
     return;
   }
-  placeholdersByName.set(name, { kind, name });
+  placeholdersByName.set(name, {
+    kind,
+    name,
+  });
 }

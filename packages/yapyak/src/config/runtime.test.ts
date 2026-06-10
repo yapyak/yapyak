@@ -5,7 +5,10 @@ import { defineRuntime } from './runtime';
 const baseInput = {
   defaultLocale: 'en',
   detectAcceptLanguage: false,
-  locales: ['en', 'sv'],
+  locales: [
+    'en',
+    'sv',
+  ],
   syncHtmlLang: false,
 };
 
@@ -13,7 +16,9 @@ describe('defineRuntime', () => {
   it('emits every constant as a JS `export const` line', () => {
     const code = defineRuntime({
       ...baseInput,
-      persistence: { type: 'none' },
+      persistence: {
+        type: 'none',
+      },
     });
     expect(code).toContain('export const LOCALES = ["en","sv"];');
     expect(code).toContain('export const DEFAULT_LOCALE = "en";');
@@ -24,7 +29,9 @@ describe('defineRuntime', () => {
   it('emits a `none` persistence config with bare type', () => {
     const code = defineRuntime({
       ...baseInput,
-      persistence: { type: 'none' },
+      persistence: {
+        type: 'none',
+      },
     });
     expect(code).toContain(`PERSISTENCE_CONFIG = { type: 'none' };`);
   });
@@ -32,7 +39,10 @@ describe('defineRuntime', () => {
   it('emits a `cookie` persistence config with the cookie name', () => {
     const code = defineRuntime({
       ...baseInput,
-      persistence: { name: 'locale', type: 'cookie' },
+      persistence: {
+        name: 'locale',
+        type: 'cookie',
+      },
     });
     expect(code).toContain(
       `PERSISTENCE_CONFIG = { type: 'cookie', name: "locale" };`,
@@ -42,7 +52,10 @@ describe('defineRuntime', () => {
   it('emits a `local-storage` persistence config with the storage key', () => {
     const code = defineRuntime({
       ...baseInput,
-      persistence: { key: 'locale', type: 'local-storage' },
+      persistence: {
+        key: 'locale',
+        type: 'local-storage',
+      },
     });
     expect(code).toContain(
       `PERSISTENCE_CONFIG = { type: 'local-storage', key: "locale" };`,
@@ -52,7 +65,9 @@ describe('defineRuntime', () => {
   it('emits a `url` persistence config without `match` when none is given', () => {
     const code = defineRuntime({
       ...baseInput,
-      persistence: { type: 'url' },
+      persistence: {
+        type: 'url',
+      },
     });
     expect(code).toContain(`PERSISTENCE_CONFIG = { type: 'url' };`);
   });
@@ -60,7 +75,10 @@ describe('defineRuntime', () => {
   it('emits a `url` persistence config with a `RegExp` matcher when `match` is given', () => {
     const code = defineRuntime({
       ...baseInput,
-      persistence: { match: /^\/(?<locale>[a-z]{2})\//, type: 'url' },
+      persistence: {
+        match: /^\/(?<locale>[a-z]{2})\//,
+        type: 'url',
+      },
     });
     expect(code).toContain(
       `PERSISTENCE_CONFIG = { type: 'url', match: new RegExp(`,

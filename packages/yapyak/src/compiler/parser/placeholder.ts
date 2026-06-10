@@ -8,15 +8,18 @@ import { extractPlaceholders, parseTemplate } from '../../template';
 
 export type { Placeholder, PlaceholderKind, TemplateDiagnostic };
 
-export interface ParsedMessage {
+export type ParsedMessage = {
   issues: TemplateDiagnostic[];
   placeholders: Placeholder[];
-}
+};
 
 export function parsePlaceholders(source: string): ParsedMessage {
   const { diagnostics, template } = parseTemplate(source);
   if (hasFatalDiagnostic(diagnostics)) {
-    return { issues: diagnostics, placeholders: [] };
+    return {
+      issues: diagnostics,
+      placeholders: [],
+    };
   }
   return {
     issues: diagnostics,

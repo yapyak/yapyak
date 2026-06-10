@@ -12,7 +12,10 @@ export function LayoutHeaderStart(props: LayoutHeaderStartProps) {
   return (
     <Box
       {...restProps}
-      className={[styles.LayoutHeaderStart, className]}
+      className={[
+        styles.LayoutHeaderStart,
+        className,
+      ]}
     />
   );
 }

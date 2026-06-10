@@ -54,11 +54,17 @@ describe('resolveFormatter', () => {
       locale: string,
       options?: object,
     ) => FakeFormatter;
-    const oldest = resolveFormatter(ctor, 'en', { tag: 1 });
+    const oldest = resolveFormatter(ctor, 'en', {
+      tag: 1,
+    });
     for (let tag = 2; tag <= 65; tag++) {
-      resolveFormatter(ctor, 'en', { tag });
+      resolveFormatter(ctor, 'en', {
+        tag,
+      });
     }
-    const evictedReplacement = resolveFormatter(ctor, 'en', { tag: 1 });
+    const evictedReplacement = resolveFormatter(ctor, 'en', {
+      tag: 1,
+    });
     expect(evictedReplacement).not.toBe(oldest);
   });
 });

@@ -12,7 +12,10 @@ export function LayoutHeaderEnd(props: LayoutHeaderEndProps) {
   return (
     <Box
       {...restProps}
-      className={[styles.LayoutHeaderEnd, className]}
+      className={[
+        styles.LayoutHeaderEnd,
+        className,
+      ]}
     />
   );
 }

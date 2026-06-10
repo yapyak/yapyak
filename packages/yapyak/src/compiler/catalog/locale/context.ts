@@ -1,5 +1,5 @@
-export interface LocaleContext {
+export type LocaleContext = {
   defaultLocale: string;
   locales: string[];
   localesDir: string;
-}
+};

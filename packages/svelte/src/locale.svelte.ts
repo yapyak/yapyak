@@ -39,7 +39,9 @@ if (typeof window !== 'undefined') {
  * {/each}
  * ```
  */
-export const locale: { current: Locale } = {
+export const locale: {
+  current: Locale;
+} = {
   get current(): Locale {
     return typeof window === 'undefined' ? getLocale() : active;
   },

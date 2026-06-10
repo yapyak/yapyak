@@ -5,7 +5,7 @@ import type { Translator } from '../translator';
 
 import { loadYapyakConfig } from '../config/internal';
 
-export interface Config {
+export type Config = {
   defaultLocale: string;
   examples: number;
   exclude: FilterPattern;
@@ -13,9 +13,14 @@ export interface Config {
   localesDir: string;
   processors: Processor[];
   translator: Translator | undefined;
-}
+};
 
-let cached: { projectRoot: string; value: Config } | undefined;
+let cached:
+  | {
+      projectRoot: string;
+      value: Config;
+    }
+  | undefined;
 
 export async function loadConfig(projectRoot: string): Promise<Config> {
   if (cached?.projectRoot === projectRoot) {
@@ -23,7 +28,10 @@ export async function loadConfig(projectRoot: string): Promise<Config> {
   }
   const { config } = await loadYapyakConfig(projectRoot);
   const value = toCliConfig(config);
-  cached = { projectRoot, value };
+  cached = {
+    projectRoot,
+    value,
+  };
   return value;
 }
 

@@ -12,7 +12,7 @@ import {
 } from 'yapyak/translator/internal';
 
 /** Options for {@link gemini}. */
-export interface GeminiOptions {
+export type GeminiOptions = {
   /** The API key. */
   apiKey: string;
   /**
@@ -69,7 +69,7 @@ export interface GeminiOptions {
   timeout?: number;
   /** The voice and tone guidance passed to the model. */
   voice?: string;
-}
+};
 
 const DEFAULT_MODEL = 'gemini-2.5-flash';
 const DEFAULT_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta';
@@ -123,7 +123,11 @@ export function gemini(options: GeminiOptions): Translator {
         body: JSON.stringify({
           contents: [
             {
-              parts: [{ text: JSON.stringify(items) }],
+              parts: [
+                {
+                  text: JSON.stringify(items),
+                },
+              ],
               role: 'user',
             },
           ],
@@ -133,7 +137,9 @@ export function gemini(options: GeminiOptions): Translator {
           },
           systemInstruction: {
             parts: [
-              { text: buildSystem(sourceLocale, targetLocales, options) },
+              {
+                text: buildSystem(sourceLocale, targetLocales, options),
+              },
             ],
           },
         }),
@@ -164,14 +170,21 @@ export function gemini(options: GeminiOptions): Translator {
       const cleaned = stripCodeFence(text.trim());
       return JSON.parse(cleaned) as LocaleTranslations[];
     },
-    { batchSize, concurrency, context, id: 'gemini' },
+    {
+      batchSize,
+      concurrency,
+      context,
+      id: 'gemini',
+    },
   );
 }
 
-interface GeminiResponse {
+type GeminiResponse = {
   candidates?: Array<{
     content?: {
-      parts?: Array<{ text?: string }>;
+      parts?: Array<{
+        text?: string;
+      }>;
     };
   }>;
-}
+};

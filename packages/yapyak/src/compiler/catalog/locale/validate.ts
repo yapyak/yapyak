@@ -5,8 +5,16 @@ import { parsePlaceholders, toMessageKey } from '../../parser';
 import { existsSync, readFileSync } from 'node:fs';
 
 const STUB_RANGE = {
-  end: { column: 0, line: 1, offset: 0 },
-  start: { column: 0, line: 1, offset: 0 },
+  end: {
+    column: 0,
+    line: 1,
+    offset: 0,
+  },
+  start: {
+    column: 0,
+    line: 1,
+    offset: 0,
+  },
 };
 
 export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {

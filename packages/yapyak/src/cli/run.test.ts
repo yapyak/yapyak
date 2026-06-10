@@ -17,7 +17,9 @@ vi.mock('./config', () => ({
     defaultLocale: 'en',
     examples: 0,
     exclude: [],
-    include: ['src/**/*.ts'],
+    include: [
+      'src/**/*.ts',
+    ],
     localesDir: 'locales',
     processors: [],
     translator: undefined,
@@ -48,113 +50,171 @@ describe('run', () => {
   });
 
   it('returns `0` and prints help when `--help` is given', async () => {
-    const code = await run(['--help']);
+    const code = await run([
+      '--help',
+    ]);
     expect(code).toBe(0);
     expect(writes.join('')).toContain('Commands');
   });
 
   it('returns `0` and prints the version when `--version` is given', async () => {
-    const code = await run(['--version']);
+    const code = await run([
+      '--version',
+    ]);
     expect(code).toBe(0);
     expect(writes.join('')).toContain('yapyak ');
   });
 
   it('returns `1` and warns about an unknown command', async () => {
-    const code = await run(['bogus']);
+    const code = await run([
+      'bogus',
+    ]);
     expect(code).toBe(1);
     expect(writes.join('')).toContain('Unknown command: bogus');
   });
 
   it('picks the `status` command', async () => {
-    await run(['status']);
+    await run([
+      'status',
+    ]);
     expect(status).toHaveBeenCalledTimes(1);
   });
 
   it('picks the `check` command', async () => {
-    await run(['check']);
+    await run([
+      'check',
+    ]);
     expect(check).toHaveBeenCalledTimes(1);
   });
 
   it('picks the `clean` command', async () => {
-    await run(['clean']);
+    await run([
+      'clean',
+    ]);
     expect(clean).toHaveBeenCalledTimes(1);
   });
 
   it('picks the `add` command', async () => {
-    await run(['add']);
+    await run([
+      'add',
+    ]);
     expect(add).toHaveBeenCalledTimes(1);
   });
 
   it('picks the `translate` command', async () => {
-    await run(['translate']);
+    await run([
+      'translate',
+    ]);
     expect(translate).toHaveBeenCalledTimes(1);
   });
 
   it('picks the `export` command', async () => {
-    await run(['export']);
+    await run([
+      'export',
+    ]);
     expect(exportCommand).toHaveBeenCalledTimes(1);
   });
 
   it('extracts `--json` into the `status` options', async () => {
-    await run(['status', '--json']);
+    await run([
+      'status',
+      '--json',
+    ]);
     expect(status).toHaveBeenCalledWith(
       expect.anything(),
       expect.any(String),
-      expect.objectContaining({ json: true }),
+      expect.objectContaining({
+        json: true,
+      }),
     );
   });
 
   it('extracts `--write` into the `clean` options', async () => {
-    await run(['clean', '--write']);
+    await run([
+      'clean',
+      '--write',
+    ]);
     expect(clean).toHaveBeenCalledWith(
       expect.anything(),
       expect.any(String),
-      expect.objectContaining({ write: true }),
+      expect.objectContaining({
+        write: true,
+      }),
     );
   });
 
   it('extracts non-flag args into the `add` locales', async () => {
-    await run(['add', 'sv', 'fr']);
+    await run([
+      'add',
+      'sv',
+      'fr',
+    ]);
     expect(add).toHaveBeenCalledWith(
       expect.anything(),
       expect.any(String),
-      expect.objectContaining({ locales: ['sv', 'fr'] }),
+      expect.objectContaining({
+        locales: [
+          'sv',
+          'fr',
+        ],
+      }),
     );
   });
 
   it('extracts `--force` into the `translate` options', async () => {
-    await run(['translate', '--force']);
+    await run([
+      'translate',
+      '--force',
+    ]);
     expect(translate).toHaveBeenCalledWith(
       expect.anything(),
       expect.any(String),
-      expect.objectContaining({ force: true }),
+      expect.objectContaining({
+        force: true,
+      }),
     );
   });
 
   it('extracts the locale arg into the `translate` options', async () => {
-    await run(['translate', 'sv']);
+    await run([
+      'translate',
+      'sv',
+    ]);
     expect(translate).toHaveBeenCalledWith(
       expect.anything(),
       expect.any(String),
-      expect.objectContaining({ locale: 'sv' }),
+      expect.objectContaining({
+        locale: 'sv',
+      }),
     );
   });
 
   it('extracts `--out=path` into the `export` options', async () => {
-    await run(['export', '--out=snapshot.json']);
+    await run([
+      'export',
+      '--out=snapshot.json',
+    ]);
     expect(exportCommand).toHaveBeenCalledWith(
       expect.anything(),
       expect.any(String),
-      expect.objectContaining({ out: 'snapshot.json' }),
+      expect.objectContaining({
+        out: 'snapshot.json',
+      }),
     );
   });
 
   it('extracts `--split` into the `export` options', async () => {
-    await run(['export', '--split', '--out=out-dir']);
+    await run([
+      'export',
+      '--split',
+      '--out=out-dir',
+    ]);
     expect(exportCommand).toHaveBeenCalledWith(
       expect.anything(),
       expect.any(String),
-      expect.objectContaining({ split: true }),
+      expect.objectContaining({
+        split: true,
+      }),
     );
   });
 });

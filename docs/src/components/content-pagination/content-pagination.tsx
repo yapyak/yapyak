@@ -24,7 +24,10 @@ export function ContentPagination(props: ContentPaginationProps) {
     <Box
       {...restProps}
       as="nav"
-      className={[styles.ContentPagination, className]}
+      className={[
+        styles.ContentPagination,
+        className,
+      ]}
     >
       {previousPage ? (
         <Link

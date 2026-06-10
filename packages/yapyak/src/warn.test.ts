@@ -13,9 +13,13 @@ describe('warn', () => {
     const stub = vi.fn();
     setWarn(stub);
 
-    warn('Hello', { code: 'YPK_TEST' });
+    warn('Hello', {
+      code: 'YPK_TEST',
+    });
 
-    expect(stub).toHaveBeenCalledWith('Hello', { code: 'YPK_TEST' });
+    expect(stub).toHaveBeenCalledWith('Hello', {
+      code: 'YPK_TEST',
+    });
   });
 
   it('writes the prefixed message to `console.warn` via the default', () => {
@@ -29,7 +33,9 @@ describe('warn', () => {
   it('writes the prefixed message and `meta` to `console.warn` via the default', () => {
     const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-    warn('Hello', { code: 'YPK_TEST' });
+    warn('Hello', {
+      code: 'YPK_TEST',
+    });
 
     expect(consoleWarn).toHaveBeenCalledWith('[yapyak] Hello', {
       code: 'YPK_TEST',

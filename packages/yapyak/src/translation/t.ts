@@ -16,7 +16,11 @@ export type TParams<T extends string> = T extends `${string}{${string}`
   : never;
 
 type TArgs<T extends string> =
-  TParams<T> extends never ? [] : [params: TParams<T>];
+  TParams<T> extends never
+    ? []
+    : [
+        params: TParams<T>,
+      ];
 
 type ValidContext<T extends string> = string extends T
   ? T
@@ -36,9 +40,15 @@ declare const brand: unique symbol;
  *
  * @typeParam T - The rich-text tag names extracted from the source string.
  */
-export type TReturn<T extends string = never> = [T] extends [never]
+export type TReturn<T extends string = never> = [
+  T,
+] extends [
+  never,
+]
   ? string
-  : string & { [brand]: T };
+  : string & {
+      [brand]: T;
+    };
 
 /**
  * The inline chain returned by `t.in(locale)`. Completes via `.as(context, source)`.
@@ -53,13 +63,13 @@ export type TReturn<T extends string = never> = [T] extends [never]
  * t.in('sv').as('action', 'Open');
  * ```
  */
-export interface TInChain {
+export type TInChain = {
   as<TContext extends string, TSource extends string>(
     context: ValidContext<TContext>,
     source: ValidateSource<TSource>,
     ...args: TArgs<TSource>
   ): TReturn<ExtractTags<TSource>>;
-}
+};
 
 /**
  * The inline chain returned by `t.as(context)`. Completes via `.in(locale, source)`.
@@ -74,13 +84,13 @@ export interface TInChain {
  * t.as('action').in('sv', 'Open');
  * ```
  */
-export interface TAsChain {
+export type TAsChain = {
   in<T extends string>(
     locale: Locale,
     source: ValidateSource<T>,
     ...args: TArgs<T>
   ): TReturn<ExtractTags<T>>;
-}
+};
 
 /**
  * Translates a source string for the active locale.
@@ -88,7 +98,7 @@ export interface TAsChain {
  * @remarks
  * The type of {@link t}. Modifiers `in` and `as` are inline: they accept the source directly, or return a constrained chain that requires the other modifier to complete the call. They do not return translators and cannot be captured.
  */
-export interface TFn {
+export type TFn = {
   /**
    * Disambiguates a source string by context, or returns a chain that requires `.in()` to complete.
    *
@@ -129,7 +139,7 @@ export interface TFn {
     source: ValidateSource<T>,
     ...args: TArgs<T>
   ): TReturn<ExtractTags<T>>;
-}
+};
 
 /**
  * Translates a source string for the active locale.
@@ -178,6 +188,6 @@ export const t = Object.assign(() => throwNotCompiled('t'), {
 function throwNotCompiled(method: 't' | 't.as' | 't.in'): never {
   throw new Error(
     `[yapyak] ${method}() was not rewritten at build time. ` +
-      `Install and register a yapyak build-tool plugin (e.g. @yapyak/vite) in your bundler config.`,
+      'Install and register a yapyak build-tool plugin (e.g. @yapyak/vite) in your bundler config.',
   );
 }

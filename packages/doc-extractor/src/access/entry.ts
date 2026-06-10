@@ -1,9 +1,17 @@
 import type { Manifest, Page } from '../build';
 
 export type Entry =
-  | { kind: 'page'; page: Page }
-  | { kind: 'redirect'; target: string }
-  | { kind: 'not-found' };
+  | {
+      kind: 'page';
+      page: Page;
+    }
+  | {
+      kind: 'redirect';
+      target: string;
+    }
+  | {
+      kind: 'not-found';
+    };
 
 export function getEntry(
   manifest: Manifest,
@@ -12,18 +20,28 @@ export function getEntry(
 ): Entry {
   const collectionData = manifest.collections[collection];
   if (!collectionData) {
-    return { kind: 'not-found' };
+    return {
+      kind: 'not-found',
+    };
   }
 
   const page = collectionData.pages[path];
   if (page) {
-    return { kind: 'page', page };
+    return {
+      kind: 'page',
+      page,
+    };
   }
 
   const redirect = collectionData.redirects[path];
   if (redirect) {
-    return { kind: 'redirect', target: redirect };
+    return {
+      kind: 'redirect',
+      target: redirect,
+    };
   }
 
-  return { kind: 'not-found' };
+  return {
+    kind: 'not-found',
+  };
 }

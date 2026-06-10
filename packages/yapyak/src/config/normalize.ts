@@ -8,7 +8,7 @@ import type { FilterPattern, YapyakConfig } from './type';
 
 import { vanillaProcessor } from '../compiler';
 
-export interface NormalizedYapyakConfig {
+export type NormalizedYapyakConfig = {
   autoTranslateThreshold: number;
   defaultLocale: string;
   detectAcceptLanguage: boolean;
@@ -21,7 +21,7 @@ export interface NormalizedYapyakConfig {
   processors: Processor[];
   syncHtmlLang: boolean;
   translator: Translator | undefined;
-}
+};
 
 const DEFAULT_AUTO_TRANSLATE_THRESHOLD = 20;
 const DEFAULT_EXAMPLES = 5;
@@ -45,7 +45,9 @@ const DEFAULT_STORAGE_KEY = 'locale';
  * });
  * ```
  */
-export const DEFAULT_INCLUDE: FilterPattern = ['src'];
+export const DEFAULT_INCLUDE: FilterPattern = [
+  'src',
+];
 
 /**
  * The default exclude patterns.
@@ -147,7 +149,9 @@ function resolveExtensions(processors: Processor[]): string[] {
       allExtensions.add(extension.replace(/^\./, ''));
     }
   }
-  return [...allExtensions].sort();
+  return [
+    ...allExtensions,
+  ].sort();
 }
 
 function resolveExamples(config: YapyakConfig): number {
@@ -164,30 +168,55 @@ function normalizePersistenceConfig(
   config: PersistenceConfig | undefined,
 ): NormalizedPersistenceConfig {
   if (!config) {
-    return { type: 'none' };
+    return {
+      type: 'none',
+    };
   }
   if (typeof config === 'string') {
     switch (config) {
       case 'cookie':
-        return { name: DEFAULT_COOKIE_NAME, type: 'cookie' };
+        return {
+          name: DEFAULT_COOKIE_NAME,
+          type: 'cookie',
+        };
       case 'local-storage':
-        return { key: DEFAULT_STORAGE_KEY, type: 'local-storage' };
+        return {
+          key: DEFAULT_STORAGE_KEY,
+          type: 'local-storage',
+        };
       case 'url':
-        return { type: 'url' };
+        return {
+          type: 'url',
+        };
       case 'none':
-        return { type: 'none' };
+        return {
+          type: 'none',
+        };
     }
   }
   switch (config.type) {
     case 'cookie':
-      return { name: config.name ?? DEFAULT_COOKIE_NAME, type: 'cookie' };
+      return {
+        name: config.name ?? DEFAULT_COOKIE_NAME,
+        type: 'cookie',
+      };
     case 'local-storage':
-      return { key: config.key ?? DEFAULT_STORAGE_KEY, type: 'local-storage' };
+      return {
+        key: config.key ?? DEFAULT_STORAGE_KEY,
+        type: 'local-storage',
+      };
     case 'url':
       return config.match
-        ? { match: config.match, type: 'url' }
-        : { type: 'url' };
+        ? {
+            match: config.match,
+            type: 'url',
+          }
+        : {
+            type: 'url',
+          };
     case 'none':
-      return { type: 'none' };
+      return {
+        type: 'none',
+      };
   }
 }

@@ -18,7 +18,10 @@ export function BlockRendererNodeEyebrowKindBadge(
     <Box
       {...restProps}
       as="span"
-      className={[styles.BlockRendererNodeEyebrowKindBadge, className]}
+      className={[
+        styles.BlockRendererNodeEyebrowKindBadge,
+        className,
+      ]}
       data-variant={variant}
     >
       {variant}

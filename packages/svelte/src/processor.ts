@@ -39,11 +39,15 @@ export function svelte(): Processor {
       }
       magicString.prepend(`<script>\n${importStatement}\n</script>\n`);
     },
-    ['.svelte'],
+    [
+      '.svelte',
+    ],
     'svelte',
     (source) => {
       const compiler = loadCompiler();
-      const ast = compiler.parse(source, { modern: true });
+      const ast = compiler.parse(source, {
+        modern: true,
+      });
       const fragments: Fragment[] = [];
 
       if (ast.instance != null) {
@@ -70,14 +74,24 @@ function loadCompiler(): typeof SvelteCompiler {
   } catch (error) {
     throw new Error(
       'svelte is required to process Svelte files. Install it as a dependency.',
-      { cause: error },
+      {
+        cause: error,
+      },
     );
   }
 }
 
 function fragmentsFromScript(script: AST.Script, source: string): Fragment[] {
-  const start = (script.content as { start?: unknown }).start;
-  const end = (script.content as { end?: unknown }).end;
+  const start = (
+    script.content as {
+      start?: unknown;
+    }
+  ).start;
+  const end = (
+    script.content as {
+      end?: unknown;
+    }
+  ).end;
   if (typeof start !== 'number' || typeof end !== 'number') {
     return [];
   }
@@ -310,8 +324,16 @@ function fragmentsFromExpression(
   if (typeof expression !== 'object') {
     return [];
   }
-  const start = (expression as { start?: unknown }).start;
-  const end = (expression as { end?: unknown }).end;
+  const start = (
+    expression as {
+      start?: unknown;
+    }
+  ).start;
+  const end = (
+    expression as {
+      end?: unknown;
+    }
+  ).end;
   if (typeof start !== 'number' || typeof end !== 'number') {
     return [];
   }
@@ -328,5 +350,7 @@ function fragmentsFromExpression(
   if (elision) {
     fragment.elision = elision;
   }
-  return [fragment];
+  return [
+    fragment,
+  ];
 }

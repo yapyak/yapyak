@@ -7,18 +7,18 @@ import { createFilter } from '../config/internal';
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-interface MissingEntry {
+type MissingEntry = {
   fileId: string;
   locale: string;
   source: string;
-}
+};
 
-interface LocaleStats {
+type LocaleStats = {
   missing: number;
   translated: number;
-}
+};
 
-interface Report {
+type Report = {
   defaultLocale: string;
   diagnostics: Diagnostic[];
   locales: string[];
@@ -26,16 +26,16 @@ interface Report {
   missing: MissingEntry[];
   perLocale: Record<string, LocaleStats>;
   totalMessages: number;
-}
+};
 
-interface BuildReportInput {
+type BuildReportInput = {
   defaultLocale: string;
   exclude: FilterPattern;
   include: FilterPattern;
   localesDir: string;
   processors?: Processor[];
   projectRoot: string;
-}
+};
 
 export function buildReport(input: BuildReportInput): Report {
   const localesPath = join(input.projectRoot, input.localesDir);
@@ -45,7 +45,12 @@ export function buildReport(input: BuildReportInput): Report {
         .map((name) => name.replace(/\.json$/, ''))
     : [];
   const { defaultLocale } = input;
-  const locales = [...new Set([defaultLocale, ...fileLocales])].sort();
+  const locales = [
+    ...new Set([
+      defaultLocale,
+      ...fileLocales,
+    ]),
+  ].sort();
 
   const filter = createFilter(input.include, input.exclude);
   const sourceFiles = walkSourceFiles(filter, input.projectRoot);
@@ -103,11 +108,18 @@ export function buildReport(input: BuildReportInput): Report {
           translated++;
         } else {
           missingCount++;
-          missing.push({ fileId, locale, source });
+          missing.push({
+            fileId,
+            locale,
+            source,
+          });
         }
       }
     }
-    perLocale[locale] = { missing: missingCount, translated };
+    perLocale[locale] = {
+      missing: missingCount,
+      translated,
+    };
   }
 
   return {

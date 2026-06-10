@@ -10,8 +10,16 @@ import { join } from 'node:path';
 
 function emptyRange() {
   return {
-    end: { column: 0, line: 1, offset: 0 },
-    start: { column: 0, line: 1, offset: 0 },
+    end: {
+      column: 0,
+      line: 1,
+      offset: 0,
+    },
+    start: {
+      column: 0,
+      line: 1,
+      offset: 0,
+    },
   };
 }
 
@@ -24,7 +32,12 @@ function makeLocation(fileId = 'src/a.tsx'): Location {
 }
 
 function makeMessage(source: string, locations: Location[]): ExtractedMessage {
-  return { id: source, locations, placeholders: [], source };
+  return {
+    id: source,
+    locations,
+    placeholders: [],
+    source,
+  };
 }
 
 describe('validateLocaleFile', () => {
@@ -37,7 +50,10 @@ describe('validateLocaleFile', () => {
   });
 
   afterEach(() => {
-    rmSync(dir, { force: true, recursive: true });
+    rmSync(dir, {
+      force: true,
+      recursive: true,
+    });
   });
 
   it('returns no diagnostics for a missing file', () => {
@@ -45,12 +61,26 @@ describe('validateLocaleFile', () => {
   });
 
   it('returns no diagnostics for a well-formed file', () => {
-    writeFileSync(path, JSON.stringify({ 'src/a.tsx': { Hello: 'Hej' } }));
+    writeFileSync(
+      path,
+      JSON.stringify({
+        'src/a.tsx': {
+          Hello: 'Hej',
+        },
+      }),
+    );
     expect(validateLocaleFile('sv.json', path)).toHaveLength(0);
   });
 
   it('emits YPK301 when entry value is a number', () => {
-    writeFileSync(path, JSON.stringify({ 'src/a.tsx': { Hello: 42 } }));
+    writeFileSync(
+      path,
+      JSON.stringify({
+        'src/a.tsx': {
+          Hello: 42,
+        },
+      }),
+    );
     const diagnostics = validateLocaleFile('sv.json', path);
     expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK301')).toBe(
       true,
@@ -60,7 +90,13 @@ describe('validateLocaleFile', () => {
   it('emits YPK301 when entry value is an object', () => {
     writeFileSync(
       path,
-      JSON.stringify({ 'src/a.tsx': { Hello: { sv: 'Hej' } } }),
+      JSON.stringify({
+        'src/a.tsx': {
+          Hello: {
+            sv: 'Hej',
+          },
+        },
+      }),
     );
     const diagnostics = validateLocaleFile('sv.json', path);
     expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK301')).toBe(
@@ -69,7 +105,14 @@ describe('validateLocaleFile', () => {
   });
 
   it('emits YPK302 for an absolute file-path key', () => {
-    writeFileSync(path, JSON.stringify({ '/etc/passwd': { x: 'y' } }));
+    writeFileSync(
+      path,
+      JSON.stringify({
+        '/etc/passwd': {
+          x: 'y',
+        },
+      }),
+    );
     const diagnostics = validateLocaleFile('sv.json', path);
     expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK302')).toBe(
       true,
@@ -77,7 +120,14 @@ describe('validateLocaleFile', () => {
   });
 
   it('emits YPK302 for a file-path key with `..`', () => {
-    writeFileSync(path, JSON.stringify({ '../etc/passwd': { x: 'y' } }));
+    writeFileSync(
+      path,
+      JSON.stringify({
+        '../etc/passwd': {
+          x: 'y',
+        },
+      }),
+    );
     const diagnostics = validateLocaleFile('sv.json', path);
     expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK302')).toBe(
       true,
@@ -85,7 +135,14 @@ describe('validateLocaleFile', () => {
   });
 
   it('emits YPK302 for a file-path key with backslashes', () => {
-    writeFileSync(path, JSON.stringify({ 'src\\a.tsx': { x: 'y' } }));
+    writeFileSync(
+      path,
+      JSON.stringify({
+        'src\\a.tsx': {
+          x: 'y',
+        },
+      }),
+    );
     const diagnostics = validateLocaleFile('sv.json', path);
     expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK302')).toBe(
       true,
@@ -93,7 +150,14 @@ describe('validateLocaleFile', () => {
   });
 
   it('emits YPK303 when a translation string is not Unicode NFC', () => {
-    writeFileSync(path, JSON.stringify({ 'src/a.tsx': { Hello: 'Ä' } }));
+    writeFileSync(
+      path,
+      JSON.stringify({
+        'src/a.tsx': {
+          Hello: 'Ä',
+        },
+      }),
+    );
     const diagnostics = validateLocaleFile('sv.json', path);
     expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK303')).toBe(
       true,
@@ -103,23 +167,43 @@ describe('validateLocaleFile', () => {
 
 describe('validateIcuPairs', () => {
   it('returns no diagnostics when source and target have matching placeholders', () => {
-    const messages = [makeMessage('Hi {name}', [makeLocation()])];
+    const messages = [
+      makeMessage('Hi {name}', [
+        makeLocation(),
+      ]),
+    ];
     const localeFile: LocaleFile = {
-      'src/a.tsx': { 'Hi {name}': 'Hej {name}' },
+      'src/a.tsx': {
+        'Hi {name}': 'Hej {name}',
+      },
     };
     expect(validateIcuPairs('sv.json', localeFile, messages)).toHaveLength(0);
   });
 
   it('returns no diagnostics when target is empty', () => {
-    const messages = [makeMessage('Hi {name}', [makeLocation()])];
-    const localeFile: LocaleFile = { 'src/a.tsx': { 'Hi {name}': '' } };
+    const messages = [
+      makeMessage('Hi {name}', [
+        makeLocation(),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        'Hi {name}': '',
+      },
+    };
     expect(validateIcuPairs('sv.json', localeFile, messages)).toHaveLength(0);
   });
 
   it('emits YPK205 when a placeholder is missing from the translation', () => {
-    const messages = [makeMessage('Hi {name}', [makeLocation()])];
+    const messages = [
+      makeMessage('Hi {name}', [
+        makeLocation(),
+      ]),
+    ];
     const localeFile: LocaleFile = {
-      'src/a.tsx': { 'Hi {name}': 'Hej där' },
+      'src/a.tsx': {
+        'Hi {name}': 'Hej där',
+      },
     };
     const diagnostics = validateIcuPairs('sv.json', localeFile, messages);
     expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK205')).toBe(
@@ -128,9 +212,15 @@ describe('validateIcuPairs', () => {
   });
 
   it('emits YPK206 when the translation has an extra placeholder', () => {
-    const messages = [makeMessage('Hello', [makeLocation()])];
+    const messages = [
+      makeMessage('Hello', [
+        makeLocation(),
+      ]),
+    ];
     const localeFile: LocaleFile = {
-      'src/a.tsx': { Hello: 'Hej {name}' },
+      'src/a.tsx': {
+        Hello: 'Hej {name}',
+      },
     };
     const diagnostics = validateIcuPairs('sv.json', localeFile, messages);
     expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK206')).toBe(

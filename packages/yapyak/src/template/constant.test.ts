@@ -10,51 +10,123 @@ describe('resolveConstants', () => {
   });
 
   it('returns a literal-only template unchanged', () => {
-    const template: Template = [{ kind: 'literal', value: 'Hello' }];
+    const template: Template = [
+      {
+        kind: 'literal',
+        value: 'Hello',
+      },
+    ];
     expect(resolveConstants(template, {})).toEqual(template);
   });
 
   it('folds a placeholder when its param is known', () => {
-    const template: Template = [{ kind: 'placeholder', name: 'name' }];
-    expect(resolveConstants(template, { name: 'World' })).toEqual([
-      { kind: 'literal', value: 'World' },
+    const template: Template = [
+      {
+        kind: 'placeholder',
+        name: 'name',
+      },
+    ];
+    expect(
+      resolveConstants(template, {
+        name: 'World',
+      }),
+    ).toEqual([
+      {
+        kind: 'literal',
+        value: 'World',
+      },
     ]);
   });
 
   it('leaves a placeholder unchanged when its param is missing', () => {
-    const template: Template = [{ kind: 'placeholder', name: 'name' }];
+    const template: Template = [
+      {
+        kind: 'placeholder',
+        name: 'name',
+      },
+    ];
     expect(resolveConstants(template, {})).toEqual(template);
   });
 
   it('merges adjacent literals after folding', () => {
     const template: Template = [
-      { kind: 'literal', value: 'Hello ' },
-      { kind: 'placeholder', name: 'name' },
-      { kind: 'literal', value: '!' },
+      {
+        kind: 'literal',
+        value: 'Hello ',
+      },
+      {
+        kind: 'placeholder',
+        name: 'name',
+      },
+      {
+        kind: 'literal',
+        value: '!',
+      },
     ];
-    expect(resolveConstants(template, { name: 'World' })).toEqual([
-      { kind: 'literal', value: 'Hello World!' },
+    expect(
+      resolveConstants(template, {
+        name: 'World',
+      }),
+    ).toEqual([
+      {
+        kind: 'literal',
+        value: 'Hello World!',
+      },
     ]);
   });
 
   it('coerces non-string folded values via String()', () => {
-    const template: Template = [{ kind: 'placeholder', name: 'n' }];
-    expect(resolveConstants(template, { n: 42 })).toEqual([
-      { kind: 'literal', value: '42' },
+    const template: Template = [
+      {
+        kind: 'placeholder',
+        name: 'n',
+      },
+    ];
+    expect(
+      resolveConstants(template, {
+        n: 42,
+      }),
+    ).toEqual([
+      {
+        kind: 'literal',
+        value: '42',
+      },
     ]);
   });
 
   it('leaves number/date/time nodes unchanged', () => {
     const template: Template = [
-      { kind: 'number', name: 'v', options: {} },
-      { kind: 'date', name: 'd', style: 'short' },
-      { kind: 'time', name: 't', style: 'full' },
+      {
+        kind: 'number',
+        name: 'v',
+        options: {},
+      },
+      {
+        kind: 'date',
+        name: 'd',
+        style: 'short',
+      },
+      {
+        kind: 'time',
+        name: 't',
+        style: 'full',
+      },
     ];
-    expect(resolveConstants(template, { d: 0, t: 0, v: 1 })).toEqual(template);
+    expect(
+      resolveConstants(template, {
+        d: 0,
+        t: 0,
+        v: 1,
+      }),
+    ).toEqual(template);
   });
 
   it('leaves count nodes unchanged', () => {
-    const template: Template = [{ kind: 'count' }];
+    const template: Template = [
+      {
+        kind: 'count',
+      },
+    ];
     expect(resolveConstants(template, {})).toEqual(template);
   });
 
@@ -64,14 +136,30 @@ describe('resolveConstants', () => {
         {
           branches: {
             one: [
-              { kind: 'count' },
-              { kind: 'literal', value: ' from ' },
-              { kind: 'placeholder', name: 'name' },
+              {
+                kind: 'count',
+              },
+              {
+                kind: 'literal',
+                value: ' from ',
+              },
+              {
+                kind: 'placeholder',
+                name: 'name',
+              },
             ],
             other: [
-              { kind: 'count' },
-              { kind: 'literal', value: ' from ' },
-              { kind: 'placeholder', name: 'name' },
+              {
+                kind: 'count',
+              },
+              {
+                kind: 'literal',
+                value: ' from ',
+              },
+              {
+                kind: 'placeholder',
+                name: 'name',
+              },
             ],
           },
           kind: 'plural',
@@ -79,22 +167,36 @@ describe('resolveConstants', () => {
           type: 'cardinal',
         },
       ];
-      const result = resolveConstants(template, { name: 'Ada' });
+      const result = resolveConstants(template, {
+        name: 'Ada',
+      });
       const node = result[0];
       expect(node?.kind).toBe('plural');
       if (node?.kind !== 'plural') {
         return;
       }
-      expect(node.branches['one']).toEqual([
-        { kind: 'count' },
-        { kind: 'literal', value: ' from Ada' },
+      expect(node.branches.one).toEqual([
+        {
+          kind: 'count',
+        },
+        {
+          kind: 'literal',
+          value: ' from Ada',
+        },
       ]);
     });
 
     it('keeps the plural node intact when the count param is unknown', () => {
       const template: Template = [
         {
-          branches: { other: [{ kind: 'literal', value: 'items' }] },
+          branches: {
+            other: [
+              {
+                kind: 'literal',
+                value: 'items',
+              },
+            ],
+          },
           kind: 'plural',
           name: 'count',
           type: 'cardinal',
@@ -110,25 +212,42 @@ describe('resolveConstants', () => {
         {
           branches: {
             male: [
-              { kind: 'literal', value: 'he is ' },
-              { kind: 'placeholder', name: 'role' },
+              {
+                kind: 'literal',
+                value: 'he is ',
+              },
+              {
+                kind: 'placeholder',
+                name: 'role',
+              },
             ],
             other: [
-              { kind: 'literal', value: 'they are ' },
-              { kind: 'placeholder', name: 'role' },
+              {
+                kind: 'literal',
+                value: 'they are ',
+              },
+              {
+                kind: 'placeholder',
+                name: 'role',
+              },
             ],
           },
           kind: 'select',
           name: 'gender',
         },
       ];
-      const result = resolveConstants(template, { role: 'admin' });
+      const result = resolveConstants(template, {
+        role: 'admin',
+      });
       const node = result[0];
       if (node?.kind !== 'select') {
         return;
       }
-      expect(node.branches['male']).toEqual([
-        { kind: 'literal', value: 'he is admin' },
+      expect(node.branches.male).toEqual([
+        {
+          kind: 'literal',
+          value: 'he is admin',
+        },
       ]);
     });
   });
@@ -136,11 +255,19 @@ describe('resolveConstants', () => {
   describe('purity', () => {
     it('does not mutate the input template', () => {
       const template: Template = [
-        { kind: 'literal', value: 'Hello ' },
-        { kind: 'placeholder', name: 'name' },
+        {
+          kind: 'literal',
+          value: 'Hello ',
+        },
+        {
+          kind: 'placeholder',
+          name: 'name',
+        },
       ];
       const original = JSON.parse(JSON.stringify(template));
-      resolveConstants(template, { name: 'World' });
+      resolveConstants(template, {
+        name: 'World',
+      });
       expect(template).toEqual(original);
     });
   });

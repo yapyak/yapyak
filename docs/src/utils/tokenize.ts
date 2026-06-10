@@ -40,10 +40,10 @@ export type TokenType =
   | 'bash-subcommand'
   | 'bash-package';
 
-export interface Token {
+export type Token = {
   type: TokenType;
   value: string;
-}
+};
 
 const KEYWORDS = new Set([
   'import',
@@ -120,7 +120,12 @@ const BUILTIN_TYPES = new Set([
   'Parameters',
 ]);
 
-const LITERALS = new Set(['true', 'false', 'null', 'undefined']);
+const LITERALS = new Set([
+  'true',
+  'false',
+  'null',
+  'undefined',
+]);
 
 const TYPE_KEYWORDS = new Set([
   'as',
@@ -164,7 +169,10 @@ export function tokenize(code: string, language: Language): Token[] {
   while (index < code.length) {
     const result = scanToken(code, index, language, lastSignificant);
     if (result === undefined) {
-      const fallback: Token = { type: 'plain', value: code[index] ?? '' };
+      const fallback: Token = {
+        type: 'plain',
+        value: code[index] ?? '',
+      };
       tokens.push(fallback);
       if (!/^\s+$/.test(fallback.value)) {
         lastSignificant = fallback;
@@ -195,13 +203,25 @@ function tokenizeDiff(code: string) {
     const line = lines[index] ?? '';
     const trailing = index < lines.length - 1 ? '\n' : '';
     if (line.startsWith('@@')) {
-      tokens.push({ type: 'diff-hunk', value: line + trailing });
+      tokens.push({
+        type: 'diff-hunk',
+        value: line + trailing,
+      });
     } else if (line.startsWith('+') && !line.startsWith('+++')) {
-      tokens.push({ type: 'diff-add', value: line + trailing });
+      tokens.push({
+        type: 'diff-add',
+        value: line + trailing,
+      });
     } else if (line.startsWith('-') && !line.startsWith('---')) {
-      tokens.push({ type: 'diff-remove', value: line + trailing });
+      tokens.push({
+        type: 'diff-remove',
+        value: line + trailing,
+      });
     } else {
-      tokens.push({ type: 'plain', value: line + trailing });
+      tokens.push({
+        type: 'plain',
+        value: line + trailing,
+      });
     }
   }
   return mergePlainTokens(tokens);
@@ -237,7 +257,10 @@ function tokenizeBash(code: string) {
     ) {
       const match = /^[\s]+/.exec(code.slice(index));
       if (match) {
-        tokens.push({ type: 'plain', value: match[0] });
+        tokens.push({
+          type: 'plain',
+          value: match[0],
+        });
         if (match[0].includes('\n')) {
           atLineStart = true;
           expectSubcommand = false;
@@ -252,7 +275,10 @@ function tokenizeBash(code: string) {
       const newline = code.indexOf('\n', index);
       const value =
         newline === -1 ? code.slice(index) : code.slice(index, newline);
-      tokens.push({ type: 'comment', value });
+      tokens.push({
+        type: 'comment',
+        value,
+      });
       index += value.length;
       continue;
     }
@@ -262,7 +288,10 @@ function tokenizeBash(code: string) {
         character === "'" ? /^'(?:\\.|[^'\\])*'/ : /^"(?:\\.|[^"\\])*"/;
       const match = re.exec(code.slice(index));
       if (match) {
-        tokens.push({ type: 'string', value: match[0] });
+        tokens.push({
+          type: 'string',
+          value: match[0],
+        });
         index += match[0].length;
         continue;
       }
@@ -271,13 +300,19 @@ function tokenizeBash(code: string) {
     if (character === '$') {
       const braced = /^\$\{[^}]+\}/.exec(code.slice(index));
       if (braced) {
-        tokens.push({ type: 'bash-var', value: braced[0] });
+        tokens.push({
+          type: 'bash-var',
+          value: braced[0],
+        });
         index += braced[0].length;
         continue;
       }
       const plain = /^\$[A-Za-z_][\w]*/.exec(code.slice(index));
       if (plain) {
-        tokens.push({ type: 'bash-var', value: plain[0] });
+        tokens.push({
+          type: 'bash-var',
+          value: plain[0],
+        });
         index += plain[0].length;
         continue;
       }
@@ -289,7 +324,10 @@ function tokenizeBash(code: string) {
       if (!isWordContinuation) {
         const flag = /^--?[A-Za-z][\w-]*/.exec(code.slice(index));
         if (flag) {
-          tokens.push({ type: 'bash-flag', value: flag[0] });
+          tokens.push({
+            type: 'bash-flag',
+            value: flag[0],
+          });
           index += flag[0].length;
           continue;
         }
@@ -299,7 +337,10 @@ function tokenizeBash(code: string) {
     if (character >= '0' && character <= '9') {
       const match = /^\d+(?:\.\d+)?/.exec(code.slice(index));
       if (match) {
-        tokens.push({ type: 'number', value: match[0] });
+        tokens.push({
+          type: 'number',
+          value: match[0],
+        });
         index += match[0].length;
         continue;
       }
@@ -308,7 +349,10 @@ function tokenizeBash(code: string) {
     if (atLineStart && /[A-Za-z_]/.test(character)) {
       const match = /^[A-Za-z_][\w-]*/.exec(code.slice(index));
       if (match) {
-        tokens.push({ type: 'fn-call', value: match[0] });
+        tokens.push({
+          type: 'fn-call',
+          value: match[0],
+        });
         atLineStart = false;
         if (SUBCOMMAND_TOOLS.has(match[0])) {
           expectSubcommand = true;
@@ -321,7 +365,10 @@ function tokenizeBash(code: string) {
     if (expectSubcommand && /[A-Za-z_]/.test(character)) {
       const match = /^[A-Za-z_][\w-]*/.exec(code.slice(index));
       if (match) {
-        tokens.push({ type: 'bash-subcommand', value: match[0] });
+        tokens.push({
+          type: 'bash-subcommand',
+          value: match[0],
+        });
         expectSubcommand = false;
         inArgs = true;
         index += match[0].length;
@@ -332,7 +379,10 @@ function tokenizeBash(code: string) {
     if (inArgs && /[@A-Za-z_]/.test(character)) {
       const match = /^@?[\w][\w./@-]*/.exec(code.slice(index));
       if (match) {
-        tokens.push({ type: 'bash-package', value: match[0] });
+        tokens.push({
+          type: 'bash-package',
+          value: match[0],
+        });
         index += match[0].length;
         continue;
       }
@@ -341,7 +391,10 @@ function tokenizeBash(code: string) {
     if (character !== '\n') {
       atLineStart = false;
     }
-    tokens.push({ type: 'plain', value: character });
+    tokens.push({
+      type: 'plain',
+      value: character,
+    });
     index++;
   }
   return mergePlainTokens(tokens);
@@ -357,7 +410,10 @@ function tokenizeHtml(code: string) {
       if (code.startsWith('<!--', index)) {
         const end = code.indexOf('-->', index + 4);
         const stop = end === -1 ? code.length : end + 3;
-        tokens.push({ type: 'comment', value: code.slice(index, stop) });
+        tokens.push({
+          type: 'comment',
+          value: code.slice(index, stop),
+        });
         index = stop;
         continue;
       }
@@ -365,7 +421,10 @@ function tokenizeHtml(code: string) {
       if (code[index] === '<') {
         const match = /^<\/?[A-Za-z][\w.-]*/.exec(code.slice(index));
         if (match) {
-          tokens.push({ type: 'jsx-tag', value: match[0] });
+          tokens.push({
+            type: 'jsx-tag',
+            value: match[0],
+          });
           index += match[0].length;
           mode = 'tag';
           continue;
@@ -374,20 +433,29 @@ function tokenizeHtml(code: string) {
 
       const nextOpen = code.indexOf('<', index);
       const stop = nextOpen === -1 ? code.length : nextOpen;
-      tokens.push({ type: 'plain', value: code.slice(index, stop) });
+      tokens.push({
+        type: 'plain',
+        value: code.slice(index, stop),
+      });
       index = stop;
       continue;
     }
 
     if (code[index] === '/' && code[index + 1] === '>') {
-      tokens.push({ type: 'jsx-tag', value: '/>' });
+      tokens.push({
+        type: 'jsx-tag',
+        value: '/>',
+      });
       index += 2;
       mode = 'text';
       continue;
     }
 
     if (code[index] === '>') {
-      tokens.push({ type: 'jsx-tag', value: '>' });
+      tokens.push({
+        type: 'jsx-tag',
+        value: '>',
+      });
       index++;
       mode = 'text';
       continue;
@@ -395,13 +463,19 @@ function tokenizeHtml(code: string) {
 
     const whitespace = /^[\s]+/.exec(code.slice(index));
     if (whitespace) {
-      tokens.push({ type: 'plain', value: whitespace[0] });
+      tokens.push({
+        type: 'plain',
+        value: whitespace[0],
+      });
       index += whitespace[0].length;
       continue;
     }
 
     if (code[index] === '=') {
-      tokens.push({ type: 'punct', value: '=' });
+      tokens.push({
+        type: 'punct',
+        value: '=',
+      });
       index++;
       continue;
     }
@@ -411,7 +485,10 @@ function tokenizeHtml(code: string) {
       const regex = quote === "'" ? /^'(?:\\.|[^'\\])*'/ : /^"(?:\\.|[^"\\])*"/;
       const match = regex.exec(code.slice(index));
       if (match) {
-        tokens.push({ type: 'string', value: match[0] });
+        tokens.push({
+          type: 'string',
+          value: match[0],
+        });
         index += match[0].length;
         continue;
       }
@@ -419,12 +496,18 @@ function tokenizeHtml(code: string) {
 
     const attribute = /^[A-Za-z_:@][\w:.-]*/.exec(code.slice(index));
     if (attribute) {
-      tokens.push({ type: 'fn-call', value: attribute[0] });
+      tokens.push({
+        type: 'fn-call',
+        value: attribute[0],
+      });
       index += attribute[0].length;
       continue;
     }
 
-    tokens.push({ type: 'plain', value: code[index] ?? '' });
+    tokens.push({
+      type: 'plain',
+      value: code[index] ?? '',
+    });
     index++;
   }
 
@@ -442,19 +525,28 @@ function tokenizeYaml(code: string) {
 
     const indent = /^[ \t]*/.exec(line)?.[0] ?? '';
     if (indent) {
-      tokens.push({ type: 'plain', value: indent });
+      tokens.push({
+        type: 'plain',
+        value: indent,
+      });
       cursor += indent.length;
     }
 
     if (cursor >= line.length) {
       if (trailing) {
-        tokens.push({ type: 'plain', value: trailing });
+        tokens.push({
+          type: 'plain',
+          value: trailing,
+        });
       }
       continue;
     }
 
     if (line[cursor] === '#') {
-      tokens.push({ type: 'comment', value: line.slice(cursor) + trailing });
+      tokens.push({
+        type: 'comment',
+        value: line.slice(cursor) + trailing,
+      });
       continue;
     }
 
@@ -462,26 +554,41 @@ function tokenizeYaml(code: string) {
       line[cursor] === '-' &&
       (line[cursor + 1] === ' ' || cursor + 1 === line.length)
     ) {
-      tokens.push({ type: 'punct', value: '-' });
+      tokens.push({
+        type: 'punct',
+        value: '-',
+      });
       cursor++;
     }
 
     while (cursor < line.length && line[cursor] === ' ') {
-      tokens.push({ type: 'plain', value: ' ' });
+      tokens.push({
+        type: 'plain',
+        value: ' ',
+      });
       cursor++;
     }
 
     if (cursor >= line.length) {
       if (trailing) {
-        tokens.push({ type: 'plain', value: trailing });
+        tokens.push({
+          type: 'plain',
+          value: trailing,
+        });
       }
       continue;
     }
 
     const keyMatch = /^([A-Za-z_][\w-]*)(\s*:)(\s|$)/.exec(line.slice(cursor));
     if (keyMatch) {
-      tokens.push({ type: 'keyword', value: keyMatch[1] ?? '' });
-      tokens.push({ type: 'punct', value: keyMatch[2] ?? '' });
+      tokens.push({
+        type: 'keyword',
+        value: keyMatch[1] ?? '',
+      });
+      tokens.push({
+        type: 'punct',
+        value: keyMatch[2] ?? '',
+      });
       cursor += (keyMatch[1]?.length ?? 0) + (keyMatch[2]?.length ?? 0);
     }
 
@@ -490,13 +597,19 @@ function tokenizeYaml(code: string) {
 
       const ws = /^[ \t]+/.exec(remainder);
       if (ws) {
-        tokens.push({ type: 'plain', value: ws[0] });
+        tokens.push({
+          type: 'plain',
+          value: ws[0],
+        });
         cursor += ws[0].length;
         continue;
       }
 
       if (remainder[0] === '#') {
-        tokens.push({ type: 'comment', value: line.slice(cursor) });
+        tokens.push({
+          type: 'comment',
+          value: line.slice(cursor),
+        });
         cursor = line.length;
         continue;
       }
@@ -507,7 +620,10 @@ function tokenizeYaml(code: string) {
           quote === "'" ? /^'(?:\\.|[^'\\])*'/ : /^"(?:\\.|[^"\\])*"/;
         const match = regex.exec(remainder);
         if (match) {
-          tokens.push({ type: 'string', value: match[0] });
+          tokens.push({
+            type: 'string',
+            value: match[0],
+          });
           cursor += match[0].length;
           continue;
         }
@@ -515,24 +631,36 @@ function tokenizeYaml(code: string) {
 
       const numberMatch = /^-?\d+(?:\.\d+)?(?=\s|$|,)/.exec(remainder);
       if (numberMatch) {
-        tokens.push({ type: 'number', value: numberMatch[0] });
+        tokens.push({
+          type: 'number',
+          value: numberMatch[0],
+        });
         cursor += numberMatch[0].length;
         continue;
       }
 
       const literalMatch = /^(true|false|null|~)(?=\s|$|,)/.exec(remainder);
       if (literalMatch) {
-        tokens.push({ type: 'literal', value: literalMatch[0] });
+        tokens.push({
+          type: 'literal',
+          value: literalMatch[0],
+        });
         cursor += literalMatch[0].length;
         continue;
       }
 
-      tokens.push({ type: 'plain', value: remainder });
+      tokens.push({
+        type: 'plain',
+        value: remainder,
+      });
       cursor = line.length;
     }
 
     if (trailing) {
-      tokens.push({ type: 'plain', value: trailing });
+      tokens.push({
+        type: 'plain',
+        value: trailing,
+      });
     }
   }
 
@@ -554,17 +682,29 @@ function tokenizeTranslation(code: string): Token[] {
       if (match) {
         const prefix = match[1] ?? '';
         const content = match[2] ?? '';
-        tokens.push({ type: 'comment', value: prefix });
+        tokens.push({
+          type: 'comment',
+          value: prefix,
+        });
         if (content.length > 0) {
-          tokens.push({ type: 'tx-source', value: content });
+          tokens.push({
+            type: 'tx-source',
+            value: content,
+          });
         }
       } else {
-        tokens.push({ type: 'tx-source', value: line });
+        tokens.push({
+          type: 'tx-source',
+          value: line,
+        });
       }
     }
 
     if (trailing.length > 0) {
-      tokens.push({ type: 'plain', value: trailing });
+      tokens.push({
+        type: 'plain',
+        value: trailing,
+      });
     }
   }
 
@@ -587,35 +727,50 @@ function tokenizeJson(code: string) {
     ) {
       const match = /^[\s]+/.exec(code.slice(index));
       if (match) {
-        tokens.push({ type: 'plain', value: match[0] });
+        tokens.push({
+          type: 'plain',
+          value: match[0],
+        });
         index += match[0].length;
         continue;
       }
     }
 
     if (character === '{' || character === '[') {
-      tokens.push({ type: 'punct', value: character });
+      tokens.push({
+        type: 'punct',
+        value: character,
+      });
       lastWas = 'open';
       index++;
       continue;
     }
 
     if (character === '}' || character === ']') {
-      tokens.push({ type: 'punct', value: character });
+      tokens.push({
+        type: 'punct',
+        value: character,
+      });
       lastWas = 'value';
       index++;
       continue;
     }
 
     if (character === ':') {
-      tokens.push({ type: 'punct', value: character });
+      tokens.push({
+        type: 'punct',
+        value: character,
+      });
       lastWas = 'colon';
       index++;
       continue;
     }
 
     if (character === ',') {
-      tokens.push({ type: 'punct', value: character });
+      tokens.push({
+        type: 'punct',
+        value: character,
+      });
       lastWas = 'comma';
       index++;
       continue;
@@ -638,7 +793,10 @@ function tokenizeJson(code: string) {
     if (/[0-9-]/.test(character)) {
       const match = /^-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/.exec(code.slice(index));
       if (match) {
-        tokens.push({ type: 'number', value: match[0] });
+        tokens.push({
+          type: 'number',
+          value: match[0],
+        });
         lastWas = 'value';
         index += match[0].length;
         continue;
@@ -648,24 +806,30 @@ function tokenizeJson(code: string) {
     if (/[a-z]/.test(character)) {
       const match = /^(true|false|null)\b/.exec(code.slice(index));
       if (match) {
-        tokens.push({ type: 'literal', value: match[0] });
+        tokens.push({
+          type: 'literal',
+          value: match[0],
+        });
         lastWas = 'value';
         index += match[0].length;
         continue;
       }
     }
 
-    tokens.push({ type: 'plain', value: character });
+    tokens.push({
+      type: 'plain',
+      value: character,
+    });
     index++;
   }
 
   return mergePlainTokens(tokens);
 }
 
-interface ScanResult {
+type ScanResult = {
   end: number;
   token: Token;
-}
+};
 
 const JSX_LANGUAGES = new Set<Language>([
   'tsx',
@@ -726,7 +890,10 @@ function scanToken(
     if (match) {
       return {
         end: index + match[0].length,
-        token: { type: 'plain', value: match[0] },
+        token: {
+          type: 'plain',
+          value: match[0],
+        },
       };
     }
   }
@@ -735,13 +902,25 @@ function scanToken(
     const newline = code.indexOf('\n', index);
     const value =
       newline === -1 ? code.slice(index) : code.slice(index, newline);
-    return { end: index + value.length, token: { type: 'comment', value } };
+    return {
+      end: index + value.length,
+      token: {
+        type: 'comment',
+        value,
+      },
+    };
   }
 
   if (character === '/' && code[index + 1] === '*') {
     const close = code.indexOf('*/', index + 2);
     const end = close === -1 ? code.length : close + 2;
-    return { end, token: { type: 'comment', value: code.slice(index, end) } };
+    return {
+      end,
+      token: {
+        type: 'comment',
+        value: code.slice(index, end),
+      },
+    };
   }
 
   if (character === '/' && isRegexContext(previous)) {
@@ -751,7 +930,10 @@ function scanToken(
     if (match) {
       return {
         end: index + match[0].length,
-        token: { type: 'regex', value: match[0] },
+        token: {
+          type: 'regex',
+          value: match[0],
+        },
       };
     }
   }
@@ -763,7 +945,10 @@ function scanToken(
     if (match) {
       return {
         end: index + match[0].length,
-        token: { type: 'string', value: match[0] },
+        token: {
+          type: 'string',
+          value: match[0],
+        },
       };
     }
   }
@@ -773,7 +958,10 @@ function scanToken(
     if (match) {
       return {
         end: index + match[0].length,
-        token: { type: 'template', value: match[0] },
+        token: {
+          type: 'template',
+          value: match[0],
+        },
       };
     }
   }
@@ -783,7 +971,10 @@ function scanToken(
     if (match) {
       return {
         end: index + match[0].length,
-        token: { type: 'jsx-tag', value: match[0] },
+        token: {
+          type: 'jsx-tag',
+          value: match[0],
+        },
       };
     }
   }
@@ -793,7 +984,13 @@ function scanToken(
     code[index + 1] === '>' &&
     JSX_LANGUAGES.has(language)
   ) {
-    return { end: index + 2, token: { type: 'jsx-tag', value: '/>' } };
+    return {
+      end: index + 2,
+      token: {
+        type: 'jsx-tag',
+        value: '/>',
+      },
+    };
   }
 
   if (character >= '0' && character <= '9') {
@@ -802,21 +999,30 @@ function scanToken(
     if (hex) {
       return {
         end: index + hex[0].length,
-        token: { type: 'number', value: hex[0] },
+        token: {
+          type: 'number',
+          value: hex[0],
+        },
       };
     }
     const bin = /^0[bB][01](?:_?[01])*n?/.exec(tail);
     if (bin) {
       return {
         end: index + bin[0].length,
-        token: { type: 'number', value: bin[0] },
+        token: {
+          type: 'number',
+          value: bin[0],
+        },
       };
     }
     const oct = /^0[oO][0-7](?:_?[0-7])*n?/.exec(tail);
     if (oct) {
       return {
         end: index + oct[0].length,
-        token: { type: 'number', value: oct[0] },
+        token: {
+          type: 'number',
+          value: oct[0],
+        },
       };
     }
     const decimal =
@@ -824,13 +1030,22 @@ function scanToken(
     if (decimal) {
       return {
         end: index + decimal[0].length,
-        token: { type: 'number', value: decimal[0] },
+        token: {
+          type: 'number',
+          value: decimal[0],
+        },
       };
     }
   }
 
   if (character === '.' && code[index + 1] === '.' && code[index + 2] === '.') {
-    return { end: index + 3, token: { type: 'spread', value: '...' } };
+    return {
+      end: index + 3,
+      token: {
+        type: 'spread',
+        value: '...',
+      },
+    };
   }
 
   if (character === '@') {
@@ -838,7 +1053,10 @@ function scanToken(
     if (match) {
       return {
         end: index + match[0].length,
-        token: { type: 'decorator', value: match[0] },
+        token: {
+          type: 'decorator',
+          value: match[0],
+        },
       };
     }
   }
@@ -857,12 +1075,24 @@ function scanToken(
       } else if (code[index + value.length] === '(') {
         type = 'fn-call';
       }
-      return { end: index + value.length, token: { type, value } };
+      return {
+        end: index + value.length,
+        token: {
+          type,
+          value,
+        },
+      };
     }
   }
 
   if (/[{}()[\];,.:?!<>=+\-*/%&|^~]/.test(character)) {
-    return { end: index + 1, token: { type: 'punct', value: character } };
+    return {
+      end: index + 1,
+      token: {
+        type: 'punct',
+        value: character,
+      },
+    };
   }
 
   return undefined;
@@ -1011,8 +1241,14 @@ function markTaggedTemplates(tokens: Token[]) {
   }
 }
 
-const RAW_TEXT_TAGS = new Set(['<script', '<style']);
-const RAW_TEXT_CLOSE_TAGS = new Set(['</script', '</style']);
+const RAW_TEXT_TAGS = new Set([
+  '<script',
+  '<style',
+]);
+const RAW_TEXT_CLOSE_TAGS = new Set([
+  '</script',
+  '</style',
+]);
 
 function reclassifyJsxText(tokens: Token[]) {
   let depth = 0;
@@ -1135,11 +1371,17 @@ function expandVueAttributeBindings(tokens: Token[]): Token[] {
                   const quote = str.value[0] ?? '"';
                   const inner = str.value.slice(1, -1);
                   const innerTokens = tokenize(inner, 'ts');
-                  result.push({ type: 'string', value: quote });
+                  result.push({
+                    type: 'string',
+                    value: quote,
+                  });
                   for (const innerToken of innerTokens) {
                     result.push(innerToken);
                   }
-                  result.push({ type: 'string', value: quote });
+                  result.push({
+                    type: 'string',
+                    value: quote,
+                  });
                   index = stringIndex + 1;
                   continue;
                 }
@@ -1215,12 +1457,18 @@ function expandTemplateInterpolations(
           }
           end++;
         }
-        segments.push({ type: 'punct', value: '${' });
+        segments.push({
+          type: 'punct',
+          value: '${',
+        });
         const inner = body.slice(cursor + 2, end);
         for (const innerToken of tokenize(inner, language)) {
           segments.push(innerToken);
         }
-        segments.push({ type: 'punct', value: '}' });
+        segments.push({
+          type: 'punct',
+          value: '}',
+        });
         cursor = end + 1;
         lastEnd = cursor;
         continue;
@@ -1234,14 +1482,23 @@ function expandTemplateInterpolations(
     }
 
     if (lastEnd < body.length) {
-      segments.push({ type: 'template', value: body.slice(lastEnd) });
+      segments.push({
+        type: 'template',
+        value: body.slice(lastEnd),
+      });
     }
 
-    result.push({ type: 'template', value: '`' });
+    result.push({
+      type: 'template',
+      value: '`',
+    });
     for (const segment of segments) {
       result.push(segment);
     }
-    result.push({ type: 'template', value: '`' });
+    result.push({
+      type: 'template',
+      value: '`',
+    });
   }
 
   return result;
@@ -1405,7 +1662,9 @@ function mergePlainTokens(tokens: Token[]) {
     ) {
       previous.value += token.value;
     } else {
-      result.push({ ...token });
+      result.push({
+        ...token,
+      });
     }
   }
   return result;

@@ -10,28 +10,51 @@ describe('readLocaleData', () => {
 
   beforeEach(() => {
     root = mkdtempSync(join(tmpdir(), 'yapyak-data-'));
-    mkdirSync(join(root, 'locales'), { recursive: true });
+    mkdirSync(join(root, 'locales'), {
+      recursive: true,
+    });
   });
 
   afterEach(() => {
-    rmSync(root, { force: true, recursive: true });
+    rmSync(root, {
+      force: true,
+      recursive: true,
+    });
   });
 
   it('returns parsed locale files for each requested locale', () => {
     writeFileSync(
       join(root, 'locales', 'sv.json'),
-      JSON.stringify({ 'src/a.ts': { Hello: 'Hej' } }),
+      JSON.stringify({
+        'src/a.ts': {
+          Hello: 'Hej',
+        },
+      }),
     );
     const result = readLocaleData(
-      { locales: ['sv'], localesDir: 'locales' },
+      {
+        locales: [
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
       root,
     );
-    expect(result.sv).toEqual({ 'src/a.ts': { Hello: 'Hej' } });
+    expect(result.sv).toEqual({
+      'src/a.ts': {
+        Hello: 'Hej',
+      },
+    });
   });
 
   it('returns an empty entry when a locale file is missing', () => {
     const result = readLocaleData(
-      { locales: ['sv'], localesDir: 'locales' },
+      {
+        locales: [
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
       root,
     );
     expect(result.sv).toEqual({});
@@ -41,7 +64,12 @@ describe('readLocaleData', () => {
     writeFileSync(join(root, 'locales', 'sv.json'), '{not valid');
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const result = readLocaleData(
-      { locales: ['sv'], localesDir: 'locales' },
+      {
+        locales: [
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
       root,
     );
     expect(result.sv).toEqual({});
@@ -57,7 +85,15 @@ describe('readLocaleData', () => {
     rmSync(path);
     mkdirSync(path);
     expect(() =>
-      readLocaleData({ locales: ['sv'], localesDir: 'locales' }, root),
+      readLocaleData(
+        {
+          locales: [
+            'sv',
+          ],
+          localesDir: 'locales',
+        },
+        root,
+      ),
     ).toThrow();
   });
 });

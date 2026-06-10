@@ -91,7 +91,9 @@ export function getLocale(): Locale {
     hasWarnedUninitialized = true;
     warn(
       'yapyak runtime not initialized — register the build-tool plugin (@yapyak/vite) in your bundler config.',
-      { code: 'YPK_RUNTIME_NOT_INITIALIZED' },
+      {
+        code: 'YPK_RUNTIME_NOT_INITIALIZED',
+      },
     );
   }
   if (typeof window === 'undefined') {
@@ -154,7 +156,9 @@ export function setLocale(value: Locale): void {
 }
 
 /** The configured locales, frozen at module load from values injected by yapyak's compiler. */
-export const locales: Locale[] = Object.freeze([...LOCALES]) as Locale[];
+export const locales: Locale[] = Object.freeze([
+  ...LOCALES,
+]) as Locale[];
 
 /** The default locale. Build-time constant. Inlined by yapyak's compiler. */
 export const defaultLocale: Locale = DEFAULT_LOCALE;

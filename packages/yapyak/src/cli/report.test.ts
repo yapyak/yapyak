@@ -8,7 +8,9 @@ import { join } from 'node:path';
 const baseOptions = {
   defaultLocale: 'en',
   exclude: [],
-  include: ['src/**/*.ts'],
+  include: [
+    'src/**/*.ts',
+  ],
   localesDir: 'locales',
 };
 
@@ -17,16 +19,26 @@ describe('buildReport', () => {
 
   beforeEach(() => {
     root = mkdtempSync(join(tmpdir(), 'yapyak-report-'));
-    mkdirSync(join(root, 'src'), { recursive: true });
-    mkdirSync(join(root, 'locales'), { recursive: true });
+    mkdirSync(join(root, 'src'), {
+      recursive: true,
+    });
+    mkdirSync(join(root, 'locales'), {
+      recursive: true,
+    });
   });
 
   afterEach(() => {
-    rmSync(root, { force: true, recursive: true });
+    rmSync(root, {
+      force: true,
+      recursive: true,
+    });
   });
 
   it('returns an empty report when no source files exist', () => {
-    const report = buildReport({ ...baseOptions, projectRoot: root });
+    const report = buildReport({
+      ...baseOptions,
+      projectRoot: root,
+    });
     expect(report.totalMessages).toBe(0);
     expect(report.messages).toEqual([]);
     expect(report.missing).toEqual([]);
@@ -37,7 +49,10 @@ describe('buildReport', () => {
       join(root, 'src', 'app.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
-    const report = buildReport({ ...baseOptions, projectRoot: root });
+    const report = buildReport({
+      ...baseOptions,
+      projectRoot: root,
+    });
     expect(report.totalMessages).toBe(1);
     expect(report.messages[0]?.source).toBe('Save');
   });
@@ -47,8 +62,14 @@ describe('buildReport', () => {
       join(root, 'src', 'app.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
-    const report = buildReport({ ...baseOptions, projectRoot: root });
-    expect(report.perLocale.en).toEqual({ missing: 0, translated: 1 });
+    const report = buildReport({
+      ...baseOptions,
+      projectRoot: root,
+    });
+    expect(report.perLocale.en).toEqual({
+      missing: 0,
+      translated: 1,
+    });
   });
 
   it('lists every missing translation in a non-default locale', () => {
@@ -58,10 +79,20 @@ describe('buildReport', () => {
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
-      JSON.stringify({ 'src/app.ts': { Save: '' } }),
+      JSON.stringify({
+        'src/app.ts': {
+          Save: '',
+        },
+      }),
     );
-    const report = buildReport({ ...baseOptions, projectRoot: root });
+    const report = buildReport({
+      ...baseOptions,
+      projectRoot: root,
+    });
     expect(report.missing).toHaveLength(1);
-    expect(report.missing[0]).toMatchObject({ locale: 'sv', source: 'Save' });
+    expect(report.missing[0]).toMatchObject({
+      locale: 'sv',
+      source: 'Save',
+    });
   });
 });

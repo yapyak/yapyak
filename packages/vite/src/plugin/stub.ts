@@ -7,18 +7,18 @@ import { autoTranslate, validateLocaleCode } from 'yapyak/compiler';
 import { getNormalized, getResolver } from './state';
 import { runYapyakCommand } from './yapyak-command';
 
-interface TranslationErrorEntry {
+type TranslationErrorEntry = {
   error: unknown;
   fileId: string;
   locale: string;
   source: string;
-}
+};
 
-interface TranslationErrorGroup {
+type TranslationErrorGroup = {
   entries: TranslationErrorEntry[];
   error: unknown;
   locale: string;
-}
+};
 
 export function fillStubs(state: State): void {
   const config = getNormalized(state);
@@ -72,13 +72,13 @@ export function fillStubs(state: State): void {
   });
 }
 
-interface RunAutoTranslateInput {
+type RunAutoTranslateInput = {
   defaultLocale: string;
   filtered: ExtractedMessage[];
   locales: string[];
   startedAt: number;
   translator: Translator;
-}
+};
 
 async function runAutoTranslate(
   state: State,
@@ -87,14 +87,20 @@ async function runAutoTranslate(
   const config = getNormalized(state);
   try {
     const result = await autoTranslate(
-      { messages: input.filtered, translator: input.translator },
+      {
+        messages: input.filtered,
+        translator: input.translator,
+      },
       {
         defaultLocale: input.defaultLocale,
         locales: input.locales,
         localesDir: config.localesDir,
       },
       state.projectRoot,
-      { examples: config.examples, yapyakDir: state.yapyakDir },
+      {
+        examples: config.examples,
+        yapyakDir: state.yapyakDir,
+      },
     );
     if (result.translated > 0) {
       getResolver(state).invalidateData();
@@ -170,7 +176,9 @@ function buildErrorGroups(
     }
     group.entries.push(entry);
   }
-  return [...groups.values()];
+  return [
+    ...groups.values(),
+  ];
 }
 
 function renderTranslationErrorGroup(group: TranslationErrorGroup): string {

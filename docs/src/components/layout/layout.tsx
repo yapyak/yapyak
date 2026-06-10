@@ -15,7 +15,10 @@ export function Layout(props: LayoutProps) {
   return (
     <Box
       {...restProps}
-      className={[styles.Layout, className]}
+      className={[
+        styles.Layout,
+        className,
+      ]}
     >
       <Box
         aria-hidden="true"

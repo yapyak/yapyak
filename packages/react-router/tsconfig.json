@@ -3,7 +3,12 @@
     "outDir": "dist",
     "rootDir": "src"
   },
-  "exclude": ["dist", "node_modules"],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ],
   "extends": "@yapyak/typescript-config/library",
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

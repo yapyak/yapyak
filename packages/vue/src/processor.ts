@@ -61,7 +61,9 @@ export function vue(): Processor {
       }
       magicString.prepend(`<script setup>\n${importStatement}\n</script>\n`);
     },
-    ['.vue'],
+    [
+      '.vue',
+    ],
     'vue',
     (source) => {
       const compiler = loadCompiler();
@@ -94,7 +96,9 @@ function loadCompiler(): typeof VueSfc {
   } catch (error) {
     throw new Error(
       '@vue/compiler-sfc is required to process Vue files. Install it as a dependency.',
-      { cause: error },
+      {
+        cause: error,
+      },
     );
   }
 }
@@ -200,7 +204,9 @@ function fragmentsFromDirective(
       ),
     };
   }
-  return [fragment];
+  return [
+    fragment,
+  ];
 }
 
 function readVBindAttributeName(prop: DirectiveNode): string | undefined {
@@ -220,11 +226,11 @@ function readVBindAttributeName(prop: DirectiveNode): string | undefined {
   return directiveArgument.content;
 }
 
-interface MustacheExpression {
+type MustacheExpression = {
   code: string;
   codeOffset: number;
   endOffset: number;
-}
+};
 
 function readMustache(
   source: string,
@@ -324,7 +330,9 @@ function skipTemplateLiteral(source: string, from: number): number {
 
 function skipLineComment(source: string, from: number): number {
   let index = from + 2;
-  while (index < source.length && source[index] !== '\n') index += 1;
+  while (index < source.length && source[index] !== '\n') {
+    index += 1;
+  }
   return index;
 }
 
@@ -402,6 +410,12 @@ function hasChildren(node: RootNode | TemplateChildNode): node is (
 } {
   return (
     'children' in node &&
-    Array.isArray((node as { children?: unknown }).children)
+    Array.isArray(
+      (
+        node as {
+          children?: unknown;
+        }
+      ).children,
+    )
   );
 }

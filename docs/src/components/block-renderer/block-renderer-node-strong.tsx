@@ -5,9 +5,9 @@ import { Box } from '#components/box';
 import { BlockRendererNode } from './block-renderer-node';
 import styles from './block-renderer-node-strong.module.css';
 
-export interface BlockRendererNodeStrongProps {
+export type BlockRendererNodeStrongProps = {
   block: StrongBlock;
-}
+};
 
 export function BlockRendererNodeStrong(props: BlockRendererNodeStrongProps) {
   const { block } = props;

@@ -4,9 +4,9 @@ import { Box } from '#components/box';
 
 import { BlockRendererNode } from './block-renderer-node';
 
-export interface BlockRendererNodeParagraphProps {
+export type BlockRendererNodeParagraphProps = {
   block: ParagraphBlock;
-}
+};
 
 export function BlockRendererNodeParagraph(
   props: BlockRendererNodeParagraphProps,

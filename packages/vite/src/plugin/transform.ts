@@ -20,14 +20,19 @@ export function createTransformPlugin(state: State): Plugin {
     transform(
       code: string,
       id: string,
-    ): { code: string; map: TransformFileResult['map'] } | null {
+    ): {
+      code: string;
+      map: TransformFileResult['map'];
+    } | null {
       if (!isCandidateId(id, state.filter, state.projectRoot)) {
         return null;
       }
       const fileId = toFileId(state.projectRoot, id);
       const { locales } = getResolver(state).getEmittedLocales();
       const processors = getNormalized(state).processors;
-      const extracted = extractFile(fileId, code, { processors });
+      const extracted = extractFile(fileId, code, {
+        processors,
+      });
       renderErrorDiagnostics(state.logger, extracted);
       if (extracted.callSites.length === 0) {
         return null;
@@ -51,17 +56,20 @@ export function createTransformPlugin(state: State): Plugin {
       if (result.code === code) {
         return null;
       }
-      return { code: result.code, map: result.map };
+      return {
+        code: result.code,
+        map: result.map,
+      };
     },
   };
 }
 
-interface BuildTranslationsInput {
+type BuildTranslationsInput = {
   extracted: ExtractFileResult;
   fileId: string;
   localeData: LocaleData;
   locales: string[];
-}
+};
 
 function buildTranslations(
   input: BuildTranslationsInput,

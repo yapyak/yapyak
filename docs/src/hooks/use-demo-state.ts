@@ -9,7 +9,7 @@ import {
   SCENES,
 } from '#utils/hero-demo-scenes';
 
-export interface DemoState {
+export type DemoState = {
   receiving: boolean;
   savedSource: string;
   saving: boolean;
@@ -17,7 +17,7 @@ export interface DemoState {
   source: string;
   translations: Record<LocaleCode, string>;
   typing: boolean;
-}
+};
 
 const INITIAL_STATE: DemoState = {
   receiving: false,
@@ -76,11 +76,17 @@ export function useDemoState(active: boolean) {
           return;
         }
 
-        setState((previous) => ({ ...previous, typing: true }));
+        setState((previous) => ({
+          ...previous,
+          typing: true,
+        }));
 
         while (currentSource.length > 0) {
           currentSource = currentSource.slice(0, -1);
-          setState((previous) => ({ ...previous, source: currentSource }));
+          setState((previous) => ({
+            ...previous,
+            source: currentSource,
+          }));
           await sleep(jitter(28, 26));
           if (isCancelled) {
             return;
@@ -91,7 +97,10 @@ export function useDemoState(active: boolean) {
 
         for (let index = 0; index < scene.source.length; index++) {
           currentSource = scene.source.slice(0, index + 1);
-          setState((previous) => ({ ...previous, source: currentSource }));
+          setState((previous) => ({
+            ...previous,
+            source: currentSource,
+          }));
           const character = scene.source[index];
           const delay = jitter(48, 70) + (character === ' ' ? 60 : 0);
           await sleep(delay);
@@ -114,7 +123,10 @@ export function useDemoState(active: boolean) {
           translations: EMPTY_TRANSLATIONS,
         }));
         await sleep(360);
-        setState((previous) => ({ ...previous, saving: false }));
+        setState((previous) => ({
+          ...previous,
+          saving: false,
+        }));
         await sleep(700);
         if (isCancelled) {
           return;
@@ -126,7 +138,10 @@ export function useDemoState(active: boolean) {
           translations: scene.translations,
         }));
 
-        setState((previous) => ({ ...previous, receiving: false }));
+        setState((previous) => ({
+          ...previous,
+          receiving: false,
+        }));
         await sleep(1100);
 
         sceneIndex++;
@@ -142,7 +157,9 @@ export function useDemoState(active: boolean) {
       }
       timeouts.clear();
     };
-  }, [active]);
+  }, [
+    active,
+  ]);
 
   return state;
 }

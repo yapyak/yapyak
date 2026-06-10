@@ -7,11 +7,11 @@ import type { SidebarNode } from './manifest';
 
 import { buildSymbolHref } from '../symbol-path';
 
-interface BuildTypedocPackageRootInput {
+type BuildTypedocPackageRootInput = {
   collapsible: boolean;
   expanded: boolean;
   label: string;
-}
+};
 
 export function buildTypedocPackageRoot(
   manifest: ReferenceManifest,
@@ -52,7 +52,9 @@ export function buildTypedocPackageRoot(
     href: `/${collectionName}/${packageSlug}`,
     label,
     type: 'group',
-    ...(collapsible && { defaultOpen: expanded }),
+    ...(collapsible && {
+      defaultOpen: expanded,
+    }),
   };
 }
 
@@ -73,7 +75,9 @@ function moduleChildren(
       }),
       label: api.kind === 'function' ? `${api.name}()` : api.name,
       ...(api.deprecated !== null && {
-        badge: { variant: 'deprecated' as const },
+        badge: {
+          variant: 'deprecated' as const,
+        },
       }),
       type: 'link',
     });

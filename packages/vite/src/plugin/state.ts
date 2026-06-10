@@ -3,7 +3,7 @@ import type { ExtractedMessage } from 'yapyak/compiler';
 import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
 import type { LocaleResolver } from '../locale-resolver';
 
-export interface State {
+export type State = {
   command: 'build' | 'serve';
   configFile: string | undefined;
   filter: (path: string) => boolean;
@@ -15,11 +15,11 @@ export interface State {
   resolver: LocaleResolver | undefined;
   teardownCallbacks: Array<() => void>;
   yapyakDir: string;
-}
+};
 
-export interface CreateStateOptions {
+export type CreateStateOptions = {
   fixedLocale: string | undefined;
-}
+};
 
 export function createState(options: CreateStateOptions): State {
   return {

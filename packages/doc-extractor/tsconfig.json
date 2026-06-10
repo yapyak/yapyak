@@ -3,8 +3,12 @@
     "allowImportingTsExtensions": true,
     "isolatedDeclarations": false,
     "noEmit": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
   "extends": "@yapyak/typescript-config/library",
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

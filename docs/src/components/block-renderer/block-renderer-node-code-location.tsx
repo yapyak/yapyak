@@ -4,9 +4,9 @@ import { Box } from '#components/box';
 
 import styles from './block-renderer-node-code-location.module.css';
 
-export interface BlockRendererNodeCodeLocationProps {
+export type BlockRendererNodeCodeLocationProps = {
   block: CodeLocationBlock;
-}
+};
 
 export function BlockRendererNodeCodeLocation(
   props: BlockRendererNodeCodeLocationProps,

@@ -1,13 +1,13 @@
 import { color } from './color';
 
-interface SymbolSet {
+type SymbolSet = {
   arrow: string;
   bullet: string;
   check: string;
   cross: string;
   question: string;
   warn: string;
-}
+};
 
 export const symbol: SymbolSet = {
   arrow: color.cyan('▸'),

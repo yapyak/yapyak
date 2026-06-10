@@ -4,30 +4,30 @@ export const YAPYAK_MODULE = 'yapyak';
 export const YAPYAK_INTERNAL_MODULE = 'yapyak/internal';
 export const RUNTIME_NAME = 't';
 
-export interface Binding {
+export type Binding = {
   kind: 'direct' | 'namespace' | 'wrapper';
   localName: string;
-}
+};
 
-export interface Scope {
+export type Scope = {
   bindings: Map<string, Binding>;
   node: ts.Node;
   parent?: Scope;
-}
+};
 
-export interface BindingTable {
+export type BindingTable = {
   find(name: string, atNode: ts.Node): Binding | undefined;
   root: Scope;
-}
+};
 
-interface ImportData {
+type ImportData = {
   directLocals: Set<string>;
   namespaceLocals: Set<string>;
-}
+};
 
-export interface ResolveBindingsOptions {
+export type ResolveBindingsOptions = {
   ambientParent?: Scope;
-}
+};
 
 export function resolveBindings(
   sourceFile: ts.SourceFile,

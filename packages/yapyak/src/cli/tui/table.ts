@@ -8,9 +8,9 @@ const padEndVisual = (value: string, width: number): string => {
   return length >= width ? value : value + ' '.repeat(width - length);
 };
 
-export interface RenderTableOptions {
+export type RenderTableOptions = {
   align?: Array<'left' | 'right'>;
-}
+};
 
 export function renderTable(
   headers: string[],
@@ -44,7 +44,11 @@ export function renderTable(
   const sep = `├${widths.map((width) => '─'.repeat(width + 2)).join('┼')}┤`;
   const bottom = `└${widths.map((width) => '─'.repeat(width + 2)).join('┴')}┘`;
 
-  const lines = [top, renderRow(headers), sep];
+  const lines = [
+    top,
+    renderRow(headers),
+    sep,
+  ];
   for (const row of rows) {
     lines.push(renderRow(row));
   }

@@ -31,7 +31,13 @@ import { subscribeLocale } from 'yapyak/internal';
  * }
  * ```
  */
-export function useLocale(): [Locale, (value: Locale) => void] {
+export function useLocale(): [
+  Locale,
+  (value: Locale) => void,
+] {
   const current = useSyncExternalStore(subscribeLocale, getLocale, getLocale);
-  return [current, setLocale];
+  return [
+    current,
+    setLocale,
+  ];
 }

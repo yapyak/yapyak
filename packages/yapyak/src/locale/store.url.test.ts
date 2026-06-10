@@ -3,20 +3,28 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('yapyak/runtime', () => ({
   DEFAULT_LOCALE: 'en',
   DETECT_ACCEPT_LANGUAGE: false,
-  LOCALES: ['en', 'sv', 'fr'],
-  PERSISTENCE_CONFIG: { type: 'url' },
+  LOCALES: [
+    'en',
+    'sv',
+    'fr',
+  ],
+  PERSISTENCE_CONFIG: {
+    type: 'url',
+  },
   SYNC_HTML_LANG: false,
 }));
 
-interface MockWindow {
+type MockWindow = {
   addEventListener: (type: string, fn: (event: Event) => void) => void;
   dispatchEvent: (event: Event) => void;
   history: {
     pushState: (state: unknown, title: string, url: string) => void;
     replaceState: (state: unknown, title: string, url: string) => void;
   };
-  location: { pathname: string };
-}
+  location: {
+    pathname: string;
+  };
+};
 
 let mockWindow: MockWindow;
 let listeners: Map<string, Array<(event: Event) => void>>;
@@ -31,7 +39,9 @@ function createMockWindow(): MockWindow {
       listeners.set(type, arr);
     },
     dispatchEvent(event) {
-      for (const fn of listeners.get(event.type) ?? []) fn(event);
+      for (const fn of listeners.get(event.type) ?? []) {
+        fn(event);
+      }
     },
     history: {
       pushState(_state, _title, url) {

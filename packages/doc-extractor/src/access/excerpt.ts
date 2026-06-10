@@ -2,9 +2,9 @@ import type { Page } from '../build';
 
 import { blockToText } from './text';
 
-export interface GetExcerptOptions {
+export type GetExcerptOptions = {
   maxLength?: number;
-}
+};
 
 export function getExcerpt(
   page: Page,

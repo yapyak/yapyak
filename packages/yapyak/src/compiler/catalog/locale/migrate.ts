@@ -3,30 +3,33 @@ import type { LocaleContext } from './context';
 import { readLocaleFile, writeLocaleFile } from './file';
 import { join } from 'node:path';
 
-export interface MessagePosition {
+export type MessagePosition = {
   column: number;
   line: number;
   source: string;
-}
+};
 
-export interface RenameEntry {
+export type RenameEntry = {
   from: string;
   to: string;
-}
+};
 
-export interface MigrateLocalesInput {
+export type MigrateLocalesInput = {
   extractedSources: Record<string, Set<string>>;
   fileId: string;
   renames: RenameEntry[];
-}
+};
 
-export interface MigrateLocalesOptions {
+export type MigrateLocalesOptions = {
   preserveTranslations?: boolean;
-}
+};
 
-export interface MigrateLocalesResult {
-  staleEntries: Array<{ locale: string; source: string }>;
-}
+export type MigrateLocalesResult = {
+  staleEntries: Array<{
+    locale: string;
+    source: string;
+  }>;
+};
 
 export function detectRenames(
   oldEntries: MessagePosition[],
@@ -80,7 +83,10 @@ export function detectRenames(
     if (claimedAdded.has(candidate)) {
       continue;
     }
-    renames.push({ from: oldEntry.source, to: candidate });
+    renames.push({
+      from: oldEntry.source,
+      to: candidate,
+    });
     claimedAdded.add(candidate);
   }
 
@@ -95,7 +101,9 @@ export function migrateLocales(
 ): MigrateLocalesResult {
   const staleEntries: MigrateLocalesResult['staleEntries'] = [];
   if (input.renames.length === 0) {
-    return { staleEntries };
+    return {
+      staleEntries,
+    };
   }
 
   const preserveTranslations = options?.preserveTranslations ?? false;
@@ -111,7 +119,9 @@ export function migrateLocales(
       continue;
     }
     let hasChanged = false;
-    const next: Record<string, string> = { ...fileEntries };
+    const next: Record<string, string> = {
+      ...fileEntries,
+    };
     for (const rename of input.renames) {
       if (!Object.hasOwn(next, rename.from)) {
         continue;
@@ -119,7 +129,10 @@ export function migrateLocales(
       const previousValue = next[rename.from];
       delete next[rename.from];
       next[rename.to] = preserveTranslations ? (previousValue ?? '') : '';
-      staleEntries.push({ locale, source: rename.to });
+      staleEntries.push({
+        locale,
+        source: rename.to,
+      });
       hasChanged = true;
     }
     if (hasChanged) {
@@ -131,7 +144,9 @@ export function migrateLocales(
       });
     }
   }
-  return { staleEntries };
+  return {
+    staleEntries,
+  };
 }
 
 function toPositionKey(entry: MessagePosition): string {

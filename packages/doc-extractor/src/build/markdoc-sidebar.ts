@@ -1,7 +1,7 @@
 import type { SidebarNode } from './manifest';
 
 import { parseFrontmatterOnly } from '../extract/markdoc';
-import { readdir, readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
 export async function buildMarkdocSidebar(
@@ -18,7 +18,11 @@ async function walkDirectory(
   const entries = await readdir(absoluteDirectory, {
     withFileTypes: true,
   }).catch(() => []);
-  const collected: { node: SidebarNode; order: number; name: string }[] = [];
+  const collected: {
+    node: SidebarNode;
+    order: number;
+    name: string;
+  }[] = [];
 
   for (const entry of entries) {
     if (entry.name.startsWith('.') || entry.name.startsWith('_')) {
@@ -50,7 +54,11 @@ async function walkDirectory(
       const slug = entry.name.replace(/\.md$/, '');
       const link = await buildLink(fullPath, `${urlPrefix}/${slug}`);
       if (link !== null) {
-        collected.push({ name: slug, node: link.node, order: link.order });
+        collected.push({
+          name: slug,
+          node: link.node,
+          order: link.order,
+        });
       }
     }
   }
@@ -81,7 +89,11 @@ async function buildLink(absPath: string, href: string) {
       ? frontmatter.order
       : Number.POSITIVE_INFINITY;
   return {
-    node: { href, label, type: 'link' as const },
+    node: {
+      href,
+      label,
+      type: 'link' as const,
+    },
     order,
   };
 }

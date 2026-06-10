@@ -14,7 +14,9 @@ type TagHandler = (children: ReactNode) => ReactNode;
  *
  * @typeParam T - The source string literal. Tag names are extracted from it.
  */
-export type RichTextProps<T extends string> = { value: T } & {
+export type RichTextProps<T extends string> = {
+  value: T;
+} & {
   [Tag in TagsOf<T>]: TagHandler;
 };
 

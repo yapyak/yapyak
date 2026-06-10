@@ -18,39 +18,39 @@ import { dirname, join } from 'node:path';
 
 export type LocaleFile = Record<string, Record<string, string>>;
 
-export interface SyncLocaleFilesInput {
+export type SyncLocaleFilesInput = {
   filter: (fileId: string) => boolean;
   messages: ExtractedMessage[];
-}
+};
 
-export interface SyncLocaleFilesOptions {
+export type SyncLocaleFilesOptions = {
   now?: () => string;
   yapyakDir?: string;
-}
+};
 
-export interface SyncEntry {
+export type SyncEntry = {
   fileId: string;
   locale: string;
   source: string;
-}
+};
 
-export interface SyncLocaleFilesResult {
+export type SyncLocaleFilesResult = {
   orphaned: SyncEntry[];
   restored: SyncEntry[];
-}
+};
 
-export interface WriteLocaleFileInput {
+export type WriteLocaleFileInput = {
   after: LocaleFile;
   extractedSources: Record<string, Set<string>>;
   filePath: string;
-}
+};
 
-export interface InvariantViolation {
+export type InvariantViolation = {
   afterValue: string | undefined;
   beforeValue: string;
   fileId: string;
   source: string;
-}
+};
 
 export class YapyakInvariantError extends Error {
   filePath: string;
@@ -79,7 +79,9 @@ export class CorruptLocaleFileError extends Error {
   constructor(filePath: string, cause: unknown) {
     super(
       `[yapyak] Failed to parse locale file ${filePath}. Fix the JSON syntax to proceed.`,
-      { cause },
+      {
+        cause,
+      },
     );
     this.name = 'CorruptLocaleFileError';
     this.filePath = filePath;
@@ -140,13 +142,17 @@ export function writeLocaleFiles(writes: WriteLocaleFileInput[]): void {
     }
   }
   for (const write of writes) {
-    mkdirSync(dirname(write.filePath), { recursive: true });
+    mkdirSync(dirname(write.filePath), {
+      recursive: true,
+    });
     writeFileSync(write.filePath, stringifyCanonical(write.after));
   }
 }
 
 export function writeLocaleFile(input: WriteLocaleFileInput): void {
-  writeLocaleFiles([input]);
+  writeLocaleFiles([
+    input,
+  ]);
 }
 
 function findInvariantViolations(
@@ -170,7 +176,12 @@ function findInvariantViolations(
       }
       const afterValue = afterEntries[source];
       if (afterValue === undefined || afterValue === '') {
-        violations.push({ afterValue, beforeValue, fileId, source });
+        violations.push({
+          afterValue,
+          beforeValue,
+          fileId,
+          source,
+        });
       }
     }
   }
@@ -260,7 +271,11 @@ export function syncLocaleFiles(
           if (inFlightDrops.get(orphan.fileId)?.has(source)) {
             registerPair(restoredInFlight, orphan.fileId, source);
           }
-          restored.push({ fileId, locale, source });
+          restored.push({
+            fileId,
+            locale,
+            source,
+          });
           continue;
         }
         const inFlight = findInFlightDrop(inFlightDrops, fileId, source);
@@ -268,7 +283,11 @@ export function syncLocaleFiles(
         if (inFlight && inFlightValue) {
           fileEntries[source] = inFlightValue;
           registerPair(restoredInFlight, inFlight.fileId, source);
-          restored.push({ fileId, locale, source });
+          restored.push({
+            fileId,
+            locale,
+            source,
+          });
           continue;
         }
         fileEntries[source] = '';
@@ -296,7 +315,11 @@ export function syncLocaleFiles(
       }
       nextBySource.set(source, translations);
       for (const locale of Object.keys(translations)) {
-        orphaned.push({ fileId, locale, source });
+        orphaned.push({
+          fileId,
+          locale,
+          source,
+        });
       }
     }
   }
@@ -320,11 +343,18 @@ export function syncLocaleFiles(
       context.localesDir,
       locale,
     );
-    writes.push({ after: next, extractedSources, filePath: localePath });
+    writes.push({
+      after: next,
+      extractedSources,
+      filePath: localePath,
+    });
   }
   writeLocaleFiles(writes);
 
-  return { orphaned, restored };
+  return {
+    orphaned,
+    restored,
+  };
 }
 
 function registerPair(
@@ -342,10 +372,10 @@ function registerPair(
 
 type InFlightDrops = Map<string, Map<string, Record<string, string>>>;
 
-interface InFlightDropLookup {
+type InFlightDropLookup = {
   fileId: string;
   translations: Record<string, string>;
-}
+};
 
 function extractInFlightDrops(
   existingByLocale: Map<string, LocaleFile>,
@@ -392,12 +422,18 @@ function findInFlightDrop(
 ): InFlightDropLookup | undefined {
   const direct = drops.get(fileId)?.get(source);
   if (direct) {
-    return { fileId, translations: direct };
+    return {
+      fileId,
+      translations: direct,
+    };
   }
   for (const [otherFileId, bySource] of drops) {
     const translations = bySource.get(source);
     if (translations) {
-      return { fileId: otherFileId, translations };
+      return {
+        fileId: otherFileId,
+        translations,
+      };
     }
   }
   return undefined;
@@ -457,7 +493,9 @@ function groupSourcesByFile(
   }
   const result: Record<string, string[]> = {};
   for (const [fileId, set] of Object.entries(grouped)) {
-    result[fileId] = [...set].sort();
+    result[fileId] = [
+      ...set,
+    ].sort();
   }
   return result;
 }

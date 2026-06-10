@@ -5,9 +5,9 @@ import { useOptionsContext } from '#components/options';
 
 import { BlockRenderer } from './block-renderer';
 
-export interface BlockRendererNodeOnlyProps {
+export type BlockRendererNodeOnlyProps = {
   block: OnlyBlock;
-}
+};
 
 export function BlockRendererNodeOnly(props: BlockRendererNodeOnlyProps) {
   const { block } = props;

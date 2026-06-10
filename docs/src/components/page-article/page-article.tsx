@@ -20,7 +20,10 @@ export function PageArticle(props: PageArticleProps) {
     <Box
       {...restProps}
       as="article"
-      className={[styles.PageArticle, className]}
+      className={[
+        styles.PageArticle,
+        className,
+      ]}
     >
       <Box
         as="header"

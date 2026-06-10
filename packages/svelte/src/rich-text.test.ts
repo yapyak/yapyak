@@ -8,7 +8,11 @@ import RichText from './rich-text.svelte';
 
 describe('RichText', () => {
   it('returns the source string when it holds no tags', () => {
-    const { container } = render(RichText, { props: { value: 'Hello' } });
+    const { container } = render(RichText, {
+      props: {
+        value: 'Hello',
+      },
+    });
     expect(container.textContent).toBe('Hello');
   });
 
@@ -19,15 +23,21 @@ describe('RichText', () => {
     const props = {
       link,
       value: 'Click <link>here</link>.',
-    } as unknown as { value: string };
-    const { container } = render(RichText, { props });
+    } as unknown as {
+      value: string;
+    };
+    const { container } = render(RichText, {
+      props,
+    });
     const anchor = container.querySelector('a');
     expect(anchor?.getAttribute('href')).toBe('/x');
   });
 
   it('emits every tag when multiple are present', () => {
     const { container } = render(RichText, {
-      props: { value: '<a>one</a> <b>two</b>' },
+      props: {
+        value: '<a>one</a> <b>two</b>',
+      },
     });
     expect(container.textContent).toContain('<a>');
     expect(container.textContent).toContain('one');
@@ -39,7 +49,9 @@ describe('RichText', () => {
 
   it('emits the unmatched tag as literal text', () => {
     const { container } = render(RichText, {
-      props: { value: '<unknown>Hi</unknown>' },
+      props: {
+        value: '<unknown>Hi</unknown>',
+      },
     });
     expect(container.textContent).toContain('<unknown>');
     expect(container.textContent).toContain('Hi');
@@ -48,7 +60,9 @@ describe('RichText', () => {
 
   it('preserves text between tags', () => {
     const { container } = render(RichText, {
-      props: { value: 'before <tag>middle</tag> after' },
+      props: {
+        value: 'before <tag>middle</tag> after',
+      },
     });
     expect(container.textContent).toContain('before');
     expect(container.textContent).toContain('middle');
@@ -57,7 +71,9 @@ describe('RichText', () => {
 
   it('walks nested tags recursively', () => {
     const { container } = render(RichText, {
-      props: { value: '<outer>before <inner>nested</inner> after</outer>' },
+      props: {
+        value: '<outer>before <inner>nested</inner> after</outer>',
+      },
     });
     expect(container.textContent).toContain('<outer>');
     expect(container.textContent).toContain('<inner>');

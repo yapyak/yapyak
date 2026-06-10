@@ -4,9 +4,9 @@ import { Box } from '#components/box';
 
 import { BlockRendererNode } from './block-renderer-node';
 
-export interface BlockRendererNodeStrikethroughProps {
+export type BlockRendererNodeStrikethroughProps = {
   block: StrikethroughBlock;
-}
+};
 
 export function BlockRendererNodeStrikethrough(
   props: BlockRendererNodeStrikethroughProps,

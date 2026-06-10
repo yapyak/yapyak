@@ -15,7 +15,11 @@ function stubFetch(text: string): {
     body: unknown;
     headers: Record<string, string>;
     url: string;
-  } = { body: undefined, headers: {}, url: '' };
+  } = {
+    body: undefined,
+    headers: {},
+    url: '',
+  };
   vi.stubGlobal('fetch', async (url: string, init: RequestInit) => {
     captured = {
       body: JSON.parse(init.body as string),
@@ -26,11 +30,23 @@ function stubFetch(text: string): {
       JSON.stringify({
         candidates: [
           {
-            content: { parts: [{ text: JSON.stringify([{ sv: text }]) }] },
+            content: {
+              parts: [
+                {
+                  text: JSON.stringify([
+                    {
+                      sv: text,
+                    },
+                  ]),
+                },
+              ],
+            },
           },
         ],
       }),
-      { status: 200 },
+      {
+        status: 200,
+      },
     );
   });
   return {
@@ -43,7 +59,9 @@ function stubFetch(text: string): {
 describe('gemini', () => {
   it('returns translated text trimmed', async () => {
     stubFetch('  Hej  ');
-    const translator = gemini({ apiKey: 'k' });
+    const translator = gemini({
+      apiKey: 'k',
+    });
     const result = await translator({
       fileId: 'src/a.tsx',
       source: 'Hello',
@@ -55,7 +73,9 @@ describe('gemini', () => {
 
   it('writes the API key as `x-goog-api-key` header', async () => {
     const stub = stubFetch('Hej');
-    await gemini({ apiKey: 'gk-test' })({
+    await gemini({
+      apiKey: 'gk-test',
+    })({
       fileId: 'x',
       source: 'Hello',
       sourceLocale: 'en',
@@ -66,7 +86,9 @@ describe('gemini', () => {
 
   it('builds requests with `gemini-2.5-flash` as default model', async () => {
     const stub = stubFetch('Hej');
-    await gemini({ apiKey: 'k' })({
+    await gemini({
+      apiKey: 'k',
+    })({
       fileId: 'x',
       source: 'Hello',
       sourceLocale: 'en',
@@ -77,7 +99,10 @@ describe('gemini', () => {
 
   it('builds requests with the configured model when set', async () => {
     const stub = stubFetch('Hej');
-    await gemini({ apiKey: 'k', model: 'gemini-2.5-pro' })({
+    await gemini({
+      apiKey: 'k',
+      model: 'gemini-2.5-pro',
+    })({
       fileId: 'x',
       source: 'Hello',
       sourceLocale: 'en',
@@ -104,14 +129,21 @@ describe('gemini', () => {
 
   it('builds the system prompt into `systemInstruction.parts[0].text`', async () => {
     const stub = stubFetch('Hej');
-    await gemini({ apiKey: 'k', voice: 'Casual, never corporate' })({
+    await gemini({
+      apiKey: 'k',
+      voice: 'Casual, never corporate',
+    })({
       fileId: 'x',
       source: 'Hello',
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
     const body = stub.body() as {
-      systemInstruction: { parts: Array<{ text: string }> };
+      systemInstruction: {
+        parts: Array<{
+          text: string;
+        }>;
+      };
     };
     expect(body.systemInstruction.parts[0]?.text).toContain(
       'Casual, never corporate',
@@ -127,15 +159,23 @@ describe('gemini', () => {
             candidates: [
               {
                 content: {
-                  parts: [{ text: '```json\n[{"sv": "Hej"}]\n```' }],
+                  parts: [
+                    {
+                      text: '```json\n[{"sv": "Hej"}]\n```',
+                    },
+                  ],
                 },
               },
             ],
           }),
-          { status: 200 },
+          {
+            status: 200,
+          },
         ),
     );
-    const result = await gemini({ apiKey: 'k' })({
+    const result = await gemini({
+      apiKey: 'k',
+    })({
       fileId: 'x',
       source: 'Hello',
       sourceLocale: 'en',
@@ -147,10 +187,15 @@ describe('gemini', () => {
   it('throws when the API responds with non-2xx', async () => {
     vi.stubGlobal(
       'fetch',
-      async () => new Response('rate limited', { status: 429 }),
+      async () =>
+        new Response('rate limited', {
+          status: 429,
+        }),
     );
     await expect(
-      gemini({ apiKey: 'k' })({
+      gemini({
+        apiKey: 'k',
+      })({
         fileId: 'x',
         source: 'Hello',
         sourceLocale: 'en',
@@ -163,10 +208,19 @@ describe('gemini', () => {
     vi.stubGlobal(
       'fetch',
       async () =>
-        new Response(JSON.stringify({ candidates: [] }), { status: 200 }),
+        new Response(
+          JSON.stringify({
+            candidates: [],
+          }),
+          {
+            status: 200,
+          },
+        ),
     );
     await expect(
-      gemini({ apiKey: 'k' })({
+      gemini({
+        apiKey: 'k',
+      })({
         fileId: 'x',
         source: 'Hello',
         sourceLocale: 'en',
@@ -176,6 +230,10 @@ describe('gemini', () => {
   });
 
   it('throws when `apiKey` is an empty string', () => {
-    expect(() => gemini({ apiKey: '' })).toThrow(/apiKey is required/);
+    expect(() =>
+      gemini({
+        apiKey: '',
+      }),
+    ).toThrow(/apiKey is required/);
   });
 });

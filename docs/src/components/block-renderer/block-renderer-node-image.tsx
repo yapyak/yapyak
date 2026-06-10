@@ -2,9 +2,9 @@ import type { ImageBlock } from '@yapyak/doc-extractor';
 
 import { Box } from '#components/box';
 
-export interface BlockRendererNodeImageProps {
+export type BlockRendererNodeImageProps = {
   block: ImageBlock;
-}
+};
 
 export function BlockRendererNodeImage(props: BlockRendererNodeImageProps) {
   const { block } = props;

@@ -4,11 +4,17 @@ import { parseAcceptLanguage } from './accept-language';
 
 describe('parseAcceptLanguage', () => {
   it('parses a single locale', () => {
-    expect(parseAcceptLanguage('sv')).toEqual(['sv']);
+    expect(parseAcceptLanguage('sv')).toEqual([
+      'sv',
+    ]);
   });
 
   it('parses multiple locales preserving order when no quality given', () => {
-    expect(parseAcceptLanguage('sv,fr,en')).toEqual(['sv', 'fr', 'en']);
+    expect(parseAcceptLanguage('sv,fr,en')).toEqual([
+      'sv',
+      'fr',
+      'en',
+    ]);
   });
 
   it('returns locales in `q`-value descending order', () => {
@@ -20,7 +26,10 @@ describe('parseAcceptLanguage', () => {
   });
 
   it('parses missing q as 1.0', () => {
-    expect(parseAcceptLanguage('en;q=0.5,sv')).toEqual(['sv', 'en']);
+    expect(parseAcceptLanguage('en;q=0.5,sv')).toEqual([
+      'sv',
+      'en',
+    ]);
   });
 
   it('returns an empty array for an empty header', () => {
@@ -28,26 +37,41 @@ describe('parseAcceptLanguage', () => {
   });
 
   it('blocks wildcard `*`', () => {
-    expect(parseAcceptLanguage('sv,*;q=0.1')).toEqual(['sv']);
+    expect(parseAcceptLanguage('sv,*;q=0.1')).toEqual([
+      'sv',
+    ]);
   });
 
   it('blocks entries with q=0', () => {
-    expect(parseAcceptLanguage('sv;q=0,fr')).toEqual(['fr']);
+    expect(parseAcceptLanguage('sv;q=0,fr')).toEqual([
+      'fr',
+    ]);
   });
 
   it('preserves the default weight when q is non-numeric', () => {
-    expect(parseAcceptLanguage('sv;q=abc,fr')).toEqual(['sv', 'fr']);
+    expect(parseAcceptLanguage('sv;q=abc,fr')).toEqual([
+      'sv',
+      'fr',
+    ]);
   });
 
   it('preserves the default weight when q is above 1', () => {
-    expect(parseAcceptLanguage('sv;q=5,fr;q=0.5')).toEqual(['sv', 'fr']);
+    expect(parseAcceptLanguage('sv;q=5,fr;q=0.5')).toEqual([
+      'sv',
+      'fr',
+    ]);
   });
 
   it('preserves the default weight when q is negative', () => {
-    expect(parseAcceptLanguage('sv;q=-1,fr')).toEqual(['sv', 'fr']);
+    expect(parseAcceptLanguage('sv;q=-1,fr')).toEqual([
+      'sv',
+      'fr',
+    ]);
   });
 
   it('blocks whitespace-only segments', () => {
-    expect(parseAcceptLanguage(' , ,sv')).toEqual(['sv']);
+    expect(parseAcceptLanguage(' , ,sv')).toEqual([
+      'sv',
+    ]);
   });
 });

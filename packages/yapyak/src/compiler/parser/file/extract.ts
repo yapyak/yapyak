@@ -22,24 +22,24 @@ import { resolveProcessor } from '../processor';
 import { remapRange, toRange } from '../range';
 import { getScriptKind } from '../script-kind';
 
-export interface Location {
+export type Location = {
   callSiteContext: CallSiteContext;
   context?: string;
   fileId: string;
   range: Range;
-}
+};
 
-export interface ExtractedMessage {
+export type ExtractedMessage = {
   context?: string;
   id: string;
   locations: Location[];
   placeholders: Placeholder[];
   source: string;
-}
+};
 
-export interface ExtractFileOptions {
+export type ExtractFileOptions = {
   processors?: Processor[];
-}
+};
 
 export interface ParsedCallSite extends CallSite {
   context?: string;
@@ -48,11 +48,11 @@ export interface ParsedCallSite extends CallSite {
   source: string;
 }
 
-export interface ExtractFileResult {
+export type ExtractFileResult = {
   callSites: ParsedCallSite[];
   diagnostics: Diagnostic[];
   messages: ExtractedMessage[];
-}
+};
 
 export function extractFile(
   fileId: string,
@@ -103,7 +103,9 @@ export function extractFile(
       continue;
     }
     const sourceFile = createFragmentSourceFile(fileId, fragment);
-    const bindings = resolveBindings(sourceFile, { ambientParent });
+    const bindings = resolveBindings(sourceFile, {
+      ambientParent,
+    });
     extractFromFragment({
       bindings,
       callSites,
@@ -123,7 +125,7 @@ export function extractFile(
   };
 }
 
-interface ExtractFromFragmentInput {
+type ExtractFromFragmentInput = {
   bindings: ReturnType<typeof resolveBindings>;
   callSites: ParsedCallSite[];
   diagnostics: Diagnostic[];
@@ -132,7 +134,7 @@ interface ExtractFromFragmentInput {
   messagesById: Map<string, ExtractedMessage>;
   originalSource: string;
   sourceFile: ts.SourceFile;
-}
+};
 
 function extractFromFragment(input: ExtractFromFragmentInput): void {
   const {
@@ -211,7 +213,9 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
 
     const message: ExtractedMessage = {
       id,
-      locations: [location],
+      locations: [
+        location,
+      ],
       placeholders,
       source: parsed.source,
     };

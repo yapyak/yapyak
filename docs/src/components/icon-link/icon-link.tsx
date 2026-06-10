@@ -13,7 +13,10 @@ export function IconLink(props: IconLinkProps) {
     <Box
       {...restProps}
       as="a"
-      className={[styles.IconLink, className]}
+      className={[
+        styles.IconLink,
+        className,
+      ]}
     />
   );
 }

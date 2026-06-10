@@ -7,7 +7,10 @@ import { createTranslator } from './create';
 describe('createTranslator', () => {
   it('picks the matching per-locale translation for each request', async () => {
     const translator = createTranslator(() => [
-      { de: 'Speichern', sv: 'Spara' },
+      {
+        de: 'Speichern',
+        sv: 'Spara',
+      },
     ]);
 
     const results = await translator.batch?.([
@@ -25,7 +28,10 @@ describe('createTranslator', () => {
       },
     ]);
 
-    expect(results).toEqual(['Spara', 'Speichern']);
+    expect(results).toEqual([
+      'Spara',
+      'Speichern',
+    ]);
   });
 
   it('folds identical sources across locales into a single translate call', async () => {
@@ -66,14 +72,22 @@ describe('createTranslator', () => {
 
     expect(calls).toBe(1);
     expect(receivedItems).toBe(1);
-    expect(receivedLocales).toEqual(['de', 'fr', 'sv']);
+    expect(receivedLocales).toEqual([
+      'de',
+      'fr',
+      'sv',
+    ]);
   });
 
   it('returns the union of target locales sorted alphabetically', async () => {
     let receivedLocales: string[] | undefined;
     const translator = createTranslator((params: TranslateBatchRequest) => {
       receivedLocales = params.targetLocales;
-      return params.items.map(() => ({ de: 'b', fr: 'c', sv: 'a' }));
+      return params.items.map(() => ({
+        de: 'b',
+        fr: 'c',
+        sv: 'a',
+      }));
     });
 
     await translator.batch?.([
@@ -97,11 +111,19 @@ describe('createTranslator', () => {
       },
     ]);
 
-    expect(receivedLocales).toEqual(['de', 'fr', 'sv']);
+    expect(receivedLocales).toEqual([
+      'de',
+      'fr',
+      'sv',
+    ]);
   });
 
   it('holds an empty string when the translate response is missing a locale key', async () => {
-    const translator = createTranslator(() => [{ sv: 'Spara' }]);
+    const translator = createTranslator(() => [
+      {
+        sv: 'Spara',
+      },
+    ]);
 
     const results = await translator.batch?.([
       {
@@ -118,7 +140,10 @@ describe('createTranslator', () => {
       },
     ]);
 
-    expect(results).toEqual(['Spara', '']);
+    expect(results).toEqual([
+      'Spara',
+      '',
+    ]);
   });
 
   it('builds chunks by unique source count, not raw request count', async () => {
@@ -128,9 +153,14 @@ describe('createTranslator', () => {
       (params: TranslateBatchRequest) => {
         calls += 1;
         chunkSizes.push(params.items.length);
-        return params.items.map(() => ({ de: 'y', sv: 'x' }));
+        return params.items.map(() => ({
+          de: 'y',
+          sv: 'x',
+        }));
       },
-      { batchSize: 2 },
+      {
+        batchSize: 2,
+      },
     );
 
     await translator.batch?.([
@@ -173,24 +203,34 @@ describe('createTranslator', () => {
     ]);
 
     expect(calls).toBe(2);
-    expect(chunkSizes.sort()).toEqual([1, 2]);
+    expect(chunkSizes.sort()).toEqual([
+      1,
+      2,
+    ]);
   });
 
   it('refuses construction when batchSize is not a positive integer', () => {
-    expect(() => createTranslator(() => [], { batchSize: 0 })).toThrow(
-      /batchSize must be a positive integer/,
-    );
+    expect(() =>
+      createTranslator(() => [], {
+        batchSize: 0,
+      }),
+    ).toThrow(/batchSize must be a positive integer/);
   });
 
   it('refuses construction when concurrency is not a positive integer', () => {
-    expect(() => createTranslator(() => [], { concurrency: -1 })).toThrow(
-      /concurrency must be a positive integer/,
-    );
+    expect(() =>
+      createTranslator(() => [], {
+        concurrency: -1,
+      }),
+    ).toThrow(/concurrency must be a positive integer/);
   });
 
   it('throws when the translate response is not an array', async () => {
     const translator = createTranslator(
-      () => ({ not: 'array' }) as unknown as never,
+      () =>
+        ({
+          not: 'array',
+        }) as unknown as never,
     );
     await expect(
       translator.batch?.([
@@ -206,8 +246,12 @@ describe('createTranslator', () => {
 
   it('throws when the translate response has the wrong length', async () => {
     const translator = createTranslator(() => [
-      { sv: 'Spara' },
-      { sv: 'extra' },
+      {
+        sv: 'Spara',
+      },
+      {
+        sv: 'extra',
+      },
     ]);
     await expect(
       translator.batch?.([
@@ -222,7 +266,9 @@ describe('createTranslator', () => {
   });
 
   it('returns an empty string when a translate response entry is not an object', async () => {
-    const translator = createTranslator(() => [null as unknown as never]);
+    const translator = createTranslator(() => [
+      null as unknown as never,
+    ]);
     const results = await translator.batch?.([
       {
         fileId: 'src/a.tsx',
@@ -231,12 +277,16 @@ describe('createTranslator', () => {
         targetLocale: 'sv',
       },
     ]);
-    expect(results).toEqual(['']);
+    expect(results).toEqual([
+      '',
+    ]);
   });
 
   it('returns an empty string for a translation whose value is not a string', async () => {
     const translator = createTranslator(() => [
-      { sv: 42 as unknown as string },
+      {
+        sv: 42 as unknown as string,
+      },
     ]);
     const results = await translator.batch?.([
       {
@@ -246,11 +296,17 @@ describe('createTranslator', () => {
         targetLocale: 'sv',
       },
     ]);
-    expect(results).toEqual(['']);
+    expect(results).toEqual([
+      '',
+    ]);
   });
 
   it('returns an empty string for a translation that is blank after trim', async () => {
-    const translator = createTranslator(() => [{ sv: '   ' }]);
+    const translator = createTranslator(() => [
+      {
+        sv: '   ',
+      },
+    ]);
     const results = await translator.batch?.([
       {
         fileId: 'src/a.tsx',
@@ -259,11 +315,17 @@ describe('createTranslator', () => {
         targetLocale: 'sv',
       },
     ]);
-    expect(results).toEqual(['']);
+    expect(results).toEqual([
+      '',
+    ]);
   });
 
   it('returns an empty string when calling `single` on an unknown source', async () => {
-    const translator = createTranslator(() => [{ sv: 'Spara' }]);
+    const translator = createTranslator(() => [
+      {
+        sv: 'Spara',
+      },
+    ]);
     const result = await translator({
       fileId: 'src/a.tsx',
       source: 'Save',
@@ -283,12 +345,19 @@ describe('createTranslator', () => {
     let receivedItems: unknown[] | undefined;
     const translator = createTranslator((params) => {
       receivedItems = params.items;
-      return params.items.map(() => ({ sv: 'Spara' }));
+      return params.items.map(() => ({
+        sv: 'Spara',
+      }));
     });
     await translator.batch?.([
       {
         disambiguation: 'button',
-        examples: [{ source: 'Save', translation: 'Spara' }],
+        examples: [
+          {
+            source: 'Save',
+            translation: 'Spara',
+          },
+        ],
         fileId: 'src/a.tsx',
         source: 'Save',
         sourceLocale: 'en',
@@ -298,7 +367,12 @@ describe('createTranslator', () => {
     expect(receivedItems).toEqual([
       {
         disambiguation: 'button',
-        examples: [{ source: 'Save', translation: 'Spara' }],
+        examples: [
+          {
+            source: 'Save',
+            translation: 'Spara',
+          },
+        ],
         source: 'Save',
       },
     ]);
@@ -309,9 +383,13 @@ describe('createTranslator', () => {
     const translator = createTranslator(
       (params) => {
         receivedItems = params.items;
-        return params.items.map(() => ({ sv: 'Spara' }));
+        return params.items.map(() => ({
+          sv: 'Spara',
+        }));
       },
-      { context: 'none' },
+      {
+        context: 'none',
+      },
     );
     await translator.batch?.([
       {
@@ -326,14 +404,20 @@ describe('createTranslator', () => {
         targetLocale: 'sv',
       },
     ]);
-    expect(receivedItems).toEqual([{ source: 'Save' }]);
+    expect(receivedItems).toEqual([
+      {
+        source: 'Save',
+      },
+    ]);
   });
 
   it('builds an item with `componentName` and `enclosingElement` at `minimal` context', async () => {
     let receivedItems: unknown[] | undefined;
     const translator = createTranslator((params) => {
       receivedItems = params.items;
-      return params.items.map(() => ({ sv: 'Spara' }));
+      return params.items.map(() => ({
+        sv: 'Spara',
+      }));
     });
     await translator.batch?.([
       {
@@ -359,9 +443,13 @@ describe('createTranslator', () => {
     const translator = createTranslator(
       (params) => {
         receivedItems = params.items;
-        return params.items.map(() => ({ sv: 'Spara' }));
+        return params.items.map(() => ({
+          sv: 'Spara',
+        }));
       },
-      { context: 'rich' },
+      {
+        context: 'rich',
+      },
     );
     await translator.batch?.([
       {

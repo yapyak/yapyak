@@ -4,11 +4,11 @@ import { appendResponseHeader } from '../locale';
 import { warn } from '../warn';
 import { subscribeHistory } from './history';
 
-interface CookieOptions {
+type CookieOptions = {
   name: string;
-}
+};
 
-const POLL_INTERVAL_MS = 1_000;
+const POLL_INTERVAL_MS = 1000;
 const COOKIE_MAX_AGE_SECONDS = 31_536_000;
 
 export function parseCookie(header: string): Record<string, string> {
@@ -69,7 +69,9 @@ export function cookie(options: CookieOptions): Persistence {
         if (!applied) {
           warn(
             'setLocale() called server-side outside a withRequest scope. The cookie was not set. Install the matching adapter middleware (e.g. @yapyak/astro, @yapyak/sveltekit).',
-            { code: 'YPK_PERSISTENCE_COOKIE_NO_WRITER' },
+            {
+              code: 'YPK_PERSISTENCE_COOKIE_NO_WRITER',
+            },
           );
         }
         return false;

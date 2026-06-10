@@ -1,15 +1,15 @@
-export interface ReferenceManifest {
+export type ReferenceManifest = {
   modules: ReferenceModule[];
   packageName: string;
-}
+};
 
-export interface ReferenceModule {
+export type ReferenceModule = {
   description: string;
   exports: ReferenceExport[];
   id: string;
   sourcePath: string;
   subpath: string;
-}
+};
 
 export type ReferenceExport =
   | ReferenceClass
@@ -18,7 +18,7 @@ export type ReferenceExport =
   | ReferenceTypeAlias
   | ReferenceVariable;
 
-export interface ReferenceSymbolBase {
+export type ReferenceSymbolBase = {
   deprecated: string | null;
   description: string;
   examples: ReferenceExample[];
@@ -28,19 +28,19 @@ export interface ReferenceSymbolBase {
   seeAlso: string[];
   tags: ReferenceTag[];
   throws: ReferenceThrows[];
-}
+};
 
-export interface ReferenceExample {
+export type ReferenceExample = {
   code: string;
   language: string;
   path: string | null;
   title: string | null;
-}
+};
 
-export interface ReferenceThrows {
+export type ReferenceThrows = {
   condition: string;
   errorClass: string;
-}
+};
 
 export interface ReferenceFunction extends ReferenceSymbolBase {
   kind: 'function';
@@ -48,19 +48,19 @@ export interface ReferenceFunction extends ReferenceSymbolBase {
   overloads: ReferenceOverload[];
 }
 
-export interface ReferenceOverload {
+export type ReferenceOverload = {
   parameters: ReferenceParameter[];
   returnType: TypeToken[];
   signature: string;
   typeParameters: ReferenceTypeParameter[];
-}
+};
 
-export interface ReferenceTypeParameter {
+export type ReferenceTypeParameter = {
   constraint: TypeToken[] | null;
   defaultType: TypeToken[] | null;
   description: string;
   name: string;
-}
+};
 
 export interface ReferenceInterface extends ReferenceSymbolBase {
   callSignatures: ReferenceCallSignature[];
@@ -86,50 +86,50 @@ export interface ReferenceClass extends ReferenceSymbolBase {
   signature: string;
 }
 
-export interface ReferenceParameter {
+export type ReferenceParameter = {
   defaultValue: string | null;
   description: string;
   name: string;
   optional: boolean;
   type: TypeToken[];
-}
+};
 
-export interface ReferenceMember {
+export type ReferenceMember = {
   defaultValue: string | null;
   description: string;
   name: string;
   optional: boolean;
   type: TypeToken[];
-}
+};
 
-export interface ReferenceCallSignature {
+export type ReferenceCallSignature = {
   parameters: ReferenceParameter[];
   returnType: TypeToken[];
   signature: string;
   typeParameters: ReferenceTypeParameter[];
-}
+};
 
 export type TypeToken = TypeRefToken | TypeTextToken;
 
-export interface TypeTextToken {
+export type TypeTextToken = {
   kind: 'text';
   text: string;
-}
+};
 
-export interface TypeRefToken {
+export type TypeRefToken = {
   kind: 'ref';
   module: string;
   name: string;
   text: string;
-}
+};
 
-export interface ReferenceLocation {
+export type ReferenceLocation = {
   column: number;
   file: string;
   line: number;
-}
+};
 
-export interface ReferenceTag {
+export type ReferenceTag = {
   name: string;
   text: string;
-}
+};

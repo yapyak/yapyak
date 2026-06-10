@@ -11,12 +11,12 @@ import styles from './hero-demo-editor.module.css';
 
 export type Framework = 'astro' | 'react' | 'svelte' | 'vue';
 
-interface FrameworkConfig {
+type FrameworkConfig = {
   filename: string;
   id: Framework;
   label: string;
   language: Language;
-}
+};
 
 export const FRAMEWORKS: [
   FrameworkConfig,
@@ -24,10 +24,30 @@ export const FRAMEWORKS: [
   FrameworkConfig,
   FrameworkConfig,
 ] = [
-  { filename: 'app.tsx', id: 'react', label: 'React', language: 'tsx' },
-  { filename: 'app.vue', id: 'vue', label: 'Vue', language: 'vue' },
-  { filename: 'app.svelte', id: 'svelte', label: 'Svelte', language: 'svelte' },
-  { filename: 'app.astro', id: 'astro', label: 'Astro', language: 'astro' },
+  {
+    filename: 'app.tsx',
+    id: 'react',
+    label: 'React',
+    language: 'tsx',
+  },
+  {
+    filename: 'app.vue',
+    id: 'vue',
+    label: 'Vue',
+    language: 'vue',
+  },
+  {
+    filename: 'app.svelte',
+    id: 'svelte',
+    label: 'Svelte',
+    language: 'svelte',
+  },
+  {
+    filename: 'app.astro',
+    id: 'astro',
+    label: 'Astro',
+    language: 'astro',
+  },
 ];
 
 export interface HeroDemoEditorProps extends BoxProps {
@@ -41,10 +61,10 @@ export interface HeroDemoEditorProps extends BoxProps {
 const CARET_MARKER = 'CARET';
 const T_NAME = 't';
 
-interface IndicatorState {
+type IndicatorState = {
   width: number;
   x: number;
-}
+};
 
 export function HeroDemoEditor(props: HeroDemoEditorProps) {
   const {
@@ -83,12 +103,17 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
       setIsReady(true);
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [framework]);
+  }, [
+    framework,
+  ]);
 
   return (
     <Box
       {...restProps}
-      className={[styles.HeroDemoEditor, className]}
+      className={[
+        styles.HeroDemoEditor,
+        className,
+      ]}
       data-saving={saving}
       style={
         indicator

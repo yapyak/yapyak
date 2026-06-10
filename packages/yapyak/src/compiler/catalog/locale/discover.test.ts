@@ -13,14 +13,19 @@ describe('discoverLocales', () => {
   });
 
   afterEach(() => {
-    rmSync(root, { force: true, recursive: true });
+    rmSync(root, {
+      force: true,
+      recursive: true,
+    });
   });
 
   it('returns only the default locale when the locales directory does not exist', () => {
     const result = discoverLocales('locales', root);
     expect(result).toEqual({
       defaultLocale: 'en',
-      locales: ['en'],
+      locales: [
+        'en',
+      ],
       warnings: [],
     });
   });
@@ -31,15 +36,23 @@ describe('discoverLocales', () => {
     writeFileSync(join(root, 'locales', 'sv.json'), '{}');
     writeFileSync(join(root, 'locales', 'readme.md'), '');
     const result = discoverLocales('locales', root);
-    expect(result.locales).toEqual(['en', 'sv']);
+    expect(result.locales).toEqual([
+      'en',
+      'sv',
+    ]);
   });
 
   it('folds the explicit `defaultLocale` into the locales list', () => {
     mkdirSync(join(root, 'locales'));
     writeFileSync(join(root, 'locales', 'sv.json'), '{}');
-    const result = discoverLocales('locales', root, { defaultLocale: 'no' });
+    const result = discoverLocales('locales', root, {
+      defaultLocale: 'no',
+    });
     expect(result.defaultLocale).toBe('no');
-    expect(result.locales).toEqual(['no', 'sv']);
+    expect(result.locales).toEqual([
+      'no',
+      'sv',
+    ]);
   });
 
   it('emits a warning for a locale whose structure is invalid', () => {
@@ -53,7 +66,9 @@ describe('discoverLocales', () => {
   it('emits a warning with a suggestion for an unknown language code', () => {
     mkdirSync(join(root, 'locales'));
     writeFileSync(join(root, 'locales', 'sw.json'), '{}');
-    const result = discoverLocales('locales', root, { defaultLocale: 'xx' });
+    const result = discoverLocales('locales', root, {
+      defaultLocale: 'xx',
+    });
     const warning = result.warnings.find((warning) => warning.code === 'xx');
     expect(warning?.issue).toBe('unknown-language');
   });

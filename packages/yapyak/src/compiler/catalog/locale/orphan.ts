@@ -2,17 +2,17 @@ import { stringifyCanonical } from '../canonical';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
-export interface OrphanEntry {
+export type OrphanEntry = {
   deletedAt: string;
   translations: Record<string, string>;
-}
+};
 
 export type OrphanCache = Record<string, Record<string, OrphanEntry>>;
 
-interface OrphanLookup {
+type OrphanLookup = {
   entry: OrphanEntry;
   fileId: string;
-}
+};
 
 export function getDefaultYapyakDir(projectRoot: string): string {
   return join(projectRoot, '.yapyak');
@@ -61,7 +61,9 @@ export function readOrphans(yapyakDir: string): OrphanCache {
 
 export function writeOrphans(yapyakDir: string, cache: OrphanCache): void {
   const path = getOrphansFilePath(yapyakDir);
-  mkdirSync(dirname(path), { recursive: true });
+  mkdirSync(dirname(path), {
+    recursive: true,
+  });
   writeFileSync(path, stringifyCanonical(cache));
 }
 
@@ -72,7 +74,10 @@ export function findOrphan(
 ): OrphanLookup | undefined {
   const direct = cache[fileId]?.[source];
   if (direct) {
-    return { entry: direct, fileId };
+    return {
+      entry: direct,
+      fileId,
+    };
   }
   let best: OrphanLookup | undefined;
   for (const [otherFileId, sources] of Object.entries(cache)) {
@@ -85,7 +90,10 @@ export function findOrphan(
       entry.deletedAt > best.entry.deletedAt ||
       (entry.deletedAt === best.entry.deletedAt && otherFileId < best.fileId)
     ) {
-      best = { entry, fileId: otherFileId };
+      best = {
+        entry,
+        fileId: otherFileId,
+      };
     }
   }
   return best;
@@ -145,5 +153,8 @@ function normalizeEntry(value: unknown): OrphanEntry | undefined {
   if (Object.keys(cleanTranslations).length === 0) {
     return undefined;
   }
-  return { deletedAt, translations: cleanTranslations };
+  return {
+    deletedAt,
+    translations: cleanTranslations,
+  };
 }

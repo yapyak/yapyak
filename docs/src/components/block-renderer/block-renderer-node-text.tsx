@@ -1,8 +1,8 @@
 import type { TextBlock } from '@yapyak/doc-extractor';
 
-export interface BlockRendererNodeTextProps {
+export type BlockRendererNodeTextProps = {
   block: TextBlock;
-}
+};
 
 export function BlockRendererNodeText(props: BlockRendererNodeTextProps) {
   const { block } = props;

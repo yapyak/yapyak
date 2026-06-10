@@ -4,7 +4,12 @@ import { notFound, redirect } from '@tanstack/react-router';
 
 import { doc } from 'virtual:doc-extractor';
 
-export function loadPage(collection: string, path: string): { page: Page } {
+export function loadPage(
+  collection: string,
+  path: string,
+): {
+  page: Page;
+} {
   return pageOrThrow(doc.getEntry(collection, path));
 }
 
@@ -13,15 +18,25 @@ export function redirectToFirstPage(collection: string): never {
   if (first === undefined) {
     throw notFound();
   }
-  throw redirect({ replace: true, to: first.href });
+  throw redirect({
+    replace: true,
+    to: first.href,
+  });
 }
 
-function pageOrThrow(entry: Entry): { page: Page } {
+function pageOrThrow(entry: Entry): {
+  page: Page;
+} {
   if (entry.kind === 'page') {
-    return { page: entry.page };
+    return {
+      page: entry.page,
+    };
   }
   if (entry.kind === 'redirect') {
-    throw redirect({ replace: true, to: entry.target });
+    throw redirect({
+      replace: true,
+      to: entry.target,
+    });
   }
   throw notFound();
 }

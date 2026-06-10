@@ -14,7 +14,9 @@ export function docExtractor(options: Config): Plugin {
 
   const writeManifestFile = async () => {
     const manifest = await buildManifest(options);
-    await mkdir(dirname(outAbsolute), { recursive: true });
+    await mkdir(dirname(outAbsolute), {
+      recursive: true,
+    });
     await writeFile(outAbsolute, JSON.stringify(manifest, null, 2));
   };
 
@@ -104,7 +106,9 @@ function invalidateVirtualModule(server: ViteDevServer) {
   const mod = server.moduleGraph.getModuleById(RESOLVED_ID);
   if (mod) {
     server.moduleGraph.invalidateModule(mod);
-    server.ws.send({ type: 'full-reload' });
+    server.ws.send({
+      type: 'full-reload',
+    });
   }
 }
 

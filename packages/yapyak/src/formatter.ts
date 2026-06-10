@@ -42,7 +42,9 @@ function buildCanonicalKey(
   const optionEntries = Object.entries(options).sort(([a], [b]) =>
     a < b ? -1 : a > b ? 1 : 0,
   );
-  const parts = [locale];
+  const parts = [
+    locale,
+  ];
   for (const [key, value] of optionEntries) {
     parts.push(`${key}=${JSON.stringify(value)}`);
   }

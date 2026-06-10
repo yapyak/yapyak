@@ -4,7 +4,9 @@ import { defaultLocale } from 'yapyak';
 export const Route = createFileRoute('/')({
   beforeLoad: () => {
     throw redirect({
-      params: { locale: defaultLocale },
+      params: {
+        locale: defaultLocale,
+      },
       replace: true,
       to: '/$locale',
     });

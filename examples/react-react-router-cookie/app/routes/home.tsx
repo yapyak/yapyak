@@ -18,14 +18,29 @@ export async function action({ request }: Route.ActionArgs) {
 export default function Home() {
   const [locale, setLocale] = useLocale();
   return (
-    <main style={{ fontFamily: 'system-ui', maxWidth: 720, padding: 32 }}>
+    <main
+      style={{
+        fontFamily: 'system-ui',
+        maxWidth: 720,
+        padding: 32,
+      }}
+    >
       <h1>{t('Hello there')}</h1>
-      <p>{t('This is the {name} example.', { name: 'yapyak' })}</p>
+      <p>
+        {t('This is the {name} example.', {
+          name: 'yapyak',
+        })}
+      </p>
 
       <h2>{t('Switch language')}</h2>
 
       <p>{t('From the client')}</p>
-      <div style={{ display: 'flex', gap: 8 }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: 8,
+        }}
+      >
         {locales.map((value) => (
           <button
             disabled={value === locale}
@@ -41,7 +56,10 @@ export default function Home() {
       <p>{t('From the server')}</p>
       <Form
         method="post"
-        style={{ display: 'flex', gap: 8 }}
+        style={{
+          display: 'flex',
+          gap: 8,
+        }}
       >
         {locales.map((value) => (
           <button
@@ -82,25 +100,57 @@ export default function Home() {
       </p>
 
       <h2>{t('Numbers')}</h2>
-      <p>{t('Total: {amount, number, percent}', { amount: 0.42 })}</p>
-      <p>{t('Price: {amount, number, currency EUR}', { amount: 99.5 })}</p>
-      <p>{t('Count: {amount, number, integer}', { amount: 42.7 })}</p>
+      <p>
+        {t('Total: {amount, number, percent}', {
+          amount: 0.42,
+        })}
+      </p>
+      <p>
+        {t('Price: {amount, number, currency EUR}', {
+          amount: 99.5,
+        })}
+      </p>
+      <p>
+        {t('Count: {amount, number, integer}', {
+          amount: 42.7,
+        })}
+      </p>
 
       <h2>{t('Dates and times')}</h2>
-      <p>{t('Updated: {when, date, long}', { when: date })}</p>
-      <p>{t('Updated: {when, date, short}', { when: date })}</p>
-      <p>{t('At: {when, time, short}', { when: date })}</p>
+      <p>
+        {t('Updated: {when, date, long}', {
+          when: date,
+        })}
+      </p>
+      <p>
+        {t('Updated: {when, date, short}', {
+          when: date,
+        })}
+      </p>
+      <p>
+        {t('At: {when, time, short}', {
+          when: date,
+        })}
+      </p>
 
       <h2>{t('Select')}</h2>
       <p>
         {t(
           '{role, select, admin {Administrator} editor {Editor} other {Viewer}}',
-          { role: 'editor' },
+          {
+            role: 'editor',
+          },
         )}
       </p>
 
       <h2>{t('Lists')}</h2>
-      <p>{format.list([t('apple'), t('pear'), t('banana')])}</p>
+      <p>
+        {format.list([
+          t('apple'),
+          t('pear'),
+          t('banana'),
+        ])}
+      </p>
 
       <h2>{t('Relative time')}</h2>
       <p>{format.relativeTime(-2, 'day')}</p>

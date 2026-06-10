@@ -5,9 +5,9 @@ import { Box } from '#components/box';
 import styles from './block-renderer-node-eyebrow.module.css';
 import { BlockRendererNodeEyebrowKindBadge } from './block-renderer-node-eyebrow-kind-badge';
 
-export interface BlockRendererNodeEyebrowProps {
+export type BlockRendererNodeEyebrowProps = {
   block: EyebrowBlock;
-}
+};
 
 export function BlockRendererNodeEyebrow(props: BlockRendererNodeEyebrowProps) {
   const { block } = props;

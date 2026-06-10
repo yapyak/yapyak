@@ -13,11 +13,19 @@ describe('writeRegister', () => {
   });
 
   afterEach(() => {
-    rmSync(yapyakDir, { force: true, recursive: true });
+    rmSync(yapyakDir, {
+      force: true,
+      recursive: true,
+    });
   });
 
   it('writes a single-locale union', () => {
-    writeRegister(['en'], yapyakDir);
+    writeRegister(
+      [
+        'en',
+      ],
+      yapyakDir,
+    );
     const content = readFileSync(join(yapyakDir, 'types.d.ts'), 'utf8');
     expect(content).toBe(
       `declare module 'yapyak' {
@@ -32,13 +40,27 @@ export {};
   });
 
   it('writes a multi-locale union in the order given', () => {
-    writeRegister(['en', 'sv', 'da'], yapyakDir);
+    writeRegister(
+      [
+        'en',
+        'sv',
+        'da',
+      ],
+      yapyakDir,
+    );
     const content = readFileSync(join(yapyakDir, 'types.d.ts'), 'utf8');
     expect(content).toContain(`Locale: 'en' | 'sv' | 'da';`);
   });
 
   it('writes BCP 47 region and script variants verbatim', () => {
-    writeRegister(['en-US', 'pt-BR', 'zh-Hans-CN'], yapyakDir);
+    writeRegister(
+      [
+        'en-US',
+        'pt-BR',
+        'zh-Hans-CN',
+      ],
+      yapyakDir,
+    );
     const content = readFileSync(join(yapyakDir, 'types.d.ts'), 'utf8');
     expect(content).toContain(`Locale: 'en-US' | 'pt-BR' | 'zh-Hans-CN';`);
   });
@@ -50,13 +72,28 @@ export {};
 
   it('writes the file when yapyakDir is missing', () => {
     const nested = join(yapyakDir, 'does', 'not', 'exist');
-    writeRegister(['en'], nested);
+    writeRegister(
+      [
+        'en',
+      ],
+      nested,
+    );
     expect(existsSync(join(nested, 'types.d.ts'))).toBe(true);
   });
 
   it('writes the new union when called twice', () => {
-    writeRegister(['en'], yapyakDir);
-    writeRegister(['sv'], yapyakDir);
+    writeRegister(
+      [
+        'en',
+      ],
+      yapyakDir,
+    );
+    writeRegister(
+      [
+        'sv',
+      ],
+      yapyakDir,
+    );
     const content = readFileSync(join(yapyakDir, 'types.d.ts'), 'utf8');
     expect(content).toContain(`Locale: 'sv';`);
     expect(content).not.toContain(`'en'`);

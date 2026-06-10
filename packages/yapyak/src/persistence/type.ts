@@ -1,10 +1,10 @@
 /** The runtime persistence instance. */
-export interface Persistence {
+export type Persistence = {
   get(): string | undefined;
   getFromRequest?(request: Request): string | undefined;
   set(locale: string): boolean;
   subscribe?(onChange: () => void): () => void;
-}
+};
 
 /**
  * The cookie persistence configuration.
@@ -19,7 +19,7 @@ export interface Persistence {
  * });
  * ```
  */
-export interface CookiePersistenceOptions {
+export type CookiePersistenceOptions = {
   /**
    * The cookie name.
    *
@@ -27,7 +27,7 @@ export interface CookiePersistenceOptions {
    */
   name?: string;
   type: 'cookie';
-}
+};
 
 /**
  * The localStorage persistence configuration.
@@ -42,7 +42,7 @@ export interface CookiePersistenceOptions {
  * });
  * ```
  */
-export interface LocalStoragePersistenceOptions {
+export type LocalStoragePersistenceOptions = {
   /**
    * The storage key.
    *
@@ -50,7 +50,7 @@ export interface LocalStoragePersistenceOptions {
    */
   key?: string;
   type: 'local-storage';
-}
+};
 
 /**
  * The URL persistence configuration.
@@ -68,7 +68,7 @@ export interface LocalStoragePersistenceOptions {
  * });
  * ```
  */
-export interface UrlPersistenceOptions {
+export type UrlPersistenceOptions = {
   /**
    * The pattern that matches the locale segment in the URL.
    *
@@ -77,12 +77,12 @@ export interface UrlPersistenceOptions {
    */
   match?: RegExp;
   type: 'url';
-}
+};
 
 /** The none persistence configuration. */
-export interface NonePersistenceOptions {
+export type NonePersistenceOptions = {
   type: 'none';
-}
+};
 
 /** The locale persistence strategy. */
 export type PersistenceConfig =
@@ -96,7 +96,18 @@ export type PersistenceConfig =
   | NonePersistenceOptions;
 
 export type NormalizedPersistenceConfig =
-  | { type: 'cookie'; name: string }
-  | { type: 'local-storage'; key: string }
-  | { type: 'url'; match?: RegExp }
-  | { type: 'none' };
+  | {
+      type: 'cookie';
+      name: string;
+    }
+  | {
+      type: 'local-storage';
+      key: string;
+    }
+  | {
+      type: 'url';
+      match?: RegExp;
+    }
+  | {
+      type: 'none';
+    };

@@ -2,9 +2,9 @@ import type { Persistence } from './type';
 
 import { warn } from '../warn';
 
-interface LocalStorageOptions {
+type LocalStorageOptions = {
   key: string;
-}
+};
 
 export function localStorage(options: LocalStorageOptions): Persistence {
   const { key } = options;
@@ -24,7 +24,9 @@ export function localStorage(options: LocalStorageOptions): Persistence {
       if (typeof globalThis.localStorage === 'undefined') {
         warn(
           'setLocale() is a no-op server-side with persistence: "local-storage". localStorage is browser-only. Use persistence: "cookie" for SSR-compatible locale switching.',
-          { code: 'YPK_PERSISTENCE_LOCAL_STORAGE_SSR_NOOP' },
+          {
+            code: 'YPK_PERSISTENCE_LOCAL_STORAGE_SSR_NOOP',
+          },
         );
         return false;
       }

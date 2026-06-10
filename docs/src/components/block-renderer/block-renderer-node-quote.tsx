@@ -4,9 +4,9 @@ import { Box } from '#components/box';
 
 import { BlockRendererNode } from './block-renderer-node';
 
-export interface BlockRendererNodeQuoteProps {
+export type BlockRendererNodeQuoteProps = {
   block: QuoteBlock;
-}
+};
 
 export function BlockRendererNodeQuote(props: BlockRendererNodeQuoteProps) {
   const { block } = props;

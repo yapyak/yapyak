@@ -1,14 +1,21 @@
 import type { ReactNode } from 'react';
 
-import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router';
+import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router';
 import { LocaleProvider, useLocale } from '@yapyak/react';
 
 export const Route = createRootRoute({
   head: () => ({
     meta: [
-      { charSet: 'utf-8' },
-      { content: 'width=device-width, initial-scale=1', name: 'viewport' },
-      { title: 'yapyak — TanStack Start example' },
+      {
+        charSet: 'utf-8',
+      },
+      {
+        content: 'width=device-width, initial-scale=1',
+        name: 'viewport',
+      },
+      {
+        title: 'yapyak — TanStack Start example',
+      },
     ],
   }),
   shellComponent: RootDocument,

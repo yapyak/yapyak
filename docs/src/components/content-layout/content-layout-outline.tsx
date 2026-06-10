@@ -13,7 +13,10 @@ export function ContentLayoutOutline(props: ContentLayoutOutlineProps) {
     <Box
       {...restProps}
       as="aside"
-      className={[styles.ContentLayoutOutline, className]}
+      className={[
+        styles.ContentLayoutOutline,
+        className,
+      ]}
     />
   );
 }

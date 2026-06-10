@@ -1,10 +1,16 @@
 {
   "compilerOptions": {
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "preserve",
     "noEmit": true,
     "target": "ES2023",
-    "types": ["vite/client"]
+    "types": [
+      "vite/client"
+    ]
   },
   "extends": "./base.json"
 }

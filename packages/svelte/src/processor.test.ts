@@ -4,18 +4,26 @@ import { extractFile, transformFile } from 'yapyak/compiler';
 
 import { svelte } from './processor';
 
-const processors = [svelte()];
+const processors = [
+  svelte(),
+];
 
 function extractSvelte(source: string) {
-  return extractFile('src/a.svelte', source, { processors });
+  return extractFile('src/a.svelte', source, {
+    processors,
+  });
 }
 
 function runSvelteTransform(
   source: string,
-  locales: string[] = ['en'],
+  locales: string[] = [
+    'en',
+  ],
 ): string {
   const fileId = 'src/a.svelte';
-  const extracted = extractFile(fileId, source, { processors });
+  const extracted = extractFile(fileId, source, {
+    processors,
+  });
   return transformFile({
     extracted,
     fileId,
@@ -341,7 +349,10 @@ describe('svelte processor — transform', () => {
         '</script>',
         `<p>{t('Hello')}</p>`,
       ].join('\n'),
-      ['en', 'sv'],
+      [
+        'en',
+        'sv',
+      ],
     );
     expect(code).toMatch(/import \{ pick as _pick \} from 'yapyak\/internal'/);
   });

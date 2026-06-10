@@ -25,7 +25,10 @@ export function ChevronIcon(props: ChevronIconProps) {
       width="1em"
       xmlns="http://www.w3.org/2000/svg"
       {...restProps}
-      style={{ transform: `rotate(${ROTATION_MAP[direction]}deg)`, ...style }}
+      style={{
+        transform: `rotate(${ROTATION_MAP[direction]}deg)`,
+        ...style,
+      }}
     >
       <path
         d="M4 6l4 4 4-4"

@@ -10,49 +10,49 @@ export type TemplateNode =
   | DateNode
   | TimeNode;
 
-export interface LiteralNode {
+export type LiteralNode = {
   kind: 'literal';
   value: string;
-}
+};
 
-export interface PlaceholderNode {
+export type PlaceholderNode = {
   kind: 'placeholder';
   name: string;
-}
+};
 
-export interface CountNode {
+export type CountNode = {
   kind: 'count';
-}
+};
 
-export interface PluralNode {
+export type PluralNode = {
   branches: Record<string, Template>;
   kind: 'plural';
   name: string;
   type: 'cardinal' | 'ordinal';
-}
+};
 
-export interface SelectNode {
+export type SelectNode = {
   branches: Record<string, Template>;
   kind: 'select';
   name: string;
-}
+};
 
-export interface NumberNode {
+export type NumberNode = {
   kind: 'number';
   name: string;
   options: Intl.NumberFormatOptions;
-}
+};
 
-export interface DateNode {
+export type DateNode = {
   kind: 'date';
   name: string;
   style: DateTimeStyle;
-}
+};
 
-export interface TimeNode {
+export type TimeNode = {
   kind: 'time';
   name: string;
   style: DateTimeStyle;
-}
+};
 
 export type DateTimeStyle = 'short' | 'medium' | 'long' | 'full';

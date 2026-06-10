@@ -49,7 +49,9 @@ export function astro(): Processor {
       }
       magicString.prepend(`---\n${importStatement}\n---\n`);
     },
-    ['.astro'],
+    [
+      '.astro',
+    ],
     'astro',
     (source) => {
       const compiler = loadCompiler();
@@ -71,7 +73,9 @@ function loadCompiler(): typeof AstroCompilerSync {
   } catch (error) {
     throw new Error(
       '@astrojs/compiler is required to process Astro files. Install it as a dependency.',
-      { cause: error },
+      {
+        cause: error,
+      },
     );
   }
 }
@@ -146,7 +150,7 @@ function resolveExpressionElision(
     return undefined;
   }
   const onlyChild = children[0];
-  if (!onlyChild || onlyChild.type !== 'text') {
+  if (onlyChild?.type !== 'text') {
     return undefined;
   }
   const textStart = onlyChild.position?.start.offset;
@@ -166,7 +170,12 @@ function resolveExpressionElision(
 function findEnclosingBraces(
   source: string,
   textStart: number,
-): { end: number; start: number } | undefined {
+):
+  | {
+      end: number;
+      start: number;
+    }
+  | undefined {
   let openIdx = textStart - 1;
   while (openIdx >= 0 && source[openIdx] !== '{') {
     const char = source[openIdx] ?? '';
@@ -187,7 +196,10 @@ function findEnclosingBraces(
     } else if (char === '}') {
       depth -= 1;
       if (depth === 0) {
-        return { end: index + 1, start: openIdx };
+        return {
+          end: index + 1,
+          start: openIdx,
+        };
       }
     }
     index += 1;
@@ -196,7 +208,14 @@ function findEnclosingBraces(
 }
 
 function fragmentsFromTextExpression(
-  node: { position?: { start: { offset: number } }; value: string },
+  node: {
+    position?: {
+      start: {
+        offset: number;
+      };
+    };
+    value: string;
+  },
   elision: Fragment['elision'],
 ): Fragment[] {
   const start = node.position?.start.offset;
@@ -215,7 +234,9 @@ function fragmentsFromTextExpression(
   if (elision) {
     fragment.elision = elision;
   }
-  return [fragment];
+  return [
+    fragment,
+  ];
 }
 
 function fragmentsFromAttribute(
@@ -243,7 +264,9 @@ function fragmentsFromAttribute(
   if (elision) {
     fragment.elision = elision;
   }
-  return [fragment];
+  return [
+    fragment,
+  ];
 }
 
 function resolveAttributeElision(

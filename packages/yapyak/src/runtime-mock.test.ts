@@ -13,11 +13,16 @@ describe('buildRuntimeMock', () => {
     });
 
     it('returns `[en, sv]` as `LOCALES`', () => {
-      expect(buildRuntimeMock().LOCALES).toEqual(['en', 'sv']);
+      expect(buildRuntimeMock().LOCALES).toEqual([
+        'en',
+        'sv',
+      ]);
     });
 
     it('returns `{ type: none }` as `PERSISTENCE_CONFIG`', () => {
-      expect(buildRuntimeMock().PERSISTENCE_CONFIG).toEqual({ type: 'none' });
+      expect(buildRuntimeMock().PERSISTENCE_CONFIG).toEqual({
+        type: 'none',
+      });
     });
 
     it('returns `false` as `SYNC_HTML_LANG`', () => {
@@ -27,40 +32,71 @@ describe('buildRuntimeMock', () => {
 
   describe('with overrides', () => {
     it('returns the configured `defaultLocale`', () => {
-      expect(buildRuntimeMock({ defaultLocale: 'sv' }).DEFAULT_LOCALE).toBe(
-        'sv',
-      );
+      expect(
+        buildRuntimeMock({
+          defaultLocale: 'sv',
+        }).DEFAULT_LOCALE,
+      ).toBe('sv');
     });
 
     it('returns the configured `detectAcceptLanguage`', () => {
       expect(
-        buildRuntimeMock({ detectAcceptLanguage: true }).DETECT_ACCEPT_LANGUAGE,
+        buildRuntimeMock({
+          detectAcceptLanguage: true,
+        }).DETECT_ACCEPT_LANGUAGE,
       ).toBe(true);
     });
 
     it('returns the configured `locales`', () => {
-      expect(buildRuntimeMock({ locales: ['en', 'sv', 'fr'] }).LOCALES).toEqual(
-        ['en', 'sv', 'fr'],
-      );
+      expect(
+        buildRuntimeMock({
+          locales: [
+            'en',
+            'sv',
+            'fr',
+          ],
+        }).LOCALES,
+      ).toEqual([
+        'en',
+        'sv',
+        'fr',
+      ]);
     });
 
     it('returns the configured `persistence`', () => {
       expect(
-        buildRuntimeMock({ persistence: { type: 'url' } }).PERSISTENCE_CONFIG,
-      ).toEqual({ type: 'url' });
+        buildRuntimeMock({
+          persistence: {
+            type: 'url',
+          },
+        }).PERSISTENCE_CONFIG,
+      ).toEqual({
+        type: 'url',
+      });
     });
 
     it('returns the configured `syncHtmlLang`', () => {
-      expect(buildRuntimeMock({ syncHtmlLang: true }).SYNC_HTML_LANG).toBe(
-        true,
-      );
+      expect(
+        buildRuntimeMock({
+          syncHtmlLang: true,
+        }).SYNC_HTML_LANG,
+      ).toBe(true);
     });
 
     it('folds `defaultLocale` into `locales` when missing', () => {
       expect(
-        buildRuntimeMock({ defaultLocale: 'fr', locales: ['en', 'sv'] })
-          .LOCALES,
-      ).toEqual(['fr', 'en', 'sv']);
+        buildRuntimeMock({
+          defaultLocale: 'fr',
+          locales: [
+            'en',
+            'sv',
+          ],
+        }).LOCALES,
+      ).toEqual([
+        'fr',
+        'en',
+        'sv',
+      ]);
     });
   });
 });

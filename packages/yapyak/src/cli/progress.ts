@@ -14,7 +14,9 @@ export function withProgress(
       onProgress(1);
       return value;
     },
-    { id: base.id },
+    {
+      id: base.id,
+    },
   );
   if (typeof base.batch === 'function') {
     const batchFn = base.batch.bind(base);

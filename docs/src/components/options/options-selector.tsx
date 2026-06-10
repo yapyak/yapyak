@@ -21,7 +21,10 @@ export function OptionsSelectors(props: OptionsSelectorsProps) {
   return (
     <Box
       {...restProps}
-      className={[styles.OptionsSelectors, className]}
+      className={[
+        styles.OptionsSelectors,
+        className,
+      ]}
     >
       {groupIds.map((groupId) => (
         <OptionsSelector
@@ -33,9 +36,9 @@ export function OptionsSelectors(props: OptionsSelectorsProps) {
   );
 }
 
-interface OptionsSelectorProps {
+type OptionsSelectorProps = {
   groupId: string;
-}
+};
 
 function OptionsSelector(props: OptionsSelectorProps) {
   const { groupId } = props;

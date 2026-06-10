@@ -6,42 +6,86 @@ import { defineConfig } from 'vite';
 
 import { resolve } from 'node:path';
 
-interface ReferencePackage {
+type ReferencePackage = {
   collapsible?: boolean;
   dir: string;
   group?: string;
   subpaths?: string[];
-}
+};
 
 const REFERENCE_PACKAGES: ReferencePackage[] = [
   {
     collapsible: true,
     dir: 'yapyak',
-    subpaths: ['./adapter', './config', './processor', './translator'],
+    subpaths: [
+      './adapter',
+      './config',
+      './processor',
+      './translator',
+    ],
   },
 
-  { dir: 'vite', group: 'Bundlers' },
+  {
+    dir: 'vite',
+    group: 'Bundlers',
+  },
 
   {
     dir: 'react',
     group: 'Frameworks',
   },
-  { dir: 'vue', group: 'Frameworks', subpaths: ['./processor'] },
-  { dir: 'svelte', group: 'Frameworks', subpaths: ['./processor'] },
+  {
+    dir: 'vue',
+    group: 'Frameworks',
+    subpaths: [
+      './processor',
+    ],
+  },
+  {
+    dir: 'svelte',
+    group: 'Frameworks',
+    subpaths: [
+      './processor',
+    ],
+  },
   {
     dir: 'astro',
     group: 'Frameworks',
-    subpaths: ['./integration', './processor'],
+    subpaths: [
+      './integration',
+      './processor',
+    ],
   },
 
-  { dir: 'sveltekit', group: 'Adapters' },
-  { dir: 'tanstack-start', group: 'Adapters' },
-  { dir: 'react-router', group: 'Adapters' },
+  {
+    dir: 'sveltekit',
+    group: 'Adapters',
+  },
+  {
+    dir: 'tanstack-start',
+    group: 'Adapters',
+  },
+  {
+    dir: 'react-router',
+    group: 'Adapters',
+  },
 
-  { dir: 'anthropic', group: 'Translators' },
-  { dir: 'openai', group: 'Translators' },
-  { dir: 'gemini', group: 'Translators' },
-  { dir: 'ollama', group: 'Translators' },
+  {
+    dir: 'anthropic',
+    group: 'Translators',
+  },
+  {
+    dir: 'openai',
+    group: 'Translators',
+  },
+  {
+    dir: 'gemini',
+    group: 'Translators',
+  },
+  {
+    dir: 'ollama',
+    group: 'Translators',
+  },
 ];
 
 export default defineConfig({
@@ -65,7 +109,7 @@ export default defineConfig({
         },
         reference: {
           packages: REFERENCE_PACKAGES.map((pkg) => ({
-            collapsible: pkg.collapsible ?? !!pkg.group,
+            collapsible: pkg.collapsible ?? Boolean(pkg.group),
             group: pkg.group,
             name: pkg.dir,
             root: resolve(import.meta.dirname, `../packages/${pkg.dir}`),
@@ -79,19 +123,40 @@ export default defineConfig({
           default: 'react',
           label: 'Framework',
           options: [
-            { label: 'React', value: 'react' },
-            { label: 'Vue', value: 'vue' },
-            { label: 'Svelte', value: 'svelte' },
-            { label: 'Astro', value: 'astro' },
+            {
+              label: 'React',
+              value: 'react',
+            },
+            {
+              label: 'Vue',
+              value: 'vue',
+            },
+            {
+              label: 'Svelte',
+              value: 'svelte',
+            },
+            {
+              label: 'Astro',
+              value: 'astro',
+            },
           ],
         },
         pkg: {
           default: 'pnpm',
           label: 'Package manager',
           options: [
-            { label: 'npm', value: 'npm' },
-            { label: 'pnpm', value: 'pnpm' },
-            { label: 'bun', value: 'bun' },
+            {
+              label: 'npm',
+              value: 'npm',
+            },
+            {
+              label: 'pnpm',
+              value: 'pnpm',
+            },
+            {
+              label: 'bun',
+              value: 'bun',
+            },
           ],
         },
       },

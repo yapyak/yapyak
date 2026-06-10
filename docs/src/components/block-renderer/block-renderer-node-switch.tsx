@@ -6,9 +6,9 @@ import { useOptionsContext } from '#components/options';
 import { BlockRenderer } from './block-renderer';
 import { doc } from 'virtual:doc-extractor';
 
-export interface BlockRendererNodeSwitchProps {
+export type BlockRendererNodeSwitchProps = {
   block: SwitchBlock;
-}
+};
 
 export function BlockRendererNodeSwitch(props: BlockRendererNodeSwitchProps) {
   const { block } = props;

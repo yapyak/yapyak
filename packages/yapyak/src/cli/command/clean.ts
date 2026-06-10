@@ -12,20 +12,20 @@ import { color, header, symbol } from '../tui';
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-interface OrphanSource {
+type OrphanSource = {
   fileId: string;
   locale: string;
   source: string;
-}
+};
 
-interface BuildExpectedResult {
+type BuildExpectedResult = {
   expected: Record<string, Set<string>>;
   inScope: (fileId: string) => boolean;
-}
+};
 
-export interface CleanOptions {
+export type CleanOptions = {
   write: boolean;
-}
+};
 
 export function clean(
   config: Config,
@@ -46,7 +46,10 @@ export function clean(
 
   const { expected, inScope } = buildExpected(projectRoot, config);
   const orphanSources: OrphanSource[] = [];
-  const filesToWrite: Array<{ next: LocaleFile; path: string }> = [];
+  const filesToWrite: Array<{
+    next: LocaleFile;
+    path: string;
+  }> = [];
 
   for (const locale of locales) {
     const localePath = join(localesPath, `${locale}.json`);
@@ -56,14 +59,20 @@ export function clean(
 
     for (const [fileId, entries] of Object.entries(existing)) {
       if (!inScope(fileId)) {
-        next[fileId] = { ...entries };
+        next[fileId] = {
+          ...entries,
+        };
         continue;
       }
       const expectedSources = expected[fileId];
       const nextEntries: Record<string, string> = {};
       for (const [source, value] of Object.entries(entries)) {
         if (!expectedSources?.has(source)) {
-          orphanSources.push({ fileId, locale, source });
+          orphanSources.push({
+            fileId,
+            locale,
+            source,
+          });
           hasChanged = true;
           continue;
         }
@@ -75,7 +84,10 @@ export function clean(
     }
 
     if (hasChanged && write) {
-      filesToWrite.push({ next, path: localePath });
+      filesToWrite.push({
+        next,
+        path: localePath,
+      });
     }
   }
 

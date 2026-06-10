@@ -3,8 +3,14 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 vi.mock('yapyak/runtime', () => ({
   DEFAULT_LOCALE: 'en',
   DETECT_ACCEPT_LANGUAGE: false,
-  LOCALES: ['en', 'sv', 'fr'],
-  PERSISTENCE_CONFIG: { type: 'none' },
+  LOCALES: [
+    'en',
+    'sv',
+    'fr',
+  ],
+  PERSISTENCE_CONFIG: {
+    type: 'none',
+  },
   SYNC_HTML_LANG: false,
 }));
 
@@ -19,9 +25,16 @@ import {
 } from './store';
 
 function makeMeta(
-  hot?: { dispose(callback: () => void): void } | undefined,
+  hot?:
+    | {
+        dispose(callback: () => void): void;
+      }
+    | undefined,
 ): ImportMeta {
-  return { ...import.meta, hot };
+  return {
+    ...import.meta,
+    hot,
+  };
 }
 
 afterEach(() => {
@@ -42,7 +55,11 @@ describe('getLocale', () => {
 
 describe('locales', () => {
   it('returns the configured locale list', () => {
-    expect(locales).toEqual(['en', 'sv', 'fr']);
+    expect(locales).toEqual([
+      'en',
+      'sv',
+      'fr',
+    ]);
   });
 });
 
@@ -95,7 +112,12 @@ describe('autoSubscribeLocale', () => {
     const dispose = vi.fn();
     const listener = vi.fn();
 
-    autoSubscribeLocale(makeMeta({ dispose }), listener);
+    autoSubscribeLocale(
+      makeMeta({
+        dispose,
+      }),
+      listener,
+    );
 
     expect(dispose).toHaveBeenCalledOnce();
     const unsubscribe = dispose.mock.calls[0]?.[0];

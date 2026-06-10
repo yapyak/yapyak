@@ -1,8 +1,8 @@
 import type { ReactElement } from 'react';
 
-export interface CheckIconProps {
+export type CheckIconProps = {
   size?: number;
-}
+};
 
 export function CheckIcon(props: CheckIconProps): ReactElement {
   const { size = 14 } = props;

@@ -1,4 +1,4 @@
-import { createFileRoute, getRouteApi, Outlet } from '@tanstack/react-router';
+import { Outlet, createFileRoute, getRouteApi } from '@tanstack/react-router';
 import { getHeadings } from '@yapyak/doc-extractor';
 import { useMemo } from 'react';
 import { t } from 'yapyak';
@@ -13,7 +13,9 @@ const splatRoute = getRouteApi('/guide/$');
 
 export const Route = createFileRoute('/guide')({
   beforeLoad() {
-    return { sidebar: doc.getSidebar('guide') };
+    return {
+      sidebar: doc.getSidebar('guide'),
+    };
   },
   component: Component,
 });
@@ -30,8 +32,14 @@ function Component() {
   );
 
   const headings = useMemo(
-    () => getHeadings(page, { maxLevel: 3, minLevel: 2 }),
-    [page],
+    () =>
+      getHeadings(page, {
+        maxLevel: 3,
+        minLevel: 2,
+      }),
+    [
+      page,
+    ],
   );
 
   return (

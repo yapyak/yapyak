@@ -2,9 +2,9 @@ import type { CodeBlock as CodeBlockData } from '@yapyak/doc-extractor';
 
 import { CodeBlock } from '#components/code-block';
 
-export interface BlockRendererNodeCodeBlockProps {
+export type BlockRendererNodeCodeBlockProps = {
   block: CodeBlockData;
-}
+};
 
 export function BlockRendererNodeCodeBlock(
   props: BlockRendererNodeCodeBlockProps,

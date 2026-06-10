@@ -3,6 +3,8 @@ import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
   persistence: 'local-storage',
-  processors: [vue()],
+  processors: [
+    vue(),
+  ],
   syncHtmlLang: true,
 });

@@ -33,16 +33,16 @@ let currentCollection = 'reference';
 let currentPackageName = '';
 let currentPackageSlug = '';
 
-interface BuildSymbolPageInput {
+type BuildSymbolPageInput = {
   href: string;
   index: SymbolIndex;
   moduleId: string;
   packageDir: string;
-}
+};
 
-interface BuildSymbolPageOptions {
+type BuildSymbolPageOptions = {
   sourceUrl?: SourceUrlConfig;
-}
+};
 
 export function buildSymbolPage(
   symbol: ReferenceExport,
@@ -73,7 +73,12 @@ export function buildSymbolPage(
     blocks.push({
       children: [
         {
-          children: [{ type: 'text', value: symbol.deprecated }],
+          children: [
+            {
+              type: 'text',
+              value: symbol.deprecated,
+            },
+          ],
           type: 'paragraph',
         },
       ],
@@ -193,13 +198,13 @@ function resolveSourceHref(
     .replaceAll('{line}', String(line));
 }
 
-interface BuildModulePageInput {
+type BuildModulePageInput = {
   href: string;
   index: SymbolIndex;
   label: string;
-}
+};
 
-interface BuildPackageIndexPageInput {
+type BuildPackageIndexPageInput = {
   href: string;
   label: string;
   subpaths: ReadonlyArray<{
@@ -207,7 +212,7 @@ interface BuildPackageIndexPageInput {
     href: string;
     subpath: string;
   }>;
-}
+};
 
 export function buildTypedocPackageIndexPage(
   context: PackageContext,
@@ -248,7 +253,12 @@ function buildSubpathsTable(
       children: [
         buildTableBodyCell([
           {
-            children: [{ type: 'inline-code', value: entry.subpath }],
+            children: [
+              {
+                type: 'inline-code',
+                value: entry.subpath,
+              },
+            ],
             href: entry.href,
             kind: 'internal',
             type: 'link',
@@ -260,7 +270,10 @@ function buildSubpathsTable(
       ],
       type: 'table-row',
     })),
-    head: buildTableHeaderRow(['Subpath', 'Description']),
+    head: buildTableHeaderRow([
+      'Subpath',
+      'Description',
+    ]),
     type: 'table',
   };
 }
@@ -308,7 +321,11 @@ function buildExportsTable(
 ): Block {
   return {
     body: exports.map((entry) => buildExportRow(entry, moduleId)),
-    head: buildTableHeaderRow(['Name', 'Kind', 'Description']),
+    head: buildTableHeaderRow([
+      'Name',
+      'Kind',
+      'Description',
+    ]),
     type: 'table',
   };
 }
@@ -323,13 +340,23 @@ function buildExportRow(
     children: [
       buildTableBodyCell([
         {
-          children: [{ type: 'inline-code', value: label }],
+          children: [
+            {
+              type: 'inline-code',
+              value: label,
+            },
+          ],
           href,
           kind: 'internal',
           type: 'link',
         },
       ]),
-      buildTableBodyCell([{ type: 'text', value: entry.kind }]),
+      buildTableBodyCell([
+        {
+          type: 'text',
+          value: entry.kind,
+        },
+      ]),
       buildTableBodyCell(markdownToInline(getFirstSentence(entry.description))),
     ],
     type: 'table-row',
@@ -394,7 +421,10 @@ function normalizeOverloadParameters(
       continue;
     }
     const isInAllOverloads = present.length === overloads.length;
-    unified.push({ ...first, optional: !isInAllOverloads || first.optional });
+    unified.push({
+      ...first,
+      optional: !isInAllOverloads || first.optional,
+    });
   }
   return unified;
 }
@@ -430,7 +460,12 @@ function buildImportSnippet(
 
 function buildHeading2Block(text: string): Block {
   return {
-    children: [{ type: 'text', value: text }],
+    children: [
+      {
+        type: 'text',
+        value: text,
+      },
+    ],
     id: slugify(text),
     level: 2,
     type: 'heading',
@@ -459,7 +494,12 @@ function buildTypeParametersTable(
 ): Block {
   return {
     body: typeParameters.map(buildTypeParameterRow),
-    head: buildTableHeaderRow(['Name', 'Constraint', 'Default', 'Description']),
+    head: buildTableHeaderRow([
+      'Name',
+      'Constraint',
+      'Default',
+      'Description',
+    ]),
     type: 'table',
   };
 }
@@ -469,16 +509,31 @@ function buildTypeParameterRow(
 ): TableRowBlock {
   return {
     children: [
-      buildTableBodyCell([{ type: 'inline-code', value: typeParameter.name }]),
+      buildTableBodyCell([
+        {
+          type: 'inline-code',
+          value: typeParameter.name,
+        },
+      ]),
       buildTableBodyCell(
         typeParameter.constraint !== null
           ? tokensToBlocks(typeParameter.constraint)
-          : [{ type: 'text', value: '' }],
+          : [
+              {
+                type: 'text',
+                value: '',
+              },
+            ],
       ),
       buildTableBodyCell(
         typeParameter.defaultType !== null
           ? tokensToBlocks(typeParameter.defaultType)
-          : [{ type: 'text', value: '' }],
+          : [
+              {
+                type: 'text',
+                value: '',
+              },
+            ],
       ),
       buildTableBodyCell(markdownToInline(typeParameter.description)),
     ],
@@ -496,8 +551,17 @@ function buildParametersTable(parameters: ReferenceParameter[]): Block {
     ),
     head: buildTableHeaderRow(
       hasDefault
-        ? ['Name', 'Type', 'Default', 'Description']
-        : ['Name', 'Type', 'Description'],
+        ? [
+            'Name',
+            'Type',
+            'Default',
+            'Description',
+          ]
+        : [
+            'Name',
+            'Type',
+            'Description',
+          ],
     ),
     type: 'table',
   };
@@ -509,8 +573,17 @@ function buildMembersTable(members: ReferenceMember[]): Block {
     body: members.map((member) => buildMemberRow(member, hasDefault)),
     head: buildTableHeaderRow(
       hasDefault
-        ? ['Name', 'Type', 'Default', 'Description']
-        : ['Name', 'Type', 'Description'],
+        ? [
+            'Name',
+            'Type',
+            'Default',
+            'Description',
+          ]
+        : [
+            'Name',
+            'Type',
+            'Description',
+          ],
     ),
     type: 'table',
   };
@@ -534,12 +607,20 @@ function buildParameterRow(
       buildTableBodyCell(
         parameter.defaultValue !== null
           ? markdownToInline(parameter.defaultValue)
-          : [{ type: 'text', value: '' }],
+          : [
+              {
+                type: 'text',
+                value: '',
+              },
+            ],
       ),
     );
   }
   children.push(buildTableBodyCell(markdownToInline(parameter.description)));
-  return { children, type: 'table-row' };
+  return {
+    children,
+    type: 'table-row',
+  };
 }
 
 function buildMemberRow(
@@ -560,22 +641,39 @@ function buildMemberRow(
       buildTableBodyCell(
         member.defaultValue !== null
           ? markdownToInline(member.defaultValue)
-          : [{ type: 'text', value: '' }],
+          : [
+              {
+                type: 'text',
+                value: '',
+              },
+            ],
       ),
     );
   }
   children.push(buildTableBodyCell(markdownToInline(member.description)));
-  return { children, type: 'table-row' };
+  return {
+    children,
+    type: 'table-row',
+  };
 }
 
 function buildTableBodyCell(children: Block[]) {
-  return { children, header: false, type: 'table-cell' as const };
+  return {
+    children,
+    header: false,
+    type: 'table-cell' as const,
+  };
 }
 
 function buildTableHeaderRow(labels: string[]): TableRowBlock {
   return {
     children: labels.map((label) => ({
-      children: [{ type: 'text' as const, value: label }],
+      children: [
+        {
+          type: 'text' as const,
+          value: label,
+        },
+      ],
       header: true,
       type: 'table-cell' as const,
     })),
@@ -590,17 +688,28 @@ function tokensToBlocks(tokens: TypeToken[]): Block[] {
       token.kind === 'ref' ? resolveModule(token) : undefined;
     if (token.kind === 'ref' && resolvedModule !== undefined) {
       blocks.push({
-        children: [{ type: 'inline-code', value: token.text }],
+        children: [
+          {
+            type: 'inline-code',
+            value: token.text,
+          },
+        ],
         href: resolveSymbolHref(resolvedModule, token.name),
         kind: 'internal',
         type: 'link',
       });
     } else {
-      blocks.push({ type: 'inline-code', value: token.text });
+      blocks.push({
+        type: 'inline-code',
+        value: token.text,
+      });
     }
   }
   if (blocks.length === 0) {
-    blocks.push({ type: 'inline-code', value: '' });
+    blocks.push({
+      type: 'inline-code',
+      value: '',
+    });
   }
   return blocks;
 }
@@ -626,7 +735,12 @@ function resolveSymbolHref(moduleId: string, name: string): string {
 
 function markdownToInline(source: string): Block[] {
   if (source === '') {
-    return [{ type: 'text', value: '' }];
+    return [
+      {
+        type: 'text',
+        value: '',
+      },
+    ];
   }
   const parsed = parseMarkdoc(source);
   const blocks = parsed.blocks;
@@ -640,7 +754,12 @@ function buildExampleBlocks(example: ReferenceExample): Block[] {
   const result: Block[] = [];
   if (example.title !== null) {
     result.push({
-      children: [{ type: 'text', value: example.title }],
+      children: [
+        {
+          type: 'text',
+          value: example.title,
+        },
+      ],
       id: slugify(example.title),
       level: 3,
       type: 'heading',
@@ -659,7 +778,10 @@ function buildExampleBlocks(example: ReferenceExample): Block[] {
 function buildThrowsTable(throws: ReferenceThrows[]): Block {
   return {
     body: throws.map(buildThrowsRow),
-    head: buildTableHeaderRow(['Error', 'When']),
+    head: buildTableHeaderRow([
+      'Error',
+      'When',
+    ]),
     type: 'table',
   };
 }
@@ -669,8 +791,18 @@ function buildThrowsRow(entry: ReferenceThrows): TableRowBlock {
     children: [
       buildTableBodyCell(
         entry.errorClass
-          ? [{ type: 'inline-code', value: entry.errorClass }]
-          : [{ type: 'text', value: '' }],
+          ? [
+              {
+                type: 'inline-code',
+                value: entry.errorClass,
+              },
+            ]
+          : [
+              {
+                type: 'text',
+                value: '',
+              },
+            ],
       ),
       buildTableBodyCell(markdownToInline(entry.condition)),
     ],

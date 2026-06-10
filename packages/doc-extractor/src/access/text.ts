@@ -37,7 +37,12 @@ export function blockToText(block: Block): string {
       return block.children.map(blockToText).join('');
     case 'table': {
       const rows =
-        block.head === null ? block.body : [block.head, ...block.body];
+        block.head === null
+          ? block.body
+          : [
+              block.head,
+              ...block.body,
+            ];
       return rows
         .map((row) => row.children.map(blockToText).join(' | '))
         .join('\n');

@@ -5,10 +5,10 @@ import { withProgress } from '../progress';
 import { buildReport } from '../report';
 import { color, header, progressBar, spinner, symbol } from '../tui';
 
-export interface TranslateOptions {
+export type TranslateOptions = {
   force?: boolean;
   locale?: string;
-}
+};
 
 export async function translate(
   config: Config,
@@ -46,7 +46,9 @@ export async function translate(
     projectRoot,
   });
   const targetLocales = targetLocale
-    ? [targetLocale]
+    ? [
+        targetLocale,
+      ]
     : report.locales.filter((locale) => locale !== report.defaultLocale);
 
   const stubsToFill = force
@@ -87,7 +89,9 @@ export async function translate(
     );
   };
 
-  const localesToProcess = [...new Set(stubsToFill.map((stub) => stub.locale))];
+  const localesToProcess = [
+    ...new Set(stubsToFill.map((stub) => stub.locale)),
+  ];
   for (const locale of localesToProcess) {
     const subResult = await autoTranslate(
       {
@@ -96,11 +100,17 @@ export async function translate(
       },
       {
         defaultLocale: report.defaultLocale,
-        locales: [report.defaultLocale, locale],
+        locales: [
+          report.defaultLocale,
+          locale,
+        ],
         localesDir: config.localesDir,
       },
       projectRoot,
-      { examples: config.examples, force },
+      {
+        examples: config.examples,
+        force,
+      },
     );
     failed += subResult.errors.length;
   }

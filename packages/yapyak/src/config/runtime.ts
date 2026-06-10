@@ -1,12 +1,12 @@
 import type { NormalizedPersistenceConfig } from '../persistence';
 
-export interface DefineRuntimeInput {
+export type DefineRuntimeInput = {
   defaultLocale: string;
   detectAcceptLanguage: boolean;
   locales: string[];
   persistence: NormalizedPersistenceConfig;
   syncHtmlLang: boolean;
-}
+};
 
 export function defineRuntime(input: DefineRuntimeInput): string {
   return [

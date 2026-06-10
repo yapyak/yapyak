@@ -9,7 +9,12 @@ const emptyOrphans: OrphanCache = {};
 describe('extractExamples', () => {
   it('returns an empty list when max is 0', () => {
     const localeData: LocaleData = {
-      sv: { 'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' } },
+      sv: {
+        'src/a.tsx': {
+          Cancel: 'Avbryt',
+          Save: 'Spara',
+        },
+      },
     };
 
     const examples = extractExamples({
@@ -28,8 +33,13 @@ describe('extractExamples', () => {
   it('picks entries from the same locale across other files', () => {
     const localeData: LocaleData = {
       sv: {
-        'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
-        'src/b.tsx': { Hello: 'Hej' },
+        'src/a.tsx': {
+          Cancel: 'Avbryt',
+          Save: 'Spara',
+        },
+        'src/b.tsx': {
+          Hello: 'Hej',
+        },
       },
     };
 
@@ -53,7 +63,10 @@ describe('extractExamples', () => {
   it('picks entries other than the source being translated', () => {
     const localeData: LocaleData = {
       sv: {
-        'src/a.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
+        'src/a.tsx': {
+          Cancel: 'Avbryt',
+          Save: 'Spara',
+        },
       },
     };
 
@@ -67,14 +80,21 @@ describe('extractExamples', () => {
       source: 'Save',
     });
 
-    expect(examples.map((entry) => entry.source)).toEqual(['Cancel']);
+    expect(examples.map((entry) => entry.source)).toEqual([
+      'Cancel',
+    ]);
   });
 
   it('picks same-file entries first when similarity ties', () => {
     const localeData: LocaleData = {
       sv: {
-        'src/a.tsx': { Settings: 'Inställningar' },
-        'src/b.tsx': { Cancel: 'Avbryt', Save: 'Spara' },
+        'src/a.tsx': {
+          Settings: 'Inställningar',
+        },
+        'src/b.tsx': {
+          Cancel: 'Avbryt',
+          Save: 'Spara',
+        },
       },
     };
 
@@ -88,7 +108,9 @@ describe('extractExamples', () => {
       source: 'Hello',
     });
 
-    expect(examples[0]).toMatchObject({ source: 'Cancel' });
+    expect(examples[0]).toMatchObject({
+      source: 'Cancel',
+    });
   });
 
   it('returns at most max entries', () => {
@@ -124,7 +146,9 @@ describe('extractExamples', () => {
       'src/a.tsx': {
         Save: {
           deletedAt: '2026-01-01T00:00:00.000Z',
-          translations: { sv: 'Spara' },
+          translations: {
+            sv: 'Spara',
+          },
         },
       },
     };
@@ -139,14 +163,23 @@ describe('extractExamples', () => {
       source: 'Hello',
     });
 
-    expect(examples).toEqual([{ source: 'Save', translation: 'Spara' }]);
+    expect(examples).toEqual([
+      {
+        source: 'Save',
+        translation: 'Spara',
+      },
+    ]);
   });
 
   it('folds duplicate sources across files into a single entry', () => {
     const localeData: LocaleData = {
       sv: {
-        'src/a.tsx': { Save: 'Spara' },
-        'src/b.tsx': { Save: 'Spara' },
+        'src/a.tsx': {
+          Save: 'Spara',
+        },
+        'src/b.tsx': {
+          Save: 'Spara',
+        },
       },
     };
 
@@ -183,13 +216,18 @@ describe('extractExamples', () => {
       source: 'Save changes',
     });
 
-    expect(examples[0]).toMatchObject({ source: 'Save' });
+    expect(examples[0]).toMatchObject({
+      source: 'Save',
+    });
   });
 
   it('blocks entries that have no translation for the target locale', () => {
     const localeData: LocaleData = {
       sv: {
-        'src/a.tsx': { Cancel: '', Save: 'Spara' },
+        'src/a.tsx': {
+          Cancel: '',
+          Save: 'Spara',
+        },
       },
     };
 
@@ -203,6 +241,8 @@ describe('extractExamples', () => {
       source: 'Hello',
     });
 
-    expect(examples.map((entry) => entry.source)).toEqual(['Save']);
+    expect(examples.map((entry) => entry.source)).toEqual([
+      'Save',
+    ]);
   });
 });

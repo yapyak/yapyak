@@ -7,11 +7,11 @@ import { CodeBlock } from '#components/code-block';
 
 import styles from './code-group.module.css';
 
-export interface CodeGroupTab {
+export type CodeGroupTab = {
   label?: string;
   language?: string;
   source: string;
-}
+};
 
 export interface CodeGroupProps extends BoxProps {
   tabs: CodeGroupTab[];
@@ -24,7 +24,10 @@ export function CodeGroup(props: CodeGroupProps) {
   return (
     <Box
       {...restProps}
-      className={[styles.CodeGroup, className]}
+      className={[
+        styles.CodeGroup,
+        className,
+      ]}
     >
       <Box className={styles.TabRow}>
         {tabs.map((tab, index) => (
@@ -61,7 +64,7 @@ export function CodeGroup(props: CodeGroupProps) {
             key={index}
           >
             <CodeBlock
-              bare
+              bare={true}
               language={tab.language}
               source={tab.source}
             />

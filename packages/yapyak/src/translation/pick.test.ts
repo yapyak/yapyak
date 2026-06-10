@@ -11,24 +11,53 @@ afterEach(() => {
 describe('pick', () => {
   it('returns the active-locale variant', () => {
     setLocale('sv');
-    expect(pick({ en: 'Save', sv: 'Spara' })).toBe('Spara');
+    expect(
+      pick({
+        en: 'Save',
+        sv: 'Spara',
+      }),
+    ).toBe('Spara');
   });
 
   it('returns the default-locale variant when no active match', () => {
     setLocale('en');
-    expect(pick({ en: 'Save', sv: 'Spara' })).toBe('Save');
+    expect(
+      pick({
+        en: 'Save',
+        sv: 'Spara',
+      }),
+    ).toBe('Save');
   });
 
   it('preserves a forced locale via options', () => {
     setLocale('en');
-    expect(pick({ en: 'Save', sv: 'Spara' }, { locale: 'sv' })).toBe('Spara');
+    expect(
+      pick(
+        {
+          en: 'Save',
+          sv: 'Spara',
+        },
+        {
+          locale: 'sv',
+        },
+      ),
+    ).toBe('Spara');
   });
 
   it('preserves a forced locale via options when params slot is undefined', () => {
     setLocale('en');
-    expect(pick({ en: 'Save', sv: 'Spara' }, undefined, { locale: 'sv' })).toBe(
-      'Spara',
-    );
+    expect(
+      pick(
+        {
+          en: 'Save',
+          sv: 'Spara',
+        },
+        undefined,
+        {
+          locale: 'sv',
+        },
+      ),
+    ).toBe('Spara');
   });
 
   it('interprets an AST variant with params', () => {
@@ -36,10 +65,20 @@ describe('pick', () => {
     expect(
       pick(
         {
-          en: [literal('Hi, '), placeholder('name'), literal('!')],
-          sv: [literal('Hej, '), placeholder('name'), literal('!')],
+          en: [
+            literal('Hi, '),
+            placeholder('name'),
+            literal('!'),
+          ],
+          sv: [
+            literal('Hej, '),
+            placeholder('name'),
+            literal('!'),
+          ],
         },
-        { name: 'Alex' },
+        {
+          name: 'Alex',
+        },
       ),
     ).toBe('Hi, Alex!');
   });
@@ -49,11 +88,23 @@ describe('pick', () => {
     expect(
       pick(
         {
-          en: [literal('Hi, '), placeholder('name'), literal('!')],
-          sv: [literal('Hej, '), placeholder('name'), literal('!')],
+          en: [
+            literal('Hi, '),
+            placeholder('name'),
+            literal('!'),
+          ],
+          sv: [
+            literal('Hej, '),
+            placeholder('name'),
+            literal('!'),
+          ],
         },
-        { name: 'Alex' },
-        { locale: 'sv' },
+        {
+          name: 'Alex',
+        },
+        {
+          locale: 'sv',
+        },
       ),
     ).toBe('Hej, Alex!');
   });
@@ -64,15 +115,26 @@ describe('pick', () => {
       pick(
         {
           en: 'Hi, Alex!',
-          sv: [literal('Hej, '), placeholder('name'), literal('!')],
+          sv: [
+            literal('Hej, '),
+            placeholder('name'),
+            literal('!'),
+          ],
         },
-        { name: 'Alex' },
+        {
+          name: 'Alex',
+        },
       ),
     ).toBe('Hi, Alex!');
   });
 
   it('returns a string variant as-is without invoking the interpreter', () => {
     setLocale('en');
-    expect(pick({ en: 'Pre-rendered', sv: 'Färdig' })).toBe('Pre-rendered');
+    expect(
+      pick({
+        en: 'Pre-rendered',
+        sv: 'Färdig',
+      }),
+    ).toBe('Pre-rendered');
   });
 });

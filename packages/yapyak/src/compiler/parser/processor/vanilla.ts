@@ -7,7 +7,16 @@ export const vanillaProcessor: Processor = createProcessor(
     void source;
     magicString.prepend(`${importStatement}\n`);
   },
-  ['.ts', '.tsx', '.js', '.jsx', '.mts', '.mjs', '.cts', '.cjs'],
+  [
+    '.ts',
+    '.tsx',
+    '.js',
+    '.jsx',
+    '.mts',
+    '.mjs',
+    '.cts',
+    '.cjs',
+  ],
   'vanilla',
   (source) => [
     {

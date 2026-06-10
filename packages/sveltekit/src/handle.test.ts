@@ -6,12 +6,14 @@ import { getPendingResponseHeaders } from 'yapyak/adapter';
 
 import { handle } from './handle';
 
-interface ResolveCall {
+type ResolveCall = {
   options: ResolveOptions | undefined;
-}
+};
 
 function makeEvent(request: Request): Parameters<typeof handle>[0]['event'] {
-  return { request } as Parameters<typeof handle>[0]['event'];
+  return {
+    request,
+  } as Parameters<typeof handle>[0]['event'];
 }
 
 describe('handle', () => {
@@ -21,7 +23,9 @@ describe('handle', () => {
     await handle({
       event,
       resolve: async (_event, options) => {
-        calls.push({ options });
+        calls.push({
+          options,
+        });
         const html = options?.transformPageChunk?.({
           done: true,
           html: '<html lang="%yapyak.lang%">',

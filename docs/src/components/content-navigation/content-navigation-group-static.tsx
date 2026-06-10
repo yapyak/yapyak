@@ -17,7 +17,10 @@ export function ContentNavigationGroupStatic(
   return (
     <Box
       {...restProps}
-      className={[styles.ContentNavigationGroup, className]}
+      className={[
+        styles.ContentNavigationGroup,
+        className,
+      ]}
       data-depth={depth}
     >
       {node.href === undefined ? (
@@ -32,7 +35,7 @@ export function ContentNavigationGroupStatic(
           as={Link}
           className={styles.TitleHeading}
           data-active={isActive}
-          data-link
+          data-link={true}
           to={node.href}
         >
           {node.label}

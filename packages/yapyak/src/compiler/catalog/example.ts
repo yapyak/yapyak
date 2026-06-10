@@ -1,7 +1,7 @@
 import type { TranslationExample } from '../../translator';
 import type { LocaleData, OrphanCache } from './locale';
 
-export interface ExtractExamplesInput {
+export type ExtractExamplesInput = {
   currentFileId: string;
   excludeKey: string;
   locale: string;
@@ -9,14 +9,14 @@ export interface ExtractExamplesInput {
   max: number;
   orphans: OrphanCache;
   source: string;
-}
+};
 
-interface Candidate {
+type Candidate = {
   fileId: string;
   score: number;
   source: string;
   translation: string;
-}
+};
 
 export function extractExamples(
   input: ExtractExamplesInput,
@@ -95,7 +95,9 @@ function dedupeBySource(candidates: Candidate[]): Candidate[] {
       bestBySource.set(candidate.source, candidate);
     }
   }
-  return [...bestBySource.values()];
+  return [
+    ...bestBySource.values(),
+  ];
 }
 
 function makeCandidateComparator(
@@ -121,7 +123,10 @@ function makeCandidateComparator(
 }
 
 function toExample(candidate: Candidate): TranslationExample {
-  return { source: candidate.source, translation: candidate.translation };
+  return {
+    source: candidate.source,
+    translation: candidate.translation,
+  };
 }
 
 function similarity(a: string, b: string): number {
@@ -154,7 +159,9 @@ function wordLevenshtein(a: string[], b: string[]): number {
     return a.length;
   }
   let previous: number[] = Array.from(
-    { length: b.length + 1 },
+    {
+      length: b.length + 1,
+    },
     (_, index) => index,
   );
   let current: number[] = new Array(b.length + 1).fill(0);
@@ -168,7 +175,10 @@ function wordLevenshtein(a: string[], b: string[]): number {
         (previous[bIndex - 1] ?? 0) + cost,
       );
     }
-    [previous, current] = [current, previous];
+    [previous, current] = [
+      current,
+      previous,
+    ];
   }
   return previous[b.length] ?? 0;
 }

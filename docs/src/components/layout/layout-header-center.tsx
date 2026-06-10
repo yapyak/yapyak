@@ -12,7 +12,10 @@ export function LayoutHeaderCenter(props: LayoutHeaderCenterProps) {
   return (
     <Box
       {...restProps}
-      className={[styles.LayoutHeaderCenter, className]}
+      className={[
+        styles.LayoutHeaderCenter,
+        className,
+      ]}
     />
   );
 }

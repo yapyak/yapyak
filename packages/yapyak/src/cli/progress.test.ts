@@ -5,7 +5,9 @@ import { describe, expect, it, vi } from 'vitest';
 import { withProgress } from './progress';
 
 function makeTranslator(): Translator {
-  return Object.assign(async () => 'Spara', { id: 'fake' });
+  return Object.assign(async () => 'Spara', {
+    id: 'fake',
+  });
 }
 
 describe('withProgress', () => {

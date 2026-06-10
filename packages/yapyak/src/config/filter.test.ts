@@ -19,7 +19,13 @@ describe('createFilter', () => {
   });
 
   it('returns true for a path matched by any include in an array', () => {
-    const filter = createFilter(['src/**/*.ts', 'app/**/*.ts'], []);
+    const filter = createFilter(
+      [
+        'src/**/*.ts',
+        'app/**/*.ts',
+      ],
+      [],
+    );
     expect(filter('app/main.ts')).toBe(true);
   });
 

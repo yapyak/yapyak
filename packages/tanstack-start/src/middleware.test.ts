@@ -3,17 +3,21 @@ import { getPendingResponseHeaders } from 'yapyak/adapter';
 
 import { middleware } from './middleware';
 
-interface MiddlewareContext {
-  next: () => Promise<{ response: Response }>;
+type MiddlewareContext = {
+  next: () => Promise<{
+    response: Response;
+  }>;
   request: Request;
-}
+};
 
-function getServer(): (
-  context: MiddlewareContext,
-) => Promise<{ response: Response }> {
+function getServer(): (context: MiddlewareContext) => Promise<{
+  response: Response;
+}> {
   const def = middleware as unknown as {
     options?: {
-      server?: (context: MiddlewareContext) => Promise<{ response: Response }>;
+      server?: (context: MiddlewareContext) => Promise<{
+        response: Response;
+      }>;
     };
   };
   if (!def.options?.server) {
@@ -26,8 +30,13 @@ describe('middleware', () => {
   it('returns the result returned by `next`', async () => {
     const server = getServer();
     const request = new Request('http://example.com/');
-    const expected = { response: new Response('body') };
-    const result = await server({ next: async () => expected, request });
+    const expected = {
+      response: new Response('body'),
+    };
+    const result = await server({
+      next: async () => expected,
+      request,
+    });
     expect(result).toBe(expected);
   });
 
@@ -38,7 +47,9 @@ describe('middleware', () => {
     await server({
       next: async () => {
         getPendingResponseHeaders().append('Set-Cookie', 'lang=sv');
-        return { response };
+        return {
+          response,
+        };
       },
       request,
     });

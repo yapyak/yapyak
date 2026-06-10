@@ -3,10 +3,10 @@ import type { Page } from '../build';
 import { walkBlocks } from './block';
 import { blockToText } from './text';
 
-export interface InternalLinkEntry {
+export type InternalLinkEntry = {
   href: string;
   text: string;
-}
+};
 
 export function getInternalLinks(page: Page): InternalLinkEntry[] {
   const links: InternalLinkEntry[] = [];
