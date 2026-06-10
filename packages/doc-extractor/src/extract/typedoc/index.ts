@@ -1,5 +1,4 @@
 export type { PackageContext } from './package-context';
-export type { SymbolIndex } from './symbol-index';
 
 export { extractTypedoc } from './extract';
 export {

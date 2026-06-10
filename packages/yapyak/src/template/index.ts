@@ -1,19 +1,6 @@
-export type { TemplateDiagnostic, TemplateRange } from './diagnostic';
-export type {
-  CountNode,
-  DateNode,
-  DateTimeStyle,
-  LiteralNode,
-  NumberNode,
-  PlaceholderNode,
-  PluralNode,
-  SelectNode,
-  Template,
-  TemplateNode,
-  TimeNode,
-} from './node';
+export type { TemplateDiagnostic } from './diagnostic';
+export type { Template, TemplateNode } from './node';
 
-export { resolveConstants } from './constant';
 export {
   count,
   date,
@@ -25,7 +12,7 @@ export {
   time,
 } from './factory';
 export { interpret } from './interpret';
-export { type ParseTemplateResult, parseTemplate } from './parse';
+export { parseTemplate } from './parse';
 export {
   type Placeholder,
   type PlaceholderKind,

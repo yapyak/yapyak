@@ -3,7 +3,6 @@ export type {
   LocalStoragePersistenceOptions,
   NonePersistenceOptions,
   NormalizedPersistenceConfig,
-  Persistence,
   PersistenceConfig,
   UrlPersistenceOptions,
 } from './type';

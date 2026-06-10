@@ -80,7 +80,7 @@ export interface ReferenceVariable extends ReferenceSymbolBase {
   type: TypeToken[];
 }
 
-export interface ReferenceClass extends ReferenceSymbolBase {
+interface ReferenceClass extends ReferenceSymbolBase {
   kind: 'class';
   members: ReferenceMember[];
   signature: string;
@@ -111,12 +111,12 @@ export type ReferenceCallSignature = {
 
 export type TypeToken = TypeRefToken | TypeTextToken;
 
-export type TypeTextToken = {
+type TypeTextToken = {
   kind: 'text';
   text: string;
 };
 
-export type TypeRefToken = {
+type TypeRefToken = {
   kind: 'ref';
   module: string;
   name: string;

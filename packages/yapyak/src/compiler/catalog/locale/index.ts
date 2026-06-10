@@ -22,7 +22,6 @@ export {
   type SyncLocaleFilesResult,
   type WriteLocaleFileInput,
   YapyakInvariantError,
-  getLocaleFilePath,
   readLocaleFile,
   syncLocaleFiles,
   writeLocaleFile,
@@ -39,7 +38,6 @@ export {
 } from './migrate';
 export {
   type OrphanCache,
-  type OrphanEntry,
   getDefaultYapyakDir,
   readOrphans,
 } from './orphan';

@@ -88,7 +88,7 @@ export class CorruptLocaleFileError extends Error {
   }
 }
 
-export function getLocaleFilePath(
+function getLocaleFilePath(
   projectRoot: string,
   localesDir: string,
   locale: string,

@@ -32,7 +32,6 @@ export type { GetHeadingsOptions, HeadingEntry } from './heading';
 export type { InternalLinkEntry } from './internal-link';
 export type { AdjacentPages, PageEntry } from './page';
 
-export { walkBlocks } from './block';
 export { getCodeBlocks } from './code-block';
 export { getCollection } from './collection';
 export { getEntry } from './entry';
@@ -43,4 +42,4 @@ export { getOptions, getOptionsGroup } from './options';
 export { findAdjacentPages, getFirstPage, getPage } from './page';
 export { getSidebar } from './sidebar';
 export { resolveSymbol } from './symbol';
-export { blockToText, getText } from './text';
+export { getText } from './text';
