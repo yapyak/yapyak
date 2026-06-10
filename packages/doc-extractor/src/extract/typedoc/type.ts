@@ -42,11 +42,11 @@ export type ReferenceThrows = {
   errorClass: string;
 };
 
-export interface ReferenceFunction extends ReferenceSymbolBase {
+export type ReferenceFunction = ReferenceSymbolBase & {
   kind: 'function';
   members: ReferenceMember[];
   overloads: ReferenceOverload[];
-}
+};
 
 export type ReferenceOverload = {
   parameters: ReferenceParameter[];
@@ -62,29 +62,29 @@ export type ReferenceTypeParameter = {
   name: string;
 };
 
-export interface ReferenceInterface extends ReferenceSymbolBase {
+export type ReferenceInterface = ReferenceSymbolBase & {
   callSignatures: ReferenceCallSignature[];
   kind: 'interface';
   members: ReferenceMember[];
   signature: string;
-}
+};
 
-export interface ReferenceTypeAlias extends ReferenceSymbolBase {
+export type ReferenceTypeAlias = ReferenceSymbolBase & {
   kind: 'type';
   resolvedType: TypeToken[];
   signature: string;
-}
+};
 
-export interface ReferenceVariable extends ReferenceSymbolBase {
+export type ReferenceVariable = ReferenceSymbolBase & {
   kind: 'variable';
   type: TypeToken[];
-}
+};
 
-interface ReferenceClass extends ReferenceSymbolBase {
+type ReferenceClass = ReferenceSymbolBase & {
   kind: 'class';
   members: ReferenceMember[];
   signature: string;
-}
+};
 
 export type ReferenceParameter = {
   defaultValue: string | null;

@@ -41,12 +41,12 @@ export type ExtractFileOptions = {
   processors?: Processor[];
 };
 
-export interface ParsedCallSite extends CallSite {
+export type ParsedCallSite = CallSite & {
   context?: string;
   id: string;
   placeholders: Placeholder[];
   source: string;
-}
+};
 
 export type ExtractFileResult = {
   callSites: ParsedCallSite[];

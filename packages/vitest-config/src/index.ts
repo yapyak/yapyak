@@ -5,11 +5,11 @@ import type { RuntimeMock } from 'yapyak/internal';
 import { defineConfig as defineViteConfig } from 'vitest/config';
 import { buildRuntimeMock } from 'yapyak/internal';
 
-export interface Options extends Partial<RuntimeMock> {
+export type Options = Partial<RuntimeMock> & {
   environment?: 'node' | 'happy-dom' | 'jsdom';
   plugins?: PluginOption[];
   setupFiles?: string[];
-}
+};
 
 export function defineConfig(options: Options = {}): ViteUserConfig {
   const { environment, plugins = [], setupFiles, ...runtime } = options;
