@@ -43,6 +43,7 @@ function yapyakRuntimePlugin(runtime: Partial<RuntimeMock>): Plugin {
       if (source === RUNTIME_ID) {
         return RESOLVED_ID;
       }
+      return undefined;
     },
   };
 }
