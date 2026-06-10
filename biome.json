@@ -177,7 +177,6 @@
       },
       "suspicious": {
         "noEvolvingTypes": "error",
-        "noUnsafeDeclarationMerging": "error",
         "noVar": "error"
       }
     }
