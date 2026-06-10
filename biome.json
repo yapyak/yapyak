@@ -1,11 +1,9 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
-
   "assist": {
     "actions": {
       "source": {
         "noDuplicateClasses": "on",
-
         "organizeImports": {
           "level": "on",
           "options": {
@@ -26,10 +24,8 @@
             "identifierOrder": "lexicographic"
           }
         },
-
         "useSortedAttributes": "on",
         "useSortedInterfaceMembers": "on",
-
         "useSortedKeys": {
           "level": "on",
           "options": {
@@ -37,18 +33,15 @@
             "sortOrder": "lexicographic"
           }
         },
-
         "useSortedProperties": "on"
       }
     }
   },
-
   "css": {
     "parser": {
       "cssModules": true
     }
   },
-
   "files": {
     "ignoreUnknown": true,
     "includes": [
@@ -65,13 +58,11 @@
       "!**/.yapyak"
     ]
   },
-
   "formatter": {
     "attributePosition": "multiline",
     "expand": "always",
     "indentStyle": "space"
   },
-
   "javascript": {
     "experimentalEmbeddedSnippetsEnabled": true,
     "formatter": {
@@ -82,37 +73,24 @@
       "jsxEverywhere": false
     }
   },
-
   "json": {
     "parser": {
       "allowComments": true
     }
   },
-
   "linter": {
     "rules": {
       "complexity": {
-        "noArguments": "error",
         "noBannedTypes": "off",
-        "noCommaOperator": "error",
         "noImplicitCoercions": "error",
-        "useLiteralKeys": "error",
-        "useOptionalChain": "error",
-        "useRegexLiterals": "error",
         "useSimpleNumberKeys": "error"
       },
-
       "correctness": {
         "noUndeclaredDependencies": "error",
         "noUndeclaredVariables": "error",
-        "noUnusedFunctionParameters": "error",
-        "noUnusedImports": "error",
-        "noUnusedVariables": "error",
         "useExhaustiveDependencies": "error",
-        "useJsonImportAttributes": "error",
-        "useParseIntRadix": "error"
+        "useJsonImportAttributes": "error"
       },
-
       "nursery": {
         "noFloatingPromises": "error",
         "noMisusedPromises": "error",
@@ -123,12 +101,10 @@
         "useTestHooksInOrder": "error",
         "useTestHooksOnTop": "error"
       },
-
       "performance": {
         "noNamespaceImport": "error",
         "noReExportAll": "error"
       },
-
       "style": {
         "noCommonJs": "error",
         "noDescendingSpecificity": "off",
@@ -136,14 +112,11 @@
         "noImplicitBoolean": "error",
         "noNamespace": "error",
         "noNegationElse": "error",
-        "noNonNullAssertion": "error",
         "noParameterAssign": "error",
         "noParameterProperties": "error",
         "noUnusedTemplateLiteral": "error",
         "noUselessElse": "error",
         "noYodaExpression": "error",
-
-        "useArrayLiterals": "error",
         "useAsConstAssertion": "error",
         "useBlockStatements": "error",
         "useCollapsedElseIf": "error",
@@ -159,13 +132,10 @@
             "style": "type"
           }
         },
-        "useConst": "error",
         "useDefaultParameterLast": "error",
         "useDefaultSwitchClause": "error",
         "useEnumInitializers": "error",
         "useExplicitLengthCheck": "error",
-        "useExponentiationOperator": "error",
-        "useExportType": "error",
         "useFilenamingConvention": {
           "level": "error",
           "options": {
@@ -201,32 +171,23 @@
             "strictCase": false
           }
         },
-        "useNodejsImportProtocol": "error",
         "useNumberNamespace": "error",
         "useNumericSeparators": "error",
         "useObjectSpread": "error",
         "useReadonlyClassProperties": "error",
         "useSelfClosingElements": "error",
         "useShorthandAssign": "error",
-        "useShorthandFunctionType": "error",
         "useSingleVarDeclarator": "error",
         "useTemplate": "error",
         "useThrowNewError": "error"
       },
-
       "suspicious": {
-        "noConstEnum": "error",
-        "noDoubleEquals": "error",
         "noEvolvingTypes": "error",
-        "noExplicitAny": "error",
-        "noImplicitAnyLet": "error",
         "noUnsafeDeclarationMerging": "error",
-        "noVar": "error",
-        "useDefaultSwitchClauseLast": "error"
+        "noVar": "error"
       }
     }
   },
-
   "overrides": [
     {
       "assist": {
@@ -278,7 +239,6 @@
       }
     }
   ],
-
   "vcs": {
     "clientKind": "git",
     "enabled": true,
