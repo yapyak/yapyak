@@ -12,7 +12,6 @@
  * @packageDocumentation
  */
 
-export { type SerializedYapyakError, YapyakError } from './error';
 export { type Format, format } from './format';
 export {
   defaultLocale,

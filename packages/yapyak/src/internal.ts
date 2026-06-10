@@ -1,4 +1,3 @@
-export { type SerializedYapyakError, YapyakError } from './error';
 export { registerHotDispose } from './hot-dispose';
 export {
   autoSubscribeLocale,

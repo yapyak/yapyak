@@ -54,7 +54,7 @@ export interface YapyakConfig {
    *
    * @defaultValue `['**\/*.{test,spec}.*', '**\/__tests__/**', '**\/*.{stories,gen}.{ts,tsx,js,jsx,mjs,cjs}', '**\/*.d.ts']`
    *
-   * @example Directory shortcut, glob, and `RegExp` entries
+   * @example Directory shortcut, glob, and RegExp entries
    * ```ts
    * defineConfig({ exclude: ['legacy'] });                    // expands to 'legacy/**\/*.{cjs,cts,...,tsx}'
    * defineConfig({ exclude: ['legacy', 'sandbox'] });         // multiple directories
@@ -80,7 +80,7 @@ export interface YapyakConfig {
    *
    * @defaultValue `['src']`
    *
-   * @example Directory shortcut, glob, and `RegExp` entries
+   * @example Directory shortcut, glob, and RegExp entries
    * ```ts
    * defineConfig({ include: ['src'] });                       // expands to 'src/**\/*.{cjs,cts,...,tsx}'
    * defineConfig({ include: ['src', 'app'] });                // multiple roots
