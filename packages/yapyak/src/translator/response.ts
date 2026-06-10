@@ -2,27 +2,6 @@ import type { LocaleTranslations } from './type';
 
 const PREVIEW_LENGTH = 200;
 
-function preview(text: string): string {
-  const trimmed = text.trim();
-  if (trimmed.length <= PREVIEW_LENGTH) {
-    return trimmed;
-  }
-  return `${trimmed.slice(0, PREVIEW_LENGTH)}…`;
-}
-
-function describeShape(value: unknown): string {
-  if (value === null) {
-    return 'null';
-  }
-  if (Array.isArray(value)) {
-    return 'an array';
-  }
-  if (typeof value === 'object') {
-    return 'an object';
-  }
-  return `a ${typeof value}`;
-}
-
 export function parseResponse(
   raw: string,
   vendor: string,
@@ -42,4 +21,25 @@ export function parseResponse(
     );
   }
   return parsed as LocaleTranslations[];
+}
+
+function preview(text: string): string {
+  const trimmed = text.trim();
+  if (trimmed.length <= PREVIEW_LENGTH) {
+    return trimmed;
+  }
+  return `${trimmed.slice(0, PREVIEW_LENGTH)}…`;
+}
+
+function describeShape(value: unknown): string {
+  if (value === null) {
+    return 'null';
+  }
+  if (Array.isArray(value)) {
+    return 'an array';
+  }
+  if (typeof value === 'object') {
+    return 'an object';
+  }
+  return `a ${typeof value}`;
 }

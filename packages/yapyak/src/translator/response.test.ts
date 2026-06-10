@@ -4,8 +4,7 @@ import { parseResponse } from './response';
 
 describe('parseResponse', () => {
   it('returns the parsed array for a well-formed response', () => {
-    const result = parseResponse('[{"sv":"Hej"}]', 'openai');
-    expect(result).toEqual([
+    expect(parseResponse('[{"sv":"Hej"}]', 'openai')).toEqual([
       {
         sv: 'Hej',
       },
@@ -17,45 +16,30 @@ describe('parseResponse', () => {
   });
 
   describe('invalid JSON', () => {
-    it('throws a vendor-tagged error', () => {
+    it('throws an Error tagged with the vendor name', () => {
       expect(() => parseResponse('not json', 'openai')).toThrow(
         /yapyak openai: model response is not valid JSON/,
       );
     });
 
-    it('includes the underlying syntax error reason', () => {
-      let captured: unknown;
-      try {
-        parseResponse('{"sv":', 'anthropic');
-      } catch (error) {
-        captured = error;
-      }
-      expect(captured).toBeInstanceOf(Error);
-      expect((captured as Error).message).toMatch(/anthropic/);
-      expect((captured as Error).message).toMatch(/not valid JSON/);
+    it('throws an Error that includes the underlying SyntaxError reason', () => {
+      expect(() => parseResponse('{"sv":', 'anthropic')).toThrow(
+        /yapyak anthropic: model response is not valid JSON \(.+\)/,
+      );
     });
 
-    it('includes a truncated preview of the raw response', () => {
-      let captured: unknown;
-      try {
-        parseResponse('garbage payload', 'gemini');
-      } catch (error) {
-        captured = error;
-      }
-      expect((captured as Error).message).toMatch(/"garbage payload"/);
+    it('throws an Error that includes a JSON-encoded preview of the response', () => {
+      expect(() => parseResponse('garbage payload', 'gemini')).toThrow(
+        /Preview: "garbage payload"/,
+      );
     });
 
-    it('truncates previews longer than 200 characters with `…`', () => {
+    it('throws an Error whose preview is truncated past 200 characters with `…`', () => {
       const long = `not_json_${'x'.repeat(300)}`;
-      let captured: unknown;
-      try {
-        parseResponse(long, 'ollama');
-      } catch (error) {
-        captured = error;
-      }
-      const message = (captured as Error).message;
-      expect(message).toMatch(/…/);
-      expect(message).not.toContain('x'.repeat(250));
+      expect(() => parseResponse(long, 'ollama')).toThrow(/…/);
+      expect(() => parseResponse(long, 'ollama')).not.toThrow(
+        new RegExp('x'.repeat(250)),
+      );
     });
   });
 
@@ -84,13 +68,13 @@ describe('parseResponse', () => {
       );
     });
 
-    it('throws when the response is `true`', () => {
+    it('throws when the response is a boolean', () => {
       expect(() => parseResponse('true', 'openai')).toThrow(
         /yapyak openai: model returned a boolean, expected an array/,
       );
     });
 
-    it('includes the response preview in the error', () => {
+    it('throws an Error that includes a JSON-encoded preview of the response', () => {
       expect(() => parseResponse('{"sv":"Hej"}', 'openai')).toThrow(
         /Preview: "{\\"sv\\":\\"Hej\\"}"/,
       );
