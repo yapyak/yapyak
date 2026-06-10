@@ -406,7 +406,7 @@ describe('yapyak', () => {
         warnings.push(message);
       };
       const plugin = yapyak();
-      const hook = plugin.configResolved;
+      const hook = findHook(plugin, 'configResolved');
       if (typeof hook !== 'function') throw new Error('missing');
       await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
         command: 'serve',
@@ -551,7 +551,7 @@ describe('yapyak', () => {
         warnings.push(message);
       };
       const plugin = yapyak();
-      const hook = plugin.configResolved;
+      const hook = findHook(plugin, 'configResolved');
       if (typeof hook !== 'function') throw new Error('missing');
       await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
         command: 'serve',
@@ -589,7 +589,7 @@ describe('yapyak', () => {
         warnings.push(message);
       };
       const plugin = yapyak();
-      const hook = plugin.configResolved;
+      const hook = findHook(plugin, 'configResolved');
       if (typeof hook !== 'function') throw new Error('missing');
       await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
         command: 'serve',
@@ -635,7 +635,7 @@ describe('yapyak', () => {
         warnings.push(message);
       };
       const plugin = yapyak();
-      const hook = plugin.configResolved;
+      const hook = findHook(plugin, 'configResolved');
       if (typeof hook !== 'function') throw new Error('missing');
       await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
         command: 'serve',
@@ -712,11 +712,11 @@ describe('yapyak', () => {
       );
     });
 
-    it('treats empty string as no fixedLocale', async () => {
+    it('throws when fixedLocale is an empty string', async () => {
       const plugin = yapyak({ fixedLocale: '' });
-      await expect(
-        invokeConfigResolved(plugin, root, 'build'),
-      ).resolves.toBeUndefined();
+      await expect(invokeConfigResolved(plugin, root, 'build')).rejects.toThrow(
+        /fixedLocale '' is not configured/,
+      );
     });
 
     it('treats undefined as no fixedLocale (default behavior)', async () => {
@@ -894,7 +894,7 @@ describe('yapyak', () => {
         warnings.push(message);
       };
       const plugin = yapyak();
-      const hook = plugin.configResolved;
+      const hook = findHook(plugin, 'configResolved');
       if (typeof hook !== 'function') throw new Error('missing');
       await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
         command: 'serve',
@@ -914,7 +914,7 @@ describe('yapyak', () => {
         warnings.push(message);
       };
       const plugin = yapyak();
-      const hook = plugin.configResolved;
+      const hook = findHook(plugin, 'configResolved');
       if (typeof hook !== 'function') throw new Error('missing');
       await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
         command: 'serve',
@@ -928,7 +928,7 @@ describe('yapyak', () => {
     it('preserves only non-yapyak entries in an `ssr.external` array', async () => {
       const external = ['react', 'yapyak', '@yapyak/react', 'lodash'];
       const plugin = yapyak();
-      const hook = plugin.configResolved;
+      const hook = findHook(plugin, 'configResolved');
       if (typeof hook !== 'function') throw new Error('missing');
       await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
         command: 'serve',
@@ -942,7 +942,7 @@ describe('yapyak', () => {
     it('throws when `fixedLocale` is not in the discovered locales', async () => {
       writeFileSync(join(root, 'locales', 'en.json'), '{}');
       const plugin = yapyak({ fixedLocale: 'de' });
-      const hook = plugin.configResolved;
+      const hook = findHook(plugin, 'configResolved');
       if (typeof hook !== 'function') throw new Error('missing');
       await expect(
         (hook as (config: ResolvedConfig) => unknown).call(plugin, {
@@ -962,7 +962,7 @@ describe('yapyak', () => {
         warnings.push(message);
       };
       const plugin = yapyak();
-      const hook = plugin.configResolved;
+      const hook = findHook(plugin, 'configResolved');
       if (typeof hook !== 'function') throw new Error('missing');
       await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
         command: 'serve',
@@ -1041,15 +1041,24 @@ describe('yapyak', () => {
   });
 });
 
+type YapyakPlugin = ReturnType<typeof yapyak>;
+
+function findHook(plugin: YapyakPlugin, hookName: string): unknown {
+  for (const sub of plugin) {
+    const value = (sub as unknown as Record<string, unknown>)[hookName];
+    if (value !== undefined) {
+      return value;
+    }
+  }
+  throw new Error(`${hookName} hook missing`);
+}
+
 async function invokeConfigResolved(
-  plugin: ReturnType<typeof yapyak>,
+  plugin: YapyakPlugin,
   root: string,
   command: 'build' | 'serve',
 ): Promise<void> {
-  const hook = plugin.configResolved;
-  if (typeof hook !== 'function') {
-    throw new Error('configResolved hook missing');
-  }
+  const hook = findHook(plugin, 'configResolved');
   await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
     command,
     logger: createSilentLogger(),
@@ -1079,47 +1088,35 @@ type TransformHook = (
   | Promise<{ code: string; map?: SourceMap } | null>;
 
 async function invokeTransform(
-  plugin: ReturnType<typeof yapyak>,
+  plugin: YapyakPlugin,
   filePath: string,
 ): Promise<string> {
-  const hook = plugin.transform;
-  if (typeof hook !== 'function') {
-    throw new Error('transform hook missing');
-  }
+  const hook = findHook(plugin, 'transform');
   const code = readFileSync(filePath, 'utf8');
   const result = await (hook as TransformHook).call(plugin, code, filePath);
   return result?.code ?? code;
 }
 
 async function invokeTransformMap(
-  plugin: ReturnType<typeof yapyak>,
+  plugin: YapyakPlugin,
   filePath: string,
 ): Promise<SourceMap | undefined> {
-  const hook = plugin.transform;
-  if (typeof hook !== 'function') {
-    throw new Error('transform hook missing');
-  }
+  const hook = findHook(plugin, 'transform');
   const code = readFileSync(filePath, 'utf8');
   const result = await (hook as TransformHook).call(plugin, code, filePath);
   return result?.map;
 }
 
-function invokeBuildStart(plugin: ReturnType<typeof yapyak>): void {
-  const hook = plugin.buildStart;
-  if (typeof hook !== 'function') {
-    throw new Error('buildStart hook missing');
-  }
+function invokeBuildStart(plugin: YapyakPlugin): void {
+  const hook = findHook(plugin, 'buildStart');
   (hook as () => void).call(plugin);
 }
 
-function invokeConfig(plugin: ReturnType<typeof yapyak>): {
+function invokeConfig(plugin: YapyakPlugin): {
   optimizeDeps?: { exclude?: string[] };
   ssr?: { noExternal?: unknown };
 } {
-  const hook = plugin.config;
-  if (typeof hook !== 'function') {
-    throw new Error('config hook missing');
-  }
+  const hook = findHook(plugin, 'config');
   return (
     hook as () => {
       optimizeDeps?: { exclude?: string[] };
@@ -1128,57 +1125,36 @@ function invokeConfig(plugin: ReturnType<typeof yapyak>): {
   ).call(plugin);
 }
 
-function invokeResolveId(
-  plugin: ReturnType<typeof yapyak>,
-  id: string,
-): string | null {
-  const hook = plugin.resolveId;
-  if (typeof hook !== 'function') {
-    throw new Error('resolveId hook missing');
-  }
+function invokeResolveId(plugin: YapyakPlugin, id: string): string | null {
+  const hook = findHook(plugin, 'resolveId');
   return (hook as (id: string) => string | null).call(plugin, id);
 }
 
-function invokeLoad(
-  plugin: ReturnType<typeof yapyak>,
-  id: string,
-): string | null {
-  const hook = plugin.load;
-  if (typeof hook !== 'function') {
-    throw new Error('load hook missing');
-  }
+function invokeLoad(plugin: YapyakPlugin, id: string): string | null {
+  const hook = findHook(plugin, 'load');
   return (hook as (id: string) => string | null).call(plugin, id);
 }
 
 async function invokeTransformRaw(
-  plugin: ReturnType<typeof yapyak>,
+  plugin: YapyakPlugin,
   filePath: string,
   code: string,
 ): Promise<{ code: string; map?: SourceMap } | null> {
-  const hook = plugin.transform;
-  if (typeof hook !== 'function') {
-    throw new Error('transform hook missing');
-  }
+  const hook = findHook(plugin, 'transform');
   return (await (hook as TransformHook).call(plugin, code, filePath)) ?? null;
 }
 
-function invokeBuildEnd(plugin: ReturnType<typeof yapyak>): void {
-  const hook = plugin.buildEnd;
-  if (typeof hook !== 'function') {
-    throw new Error('buildEnd hook missing');
-  }
+function invokeBuildEnd(plugin: YapyakPlugin): void {
+  const hook = findHook(plugin, 'buildEnd');
   (hook as () => void).call(plugin);
 }
 
 async function invokeHandleHotUpdate(
-  plugin: ReturnType<typeof yapyak>,
+  plugin: YapyakPlugin,
   file: string,
   code: string,
 ): Promise<void> {
-  const hook = plugin.handleHotUpdate;
-  if (typeof hook !== 'function') {
-    throw new Error('handleHotUpdate hook missing');
-  }
+  const hook = findHook(plugin, 'handleHotUpdate');
   await (
     hook as (ctx: {
       file: string;
@@ -1236,13 +1212,7 @@ function createMockServer(watcher: MockWatcher): MockServer {
   };
 }
 
-function invokeConfigureServer(
-  plugin: ReturnType<typeof yapyak>,
-  server: MockServer,
-): void {
-  const hook = plugin.configureServer;
-  if (typeof hook !== 'function') {
-    throw new Error('configureServer hook missing');
-  }
+function invokeConfigureServer(plugin: YapyakPlugin, server: MockServer): void {
+  const hook = findHook(plugin, 'configureServer');
   (hook as (server: unknown) => void).call(plugin, server);
 }

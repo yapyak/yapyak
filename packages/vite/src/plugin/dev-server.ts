@@ -1,0 +1,352 @@
+import type { HmrContext, Plugin, ViteDevServer } from 'vite';
+import type { ExtractedMessage, LocaleWarning } from 'yapyak/compiler';
+import type { EngineState } from './state';
+
+import {
+  detectRenames,
+  extractFile,
+  migrateLocales,
+  syncLocaleFiles,
+  validateLocaleCode,
+  writeRegister,
+} from 'yapyak/compiler';
+
+import { RUNTIME_RESOLVED } from '../virtual-runtime';
+import { isCandidateId, toFileId } from './candidate-id';
+import { logErrors } from './error';
+import { renderLocaleWarning } from './locale-warning';
+import { fillStubs, syncAll } from './scan';
+import { runYapyakCommand } from './yapyak-command';
+import { readFileSync } from 'node:fs';
+import { basename, extname, join, relative, sep } from 'node:path';
+
+interface CallSitePosition {
+  column: number;
+  line: number;
+  source: string;
+}
+
+interface Debounced {
+  cancel(): void;
+  (): void;
+}
+
+export function createDevServerPlugin(state: EngineState): Plugin {
+  return {
+    buildEnd(): void {
+      for (const cancel of state.teardownCallbacks) {
+        cancel();
+      }
+      state.teardownCallbacks.length = 0;
+    },
+    configureServer(server: ViteDevServer): void {
+      if (state.configFile !== undefined) {
+        server.watcher.add(state.configFile);
+      }
+
+      const pendingActionByFileId = new Map<string, 'add' | 'unlink'>();
+      const flush = debounce(() => {
+        if (pendingActionByFileId.size === 0) {
+          return;
+        }
+        for (const [fileId, kind] of pendingActionByFileId) {
+          if (kind === 'unlink') {
+            state.messagesByFile.delete(fileId);
+            continue;
+          }
+          let code: string;
+          try {
+            code = readFileSync(join(state.projectRoot, fileId), 'utf8');
+          } catch {
+            state.messagesByFile.delete(fileId);
+            continue;
+          }
+          const result = extractFile(fileId, code, {
+            processors: state.getNormalized().processors,
+          });
+          logErrors(state, result);
+          if (result.messages.length > 0) {
+            state.messagesByFile.set(fileId, result.messages);
+          } else {
+            state.messagesByFile.delete(fileId);
+          }
+        }
+        pendingActionByFileId.clear();
+        syncAll(state);
+        fillStubs(state);
+      }, 50);
+      state.teardownCallbacks.push(flush.cancel);
+
+      const reloadCandidateModules = (): void => {
+        for (const mod of server.moduleGraph.idToModuleMap.values()) {
+          if (
+            mod.file !== null &&
+            isCandidateId(mod.file, state.filter, state.projectRoot)
+          ) {
+            void server.reloadModule(mod);
+          }
+        }
+      };
+
+      const reloadRuntimeModule = (): void => {
+        const runtimeMod = server.moduleGraph.getModuleById(RUNTIME_RESOLVED);
+        if (runtimeMod) {
+          void server.reloadModule(runtimeMod);
+        }
+      };
+
+      const invalidateLocaleData = debounce(() => {
+        state.getResolver().invalidateData();
+        reloadCandidateModules();
+      }, 50);
+      state.teardownCallbacks.push(invalidateLocaleData.cancel);
+
+      const syncLocaleStructure = debounce(() => {
+        state.getResolver().invalidateStructure();
+        const { defaultLocale, locales } = state
+          .getResolver()
+          .getProjectLocales();
+        const allMessages: ExtractedMessage[] = [];
+        for (const list of state.messagesByFile.values()) {
+          allMessages.push(...list);
+        }
+        const result = syncLocaleFiles(
+          { filter: state.filter, messages: allMessages },
+          {
+            defaultLocale,
+            locales,
+            localesDir: state.getNormalized().localesDir,
+          },
+          state.projectRoot,
+          { yapyakDir: state.yapyakDir },
+        );
+        for (const entry of result.orphaned) {
+          state.warn(
+            `[yapyak] preserved '${entry.source}' (${entry.locale}) — call site removed from ${entry.fileId}, translation saved in case it returns.`,
+          );
+        }
+        for (const entry of result.restored) {
+          state.info(
+            `[yapyak] restored '${entry.source}' (${entry.locale}) in ${entry.fileId} — translation kept from when the call site was removed earlier.`,
+          );
+        }
+        writeRegister(
+          state.getResolver().getEmittedLocales().locales,
+          state.yapyakDir,
+        );
+        reloadRuntimeModule();
+        reloadCandidateModules();
+      }, 50);
+      state.teardownCallbacks.push(syncLocaleStructure.cancel);
+
+      server.watcher.on('change', (path: string) => {
+        if (state.configFile !== undefined && path === state.configFile) {
+          void server.restart();
+          return;
+        }
+        if (isLocaleFile(state, path)) {
+          invalidateLocaleData();
+        }
+      });
+
+      server.watcher.on('add', (path: string) => {
+        if (isCandidateId(path, state.filter, state.projectRoot)) {
+          pendingActionByFileId.set(toFileId(state.projectRoot, path), 'add');
+          flush();
+          return;
+        }
+        if (isLocaleFile(state, path)) {
+          const locale = localeFromPath(path);
+          const validation = validateLocaleCode(locale);
+          if (!validation.valid && validation.issue) {
+            const warning: LocaleWarning = {
+              code: locale,
+              issue: validation.issue,
+            };
+            if (validation.suggestion !== undefined) {
+              warning.suggestion = validation.suggestion;
+            }
+            state.warn(
+              renderLocaleWarning(warning, state.getNormalized().localesDir),
+            );
+            return;
+          }
+          const hint = `Run \`${runYapyakCommand(`translate ${locale}`)}\` to fill the stubs.`;
+          syncLocaleStructure();
+          state.info(`[yapyak] New locale '${locale}' detected. ${hint}`);
+          server.ws.send({
+            data: { hint, locale },
+            event: 'yapyak:locale-added',
+            type: 'custom',
+          });
+        }
+      });
+
+      server.watcher.on('unlink', (path: string) => {
+        if (isCandidateId(path, state.filter, state.projectRoot)) {
+          pendingActionByFileId.set(
+            toFileId(state.projectRoot, path),
+            'unlink',
+          );
+          flush();
+          return;
+        }
+        if (isLocaleFile(state, path)) {
+          const locale = localeFromPath(path);
+          syncLocaleStructure();
+          state.info(`[yapyak] Locale '${locale}' removed.`);
+          server.ws.send({
+            data: { locale },
+            event: 'yapyak:locale-removed',
+            type: 'custom',
+          });
+        }
+      });
+    },
+    async handleHotUpdate(context: HmrContext): Promise<void> {
+      if (!isCandidateId(context.file, state.filter, state.projectRoot)) {
+        return;
+      }
+      const fileId = toFileId(state.projectRoot, context.file);
+      const code = await context.read();
+      const { defaultLocale, locales } = state
+        .getResolver()
+        .getEmittedLocales();
+      const result = extractFile(fileId, code, {
+        processors: state.getNormalized().processors,
+      });
+      logErrors(state, result);
+      const before = state.messagesByFile.get(fileId) ?? [];
+      const after = result.messages;
+      if (areMessagesEqual(before, after)) {
+        return;
+      }
+      const renames = detectRenames(
+        before.flatMap(toCallSitePositions),
+        after.flatMap(toCallSitePositions),
+      );
+      if (renames.length > 0) {
+        migrateLocales(
+          {
+            extractedSources: toExtractedSourcesForFile(fileId, after),
+            fileId,
+            renames,
+          },
+          {
+            defaultLocale,
+            locales,
+            localesDir: state.getNormalized().localesDir,
+          },
+          state.projectRoot,
+          {
+            preserveTranslations:
+              state.getNormalized().preserveTranslationsOnRename,
+          },
+        );
+        state.getResolver().invalidateData();
+      }
+      if (after.length === 0) {
+        state.messagesByFile.delete(fileId);
+      } else {
+        state.messagesByFile.set(fileId, after);
+      }
+      syncAll(state);
+      fillStubs(state);
+    },
+    name: 'yapyak:dev-server',
+  };
+}
+
+function isLocaleFile(state: EngineState, path: string): boolean {
+  const directory = join(state.projectRoot, state.getNormalized().localesDir);
+  const relativePath = relative(directory, path);
+  if (
+    relativePath === '' ||
+    relativePath.startsWith('..') ||
+    relativePath.includes(sep)
+  ) {
+    return false;
+  }
+  return extname(relativePath) === '.json';
+}
+
+function localeFromPath(path: string): string {
+  const base = basename(path);
+  return base.slice(0, -extname(base).length);
+}
+
+function toCallSitePositions(message: ExtractedMessage): CallSitePosition[] {
+  return message.locations.map((location) => ({
+    column: location.range.start.column,
+    line: location.range.start.line,
+    source: message.source,
+  }));
+}
+
+function toExtractedSourcesForFile(
+  fileId: string,
+  messages: ExtractedMessage[],
+): Record<string, Set<string>> {
+  const sources = new Set<string>();
+  for (const message of messages) {
+    sources.add(message.source);
+  }
+  return { [fileId]: sources };
+}
+
+function areMessagesEqual(
+  a: ExtractedMessage[],
+  b: ExtractedMessage[],
+): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+  for (let index = 0; index < a.length; index++) {
+    const left = a[index];
+    const right = b[index];
+    if (!left || !right) {
+      return false;
+    }
+    if (
+      left.id !== right.id ||
+      left.locations.length !== right.locations.length
+    ) {
+      return false;
+    }
+    for (
+      let locationIndex = 0;
+      locationIndex < left.locations.length;
+      locationIndex++
+    ) {
+      const leftLocation = left.locations[locationIndex];
+      const rightLocation = right.locations[locationIndex];
+      if (!leftLocation || !rightLocation) {
+        return false;
+      }
+      if (
+        leftLocation.range.start.line !== rightLocation.range.start.line ||
+        leftLocation.range.start.column !== rightLocation.range.start.column
+      ) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function debounce(fn: () => void, ms: number): Debounced {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const debounced = (() => {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(fn, ms);
+  }) as Debounced;
+  debounced.cancel = () => {
+    if (timer) {
+      clearTimeout(timer);
+      timer = undefined;
+    }
+  };
+  return debounced;
+}
