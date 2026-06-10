@@ -27,7 +27,7 @@ export function buildTypedocPackageRoot(
   const childrenById = new Map<string, ReferenceModule[]>();
   for (const id of byId.keys()) {
     const parentId = findParentId(id, byId);
-    if (parentId === null) {
+    if (parentId === undefined) {
       continue;
     }
     let list = childrenById.get(parentId);
@@ -49,10 +49,10 @@ export function buildTypedocPackageRoot(
   return {
     children,
     collapsible,
-    defaultOpen: collapsible ? expanded : undefined,
     href: `/${collectionName}/${packageSlug}`,
     label,
     type: 'group',
+    ...(collapsible && { defaultOpen: expanded }),
   };
 }
 
@@ -66,13 +66,15 @@ function moduleChildren(
   const nodes: SidebarNode[] = [];
   for (const api of module.exports) {
     nodes.push({
-      badge: api.deprecated !== null ? { variant: 'deprecated' } : undefined,
       href: buildSymbolHref(module.id, api.name, {
         collectionName,
         packageName,
         packageSlug,
       }),
       label: api.kind === 'function' ? `${api.name}()` : api.name,
+      ...(api.deprecated !== null && {
+        badge: { variant: 'deprecated' as const },
+      }),
       type: 'link',
     });
   }
@@ -120,12 +122,15 @@ function topLevelSubpathChildren(
   }));
 }
 
-function findParentId(id: string, byId: Map<string, ReferenceModule>) {
+function findParentId(
+  id: string,
+  byId: Map<string, ReferenceModule>,
+): string | undefined {
   let cursor = id;
   while (true) {
     const slashIndex = cursor.lastIndexOf('/');
     if (slashIndex === -1) {
-      return null;
+      return undefined;
     }
     cursor = cursor.slice(0, slashIndex);
     if (byId.has(cursor)) {

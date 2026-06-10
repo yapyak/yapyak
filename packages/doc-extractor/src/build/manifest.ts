@@ -15,7 +15,7 @@ import {
   buildTypedocPackageIndexPage,
   extractTypedoc,
 } from '../extract/typedoc';
-import { slugify } from '../slug';
+import { slugify } from '../slugify';
 import { encodeSymbolSegment } from '../symbol-path';
 import { buildMarkdocSidebar } from './markdoc-sidebar';
 import { buildTypedocPackageRoot } from './typedoc-package-root';

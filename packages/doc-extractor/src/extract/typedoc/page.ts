@@ -22,7 +22,8 @@ import type {
   TypeToken,
 } from './type';
 
-import { slugify } from '../../slug';
+import { nullify } from '../../nullify';
+import { slugify } from '../../slugify';
 import { buildSymbolHref } from '../../symbol-path';
 import { parseMarkdoc } from '../markdoc';
 import { relative, resolve } from 'node:path';
@@ -406,7 +407,7 @@ function buildEyebrowBlock(
   return {
     kind,
     module: moduleId,
-    sourceHref: sourceHref ?? null,
+    sourceHref: nullify(sourceHref),
     type: 'eyebrow',
   };
 }

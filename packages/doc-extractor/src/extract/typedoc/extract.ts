@@ -31,6 +31,7 @@ import type {
 
 import { Application, ReflectionKind, TSConfigReader } from 'typedoc';
 
+import { nullify } from '../../nullify';
 import { readFile } from 'node:fs/promises';
 import { join, relative, resolve } from 'node:path';
 
@@ -445,11 +446,11 @@ function toReferenceSymbolBase(
   reflection: DeclarationReflection,
   context: ExtractContext,
 ): ReferenceSymbolBase {
-  const comment = reflection.comment ?? null;
-  const signature = reflection.signatures?.[0]?.comment ?? null;
+  const comment = reflection.comment;
+  const signature = reflection.signatures?.[0]?.comment;
   const effective = comment ?? signature;
   return {
-    deprecated: effective ? (readDeprecated(effective, context) ?? null) : null,
+    deprecated: effective ? nullify(readDeprecated(effective, context)) : null,
     description: effective ? partsToMarkdown(effective.summary, context) : '',
     examples: effective ? extractExamples(effective, context) : [],
     location: readLocation(reflection, context.packageDir),
@@ -512,7 +513,7 @@ function toReferenceParameter(
   context: ExtractContext,
 ): ReferenceParameter {
   return {
-    defaultValue: reflection.defaultValue ?? null,
+    defaultValue: nullify(reflection.defaultValue),
     description: reflection.comment
       ? partsToMarkdown(reflection.comment.summary, context)
       : '',
@@ -530,7 +531,7 @@ function toReferenceMember(
 ): ReferenceMember {
   const comment = reflection.comment ?? reflection.signatures?.[0]?.comment;
   return {
-    defaultValue: readDefaultValue(reflection, context) ?? null,
+    defaultValue: nullify(readDefaultValue(reflection, context)),
     description: comment ? partsToMarkdown(comment.summary, context) : '',
     name: reflection.name,
     optional: Boolean(reflection.flags.isOptional),
@@ -855,7 +856,7 @@ function extractExamples(
     examples.push({
       code: fenced.code,
       language: fenced.language,
-      path: fenced.path ?? null,
+      path: nullify(fenced.path),
       title: tag.name ? tag.name : null,
     });
     void context;

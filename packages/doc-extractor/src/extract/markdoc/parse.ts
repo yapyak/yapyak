@@ -11,7 +11,8 @@ import type { MetaValue } from '../../build';
 
 import Markdoc from '@markdoc/markdoc';
 
-import { slugify } from '../../slug';
+import { nullify } from '../../nullify';
+import { slugify } from '../../slugify';
 
 interface ParsedContent {
   blocks: Block[];
@@ -86,7 +87,7 @@ function toBlocks(node: unknown): Block[] {
     case 'img':
       return [
         {
-          alt: getStringAttribute(node.attributes.alt) ?? null,
+          alt: nullify(getStringAttribute(node.attributes.alt)),
           src: getStringAttribute(node.attributes.src) ?? '',
           type: 'image',
         },
@@ -192,14 +193,14 @@ function buildTable(children: unknown[]): TableBlock {
     }
   }
 
-  return { body, head: head ?? null, type: 'table' };
+  return { body, head: nullify(head), type: 'table' };
 }
 
 function buildCodeBlock(attributes: Record<string, unknown>): CodeBlock {
   return {
-    label: getStringAttribute(attributes.label) ?? null,
-    language: getStringAttribute(attributes.language) ?? null,
-    path: getStringAttribute(attributes.path) ?? null,
+    label: nullify(getStringAttribute(attributes.label)),
+    language: nullify(getStringAttribute(attributes.language)),
+    path: nullify(getStringAttribute(attributes.path)),
     source: getStringAttribute(attributes.source) ?? '',
     type: 'code-block',
   };
@@ -220,7 +221,7 @@ function buildCallout(
   }
   return {
     children,
-    title: getStringAttribute(attributes.title) ?? null,
+    title: nullify(getStringAttribute(attributes.title)),
     type: 'callout',
     variant,
   };
