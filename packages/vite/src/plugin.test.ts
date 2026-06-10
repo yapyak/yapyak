@@ -355,6 +355,79 @@ describe('yapyak', () => {
       expect(send).not.toHaveBeenCalled();
     });
 
+    it('clears the file entry when the added file is removed before flush', async () => {
+      writeFileSync(localePath, '{}');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const server = createMockServer(createMockWatcher());
+      invokeConfigureServer(plugin, server);
+      const watcher = server.watcher;
+
+      const newFile = join(root, 'src', 'b.tsx');
+      writeFileSync(
+        newFile,
+        "import { t } from 'yapyak';\nexport const x = () => t('Hello');\n",
+      );
+      watcher.emit('add', newFile);
+      rmSync(newFile);
+      await vi.advanceTimersByTimeAsync(60);
+
+      const after = JSON.parse(readFileSync(localePath, 'utf8'));
+      expect(after['src/b.tsx']).toBeUndefined();
+    });
+
+    it('notifies the server when the config file changes', async () => {
+      writeFileSync(
+        join(root, 'yapyak.config.ts'),
+        'export default { defaultLocale: "en" };\n',
+      );
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      const restart = vi.fn(() => Promise.resolve());
+      const server = createMockServer(createMockWatcher());
+      server.restart = restart;
+      invokeConfigureServer(plugin, server);
+      const watcher = server.watcher;
+
+      watcher.emit('change', join(root, 'yapyak.config.ts'));
+
+      expect(restart).toHaveBeenCalledTimes(1);
+    });
+
+    it('warns when an added locale file uses an invalid code', async () => {
+      const warnings: string[] = [];
+      const logger = createSilentLogger();
+      logger.warn = (message: string) => {
+        warnings.push(message);
+      };
+      const plugin = yapyak();
+      const hook = plugin.configResolved;
+      if (typeof hook !== 'function') throw new Error('missing');
+      await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
+        command: 'serve',
+        logger,
+        root,
+      } as ResolvedConfig);
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const server = createMockServer(createMockWatcher());
+      invokeConfigureServer(plugin, server);
+      const watcher = server.watcher;
+
+      const invalidLocale = join(root, 'locales', '1234.json');
+      writeFileSync(invalidLocale, '{}');
+      watcher.emit('add', invalidLocale);
+      await vi.advanceTimersByTimeAsync(60);
+
+      expect(warnings.some((message) => message.includes('1234'))).toBe(true);
+    });
+
     it('clears pending timers on `buildEnd`', async () => {
       writeFileSync(localePath, '{}');
       const plugin = yapyak();
@@ -383,11 +456,17 @@ describe('yapyak', () => {
   });
 
   describe('auto-translate threshold', () => {
-    function writeConfig(opts: { threshold?: number }): void {
+    function writeConfig(opts: {
+      failing?: boolean;
+      threshold?: number;
+    }): void {
       const thresholdLine =
         opts.threshold === undefined
           ? ''
           : `  autoTranslateThreshold: ${opts.threshold},`;
+      const batchBody = opts.failing
+        ? '      throw new Error("translator-boom");'
+        : '      return reqs.map((r) => map[r.source] ?? r.source);';
       const config = [
         "const map = { Hello: 'Hej', World: 'Världen', Save: 'Spara' };",
         'const translator = Object.assign(',
@@ -395,7 +474,7 @@ describe('yapyak', () => {
         '  {',
         "    id: 'test',",
         '    async batch(reqs) {',
-        '      return reqs.map((r) => map[r.source] ?? r.source);',
+        batchBody,
         '    },',
         '  },',
         ');',
@@ -461,6 +540,118 @@ describe('yapyak', () => {
 
       const localeJson = JSON.parse(readFileSync(localePath, 'utf8'));
       expect(localeJson['src/a.tsx']).toEqual({ Hello: '', World: '' });
+    });
+
+    it('warns when the translator throws during auto-translate', async () => {
+      writeFileSync(localePath, '{}');
+      writeConfig({ failing: true });
+      const warnings: string[] = [];
+      const logger = createSilentLogger();
+      logger.warn = (message: string) => {
+        warnings.push(message);
+      };
+      const plugin = yapyak();
+      const hook = plugin.configResolved;
+      if (typeof hook !== 'function') throw new Error('missing');
+      await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
+        command: 'serve',
+        logger,
+        root,
+      } as ResolvedConfig);
+      invokeBuildStart(plugin);
+
+      const server = createMockServer(createMockWatcher());
+      invokeConfigureServer(plugin, server);
+
+      const newFile = join(root, 'src', 'a.tsx');
+      writeFileSync(
+        newFile,
+        "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
+      );
+      server.watcher.emit('add', newFile);
+
+      await vi.waitFor(
+        () => {
+          expect(
+            warnings.some((message) => message.includes('translation failed')),
+          ).toBe(true);
+        },
+        { interval: 20, timeout: 2000 },
+      );
+    });
+
+    it('warns about a batch failure when many sources in one file fail', async () => {
+      writeFileSync(localePath, '{}');
+      writeConfig({ failing: true });
+      const warnings: string[] = [];
+      const logger = createSilentLogger();
+      logger.warn = (message: string) => {
+        warnings.push(message);
+      };
+      const plugin = yapyak();
+      const hook = plugin.configResolved;
+      if (typeof hook !== 'function') throw new Error('missing');
+      await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
+        command: 'serve',
+        logger,
+        root,
+      } as ResolvedConfig);
+      invokeBuildStart(plugin);
+
+      const server = createMockServer(createMockWatcher());
+      invokeConfigureServer(plugin, server);
+
+      const newFile = join(root, 'src', 'a.tsx');
+      writeFileSync(
+        newFile,
+        "import { t } from 'yapyak';\nexport const a = t('Hello');\nexport const b = t('World');\nexport const c = t('Save');\n",
+      );
+      server.watcher.emit('add', newFile);
+
+      await vi.waitFor(
+        () => {
+          expect(
+            warnings.some((message) => message.includes('batch failed')),
+          ).toBe(true);
+        },
+        { interval: 20, timeout: 2000 },
+      );
+    });
+
+    it('warns about a batch failure across many files when sources span them', async () => {
+      writeFileSync(localePath, '{}');
+      writeConfig({ failing: true });
+      writeFileSync(
+        join(root, 'src', 'a.tsx'),
+        "import { t } from 'yapyak';\nexport const a = t('Hello');\n",
+      );
+      writeFileSync(
+        join(root, 'src', 'b.tsx'),
+        "import { t } from 'yapyak';\nexport const b = t('World');\n",
+      );
+      const warnings: string[] = [];
+      const logger = createSilentLogger();
+      logger.warn = (message: string) => {
+        warnings.push(message);
+      };
+      const plugin = yapyak();
+      const hook = plugin.configResolved;
+      if (typeof hook !== 'function') throw new Error('missing');
+      await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
+        command: 'serve',
+        logger,
+        root,
+      } as ResolvedConfig);
+      invokeBuildStart(plugin);
+
+      await vi.waitFor(
+        () => {
+          expect(
+            warnings.some((message) => message.includes('across 2 files')),
+          ).toBe(true);
+        },
+        { interval: 20, timeout: 2000 },
+      );
     });
 
     it('blocks auto-translate when the threshold is `0`', async () => {
@@ -760,6 +951,26 @@ describe('yapyak', () => {
           root,
         } as ResolvedConfig),
       ).rejects.toThrow(/fixedLocale 'de' is not configured/);
+    });
+
+    it('warns when discovered locales include an invalid code', async () => {
+      writeFileSync(join(root, 'locales', 'en.json'), '{}');
+      writeFileSync(join(root, 'locales', '1234.json'), '{}');
+      const warnings: string[] = [];
+      const logger = createSilentLogger();
+      logger.warn = (message: string) => {
+        warnings.push(message);
+      };
+      const plugin = yapyak();
+      const hook = plugin.configResolved;
+      if (typeof hook !== 'function') throw new Error('missing');
+      await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
+        command: 'serve',
+        logger,
+        root,
+      } as ResolvedConfig);
+
+      expect(warnings.some((message) => message.includes('1234'))).toBe(true);
     });
   });
 
