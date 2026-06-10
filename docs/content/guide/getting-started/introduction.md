@@ -115,8 +115,6 @@ When you save, yapyak adds the message to your locale files as an empty stub. Th
 
 If you rename or move the source file, yapyak finds the translations again under the new path. Deleting a component and bringing it back later restores the translations from before. Copying markup to a new file brings the translations along.
 
-Refactoring stops costing you translations.
-
 ## Translations write themselves
 
 The stub can be filled by you, by your coding agent, or by a *translator*.
