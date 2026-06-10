@@ -29,7 +29,6 @@
         "useSortedKeys": {
           "level": "on",
           "options": {
-            "groupByNesting": false,
             "sortOrder": "lexicographic"
           }
         },
@@ -141,9 +140,7 @@
           "options": {
             "filenameCases": [
               "kebab-case"
-            ],
-            "requireAscii": true,
-            "strictCase": true
+            ]
           }
         },
         "useForOf": "error",
@@ -155,7 +152,6 @@
             "style": "separatedType"
           }
         },
-        "useLiteralEnumMembers": "error",
         "useNamingConvention": {
           "level": "error",
           "options": {
@@ -167,7 +163,6 @@
                 }
               }
             ],
-            "requireAscii": true,
             "strictCase": false
           }
         },
@@ -178,7 +173,6 @@
         "useSelfClosingElements": "error",
         "useShorthandAssign": "error",
         "useSingleVarDeclarator": "error",
-        "useTemplate": "error",
         "useThrowNewError": "error"
       },
       "suspicious": {
@@ -198,30 +192,8 @@
         }
       },
       "includes": [
-        "**/package.json"
-      ]
-    },
-    {
-      "assist": {
-        "actions": {
-          "source": {
-            "useSortedKeys": "off"
-          }
-        }
-      },
-      "includes": [
-        "**/locales/*.json"
-      ]
-    },
-    {
-      "assist": {
-        "actions": {
-          "source": {
-            "useSortedKeys": "off"
-          }
-        }
-      },
-      "includes": [
+        "**/package.json",
+        "**/locales/*.json",
         "**/knip.json"
       ]
     },
