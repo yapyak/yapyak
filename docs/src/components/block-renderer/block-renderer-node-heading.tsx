@@ -42,5 +42,7 @@ function headingTag(level: HeadingBlock['level']) {
       return 'h5';
     case 6:
       return 'h6';
+    default:
+      return 'h6';
   }
 }

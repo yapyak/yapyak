@@ -148,7 +148,7 @@ export function useDemoState(active: boolean) {
       }
     };
 
-    run();
+    void run();
 
     return () => {
       isCancelled = true;

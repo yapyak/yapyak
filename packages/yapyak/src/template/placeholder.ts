@@ -67,6 +67,8 @@ function walkNode(
         walkTemplate(branch, placeholdersByName);
       }
       return;
+    default:
+      return;
   }
 }
 

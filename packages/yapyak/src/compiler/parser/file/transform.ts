@@ -574,6 +574,8 @@ function renderNode(node: TemplateNode, usedFactories: Set<string>): string {
     case 'time':
       usedFactories.add('time');
       return `_time(${JSON.stringify(node.name)},${JSON.stringify(node.style)})`;
+    default:
+      return '';
   }
 }
 

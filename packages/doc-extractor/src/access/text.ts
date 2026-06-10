@@ -60,5 +60,7 @@ export function blockToText(block: Block): string {
     case 'divider':
     case 'line-break':
       return '';
+    default:
+      return '';
   }
 }

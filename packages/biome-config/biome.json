@@ -134,7 +134,6 @@
 
       "style": {
         "noCommonJs": "error",
-        "noDefaultExport": "error",
         "noDescendingSpecificity": "off",
         "noEnum": "error",
         "noImplicitBoolean": "error",
@@ -180,7 +179,6 @@
         "useDefaultSwitchClause": "error",
         "useEnumInitializers": "error",
         "useExportType": "error",
-        "useExportsLast": "error",
         "useFragmentSyntax": "error",
         "useGroupedAccessorPairs": "error",
         "useImportType": {

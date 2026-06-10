@@ -1,5 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { getLocale } from '../index';
+import { resetLocale } from '../internal';
+import { withRequest } from './request';
+
 vi.mock('yapyak/runtime', () => ({
   DEFAULT_LOCALE: 'en',
   DETECT_ACCEPT_LANGUAGE: true,
@@ -14,10 +18,6 @@ vi.mock('yapyak/runtime', () => ({
   },
   SYNC_HTML_LANG: false,
 }));
-
-import { getLocale } from '../index';
-import { resetLocale } from '../internal';
-import { withRequest } from './request';
 
 function makeRequest(
   headers: { acceptLanguage?: string; cookie?: string } = {},

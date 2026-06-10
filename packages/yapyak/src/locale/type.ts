@@ -13,7 +13,6 @@
  * }
  * ```
  */
-// biome-ignore lint/suspicious/noEmptyInterface: yap yap yap
 export type Register = {};
 
 /**

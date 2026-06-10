@@ -1,5 +1,15 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import {
+  autoSubscribeLocale,
+  defaultLocale,
+  getLocale,
+  locales,
+  resetLocale,
+  setLocale,
+  subscribeLocale,
+} from './store';
+
 vi.mock('yapyak/runtime', () => ({
   DEFAULT_LOCALE: 'en',
   DETECT_ACCEPT_LANGUAGE: false,
@@ -13,16 +23,6 @@ vi.mock('yapyak/runtime', () => ({
   },
   SYNC_HTML_LANG: false,
 }));
-
-import {
-  autoSubscribeLocale,
-  defaultLocale,
-  getLocale,
-  locales,
-  resetLocale,
-  setLocale,
-  subscribeLocale,
-} from './store';
 
 function makeMeta(
   hot?:

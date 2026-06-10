@@ -45,10 +45,12 @@ describe('resolveFormatter', () => {
 
   it('clears the oldest formatter from the cache when capacity is reached', () => {
     class FakeFormatter {
-      constructor(
-        public locale: string,
-        public options?: object,
-      ) {}
+      locale: string;
+      options?: object;
+      constructor(locale: string, options?: object) {
+        this.locale = locale;
+        this.options = options;
+      }
     }
     const ctor = FakeFormatter as unknown as new (
       locale: string,

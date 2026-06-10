@@ -62,6 +62,8 @@ function resolveNode(
         ...node,
         branches: resolveBranches(node.branches, params),
       };
+    default:
+      return node;
   }
 }
 

@@ -126,5 +126,7 @@ function renderFlag(code: HeroDemoLocaleFlagCode) {
           />
         </>
       );
+    default:
+      return null;
   }
 }

@@ -80,5 +80,7 @@ export function BlockRendererNode(props: BlockRendererNodeProps) {
       return <BlockRendererNodeEyebrow block={block} />;
     case 'code-location':
       return <BlockRendererNodeCodeLocation block={block} />;
+    default:
+      return null;
   }
 }

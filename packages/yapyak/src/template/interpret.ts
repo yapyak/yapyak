@@ -56,6 +56,8 @@ function interpretNode(
       return interpretDate(node, params, locale);
     case 'time':
       return interpretTime(node, params, locale);
+    default:
+      return '';
   }
 }
 

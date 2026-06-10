@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { setLocale } from '../index';
+import { resetLocale } from '../internal';
+import { getPendingResponseHeaders } from './pending-response-header';
+import { withRequest } from './request';
+
 vi.mock('yapyak/runtime', () => ({
   DEFAULT_LOCALE: 'en',
   DETECT_ACCEPT_LANGUAGE: false,
@@ -14,11 +19,6 @@ vi.mock('yapyak/runtime', () => ({
   },
   SYNC_HTML_LANG: false,
 }));
-
-import { setLocale } from '../index';
-import { resetLocale } from '../internal';
-import { getPendingResponseHeaders } from './pending-response-header';
-import { withRequest } from './request';
 
 function makeRequest(): Request {
   return new Request('http://example.test');

@@ -192,6 +192,10 @@ function normalizePersistenceConfig(
         return {
           type: 'none',
         };
+      default:
+        return {
+          type: 'none',
+        };
     }
   }
   switch (config.type) {
@@ -215,6 +219,10 @@ function normalizePersistenceConfig(
             type: 'url',
           };
     case 'none':
+      return {
+        type: 'none',
+      };
+    default:
       return {
         type: 'none',
       };

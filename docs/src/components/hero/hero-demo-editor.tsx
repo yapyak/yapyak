@@ -248,5 +248,7 @@ import { ${T_NAME} } from 'yapyak'
   <h1>{{ ${T_NAME}('${value}') }}</h1>
 </template>
 `;
+    default:
+      return '';
   }
 }
