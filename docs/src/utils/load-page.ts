@@ -10,7 +10,7 @@ export function loadPage(collection: string, path: string): { page: Page } {
 
 export function redirectToFirstPage(collection: string): never {
   const first = doc.getFirstPage(collection);
-  if (first === null) {
+  if (first === undefined) {
     throw notFound();
   }
   throw redirect({ replace: true, to: first.href });

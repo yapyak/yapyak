@@ -45,7 +45,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
           return;
         }
       }
-      let lastAbove: string | null = null;
+      let lastAbove: string | undefined;
       for (const heading of headings) {
         const element = document.getElementById(heading.id);
         if (!element) continue;

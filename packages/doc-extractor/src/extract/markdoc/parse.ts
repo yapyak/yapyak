@@ -86,7 +86,7 @@ function toBlocks(node: unknown): Block[] {
     case 'img':
       return [
         {
-          alt: getStringAttribute(node.attributes.alt),
+          alt: getStringAttribute(node.attributes.alt) ?? null,
           src: getStringAttribute(node.attributes.src) ?? '',
           type: 'image',
         },
@@ -172,7 +172,7 @@ function toBlocks(node: unknown): Block[] {
 }
 
 function buildTable(children: unknown[]): TableBlock {
-  let head: TableRowBlock | null = null;
+  let head: TableRowBlock | undefined;
   const body: TableRowBlock[] = [];
 
   for (const child of children) {
@@ -183,7 +183,7 @@ function buildTable(children: unknown[]): TableBlock {
       const rows = child.children
         .flatMap(toBlocks)
         .filter((block): block is TableRowBlock => block.type === 'table-row');
-      head = rows[0] ?? null;
+      head = rows[0];
     } else if (child.name === 'tbody') {
       const rows = child.children
         .flatMap(toBlocks)
@@ -192,14 +192,14 @@ function buildTable(children: unknown[]): TableBlock {
     }
   }
 
-  return { body, head, type: 'table' };
+  return { body, head: head ?? null, type: 'table' };
 }
 
 function buildCodeBlock(attributes: Record<string, unknown>): CodeBlock {
   return {
-    label: getStringAttribute(attributes.label),
-    language: getStringAttribute(attributes.language),
-    path: getStringAttribute(attributes.path),
+    label: getStringAttribute(attributes.label) ?? null,
+    language: getStringAttribute(attributes.language) ?? null,
+    path: getStringAttribute(attributes.path) ?? null,
     source: getStringAttribute(attributes.source) ?? '',
     type: 'code-block',
   };
@@ -220,7 +220,7 @@ function buildCallout(
   }
   return {
     children,
-    title: getStringAttribute(attributes.title),
+    title: getStringAttribute(attributes.title) ?? null,
     type: 'callout',
     variant,
   };
@@ -236,8 +236,8 @@ function isCell(block: Block): block is TableCellBlock {
   return block.type === 'table-cell';
 }
 
-function getStringAttribute(value: unknown): string | null {
-  return typeof value === 'string' && value.length > 0 ? value : null;
+function getStringAttribute(value: unknown): string | undefined {
+  return typeof value === 'string' && value.length > 0 ? value : undefined;
 }
 
 const document: Schema = {
@@ -285,13 +285,8 @@ const fence: Schema = {
   transform(node) {
     const rawLanguage = node.attributes.language as string | undefined;
     const content = node.attributes.content as string;
-    const { label, language, path } = parseLanguageLabel(rawLanguage);
-    return new Markdoc.Tag('CodeBlock', {
-      label,
-      language,
-      path,
-      source: content,
-    });
+    const parsed = parseLanguageLabel(rawLanguage);
+    return new Markdoc.Tag('CodeBlock', { source: content, ...parsed });
   },
 };
 
@@ -362,27 +357,32 @@ const markdocConfig: Config = {
   },
 };
 
-function parseLanguageLabel(raw: string | undefined) {
+interface ParsedLanguageLabel {
+  label?: string;
+  language?: string;
+  path?: string;
+}
+
+function parseLanguageLabel(raw: string | undefined): ParsedLanguageLabel {
   if (!raw) {
-    return { label: undefined, language: undefined, path: undefined };
+    return {};
   }
   const match = raw.match(/^(\S*)\s*\[([^\]]+)\]$/);
-  if (match) {
-    const bracket = match[2] ?? '';
-    if (isPathLike(bracket)) {
-      return {
-        label: undefined,
-        language: match[1] || undefined,
-        path: bracket,
-      };
-    }
-    return {
-      label: bracket,
-      language: match[1] || undefined,
-      path: undefined,
-    };
+  if (!match) {
+    return { language: raw };
   }
-  return { label: undefined, language: raw, path: undefined };
+  const bracket = match[2] ?? '';
+  const language = match[1];
+  const result: ParsedLanguageLabel = {};
+  if (language) {
+    result.language = language;
+  }
+  if (isPathLike(bracket)) {
+    result.path = bracket;
+  } else {
+    result.label = bracket;
+  }
+  return result;
 }
 
 function isPathLike(value: string): boolean {

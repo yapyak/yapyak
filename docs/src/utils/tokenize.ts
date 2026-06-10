@@ -163,7 +163,7 @@ export function tokenize(code: string, language: Language): Token[] {
   let lastSignificant: Token | undefined;
   while (index < code.length) {
     const result = scanToken(code, index, language, lastSignificant);
-    if (result === null) {
+    if (result === undefined) {
       const fallback: Token = { type: 'plain', value: code[index] ?? '' };
       tokens.push(fallback);
       if (!/^\s+$/.test(fallback.value)) {
@@ -710,10 +710,10 @@ function scanToken(
   index: number,
   language: Language,
   previous: Token | undefined,
-): ScanResult | null {
+): ScanResult | undefined {
   const character = code[index];
   if (character === undefined) {
-    return null;
+    return undefined;
   }
 
   if (
@@ -865,7 +865,7 @@ function scanToken(
     return { end: index + 1, token: { type: 'punct', value: character } };
   }
 
-  return null;
+  return undefined;
 }
 
 function applyYapyakHighlight(tokens: Token[]) {
@@ -885,14 +885,14 @@ function applyYapyakHighlight(tokens: Token[]) {
       token.value === 't'
     ) {
       const next = findNextSignificant(tokens, index + 1);
-      if (next === null) {
+      if (next === undefined) {
         continue;
       }
 
       // Case 1: t('source')
       if (tokens[next]?.type === 'punct' && tokens[next]?.value === '(') {
         const arg = findNextSignificant(tokens, next + 1);
-        if (arg !== null) {
+        if (arg !== undefined) {
           const argToken = tokens[arg];
           if (
             argToken !== undefined &&
@@ -909,7 +909,7 @@ function applyYapyakHighlight(tokens: Token[]) {
       // Case 2: t.as('context', 'source') or t.in('locale', 'source')
       if (tokens[next]?.type === 'punct' && tokens[next]?.value === '.') {
         const method = findNextSignificant(tokens, next + 1);
-        if (method === null) {
+        if (method === undefined) {
           continue;
         }
         const methodValue = tokens[method]?.value;
@@ -918,22 +918,22 @@ function applyYapyakHighlight(tokens: Token[]) {
         }
         const paren = findNextSignificant(tokens, method + 1);
         if (
-          paren === null ||
+          paren === undefined ||
           tokens[paren]?.type !== 'punct' ||
           tokens[paren]?.value !== '('
         ) {
           continue;
         }
         const firstArg = findNextSignificant(tokens, paren + 1);
-        if (firstArg === null) {
+        if (firstArg === undefined) {
           continue;
         }
         const comma = findTopLevelComma(tokens, firstArg + 1);
-        if (comma === null) {
+        if (comma === undefined) {
           continue;
         }
         const secondArg = findNextSignificant(tokens, comma + 1);
-        if (secondArg === null) {
+        if (secondArg === undefined) {
           continue;
         }
         const secondToken = tokens[secondArg];
@@ -950,7 +950,7 @@ function applyYapyakHighlight(tokens: Token[]) {
     if (token.type === 'fn-call' && token.value === '_$pick') {
       const openParen = findNextSignificant(tokens, index + 1);
       if (
-        openParen !== null &&
+        openParen !== undefined &&
         tokens[openParen]?.type === 'punct' &&
         tokens[openParen]?.value === '('
       ) {
@@ -1261,7 +1261,7 @@ function findNextNonWhitespace(tokens: Token[], from: number): number {
   return -1;
 }
 
-function findTopLevelComma(tokens: Token[], from: number): number | null {
+function findTopLevelComma(tokens: Token[], from: number): number | undefined {
   let depth = 0;
   for (let index = from; index < tokens.length; index++) {
     const token = tokens[index];
@@ -1275,7 +1275,7 @@ function findTopLevelComma(tokens: Token[], from: number): number | null {
       }
       if (token.value === ')' || token.value === ']' || token.value === '}') {
         if (depth === 0) {
-          return null;
+          return undefined;
         }
         depth--;
         continue;
@@ -1285,7 +1285,7 @@ function findTopLevelComma(tokens: Token[], from: number): number | null {
       }
     }
   }
-  return null;
+  return undefined;
 }
 
 function applyTypePositions(tokens: Token[]) {
@@ -1300,7 +1300,7 @@ function applyTypePositions(tokens: Token[]) {
     if (token.type === 'punct' && token.value === '<') {
       const previousIndex = findPreviousSignificant(tokens, index - 1);
       const previous =
-        previousIndex === null ? undefined : tokens[previousIndex];
+        previousIndex === undefined ? undefined : tokens[previousIndex];
       const isGenericOpen =
         previous !== undefined &&
         (previous.type === 'type' ||
@@ -1330,7 +1330,7 @@ function applyTypePositions(tokens: Token[]) {
     }
 
     const previousIndex = findPreviousSignificant(tokens, index - 1);
-    if (previousIndex === null) {
+    if (previousIndex === undefined) {
       continue;
     }
     const previous = tokens[previousIndex];
@@ -1348,7 +1348,7 @@ function applyTypePositions(tokens: Token[]) {
     }
 
     const nextIndex = findNextSignificant(tokens, index + 1);
-    if (nextIndex !== null) {
+    if (nextIndex !== undefined) {
       const next = tokens[nextIndex];
       if (next?.type === 'keyword' && next.value === 'in') {
         token.type = 'type';
@@ -1357,7 +1357,10 @@ function applyTypePositions(tokens: Token[]) {
   }
 }
 
-function findPreviousSignificant(tokens: Token[], from: number) {
+function findPreviousSignificant(
+  tokens: Token[],
+  from: number,
+): number | undefined {
   for (let index = from; index >= 0; index--) {
     const token = tokens[index];
     if (token === undefined) {
@@ -1371,10 +1374,13 @@ function findPreviousSignificant(tokens: Token[], from: number) {
     }
     return index;
   }
-  return null;
+  return undefined;
 }
 
-function findNextSignificant(tokens: Token[], from: number) {
+function findNextSignificant(
+  tokens: Token[],
+  from: number,
+): number | undefined {
   for (let index = from; index < tokens.length; index++) {
     const token = tokens[index];
     if (token === undefined) {
@@ -1385,7 +1391,7 @@ function findNextSignificant(tokens: Token[], from: number) {
     }
     return index;
   }
-  return null;
+  return undefined;
 }
 
 function mergePlainTokens(tokens: Token[]) {

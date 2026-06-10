@@ -283,7 +283,7 @@ function entryToModuleName(entry: EntryPoint, packageDir: string): string {
 function toReferenceExport(
   reflection: DeclarationReflection,
   context: ExtractContext,
-): ReferenceExport | null {
+): ReferenceExport | undefined {
   switch (reflection.kind) {
     case ReflectionKind.Function:
       return toReferenceFunction(reflection, context);
@@ -293,7 +293,7 @@ function toReferenceExport(
       return toReferenceTypeAlias(reflection, context);
     case ReflectionKind.Variable: {
       const signatures = resolveCallableSignatures(reflection);
-      if (signatures !== null) {
+      if (signatures !== undefined) {
         return callableVariableToReferenceFunction(
           reflection,
           signatures,
@@ -305,16 +305,16 @@ function toReferenceExport(
     case ReflectionKind.Class:
       return classToReferenceExport(reflection, context);
     default:
-      return null;
+      return undefined;
   }
 }
 
 function resolveCallableSignatures(
   reflection: DeclarationReflection,
-): SignatureReflection[] | null {
+): SignatureReflection[] | undefined {
   const type = reflection.type;
   if (!type) {
-    return null;
+    return undefined;
   }
   if (type.type === 'reference') {
     const target = type.reflection;
@@ -337,7 +337,7 @@ function resolveCallableSignatures(
       return sigs;
     }
   }
-  return null;
+  return undefined;
 }
 
 function callableVariableToReferenceFunction(
@@ -449,7 +449,7 @@ function toReferenceSymbolBase(
   const signature = reflection.signatures?.[0]?.comment ?? null;
   const effective = comment ?? signature;
   return {
-    deprecated: effective ? readDeprecated(effective, context) : null,
+    deprecated: effective ? (readDeprecated(effective, context) ?? null) : null,
     description: effective ? partsToMarkdown(effective.summary, context) : '',
     examples: effective ? extractExamples(effective, context) : [],
     location: readLocation(reflection, context.packageDir),
@@ -528,10 +528,9 @@ function toReferenceMember(
   reflection: DeclarationReflection,
   context: ExtractContext,
 ): ReferenceMember {
-  const comment =
-    reflection.comment ?? reflection.signatures?.[0]?.comment ?? null;
+  const comment = reflection.comment ?? reflection.signatures?.[0]?.comment;
   return {
-    defaultValue: readDefaultValue(reflection, context),
+    defaultValue: readDefaultValue(reflection, context) ?? null,
     description: comment ? partsToMarkdown(comment.summary, context) : '',
     name: reflection.name,
     optional: Boolean(reflection.flags.isOptional),
@@ -812,7 +811,7 @@ function resolveInlineLink(
   context: ExtractContext,
 ): string {
   const targetId = resolveTargetId(part.target);
-  if (targetId !== null) {
+  if (targetId !== undefined) {
     const url = context.registry.get(targetId);
     if (url) {
       return `[${part.text}](${url})`;
@@ -825,7 +824,7 @@ function resolveInlineLink(
   return `\`${part.text}\``;
 }
 
-function resolveTargetId(target: unknown): number | null {
+function resolveTargetId(target: unknown): number | undefined {
   if (typeof target === 'number') {
     return target;
   }
@@ -837,7 +836,7 @@ function resolveTargetId(target: unknown): number | null {
   ) {
     return (target as { id: number }).id;
   }
-  return null;
+  return undefined;
 }
 
 function extractExamples(
@@ -856,7 +855,7 @@ function extractExamples(
     examples.push({
       code: fenced.code,
       language: fenced.language,
-      path: fenced.path,
+      path: fenced.path ?? null,
       title: tag.name ? tag.name : null,
     });
     void context;
@@ -867,7 +866,7 @@ function extractExamples(
 function parseCodeFence(raw: string): {
   code: string;
   language: string;
-  path: string | null;
+  path?: string;
 } {
   const trimmed = raw.trim();
   const fenceMatch = trimmed.match(
@@ -875,13 +874,14 @@ function parseCodeFence(raw: string): {
   );
   if (fenceMatch !== null) {
     const bracket = fenceMatch[2];
+    const path = bracket && isPathLike(bracket) ? bracket : undefined;
     return {
       code: fenceMatch[3] ?? '',
       language: fenceMatch[1] ?? 'ts',
-      path: bracket && isPathLike(bracket) ? bracket : null,
+      ...(path !== undefined && { path }),
     };
   }
-  return { code: trimmed, language: 'ts', path: null };
+  return { code: trimmed, language: 'ts' };
 }
 
 function isPathLike(value: string): boolean {
@@ -931,13 +931,13 @@ function readBlockTag(
 function readDeprecated(
   comment: CommentLike,
   context: ExtractContext,
-): string | null {
+): string | undefined {
   for (const tag of comment.blockTags ?? []) {
     if (tag.tag === '@deprecated') {
       return partsToMarkdown(tag.content, context);
     }
   }
-  return null;
+  return undefined;
 }
 
 function readSeeAlso(comment: CommentLike, context: ExtractContext): string[] {
@@ -977,7 +977,7 @@ function readThrows(
 function readDefaultValue(
   reflection: DeclarationReflection,
   context: ExtractContext,
-): string | null {
+): string | undefined {
   if (reflection.defaultValue !== undefined) {
     return reflection.defaultValue;
   }
@@ -985,9 +985,9 @@ function readDefaultValue(
     (entry) => entry.tag === '@defaultValue',
   );
   if (!tag) {
-    return null;
+    return undefined;
   }
-  return partsToMarkdown(tag.content, context).trim() || null;
+  return partsToMarkdown(tag.content, context).trim() || undefined;
 }
 
 function readLocation(

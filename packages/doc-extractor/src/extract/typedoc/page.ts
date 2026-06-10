@@ -178,9 +178,9 @@ function resolveSourceHref(
   line: number,
   packageDir: string,
   sourceUrl: SourceUrlConfig | undefined,
-): string | null {
+): string | undefined {
   if (sourceUrl === undefined || file === '') {
-    return null;
+    return undefined;
   }
   const absolute = resolve(packageDir, file);
   const path = relative(sourceUrl.workspaceRoot, absolute).replaceAll(
@@ -401,9 +401,14 @@ function normalizeOverloadParameters(
 function buildEyebrowBlock(
   moduleId: string,
   kind: ExportKind,
-  sourceHref: string | null,
+  sourceHref: string | undefined,
 ): Block {
-  return { kind, module: moduleId, sourceHref, type: 'eyebrow' };
+  return {
+    kind,
+    module: moduleId,
+    sourceHref: sourceHref ?? null,
+    type: 'eyebrow',
+  };
 }
 
 function buildImportSnippet(
@@ -580,8 +585,9 @@ function buildTableHeaderRow(labels: string[]): TableRowBlock {
 function tokensToBlocks(tokens: TypeToken[]): Block[] {
   const blocks: Block[] = [];
   for (const token of tokens) {
-    const resolvedModule = token.kind === 'ref' ? resolveModule(token) : null;
-    if (token.kind === 'ref' && resolvedModule !== null) {
+    const resolvedModule =
+      token.kind === 'ref' ? resolveModule(token) : undefined;
+    if (token.kind === 'ref' && resolvedModule !== undefined) {
       blocks.push({
         children: [{ type: 'inline-code', value: token.text }],
         href: resolveSymbolHref(resolvedModule, token.name),
@@ -598,13 +604,15 @@ function tokensToBlocks(tokens: TypeToken[]): Block[] {
   return blocks;
 }
 
-function resolveModule(token: { module: string; name: string }): string | null {
+function resolveModule(token: {
+  module: string;
+  name: string;
+}): string | undefined {
   const exactKey = `${token.module}::${token.name}`;
   if (currentIndex.has(exactKey)) {
     return token.module;
   }
-  const fallback = currentIndex.get(token.name);
-  return fallback ?? null;
+  return currentIndex.get(token.name);
 }
 
 function resolveSymbolHref(moduleId: string, name: string): string {

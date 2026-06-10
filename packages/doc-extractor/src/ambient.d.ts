@@ -14,10 +14,10 @@ declare module 'virtual:doc-extractor' {
   export const doc: {
     findAdjacentPages(page: Page): AdjacentPages;
     getEntry(collection: string, path?: string): Entry;
-    getFirstPage(collection: string): Page | null;
+    getFirstPage(collection: string): Page | undefined;
     getHeadings(page: Page, options?: GetHeadingsOptions): HeadingEntry[];
     getOptions(): OptionsRegistry;
-    getOptionsGroup(groupId: string): OptionsGroup | null;
+    getOptionsGroup(groupId: string): OptionsGroup | undefined;
     getSidebar(collection: string): SidebarNode[];
     manifest: Manifest;
   };

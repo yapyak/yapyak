@@ -44,7 +44,7 @@ export function PageArticle(props: PageArticleProps) {
       <Box className={styles.Body}>
         <BlockRenderer blocks={page.blocks} />
       </Box>
-      {(nextPage !== null || previousPage !== null) && (
+      {(nextPage !== undefined || previousPage !== undefined) && (
         <Box
           as="footer"
           className={styles.Footer}

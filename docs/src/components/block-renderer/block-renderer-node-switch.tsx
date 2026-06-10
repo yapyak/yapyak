@@ -14,7 +14,7 @@ export function BlockRendererNodeSwitch(props: BlockRendererNodeSwitchProps) {
   const { block } = props;
   const { get } = useOptionsContext();
   const group = doc.getOptionsGroup(block.group);
-  if (group === null) {
+  if (group === undefined) {
     return null;
   }
   const active = get(block.group);

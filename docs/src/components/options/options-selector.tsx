@@ -41,7 +41,7 @@ function OptionsSelector(props: OptionsSelectorProps) {
   const { groupId } = props;
   const { get, set } = useOptionsContext();
   const group = doc.getOptionsGroup(groupId);
-  if (group === null) {
+  if (group === undefined) {
     return null;
   }
   const active = get(groupId);

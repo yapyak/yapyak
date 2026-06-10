@@ -30,12 +30,12 @@ export function createLocaleResolver(
   options?: CreateLocaleResolverOptions,
 ): LocaleResolver {
   const fixedLocale = options?.fixedLocale;
-  let discovery: DiscoverLocalesResult | null = null;
-  let emitted: EmittedLocales | null = null;
-  let localeData: LocaleData | null = null;
+  let discovery: DiscoverLocalesResult | undefined;
+  let emitted: EmittedLocales | undefined;
+  let localeData: LocaleData | undefined;
 
   function getDiscovery(): DiscoverLocalesResult {
-    if (discovery === null) {
+    if (discovery === undefined) {
       discovery = discoverLocales(context.localesDir, projectRoot, {
         defaultLocale: context.defaultLocale,
       });
@@ -49,7 +49,7 @@ export function createLocaleResolver(
   }
 
   function getEmittedLocales(): EmittedLocales {
-    if (emitted === null) {
+    if (emitted === undefined) {
       const project = getProjectLocales();
       emitted =
         fixedLocale !== undefined
@@ -63,7 +63,7 @@ export function createLocaleResolver(
   }
 
   function getLocaleData(): LocaleData {
-    if (localeData === null) {
+    if (localeData === undefined) {
       localeData = readLocaleData(
         {
           locales: getEmittedLocales().locales,
@@ -81,12 +81,12 @@ export function createLocaleResolver(
     getLocaleData,
     getProjectLocales,
     invalidateData(): void {
-      localeData = null;
+      localeData = undefined;
     },
     invalidateStructure(): void {
-      discovery = null;
-      emitted = null;
-      localeData = null;
+      discovery = undefined;
+      emitted = undefined;
+      localeData = undefined;
     },
   };
 }

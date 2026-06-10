@@ -23,7 +23,7 @@ export async function extractMarkdoc(
     const href =
       path === '' ? `/${collectionName}` : `/${collectionName}/${path}`;
     const page = await loadMarkdocPage(absolutePath, href);
-    if (page === null) {
+    if (page === undefined) {
       continue;
     }
     const redirectTarget = resolvePageRedirectTarget(
@@ -31,7 +31,7 @@ export async function extractMarkdoc(
       path,
       collectionName,
     );
-    if (redirectTarget !== null) {
+    if (redirectTarget !== undefined) {
       redirects.set(path, redirectTarget);
       continue;
     }
@@ -43,10 +43,10 @@ export async function extractMarkdoc(
 async function loadMarkdocPage(
   absolutePath: string,
   href: string,
-): Promise<Page | null> {
-  const source = await readFile(absolutePath, 'utf8').catch(() => null);
-  if (source === null) {
-    return null;
+): Promise<Page | undefined> {
+  const source = await readFile(absolutePath, 'utf8').catch(() => undefined);
+  if (source === undefined) {
+    return undefined;
   }
   const { blocks, frontmatter } = parseMarkdoc(source);
   return {
@@ -152,10 +152,10 @@ function resolvePageRedirectTarget(
   page: Page,
   path: string,
   collectionName: string,
-): string | null {
+): string | undefined {
   const raw = page.meta.redirect;
   if (typeof raw !== 'string' || raw.length === 0) {
-    return null;
+    return undefined;
   }
   if (raw.startsWith('/')) {
     return raw;

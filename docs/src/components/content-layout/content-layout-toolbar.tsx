@@ -15,7 +15,7 @@ import { doc } from 'virtual:doc-extractor';
 
 export interface ContentLayoutToolbarProps {
   children: ReactNode;
-  page: Page | null;
+  page?: Page;
 }
 
 export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {

@@ -8,6 +8,6 @@ export function getOptions(manifest: Manifest): OptionsRegistry {
 export function getOptionsGroup(
   manifest: Manifest,
   groupId: string,
-): OptionsGroup | null {
-  return manifest.options[groupId] ?? null;
+): OptionsGroup | undefined {
+  return manifest.options[groupId];
 }

@@ -9,8 +9,8 @@ import { Box } from '#components/box';
 import styles from './content-pagination.module.css';
 
 export interface ContentPaginationProps extends BoxProps<'nav'> {
-  nextPage: Page | null;
-  previousPage: Page | null;
+  nextPage?: Page;
+  previousPage?: Page;
 }
 
 export function ContentPagination(props: ContentPaginationProps) {

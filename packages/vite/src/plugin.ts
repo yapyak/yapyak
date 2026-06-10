@@ -109,16 +109,16 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
   const messagesByFile = new Map<string, ExtractedMessage[]>();
   let projectRoot = process.cwd();
   let yapyakDir = '';
-  let resolver: LocaleResolver | null = null;
-  let normalized: NormalizedYapyakConfig | null = null;
+  let resolver: LocaleResolver | undefined;
+  let normalized: NormalizedYapyakConfig | undefined;
   let filter: (path: string) => boolean = () => false;
   let configFile: string | undefined;
   let command: 'build' | 'serve' = 'serve';
-  let logger: ResolvedConfig['logger'] | null = null;
+  let logger: ResolvedConfig['logger'] | undefined;
   const teardownCallbacks: Array<() => void> = [];
 
   function getNormalized(): NormalizedYapyakConfig {
-    if (normalized === null) {
+    if (normalized === undefined) {
       throw new Error(
         '[yapyak] plugin used before configResolved — config is not loaded yet.',
       );
@@ -127,7 +127,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
   }
 
   function getResolver(): LocaleResolver {
-    if (resolver === null) {
+    if (resolver === undefined) {
       throw new Error(
         '[yapyak] plugin used before configResolved — config is not loaded yet.',
       );
@@ -277,7 +277,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
   }
 
   function info(message: string): void {
-    if (logger !== null) {
+    if (logger !== undefined) {
       logger.info(message);
       return;
     }
@@ -285,7 +285,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
   }
 
   function warn(message: string): void {
-    if (logger !== null) {
+    if (logger !== undefined) {
       logger.warn(message);
       return;
     }
@@ -293,7 +293,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin {
   }
 
   function error(message: string): void {
-    if (logger !== null) {
+    if (logger !== undefined) {
       logger.error(message);
       return;
     }
