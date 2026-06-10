@@ -165,7 +165,7 @@ function parseTokenBody(
   isInPluralBranch: boolean,
 ): TemplateNode {
   const firstComma = findTopLevelComma(context.source, start, end);
-  if (firstComma === -1) {
+  if (firstComma === undefined) {
     const name = context.source.slice(start, end).trim();
     if (name === '') {
       context.diagnostics.push({
@@ -178,17 +178,32 @@ function parseTokenBody(
   const name = context.source.slice(start, firstComma).trim();
   const afterName = firstComma + 1;
   const secondComma = findTopLevelComma(context.source, afterName, end);
-  const kindEnd = secondComma === -1 ? end : secondComma;
+  const kindEnd = secondComma === undefined ? end : secondComma;
   const kind = context.source.slice(afterName, kindEnd).trim();
-  const bodyStart = secondComma === -1 ? end : secondComma + 1;
+  const bodyStart = secondComma === undefined ? end : secondComma + 1;
   if (kind === 'plural') {
-    return buildPluralNode(context, name, 'cardinal', bodyStart, end);
+    return buildPluralNode(context, {
+      bodyEnd: end,
+      bodyStart,
+      name,
+      type: 'cardinal',
+    });
   }
   if (kind === 'selectordinal') {
-    return buildPluralNode(context, name, 'ordinal', bodyStart, end);
+    return buildPluralNode(context, {
+      bodyEnd: end,
+      bodyStart,
+      name,
+      type: 'ordinal',
+    });
   }
   if (kind === 'select') {
-    return buildSelectNode(context, name, bodyStart, end, isInPluralBranch);
+    return buildSelectNode(context, {
+      bodyEnd: end,
+      bodyStart,
+      isInPluralBranch,
+      name,
+    });
   }
   if (kind === 'number') {
     return buildNumberNode(
@@ -218,40 +233,53 @@ function parseTokenBody(
   return { kind: 'placeholder', name };
 }
 
+interface BuildPluralNodeInput {
+  bodyEnd: number;
+  bodyStart: number;
+  name: string;
+  type: 'cardinal' | 'ordinal';
+}
+
 function buildPluralNode(
   context: ParseContext,
-  name: string,
-  type: 'cardinal' | 'ordinal',
-  bodyStart: number,
-  bodyEnd: number,
+  input: BuildPluralNodeInput,
 ): PluralNode {
-  const bodyText = context.source.slice(bodyStart, bodyEnd);
+  const bodyText = context.source.slice(input.bodyStart, input.bodyEnd);
   if (PLURAL_OFFSET_RX.test(bodyText)) {
     context.diagnostics.push({
       feature: 'plural offset',
-      name,
+      name: input.name,
       reason: 'unsupported',
     });
   }
-  const branches = parseBranches(context, bodyStart, bodyEnd, true);
+  const branches = parseBranches(context, input.bodyStart, input.bodyEnd, true);
   if (!branches.has('other')) {
-    context.diagnostics.push({ name, reason: 'missing-other' });
+    context.diagnostics.push({ name: input.name, reason: 'missing-other' });
   }
-  return { branches, kind: 'plural', name, type };
+  return { branches, kind: 'plural', name: input.name, type: input.type };
+}
+
+interface BuildSelectNodeInput {
+  bodyEnd: number;
+  bodyStart: number;
+  isInPluralBranch: boolean;
+  name: string;
 }
 
 function buildSelectNode(
   context: ParseContext,
-  name: string,
-  bodyStart: number,
-  bodyEnd: number,
-  isInPluralBranch: boolean,
+  input: BuildSelectNodeInput,
 ): SelectNode {
-  const branches = parseBranches(context, bodyStart, bodyEnd, isInPluralBranch);
+  const branches = parseBranches(
+    context,
+    input.bodyStart,
+    input.bodyEnd,
+    input.isInPluralBranch,
+  );
   if (!branches.has('other')) {
-    context.diagnostics.push({ name, reason: 'missing-other' });
+    context.diagnostics.push({ name: input.name, reason: 'missing-other' });
   }
-  return { branches, kind: 'select', name };
+  return { branches, kind: 'select', name: input.name };
 }
 
 function buildNumberNode(
@@ -359,7 +387,11 @@ function findMatchingBrace(
   return position;
 }
 
-function findTopLevelComma(source: string, start: number, end: number): number {
+function findTopLevelComma(
+  source: string,
+  start: number,
+  end: number,
+): number | undefined {
   let depth = 0;
   for (let index = start; index < end; index++) {
     const character = source[index];
@@ -371,7 +403,7 @@ function findTopLevelComma(source: string, start: number, end: number): number {
       return index;
     }
   }
-  return -1;
+  return undefined;
 }
 
 function isWhitespace(character: string | undefined): boolean {
