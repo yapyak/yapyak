@@ -149,6 +149,16 @@
         "useExplicitLengthCheck": "error",
         "useExponentiationOperator": "error",
         "useExportType": "error",
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": {
+            "filenameCases": [
+              "kebab-case"
+            ],
+            "requireAscii": true,
+            "strictCase": true
+          }
+        },
         "useForOf": "error",
         "useFragmentSyntax": "error",
         "useGroupedAccessorPairs": "error",
@@ -159,6 +169,21 @@
           }
         },
         "useLiteralEnumMembers": "error",
+        "useNamingConvention": {
+          "level": "error",
+          "options": {
+            "conventions": [
+              {
+                "match": ".*",
+                "selector": {
+                  "kind": "objectLiteralProperty"
+                }
+              }
+            ],
+            "requireAscii": true,
+            "strictCase": false
+          }
+        },
         "useNodejsImportProtocol": "error",
         "useNumberNamespace": "error",
         "useNumericSeparators": "error",

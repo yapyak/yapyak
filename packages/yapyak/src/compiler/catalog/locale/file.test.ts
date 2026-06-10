@@ -1056,20 +1056,20 @@ describe('writeLocaleFile invariant', () => {
   });
 
   it('preserves the invariant across every state combination', () => {
-    const FILE_ID = 'src/a.tsx';
-    const SOURCE = 'Hello';
-    const OLD = 'Hej';
-    const NEW = 'NyttHej';
+    const fileId = 'src/a.tsx';
+    const source = 'Hello';
+    const previous = 'Hej';
+    const next = 'NyttHej';
 
     for (const beforeState of ENTRY_STATES) {
       for (const afterState of ENTRY_STATES) {
         for (const extractedState of EXTRACTED_STATES) {
-          const before = buildEntry(beforeState, FILE_ID, SOURCE, OLD);
-          const after = buildEntry(afterState, FILE_ID, SOURCE, NEW);
+          const before = buildEntry(beforeState, fileId, source, previous);
+          const after = buildEntry(afterState, fileId, source, next);
           const extractedSources = buildExtracted(
             extractedState,
-            FILE_ID,
-            SOURCE,
+            fileId,
+            source,
           );
           writeFileSync(path, JSON.stringify(before));
           const beforeOnDisk = readFileSync(path, 'utf8');

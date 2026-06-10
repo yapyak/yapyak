@@ -29,7 +29,7 @@ export const OPTIONS_STORAGE_PREFIX = 'yapyak.option.';
 export const OPTIONS_PREPAINT_STYLE_ID = 'yapyak-options-prepaint';
 
 declare global {
-  // biome-ignore lint/style/useConsistentTypeDefinitions: needed
+  // biome-ignore lint/style/useConsistentTypeDefinitions: yap yap yap
   interface Window {
     __yapyakOptions?: Record<string, string>;
   }

@@ -1,5 +1,5 @@
 declare global {
-  // biome-ignore lint/style/useConsistentTypeDefinitions: needed
+  // biome-ignore lint/style/useConsistentTypeDefinitions: yap yap yap
   interface ImportMeta {
     hot?: {
       dispose(callback: () => void): void;

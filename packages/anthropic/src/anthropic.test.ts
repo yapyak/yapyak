@@ -304,7 +304,7 @@ describe('anthropic', () => {
   });
 
   describe('batch', () => {
-    const POOL: Record<string, string> = {
+    const pool: Record<string, string> = {
       Cancel: 'Avbryt',
       Hello: 'Hej',
       'Loading...': 'Laddar...',
@@ -424,7 +424,7 @@ describe('anthropic', () => {
               {
                 text: JSON.stringify(
                   items.map((item) => ({
-                    sv: POOL[item.source] ?? '',
+                    sv: pool[item.source] ?? '',
                   })),
                 ),
                 type: 'text',
@@ -478,7 +478,7 @@ describe('anthropic', () => {
               {
                 text: JSON.stringify(
                   items.map((item) => ({
-                    sv: POOL[item.source] ?? '',
+                    sv: pool[item.source] ?? '',
                   })),
                 ),
                 type: 'text',

@@ -28,6 +28,7 @@ export type Register = {};
  * ```
  */
 export type Locale = Register extends {
+  // biome-ignore lint/style/useNamingConvention: yap yap yap
   Locale: infer L extends string;
 }
   ? L

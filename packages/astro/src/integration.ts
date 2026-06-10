@@ -25,7 +25,7 @@ export function yapyak(): AstroIntegration {
         updateConfig({
           vite: {
             plugins: [
-              // biome-ignore lint/suspicious/noExplicitAny: needed
+              // biome-ignore lint/suspicious/noExplicitAny: yap yap yap
               yapyakVitePlugin() as any,
             ],
           },

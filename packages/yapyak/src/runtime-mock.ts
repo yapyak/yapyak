@@ -10,11 +10,13 @@ export type RuntimeMock = {
 };
 
 export function buildRuntimeMock(runtime: Partial<RuntimeMock> = {}): {
+  // biome-ignore-start lint/style/useNamingConvention: yap yap yap
   DEFAULT_LOCALE: Locale;
   DETECT_ACCEPT_LANGUAGE: boolean;
   LOCALES: Locale[];
   PERSISTENCE_CONFIG: NormalizedPersistenceConfig;
   SYNC_HTML_LANG: boolean;
+  // biome-ignore-end lint/style/useNamingConvention: yap yap yap
 } {
   const {
     defaultLocale = 'en',

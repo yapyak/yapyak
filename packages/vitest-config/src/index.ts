@@ -26,12 +26,12 @@ export function defineConfig(options: Options = {}): ViteUserConfig {
 }
 
 function yapyakRuntimePlugin(runtime: Partial<RuntimeMock>): Plugin {
-  const RUNTIME_ID = 'yapyak/runtime';
-  const RESOLVED_ID = `\0${RUNTIME_ID}`;
+  const runtimeId = 'yapyak/runtime';
+  const resolvedId = `\0${runtimeId}`;
   return {
     enforce: 'pre',
     load(id) {
-      if (id !== RESOLVED_ID) {
+      if (id !== resolvedId) {
         return;
       }
       return Object.entries(buildRuntimeMock(runtime))
@@ -40,8 +40,8 @@ function yapyakRuntimePlugin(runtime: Partial<RuntimeMock>): Plugin {
     },
     name: '@yapyak/vitest-config:runtime',
     resolveId(source) {
-      if (source === RUNTIME_ID) {
-        return RESOLVED_ID;
+      if (source === runtimeId) {
+        return resolvedId;
       }
       return undefined;
     },

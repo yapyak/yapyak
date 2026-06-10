@@ -18,5 +18,20 @@
       "!**/parser/fixtures",
       "!**/.yapyak"
     ]
-  }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "**/*.$.tsx",
+        "**/*.astro.d.ts"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useFilenamingConvention": "off"
+          }
+        }
+      }
+    }
+  ]
 }

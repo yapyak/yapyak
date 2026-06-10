@@ -76,6 +76,7 @@ type IsDigitsOnly<T extends string> = T extends ''
     ? IsDigitsOnly<TRest>
     : false;
 
+// biome-ignore lint/style/useNamingConvention: yap yap yap
 type IsValidEqualLiteral<T extends string> = T extends `=${infer TN}`
   ? TN extends ''
     ? false

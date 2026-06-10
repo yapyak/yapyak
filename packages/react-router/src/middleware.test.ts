@@ -9,7 +9,7 @@ describe('middleware', () => {
     const expected = new Response('body', {
       status: 200,
     });
-    // biome-ignore lint/nursery/useAwaitThenable: needed
+    // biome-ignore lint/nursery/useAwaitThenable: yap yap yap
     const result = await middleware(
       {
         request,
@@ -22,7 +22,7 @@ describe('middleware', () => {
   it('writes every pending yapyak header onto the response', async () => {
     const request = new Request('http://example.com/');
     const response = new Response('body');
-    // biome-ignore lint/nursery/useAwaitThenable: needed
+    // biome-ignore lint/nursery/useAwaitThenable: yap yap yap
     await middleware(
       {
         request,
