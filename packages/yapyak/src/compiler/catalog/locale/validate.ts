@@ -1,11 +1,7 @@
 import type { Diagnostic, ExtractedMessage, Placeholder } from '../../parser';
 import type { LocaleFile } from './file';
 
-import {
-  createDiagnostic,
-  parsePlaceholders,
-  toMessageKey,
-} from '../../parser';
+import { parsePlaceholders, toMessageKey } from '../../parser';
 import { existsSync, readFileSync } from 'node:fs';
 
 const STUB_RANGE = {
@@ -33,67 +29,57 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
   for (const [pathKey, entries] of Object.entries(parsed)) {
     if (isUnsafePath(pathKey)) {
-      diagnostics.push(
-        createDiagnostic({
-          code: 'YPK302',
-          fileId,
-          message: `Unsafe file-path key "${pathKey}" — must be relative, use forward slashes, and contain no ".." segments.`,
-          range: STUB_RANGE,
-          severity: 'error',
-          source: '',
-        }),
-      );
+      diagnostics.push({
+        code: 'YPK302',
+        fileId,
+        message: `Unsafe file-path key "${pathKey}" — must be relative, use forward slashes, and contain no ".." segments.`,
+        range: STUB_RANGE,
+        severity: 'error',
+        source: '',
+      });
     }
     if (!isPlainObject(entries)) {
-      diagnostics.push(
-        createDiagnostic({
-          code: 'YPK301',
-          fileId,
-          message: `Entries under "${pathKey}" must be an object mapping source to translation.`,
-          range: STUB_RANGE,
-          severity: 'error',
-          source: '',
-        }),
-      );
+      diagnostics.push({
+        code: 'YPK301',
+        fileId,
+        message: `Entries under "${pathKey}" must be an object mapping source to translation.`,
+        range: STUB_RANGE,
+        severity: 'error',
+        source: '',
+      });
       continue;
     }
     for (const [source, value] of Object.entries(entries)) {
       if (source !== source.normalize('NFC')) {
-        diagnostics.push(
-          createDiagnostic({
-            code: 'YPK303',
-            fileId,
-            message: `Source key at "${pathKey}".${JSON.stringify(source)} is not Unicode NFC — it will not match extracted source strings.`,
-            range: STUB_RANGE,
-            severity: 'error',
-            source: '',
-          }),
-        );
+        diagnostics.push({
+          code: 'YPK303',
+          fileId,
+          message: `Source key at "${pathKey}".${JSON.stringify(source)} is not Unicode NFC — it will not match extracted source strings.`,
+          range: STUB_RANGE,
+          severity: 'error',
+          source: '',
+        });
       }
       if (typeof value !== 'string') {
-        diagnostics.push(
-          createDiagnostic({
-            code: 'YPK301',
-            fileId,
-            message: `Entry "${pathKey}".${JSON.stringify(source)} must be a string.`,
-            range: STUB_RANGE,
-            severity: 'error',
-            source: '',
-          }),
-        );
+        diagnostics.push({
+          code: 'YPK301',
+          fileId,
+          message: `Entry "${pathKey}".${JSON.stringify(source)} must be a string.`,
+          range: STUB_RANGE,
+          severity: 'error',
+          source: '',
+        });
         continue;
       }
       if (value !== value.normalize('NFC')) {
-        diagnostics.push(
-          createDiagnostic({
-            code: 'YPK303',
-            fileId,
-            message: `Translation at "${pathKey}".${JSON.stringify(source)} is not Unicode NFC.`,
-            range: STUB_RANGE,
-            severity: 'error',
-            source: '',
-          }),
-        );
+        diagnostics.push({
+          code: 'YPK303',
+          fileId,
+          message: `Translation at "${pathKey}".${JSON.stringify(source)} is not Unicode NFC.`,
+          range: STUB_RANGE,
+          severity: 'error',
+          source: '',
+        });
       }
     }
   }
@@ -120,47 +106,41 @@ export function validateIcuPairs(
 
       for (const [name, placeholder] of sourceByName) {
         if (!targetByName.has(name)) {
-          diagnostics.push(
-            createDiagnostic({
-              code: 'YPK205',
-              fileId,
-              hint: `Include \`{${name}}\` in the translation.`,
-              message: `Placeholder \`{${name}}\` is in the source but missing from the translation.`,
-              range: location.range,
-              severity: 'error',
-              source: '',
-            }),
-          );
+          diagnostics.push({
+            code: 'YPK205',
+            fileId,
+            hint: `Include \`{${name}}\` in the translation.`,
+            message: `Placeholder \`{${name}}\` is in the source but missing from the translation.`,
+            range: location.range,
+            severity: 'error',
+            source: '',
+          });
           continue;
         }
         const targetPlaceholder = targetByName.get(name);
         if (targetPlaceholder && targetPlaceholder.kind !== placeholder.kind) {
-          diagnostics.push(
-            createDiagnostic({
-              code: 'YPK204',
-              fileId,
-              hint: `Match the placeholder kind \`${placeholder.kind}\` from the source.`,
-              message: `Placeholder \`{${name}}\` is \`${placeholder.kind}\` in the source but \`${targetPlaceholder.kind}\` in the translation.`,
-              range: location.range,
-              severity: 'error',
-              source: '',
-            }),
-          );
+          diagnostics.push({
+            code: 'YPK204',
+            fileId,
+            hint: `Match the placeholder kind \`${placeholder.kind}\` from the source.`,
+            message: `Placeholder \`{${name}}\` is \`${placeholder.kind}\` in the source but \`${targetPlaceholder.kind}\` in the translation.`,
+            range: location.range,
+            severity: 'error',
+            source: '',
+          });
         }
       }
       for (const name of targetByName.keys()) {
         if (!sourceByName.has(name)) {
-          diagnostics.push(
-            createDiagnostic({
-              code: 'YPK206',
-              fileId,
-              hint: `Remove \`{${name}}\` from the translation or add it to the source.`,
-              message: `Placeholder \`{${name}}\` is in the translation but missing from the source.`,
-              range: location.range,
-              severity: 'error',
-              source: '',
-            }),
-          );
+          diagnostics.push({
+            code: 'YPK206',
+            fileId,
+            hint: `Remove \`{${name}}\` from the translation or add it to the source.`,
+            message: `Placeholder \`{${name}}\` is in the translation but missing from the source.`,
+            range: location.range,
+            severity: 'error',
+            source: '',
+          });
         }
       }
     }

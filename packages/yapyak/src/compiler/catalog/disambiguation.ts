@@ -1,6 +1,5 @@
 import type { Diagnostic, ExtractedMessage, Location } from '../parser';
 
-import { createDiagnostic } from '../parser';
 import { toLocationKey } from './location-key';
 
 export function detectAtIssues(messages: ExtractedMessage[]): Diagnostic[] {
@@ -39,17 +38,15 @@ export function detectAtIssues(messages: ExtractedMessage[]): Diagnostic[] {
       const first = messagesForSource[0]!;
       // biome-ignore lint/style/noNonNullAssertion: yap yap yap
       const firstLocation = first.locations[0]!;
-      diagnostics.push(
-        createDiagnostic({
-          code: 'YPK403',
-          fileId: firstLocation.fileId,
-          hint: 'Either use `t.as(context, ...)` for every occurrence, or remove `t.as` from all of them.',
-          message: `Source "${first.source}" is used with both \`t()\` and \`t.as()\` in ${firstLocation.fileId}. Choose one form for every occurrence.`,
-          range: firstLocation.range,
-          severity: 'error',
-          source: '',
-        }),
-      );
+      diagnostics.push({
+        code: 'YPK403',
+        fileId: firstLocation.fileId,
+        hint: 'Either use `t.as(context, ...)` for every occurrence, or remove `t.as` from all of them.',
+        message: `Source "${first.source}" is used with both \`t()\` and \`t.as()\` in ${firstLocation.fileId}. Choose one form for every occurrence.`,
+        range: firstLocation.range,
+        severity: 'error',
+        source: '',
+      });
       continue;
     }
 
@@ -58,17 +55,15 @@ export function detectAtIssues(messages: ExtractedMessage[]): Diagnostic[] {
       const onlyMessage = tagged[0]!;
       // biome-ignore lint/style/noNonNullAssertion: yap yap yap
       const firstLocation = onlyMessage.locations[0]!;
-      diagnostics.push(
-        createDiagnostic({
-          code: 'YPK404',
-          fileId: firstLocation.fileId,
-          hint: `Drop \`.as('${onlyMessage.context}', ...)\` — without another context for "${onlyMessage.source}", it has no effect.`,
-          message: `\`t.as('${onlyMessage.context}', '${onlyMessage.source}')\` in ${firstLocation.fileId} has no other context to disambiguate from.`,
-          range: firstLocation.range,
-          severity: 'warning',
-          source: '',
-        }),
-      );
+      diagnostics.push({
+        code: 'YPK404',
+        fileId: firstLocation.fileId,
+        hint: `Drop \`.as('${onlyMessage.context}', ...)\` — without another context for "${onlyMessage.source}", it has no effect.`,
+        message: `\`t.as('${onlyMessage.context}', '${onlyMessage.source}')\` in ${firstLocation.fileId} has no other context to disambiguate from.`,
+        range: firstLocation.range,
+        severity: 'warning',
+        source: '',
+      });
     }
   }
 

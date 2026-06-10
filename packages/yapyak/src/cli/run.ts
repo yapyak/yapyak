@@ -30,20 +30,18 @@ export async function run(argv: string[]): Promise<number> {
     }
     case 'clean': {
       const config = await loadConfig(projectRoot);
-      const shouldWrite = rest.includes('--write');
-      return clean(config, projectRoot, shouldWrite);
+      return clean(config, projectRoot, { write: rest.includes('--write') });
     }
     case 'add': {
       const config = await loadConfig(projectRoot);
       const locales = rest.filter((entry) => !entry.startsWith('-'));
-      return add(config, locales, projectRoot);
+      return add(config, projectRoot, { locales });
     }
     case 'translate': {
       const config = await loadConfig(projectRoot);
       const locale = rest.find((entry) => !entry.startsWith('-'));
-      const shouldForce = rest.includes('--force') || rest.includes('-f');
       return translate(config, projectRoot, {
-        force: shouldForce,
+        force: rest.includes('--force') || rest.includes('-f'),
         locale,
       });
     }
@@ -51,14 +49,11 @@ export async function run(argv: string[]): Promise<number> {
       const config = await loadConfig(projectRoot);
       const locales = rest.filter((entry) => !entry.startsWith('-'));
       const outFlag = rest.find((entry) => entry.startsWith('--out='));
-      const out = outFlag ? outFlag.slice('--out='.length) : undefined;
-      const shouldSplit = rest.includes('--split');
-      return exportCommand({
-        config,
+      const out = outFlag?.slice('--out='.length);
+      return exportCommand(config, projectRoot, {
         locales,
-        out,
-        projectRoot,
-        split: shouldSplit,
+        split: rest.includes('--split'),
+        ...(out !== undefined && { out }),
       });
     }
     default:

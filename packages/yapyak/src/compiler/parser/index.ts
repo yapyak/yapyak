@@ -1,3 +1,4 @@
+export type { Diagnostic, DiagnosticCode } from './diagnostic';
 export type {
   ExtractedMessage,
   ExtractFileOptions,
@@ -26,11 +27,6 @@ export {
   type CallSiteContext,
   resolveCallSiteContext,
 } from './call-site-context';
-export {
-  createDiagnostic,
-  type Diagnostic,
-  type DiagnosticCode,
-} from './diagnostic';
 export { extractFile } from './file/extract';
 export { transformFile } from './file/transform';
 export { toMessageId } from './message-id';

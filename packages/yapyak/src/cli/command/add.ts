@@ -12,11 +12,16 @@ import { color, header, progressBar, spinner, symbol } from '../tui';
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+export interface AddOptions {
+  locales: string[];
+}
+
 export async function add(
   config: Config,
-  locales: string[],
   projectRoot: string,
+  options: AddOptions,
 ): Promise<number> {
+  const { locales } = options;
   if (locales.length === 0) {
     process.stdout.write(
       `\n  ${symbol.cross} ${color.red('Locale code required.')}\n`,

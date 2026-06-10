@@ -104,12 +104,12 @@ describe('run', () => {
     );
   });
 
-  it('extracts `--write` into the `clean` arg', async () => {
+  it('extracts `--write` into the `clean` options', async () => {
     await run(['clean', '--write']);
     expect(clean).toHaveBeenCalledWith(
       expect.anything(),
       expect.any(String),
-      true,
+      expect.objectContaining({ write: true }),
     );
   });
 
@@ -117,8 +117,8 @@ describe('run', () => {
     await run(['add', 'sv', 'fr']);
     expect(add).toHaveBeenCalledWith(
       expect.anything(),
-      ['sv', 'fr'],
       expect.any(String),
+      expect.objectContaining({ locales: ['sv', 'fr'] }),
     );
   });
 
@@ -143,6 +143,8 @@ describe('run', () => {
   it('extracts `--out=path` into the `export` options', async () => {
     await run(['export', '--out=snapshot.json']);
     expect(exportCommand).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
       expect.objectContaining({ out: 'snapshot.json' }),
     );
   });
@@ -150,6 +152,8 @@ describe('run', () => {
   it('extracts `--split` into the `export` options', async () => {
     await run(['export', '--split', '--out=out-dir']);
     expect(exportCommand).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
       expect.objectContaining({ split: true }),
     );
   });

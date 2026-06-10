@@ -1,5 +1,9 @@
 import ts from 'typescript';
 
+export const YAPYAK_MODULE = 'yapyak';
+export const YAPYAK_INTERNAL_MODULE = 'yapyak/internal';
+export const RUNTIME_NAME = 't';
+
 export interface Binding {
   kind: 'direct' | 'namespace' | 'wrapper';
   localName: string;
@@ -15,9 +19,6 @@ export interface BindingTable {
   find(name: string, atNode: ts.Node): Binding | undefined;
   root: Scope;
 }
-
-const YAPYAK_MODULE = 'yapyak';
-const RUNTIME_NAME = 't';
 
 interface ImportData {
   directLocals: Set<string>;

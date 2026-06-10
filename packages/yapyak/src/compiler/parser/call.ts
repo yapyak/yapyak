@@ -4,7 +4,7 @@ import type { Diagnostic } from './diagnostic';
 
 import ts from 'typescript';
 
-import { createDiagnostic } from './diagnostic';
+import { RUNTIME_NAME } from './binding';
 import { toRange } from './range';
 
 export interface CallSite {
@@ -23,7 +23,6 @@ export interface DiscoverCallsResult {
   diagnostics: Diagnostic[];
 }
 
-const RUNTIME_NAME = 't';
 const IN_NAME = 'in';
 const AS_NAME = 'as';
 
@@ -324,20 +323,18 @@ function reportCapture(
     return;
   }
   const sourceFile = context.sourceFile;
-  context.diagnostics.push(
-    createDiagnostic({
-      code: 'YPK405',
-      fileId: sourceFile.fileName,
-      hint:
-        methodName === IN_NAME
-          ? "Pass the source inline: `t.in('sv', 'source')` or chain with `.as()`: `t.in('sv').as('context', 'source')`."
-          : "Pass the source inline: `t.as('context', 'source')` or chain with `.in()`: `t.as('context').in('sv', 'source')`.",
-      message: `\`t.${methodName}()\` captured. Modifiers must be used inline — see the hint for valid forms.`,
-      range: toRange(call, sourceFile),
-      severity: 'error',
-      source: sourceFile.text,
-    }),
-  );
+  context.diagnostics.push({
+    code: 'YPK405',
+    fileId: sourceFile.fileName,
+    hint:
+      methodName === IN_NAME
+        ? "Pass the source inline: `t.in('sv', 'source')` or chain with `.as()`: `t.in('sv').as('context', 'source')`."
+        : "Pass the source inline: `t.as('context', 'source')` or chain with `.in()`: `t.as('context').in('sv', 'source')`.",
+    message: `\`t.${methodName}()\` captured. Modifiers must be used inline — see the hint for valid forms.`,
+    range: toRange(call, sourceFile),
+    severity: 'error',
+    source: sourceFile.text,
+  });
 }
 
 function isInlineChain(call: ts.CallExpression): boolean {

@@ -7,6 +7,7 @@ import type { ExtractFileResult, ParsedCallSite } from './extract';
 import MagicString from 'magic-string';
 import ts from 'typescript';
 
+import { YAPYAK_INTERNAL_MODULE, YAPYAK_MODULE } from '../binding';
 import { findMatchingBraceIndex } from '../matching-brace';
 import { resolveProcessor } from '../processor';
 import { getScriptKind } from '../script-kind';
@@ -30,8 +31,6 @@ export interface TransformFileResult {
 
 const PICK_EXPORT = 'pick';
 const PICK_LOCAL = '_pick';
-const YAPYAK_MODULE = 'yapyak';
-const YAPYAK_INTERNAL_MODULE = 'yapyak/internal';
 
 export function transformFile(
   request: TransformFileRequest,

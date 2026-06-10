@@ -56,11 +56,8 @@ describe('exportCommand', () => {
   });
 
   it('returns `1` when `--split` is given without `--out`', () => {
-    const code = exportCommand({
-      config: makeConfig(),
+    const code = exportCommand(makeConfig(), root, {
       locales: [],
-      out: undefined,
-      projectRoot: root,
       split: true,
     });
     expect(code).toBe(1);
@@ -68,11 +65,9 @@ describe('exportCommand', () => {
   });
 
   it('refuses to write inside the locales directory', () => {
-    const code = exportCommand({
-      config: makeConfig(),
+    const code = exportCommand(makeConfig(), root, {
       locales: [],
       out: 'locales',
-      projectRoot: root,
       split: true,
     });
     expect(code).toBe(1);
@@ -80,11 +75,8 @@ describe('exportCommand', () => {
   });
 
   it('emits a JSON snapshot to stdout when no `--out` is given', () => {
-    const code = exportCommand({
-      config: makeConfig(),
+    const code = exportCommand(makeConfig(), root, {
       locales: [],
-      out: undefined,
-      projectRoot: root,
       split: false,
     });
     expect(code).toBe(0);
@@ -94,11 +86,9 @@ describe('exportCommand', () => {
   });
 
   it('writes a single snapshot file when `--out` is given', () => {
-    const code = exportCommand({
-      config: makeConfig(),
+    const code = exportCommand(makeConfig(), root, {
       locales: [],
       out: 'snapshot.json',
-      projectRoot: root,
       split: false,
     });
     expect(code).toBe(0);
@@ -109,11 +99,8 @@ describe('exportCommand', () => {
   });
 
   it('returns `1` when the locale filter includes an unknown locale', () => {
-    const code = exportCommand({
-      config: makeConfig(),
+    const code = exportCommand(makeConfig(), root, {
       locales: ['de'],
-      out: undefined,
-      projectRoot: root,
       split: false,
     });
     expect(code).toBe(1);
@@ -121,11 +108,8 @@ describe('exportCommand', () => {
   });
 
   it('returns `1` when the locale filter includes multiple unknown locales', () => {
-    const code = exportCommand({
-      config: makeConfig(),
+    const code = exportCommand(makeConfig(), root, {
       locales: ['de', 'fr'],
-      out: undefined,
-      projectRoot: root,
       split: false,
     });
     expect(code).toBe(1);
@@ -133,11 +117,9 @@ describe('exportCommand', () => {
   });
 
   it('writes one file per locale when `--split` and `--out` are given', () => {
-    const code = exportCommand({
-      config: makeConfig(),
+    const code = exportCommand(makeConfig(), root, {
       locales: ['sv'],
       out: 'out-dir',
-      projectRoot: root,
       split: true,
     });
     expect(code).toBe(0);

@@ -23,11 +23,16 @@ interface BuildExpectedResult {
   inScope: (fileId: string) => boolean;
 }
 
+export interface CleanOptions {
+  write: boolean;
+}
+
 export function clean(
   config: Config,
   projectRoot: string,
-  write: boolean,
+  options: CleanOptions,
 ): number {
+  const { write } = options;
   const localesPath = join(projectRoot, config.localesDir);
   const fileLocales = existsSync(localesPath)
     ? readdirSync(localesPath)

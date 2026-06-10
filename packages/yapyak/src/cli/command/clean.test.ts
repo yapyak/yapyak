@@ -55,7 +55,7 @@ describe('clean', () => {
       join(root, 'locales', 'sv.json'),
       JSON.stringify({ 'src/app.ts': { Save: 'Spara' } }),
     );
-    const code = clean(makeConfig(), root, false);
+    const code = clean(makeConfig(), root, { write: false });
     expect(code).toBe(0);
     expect(writes.join('')).toContain('No orphan entries');
   });
@@ -64,7 +64,7 @@ describe('clean', () => {
     writeFileSync(join(root, 'src', 'app.ts'), '');
     const before = JSON.stringify({ 'src/app.ts': { Save: 'Spara' } });
     writeFileSync(join(root, 'locales', 'sv.json'), before);
-    const code = clean(makeConfig(), root, false);
+    const code = clean(makeConfig(), root, { write: false });
     expect(code).toBe(0);
     expect(writes.join('')).toContain('orphan source');
     expect(readFileSync(join(root, 'locales', 'sv.json'), 'utf-8')).toBe(
@@ -78,7 +78,7 @@ describe('clean', () => {
       join(root, 'locales', 'sv.json'),
       JSON.stringify({ 'src/app.ts': { Save: 'Spara' } }),
     );
-    const code = clean(makeConfig(), root, true);
+    const code = clean(makeConfig(), root, { write: true });
     expect(code).toBe(0);
     const after = JSON.parse(
       readFileSync(join(root, 'locales', 'sv.json'), 'utf-8'),

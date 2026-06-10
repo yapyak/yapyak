@@ -5,7 +5,6 @@ import type { IcuIssue } from './placeholder';
 
 import ts from 'typescript';
 
-import { createDiagnostic } from './diagnostic';
 import { parsePlaceholders } from './placeholder';
 import { toRange } from './range';
 
@@ -41,49 +40,43 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
     ) {
       const text = contextExpression.text;
       if (text.includes(CONTEXT_SEPARATOR)) {
-        diagnostics.push(
-          createDiagnostic({
-            code: 'YPK402',
-            fileId,
-            hint: "Remove the '@' — it is reserved as the source/context separator.",
-            message: `\`t.as()\` context \`'${text}'\` must not contain \`'@'\`.`,
-            range: toRange(contextExpression, sourceFile),
-            severity: 'error',
-            source: fileText,
-          }),
-        );
+        diagnostics.push({
+          code: 'YPK402',
+          fileId,
+          hint: "Remove the '@' — it is reserved as the source/context separator.",
+          message: `\`t.as()\` context \`'${text}'\` must not contain \`'@'\`.`,
+          range: toRange(contextExpression, sourceFile),
+          severity: 'error',
+          source: fileText,
+        });
       } else {
         context = text;
       }
     } else {
-      diagnostics.push(
-        createDiagnostic({
-          code: 'YPK401',
-          fileId,
-          hint: 'Pass a static string literal as the context argument.',
-          message: '`t.as()` context argument must be a static string literal.',
-          range: toRange(contextExpression, sourceFile),
-          severity: 'error',
-          source: fileText,
-        }),
-      );
+      diagnostics.push({
+        code: 'YPK401',
+        fileId,
+        hint: 'Pass a static string literal as the context argument.',
+        message: '`t.as()` context argument must be a static string literal.',
+        range: toRange(contextExpression, sourceFile),
+        severity: 'error',
+        source: fileText,
+      });
     }
   }
 
   const sourceExpression = callSite.sourceExpression;
   if (!sourceExpression) {
-    diagnostics.push(
-      createDiagnostic({
-        code: 'YPK101',
-        fileId,
-        message: callSite.contextExpression
-          ? 't.as() called without source string.'
-          : 't() called without arguments.',
-        range: toRange(callSite.node, sourceFile),
-        severity: 'error',
-        source: fileText,
-      }),
-    );
+    diagnostics.push({
+      code: 'YPK101',
+      fileId,
+      message: callSite.contextExpression
+        ? 't.as() called without source string.'
+        : 't() called without arguments.',
+      range: toRange(callSite.node, sourceFile),
+      severity: 'error',
+      source: fileText,
+    });
     const result: ParsedArguments = {
       diagnostics,
       source: '',
@@ -97,19 +90,17 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
 
   const sourceRange = toRange(sourceExpression, sourceFile);
   if (!isLiteralFirstArg(sourceExpression)) {
-    diagnostics.push(
-      createDiagnostic({
-        code: 'YPK102',
-        fileId,
-        // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
-        hint: "Replace `t(`Hi ${name}`)` with `t('Hi {name}', { name })`.",
-        message:
-          'Dynamic source string in t(). Use a plain string literal with `{placeholder}` syntax.',
-        range: sourceRange,
-        severity: 'error',
-        source: fileText,
-      }),
-    );
+    diagnostics.push({
+      code: 'YPK102',
+      fileId,
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
+      hint: "Replace `t(`Hi ${name}`)` with `t('Hi {name}', { name })`.",
+      message:
+        'Dynamic source string in t(). Use a plain string literal with `{placeholder}` syntax.',
+      range: sourceRange,
+      severity: 'error',
+      source: fileText,
+    });
     const result: ParsedArguments = { diagnostics, source: '', sourceRange };
     if (context !== undefined) {
       result.context = context;
@@ -119,16 +110,14 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
 
   const source = sourceExpression.text;
   if (source === '') {
-    diagnostics.push(
-      createDiagnostic({
-        code: 'YPK103',
-        fileId,
-        message: 't() called with empty source string.',
-        range: sourceRange,
-        severity: 'error',
-        source: fileText,
-      }),
-    );
+    diagnostics.push({
+      code: 'YPK103',
+      fileId,
+      message: 't() called with empty source string.',
+      range: sourceRange,
+      severity: 'error',
+      source: fileText,
+    });
   }
 
   const { issues, placeholders } = parsePlaceholders(source);
@@ -179,7 +168,7 @@ function toIcuDiagnostic(
   context: IcuDiagnosticContext,
 ): Diagnostic {
   if (issue.reason === 'missing-other') {
-    return createDiagnostic({
+    return {
       code: 'YPK202',
       fileId: context.fileId,
       hint: 'Add an `other {<text>}` branch — plural, selectordinal, and select all require an `other` fallback.',
@@ -187,10 +176,10 @@ function toIcuDiagnostic(
       range: context.range,
       severity: 'error',
       source: context.fileText,
-    });
+    };
   }
   if (issue.reason === 'malformed') {
-    return createDiagnostic({
+    return {
       code: 'YPK201',
       fileId: context.fileId,
       hint: 'Check the ICU syntax — every `{` needs a matching `}`.',
@@ -198,9 +187,9 @@ function toIcuDiagnostic(
       range: context.range,
       severity: 'error',
       source: context.fileText,
-    });
+    };
   }
-  return createDiagnostic({
+  return {
     code: 'YPK203',
     fileId: context.fileId,
     hint: 'Use a supported ICU feature, or format the value before passing it in.',
@@ -210,7 +199,7 @@ function toIcuDiagnostic(
     range: context.range,
     severity: 'error',
     source: context.fileText,
-  });
+  };
 }
 
 function isLiteralFirstArg(
@@ -279,64 +268,56 @@ function validateParams(input: ValidateParamsInput): void {
 
   if (!params) {
     if (hasParamsExpression) {
-      diagnostics.push(
-        createDiagnostic({
-          code: 'YPK106',
-          fileId,
-          hint: 'Pass params as an inline object literal to enable validation.',
-          message: 'Params passed dynamically cannot be statically verified.',
-          range: callRange,
-          severity: 'warning',
-          source: fileText,
-        }),
-      );
+      diagnostics.push({
+        code: 'YPK106',
+        fileId,
+        hint: 'Pass params as an inline object literal to enable validation.',
+        message: 'Params passed dynamically cannot be statically verified.',
+        range: callRange,
+        severity: 'warning',
+        source: fileText,
+      });
       return;
     }
     for (const key of placeholderKeys) {
-      diagnostics.push(
-        createDiagnostic({
-          code: 'YPK104',
-          fileId,
-          hint: `Add { ${key}: ... } as the second argument.`,
-          message: `Missing parameter '${key}' for placeholder '{${key}}'.`,
-          range: callRange,
-          severity: 'error',
-          source: fileText,
-        }),
-      );
+      diagnostics.push({
+        code: 'YPK104',
+        fileId,
+        hint: `Add { ${key}: ... } as the second argument.`,
+        message: `Missing parameter '${key}' for placeholder '{${key}}'.`,
+        range: callRange,
+        severity: 'error',
+        source: fileText,
+      });
     }
     return;
   }
 
   if (params.kind === 'spread') {
-    diagnostics.push(
-      createDiagnostic({
-        code: 'YPK106',
-        fileId,
-        hint: 'Pass keys explicitly to enable validation.',
-        message: 'Spread params cannot be statically verified.',
-        range: params.range,
-        severity: 'warning',
-        source: fileText,
-      }),
-    );
+    diagnostics.push({
+      code: 'YPK106',
+      fileId,
+      hint: 'Pass keys explicitly to enable validation.',
+      message: 'Spread params cannot be statically verified.',
+      range: params.range,
+      severity: 'warning',
+      source: fileText,
+    });
     return;
   }
 
   const providedKeys = new Set(params.keys);
   for (const key of placeholderKeys) {
     if (!providedKeys.has(key)) {
-      diagnostics.push(
-        createDiagnostic({
-          code: 'YPK104',
-          fileId,
-          hint: `Add '${key}' to the params object.`,
-          message: `Missing parameter '${key}' for placeholder '{${key}}'.`,
-          range: params.range,
-          severity: 'error',
-          source: fileText,
-        }),
-      );
+      diagnostics.push({
+        code: 'YPK104',
+        fileId,
+        hint: `Add '${key}' to the params object.`,
+        message: `Missing parameter '${key}' for placeholder '{${key}}'.`,
+        range: params.range,
+        severity: 'error',
+        source: fileText,
+      });
     }
   }
   const placeholderSet = new Set(placeholderKeys);
@@ -344,16 +325,14 @@ function validateParams(input: ValidateParamsInput): void {
     if (placeholderSet.has(key)) {
       continue;
     }
-    diagnostics.push(
-      createDiagnostic({
-        code: 'YPK105',
-        fileId,
-        hint: `Remove '${key}' from the params object or add '{${key}}' to the source string.`,
-        message: `Extra parameter '${key}' with no matching placeholder.`,
-        range: params.range,
-        severity: 'warning',
-        source: fileText,
-      }),
-    );
+    diagnostics.push({
+      code: 'YPK105',
+      fileId,
+      hint: `Remove '${key}' from the params object or add '{${key}}' to the source string.`,
+      message: `Extra parameter '${key}' with no matching placeholder.`,
+      range: params.range,
+      severity: 'warning',
+      source: fileText,
+    });
   }
 }
