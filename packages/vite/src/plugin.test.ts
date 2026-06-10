@@ -1043,9 +1043,20 @@ describe('yapyak', () => {
 
 type YapyakPlugin = ReturnType<typeof yapyak>;
 
-function findHook(plugin: YapyakPlugin, hookName: string): unknown {
+type PluginHookName =
+  | 'buildEnd'
+  | 'buildStart'
+  | 'config'
+  | 'configResolved'
+  | 'configureServer'
+  | 'handleHotUpdate'
+  | 'load'
+  | 'resolveId'
+  | 'transform';
+
+function findHook(plugin: YapyakPlugin, hookName: PluginHookName): unknown {
   for (const sub of plugin) {
-    const value = (sub as unknown as Record<string, unknown>)[hookName];
+    const value = sub[hookName];
     if (value !== undefined) {
       return value;
     }

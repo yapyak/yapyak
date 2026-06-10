@@ -4,14 +4,14 @@ import type {
   LocaleData,
   TransformFileResult,
 } from 'yapyak/compiler';
-import type { EngineState } from './state';
+import type { State } from './state';
 
 import { extractFile, toMessageKey, transformFile } from 'yapyak/compiler';
 
-import { isCandidateId, toFileId } from './candidate-id';
-import { logErrors } from './error';
+import { isCandidateId } from './candidate-id';
+import { toFileId } from './file-id';
 
-export function createTransformPlugin(state: EngineState): Plugin {
+export function createTransformPlugin(state: State): Plugin {
   return {
     enforce: 'pre',
     name: 'yapyak:transform',
@@ -26,7 +26,14 @@ export function createTransformPlugin(state: EngineState): Plugin {
       const { locales } = state.getResolver().getEmittedLocales();
       const processors = state.getNormalized().processors;
       const extracted = extractFile(fileId, code, { processors });
-      logErrors(state, extracted);
+      for (const diagnostic of extracted.diagnostics) {
+        if (diagnostic.severity !== 'error') {
+          continue;
+        }
+        state.error(
+          `[yapyak] ${diagnostic.code} ${diagnostic.fileId}:${diagnostic.range.start.line}:${diagnostic.range.start.column}: ${diagnostic.message}`,
+        );
+      }
       if (extracted.callSites.length === 0) {
         return null;
       }

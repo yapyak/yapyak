@@ -3,7 +3,7 @@ import type { ExtractedMessage } from 'yapyak/compiler';
 import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
 import type { LocaleResolver } from '../locale-resolver';
 
-export interface EngineState {
+export interface State {
   command: 'build' | 'serve';
   configFile: string | undefined;
   error(message: string): void;
@@ -11,7 +11,6 @@ export interface EngineState {
   fixedLocale: string | undefined;
   getNormalized(): NormalizedYapyakConfig;
   getResolver(): LocaleResolver;
-
   info(message: string): void;
   logger: ResolvedConfig['logger'] | undefined;
   messagesByFile: Map<string, ExtractedMessage[]>;
@@ -23,12 +22,12 @@ export interface EngineState {
   yapyakDir: string;
 }
 
-export interface StateOptions {
+export interface CreateStateOptions {
   fixedLocale: string | undefined;
 }
 
-export function createState(options: StateOptions): EngineState {
-  const state: EngineState = {
+export function createState(options: CreateStateOptions): State {
+  const state: State = {
     command: 'serve',
     configFile: undefined,
     error(message: string): void {
@@ -56,7 +55,6 @@ export function createState(options: StateOptions): EngineState {
       }
       return state.resolver;
     },
-
     info(message: string): void {
       if (state.logger !== undefined) {
         state.logger.info(message);

@@ -5,7 +5,7 @@ import type {
   SyncLocaleFilesResult,
 } from 'yapyak/compiler';
 import type { Translator } from 'yapyak/translator';
-import type { EngineState } from './state';
+import type { State } from './state';
 
 import {
   autoTranslate,
@@ -15,7 +15,6 @@ import {
   walkSourceFiles,
 } from 'yapyak/compiler';
 
-import { logErrors } from './error';
 import { runYapyakCommand } from './yapyak-command';
 
 interface TranslationErrorEntry {
@@ -31,7 +30,7 @@ interface TranslationErrorGroup {
   locale: string;
 }
 
-export function syncAll(state: EngineState): void {
+export function syncAll(state: State): void {
   const allMessages: ExtractedMessage[] = [];
   for (const list of state.messagesByFile.values()) {
     allMessages.push(...list);
@@ -51,13 +50,20 @@ export function syncAll(state: EngineState): void {
   state.getResolver().invalidateData();
 }
 
-export function scanAllSources(state: EngineState): void {
+export function scanAllSources(state: State): void {
   const files = walkSourceFiles(state.filter, state.projectRoot);
   const processors = state.getNormalized().processors;
   state.messagesByFile.clear();
   for (const file of files) {
     const result = extractFile(file.fileId, file.code, { processors });
-    logErrors(state, result);
+    for (const diagnostic of result.diagnostics) {
+      if (diagnostic.severity !== 'error') {
+        continue;
+      }
+      state.error(
+        `[yapyak] ${diagnostic.code} ${diagnostic.fileId}:${diagnostic.range.start.line}:${diagnostic.range.start.column}: ${diagnostic.message}`,
+      );
+    }
     if (result.messages.length > 0) {
       state.messagesByFile.set(file.fileId, result.messages);
     }
@@ -65,7 +71,7 @@ export function scanAllSources(state: EngineState): void {
   syncAll(state);
 }
 
-export function fillStubs(state: EngineState): void {
+export function fillStubs(state: State): void {
   const config = state.getNormalized();
   const translator = config.translator;
   if (!translator) {
@@ -117,7 +123,7 @@ export function fillStubs(state: EngineState): void {
   });
 }
 
-export function createScanPlugin(state: EngineState): Plugin {
+export function createScanPlugin(state: State): Plugin {
   return {
     buildStart(): void {
       if (state.command === 'build') {
@@ -139,13 +145,10 @@ interface RunAutoTranslateInput {
 }
 
 async function runAutoTranslate(
-  state: EngineState,
+  state: State,
   input: RunAutoTranslateInput,
 ): Promise<void> {
   const config = state.getNormalized();
-  if (!input.translator) {
-    return;
-  }
   try {
     const result = await autoTranslate(
       { messages: input.filtered, translator: input.translator },
@@ -178,7 +181,7 @@ async function runAutoTranslate(
 }
 
 function emitSyncDiagnostics(
-  state: EngineState,
+  state: State,
   result: SyncLocaleFilesResult,
 ): void {
   for (const entry of result.orphaned) {
@@ -248,18 +251,18 @@ function buildErrorGroups(
 
 function renderTranslationErrorGroup(group: TranslationErrorGroup): string {
   const message = String(group.error);
+  const [firstEntry] = group.entries;
+  if (!firstEntry) {
+    return `[yapyak] translation failed: ${group.locale} — ${message}`;
+  }
   if (group.entries.length === 1) {
-    const entry = group.entries[0];
-    if (!entry) {
-      return `[yapyak] translation failed: ${group.locale} — ${message}`;
-    }
-    return `[yapyak] translation failed: ${entry.locale} ${entry.fileId} "${entry.source}" — ${message}`;
+    return `[yapyak] translation failed: ${firstEntry.locale} ${firstEntry.fileId} "${firstEntry.source}" — ${message}`;
   }
   const fileCount = new Set(group.entries.map((entry) => entry.fileId)).size;
   const stringPart = `${group.entries.length} ${pluralize('string', group.entries.length)}`;
   const filePart =
     fileCount === 1
-      ? `in ${group.entries[0]?.fileId ?? '?'}`
+      ? `in ${firstEntry.fileId}`
       : `across ${fileCount} ${pluralize('file', fileCount)}`;
   return `[yapyak] batch failed: ${group.locale} (${stringPart} ${filePart}) — ${message}`;
 }

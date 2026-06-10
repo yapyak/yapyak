@@ -1,5 +1,5 @@
 import type { Plugin, ResolvedConfig, UserConfig } from 'vite';
-import type { EngineState } from './state';
+import type { State } from './state';
 
 import { writeRegister } from 'yapyak/compiler';
 import { createFilter, loadYapyakConfig } from 'yapyak/config/internal';
@@ -13,7 +13,7 @@ import {
 import { renderLocaleWarning } from './locale-warning';
 import { join } from 'node:path';
 
-export function createConfigPlugin(state: EngineState): Plugin {
+export function createConfigPlugin(state: State): Plugin {
   return {
     config(): UserConfig {
       return {

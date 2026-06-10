@@ -1,6 +1,6 @@
 import type { HmrContext, Plugin, ViteDevServer } from 'vite';
 import type { ExtractedMessage, LocaleWarning } from 'yapyak/compiler';
-import type { EngineState } from './state';
+import type { State } from './state';
 
 import {
   detectRenames,
@@ -12,8 +12,8 @@ import {
 } from 'yapyak/compiler';
 
 import { RUNTIME_RESOLVED } from '../virtual-runtime';
-import { isCandidateId, toFileId } from './candidate-id';
-import { logErrors } from './error';
+import { isCandidateId } from './candidate-id';
+import { toFileId } from './file-id';
 import { renderLocaleWarning } from './locale-warning';
 import { fillStubs, syncAll } from './scan';
 import { runYapyakCommand } from './yapyak-command';
@@ -31,7 +31,7 @@ interface Debounced {
   (): void;
 }
 
-export function createDevServerPlugin(state: EngineState): Plugin {
+export function createDevServerPlugin(state: State): Plugin {
   return {
     buildEnd(): void {
       for (const cancel of state.teardownCallbacks) {
@@ -64,7 +64,14 @@ export function createDevServerPlugin(state: EngineState): Plugin {
           const result = extractFile(fileId, code, {
             processors: state.getNormalized().processors,
           });
-          logErrors(state, result);
+          for (const diagnostic of result.diagnostics) {
+            if (diagnostic.severity !== 'error') {
+              continue;
+            }
+            state.error(
+              `[yapyak] ${diagnostic.code} ${diagnostic.fileId}:${diagnostic.range.start.line}:${diagnostic.range.start.column}: ${diagnostic.message}`,
+            );
+          }
           if (result.messages.length > 0) {
             state.messagesByFile.set(fileId, result.messages);
           } else {
@@ -215,7 +222,14 @@ export function createDevServerPlugin(state: EngineState): Plugin {
       const result = extractFile(fileId, code, {
         processors: state.getNormalized().processors,
       });
-      logErrors(state, result);
+      for (const diagnostic of result.diagnostics) {
+        if (diagnostic.severity !== 'error') {
+          continue;
+        }
+        state.error(
+          `[yapyak] ${diagnostic.code} ${diagnostic.fileId}:${diagnostic.range.start.line}:${diagnostic.range.start.column}: ${diagnostic.message}`,
+        );
+      }
       const before = state.messagesByFile.get(fileId) ?? [];
       const after = result.messages;
       if (areMessagesEqual(before, after)) {
@@ -257,7 +271,7 @@ export function createDevServerPlugin(state: EngineState): Plugin {
   };
 }
 
-function isLocaleFile(state: EngineState, path: string): boolean {
+function isLocaleFile(state: State, path: string): boolean {
   const directory = join(state.projectRoot, state.getNormalized().localesDir);
   const relativePath = relative(directory, path);
   if (
