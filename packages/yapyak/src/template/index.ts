@@ -1,3 +1,4 @@
+export type { TemplateDiagnostic } from './diagnostic';
 export type {
   CountNode,
   DateNode,
@@ -15,4 +16,9 @@ export type {
 export { resolveConstants } from './constant';
 export { generateTemplate } from './generate';
 export { interpret } from './interpret';
-export { parseTemplate } from './parse';
+export { type ParseTemplateResult, parseTemplate } from './parse';
+export {
+  extractPlaceholders,
+  type Placeholder,
+  type PlaceholderKind,
+} from './placeholder';

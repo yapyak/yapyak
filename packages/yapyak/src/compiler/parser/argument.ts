@@ -1,7 +1,7 @@
 import type { Range } from '../../processor';
 import type { CallSite } from './call';
 import type { Diagnostic } from './diagnostic';
-import type { IcuIssue } from './placeholder';
+import type { TemplateDiagnostic } from './placeholder';
 
 import ts from 'typescript';
 
@@ -164,7 +164,7 @@ interface IcuDiagnosticContext {
 }
 
 function toIcuDiagnostic(
-  issue: IcuIssue,
+  issue: TemplateDiagnostic,
   context: IcuDiagnosticContext,
 ): Diagnostic {
   if (issue.reason === 'missing-other') {

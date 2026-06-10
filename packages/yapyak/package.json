@@ -58,7 +58,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@formatjs/icu-messageformat-parser": "catalog:",
     "jiti": "catalog:",
     "magic-string": "catalog:",
     "picomatch": "catalog:"

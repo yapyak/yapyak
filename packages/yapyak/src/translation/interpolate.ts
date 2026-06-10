@@ -11,7 +11,7 @@ export function interpolate(
 ): string {
   let ast = templateCache.get(template);
   if (ast === undefined) {
-    ast = parseTemplate(template);
+    ast = parseTemplate(template).template;
     templateCache.set(template, ast);
   }
   return interpret(ast, params, locale);

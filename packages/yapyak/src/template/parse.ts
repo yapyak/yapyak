@@ -1,3 +1,4 @@
+import type { TemplateDiagnostic } from './diagnostic';
 import type {
   CountNode,
   DateNode,
@@ -11,16 +12,31 @@ import type {
   TimeNode,
 } from './node';
 
-import { warn } from '../warn';
+const APOSTROPHE_ESCAPE_RX = /'[#'<>{}]/;
+const PLURAL_OFFSET_RX = /\boffset:\d+/;
 
-export function parseTemplate(source: string): Template {
-  const result = parseNodes(source, 0, false, null);
-  if (result.next < source.length) {
-    throw new Error(
-      `Unbalanced '}' at index ${result.next} in interpolation template: missing opening '{'.`,
-    );
+export interface ParseTemplateResult {
+  diagnostics: TemplateDiagnostic[];
+  template: Template;
+}
+
+export function parseTemplate(source: string): ParseTemplateResult {
+  const diagnostics: TemplateDiagnostic[] = [];
+  if (APOSTROPHE_ESCAPE_RX.test(source)) {
+    diagnostics.push({
+      feature: 'apostrophe escaping',
+      name: '',
+      reason: 'unsupported',
+    });
   }
-  return result.value;
+  const context: ParseContext = { diagnostics, source };
+  const template = parseNodes(context, 0, false, null).value;
+  return { diagnostics, template };
+}
+
+interface ParseContext {
+  diagnostics: TemplateDiagnostic[];
+  source: string;
 }
 
 interface ParseResult<T> {
@@ -29,28 +45,30 @@ interface ParseResult<T> {
 }
 
 function parseNodes(
-  source: string,
+  context: ParseContext,
   start: number,
   isInPluralBranch: boolean,
   terminator: '}' | null,
 ): ParseResult<Template> {
   const nodes: Template = [];
   let position = start;
-  while (position < source.length) {
-    const character = source[position];
+  while (position < context.source.length) {
+    const character = context.source[position];
     if (character === terminator) {
       break;
     }
     if (character === '}' && terminator === null) {
-      throw new Error(
-        `Unbalanced '}' at index ${position} in interpolation template: missing opening '{'.`,
-      );
+      context.diagnostics.push({
+        message: `unbalanced '}' at index ${position}: missing opening '{'`,
+        reason: 'malformed',
+      });
+      nodes.push({ kind: 'literal', value: '}' });
+      position++;
+      continue;
     }
-    const node = parseNode(source, position, isInPluralBranch);
+    const node = parseNode(context, position, isInPluralBranch);
     if (node === null) {
-      throw new Error(
-        `Unexpected character '${character ?? ''}' at index ${position} in interpolation template.`,
-      );
+      break;
     }
     nodes.push(node.value);
     position = node.next;
@@ -59,25 +77,25 @@ function parseNodes(
 }
 
 function parseNode(
-  source: string,
+  context: ParseContext,
   position: number,
   isInPluralBranch: boolean,
 ): ParseResult<TemplateNode> | null {
   return (
-    parseToken(source, position, isInPluralBranch) ??
-    parseCount(source, position, isInPluralBranch) ??
-    parseLiteral(source, position, isInPluralBranch)
+    parseToken(context, position, isInPluralBranch) ??
+    parseCount(context, position, isInPluralBranch) ??
+    parseLiteral(context, position, isInPluralBranch)
   );
 }
 
 function parseLiteral(
-  source: string,
+  context: ParseContext,
   position: number,
   isInPluralBranch: boolean,
 ): ParseResult<TemplateNode> | null {
   let end = position;
-  while (end < source.length) {
-    const character = source[end];
+  while (end < context.source.length) {
+    const character = context.source[end];
     if (character === '{' || character === '}') {
       break;
     }
@@ -91,20 +109,20 @@ function parseLiteral(
   }
   const node: LiteralNode = {
     kind: 'literal',
-    value: source.slice(position, end),
+    value: context.source.slice(position, end),
   };
   return { next: end, value: node };
 }
 
 function parseCount(
-  source: string,
+  context: ParseContext,
   position: number,
   isInPluralBranch: boolean,
 ): ParseResult<TemplateNode> | null {
   if (!isInPluralBranch) {
     return null;
   }
-  if (source[position] !== '#') {
+  if (context.source[position] !== '#') {
     return null;
   }
   const node: CountNode = { kind: 'count' };
@@ -112,94 +130,168 @@ function parseCount(
 }
 
 function parseToken(
-  source: string,
+  context: ParseContext,
   position: number,
   isInPluralBranch: boolean,
 ): ParseResult<TemplateNode> | null {
-  if (source[position] !== '{') {
+  if (context.source[position] !== '{') {
     return null;
   }
-  const closeIndex = findMatchingBrace(source, position);
-  const bodyStart = position + 1;
-  const bodyEnd = closeIndex;
-  const node = parseTokenBody(source, bodyStart, bodyEnd, isInPluralBranch);
+  const closeIndex = findMatchingBrace(context.source, position);
+  if (closeIndex === undefined) {
+    context.diagnostics.push({
+      message: `unbalanced '{' at index ${position}: missing closing '}'`,
+      reason: 'malformed',
+    });
+    const node: LiteralNode = {
+      kind: 'literal',
+      value: context.source.slice(position),
+    };
+    return { next: context.source.length, value: node };
+  }
+  const node = parseTokenBody(
+    context,
+    position + 1,
+    closeIndex,
+    isInPluralBranch,
+  );
   return { next: closeIndex + 1, value: node };
 }
 
 function parseTokenBody(
-  source: string,
+  context: ParseContext,
   start: number,
   end: number,
   isInPluralBranch: boolean,
 ): TemplateNode {
-  const firstComma = findTopLevelComma(source, start, end);
+  const firstComma = findTopLevelComma(context.source, start, end);
   if (firstComma === -1) {
-    const name = source.slice(start, end).trim();
+    const name = context.source.slice(start, end).trim();
+    if (name === '') {
+      context.diagnostics.push({
+        message: 'empty argument',
+        reason: 'malformed',
+      });
+    }
     return { kind: 'placeholder', name };
   }
-  const name = source.slice(start, firstComma).trim();
+  const name = context.source.slice(start, firstComma).trim();
   const afterName = firstComma + 1;
-  const secondComma = findTopLevelComma(source, afterName, end);
+  const secondComma = findTopLevelComma(context.source, afterName, end);
   const kindEnd = secondComma === -1 ? end : secondComma;
-  const kind = source.slice(afterName, kindEnd).trim();
+  const kind = context.source.slice(afterName, kindEnd).trim();
   const bodyStart = secondComma === -1 ? end : secondComma + 1;
   if (kind === 'plural') {
-    return buildPluralNode(source, name, 'cardinal', bodyStart, end);
+    return buildPluralNode(context, name, 'cardinal', bodyStart, end);
   }
   if (kind === 'selectordinal') {
-    return buildPluralNode(source, name, 'ordinal', bodyStart, end);
+    return buildPluralNode(context, name, 'ordinal', bodyStart, end);
   }
   if (kind === 'select') {
-    return buildSelectNode(source, name, bodyStart, end, isInPluralBranch);
+    return buildSelectNode(context, name, bodyStart, end, isInPluralBranch);
   }
   if (kind === 'number') {
-    return buildNumberNode(name, source.slice(bodyStart, end).trim());
+    return buildNumberNode(
+      context,
+      name,
+      context.source.slice(bodyStart, end).trim(),
+    );
   }
   if (kind === 'date') {
-    return buildDateNode(name, source.slice(bodyStart, end).trim());
+    return buildDateNode(
+      context,
+      name,
+      context.source.slice(bodyStart, end).trim(),
+    );
   }
   if (kind === 'time') {
-    return buildTimeNode(name, source.slice(bodyStart, end).trim());
+    return buildTimeNode(
+      context,
+      name,
+      context.source.slice(bodyStart, end).trim(),
+    );
   }
+  context.diagnostics.push({
+    message: `unknown argument type "${kind}"`,
+    reason: 'malformed',
+  });
   return { kind: 'placeholder', name };
 }
 
 function buildPluralNode(
-  source: string,
+  context: ParseContext,
   name: string,
   type: 'cardinal' | 'ordinal',
   bodyStart: number,
   bodyEnd: number,
 ): PluralNode {
-  const branches = parseBranches(source, bodyStart, bodyEnd, true);
+  const bodyText = context.source.slice(bodyStart, bodyEnd);
+  if (PLURAL_OFFSET_RX.test(bodyText)) {
+    context.diagnostics.push({
+      feature: 'plural offset',
+      name,
+      reason: 'unsupported',
+    });
+  }
+  const branches = parseBranches(context, bodyStart, bodyEnd, true);
+  if (!branches.has('other')) {
+    context.diagnostics.push({ name, reason: 'missing-other' });
+  }
   return { branches, kind: 'plural', name, type };
 }
 
 function buildSelectNode(
-  source: string,
+  context: ParseContext,
   name: string,
   bodyStart: number,
   bodyEnd: number,
   isInPluralBranch: boolean,
 ): SelectNode {
-  const branches = parseBranches(source, bodyStart, bodyEnd, isInPluralBranch);
+  const branches = parseBranches(context, bodyStart, bodyEnd, isInPluralBranch);
+  if (!branches.has('other')) {
+    context.diagnostics.push({ name, reason: 'missing-other' });
+  }
   return { branches, kind: 'select', name };
 }
 
-function buildNumberNode(name: string, body: string): NumberNode {
-  return { kind: 'number', name, options: resolveNumberOptions(body) };
+function buildNumberNode(
+  context: ParseContext,
+  name: string,
+  body: string,
+): NumberNode {
+  return {
+    kind: 'number',
+    name,
+    options: resolveNumberOptions(context, name, body),
+  };
 }
 
-function buildDateNode(name: string, body: string): DateNode {
-  return { kind: 'date', name, style: resolveDateTimeStyle(body) };
+function buildDateNode(
+  context: ParseContext,
+  name: string,
+  body: string,
+): DateNode {
+  return {
+    kind: 'date',
+    name,
+    style: resolveDateTimeStyle(context, name, 'date', body),
+  };
 }
 
-function buildTimeNode(name: string, body: string): TimeNode {
-  return { kind: 'time', name, style: resolveDateTimeStyle(body) };
+function buildTimeNode(
+  context: ParseContext,
+  name: string,
+  body: string,
+): TimeNode {
+  return {
+    kind: 'time',
+    name,
+    style: resolveDateTimeStyle(context, name, 'time', body),
+  };
 }
 
 function parseBranches(
-  source: string,
+  context: ParseContext,
   start: number,
   end: number,
   isInPluralBranch: boolean,
@@ -207,7 +299,7 @@ function parseBranches(
   const branches = new Map<string, Template>();
   let position = start;
   while (position < end) {
-    while (position < end && isWhitespace(source[position])) {
+    while (position < end && isWhitespace(context.source[position])) {
       position++;
     }
     if (position >= end) {
@@ -216,28 +308,38 @@ function parseBranches(
     let nameEnd = position;
     while (
       nameEnd < end &&
-      !isWhitespace(source[nameEnd]) &&
-      source[nameEnd] !== '{'
+      !isWhitespace(context.source[nameEnd]) &&
+      context.source[nameEnd] !== '{'
     ) {
       nameEnd++;
     }
-    const branchName = source.slice(position, nameEnd);
+    const branchName = context.source.slice(position, nameEnd);
     position = nameEnd;
-    while (position < end && isWhitespace(source[position])) {
+    while (position < end && isWhitespace(context.source[position])) {
       position++;
     }
-    if (source[position] !== '{') {
+    if (context.source[position] !== '{') {
+      continue;
+    }
+    const closeIndex = findMatchingBrace(context.source, position);
+    if (closeIndex === undefined) {
+      context.diagnostics.push({
+        message: `unbalanced '{' at index ${position}: missing closing '}'`,
+        reason: 'malformed',
+      });
       break;
     }
-    const closeIndex = findMatchingBrace(source, position);
-    const inner = parseNodes(source, position + 1, isInPluralBranch, '}');
+    const inner = parseNodes(context, position + 1, isInPluralBranch, '}');
     branches.set(branchName, inner.value);
     position = closeIndex + 1;
   }
   return branches;
 }
 
-function findMatchingBrace(source: string, openIndex: number): number {
+function findMatchingBrace(
+  source: string,
+  openIndex: number,
+): number | undefined {
   let depth = 1;
   let position = openIndex + 1;
   while (position < source.length && depth > 0) {
@@ -252,9 +354,7 @@ function findMatchingBrace(source: string, openIndex: number): number {
     }
   }
   if (depth > 0) {
-    throw new Error(
-      `Unbalanced '{' at index ${openIndex} in interpolation template: missing closing '}'.`,
-    );
+    return undefined;
   }
   return position;
 }
@@ -283,7 +383,11 @@ function isWhitespace(character: string | undefined): boolean {
   );
 }
 
-function resolveNumberOptions(body: string): Intl.NumberFormatOptions {
+function resolveNumberOptions(
+  context: ParseContext,
+  name: string,
+  body: string,
+): Intl.NumberFormatOptions {
   if (body === '' || body === 'decimal') {
     return {};
   }
@@ -293,20 +397,45 @@ function resolveNumberOptions(body: string): Intl.NumberFormatOptions {
   if (body === 'integer') {
     return { maximumFractionDigits: 0 };
   }
+  if (body === 'currency') {
+    context.diagnostics.push({
+      feature: 'currency without a code',
+      name,
+      reason: 'unsupported',
+    });
+    return {};
+  }
   if (body.startsWith('currency')) {
     const currencyCode = body.slice('currency'.length).trim();
     if (currencyCode !== '') {
       return { currency: currencyCode, style: 'currency' };
     }
   }
-  warn(
-    'Unknown number style — falling back to default formatting. Expected one of: decimal, percent, currency, integer.',
-    { code: 'YPK_UNKNOWN_NUMBER_STYLE', received: body },
-  );
+  if (body.startsWith('::')) {
+    context.diagnostics.push({
+      feature: 'number skeleton',
+      name,
+      reason: 'unsupported',
+    });
+    return {};
+  }
+  context.diagnostics.push({
+    feature: `number style "${body}"`,
+    name,
+    reason: 'unsupported',
+  });
   return {};
 }
 
-function resolveDateTimeStyle(body: string): DateTimeStyle {
+function resolveDateTimeStyle(
+  context: ParseContext,
+  name: string,
+  kind: 'date' | 'time',
+  body: string,
+): DateTimeStyle {
+  if (body === '') {
+    return 'medium';
+  }
   if (
     body === 'short' ||
     body === 'medium' ||
@@ -315,5 +444,10 @@ function resolveDateTimeStyle(body: string): DateTimeStyle {
   ) {
     return body;
   }
+  context.diagnostics.push({
+    feature: `${kind} skeleton or custom pattern`,
+    name,
+    reason: 'unsupported',
+  });
   return 'medium';
 }

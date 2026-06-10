@@ -168,7 +168,7 @@ describe('generateTemplate', () => {
   describe('semantic equivalence with interpret', () => {
     for (const fixture of fixtures) {
       it(`matches interpret for: ${fixture.name}`, () => {
-        const template = parseTemplate(fixture.source);
+        const template = parseTemplate(fixture.source).template;
         const compiled = compile(template);
         const generated = compiled(fixture.params, fixture.locale);
         const interpreted = interpret(template, fixture.params, fixture.locale);
