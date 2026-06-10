@@ -156,12 +156,15 @@ function parseToken(
     };
     return { next: context.source.length, value: node };
   }
-  const node = parseTokenBody(context, {
-    innerEnd: closeIndex,
-    innerStart: position + 1,
-    isInPluralBranch,
-    tokenRange: { end: closeIndex + 1, start: position },
-  });
+  const node = parseTokenBody(
+    {
+      innerEnd: closeIndex,
+      innerStart: position + 1,
+      isInPluralBranch,
+      tokenRange: { end: closeIndex + 1, start: position },
+    },
+    context,
+  );
   return { next: closeIndex + 1, value: node };
 }
 
@@ -173,8 +176,8 @@ interface ParseTokenBodyInput {
 }
 
 function parseTokenBody(
-  context: ParseContext,
   input: ParseTokenBodyInput,
+  context: ParseContext,
 ): TemplateNode {
   const { innerEnd, innerStart, isInPluralBranch, tokenRange } = input;
   const firstComma = findTopLevelComma(context.source, innerStart, innerEnd);
@@ -196,41 +199,50 @@ function parseTokenBody(
   const kind = context.source.slice(afterName, kindEnd).trim();
   const bodyStart = secondComma === undefined ? innerEnd : secondComma + 1;
   if (kind === 'plural') {
-    return buildPluralNode(context, {
-      bodyEnd: innerEnd,
-      bodyStart,
-      name,
-      tokenRange,
-      type: 'cardinal',
-    });
+    return buildPluralNode(
+      {
+        bodyEnd: innerEnd,
+        bodyStart,
+        name,
+        tokenRange,
+        type: 'cardinal',
+      },
+      context,
+    );
   }
   if (kind === 'selectordinal') {
-    return buildPluralNode(context, {
-      bodyEnd: innerEnd,
-      bodyStart,
-      name,
-      tokenRange,
-      type: 'ordinal',
-    });
+    return buildPluralNode(
+      {
+        bodyEnd: innerEnd,
+        bodyStart,
+        name,
+        tokenRange,
+        type: 'ordinal',
+      },
+      context,
+    );
   }
   if (kind === 'select') {
-    return buildSelectNode(context, {
-      bodyEnd: innerEnd,
-      bodyStart,
-      isInPluralBranch,
-      name,
-      tokenRange,
-    });
+    return buildSelectNode(
+      {
+        bodyEnd: innerEnd,
+        bodyStart,
+        isInPluralBranch,
+        name,
+        tokenRange,
+      },
+      context,
+    );
   }
   const bodyRange = trimmedRange(context.source, bodyStart, innerEnd);
   if (kind === 'number') {
-    return buildNumberNode(context, { bodyRange, name });
+    return buildNumberNode({ bodyRange, name }, context);
   }
   if (kind === 'date') {
-    return buildDateNode(context, { bodyRange, name });
+    return buildDateNode({ bodyRange, name }, context);
   }
   if (kind === 'time') {
-    return buildTimeNode(context, { bodyRange, name });
+    return buildTimeNode({ bodyRange, name }, context);
   }
   context.diagnostics.push({
     message: `unknown argument type "${kind}"`,
@@ -249,8 +261,8 @@ interface BuildPluralNodeInput {
 }
 
 function buildPluralNode(
-  context: ParseContext,
   input: BuildPluralNodeInput,
+  context: ParseContext,
 ): PluralNode {
   const bodyText = context.source.slice(input.bodyStart, input.bodyEnd);
   const offsetMatch = PLURAL_OFFSET_RX.exec(bodyText);
@@ -285,8 +297,8 @@ interface BuildSelectNodeInput {
 }
 
 function buildSelectNode(
-  context: ParseContext,
   input: BuildSelectNodeInput,
+  context: ParseContext,
 ): SelectNode {
   const branches = parseBranches(
     context,
@@ -310,35 +322,35 @@ interface BuildFormatNodeInput {
 }
 
 function buildNumberNode(
-  context: ParseContext,
   input: BuildFormatNodeInput,
+  context: ParseContext,
 ): NumberNode {
   return {
     kind: 'number',
     name: input.name,
-    options: resolveNumberOptions(context, input),
+    options: resolveNumberOptions(input, context),
   };
 }
 
 function buildDateNode(
-  context: ParseContext,
   input: BuildFormatNodeInput,
+  context: ParseContext,
 ): DateNode {
   return {
     kind: 'date',
     name: input.name,
-    style: resolveDateTimeStyle(context, 'date', input),
+    style: resolveDateTimeStyle(input, context, 'date'),
   };
 }
 
 function buildTimeNode(
-  context: ParseContext,
   input: BuildFormatNodeInput,
+  context: ParseContext,
 ): TimeNode {
   return {
     kind: 'time',
     name: input.name,
-    style: resolveDateTimeStyle(context, 'time', input),
+    style: resolveDateTimeStyle(input, context, 'time'),
   };
 }
 
@@ -460,8 +472,8 @@ function trimmedRange(
 }
 
 function resolveNumberOptions(
-  context: ParseContext,
   input: BuildFormatNodeInput,
+  context: ParseContext,
 ): Intl.NumberFormatOptions {
   const body = context.source
     .slice(input.bodyRange.start, input.bodyRange.end)
@@ -509,9 +521,9 @@ function resolveNumberOptions(
 }
 
 function resolveDateTimeStyle(
+  input: BuildFormatNodeInput,
   context: ParseContext,
   kind: 'date' | 'time',
-  input: BuildFormatNodeInput,
 ): DateTimeStyle {
   const body = context.source
     .slice(input.bodyRange.start, input.bodyRange.end)
