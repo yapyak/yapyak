@@ -118,6 +118,34 @@ describe('transformFile', () => {
       expect(code).not.toContain("from 'yapyak'");
     });
 
+    it('clears the `t` import even when `t` appears inside a comment', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source: `
+          import { t } from 'yapyak';
+          // t is the compiler entry point
+          export const x = t('Hello');
+        `,
+      });
+      expect(code).not.toContain("from 'yapyak'");
+    });
+
+    it('clears the `t` import even when `t` appears inside a string literal', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source: `
+          import { t } from 'yapyak';
+          export const note = "t is the entry point";
+          export const x = t('Hello');
+        `,
+      });
+      expect(code).not.toContain("from 'yapyak'");
+    });
+
     it('preserves `useLocale` specifier when still referenced', () => {
       const code = runTransform({
         locales: [

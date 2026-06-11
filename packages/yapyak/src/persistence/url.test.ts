@@ -88,4 +88,32 @@ describe('url', () => {
       expect(getFromUrl('https://app.test/app/sv/home', patternRx)).toBe('sv');
     });
   });
+
+  describe('with a `/g`-flagged regex matcher', () => {
+    it('returns the locale deterministically across consecutive navigations', () => {
+      const patternRx = /\/(?<locale>en|sv)\//g;
+      const persistence = url({
+        locales: LOCALES,
+        match: patternRx,
+      });
+      expect(
+        persistence.getFromRequest?.(new Request('https://app.test/sv/home')),
+      ).toBe('sv');
+      expect(
+        persistence.getFromRequest?.(new Request('https://app.test/en/about')),
+      ).toBe('en');
+      expect(
+        persistence.getFromRequest?.(new Request('https://app.test/sv/list')),
+      ).toBe('sv');
+    });
+
+    it('preserves the original regex `lastIndex` across calls', () => {
+      const patternRx = /\/(?<locale>en|sv)\//g;
+      url({
+        locales: LOCALES,
+        match: patternRx,
+      }).getFromRequest?.(new Request('https://app.test/sv/home'));
+      expect(patternRx.lastIndex).toBe(0);
+    });
+  });
 });

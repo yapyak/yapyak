@@ -626,21 +626,39 @@ function getParamArgText(callSite: ParsedCallSite): string | undefined {
 }
 
 function getReferenceCount(code: string, name: string): number {
+  const sourceFile = ts.createSourceFile(
+    'ref-count.tsx',
+    code,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TSX,
+  );
   let count = 0;
-  let index = 0;
-  while (index < code.length) {
-    const nextIndex = code.indexOf(name, index);
-    if (nextIndex === -1) {
-      break;
-    }
-    const before = code[nextIndex - 1];
-    const after = code[nextIndex + name.length];
-    if (!isIdentifierChar(before) && !isIdentifierChar(after)) {
+  const visit = (node: ts.Node): void => {
+    if (ts.isIdentifier(node) && node.text === name && isReference(node)) {
       count += 1;
     }
-    index = nextIndex + name.length;
-  }
+    ts.forEachChild(node, visit);
+  };
+  visit(sourceFile);
   return count;
+}
+
+function isReference(node: ts.Identifier): boolean {
+  const parent = node.parent;
+  if (!parent) {
+    return true;
+  }
+  if (ts.isPropertyAccessExpression(parent) && parent.name === node) {
+    return false;
+  }
+  if (ts.isPropertyAssignment(parent) && parent.name === node) {
+    return false;
+  }
+  if (ts.isJsxAttribute(parent) && parent.name === node) {
+    return false;
+  }
+  return true;
 }
 
 function isIdentifierChar(character: string | undefined): boolean {

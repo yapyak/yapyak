@@ -10,15 +10,16 @@ type UrlOptions = {
 
 export function url(options: UrlOptions): Persistence {
   const { locales, match } = options;
+  const pattern = match ? stripGlobalFlag(match) : undefined;
   return {
     get() {
       if (typeof window === 'undefined') {
         return undefined;
       }
-      return getLocaleFromUrl(window.location, locales, match);
+      return getLocaleFromUrl(window.location, locales, pattern);
     },
     getFromRequest(request) {
-      return getLocaleFromUrl(new URL(request.url), locales, match);
+      return getLocaleFromUrl(new URL(request.url), locales, pattern);
     },
     set() {
       warn(
@@ -57,4 +58,11 @@ function getLocaleFromUrl(
     return segment;
   }
   return undefined;
+}
+
+function stripGlobalFlag(regex: RegExp): RegExp {
+  if (!regex.global) {
+    return regex;
+  }
+  return new RegExp(regex.source, regex.flags.replace('g', ''));
 }
