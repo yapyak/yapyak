@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { fc, it } from '@fast-check/vitest';
+import { describe, expect } from 'vitest';
 
 import { parseRichText, walkRichText } from './rich-text';
 
@@ -234,5 +235,44 @@ describe('walkRichText', () => {
       stringRenderer,
     );
     expect(result).toBe('[click * here]');
+  });
+});
+
+describe('properties', () => {
+  it.prop([
+    fc.string(),
+  ])('returns an array of nodes for every input string', (source) => {
+    expect(Array.isArray(parseRichText(source))).toBe(true);
+  });
+
+  const tagFreeArbitrary = fc.string().filter((s) => !s.includes('<'));
+
+  it.prop([
+    tagFreeArbitrary,
+  ])(
+    'preserves the source as a single text node when no tag marker is present',
+    (source) => {
+      const result = parseRichText(source);
+      if (source === '') {
+        expect(result).toEqual([]);
+        return;
+      }
+      expect(result).toEqual([
+        {
+          text: source,
+          type: 'text',
+        },
+      ]);
+    },
+  );
+
+  it.prop([
+    fc.string(),
+  ])('lists no empty text node in the result', (source) => {
+    for (const node of parseRichText(source)) {
+      if (node.type === 'text') {
+        expect(node.text).not.toBe('');
+      }
+    }
   });
 });

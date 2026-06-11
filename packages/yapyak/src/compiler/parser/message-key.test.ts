@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { fc, it } from '@fast-check/vitest';
+import { describe, expect } from 'vitest';
 
 import { parseMessageKey, toMessageKey } from './message-key';
 
@@ -25,4 +26,32 @@ describe('toMessageKey', () => {
   it('builds a key from source and context joined by `@`', () => {
     expect(toMessageKey('Save', 'button')).toBe('Save@button');
   });
+});
+
+describe('properties', () => {
+  const sourceWithoutSeparator = fc.string().filter((s) => !s.includes('@'));
+
+  it.prop([
+    sourceWithoutSeparator,
+  ])(
+    'preserves every source through a roundtrip when no context is supplied',
+    (source) => {
+      expect(parseMessageKey(toMessageKey(source))).toEqual({
+        source,
+      });
+    },
+  );
+
+  it.prop([
+    sourceWithoutSeparator,
+    fc.string(),
+  ])(
+    'preserves every source and context pair through a roundtrip',
+    (source, context) => {
+      expect(parseMessageKey(toMessageKey(source, context))).toEqual({
+        context,
+        source,
+      });
+    },
+  );
 });
