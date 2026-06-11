@@ -10,7 +10,7 @@ type VoidsOf<T> = T extends TReturn<string, infer Void> ? Void : never;
  * @remarks
  * Each pair-tag snippet on {@link RichText} matching a `<name>...</name>` tag in `value` has this signature.
  */
-export type TagHandler = Snippet<
+export type PairHandler = Snippet<
   [
     Snippet,
   ]
@@ -28,14 +28,14 @@ export type VoidHandler = Snippet<[]>;
  * Props for {@link RichText}.
  *
  * @remarks
- * Carries the source `value` and a snippet per named tag extracted from it. Pair tags take a {@link TagHandler}, void tags take a {@link VoidHandler}.
+ * Carries the source `value` and a snippet per named tag extracted from it. Pair tags take a {@link PairHandler}, void tags take a {@link VoidHandler}.
  *
  * @typeParam T - The source string literal carrying the tag names.
  */
 export type RichTextProps<T extends string> = {
   value: T;
 } & {
-  [Pair in PairsOf<T>]: TagHandler;
+  [Pair in PairsOf<T>]: PairHandler;
 } & {
   [Void in VoidsOf<T>]: VoidHandler;
 };

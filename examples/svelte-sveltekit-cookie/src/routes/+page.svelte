@@ -14,7 +14,7 @@
 
   <p>{t("From the client")}</p>
   <div style="display: flex; gap: 8px;">
-    {#each locales as value (value)}
+    {#each locales as value}
       <button
         type="button"
         disabled={value === locale.current}
@@ -27,7 +27,7 @@
 
   <p>{t("From the server")}</p>
   <form {...localeForm} style="display: flex; gap: 8px;">
-    {#each locales as value (value)}
+    {#each locales as value}
       <button name="locale" {value} disabled={value === locale.current}>
         {value === "sv" ? t("Swedish") : t("English")}
       </button>

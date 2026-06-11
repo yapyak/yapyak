@@ -9,7 +9,9 @@ import { parseRichText } from 'yapyak/internal';
  * @remarks
  * The slot receives a `children` render function that emits the inner content, which the consumer wraps in the desired element.
  */
-export type TagSlot = (props: { children: () => VNodeChild[] }) => VNodeChild[];
+export type PairSlot = (props: {
+  children: () => VNodeChild[];
+}) => VNodeChild[];
 
 /**
  * The void-tag slot. Each named void tag (`<name/>`) in the source string surfaces as a slot with this signature.
@@ -20,12 +22,12 @@ export type TagSlot = (props: { children: () => VNodeChild[] }) => VNodeChild[];
 export type VoidSlot = () => VNodeChild[];
 
 /**
- * The rich-text slots. Maps tag names to their {@link TagSlot} or {@link VoidSlot}.
+ * The rich-text slots. Maps tag names to their {@link PairSlot} or {@link VoidSlot}.
  *
  * @remarks
  * Vue's type system cannot require slots derived from a generic string literal, so the slot map is open: any tag found in `value` is matched against a slot of the same name. A tag with no matching slot renders as literal text.
  */
-export type RichTextSlots = Record<string, TagSlot | VoidSlot>;
+export type RichTextSlots = Record<string, PairSlot | VoidSlot>;
 
 /**
  * Props for {@link RichText}.
@@ -68,7 +70,7 @@ export const RichText: FunctionalComponent<
 
 function renderNodes(
   nodes: Node[],
-  slots: Readonly<Record<string, TagSlot | VoidSlot | undefined>>,
+  slots: Readonly<Record<string, PairSlot | VoidSlot | undefined>>,
 ): VNodeChild[] {
   const out: VNodeChild[] = [];
   for (const node of nodes) {
@@ -89,7 +91,7 @@ function renderNodes(
     if (slot) {
       const children = (): VNodeChild[] => renderNodes(node.children, slots);
       out.push(
-        ...(slot as TagSlot)({
+        ...(slot as PairSlot)({
           children,
         }),
       );

@@ -2,14 +2,14 @@
   import type { Snippet } from "svelte";
   import type { RichTextNode } from "yapyak/internal";
 
-  import type { TagHandler, VoidHandler } from "./rich-text";
+  import type { PairHandler, VoidHandler } from "./rich-text";
   import RichTextWalker from "./rich-text-walker.svelte";
 
   let {
     handlers,
     nodes,
   }: {
-    handlers: Record<string, TagHandler | VoidHandler>;
+    handlers: Record<string, PairHandler | VoidHandler>;
     nodes: RichTextNode[];
   } = $props();
 </script>
@@ -24,7 +24,7 @@
       {`<${node.name}/>`}
     {/if}
   {:else if handlers[node.name]}
-    {@const handler = handlers[node.name] as TagHandler}
+    {@const handler = handlers[node.name] as PairHandler}
     {#snippet children()}
       <RichTextWalker {handlers} nodes={node.children} />
     {/snippet}

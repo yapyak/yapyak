@@ -12,7 +12,7 @@
 
   <h2>{t("Switch language")}</h2>
   <div style="display: flex; gap: 8px;">
-    {#each locales as value (value)}
+    {#each locales as value}
       <a
         href={resolve("/[locale]", { locale: value })}
         aria-current={value === locale.current ? "page" : undefined}
