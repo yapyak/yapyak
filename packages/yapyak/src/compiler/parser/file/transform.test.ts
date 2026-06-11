@@ -553,6 +553,44 @@ describe('transformFile', () => {
       expect(code).toMatch(/_yapyak_catalog_\$0_\$0 = \{/);
       expect(code).toContain('const _yapyak_catalog = "user-defined";');
     });
+
+    it('preserves a free catalog prefix when user has both `_yapyak_catalog` and `_yapyak_catalog_$0`', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source: [
+          "import { t } from 'yapyak';",
+          'const _yapyak_catalog = "user-defined";',
+          'const _yapyak_catalog_$0 = "also-user-defined";',
+          "export const x = t('Hello');",
+          'export { _yapyak_catalog, _yapyak_catalog_$0 };',
+        ].join('\n'),
+      });
+      expect(code).toMatch(/_yapyak_catalog_\$1_\$0 = \{/);
+      expect(code).toContain('const _yapyak_catalog = "user-defined";');
+      expect(code).toContain('const _yapyak_catalog_$0 = "also-user-defined";');
+    });
+
+    it('preserves `_yapyak_catalog` when the prefix appears only as a substring of a larger identifier', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source: [
+          "import { t } from 'yapyak';",
+          'const my_yapyak_catalog_other = "looks-similar";',
+          'const your_yapyak_catalog_thing = "looks-similar-too";',
+          "export const x = t('Hello');",
+          'export { my_yapyak_catalog_other, your_yapyak_catalog_thing };',
+        ].join('\n'),
+      });
+      expect(code).toMatch(/const _yapyak_catalog_\$0 = \{/);
+      expect(code).toContain('const my_yapyak_catalog_other');
+      expect(code).toContain('const your_yapyak_catalog_thing');
+    });
   });
 
   describe('AST variants', () => {

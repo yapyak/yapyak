@@ -454,6 +454,40 @@ describe('interpret', () => {
         ),
       ).toBe('');
     });
+
+    it('interpolates an empty string when the value is missing', () => {
+      expect(
+        interpret(
+          [
+            {
+              kind: 'number',
+              name: 'value',
+              options: {},
+            },
+          ],
+          {},
+          'en',
+        ),
+      ).toBe('');
+    });
+
+    it('interpolates the raw `String()` when the value is not numeric', () => {
+      expect(
+        interpret(
+          [
+            {
+              kind: 'number',
+              name: 'value',
+              options: {},
+            },
+          ],
+          {
+            value: 'Hello',
+          },
+          'en',
+        ),
+      ).toBe('Hello');
+    });
   });
 
   describe('date', () => {
@@ -486,6 +520,63 @@ describe('interpret', () => {
           ],
           {
             when: 'not-a-date',
+          },
+          'en',
+        ),
+      ).toBe('');
+    });
+
+    it('interpolates an empty string when the value is neither `Date` nor a primitive', () => {
+      expect(
+        interpret(
+          [
+            {
+              kind: 'date',
+              name: 'when',
+              style: 'short',
+            },
+          ],
+          {
+            when: {
+              foo: 'bar',
+            },
+          },
+          'en',
+        ),
+      ).toBe('');
+    });
+  });
+
+  describe('time', () => {
+    it('interpolates a Date with the given style', () => {
+      const result = interpret(
+        [
+          {
+            kind: 'time',
+            name: 'when',
+            style: 'short',
+          },
+        ],
+        {
+          when: new Date('2026-06-10T08:30:00Z'),
+        },
+        'en',
+      );
+      expect(result).toMatch(/\d/);
+    });
+
+    it('interpolates an empty string for an invalid time input', () => {
+      expect(
+        interpret(
+          [
+            {
+              kind: 'time',
+              name: 'when',
+              style: 'short',
+            },
+          ],
+          {
+            when: 'not-a-time',
           },
           'en',
         ),

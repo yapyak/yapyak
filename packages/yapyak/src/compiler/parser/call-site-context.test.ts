@@ -215,4 +215,45 @@ describe('resolveCallSiteContext', () => {
     );
     expect(context.componentName).toBeUndefined();
   });
+
+  it('returns no component name for `t()` inside a class method', () => {
+    const sourceFile = parseInline(`
+      import { t } from 'yapyak';
+      class Service {
+        render() {
+          return t('Hello');
+        }
+      }
+    `);
+    const context = resolveCallSiteContext(
+      findFirstCall(sourceFile),
+      sourceFile,
+    );
+    expect(context.componentName).toBeUndefined();
+  });
+
+  it('returns the component name from a named function expression', () => {
+    const sourceFile = parseInline(`
+      import { t } from 'yapyak';
+      export const greeting = (function Greeting() { return t('Hello'); })();
+    `);
+    const context = resolveCallSiteContext(
+      findFirstCall(sourceFile),
+      sourceFile,
+    );
+    expect(context.componentName).toBe('Greeting');
+  });
+
+  it('returns no component name for `t()` inside a non-HOC bare function call', () => {
+    const sourceFile = parseInline(`
+      import { t } from 'yapyak';
+      function wrap(fn: () => string) { return fn(); }
+      export const greeting = wrap(() => t('Hello'));
+    `);
+    const context = resolveCallSiteContext(
+      findFirstCall(sourceFile),
+      sourceFile,
+    );
+    expect(context.componentName).toBeUndefined();
+  });
 });

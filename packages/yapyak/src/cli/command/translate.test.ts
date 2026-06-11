@@ -185,4 +185,77 @@ describe('translate', () => {
     );
     expect(code).toBe(1);
   });
+
+  it('returns `130` when SIGINT cancels mid-translate', async () => {
+    writeFileSync(
+      join(root, 'src', 'app.ts'),
+      `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
+    );
+    writeFileSync(
+      join(root, 'locales', 'sv.json'),
+      JSON.stringify({
+        'src/app.ts': {
+          Save: '',
+        },
+      }),
+    );
+    const translator = Object.assign(
+      vi.fn(async () => {
+        process.emit('SIGINT');
+        return 'Spara';
+      }),
+      {
+        id: 'fake',
+      },
+    );
+    const code = await translate(
+      makeConfig({
+        translator,
+      }),
+      root,
+    );
+    expect(code).toBe(130);
+    expect(writes.join('')).toContain('cancelled');
+    expect(writes.join('')).toContain('Partial results written');
+  });
+
+  it('blocks every remaining locale when SIGINT fires after the first', async () => {
+    writeFileSync(
+      join(root, 'src', 'app.ts'),
+      `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
+    );
+    writeFileSync(
+      join(root, 'locales', 'sv.json'),
+      JSON.stringify({
+        'src/app.ts': {
+          Save: '',
+        },
+      }),
+    );
+    writeFileSync(
+      join(root, 'locales', 'fr.json'),
+      JSON.stringify({
+        'src/app.ts': {
+          Save: '',
+        },
+      }),
+    );
+    const translator = Object.assign(
+      vi.fn(async () => {
+        process.emit('SIGINT');
+        return 'Spara';
+      }),
+      {
+        id: 'fake',
+      },
+    );
+    const code = await translate(
+      makeConfig({
+        translator,
+      }),
+      root,
+    );
+    expect(code).toBe(130);
+    expect(translator).toHaveBeenCalledTimes(1);
+  });
 });

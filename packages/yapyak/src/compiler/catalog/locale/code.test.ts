@@ -80,4 +80,20 @@ describe('validateLocaleCode', () => {
 
     expect(result.valid).toBe(true);
   });
+
+  it('returns an invalid-structure issue without a suggestion for an empty code', () => {
+    const result = validateLocaleCode('');
+
+    expect(result.valid).toBe(false);
+    expect(result.issue).toBe('invalid-structure');
+    expect(result.suggestion).toBeUndefined();
+  });
+
+  it('returns an invalid-structure issue without a suggestion for a long pseudo-code', () => {
+    const result = validateLocaleCode('completely-unknown-locale-tag');
+
+    expect(result.valid).toBe(false);
+    expect(result.issue).toBe('invalid-structure');
+    expect(result.suggestion).toBeUndefined();
+  });
 });

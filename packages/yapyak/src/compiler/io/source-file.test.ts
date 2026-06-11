@@ -1,7 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { walkSourceFiles } from './source-file';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  chmodSync,
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -13,6 +20,9 @@ describe('walkSourceFiles', () => {
   });
 
   afterEach(() => {
+    try {
+      chmodSync(projectRoot, 0o755);
+    } catch {}
     rmSync(projectRoot, {
       force: true,
       recursive: true,
@@ -67,5 +77,57 @@ describe('walkSourceFiles', () => {
     expect(files.map((file) => file.fileId)).toEqual([
       'src/a.tsx',
     ]);
+  });
+
+  it('blocks a file when the filter rejects its `fileId`', () => {
+    mkdirSync(join(projectRoot, 'src'), {
+      recursive: true,
+    });
+    writeFileSync(join(projectRoot, 'src', 'a.ts'), 'Hello');
+    writeFileSync(join(projectRoot, 'src', 'b.ts'), 'World');
+
+    const files = walkSourceFiles(
+      (fileId) => fileId !== 'src/b.ts',
+      projectRoot,
+    );
+
+    expect(files.map((file) => file.fileId)).toEqual([
+      'src/a.ts',
+    ]);
+  });
+
+  it('returns no files when the project root does not exist', () => {
+    const files = walkSourceFiles(() => true, join(projectRoot, 'missing'));
+    expect(files).toEqual([]);
+  });
+
+  it('returns no files for a broken symlink entry', () => {
+    mkdirSync(join(projectRoot, 'src'), {
+      recursive: true,
+    });
+    symlinkSync(
+      join(projectRoot, 'missing.ts'),
+      join(projectRoot, 'src', 'a.ts'),
+    );
+
+    const files = walkSourceFiles(() => true, projectRoot);
+
+    expect(files).toEqual([]);
+  });
+
+  it('returns no files when a file is unreadable', () => {
+    mkdirSync(join(projectRoot, 'src'), {
+      recursive: true,
+    });
+    const filePath = join(projectRoot, 'src', 'a.ts');
+    writeFileSync(filePath, 'Hello');
+    chmodSync(filePath, 0o000);
+
+    try {
+      const files = walkSourceFiles(() => true, projectRoot);
+      expect(files).toEqual([]);
+    } finally {
+      chmodSync(filePath, 0o644);
+    }
   });
 });

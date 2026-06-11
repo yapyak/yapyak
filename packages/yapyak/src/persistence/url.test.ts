@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { resetWarn, setWarn } from '../warn';
 import { url } from './url';
 
 const LOCALES = [
@@ -114,6 +115,63 @@ describe('url', () => {
         match: patternRx,
       }).getFromRequest?.(new Request('https://app.test/sv/home'));
       expect(patternRx.lastIndex).toBe(0);
+    });
+  });
+
+  describe('in non-browser environment', () => {
+    it('returns `undefined` from `get` when `window` is missing', () => {
+      expect(
+        url({
+          locales: LOCALES,
+        }).get(),
+      ).toBeUndefined();
+    });
+
+    it('returns a no-op unsubscribe from `subscribe` when `window` is missing', () => {
+      const unsubscribe = url({
+        locales: LOCALES,
+      }).subscribe?.(vi.fn());
+      expect(unsubscribe).toBeTypeOf('function');
+      expect(() => unsubscribe?.()).not.toThrow();
+    });
+  });
+
+  describe('in browser', () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it('returns the locale from `window.location`', () => {
+      vi.stubGlobal('window', {
+        location: new URL('https://app.test/sv/home'),
+      });
+      expect(
+        url({
+          locales: LOCALES,
+        }).get(),
+      ).toBe('sv');
+    });
+  });
+
+  describe('set', () => {
+    afterEach(() => {
+      resetWarn();
+    });
+
+    it('returns `false` and warns with `YPK_PERSISTENCE_URL_NOOP`', () => {
+      const warnSpy =
+        vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
+      setWarn(warnSpy);
+      const result = url({
+        locales: LOCALES,
+      }).set('sv');
+      expect(result).toBe(false);
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('setLocale() is a no-op'),
+        expect.objectContaining({
+          code: 'YPK_PERSISTENCE_URL_NOOP',
+        }),
+      );
     });
   });
 });

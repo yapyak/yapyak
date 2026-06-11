@@ -285,6 +285,7 @@ describe('cookie', () => {
             globalThis.clearInterval(id);
           },
           history,
+          removeEventListener() {},
           setInterval(handler: () => void, ms?: number) {
             return globalThis.setInterval(handler, ms);
           },
@@ -294,6 +295,11 @@ describe('cookie', () => {
             const arr = documentListeners.get(type) ?? [];
             arr.push(fn);
             documentListeners.set(type, arr);
+          },
+          removeEventListener(type: string, fn: (event: Event) => void) {
+            const arr = documentListeners.get(type) ?? [];
+            const filtered = arr.filter((existing) => existing !== fn);
+            documentListeners.set(type, filtered);
           },
           get visibilityState() {
             return visibilityState;
@@ -337,6 +343,16 @@ describe('cookie', () => {
         visibilityState = 'visible';
         dispatchDocument('visibilitychange');
         expect(onChange).toHaveBeenCalledOnce();
+      });
+
+      it('clears the polling interval after unsubscribe', () => {
+        const onChange = vi.fn();
+        const unsubscribe = cookie({
+          name: 'locale',
+        }).subscribe?.(onChange);
+        unsubscribe?.();
+        vi.advanceTimersByTime(5000);
+        expect(onChange).not.toHaveBeenCalled();
       });
     });
   });

@@ -18,6 +18,16 @@ function loadFixture(name: string): ts.SourceFile {
   );
 }
 
+function parseSource(source: string): ts.SourceFile {
+  return ts.createSourceFile(
+    'inline.ts',
+    source,
+    ts.ScriptTarget.ESNext,
+    true,
+    ts.ScriptKind.TS,
+  );
+}
+
 function findFirstCallExpression(
   node: ts.Node,
   name: string,
@@ -120,5 +130,31 @@ describe('resolveBindings', () => {
     const call = findFirstCallExpression(sourceFile, 't');
     expect(call).toBeDefined();
     expect(table.find('t', call as ts.Node)?.kind).toBe('direct');
+  });
+
+  it('returns no binding for an import from a different module', () => {
+    const sourceFile = parseSource("import { t } from 'other';");
+    const table = resolveBindings(sourceFile);
+    expect(table.root.bindings.size).toBe(0);
+  });
+
+  it('returns no binding for a side-effect import of `yapyak`', () => {
+    const sourceFile = parseSource("import 'yapyak';");
+    const table = resolveBindings(sourceFile);
+    expect(table.root.bindings.size).toBe(0);
+  });
+
+  it('returns no binding for a default-only import of `yapyak`', () => {
+    const sourceFile = parseSource("import t from 'yapyak';");
+    const table = resolveBindings(sourceFile);
+    expect(table.root.bindings.size).toBe(0);
+  });
+
+  it('returns no wrapper binding for a variable assigned an unknown identifier', () => {
+    const sourceFile = parseSource(
+      "import { t } from 'yapyak';\nconst translate = somethingUnknown;",
+    );
+    const table = resolveBindings(sourceFile);
+    expect(table.root.bindings.has('translate')).toBe(false);
   });
 });
