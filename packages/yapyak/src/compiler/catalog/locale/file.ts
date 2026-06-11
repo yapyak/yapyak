@@ -4,6 +4,7 @@ import type { OrphanCache } from './orphan';
 
 import { toMessageKey } from '../../parser';
 import { compareKeys, stringifyCanonical } from '../canonical';
+import { writeAtomic } from './atomic';
 import { validateLocaleCode } from './code';
 import {
   CorruptOrphanCacheError,
@@ -14,7 +15,7 @@ import {
   removeOrphan,
   writeOrphans,
 } from './orphan';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 export type LocaleFile = Record<string, Record<string, string>>;
@@ -146,7 +147,7 @@ export function writeLocaleFiles(writes: WriteLocaleFileInput[]): void {
     mkdirSync(dirname(write.filePath), {
       recursive: true,
     });
-    writeFileSync(write.filePath, stringifyCanonical(write.after));
+    writeAtomic(write.filePath, stringifyCanonical(write.after));
   }
 }
 

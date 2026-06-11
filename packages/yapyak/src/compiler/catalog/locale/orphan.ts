@@ -1,5 +1,6 @@
 import { stringifyCanonical } from '../canonical';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { writeAtomic } from './atomic';
+import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 export type OrphanEntry = {
@@ -79,7 +80,7 @@ export function writeOrphans(yapyakDir: string, cache: OrphanCache): void {
   mkdirSync(dirname(path), {
     recursive: true,
   });
-  writeFileSync(path, stringifyCanonical(cache));
+  writeAtomic(path, stringifyCanonical(cache));
 }
 
 export function findOrphan(
