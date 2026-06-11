@@ -153,7 +153,7 @@ function registerVariableDeclarations(
         continue;
       }
       scope.bindings.set(localName, {
-        kind: 'wrapper',
+        kind: target.kind === 'namespace' ? 'namespace' : 'wrapper',
         localName,
       });
     }

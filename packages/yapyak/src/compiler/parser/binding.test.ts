@@ -157,4 +157,12 @@ describe('resolveBindings', () => {
     const table = resolveBindings(sourceFile);
     expect(table.root.bindings.has('translate')).toBe(false);
   });
+
+  it('preserves the namespace kind for a variable aliased to a namespace import', () => {
+    const sourceFile = parseSource(
+      "import * as y from 'yapyak';\nconst x = y;",
+    );
+    const table = resolveBindings(sourceFile);
+    expect(table.root.bindings.get('x')?.kind).toBe('namespace');
+  });
 });
