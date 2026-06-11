@@ -1,3 +1,6 @@
+/**
+ * The rich text node. Holds either a plain-text leaf, a tag wrapping recursively-parsed children, or a void tag carrying no children.
+ */
 export type RichTextNode =
   | {
       type: 'tag';
@@ -5,10 +8,66 @@ export type RichTextNode =
       children: RichTextNode[];
     }
   | {
+      type: 'void';
+      name: string;
+    }
+  | {
       type: 'text';
       text: string;
     };
 
+/**
+ * Parses a source string with `<tag>` markers into a tree of {@link RichTextNode}.
+ *
+ * @remarks
+ * The primitive behind every framework `<RichText>` component. Use directly when building a non-framework rendering target — server-rendered HTML emails, plain-text fallbacks, custom string formats, or a renderer for a framework yapyak does not ship.
+ *
+ * Tag names must match `[A-Za-z][A-Za-z0-9]*`. Tags with attributes and tags whose matching close marker is missing are not parsed and remain in the surrounding text as-is. Self-closing tags `<name/>` parse as `void` nodes that carry no children.
+ *
+ * @param source - The source string.
+ *
+ * @example Parse a translated string
+ * ```ts
+ * import { parseRichText, t } from 'yapyak';
+ *
+ * parseRichText(t('Click <link>here</link>.'));
+ * // => [
+ * //   { type: 'text', text: 'Click ' },
+ * //   { type: 'tag', name: 'link', children: [{ type: 'text', text: 'here' }] },
+ * //   { type: 'text', text: '.' },
+ * // ]
+ * ```
+ *
+ * @example Parse a void tag
+ * ```ts
+ * import { parseRichText } from 'yapyak';
+ *
+ * parseRichText('First<br/>Second');
+ * // => [
+ * //   { type: 'text', text: 'First' },
+ * //   { type: 'void', name: 'br' },
+ * //   { type: 'text', text: 'Second' },
+ * // ]
+ * ```
+ *
+ * @example Build a plain-text renderer
+ * ```ts
+ * import { parseRichText, type RichTextNode } from 'yapyak';
+ *
+ * function toPlain(nodes: RichTextNode[]): string {
+ *   return nodes
+ *     .map((node) => {
+ *       if (node.type === 'text') return node.text;
+ *       if (node.type === 'void') return '';
+ *       return toPlain(node.children);
+ *     })
+ *     .join('');
+ * }
+ *
+ * toPlain(parseRichText('Click <link>here</link>.'));
+ * // => 'Click here.'
+ * ```
+ */
 export function parseRichText(source: string): RichTextNode[] {
   const nodes: RichTextNode[] = [];
   let text = '';
@@ -29,6 +88,15 @@ export function parseRichText(source: string): RichTextNode[] {
       ? readOpenTag(source, index)
       : undefined;
     if (openTag) {
+      if (openTag.kind === 'void') {
+        flush();
+        nodes.push({
+          name: openTag.name,
+          type: 'void',
+        });
+        index = openTag.end;
+        continue;
+      }
       const close = findClosingTagRange(source, openTag.end, openTag.name);
       if (close) {
         flush();
@@ -50,7 +118,7 @@ export function parseRichText(source: string): RichTextNode[] {
 
 export function walkRichText<T>(
   source: string,
-  handlers: Record<string, (children: T) => T>,
+  handlers: Record<string, (children?: T) => T>,
   renderer: {
     leaf: (text: string) => T;
     concat: (parts: T[]) => T;
@@ -61,7 +129,7 @@ export function walkRichText<T>(
 
 function renderNodes<T>(
   nodes: RichTextNode[],
-  handlers: Record<string, (children: T) => T>,
+  handlers: Record<string, (children?: T) => T>,
   renderer: {
     leaf: (text: string) => T;
     concat: (parts: T[]) => T;
@@ -71,6 +139,15 @@ function renderNodes<T>(
   for (const node of nodes) {
     if (node.type === 'text') {
       parts.push(renderer.leaf(node.text));
+      continue;
+    }
+    if (node.type === 'void') {
+      const handler = handlers[node.name];
+      if (handler) {
+        parts.push(handler());
+        continue;
+      }
+      parts.push(renderer.leaf(`<${node.name}/>`));
       continue;
     }
     const handler = handlers[node.name];
@@ -93,18 +170,25 @@ function readOpenTag(
   | {
       name: string;
       end: number;
+      kind: 'open' | 'void';
     }
   | undefined {
   const close = source.indexOf('>', index + 1);
   if (close === -1) {
     return undefined;
   }
-  const name = source.slice(index + 1, close);
+  let name = source.slice(index + 1, close);
+  let kind: 'open' | 'void' = 'open';
+  if (name.endsWith('/')) {
+    name = name.slice(0, -1);
+    kind = 'void';
+  }
   if (!/^[A-Za-z][A-Za-z0-9]*$/.test(name)) {
     return undefined;
   }
   return {
     end: close + 1,
+    kind,
     name,
   };
 }

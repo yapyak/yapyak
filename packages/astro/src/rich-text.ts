@@ -47,6 +47,10 @@ function extractTagNames(nodes: RichTextNode[]): Set<string> {
       if (node.type === 'tag') {
         names.add(node.name);
         walk(node.children);
+        continue;
+      }
+      if (node.type === 'void') {
+        names.add(node.name);
       }
     }
   }
@@ -60,6 +64,15 @@ function renderNodes(
   for (const node of nodes) {
     if (node.type === 'text') {
       out += escapeHtml(node.text);
+      continue;
+    }
+    if (node.type === 'void') {
+      const template = templates[node.name];
+      if (template !== undefined) {
+        out += template.replaceAll(CHILDREN_TOKEN, '');
+        continue;
+      }
+      out += `&lt;${escapeHtml(node.name)}/&gt;`;
       continue;
     }
     const template = templates[node.name];

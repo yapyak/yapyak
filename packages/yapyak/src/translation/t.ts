@@ -1,7 +1,7 @@
 import type { Locale } from '../locale';
 import type { ValidateSource } from './source';
 import type { ExtractTParams } from './t-param';
-import type { ExtractTags } from './tag';
+import type { ExtractPairTags, ExtractVoidTags } from './tag';
 
 /**
  * The params for a source string's placeholders.
@@ -36,18 +36,25 @@ declare const brand: unique symbol;
  * The return type of {@link t}.
  *
  * @remarks
- * A `string` branded with the rich-text tag names found in the source, so a `<RichText>` can require a handler per tag. A source with no tags returns a plain `string`.
+ * A `string` branded with the rich-text tag names found in the source — pair tags (with content) in `TPair` and void tags (self-closing) in `TVoid` — so a `<RichText>` can require a handler per tag with the right signature. A source with no tags returns a plain `string`.
  *
- * @typeParam T - The rich-text tag names extracted from the source string.
+ * @typeParam TPair - The pair-tag names extracted from the source string.
+ * @typeParam TVoid - The void-tag names extracted from the source string.
  */
-export type TReturn<T extends string = never> = [
-  T,
+export type TReturn<
+  TPair extends string = never,
+  TVoid extends string = never,
+> = [
+  TPair | TVoid,
 ] extends [
   never,
 ]
   ? string
   : string & {
-      [brand]: T;
+      [brand]: {
+        pair: TPair;
+        void: TVoid;
+      };
     };
 
 /**
@@ -68,7 +75,7 @@ export type TInChain = {
     context: ValidContext<TContext>,
     source: ValidateSource<TSource>,
     ...args: TArgs<TSource>
-  ): TReturn<ExtractTags<TSource>>;
+  ): TReturn<ExtractPairTags<TSource>, ExtractVoidTags<TSource>>;
 };
 
 /**
@@ -89,7 +96,7 @@ export type TAsChain = {
     locale: Locale,
     source: ValidateSource<T>,
     ...args: TArgs<T>
-  ): TReturn<ExtractTags<T>>;
+  ): TReturn<ExtractPairTags<T>, ExtractVoidTags<T>>;
 };
 
 /**
@@ -113,7 +120,7 @@ export type TFn = {
     context: ValidContext<TContext>,
     source: ValidateSource<TSource>,
     ...args: TArgs<TSource>
-  ): TReturn<ExtractTags<TSource>>;
+  ): TReturn<ExtractPairTags<TSource>, ExtractVoidTags<TSource>>;
   as<T extends string>(context: ValidContext<T>): TAsChain;
 
   /**
@@ -127,7 +134,7 @@ export type TFn = {
     locale: Locale,
     source: ValidateSource<T>,
     ...args: TArgs<T>
-  ): TReturn<ExtractTags<T>>;
+  ): TReturn<ExtractPairTags<T>, ExtractVoidTags<T>>;
   in(locale: Locale): TInChain;
   /**
    * Translates `source` for the active locale.
@@ -138,7 +145,7 @@ export type TFn = {
   <T extends string>(
     source: ValidateSource<T>,
     ...args: TArgs<T>
-  ): TReturn<ExtractTags<T>>;
+  ): TReturn<ExtractPairTags<T>, ExtractVoidTags<T>>;
 };
 
 /**

@@ -7,11 +7,13 @@ import { t } from './t';
 
 describe('t', () => {
   it('returns an untagged string for a source without tags', () => {
-    expectTypeOf(t('Save changes')).toEqualTypeOf<TReturn<never>>();
+    expectTypeOf(t('Save changes')).toEqualTypeOf<TReturn<never, never>>();
   });
 
   it('returns a tagged type for the tag names in the source', () => {
-    expectTypeOf(t('Read <link>terms</link>')).toEqualTypeOf<TReturn<'link'>>();
+    expectTypeOf(t('Read <link>terms</link>')).toEqualTypeOf<
+      TReturn<'link', never>
+    >();
   });
 
   it('holds params for a source with placeholders', () => {
@@ -23,12 +25,12 @@ describe('t', () => {
   });
 
   it('returns an untagged string from `t.in(locale, source)`', () => {
-    expectTypeOf(t.in('sv', 'Save')).toEqualTypeOf<TReturn<never>>();
+    expectTypeOf(t.in('sv', 'Save')).toEqualTypeOf<TReturn<never, never>>();
   });
 
   it('preserves tag extraction through `t.in(locale, source)`', () => {
     expectTypeOf(t.in('sv', 'Read <link>terms</link>')).toEqualTypeOf<
-      TReturn<'link'>
+      TReturn<'link', never>
     >();
   });
 
@@ -38,12 +40,12 @@ describe('t', () => {
 
   it('returns an untagged string from `t.in(locale).as(context, source)`', () => {
     expectTypeOf(t.in('sv').as('action', 'Save')).toEqualTypeOf<
-      TReturn<never>
+      TReturn<never, never>
     >();
   });
 
   it('returns an untagged string from `at` without placeholders', () => {
-    expectTypeOf(t.as('button', 'Save')).toEqualTypeOf<TReturn<never>>();
+    expectTypeOf(t.as('button', 'Save')).toEqualTypeOf<TReturn<never, never>>();
   });
 
   it('holds params from `at` for a source with placeholders', () => {
@@ -51,12 +53,12 @@ describe('t', () => {
       t.as('greeting', 'Hello, {name}!', {
         name: 'Alex',
       }),
-    ).toEqualTypeOf<TReturn<never>>();
+    ).toEqualTypeOf<TReturn<never, never>>();
   });
 
   it('preserves tag extraction through `at`', () => {
     expectTypeOf(t.as('paragraph', 'Read <link>terms</link>')).toEqualTypeOf<
-      TReturn<'link'>
+      TReturn<'link', never>
     >();
   });
 
@@ -66,7 +68,7 @@ describe('t', () => {
 
   it('returns an untagged string from `t.as(context).in(locale, source)`', () => {
     expectTypeOf(t.as('action').in('sv', 'Save')).toEqualTypeOf<
-      TReturn<never>
+      TReturn<never, never>
     >();
   });
 

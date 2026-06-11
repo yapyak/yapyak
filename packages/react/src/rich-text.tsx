@@ -4,25 +4,33 @@ import type { TReturn } from 'yapyak';
 import { Fragment } from 'react';
 import { walkRichText } from 'yapyak/internal';
 
-type TagsOf<T> = T extends TReturn<infer Tags> ? Tags : never;
+type PairsOf<T> = T extends TReturn<infer Pair, string> ? Pair : never;
+type VoidsOf<T> = T extends TReturn<string, infer Void> ? Void : never;
 
-type TagHandler = (children: ReactNode) => ReactNode;
+type PairHandler = (children: ReactNode) => ReactNode;
+type VoidHandler = () => ReactNode;
 
 /**
- * Props for {@link RichText}. Carries the source `value` and a handler per
- * named tag found in it.
+ * Props for {@link RichText}. Carries the source `value` and a handler per named tag found in it.
+ *
+ * @remarks
+ * Pair tags (`<name>...</name>`) take a `PairHandler` whose first argument is the rendered children. Void tags (`<name/>`) take a `VoidHandler` that receives no arguments — TypeScript rejects passing one for the other.
  *
  * @typeParam T - The source string literal. Tag names are extracted from it.
  */
 export type RichTextProps<T extends string> = {
   value: T;
 } & {
-  [Tag in TagsOf<T>]: TagHandler;
+  [Pair in PairsOf<T>]: PairHandler;
+} & {
+  [Void in VoidsOf<T>]: VoidHandler;
 };
 
 /**
- * Renders rich text from a string with named tags into handlers supplied by
- * the caller as props. See {@link RichTextProps} for the prop shape.
+ * Renders rich text from a string with named tags into handlers supplied by the caller as props.
+ *
+ * @remarks
+ * See {@link RichTextProps} for the prop shape.
  *
  * @example
  * ```tsx
@@ -31,12 +39,20 @@ export type RichTextProps<T extends string> = {
  *   link={(children) => <a href="/docs">{children}</a>}
  * />
  * ```
+ *
+ * @example Void tag for a line break
+ * ```tsx
+ * <RichText
+ *   value={t('First line<br/>second line')}
+ *   br={() => <br />}
+ * />
+ * ```
  */
 export function RichText<T extends string>(props: RichTextProps<T>): ReactNode {
   const { value, ...handlers } = props;
   return walkRichText<ReactNode>(
     value,
-    handlers as Record<string, TagHandler>,
+    handlers as Record<string, (children?: ReactNode) => ReactNode>,
     reactRenderer,
   );
 }

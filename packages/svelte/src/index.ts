@@ -12,7 +12,7 @@
  * @packageDocumentation
  */
 
-export type { RichTextProps, TagHandler } from './rich-text';
+export type { RichTextProps, TagHandler, VoidHandler } from './rich-text';
 
 export { locale } from './locale.svelte';
 export { default as RichText } from './rich-text.svelte';

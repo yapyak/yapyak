@@ -85,4 +85,27 @@ describe('RichText', () => {
     expect(container.textContent).toContain('</inner>');
     expect(container.textContent).toContain('</outer>');
   });
+
+  it('emits a void tag through its slot', () => {
+    const { container } = render(RichText, {
+      props: {
+        value: 'Line one<br/>line two',
+      },
+      slots: {
+        br: () => h('br'),
+      },
+    });
+    expect(container.querySelector('br')).not.toBeNull();
+    expect(container.textContent).toContain('Line one');
+    expect(container.textContent).toContain('line two');
+  });
+
+  it('emits an unmatched void tag as a literal self-closing marker', () => {
+    const { container } = render(RichText, {
+      props: {
+        value: 'A <foo/> B',
+      },
+    });
+    expect(container.textContent).toContain('<foo/>');
+  });
 });

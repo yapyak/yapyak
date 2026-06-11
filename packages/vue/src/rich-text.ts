@@ -4,7 +4,7 @@ import type { RichTextNode as Node } from 'yapyak/internal';
 import { parseRichText } from 'yapyak/internal';
 
 /**
- * The tag slot. Each named tag in the source string surfaces as a scoped slot with this signature.
+ * The pair-tag slot. Each named pair tag (`<name>...</name>`) in the source string surfaces as a scoped slot with this signature.
  *
  * @remarks
  * The slot receives a `children` render function that emits the inner content, which the consumer wraps in the desired element.
@@ -12,12 +12,20 @@ import { parseRichText } from 'yapyak/internal';
 export type TagSlot = (props: { children: () => VNodeChild[] }) => VNodeChild[];
 
 /**
- * The rich-text slots. Maps tag names to their {@link TagSlot}.
+ * The void-tag slot. Each named void tag (`<name/>`) in the source string surfaces as a slot with this signature.
  *
  * @remarks
- * Vue's type system cannot require slots derived from a generic string literal, so the slot map is open: any tag found in `value` is matched against a scoped slot of the same name. A tag with no matching slot renders as literal text.
+ * The slot receives no scope props. The consumer renders the standalone element.
  */
-export type RichTextSlots = Record<string, TagSlot>;
+export type VoidSlot = () => VNodeChild[];
+
+/**
+ * The rich-text slots. Maps tag names to their {@link TagSlot} or {@link VoidSlot}.
+ *
+ * @remarks
+ * Vue's type system cannot require slots derived from a generic string literal, so the slot map is open: any tag found in `value` is matched against a slot of the same name. A tag with no matching slot renders as literal text.
+ */
+export type RichTextSlots = Record<string, TagSlot | VoidSlot>;
 
 /**
  * Props for {@link RichText}.
@@ -42,6 +50,15 @@ export type RichTextProps<T extends string> = {
  *   </template>
  * </RichText>
  * ```
+ *
+ * @example Void tag for a line break
+ * ```vue
+ * <RichText :value="t('Line one<br/>line two')">
+ *   <template #br>
+ *     <br/>
+ *   </template>
+ * </RichText>
+ * ```
  */
 export const RichText: FunctionalComponent<
   RichTextProps<string>,
@@ -51,7 +68,7 @@ export const RichText: FunctionalComponent<
 
 function renderNodes(
   nodes: Node[],
-  slots: Readonly<Record<string, TagSlot | undefined>>,
+  slots: Readonly<Record<string, TagSlot | VoidSlot | undefined>>,
 ): VNodeChild[] {
   const out: VNodeChild[] = [];
   for (const node of nodes) {
@@ -59,11 +76,20 @@ function renderNodes(
       out.push(node.text);
       continue;
     }
+    if (node.type === 'void') {
+      const slot = slots[node.name];
+      if (slot) {
+        out.push(...(slot as VoidSlot)());
+        continue;
+      }
+      out.push(`<${node.name}/>`);
+      continue;
+    }
     const slot = slots[node.name];
     if (slot) {
       const children = (): VNodeChild[] => renderNodes(node.children, slots);
       out.push(
-        ...slot({
+        ...(slot as TagSlot)({
           children,
         }),
       );

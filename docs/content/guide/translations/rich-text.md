@@ -141,32 +141,104 @@ In React and Svelte, a value containing `<link>...</link>` requires a matching `
 
 Vue and Astro expose handlers as loose slots and cannot require them at the type level. A tag with no matching slot renders as escaped literal text.
 
-## Rendering to a string
+## Void tags
 
-When the output should be a string rather than a component tree, use `richText()`. Like `<RichText>`, `richText()` interprets named tags in its input string. Instead of components, its handlers return strings:
+A tag with no inner content uses the self-closing form `<name/>`. The handler receives no arguments.
+
+{% switch group="framework" %}
+
+{% when value="react" %}
+```tsx [Notice.tsx]
+import { RichText } from '@yapyak/react';
+import { t } from 'yapyak';
+
+export function Notice() {
+  return (
+    <RichText
+      value={t('Line one<br/>line two')}
+      br={() => <br />}
+    />
+  );
+}
+```
+{% /when %}
+
+{% when value="vue" %}
+```vue [Notice.vue]
+<script setup lang="ts">
+import { RichText } from '@yapyak/vue';
+import { t } from 'yapyak';
+</script>
+
+<template>
+  <RichText :value="t('Line one<br/>line two')">
+    <template #br>
+      <br/>
+    </template>
+  </RichText>
+</template>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte [Notice.svelte]
+<script lang="ts">
+  import { RichText } from '@yapyak/svelte';
+  import { t } from 'yapyak';
+</script>
+
+<RichText value={t('Line one<br/>line two')}>
+  {#snippet br()}
+    <br/>
+  {/snippet}
+</RichText>
+```
+{% /when %}
+
+{% when value="astro" %}
+```astro [Notice.astro]
+---
+import { RichText } from '@yapyak/astro';
+import { t } from 'yapyak';
+---
+
+<RichText value={t('Line one<br/>line two')}>
+  <br slot="br"/>
+</RichText>
+```
+{% /when %}
+
+{% /switch %}
+
+The void form parses as a `void` node carrying no children. Use it for line breaks, inline icons, and any standalone marker.
+
+## Building a custom renderer
+
+For non-framework output — server-rendered HTML emails, plain-text fallbacks, custom string formats — use `parseRichText()` directly. It returns the parsed tree as a flat array of nodes:
 
 ```ts
-import { richText, t } from 'yapyak';
+import { parseRichText, t } from 'yapyak';
 
-const html = richText(
-  t('Read the <link>documentation</link> to get started.'),
-  {
-    link: (children) => `<a href="/docs">${children}</a>`,
-  },
-);
+parseRichText(t('Click <link>here</link>.'));
+// => [
+//   { type: 'text', text: 'Click ' },
+//   { type: 'tag', name: 'link', children: [{ type: 'text', text: 'here' }] },
+//   { type: 'text', text: '.' },
+// ]
 ```
 
-The same check applies: if the input string contains `<link>...</link>`, a matching `link` handler must be provided.
-
-A handler can also keep the contents of a tag without adding markup around them:
+Walk the tree to produce any output you want:
 
 ```ts
-const text = richText(
-  t('Read the <link>documentation</link> to get started.'),
-  {
-    link: (children) => children,
-  },
-);
-```
+import { parseRichText, type RichTextNode } from 'yapyak';
 
-`<RichText>` renders named parts into components. `richText()` renders them into strings. `t()` provides the translated message.
+function toPlain(nodes: RichTextNode[]): string {
+  return nodes
+    .map((node) => {
+      if (node.type === 'text') return node.text;
+      if (node.type === 'void') return '';
+      return toPlain(node.children);
+    })
+    .join('');
+}
+```

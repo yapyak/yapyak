@@ -58,4 +58,33 @@ describe('RichText', () => {
     expect(container.textContent).toContain('</inner>');
     expect(container.textContent).toContain('</outer>');
   });
+
+  it('emits a void tag through its handler', () => {
+    const props = {
+      br: () => <br />,
+      value: 'Line one<br/>line two',
+    } as unknown as Parameters<typeof RichText>[0];
+    const { container } = render(<RichText {...props} />);
+    expect(container.querySelector('br')).not.toBeNull();
+    expect(container.textContent).toContain('Line one');
+    expect(container.textContent).toContain('line two');
+  });
+
+  it('emits an unmatched void tag as a literal self-closing marker', () => {
+    const { container } = render(<RichText value="A <foo/> B" />);
+    expect(container.textContent).toContain('<foo/>');
+  });
+
+  it('walks a void tag inside a pair tag through both handlers', () => {
+    const props = {
+      icon: () => <span data-testid="icon">★</span>,
+      link: (children: ReactNode) => <a href="/x">{children}</a>,
+      value: '<link>click <icon/> here</link>',
+    } as unknown as Parameters<typeof RichText>[0];
+    const { container } = render(<RichText {...props} />);
+    expect(container.querySelector('a')).not.toBeNull();
+    expect(container.querySelector('[data-testid="icon"]')?.textContent).toBe(
+      '★',
+    );
+  });
 });

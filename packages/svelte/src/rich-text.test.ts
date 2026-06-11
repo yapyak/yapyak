@@ -1,4 +1,4 @@
-import type { TagHandler } from './rich-text';
+import type { TagHandler, VoidHandler } from './rich-text';
 
 import { render } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
@@ -80,5 +80,32 @@ describe('RichText', () => {
     expect(container.textContent).toContain('nested');
     expect(container.textContent).toContain('</inner>');
     expect(container.textContent).toContain('</outer>');
+  });
+
+  it('emits a void tag through its snippet', () => {
+    const br = createRawSnippet(() => ({
+      render: () => '<br/>',
+    })) as unknown as VoidHandler;
+    const props = {
+      br,
+      value: 'Line one<br/>line two',
+    } as unknown as {
+      value: string;
+    };
+    const { container } = render(RichText, {
+      props,
+    });
+    expect(container.querySelector('br')).not.toBeNull();
+    expect(container.textContent).toContain('Line one');
+    expect(container.textContent).toContain('line two');
+  });
+
+  it('emits an unmatched void tag as a literal self-closing marker', () => {
+    const { container } = render(RichText, {
+      props: {
+        value: 'A <foo/> B',
+      },
+    });
+    expect(container.textContent).toContain('<foo/>');
   });
 });

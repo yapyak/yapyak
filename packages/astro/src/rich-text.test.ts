@@ -136,4 +136,38 @@ describe('renderRichText', () => {
     const result = await renderRichText(nodes, buildSlotAccessor({}));
     expect(result).toBe('');
   });
+
+  it('emits a void tag through its slot template', async () => {
+    const nodes = parseRichText('Line one<br/>line two');
+    const slotAccessor = buildSlotAccessor({
+      br: '<br>',
+    });
+    const result = await renderRichText(nodes, slotAccessor);
+    expect(result).toBe('Line one<br>line two');
+  });
+
+  it('preserves an unmatched void tag as escaped literal text', async () => {
+    const nodes = parseRichText('A <foo/> B');
+    const result = await renderRichText(nodes, buildSlotAccessor({}));
+    expect(result).toBe('A &lt;foo/&gt; B');
+  });
+
+  it('emits a void tag inside a pair tag through both slot templates', async () => {
+    const nodes = parseRichText('<link>click <icon/> here</link>');
+    const slotAccessor = buildSlotAccessor({
+      icon: '<span>★</span>',
+      link: `<a href="/x">${CHILDREN_TOKEN}</a>`,
+    });
+    const result = await renderRichText(nodes, slotAccessor);
+    expect(result).toBe('<a href="/x">click <span>★</span> here</a>');
+  });
+
+  it('strips an accidentally-placed children token from a void slot template', async () => {
+    const nodes = parseRichText('A<br/>B');
+    const slotAccessor = buildSlotAccessor({
+      br: `<span>${CHILDREN_TOKEN}</span>`,
+    });
+    const result = await renderRichText(nodes, slotAccessor);
+    expect(result).toBe('A<span></span>B');
+  });
 });
