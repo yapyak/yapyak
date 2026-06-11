@@ -160,8 +160,11 @@ export default function Home() {
       <p>
         <RichText
           b={(children) => <strong>{children}</strong>}
+          br={() => <br />}
           link={(children) => <a href="https://yapyak.dev">{children}</a>}
-          value={t('Translate <b>everything</b> with <link>yapyak</link>')}
+          value={t(
+            'Translate <b>everything</b> with <link>yapyak</link>.<br/>Even with <b>line breaks</b>.',
+          )}
         />
       </p>
     </main>

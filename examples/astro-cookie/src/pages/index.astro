@@ -73,10 +73,11 @@ const currentLocale = getLocale();
   <h2>{t('Rich text')}</h2>
   <p>
     <RichText
-      value={t('Translate <b>everything</b> with <link>yapyak</link>')}
+      value={t('Translate <b>everything</b> with <link>yapyak</link>.<br/>Even with <b>line breaks</b>.')}
     >
       <strong slot="b"><RichText.Children /></strong>
       <a slot="link" href="https://yapyak.dev"><RichText.Children /></a>
+      <br slot="br"/>
     </RichText>
   </p>
 </Layout>

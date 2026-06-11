@@ -57,9 +57,12 @@ const date = new Date('2024-01-01T08:30:00Z');
 
     <h2>{{ t('Rich text') }}</h2>
     <p>
-      <RichText :value="t('Translate <b>everything</b> with <link>yapyak</link>')">
+      <RichText :value="t('Translate <b>everything</b> with <link>yapyak</link>.<br/>Even with <b>line breaks</b>.')">
         <template #b="{ children }">
           <strong><component :is="children" /></strong>
+        </template>
+        <template #br>
+          <br/>
         </template>
         <template #link="{ children }">
           <a href="https://yapyak.dev"><component :is="children" /></a>

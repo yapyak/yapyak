@@ -80,9 +80,14 @@
 
   <h2>{t("Rich text")}</h2>
   <p>
-    <RichText value={t("Translate <b>everything</b> with <link>yapyak</link>")}>
+    <RichText
+      value={t("Translate <b>everything</b> with <link>yapyak</link>.<br/>Even with <b>line breaks</b>.")}
+    >
       {#snippet b(children)}
         <strong>{@render children()}</strong>
+      {/snippet}
+      {#snippet br()}
+        <br/>
       {/snippet}
       {#snippet link(children)}
         <a href="https://yapyak.dev">{@render children()}</a>
