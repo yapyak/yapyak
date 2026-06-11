@@ -1,59 +1,146 @@
-import type { TReturn } from './t';
+export type RichTextNode =
+  | {
+      type: 'tag';
+      name: string;
+      children: RichTextNode[];
+    }
+  | {
+      type: 'text';
+      text: string;
+    };
 
-import { walkRichText } from './rich-text-walker';
+export function parseRichText(source: string): RichTextNode[] {
+  const nodes: RichTextNode[] = [];
+  let text = '';
+  let index = 0;
 
-type TagsOf<T> = T extends TReturn<infer Tags> ? Tags : never;
+  const flush = (): void => {
+    if (text !== '') {
+      nodes.push({
+        text,
+        type: 'text',
+      });
+      text = '';
+    }
+  };
 
-/**
- * The rich-text handler.
- *
- * @remarks
- * Receives the recursively-rendered children of the tag (the concatenated output of inner handlers, or the raw text when no nested tags exist) and returns the rendered string. The shape used by every entry of a {@link RichTextHandlers} object.
- */
-export type RichTextHandler = (children: string) => string;
-
-/**
- * The rich-text handlers. Maps tag names extracted from `T` to their {@link RichTextHandler}.
- *
- * @typeParam T - The source string literal carrying the tag names.
- */
-export type RichTextHandlers<T extends string> = {
-  [Tag in TagsOf<T>]: RichTextHandler;
-};
-
-/**
- * Renders a rich-text string by resolving `<tag>...</tag>` markers via handlers.
- *
- * @remarks
- * The string-side counterpart to the framework `<RichText>` components in `@yapyak/react`, `@yapyak/vue`, `@yapyak/svelte`, and `@yapyak/astro`. When `value` comes from {@link t}, the handlers object is statically checked against the tag names found in the source.
- *
- * @typeParam T - The source string literal carrying the tag names.
- *
- * @param value - The string to render. May contain `<tag>...</tag>` markers.
- * @param handlers - A handler per tag name.
- *
- * @example
- * ```ts
- * import { richText, t } from 'yapyak';
- *
- * const html = richText(
- *   t('Read the <link>documentation</link> to get started.'),
- *   { link: (children) => `<a href="/docs">${children}</a>` },
- * );
- * ```
- */
-export function richText<T extends string>(
-  value: T,
-  handlers: RichTextHandlers<T>,
-): string {
-  return walkRichText<string>(
-    value,
-    handlers as Record<string, RichTextHandler>,
-    stringRenderer,
-  );
+  while (index < source.length) {
+    const openTag = source.startsWith('<', index)
+      ? readOpenTag(source, index)
+      : undefined;
+    if (openTag) {
+      const close = findClosingTagRange(source, openTag.end, openTag.name);
+      if (close) {
+        flush();
+        nodes.push({
+          children: parseRichText(source.slice(openTag.end, close.start)),
+          name: openTag.name,
+          type: 'tag',
+        });
+        index = close.end;
+        continue;
+      }
+    }
+    text += source[index];
+    index += 1;
+  }
+  flush();
+  return nodes;
 }
 
-const stringRenderer = {
-  concat: (parts: string[]): string => parts.join(''),
-  leaf: (text: string): string => text,
-};
+export function walkRichText<T>(
+  source: string,
+  handlers: Record<string, (children: T) => T>,
+  renderer: {
+    leaf: (text: string) => T;
+    concat: (parts: T[]) => T;
+  },
+): T {
+  return renderNodes(parseRichText(source), handlers, renderer);
+}
+
+function renderNodes<T>(
+  nodes: RichTextNode[],
+  handlers: Record<string, (children: T) => T>,
+  renderer: {
+    leaf: (text: string) => T;
+    concat: (parts: T[]) => T;
+  },
+): T {
+  const parts: T[] = [];
+  for (const node of nodes) {
+    if (node.type === 'text') {
+      parts.push(renderer.leaf(node.text));
+      continue;
+    }
+    const handler = handlers[node.name];
+    if (handler) {
+      const inner = renderNodes(node.children, handlers, renderer);
+      parts.push(handler(inner));
+      continue;
+    }
+    parts.push(renderer.leaf(`<${node.name}>`));
+    parts.push(renderNodes(node.children, handlers, renderer));
+    parts.push(renderer.leaf(`</${node.name}>`));
+  }
+  return renderer.concat(parts);
+}
+
+function readOpenTag(
+  source: string,
+  index: number,
+):
+  | {
+      name: string;
+      end: number;
+    }
+  | undefined {
+  const close = source.indexOf('>', index + 1);
+  if (close === -1) {
+    return undefined;
+  }
+  const name = source.slice(index + 1, close);
+  if (!/^[A-Za-z][A-Za-z0-9]*$/.test(name)) {
+    return undefined;
+  }
+  return {
+    end: close + 1,
+    name,
+  };
+}
+
+function findClosingTagRange(
+  source: string,
+  from: number,
+  name: string,
+):
+  | {
+      start: number;
+      end: number;
+    }
+  | undefined {
+  const openMarker = `<${name}>`;
+  const close = `</${name}>`;
+  let depth = 1;
+  let index = from;
+  while (index < source.length) {
+    if (source.startsWith(close, index)) {
+      depth -= 1;
+      if (depth === 0) {
+        return {
+          end: index + close.length,
+          start: index,
+        };
+      }
+      index += close.length;
+      continue;
+    }
+    if (source.startsWith(openMarker, index)) {
+      depth += 1;
+      index += openMarker.length;
+      continue;
+    }
+    index += 1;
+  }
+  return undefined;
+}

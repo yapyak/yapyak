@@ -12,15 +12,16 @@
  * @packageDocumentation
  */
 
+import _Children from './Children.astro';
 import _RichText from './RichText.astro';
 
 export type { RichTextProps } from './RichText.astro';
 
 /**
- * Renders rich text by resolving named tags via handler props.
+ * Renders rich text by resolving named tags via Astro slots.
  *
  * @remarks
- * Each named tag found in `value` is matched against a prop of the same name. The matching handler receives the tag's inner content and returns the HTML to emit at that position. A tag with no matching handler renders as its inner text.
+ * Each named tag found in `value` is matched against an Astro slot of the same name. Inside the slot, place a `<RichText.Children />` marker where the matched tag's children should appear. Leaf text and unmatched tag names are HTML-escaped before they reach the output, so translator-produced strings cannot inject script or attribute payloads.
  *
  * @example Render a translated string with a link tag
  * ```astro
@@ -29,10 +30,20 @@ export type { RichTextProps } from './RichText.astro';
  * import { t } from 'yapyak';
  * ---
  *
- * <RichText
- *   value={t('Click <link>here</link>.')}
- *   link={(children) => `<a href="/docs">${children}</a>`}
- * />
+ * <RichText value={t('Click <link>here</link>.')}>
+ *   <a slot="link" href="/docs"><RichText.Children /></a>
+ * </RichText>
  * ```
  */
-export const RichText: typeof _RichText = _RichText;
+export const RichText: typeof _RichText & {
+  /**
+   * Marker for "render the matched tag's children here" inside a {@link RichText} named slot.
+   *
+   * @remarks
+   * Has no props. Place exactly where the children should appear within the slot's element tree.
+   */
+  // biome-ignore lint/style/useNamingConvention: yap yap yap
+  Children: typeof _Children;
+} = Object.assign(_RichText, {
+  Children: _Children,
+});

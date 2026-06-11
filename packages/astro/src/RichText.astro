@@ -1,21 +1,14 @@
 ---
-import type { RichTextHandler } from 'yapyak';
+import { parseRichText } from 'yapyak';
 
-import { richText } from 'yapyak';
+import { renderRichText } from './rich-text';
 
-/**
- * Props for the `RichText` Astro component.
- *
- * @remarks
- * Each named tag found in `value` can be supplied via a prop of the same name with a {@link RichTextHandler}. A tag with no matching handler renders verbatim as a literal `<tag>…</tag>` element in the output HTML — supply a handler for every tag you want styled or rewritten.
- */
 interface Props {
   value: string;
-  [tagName: string]: RichTextHandler | string;
 }
 
-const { value, ...restProps } = Astro.props;
-const html = richText(value, restProps);
+const { value } = Astro.props;
+const html = await renderRichText(parseRichText(value), Astro.slots);
 ---
 
 <Fragment set:html={html} />

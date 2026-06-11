@@ -23,11 +23,10 @@ export {
   setLocale,
 } from './locale';
 export {
-  type RichTextHandler,
-  type RichTextHandlers,
+  type RichTextNode,
   type TFn,
   type TParams,
   type TReturn,
-  richText,
+  parseRichText,
   t,
 } from './translation';

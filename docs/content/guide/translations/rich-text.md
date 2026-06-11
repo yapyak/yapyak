@@ -64,10 +64,9 @@ import { RichText } from '@yapyak/astro';
 import { t } from 'yapyak';
 ---
 
-<RichText
-  value={t('Read the <link>documentation</link> to get started.')}
-  link={(children) => `<a href="/docs">${children}</a>`}
-/>
+<RichText value={t('Read the <link>documentation</link> to get started.')}>
+  <a slot="link" href="/docs"><RichText.Children /></a>
+</RichText>
 ```
 {% /when %}
 
@@ -119,10 +118,9 @@ Its renderer remains in your component code, free to operate on any string conta
 
 {% when value="astro" %}
 ```astro
-<RichText
-  value="Read the <link>documentation</link> to get started."
-  link={(children) => `<a href="/docs">${children}</a>`}
-/>
+<RichText value="Read the <link>documentation</link> to get started.">
+  <a slot="link" href="/docs"><RichText.Children /></a>
+</RichText>
 ```
 {% /when %}
 
@@ -141,7 +139,7 @@ In React and Svelte, a value containing `<link>...</link>` requires a matching `
 // TypeScript error: missing `link` renderer
 ```
 
-Vue and Astro expose handlers as loose props/slots and cannot require them at the type level. A tag with no matching handler renders as its inner text.
+Vue and Astro expose handlers as loose slots and cannot require them at the type level. A tag with no matching slot renders as escaped literal text.
 
 ## Rendering to a string
 

@@ -74,8 +74,9 @@ const currentLocale = getLocale();
   <p>
     <RichText
       value={t('Translate <b>everything</b> with <link>yapyak</link>')}
-      b={(children) => `<strong>${children}</strong>`}
-      link={(children) => `<a href="https://yapyak.dev">${children}</a>`}
-    />
+    >
+      <strong slot="b"><RichText.Children /></strong>
+      <a slot="link" href="https://yapyak.dev"><RichText.Children /></a>
+    </RichText>
   </p>
 </Layout>
