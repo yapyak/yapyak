@@ -1,7 +1,8 @@
 import type { Template } from './node';
 
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { resetWarn, setWarn } from '../warn';
 import { interpret } from './interpret';
 
 describe('interpret', () => {
@@ -489,6 +490,163 @@ describe('interpret', () => {
           'en',
         ),
       ).toBe('');
+    });
+  });
+
+  describe('warnings', () => {
+    let warnSpy: ReturnType<
+      typeof vi.fn<(message: string, meta?: Record<string, unknown>) => void>
+    >;
+
+    beforeEach(() => {
+      warnSpy =
+        vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
+      setWarn(warnSpy);
+    });
+
+    afterEach(() => {
+      resetWarn();
+    });
+
+    it('warns when a placeholder is missing', () => {
+      interpret(
+        [
+          {
+            kind: 'placeholder',
+            name: 'name',
+          },
+        ],
+        {},
+        'en',
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Missing placeholder "name"'),
+        undefined,
+      );
+    });
+
+    it('warns when a placeholder gets `null`', () => {
+      interpret(
+        [
+          {
+            kind: 'placeholder',
+            name: 'name',
+          },
+        ],
+        {
+          name: null,
+        },
+        'en',
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Placeholder "name" got `null`'),
+        undefined,
+      );
+    });
+
+    it('warns when a placeholder gets an object', () => {
+      const value = {
+        toString: () => 'whatever',
+      };
+      interpret(
+        [
+          {
+            kind: 'placeholder',
+            name: 'name',
+          },
+        ],
+        {
+          name: value,
+        },
+        'en',
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Placeholder "name" got an object'),
+        expect.objectContaining({
+          value,
+        }),
+      );
+    });
+
+    it('warns when a plural argument is not numeric', () => {
+      interpret(
+        [
+          {
+            branches: {
+              one: [
+                {
+                  kind: 'literal',
+                  value: 'one',
+                },
+              ],
+              other: [
+                {
+                  kind: 'literal',
+                  value: 'other',
+                },
+              ],
+            },
+            kind: 'plural',
+            name: 'count',
+            type: 'cardinal',
+          },
+        ],
+        {
+          count: 'not-a-number',
+        },
+        'en',
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Plural "count"'),
+        expect.objectContaining({
+          value: 'not-a-number',
+        }),
+      );
+    });
+
+    it('warns when a select argument is not a string', () => {
+      interpret(
+        [
+          {
+            branches: {
+              other: [
+                {
+                  kind: 'literal',
+                  value: 'fallback',
+                },
+              ],
+            },
+            kind: 'select',
+            name: 'role',
+          },
+        ],
+        {
+          role: 42,
+        },
+        'en',
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Select "role"'),
+        expect.objectContaining({
+          value: 42,
+        }),
+      );
+    });
+
+    it('preserves a placeholder with a string value without warning', () => {
+      interpret(
+        [
+          {
+            kind: 'placeholder',
+            name: 'name',
+          },
+        ],
+        {
+          name: 'Ada',
+        },
+        'en',
+      );
+      expect(warnSpy).not.toHaveBeenCalled();
     });
   });
 });

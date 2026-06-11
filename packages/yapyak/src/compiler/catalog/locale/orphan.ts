@@ -22,6 +22,21 @@ function getOrphansFilePath(yapyakDir: string): string {
   return join(yapyakDir, 'orphans.json');
 }
 
+export class CorruptOrphanCacheError extends Error {
+  filePath: string;
+
+  constructor(filePath: string, cause: unknown) {
+    super(
+      `[yapyak] Failed to parse orphan cache ${filePath}. Fix the JSON syntax to proceed.`,
+      {
+        cause,
+      },
+    );
+    this.name = 'CorruptOrphanCacheError';
+    this.filePath = filePath;
+  }
+}
+
 export function readOrphans(yapyakDir: string): OrphanCache {
   const path = getOrphansFilePath(yapyakDir);
   if (!existsSync(path)) {
@@ -34,8 +49,8 @@ export function readOrphans(yapyakDir: string): OrphanCache {
   let parsed: unknown;
   try {
     parsed = JSON.parse(content);
-  } catch {
-    return {};
+  } catch (cause) {
+    throw new CorruptOrphanCacheError(path, cause);
   }
   if (typeof parsed !== 'object' || parsed === null) {
     return {};

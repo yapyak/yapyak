@@ -3,6 +3,7 @@ export {
   type AutoTranslateOptions,
   type AutoTranslateResult,
   CorruptLocaleFileError,
+  CorruptOrphanCacheError,
   type DiscoverLocalesOptions,
   type DiscoverLocalesResult,
   type InvariantViolation,

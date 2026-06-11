@@ -37,6 +37,7 @@ export {
   migrateLocales,
 } from './migrate';
 export {
+  CorruptOrphanCacheError,
   type OrphanCache,
   getDefaultYapyakDir,
   readOrphans,

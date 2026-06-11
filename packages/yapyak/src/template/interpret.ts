@@ -9,6 +9,7 @@ import type {
 } from './node';
 
 import { resolveFormatter } from '../formatter';
+import { warn } from '../warn';
 
 export function interpret(
   template: Template,
@@ -40,10 +41,8 @@ function interpretNode(
   switch (node.kind) {
     case 'literal':
       return node.value;
-    case 'placeholder': {
-      const value = params[node.name];
-      return value === undefined ? '' : String(value);
-    }
+    case 'placeholder':
+      return interpretPlaceholder(node.name, params);
     case 'count':
       return formattedCount ?? '';
     case 'plural':
@@ -61,12 +60,44 @@ function interpretNode(
   }
 }
 
+function interpretPlaceholder(
+  name: string,
+  params: Record<string, unknown>,
+): string {
+  const value = params[name];
+  if (value === undefined) {
+    warn(`Missing placeholder "${name}" — rendered as empty string.`);
+    return '';
+  }
+  if (value === null) {
+    warn(`Placeholder "${name}" got \`null\` — rendered as "null".`);
+    return 'null';
+  }
+  if (typeof value === 'object') {
+    const rendered = String(value);
+    warn(`Placeholder "${name}" got an object — rendered as "${rendered}".`, {
+      value,
+    });
+    return rendered;
+  }
+  return String(value);
+}
+
 function interpretPlural(
   node: PluralNode,
   params: Record<string, unknown>,
   locale: string,
 ): string {
-  const count = Number(params[node.name]);
+  const raw = params[node.name];
+  const count = Number(raw);
+  if (Number.isNaN(count)) {
+    warn(
+      `Plural "${node.name}" expected a number, got \`${typeof raw}\` — falling to the "other" branch.`,
+      {
+        value: raw,
+      },
+    );
+  }
   const formattedCount = resolveFormatter(Intl.NumberFormat, locale, {}).format(
     count,
   );
@@ -87,7 +118,16 @@ function interpretSelect(
   locale: string,
   formattedCount: string | undefined,
 ): string {
-  const value = String(params[node.name]);
+  const raw = params[node.name];
+  if (typeof raw !== 'string') {
+    warn(
+      `Select "${node.name}" expected a string, got \`${typeof raw}\` — falling to the "other" branch.`,
+      {
+        value: raw,
+      },
+    );
+  }
+  const value = String(raw);
   const branch = node.branches[value] ?? node.branches.other ?? [];
   return interpretNodes(branch, params, locale, formattedCount);
 }

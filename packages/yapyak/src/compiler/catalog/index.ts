@@ -2,6 +2,7 @@ export { stringifyCanonical } from './canonical';
 export { detectAtIssues } from './disambiguation';
 export {
   CorruptLocaleFileError,
+  CorruptOrphanCacheError,
   type DiscoverLocalesOptions,
   type DiscoverLocalesResult,
   type InvariantViolation,

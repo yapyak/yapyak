@@ -3,6 +3,7 @@ import type { OrphanCache, OrphanEntry } from './orphan';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import {
+  CorruptOrphanCacheError,
   addOrphan,
   findOrphan,
   getDefaultYapyakDir,
@@ -165,9 +166,21 @@ describe('readOrphans', () => {
     expect(readOrphans(dir)).toEqual({});
   });
 
-  it('returns an empty cache when the file is invalid JSON', () => {
+  it('refuses to parse an invalid JSON orphan cache', () => {
     writeFileSync(join(dir, 'orphans.json'), '{not json');
-    expect(readOrphans(dir)).toEqual({});
+    expect(() => readOrphans(dir)).toThrow(CorruptOrphanCacheError);
+  });
+
+  it('refuses with a `CorruptOrphanCacheError` carrying the file path', () => {
+    const path = join(dir, 'orphans.json');
+    writeFileSync(path, '{not json');
+    try {
+      readOrphans(dir);
+      throw new Error('expected readOrphans to throw');
+    } catch (error) {
+      expect(error).toBeInstanceOf(CorruptOrphanCacheError);
+      expect((error as CorruptOrphanCacheError).filePath).toBe(path);
+    }
   });
 
   it('blocks an entry whose value is not an object', () => {

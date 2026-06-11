@@ -22,7 +22,6 @@ import {
   writeLocaleFile,
 } from './locale';
 import { toLocationKey } from './location-key';
-import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 export type AutoTranslateInput = {
@@ -152,9 +151,6 @@ export async function autoTranslate(
       continue;
     }
     const localePath = join(projectRoot, context.localesDir, `${locale}.json`);
-    if (!existsSync(localePath)) {
-      continue;
-    }
     writeLocaleFile({
       after: localeFile,
       extractedSources,

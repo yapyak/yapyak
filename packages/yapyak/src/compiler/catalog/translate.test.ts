@@ -8,6 +8,7 @@ import {
   existsSync,
   mkdirSync,
   mkdtempSync,
+  readFileSync,
   rmSync,
   writeFileSync,
 } from 'node:fs';
@@ -33,17 +34,14 @@ describe('autoTranslate', () => {
     });
   });
 
-  it('blocks the write when locale file is deleted mid-translation', async () => {
-    writeFileSync(localePath, '{}');
-
-    let resolveTranslation: (value: string[]) => void = () => {};
+  it('writes a fresh locale file when the target does not yet exist', async () => {
     const translator: Translator = Object.assign(
       () => Promise.reject(new Error('use batch')),
       {
         batch: () =>
-          new Promise<string[]>((resolve) => {
-            resolveTranslation = resolve;
-          }),
+          Promise.resolve([
+            'Hej',
+          ]),
         id: 'mock',
       },
     );
@@ -74,7 +72,9 @@ describe('autoTranslate', () => {
       },
     ];
 
-    const promise = autoTranslate(
+    expect(existsSync(localePath)).toBe(false);
+
+    const result = await autoTranslate(
       {
         messages,
         translator,
@@ -90,12 +90,12 @@ describe('autoTranslate', () => {
       projectRoot,
     );
 
-    rmSync(localePath);
-    resolveTranslation([
-      'Hej',
-    ]);
-    await promise;
-
-    expect(existsSync(localePath)).toBe(false);
+    expect(result.translated).toBe(1);
+    expect(existsSync(localePath)).toBe(true);
+    expect(JSON.parse(readFileSync(localePath, 'utf-8'))).toEqual({
+      'src/a.tsx': {
+        Hello: 'Hej',
+      },
+    });
   });
 });

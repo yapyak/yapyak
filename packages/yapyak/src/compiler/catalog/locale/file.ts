@@ -6,6 +6,7 @@ import { toMessageKey } from '../../parser';
 import { compareKeys, stringifyCanonical } from '../canonical';
 import { validateLocaleCode } from './code';
 import {
+  CorruptOrphanCacheError,
   addOrphan,
   findOrphan,
   getDefaultYapyakDir,
@@ -198,7 +199,17 @@ export function syncLocaleFiles(
   const extractedSources = toExtractedSourcesSet(sourcesByFile);
 
   const yapyakDir = options?.yapyakDir ?? getDefaultYapyakDir(projectRoot);
-  const orphans = readOrphans(yapyakDir);
+  let orphans: ReturnType<typeof readOrphans>;
+  try {
+    orphans = readOrphans(yapyakDir);
+  } catch (error) {
+    if (error instanceof CorruptOrphanCacheError) {
+      console.warn(error.message);
+      orphans = {};
+    } else {
+      throw error;
+    }
+  }
   const nonDefaultLocales = context.locales.filter(
     (locale) =>
       locale !== context.defaultLocale && validateLocaleCode(locale).valid,
