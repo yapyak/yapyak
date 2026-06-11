@@ -146,6 +146,39 @@ describe('transformFile', () => {
       expect(code).not.toContain("from 'yapyak'");
     });
 
+    it('elides a repeated placeholder through a single-evaluation IIFE', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source: `
+          import { t } from 'yapyak';
+          export function greet(name) {
+            return t('{name} and {name}', { name });
+          }
+        `,
+      });
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
+      expect(code).toContain('((_name) => `${_name} and ${_name}`)(name)');
+    });
+
+    it('elides a single-use placeholder without an IIFE wrapper', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source: `
+          import { t } from 'yapyak';
+          export function greet(name) {
+            return t('Hi {name}', { name });
+          }
+        `,
+      });
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
+      expect(code).toContain('`Hi ${name}`');
+      expect(code).not.toContain('=>');
+    });
+
     it('preserves `useLocale` specifier when still referenced', () => {
       const code = runTransform({
         locales: [
@@ -418,7 +451,7 @@ describe('transformFile', () => {
       expect(code).toMatch(
         /import \{ pick as _pick_\$0 \} from 'yapyak\/internal'/,
       );
-      expect(code).toContain('_pick_$0({');
+      expect(code).toMatch(/_pick_\$0\(_yapyak_catalog/);
       expect(code).toContain('const _pick = "user-defined";');
     });
 
@@ -439,7 +472,70 @@ describe('transformFile', () => {
       expect(code).toMatch(
         /import \{ pick as _pick_\$1 \} from 'yapyak\/internal'/,
       );
-      expect(code).toContain('_pick_$1({');
+      expect(code).toMatch(/_pick_\$1\(_yapyak_catalog/);
+    });
+
+    it('emits a hoisted module-scope catalog for a multi-locale call', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source: "import { t } from 'yapyak';\nexport const x = t('Save');\n",
+      });
+      expect(code).toMatch(/const _yapyak_catalog_\$0 = \{/);
+      expect(code).toContain('_pick(_yapyak_catalog_$0');
+    });
+
+    it('folds two call sites with identical catalog text to one declaration', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source: [
+          "import { t } from 'yapyak';",
+          "export const a = t('Save');",
+          "export const b = t('Save');",
+        ].join('\n'),
+      });
+      const declarations = code.match(/_yapyak_catalog_\$\d+ = /g) ?? [];
+      expect(declarations).toHaveLength(1);
+      const calls = code.match(/_pick\(_yapyak_catalog_\$\d+/g) ?? [];
+      expect(calls).toHaveLength(2);
+    });
+
+    it('emits one catalog per distinct source string', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source: [
+          "import { t } from 'yapyak';",
+          "export const a = t('Save');",
+          "export const b = t('Cancel');",
+        ].join('\n'),
+      });
+      const declarations = code.match(/_yapyak_catalog_\$\d+ = /g) ?? [];
+      expect(declarations).toHaveLength(2);
+    });
+
+    it('preserves a free catalog prefix when user already has `_yapyak_catalog`', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source: [
+          "import { t } from 'yapyak';",
+          'const _yapyak_catalog = "user-defined";',
+          "export const x = t('Hello');",
+          'export { _yapyak_catalog };',
+        ].join('\n'),
+      });
+      expect(code).toMatch(/_yapyak_catalog_\$0_\$0 = \{/);
+      expect(code).toContain('const _yapyak_catalog = "user-defined";');
     });
   });
 

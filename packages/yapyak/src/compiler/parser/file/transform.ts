@@ -33,6 +33,7 @@ export type TransformFileResult = {
 
 const PICK_EXPORT = 'pick';
 const PICK_LOCAL = '_pick';
+const CATALOG_PREFIX = '_yapyak_catalog';
 const FACTORY_ORDER = [
   'literal',
   'placeholder',
@@ -71,12 +72,24 @@ export function transformFile(
 
   let hasUsedPick = false;
   const usedFactories = new Set<string>();
+  const catalogsByLiteral = new Map<string, string>();
+  const catalogPrefix = findFreeCatalogPrefix(request.source);
+  const registerCatalog = (literal: string): string => {
+    const existing = catalogsByLiteral.get(literal);
+    if (existing) {
+      return existing;
+    }
+    const identifier = `${catalogPrefix}_$${catalogsByLiteral.size}`;
+    catalogsByLiteral.set(literal, identifier);
+    return identifier;
+  };
   for (const callSite of request.extracted.callSites) {
     const replacement = renderCallReplacement({
       callSite,
       defaultLocale,
       locales: request.locales,
       pickLocal,
+      registerCatalog,
       singleLocale: isSingleLocale,
       translations: request.translations,
     });
@@ -112,11 +125,20 @@ export function transformFile(
       importSpecs.push(`${factory} as _${factory}`);
     }
   }
+  const injectionLines: string[] = [];
   if (importSpecs.length > 0) {
+    injectionLines.push(
+      `import { ${importSpecs.join(', ')} } from '${YAPYAK_INTERNAL_MODULE}';`,
+    );
+  }
+  for (const [literal, identifier] of catalogsByLiteral) {
+    injectionLines.push(`const ${identifier} = ${literal};`);
+  }
+  if (injectionLines.length > 0) {
     processor.applyImport(
       magicString,
       request.source,
-      `import { ${importSpecs.join(', ')} } from '${YAPYAK_INTERNAL_MODULE}';`,
+      injectionLines.join('\n'),
     );
   }
 
@@ -259,6 +281,7 @@ type RenderCallReplacementInput = {
   defaultLocale: string;
   locales: string[];
   pickLocal: string;
+  registerCatalog: (literal: string) => string;
   singleLocale: boolean;
   translations: Record<string, Record<string, string>>;
 };
@@ -279,6 +302,7 @@ function renderCallReplacement(
     singleLocale: isSingleLocale,
     locales,
     pickLocal,
+    registerCatalog,
     translations,
   } = input;
   if (callSite.source === '') {
@@ -319,6 +343,7 @@ function renderCallReplacement(
     },
     usedFactories,
   );
+  const catalogIdentifier = registerCatalog(catalog);
   const hasPlaceholders = placeholders.length > 0;
   const paramsExpressionText = hasPlaceholders
     ? getParamArgText(callSite)
@@ -326,7 +351,7 @@ function renderCallReplacement(
   const localeText = callSite.localeExpression?.getText();
 
   const args: string[] = [
-    catalog,
+    catalogIdentifier,
   ];
   if (paramsExpressionText || localeText) {
     args.push(paramsExpressionText ?? 'undefined');
@@ -450,6 +475,27 @@ function buildTemplateLiteral(
   source: string,
   expressions: Map<string, string>,
 ): string {
+  const usageByKey = new Map<string, number>();
+  let scan = 0;
+  while (scan < source.length) {
+    if (source[scan] === '{') {
+      const close = findMatchingBraceIndex(source, scan);
+      const key = readKey(source.slice(scan + 1, close));
+      if (key && expressions.has(key)) {
+        usageByKey.set(key, (usageByKey.get(key) ?? 0) + 1);
+        scan = close + 1;
+        continue;
+      }
+    }
+    scan += 1;
+  }
+  const cachedKeys: string[] = [];
+  for (const [key, count] of usageByKey) {
+    if (count > 1) {
+      cachedKeys.push(key);
+    }
+  }
+
   let result = '`';
   let index = 0;
   while (index < source.length) {
@@ -459,7 +505,10 @@ function buildTemplateLiteral(
       const inner = source.slice(index + 1, close);
       const key = readKey(inner);
       if (key && expressions.has(key)) {
-        result += `\${${expressions.get(key) ?? key}}`;
+        const expression = cachedKeys.includes(key)
+          ? `_${key}`
+          : (expressions.get(key) ?? key);
+        result += `\${${expression}}`;
         index = close + 1;
         continue;
       }
@@ -483,7 +532,13 @@ function buildTemplateLiteral(
     index += 1;
   }
   result += '`';
-  return result;
+
+  if (cachedKeys.length === 0) {
+    return result;
+  }
+  const params = cachedKeys.map((key) => `_${key}`).join(', ');
+  const args = cachedKeys.map((key) => expressions.get(key) ?? key).join(', ');
+  return `((${params}) => ${result})(${args})`;
 }
 
 function readKey(inner: string): string | undefined {
@@ -722,6 +777,17 @@ function findFreePickLocal(source: string): string {
     suffix += 1;
   }
   return `${PICK_LOCAL}_$${suffix}`;
+}
+
+function findFreeCatalogPrefix(source: string): string {
+  if (!hasIdentifier(source, CATALOG_PREFIX)) {
+    return CATALOG_PREFIX;
+  }
+  let suffix = 0;
+  while (hasIdentifier(source, `${CATALOG_PREFIX}_$${suffix}`)) {
+    suffix += 1;
+  }
+  return `${CATALOG_PREFIX}_$${suffix}`;
 }
 
 function hasIdentifier(source: string, name: string): boolean {
