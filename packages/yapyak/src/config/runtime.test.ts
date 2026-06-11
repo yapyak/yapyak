@@ -41,11 +41,26 @@ describe('defineRuntime', () => {
       ...baseInput,
       persistence: {
         name: 'locale',
+        secure: false,
         type: 'cookie',
       },
     });
     expect(code).toContain(
-      `PERSISTENCE_CONFIG = { type: 'cookie', name: "locale" };`,
+      `PERSISTENCE_CONFIG = { type: 'cookie', name: "locale", secure: false };`,
+    );
+  });
+
+  it('emits a `cookie` persistence config with `secure: true` when requested', () => {
+    const code = defineRuntime({
+      ...baseInput,
+      persistence: {
+        name: 'locale',
+        secure: true,
+        type: 'cookie',
+      },
+    });
+    expect(code).toContain(
+      `PERSISTENCE_CONFIG = { type: 'cookie', name: "locale", secure: true };`,
     );
   });
 

@@ -13,6 +13,7 @@ describe('buildPersistence', () => {
     const persistence = buildPersistence(
       {
         name: 'locale',
+        secure: false,
         type: 'cookie',
       },
       LOCALES,

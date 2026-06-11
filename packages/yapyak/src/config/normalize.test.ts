@@ -305,6 +305,7 @@ describe('normalizeYapyakConfig', () => {
     });
     expect(result.persistence).toEqual({
       name: 'locale',
+      secure: false,
       type: 'cookie',
     });
   });
@@ -346,6 +347,7 @@ describe('normalizeYapyakConfig', () => {
     });
     expect(result.persistence).toEqual({
       name: 'my_locale',
+      secure: false,
       type: 'cookie',
     });
   });

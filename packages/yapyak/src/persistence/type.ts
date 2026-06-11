@@ -26,6 +26,15 @@ export type CookiePersistenceOptions = {
    * @defaultValue `'locale'`
    */
   name?: string;
+  /**
+   * Whether the cookie is marked as `Secure`, restricting it to HTTPS-only contexts.
+   *
+   * @remarks
+   * When `true`, browsers refuse to send or set the cookie over plain HTTP — except on `localhost`, which modern browsers exempt for development. Production sites served over HTTPS should set this to `true`. Deployments that serve plain HTTP to the browser (internal tools, embedded devices, unencrypted reverse proxies) must leave it `false`, otherwise client-side calls to `setLocale()` silently fail.
+   *
+   * @defaultValue `false`
+   */
+  secure?: boolean;
   type: 'cookie';
 };
 
@@ -99,6 +108,7 @@ export type NormalizedPersistenceConfig =
   | {
       type: 'cookie';
       name: string;
+      secure: boolean;
     }
   | {
       type: 'local-storage';

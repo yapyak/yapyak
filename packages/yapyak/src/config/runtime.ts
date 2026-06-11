@@ -23,7 +23,7 @@ function emitPersistenceConfig(config: NormalizedPersistenceConfig): string {
     return `{ type: 'none' }`;
   }
   if (config.type === 'cookie') {
-    return `{ type: 'cookie', name: ${JSON.stringify(config.name)} }`;
+    return `{ type: 'cookie', name: ${JSON.stringify(config.name)}, secure: ${JSON.stringify(config.secure)} }`;
   }
   if (config.type === 'local-storage') {
     return `{ type: 'local-storage', key: ${JSON.stringify(config.key)} }`;

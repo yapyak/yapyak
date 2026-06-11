@@ -177,6 +177,7 @@ function normalizePersistenceConfig(
       case 'cookie':
         return {
           name: DEFAULT_COOKIE_NAME,
+          secure: false,
           type: 'cookie',
         };
       case 'local-storage':
@@ -202,6 +203,7 @@ function normalizePersistenceConfig(
     case 'cookie':
       return {
         name: config.name ?? DEFAULT_COOKIE_NAME,
+        secure: config.secure ?? false,
         type: 'cookie',
       };
     case 'local-storage':

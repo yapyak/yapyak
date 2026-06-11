@@ -404,3 +404,74 @@ describe('parseCookie', () => {
     });
   });
 });
+
+describe('cookie name validation', () => {
+  it('throws when the cookie name contains a CR or LF', () => {
+    expect(() =>
+      cookie({
+        name: 'locale\r\nSet-Cookie: admin=true',
+      }),
+    ).toThrow(/Invalid cookie name/);
+  });
+
+  it('throws when the cookie name contains whitespace', () => {
+    expect(() =>
+      cookie({
+        name: 'my locale',
+      }),
+    ).toThrow(/Invalid cookie name/);
+  });
+
+  it('throws when the cookie name is empty', () => {
+    expect(() =>
+      cookie({
+        name: '',
+      }),
+    ).toThrow(/Invalid cookie name/);
+  });
+
+  it('preserves a name made of RFC 6265 token characters', () => {
+    expect(() =>
+      cookie({
+        name: 'app_locale-v2',
+      }),
+    ).not.toThrow();
+  });
+});
+
+describe('secure attribute', () => {
+  let cookieJar: string;
+
+  beforeEach(() => {
+    cookieJar = '';
+    vi.stubGlobal('document', {
+      get cookie() {
+        return cookieJar;
+      },
+      set cookie(value: string) {
+        cookieJar = value;
+      },
+    });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('writes the cookie without the `secure` attribute by default', () => {
+    cookie({
+      name: 'locale',
+    }).set('sv');
+    expect(cookieJar).toBe('locale=sv; path=/; max-age=31536000; samesite=lax');
+  });
+
+  it('writes the cookie with the `secure` attribute when `secure: true`', () => {
+    cookie({
+      name: 'locale',
+      secure: true,
+    }).set('sv');
+    expect(cookieJar).toBe(
+      'locale=sv; path=/; max-age=31536000; samesite=lax; secure',
+    );
+  });
+});

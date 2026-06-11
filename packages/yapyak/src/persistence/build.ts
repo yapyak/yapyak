@@ -14,6 +14,7 @@ export function buildPersistence(
   if (config.type === 'cookie') {
     return cookie({
       name: config.name,
+      secure: config.secure,
     });
   }
   if (config.type === 'local-storage') {

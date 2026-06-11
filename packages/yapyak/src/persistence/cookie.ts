@@ -6,10 +6,12 @@ import { subscribeHistory } from './history';
 
 type CookieOptions = {
   name: string;
+  secure?: boolean;
 };
 
 const POLL_INTERVAL_MS = 1000;
 const COOKIE_MAX_AGE_SECONDS = 31_536_000;
+const COOKIE_NAME_RX = /^[A-Za-z0-9!#$%&'*+\-.^_`|~]+$/;
 
 export function parseCookie(header: string): Record<string, string> {
   const result: Record<string, string> = {};
@@ -44,7 +46,15 @@ export function parseCookie(header: string): Record<string, string> {
 }
 
 export function cookie(options: CookieOptions): Persistence {
-  const { name } = options;
+  const { name, secure = false } = options;
+  if (!COOKIE_NAME_RX.test(name)) {
+    throw new Error(
+      `[yapyak] Invalid cookie name "${name}". Must match RFC 6265 token syntax: alphanumeric and !#$%&'*+-.^_\`|~ only.`,
+    );
+  }
+  const attributes = `path=/; max-age=${COOKIE_MAX_AGE_SECONDS}; samesite=lax${
+    secure ? '; secure' : ''
+  }`;
   return {
     get() {
       if (typeof globalThis.document === 'undefined') {
@@ -63,7 +73,7 @@ export function cookie(options: CookieOptions): Persistence {
     },
     set(locale) {
       const value = encodeURIComponent(locale);
-      const cookieString = `${name}=${value}; path=/; max-age=${COOKIE_MAX_AGE_SECONDS}; samesite=lax`;
+      const cookieString = `${name}=${value}; ${attributes}`;
       if (typeof globalThis.document === 'undefined') {
         const applied = appendResponseHeader('Set-Cookie', cookieString);
         if (!applied) {
