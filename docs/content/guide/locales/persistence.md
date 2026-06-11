@@ -52,6 +52,21 @@ export default defineConfig({
 });
 ```
 
+### Cookie security
+
+Set `secure: true` on the cookie strategy to add the `Secure` attribute, restricting the cookie to HTTPS contexts. Recommended for server-driven locale switching (e.g., a form POST that emits `Set-Cookie`).
+
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+
+export default defineConfig({
+  defaultLocale: 'sv',
+  persistence: { type: 'cookie', name: 'lang', secure: true },
+});
+```
+
+Client-side `setLocale()` calls then work only when the page is served over HTTPS (or from `localhost`, which modern browsers exempt). On plain HTTP they silently fail — leave `secure: false` for HTTP-only deployments.
+
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 
