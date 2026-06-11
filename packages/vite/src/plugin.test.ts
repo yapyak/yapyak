@@ -313,7 +313,7 @@ describe('yapyak', () => {
       expect(reloadModule).toHaveBeenCalledTimes(1);
     });
 
-    it('emits a full-reload event for an Astro module when its file id is touched', async () => {
+    it('invalidates and full-reloads an Astro module when its file id is touched', async () => {
       writeFileSync(localePath, '{}');
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
@@ -322,14 +322,17 @@ describe('yapyak', () => {
       vi.useFakeTimers();
       const reloadModule = vi.fn(() => Promise.resolve());
       const send = vi.fn();
+      const invalidateModule = vi.fn();
       const server = createMockServer(createMockWatcher());
       server.reloadModule = reloadModule;
       server.ws.send = send;
+      server.moduleGraph.invalidateModule = invalidateModule;
       const astroPath = join(root, 'src', 'pages', 'index.astro');
-      server.moduleGraph.idToModuleMap.set('m1', {
+      const astroModule = {
         file: astroPath,
         url: '/src/pages/index.astro',
-      });
+      };
+      server.moduleGraph.idToModuleMap.set('m1', astroModule);
       invokeConfigureServer(plugin, server);
       const watcher = server.watcher;
 
@@ -345,6 +348,7 @@ describe('yapyak', () => {
       await vi.advanceTimersByTimeAsync(60);
 
       expect(reloadModule).not.toHaveBeenCalled();
+      expect(invalidateModule).toHaveBeenCalledWith(astroModule);
       expect(send).toHaveBeenCalledWith({
         path: astroPath,
         type: 'full-reload',
@@ -1376,6 +1380,7 @@ type MockServer = {
     getModuleById: (id: string) => MockModule | undefined;
     getModulesByFile: (file: string) => Set<MockModule> | undefined;
     idToModuleMap: Map<unknown, MockModule>;
+    invalidateModule: (mod: MockModule) => void;
   };
   reloadModule: (mod: unknown) => Promise<void>;
   restart: () => Promise<void>;
@@ -1406,6 +1411,7 @@ function createMockServer(watcher: MockWatcher): MockServer {
         return matching.size === 0 ? undefined : matching;
       },
       idToModuleMap,
+      invalidateModule: () => {},
     },
     reloadModule: () => Promise.resolve(),
     restart: () => Promise.resolve(),
