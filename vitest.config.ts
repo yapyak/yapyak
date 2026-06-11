@@ -5,9 +5,11 @@ export default defineConfig({
     coverage: {
       exclude: [
         '**/*.astro',
+        '**/*.svelte',
         '**/*.test-d.ts',
+        '**/bin.ts',
         '**/fixture/**',
-        'packages/yapyak/src/runtime.ts',
+        'packages/*/src/runtime.ts',
         'packages/{doc-extractor,tsup-config,typescript-config,vitest-config}/**',
       ],
       include: [

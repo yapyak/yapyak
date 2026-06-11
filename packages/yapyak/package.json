@@ -50,7 +50,7 @@
     "dist"
   ],
   "bin": {
-    "yapyak": "./dist/cli/run.js"
+    "yapyak": "./dist/cli/bin.js"
   },
   "scripts": {
     "build": "tsup",

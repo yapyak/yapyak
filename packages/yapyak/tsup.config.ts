@@ -6,7 +6,7 @@ export default defineConfig({
     'src/internal.ts',
     'src/runtime.ts',
     'src/adapter/index.ts',
-    'src/cli/run.ts',
+    'src/cli/bin.ts',
     'src/compiler/index.ts',
     'src/config/index.ts',
     'src/config/internal.ts',

@@ -1,9 +1,6 @@
-#!/usr/bin/env node
-
 import { add, check, clean, exportCommand, status, translate } from './command';
 import { loadConfig } from './config';
 import { color, symbol } from './tui';
-import { fileURLToPath } from 'node:url';
 
 export async function run(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
@@ -93,17 +90,4 @@ function printHelp(): void {
     ${color.cyan('clean --write')}         ${color.dim('Remove orphan entries from the locale files')}
 
 `);
-}
-
-if (process.argv[1] && process.argv[1] === fileURLToPath(import.meta.url)) {
-  void (async (): Promise<void> => {
-    try {
-      const code = await run(process.argv.slice(2));
-      process.exit(code);
-    } catch (cause) {
-      const message = cause instanceof Error ? cause.message : String(cause);
-      process.stderr.write(`\n  ${symbol.cross} ${color.red(message)}\n\n`);
-      process.exit(1);
-    }
-  })();
 }
