@@ -36,7 +36,7 @@ describe('renderErrorDiagnostics', () => {
         {
           code: 'YPK101',
           fileId: 'src/a.tsx',
-          message: 'Bad source',
+          message: 'Hello',
           range: {
             end: {
               column: 10,
@@ -70,7 +70,7 @@ describe('renderErrorDiagnostics', () => {
         {
           code: 'YPK201',
           fileId: 'src/a.tsx',
-          message: 'Soft hint',
+          message: 'Hello',
           range: {
             end: {
               column: 2,
@@ -95,5 +95,56 @@ describe('renderErrorDiagnostics', () => {
     const logger = buildLogger();
     renderErrorDiagnostics(logger, buildResult([]));
     expect(logger.error).not.toHaveBeenCalled();
+  });
+
+  it('writes a logger error only for the error diagnostic in a mixed list', () => {
+    const logger = buildLogger();
+    renderErrorDiagnostics(
+      logger,
+      buildResult([
+        {
+          code: 'YPK101',
+          fileId: 'src/a.tsx',
+          message: 'Hello',
+          range: {
+            end: {
+              column: 5,
+              line: 1,
+              offset: 5,
+            },
+            start: {
+              column: 1,
+              line: 1,
+              offset: 0,
+            },
+          },
+          severity: 'error',
+          source: 'Hello',
+        },
+        {
+          code: 'YPK201',
+          fileId: 'src/b.tsx',
+          message: 'Hello',
+          range: {
+            end: {
+              column: 5,
+              line: 1,
+              offset: 5,
+            },
+            start: {
+              column: 1,
+              line: 1,
+              offset: 0,
+            },
+          },
+          severity: 'warning',
+          source: 'Hello',
+        },
+      ]),
+    );
+    expect(logger.error).toHaveBeenCalledTimes(1);
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.stringContaining('src/a.tsx'),
+    );
   });
 });

@@ -1,9 +1,13 @@
 import type { LocaleResolver } from '../locale-resolver';
 
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { normalizeYapyakConfig } from 'yapyak/config/internal';
 
 import { createState, getNormalized, getResolver } from './state';
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 function buildResolver(): LocaleResolver {
   return {
@@ -65,25 +69,19 @@ describe('createState', () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-    try {
-      const state = createState({
-        fixedLocale: undefined,
-      });
-      state.logger.clearScreen('error');
-      state.logger.info('Hello');
-      state.logger.warn('Hello');
-      state.logger.warnOnce('Hello');
-      state.logger.error('Hello');
-      expect(logSpy).toHaveBeenCalledWith('Hello');
-      expect(warnSpy).toHaveBeenCalledTimes(2);
-      expect(errorSpy).toHaveBeenCalledWith('Hello');
-      expect(state.logger.hasErrorLogged(new Error('Hello'))).toBe(false);
-      expect(state.logger.hasWarned).toBe(false);
-    } finally {
-      errorSpy.mockRestore();
-      warnSpy.mockRestore();
-      logSpy.mockRestore();
-    }
+    const state = createState({
+      fixedLocale: undefined,
+    });
+    state.logger.clearScreen('error');
+    state.logger.info('Hello');
+    state.logger.warn('Hello');
+    state.logger.warnOnce('Hello');
+    state.logger.error('Hello');
+    expect(logSpy).toHaveBeenCalledWith('Hello');
+    expect(warnSpy).toHaveBeenCalledTimes(2);
+    expect(errorSpy).toHaveBeenCalledWith('Hello');
+    expect(state.logger.hasErrorLogged(new Error('Hello'))).toBe(false);
+    expect(state.logger.hasWarned).toBe(false);
   });
 });
 
