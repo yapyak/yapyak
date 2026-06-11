@@ -112,13 +112,23 @@ export function createTranslator(
         if (batchOptions?.signal?.aborted) {
           throw toAbortError(batchOptions.signal);
         }
-        const result = await runChunk(
-          chunk,
-          targetLocales,
-          batchOptions?.signal,
-        );
-        chunkResults[myIndex] = result;
-        batchOptions?.onChunk?.(result.length * targetLocales.length);
+        try {
+          const result = await runChunk(
+            chunk,
+            targetLocales,
+            batchOptions?.signal,
+          );
+          chunkResults[myIndex] = result;
+          batchOptions?.onChunk?.(result.length * targetLocales.length);
+        } catch (error) {
+          if (batchOptions?.signal?.aborted) {
+            throw error;
+          }
+          if (!batchOptions?.onChunkError) {
+            throw error;
+          }
+          batchOptions.onChunkError(error, chunk);
+        }
       }
     }
     const workerCount = Math.min(concurrency, chunks.length);
@@ -131,7 +141,19 @@ export function createTranslator(
       ),
     );
 
-    const uniqueTranslations = chunkResults.flat();
+    const uniqueTranslations: (LocaleTranslations | undefined)[] = new Array(
+      uniqueRequests.length,
+    );
+    for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
+      const chunkOffset = chunkIndex * batchSize;
+      const result = chunkResults[chunkIndex];
+      if (!result) {
+        continue;
+      }
+      for (let resultIndex = 0; resultIndex < result.length; resultIndex++) {
+        uniqueTranslations[chunkOffset + resultIndex] = result[resultIndex];
+      }
+    }
     return requests.map((request, index) => {
       const uniqueIndex = requestToUnique[index] ?? -1;
       const translations = uniqueTranslations[uniqueIndex];

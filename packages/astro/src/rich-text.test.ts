@@ -162,7 +162,7 @@ describe('renderRichText', () => {
     expect(result).toBe('<a href="/x">click <span>★</span> here</a>');
   });
 
-  it('strips an accidentally-placed children token from a void slot template', async () => {
+  it('clears an accidentally-placed children token from a void slot template', async () => {
     const nodes = parseRichText('A<br/>B');
     const slotAccessor = buildSlotAccessor({
       br: `<span>${CHILDREN_TOKEN}</span>`,

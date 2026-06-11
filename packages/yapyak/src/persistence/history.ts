@@ -1,22 +1,49 @@
+const listeners = new Set<() => void>();
+let patch:
+  | {
+      pushState: typeof window.history.pushState;
+      replaceState: typeof window.history.replaceState;
+    }
+  | undefined;
+
+function dispatch(): void {
+  for (const listener of listeners) {
+    listener();
+  }
+}
+
 export function subscribeHistory(onChange: () => void): () => void {
+  if (!patch) {
+    const originalPushState = window.history.pushState.bind(window.history);
+    const originalReplaceState = window.history.replaceState.bind(
+      window.history,
+    );
+    patch = {
+      pushState: originalPushState,
+      replaceState: originalReplaceState,
+    };
+    window.history.pushState = (
+      ...args: Parameters<typeof window.history.pushState>
+    ): void => {
+      originalPushState(...args);
+      dispatch();
+    };
+    window.history.replaceState = (
+      ...args: Parameters<typeof window.history.replaceState>
+    ): void => {
+      originalReplaceState(...args);
+      dispatch();
+    };
+  }
   window.addEventListener('popstate', onChange);
-  const originalPushState = window.history.pushState.bind(window.history);
-  const originalReplaceState = window.history.replaceState.bind(window.history);
-  window.history.pushState = (
-    ...args: Parameters<typeof window.history.pushState>
-  ): void => {
-    originalPushState(...args);
-    onChange();
-  };
-  window.history.replaceState = (
-    ...args: Parameters<typeof window.history.replaceState>
-  ): void => {
-    originalReplaceState(...args);
-    onChange();
-  };
+  listeners.add(onChange);
   return (): void => {
     window.removeEventListener('popstate', onChange);
-    window.history.pushState = originalPushState;
-    window.history.replaceState = originalReplaceState;
+    listeners.delete(onChange);
+    if (listeners.size === 0 && patch) {
+      window.history.pushState = patch.pushState;
+      window.history.replaceState = patch.replaceState;
+      patch = undefined;
+    }
   };
 }

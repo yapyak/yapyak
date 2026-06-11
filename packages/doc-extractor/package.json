@@ -2,6 +2,7 @@
   "name": "@yapyak/doc-extractor",
   "version": "0.0.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "exports": {
     ".": {
@@ -36,5 +37,8 @@
   },
   "peerDependencies": {
     "vite": ">=5"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

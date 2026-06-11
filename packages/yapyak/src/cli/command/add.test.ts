@@ -71,7 +71,7 @@ describe('add', () => {
     mkdirSync(join(root, 'src'), {
       recursive: true,
     });
-    writeFileSync(join(root, 'src', 'app.ts'), '');
+    writeFileSync(join(root, 'src', 'a.ts'), '');
     const code = await add(makeConfig(), root, {
       locales: [
         'sv',
@@ -89,13 +89,13 @@ describe('add', () => {
       recursive: true,
     });
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Save: 'Spara',
         },
       }),
@@ -114,7 +114,7 @@ describe('add', () => {
       recursive: true,
     });
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     const code = await add(makeConfig(), root, {
@@ -131,7 +131,7 @@ describe('add', () => {
       recursive: true,
     });
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     const translator = Object.assign(
@@ -155,7 +155,7 @@ describe('add', () => {
     const written = JSON.parse(
       readFileSync(join(root, 'locales', 'sv.json'), 'utf-8'),
     );
-    expect(written['src/app.ts'].Save).toBe('Spara');
+    expect(written['src/a.ts'].Save).toBe('Spara');
   });
 
   it('returns `1` when the translator throws', async () => {
@@ -163,7 +163,7 @@ describe('add', () => {
       recursive: true,
     });
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     const translator = Object.assign(

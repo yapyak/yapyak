@@ -46,7 +46,7 @@ describe('buildReport', () => {
 
   it('lists every extracted message across the source tree', () => {
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     const report = buildReport({
@@ -59,7 +59,7 @@ describe('buildReport', () => {
 
   it('builds `perLocale` stats with the default locale fully translated', () => {
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     const report = buildReport({
@@ -74,13 +74,13 @@ describe('buildReport', () => {
 
   it('lists every missing translation in a non-default locale', () => {
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Save: '',
         },
       }),

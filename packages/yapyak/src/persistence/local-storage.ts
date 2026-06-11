@@ -32,8 +32,17 @@ export function localStorage(options: LocalStorageOptions): Persistence {
       }
       try {
         globalThis.localStorage.setItem(key, locale);
-      } catch {}
-      return true;
+        return true;
+      } catch (cause) {
+        warn(
+          'setLocale() failed to write to localStorage — quota exceeded, Safari private mode, or storage disabled. The in-memory locale was updated but will not survive a reload.',
+          {
+            cause,
+            code: 'YPK_PERSISTENCE_LOCAL_STORAGE_WRITE_FAILED',
+          },
+        );
+        return false;
+      }
     },
   };
 }

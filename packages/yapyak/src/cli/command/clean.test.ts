@@ -57,13 +57,13 @@ describe('clean', () => {
 
   it('returns `0` with a check mark when no orphan entries exist', () => {
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Save: 'Spara',
         },
       }),
@@ -76,9 +76,9 @@ describe('clean', () => {
   });
 
   it('lists orphan entries without writing when `write` is `false`', () => {
-    writeFileSync(join(root, 'src', 'app.ts'), '');
+    writeFileSync(join(root, 'src', 'a.ts'), '');
     const before = JSON.stringify({
-      'src/app.ts': {
+      'src/a.ts': {
         Save: 'Spara',
       },
     });
@@ -94,11 +94,11 @@ describe('clean', () => {
   });
 
   it('clears orphan entries from the locale files when `write` is `true`', () => {
-    writeFileSync(join(root, 'src', 'app.ts'), '');
+    writeFileSync(join(root, 'src', 'a.ts'), '');
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Save: 'Spara',
         },
       }),

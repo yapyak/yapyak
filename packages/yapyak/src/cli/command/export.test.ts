@@ -43,13 +43,13 @@ describe('exportCommand', () => {
       recursive: true,
     });
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Save: 'Spara',
         },
       }),
@@ -108,7 +108,7 @@ describe('exportCommand', () => {
     const written = readFileSync(join(root, 'snapshot.json'), 'utf-8');
     expect(JSON.parse(written)).toMatchObject({
       sv: {
-        'src/app.ts': {
+        'src/a.ts': {
           Save: 'Spara',
         },
       },

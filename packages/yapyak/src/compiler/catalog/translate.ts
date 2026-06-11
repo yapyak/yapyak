@@ -99,18 +99,43 @@ export async function autoTranslate(
   );
 
   const signal = options?.signal;
+  const stubByRequest = new Map<TranslateRequest, TranslationStub>();
+  for (let index = 0; index < requests.length; index++) {
+    const request = requests[index];
+    const stub = stubs[index];
+    if (request && stub) {
+      stubByRequest.set(request, stub);
+    }
+  }
+  const onChunkError = (
+    error: unknown,
+    chunkRequests: TranslateRequest[],
+  ): void => {
+    for (const request of chunkRequests) {
+      const stub = stubByRequest.get(request);
+      if (!stub) {
+        continue;
+      }
+      errors.push({
+        error,
+        fileId: stub.fileId,
+        locale: stub.locale,
+        source: stub.source,
+      });
+    }
+  };
   let results: string[];
   try {
     results =
       typeof input.translator.batch === 'function'
-        ? await input.translator.batch(
-            requests,
-            signal === undefined
-              ? undefined
+        ? await input.translator.batch(requests, {
+            onChunkError,
+            ...(signal === undefined
+              ? {}
               : {
                   signal,
-                },
-          )
+                }),
+          })
         : await runOneByOne(stubs, requests, input.translator, errors, signal);
   } catch (error) {
     for (const stub of stubs) {

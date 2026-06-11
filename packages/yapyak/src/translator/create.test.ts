@@ -1,4 +1,4 @@
-import type { TranslateBatchRequest } from './type';
+import type { TranslateBatchRequest, TranslateRequest } from './type';
 
 import { describe, expect, it } from 'vitest';
 
@@ -463,7 +463,7 @@ describe('createTranslator', () => {
     ).rejects.toThrow(/Cancelled before start/);
   });
 
-  it('forwards the abort signal to the translate callback', async () => {
+  it('notifies the translate callback with the abort signal', async () => {
     let receivedSignal: AbortSignal | undefined;
     const translator = createTranslator((params) => {
       receivedSignal = params.signal;
@@ -517,5 +517,91 @@ describe('createTranslator', () => {
     const item = receivedItems?.[0] as Record<string, unknown>;
     expect(item.snippet).toBe('<h1>Save</h1>');
     expect(item.component).toBeUndefined();
+  });
+
+  it('notifies `onChunkError` for every failed chunk', async () => {
+    const translator = createTranslator(
+      (params) => {
+        if (params.items.some((item) => item.source === 'Save')) {
+          throw new Error('Transient API error');
+        }
+        return params.items.map(() => ({
+          sv: 'Avbryt',
+        }));
+      },
+      {
+        batchSize: 1,
+      },
+    );
+    const failedSources: string[] = [];
+    const onChunkError = (
+      _error: unknown,
+      requests: TranslateRequest[],
+    ): void => {
+      for (const request of requests) {
+        failedSources.push(request.source);
+      }
+    };
+    await translator.batch?.(
+      [
+        {
+          fileId: 'src/a.tsx',
+          source: 'Save',
+          sourceLocale: 'en',
+          targetLocale: 'sv',
+        },
+        {
+          fileId: 'src/a.tsx',
+          source: 'Cancel',
+          sourceLocale: 'en',
+          targetLocale: 'sv',
+        },
+      ],
+      {
+        onChunkError,
+      },
+    );
+    expect(failedSources).toEqual([
+      'Save',
+    ]);
+  });
+
+  it('preserves every succeeded chunk result when another chunk fails', async () => {
+    const translator = createTranslator(
+      (params) => {
+        if (params.items.some((item) => item.source === 'Save')) {
+          throw new Error('Transient API error');
+        }
+        return params.items.map(() => ({
+          sv: 'Avbryt',
+        }));
+      },
+      {
+        batchSize: 1,
+      },
+    );
+    const results = await translator.batch?.(
+      [
+        {
+          fileId: 'src/a.tsx',
+          source: 'Save',
+          sourceLocale: 'en',
+          targetLocale: 'sv',
+        },
+        {
+          fileId: 'src/a.tsx',
+          source: 'Cancel',
+          sourceLocale: 'en',
+          targetLocale: 'sv',
+        },
+      ],
+      {
+        onChunkError: () => {},
+      },
+    );
+    expect(results).toEqual([
+      '',
+      'Avbryt',
+    ]);
   });
 });

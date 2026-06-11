@@ -233,7 +233,7 @@ describe('extractPlaceholders', () => {
   });
 
   describe('dedup', () => {
-    it('deduplicates repeated placeholder names', () => {
+    it('folds repeated placeholder names into one entry', () => {
       const template = [
         placeholder('name'),
         literal(' and '),

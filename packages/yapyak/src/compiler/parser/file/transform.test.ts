@@ -269,7 +269,7 @@ describe('transformFile', () => {
       expect(code).toContain('_pick');
     });
 
-    it('escapes `{` and `}` in static catalog string variants so Vue/JSX parsers never see literal braces', () => {
+    it('emits escaped `{` and `}` in static catalog string variants so Vue/JSX parsers never see literal braces', () => {
       const source = [
         "import { t } from 'yapyak';",
         "export const x = t('Closing }} pattern with { open');",
@@ -707,7 +707,7 @@ describe('transformFile', () => {
       expect(code).not.toContain('_placeholder');
     });
 
-    it('combines pick + multiple factory imports in one statement', () => {
+    it('folds pick and multiple factory imports into one statement', () => {
       const code = runTransform({
         locales: [
           'en',

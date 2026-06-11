@@ -1,6 +1,8 @@
 import type { TranslationExample } from '../../translator';
 import type { LocaleData, OrphanCache } from './locale';
 
+import { parseMessageKey } from '../parser';
+
 export type ExtractExamplesInput = {
   currentFileId: string;
   excludeKey: string;
@@ -83,8 +85,7 @@ function candidatesFromOrphans(input: ExtractExamplesInput): Candidate[] {
 }
 
 function sourceFromKey(key: string): string {
-  const at = key.indexOf('@');
-  return at === -1 ? key : key.slice(0, at);
+  return parseMessageKey(key).source;
 }
 
 function dedupeBySource(candidates: Candidate[]): Candidate[] {

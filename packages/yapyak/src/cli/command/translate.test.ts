@@ -63,13 +63,13 @@ describe('translate', () => {
 
   it('returns `0` when no stubs are missing', async () => {
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Save: 'Spara',
         },
       }),
@@ -91,13 +91,13 @@ describe('translate', () => {
 
   it('returns `0` when every missing translation is filled', async () => {
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Save: '',
         },
       }),
@@ -118,18 +118,18 @@ describe('translate', () => {
     const written = JSON.parse(
       readFileSync(join(root, 'locales', 'sv.json'), 'utf-8'),
     );
-    expect(written['src/app.ts'].Save).toBe('Spara');
+    expect(written['src/a.ts'].Save).toBe('Spara');
   });
 
   it('writes every translation when `force` is set', async () => {
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Save: 'Old',
         },
       }),
@@ -153,18 +153,18 @@ describe('translate', () => {
     const written = JSON.parse(
       readFileSync(join(root, 'locales', 'sv.json'), 'utf-8'),
     );
-    expect(written['src/app.ts'].Save).toBe('Spara');
+    expect(written['src/a.ts'].Save).toBe('Spara');
   });
 
   it('returns `1` when the translator throws', async () => {
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Save: '',
         },
       }),
@@ -188,13 +188,13 @@ describe('translate', () => {
 
   it('returns `130` when SIGINT cancels mid-translate', async () => {
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Save: '',
         },
       }),
@@ -221,13 +221,13 @@ describe('translate', () => {
 
   it('blocks every remaining locale when SIGINT fires after the first', async () => {
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Save: '',
         },
       }),
@@ -235,7 +235,7 @@ describe('translate', () => {
     writeFileSync(
       join(root, 'locales', 'fr.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Save: '',
         },
       }),

@@ -51,13 +51,13 @@ describe('status', () => {
 
   it('returns `0` when every translation is present', () => {
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Save: 'Spara',
         },
       }),
@@ -69,13 +69,13 @@ describe('status', () => {
 
   it('returns `1` and lists every missing entry when translations are missing', () => {
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Save: '',
         },
       }),
@@ -87,13 +87,13 @@ describe('status', () => {
 
   it('writes every missing entry grouped under its locale', () => {
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const a = t('Save');\nexport const b = t('Cancel');\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Cancel: '',
           Save: '',
         },
@@ -108,7 +108,7 @@ describe('status', () => {
 
   it('writes a truncation hint when missing entries exceed the limit', () => {
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       [
         "import { t } from 'yapyak';",
         "export const a = t('Hello');",
@@ -127,7 +127,7 @@ describe('status', () => {
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Cancel: '',
           Hello: '',
           Loading: '',
@@ -150,13 +150,13 @@ describe('status', () => {
 
   it('emits a JSON payload when `json` is `true`', () => {
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Save: 'Spara',
         },
       }),

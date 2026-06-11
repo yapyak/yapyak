@@ -95,6 +95,13 @@ export type TranslateBatchOptions = {
   /** Called when a chunk resolves. */
   onChunk?: (count: number) => void;
   /**
+   * Called when a chunk fails after retries.
+   *
+   * @remarks
+   * Invoked once per failed chunk with the original requests so the caller can persist already-completed chunks and record per-stub errors. Abort errors propagated through `signal` do not fire this callback — they bubble out so cancellation stops the batch.
+   */
+  onChunkError?: (error: unknown, requests: TranslateRequest[]) => void;
+  /**
    * The abort signal for cancellation.
    *
    * @remarks

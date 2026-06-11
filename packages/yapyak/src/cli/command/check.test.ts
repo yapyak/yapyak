@@ -47,7 +47,7 @@ describe('check', () => {
     mkdirSync(join(root, 'src'), {
       recursive: true,
     });
-    writeFileSync(join(root, 'src', 'app.ts'), '');
+    writeFileSync(join(root, 'src', 'a.ts'), '');
     const code = check(makeConfig(), root);
     expect(code).toBe(0);
   });
@@ -57,7 +57,7 @@ describe('check', () => {
       recursive: true,
     });
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     mkdirSync(join(root, 'locales'), {
@@ -66,7 +66,7 @@ describe('check', () => {
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Save: '',
         },
       }),
@@ -84,13 +84,13 @@ describe('check', () => {
       recursive: true,
     });
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Save: 'Spara',
         },
       }),
@@ -105,7 +105,7 @@ describe('check', () => {
       recursive: true,
     });
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t.as('bad@ctx', 'Save');\n`,
     );
     check(makeConfig(), root);
@@ -120,13 +120,13 @@ describe('check', () => {
       recursive: true,
     });
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const a = t('Save');\nexport const b = t('Cancel');\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Cancel: '',
           Save: '',
         },
@@ -135,7 +135,7 @@ describe('check', () => {
     writeFileSync(
       join(root, 'locales', 'de.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           Cancel: '',
           Save: '',
         },
@@ -156,13 +156,13 @@ describe('check', () => {
       recursive: true,
     });
     writeFileSync(
-      join(root, 'src', 'app.ts'),
+      join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Hi {name}');\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
       JSON.stringify({
-        'src/app.ts': {
+        'src/a.ts': {
           'Hi {name}': 'Hej {namn}',
         },
       }),
