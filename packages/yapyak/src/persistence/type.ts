@@ -30,7 +30,7 @@ export type CookiePersistenceOptions = {
    * Whether the cookie is marked as `Secure`, restricting it to HTTPS-only contexts.
    *
    * @remarks
-   * When `true`, browsers refuse to send or set the cookie over plain HTTP — except on `localhost`, which modern browsers exempt for development. Production sites served over HTTPS should set this to `true`. Deployments that serve plain HTTP to the browser (internal tools, embedded devices, unencrypted reverse proxies) must leave it `false`, otherwise client-side calls to `setLocale()` silently fail.
+   * Enable for server-driven locale switching (e.g., a form POST that sets the cookie). Client-side `setLocale()` calls work only when the page is served over HTTPS (or from `localhost`) — on plain HTTP they silently fail.
    *
    * @defaultValue `false`
    */
