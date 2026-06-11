@@ -199,10 +199,16 @@ export function createTranslator(
   }
 
   async function single(request: TranslateRequest): Promise<string> {
-    const [first] = await batch([
-      request,
-    ]);
-    return first ?? '';
+    const result = await runChunk(
+      [
+        request,
+      ],
+      [
+        request.targetLocale,
+      ],
+      undefined,
+    );
+    return result[0]?.[request.targetLocale] ?? '';
   }
 
   return Object.assign(single, {

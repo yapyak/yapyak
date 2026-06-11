@@ -90,10 +90,12 @@ describe('setLocale', () => {
     });
 
     it('warns when called in dev mode', () => {
+      vi.stubEnv('NODE_ENV', 'development');
       setLocale('sv');
       expect(warnSpy).toHaveBeenCalledOnce();
       expect(warnSpy.mock.calls[0]?.[0]).toContain('no-op');
       expect(warnSpy.mock.calls[0]?.[0]).toContain('url');
+      vi.unstubAllEnvs();
     });
 
     it('notifies no subscribers', () => {

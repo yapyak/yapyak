@@ -533,7 +533,7 @@ describe('anthropic', () => {
       ).toThrow(/concurrency must be a positive integer/);
     });
 
-    it('throws when batch response length does not match', async () => {
+    it('keeps the batch alive when the response length does not match the request', async () => {
       vi.stubGlobal(
         'fetch',
         async () =>
@@ -558,22 +558,24 @@ describe('anthropic', () => {
       const translator = anthropic({
         apiKey: 'k',
       });
-      await expect(
-        translator.batch?.([
-          {
-            fileId: 'src/a.tsx',
-            source: 'Hello',
-            sourceLocale: 'en',
-            targetLocale: 'sv',
-          },
-          {
-            fileId: 'src/a.tsx',
-            source: 'Save',
-            sourceLocale: 'en',
-            targetLocale: 'sv',
-          },
-        ]),
-      ).rejects.toThrow(/expected 2/);
+      const results = await translator.batch?.([
+        {
+          fileId: 'src/a.tsx',
+          source: 'Hello',
+          sourceLocale: 'en',
+          targetLocale: 'sv',
+        },
+        {
+          fileId: 'src/a.tsx',
+          source: 'Save',
+          sourceLocale: 'en',
+          targetLocale: 'sv',
+        },
+      ]);
+      expect(results).toEqual([
+        '',
+        '',
+      ]);
     });
   });
 

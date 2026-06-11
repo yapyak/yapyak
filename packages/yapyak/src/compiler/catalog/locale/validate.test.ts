@@ -1,4 +1,4 @@
-import type { ExtractedMessage, Location } from '../../parser/file/extract';
+import type { ExtractedMessage, Location } from '../../parser';
 import type { LocaleFile } from './file';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';

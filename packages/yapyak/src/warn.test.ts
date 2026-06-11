@@ -23,6 +23,7 @@ describe('warn', () => {
   });
 
   it('writes the prefixed message to `console.warn` via the default', () => {
+    vi.stubEnv('NODE_ENV', 'development');
     const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     warn('Hello');
@@ -31,6 +32,7 @@ describe('warn', () => {
   });
 
   it('writes the prefixed message and `meta` to `console.warn` via the default', () => {
+    vi.stubEnv('NODE_ENV', 'development');
     const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     warn('Hello', {
@@ -44,6 +46,15 @@ describe('warn', () => {
 
   it('blocks emission when `process.env.NODE_ENV` is `production`', () => {
     vi.stubEnv('NODE_ENV', 'production');
+    const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    warn('Hello');
+
+    expect(consoleWarn).not.toHaveBeenCalled();
+  });
+
+  it('blocks emission when `process.env.NODE_ENV` is `test`', () => {
+    vi.stubEnv('NODE_ENV', 'test');
     const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     warn('Hello');
@@ -65,6 +76,7 @@ describe('setWarn', () => {
 
 describe('resetWarn', () => {
   it('writes through the default after a custom function was set', () => {
+    vi.stubEnv('NODE_ENV', 'development');
     const stub = vi.fn();
     setWarn(stub);
     const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});

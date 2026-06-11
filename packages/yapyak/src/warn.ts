@@ -15,8 +15,11 @@ export function resetWarn(): void {
 }
 
 function defaultWarn(message: string, meta?: Record<string, unknown>): void {
-  if (typeof process !== 'undefined' && process.env.NODE_ENV === 'production') {
-    return;
+  if (typeof process !== 'undefined') {
+    const nodeEnv = process.env.NODE_ENV;
+    if (nodeEnv === 'production' || nodeEnv === 'test') {
+      return;
+    }
   }
   if (meta) {
     console.warn(`[yapyak] ${message}`, meta);
