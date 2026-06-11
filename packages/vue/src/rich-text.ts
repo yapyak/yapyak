@@ -3,31 +3,11 @@ import type { RichTextNode as Node } from 'yapyak/internal';
 
 import { parseRichText } from 'yapyak/internal';
 
-/**
- * The pair-tag slot. Each named pair tag (`<name>...</name>`) in the source string surfaces as a scoped slot with this signature.
- *
- * @remarks
- * The slot receives a `children` render function that emits the inner content, which the consumer wraps in the desired element.
- */
-export type PairSlot = (props: {
-  children: () => VNodeChild[];
-}) => VNodeChild[];
+type PairSlot = (props: { children: () => VNodeChild[] }) => VNodeChild[];
 
-/**
- * The void-tag slot. Each named void tag (`<name/>`) in the source string surfaces as a slot with this signature.
- *
- * @remarks
- * The slot receives no scope props. The consumer renders the standalone element.
- */
-export type VoidSlot = () => VNodeChild[];
+type VoidSlot = () => VNodeChild[];
 
-/**
- * The rich-text slots. Maps tag names to their {@link PairSlot} or {@link VoidSlot}.
- *
- * @remarks
- * Vue's type system cannot require slots derived from a generic string literal, so the slot map is open: any tag found in `value` is matched against a slot of the same name. A tag with no matching slot renders as literal text.
- */
-export type RichTextSlots = Record<string, PairSlot | VoidSlot>;
+type RichTextSlots = Record<string, PairSlot | VoidSlot>;
 
 /**
  * Props for {@link RichText}.
@@ -40,9 +20,6 @@ export type RichTextProps<T extends string> = {
 
 /**
  * Renders rich text by resolving named tags via scoped slots.
- *
- * @remarks
- * The slot shape is {@link RichTextSlots}.
  *
  * @example
  * ```vue
