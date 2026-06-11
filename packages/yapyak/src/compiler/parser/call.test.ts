@@ -55,7 +55,7 @@ describe('discoverCalls', () => {
     expect(callSites[0]?.binding.kind).toBe('wrapper');
   });
 
-  it('returns namespace member calls (`Y.t`)', () => {
+  it('returns namespace member calls (`y.t`)', () => {
     const sourceFile = loadFixture('binding', 'namespace-import.ts');
     const { callSites } = discoverCalls(
       sourceFile,

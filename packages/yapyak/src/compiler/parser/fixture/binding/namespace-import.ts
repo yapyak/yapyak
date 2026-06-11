@@ -1,7 +1,7 @@
 // @ts-nocheck
 // biome-ignore lint/performance/noNamespaceImport: yap yap yap
-import * as Y from 'yapyak';
+import * as y from 'yapyak';
 
 export function greeting(): string {
-  return Y.t('Hello');
+  return y.t('Hello');
 }

@@ -79,9 +79,9 @@ describe('resolveBindings', () => {
   it('returns a namespace binding for a namespace import', () => {
     const sourceFile = loadFixture('namespace-import.ts');
     const table = resolveBindings(sourceFile);
-    const binding = table.root.bindings.get('Y');
+    const binding = table.root.bindings.get('y');
     expect(binding?.kind).toBe('namespace');
-    expect(binding?.localName).toBe('Y');
+    expect(binding?.localName).toBe('y');
   });
 
   it('returns a wrapper binding at root scope', () => {
