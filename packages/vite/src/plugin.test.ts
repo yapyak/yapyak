@@ -313,6 +313,44 @@ describe('yapyak', () => {
       expect(reloadModule).toHaveBeenCalledTimes(1);
     });
 
+    it('emits a full-reload event for an Astro module when its file id is touched', async () => {
+      writeFileSync(localePath, '{}');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const reloadModule = vi.fn(() => Promise.resolve());
+      const send = vi.fn();
+      const server = createMockServer(createMockWatcher());
+      server.reloadModule = reloadModule;
+      server.ws.send = send;
+      const astroPath = join(root, 'src', 'pages', 'index.astro');
+      server.moduleGraph.idToModuleMap.set('m1', {
+        file: astroPath,
+        url: '/src/pages/index.astro',
+      });
+      invokeConfigureServer(plugin, server);
+      const watcher = server.watcher;
+
+      writeFileSync(
+        localePath,
+        JSON.stringify({
+          'src/pages/index.astro': {
+            Hello: 'Hej',
+          },
+        }),
+      );
+      watcher.emit('change', localePath);
+      await vi.advanceTimersByTimeAsync(60);
+
+      expect(reloadModule).not.toHaveBeenCalled();
+      expect(send).toHaveBeenCalledWith({
+        path: astroPath,
+        type: 'full-reload',
+      });
+    });
+
     it('blocks reload for non-locale files', async () => {
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
@@ -1336,6 +1374,7 @@ type MockMessage = {
 type MockServer = {
   moduleGraph: {
     getModuleById: (id: string) => MockModule | undefined;
+    getModulesByFile: (file: string) => Set<MockModule> | undefined;
     idToModuleMap: Map<unknown, MockModule>;
   };
   reloadModule: (mod: unknown) => Promise<void>;
@@ -1357,6 +1396,15 @@ function createMockServer(watcher: MockWatcher): MockServer {
   return {
     moduleGraph: {
       getModuleById: (id: string) => idToModuleMap.get(id),
+      getModulesByFile: (file: string) => {
+        const matching = new Set<MockModule>();
+        for (const mod of idToModuleMap.values()) {
+          if (mod.file === file) {
+            matching.add(mod);
+          }
+        }
+        return matching.size === 0 ? undefined : matching;
+      },
       idToModuleMap,
     },
     reloadModule: () => Promise.resolve(),

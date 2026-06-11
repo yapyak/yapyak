@@ -1,5 +1,9 @@
 import type { HmrContext, Plugin, ViteDevServer } from 'vite';
-import type { ExtractedMessage, LocaleWarning } from 'yapyak/compiler';
+import type {
+  ExtractedMessage,
+  LocaleFile,
+  LocaleWarning,
+} from 'yapyak/compiler';
 import type { State } from './state';
 
 import {
@@ -98,9 +102,45 @@ export function createDevServerPlugin(state: State): Plugin {
         }
       };
 
+      const previousLocaleData = new Map<string, LocaleFile>();
+      const pendingLocalePaths = new Set<string>();
       const invalidateLocaleData = debounce(() => {
+        if (pendingLocalePaths.size === 0) {
+          return;
+        }
+        const changedFileIds = new Set<string>();
+        for (const localePath of pendingLocalePaths) {
+          const locale = localeFromPath(localePath);
+          const before = previousLocaleData.get(locale) ?? {};
+          const after = readLocaleFile(localePath);
+          previousLocaleData.set(locale, after);
+          for (const fileId of extractChangedFileIds(before, after)) {
+            changedFileIds.add(fileId);
+          }
+        }
+        pendingLocalePaths.clear();
+        if (changedFileIds.size === 0) {
+          return;
+        }
         getResolver(state).invalidateData();
-        reloadCandidateModules();
+        for (const fileId of changedFileIds) {
+          const absolutePath = join(state.projectRoot, fileId);
+          const modules = server.moduleGraph.getModulesByFile(absolutePath);
+          if (!modules) {
+            continue;
+          }
+          for (const mod of modules) {
+            if (mod.file?.endsWith('.astro')) {
+              server.moduleGraph.invalidateModule(mod);
+              server.ws.send({
+                path: mod.file,
+                type: 'full-reload',
+              });
+              continue;
+            }
+            void server.reloadModule(mod);
+          }
+        }
       }, 50);
       state.teardownCallbacks.push(invalidateLocaleData.cancel);
 
@@ -152,6 +192,7 @@ export function createDevServerPlugin(state: State): Plugin {
           return;
         }
         if (isLocaleFile(state, path)) {
+          pendingLocalePaths.add(path);
           invalidateLocaleData();
         }
       });
@@ -285,6 +326,62 @@ function isLocaleFile(state: State, path: string): boolean {
 function localeFromPath(path: string): string {
   const base = basename(path);
   return base.slice(0, -extname(base).length);
+}
+
+export function readLocaleFile(path: string): LocaleFile {
+  let raw: string;
+  try {
+    raw = readFileSync(path, 'utf8');
+  } catch {
+    return {};
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return {};
+  }
+  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return {};
+  }
+  return parsed as LocaleFile;
+}
+
+export function extractChangedFileIds(
+  before: LocaleFile,
+  after: LocaleFile,
+): Set<string> {
+  const changed = new Set<string>();
+  for (const [fileId, beforeEntries] of Object.entries(before)) {
+    if (!areEntriesEqual(beforeEntries, after[fileId])) {
+      changed.add(fileId);
+    }
+  }
+  for (const fileId of Object.keys(after)) {
+    if (!(fileId in before)) {
+      changed.add(fileId);
+    }
+  }
+  return changed;
+}
+
+export function areEntriesEqual(
+  a: Record<string, string>,
+  b: Record<string, string> | undefined,
+): boolean {
+  if (!b) {
+    return false;
+  }
+  const aKeys = Object.keys(a);
+  if (aKeys.length !== Object.keys(b).length) {
+    return false;
+  }
+  for (const key of aKeys) {
+    if (a[key] !== b[key]) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function toCallSitePositions(message: ExtractedMessage): CallSitePosition[] {
