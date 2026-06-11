@@ -19,25 +19,25 @@ export type SlotAccessor = {
  * @remarks
  * Leaf text and unmatched tag names are HTML-escaped before they reach the output. A matched slot's pre-rendered template is inlined with every `CHILDREN_TOKEN` occurrence replaced by the rendered children of that tag occurrence; the slot template itself is treated as developer-authored HTML and emitted verbatim.
  *
- * @param parts - The parsed rich-text tree.
- * @param slots - The Astro slot accessor (or a structural mock).
+ * @param nodes - The parsed rich-text tree.
+ * @param slotAccessor - The Astro slot accessor (or a structural mock).
  *
  * @returns The HTML output.
  */
 export async function renderRichText(
-  parts: RichTextNode[],
-  slots: SlotAccessor,
+  nodes: RichTextNode[],
+  slotAccessor: SlotAccessor,
 ): Promise<string> {
   const slotTemplates: Record<string, string> = {};
-  for (const name of collectTagNames(parts)) {
-    if (slots.has(name)) {
-      slotTemplates[name] = await slots.render(name);
+  for (const name of extractTagNames(nodes)) {
+    if (slotAccessor.has(name)) {
+      slotTemplates[name] = await slotAccessor.render(name);
     }
   }
-  return renderNodes(parts, slotTemplates);
+  return renderNodes(nodes, slotTemplates);
 }
 
-function collectTagNames(nodes: RichTextNode[]): Set<string> {
+function extractTagNames(nodes: RichTextNode[]): Set<string> {
   const names = new Set<string>();
   walk(nodes);
   return names;
