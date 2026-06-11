@@ -1,4 +1,7 @@
-import { t, useLocale } from 'yapyak';
+// @ts-nocheck
+
+import { useLocale } from '@yapyak/react';
+import { t } from 'yapyak';
 
 declare const previewLocale: {
   value: string;

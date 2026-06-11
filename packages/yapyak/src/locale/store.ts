@@ -78,7 +78,7 @@ persistence?.subscribe?.(syncFromPersistence);
  * The current locale.
  *
  * @remarks
- * Server-side, reads from the request bound by {@link withRequest} via persistence or the `Accept-Language` header. When no request is bound (e.g. outside any host-integration middleware), falls through to the module-scope locale shared across requests — the same value {@link setLocale} writes — which can leak between concurrent requests, and warns once with `YPK_SSR_LEAK_RISK`. Client-side, returns the locale set by {@link setLocale}.
+ * Server-side, reads from the request bound by {@link withRequest} via persistence or the `Accept-Language` header. When no request is bound (e.g. outside any host-integration middleware), falls through to the module-scope locale shared across requests — the same value {@link setLocale} writes — which can leak between concurrent requests. A `YPK_SSR_LEAK_RISK` warning fires once on the first such fallback. Client-side, returns the locale set by {@link setLocale}.
  *
  * @example Read the current locale
  * ```ts

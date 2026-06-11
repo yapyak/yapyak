@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { t } from 'yapyak';
 
 const translate = t;

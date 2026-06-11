@@ -36,23 +36,6 @@ describe('literal', () => {
       value: 'Hello',
     });
   });
-
-  it('builds nodes that interpret can read back', () => {
-    const ast = [
-      literal('Hi '),
-      placeholder('name'),
-    ];
-    expect(ast).toEqual([
-      {
-        kind: 'literal',
-        value: 'Hi ',
-      },
-      {
-        kind: 'placeholder',
-        name: 'name',
-      },
-    ]);
-  });
 });
 
 describe('number', () => {

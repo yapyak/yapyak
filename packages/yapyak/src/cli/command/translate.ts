@@ -84,11 +84,11 @@ export async function translate(
   const startedAt = Date.now();
 
   const controller = new AbortController();
-  const onAbortSignal = (): void => {
+  const onSigint = (): void => {
     aborted = true;
     controller.abort(new Error('Translate cancelled by SIGINT.'));
   };
-  process.once('SIGINT', onAbortSignal);
+  process.once('SIGINT', onSigint);
 
   const onProgress = (count: number): void => {
     done += count;
@@ -128,7 +128,7 @@ export async function translate(
       failed += subResult.errors.length;
     }
   } finally {
-    process.off('SIGINT', onAbortSignal);
+    process.off('SIGINT', onSigint);
   }
 
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);

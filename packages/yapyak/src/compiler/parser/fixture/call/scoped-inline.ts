@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { t } from 'yapyak';
 
 declare const previewLocale: {

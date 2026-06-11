@@ -1,3 +1,4 @@
+// @ts-nocheck
 // biome-ignore lint/performance/noNamespaceImport: yap yap yap
 import * as Y from 'yapyak';
 

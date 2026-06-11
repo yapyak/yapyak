@@ -1,4 +1,7 @@
-import { getLocale, setLocale, useLocale } from 'yapyak';
+// @ts-nocheck
+
+import { useLocale } from '@yapyak/react';
+import { getLocale, setLocale } from 'yapyak';
 
 export function current(): string {
   return getLocale();

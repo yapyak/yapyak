@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { spinner } from './spinner';
 
-function setIsTty(value: boolean | undefined): void {
+function setIsTTY(value: boolean | undefined): void {
   Object.assign(process.stdout, {
     isTTY: value,
   });
@@ -24,7 +24,7 @@ describe('spinner', () => {
     originalIsTty = process.stdout.isTTY;
     originalCi = process.env.CI;
     originalNoColor = process.env.NO_COLOR;
-    setIsTty(true);
+    setIsTTY(true);
     delete process.env.CI;
     delete process.env.NO_COLOR;
   });
@@ -32,7 +32,7 @@ describe('spinner', () => {
   afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
-    setIsTty(originalIsTty);
+    setIsTTY(originalIsTty);
     if (originalCi === undefined) {
       delete process.env.CI;
     } else {
@@ -76,8 +76,8 @@ describe('spinner', () => {
     instance.succeed('Settings');
   });
 
-  it('writes plain output and skips the interval when stdout is not a TTY', () => {
-    setIsTty(undefined);
+  it('writes plain output without escape sequences when stdout is not a TTY', () => {
+    setIsTTY(undefined);
     const instance = spinner('Loading...');
     instance.succeed('Settings');
     vi.advanceTimersByTime(1000);
@@ -87,7 +87,7 @@ describe('spinner', () => {
     expect(final).toContain('Settings');
   });
 
-  it('writes plain output and skips the interval when `CI` is set', () => {
+  it('writes plain output without escape sequences when `CI` is set', () => {
     process.env.CI = 'true';
     const instance = spinner('Loading...');
     instance.fail('Cancel');
@@ -97,7 +97,7 @@ describe('spinner', () => {
     expect(final).toContain('Cancel');
   });
 
-  it('writes plain output and skips the interval when `NO_COLOR` is set', () => {
+  it('writes plain output without escape sequences when `NO_COLOR` is set', () => {
     process.env.NO_COLOR = '1';
     const instance = spinner('Loading...');
     instance.succeed('Settings');

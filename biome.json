@@ -53,7 +53,7 @@
       "!**/node_modules",
       "!**/routeTree.gen.*",
       "!**/manifest.json",
-      "!**/parser/fixtures",
+      "!**/parser/fixture",
       "!**/.yapyak"
     ]
   },
