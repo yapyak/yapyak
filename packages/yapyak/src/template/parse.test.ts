@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { fc, it } from '@fast-check/vitest';
+import { describe, expect } from 'vitest';
 
 import { parseTemplate } from './parse';
 
@@ -602,5 +603,26 @@ describe('parseTemplate', () => {
         },
       ]);
     });
+  });
+
+  describe('properties', () => {
+    it.prop([
+      fc.string(),
+    ])('returns a template array for every input string', (source) => {
+      const result = parseTemplate(source);
+      expect(Array.isArray(result.template)).toBe(true);
+      expect(Array.isArray(result.diagnostics)).toBe(true);
+    });
+
+    it.prop([
+      fc.string(),
+    ])(
+      'returns the same template on a second parse of the same input',
+      (source) => {
+        const a = parseTemplate(source);
+        const b = parseTemplate(source);
+        expect(b.template).toEqual(a.template);
+      },
+    );
   });
 });

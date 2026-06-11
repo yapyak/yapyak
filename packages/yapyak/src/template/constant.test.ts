@@ -1,8 +1,10 @@
 import type { Template } from './node';
 
-import { describe, expect, it } from 'vitest';
+import { fc, it } from '@fast-check/vitest';
+import { describe, expect } from 'vitest';
 
 import { resolveConstants } from './constant';
+import { interpret } from './interpret';
 
 describe('resolveConstants', () => {
   it('returns an empty template unchanged', () => {
@@ -270,5 +272,49 @@ describe('resolveConstants', () => {
       });
       expect(template).toEqual(original);
     });
+  });
+
+  describe('properties', () => {
+    const nodeArbitrary: fc.Arbitrary<Template[number]> = fc.oneof(
+      fc.string().map((value) => ({
+        kind: 'literal' as const,
+        value,
+      })),
+      fc.string().map((name) => ({
+        kind: 'placeholder' as const,
+        name,
+      })),
+    );
+
+    it.prop([
+      fc.array(nodeArbitrary),
+      fc.string(),
+    ])(
+      'preserves the result on a second application for every params object',
+      (template, value) => {
+        const params = {
+          value,
+        };
+        const once = resolveConstants(template, params);
+        const twice = resolveConstants(once, params);
+        expect(twice).toEqual(once);
+      },
+    );
+
+    it.prop([
+      fc.array(nodeArbitrary),
+      fc.string(),
+    ])(
+      'preserves the interpreted output for every params object',
+      (template, value) => {
+        const params = {
+          value,
+        };
+        const folded = resolveConstants(template, params);
+        expect(interpret(folded, params, 'en')).toBe(
+          interpret(template, params, 'en'),
+        );
+      },
+    );
   });
 });

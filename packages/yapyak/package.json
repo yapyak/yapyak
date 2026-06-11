@@ -63,6 +63,7 @@
     "picomatch": "catalog:"
   },
   "devDependencies": {
+    "@fast-check/vitest": "catalog:",
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:",
     "@yapyak/tsup-config": "workspace:*",

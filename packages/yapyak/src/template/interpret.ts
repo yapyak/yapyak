@@ -60,11 +60,15 @@ function interpretNode(
   }
 }
 
+function readParam(params: Record<string, unknown>, name: string): unknown {
+  return Object.hasOwn(params, name) ? params[name] : undefined;
+}
+
 function interpretPlaceholder(
   name: string,
   params: Record<string, unknown>,
 ): string {
-  const value = params[name];
+  const value = readParam(params, name);
   if (value === undefined) {
     warn(`Missing placeholder "${name}" — rendered as empty string.`);
     return '';
@@ -88,7 +92,7 @@ function interpretPlural(
   params: Record<string, unknown>,
   locale: string,
 ): string {
-  const raw = params[node.name];
+  const raw = readParam(params, node.name);
   if (raw === undefined || raw === null || raw === '') {
     warn(`Plural "${node.name}" missing — falling to the "other" branch.`, {
       value: raw,
@@ -124,7 +128,7 @@ function interpretSelect(
   locale: string,
   formattedCount: string | undefined,
 ): string {
-  const raw = params[node.name];
+  const raw = readParam(params, node.name);
   if (typeof raw !== 'string') {
     warn(
       `Select "${node.name}" expected a string, got \`${typeof raw}\` — falling to the "other" branch.`,
@@ -143,7 +147,7 @@ function interpretNumber(
   params: Record<string, unknown>,
   locale: string,
 ): string {
-  const raw = params[node.name];
+  const raw = readParam(params, node.name);
   if (raw === undefined || raw === null) {
     return '';
   }
@@ -161,7 +165,7 @@ function interpretDate(
   params: Record<string, unknown>,
   locale: string,
 ): string {
-  const date = toDate(params[node.name]);
+  const date = toDate(readParam(params, node.name));
   if (date === undefined) {
     return '';
   }
@@ -175,7 +179,7 @@ function interpretTime(
   params: Record<string, unknown>,
   locale: string,
 ): string {
-  const date = toDate(params[node.name]);
+  const date = toDate(readParam(params, node.name));
   if (date === undefined) {
     return '';
   }

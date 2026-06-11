@@ -7,6 +7,7 @@ catalog:
   '@astrojs/compiler': 4.0.0
   '@astrojs/node': 10.1.1
   '@biomejs/biome': 2.4.16
+  '@fast-check/vitest': 0.4.1
   '@markdoc/markdoc': 0.5.7
   '@react-router/dev': 7.15.1
   '@react-router/node': 7.15.1

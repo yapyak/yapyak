@@ -1,6 +1,7 @@
 import type { Template } from './node';
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { fc, it } from '@fast-check/vitest';
+import { afterEach, beforeEach, describe, expect, vi } from 'vitest';
 
 import { resetWarn, setWarn } from '../warn';
 import { interpret } from './interpret';
@@ -842,5 +843,136 @@ describe('interpret', () => {
       );
       expect(warnSpy).not.toHaveBeenCalled();
     });
+  });
+
+  describe('properties', () => {
+    beforeEach(() => {
+      setWarn(() => {});
+    });
+
+    afterEach(() => {
+      resetWarn();
+    });
+
+    it.prop([
+      fc.string(),
+    ])('preserves every literal value as the rendered output', (value) => {
+      expect(
+        interpret(
+          [
+            {
+              kind: 'literal',
+              value,
+            },
+          ],
+          {},
+          'en',
+        ),
+      ).toBe(value);
+    });
+
+    it.prop([
+      fc.oneof(fc.string(), fc.integer(), fc.float(), fc.boolean()),
+    ])(
+      'interpolates `String(value)` for every placeholder param of primitive type',
+      (value) => {
+        expect(
+          interpret(
+            [
+              {
+                kind: 'placeholder',
+                name: 'value',
+              },
+            ],
+            {
+              value,
+            },
+            'en',
+          ),
+        ).toBe(String(value));
+      },
+    );
+
+    const nodeArbitrary: fc.Arbitrary<Template[number]> = fc.oneof(
+      fc.string().map((value) => ({
+        kind: 'literal' as const,
+        value,
+      })),
+      fc.constant({
+        kind: 'placeholder' as const,
+        name: 'value',
+      }),
+    );
+
+    it.prop([
+      fc.array(nodeArbitrary),
+      fc.string(),
+    ])(
+      'returns a string for every template of literal and placeholder nodes',
+      (template, paramValue) => {
+        const result = interpret(
+          template,
+          {
+            value: paramValue,
+          },
+          'en',
+        );
+        expect(typeof result).toBe('string');
+      },
+    );
+
+    const sameOutputTemplate: Template = [
+      {
+        kind: 'literal',
+        value: 'Hello ',
+      },
+      {
+        kind: 'placeholder',
+        name: 'name',
+      },
+    ];
+
+    it.prop([
+      fc.string(),
+    ])(
+      'returns the same output when given the same template, params, and locale',
+      (name) => {
+        const a = interpret(
+          sameOutputTemplate,
+          {
+            name,
+          },
+          'en',
+        );
+        const b = interpret(
+          sameOutputTemplate,
+          {
+            name,
+          },
+          'en',
+        );
+        expect(a).toBe(b);
+      },
+    );
+
+    it.prop([
+      fc.string(),
+    ])(
+      'returns an empty string for every placeholder when its param is missing',
+      (name) => {
+        expect(
+          interpret(
+            [
+              {
+                kind: 'placeholder',
+                name,
+              },
+            ],
+            {},
+            'en',
+          ),
+        ).toBe('');
+      },
+    );
   });
 });

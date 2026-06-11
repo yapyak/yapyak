@@ -43,6 +43,9 @@ function resolveNode(
     case 'time':
       return node;
     case 'placeholder': {
+      if (!Object.hasOwn(params, node.name)) {
+        return node;
+      }
       const value = params[node.name];
       if (value === undefined) {
         return node;

@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { fc, it } from '@fast-check/vitest';
+import { describe, expect } from 'vitest';
 
 import {
   count,
@@ -296,6 +297,33 @@ describe('extractPlaceholders', () => {
           name: 'third',
         },
       ]);
+    });
+  });
+
+  describe('properties', () => {
+    const nodeArbitrary = fc.oneof(
+      fc.string().map((value) => literal(value)),
+      fc
+        .string()
+        .filter((name) => name !== '')
+        .map((name) => placeholder(name)),
+    );
+
+    it.prop([
+      fc.array(nodeArbitrary),
+    ])('lists no duplicate placeholder name in the output', (template) => {
+      const result = extractPlaceholders(template);
+      const names = result.map((entry) => entry.name);
+      expect(names.length).toBe(new Set(names).size);
+    });
+
+    it.prop([
+      fc.array(nodeArbitrary),
+    ])('lists no placeholder with an empty name', (template) => {
+      const result = extractPlaceholders(template);
+      for (const entry of result) {
+        expect(entry.name).not.toBe('');
+      }
     });
   });
 });
