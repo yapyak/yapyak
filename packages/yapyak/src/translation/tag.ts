@@ -4,6 +4,10 @@ type IsTagName<T extends string> = T extends ''
     ? false
     : true;
 
+type TrimTrailingSpace<T extends string> = T extends `${infer S} `
+  ? TrimTrailingSpace<S>
+  : T;
+
 export type ExtractPairTags<T extends string> =
   T extends `${string}<${infer Tag}>${infer Rest}`
     ? IsTagName<Tag> extends true
@@ -14,8 +18,8 @@ export type ExtractPairTags<T extends string> =
 export type ExtractVoidTags<T extends string> =
   T extends `${string}<${infer Tag}>${infer Rest}`
     ? Tag extends `${infer Name}/`
-      ? IsTagName<Name> extends true
-        ? Name | ExtractVoidTags<Rest>
+      ? IsTagName<TrimTrailingSpace<Name>> extends true
+        ? TrimTrailingSpace<Name> | ExtractVoidTags<Rest>
         : ExtractVoidTags<Rest>
       : ExtractVoidTags<Rest>
     : never;

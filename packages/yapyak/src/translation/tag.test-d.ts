@@ -80,4 +80,8 @@ describe('ExtractVoidTags', () => {
       ExtractVoidTags<'<link>terms</link>'>
     >().toEqualTypeOf<never>();
   });
+
+  it('extracts a void tag written with a space before the slash', () => {
+    expectTypeOf<ExtractVoidTags<'line<br />break'>>().toEqualTypeOf<'br'>();
+  });
 });

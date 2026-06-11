@@ -22,7 +22,7 @@ export type RichTextNode =
  * @remarks
  * The primitive behind every framework `<RichText>` component. Use directly when building a non-framework rendering target — server-rendered HTML emails, plain-text fallbacks, custom string formats, or a renderer for a framework yapyak does not ship.
  *
- * Tag names must match `[A-Za-z][A-Za-z0-9]*`. Tags with attributes and tags whose matching close marker is missing are not parsed and remain in the surrounding text as-is. Self-closing tags `<name/>` parse as `void` nodes that carry no children.
+ * Tag names must match `[A-Za-z][A-Za-z0-9]*`. Tags with attributes and tags whose matching close marker is missing are not parsed and remain in the surrounding text as-is. Self-closing tags parse as `void` nodes that carry no children — both `<name/>` and `<name />` (with whitespace before the slash) are accepted; tag names have no HTML semantics, so the unslashed form `<name>` is always a pair opener.
  *
  * @param source - The source string.
  *
@@ -180,7 +180,7 @@ function readOpenTag(
   let name = source.slice(index + 1, close);
   let kind: 'open' | 'void' = 'open';
   if (name.endsWith('/')) {
-    name = name.slice(0, -1);
+    name = name.slice(0, -1).trimEnd();
     kind = 'void';
   }
   if (!/^[A-Za-z][A-Za-z0-9]*$/.test(name)) {

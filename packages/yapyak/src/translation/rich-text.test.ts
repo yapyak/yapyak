@@ -85,6 +85,40 @@ describe('parseRichText', () => {
     ]);
   });
 
+  it('parses a void tag with a single space before the slash', () => {
+    expect(parseRichText('First<br />Second')).toEqual([
+      {
+        text: 'First',
+        type: 'text',
+      },
+      {
+        name: 'br',
+        type: 'void',
+      },
+      {
+        text: 'Second',
+        type: 'text',
+      },
+    ]);
+  });
+
+  it('parses a void tag with multiple spaces before the slash', () => {
+    expect(parseRichText('First<br   />Second')).toEqual([
+      {
+        text: 'First',
+        type: 'text',
+      },
+      {
+        name: 'br',
+        type: 'void',
+      },
+      {
+        text: 'Second',
+        type: 'text',
+      },
+    ]);
+  });
+
   it('parses a void tag nested inside a pair tag', () => {
     expect(parseRichText('<link>click <icon/> here</link>')).toEqual([
       {

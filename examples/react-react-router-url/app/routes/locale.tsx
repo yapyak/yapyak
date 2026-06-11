@@ -52,7 +52,6 @@ export default function LocalePage() {
       <div>
         <button type="button">{t.as('button', 'Open')}</button>
       </div>
-
       <div>
         <span>{t.as('badge', 'Open')}</span>
       </div>
