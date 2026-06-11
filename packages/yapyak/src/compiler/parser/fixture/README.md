@@ -7,10 +7,10 @@ yapyak's own AST logic — they are never type-checked or executed.
 ## Why every file starts with `// @ts-nocheck`
 
 Several fixtures are *intentionally* invalid yapyak usage (the `diagnostic/`
-files exercise `YPK1xx`/`YPK2xx` build-time diagnostics), and others reference
-things that don't resolve from inside this package (e.g. `useLocale` lives in
-`@yapyak/react`, JSX has no runtime here). These files are already excluded from
-`tsc` (`../../../../tsconfig.json` → `exclude`) and ignored by knip, but the
+files exercise `YPK1xx`/`YPK2xx` build-time diagnostics), and some use syntax
+that doesn't fully resolve from inside this framework-agnostic package (e.g. JSX
+has no runtime here). These files are already excluded from `tsc`
+(`../../../../tsconfig.json` → `exclude`) and ignored by knip, but the
 editor's language server still type-checks an open, excluded file via an
 inferred project and shows squiggles. `// @ts-nocheck` silences that.
 
