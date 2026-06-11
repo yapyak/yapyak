@@ -21,6 +21,36 @@ const FRAMES = [
 ] as const;
 
 export function spinner(initial: string): Spinner {
+  if (!isInteractive()) {
+    return makePlainSpinner(initial);
+  }
+  return makeAnimatedSpinner(initial);
+}
+
+function isInteractive(): boolean {
+  if (process.env.CI !== undefined) {
+    return false;
+  }
+  if (process.env.NO_COLOR !== undefined) {
+    return false;
+  }
+  return process.stdout.isTTY === true;
+}
+
+function makePlainSpinner(initial: string): Spinner {
+  process.stdout.write(`  ${initial}\n`);
+  return {
+    fail(text) {
+      process.stdout.write(`  ${symbol.cross} ${text}\n`);
+    },
+    succeed(text) {
+      process.stdout.write(`  ${symbol.check} ${text}\n`);
+    },
+    update() {},
+  };
+}
+
+function makeAnimatedSpinner(initial: string): Spinner {
   let message = initial;
   let frameIndex = 0;
   process.stdout.write(`  ${color.cyan(FRAMES[0])} ${message}`);

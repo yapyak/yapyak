@@ -31,14 +31,14 @@ describe('writeAtomic', () => {
     expect(readFileSync(path, 'utf-8')).toBe('{"key":"value"}');
   });
 
-  it('replaces existing content', () => {
+  it('transforms existing content into the new bytes', () => {
     const path = join(directory, 'data.json');
     writeFileSync(path, '{"old":"value"}');
     writeAtomic(path, '{"new":"value"}');
     expect(readFileSync(path, 'utf-8')).toBe('{"new":"value"}');
   });
 
-  it('leaves no `.tmp` artefact after a successful write', () => {
+  it('writes no `.tmp` artefact after a successful write', () => {
     const path = join(directory, 'data.json');
     writeAtomic(path, '{"key":"value"}');
     const remaining = readdirSync(directory).filter((name) =>

@@ -89,6 +89,12 @@ function interpretPlural(
   locale: string,
 ): string {
   const raw = params[node.name];
+  if (raw === undefined || raw === null || raw === '') {
+    warn(`Plural "${node.name}" missing — falling to the "other" branch.`, {
+      value: raw,
+    });
+    return interpretNodes(node.branches.other ?? [], params, locale, '');
+  }
   const count = Number(raw);
   if (Number.isNaN(count)) {
     warn(

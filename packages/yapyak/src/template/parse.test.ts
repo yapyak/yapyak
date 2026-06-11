@@ -25,7 +25,7 @@ describe('parseTemplate', () => {
     ]);
   });
 
-  it('trims whitespace inside a placeholder name', () => {
+  it('normalizes whitespace inside a placeholder name', () => {
     expect(parseTemplate('{  name  }').template).toEqual([
       {
         kind: 'placeholder',
@@ -223,7 +223,7 @@ describe('parseTemplate', () => {
       ]);
     });
 
-    it('inherits plural context into nested select branches', () => {
+    it('preserves plural context into nested select branches', () => {
       const { template } = parseTemplate(
         '{c, plural, one {{g, select, male {he} other {they}} sent #} other {nothing}}',
       );
@@ -255,7 +255,7 @@ describe('parseTemplate', () => {
   });
 
   describe('count', () => {
-    it('treats `#` outside any plural branch as a literal', () => {
+    it('parses `#` outside any plural branch as a literal', () => {
       expect(parseTemplate('# hash').template).toEqual([
         {
           kind: 'literal',
@@ -371,7 +371,7 @@ describe('parseTemplate', () => {
       ]);
     });
 
-    it('falls back to medium for unknown style and emits unsupported', () => {
+    it('parses an unknown style as medium and emits an unsupported diagnostic', () => {
       const source = '{when, date, weird}';
       const { diagnostics, template } = parseTemplate(source);
       expect(template).toEqual([
@@ -396,7 +396,7 @@ describe('parseTemplate', () => {
       ]);
     });
 
-    it('treats bare `date` as medium with no diagnostic', () => {
+    it('parses bare `date` as medium with no diagnostic', () => {
       const { diagnostics, template } = parseTemplate('{when, date}');
       expect(template).toEqual([
         {
@@ -460,7 +460,7 @@ describe('parseTemplate', () => {
   });
 
   describe('range', () => {
-    it('points at the offending `}` for an unbalanced closing brace', () => {
+    it('emits a diagnostic at the offending `}` for an unbalanced closing brace', () => {
       const source = 'Hi name}';
       const { diagnostics } = parseTemplate(source);
       const start = source.indexOf('}');
@@ -474,7 +474,7 @@ describe('parseTemplate', () => {
       });
     });
 
-    it('spans from `{` to end of source for an unbalanced opening brace', () => {
+    it('emits a diagnostic spanning from `{` to end of source for an unbalanced opening brace', () => {
       const source = 'Hi {name';
       const { diagnostics } = parseTemplate(source);
       const start = source.indexOf('{');
@@ -488,7 +488,7 @@ describe('parseTemplate', () => {
       });
     });
 
-    it('spans the whole `{}` token for an empty argument', () => {
+    it('emits a diagnostic spanning the whole `{}` token for an empty argument', () => {
       const source = 'a {} b';
       const { diagnostics } = parseTemplate(source);
       const start = source.indexOf('{');
@@ -502,7 +502,7 @@ describe('parseTemplate', () => {
       });
     });
 
-    it('points at the kind keyword for an unknown argument type', () => {
+    it('emits a diagnostic at the kind keyword for an unknown argument type', () => {
       const source = '{x, mystery, body}';
       const { diagnostics } = parseTemplate(source);
       const start = source.indexOf('mystery');
@@ -516,7 +516,7 @@ describe('parseTemplate', () => {
       });
     });
 
-    it('spans the whole token for a plural missing `other`', () => {
+    it('emits a diagnostic spanning the whole token for a plural missing `other`', () => {
       const source = 'before {n, plural, one {#}} after';
       const { diagnostics } = parseTemplate(source);
       const start = source.indexOf('{n');
@@ -531,7 +531,7 @@ describe('parseTemplate', () => {
       });
     });
 
-    it('spans the whole token for a select missing `other`', () => {
+    it('emits a diagnostic spanning the whole token for a select missing `other`', () => {
       const source = 'x {g, select, male {he}} y';
       const { diagnostics } = parseTemplate(source);
       const start = source.indexOf('{g');
@@ -546,7 +546,7 @@ describe('parseTemplate', () => {
       });
     });
 
-    it('points at the `offset:N` text inside a plural body', () => {
+    it('emits a diagnostic at the `offset:N` text inside a plural body', () => {
       const source = '{c, plural, offset:2 one {#} other {# more}}';
       const { diagnostics } = parseTemplate(source);
       const start = source.indexOf('offset:2');
@@ -561,7 +561,7 @@ describe('parseTemplate', () => {
       });
     });
 
-    it('points at the body for a `time` skeleton', () => {
+    it('emits a diagnostic at the body for a `time` skeleton', () => {
       const source = '{when, time, weird}';
       const { diagnostics } = parseTemplate(source);
       const start = source.indexOf('weird');
@@ -576,7 +576,7 @@ describe('parseTemplate', () => {
       });
     });
 
-    it('points at the body for a legacy number pattern', () => {
+    it('emits a diagnostic at the body for a legacy number pattern', () => {
       const source = '{n, number, #,##0.00}';
       const { diagnostics } = parseTemplate(source);
       const start = source.indexOf('#,##0.00');
@@ -593,7 +593,7 @@ describe('parseTemplate', () => {
   });
 
   describe('unknown format kind', () => {
-    it('falls back to a plain placeholder for an unknown kind', () => {
+    it('parses an unknown kind as a plain placeholder', () => {
       const { template } = parseTemplate('{value, weird, stuff}');
       expect(template).toEqual([
         {

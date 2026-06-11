@@ -489,10 +489,10 @@ function buildTemplateLiteral(
     }
     scan += 1;
   }
-  const cachedKeys: string[] = [];
+  const paramByKey = new Map<string, string>();
   for (const [key, count] of usageByKey) {
     if (count > 1) {
-      cachedKeys.push(key);
+      paramByKey.set(key, `_p${paramByKey.size}`);
     }
   }
 
@@ -505,9 +505,8 @@ function buildTemplateLiteral(
       const inner = source.slice(index + 1, close);
       const key = readKey(inner);
       if (key && expressions.has(key)) {
-        const expression = cachedKeys.includes(key)
-          ? `_${key}`
-          : (expressions.get(key) ?? key);
+        const cachedParam = paramByKey.get(key);
+        const expression = cachedParam ?? expressions.get(key) ?? key;
         result += `\${${expression}}`;
         index = close + 1;
         continue;
@@ -533,11 +532,17 @@ function buildTemplateLiteral(
   }
   result += '`';
 
-  if (cachedKeys.length === 0) {
+  if (paramByKey.size === 0) {
     return result;
   }
-  const params = cachedKeys.map((key) => `_${key}`).join(', ');
-  const args = cachedKeys.map((key) => expressions.get(key) ?? key).join(', ');
+  const params = [
+    ...paramByKey.values(),
+  ].join(', ');
+  const args = [
+    ...paramByKey.keys(),
+  ]
+    .map((key) => expressions.get(key) ?? key)
+    .join(', ');
   return `((${params}) => ${result})(${args})`;
 }
 
@@ -761,7 +766,16 @@ function tryBareElision(
 }
 
 function isSafeJsxText(source: string): boolean {
-  return !/[<>{}]/.test(source);
+  if (/[<>{}]/.test(source)) {
+    return false;
+  }
+  if (/^\s|\s$/.test(source)) {
+    return false;
+  }
+  if (/[\n\r]/.test(source)) {
+    return false;
+  }
+  return true;
 }
 
 function isSafeAttributeValue(source: string): boolean {

@@ -438,6 +438,56 @@ describe('createTranslator', () => {
     expect(item.snippet).toBeUndefined();
   });
 
+  it('throws when the abort signal is already aborted before batch starts', async () => {
+    const translator = createTranslator(() => [
+      {
+        sv: 'Spara',
+      },
+    ]);
+    const controller = new AbortController();
+    controller.abort(new Error('Cancelled before start.'));
+    await expect(
+      translator.batch?.(
+        [
+          {
+            fileId: 'src/a.tsx',
+            source: 'Save',
+            sourceLocale: 'en',
+            targetLocale: 'sv',
+          },
+        ],
+        {
+          signal: controller.signal,
+        },
+      ),
+    ).rejects.toThrow(/Cancelled before start/);
+  });
+
+  it('forwards the abort signal to the translate callback', async () => {
+    let receivedSignal: AbortSignal | undefined;
+    const translator = createTranslator((params) => {
+      receivedSignal = params.signal;
+      return params.items.map(() => ({
+        sv: 'Spara',
+      }));
+    });
+    const controller = new AbortController();
+    await translator.batch?.(
+      [
+        {
+          fileId: 'src/a.tsx',
+          source: 'Save',
+          sourceLocale: 'en',
+          targetLocale: 'sv',
+        },
+      ],
+      {
+        signal: controller.signal,
+      },
+    );
+    expect(receivedSignal).toBe(controller.signal);
+  });
+
   it('builds an item with `snippet` only when context is `rich`', async () => {
     let receivedItems: unknown[] | undefined;
     const translator = createTranslator(

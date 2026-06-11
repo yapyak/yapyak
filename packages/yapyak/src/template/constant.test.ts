@@ -38,7 +38,7 @@ describe('resolveConstants', () => {
     ]);
   });
 
-  it('leaves a placeholder unchanged when its param is missing', () => {
+  it('preserves a placeholder when its param is missing', () => {
     const template: Template = [
       {
         kind: 'placeholder',
@@ -48,7 +48,7 @@ describe('resolveConstants', () => {
     expect(resolveConstants(template, {})).toEqual(template);
   });
 
-  it('merges adjacent literals after folding', () => {
+  it('folds adjacent literals after a placeholder resolves', () => {
     const template: Template = [
       {
         kind: 'literal',
@@ -75,7 +75,7 @@ describe('resolveConstants', () => {
     ]);
   });
 
-  it('coerces non-string folded values via String()', () => {
+  it('folds non-string values via `String()`', () => {
     const template: Template = [
       {
         kind: 'placeholder',
@@ -94,7 +94,7 @@ describe('resolveConstants', () => {
     ]);
   });
 
-  it('leaves number/date/time nodes unchanged', () => {
+  it('preserves number/date/time nodes', () => {
     const template: Template = [
       {
         kind: 'number',
@@ -121,7 +121,7 @@ describe('resolveConstants', () => {
     ).toEqual(template);
   });
 
-  it('leaves count nodes unchanged', () => {
+  it('preserves count nodes', () => {
     const template: Template = [
       {
         kind: 'count',
@@ -131,7 +131,7 @@ describe('resolveConstants', () => {
   });
 
   describe('plural', () => {
-    it('recurses into plural branches and folds placeholders there', () => {
+    it('walks into plural branches and folds placeholders there', () => {
       const template: Template = [
         {
           branches: {
@@ -186,7 +186,7 @@ describe('resolveConstants', () => {
       ]);
     });
 
-    it('keeps the plural node intact when the count param is unknown', () => {
+    it('preserves the plural node when the count param is unknown', () => {
       const template: Template = [
         {
           branches: {
@@ -207,7 +207,7 @@ describe('resolveConstants', () => {
   });
 
   describe('select', () => {
-    it('recurses into select branches and folds placeholders', () => {
+    it('walks into select branches and folds placeholders', () => {
       const template: Template = [
         {
           branches: {
@@ -253,7 +253,7 @@ describe('resolveConstants', () => {
   });
 
   describe('purity', () => {
-    it('does not mutate the input template', () => {
+    it('preserves the input template', () => {
       const template: Template = [
         {
           kind: 'literal',

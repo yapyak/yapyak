@@ -60,7 +60,7 @@ describe('pick', () => {
     ).toBe('Spara');
   });
 
-  it('interprets an AST variant with params', () => {
+  it('interpolates an AST variant with params', () => {
     setLocale('en');
     expect(
       pick(
@@ -109,7 +109,7 @@ describe('pick', () => {
     ).toBe('Hej, Alex!');
   });
 
-  it('mixes string and AST variants across locales', () => {
+  it('picks string and AST variants across locales', () => {
     setLocale('en');
     expect(
       pick(

@@ -94,6 +94,13 @@ export type Translator = {
 export type TranslateBatchOptions = {
   /** Called when a chunk resolves. */
   onChunk?: (count: number) => void;
+  /**
+   * The abort signal for cancellation.
+   *
+   * @remarks
+   * Forwarded as {@link TranslateBatchRequest.signal} to the user-supplied `translate` callback so it reaches the underlying fetch/SDK call.
+   */
+  signal?: AbortSignal;
 };
 
 /**

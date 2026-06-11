@@ -8,7 +8,7 @@ export default defineConfig({
         '**/*.test-d.ts',
         '**/fixture/**',
         'packages/yapyak/src/runtime.ts',
-        'packages/{biome-config,doc-extractor,tsup-config,typescript-config,vitest-config}/**',
+        'packages/{doc-extractor,tsup-config,typescript-config,vitest-config}/**',
       ],
       include: [
         'packages/*/src/**',

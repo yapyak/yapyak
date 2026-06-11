@@ -11,28 +11,77 @@ import {
   time,
 } from './factory';
 
-describe('factory', () => {
-  it('literal returns a LiteralNode', () => {
+describe('count', () => {
+  it('returns a CountNode', () => {
+    expect(count()).toEqual({
+      kind: 'count',
+    });
+  });
+});
+
+describe('date', () => {
+  it('returns a DateNode with the given style', () => {
+    expect(date('when', 'short')).toEqual({
+      kind: 'date',
+      name: 'when',
+      style: 'short',
+    });
+  });
+});
+
+describe('literal', () => {
+  it('returns a LiteralNode', () => {
     expect(literal('Hello')).toEqual({
       kind: 'literal',
       value: 'Hello',
     });
   });
 
-  it('placeholder returns a PlaceholderNode', () => {
+  it('builds nodes that interpret can read back', () => {
+    const ast = [
+      literal('Hi '),
+      placeholder('name'),
+    ];
+    expect(ast).toEqual([
+      {
+        kind: 'literal',
+        value: 'Hi ',
+      },
+      {
+        kind: 'placeholder',
+        name: 'name',
+      },
+    ]);
+  });
+});
+
+describe('number', () => {
+  it('returns a NumberNode with options', () => {
+    expect(
+      number('value', {
+        style: 'percent',
+      }),
+    ).toEqual({
+      kind: 'number',
+      name: 'value',
+      options: {
+        style: 'percent',
+      },
+    });
+  });
+});
+
+describe('placeholder', () => {
+  it('returns a PlaceholderNode', () => {
     expect(placeholder('name')).toEqual({
       kind: 'placeholder',
       name: 'name',
     });
   });
+});
 
-  it('count returns a CountNode', () => {
-    expect(count()).toEqual({
-      kind: 'count',
-    });
-  });
-
-  it('plural returns a PluralNode with cardinal type', () => {
+describe('plural', () => {
+  it('returns a PluralNode with cardinal type', () => {
     const node = plural('count', 'cardinal', {
       one: [
         literal('item'),
@@ -61,8 +110,10 @@ describe('factory', () => {
       type: 'cardinal',
     });
   });
+});
 
-  it('select returns a SelectNode', () => {
+describe('select', () => {
+  it('returns a SelectNode', () => {
     const node = select('gender', {
       male: [
         literal('he'),
@@ -90,51 +141,14 @@ describe('factory', () => {
       name: 'gender',
     });
   });
+});
 
-  it('number returns a NumberNode with options', () => {
-    expect(
-      number('value', {
-        style: 'percent',
-      }),
-    ).toEqual({
-      kind: 'number',
-      name: 'value',
-      options: {
-        style: 'percent',
-      },
-    });
-  });
-
-  it('date returns a DateNode with style', () => {
-    expect(date('when', 'short')).toEqual({
-      kind: 'date',
-      name: 'when',
-      style: 'short',
-    });
-  });
-
-  it('time returns a TimeNode with style', () => {
+describe('time', () => {
+  it('returns a TimeNode with the given style', () => {
     expect(time('when', 'full')).toEqual({
       kind: 'time',
       name: 'when',
       style: 'full',
     });
-  });
-
-  it('composes nodes that interpret can render correctly', () => {
-    const ast = [
-      literal('Hi '),
-      placeholder('name'),
-    ];
-    expect(ast).toEqual([
-      {
-        kind: 'literal',
-        value: 'Hi ',
-      },
-      {
-        kind: 'placeholder',
-        name: 'name',
-      },
-    ]);
   });
 });

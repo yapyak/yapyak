@@ -15,6 +15,7 @@ import { readRequest } from './request-reader';
 import { resolveLocale } from './resolve';
 
 let hasWarnedUninitialized = false;
+let hasWarnedSsrFallback = false;
 
 const persistence = buildPersistence(PERSISTENCE_CONFIG, LOCALES);
 
@@ -77,7 +78,7 @@ persistence?.subscribe?.(syncFromPersistence);
  * The current locale.
  *
  * @remarks
- * Server-side, reads from the request bound by {@link withRequest} via persistence or the `Accept-Language` header. When no request is bound (e.g. outside any host-integration middleware), falls through to the module-scope locale shared across requests — the same value {@link setLocale} writes — which can leak between concurrent requests. Client-side, returns the locale set by {@link setLocale}.
+ * Server-side, reads from the request bound by {@link withRequest} via persistence or the `Accept-Language` header. When no request is bound (e.g. outside any host-integration middleware), falls through to the module-scope locale shared across requests — the same value {@link setLocale} writes — which can leak between concurrent requests, and warns once with `YPK_SSR_LEAK_RISK`. Client-side, returns the locale set by {@link setLocale}.
  *
  * @example Read the current locale
  * ```ts
@@ -110,6 +111,15 @@ export function getLocale(): Locale {
         return isLocale(resolved) ? resolved : DEFAULT_LOCALE;
       }
       return DEFAULT_LOCALE;
+    }
+    if (!hasWarnedSsrFallback) {
+      hasWarnedSsrFallback = true;
+      warn(
+        'getLocale() fell back to the shared module-global locale on the server — register the host-integration middleware so each request binds its own locale.',
+        {
+          code: 'YPK_SSR_LEAK_RISK',
+        },
+      );
     }
   }
   return currentLocale;
@@ -181,4 +191,5 @@ export function autoSubscribeLocale(
 export function resetLocale(): void {
   currentLocale = getInitialLocale();
   hasWarnedUninitialized = false;
+  hasWarnedSsrFallback = false;
 }

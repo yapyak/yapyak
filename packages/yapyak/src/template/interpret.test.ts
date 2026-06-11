@@ -6,11 +6,11 @@ import { resetWarn, setWarn } from '../warn';
 import { interpret } from './interpret';
 
 describe('interpret', () => {
-  it('renders an empty template as an empty string', () => {
+  it('interpolates an empty template as an empty string', () => {
     expect(interpret([], {}, 'en')).toBe('');
   });
 
-  it('renders a single literal as-is', () => {
+  it('interpolates a single literal as-is', () => {
     expect(
       interpret(
         [
@@ -25,7 +25,7 @@ describe('interpret', () => {
     ).toBe('Hello');
   });
 
-  it('renders a placeholder from params', () => {
+  it('interpolates a placeholder from params', () => {
     expect(
       interpret(
         [
@@ -42,7 +42,7 @@ describe('interpret', () => {
     ).toBe('Ada');
   });
 
-  it('renders a missing placeholder as an empty string', () => {
+  it('interpolates a missing placeholder as an empty string', () => {
     expect(
       interpret(
         [
@@ -57,7 +57,7 @@ describe('interpret', () => {
     ).toBe('');
   });
 
-  it('coerces numeric placeholder values to strings', () => {
+  it('interpolates numeric placeholder values as strings', () => {
     expect(
       interpret(
         [
@@ -75,7 +75,7 @@ describe('interpret', () => {
   });
 
   describe('count', () => {
-    it('renders nothing for a CountNode outside any plural context', () => {
+    it('interpolates nothing for a CountNode outside any plural context', () => {
       expect(
         interpret(
           [
@@ -91,7 +91,7 @@ describe('interpret', () => {
       ).toBe('');
     });
 
-    it('renders the formatted count inside a plural branch', () => {
+    it('interpolates the formatted count inside a plural branch', () => {
       const template: Template = [
         {
           branches: {
@@ -220,7 +220,7 @@ describe('interpret', () => {
       ).toBe('none');
     });
 
-    it('falls back to `other` when the category has no branch', () => {
+    it('picks the `other` branch when the category has no match', () => {
       const template: Template = [
         {
           branches: {
@@ -247,7 +247,7 @@ describe('interpret', () => {
       ).toBe('many');
     });
 
-    it('renders nested placeholders inside a plural branch', () => {
+    it('interpolates nested placeholders inside a plural branch', () => {
       const template: Template = [
         {
           branches: {
@@ -324,7 +324,7 @@ describe('interpret', () => {
       },
     ];
 
-    it('selects the matching branch', () => {
+    it('picks the matching branch', () => {
       expect(
         interpret(
           template,
@@ -336,7 +336,7 @@ describe('interpret', () => {
       ).toBe('she');
     });
 
-    it('falls back to `other` when no branch matches', () => {
+    it('picks the `other` branch when no other branch matches', () => {
       expect(
         interpret(
           template,
@@ -348,7 +348,7 @@ describe('interpret', () => {
       ).toBe('they');
     });
 
-    it('inherits the plural context through a nested select', () => {
+    it('preserves the plural context through a nested select', () => {
       const nested: Template = [
         {
           branches: {
@@ -399,7 +399,7 @@ describe('interpret', () => {
   });
 
   describe('number', () => {
-    it('formats with no options as decimal default', () => {
+    it('interpolates a number with decimal as the default', () => {
       expect(
         interpret(
           [
@@ -417,7 +417,7 @@ describe('interpret', () => {
       ).toBe('1,234.5');
     });
 
-    it('formats `percent` style', () => {
+    it('interpolates a number with `percent` style', () => {
       expect(
         interpret(
           [
@@ -437,7 +437,7 @@ describe('interpret', () => {
       ).toBe('25%');
     });
 
-    it('renders an empty string for null', () => {
+    it('interpolates an empty string for `null`', () => {
       expect(
         interpret(
           [
@@ -457,7 +457,7 @@ describe('interpret', () => {
   });
 
   describe('date', () => {
-    it('formats a Date with the given style', () => {
+    it('interpolates a Date with the given style', () => {
       const result = interpret(
         [
           {
@@ -474,7 +474,7 @@ describe('interpret', () => {
       expect(result).toMatch(/\d/);
     });
 
-    it('renders an empty string for an invalid date input', () => {
+    it('interpolates an empty string for an invalid date input', () => {
       expect(
         interpret(
           [
@@ -600,6 +600,109 @@ describe('interpret', () => {
         expect.stringContaining('Plural "count"'),
         expect.objectContaining({
           value: 'not-a-number',
+        }),
+      );
+    });
+
+    it('warns and falls to `other` when a plural argument is `null`', () => {
+      const result = interpret(
+        [
+          {
+            branches: {
+              one: [
+                {
+                  kind: 'literal',
+                  value: 'one',
+                },
+              ],
+              other: [
+                {
+                  kind: 'literal',
+                  value: 'other',
+                },
+              ],
+            },
+            kind: 'plural',
+            name: 'count',
+            type: 'cardinal',
+          },
+        ],
+        {
+          count: null,
+        },
+        'en',
+      );
+      expect(result).toBe('other');
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Plural "count" missing'),
+        expect.objectContaining({
+          value: null,
+        }),
+      );
+    });
+
+    it('warns and falls to `other` when a plural argument is missing', () => {
+      const result = interpret(
+        [
+          {
+            branches: {
+              one: [
+                {
+                  kind: 'literal',
+                  value: 'one',
+                },
+              ],
+              other: [
+                {
+                  kind: 'literal',
+                  value: 'other',
+                },
+              ],
+            },
+            kind: 'plural',
+            name: 'count',
+            type: 'cardinal',
+          },
+        ],
+        {},
+        'en',
+      );
+      expect(result).toBe('other');
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Plural "count" missing'),
+        expect.objectContaining({
+          value: undefined,
+        }),
+      );
+    });
+
+    it('warns and falls to `other` when a plural argument is an empty string', () => {
+      const result = interpret(
+        [
+          {
+            branches: {
+              other: [
+                {
+                  kind: 'literal',
+                  value: 'other',
+                },
+              ],
+            },
+            kind: 'plural',
+            name: 'count',
+            type: 'cardinal',
+          },
+        ],
+        {
+          count: '',
+        },
+        'en',
+      );
+      expect(result).toBe('other');
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Plural "count" missing'),
+        expect.objectContaining({
+          value: '',
         }),
       );
     });

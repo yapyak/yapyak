@@ -2,8 +2,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { spinner } from './spinner';
 
+function setIsTty(value: boolean | undefined): void {
+  Object.assign(process.stdout, {
+    isTTY: value,
+  });
+}
+
 describe('spinner', () => {
   let writes: string[];
+  let originalIsTty: boolean | undefined;
+  let originalCi: string | undefined;
+  let originalNoColor: string | undefined;
 
   beforeEach(() => {
     vi.useFakeTimers();
@@ -12,11 +21,28 @@ describe('spinner', () => {
       writes.push(String(chunk));
       return true;
     });
+    originalIsTty = process.stdout.isTTY;
+    originalCi = process.env.CI;
+    originalNoColor = process.env.NO_COLOR;
+    setIsTty(true);
+    delete process.env.CI;
+    delete process.env.NO_COLOR;
   });
 
   afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
+    setIsTty(originalIsTty);
+    if (originalCi === undefined) {
+      delete process.env.CI;
+    } else {
+      process.env.CI = originalCi;
+    }
+    if (originalNoColor === undefined) {
+      delete process.env.NO_COLOR;
+    } else {
+      process.env.NO_COLOR = originalNoColor;
+    }
   });
 
   it('writes the initial frame on creation', () => {
@@ -48,5 +74,36 @@ describe('spinner', () => {
     vi.advanceTimersByTime(80);
     expect(writes.join('')).toContain('Switch account');
     instance.succeed('Settings');
+  });
+
+  it('writes plain output and skips the interval when stdout is not a TTY', () => {
+    setIsTty(undefined);
+    const instance = spinner('Loading...');
+    instance.succeed('Settings');
+    vi.advanceTimersByTime(1000);
+    const final = writes.join('');
+    expect(final).not.toContain('\x1b[K');
+    expect(final).toContain('Loading...');
+    expect(final).toContain('Settings');
+  });
+
+  it('writes plain output and skips the interval when `CI` is set', () => {
+    process.env.CI = 'true';
+    const instance = spinner('Loading...');
+    instance.fail('Cancel');
+    vi.advanceTimersByTime(1000);
+    const final = writes.join('');
+    expect(final).not.toContain('\x1b[K');
+    expect(final).toContain('Cancel');
+  });
+
+  it('writes plain output and skips the interval when `NO_COLOR` is set', () => {
+    process.env.NO_COLOR = '1';
+    const instance = spinner('Loading...');
+    instance.succeed('Settings');
+    vi.advanceTimersByTime(1000);
+    const final = writes.join('');
+    expect(final).not.toContain('\x1b[K');
+    expect(final).toContain('Settings');
   });
 });

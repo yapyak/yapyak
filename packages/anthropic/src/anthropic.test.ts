@@ -6,6 +6,18 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+const POOL: Record<string, string> = {
+  Cancel: 'Avbryt',
+  Hello: 'Hej',
+  'Loading...': 'Laddar...',
+  Save: 'Spara',
+  'Save changes': 'Spara ändringar',
+  Settings: 'Inställningar',
+  'Switch account': 'Byt konto',
+  'Unnamed account': 'Namnlöst konto',
+  World: 'Världen',
+};
+
 function stubFetch(text: string): {
   body: () => unknown;
   headers: () => Record<string, string>;
@@ -48,17 +60,17 @@ function stubFetch(text: string): {
 
 describe('anthropic', () => {
   it('returns translated text trimmed', async () => {
-    stubFetch('  Hej världen  ');
+    stubFetch('  Hej  ');
     const translator = anthropic({
       apiKey: 'k',
     });
     const result = await translator({
       fileId: 'src/a.tsx',
-      source: 'Hello world',
+      source: 'Hello',
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
-    expect(result).toBe('Hej världen');
+    expect(result).toBe('Hej');
   });
 
   it('writes the API key as `x-api-key` header', async () => {
@@ -67,7 +79,7 @@ describe('anthropic', () => {
       apiKey: 'sk-test',
     })({
       fileId: 'src/a.tsx',
-      source: 'Hi',
+      source: 'Hello',
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
@@ -79,8 +91,8 @@ describe('anthropic', () => {
     await anthropic({
       apiKey: 'k',
     })({
-      fileId: 'x',
-      source: 'Hi',
+      fileId: 'src/a.tsx',
+      source: 'Hello',
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
@@ -99,8 +111,8 @@ describe('anthropic', () => {
       apiKey: 'k',
       model: 'claude-opus-4-7',
     })({
-      fileId: 'x',
-      source: 'Hi',
+      fileId: 'src/a.tsx',
+      source: 'Hello',
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
@@ -117,10 +129,10 @@ describe('anthropic', () => {
     const stub = stubFetch('Hej');
     await anthropic({
       apiKey: 'k',
-      voice: 'Casual, never corporate',
+      voice: 'Switch account',
     })({
-      fileId: 'x',
-      source: 'Hi',
+      fileId: 'src/a.tsx',
+      source: 'Hello',
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
@@ -130,22 +142,22 @@ describe('anthropic', () => {
           system: string;
         }
       ).system,
-    ).toContain('Casual, never corporate');
+    ).toContain('Switch account');
   });
 
   it('builds system prompt with matching glossary entries', async () => {
-    const stub = stubFetch('Skapa konto');
+    const stub = stubFetch('Byt konto');
     await anthropic({
       apiKey: 'k',
       glossary: {
-        'Sign up': {
-          fr: "S'inscrire",
-          sv: 'Skapa konto',
+        'Switch account': {
+          fr: 'Changer de compte',
+          sv: 'Byt konto',
         },
       },
     })({
-      fileId: 'x',
-      source: 'Sign up',
+      fileId: 'src/a.tsx',
+      source: 'Switch account',
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
@@ -154,8 +166,8 @@ describe('anthropic', () => {
         system: string;
       }
     ).system;
-    expect(system).toContain('"Sign up" → sv="Skapa konto"');
-    expect(system).not.toContain("S'inscrire");
+    expect(system).toContain('"Switch account" → sv="Byt konto"');
+    expect(system).not.toContain('Changer de compte');
   });
 
   it('builds system prompt with placeholder preservation reminder', async () => {
@@ -163,7 +175,7 @@ describe('anthropic', () => {
     await anthropic({
       apiKey: 'k',
     })({
-      fileId: 'x',
+      fileId: 'src/a.tsx',
       source: 'Hi {name}',
       sourceLocale: 'en',
       targetLocale: 'sv',
@@ -202,8 +214,8 @@ describe('anthropic', () => {
       apiKey: 'k',
       endpoint: 'https://proxy.example.com/messages',
     })({
-      fileId: 'x',
-      source: 'Hi',
+      fileId: 'src/a.tsx',
+      source: 'Hello',
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
@@ -232,8 +244,8 @@ describe('anthropic', () => {
       apiKey: 'k',
     });
     const result = await translator({
-      fileId: 'x',
-      source: 'Hi',
+      fileId: 'src/a.tsx',
+      source: 'Hello',
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
@@ -274,8 +286,8 @@ describe('anthropic', () => {
     });
     await expect(
       translator({
-        fileId: 'x',
-        source: 'Hi',
+        fileId: 'src/a.tsx',
+        source: 'Hello',
         sourceLocale: 'en',
         targetLocale: 'sv',
       }),
@@ -295,8 +307,8 @@ describe('anthropic', () => {
     });
     await expect(
       translator({
-        fileId: 'x',
-        source: 'Hi',
+        fileId: 'src/a.tsx',
+        source: 'Hello',
         sourceLocale: 'en',
         targetLocale: 'sv',
       }),
@@ -304,16 +316,6 @@ describe('anthropic', () => {
   });
 
   describe('batch', () => {
-    const pool: Record<string, string> = {
-      Cancel: 'Avbryt',
-      Hello: 'Hej',
-      'Loading...': 'Laddar...',
-      Save: 'Spara',
-      'Save changes': 'Spara ändringar',
-      Settings: 'Inställningar',
-      World: 'Världen',
-    };
-
     it('returns all translations in a single call', async () => {
       let calls = 0;
       vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
@@ -323,7 +325,7 @@ describe('anthropic', () => {
           source: string;
         }[] = JSON.parse(body.messages[0].content);
         const translations = items.map((item) => ({
-          sv: item.source.replace(/Hello/g, 'Hej'),
+          sv: POOL[item.source] ?? '',
         }));
         return new Response(
           JSON.stringify({
@@ -344,21 +346,21 @@ describe('anthropic', () => {
       });
       const results = await translator.batch?.([
         {
-          fileId: 'x',
-          source: 'Hello A',
+          fileId: 'src/a.tsx',
+          source: 'Hello',
           sourceLocale: 'en',
           targetLocale: 'sv',
         },
         {
-          fileId: 'x',
-          source: 'Hello B',
+          fileId: 'src/a.tsx',
+          source: 'Save',
           sourceLocale: 'en',
           targetLocale: 'sv',
         },
       ]);
       expect(results).toEqual([
-        'Hej A',
-        'Hej B',
+        'Hej',
+        'Spara',
       ]);
       expect(calls).toBe(1);
     });
@@ -376,8 +378,8 @@ describe('anthropic', () => {
             content: [
               {
                 text: JSON.stringify(
-                  items.map(() => ({
-                    sv: 'ok',
+                  items.map((item) => ({
+                    sv: POOL[item.source] ?? '',
                   })),
                 ),
                 type: 'text',
@@ -393,17 +395,21 @@ describe('anthropic', () => {
         apiKey: 'k',
         batchSize: 3,
       });
-      const requests = Array.from(
-        {
-          length: 7,
-        },
-        (_, index) => ({
-          fileId: 'x',
-          source: `s${index}`,
-          sourceLocale: 'en',
-          targetLocale: 'sv',
-        }),
-      );
+      const sources = [
+        'Hello',
+        'World',
+        'Save',
+        'Save changes',
+        'Cancel',
+        'Settings',
+        'Loading...',
+      ];
+      const requests = sources.map((source) => ({
+        fileId: 'src/a.tsx',
+        source,
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      }));
       const results = await translator.batch?.(requests);
       expect(results?.length).toBe(7);
       expect(calls).toBe(3);
@@ -424,7 +430,7 @@ describe('anthropic', () => {
               {
                 text: JSON.stringify(
                   items.map((item) => ({
-                    sv: pool[item.source] ?? '',
+                    sv: POOL[item.source] ?? '',
                   })),
                 ),
                 type: 'text',
@@ -450,7 +456,7 @@ describe('anthropic', () => {
         'Settings',
       ];
       const requests = sources.map((source) => ({
-        fileId: 'x',
+        fileId: 'src/a.tsx',
         source,
         sourceLocale: 'en',
         targetLocale: 'sv',
@@ -478,7 +484,7 @@ describe('anthropic', () => {
               {
                 text: JSON.stringify(
                   items.map((item) => ({
-                    sv: pool[item.source] ?? '',
+                    sv: POOL[item.source] ?? '',
                   })),
                 ),
                 type: 'text',
@@ -505,7 +511,7 @@ describe('anthropic', () => {
         'Loading...',
       ];
       const requests = sources.map((source) => ({
-        fileId: 'x',
+        fileId: 'src/a.tsx',
         source,
         sourceLocale: 'en',
         targetLocale: 'sv',
@@ -537,7 +543,7 @@ describe('anthropic', () => {
                 {
                   text: JSON.stringify([
                     {
-                      sv: 'only-one',
+                      sv: 'Hej',
                     },
                   ]),
                   type: 'text',
@@ -555,14 +561,14 @@ describe('anthropic', () => {
       await expect(
         translator.batch?.([
           {
-            fileId: 'x',
-            source: 'A',
+            fileId: 'src/a.tsx',
+            source: 'Hello',
             sourceLocale: 'en',
             targetLocale: 'sv',
           },
           {
-            fileId: 'x',
-            source: 'B',
+            fileId: 'src/a.tsx',
+            source: 'Save',
             sourceLocale: 'en',
             targetLocale: 'sv',
           },
@@ -573,13 +579,13 @@ describe('anthropic', () => {
 
   describe('disambiguation', () => {
     it('writes `disambiguation` into the request items', async () => {
-      const stub = stubFetch('Öppna');
+      const stub = stubFetch('Spara');
       await anthropic({
         apiKey: 'k',
       })({
         disambiguation: 'button',
         fileId: 'src/a.tsx',
-        source: 'Open',
+        source: 'Save',
         sourceLocale: 'en',
         targetLocale: 'sv',
       });
@@ -596,12 +602,12 @@ describe('anthropic', () => {
     });
 
     it('writes `disambiguation` in the system prompt', async () => {
-      const stub = stubFetch('Öppna');
+      const stub = stubFetch('Spara');
       await anthropic({
         apiKey: 'k',
       })({
         fileId: 'src/a.tsx',
-        source: 'Open',
+        source: 'Save',
         sourceLocale: 'en',
         targetLocale: 'sv',
       });

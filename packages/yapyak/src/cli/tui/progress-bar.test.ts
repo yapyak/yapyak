@@ -27,4 +27,11 @@ describe('progressBar', () => {
     expect(bar).toContain('0/0');
     expect((bar.match(/░/g) ?? []).length).toBe(10);
   });
+
+  it('builds a full bar when `current` exceeds `total`', () => {
+    const bar = progressBar(15, 10, 10);
+    expect(bar).toContain('15/10');
+    expect((bar.match(/█/g) ?? []).length).toBe(10);
+    expect((bar.match(/░/g) ?? []).length).toBe(0);
+  });
 });

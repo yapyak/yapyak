@@ -32,6 +32,7 @@ export type AutoTranslateInput = {
 export type AutoTranslateOptions = {
   examples?: number;
   force?: boolean;
+  signal?: AbortSignal;
   yapyakDir?: string;
 };
 
@@ -97,12 +98,20 @@ export async function autoTranslate(
     buildRequest(stub, context.defaultLocale, exampleCache, examplesMax),
   );
 
+  const signal = options?.signal;
   let results: string[];
   try {
     results =
       typeof input.translator.batch === 'function'
-        ? await input.translator.batch(requests)
-        : await runOneByOne(stubs, requests, input.translator, errors);
+        ? await input.translator.batch(
+            requests,
+            signal === undefined
+              ? undefined
+              : {
+                  signal,
+                },
+          )
+        : await runOneByOne(stubs, requests, input.translator, errors, signal);
   } catch (error) {
     for (const stub of stubs) {
       errors.push({
@@ -169,9 +178,15 @@ async function runOneByOne(
   requests: TranslateRequest[],
   translator: Translator,
   errors: AutoTranslateResult['errors'],
+  signal: AbortSignal | undefined,
 ): Promise<string[]> {
   const results: string[] = [];
   for (let index = 0; index < stubs.length; index++) {
+    if (signal?.aborted) {
+      throw signal.reason instanceof Error
+        ? signal.reason
+        : new Error('Translate batch aborted.');
+    }
     const stub = stubs[index];
     const request = requests[index];
     if (!stub || !request) {

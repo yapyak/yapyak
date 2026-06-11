@@ -80,7 +80,15 @@ export async function translate(
   );
   let done = 0;
   let failed = 0;
+  let aborted = false;
   const startedAt = Date.now();
+
+  const controller = new AbortController();
+  const onAbortSignal = (): void => {
+    aborted = true;
+    controller.abort(new Error('Translate cancelled by SIGINT.'));
+  };
+  process.once('SIGINT', onAbortSignal);
 
   const onProgress = (count: number): void => {
     done += count;
@@ -92,30 +100,47 @@ export async function translate(
   const localesToProcess = [
     ...new Set(stubsToFill.map((stub) => stub.locale)),
   ];
-  for (const locale of localesToProcess) {
-    const subResult = await autoTranslate(
-      {
-        messages: report.messages,
-        translator: withProgress(translator, onProgress),
-      },
-      {
-        defaultLocale: report.defaultLocale,
-        locales: [
-          report.defaultLocale,
-          locale,
-        ],
-        localesDir: config.localesDir,
-      },
-      projectRoot,
-      {
-        examples: config.examples,
-        force,
-      },
-    );
-    failed += subResult.errors.length;
+  try {
+    for (const locale of localesToProcess) {
+      if (controller.signal.aborted) {
+        break;
+      }
+      const subResult = await autoTranslate(
+        {
+          messages: report.messages,
+          translator: withProgress(translator, onProgress),
+        },
+        {
+          defaultLocale: report.defaultLocale,
+          locales: [
+            report.defaultLocale,
+            locale,
+          ],
+          localesDir: config.localesDir,
+        },
+        projectRoot,
+        {
+          examples: config.examples,
+          force,
+          signal: controller.signal,
+        },
+      );
+      failed += subResult.errors.length;
+    }
+  } finally {
+    process.off('SIGINT', onAbortSignal);
   }
 
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
+  if (aborted) {
+    sp.fail(
+      `${done} translated · ${color.red('cancelled')} · ${color.dim(`${elapsed}s`)}`,
+    );
+    process.stdout.write(
+      `\n  ${color.dim('Partial results written. Re-run to resume.')}\n\n`,
+    );
+    return 130;
+  }
   if (failed === 0) {
     sp.succeed(`${done} translated · ${color.dim(`${elapsed}s`)}`);
   } else {

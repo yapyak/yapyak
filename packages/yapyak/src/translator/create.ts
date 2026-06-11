@@ -3,6 +3,7 @@ import type {
   CreateTranslatorOptions,
   LocaleTranslations,
   TranslateBatchOptions,
+  TranslateBatchRequest,
   TranslateFn,
   TranslateItem,
   TranslateRequest,
@@ -108,7 +109,14 @@ export function createTranslator(
         if (!chunk) {
           continue;
         }
-        const result = await runChunk(chunk, targetLocales);
+        if (batchOptions?.signal?.aborted) {
+          throw toAbortError(batchOptions.signal);
+        }
+        const result = await runChunk(
+          chunk,
+          targetLocales,
+          batchOptions?.signal,
+        );
         chunkResults[myIndex] = result;
         batchOptions?.onChunk?.(result.length * targetLocales.length);
       }
@@ -137,6 +145,7 @@ export function createTranslator(
   async function runChunk(
     uniqueRequests: TranslateRequest[],
     targetLocales: string[],
+    signal: AbortSignal | undefined,
   ): Promise<LocaleTranslations[]> {
     const reference = uniqueRequests[0];
     if (!reference) {
@@ -145,11 +154,15 @@ export function createTranslator(
     const items = uniqueRequests.map((request) =>
       toItem(request, contextLevel),
     );
-    const result = await translate({
+    const request: TranslateBatchRequest = {
       items,
       sourceLocale: reference.sourceLocale,
       targetLocales,
-    });
+    };
+    if (signal !== undefined) {
+      request.signal = signal;
+    }
+    const result = await translate(request);
     return validateBatch(result, {
       items,
       sourceLocale: reference.sourceLocale,
@@ -232,6 +245,13 @@ function validateBatch(
     );
   }
   return result.map((entry) => normalizeEntry(entry, context.targetLocales));
+}
+
+function toAbortError(signal: AbortSignal): Error {
+  if (signal.reason instanceof Error) {
+    return signal.reason;
+  }
+  return new Error('Translate batch aborted.');
 }
 
 function normalizeEntry(

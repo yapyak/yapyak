@@ -72,4 +72,14 @@ describe('discoverLocales', () => {
     const warning = result.warnings.find((warning) => warning.code === 'xx');
     expect(warning?.issue).toBe('unknown-language');
   });
+
+  it('lists no locale for a directory whose name ends with `.json`', () => {
+    mkdirSync(join(root, 'locales'));
+    mkdirSync(join(root, 'locales', 'sv.json'));
+    writeFileSync(join(root, 'locales', 'en.json'), '{}');
+    const result = discoverLocales('locales', root);
+    expect(result.locales).toEqual([
+      'en',
+    ]);
+  });
 });

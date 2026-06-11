@@ -159,7 +159,23 @@ describe('transformFile', () => {
         `,
       });
       // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
-      expect(code).toContain('((_name) => `${_name} and ${_name}`)(name)');
+      expect(code).toContain('((_p0) => `${_p0} and ${_p0}`)(name)');
+    });
+
+    it('elides a repeated placeholder named `_name` without colliding with the IIFE parameter', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source: `
+          import { t } from 'yapyak';
+          export function greet(_name) {
+            return t('{a} and {a}', { a: _name });
+          }
+        `,
+      });
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
+      expect(code).toContain('((_p0) => `${_p0} and ${_p0}`)(_name)');
     });
 
     it('elides a single-use placeholder without an IIFE wrapper', () => {
@@ -641,7 +657,7 @@ describe('transformFile', () => {
       );
     });
 
-    it('does not import factories when no template needs them', () => {
+    it('clears the factory imports when no template needs them', () => {
       const code = runTransform({
         locales: [
           'en',
@@ -717,6 +733,37 @@ describe('transformFile', () => {
         ].join('\n'),
       });
       expect(code).toContain("{'Use <em> for emphasis'}");
+    });
+
+    it('refuses bare JSX elision when the source has leading or trailing whitespace', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source: [
+          "import { t } from 'yapyak';",
+          'export function App() {',
+          "  return <p>{t(' Hello ')}</p>;",
+          '}',
+        ].join('\n'),
+      });
+      expect(code).toContain("{' Hello '}");
+      expect(code).not.toContain('<p> Hello </p>');
+    });
+
+    it('refuses bare JSX elision when the source has a line break', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source: [
+          "import { t } from 'yapyak';",
+          'export function App() {',
+          "  return <p>{t('Line one\\nLine two')}</p>;",
+          '}',
+        ].join('\n'),
+      });
+      expect(code).toContain("{'Line one\\nLine two'}");
     });
 
     it('emits expression-form JSX attribute when value contains `"`', () => {

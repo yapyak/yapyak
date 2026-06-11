@@ -246,7 +246,7 @@ describe('extractPlaceholders', () => {
       ]);
     });
 
-    it('keeps the first-seen kind when the same name appears with different kinds', () => {
+    it('preserves the first-seen kind when the same name appears with different kinds', () => {
       const template = [
         plural('count', 'cardinal', {
           other: [
@@ -266,7 +266,7 @@ describe('extractPlaceholders', () => {
   });
 
   describe('edge cases', () => {
-    it('skips placeholders with an empty name', () => {
+    it('refuses placeholders with an empty name', () => {
       expect(
         extractPlaceholders([
           placeholder(''),

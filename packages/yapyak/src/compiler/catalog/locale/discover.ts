@@ -27,9 +27,11 @@ export function discoverLocales(
 ): DiscoverLocalesResult {
   const directory = join(projectRoot, localesDir);
   const fileLocales = existsSync(directory)
-    ? readdirSync(directory)
-        .filter((name) => name.endsWith('.json'))
-        .map((name) => name.replace(/\.json$/, ''))
+    ? readdirSync(directory, {
+        withFileTypes: true,
+      })
+        .filter((entry) => entry.isFile() && entry.name.endsWith('.json'))
+        .map((entry) => entry.name.replace(/\.json$/, ''))
         .sort()
     : [];
   const defaultLocale = options?.defaultLocale || 'en';

@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { resetWarn, setWarn } from '../warn';
 import {
   autoSubscribeLocale,
   defaultLocale,
@@ -50,6 +51,25 @@ describe('defaultLocale', () => {
 describe('getLocale', () => {
   it('returns the default locale on startup', () => {
     expect(getLocale()).toBe('en');
+  });
+
+  it('warns once with `YPK_SSR_LEAK_RISK` when no request is bound on the server', () => {
+    const warnSpy =
+      vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
+    setWarn(warnSpy);
+    try {
+      getLocale();
+      getLocale();
+    } finally {
+      resetWarn();
+    }
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('fell back to the shared module-global locale'),
+      expect.objectContaining({
+        code: 'YPK_SSR_LEAK_RISK',
+      }),
+    );
   });
 });
 
