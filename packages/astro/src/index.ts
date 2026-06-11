@@ -21,7 +21,7 @@ export type { RichTextProps } from './RichText.astro';
  * Renders rich text by resolving named tags via Astro slots.
  *
  * @remarks
- * Each named tag found in `value` is matched against an Astro slot of the same name. Inside the slot, place a `<RichText.Children />` marker where the matched tag's children should appear. Leaf text and unmatched tag names are HTML-escaped before they reach the output, so translator-produced strings cannot inject script or attribute payloads.
+ * Each named tag found in `value` is matched against an Astro slot of the same name. Inside the slot, place a `<RichText.Children />` marker where the matched tag's children should appear. Translator output is HTML-escaped (`&`, `<`, `>`, `"`, `'`), safe for element content and quoted attribute values. Slot content itself is developer-authored — quote your attributes, as with React, Vue, and Lit.
  *
  * @example Render a translated string with a link tag
  * ```astro
