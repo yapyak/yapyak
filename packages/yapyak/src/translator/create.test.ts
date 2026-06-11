@@ -1,7 +1,8 @@
 import type { TranslateBatchRequest, TranslateRequest } from './type';
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
+import { resetWarn, setWarn } from '../warn';
 import { createTranslator } from './create';
 
 describe('createTranslator', () => {
@@ -225,26 +226,40 @@ describe('createTranslator', () => {
     ).toThrow(/concurrency must be a positive integer/);
   });
 
-  it('throws when the translate response is not an array', async () => {
+  it('warns and returns an empty result when the translate response is not an array', async () => {
     const translator = createTranslator(
       () =>
         ({
           not: 'array',
         }) as unknown as never,
     );
-    await expect(
-      translator.batch?.([
+    const warnSpy =
+      vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
+    setWarn(warnSpy);
+    try {
+      const results = await translator.batch?.([
         {
           fileId: 'src/a.tsx',
           source: 'Save',
           sourceLocale: 'en',
           targetLocale: 'sv',
         },
-      ]),
-    ).rejects.toThrow(/must return an array/);
+      ]);
+      expect(results).toEqual([
+        '',
+      ]);
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('chunk failed'),
+        expect.objectContaining({
+          code: 'YPK_TRANSLATE_CHUNK_FAILED',
+        }),
+      );
+    } finally {
+      resetWarn();
+    }
   });
 
-  it('throws when the translate response has the wrong length', async () => {
+  it('warns and returns an empty result when the translate response has the wrong length', async () => {
     const translator = createTranslator(() => [
       {
         sv: 'Spara',
@@ -253,16 +268,30 @@ describe('createTranslator', () => {
         sv: 'extra',
       },
     ]);
-    await expect(
-      translator.batch?.([
+    const warnSpy =
+      vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
+    setWarn(warnSpy);
+    try {
+      const results = await translator.batch?.([
         {
           fileId: 'src/a.tsx',
           source: 'Save',
           sourceLocale: 'en',
           targetLocale: 'sv',
         },
-      ]),
-    ).rejects.toThrow(/returned 2 items, expected 1/);
+      ]);
+      expect(results).toEqual([
+        '',
+      ]);
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('chunk failed'),
+        expect.objectContaining({
+          code: 'YPK_TRANSLATE_CHUNK_FAILED',
+        }),
+      );
+    } finally {
+      resetWarn();
+    }
   });
 
   it('returns an empty string when a translate response entry is not an object', async () => {

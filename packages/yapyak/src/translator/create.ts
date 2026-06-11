@@ -10,6 +10,8 @@ import type {
   Translator,
 } from './type';
 
+import { warn } from '../warn';
+
 const DEFAULT_BATCH_SIZE = 25;
 const DEFAULT_CONCURRENCY = 5;
 const DEFAULT_CONTEXT: ContextLevel = 'minimal';
@@ -124,10 +126,14 @@ export function createTranslator(
           if (batchOptions?.signal?.aborted) {
             throw error;
           }
-          if (!batchOptions?.onChunkError) {
-            throw error;
+          if (batchOptions?.onChunkError) {
+            batchOptions.onChunkError(error, chunk);
+          } else {
+            warn('Translate batch chunk failed — keeping other chunks.', {
+              cause: error,
+              code: 'YPK_TRANSLATE_CHUNK_FAILED',
+            });
           }
-          batchOptions.onChunkError(error, chunk);
         }
       }
     }
