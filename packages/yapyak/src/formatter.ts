@@ -1,5 +1,3 @@
-import { warn } from './warn';
-
 type IntlFormatterCtor<T> = new (locale: string, options?: object) => T;
 
 const MAX_FORMATTERS_PER_CTOR = 64;
@@ -23,7 +21,7 @@ export function resolveFormatter<T>(
     cache.set(key, cached);
     return cached;
   }
-  const formatter = makeFormatter(ctor, locale, options);
+  const formatter = new ctor(locale, options);
   if (cache.size >= MAX_FORMATTERS_PER_CTOR) {
     const oldestKey = cache.keys().next().value;
     if (oldestKey !== undefined) {
@@ -33,33 +31,6 @@ export function resolveFormatter<T>(
   cache.set(key, formatter);
   return formatter;
 }
-
-function makeFormatter<T>(
-  ctor: IntlFormatterCtor<T>,
-  locale: string,
-  options: object | undefined,
-): T {
-  try {
-    return new ctor(locale, options);
-  } catch (cause) {
-    warn(
-      'Intl formatter rejected options — falling back to identity format. Check currency / locale codes.',
-      {
-        cause,
-        code: 'YPK_INTL_FORMATTER_FAILED',
-        locale,
-        options,
-      },
-    );
-    return IDENTITY_FORMATTER as T;
-  }
-}
-
-const IDENTITY_FORMATTER: {
-  format: (value: unknown) => string;
-} = {
-  format: (value) => String(value),
-};
 
 function buildCanonicalKey(
   locale: string,
