@@ -76,6 +76,16 @@ describe('validateLocaleFile', () => {
     expect(validateLocaleFile('sv.json', path)).toHaveLength(0);
   });
 
+  it('emits YPK304 when the file is not valid JSON', () => {
+    writeFileSync(path, '{ "src/a.tsx": { "Hello": "Hej" ');
+    const diagnostics = validateLocaleFile('sv.json', path);
+
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0]?.code).toBe('YPK304');
+    expect(diagnostics[0]?.severity).toBe('error');
+    expect(diagnostics[0]?.message).toMatch(/not valid JSON/);
+  });
+
   it('emits YPK301 when entry value is a number', () => {
     writeFileSync(
       path,

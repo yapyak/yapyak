@@ -1,4 +1,5 @@
 import type { Config } from '../config';
+import type { TranslationErrorEntry } from '../translation-error';
 
 import {
   autoTranslate,
@@ -8,6 +9,7 @@ import {
 } from '../../compiler';
 import { withProgress } from '../progress';
 import { buildReport } from '../report';
+import { renderTranslationErrors } from '../translation-error';
 import { color, header, progressBar, spinner, symbol } from '../tui';
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -148,6 +150,7 @@ export async function add(
 
   let totalDone = 0;
   let totalFailed = 0;
+  const allErrors: TranslationErrorEntry[] = [];
   const startedAt = Date.now();
 
   for (const locale of locales) {
@@ -192,6 +195,7 @@ export async function add(
 
     totalDone += done;
     totalFailed += subResult.errors.length;
+    allErrors.push(...subResult.errors);
 
     if (subResult.errors.length === 0) {
       sp.succeed(`${color.bold(locale)} ${color.dim('·')} ${done} translated`);
@@ -200,6 +204,10 @@ export async function add(
         `${color.bold(locale)} ${color.dim('·')} ${done} translated · ${color.red(`${subResult.errors.length} failed`)}`,
       );
     }
+  }
+
+  if (allErrors.length > 0) {
+    process.stdout.write(renderTranslationErrors(allErrors));
   }
 
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);

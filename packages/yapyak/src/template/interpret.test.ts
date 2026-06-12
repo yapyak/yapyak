@@ -879,6 +879,36 @@ describe('interpret', () => {
       );
     });
 
+    it('preserves a select branch matched by a coerced non-string value without warning', () => {
+      interpret(
+        [
+          {
+            branches: {
+              '1': [
+                {
+                  kind: 'literal',
+                  value: 'first',
+                },
+              ],
+              other: [
+                {
+                  kind: 'literal',
+                  value: 'fallback',
+                },
+              ],
+            },
+            kind: 'select',
+            name: 'rank',
+          },
+        ],
+        {
+          rank: 1,
+        },
+        'en',
+      );
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
     it('preserves a placeholder with a string value without warning', () => {
       interpret(
         [

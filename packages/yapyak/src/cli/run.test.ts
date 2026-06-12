@@ -223,4 +223,34 @@ describe('run', () => {
       }),
     );
   });
+
+  it('refuses an unknown flag on the `add` command', async () => {
+    const code = await run([
+      'add',
+      '--frce',
+      'sv',
+    ]);
+    expect(code).toBe(1);
+    expect(errorWrites.join('')).toContain('Unknown flag');
+    expect(errorWrites.join('')).toContain('--frce');
+  });
+
+  it('refuses an unknown flag on the `translate` command', async () => {
+    const code = await run([
+      'translate',
+      '--frce',
+    ]);
+    expect(code).toBe(1);
+    expect(errorWrites.join('')).toContain('Unknown flag');
+  });
+
+  it('refuses an unknown flag on the `export` command', async () => {
+    const code = await run([
+      'export',
+      '--output=foo',
+    ]);
+    expect(code).toBe(1);
+    expect(errorWrites.join('')).toContain('Unknown flag');
+    expect(errorWrites.join('')).toContain('--output');
+  });
 });

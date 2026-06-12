@@ -218,19 +218,14 @@ function parseTokenBody(
   const firstComma = findTopLevelComma(context.source, innerStart, innerEnd);
   if (firstComma === undefined) {
     const name = context.source.slice(innerStart, innerEnd).trim();
-    if (name === '') {
-      context.diagnostics.push({
-        message: 'empty argument',
-        range: tokenRange,
-        reason: 'malformed',
-      });
-    }
+    emitNameDiagnostic(name, tokenRange, context);
     return {
       kind: 'placeholder',
       name,
     };
   }
   const name = context.source.slice(innerStart, firstComma).trim();
+  emitNameDiagnostic(name, tokenRange, context);
   const afterName = firstComma + 1;
   const secondComma = findTopLevelComma(context.source, afterName, innerEnd);
   const kindEnd = secondComma === undefined ? innerEnd : secondComma;
@@ -309,6 +304,28 @@ function parseTokenBody(
     kind: 'placeholder',
     name,
   };
+}
+
+function emitNameDiagnostic(
+  name: string,
+  tokenRange: TemplateRange,
+  context: ParseContext,
+): void {
+  if (name === '') {
+    context.diagnostics.push({
+      message: 'empty argument',
+      range: tokenRange,
+      reason: 'malformed',
+    });
+    return;
+  }
+  if (name.includes('{') || name.includes('}')) {
+    context.diagnostics.push({
+      message: `placeholder name contains an unbalanced brace: "${name}"`,
+      range: tokenRange,
+      reason: 'malformed',
+    });
+  }
 }
 
 type BuildPluralNodeInput = {

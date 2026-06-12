@@ -4,6 +4,25 @@ import { color, symbol } from './tui';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+const FLAGS_BY_COMMAND: Record<string, ReadonlySet<string>> = {
+  add: new Set<string>(),
+  check: new Set<string>(),
+  clean: new Set([
+    '--write',
+  ]),
+  export: new Set([
+    '--out',
+    '--split',
+  ]),
+  status: new Set([
+    '--json',
+  ]),
+  translate: new Set([
+    '--force',
+    '-f',
+  ]),
+};
+
 export async function run(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
   const projectRoot = process.cwd();
@@ -19,39 +38,47 @@ export async function run(argv: string[]): Promise<number> {
     case '-v':
       process.stdout.write(`yapyak ${readPackageVersion()}\n`);
       return 0;
-    case 'status': {
-      const config = await loadConfig(projectRoot);
-      return status(config, projectRoot, {
-        json: rest.includes('--json'),
-      });
-    }
-    case 'check': {
-      const config = await loadConfig(projectRoot);
-      return check(config, projectRoot);
-    }
-    case 'clean': {
-      const config = await loadConfig(projectRoot);
-      return clean(config, projectRoot, {
-        write: rest.includes('--write'),
-      });
-    }
-    case 'add': {
-      const config = await loadConfig(projectRoot);
-      const locales = rest.filter((entry) => !entry.startsWith('-'));
-      return add(config, projectRoot, {
-        locales,
-      });
-    }
-    case 'translate': {
-      const config = await loadConfig(projectRoot);
-      const locale = rest.find((entry) => !entry.startsWith('-'));
-      return translate(config, projectRoot, {
-        force: rest.includes('--force') || rest.includes('-f'),
-        locale,
-      });
-    }
+    case 'status':
+    case 'check':
+    case 'clean':
+    case 'add':
+    case 'translate':
     case 'export': {
+      const unknown = findUnknownFlags(rest, FLAGS_BY_COMMAND[command]);
+      if (unknown.length > 0) {
+        process.stderr.write(
+          `\n  ${symbol.cross} ${color.red(`Unknown flag${unknown.length === 1 ? '' : 's'}: ${unknown.join(', ')}`)}\n`,
+        );
+        printHelp();
+        return 1;
+      }
       const config = await loadConfig(projectRoot);
+      if (command === 'status') {
+        return status(config, projectRoot, {
+          json: rest.includes('--json'),
+        });
+      }
+      if (command === 'check') {
+        return check(config, projectRoot);
+      }
+      if (command === 'clean') {
+        return clean(config, projectRoot, {
+          write: rest.includes('--write'),
+        });
+      }
+      if (command === 'add') {
+        const locales = rest.filter((entry) => !entry.startsWith('-'));
+        return add(config, projectRoot, {
+          locales,
+        });
+      }
+      if (command === 'translate') {
+        const locale = rest.find((entry) => !entry.startsWith('-'));
+        return translate(config, projectRoot, {
+          force: rest.includes('--force') || rest.includes('-f'),
+          locale,
+        });
+      }
       const locales = rest.filter((entry) => !entry.startsWith('-'));
       const outFlag = rest.find((entry) => entry.startsWith('--out='));
       const out = outFlag?.slice('--out='.length);
@@ -70,6 +97,26 @@ export async function run(argv: string[]): Promise<number> {
       printHelp();
       return 1;
   }
+}
+
+function findUnknownFlags(
+  args: readonly string[],
+  known: ReadonlySet<string> | undefined,
+): string[] {
+  if (!known) {
+    return [];
+  }
+  const unknown: string[] = [];
+  for (const arg of args) {
+    if (!arg.startsWith('-')) {
+      continue;
+    }
+    const flagName = arg.includes('=') ? arg.slice(0, arg.indexOf('=')) : arg;
+    if (!known.has(flagName)) {
+      unknown.push(arg);
+    }
+  }
+  return unknown;
 }
 
 function readPackageVersion(): string {

@@ -40,7 +40,13 @@ export function check(config: Config, projectRoot: string): number {
     }
     const localeFilePath = join(localesPath, `${locale}.json`);
     const fileId = `${locale}.json`;
-    allDiagnostics.push(...validateLocaleFile(fileId, localeFilePath));
+    const localeFileDiagnostics = validateLocaleFile(fileId, localeFilePath);
+    allDiagnostics.push(...localeFileDiagnostics);
+    if (
+      localeFileDiagnostics.some((diagnostic) => diagnostic.code === 'YPK304')
+    ) {
+      continue;
+    }
     const localeFile = readLocaleFile(localeFilePath);
     allDiagnostics.push(
       ...validateIcuPairs(fileId, localeFile, report.messages),

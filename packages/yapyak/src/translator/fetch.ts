@@ -6,6 +6,9 @@ export type FetchWithRetryOptions = {
 
 const DEFAULT_MAX_RETRIES = 3;
 const DEFAULT_TIMEOUT = 30_000;
+const MAX_BACKOFF_MS = 8000;
+const BASE_BACKOFF_MS = 250;
+const JITTER_RANGE = 0.4;
 
 export async function fetchWithRetry(
   url: string,
@@ -16,9 +19,11 @@ export async function fetchWithRetry(
   const timeout = options?.timeout ?? DEFAULT_TIMEOUT;
   const outerSignal = options?.signal;
   let lastError: unknown;
+  let nextBackoffMs: number | undefined;
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     if (attempt > 0) {
-      await delay(getBackoffMs(attempt));
+      await delay(nextBackoffMs ?? getBackoffMs(attempt));
+      nextBackoffMs = undefined;
     }
     const controller = new AbortController();
     const onAbort = (): void => controller.abort();
@@ -42,6 +47,10 @@ export async function fetchWithRetry(
       if (!isRetryable(response.status) || attempt === maxRetries) {
         return response;
       }
+      nextBackoffMs = resolveRetryDelayMs(
+        response.headers.get('retry-after'),
+        attempt + 1,
+      );
       lastError = new Error(`HTTP ${response.status}`);
     } catch (error) {
       lastError = error;
@@ -74,8 +83,40 @@ function isNetworkError(error: unknown): boolean {
   return error instanceof TypeError;
 }
 
+export function parseRetryAfterMs(value: string | null): number | undefined {
+  if (value === null) {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  if (trimmed === '') {
+    return undefined;
+  }
+  if (/^\d+$/.test(trimmed)) {
+    const seconds = Number(trimmed);
+    return seconds * 1000;
+  }
+  const timestamp = Date.parse(trimmed);
+  if (Number.isNaN(timestamp)) {
+    return undefined;
+  }
+  return Math.max(0, timestamp - Date.now());
+}
+
+function resolveRetryDelayMs(
+  retryAfter: string | null,
+  attempt: number,
+): number {
+  const fromHeader = parseRetryAfterMs(retryAfter);
+  if (fromHeader !== undefined) {
+    return Math.min(MAX_BACKOFF_MS, fromHeader);
+  }
+  return getBackoffMs(attempt);
+}
+
 function getBackoffMs(attempt: number): number {
-  return Math.min(8000, 250 * 2 ** (attempt - 1));
+  const exponential = BASE_BACKOFF_MS * 2 ** (attempt - 1);
+  const jitterFactor = 1 - JITTER_RANGE / 2 + Math.random() * JITTER_RANGE;
+  return Math.min(MAX_BACKOFF_MS, exponential * jitterFactor);
 }
 
 function delay(ms: number): Promise<void> {

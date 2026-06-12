@@ -439,6 +439,26 @@ describe('parseTemplate', () => {
       expect(diagnostics[0]?.reason).toBe('malformed');
     });
 
+    it('emits malformed for an empty ICU argument name', () => {
+      const { diagnostics } = parseTemplate('{, plural, other {x}}');
+      expect(diagnostics).toContainEqual(
+        expect.objectContaining({
+          message: 'empty argument',
+          reason: 'malformed',
+        }),
+      );
+    });
+
+    it('emits malformed for a placeholder name containing an unbalanced brace', () => {
+      const { diagnostics } = parseTemplate('{a{b}}');
+      expect(diagnostics).toContainEqual(
+        expect.objectContaining({
+          message: expect.stringContaining('unbalanced brace'),
+          reason: 'malformed',
+        }),
+      );
+    });
+
     it('emits malformed for an unknown argument type', () => {
       const { diagnostics } = parseTemplate('{x, mystery, body}');
       expect(diagnostics[0]?.reason).toBe('malformed');

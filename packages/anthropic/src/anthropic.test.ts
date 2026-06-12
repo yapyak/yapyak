@@ -268,6 +268,38 @@ describe('anthropic', () => {
     ).toThrow(/apiKey is required, received empty string/);
   });
 
+  it('throws a budget-truncation error when `stop_reason` is `max_tokens`', async () => {
+    vi.stubGlobal(
+      'fetch',
+      async () =>
+        new Response(
+          JSON.stringify({
+            content: [
+              {
+                text: '[{"sv": "Hej"',
+                type: 'text',
+              },
+            ],
+            stop_reason: 'max_tokens',
+          }),
+          {
+            status: 200,
+          },
+        ),
+    );
+    const translator = anthropic({
+      apiKey: 'k',
+    });
+    await expect(
+      translator({
+        fileId: 'src/a.tsx',
+        source: 'Hello',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      }),
+    ).rejects.toThrow(/truncated by max_tokens/);
+  });
+
   it('throws when the API response has no text block', async () => {
     vi.stubGlobal(
       'fetch',

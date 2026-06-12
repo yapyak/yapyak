@@ -29,8 +29,18 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
   let parsed: unknown;
   try {
     parsed = JSON.parse(content);
-  } catch {
-    return [];
+  } catch (cause) {
+    const detail = cause instanceof Error ? cause.message : String(cause);
+    return [
+      {
+        code: 'YPK304',
+        fileId,
+        message: `Locale file is not valid JSON: ${detail}`,
+        range: STUB_RANGE,
+        severity: 'error',
+        source: '',
+      },
+    ];
   }
   if (!isPlainObject(parsed)) {
     return [];

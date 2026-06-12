@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { fetchWithRetry } from './fetch';
+import { fetchWithRetry, parseRetryAfterMs } from './fetch';
 
 const URL = 'http://x';
 const INIT: RequestInit = {};
@@ -92,5 +92,64 @@ describe('fetchWithRetry', () => {
     const expectation = expect(promise).rejects.toThrow('boom');
     await vi.runAllTimersAsync();
     await expectation;
+  });
+
+  it('returns the response after the `Retry-After` delay on a 429', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response('rate limited', {
+          headers: {
+            'retry-after': '2',
+          },
+          status: 429,
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response('ok', {
+          status: 200,
+        }),
+      );
+    vi.stubGlobal('fetch', fetchMock);
+    const promise = fetchWithRetry(URL, INIT, {
+      maxRetries: 1,
+      timeout: 1000,
+    });
+    await vi.advanceTimersByTimeAsync(1999);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(2);
+    const result = await promise;
+    expect(result.ok).toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('parseRetryAfterMs', () => {
+  it('returns undefined for a `null` header value', () => {
+    expect(parseRetryAfterMs(null)).toBeUndefined();
+  });
+
+  it('returns undefined for an empty header value', () => {
+    expect(parseRetryAfterMs('')).toBeUndefined();
+  });
+
+  it('parses an integer-seconds header value', () => {
+    expect(parseRetryAfterMs('5')).toBe(5000);
+  });
+
+  it('parses an HTTP-date header value into a millisecond offset', () => {
+    const future = new Date(Date.now() + 10_000).toUTCString();
+    const ms = parseRetryAfterMs(future);
+    expect(ms).toBeGreaterThanOrEqual(8000);
+    expect(ms).toBeLessThanOrEqual(11_000);
+  });
+
+  it('returns `0` for a past HTTP-date header value', () => {
+    const past = new Date(Date.now() - 60_000).toUTCString();
+    expect(parseRetryAfterMs(past)).toBe(0);
+  });
+
+  it('returns undefined for an unparseable header value', () => {
+    expect(parseRetryAfterMs('not a date')).toBeUndefined();
   });
 });

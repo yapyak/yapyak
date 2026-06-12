@@ -1,8 +1,10 @@
 import type { Config } from '../config';
+import type { TranslationErrorEntry } from '../translation-error';
 
 import { autoTranslate } from '../../compiler';
 import { withProgress } from '../progress';
 import { buildReport } from '../report';
+import { renderTranslationErrors } from '../translation-error';
 import { color, header, progressBar, spinner, symbol } from '../tui';
 
 export type TranslateOptions = {
@@ -81,6 +83,7 @@ export async function translate(
   let done = 0;
   let failed = 0;
   let aborted = false;
+  const allErrors: TranslationErrorEntry[] = [];
   const startedAt = Date.now();
 
   const controller = new AbortController();
@@ -126,6 +129,7 @@ export async function translate(
         },
       );
       failed += subResult.errors.length;
+      allErrors.push(...subResult.errors);
     }
   } finally {
     process.off('SIGINT', onSigint);
@@ -147,6 +151,10 @@ export async function translate(
     sp.fail(
       `${done} translated · ${color.red(`${failed} failed`)} · ${color.dim(`${elapsed}s`)}`,
     );
+  }
+
+  if (allErrors.length > 0) {
+    process.stdout.write(renderTranslationErrors(allErrors));
   }
 
   process.stdout.write(

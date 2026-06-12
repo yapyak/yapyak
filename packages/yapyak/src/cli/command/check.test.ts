@@ -171,4 +171,23 @@ describe('check', () => {
     expect(code).toBe(1);
     expect(writes.join('')).toMatch(/error/);
   });
+
+  it('emits YPK304 instead of throwing when a locale file is corrupt JSON', () => {
+    mkdirSync(join(root, 'src'), {
+      recursive: true,
+    });
+    mkdirSync(join(root, 'locales'), {
+      recursive: true,
+    });
+    writeFileSync(
+      join(root, 'src', 'a.ts'),
+      `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
+    );
+    writeFileSync(join(root, 'locales', 'sv.json'), '{ "src/a.ts": { "Save": ');
+
+    const code = check(makeConfig(), root);
+
+    expect(code).toBe(1);
+    expect(writes.join('')).toContain('YPK304');
+  });
 });

@@ -130,6 +130,11 @@ function interpretSelect(
   formattedCount: string | undefined,
 ): string {
   const raw = readParam(params, node.name);
+  const value = String(raw);
+  const directBranch = node.branches[value];
+  if (directBranch) {
+    return interpretNodes(directBranch, params, locale, formattedCount);
+  }
   if (typeof raw !== 'string') {
     warn(
       `Select "${node.name}" expected a string, got \`${typeof raw}\` — falling to the "other" branch.`,
@@ -138,8 +143,7 @@ function interpretSelect(
       },
     );
   }
-  const value = String(raw);
-  const branch = node.branches[value] ?? node.branches.other ?? [];
+  const branch = node.branches.other ?? [];
   return interpretNodes(branch, params, locale, formattedCount);
 }
 

@@ -1,4 +1,4 @@
-import type { Diagnostic, ExtractedMessage } from '../compiler';
+import type { Diagnostic, ExtractedMessage, LocaleFile } from '../compiler';
 import type { FilterPattern } from '../config';
 import type { Processor } from '../processor';
 
@@ -102,7 +102,16 @@ export function buildReport(input: BuildReportInput): Report {
       };
       continue;
     }
-    const localeFile = readLocaleFile(join(localesPath, `${locale}.json`));
+    let localeFile: LocaleFile;
+    try {
+      localeFile = readLocaleFile(join(localesPath, `${locale}.json`));
+    } catch {
+      perLocale[locale] = {
+        missing: totalMessages,
+        translated: 0,
+      };
+      continue;
+    }
     let translated = 0;
     let missingCount = 0;
     for (const [fileId, keys] of Object.entries(keysByFile)) {
