@@ -252,4 +252,31 @@ describe('ExtractTParams', () => {
   it('returns `never` for a placeholder with non-identifier characters', () => {
     expectTypeOf<ExtractTParams<'Hi {user.name}'>>().toEqualTypeOf<never>();
   });
+
+  it('resolves the nested placeholder name from each branch of a plural source', () => {
+    type Result =
+      ExtractTParams<'You have {count, plural, one {# by {author}} other {# by {author}}}'>;
+    expectTypeOf<{
+      count: 1;
+      author: 'Ada';
+    }>().toExtend<Result>();
+  });
+
+  it('resolves the nested placeholder name from each branch of a select source', () => {
+    type Result =
+      ExtractTParams<'{theme, select, dark {Hi {name}} other {Bye {name}}}'>;
+    expectTypeOf<{
+      theme: 'dark';
+      name: 'Ada';
+    }>().toExtend<Result>();
+  });
+
+  it('resolves a nested select within a plural branch with all placeholder names intact', () => {
+    type Result =
+      ExtractTParams<'{count, plural, one {{role, select, admin {Admin} other {User}}} other {Many}}'>;
+    expectTypeOf<{
+      count: 1;
+      role: 'admin';
+    }>().toExtend<Result>();
+  });
 });

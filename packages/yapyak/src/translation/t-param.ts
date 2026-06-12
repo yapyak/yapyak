@@ -41,11 +41,14 @@ type ExtractSelectBranches<
   TBody extends string,
   TAccumulator extends string = never,
 > =
-  Trim<TBody> extends `${infer Key} {${string}}${infer Rest}`
-    ? ExtractSelectBranches<Trim<Rest>, TAccumulator | Trim<Key>>
-    : Trim<TBody> extends `${infer Key} {${string}`
-      ? TAccumulator | Trim<Key>
-      : TAccumulator;
+  Trim<TBody> extends `${infer Key} {${infer AfterOpen}`
+    ? BalancedSplit<AfterOpen> extends [
+        string,
+        infer Rest extends string,
+      ]
+      ? ExtractSelectBranches<Rest, TAccumulator | Trim<Key>>
+      : TAccumulator | Trim<Key>
+    : TAccumulator;
 
 type SelectValue<TBody extends string> = [
   ExtractSelectBranches<TBody>,
@@ -75,37 +78,104 @@ type IcuParam<
 };
 
 type ExtractBranchParams<TBody extends string, TAccumulator = unknown> =
-  Trim<TBody> extends `${string} {${infer Tail}`
-    ? Tail extends `${infer BeforeClose}}${string}`
-      ? BeforeClose extends `${string}{${string}`
-        ? Tail extends `${infer Pre}{${infer Inner}}}${infer Rest}`
-          ? ExtractBranchParams<
-              Rest,
-              TAccumulator & ExtractTParams<`${Pre}{${Inner}}`>
-            >
-          : TAccumulator & ExtractTParams<Tail>
-        : Tail extends `${infer Content}}${infer Rest}`
-          ? ExtractBranchParams<Rest, TAccumulator & ExtractTParams<Content>>
-          : TAccumulator
+  Trim<TBody> extends `${string} {${infer AfterOpen}`
+    ? BalancedSplit<AfterOpen> extends [
+        infer BranchContent extends string,
+        infer Rest extends string,
+      ]
+      ? ExtractBranchParams<Rest, TAccumulator & ExtractTParams<BranchContent>>
       : TAccumulator
     : TAccumulator;
+
+export type BalancedSplit<
+  TSource extends string,
+  TDepth extends unknown[] = [
+    unknown,
+  ],
+  TAccumulator extends string = '',
+  TGuard extends unknown[] = [],
+> = TGuard['length'] extends 200
+  ? [
+      TAccumulator,
+      TSource,
+    ]
+  : TSource extends `${infer TPre}{${infer TAfterOpen}`
+    ? TPre extends `${string}}${string}`
+      ? TSource extends `${infer TPreClose}}${infer TAfterClose}`
+        ? TDepth extends [
+            unknown,
+            ...infer TDepthTail,
+          ]
+          ? TDepthTail extends []
+            ? [
+                `${TAccumulator}${TPreClose}`,
+                TAfterClose,
+              ]
+            : BalancedSplit<
+                TAfterClose,
+                TDepthTail,
+                `${TAccumulator}${TPreClose}}`,
+                [
+                  unknown,
+                  ...TGuard,
+                ]
+              >
+          : never
+        : never
+      : BalancedSplit<
+          TAfterOpen,
+          [
+            unknown,
+            ...TDepth,
+          ],
+          `${TAccumulator}${TPre}{`,
+          [
+            unknown,
+            ...TGuard,
+          ]
+        >
+    : TSource extends `${infer TPreClose}}${infer TAfterClose}`
+      ? TDepth extends [
+          unknown,
+          ...infer TDepthTail,
+        ]
+        ? TDepthTail extends []
+          ? [
+              `${TAccumulator}${TPreClose}`,
+              TAfterClose,
+            ]
+          : BalancedSplit<
+              TAfterClose,
+              TDepthTail,
+              `${TAccumulator}${TPreClose}}`,
+              [
+                unknown,
+                ...TGuard,
+              ]
+            >
+        : never
+      : never;
 
 type ResolveIcuPattern<
   TSource extends string,
   TAccumulator,
-> = TSource extends `${string}{${infer Name},${infer Format},${infer Body}}}${infer Rest}`
-  ? ExtractTParams<
-      Rest,
-      TAccumulator & IcuParam<Name, Format, Body> & ExtractBranchParams<Body>
-    >
-  : TSource extends `${string}{${infer Name},${infer Format},${infer Body}}${infer Rest}`
-    ? ExtractTParams<
-        Rest,
-        TAccumulator & IcuParam<Name, Format, Body> & ExtractBranchParams<Body>
-      >
-    : TSource extends `${string}{${infer Name},${infer Format}}${infer Rest}`
-      ? ExtractTParams<Rest, TAccumulator & IcuParam<Name, Format>>
-      : TAccumulator;
+> = TSource extends `${string}{${infer TInner}`
+  ? BalancedSplit<TInner> extends [
+      infer TBody extends string,
+      infer TRest extends string,
+    ]
+    ? TBody extends `${infer TName},${infer TFormat},${infer TInnerBody}`
+      ? ExtractTParams<
+          TRest,
+          TAccumulator &
+            IcuParam<TName, TFormat, TInnerBody> &
+            ExtractBranchParams<TInnerBody>
+        >
+      : TBody extends `${infer TName},${infer TFormat}`
+        ? ExtractTParams<TRest, TAccumulator & IcuParam<TName, TFormat>>
+        : TAccumulator
+    : TAccumulator
+  : TAccumulator;
 
 export type ExtractTParams<
   TSource extends string,

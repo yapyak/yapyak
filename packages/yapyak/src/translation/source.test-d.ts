@@ -2,6 +2,8 @@ import type { ValidateSource } from './source';
 
 import { describe, expectTypeOf, it } from 'vitest';
 
+import { t } from './t';
+
 describe('ValidateSource', () => {
   it('preserves a valid source literal unchanged', () => {
     expectTypeOf<
@@ -203,5 +205,128 @@ describe('ValidateSource', () => {
     expectTypeOf<ValidateSource<'Hi {0}, {user.name}'>>().toEqualTypeOf<{
       $yapyakTypeError: 'Invalid placeholder "0": must start with a letter or underscore (not a digit)';
     }>();
+  });
+
+  it('returns a string at the call site for a plural source with a nested placeholder in each branch', () => {
+    expectTypeOf(
+      t('You have {count, plural, one {# by {author}} other {# by {author}}}', {
+        author: 'Ada',
+        count: 1,
+      }),
+    ).toEqualTypeOf<string>();
+  });
+
+  it('returns a string at the call site for a select source with a nested placeholder in each branch', () => {
+    expectTypeOf(
+      t('{theme, select, dark {Hi {name}} other {Bye {name}}}', {
+        name: 'Ada',
+        theme: 'dark',
+      }),
+    ).toEqualTypeOf<string>();
+  });
+
+  it('returns a string at the call site for a select source whose selector is a free-form string', () => {
+    expectTypeOf(
+      t('{theme, select, dark {Hi {name}} other {Bye {name}}}', {
+        name: 'Ada',
+        theme: 'custom-theme',
+      }),
+    ).toEqualTypeOf<string>();
+  });
+
+  it('refuses a plural source where the `other` branch is missing', () => {
+    expectTypeOf<
+      ValidateSource<'You have {count, plural, one {# item}}'>
+    >().toEqualTypeOf<{
+      $yapyakTypeError: 'Plural "{count}" is missing the required \'other\' branch';
+    }>();
+  });
+
+  it('refuses a select source where the `other` branch is missing', () => {
+    expectTypeOf<
+      ValidateSource<'{gender, select, male {Mr.} female {Ms.}}'>
+    >().toEqualTypeOf<{
+      $yapyakTypeError: 'Select "{gender}" is missing the required \'other\' branch';
+    }>();
+  });
+
+  it('returns a string at the call site for a source with ten levels of nested ICU branches', () => {
+    expectTypeOf(
+      t(
+        '{a, plural, one {{b, select, x {{c, plural, one {{d, select, y {{e, plural, one {{f, select, z {{g, plural, one {{h, select, w {{i, plural, one {{j, select, v {deep} other {q9}}} other {q8}}} other {q7}}} other {q6}}} other {q5}}} other {q4}}} other {q3}}} other {q2}}} other {q1}}} other {q0}}',
+        {
+          a: 1,
+          b: 'x',
+          c: 1,
+          d: 'y',
+          e: 1,
+          f: 'z',
+          g: 1,
+          h: 'w',
+          i: 1,
+          j: 'v',
+        },
+      ),
+    ).toEqualTypeOf<string>();
+  });
+
+  it('returns a string at the call site for a source with fifty simple placeholders', () => {
+    expectTypeOf(
+      t(
+        '{a} {b} {c} {d} {e} {f} {g} {h} {i} {j} {k} {l} {m} {n} {o} {p} {q} {r} {s} {t} {u} {v} {w} {x} {y} {z} {aa} {ab} {ac} {ad} {ae} {af} {ag} {ah} {ai} {aj} {ak} {al} {am} {an} {ao} {ap} {aq} {ar} {as} {at} {au} {av} {aw} {ax}',
+        {
+          a: 'a',
+          aa: 'aa',
+          ab: 'ab',
+          ac: 'ac',
+          ad: 'ad',
+          ae: 'ae',
+          af: 'af',
+          ag: 'ag',
+          ah: 'ah',
+          ai: 'ai',
+          aj: 'aj',
+          ak: 'ak',
+          al: 'al',
+          am: 'am',
+          an: 'an',
+          ao: 'ao',
+          ap: 'ap',
+          aq: 'aq',
+          ar: 'ar',
+          as: 'as',
+          at: 'at',
+          au: 'au',
+          av: 'av',
+          aw: 'aw',
+          ax: 'ax',
+          b: 'b',
+          c: 'c',
+          d: 'd',
+          e: 'e',
+          f: 'f',
+          g: 'g',
+          h: 'h',
+          i: 'i',
+          j: 'j',
+          k: 'k',
+          l: 'l',
+          m: 'm',
+          n: 'n',
+          o: 'o',
+          p: 'p',
+          q: 'q',
+          r: 'r',
+          s: 's',
+          t: 't',
+          u: 'u',
+          v: 'v',
+          w: 'w',
+          x: 'x',
+          y: 'y',
+          z: 'z',
+        },
+      ),
+    ).toEqualTypeOf<string>();
   });
 });

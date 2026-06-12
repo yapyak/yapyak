@@ -1,4 +1,4 @@
-import type { Digit, NonIdentifierChar, Trim } from './t-param';
+import type { BalancedSplit, Digit, NonIdentifierChar, Trim } from './t-param';
 
 type OrElse<TValue, TFallback> = [
   TValue,
@@ -172,19 +172,14 @@ type ValidatePlaceholder<T extends string> =
       : ValidateName<Trim<T>>;
 
 type FindFirstSourceError<T extends string> =
-  T extends `${string}{${infer TName},${infer TFormat},${infer TBody}}}${infer TRest}`
-    ? OrElse<
-        ValidatePlaceholder<`${TName},${TFormat},${TBody}}`>,
-        FindFirstSourceError<TRest>
-      >
-    : T extends `${string}{${infer TName},${infer TFormat},${infer TBody}}${infer TRest}`
-      ? OrElse<
-          ValidatePlaceholder<`${TName},${TFormat},${TBody}`>,
-          FindFirstSourceError<TRest>
-        >
-      : T extends `${string}{${infer TContent}}${infer TRest}`
-        ? OrElse<ValidatePlaceholder<TContent>, FindFirstSourceError<TRest>>
-        : never;
+  T extends `${string}{${infer TInner}`
+    ? BalancedSplit<TInner> extends [
+        infer TBody extends string,
+        infer TRest extends string,
+      ]
+      ? OrElse<ValidatePlaceholder<TBody>, FindFirstSourceError<TRest>>
+      : never
+    : never;
 
 export type ValidateSource<T extends string> = string extends T
   ? T
