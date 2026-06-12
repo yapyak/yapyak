@@ -183,10 +183,10 @@ type ResolveIcuPattern<
 export type ExtractTParams<
   TSource extends string,
   TAccumulator = unknown,
-> = TSource extends `${string}{${infer Placeholder}}${infer Rest}`
-  ? Placeholder extends `${string},${string}`
+> = TSource extends `${string}{${infer TPlaceholder}}${infer TRest}`
+  ? TPlaceholder extends `${string},${string}`
     ? ResolveIcuPattern<TSource, TAccumulator>
-    : Placeholder extends `${string}{${infer Tail}`
-      ? ExtractTParams<`{${Tail}}${Rest}`, TAccumulator>
-      : ExtractTParams<Rest, TAccumulator & SimpleParam<Placeholder>>
+    : TPlaceholder extends `${string}{${infer TTail}`
+      ? ExtractTParams<`{${TTail}}${TRest}`, TAccumulator>
+      : ExtractTParams<TRest, TAccumulator & SimpleParam<TPlaceholder>>
   : TAccumulator;
