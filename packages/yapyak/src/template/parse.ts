@@ -428,7 +428,7 @@ function parseBranches(
   end: number,
   isInPluralBranch: boolean,
 ): Record<string, Template> {
-  const branches: Record<string, Template> = {};
+  const branches: Record<string, Template> = Object.create(null);
   let position = start;
   while (position < end) {
     while (position < end && isWhitespace(context.source[position])) {

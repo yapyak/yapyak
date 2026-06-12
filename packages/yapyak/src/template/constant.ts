@@ -74,7 +74,7 @@ function resolveBranches(
   branches: Record<string, Template>,
   params: Record<string, unknown>,
 ): Record<string, Template> {
-  const resolved: Record<string, Template> = {};
+  const resolved: Record<string, Template> = Object.create(null);
   for (const [name, template] of Object.entries(branches)) {
     resolved[name] = resolveNodes(template, params);
   }

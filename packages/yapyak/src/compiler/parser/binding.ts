@@ -1,9 +1,5 @@
 import ts from 'typescript';
 
-export const YAPYAK_MODULE = 'yapyak';
-export const YAPYAK_INTERNAL_MODULE = 'yapyak/internal';
-export const RUNTIME_NAME = 't';
-
 export type Binding = {
   kind: 'direct' | 'namespace' | 'shadow' | 'wrapper';
   localName: string;
@@ -33,6 +29,10 @@ type WalkContext = {
   scopeByNode: Map<ts.Node, Scope>;
   shadowableNames: Set<string>;
 };
+
+export const YAPYAK_MODULE = 'yapyak';
+export const YAPYAK_INTERNAL_MODULE = 'yapyak/internal';
+export const RUNTIME_NAME = 't';
 
 export function resolveBindings(
   sourceFile: ts.SourceFile,

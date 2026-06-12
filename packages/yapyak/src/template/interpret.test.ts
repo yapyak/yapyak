@@ -4,6 +4,7 @@ import { fc, it } from '@fast-check/vitest';
 import { afterEach, beforeEach, describe, expect, vi } from 'vitest';
 
 import { resetWarn, setWarn } from '../warn';
+import { literal, select } from './factory';
 import { interpret } from './interpret';
 
 describe('interpret', () => {
@@ -396,6 +397,56 @@ describe('interpret', () => {
           'en',
         ),
       ).toBe('he sent 1');
+    });
+
+    it('returns the `other` branch for a select value that names a prototype method', () => {
+      const template: Template = [
+        select('gender', {
+          female: [
+            literal('she'),
+          ],
+          male: [
+            literal('he'),
+          ],
+          other: [
+            literal('they'),
+          ],
+        }),
+      ];
+      expect(
+        interpret(
+          template,
+          {
+            gender: 'constructor',
+          },
+          'en',
+        ),
+      ).toBe('they');
+    });
+
+    it('returns the `other` branch for a select value of `__proto__`', () => {
+      const template: Template = [
+        select('gender', {
+          female: [
+            literal('she'),
+          ],
+          male: [
+            literal('he'),
+          ],
+          other: [
+            literal('they'),
+          ],
+        }),
+      ];
+      expect(
+        interpret(
+          template,
+          {
+            gender: '__proto__',
+          },
+          'en',
+        ),
+      ).toBe('they');
     });
   });
 
@@ -920,6 +971,32 @@ describe('interpret', () => {
         expect(typeof result).toBe('string');
       },
     );
+
+    it.prop([
+      fc.string(),
+    ])('returns a string for every select value', (value) => {
+      const template: Template = [
+        select('gender', {
+          female: [
+            literal('she'),
+          ],
+          male: [
+            literal('he'),
+          ],
+          other: [
+            literal('they'),
+          ],
+        }),
+      ];
+      const result = interpret(
+        template,
+        {
+          gender: value,
+        },
+        'en',
+      );
+      expect(typeof result).toBe('string');
+    });
 
     const sameOutputTemplate: Template = [
       {
