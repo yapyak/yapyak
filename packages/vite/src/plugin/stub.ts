@@ -2,7 +2,11 @@ import type { ExtractedMessage, LocaleData } from 'yapyak/compiler';
 import type { Translator } from 'yapyak/translator';
 import type { State } from './state';
 
-import { autoTranslate, validateLocaleCode } from 'yapyak/compiler';
+import {
+  autoTranslate,
+  toMessageKey,
+  validateLocaleCode,
+} from 'yapyak/compiler';
 
 import { getNormalized, getResolver } from './state';
 import { runYapyakCommand } from './yapyak-command';
@@ -55,7 +59,9 @@ export function fillStubs(state: State): void {
     );
     return;
   }
-  const filtered = allMessages.filter((message) => missing.has(message.source));
+  const filtered = allMessages.filter((message) =>
+    missing.has(toMessageKey(message.source, message.context)),
+  );
   const targetLocaleCount = translatableLocales.filter(
     (locale) => locale !== defaultLocale,
   ).length;
@@ -134,7 +140,8 @@ function discoverMissingSources(
 ): Set<string> {
   const missing = new Set<string>();
   for (const message of messages) {
-    if (missing.has(message.source)) {
+    const messageKey = toMessageKey(message.source, message.context);
+    if (missing.has(messageKey)) {
       continue;
     }
     let isFlagged = false;
@@ -144,9 +151,9 @@ function discoverMissingSources(
       }
       const localeFile = localeData[locale];
       for (const location of message.locations) {
-        const existing = localeFile?.[location.fileId]?.[message.source];
+        const existing = localeFile?.[location.fileId]?.[messageKey];
         if (typeof existing !== 'string' || existing === '') {
-          missing.add(message.source);
+          missing.add(messageKey);
           isFlagged = true;
           break;
         }

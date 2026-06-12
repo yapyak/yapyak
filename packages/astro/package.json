@@ -24,9 +24,8 @@
   "sideEffects": false,
   "files": [
     "dist",
-    "src/RichText.astro",
-    "src/RichText.astro.d.ts",
-    "src/index.ts"
+    "src",
+    "!src/**/*.test.ts"
   ],
   "scripts": {
     "build": "tsup",

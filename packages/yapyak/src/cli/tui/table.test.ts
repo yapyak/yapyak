@@ -47,7 +47,7 @@ describe('renderTable', () => {
     expect(out).toContain('│ Save changes │');
   });
 
-  it('right-aligns a cell when its column is `right`', () => {
+  it('renders a cell with right alignment when its column is `right`', () => {
     const out = renderTable(
       [
         'N',

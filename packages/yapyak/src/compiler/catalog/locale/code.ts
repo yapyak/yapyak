@@ -185,7 +185,8 @@ const ISO_639_1: ReadonlySet<string> = new Set([
   'zu',
 ]);
 
-const BCP47_RX = /^[a-z]{2,3}(-[A-Z][a-z]{3})?(-[A-Z]{2})?$/;
+const BCP47_RX =
+  /^[a-z]{2,3}(-[A-Z][a-z]{3})?(-([A-Z]{2}|\d{3}))?(-[a-z0-9]{5,8})?(-x(-[a-z0-9]{1,8})+)?$/;
 
 export type LocaleIssue = 'invalid-structure' | 'unknown-language';
 
@@ -215,6 +216,11 @@ export function validateLocaleCode(code: string): LocaleValidation {
   }
   const language = (code.split('-')[0] ?? code).toLowerCase();
   if (ISO_639_1.has(language)) {
+    return {
+      valid: true,
+    };
+  }
+  if (language.length === 3) {
     return {
       valid: true,
     };

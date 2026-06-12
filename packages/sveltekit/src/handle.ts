@@ -1,7 +1,7 @@
 import type { Handle } from '@sveltejs/kit';
 
 import { getLocale } from 'yapyak';
-import { getPendingResponseHeaders, withRequest } from 'yapyak/adapter';
+import { mergePendingResponseHeaders, withRequest } from 'yapyak/adapter';
 
 const PLACEHOLDER = '%yapyak.lang%';
 
@@ -37,8 +37,6 @@ export const handle: Handle = ({ event, resolve }) =>
     const response = await resolve(event, {
       transformPageChunk: ({ html }) => html.replace(PLACEHOLDER, getLocale()),
     });
-    for (const [name, value] of getPendingResponseHeaders()) {
-      response.headers.append(name, value);
-    }
+    mergePendingResponseHeaders(response.headers);
     return response;
   });

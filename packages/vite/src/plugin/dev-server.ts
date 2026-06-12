@@ -297,6 +297,11 @@ export function createDevServerPlugin(state: State): Plugin {
           },
         );
         getResolver(state).invalidateData();
+        const runtimeMod =
+          context.server?.moduleGraph.getModuleById(RUNTIME_RESOLVED);
+        if (runtimeMod) {
+          void context.server?.reloadModule(runtimeMod);
+        }
       }
       if (after.length === 0) {
         state.messagesByFile.delete(fileId);

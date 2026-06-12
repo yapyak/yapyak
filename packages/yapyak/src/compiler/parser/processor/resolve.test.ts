@@ -43,14 +43,29 @@ describe('resolveProcessor', () => {
     ).toBe(vanillaProcessor);
   });
 
-  it('resolves the vanilla processor when the source is already compiled', () => {
+  it('resolves the vanilla processor when the source already imports from `yapyak/internal`', () => {
     const vue = makeProcessor('vue', [
       '.vue',
     ]);
     expect(
-      resolveProcessor('src/a.vue', "import { x } from 'y';", [
+      resolveProcessor(
+        'src/a.vue',
+        "import { pick as _pick } from 'yapyak/internal';",
+        [
+          vue,
+        ],
+      ),
+    ).toBe(vanillaProcessor);
+  });
+
+  it('resolves a custom processor when the source begins with an unrelated `import`', () => {
+    const vue = makeProcessor('vue', [
+      '.vue',
+    ]);
+    expect(
+      resolveProcessor('src/a.vue', "import { x } from 'lodash';", [
         vue,
       ]),
-    ).toBe(vanillaProcessor);
+    ).toBe(vue);
   });
 });

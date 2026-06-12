@@ -75,15 +75,29 @@ export function normalizeYapyakConfig(
   config: YapyakConfig,
 ): NormalizedYapyakConfig {
   const processors = config.processors ?? [];
+  const autoTranslateThreshold =
+    config.autoTranslateThreshold ?? DEFAULT_AUTO_TRANSLATE_THRESHOLD;
+  if (!Number.isInteger(autoTranslateThreshold) || autoTranslateThreshold < 0) {
+    throw new Error(
+      `[yapyak] autoTranslateThreshold must be a non-negative integer, got ${String(autoTranslateThreshold)}.`,
+    );
+  }
+  const defaultLocale = config.defaultLocale ?? DEFAULT_LOCALE;
+  if (defaultLocale === '') {
+    throw new Error('[yapyak] defaultLocale cannot be an empty string.');
+  }
+  const localesDir = config.localesDir ?? DEFAULT_LOCALES_DIR;
+  if (localesDir === '') {
+    throw new Error('[yapyak] localesDir cannot be an empty string.');
+  }
   return {
-    autoTranslateThreshold:
-      config.autoTranslateThreshold ?? DEFAULT_AUTO_TRANSLATE_THRESHOLD,
-    defaultLocale: config.defaultLocale ?? DEFAULT_LOCALE,
+    autoTranslateThreshold,
+    defaultLocale,
     detectAcceptLanguage: config.detectAcceptLanguage ?? false,
     examples: resolveExamples(config),
     exclude: resolvePatterns(config.exclude ?? DEFAULT_EXCLUDE, processors),
     include: resolvePatterns(config.include ?? DEFAULT_INCLUDE, processors),
-    localesDir: config.localesDir ?? DEFAULT_LOCALES_DIR,
+    localesDir,
     persistence: normalizePersistenceConfig(config.persistence),
     preserveTranslationsOnRename:
       config.preserveTranslationsOnRename ?? !config.translator,
@@ -156,6 +170,11 @@ function resolveExtensions(processors: Processor[]): string[] {
 
 function resolveExamples(config: YapyakConfig): number {
   if (config.examples !== undefined) {
+    if (!Number.isInteger(config.examples) || config.examples < 0) {
+      throw new Error(
+        `[yapyak] examples must be a non-negative integer, got ${String(config.examples)}.`,
+      );
+    }
     return config.examples;
   }
   if (config.translator?.context === 'none') {

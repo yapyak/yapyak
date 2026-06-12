@@ -17,7 +17,7 @@ describe('parseMessageKey', () => {
     });
   });
 
-  it('splits on the last separator so a source containing `@` keeps its tail', () => {
+  it('parses on the last separator so a source containing `@` preserves its tail', () => {
     expect(parseMessageKey('Mention @user@tooltip')).toEqual({
       context: 'tooltip',
       source: 'Mention @user',

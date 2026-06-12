@@ -83,16 +83,48 @@ export function transformFile(
     catalogsByLiteral.set(literal, identifier);
     return identifier;
   };
-  for (const callSite of request.extracted.callSites) {
+  const callSites = request.extracted.callSites;
+  const childrenByParent = buildContainmentTree(callSites);
+  const replacementsByCallSite = new Map<ParsedCallSite, CallReplacement>();
+  const renderInOrder = (callSite: ParsedCallSite): void => {
+    for (const child of childrenByParent.get(callSite) ?? []) {
+      renderInOrder(child);
+    }
+    const nestedReplacements: NestedReplacement[] = [];
+    for (const child of childrenByParent.get(callSite) ?? []) {
+      const childReplacement = replacementsByCallSite.get(child);
+      if (!childReplacement) {
+        continue;
+      }
+      const range = childReplacement.range ?? child.range;
+      nestedReplacements.push({
+        code: childReplacement.code,
+        end: range.end.offset,
+        start: range.start.offset,
+      });
+    }
     const replacement = renderCallReplacement({
       callSite,
       defaultLocale,
       locales: request.locales,
+      nestedReplacements,
       pickLocal,
       registerCatalog,
       singleLocale: isSingleLocale,
       translations: request.translations,
     });
+    if (replacement) {
+      replacementsByCallSite.set(callSite, replacement);
+    }
+  };
+  const topLevelCallSites = callSites.filter(
+    (callSite) => !hasContainingParent(callSite, callSites),
+  );
+  for (const callSite of topLevelCallSites) {
+    renderInOrder(callSite);
+  }
+  for (const callSite of topLevelCallSites) {
+    const replacement = replacementsByCallSite.get(callSite);
     if (!replacement) {
       continue;
     }
@@ -102,6 +134,8 @@ export function transformFile(
       range.end.offset,
       replacement.code,
     );
+  }
+  for (const replacement of replacementsByCallSite.values()) {
     if (replacement.usesPick) {
       hasUsedPick = true;
     }
@@ -144,7 +178,7 @@ export function transformFile(
 
   return {
     code: magicString.toString(),
-    diagnostics: [],
+    diagnostics: request.extracted.diagnostics,
     map: magicString.generateMap({
       hires: true,
       source: request.sourcePath ?? request.fileId,
@@ -280,6 +314,7 @@ type RenderCallReplacementInput = {
   callSite: ParsedCallSite;
   defaultLocale: string;
   locales: string[];
+  nestedReplacements?: NestedReplacement[];
   pickLocal: string;
   registerCatalog: (literal: string) => string;
   singleLocale: boolean;
@@ -291,6 +326,12 @@ type CallReplacement = {
   range?: Range;
   usedFactories: Set<string>;
   usesPick: boolean;
+};
+
+type NestedReplacement = {
+  code: string;
+  end: number;
+  start: number;
 };
 
 function renderCallReplacement(
@@ -345,10 +386,15 @@ function renderCallReplacement(
   );
   const catalogIdentifier = registerCatalog(catalog);
   const hasPlaceholders = placeholders.length > 0;
+  const nested = input.nestedReplacements ?? [];
   const paramsExpressionText = hasPlaceholders
-    ? getParamArgText(callSite)
+    ? getParamArgText(callSite, nested)
     : undefined;
-  const localeText = callSite.localeExpression?.getText();
+  const localeText = applyNestedReplacements(
+    callSite.localeExpression?.getText(),
+    callSite.localeExpression?.getStart(),
+    nested,
+  );
 
   const args: string[] = [
     catalogIdentifier,
@@ -677,12 +723,98 @@ function renderLocaleKey(locale: string): string {
   return JSON.stringify(locale);
 }
 
-function getParamArgText(callSite: ParsedCallSite): string | undefined {
+function buildContainmentTree(
+  callSites: ParsedCallSite[],
+): Map<ParsedCallSite, ParsedCallSite[]> {
+  const childrenByParent = new Map<ParsedCallSite, ParsedCallSite[]>();
+  for (const candidateChild of callSites) {
+    const parent = findSmallestContainingParent(candidateChild, callSites);
+    if (!parent) {
+      continue;
+    }
+    const list = childrenByParent.get(parent) ?? [];
+    list.push(candidateChild);
+    childrenByParent.set(parent, list);
+  }
+  return childrenByParent;
+}
+
+function findSmallestContainingParent(
+  child: ParsedCallSite,
+  callSites: ParsedCallSite[],
+): ParsedCallSite | undefined {
+  const childStart = child.range.start.offset;
+  const childEnd = child.range.end.offset;
+  let smallestParent: ParsedCallSite | undefined;
+  let smallestSize = Number.POSITIVE_INFINITY;
+  for (const candidate of callSites) {
+    if (candidate === child) {
+      continue;
+    }
+    const candidateStart = candidate.range.start.offset;
+    const candidateEnd = candidate.range.end.offset;
+    if (candidateStart > childStart || candidateEnd < childEnd) {
+      continue;
+    }
+    if (candidateStart === childStart && candidateEnd === childEnd) {
+      continue;
+    }
+    const size = candidateEnd - candidateStart;
+    if (size < smallestSize) {
+      smallestSize = size;
+      smallestParent = candidate;
+    }
+  }
+  return smallestParent;
+}
+
+function hasContainingParent(
+  child: ParsedCallSite,
+  callSites: ParsedCallSite[],
+): boolean {
+  return findSmallestContainingParent(child, callSites) !== undefined;
+}
+
+function getParamArgText(
+  callSite: ParsedCallSite,
+  nested: NestedReplacement[],
+): string | undefined {
   const paramsExpression = callSite.paramsExpression;
   if (!paramsExpression) {
     return undefined;
   }
-  return paramsExpression.getText();
+  return applyNestedReplacements(
+    paramsExpression.getText(),
+    paramsExpression.getStart(),
+    nested,
+  );
+}
+
+function applyNestedReplacements(
+  text: string | undefined,
+  textStart: number | undefined,
+  nested: NestedReplacement[],
+): string | undefined {
+  if (text === undefined || textStart === undefined || nested.length === 0) {
+    return text;
+  }
+  const textEnd = textStart + text.length;
+  const contained = nested
+    .filter((n) => n.start >= textStart && n.end <= textEnd)
+    .sort((a, b) => b.start - a.start);
+  if (contained.length === 0) {
+    return text;
+  }
+  let result = text;
+  for (const replacement of contained) {
+    const relativeStart = replacement.start - textStart;
+    const relativeEnd = replacement.end - textStart;
+    result =
+      result.slice(0, relativeStart) +
+      replacement.code +
+      result.slice(relativeEnd);
+  }
+  return result;
 }
 
 function getReferenceCount(code: string, name: string): number {

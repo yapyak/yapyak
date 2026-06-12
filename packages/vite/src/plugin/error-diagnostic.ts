@@ -6,11 +6,11 @@ export function renderErrorDiagnostics(
   result: ExtractFileResult,
 ): void {
   for (const diagnostic of result.diagnostics) {
-    if (diagnostic.severity !== 'error') {
-      continue;
+    const message = `[yapyak] ${diagnostic.code} ${diagnostic.fileId}:${diagnostic.range.start.line}:${diagnostic.range.start.column}: ${diagnostic.message}`;
+    if (diagnostic.severity === 'error') {
+      logger.error(message);
+    } else {
+      logger.warn(message);
     }
-    logger.error(
-      `[yapyak] ${diagnostic.code} ${diagnostic.fileId}:${diagnostic.range.start.line}:${diagnostic.range.start.column}: ${diagnostic.message}`,
-    );
   }
 }

@@ -43,4 +43,10 @@ export {
   readOrphans,
 } from './orphan';
 export { writeRegister } from './register';
-export { validateIcuPairs, validateLocaleFile } from './validate';
+export {
+  type TranslationParityIssue,
+  type TranslationParityResult,
+  validateIcuPairs,
+  validateLocaleFile,
+  validateTranslationParity,
+} from './validate';

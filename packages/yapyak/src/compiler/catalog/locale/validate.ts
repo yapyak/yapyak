@@ -94,6 +94,62 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
   return diagnostics;
 }
 
+export type TranslationParityIssue = {
+  kind: 'missing' | 'extra' | 'kind-mismatch';
+  name: string;
+  sourceKind?: Placeholder['kind'];
+  targetKind?: Placeholder['kind'];
+};
+
+export type TranslationParityResult = {
+  issues: TranslationParityIssue[];
+  ok: boolean;
+};
+
+export function validateTranslationParity(
+  source: string,
+  target: string,
+): TranslationParityResult {
+  const sourceByName = buildPlaceholderIndex(
+    parsePlaceholders(source).placeholders,
+  );
+  const targetByName = buildPlaceholderIndex(
+    parsePlaceholders(target).placeholders,
+  );
+  const issues: TranslationParityIssue[] = [];
+  for (const [name, placeholder] of sourceByName) {
+    const targetPlaceholder = targetByName.get(name);
+    if (!targetPlaceholder) {
+      issues.push({
+        kind: 'missing',
+        name,
+        sourceKind: placeholder.kind,
+      });
+      continue;
+    }
+    if (targetPlaceholder.kind !== placeholder.kind) {
+      issues.push({
+        kind: 'kind-mismatch',
+        name,
+        sourceKind: placeholder.kind,
+        targetKind: targetPlaceholder.kind,
+      });
+    }
+  }
+  for (const name of targetByName.keys()) {
+    if (!sourceByName.has(name)) {
+      issues.push({
+        kind: 'extra',
+        name,
+      });
+    }
+  }
+  return {
+    issues,
+    ok: issues.length === 0,
+  };
+}
+
 export function validateIcuPairs(
   fileId: string,
   localeFile: LocaleFile,

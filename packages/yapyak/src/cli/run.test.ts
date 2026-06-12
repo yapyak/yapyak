@@ -28,11 +28,17 @@ vi.mock('./config', () => ({
 
 describe('run', () => {
   let writes: string[];
+  let errorWrites: string[];
 
   beforeEach(() => {
     writes = [];
+    errorWrites = [];
     vi.spyOn(process.stdout, 'write').mockImplementation((chunk) => {
       writes.push(String(chunk));
+      return true;
+    });
+    vi.spyOn(process.stderr, 'write').mockImplementation((chunk) => {
+      errorWrites.push(String(chunk));
       return true;
     });
   });
@@ -65,12 +71,12 @@ describe('run', () => {
     expect(writes.join('')).toContain('yapyak ');
   });
 
-  it('returns `1` and warns about an unknown command', async () => {
+  it('returns `1` and warns about an unknown command on stderr', async () => {
     const code = await run([
       'bogus',
     ]);
     expect(code).toBe(1);
-    expect(writes.join('')).toContain('Unknown command: bogus');
+    expect(errorWrites.join('')).toContain('Unknown command: bogus');
   });
 
   it('picks the `status` command', async () => {

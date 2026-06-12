@@ -925,6 +925,64 @@ describe('transformFile', () => {
     });
   });
 
+  describe('with nested `t()` calls', () => {
+    it('transforms a nested `t()` inside an outer params expression', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source:
+          "import { t } from 'yapyak';\nexport const x = t('Outer {x}', { x: t('Inner') });\n",
+      });
+      expect(code).toContain('_pick(_yapyak_catalog_$1');
+      expect(code).toContain('x: _pick(_yapyak_catalog_$0)');
+      expect(code).not.toContain("t('Outer");
+      expect(code).not.toContain("t('Inner'");
+    });
+
+    it('transforms a deeply nested chain of three `t()` calls', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source:
+          "import { t } from 'yapyak';\nexport const x = t('A {a}', { a: t('B {b}', { b: t('C') }) });\n",
+      });
+      expect(code).toContain(
+        '_pick(_yapyak_catalog_$2, { a: _pick(_yapyak_catalog_$1, { b: _pick(_yapyak_catalog_$0) }) })',
+      );
+    });
+
+    it('transforms two sibling nested `t()` calls inside a single outer params expression', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source:
+          "import { t } from 'yapyak';\nexport const x = t('A {a} {b}', { a: t('Hello'), b: t('Save') });\n",
+      });
+      expect(code).toContain('a: _pick(_yapyak_catalog_$0)');
+      expect(code).toContain('b: _pick(_yapyak_catalog_$1)');
+    });
+
+    it('transforms two non-nested sibling `t()` calls independently', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source:
+          "import { t } from 'yapyak';\nexport const x = t('Hello') + t('Save');\n",
+      });
+      expect(code).toContain(
+        '_pick(_yapyak_catalog_$0) + _pick(_yapyak_catalog_$1)',
+      );
+    });
+  });
+
   describe('with local shadowing', () => {
     it('preserves a function whose parameter named `t` shadows the import', () => {
       const code = runTransform({

@@ -9,11 +9,28 @@ type ColorPalette = {
   yellow(text: string): string;
 };
 
+export function colorEnabled(): boolean {
+  if (process.env.NO_COLOR !== undefined) {
+    return false;
+  }
+  if (process.env.CI !== undefined) {
+    return false;
+  }
+  return process.stdout.isTTY === true;
+}
+
+function wrap(code: string, text: string): string {
+  if (!colorEnabled()) {
+    return text;
+  }
+  return `${ESC}${code}m${text}${ESC}0m`;
+}
+
 export const color: ColorPalette = {
-  bold: (text) => `${ESC}1m${text}${ESC}0m`,
-  cyan: (text) => `${ESC}36m${text}${ESC}0m`,
-  dim: (text) => `${ESC}2m${text}${ESC}0m`,
-  green: (text) => `${ESC}32m${text}${ESC}0m`,
-  red: (text) => `${ESC}31m${text}${ESC}0m`,
-  yellow: (text) => `${ESC}33m${text}${ESC}0m`,
+  bold: (text) => wrap('1', text),
+  cyan: (text) => wrap('36', text),
+  dim: (text) => wrap('2', text),
+  green: (text) => wrap('32', text),
+  red: (text) => wrap('31', text),
+  yellow: (text) => wrap('33', text),
 };

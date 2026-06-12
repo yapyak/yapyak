@@ -25,3 +25,15 @@ import { getStorage } from './storage';
 export function getPendingResponseHeaders(): Headers {
   return getStorage()?.headers.getStore() ?? new Headers();
 }
+
+/**
+ * Drains pending response headers into `target`.
+ *
+ * @remarks
+ * Equivalent to iterating {@link getPendingResponseHeaders} and calling `target.append(name, value)` for each entry. Use this from framework adapter packages to keep the merge step a single call.
+ */
+export function mergePendingResponseHeaders(target: Headers): void {
+  for (const [name, value] of getPendingResponseHeaders()) {
+    target.append(name, value);
+  }
+}

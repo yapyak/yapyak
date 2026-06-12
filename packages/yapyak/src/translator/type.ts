@@ -95,6 +95,16 @@ export type TranslateBatchOptions = {
   /** Called when a chunk resolves. */
   onChunk?: (count: number) => void;
   /**
+   * Called when a chunk resolves with the per-locale translations for that chunk.
+   *
+   * @remarks
+   * Fires before {@link onChunk}. Enables incremental persistence so abort or crash mid-batch keeps already-completed work. The `result` array is aligned with `requests` (1:1, in order).
+   */
+  onChunkComplete?: (
+    requests: TranslateRequest[],
+    result: LocaleTranslations[],
+  ) => void;
+  /**
    * Called when a chunk fails after retries.
    *
    * @remarks

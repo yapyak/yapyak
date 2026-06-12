@@ -533,7 +533,7 @@ describe('anthropic', () => {
       ).toThrow(/concurrency must be a positive integer/);
     });
 
-    it('keeps the batch alive when the response length does not match the request', async () => {
+    it('preserves the batch when the response length does not match the request', async () => {
       vi.stubGlobal(
         'fetch',
         async () =>

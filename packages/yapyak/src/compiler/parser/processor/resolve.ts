@@ -21,5 +21,5 @@ export function resolveProcessor(
 }
 
 function isAlreadyCompiled(source: string): boolean {
-  return source.trimStart().startsWith('import');
+  return source.includes("from 'yapyak/internal'");
 }

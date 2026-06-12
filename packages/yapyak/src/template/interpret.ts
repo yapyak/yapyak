@@ -107,6 +107,7 @@ function interpretPlural(
         value: raw,
       },
     );
+    return interpretNodes(node.branches.other ?? [], params, locale, '');
   }
   const formattedCount = resolveFormatter(Intl.NumberFormat, locale, {}).format(
     count,

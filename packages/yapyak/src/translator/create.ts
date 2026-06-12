@@ -121,6 +121,7 @@ export function createTranslator(
             batchOptions?.signal,
           );
           chunkResults[myIndex] = result;
+          batchOptions?.onChunkComplete?.(chunk, result);
           batchOptions?.onChunk?.(result.length * targetLocales.length);
         } catch (error) {
           if (batchOptions?.signal?.aborted) {

@@ -26,15 +26,15 @@ export type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
 
 type SimpleParam<T extends string> =
   Trim<T> extends ''
-    ? unknown
+    ? never
     : T extends `${string}{${string}`
-      ? unknown
+      ? never
       : Trim<T> extends `${string}${NonIdentifierChar}${string}`
-        ? unknown
+        ? never
         : Trim<T> extends `#${string}`
-          ? unknown
+          ? never
           : Trim<T> extends `${Digit}${string}`
-            ? unknown
+            ? never
             : { [Key in Trim<T>]: string | number };
 
 type ExtractSelectBranches<

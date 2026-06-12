@@ -1,6 +1,8 @@
 import { add, check, clean, exportCommand, status, translate } from './command';
 import { loadConfig } from './config';
 import { color, symbol } from './tui';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 export async function run(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
@@ -15,7 +17,7 @@ export async function run(argv: string[]): Promise<number> {
       return 0;
     case '--version':
     case '-v':
-      process.stdout.write('yapyak 0.0.0\n');
+      process.stdout.write(`yapyak ${readPackageVersion()}\n`);
       return 0;
     case 'status': {
       const config = await loadConfig(projectRoot);
@@ -62,12 +64,23 @@ export async function run(argv: string[]): Promise<number> {
       });
     }
     default:
-      process.stdout.write(
+      process.stderr.write(
         `\n  ${symbol.cross} ${color.red(`Unknown command: ${command}`)}\n`,
       );
       printHelp();
       return 1;
   }
+}
+
+function readPackageVersion(): string {
+  try {
+    const packagePath = join(import.meta.dirname, '..', '..', 'package.json');
+    const parsed = JSON.parse(readFileSync(packagePath, 'utf-8'));
+    if (typeof parsed.version === 'string') {
+      return parsed.version;
+    }
+  } catch {}
+  return 'unknown';
 }
 
 function printHelp(): void {

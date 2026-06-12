@@ -1,4 +1,5 @@
 import type {
+  LocaleTranslations,
   MessageContext,
   TranslateRequest,
   TranslationExample,
@@ -19,6 +20,7 @@ import {
   readLocaleFile,
   readOrphans,
   validateLocaleCode,
+  validateTranslationParity,
   writeLocaleFile,
 } from './locale';
 import { toLocationKey } from './location-key';
@@ -124,45 +126,36 @@ export async function autoTranslate(
       });
     }
   };
-  let results: string[];
-  try {
-    results =
-      typeof input.translator.batch === 'function'
-        ? await input.translator.batch(requests, {
-            onChunkError,
-            ...(signal === undefined
-              ? {}
-              : {
-                  signal,
-                }),
-          })
-        : await runOneByOne(stubs, requests, input.translator, errors, signal);
-  } catch (error) {
-    for (const stub of stubs) {
+  const localeFiles = new Map<string, LocaleFile>();
+  const touchedLocales = new Set<string>();
+  const persistedStubs = new Set<TranslationStub>();
+  const persistResult = (stub: TranslationStub, value: string): void => {
+    if (persistedStubs.has(stub)) {
+      return;
+    }
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return;
+    }
+    const parity = validateTranslationParity(stub.source, trimmed);
+    if (!parity.ok) {
       errors.push({
-        error,
+        error: new Error(
+          `Translation placeholder mismatch: ${parity.issues
+            .map((issue) =>
+              issue.kind === 'missing'
+                ? `missing {${issue.name}}`
+                : issue.kind === 'extra'
+                  ? `extra {${issue.name}}`
+                  : `kind mismatch for {${issue.name}} (${issue.sourceKind} vs ${issue.targetKind})`,
+            )
+            .join(', ')}`,
+        ),
         fileId: stub.fileId,
         locale: stub.locale,
         source: stub.source,
       });
-    }
-    return {
-      errors,
-      translated,
-    };
-  }
-
-  const localeFiles = new Map<string, LocaleFile>();
-  const touchedLocales = new Set<string>();
-  for (let index = 0; index < stubs.length; index++) {
-    const stub = stubs[index];
-    const value = results[index];
-    if (!stub || value === undefined) {
-      continue;
-    }
-    const trimmed = value.trim();
-    if (!trimmed) {
-      continue;
+      return;
     }
     let localeFile = localeFiles.get(stub.locale);
     if (!localeFile) {
@@ -177,20 +170,93 @@ export async function autoTranslate(
     setEntry(localeFile, stub.fileId, getStubKey(stub), trimmed);
     translated++;
     touchedLocales.add(stub.locale);
+    persistedStubs.add(stub);
+  };
+  const flushTouchedLocales = (): void => {
+    for (const locale of touchedLocales) {
+      const localeFile = localeFiles.get(locale);
+      if (!localeFile) {
+        continue;
+      }
+      const localePath = join(
+        projectRoot,
+        context.localesDir,
+        `${locale}.json`,
+      );
+      writeLocaleFile({
+        after: localeFile,
+        extractedSources,
+        filePath: localePath,
+      });
+    }
+    touchedLocales.clear();
+  };
+  const onChunkComplete = (
+    chunkRequests: TranslateRequest[],
+    chunkResult: LocaleTranslations[],
+  ): void => {
+    for (let chunkIndex = 0; chunkIndex < chunkRequests.length; chunkIndex++) {
+      const chunkRequest = chunkRequests[chunkIndex];
+      if (!chunkRequest) {
+        continue;
+      }
+      const stub = stubByRequest.get(chunkRequest);
+      if (!stub) {
+        continue;
+      }
+      const translations = chunkResult[chunkIndex];
+      if (!translations) {
+        continue;
+      }
+      const value = translations[chunkRequest.targetLocale];
+      if (typeof value !== 'string') {
+        continue;
+      }
+      persistResult(stub, value);
+    }
+    flushTouchedLocales();
+  };
+  let results: string[];
+  try {
+    results =
+      typeof input.translator.batch === 'function'
+        ? await input.translator.batch(requests, {
+            onChunkComplete,
+            onChunkError,
+            ...(signal === undefined
+              ? {}
+              : {
+                  signal,
+                }),
+          })
+        : await runOneByOne(stubs, requests, input.translator, errors, signal);
+  } catch (error) {
+    flushTouchedLocales();
+    for (const stub of stubs) {
+      errors.push({
+        error,
+        fileId: stub.fileId,
+        locale: stub.locale,
+        source: stub.source,
+      });
+    }
+    return {
+      errors,
+      translated,
+    };
   }
-
-  for (const locale of touchedLocales) {
-    const localeFile = localeFiles.get(locale);
-    if (!localeFile) {
+  for (let index = 0; index < stubs.length; index++) {
+    const stub = stubs[index];
+    const value = results[index];
+    if (!stub || value === undefined) {
       continue;
     }
-    const localePath = join(projectRoot, context.localesDir, `${locale}.json`);
-    writeLocaleFile({
-      after: localeFile,
-      extractedSources,
-      filePath: localePath,
-    });
+    if (persistedStubs.has(stub)) {
+      continue;
+    }
+    persistResult(stub, value);
   }
+  flushTouchedLocales();
 
   return {
     errors,

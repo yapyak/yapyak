@@ -245,11 +245,11 @@ describe('ExtractTParams', () => {
     }>().toExtend<Result>();
   });
 
-  it('preserves `unknown` for a placeholder that starts with a digit', () => {
-    expectTypeOf<ExtractTParams<'Item {0}'>>().toEqualTypeOf<unknown>();
+  it('returns `never` for a placeholder that starts with a digit', () => {
+    expectTypeOf<ExtractTParams<'Item {0}'>>().toEqualTypeOf<never>();
   });
 
-  it('preserves `unknown` for a placeholder with non-identifier characters', () => {
-    expectTypeOf<ExtractTParams<'Hi {user.name}'>>().toEqualTypeOf<unknown>();
+  it('returns `never` for a placeholder with non-identifier characters', () => {
+    expectTypeOf<ExtractTParams<'Hi {user.name}'>>().toEqualTypeOf<never>();
   });
 });

@@ -3,7 +3,11 @@ import type { LocaleFile } from './file';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { validateIcuPairs, validateLocaleFile } from './validate';
+import {
+  validateIcuPairs,
+  validateLocaleFile,
+  validateTranslationParity,
+} from './validate';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -244,5 +248,47 @@ describe('validateIcuPairs', () => {
     expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK204')).toBe(
       true,
     );
+  });
+});
+
+describe('validateTranslationParity', () => {
+  it('returns `ok: true` for a placeholder-free source and target', () => {
+    expect(validateTranslationParity('Hello', 'Hej').ok).toBe(true);
+  });
+
+  it('returns `ok: true` when every source placeholder is preserved', () => {
+    expect(validateTranslationParity('Hi {name}', 'Hej {name}').ok).toBe(true);
+  });
+
+  it('returns a `missing` issue when a source placeholder is dropped', () => {
+    const result = validateTranslationParity('Hi {name}', 'Hej');
+    expect(result.ok).toBe(false);
+    expect(result.issues).toEqual([
+      {
+        kind: 'missing',
+        name: 'name',
+        sourceKind: 'simple',
+      },
+    ]);
+  });
+
+  it('returns an `extra` issue when the target invents a placeholder', () => {
+    const result = validateTranslationParity('Hi', 'Hej {name}');
+    expect(result.ok).toBe(false);
+    expect(result.issues).toEqual([
+      {
+        kind: 'extra',
+        name: 'name',
+      },
+    ]);
+  });
+
+  it('returns a `kind-mismatch` issue when the placeholder kind diverges', () => {
+    const result = validateTranslationParity(
+      '{count, plural, one {one} other {many}}',
+      '{count, select, one {ett} other {flera}}',
+    );
+    expect(result.ok).toBe(false);
+    expect(result.issues[0]?.kind).toBe('kind-mismatch');
   });
 });
