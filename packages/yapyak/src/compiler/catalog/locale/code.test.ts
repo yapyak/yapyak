@@ -96,4 +96,44 @@ describe('validateLocaleCode', () => {
     expect(result.issue).toBe('invalid-structure');
     expect(result.suggestion).toBeUndefined();
   });
+
+  it('returns valid for a BCP 47 digit-prefix variant subtag', () => {
+    expect(validateLocaleCode('de-CH-1996')).toEqual({
+      valid: true,
+    });
+    expect(validateLocaleCode('de-1901')).toEqual({
+      valid: true,
+    });
+  });
+
+  it('returns valid for a BCP 47 word-form variant subtag', () => {
+    expect(validateLocaleCode('ca-ES-valencia')).toEqual({
+      valid: true,
+    });
+  });
+
+  it('returns valid for multiple BCP 47 variant subtags', () => {
+    expect(validateLocaleCode('sl-rozaj-biske')).toEqual({
+      valid: true,
+    });
+  });
+
+  it('returns valid for a BCP 47 extension subtag', () => {
+    expect(validateLocaleCode('en-US-u-ca-gregory')).toEqual({
+      valid: true,
+    });
+  });
+
+  it('returns valid for a BCP 47 extlang subtag', () => {
+    expect(validateLocaleCode('zh-yue-Hant-HK')).toEqual({
+      valid: true,
+    });
+  });
+
+  it('returns an invalid-structure issue for a malformed variant subtag', () => {
+    const result = validateLocaleCode('de-CH-19');
+
+    expect(result.valid).toBe(false);
+    expect(result.issue).toBe('invalid-structure');
+  });
 });

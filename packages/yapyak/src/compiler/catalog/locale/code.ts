@@ -186,7 +186,7 @@ const ISO_639_1: ReadonlySet<string> = new Set([
 ]);
 
 const BCP47_RX =
-  /^[a-z]{2,3}(-[A-Z][a-z]{3})?(-([A-Z]{2}|\d{3}))?(-[a-z0-9]{5,8})?(-x(-[a-z0-9]{1,8})+)?$/;
+  /^[a-z]{2,3}(?:-[a-z]{3}){0,3}(?:-[A-Z][a-z]{3})?(?:-(?:[A-Z]{2}|\d{3}))?(?:-(?:[a-z0-9]{5,8}|\d[a-z0-9]{3}))*(?:-[0-9a-wy-z](?:-[a-z0-9]{2,8})+)*(?:-x(?:-[a-z0-9]{1,8})+)?$/;
 
 export type LocaleIssue = 'invalid-structure' | 'unknown-language';
 
