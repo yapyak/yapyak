@@ -193,7 +193,7 @@ describe('migrateLocales', () => {
   ): ReturnType<typeof migrateLocales> {
     return migrateLocales(
       {
-        extractedSources: {
+        extractedKeys: {
           'src/a.ts': new Set([
             'Save changes',
           ]),
@@ -352,7 +352,7 @@ describe('migrateLocales', () => {
     });
     const result = runMigrate({
       input: {
-        extractedSources: {
+        extractedKeys: {
           'src/a.ts': new Set([
             'Save changes',
             'Loading...',

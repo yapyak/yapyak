@@ -2,7 +2,7 @@ import type { Diagnostic } from '../../compiler';
 import type { Config } from '../config';
 
 import {
-  detectAtIssues,
+  findContextDiagnostics,
   readLocaleFile,
   validateIcuPairs,
   validateLocaleFile,
@@ -12,6 +12,7 @@ import { color, header, symbol } from '../tui';
 import { join } from 'node:path';
 
 type MissingTranslation = {
+  context?: string;
   fileId: string;
   locale: string;
   source: string;
@@ -31,7 +32,7 @@ export function check(config: Config, projectRoot: string): number {
   const allDiagnostics: Diagnostic[] = [
     ...report.diagnostics,
   ];
-  allDiagnostics.push(...detectAtIssues(report.messages));
+  allDiagnostics.push(...findContextDiagnostics(report.messages));
 
   for (const locale of report.locales) {
     if (locale === report.defaultLocale) {
@@ -94,9 +95,11 @@ export function check(config: Config, projectRoot: string): number {
           process.stdout.write(`    ${color.dim(entry.fileId)}\n`);
           lastFileId = entry.fileId;
         }
-        process.stdout.write(
-          `      ${color.dim('—')} ${color.bold(entry.source)}\n`,
-        );
+        const label =
+          entry.context === undefined
+            ? color.bold(entry.source)
+            : `${color.bold(entry.source)} ${color.dim(`· ${entry.context}`)}`;
+        process.stdout.write(`      ${color.dim('—')} ${label}\n`);
       }
       process.stdout.write('\n');
     }

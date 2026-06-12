@@ -1,9 +1,16 @@
-import type { ExtractedMessage, LocaleFile } from '../../compiler';
+import type {
+  CatalogEntry,
+  ExtractedMessage,
+  LocaleFile,
+} from '../../compiler';
 import type { Config } from '../config';
 
 import {
   extractFile,
   readLocaleFile,
+  toEntry,
+  toMessageKey,
+  toVariants,
   walkSourceFiles,
   writeLocaleFile,
 } from '../../compiler';
@@ -64,19 +71,33 @@ export function clean(
         };
         continue;
       }
-      const expectedSources = expected[fileId];
-      const nextEntries: Record<string, string> = {};
-      for (const [source, value] of Object.entries(entries)) {
-        if (!expectedSources?.has(source)) {
-          orphanSources.push({
-            fileId,
-            locale,
-            source,
-          });
-          hasChanged = true;
-          continue;
+      const expectedKeys = expected[fileId];
+      const byContextBySource = new Map<
+        string,
+        Map<string | undefined, string>
+      >();
+      for (const [source, entry] of Object.entries(entries)) {
+        for (const { context, value } of toVariants(entry)) {
+          if (!expectedKeys?.has(toMessageKey(source, context))) {
+            orphanSources.push({
+              fileId,
+              locale,
+              source,
+            });
+            hasChanged = true;
+            continue;
+          }
+          let byContext = byContextBySource.get(source);
+          if (!byContext) {
+            byContext = new Map();
+            byContextBySource.set(source, byContext);
+          }
+          byContext.set(context, value);
         }
-        nextEntries[source] = value;
+      }
+      const nextEntries: Record<string, CatalogEntry> = Object.create(null);
+      for (const [source, byContext] of byContextBySource) {
+        nextEntries[source] = toEntry(byContext);
       }
       if (Object.keys(nextEntries).length > 0) {
         next[fileId] = nextEntries;
@@ -118,7 +139,7 @@ export function clean(
   for (const file of filesToWrite) {
     writeLocaleFile({
       after: file.next,
-      extractedSources: expected,
+      extractedKeys: expected,
       filePath: file.path,
     });
   }
@@ -144,10 +165,7 @@ function buildExpected(
   }
   const expected: Record<string, Set<string>> = {};
   for (const message of messages) {
-    const key =
-      message.context === undefined
-        ? message.source
-        : `${message.source}@${message.context}`;
+    const key = toMessageKey(message.source, message.context);
     for (const location of message.locations) {
       let perFile = expected[location.fileId];
       if (!perFile) {

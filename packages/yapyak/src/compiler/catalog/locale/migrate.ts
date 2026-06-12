@@ -1,4 +1,5 @@
 import type { LocaleContext } from './context';
+import type { CatalogEntry } from './file';
 
 import { readLocaleFile, writeLocaleFile } from './file';
 import { join } from 'node:path';
@@ -15,7 +16,7 @@ export type RenameEntry = {
 };
 
 export type MigrateLocalesInput = {
-  extractedSources: Record<string, Set<string>>;
+  extractedKeys: Record<string, Set<string>>;
   fileId: string;
   renames: RenameEntry[];
 };
@@ -119,7 +120,7 @@ export function migrateLocales(
       continue;
     }
     let hasChanged = false;
-    const next: Record<string, string> = {
+    const next: Record<string, CatalogEntry> = {
       ...fileEntries,
     };
     for (const rename of input.renames) {
@@ -139,7 +140,7 @@ export function migrateLocales(
       localeFile[input.fileId] = next;
       writeLocaleFile({
         after: localeFile,
-        extractedSources: input.extractedSources,
+        extractedKeys: input.extractedKeys,
         filePath: localePath,
       });
     }

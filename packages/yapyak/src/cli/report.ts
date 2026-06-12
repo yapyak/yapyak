@@ -2,12 +2,20 @@ import type { Diagnostic, ExtractedMessage } from '../compiler';
 import type { FilterPattern } from '../config';
 import type { Processor } from '../processor';
 
-import { extractFile, readLocaleFile, walkSourceFiles } from '../compiler';
+import {
+  extractFile,
+  findTranslation,
+  fromMessageKey,
+  readLocaleFile,
+  toMessageKey,
+  walkSourceFiles,
+} from '../compiler';
 import { createFilter } from '../config/internal';
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 type MissingEntry = {
+  context?: string;
   fileId: string;
   locale: string;
   source: string;
@@ -65,23 +73,20 @@ export function buildReport(input: BuildReportInput): Report {
     diagnostics.push(...result.diagnostics);
   }
 
-  const sourcesByFile: Record<string, Set<string>> = {};
+  const keysByFile: Record<string, Set<string>> = {};
   for (const message of messages) {
-    const key =
-      message.context === undefined
-        ? message.source
-        : `${message.source}@${message.context}`;
+    const key = toMessageKey(message.source, message.context);
     for (const location of message.locations) {
-      let sources = sourcesByFile[location.fileId];
-      if (!sources) {
-        sources = new Set();
-        sourcesByFile[location.fileId] = sources;
+      let keys = keysByFile[location.fileId];
+      if (!keys) {
+        keys = new Set();
+        keysByFile[location.fileId] = keys;
       }
-      sources.add(key);
+      keys.add(key);
     }
   }
 
-  const totalMessages = Object.values(sourcesByFile).reduce(
+  const totalMessages = Object.values(keysByFile).reduce(
     (sum, file) => sum + file.size,
     0,
   );
@@ -100,19 +105,24 @@ export function buildReport(input: BuildReportInput): Report {
     const localeFile = readLocaleFile(join(localesPath, `${locale}.json`));
     let translated = 0;
     let missingCount = 0;
-    for (const [fileId, sources] of Object.entries(sourcesByFile)) {
+    for (const [fileId, keys] of Object.entries(keysByFile)) {
       const fileEntries = localeFile[fileId] ?? {};
-      for (const source of sources) {
-        const value = fileEntries[source];
+      for (const key of keys) {
+        const { context, source } = fromMessageKey(key);
+        const value = findTranslation(fileEntries[source], context);
         if (typeof value === 'string' && value.trim() !== '') {
           translated++;
         } else {
           missingCount++;
-          missing.push({
+          const entry: MissingEntry = {
             fileId,
             locale,
             source,
-          });
+          };
+          if (context !== undefined) {
+            entry.context = context;
+          }
+          missing.push(entry);
         }
       }
     }

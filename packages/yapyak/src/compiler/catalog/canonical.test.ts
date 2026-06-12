@@ -64,6 +64,18 @@ describe('stringifyCanonical', () => {
     expect(upperIndex).toBeLessThan(lowerIndex);
   });
 
+  it('transforms context keys into sorted order', () => {
+    const output = stringifyCanonical({
+      'src/a.tsx': {
+        Save: {
+          button: 'Spara',
+          toolbar: 'Spara',
+        },
+      },
+    });
+    expect(output.indexOf('button')).toBeLessThan(output.indexOf('toolbar'));
+  });
+
   it('preserves array order', () => {
     expect(
       stringifyCanonical([

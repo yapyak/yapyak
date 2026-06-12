@@ -151,8 +151,10 @@ The translation file can now keep both messages separately:
 ```json
 {
   "src/Ticket.tsx": {
-    "Open@button": "Öppna",
-    "Open@badge": "Öppen"
+    "Open": {
+      "badge": "Öppen",
+      "button": "Öppna"
+    }
   }
 }
 ```
@@ -162,8 +164,10 @@ The translation file can now keep both messages separately:
 ```json
 {
   "src/Ticket.vue": {
-    "Open@button": "Öppna",
-    "Open@badge": "Öppen"
+    "Open": {
+      "badge": "Öppen",
+      "button": "Öppna"
+    }
   }
 }
 ```
@@ -173,8 +177,10 @@ The translation file can now keep both messages separately:
 ```json
 {
   "src/Ticket.svelte": {
-    "Open@button": "Öppna",
-    "Open@badge": "Öppen"
+    "Open": {
+      "badge": "Öppen",
+      "button": "Öppna"
+    }
   }
 }
 ```
@@ -184,8 +190,10 @@ The translation file can now keep both messages separately:
 ```json
 {
   "src/Ticket.astro": {
-    "Open@button": "Öppna",
-    "Open@badge": "Öppen"
+    "Open": {
+      "badge": "Öppen",
+      "button": "Öppna"
+    }
   }
 }
 ```

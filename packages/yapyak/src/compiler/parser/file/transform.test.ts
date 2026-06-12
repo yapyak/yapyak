@@ -2,7 +2,7 @@ import type { TransformFileRequest } from './transform';
 
 import { describe, expect, it } from 'vitest';
 
-import { toMessageId } from '../message-id';
+import { toMessageKey } from '../message-key';
 import { extractFile } from './extract';
 import { transformFile } from './transform';
 
@@ -25,7 +25,7 @@ function runTransform(input: {
 }
 
 function hashId(source: string, context?: string): string {
-  return toMessageId(source, context);
+  return toMessageKey(source, context);
 }
 
 describe('transformFile', () => {

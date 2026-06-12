@@ -1,5 +1,6 @@
 import type { HmrContext, Plugin, ViteDevServer } from 'vite';
 import type {
+  CatalogEntry,
   ExtractedMessage,
   LocaleFile,
   LocaleWarning,
@@ -281,7 +282,7 @@ export function createDevServerPlugin(state: State): Plugin {
       if (renames.length > 0) {
         migrateLocales(
           {
-            extractedSources: toExtractedSourcesForFile(fileId, after),
+            extractedKeys: toExtractedKeysForFile(fileId, after),
             fileId,
             renames,
           },
@@ -373,11 +374,33 @@ export function extractChangedFileIds(
 }
 
 export function areEntriesEqual(
-  a: Record<string, string>,
-  b: Record<string, string> | undefined,
+  a: Record<string, CatalogEntry>,
+  b: Record<string, CatalogEntry> | undefined,
 ): boolean {
   if (!b) {
     return false;
+  }
+  const aKeys = Object.keys(a);
+  if (aKeys.length !== Object.keys(b).length) {
+    return false;
+  }
+  for (const key of aKeys) {
+    if (!isEntryEqual(a[key], b[key])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function isEntryEqual(
+  a: CatalogEntry | undefined,
+  b: CatalogEntry | undefined,
+): boolean {
+  if (a === undefined || b === undefined) {
+    return a === b;
+  }
+  if (typeof a === 'string' || typeof b === 'string') {
+    return a === b;
   }
   const aKeys = Object.keys(a);
   if (aKeys.length !== Object.keys(b).length) {
@@ -399,7 +422,7 @@ function toCallSitePositions(message: ExtractedMessage): CallSitePosition[] {
   }));
 }
 
-function toExtractedSourcesForFile(
+function toExtractedKeysForFile(
   fileId: string,
   messages: ExtractedMessage[],
 ): Record<string, Set<string>> {

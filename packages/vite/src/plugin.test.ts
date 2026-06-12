@@ -896,7 +896,9 @@ describe('yapyak', () => {
         localePath,
         JSON.stringify({
           'src/a.tsx': {
-            'Save@button': 'Lagra',
+            Save: {
+              button: 'Spara',
+            },
           },
         }),
       );
@@ -905,7 +907,7 @@ describe('yapyak', () => {
       await invokeConfigResolved(plugin, root, 'build');
       const output = await invokeTransform(plugin, join(root, 'src', 'a.tsx'));
 
-      expect(output).toContain('Lagra');
+      expect(output).toContain('Spara');
     });
 
     it('emits the plain translation when source has no context', async () => {

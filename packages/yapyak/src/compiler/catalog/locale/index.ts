@@ -13,6 +13,7 @@ export {
   discoverLocales,
 } from './discover';
 export {
+  type CatalogEntry,
   CorruptLocaleFileError,
   type InvariantViolation,
   type LocaleFile,
@@ -22,8 +23,11 @@ export {
   type SyncLocaleFilesResult,
   type WriteLocaleFileInput,
   YapyakInvariantError,
+  findTranslation,
   readLocaleFile,
   syncLocaleFiles,
+  toEntry,
+  toVariants,
   writeLocaleFile,
   writeLocaleFiles,
 } from './file';
@@ -44,8 +48,6 @@ export {
 } from './orphan';
 export { writeRegister } from './register';
 export {
-  type TranslationParityItem,
-  type TranslationParityResult,
   validateIcuPairs,
   validateLocaleFile,
   validateTranslationParity,

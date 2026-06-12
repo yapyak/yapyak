@@ -1,7 +1,8 @@
 import type { TranslationExample } from '../../translator';
 import type { LocaleData, OrphanCache } from './locale';
 
-import { parseMessageKey } from '../parser';
+import { fromMessageKey, toMessageKey } from '../parser';
+import { toVariants } from './locale';
 
 export type ExtractExamplesInput = {
   currentFileId: string;
@@ -42,20 +43,24 @@ function candidatesFromLocaleData(input: ExtractExamplesInput): Candidate[] {
   }
   const candidates: Candidate[] = [];
   for (const [fileId, entries] of Object.entries(localeFile)) {
-    for (const [key, translation] of Object.entries(entries)) {
-      if (!translation) {
-        continue;
+    for (const [source, entry] of Object.entries(entries)) {
+      for (const { context, value } of toVariants(entry)) {
+        if (!value) {
+          continue;
+        }
+        if (
+          fileId === input.currentFileId &&
+          toMessageKey(source, context) === input.excludeKey
+        ) {
+          continue;
+        }
+        candidates.push({
+          fileId,
+          score: similarity(input.source, source),
+          source,
+          translation: value,
+        });
       }
-      if (fileId === input.currentFileId && key === input.excludeKey) {
-        continue;
-      }
-      const source = sourceFromKey(key);
-      candidates.push({
-        fileId,
-        score: similarity(input.source, source),
-        source,
-        translation,
-      });
     }
   }
   return candidates;
@@ -72,7 +77,7 @@ function candidatesFromOrphans(input: ExtractExamplesInput): Candidate[] {
       if (fileId === input.currentFileId && key === input.excludeKey) {
         continue;
       }
-      const source = sourceFromKey(key);
+      const source = fromMessageKey(key).source;
       candidates.push({
         fileId,
         score: similarity(input.source, source),
@@ -82,10 +87,6 @@ function candidatesFromOrphans(input: ExtractExamplesInput): Candidate[] {
     }
   }
   return candidates;
-}
-
-function sourceFromKey(key: string): string {
-  return parseMessageKey(key).source;
 }
 
 function dedupeBySource(candidates: Candidate[]): Candidate[] {

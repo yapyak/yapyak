@@ -2,7 +2,9 @@ import type { Diagnostic, ExtractedMessage, Location } from '../parser';
 
 import { toLocationKey } from './location-key';
 
-export function detectAtIssues(messages: ExtractedMessage[]): Diagnostic[] {
+export function findContextDiagnostics(
+  messages: ExtractedMessage[],
+): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
   const groups = new Map<string, ExtractedMessage[]>();
   for (const message of messages) {

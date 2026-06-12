@@ -1,64 +1,73 @@
 import { fc, it } from '@fast-check/vitest';
 import { describe, expect } from 'vitest';
 
-import { parseMessageKey, toMessageKey } from './message-key';
+import { fromMessageKey, toMessageKey } from './message-key';
 
-describe('parseMessageKey', () => {
-  it('parses a key with no context into a bare source', () => {
-    expect(parseMessageKey('Save')).toEqual({
+describe('toMessageKey', () => {
+  it('builds a key from a source without a context', () => {
+    expect(toMessageKey('Save')).toBe('["Save",null]');
+  });
+
+  it('builds a key from a source and a context', () => {
+    expect(toMessageKey('Save', 'button')).toBe('["Save","button"]');
+  });
+});
+
+describe('fromMessageKey', () => {
+  it('parses a key into a source without a context', () => {
+    expect(fromMessageKey('["Save",null]')).toEqual({
       source: 'Save',
     });
   });
 
-  it('parses a key with context into source and context', () => {
-    expect(parseMessageKey('Save@button')).toEqual({
+  it('parses a key into a source and a context', () => {
+    expect(fromMessageKey('["Save","button"]')).toEqual({
       context: 'button',
       source: 'Save',
     });
   });
-
-  it('parses on the last separator so a source containing `@` preserves its tail', () => {
-    expect(parseMessageKey('Mention @user@tooltip')).toEqual({
-      context: 'tooltip',
-      source: 'Mention @user',
-    });
-  });
-});
-
-describe('toMessageKey', () => {
-  it('builds a key from source when context is undefined', () => {
-    expect(toMessageKey('Save')).toBe('Save');
-  });
-
-  it('builds a key from source and context joined by `@`', () => {
-    expect(toMessageKey('Save', 'button')).toBe('Save@button');
-  });
 });
 
 describe('properties', () => {
-  const stringWithoutSeparator = fc.string().filter((s) => !s.includes('@'));
-
   it.prop([
-    stringWithoutSeparator,
+    fc.string(),
+    fc.option(fc.string(), {
+      nil: undefined,
+    }),
   ])(
-    'preserves every separator-free source through a roundtrip when no context is supplied',
-    (source) => {
-      expect(parseMessageKey(toMessageKey(source))).toEqual({
-        source,
-      });
+    'parses every key back into the source and context that built it',
+    (source, context) => {
+      const expected =
+        context === undefined
+          ? {
+              source: source.normalize(),
+            }
+          : {
+              context: context.normalize(),
+              source: source.normalize(),
+            };
+      expect(fromMessageKey(toMessageKey(source, context))).toEqual(expected);
     },
   );
 
   it.prop([
     fc.string(),
-    stringWithoutSeparator,
+    fc.option(fc.string(), {
+      nil: undefined,
+    }),
+    fc.string(),
+    fc.option(fc.string(), {
+      nil: undefined,
+    }),
   ])(
-    'preserves every source and separator-free context pair through a roundtrip',
-    (source, context) => {
-      expect(parseMessageKey(toMessageKey(source, context))).toEqual({
-        context,
-        source,
-      });
+    'builds equal keys for every pair only when source and context match',
+    (sourceA, contextA, sourceB, contextB) => {
+      const matches =
+        sourceA.normalize() === sourceB.normalize() &&
+        contextA?.normalize() === contextB?.normalize();
+      expect(
+        toMessageKey(sourceA, contextA) === toMessageKey(sourceB, contextB),
+      ).toBe(matches);
     },
   );
 });

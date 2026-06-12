@@ -1,6 +1,7 @@
 export { stringifyCanonical } from './canonical';
-export { detectAtIssues } from './disambiguation';
+export { findContextDiagnostics } from './context-diagnostic';
 export {
+  type CatalogEntry,
   CorruptLocaleFileError,
   CorruptOrphanCacheError,
   type DiscoverLocalesOptions,
@@ -25,11 +26,14 @@ export {
   YapyakInvariantError,
   detectRenames,
   discoverLocales,
+  findTranslation,
   getDefaultYapyakDir,
   migrateLocales,
   readLocaleData,
   readLocaleFile,
   syncLocaleFiles,
+  toEntry,
+  toVariants,
   validateIcuPairs,
   validateLocaleCode,
   validateLocaleFile,

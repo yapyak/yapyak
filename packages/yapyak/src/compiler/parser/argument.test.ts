@@ -250,15 +250,6 @@ describe('parseArguments', () => {
       expect(parsed.context).toBeUndefined();
     });
 
-    it('emits YPK402 when context contains an `@`', () => {
-      const parsed = parseInline("export const x = t.as('btn@x', 'Save');");
-      const ypk402 = parsed.diagnostics.filter(
-        (diagnostic) => diagnostic.code === 'YPK402',
-      );
-      expect(ypk402).toHaveLength(1);
-      expect(parsed.context).toBeUndefined();
-    });
-
     it('holds kebab-case context names', () => {
       const parsed = parseInline(
         "export const x = t.as('primary-cta', 'Save');",

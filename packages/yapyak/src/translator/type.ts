@@ -39,7 +39,7 @@ export type TranslateRequest = {
    * The developer-supplied disambiguation context.
    *
    * @remarks
-   * Set via `t.as(context, source)` at the call site. Must not contain `'@'`.
+   * Set via `t.as(context, source)` at the call site.
    */
   disambiguation?: string;
   /** Example translations from the project, supplied as style reference. */

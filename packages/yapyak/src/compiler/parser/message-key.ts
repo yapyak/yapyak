@@ -1,24 +1,41 @@
-const MESSAGE_KEY_SEPARATOR = '@';
-
 export function toMessageKey(source: string, context?: string): string {
-  if (context === undefined) {
-    return source;
-  }
-  return `${source}${MESSAGE_KEY_SEPARATOR}${context}`;
+  return JSON.stringify([
+    source.normalize(),
+    context === undefined ? null : context.normalize(),
+  ]);
 }
 
-export function parseMessageKey(key: string): {
+export function fromMessageKey(key: string): {
   context?: string;
   source: string;
 } {
-  const index = key.lastIndexOf(MESSAGE_KEY_SEPARATOR);
-  if (index === -1) {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(key);
+  } catch {
     return {
       source: key,
     };
   }
+  if (!Array.isArray(parsed)) {
+    return {
+      source: key,
+    };
+  }
+  const source = parsed[0];
+  if (typeof source !== 'string') {
+    return {
+      source: key,
+    };
+  }
+  const context = parsed[1];
+  if (typeof context === 'string') {
+    return {
+      context,
+      source,
+    };
+  }
   return {
-    context: key.slice(index + 1),
-    source: key.slice(0, index),
+    source,
   };
 }

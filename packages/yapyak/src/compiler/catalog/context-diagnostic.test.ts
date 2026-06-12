@@ -2,7 +2,8 @@ import type { ExtractedMessage, Location } from '../parser/file/extract';
 
 import { describe, expect, it } from 'vitest';
 
-import { detectAtIssues } from './disambiguation';
+import { toMessageKey } from '../parser';
+import { findContextDiagnostics } from './context-diagnostic';
 
 function makeLocation(fileId = 'src/a.tsx', context?: string): Location {
   const location: Location = {
@@ -33,7 +34,7 @@ function makeMessage(
   context?: string,
 ): ExtractedMessage {
   const message: ExtractedMessage = {
-    id: context === undefined ? source : `${source}@${context}`,
+    id: toMessageKey(source, context),
     locations,
     placeholders: [],
     source,
@@ -44,14 +45,14 @@ function makeMessage(
   return message;
 }
 
-describe('detectAtIssues', () => {
+describe('findContextDiagnostics', () => {
   it('returns no diagnostics for a single untagged call', () => {
     const messages = [
       makeMessage('Save', [
         makeLocation('src/a.tsx'),
       ]),
     ];
-    expect(detectAtIssues(messages)).toHaveLength(0);
+    expect(findContextDiagnostics(messages)).toHaveLength(0);
   });
 
   it('returns no diagnostics for two untagged calls of the same source', () => {
@@ -61,7 +62,7 @@ describe('detectAtIssues', () => {
         makeLocation('src/a.tsx'),
       ]),
     ];
-    expect(detectAtIssues(messages)).toHaveLength(0);
+    expect(findContextDiagnostics(messages)).toHaveLength(0);
   });
 
   it('returns no diagnostics when two contexts disambiguate the same source', () => {
@@ -81,7 +82,7 @@ describe('detectAtIssues', () => {
         'status',
       ),
     ];
-    expect(detectAtIssues(messages)).toHaveLength(0);
+    expect(findContextDiagnostics(messages)).toHaveLength(0);
   });
 
   it('emits YPK403 when a source is used with both `t()` and `t.as()` in the same file', () => {
@@ -97,7 +98,7 @@ describe('detectAtIssues', () => {
         'button',
       ),
     ];
-    const diagnostics = detectAtIssues(messages);
+    const diagnostics = findContextDiagnostics(messages);
     expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK403')).toBe(
       true,
     );
@@ -123,7 +124,7 @@ describe('detectAtIssues', () => {
         'status',
       ),
     ];
-    const diagnostics = detectAtIssues(messages);
+    const diagnostics = findContextDiagnostics(messages);
     expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK403')).toBe(
       false,
     );
@@ -139,7 +140,7 @@ describe('detectAtIssues', () => {
         'button',
       ),
     ];
-    const diagnostics = detectAtIssues(messages);
+    const diagnostics = findContextDiagnostics(messages);
     const ypk404 = diagnostics.filter(
       (diagnostic) => diagnostic.code === 'YPK404',
     );

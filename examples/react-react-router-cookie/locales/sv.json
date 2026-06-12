@@ -13,8 +13,10 @@
     "Language preview": "Språkförhandsvisning",
     "Lists": "Listor",
     "Numbers": "Tal",
-    "Open@badge": "Öppen",
-    "Open@button": "Öppna",
+    "Open": {
+      "badge": "Öppen",
+      "button": "Öppna"
+    },
     "pear": "päron",
     "Plurals": "Pluralis",
     "Price: {amount, number, currency EUR}": "Pris: {amount, number, currency EUR}",

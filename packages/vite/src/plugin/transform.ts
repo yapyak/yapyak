@@ -6,7 +6,7 @@ import type {
 } from 'yapyak/compiler';
 import type { State } from './state';
 
-import { extractFile, toMessageKey, transformFile } from 'yapyak/compiler';
+import { extractFile, findTranslation, transformFile } from 'yapyak/compiler';
 
 import { isCandidateId } from './candidate-id';
 import { renderErrorDiagnostics } from './error-diagnostic';
@@ -76,12 +76,12 @@ function buildTranslations(
 ): Record<string, Record<string, string>> {
   const translations: Record<string, Record<string, string>> = {};
   for (const message of input.extracted.messages) {
-    const messageKey = toMessageKey(message.source, message.context);
     for (const locale of input.locales) {
-      const localeFile = input.localeData[locale];
-      const fileEntries = localeFile?.[input.fileId];
-      const value = fileEntries?.[messageKey];
-      if (typeof value !== 'string' || value === '') {
+      const value = findTranslation(
+        input.localeData[locale]?.[input.fileId]?.[message.source],
+        message.context,
+      );
+      if (value === undefined || value === '') {
         continue;
       }
       let localeMap = translations[locale];

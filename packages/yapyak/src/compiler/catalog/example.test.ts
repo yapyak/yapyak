@@ -2,6 +2,7 @@ import type { LocaleData, OrphanCache } from './locale';
 
 import { describe, expect, it } from 'vitest';
 
+import { toMessageKey } from '../parser';
 import { extractExamples } from './example';
 
 const emptyOrphans: OrphanCache = {};
@@ -19,7 +20,7 @@ describe('extractExamples', () => {
 
     const examples = extractExamples({
       currentFileId: 'src/b.tsx',
-      excludeKey: 'Hello',
+      excludeKey: toMessageKey('Hello'),
       locale: 'sv',
       localeData,
       max: 0,
@@ -45,7 +46,7 @@ describe('extractExamples', () => {
 
     const examples = extractExamples({
       currentFileId: 'src/components/c.tsx',
-      excludeKey: 'World',
+      excludeKey: toMessageKey('World'),
       locale: 'sv',
       localeData,
       max: 5,
@@ -72,7 +73,7 @@ describe('extractExamples', () => {
 
     const examples = extractExamples({
       currentFileId: 'src/a.tsx',
-      excludeKey: 'Save',
+      excludeKey: toMessageKey('Save'),
       locale: 'sv',
       localeData,
       max: 5,
@@ -100,7 +101,7 @@ describe('extractExamples', () => {
 
     const examples = extractExamples({
       currentFileId: 'src/b.tsx',
-      excludeKey: 'Hello',
+      excludeKey: toMessageKey('Hello'),
       locale: 'sv',
       localeData,
       max: 3,
@@ -130,7 +131,7 @@ describe('extractExamples', () => {
 
     const examples = extractExamples({
       currentFileId: 'src/b.tsx',
-      excludeKey: 'Save changes',
+      excludeKey: toMessageKey('Save changes'),
       locale: 'sv',
       localeData,
       max: 3,
@@ -144,7 +145,7 @@ describe('extractExamples', () => {
   it('reads entries from the orphan cache for the target locale', () => {
     const orphans: OrphanCache = {
       'src/a.tsx': {
-        Save: {
+        [toMessageKey('Save')]: {
           deletedAt: '2026-01-01T00:00:00.000Z',
           translations: {
             sv: 'Spara',
@@ -155,7 +156,7 @@ describe('extractExamples', () => {
 
     const examples = extractExamples({
       currentFileId: 'src/b.tsx',
-      excludeKey: 'Hello',
+      excludeKey: toMessageKey('Hello'),
       locale: 'sv',
       localeData: {},
       max: 5,
@@ -185,7 +186,7 @@ describe('extractExamples', () => {
 
     const examples = extractExamples({
       currentFileId: 'src/components/c.tsx',
-      excludeKey: 'Hello',
+      excludeKey: toMessageKey('Hello'),
       locale: 'sv',
       localeData,
       max: 5,
@@ -208,7 +209,7 @@ describe('extractExamples', () => {
 
     const examples = extractExamples({
       currentFileId: 'src/b.tsx',
-      excludeKey: 'Save changes',
+      excludeKey: toMessageKey('Save changes'),
       locale: 'sv',
       localeData,
       max: 1,
@@ -233,7 +234,7 @@ describe('extractExamples', () => {
 
     const examples = extractExamples({
       currentFileId: 'src/b.tsx',
-      excludeKey: 'Hello',
+      excludeKey: toMessageKey('Hello'),
       locale: 'sv',
       localeData,
       max: 5,

@@ -9,7 +9,7 @@ type ColorPalette = {
   yellow(text: string): string;
 };
 
-export function colorEnabled(): boolean {
+function colorEnabled(): boolean {
   if (process.env.NO_COLOR !== undefined) {
     return false;
   }

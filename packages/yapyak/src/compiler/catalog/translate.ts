@@ -7,6 +7,7 @@ import type {
 } from '../../translator';
 import type { ExtractedMessage, Location } from '../parser';
 import type {
+  CatalogEntry,
   LocaleContext,
   LocaleData,
   LocaleFile,
@@ -16,6 +17,7 @@ import type {
 import { toMessageKey } from '../parser';
 import { extractExamples } from './example';
 import {
+  findTranslation,
   getDefaultYapyakDir,
   readLocaleFile,
   readOrphans,
@@ -85,7 +87,7 @@ export async function autoTranslate(
     };
   }
 
-  const extractedSources = toExtractedSources(input.messages);
+  const extractedKeys = toExtractedKeys(input.messages);
   const errors: AutoTranslateResult['errors'] = [];
   let translated = 0;
 
@@ -167,7 +169,10 @@ export async function autoTranslate(
       localeFile = readLocaleFile(localePath);
       localeFiles.set(stub.locale, localeFile);
     }
-    setEntry(localeFile, stub.fileId, getStubKey(stub), trimmed);
+    const fileEntries: Record<string, CatalogEntry> =
+      localeFile[stub.fileId] ?? Object.create(null);
+    localeFile[stub.fileId] = fileEntries;
+    setEntry(fileEntries, stub.source, stub.disambiguation, trimmed);
     translated++;
     touchedLocales.add(stub.locale);
     persistedStubs.add(stub);
@@ -185,7 +190,7 @@ export async function autoTranslate(
       );
       writeLocaleFile({
         after: localeFile,
-        extractedSources,
+        extractedKeys,
         filePath: localePath,
       });
     }
@@ -324,7 +329,7 @@ function buildRequest(
   return request;
 }
 
-function toExtractedSources(
+function toExtractedKeys(
   messages: ExtractedMessage[],
 ): Record<string, Set<string>> {
   const result: Record<string, Set<string>> = {};
@@ -387,12 +392,13 @@ function extractStubs(
     const localePath = join(projectRoot, context.localesDir, `${locale}.json`);
     const localeData = readLocaleFile(localePath);
     for (const message of input.messages) {
-      const key = toMessageKey(message.source, message.context);
       for (const location of message.locations) {
         if (!input.force) {
-          const localeFile = localeData[location.fileId];
-          const existing = localeFile?.[key];
-          if (typeof existing === 'string' && existing !== '') {
+          const existing = findTranslation(
+            localeData[location.fileId]?.[message.source],
+            message.context,
+          );
+          if (existing !== undefined && existing !== '') {
             continue;
           }
         }
@@ -426,17 +432,20 @@ function dedupeStubs(stubs: TranslationStub[]): TranslationStub[] {
 }
 
 function setEntry(
-  localeFile: LocaleFile,
-  fileId: string,
+  fileEntries: Record<string, CatalogEntry>,
   source: string,
+  context: string | undefined,
   value: string,
 ): void {
-  let entry = localeFile[fileId];
-  if (!entry) {
-    entry = {};
-    localeFile[fileId] = entry;
+  if (context === undefined) {
+    fileEntries[source] = value;
+    return;
   }
-  entry[source] = value;
+  const existing = fileEntries[source];
+  const variants: Record<string, string> =
+    typeof existing === 'object' ? existing : Object.create(null);
+  variants[context] = value;
+  fileEntries[source] = variants;
 }
 
 type ExampleCache = {

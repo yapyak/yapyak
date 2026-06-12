@@ -1,7 +1,17 @@
-import type { ExtractedMessage, LocaleFile } from '../../compiler';
+import type {
+  CatalogEntry,
+  ExtractedMessage,
+  LocaleFile,
+} from '../../compiler';
 import type { Config } from '../config';
 
-import { readLocaleFile, stringifyCanonical } from '../../compiler';
+import {
+  findTranslation,
+  readLocaleFile,
+  stringifyCanonical,
+  toEntry,
+  toMessageKey,
+} from '../../compiler';
 import { buildReport } from '../report';
 import { color, symbol } from '../tui';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -58,12 +68,12 @@ export function exportCommand(
     return 1;
   }
 
-  const sourcesByFile = buildSourcesByFile(report.messages);
+  const variantsByFile = buildVariantsByFile(report.messages);
   const snapshot = buildSnapshot({
     defaultLocale: report.defaultLocale,
     localesDir: join(projectRoot, config.localesDir),
-    sourcesByFile,
     targetLocales,
+    variantsByFile,
   });
 
   if (split) {
@@ -104,28 +114,49 @@ export function exportCommand(
   return 0;
 }
 
-function buildSourcesByFile(
+type ExportVariant = {
+  context?: string;
+  source: string;
+};
+
+function buildVariantsByFile(
   messages: ExtractedMessage[],
-): Map<string, Set<string>> {
-  const sourcesByFile = new Map<string, Set<string>>();
+): Map<string, ExportVariant[]> {
+  const byFile = new Map<string, Map<string, ExportVariant>>();
   for (const message of messages) {
+    const key = toMessageKey(message.source, message.context);
+    const variant: ExportVariant =
+      message.context === undefined
+        ? {
+            source: message.source,
+          }
+        : {
+            context: message.context,
+            source: message.source,
+          };
     for (const location of message.locations) {
-      let sources = sourcesByFile.get(location.fileId);
-      if (!sources) {
-        sources = new Set();
-        sourcesByFile.set(location.fileId, sources);
+      let variants = byFile.get(location.fileId);
+      if (!variants) {
+        variants = new Map();
+        byFile.set(location.fileId, variants);
       }
-      sources.add(message.source);
+      variants.set(key, variant);
     }
   }
-  return sourcesByFile;
+  const result = new Map<string, ExportVariant[]>();
+  for (const [fileId, variants] of byFile) {
+    result.set(fileId, [
+      ...variants.values(),
+    ]);
+  }
+  return result;
 }
 
 function buildSnapshot(args: {
   defaultLocale: string;
   localesDir: string;
-  sourcesByFile: Map<string, Set<string>>;
   targetLocales: string[];
+  variantsByFile: Map<string, ExportVariant[]>;
 }): Snapshot {
   const snapshot: Snapshot = {};
   for (const locale of args.targetLocales) {
@@ -133,7 +164,7 @@ function buildSnapshot(args: {
       defaultLocale: args.defaultLocale,
       locale,
       localePath: join(args.localesDir, `${locale}.json`),
-      sourcesByFile: args.sourcesByFile,
+      variantsByFile: args.variantsByFile,
     });
   }
   return snapshot;
@@ -143,20 +174,31 @@ function buildLocaleFile(args: {
   defaultLocale: string;
   locale: string;
   localePath: string;
-  sourcesByFile: Map<string, Set<string>>;
+  variantsByFile: Map<string, ExportVariant[]>;
 }): LocaleFile {
   const isDefault = args.locale === args.defaultLocale;
   const onDisk = isDefault ? {} : readLocaleFile(args.localePath);
   const localeFile: LocaleFile = {};
-  for (const [fileId, sources] of args.sourcesByFile) {
-    const entries: Record<string, string> = {};
-    const fileEntries = onDisk[fileId] ?? {};
-    for (const source of sources) {
-      if (isDefault) {
-        entries[source] = source;
-      } else {
-        entries[source] = fileEntries[source] ?? '';
+  for (const [fileId, variants] of args.variantsByFile) {
+    const fileEntries = onDisk[fileId];
+    const byContextBySource = new Map<
+      string,
+      Map<string | undefined, string>
+    >();
+    for (const { context, source } of variants) {
+      const value = isDefault
+        ? source
+        : (findTranslation(fileEntries?.[source], context) ?? '');
+      let byContext = byContextBySource.get(source);
+      if (!byContext) {
+        byContext = new Map();
+        byContextBySource.set(source, byContext);
       }
+      byContext.set(context, value);
+    }
+    const entries: Record<string, CatalogEntry> = Object.create(null);
+    for (const [source, byContext] of byContextBySource) {
+      entries[source] = toEntry(byContext);
     }
     localeFile[fileId] = entries;
   }

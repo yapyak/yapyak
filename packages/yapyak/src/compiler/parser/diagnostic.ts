@@ -17,7 +17,6 @@ export type DiagnosticCode =
   | 'YPK302'
   | 'YPK303'
   | 'YPK401'
-  | 'YPK402'
   | 'YPK403'
   | 'YPK404'
   | 'YPK405';

@@ -16,7 +16,7 @@ import { parseArguments } from '../argument';
 import { resolveBindings } from '../binding';
 import { discoverCalls } from '../call';
 import { resolveCallSiteContext } from '../call-site-context';
-import { toMessageId } from '../message-id';
+import { toMessageKey } from '../message-key';
 import { parsePlaceholders } from '../placeholder';
 import { resolveProcessor } from '../processor';
 import { remapRange, toRange } from '../range';
@@ -161,7 +161,7 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
 
     const { placeholders } = parsePlaceholders(parsed.source);
     const id =
-      parsed.source === '' ? '' : toMessageId(parsed.source, parsed.context);
+      parsed.source === '' ? '' : toMessageKey(parsed.source, parsed.context);
 
     const callSite: ParsedCallSite = {
       binding: fragmentCall.binding,

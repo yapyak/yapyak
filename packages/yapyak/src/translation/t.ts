@@ -22,14 +22,6 @@ type TArgs<T extends string> =
         params: TParams<T>,
       ];
 
-type ValidContext<T extends string> = string extends T
-  ? T
-  : T extends `${string}@${string}`
-    ? {
-        $yapyakTypeError: `Invalid context "${T}": '@' is reserved as the source/context separator`;
-      }
-    : T;
-
 declare const brand: unique symbol;
 
 /**
@@ -72,7 +64,7 @@ export type TReturn<
  */
 export type TInChain = {
   as<TContext extends string, TSource extends string>(
-    context: ValidContext<TContext>,
+    context: TContext,
     source: ValidateSource<TSource>,
     ...args: TArgs<TSource>
   ): TReturn<ExtractPairTags<TSource>, ExtractVoidTags<TSource>>;
@@ -112,16 +104,16 @@ export type TFn = {
    * @remarks
    * The compiler emits `YPK403` if a source is used with both `t()` and `t.as()` in the same file.
    *
-   * @param context - The disambiguating context. Must not contain `'@'` (reserved as the source/context separator).
+   * @param context - The disambiguating context.
    * @param source - The source string literal, supplied to translate inline.
    * @param args - The placeholder params tuple. Required when the source has placeholders.
    */
   as<TContext extends string, TSource extends string>(
-    context: ValidContext<TContext>,
+    context: TContext,
     source: ValidateSource<TSource>,
     ...args: TArgs<TSource>
   ): TReturn<ExtractPairTags<TSource>, ExtractVoidTags<TSource>>;
-  as<T extends string>(context: ValidContext<T>): TAsChain;
+  as<T extends string>(context: T): TAsChain;
 
   /**
    * Forces a fixed locale for one translation call, or returns a chain that requires `.as()` to complete.

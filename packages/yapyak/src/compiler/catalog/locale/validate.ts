@@ -1,7 +1,8 @@
 import type { Diagnostic, ExtractedMessage, Placeholder } from '../../parser';
 import type { LocaleFile } from './file';
 
-import { parsePlaceholders, toMessageKey } from '../../parser';
+import { parsePlaceholders } from '../../parser';
+import { findTranslation } from './file';
 import { existsSync, readFileSync } from 'node:fs';
 
 const STUB_RANGE = {
@@ -94,15 +95,13 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
   return diagnostics;
 }
 
-export type TranslationParityItem = {
-  kind: 'missing' | 'extra' | 'kind-mismatch';
-  name: string;
-  sourceKind?: Placeholder['kind'];
-  targetKind?: Placeholder['kind'];
-};
-
 export type TranslationParityResult = {
-  issues: TranslationParityItem[];
+  issues: {
+    kind: 'missing' | 'extra' | 'kind-mismatch';
+    name: string;
+    sourceKind?: Placeholder['kind'];
+    targetKind?: Placeholder['kind'];
+  }[];
   ok: boolean;
 };
 
@@ -116,7 +115,7 @@ export function validateTranslationParity(
   const targetByName = buildPlaceholderIndex(
     parsePlaceholders(target).placeholders,
   );
-  const issues: TranslationParityItem[] = [];
+  const issues: TranslationParityResult['issues'] = [];
   for (const [name, placeholder] of sourceByName) {
     const targetPlaceholder = targetByName.get(name);
     if (!targetPlaceholder) {
@@ -159,10 +158,12 @@ export function validateIcuPairs(
   for (const message of messages) {
     const sourcePlaceholders = parsePlaceholders(message.source).placeholders;
     const sourceByName = buildPlaceholderIndex(sourcePlaceholders);
-    const key = toMessageKey(message.source, message.context);
     for (const location of message.locations) {
-      const target = readTarget(localeFile, location.fileId, key);
-      if (target === undefined) {
+      const target = findTranslation(
+        localeFile[location.fileId]?.[message.source],
+        message.context,
+      );
+      if (target === undefined || target === '') {
         continue;
       }
       const targetPlaceholders = parsePlaceholders(target).placeholders;
@@ -220,22 +221,6 @@ function buildPlaceholderIndex(
     placeholdersByName.set(placeholder.name, placeholder);
   }
   return placeholdersByName;
-}
-
-function readTarget(
-  localeFile: LocaleFile,
-  fileId: string,
-  key: string,
-): string | undefined {
-  const fileEntries = localeFile[fileId];
-  if (!fileEntries) {
-    return undefined;
-  }
-  const entry = fileEntries[key];
-  if (entry === undefined || entry === '') {
-    return undefined;
-  }
-  return entry;
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {

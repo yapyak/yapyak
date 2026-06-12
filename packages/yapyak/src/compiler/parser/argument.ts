@@ -22,8 +22,6 @@ export type ParsedArguments = {
   sourceRange: Range;
 };
 
-const CONTEXT_SEPARATOR = '@';
-
 export function parseArguments(callSite: CallSite): ParsedArguments {
   const sourceFile = callSite.node.getSourceFile();
   const fileText = sourceFile.text;
@@ -38,20 +36,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
       ts.isStringLiteral(contextExpression) ||
       ts.isNoSubstitutionTemplateLiteral(contextExpression)
     ) {
-      const text = contextExpression.text;
-      if (text.includes(CONTEXT_SEPARATOR)) {
-        diagnostics.push({
-          code: 'YPK402',
-          fileId,
-          hint: "Remove the '@' — it is reserved as the source/context separator.",
-          message: `\`t.as()\` context \`'${text}'\` must not contain \`'@'\`.`,
-          range: toRange(contextExpression, sourceFile),
-          severity: 'error',
-          source: fileText,
-        });
-      } else {
-        context = text;
-      }
+      context = contextExpression.text;
     } else {
       diagnostics.push({
         code: 'YPK401',

@@ -100,13 +100,13 @@ describe('check', () => {
     expect(writes.join('')).toContain('translations present');
   });
 
-  it('emits a diagnostic when source has `@` in disambiguation', () => {
+  it('emits a diagnostic for a lone `t.as()` context', () => {
     mkdirSync(join(root, 'src'), {
       recursive: true,
     });
     writeFileSync(
       join(root, 'src', 'a.ts'),
-      `import { t } from 'yapyak';\nexport const x = t.as('bad@ctx', 'Save');\n`,
+      `import { t } from 'yapyak';\nexport const x = t.as('button', 'Save');\n`,
     );
     check(makeConfig(), root);
     expect(writes.join('')).toMatch(/warning|error/);

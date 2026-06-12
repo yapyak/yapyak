@@ -29,8 +29,7 @@ export {
 } from './call-site-context';
 export { extractFile } from './file/extract';
 export { transformFile } from './file/transform';
-export { toMessageId } from './message-id';
-export { parseMessageKey, toMessageKey } from './message-key';
+export { fromMessageKey, toMessageKey } from './message-key';
 export {
   type ParsedMessage,
   type Placeholder,

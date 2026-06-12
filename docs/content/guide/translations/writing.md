@@ -129,7 +129,6 @@ t.in('sv').as('button', 'Save'); // OK — inline chain
 | [YPK105](./diagnostics#ypk105) | Params key has no matching placeholder |
 | [YPK106](./diagnostics#ypk106) | Params passed as variable or spread, cannot be statically verified |
 | [YPK401](./diagnostics#ypk401) | `t.as()` context is not a static string literal |
-| [YPK402](./diagnostics#ypk402) | Context contains `'@'` (reserved separator) |
 | [YPK403](./diagnostics#ypk403) | Same source used with both `t()` and `t.as()` in the same file |
 | [YPK404](./diagnostics#ypk404) | `t.as()` has no other context to disambiguate from |
 | [YPK405](./diagnostics#ypk405) | Modifier captured instead of used inline |
@@ -143,7 +142,6 @@ Several validations are also enforced by TypeScript at the call site — you get
 - **YPK103** — empty source string
 - **YPK202** — missing `'other'` branch in plural / selectordinal / select
 - **YPK203** — unknown ICU format keyword (`plurral`, `selct`, …)
-- **YPK402** — `t.as()` context containing `'@'`
 - **Placeholder name validity** — digit-first names (`{0}`), names with punctuation (`{user.name}`), spaces (`{first name}`), empty (`{}`)
 
 Other diagnostics surface at build time only — the compiler catches them when you run `pnpm yapyak compile` or via the Vite plugin.

@@ -95,4 +95,58 @@ describe('buildReport', () => {
       source: 'Save',
     });
   });
+
+  it('builds `perLocale` stats that count a disambiguated source as translated', () => {
+    writeFileSync(
+      join(root, 'src', 'a.ts'),
+      `import { t } from 'yapyak';\nexport const a = t.as('button', 'Save');\nexport const b = t.as('toolbar', 'Save');\n`,
+    );
+    writeFileSync(
+      join(root, 'locales', 'sv.json'),
+      JSON.stringify({
+        'src/a.ts': {
+          Save: {
+            button: 'Spara',
+            toolbar: 'Spara',
+          },
+        },
+      }),
+    );
+    const report = buildReport({
+      ...baseOptions,
+      projectRoot: root,
+    });
+    expect(report.perLocale.sv).toEqual({
+      missing: 0,
+      translated: 2,
+    });
+    expect(report.missing).toEqual([]);
+  });
+
+  it('lists a missing disambiguated translation with its context', () => {
+    writeFileSync(
+      join(root, 'src', 'a.ts'),
+      `import { t } from 'yapyak';\nexport const a = t.as('button', 'Save');\nexport const b = t.as('toolbar', 'Save');\n`,
+    );
+    writeFileSync(
+      join(root, 'locales', 'sv.json'),
+      JSON.stringify({
+        'src/a.ts': {
+          Save: {
+            button: 'Spara',
+          },
+        },
+      }),
+    );
+    const report = buildReport({
+      ...baseOptions,
+      projectRoot: root,
+    });
+    expect(report.missing).toHaveLength(1);
+    expect(report.missing[0]).toMatchObject({
+      context: 'toolbar',
+      locale: 'sv',
+      source: 'Save',
+    });
+  });
 });

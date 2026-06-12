@@ -3,6 +3,8 @@ import type { LocaleFile } from './file';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { toMessageKey } from '../../parser';
+import { stringifyCanonical } from '../canonical';
 import {
   CorruptLocaleFileError,
   YapyakInvariantError,
@@ -126,7 +128,7 @@ describe('syncLocaleFiles', () => {
       JSON.parse(readFileSync(join(yapyakDir, 'orphans.json'), 'utf8')),
     ).toEqual({
       'src/a.tsx': {
-        Save: {
+        [toMessageKey('Save')]: {
           deletedAt: '2026-01-01T00:00:00.000Z',
           translations: {
             sv: 'Spara',
@@ -184,7 +186,7 @@ describe('syncLocaleFiles', () => {
       JSON.parse(readFileSync(join(yapyakDir, 'orphans.json'), 'utf8')),
     ).toEqual({
       'src/a.tsx': {
-        Cancel: {
+        [toMessageKey('Cancel')]: {
           deletedAt: '2026-01-01T00:00:00.000Z',
           translations: {
             sv: 'Avbryt',
@@ -422,13 +424,13 @@ describe('syncLocaleFiles', () => {
       readFileSync(join(yapyakDir, 'orphans.json'), 'utf8'),
     );
     expect(orphans['src/a.tsx']).toEqual({
-      Cancel: {
+      [toMessageKey('Cancel')]: {
         deletedAt: '2026-01-01T00:00:00.000Z',
         translations: {
           sv: 'Avbryt',
         },
       },
-      Hello: {
+      [toMessageKey('Hello')]: {
         deletedAt: '2026-01-01T00:00:00.000Z',
         translations: {
           sv: 'Hej',
@@ -777,6 +779,73 @@ describe('readLocaleFile', () => {
 
     expect(readLocaleFile(path)).toEqual({});
   });
+
+  it('reads a plain string entry as a source translation', () => {
+    writeFileSync(
+      path,
+      JSON.stringify({
+        'src/a.tsx': {
+          'Save changes': 'Spara ändringar',
+        },
+      }),
+    );
+
+    expect(readLocaleFile(path)).toEqual({
+      'src/a.tsx': {
+        'Save changes': 'Spara ändringar',
+      },
+    });
+  });
+
+  it('reads an object entry as translations by context', () => {
+    writeFileSync(
+      path,
+      JSON.stringify({
+        'src/a.tsx': {
+          Save: {
+            button: 'Spara',
+            toolbar: 'Spara',
+          },
+        },
+      }),
+    );
+
+    expect(readLocaleFile(path)).toEqual({
+      'src/a.tsx': {
+        Save: {
+          button: 'Spara',
+          toolbar: 'Spara',
+        },
+      },
+    });
+  });
+
+  it('reads a `__proto__` context as an own translation', () => {
+    writeFileSync(
+      path,
+      '{ "src/a.tsx": { "Save": { "__proto__": "Spara" } } }',
+    );
+
+    const entry = readLocaleFile(path)['src/a.tsx']?.Save;
+    expect(typeof entry === 'object' && Object.hasOwn(entry, '__proto__')).toBe(
+      true,
+    );
+  });
+
+  it('preserves plain and by-context entries through a roundtrip', () => {
+    const catalog = {
+      'src/a.tsx': {
+        Save: {
+          button: 'Spara',
+          toolbar: 'Spara',
+        },
+        'Save changes': 'Spara ändringar',
+      },
+    };
+    writeFileSync(path, stringifyCanonical(catalog));
+
+    expect(readLocaleFile(path)).toEqual(catalog);
+  });
 });
 
 describe('writeLocaleFile invariant', () => {
@@ -812,9 +881,9 @@ describe('writeLocaleFile invariant', () => {
             Hello: '',
           },
         },
-        extractedSources: {
+        extractedKeys: {
           'src/a.tsx': new Set([
-            'Hello',
+            toMessageKey('Hello'),
           ]),
         },
         filePath: path,
@@ -837,9 +906,36 @@ describe('writeLocaleFile invariant', () => {
         after: {
           'src/a.tsx': {},
         },
-        extractedSources: {
+        extractedKeys: {
           'src/a.tsx': new Set([
-            'Hello',
+            toMessageKey('Hello'),
+          ]),
+        },
+        filePath: path,
+      }),
+    ).toThrow(YapyakInvariantError);
+  });
+
+  it('throws when a still-used context variant would be cleared', () => {
+    writeFileSync(
+      path,
+      JSON.stringify({
+        'src/a.tsx': {
+          Save: {
+            button: 'Spara',
+          },
+        },
+      }),
+    );
+
+    expect(() =>
+      writeLocaleFile({
+        after: {
+          'src/a.tsx': {},
+        },
+        extractedKeys: {
+          'src/a.tsx': new Set([
+            toMessageKey('Save', 'button'),
           ]),
         },
         filePath: path,
@@ -864,9 +960,9 @@ describe('writeLocaleFile invariant', () => {
           World: 'Världen',
         },
       },
-      extractedSources: {
+      extractedKeys: {
         'src/a.tsx': new Set([
-          'World',
+          toMessageKey('World'),
         ]),
       },
       filePath: path,
@@ -891,7 +987,7 @@ describe('writeLocaleFile invariant', () => {
 
     writeLocaleFile({
       after: {},
-      extractedSources: {},
+      extractedKeys: {},
       filePath: path,
     });
 
@@ -914,9 +1010,9 @@ describe('writeLocaleFile invariant', () => {
           Hello: 'Hej',
         },
       },
-      extractedSources: {
+      extractedKeys: {
         'src/a.tsx': new Set([
-          'Hello',
+          toMessageKey('Hello'),
         ]),
       },
       filePath: path,
@@ -945,9 +1041,9 @@ describe('writeLocaleFile invariant', () => {
           Hello: 'Hej',
         },
       },
-      extractedSources: {
+      extractedKeys: {
         'src/a.tsx': new Set([
-          'Hello',
+          toMessageKey('Hello'),
         ]),
       },
       filePath: path,
@@ -979,10 +1075,10 @@ describe('writeLocaleFile invariant', () => {
             World: '',
           },
         },
-        extractedSources: {
+        extractedKeys: {
           'src/a.tsx': new Set([
-            'Hello',
-            'World',
+            toMessageKey('Hello'),
+            toMessageKey('World'),
           ]),
         },
         filePath: path,
@@ -1010,9 +1106,9 @@ describe('writeLocaleFile invariant', () => {
           Hello: 'Hej',
         },
       },
-      extractedSources: {
+      extractedKeys: {
         'src/a.tsx': new Set([
-          'Hello',
+          toMessageKey('Hello'),
         ]),
       },
       filePath: nested,
@@ -1043,9 +1139,9 @@ describe('writeLocaleFile invariant', () => {
             Hello: '',
           },
         },
-        extractedSources: {
+        extractedKeys: {
           'src/a.tsx': new Set([
-            'Hello',
+            toMessageKey('Hello'),
           ]),
         },
         filePath: path,
@@ -1066,11 +1162,7 @@ describe('writeLocaleFile invariant', () => {
         for (const extractedState of EXTRACTED_STATES) {
           const before = buildEntry(beforeState, fileId, source, previous);
           const after = buildEntry(afterState, fileId, source, next);
-          const extractedSources = buildExtracted(
-            extractedState,
-            fileId,
-            source,
-          );
+          const extractedKeys = buildExtracted(extractedState, fileId, source);
           writeFileSync(path, JSON.stringify(before));
           const beforeOnDisk = readFileSync(path, 'utf8');
           const shouldThrow =
@@ -1080,7 +1172,7 @@ describe('writeLocaleFile invariant', () => {
           const label = `before=${beforeState} after=${afterState} extracted=${extractedState}`;
           const input = {
             after,
-            extractedSources,
+            extractedKeys,
             filePath: path,
           };
 
@@ -1109,9 +1201,9 @@ describe('writeLocaleFile invariant', () => {
     writeFileSync(path, JSON.stringify(data));
     const input = {
       after: data,
-      extractedSources: {
+      extractedKeys: {
         'src/a.tsx': new Set([
-          'Hello',
+          toMessageKey('Hello'),
         ]),
       },
       filePath: path,
@@ -1174,13 +1266,13 @@ function buildExtracted(
   if (state === 'missing-source') {
     return {
       [fileId]: new Set([
-        'other',
+        toMessageKey('other'),
       ]),
     };
   }
   return {
     [fileId]: new Set([
-      source,
+      toMessageKey(source),
     ]),
   };
 }

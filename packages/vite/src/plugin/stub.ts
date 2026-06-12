@@ -4,6 +4,7 @@ import type { State } from './state';
 
 import {
   autoTranslate,
+  findTranslation,
   toMessageKey,
   validateLocaleCode,
 } from 'yapyak/compiler';
@@ -151,8 +152,11 @@ function discoverMissingMessageKeys(
       }
       const localeFile = localeData[locale];
       for (const location of message.locations) {
-        const existing = localeFile?.[location.fileId]?.[messageKey];
-        if (typeof existing !== 'string' || existing === '') {
+        const existing = findTranslation(
+          localeFile?.[location.fileId]?.[message.source],
+          message.context,
+        );
+        if (existing === undefined || existing === '') {
           missing.add(messageKey);
           isFlagged = true;
           break;

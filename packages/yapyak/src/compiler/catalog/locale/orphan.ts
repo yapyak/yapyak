@@ -57,19 +57,19 @@ export function readOrphans(yapyakDir: string): OrphanCache {
     return {};
   }
   const result: OrphanCache = {};
-  for (const [fileId, sources] of Object.entries(parsed)) {
-    if (typeof sources !== 'object' || sources === null) {
+  for (const [fileId, entries] of Object.entries(parsed)) {
+    if (typeof entries !== 'object' || entries === null) {
       continue;
     }
-    const sourceMap: Record<string, OrphanEntry> = {};
-    for (const [source, entry] of Object.entries(sources)) {
+    const byKey: Record<string, OrphanEntry> = Object.create(null);
+    for (const [key, entry] of Object.entries(entries)) {
       const normalized = normalizeEntry(entry);
       if (normalized) {
-        sourceMap[source] = normalized;
+        byKey[key] = normalized;
       }
     }
-    if (Object.keys(sourceMap).length > 0) {
-      result[fileId] = sourceMap;
+    if (Object.keys(byKey).length > 0) {
+      result[fileId] = byKey;
     }
   }
   return result;
@@ -86,9 +86,9 @@ export function writeOrphans(yapyakDir: string, cache: OrphanCache): void {
 export function findOrphan(
   cache: OrphanCache,
   fileId: string,
-  source: string,
+  key: string,
 ): OrphanLookup | undefined {
-  const direct = cache[fileId]?.[source];
+  const direct = cache[fileId]?.[key];
   if (direct) {
     return {
       entry: direct,
@@ -96,8 +96,8 @@ export function findOrphan(
     };
   }
   let best: OrphanLookup | undefined;
-  for (const [otherFileId, sources] of Object.entries(cache)) {
-    const entry = sources[source];
+  for (const [otherFileId, entries] of Object.entries(cache)) {
+    const entry = entries[key];
     if (!entry) {
       continue;
     }
@@ -118,14 +118,14 @@ export function findOrphan(
 export function removeOrphan(
   cache: OrphanCache,
   fileId: string,
-  source: string,
+  key: string,
 ): boolean {
-  const sources = cache[fileId];
-  if (!sources || !(source in sources)) {
+  const entries = cache[fileId];
+  if (!entries || !Object.hasOwn(entries, key)) {
     return false;
   }
-  delete sources[source];
-  if (Object.keys(sources).length === 0) {
+  delete entries[key];
+  if (Object.keys(entries).length === 0) {
     delete cache[fileId];
   }
   return true;
@@ -134,15 +134,13 @@ export function removeOrphan(
 export function addOrphan(
   cache: OrphanCache,
   fileId: string,
-  source: string,
+  key: string,
   entry: OrphanEntry,
 ): void {
-  let sources = cache[fileId];
-  if (!sources) {
-    sources = {};
-    cache[fileId] = sources;
-  }
-  sources[source] = entry;
+  const entries: Record<string, OrphanEntry> =
+    cache[fileId] ?? Object.create(null);
+  entries[key] = entry;
+  cache[fileId] = entries;
 }
 
 function normalizeEntry(value: unknown): OrphanEntry | undefined {

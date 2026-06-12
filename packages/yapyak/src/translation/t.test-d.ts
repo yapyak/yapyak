@@ -118,26 +118,4 @@ describe('t', () => {
       ]
     >();
   });
-
-  it('refuses a context literal that contains an `@`', () => {
-    expectTypeOf(t.as<'btn@x', 'Save'>).parameters.toEqualTypeOf<
-      [
-        {
-          $yapyakTypeError: `Invalid context "btn@x": '@' is reserved as the source/context separator`;
-        },
-        'Save',
-      ]
-    >();
-  });
-
-  it('refuses an `@` in the context on the `t.in(locale).as()` chain', () => {
-    expectTypeOf(t.in('sv').as<'btn@x', 'Save'>).parameters.toEqualTypeOf<
-      [
-        {
-          $yapyakTypeError: `Invalid context "btn@x": '@' is reserved as the source/context separator`;
-        },
-        'Save',
-      ]
-    >();
-  });
 });

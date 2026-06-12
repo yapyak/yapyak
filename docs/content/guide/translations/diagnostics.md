@@ -128,17 +128,6 @@ t.as(prefix, 'Open');         // ✗ YPK401
 t.as('button', 'Open');       // ✓
 ```
 
-### YPK402
-
-The `t.as()` context contains an `'@'` (error). `'@'` is reserved as the source/context separator.
-
-```ts
-t.as('btn@x', 'Open');        // ✗ YPK402 (contains '@')
-t.as('primary-cta', 'Open');  // ✓
-```
-
-> **Also a TS error.** `t.as('btn@x', ...)` fails type-checking with `Invalid context "btn@x": '@' is reserved as the source/context separator`.
-
 ### YPK403
 
 The same source string is used with both `t()` and `t.as()` in the same file (error). Pick one form for every occurrence.
