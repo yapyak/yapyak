@@ -11,7 +11,7 @@ export function parseMessageKey(key: string): {
   context?: string;
   source: string;
 } {
-  const index = key.indexOf(MESSAGE_KEY_SEPARATOR);
+  const index = key.lastIndexOf(MESSAGE_KEY_SEPARATOR);
   if (index === -1) {
     return {
       source: key,

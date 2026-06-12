@@ -16,6 +16,13 @@ describe('parseMessageKey', () => {
       source: 'Save',
     });
   });
+
+  it('splits on the last separator so a source containing `@` keeps its tail', () => {
+    expect(parseMessageKey('Mention @user@tooltip')).toEqual({
+      context: 'tooltip',
+      source: 'Mention @user',
+    });
+  });
 });
 
 describe('toMessageKey', () => {
@@ -29,12 +36,12 @@ describe('toMessageKey', () => {
 });
 
 describe('properties', () => {
-  const sourceWithoutSeparator = fc.string().filter((s) => !s.includes('@'));
+  const stringWithoutSeparator = fc.string().filter((s) => !s.includes('@'));
 
   it.prop([
-    sourceWithoutSeparator,
+    stringWithoutSeparator,
   ])(
-    'preserves every source through a roundtrip when no context is supplied',
+    'preserves every separator-free source through a roundtrip when no context is supplied',
     (source) => {
       expect(parseMessageKey(toMessageKey(source))).toEqual({
         source,
@@ -43,10 +50,10 @@ describe('properties', () => {
   );
 
   it.prop([
-    sourceWithoutSeparator,
     fc.string(),
+    stringWithoutSeparator,
   ])(
-    'preserves every source and context pair through a roundtrip',
+    'preserves every source and separator-free context pair through a roundtrip',
     (source, context) => {
       expect(parseMessageKey(toMessageKey(source, context))).toEqual({
         context,
