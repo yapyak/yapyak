@@ -2,7 +2,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { setLocale } from '../index';
 import { resetLocale } from '../internal';
-import { getPendingResponseHeaders } from './pending-response-header';
+import {
+  getPendingResponseHeaders,
+  mergePendingResponseHeaders,
+} from './pending-response-header';
 import { withRequest } from './request';
 
 vi.mock('yapyak/runtime', () => ({
@@ -76,5 +79,43 @@ describe('getPendingResponseHeaders', () => {
         'locale=sv; path=/; max-age=31536000; samesite=lax',
       ],
     ]);
+  });
+});
+
+describe('mergePendingResponseHeaders', () => {
+  afterEach(() => {
+    resetLocale();
+  });
+
+  it('writes no entry when called outside a scope', () => {
+    const target = new Headers();
+    mergePendingResponseHeaders(target);
+    expect(Array.from(target)).toEqual([]);
+  });
+
+  it('writes every pending entry into the target inside a scope', () => {
+    const target = new Headers();
+    withRequest(makeRequest(), () => {
+      setLocale('sv');
+      mergePendingResponseHeaders(target);
+    });
+    expect(Array.from(target)).toEqual([
+      [
+        'set-cookie',
+        'locale=sv; path=/; max-age=31536000; samesite=lax',
+      ],
+    ]);
+  });
+
+  it('preserves existing target entries when merging', () => {
+    const target = new Headers({
+      'x-custom': 'kept',
+    });
+    withRequest(makeRequest(), () => {
+      setLocale('sv');
+      mergePendingResponseHeaders(target);
+    });
+    expect(target.get('x-custom')).toBe('kept');
+    expect(target.get('set-cookie')).toContain('locale=sv');
   });
 });

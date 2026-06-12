@@ -44,7 +44,7 @@ export function fillStubs(state: State): void {
   const translatableLocales = locales.filter(
     (locale) => validateLocaleCode(locale).valid,
   );
-  const missing = discoverMissingSources(
+  const missing = discoverMissingMessageKeys(
     allMessages,
     translatableLocales,
     defaultLocale,
@@ -132,7 +132,7 @@ async function runAutoTranslate(
   }
 }
 
-function discoverMissingSources(
+function discoverMissingMessageKeys(
   messages: ExtractedMessage[],
   locales: string[],
   defaultLocale: string,

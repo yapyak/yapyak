@@ -390,11 +390,14 @@ function renderCallReplacement(
   const paramsExpressionText = hasPlaceholders
     ? getParamArgText(callSite, nested)
     : undefined;
-  const localeText = applyNestedReplacements(
-    callSite.localeExpression?.getText(),
-    callSite.localeExpression?.getStart(),
-    nested,
-  );
+  const localeExpression = callSite.localeExpression;
+  const localeText = localeExpression
+    ? interpolateNestedReplacements(
+        localeExpression.getText(),
+        localeExpression.getStart(),
+        nested,
+      )
+    : undefined;
 
   const args: string[] = [
     catalogIdentifier,
@@ -783,19 +786,19 @@ function getParamArgText(
   if (!paramsExpression) {
     return undefined;
   }
-  return applyNestedReplacements(
+  return interpolateNestedReplacements(
     paramsExpression.getText(),
     paramsExpression.getStart(),
     nested,
   );
 }
 
-function applyNestedReplacements(
-  text: string | undefined,
-  textStart: number | undefined,
+function interpolateNestedReplacements(
+  text: string,
+  textStart: number,
   nested: NestedReplacement[],
-): string | undefined {
-  if (text === undefined || textStart === undefined || nested.length === 0) {
+): string {
+  if (nested.length === 0) {
     return text;
   }
   const textEnd = textStart + text.length;

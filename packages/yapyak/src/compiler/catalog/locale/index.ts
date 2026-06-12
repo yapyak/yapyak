@@ -44,7 +44,7 @@ export {
 } from './orphan';
 export { writeRegister } from './register';
 export {
-  type TranslationParityIssue,
+  type TranslationParityItem,
   type TranslationParityResult,
   validateIcuPairs,
   validateLocaleFile,

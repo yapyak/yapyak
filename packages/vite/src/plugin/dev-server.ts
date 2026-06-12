@@ -297,10 +297,12 @@ export function createDevServerPlugin(state: State): Plugin {
           },
         );
         getResolver(state).invalidateData();
-        const runtimeMod =
-          context.server?.moduleGraph.getModuleById(RUNTIME_RESOLVED);
-        if (runtimeMod) {
-          void context.server?.reloadModule(runtimeMod);
+        const { server } = context;
+        if (server) {
+          const runtimeMod = server.moduleGraph.getModuleById(RUNTIME_RESOLVED);
+          if (runtimeMod) {
+            void server.reloadModule(runtimeMod);
+          }
         }
       }
       if (after.length === 0) {

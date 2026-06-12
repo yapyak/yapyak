@@ -94,7 +94,7 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
   return diagnostics;
 }
 
-export type TranslationParityIssue = {
+export type TranslationParityItem = {
   kind: 'missing' | 'extra' | 'kind-mismatch';
   name: string;
   sourceKind?: Placeholder['kind'];
@@ -102,7 +102,7 @@ export type TranslationParityIssue = {
 };
 
 export type TranslationParityResult = {
-  issues: TranslationParityIssue[];
+  issues: TranslationParityItem[];
   ok: boolean;
 };
 
@@ -116,7 +116,7 @@ export function validateTranslationParity(
   const targetByName = buildPlaceholderIndex(
     parsePlaceholders(target).placeholders,
   );
-  const issues: TranslationParityIssue[] = [];
+  const issues: TranslationParityItem[] = [];
   for (const [name, placeholder] of sourceByName) {
     const targetPlaceholder = targetByName.get(name);
     if (!targetPlaceholder) {

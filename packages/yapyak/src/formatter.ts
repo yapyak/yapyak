@@ -23,7 +23,7 @@ export function resolveFormatter<T>(
     cache.set(key, cached);
     return cached;
   }
-  const formatter = constructFormatter(ctor, locale, options);
+  const formatter = makeFormatter(ctor, locale, options);
   if (cache.size >= MAX_FORMATTERS_PER_CTOR) {
     const oldestKey = cache.keys().next().value;
     if (oldestKey !== undefined) {
@@ -34,7 +34,7 @@ export function resolveFormatter<T>(
   return formatter;
 }
 
-function constructFormatter<T>(
+function makeFormatter<T>(
   ctor: IntlFormatterCtor<T>,
   locale: string,
   options: object | undefined,
@@ -51,17 +51,15 @@ function constructFormatter<T>(
         options,
       },
     );
-    return identityFormatter() as T;
+    return IDENTITY_FORMATTER as T;
   }
 }
 
-function identityFormatter(): {
+const IDENTITY_FORMATTER: {
   format: (value: unknown) => string;
-} {
-  return {
-    format: (value: unknown) => String(value),
-  };
-}
+} = {
+  format: (value) => String(value),
+};
 
 function buildCanonicalKey(
   locale: string,

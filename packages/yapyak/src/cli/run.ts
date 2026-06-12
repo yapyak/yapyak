@@ -79,8 +79,10 @@ function readPackageVersion(): string {
     if (typeof parsed.version === 'string') {
       return parsed.version;
     }
-  } catch {}
-  return 'unknown';
+    return 'unknown';
+  } catch {
+    return 'unknown';
+  }
 }
 
 function printHelp(): void {
