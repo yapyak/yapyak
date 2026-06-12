@@ -74,7 +74,7 @@ const ANTHROPIC_VERSION = '2023-06-01';
 const DEFAULT_TEMPERATURE = 0.2;
 const DEFAULT_TIMEOUT = 30_000;
 const DEFAULT_MAX_RETRIES = 2;
-const MAX_TOKENS_CAP = 8000;
+const MAX_TOKENS_CAP = 32_000;
 
 /**
  * Creates an Anthropic translator.

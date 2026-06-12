@@ -22,20 +22,20 @@ export async function translate(
 
   const translator = config.translator;
   if (!translator) {
-    process.stdout.write(
+    process.stderr.write(
       `\n  ${symbol.cross} ${color.red('No translator configured.')}\n\n`,
     );
-    process.stdout.write(
+    process.stderr.write(
       `  ${color.dim('Add a translator to')} ${color.bold('yapyak.config.ts')}${color.dim(':')}\n\n`,
     );
-    process.stdout.write(
+    process.stderr.write(
       `    ${color.cyan("import { anthropic } from '@yapyak/anthropic';")}\n\n`,
     );
-    process.stdout.write(`    ${color.cyan('export default {')}\n`);
-    process.stdout.write(
+    process.stderr.write(`    ${color.cyan('export default {')}\n`);
+    process.stderr.write(
       `    ${color.cyan('  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! }),')}\n`,
     );
-    process.stdout.write(`    ${color.cyan('};')}\n\n`);
+    process.stderr.write(`    ${color.cyan('};')}\n\n`);
     return 1;
   }
 

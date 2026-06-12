@@ -15,7 +15,7 @@ import {
 import { buildReport } from '../report';
 import { color, symbol } from '../tui';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, isAbsolute, join, resolve } from 'node:path';
+import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 
 export type ExportOptions = {
   locales: string[];
@@ -33,14 +33,14 @@ export function exportCommand(
   const { locales: localeFilter, out, split } = options;
 
   if (split && !out) {
-    process.stdout.write(
+    process.stderr.write(
       `\n  ${symbol.cross} ${color.red('--split requires --out=<dir>')}\n\n`,
     );
     return 1;
   }
 
   if (out && isInsideLocalesDir(out, projectRoot, config.localesDir)) {
-    process.stdout.write(
+    process.stderr.write(
       `\n  ${symbol.cross} ${color.red(`yapyak export refuses to write inside ${config.localesDir}/.`)}\n  ${color.dim('That directory is owned by the plugin and represents the on-disk state, not a derived snapshot.')}\n\n`,
     );
     return 1;
@@ -62,7 +62,7 @@ export function exportCommand(
 
   const unknown = localeFilter.filter((locale) => !allLocales.includes(locale));
   if (unknown.length > 0) {
-    process.stdout.write(
+    process.stderr.write(
       `\n  ${symbol.cross} ${color.red(`Unknown locale${unknown.length > 1 ? 's' : ''}: ${unknown.join(', ')}`)}\n  ${color.dim(`Known: ${allLocales.join(', ')}`)}\n\n`,
     );
     return 1;
@@ -177,7 +177,16 @@ function buildLocaleFile(args: {
   variantsByFile: Map<string, ExportVariant[]>;
 }): LocaleFile {
   const isDefault = args.locale === args.defaultLocale;
-  const onDisk = isDefault ? {} : readLocaleFile(args.localePath);
+  let onDisk: LocaleFile;
+  if (isDefault) {
+    onDisk = {};
+  } else {
+    try {
+      onDisk = readLocaleFile(args.localePath);
+    } catch {
+      onDisk = {};
+    }
+  }
   const localeFile: LocaleFile = {};
   for (const [fileId, variants] of args.variantsByFile) {
     const fileEntries = onDisk[fileId];
@@ -212,5 +221,9 @@ function isInsideLocalesDir(
 ): boolean {
   const absOut = isAbsolute(out) ? out : resolve(projectRoot, out);
   const absLocales = resolve(projectRoot, localesDir);
-  return absOut === absLocales || absOut.startsWith(`${absLocales}/`);
+  if (absOut === absLocales) {
+    return true;
+  }
+  const rel = relative(absLocales, absOut);
+  return rel !== '' && !rel.startsWith('..') && !isAbsolute(rel);
 }

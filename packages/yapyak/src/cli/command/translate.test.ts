@@ -31,10 +31,12 @@ function makeConfig(overrides: Partial<Config> = {}): Config {
 describe('translate', () => {
   let root: string;
   let writes: string[];
+  let errorWrites: string[];
 
   beforeEach(() => {
     root = mkdtempSync(join(tmpdir(), 'yapyak-translate-'));
     writes = [];
+    errorWrites = [];
     mkdirSync(join(root, 'src'), {
       recursive: true,
     });
@@ -43,6 +45,10 @@ describe('translate', () => {
     });
     vi.spyOn(process.stdout, 'write').mockImplementation((chunk) => {
       writes.push(String(chunk));
+      return true;
+    });
+    vi.spyOn(process.stderr, 'write').mockImplementation((chunk) => {
+      errorWrites.push(String(chunk));
       return true;
     });
   });
@@ -58,7 +64,7 @@ describe('translate', () => {
   it('returns `1` when no translator is configured', async () => {
     const code = await translate(makeConfig(), root);
     expect(code).toBe(1);
-    expect(writes.join('')).toContain('No translator configured');
+    expect(errorWrites.join('')).toContain('No translator configured');
   });
 
   it('returns `0` when no stubs are missing', async () => {

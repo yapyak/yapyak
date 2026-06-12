@@ -119,6 +119,39 @@ describe('openai', () => {
     ).toBe('gpt-5');
   });
 
+  it('writes no `temperature` for a reasoning model like the default `gpt-5-mini`', async () => {
+    const stub = stubFetch('Hej');
+    await openai({
+      apiKey: 'k',
+    })({
+      fileId: 'x',
+      source: 'Hello',
+      sourceLocale: 'en',
+      targetLocale: 'sv',
+    });
+    expect(stub.body() as Record<string, unknown>).not.toHaveProperty(
+      'temperature',
+    );
+  });
+
+  it('writes `temperature` to the request body for a non-reasoning model like `gpt-4o`', async () => {
+    const stub = stubFetch('Hej');
+    await openai({
+      apiKey: 'k',
+      model: 'gpt-4o',
+      temperature: 0.5,
+    })({
+      fileId: 'x',
+      source: 'Hello',
+      sourceLocale: 'en',
+      targetLocale: 'sv',
+    });
+    const body = stub.body() as {
+      temperature?: number;
+    };
+    expect(body.temperature).toBe(0.5);
+  });
+
   it('builds requests against the configured endpoint when set', async () => {
     const stub = stubFetch('Hej');
     await openai({

@@ -60,7 +60,12 @@ export function clean(
 
   for (const locale of locales) {
     const localePath = join(localesPath, `${locale}.json`);
-    const existing = readLocaleFile(localePath);
+    let existing: LocaleFile;
+    try {
+      existing = readLocaleFile(localePath);
+    } catch {
+      continue;
+    }
     const next: LocaleFile = {};
     let hasChanged = false;
 

@@ -31,12 +31,18 @@ function makeConfig(overrides: Partial<Config> = {}): Config {
 describe('add', () => {
   let root: string;
   let writes: string[];
+  let errorWrites: string[];
 
   beforeEach(() => {
     root = mkdtempSync(join(tmpdir(), 'yapyak-add-'));
     writes = [];
+    errorWrites = [];
     vi.spyOn(process.stdout, 'write').mockImplementation((chunk) => {
       writes.push(String(chunk));
+      return true;
+    });
+    vi.spyOn(process.stderr, 'write').mockImplementation((chunk) => {
+      errorWrites.push(String(chunk));
       return true;
     });
   });
@@ -54,7 +60,7 @@ describe('add', () => {
       locales: [],
     });
     expect(code).toBe(1);
-    expect(writes.join('')).toContain('Locale code required');
+    expect(errorWrites.join('')).toContain('Locale code required');
   });
 
   it('returns `1` when a locale code is invalid', async () => {
@@ -64,7 +70,7 @@ describe('add', () => {
       ],
     });
     expect(code).toBe(1);
-    expect(writes.join('')).toContain('Invalid locale code');
+    expect(errorWrites.join('')).toContain('Invalid locale code');
   });
 
   it('writes the locale file and returns `0` when no source strings exist', async () => {

@@ -79,6 +79,7 @@ const DEFAULT_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
 const DEFAULT_TEMPERATURE = 0.2;
 const DEFAULT_TIMEOUT = 30_000;
 const DEFAULT_MAX_RETRIES = 2;
+const REASONING_MODEL_RX = /^(gpt-5|o[1-9])/;
 
 /**
  * Creates an OpenAI translator.
@@ -136,8 +137,10 @@ export function openai(options: OpenAIOptions): Translator {
           },
         ],
         model,
-        temperature,
       };
+      if (!REASONING_MODEL_RX.test(model)) {
+        body.temperature = temperature;
+      }
       if (seed !== undefined) {
         body.seed = seed;
       }

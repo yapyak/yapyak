@@ -1,3 +1,4 @@
+import type { Processor } from '../../../processor';
 import type { TransformFileRequest } from './transform';
 
 import { describe, expect, it } from 'vitest';
@@ -11,13 +12,17 @@ function runTransform(input: {
   locales: string[];
   translations?: Record<string, Record<string, string>>;
   fileId?: string;
+  processors?: Processor[];
 }): string {
   const fileId = input.fileId ?? 'src/a.tsx';
-  const extracted = extractFile(fileId, input.source);
+  const extracted = extractFile(fileId, input.source, {
+    processors: input.processors,
+  });
   const request: TransformFileRequest = {
     extracted,
     fileId,
     locales: input.locales,
+    processors: input.processors,
     source: input.source,
     translations: input.translations ?? {},
   };
@@ -285,6 +290,23 @@ describe('transformFile', () => {
       expect(code).not.toMatch(/"[^"]*\{[a-z]/);
       expect(code).toContain('\\u007d\\u007d');
       expect(code).toContain('\\u007b');
+    });
+
+    it('preserves a placeholder when its `{` is immediately preceded by `$`', () => {
+      const source = [
+        "import { t } from 'yapyak';",
+        // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
+        "export const x = t('${amount}', { amount: 5 });",
+      ].join('\n');
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source,
+      });
+      expect(code).toContain('`$${5}`');
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
+      expect(code).not.toContain('\\${amount}');
     });
 
     it('transforms `{` and `}` in elided single-locale literal without placeholders', () => {
@@ -1030,6 +1052,100 @@ describe('transformFile', () => {
       });
       expect(code).toContain("return t('Hello')");
       expect(code).toContain("export const greeting = 'Hello'");
+    });
+  });
+
+  describe('with framework fragments offset', () => {
+    const offsetProcessor: Processor = {
+      applyImport: (magicString, _source, importStatement) => {
+        magicString.appendLeft(0, `${importStatement}\n`);
+      },
+      extensions: [
+        '.pad',
+      ],
+      id: 'pad',
+      parseFragments: (source) => {
+        const prefix = '<padding>\n';
+        if (!source.startsWith(prefix)) {
+          return [
+            {
+              code: source,
+              kind: 'script',
+              lang: 'ts',
+              originalOffset: 0,
+            },
+          ];
+        }
+        return [
+          {
+            code: source.slice(prefix.length),
+            kind: 'script',
+            lang: 'ts',
+            originalOffset: prefix.length,
+          },
+        ];
+      },
+    };
+
+    it('transforms a nested `t.in()` inside a fragment with a non-zero offset', () => {
+      const inner = "t.in('en', 'World')";
+      const outer = `t('Hi {name}', { name: ${inner} })`;
+      const code = runTransform({
+        fileId: 'src/a.pad',
+        locales: [
+          'en',
+          'sv',
+        ],
+        processors: [
+          offsetProcessor,
+        ],
+        source: `<padding>\nimport { t } from 'yapyak';\nexport const x = ${outer};\n`,
+        translations: {
+          sv: {
+            'Hi {name}': 'Hej {name}',
+            World: 'Världen',
+          },
+        },
+      });
+      expect(code).toContain('_pick(_yapyak_catalog');
+      expect(code).not.toContain("t.in('en', 'World')");
+    });
+  });
+
+  describe('with factory-name collisions', () => {
+    it('emits a renamed factory import when the source already declares `_literal`', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source:
+          "import { t } from 'yapyak';\nconst _literal = 'taken';\nexport const x = t('Hi {name}', { name: 'A' });\n",
+        translations: {
+          sv: {
+            'Hi {name}': 'Hej {name}',
+          },
+        },
+      });
+      expect(code).toMatch(/literal as _literal_\$0/);
+      expect(code).not.toMatch(/literal as _literal[^_]/);
+    });
+
+    it('emits a renamed factory import when the source already declares `_date`', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source:
+          "import { t } from 'yapyak';\nconst _date = new Date();\nexport const x = t('At: {when, date, short}', { when: _date });\n",
+        translations: {
+          sv: {
+            'At: {when, date, short}': 'Vid: {when, date, short}',
+          },
+        },
+      });
+      expect(code).toMatch(/date as _date_\$0/);
     });
   });
 });

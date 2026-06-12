@@ -32,10 +32,12 @@ function makeConfig(overrides: Partial<Config> = {}): Config {
 describe('exportCommand', () => {
   let root: string;
   let writes: string[];
+  let errorWrites: string[];
 
   beforeEach(() => {
     root = mkdtempSync(join(tmpdir(), 'yapyak-export-'));
     writes = [];
+    errorWrites = [];
     mkdirSync(join(root, 'src'), {
       recursive: true,
     });
@@ -58,6 +60,10 @@ describe('exportCommand', () => {
       writes.push(String(chunk));
       return true;
     });
+    vi.spyOn(process.stderr, 'write').mockImplementation((chunk) => {
+      errorWrites.push(String(chunk));
+      return true;
+    });
   });
 
   afterEach(() => {
@@ -74,7 +80,7 @@ describe('exportCommand', () => {
       split: true,
     });
     expect(code).toBe(1);
-    expect(writes.join('')).toContain('--split requires --out');
+    expect(errorWrites.join('')).toContain('--split requires --out');
   });
 
   it('refuses to write inside the locales directory', () => {
@@ -84,7 +90,7 @@ describe('exportCommand', () => {
       split: true,
     });
     expect(code).toBe(1);
-    expect(writes.join('')).toContain('refuses to write');
+    expect(errorWrites.join('')).toContain('refuses to write');
   });
 
   it('emits a JSON snapshot to stdout when no `--out` is given', () => {
@@ -123,7 +129,7 @@ describe('exportCommand', () => {
       split: false,
     });
     expect(code).toBe(1);
-    expect(writes.join('')).toContain('Unknown locale');
+    expect(errorWrites.join('')).toContain('Unknown locale');
   });
 
   it('returns `1` when the locale filter includes multiple unknown locales', () => {
@@ -135,7 +141,7 @@ describe('exportCommand', () => {
       split: false,
     });
     expect(code).toBe(1);
-    expect(writes.join('')).toContain('Unknown locales');
+    expect(errorWrites.join('')).toContain('Unknown locales');
   });
 
   it('writes one file per locale when `--split` and `--out` are given', () => {

@@ -69,6 +69,7 @@ export function transformFile(
   const magicString = new MagicString(request.source);
 
   const pickLocal = findFreePickLocal(request.source);
+  const localsByFactory = findFreeFactoryLocals(request.source);
 
   let hasUsedPick = false;
   const usedFactories = new Set<string>();
@@ -107,6 +108,7 @@ export function transformFile(
       callSite,
       defaultLocale,
       locales: request.locales,
+      localsByFactory,
       nestedReplacements,
       pickLocal,
       registerCatalog,
@@ -156,7 +158,8 @@ export function transformFile(
   }
   for (const factory of FACTORY_ORDER) {
     if (usedFactories.has(factory)) {
-      importSpecs.push(`${factory} as _${factory}`);
+      const local = localsByFactory.get(factory) ?? `_${factory}`;
+      importSpecs.push(`${factory} as ${local}`);
     }
   }
   const injectionLines: string[] = [];
@@ -314,6 +317,7 @@ type RenderCallReplacementInput = {
   callSite: ParsedCallSite;
   defaultLocale: string;
   locales: string[];
+  localsByFactory: ReadonlyMap<string, string>;
   nestedReplacements?: NestedReplacement[];
   pickLocal: string;
   registerCatalog: (literal: string) => string;
@@ -342,6 +346,7 @@ function renderCallReplacement(
     defaultLocale,
     singleLocale: isSingleLocale,
     locales,
+    localsByFactory,
     pickLocal,
     registerCatalog,
     translations,
@@ -383,6 +388,7 @@ function renderCallReplacement(
       translations,
     },
     usedFactories,
+    localsByFactory,
   );
   const catalogIdentifier = registerCatalog(catalog);
   const hasPlaceholders = placeholders.length > 0;
@@ -394,7 +400,7 @@ function renderCallReplacement(
   const localeText = localeExpression
     ? interpolateNestedReplacements(
         localeExpression.getText(),
-        localeExpression.getStart(),
+        localeExpression.getStart() + callSite.fragmentOffset,
         nested,
       )
     : undefined;
@@ -572,6 +578,14 @@ function buildTemplateLiteral(
       continue;
     }
     if (character === '$' && source[index + 1] === '{') {
+      const close = findMatchingBraceIndex(source, index + 1);
+      const inner = source.slice(index + 2, close);
+      const peekKey = readKey(inner);
+      if (peekKey && expressions.has(peekKey)) {
+        result += '$';
+        index += 1;
+        continue;
+      }
       result += '\\${';
       index += 2;
       continue;
@@ -612,6 +626,7 @@ type BuildCatalogInput = {
 function buildCatalogLiteral(
   input: BuildCatalogInput,
   usedFactories: Set<string>,
+  localsByFactory: ReadonlyMap<string, string>,
 ): string {
   const { defaultLocale, id, locales, source, translations } = input;
   const entries: string[] = [];
@@ -624,18 +639,22 @@ function buildCatalogLiteral(
       translations,
     });
     entries.push(
-      `${renderLocaleKey(locale)}: ${renderVariantValue(text, usedFactories)}`,
+      `${renderLocaleKey(locale)}: ${renderVariantValue(text, usedFactories, localsByFactory)}`,
     );
   }
   return `{ ${entries.join(', ')} }`;
 }
 
-function renderVariantValue(text: string, usedFactories: Set<string>): string {
+function renderVariantValue(
+  text: string,
+  usedFactories: Set<string>,
+  localsByFactory: ReadonlyMap<string, string>,
+): string {
   const { template } = parseTemplate(text);
   if (isStaticTemplate(template)) {
     return toSafeJsString(text);
   }
-  return renderTemplateLiteral(template, usedFactories);
+  return renderTemplateLiteral(template, usedFactories, localsByFactory);
 }
 
 function isStaticTemplate(template: Template): boolean {
@@ -653,36 +672,43 @@ function isStaticTemplate(template: Template): boolean {
 function renderTemplateLiteral(
   template: Template,
   usedFactories: Set<string>,
+  localsByFactory: ReadonlyMap<string, string>,
 ): string {
-  return `[${template.map((node) => renderNode(node, usedFactories)).join(',')}]`;
+  return `[${template.map((node) => renderNode(node, usedFactories, localsByFactory)).join(',')}]`;
 }
 
-function renderNode(node: TemplateNode, usedFactories: Set<string>): string {
+function renderNode(
+  node: TemplateNode,
+  usedFactories: Set<string>,
+  localsByFactory: ReadonlyMap<string, string>,
+): string {
+  const localFor = (factory: string): string =>
+    localsByFactory.get(factory) ?? `_${factory}`;
   switch (node.kind) {
     case 'literal':
       usedFactories.add('literal');
-      return `_literal(${JSON.stringify(node.value)})`;
+      return `${localFor('literal')}(${JSON.stringify(node.value)})`;
     case 'placeholder':
       usedFactories.add('placeholder');
-      return `_placeholder(${JSON.stringify(node.name)})`;
+      return `${localFor('placeholder')}(${JSON.stringify(node.name)})`;
     case 'count':
       usedFactories.add('count');
-      return '_count()';
+      return `${localFor('count')}()`;
     case 'plural':
       usedFactories.add('plural');
-      return `_plural(${JSON.stringify(node.name)},${JSON.stringify(node.type)},${renderBranches(node.branches, usedFactories)})`;
+      return `${localFor('plural')}(${JSON.stringify(node.name)},${JSON.stringify(node.type)},${renderBranches(node.branches, usedFactories, localsByFactory)})`;
     case 'select':
       usedFactories.add('select');
-      return `_select(${JSON.stringify(node.name)},${renderBranches(node.branches, usedFactories)})`;
+      return `${localFor('select')}(${JSON.stringify(node.name)},${renderBranches(node.branches, usedFactories, localsByFactory)})`;
     case 'number':
       usedFactories.add('number');
-      return `_number(${JSON.stringify(node.name)},${JSON.stringify(node.options)})`;
+      return `${localFor('number')}(${JSON.stringify(node.name)},${JSON.stringify(node.options)})`;
     case 'date':
       usedFactories.add('date');
-      return `_date(${JSON.stringify(node.name)},${JSON.stringify(node.style)})`;
+      return `${localFor('date')}(${JSON.stringify(node.name)},${JSON.stringify(node.style)})`;
     case 'time':
       usedFactories.add('time');
-      return `_time(${JSON.stringify(node.name)},${JSON.stringify(node.style)})`;
+      return `${localFor('time')}(${JSON.stringify(node.name)},${JSON.stringify(node.style)})`;
     default:
       return '';
   }
@@ -691,10 +717,11 @@ function renderNode(node: TemplateNode, usedFactories: Set<string>): string {
 function renderBranches(
   branches: Record<string, Template>,
   usedFactories: Set<string>,
+  localsByFactory: ReadonlyMap<string, string>,
 ): string {
   const entries = Object.entries(branches).map(
     ([name, template]) =>
-      `${JSON.stringify(name)}:${renderTemplateLiteral(template, usedFactories)}`,
+      `${JSON.stringify(name)}:${renderTemplateLiteral(template, usedFactories, localsByFactory)}`,
   );
   return `{${entries.join(',')}}`;
 }
@@ -788,7 +815,7 @@ function getParamArgText(
   }
   return interpolateNestedReplacements(
     paramsExpression.getText(),
-    paramsExpression.getStart(),
+    paramsExpression.getStart() + callSite.fragmentOffset,
     nested,
   );
 }
@@ -918,25 +945,30 @@ function isSafeAttributeValue(source: string): boolean {
 }
 
 function findFreePickLocal(source: string): string {
-  if (!hasIdentifier(source, PICK_LOCAL)) {
-    return PICK_LOCAL;
-  }
-  let suffix = 0;
-  while (hasIdentifier(source, `${PICK_LOCAL}_$${suffix}`)) {
-    suffix += 1;
-  }
-  return `${PICK_LOCAL}_$${suffix}`;
+  return findFreeIdentifier(source, PICK_LOCAL);
 }
 
 function findFreeCatalogPrefix(source: string): string {
-  if (!hasIdentifier(source, CATALOG_PREFIX)) {
-    return CATALOG_PREFIX;
+  return findFreeIdentifier(source, CATALOG_PREFIX);
+}
+
+function findFreeFactoryLocals(source: string): Map<string, string> {
+  const locals = new Map<string, string>();
+  for (const factory of FACTORY_ORDER) {
+    locals.set(factory, findFreeIdentifier(source, `_${factory}`));
+  }
+  return locals;
+}
+
+function findFreeIdentifier(source: string, preferred: string): string {
+  if (!hasIdentifier(source, preferred)) {
+    return preferred;
   }
   let suffix = 0;
-  while (hasIdentifier(source, `${CATALOG_PREFIX}_$${suffix}`)) {
+  while (hasIdentifier(source, `${preferred}_$${suffix}`)) {
     suffix += 1;
   }
-  return `${CATALOG_PREFIX}_$${suffix}`;
+  return `${preferred}_$${suffix}`;
 }
 
 function hasIdentifier(source: string, name: string): boolean {

@@ -25,13 +25,13 @@ export async function add(
 ): Promise<number> {
   const { locales } = options;
   if (locales.length === 0) {
-    process.stdout.write(
+    process.stderr.write(
       `\n  ${symbol.cross} ${color.red('Locale code required.')}\n`,
     );
-    process.stdout.write(
+    process.stderr.write(
       `  ${color.dim('Example:')} ${color.cyan('yapyak add fr')}\n`,
     );
-    process.stdout.write(
+    process.stderr.write(
       `  ${color.dim('Or multiple:')} ${color.cyan('yapyak add fr de sv')}\n\n`,
     );
     return 1;
@@ -51,18 +51,18 @@ export async function add(
     }
   }
   if (invalid.length > 0) {
-    process.stdout.write(
+    process.stderr.write(
       `\n  ${symbol.cross} ${color.red('Invalid locale code.')}\n\n`,
     );
     for (const entry of invalid) {
       const hint = entry.suggestion
         ? ` ${color.dim('— did you mean')} ${color.cyan(entry.suggestion)}${color.dim('?')}`
         : '';
-      process.stdout.write(
+      process.stderr.write(
         `    ${color.bold(entry.code)} is not a recognized ISO 639-1 language code.${hint}\n`,
       );
     }
-    process.stdout.write(
+    process.stderr.write(
       `\n  ${color.dim('Use a standard locale code (')}${color.cyan('en')}${color.dim(', ')}${color.cyan('sv')}${color.dim(', ')}${color.cyan('pt-BR')}${color.dim(', etc.) or a BCP 47 variant.')}\n\n`,
     );
     return 1;
