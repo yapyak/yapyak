@@ -51,6 +51,17 @@ function findFirstCallExpression(
   return found;
 }
 
+function findCallBindingKind(
+  source: string,
+  callName: string,
+): string | undefined {
+  const sourceFile = parseSource(source);
+  const table = resolveBindings(sourceFile);
+  const call = findFirstCallExpression(sourceFile, callName);
+  expect(call).toBeDefined();
+  return table.find(callName, call as ts.Node)?.kind;
+}
+
 function findFirstIfStatement(node: ts.Node): ts.IfStatement | undefined {
   let found: ts.IfStatement | undefined;
   const visit = (n: ts.Node): void => {
@@ -164,5 +175,213 @@ describe('resolveBindings', () => {
     );
     const table = resolveBindings(sourceFile);
     expect(table.root.bindings.get('x')?.kind).toBe('namespace');
+  });
+
+  it('returns a shadow binding for a function-declaration parameter named `t`', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nfunction f(t) { return t('Hello'); }",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for a function-expression parameter named `t`', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nconst f = function (t) { return t('Hello'); };",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for an arrow-function parameter named `t`', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nconst f = (t) => { return t('Hello'); };",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for an arrow-function expression-body parameter named `t`', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nconst f = (t) => t('Hello');",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for a method parameter named `t`', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nclass C { m(t) { return t('Hello'); } }",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for a constructor parameter named `t`', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nclass C { constructor(t) { t('Hello'); } }",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for a set-accessor parameter named `t`', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nclass C { set x(t) { t('Hello'); } }",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for a catch-clause variable named `t`', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\ntry {} catch (t) { t('Hello'); }",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for a catch-clause object-destructured `{ t }`', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\ntry {} catch ({ t }) { t('Hello'); }",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for an object-destructured parameter `{ t }`', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nfunction f({ t }) { return t('Hello'); }",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for an array-destructured parameter `[t]`', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nfunction f([t]) { return t('Hello'); }",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for a renamed object-destructured parameter `{ x: t }`', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nfunction f({ x: t }) { return t('Hello'); }",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for a rest parameter `...t`', () => {
+    const sourceFile = parseSource(
+      "import { t } from 'yapyak';\nfunction f(...t) { return t.length; }",
+    );
+    const table = resolveBindings(sourceFile);
+    const functionDecl = sourceFile.statements.find(ts.isFunctionDeclaration);
+    expect(functionDecl?.body).toBeDefined();
+    expect(table.find('t', functionDecl?.body as ts.Node)?.kind).toBe('shadow');
+  });
+
+  it('returns a shadow binding for a parameter with default value `t = expr`', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nfunction f(t = () => '') { return t('Hello'); }",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for a nested function declaration `function t()`', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nfunction outer() { function t() { return ''; } return t('Hello'); }",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for a nested class declaration `class t`', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nfunction outer() { class t {} return t('Hello'); }",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for a nested `const t` declaration', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nfunction outer() { const t = () => ''; return t('Hello'); }",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for a nested `let t` declaration', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nfunction outer() { let t; t = () => ''; return t('Hello'); }",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for a nested `var t` declaration hoisted to the function scope', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nfunction outer() { if (true) { var t = () => ''; } return t('Hello'); }",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for a `for ... of` iteration variable named `t`', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nfor (const t of []) { t('Hello'); }",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for a `for` init declaration named `t`', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nfor (let t = () => ''; ; ) { t('Hello'); break; }",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns a shadow binding for an object-destructured `const { t }`', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nfunction outer() { const { t } = { t: () => '' }; return t('Hello'); }",
+        't',
+      ),
+    ).toBe('shadow');
+  });
+
+  it('returns the direct binding for a callsite outside any shadowing scope', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nfunction inner(other) { return other('x'); }\nexport const result = t('Hello');",
+        't',
+      ),
+    ).toBe('direct');
   });
 });

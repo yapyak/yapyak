@@ -80,7 +80,7 @@ function extractBaseCall(
   context: DiscoveryContext,
 ): void {
   const binding = context.bindings.find(callee.text, call);
-  if (!binding || binding.kind === 'namespace') {
+  if (!binding || binding.kind === 'namespace' || binding.kind === 'shadow') {
     return;
   }
   const callSite: CallSite = {
@@ -163,7 +163,7 @@ function extractDirectModifier(
   context: DiscoveryContext,
 ): void {
   const binding = context.bindings.find(receiver.text, call);
-  if (!binding || binding.kind === 'namespace') {
+  if (!binding || binding.kind === 'namespace' || binding.kind === 'shadow') {
     return;
   }
 
@@ -296,7 +296,7 @@ function resolveChainBinding(
   const innerReceiver = innerCallee.expression;
   if (ts.isIdentifier(innerReceiver)) {
     const binding = context.bindings.find(innerReceiver.text, innerCall);
-    if (!binding || binding.kind === 'namespace') {
+    if (!binding || binding.kind === 'namespace' || binding.kind === 'shadow') {
       return undefined;
     }
     return binding;

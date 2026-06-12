@@ -924,4 +924,54 @@ describe('transformFile', () => {
       expect(code).not.toContain('t.as(');
     });
   });
+
+  describe('with local shadowing', () => {
+    it('preserves a function whose parameter named `t` shadows the import', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source:
+          "import { t } from 'yapyak';\nexport function render(t) { return t('Hello'); }\n",
+      });
+      expect(code).toContain("return t('Hello')");
+      expect(code).not.toContain('_pick');
+    });
+
+    it('preserves an arrow whose parameter named `t` shadows the import', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source:
+          "import { t } from 'yapyak';\nexport const render = (t) => t('Hello');\n",
+      });
+      expect(code).toContain("t('Hello')");
+      expect(code).not.toContain('_pick');
+    });
+
+    it('preserves a catch-clause body whose binding named `t` shadows the import', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source:
+          "import { t } from 'yapyak';\nexport function render() { try { return ''; } catch (t) { return t('Hello'); } }\n",
+      });
+      expect(code).toContain("t('Hello')");
+      expect(code).not.toContain('_pick');
+    });
+
+    it('transforms a `t()` call outside any shadowing scope', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source:
+          "import { t } from 'yapyak';\nexport function render(t) { return t('Hello'); }\nexport const greeting = t('Hello');\n",
+      });
+      expect(code).toContain("return t('Hello')");
+      expect(code).toContain("export const greeting = 'Hello'");
+    });
+  });
 });
