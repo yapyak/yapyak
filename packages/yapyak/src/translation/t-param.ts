@@ -41,13 +41,13 @@ type ExtractSelectBranches<
   TBody extends string,
   TAccumulator extends string = never,
 > =
-  Trim<TBody> extends `${infer Key} {${infer AfterOpen}`
-    ? BalancedSplit<AfterOpen> extends [
+  Trim<TBody> extends `${infer TKey} {${infer TAfterOpen}`
+    ? BalancedSplit<TAfterOpen> extends [
         string,
-        infer Rest extends string,
+        infer TRest extends string,
       ]
-      ? ExtractSelectBranches<Rest, TAccumulator | Trim<Key>>
-      : TAccumulator | Trim<Key>
+      ? ExtractSelectBranches<TRest, TAccumulator | Trim<TKey>>
+      : TAccumulator | Trim<TKey>
     : TAccumulator;
 
 type SelectValue<TBody extends string> = [
@@ -78,12 +78,15 @@ type IcuParam<
 };
 
 type ExtractBranchParams<TBody extends string, TAccumulator = unknown> =
-  Trim<TBody> extends `${string} {${infer AfterOpen}`
-    ? BalancedSplit<AfterOpen> extends [
-        infer BranchContent extends string,
-        infer Rest extends string,
+  Trim<TBody> extends `${string} {${infer TAfterOpen}`
+    ? BalancedSplit<TAfterOpen> extends [
+        infer TBranchContent extends string,
+        infer TRest extends string,
       ]
-      ? ExtractBranchParams<Rest, TAccumulator & ExtractTParams<BranchContent>>
+      ? ExtractBranchParams<
+          TRest,
+          TAccumulator & ExtractTParams<TBranchContent>
+        >
       : TAccumulator
     : TAccumulator;
 
