@@ -185,8 +185,46 @@ const ISO_639_1: ReadonlySet<string> = new Set([
   'zu',
 ]);
 
-const BCP47_RX =
-  /^[a-z]{2,3}(?:-[a-z]{3}){0,3}(?:-[A-Z][a-z]{3})?(?:-(?:[A-Z]{2}|\d{3}))?(?:-(?:[a-z0-9]{5,8}|\d[a-z0-9]{3}))*(?:-[0-9a-wy-z](?:-[a-z0-9]{2,8})+)*(?:-x(?:-[a-z0-9]{1,8})+)?$/;
+const GRANDFATHERED_TAGS: ReadonlySet<string> = new Set([
+  'art-lojban',
+  'cel-gaulish',
+  'en-GB-oed',
+  'i-ami',
+  'i-bnn',
+  'i-default',
+  'i-enochian',
+  'i-hak',
+  'i-klingon',
+  'i-lux',
+  'i-mingo',
+  'i-navajo',
+  'i-pwn',
+  'i-tao',
+  'i-tay',
+  'i-tsu',
+  'no-bok',
+  'no-nyn',
+  'sgn-BE-FR',
+  'sgn-BE-NL',
+  'sgn-CH-DE',
+  'zh-guoyu',
+  'zh-hakka',
+  'zh-min',
+  'zh-min-nan',
+  'zh-xiang',
+]);
+
+const BCP47_RX = (() => {
+  const language = '(?:[a-z]{2,3}(?:-[a-z]{3}){0,3}|[a-z]{4}|[a-z]{5,8})';
+  const script = '(?:-[A-Z][a-z]{3})?';
+  const region = '(?:-(?:[A-Z]{2}|\\d{3}))?';
+  const variant = '(?:-(?:[a-z0-9]{5,8}|\\d[a-z0-9]{3}))*';
+  const extension = '(?:-[0-9a-wy-z](?:-[a-z0-9]{2,8})+)*';
+  const privateuse = '(?:-x(?:-[a-z0-9]{1,8})+)?';
+  const langtag = language + script + region + variant + extension + privateuse;
+  const purePrivateuse = 'x(?:-[a-z0-9]{1,8})+';
+  return new RegExp(`^(?:${langtag}|${purePrivateuse})$`);
+})();
 
 export type LocaleIssue = 'invalid-structure' | 'unknown-language';
 
@@ -197,6 +235,11 @@ export type LocaleValidation = {
 };
 
 export function validateLocaleCode(code: string): LocaleValidation {
+  if (GRANDFATHERED_TAGS.has(code)) {
+    return {
+      valid: true,
+    };
+  }
   if (!BCP47_RX.test(code)) {
     const lowered = code.toLowerCase();
     const suggestion = findClosestSuggestion(
@@ -215,6 +258,11 @@ export function validateLocaleCode(code: string): LocaleValidation {
     };
   }
   const language = (code.split('-')[0] ?? code).toLowerCase();
+  if (language === 'x') {
+    return {
+      valid: true,
+    };
+  }
   if (ISO_639_1.has(language)) {
     return {
       valid: true,
