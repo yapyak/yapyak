@@ -30,7 +30,11 @@ export function bind(fileId: string, id: string, initial: Catalog): Catalog {
   const pending = pendingPatches.get(key);
   if (pending) {
     for (const [pendingLocale, pendingValue] of pending) {
-      catalog[pendingLocale] = pendingValue;
+      if (pendingValue === '') {
+        delete catalog[pendingLocale];
+      } else {
+        catalog[pendingLocale] = pendingValue;
+      }
     }
     pendingPatches.delete(key);
   }
@@ -47,7 +51,11 @@ export function patch(
   const key = makeKey(fileId, id);
   const catalog = catalogs.get(key);
   if (catalog) {
-    catalog[locale] = value;
+    if (value === '') {
+      delete catalog[locale];
+    } else {
+      catalog[locale] = value;
+    }
   } else {
     let pending = pendingPatches.get(key);
     if (!pending) {

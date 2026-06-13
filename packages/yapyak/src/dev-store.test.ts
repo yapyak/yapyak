@@ -112,6 +112,28 @@ describe('patch', () => {
     );
   });
 
+  it('clears the locale key when patched with an empty string', () => {
+    const catalog = bind('src/Header.tsx', 'Save', {
+      en: 'Save',
+      sv: 'Spara',
+    });
+
+    patch('src/Header.tsx', 'Save', 'sv', '');
+
+    expect(Object.hasOwn(catalog, 'sv')).toBe(false);
+    expect(catalog.en).toBe('Save');
+  });
+
+  it('refuses to write an empty buffered patch into a later bind', () => {
+    patch('src/Lazy.tsx', 'Loading...', 'sv', '');
+    const catalog = bind('src/Lazy.tsx', 'Loading...', {
+      en: 'Loading...',
+      sv: 'Laddar...',
+    });
+
+    expect(Object.hasOwn(catalog, 'sv')).toBe(false);
+  });
+
   it('writes a Template value into a bound catalog', () => {
     const catalog = bind('src/Header.tsx', 'Hi {name}', {
       en: 'Hi {name}',
