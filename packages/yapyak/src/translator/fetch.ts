@@ -22,7 +22,7 @@ export async function fetchWithRetry(
   let nextBackoffMs: number | undefined;
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     if (attempt > 0) {
-      await delay(nextBackoffMs ?? getBackoffMs(attempt));
+      await delay(nextBackoffMs ?? getBackoffMs(attempt), outerSignal);
       nextBackoffMs = undefined;
     }
     const controller = new AbortController();
@@ -119,6 +119,22 @@ function getBackoffMs(attempt: number): number {
   return Math.min(MAX_BACKOFF_MS, exponential * jitterFactor);
 }
 
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+function delay(ms: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(signal.reason);
+      return;
+    }
+    const onAbort = (): void => {
+      clearTimeout(timer);
+      reject(signal?.reason);
+    };
+    const timer = setTimeout(() => {
+      signal?.removeEventListener('abort', onAbort);
+      resolve();
+    }, ms);
+    signal?.addEventListener('abort', onAbort, {
+      once: true,
+    });
+  });
 }

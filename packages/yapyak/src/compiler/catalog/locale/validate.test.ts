@@ -101,13 +101,30 @@ describe('validateLocaleFile', () => {
     );
   });
 
-  it('emits YPK301 when entry value is an object', () => {
+  it('emits YPK301 when an entry value is neither string nor object', () => {
     writeFileSync(
       path,
       JSON.stringify({
         'src/a.tsx': {
-          Hello: {
-            sv: 'Hej',
+          Hello: 42,
+        },
+      }),
+    );
+    const diagnostics = validateLocaleFile('sv.json', path);
+    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK301')).toBe(
+      true,
+    );
+  });
+
+  it('emits YPK301 when a context-variant value is not a string', () => {
+    writeFileSync(
+      path,
+      JSON.stringify({
+        'src/a.tsx': {
+          Save: {
+            button: {
+              sv: 'Spara',
+            },
           },
         },
       }),
@@ -115,6 +132,24 @@ describe('validateLocaleFile', () => {
     const diagnostics = validateLocaleFile('sv.json', path);
     expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK301')).toBe(
       true,
+    );
+  });
+
+  it('accepts a context-variant entry with string values', () => {
+    writeFileSync(
+      path,
+      JSON.stringify({
+        'src/a.tsx': {
+          Save: {
+            button: 'Spara',
+            toolbar: 'Spara',
+          },
+        },
+      }),
+    );
+    const diagnostics = validateLocaleFile('sv.json', path);
+    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK301')).toBe(
+      false,
     );
   });
 

@@ -10,7 +10,7 @@ function sortKeys(_: string, current: unknown): unknown {
   ) {
     return current;
   }
-  const sorted: Record<string, unknown> = {};
+  const sorted = Object.create(null) as Record<string, unknown>;
   for (const key of Object.keys(current as object).sort(compareKeys)) {
     sorted[key] = (current as Record<string, unknown>)[key];
   }

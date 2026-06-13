@@ -132,6 +132,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
         throw new Error(`yapyak ollama: ${response.status} ${text}`);
       }
       const responseBody = (await response.json()) as OllamaResponse;
+      validateResponse(responseBody);
       const text = responseBody.response;
       if (typeof text !== 'string') {
         throw new Error(
@@ -150,5 +151,15 @@ export function ollama(options: OllamaOptions = {}): Translator {
 }
 
 type OllamaResponse = {
+  // biome-ignore lint/style/useNamingConvention: yap yap yap
+  done_reason?: 'length' | 'stop' | (string & {});
   response?: string;
 };
+
+function validateResponse(body: OllamaResponse): void {
+  if (body.done_reason === 'length') {
+    throw new Error(
+      "yapyak ollama: response truncated by num_predict (done_reason='length'). Lower batchSize or raise num_predict.",
+    );
+  }
+}

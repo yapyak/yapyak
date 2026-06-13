@@ -1,8 +1,8 @@
 import type { Diagnostic, ExtractedMessage, Placeholder } from '../../parser';
-import type { LocaleFile } from './file';
+import type { LocaleFile, ParseEntryError } from './file';
 
 import { parsePlaceholders } from '../../parser';
-import { findTranslation } from './file';
+import { findTranslation, parseEntry } from './file';
 import { existsSync, readFileSync } from 'node:fs';
 
 const STUB_RANGE = {
@@ -79,30 +79,63 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
           source: '',
         });
       }
-      if (typeof value !== 'string') {
+      const { entry, errors } = parseEntry(value);
+      for (const error of errors) {
         diagnostics.push({
           code: 'YPK301',
           fileId,
-          message: `Entry "${pathKey}".${JSON.stringify(source)} must be a string.`,
+          message: entryErrorMessage(error, pathKey, source),
           range: STUB_RANGE,
           severity: 'error',
           source: '',
         });
+      }
+      if (typeof entry === 'string') {
+        if (entry !== entry.normalize('NFC')) {
+          diagnostics.push({
+            code: 'YPK303',
+            fileId,
+            message: `Translation at "${pathKey}".${JSON.stringify(source)} is not Unicode NFC.`,
+            range: STUB_RANGE,
+            severity: 'error',
+            source: '',
+          });
+        }
         continue;
       }
-      if (value !== value.normalize('NFC')) {
-        diagnostics.push({
-          code: 'YPK303',
-          fileId,
-          message: `Translation at "${pathKey}".${JSON.stringify(source)} is not Unicode NFC.`,
-          range: STUB_RANGE,
-          severity: 'error',
-          source: '',
-        });
+      if (entry === undefined) {
+        continue;
+      }
+      for (const [context, translation] of Object.entries(entry)) {
+        if (translation !== translation.normalize('NFC')) {
+          diagnostics.push({
+            code: 'YPK303',
+            fileId,
+            message: `Translation at "${pathKey}".${JSON.stringify(source)}.${JSON.stringify(context)} is not Unicode NFC.`,
+            range: STUB_RANGE,
+            severity: 'error',
+            source: '',
+          });
+        }
       }
     }
   }
   return diagnostics;
+}
+
+function entryErrorMessage(
+  error: ParseEntryError,
+  pathKey: string,
+  source: string,
+): string {
+  const path = `"${pathKey}".${JSON.stringify(source)}`;
+  if (error.kind === 'value-not-string-or-object') {
+    return `Entry ${path} must be a string or a context-variant object with string values.`;
+  }
+  if (error.kind === 'context-value-not-string') {
+    return `Entry ${path}.${JSON.stringify(error.context)} must be a string.`;
+  }
+  return `Entry ${path} has no string values — supply at least one context variant.`;
 }
 
 export type TranslationParityResult = {

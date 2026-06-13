@@ -83,6 +83,26 @@ describe('fetchWithRetry', () => {
     ).rejects.toThrow('user aborted');
   });
 
+  it('throws without waiting out the backoff when the signal aborts during sleep', async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(
+      new Response(null, {
+        status: 500,
+      }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+    const controller = new AbortController();
+    const promise = fetchWithRetry(URL, INIT, {
+      maxRetries: 2,
+      signal: controller.signal,
+      timeout: 1000,
+    });
+    const expectation = expect(promise).rejects.toThrow('user aborted');
+    await vi.advanceTimersByTimeAsync(0);
+    controller.abort(new Error('user aborted'));
+    await expectation;
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it('throws a network error after exhausting retries', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('boom')));
     const promise = fetchWithRetry(URL, INIT, {

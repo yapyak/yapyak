@@ -160,11 +160,7 @@ export function gemini(options: GeminiOptions): Translator {
         throw new Error(`yapyak gemini: ${response.status} ${text}`);
       }
       const responseBody = (await response.json()) as GeminiResponse;
-      if (responseBody.candidates?.[0]?.finishReason === 'MAX_TOKENS') {
-        throw new Error(
-          "yapyak gemini: response truncated by token limit (finishReason='MAX_TOKENS'). Lower batchSize or raise the model's max output tokens.",
-        );
-      }
+      validateResponse(responseBody);
       const text = responseBody.candidates?.[0]?.content?.parts?.[0]?.text;
       if (typeof text !== 'string') {
         throw new Error('yapyak gemini: response did not contain a text part');
@@ -196,3 +192,11 @@ type GeminiResponse = {
       | 'OTHER';
   }>;
 };
+
+function validateResponse(body: GeminiResponse): void {
+  if (body.candidates?.[0]?.finishReason === 'MAX_TOKENS') {
+    throw new Error(
+      "yapyak gemini: response truncated by token limit (finishReason='MAX_TOKENS'). Lower batchSize or raise the model's max output tokens.",
+    );
+  }
+}

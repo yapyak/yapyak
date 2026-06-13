@@ -154,11 +154,7 @@ export function anthropic(options: AnthropicOptions): Translator {
         throw new Error(`yapyak anthropic: ${response.status} ${text}`);
       }
       const body = (await response.json()) as AnthropicMessageResponse;
-      if (body.stop_reason === 'max_tokens') {
-        throw new Error(
-          `yapyak anthropic: response truncated by max_tokens (${MAX_TOKENS_CAP}). Lower batchSize to stay under the cap.`,
-        );
-      }
+      validateResponse(body);
       const text = body.content?.[0]?.text;
       if (typeof text !== 'string') {
         throw new Error(
@@ -184,3 +180,11 @@ type AnthropicMessageResponse = {
   // biome-ignore lint/style/useNamingConvention: yap yap yap
   stop_reason?: 'end_turn' | 'max_tokens' | 'stop_sequence' | 'tool_use';
 };
+
+function validateResponse(body: AnthropicMessageResponse): void {
+  if (body.stop_reason === 'max_tokens') {
+    throw new Error(
+      `yapyak anthropic: response truncated by max_tokens (${MAX_TOKENS_CAP}). Lower batchSize to stay under the cap.`,
+    );
+  }
+}

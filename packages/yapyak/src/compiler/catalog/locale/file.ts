@@ -133,7 +133,7 @@ function parseLocaleFile(parsed: unknown): LocaleFile {
     }
     const fileEntries: Record<string, CatalogEntry> = Object.create(null);
     for (const [source, value] of Object.entries(entries)) {
-      const entry = parseEntry(value);
+      const { entry } = parseEntry(value);
       if (entry !== undefined) {
         fileEntries[source.normalize()] = entry;
       }
@@ -143,23 +143,67 @@ function parseLocaleFile(parsed: unknown): LocaleFile {
   return result;
 }
 
-function parseEntry(value: unknown): CatalogEntry | undefined {
+export type ParseEntryError =
+  | {
+      kind: 'value-not-string-or-object';
+    }
+  | {
+      context: string;
+      kind: 'context-value-not-string';
+    }
+  | {
+      kind: 'object-has-no-string-values';
+    };
+
+export type ParseEntryResult = {
+  entry: CatalogEntry | undefined;
+  errors: ParseEntryError[];
+};
+
+export function parseEntry(value: unknown): ParseEntryResult {
   if (typeof value === 'string') {
-    return value;
+    return {
+      entry: value,
+      errors: [],
+    };
   }
   if (typeof value !== 'object' || value === null) {
-    return undefined;
+    return {
+      entry: undefined,
+      errors: [
+        {
+          kind: 'value-not-string-or-object',
+        },
+      ],
+    };
   }
   const variants: Record<string, string> = Object.create(null);
+  const errors: ParseEntryError[] = [];
   for (const [context, translation] of Object.entries(value)) {
     if (typeof translation === 'string') {
       variants[context.normalize()] = translation;
+      continue;
     }
+    errors.push({
+      context,
+      kind: 'context-value-not-string',
+    });
   }
   if (Object.keys(variants).length === 0) {
-    return undefined;
+    if (errors.length === 0) {
+      errors.push({
+        kind: 'object-has-no-string-values',
+      });
+    }
+    return {
+      entry: undefined,
+      errors,
+    };
   }
-  return variants;
+  return {
+    entry: variants,
+    errors,
+  };
 }
 
 export function writeLocaleFiles(writes: WriteLocaleFileInput[]): void {

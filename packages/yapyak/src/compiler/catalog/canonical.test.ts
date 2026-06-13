@@ -97,4 +97,17 @@ describe('stringifyCanonical', () => {
   it('writes a trailing newline', () => {
     expect(stringifyCanonical({})).toBe('{}\n');
   });
+
+  it('preserves a `__proto__` source key as an own entry', () => {
+    const value: Record<string, unknown> = Object.create(null);
+    value.Hello = 'Hej';
+    Object.defineProperty(value, '__proto__', {
+      enumerable: true,
+      value: 'PWNED',
+      writable: true,
+    });
+    const output = stringifyCanonical(value);
+    expect(output).toContain('"__proto__"');
+    expect(output).toContain('"Hello"');
+  });
 });

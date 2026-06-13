@@ -343,7 +343,9 @@ function buildPluralNode(
   context: ParseContext,
 ): PluralNode {
   const bodyText = context.source.slice(input.bodyStart, input.bodyEnd);
-  const offsetMatch = PLURAL_OFFSET_RX.exec(bodyText);
+  const firstBrace = bodyText.indexOf('{');
+  const preludeEnd = firstBrace === -1 ? bodyText.length : firstBrace;
+  const offsetMatch = PLURAL_OFFSET_RX.exec(bodyText.slice(0, preludeEnd));
   if (offsetMatch) {
     context.diagnostics.push({
       feature: 'plural offset',

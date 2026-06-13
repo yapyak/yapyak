@@ -632,6 +632,18 @@ describe('parseTemplate', () => {
       });
     });
 
+    it('preserves a plural branch when `offset:N` appears in the branch text', () => {
+      const source =
+        '{c, plural, one {Apply a GMT offset:1 hour} other {# hours}}';
+      const { diagnostics } = parseTemplate(source);
+      const offsetDiagnostic = diagnostics.find(
+        (diagnostic) =>
+          diagnostic.reason === 'unsupported' &&
+          diagnostic.feature === 'plural offset',
+      );
+      expect(offsetDiagnostic).toBeUndefined();
+    });
+
     it('emits a diagnostic at the body for a `time` skeleton', () => {
       const source = '{when, time, weird}';
       const { diagnostics } = parseTemplate(source);

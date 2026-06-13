@@ -183,4 +183,28 @@ describe('ollama', () => {
       }),
     ).rejects.toThrow(/response field/);
   });
+
+  it('throws a truncation error when `done_reason` is `length`', async () => {
+    vi.stubGlobal(
+      'fetch',
+      async () =>
+        new Response(
+          JSON.stringify({
+            done_reason: 'length',
+            response: '[{"sv": "Hej"',
+          }),
+          {
+            status: 200,
+          },
+        ),
+    );
+    await expect(
+      ollama()({
+        fileId: 'x',
+        source: 'Hello',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      }),
+    ).rejects.toThrow(/truncated by num_predict/);
+  });
 });

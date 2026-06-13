@@ -173,11 +173,7 @@ export function openai(options: OpenAIOptions): Translator {
         throw new Error(`yapyak openai: ${response.status} ${text}`);
       }
       const responseBody = (await response.json()) as OpenAIChatResponse;
-      if (responseBody.choices?.[0]?.finish_reason === 'length') {
-        throw new Error(
-          "yapyak openai: response truncated by token limit (finish_reason='length'). Lower batchSize or raise the model's max output tokens.",
-        );
-      }
+      validateResponse(responseBody);
       const text = responseBody.choices?.[0]?.message?.content;
       if (typeof text !== 'string') {
         throw new Error('yapyak openai: response did not contain a text block');
@@ -208,3 +204,11 @@ type OpenAIChatResponse = {
     };
   }>;
 };
+
+function validateResponse(body: OpenAIChatResponse): void {
+  if (body.choices?.[0]?.finish_reason === 'length') {
+    throw new Error(
+      "yapyak openai: response truncated by token limit (finish_reason='length'). Lower batchSize or raise the model's max output tokens.",
+    );
+  }
+}

@@ -569,11 +569,23 @@ function buildTemplateLiteral(
     }
     scan += 1;
   }
-  const paramByKey = new Map<string, string>();
+  const repeatedKeys: string[] = [];
   for (const [key, count] of usageByKey) {
     if (count > 1) {
-      paramByKey.set(key, `_p${paramByKey.size}`);
+      repeatedKeys.push(key);
     }
+  }
+  const collisionSource = `${source}\n${[
+    ...expressions.values(),
+  ].join('\n')}`;
+  const freeParams = findFreeIdentifiers(
+    collisionSource,
+    '_p',
+    repeatedKeys.length,
+  );
+  const paramByKey = new Map<string, string>();
+  for (let i = 0; i < repeatedKeys.length; i++) {
+    paramByKey.set(repeatedKeys[i] as string, freeParams[i] as string);
   }
 
   let result = '`';
@@ -994,6 +1006,23 @@ function findFreeIdentifier(source: string, preferred: string): string {
     suffix += 1;
   }
   return `${preferred}_$${suffix}`;
+}
+
+function findFreeIdentifiers(
+  source: string,
+  prefix: string,
+  count: number,
+): string[] {
+  const result: string[] = [];
+  let index = 0;
+  while (result.length < count) {
+    const candidate = `${prefix}${index}`;
+    if (!hasIdentifier(source, candidate) && !result.includes(candidate)) {
+      result.push(candidate);
+    }
+    index += 1;
+  }
+  return result;
 }
 
 function hasIdentifier(source: string, name: string): boolean {

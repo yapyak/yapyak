@@ -183,6 +183,22 @@ describe('transformFile', () => {
       expect(code).toContain('((_p0) => `${_p0} and ${_p0}`)(_name)');
     });
 
+    it('preserves a sibling user variable named `_p0` when wrapping a repeated placeholder', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source: `
+          import { t } from 'yapyak';
+          export function greet(_p0, x) {
+            return t('{a} {a} {b}', { a: x, b: _p0 });
+          }
+        `,
+      });
+      expect(code).not.toMatch(/\(\(_p0\)\s*=>/);
+      expect(code).toContain('_p0');
+    });
+
     it('elides a single-use placeholder without an IIFE wrapper', () => {
       const code = runTransform({
         locales: [
