@@ -71,7 +71,7 @@ export function App() {
         })}
       </p>
       <p>
-        {t('Price: {amount, number, currency HAHAHAHA}', {
+        {t('Price: {amount, number, currency EUR}', {
           amount: 99.5,
         })}
       </p>
