@@ -12,8 +12,6 @@
  * @packageDocumentation
  */
 
-import './dev-store';
-
 export type { RichTextProps } from './rich-text';
 
 export { locale } from './locale';

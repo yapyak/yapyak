@@ -11,14 +11,18 @@ function makeKey(fileId: string, id: string): string {
   return `${fileId}\0${id}`;
 }
 
-function notifyAll(): void {
+function runSubscribers(): void {
   version += 1;
   for (const subscriber of subscribers) {
     subscriber();
   }
 }
 
-export function bind(fileId: string, id: string, initial: Catalog): Catalog {
+export function registerCatalog(
+  fileId: string,
+  id: string,
+  initial: Catalog,
+): Catalog {
   const key = makeKey(fileId, id);
   const existing = catalogs.get(key);
   if (existing) {
@@ -42,7 +46,7 @@ export function bind(fileId: string, id: string, initial: Catalog): Catalog {
   return catalog;
 }
 
-export function patch(
+export function setCatalogEntry(
   fileId: string,
   id: string,
   locale: string,
@@ -64,10 +68,10 @@ export function patch(
     }
     pending.set(locale, value);
   }
-  notifyAll();
+  runSubscribers();
 }
 
-export function purgeFile(fileId: string): void {
+export function invalidateFile(fileId: string): void {
   const prefix = `${fileId}\0`;
   let dirty = false;
   for (const key of catalogs.keys()) {
@@ -83,7 +87,7 @@ export function purgeFile(fileId: string): void {
     }
   }
   if (dirty) {
-    notifyAll();
+    runSubscribers();
   }
 }
 

@@ -12,8 +12,6 @@
  * @packageDocumentation
  */
 
-import './dev-store.svelte';
-
 export type { RichTextProps } from './rich-text';
 
 export { locale } from './locale.svelte';

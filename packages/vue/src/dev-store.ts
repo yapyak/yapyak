@@ -4,8 +4,8 @@ import { customRef } from 'vue';
 import {
   autoRegisterTracker,
   getDevVersion,
-  patch,
-  purgeFile,
+  invalidateFile,
+  setCatalogEntry,
   subscribeDev,
 } from 'yapyak/internal';
 
@@ -25,16 +25,16 @@ const devVersion: Ref<number> = customRef<number>((track, trigger) => {
     if (import.meta.hot?.on) {
       import.meta.hot.on('yapyak:patch', (data: { patches: Patch[] }) => {
         for (const item of data.patches) {
-          patch(
+          setCatalogEntry(
             item.fileId,
             item.id,
             item.locale,
-            item.value as Parameters<typeof patch>[3],
+            item.value as Parameters<typeof setCatalogEntry>[3],
           );
         }
       });
-      import.meta.hot.on('yapyak:purge', (data: { fileId: string }) => {
-        purgeFile(data.fileId);
+      import.meta.hot.on('yapyak:invalidate', (data: { fileId: string }) => {
+        invalidateFile(data.fileId);
       });
     }
   }

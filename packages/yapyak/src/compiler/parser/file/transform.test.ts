@@ -1203,7 +1203,7 @@ describe('transformFile', () => {
   });
 
   describe('dev mode', () => {
-    it('wraps every catalog in a `bind()` call when dev is on', () => {
+    it('transforms every catalog into a `registerCatalog` call when dev is on', () => {
       const code = runTransform({
         dev: true,
         locales: [
@@ -1213,12 +1213,14 @@ describe('transformFile', () => {
         source:
           "import { t } from 'yapyak';\nexport function Header() { return t('Hello'); }\n",
       });
-      expect(code).toMatch(/_yp_bind\(/);
+      expect(code).toMatch(/_yp_register\(/);
       expect(code).toContain('"src/a.tsx"');
-      expect(code).toMatch(/_yp_bind\("src\/a\.tsx", "\[\\"Hello\\",null\]"/);
+      expect(code).toMatch(
+        /_yp_register\("src\/a\.tsx", "\[\\"Hello\\",null\]"/,
+      );
     });
 
-    it('emits a `purgeFile` disposer when dev is on', () => {
+    it('emits an `invalidateFile` disposer when dev is on', () => {
       const code = runTransform({
         dev: true,
         locales: [
@@ -1229,10 +1231,10 @@ describe('transformFile', () => {
           "import { t } from 'yapyak';\nexport function Header() { return t('Hello'); }\n",
       });
       expect(code).toMatch(/import\.meta\.hot\.dispose/);
-      expect(code).toMatch(/_yp_purge\("src\/a\.tsx"\)/);
+      expect(code).toMatch(/_yp_invalidate\("src\/a\.tsx"\)/);
     });
 
-    it('injects a `useYapyak()` call at the top of a React function component', () => {
+    it('writes a `useYapyak()` call at the top of a React function component', () => {
       const code = runTransform({
         dev: true,
         locales: [
@@ -1253,7 +1255,7 @@ describe('transformFile', () => {
       expect(code).toMatch(/function Header\(\) \{_yp_use\(\)/);
     });
 
-    it('refuses to inject a `useYapyak()` call in a lowercase helper function', () => {
+    it('refuses to write a `useYapyak()` call in a lowercase helper function', () => {
       const code = runTransform({
         dev: true,
         locales: [
@@ -1270,7 +1272,7 @@ describe('transformFile', () => {
       expect(code).not.toMatch(/function helper\(\) \{_yp_use\(\)/);
     });
 
-    it('injects a `useYapyak()` call in a custom hook starting with `use`', () => {
+    it('writes a `useYapyak()` call in a custom hook starting with `use`', () => {
       const code = runTransform({
         dev: true,
         locales: [
@@ -1290,7 +1292,7 @@ describe('transformFile', () => {
       expect(code).toMatch(/function useGreeting\(\) \{_yp_use\(\)/);
     });
 
-    it('folds repeat `t()` calls with the same id into a single `bind()` site', () => {
+    it('folds repeat `t()` calls with one id into a single `registerCatalog` site', () => {
       const code = runTransform({
         dev: true,
         locales: [
@@ -1304,8 +1306,8 @@ describe('transformFile', () => {
           '}',
         ].join('\n'),
       });
-      const bindCallMatches = code.match(/_yp_bind\(/g);
-      expect(bindCallMatches?.length).toBe(1);
+      const registerCalls = code.match(/_yp_register\(/g);
+      expect(registerCalls?.length).toBe(1);
     });
 
     it('emits no dev imports when dev is off', () => {
@@ -1317,9 +1319,9 @@ describe('transformFile', () => {
         source:
           "import { t } from 'yapyak';\nexport function Header() { return t('Hello'); }\n",
       });
-      expect(code).not.toMatch(/_yp_bind/);
+      expect(code).not.toMatch(/_yp_register/);
       expect(code).not.toMatch(/_yp_use/);
-      expect(code).not.toMatch(/_yp_purge/);
+      expect(code).not.toMatch(/_yp_invalidate/);
     });
   });
 });

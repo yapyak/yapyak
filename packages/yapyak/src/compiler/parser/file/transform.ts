@@ -35,8 +35,8 @@ export type TransformFileResult = {
 const PICK_EXPORT = 'pick';
 const PICK_LOCAL = '_pick';
 const CATALOG_PREFIX = '_yapyak_catalog';
-const BIND_LOCAL = '_yp_bind';
-const PURGE_LOCAL = '_yp_purge';
+const REGISTER_LOCAL = '_yp_register';
+const INVALIDATE_LOCAL = '_yp_invalidate';
 const USE_LOCAL = '_yp_use';
 const REACT_PROCESSOR_ID = 'react';
 const FACTORY_ORDER = [
@@ -78,9 +78,11 @@ export function transformFile(
 
   const pickLocal = findFreePickLocal(request.source);
   const localsByFactory = findFreeFactoryLocals(request.source);
-  const bindLocal = isDev ? findFreeIdentifier(request.source, BIND_LOCAL) : '';
-  const purgeLocal = isDev
-    ? findFreeIdentifier(request.source, PURGE_LOCAL)
+  const registerLocal = isDev
+    ? findFreeIdentifier(request.source, REGISTER_LOCAL)
+    : '';
+  const invalidateLocal = isDev
+    ? findFreeIdentifier(request.source, INVALIDATE_LOCAL)
     : '';
   const useLocal = injectsReactHook
     ? findFreeIdentifier(request.source, USE_LOCAL)
@@ -185,8 +187,8 @@ export function transformFile(
   const injectionLines: string[] = [];
   const allImportSpecs = importSpecs.slice();
   if (isDev) {
-    allImportSpecs.push(`bind as ${bindLocal}`);
-    allImportSpecs.push(`purgeFile as ${purgeLocal}`);
+    allImportSpecs.push(`registerCatalog as ${registerLocal}`);
+    allImportSpecs.push(`invalidateFile as ${invalidateLocal}`);
   }
   if (allImportSpecs.length > 0) {
     injectionLines.push(
@@ -203,7 +205,7 @@ export function transformFile(
   for (const entry of catalogsByKey.values()) {
     if (isDev) {
       injectionLines.push(
-        `const ${entry.identifier} = ${bindLocal}(${JSON.stringify(request.fileId)}, ${JSON.stringify(entry.id)}, ${entry.literal});`,
+        `const ${entry.identifier} = ${registerLocal}(${JSON.stringify(request.fileId)}, ${JSON.stringify(entry.id)}, ${entry.literal});`,
       );
     } else {
       injectionLines.push(`const ${entry.identifier} = ${entry.literal};`);
@@ -211,7 +213,7 @@ export function transformFile(
   }
   if (isDev) {
     injectionLines.push(
-      `if (import.meta.hot) import.meta.hot.dispose(() => ${purgeLocal}(${JSON.stringify(request.fileId)}));`,
+      `if (import.meta.hot) import.meta.hot.dispose(() => ${invalidateLocal}(${JSON.stringify(request.fileId)}));`,
     );
   }
   if (injectionLines.length > 0) {

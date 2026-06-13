@@ -1,11 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
-  bind,
   getDevVersion,
-  patch,
-  purgeFile,
+  invalidateFile,
+  registerCatalog,
   resetDevStore,
+  setCatalogEntry,
   subscribeDev,
 } from './dev-store';
 
@@ -13,9 +13,9 @@ afterEach(() => {
   resetDevStore();
 });
 
-describe('bind', () => {
+describe('registerCatalog', () => {
   it('returns the initial catalog when no entry exists', () => {
-    const catalog = bind('src/Header.tsx', 'Save', {
+    const catalog = registerCatalog('src/a.tsx', 'Save', {
       en: 'Save',
       sv: 'Spara',
     });
@@ -26,12 +26,12 @@ describe('bind', () => {
     });
   });
 
-  it('preserves catalog identity across repeat binds', () => {
-    const first = bind('src/Header.tsx', 'Save', {
+  it('returns the bound catalog on a repeat call', () => {
+    const first = registerCatalog('src/a.tsx', 'Save', {
       en: 'Save',
       sv: 'Spara',
     });
-    const second = bind('src/Header.tsx', 'Save', {
+    const second = registerCatalog('src/a.tsx', 'Save', {
       en: 'Save',
       sv: 'Spara',
     });
@@ -39,103 +39,102 @@ describe('bind', () => {
     expect(second).toBe(first);
   });
 
-  it('preserves prior patches when a repeat bind runs', () => {
-    bind('src/Header.tsx', 'Save', {
+  it('preserves prior entries when a repeat call runs', () => {
+    registerCatalog('src/a.tsx', 'Save', {
       en: 'Save',
       sv: 'Spara',
     });
-    patch('src/Header.tsx', 'Save', 'sv', 'Spara nu');
-    const rebound = bind('src/Header.tsx', 'Save', {
+    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara ändringar');
+    const rebound = registerCatalog('src/a.tsx', 'Save', {
       en: 'Save',
       sv: 'Spara',
     });
 
-    expect(rebound.sv).toBe('Spara nu');
+    expect(rebound.sv).toBe('Spara ändringar');
   });
 
-  it('applies buffered patches that arrived before bind', () => {
-    patch('src/Header.tsx', 'Save', 'sv', 'Spara nu');
-    const catalog = bind('src/Header.tsx', 'Save', {
+  it('folds a buffered entry into a later registerCatalog', () => {
+    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara');
+    const catalog = registerCatalog('src/a.tsx', 'Save', {
       en: 'Save',
-      sv: 'Spara',
     });
 
-    expect(catalog.sv).toBe('Spara nu');
+    expect(catalog.sv).toBe('Spara');
   });
 
-  it('isolates catalogs across different sources in the same file', () => {
-    const save = bind('src/Header.tsx', 'Save', {
+  it('holds distinct catalogs for distinct ids within one file', () => {
+    const save = registerCatalog('src/a.tsx', 'Save', {
       en: 'Save',
     });
-    const cancel = bind('src/Header.tsx', 'Cancel', {
+    const cancel = registerCatalog('src/a.tsx', 'Cancel', {
       en: 'Cancel',
     });
 
     expect(save).not.toBe(cancel);
   });
 
-  it('isolates catalogs across different file ids', () => {
-    const headerSave = bind('src/Header.tsx', 'Save', {
+  it('holds distinct catalogs for distinct file ids', () => {
+    const fromA = registerCatalog('src/a.tsx', 'Save', {
       en: 'Save',
     });
-    const footerSave = bind('src/Footer.tsx', 'Save', {
+    const fromB = registerCatalog('src/b.tsx', 'Save', {
       en: 'Save',
     });
 
-    expect(headerSave).not.toBe(footerSave);
+    expect(fromA).not.toBe(fromB);
   });
 });
 
-describe('patch', () => {
+describe('setCatalogEntry', () => {
   it('writes a locale value into a bound catalog in place', () => {
-    const catalog = bind('src/Header.tsx', 'Save', {
+    const catalog = registerCatalog('src/a.tsx', 'Save', {
       en: 'Save',
       sv: 'Spara',
     });
 
-    patch('src/Header.tsx', 'Save', 'sv', 'Spara nu');
+    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara ändringar');
 
-    expect(catalog.sv).toBe('Spara nu');
+    expect(catalog.sv).toBe('Spara ändringar');
   });
 
-  it('preserves catalog identity when patching', () => {
-    const catalog = bind('src/Header.tsx', 'Save', {
+  it('preserves catalog identity when writing an entry', () => {
+    const catalog = registerCatalog('src/a.tsx', 'Save', {
       en: 'Save',
     });
 
-    patch('src/Header.tsx', 'Save', 'sv', 'Spara');
+    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara');
 
     expect(catalog).toBe(
-      bind('src/Header.tsx', 'Save', {
+      registerCatalog('src/a.tsx', 'Save', {
         en: 'Save',
       }),
     );
   });
 
-  it('clears the locale key when patched with an empty string', () => {
-    const catalog = bind('src/Header.tsx', 'Save', {
+  it('clears the locale key when the value is empty', () => {
+    const catalog = registerCatalog('src/a.tsx', 'Save', {
       en: 'Save',
       sv: 'Spara',
     });
 
-    patch('src/Header.tsx', 'Save', 'sv', '');
+    setCatalogEntry('src/a.tsx', 'Save', 'sv', '');
 
     expect(Object.hasOwn(catalog, 'sv')).toBe(false);
     expect(catalog.en).toBe('Save');
   });
 
-  it('refuses to write an empty buffered patch into a later bind', () => {
-    patch('src/Lazy.tsx', 'Loading...', 'sv', '');
-    const catalog = bind('src/Lazy.tsx', 'Loading...', {
-      en: 'Loading...',
-      sv: 'Laddar...',
+  it('refuses to write an empty buffered entry into a later registerCatalog', () => {
+    setCatalogEntry('src/a.tsx', 'Save', 'sv', '');
+    const catalog = registerCatalog('src/a.tsx', 'Save', {
+      en: 'Save',
+      sv: 'Spara',
     });
 
     expect(Object.hasOwn(catalog, 'sv')).toBe(false);
   });
 
-  it('writes a Template value into a bound catalog', () => {
-    const catalog = bind('src/Header.tsx', 'Hi {name}', {
+  it('writes a `Template` value into a bound catalog', () => {
+    const catalog = registerCatalog('src/a.tsx', 'Hi {name}', {
       en: 'Hi {name}',
     });
     const template = [
@@ -146,105 +145,105 @@ describe('patch', () => {
       },
     ];
 
-    patch('src/Header.tsx', 'Hi {name}', 'sv', template as never);
+    setCatalogEntry('src/a.tsx', 'Hi {name}', 'sv', template as never);
 
     expect(catalog.sv).toBe(template);
   });
 
-  it('buffers a patch when no catalog is bound', () => {
-    patch('src/Lazy.tsx', 'Loading...', 'sv', 'Laddar...');
-    const catalog = bind('src/Lazy.tsx', 'Loading...', {
+  it('holds a buffered entry when no catalog is bound', () => {
+    setCatalogEntry('src/a.tsx', 'Loading...', 'sv', 'Laddar...');
+    const catalog = registerCatalog('src/a.tsx', 'Loading...', {
       en: 'Loading...',
     });
 
     expect(catalog.sv).toBe('Laddar...');
   });
 
-  it('folds repeat buffered patches for the same locale to the latest value', () => {
-    patch('src/Lazy.tsx', 'Loading...', 'sv', 'Stale');
-    patch('src/Lazy.tsx', 'Loading...', 'sv', 'Laddar...');
-    const catalog = bind('src/Lazy.tsx', 'Loading...', {
+  it('folds repeat buffered entries for one locale to the latest value', () => {
+    setCatalogEntry('src/a.tsx', 'Loading...', 'sv', 'Spara');
+    setCatalogEntry('src/a.tsx', 'Loading...', 'sv', 'Laddar...');
+    const catalog = registerCatalog('src/a.tsx', 'Loading...', {
       en: 'Loading...',
     });
 
     expect(catalog.sv).toBe('Laddar...');
   });
 
-  it('preserves distinct buffered locales for the same source', () => {
-    patch('src/Lazy.tsx', 'Loading...', 'sv', 'Laddar...');
-    patch('src/Lazy.tsx', 'Loading...', 'de', 'Lädt...');
-    const catalog = bind('src/Lazy.tsx', 'Loading...', {
-      en: 'Loading...',
+  it('preserves distinct buffered locales for one id', () => {
+    setCatalogEntry('src/a.tsx', 'Cancel', 'sv', 'Avbryt');
+    setCatalogEntry('src/a.tsx', 'Cancel', 'fi', 'Peruuta');
+    const catalog = registerCatalog('src/a.tsx', 'Cancel', {
+      en: 'Cancel',
     });
 
-    expect(catalog.sv).toBe('Laddar...');
-    expect(catalog.de).toBe('Lädt...');
+    expect(catalog.sv).toBe('Avbryt');
+    expect(catalog.fi).toBe('Peruuta');
   });
 
-  it('notifies subscribers when patching a bound catalog', () => {
-    bind('src/Header.tsx', 'Save', {
+  it('notifies subscribers when writing to a bound catalog', () => {
+    registerCatalog('src/a.tsx', 'Save', {
       en: 'Save',
     });
     const subscriber = vi.fn();
     subscribeDev(subscriber);
 
-    patch('src/Header.tsx', 'Save', 'sv', 'Spara');
+    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara');
 
     expect(subscriber).toHaveBeenCalledOnce();
   });
 
-  it('notifies subscribers when buffering an unbound patch', () => {
+  it('notifies subscribers when holding an unbound entry', () => {
     const subscriber = vi.fn();
     subscribeDev(subscriber);
 
-    patch('src/Lazy.tsx', 'Loading...', 'sv', 'Laddar...');
+    setCatalogEntry('src/a.tsx', 'Loading...', 'sv', 'Laddar...');
 
     expect(subscriber).toHaveBeenCalledOnce();
   });
 });
 
-describe('purgeFile', () => {
+describe('invalidateFile', () => {
   it('clears every catalog for the file id', () => {
-    bind('src/Header.tsx', 'Save', {
+    registerCatalog('src/a.tsx', 'Save', {
       en: 'Save',
     });
-    bind('src/Header.tsx', 'Cancel', {
+    registerCatalog('src/a.tsx', 'Cancel', {
       en: 'Cancel',
     });
 
-    purgeFile('src/Header.tsx');
+    invalidateFile('src/a.tsx');
 
-    const reboundSave = bind('src/Header.tsx', 'Save', {
-      en: 'Save fresh',
+    const rebound = registerCatalog('src/a.tsx', 'Save', {
+      en: 'Hello',
     });
-    expect(reboundSave).toEqual({
-      en: 'Save fresh',
+    expect(rebound).toEqual({
+      en: 'Hello',
     });
   });
 
   it('preserves catalogs for other file ids', () => {
-    const footerSave = bind('src/Footer.tsx', 'Save', {
+    const fromB = registerCatalog('src/b.tsx', 'Save', {
       en: 'Save',
     });
-    bind('src/Header.tsx', 'Save', {
+    registerCatalog('src/a.tsx', 'Save', {
       en: 'Save',
     });
 
-    purgeFile('src/Header.tsx');
+    invalidateFile('src/a.tsx');
 
     expect(
-      bind('src/Footer.tsx', 'Save', {
-        en: 'ignored',
+      registerCatalog('src/b.tsx', 'Save', {
+        en: 'World',
       }),
-    ).toBe(footerSave);
+    ).toBe(fromB);
   });
 
-  it('clears buffered patches for the file id', () => {
-    patch('src/Lazy.tsx', 'Loading...', 'sv', 'Laddar...');
+  it('clears buffered entries for the file id', () => {
+    setCatalogEntry('src/a.tsx', 'Loading...', 'sv', 'Laddar...');
 
-    purgeFile('src/Lazy.tsx');
+    invalidateFile('src/a.tsx');
 
-    const catalog = bind('src/Lazy.tsx', 'Loading...', {
+    const catalog = registerCatalog('src/a.tsx', 'Loading...', {
       en: 'Loading...',
     });
     expect(catalog).toEqual({
@@ -252,26 +251,26 @@ describe('purgeFile', () => {
     });
   });
 
-  it('notifies subscribers when entries are purged', () => {
-    bind('src/Header.tsx', 'Save', {
+  it('notifies subscribers when entries are cleared', () => {
+    registerCatalog('src/a.tsx', 'Save', {
       en: 'Save',
     });
     const subscriber = vi.fn();
     subscribeDev(subscriber);
 
-    purgeFile('src/Header.tsx');
+    invalidateFile('src/a.tsx');
 
     expect(subscriber).toHaveBeenCalledOnce();
   });
 
-  it('refuses to notify when nothing matches the file id', () => {
-    bind('src/Header.tsx', 'Save', {
+  it('refuses to notify when no catalog matches the file id', () => {
+    registerCatalog('src/a.tsx', 'Save', {
       en: 'Save',
     });
     const subscriber = vi.fn();
     subscribeDev(subscriber);
 
-    purgeFile('src/Unknown.tsx');
+    invalidateFile('src/b.tsx');
 
     expect(subscriber).not.toHaveBeenCalled();
   });
@@ -284,13 +283,13 @@ describe('subscribeDev', () => {
     expect(unsubscribe).toBeTypeOf('function');
   });
 
-  it('notifies every subscriber when a patch fires', () => {
+  it('notifies every subscriber when an entry fires', () => {
     const first = vi.fn();
     const second = vi.fn();
     subscribeDev(first);
     subscribeDev(second);
 
-    patch('src/Header.tsx', 'Save', 'sv', 'Spara');
+    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara');
 
     expect(first).toHaveBeenCalledOnce();
     expect(second).toHaveBeenCalledOnce();
@@ -301,7 +300,7 @@ describe('subscribeDev', () => {
     const unsubscribe = subscribeDev(subscriber);
 
     unsubscribe();
-    patch('src/Header.tsx', 'Save', 'sv', 'Spara');
+    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara');
 
     expect(subscriber).not.toHaveBeenCalled();
   });
@@ -312,21 +311,21 @@ describe('getDevVersion', () => {
     expect(getDevVersion()).toBe(0);
   });
 
-  it('increments when a patch fires', () => {
+  it('yields a new version when an entry fires', () => {
     const before = getDevVersion();
 
-    patch('src/Header.tsx', 'Save', 'sv', 'Spara');
+    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara');
 
     expect(getDevVersion()).toBe(before + 1);
   });
 
-  it('increments when a purge fires for a known file id', () => {
-    bind('src/Header.tsx', 'Save', {
+  it('yields a new version when invalidation fires for a known file id', () => {
+    registerCatalog('src/a.tsx', 'Save', {
       en: 'Save',
     });
     const before = getDevVersion();
 
-    purgeFile('src/Header.tsx');
+    invalidateFile('src/a.tsx');
 
     expect(getDevVersion()).toBe(before + 1);
   });

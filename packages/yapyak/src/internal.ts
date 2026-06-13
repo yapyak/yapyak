@@ -3,11 +3,11 @@ export type { RichTextNode } from './translation';
 export type { WarnFn } from './warn';
 
 export {
-  bind,
   getDevVersion,
-  patch,
-  purgeFile,
+  invalidateFile,
+  registerCatalog,
   resetDevStore,
+  setCatalogEntry,
   subscribeDev,
 } from './dev-store';
 export { registerHotDispose } from './hot-dispose';

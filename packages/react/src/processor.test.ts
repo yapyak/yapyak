@@ -78,7 +78,7 @@ describe('react processor', () => {
         '}',
       ].join('\n'),
     });
-    expect(code).not.toMatch(/_yp_bind/);
+    expect(code).not.toMatch(/_yp_register/);
     expect(code).not.toMatch(/_yp_use/);
   });
 });
