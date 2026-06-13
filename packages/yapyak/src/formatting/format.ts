@@ -5,17 +5,6 @@ import { getLocale } from '../locale';
 import { runTrackers } from '../tracker';
 import { resolveFormatter } from './formatter';
 
-type BaseNumberOptions = Omit<
-  Intl.NumberFormatOptions,
-  | 'currency'
-  | 'currencyDisplay'
-  | 'currencySign'
-  | 'localeMatcher'
-  | 'style'
-  | 'unit'
-  | 'unitDisplay'
->;
-
 /**
  * Options for {@link Format.number}.
  *
@@ -32,24 +21,35 @@ type BaseNumberOptions = Omit<
  * format.number(45, { style: 'unit' }); // ✗ unit missing
  * ```
  */
-export type FormatNumberOptions =
-  | (BaseNumberOptions & {
-      style?: 'decimal';
-    })
-  | (BaseNumberOptions & {
-      style: 'currency';
-      currency: Currency | (string & {});
-      currencyDisplay?: 'symbol' | 'narrowSymbol' | 'code' | 'name';
-      currencySign?: 'standard' | 'accounting';
-    })
-  | (BaseNumberOptions & {
-      style: 'percent';
-    })
-  | (BaseNumberOptions & {
-      style: 'unit';
-      unit: string;
-      unitDisplay?: 'short' | 'narrow' | 'long';
-    });
+export type FormatNumberOptions = Omit<
+  Intl.NumberFormatOptions,
+  | 'currency'
+  | 'currencyDisplay'
+  | 'currencySign'
+  | 'localeMatcher'
+  | 'style'
+  | 'unit'
+  | 'unitDisplay'
+> &
+  (
+    | {
+        style?: 'decimal';
+      }
+    | {
+        style: 'currency';
+        currency: Currency | (string & {});
+        currencyDisplay?: 'symbol' | 'narrowSymbol' | 'code' | 'name';
+        currencySign?: 'standard' | 'accounting';
+      }
+    | {
+        style: 'percent';
+      }
+    | {
+        style: 'unit';
+        unit: string;
+        unitDisplay?: 'short' | 'narrow' | 'long';
+      }
+  );
 
 /**
  * Options for {@link Format.dateTime}.
