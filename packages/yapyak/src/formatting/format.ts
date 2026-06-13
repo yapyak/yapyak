@@ -22,7 +22,17 @@ type BaseNumberOptions = Omit<
  * Options for {@link Format.number}.
  *
  * @remarks
- * A discriminated union on `style`. Each branch unlocks only the options Intl accepts for that style — `currency` requires the `currency` field, `unit` requires `unit`, `decimal` and `percent` have no extra requirements. Lifts `Intl.NumberFormat`'s runtime errors to compile time.
+ * Discriminated union over `Intl.NumberFormatOptions`'s `style`. The `currency` branch types the `currency` field as {@link Currency}.
+ *
+ * @example
+ * ```ts
+ * format.number(1234.5, { maximumFractionDigits: 1 });
+ * format.number(199, { style: 'currency', currency: 'EUR' });
+ * format.number(199, { style: 'currency' }); // ✗ currency missing
+ * format.number(0.42, { style: 'percent' });
+ * format.number(45, { style: 'unit', unit: 'kilometer' });
+ * format.number(45, { style: 'unit' }); // ✗ unit missing
+ * ```
  */
 export type FormatNumberOptions =
   | (BaseNumberOptions & {
@@ -47,7 +57,14 @@ export type FormatNumberOptions =
  * Options for {@link Format.dateTime}.
  *
  * @remarks
- * Native `Intl.DateTimeFormatOptions` minus `localeMatcher` (yapyak controls locale negotiation).
+ * `Intl.DateTimeFormatOptions` minus `localeMatcher`.
+ *
+ * @example
+ * ```ts
+ * format.dateTime(new Date(), { dateStyle: 'long' });
+ * format.dateTime(new Date(), { timeStyle: 'short' });
+ * format.dateTime(new Date(), { dateStyle: 'medium', timeStyle: 'short' });
+ * ```
  */
 export type FormatDateTimeOptions = Omit<
   Intl.DateTimeFormatOptions,
@@ -56,11 +73,30 @@ export type FormatDateTimeOptions = Omit<
 
 /**
  * Options for {@link Format.list}.
+ *
+ * @remarks
+ * `Intl.ListFormatOptions` minus `localeMatcher`.
+ *
+ * @example
+ * ```ts
+ * format.list(['apple', 'pear', 'orange']);
+ * format.list(['apple', 'pear'], { type: 'disjunction' });
+ * format.list(['a', 'b', 'c'], { style: 'narrow' });
+ * ```
  */
 export type FormatListOptions = Omit<Intl.ListFormatOptions, 'localeMatcher'>;
 
 /**
  * Options for {@link Format.relativeTime}.
+ *
+ * @remarks
+ * `Intl.RelativeTimeFormatOptions` minus `localeMatcher`.
+ *
+ * @example
+ * ```ts
+ * format.relativeTime(-1, 'day');
+ * format.relativeTime(-1, 'day', { numeric: 'auto' });
+ * ```
  */
 export type FormatRelativeTimeOptions = Omit<
   Intl.RelativeTimeFormatOptions,

@@ -1,3 +1,3 @@
-export type { Currency } from './known';
+export type { Currency } from './code';
 
 export { isCurrency } from './code';

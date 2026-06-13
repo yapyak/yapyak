@@ -12,30 +12,23 @@
  * @packageDocumentation
  */
 
-export {
-  type Currency,
-  type Format,
-  type FormatDateTimeOptions,
-  type FormatListOptions,
-  type FormatNumberOptions,
-  type FormatRelativeTimeOptions,
-  format,
-  isCurrency,
+export type {
+  Currency,
+  Format,
+  FormatDateTimeOptions,
+  FormatListOptions,
+  FormatNumberOptions,
+  FormatRelativeTimeOptions,
 } from './formatting';
+export type { Locale, Register } from './locale';
+export type { RichTextNode, TFn, TParams, TReturn } from './translation';
+
+export { format, isCurrency } from './formatting';
 export {
-  type Locale,
-  type Register,
   defaultLocale,
   getLocale,
   isLocale,
   locales,
   setLocale,
 } from './locale';
-export {
-  type RichTextNode,
-  type TFn,
-  type TParams,
-  type TReturn,
-  parseRichText,
-  t,
-} from './translation';
+export { parseRichText, t } from './translation';
