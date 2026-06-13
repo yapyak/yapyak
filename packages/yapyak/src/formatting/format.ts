@@ -190,6 +190,11 @@ export type Format = {
   ): string;
 };
 
+const DATE_TIME_DEFAULT: Intl.DateTimeFormatOptions = {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+};
+
 /**
  * Locale-aware formatting backed by `Intl`.
  *
@@ -201,11 +206,6 @@ export type Format = {
  * format.in('sv').number(200, { style: 'currency', currency: 'SEK' });
  * ```
  */
-const DATE_TIME_DEFAULT: Intl.DateTimeFormatOptions = {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-};
-
 export const format: Format = createFormat();
 
 function createFormat(boundLocale?: string): Format {
