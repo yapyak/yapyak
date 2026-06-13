@@ -1,4 +1,4 @@
-import type { CurrencyCode } from './known';
+import type { Currency } from './known';
 
 let cachedSupported: Set<string> | undefined;
 
@@ -14,6 +14,6 @@ function getSupportedCurrencies(): Set<string> {
   return cachedSupported;
 }
 
-export function isCurrencyCode(value: string): value is CurrencyCode {
+export function isCurrency(value: string): value is Currency {
   return getSupportedCurrencies().has(value);
 }

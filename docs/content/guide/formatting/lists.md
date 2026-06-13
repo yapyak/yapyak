@@ -15,10 +15,10 @@ format.list(['apples', 'pears', 'oranges']);
 
 ## format.list
 
-Accepts any iterable — arrays, sets, generators. Items must already be strings; yapyak does not coerce or format individual items. Options come from [`Intl.ListFormatOptions`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat/ListFormat#options).
+Accepts any iterable — arrays, sets, generators. Items must already be strings; yapyak does not coerce or format individual items. `FormatListOptions` is [`Intl.ListFormatOptions`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat/ListFormat#options) minus `localeMatcher`.
 
 ```ts
-format.list(items: Iterable<string>, options?: Intl.ListFormatOptions): string
+format.list(items: Iterable<string>, options?: FormatListOptions): string
 ```
 
 ```ts

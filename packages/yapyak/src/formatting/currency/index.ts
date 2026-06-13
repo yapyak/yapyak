@@ -1,4 +1,3 @@
-export type { CurrencyCode } from './known';
+export type { Currency } from './known';
 
-export { isCurrencyCode } from './code';
-export { formatCurrency } from './format';
+export { isCurrency } from './code';

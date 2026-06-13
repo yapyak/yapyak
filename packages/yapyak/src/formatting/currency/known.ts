@@ -1,4 +1,4 @@
-export type CurrencyCode =
+export type Currency =
   | 'AED'
   | 'AFN'
   | 'ALL'

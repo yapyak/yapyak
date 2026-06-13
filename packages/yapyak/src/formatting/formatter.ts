@@ -1,5 +1,5 @@
 import { warn } from '../warn';
-import { isCurrencyCode } from './currency';
+import { isCurrency } from './currency';
 
 type IntlFormatterCtor<T> = new (locale: string, options?: object) => T;
 
@@ -43,7 +43,7 @@ function buildFormatter<T>(
 ): T {
   if (isCurrencyConstruction(ctor, options)) {
     const code = (options as Intl.NumberFormatOptions).currency as string;
-    if (!isCurrencyCode(code)) {
+    if (!isCurrency(code)) {
       warnUnsupportedCurrencyOnce(code, locale, null);
       return buildCurrencyFallback(locale, code, options) as T;
     }

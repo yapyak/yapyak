@@ -13,10 +13,14 @@
  */
 
 export {
-  type CurrencyCode,
+  type Currency,
   type Format,
+  type FormatDateTimeOptions,
+  type FormatListOptions,
+  type FormatNumberOptions,
+  type FormatRelativeTimeOptions,
   format,
-  isCurrencyCode,
+  isCurrency,
 } from './formatting';
 export {
   type Locale,

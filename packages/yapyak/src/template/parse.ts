@@ -12,7 +12,7 @@ import type {
   TimeNode,
 } from './node';
 
-import { isCurrencyCode } from '../formatting';
+import { isCurrency } from '../formatting';
 
 const APOSTROPHE_ESCAPE_RX = /'[#'<>{}]/;
 const PLURAL_OFFSET_RX = /\boffset:\d+/;
@@ -599,7 +599,7 @@ function resolveNumberOptions(
   if (body.startsWith('currency')) {
     const currencyCode = body.slice('currency'.length).trim();
     if (currencyCode !== '') {
-      if (!isCurrencyCode(currencyCode)) {
+      if (!isCurrency(currencyCode)) {
         context.diagnostics.push({
           message: `Unsupported currency code "${currencyCode}".`,
           range: input.bodyRange,
