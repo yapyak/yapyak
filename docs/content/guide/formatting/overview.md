@@ -3,7 +3,7 @@ title: Overview
 order: 1
 ---
 
-`format` is a thin layer over the platform [`Intl`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl) constructors. One method per underlying `Intl.*Format` class. Each method reads the active locale on every call and forwards options to `Intl` — yapyak applies a default only to `dateTime`.
+`format` is a thin layer over the platform [`Intl`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl) constructors. One method per underlying `Intl.*Format` class. Each method reads the active locale on every call and forwards options to `Intl` — yapyak applies no defaults of its own.
 
 ```ts
 import { format } from 'yapyak';
@@ -20,7 +20,7 @@ format.relativeTime(-1, 'day');                                 // '1 day ago' o
 | Method | Underlying `Intl` class | Notes |
 |---|---|---|
 | `number` | `Intl.NumberFormat` | Discriminated union on `style` — decimal, currency, percent, unit |
-| `dateTime` | `Intl.DateTimeFormat` | Defaults to `{ dateStyle: 'medium', timeStyle: 'short' }` |
+| `dateTime` | `Intl.DateTimeFormat` | Supply `dateStyle`, `timeStyle`, both, or individual fields |
 | `list` | `Intl.ListFormat` | Joins iterables of strings |
 | `relativeTime` | `Intl.RelativeTimeFormat` | `'yesterday'`-style phrasing |
 | `in` | — | Returns a `Format` scoped to a fixed locale |

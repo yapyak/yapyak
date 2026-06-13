@@ -133,7 +133,7 @@ export type Format = {
    * Formats a date or time for the active locale.
    *
    * @remarks
-   * When `options` is omitted, falls back to `{ dateStyle: 'medium', timeStyle: 'short' }`. Supply `dateStyle` alone, `timeStyle` alone, or individual field options for finer control.
+   * Supply `dateStyle` alone, `timeStyle` alone, both for the combined form, or individual field options for finer control.
    *
    * @param value - The date or timestamp.
    * @param options - Date-time-format options. See {@link FormatDateTimeOptions}.
@@ -190,11 +190,6 @@ export type Format = {
   ): string;
 };
 
-const DATE_TIME_DEFAULT: Intl.DateTimeFormatOptions = {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-};
-
 /**
  * Locale-aware formatting backed by `Intl`.
  *
@@ -213,8 +208,7 @@ function createFormat(boundLocale?: string): Format {
     dateTime: (value, options) => {
       runTrackers();
       const locale = boundLocale ?? getLocale();
-      const resolved = options ?? DATE_TIME_DEFAULT;
-      return resolveFormatter(Intl.DateTimeFormat, locale, resolved).format(
+      return resolveFormatter(Intl.DateTimeFormat, locale, options).format(
         value,
       );
     },

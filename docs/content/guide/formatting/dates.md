@@ -22,13 +22,11 @@ format.dateTime(value: Date | number, options?: FormatDateTimeOptions): string
 
 `FormatDateTimeOptions` is [`Intl.DateTimeFormatOptions`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#options) minus `localeMatcher`. Use `dateStyle` for date-only, `timeStyle` for time-only, both for the combined form, or individual field options (`year`, `month`, `day`, `hour`, `minute`, etc.) for finer control.
 
-### Default
-
-When `options` is omitted, yapyak falls back to `{ dateStyle: 'medium', timeStyle: 'short' }`.
+When `options` is omitted, yapyak passes through to the host runtime's `Intl.DateTimeFormat` default — which renders the date only.
 
 ```ts
 format.dateTime(new Date());
-// 'Nov 12, 2025, 3:42 PM' on en, '12 nov. 2025 15:42' on sv
+// '11/12/2025' on en — Intl default, no time
 ```
 
 ### Date-only
@@ -72,23 +70,18 @@ format.dateTime(new Date(), {
 
 ### Empty options
 
-The default applies when `options` is `undefined` or an empty object `{}`. Any non-empty options object replaces the default — yapyak does not merge.
-
-::: warning
-`format.dateTime(now, { timeZone: 'UTC' })` drops the `{ dateStyle, timeStyle }` default and uses `Intl`'s own default. Spell out the styles to keep them alongside an extra option.
-:::
+yapyak applies no defaults — `options` undefined and `{}` both pass straight through to `Intl.DateTimeFormat`.
 
 ```ts
 const now = new Date();
 
-format.dateTime(now);                                          // 'Nov 12, 2025, 3:42 PM' on en — default applied
-format.dateTime(now, {});                                      // 'Nov 12, 2025, 3:42 PM' on en — default applied
-format.dateTime(now, { timeZone: 'UTC' });                     // '11/12/2025, 11:42 PM' on en — default DROPPED
+format.dateTime(now);                                          // '11/12/2025' on en — Intl default
+format.dateTime(now, {});                                      // '11/12/2025' on en — same
+format.dateTime(now, { dateStyle: 'medium' });                 // 'Nov 12, 2025' on en
 format.dateTime(now, {
   dateStyle: 'medium',
   timeStyle: 'short',
-  timeZone: 'UTC',
-});                                                            // 'Nov 12, 2025, 11:42 PM' on en — both
+});                                                            // 'Nov 12, 2025, 3:42 PM' on en
 ```
 
 ## format.relativeTime
