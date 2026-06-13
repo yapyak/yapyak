@@ -924,6 +924,33 @@ describe('interpret', () => {
       );
       expect(warnSpy).not.toHaveBeenCalled();
     });
+
+    it('returns a `<value> <code>` fallback when Intl rejects the currency code', () => {
+      const result = interpret(
+        [
+          {
+            kind: 'number',
+            name: 'amount',
+            options: {
+              currency: 'XX',
+              style: 'currency',
+            },
+          },
+        ],
+        {
+          amount: 42,
+        },
+        'en',
+      );
+      expect(result).toBe('42 XX');
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Unsupported currency code "XX"'),
+        expect.objectContaining({
+          currency: 'XX',
+          locale: 'en',
+        }),
+      );
+    });
   });
 
   describe('properties', () => {

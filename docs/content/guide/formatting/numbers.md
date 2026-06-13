@@ -29,7 +29,7 @@ format.number(1234, { notation: 'compact' });                 // '1.2K' on en
 
 ## format.currency
 
-Formats currency amounts. The second argument is the ISO 4217 currency code (`'EUR'`, `'USD'`, `'SEK'`).
+Formats currency amounts. The second argument is the ISO 4217 currency code: three uppercase ASCII letters (`'EUR'`, `'USD'`, `'SEK'`). Lowercase or non-ISO codes throw at runtime.
 
 ```ts
 format.currency(value: number, currency: string, options?: Intl.NumberFormatOptions): string

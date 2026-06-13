@@ -176,4 +176,31 @@ describe('pick', () => {
       ),
     ).toBe('');
   });
+
+  it('picks the default-locale variant when the locale option is not a key in `variants`', () => {
+    expect(
+      pick(
+        {
+          en: 'Hello',
+        },
+        {
+          locale: 'xx',
+        },
+      ),
+    ).toBe('Hello');
+  });
+
+  it('picks the matching variant when the locale option is a non-BCP-47 key the caller defined', () => {
+    expect(
+      pick(
+        {
+          custom: 'Greetings',
+          en: 'Hello',
+        },
+        {
+          locale: 'custom',
+        },
+      ),
+    ).toBe('Greetings');
+  });
 });

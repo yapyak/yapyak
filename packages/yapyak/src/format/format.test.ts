@@ -1,10 +1,12 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetLocale, setLocale } from '../locale';
+import { resetWarn, setWarn } from '../warn';
 import { format } from './format';
 
 afterEach(() => {
   resetLocale();
+  resetWarn();
 });
 
 describe('format', () => {
@@ -49,16 +51,47 @@ describe('format', () => {
       ).toContain('€');
     });
 
-    it('throws for an empty currency code', () => {
-      setLocale('en');
-      expect(() => format.currency(10, '')).toThrow(/Invalid currency code/);
-    });
+    describe('unsupported codes', () => {
+      let warnSpy: ReturnType<
+        typeof vi.fn<(message: string, meta?: Record<string, unknown>) => void>
+      >;
 
-    it('throws for a currency code that is not three letters', () => {
-      setLocale('en');
-      expect(() => format.currency(10, 'USDD')).toThrow(
-        /Invalid currency code/,
-      );
+      beforeEach(() => {
+        warnSpy =
+          vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
+        setWarn(warnSpy);
+      });
+
+      it('returns a `<value> <code>` fallback for an unknown ISO 4217 code', () => {
+        setLocale('en');
+        expect(format.currency(499, 'XYZ')).toBe('499 XYZ');
+      });
+
+      it('returns a `<value> <code>` fallback for a code that is not three letters', () => {
+        setLocale('en');
+        expect(format.currency(10, 'USDD')).toBe('10 USDD');
+      });
+
+      it('returns a `<value> <code>` fallback for an empty code', () => {
+        setLocale('en');
+        expect(format.currency(10, '')).toBe('10 ');
+      });
+
+      it('warns the consumer once per locale-and-code pair', () => {
+        setLocale('en');
+        format.currency(1, 'AAA');
+        format.currency(2, 'AAA');
+        format.currency(3, 'AAA');
+        const currencyWarns = warnSpy.mock.calls.filter(([message]) =>
+          message.includes('Unsupported currency code "AAA"'),
+        );
+        expect(currencyWarns).toHaveLength(1);
+      });
+
+      it('folds the value with the active locale before appending the code', () => {
+        setLocale('sv');
+        expect(format.currency(1234.5, 'XYZ')).toMatch(/^1\D234,5 XYZ$/);
+      });
     });
   });
 

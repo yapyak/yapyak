@@ -67,6 +67,8 @@ t('{count, number, integer}', { count: 1500 });
 
 Supported styles: `decimal` (default), `integer`, `percent`, `currency CODE` (ISO 4217). The param type is `number`.
 
+The `CODE` after `currency` is three uppercase ASCII letters. Lowercase, two-letter, or longer codes fail parse with [YPK201](./diagnostics#ypk201).
+
 ## Dates and times
 
 `{value, date, style}` and `{value, time, style}` format through `Intl.DateTimeFormat`:

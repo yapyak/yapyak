@@ -67,7 +67,7 @@ t('Hi {name}', { name: 'Alex' }); // ✓
 
 ### YPK201
 
-Malformed ICU syntax (error). Check that every `{` has a matching `}`.
+Malformed ICU syntax (error). Check that every `{` has a matching `}`, and that every `currency` token is followed by a three-letter uppercase ISO 4217 code.
 
 ### YPK202
 

@@ -12,6 +12,8 @@ import type {
   TimeNode,
 } from './node';
 
+import { isCurrencyCode } from '../currency';
+
 const APOSTROPHE_ESCAPE_RX = /'[#'<>{}]/;
 const PLURAL_OFFSET_RX = /\boffset:\d+/;
 
@@ -597,6 +599,14 @@ function resolveNumberOptions(
   if (body.startsWith('currency')) {
     const currencyCode = body.slice('currency'.length).trim();
     if (currencyCode !== '') {
+      if (!isCurrencyCode(currencyCode)) {
+        context.diagnostics.push({
+          message: `Unsupported currency code "${currencyCode}": not recognized by \`Intl.supportedValuesOf('currency')\` (expected an uppercase ISO 4217 code).`,
+          range: input.bodyRange,
+          reason: 'malformed',
+        });
+        return {};
+      }
       return {
         currency: currencyCode,
         style: 'currency',

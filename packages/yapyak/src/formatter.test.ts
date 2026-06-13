@@ -1,6 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resolveFormatter } from './formatter';
+import { resetWarn, setWarn } from './warn';
 
 describe('resolveFormatter', () => {
   it('returns the same formatter for an identical locale and options', () => {
@@ -41,6 +42,62 @@ describe('resolveFormatter', () => {
       undefined,
     );
     expect(numberFormatter).not.toBe(dateFormatter);
+  });
+
+  describe('currency safety net', () => {
+    let warnSpy: ReturnType<
+      typeof vi.fn<(message: string, meta?: Record<string, unknown>) => void>
+    >;
+
+    beforeEach(() => {
+      warnSpy =
+        vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
+      setWarn(warnSpy);
+    });
+
+    afterEach(() => {
+      resetWarn();
+    });
+
+    it('returns a `<value> <code>` fallback formatter when Intl rejects the currency code', () => {
+      const formatter = resolveFormatter(Intl.NumberFormat, 'en', {
+        currency: 'XYZ',
+        style: 'currency',
+      });
+      expect(formatter.format(499)).toBe('499 XYZ');
+    });
+
+    it('warns once per locale-and-code pair when the code is rejected', () => {
+      resolveFormatter(Intl.NumberFormat, 'en', {
+        currency: 'AAA',
+        style: 'currency',
+      });
+      resolveFormatter(Intl.NumberFormat, 'en', {
+        currency: 'AAA',
+        style: 'currency',
+      });
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('warns again when the same code is used in a different locale', () => {
+      resolveFormatter(Intl.NumberFormat, 'en', {
+        currency: 'BBB',
+        style: 'currency',
+      });
+      resolveFormatter(Intl.NumberFormat, 'sv', {
+        currency: 'BBB',
+        style: 'currency',
+      });
+      expect(warnSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('preserves the active-locale grouping in the fallback rendering', () => {
+      const formatter = resolveFormatter(Intl.NumberFormat, 'sv', {
+        currency: 'XYZ',
+        style: 'currency',
+      });
+      expect(formatter.format(1234.5)).toMatch(/^1\D234,5 XYZ$/);
+    });
   });
 
   it('clears the oldest formatter from the cache when capacity is reached', () => {

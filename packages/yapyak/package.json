@@ -54,6 +54,7 @@
   },
   "scripts": {
     "build": "tsup",
+    "gen:iso-4217": "node scripts/generate-known-currency-code.mjs",
     "test": "pnpm -w vitest --run --project=yapyak",
     "typecheck": "tsc --noEmit"
   },

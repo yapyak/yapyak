@@ -336,6 +336,56 @@ describe('parseTemplate', () => {
       ]);
     });
 
+    it('emits malformed for a lowercase currency code', () => {
+      const { diagnostics } = parseTemplate('{cost, number, currency eur}');
+      expect(diagnostics).toContainEqual(
+        expect.objectContaining({
+          message: expect.stringContaining('Unsupported currency code "eur"'),
+          reason: 'malformed',
+        }),
+      );
+    });
+
+    it('emits malformed for a two-letter currency code', () => {
+      const { diagnostics } = parseTemplate('{cost, number, currency EU}');
+      expect(diagnostics).toContainEqual(
+        expect.objectContaining({
+          message: expect.stringContaining('Unsupported currency code "EU"'),
+          reason: 'malformed',
+        }),
+      );
+    });
+
+    it('emits malformed for a four-letter currency code', () => {
+      const { diagnostics } = parseTemplate('{cost, number, currency EURO}');
+      expect(diagnostics).toContainEqual(
+        expect.objectContaining({
+          message: expect.stringContaining('Unsupported currency code "EURO"'),
+          reason: 'malformed',
+        }),
+      );
+    });
+
+    it('emits malformed for a currency code with digits', () => {
+      const { diagnostics } = parseTemplate('{cost, number, currency US1}');
+      expect(diagnostics).toContainEqual(
+        expect.objectContaining({
+          message: expect.stringContaining('Unsupported currency code "US1"'),
+          reason: 'malformed',
+        }),
+      );
+    });
+
+    it('emits malformed for an unknown ISO 4217 code', () => {
+      const { diagnostics } = parseTemplate('{cost, number, currency XYZ}');
+      expect(diagnostics).toContainEqual(
+        expect.objectContaining({
+          message: expect.stringContaining('Unsupported currency code "XYZ"'),
+          reason: 'malformed',
+        }),
+      );
+    });
+
     it('emits unsupported for currency without a code', () => {
       const source = '{cost, number, currency}';
       const { diagnostics } = parseTemplate(source);

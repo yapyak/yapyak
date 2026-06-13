@@ -1,8 +1,12 @@
+import { isCurrencyCode } from './currency';
+import { warn } from './warn';
+
 type IntlFormatterCtor<T> = new (locale: string, options?: object) => T;
 
 const MAX_FORMATTERS_PER_CTOR = 64;
 
 const caches = new Map<IntlFormatterCtor<unknown>, Map<string, unknown>>();
+const warnedCurrencyKeys = new Set<string>();
 
 export function resolveFormatter<T>(
   ctor: IntlFormatterCtor<T>,
@@ -21,7 +25,7 @@ export function resolveFormatter<T>(
     cache.set(key, cached);
     return cached;
   }
-  const formatter = new ctor(locale, options);
+  const formatter = buildFormatter(ctor, locale, options);
   if (cache.size >= MAX_FORMATTERS_PER_CTOR) {
     const oldestKey = cache.keys().next().value;
     if (oldestKey !== undefined) {
@@ -30,6 +34,30 @@ export function resolveFormatter<T>(
   }
   cache.set(key, formatter);
   return formatter;
+}
+
+function buildFormatter<T>(
+  ctor: IntlFormatterCtor<T>,
+  locale: string,
+  options: object | undefined,
+): T {
+  if (isCurrencyConstruction(ctor, options)) {
+    const code = (options as Intl.NumberFormatOptions).currency as string;
+    if (!isCurrencyCode(code)) {
+      warnUnsupportedCurrencyOnce(code, locale, null);
+      return buildCurrencyFallback(locale, code, options) as T;
+    }
+  }
+  try {
+    return new ctor(locale, options);
+  } catch (cause) {
+    if (isCurrencyConstruction(ctor, options)) {
+      const code = (options as Intl.NumberFormatOptions).currency as string;
+      warnUnsupportedCurrencyOnce(code, locale, cause);
+      return buildCurrencyFallback(locale, code, options) as T;
+    }
+    throw cause;
+  }
 }
 
 function buildCanonicalKey(
@@ -49,4 +77,71 @@ function buildCanonicalKey(
     parts.push(`${key}=${JSON.stringify(value)}`);
   }
   return parts.join('|');
+}
+
+function isCurrencyConstruction(
+  ctor: IntlFormatterCtor<unknown>,
+  options: object | undefined,
+): boolean {
+  if (ctor !== (Intl.NumberFormat as unknown as IntlFormatterCtor<unknown>)) {
+    return false;
+  }
+  const numberOptions = options as Intl.NumberFormatOptions | undefined;
+  return (
+    numberOptions?.style === 'currency' &&
+    typeof numberOptions.currency === 'string'
+  );
+}
+
+function warnUnsupportedCurrencyOnce(
+  code: string,
+  locale: string,
+  cause: unknown,
+): void {
+  const dedupKey = `${locale}|${code}`;
+  if (warnedCurrencyKeys.has(dedupKey)) {
+    return;
+  }
+  warnedCurrencyKeys.add(dedupKey);
+  const meta: Record<string, unknown> = {
+    currency: code,
+    locale,
+  };
+  if (cause !== null) {
+    meta.cause = cause;
+  }
+  warn(
+    `Unsupported currency code "${code}" for locale "${locale}" — not recognized by \`Intl.supportedValuesOf('currency')\`. Rendering "<value> ${code}" as a graceful fallback.`,
+    meta,
+  );
+}
+
+function buildCurrencyFallback(
+  locale: string,
+  code: string,
+  options: object | undefined,
+): Intl.NumberFormat {
+  const numberOnly = new Intl.NumberFormat(
+    locale,
+    stripCurrencyFields(options),
+  );
+  return {
+    format: (value: number) => `${numberOnly.format(value)} ${code}`,
+  } as Intl.NumberFormat;
+}
+
+function stripCurrencyFields(
+  options: object | undefined,
+): Intl.NumberFormatOptions {
+  if (!options) {
+    return {};
+  }
+  const {
+    style: _style,
+    currency: _currency,
+    currencyDisplay: _currencyDisplay,
+    currencySign: _currencySign,
+    ...rest
+  } = options as Intl.NumberFormatOptions;
+  return rest;
 }
