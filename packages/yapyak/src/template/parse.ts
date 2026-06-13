@@ -601,7 +601,7 @@ function resolveNumberOptions(
     if (currencyCode !== '') {
       if (!isCurrencyCode(currencyCode)) {
         context.diagnostics.push({
-          message: `Unsupported currency code "${currencyCode}": not recognized by \`Intl.supportedValuesOf('currency')\` (expected an uppercase ISO 4217 code).`,
+          message: `Unsupported currency code "${currencyCode}".`,
           range: input.bodyRange,
           reason: 'malformed',
         });

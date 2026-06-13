@@ -28,16 +28,9 @@ export function parsePlaceholders(source: string): ParsedMessage {
 }
 
 function hasFatalDiagnostic(diagnostics: TemplateDiagnostic[]): boolean {
-  return diagnostics.some((diagnostic) => {
-    if (diagnostic.reason === 'malformed') {
-      return true;
-    }
-    if (
+  return diagnostics.some(
+    (diagnostic) =>
       diagnostic.reason === 'unsupported' &&
-      diagnostic.feature === 'apostrophe escaping'
-    ) {
-      return true;
-    }
-    return false;
-  });
+      diagnostic.feature === 'apostrophe escaping',
+  );
 }

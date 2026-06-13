@@ -340,7 +340,7 @@ describe('parseTemplate', () => {
       const { diagnostics } = parseTemplate('{cost, number, currency eur}');
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
-          message: expect.stringContaining('Unsupported currency code "eur"'),
+          message: 'Unsupported currency code "eur".',
           reason: 'malformed',
         }),
       );

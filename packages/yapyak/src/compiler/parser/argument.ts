@@ -180,7 +180,7 @@ function toIcuDiagnostic(
       code: 'YPK201',
       fileId: context.fileId,
       hint: 'Check the ICU syntax — every `{` needs a matching `}`.',
-      message: `Malformed ICU message (${issue.message}).`,
+      message: issue.message,
       range: context.range,
       severity: 'error',
       source: context.fileText,
