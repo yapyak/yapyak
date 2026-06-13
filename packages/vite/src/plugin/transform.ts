@@ -45,6 +45,7 @@ export function createTransformPlugin(state: State): Plugin {
       });
       const result = transformFile({
         defaultLocale: getResolver(state).getEmittedLocales().defaultLocale,
+        dev: state.command === 'serve',
         extracted,
         fileId,
         locales,

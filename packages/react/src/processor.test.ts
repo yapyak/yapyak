@@ -1,0 +1,84 @@
+import { describe, expect, it } from 'vitest';
+import { extractFile, transformFile } from 'yapyak/compiler';
+
+import { react } from './processor';
+
+const processors = [
+  react(),
+];
+
+function runReactTransform(input: {
+  source: string;
+  locales: string[];
+  fileId?: string;
+  dev?: boolean;
+}): string {
+  const fileId = input.fileId ?? 'src/a.tsx';
+  const extracted = extractFile(fileId, input.source, {
+    processors,
+  });
+  const request: Parameters<typeof transformFile>[0] = {
+    extracted,
+    fileId,
+    locales: input.locales,
+    processors,
+    source: input.source,
+    translations: {},
+  };
+  if (input.dev !== undefined) {
+    request.dev = input.dev;
+  }
+  return transformFile(request).code;
+}
+
+describe('react processor', () => {
+  it('returns a processor with the `react` id', () => {
+    expect(react().id).toBe('react');
+  });
+
+  it('returns a processor that handles `.tsx` and `.jsx` files', () => {
+    expect(react().extensions).toEqual([
+      '.tsx',
+      '.jsx',
+    ]);
+  });
+
+  it('returns a processor that declares `@yapyak/react` as the runtime binding', () => {
+    expect(react().runtimeBinding).toBe('@yapyak/react');
+  });
+
+  it('emits a `useYapyak` import when the dev transform runs through this processor', () => {
+    const code = runReactTransform({
+      dev: true,
+      locales: [
+        'en',
+        'sv',
+      ],
+      source: [
+        "import { t } from 'yapyak';",
+        'export function Header() {',
+        "  return t('Hello');",
+        '}',
+      ].join('\n'),
+    });
+    expect(code).toMatch(/useYapyak as _yp_use/);
+    expect(code).toContain("from '@yapyak/react'");
+  });
+
+  it('refuses to emit dev imports when dev is off', () => {
+    const code = runReactTransform({
+      locales: [
+        'en',
+        'sv',
+      ],
+      source: [
+        "import { t } from 'yapyak';",
+        'export function Header() {',
+        "  return t('Hello');",
+        '}',
+      ].join('\n'),
+    });
+    expect(code).not.toMatch(/_yp_bind/);
+    expect(code).not.toMatch(/_yp_use/);
+  });
+});

@@ -33,6 +33,16 @@ function runVueTransform(input: {
   return result.code;
 }
 
+describe('vue processor — shape', () => {
+  it('returns a processor with the `vue` id', () => {
+    expect(vue().id).toBe('vue');
+  });
+
+  it('returns a processor that declares `@yapyak/vue` as the runtime binding', () => {
+    expect(vue().runtimeBinding).toBe('@yapyak/vue');
+  });
+});
+
 describe('vue processor — extract', () => {
   it('returns template messages resolved against `<script setup>` import', () => {
     const source = [

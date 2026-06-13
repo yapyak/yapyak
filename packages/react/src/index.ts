@@ -12,9 +12,10 @@
  * @packageDocumentation
  */
 
-export type { LocaleProviderProps } from './locale-provider';
+import './dev-store';
+
 export type { RichTextProps } from './rich-text';
 
-export { LocaleProvider } from './locale-provider';
+export { useYapyak } from './dev-store';
 export { RichText } from './rich-text';
 export { useLocale } from './use-locale';

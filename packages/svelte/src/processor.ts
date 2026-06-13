@@ -61,6 +61,7 @@ export function svelte(): Processor {
       }
       return fragments;
     },
+    '@yapyak/svelte',
   );
 }
 

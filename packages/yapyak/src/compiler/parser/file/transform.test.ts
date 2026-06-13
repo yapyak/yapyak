@@ -3,9 +3,30 @@ import type { TransformFileRequest } from './transform';
 
 import { describe, expect, it } from 'vitest';
 
+import { createProcessor } from '../../../processor';
 import { toMessageKey } from '../message-key';
 import { extractFile } from './extract';
 import { transformFile } from './transform';
+
+const reactProcessor: Processor = createProcessor(
+  (magicString, _source, importStatement) => {
+    magicString.prepend(`${importStatement}\n`);
+  },
+  [
+    '.tsx',
+    '.jsx',
+  ],
+  'react',
+  (source) => [
+    {
+      code: source,
+      kind: 'script',
+      lang: 'ts',
+      originalOffset: 0,
+    },
+  ],
+  '@yapyak/react',
+);
 
 function runTransform(input: {
   source: string;
@@ -13,6 +34,7 @@ function runTransform(input: {
   translations?: Record<string, Record<string, string>>;
   fileId?: string;
   processors?: Processor[];
+  dev?: boolean;
 }): string {
   const fileId = input.fileId ?? 'src/a.tsx';
   const extracted = extractFile(fileId, input.source, {
@@ -26,6 +48,9 @@ function runTransform(input: {
     source: input.source,
     translations: input.translations ?? {},
   };
+  if (input.dev !== undefined) {
+    request.dev = input.dev;
+  }
   return transformFile(request).code;
 }
 
@@ -1174,6 +1199,127 @@ describe('transformFile', () => {
         },
       });
       expect(code).toMatch(/date as _date_\$0/);
+    });
+  });
+
+  describe('dev mode', () => {
+    it('wraps every catalog in a `bind()` call when dev is on', () => {
+      const code = runTransform({
+        dev: true,
+        locales: [
+          'en',
+          'sv',
+        ],
+        source:
+          "import { t } from 'yapyak';\nexport function Header() { return t('Hello'); }\n",
+      });
+      expect(code).toMatch(/_yp_bind\(/);
+      expect(code).toContain('"src/a.tsx"');
+      expect(code).toMatch(/_yp_bind\("src\/a\.tsx", "\[\\"Hello\\",null\]"/);
+    });
+
+    it('emits a `purgeFile` disposer when dev is on', () => {
+      const code = runTransform({
+        dev: true,
+        locales: [
+          'en',
+          'sv',
+        ],
+        source:
+          "import { t } from 'yapyak';\nexport function Header() { return t('Hello'); }\n",
+      });
+      expect(code).toMatch(/import\.meta\.hot\.dispose/);
+      expect(code).toMatch(/_yp_purge\("src\/a\.tsx"\)/);
+    });
+
+    it('injects a `useYapyak()` call at the top of a React function component', () => {
+      const code = runTransform({
+        dev: true,
+        locales: [
+          'en',
+          'sv',
+        ],
+        processors: [
+          reactProcessor,
+        ],
+        source: [
+          "import { t } from 'yapyak';",
+          'export function Header() {',
+          "  return t('Hello');",
+          '}',
+        ].join('\n'),
+      });
+      expect(code).toMatch(/useYapyak as _yp_use/);
+      expect(code).toMatch(/function Header\(\) \{_yp_use\(\)/);
+    });
+
+    it('refuses to inject a `useYapyak()` call in a lowercase helper function', () => {
+      const code = runTransform({
+        dev: true,
+        locales: [
+          'en',
+          'sv',
+        ],
+        source: [
+          "import { t } from 'yapyak';",
+          'function helper() {',
+          "  return t('Hello');",
+          '}',
+        ].join('\n'),
+      });
+      expect(code).not.toMatch(/function helper\(\) \{_yp_use\(\)/);
+    });
+
+    it('injects a `useYapyak()` call in a custom hook starting with `use`', () => {
+      const code = runTransform({
+        dev: true,
+        locales: [
+          'en',
+          'sv',
+        ],
+        processors: [
+          reactProcessor,
+        ],
+        source: [
+          "import { t } from 'yapyak';",
+          'export function useGreeting() {',
+          "  return t('Hello');",
+          '}',
+        ].join('\n'),
+      });
+      expect(code).toMatch(/function useGreeting\(\) \{_yp_use\(\)/);
+    });
+
+    it('folds repeat `t()` calls with the same id into a single `bind()` site', () => {
+      const code = runTransform({
+        dev: true,
+        locales: [
+          'en',
+          'sv',
+        ],
+        source: [
+          "import { t } from 'yapyak';",
+          'export function Header() {',
+          "  return t('Hello') + t('Hello');",
+          '}',
+        ].join('\n'),
+      });
+      const bindCallMatches = code.match(/_yp_bind\(/g);
+      expect(bindCallMatches?.length).toBe(1);
+    });
+
+    it('emits no dev imports when dev is off', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source:
+          "import { t } from 'yapyak';\nexport function Header() { return t('Hello'); }\n",
+      });
+      expect(code).not.toMatch(/_yp_bind/);
+      expect(code).not.toMatch(/_yp_use/);
+      expect(code).not.toMatch(/_yp_purge/);
     });
   });
 });

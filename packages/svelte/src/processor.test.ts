@@ -34,6 +34,16 @@ function runSvelteTransform(
   }).code;
 }
 
+describe('svelte processor — shape', () => {
+  it('returns a processor with the `svelte` id', () => {
+    expect(svelte().id).toBe('svelte');
+  });
+
+  it('returns a processor that declares `@yapyak/svelte` as the runtime binding', () => {
+    expect(svelte().runtimeBinding).toBe('@yapyak/svelte');
+  });
+});
+
 describe('svelte processor — extract', () => {
   it('extracts `t()` from inside an `{#if}` block', () => {
     const result = extractSvelte(

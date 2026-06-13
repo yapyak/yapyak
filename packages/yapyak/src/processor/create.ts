@@ -10,6 +10,7 @@ import type { ApplyImportFn, ParseFragmentsFn, Processor } from './type';
  * @param extensions - File extensions this processor handles, e.g. `['.vue']`.
  * @param id - Stable identifier for diagnostics. Convention: lowercase suffix matching the package name.
  * @param parseFragments - Breaks framework-specific source into TS-parseable fragments.
+ * @param runtimeBinding - Optional package name the dev transform side-effect-imports for HMR wiring.
  *
  * @example
  * ```ts
@@ -22,6 +23,7 @@ import type { ApplyImportFn, ParseFragmentsFn, Processor } from './type';
  *   ['.mfx'],
  *   'my-framework',
  *   (source) => [{ code: source, kind: 'script', lang: 'ts', originalOffset: 0 }],
+ *   '@my-framework/binding',
  * );
  * ```
  *
@@ -33,6 +35,7 @@ export function createProcessor(
   extensions: string[],
   id: string,
   parseFragments: ParseFragmentsFn,
+  runtimeBinding?: string,
 ): Processor {
   if (id === '') {
     throw new Error('createProcessor: id must be a non-empty string.');
@@ -40,10 +43,14 @@ export function createProcessor(
   if (extensions.length === 0) {
     throw new Error('createProcessor: extensions must be a non-empty array.');
   }
-  return {
+  const processor: Processor = {
     applyImport,
     extensions,
     id,
     parseFragments,
   };
+  if (runtimeBinding !== undefined) {
+    processor.runtimeBinding = runtimeBinding;
+  }
+  return processor;
 }

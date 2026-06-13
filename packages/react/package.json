@@ -8,6 +8,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./processor": {
+      "types": "./dist/processor.d.ts",
+      "default": "./dist/processor.js"
     }
   },
   "files": [

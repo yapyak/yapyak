@@ -78,4 +78,6 @@ export type Processor = {
   id: string;
   /** Breaks framework-specific source into TS-parseable fragments. */
   parseFragments(source: string): Fragment[];
+  /** Package name the dev transform side-effect-imports for HMR wiring. */
+  runtimeBinding?: string;
 };

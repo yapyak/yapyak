@@ -1,3 +1,4 @@
+export type { Template, TemplateNode } from '../template';
 export type {
   AutoTranslateInput,
   AutoTranslateOptions,
@@ -47,6 +48,7 @@ export type {
   TransformFileResult,
 } from './parser';
 
+export { parseTemplate } from '../template';
 export {
   CorruptLocaleFileError,
   CorruptOrphanCacheError,

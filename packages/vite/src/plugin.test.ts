@@ -281,21 +281,16 @@ describe('yapyak', () => {
       });
     });
 
-    it('notifies candidate modules when editing a locale file', async () => {
+    it('emits a `yapyak:patch` event when editing a locale file', async () => {
       writeFileSync(localePath, '{}');
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
       invokeBuildStart(plugin);
 
       vi.useFakeTimers();
-      const reloadModule = vi.fn(() => Promise.resolve());
-      const sourcePath = join(root, 'src', 'a.tsx');
+      const send = vi.fn();
       const server = createMockServer(createMockWatcher());
-      server.reloadModule = reloadModule;
-      server.moduleGraph.idToModuleMap.set('m1', {
-        file: sourcePath,
-        url: '/src/foo.tsx',
-      });
+      server.ws.send = send;
       invokeConfigureServer(plugin, server);
       const watcher = server.watcher;
 
@@ -310,29 +305,34 @@ describe('yapyak', () => {
       watcher.emit('change', localePath);
       await vi.advanceTimersByTimeAsync(60);
 
-      expect(reloadModule).toHaveBeenCalledTimes(1);
+      expect(send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            patches: expect.arrayContaining([
+              expect.objectContaining({
+                fileId: 'src/a.tsx',
+                locale: 'sv',
+                value: 'Hej',
+              }),
+            ]),
+          }),
+          event: 'yapyak:patch',
+          type: 'custom',
+        }),
+      );
     });
 
-    it('invalidates and full-reloads an Astro module when its file id is touched', async () => {
+    it('emits a `full-reload` for an Astro file id and refuses to emit a patch', async () => {
       writeFileSync(localePath, '{}');
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
       invokeBuildStart(plugin);
 
       vi.useFakeTimers();
-      const reloadModule = vi.fn(() => Promise.resolve());
       const send = vi.fn();
-      const invalidateModule = vi.fn();
       const server = createMockServer(createMockWatcher());
-      server.reloadModule = reloadModule;
       server.ws.send = send;
-      server.moduleGraph.invalidateModule = invalidateModule;
       const astroPath = join(root, 'src', 'pages', 'index.astro');
-      const astroModule = {
-        file: astroPath,
-        url: '/src/pages/index.astro',
-      };
-      server.moduleGraph.idToModuleMap.set('m1', astroModule);
       invokeConfigureServer(plugin, server);
       const watcher = server.watcher;
 
@@ -347,12 +347,16 @@ describe('yapyak', () => {
       watcher.emit('change', localePath);
       await vi.advanceTimersByTimeAsync(60);
 
-      expect(reloadModule).not.toHaveBeenCalled();
-      expect(invalidateModule).toHaveBeenCalledWith(astroModule);
       expect(send).toHaveBeenCalledWith({
         path: astroPath,
         type: 'full-reload',
       });
+      for (const call of send.mock.calls) {
+        const payload = call[0];
+        if (payload && typeof payload === 'object' && 'event' in payload) {
+          expect(payload.event).not.toBe('yapyak:patch');
+        }
+      }
     });
 
     it('blocks reload for non-locale files', async () => {
@@ -1140,7 +1144,7 @@ describe('yapyak', () => {
     });
   });
 
-  describe('handleHotUpdate', () => {
+  describe('hotUpdate', () => {
     it('returns early when the changed file is not a candidate', async () => {
       writeFileSync(localePath, '{}');
       const plugin = yapyak();
@@ -1217,7 +1221,7 @@ type PluginHookName =
   | 'config'
   | 'configResolved'
   | 'configureServer'
-  | 'handleHotUpdate'
+  | 'hotUpdate'
   | 'load'
   | 'resolveId'
   | 'transform';
@@ -1350,7 +1354,7 @@ async function invokeHandleHotUpdate(
   file: string,
   code: string,
 ): Promise<void> {
-  const hook = findHook(plugin, 'handleHotUpdate');
+  const hook = findHook(plugin, 'hotUpdate');
   await (
     hook as (ctx: {
       file: string;

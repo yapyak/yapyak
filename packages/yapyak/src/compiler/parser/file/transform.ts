@@ -16,6 +16,7 @@ import { getScriptKind } from '../script-kind';
 
 export type TransformFileRequest = {
   defaultLocale?: string;
+  dev?: boolean;
   extracted: ExtractFileResult;
   fileId: string;
   locales: string[];
@@ -34,6 +35,10 @@ export type TransformFileResult = {
 const PICK_EXPORT = 'pick';
 const PICK_LOCAL = '_pick';
 const CATALOG_PREFIX = '_yapyak_catalog';
+const BIND_LOCAL = '_yp_bind';
+const PURGE_LOCAL = '_yp_purge';
+const USE_LOCAL = '_yp_use';
+const REACT_PROCESSOR_ID = 'react';
 const FACTORY_ORDER = [
   'literal',
   'placeholder',
@@ -66,22 +71,37 @@ export function transformFile(
   );
   const fragments = processor.parseFragments(request.source);
   const isSingleLocale = request.locales.length === 1;
+  const isDev = request.dev === true;
+  const injectsReactHook = isDev && processor.id === REACT_PROCESSOR_ID;
+  const runtimeBinding = isDev ? processor.runtimeBinding : undefined;
   const magicString = new MagicString(request.source);
 
   const pickLocal = findFreePickLocal(request.source);
   const localsByFactory = findFreeFactoryLocals(request.source);
+  const bindLocal = isDev ? findFreeIdentifier(request.source, BIND_LOCAL) : '';
+  const purgeLocal = isDev
+    ? findFreeIdentifier(request.source, PURGE_LOCAL)
+    : '';
+  const useLocal = injectsReactHook
+    ? findFreeIdentifier(request.source, USE_LOCAL)
+    : '';
 
   let hasUsedPick = false;
   const usedFactories = new Set<string>();
-  const catalogsByLiteral = new Map<string, string>();
+  const catalogsByKey = new Map<string, CatalogEntry>();
   const catalogPrefix = findFreeCatalogPrefix(request.source);
-  const registerCatalog = (literal: string): string => {
-    const existing = catalogsByLiteral.get(literal);
+  const registerCatalog = (literal: string, id: string): string => {
+    const key = isDev ? id : literal;
+    const existing = catalogsByKey.get(key);
     if (existing) {
-      return existing;
+      return existing.identifier;
     }
-    const identifier = `${catalogPrefix}_$${catalogsByLiteral.size}`;
-    catalogsByLiteral.set(literal, identifier);
+    const identifier = `${catalogPrefix}_$${catalogsByKey.size}`;
+    catalogsByKey.set(key, {
+      id,
+      identifier,
+      literal,
+    });
     return identifier;
   };
   const callSites = request.extracted.callSites;
@@ -163,13 +183,36 @@ export function transformFile(
     }
   }
   const injectionLines: string[] = [];
-  if (importSpecs.length > 0) {
+  const allImportSpecs = importSpecs.slice();
+  if (isDev) {
+    allImportSpecs.push(`bind as ${bindLocal}`);
+    allImportSpecs.push(`purgeFile as ${purgeLocal}`);
+  }
+  if (allImportSpecs.length > 0) {
     injectionLines.push(
-      `import { ${importSpecs.join(', ')} } from '${YAPYAK_INTERNAL_MODULE}';`,
+      `import { ${allImportSpecs.join(', ')} } from '${YAPYAK_INTERNAL_MODULE}';`,
     );
   }
-  for (const [literal, identifier] of catalogsByLiteral) {
-    injectionLines.push(`const ${identifier} = ${literal};`);
+  if (injectsReactHook && runtimeBinding !== undefined) {
+    injectionLines.push(
+      `import { useYapyak as ${useLocal} } from '${runtimeBinding}';`,
+    );
+  } else if (runtimeBinding !== undefined) {
+    injectionLines.push(`import '${runtimeBinding}';`);
+  }
+  for (const entry of catalogsByKey.values()) {
+    if (isDev) {
+      injectionLines.push(
+        `const ${entry.identifier} = ${bindLocal}(${JSON.stringify(request.fileId)}, ${JSON.stringify(entry.id)}, ${entry.literal});`,
+      );
+    } else {
+      injectionLines.push(`const ${entry.identifier} = ${entry.literal};`);
+    }
+  }
+  if (isDev) {
+    injectionLines.push(
+      `if (import.meta.hot) import.meta.hot.dispose(() => ${purgeLocal}(${JSON.stringify(request.fileId)}));`,
+    );
   }
   if (injectionLines.length > 0) {
     processor.applyImport(
@@ -177,6 +220,9 @@ export function transformFile(
       request.source,
       injectionLines.join('\n'),
     );
+  }
+  if (injectsReactHook) {
+    injectReactHooks(magicString, fragments, callSites, useLocal, request);
   }
 
   return {
@@ -313,6 +359,12 @@ function extractCoreImports(sourceFile: ts.SourceFile): ts.ImportDeclaration[] {
   return result;
 }
 
+type CatalogEntry = {
+  id: string;
+  identifier: string;
+  literal: string;
+};
+
 type RenderCallReplacementInput = {
   callSite: ParsedCallSite;
   defaultLocale: string;
@@ -320,7 +372,7 @@ type RenderCallReplacementInput = {
   localsByFactory: ReadonlyMap<string, string>;
   nestedReplacements?: NestedReplacement[];
   pickLocal: string;
-  registerCatalog: (literal: string) => string;
+  registerCatalog: (literal: string, id: string) => string;
   singleLocale: boolean;
   translations: Record<string, Record<string, string>>;
 };
@@ -393,7 +445,7 @@ function renderCallReplacement(
     usedFactories,
     localsByFactory,
   );
-  const catalogIdentifier = registerCatalog(catalog);
+  const catalogIdentifier = registerCatalog(catalog, id);
   const hasPlaceholders = placeholders.length > 0;
   const nested = input.nestedReplacements ?? [];
   const paramsExpressionText = hasPlaceholders
@@ -1034,6 +1086,110 @@ function hasIdentifier(source: string, name: string): boolean {
       return true;
     }
     index = source.indexOf(name, index + name.length);
+  }
+  return false;
+}
+
+const COMPONENT_NAME_RX = /^[A-Z]/;
+const HOOK_NAME_RX = /^use[A-Z]/;
+
+function injectReactHooks(
+  magicString: MagicString,
+  fragments: Fragment[],
+  callSites: readonly ParsedCallSite[],
+  useLocal: string,
+  request: TransformFileRequest,
+): void {
+  for (const fragment of fragments) {
+    if (fragment.kind !== 'script') {
+      continue;
+    }
+    const sourceFile = ts.createSourceFile(
+      request.fileId,
+      fragment.code,
+      ts.ScriptTarget.ESNext,
+      true,
+      getScriptKind(request.fileId, fragment.lang),
+    );
+    const insertionPositions = new Set<number>();
+    walkForComponents(
+      sourceFile,
+      sourceFile,
+      fragment.originalOffset,
+      callSites,
+      insertionPositions,
+    );
+    for (const position of insertionPositions) {
+      magicString.appendLeft(position, `${useLocal}();`);
+    }
+  }
+}
+
+function walkForComponents(
+  node: ts.Node,
+  sourceFile: ts.SourceFile,
+  fragmentOffset: number,
+  callSites: readonly ParsedCallSite[],
+  insertionPositions: Set<number>,
+): void {
+  if (ts.isFunctionDeclaration(node) && node.name && node.body) {
+    if (
+      isReactCandidateName(node.name.text) &&
+      containsCallSite(node, sourceFile, fragmentOffset, callSites)
+    ) {
+      insertionPositions.add(
+        node.body.getStart(sourceFile) + 1 + fragmentOffset,
+      );
+    }
+  }
+  if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name)) {
+    const initializer = node.initializer;
+    if (
+      initializer &&
+      (ts.isArrowFunction(initializer) ||
+        ts.isFunctionExpression(initializer)) &&
+      ts.isBlock(initializer.body)
+    ) {
+      if (
+        isReactCandidateName(node.name.text) &&
+        containsCallSite(initializer, sourceFile, fragmentOffset, callSites)
+      ) {
+        insertionPositions.add(
+          initializer.body.getStart(sourceFile) + 1 + fragmentOffset,
+        );
+      }
+    }
+  }
+  ts.forEachChild(node, (child) => {
+    walkForComponents(
+      child,
+      sourceFile,
+      fragmentOffset,
+      callSites,
+      insertionPositions,
+    );
+  });
+}
+
+function isReactCandidateName(name: string): boolean {
+  return COMPONENT_NAME_RX.test(name) || HOOK_NAME_RX.test(name);
+}
+
+function containsCallSite(
+  node: ts.Node,
+  sourceFile: ts.SourceFile,
+  fragmentOffset: number,
+  callSites: readonly ParsedCallSite[],
+): boolean {
+  const start = node.getStart(sourceFile) + fragmentOffset;
+  const end = node.getEnd() + fragmentOffset;
+  for (const callSite of callSites) {
+    if (
+      callSite.range.start.offset >= start &&
+      callSite.range.end.offset <= end
+    ) {
+      return true;
+    }
   }
   return false;
 }

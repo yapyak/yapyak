@@ -2,6 +2,14 @@ export type { RuntimeMock } from './runtime-mock';
 export type { RichTextNode } from './translation';
 export type { WarnFn } from './warn';
 
+export {
+  bind,
+  getDevVersion,
+  patch,
+  purgeFile,
+  resetDevStore,
+  subscribeDev,
+} from './dev-store';
 export { registerHotDispose } from './hot-dispose';
 export {
   autoSubscribeLocale,

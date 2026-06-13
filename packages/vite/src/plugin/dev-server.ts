@@ -1,9 +1,10 @@
-import type { HmrContext, Plugin, ViteDevServer } from 'vite';
+import type { HotUpdateOptions, Plugin, ViteDevServer } from 'vite';
 import type {
   CatalogEntry,
   ExtractedMessage,
   LocaleFile,
   LocaleWarning,
+  Template,
 } from 'yapyak/compiler';
 import type { State } from './state';
 
@@ -11,12 +12,13 @@ import {
   detectRenames,
   extractFile,
   migrateLocales,
+  parseTemplate,
   syncLocaleFiles,
+  toMessageKey,
   validateLocaleCode,
   writeRegister,
 } from 'yapyak/compiler';
 
-import { RUNTIME_RESOLVED } from '../virtual-runtime';
 import { isCandidateId } from './candidate-id';
 import { renderErrorDiagnostics } from './error-diagnostic';
 import { toFileId } from './file-id';
@@ -37,6 +39,13 @@ type CallSitePosition = {
 type Debounced = {
   cancel(): void;
   (): void;
+};
+
+type Patch = {
+  fileId: string;
+  id: string;
+  locale: string;
+  value: string | Template;
 };
 
 export function createDevServerPlugin(state: State): Plugin {
@@ -85,67 +94,53 @@ export function createDevServerPlugin(state: State): Plugin {
       }, 50);
       state.teardownCallbacks.push(flush.cancel);
 
-      const reloadCandidateModules = (): void => {
-        for (const mod of server.moduleGraph.idToModuleMap.values()) {
-          if (
-            mod.file !== null &&
-            isCandidateId(mod.file, state.filter, state.projectRoot)
-          ) {
-            void server.reloadModule(mod);
-          }
-        }
-      };
-
-      const reloadRuntimeModule = (): void => {
-        const runtimeMod = server.moduleGraph.getModuleById(RUNTIME_RESOLVED);
-        if (runtimeMod) {
-          void server.reloadModule(runtimeMod);
-        }
-      };
-
       const previousLocaleData = new Map<string, LocaleFile>();
       const pendingLocalePaths = new Set<string>();
-      const invalidateLocaleData = debounce(() => {
+      const sendLocalePatches = debounce(() => {
         if (pendingLocalePaths.size === 0) {
           return;
         }
-        const changedFileIds = new Set<string>();
+        const allPatches: Patch[] = [];
+        const astroFilesToReload = new Set<string>();
         for (const localePath of pendingLocalePaths) {
           const locale = localeFromPath(localePath);
           const before = previousLocaleData.get(locale) ?? {};
           const after = readLocaleFile(localePath);
           previousLocaleData.set(locale, after);
-          for (const fileId of extractChangedFileIds(before, after)) {
-            changedFileIds.add(fileId);
+          const localePatches = derivePatches(before, after, locale);
+          for (const patch of localePatches) {
+            if (patch.fileId.endsWith('.astro')) {
+              const absolutePath = join(state.projectRoot, patch.fileId);
+              astroFilesToReload.add(absolutePath);
+            } else {
+              allPatches.push(patch);
+            }
           }
         }
         pendingLocalePaths.clear();
-        if (changedFileIds.size === 0) {
+        if (allPatches.length === 0 && astroFilesToReload.size === 0) {
           return;
         }
         getResolver(state).invalidateData();
-        for (const fileId of changedFileIds) {
-          const absolutePath = join(state.projectRoot, fileId);
-          const modules = server.moduleGraph.getModulesByFile(absolutePath);
-          if (!modules) {
-            continue;
-          }
-          for (const mod of modules) {
-            if (mod.file?.endsWith('.astro')) {
-              server.moduleGraph.invalidateModule(mod);
-              server.ws.send({
-                path: mod.file,
-                type: 'full-reload',
-              });
-              continue;
-            }
-            void server.reloadModule(mod);
-          }
+        for (const file of astroFilesToReload) {
+          server.ws.send({
+            path: file,
+            type: 'full-reload',
+          });
+        }
+        if (allPatches.length > 0) {
+          server.ws.send({
+            data: {
+              patches: allPatches,
+            },
+            event: 'yapyak:patch',
+            type: 'custom',
+          });
         }
       }, 50);
-      state.teardownCallbacks.push(invalidateLocaleData.cancel);
+      state.teardownCallbacks.push(sendLocalePatches.cancel);
 
-      const syncLocaleStructure = debounce(() => {
+      const announceLocaleStructure = debounce(() => {
         getResolver(state).invalidateStructure();
         const { defaultLocale, locales } =
           getResolver(state).getProjectLocales();
@@ -182,10 +177,8 @@ export function createDevServerPlugin(state: State): Plugin {
           getResolver(state).getEmittedLocales().locales,
           state.yapyakDir,
         );
-        reloadRuntimeModule();
-        reloadCandidateModules();
       }, 50);
-      state.teardownCallbacks.push(syncLocaleStructure.cancel);
+      state.teardownCallbacks.push(announceLocaleStructure.cancel);
 
       server.watcher.on('change', (path: string) => {
         if (state.configFile !== undefined && path === state.configFile) {
@@ -194,7 +187,7 @@ export function createDevServerPlugin(state: State): Plugin {
         }
         if (isLocaleFile(state, path)) {
           pendingLocalePaths.add(path);
-          invalidateLocaleData();
+          sendLocalePatches();
         }
       });
 
@@ -221,10 +214,22 @@ export function createDevServerPlugin(state: State): Plugin {
             return;
           }
           const hint = `Run \`${runYapyakCommand(`translate ${locale}`)}\` to fill the stubs.`;
-          syncLocaleStructure();
+          announceLocaleStructure();
           state.logger.info(
             `[yapyak] New locale '${locale}' detected. ${hint}`,
           );
+          const initial = readLocaleFile(path);
+          previousLocaleData.set(locale, initial);
+          const initialPatches = derivePatches({}, initial, locale);
+          if (initialPatches.length > 0) {
+            server.ws.send({
+              data: {
+                patches: initialPatches,
+              },
+              event: 'yapyak:patch',
+              type: 'custom',
+            });
+          }
           server.ws.send({
             data: {
               hint,
@@ -247,7 +252,8 @@ export function createDevServerPlugin(state: State): Plugin {
         }
         if (isLocaleFile(state, path)) {
           const locale = localeFromPath(path);
-          syncLocaleStructure();
+          previousLocaleData.delete(locale);
+          announceLocaleStructure();
           state.logger.info(`[yapyak] Locale '${locale}' removed.`);
           server.ws.send({
             data: {
@@ -259,7 +265,7 @@ export function createDevServerPlugin(state: State): Plugin {
         }
       });
     },
-    async handleHotUpdate(context: HmrContext): Promise<void> {
+    async hotUpdate(context: HotUpdateOptions): Promise<void> {
       if (!isCandidateId(context.file, state.filter, state.projectRoot)) {
         return;
       }
@@ -298,13 +304,6 @@ export function createDevServerPlugin(state: State): Plugin {
           },
         );
         getResolver(state).invalidateData();
-        const { server } = context;
-        if (server) {
-          const runtimeMod = server.moduleGraph.getModuleById(RUNTIME_RESOLVED);
-          if (runtimeMod) {
-            void server.reloadModule(runtimeMod);
-          }
-        }
       }
       if (after.length === 0) {
         state.messagesByFile.delete(fileId);
@@ -353,6 +352,112 @@ export function readLocaleFile(path: string): LocaleFile {
     return {};
   }
   return parsed as LocaleFile;
+}
+
+export function derivePatches(
+  before: LocaleFile,
+  after: LocaleFile,
+  locale: string,
+): Patch[] {
+  const patches: Patch[] = [];
+  const fileIds = new Set<string>([
+    ...Object.keys(before),
+    ...Object.keys(after),
+  ]);
+  for (const fileId of fileIds) {
+    const beforeEntries = before[fileId] ?? {};
+    const afterEntries = after[fileId] ?? {};
+    const sources = new Set<string>([
+      ...Object.keys(beforeEntries),
+      ...Object.keys(afterEntries),
+    ]);
+    for (const source of sources) {
+      const beforeEntry = beforeEntries[source];
+      const afterEntry = afterEntries[source];
+      walkEntry(patches, fileId, source, locale, beforeEntry, afterEntry);
+    }
+  }
+  return patches;
+}
+
+function walkEntry(
+  patches: Patch[],
+  fileId: string,
+  source: string,
+  locale: string,
+  beforeEntry: CatalogEntry | undefined,
+  afterEntry: CatalogEntry | undefined,
+): void {
+  if (typeof afterEntry === 'string') {
+    if (typeof beforeEntry !== 'string' || beforeEntry !== afterEntry) {
+      patches.push({
+        fileId,
+        id: toMessageKey(source),
+        locale,
+        value: compileLocaleValue(afterEntry),
+      });
+    }
+    return;
+  }
+  if (afterEntry && typeof afterEntry === 'object') {
+    const beforeMap =
+      beforeEntry && typeof beforeEntry === 'object' ? beforeEntry : {};
+    const contexts = new Set<string>([
+      ...Object.keys(beforeMap),
+      ...Object.keys(afterEntry),
+    ]);
+    for (const context of contexts) {
+      const beforeValue = beforeMap[context];
+      const afterValue = afterEntry[context];
+      if (typeof afterValue === 'string') {
+        if (beforeValue !== afterValue) {
+          patches.push({
+            fileId,
+            id: toMessageKey(source, context),
+            locale,
+            value: compileLocaleValue(afterValue),
+          });
+        }
+      } else if (afterValue === undefined && typeof beforeValue === 'string') {
+        patches.push({
+          fileId,
+          id: toMessageKey(source, context),
+          locale,
+          value: '',
+        });
+      }
+    }
+    return;
+  }
+  if (typeof beforeEntry === 'string') {
+    patches.push({
+      fileId,
+      id: toMessageKey(source),
+      locale,
+      value: '',
+    });
+  }
+  if (beforeEntry && typeof beforeEntry === 'object') {
+    for (const context of Object.keys(beforeEntry)) {
+      patches.push({
+        fileId,
+        id: toMessageKey(source, context),
+        locale,
+        value: '',
+      });
+    }
+  }
+}
+
+function compileLocaleValue(raw: string): string | Template {
+  const { template } = parseTemplate(raw);
+  if (template.length === 0) {
+    return '';
+  }
+  if (template.length === 1 && template[0]?.kind === 'literal') {
+    return template[0].value;
+  }
+  return template;
 }
 
 export function extractChangedFileIds(

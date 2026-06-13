@@ -33,6 +33,16 @@ function extractAstro(source: string) {
   });
 }
 
+describe('astro processor — shape', () => {
+  it('returns a processor with the `astro` id', () => {
+    expect(astro().id).toBe('astro');
+  });
+
+  it('returns a processor that declares `@yapyak/astro` as the runtime binding', () => {
+    expect(astro().runtimeBinding).toBe('@yapyak/astro');
+  });
+});
+
 describe('astro processor — extract', () => {
   it('returns frontmatter `t()` calls when frontmatter imports yapyak', () => {
     const source = [
