@@ -67,6 +67,16 @@ describe('status', () => {
     expect(writes.join('')).toContain('All translations present');
   });
 
+  it('returns `1` when a locale file is corrupt JSON', () => {
+    writeFileSync(
+      join(root, 'src', 'a.ts'),
+      `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
+    );
+    writeFileSync(join(root, 'locales', 'sv.json'), '{ "src/a.ts": { "Save": ');
+    const code = status(makeConfig(), root);
+    expect(code).toBe(1);
+  });
+
   it('returns `1` and lists every missing entry when translations are missing', () => {
     writeFileSync(
       join(root, 'src', 'a.ts'),

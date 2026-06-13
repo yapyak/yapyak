@@ -963,6 +963,18 @@ describe('transformFile', () => {
       expect(code).not.toContain("t('Inner'");
     });
 
+    it('blocks single-locale elision when a nested `t()` lives inside the params expression', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source:
+          "import { t } from 'yapyak';\nexport const x = t('Outer {x}', { x: t('Inner') });\n",
+      });
+      expect(code).not.toContain("t('Outer");
+      expect(code).not.toContain("t('Inner'");
+    });
+
     it('transforms a deeply nested chain of three `t()` calls', () => {
       const code = runTransform({
         locales: [

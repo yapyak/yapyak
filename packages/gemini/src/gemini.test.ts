@@ -204,6 +204,42 @@ describe('gemini', () => {
     ).rejects.toThrow(/429/);
   });
 
+  it('throws a truncation error when `finishReason` is `MAX_TOKENS`', async () => {
+    vi.stubGlobal(
+      'fetch',
+      async () =>
+        new Response(
+          JSON.stringify({
+            candidates: [
+              {
+                content: {
+                  parts: [
+                    {
+                      text: '[{"sv": "Hej"',
+                    },
+                  ],
+                },
+                finishReason: 'MAX_TOKENS',
+              },
+            ],
+          }),
+          {
+            status: 200,
+          },
+        ),
+    );
+    await expect(
+      gemini({
+        apiKey: 'k',
+      })({
+        fileId: 'x',
+        source: 'Hello',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      }),
+    ).rejects.toThrow(/truncated by token limit/);
+  });
+
   it('throws when the response holds no text part', async () => {
     vi.stubGlobal(
       'fetch',

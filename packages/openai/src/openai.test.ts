@@ -292,6 +292,39 @@ describe('openai', () => {
     ).rejects.toThrow(/429/);
   });
 
+  it('throws a truncation error when `finish_reason` is `length`', async () => {
+    vi.stubGlobal(
+      'fetch',
+      async () =>
+        new Response(
+          JSON.stringify({
+            choices: [
+              {
+                finish_reason: 'length',
+                message: {
+                  content: '[{"sv": "Hej"',
+                  role: 'assistant',
+                },
+              },
+            ],
+          }),
+          {
+            status: 200,
+          },
+        ),
+    );
+    await expect(
+      openai({
+        apiKey: 'k',
+      })({
+        fileId: 'x',
+        source: 'Hello',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      }),
+    ).rejects.toThrow(/truncated by token limit/);
+  });
+
   it('throws when `apiKey` is an empty string', () => {
     expect(() =>
       openai({

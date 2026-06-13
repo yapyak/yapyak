@@ -137,4 +137,43 @@ describe('pick', () => {
       }),
     ).toBe('Pre-rendered');
   });
+
+  it('picks the default-locale variant when the active locale names a prototype method', () => {
+    expect(
+      pick(
+        {
+          en: 'Hello',
+        },
+        {
+          locale: 'constructor',
+        },
+      ),
+    ).toBe('Hello');
+  });
+
+  it('picks the default-locale variant when the active locale is `__proto__`', () => {
+    expect(
+      pick(
+        {
+          en: 'Hello',
+        },
+        {
+          locale: '__proto__',
+        },
+      ),
+    ).toBe('Hello');
+  });
+
+  it('returns the empty string when neither active nor default has a matching variant', () => {
+    expect(
+      pick(
+        {
+          sv: 'Hej',
+        },
+        {
+          locale: 'constructor',
+        },
+      ),
+    ).toBe('');
+  });
 });

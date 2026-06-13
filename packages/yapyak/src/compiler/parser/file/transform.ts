@@ -356,7 +356,10 @@ function renderCallReplacement(
   }
   const { id, placeholders, source } = callSite;
 
-  if (isSingleLocale && canElide(placeholders, callSite)) {
+  if (
+    isSingleLocale &&
+    canElide(placeholders, callSite, input.nestedReplacements ?? [])
+  ) {
     const singleLocale = locales[0];
     const targetText = singleLocale
       ? pickLocaleText({
@@ -424,6 +427,7 @@ function renderCallReplacement(
 function canElide(
   placeholders: Placeholder[],
   callSite: ParsedCallSite,
+  nested: NestedReplacement[],
 ): boolean {
   if (callSite.localeExpression) {
     return false;
@@ -436,7 +440,28 @@ function canElide(
   if (placeholders.length === 0) {
     return true;
   }
+  if (hasNestedInParams(callSite, nested)) {
+    return false;
+  }
   return Boolean(getParamExpressions(callSite));
+}
+
+function hasNestedInParams(
+  callSite: ParsedCallSite,
+  nested: NestedReplacement[],
+): boolean {
+  const paramsExpression = callSite.paramsExpression;
+  if (!paramsExpression || nested.length === 0) {
+    return false;
+  }
+  const start = paramsExpression.getStart() + callSite.fragmentOffset;
+  const end = paramsExpression.getEnd() + callSite.fragmentOffset;
+  for (const replacement of nested) {
+    if (replacement.start >= start && replacement.end <= end) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function renderEliminated(

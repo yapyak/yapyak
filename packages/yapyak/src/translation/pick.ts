@@ -30,9 +30,23 @@ export function pick(
 
   runTrackers();
   const active = options?.locale ?? getLocale();
-  const variant = variants[active] ?? variants[defaultLocale] ?? '';
+  const variant = pickVariant(variants, active, defaultLocale);
   if (typeof variant === 'string') {
     return variant;
   }
   return interpret(variant, params ?? {}, active);
+}
+
+function pickVariant(
+  variants: Variants,
+  active: string,
+  fallback: string,
+): string | Template {
+  if (Object.hasOwn(variants, active)) {
+    return variants[active] ?? '';
+  }
+  if (Object.hasOwn(variants, fallback)) {
+    return variants[fallback] ?? '';
+  }
+  return '';
 }

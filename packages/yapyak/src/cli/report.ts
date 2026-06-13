@@ -110,6 +110,20 @@ export function buildReport(input: BuildReportInput): Report {
         missing: totalMessages,
         translated: 0,
       };
+      for (const [fileId, keys] of Object.entries(keysByFile)) {
+        for (const key of keys) {
+          const { context, source } = fromMessageKey(key);
+          const entry: MissingEntry = {
+            fileId,
+            locale,
+            source,
+          };
+          if (context !== undefined) {
+            entry.context = context;
+          }
+          missing.push(entry);
+        }
+      }
       continue;
     }
     let translated = 0;
