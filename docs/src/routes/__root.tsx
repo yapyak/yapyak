@@ -9,7 +9,7 @@ import {
   Scripts,
   createRootRoute,
 } from '@tanstack/react-router';
-import { LocaleProvider, useLocale } from '@yapyak/react';
+import { useLocale } from '@yapyak/react';
 import { t } from 'yapyak';
 
 import { Colophon } from '#components/colophon';
@@ -139,9 +139,7 @@ function ShellComponent(props: ShellComponentProps) {
         />
       </head>
       <body>
-        <LocaleProvider>
-          <OptionsProvider>{children}</OptionsProvider>
-        </LocaleProvider>
+        <OptionsProvider>{children}</OptionsProvider>
         <Scripts />
       </body>
     </html>

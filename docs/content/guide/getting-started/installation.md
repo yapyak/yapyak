@@ -42,7 +42,16 @@ export default defineConfig({
 });
 ```
 
-`.ts`/`.tsx` is handled by the built-in vanilla processor — no further wiring needed.
+Register the React processor in `yapyak.config.ts` so `.tsx` and `.jsx` files get the hook-based HMR wiring:
+
+```ts [yapyak.config.ts]
+import { react } from '@yapyak/react/processor';
+import { defineConfig } from 'yapyak/config';
+
+export default defineConfig({
+  processors: [react()],
+});
+```
 
 {% /when %}
 

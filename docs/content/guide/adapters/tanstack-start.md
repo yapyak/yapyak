@@ -38,13 +38,13 @@ That's the entire wiring.
 
 ## Set the page language
 
-Drive the document's `lang` attribute from the locale via `useLocale()` in the shell component, and wrap the routed tree in `LocaleProvider` so `t()` calls re-render when the locale changes:
+Drive the document's `lang` attribute from the locale via `useLocale()` in the shell component:
 
 ```tsx [src/routes/__root.tsx]
 import type { ReactNode } from 'react';
 
 import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router';
-import { LocaleProvider, useLocale } from '@yapyak/react';
+import { useLocale } from '@yapyak/react';
 
 export const Route = createRootRoute({ shellComponent: RootDocument });
 
@@ -56,7 +56,7 @@ function RootDocument({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <LocaleProvider>{children}</LocaleProvider>
+        {children}
         <Scripts />
       </body>
     </html>
@@ -64,7 +64,7 @@ function RootDocument({ children }: { children: ReactNode }) {
 }
 ```
 
-This is the recommended pattern for TanStack Start. The shell re-renders on locale change so `lang` updates reactively, `LocaleProvider` re-renders the routed tree so `t()` returns the new locale's strings, and SSR renders the correct `lang` per request. No extra plugin option needed.
+This is the recommended pattern for TanStack Start. The shell re-renders on locale change so `lang` updates reactively, every component that calls `t()` re-renders on its own (the React processor wires it up at transform time), and SSR renders the correct `lang` per request. No extra plugin option needed.
 
 ## Cookie persistence
 
