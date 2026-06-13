@@ -13,7 +13,9 @@
  * }
  * ```
  */
-export type Register = {};
+// biome-ignore lint/style/useConsistentTypeDefinitions: yap yap yap
+// biome-ignore lint/suspicious/noEmptyInterface: yap yap yap
+export interface Register {}
 
 /**
  * The locale. Narrows to a project's configured locales when {@link Register} is augmented; falls back to `string` otherwise.
