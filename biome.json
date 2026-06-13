@@ -198,6 +198,7 @@
         }
       },
       "includes": [
+        "**/package.json",
         "**/locales/*.json",
         "**/knip.json"
       ]
