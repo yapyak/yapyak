@@ -111,7 +111,7 @@ function warnUnsupportedCurrencyOnce(
     meta.cause = cause;
   }
   warn(
-    `Unsupported currency code "${code}" for locale "${locale}" — not recognized by \`Intl.supportedValuesOf('currency')\`. Rendering "<value> ${code}" as a graceful fallback.`,
+    `Unsupported currency code "${code}" — rendered as "<value> ${code}".`,
     meta,
   );
 }
