@@ -118,4 +118,134 @@ describe('t', () => {
       ]
     >();
   });
+
+  it('holds a `number` param for an ICU `number`-format placeholder', () => {
+    expectTypeOf(
+      t<'Price: {amount, number, currency EUR}'>,
+    ).parameters.toEqualTypeOf<
+      [
+        'Price: {amount, number, currency EUR}',
+        {
+          amount: number;
+        },
+      ]
+    >();
+  });
+
+  it('holds a `number` param for an ICU `plural` placeholder', () => {
+    expectTypeOf(
+      t<'You have {count, plural, one {# item} other {# items}}'>,
+    ).parameters.toEqualTypeOf<
+      [
+        'You have {count, plural, one {# item} other {# items}}',
+        {
+          count: number;
+        },
+      ]
+    >();
+  });
+
+  it('holds a `string` param for an ICU `select` placeholder', () => {
+    expectTypeOf(
+      t('{theme, select, dark {Dark mode} other {Light mode}}', {
+        theme: 'dark',
+      }),
+    ).toEqualTypeOf<TReturn<never, never>>();
+  });
+
+  it('holds a `Date`-or-`number` param for an ICU `date` placeholder', () => {
+    expectTypeOf(t<'Updated: {when, date, long}'>).parameters.toEqualTypeOf<
+      [
+        'Updated: {when, date, long}',
+        {
+          when: Date | number;
+        },
+      ]
+    >();
+  });
+
+  it('holds every param when a source has multiple placeholders', () => {
+    expectTypeOf(
+      t('You have {count, plural, one {# by {author}} other {# by {author}}}', {
+        author: 'Alex',
+        count: 3,
+      }),
+    ).toEqualTypeOf<TReturn<never, never>>();
+  });
+
+  it('returns a void-tagged type for a self-closing tag', () => {
+    expectTypeOf(t('Line<br/>break')).toEqualTypeOf<TReturn<never, 'br'>>();
+  });
+
+  it('returns a mixed-tag type for pair and void tags', () => {
+    expectTypeOf(t('<b>x</b><br/>')).toEqualTypeOf<TReturn<'b', 'br'>>();
+  });
+
+  it('returns a tagged type for two pair tags', () => {
+    expectTypeOf(t('<a>x</a><b>y</b>')).toEqualTypeOf<
+      TReturn<'a' | 'b', never>
+    >();
+  });
+
+  it('returns a tagged type for nested pair tags', () => {
+    expectTypeOf(t('<a><b>x</b></a>')).toEqualTypeOf<
+      TReturn<'a' | 'b', never>
+    >();
+  });
+
+  it('preserves tag extraction when a placeholder sits inside a tag', () => {
+    expectTypeOf(
+      t('Hi <b>{name}</b>', {
+        name: 'Alex',
+      }),
+    ).toEqualTypeOf<TReturn<'b', never>>();
+  });
+
+  it('holds the `as` key on `TInChain`', () => {
+    expectTypeOf<keyof TInChain>().toEqualTypeOf<'as'>();
+  });
+
+  it('holds the `in` key on `TAsChain`', () => {
+    expectTypeOf<keyof TAsChain>().toEqualTypeOf<'in'>();
+  });
+
+  it('refuses a callable signature for `TInChain`', () => {
+    expectTypeOf<TInChain>().not.toExtend<
+      (...args: readonly unknown[]) => unknown
+    >();
+  });
+
+  it('refuses a callable signature for `TAsChain`', () => {
+    expectTypeOf<TAsChain>().not.toExtend<
+      (...args: readonly unknown[]) => unknown
+    >();
+  });
+
+  it('preserves placeholder params for `t.in(locale).as(context, source)`', () => {
+    expectTypeOf(
+      t.in('sv').as('greeting', 'Hi {name}', {
+        name: 'Alex',
+      }),
+    ).toEqualTypeOf<TReturn<never, never>>();
+  });
+
+  it('preserves placeholder params for `t.as(context).in(locale, source)`', () => {
+    expectTypeOf(
+      t.as('greeting').in('sv', 'Hi {name}', {
+        name: 'Alex',
+      }),
+    ).toEqualTypeOf<TReturn<never, never>>();
+  });
+
+  it('preserves tag extraction for `t.in(locale).as(context, source)`', () => {
+    expectTypeOf(t.in('sv').as('button', '<a>x</a>')).toEqualTypeOf<
+      TReturn<'a', never>
+    >();
+  });
+
+  it('preserves tag extraction for `t.as(context).in(locale, source)`', () => {
+    expectTypeOf(t.as('button').in('sv', '<a>x</a>')).toEqualTypeOf<
+      TReturn<'a', never>
+    >();
+  });
 });
