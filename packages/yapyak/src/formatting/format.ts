@@ -2,10 +2,8 @@ import type { Locale } from '../locale';
 import type { Currency } from './currency';
 
 import { getLocale } from '../locale';
-import { formatDateTime } from './date-time';
-import { formatList } from './list';
-import { formatNumber } from './number';
-import { formatRelativeTime } from './relative-time';
+import { runTrackers } from '../tracker';
+import { resolveFormatter } from './formatter';
 
 type BaseNumberOptions = Omit<
   Intl.NumberFormatOptions,
@@ -203,18 +201,41 @@ export type Format = {
  * format.in('sv').number(200, { style: 'currency', currency: 'SEK' });
  * ```
  */
+const DATE_TIME_DEFAULT: Intl.DateTimeFormatOptions = {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+};
+
 export const format: Format = createFormat();
 
 function createFormat(boundLocale?: string): Format {
   return {
-    dateTime: (value, options) =>
-      formatDateTime(value, boundLocale ?? getLocale(), options),
+    dateTime: (value, options) => {
+      runTrackers();
+      const locale = boundLocale ?? getLocale();
+      const resolved = options ?? DATE_TIME_DEFAULT;
+      return resolveFormatter(Intl.DateTimeFormat, locale, resolved).format(
+        value,
+      );
+    },
     in: (locale) => createFormat(locale),
-    list: (items, options) =>
-      formatList(items, boundLocale ?? getLocale(), options),
-    number: (value, options) =>
-      formatNumber(value, boundLocale ?? getLocale(), options),
-    relativeTime: (value, unit, options) =>
-      formatRelativeTime(value, boundLocale ?? getLocale(), unit, options),
+    list: (items, options) => {
+      runTrackers();
+      const locale = boundLocale ?? getLocale();
+      return resolveFormatter(Intl.ListFormat, locale, options).format(items);
+    },
+    number: (value, options) => {
+      runTrackers();
+      const locale = boundLocale ?? getLocale();
+      return resolveFormatter(Intl.NumberFormat, locale, options).format(value);
+    },
+    relativeTime: (value, unit, options) => {
+      runTrackers();
+      const locale = boundLocale ?? getLocale();
+      return resolveFormatter(Intl.RelativeTimeFormat, locale, options).format(
+        value,
+        unit,
+      );
+    },
   };
 }
