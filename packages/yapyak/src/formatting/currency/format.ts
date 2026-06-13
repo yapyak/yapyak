@@ -1,4 +1,4 @@
-import type { CurrencyCodeInput } from './code';
+import type { CurrencyCode } from './known';
 
 import { runTrackers } from '../../tracker';
 import { resolveFormatter } from '../formatter';
@@ -6,7 +6,7 @@ import { resolveFormatter } from '../formatter';
 export function formatCurrency(
   value: number,
   locale: string,
-  currency: CurrencyCodeInput,
+  currency: CurrencyCode | (string & {}),
   options?: Intl.NumberFormatOptions,
 ): string {
   runTrackers();

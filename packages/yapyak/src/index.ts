@@ -14,11 +14,9 @@
 
 export {
   type CurrencyCode,
-  type CurrencyCodeInput,
   type Format,
   format,
   isCurrencyCode,
-  parseCurrencyCode,
 } from './formatting';
 export {
   type Locale,

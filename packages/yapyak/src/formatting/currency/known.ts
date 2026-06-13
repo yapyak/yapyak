@@ -1,4 +1,4 @@
-export type KnownCurrencies =
+export type CurrencyCode =
   | 'AED'
   | 'AFN'
   | 'ALL'

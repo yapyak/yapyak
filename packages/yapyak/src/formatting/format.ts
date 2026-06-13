@@ -1,5 +1,5 @@
 import type { Locale } from '../locale';
-import type { CurrencyCodeInput } from './currency';
+import type { CurrencyCode } from './currency';
 
 import { getLocale } from '../locale';
 import { formatCurrency } from './currency';
@@ -22,15 +22,15 @@ export type Format = {
    * Formats a currency amount for the active locale.
    *
    * @remarks
-   * The `style` and `currency` fields are set from the `currency` argument and override any provided in `options`. A currency code unsupported by the host runtime's `Intl` does not throw — yapyak warns and falls back to a `<value> <code>` rendering, so renders never unmount.
+   * The `style` and `currency` fields are set from the `currency` argument and override any provided in `options`. A code unsupported by the host `Intl` does not throw — yapyak falls back to a `<value> <code>` rendering.
    *
    * @param value - The numeric amount.
-   * @param currency - The ISO 4217 currency code, e.g. `'SEK'`. Accepts any string from runtime sources; hardcoded literals receive autocomplete.
+   * @param currency - The ISO 4217 currency code, e.g. `'SEK'`.
    * @param options - Native `Intl.NumberFormatOptions`.
    */
   currency(
     value: number,
-    currency: CurrencyCodeInput,
+    currency: CurrencyCode | (string & {}),
     options?: Intl.NumberFormatOptions,
   ): string;
 

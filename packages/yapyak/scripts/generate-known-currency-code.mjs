@@ -8,7 +8,7 @@ const target = join(here, '..', 'src', 'formatting', 'currency', 'known.ts');
 const codes = Intl.supportedValuesOf('currency');
 const union = codes.map((code) => `  | '${code}'`).join('\n');
 
-const contents = `export type KnownCurrencies =
+const contents = `export type CurrencyCode =
 ${union};
 `;
 
