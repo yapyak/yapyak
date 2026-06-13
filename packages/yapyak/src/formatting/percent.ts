@@ -1,18 +1,14 @@
-import type { CurrencyCodeInput } from '../currency';
-
-import { resolveFormatter } from '../formatter';
 import { runTrackers } from '../tracker';
+import { resolveFormatter } from './formatter';
 
-export function formatCurrency(
+export function formatPercent(
   value: number,
   locale: string,
-  currency: CurrencyCodeInput,
   options?: Intl.NumberFormatOptions,
 ): string {
   runTrackers();
   return resolveFormatter(Intl.NumberFormat, locale, {
     ...options,
-    currency,
-    style: 'currency',
+    style: 'percent',
   }).format(value);
 }

@@ -1,5 +1,5 @@
-import type { CurrencyCodeInput } from '../currency';
 import type { Locale } from '../locale';
+import type { CurrencyCodeInput } from './currency';
 
 import { getLocale } from '../locale';
 import { formatCurrency } from './currency';

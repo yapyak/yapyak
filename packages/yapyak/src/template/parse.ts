@@ -12,7 +12,7 @@ import type {
   TimeNode,
 } from './node';
 
-import { isCurrencyCode } from '../currency';
+import { isCurrencyCode } from '../formatting';
 
 const APOSTROPHE_ESCAPE_RX = /'[#'<>{}]/;
 const PLURAL_OFFSET_RX = /\boffset:\d+/;

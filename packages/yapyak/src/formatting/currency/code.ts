@@ -1,4 +1,4 @@
-import type { KnownCurrencyCode } from './known';
+import type { KnownCurrencies } from './known';
 
 declare const brand: unique symbol;
 
@@ -18,7 +18,7 @@ export type CurrencyCode = string & {
  * @remarks
  * Backed by the `LiteralUnion` pattern — `(string & {})` keeps autocomplete suggestions visible while permitting arbitrary runtime strings. Use {@link parseCurrencyCode} when you need a {@link CurrencyCode} brand for downstream code.
  */
-export type CurrencyCodeInput = KnownCurrencyCode | (string & {});
+export type CurrencyCodeInput = KnownCurrencies | (string & {});
 
 let cachedSupported: Set<string> | undefined;
 

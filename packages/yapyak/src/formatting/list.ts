@@ -1,5 +1,5 @@
-import { resolveFormatter } from '../formatter';
 import { runTrackers } from '../tracker';
+import { resolveFormatter } from './formatter';
 
 export function formatList(
   items: Iterable<string>,

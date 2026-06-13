@@ -1,5 +1,5 @@
-import { resolveFormatter } from '../formatter';
 import { runTrackers } from '../tracker';
+import { resolveFormatter } from './formatter';
 
 const DEFAULT: Intl.DateTimeFormatOptions = {
   dateStyle: 'medium',

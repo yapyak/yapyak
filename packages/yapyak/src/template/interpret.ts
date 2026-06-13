@@ -8,7 +8,7 @@ import type {
   TimeNode,
 } from './node';
 
-import { resolveFormatter } from '../formatter';
+import { resolveFormatter } from '../formatting';
 import { warn } from '../warn';
 
 export function interpret(

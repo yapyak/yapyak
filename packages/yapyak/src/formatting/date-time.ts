@@ -1,11 +1,12 @@
-import { resolveFormatter } from '../formatter';
 import { runTrackers } from '../tracker';
+import { resolveFormatter } from './formatter';
 
 const DEFAULT: Intl.DateTimeFormatOptions = {
+  dateStyle: 'medium',
   timeStyle: 'short',
 };
 
-export function formatTime(
+export function formatDateTime(
   value: Date | number,
   locale: string,
   options?: Intl.DateTimeFormatOptions,

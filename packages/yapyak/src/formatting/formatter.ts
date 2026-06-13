@@ -1,5 +1,5 @@
+import { warn } from '../warn';
 import { isCurrencyCode } from './currency';
-import { warn } from './warn';
 
 type IntlFormatterCtor<T> = new (locale: string, options?: object) => T;
 

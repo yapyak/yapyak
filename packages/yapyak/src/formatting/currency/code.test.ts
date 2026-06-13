@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { isCurrencyCode, parseCurrencyCode } from './iso-4217';
+import { isCurrencyCode, parseCurrencyCode } from './code';
 
 describe('isCurrencyCode', () => {
   it('returns `true` for a code the host runtime supports', () => {

@@ -15,10 +15,11 @@
 export {
   type CurrencyCode,
   type CurrencyCodeInput,
+  type Format,
+  format,
   isCurrencyCode,
   parseCurrencyCode,
-} from './currency';
-export { type Format, format } from './format';
+} from './formatting';
 export {
   type Locale,
   type Register,

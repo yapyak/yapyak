@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { resetWarn, setWarn } from '../warn';
 import { resolveFormatter } from './formatter';
-import { resetWarn, setWarn } from './warn';
 
 describe('resolveFormatter', () => {
   it('returns the same formatter for an identical locale and options', () => {
