@@ -38,8 +38,12 @@ describe('vue processor — shape', () => {
     expect(vue().id).toBe('vue');
   });
 
-  it('returns a processor that declares `@yapyak/vue` as the runtime binding', () => {
-    expect(vue().runtimeBinding).toBe('@yapyak/vue');
+  it('returns a processor that declares `@yapyak/vue/internal` as the runtime binding module', () => {
+    expect(vue().runtimeBinding?.module).toBe('@yapyak/vue/internal');
+  });
+
+  it('refuses to declare a runtime hook', () => {
+    expect(vue().runtimeBinding?.hook).toBeUndefined();
   });
 });
 

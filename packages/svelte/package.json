@@ -10,6 +10,11 @@
       "svelte": "./src/index.ts",
       "default": "./src/index.ts"
     },
+    "./internal": {
+      "types": "./src/internal.svelte.ts",
+      "svelte": "./src/internal.svelte.ts",
+      "default": "./src/internal.svelte.ts"
+    },
     "./processor": {
       "types": "./dist/processor.d.ts",
       "default": "./dist/processor.js"

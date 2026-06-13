@@ -78,6 +78,13 @@ export type Processor = {
   id: string;
   /** Breaks framework-specific source into TS-parseable fragments. */
   parseFragments(source: string): Fragment[];
-  /** Package name the dev transform side-effect-imports for HMR wiring. */
-  runtimeBinding?: string;
+  /**
+   * Compiler-emitted runtime wiring. The dev transform imports `module` so the framework's HMR side effects fire. When `hook` is set, the dev transform also imports that hook from the same module and injects a call at the top of every React function component containing `t()`.
+   */
+  runtimeBinding?: {
+    hook?: {
+      name: string;
+    };
+    module: string;
+  };
 };

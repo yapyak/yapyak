@@ -25,7 +25,12 @@ const reactProcessor: Processor = createProcessor(
       originalOffset: 0,
     },
   ],
-  '@yapyak/react',
+  {
+    hook: {
+      name: 'useYapyak',
+    },
+    module: '@yapyak/react/internal',
+  },
 );
 
 function runTransform(input: {
@@ -1252,6 +1257,7 @@ describe('transformFile', () => {
         ].join('\n'),
       });
       expect(code).toMatch(/useYapyak as _yp_use/);
+      expect(code).toContain("from '@yapyak/react/internal'");
       expect(code).toMatch(/function Header\(\) \{_yp_use\(\)/);
     });
 

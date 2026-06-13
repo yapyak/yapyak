@@ -3,8 +3,6 @@ import type { Locale } from 'yapyak';
 import { getLocale, setLocale } from 'yapyak';
 import { autoRegisterTracker, autoSubscribeLocale } from 'yapyak/internal';
 
-import './dev-store.svelte';
-
 let active = $state(getLocale());
 
 if (typeof window !== 'undefined') {

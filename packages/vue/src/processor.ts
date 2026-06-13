@@ -83,7 +83,9 @@ export function vue(): Processor {
       }
       return fragments;
     },
-    '@yapyak/vue',
+    {
+      module: '@yapyak/vue/internal',
+    },
   );
 }
 

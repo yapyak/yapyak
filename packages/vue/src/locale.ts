@@ -5,8 +5,6 @@ import { customRef } from 'vue';
 import { getLocale, setLocale } from 'yapyak';
 import { autoRegisterTracker, autoSubscribeLocale } from 'yapyak/internal';
 
-import './dev-store';
-
 /**
  * Reactive locale ref.
  *

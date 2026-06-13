@@ -39,8 +39,12 @@ describe('svelte processor — shape', () => {
     expect(svelte().id).toBe('svelte');
   });
 
-  it('returns a processor that declares `@yapyak/svelte` as the runtime binding', () => {
-    expect(svelte().runtimeBinding).toBe('@yapyak/svelte');
+  it('returns a processor that declares `@yapyak/svelte/internal` as the runtime binding module', () => {
+    expect(svelte().runtimeBinding?.module).toBe('@yapyak/svelte/internal');
+  });
+
+  it('refuses to declare a runtime hook', () => {
+    expect(svelte().runtimeBinding?.hook).toBeUndefined();
   });
 });
 

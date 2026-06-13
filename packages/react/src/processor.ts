@@ -30,7 +30,12 @@ export function react(): Processor {
     ],
     'react',
     parseFragments,
-    '@yapyak/react',
+    {
+      hook: {
+        name: 'useYapyak',
+      },
+      module: '@yapyak/react/internal',
+    },
   );
 }
 

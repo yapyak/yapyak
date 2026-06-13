@@ -61,7 +61,9 @@ export function svelte(): Processor {
       }
       return fragments;
     },
-    '@yapyak/svelte',
+    {
+      module: '@yapyak/svelte/internal',
+    },
   );
 }
 

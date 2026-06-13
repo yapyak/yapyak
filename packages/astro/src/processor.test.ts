@@ -38,8 +38,8 @@ describe('astro processor — shape', () => {
     expect(astro().id).toBe('astro');
   });
 
-  it('returns a processor that declares `@yapyak/astro` as the runtime binding', () => {
-    expect(astro().runtimeBinding).toBe('@yapyak/astro');
+  it('refuses to declare a runtime binding — Astro uses full-reload for HMR', () => {
+    expect(astro().runtimeBinding).toBeUndefined();
   });
 });
 

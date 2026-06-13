@@ -10,7 +10,7 @@ import type { ApplyImportFn, ParseFragmentsFn, Processor } from './type';
  * @param extensions - File extensions this processor handles, e.g. `['.vue']`.
  * @param id - Stable identifier for diagnostics. Convention: lowercase suffix matching the package name.
  * @param parseFragments - Breaks framework-specific source into TS-parseable fragments.
- * @param runtimeBinding - Optional package name the dev transform side-effect-imports for HMR wiring.
+ * @param runtimeBinding - Optional compiler-emitted runtime wiring. `module` is side-effect-imported in dev; `hook.name` (when set) is imported from the same module and injected as a call at the top of every React function component containing `t()`.
  *
  * @example
  * ```ts
@@ -23,7 +23,7 @@ import type { ApplyImportFn, ParseFragmentsFn, Processor } from './type';
  *   ['.mfx'],
  *   'my-framework',
  *   (source) => [{ code: source, kind: 'script', lang: 'ts', originalOffset: 0 }],
- *   '@my-framework/binding',
+ *   { module: '@my-framework/binding/internal' },
  * );
  * ```
  *
@@ -35,7 +35,12 @@ export function createProcessor(
   extensions: string[],
   id: string,
   parseFragments: ParseFragmentsFn,
-  runtimeBinding?: string,
+  runtimeBinding?: {
+    hook?: {
+      name: string;
+    };
+    module: string;
+  },
 ): Processor {
   if (id === '') {
     throw new Error('createProcessor: id must be a non-empty string.');

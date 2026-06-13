@@ -38,7 +38,6 @@ const CATALOG_PREFIX = '_yapyak_catalog';
 const REGISTER_LOCAL = '_yp_register';
 const INVALIDATE_LOCAL = '_yp_invalidate';
 const USE_LOCAL = '_yp_use';
-const REACT_PROCESSOR_ID = 'react';
 const FACTORY_ORDER = [
   'literal',
   'placeholder',
@@ -72,8 +71,9 @@ export function transformFile(
   const fragments = processor.parseFragments(request.source);
   const isSingleLocale = request.locales.length === 1;
   const isDev = request.dev === true;
-  const injectsReactHook = isDev && processor.id === REACT_PROCESSOR_ID;
   const runtimeBinding = isDev ? processor.runtimeBinding : undefined;
+  const injectsReactHook =
+    runtimeBinding !== undefined && runtimeBinding.hook !== undefined;
   const magicString = new MagicString(request.source);
 
   const pickLocal = findFreePickLocal(request.source);
@@ -195,12 +195,14 @@ export function transformFile(
       `import { ${allImportSpecs.join(', ')} } from '${YAPYAK_INTERNAL_MODULE}';`,
     );
   }
-  if (injectsReactHook && runtimeBinding !== undefined) {
-    injectionLines.push(
-      `import { useYapyak as ${useLocal} } from '${runtimeBinding}';`,
-    );
-  } else if (runtimeBinding !== undefined) {
-    injectionLines.push(`import '${runtimeBinding}';`);
+  if (runtimeBinding !== undefined) {
+    if (injectsReactHook && runtimeBinding.hook !== undefined) {
+      injectionLines.push(
+        `import { ${runtimeBinding.hook.name} as ${useLocal} } from '${runtimeBinding.module}';`,
+      );
+    } else {
+      injectionLines.push(`import '${runtimeBinding.module}';`);
+    }
   }
   for (const entry of catalogsByKey.values()) {
     if (isDev) {

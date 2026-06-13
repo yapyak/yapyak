@@ -58,7 +58,6 @@ export function astro(): Processor {
       const { ast } = compiler.parse(source, undefined);
       return fragmentsFromNode(ast, source);
     },
-    '@yapyak/astro',
   );
 }
 
