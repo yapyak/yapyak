@@ -63,12 +63,7 @@ const reactRenderer = {
       return parts[0];
     }
     return parts.map((part, index) =>
-      typeof part === 'string' ? (
-        part
-      ) : (
-        // biome-ignore lint/suspicious/noArrayIndexKey: yap yap yap
-        <Fragment key={index}>{part}</Fragment>
-      ),
+      typeof part === 'string' ? part : <Fragment key={index}>{part}</Fragment>,
     );
   },
   leaf: (text: string): ReactNode => text,

@@ -1,5 +1,9 @@
 export type { TemplateDiagnostic } from './diagnostic';
 export type { Template, TemplateNode } from './node';
+export type {
+  Placeholder,
+  PlaceholderKind,
+} from './placeholder';
 
 export {
   count,
@@ -13,8 +17,4 @@ export {
 } from './factory';
 export { interpret } from './interpret';
 export { parseTemplate } from './parse';
-export {
-  type Placeholder,
-  type PlaceholderKind,
-  extractPlaceholders,
-} from './placeholder';
+export { extractPlaceholders } from './placeholder';

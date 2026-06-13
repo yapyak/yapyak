@@ -2,6 +2,7 @@
   "name": "@yapyak/openai",
   "version": "0.0.0",
   "license": "MIT",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {
@@ -9,7 +10,6 @@
       "default": "./dist/index.js"
     }
   },
-  "sideEffects": false,
   "files": [
     "dist"
   ],

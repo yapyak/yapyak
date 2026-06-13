@@ -1,27 +1,38 @@
-export type { LocaleContext } from './context';
-
-export {
-  type LocaleIssue,
-  type LocaleValidation,
-  validateLocaleCode,
+export type {
+  LocaleIssue,
+  LocaleValidation,
 } from './code';
-export { type LocaleData, readLocaleData } from './data';
-export {
-  type DiscoverLocalesOptions,
-  type DiscoverLocalesResult,
-  type LocaleWarning,
-  discoverLocales,
+export type { LocaleContext } from './context';
+export type { LocaleData } from './data';
+export type {
+  DiscoverLocalesOptions,
+  DiscoverLocalesResult,
+  LocaleWarning,
 } from './discover';
+export type {
+  CatalogEntry,
+  InvariantViolation,
+  LocaleFile,
+  SyncEntry,
+  SyncLocaleFilesInput,
+  SyncLocaleFilesOptions,
+  SyncLocaleFilesResult,
+  WriteLocaleFileInput,
+} from './file';
+export type {
+  MessagePosition,
+  MigrateLocalesInput,
+  MigrateLocalesOptions,
+  MigrateLocalesResult,
+  RenameEntry,
+} from './migrate';
+export type { OrphanCache } from './orphan';
+
+export { validateLocaleCode } from './code';
+export { readLocaleData } from './data';
+export { discoverLocales } from './discover';
 export {
-  type CatalogEntry,
   CorruptLocaleFileError,
-  type InvariantViolation,
-  type LocaleFile,
-  type SyncEntry,
-  type SyncLocaleFilesInput,
-  type SyncLocaleFilesOptions,
-  type SyncLocaleFilesResult,
-  type WriteLocaleFileInput,
   YapyakInvariantError,
   findTranslation,
   readLocaleFile,
@@ -32,17 +43,11 @@ export {
   writeLocaleFiles,
 } from './file';
 export {
-  type MessagePosition,
-  type MigrateLocalesInput,
-  type MigrateLocalesOptions,
-  type MigrateLocalesResult,
-  type RenameEntry,
   detectRenames,
   migrateLocales,
 } from './migrate';
 export {
   CorruptOrphanCacheError,
-  type OrphanCache,
   getDefaultYapyakDir,
   readOrphans,
 } from './orphan';

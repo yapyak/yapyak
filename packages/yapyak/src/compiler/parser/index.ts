@@ -1,3 +1,15 @@
+export type {
+  ParsedArguments,
+  ParsedParams,
+} from './argument';
+export type {
+  Binding,
+  BindingTable,
+  ResolveBindingsOptions,
+  Scope,
+} from './binding';
+export type { CallSite } from './call';
+export type { CallSiteContext } from './call-site-context';
 export type { Diagnostic, DiagnosticCode } from './diagnostic';
 export type {
   ExtractFileOptions,
@@ -9,32 +21,19 @@ export type {
   TransformFileRequest,
   TransformFileResult,
 } from './file/transform';
+export type {
+  ParsedMessage,
+  Placeholder,
+  PlaceholderKind,
+  TemplateDiagnostic,
+} from './placeholder';
 
-export {
-  type ParsedArguments,
-  type ParsedParams,
-  parseArguments,
-} from './argument';
-export {
-  type Binding,
-  type BindingTable,
-  type ResolveBindingsOptions,
-  type Scope,
-  resolveBindings,
-} from './binding';
-export { type CallSite, discoverCalls } from './call';
-export {
-  type CallSiteContext,
-  resolveCallSiteContext,
-} from './call-site-context';
+export { parseArguments } from './argument';
+export { resolveBindings } from './binding';
+export { discoverCalls } from './call';
+export { resolveCallSiteContext } from './call-site-context';
 export { extractFile } from './file/extract';
 export { transformFile } from './file/transform';
 export { fromMessageKey, toMessageKey } from './message-key';
-export {
-  type ParsedMessage,
-  type Placeholder,
-  type PlaceholderKind,
-  type TemplateDiagnostic,
-  parsePlaceholders,
-} from './placeholder';
+export { parsePlaceholders } from './placeholder';
 export { resolveProcessor, vanillaProcessor } from './processor';

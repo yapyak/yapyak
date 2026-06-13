@@ -1,7 +1,9 @@
+export type { RichTextNode } from './rich-text';
+export type { TFn, TParams, TReturn } from './t';
+
 export { pick } from './pick';
 export {
-  type RichTextNode,
   parseRichText,
   walkRichText,
 } from './rich-text';
-export { type TFn, type TParams, type TReturn, t } from './t';
+export { t } from './t';

@@ -12,4 +12,6 @@
  * @packageDocumentation
  */
 
-export { type AnthropicOptions, anthropic } from './anthropic';
+export type { AnthropicOptions } from './anthropic';
+
+export { anthropic } from './anthropic';

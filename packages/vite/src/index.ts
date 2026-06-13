@@ -12,4 +12,6 @@
  * @packageDocumentation
  */
 
-export { type YapyakOptions, yapyak } from './plugin';
+export type { YapyakOptions } from './plugin';
+
+export { yapyak } from './plugin';

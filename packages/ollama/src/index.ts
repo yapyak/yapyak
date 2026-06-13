@@ -12,4 +12,6 @@
  * @packageDocumentation
  */
 
-export { type OllamaOptions, ollama } from './ollama';
+export type { OllamaOptions } from './ollama';
+
+export { ollama } from './ollama';

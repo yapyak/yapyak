@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {
@@ -15,7 +16,6 @@
       "default": "./dist/vite.js"
     }
   },
-  "sideEffects": false,
   "files": [
     "dist",
     "src/ambient.d.ts"

@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.0/schema.json",
   "assist": {
     "actions": {
       "source": {
@@ -32,6 +32,7 @@
             "sortOrder": "lexicographic"
           }
         },
+        "useSortedPackageJson": "on",
         "useSortedProperties": "on"
       }
     }
@@ -135,6 +136,12 @@
         "useDefaultSwitchClause": "error",
         "useEnumInitializers": "error",
         "useExplicitLengthCheck": "error",
+        "useExportType": {
+          "level": "error",
+          "options": {
+            "style": "separatedType"
+          }
+        },
         "useFilenamingConvention": {
           "level": "error",
           "options": {
@@ -191,7 +198,6 @@
         }
       },
       "includes": [
-        "**/package.json",
         "**/locales/*.json",
         "**/knip.json"
       ]

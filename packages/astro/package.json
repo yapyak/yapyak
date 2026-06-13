@@ -2,6 +2,7 @@
   "name": "@yapyak/astro",
   "version": "0.0.0",
   "license": "MIT",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {
@@ -21,7 +22,6 @@
       "default": "./dist/processor.js"
     }
   },
-  "sideEffects": false,
   "files": [
     "dist",
     "src",

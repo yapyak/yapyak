@@ -11,8 +11,8 @@
     "#utils/*": "./src/utils/*"
   },
   "scripts": {
-    "dev": "vite dev",
     "build": "vite build",
+    "dev": "vite dev",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },
@@ -23,8 +23,8 @@
     "@yapyak/doc-extractor": "workspace:*",
     "@yapyak/react": "workspace:*",
     "@yapyak/vite": "workspace:*",
-    "react-dom": "catalog:",
     "react": "catalog:",
+    "react-dom": "catalog:",
     "yapyak": "workspace:*"
   },
   "devDependencies": {

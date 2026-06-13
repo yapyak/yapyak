@@ -12,4 +12,6 @@
  * @packageDocumentation
  */
 
-export { type OpenAIOptions, openai } from './openai';
+export type { OpenAIOptions } from './openai';
+
+export { openai } from './openai';

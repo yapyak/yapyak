@@ -1,28 +1,36 @@
+export type {
+  CatalogEntry,
+  DiscoverLocalesOptions,
+  DiscoverLocalesResult,
+  InvariantViolation,
+  LocaleContext,
+  LocaleData,
+  LocaleFile,
+  LocaleIssue,
+  LocaleValidation,
+  LocaleWarning,
+  MessagePosition,
+  MigrateLocalesInput,
+  MigrateLocalesOptions,
+  MigrateLocalesResult,
+  RenameEntry,
+  SyncEntry,
+  SyncLocaleFilesInput,
+  SyncLocaleFilesOptions,
+  SyncLocaleFilesResult,
+  WriteLocaleFileInput,
+} from './locale';
+export type {
+  AutoTranslateInput,
+  AutoTranslateOptions,
+  AutoTranslateResult,
+} from './translate';
+
 export { stringifyCanonical } from './canonical';
 export { findContextDiagnostics } from './context-diagnostic';
 export {
-  type CatalogEntry,
   CorruptLocaleFileError,
   CorruptOrphanCacheError,
-  type DiscoverLocalesOptions,
-  type DiscoverLocalesResult,
-  type InvariantViolation,
-  type LocaleContext,
-  type LocaleData,
-  type LocaleFile,
-  type LocaleIssue,
-  type LocaleValidation,
-  type LocaleWarning,
-  type MessagePosition,
-  type MigrateLocalesInput,
-  type MigrateLocalesOptions,
-  type MigrateLocalesResult,
-  type RenameEntry,
-  type SyncEntry,
-  type SyncLocaleFilesInput,
-  type SyncLocaleFilesOptions,
-  type SyncLocaleFilesResult,
-  type WriteLocaleFileInput,
   YapyakInvariantError,
   detectRenames,
   discoverLocales,
@@ -41,9 +49,4 @@ export {
   writeLocaleFiles,
   writeRegister,
 } from './locale';
-export {
-  type AutoTranslateInput,
-  type AutoTranslateOptions,
-  type AutoTranslateResult,
-  autoTranslate,
-} from './translate';
+export { autoTranslate } from './translate';

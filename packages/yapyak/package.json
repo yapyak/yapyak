@@ -2,6 +2,7 @@
   "name": "yapyak",
   "version": "0.0.0",
   "license": "MIT",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {
@@ -45,13 +46,12 @@
       "default": "./dist/translator/internal.js"
     }
   },
-  "sideEffects": false,
-  "files": [
-    "dist"
-  ],
   "bin": {
     "yapyak": "./dist/cli/bin.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "pnpm -w vitest --run --project=yapyak",

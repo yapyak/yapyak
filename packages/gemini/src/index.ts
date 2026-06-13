@@ -12,4 +12,6 @@
  * @packageDocumentation
  */
 
-export { type GeminiOptions, gemini } from './gemini';
+export type { GeminiOptions } from './gemini';
+
+export { gemini } from './gemini';

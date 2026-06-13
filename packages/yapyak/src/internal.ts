@@ -1,10 +1,14 @@
+export type { RuntimeMock } from './runtime-mock';
+export type { RichTextNode } from './translation';
+export type { WarnFn } from './warn';
+
 export { registerHotDispose } from './hot-dispose';
 export {
   autoSubscribeLocale,
   resetLocale,
   subscribeLocale,
 } from './locale';
-export { type RuntimeMock, buildRuntimeMock } from './runtime-mock';
+export { buildRuntimeMock } from './runtime-mock';
 export {
   count,
   date,
@@ -17,9 +21,8 @@ export {
 } from './template';
 export { autoRegisterTracker, registerTracker, runTrackers } from './tracker';
 export {
-  type RichTextNode,
   parseRichText,
   pick,
   walkRichText,
 } from './translation';
-export { type WarnFn, resetWarn, setWarn, warn } from './warn';
+export { resetWarn, setWarn, warn } from './warn';
