@@ -135,7 +135,7 @@ describe('validateLocaleFile', () => {
     );
   });
 
-  it('accepts a context-variant entry with string values', () => {
+  it('emits no YPK301 when a context-variant entry has string values', () => {
     writeFileSync(
       path,
       JSON.stringify({

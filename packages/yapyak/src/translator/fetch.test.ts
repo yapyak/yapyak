@@ -83,7 +83,7 @@ describe('fetchWithRetry', () => {
     ).rejects.toThrow('user aborted');
   });
 
-  it('throws without waiting out the backoff when the signal aborts during sleep', async () => {
+  it('throws when the signal aborts during a backoff sleep', async () => {
     const fetchMock = vi.fn().mockResolvedValueOnce(
       new Response(null, {
         status: 500,
