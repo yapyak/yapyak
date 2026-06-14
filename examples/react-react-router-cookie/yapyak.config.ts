@@ -1,3 +1,4 @@
+import { react } from '@yapyak/react/processor';
 import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
@@ -5,4 +6,7 @@ export default defineConfig({
     'app',
   ],
   persistence: 'cookie',
+  processors: [
+    react(),
+  ],
 });

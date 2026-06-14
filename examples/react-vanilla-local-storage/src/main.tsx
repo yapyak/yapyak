@@ -1,4 +1,3 @@
-import { LocaleProvider } from '@yapyak/react';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
@@ -11,8 +10,6 @@ if (!root) {
 
 createRoot(root).render(
   <StrictMode>
-    <LocaleProvider>
-      <App />
-    </LocaleProvider>
+    <App />
   </StrictMode>,
 );

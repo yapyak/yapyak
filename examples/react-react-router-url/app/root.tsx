@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { Route } from './+types/root';
 
-import { LocaleProvider, useLocale } from '@yapyak/react';
+import { useLocale } from '@yapyak/react';
 import { middleware as yapyakMiddleware } from '@yapyak/react-router';
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
 
@@ -23,7 +23,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <Links />
       </head>
       <body>
-        <LocaleProvider>{children}</LocaleProvider>
+        {children}
         <ScrollRestoration />
         <Scripts />
       </body>

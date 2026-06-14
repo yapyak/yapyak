@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router';
-import { LocaleProvider, useLocale } from '@yapyak/react';
+import { useLocale } from '@yapyak/react';
 
 export const Route = createRootRoute({
   head: () => ({
@@ -29,7 +29,7 @@ function RootDocument({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <LocaleProvider>{children}</LocaleProvider>
+        {children}
         <Scripts />
       </body>
     </html>

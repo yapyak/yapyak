@@ -253,10 +253,10 @@ describe('transformFile', () => {
 
     it('preserves type-only `@yapyak/*` imports', () => {
       const source = [
-        "import type { LocaleProviderProps } from '@yapyak/react';",
+        "import type { RichTextProps } from '@yapyak/react';",
         "import { t } from 'yapyak';",
-        'export function Greeting(props: LocaleProviderProps) {',
-        "  return props.defaultLocale + t('Hello');",
+        "export function Greeting(props: RichTextProps<'Hello'>) {",
+        "  return props.value + t('Hello');",
         '}',
       ].join('\n');
       const code = runTransform({
@@ -266,16 +266,16 @@ describe('transformFile', () => {
         source,
       });
       expect(code).toContain(
-        "import type { LocaleProviderProps } from '@yapyak/react';",
+        "import type { RichTextProps } from '@yapyak/react';",
       );
     });
 
     it('preserves inline type marker on `@yapyak/*` import specifier', () => {
       const source = [
-        "import { type LocaleProviderProps } from '@yapyak/react';",
+        "import { type RichTextProps } from '@yapyak/react';",
         "import { t } from 'yapyak';",
-        'export function Greeting(props: LocaleProviderProps) {',
-        "  return props.defaultLocale + t('Hello');",
+        "export function Greeting(props: RichTextProps<'Hello'>) {",
+        "  return props.value + t('Hello');",
         '}',
       ].join('\n');
       const code = runTransform({
@@ -285,7 +285,7 @@ describe('transformFile', () => {
         source,
       });
       expect(code).toContain(
-        "import { type LocaleProviderProps } from '@yapyak/react';",
+        "import { type RichTextProps } from '@yapyak/react';",
       );
     });
 
