@@ -3,4 +3,4 @@ export type { BuildSystemOptions } from './prompt';
 
 export { fetchWithRetry } from './fetch';
 export { buildSystem, stripCodeFence } from './prompt';
-export { parseJsonResponse, parseResponse } from './response';
+export { parseResponse, parseTranslationsBatch } from './response';

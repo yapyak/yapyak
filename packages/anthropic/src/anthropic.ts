@@ -4,8 +4,8 @@ import { createTranslator } from 'yapyak/translator';
 import {
   buildSystem,
   fetchWithRetry,
-  parseJsonResponse,
   parseResponse,
+  parseTranslationsBatch,
   stripCodeFence,
 } from 'yapyak/translator/internal';
 
@@ -174,7 +174,7 @@ export function anthropic(options: AnthropicOptions): Translator {
         const text = await response.text();
         throw new Error(`yapyak anthropic: ${response.status} ${text}`);
       }
-      const body = await parseJsonResponse<AnthropicMessageResponse>(
+      const body = await parseResponse<AnthropicMessageResponse>(
         response,
         'anthropic',
       );
@@ -185,7 +185,7 @@ export function anthropic(options: AnthropicOptions): Translator {
           'yapyak anthropic: response did not contain a text block',
         );
       }
-      return parseResponse(stripCodeFence(text.trim()), 'anthropic');
+      return parseTranslationsBatch(stripCodeFence(text.trim()), 'anthropic');
     },
   });
 }

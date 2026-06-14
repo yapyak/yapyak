@@ -4,8 +4,8 @@ import { createTranslator } from 'yapyak/translator';
 import {
   buildSystem,
   fetchWithRetry,
-  parseJsonResponse,
   parseResponse,
+  parseTranslationsBatch,
   stripCodeFence,
 } from 'yapyak/translator/internal';
 
@@ -193,7 +193,7 @@ export function openai(options: OpenAIOptions): Translator {
         const text = await response.text();
         throw new Error(`yapyak openai: ${response.status} ${text}`);
       }
-      const responseBody = await parseJsonResponse<OpenAIChatResponse>(
+      const responseBody = await parseResponse<OpenAIChatResponse>(
         response,
         'openai',
       );
@@ -202,7 +202,7 @@ export function openai(options: OpenAIOptions): Translator {
       if (typeof text !== 'string') {
         throw new Error('yapyak openai: response did not contain a text block');
       }
-      return parseResponse(stripCodeFence(text.trim()), 'openai');
+      return parseTranslationsBatch(stripCodeFence(text.trim()), 'openai');
     },
   });
 }

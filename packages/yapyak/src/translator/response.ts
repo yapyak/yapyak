@@ -2,7 +2,7 @@ import type { LocaleTranslations } from './type';
 
 const PREVIEW_LENGTH = 200;
 
-export function parseResponse(
+export function parseTranslationsBatch(
   raw: string,
   vendor: string,
 ): LocaleTranslations[] {
@@ -23,7 +23,7 @@ export function parseResponse(
   return parsed as LocaleTranslations[];
 }
 
-export async function parseJsonResponse<T>(
+export async function parseResponse<T>(
   response: Response,
   vendor: string,
 ): Promise<T> {

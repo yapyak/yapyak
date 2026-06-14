@@ -4,8 +4,8 @@ import { createTranslator } from 'yapyak/translator';
 import {
   buildSystem,
   fetchWithRetry,
-  parseJsonResponse,
   parseResponse,
+  parseTranslationsBatch,
 } from 'yapyak/translator/internal';
 
 /** Options for {@link ollama}. */
@@ -149,7 +149,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
         const text = await response.text();
         throw new Error(`yapyak ollama: ${response.status} ${text}`);
       }
-      const responseBody = await parseJsonResponse<OllamaResponse>(
+      const responseBody = await parseResponse<OllamaResponse>(
         response,
         'ollama',
       );
@@ -160,7 +160,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
           'yapyak ollama: response did not contain a response field',
         );
       }
-      return parseResponse(text.trim(), 'ollama');
+      return parseTranslationsBatch(text.trim(), 'ollama');
     },
   });
 }

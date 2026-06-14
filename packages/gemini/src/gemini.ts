@@ -4,8 +4,8 @@ import { createTranslator } from 'yapyak/translator';
 import {
   buildSystem,
   fetchWithRetry,
-  parseJsonResponse,
   parseResponse,
+  parseTranslationsBatch,
   stripCodeFence,
 } from 'yapyak/translator/internal';
 
@@ -177,7 +177,7 @@ export function gemini(options: GeminiOptions): Translator {
         const text = await response.text();
         throw new Error(`yapyak gemini: ${response.status} ${text}`);
       }
-      const responseBody = await parseJsonResponse<GeminiResponse>(
+      const responseBody = await parseResponse<GeminiResponse>(
         response,
         'gemini',
       );
@@ -186,7 +186,7 @@ export function gemini(options: GeminiOptions): Translator {
       if (typeof text !== 'string') {
         throw new Error('yapyak gemini: response did not contain a text part');
       }
-      return parseResponse(stripCodeFence(text.trim()), 'gemini');
+      return parseTranslationsBatch(stripCodeFence(text.trim()), 'gemini');
     },
   });
 }
