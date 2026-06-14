@@ -3,6 +3,7 @@ import type { LocaleFile, ParseEntryError } from './file';
 
 import { parsePlaceholders } from '../../parser';
 import { findTranslation, parseEntry } from './file';
+import { isUnsafeKey } from './unsafe-key';
 import { existsSync, readFileSync } from 'node:fs';
 
 const STUB_RANGE = {
@@ -274,7 +275,7 @@ function isUnsafePath(path: string): boolean {
   if (path === '') {
     return true;
   }
-  if (path === '__proto__' || path === 'constructor' || path === 'prototype') {
+  if (isUnsafeKey(path)) {
     return true;
   }
   if (path.includes('\\')) {

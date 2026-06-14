@@ -300,7 +300,7 @@ describe('anthropic', () => {
     ).rejects.toThrow(/truncated by token limit/);
   });
 
-  it('sends the scaled `max_tokens` default when `maxTokens` is not set', async () => {
+  it('writes the scaled `max_tokens` default when `maxTokens` is not set', async () => {
     let capturedBody:
       | {
           max_tokens?: number;

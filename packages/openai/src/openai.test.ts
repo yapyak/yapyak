@@ -358,7 +358,7 @@ describe('openai', () => {
     ).rejects.toThrow(/blocked by OpenAI content filter/);
   });
 
-  it('sends `maxTokens` as `max_completion_tokens` for a reasoning model', async () => {
+  it('writes `maxTokens` to `max_completion_tokens` for a reasoning model', async () => {
     const stub = stubFetch('Hej');
     await openai({
       apiKey: 'k',
@@ -377,7 +377,7 @@ describe('openai', () => {
     expect(body.max_tokens).toBeUndefined();
   });
 
-  it('sends `maxTokens` as `max_tokens` for a non-reasoning model', async () => {
+  it('writes `maxTokens` to `max_tokens` for a non-reasoning model', async () => {
     const stub = stubFetch('Hej');
     await openai({
       apiKey: 'k',

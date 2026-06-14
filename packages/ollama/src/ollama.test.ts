@@ -208,7 +208,7 @@ describe('ollama', () => {
     ).rejects.toThrow(/truncated by token limit/);
   });
 
-  it('sends `maxTokens` as `options.num_predict` when set', async () => {
+  it('writes `maxTokens` to `options.num_predict` when set', async () => {
     let capturedBody:
       | {
           options?: {

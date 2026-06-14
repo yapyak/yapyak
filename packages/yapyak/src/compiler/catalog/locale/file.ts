@@ -15,6 +15,7 @@ import {
   removeOrphan,
   writeOrphans,
 } from './orphan';
+import { isUnsafeKey } from './unsafe-key';
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
@@ -144,10 +145,6 @@ export function parseLocaleFile(parsed: unknown): LocaleFile {
     result[fileId] = fileEntries;
   }
   return result;
-}
-
-function isUnsafeKey(key: string): boolean {
-  return key === '__proto__' || key === 'constructor' || key === 'prototype';
 }
 
 export type ParseEntryError =

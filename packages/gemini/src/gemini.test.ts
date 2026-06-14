@@ -323,7 +323,7 @@ describe('gemini', () => {
     ).rejects.toThrow(/blocked by Gemini recitation filter/);
   });
 
-  it('sends `maxTokens` as `generationConfig.maxOutputTokens` when set', async () => {
+  it('writes `maxTokens` to `generationConfig.maxOutputTokens` when set', async () => {
     const stub = stubFetch('Hej');
     await gemini({
       apiKey: 'k',

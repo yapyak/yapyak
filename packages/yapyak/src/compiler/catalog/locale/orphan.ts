@@ -1,5 +1,6 @@
 import { stringifyCanonical } from '../canonical';
 import { writeAtomic } from './atomic';
+import { isUnsafeKey } from './unsafe-key';
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
@@ -79,10 +80,6 @@ export function readOrphans(yapyakDir: string): OrphanCache {
     }
   }
   return result;
-}
-
-function isUnsafeKey(key: string): boolean {
-  return key === '__proto__' || key === 'constructor' || key === 'prototype';
 }
 
 export function writeOrphans(yapyakDir: string, cache: OrphanCache): void {
