@@ -28,7 +28,7 @@
     "!src/**/*.test.ts"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "pnpm -w vitest --run --project=@yapyak/astro",
     "typecheck": "tsc --noEmit"
   },
@@ -38,10 +38,10 @@
   "devDependencies": {
     "@astrojs/compiler": "catalog:",
     "@types/node": "catalog:",
-    "@yapyak/tsup-config": "workspace:*",
+    "@yapyak/tsdown-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "astro": "catalog:",
-    "tsup": "catalog:",
+    "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },

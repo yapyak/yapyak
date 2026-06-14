@@ -22,7 +22,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "pnpm -w vitest --run --project=@yapyak/vue",
     "typecheck": "tsc --noEmit"
   },
@@ -31,11 +31,11 @@
     "@types/node": "catalog:",
     "@vue/compiler-core": "catalog:",
     "@vue/compiler-sfc": "catalog:",
-    "@yapyak/tsup-config": "workspace:*",
+    "@yapyak/tsdown-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "@yapyak/vitest-config": "workspace:*",
     "happy-dom": "catalog:",
-    "tsup": "catalog:",
+    "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:",
     "vue": "catalog:"

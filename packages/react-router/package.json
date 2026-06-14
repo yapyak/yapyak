@@ -14,15 +14,15 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "pnpm -w vitest --run --project=@yapyak/react-router",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@yapyak/tsup-config": "workspace:*",
+    "@yapyak/tsdown-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "react-router": "catalog:",
-    "tsup": "catalog:",
+    "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },

@@ -1,4 +1,4 @@
-import { defineConfig } from '@yapyak/tsup-config';
+import { defineConfig } from '@yapyak/tsdown-config';
 
 export default defineConfig({
   entry: [

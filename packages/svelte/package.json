@@ -26,7 +26,7 @@
     "!src/**/*.test.ts"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "pnpm -w vitest --run --project=@yapyak/svelte",
     "typecheck": "tsc --noEmit"
   },
@@ -34,12 +34,12 @@
     "@sveltejs/vite-plugin-svelte": "catalog:",
     "@testing-library/svelte": "catalog:",
     "@types/node": "catalog:",
-    "@yapyak/tsup-config": "workspace:*",
+    "@yapyak/tsdown-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "@yapyak/vitest-config": "workspace:*",
     "happy-dom": "catalog:",
     "svelte": "catalog:",
-    "tsup": "catalog:",
+    "tsdown": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"

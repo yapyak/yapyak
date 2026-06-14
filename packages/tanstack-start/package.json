@@ -14,15 +14,15 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "pnpm -w vitest --run --project=@yapyak/tanstack-start",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@tanstack/react-start": "catalog:",
-    "@yapyak/tsup-config": "workspace:*",
+    "@yapyak/tsdown-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
-    "tsup": "catalog:",
+    "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },

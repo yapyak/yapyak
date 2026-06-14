@@ -1,5 +1,5 @@
 {
-  "name": "@yapyak/tsup-config",
+  "name": "@yapyak/tsdown-config",
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
@@ -15,17 +15,17 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "@yapyak/typescript-config": "workspace:*",
-    "tsup": "catalog:",
+    "tsdown": "catalog:",
     "typescript": "catalog:"
   },
   "peerDependencies": {
-    "tsup": ">=8"
+    "tsdown": ">=0.22"
   },
   "engines": {
     "node": ">=22"

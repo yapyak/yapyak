@@ -1,4 +1,4 @@
-import { defineConfig } from '@yapyak/tsup-config';
+import { defineConfig } from '@yapyak/tsdown-config';
 
 export default defineConfig({
   entry: [
@@ -7,6 +7,8 @@ export default defineConfig({
     'src/processor.ts',
   ],
   external: [
-    'react',
+    'vue',
+    '@vue/compiler-core',
+    '@vue/compiler-sfc',
   ],
 });
