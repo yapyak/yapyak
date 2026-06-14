@@ -44,8 +44,7 @@ describe('svelte processor — shape', () => {
   });
 
   it('refuses to declare a runtime invocation', () => {
-    const runtime = svelte().runtime;
-    expect(runtime && 'invoke' in runtime).toBe(false);
+    expect(svelte().runtime?.invoke).toBeUndefined();
   });
 });
 

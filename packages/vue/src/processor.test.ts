@@ -43,8 +43,7 @@ describe('vue processor — shape', () => {
   });
 
   it('refuses to declare a runtime invocation', () => {
-    const runtime = vue().runtime;
-    expect(runtime && 'invoke' in runtime).toBe(false);
+    expect(vue().runtime?.invoke).toBeUndefined();
   });
 });
 

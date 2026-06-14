@@ -81,12 +81,8 @@ export type Processor = {
   /**
    * Compiler-emitted runtime wiring. The dev transform imports `module` so the framework's HMR side effects fire. When `invoke` is set, the dev transform imports the named function from the same module and injects a call at the top of every React function component containing `t()` instead of a bare side-effect import.
    */
-  runtime?:
-    | {
-        module: string;
-      }
-    | {
-        invoke: string;
-        module: string;
-      };
+  runtime?: {
+    invoke?: string;
+    module: string;
+  };
 };

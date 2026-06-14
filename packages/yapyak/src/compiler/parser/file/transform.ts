@@ -95,7 +95,7 @@ export function transformFile(
   const isSingleLocale = request.locales.length === 1;
   const isDev = request.dev === true;
   const runtime = isDev ? processor.runtime : undefined;
-  const injectsReactHook = runtime !== undefined && 'invoke' in runtime;
+  const injectsReactHook = runtime?.invoke !== undefined;
   const magicString = new MagicString(request.source);
 
   const pickLocal = findFreePickLocal(request.source);
@@ -218,12 +218,12 @@ export function transformFile(
     );
   }
   if (runtime !== undefined) {
-    if (injectsReactHook && 'invoke' in runtime) {
+    if (runtime.invoke === undefined) {
+      injectionLines.push(`import '${runtime.module}';`);
+    } else {
       injectionLines.push(
         `import { ${runtime.invoke} as ${useLocal} } from '${runtime.module}';`,
       );
-    } else {
-      injectionLines.push(`import '${runtime.module}';`);
     }
   }
   for (const entry of catalogsByKey.values()) {

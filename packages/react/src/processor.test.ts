@@ -48,10 +48,7 @@ describe('react processor', () => {
   });
 
   it('returns a processor that declares `useYapyak` as the runtime invocation', () => {
-    const runtime = react().runtime;
-    expect(runtime && 'invoke' in runtime ? runtime.invoke : undefined).toBe(
-      'useYapyak',
-    );
+    expect(react().runtime?.invoke).toBe('useYapyak');
   });
 
   it('emits a `useYapyak` import when the dev transform runs through this processor', () => {
