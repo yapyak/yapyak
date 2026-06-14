@@ -265,6 +265,99 @@ describe('gemini', () => {
     ).rejects.toThrow(/text part/);
   });
 
+  it('throws a safety-filter error when `finishReason` is `SAFETY`', async () => {
+    vi.stubGlobal(
+      'fetch',
+      async () =>
+        new Response(
+          JSON.stringify({
+            candidates: [
+              {
+                finishReason: 'SAFETY',
+              },
+            ],
+          }),
+          {
+            status: 200,
+          },
+        ),
+    );
+    await expect(
+      gemini({
+        apiKey: 'k',
+      })({
+        fileId: 'x',
+        source: 'Hello',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      }),
+    ).rejects.toThrow(/blocked by Gemini safety filter/);
+  });
+
+  it('throws a recitation-filter error when `finishReason` is `RECITATION`', async () => {
+    vi.stubGlobal(
+      'fetch',
+      async () =>
+        new Response(
+          JSON.stringify({
+            candidates: [
+              {
+                finishReason: 'RECITATION',
+              },
+            ],
+          }),
+          {
+            status: 200,
+          },
+        ),
+    );
+    await expect(
+      gemini({
+        apiKey: 'k',
+      })({
+        fileId: 'x',
+        source: 'Hello',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      }),
+    ).rejects.toThrow(/blocked by Gemini recitation filter/);
+  });
+
+  it('sends `maxTokens` as `generationConfig.maxOutputTokens` when set', async () => {
+    const stub = stubFetch('Hej');
+    await gemini({
+      apiKey: 'k',
+      maxTokens: 4096,
+    })({
+      fileId: 'x',
+      source: 'Hello',
+      sourceLocale: 'en',
+      targetLocale: 'sv',
+    });
+    const body = stub.body() as {
+      generationConfig: {
+        maxOutputTokens?: number;
+      };
+    };
+    expect(body.generationConfig.maxOutputTokens).toBe(4096);
+  });
+
+  it('omits `maxOutputTokens` from the request when `maxTokens` is not set', async () => {
+    const stub = stubFetch('Hej');
+    await gemini({
+      apiKey: 'k',
+    })({
+      fileId: 'x',
+      source: 'Hello',
+      sourceLocale: 'en',
+      targetLocale: 'sv',
+    });
+    const body = stub.body() as {
+      generationConfig: Record<string, unknown>;
+    };
+    expect(body.generationConfig).not.toHaveProperty('maxOutputTokens');
+  });
+
   it('throws when `apiKey` is an empty string', () => {
     expect(() =>
       gemini({

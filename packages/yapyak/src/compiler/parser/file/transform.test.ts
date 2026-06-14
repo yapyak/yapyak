@@ -592,7 +592,7 @@ describe('transformFile', () => {
       expect(declarations).toHaveLength(2);
     });
 
-    it('preserves a free catalog prefix when user already has `_catalog`', () => {
+    it('emits `_catalog_$0` when user has bare `_catalog`', () => {
       const code = runTransform({
         locales: [
           'en',
@@ -605,11 +605,11 @@ describe('transformFile', () => {
           'export { _catalog };',
         ].join('\n'),
       });
-      expect(code).toMatch(/_catalog_\$0_\$0 = \{/);
+      expect(code).toMatch(/const _catalog_\$0 = \{/);
       expect(code).toContain('const _catalog = "user-defined";');
     });
 
-    it('preserves a free catalog prefix when user has both `_catalog` and `_catalog_$0`', () => {
+    it('skips `_catalog_$0` when user already declares it', () => {
       const code = runTransform({
         locales: [
           'en',
@@ -617,15 +617,49 @@ describe('transformFile', () => {
         ],
         source: [
           "import { t } from 'yapyak';",
-          'const _catalog = "user-defined";',
-          'const _catalog_$0 = "also-user-defined";',
+          'const _catalog_$0 = "user-defined";',
           "export const x = t('Hello');",
-          'export { _catalog, _catalog_$0 };',
+          'export { _catalog_$0 };',
         ].join('\n'),
       });
-      expect(code).toMatch(/_catalog_\$1_\$0 = \{/);
-      expect(code).toContain('const _catalog = "user-defined";');
-      expect(code).toContain('const _catalog_$0 = "also-user-defined";');
+      expect(code).toMatch(/const _catalog_\$1 = \{/);
+      expect(code).not.toMatch(/const _catalog_\$0 = \{/);
+      expect(code).toContain('const _catalog_$0 = "user-defined";');
+    });
+
+    it('skips `_catalog_$0` and `_catalog_$1` when user declares both', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source: [
+          "import { t } from 'yapyak';",
+          'const _catalog_$0 = "first";',
+          'const _catalog_$1 = "second";',
+          "export const x = t('Hello');",
+          'export { _catalog_$0, _catalog_$1 };',
+        ].join('\n'),
+      });
+      expect(code).toMatch(/const _catalog_\$2 = \{/);
+    });
+
+    it('emits unique identifiers across two distinct catalogs when user has `_catalog_$0`', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source: [
+          "import { t } from 'yapyak';",
+          'const _catalog_$0 = "user-defined";',
+          "export const a = t('Hello');",
+          "export const b = t('World');",
+          'export { _catalog_$0 };',
+        ].join('\n'),
+      });
+      expect(code).toMatch(/const _catalog_\$1 = \{/);
+      expect(code).toMatch(/const _catalog_\$2 = \{/);
     });
 
     it('preserves `_catalog` when the prefix appears only as a substring of a larger identifier', () => {

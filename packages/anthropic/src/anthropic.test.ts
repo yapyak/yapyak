@@ -297,7 +297,86 @@ describe('anthropic', () => {
         sourceLocale: 'en',
         targetLocale: 'sv',
       }),
-    ).rejects.toThrow(/truncated by max_tokens/);
+    ).rejects.toThrow(/truncated by token limit/);
+  });
+
+  it('sends the scaled `max_tokens` default when `maxTokens` is not set', async () => {
+    let capturedBody:
+      | {
+          max_tokens?: number;
+        }
+      | undefined;
+    vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
+      capturedBody = JSON.parse(init.body as string) as {
+        max_tokens?: number;
+      };
+      return new Response(
+        JSON.stringify({
+          content: [
+            {
+              text: JSON.stringify([
+                {
+                  sv: 'Hej',
+                },
+              ]),
+              type: 'text',
+            },
+          ],
+        }),
+        {
+          status: 200,
+        },
+      );
+    });
+    await anthropic({
+      apiKey: 'k',
+    })({
+      fileId: 'x',
+      source: 'Hello',
+      sourceLocale: 'en',
+      targetLocale: 'sv',
+    });
+    expect(capturedBody?.max_tokens).toBe(1024);
+  });
+
+  it('overrides the scaled default when `maxTokens` is set', async () => {
+    let capturedBody:
+      | {
+          max_tokens?: number;
+        }
+      | undefined;
+    vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
+      capturedBody = JSON.parse(init.body as string) as {
+        max_tokens?: number;
+      };
+      return new Response(
+        JSON.stringify({
+          content: [
+            {
+              text: JSON.stringify([
+                {
+                  sv: 'Hej',
+                },
+              ]),
+              type: 'text',
+            },
+          ],
+        }),
+        {
+          status: 200,
+        },
+      );
+    });
+    await anthropic({
+      apiKey: 'k',
+      maxTokens: 8192,
+    })({
+      fileId: 'x',
+      source: 'Hello',
+      sourceLocale: 'en',
+      targetLocale: 'sv',
+    });
+    expect(capturedBody?.max_tokens).toBe(8192);
   });
 
   it('throws when the API response has no text block', async () => {

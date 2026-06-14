@@ -47,6 +47,13 @@ export type AnthropicOptions = {
    */
   maxRetries?: number;
   /**
+   * The output-token cap sent as `max_tokens` to the Anthropic API.
+   *
+   * @remarks
+   * When omitted, the translator scales the cap to `items × targetLocales × 96` with a floor of `1024` and a ceiling of `32_000`. Set this to override the scaled default for batches that need more or less headroom.
+   */
+  maxTokens?: number;
+  /**
    * The model name.
    *
    * @defaultValue `'claude-sonnet-4-6'`
@@ -75,6 +82,8 @@ const DEFAULT_TEMPERATURE = 0.2;
 const DEFAULT_TIMEOUT = 30_000;
 const DEFAULT_MAX_RETRIES = 2;
 const MAX_TOKENS_CAP = 32_000;
+const MAX_TOKENS_FLOOR = 1024;
+const MAX_TOKENS_PER_ITEM = 96;
 
 /**
  * Creates an Anthropic translator.
@@ -109,6 +118,7 @@ export function anthropic(options: AnthropicOptions): Translator {
     endpoint = DEFAULT_ENDPOINT,
     headers: customHeaders,
     maxRetries = DEFAULT_MAX_RETRIES,
+    maxTokens,
     model = DEFAULT_MODEL,
     temperature = DEFAULT_TEMPERATURE,
     timeout = DEFAULT_TIMEOUT,
@@ -121,12 +131,18 @@ export function anthropic(options: AnthropicOptions): Translator {
     id: 'anthropic',
     translate: async (params) => {
       const { items, signal, sourceLocale, targetLocales } = params;
+      const resolvedMaxTokens =
+        maxTokens ??
+        Math.min(
+          MAX_TOKENS_CAP,
+          Math.max(
+            MAX_TOKENS_FLOOR,
+            items.length * targetLocales.length * MAX_TOKENS_PER_ITEM,
+          ),
+        );
       const init: RequestInit = {
         body: JSON.stringify({
-          max_tokens: Math.min(
-            MAX_TOKENS_CAP,
-            Math.max(1024, items.length * targetLocales.length * 96),
-          ),
+          max_tokens: resolvedMaxTokens,
           messages: [
             {
               content: JSON.stringify(items),
@@ -182,7 +198,7 @@ type AnthropicMessageResponse = {
 function validateResponse(body: AnthropicMessageResponse): void {
   if (body.stop_reason === 'max_tokens') {
     throw new Error(
-      `yapyak anthropic: response truncated by max_tokens (${MAX_TOKENS_CAP}). Lower batchSize to stay under the cap.`,
+      "yapyak anthropic: response truncated by token limit (stop_reason='max_tokens'). Lower batchSize or raise `maxTokens` in the translator options.",
     );
   }
 }

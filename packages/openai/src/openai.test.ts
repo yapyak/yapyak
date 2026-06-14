@@ -325,6 +325,78 @@ describe('openai', () => {
     ).rejects.toThrow(/truncated by token limit/);
   });
 
+  it('throws a content-filter error when `finish_reason` is `content_filter`', async () => {
+    vi.stubGlobal(
+      'fetch',
+      async () =>
+        new Response(
+          JSON.stringify({
+            choices: [
+              {
+                finish_reason: 'content_filter',
+                message: {
+                  content: '',
+                  role: 'assistant',
+                },
+              },
+            ],
+          }),
+          {
+            status: 200,
+          },
+        ),
+    );
+    await expect(
+      openai({
+        apiKey: 'k',
+      })({
+        fileId: 'x',
+        source: 'Hello',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      }),
+    ).rejects.toThrow(/blocked by OpenAI content filter/);
+  });
+
+  it('sends `maxTokens` as `max_completion_tokens` for a reasoning model', async () => {
+    const stub = stubFetch('Hej');
+    await openai({
+      apiKey: 'k',
+      maxTokens: 4096,
+    })({
+      fileId: 'x',
+      source: 'Hello',
+      sourceLocale: 'en',
+      targetLocale: 'sv',
+    });
+    const body = stub.body() as {
+      max_completion_tokens?: number;
+      max_tokens?: number;
+    };
+    expect(body.max_completion_tokens).toBe(4096);
+    expect(body.max_tokens).toBeUndefined();
+  });
+
+  it('sends `maxTokens` as `max_tokens` for a non-reasoning model', async () => {
+    const stub = stubFetch('Hej');
+    await openai({
+      apiKey: 'k',
+      maxTokens: 4096,
+      model: 'gpt-4o',
+    })({
+      fileId: 'x',
+      source: 'Hello',
+      sourceLocale: 'en',
+      targetLocale: 'sv',
+    });
+    const body = stub.body() as {
+      max_completion_tokens?: number;
+      max_tokens?: number;
+    };
+    expect(body.max_tokens).toBe(4096);
+    expect(body.max_completion_tokens).toBeUndefined();
+  });
+
   it('throws when `apiKey` is an empty string', () => {
     expect(() =>
       openai({

@@ -22,6 +22,8 @@ export type ParseTemplateResult = {
   template: Template;
 };
 
+const MAX_TEMPLATE_DEPTH = 1000;
+
 export function parseTemplate(source: string): ParseTemplateResult {
   const diagnostics: TemplateDiagnostic[] = [];
   const apostropheMatch = APOSTROPHE_ESCAPE_RX.exec(source);
@@ -37,6 +39,7 @@ export function parseTemplate(source: string): ParseTemplateResult {
     });
   }
   const context: ParseContext = {
+    depth: 0,
     diagnostics,
     source,
   };
@@ -48,6 +51,7 @@ export function parseTemplate(source: string): ParseTemplateResult {
 }
 
 type ParseContext = {
+  depth: number;
   diagnostics: TemplateDiagnostic[];
   source: string;
 };
@@ -63,6 +67,27 @@ function parseNodes(
   isInPluralBranch: boolean,
   terminator: '}' | null,
 ): ParseResult<Template> {
+  if (context.depth > MAX_TEMPLATE_DEPTH) {
+    const end =
+      terminator === '}'
+        ? (findMatchingBrace(context.source, start - 1) ??
+          context.source.length)
+        : context.source.length;
+    const value = context.source.slice(start, end);
+    return {
+      next: end,
+      value:
+        value === ''
+          ? []
+          : [
+              {
+                kind: 'literal',
+                value,
+              },
+            ],
+    };
+  }
+  context.depth += 1;
   const nodes: Template = [];
   let position = start;
   while (position < context.source.length) {
@@ -93,6 +118,7 @@ function parseNodes(
     nodes.push(node.value);
     position = node.next;
   }
+  context.depth -= 1;
   return {
     next: position,
     value: nodes,

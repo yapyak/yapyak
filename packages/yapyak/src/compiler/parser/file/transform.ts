@@ -113,14 +113,20 @@ export function transformFile(
   let hasUsedPick = false;
   const usedFactories = new Set<string>();
   const catalogsByKey = new Map<string, CatalogEntry>();
-  const catalogPrefix = findFreeCatalogPrefix(request.source);
+  let nextCatalogIndex = 0;
   const registerCatalog = (literal: string, id: string): string => {
     const key = isDev ? id : literal;
     const existing = catalogsByKey.get(key);
     if (existing) {
       return existing.identifier;
     }
-    const identifier = `${catalogPrefix}_$${catalogsByKey.size}`;
+    while (
+      hasIdentifier(request.source, `${CATALOG_PREFIX}_$${nextCatalogIndex}`)
+    ) {
+      nextCatalogIndex += 1;
+    }
+    const identifier = `${CATALOG_PREFIX}_$${nextCatalogIndex}`;
+    nextCatalogIndex += 1;
     catalogsByKey.set(key, {
       id,
       identifier,
@@ -1065,10 +1071,6 @@ function isSafeAttributeValue(source: string): boolean {
 
 function findFreePickLocal(source: string): string {
   return findFreeIdentifier(source, PICK_LOCAL);
-}
-
-function findFreeCatalogPrefix(source: string): string {
-  return findFreeIdentifier(source, CATALOG_PREFIX);
 }
 
 function findFreeFactoryLocals(source: string): Map<string, string> {

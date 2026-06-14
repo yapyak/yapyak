@@ -161,6 +161,29 @@ describe('status', () => {
     expect(writes.join('')).toContain('more');
   });
 
+  it('returns `1` when a source file contains a dynamic `t()` argument', () => {
+    writeFileSync(
+      join(root, 'src', 'a.ts'),
+      `import { t } from 'yapyak';\nexport const dyn = 'Hello';\nexport const x = t(dyn);\n`,
+    );
+    writeFileSync(join(root, 'locales', 'sv.json'), JSON.stringify({}));
+    const code = status(makeConfig(), root);
+    expect(code).toBe(1);
+    expect(writes.join('')).toContain('run `yapyak check` for details');
+  });
+
+  it('returns `1` for `json` output when a source file contains a dynamic `t()` argument', () => {
+    writeFileSync(
+      join(root, 'src', 'a.ts'),
+      `import { t } from 'yapyak';\nexport const dyn = 'Hello';\nexport const x = t(dyn);\n`,
+    );
+    writeFileSync(join(root, 'locales', 'sv.json'), JSON.stringify({}));
+    const code = status(makeConfig(), root, {
+      json: true,
+    });
+    expect(code).toBe(1);
+  });
+
   it('emits a JSON payload when `json` is `true`', () => {
     writeFileSync(
       join(root, 'src', 'a.ts'),

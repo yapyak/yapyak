@@ -69,6 +69,22 @@ export type RichTextNode =
  * ```
  */
 export function parseRichText(source: string): RichTextNode[] {
+  return parseRichTextAtDepth(source, 0);
+}
+
+const MAX_RICH_TEXT_DEPTH = 1000;
+
+function parseRichTextAtDepth(source: string, depth: number): RichTextNode[] {
+  if (depth > MAX_RICH_TEXT_DEPTH) {
+    return source === ''
+      ? []
+      : [
+          {
+            text: source,
+            type: 'text',
+          },
+        ];
+  }
   const nodes: RichTextNode[] = [];
   let text = '';
   let index = 0;
@@ -101,7 +117,10 @@ export function parseRichText(source: string): RichTextNode[] {
       if (close) {
         flush();
         nodes.push({
-          children: parseRichText(source.slice(openTag.end, close.start)),
+          children: parseRichTextAtDepth(
+            source.slice(openTag.end, close.start),
+            depth + 1,
+          ),
           name: openTag.name,
           type: 'tag',
         });

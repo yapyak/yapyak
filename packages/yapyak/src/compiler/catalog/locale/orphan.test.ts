@@ -255,6 +255,19 @@ describe('readOrphans', () => {
     expect(readOrphans(dir)).toEqual({});
   });
 
+  it('refuses to set the result prototype when the JSON has a top-level `__proto__` key', () => {
+    writeFileSync(
+      join(dir, 'orphans.json'),
+      '{"__proto__":{"leaked":{"deletedAt":"2025-01-01T00:00:00Z","translations":{"sv":"PWNED"}}},"src/a.ts":{"Hello":{"deletedAt":"2025-01-01T00:00:00Z","translations":{"sv":"Hej"}}}}',
+    );
+
+    const result = readOrphans(dir);
+    expect(Object.getPrototypeOf(result)).toBeNull();
+    expect(Object.keys(result)).toEqual([
+      'src/a.ts',
+    ]);
+  });
+
   it('returns the parsed cache when the file holds valid entries', () => {
     const cache: OrphanCache = {
       'src/a.ts': {

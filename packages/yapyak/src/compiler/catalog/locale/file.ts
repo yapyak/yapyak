@@ -122,12 +122,15 @@ export function readLocaleFile(path: string): LocaleFile {
   return parseLocaleFile(parsed);
 }
 
-function parseLocaleFile(parsed: unknown): LocaleFile {
+export function parseLocaleFile(parsed: unknown): LocaleFile {
   if (typeof parsed !== 'object' || parsed === null) {
-    return {};
+    return Object.create(null);
   }
-  const result: LocaleFile = {};
+  const result: LocaleFile = Object.create(null);
   for (const [fileId, entries] of Object.entries(parsed)) {
+    if (isUnsafeKey(fileId)) {
+      continue;
+    }
     if (typeof entries !== 'object' || entries === null) {
       continue;
     }
@@ -141,6 +144,10 @@ function parseLocaleFile(parsed: unknown): LocaleFile {
     result[fileId] = fileEntries;
   }
   return result;
+}
+
+function isUnsafeKey(key: string): boolean {
+  return key === '__proto__' || key === 'constructor' || key === 'prototype';
 }
 
 export type ParseEntryError =

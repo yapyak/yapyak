@@ -274,6 +274,9 @@ function isUnsafePath(path: string): boolean {
   if (path === '') {
     return true;
   }
+  if (path === '__proto__' || path === 'constructor' || path === 'prototype') {
+    return true;
+  }
   if (path.includes('\\')) {
     return true;
   }

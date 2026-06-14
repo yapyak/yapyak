@@ -1,3 +1,5 @@
+import type { RichTextNode } from './rich-text';
+
 import { fc, it } from '@fast-check/vitest';
 import { describe, expect } from 'vitest';
 
@@ -274,5 +276,34 @@ describe('properties', () => {
         expect(node.text).not.toBe('');
       }
     }
+  });
+
+  it('refuses to throw when tag nesting reaches eight thousand levels', () => {
+    const source = `${'<b>'.repeat(8000)}x${'</b>'.repeat(8000)}`;
+    expect(() => parseRichText(source)).not.toThrow();
+  });
+
+  it('returns a text fallback at the deepest level when nesting exceeds the limit', () => {
+    const source = `${'<b>'.repeat(8000)}x${'</b>'.repeat(8000)}`;
+    const result = parseRichText(source);
+    let node: RichTextNode | undefined = result[0];
+    while (node?.type === 'tag') {
+      node = node.children[0];
+    }
+    expect(node?.type).toBe('text');
+  });
+
+  it('parses nesting up to a thousand levels without falling back', () => {
+    const source = `${'<b>'.repeat(1000)}x${'</b>'.repeat(1000)}`;
+    const result = parseRichText(source);
+    let node: RichTextNode | undefined = result[0];
+    let depth = 0;
+    while (node?.type === 'tag') {
+      node = node.children[0];
+      depth += 1;
+    }
+    expect(node?.type).toBe('text');
+    expect(node?.type === 'text' ? node.text : '').toBe('x');
+    expect(depth).toBe(1000);
   });
 });

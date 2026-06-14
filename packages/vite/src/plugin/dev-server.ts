@@ -12,6 +12,7 @@ import {
   detectRenames,
   extractFile,
   migrateLocales,
+  parseLocaleFile,
   parseTemplate,
   syncLocaleFiles,
   toMessageKey,
@@ -348,10 +349,7 @@ export function readLocaleFile(path: string): LocaleFile {
   } catch {
     return {};
   }
-  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    return {};
-  }
-  return parsed as LocaleFile;
+  return parseLocaleFile(parsed);
 }
 
 export function derivePatches(

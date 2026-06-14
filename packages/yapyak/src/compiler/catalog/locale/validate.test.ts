@@ -198,6 +198,22 @@ describe('validateLocaleFile', () => {
     );
   });
 
+  it('emits YPK302 for a `__proto__` file-path key', () => {
+    writeFileSync(path, '{"__proto__":{"x":"y"}}');
+    const diagnostics = validateLocaleFile('sv.json', path);
+    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK302')).toBe(
+      true,
+    );
+  });
+
+  it('emits YPK302 for a `constructor` file-path key', () => {
+    writeFileSync(path, '{"constructor":{"x":"y"}}');
+    const diagnostics = validateLocaleFile('sv.json', path);
+    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK302')).toBe(
+      true,
+    );
+  });
+
   it('emits YPK303 when a translation string is not Unicode NFC', () => {
     writeFileSync(
       path,

@@ -347,4 +347,34 @@ describe('readLocaleFile', () => {
     writeFileSync(path, '["array", "not", "object"]');
     expect(readLocaleFile(path)).toEqual({});
   });
+
+  it('normalizes source keys to NFC like the canonical reader', () => {
+    const path = join(directory, 'sv.json');
+    writeFileSync(
+      path,
+      JSON.stringify({
+        'src/a.ts': {
+          Café: 'Café',
+        },
+      }),
+    );
+    const entries = readLocaleFile(path)['src/a.ts'];
+    expect(entries).toBeDefined();
+    expect(Object.keys(entries ?? {})).toEqual([
+      'Café'.normalize(),
+    ]);
+  });
+
+  it('refuses to set the result prototype when the JSON has a top-level `__proto__` key', () => {
+    const path = join(directory, 'sv.json');
+    writeFileSync(
+      path,
+      '{"__proto__":{"leaked":{"Hello":"PWNED"}},"src/a.ts":{"Hello":"Hej"}}',
+    );
+    const result = readLocaleFile(path);
+    expect(Object.getPrototypeOf(result)).toBeNull();
+    expect(Object.keys(result)).toEqual([
+      'src/a.ts',
+    ]);
+  });
 });

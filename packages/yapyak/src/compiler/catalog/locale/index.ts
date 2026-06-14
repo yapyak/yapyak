@@ -35,6 +35,7 @@ export {
   CorruptLocaleFileError,
   YapyakInvariantError,
   findTranslation,
+  parseLocaleFile,
   readLocaleFile,
   syncLocaleFiles,
   toEntry,

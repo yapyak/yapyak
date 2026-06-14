@@ -832,6 +832,31 @@ describe('readLocaleFile', () => {
     );
   });
 
+  it('refuses to set the result prototype when the JSON has a top-level `__proto__` key', () => {
+    writeFileSync(
+      path,
+      '{"__proto__":{"leaked":{"Hello":"PWNED"}},"src/b.ts":{"Hello":"Hej"}}',
+    );
+
+    const result = readLocaleFile(path);
+    expect(Object.getPrototypeOf(result)).toBeNull();
+    expect(Object.keys(result)).toEqual([
+      'src/b.ts',
+    ]);
+  });
+
+  it('skips `constructor` and `prototype` keys at the top level', () => {
+    writeFileSync(
+      path,
+      '{"constructor":{"Hello":"X"},"prototype":{"Hello":"Y"},"src/a.ts":{"Hello":"Hej"}}',
+    );
+
+    const result = readLocaleFile(path);
+    expect(Object.keys(result)).toEqual([
+      'src/a.ts',
+    ]);
+  });
+
   it('preserves plain and by-context entries through a roundtrip', () => {
     const catalog = {
       'src/a.tsx': {

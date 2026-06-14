@@ -47,6 +47,13 @@ export type GeminiOptions = {
    */
   maxRetries?: number;
   /**
+   * The output-token cap sent as `generationConfig.maxOutputTokens` to the Gemini API.
+   *
+   * @remarks
+   * When omitted, the model's own default applies. Set this to override that default for batches that need more or less headroom.
+   */
+  maxTokens?: number;
+  /**
    * The model name.
    *
    * @defaultValue `'gemini-2.5-flash'`
@@ -107,6 +114,7 @@ export function gemini(options: GeminiOptions): Translator {
     endpoint = DEFAULT_ENDPOINT,
     headers: customHeaders,
     maxRetries = DEFAULT_MAX_RETRIES,
+    maxTokens,
     model = DEFAULT_MODEL,
     temperature = DEFAULT_TEMPERATURE,
     timeout = DEFAULT_TIMEOUT,
@@ -135,6 +143,11 @@ export function gemini(options: GeminiOptions): Translator {
           generationConfig: {
             responseMimeType: 'application/json',
             temperature,
+            ...(maxTokens === undefined
+              ? {}
+              : {
+                  maxOutputTokens: maxTokens,
+                }),
           },
           systemInstruction: {
             parts: [
@@ -192,9 +205,20 @@ type GeminiResponse = {
 };
 
 function validateResponse(body: GeminiResponse): void {
-  if (body.candidates?.[0]?.finishReason === 'MAX_TOKENS') {
+  const reason = body.candidates?.[0]?.finishReason;
+  if (reason === 'MAX_TOKENS') {
     throw new Error(
-      "yapyak gemini: response truncated by token limit (finishReason='MAX_TOKENS'). Lower batchSize or raise the model's max output tokens.",
+      "yapyak gemini: response truncated by token limit (finishReason='MAX_TOKENS'). Lower batchSize or raise `maxTokens` in the translator options.",
+    );
+  }
+  if (reason === 'SAFETY') {
+    throw new Error(
+      "yapyak gemini: response blocked by Gemini safety filter (finishReason='SAFETY'). Adjust voice or glossary, or split the batch to isolate the offending message.",
+    );
+  }
+  if (reason === 'RECITATION') {
+    throw new Error(
+      "yapyak gemini: response blocked by Gemini recitation filter (finishReason='RECITATION'). The model refused to reproduce protected content.",
     );
   }
 }

@@ -205,6 +205,76 @@ describe('ollama', () => {
         sourceLocale: 'en',
         targetLocale: 'sv',
       }),
-    ).rejects.toThrow(/truncated by num_predict/);
+    ).rejects.toThrow(/truncated by token limit/);
+  });
+
+  it('sends `maxTokens` as `options.num_predict` when set', async () => {
+    let capturedBody:
+      | {
+          options?: {
+            num_predict?: number;
+          };
+        }
+      | undefined;
+    vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
+      capturedBody = JSON.parse(init.body as string) as {
+        options?: {
+          num_predict?: number;
+        };
+      };
+      return new Response(
+        JSON.stringify({
+          response: JSON.stringify([
+            {
+              sv: 'Hej',
+            },
+          ]),
+        }),
+        {
+          status: 200,
+        },
+      );
+    });
+    await ollama({
+      maxTokens: 4096,
+    })({
+      fileId: 'x',
+      source: 'Hello',
+      sourceLocale: 'en',
+      targetLocale: 'sv',
+    });
+    expect(capturedBody?.options?.num_predict).toBe(4096);
+  });
+
+  it('omits `num_predict` from `options` when `maxTokens` is not set', async () => {
+    let capturedBody:
+      | {
+          options?: Record<string, unknown>;
+        }
+      | undefined;
+    vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
+      capturedBody = JSON.parse(init.body as string) as {
+        options?: Record<string, unknown>;
+      };
+      return new Response(
+        JSON.stringify({
+          response: JSON.stringify([
+            {
+              sv: 'Hej',
+            },
+          ]),
+        }),
+        {
+          status: 200,
+        },
+      );
+    });
+    await ollama()({
+      fileId: 'x',
+      source: 'Hello',
+      sourceLocale: 'en',
+      targetLocale: 'sv',
+    });
+    expect(capturedBody?.options).not.toHaveProperty('num_predict');
   });
 });

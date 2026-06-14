@@ -21,9 +21,13 @@ export function status(
     projectRoot,
   });
 
+  const hasErrors = report.diagnostics.some(
+    (diagnostic) => diagnostic.severity === 'error',
+  );
+
   if (options?.json === true) {
     process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
-    return report.missing.length === 0 ? 0 : 1;
+    return report.missing.length === 0 && !hasErrors ? 0 : 1;
   }
 
   const total = report.totalMessages;
@@ -78,11 +82,24 @@ export function status(
       .join('\n')}\n\n`,
   );
 
-  if (report.missing.length === 0) {
+  if (report.missing.length === 0 && !hasErrors) {
     process.stdout.write(
       `  ${symbol.check} ${color.green('All translations present.')}\n\n`,
     );
     return 0;
+  }
+
+  if (hasErrors) {
+    const errorCount = report.diagnostics.filter(
+      (diagnostic) => diagnostic.severity === 'error',
+    ).length;
+    process.stdout.write(
+      `  ${symbol.cross} ${color.red(`${errorCount} error${errorCount === 1 ? '' : 's'} in source files`)} ${color.dim('— run `yapyak check` for details')}\n\n`,
+    );
+  }
+
+  if (report.missing.length === 0) {
+    return 1;
   }
 
   const byLocale: Record<string, typeof report.missing> = {};

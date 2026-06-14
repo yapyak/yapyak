@@ -60,6 +60,7 @@ export {
   findTranslation,
   getDefaultYapyakDir,
   migrateLocales,
+  parseLocaleFile,
   readLocaleData,
   readLocaleFile,
   stringifyCanonical,

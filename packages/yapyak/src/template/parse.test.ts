@@ -707,4 +707,16 @@ describe('parseTemplate', () => {
       },
     );
   });
+
+  describe('depth limit', () => {
+    it('refuses to throw when select-branch nesting exceeds the depth limit', () => {
+      const source = `${'{x,select,other{'.repeat(2000)}#${'}'.repeat(2000)}`;
+      expect(() => parseTemplate(source)).not.toThrow();
+    });
+
+    it('parses select-branch nesting up to a thousand levels without throwing', () => {
+      const source = `${'{x,select,other{'.repeat(1000)}#${'}'.repeat(1000)}`;
+      expect(() => parseTemplate(source)).not.toThrow();
+    });
+  });
 });

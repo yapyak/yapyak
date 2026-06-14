@@ -44,6 +44,13 @@ export type OllamaOptions = {
    */
   maxRetries?: number;
   /**
+   * The output-token cap sent as `options.num_predict` to the Ollama API.
+   *
+   * @remarks
+   * When omitted, the model's own default applies.
+   */
+  maxTokens?: number;
+  /**
    * The model name.
    *
    * @defaultValue `'llama3.1'`
@@ -94,6 +101,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
     endpoint = DEFAULT_ENDPOINT,
     headers: customHeaders,
     maxRetries = DEFAULT_MAX_RETRIES,
+    maxTokens,
     model = DEFAULT_MODEL,
     temperature = DEFAULT_TEMPERATURE,
     timeout = DEFAULT_TIMEOUT,
@@ -112,6 +120,11 @@ export function ollama(options: OllamaOptions = {}): Translator {
           model,
           options: {
             temperature,
+            ...(maxTokens === undefined
+              ? {}
+              : {
+                  num_predict: maxTokens,
+                }),
           },
           prompt: JSON.stringify(items),
           stream: false,
@@ -157,7 +170,7 @@ type OllamaResponse = {
 function validateResponse(body: OllamaResponse): void {
   if (body.done_reason === 'length') {
     throw new Error(
-      "yapyak ollama: response truncated by num_predict (done_reason='length'). Lower batchSize or raise num_predict.",
+      "yapyak ollama: response truncated by token limit (done_reason='length'). Lower batchSize or raise `maxTokens` in the translator options.",
     );
   }
 }

@@ -37,6 +37,7 @@ export {
   findTranslation,
   getDefaultYapyakDir,
   migrateLocales,
+  parseLocaleFile,
   readLocaleData,
   readLocaleFile,
   syncLocaleFiles,

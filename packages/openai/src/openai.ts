@@ -47,6 +47,13 @@ export type OpenAIOptions = {
    */
   maxRetries?: number;
   /**
+   * The output-token cap sent to the OpenAI API.
+   *
+   * @remarks
+   * Sent as `max_completion_tokens` for reasoning models (`gpt-5*`, `o[1-9]*`) and as `max_tokens` for chat-completion models. When omitted, the model's own default applies.
+   */
+  maxTokens?: number;
+  /**
    * The model name.
    *
    * @defaultValue `'gpt-5-mini'`
@@ -114,6 +121,7 @@ export function openai(options: OpenAIOptions): Translator {
     endpoint = DEFAULT_ENDPOINT,
     headers: customHeaders,
     maxRetries = DEFAULT_MAX_RETRIES,
+    maxTokens,
     model = DEFAULT_MODEL,
     organization,
     seed,
@@ -142,8 +150,16 @@ export function openai(options: OpenAIOptions): Translator {
         ],
         model,
       };
-      if (!REASONING_MODEL_RX.test(model)) {
+      const isReasoningModel = REASONING_MODEL_RX.test(model);
+      if (!isReasoningModel) {
         body.temperature = temperature;
+      }
+      if (maxTokens !== undefined) {
+        if (isReasoningModel) {
+          body.max_completion_tokens = maxTokens;
+        } else {
+          body.max_tokens = maxTokens;
+        }
       }
       if (seed !== undefined) {
         body.seed = seed;
@@ -204,9 +220,15 @@ type OpenAIChatResponse = {
 };
 
 function validateResponse(body: OpenAIChatResponse): void {
-  if (body.choices?.[0]?.finish_reason === 'length') {
+  const reason = body.choices?.[0]?.finish_reason;
+  if (reason === 'length') {
     throw new Error(
-      "yapyak openai: response truncated by token limit (finish_reason='length'). Lower batchSize or raise the model's max output tokens.",
+      "yapyak openai: response truncated by token limit (finish_reason='length'). Lower batchSize or raise `maxTokens` in the translator options.",
+    );
+  }
+  if (reason === 'content_filter') {
+    throw new Error(
+      "yapyak openai: response blocked by OpenAI content filter (finish_reason='content_filter'). Adjust voice or glossary, or split the batch to isolate the offending message.",
     );
   }
 }

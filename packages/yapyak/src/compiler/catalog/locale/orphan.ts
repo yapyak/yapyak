@@ -54,15 +54,21 @@ export function readOrphans(yapyakDir: string): OrphanCache {
     throw new CorruptOrphanCacheError(path, cause);
   }
   if (typeof parsed !== 'object' || parsed === null) {
-    return {};
+    return Object.create(null);
   }
-  const result: OrphanCache = {};
+  const result: OrphanCache = Object.create(null);
   for (const [fileId, entries] of Object.entries(parsed)) {
+    if (isUnsafeKey(fileId)) {
+      continue;
+    }
     if (typeof entries !== 'object' || entries === null) {
       continue;
     }
     const byKey: Record<string, OrphanEntry> = Object.create(null);
     for (const [key, entry] of Object.entries(entries)) {
+      if (isUnsafeKey(key)) {
+        continue;
+      }
       const normalized = normalizeEntry(entry);
       if (normalized) {
         byKey[key] = normalized;
@@ -73,6 +79,10 @@ export function readOrphans(yapyakDir: string): OrphanCache {
     }
   }
   return result;
+}
+
+function isUnsafeKey(key: string): boolean {
+  return key === '__proto__' || key === 'constructor' || key === 'prototype';
 }
 
 export function writeOrphans(yapyakDir: string, cache: OrphanCache): void {
