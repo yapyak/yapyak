@@ -102,11 +102,17 @@ export function buildSymbolPage(
 
   if (symbol.kind === 'function') {
     blocks.push(buildHeading2Block('Signature'));
-    blocks.push(buildFunctionSignatureBlock(symbol.overloads));
-    const typeParameters = normalizeOverloadTypeParameters(symbol.overloads);
-    if (typeParameters.length > 0) {
-      blocks.push(buildHeading2Block('Type Parameters'));
-      blocks.push(buildTypeParametersTable(typeParameters));
+    if (symbol.shape) {
+      blocks.push(buildShapeBlock(symbol.shape));
+    } else {
+      blocks.push(buildFunctionSignatureBlock(symbol.overloads));
+    }
+    if (!symbol.shape) {
+      const typeParameters = normalizeOverloadTypeParameters(symbol.overloads);
+      if (typeParameters.length > 0) {
+        blocks.push(buildHeading2Block('Type Parameters'));
+        blocks.push(buildTypeParametersTable(typeParameters));
+      }
     }
     const parameters = normalizeOverloadParameters(symbol.overloads);
     if (parameters.length > 0) {
@@ -121,11 +127,18 @@ export function buildSymbolPage(
 
   if (symbol.kind === 'variable') {
     blocks.push(buildHeading2Block('Type'));
-    blocks.push(buildVariableSignatureBlock(symbol));
+    if (symbol.shape) {
+      blocks.push(buildShapeBlock(symbol.shape));
+    } else {
+      blocks.push(buildVariableSignatureBlock(symbol));
+    }
   }
 
   if (symbol.kind === 'interface') {
-    if (symbol.callSignatures.length > 0) {
+    if (symbol.shape) {
+      blocks.push(buildHeading2Block('Shape'));
+      blocks.push(buildShapeBlock(symbol.shape));
+    } else if (symbol.callSignatures.length > 0) {
       blocks.push(buildHeading2Block('Call signatures'));
       blocks.push({
         label: null,
@@ -141,9 +154,14 @@ export function buildSymbolPage(
     }
   }
 
-  if (symbol.kind === 'type' && symbol.resolvedType.length > 0) {
-    blocks.push(buildHeading2Block('Type'));
-    blocks.push(buildTypeAliasBlock(symbol));
+  if (symbol.kind === 'type') {
+    if (symbol.shape) {
+      blocks.push(buildHeading2Block('Shape'));
+      blocks.push(buildShapeBlock(symbol.shape));
+    } else if (symbol.resolvedType.length > 0) {
+      blocks.push(buildHeading2Block('Type'));
+      blocks.push(buildTypeAliasBlock(symbol));
+    }
   }
 
   if (symbol.kind === 'class') {
@@ -382,6 +400,51 @@ function buildFunctionSignatureBlock(overloads: ReferenceOverload[]): Block {
   };
 }
 
+function buildShapeBlock(shape: string): Block {
+  return {
+    label: null,
+    language: 'ts',
+    path: null,
+    source: shape.trim(),
+    type: 'code-block',
+  };
+}
+
+function tokenizeShapeText(text: string): TypeToken[] {
+  const tokens: TypeToken[] = [];
+  const identifierRx = /[A-Z][A-Za-z0-9]*/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  match = identifierRx.exec(text);
+  while (match !== null) {
+    const name = match[0];
+    const moduleId = currentIndex.get(name);
+    if (moduleId !== undefined) {
+      if (match.index > lastIndex) {
+        tokens.push({
+          kind: 'text',
+          text: text.slice(lastIndex, match.index),
+        });
+      }
+      tokens.push({
+        kind: 'ref',
+        module: moduleId,
+        name,
+        text: name,
+      });
+      lastIndex = match.index + name.length;
+    }
+    match = identifierRx.exec(text);
+  }
+  if (lastIndex < text.length) {
+    tokens.push({
+      kind: 'text',
+      text: text.slice(lastIndex),
+    });
+  }
+  return tokens;
+}
+
 function buildVariableSignatureBlock(symbol: ReferenceVariable): Block {
   return {
     label: null,
@@ -524,6 +587,9 @@ function buildTypeParameterRow(
               },
             ]
           : tokensToBlocks(typeParameter.constraint),
+        {
+          monospace: true,
+        },
       ),
       buildTableBodyCell(
         typeParameter.defaultType === null
@@ -534,6 +600,9 @@ function buildTypeParameterRow(
               },
             ]
           : tokensToBlocks(typeParameter.defaultType),
+        {
+          monospace: true,
+        },
       ),
       buildTableBodyCell(markdownToInline(typeParameter.description)),
     ],
@@ -593,6 +662,9 @@ function buildParameterRow(
   parameter: ReferenceParameter,
   includeDefault: boolean,
 ): TableRowBlock {
+  const typeBlocks = parameter.shape
+    ? tokensToBlocks(tokenizeShapeText(parameter.shape))
+    : tokensToBlocks(parameter.type);
   const children: TableCellBlock[] = [
     buildTableBodyCell([
       {
@@ -600,7 +672,9 @@ function buildParameterRow(
         value: parameter.name + (parameter.optional ? '?' : ''),
       },
     ]),
-    buildTableBodyCell(tokensToBlocks(parameter.type)),
+    buildTableBodyCell(typeBlocks, {
+      monospace: true,
+    }),
   ];
   if (includeDefault) {
     children.push(
@@ -634,7 +708,9 @@ function buildMemberRow(
         value: member.name + (member.optional ? '?' : ''),
       },
     ]),
-    buildTableBodyCell(tokensToBlocks(member.type)),
+    buildTableBodyCell(tokensToBlocks(member.type), {
+      monospace: true,
+    }),
   ];
   if (includeDefault) {
     children.push(
@@ -657,10 +733,16 @@ function buildMemberRow(
   };
 }
 
-function buildTableBodyCell(children: Block[]) {
+function buildTableBodyCell(
+  children: Block[],
+  options: {
+    monospace?: boolean;
+  } = {},
+) {
   return {
     children,
     header: false,
+    monospace: options.monospace,
     type: 'table-cell' as const,
   };
 }

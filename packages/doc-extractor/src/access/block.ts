@@ -112,6 +112,7 @@ export type TableRowBlock = {
 export type TableCellBlock = {
   children: Block[];
   header: boolean;
+  monospace?: boolean;
   type: 'table-cell';
 };
 

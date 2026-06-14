@@ -11,6 +11,8 @@ import { resolveFormatter } from './formatter';
  * @remarks
  * Discriminated union over `Intl.NumberFormatOptions`'s `style`. The `currency` branch types the `currency` field as {@link Currency}.
  *
+ * @shape Intl.NumberFormatOptions & { style: 'decimal' | 'currency' | 'percent' | 'unit' }
+ *
  * @example
  * ```ts
  * format.number(1234.5, { maximumFractionDigits: 1 });

@@ -26,6 +26,7 @@ export type ReferenceSymbolBase = {
   name: string;
   remarks: string;
   seeAlso: string[];
+  shape: string;
   tags: ReferenceTag[];
   throws: ReferenceThrows[];
 };
@@ -91,6 +92,7 @@ export type ReferenceParameter = {
   description: string;
   name: string;
   optional: boolean;
+  shape: string;
   type: TypeToken[];
 };
 

@@ -9,6 +9,8 @@ import type { ExtractPairTags, ExtractVoidTags } from './tag';
  * @remarks
  * Resolves to the placeholder names and value types read from the source literal. `never` if the source has no placeholders.
  *
+ * @shape TParams<T extends string> = \{ [placeholder]: string | number \}
+ *
  * @typeParam T - The source string literal.
  */
 export type TParams<T extends string> = T extends `${string}{${string}`
@@ -29,6 +31,8 @@ declare const brand: unique symbol;
  *
  * @remarks
  * A `string` branded with the rich-text tag names found in the source — pair tags (with content) in `TPair` and void tags (self-closing) in `TVoid` — so a `<RichText>` can require a handler per tag with the right signature. A source with no tags returns a plain `string`.
+ *
+ * @shape string
  *
  * @typeParam TPair - The pair-tag names extracted from the source string.
  * @typeParam TVoid - The void-tag names extracted from the source string.
@@ -66,7 +70,7 @@ export type TInChain = {
   as<TContext extends string, TSource extends string>(
     context: TContext,
     source: ValidateSource<TSource>,
-    ...args: TArgs<TSource>
+    ...params: TArgs<TSource>
   ): TReturn<ExtractPairTags<TSource>, ExtractVoidTags<TSource>>;
 };
 
@@ -87,7 +91,7 @@ export type TAsChain = {
   in<T extends string>(
     locale: Locale,
     source: ValidateSource<T>,
-    ...args: TArgs<T>
+    ...params: TArgs<T>
   ): TReturn<ExtractPairTags<T>, ExtractVoidTags<T>>;
 };
 
@@ -104,44 +108,46 @@ export type TFn = {
    * @remarks
    * The compiler emits `YPK403` if a source is used with both `t()` and `t.as()` in the same file.
    *
-   * @param context - The disambiguating context.
-   * @param source - The source string literal, supplied to translate inline.
-   * @param args - The placeholder params tuple. Required when the source has placeholders.
+   * @param context - {@shape string} The disambiguating context.
+   * @param source - {@shape T} The source string literal, supplied to translate inline.
+   * @param params - {@shape TParams<T>} Object with placeholder values. Required when the source has placeholders.
    */
   as<TContext extends string, TSource extends string>(
     context: TContext,
     source: ValidateSource<TSource>,
-    ...args: TArgs<TSource>
+    ...params: TArgs<TSource>
   ): TReturn<ExtractPairTags<TSource>, ExtractVoidTags<TSource>>;
   as<T extends string>(context: T): TAsChain;
 
   /**
    * Forces a fixed locale for one translation call, or returns a chain that requires `.as()` to complete.
    *
-   * @param locale - The locale code, e.g. `'sv'`.
-   * @param source - The source string literal, supplied to translate inline.
-   * @param args - The placeholder params tuple. Required when the source has placeholders.
+   * @param locale - {@shape Locale} The locale code, e.g. `'sv'`.
+   * @param source - {@shape T} The source string literal, supplied to translate inline.
+   * @param params - {@shape TParams<T>} Object with placeholder values. Required when the source has placeholders.
    */
   in<T extends string>(
     locale: Locale,
     source: ValidateSource<T>,
-    ...args: TArgs<T>
+    ...params: TArgs<T>
   ): TReturn<ExtractPairTags<T>, ExtractVoidTags<T>>;
   in(locale: Locale): TInChain;
   /**
    * Translates `source` for the active locale.
    *
-   * @param source - The source string literal.
-   * @param args - The placeholder params tuple. Required when the source has placeholders.
+   * @param source - {@shape T} The source string literal.
+   * @param params - {@shape TParams<T>} Object with placeholder values. Required when the source has placeholders.
    */
   <T extends string>(
     source: ValidateSource<T>,
-    ...args: TArgs<T>
+    ...params: TArgs<T>
   ): TReturn<ExtractPairTags<T>, ExtractVoidTags<T>>;
 };
 
 /**
  * Translates a source string for the active locale.
+ *
+ * @shape t<T extends string>(source: T, params?: TParams<T>): string
  *
  * @remarks
  * Yapyak's compiler rewrites every `t()` call site at build to inline the active-locale's catalog lookup. The source argument must be a string literal — wrapping breaks extraction. Placeholders use `{name}` and their values are type-checked from the source literal. A fixed locale is pinned via `t.in(locale, source)`, and modifiers chain inline: `t.in('sv').as('action', 'Save')`.

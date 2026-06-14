@@ -492,6 +492,7 @@ function toReferenceSymbolBase(
     name: reflection.name,
     remarks: effective ? readBlockTag(effective, '@remarks', context) : '',
     seeAlso: effective ? readSeeAlso(effective, context) : [],
+    shape: effective ? readBlockTag(effective, '@shape', context) : '',
     tags: effective ? extractTags(effective, context) : [],
     throws: effective ? readThrows(effective, context) : [],
   };
@@ -556,8 +557,23 @@ function toReferenceParameter(
     optional:
       Boolean(reflection.flags.isOptional) ||
       reflection.defaultValue !== undefined,
+    shape: reflection.comment
+      ? extractInlineShape(reflection.comment.summary)
+      : '',
     type: reflection.type ? toTypeTokens(reflection.type) : [],
   };
+}
+
+function extractInlineShape(parts: CommentDisplayPart[] | undefined): string {
+  if (!parts) {
+    return '';
+  }
+  for (const part of parts) {
+    if (part.kind === 'inline-tag' && part.tag === '@shape') {
+      return part.text;
+    }
+  }
+  return '';
 }
 
 function toReferenceMember(
@@ -1051,7 +1067,8 @@ function extractTags(
       tag.tag === '@see' ||
       tag.tag === '@param' ||
       tag.tag === '@typeParam' ||
-      tag.tag === '@defaultValue'
+      tag.tag === '@defaultValue' ||
+      tag.tag === '@shape'
     ) {
       continue;
     }

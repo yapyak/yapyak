@@ -20,6 +20,8 @@ export interface Register {}
 /**
  * The locale. Narrows to a project's configured locales when {@link Register} is augmented; falls back to `string` otherwise.
  *
+ * @shape 'en' | 'sv' | ...
+ *
  * @example Use Locale in a function signature
  * ```ts
  * import type { Locale } from 'yapyak';
