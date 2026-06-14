@@ -4,7 +4,7 @@ import { createTranslator } from 'yapyak/translator';
 import {
   buildSystem,
   fetchWithRetry,
-  parseResponse,
+  parseResponseBody,
   parseTranslationsBatch,
   stripCodeFence,
 } from 'yapyak/translator/internal';
@@ -177,7 +177,7 @@ export function gemini(options: GeminiOptions): Translator {
         const text = await response.text();
         throw new Error(`yapyak gemini: ${response.status} ${text}`);
       }
-      const responseBody = await parseResponse<GeminiResponse>(
+      const responseBody = await parseResponseBody<GeminiResponseBody>(
         response,
         'gemini',
       );
@@ -191,7 +191,7 @@ export function gemini(options: GeminiOptions): Translator {
   });
 }
 
-type GeminiResponse = {
+type GeminiResponseBody = {
   candidates?: {
     content?: {
       parts?: {
@@ -208,7 +208,7 @@ type GeminiResponse = {
   }[];
 };
 
-function validateResponse(body: GeminiResponse): void {
+function validateResponse(body: GeminiResponseBody): void {
   const reason = body.candidates?.[0]?.finishReason;
   if (reason === 'MAX_TOKENS') {
     throw new Error(

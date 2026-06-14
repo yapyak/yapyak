@@ -23,7 +23,7 @@ export function parseTranslationsBatch(
   return parsed as LocaleTranslations[];
 }
 
-export async function parseResponse<T>(
+export async function parseResponseBody<T>(
   response: Response,
   vendor: string,
 ): Promise<T> {

@@ -4,7 +4,7 @@ import { createTranslator } from 'yapyak/translator';
 import {
   buildSystem,
   fetchWithRetry,
-  parseResponse,
+  parseResponseBody,
   parseTranslationsBatch,
 } from 'yapyak/translator/internal';
 
@@ -149,7 +149,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
         const text = await response.text();
         throw new Error(`yapyak ollama: ${response.status} ${text}`);
       }
-      const responseBody = await parseResponse<OllamaResponse>(
+      const responseBody = await parseResponseBody<OllamaResponseBody>(
         response,
         'ollama',
       );
@@ -165,13 +165,13 @@ export function ollama(options: OllamaOptions = {}): Translator {
   });
 }
 
-type OllamaResponse = {
+type OllamaResponseBody = {
   // biome-ignore lint/style/useNamingConvention: yap yap yap
   done_reason?: 'length' | 'stop' | (string & {});
   response?: string;
 };
 
-function validateResponse(body: OllamaResponse): void {
+function validateResponse(body: OllamaResponseBody): void {
   if (body.done_reason === 'length') {
     throw new Error(
       "yapyak ollama: response truncated by token limit (done_reason='length'). Lower batchSize or raise `maxTokens` in the translator options.",

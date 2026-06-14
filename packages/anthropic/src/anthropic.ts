@@ -4,7 +4,7 @@ import { createTranslator } from 'yapyak/translator';
 import {
   buildSystem,
   fetchWithRetry,
-  parseResponse,
+  parseResponseBody,
   parseTranslationsBatch,
   stripCodeFence,
 } from 'yapyak/translator/internal';
@@ -174,12 +174,12 @@ export function anthropic(options: AnthropicOptions): Translator {
         const text = await response.text();
         throw new Error(`yapyak anthropic: ${response.status} ${text}`);
       }
-      const body = await parseResponse<AnthropicMessageResponse>(
+      const responseBody = await parseResponseBody<AnthropicResponseBody>(
         response,
         'anthropic',
       );
-      validateResponse(body);
-      const text = body.content?.[0]?.text;
+      validateResponse(responseBody);
+      const text = responseBody.content?.[0]?.text;
       if (typeof text !== 'string') {
         throw new Error(
           'yapyak anthropic: response did not contain a text block',
@@ -190,7 +190,7 @@ export function anthropic(options: AnthropicOptions): Translator {
   });
 }
 
-type AnthropicMessageResponse = {
+type AnthropicResponseBody = {
   content?: {
     text?: string;
     type: string;
@@ -199,7 +199,7 @@ type AnthropicMessageResponse = {
   stop_reason?: 'end_turn' | 'max_tokens' | 'stop_sequence' | 'tool_use';
 };
 
-function validateResponse(body: AnthropicMessageResponse): void {
+function validateResponse(body: AnthropicResponseBody): void {
   if (body.stop_reason === 'max_tokens') {
     throw new Error(
       "yapyak anthropic: response truncated by token limit (stop_reason='max_tokens'). Lower batchSize or raise `maxTokens` in the translator options.",

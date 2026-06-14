@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseResponse, parseTranslationsBatch } from './response';
+import { parseResponseBody, parseTranslationsBatch } from './response';
 
 describe('parseTranslationsBatch', () => {
   it('returns the parsed array for a well-formed response', () => {
@@ -82,7 +82,7 @@ describe('parseTranslationsBatch', () => {
   });
 });
 
-describe('parseResponse', () => {
+describe('parseResponseBody', () => {
   it('returns the parsed body for a well-formed JSON response', async () => {
     const response = new Response(
       JSON.stringify({
@@ -92,7 +92,7 @@ describe('parseResponse', () => {
         status: 200,
       },
     );
-    const result = await parseResponse<{
+    const result = await parseResponseBody<{
       ok: boolean;
     }>(response, 'openai');
     expect(result.ok).toBe(true);
@@ -102,7 +102,7 @@ describe('parseResponse', () => {
     const response = new Response('<html><body>nope</body></html>', {
       status: 200,
     });
-    await expect(parseResponse(response, 'openai')).rejects.toThrow(
+    await expect(parseResponseBody(response, 'openai')).rejects.toThrow(
       /yapyak openai: response is not valid JSON/,
     );
   });
@@ -112,6 +112,6 @@ describe('parseResponse', () => {
     const response = new Response(long, {
       status: 200,
     });
-    await expect(parseResponse(response, 'gemini')).rejects.toThrow(/…/);
+    await expect(parseResponseBody(response, 'gemini')).rejects.toThrow(/…/);
   });
 });

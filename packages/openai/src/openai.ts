@@ -4,7 +4,7 @@ import { createTranslator } from 'yapyak/translator';
 import {
   buildSystem,
   fetchWithRetry,
-  parseResponse,
+  parseResponseBody,
   parseTranslationsBatch,
   stripCodeFence,
 } from 'yapyak/translator/internal';
@@ -193,7 +193,7 @@ export function openai(options: OpenAIOptions): Translator {
         const text = await response.text();
         throw new Error(`yapyak openai: ${response.status} ${text}`);
       }
-      const responseBody = await parseResponse<OpenAIChatResponse>(
+      const responseBody = await parseResponseBody<OpenAIResponseBody>(
         response,
         'openai',
       );
@@ -207,7 +207,7 @@ export function openai(options: OpenAIOptions): Translator {
   });
 }
 
-type OpenAIChatResponse = {
+type OpenAIResponseBody = {
   choices?: {
     // biome-ignore lint/style/useNamingConvention: yap yap yap
     finish_reason?:
@@ -223,7 +223,7 @@ type OpenAIChatResponse = {
   }[];
 };
 
-function validateResponse(body: OpenAIChatResponse): void {
+function validateResponse(body: OpenAIResponseBody): void {
   const reason = body.choices?.[0]?.finish_reason;
   if (reason === 'length') {
     throw new Error(
