@@ -208,7 +208,7 @@ export function openai(options: OpenAIOptions): Translator {
 }
 
 type OpenAIChatResponse = {
-  choices?: Array<{
+  choices?: {
     // biome-ignore lint/style/useNamingConvention: yap yap yap
     finish_reason?:
       | 'stop'
@@ -220,7 +220,7 @@ type OpenAIChatResponse = {
       content?: string;
       role: string;
     };
-  }>;
+  }[];
 };
 
 function validateResponse(body: OpenAIChatResponse): void {

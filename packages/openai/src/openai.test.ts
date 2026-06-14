@@ -178,10 +178,10 @@ describe('openai', () => {
       targetLocale: 'sv',
     });
     const body = stub.body() as {
-      messages: Array<{
+      messages: {
         content: string;
         role: string;
-      }>;
+      }[];
     };
     expect(body.messages[0]?.role).toBe('system');
     expect(body.messages[0]?.content).toContain('Casual, never corporate');

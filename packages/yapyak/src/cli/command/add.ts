@@ -37,10 +37,10 @@ export async function add(
     return 1;
   }
 
-  const invalid: Array<{
+  const invalid: {
     code: string;
     suggestion?: string;
-  }> = [];
+  }[] = [];
   for (const code of locales) {
     const result = validateLocaleCode(code);
     if (!result.valid) {

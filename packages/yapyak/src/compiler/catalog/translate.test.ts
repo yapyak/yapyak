@@ -119,12 +119,12 @@ describe('autoTranslate', () => {
       () => Promise.reject(new Error('use batch')),
       {
         batch: (
-          requests: Array<{
-            examples?: Array<{
+          requests: {
+            examples?: {
               source: string;
               translation: string;
-            }>;
-          }>,
+            }[];
+          }[],
         ): Promise<string[]> => {
           receivedExamples = requests[0]?.examples;
           return Promise.resolve([

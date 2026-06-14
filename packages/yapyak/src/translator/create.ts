@@ -64,7 +64,7 @@ export function createTranslator(input: CreateTranslatorInput): Translator {
 
     const uniqueRequests: TranslateRequest[] = [];
     const indexOfUnique = new Map<string, number>();
-    const requestToUnique = new Array<number>(requests.length);
+    const requestToUnique: number[] = new Array(requests.length);
     const uniqueTargetLocales = new Set<string>();
     for (let requestIndex = 0; requestIndex < requests.length; requestIndex++) {
       const request = requests[requestIndex];

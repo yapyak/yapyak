@@ -41,12 +41,12 @@ export type AutoTranslateOptions = {
 };
 
 export type AutoTranslateResult = {
-  errors: Array<{
+  errors: {
     error: unknown;
     fileId: string;
     locale: string;
     source: string;
-  }>;
+  }[];
   translated: number;
 };
 

@@ -191,10 +191,10 @@ export function anthropic(options: AnthropicOptions): Translator {
 }
 
 type AnthropicMessageResponse = {
-  content?: Array<{
+  content?: {
     text?: string;
     type: string;
-  }>;
+  }[];
   // biome-ignore lint/style/useNamingConvention: yap yap yap
   stop_reason?: 'end_turn' | 'max_tokens' | 'stop_sequence' | 'tool_use';
 };

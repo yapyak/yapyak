@@ -26,10 +26,10 @@ export type MigrateLocalesOptions = {
 };
 
 export type MigrateLocalesResult = {
-  staleEntries: Array<{
+  staleEntries: {
     locale: string;
     source: string;
-  }>;
+  }[];
 };
 
 export function detectRenames(

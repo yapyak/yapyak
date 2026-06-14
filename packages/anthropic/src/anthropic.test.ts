@@ -707,14 +707,14 @@ describe('anthropic', () => {
         targetLocale: 'sv',
       });
       const body = stub.body() as {
-        messages: Array<{
+        messages: {
           content: string;
-        }>;
+        }[];
       };
       // biome-ignore lint/style/noNonNullAssertion: yap yap yap
-      const items = JSON.parse(body.messages[0]!.content) as Array<{
+      const items = JSON.parse(body.messages[0]!.content) as {
         disambiguation?: string;
-      }>;
+      }[];
       expect(items[0]?.disambiguation).toBe('button');
     });
 

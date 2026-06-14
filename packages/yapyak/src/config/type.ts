@@ -12,7 +12,7 @@ export type {
 } from '../persistence';
 
 /** Glob pattern for include/exclude filtering. */
-export type FilterPattern = string | RegExp | Array<string | RegExp>;
+export type FilterPattern = string | RegExp | (string | RegExp)[];
 
 /** Configuration for yapyak. */
 export type YapyakConfig = {

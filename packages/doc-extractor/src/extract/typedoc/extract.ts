@@ -65,11 +65,11 @@ type ExtractContext = {
 };
 
 type CommentLike = {
-  blockTags?: ReadonlyArray<{
+  blockTags?: readonly {
     content?: readonly CommentDisplayPart[];
     name?: string;
     tag: string;
-  }>;
+  }[];
   modifierTags?: ReadonlySet<string>;
   summary?: readonly CommentDisplayPart[];
 };

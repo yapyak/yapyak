@@ -192,11 +192,11 @@ export function gemini(options: GeminiOptions): Translator {
 }
 
 type GeminiResponse = {
-  candidates?: Array<{
+  candidates?: {
     content?: {
-      parts?: Array<{
+      parts?: {
         text?: string;
-      }>;
+      }[];
     };
     finishReason?:
       | 'STOP'
@@ -205,7 +205,7 @@ type GeminiResponse = {
       | 'RECITATION'
       | 'LANGUAGE'
       | 'OTHER';
-  }>;
+  }[];
 };
 
 function validateResponse(body: GeminiResponse): void {

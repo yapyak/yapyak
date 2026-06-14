@@ -53,10 +53,10 @@ export function clean(
 
   const { expected, inScope } = buildExpected(projectRoot, config);
   const orphanSources: OrphanSource[] = [];
-  const filesToWrite: Array<{
+  const filesToWrite: {
     next: LocaleFile;
     path: string;
-  }> = [];
+  }[] = [];
 
   for (const locale of locales) {
     const localePath = join(localesPath, `${locale}.json`);

@@ -9,7 +9,7 @@ const padEndVisual = (value: string, width: number): string => {
 };
 
 export type RenderTableOptions = {
-  align?: Array<'left' | 'right'>;
+  align?: ('left' | 'right')[];
 };
 
 export function renderTable(

@@ -264,7 +264,7 @@ describe('cookie', () => {
     });
 
     describe('without the Cookie Store API', () => {
-      let documentListeners: Map<string, Array<(event: Event) => void>>;
+      let documentListeners: Map<string, ((event: Event) => void)[]>;
       let visibilityState: DocumentVisibilityState;
       let history: {
         pushState: (state: unknown, title: string, url: string) => void;

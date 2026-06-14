@@ -13,7 +13,7 @@ export type State = {
   normalized: NormalizedYapyakConfig | undefined;
   projectRoot: string;
   resolver: LocaleResolver | undefined;
-  teardownCallbacks: Array<() => void>;
+  teardownCallbacks: (() => void)[];
   yapyakDir: string;
 };
 

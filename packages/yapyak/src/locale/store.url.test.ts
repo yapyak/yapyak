@@ -27,7 +27,7 @@ type MockWindow = {
 };
 
 let mockWindow: MockWindow;
-let listeners: Map<string, Array<(event: Event) => void>>;
+let listeners: Map<string, ((event: Event) => void)[]>;
 let pathname = '/en/home';
 
 function createMockWindow(): MockWindow {

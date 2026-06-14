@@ -140,9 +140,9 @@ describe('gemini', () => {
     });
     const body = stub.body() as {
       systemInstruction: {
-        parts: Array<{
+        parts: {
           text: string;
-        }>;
+        }[];
       };
     };
     expect(body.systemInstruction.parts[0]?.text).toContain(
