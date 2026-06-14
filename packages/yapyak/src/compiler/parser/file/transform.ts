@@ -1,5 +1,11 @@
 import type { SourceMap } from 'magic-string';
-import type { Fragment, Processor, Range } from '../../../processor';
+import type {
+  ApplyImportFn,
+  Fragment,
+  ParseFragmentsFn,
+  Processor,
+  Range,
+} from '../../../processor';
 import type { Template, TemplateNode } from '../../../template';
 import type { Diagnostic } from '../diagnostic';
 import type { Placeholder } from '../placeholder';
@@ -38,6 +44,21 @@ const CATALOG_PREFIX = '_yapyak_catalog';
 const REGISTER_LOCAL = '_yp_register';
 const INVALIDATE_LOCAL = '_yp_invalidate';
 const USE_LOCAL = '_yp_use';
+const DEFAULT_APPLY_IMPORT: ApplyImportFn = (
+  magicString,
+  _source,
+  importStatement,
+) => {
+  magicString.prepend(`${importStatement}\n`);
+};
+const DEFAULT_PARSE_FRAGMENTS: ParseFragmentsFn = (source) => [
+  {
+    code: source,
+    kind: 'script',
+    lang: 'ts',
+    originalOffset: 0,
+  },
+];
 const FACTORY_ORDER = [
   'literal',
   'placeholder',
@@ -68,7 +89,7 @@ export function transformFile(
     request.source,
     request.processors ?? [],
   );
-  const fragments = (processor.parseFragments ?? defaultParseFragments)(
+  const fragments = (processor.parseFragments ?? DEFAULT_PARSE_FRAGMENTS)(
     request.source,
   );
   const isSingleLocale = request.locales.length === 1;
@@ -220,7 +241,7 @@ export function transformFile(
     );
   }
   if (injectionLines.length > 0) {
-    (processor.applyImport ?? defaultApplyImport)(
+    (processor.applyImport ?? DEFAULT_APPLY_IMPORT)(
       magicString,
       request.source,
       injectionLines.join('\n'),
@@ -1197,24 +1218,4 @@ function containsCallSite(
     }
   }
   return false;
-}
-
-function defaultApplyImport(
-  magicString: MagicString,
-  source: string,
-  importStatement: string,
-): void {
-  void source;
-  magicString.prepend(`${importStatement}\n`);
-}
-
-function defaultParseFragments(source: string): Fragment[] {
-  return [
-    {
-      code: source,
-      kind: 'script',
-      lang: 'ts',
-      originalOffset: 0,
-    },
-  ];
 }

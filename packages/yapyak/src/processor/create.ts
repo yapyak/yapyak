@@ -29,12 +29,6 @@ export type CreateProcessorInput = {
  * export const myProcessor = createProcessor({
  *   id: 'my-framework',
  *   extensions: ['.mfx'],
- *   applyImport: (magicString, source, importStatement) => {
- *     magicString.prepend(`${importStatement}\n`);
- *   },
- *   parseFragments: (source) => [
- *     { code: source, kind: 'script', lang: 'ts', originalOffset: 0 },
- *   ],
  *   runtime: { module: '@my-framework/binding/internal' },
  * });
  * ```

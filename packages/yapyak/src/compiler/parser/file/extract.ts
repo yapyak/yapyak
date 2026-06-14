@@ -1,6 +1,7 @@
 import type {
   ElisionContext,
   Fragment,
+  ParseFragmentsFn,
   Processor,
   Range,
 } from '../../../processor';
@@ -21,6 +22,15 @@ import { parsePlaceholders } from '../placeholder';
 import { resolveProcessor } from '../processor';
 import { remapRange, toRange } from '../range';
 import { getScriptKind } from '../script-kind';
+
+const DEFAULT_PARSE_FRAGMENTS: ParseFragmentsFn = (source) => [
+  {
+    code: source,
+    kind: 'script',
+    lang: 'ts',
+    originalOffset: 0,
+  },
+];
 
 export type Location = {
   callSiteContext: CallSiteContext;
@@ -61,7 +71,9 @@ export function extractFile(
   options?: ExtractFileOptions,
 ): ExtractFileResult {
   const processor = resolveProcessor(fileId, source, options?.processors ?? []);
-  const fragments = (processor.parseFragments ?? defaultParseFragments)(source);
+  const fragments = (processor.parseFragments ?? DEFAULT_PARSE_FRAGMENTS)(
+    source,
+  );
 
   const diagnostics: Diagnostic[] = [];
   const callSites: ParsedCallSite[] = [];
@@ -298,15 +310,4 @@ function remapDiagnostic(
     range: remapRange(diagnostic.range, fragment, originalSource),
     source: originalSource,
   };
-}
-
-function defaultParseFragments(source: string): Fragment[] {
-  return [
-    {
-      code: source,
-      kind: 'script',
-      lang: 'ts',
-      originalOffset: 0,
-    },
-  ];
 }
