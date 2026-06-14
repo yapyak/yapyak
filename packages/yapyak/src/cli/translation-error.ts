@@ -8,7 +8,7 @@ export type TranslationErrorEntry = {
 };
 
 export function renderTranslationErrors(
-  entries: readonly TranslationErrorEntry[],
+  entries: TranslationErrorEntry[],
 ): string {
   if (entries.length === 0) {
     return '';

@@ -210,15 +210,11 @@ describe('t', () => {
   });
 
   it('refuses a callable signature for `TInChain`', () => {
-    expectTypeOf<TInChain>().not.toExtend<
-      (...args: readonly unknown[]) => unknown
-    >();
+    expectTypeOf<TInChain>().not.toExtend<(...args: unknown[]) => unknown>();
   });
 
   it('refuses a callable signature for `TAsChain`', () => {
-    expectTypeOf<TAsChain>().not.toExtend<
-      (...args: readonly unknown[]) => unknown
-    >();
+    expectTypeOf<TAsChain>().not.toExtend<(...args: unknown[]) => unknown>();
   });
 
   it('preserves placeholder params for `t.in(locale).as(context, source)`', () => {

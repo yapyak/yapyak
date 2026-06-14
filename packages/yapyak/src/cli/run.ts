@@ -4,7 +4,7 @@ import { color, symbol } from './tui';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const FLAGS_BY_COMMAND: Record<string, ReadonlySet<string>> = {
+const FLAGS_BY_COMMAND: Record<string, Set<string>> = {
   add: new Set<string>(),
   check: new Set<string>(),
   clean: new Set([
@@ -100,8 +100,8 @@ export async function run(argv: string[]): Promise<number> {
 }
 
 function findUnknownFlags(
-  args: readonly string[],
-  known: ReadonlySet<string> | undefined,
+  args: string[],
+  known: Set<string> | undefined,
 ): string[] {
   if (!known) {
     return [];

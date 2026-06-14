@@ -15,7 +15,7 @@ export interface CodeBlockProps extends BoxProps {
   source: string;
 }
 
-const SUPPORTED_LANGUAGES: ReadonlySet<string> = new Set<Language>([
+const SUPPORTED_LANGUAGES: Set<string> = new Set<Language>([
   'tsx',
   'ts',
   'jsx',
@@ -31,7 +31,7 @@ const SUPPORTED_LANGUAGES: ReadonlySet<string> = new Set<Language>([
   'translation',
 ]);
 
-const HIDDEN_LABEL_LANGUAGES: ReadonlySet<string> = new Set<Language>([
+const HIDDEN_LABEL_LANGUAGES: Set<string> = new Set<Language>([
   'translation',
 ]);
 

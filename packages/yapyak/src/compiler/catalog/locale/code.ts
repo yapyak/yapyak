@@ -1,4 +1,4 @@
-const ISO_639_1: ReadonlySet<string> = new Set([
+const ISO_639_1: Set<string> = new Set([
   'aa',
   'ab',
   'ae',
@@ -185,7 +185,7 @@ const ISO_639_1: ReadonlySet<string> = new Set([
   'zu',
 ]);
 
-const GRANDFATHERED_TAGS: ReadonlySet<string> = new Set([
+const GRANDFATHERED_TAGS: Set<string> = new Set([
   'art-lojban',
   'cel-gaulish',
   'en-GB-oed',

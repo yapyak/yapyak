@@ -405,7 +405,7 @@ type RenderCallReplacementInput = {
   callSite: ParsedCallSite;
   defaultLocale: string;
   locales: string[];
-  localsByFactory: ReadonlyMap<string, string>;
+  localsByFactory: Map<string, string>;
   nestedReplacements?: NestedReplacement[];
   pickLocal: string;
   registerCatalog: (literal: string, id: string) => string;
@@ -751,7 +751,7 @@ type BuildCatalogInput = {
 function buildCatalogLiteral(
   input: BuildCatalogInput,
   usedFactories: Set<string>,
-  localsByFactory: ReadonlyMap<string, string>,
+  localsByFactory: Map<string, string>,
 ): string {
   const { defaultLocale, id, locales, source, translations } = input;
   const entries: string[] = [];
@@ -773,7 +773,7 @@ function buildCatalogLiteral(
 function renderVariantValue(
   text: string,
   usedFactories: Set<string>,
-  localsByFactory: ReadonlyMap<string, string>,
+  localsByFactory: Map<string, string>,
 ): string {
   const { template } = parseTemplate(text);
   if (isStaticTemplate(template)) {
@@ -797,7 +797,7 @@ function isStaticTemplate(template: Template): boolean {
 function renderTemplateLiteral(
   template: Template,
   usedFactories: Set<string>,
-  localsByFactory: ReadonlyMap<string, string>,
+  localsByFactory: Map<string, string>,
 ): string {
   return `[${template.map((node) => renderNode(node, usedFactories, localsByFactory)).join(',')}]`;
 }
@@ -805,7 +805,7 @@ function renderTemplateLiteral(
 function renderNode(
   node: TemplateNode,
   usedFactories: Set<string>,
-  localsByFactory: ReadonlyMap<string, string>,
+  localsByFactory: Map<string, string>,
 ): string {
   const localFor = (factory: string): string =>
     localsByFactory.get(factory) ?? `_${factory}`;
@@ -842,7 +842,7 @@ function renderNode(
 function renderBranches(
   branches: Record<string, Template>,
   usedFactories: Set<string>,
-  localsByFactory: ReadonlyMap<string, string>,
+  localsByFactory: Map<string, string>,
 ): string {
   const entries = Object.entries(branches).map(
     ([name, template]) =>
@@ -1128,7 +1128,7 @@ const HOOK_NAME_RX = /^use[A-Z]/;
 function injectReactHooks(
   magicString: MagicString,
   fragments: Fragment[],
-  callSites: readonly ParsedCallSite[],
+  callSites: ParsedCallSite[],
   useYapyakLocal: string,
   request: TransformFileRequest,
 ): void {
@@ -1161,7 +1161,7 @@ function walkForComponents(
   node: ts.Node,
   sourceFile: ts.SourceFile,
   fragmentOffset: number,
-  callSites: readonly ParsedCallSite[],
+  callSites: ParsedCallSite[],
   insertionPositions: Set<number>,
 ): void {
   if (ts.isFunctionDeclaration(node) && node.name && node.body) {
@@ -1211,7 +1211,7 @@ function containsCallSite(
   node: ts.Node,
   sourceFile: ts.SourceFile,
   fragmentOffset: number,
-  callSites: readonly ParsedCallSite[],
+  callSites: ParsedCallSite[],
 ): boolean {
   const start = node.getStart(sourceFile) + fragmentOffset;
   const end = node.getEnd() + fragmentOffset;

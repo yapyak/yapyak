@@ -207,7 +207,7 @@ type BuildModulePageInput = {
 type BuildPackageIndexPageInput = {
   href: string;
   label: string;
-  subpaths: readonly {
+  subpaths: {
     description: string;
     href: string;
     subpath: string;
@@ -242,7 +242,7 @@ export function buildTypedocPackageIndexPage(
 }
 
 function buildSubpathsTable(
-  subpaths: readonly {
+  subpaths: {
     description: string;
     href: string;
     subpath: string;

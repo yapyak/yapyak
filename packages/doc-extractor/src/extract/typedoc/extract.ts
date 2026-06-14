@@ -65,13 +65,13 @@ type ExtractContext = {
 };
 
 type CommentLike = {
-  blockTags?: readonly {
-    content?: readonly CommentDisplayPart[];
+  blockTags?: {
+    content?: CommentDisplayPart[];
     name?: string;
     tag: string;
   }[];
-  modifierTags?: ReadonlySet<string>;
-  summary?: readonly CommentDisplayPart[];
+  modifierTags?: Set<string>;
+  summary?: CommentDisplayPart[];
 };
 
 export async function extractTypedoc(
@@ -178,7 +178,7 @@ async function loadProject(
 }
 
 type ProjectModule = {
-  children: readonly DeclarationReflection[];
+  children: DeclarationReflection[];
   comment: ProjectReflection['comment'];
   entry: EntryPoint;
 };
@@ -921,7 +921,7 @@ function buildInterfaceSignature(
 }
 
 function partsToMarkdown(
-  parts: readonly CommentDisplayPart[] | undefined,
+  parts: CommentDisplayPart[] | undefined,
   context: ExtractContext,
 ): string {
   if (!parts) {
