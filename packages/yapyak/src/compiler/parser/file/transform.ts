@@ -40,10 +40,10 @@ export type TransformFileResult = {
 
 const PICK_EXPORT = 'pick';
 const PICK_LOCAL = '_pick';
-const CATALOG_PREFIX = '_yapyak_catalog';
-const REGISTER_LOCAL = '_yp_register';
-const INVALIDATE_LOCAL = '_yp_invalidate';
-const USE_LOCAL = '_yp_use';
+const CATALOG_PREFIX = '_catalog';
+const REGISTER_CATALOG_LOCAL = '_registerCatalog';
+const INVALIDATE_FILE_LOCAL = '_invalidateFile';
+const USE_YAPYAK_LOCAL = '_useYapyak';
 const DEFAULT_APPLY_IMPORT: ApplyImportFn = (
   magicString,
   _source,
@@ -100,14 +100,14 @@ export function transformFile(
 
   const pickLocal = findFreePickLocal(request.source);
   const localsByFactory = findFreeFactoryLocals(request.source);
-  const registerLocal = isDev
-    ? findFreeIdentifier(request.source, REGISTER_LOCAL)
+  const registerCatalogLocal = isDev
+    ? findFreeIdentifier(request.source, REGISTER_CATALOG_LOCAL)
     : '';
-  const invalidateLocal = isDev
-    ? findFreeIdentifier(request.source, INVALIDATE_LOCAL)
+  const invalidateFileLocal = isDev
+    ? findFreeIdentifier(request.source, INVALIDATE_FILE_LOCAL)
     : '';
-  const useLocal = injectsReactHook
-    ? findFreeIdentifier(request.source, USE_LOCAL)
+  const useYapyakLocal = injectsReactHook
+    ? findFreeIdentifier(request.source, USE_YAPYAK_LOCAL)
     : '';
 
   let hasUsedPick = false;
@@ -209,8 +209,8 @@ export function transformFile(
   const injectionLines: string[] = [];
   const allImportSpecs = importSpecs.slice();
   if (isDev) {
-    allImportSpecs.push(`registerCatalog as ${registerLocal}`);
-    allImportSpecs.push(`invalidateFile as ${invalidateLocal}`);
+    allImportSpecs.push(`registerCatalog as ${registerCatalogLocal}`);
+    allImportSpecs.push(`invalidateFile as ${invalidateFileLocal}`);
   }
   if (allImportSpecs.length > 0) {
     injectionLines.push(
@@ -222,14 +222,14 @@ export function transformFile(
       injectionLines.push(`import '${runtime.module}';`);
     } else {
       injectionLines.push(
-        `import { ${runtime.invoke} as ${useLocal} } from '${runtime.module}';`,
+        `import { ${runtime.invoke} as ${useYapyakLocal} } from '${runtime.module}';`,
       );
     }
   }
   for (const entry of catalogsByKey.values()) {
     if (isDev) {
       injectionLines.push(
-        `const ${entry.identifier} = ${registerLocal}(${JSON.stringify(request.fileId)}, ${JSON.stringify(entry.id)}, ${entry.literal});`,
+        `const ${entry.identifier} = ${registerCatalogLocal}(${JSON.stringify(request.fileId)}, ${JSON.stringify(entry.id)}, ${entry.literal});`,
       );
     } else {
       injectionLines.push(`const ${entry.identifier} = ${entry.literal};`);
@@ -237,7 +237,7 @@ export function transformFile(
   }
   if (isDev) {
     injectionLines.push(
-      `if (import.meta.hot) import.meta.hot.dispose(() => ${invalidateLocal}(${JSON.stringify(request.fileId)}));`,
+      `if (import.meta.hot) import.meta.hot.dispose(() => ${invalidateFileLocal}(${JSON.stringify(request.fileId)}));`,
     );
   }
   if (injectionLines.length > 0) {
@@ -248,7 +248,13 @@ export function transformFile(
     );
   }
   if (injectsReactHook) {
-    injectReactHooks(magicString, fragments, callSites, useLocal, request);
+    injectReactHooks(
+      magicString,
+      fragments,
+      callSites,
+      useYapyakLocal,
+      request,
+    );
   }
 
   return {
@@ -1123,7 +1129,7 @@ function injectReactHooks(
   magicString: MagicString,
   fragments: Fragment[],
   callSites: readonly ParsedCallSite[],
-  useLocal: string,
+  useYapyakLocal: string,
   request: TransformFileRequest,
 ): void {
   for (const fragment of fragments) {
@@ -1146,7 +1152,7 @@ function injectReactHooks(
       insertionPositions,
     );
     for (const position of insertionPositions) {
-      magicString.appendLeft(position, `${useLocal}();`);
+      magicString.appendLeft(position, `${useYapyakLocal}();`);
     }
   }
 }

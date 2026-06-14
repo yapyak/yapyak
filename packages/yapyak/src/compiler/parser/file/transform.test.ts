@@ -522,7 +522,7 @@ describe('transformFile', () => {
       expect(code).toMatch(
         /import \{ pick as _pick_\$0 \} from 'yapyak\/internal'/,
       );
-      expect(code).toMatch(/_pick_\$0\(_yapyak_catalog/);
+      expect(code).toMatch(/_pick_\$0\(_catalog/);
       expect(code).toContain('const _pick = "user-defined";');
     });
 
@@ -543,7 +543,7 @@ describe('transformFile', () => {
       expect(code).toMatch(
         /import \{ pick as _pick_\$1 \} from 'yapyak\/internal'/,
       );
-      expect(code).toMatch(/_pick_\$1\(_yapyak_catalog/);
+      expect(code).toMatch(/_pick_\$1\(_catalog/);
     });
 
     it('emits a hoisted module-scope catalog for a multi-locale call', () => {
@@ -554,8 +554,8 @@ describe('transformFile', () => {
         ],
         source: "import { t } from 'yapyak';\nexport const x = t('Save');\n",
       });
-      expect(code).toMatch(/const _yapyak_catalog_\$0 = \{/);
-      expect(code).toContain('_pick(_yapyak_catalog_$0');
+      expect(code).toMatch(/const _catalog_\$0 = \{/);
+      expect(code).toContain('_pick(_catalog_$0');
     });
 
     it('folds two call sites with identical catalog text to one declaration', () => {
@@ -570,9 +570,9 @@ describe('transformFile', () => {
           "export const b = t('Save');",
         ].join('\n'),
       });
-      const declarations = code.match(/_yapyak_catalog_\$\d+ = /g) ?? [];
+      const declarations = code.match(/_catalog_\$\d+ = /g) ?? [];
       expect(declarations).toHaveLength(1);
-      const calls = code.match(/_pick\(_yapyak_catalog_\$\d+/g) ?? [];
+      const calls = code.match(/_pick\(_catalog_\$\d+/g) ?? [];
       expect(calls).toHaveLength(2);
     });
 
@@ -588,11 +588,11 @@ describe('transformFile', () => {
           "export const b = t('Cancel');",
         ].join('\n'),
       });
-      const declarations = code.match(/_yapyak_catalog_\$\d+ = /g) ?? [];
+      const declarations = code.match(/_catalog_\$\d+ = /g) ?? [];
       expect(declarations).toHaveLength(2);
     });
 
-    it('preserves a free catalog prefix when user already has `_yapyak_catalog`', () => {
+    it('preserves a free catalog prefix when user already has `_catalog`', () => {
       const code = runTransform({
         locales: [
           'en',
@@ -600,16 +600,16 @@ describe('transformFile', () => {
         ],
         source: [
           "import { t } from 'yapyak';",
-          'const _yapyak_catalog = "user-defined";',
+          'const _catalog = "user-defined";',
           "export const x = t('Hello');",
-          'export { _yapyak_catalog };',
+          'export { _catalog };',
         ].join('\n'),
       });
-      expect(code).toMatch(/_yapyak_catalog_\$0_\$0 = \{/);
-      expect(code).toContain('const _yapyak_catalog = "user-defined";');
+      expect(code).toMatch(/_catalog_\$0_\$0 = \{/);
+      expect(code).toContain('const _catalog = "user-defined";');
     });
 
-    it('preserves a free catalog prefix when user has both `_yapyak_catalog` and `_yapyak_catalog_$0`', () => {
+    it('preserves a free catalog prefix when user has both `_catalog` and `_catalog_$0`', () => {
       const code = runTransform({
         locales: [
           'en',
@@ -617,18 +617,18 @@ describe('transformFile', () => {
         ],
         source: [
           "import { t } from 'yapyak';",
-          'const _yapyak_catalog = "user-defined";',
-          'const _yapyak_catalog_$0 = "also-user-defined";',
+          'const _catalog = "user-defined";',
+          'const _catalog_$0 = "also-user-defined";',
           "export const x = t('Hello');",
-          'export { _yapyak_catalog, _yapyak_catalog_$0 };',
+          'export { _catalog, _catalog_$0 };',
         ].join('\n'),
       });
-      expect(code).toMatch(/_yapyak_catalog_\$1_\$0 = \{/);
-      expect(code).toContain('const _yapyak_catalog = "user-defined";');
-      expect(code).toContain('const _yapyak_catalog_$0 = "also-user-defined";');
+      expect(code).toMatch(/_catalog_\$1_\$0 = \{/);
+      expect(code).toContain('const _catalog = "user-defined";');
+      expect(code).toContain('const _catalog_$0 = "also-user-defined";');
     });
 
-    it('preserves `_yapyak_catalog` when the prefix appears only as a substring of a larger identifier', () => {
+    it('preserves `_catalog` when the prefix appears only as a substring of a larger identifier', () => {
       const code = runTransform({
         locales: [
           'en',
@@ -636,15 +636,15 @@ describe('transformFile', () => {
         ],
         source: [
           "import { t } from 'yapyak';",
-          'const my_yapyak_catalog_other = "looks-similar";',
-          'const your_yapyak_catalog_thing = "looks-similar-too";',
+          'const my_catalog_other = "looks-similar";',
+          'const your_catalog_thing = "looks-similar-too";',
           "export const x = t('Hello');",
-          'export { my_yapyak_catalog_other, your_yapyak_catalog_thing };',
+          'export { my_catalog_other, your_catalog_thing };',
         ].join('\n'),
       });
-      expect(code).toMatch(/const _yapyak_catalog_\$0 = \{/);
-      expect(code).toContain('const my_yapyak_catalog_other');
-      expect(code).toContain('const your_yapyak_catalog_thing');
+      expect(code).toMatch(/const _catalog_\$0 = \{/);
+      expect(code).toContain('const my_catalog_other');
+      expect(code).toContain('const your_catalog_thing');
     });
   });
 
@@ -990,8 +990,8 @@ describe('transformFile', () => {
         source:
           "import { t } from 'yapyak';\nexport const x = t('Outer {x}', { x: t('Inner') });\n",
       });
-      expect(code).toContain('_pick(_yapyak_catalog_$1');
-      expect(code).toContain('x: _pick(_yapyak_catalog_$0)');
+      expect(code).toContain('_pick(_catalog_$1');
+      expect(code).toContain('x: _pick(_catalog_$0)');
       expect(code).not.toContain("t('Outer");
       expect(code).not.toContain("t('Inner'");
     });
@@ -1018,7 +1018,7 @@ describe('transformFile', () => {
           "import { t } from 'yapyak';\nexport const x = t('A {a}', { a: t('B {b}', { b: t('C') }) });\n",
       });
       expect(code).toContain(
-        '_pick(_yapyak_catalog_$2, { a: _pick(_yapyak_catalog_$1, { b: _pick(_yapyak_catalog_$0) }) })',
+        '_pick(_catalog_$2, { a: _pick(_catalog_$1, { b: _pick(_catalog_$0) }) })',
       );
     });
 
@@ -1031,8 +1031,8 @@ describe('transformFile', () => {
         source:
           "import { t } from 'yapyak';\nexport const x = t('A {a} {b}', { a: t('Hello'), b: t('Save') });\n",
       });
-      expect(code).toContain('a: _pick(_yapyak_catalog_$0)');
-      expect(code).toContain('b: _pick(_yapyak_catalog_$1)');
+      expect(code).toContain('a: _pick(_catalog_$0)');
+      expect(code).toContain('b: _pick(_catalog_$1)');
     });
 
     it('transforms two non-nested sibling `t()` calls independently', () => {
@@ -1044,9 +1044,7 @@ describe('transformFile', () => {
         source:
           "import { t } from 'yapyak';\nexport const x = t('Hello') + t('Save');\n",
       });
-      expect(code).toContain(
-        '_pick(_yapyak_catalog_$0) + _pick(_yapyak_catalog_$1)',
-      );
+      expect(code).toContain('_pick(_catalog_$0) + _pick(_catalog_$1)');
     });
   });
 
@@ -1152,7 +1150,7 @@ describe('transformFile', () => {
           },
         },
       });
-      expect(code).toContain('_pick(_yapyak_catalog');
+      expect(code).toContain('_pick(_catalog');
       expect(code).not.toContain("t.in('en', 'World')");
     });
   });
@@ -1205,10 +1203,10 @@ describe('transformFile', () => {
         source:
           "import { t } from 'yapyak';\nexport function Header() { return t('Hello'); }\n",
       });
-      expect(code).toMatch(/_yp_register\(/);
+      expect(code).toMatch(/_registerCatalog\(/);
       expect(code).toContain('"src/a.tsx"');
       expect(code).toMatch(
-        /_yp_register\("src\/a\.tsx", "\[\\"Hello\\",null\]"/,
+        /_registerCatalog\("src\/a\.tsx", "\[\\"Hello\\",null\]"/,
       );
     });
 
@@ -1223,7 +1221,7 @@ describe('transformFile', () => {
           "import { t } from 'yapyak';\nexport function Header() { return t('Hello'); }\n",
       });
       expect(code).toMatch(/import\.meta\.hot\.dispose/);
-      expect(code).toMatch(/_yp_invalidate\("src\/a\.tsx"\)/);
+      expect(code).toMatch(/_invalidateFile\("src\/a\.tsx"\)/);
     });
 
     it('writes a `useYapyak()` call at the top of a React function component', () => {
@@ -1243,9 +1241,9 @@ describe('transformFile', () => {
           '}',
         ].join('\n'),
       });
-      expect(code).toMatch(/useYapyak as _yp_use/);
+      expect(code).toMatch(/useYapyak as _useYapyak/);
       expect(code).toContain("from '@yapyak/react/internal'");
-      expect(code).toMatch(/function Header\(\) \{_yp_use\(\)/);
+      expect(code).toMatch(/function Header\(\) \{_useYapyak\(\)/);
     });
 
     it('refuses to write a `useYapyak()` call in a lowercase helper function', () => {
@@ -1262,7 +1260,7 @@ describe('transformFile', () => {
           '}',
         ].join('\n'),
       });
-      expect(code).not.toMatch(/function helper\(\) \{_yp_use\(\)/);
+      expect(code).not.toMatch(/function helper\(\) \{_useYapyak\(\)/);
     });
 
     it('writes a `useYapyak()` call in a custom hook starting with `use`', () => {
@@ -1282,7 +1280,7 @@ describe('transformFile', () => {
           '}',
         ].join('\n'),
       });
-      expect(code).toMatch(/function useGreeting\(\) \{_yp_use\(\)/);
+      expect(code).toMatch(/function useGreeting\(\) \{_useYapyak\(\)/);
     });
 
     it('folds repeat `t()` calls with one id into a single `registerCatalog` site', () => {
@@ -1299,7 +1297,7 @@ describe('transformFile', () => {
           '}',
         ].join('\n'),
       });
-      const registerCalls = code.match(/_yp_register\(/g);
+      const registerCalls = code.match(/_registerCatalog\(/g);
       expect(registerCalls?.length).toBe(1);
     });
 
@@ -1312,9 +1310,9 @@ describe('transformFile', () => {
         source:
           "import { t } from 'yapyak';\nexport function Header() { return t('Hello'); }\n",
       });
-      expect(code).not.toMatch(/_yp_register/);
-      expect(code).not.toMatch(/_yp_use/);
-      expect(code).not.toMatch(/_yp_invalidate/);
+      expect(code).not.toMatch(/_registerCatalog/);
+      expect(code).not.toMatch(/_useYapyak/);
+      expect(code).not.toMatch(/_invalidateFile/);
     });
   });
 });

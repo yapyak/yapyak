@@ -65,7 +65,7 @@ describe('react processor', () => {
         '}',
       ].join('\n'),
     });
-    expect(code).toMatch(/useYapyak as _yp_use/);
+    expect(code).toMatch(/useYapyak as _useYapyak/);
     expect(code).toContain("from '@yapyak/react/internal'");
   });
 
@@ -82,7 +82,7 @@ describe('react processor', () => {
         '}',
       ].join('\n'),
     });
-    expect(code).not.toMatch(/_yp_register/);
-    expect(code).not.toMatch(/_yp_use/);
+    expect(code).not.toMatch(/_registerCatalog/);
+    expect(code).not.toMatch(/_useYapyak/);
   });
 });

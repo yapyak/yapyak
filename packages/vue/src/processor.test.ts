@@ -353,8 +353,8 @@ describe('vue processor — transform', () => {
         sv: {},
       },
     });
-    expect(code).toMatch(/_pick\(_yapyak_catalog_\$\d+\)/);
-    expect(code).toContain("_yapyak_catalog_$0 = { en: 'Hello', sv: 'Hello' }");
+    expect(code).toMatch(/_pick\(_catalog_\$\d+\)/);
+    expect(code).toContain("_catalog_$0 = { en: 'Hello', sv: 'Hello' }");
     expect(code).toMatch(/import \{ pick as _pick \} from 'yapyak\/internal'/);
   });
 
