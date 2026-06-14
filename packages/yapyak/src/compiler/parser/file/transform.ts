@@ -94,7 +94,7 @@ export function transformFile(
   );
   const isSingleLocale = request.locales.length === 1;
   const isDev = request.dev === true;
-  const runtime = isDev ? processor.runtime : undefined;
+  const runtime = processor.runtime;
   const injectsReactHook = runtime?.invoke !== undefined;
   const magicString = new MagicString(request.source);
 
@@ -217,14 +217,12 @@ export function transformFile(
       `import { ${allImportSpecs.join(', ')} } from '${YAPYAK_INTERNAL_MODULE}';`,
     );
   }
-  if (runtime !== undefined) {
-    if (runtime.invoke === undefined) {
-      injectionLines.push(`import '${runtime.module}';`);
-    } else {
-      injectionLines.push(
-        `import { ${runtime.invoke} as ${useYapyakLocal} } from '${runtime.module}';`,
-      );
-    }
+  if (runtime?.invoke !== undefined) {
+    injectionLines.push(
+      `import { ${runtime.invoke} as ${useYapyakLocal} } from '${runtime.module}';`,
+    );
+  } else if (runtime !== undefined && isDev) {
+    injectionLines.push(`import '${runtime.module}';`);
   }
   for (const entry of catalogsByKey.values()) {
     if (isDev) {

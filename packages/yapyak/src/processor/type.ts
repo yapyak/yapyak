@@ -79,7 +79,7 @@ export type Processor = {
   /** Breaks framework-specific source into TS-parseable fragments. Defaults to the whole source as one script when omitted — fits plain TS/JS files. */
   parseFragments?(source: string): Fragment[];
   /**
-   * Compiler-emitted runtime wiring. The dev transform imports `module` so the framework's HMR side effects fire. When `invoke` is set, the dev transform imports the named function from the same module and injects a call at the top of every React function component containing `t()` instead of a bare side-effect import.
+   * Compiler-emitted runtime wiring. When `invoke` is set, the transform imports the named function from `module` and injects a call at the top of every React function component containing `t()`. The import and call are emitted in every build, so locale changes re-render the component through the framework's subscription primitive. When `invoke` is omitted, the transform emits a bare side-effect import of `module` for the framework's HMR wiring; this import is emitted only in dev builds.
    */
   runtime?: {
     invoke?: string;

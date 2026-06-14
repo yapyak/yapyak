@@ -1314,5 +1314,27 @@ describe('transformFile', () => {
       expect(code).not.toMatch(/_useYapyak/);
       expect(code).not.toMatch(/_invalidateFile/);
     });
+
+    it('writes a `useYapyak()` call in a React component in production builds', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        processors: [
+          reactProcessor,
+        ],
+        source: [
+          "import { t } from 'yapyak';",
+          'export function Header() {',
+          "  return t('Hello');",
+          '}',
+        ].join('\n'),
+      });
+      expect(code).toMatch(/useYapyak as _useYapyak/);
+      expect(code).toMatch(/function Header\(\) \{_useYapyak\(\)/);
+      expect(code).not.toMatch(/_registerCatalog/);
+      expect(code).not.toMatch(/_invalidateFile/);
+    });
   });
 });

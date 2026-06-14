@@ -51,7 +51,7 @@ describe('react processor', () => {
     expect(react().runtime?.invoke).toBe('useYapyak');
   });
 
-  it('emits a `useYapyak` import when the dev transform runs through this processor', () => {
+  it('emits a `useYapyak` import in dev builds', () => {
     const code = runReactTransform({
       dev: true,
       locales: [
@@ -69,7 +69,24 @@ describe('react processor', () => {
     expect(code).toContain("from '@yapyak/react/internal'");
   });
 
-  it('refuses to emit dev imports when dev is off', () => {
+  it('emits a `useYapyak` import in production builds', () => {
+    const code = runReactTransform({
+      locales: [
+        'en',
+        'sv',
+      ],
+      source: [
+        "import { t } from 'yapyak';",
+        'export function Header() {',
+        "  return t('Hello');",
+        '}',
+      ].join('\n'),
+    });
+    expect(code).toMatch(/useYapyak as _useYapyak/);
+    expect(code).toContain("from '@yapyak/react/internal'");
+  });
+
+  it('skips HMR catalog wiring in production builds', () => {
     const code = runReactTransform({
       locales: [
         'en',
@@ -83,6 +100,6 @@ describe('react processor', () => {
       ].join('\n'),
     });
     expect(code).not.toMatch(/_registerCatalog/);
-    expect(code).not.toMatch(/_useYapyak/);
+    expect(code).not.toMatch(/_invalidateFile/);
   });
 });
