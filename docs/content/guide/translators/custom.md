@@ -63,7 +63,7 @@ For OpenAI-compatible providers (Groq, DeepSeek, Mistral, OpenRouter, Vercel AI 
 ## The createTranslator API
 
 ```ts
-interface CreateTranslatorOptions {
+interface CreateTranslatorInput {
   batchSize?: number;
   concurrency?: number;
   context?: 'none' | 'minimal' | 'rich';

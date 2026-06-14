@@ -159,11 +159,12 @@ export function SaveButton() {
 
 ## Files
 
-yapyak extracts messages from TypeScript and JSX out of the box. Framework-specific file formats (`.vue`, `.svelte`, `.astro`) are handled by [processors](/guide/getting-started/installation#register-framework-processors) registered in `yapyak.config.ts`.
+yapyak extracts messages from TypeScript and JSX out of the box. Framework-specific file formats and React's HMR wiring are handled by [processors](/guide/getting-started/installation) registered in `yapyak.config.ts`.
 
 | File type                     | Parsed by                             |
 | ----------------------------- | ------------------------------------- |
-| `.ts`, `.tsx`, `.jsx`, `.mjs` | Built-in (TypeScript or JSX)          |
+| `.ts`, `.mjs`                 | Built-in (TypeScript)                 |
+| `.tsx`, `.jsx`                | `@yapyak/react/processor`             |
 | `.vue`                        | `@yapyak/vue/processor`               |
 | `.svelte`                     | `@yapyak/svelte/processor`            |
 | `.astro`                      | `@yapyak/astro/processor`             |
