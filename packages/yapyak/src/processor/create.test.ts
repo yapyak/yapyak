@@ -4,14 +4,12 @@ import { createProcessor } from './create';
 
 describe('createProcessor', () => {
   it('returns a processor carrying id and extensions', () => {
-    const processor = createProcessor(
-      () => {},
-      [
+    const processor = createProcessor({
+      extensions: [
         '.foo',
       ],
-      'foo',
-      () => [],
-    );
+      id: 'foo',
+    });
 
     expect(processor.id).toBe('foo');
     expect(processor.extensions).toEqual([
@@ -19,20 +17,19 @@ describe('createProcessor', () => {
     ]);
   });
 
-  it('writes calls through to the provided applyImport hook', () => {
+  it('preserves the provided applyImport hook', () => {
     const calls: string[] = [];
-    const processor = createProcessor(
-      (_, source, importStatement) => {
+    const processor = createProcessor({
+      applyImport: (_, source, importStatement) => {
         calls.push(`${source}|${importStatement}`);
       },
-      [
+      extensions: [
         '.foo',
       ],
-      'foo',
-      () => [],
-    );
+      id: 'foo',
+    });
 
-    processor.applyImport(
+    processor.applyImport?.(
       // biome-ignore lint/suspicious/noExplicitAny: yap yap yap
       {} as any,
       'source',
@@ -43,14 +40,13 @@ describe('createProcessor', () => {
     ]);
   });
 
-  it('writes calls through to the provided parseFragments hook', () => {
-    const processor = createProcessor(
-      () => {},
-      [
+  it('preserves the provided parseFragments hook', () => {
+    const processor = createProcessor({
+      extensions: [
         '.foo',
       ],
-      'foo',
-      (source) => [
+      id: 'foo',
+      parseFragments: (source) => [
         {
           code: source,
           kind: 'script',
@@ -58,9 +54,9 @@ describe('createProcessor', () => {
           originalOffset: 0,
         },
       ],
-    );
+    });
 
-    const fragments = processor.parseFragments('let x = 1;');
+    const fragments = processor.parseFragments?.('let x = 1;');
     expect(fragments).toEqual([
       {
         code: 'let x = 1;',
@@ -73,25 +69,21 @@ describe('createProcessor', () => {
 
   it('refuses construction when id is empty', () => {
     expect(() =>
-      createProcessor(
-        () => {},
-        [
+      createProcessor({
+        extensions: [
           '.foo',
         ],
-        '',
-        () => [],
-      ),
+        id: '',
+      }),
     ).toThrow(/id must be a non-empty string/);
   });
 
   it('refuses construction when extensions is empty', () => {
     expect(() =>
-      createProcessor(
-        () => {},
-        [],
-        'foo',
-        () => [],
-      ),
+      createProcessor({
+        extensions: [],
+        id: 'foo',
+      }),
     ).toThrow(/extensions must be a non-empty array/);
   });
 });

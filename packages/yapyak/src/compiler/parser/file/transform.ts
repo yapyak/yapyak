@@ -68,12 +68,13 @@ export function transformFile(
     request.source,
     request.processors ?? [],
   );
-  const fragments = processor.parseFragments(request.source);
+  const fragments = (processor.parseFragments ?? defaultParseFragments)(
+    request.source,
+  );
   const isSingleLocale = request.locales.length === 1;
   const isDev = request.dev === true;
-  const runtimeBinding = isDev ? processor.runtimeBinding : undefined;
-  const injectsReactHook =
-    runtimeBinding !== undefined && runtimeBinding.hook !== undefined;
+  const runtime = isDev ? processor.runtime : undefined;
+  const injectsReactHook = runtime !== undefined && 'invoke' in runtime;
   const magicString = new MagicString(request.source);
 
   const pickLocal = findFreePickLocal(request.source);
@@ -195,13 +196,13 @@ export function transformFile(
       `import { ${allImportSpecs.join(', ')} } from '${YAPYAK_INTERNAL_MODULE}';`,
     );
   }
-  if (runtimeBinding !== undefined) {
-    if (injectsReactHook && runtimeBinding.hook !== undefined) {
+  if (runtime !== undefined) {
+    if (injectsReactHook && 'invoke' in runtime) {
       injectionLines.push(
-        `import { ${runtimeBinding.hook.name} as ${useLocal} } from '${runtimeBinding.module}';`,
+        `import { ${runtime.invoke} as ${useLocal} } from '${runtime.module}';`,
       );
     } else {
-      injectionLines.push(`import '${runtimeBinding.module}';`);
+      injectionLines.push(`import '${runtime.module}';`);
     }
   }
   for (const entry of catalogsByKey.values()) {
@@ -219,7 +220,7 @@ export function transformFile(
     );
   }
   if (injectionLines.length > 0) {
-    processor.applyImport(
+    (processor.applyImport ?? defaultApplyImport)(
       magicString,
       request.source,
       injectionLines.join('\n'),
@@ -1196,4 +1197,24 @@ function containsCallSite(
     }
   }
   return false;
+}
+
+function defaultApplyImport(
+  magicString: MagicString,
+  source: string,
+  importStatement: string,
+): void {
+  void source;
+  magicString.prepend(`${importStatement}\n`);
+}
+
+function defaultParseFragments(source: string): Fragment[] {
+  return [
+    {
+      code: source,
+      kind: 'script',
+      lang: 'ts',
+      originalOffset: 0,
+    },
+  ];
 }

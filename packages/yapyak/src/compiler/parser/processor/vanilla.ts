@@ -2,12 +2,8 @@ import type { Processor } from '../../../processor';
 
 import { createProcessor } from '../../../processor';
 
-export const vanillaProcessor: Processor = createProcessor(
-  (magicString, source, importStatement) => {
-    void source;
-    magicString.prepend(`${importStatement}\n`);
-  },
-  [
+export const vanillaProcessor: Processor = createProcessor({
+  extensions: [
     '.ts',
     '.tsx',
     '.js',
@@ -17,13 +13,5 @@ export const vanillaProcessor: Processor = createProcessor(
     '.cts',
     '.cjs',
   ],
-  'vanilla',
-  (source) => [
-    {
-      code: source,
-      kind: 'script',
-      lang: 'ts',
-      originalOffset: 0,
-    },
-  ],
-);
+  id: 'vanilla',
+});

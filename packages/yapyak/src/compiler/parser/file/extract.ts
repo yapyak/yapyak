@@ -61,7 +61,7 @@ export function extractFile(
   options?: ExtractFileOptions,
 ): ExtractFileResult {
   const processor = resolveProcessor(fileId, source, options?.processors ?? []);
-  const fragments = processor.parseFragments(source);
+  const fragments = (processor.parseFragments ?? defaultParseFragments)(source);
 
   const diagnostics: Diagnostic[] = [];
   const callSites: ParsedCallSite[] = [];
@@ -298,4 +298,15 @@ function remapDiagnostic(
     range: remapRange(diagnostic.range, fragment, originalSource),
     source: originalSource,
   };
+}
+
+function defaultParseFragments(source: string): Fragment[] {
+  return [
+    {
+      code: source,
+      kind: 'script',
+      lang: 'ts',
+      originalOffset: 0,
+    },
+  ];
 }

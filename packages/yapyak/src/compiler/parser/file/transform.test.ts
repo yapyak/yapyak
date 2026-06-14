@@ -8,30 +8,17 @@ import { toMessageKey } from '../message-key';
 import { extractFile } from './extract';
 import { transformFile } from './transform';
 
-const reactProcessor: Processor = createProcessor(
-  (magicString, _source, importStatement) => {
-    magicString.prepend(`${importStatement}\n`);
-  },
-  [
+const reactProcessor: Processor = createProcessor({
+  extensions: [
     '.tsx',
     '.jsx',
   ],
-  'react',
-  (source) => [
-    {
-      code: source,
-      kind: 'script',
-      lang: 'ts',
-      originalOffset: 0,
-    },
-  ],
-  {
-    hook: {
-      name: 'useYapyak',
-    },
+  id: 'react',
+  runtime: {
+    invoke: 'useYapyak',
     module: '@yapyak/react/internal',
   },
-);
+});
 
 function runTransform(input: {
   source: string;

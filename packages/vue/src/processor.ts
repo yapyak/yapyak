@@ -45,8 +45,8 @@ let cached: typeof VueSfc | undefined;
  * ```
  */
 export function vue(): Processor {
-  return createProcessor(
-    (magicString, source, importStatement) => {
+  return createProcessor({
+    applyImport: (magicString, source, importStatement) => {
       const setupMatch = SCRIPT_SETUP_RX.exec(source);
       if (setupMatch !== null) {
         const insertAt = setupMatch.index + setupMatch[0].length;
@@ -61,11 +61,11 @@ export function vue(): Processor {
       }
       magicString.prepend(`<script setup>\n${importStatement}\n</script>\n`);
     },
-    [
+    extensions: [
       '.vue',
     ],
-    'vue',
-    (source) => {
+    id: 'vue',
+    parseFragments: (source) => {
       const compiler = loadCompiler();
       const { descriptor } = compiler.parse(source);
       const fragments: Fragment[] = [];
@@ -83,10 +83,10 @@ export function vue(): Processor {
       }
       return fragments;
     },
-    {
+    runtime: {
       module: '@yapyak/vue/internal',
     },
-  );
+  });
 }
 
 function loadCompiler(): typeof VueSfc {

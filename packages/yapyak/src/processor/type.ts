@@ -66,8 +66,8 @@ export type ParseFragmentsFn = (source: string) => Fragment[];
  * Public extension point. Implemented by the framework processor packages and by third-party processors.
  */
 export type Processor = {
-  /** Injects a `yapyak` import into framework-specific source. */
-  applyImport(
+  /** Injects a `yapyak` import into framework-specific source. Defaults to prepending the statement when omitted — fits plain TS/JS files. */
+  applyImport?(
     magicString: MagicString,
     source: string,
     importStatement: string,
@@ -76,15 +76,17 @@ export type Processor = {
   extensions: string[];
   /** Stable identifier for diagnostics. */
   id: string;
-  /** Breaks framework-specific source into TS-parseable fragments. */
-  parseFragments(source: string): Fragment[];
+  /** Breaks framework-specific source into TS-parseable fragments. Defaults to the whole source as one script when omitted — fits plain TS/JS files. */
+  parseFragments?(source: string): Fragment[];
   /**
-   * Compiler-emitted runtime wiring. The dev transform imports `module` so the framework's HMR side effects fire. When `hook` is set, the dev transform also imports that hook from the same module and injects a call at the top of every React function component containing `t()`.
+   * Compiler-emitted runtime wiring. The dev transform imports `module` so the framework's HMR side effects fire. When `invoke` is set, the dev transform imports the named function from the same module and injects a call at the top of every React function component containing `t()` instead of a bare side-effect import.
    */
-  runtimeBinding?: {
-    hook?: {
-      name: string;
-    };
-    module: string;
-  };
+  runtime?:
+    | {
+        module: string;
+      }
+    | {
+        invoke: string;
+        module: string;
+      };
 };

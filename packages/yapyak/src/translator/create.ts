@@ -1,10 +1,9 @@
 import type {
   ContextLevel,
-  CreateTranslatorOptions,
+  CreateTranslatorInput,
   LocaleTranslations,
   TranslateBatchOptions,
   TranslateBatchRequest,
-  TranslateFn,
   TranslateItem,
   TranslateRequest,
   Translator,
@@ -23,13 +22,12 @@ const DEFAULT_ID = 'custom';
  * @remarks
  * Handles batching, context shaping, deduplication across target locales, and result validation. The provided function talks to the AI and receives every target locale in one call so terminology stays consistent and round-trips stay minimal.
  *
- * @param translate - Translates a batch of items into every target locale.
- * @param options - Tuning knobs. See {@link CreateTranslatorOptions}.
+ * @param input - Translator construction input. See {@link CreateTranslatorInput}.
  *
  * @example
  * ```ts
- * const myTranslator = createTranslator(
- *   async ({ items, sourceLocale, targetLocales }) => {
+ * const myTranslator = createTranslator({
+ *   translate: async ({ items, sourceLocale, targetLocales }) => {
  *     const response = await fetch('https://my-api.example/translate', {
  *       method: 'POST',
  *       body: JSON.stringify({ items, sourceLocale, targetLocales }),
@@ -37,26 +35,24 @@ const DEFAULT_ID = 'custom';
  *     const { translations } = await response.json();
  *     return translations;
  *   },
- * );
+ * });
  * ```
  */
-export function createTranslator(
-  translate: TranslateFn,
-  options?: CreateTranslatorOptions,
-): Translator {
-  const batchSize = options?.batchSize ?? DEFAULT_BATCH_SIZE;
+export function createTranslator(input: CreateTranslatorInput): Translator {
+  const { translate } = input;
+  const batchSize = input.batchSize ?? DEFAULT_BATCH_SIZE;
   if (!Number.isInteger(batchSize) || batchSize <= 0) {
     throw new Error(
       `createTranslator: batchSize must be a positive integer, got ${String(batchSize)}.`,
     );
   }
-  const concurrency = options?.concurrency ?? DEFAULT_CONCURRENCY;
+  const concurrency = input.concurrency ?? DEFAULT_CONCURRENCY;
   if (!Number.isInteger(concurrency) || concurrency <= 0) {
     throw new Error(
       `createTranslator: concurrency must be a positive integer, got ${String(concurrency)}.`,
     );
   }
-  const contextLevel = options?.context ?? DEFAULT_CONTEXT;
+  const contextLevel = input.context ?? DEFAULT_CONTEXT;
 
   async function batch(
     requests: TranslateRequest[],
@@ -215,7 +211,7 @@ export function createTranslator(
   return Object.assign(single, {
     batch,
     context: contextLevel,
-    id: options?.id ?? DEFAULT_ID,
+    id: input.id ?? DEFAULT_ID,
   });
 }
 

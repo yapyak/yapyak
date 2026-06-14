@@ -38,8 +38,8 @@ describe('astro processor — shape', () => {
     expect(astro().id).toBe('astro');
   });
 
-  it('refuses to declare a runtime binding — Astro uses full-reload for HMR', () => {
-    expect(astro().runtimeBinding).toBeUndefined();
+  it('refuses to declare a runtime — Astro uses full-reload for HMR', () => {
+    expect(astro().runtime).toBeUndefined();
   });
 });
 

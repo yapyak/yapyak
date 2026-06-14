@@ -114,8 +114,12 @@ export function anthropic(options: AnthropicOptions): Translator {
     timeout = DEFAULT_TIMEOUT,
   } = options;
 
-  return createTranslator(
-    async (params) => {
+  return createTranslator({
+    batchSize,
+    concurrency,
+    context,
+    id: 'anthropic',
+    translate: async (params) => {
       const { items, signal, sourceLocale, targetLocales } = params;
       const init: RequestInit = {
         body: JSON.stringify({
@@ -163,13 +167,7 @@ export function anthropic(options: AnthropicOptions): Translator {
       }
       return parseResponse(stripCodeFence(text.trim()), 'anthropic');
     },
-    {
-      batchSize,
-      concurrency,
-      context,
-      id: 'anthropic',
-    },
-  );
+  });
 }
 
 type AnthropicMessageResponse = {

@@ -1,4 +1,4 @@
-import type { Fragment, Processor } from 'yapyak/processor';
+import type { Processor } from 'yapyak/processor';
 
 import { createProcessor } from 'yapyak/processor';
 
@@ -6,7 +6,7 @@ import { createProcessor } from 'yapyak/processor';
  * Creates a React processor for yapyak's compiler.
  *
  * @remarks
- * Handles `.tsx` and `.jsx` files. Declares `@yapyak/react` as the runtime binding so the dev transform side-effect-imports it for HMR wiring and so the transform injects the `useYapyak()` hook into React function components.
+ * Handles `.tsx` and `.jsx` files. Declares `@yapyak/react/internal` as the runtime module so the dev transform side-effect-imports it for HMR wiring and injects a `useYapyak()` hook call at the top of every React function component containing `t()`.
  *
  * @example Register in yapyak.config.ts
  * ```ts [yapyak.config.ts]
@@ -19,33 +19,15 @@ import { createProcessor } from 'yapyak/processor';
  * ```
  */
 export function react(): Processor {
-  return createProcessor(
-    (magicString, source, importStatement) => {
-      void source;
-      magicString.prepend(`${importStatement}\n`);
-    },
-    [
+  return createProcessor({
+    extensions: [
       '.tsx',
       '.jsx',
     ],
-    'react',
-    parseFragments,
-    {
-      hook: {
-        name: 'useYapyak',
-      },
+    id: 'react',
+    runtime: {
+      invoke: 'useYapyak',
       module: '@yapyak/react/internal',
     },
-  );
-}
-
-function parseFragments(source: string): Fragment[] {
-  return [
-    {
-      code: source,
-      kind: 'script',
-      lang: 'ts',
-      originalOffset: 0,
-    },
-  ];
+  });
 }

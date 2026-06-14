@@ -29,8 +29,8 @@ let cached: typeof SvelteCompiler | undefined;
  * ```
  */
 export function svelte(): Processor {
-  return createProcessor(
-    (magicString, source, importStatement) => {
+  return createProcessor({
+    applyImport: (magicString, source, importStatement) => {
       const match = SCRIPT_RX.exec(source);
       if (match !== null) {
         const insertAt = match.index + match[0].length;
@@ -39,11 +39,11 @@ export function svelte(): Processor {
       }
       magicString.prepend(`<script>\n${importStatement}\n</script>\n`);
     },
-    [
+    extensions: [
       '.svelte',
     ],
-    'svelte',
-    (source) => {
+    id: 'svelte',
+    parseFragments: (source) => {
       const compiler = loadCompiler();
       const ast = compiler.parse(source, {
         modern: true,
@@ -61,10 +61,10 @@ export function svelte(): Processor {
       }
       return fragments;
     },
-    {
+    runtime: {
       module: '@yapyak/svelte/internal',
     },
-  );
+  });
 }
 
 function loadCompiler(): typeof SvelteCompiler {

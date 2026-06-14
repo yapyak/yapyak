@@ -122,8 +122,12 @@ export function openai(options: OpenAIOptions): Translator {
     user,
   } = options;
 
-  return createTranslator(
-    async (params) => {
+  return createTranslator({
+    batchSize,
+    concurrency,
+    context,
+    id: 'openai',
+    translate: async (params) => {
       const { items, signal, sourceLocale, targetLocales } = params;
       const body: Record<string, unknown> = {
         messages: [
@@ -180,13 +184,7 @@ export function openai(options: OpenAIOptions): Translator {
       }
       return parseResponse(stripCodeFence(text.trim()), 'openai');
     },
-    {
-      batchSize,
-      concurrency,
-      context,
-      id: 'openai',
-    },
-  );
+  });
 }
 
 type OpenAIChatResponse = {

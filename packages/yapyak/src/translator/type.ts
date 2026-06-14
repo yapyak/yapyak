@@ -218,8 +218,8 @@ export type TranslateFn = (
   params: TranslateBatchRequest,
 ) => LocaleTranslations[] | Promise<LocaleTranslations[]>;
 
-/** Options for {@link createTranslator}. */
-export type CreateTranslatorOptions = {
+/** Input for {@link createTranslator}. */
+export type CreateTranslatorInput = {
   /**
    * The maximum number of items per `translate` call.
    *
@@ -244,4 +244,8 @@ export type CreateTranslatorOptions = {
    * @defaultValue `'custom'`
    */
   id?: string;
+  /**
+   * Translates a batch of items into every target locale.
+   */
+  translate: TranslateFn;
 };

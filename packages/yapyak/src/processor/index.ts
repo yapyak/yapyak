@@ -1,3 +1,4 @@
+export type { CreateProcessorInput } from './create';
 export type {
   ApplyImportFn,
   ElisionContext,

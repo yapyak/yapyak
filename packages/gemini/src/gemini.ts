@@ -112,8 +112,12 @@ export function gemini(options: GeminiOptions): Translator {
     timeout = DEFAULT_TIMEOUT,
   } = options;
 
-  return createTranslator(
-    async (params) => {
+  return createTranslator({
+    batchSize,
+    concurrency,
+    context,
+    id: 'gemini',
+    translate: async (params) => {
       const { items, signal, sourceLocale, targetLocales } = params;
       const url = `${endpoint}/models/${model}:generateContent`;
       const init: RequestInit = {
@@ -167,13 +171,7 @@ export function gemini(options: GeminiOptions): Translator {
       }
       return parseResponse(stripCodeFence(text.trim()), 'gemini');
     },
-    {
-      batchSize,
-      concurrency,
-      context,
-      id: 'gemini',
-    },
-  );
+  });
 }
 
 type GeminiResponse = {

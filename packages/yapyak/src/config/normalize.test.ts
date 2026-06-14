@@ -8,11 +8,13 @@ import { createTranslator } from '../translator';
 import { normalizeYapyakConfig } from './normalize';
 
 function makeTranslator(context?: ContextLevel): Translator {
-  const options: Parameters<typeof createTranslator>[1] = {};
+  const input: Parameters<typeof createTranslator>[0] = {
+    translate: () => [],
+  };
   if (context !== undefined) {
-    options.context = context;
+    input.context = context;
   }
-  return createTranslator(() => [], options);
+  return createTranslator(input);
 }
 
 describe('normalizeYapyakConfig', () => {
@@ -432,10 +434,8 @@ describe('normalizeYapyakConfig', () => {
 });
 
 function makeProcessor(id: string, extensions: string[]): Processor {
-  return createProcessor(
-    () => undefined,
+  return createProcessor({
     extensions,
     id,
-    () => [],
-  );
+  });
 }

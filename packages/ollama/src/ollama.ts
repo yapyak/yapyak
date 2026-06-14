@@ -99,8 +99,12 @@ export function ollama(options: OllamaOptions = {}): Translator {
     timeout = DEFAULT_TIMEOUT,
   } = options;
 
-  return createTranslator(
-    async (params) => {
+  return createTranslator({
+    batchSize,
+    concurrency,
+    context,
+    id: 'ollama',
+    translate: async (params) => {
       const { items, signal, sourceLocale, targetLocales } = params;
       const init: RequestInit = {
         body: JSON.stringify({
@@ -141,13 +145,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
       }
       return parseResponse(text.trim(), 'ollama');
     },
-    {
-      batchSize,
-      concurrency,
-      context,
-      id: 'ollama',
-    },
-  );
+  });
 }
 
 type OllamaResponse = {

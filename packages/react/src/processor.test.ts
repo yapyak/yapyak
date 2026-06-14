@@ -43,12 +43,15 @@ describe('react processor', () => {
     ]);
   });
 
-  it('returns a processor that declares `@yapyak/react/internal` as the runtime binding module', () => {
-    expect(react().runtimeBinding?.module).toBe('@yapyak/react/internal');
+  it('returns a processor that declares `@yapyak/react/internal` as the runtime module', () => {
+    expect(react().runtime?.module).toBe('@yapyak/react/internal');
   });
 
-  it('returns a processor that declares `useYapyak` as the runtime hook', () => {
-    expect(react().runtimeBinding?.hook?.name).toBe('useYapyak');
+  it('returns a processor that declares `useYapyak` as the runtime invocation', () => {
+    const runtime = react().runtime;
+    expect(runtime && 'invoke' in runtime ? runtime.invoke : undefined).toBe(
+      'useYapyak',
+    );
   });
 
   it('emits a `useYapyak` import when the dev transform runs through this processor', () => {
