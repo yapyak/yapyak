@@ -2,6 +2,7 @@ export type {
   Block,
   CalloutBlock,
   CodeBlock,
+  CodeExpressionBlock,
   CodeGroupBlock,
   CodeLocationBlock,
   DividerBlock,

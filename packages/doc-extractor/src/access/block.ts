@@ -2,6 +2,7 @@ export type Block =
   | QuoteBlock
   | CalloutBlock
   | CodeBlock
+  | CodeExpressionBlock
   | CodeGroupBlock
   | CodeLocationBlock
   | DividerBlock
@@ -112,7 +113,6 @@ export type TableRowBlock = {
 export type TableCellBlock = {
   children: Block[];
   header: boolean;
-  monospace?: boolean;
   type: 'table-cell';
 };
 
@@ -122,6 +122,11 @@ export type CodeBlock = {
   path: string | null;
   source: string;
   type: 'code-block';
+};
+
+export type CodeExpressionBlock = {
+  children: Block[];
+  type: 'code-expression';
 };
 
 export type CodeGroupBlock = {

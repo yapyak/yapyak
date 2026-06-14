@@ -108,6 +108,8 @@ export type TFn = {
    * @remarks
    * The compiler emits `YPK403` if a source is used with both `t()` and `t.as()` in the same file.
    *
+   * @typeParam TContext - The disambiguating context literal.
+   * @typeParam TSource - The source string literal.
    * @param context - {@shape string} The disambiguating context.
    * @param source - {@shape T} The source string literal, supplied to translate inline.
    * @param params - {@shape TParams<T>} Object with placeholder values. Required when the source has placeholders.
@@ -122,6 +124,7 @@ export type TFn = {
   /**
    * Forces a fixed locale for one translation call, or returns a chain that requires `.as()` to complete.
    *
+   * @typeParam T - The source string literal.
    * @param locale - {@shape Locale} The locale code, e.g. `'sv'`.
    * @param source - {@shape T} The source string literal, supplied to translate inline.
    * @param params - {@shape TParams<T>} Object with placeholder values. Required when the source has placeholders.
@@ -135,6 +138,7 @@ export type TFn = {
   /**
    * Translates `source` for the active locale.
    *
+   * @typeParam T - The source string literal.
    * @param source - {@shape T} The source string literal.
    * @param params - {@shape TParams<T>} Object with placeholder values. Required when the source has placeholders.
    */

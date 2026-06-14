@@ -1,0 +1,12 @@
+@layer components {
+  .BlockRendererNodeCodeExpression {
+    padding: 4px 6px;
+    font-family: var(--font-family-mono);
+    font-size: 0.78em;
+    color: var(--foreground-soft);
+    white-space: nowrap;
+    background-color: var(--surface-strong);
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-ring-inset);
+  }
+}

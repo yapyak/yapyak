@@ -2,6 +2,7 @@ import type { Block } from '@yapyak/doc-extractor';
 
 import { BlockRendererNodeCallout } from './block-renderer-node-callout';
 import { BlockRendererNodeCodeBlock } from './block-renderer-node-code-block';
+import { BlockRendererNodeCodeExpression } from './block-renderer-node-code-expression';
 import { BlockRendererNodeCodeGroup } from './block-renderer-node-code-group';
 import { BlockRendererNodeCodeLocation } from './block-renderer-node-code-location';
 import { BlockRendererNodeDivider } from './block-renderer-node-divider';
@@ -68,6 +69,8 @@ export function BlockRendererNode(props: BlockRendererNodeProps) {
       return <BlockRendererNodeTableCell block={block} />;
     case 'code-block':
       return <BlockRendererNodeCodeBlock block={block} />;
+    case 'code-expression':
+      return <BlockRendererNodeCodeExpression block={block} />;
     case 'code-group':
       return <BlockRendererNodeCodeGroup block={block} />;
     case 'switch':

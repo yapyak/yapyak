@@ -1,5 +1,6 @@
 import type {
   Block,
+  CodeExpressionBlock,
   ExportKind,
   TableCellBlock,
   TableRowBlock,
@@ -107,12 +108,10 @@ export function buildSymbolPage(
     } else {
       blocks.push(buildFunctionSignatureBlock(symbol.overloads));
     }
-    if (!symbol.shape) {
-      const typeParameters = normalizeOverloadTypeParameters(symbol.overloads);
-      if (typeParameters.length > 0) {
-        blocks.push(buildHeading2Block('Type Parameters'));
-        blocks.push(buildTypeParametersTable(typeParameters));
-      }
+    const typeParameters = normalizeOverloadTypeParameters(symbol.overloads);
+    if (typeParameters.length > 0) {
+      blocks.push(buildHeading2Block('Type Parameters'));
+      blocks.push(buildTypeParametersTable(typeParameters));
     }
     const parameters = normalizeOverloadParameters(symbol.overloads);
     if (parameters.length > 0) {
@@ -586,10 +585,9 @@ function buildTypeParameterRow(
                 value: '',
               },
             ]
-          : tokensToBlocks(typeParameter.constraint),
-        {
-          monospace: true,
-        },
+          : [
+              tokensToCodeExpression(typeParameter.constraint),
+            ],
       ),
       buildTableBodyCell(
         typeParameter.defaultType === null
@@ -599,10 +597,9 @@ function buildTypeParameterRow(
                 value: '',
               },
             ]
-          : tokensToBlocks(typeParameter.defaultType),
-        {
-          monospace: true,
-        },
+          : [
+              tokensToCodeExpression(typeParameter.defaultType),
+            ],
       ),
       buildTableBodyCell(markdownToInline(typeParameter.description)),
     ],
@@ -662,9 +659,9 @@ function buildParameterRow(
   parameter: ReferenceParameter,
   includeDefault: boolean,
 ): TableRowBlock {
-  const typeBlocks = parameter.shape
-    ? tokensToBlocks(tokenizeShapeText(parameter.shape))
-    : tokensToBlocks(parameter.type);
+  const typeExpression = parameter.shape
+    ? tokensToCodeExpression(tokenizeShapeText(parameter.shape))
+    : tokensToCodeExpression(parameter.type);
   const children: TableCellBlock[] = [
     buildTableBodyCell([
       {
@@ -672,9 +669,9 @@ function buildParameterRow(
         value: parameter.name + (parameter.optional ? '?' : ''),
       },
     ]),
-    buildTableBodyCell(typeBlocks, {
-      monospace: true,
-    }),
+    buildTableBodyCell([
+      typeExpression,
+    ]),
   ];
   if (includeDefault) {
     children.push(
@@ -708,9 +705,9 @@ function buildMemberRow(
         value: member.name + (member.optional ? '?' : ''),
       },
     ]),
-    buildTableBodyCell(tokensToBlocks(member.type), {
-      monospace: true,
-    }),
+    buildTableBodyCell([
+      tokensToCodeExpression(member.type),
+    ]),
   ];
   if (includeDefault) {
     children.push(
@@ -733,16 +730,10 @@ function buildMemberRow(
   };
 }
 
-function buildTableBodyCell(
-  children: Block[],
-  options: {
-    monospace?: boolean;
-  } = {},
-) {
+function buildTableBodyCell(children: Block[]) {
   return {
     children,
     header: false,
-    monospace: options.monospace,
     type: 'table-cell' as const,
   };
 }
@@ -763,16 +754,16 @@ function buildTableHeaderRow(labels: string[]): TableRowBlock {
   };
 }
 
-function tokensToBlocks(tokens: TypeToken[]): Block[] {
-  const blocks: Block[] = [];
+function tokensToCodeExpression(tokens: TypeToken[]): CodeExpressionBlock {
+  const children: Block[] = [];
   for (const token of tokens) {
     const resolvedModule =
       token.kind === 'ref' ? resolveModule(token) : undefined;
     if (token.kind === 'ref' && resolvedModule !== undefined) {
-      blocks.push({
+      children.push({
         children: [
           {
-            type: 'inline-code',
+            type: 'text',
             value: token.text,
           },
         ],
@@ -781,19 +772,16 @@ function tokensToBlocks(tokens: TypeToken[]): Block[] {
         type: 'link',
       });
     } else {
-      blocks.push({
-        type: 'inline-code',
+      children.push({
+        type: 'text',
         value: token.text,
       });
     }
   }
-  if (blocks.length === 0) {
-    blocks.push({
-      type: 'inline-code',
-      value: '',
-    });
-  }
-  return blocks;
+  return {
+    children,
+    type: 'code-expression',
+  };
 }
 
 function resolveModule(token: {

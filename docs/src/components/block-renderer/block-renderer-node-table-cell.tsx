@@ -18,7 +18,6 @@ export function BlockRendererNodeTableCell(
       as={block.header ? 'th' : 'td'}
       className={styles.BlockRendererNodeTableCell}
       data-header={block.header}
-      data-monospace={block.monospace === true ? '' : undefined}
     >
       {block.children.map((child, index) => (
         <BlockRendererNode
