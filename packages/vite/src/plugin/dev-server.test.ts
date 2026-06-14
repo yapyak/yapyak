@@ -350,18 +350,19 @@ describe('readLocaleFile', () => {
 
   it('normalizes source keys to NFC like the canonical reader', () => {
     const path = join(directory, 'sv.json');
+    const nfdKey = 'Cafe\u0301';
     writeFileSync(
       path,
       JSON.stringify({
         'src/a.ts': {
-          Café: 'Café',
+          [nfdKey]: 'Caf\u00e9',
         },
       }),
     );
     const entries = readLocaleFile(path)['src/a.ts'];
     expect(entries).toBeDefined();
     expect(Object.keys(entries ?? {})).toEqual([
-      'Café'.normalize(),
+      'Caf\u00e9'.normalize(),
     ]);
   });
 

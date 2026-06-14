@@ -102,7 +102,7 @@ export function clean(
       }
       const nextEntries: Record<string, CatalogEntry> = Object.create(null);
       for (const [source, byContext] of byContextBySource) {
-        nextEntries[source] = toEntry(byContext);
+        nextEntries[source] = toEntry(byContext, source);
       }
       if (Object.keys(nextEntries).length > 0) {
         next[fileId] = nextEntries;

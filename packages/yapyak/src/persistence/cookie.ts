@@ -31,6 +31,9 @@ export function parseCookie(header: string): Record<string, string> {
     if (name === '') {
       continue;
     }
+    if (Object.hasOwn(result, name)) {
+      continue;
+    }
     const rawValue = trimmed.slice(equalsIndex + 1).trim();
     const unquoted =
       rawValue.startsWith('"') && rawValue.endsWith('"')

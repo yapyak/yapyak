@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseResponse } from './response';
+import { parseJsonResponse, parseResponse } from './response';
 
 describe('parseResponse', () => {
   it('returns the parsed array for a well-formed response', () => {
@@ -79,5 +79,39 @@ describe('parseResponse', () => {
         /Preview: "{\\"sv\\":\\"Hej\\"}"/,
       );
     });
+  });
+});
+
+describe('parseJsonResponse', () => {
+  it('returns the parsed body for a well-formed JSON response', async () => {
+    const response = new Response(
+      JSON.stringify({
+        ok: true,
+      }),
+      {
+        status: 200,
+      },
+    );
+    const result = await parseJsonResponse<{
+      ok: boolean;
+    }>(response, 'openai');
+    expect(result.ok).toBe(true);
+  });
+
+  it('throws a vendor-tagged Error when the body is HTML with a 200 status', async () => {
+    const response = new Response('<html><body>nope</body></html>', {
+      status: 200,
+    });
+    await expect(parseJsonResponse(response, 'openai')).rejects.toThrow(
+      /yapyak openai: response is not valid JSON/,
+    );
+  });
+
+  it('throws an Error whose preview is truncated past 200 characters with `…`', async () => {
+    const long = `<html>${'x'.repeat(300)}</html>`;
+    const response = new Response(long, {
+      status: 200,
+    });
+    await expect(parseJsonResponse(response, 'gemini')).rejects.toThrow(/…/);
   });
 });

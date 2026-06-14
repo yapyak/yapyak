@@ -10,6 +10,7 @@ import {
   YapyakInvariantError,
   readLocaleFile,
   syncLocaleFiles,
+  toEntry,
   writeLocaleFile,
 } from './file';
 import {
@@ -870,6 +871,51 @@ describe('readLocaleFile', () => {
     writeFileSync(path, stringifyCanonical(catalog));
 
     expect(readLocaleFile(path)).toEqual(catalog);
+  });
+});
+
+describe('toEntry', () => {
+  it('returns the plain value as a string when no context variants exist', () => {
+    const byContext = new Map<string | undefined, string>([
+      [
+        undefined,
+        'Spara',
+      ],
+    ]);
+    expect(toEntry(byContext, 'Save')).toBe('Spara');
+  });
+
+  it('returns a context-variant record when no plain value exists', () => {
+    const byContext = new Map<string | undefined, string>([
+      [
+        'button',
+        'Spara',
+      ],
+      [
+        'toolbar',
+        'Spara',
+      ],
+    ]);
+    expect(toEntry(byContext, 'Save')).toEqual({
+      button: 'Spara',
+      toolbar: 'Spara',
+    });
+  });
+
+  it('throws a `YPK403` error when the source has both a plain value and a context variant', () => {
+    const byContext = new Map<string | undefined, string>([
+      [
+        undefined,
+        'Spara',
+      ],
+      [
+        'button',
+        'Spara',
+      ],
+    ]);
+    expect(() => toEntry(byContext, 'Save')).toThrow(/YPK403/);
+    expect(() => toEntry(byContext, 'Save')).toThrow(/"Save"/);
+    expect(() => toEntry(byContext, 'Save')).toThrow(/yapyak check/);
   });
 });
 

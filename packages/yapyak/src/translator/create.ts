@@ -289,7 +289,14 @@ function normalizeEntry(
   entry: unknown,
   targetLocales: string[],
 ): LocaleTranslations {
-  if (typeof entry !== 'object' || entry === null) {
+  if (typeof entry !== 'object' || entry === null || Array.isArray(entry)) {
+    warn(
+      `Translate result entry is ${getEntryShapeDescription(entry)} — expected an object keyed by target locales. The element was dropped; translations for it will be empty.`,
+      {
+        code: 'YPK_TRANSLATE_ENTRY_SHAPE',
+        value: entry,
+      },
+    );
     return {};
   }
   const record = entry as Record<string, unknown>;
@@ -304,4 +311,17 @@ function normalizeEntry(
     }
   }
   return translations;
+}
+
+function getEntryShapeDescription(value: unknown): string {
+  if (value === null) {
+    return '`null`';
+  }
+  if (Array.isArray(value)) {
+    return 'an array';
+  }
+  if (typeof value === 'string') {
+    return `a string (${JSON.stringify(value.slice(0, 40))})`;
+  }
+  return `a ${typeof value}`;
 }

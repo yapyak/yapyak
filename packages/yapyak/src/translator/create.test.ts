@@ -323,6 +323,69 @@ describe('createTranslator', () => {
     ]);
   });
 
+  it('warns when a translate response entry is a string instead of an object', async () => {
+    const translator = createTranslator({
+      translate: () => [
+        'Spara' as unknown as never,
+      ],
+    });
+    const warnSpy =
+      vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
+    setWarn(warnSpy);
+    try {
+      const results = await translator.batch?.([
+        {
+          fileId: 'src/a.tsx',
+          source: 'Save',
+          sourceLocale: 'en',
+          targetLocale: 'sv',
+        },
+      ]);
+      expect(results).toEqual([
+        '',
+      ]);
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('expected an object keyed by target locales'),
+        expect.objectContaining({
+          code: 'YPK_TRANSLATE_ENTRY_SHAPE',
+        }),
+      );
+    } finally {
+      resetWarn();
+    }
+  });
+
+  it('warns when a translate response entry is an array instead of an object', async () => {
+    const translator = createTranslator({
+      translate: () => [
+        [
+          'Spara',
+        ] as unknown as never,
+      ],
+    });
+    const warnSpy =
+      vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
+    setWarn(warnSpy);
+    try {
+      await translator.batch?.([
+        {
+          fileId: 'src/a.tsx',
+          source: 'Save',
+          sourceLocale: 'en',
+          targetLocale: 'sv',
+        },
+      ]);
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('an array'),
+        expect.objectContaining({
+          code: 'YPK_TRANSLATE_ENTRY_SHAPE',
+        }),
+      );
+    } finally {
+      resetWarn();
+    }
+  });
+
   it('returns an empty string for a translation whose value is not a string', async () => {
     const translator = createTranslator({
       translate: () => [

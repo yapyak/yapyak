@@ -4,6 +4,7 @@ import { createTranslator } from 'yapyak/translator';
 import {
   buildSystem,
   fetchWithRetry,
+  parseJsonResponse,
   parseResponse,
 } from 'yapyak/translator/internal';
 
@@ -148,7 +149,10 @@ export function ollama(options: OllamaOptions = {}): Translator {
         const text = await response.text();
         throw new Error(`yapyak ollama: ${response.status} ${text}`);
       }
-      const responseBody = (await response.json()) as OllamaResponse;
+      const responseBody = await parseJsonResponse<OllamaResponse>(
+        response,
+        'ollama',
+      );
       validateResponse(responseBody);
       const text = responseBody.response;
       if (typeof text !== 'string') {

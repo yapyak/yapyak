@@ -4,6 +4,7 @@ import { createTranslator } from 'yapyak/translator';
 import {
   buildSystem,
   fetchWithRetry,
+  parseJsonResponse,
   parseResponse,
   stripCodeFence,
 } from 'yapyak/translator/internal';
@@ -173,7 +174,10 @@ export function anthropic(options: AnthropicOptions): Translator {
         const text = await response.text();
         throw new Error(`yapyak anthropic: ${response.status} ${text}`);
       }
-      const body = (await response.json()) as AnthropicMessageResponse;
+      const body = await parseJsonResponse<AnthropicMessageResponse>(
+        response,
+        'anthropic',
+      );
       validateResponse(body);
       const text = body.content?.[0]?.text;
       if (typeof text !== 'string') {

@@ -212,6 +212,7 @@ describe('ollama', () => {
     let capturedBody:
       | {
           options?: {
+            // biome-ignore lint/style/useNamingConvention: needed
             num_predict?: number;
           };
         }
@@ -219,6 +220,7 @@ describe('ollama', () => {
     vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
       capturedBody = JSON.parse(init.body as string) as {
         options?: {
+          // biome-ignore lint/style/useNamingConvention: needed
           num_predict?: number;
         };
       };

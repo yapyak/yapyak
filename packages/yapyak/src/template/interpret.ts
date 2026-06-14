@@ -112,9 +112,15 @@ function interpretPlural(
   const formattedCount = resolveFormatter(Intl.NumberFormat, locale, {}).format(
     count,
   );
-  const exact = node.branches[`=${count}`];
-  if (exact !== undefined) {
-    return interpretNodes(exact, params, locale, formattedCount);
+  if (
+    typeof raw === 'number' &&
+    Number.isFinite(raw) &&
+    Number.isInteger(raw)
+  ) {
+    const exact = node.branches[`=${raw}`];
+    if (exact !== undefined) {
+      return interpretNodes(exact, params, locale, formattedCount);
+    }
   }
   const category = resolveFormatter(Intl.PluralRules, locale, {
     type: node.type,

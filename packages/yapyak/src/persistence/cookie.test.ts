@@ -419,6 +419,12 @@ describe('parseCookie', () => {
       token: 'abc=def=ghi',
     });
   });
+
+  it('returns the first occurrence when the same name appears twice (RFC 6265 §5.4)', () => {
+    expect(parseCookie('lang=sv; lang=en')).toEqual({
+      lang: 'sv',
+    });
+  });
 });
 
 describe('cookie name validation', () => {

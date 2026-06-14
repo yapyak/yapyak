@@ -222,6 +222,123 @@ describe('interpret', () => {
       ).toBe('none');
     });
 
+    it('refuses to pick the `=1` branch when the param is the boolean `true`', () => {
+      const template: Template = [
+        {
+          branches: {
+            '=1': [
+              {
+                kind: 'literal',
+                value: 'exact-one',
+              },
+            ],
+            one: [
+              {
+                kind: 'literal',
+                value: 'one',
+              },
+            ],
+            other: [
+              {
+                kind: 'literal',
+                value: 'other',
+              },
+            ],
+          },
+          kind: 'plural',
+          name: 'count',
+          type: 'cardinal',
+        },
+      ];
+      expect(
+        interpret(
+          template,
+          {
+            count: true,
+          },
+          'en',
+        ),
+      ).toBe('one');
+    });
+
+    it('refuses to pick the `=1` branch when the param is the string `"1.0"`', () => {
+      const template: Template = [
+        {
+          branches: {
+            '=1': [
+              {
+                kind: 'literal',
+                value: 'exact-one',
+              },
+            ],
+            one: [
+              {
+                kind: 'literal',
+                value: 'one',
+              },
+            ],
+            other: [
+              {
+                kind: 'literal',
+                value: 'other',
+              },
+            ],
+          },
+          kind: 'plural',
+          name: 'count',
+          type: 'cardinal',
+        },
+      ];
+      expect(
+        interpret(
+          template,
+          {
+            count: '1.0',
+          },
+          'en',
+        ),
+      ).toBe('one');
+    });
+
+    it('refuses to pick the `=1` branch when the param is the string `" 1 "`', () => {
+      const template: Template = [
+        {
+          branches: {
+            '=1': [
+              {
+                kind: 'literal',
+                value: 'exact-one',
+              },
+            ],
+            one: [
+              {
+                kind: 'literal',
+                value: 'one',
+              },
+            ],
+            other: [
+              {
+                kind: 'literal',
+                value: 'other',
+              },
+            ],
+          },
+          kind: 'plural',
+          name: 'count',
+          type: 'cardinal',
+        },
+      ];
+      expect(
+        interpret(
+          template,
+          {
+            count: ' 1 ',
+          },
+          'en',
+        ),
+      ).toBe('one');
+    });
+
     it('picks the `other` branch when the category has no match', () => {
       const template: Template = [
         {

@@ -4,6 +4,7 @@ import { createTranslator } from 'yapyak/translator';
 import {
   buildSystem,
   fetchWithRetry,
+  parseJsonResponse,
   parseResponse,
   stripCodeFence,
 } from 'yapyak/translator/internal';
@@ -192,7 +193,10 @@ export function openai(options: OpenAIOptions): Translator {
         const text = await response.text();
         throw new Error(`yapyak openai: ${response.status} ${text}`);
       }
-      const responseBody = (await response.json()) as OpenAIChatResponse;
+      const responseBody = await parseJsonResponse<OpenAIChatResponse>(
+        response,
+        'openai',
+      );
       validateResponse(responseBody);
       const text = responseBody.choices?.[0]?.message?.content;
       if (typeof text !== 'string') {

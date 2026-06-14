@@ -4,6 +4,7 @@ import { createTranslator } from 'yapyak/translator';
 import {
   buildSystem,
   fetchWithRetry,
+  parseJsonResponse,
   parseResponse,
   stripCodeFence,
 } from 'yapyak/translator/internal';
@@ -176,7 +177,10 @@ export function gemini(options: GeminiOptions): Translator {
         const text = await response.text();
         throw new Error(`yapyak gemini: ${response.status} ${text}`);
       }
-      const responseBody = (await response.json()) as GeminiResponse;
+      const responseBody = await parseJsonResponse<GeminiResponse>(
+        response,
+        'gemini',
+      );
       validateResponse(responseBody);
       const text = responseBody.candidates?.[0]?.content?.parts?.[0]?.text;
       if (typeof text !== 'string') {

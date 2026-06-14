@@ -432,7 +432,7 @@ export function syncLocaleFiles(
       }
       const fileEntries: Record<string, CatalogEntry> = Object.create(null);
       for (const [source, byContext] of byContextBySource) {
-        fileEntries[source] = toEntry(byContext);
+        fileEntries[source] = toEntry(byContext, source);
       }
       next[fileId] = fileEntries;
     }
@@ -514,10 +514,16 @@ function registerPair(
 
 export function toEntry(
   byContext: Map<string | undefined, string>,
+  source: string,
 ): CatalogEntry {
   const plain = byContext.get(undefined);
   if (plain !== undefined && byContext.size === 1) {
     return plain;
+  }
+  if (plain !== undefined) {
+    throw new Error(
+      `[yapyak] YPK403: Source "${source}" is used with both \`t()\` and \`t.as()\`. Choose one form for every occurrence — either drop \`t.as\` or wrap every call with it. Run \`yapyak check\` to find the conflicting call sites.`,
+    );
   }
   const variants: Record<string, string> = Object.create(null);
   for (const [context, value] of byContext) {

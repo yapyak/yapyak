@@ -207,7 +207,7 @@ function buildLocaleFile(args: {
     }
     const entries: Record<string, CatalogEntry> = Object.create(null);
     for (const [source, byContext] of byContextBySource) {
-      entries[source] = toEntry(byContext);
+      entries[source] = toEntry(byContext, source);
     }
     localeFile[fileId] = entries;
   }
