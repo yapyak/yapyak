@@ -2,11 +2,16 @@ import type { ContextLevel, Translator } from 'yapyak/translator';
 
 import { createTranslator } from 'yapyak/translator';
 import {
+  TranslatorInvalidResponseError,
+  TranslatorSafetyError,
+  TranslatorTruncatedError,
   buildSystem,
+  causeToError,
   fetchWithRetry,
   parseResponseBody,
   parseTranslationsBatch,
   resolveMaxTokens,
+  responseToError,
 } from 'yapyak/translator/internal';
 
 /** Options for {@link gemini}. */
@@ -179,10 +184,14 @@ export function gemini(options: GeminiOptions): Translator {
       if (signal) {
         fetchOptions.signal = signal;
       }
-      const response = await fetchWithRetry(url, init, fetchOptions);
+      let response: Response;
+      try {
+        response = await fetchWithRetry(url, init, fetchOptions);
+      } catch (cause) {
+        throw causeToError(cause, 'gemini');
+      }
       if (!response.ok) {
-        const text = await response.text();
-        throw new Error(`yapyak gemini: ${response.status} ${text}`);
+        throw await responseToError(response, 'gemini');
       }
       const responseBody = await parseResponseBody<GeminiResponseBody>(
         response,
@@ -191,7 +200,12 @@ export function gemini(options: GeminiOptions): Translator {
       validateResponse(responseBody);
       const text = responseBody.candidates?.[0]?.content?.parts?.[0]?.text;
       if (typeof text !== 'string') {
-        throw new Error('yapyak gemini: response did not contain a text part');
+        throw new TranslatorInvalidResponseError(
+          'yapyak gemini: response did not contain a text part.',
+          {
+            vendor: 'gemini',
+          },
+        );
       }
       return parseTranslationsBatch(text, 'gemini');
     },
@@ -218,18 +232,27 @@ type GeminiResponseBody = {
 function validateResponse(body: GeminiResponseBody): void {
   const reason = body.candidates?.[0]?.finishReason;
   if (reason === 'MAX_TOKENS') {
-    throw new Error(
+    throw new TranslatorTruncatedError(
       "yapyak gemini: response truncated by token limit (finishReason='MAX_TOKENS'). Lower batchSize or raise `maxTokens` in the translator options.",
+      {
+        vendor: 'gemini',
+      },
     );
   }
   if (reason === 'SAFETY') {
-    throw new Error(
+    throw new TranslatorSafetyError(
       "yapyak gemini: response blocked by Gemini safety filter (finishReason='SAFETY'). Adjust voice or glossary, or split the batch to isolate the offending message.",
+      {
+        vendor: 'gemini',
+      },
     );
   }
   if (reason === 'RECITATION') {
-    throw new Error(
+    throw new TranslatorSafetyError(
       "yapyak gemini: response blocked by Gemini recitation filter (finishReason='RECITATION'). The model refused to reproduce protected content.",
+      {
+        vendor: 'gemini',
+      },
     );
   }
 }

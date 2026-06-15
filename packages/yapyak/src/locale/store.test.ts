@@ -5,7 +5,9 @@ import {
   autoSubscribeLocale,
   defaultLocale,
   getLocale,
+  isLocale,
   locales,
+  parseLocale,
   resetLocale,
   setLocale,
   subscribeLocale,
@@ -86,6 +88,38 @@ describe('locales', () => {
       'sv',
       'fr',
     ]);
+  });
+});
+
+describe('isLocale', () => {
+  it('returns `true` for a configured locale', () => {
+    expect(isLocale('sv')).toBe(true);
+  });
+
+  it('returns `false` for an unconfigured locale', () => {
+    expect(isLocale('de')).toBe(false);
+  });
+});
+
+describe('parseLocale', () => {
+  it('returns the locale verbatim when it matches an exact configured tag', () => {
+    expect(parseLocale('sv')).toBe('sv');
+  });
+
+  it('returns `undefined` when the value is not a configured locale', () => {
+    expect(parseLocale('de')).toBeUndefined();
+  });
+
+  it('returns `undefined` for a malformed BCP 47 tag', () => {
+    expect(parseLocale('not a locale!')).toBeUndefined();
+  });
+
+  it('returns the canonical configured tag when the input is a casing variant', () => {
+    expect(parseLocale('SV')).toBe('sv');
+  });
+
+  it('returns `undefined` when the input is a non-configured BCP 47 variant', () => {
+    expect(parseLocale('sv-FI')).toBeUndefined();
   });
 });
 

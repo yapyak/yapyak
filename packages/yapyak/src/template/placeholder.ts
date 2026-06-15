@@ -1,6 +1,6 @@
 import type { Template, TemplateNode } from './node';
 
-export type PlaceholderKind =
+type PlaceholderKind =
   | 'date'
   | 'number'
   | 'plural'

@@ -1,5 +1,6 @@
 import type { LocaleTranslations } from './type';
 
+import { TranslatorInvalidResponseError } from './error';
 import { stripCodeFence } from './prompt';
 
 const PREVIEW_LENGTH = 200;
@@ -12,15 +13,22 @@ export function parseTranslationsBatch(
   let parsed: unknown;
   try {
     parsed = JSON.parse(unwrapped);
-  } catch (error) {
-    const reason = error instanceof Error ? error.message : String(error);
-    throw new Error(
+  } catch (cause) {
+    const reason = cause instanceof Error ? cause.message : String(cause);
+    throw new TranslatorInvalidResponseError(
       `yapyak ${vendor}: model response is not valid JSON (${reason}). Preview: ${JSON.stringify(preview(unwrapped))}`,
+      {
+        cause,
+        vendor,
+      },
     );
   }
   if (!Array.isArray(parsed)) {
-    throw new Error(
+    throw new TranslatorInvalidResponseError(
       `yapyak ${vendor}: model returned ${getShapeDescription(parsed)}, expected an array. Preview: ${JSON.stringify(preview(unwrapped))}`,
+      {
+        vendor,
+      },
     );
   }
   return parsed as LocaleTranslations[];
@@ -33,18 +41,26 @@ export async function parseResponseBody<T>(
   let raw: string;
   try {
     raw = await response.text();
-  } catch (error) {
-    const reason = error instanceof Error ? error.message : String(error);
-    throw new Error(
+  } catch (cause) {
+    const reason = cause instanceof Error ? cause.message : String(cause);
+    throw new TranslatorInvalidResponseError(
       `yapyak ${vendor}: response body could not be read (${reason}).`,
+      {
+        cause,
+        vendor,
+      },
     );
   }
   try {
     return JSON.parse(raw) as T;
-  } catch (error) {
-    const reason = error instanceof Error ? error.message : String(error);
-    throw new Error(
+  } catch (cause) {
+    const reason = cause instanceof Error ? cause.message : String(cause);
+    throw new TranslatorInvalidResponseError(
       `yapyak ${vendor}: response is not valid JSON (${reason}). Preview: ${JSON.stringify(preview(raw))}`,
+      {
+        cause,
+        vendor,
+      },
     );
   }
 }

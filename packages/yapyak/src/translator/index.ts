@@ -13,3 +13,13 @@ export type {
 } from './type';
 
 export { createTranslator } from './create';
+export {
+  TranslatorAuthError,
+  TranslatorError,
+  TranslatorInvalidResponseError,
+  TranslatorNetworkError,
+  TranslatorRateLimitError,
+  TranslatorSafetyError,
+  TranslatorTimeoutError,
+  TranslatorTruncatedError,
+} from './error';

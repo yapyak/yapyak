@@ -27,8 +27,10 @@ export { format, isCurrency } from './formatting';
 export {
   defaultLocale,
   getLocale,
+  getLocaleFallbackChain,
   isLocale,
   locales,
+  parseLocale,
   setLocale,
 } from './locale';
 export { parseRichText, t } from './translation';

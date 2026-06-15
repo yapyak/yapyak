@@ -1,6 +1,6 @@
 import type { Template } from '../template';
 
-import { defaultLocale, getLocale } from '../locale';
+import { defaultLocale, getLocale, getLocaleFallbackChain } from '../locale';
 import { interpret } from '../template';
 import { runTrackers } from '../tracker';
 
@@ -42,11 +42,15 @@ function pickVariant(
   active: string,
   fallback: string,
 ): string | Template {
-  if (Object.hasOwn(variants, active)) {
-    return variants[active] ?? '';
+  for (const candidate of getLocaleFallbackChain(active)) {
+    if (Object.hasOwn(variants, candidate)) {
+      return variants[candidate] ?? '';
+    }
   }
-  if (Object.hasOwn(variants, fallback)) {
-    return variants[fallback] ?? '';
+  for (const candidate of getLocaleFallbackChain(fallback)) {
+    if (Object.hasOwn(variants, candidate)) {
+      return variants[candidate] ?? '';
+    }
   }
   return '';
 }

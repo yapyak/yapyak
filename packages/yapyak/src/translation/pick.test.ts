@@ -34,6 +34,34 @@ describe('pick', () => {
     ).toBe('Save');
   });
 
+  it('walks the BCP 47 fallback chain when the exact tag is not present', () => {
+    expect(
+      pick(
+        {
+          en: 'Save',
+          sv: 'Spara',
+        },
+        {
+          locale: 'sv-FI',
+        },
+      ),
+    ).toBe('Spara');
+  });
+
+  it('walks the default locale fallback chain when neither active nor its base match', () => {
+    expect(
+      pick(
+        {
+          en: 'Save',
+          sv: 'Spara',
+        },
+        {
+          locale: 'de-AT',
+        },
+      ),
+    ).toBe('Save');
+  });
+
   it('preserves a forced locale via options', () => {
     setLocale('en');
     expect(

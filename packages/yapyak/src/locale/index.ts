@@ -1,5 +1,6 @@
 export type { Locale, Register } from './type';
 
+export { getLocaleFallbackChain } from './fallback-chain';
 export {
   appendPendingResponseHeader,
   setResponseHeaderWriter,
@@ -11,6 +12,7 @@ export {
   getLocale,
   isLocale,
   locales,
+  parseLocale,
   resetLocale,
   setLocale,
   subscribeLocale,

@@ -2,11 +2,15 @@ import type { ContextLevel, Translator } from 'yapyak/translator';
 
 import { createTranslator } from 'yapyak/translator';
 import {
+  TranslatorInvalidResponseError,
+  TranslatorTruncatedError,
   buildSystem,
+  causeToError,
   fetchWithRetry,
   parseResponseBody,
   parseTranslationsBatch,
   resolveMaxTokens,
+  responseToError,
 } from 'yapyak/translator/internal';
 
 /** Options for {@link anthropic}. */
@@ -168,10 +172,14 @@ export function anthropic(options: AnthropicOptions): Translator {
       if (signal) {
         fetchOptions.signal = signal;
       }
-      const response = await fetchWithRetry(endpoint, init, fetchOptions);
+      let response: Response;
+      try {
+        response = await fetchWithRetry(endpoint, init, fetchOptions);
+      } catch (cause) {
+        throw causeToError(cause, 'anthropic');
+      }
       if (!response.ok) {
-        const text = await response.text();
-        throw new Error(`yapyak anthropic: ${response.status} ${text}`);
+        throw await responseToError(response, 'anthropic');
       }
       const responseBody = await parseResponseBody<AnthropicResponseBody>(
         response,
@@ -180,8 +188,11 @@ export function anthropic(options: AnthropicOptions): Translator {
       validateResponse(responseBody);
       const text = responseBody.content?.[0]?.text;
       if (typeof text !== 'string') {
-        throw new Error(
-          'yapyak anthropic: response did not contain a text block',
+        throw new TranslatorInvalidResponseError(
+          'yapyak anthropic: response did not contain a text block.',
+          {
+            vendor: 'anthropic',
+          },
         );
       }
       return parseTranslationsBatch(text, 'anthropic');
@@ -200,8 +211,11 @@ type AnthropicResponseBody = {
 
 function validateResponse(body: AnthropicResponseBody): void {
   if (body.stop_reason === 'max_tokens') {
-    throw new Error(
+    throw new TranslatorTruncatedError(
       "yapyak anthropic: response truncated by token limit (stop_reason='max_tokens'). Lower batchSize or raise `maxTokens` in the translator options.",
+      {
+        vendor: 'anthropic',
+      },
     );
   }
 }

@@ -2,11 +2,16 @@ import type { ContextLevel, Translator } from 'yapyak/translator';
 
 import { createTranslator } from 'yapyak/translator';
 import {
+  TranslatorInvalidResponseError,
+  TranslatorSafetyError,
+  TranslatorTruncatedError,
   buildSystem,
+  causeToError,
   fetchWithRetry,
   parseResponseBody,
   parseTranslationsBatch,
   resolveMaxTokens,
+  responseToError,
 } from 'yapyak/translator/internal';
 
 /** Options for {@link openai}. */
@@ -197,10 +202,14 @@ export function openai(options: OpenAIOptions): Translator {
       if (signal) {
         fetchOptions.signal = signal;
       }
-      const response = await fetchWithRetry(endpoint, init, fetchOptions);
+      let response: Response;
+      try {
+        response = await fetchWithRetry(endpoint, init, fetchOptions);
+      } catch (cause) {
+        throw causeToError(cause, 'openai');
+      }
       if (!response.ok) {
-        const text = await response.text();
-        throw new Error(`yapyak openai: ${response.status} ${text}`);
+        throw await responseToError(response, 'openai');
       }
       const responseBody = await parseResponseBody<OpenAIResponseBody>(
         response,
@@ -209,7 +218,12 @@ export function openai(options: OpenAIOptions): Translator {
       validateResponse(responseBody);
       const text = responseBody.choices?.[0]?.message?.content;
       if (typeof text !== 'string') {
-        throw new Error('yapyak openai: response did not contain a text block');
+        throw new TranslatorInvalidResponseError(
+          'yapyak openai: response did not contain a text block.',
+          {
+            vendor: 'openai',
+          },
+        );
       }
       return parseTranslationsBatch(text, 'openai');
     },
@@ -235,13 +249,19 @@ type OpenAIResponseBody = {
 function validateResponse(body: OpenAIResponseBody): void {
   const reason = body.choices?.[0]?.finish_reason;
   if (reason === 'length') {
-    throw new Error(
+    throw new TranslatorTruncatedError(
       "yapyak openai: response truncated by token limit (finish_reason='length'). Lower batchSize or raise `maxTokens` in the translator options.",
+      {
+        vendor: 'openai',
+      },
     );
   }
   if (reason === 'content_filter') {
-    throw new Error(
+    throw new TranslatorSafetyError(
       "yapyak openai: response blocked by OpenAI content filter (finish_reason='content_filter'). Adjust voice or glossary, or split the batch to isolate the offending message.",
+      {
+        vendor: 'openai',
+      },
     );
   }
 }

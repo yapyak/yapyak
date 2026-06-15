@@ -1,9 +1,6 @@
 export type { TemplateDiagnostic } from './diagnostic';
 export type { Template, TemplateNode } from './node';
-export type {
-  Placeholder,
-  PlaceholderKind,
-} from './placeholder';
+export type { Placeholder } from './placeholder';
 
 export {
   count,

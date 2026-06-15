@@ -2,11 +2,15 @@ import type { ContextLevel, Translator } from 'yapyak/translator';
 
 import { createTranslator } from 'yapyak/translator';
 import {
+  TranslatorInvalidResponseError,
+  TranslatorTruncatedError,
   buildSystem,
+  causeToError,
   fetchWithRetry,
   parseResponseBody,
   parseTranslationsBatch,
   resolveMaxTokens,
+  responseToError,
 } from 'yapyak/translator/internal';
 
 /** Options for {@link ollama}. */
@@ -152,10 +156,14 @@ export function ollama(options: OllamaOptions = {}): Translator {
       if (signal) {
         fetchOptions.signal = signal;
       }
-      const response = await fetchWithRetry(endpoint, init, fetchOptions);
+      let response: Response;
+      try {
+        response = await fetchWithRetry(endpoint, init, fetchOptions);
+      } catch (cause) {
+        throw causeToError(cause, 'ollama');
+      }
       if (!response.ok) {
-        const text = await response.text();
-        throw new Error(`yapyak ollama: ${response.status} ${text}`);
+        throw await responseToError(response, 'ollama');
       }
       const responseBody = await parseResponseBody<OllamaResponseBody>(
         response,
@@ -164,8 +172,11 @@ export function ollama(options: OllamaOptions = {}): Translator {
       validateResponse(responseBody);
       const text = responseBody.response;
       if (typeof text !== 'string') {
-        throw new Error(
-          'yapyak ollama: response did not contain a response field',
+        throw new TranslatorInvalidResponseError(
+          'yapyak ollama: response did not contain a response field.',
+          {
+            vendor: 'ollama',
+          },
         );
       }
       return parseTranslationsBatch(text, 'ollama');
@@ -181,8 +192,11 @@ type OllamaResponseBody = {
 
 function validateResponse(body: OllamaResponseBody): void {
   if (body.done_reason === 'length') {
-    throw new Error(
+    throw new TranslatorTruncatedError(
       "yapyak ollama: response truncated by token limit (done_reason='length'). Lower batchSize or raise `maxTokens` in the translator options.",
+      {
+        vendor: 'ollama',
+      },
     );
   }
 }

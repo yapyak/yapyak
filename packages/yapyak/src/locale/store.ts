@@ -37,6 +37,43 @@ export function isLocale(value: string): value is Locale {
   return LOCALES.includes(value);
 }
 
+/**
+ * Parses a string into a {@link Locale}, normalizing tag casing.
+ *
+ * @param value - The candidate string.
+ * @returns The matching configured {@link Locale}, or `undefined` when the value
+ *   is not a recognized locale tag for this app.
+ *
+ * @remarks
+ * Useful for trusting unknown input — URL params, cookies, HTTP headers — where
+ * runtime values bypass the {@link Locale} type's compile-time guarantee. Tries
+ * the input verbatim first; on miss, normalizes via {@link Intl.Locale} (BCP 47
+ * canonical form) and retries. Returns `undefined` for malformed tags and for
+ * well-formed tags that are not in the configured {@link locales} list.
+ *
+ * @example Narrow a URL parameter to Locale
+ * ```ts
+ * import { parseLocale } from 'yapyak';
+ *
+ * const locale = parseLocale(params.locale);
+ * if (locale) {
+ *   // locale is now typed as Locale
+ * }
+ * ```
+ */
+export function parseLocale(value: string): Locale | undefined {
+  if (isLocale(value)) {
+    return value;
+  }
+  try {
+    const canonical = new Intl.Locale(value).toString();
+    if (isLocale(canonical)) {
+      return canonical;
+    }
+  } catch {}
+  return undefined;
+}
+
 function getInitialLocale(): Locale {
   const persisted = persistence?.get();
   if (persisted !== undefined && isLocale(persisted)) {
