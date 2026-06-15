@@ -274,18 +274,6 @@ export function getDocsUrl(code: YapCode): string {
   return `${DOCS_BASE}/${code.toLowerCase()}`;
 }
 
-export function isYapCode(value: unknown): value is YapCode {
-  if (typeof value !== 'string') {
-    return false;
-  }
-  for (const entry of Object.values(YAP)) {
-    if (entry.code === value) {
-      return true;
-    }
-  }
-  return false;
-}
-
 export function warnDiagnostic<K extends YapKey>(
   key: K,
   params: Parameters<(typeof YAP)[K]['message']>[0],
