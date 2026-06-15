@@ -1,3 +1,5 @@
+import { docsUrl, isYapCode } from './diagnostics/codes';
+
 export type WarnFn = (message: string, meta?: Record<string, unknown>) => void;
 
 let active: WarnFn = defaultWarn;
@@ -21,9 +23,12 @@ function defaultWarn(message: string, meta?: Record<string, unknown>): void {
       return;
     }
   }
+  const code = meta?.code;
+  const prefix = isYapCode(code) ? `[yapyak] ${code} ` : '[yapyak] ';
+  const suffix = isYapCode(code) ? `\nSee ${docsUrl(code)}` : '';
   if (meta) {
-    console.warn(`[yapyak] ${message}`, meta);
+    console.warn(`${prefix}${message}${suffix}`, meta);
     return;
   }
-  console.warn(`[yapyak] ${message}`);
+  console.warn(`${prefix}${message}${suffix}`);
 }

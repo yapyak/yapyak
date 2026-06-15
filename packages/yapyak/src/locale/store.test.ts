@@ -60,7 +60,7 @@ describe('getLocale', () => {
     expect(getLocale()).toBe('en');
   });
 
-  it('warns once with `YPK_SSR_LEAK_RISK` when no request is bound on the server', () => {
+  it('warns once with `YAP0022` when no request is bound on the server', () => {
     vi.unstubAllGlobals();
     const warnSpy =
       vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
@@ -75,7 +75,7 @@ describe('getLocale', () => {
     expect(warnSpy).toHaveBeenCalledWith(
       expect.stringContaining('fell back to the shared module-global locale'),
       expect.objectContaining({
-        code: 'YPK_SSR_LEAK_RISK',
+        code: 'YAP0022',
       }),
     );
   });
@@ -134,7 +134,7 @@ describe('setLocale', () => {
     expect(getLocale()).toBe('en');
   });
 
-  it('warns with `YPK_SET_LOCALE_SSR_LEAK_RISK` and no-ops on the server with `none` persistence', () => {
+  it('warns with `YAP0029` and no-ops on the server with `none` persistence', () => {
     vi.unstubAllGlobals();
     const warnSpy =
       vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
@@ -147,7 +147,7 @@ describe('setLocale', () => {
     expect(warnSpy).toHaveBeenCalledWith(
       expect.stringContaining('leaks between concurrent requests'),
       expect.objectContaining({
-        code: 'YPK_SET_LOCALE_SSR_LEAK_RISK',
+        code: 'YAP0029',
         requested: 'sv',
       }),
     );

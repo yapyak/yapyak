@@ -172,7 +172,7 @@ describe('check', () => {
     expect(writes.join('')).toMatch(/error/);
   });
 
-  it('emits YPK304 instead of throwing when a locale file is corrupt JSON', () => {
+  it('emits YAP0016 instead of throwing when a locale file is corrupt JSON', () => {
     mkdirSync(join(root, 'src'), {
       recursive: true,
     });
@@ -188,6 +188,6 @@ describe('check', () => {
     const code = check(makeConfig(), root);
 
     expect(code).toBe(1);
-    expect(writes.join('')).toContain('YPK304');
+    expect(writes.join('')).toContain('YAP0016');
   });
 });

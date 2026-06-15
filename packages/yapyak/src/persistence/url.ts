@@ -1,5 +1,6 @@
 import type { Persistence } from './type';
 
+import { YAP } from '../diagnostics/codes';
 import { warn } from '../warn';
 import { subscribeHistory } from './history';
 
@@ -23,9 +24,9 @@ export function url(options: UrlOptions): Persistence {
     },
     set() {
       warn(
-        'setLocale() is a no-op with persistence: "url". The URL is the source of truth — drive locale switches through router navigation.',
+        'setLocale() skipped with persistence `url`. The URL is the source of truth. Drive locale switches through router navigation.',
         {
-          code: 'YPK_PERSISTENCE_URL_NOOP',
+          code: YAP.PERSISTENCE_URL_SKIPPED,
         },
       );
       return false;

@@ -1,6 +1,7 @@
 import type { Diagnostic, ExtractedMessage, Placeholder } from '../../parser';
 import type { LocaleFile, ParseEntryError } from './file';
 
+import { YAP } from '../../../diagnostics/codes';
 import { parsePlaceholders } from '../../parser';
 import { stripBom } from './bom';
 import { findTranslation, parseEntry } from './file';
@@ -36,9 +37,9 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
     const detail = cause instanceof Error ? cause.message : String(cause);
     return [
       {
-        code: 'YPK304',
+        code: YAP.CATALOG_INVALID_JSON,
         fileId,
-        message: `Locale file is not valid JSON: ${detail}`,
+        message: `Locale file is not valid JSON. ${detail}.`,
         range: STUB_RANGE,
         severity: 'error',
         source: '',
@@ -52,9 +53,9 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
   for (const [pathKey, entries] of Object.entries(parsed)) {
     if (isUnsafePath(pathKey)) {
       diagnostics.push({
-        code: 'YPK302',
+        code: YAP.CATALOG_UNSAFE_PATH,
         fileId,
-        message: `Unsafe file-path key "${pathKey}" — must be relative, use forward slashes, and contain no ".." segments.`,
+        message: `Unsafe file-path key "${pathKey}". Paths must be relative, use forward slashes, and contain no ".." segments.`,
         range: STUB_RANGE,
         severity: 'error',
         source: '',
@@ -62,9 +63,9 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
     }
     if (!isPlainObject(entries)) {
       diagnostics.push({
-        code: 'YPK301',
+        code: YAP.CATALOG_INVALID_SHAPE,
         fileId,
-        message: `Entries under "${pathKey}" must be an object mapping source to translation.`,
+        message: `Entries under "${pathKey}" are not an object mapping source to translation.`,
         range: STUB_RANGE,
         severity: 'error',
         source: '',
@@ -74,9 +75,9 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
     for (const [source, value] of Object.entries(entries)) {
       if (source !== source.normalize('NFC')) {
         diagnostics.push({
-          code: 'YPK303',
+          code: YAP.CATALOG_NOT_NFC,
           fileId,
-          message: `Source key at "${pathKey}".${JSON.stringify(source)} is not Unicode NFC — it will not match extracted source strings.`,
+          message: `Source key at "${pathKey}".${JSON.stringify(source)} is not Unicode NFC. It will not match extracted source strings.`,
           range: STUB_RANGE,
           severity: 'error',
           source: '',
@@ -85,7 +86,7 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
       const { entry, errors } = parseEntry(value);
       for (const error of errors) {
         diagnostics.push({
-          code: 'YPK301',
+          code: YAP.CATALOG_INVALID_SHAPE,
           fileId,
           message: entryErrorMessage(error, pathKey, source),
           range: STUB_RANGE,
@@ -96,7 +97,7 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
       if (typeof entry === 'string') {
         if (entry !== entry.normalize('NFC')) {
           diagnostics.push({
-            code: 'YPK303',
+            code: YAP.CATALOG_NOT_NFC,
             fileId,
             message: `Translation at "${pathKey}".${JSON.stringify(source)} is not Unicode NFC.`,
             range: STUB_RANGE,
@@ -112,7 +113,7 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
       for (const [context, translation] of Object.entries(entry)) {
         if (translation !== translation.normalize('NFC')) {
           diagnostics.push({
-            code: 'YPK303',
+            code: YAP.CATALOG_NOT_NFC,
             fileId,
             message: `Translation at "${pathKey}".${JSON.stringify(source)}.${JSON.stringify(context)} is not Unicode NFC.`,
             range: STUB_RANGE,
@@ -218,7 +219,7 @@ export function validateIcuPairs(
       for (const [name, placeholder] of sourceByName) {
         if (!targetByName.has(name)) {
           diagnostics.push({
-            code: 'YPK205',
+            code: YAP.PLACEHOLDER_MISSING_IN_TARGET,
             fileId,
             hint: `Include \`{${name}}\` in the translation.`,
             message: `Placeholder \`{${name}}\` is in the source but missing from the translation.`,
@@ -231,7 +232,7 @@ export function validateIcuPairs(
         const targetPlaceholder = targetByName.get(name);
         if (targetPlaceholder && targetPlaceholder.kind !== placeholder.kind) {
           diagnostics.push({
-            code: 'YPK204',
+            code: YAP.PLACEHOLDER_KIND_MISMATCH,
             fileId,
             hint: `Match the placeholder kind \`${placeholder.kind}\` from the source.`,
             message: `Placeholder \`{${name}}\` is \`${placeholder.kind}\` in the source but \`${targetPlaceholder.kind}\` in the translation.`,
@@ -244,7 +245,7 @@ export function validateIcuPairs(
       for (const name of targetByName.keys()) {
         if (!sourceByName.has(name)) {
           diagnostics.push({
-            code: 'YPK206',
+            code: YAP.PLACEHOLDER_MISSING_IN_SOURCE,
             fileId,
             hint: `Remove \`{${name}}\` from the translation or add it to the source.`,
             message: `Placeholder \`{${name}}\` is in the translation but missing from the source.`,

@@ -2,6 +2,7 @@ import type { ExtractedMessage } from '../../parser';
 import type { LocaleContext } from './context';
 import type { OrphanCache } from './orphan';
 
+import { YAP } from '../../../diagnostics/codes';
 import { warn } from '../../../warn';
 import { toMessageKey } from '../../parser';
 import { compareKeys, stringifyCanonical } from '../canonical';
@@ -333,7 +334,7 @@ export function syncLocaleFiles(
   } catch (error) {
     if (error instanceof CorruptOrphanCacheError) {
       warn(error.message, {
-        code: 'YPK_CORRUPT_ORPHAN_CACHE',
+        code: YAP.CATALOG_ORPHAN_CACHE_CORRUPT,
       });
       orphans = {};
     } else {
@@ -358,7 +359,7 @@ export function syncLocaleFiles(
     } catch (error) {
       if (error instanceof CorruptLocaleFileError) {
         warn(error.message, {
-          code: 'YPK_CORRUPT_LOCALE_FILE',
+          code: YAP.CATALOG_LOCALE_FILE_CORRUPT,
         });
         corruptLocales.add(locale);
         continue;
@@ -534,7 +535,7 @@ export function toEntry(
   }
   if (plain !== undefined) {
     throw new Error(
-      `[yapyak] YPK403: Source "${source}" is used with both \`t()\` and \`t.as()\`. Choose one form for every occurrence — either drop \`t.as\` or wrap every call with it. Run \`yapyak check\` to find the conflicting call sites.`,
+      `[yapyak] ${YAP.CONTEXT_MIXED_USAGE}: Source "${source}" is used with both \`t()\` and \`t.as()\`. Choose one form for every occurrence: either drop \`t.as\` or wrap every call with it. Run \`yapyak check\` to find the conflicting call sites.`,
     );
   }
   const variants: Record<string, string> = Object.create(null);

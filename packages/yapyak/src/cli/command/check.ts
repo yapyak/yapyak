@@ -2,6 +2,7 @@ import type { Diagnostic } from '../../compiler/internal';
 import type { Config } from '../config';
 
 import {
+  YAP,
   findContextDiagnostics,
   readLocaleFile,
   validateIcuPairs,
@@ -43,7 +44,9 @@ export function check(config: Config, projectRoot: string): number {
     const localeFileDiagnostics = validateLocaleFile(fileId, localeFilePath);
     allDiagnostics.push(...localeFileDiagnostics);
     if (
-      localeFileDiagnostics.some((diagnostic) => diagnostic.code === 'YPK304')
+      localeFileDiagnostics.some(
+        (diagnostic) => diagnostic.code === YAP.CATALOG_INVALID_JSON,
+      )
     ) {
       continue;
     }

@@ -259,7 +259,7 @@ describe('createTranslator', () => {
       expect(warnSpy).toHaveBeenCalledWith(
         expect.stringContaining('chunk failed'),
         expect.objectContaining({
-          code: 'YPK_TRANSLATE_CHUNK_FAILED',
+          code: 'YAP0033',
         }),
       );
     } finally {
@@ -296,7 +296,7 @@ describe('createTranslator', () => {
       expect(warnSpy).toHaveBeenCalledWith(
         expect.stringContaining('chunk failed'),
         expect.objectContaining({
-          code: 'YPK_TRANSLATE_CHUNK_FAILED',
+          code: 'YAP0033',
         }),
       );
     } finally {
@@ -345,9 +345,9 @@ describe('createTranslator', () => {
         '',
       ]);
       expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('expected an object keyed by target locales'),
+        expect.stringContaining('object keyed by target locales'),
         expect.objectContaining({
-          code: 'YPK_TRANSLATE_ENTRY_SHAPE',
+          code: 'YAP0034',
         }),
       );
     } finally {
@@ -378,7 +378,7 @@ describe('createTranslator', () => {
       expect(warnSpy).toHaveBeenCalledWith(
         expect.stringContaining('an array'),
         expect.objectContaining({
-          code: 'YPK_TRANSLATE_ENTRY_SHAPE',
+          code: 'YAP0034',
         }),
       );
     } finally {

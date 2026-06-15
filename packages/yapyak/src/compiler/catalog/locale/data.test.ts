@@ -79,7 +79,7 @@ describe('readLocaleData', () => {
       expect(warnSpy).toHaveBeenCalledWith(
         expect.stringContaining('Failed to parse locale file'),
         expect.objectContaining({
-          code: 'YPK_CORRUPT_LOCALE_FILE',
+          code: 'YAP0031',
         }),
       );
     } finally {

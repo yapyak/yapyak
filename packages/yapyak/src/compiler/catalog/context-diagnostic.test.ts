@@ -85,7 +85,7 @@ describe('findContextDiagnostics', () => {
     expect(findContextDiagnostics(messages)).toHaveLength(0);
   });
 
-  it('emits YPK403 when a source is used with both `t()` and `t.as()` in the same file', () => {
+  it('emits YAP0018 when a source is used with both `t()` and `t.as()` in the same file', () => {
     const messages = [
       makeMessage('Save', [
         makeLocation('src/a.tsx'),
@@ -99,12 +99,12 @@ describe('findContextDiagnostics', () => {
       ),
     ];
     const diagnostics = findContextDiagnostics(messages);
-    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK403')).toBe(
-      true,
-    );
+    expect(
+      diagnostics.some((diagnostic) => diagnostic.code === 'YAP0018'),
+    ).toBe(true);
   });
 
-  it('emits no YPK403 when t() and t.as() are used in different files', () => {
+  it('emits no YAP0018 when t() and t.as() are used in different files', () => {
     const messages = [
       makeMessage('Save', [
         makeLocation('src/a.tsx'),
@@ -125,12 +125,12 @@ describe('findContextDiagnostics', () => {
       ),
     ];
     const diagnostics = findContextDiagnostics(messages);
-    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK403')).toBe(
-      false,
-    );
+    expect(
+      diagnostics.some((diagnostic) => diagnostic.code === 'YAP0018'),
+    ).toBe(false);
   });
 
-  it('emits YPK404 when only one `t.as()` exists for a source with no other context', () => {
+  it('emits YAP0019 when only one `t.as()` exists for a source with no other context', () => {
     const messages = [
       makeMessage(
         'Save',
@@ -142,7 +142,7 @@ describe('findContextDiagnostics', () => {
     ];
     const diagnostics = findContextDiagnostics(messages);
     const ypk404 = diagnostics.filter(
-      (diagnostic) => diagnostic.code === 'YPK404',
+      (diagnostic) => diagnostic.code === 'YAP0019',
     );
     expect(ypk404).toHaveLength(1);
     expect(ypk404[0]?.severity).toBe('warning');

@@ -213,10 +213,10 @@ describe('cookie', () => {
 
       expect(stub).toHaveBeenCalledWith(
         expect.stringContaining(
-          'setLocale() called server-side outside a withResponse scope',
+          'setLocale() called server-side outside a `withResponse` scope',
         ),
         expect.objectContaining({
-          code: 'YPK_PERSISTENCE_COOKIE_NO_WRITER',
+          code: 'YAP0023',
         }),
       );
     });

@@ -90,24 +90,24 @@ describe('extractFile', () => {
       expect(result.diagnostics).toHaveLength(0);
     });
 
-    it('emits YPK102 from `parse-arguments`', () => {
+    it('emits YAP0002 from `parse-arguments`', () => {
       const result = extractFixture('diagnostic', 'ypk102-dynamic-source.ts');
       expect(
-        result.diagnostics.some((diagnostic) => diagnostic.code === 'YPK102'),
+        result.diagnostics.some((diagnostic) => diagnostic.code === 'YAP0002'),
       ).toBe(true);
     });
 
-    it('emits YPK104 from `parse-arguments`', () => {
+    it('emits YAP0004 from `parse-arguments`', () => {
       const result = extractFixture('diagnostic', 'ypk104-missing-param.ts');
       expect(
-        result.diagnostics.some((diagnostic) => diagnostic.code === 'YPK104'),
+        result.diagnostics.some((diagnostic) => diagnostic.code === 'YAP0004'),
       ).toBe(true);
     });
 
-    it('emits YPK202 from `parse-arguments`', () => {
+    it('emits YAP0008 from `parse-arguments`', () => {
       const result = extractFixture('diagnostic', 'ypk202-invalid-plural.ts');
       expect(
-        result.diagnostics.some((diagnostic) => diagnostic.code === 'YPK202'),
+        result.diagnostics.some((diagnostic) => diagnostic.code === 'YAP0008'),
       ).toBe(true);
     });
   });

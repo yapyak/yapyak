@@ -574,7 +574,7 @@ describe('syncLocaleFiles', () => {
       expect(warnSpy).toHaveBeenCalledWith(
         expect.stringContaining('Failed to parse locale file'),
         expect.objectContaining({
-          code: 'YPK_CORRUPT_LOCALE_FILE',
+          code: 'YAP0031',
         }),
       );
     } finally {
@@ -908,7 +908,7 @@ describe('toEntry', () => {
     });
   });
 
-  it('throws a `YPK403` error when the source has both a plain value and a context variant', () => {
+  it('throws a `YAP0018` error when the source has both a plain value and a context variant', () => {
     const byContext = new Map<string | undefined, string>([
       [
         undefined,
@@ -919,7 +919,7 @@ describe('toEntry', () => {
         'Spara',
       ],
     ]);
-    expect(() => toEntry(byContext, 'Save')).toThrow(/YPK403/);
+    expect(() => toEntry(byContext, 'Save')).toThrow(/YAP0018/);
     expect(() => toEntry(byContext, 'Save')).toThrow(/"Save"/);
     expect(() => toEntry(byContext, 'Save')).toThrow(/yapyak check/);
   });

@@ -145,7 +145,7 @@ describe('discoverCalls', () => {
     expect(callSites[0]?.sourceExpression?.getText()).toBe("'Save'");
   });
 
-  it('emits YPK405 when `t.in()` result is captured in a variable', () => {
+  it('emits YAP0020 when `t.in()` result is captured in a variable', () => {
     const sourceFile = ts.createSourceFile(
       'inline.ts',
       "import { t } from 'yapyak';\nconst sv = t.in('sv');\n",
@@ -158,12 +158,12 @@ describe('discoverCalls', () => {
       resolveBindings(sourceFile),
     );
     expect(callSites).toHaveLength(0);
-    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK405')).toBe(
-      true,
-    );
+    expect(
+      diagnostics.some((diagnostic) => diagnostic.code === 'YAP0020'),
+    ).toBe(true);
   });
 
-  it('emits YPK405 when `t.as()` result is captured in a variable', () => {
+  it('emits YAP0020 when `t.as()` result is captured in a variable', () => {
     const sourceFile = ts.createSourceFile(
       'inline.ts',
       "import { t } from 'yapyak';\nconst action = t.as('action');\n",
@@ -176,12 +176,12 @@ describe('discoverCalls', () => {
       resolveBindings(sourceFile),
     );
     expect(callSites).toHaveLength(0);
-    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK405')).toBe(
-      true,
-    );
+    expect(
+      diagnostics.some((diagnostic) => diagnostic.code === 'YAP0020'),
+    ).toBe(true);
   });
 
-  it('emits YPK405 when `t.in()` is returned from a function', () => {
+  it('emits YAP0020 when `t.in()` is returned from a function', () => {
     const sourceFile = ts.createSourceFile(
       'inline.ts',
       "import { t } from 'yapyak';\nexport function scope() { return t.in('sv'); }\n",
@@ -193,12 +193,12 @@ describe('discoverCalls', () => {
       sourceFile,
       resolveBindings(sourceFile),
     );
-    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK405')).toBe(
-      true,
-    );
+    expect(
+      diagnostics.some((diagnostic) => diagnostic.code === 'YAP0020'),
+    ).toBe(true);
   });
 
-  it('emits YPK405 when `t.in()` is passed as an argument', () => {
+  it('emits YAP0020 when `t.in()` is passed as an argument', () => {
     const sourceFile = ts.createSourceFile(
       'inline.ts',
       "import { t } from 'yapyak';\ndeclare function use(x: unknown): void;\nuse(t.in('sv'));\n",
@@ -210,12 +210,12 @@ describe('discoverCalls', () => {
       sourceFile,
       resolveBindings(sourceFile),
     );
-    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK405')).toBe(
-      true,
-    );
+    expect(
+      diagnostics.some((diagnostic) => diagnostic.code === 'YAP0020'),
+    ).toBe(true);
   });
 
-  it('emits no YPK405 when `t.in()` is followed inline by `.as(...)`', () => {
+  it('emits no YAP0020 when `t.in()` is followed inline by `.as(...)`', () => {
     const sourceFile = ts.createSourceFile(
       'inline.ts',
       "import { t } from 'yapyak';\nexport const x = t.in('sv').as('button', 'Save');\n",
@@ -281,7 +281,7 @@ describe('discoverCalls', () => {
     expect(callSites[0]?.contextExpression?.getText()).toBe("'button'");
   });
 
-  it('emits YPK405 when `Y.t.in()` result is captured in a variable', () => {
+  it('emits YAP0020 when `Y.t.in()` result is captured in a variable', () => {
     const sourceFile = ts.createSourceFile(
       'inline.ts',
       "import * as Y from 'yapyak';\nconst sv = Y.t.in('sv');\n",
@@ -294,9 +294,9 @@ describe('discoverCalls', () => {
       resolveBindings(sourceFile),
     );
     expect(callSites).toHaveLength(0);
-    expect(diagnostics.some((diagnostic) => diagnostic.code === 'YPK405')).toBe(
-      true,
-    );
+    expect(
+      diagnostics.some((diagnostic) => diagnostic.code === 'YAP0020'),
+    ).toBe(true);
   });
 
   it('returns no call sites for a non-`in`/`as` method on `t`', () => {

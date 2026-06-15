@@ -4,6 +4,7 @@ import type { Diagnostic } from './diagnostic';
 
 import ts from 'typescript';
 
+import { YAP } from '../../diagnostics/codes';
 import { RUNTIME_NAME } from './binding';
 import { toRange } from './range';
 
@@ -327,13 +328,13 @@ function reportCapture(
   }
   const sourceFile = context.sourceFile;
   context.diagnostics.push({
-    code: 'YPK405',
+    code: YAP.CONTEXT_DYNAMIC_CALL,
     fileId: sourceFile.fileName,
     hint:
       methodName === IN_NAME
         ? "Pass the source inline: `t.in('sv', 'source')` or chain with `.as()`: `t.in('sv').as('context', 'source')`."
         : "Pass the source inline: `t.as('context', 'source')` or chain with `.in()`: `t.as('context').in('sv', 'source')`.",
-    message: `\`t.${methodName}()\` captured. Modifiers must be used inline — see the hint for valid forms.`,
+    message: `\`t.${methodName}()\` captured into a variable. Modifiers must be used inline.`,
     range: toRange(call, sourceFile),
     severity: 'error',
     source: sourceFile.text,

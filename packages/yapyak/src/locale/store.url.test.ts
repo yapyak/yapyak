@@ -93,7 +93,7 @@ describe('setLocale', () => {
       vi.stubEnv('NODE_ENV', 'development');
       setLocale('sv');
       expect(warnSpy).toHaveBeenCalledOnce();
-      expect(warnSpy.mock.calls[0]?.[0]).toContain('no-op');
+      expect(warnSpy.mock.calls[0]?.[0]).toContain('skipped');
       expect(warnSpy.mock.calls[0]?.[0]).toContain('url');
       vi.unstubAllEnvs();
     });

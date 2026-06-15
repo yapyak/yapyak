@@ -150,7 +150,7 @@ describe('buildReport', () => {
     });
   });
 
-  it('emits YPK304 when a non-default locale file is not valid JSON', () => {
+  it('emits YAP0016 when a non-default locale file is not valid JSON', () => {
     writeFileSync(
       join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
@@ -161,7 +161,7 @@ describe('buildReport', () => {
       projectRoot: root,
     });
     const corrupt = report.diagnostics.find(
-      (diagnostic) => diagnostic.code === 'YPK304',
+      (diagnostic) => diagnostic.code === 'YAP0016',
     );
     expect(corrupt).toBeDefined();
     expect(corrupt?.fileId).toBe('locales/sv.json');

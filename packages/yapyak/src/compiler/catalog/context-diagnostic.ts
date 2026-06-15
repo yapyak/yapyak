@@ -1,5 +1,6 @@
 import type { Diagnostic, ExtractedMessage, Location } from '../parser';
 
+import { YAP } from '../../diagnostics/codes';
 import { toLocationKey } from './location-key';
 
 export function findContextDiagnostics(
@@ -41,10 +42,10 @@ export function findContextDiagnostics(
       // biome-ignore lint/style/noNonNullAssertion: yap yap yap
       const firstLocation = first.locations[0]!;
       diagnostics.push({
-        code: 'YPK403',
+        code: YAP.CONTEXT_MIXED_USAGE,
         fileId: firstLocation.fileId,
         hint: 'Either use `t.as(context, ...)` for every occurrence, or remove `t.as` from all of them.',
-        message: `Source "${first.source}" is used with both \`t()\` and \`t.as()\` in ${firstLocation.fileId}. Choose one form for every occurrence.`,
+        message: `Source "${first.source}" is used with both \`t()\` and \`t.as()\` in ${firstLocation.fileId}.`,
         range: firstLocation.range,
         severity: 'error',
         source: '',
@@ -58,10 +59,10 @@ export function findContextDiagnostics(
       // biome-ignore lint/style/noNonNullAssertion: yap yap yap
       const firstLocation = onlyMessage.locations[0]!;
       diagnostics.push({
-        code: 'YPK404',
+        code: YAP.CONTEXT_UNUSED,
         fileId: firstLocation.fileId,
-        hint: `Drop \`.as('${onlyMessage.context}', ...)\` — without another context for "${onlyMessage.source}", it has no effect.`,
-        message: `\`t.as('${onlyMessage.context}', '${onlyMessage.source}')\` in ${firstLocation.fileId} has no other context to disambiguate from.`,
+        hint: `Drop \`.as("${onlyMessage.context}", ...)\`. Without another context for "${onlyMessage.source}", it has no effect.`,
+        message: `\`t.as("${onlyMessage.context}", "${onlyMessage.source}")\` in ${firstLocation.fileId} has no other context to disambiguate from.`,
         range: firstLocation.range,
         severity: 'warning',
         source: '',

@@ -1,6 +1,7 @@
 import type { LocaleContext } from './context';
 import type { LocaleFile } from './file';
 
+import { YAP } from '../../../diagnostics/codes';
 import { warn } from '../../../warn';
 import { CorruptLocaleFileError, readLocaleFile } from './file';
 import { join } from 'node:path';
@@ -19,7 +20,7 @@ export function readLocaleData(
     } catch (error) {
       if (error instanceof CorruptLocaleFileError) {
         warn(error.message, {
-          code: 'YPK_CORRUPT_LOCALE_FILE',
+          code: YAP.CATALOG_LOCALE_FILE_CORRUPT,
         });
         localeData[locale] = {};
         continue;

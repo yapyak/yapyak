@@ -14,11 +14,11 @@ describe('warn', () => {
     setWarn(stub);
 
     warn('Hello', {
-      code: 'YPK_TEST',
+      code: 'UNKNOWN_CODE',
     });
 
     expect(stub).toHaveBeenCalledWith('Hello', {
-      code: 'YPK_TEST',
+      code: 'UNKNOWN_CODE',
     });
   });
 
@@ -36,11 +36,11 @@ describe('warn', () => {
     const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     warn('Hello', {
-      code: 'YPK_TEST',
+      code: 'UNKNOWN_CODE',
     });
 
     expect(consoleWarn).toHaveBeenCalledWith('[yapyak] Hello', {
-      code: 'YPK_TEST',
+      code: 'UNKNOWN_CODE',
     });
   });
 

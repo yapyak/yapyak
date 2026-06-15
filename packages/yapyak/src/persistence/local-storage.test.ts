@@ -145,10 +145,10 @@ describe('localStorage', () => {
 
       expect(stub).toHaveBeenCalledWith(
         expect.stringContaining(
-          'setLocale() is a no-op server-side with persistence: "local-storage"',
+          'setLocale() skipped on the server with persistence `local-storage`',
         ),
         expect.objectContaining({
-          code: 'YPK_PERSISTENCE_LOCAL_STORAGE_SSR_NOOP',
+          code: 'YAP0024',
         }),
       );
     });

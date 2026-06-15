@@ -9,6 +9,7 @@ import type {
   Translator,
 } from './type';
 
+import { YAP } from '../diagnostics/codes';
 import { warn } from '../warn';
 
 const DEFAULT_BATCH_SIZE = 25;
@@ -126,10 +127,13 @@ export function createTranslator(input: CreateTranslatorInput): Translator {
           if (batchOptions?.onChunkError) {
             batchOptions.onChunkError(error, chunk);
           } else {
-            warn('Translate batch chunk failed — keeping other chunks.', {
-              cause: error,
-              code: 'YPK_TRANSLATE_CHUNK_FAILED',
-            });
+            warn(
+              'A translate batch chunk failed. Yapyak kept the other chunks and returned partial results.',
+              {
+                cause: error,
+                code: YAP.TRANSLATE_CHUNK_FAILED,
+              },
+            );
           }
         }
       }
@@ -291,9 +295,9 @@ function normalizeEntry(
 ): LocaleTranslations {
   if (typeof entry !== 'object' || entry === null || Array.isArray(entry)) {
     warn(
-      `Translate result entry is ${getEntryShapeDescription(entry)} — expected an object keyed by target locales. The element was dropped; translations for it will be empty.`,
+      `Translate result entry is ${getEntryShapeDescription(entry)} instead of an object keyed by target locales. The element was dropped and its translations were left empty.`,
       {
-        code: 'YPK_TRANSLATE_ENTRY_SHAPE',
+        code: YAP.TRANSLATE_ENTRY_SHAPE_INVALID,
         value: entry,
       },
     );

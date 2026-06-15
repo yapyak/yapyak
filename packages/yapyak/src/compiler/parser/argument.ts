@@ -5,6 +5,7 @@ import type { TemplateDiagnostic } from './placeholder';
 
 import ts from 'typescript';
 
+import { YAP } from '../../diagnostics/codes';
 import { parsePlaceholders } from './placeholder';
 import { toRange } from './range';
 
@@ -39,10 +40,10 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
       context = contextExpression.text;
     } else {
       diagnostics.push({
-        code: 'YPK401',
+        code: YAP.CONTEXT_NOT_LITERAL,
         fileId,
         hint: 'Pass a static string literal as the context argument.',
-        message: '`t.as()` context argument must be a static string literal.',
+        message: '`t.as()` context argument is not a static string literal.',
         range: toRange(contextExpression, sourceFile),
         severity: 'error',
         source: fileText,
@@ -53,11 +54,12 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   const sourceExpression = callSite.sourceExpression;
   if (!sourceExpression) {
     diagnostics.push({
-      code: 'YPK101',
+      code: YAP.PARSER_NO_SOURCE,
       fileId,
+      hint: 'Pass the English source as the first (or, for `t.as()`, second) argument.',
       message: callSite.contextExpression
-        ? 't.as() called without source string.'
-        : 't() called without arguments.',
+        ? '`t.as()` called without a source string.'
+        : '`t()` called without arguments.',
       range: toRange(callSite.node, sourceFile),
       severity: 'error',
       source: fileText,
@@ -76,12 +78,11 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   const sourceRange = toRange(sourceExpression, sourceFile);
   if (!isLiteralFirstArg(sourceExpression)) {
     diagnostics.push({
-      code: 'YPK102',
+      code: YAP.PARSER_TEMPLATE_LITERAL,
       fileId,
       // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
       hint: "Replace `t(`Hi ${name}`)` with `t('Hi {name}', { name })`.",
-      message:
-        'Dynamic source string in t(). Use a plain string literal with `{placeholder}` syntax.',
+      message: 'Source argument is a dynamic template literal.',
       range: sourceRange,
       severity: 'error',
       source: fileText,
@@ -100,9 +101,10 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   const source = sourceExpression.text;
   if (source === '') {
     diagnostics.push({
-      code: 'YPK103',
+      code: YAP.PARSER_EMPTY_SOURCE,
       fileId,
-      message: 't() called with empty source string.',
+      hint: 'Provide a non-empty English source as the first argument.',
+      message: '`t()` called with an empty source string.',
       range: sourceRange,
       severity: 'error',
       source: fileText,
@@ -166,10 +168,10 @@ function toIcuDiagnostic(
 ): Diagnostic {
   if (issue.reason === 'missing-other') {
     return {
-      code: 'YPK202',
+      code: YAP.PLACEHOLDER_MISSING_OTHER,
       fileId: context.fileId,
-      hint: 'Add an `other {<text>}` branch — plural, selectordinal, and select all require an `other` fallback.',
-      message: `Placeholder '{${issue.name}}' is missing the required 'other' branch.`,
+      hint: 'Add an `other {<text>}` branch. `plural`, `selectordinal`, and `select` all require an `other` fallback.',
+      message: `Placeholder \`{${issue.name}}\` is missing the required \`other\` branch.`,
       range: context.range,
       severity: 'error',
       source: context.fileText,
@@ -177,9 +179,9 @@ function toIcuDiagnostic(
   }
   if (issue.reason === 'malformed') {
     return {
-      code: 'YPK201',
+      code: YAP.PLACEHOLDER_MALFORMED,
       fileId: context.fileId,
-      hint: 'Check the ICU syntax — every `{` needs a matching `}`.',
+      hint: 'Check the ICU syntax. Every `{` needs a matching `}`.',
       message: issue.message,
       range: context.range,
       severity: 'error',
@@ -187,11 +189,11 @@ function toIcuDiagnostic(
     };
   }
   return {
-    code: 'YPK203',
+    code: YAP.PLACEHOLDER_UNSUPPORTED,
     fileId: context.fileId,
     hint: 'Use a supported ICU feature, or format the value before passing it in.',
     message: issue.name
-      ? `Unsupported ICU feature in '{${issue.name}}': ${issue.feature}.`
+      ? `Unsupported ICU feature in \`{${issue.name}}\`: ${issue.feature}.`
       : `Unsupported ICU feature: ${issue.feature}.`,
     range: context.range,
     severity: 'error',
@@ -270,10 +272,11 @@ function validateParams(input: ValidateParamsInput): void {
   if (!params) {
     if (hasParamsExpression) {
       diagnostics.push({
-        code: 'YPK106',
+        code: YAP.PARSER_DYNAMIC_PARAMS,
         fileId,
         hint: 'Pass params as an inline object literal to enable validation.',
-        message: 'Params passed dynamically cannot be statically verified.',
+        message:
+          'Params are passed dynamically and cannot be statically verified.',
         range: callRange,
         severity: 'warning',
         source: fileText,
@@ -282,10 +285,10 @@ function validateParams(input: ValidateParamsInput): void {
     }
     for (const key of placeholderKeys) {
       diagnostics.push({
-        code: 'YPK104',
+        code: YAP.PARSER_MISSING_PARAM,
         fileId,
-        hint: `Add { ${key}: ... } as the second argument.`,
-        message: `Missing parameter '${key}' for placeholder '{${key}}'.`,
+        hint: `Add \`{ ${key}: ... }\` as the second argument.`,
+        message: `Params is missing key \`${key}\` for placeholder \`{${key}}\`.`,
         range: callRange,
         severity: 'error',
         source: fileText,
@@ -296,7 +299,7 @@ function validateParams(input: ValidateParamsInput): void {
 
   if (params.kind === 'spread') {
     diagnostics.push({
-      code: 'YPK106',
+      code: YAP.PARSER_DYNAMIC_PARAMS,
       fileId,
       hint: 'Pass keys explicitly to enable validation.',
       message: 'Spread params cannot be statically verified.',
@@ -311,10 +314,10 @@ function validateParams(input: ValidateParamsInput): void {
   for (const key of placeholderKeys) {
     if (!providedKeys.has(key)) {
       diagnostics.push({
-        code: 'YPK104',
+        code: YAP.PARSER_MISSING_PARAM,
         fileId,
-        hint: `Add '${key}' to the params object.`,
-        message: `Missing parameter '${key}' for placeholder '{${key}}'.`,
+        hint: `Add \`${key}\` to the params object.`,
+        message: `Params is missing key \`${key}\` for placeholder \`{${key}}\`.`,
         range: params.range,
         severity: 'error',
         source: fileText,
@@ -327,10 +330,10 @@ function validateParams(input: ValidateParamsInput): void {
       continue;
     }
     diagnostics.push({
-      code: 'YPK105',
+      code: YAP.PARSER_EXTRA_PARAM,
       fileId,
-      hint: `Remove '${key}' from the params object or add '{${key}}' to the source string.`,
-      message: `Extra parameter '${key}' with no matching placeholder.`,
+      hint: `Remove \`${key}\` from the params object or add \`{${key}}\` to the source string.`,
+      message: `Params has extra key \`${key}\` with no matching placeholder.`,
       range: params.range,
       severity: 'warning',
       source: fileText,

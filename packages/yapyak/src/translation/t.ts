@@ -106,7 +106,7 @@ export type TFn = {
    * Disambiguates a source string by context, or returns a chain that requires `.in()` to complete.
    *
    * @remarks
-   * The compiler emits `YPK403` if a source is used with both `t()` and `t.as()` in the same file.
+   * The compiler emits `YAP0018` if a source is used with both `t()` and `t.as()` in the same file.
    *
    * @typeParam TContext - The disambiguating context literal.
    * @typeParam TSource - The source string literal.

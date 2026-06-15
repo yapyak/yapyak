@@ -34,7 +34,7 @@ describe('renderErrorDiagnostics', () => {
       logger,
       buildResult([
         {
-          code: 'YPK101',
+          code: 'YAP0001',
           fileId: 'src/a.tsx',
           message: 'Hello',
           range: {
@@ -55,7 +55,7 @@ describe('renderErrorDiagnostics', () => {
       ]),
     );
     expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining('YPK101'),
+      expect.stringContaining('YAP0001'),
     );
     expect(logger.error).toHaveBeenCalledWith(
       expect.stringContaining('src/a.tsx:3:5'),
@@ -68,7 +68,7 @@ describe('renderErrorDiagnostics', () => {
       logger,
       buildResult([
         {
-          code: 'YPK201',
+          code: 'YAP0007',
           fileId: 'src/a.tsx',
           message: 'Hello',
           range: {
@@ -103,7 +103,7 @@ describe('renderErrorDiagnostics', () => {
       logger,
       buildResult([
         {
-          code: 'YPK101',
+          code: 'YAP0001',
           fileId: 'src/a.tsx',
           message: 'Hello',
           range: {
@@ -122,7 +122,7 @@ describe('renderErrorDiagnostics', () => {
           source: 'Hello',
         },
         {
-          code: 'YPK201',
+          code: 'YAP0007',
           fileId: 'src/b.tsx',
           message: 'Hello',
           range: {
@@ -154,7 +154,7 @@ describe('renderErrorDiagnostics', () => {
       logger,
       buildResult([
         {
-          code: 'YPK101',
+          code: 'YAP0001',
           fileId: 'src/a.tsx',
           message: 'Boom',
           range: {
@@ -173,7 +173,7 @@ describe('renderErrorDiagnostics', () => {
           source: 'Hello',
         },
         {
-          code: 'YPK201',
+          code: 'YAP0007',
           fileId: 'src/b.tsx',
           message: 'Soft',
           range: {
@@ -194,6 +194,6 @@ describe('renderErrorDiagnostics', () => {
       ]),
     );
     expect(errorDiagnostics).toHaveLength(1);
-    expect(errorDiagnostics[0]?.code).toBe('YPK101');
+    expect(errorDiagnostics[0]?.code).toBe('YAP0001');
   });
 });

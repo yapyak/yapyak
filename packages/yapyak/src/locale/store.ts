@@ -8,6 +8,7 @@ import {
   SYNC_HTML_LANG,
 } from 'yapyak/runtime';
 
+import { YAP } from '../diagnostics/codes';
 import { registerHotDispose } from '../hot-dispose';
 import { buildPersistence } from '../persistence';
 import { warn } from '../warn';
@@ -101,10 +102,13 @@ function writeLocale(value: Locale): void {
     try {
       listener(value);
     } catch (cause) {
-      warn('Locale subscriber threw — continuing with remaining subscribers.', {
-        cause,
-        code: 'YPK_LOCALE_LISTENER_THREW',
-      });
+      warn(
+        'Locale subscriber threw an exception. Yapyak continued with the remaining subscribers.',
+        {
+          cause,
+          code: YAP.LOCALE_LISTENER_THREW,
+        },
+      );
     }
   }
 }
@@ -122,7 +126,7 @@ persistence?.subscribe?.(syncFromPersistence);
  * The current locale.
  *
  * @remarks
- * Server-side, reads from the request bound by {@link withResponse} via persistence or the `Accept-Language` header. When no request is bound (e.g. outside any host-integration middleware), falls through to the module-scope locale shared across requests — the same value {@link setLocale} writes — which can leak between concurrent requests. A `YPK_SSR_LEAK_RISK` warning fires once on the first such fallback. Client-side, returns the locale set by {@link setLocale}.
+ * Server-side, reads from the request bound by {@link withResponse} via persistence or the `Accept-Language` header. When no request is bound (e.g. outside any host-integration middleware), falls through to the module-scope locale shared across requests — the same value {@link setLocale} writes — which can leak between concurrent requests. A `YAP0022` warning fires once on the first such fallback. Client-side, returns the locale set by {@link setLocale}.
  *
  * @example Read the current locale
  * ```ts
@@ -135,9 +139,9 @@ export function getLocale(): Locale {
   if (!hasWarnedUninitialized && LOCALES.length === 0) {
     hasWarnedUninitialized = true;
     warn(
-      'yapyak runtime not initialized — register the build-tool plugin (@yapyak/vite) in your bundler config.',
+      'Yapyak runtime is not initialized. Register the build-tool plugin (`@yapyak/vite`) in your bundler config.',
       {
-        code: 'YPK_RUNTIME_NOT_INITIALIZED',
+        code: YAP.RUNTIME_NOT_INITIALIZED,
       },
     );
   }
@@ -159,9 +163,9 @@ export function getLocale(): Locale {
     if (!hasWarnedSsrFallback) {
       hasWarnedSsrFallback = true;
       warn(
-        'getLocale() fell back to the shared module-global locale on the server — register the host-integration middleware so each request binds its own locale.',
+        'getLocale() fell back to the shared module-global locale on the server. Register the host-integration middleware so each request binds its own locale.',
         {
-          code: 'YPK_SSR_LEAK_RISK',
+          code: YAP.RUNTIME_SSR_LEAK_RISK,
         },
       );
     }
@@ -176,7 +180,7 @@ export function getLocale(): Locale {
  * Warns and no-ops if `value` is not in {@link locales}. Behavior beyond validation depends on the configured persistence:
  *
  * - `'none'` (client) — Updates the in-memory locale and notifies subscribers.
- * - `'none'` (server) — Warns with `YPK_SET_LOCALE_SSR_LEAK_RISK` and no-ops; mutating the shared module-global locale would leak between concurrent requests.
+ * - `'none'` (server) — Warns with `YAP0029` and no-ops; mutating the shared module-global locale would leak between concurrent requests.
  * - `'cookie'` (client) — Writes `document.cookie`, updates the in-memory locale, and notifies subscribers.
  * - `'cookie'` (server) — Appends a `Set-Cookie` header via the bound response writer (or warns if no writer is bound). Does not update the in-memory locale and does not notify subscribers — the cookie reaches the next request, not this one's render.
  * - `'local-storage'` (client) — Writes to `localStorage`, updates the in-memory locale, and notifies subscribers.
@@ -194,11 +198,14 @@ export function getLocale(): Locale {
  */
 export function setLocale(value: Locale): void {
   if (!LOCALES.includes(value)) {
-    warn('setLocale ignored — value not in configured locales.', {
-      code: 'YPK_SET_LOCALE_IGNORED',
-      configured: LOCALES,
-      requested: value,
-    });
+    warn(
+      `setLocale call ignored. Value "${value}" is not in the configured locales.`,
+      {
+        code: YAP.LOCALE_SET_IGNORED,
+        configured: LOCALES,
+        requested: value,
+      },
+    );
     return;
   }
 
@@ -209,9 +216,9 @@ export function setLocale(value: Locale): void {
 
   if (typeof window === 'undefined') {
     warn(
-      'setLocale ignored — mutating the shared module-global locale on the server leaks between concurrent requests. Configure cookie or url persistence, or drive locale switches through router navigation.',
+      'setLocale call ignored on the server. Mutating the shared module-global locale leaks between concurrent requests. Configure `cookie` or `url` persistence, or drive locale switches through router navigation.',
       {
-        code: 'YPK_SET_LOCALE_SSR_LEAK_RISK',
+        code: YAP.LOCALE_SET_SSR_LEAK_RISK,
         requested: value,
       },
     );

@@ -158,7 +158,7 @@ describe('url', () => {
       resetWarn();
     });
 
-    it('returns `false` and warns with `YPK_PERSISTENCE_URL_NOOP`', () => {
+    it('returns `false` and warns with `YAP0026`', () => {
       const warnSpy =
         vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
       setWarn(warnSpy);
@@ -167,9 +167,9 @@ describe('url', () => {
       }).set('sv');
       expect(result).toBe(false);
       expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('setLocale() is a no-op'),
+        expect.stringContaining('setLocale() skipped'),
         expect.objectContaining({
-          code: 'YPK_PERSISTENCE_URL_NOOP',
+          code: 'YAP0026',
         }),
       );
     });
