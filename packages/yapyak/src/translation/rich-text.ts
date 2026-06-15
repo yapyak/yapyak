@@ -222,8 +222,9 @@ function findClosingTagRange(
       end: number;
     }
   | undefined {
-  const openMarker = `<${name}>`;
+  const openPrefix = `<${name}`;
   const close = `</${name}>`;
+  const openPrefixLength = openPrefix.length;
   let depth = 1;
   let index = from;
   while (index < source.length) {
@@ -238,10 +239,24 @@ function findClosingTagRange(
       index += close.length;
       continue;
     }
-    if (source.startsWith(openMarker, index)) {
-      depth += 1;
-      index += openMarker.length;
-      continue;
+    if (source.startsWith(openPrefix, index)) {
+      const after = source[index + openPrefixLength];
+      if (after === '>') {
+        depth += 1;
+        index += openPrefixLength + 1;
+        continue;
+      }
+      if (after === ' ' || after === '\t' || after === '\n' || after === '/') {
+        const closeBracket = source.indexOf('>', index + openPrefixLength);
+        if (closeBracket === -1) {
+          return undefined;
+        }
+        if (source[closeBracket - 1] !== '/') {
+          depth += 1;
+        }
+        index = closeBracket + 1;
+        continue;
+      }
     }
     index += 1;
   }

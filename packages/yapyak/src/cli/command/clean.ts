@@ -6,6 +6,7 @@ import type {
 import type { Config } from '../config';
 
 import {
+  CorruptLocaleFileError,
   extractFile,
   readLocaleFile,
   toEntry,
@@ -63,8 +64,14 @@ export function clean(
     let existing: LocaleFile;
     try {
       existing = readLocaleFile(localePath);
-    } catch {
-      continue;
+    } catch (error) {
+      if (error instanceof CorruptLocaleFileError) {
+        process.stderr.write(
+          `\n  ${symbol.cross} ${color.red(error.message)}\n  ${color.dim('Refusing to clean — fix the locale file or run `yapyak check` to see all issues.')}\n\n`,
+        );
+        return 1;
+      }
+      throw error;
     }
     const next: LocaleFile = {};
     let hasChanged = false;

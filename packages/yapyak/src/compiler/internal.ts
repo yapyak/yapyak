@@ -17,6 +17,8 @@ export type {
 
 export { parseTemplate } from '../template';
 export {
+  CorruptLocaleFileError,
+  CorruptOrphanCacheError,
   autoTranslate,
   detectRenames,
   discoverLocales,

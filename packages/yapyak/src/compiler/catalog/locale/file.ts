@@ -6,6 +6,7 @@ import { warn } from '../../../warn';
 import { toMessageKey } from '../../parser';
 import { compareKeys, stringifyCanonical } from '../canonical';
 import { writeAtomicAll } from './atomic';
+import { stripBom } from './bom';
 import { validateLocaleCode } from './code';
 import {
   CorruptOrphanCacheError,
@@ -16,6 +17,7 @@ import {
   removeOrphan,
   writeOrphans,
 } from './orphan';
+import { isPlainObject } from './plain-object';
 import { isUnsafeKey } from './unsafe-key';
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -34,7 +36,7 @@ export type SyncLocaleFilesOptions = {
   yapyakDir?: string;
 };
 
-export type SyncEntry = {
+type SyncEntry = {
   fileId: string;
   locale: string;
   source: string;
@@ -111,7 +113,7 @@ export function readLocaleFile(path: string): LocaleFile {
   if (!existsSync(path)) {
     return {};
   }
-  const content = readFileSync(path, 'utf-8');
+  const content = stripBom(readFileSync(path, 'utf-8'));
   if (!content.trim()) {
     return {};
   }
@@ -125,7 +127,7 @@ export function readLocaleFile(path: string): LocaleFile {
 }
 
 export function parseLocaleFile(parsed: unknown): LocaleFile {
-  if (typeof parsed !== 'object' || parsed === null) {
+  if (!isPlainObject(parsed)) {
     return Object.create(null);
   }
   const result: LocaleFile = Object.create(null);
@@ -133,7 +135,7 @@ export function parseLocaleFile(parsed: unknown): LocaleFile {
     if (isUnsafeKey(fileId)) {
       continue;
     }
-    if (typeof entries !== 'object' || entries === null) {
+    if (!isPlainObject(entries)) {
       continue;
     }
     const fileEntries: Record<string, CatalogEntry> = Object.create(null);
@@ -172,7 +174,7 @@ export function parseEntry(value: unknown): ParseEntryResult {
       errors: [],
     };
   }
-  if (typeof value !== 'object' || value === null) {
+  if (!isPlainObject(value)) {
     return {
       entry: undefined,
       errors: [
@@ -211,7 +213,7 @@ export function parseEntry(value: unknown): ParseEntryResult {
   };
 }
 
-export function writeLocaleFiles(writes: WriteLocaleFileInput[]): void {
+function writeLocaleFiles(writes: WriteLocaleFileInput[]): void {
   for (const write of writes) {
     const before = readLocaleFile(write.filePath);
     const violations = findInvariantViolations(

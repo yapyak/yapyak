@@ -28,7 +28,7 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "vite": ">=5",
+    "vite": ">=6",
     "yapyak": "workspace:*"
   },
   "engines": {

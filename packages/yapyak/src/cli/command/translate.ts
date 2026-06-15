@@ -1,7 +1,7 @@
 import type { Config } from '../config';
 import type { TranslationErrorEntry } from '../translation-error';
 
-import { autoTranslate } from '../../compiler/internal';
+import { autoTranslate, validateLocaleCode } from '../../compiler/internal';
 import { withProgress } from '../progress';
 import { buildReport } from '../report';
 import { renderTranslationErrors } from '../translation-error';
@@ -19,6 +19,19 @@ export async function translate(
 ): Promise<number> {
   const force = options?.force ?? false;
   const targetLocale = options?.locale;
+
+  if (targetLocale !== undefined) {
+    const validation = validateLocaleCode(targetLocale);
+    if (!validation.valid) {
+      const hint = validation.suggestion
+        ? ` ${color.dim('— did you mean')} ${color.cyan(validation.suggestion)}${color.dim('?')}`
+        : '';
+      process.stderr.write(
+        `\n  ${symbol.cross} ${color.red(`Invalid locale code: ${color.bold(targetLocale)}.`)}${hint}\n  ${color.dim('Use a standard locale code (')}${color.cyan('en')}${color.dim(', ')}${color.cyan('sv')}${color.dim(', ')}${color.cyan('pt-BR')}${color.dim(', etc.) or a BCP 47 variant.')}\n\n`,
+      );
+      return 1;
+    }
+  }
 
   const translator = config.translator;
   if (!translator) {

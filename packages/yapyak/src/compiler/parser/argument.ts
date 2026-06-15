@@ -8,7 +8,7 @@ import ts from 'typescript';
 import { parsePlaceholders } from './placeholder';
 import { toRange } from './range';
 
-export type ParsedParams = {
+type ParsedParams = {
   keys: string[];
   kind: 'spread' | 'static';
   range: Range;

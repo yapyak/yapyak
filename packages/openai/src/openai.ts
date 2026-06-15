@@ -7,7 +7,6 @@ import {
   parseResponseBody,
   parseTranslationsBatch,
   resolveMaxTokens,
-  stripCodeFence,
 } from 'yapyak/translator/internal';
 
 /** Options for {@link openai}. */
@@ -212,7 +211,7 @@ export function openai(options: OpenAIOptions): Translator {
       if (typeof text !== 'string') {
         throw new Error('yapyak openai: response did not contain a text block');
       }
-      return parseTranslationsBatch(stripCodeFence(text.trim()), 'openai');
+      return parseTranslationsBatch(text, 'openai');
     },
   });
 }

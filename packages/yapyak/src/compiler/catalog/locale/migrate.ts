@@ -128,7 +128,13 @@ export function migrateLocales(
         continue;
       }
       const previousValue = next[rename.from];
+      const targetHasValue =
+        Object.hasOwn(next, rename.to) && !isEmptyEntry(next[rename.to]);
       delete next[rename.from];
+      if (targetHasValue) {
+        hasChanged = true;
+        continue;
+      }
       next[rename.to] = preserveTranslations ? (previousValue ?? '') : '';
       staleEntries.push({
         locale,
@@ -152,4 +158,19 @@ export function migrateLocales(
 
 function toPositionKey(entry: MessagePosition): string {
   return `${entry.line}:${entry.column}`;
+}
+
+function isEmptyEntry(entry: CatalogEntry | undefined): boolean {
+  if (entry === undefined) {
+    return true;
+  }
+  if (typeof entry === 'string') {
+    return entry === '';
+  }
+  for (const value of Object.values(entry)) {
+    if (value !== '') {
+      return false;
+    }
+  }
+  return true;
 }

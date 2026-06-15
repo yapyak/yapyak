@@ -563,6 +563,67 @@ describe('transformFile', () => {
       expect(code).toMatch(/_pick_\$1\(_catalog/);
     });
 
+    it('preserves a leading `use client` directive at the top of the file', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source: [
+          "'use client';",
+          "import { t } from 'yapyak';",
+          "export const x = t('Hello');",
+        ].join('\n'),
+      });
+      const firstNonEmpty = code
+        .split('\n')
+        .find((line) => line.trim().length > 0);
+      expect(firstNonEmpty).toBe("'use client';");
+    });
+
+    it('preserves a leading `use server` directive at the top of the file', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source: [
+          '"use server";',
+          "import { t } from 'yapyak';",
+          "export const x = t('Hello');",
+        ].join('\n'),
+      });
+      const firstNonEmpty = code
+        .split('\n')
+        .find((line) => line.trim().length > 0);
+      expect(firstNonEmpty).toBe('"use server";');
+    });
+
+    it('preserves a directive when leading comments precede it', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source: [
+          '// header banner',
+          '/* block comment */',
+          "'use client';",
+          "import { t } from 'yapyak';",
+          "export const x = t('Hello');",
+        ].join('\n'),
+      });
+      const lines = code.split('\n');
+      const directiveIndex = lines.findIndex((line) =>
+        line.includes("'use client'"),
+      );
+      const importIndex = lines.findIndex((line) =>
+        line.includes("from 'yapyak/internal'"),
+      );
+      expect(directiveIndex).toBeGreaterThan(-1);
+      expect(importIndex).toBeGreaterThan(directiveIndex);
+    });
+
     it('emits a hoisted module-scope catalog for a multi-locale call', () => {
       const code = runTransform({
         locales: [

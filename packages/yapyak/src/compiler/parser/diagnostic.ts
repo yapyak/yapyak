@@ -1,6 +1,6 @@
 import type { Range } from '../../processor';
 
-export type DiagnosticCode =
+type DiagnosticCode =
   | 'YPK101'
   | 'YPK102'
   | 'YPK103'

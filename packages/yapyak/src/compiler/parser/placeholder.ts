@@ -1,12 +1,8 @@
-import type {
-  Placeholder,
-  PlaceholderKind,
-  TemplateDiagnostic,
-} from '../../template';
+import type { Placeholder, TemplateDiagnostic } from '../../template';
 
 import { extractPlaceholders, parseTemplate } from '../../template';
 
-export type { Placeholder, PlaceholderKind, TemplateDiagnostic };
+export type { Placeholder, TemplateDiagnostic };
 
 export type ParsedMessage = {
   issues: TemplateDiagnostic[];

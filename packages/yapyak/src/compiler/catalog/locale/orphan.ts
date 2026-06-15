@@ -1,5 +1,6 @@
 import { stringifyCanonical } from '../canonical';
 import { writeAtomic } from './atomic';
+import { stripBom } from './bom';
 import { isUnsafeKey } from './unsafe-key';
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -44,7 +45,7 @@ export function readOrphans(yapyakDir: string): OrphanCache {
   if (!existsSync(path)) {
     return {};
   }
-  const content = readFileSync(path, 'utf-8');
+  const content = stripBom(readFileSync(path, 'utf-8'));
   if (content.trim() === '') {
     return {};
   }

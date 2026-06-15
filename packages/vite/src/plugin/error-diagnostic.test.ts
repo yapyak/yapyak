@@ -147,4 +147,53 @@ describe('renderErrorDiagnostics', () => {
       expect.stringContaining('src/a.tsx'),
     );
   });
+
+  it('returns the error-severity diagnostics for callers to fail the build on', () => {
+    const logger = buildLogger();
+    const errorDiagnostics = renderErrorDiagnostics(
+      logger,
+      buildResult([
+        {
+          code: 'YPK101',
+          fileId: 'src/a.tsx',
+          message: 'Boom',
+          range: {
+            end: {
+              column: 5,
+              line: 1,
+              offset: 5,
+            },
+            start: {
+              column: 1,
+              line: 1,
+              offset: 0,
+            },
+          },
+          severity: 'error',
+          source: 'Hello',
+        },
+        {
+          code: 'YPK201',
+          fileId: 'src/b.tsx',
+          message: 'Soft',
+          range: {
+            end: {
+              column: 5,
+              line: 1,
+              offset: 5,
+            },
+            start: {
+              column: 1,
+              line: 1,
+              offset: 0,
+            },
+          },
+          severity: 'warning',
+          source: 'Hello',
+        },
+      ]),
+    );
+    expect(errorDiagnostics).toHaveLength(1);
+    expect(errorDiagnostics[0]?.code).toBe('YPK101');
+  });
 });

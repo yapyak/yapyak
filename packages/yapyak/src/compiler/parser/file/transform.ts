@@ -46,10 +46,15 @@ const INVALIDATE_FILE_LOCAL = '_invalidateFile';
 const USE_YAPYAK_LOCAL = '_useYapyak';
 const DEFAULT_APPLY_IMPORT: ApplyImportFn = (
   magicString,
-  _source,
+  source,
   importStatement,
 ) => {
-  magicString.prepend(`${importStatement}\n`);
+  const prologueEnd = resolveDirectivePrologueEnd(source);
+  if (prologueEnd === 0) {
+    magicString.prepend(`${importStatement}\n`);
+    return;
+  }
+  magicString.appendRight(prologueEnd, `${importStatement}\n`);
 };
 const DEFAULT_PARSE_FRAGMENTS: ParseFragmentsFn = (source) => [
   {
@@ -282,12 +287,13 @@ function transformScriptImports(
     if (fragment.kind !== 'script') {
       continue;
     }
+    const scriptKind = getScriptKind(request.fileId, fragment.lang);
     const sourceFile = ts.createSourceFile(
       request.fileId,
       fragment.code,
       ts.ScriptTarget.ESNext,
       true,
-      getScriptKind(request.fileId, fragment.lang),
+      scriptKind,
     );
     const coreImports = extractCoreImports(sourceFile);
     for (const declaration of coreImports) {
@@ -296,6 +302,7 @@ function transformScriptImports(
         fragment,
         intermediate,
         magicString,
+        scriptKind,
         sourceFile,
       });
     }
@@ -307,14 +314,21 @@ type TransformImportDeclarationInput = {
   fragment: Fragment;
   intermediate: string;
   magicString: MagicString;
+  scriptKind: ts.ScriptKind;
   sourceFile: ts.SourceFile;
 };
 
 function transformImportDeclaration(
   input: TransformImportDeclarationInput,
 ): void {
-  const { declaration, fragment, intermediate, magicString, sourceFile } =
-    input;
+  const {
+    declaration,
+    fragment,
+    intermediate,
+    magicString,
+    scriptKind,
+    sourceFile,
+  } = input;
   if (declaration.importClause?.isTypeOnly === true) {
     return;
   }
@@ -336,7 +350,11 @@ function transformImportDeclaration(
       });
       continue;
     }
-    const occurrences = getReferenceCount(intermediate, localName);
+    const occurrences = resolveReferenceCount(
+      intermediate,
+      localName,
+      scriptKind,
+    );
     if (occurrences > 1) {
       remaining.push({
         imported: importedName,
@@ -978,13 +996,17 @@ function interpolateNestedReplacements(
   return result;
 }
 
-function getReferenceCount(code: string, name: string): number {
+function resolveReferenceCount(
+  code: string,
+  name: string,
+  scriptKind: ts.ScriptKind,
+): number {
   const sourceFile = ts.createSourceFile(
-    'ref-count.tsx',
+    'ref-count.ts',
     code,
     ts.ScriptTarget.Latest,
     true,
-    ts.ScriptKind.TSX,
+    scriptKind,
   );
   let count = 0;
   const visit = (node: ts.Node): void => {
@@ -1230,4 +1252,47 @@ function containsCallSite(
     }
   }
   return false;
+}
+
+const DIRECTIVE_RX =
+  /^\s*(['"])(?:use [a-z]+|use [a-z]+ [a-z]+)\1\s*;?\s*(?:\r?\n|$)/;
+
+function resolveDirectivePrologueEnd(source: string): number {
+  let cursor = 0;
+  while (cursor < source.length) {
+    const slice = source.slice(cursor);
+    const stripped = stripLeadingShebangAndComments(slice);
+    const consumed = slice.length - stripped.length;
+    const match = DIRECTIVE_RX.exec(stripped);
+    if (!match) {
+      return cursor;
+    }
+    cursor += consumed + match[0].length;
+  }
+  return cursor;
+}
+
+function stripLeadingShebangAndComments(source: string): string {
+  let cursor = 0;
+  if (source.startsWith('#!')) {
+    const newline = source.indexOf('\n', cursor);
+    cursor = newline === -1 ? source.length : newline + 1;
+  }
+  while (cursor < source.length) {
+    const rest = source.slice(cursor);
+    const whitespaceLength = rest.length - rest.trimStart().length;
+    cursor += whitespaceLength;
+    if (source.startsWith('//', cursor)) {
+      const newline = source.indexOf('\n', cursor);
+      cursor = newline === -1 ? source.length : newline + 1;
+      continue;
+    }
+    if (source.startsWith('/*', cursor)) {
+      const close = source.indexOf('*/', cursor + 2);
+      cursor = close === -1 ? source.length : close + 2;
+      continue;
+    }
+    break;
+  }
+  return source.slice(cursor);
 }

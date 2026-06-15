@@ -1,23 +1,26 @@
 import type { LocaleTranslations } from './type';
 
+import { stripCodeFence } from './prompt';
+
 const PREVIEW_LENGTH = 200;
 
 export function parseTranslationsBatch(
   raw: string,
   vendor: string,
 ): LocaleTranslations[] {
+  const unwrapped = stripCodeFence(raw.trim());
   let parsed: unknown;
   try {
-    parsed = JSON.parse(raw);
+    parsed = JSON.parse(unwrapped);
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
     throw new Error(
-      `yapyak ${vendor}: model response is not valid JSON (${reason}). Preview: ${JSON.stringify(preview(raw))}`,
+      `yapyak ${vendor}: model response is not valid JSON (${reason}). Preview: ${JSON.stringify(preview(unwrapped))}`,
     );
   }
   if (!Array.isArray(parsed)) {
     throw new Error(
-      `yapyak ${vendor}: model returned ${getShapeDescription(parsed)}, expected an array. Preview: ${JSON.stringify(preview(raw))}`,
+      `yapyak ${vendor}: model returned ${getShapeDescription(parsed)}, expected an array. Preview: ${JSON.stringify(preview(unwrapped))}`,
     );
   }
   return parsed as LocaleTranslations[];

@@ -55,7 +55,7 @@ export async function run(argv: string[]): Promise<number> {
       const config = await loadConfig(projectRoot);
       if (command === 'status') {
         return status(config, projectRoot, {
-          json: rest.includes('--json'),
+          json: hasFlag(rest, '--json'),
         });
       }
       if (command === 'check') {
@@ -63,7 +63,7 @@ export async function run(argv: string[]): Promise<number> {
       }
       if (command === 'clean') {
         return clean(config, projectRoot, {
-          write: rest.includes('--write'),
+          write: hasFlag(rest, '--write'),
         });
       }
       if (command === 'add') {
@@ -73,7 +73,7 @@ export async function run(argv: string[]): Promise<number> {
       if (command === 'translate') {
         const locale = rest.find((entry) => !entry.startsWith('-'));
         return translate(config, projectRoot, {
-          force: rest.includes('--force') || rest.includes('-f'),
+          force: hasFlag(rest, '--force') || hasFlag(rest, '-f'),
           locale,
         });
       }
@@ -135,6 +135,12 @@ function parseExportArgs(args: string[]): ParseExportArgsResult {
     out,
     split: isSplit,
   };
+}
+
+function hasFlag(entries: string[], flag: string): boolean {
+  return entries.some(
+    (entry) => entry === flag || entry.startsWith(`${flag}=`),
+  );
 }
 
 function findUnknownFlags(

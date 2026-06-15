@@ -37,7 +37,13 @@ export function createTransformPlugin(state: State): Plugin {
       const extracted = extractFile(fileId, code, {
         processors,
       });
-      renderErrorDiagnostics(state.logger, extracted);
+      const errorDiagnostics = renderErrorDiagnostics(state.logger, extracted);
+      if (errorDiagnostics.length > 0) {
+        const first = errorDiagnostics[0];
+        if (first) {
+          this.error(`[yapyak] ${first.code}: ${first.message}`);
+        }
+      }
       if (extracted.callSites.length === 0) {
         return null;
       }

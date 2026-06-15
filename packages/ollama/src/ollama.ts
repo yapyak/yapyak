@@ -168,7 +168,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
           'yapyak ollama: response did not contain a response field',
         );
       }
-      return parseTranslationsBatch(text.trim(), 'ollama');
+      return parseTranslationsBatch(text, 'ollama');
     },
   });
 }

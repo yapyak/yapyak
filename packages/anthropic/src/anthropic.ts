@@ -7,7 +7,6 @@ import {
   parseResponseBody,
   parseTranslationsBatch,
   resolveMaxTokens,
-  stripCodeFence,
 } from 'yapyak/translator/internal';
 
 /** Options for {@link anthropic}. */
@@ -185,7 +184,7 @@ export function anthropic(options: AnthropicOptions): Translator {
           'yapyak anthropic: response did not contain a text block',
         );
       }
-      return parseTranslationsBatch(stripCodeFence(text.trim()), 'anthropic');
+      return parseTranslationsBatch(text, 'anthropic');
     },
   });
 }

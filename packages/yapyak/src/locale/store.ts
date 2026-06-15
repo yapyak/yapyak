@@ -61,7 +61,14 @@ function writeLocale(value: Locale): void {
     document.documentElement.lang = value;
   }
   for (const listener of listeners) {
-    listener(value);
+    try {
+      listener(value);
+    } catch (cause) {
+      warn('Locale subscriber threw — continuing with remaining subscribers.', {
+        cause,
+        code: 'YPK_LOCALE_LISTENER_THREW',
+      });
+    }
   }
 }
 

@@ -1,3 +1,4 @@
+import { defaultLocale } from '../locale';
 import { warn } from '../warn';
 import { isCurrency } from './currency';
 
@@ -7,25 +8,28 @@ const MAX_FORMATTERS_PER_CTOR = 64;
 
 const caches = new Map<IntlFormatterCtor<unknown>, Map<string, unknown>>();
 const warnedCurrencyKeys = new Set<string>();
+const warnedInvalidLocales = new Set<string>();
+const validLocaleCache = new Map<string, string>();
 
 export function resolveFormatter<T>(
   ctor: IntlFormatterCtor<T>,
   locale: string,
   options: object | undefined,
 ): T {
+  const safeLocale = resolveValidLocale(locale);
   let cache = caches.get(ctor) as Map<string, T> | undefined;
   if (!cache) {
     cache = new Map();
     caches.set(ctor, cache as Map<string, unknown>);
   }
-  const key = buildCanonicalKey(locale, options);
+  const key = buildCanonicalKey(safeLocale, options);
   const cached = cache.get(key);
   if (cached) {
     cache.delete(key);
     cache.set(key, cached);
     return cached;
   }
-  const formatter = buildFormatter(ctor, locale, options);
+  const formatter = buildFormatter(ctor, safeLocale, options);
   if (cache.size >= MAX_FORMATTERS_PER_CTOR) {
     const oldestKey = cache.keys().next().value;
     if (oldestKey !== undefined) {
@@ -144,4 +148,29 @@ function stripCurrencyFields(
     ...rest
   } = options as Intl.NumberFormatOptions;
   return rest;
+}
+
+function resolveValidLocale(locale: string): string {
+  const cached = validLocaleCache.get(locale);
+  if (cached !== undefined) {
+    return cached;
+  }
+  try {
+    const canonical = new Intl.Locale(locale).toString();
+    validLocaleCache.set(locale, canonical);
+    return canonical;
+  } catch {
+    if (!warnedInvalidLocales.has(locale)) {
+      warnedInvalidLocales.add(locale);
+      warn(
+        `Invalid locale "${locale}" — falling back to default "${defaultLocale}".`,
+        {
+          code: 'YPK_INVALID_FORCED_LOCALE',
+          requested: locale,
+        },
+      );
+    }
+    validLocaleCache.set(locale, defaultLocale);
+    return defaultLocale;
+  }
 }

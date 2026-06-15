@@ -2,7 +2,9 @@ import type { Diagnostic, ExtractedMessage, Placeholder } from '../../parser';
 import type { LocaleFile, ParseEntryError } from './file';
 
 import { parsePlaceholders } from '../../parser';
+import { stripBom } from './bom';
 import { findTranslation, parseEntry } from './file';
+import { isPlainObject } from './plain-object';
 import { isUnsafeKey } from './unsafe-key';
 import { existsSync, readFileSync } from 'node:fs';
 
@@ -23,7 +25,7 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
   if (!existsSync(path)) {
     return [];
   }
-  const content = readFileSync(path, 'utf-8');
+  const content = stripBom(readFileSync(path, 'utf-8'));
   if (content.trim() === '') {
     return [];
   }
@@ -265,10 +267,6 @@ function buildPlaceholderIndex(
     placeholdersByName.set(placeholder.name, placeholder);
   }
   return placeholdersByName;
-}
-
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 function isUnsafePath(path: string): boolean {

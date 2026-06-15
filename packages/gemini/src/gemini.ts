@@ -7,7 +7,6 @@ import {
   parseResponseBody,
   parseTranslationsBatch,
   resolveMaxTokens,
-  stripCodeFence,
 } from 'yapyak/translator/internal';
 
 /** Options for {@link gemini}. */
@@ -194,7 +193,7 @@ export function gemini(options: GeminiOptions): Translator {
       if (typeof text !== 'string') {
         throw new Error('yapyak gemini: response did not contain a text part');
       }
-      return parseTranslationsBatch(stripCodeFence(text.trim()), 'gemini');
+      return parseTranslationsBatch(text, 'gemini');
     },
   });
 }

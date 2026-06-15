@@ -6,6 +6,7 @@ import type {
 import type { Config } from '../config';
 
 import {
+  CorruptLocaleFileError,
   findTranslation,
   readLocaleFile,
   stringifyCanonical,
@@ -69,12 +70,23 @@ export function exportCommand(
   }
 
   const variantsByFile = buildVariantsByFile(report.messages);
-  const snapshot = buildSnapshot({
-    defaultLocale: report.defaultLocale,
-    localesDir: join(projectRoot, config.localesDir),
-    targetLocales,
-    variantsByFile,
-  });
+  let snapshot: Snapshot;
+  try {
+    snapshot = buildSnapshot({
+      defaultLocale: report.defaultLocale,
+      localesDir: join(projectRoot, config.localesDir),
+      targetLocales,
+      variantsByFile,
+    });
+  } catch (error) {
+    if (error instanceof CorruptLocaleFileError) {
+      process.stderr.write(
+        `\n  ${symbol.cross} ${color.red(error.message)}\n  ${color.dim('Refusing to export — fix the locale file or run `yapyak check` to see all issues.')}\n\n`,
+      );
+      return 1;
+    }
+    throw error;
+  }
 
   if (split) {
     const outputDirectory = resolve(projectRoot, out as string);
@@ -181,11 +193,7 @@ function buildLocaleFile(args: {
   if (isDefault) {
     onDisk = {};
   } else {
-    try {
-      onDisk = readLocaleFile(args.localePath);
-    } catch {
-      onDisk = {};
-    }
+    onDisk = readLocaleFile(args.localePath);
   }
   const localeFile: LocaleFile = {};
   for (const [fileId, variants] of args.variantsByFile) {
