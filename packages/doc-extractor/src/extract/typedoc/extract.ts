@@ -29,7 +29,12 @@ import type {
   TypeToken,
 } from './type';
 
-import { Application, ReflectionKind, TSConfigReader } from 'typedoc';
+import {
+  Application,
+  OptionDefaults,
+  ReflectionKind,
+  TSConfigReader,
+} from 'typedoc';
 
 import { nullify } from '../../nullify';
 import { readFile } from 'node:fs/promises';
@@ -159,10 +164,18 @@ async function loadProject(
 ): Promise<ProjectReflection> {
   const app = await Application.bootstrap(
     {
+      blockTags: [
+        ...OptionDefaults.blockTags,
+        '@shape',
+      ],
       entryPoints: entries.map((entry) => entry.filePath),
       excludeInternal: false,
       excludePrivate: true,
       excludeProtected: true,
+      inlineTags: [
+        ...OptionDefaults.inlineTags,
+        '@shape',
+      ],
       skipErrorChecking: true,
       tsconfig: resolve(packageDir, 'tsconfig.json'),
     },

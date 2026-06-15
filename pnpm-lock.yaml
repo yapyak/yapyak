@@ -167,6 +167,9 @@ importers:
       '@yapyak/react':
         specifier: workspace:*
         version: link:../packages/react
+      '@yapyak/tanstack-start':
+        specifier: workspace:*
+        version: link:../packages/tanstack-start
       '@yapyak/vite':
         specifier: workspace:*
         version: link:../packages/vite

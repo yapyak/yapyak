@@ -4,13 +4,12 @@ import { createStorage } from './storage';
  * Runs `handler` with `request` bound to async-scoped storage, then drains pending response headers buffered during the scope onto the produced `Response`.
  *
  * @remarks
- * The single public entry point of `yapyak/adapter`. Called by the shipped framework adapter packages. Adapters whose middleware contract produces a `Response` directly call the two-argument form. Adapters whose middleware result wraps a `Response` pass an `extractResponse` function that locates the `Response` inside the wrapper.
+ * The single public entry point of `yapyak/adapter`. Use this form when the handler returns a `Response` directly (sveltekit, astro, react-router). Use the three-argument form with `extractResponse` when the handler returns a value that wraps the `Response` (tanstack-start).
  *
  * Pending headers come from server-side `setLocale()` calls and other yapyak-internal sources buffered by persistence. The buffer is established fresh per scope and never leaks between concurrent requests.
  *
  * @param request - The incoming Web `Request`.
  * @param handler - Produces the response. Runs inside the request-bound async scope.
- * @param extractResponse - Locates the `Response` inside the handler's result. Required when the handler returns a value that is not a `Response`.
  *
  * @example SvelteKit handle
  * ```ts
@@ -19,8 +18,22 @@ import { createStorage } from './storage';
  * export const handle: Handle = ({ event, resolve }) =>
  *   withResponse(event.request, () => resolve(event));
  * ```
+ */
+export function withResponse(
+  request: Request,
+  handler: () => Response | Promise<Response>,
+): Promise<Response>;
+/**
+ * Runs `handler` with `request` bound to async-scoped storage, locates the produced `Response` via `extractResponse`, then drains pending response headers onto it before returning the handler's result.
  *
- * @example TanStack Start middleware (Response wrapped in result)
+ * @remarks
+ * Use this form when the handler returns a value that wraps the `Response` (e.g. TanStack Start's `{ response, ... }` middleware result). The handler's full result is returned; only the located `Response`'s headers are mutated.
+ *
+ * @param request - The incoming Web `Request`.
+ * @param handler - Produces a result that wraps the response. Runs inside the request-bound async scope.
+ * @param extractResponse - Locates the `Response` inside the handler's result.
+ *
+ * @example TanStack Start middleware
  * ```ts
  * import { withResponse } from 'yapyak/adapter';
  * import { createMiddleware } from '@tanstack/react-start';
@@ -30,10 +43,6 @@ import { createStorage } from './storage';
  * );
  * ```
  */
-export function withResponse(
-  request: Request,
-  handler: () => Response | Promise<Response>,
-): Promise<Response>;
 export function withResponse<T>(
   request: Request,
   handler: () => T | Promise<T>,
