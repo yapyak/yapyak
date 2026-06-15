@@ -83,13 +83,9 @@ export function normalizeYapyakConfig(
     );
   }
   const defaultLocale = config.defaultLocale ?? DEFAULT_LOCALE;
-  if (defaultLocale === '') {
-    throw new Error('[yapyak] defaultLocale cannot be an empty string.');
-  }
+  assertNonEmptyString(defaultLocale, 'defaultLocale');
   const localesDir = config.localesDir ?? DEFAULT_LOCALES_DIR;
-  if (localesDir === '') {
-    throw new Error('[yapyak] localesDir cannot be an empty string.');
-  }
+  assertNonEmptyString(localesDir, 'localesDir');
   return {
     autoTranslateThreshold,
     defaultLocale,
@@ -183,6 +179,13 @@ function resolveExamples(config: YapyakConfig): number {
   return DEFAULT_EXAMPLES;
 }
 
+const PERSISTENCE_KINDS = [
+  'cookie',
+  'local-storage',
+  'none',
+  'url',
+] as const;
+
 function normalizePersistenceConfig(
   config: PersistenceConfig | undefined,
 ): NormalizedPersistenceConfig {
@@ -192,6 +195,7 @@ function normalizePersistenceConfig(
     };
   }
   if (typeof config === 'string') {
+    assertKnownDiscriminator(config, PERSISTENCE_KINDS, 'persistence');
     switch (config) {
       case 'cookie':
         return {
@@ -212,24 +216,35 @@ function normalizePersistenceConfig(
         return {
           type: 'none',
         };
-      default:
-        return {
-          type: 'none',
-        };
+      default: {
+        const exhaustive: never = config;
+        throw new Error(
+          `[yapyak] unreachable persistence kind: ${String(exhaustive)}`,
+        );
+      }
     }
   }
+  assertKnownDiscriminator(config.type, PERSISTENCE_KINDS, 'persistence.type');
   switch (config.type) {
-    case 'cookie':
+    case 'cookie': {
+      if (config.name !== undefined) {
+        assertNonEmptyString(config.name, 'persistence.name');
+      }
       return {
         name: config.name ?? DEFAULT_COOKIE_NAME,
         secure: config.secure ?? false,
         type: 'cookie',
       };
-    case 'local-storage':
+    }
+    case 'local-storage': {
+      if (config.key !== undefined) {
+        assertNonEmptyString(config.key, 'persistence.key');
+      }
       return {
         key: config.key ?? DEFAULT_STORAGE_KEY,
         type: 'local-storage',
       };
+    }
     case 'url':
       return config.match
         ? {
@@ -243,9 +258,33 @@ function normalizePersistenceConfig(
       return {
         type: 'none',
       };
-    default:
-      return {
-        type: 'none',
-      };
+    default: {
+      const exhaustive: never = config;
+      throw new Error(
+        `[yapyak] unreachable persistence kind: ${String(exhaustive)}`,
+      );
+    }
+  }
+}
+
+function assertNonEmptyString(
+  value: unknown,
+  field: string,
+): asserts value is string {
+  if (typeof value !== 'string' || value === '') {
+    throw new Error(`[yapyak] ${field} cannot be an empty string.`);
+  }
+}
+
+function assertKnownDiscriminator<T extends string>(
+  value: unknown,
+  allowed: readonly T[],
+  field: string,
+): asserts value is T {
+  if (typeof value !== 'string' || !allowed.includes(value as T)) {
+    const allowedList = allowed.map((entry) => `"${entry}"`).join(', ');
+    throw new Error(
+      `[yapyak] ${field} must be one of ${allowedList}; got ${JSON.stringify(value)}.`,
+    );
   }
 }

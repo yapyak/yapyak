@@ -315,6 +315,46 @@ describe('normalizeYapyakConfig', () => {
     ).toThrow(/examples must be a non-negative integer/);
   });
 
+  it('throws when `persistence` is an unknown string', () => {
+    expect(() =>
+      normalizeYapyakConfig({
+        persistence: 'cooie' as never,
+      }),
+    ).toThrow(/persistence must be one of/);
+  });
+
+  it('throws when `persistence.type` is an unknown discriminator', () => {
+    expect(() =>
+      normalizeYapyakConfig({
+        persistence: {
+          type: 'cooie',
+        } as never,
+      }),
+    ).toThrow(/persistence\.type must be one of/);
+  });
+
+  it('throws when `persistence.name` is an empty string for `cookie`', () => {
+    expect(() =>
+      normalizeYapyakConfig({
+        persistence: {
+          name: '',
+          type: 'cookie',
+        },
+      }),
+    ).toThrow(/persistence\.name cannot be an empty string/);
+  });
+
+  it('throws when `persistence.key` is an empty string for `local-storage`', () => {
+    expect(() =>
+      normalizeYapyakConfig({
+        persistence: {
+          key: '',
+          type: 'local-storage',
+        },
+      }),
+    ).toThrow(/persistence\.key cannot be an empty string/);
+  });
+
   it('preserves a `RegExp` inside an include array verbatim', () => {
     const pattern = /\.special$/;
     const result = normalizeYapyakConfig({
