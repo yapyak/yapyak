@@ -473,10 +473,6 @@ export function syncLocaleFiles(
     restoredOrphans,
   );
 
-  if (orphansChanged) {
-    writeOrphans(yapyakDir, orphans);
-  }
-
   const writes: WriteLocaleFileInput[] = [];
   for (const locale of healthyLocales) {
     const next = nextByLocale.get(locale) ?? {};
@@ -492,6 +488,10 @@ export function syncLocaleFiles(
     });
   }
   writeLocaleFiles(writes);
+
+  if (orphansChanged) {
+    writeOrphans(yapyakDir, orphans);
+  }
 
   return {
     orphaned,

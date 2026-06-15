@@ -209,6 +209,41 @@ describe('run', () => {
     );
   });
 
+  it('extracts `--out path` (space form) into the `export` options', async () => {
+    await run([
+      'export',
+      '--out',
+      'snapshot.json',
+    ]);
+    expect(exportCommand).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      expect.objectContaining({
+        locales: [],
+        out: 'snapshot.json',
+      }),
+    );
+  });
+
+  it('does not treat the `--out` value as a locale', async () => {
+    await run([
+      'export',
+      '--out',
+      'snapshot.json',
+      'sv',
+    ]);
+    expect(exportCommand).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      expect.objectContaining({
+        locales: [
+          'sv',
+        ],
+        out: 'snapshot.json',
+      }),
+    );
+  });
+
   it('extracts `--split` into the `export` options', async () => {
     await run([
       'export',

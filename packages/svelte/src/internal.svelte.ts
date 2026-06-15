@@ -1,7 +1,6 @@
 import {
   autoRegisterTracker,
   getDevVersion,
-  invalidateFile,
   setCatalogEntry,
   subscribeDev,
 } from 'yapyak/internal';
@@ -32,9 +31,6 @@ if (typeof window !== 'undefined') {
           item.value as Parameters<typeof setCatalogEntry>[3],
         );
       }
-    });
-    import.meta.hot.on('yapyak:invalidate', (data: { fileId: string }) => {
-      invalidateFile(data.fileId);
     });
   }
 }

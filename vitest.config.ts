@@ -10,7 +10,7 @@ export default defineConfig({
         '**/bin.ts',
         '**/fixture/**',
         'packages/*/src/runtime.ts',
-        'packages/{doc-extractor,tsup-config,typescript-config,vitest-config}/**',
+        'packages/{doc-extractor,tsdown-config,typescript-config,vitest-config}/**',
       ],
       include: [
         'packages/*/src/**',

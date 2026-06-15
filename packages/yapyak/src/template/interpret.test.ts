@@ -222,6 +222,39 @@ describe('interpret', () => {
       ).toBe('none');
     });
 
+    it('does not match an exact `=N` branch for negative integers', () => {
+      const template: Template = [
+        {
+          branches: {
+            '=-1': [
+              {
+                kind: 'literal',
+                value: 'negative-exact',
+              },
+            ],
+            other: [
+              {
+                kind: 'literal',
+                value: 'other-branch',
+              },
+            ],
+          },
+          kind: 'plural',
+          name: 'count',
+          type: 'cardinal',
+        },
+      ];
+      expect(
+        interpret(
+          template,
+          {
+            count: -1,
+          },
+          'en',
+        ),
+      ).toBe('other-branch');
+    });
+
     it('refuses to pick the `=1` branch when the param is the boolean `true`', () => {
       const template: Template = [
         {

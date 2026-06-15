@@ -2,7 +2,6 @@ import { useSyncExternalStore } from 'react';
 import { getLocale } from 'yapyak';
 import {
   getDevVersion,
-  invalidateFile,
   setCatalogEntry,
   subscribeDev,
   subscribeLocale,
@@ -25,9 +24,6 @@ if (typeof window !== 'undefined' && import.meta.hot?.on) {
         item.value as Parameters<typeof setCatalogEntry>[3],
       );
     }
-  });
-  import.meta.hot.on('yapyak:invalidate', (data: { fileId: string }) => {
-    invalidateFile(data.fileId);
   });
 }
 

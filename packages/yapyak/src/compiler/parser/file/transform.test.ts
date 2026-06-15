@@ -908,6 +908,36 @@ describe('transformFile', () => {
       expect(code).toContain("title={'Say \\u0022hi\\u0022'}");
     });
 
+    it('refuses bare JSX text elision when the source contains `&`', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source: [
+          "import { t } from 'yapyak';",
+          'export function App() {',
+          "  return <p>{t('A & B')}</p>;",
+          '}',
+        ].join('\n'),
+      });
+      expect(code).toContain("{'A & B'}");
+    });
+
+    it('emits expression-form JSX attribute when value contains `&`', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source: [
+          "import { t } from 'yapyak';",
+          'export function App() {',
+          "  return <button title={t('A & B')}>x</button>;",
+          '}',
+        ].join('\n'),
+      });
+      expect(code).toContain("title={'A & B'}");
+    });
+
     it('preserves `_pick` wrappers in multi-locale without bare elision', () => {
       const code = runTransform({
         locales: [

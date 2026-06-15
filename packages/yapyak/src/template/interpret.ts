@@ -115,7 +115,8 @@ function interpretPlural(
   if (
     typeof raw === 'number' &&
     Number.isFinite(raw) &&
-    Number.isInteger(raw)
+    Number.isInteger(raw) &&
+    raw >= 0
   ) {
     const exact = node.branches[`=${raw}`];
     if (exact !== undefined) {

@@ -1,5 +1,5 @@
-# @yapyak/tsup-config
+# @yapyak/tsdown-config
 
 > Internal
 
-Shared tsup config for yapyak.
+Shared tsdown config for yapyak.

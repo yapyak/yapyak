@@ -1053,7 +1053,7 @@ function tryBareElision(
 }
 
 function isSafeJsxText(source: string): boolean {
-  if (/[<>{}]/.test(source)) {
+  if (/[<>{}&]/.test(source)) {
     return false;
   }
   if (/^\s|\s$/.test(source)) {
@@ -1066,7 +1066,7 @@ function isSafeJsxText(source: string): boolean {
 }
 
 function isSafeAttributeValue(source: string): boolean {
-  return !/["<>]/.test(source);
+  return !/["<>&]/.test(source);
 }
 
 function findFreePickLocal(source: string): string {

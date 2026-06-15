@@ -79,14 +79,12 @@ export async function run(argv: string[]): Promise<number> {
           locale,
         });
       }
-      const locales = rest.filter((entry) => !entry.startsWith('-'));
-      const outFlag = rest.find((entry) => entry.startsWith('--out='));
-      const out = outFlag?.slice('--out='.length);
+      const exportArgs = parseExportArgs(rest);
       return exportCommand(config, projectRoot, {
-        locales,
-        split: rest.includes('--split'),
-        ...(out !== undefined && {
-          out,
+        locales: exportArgs.locales,
+        split: exportArgs.split,
+        ...(exportArgs.out !== undefined && {
+          out: exportArgs.out,
         }),
       });
     }
@@ -97,6 +95,48 @@ export async function run(argv: string[]): Promise<number> {
       printHelp();
       return 1;
   }
+}
+
+type ParseExportArgsResult = {
+  locales: string[];
+  out: string | undefined;
+  split: boolean;
+};
+
+function parseExportArgs(args: string[]): ParseExportArgsResult {
+  let out: string | undefined;
+  let isSplit = false;
+  const locales: string[] = [];
+  for (let index = 0; index < args.length; index++) {
+    const entry = args[index];
+    if (entry === undefined) {
+      continue;
+    }
+    if (entry === '--split') {
+      isSplit = true;
+      continue;
+    }
+    if (entry.startsWith('--out=')) {
+      out = entry.slice('--out='.length);
+      continue;
+    }
+    if (entry === '--out') {
+      const next = args[index + 1];
+      if (next !== undefined && !next.startsWith('-')) {
+        out = next;
+        index++;
+      }
+      continue;
+    }
+    if (!entry.startsWith('-')) {
+      locales.push(entry);
+    }
+  }
+  return {
+    locales,
+    out,
+    split: isSplit,
+  };
 }
 
 function findUnknownFlags(

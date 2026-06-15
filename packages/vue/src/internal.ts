@@ -4,7 +4,6 @@ import { customRef } from 'vue';
 import {
   autoRegisterTracker,
   getDevVersion,
-  invalidateFile,
   setCatalogEntry,
   subscribeDev,
 } from 'yapyak/internal';
@@ -32,9 +31,6 @@ const devVersion: Ref<number> = customRef<number>((track, trigger) => {
             item.value as Parameters<typeof setCatalogEntry>[3],
           );
         }
-      });
-      import.meta.hot.on('yapyak:invalidate', (data: { fileId: string }) => {
-        invalidateFile(data.fileId);
       });
     }
   }
