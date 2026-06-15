@@ -1,4 +1,4 @@
-import type { ExtractedMessage, LocaleData } from 'yapyak/compiler';
+import type { ExtractedMessage, LocaleData } from 'yapyak/compiler/internal';
 import type { Translator } from 'yapyak/translator';
 import type { State } from './state';
 
@@ -7,7 +7,7 @@ import {
   findTranslation,
   toMessageKey,
   validateLocaleCode,
-} from 'yapyak/compiler';
+} from 'yapyak/compiler/internal';
 
 import { getNormalized, getResolver } from './state';
 import { runYapyakCommand } from './yapyak-command';

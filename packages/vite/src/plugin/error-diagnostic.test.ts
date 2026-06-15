@@ -1,5 +1,5 @@
 import type { Logger } from 'vite';
-import type { ExtractFileResult } from 'yapyak/compiler';
+import type { ExtractFileResult } from 'yapyak/compiler/internal';
 
 import { describe, expect, it, vi } from 'vitest';
 

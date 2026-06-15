@@ -1,16 +1,12 @@
 // @vitest-environment node
-import { afterEach, describe, expect, it } from 'vitest';
-import { setLocale } from 'yapyak';
+import { describe, expect, it } from 'vitest';
+import { defaultLocale, setLocale } from 'yapyak';
 
 import { locale } from './locale.svelte';
 
-afterEach(() => {
-  setLocale('en');
-});
-
 describe('locale', () => {
-  it('returns the current locale on `current` read without `window`', () => {
+  it('returns the default locale on `current` read without `window` (setLocale no-ops on server with `none` persistence)', () => {
     setLocale('sv');
-    expect(locale.current).toBe('sv');
+    expect(locale.current).toBe(defaultLocale);
   });
 });

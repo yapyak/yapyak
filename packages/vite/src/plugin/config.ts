@@ -1,7 +1,7 @@
 import type { Plugin, ResolvedConfig, UserConfig } from 'vite';
 import type { State } from './state';
 
-import { writeRegister } from 'yapyak/compiler';
+import { writeRegister } from 'yapyak/compiler/internal';
 import { createFilter, loadYapyakConfig } from 'yapyak/config/internal';
 
 import { createLocaleResolver } from '../locale-resolver';

@@ -12,7 +12,7 @@ export default defineConfig({
     'src/runtime.ts',
     'src/adapter/index.ts',
     'src/cli/bin.ts',
-    'src/compiler/index.ts',
+    'src/compiler/internal.ts',
     'src/config/index.ts',
     'src/config/internal.ts',
     'src/processor/index.ts',

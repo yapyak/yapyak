@@ -2,7 +2,7 @@ import type {
   CatalogEntry,
   ExtractedMessage,
   LocaleFile,
-} from '../../compiler';
+} from '../../compiler/internal';
 import type { Config } from '../config';
 
 import {
@@ -13,7 +13,7 @@ import {
   toVariants,
   walkSourceFiles,
   writeLocaleFile,
-} from '../../compiler';
+} from '../../compiler/internal';
 import { createFilter } from '../../config/internal';
 import { color, header, symbol } from '../tui';
 import { existsSync, readdirSync } from 'node:fs';

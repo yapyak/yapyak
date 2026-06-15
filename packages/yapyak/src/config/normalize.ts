@@ -6,7 +6,7 @@ import type { Processor } from '../processor';
 import type { Translator } from '../translator';
 import type { FilterPattern, YapyakConfig } from './type';
 
-import { vanillaProcessor } from '../compiler';
+import { vanillaProcessor } from '../compiler/internal';
 
 export type NormalizedYapyakConfig = {
   autoTranslateThreshold: number;

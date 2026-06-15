@@ -13,9 +13,9 @@
       "types": "./dist/adapter/index.d.ts",
       "default": "./dist/adapter/index.js"
     },
-    "./compiler": {
-      "types": "./dist/compiler/index.d.ts",
-      "default": "./dist/compiler/index.js"
+    "./compiler/internal": {
+      "types": "./dist/compiler/internal.d.ts",
+      "default": "./dist/compiler/internal.js"
     },
     "./config": {
       "types": "./dist/config/index.d.ts",

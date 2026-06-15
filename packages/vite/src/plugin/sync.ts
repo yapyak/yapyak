@@ -1,7 +1,10 @@
-import type { ExtractedMessage, SyncLocaleFilesResult } from 'yapyak/compiler';
+import type {
+  ExtractedMessage,
+  SyncLocaleFilesResult,
+} from 'yapyak/compiler/internal';
 import type { State } from './state';
 
-import { syncLocaleFiles } from 'yapyak/compiler';
+import { syncLocaleFiles } from 'yapyak/compiler/internal';
 
 import { getNormalized, getResolver } from './state';
 

@@ -1,5 +1,5 @@
 import type { Logger } from 'vite';
-import type { ExtractedMessage } from 'yapyak/compiler';
+import type { ExtractedMessage } from 'yapyak/compiler/internal';
 import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
 import type { LocaleResolver } from '../locale-resolver';
 

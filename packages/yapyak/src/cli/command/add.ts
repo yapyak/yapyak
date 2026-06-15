@@ -6,7 +6,7 @@ import {
   getDefaultYapyakDir,
   validateLocaleCode,
   writeRegister,
-} from '../../compiler';
+} from '../../compiler/internal';
 import { withProgress } from '../progress';
 import { buildReport } from '../report';
 import { renderTranslationErrors } from '../translation-error';

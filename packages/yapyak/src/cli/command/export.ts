@@ -2,7 +2,7 @@ import type {
   CatalogEntry,
   ExtractedMessage,
   LocaleFile,
-} from '../../compiler';
+} from '../../compiler/internal';
 import type { Config } from '../config';
 
 import {
@@ -11,7 +11,7 @@ import {
   stringifyCanonical,
   toEntry,
   toMessageKey,
-} from '../../compiler';
+} from '../../compiler/internal';
 import { buildReport } from '../report';
 import { color, symbol } from '../tui';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';

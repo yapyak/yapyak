@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { extractFile, transformFile } from 'yapyak/compiler';
+import { extractFile, transformFile } from 'yapyak/compiler/internal';
 
 import { react } from './processor';
 

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { toMessageKey } from 'yapyak/compiler';
+import { toMessageKey } from 'yapyak/compiler/internal';
 
 import {
   areEntriesEqual,

@@ -1,7 +1,7 @@
 import type { Config } from '../config';
 import type { TranslationErrorEntry } from '../translation-error';
 
-import { autoTranslate } from '../../compiler';
+import { autoTranslate } from '../../compiler/internal';
 import { withProgress } from '../progress';
 import { buildReport } from '../report';
 import { renderTranslationErrors } from '../translation-error';

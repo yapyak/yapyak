@@ -1,7 +1,7 @@
 import type { Plugin } from 'vite';
 import type { State } from './state';
 
-import { extractFile, walkSourceFiles } from 'yapyak/compiler';
+import { extractFile, walkSourceFiles } from 'yapyak/compiler/internal';
 
 import { renderErrorDiagnostics } from './error-diagnostic';
 import { getNormalized } from './state';

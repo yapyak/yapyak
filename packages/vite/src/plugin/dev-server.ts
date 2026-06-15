@@ -5,7 +5,7 @@ import type {
   LocaleFile,
   LocaleWarning,
   Template,
-} from 'yapyak/compiler';
+} from 'yapyak/compiler/internal';
 import type { State } from './state';
 
 import {
@@ -18,7 +18,7 @@ import {
   toMessageKey,
   validateLocaleCode,
   writeRegister,
-} from 'yapyak/compiler';
+} from 'yapyak/compiler/internal';
 
 import { isCandidateId } from './candidate-id';
 import { renderErrorDiagnostics } from './error-diagnostic';

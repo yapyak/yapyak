@@ -2,9 +2,9 @@ import type {
   DiscoverLocalesResult,
   LocaleContext,
   LocaleData,
-} from 'yapyak/compiler';
+} from 'yapyak/compiler/internal';
 
-import { discoverLocales, readLocaleData } from 'yapyak/compiler';
+import { discoverLocales, readLocaleData } from 'yapyak/compiler/internal';
 
 type EmittedLocales = {
   defaultLocale: string;

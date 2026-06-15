@@ -1,4 +1,8 @@
-import type { Diagnostic, ExtractedMessage, LocaleFile } from '../compiler';
+import type {
+  Diagnostic,
+  ExtractedMessage,
+  LocaleFile,
+} from '../compiler/internal';
 import type { FilterPattern } from '../config';
 import type { Processor } from '../processor';
 
@@ -10,7 +14,7 @@ import {
   toMessageKey,
   validateLocaleFile,
   walkSourceFiles,
-} from '../compiler';
+} from '../compiler/internal';
 import { createFilter } from '../config/internal';
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';

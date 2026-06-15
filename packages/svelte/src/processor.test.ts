@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
-import { extractFile, transformFile } from 'yapyak/compiler';
+import { extractFile, transformFile } from 'yapyak/compiler/internal';
 
 import { svelte } from './processor';
 

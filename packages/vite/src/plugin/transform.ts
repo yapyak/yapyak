@@ -3,10 +3,14 @@ import type {
   ExtractFileResult,
   LocaleData,
   TransformFileResult,
-} from 'yapyak/compiler';
+} from 'yapyak/compiler/internal';
 import type { State } from './state';
 
-import { extractFile, findTranslation, transformFile } from 'yapyak/compiler';
+import {
+  extractFile,
+  findTranslation,
+  transformFile,
+} from 'yapyak/compiler/internal';
 
 import { isCandidateId } from './candidate-id';
 import { renderErrorDiagnostics } from './error-diagnostic';

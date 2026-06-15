@@ -1,4 +1,4 @@
-import type { Diagnostic } from '../../compiler';
+import type { Diagnostic } from '../../compiler/internal';
 import type { Config } from '../config';
 
 import {
@@ -6,7 +6,7 @@ import {
   readLocaleFile,
   validateIcuPairs,
   validateLocaleFile,
-} from '../../compiler';
+} from '../../compiler/internal';
 import { buildReport } from '../report';
 import { color, header, symbol } from '../tui';
 import { join } from 'node:path';

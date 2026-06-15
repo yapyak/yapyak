@@ -1,5 +1,5 @@
 import type { ResolvedConfig } from 'vite';
-import type { TransformFileResult } from 'yapyak/compiler';
+import type { TransformFileResult } from 'yapyak/compiler/internal';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 

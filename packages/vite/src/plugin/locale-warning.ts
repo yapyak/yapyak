@@ -1,4 +1,4 @@
-import type { LocaleWarning } from 'yapyak/compiler';
+import type { LocaleWarning } from 'yapyak/compiler/internal';
 
 export function renderLocaleWarning(
   warning: LocaleWarning,
