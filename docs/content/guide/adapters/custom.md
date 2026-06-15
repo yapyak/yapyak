@@ -3,29 +3,40 @@ title: Custom
 order: 7
 ---
 
-`withRequest` ships in the `yapyak` package under the `yapyak/adapter` subpath — no extra install needed.
+`withResponse` ships in the `yapyak` package under the `yapyak/adapter` subpath — no extra install needed.
 
 ## Setup
 
-If your Vite SSR setup isn't TanStack Start or SvelteKit, wrap each request with `withRequest()`.
+If your Vite SSR setup isn't TanStack Start or SvelteKit, wrap each request with `withResponse()`.
 
 ```ts
-import { withRequest } from 'yapyak/adapter';
+import { withResponse } from 'yapyak/adapter';
 
-function handler(request: Request): Response | Promise<Response> {
-  return withRequest(request, () => renderApp(request));
+function handler(request: Request): Promise<Response> {
+  return withResponse(request, () => renderApp(request));
 }
 ```
 
-`withRequest()` reads `Accept-Language` and `Cookie` from the `Request`, binds them to an async-scoped context, and runs the callback inside that scope. `getLocale()`, `t()`, and any other yapyak call inside the callback see this request's locale.
+`withResponse()` reads `Accept-Language` and `Cookie` from the `Request`, binds them to an async-scoped context, runs the handler inside that scope, and drains any pending response headers (e.g. `Set-Cookie` from a server-side `setLocale()` call) onto the produced `Response` before returning it. `getLocale()`, `t()`, and any other yapyak call inside the handler see this request's locale.
 
-## What withRequest does
+## What withResponse does
 
-It uses Node's `AsyncLocalStorage.run()` for safe per-request isolation. Concurrent requests can't bleed locale state into each other. The callback's return value is forwarded.
+It uses Node's `AsyncLocalStorage.run()` for safe per-request isolation. Concurrent requests can't bleed locale state into each other. After the handler returns, yapyak's pending response headers are merged onto the produced `Response`.
 
 ```ts
-withRequest<T>(request: Request, fn: () => T): T;
+withResponse(
+  request: Request,
+  handler: () => Response | Promise<Response>,
+): Promise<Response>;
+
+withResponse<T>(
+  request: Request,
+  handler: () => T | Promise<T>,
+  extractResponse: (result: T) => Response,
+): Promise<T>;
 ```
+
+Pass an `extractResponse` function when the handler returns a value that wraps the `Response` (e.g. TanStack Start's `{ response, ... }` middleware result).
 
 ## Set the page language
 

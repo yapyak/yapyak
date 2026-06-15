@@ -81,7 +81,7 @@ export function cookie(options: CookieOptions): Persistence {
         const applied = appendPendingResponseHeader('Set-Cookie', cookieString);
         if (!applied) {
           warn(
-            'setLocale() called server-side outside a withRequest scope. The cookie was not set. Install the matching adapter middleware (e.g. @yapyak/astro, @yapyak/sveltekit).',
+            'setLocale() called server-side outside a withResponse scope. The cookie was not set. Install the matching adapter middleware (e.g. @yapyak/astro, @yapyak/sveltekit).',
             {
               code: 'YPK_PERSISTENCE_COOKIE_NO_WRITER',
             },

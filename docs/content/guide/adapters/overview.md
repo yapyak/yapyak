@@ -22,4 +22,4 @@ yapyak ships adapters for the major SSR frameworks:
 - [TanStack Start](/guide/adapters/tanstack-start) — request middleware
 - [SvelteKit](/guide/adapters/sveltekit) — handle hook re-export
 
-For anything else, the [custom adapter](/guide/adapters/custom) wraps each request with `withRequest()` — that's the entire surface area.
+For anything else, the [custom adapter](/guide/adapters/custom) wraps each request with `withResponse()` — that's the entire surface area.
