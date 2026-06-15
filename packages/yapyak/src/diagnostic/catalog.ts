@@ -248,6 +248,21 @@ export const YAP = {
     message: ({ shape }: { shape: string }): string =>
       `Translate result entry is ${shape} instead of an object keyed by target locales. The element was dropped and its translations were left empty.`,
   },
+  FORMAT_UNSUPPORTED_CURRENCY: {
+    code: 'YAP0035',
+    message: ({ code }: { code: string }): string =>
+      `Unsupported currency code "${code}". Yapyak rendered the value as "<value> ${code}".`,
+  },
+  FORMAT_UNSUPPORTED_UNIT: {
+    code: 'YAP0036',
+    message: ({ unit }: { unit: string }): string =>
+      `Unsupported unit "${unit}". Yapyak rendered the value as "<value> ${unit}".`,
+  },
+  FORMAT_UNSUPPORTED_TIME_ZONE: {
+    code: 'YAP0037',
+    message: ({ timeZone }: { timeZone: string }): string =>
+      `Unsupported time zone "${timeZone}". Yapyak rendered the date in the system time zone.`,
+  },
 } as const;
 
 export type YapKey = keyof typeof YAP;

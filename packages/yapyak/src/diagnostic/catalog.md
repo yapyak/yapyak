@@ -67,3 +67,9 @@ See `agents/typescript/diagnostics.md` for the authoring rules.
 
 - `YAP0033` (`TRANSLATE_CHUNK_FAILED`) — A batch chunk failed to translate.
 - `YAP0034` (`TRANSLATE_ENTRY_SHAPE_INVALID`) — Translator returned an entry with the wrong shape.
+
+## Formatting runtime
+
+- `YAP0035` (`FORMAT_UNSUPPORTED_CURRENCY`) — Intl rejected the currency code; rendered as `<value> <code>`.
+- `YAP0036` (`FORMAT_UNSUPPORTED_UNIT`) — Intl rejected the unit; rendered as `<value> <unit>`.
+- `YAP0037` (`FORMAT_UNSUPPORTED_TIME_ZONE`) — Intl rejected the time zone; rendered in the system time zone.

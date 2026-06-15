@@ -100,6 +100,108 @@ describe('resolveFormatter', () => {
     });
   });
 
+  describe('unit safety net', () => {
+    let warnSpy: ReturnType<
+      typeof vi.fn<(message: string, meta?: Record<string, unknown>) => void>
+    >;
+
+    beforeEach(() => {
+      warnSpy =
+        vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
+      setWarn(warnSpy);
+    });
+
+    afterEach(() => {
+      resetWarn();
+    });
+
+    it('returns a `<value> <unit>` fallback formatter when Intl rejects the unit', () => {
+      const formatter = resolveFormatter(Intl.NumberFormat, 'en', {
+        style: 'unit',
+        unit: 'bogus',
+      });
+      expect(formatter.format(5)).toBe('5 bogus');
+    });
+
+    it('warns once per locale-and-unit pair when the unit is rejected', () => {
+      resolveFormatter(Intl.NumberFormat, 'en', {
+        style: 'unit',
+        unit: 'bogus-once',
+      });
+      resolveFormatter(Intl.NumberFormat, 'en', {
+        style: 'unit',
+        unit: 'bogus-once',
+      });
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('warns again when the same unit is used in a different locale', () => {
+      resolveFormatter(Intl.NumberFormat, 'en', {
+        style: 'unit',
+        unit: 'bogus-cross-locale',
+      });
+      resolveFormatter(Intl.NumberFormat, 'sv', {
+        style: 'unit',
+        unit: 'bogus-cross-locale',
+      });
+      expect(warnSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('preserves the active-locale grouping in the fallback rendering', () => {
+      const formatter = resolveFormatter(Intl.NumberFormat, 'sv', {
+        style: 'unit',
+        unit: 'bogus-grouped',
+      });
+      expect(formatter.format(1234.5)).toMatch(/^1\D234,5 bogus-grouped$/);
+    });
+  });
+
+  describe('time-zone safety net', () => {
+    let warnSpy: ReturnType<
+      typeof vi.fn<(message: string, meta?: Record<string, unknown>) => void>
+    >;
+
+    beforeEach(() => {
+      warnSpy =
+        vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
+      setWarn(warnSpy);
+    });
+
+    afterEach(() => {
+      resetWarn();
+    });
+
+    it('returns a system-time-zone fallback when Intl rejects the time zone', () => {
+      const formatter = resolveFormatter(Intl.DateTimeFormat, 'en', {
+        dateStyle: 'medium',
+        timeZone: 'Not/AZone',
+      });
+      expect(formatter.format(new Date('2026-01-15T00:00:00Z'))).toContain(
+        '2026',
+      );
+    });
+
+    it('warns once per locale-and-zone pair when the zone is rejected', () => {
+      resolveFormatter(Intl.DateTimeFormat, 'en', {
+        timeZone: 'Not/Once',
+      });
+      resolveFormatter(Intl.DateTimeFormat, 'en', {
+        timeZone: 'Not/Once',
+      });
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('warns again when the same zone is used in a different locale', () => {
+      resolveFormatter(Intl.DateTimeFormat, 'en', {
+        timeZone: 'Not/CrossLocale',
+      });
+      resolveFormatter(Intl.DateTimeFormat, 'sv', {
+        timeZone: 'Not/CrossLocale',
+      });
+      expect(warnSpy).toHaveBeenCalledTimes(2);
+    });
+  });
+
   it('clears the oldest formatter from the cache when capacity is reached', () => {
     class FakeFormatter {
       locale: string;

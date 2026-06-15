@@ -1,6 +1,5 @@
 import { warnDiagnostic } from '../diagnostic';
 import { defaultLocale } from '../locale';
-import { warn } from '../warn';
 import { isCurrency } from './currency';
 
 type IntlFormatterCtor<T> = new (locale: string, options?: object) => T;
@@ -9,6 +8,8 @@ const MAX_FORMATTERS_PER_CTOR = 64;
 
 const caches = new Map<IntlFormatterCtor<unknown>, Map<string, unknown>>();
 const warnedCurrencyKeys = new Set<string>();
+const warnedUnitKeys = new Set<string>();
+const warnedTimeZoneKeys = new Set<string>();
 const warnedInvalidLocales = new Set<string>();
 const validLocaleCache = new Map<string, string>();
 
@@ -61,6 +62,17 @@ function buildFormatter<T>(
       warnUnsupportedCurrencyOnce(code, locale, cause);
       return buildCurrencyFallback(locale, code, options) as T;
     }
+    if (isUnitConstruction(ctor, options)) {
+      const unit = (options as Intl.NumberFormatOptions).unit as string;
+      warnUnsupportedUnitOnce(unit, locale, cause);
+      return buildUnitFallback(locale, unit, options) as T;
+    }
+    if (isTimeZoneConstruction(ctor, options)) {
+      const timeZone = (options as Intl.DateTimeFormatOptions)
+        .timeZone as string;
+      warnUnsupportedTimeZoneOnce(timeZone, locale, cause);
+      return buildTimeZoneFallback(ctor, locale, options);
+    }
     throw cause;
   }
 }
@@ -98,6 +110,30 @@ function isCurrencyConstruction(
   );
 }
 
+function isUnitConstruction(
+  ctor: IntlFormatterCtor<unknown>,
+  options: object | undefined,
+): boolean {
+  if (ctor !== (Intl.NumberFormat as unknown as IntlFormatterCtor<unknown>)) {
+    return false;
+  }
+  const numberOptions = options as Intl.NumberFormatOptions | undefined;
+  return (
+    numberOptions?.style === 'unit' && typeof numberOptions.unit === 'string'
+  );
+}
+
+function isTimeZoneConstruction(
+  ctor: IntlFormatterCtor<unknown>,
+  options: object | undefined,
+): boolean {
+  if (ctor !== (Intl.DateTimeFormat as unknown as IntlFormatterCtor<unknown>)) {
+    return false;
+  }
+  const dateOptions = options as Intl.DateTimeFormatOptions | undefined;
+  return typeof dateOptions?.timeZone === 'string';
+}
+
 function warnUnsupportedCurrencyOnce(
   code: string,
   locale: string,
@@ -115,8 +151,59 @@ function warnUnsupportedCurrencyOnce(
   if (cause !== null) {
     meta.cause = cause;
   }
-  warn(
-    `Unsupported currency code "${code}" — rendered as "<value> ${code}".`,
+  warnDiagnostic(
+    'FORMAT_UNSUPPORTED_CURRENCY',
+    {
+      code,
+    },
+    meta,
+  );
+}
+
+function warnUnsupportedUnitOnce(
+  unit: string,
+  locale: string,
+  cause: unknown,
+): void {
+  const dedupKey = `${locale}|${unit}`;
+  if (warnedUnitKeys.has(dedupKey)) {
+    return;
+  }
+  warnedUnitKeys.add(dedupKey);
+  const meta: Record<string, unknown> = {
+    cause,
+    locale,
+    unit,
+  };
+  warnDiagnostic(
+    'FORMAT_UNSUPPORTED_UNIT',
+    {
+      unit,
+    },
+    meta,
+  );
+}
+
+function warnUnsupportedTimeZoneOnce(
+  timeZone: string,
+  locale: string,
+  cause: unknown,
+): void {
+  const dedupKey = `${locale}|${timeZone}`;
+  if (warnedTimeZoneKeys.has(dedupKey)) {
+    return;
+  }
+  warnedTimeZoneKeys.add(dedupKey);
+  const meta: Record<string, unknown> = {
+    cause,
+    locale,
+    timeZone,
+  };
+  warnDiagnostic(
+    'FORMAT_UNSUPPORTED_TIME_ZONE',
+    {
+      timeZone,
+    },
     meta,
   );
 }
@@ -135,6 +222,25 @@ function buildCurrencyFallback(
   } as Intl.NumberFormat;
 }
 
+function buildUnitFallback(
+  locale: string,
+  unit: string,
+  options: object | undefined,
+): Intl.NumberFormat {
+  const numberOnly = new Intl.NumberFormat(locale, stripUnitFields(options));
+  return {
+    format: (value: number) => `${numberOnly.format(value)} ${unit}`,
+  } as Intl.NumberFormat;
+}
+
+function buildTimeZoneFallback<T>(
+  ctor: IntlFormatterCtor<T>,
+  locale: string,
+  options: object | undefined,
+): T {
+  return new ctor(locale, stripTimeZoneField(options));
+}
+
 function stripCurrencyFields(
   options: object | undefined,
 ): Intl.NumberFormatOptions {
@@ -148,6 +254,32 @@ function stripCurrencyFields(
     currencySign: _currencySign,
     ...rest
   } = options as Intl.NumberFormatOptions;
+  return rest;
+}
+
+function stripUnitFields(
+  options: object | undefined,
+): Intl.NumberFormatOptions {
+  if (!options) {
+    return {};
+  }
+  const {
+    style: _style,
+    unit: _unit,
+    unitDisplay: _unitDisplay,
+    ...rest
+  } = options as Intl.NumberFormatOptions;
+  return rest;
+}
+
+function stripTimeZoneField(
+  options: object | undefined,
+): Intl.DateTimeFormatOptions {
+  if (!options) {
+    return {};
+  }
+  const { timeZone: _timeZone, ...rest } =
+    options as Intl.DateTimeFormatOptions;
   return rest;
 }
 

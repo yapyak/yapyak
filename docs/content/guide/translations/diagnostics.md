@@ -492,3 +492,37 @@ These fire from `createTranslator()` when the user-supplied translate function r
 ```
 
 If you’re calling an LLM, tighten the system prompt or wrap the response in a schema-validated parser before returning it.
+
+## Formatting — runtime
+
+These fire from `format.number()` and `format.dateTime()` when the host `Intl` rejects an option value.
+
+### YAP0035 — FORMAT_UNSUPPORTED_CURRENCY
+
+**Severity:** warning.
+
+**What happened.** `format.number({ style: 'currency', currency })` was called with a currency code that the host `Intl.NumberFormat` does not accept.
+
+**Why it matters.** Without a fallback the call would throw `RangeError` and break rendering. yapyak instead renders the value as `<value> <code>` so the page keeps painting.
+
+**Fix.** Use a valid ISO 4217 code (`EUR`, `SEK`, `USD`, …). If the value is dynamic, validate it before passing it through. yapyak deduplicates the warning per locale-and-code pair so the log stays usable.
+
+### YAP0036 — FORMAT_UNSUPPORTED_UNIT
+
+**Severity:** warning.
+
+**What happened.** `format.number({ style: 'unit', unit })` was called with a unit the host `Intl.NumberFormat` does not accept.
+
+**Why it matters.** Without a fallback the call would throw `RangeError`. yapyak instead renders the value as `<value> <unit>` so the page keeps painting.
+
+**Fix.** Use a unit from `Intl.supportedValuesOf('unit')`, e.g. `kilometer`, `gigabyte`, `hour`. If the value is dynamic, validate it before passing it through. Deduplicated per locale-and-unit pair.
+
+### YAP0037 — FORMAT_UNSUPPORTED_TIME_ZONE
+
+**Severity:** warning.
+
+**What happened.** `format.dateTime({ timeZone })` was called with a time zone the host `Intl.DateTimeFormat` does not accept.
+
+**Why it matters.** Without a fallback the call would throw `RangeError`. yapyak instead formats the date in the system time zone so the page keeps painting.
+
+**Fix.** Use a valid IANA tz database name (`Europe/Stockholm`, `UTC`, `America/New_York`, …). If the value is dynamic, validate it against `Intl.supportedValuesOf('timeZone')` before passing it through. Deduplicated per locale-and-zone pair.
