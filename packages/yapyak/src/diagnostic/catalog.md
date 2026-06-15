@@ -63,6 +63,7 @@ See `agents/typescript/diagnostics.md` for the authoring rules.
 
 - `YAP0031` (`CATALOG_LOCALE_FILE_CORRUPT`) — Locale file failed to read or parse.
 - `YAP0032` (`CATALOG_ORPHAN_CACHE_CORRUPT`) — Orphan cache file failed to read or parse.
+- `YAP0039` (`CATALOG_MIGRATION_FAILED`) — Locale migration failed for a specific locale; that locale is skipped.
 
 ## Translator runtime
 

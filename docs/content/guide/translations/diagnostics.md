@@ -477,6 +477,16 @@ These fire when the runtime tries to read a locale or orphan-cache file.
 
 **Fix.** Delete the orphan cache file and let yapyak rebuild it on the next compile. If the corruption keeps recurring, it usually indicates a crash during a previous write — check disk space and process kill signals.
 
+### YAP0039 — CATALOG_MIGRATION_FAILED
+
+**Severity:** warning.
+
+**What happened.** Yapyak was migrating a locale file in response to a rename in the source — `t('Save')` → `t('Save changes')` — and the migration failed for one locale. The diagnostic includes the underlying cause: either the locale file was momentarily corrupt at the moment the read happened, or a chained rename in the same edit batch produced output that violated yapyak's catalog invariants.
+
+**Why it matters.** That single locale's translations are not propagated for this rename. Other locales were migrated normally; the dev server keeps running.
+
+**Fix.** If the cause is `CorruptLocaleFileError`, fix the JSON in that locale file and save it again — yapyak will pick up the next edit. If the cause is `YapyakInvariantError`, the safest move is to undo the chain/swap rename and apply the renames one at a time. Run `yapyak check` to see the full picture across all locales.
+
 ## Translator — runtime
 
 These fire from `createTranslator()` when the user-supplied translate function returns something unexpected.

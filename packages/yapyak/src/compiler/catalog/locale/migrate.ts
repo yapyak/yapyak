@@ -1,7 +1,13 @@
 import type { LocaleContext } from './context';
-import type { CatalogEntry } from './file';
+import type { CatalogEntry, LocaleFile } from './file';
 
-import { readLocaleFile, writeLocaleFile } from './file';
+import { warnDiagnostic } from '../../../diagnostic';
+import {
+  CorruptLocaleFileError,
+  YapyakInvariantError,
+  readLocaleFile,
+  writeLocaleFile,
+} from './file';
 import { join } from 'node:path';
 
 export type MessagePosition = {
@@ -124,7 +130,29 @@ export function migrateLocales(
       continue;
     }
     const localePath = join(projectRoot, context.localesDir, `${locale}.json`);
-    const localeFile = readLocaleFile(localePath);
+    let localeFile: LocaleFile;
+    try {
+      localeFile = readLocaleFile(localePath);
+    } catch (error) {
+      if (
+        error instanceof CorruptLocaleFileError ||
+        error instanceof YapyakInvariantError
+      ) {
+        warnDiagnostic(
+          'CATALOG_MIGRATION_FAILED',
+          {
+            detail: error.message,
+            locale,
+          },
+          {
+            cause: error,
+            locale,
+          },
+        );
+        continue;
+      }
+      throw error;
+    }
     const fileEntries = localeFile[input.fileId];
     if (!fileEntries) {
       continue;
@@ -160,11 +188,25 @@ export function migrateLocales(
     }
     if (hasChanged) {
       localeFile[input.fileId] = next;
-      writeLocaleFile({
-        after: localeFile,
-        extractedKeys: input.extractedKeys,
-        filePath: localePath,
-      });
+      try {
+        writeLocaleFile({
+          after: localeFile,
+          extractedKeys: input.extractedKeys,
+          filePath: localePath,
+        });
+      } catch (error) {
+        if (
+          error instanceof CorruptLocaleFileError ||
+          error instanceof YapyakInvariantError
+        ) {
+          warnDiagnostic('CATALOG_MIGRATION_FAILED', {
+            detail: error.message,
+            locale,
+          });
+          continue;
+        }
+        throw error;
+      }
     }
   }
   return {

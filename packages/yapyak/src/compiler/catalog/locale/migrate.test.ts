@@ -1,8 +1,9 @@
 import type { LocaleContext } from './context';
 import type { MigrateLocalesInput, MigrateLocalesOptions } from './migrate';
 
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { resetWarn, setWarn } from '../../../warn';
 import { detectRenames, migrateLocales } from './migrate';
 import {
   mkdirSync,
@@ -421,5 +422,89 @@ describe('migrateLocales', () => {
         source: 'Save changes',
       },
     ]);
+  });
+
+  describe('catch-and-warn', () => {
+    let warnSpy: ReturnType<
+      typeof vi.fn<(message: string, meta?: Record<string, unknown>) => void>
+    >;
+
+    beforeEach(() => {
+      warnSpy =
+        vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
+      setWarn(warnSpy);
+    });
+
+    afterEach(() => {
+      resetWarn();
+    });
+
+    it('warns with YAP0039 when a locale file is corrupt', () => {
+      writeFileSync(join(root, 'locales', 'sv.json'), '{ not valid json');
+      runMigrate();
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringMatching(/^YAP0039 /),
+        expect.objectContaining({
+          code: 'YAP0039',
+        }),
+      );
+    });
+
+    it('migrates no entries for a corrupt locale', () => {
+      writeFileSync(join(root, 'locales', 'sv.json'), '{ not valid json');
+      const result = runMigrate();
+      expect(result.conflicts).toEqual([]);
+      expect(result.staleEntries).toEqual([]);
+    });
+
+    it('migrates the healthy locale when another locale is corrupt', () => {
+      writeFileSync(join(root, 'locales', 'sv.json'), '{ not valid json');
+      writeLocale('fi', {
+        'src/a.ts': {
+          Save: 'Tallenna',
+        },
+      });
+      const result = runMigrate({
+        context: {
+          locales: [
+            'en',
+            'sv',
+            'fi',
+          ],
+        },
+      });
+      expect(result.staleEntries).toEqual([
+        {
+          locale: 'fi',
+          source: 'Save changes',
+        },
+      ]);
+    });
+
+    it('warns once per corrupt locale', () => {
+      writeFileSync(join(root, 'locales', 'sv.json'), '{ not valid json');
+      writeLocale('fi', {
+        'src/a.ts': {
+          Save: 'Tallenna',
+        },
+      });
+      runMigrate({
+        context: {
+          locales: [
+            'en',
+            'sv',
+            'fi',
+          ],
+        },
+      });
+      const corruptWarns = warnSpy.mock.calls.filter(
+        ([, meta]) =>
+          typeof meta === 'object' &&
+          meta !== null &&
+          'locale' in meta &&
+          meta.locale === 'sv',
+      );
+      expect(corruptWarns).toHaveLength(1);
+    });
   });
 });

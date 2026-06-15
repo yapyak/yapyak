@@ -270,6 +270,11 @@ export const YAP = {
     message: ({ branch, name }: { branch: string; name: string }): string =>
       `Placeholder \`{${name}}\` branch \`${branch}\` is in the source but missing from the translation.`,
   },
+  CATALOG_MIGRATION_FAILED: {
+    code: 'YAP0039',
+    message: ({ detail, locale }: { detail: string; locale: string }): string =>
+      `Locale migration for "${locale}" failed: ${detail}. Yapyak skipped this locale and continued.`,
+  },
 } as const;
 
 export type YapKey = keyof typeof YAP;
