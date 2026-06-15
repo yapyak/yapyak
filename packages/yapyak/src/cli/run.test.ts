@@ -175,6 +175,62 @@ describe('run', () => {
     );
   });
 
+  it('extracts `--write=false` as `write: false` in the `clean` options', async () => {
+    await run([
+      'clean',
+      '--write=false',
+    ]);
+    expect(clean).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      expect.objectContaining({
+        write: false,
+      }),
+    );
+  });
+
+  it('extracts `--write=0` as `write: false` in the `clean` options', async () => {
+    await run([
+      'clean',
+      '--write=0',
+    ]);
+    expect(clean).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      expect.objectContaining({
+        write: false,
+      }),
+    );
+  });
+
+  it('extracts `--write=true` as `write: true` in the `clean` options', async () => {
+    await run([
+      'clean',
+      '--write=true',
+    ]);
+    expect(clean).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      expect.objectContaining({
+        write: true,
+      }),
+    );
+  });
+
+  it('extracts `--force=false` as `force: false` in the `translate` options', async () => {
+    await run([
+      'translate',
+      '--force=false',
+    ]);
+    expect(translate).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      expect.objectContaining({
+        force: false,
+      }),
+    );
+  });
+
   it('extracts the locale arg into the `translate` options', async () => {
     await run([
       'translate',

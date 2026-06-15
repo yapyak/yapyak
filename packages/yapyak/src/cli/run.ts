@@ -137,10 +137,25 @@ function parseExportArgs(args: string[]): ParseExportArgsResult {
   };
 }
 
+const FALSE_FLAG_VALUES = new Set([
+  '0',
+  'false',
+  'no',
+  'off',
+]);
+
 function hasFlag(entries: string[], flag: string): boolean {
-  return entries.some(
-    (entry) => entry === flag || entry.startsWith(`${flag}=`),
-  );
+  const prefix = `${flag}=`;
+  for (const entry of entries) {
+    if (entry === flag) {
+      return true;
+    }
+    if (entry.startsWith(prefix)) {
+      const value = entry.slice(prefix.length).toLowerCase();
+      return !FALSE_FLAG_VALUES.has(value);
+    }
+  }
+  return false;
 }
 
 function findUnknownFlags(
