@@ -3,6 +3,7 @@ import type { LocaleFile } from './file';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { resetWarn, setWarn } from '../../../warn';
 import { toMessageKey } from '../../parser';
 import { stringifyCanonical } from '../canonical';
 import {
@@ -544,36 +545,41 @@ describe('syncLocaleFiles', () => {
     const corruptContent = '{ "src/a.tsx": { "Save": "Spara"';
     writeFileSync(localePath, corruptContent);
 
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const warnSpy = vi.fn();
+    setWarn(warnSpy);
+    try {
+      syncLocaleFiles(
+        {
+          filter: () => true,
+          messages: [
+            makeMessage('Save', 'src/a.tsx'),
+          ],
+        },
+        {
+          defaultLocale: 'en',
+          locales: [
+            'en',
+            'sv',
+          ],
+          localesDir,
+        },
+        projectRoot,
+        {
+          now: () => '2026-01-01T00:00:00.000Z',
+          yapyakDir,
+        },
+      );
 
-    syncLocaleFiles(
-      {
-        filter: () => true,
-        messages: [
-          makeMessage('Save', 'src/a.tsx'),
-        ],
-      },
-      {
-        defaultLocale: 'en',
-        locales: [
-          'en',
-          'sv',
-        ],
-        localesDir,
-      },
-      projectRoot,
-      {
-        now: () => '2026-01-01T00:00:00.000Z',
-        yapyakDir,
-      },
-    );
-
-    expect(readFileSync(localePath, 'utf8')).toBe(corruptContent);
-    expect(warn).toHaveBeenCalledWith(
-      expect.stringContaining('Failed to parse locale file'),
-    );
-
-    warn.mockRestore();
+      expect(readFileSync(localePath, 'utf8')).toBe(corruptContent);
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Failed to parse locale file'),
+        expect.objectContaining({
+          code: 'YPK_CORRUPT_LOCALE_FILE',
+        }),
+      );
+    } finally {
+      resetWarn();
+    }
   });
 
   it('preserves entries for files outside the filter scope', () => {

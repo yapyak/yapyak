@@ -1,6 +1,7 @@
 import type { LocaleContext } from './context';
 import type { LocaleFile } from './file';
 
+import { warn } from '../../../warn';
 import { CorruptLocaleFileError, readLocaleFile } from './file';
 import { join } from 'node:path';
 
@@ -17,7 +18,9 @@ export function readLocaleData(
       localeData[locale] = readLocaleFile(path);
     } catch (error) {
       if (error instanceof CorruptLocaleFileError) {
-        console.warn(error.message);
+        warn(error.message, {
+          code: 'YPK_CORRUPT_LOCALE_FILE',
+        });
         localeData[locale] = {};
         continue;
       }

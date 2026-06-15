@@ -2,6 +2,7 @@ import type { ExtractedMessage } from '../../parser';
 import type { LocaleContext } from './context';
 import type { OrphanCache } from './orphan';
 
+import { warn } from '../../../warn';
 import { toMessageKey } from '../../parser';
 import { compareKeys, stringifyCanonical } from '../canonical';
 import { writeAtomicAll } from './atomic';
@@ -329,7 +330,9 @@ export function syncLocaleFiles(
     orphans = readOrphans(yapyakDir);
   } catch (error) {
     if (error instanceof CorruptOrphanCacheError) {
-      console.warn(error.message);
+      warn(error.message, {
+        code: 'YPK_CORRUPT_ORPHAN_CACHE',
+      });
       orphans = {};
     } else {
       throw error;
@@ -352,7 +355,9 @@ export function syncLocaleFiles(
       existingByLocale.set(locale, readLocaleFile(localePath));
     } catch (error) {
       if (error instanceof CorruptLocaleFileError) {
-        console.warn(error.message);
+        warn(error.message, {
+          code: 'YPK_CORRUPT_LOCALE_FILE',
+        });
         corruptLocales.add(locale);
         continue;
       }

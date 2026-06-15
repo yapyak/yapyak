@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { resetWarn, setWarn } from '../../../warn';
 import { readLocaleData } from './data';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -62,21 +63,28 @@ describe('readLocaleData', () => {
 
   it('warns and yields an empty entry when a locale file is corrupt', () => {
     writeFileSync(join(root, 'locales', 'sv.json'), '{not valid');
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    const result = readLocaleData(
-      {
-        locales: [
-          'sv',
-        ],
-        localesDir: 'locales',
-      },
-      root,
-    );
-    expect(result.sv).toEqual({});
-    expect(warn).toHaveBeenCalledWith(
-      expect.stringContaining('Failed to parse locale file'),
-    );
-    warn.mockRestore();
+    const warnSpy = vi.fn();
+    setWarn(warnSpy);
+    try {
+      const result = readLocaleData(
+        {
+          locales: [
+            'sv',
+          ],
+          localesDir: 'locales',
+        },
+        root,
+      );
+      expect(result.sv).toEqual({});
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Failed to parse locale file'),
+        expect.objectContaining({
+          code: 'YPK_CORRUPT_LOCALE_FILE',
+        }),
+      );
+    } finally {
+      resetWarn();
+    }
   });
 
   it('throws when reading a locale file fails for a non-corrupt reason', () => {
