@@ -1,7 +1,22 @@
-import { describe, expect, it } from 'vitest';
-import { getPendingResponseHeaders } from 'yapyak/adapter';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { setLocale } from 'yapyak';
+import { resetLocale } from 'yapyak/internal';
 
 import { middleware } from './middleware';
+
+vi.mock('yapyak/runtime', () => ({
+  DEFAULT_LOCALE: 'en',
+  DETECT_ACCEPT_LANGUAGE: false,
+  LOCALES: [
+    'en',
+    'sv',
+  ],
+  PERSISTENCE_CONFIG: {
+    name: 'locale',
+    type: 'cookie',
+  },
+  SYNC_HTML_LANG: false,
+}));
 
 type MiddlewareContext = {
   next: () => Promise<{
@@ -27,6 +42,10 @@ function getServer(): (context: MiddlewareContext) => Promise<{
 }
 
 describe('middleware', () => {
+  afterEach(() => {
+    resetLocale();
+  });
+
   it('returns the result returned by `next`', async () => {
     const server = getServer();
     const request = new Request('http://example.com/');
@@ -40,19 +59,19 @@ describe('middleware', () => {
     expect(result).toBe(expected);
   });
 
-  it('writes every pending yapyak header onto the response', async () => {
+  it('drains Set-Cookie from a server-side `setLocale()` call onto the wrapped response', async () => {
     const server = getServer();
     const request = new Request('http://example.com/');
     const response = new Response('body');
     await server({
       next: async () => {
-        getPendingResponseHeaders().append('Set-Cookie', 'lang=sv');
+        setLocale('sv');
         return {
           response,
         };
       },
       request,
     });
-    expect(response.headers.get('Set-Cookie')).toBe('lang=sv');
+    expect(response.headers.get('Set-Cookie')).toContain('locale=sv');
   });
 });

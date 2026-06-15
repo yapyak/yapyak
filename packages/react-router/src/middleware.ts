@@ -1,6 +1,6 @@
 import type { MiddlewareFunction } from 'react-router';
 
-import { mergePendingResponseHeaders, withRequest } from 'yapyak/adapter';
+import { withResponse } from 'yapyak/adapter';
 
 /**
  * Middleware for React Router. Provides yapyak's per-request locale context.
@@ -17,8 +17,4 @@ import { mergePendingResponseHeaders, withRequest } from 'yapyak/adapter';
  * ```
  */
 export const middleware: MiddlewareFunction<Response> = ({ request }, next) =>
-  withRequest(request, async () => {
-    const result = await next();
-    mergePendingResponseHeaders(result.headers);
-    return result;
-  });
+  withResponse(request, () => next());

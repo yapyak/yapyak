@@ -11,7 +11,7 @@ import {
 import { registerHotDispose } from '../hot-dispose';
 import { buildPersistence } from '../persistence';
 import { warn } from '../warn';
-import { readRequest } from './request-reader';
+import { readRequest } from './request';
 import { resolveLocale } from './resolve';
 
 let hasWarnedUninitialized = false;

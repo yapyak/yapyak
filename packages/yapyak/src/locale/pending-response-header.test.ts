@@ -1,18 +1,18 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {
-  appendResponseHeader,
+  appendPendingResponseHeader,
   resetResponseHeaderWriter,
   setResponseHeaderWriter,
-} from './response-header-writer';
+} from './pending-response-header';
 
-describe('response-header-writer', () => {
+describe('pending-response-header', () => {
   afterEach(() => {
     resetResponseHeaderWriter();
   });
 
-  it('returns `false` from `appendResponseHeader` when no writer is registered', () => {
-    expect(appendResponseHeader('Set-Cookie', 'locale=sv')).toBe(false);
+  it('returns `false` from `appendPendingResponseHeader` when no writer is registered', () => {
+    expect(appendPendingResponseHeader('Set-Cookie', 'locale=sv')).toBe(false);
   });
 
   it('notifies the registered writer with name and value', () => {
@@ -26,7 +26,7 @@ describe('response-header-writer', () => {
         value,
       ]),
     );
-    appendResponseHeader('Set-Cookie', 'locale=sv');
+    appendPendingResponseHeader('Set-Cookie', 'locale=sv');
     expect(writes).toEqual([
       [
         'Set-Cookie',
@@ -35,23 +35,27 @@ describe('response-header-writer', () => {
     ]);
   });
 
-  it('returns `true` from `appendResponseHeader` when a writer is registered', () => {
+  it('returns `true` from `appendPendingResponseHeader` when a writer is registered', () => {
     setResponseHeaderWriter(() => {});
-    expect(appendResponseHeader('Set-Cookie', 'locale=sv')).toBe(true);
+    expect(appendPendingResponseHeader('Set-Cookie', 'locale=sv')).toBe(true);
   });
 
   it('clears the writer when `resetResponseHeaderWriter` is called', () => {
     setResponseHeaderWriter(() => {});
     resetResponseHeaderWriter();
-    expect(appendResponseHeader('Set-Cookie', 'locale=sv')).toBe(false);
+    expect(appendPendingResponseHeader('Set-Cookie', 'locale=sv')).toBe(false);
   });
 
   it('writes through only the latest writer when called twice', () => {
     const firstWriterCalls: string[] = [];
     const secondWriterCalls: string[] = [];
-    setResponseHeaderWriter((_, value) => firstWriterCalls.push(value));
-    setResponseHeaderWriter((_, value) => secondWriterCalls.push(value));
-    appendResponseHeader('Set-Cookie', 'locale=sv');
+    setResponseHeaderWriter((_name: string, value: string) =>
+      firstWriterCalls.push(value),
+    );
+    setResponseHeaderWriter((_name: string, value: string) =>
+      secondWriterCalls.push(value),
+    );
+    appendPendingResponseHeader('Set-Cookie', 'locale=sv');
     expect(firstWriterCalls).toEqual([]);
     expect(secondWriterCalls).toEqual([
       'locale=sv',

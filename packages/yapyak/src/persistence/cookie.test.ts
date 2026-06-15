@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   resetResponseHeaderWriter,
   setResponseHeaderWriter,
-} from '../locale/response-header-writer';
+} from '../locale/pending-response-header';
 import { resetWarn, setWarn } from '../warn';
 import { cookie, parseCookie } from './cookie';
 

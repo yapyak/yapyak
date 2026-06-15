@@ -1,6 +1,6 @@
 import type { Persistence } from './type';
 
-import { appendResponseHeader } from '../locale';
+import { appendPendingResponseHeader } from '../locale';
 import { warn } from '../warn';
 import { subscribeHistory } from './history';
 
@@ -78,7 +78,7 @@ export function cookie(options: CookieOptions): Persistence {
       const value = encodeURIComponent(locale);
       const cookieString = `${name}=${value}; ${attributes}`;
       if (typeof globalThis.document === 'undefined') {
-        const applied = appendResponseHeader('Set-Cookie', cookieString);
+        const applied = appendPendingResponseHeader('Set-Cookie', cookieString);
         if (!applied) {
           warn(
             'setLocale() called server-side outside a withRequest scope. The cookie was not set. Install the matching adapter middleware (e.g. @yapyak/astro, @yapyak/sveltekit).',

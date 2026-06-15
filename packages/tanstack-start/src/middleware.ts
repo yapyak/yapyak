@@ -1,7 +1,7 @@
 import type { AnyRequestMiddleware } from '@tanstack/react-start';
 
 import { createMiddleware } from '@tanstack/react-start';
-import { mergePendingResponseHeaders, withRequest } from 'yapyak/adapter';
+import { withResponse } from 'yapyak/adapter';
 
 /**
  * Middleware for TanStack Start. Provides yapyak's per-request locale context.
@@ -21,9 +21,9 @@ import { mergePendingResponseHeaders, withRequest } from 'yapyak/adapter';
  */
 export const middleware: AnyRequestMiddleware = createMiddleware().server(
   ({ next, request }) =>
-    withRequest(request, async () => {
-      const result = await next();
-      mergePendingResponseHeaders(result.response.headers);
-      return result;
-    }),
+    withResponse(
+      request,
+      () => next(),
+      (result) => result.response,
+    ),
 );

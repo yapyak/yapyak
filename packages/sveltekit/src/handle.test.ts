@@ -1,10 +1,24 @@
 import type { ResolveOptions } from '@sveltejs/kit';
 
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { setLocale } from 'yapyak';
-import { getPendingResponseHeaders } from 'yapyak/adapter';
+import { resetLocale } from 'yapyak/internal';
 
 import { handle } from './handle';
+
+vi.mock('yapyak/runtime', () => ({
+  DEFAULT_LOCALE: 'en',
+  DETECT_ACCEPT_LANGUAGE: false,
+  LOCALES: [
+    'en',
+    'sv',
+  ],
+  PERSISTENCE_CONFIG: {
+    name: 'locale',
+    type: 'cookie',
+  },
+  SYNC_HTML_LANG: false,
+}));
 
 type ResolveCall = {
   options: ResolveOptions | undefined;
@@ -17,6 +31,10 @@ function makeEvent(request: Request): Parameters<typeof handle>[0]['event'] {
 }
 
 describe('handle', () => {
+  afterEach(() => {
+    resetLocale();
+  });
+
   it('transforms `%yapyak.lang%` with the current locale in the page chunk', async () => {
     const calls: ResolveCall[] = [];
     const event = makeEvent(new Request('http://example.com/'));
@@ -34,19 +52,17 @@ describe('handle', () => {
       },
     } as Parameters<typeof handle>[0]);
     expect(calls).toHaveLength(1);
-    setLocale('en');
   });
 
-  it('writes every pending yapyak header onto the response', async () => {
+  it('drains Set-Cookie from a server-side `setLocale()` call onto the response', async () => {
     const event = makeEvent(new Request('http://example.com/'));
-    const response = new Response('body');
-    await handle({
+    const response = await handle({
       event,
       resolve: async () => {
-        getPendingResponseHeaders().append('Set-Cookie', 'lang=sv');
-        return response;
+        setLocale('sv');
+        return new Response('body');
       },
     } as Parameters<typeof handle>[0]);
-    expect(response.headers.get('Set-Cookie')).toBe('lang=sv');
+    expect(response.headers.get('Set-Cookie')).toContain('locale=sv');
   });
 });

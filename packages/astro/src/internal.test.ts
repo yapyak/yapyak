@@ -1,9 +1,28 @@
-import { describe, expect, it } from 'vitest';
-import { getPendingResponseHeaders } from 'yapyak/adapter';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { setLocale } from 'yapyak';
+import { resetLocale } from 'yapyak/internal';
 
 import { onRequest } from './internal';
 
+vi.mock('yapyak/runtime', () => ({
+  DEFAULT_LOCALE: 'en',
+  DETECT_ACCEPT_LANGUAGE: false,
+  LOCALES: [
+    'en',
+    'sv',
+  ],
+  PERSISTENCE_CONFIG: {
+    name: 'locale',
+    type: 'cookie',
+  },
+  SYNC_HTML_LANG: false,
+}));
+
 describe('onRequest', () => {
+  afterEach(() => {
+    resetLocale();
+  });
+
   it('returns the response returned by `next`', async () => {
     const request = new Request('http://example.com/');
     const expected = new Response('body', {
@@ -18,7 +37,7 @@ describe('onRequest', () => {
     expect(result).toBe(expected);
   });
 
-  it('writes every pending yapyak header onto the response', async () => {
+  it('drains Set-Cookie from a server-side `setLocale()` call onto the response', async () => {
     const request = new Request('http://example.com/');
     const response = new Response('body');
     await onRequest(
@@ -26,10 +45,10 @@ describe('onRequest', () => {
         request,
       } as Parameters<typeof onRequest>[0],
       async () => {
-        getPendingResponseHeaders().append('Set-Cookie', 'lang=sv');
+        setLocale('sv');
         return response;
       },
     );
-    expect(response.headers.get('Set-Cookie')).toBe('lang=sv');
+    expect(response.headers.get('Set-Cookie')).toContain('locale=sv');
   });
 });

@@ -1,10 +1,10 @@
 export type { Locale, Register } from './type';
 
-export { setRequestReader } from './request-reader';
 export {
-  appendResponseHeader,
+  appendPendingResponseHeader,
   setResponseHeaderWriter,
-} from './response-header-writer';
+} from './pending-response-header';
+export { setRequestReader } from './request';
 export {
   autoSubscribeLocale,
   defaultLocale,
