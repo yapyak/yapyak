@@ -1,6 +1,11 @@
 import { defineConfig } from '@yapyak/tsdown-config';
 
 export default defineConfig({
+  deps: {
+    neverBundle: [
+      'yapyak/runtime',
+    ],
+  },
   entry: [
     'src/index.ts',
     'src/internal.ts',
@@ -13,8 +18,5 @@ export default defineConfig({
     'src/processor/index.ts',
     'src/translator/index.ts',
     'src/translator/internal.ts',
-  ],
-  external: [
-    'yapyak/runtime',
   ],
 });
