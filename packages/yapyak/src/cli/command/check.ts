@@ -45,7 +45,7 @@ export function check(config: Config, projectRoot: string): number {
     allDiagnostics.push(...localeFileDiagnostics);
     if (
       localeFileDiagnostics.some(
-        (diagnostic) => diagnostic.code === YAP.CATALOG_INVALID_JSON,
+        (diagnostic) => diagnostic.code === YAP.CATALOG_INVALID_JSON.code,
       )
     ) {
       continue;

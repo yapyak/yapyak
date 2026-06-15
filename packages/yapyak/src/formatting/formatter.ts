@@ -1,4 +1,4 @@
-import { YAP } from '../diagnostics/codes';
+import { warnDiagnostic } from '../diagnostic';
 import { defaultLocale } from '../locale';
 import { warn } from '../warn';
 import { isCurrency } from './currency';
@@ -163,13 +163,10 @@ function resolveValidLocale(locale: string): string {
   } catch {
     if (!warnedInvalidLocales.has(locale)) {
       warnedInvalidLocales.add(locale);
-      warn(
-        `Forced locale "${locale}" is not a valid BCP 47 tag. Falling back to default "${defaultLocale}".`,
-        {
-          code: YAP.LOCALE_FORCED_INVALID,
-          requested: locale,
-        },
-      );
+      warnDiagnostic('LOCALE_FORCED_INVALID', {
+        defaultLocale,
+        requested: locale,
+      });
     }
     validLocaleCache.set(locale, defaultLocale);
     return defaultLocale;

@@ -4,7 +4,7 @@ import type { Diagnostic } from './diagnostic';
 
 import ts from 'typescript';
 
-import { YAP } from '../../diagnostics/codes';
+import { buildDiagnostic } from '../../diagnostic';
 import { RUNTIME_NAME } from './binding';
 import { toRange } from './range';
 
@@ -327,18 +327,20 @@ function reportCapture(
     return;
   }
   const sourceFile = context.sourceFile;
-  context.diagnostics.push({
-    code: YAP.CONTEXT_DYNAMIC_CALL,
-    fileId: sourceFile.fileName,
-    hint:
-      methodName === IN_NAME
-        ? "Pass the source inline: `t.in('sv', 'source')` or chain with `.as()`: `t.in('sv').as('context', 'source')`."
-        : "Pass the source inline: `t.as('context', 'source')` or chain with `.in()`: `t.as('context').in('sv', 'source')`.",
-    message: `\`t.${methodName}()\` captured into a variable. Modifiers must be used inline.`,
-    range: toRange(call, sourceFile),
-    severity: 'error',
-    source: sourceFile.text,
-  });
+  context.diagnostics.push(
+    buildDiagnostic(
+      'CONTEXT_DYNAMIC_CALL',
+      {
+        methodName: methodName === IN_NAME ? 'in' : 'as',
+      },
+      {
+        fileId: sourceFile.fileName,
+        range: toRange(call, sourceFile),
+        severity: 'error',
+        source: sourceFile.text,
+      },
+    ),
+  );
 }
 
 function isInlineChain(call: ts.CallExpression): boolean {

@@ -1,7 +1,6 @@
 import type { Persistence } from './type';
 
-import { YAP } from '../diagnostics/codes';
-import { warn } from '../warn';
+import { warnDiagnostic } from '../diagnostic';
 import { subscribeHistory } from './history';
 
 type UrlOptions = {
@@ -23,12 +22,7 @@ export function url(options: UrlOptions): Persistence {
       return getLocaleFromUrl(new URL(request.url), locales, pattern);
     },
     set() {
-      warn(
-        'setLocale() skipped with persistence `url`. The URL is the source of truth. Drive locale switches through router navigation.',
-        {
-          code: YAP.PERSISTENCE_URL_SKIPPED,
-        },
-      );
+      warnDiagnostic('PERSISTENCE_URL_SKIPPED', undefined);
       return false;
     },
     subscribe(onChange) {

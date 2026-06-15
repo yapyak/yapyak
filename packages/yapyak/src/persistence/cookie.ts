@@ -1,8 +1,7 @@
 import type { Persistence } from './type';
 
-import { YAP } from '../diagnostics/codes';
+import { warnDiagnostic } from '../diagnostic';
 import { appendPendingResponseHeader } from '../locale';
-import { warn } from '../warn';
 import { subscribeHistory } from './history';
 
 type CookieOptions = {
@@ -81,12 +80,7 @@ export function cookie(options: CookieOptions): Persistence {
       if (typeof globalThis.document === 'undefined') {
         const applied = appendPendingResponseHeader('Set-Cookie', cookieString);
         if (!applied) {
-          warn(
-            'setLocale() called server-side outside a `withResponse` scope. The cookie was not set. Install the matching adapter middleware (`@yapyak/astro`, `@yapyak/sveltekit`, etc.).',
-            {
-              code: YAP.PERSISTENCE_COOKIE_WRITER_MISSING,
-            },
-          );
+          warnDiagnostic('PERSISTENCE_COOKIE_WRITER_MISSING', undefined);
         }
         return false;
       }

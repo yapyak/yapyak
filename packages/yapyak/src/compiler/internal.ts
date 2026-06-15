@@ -1,4 +1,4 @@
-export type { YapCode } from '../diagnostics/codes';
+export type { YapCode } from '../diagnostic';
 export type { Template } from '../template';
 export type {
   CatalogEntry,
@@ -17,7 +17,7 @@ export type {
   TransformFileResult,
 } from './parser';
 
-export { YAP, docsUrl } from '../diagnostics/codes';
+export { YAP, getDocsUrl } from '../diagnostic';
 export { parseTemplate } from '../template';
 export {
   CorruptLocaleFileError,

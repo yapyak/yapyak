@@ -1,7 +1,7 @@
 import type { Logger } from 'vite';
 import type { Diagnostic, ExtractFileResult } from 'yapyak/compiler/internal';
 
-import { docsUrl } from 'yapyak/compiler/internal';
+import { getDocsUrl } from 'yapyak/compiler/internal';
 
 export function renderErrorDiagnostics(
   logger: Logger,
@@ -10,7 +10,7 @@ export function renderErrorDiagnostics(
   const errorDiagnostics: Diagnostic[] = [];
   for (const diagnostic of result.diagnostics) {
     const location = `${diagnostic.fileId}:${diagnostic.range.start.line}:${diagnostic.range.start.column}`;
-    const message = `[yapyak] ${diagnostic.code} ${location}: ${diagnostic.message}\nSee ${docsUrl(diagnostic.code)}`;
+    const message = `[yapyak] ${diagnostic.code} ${location}: ${diagnostic.message}\nSee ${getDocsUrl(diagnostic.code)}`;
     if (diagnostic.severity === 'error') {
       logger.error(message);
       errorDiagnostics.push(diagnostic);

@@ -2,8 +2,7 @@ import type { ExtractedMessage } from '../../parser';
 import type { LocaleContext } from './context';
 import type { OrphanCache } from './orphan';
 
-import { YAP } from '../../../diagnostics/codes';
-import { warn } from '../../../warn';
+import { YAP, warnDiagnostic } from '../../../diagnostic';
 import { toMessageKey } from '../../parser';
 import { compareKeys, stringifyCanonical } from '../canonical';
 import { writeAtomicAll } from './atomic';
@@ -333,8 +332,8 @@ export function syncLocaleFiles(
     orphans = readOrphans(yapyakDir);
   } catch (error) {
     if (error instanceof CorruptOrphanCacheError) {
-      warn(error.message, {
-        code: YAP.CATALOG_ORPHAN_CACHE_CORRUPT,
+      warnDiagnostic('CATALOG_ORPHAN_CACHE_CORRUPT', {
+        detail: error.message,
       });
       orphans = {};
     } else {
@@ -358,8 +357,8 @@ export function syncLocaleFiles(
       existingByLocale.set(locale, readLocaleFile(localePath));
     } catch (error) {
       if (error instanceof CorruptLocaleFileError) {
-        warn(error.message, {
-          code: YAP.CATALOG_LOCALE_FILE_CORRUPT,
+        warnDiagnostic('CATALOG_LOCALE_FILE_CORRUPT', {
+          detail: error.message,
         });
         corruptLocales.add(locale);
         continue;
@@ -535,7 +534,7 @@ export function toEntry(
   }
   if (plain !== undefined) {
     throw new Error(
-      `[yapyak] ${YAP.CONTEXT_MIXED_USAGE}: Source "${source}" is used with both \`t()\` and \`t.as()\`. Choose one form for every occurrence: either drop \`t.as\` or wrap every call with it. Run \`yapyak check\` to find the conflicting call sites.`,
+      `[yapyak] ${YAP.CONTEXT_MIXED_USAGE.code}: Source "${source}" is used with both \`t()\` and \`t.as()\`. Choose one form for every occurrence: either drop \`t.as\` or wrap every call with it. Run \`yapyak check\` to find the conflicting call sites.`,
     );
   }
   const variants: Record<string, string> = Object.create(null);

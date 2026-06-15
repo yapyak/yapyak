@@ -8,10 +8,9 @@ import {
   SYNC_HTML_LANG,
 } from 'yapyak/runtime';
 
-import { YAP } from '../diagnostics/codes';
+import { warnDiagnostic } from '../diagnostic';
 import { registerHotDispose } from '../hot-dispose';
 import { buildPersistence } from '../persistence';
-import { warn } from '../warn';
 import { readRequest } from './request';
 import { resolveLocale } from './resolve';
 
@@ -102,13 +101,9 @@ function writeLocale(value: Locale): void {
     try {
       listener(value);
     } catch (cause) {
-      warn(
-        'Locale subscriber threw an exception. Yapyak continued with the remaining subscribers.',
-        {
-          cause,
-          code: YAP.LOCALE_LISTENER_THREW,
-        },
-      );
+      warnDiagnostic('LOCALE_LISTENER_THREW', undefined, {
+        cause,
+      });
     }
   }
 }
@@ -138,12 +133,7 @@ persistence?.subscribe?.(syncFromPersistence);
 export function getLocale(): Locale {
   if (!hasWarnedUninitialized && LOCALES.length === 0) {
     hasWarnedUninitialized = true;
-    warn(
-      'Yapyak runtime is not initialized. Register the build-tool plugin (`@yapyak/vite`) in your bundler config.',
-      {
-        code: YAP.RUNTIME_NOT_INITIALIZED,
-      },
-    );
+    warnDiagnostic('RUNTIME_NOT_INITIALIZED', undefined);
   }
   if (typeof window === 'undefined') {
     const request = readRequest();
@@ -162,12 +152,7 @@ export function getLocale(): Locale {
     }
     if (!hasWarnedSsrFallback) {
       hasWarnedSsrFallback = true;
-      warn(
-        'getLocale() fell back to the shared module-global locale on the server. Register the host-integration middleware so each request binds its own locale.',
-        {
-          code: YAP.RUNTIME_SSR_LEAK_RISK,
-        },
-      );
+      warnDiagnostic('RUNTIME_SSR_LEAK_RISK', undefined);
     }
   }
   return currentLocale;
@@ -198,10 +183,12 @@ export function getLocale(): Locale {
  */
 export function setLocale(value: Locale): void {
   if (!LOCALES.includes(value)) {
-    warn(
-      `setLocale call ignored. Value "${value}" is not in the configured locales.`,
+    warnDiagnostic(
+      'LOCALE_SET_IGNORED',
       {
-        code: YAP.LOCALE_SET_IGNORED,
+        value,
+      },
+      {
         configured: LOCALES,
         requested: value,
       },
@@ -215,13 +202,9 @@ export function setLocale(value: Locale): void {
   }
 
   if (typeof window === 'undefined') {
-    warn(
-      'setLocale call ignored on the server. Mutating the shared module-global locale leaks between concurrent requests. Configure `cookie` or `url` persistence, or drive locale switches through router navigation.',
-      {
-        code: YAP.LOCALE_SET_SSR_LEAK_RISK,
-        requested: value,
-      },
-    );
+    warnDiagnostic('LOCALE_SET_SSR_LEAK_RISK', undefined, {
+      requested: value,
+    });
     return;
   }
 

@@ -1,7 +1,6 @@
 import type { Persistence } from './type';
 
-import { YAP } from '../diagnostics/codes';
-import { warn } from '../warn';
+import { warnDiagnostic } from '../diagnostic';
 
 type LocalStorageOptions = {
   key: string;
@@ -23,25 +22,16 @@ export function localStorage(options: LocalStorageOptions): Persistence {
     },
     set(locale) {
       if (typeof globalThis.localStorage === 'undefined') {
-        warn(
-          'setLocale() skipped on the server with persistence `local-storage`. `localStorage` is browser-only. Use persistence `cookie` for SSR-compatible locale switching.',
-          {
-            code: YAP.PERSISTENCE_LOCAL_STORAGE_SSR_SKIPPED,
-          },
-        );
+        warnDiagnostic('PERSISTENCE_LOCAL_STORAGE_SSR_SKIPPED', undefined);
         return false;
       }
       try {
         globalThis.localStorage.setItem(key, locale);
         return true;
       } catch (cause) {
-        warn(
-          'setLocale() failed to write to `localStorage`. The in-memory locale was updated but will not survive a reload. Common causes are quota exceeded, Safari private mode, or storage disabled.',
-          {
-            cause,
-            code: YAP.PERSISTENCE_LOCAL_STORAGE_WRITE_FAILED,
-          },
-        );
+        warnDiagnostic('PERSISTENCE_LOCAL_STORAGE_WRITE_FAILED', undefined, {
+          cause,
+        });
         return false;
       }
     },

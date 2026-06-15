@@ -1,7 +1,7 @@
 import type { Diagnostic, ExtractedMessage, Placeholder } from '../../parser';
 import type { LocaleFile, ParseEntryError } from './file';
 
-import { YAP } from '../../../diagnostics/codes';
+import { buildDiagnostic } from '../../../diagnostic';
 import { parsePlaceholders } from '../../parser';
 import { stripBom } from './bom';
 import { findTranslation, parseEntry } from './file';
@@ -30,20 +30,25 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
   if (content.trim() === '') {
     return [];
   }
+  const stubContext = {
+    fileId,
+    range: STUB_RANGE,
+    severity: 'error' as const,
+    source: '',
+  };
   let parsed: unknown;
   try {
     parsed = JSON.parse(content);
   } catch (cause) {
     const detail = cause instanceof Error ? cause.message : String(cause);
     return [
-      {
-        code: YAP.CATALOG_INVALID_JSON,
-        fileId,
-        message: `Locale file is not valid JSON. ${detail}.`,
-        range: STUB_RANGE,
-        severity: 'error',
-        source: '',
-      },
+      buildDiagnostic(
+        'CATALOG_INVALID_JSON',
+        {
+          detail,
+        },
+        stubContext,
+      ),
     ];
   }
   if (!isPlainObject(parsed)) {
@@ -52,58 +57,63 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
   for (const [pathKey, entries] of Object.entries(parsed)) {
     if (isUnsafePath(pathKey)) {
-      diagnostics.push({
-        code: YAP.CATALOG_UNSAFE_PATH,
-        fileId,
-        message: `Unsafe file-path key "${pathKey}". Paths must be relative, use forward slashes, and contain no ".." segments.`,
-        range: STUB_RANGE,
-        severity: 'error',
-        source: '',
-      });
+      diagnostics.push(
+        buildDiagnostic(
+          'CATALOG_UNSAFE_PATH',
+          {
+            pathKey,
+          },
+          stubContext,
+        ),
+      );
     }
     if (!isPlainObject(entries)) {
-      diagnostics.push({
-        code: YAP.CATALOG_INVALID_SHAPE,
-        fileId,
-        message: `Entries under "${pathKey}" are not an object mapping source to translation.`,
-        range: STUB_RANGE,
-        severity: 'error',
-        source: '',
-      });
+      diagnostics.push(
+        buildDiagnostic(
+          'CATALOG_INVALID_SHAPE',
+          {
+            detail: `Entries under "${pathKey}" are not an object mapping source to translation.`,
+          },
+          stubContext,
+        ),
+      );
       continue;
     }
     for (const [source, value] of Object.entries(entries)) {
       if (source !== source.normalize('NFC')) {
-        diagnostics.push({
-          code: YAP.CATALOG_NOT_NFC,
-          fileId,
-          message: `Source key at "${pathKey}".${JSON.stringify(source)} is not Unicode NFC. It will not match extracted source strings.`,
-          range: STUB_RANGE,
-          severity: 'error',
-          source: '',
-        });
+        diagnostics.push(
+          buildDiagnostic(
+            'CATALOG_NOT_NFC',
+            {
+              detail: `Source key at "${pathKey}".${JSON.stringify(source)} is not Unicode NFC. It will not match extracted source strings.`,
+            },
+            stubContext,
+          ),
+        );
       }
       const { entry, errors } = parseEntry(value);
       for (const error of errors) {
-        diagnostics.push({
-          code: YAP.CATALOG_INVALID_SHAPE,
-          fileId,
-          message: entryErrorMessage(error, pathKey, source),
-          range: STUB_RANGE,
-          severity: 'error',
-          source: '',
-        });
+        diagnostics.push(
+          buildDiagnostic(
+            'CATALOG_INVALID_SHAPE',
+            {
+              detail: entryErrorMessage(error, pathKey, source),
+            },
+            stubContext,
+          ),
+        );
       }
       if (typeof entry === 'string') {
         if (entry !== entry.normalize('NFC')) {
-          diagnostics.push({
-            code: YAP.CATALOG_NOT_NFC,
-            fileId,
-            message: `Translation at "${pathKey}".${JSON.stringify(source)} is not Unicode NFC.`,
-            range: STUB_RANGE,
-            severity: 'error',
-            source: '',
-          });
+          diagnostics.push(
+            buildDiagnostic(
+              'CATALOG_NOT_NFC',
+              {
+                detail: `Translation at "${pathKey}".${JSON.stringify(source)} is not Unicode NFC.`,
+              },
+              stubContext,
+            ),
+          );
         }
         continue;
       }
@@ -112,14 +122,15 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
       }
       for (const [context, translation] of Object.entries(entry)) {
         if (translation !== translation.normalize('NFC')) {
-          diagnostics.push({
-            code: YAP.CATALOG_NOT_NFC,
-            fileId,
-            message: `Translation at "${pathKey}".${JSON.stringify(source)}.${JSON.stringify(context)} is not Unicode NFC.`,
-            range: STUB_RANGE,
-            severity: 'error',
-            source: '',
-          });
+          diagnostics.push(
+            buildDiagnostic(
+              'CATALOG_NOT_NFC',
+              {
+                detail: `Translation at "${pathKey}".${JSON.stringify(source)}.${JSON.stringify(context)} is not Unicode NFC.`,
+              },
+              stubContext,
+            ),
+          );
         }
       }
     }
@@ -139,7 +150,7 @@ function entryErrorMessage(
   if (error.kind === 'context-value-not-string') {
     return `Entry ${path}.${JSON.stringify(error.context)} must be a string.`;
   }
-  return `Entry ${path} has no string values — supply at least one context variant.`;
+  return `Entry ${path} has no string values. Supply at least one context variant.`;
 }
 
 export type TranslationParityResult = {
@@ -215,44 +226,52 @@ export function validateIcuPairs(
       }
       const targetPlaceholders = parsePlaceholders(target).placeholders;
       const targetByName = buildPlaceholderIndex(targetPlaceholders);
+      const diagnosticContext = {
+        fileId,
+        range: location.range,
+        severity: 'error' as const,
+        source: '',
+      };
 
       for (const [name, placeholder] of sourceByName) {
         if (!targetByName.has(name)) {
-          diagnostics.push({
-            code: YAP.PLACEHOLDER_MISSING_IN_TARGET,
-            fileId,
-            hint: `Include \`{${name}}\` in the translation.`,
-            message: `Placeholder \`{${name}}\` is in the source but missing from the translation.`,
-            range: location.range,
-            severity: 'error',
-            source: '',
-          });
+          diagnostics.push(
+            buildDiagnostic(
+              'PLACEHOLDER_MISSING_IN_TARGET',
+              {
+                name,
+              },
+              diagnosticContext,
+            ),
+          );
           continue;
         }
         const targetPlaceholder = targetByName.get(name);
         if (targetPlaceholder && targetPlaceholder.kind !== placeholder.kind) {
-          diagnostics.push({
-            code: YAP.PLACEHOLDER_KIND_MISMATCH,
-            fileId,
-            hint: `Match the placeholder kind \`${placeholder.kind}\` from the source.`,
-            message: `Placeholder \`{${name}}\` is \`${placeholder.kind}\` in the source but \`${targetPlaceholder.kind}\` in the translation.`,
-            range: location.range,
-            severity: 'error',
-            source: '',
-          });
+          diagnostics.push(
+            buildDiagnostic(
+              'PLACEHOLDER_KIND_MISMATCH',
+              {
+                name,
+                sourceKind: placeholder.kind,
+                targetKind: targetPlaceholder.kind,
+              },
+              diagnosticContext,
+            ),
+          );
         }
       }
       for (const name of targetByName.keys()) {
         if (!sourceByName.has(name)) {
-          diagnostics.push({
-            code: YAP.PLACEHOLDER_MISSING_IN_SOURCE,
-            fileId,
-            hint: `Remove \`{${name}}\` from the translation or add it to the source.`,
-            message: `Placeholder \`{${name}}\` is in the translation but missing from the source.`,
-            range: location.range,
-            severity: 'error',
-            source: '',
-          });
+          diagnostics.push(
+            buildDiagnostic(
+              'PLACEHOLDER_MISSING_IN_SOURCE',
+              {
+                name,
+              },
+              diagnosticContext,
+            ),
+          );
         }
       }
     }
