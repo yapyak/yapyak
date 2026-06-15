@@ -6,6 +6,7 @@ export type {
   LocaleData,
   LocaleFile,
   LocaleWarning,
+  RenameConflict,
   SyncLocaleFilesResult,
 } from './catalog';
 export type {

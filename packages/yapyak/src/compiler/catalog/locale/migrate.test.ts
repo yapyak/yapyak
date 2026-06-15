@@ -381,4 +381,45 @@ describe('migrateLocales', () => {
       },
     ]);
   });
+
+  it('reports a conflict when the rename target already has a translation', () => {
+    writeLocale('sv', {
+      'src/a.ts': {
+        Save: 'Spara',
+        'Save changes': 'Spara ändringar',
+      },
+    });
+    const result = runMigrate();
+    expect(result.conflicts).toEqual([
+      {
+        fileId: 'src/a.ts',
+        from: 'Save',
+        locale: 'sv',
+        to: 'Save changes',
+      },
+    ]);
+    expect(result.staleEntries).toEqual([]);
+    expect(readLocale('sv')).toEqual({
+      'src/a.ts': {
+        'Save changes': 'Spara ändringar',
+      },
+    });
+  });
+
+  it('reports no conflict when the rename target exists but is empty', () => {
+    writeLocale('sv', {
+      'src/a.ts': {
+        Save: 'Spara',
+        'Save changes': '',
+      },
+    });
+    const result = runMigrate();
+    expect(result.conflicts).toEqual([]);
+    expect(result.staleEntries).toEqual([
+      {
+        locale: 'sv',
+        source: 'Save changes',
+      },
+    ]);
+  });
 });

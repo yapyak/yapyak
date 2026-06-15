@@ -287,7 +287,7 @@ export function createDevServerPlugin(state: State): Plugin {
         after.flatMap(toCallSitePositions),
       );
       if (renames.length > 0) {
-        migrateLocales(
+        const migrationResult = migrateLocales(
           {
             extractedKeys: toExtractedKeysForFile(fileId, after),
             fileId,
@@ -304,6 +304,11 @@ export function createDevServerPlugin(state: State): Plugin {
               getNormalized(state).preserveTranslationsOnRename,
           },
         );
+        for (const conflict of migrationResult.conflicts) {
+          state.logger.warn(
+            `[yapyak] rename '${conflict.from}' → '${conflict.to}' skipped for '${conflict.locale}' in ${conflict.fileId} — target already has a translation.`,
+          );
+        }
         getResolver(state).invalidateData();
       }
       if (after.length === 0) {

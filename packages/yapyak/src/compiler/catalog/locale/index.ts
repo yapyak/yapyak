@@ -9,6 +9,7 @@ export type {
   LocaleFile,
   SyncLocaleFilesResult,
 } from './file';
+export type { RenameConflict } from './migrate';
 export type { OrphanCache } from './orphan';
 
 export { validateLocaleCode } from './code';

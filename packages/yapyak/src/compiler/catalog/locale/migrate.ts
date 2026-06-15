@@ -25,7 +25,15 @@ export type MigrateLocalesOptions = {
   preserveTranslations?: boolean;
 };
 
+export type RenameConflict = {
+  fileId: string;
+  from: string;
+  locale: string;
+  to: string;
+};
+
 export type MigrateLocalesResult = {
+  conflicts: RenameConflict[];
   staleEntries: {
     locale: string;
     source: string;
@@ -100,9 +108,11 @@ export function migrateLocales(
   projectRoot: string,
   options?: MigrateLocalesOptions,
 ): MigrateLocalesResult {
+  const conflicts: RenameConflict[] = [];
   const staleEntries: MigrateLocalesResult['staleEntries'] = [];
   if (input.renames.length === 0) {
     return {
+      conflicts,
       staleEntries,
     };
   }
@@ -132,6 +142,12 @@ export function migrateLocales(
         Object.hasOwn(next, rename.to) && !isEmptyEntry(next[rename.to]);
       delete next[rename.from];
       if (targetHasValue) {
+        conflicts.push({
+          fileId: input.fileId,
+          from: rename.from,
+          locale,
+          to: rename.to,
+        });
         hasChanged = true;
         continue;
       }
@@ -152,6 +168,7 @@ export function migrateLocales(
     }
   }
   return {
+    conflicts,
     staleEntries,
   };
 }

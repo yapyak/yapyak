@@ -5,6 +5,7 @@ export type {
   LocaleData,
   LocaleFile,
   LocaleWarning,
+  RenameConflict,
   SyncLocaleFilesResult,
 } from './locale';
 
