@@ -56,19 +56,15 @@ describe('add', () => {
   });
 
   it('returns `1` when no locales are given', async () => {
-    const code = await add(makeConfig(), root, {
-      locales: [],
-    });
+    const code = await add(makeConfig(), root, []);
     expect(code).toBe(1);
     expect(errorWrites.join('')).toContain('Locale code required');
   });
 
   it('returns `1` when a locale code is invalid', async () => {
-    const code = await add(makeConfig(), root, {
-      locales: [
-        'EN_US',
-      ],
-    });
+    const code = await add(makeConfig(), root, [
+      'EN_US',
+    ]);
     expect(code).toBe(1);
     expect(errorWrites.join('')).toContain('Invalid locale code');
   });
@@ -78,11 +74,9 @@ describe('add', () => {
       recursive: true,
     });
     writeFileSync(join(root, 'src', 'a.ts'), '');
-    const code = await add(makeConfig(), root, {
-      locales: [
-        'sv',
-      ],
-    });
+    const code = await add(makeConfig(), root, [
+      'sv',
+    ]);
     expect(code).toBe(0);
     expect(writes.join('')).toContain('locales/sv.json');
   });
@@ -106,11 +100,9 @@ describe('add', () => {
         },
       }),
     );
-    const code = await add(makeConfig(), root, {
-      locales: [
-        'sv',
-      ],
-    });
+    const code = await add(makeConfig(), root, [
+      'sv',
+    ]);
     expect(code).toBe(0);
     expect(writes.join('')).toContain('All translations present already');
   });
@@ -123,11 +115,9 @@ describe('add', () => {
       join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
     );
-    const code = await add(makeConfig(), root, {
-      locales: [
-        'sv',
-      ],
-    });
+    const code = await add(makeConfig(), root, [
+      'sv',
+    ]);
     expect(code).toBe(0);
     expect(writes.join('')).toContain('strings need translation');
   });
@@ -151,11 +141,9 @@ describe('add', () => {
         translator,
       }),
       root,
-      {
-        locales: [
-          'sv',
-        ],
-      },
+      [
+        'sv',
+      ],
     );
     expect(code).toBe(0);
     const written = JSON.parse(
@@ -185,11 +173,9 @@ describe('add', () => {
         translator,
       }),
       root,
-      {
-        locales: [
-          'sv',
-        ],
-      },
+      [
+        'sv',
+      ],
     );
     expect(code).toBe(1);
   });

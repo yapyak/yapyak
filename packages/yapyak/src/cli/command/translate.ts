@@ -133,6 +133,7 @@ export async function translate(
     }
   } finally {
     process.off('SIGINT', onSigint);
+    sp.stop();
   }
 
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);

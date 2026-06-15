@@ -8,6 +8,7 @@ import {
   fromMessageKey,
   readLocaleFile,
   toMessageKey,
+  validateLocaleFile,
   walkSourceFiles,
 } from '../compiler';
 import { createFilter } from '../config/internal';
@@ -102,10 +103,14 @@ export function buildReport(input: BuildReportInput): Report {
       };
       continue;
     }
+    const localePath = join(localesPath, `${locale}.json`);
     let localeFile: LocaleFile;
     try {
-      localeFile = readLocaleFile(join(localesPath, `${locale}.json`));
+      localeFile = readLocaleFile(localePath);
     } catch {
+      diagnostics.push(
+        ...validateLocaleFile(`${input.localesDir}/${locale}.json`, localePath),
+      );
       perLocale[locale] = {
         missing: totalMessages,
         translated: 0,

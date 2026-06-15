@@ -303,13 +303,13 @@ describe('anthropic', () => {
   it('writes the scaled `max_tokens` default when `maxTokens` is not set', async () => {
     let capturedBody:
       | {
-          // biome-ignore lint/style/useNamingConvention: needed
+          // biome-ignore lint/style/useNamingConvention: yap yap yap
           max_tokens?: number;
         }
       | undefined;
     vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
       capturedBody = JSON.parse(init.body as string) as {
-        // biome-ignore lint/style/useNamingConvention: needed
+        // biome-ignore lint/style/useNamingConvention: yap yap yap
         max_tokens?: number;
       };
       return new Response(
@@ -344,13 +344,13 @@ describe('anthropic', () => {
   it('overrides the scaled default when `maxTokens` is set', async () => {
     let capturedBody:
       | {
-          // biome-ignore lint/style/useNamingConvention: needed
+          // biome-ignore lint/style/useNamingConvention: yap yap yap
           max_tokens?: number;
         }
       | undefined;
     vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
       capturedBody = JSON.parse(init.body as string) as {
-        // biome-ignore lint/style/useNamingConvention: needed
+        // biome-ignore lint/style/useNamingConvention: yap yap yap
         max_tokens?: number;
       };
       return new Response(

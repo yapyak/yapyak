@@ -525,16 +525,16 @@ function toCallSitePositions(message: ExtractedMessage): CallSitePosition[] {
   }));
 }
 
-function toExtractedKeysForFile(
+export function toExtractedKeysForFile(
   fileId: string,
   messages: ExtractedMessage[],
 ): Record<string, Set<string>> {
-  const sources = new Set<string>();
+  const keys = new Set<string>();
   for (const message of messages) {
-    sources.add(message.source);
+    keys.add(toMessageKey(message.source, message.context));
   }
   return {
-    [fileId]: sources,
+    [fileId]: keys,
   };
 }
 
@@ -578,13 +578,13 @@ function areMessagesEqual(
   return true;
 }
 
-function debounce(fn: () => void, ms: number): Debounced {
+function debounce(fn: () => void, milliseconds: number): Debounced {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const debounced = (() => {
     if (timer) {
       clearTimeout(timer);
     }
-    timer = setTimeout(fn, ms);
+    timer = setTimeout(fn, milliseconds);
   }) as Debounced;
   debounced.cancel = () => {
     if (timer) {

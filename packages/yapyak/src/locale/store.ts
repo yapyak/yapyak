@@ -52,7 +52,7 @@ if (SYNC_HTML_LANG && typeof document !== 'undefined') {
   document.documentElement.lang = currentLocale;
 }
 
-function applyLocale(value: Locale): void {
+function writeLocale(value: Locale): void {
   if (value === currentLocale) {
     return;
   }
@@ -68,7 +68,7 @@ function applyLocale(value: Locale): void {
 function syncFromPersistence(): void {
   const persisted = persistence?.get();
   if (persisted !== undefined && isLocale(persisted)) {
-    applyLocale(persisted);
+    writeLocale(persisted);
   }
 }
 
@@ -131,7 +131,8 @@ export function getLocale(): Locale {
  * @remarks
  * Warns and no-ops if `value` is not in {@link locales}. Behavior beyond validation depends on the configured persistence:
  *
- * - `'none'` — Updates the in-memory locale and notifies subscribers.
+ * - `'none'` (client) — Updates the in-memory locale and notifies subscribers.
+ * - `'none'` (server) — Warns with `YPK_SET_LOCALE_SSR_LEAK_RISK` and no-ops; mutating the shared module-global locale would leak between concurrent requests.
  * - `'cookie'` (client) — Writes `document.cookie`, updates the in-memory locale, and notifies subscribers.
  * - `'cookie'` (server) — Appends a `Set-Cookie` header via the bound response writer (or warns if no writer is bound). Does not update the in-memory locale and does not notify subscribers — the cookie reaches the next request, not this one's render.
  * - `'local-storage'` (client) — Writes to `localStorage`, updates the in-memory locale, and notifies subscribers.
@@ -162,7 +163,18 @@ export function setLocale(value: Locale): void {
     return;
   }
 
-  applyLocale(value);
+  if (typeof window === 'undefined') {
+    warn(
+      'setLocale ignored — mutating the shared module-global locale on the server leaks between concurrent requests. Configure cookie or url persistence, or drive locale switches through router navigation.',
+      {
+        code: 'YPK_SET_LOCALE_SSR_LEAK_RISK',
+        requested: value,
+      },
+    );
+    return;
+  }
+
+  writeLocale(value);
 }
 
 /** The configured locales, frozen at module load from values injected by yapyak's compiler. */

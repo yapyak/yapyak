@@ -14,16 +14,11 @@ import { color, header, progressBar, spinner, symbol } from '../tui';
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-export type AddOptions = {
-  locales: string[];
-};
-
 export async function add(
   config: Config,
   projectRoot: string,
-  options: AddOptions,
+  locales: string[],
 ): Promise<number> {
-  const { locales } = options;
   if (locales.length === 0) {
     process.stderr.write(
       `\n  ${symbol.cross} ${color.red('Locale code required.')}\n`,
@@ -174,35 +169,41 @@ export async function add(
       );
     };
 
-    const subResult = await autoTranslate(
-      {
-        messages: report.messages,
-        translator: withProgress(translator, onProgress),
-      },
-      {
-        defaultLocale: report.defaultLocale,
-        locales: [
-          report.defaultLocale,
-          locale,
-        ],
-        localesDir: config.localesDir,
-      },
-      projectRoot,
-      {
-        examples: config.examples,
-      },
-    );
-
-    totalDone += done;
-    totalFailed += subResult.errors.length;
-    allErrors.push(...subResult.errors);
-
-    if (subResult.errors.length === 0) {
-      sp.succeed(`${color.bold(locale)} ${color.dim('·')} ${done} translated`);
-    } else {
-      sp.fail(
-        `${color.bold(locale)} ${color.dim('·')} ${done} translated · ${color.red(`${subResult.errors.length} failed`)}`,
+    try {
+      const subResult = await autoTranslate(
+        {
+          messages: report.messages,
+          translator: withProgress(translator, onProgress),
+        },
+        {
+          defaultLocale: report.defaultLocale,
+          locales: [
+            report.defaultLocale,
+            locale,
+          ],
+          localesDir: config.localesDir,
+        },
+        projectRoot,
+        {
+          examples: config.examples,
+        },
       );
+
+      totalDone += done;
+      totalFailed += subResult.errors.length;
+      allErrors.push(...subResult.errors);
+
+      if (subResult.errors.length === 0) {
+        sp.succeed(
+          `${color.bold(locale)} ${color.dim('·')} ${done} translated`,
+        );
+      } else {
+        sp.fail(
+          `${color.bold(locale)} ${color.dim('·')} ${done} translated · ${color.red(`${subResult.errors.length} failed`)}`,
+        );
+      }
+    } finally {
+      sp.stop();
     }
   }
 

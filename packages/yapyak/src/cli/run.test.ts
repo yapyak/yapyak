@@ -155,16 +155,10 @@ describe('run', () => {
       'sv',
       'fr',
     ]);
-    expect(add).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.any(String),
-      expect.objectContaining({
-        locales: [
-          'sv',
-          'fr',
-        ],
-      }),
-    );
+    expect(add).toHaveBeenCalledWith(expect.anything(), expect.any(String), [
+      'sv',
+      'fr',
+    ]);
   });
 
   it('extracts `--force` into the `translate` options', async () => {

@@ -342,7 +342,7 @@ describe('gemini', () => {
     expect(body.generationConfig.maxOutputTokens).toBe(4096);
   });
 
-  it('omits `maxOutputTokens` from the request when `maxTokens` is not set', async () => {
+  it('sends a sensible `maxOutputTokens` default when `maxTokens` is not set', async () => {
     const stub = stubFetch('Hej');
     await gemini({
       apiKey: 'k',
@@ -355,7 +355,8 @@ describe('gemini', () => {
     const body = stub.body() as {
       generationConfig: Record<string, unknown>;
     };
-    expect(body.generationConfig).not.toHaveProperty('maxOutputTokens');
+    expect(typeof body.generationConfig.maxOutputTokens).toBe('number');
+    expect(body.generationConfig.maxOutputTokens).toBeGreaterThan(0);
   });
 
   it('throws when `apiKey` is an empty string', () => {

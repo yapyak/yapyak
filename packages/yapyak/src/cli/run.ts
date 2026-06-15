@@ -68,9 +68,7 @@ export async function run(argv: string[]): Promise<number> {
       }
       if (command === 'add') {
         const locales = rest.filter((entry) => !entry.startsWith('-'));
-        return add(config, projectRoot, {
-          locales,
-        });
+        return add(config, projectRoot, locales);
       }
       if (command === 'translate') {
         const locale = rest.find((entry) => !entry.startsWith('-'));

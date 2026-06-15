@@ -625,13 +625,13 @@ function getParamExpressions(
     return undefined;
   }
   const result = new Map<string, string>();
-  for (const prop of paramsExpression.properties) {
-    if (ts.isShorthandPropertyAssignment(prop)) {
-      result.set(prop.name.text, prop.name.text);
+  for (const property of paramsExpression.properties) {
+    if (ts.isShorthandPropertyAssignment(property)) {
+      result.set(property.name.text, property.name.text);
       continue;
     }
-    if (ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name)) {
-      result.set(prop.name.text, prop.initializer.getText());
+    if (ts.isPropertyAssignment(property) && ts.isIdentifier(property.name)) {
+      result.set(property.name.text, property.initializer.getText());
       continue;
     }
     return undefined;
@@ -672,8 +672,11 @@ function buildTemplateLiteral(
     repeatedKeys.length,
   );
   const paramByKey = new Map<string, string>();
-  for (let i = 0; i < repeatedKeys.length; i++) {
-    paramByKey.set(repeatedKeys[i] as string, freeParams[i] as string);
+  for (const [keyIndex, key] of repeatedKeys.entries()) {
+    const param = freeParams[keyIndex];
+    if (param !== undefined) {
+      paramByKey.set(key, param);
+    }
   }
 
   let result = '`';
@@ -736,7 +739,7 @@ function buildTemplateLiteral(
 
 function readKey(inner: string): string | undefined {
   const trimmed = inner.trimStart();
-  const match = /^([A-Z_$a-z][\w$]*)/.exec(trimmed);
+  const match = /^([\p{ID_Start}_$][\p{ID_Continue}$]*)/u.exec(trimmed);
   return match?.[1];
 }
 
@@ -955,7 +958,10 @@ function interpolateNestedReplacements(
   }
   const textEnd = textStart + text.length;
   const contained = nested
-    .filter((n) => n.start >= textStart && n.end <= textEnd)
+    .filter(
+      (replacement) =>
+        replacement.start >= textStart && replacement.end <= textEnd,
+    )
     .sort((a, b) => b.start - a.start);
   if (contained.length === 0) {
     return text;

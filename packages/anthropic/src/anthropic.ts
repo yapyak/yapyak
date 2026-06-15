@@ -6,6 +6,7 @@ import {
   fetchWithRetry,
   parseResponseBody,
   parseTranslationsBatch,
+  resolveMaxTokens,
   stripCodeFence,
 } from 'yapyak/translator/internal';
 
@@ -132,15 +133,14 @@ export function anthropic(options: AnthropicOptions): Translator {
     id: 'anthropic',
     translate: async (params) => {
       const { items, signal, sourceLocale, targetLocales } = params;
-      const resolvedMaxTokens =
-        maxTokens ??
-        Math.min(
-          MAX_TOKENS_CAP,
-          Math.max(
-            MAX_TOKENS_FLOOR,
-            items.length * targetLocales.length * MAX_TOKENS_PER_ITEM,
-          ),
-        );
+      const resolvedMaxTokens = resolveMaxTokens({
+        cap: MAX_TOKENS_CAP,
+        floor: MAX_TOKENS_FLOOR,
+        itemCount: items.length,
+        localeCount: targetLocales.length,
+        override: maxTokens,
+        perItem: MAX_TOKENS_PER_ITEM,
+      });
       const init: RequestInit = {
         body: JSON.stringify({
           max_tokens: resolvedMaxTokens,

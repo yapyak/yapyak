@@ -4,7 +4,12 @@ import { resetLocale, setLocale } from '../locale';
 import { resetWarn, setWarn } from '../warn';
 import { format } from './format';
 
+beforeEach(() => {
+  vi.stubGlobal('window', {});
+});
+
 afterEach(() => {
+  vi.unstubAllGlobals();
   resetLocale();
   resetWarn();
 });

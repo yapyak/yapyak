@@ -1,10 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { toMessageKey } from 'yapyak/compiler';
 
 import {
   areEntriesEqual,
   derivePatches,
   extractChangedFileIds,
   readLocaleFile,
+  toExtractedKeysForFile,
 } from './dev-server';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -377,5 +379,64 @@ describe('readLocaleFile', () => {
     expect(Object.keys(result)).toEqual([
       'src/a.ts',
     ]);
+  });
+});
+
+describe('toExtractedKeysForFile', () => {
+  it('builds the key set using toMessageKey for sources without context', () => {
+    const result = toExtractedKeysForFile('src/a.ts', [
+      {
+        id: 'Save',
+        locations: [],
+        placeholders: [],
+        source: 'Save',
+      },
+    ]);
+    expect(result).toEqual({
+      'src/a.ts': new Set([
+        toMessageKey('Save'),
+      ]),
+    });
+  });
+
+  it('builds the key set using toMessageKey for context-bearing sources', () => {
+    const result = toExtractedKeysForFile('src/a.ts', [
+      {
+        context: 'button',
+        id: 'Save',
+        locations: [],
+        placeholders: [],
+        source: 'Save',
+      },
+    ]);
+    expect(result).toEqual({
+      'src/a.ts': new Set([
+        toMessageKey('Save', 'button'),
+      ]),
+    });
+  });
+
+  it('emits separate keys for same source with and without context', () => {
+    const result = toExtractedKeysForFile('src/a.ts', [
+      {
+        id: 'Save',
+        locations: [],
+        placeholders: [],
+        source: 'Save',
+      },
+      {
+        context: 'button',
+        id: 'Save',
+        locations: [],
+        placeholders: [],
+        source: 'Save',
+      },
+    ]);
+    expect(result['src/a.ts']).toEqual(
+      new Set([
+        toMessageKey('Save'),
+        toMessageKey('Save', 'button'),
+      ]),
+    );
   });
 });

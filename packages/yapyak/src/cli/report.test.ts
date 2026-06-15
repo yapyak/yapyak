@@ -149,4 +149,21 @@ describe('buildReport', () => {
       source: 'Save',
     });
   });
+
+  it('emits YPK304 when a non-default locale file is not valid JSON', () => {
+    writeFileSync(
+      join(root, 'src', 'a.ts'),
+      `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
+    );
+    writeFileSync(join(root, 'locales', 'sv.json'), '{ not valid');
+    const report = buildReport({
+      ...baseOptions,
+      projectRoot: root,
+    });
+    const corrupt = report.diagnostics.find(
+      (diagnostic) => diagnostic.code === 'YPK304',
+    );
+    expect(corrupt).toBeDefined();
+    expect(corrupt?.fileId).toBe('locales/sv.json');
+  });
 });

@@ -12,3 +12,35 @@ export function writeAtomic(path: string, content: string): void {
     throw cause;
   }
 }
+
+export function writeAtomicAll(
+  writes: {
+    content: string;
+    path: string;
+  }[],
+): void {
+  const staged: {
+    finalPath: string;
+    tempPath: string;
+  }[] = [];
+  try {
+    for (const [index, write] of writes.entries()) {
+      const tempPath = `${write.path}.${process.pid}.${Date.now()}.${index}.tmp`;
+      writeFileSync(tempPath, write.content);
+      staged.push({
+        finalPath: write.path,
+        tempPath,
+      });
+    }
+  } catch (cause) {
+    for (const stage of staged) {
+      try {
+        unlinkSync(stage.tempPath);
+      } catch {}
+    }
+    throw cause;
+  }
+  for (const stage of staged) {
+    renameSync(stage.tempPath, stage.finalPath);
+  }
+}

@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetWarn, setWarn } from '../warn';
 import {
@@ -38,7 +38,12 @@ function makeMeta(
   };
 }
 
+beforeEach(() => {
+  vi.stubGlobal('window', {});
+});
+
 afterEach(() => {
+  vi.unstubAllGlobals();
   resetLocale();
 });
 
@@ -54,6 +59,7 @@ describe('getLocale', () => {
   });
 
   it('warns once with `YPK_SSR_LEAK_RISK` when no request is bound on the server', () => {
+    vi.unstubAllGlobals();
     const warnSpy =
       vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
     setWarn(warnSpy);
@@ -92,6 +98,25 @@ describe('setLocale', () => {
   it('blocks unsupported locale', () => {
     setLocale('de');
     expect(getLocale()).toBe('en');
+  });
+
+  it('warns with `YPK_SET_LOCALE_SSR_LEAK_RISK` and no-ops on the server with `none` persistence', () => {
+    vi.unstubAllGlobals();
+    const warnSpy =
+      vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
+    setWarn(warnSpy);
+    try {
+      setLocale('sv');
+    } finally {
+      resetWarn();
+    }
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('leaks between concurrent requests'),
+      expect.objectContaining({
+        code: 'YPK_SET_LOCALE_SSR_LEAK_RISK',
+        requested: 'sv',
+      }),
+    );
   });
 });
 

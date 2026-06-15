@@ -6,6 +6,7 @@ import {
   fetchWithRetry,
   parseResponseBody,
   parseTranslationsBatch,
+  resolveMaxTokens,
   stripCodeFence,
 } from 'yapyak/translator/internal';
 
@@ -81,6 +82,9 @@ const DEFAULT_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta';
 const DEFAULT_TEMPERATURE = 0.2;
 const DEFAULT_TIMEOUT = 30_000;
 const DEFAULT_MAX_RETRIES = 2;
+const MAX_TOKENS_CAP = 8000;
+const MAX_TOKENS_FLOOR = 1024;
+const MAX_TOKENS_PER_ITEM = 96;
 
 /**
  * Creates a Gemini translator.
@@ -129,6 +133,14 @@ export function gemini(options: GeminiOptions): Translator {
     translate: async (params) => {
       const { items, signal, sourceLocale, targetLocales } = params;
       const url = `${endpoint}/models/${model}:generateContent`;
+      const resolvedMaxTokens = resolveMaxTokens({
+        cap: MAX_TOKENS_CAP,
+        floor: MAX_TOKENS_FLOOR,
+        itemCount: items.length,
+        localeCount: targetLocales.length,
+        override: maxTokens,
+        perItem: MAX_TOKENS_PER_ITEM,
+      });
       const init: RequestInit = {
         body: JSON.stringify({
           contents: [
@@ -142,13 +154,9 @@ export function gemini(options: GeminiOptions): Translator {
             },
           ],
           generationConfig: {
+            maxOutputTokens: resolvedMaxTokens,
             responseMimeType: 'application/json',
             temperature,
-            ...(maxTokens === undefined
-              ? {}
-              : {
-                  maxOutputTokens: maxTokens,
-                }),
           },
           systemInstruction: {
             parts: [

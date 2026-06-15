@@ -1,10 +1,15 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetLocale, setLocale } from '../locale';
 import { literal, placeholder } from '../template';
 import { pick } from './pick';
 
+beforeEach(() => {
+  vi.stubGlobal('window', {});
+});
+
 afterEach(() => {
+  vi.unstubAllGlobals();
   resetLocale();
 });
 

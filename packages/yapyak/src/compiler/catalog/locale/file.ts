@@ -4,7 +4,7 @@ import type { OrphanCache } from './orphan';
 
 import { toMessageKey } from '../../parser';
 import { compareKeys, stringifyCanonical } from '../canonical';
-import { writeAtomic } from './atomic';
+import { writeAtomicAll } from './atomic';
 import { validateLocaleCode } from './code';
 import {
   CorruptOrphanCacheError,
@@ -226,8 +226,13 @@ export function writeLocaleFiles(writes: WriteLocaleFileInput[]): void {
     mkdirSync(dirname(write.filePath), {
       recursive: true,
     });
-    writeAtomic(write.filePath, stringifyCanonical(write.after));
   }
+  writeAtomicAll(
+    writes.map((write) => ({
+      content: stringifyCanonical(write.after),
+      path: write.filePath,
+    })),
+  );
 }
 
 export function writeLocaleFile(input: WriteLocaleFileInput): void {
@@ -466,7 +471,7 @@ export function syncLocaleFiles(
     }
   }
 
-  const orphansChanged = applyOrphanMutations(
+  const orphansChanged = mergeOrphans(
     droppedTranslations,
     options?.now ?? (() => new Date().toISOString()),
     orphans,
@@ -623,7 +628,7 @@ function findInFlightDrop(
   return best;
 }
 
-function applyOrphanMutations(
+function mergeOrphans(
   droppedTranslations: Map<string, Map<string, Record<string, string>>>,
   now: () => string,
   orphans: OrphanCache,

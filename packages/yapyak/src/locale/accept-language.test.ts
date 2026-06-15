@@ -48,23 +48,20 @@ describe('parseAcceptLanguage', () => {
     ]);
   });
 
-  it('preserves the default weight when q is non-numeric', () => {
+  it('drops the segment when q is non-numeric', () => {
     expect(parseAcceptLanguage('sv;q=abc,fr')).toEqual([
-      'sv',
       'fr',
     ]);
   });
 
-  it('preserves the default weight when q is above 1', () => {
+  it('drops the segment when q is above 1', () => {
     expect(parseAcceptLanguage('sv;q=5,fr;q=0.5')).toEqual([
-      'sv',
       'fr',
     ]);
   });
 
-  it('preserves the default weight when q is negative', () => {
+  it('drops the segment when q is negative', () => {
     expect(parseAcceptLanguage('sv;q=-1,fr')).toEqual([
-      'sv',
       'fr',
     ]);
   });

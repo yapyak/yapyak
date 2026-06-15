@@ -6,6 +6,7 @@ import {
   fetchWithRetry,
   parseResponseBody,
   parseTranslationsBatch,
+  resolveMaxTokens,
 } from 'yapyak/translator/internal';
 
 /** Options for {@link ollama}. */
@@ -78,6 +79,9 @@ const DEFAULT_ENDPOINT = 'http://localhost:11434/api/generate';
 const DEFAULT_TEMPERATURE = 0.2;
 const DEFAULT_TIMEOUT = 120_000;
 const DEFAULT_MAX_RETRIES = 1;
+const MAX_TOKENS_CAP = 4000;
+const MAX_TOKENS_FLOOR = 1024;
+const MAX_TOKENS_PER_ITEM = 96;
 
 /**
  * Creates an Ollama translator.
@@ -115,17 +119,21 @@ export function ollama(options: OllamaOptions = {}): Translator {
     id: 'ollama',
     translate: async (params) => {
       const { items, signal, sourceLocale, targetLocales } = params;
+      const resolvedMaxTokens = resolveMaxTokens({
+        cap: MAX_TOKENS_CAP,
+        floor: MAX_TOKENS_FLOOR,
+        itemCount: items.length,
+        localeCount: targetLocales.length,
+        override: maxTokens,
+        perItem: MAX_TOKENS_PER_ITEM,
+      });
       const init: RequestInit = {
         body: JSON.stringify({
           format: 'json',
           model,
           options: {
+            num_predict: resolvedMaxTokens,
             temperature,
-            ...(maxTokens === undefined
-              ? {}
-              : {
-                  num_predict: maxTokens,
-                }),
           },
           prompt: JSON.stringify(items),
           stream: false,

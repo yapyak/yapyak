@@ -212,7 +212,7 @@ describe('ollama', () => {
     let capturedBody:
       | {
           options?: {
-            // biome-ignore lint/style/useNamingConvention: needed
+            // biome-ignore lint/style/useNamingConvention: yap yap yap
             num_predict?: number;
           };
         }
@@ -220,7 +220,7 @@ describe('ollama', () => {
     vi.stubGlobal('fetch', async (_url: string, init: RequestInit) => {
       capturedBody = JSON.parse(init.body as string) as {
         options?: {
-          // biome-ignore lint/style/useNamingConvention: needed
+          // biome-ignore lint/style/useNamingConvention: yap yap yap
           num_predict?: number;
         };
       };
@@ -248,7 +248,7 @@ describe('ollama', () => {
     expect(capturedBody?.options?.num_predict).toBe(4096);
   });
 
-  it('omits `num_predict` from `options` when `maxTokens` is not set', async () => {
+  it('sends a sensible `num_predict` default when `maxTokens` is not set', async () => {
     let capturedBody:
       | {
           options?: Record<string, unknown>;
@@ -277,6 +277,7 @@ describe('ollama', () => {
       sourceLocale: 'en',
       targetLocale: 'sv',
     });
-    expect(capturedBody?.options).not.toHaveProperty('num_predict');
+    expect(typeof capturedBody?.options?.num_predict).toBe('number');
+    expect(capturedBody?.options?.num_predict).toBeGreaterThan(0);
   });
 });

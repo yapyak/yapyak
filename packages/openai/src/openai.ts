@@ -6,6 +6,7 @@ import {
   fetchWithRetry,
   parseResponseBody,
   parseTranslationsBatch,
+  resolveMaxTokens,
   stripCodeFence,
 } from 'yapyak/translator/internal';
 
@@ -87,6 +88,9 @@ const DEFAULT_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
 const DEFAULT_TEMPERATURE = 0.2;
 const DEFAULT_TIMEOUT = 30_000;
 const DEFAULT_MAX_RETRIES = 2;
+const MAX_TOKENS_CAP = 16_000;
+const MAX_TOKENS_FLOOR = 1024;
+const MAX_TOKENS_PER_ITEM = 96;
 const REASONING_MODEL_RX = /^(gpt-5|o[1-9])/;
 
 /**
@@ -155,12 +159,18 @@ export function openai(options: OpenAIOptions): Translator {
       if (!isReasoningModel) {
         body.temperature = temperature;
       }
-      if (maxTokens !== undefined) {
-        if (isReasoningModel) {
-          body.max_completion_tokens = maxTokens;
-        } else {
-          body.max_tokens = maxTokens;
-        }
+      const resolvedMaxTokens = resolveMaxTokens({
+        cap: MAX_TOKENS_CAP,
+        floor: MAX_TOKENS_FLOOR,
+        itemCount: items.length,
+        localeCount: targetLocales.length,
+        override: maxTokens,
+        perItem: MAX_TOKENS_PER_ITEM,
+      });
+      if (isReasoningModel) {
+        body.max_completion_tokens = resolvedMaxTokens;
+      } else {
+        body.max_tokens = resolvedMaxTokens;
       }
       if (seed !== undefined) {
         body.seed = seed;

@@ -370,9 +370,9 @@ describe('openai', () => {
       targetLocale: 'sv',
     });
     const body = stub.body() as {
-      // biome-ignore lint/style/useNamingConvention: needed
+      // biome-ignore lint/style/useNamingConvention: yap yap yap
       max_completion_tokens?: number;
-      // biome-ignore lint/style/useNamingConvention: needed
+      // biome-ignore lint/style/useNamingConvention: yap yap yap
       max_tokens?: number;
     };
     expect(body.max_completion_tokens).toBe(4096);
@@ -392,9 +392,9 @@ describe('openai', () => {
       targetLocale: 'sv',
     });
     const body = stub.body() as {
-      // biome-ignore lint/style/useNamingConvention: needed
+      // biome-ignore lint/style/useNamingConvention: yap yap yap
       max_completion_tokens?: number;
-      // biome-ignore lint/style/useNamingConvention: needed
+      // biome-ignore lint/style/useNamingConvention: yap yap yap
       max_tokens?: number;
     };
     expect(body.max_tokens).toBe(4096);

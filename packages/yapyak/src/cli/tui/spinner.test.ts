@@ -106,4 +106,21 @@ describe('spinner', () => {
     expect(final).not.toContain('\x1b[K');
     expect(final).toContain('Settings');
   });
+
+  it('stops the interval on `stop` without writing a final symbol', () => {
+    const instance = spinner('Loading...');
+    const before = writes.length;
+    instance.stop();
+    vi.advanceTimersByTime(1000);
+    const after = writes.length;
+    expect(after).toBe(before);
+  });
+
+  it('treats `stop` as idempotent', () => {
+    const instance = spinner('Loading...');
+    instance.stop();
+    instance.stop();
+    vi.advanceTimersByTime(1000);
+    expect(writes.join('')).toContain('Loading...');
+  });
 });

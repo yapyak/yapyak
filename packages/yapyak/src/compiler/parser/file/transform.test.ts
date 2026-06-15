@@ -81,6 +81,23 @@ describe('transformFile', () => {
       expect(code).not.toContain("t('Hi {name}'");
     });
 
+    it('elides a placeholder with a non-ASCII identifier', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source: `
+          import { t } from 'yapyak';
+          export function greet(café) {
+            return t('Hi {café}', { café });
+          }
+        `,
+      });
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
+      expect(code).toContain('`Hi ${café}`');
+      expect(code).not.toContain('Hi {café}');
+    });
+
     it('elides multiple placeholders with named expressions', () => {
       const code = runTransform({
         locales: [
