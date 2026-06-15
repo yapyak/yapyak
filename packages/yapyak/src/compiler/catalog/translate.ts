@@ -144,13 +144,26 @@ export async function autoTranslate(
       errors.push({
         error: new Error(
           `Translation placeholder mismatch: ${parity.issues
-            .map((issue) =>
-              issue.kind === 'missing'
-                ? `missing {${issue.name}}`
-                : issue.kind === 'extra'
-                  ? `extra {${issue.name}}`
-                  : `kind mismatch for {${issue.name}} (${issue.sourceKind} vs ${issue.targetKind})`,
-            )
+            .map((issue) => {
+              switch (issue.kind) {
+                case 'missing':
+                  return `missing {${issue.name}}`;
+                case 'extra':
+                  return `extra {${issue.name}}`;
+                case 'kind-mismatch':
+                  return `kind mismatch for {${issue.name}} (${issue.sourceKind} vs ${issue.targetKind})`;
+                case 'missing-other-branch':
+                  return `missing \`other\` branch in {${issue.name}}`;
+                case 'missing-select-branch':
+                  return `missing select branch "${issue.branch}" in {${issue.name}}`;
+                default: {
+                  const exhaustive: never = issue.kind;
+                  throw new Error(
+                    `unreachable parity issue kind: ${String(exhaustive)}`,
+                  );
+                }
+              }
+            })
             .join(', ')}`,
         ),
         fileId: stub.fileId,

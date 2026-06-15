@@ -24,6 +24,7 @@ See `agents/typescript/diagnostics.md` for the authoring rules.
 - `YAP0010` (`PLACEHOLDER_KIND_MISMATCH`) — Placeholder kind in target differs from source.
 - `YAP0011` (`PLACEHOLDER_MISSING_IN_TARGET`) — Source placeholder is missing from the translation.
 - `YAP0012` (`PLACEHOLDER_MISSING_IN_SOURCE`) — Translation placeholder is missing from the source.
+- `YAP0038` (`PLACEHOLDER_BRANCH_MISSING_IN_TARGET`) — A `select` branch in the source is missing from the translation.
 
 ## Catalog validation (compile-time)
 

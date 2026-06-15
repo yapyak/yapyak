@@ -263,6 +263,13 @@ export const YAP = {
     message: ({ timeZone }: { timeZone: string }): string =>
       `Unsupported time zone "${timeZone}". Yapyak rendered the date in the system time zone.`,
   },
+  PLACEHOLDER_BRANCH_MISSING_IN_TARGET: {
+    code: 'YAP0038',
+    hint: ({ branch, name }: { branch: string; name: string }): string =>
+      `Add the \`${branch}\` branch to \`{${name}}\` in the translation.`,
+    message: ({ branch, name }: { branch: string; name: string }): string =>
+      `Placeholder \`{${name}}\` branch \`${branch}\` is in the source but missing from the translation.`,
+  },
 } as const;
 
 export type YapKey = keyof typeof YAP;

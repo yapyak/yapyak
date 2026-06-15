@@ -198,6 +198,23 @@ t('{n, plural, one {# item} other {# items}}', { n });            // ✓
 
 **Fix.** Remove the extra placeholder from the translation, or add it to the source and pass a value at the call site.
 
+### YAP0038 — PLACEHOLDER_BRANCH_MISSING_IN_TARGET
+
+**Severity:** error.
+
+**What happened.** A `select` placeholder branch in the source is missing from the translation.
+
+**Why it matters.** `select` branches are domain-meaningful (e.g. `{theme, select, dark {…} light {…} other {…}}` — `dark` and `light` are values your code passes in). Unlike `plural` categories, they aren’t locale-rule-driven. A translation that drops one will render the fallback `other` branch when that value is passed, hiding the intended copy.
+
+**Fix.** Include every source `select` branch in the translation. If a locale genuinely wants the same text for two branches, repeat the text:
+
+```jsonc
+// source: "{theme, select, dark {Dark mode} light {Light mode} other {System}}"
+{ "sv": "{theme, select, dark {Mörkt läge} light {Ljust läge} other {System}}" }
+```
+
+`plural` and `selectordinal` branches are NOT subject to this check — locales legitimately have different plural categories (Polish needs `one`, `few`, `many`, `other`; Arabic adds `zero` and `two`). Those are governed by [YAP0008](#yap0008-—-placeholder_missing_other) which only enforces the `other` fallback.
+
 ## Catalog — locale files
 
 These fire when yapyak reads your locale files and finds a structural problem.

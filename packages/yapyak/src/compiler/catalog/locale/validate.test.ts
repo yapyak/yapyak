@@ -310,6 +310,43 @@ describe('validateIcuPairs', () => {
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0010'),
     ).toBe(true);
   });
+
+  it('emits YAP0008 when the target plural drops the `other` branch', () => {
+    const messages = [
+      makeMessage('You have {count, plural, one {# item} other {# items}}', [
+        makeLocation(),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        'You have {count, plural, one {# item} other {# items}}':
+          'Du har {count, plural, one {# objekt}}',
+      },
+    };
+    const diagnostics = validateIcuPairs('sv.json', localeFile, messages);
+    expect(
+      diagnostics.some((diagnostic) => diagnostic.code === 'YAP0008'),
+    ).toBe(true);
+  });
+
+  it('emits YAP0038 when the target select drops a source-defined branch', () => {
+    const source =
+      '{theme, select, dark {Dark mode} light {Light mode} other {System}}';
+    const messages = [
+      makeMessage(source, [
+        makeLocation(),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        [source]: '{theme, select, dark {Mörkt} other {System}}',
+      },
+    };
+    const diagnostics = validateIcuPairs('sv.json', localeFile, messages);
+    expect(
+      diagnostics.some((diagnostic) => diagnostic.code === 'YAP0038'),
+    ).toBe(true);
+  });
 });
 
 describe('validateTranslationParity', () => {
@@ -351,5 +388,50 @@ describe('validateTranslationParity', () => {
     );
     expect(result.ok).toBe(false);
     expect(result.issues[0]?.kind).toBe('kind-mismatch');
+  });
+
+  it('returns a `missing-other-branch` issue when the target plural drops `other`', () => {
+    const result = validateTranslationParity(
+      '{count, plural, one {# item} other {# items}}',
+      '{count, plural, one {# objekt}}',
+    );
+    expect(result.ok).toBe(false);
+    expect(result.issues).toContainEqual({
+      kind: 'missing-other-branch',
+      name: 'count',
+    });
+  });
+
+  it('returns a `missing-other-branch` issue when the target select drops `other`', () => {
+    const result = validateTranslationParity(
+      '{theme, select, dark {Dark mode} other {Light mode}}',
+      '{theme, select, dark {Mörkt}}',
+    );
+    expect(result.ok).toBe(false);
+    expect(result.issues).toContainEqual({
+      kind: 'missing-other-branch',
+      name: 'theme',
+    });
+  });
+
+  it('returns a `missing-select-branch` issue when the target select drops a domain branch', () => {
+    const result = validateTranslationParity(
+      '{theme, select, dark {Dark mode} light {Light mode} other {System}}',
+      '{theme, select, dark {Mörkt} other {System}}',
+    );
+    expect(result.ok).toBe(false);
+    expect(result.issues).toContainEqual({
+      branch: 'light',
+      kind: 'missing-select-branch',
+      name: 'theme',
+    });
+  });
+
+  it('returns `ok: true` when target plural adds locale-required branches beyond source', () => {
+    const result = validateTranslationParity(
+      '{count, plural, one {# item} other {# items}}',
+      '{count, plural, one {# objekt} few {# objekt} many {# objekt} other {# objekt}}',
+    );
+    expect(result.ok).toBe(true);
   });
 });

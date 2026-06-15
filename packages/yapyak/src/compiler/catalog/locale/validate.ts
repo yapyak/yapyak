@@ -1,13 +1,24 @@
+import type { Template } from '../../../template';
 import type { Diagnostic, ExtractedMessage, Placeholder } from '../../parser';
 import type { LocaleFile, ParseEntryError } from './file';
 
 import { buildDiagnostic } from '../../../diagnostic';
+import { parseTemplate } from '../../../template';
 import { parsePlaceholders } from '../../parser';
 import { stripBom } from './bom';
 import { findTranslation, parseEntry } from './file';
 import { isPlainObject } from './plain-object';
 import { isUnsafeKey } from './unsafe-key';
 import { existsSync, readFileSync } from 'node:fs';
+
+type BranchKind = 'plural' | 'selectordinal' | 'select';
+
+type BranchEntry = {
+  branches: Set<string>;
+  kind: BranchKind;
+};
+
+type BranchesByName = Map<string, BranchEntry>;
 
 const STUB_RANGE = {
   end: {
@@ -155,7 +166,13 @@ function entryErrorMessage(
 
 export type TranslationParityResult = {
   issues: {
-    kind: 'missing' | 'extra' | 'kind-mismatch';
+    branch?: string;
+    kind:
+      | 'missing'
+      | 'extra'
+      | 'kind-mismatch'
+      | 'missing-other-branch'
+      | 'missing-select-branch';
     name: string;
     sourceKind?: Placeholder['kind'];
     targetKind?: Placeholder['kind'];
@@ -199,6 +216,31 @@ export function validateTranslationParity(
         kind: 'extra',
         name,
       });
+    }
+  }
+  const sourceBranchesByName = extractBranchesByName(source);
+  const targetBranchesByName = extractBranchesByName(target);
+  for (const [name, sourceEntry] of sourceBranchesByName) {
+    const targetEntry = targetBranchesByName.get(name);
+    if (!targetEntry || targetEntry.kind !== sourceEntry.kind) {
+      continue;
+    }
+    if (!targetEntry.branches.has('other')) {
+      issues.push({
+        kind: 'missing-other-branch',
+        name,
+      });
+    }
+    if (sourceEntry.kind === 'select') {
+      for (const branch of sourceEntry.branches) {
+        if (!targetEntry.branches.has(branch)) {
+          issues.push({
+            branch,
+            kind: 'missing-select-branch',
+            name,
+          });
+        }
+      }
     }
   }
   return {
@@ -274,9 +316,77 @@ export function validateIcuPairs(
           );
         }
       }
+      const sourceBranchesByName = extractBranchesByName(message.source);
+      const targetBranchesByName = extractBranchesByName(target);
+      for (const [name, sourceEntry] of sourceBranchesByName) {
+        const targetEntry = targetBranchesByName.get(name);
+        if (!targetEntry || targetEntry.kind !== sourceEntry.kind) {
+          continue;
+        }
+        if (!targetEntry.branches.has('other')) {
+          diagnostics.push(
+            buildDiagnostic(
+              'PLACEHOLDER_MISSING_OTHER',
+              {
+                name,
+              },
+              diagnosticContext,
+            ),
+          );
+        }
+        if (sourceEntry.kind === 'select') {
+          for (const branch of sourceEntry.branches) {
+            if (!targetEntry.branches.has(branch)) {
+              diagnostics.push(
+                buildDiagnostic(
+                  'PLACEHOLDER_BRANCH_MISSING_IN_TARGET',
+                  {
+                    branch,
+                    name,
+                  },
+                  diagnosticContext,
+                ),
+              );
+            }
+          }
+        }
+      }
     }
   }
   return diagnostics;
+}
+
+function extractBranchesByName(source: string): BranchesByName {
+  const { template } = parseTemplate(source);
+  const branchesByName: BranchesByName = new Map();
+  walkForBranches(template, branchesByName);
+  return branchesByName;
+}
+
+function walkForBranches(template: Template, out: BranchesByName): void {
+  for (const node of template) {
+    if (node.kind === 'plural') {
+      if (!out.has(node.name)) {
+        out.set(node.name, {
+          branches: new Set(Object.keys(node.branches)),
+          kind: node.type === 'ordinal' ? 'selectordinal' : 'plural',
+        });
+      }
+      for (const branch of Object.values(node.branches)) {
+        walkForBranches(branch, out);
+      }
+    } else if (node.kind === 'select') {
+      if (!out.has(node.name)) {
+        out.set(node.name, {
+          branches: new Set(Object.keys(node.branches)),
+          kind: 'select',
+        });
+      }
+      for (const branch of Object.values(node.branches)) {
+        walkForBranches(branch, out);
+      }
+    }
+  }
 }
 
 function buildPlaceholderIndex(
