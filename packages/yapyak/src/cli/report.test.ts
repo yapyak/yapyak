@@ -166,4 +166,53 @@ describe('buildReport', () => {
     expect(corrupt).toBeDefined();
     expect(corrupt?.fileId).toBe('locales/sv.json');
   });
+
+  it('emits YAP0014 when a parsed locale file has an unsafe path key', () => {
+    writeFileSync(
+      join(root, 'src', 'a.ts'),
+      `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
+    );
+    writeFileSync(
+      join(root, 'locales', 'sv.json'),
+      JSON.stringify({
+        '../escape/Bar.tsx': {
+          Save: 'Spara',
+        },
+      }),
+    );
+    const report = buildReport({
+      ...baseOptions,
+      projectRoot: root,
+    });
+    const unsafe = report.diagnostics.find(
+      (diagnostic) => diagnostic.code === 'YAP0014',
+    );
+    expect(unsafe).toBeDefined();
+    expect(unsafe?.fileId).toBe('locales/sv.json');
+  });
+
+  it('emits YAP0015 when a parsed locale file has a non-NFC source key', () => {
+    writeFileSync(
+      join(root, 'src', 'a.ts'),
+      `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
+    );
+    const nfdSource = 'é';
+    writeFileSync(
+      join(root, 'locales', 'sv.json'),
+      JSON.stringify({
+        'src/a.ts': {
+          [nfdSource]: 'Spara',
+        },
+      }),
+    );
+    const report = buildReport({
+      ...baseOptions,
+      projectRoot: root,
+    });
+    const notNfc = report.diagnostics.find(
+      (diagnostic) => diagnostic.code === 'YAP0015',
+    );
+    expect(notNfc).toBeDefined();
+    expect(notNfc?.fileId).toBe('locales/sv.json');
+  });
 });

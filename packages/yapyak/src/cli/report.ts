@@ -7,6 +7,7 @@ import type { FilterPattern } from '../config';
 import type { Processor } from '../processor';
 
 import {
+  YAP,
   extractFile,
   findTranslation,
   fromMessageKey,
@@ -108,13 +109,37 @@ export function buildReport(input: BuildReportInput): Report {
       continue;
     }
     const localePath = join(localesPath, `${locale}.json`);
+    const localeFileId = `${input.localesDir}/${locale}.json`;
+    const structuralDiagnostics = validateLocaleFile(localeFileId, localePath);
+    diagnostics.push(...structuralDiagnostics);
+    const hasParseFailure = structuralDiagnostics.some(
+      (diagnostic) => diagnostic.code === YAP.CATALOG_INVALID_JSON.code,
+    );
     let localeFile: LocaleFile;
+    if (hasParseFailure) {
+      perLocale[locale] = {
+        missing: totalMessages,
+        translated: 0,
+      };
+      for (const [fileId, keys] of Object.entries(keysByFile)) {
+        for (const key of keys) {
+          const { context, source } = fromMessageKey(key);
+          const entry: MissingEntry = {
+            fileId,
+            locale,
+            source,
+          };
+          if (context !== undefined) {
+            entry.context = context;
+          }
+          missing.push(entry);
+        }
+      }
+      continue;
+    }
     try {
       localeFile = readLocaleFile(localePath);
     } catch {
-      diagnostics.push(
-        ...validateLocaleFile(`${input.localesDir}/${locale}.json`, localePath),
-      );
       perLocale[locale] = {
         missing: totalMessages,
         translated: 0,

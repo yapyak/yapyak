@@ -6,7 +6,6 @@ import {
   findContextDiagnostics,
   readLocaleFile,
   validateIcuPairs,
-  validateLocaleFile,
 } from '../../compiler/internal';
 import { buildReport } from '../report';
 import { color, header, symbol } from '../tui';
@@ -40,14 +39,13 @@ export function check(config: Config, projectRoot: string): number {
       continue;
     }
     const localeFilePath = join(localesPath, `${locale}.json`);
-    const fileId = `${locale}.json`;
-    const localeFileDiagnostics = validateLocaleFile(fileId, localeFilePath);
-    allDiagnostics.push(...localeFileDiagnostics);
-    if (
-      localeFileDiagnostics.some(
-        (diagnostic) => diagnostic.code === YAP.CATALOG_INVALID_JSON.code,
-      )
-    ) {
+    const fileId = `${config.localesDir}/${locale}.json`;
+    const hasParseFailure = report.diagnostics.some(
+      (diagnostic) =>
+        diagnostic.fileId === fileId &&
+        diagnostic.code === YAP.CATALOG_INVALID_JSON.code,
+    );
+    if (hasParseFailure) {
       continue;
     }
     const localeFile = readLocaleFile(localeFilePath);

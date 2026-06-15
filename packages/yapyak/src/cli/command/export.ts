@@ -55,6 +55,17 @@ export function exportCommand(
     processors: config.processors,
     projectRoot,
   });
+
+  const errorCount = report.diagnostics.filter(
+    (diagnostic) => diagnostic.severity === 'error',
+  ).length;
+  if (errorCount > 0) {
+    process.stderr.write(
+      `\n  ${symbol.cross} ${color.red(`${errorCount} error${errorCount === 1 ? '' : 's'} in locale files`)}\n  ${color.dim('Refusing to export — run `yapyak check` to see details.')}\n\n`,
+    );
+    return 1;
+  }
+
   const allLocales = report.locales;
   const targetLocales =
     localeFilter.length === 0

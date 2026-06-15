@@ -13,7 +13,7 @@ export default defineConfig({
         'packages/{doc-extractor,tsdown-config,typescript-config,vitest-config}/**',
       ],
       include: [
-        'packages/*/src/**',
+        'packages/*/src/**/*.{ts,tsx}',
       ],
     },
     projects: [

@@ -155,4 +155,22 @@ describe('exportCommand', () => {
     expect(code).toBe(0);
     expect(existsSync(join(root, 'out-dir', 'sv.json'))).toBe(true);
   });
+
+  it('blocks the export when a locale file has an unsafe path key', () => {
+    writeFileSync(
+      join(root, 'locales', 'sv.json'),
+      JSON.stringify({
+        '../escape/Bar.tsx': {
+          Save: 'Spara',
+        },
+      }),
+    );
+    const code = exportCommand(makeConfig(), root, {
+      locales: [],
+      split: false,
+    });
+    expect(code).toBe(1);
+    expect(errorWrites.join('')).toContain('error');
+    expect(errorWrites.join('')).toContain('Refusing to export');
+  });
 });
