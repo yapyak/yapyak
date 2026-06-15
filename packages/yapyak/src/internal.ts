@@ -6,7 +6,6 @@ export {
   getDevVersion,
   invalidateFile,
   registerCatalog,
-  resetDevStore,
   setCatalogEntry,
   subscribeDev,
 } from './dev-store';
@@ -27,7 +26,7 @@ export {
   select,
   time,
 } from './template';
-export { autoRegisterTracker, registerTracker, runTrackers } from './tracker';
+export { autoRegisterTracker } from './tracker';
 export {
   parseRichText,
   pick,
