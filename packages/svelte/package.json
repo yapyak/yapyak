@@ -2,7 +2,6 @@
   "name": "@yapyak/svelte",
   "version": "0.0.0",
   "license": "MIT",
-  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {
@@ -11,9 +10,9 @@
       "default": "./src/index.ts"
     },
     "./internal": {
-      "types": "./src/internal.svelte.ts",
-      "svelte": "./src/internal.svelte.ts",
-      "default": "./src/internal.svelte.ts"
+      "types": "./src/internal.ts",
+      "svelte": "./src/internal.ts",
+      "default": "./src/internal.ts"
     },
     "./processor": {
       "types": "./dist/processor.d.ts",

@@ -1,3 +1,4 @@
+export type { Patch } from './hmr-patch';
 export type { RuntimeMock } from './runtime-mock';
 export type { RichTextNode } from './translation';
 export type { WarnFn } from './warn';
@@ -9,6 +10,7 @@ export {
   setCatalogEntry,
   subscribeDev,
 } from './dev-store';
+export { applyPatches } from './hmr-patch';
 export { registerHotDispose } from './hot-dispose';
 export {
   autoSubscribeLocale,
