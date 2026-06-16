@@ -75,25 +75,15 @@ export function normalizeYapyakConfig(
   config: YapyakConfig,
 ): NormalizedYapyakConfig {
   const processors = config.processors ?? [];
-  const autoTranslateThreshold =
-    config.autoTranslateThreshold ?? DEFAULT_AUTO_TRANSLATE_THRESHOLD;
-  if (!Number.isInteger(autoTranslateThreshold) || autoTranslateThreshold < 0) {
-    throw new Error(
-      `[yapyak] autoTranslateThreshold must be a non-negative integer, got ${String(autoTranslateThreshold)}.`,
-    );
-  }
-  const defaultLocale = config.defaultLocale ?? DEFAULT_LOCALE;
-  assertNonEmptyString(defaultLocale, 'defaultLocale');
-  const localesDir = config.localesDir ?? DEFAULT_LOCALES_DIR;
-  assertNonEmptyString(localesDir, 'localesDir');
   return {
-    autoTranslateThreshold,
-    defaultLocale,
+    autoTranslateThreshold:
+      config.autoTranslateThreshold ?? DEFAULT_AUTO_TRANSLATE_THRESHOLD,
+    defaultLocale: config.defaultLocale ?? DEFAULT_LOCALE,
     detectAcceptLanguage: config.detectAcceptLanguage ?? false,
-    examples: resolveExamples(config),
+    examples: config.examples ?? resolveExamplesDefault(config.translator),
     exclude: resolvePatterns(config.exclude ?? DEFAULT_EXCLUDE, processors),
     include: resolvePatterns(config.include ?? DEFAULT_INCLUDE, processors),
-    localesDir,
+    localesDir: config.localesDir ?? DEFAULT_LOCALES_DIR,
     persistence: normalizePersistenceConfig(config.persistence),
     preserveTranslationsOnRename:
       config.preserveTranslationsOnRename ?? !config.translator,
@@ -123,11 +113,6 @@ function normalizeEntry(
 ): string | RegExp {
   if (entry instanceof RegExp) {
     return entry;
-  }
-  if (entry === '') {
-    throw new Error(
-      '[yapyak] include/exclude entry cannot be an empty string.',
-    );
   }
   if (!isDirectoryShortcut(entry, extensions)) {
     return entry;
@@ -164,27 +149,12 @@ function resolveExtensions(processors: Processor[]): string[] {
   ].sort();
 }
 
-function resolveExamples(config: YapyakConfig): number {
-  if (config.examples !== undefined) {
-    if (!Number.isInteger(config.examples) || config.examples < 0) {
-      throw new Error(
-        `[yapyak] examples must be a non-negative integer, got ${String(config.examples)}.`,
-      );
-    }
-    return config.examples;
-  }
-  if (config.translator?.context === 'none') {
+function resolveExamplesDefault(translator: Translator | undefined): number {
+  if (translator?.context === 'none') {
     return 0;
   }
   return DEFAULT_EXAMPLES;
 }
-
-const PERSISTENCE_KINDS = [
-  'cookie',
-  'local-storage',
-  'none',
-  'url',
-] as const;
 
 function normalizePersistenceConfig(
   config: PersistenceConfig | undefined,
@@ -195,7 +165,6 @@ function normalizePersistenceConfig(
     };
   }
   if (typeof config === 'string') {
-    assertKnownDiscriminator(config, PERSISTENCE_KINDS, 'persistence');
     switch (config) {
       case 'cookie':
         return {
@@ -216,35 +185,24 @@ function normalizePersistenceConfig(
         return {
           type: 'none',
         };
-      default: {
-        const exhaustive: never = config;
-        throw new Error(
-          `[yapyak] unreachable persistence kind: ${String(exhaustive)}`,
-        );
-      }
+      default:
+        return {
+          type: 'none',
+        };
     }
   }
-  assertKnownDiscriminator(config.type, PERSISTENCE_KINDS, 'persistence.type');
   switch (config.type) {
-    case 'cookie': {
-      if (config.name !== undefined) {
-        assertNonEmptyString(config.name, 'persistence.name');
-      }
+    case 'cookie':
       return {
         name: config.name ?? DEFAULT_COOKIE_NAME,
         secure: config.secure ?? false,
         type: 'cookie',
       };
-    }
-    case 'local-storage': {
-      if (config.key !== undefined) {
-        assertNonEmptyString(config.key, 'persistence.key');
-      }
+    case 'local-storage':
       return {
         key: config.key ?? DEFAULT_STORAGE_KEY,
         type: 'local-storage',
       };
-    }
     case 'url':
       return config.match
         ? {
@@ -258,33 +216,9 @@ function normalizePersistenceConfig(
       return {
         type: 'none',
       };
-    default: {
-      const exhaustive: never = config;
-      throw new Error(
-        `[yapyak] unreachable persistence kind: ${String(exhaustive)}`,
-      );
-    }
-  }
-}
-
-function assertNonEmptyString(
-  value: unknown,
-  field: string,
-): asserts value is string {
-  if (typeof value !== 'string' || value === '') {
-    throw new Error(`[yapyak] ${field} cannot be an empty string.`);
-  }
-}
-
-function assertKnownDiscriminator<T extends string>(
-  value: unknown,
-  allowed: readonly T[],
-  field: string,
-): asserts value is T {
-  if (typeof value !== 'string' || !allowed.includes(value as T)) {
-    const allowedList = allowed.map((entry) => `"${entry}"`).join(', ');
-    throw new Error(
-      `[yapyak] ${field} must be one of ${allowedList}; got ${JSON.stringify(value)}.`,
-    );
+    default:
+      return {
+        type: 'none',
+      };
   }
 }
