@@ -1,7 +1,6 @@
 import type { SourceMap } from 'magic-string';
 import type {
   ApplyImportFn,
-  Fragment,
   ParseFragmentsFn,
   Processor,
   Range,
@@ -15,12 +14,17 @@ import MagicString from 'magic-string';
 import ts from 'typescript';
 
 import { parseTemplate } from '../../../template';
-import { YAPYAK_INTERNAL_MODULE, YAPYAK_MODULE } from '../binding';
+import { YAPYAK_INTERNAL_MODULE } from '../binding';
 import { findMatchingBraceIndex } from '../matching-brace';
 import { resolveProcessor } from '../processor';
-import { getScriptKind } from '../script-kind';
 import { injectComponentHooks } from './transform/component-hook';
 import { resolveDirectivePrologueEnd } from './transform/directive';
+import {
+  findFreeIdentifier,
+  findFreeIdentifiers,
+  hasIdentifier,
+} from './transform/identifier';
+import { transformScriptImports } from './transform/script-import';
 
 export type TransformFileRequest = {
   defaultLocale?: string;
@@ -203,7 +207,11 @@ export function transformFile(
     }
   }
 
-  transformScriptImports(fragments, magicString, request);
+  transformScriptImports({
+    fileId: request.fileId,
+    fragments,
+    magicString,
+  });
 
   const importSpecs: string[] = [];
   if (hasUsedPick) {
@@ -278,143 +286,6 @@ export function transformFile(
       source: request.sourcePath ?? request.fileId,
     }),
   };
-}
-
-function transformScriptImports(
-  fragments: Fragment[],
-  magicString: MagicString,
-  request: TransformFileRequest,
-): void {
-  const intermediate = magicString.toString();
-
-  for (const fragment of fragments) {
-    if (fragment.kind !== 'script') {
-      continue;
-    }
-    const scriptKind = getScriptKind(request.fileId, fragment.lang);
-    const sourceFile = ts.createSourceFile(
-      request.fileId,
-      fragment.code,
-      ts.ScriptTarget.ESNext,
-      true,
-      scriptKind,
-    );
-    const coreImports = extractCoreImports(sourceFile);
-    for (const declaration of coreImports) {
-      transformImportDeclaration({
-        declaration,
-        fragment,
-        intermediate,
-        magicString,
-        scriptKind,
-        sourceFile,
-      });
-    }
-  }
-}
-
-type TransformImportDeclarationInput = {
-  declaration: ts.ImportDeclaration;
-  fragment: Fragment;
-  intermediate: string;
-  magicString: MagicString;
-  scriptKind: ts.ScriptKind;
-  sourceFile: ts.SourceFile;
-};
-
-function transformImportDeclaration(
-  input: TransformImportDeclarationInput,
-): void {
-  const {
-    declaration,
-    fragment,
-    intermediate,
-    magicString,
-    scriptKind,
-    sourceFile,
-  } = input;
-  if (declaration.importClause?.isTypeOnly === true) {
-    return;
-  }
-  const namedBindings = declaration.importClause?.namedBindings;
-  if (!namedBindings || !ts.isNamedImports(namedBindings)) {
-    return;
-  }
-
-  const remaining: ImportSpecifier[] = [];
-  for (const element of namedBindings.elements) {
-    const importedName = (element.propertyName ?? element.name).text;
-    const localName = element.name.text;
-    const isTypeOnly = element.isTypeOnly;
-    if (isTypeOnly) {
-      remaining.push({
-        imported: importedName,
-        local: localName,
-        typeOnly: true,
-      });
-      continue;
-    }
-    const occurrences = resolveReferenceCount(
-      intermediate,
-      localName,
-      scriptKind,
-    );
-    if (occurrences > 1) {
-      remaining.push({
-        imported: importedName,
-        local: localName,
-        typeOnly: false,
-      });
-    }
-  }
-
-  const startInOriginal =
-    declaration.getStart(sourceFile) + fragment.originalOffset;
-  const endInOriginal = declaration.getEnd() + fragment.originalOffset;
-
-  if (remaining.length === 0) {
-    magicString.remove(startInOriginal, endInOriginal);
-    return;
-  }
-  const specList = remaining.map(renderSpecifier).join(', ');
-  const moduleSpecText = declaration.moduleSpecifier.getText(sourceFile);
-  magicString.overwrite(
-    startInOriginal,
-    endInOriginal,
-    `import { ${specList} } from ${moduleSpecText};`,
-  );
-}
-
-function renderSpecifier(item: ImportSpecifier): string {
-  const prefix = item.typeOnly ? 'type ' : '';
-  const body =
-    item.imported === item.local
-      ? item.imported
-      : `${item.imported} as ${item.local}`;
-  return `${prefix}${body}`;
-}
-
-type ImportSpecifier = {
-  imported: string;
-  local: string;
-  typeOnly: boolean;
-};
-
-function extractCoreImports(sourceFile: ts.SourceFile): ts.ImportDeclaration[] {
-  const result: ts.ImportDeclaration[] = [];
-  for (const statement of sourceFile.statements) {
-    if (!ts.isImportDeclaration(statement)) {
-      continue;
-    }
-    if (!ts.isStringLiteral(statement.moduleSpecifier)) {
-      continue;
-    }
-    if (statement.moduleSpecifier.text !== YAPYAK_MODULE) {
-      continue;
-    }
-    result.push(statement);
-  }
-  return result;
 }
 
 type CatalogEntry = {
@@ -1000,53 +871,6 @@ function interpolateNestedReplacements(
   return result;
 }
 
-function resolveReferenceCount(
-  code: string,
-  name: string,
-  scriptKind: ts.ScriptKind,
-): number {
-  const sourceFile = ts.createSourceFile(
-    'ref-count.ts',
-    code,
-    ts.ScriptTarget.Latest,
-    true,
-    scriptKind,
-  );
-  let count = 0;
-  const visit = (node: ts.Node): void => {
-    if (ts.isIdentifier(node) && node.text === name && isReference(node)) {
-      count += 1;
-    }
-    ts.forEachChild(node, visit);
-  };
-  visit(sourceFile);
-  return count;
-}
-
-function isReference(node: ts.Identifier): boolean {
-  const parent = node.parent;
-  if (!parent) {
-    return true;
-  }
-  if (ts.isPropertyAccessExpression(parent) && parent.name === node) {
-    return false;
-  }
-  if (ts.isPropertyAssignment(parent) && parent.name === node) {
-    return false;
-  }
-  if (ts.isJsxAttribute(parent) && parent.name === node) {
-    return false;
-  }
-  return true;
-}
-
-function isIdentifierChar(character: string | undefined): boolean {
-  if (!character) {
-    return false;
-  }
-  return /[\w$]/.test(character);
-}
-
 function tryBareElision(
   source: string,
   callSite: ParsedCallSite,
@@ -1111,45 +935,4 @@ function findFreeFactoryLocals(source: string): Map<string, string> {
     locals.set(factory, findFreeIdentifier(source, `_${factory}`));
   }
   return locals;
-}
-
-function findFreeIdentifier(source: string, preferred: string): string {
-  if (!hasIdentifier(source, preferred)) {
-    return preferred;
-  }
-  let suffix = 0;
-  while (hasIdentifier(source, `${preferred}_$${suffix}`)) {
-    suffix += 1;
-  }
-  return `${preferred}_$${suffix}`;
-}
-
-function findFreeIdentifiers(
-  source: string,
-  prefix: string,
-  count: number,
-): string[] {
-  const result: string[] = [];
-  let index = 0;
-  while (result.length < count) {
-    const candidate = `${prefix}${index}`;
-    if (!hasIdentifier(source, candidate) && !result.includes(candidate)) {
-      result.push(candidate);
-    }
-    index += 1;
-  }
-  return result;
-}
-
-function hasIdentifier(source: string, name: string): boolean {
-  let index = source.indexOf(name);
-  while (index !== -1) {
-    const before = source[index - 1];
-    const after = source[index + name.length];
-    if (!isIdentifierChar(before) && !isIdentifierChar(after)) {
-      return true;
-    }
-    index = source.indexOf(name, index + name.length);
-  }
-  return false;
 }
