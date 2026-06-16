@@ -1,13 +1,11 @@
 import type { FunctionalComponent, VNodeChild } from 'vue';
-import type { RichTextNode as Node } from 'yapyak/internal';
+import type { RichTextNode } from 'yapyak/internal';
 
 import { parseRichText } from 'yapyak/internal';
 
-type PairSlot = (props: { children: () => VNodeChild[] }) => VNodeChild[];
+type SlotFn = (props: { children: () => VNodeChild[] }) => VNodeChild[];
 
-type VoidSlot = () => VNodeChild[];
-
-type RichTextSlots = Record<string, PairSlot | VoidSlot>;
+type RichTextSlots = Record<string, SlotFn>;
 
 /**
  * Props for {@link RichText}.
@@ -21,7 +19,10 @@ export type RichTextProps<T extends string> = {
 /**
  * Renders rich text by resolving named tags via scoped slots.
  *
- * @example
+ * @remarks
+ * Every named tag in `value` is bound to a slot of the same name. The slot receives a `children` thunk — for pair tags it renders the resolved inner content, for void tags it returns an empty array. Void-tag slots typically ignore `children` entirely.
+ *
+ * @example Pair tag with rendered children
  * ```vue
  * <RichText :value="t('Click <link>here</link>.')">
  *   <template #link="{ children }">
@@ -46,8 +47,8 @@ export const RichText: FunctionalComponent<
 > = (props, context) => renderNodes(parseRichText(props.value), context.slots);
 
 function renderNodes(
-  nodes: Node[],
-  slots: Readonly<Record<string, PairSlot | VoidSlot | undefined>>,
+  nodes: RichTextNode[],
+  slots: Readonly<Record<string, SlotFn | undefined>>,
 ): VNodeChild[] {
   const out: VNodeChild[] = [];
   for (const node of nodes) {
@@ -58,7 +59,11 @@ function renderNodes(
     if (node.type === 'void') {
       const slot = slots[node.name];
       if (slot) {
-        out.push(...(slot as VoidSlot)());
+        out.push(
+          ...slot({
+            children: () => [],
+          }),
+        );
         continue;
       }
       out.push(`<${node.name}/>`);
@@ -68,7 +73,7 @@ function renderNodes(
     if (slot) {
       const children = (): VNodeChild[] => renderNodes(node.children, slots);
       out.push(
-        ...(slot as PairSlot)({
+        ...slot({
           children,
         }),
       );

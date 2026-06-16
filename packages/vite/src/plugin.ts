@@ -42,8 +42,6 @@ export type YapyakOptions = {
  * @remarks
  * Configuration is read from `yapyak.config.{ts,mts,mjs,js}` in the project root. Returns defaults if no config file is found.
  *
- * Returned as five focused sub-plugins so Vite can list them individually for debugging: `yapyak:config`, `yapyak:virtual-module`, `yapyak:scan`, `yapyak:transform`, and `yapyak:dev-server`.
- *
  * @param options - The plugin options.
  *
  * @example Register in vite.config.ts
