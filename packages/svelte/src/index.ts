@@ -4,9 +4,9 @@
  * ## Installation
  *
  * ```bash
- * npm install @yapyak/svelte
+ * npm install yapyak @yapyak/svelte
  * # or
- * pnpm add @yapyak/svelte
+ * pnpm add yapyak @yapyak/svelte
  * ```
  *
  * @packageDocumentation

@@ -1,5 +1,5 @@
 /**
- * Astro binding for yapyak.
+ * Astro adapter for yapyak.
  *
  * ## Installation
  *

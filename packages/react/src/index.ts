@@ -4,9 +4,9 @@
  * ## Installation
  *
  * ```bash
- * npm install @yapyak/react
+ * npm install yapyak @yapyak/react
  * # or
- * pnpm add @yapyak/react
+ * pnpm add yapyak @yapyak/react
  * ```
  *
  * @packageDocumentation
