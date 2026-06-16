@@ -47,8 +47,29 @@ describe('react processor', () => {
     expect(react().runtime?.module).toBe('@yapyak/react/internal');
   });
 
-  it('returns a processor that declares `useYapyak` as the runtime invocation', () => {
-    expect(react().runtime?.invoke).toBe('useYapyak');
+  it('returns a processor that declares `useYapyak` as the component-hook invocation', () => {
+    expect(react().runtime?.componentHook?.invoke).toBe('useYapyak');
+  });
+
+  it('returns a processor with a component-name pattern matching PascalCase and `use*`', () => {
+    const namePattern = react().runtime?.componentHook?.namePattern;
+    expect(namePattern?.test('Header')).toBe(true);
+    expect(namePattern?.test('useTheme')).toBe(true);
+    expect(namePattern?.test('helper')).toBe(false);
+  });
+
+  it('returns a processor without an eligibility directive when `rsc` is omitted', () => {
+    expect(
+      react().runtime?.componentHook?.eligibilityDirective,
+    ).toBeUndefined();
+  });
+
+  it('returns a processor that declares `use client` as the eligibility directive when `rsc` is true', () => {
+    expect(
+      react({
+        rsc: true,
+      }).runtime?.componentHook?.eligibilityDirective,
+    ).toBe('use client');
   });
 
   it('emits a `useYapyak` import in dev builds', () => {

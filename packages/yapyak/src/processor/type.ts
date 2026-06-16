@@ -58,6 +58,37 @@ export type ApplyImportFn = (
 export type ParseFragmentsFn = (source: string) => Fragment[];
 
 /**
+ * Per-component hook injection. Compiler walks each eligible script fragment,
+ * finds functions whose name matches `namePattern` and contain at least one
+ * `t()` call site, and injects `invoke()` at the start of the function body.
+ *
+ * Declare for frameworks where component functions re-run on state change
+ * and need to subscribe to locale updates per component (React, Solid, Qwik).
+ * Omit for frameworks whose reactivity is module-level (Vue, Svelte, Astro).
+ */
+export type ComponentHook = {
+  /** String directive that must appear in the file's prologue for injection to apply. Omit to inject in every file. */
+  eligibilityDirective?: string;
+  /** Function name to import from `Runtime.module` and call at the start of every matching component body. */
+  invoke: string;
+  /** Regex matching component-like function names — PascalCase, `use*`-prefixed, framework-specific. */
+  namePattern: RegExp;
+};
+
+/**
+ * Framework runtime wiring. The transform emits a side-effect import of
+ * `module` so the framework can register HMR or set up reactivity primitives.
+ * When `componentHook` is set, the transform additionally imports and injects
+ * the named function per matching component.
+ */
+export type Runtime = {
+  /** Optional per-component hook injection. */
+  componentHook?: ComponentHook;
+  /** Framework runtime module imported once per file containing any `t()` call. */
+  module: string;
+};
+
+/**
  * The processor. Extracts framework-specific source into fragments yapyak's compiler can read.
  *
  * @remarks
@@ -78,11 +109,6 @@ export type Processor = {
   id: string;
   /** Breaks framework-specific source into TS-parseable fragments. Defaults to the whole source as one script when omitted — fits plain TS/JS files. */
   parseFragments?(source: string): Fragment[];
-  /**
-   * Compiler-emitted runtime wiring. When `invoke` is set, the transform imports the named function from `module` and injects a call at the top of every React function component containing `t()`. The import and call are emitted in every build, so locale changes re-render the component through the framework's subscription primitive. When `invoke` is omitted, the transform emits a bare side-effect import of `module` for the framework's HMR wiring; this import is emitted only in dev builds.
-   */
-  runtime?: {
-    invoke?: string;
-    module: string;
-  };
+  /** Framework runtime wiring. See {@link Runtime}. */
+  runtime?: Runtime;
 };

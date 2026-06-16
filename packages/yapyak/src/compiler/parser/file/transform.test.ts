@@ -15,7 +15,10 @@ const reactProcessor: Processor = createProcessor({
   ],
   id: 'react',
   runtime: {
-    invoke: 'useYapyak',
+    componentHook: {
+      invoke: 'useYapyak',
+      namePattern: /^[A-Z]|^use[A-Z]/,
+    },
     module: '@yapyak/react/internal',
   },
 });

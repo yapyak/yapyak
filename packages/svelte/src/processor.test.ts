@@ -43,8 +43,8 @@ describe('svelte processor — shape', () => {
     expect(svelte().runtime?.module).toBe('@yapyak/svelte/internal');
   });
 
-  it('refuses to declare a runtime invocation', () => {
-    expect(svelte().runtime?.invoke).toBeUndefined();
+  it('refuses to declare a component-hook', () => {
+    expect(svelte().runtime?.componentHook).toBeUndefined();
   });
 });
 

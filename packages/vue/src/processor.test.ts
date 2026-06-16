@@ -42,8 +42,8 @@ describe('vue processor — shape', () => {
     expect(vue().runtime?.module).toBe('@yapyak/vue/internal');
   });
 
-  it('refuses to declare a runtime invocation', () => {
-    expect(vue().runtime?.invoke).toBeUndefined();
+  it('refuses to declare a component-hook', () => {
+    expect(vue().runtime?.componentHook).toBeUndefined();
   });
 });
 

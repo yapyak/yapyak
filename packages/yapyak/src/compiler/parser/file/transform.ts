@@ -19,6 +19,8 @@ import { YAPYAK_INTERNAL_MODULE, YAPYAK_MODULE } from '../binding';
 import { findMatchingBraceIndex } from '../matching-brace';
 import { resolveProcessor } from '../processor';
 import { getScriptKind } from '../script-kind';
+import { injectComponentHooks } from './transform/component-hook';
+import { resolveDirectivePrologueEnd } from './transform/directive';
 
 export type TransformFileRequest = {
   defaultLocale?: string;
@@ -100,7 +102,7 @@ export function transformFile(
   const isSingleLocale = request.locales.length === 1;
   const isDev = request.dev === true;
   const runtime = processor.runtime;
-  const injectsReactHook = runtime?.invoke !== undefined;
+  const componentHook = runtime?.componentHook;
   const magicString = new MagicString(request.source);
 
   const pickLocal = findFreePickLocal(request.source);
@@ -111,7 +113,7 @@ export function transformFile(
   const invalidateFileLocal = isDev
     ? findFreeIdentifier(request.source, INVALIDATE_FILE_LOCAL)
     : '';
-  const useYapyakLocal = injectsReactHook
+  const componentHookLocal = componentHook
     ? findFreeIdentifier(request.source, USE_YAPYAK_LOCAL)
     : '';
 
@@ -228,9 +230,9 @@ export function transformFile(
       `import { ${allImportSpecs.join(', ')} } from '${YAPYAK_INTERNAL_MODULE}';`,
     );
   }
-  if (runtime?.invoke !== undefined) {
+  if (runtime?.componentHook !== undefined) {
     injectionLines.push(
-      `import { ${runtime.invoke} as ${useYapyakLocal} } from '${runtime.module}';`,
+      `import { ${runtime.componentHook.invoke} as ${componentHookLocal} } from '${runtime.module}';`,
     );
   } else if (runtime !== undefined && isDev) {
     injectionLines.push(`import '${runtime.module}';`);
@@ -256,14 +258,16 @@ export function transformFile(
       injectionLines.join('\n'),
     );
   }
-  if (injectsReactHook) {
-    injectReactHooks(
-      magicString,
-      fragments,
+  if (componentHook !== undefined) {
+    injectComponentHooks({
       callSites,
-      useYapyakLocal,
-      request,
-    );
+      componentHook,
+      fileId: request.fileId,
+      fragments,
+      invocation: componentHookLocal,
+      magicString,
+      source: request.source,
+    });
   }
 
   return {
@@ -1148,151 +1152,4 @@ function hasIdentifier(source: string, name: string): boolean {
     index = source.indexOf(name, index + name.length);
   }
   return false;
-}
-
-const COMPONENT_NAME_RX = /^[A-Z]/;
-const HOOK_NAME_RX = /^use[A-Z]/;
-
-function injectReactHooks(
-  magicString: MagicString,
-  fragments: Fragment[],
-  callSites: ParsedCallSite[],
-  useYapyakLocal: string,
-  request: TransformFileRequest,
-): void {
-  for (const fragment of fragments) {
-    if (fragment.kind !== 'script') {
-      continue;
-    }
-    const sourceFile = ts.createSourceFile(
-      request.fileId,
-      fragment.code,
-      ts.ScriptTarget.ESNext,
-      true,
-      getScriptKind(request.fileId, fragment.lang),
-    );
-    const insertionPositions = new Set<number>();
-    walkForComponents(
-      sourceFile,
-      sourceFile,
-      fragment.originalOffset,
-      callSites,
-      insertionPositions,
-    );
-    for (const position of insertionPositions) {
-      magicString.appendLeft(position, `${useYapyakLocal}();`);
-    }
-  }
-}
-
-function walkForComponents(
-  node: ts.Node,
-  sourceFile: ts.SourceFile,
-  fragmentOffset: number,
-  callSites: ParsedCallSite[],
-  insertionPositions: Set<number>,
-): void {
-  if (ts.isFunctionDeclaration(node) && node.name && node.body) {
-    if (
-      isReactCandidateName(node.name.text) &&
-      containsCallSite(node, sourceFile, fragmentOffset, callSites)
-    ) {
-      insertionPositions.add(
-        node.body.getStart(sourceFile) + 1 + fragmentOffset,
-      );
-    }
-  }
-  if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name)) {
-    const initializer = node.initializer;
-    if (
-      initializer &&
-      (ts.isArrowFunction(initializer) ||
-        ts.isFunctionExpression(initializer)) &&
-      ts.isBlock(initializer.body)
-    ) {
-      if (
-        isReactCandidateName(node.name.text) &&
-        containsCallSite(initializer, sourceFile, fragmentOffset, callSites)
-      ) {
-        insertionPositions.add(
-          initializer.body.getStart(sourceFile) + 1 + fragmentOffset,
-        );
-      }
-    }
-  }
-  ts.forEachChild(node, (child) => {
-    walkForComponents(
-      child,
-      sourceFile,
-      fragmentOffset,
-      callSites,
-      insertionPositions,
-    );
-  });
-}
-
-function isReactCandidateName(name: string): boolean {
-  return COMPONENT_NAME_RX.test(name) || HOOK_NAME_RX.test(name);
-}
-
-function containsCallSite(
-  node: ts.Node,
-  sourceFile: ts.SourceFile,
-  fragmentOffset: number,
-  callSites: ParsedCallSite[],
-): boolean {
-  const start = node.getStart(sourceFile) + fragmentOffset;
-  const end = node.getEnd() + fragmentOffset;
-  for (const callSite of callSites) {
-    if (
-      callSite.range.start.offset >= start &&
-      callSite.range.end.offset <= end
-    ) {
-      return true;
-    }
-  }
-  return false;
-}
-
-const DIRECTIVE_RX =
-  /^\s*(['"])(?:use [a-z]+|use [a-z]+ [a-z]+)\1\s*;?\s*(?:\r?\n|$)/;
-
-function resolveDirectivePrologueEnd(source: string): number {
-  let cursor = 0;
-  while (cursor < source.length) {
-    const slice = source.slice(cursor);
-    const stripped = stripLeadingShebangAndComments(slice);
-    const consumed = slice.length - stripped.length;
-    const match = DIRECTIVE_RX.exec(stripped);
-    if (!match) {
-      return cursor;
-    }
-    cursor += consumed + match[0].length;
-  }
-  return cursor;
-}
-
-function stripLeadingShebangAndComments(source: string): string {
-  let cursor = 0;
-  if (source.startsWith('#!')) {
-    const newline = source.indexOf('\n', cursor);
-    cursor = newline === -1 ? source.length : newline + 1;
-  }
-  while (cursor < source.length) {
-    const rest = source.slice(cursor);
-    const whitespaceLength = rest.length - rest.trimStart().length;
-    cursor += whitespaceLength;
-    if (source.startsWith('//', cursor)) {
-      const newline = source.indexOf('\n', cursor);
-      cursor = newline === -1 ? source.length : newline + 1;
-      continue;
-    }
-    if (source.startsWith('/*', cursor)) {
-      const close = source.indexOf('*/', cursor + 2);
-      cursor = close === -1 ? source.length : close + 2;
-      continue;
-    }
-    break;
-  }
-  return source.slice(cursor);
 }
