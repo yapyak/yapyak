@@ -1262,10 +1262,11 @@ function createSilentLogger(): ResolvedConfig['logger'] {
   };
 }
 
-type TransformLoadFn = (
+type TransformHookFn = (
   this: {
     error: (message: string) => void;
   },
+  code: string,
   id: string,
 ) =>
   | {
@@ -1278,15 +1279,15 @@ type TransformLoadFn = (
       map?: SourceMap | null;
     } | null>;
 
-function findTransformLoad(plugin: YapyakPlugin): TransformLoadFn {
+function findTransformHook(plugin: YapyakPlugin): TransformHookFn {
   const sub = plugin.find((entry) => entry.name === 'yapyak:transform');
-  if (!sub || typeof sub.load !== 'function') {
-    throw new Error('yapyak:transform load hook missing');
+  if (!sub || typeof sub.transform !== 'function') {
+    throw new Error('yapyak:transform transform hook missing');
   }
-  return sub.load as unknown as TransformLoadFn;
+  return sub.transform as unknown as TransformHookFn;
 }
 
-const TRANSFORM_LOAD_CONTEXT = {
+const TRANSFORM_HOOK_CONTEXT = {
   error: (message: string): never => {
     throw new Error(message);
   },
@@ -1296,17 +1297,19 @@ async function invokeTransform(
   plugin: YapyakPlugin,
   filePath: string,
 ): Promise<string> {
-  const load = findTransformLoad(plugin);
-  const result = await load.call(TRANSFORM_LOAD_CONTEXT, filePath);
-  return result?.code ?? readFileSync(filePath, 'utf8');
+  const transform = findTransformHook(plugin);
+  const code = readFileSync(filePath, 'utf8');
+  const result = await transform.call(TRANSFORM_HOOK_CONTEXT, code, filePath);
+  return result?.code ?? code;
 }
 
 async function invokeTransformMap(
   plugin: YapyakPlugin,
   filePath: string,
 ): Promise<SourceMap | undefined> {
-  const load = findTransformLoad(plugin);
-  const result = await load.call(TRANSFORM_LOAD_CONTEXT, filePath);
+  const transform = findTransformHook(plugin);
+  const code = readFileSync(filePath, 'utf8');
+  const result = await transform.call(TRANSFORM_HOOK_CONTEXT, code, filePath);
   return result?.map ?? undefined;
 }
 
@@ -1357,8 +1360,8 @@ async function invokeTransformRaw(
   if (isAbsolute(filePath)) {
     writeFileSync(filePath, code);
   }
-  const load = findTransformLoad(plugin);
-  return (await load.call(TRANSFORM_LOAD_CONTEXT, filePath)) ?? null;
+  const transform = findTransformHook(plugin);
+  return (await transform.call(TRANSFORM_HOOK_CONTEXT, code, filePath)) ?? null;
 }
 
 function invokeBuildEnd(plugin: YapyakPlugin): void {

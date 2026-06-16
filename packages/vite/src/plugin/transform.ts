@@ -16,26 +16,33 @@ import { isCandidateId } from './candidate-id';
 import { renderErrorDiagnostics } from './error-diagnostic';
 import { toFileId } from './file-id';
 import { getNormalized, getResolver } from './state';
-import { readFile } from 'node:fs/promises';
 
 export function createTransformPlugin(state: State): Plugin {
   return {
     enforce: 'pre',
-    async load(id: string): Promise<{
+    name: 'yapyak:transform',
+    transform(
+      code: string,
+      id: string,
+    ): {
       code: string;
       map: TransformFileResult['map'] | null;
-    } | null> {
-      if (id.startsWith('\0') || id.includes('?')) {
+    } | null {
+      if (id.startsWith('\0')) {
         return null;
       }
-      if (!isCandidateId(id, state.filter, state.projectRoot)) {
+      if (VITE_NON_CODE_QUERY_RX.test(id)) {
         return null;
       }
-      const raw = await readFile(id, 'utf8');
-      const fileId = toFileId(state.projectRoot, id);
+      const queryStart = id.indexOf('?');
+      const filePath = queryStart === -1 ? id : id.slice(0, queryStart);
+      if (!isCandidateId(filePath, state.filter, state.projectRoot)) {
+        return null;
+      }
+      const fileId = toFileId(state.projectRoot, filePath);
       const { locales } = getResolver(state).getEmittedLocales();
       const processors = getNormalized(state).processors;
-      const extracted = extractFile(fileId, raw, {
+      const extracted = extractFile(fileId, code, {
         processors,
       });
       const errorDiagnostics = renderErrorDiagnostics(state.logger, extracted);
@@ -61,11 +68,11 @@ export function createTransformPlugin(state: State): Plugin {
         fileId,
         locales,
         processors,
-        source: raw,
-        sourcePath: id,
+        source: code,
+        sourcePath: filePath,
         translations,
       });
-      if (result.code === raw) {
+      if (result.code === code) {
         return null;
       }
       return {
@@ -73,9 +80,11 @@ export function createTransformPlugin(state: State): Plugin {
         map: result.map,
       };
     },
-    name: 'yapyak:transform',
   };
 }
+
+const VITE_NON_CODE_QUERY_RX =
+  /\?(?:raw|url|inline|worker|sharedworker|init)\b/;
 
 type BuildTranslationsInput = {
   extracted: ExtractFileResult;
