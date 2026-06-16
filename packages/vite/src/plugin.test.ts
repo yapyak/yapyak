@@ -13,7 +13,7 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { isAbsolute, join } from 'node:path';
 
 type SourceMap = TransformFileResult['map'];
 
@@ -1262,38 +1262,52 @@ function createSilentLogger(): ResolvedConfig['logger'] {
   };
 }
 
-type TransformHook = (
-  code: string,
+type TransformLoadFn = (
+  this: {
+    error: (message: string) => void;
+  },
   id: string,
 ) =>
   | {
       code: string;
-      map?: SourceMap;
+      map?: SourceMap | null;
     }
   | null
   | Promise<{
       code: string;
-      map?: SourceMap;
+      map?: SourceMap | null;
     } | null>;
+
+function findTransformLoad(plugin: YapyakPlugin): TransformLoadFn {
+  const sub = plugin.find((entry) => entry.name === 'yapyak:transform');
+  if (!sub || typeof sub.load !== 'function') {
+    throw new Error('yapyak:transform load hook missing');
+  }
+  return sub.load as unknown as TransformLoadFn;
+}
+
+const TRANSFORM_LOAD_CONTEXT = {
+  error: (message: string): never => {
+    throw new Error(message);
+  },
+};
 
 async function invokeTransform(
   plugin: YapyakPlugin,
   filePath: string,
 ): Promise<string> {
-  const hook = findHook(plugin, 'transform');
-  const code = readFileSync(filePath, 'utf8');
-  const result = await (hook as TransformHook).call(plugin, code, filePath);
-  return result?.code ?? code;
+  const load = findTransformLoad(plugin);
+  const result = await load.call(TRANSFORM_LOAD_CONTEXT, filePath);
+  return result?.code ?? readFileSync(filePath, 'utf8');
 }
 
 async function invokeTransformMap(
   plugin: YapyakPlugin,
   filePath: string,
 ): Promise<SourceMap | undefined> {
-  const hook = findHook(plugin, 'transform');
-  const code = readFileSync(filePath, 'utf8');
-  const result = await (hook as TransformHook).call(plugin, code, filePath);
-  return result?.map;
+  const load = findTransformLoad(plugin);
+  const result = await load.call(TRANSFORM_LOAD_CONTEXT, filePath);
+  return result?.map ?? undefined;
 }
 
 function invokeBuildStart(plugin: YapyakPlugin): void {
@@ -1338,10 +1352,13 @@ async function invokeTransformRaw(
   code: string,
 ): Promise<{
   code: string;
-  map?: SourceMap;
+  map?: SourceMap | null;
 } | null> {
-  const hook = findHook(plugin, 'transform');
-  return (await (hook as TransformHook).call(plugin, code, filePath)) ?? null;
+  if (isAbsolute(filePath)) {
+    writeFileSync(filePath, code);
+  }
+  const load = findTransformLoad(plugin);
+  return (await load.call(TRANSFORM_LOAD_CONTEXT, filePath)) ?? null;
 }
 
 function invokeBuildEnd(plugin: YapyakPlugin): void {

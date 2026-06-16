@@ -26,10 +26,13 @@ describe('yapyak', () => {
     expect(updateConfig).toHaveBeenCalledTimes(1);
     const config = updateConfig.mock.calls[0]?.[0] as {
       vite: {
-        plugins: unknown[];
+        plugins: {
+          name: string;
+        }[];
       };
     };
-    expect(config.vite.plugins).toHaveLength(1);
+    const names = config.vite.plugins.map((plugin) => plugin.name);
+    expect(names).toContain('yapyak:transform');
   });
 
   it('writes the `@yapyak/astro/internal` middleware with `pre` order on setup', () => {

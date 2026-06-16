@@ -227,10 +227,13 @@ export function transformFile(
     }
   }
   const injectionLines: string[] = [];
+  const skipHmrCallback = processor.skipHmrCallback === true;
   const allImportSpecs = importSpecs.slice();
   if (isDev) {
     allImportSpecs.push(`registerCatalog as ${registerCatalogLocal}`);
-    allImportSpecs.push(`invalidateFile as ${invalidateFileLocal}`);
+    if (!skipHmrCallback) {
+      allImportSpecs.push(`invalidateFile as ${invalidateFileLocal}`);
+    }
   }
   if (allImportSpecs.length > 0) {
     injectionLines.push(
@@ -253,7 +256,7 @@ export function transformFile(
       injectionLines.push(`const ${entry.identifier} = ${entry.literal};`);
     }
   }
-  if (isDev) {
+  if (isDev && !skipHmrCallback) {
     injectionLines.push(
       `if (import.meta.hot) import.meta.hot.dispose(() => ${invalidateFileLocal}(${JSON.stringify(request.fileId)}));`,
     );

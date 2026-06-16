@@ -16,25 +16,26 @@ import { isCandidateId } from './candidate-id';
 import { renderErrorDiagnostics } from './error-diagnostic';
 import { toFileId } from './file-id';
 import { getNormalized, getResolver } from './state';
+import { readFile } from 'node:fs/promises';
 
 export function createTransformPlugin(state: State): Plugin {
   return {
     enforce: 'pre',
-    name: 'yapyak:transform',
-    transform(
-      code: string,
-      id: string,
-    ): {
+    async load(id: string): Promise<{
       code: string;
-      map: TransformFileResult['map'];
-    } | null {
+      map: TransformFileResult['map'] | null;
+    } | null> {
+      if (id.startsWith('\0') || id.includes('?')) {
+        return null;
+      }
       if (!isCandidateId(id, state.filter, state.projectRoot)) {
         return null;
       }
+      const raw = await readFile(id, 'utf8');
       const fileId = toFileId(state.projectRoot, id);
       const { locales } = getResolver(state).getEmittedLocales();
       const processors = getNormalized(state).processors;
-      const extracted = extractFile(fileId, code, {
+      const extracted = extractFile(fileId, raw, {
         processors,
       });
       const errorDiagnostics = renderErrorDiagnostics(state.logger, extracted);
@@ -60,11 +61,11 @@ export function createTransformPlugin(state: State): Plugin {
         fileId,
         locales,
         processors,
-        source: code,
+        source: raw,
         sourcePath: id,
         translations,
       });
-      if (result.code === code) {
+      if (result.code === raw) {
         return null;
       }
       return {
@@ -72,6 +73,7 @@ export function createTransformPlugin(state: State): Plugin {
         map: result.map,
       };
     },
+    name: 'yapyak:transform',
   };
 }
 

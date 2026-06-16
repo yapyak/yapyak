@@ -111,4 +111,6 @@ export type Processor = {
   parseFragments?(source: string): Fragment[];
   /** Framework runtime wiring. See {@link Runtime}. */
   runtime?: Runtime;
+  /** Skips the dev-mode `import.meta.hot.dispose(...)` callback yapyak normally injects to invalidate cached catalogs on file change. Set when the host framework's compiler cannot safely embed Vite HMR callbacks at the top level (e.g. Astro). */
+  skipHmrCallback?: boolean;
 };

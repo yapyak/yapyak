@@ -1,12 +1,12 @@
 import type { AstroIntegration } from 'astro';
 
-import { yapyak as yapyakVitePlugin } from '@yapyak/vite';
+import { yapyak as yapyakVite } from '@yapyak/vite';
 
 /**
  * Creates the yapyak integration for Astro.
  *
  * @remarks
- * Registers yapyak's Vite plugin so `.astro` files are extracted and rewritten during compilation, and injects the per-request locale middleware. `t()` calls in `.astro` frontmatter and templates are translated at render time with no further wiring.
+ * Registers yapyak's Vite plugin and injects the per-request locale middleware. Pair with the `astro()` processor in `yapyak.config.ts` so `.astro` frontmatter and templates are parsed for `t()` calls.
  *
  * @example Register in astro.config.ts
  * ```ts [astro.config.ts]
@@ -17,6 +17,16 @@ import { yapyak as yapyakVitePlugin } from '@yapyak/vite';
  *   integrations: [yapyak()],
  * });
  * ```
+ *
+ * @example Register the matching processor in yapyak.config.ts
+ * ```ts [yapyak.config.ts]
+ * import { astro } from '@yapyak/astro/processor';
+ * import { defineConfig } from 'yapyak/config';
+ *
+ * export default defineConfig({
+ *   processors: [astro()],
+ * });
+ * ```
  */
 export function yapyak(): AstroIntegration {
   return {
@@ -24,10 +34,8 @@ export function yapyak(): AstroIntegration {
       'astro:config:setup': ({ addMiddleware, updateConfig }) => {
         updateConfig({
           vite: {
-            plugins: [
-              // biome-ignore lint/suspicious/noExplicitAny: yap yap yap
-              yapyakVitePlugin() as any,
-            ],
+            // biome-ignore lint/suspicious/noExplicitAny: yap yap yap
+            plugins: yapyakVite() as any,
           },
         });
         addMiddleware({
