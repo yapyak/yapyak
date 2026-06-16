@@ -473,4 +473,106 @@ describe('vue processor — transform', () => {
     expect(code).toContain('aria-label="Save"');
     expect(code).not.toContain(':aria-label');
   });
+
+  it('preserves a `locales` import referenced from a `v-for` expression', () => {
+    const code = runVueTransform({
+      locales: [
+        'en',
+      ],
+      source: [
+        '<script setup lang="ts">',
+        "import { locales } from 'yapyak';",
+        '</script>',
+        '<template>',
+        '  <button v-for="value in locales" :key="value">{{ value }}</button>',
+        '</template>',
+      ].join('\n'),
+    });
+    expect(code).toMatch(/import \{ locales \}/);
+  });
+
+  it('preserves a `format` import referenced from a mustache call', () => {
+    const code = runVueTransform({
+      locales: [
+        'en',
+      ],
+      source: [
+        '<script setup lang="ts">',
+        "import { format } from 'yapyak';",
+        '</script>',
+        '<template>',
+        "  <p>{{ format.list(['a', 'b']) }}</p>",
+        '</template>',
+      ].join('\n'),
+    });
+    expect(code).toMatch(/import \{ format \}/);
+  });
+
+  it('preserves a `getLocale` import referenced from a `:prop` bind expression', () => {
+    const code = runVueTransform({
+      locales: [
+        'en',
+      ],
+      source: [
+        '<script setup lang="ts">',
+        "import { getLocale } from 'yapyak';",
+        '</script>',
+        '<template>',
+        '  <time :datetime="getLocale()">x</time>',
+        '</template>',
+      ].join('\n'),
+    });
+    expect(code).toMatch(/import \{ getLocale \}/);
+  });
+
+  it('elides a `locales` import referenced only as plain template text', () => {
+    const code = runVueTransform({
+      locales: [
+        'en',
+      ],
+      source: [
+        '<script setup lang="ts">',
+        "import { locales } from 'yapyak';",
+        '</script>',
+        '<template>',
+        '  <p>locales</p>',
+        '</template>',
+      ].join('\n'),
+    });
+    expect(code).not.toMatch(/import \{ locales \}/);
+  });
+
+  it('elides a `locales` import referenced only inside a static `aria-label`', () => {
+    const code = runVueTransform({
+      locales: [
+        'en',
+      ],
+      source: [
+        '<script setup lang="ts">',
+        "import { locales } from 'yapyak';",
+        '</script>',
+        '<template>',
+        '  <button aria-label="locales">x</button>',
+        '</template>',
+      ].join('\n'),
+    });
+    expect(code).not.toMatch(/import \{ locales \}/);
+  });
+
+  it('elides a `format` import referenced only as a static attribute value', () => {
+    const code = runVueTransform({
+      locales: [
+        'en',
+      ],
+      source: [
+        '<script setup lang="ts">',
+        "import { format } from 'yapyak';",
+        '</script>',
+        '<template>',
+        '  <button data-tag="format">x</button>',
+        '</template>',
+      ].join('\n'),
+    });
+    expect(code).not.toMatch(/import \{ format \}/);
+  });
 });

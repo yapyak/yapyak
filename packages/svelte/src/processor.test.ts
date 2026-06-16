@@ -370,4 +370,71 @@ describe('svelte processor — transform', () => {
     );
     expect(code).toMatch(/import \{ pick as _pick \} from 'yapyak\/internal'/);
   });
+
+  it('preserves a `locales` import referenced from an `{#each}` expression', () => {
+    const code = runSvelteTransform(
+      [
+        '<script lang="ts">',
+        "  import { locales } from 'yapyak';",
+        '</script>',
+        '',
+        '{#each locales as value}',
+        '  <button>{value}</button>',
+        '{/each}',
+      ].join('\n'),
+    );
+    expect(code).toMatch(/import \{ locales \}/);
+  });
+
+  it('preserves a `format` import referenced from a mustache expression', () => {
+    const code = runSvelteTransform(
+      [
+        '<script lang="ts">',
+        "  import { format } from 'yapyak';",
+        '</script>',
+        '',
+        "<p>{format.list(['a', 'b'])}</p>",
+      ].join('\n'),
+    );
+    expect(code).toMatch(/import \{ format \}/);
+  });
+
+  it('preserves a `getLocale` import referenced from an attribute expression', () => {
+    const code = runSvelteTransform(
+      [
+        '<script lang="ts">',
+        "  import { getLocale } from 'yapyak';",
+        '</script>',
+        '',
+        '<time datetime={getLocale()}>x</time>',
+      ].join('\n'),
+    );
+    expect(code).toMatch(/import \{ getLocale \}/);
+  });
+
+  it('elides a `locales` import referenced only as plain template text', () => {
+    const code = runSvelteTransform(
+      [
+        '<script lang="ts">',
+        "  import { locales } from 'yapyak';",
+        '</script>',
+        '',
+        '<p>locales</p>',
+      ].join('\n'),
+    );
+    expect(code).not.toMatch(/import \{ locales \}/);
+  });
+
+  it('elides a `locales` import referenced only inside a static `aria-label`', () => {
+    const code = runSvelteTransform(
+      [
+        '<script lang="ts">',
+        "  import { locales } from 'yapyak';",
+        '</script>',
+        '',
+        '<button aria-label="locales">x</button>',
+      ].join('\n'),
+    );
+    expect(code).not.toMatch(/import \{ locales \}/);
+  });
 });
