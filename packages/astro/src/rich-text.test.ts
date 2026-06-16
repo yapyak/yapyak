@@ -1,10 +1,22 @@
 import type { SlotAccessor } from './rich-text';
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { parseRichText } from 'yapyak';
 
-import { CHILDREN_TOKEN } from './children-token';
-import { renderRichText } from './rich-text';
+vi.mock('./Children.astro', () => ({
+  default: {
+    name: 'Children',
+  },
+}));
+
+vi.mock('./RichText.astro', () => ({
+  default: {
+    name: 'RichText',
+  },
+}));
+
+const { CHILDREN_TOKEN } = await import('./children-token');
+const { RichText, renderRichText } = await import('./rich-text');
 
 function buildSlotAccessor(templates: Record<string, string>): SlotAccessor {
   return {
@@ -12,6 +24,17 @@ function buildSlotAccessor(templates: Record<string, string>): SlotAccessor {
     render: async (name) => templates[name] ?? '',
   };
 }
+
+describe('RichText', () => {
+  it('builds a compound component that holds the `Children` marker as a property', () => {
+    expect(RichText.Children).toBeDefined();
+    expect(RichText.Children.name).toBe('Children');
+  });
+
+  it('preserves the underlying `RichText.astro` component identity', () => {
+    expect(RichText.name).toBe('RichText');
+  });
+});
 
 describe('renderRichText', () => {
   it('transforms a tag into its slot template with children inlined', async () => {

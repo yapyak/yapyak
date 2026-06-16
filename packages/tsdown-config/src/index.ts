@@ -6,6 +6,9 @@ export function defineConfig(overrides: UserConfig): UserConfig {
     dts: true,
     fixedExtension: false,
     format: 'esm',
+    treeshake: {
+      moduleSideEffects: 'no-external',
+    },
     ...overrides,
   };
 }

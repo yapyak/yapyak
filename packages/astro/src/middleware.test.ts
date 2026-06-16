@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { setLocale } from 'yapyak';
 import { resetLocale } from 'yapyak/internal';
 
-import { onRequest } from './internal';
+import { middleware } from './middleware';
 
 vi.mock('yapyak/runtime', () => ({
   DEFAULT_LOCALE: 'en',
@@ -18,7 +18,7 @@ vi.mock('yapyak/runtime', () => ({
   SYNC_HTML_LANG: false,
 }));
 
-describe('onRequest', () => {
+describe('middleware', () => {
   afterEach(() => {
     resetLocale();
   });
@@ -28,10 +28,10 @@ describe('onRequest', () => {
     const expected = new Response('body', {
       status: 200,
     });
-    const result = await onRequest(
+    const result = await middleware(
       {
         request,
-      } as Parameters<typeof onRequest>[0],
+      } as Parameters<typeof middleware>[0],
       async () => expected,
     );
     expect(result).toBe(expected);
@@ -40,10 +40,10 @@ describe('onRequest', () => {
   it('drains Set-Cookie from a server-side `setLocale()` call onto the response', async () => {
     const request = new Request('http://example.com/');
     const response = new Response('body');
-    await onRequest(
+    await middleware(
       {
         request,
-      } as Parameters<typeof onRequest>[0],
+      } as Parameters<typeof middleware>[0],
       async () => {
         setLocale('sv');
         return response;
