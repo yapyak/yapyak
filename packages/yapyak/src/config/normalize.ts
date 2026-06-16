@@ -75,15 +75,29 @@ export function normalizeYapyakConfig(
   config: YapyakConfig,
 ): NormalizedYapyakConfig {
   const processors = config.processors ?? [];
+  const autoTranslateThreshold =
+    config.autoTranslateThreshold ?? DEFAULT_AUTO_TRANSLATE_THRESHOLD;
+  if (!Number.isInteger(autoTranslateThreshold) || autoTranslateThreshold < 0) {
+    throw new Error(
+      `[yapyak] autoTranslateThreshold must be a non-negative integer, got ${String(autoTranslateThreshold)}.`,
+    );
+  }
+  const defaultLocale = config.defaultLocale ?? DEFAULT_LOCALE;
+  if (defaultLocale === '') {
+    throw new Error('[yapyak] defaultLocale cannot be an empty string.');
+  }
+  const localesDir = config.localesDir ?? DEFAULT_LOCALES_DIR;
+  if (localesDir === '') {
+    throw new Error('[yapyak] localesDir cannot be an empty string.');
+  }
   return {
-    autoTranslateThreshold:
-      config.autoTranslateThreshold ?? DEFAULT_AUTO_TRANSLATE_THRESHOLD,
-    defaultLocale: config.defaultLocale ?? DEFAULT_LOCALE,
+    autoTranslateThreshold,
+    defaultLocale,
     detectAcceptLanguage: config.detectAcceptLanguage ?? false,
-    examples: config.examples ?? resolveExamplesDefault(config.translator),
+    examples: resolveExamples(config),
     exclude: resolvePatterns(config.exclude ?? DEFAULT_EXCLUDE, processors),
     include: resolvePatterns(config.include ?? DEFAULT_INCLUDE, processors),
-    localesDir: config.localesDir ?? DEFAULT_LOCALES_DIR,
+    localesDir,
     persistence: normalizePersistenceConfig(config.persistence),
     preserveTranslationsOnRename:
       config.preserveTranslationsOnRename ?? !config.translator,
@@ -113,6 +127,11 @@ function normalizeEntry(
 ): string | RegExp {
   if (entry instanceof RegExp) {
     return entry;
+  }
+  if (entry === '') {
+    throw new Error(
+      '[yapyak] include/exclude entry cannot be an empty string.',
+    );
   }
   if (!isDirectoryShortcut(entry, extensions)) {
     return entry;
@@ -149,8 +168,16 @@ function resolveExtensions(processors: Processor[]): string[] {
   ].sort();
 }
 
-function resolveExamplesDefault(translator: Translator | undefined): number {
-  if (translator?.context === 'none') {
+function resolveExamples(config: YapyakConfig): number {
+  if (config.examples !== undefined) {
+    if (!Number.isInteger(config.examples) || config.examples < 0) {
+      throw new Error(
+        `[yapyak] examples must be a non-negative integer, got ${String(config.examples)}.`,
+      );
+    }
+    return config.examples;
+  }
+  if (config.translator?.context === 'none') {
     return 0;
   }
   return DEFAULT_EXAMPLES;
@@ -185,10 +212,12 @@ function normalizePersistenceConfig(
         return {
           type: 'none',
         };
-      default:
-        return {
-          type: 'none',
-        };
+      default: {
+        const exhaustive: never = config;
+        throw new Error(
+          `[yapyak] unknown persistence strategy: ${String(exhaustive)}.`,
+        );
+      }
     }
   }
   switch (config.type) {
@@ -216,9 +245,11 @@ function normalizePersistenceConfig(
       return {
         type: 'none',
       };
-    default:
-      return {
-        type: 'none',
-      };
+    default: {
+      const exhaustive: never = config;
+      throw new Error(
+        `[yapyak] unknown persistence type: ${JSON.stringify(exhaustive)}.`,
+      );
+    }
   }
 }

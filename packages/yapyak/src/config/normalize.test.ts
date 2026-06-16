@@ -265,6 +265,56 @@ describe('normalizeYapyakConfig', () => {
     ]);
   });
 
+  it('throws when an include entry is an empty string', () => {
+    expect(() =>
+      normalizeYapyakConfig({
+        include: [
+          '',
+        ],
+      }),
+    ).toThrow(/include\/exclude entry cannot be an empty string/);
+  });
+
+  it('throws when `autoTranslateThreshold` is a negative integer', () => {
+    expect(() =>
+      normalizeYapyakConfig({
+        autoTranslateThreshold: -1,
+      }),
+    ).toThrow(/autoTranslateThreshold must be a non-negative integer/);
+  });
+
+  it('throws when `autoTranslateThreshold` is a fractional number', () => {
+    expect(() =>
+      normalizeYapyakConfig({
+        autoTranslateThreshold: 1.5,
+      }),
+    ).toThrow(/autoTranslateThreshold must be a non-negative integer/);
+  });
+
+  it('throws when `defaultLocale` is an empty string', () => {
+    expect(() =>
+      normalizeYapyakConfig({
+        defaultLocale: '',
+      }),
+    ).toThrow(/defaultLocale cannot be an empty string/);
+  });
+
+  it('throws when `localesDir` is an empty string', () => {
+    expect(() =>
+      normalizeYapyakConfig({
+        localesDir: '',
+      }),
+    ).toThrow(/localesDir cannot be an empty string/);
+  });
+
+  it('throws when `examples` is a negative integer', () => {
+    expect(() =>
+      normalizeYapyakConfig({
+        examples: -1,
+      }),
+    ).toThrow(/examples must be a non-negative integer/);
+  });
+
   it('preserves a `RegExp` inside an include array verbatim', () => {
     const pattern = /\.special$/;
     const result = normalizeYapyakConfig({
@@ -380,6 +430,24 @@ describe('normalizeYapyakConfig', () => {
     expect(result.persistence).toEqual({
       type: 'none',
     });
+  });
+
+  it('throws when the persistence shorthand is unknown', () => {
+    expect(() =>
+      normalizeYapyakConfig({
+        persistence: 'cookei' as never,
+      }),
+    ).toThrow(/unknown persistence strategy/);
+  });
+
+  it('throws when the persistence object type is unknown', () => {
+    expect(() =>
+      normalizeYapyakConfig({
+        persistence: {
+          type: 'cookei',
+        } as never,
+      }),
+    ).toThrow(/unknown persistence type/);
   });
 });
 
