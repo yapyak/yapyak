@@ -1,3 +1,5 @@
+import { parseRetryAfterMs } from './fetch';
+
 /**
  * Base error thrown by every yapyak translator.
  *
@@ -25,8 +27,6 @@
  * }
  * ```
  */
-import { parseRetryAfterMs } from './fetch';
-
 export class TranslatorError extends Error {
   vendor: string;
 
