@@ -1,5 +1,5 @@
 /**
- * Svelte adapter for yapyak.
+ * Svelte bindings for yapyak.
  *
  * ## Installation
  *

@@ -1,6 +1,15 @@
 {
   "name": "@yapyak/vue",
   "version": "0.0.0",
+  "description": "Vue bindings for yapyak.",
+  "keywords": [
+    "bindings",
+    "i18n",
+    "translation",
+    "vue",
+    "yapyak"
+  ],
+  "homepage": "https://yapyak.dev",
   "license": "MIT",
   "type": "module",
   "exports": {
@@ -43,7 +52,7 @@
     "@vue/compiler-core": ">=3.0.0",
     "@vue/compiler-sfc": ">=3.0.0",
     "vue": ">=3.4",
-    "yapyak": "workspace:*"
+    "yapyak": ">=0.0.0"
   },
   "peerDependenciesMeta": {
     "@vue/compiler-core": {

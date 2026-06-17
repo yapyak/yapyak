@@ -1,6 +1,16 @@
 {
   "name": "@yapyak/react-router",
   "version": "0.0.0",
+  "description": "React Router adapter for yapyak.",
+  "keywords": [
+    "adapter",
+    "i18n",
+    "react",
+    "react-router",
+    "translation",
+    "yapyak"
+  ],
+  "homepage": "https://yapyak.dev",
   "license": "MIT",
   "sideEffects": false,
   "type": "module",
@@ -28,7 +38,7 @@
   },
   "peerDependencies": {
     "react-router": ">=7.9",
-    "yapyak": "workspace:*"
+    "yapyak": ">=0.0.0"
   },
   "engines": {
     "node": ">=22"

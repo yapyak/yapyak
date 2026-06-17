@@ -4,7 +4,7 @@ import type { AstroComponentFactory } from 'astro/runtime/server';
  * Props for {@link RichText}.
  *
  * @remarks
- * `value` carries the source string with `<tag>...</tag>` markers. Each tag is resolved by an Astro named slot of the same name; inside the slot, place a {@link Children} component where the matched tag's children should appear. A tag with no matching slot renders as escaped literal text.
+ * `value` carries the source string with `<tag>...</tag>` markers. Each tag is resolved by an Astro named slot of the same name; inside the slot, place a `<RichText.Children />` marker where the matched tag's children should appear. A tag with no matching slot renders as escaped literal text.
  */
 export type RichTextProps = {
   value: string;
@@ -19,11 +19,11 @@ export type RichTextProps = {
  * @example Render a translated string with a link tag
  * ```astro
  * ---
- * import { RichText, Children } from '@yapyak/astro';
+ * import { RichText } from '@yapyak/astro';
  * import { t } from 'yapyak';
  * ---
  * <RichText value={t('Click <link>here</link>.')}>
- *   <a slot="link" href="/docs"><Children /></a>
+ *   <a slot="link" href="/docs"><RichText.Children /></a>
  * </RichText>
  * ```
  */

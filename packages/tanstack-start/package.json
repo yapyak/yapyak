@@ -1,6 +1,16 @@
 {
   "name": "@yapyak/tanstack-start",
   "version": "0.0.0",
+  "description": "TanStack Start adapter for yapyak.",
+  "keywords": [
+    "adapter",
+    "i18n",
+    "tanstack",
+    "tanstack-start",
+    "translation",
+    "yapyak"
+  ],
+  "homepage": "https://yapyak.dev",
   "license": "MIT",
   "sideEffects": false,
   "type": "module",
@@ -28,7 +38,7 @@
   },
   "peerDependencies": {
     "@tanstack/react-start": ">=1.168",
-    "yapyak": "workspace:*"
+    "yapyak": ">=0.0.0"
   },
   "engines": {
     "node": ">=22"

@@ -639,22 +639,24 @@ Apply tests top-down. First match wins.
 
 #### Package identifier and role table
 
-The identifier is the human form of the package name; the role determines the summary suffix. The set `adapter`, `base`, `plugin`, `translator` is closed — adding a new role requires amending this table before any package uses it.
+The identifier is the human form of the package name; the role determines the summary suffix. The set `adapter`, `base`, `bindings`, `plugin`, `translator` is closed — adding a new role requires amending this table before any package uses it.
+
+`bindings` covers client-side framework-native runtime glue (hooks, refs, runes, native components). `adapter` covers server-lifecycle wiring (middleware, handle, withRequest). `plugin` covers build-tool plugins. `translator` covers LLM-vendor implementations.
 
 | Package | Identifier | Role |
 |---|---|---|
 | `@yapyak/anthropic` | Anthropic | translator |
-| `@yapyak/astro` | Astro | adapter |
+| `@yapyak/astro` | Astro | bindings |
 | `@yapyak/gemini` | Gemini | translator |
 | `@yapyak/ollama` | Ollama | translator |
 | `@yapyak/openai` | OpenAI | translator |
-| `@yapyak/react` | React | adapter |
+| `@yapyak/react` | React | bindings |
 | `@yapyak/react-router` | React Router | adapter |
-| `@yapyak/svelte` | Svelte | adapter |
+| `@yapyak/svelte` | Svelte | bindings |
 | `@yapyak/sveltekit` | SvelteKit | adapter |
 | `@yapyak/tanstack-start` | TanStack Start | adapter |
 | `@yapyak/vite` | Vite | plugin |
-| `@yapyak/vue` | Vue | adapter |
+| `@yapyak/vue` | Vue | bindings |
 
 The root `yapyak` package is intentionally absent — its summary (`Runtime API for yapyak.`) is hand-authored, not derived. The internal subsystems of `yapyak` (`adapter`, `cli`, `compiler`, `config`, `runtime`, `translator`) are subpath exports / folders within that one package, not separate packages, so they do not appear here.
 

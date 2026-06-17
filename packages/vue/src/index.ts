@@ -1,5 +1,5 @@
 /**
- * Vue adapter for yapyak.
+ * Vue bindings for yapyak.
  *
  * ## Installation
  *

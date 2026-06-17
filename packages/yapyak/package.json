@@ -1,6 +1,13 @@
 {
   "name": "yapyak",
   "version": "0.0.0",
+  "description": "i18n that keeps up.",
+  "keywords": [
+    "i18n",
+    "translation",
+    "yapyak"
+  ],
+  "homepage": "https://yapyak.dev",
   "license": "MIT",
   "sideEffects": false,
   "type": "module",

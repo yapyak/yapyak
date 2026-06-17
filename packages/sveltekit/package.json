@@ -1,6 +1,16 @@
 {
   "name": "@yapyak/sveltekit",
   "version": "0.0.0",
+  "description": "SvelteKit adapter for yapyak.",
+  "keywords": [
+    "adapter",
+    "i18n",
+    "svelte",
+    "sveltekit",
+    "translation",
+    "yapyak"
+  ],
+  "homepage": "https://yapyak.dev",
   "license": "MIT",
   "sideEffects": false,
   "type": "module",
@@ -29,7 +39,7 @@
   },
   "peerDependencies": {
     "@sveltejs/kit": ">=2",
-    "yapyak": "workspace:*"
+    "yapyak": ">=0.0.0"
   },
   "engines": {
     "node": ">=22"

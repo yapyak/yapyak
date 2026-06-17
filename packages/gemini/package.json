@@ -1,6 +1,15 @@
 {
   "name": "@yapyak/gemini",
   "version": "0.0.0",
+  "description": "Gemini translator for yapyak.",
+  "keywords": [
+    "gemini",
+    "i18n",
+    "translation",
+    "translator",
+    "yapyak"
+  ],
+  "homepage": "https://yapyak.dev",
   "license": "MIT",
   "sideEffects": false,
   "type": "module",
@@ -26,7 +35,7 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "yapyak": "workspace:*"
+    "yapyak": ">=0.0.0"
   },
   "engines": {
     "node": ">=22"

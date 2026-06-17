@@ -58,7 +58,7 @@ export type GeminiOptions = {
    * The output-token cap sent as `generationConfig.maxOutputTokens` to the Gemini API.
    *
    * @remarks
-   * When omitted, the model's own default applies. Set this to override that default for batches that need more or less headroom.
+   * When omitted, the translator scales the cap to `items × targetLocales × 96` with a floor of `1024` and a ceiling of `8000`. Set this to override the scaled default for batches that need more or less headroom.
    */
   maxTokens?: number;
   /**

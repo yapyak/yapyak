@@ -1,6 +1,16 @@
 {
   "name": "@yapyak/openai",
   "version": "0.0.0",
+  "description": "OpenAI translator for yapyak.",
+  "keywords": [
+    "gpt",
+    "i18n",
+    "openai",
+    "translation",
+    "translator",
+    "yapyak"
+  ],
+  "homepage": "https://yapyak.dev",
   "license": "MIT",
   "sideEffects": false,
   "type": "module",
@@ -26,7 +36,7 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "yapyak": "workspace:*"
+    "yapyak": ">=0.0.0"
   },
   "engines": {
     "node": ">=22"

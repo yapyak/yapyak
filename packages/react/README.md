@@ -2,7 +2,7 @@
 
 > Universal
 
-React adapter for yapyak.
+React bindings for yapyak.
 
 ## Installation
 
