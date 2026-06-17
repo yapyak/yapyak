@@ -61,6 +61,21 @@ describe('responseToError', () => {
     expect((error as TranslatorRateLimitError).retryAfter).toBe(7000);
   });
 
+  it('maps HTTP 429 with an HTTP-date Retry-After to a millisecond delta', async () => {
+    const future = new Date(Date.now() + 12_000).toUTCString();
+    const response = new Response('rate-limited', {
+      headers: {
+        'retry-after': future,
+      },
+      status: 429,
+    });
+    const error = await responseToError(response, 'openai');
+    expect(error).toBeInstanceOf(TranslatorRateLimitError);
+    const retryAfter = (error as TranslatorRateLimitError).retryAfter ?? 0;
+    expect(retryAfter).toBeGreaterThan(9000);
+    expect(retryAfter).toBeLessThan(15_000);
+  });
+
   it('maps HTTP 401 to a `TranslatorAuthError`', async () => {
     const error = await responseToError(
       new Response('unauthorized', {

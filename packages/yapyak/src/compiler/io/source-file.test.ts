@@ -115,6 +115,37 @@ describe('walkSourceFiles', () => {
     expect(files).toEqual([]);
   });
 
+  it('does not let a filtered-out symlink shadow a filtered-in path to the same real dir', () => {
+    const externalRoot = mkdtempSync(join(tmpdir(), 'yapyak-external-'));
+    try {
+      const realDir = join(externalRoot, 'real');
+      mkdirSync(realDir, {
+        recursive: true,
+      });
+      writeFileSync(join(realDir, 'a.ts'), 'Hello');
+      mkdirSync(join(projectRoot, 'node_modules'), {
+        recursive: true,
+      });
+      mkdirSync(join(projectRoot, 'src'), {
+        recursive: true,
+      });
+      symlinkSync(realDir, join(projectRoot, 'node_modules', 'shadow'));
+      symlinkSync(realDir, join(projectRoot, 'src', 'shadow'));
+
+      const filter = (id: string): boolean => !id.startsWith('node_modules/');
+      const files = walkSourceFiles(filter, projectRoot);
+
+      expect(files.map((file) => file.fileId)).toEqual([
+        'src/shadow/a.ts',
+      ]);
+    } finally {
+      rmSync(externalRoot, {
+        force: true,
+        recursive: true,
+      });
+    }
+  });
+
   it('returns no files when a file is unreadable', () => {
     mkdirSync(join(projectRoot, 'src'), {
       recursive: true,

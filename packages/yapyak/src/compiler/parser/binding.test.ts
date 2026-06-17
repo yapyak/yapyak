@@ -349,6 +349,15 @@ describe('resolveBindings', () => {
     ).toBe('shadow');
   });
 
+  it('returns the direct binding when a sibling block has a `using t` shadow', () => {
+    expect(
+      findCallBindingKind(
+        "import { t } from 'yapyak';\nfunction outer() { { using t = { [Symbol.dispose]() {} }; void t; } return t('Hello'); }",
+        't',
+      ),
+    ).toBe('direct');
+  });
+
   it('returns a shadow binding for a `for ... of` iteration variable named `t`', () => {
     expect(
       findCallBindingKind(

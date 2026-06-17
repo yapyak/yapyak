@@ -9,6 +9,11 @@ export type ResolveMaxTokensInput = {
 
 export function resolveMaxTokens(input: ResolveMaxTokensInput): number {
   if (input.override !== undefined) {
+    if (!Number.isFinite(input.override) || input.override <= 0) {
+      throw new Error(
+        `resolveMaxTokens: maxTokens override must be a positive finite number, got ${String(input.override)}.`,
+      );
+    }
     return input.override;
   }
   const projected = input.itemCount * input.localeCount * input.perItem;

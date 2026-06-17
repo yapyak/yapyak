@@ -25,6 +25,8 @@
  * }
  * ```
  */
+import { parseRetryAfterMs } from './fetch';
+
 export class TranslatorError extends Error {
   vendor: string;
 
@@ -198,7 +200,7 @@ export async function responseToError(
   const message = `yapyak ${vendor}: HTTP ${response.status}${body === '' ? '' : ` ${body}`}`;
   if (response.status === 429) {
     return new TranslatorRateLimitError(message, {
-      retryAfter: parseRetryAfterHeader(response.headers.get('retry-after')),
+      retryAfter: parseRetryAfterMs(response.headers.get('retry-after')),
       vendor,
     });
   }
@@ -242,18 +244,4 @@ export function causeToError(cause: unknown, vendor: string): TranslatorError {
       vendor,
     },
   );
-}
-
-function parseRetryAfterHeader(value: string | null): number | undefined {
-  if (value === null) {
-    return undefined;
-  }
-  const trimmed = value.trim();
-  if (trimmed === '') {
-    return undefined;
-  }
-  if (/^\d+$/.test(trimmed)) {
-    return Number(trimmed) * 1000;
-  }
-  return undefined;
 }

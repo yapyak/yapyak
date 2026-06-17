@@ -1,4 +1,5 @@
 import { parseAcceptLanguage } from './accept-language';
+import { getLocaleFallbackChain } from './fallback-chain';
 
 export type ResolveLocaleOptions = {
   acceptLanguage?: string;
@@ -17,12 +18,10 @@ export function resolveLocale(
   }
   const candidates = extractCandidates(options);
   for (const candidate of candidates) {
-    if (locales.includes(candidate)) {
-      return candidate;
-    }
-    const prefix = candidate.split('-')[0];
-    if (prefix && locales.includes(prefix)) {
-      return prefix;
+    for (const subtag of getLocaleFallbackChain(candidate)) {
+      if (locales.includes(subtag)) {
+        return subtag;
+      }
     }
   }
   return defaultLocale;

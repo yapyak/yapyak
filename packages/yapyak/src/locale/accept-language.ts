@@ -18,7 +18,7 @@ export function parseAcceptLanguage(header: string): string[] {
     let hasInvalidQuality = false;
     for (const param of parts.slice(1)) {
       const trimmed = param.trim();
-      if (trimmed.startsWith('q=')) {
+      if (trimmed.toLowerCase().startsWith('q=')) {
         const parsed = Number.parseFloat(trimmed.slice(2));
         if (Number.isFinite(parsed) && parsed >= 0 && parsed <= 1) {
           quality = parsed;

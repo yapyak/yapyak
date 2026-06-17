@@ -80,7 +80,7 @@ export async function add(
         `  ${symbol.warn} ${color.yellow(`${config.localesDir}/${locale}.json already exists — leaving it alone.`)}\n`,
       );
     } else {
-      writeFileSync(localePath, '');
+      writeFileSync(localePath, '{}\n');
       process.stdout.write(
         `  ${symbol.check} Created ${color.bold(`${config.localesDir}/${locale}.json`)}\n`,
       );

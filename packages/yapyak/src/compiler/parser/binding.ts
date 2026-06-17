@@ -171,7 +171,10 @@ function registerBindings(
   }
   if (ts.isVariableStatement(node)) {
     const flags = node.declarationList.flags;
-    const isVar = !(flags & (ts.NodeFlags.Let | ts.NodeFlags.Const));
+    const isVar = !(
+      flags &
+      (ts.NodeFlags.Let | ts.NodeFlags.Const | ts.NodeFlags.Using)
+    );
     const targetScope = isVar ? findFunctionOrModuleScope(scope) : scope;
     for (const decl of node.declarationList.declarations) {
       registerVariableDeclaration(decl, targetScope, context);

@@ -137,4 +137,34 @@ describe('resolveLocale', () => {
       ]),
     ).toBe('en');
   });
+
+  it('walks the full BCP 47 fallback chain to find a supported script subtag', () => {
+    expect(
+      resolveLocale(
+        'en',
+        [
+          'en',
+          'zh-Hant',
+        ],
+        {
+          acceptLanguage: 'zh-Hant-TW',
+        },
+      ),
+    ).toBe('zh-Hant');
+  });
+
+  it('falls back to the language subtag when no script variant is supported', () => {
+    expect(
+      resolveLocale(
+        'en',
+        [
+          'en',
+          'zh',
+        ],
+        {
+          acceptLanguage: 'zh-Hant-TW',
+        },
+      ),
+    ).toBe('zh');
+  });
 });

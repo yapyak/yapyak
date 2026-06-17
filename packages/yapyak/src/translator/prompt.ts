@@ -68,6 +68,8 @@ export function stripCodeFence(text: string): string {
   const lines = text.split('\n');
   const start = lines[0]?.startsWith('```') ? 1 : 0;
   const end =
-    lines[lines.length - 1] === '```' ? lines.length - 1 : lines.length;
+    lines[lines.length - 1]?.trimEnd() === '```'
+      ? lines.length - 1
+      : lines.length;
   return lines.slice(start, end).join('\n');
 }

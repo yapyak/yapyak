@@ -39,6 +39,13 @@ function walk(
       continue;
     }
     if (stat.isDirectory()) {
+      const probeId = relative(
+        projectRoot,
+        join(fullPath, PROBE_FILE),
+      ).replaceAll('\\', '/');
+      if (!filter(probeId)) {
+        continue;
+      }
       let realDir: string;
       try {
         realDir = realpathSync(fullPath);
@@ -49,13 +56,6 @@ function walk(
         continue;
       }
       visited.add(realDir);
-      const probeId = relative(
-        projectRoot,
-        join(fullPath, PROBE_FILE),
-      ).replaceAll('\\', '/');
-      if (!filter(probeId)) {
-        continue;
-      }
       walk(fullPath, projectRoot, filter, results, visited);
       continue;
     }

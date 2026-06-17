@@ -16,6 +16,15 @@ describe('withProgress', () => {
     expect(wrapped.id).toBe('fake');
   });
 
+  it('preserves the underlying translator `context`', () => {
+    const base: Translator = Object.assign(async () => '', {
+      context: 'none' as const,
+      id: 'fake',
+    });
+    const wrapped = withProgress(base, () => {});
+    expect(wrapped.context).toBe('none');
+  });
+
   it('notifies `onProgress` with `1` after every single translation', async () => {
     const onProgress = vi.fn();
     const wrapped = withProgress(makeTranslator(), onProgress);

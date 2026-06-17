@@ -54,4 +54,56 @@ describe('resolveMaxTokens', () => {
       }),
     ).toBe(20 * 2 * 96);
   });
+
+  it('throws when override is zero', () => {
+    expect(() =>
+      resolveMaxTokens({
+        cap: 32_000,
+        floor: 1024,
+        itemCount: 10,
+        localeCount: 2,
+        override: 0,
+        perItem: 96,
+      }),
+    ).toThrow(/positive finite number/);
+  });
+
+  it('throws when override is negative', () => {
+    expect(() =>
+      resolveMaxTokens({
+        cap: 32_000,
+        floor: 1024,
+        itemCount: 10,
+        localeCount: 2,
+        override: -1,
+        perItem: 96,
+      }),
+    ).toThrow(/positive finite number/);
+  });
+
+  it('throws when override is NaN', () => {
+    expect(() =>
+      resolveMaxTokens({
+        cap: 32_000,
+        floor: 1024,
+        itemCount: 10,
+        localeCount: 2,
+        override: Number.NaN,
+        perItem: 96,
+      }),
+    ).toThrow(/positive finite number/);
+  });
+
+  it('throws when override is Infinity', () => {
+    expect(() =>
+      resolveMaxTokens({
+        cap: 32_000,
+        floor: 1024,
+        itemCount: 10,
+        localeCount: 2,
+        override: Number.POSITIVE_INFINITY,
+        perItem: 96,
+      }),
+    ).toThrow(/positive finite number/);
+  });
 });

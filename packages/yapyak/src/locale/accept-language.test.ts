@@ -71,4 +71,12 @@ describe('parseAcceptLanguage', () => {
       'sv',
     ]);
   });
+
+  it('treats `Q=` as equivalent to `q=` per RFC 7231 §5.3.1', () => {
+    expect(parseAcceptLanguage('sv;Q=0.5,fr;Q=0.9,en;Q=0.7')).toEqual([
+      'fr',
+      'en',
+      'sv',
+    ]);
+  });
 });
