@@ -23,6 +23,7 @@ import {
   buildPrepaintScript,
 } from '#components/options';
 import { Wordmark } from '#components/wordmark';
+import { assetUrl } from '#utils/asset';
 
 import { doc } from 'virtual:doc-extractor';
 
@@ -32,7 +33,7 @@ export const Route = createRootRoute({
     return {
       links: [
         {
-          href: '/favicon.svg',
+          href: assetUrl('favicon.svg'),
           rel: 'icon',
           type: 'image/svg+xml',
         },

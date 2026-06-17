@@ -4,6 +4,7 @@ import { t } from 'yapyak';
 
 import { Box } from '#components/box';
 import { Wordmark } from '#components/wordmark';
+import { assetUrl } from '#utils/asset';
 
 import styles from './colophon.module.css';
 
@@ -25,7 +26,7 @@ export function Colophon(props: ColophonProps) {
         aria-hidden="true"
         as="img"
         className={styles.BubbleImage}
-        src="/logo.svg"
+        src={assetUrl('logo.svg')}
       />
       <Box
         as="p"

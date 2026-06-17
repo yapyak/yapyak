@@ -28,6 +28,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - run: pnpm --filter @yapyak/docs build
+        env:
+          DOCS_BASEPATH: /yapyak/
       - uses: actions/upload-pages-artifact@v4
         with:
           path: docs/dist/client
