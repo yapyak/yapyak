@@ -85,6 +85,7 @@ const DEFAULT_ENDPOINT = 'http://localhost:11434/api/generate';
 const DEFAULT_TEMPERATURE = 0.2;
 const DEFAULT_TIMEOUT = 120_000;
 const DEFAULT_MAX_RETRIES = 1;
+const DEFAULT_BATCH_SIZE = 8;
 const MAX_TOKENS_CAP = 4000;
 const MAX_TOKENS_FLOOR = 1024;
 const MAX_TOKENS_PER_ITEM = 96;
@@ -106,7 +107,7 @@ const MAX_TOKENS_PER_ITEM = 96;
  */
 export function ollama(options: OllamaOptions = {}): Translator {
   const {
-    batchSize,
+    batchSize = DEFAULT_BATCH_SIZE,
     concurrency,
     context,
     endpoint = DEFAULT_ENDPOINT,

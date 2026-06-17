@@ -30,8 +30,16 @@ export async function loadYapyakConfig(
 ): Promise<LoadYapyakConfigResult> {
   for (const name of ENV_FILES) {
     const path = resolve(cwd, name);
-    if (existsSync(path)) {
+    if (!existsSync(path)) {
+      continue;
+    }
+    try {
       loadEnvFile(path);
+    } catch (cause) {
+      const detail = cause instanceof Error ? cause.message : String(cause);
+      throw new Error(`Failed to load env file ${path}: ${detail}`, {
+        cause,
+      });
     }
   }
   for (const name of CONFIG_FILES) {

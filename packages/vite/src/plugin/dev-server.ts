@@ -463,65 +463,6 @@ function compileLocaleValue(raw: string): string | Template {
   return template;
 }
 
-export function extractChangedFileIds(
-  before: LocaleFile,
-  after: LocaleFile,
-): Set<string> {
-  const changed = new Set<string>();
-  for (const [fileId, beforeEntries] of Object.entries(before)) {
-    if (!areEntriesEqual(beforeEntries, after[fileId])) {
-      changed.add(fileId);
-    }
-  }
-  for (const fileId of Object.keys(after)) {
-    if (!(fileId in before)) {
-      changed.add(fileId);
-    }
-  }
-  return changed;
-}
-
-export function areEntriesEqual(
-  a: Record<string, CatalogEntry>,
-  b: Record<string, CatalogEntry> | undefined,
-): boolean {
-  if (!b) {
-    return false;
-  }
-  const aKeys = Object.keys(a);
-  if (aKeys.length !== Object.keys(b).length) {
-    return false;
-  }
-  for (const key of aKeys) {
-    if (!isEntryEqual(a[key], b[key])) {
-      return false;
-    }
-  }
-  return true;
-}
-
-function isEntryEqual(
-  a: CatalogEntry | undefined,
-  b: CatalogEntry | undefined,
-): boolean {
-  if (a === undefined || b === undefined) {
-    return a === b;
-  }
-  if (typeof a === 'string' || typeof b === 'string') {
-    return a === b;
-  }
-  const aKeys = Object.keys(a);
-  if (aKeys.length !== Object.keys(b).length) {
-    return false;
-  }
-  for (const key of aKeys) {
-    if (a[key] !== b[key]) {
-      return false;
-    }
-  }
-  return true;
-}
-
 function toCallSitePositions(message: ExtractedMessage): CallSitePosition[] {
   return message.locations.map((location) => ({
     column: location.range.start.column,

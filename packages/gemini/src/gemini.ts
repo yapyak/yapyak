@@ -88,6 +88,7 @@ const DEFAULT_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta';
 const DEFAULT_TEMPERATURE = 0.2;
 const DEFAULT_TIMEOUT = 30_000;
 const DEFAULT_MAX_RETRIES = 2;
+const DEFAULT_BATCH_SIZE = 15;
 const MAX_TOKENS_CAP = 8000;
 const MAX_TOKENS_FLOOR = 1024;
 const MAX_TOKENS_PER_ITEM = 96;
@@ -119,7 +120,7 @@ export function gemini(options: GeminiOptions): Translator {
   }
   const {
     apiKey,
-    batchSize,
+    batchSize = DEFAULT_BATCH_SIZE,
     concurrency,
     context,
     endpoint = DEFAULT_ENDPOINT,
