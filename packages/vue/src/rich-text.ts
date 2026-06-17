@@ -1,7 +1,7 @@
 import type { FunctionalComponent, VNodeChild } from 'vue';
 import type { RichTextNode } from 'yapyak';
 
-import { parseRichText } from 'yapyak/internal';
+import { parseRichText } from 'yapyak';
 
 type SlotFn = (props: { children: () => VNodeChild[] }) => VNodeChild[];
 

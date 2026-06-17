@@ -28,9 +28,5 @@ export {
   time,
 } from './template';
 export { autoRegisterTracker } from './tracker';
-export {
-  parseRichText,
-  pick,
-  walkRichText,
-} from './translation';
+export { pick, walkRichText } from './translation';
 export { resetWarn, setWarn, warn } from './warn';

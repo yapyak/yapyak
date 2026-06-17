@@ -1,10 +1,12 @@
 import type { ContextLevel, Translator } from 'yapyak/translator';
 
-import { createTranslator } from 'yapyak/translator';
 import {
   TranslatorInvalidResponseError,
   TranslatorSafetyError,
   TranslatorTruncatedError,
+  createTranslator,
+} from 'yapyak/translator';
+import {
   buildSystem,
   causeToError,
   fetchWithRetry,

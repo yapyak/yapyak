@@ -1,7 +1,7 @@
 <script lang="ts" generics="T extends string">
   import type { RichTextProps } from "./rich-text";
 
-  import { parseRichText } from "yapyak/internal";
+  import { parseRichText } from "yapyak";
 
   import RichTextWalker from "./rich-text-walker.svelte";
 
