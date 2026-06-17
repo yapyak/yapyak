@@ -4,7 +4,7 @@
 
 ## Reporting
 
-Open a [private vulnerability report](https://github.com/<owner>/<repo>/security/advisories/new) on GitHub. Do not file a public issue.
+Open a [private vulnerability report](https://github.com/yapyak/yapyak/security/advisories/new) on GitHub. Do not file a public issue.
 
 We aim to acknowledge within 72 hours and provide a status update within 7 days. Coordinated disclosure follows once a fix is ready or the issue is determined out-of-scope.
 

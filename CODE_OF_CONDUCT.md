@@ -10,7 +10,7 @@ We commit to acting in ways that contribute to an open, welcoming, diverse, incl
 
 ## Reporting
 
-Report unacceptable behavior by opening a [private vulnerability report](https://github.com/<owner>/<repo>/security/advisories/new) on GitHub. The form is intended for security vulnerabilities but doubles as the only confidential reporting channel this repo provides today.
+Report unacceptable behavior by opening a [private vulnerability report](https://github.com/yapyak/yapyak/security/advisories/new) on GitHub. The form is intended for security vulnerabilities but doubles as the only confidential reporting channel this repo provides today.
 
 Reports are reviewed and investigated promptly and fairly. Maintainers respect the privacy and security of the reporter.
 

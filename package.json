@@ -1,6 +1,12 @@
 {
   "name": "yapyak-monorepo",
   "private": true,
+  "homepage": "https://yapyak.dev",
+  "bugs": "https://github.com/yapyak/yapyak/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yapyak/yapyak.git"
+  },
   "author": "Joakim Uhrwing",
   "type": "module",
   "scripts": {

@@ -8,6 +8,12 @@
     "yapyak"
   ],
   "homepage": "https://yapyak.dev",
+  "bugs": "https://github.com/yapyak/yapyak/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yapyak/yapyak.git",
+    "directory": "packages/yapyak"
+  },
   "license": "MIT",
   "author": "Joakim Uhrwing",
   "sideEffects": false,
