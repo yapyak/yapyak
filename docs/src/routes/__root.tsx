@@ -39,6 +39,11 @@ export const Route = createRootRoute({
         },
       ],
       meta: [
+        // Remove before yapyak.dev launch.
+        {
+          content: 'noindex',
+          name: 'robots',
+        },
         {
           charSet: 'utf-8',
         },
