@@ -1,5 +1,5 @@
 import type { FunctionalComponent, VNodeChild } from 'vue';
-import type { RichTextNode } from 'yapyak/internal';
+import type { RichTextNode } from 'yapyak';
 
 import { parseRichText } from 'yapyak/internal';
 

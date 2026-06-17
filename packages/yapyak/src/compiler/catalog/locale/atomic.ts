@@ -40,7 +40,16 @@ export function writeAtomicAll(
     }
     throw cause;
   }
-  for (const stage of staged) {
-    renameSync(stage.tempPath, stage.finalPath);
+  for (const [index, stage] of staged.entries()) {
+    try {
+      renameSync(stage.tempPath, stage.finalPath);
+    } catch (cause) {
+      for (const remaining of staged.slice(index)) {
+        try {
+          unlinkSync(remaining.tempPath);
+        } catch {}
+      }
+      throw cause;
+    }
   }
 }

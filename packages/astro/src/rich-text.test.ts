@@ -193,4 +193,22 @@ describe('renderRichText', () => {
     const result = await renderRichText(nodes, slotAccessor);
     expect(result).toBe('A<span></span>B');
   });
+
+  it('preserves `$&` verbatim in matched-tag children instead of interpreting it as a replace pattern', async () => {
+    const nodes = parseRichText('Costs <em>$100 and $& more</em>');
+    const slotAccessor = buildSlotAccessor({
+      em: `<strong>${CHILDREN_TOKEN}</strong>`,
+    });
+    const result = await renderRichText(nodes, slotAccessor);
+    expect(result).toBe('Costs <strong>$100 and $&amp; more</strong>');
+  });
+
+  it('preserves `$$` verbatim in matched-tag children instead of collapsing to a single `$`', async () => {
+    const nodes = parseRichText('<em>price: $$ vs $0</em>');
+    const slotAccessor = buildSlotAccessor({
+      em: `<strong>${CHILDREN_TOKEN}</strong>`,
+    });
+    const result = await renderRichText(nodes, slotAccessor);
+    expect(result).toBe('<strong>price: $$ vs $0</strong>');
+  });
 });

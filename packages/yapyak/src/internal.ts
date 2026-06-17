@@ -1,6 +1,5 @@
 export type { Patch } from './hmr-patch';
 export type { RuntimeMock } from './runtime-mock';
-export type { RichTextNode } from './translation';
 export type { WarnFn } from './warn';
 
 export {

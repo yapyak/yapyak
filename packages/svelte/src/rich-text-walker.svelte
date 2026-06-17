@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
-  import type { RichTextNode } from "yapyak/internal";
+  import type { RichTextNode } from "yapyak";
 
   import type { PairHandler, VoidHandler } from "./rich-text";
   import RichTextWalker from "./rich-text-walker.svelte";

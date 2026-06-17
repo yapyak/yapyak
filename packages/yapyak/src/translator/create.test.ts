@@ -523,6 +523,35 @@ describe('createTranslator', () => {
     ]);
   });
 
+  it('refuses to forward `examples` to the translator when `context` is `none`', async () => {
+    let receivedItems: unknown[] | undefined;
+    const translator = createTranslator({
+      context: 'none',
+      translate: (params) => {
+        receivedItems = params.items;
+        return params.items.map(() => ({
+          sv: 'Spara',
+        }));
+      },
+    });
+    await translator.batch?.([
+      {
+        examples: [
+          {
+            source: 'Save',
+            translation: 'Spara',
+          },
+        ],
+        fileId: 'src/a.tsx',
+        source: 'Save',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      },
+    ]);
+    const item = receivedItems?.[0] as Record<string, unknown>;
+    expect(item.examples).toBeUndefined();
+  });
+
   it('builds an item with `componentName` and `enclosingElement` at `minimal` context', async () => {
     let receivedItems: unknown[] | undefined;
     const translator = createTranslator({

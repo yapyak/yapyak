@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { writeAtomic, writeAtomicAll } from './atomic';
 import {
+  mkdirSync,
   mkdtempSync,
   readFileSync,
   readdirSync,
@@ -150,5 +151,27 @@ describe('writeAtomicAll', () => {
   it('writes nothing when the list is empty', () => {
     writeAtomicAll([]);
     expect(readdirSync(directory)).toEqual([]);
+  });
+
+  it('leaves no `.tmp` artefacts when a later rename fails mid-commit', () => {
+    const firstPath = join(directory, 'a.json');
+    const secondPath = join(directory, 'b.json');
+    mkdirSync(secondPath);
+    expect(() =>
+      writeAtomicAll([
+        {
+          content: '{"a":1}',
+          path: firstPath,
+        },
+        {
+          content: '{"b":2}',
+          path: secondPath,
+        },
+      ]),
+    ).toThrow();
+    const remaining = readdirSync(directory).filter((name) =>
+      name.endsWith('.tmp'),
+    );
+    expect(remaining).toEqual([]);
   });
 });

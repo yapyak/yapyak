@@ -104,7 +104,7 @@ function renderNodes(
     if (node.type === 'void') {
       const template = templates[node.name];
       if (template !== undefined) {
-        out += template.replaceAll(CHILDREN_TOKEN, '');
+        out += template.replaceAll(CHILDREN_TOKEN, () => '');
         continue;
       }
       out += `&lt;${escapeHtml(node.name)}/&gt;`;
@@ -113,7 +113,7 @@ function renderNodes(
     const template = templates[node.name];
     if (template !== undefined) {
       const children = renderNodes(node.children, templates);
-      out += template.replaceAll(CHILDREN_TOKEN, children);
+      out += template.replaceAll(CHILDREN_TOKEN, () => children);
       continue;
     }
     const safeName = escapeHtml(node.name);
