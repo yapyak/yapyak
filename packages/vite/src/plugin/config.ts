@@ -37,9 +37,10 @@ export function createConfigPlugin(state: State): Plugin {
       state.configFile = result.configFile;
       state.filter = createFilter(result.config.include, result.config.exclude);
       const ssrExternal = config.ssr?.external;
-      if (Array.isArray(ssrExternal)) {
-        const kept = ssrExternal.filter((id) => !isRuntimeExternal(id));
-        ssrExternal.splice(0, ssrExternal.length, ...kept);
+      if (Array.isArray(ssrExternal) && config.ssr) {
+        config.ssr.external = ssrExternal.filter(
+          (id) => !isRuntimeExternal(id),
+        );
       } else if (ssrExternal === true || typeof ssrExternal === 'function') {
         const description =
           typeof ssrExternal === 'function' ? 'a function' : '`true`';

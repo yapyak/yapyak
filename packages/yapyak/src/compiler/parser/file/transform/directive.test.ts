@@ -56,6 +56,46 @@ describe('extractPrologueDirectives', () => {
       'use client',
     ]);
   });
+
+  it('lists a directive followed by a trailing line comment on the same line', () => {
+    expect(
+      extractPrologueDirectives(
+        "'use client'; // RSC client component\nexport const a = 1;\n",
+      ),
+    ).toEqual([
+      'use client',
+    ]);
+  });
+
+  it('lists two directives written on the same line', () => {
+    expect(
+      extractPrologueDirectives(
+        "'use strict'; 'use client';\nexport const a = 1;\n",
+      ),
+    ).toEqual([
+      'use strict',
+      'use client',
+    ]);
+  });
+
+  it('lists a directive with a mixed-case body verbatim', () => {
+    expect(
+      extractPrologueDirectives("'use Cache';\nexport const a = 1;\n"),
+    ).toEqual([
+      'use Cache',
+    ]);
+  });
+
+  it('lists directives separated by an inline block comment', () => {
+    expect(
+      extractPrologueDirectives(
+        "'use strict'; /* comment */ 'use client';\nexport const a = 1;\n",
+      ),
+    ).toEqual([
+      'use strict',
+      'use client',
+    ]);
+  });
 });
 
 describe('resolveDirectivePrologueEnd', () => {
@@ -72,5 +112,24 @@ describe('resolveDirectivePrologueEnd', () => {
     const prologue = "'use strict';\n'use client';\n";
     const source = `${prologue}export const a = 1;\n`;
     expect(resolveDirectivePrologueEnd(source)).toBe(prologue.length);
+  });
+
+  it('returns the offset past the newline when a trailing comment shares the directive line', () => {
+    const source =
+      "'use client'; // RSC client component\nexport const a = 1;\n";
+    const expected = source.indexOf('\n') + 1;
+    expect(resolveDirectivePrologueEnd(source)).toBe(expected);
+  });
+
+  it('returns the offset past two directives that share a line', () => {
+    const source = "'use strict'; 'use client';\nexport const a = 1;\n";
+    const expected = source.indexOf('\n') + 1;
+    expect(resolveDirectivePrologueEnd(source)).toBe(expected);
+  });
+
+  it('returns the offset past a mixed-case directive', () => {
+    const source = "'use Cache';\nexport const a = 1;\n";
+    const expected = source.indexOf('\n') + 1;
+    expect(resolveDirectivePrologueEnd(source)).toBe(expected);
   });
 });

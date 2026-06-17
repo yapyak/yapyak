@@ -1077,7 +1077,34 @@ describe('yapyak', () => {
       expect(warnings.some((line) => line.includes('a function'))).toBe(true);
     });
 
-    it('preserves only non-yapyak entries in an `ssr.external` array', async () => {
+    it('replaces `ssr.external` with only the non-yapyak entries', async () => {
+      const external = [
+        'react',
+        'yapyak',
+        '@yapyak/react',
+        'lodash',
+      ];
+      const ssr = {
+        external,
+      };
+      const plugin = yapyak();
+      const hook = findHook(plugin, 'configResolved');
+      if (typeof hook !== 'function') {
+        throw new Error('missing');
+      }
+      await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
+        command: 'serve',
+        logger: createSilentLogger(),
+        root,
+        ssr,
+      } as unknown as ResolvedConfig);
+      expect(ssr.external).toEqual([
+        'react',
+        'lodash',
+      ]);
+    });
+
+    it('refuses to mutate the original `ssr.external` array supplied by the user', async () => {
       const external = [
         'react',
         'yapyak',
@@ -1099,6 +1126,8 @@ describe('yapyak', () => {
       } as unknown as ResolvedConfig);
       expect(external).toEqual([
         'react',
+        'yapyak',
+        '@yapyak/react',
         'lodash',
       ]);
     });

@@ -1,61 +1,78 @@
-const DIRECTIVE_RX = /^\s*(['"])(use [a-z]+(?: [a-z]+)?)\1\s*;?\s*(?:\r?\n|$)/;
+import ts from 'typescript';
 
 export function resolveDirectivePrologueEnd(source: string): number {
-  let cursor = 0;
-  while (cursor < source.length) {
-    const slice = source.slice(cursor);
-    const stripped = stripLeadingShebangAndComments(slice);
-    const consumed = slice.length - stripped.length;
-    const match = DIRECTIVE_RX.exec(stripped);
-    if (!match) {
-      return cursor;
-    }
-    cursor += consumed + match[0].length;
+  const directives = extractPrologueStatements(source);
+  const last = directives[directives.length - 1];
+  if (last === undefined) {
+    return 0;
   }
-  return cursor;
+  return resolveLineEndAfter(source, last.end);
 }
 
 export function extractPrologueDirectives(source: string): string[] {
-  const directives: string[] = [];
-  let cursor = 0;
-  while (cursor < source.length) {
-    const slice = source.slice(cursor);
-    const stripped = stripLeadingShebangAndComments(slice);
-    const consumed = slice.length - stripped.length;
-    const match = DIRECTIVE_RX.exec(stripped);
-    if (!match) {
-      return directives;
+  return extractPrologueStatements(source).map(
+    (statement) => (statement.expression as ts.StringLiteral).text,
+  );
+}
+
+function extractPrologueStatements(source: string): ts.ExpressionStatement[] {
+  const sourceFile = ts.createSourceFile(
+    '__directive.ts',
+    source,
+    ts.ScriptTarget.Latest,
+    false,
+  );
+  const directives: ts.ExpressionStatement[] = [];
+  for (const statement of sourceFile.statements) {
+    if (!isPrologueDirective(statement)) {
+      break;
     }
-    const directive = match[2];
-    if (directive !== undefined) {
-      directives.push(directive);
-    }
-    cursor += consumed + match[0].length;
+    directives.push(statement);
   }
   return directives;
 }
 
-function stripLeadingShebangAndComments(source: string): string {
-  let cursor = 0;
-  if (source.startsWith('#!')) {
-    const newline = source.indexOf('\n', cursor);
-    cursor = newline === -1 ? source.length : newline + 1;
-  }
+function isPrologueDirective(
+  node: ts.Statement,
+): node is ts.ExpressionStatement {
+  return ts.isExpressionStatement(node) && ts.isStringLiteral(node.expression);
+}
+
+function resolveLineEndAfter(source: string, position: number): number {
+  let cursor = position;
   while (cursor < source.length) {
-    const rest = source.slice(cursor);
-    const whitespaceLength = rest.length - rest.trimStart().length;
-    cursor += whitespaceLength;
-    if (source.startsWith('//', cursor)) {
+    const char = source[cursor];
+    if (char === ' ' || char === '\t' || char === ';') {
+      cursor += 1;
+      continue;
+    }
+    if (char === '/' && source[cursor + 1] === '/') {
       const newline = source.indexOf('\n', cursor);
-      cursor = newline === -1 ? source.length : newline + 1;
+      if (newline === -1) {
+        return source.length;
+      }
+      cursor = newline;
       continue;
     }
-    if (source.startsWith('/*', cursor)) {
+    if (char === '/' && source[cursor + 1] === '*') {
       const close = source.indexOf('*/', cursor + 2);
-      cursor = close === -1 ? source.length : close + 2;
+      if (close === -1) {
+        return source.length;
+      }
+      cursor = close + 2;
       continue;
     }
-    break;
+    if (char === '\r') {
+      cursor += 1;
+      if (source[cursor] === '\n') {
+        cursor += 1;
+      }
+      return cursor;
+    }
+    if (char === '\n') {
+      return cursor + 1;
+    }
+    return cursor;
   }
-  return source.slice(cursor);
+  return cursor;
 }
