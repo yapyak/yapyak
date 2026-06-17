@@ -3,7 +3,7 @@ import type { ExtractFileResult } from 'yapyak/compiler/internal';
 
 import { describe, expect, it, vi } from 'vitest';
 
-import { renderErrorDiagnostics } from './error-diagnostic';
+import { formatDiagnostic, renderErrorDiagnostics } from './error-diagnostic';
 
 function buildLogger(): Logger {
   return {
@@ -28,7 +28,7 @@ function buildResult(
 }
 
 describe('renderErrorDiagnostics', () => {
-  it('writes a logger error for every error diagnostic', () => {
+  it('writes no logger error for an error diagnostic, leaving the caller to throw it', () => {
     const logger = buildLogger();
     renderErrorDiagnostics(
       logger,
@@ -54,12 +54,7 @@ describe('renderErrorDiagnostics', () => {
         },
       ]),
     );
-    expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining('YAP0001'),
-    );
-    expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining('src/a.tsx:3:5'),
-    );
+    expect(logger.error).not.toHaveBeenCalled();
   });
 
   it('writes no logger error for a warning diagnostic', () => {
@@ -97,7 +92,7 @@ describe('renderErrorDiagnostics', () => {
     expect(logger.error).not.toHaveBeenCalled();
   });
 
-  it('writes a logger error only for the error diagnostic in a mixed list', () => {
+  it('writes a logger warn only for the warning in a mixed list, leaving the error to the caller', () => {
     const logger = buildLogger();
     renderErrorDiagnostics(
       logger,
@@ -142,9 +137,10 @@ describe('renderErrorDiagnostics', () => {
         },
       ]),
     );
-    expect(logger.error).toHaveBeenCalledTimes(1);
-    expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining('src/a.tsx'),
+    expect(logger.error).not.toHaveBeenCalled();
+    expect(logger.warn).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining('src/b.tsx'),
     );
   });
 
@@ -195,5 +191,54 @@ describe('renderErrorDiagnostics', () => {
     );
     expect(errorDiagnostics).toHaveLength(1);
     expect(errorDiagnostics[0]?.code).toBe('YAP0001');
+  });
+});
+
+describe('formatDiagnostic', () => {
+  it('renders the diagnostic code, file path, and position', () => {
+    const message = formatDiagnostic({
+      code: 'YAP0001',
+      fileId: 'src/a.tsx',
+      message: 'Hello',
+      range: {
+        end: {
+          column: 10,
+          line: 3,
+          offset: 30,
+        },
+        start: {
+          column: 5,
+          line: 3,
+          offset: 25,
+        },
+      },
+      severity: 'error',
+      source: 'Hello',
+    });
+    expect(message).toContain('YAP0001');
+    expect(message).toContain('src/a.tsx:3:5');
+  });
+
+  it('renders a docs link for the diagnostic code', () => {
+    const message = formatDiagnostic({
+      code: 'YAP0001',
+      fileId: 'src/a.tsx',
+      message: 'Hello',
+      range: {
+        end: {
+          column: 5,
+          line: 1,
+          offset: 5,
+        },
+        start: {
+          column: 1,
+          line: 1,
+          offset: 0,
+        },
+      },
+      severity: 'error',
+      source: 'Hello',
+    });
+    expect(message).toContain('See ');
   });
 });

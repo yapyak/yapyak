@@ -7,16 +7,18 @@ export function renderErrorDiagnostics(
   logger: Logger,
   result: ExtractFileResult,
 ): Diagnostic[] {
-  const errorDiagnostics: Diagnostic[] = [];
+  const errors: Diagnostic[] = [];
   for (const diagnostic of result.diagnostics) {
-    const location = `${diagnostic.fileId}:${diagnostic.range.start.line}:${diagnostic.range.start.column}`;
-    const message = `[yapyak] ${diagnostic.code} ${location}: ${diagnostic.message}\nSee ${getDocsUrl(diagnostic.code)}`;
     if (diagnostic.severity === 'error') {
-      logger.error(message);
-      errorDiagnostics.push(diagnostic);
-    } else {
-      logger.warn(message);
+      errors.push(diagnostic);
+      continue;
     }
+    logger.warn(formatDiagnostic(diagnostic));
   }
-  return errorDiagnostics;
+  return errors;
+}
+
+export function formatDiagnostic(diagnostic: Diagnostic): string {
+  const location = `${diagnostic.fileId}:${diagnostic.range.start.line}:${diagnostic.range.start.column}`;
+  return `[yapyak] ${diagnostic.code} ${location}: ${diagnostic.message}\nSee ${getDocsUrl(diagnostic.code)}`;
 }

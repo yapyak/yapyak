@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 export type WalkedFile = {
@@ -13,7 +13,7 @@ export function walkSourceFiles(
   projectRoot: string,
 ): WalkedFile[] {
   const results: WalkedFile[] = [];
-  walk(projectRoot, projectRoot, filter, results);
+  walk(projectRoot, projectRoot, filter, results, new Set<string>());
   return results;
 }
 
@@ -22,6 +22,7 @@ function walk(
   projectRoot: string,
   filter: (id: string) => boolean,
   results: WalkedFile[],
+  visited: Set<string>,
 ): void {
   let entries: string[];
   try {
@@ -38,6 +39,16 @@ function walk(
       continue;
     }
     if (stat.isDirectory()) {
+      let realDir: string;
+      try {
+        realDir = realpathSync(fullPath);
+      } catch {
+        continue;
+      }
+      if (visited.has(realDir)) {
+        continue;
+      }
+      visited.add(realDir);
       const probeId = relative(
         projectRoot,
         join(fullPath, PROBE_FILE),
@@ -45,7 +56,7 @@ function walk(
       if (!filter(probeId)) {
         continue;
       }
-      walk(fullPath, projectRoot, filter, results);
+      walk(fullPath, projectRoot, filter, results, visited);
       continue;
     }
     if (!stat.isFile()) {

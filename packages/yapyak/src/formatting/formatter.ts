@@ -5,6 +5,8 @@ import { isCurrency } from './currency';
 type IntlFormatterCtor<T> = new (locale: string, options?: object) => T;
 
 const MAX_FORMATTERS_PER_CTOR = 64;
+const MAX_VALID_LOCALES = 64;
+const MAX_WARNED_INVALID_LOCALES = 64;
 
 const caches = new Map<IntlFormatterCtor<unknown>, Map<string, unknown>>();
 const warnedCurrencyKeys = new Set<string>();
@@ -288,19 +290,31 @@ function resolveValidLocale(locale: string): string {
   if (cached !== undefined) {
     return cached;
   }
+  let canonical: string;
   try {
-    const canonical = new Intl.Locale(locale).toString();
-    validLocaleCache.set(locale, canonical);
-    return canonical;
+    canonical = new Intl.Locale(locale).toString();
   } catch {
     if (!warnedInvalidLocales.has(locale)) {
+      if (warnedInvalidLocales.size >= MAX_WARNED_INVALID_LOCALES) {
+        const oldest = warnedInvalidLocales.values().next().value;
+        if (oldest !== undefined) {
+          warnedInvalidLocales.delete(oldest);
+        }
+      }
       warnedInvalidLocales.add(locale);
       warnDiagnostic('LOCALE_FORCED_INVALID', {
         defaultLocale,
         requested: locale,
       });
     }
-    validLocaleCache.set(locale, defaultLocale);
-    return defaultLocale;
+    canonical = defaultLocale;
   }
+  if (validLocaleCache.size >= MAX_VALID_LOCALES) {
+    const oldest = validLocaleCache.keys().next().value;
+    if (oldest !== undefined) {
+      validLocaleCache.delete(oldest);
+    }
+  }
+  validLocaleCache.set(locale, canonical);
+  return canonical;
 }

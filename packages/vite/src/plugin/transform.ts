@@ -9,11 +9,12 @@ import type { State } from './state';
 import {
   extractFile,
   findTranslation,
+  getDocsUrl,
   transformFile,
 } from 'yapyak/compiler/internal';
 
 import { isCandidateId } from './candidate-id';
-import { renderErrorDiagnostics } from './error-diagnostic';
+import { formatDiagnostic, renderErrorDiagnostics } from './error-diagnostic';
 import { toFileId } from './file-id';
 import { getNormalized, getResolver } from './state';
 
@@ -46,11 +47,24 @@ export function createTransformPlugin(state: State): Plugin {
         processors,
       });
       const errorDiagnostics = renderErrorDiagnostics(state.logger, extracted);
-      if (errorDiagnostics.length > 0) {
-        const first = errorDiagnostics[0];
-        if (first) {
-          this.error(`[yapyak] ${first.code}: ${first.message}`);
+      const firstError = errorDiagnostics[0];
+      if (firstError !== undefined) {
+        for (let index = 1; index < errorDiagnostics.length; index += 1) {
+          const subsequent = errorDiagnostics[index];
+          if (subsequent !== undefined) {
+            state.logger.error(formatDiagnostic(subsequent));
+          }
         }
+        this.error({
+          code: firstError.code,
+          id: firstError.fileId,
+          loc: {
+            column: firstError.range.start.column,
+            file: firstError.fileId,
+            line: firstError.range.start.line,
+          },
+          message: `${firstError.message}\nSee ${getDocsUrl(firstError.code)}`,
+        });
       }
       if (extracted.callSites.length === 0) {
         return null;
