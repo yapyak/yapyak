@@ -162,6 +162,46 @@ describe('translate', () => {
     expect(written['src/a.ts'].Save).toBe('Spara');
   });
 
+  it('folds every target locale into a single batch call', async () => {
+    writeFileSync(
+      join(root, 'src', 'a.ts'),
+      `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
+    );
+    writeFileSync(
+      join(root, 'locales', 'sv.json'),
+      JSON.stringify({
+        'src/a.ts': {
+          Save: '',
+        },
+      }),
+    );
+    writeFileSync(
+      join(root, 'locales', 'fr.json'),
+      JSON.stringify({
+        'src/a.ts': {
+          Save: '',
+        },
+      }),
+    );
+    const batchFn = vi.fn(async () => [
+      'Spara',
+    ]);
+    const translator = Object.assign(
+      vi.fn(async () => 'Spara'),
+      {
+        batch: batchFn,
+        id: 'fake',
+      },
+    );
+    await translate(
+      makeConfig({
+        translator,
+      }),
+      root,
+    );
+    expect(batchFn).toHaveBeenCalledOnce();
+  });
+
   it('returns `1` when the translator throws', async () => {
     writeFileSync(
       join(root, 'src', 'a.ts'),
@@ -225,7 +265,7 @@ describe('translate', () => {
     expect(writes.join('')).toContain('Partial results written');
   });
 
-  it('blocks every remaining locale when SIGINT fires after the first', async () => {
+  it('blocks the next translator call when SIGINT fires mid-batch', async () => {
     writeFileSync(
       join(root, 'src', 'a.ts'),
       `import { t } from 'yapyak';\nexport const x = t('Save');\n`,

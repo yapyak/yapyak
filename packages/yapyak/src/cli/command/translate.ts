@@ -117,33 +117,28 @@ export async function translate(
     ...new Set(stubsToFill.map((stub) => stub.locale)),
   ];
   try {
-    for (const locale of localesToProcess) {
-      if (controller.signal.aborted) {
-        break;
-      }
-      const subResult = await autoTranslate(
-        {
-          messages: report.messages,
-          translator: withProgress(translator, onProgress),
-        },
-        {
-          defaultLocale: report.defaultLocale,
-          locales: [
-            report.defaultLocale,
-            locale,
-          ],
-          localesDir: config.localesDir,
-        },
-        projectRoot,
-        {
-          examples: config.examples,
-          force,
-          signal: controller.signal,
-        },
-      );
-      failed += subResult.errors.length;
-      allErrors.push(...subResult.errors);
-    }
+    const result = await autoTranslate(
+      {
+        messages: report.messages,
+        translator: withProgress(translator, onProgress),
+      },
+      {
+        defaultLocale: report.defaultLocale,
+        locales: [
+          report.defaultLocale,
+          ...localesToProcess,
+        ],
+        localesDir: config.localesDir,
+      },
+      projectRoot,
+      {
+        examples: config.examples,
+        force,
+        signal: controller.signal,
+      },
+    );
+    failed += result.errors.length;
+    allErrors.push(...result.errors);
   } finally {
     process.off('SIGINT', onSigint);
     sp.stop();

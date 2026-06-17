@@ -143,68 +143,53 @@ export async function add(
     `\n  ${color.dim('Translating')} ${color.bold(String(totalMissing))} ${color.dim('strings via')} ${color.cyan(translator.id)}${color.dim('…')}\n\n`,
   );
 
-  let totalDone = 0;
-  let totalFailed = 0;
   const allErrors: TranslationErrorEntry[] = [];
   const startedAt = Date.now();
 
-  for (const locale of locales) {
-    const stats = report.perLocale[locale];
-    const missing = stats?.missing ?? report.totalMessages;
-    if (missing === 0) {
-      process.stdout.write(
-        `  ${symbol.check} ${color.bold(locale)} ${color.dim('already complete')}\n`,
-      );
-      continue;
-    }
-
-    const sp = spinner(
-      `${color.bold(locale)} ${color.dim('·')} translating ${color.bold(String(missing))} strings…`,
+  const sp = spinner(
+    `Translating ${color.bold(String(totalMissing))} strings…`,
+  );
+  let done = 0;
+  const onProgress = (count: number): void => {
+    done += count;
+    sp.update(
+      `${color.bold(`${done}/${totalMissing}`)} ${color.dim('·')} ${progressBar(done, totalMissing, 24)}`,
     );
-    let done = 0;
-    const onProgress = (count: number): void => {
-      done += count;
-      sp.update(
-        `${color.bold(locale)} ${color.dim('·')} ${color.bold(`${done}/${missing}`)} ${color.dim('·')} ${progressBar(done, missing, 24)}`,
+  };
+
+  let totalFailed = 0;
+  try {
+    const result = await autoTranslate(
+      {
+        messages: report.messages,
+        translator: withProgress(translator, onProgress),
+      },
+      {
+        defaultLocale: report.defaultLocale,
+        locales: [
+          report.defaultLocale,
+          ...locales,
+        ],
+        localesDir: config.localesDir,
+      },
+      projectRoot,
+      {
+        examples: config.examples,
+      },
+    );
+
+    totalFailed = result.errors.length;
+    allErrors.push(...result.errors);
+
+    if (result.errors.length === 0) {
+      sp.succeed(`${done} translated`);
+    } else {
+      sp.fail(
+        `${done} translated · ${color.red(`${result.errors.length} failed`)}`,
       );
-    };
-
-    try {
-      const subResult = await autoTranslate(
-        {
-          messages: report.messages,
-          translator: withProgress(translator, onProgress),
-        },
-        {
-          defaultLocale: report.defaultLocale,
-          locales: [
-            report.defaultLocale,
-            locale,
-          ],
-          localesDir: config.localesDir,
-        },
-        projectRoot,
-        {
-          examples: config.examples,
-        },
-      );
-
-      totalDone += done;
-      totalFailed += subResult.errors.length;
-      allErrors.push(...subResult.errors);
-
-      if (subResult.errors.length === 0) {
-        sp.succeed(
-          `${color.bold(locale)} ${color.dim('·')} ${done} translated`,
-        );
-      } else {
-        sp.fail(
-          `${color.bold(locale)} ${color.dim('·')} ${done} translated · ${color.red(`${subResult.errors.length} failed`)}`,
-        );
-      }
-    } finally {
-      sp.stop();
     }
+  } finally {
+    sp.stop();
   }
 
   if (allErrors.length > 0) {
@@ -213,7 +198,7 @@ export async function add(
 
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
   process.stdout.write(
-    `\n  ${color.dim(`Total: ${totalDone} translated · ${elapsed}s`)}\n\n`,
+    `\n  ${color.dim(`Total: ${done} translated · ${elapsed}s`)}\n\n`,
   );
 
   return totalFailed === 0 ? 0 : 1;
