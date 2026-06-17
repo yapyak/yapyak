@@ -64,7 +64,7 @@
   "peerDependencies": {
     "@astrojs/compiler": ">=2.0.0",
     "astro": ">=5",
-    "yapyak": ">=0.0.0"
+    "yapyak": "workspace:*"
   },
   "peerDependenciesMeta": {
     "@astrojs/compiler": {

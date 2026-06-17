@@ -572,8 +572,8 @@ importers:
   packages/anthropic:
     dependencies:
       yapyak:
-        specifier: '>=0.0.0'
-        version: 0.0.0
+        specifier: workspace:*
+        version: link:../yapyak
     devDependencies:
       '@yapyak/tsdown-config':
         specifier: workspace:*
@@ -597,8 +597,8 @@ importers:
         specifier: workspace:*
         version: link:../vite
       yapyak:
-        specifier: '>=0.0.0'
-        version: 0.0.0
+        specifier: workspace:*
+        version: link:../yapyak
     devDependencies:
       '@astrojs/compiler':
         specifier: 'catalog:'
@@ -656,8 +656,8 @@ importers:
   packages/gemini:
     dependencies:
       yapyak:
-        specifier: '>=0.0.0'
-        version: 0.0.0
+        specifier: workspace:*
+        version: link:../yapyak
     devDependencies:
       '@yapyak/tsdown-config':
         specifier: workspace:*
@@ -678,8 +678,8 @@ importers:
   packages/ollama:
     dependencies:
       yapyak:
-        specifier: '>=0.0.0'
-        version: 0.0.0
+        specifier: workspace:*
+        version: link:../yapyak
     devDependencies:
       '@yapyak/tsdown-config':
         specifier: workspace:*
@@ -700,8 +700,8 @@ importers:
   packages/openai:
     dependencies:
       yapyak:
-        specifier: '>=0.0.0'
-        version: 0.0.0
+        specifier: workspace:*
+        version: link:../yapyak
     devDependencies:
       '@yapyak/tsdown-config':
         specifier: workspace:*
@@ -722,8 +722,8 @@ importers:
   packages/react:
     dependencies:
       yapyak:
-        specifier: '>=0.0.0'
-        version: 0.0.0
+        specifier: workspace:*
+        version: link:../yapyak
     devDependencies:
       '@testing-library/react':
         specifier: 'catalog:'
@@ -765,8 +765,8 @@ importers:
   packages/react-router:
     dependencies:
       yapyak:
-        specifier: '>=0.0.0'
-        version: 0.0.0
+        specifier: workspace:*
+        version: link:../yapyak
     devDependencies:
       '@yapyak/tsdown-config':
         specifier: workspace:*
@@ -790,8 +790,8 @@ importers:
   packages/svelte:
     dependencies:
       yapyak:
-        specifier: '>=0.0.0'
-        version: 0.0.0
+        specifier: workspace:*
+        version: link:../yapyak
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
         specifier: 'catalog:'
@@ -833,8 +833,8 @@ importers:
   packages/sveltekit:
     dependencies:
       yapyak:
-        specifier: '>=0.0.0'
-        version: 0.0.0
+        specifier: workspace:*
+        version: link:../yapyak
     devDependencies:
       '@sveltejs/kit':
         specifier: 'catalog:'
@@ -861,8 +861,8 @@ importers:
   packages/tanstack-start:
     dependencies:
       yapyak:
-        specifier: '>=0.0.0'
-        version: 0.0.0
+        specifier: workspace:*
+        version: link:../yapyak
     devDependencies:
       '@tanstack/react-start':
         specifier: 'catalog:'
@@ -903,8 +903,8 @@ importers:
   packages/vite:
     dependencies:
       yapyak:
-        specifier: '>=0.0.0'
-        version: 0.0.0
+        specifier: workspace:*
+        version: link:../yapyak
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -959,8 +959,8 @@ importers:
   packages/vue:
     dependencies:
       yapyak:
-        specifier: '>=0.0.0'
-        version: 0.0.0
+        specifier: workspace:*
+        version: link:../yapyak
     devDependencies:
       '@testing-library/vue':
         specifier: 'catalog:'
@@ -5325,9 +5325,6 @@ packages:
     resolution: {integrity: sha512-2AvhNX3mb8zd6Zy7INTtSpl1F15HW6Wnqj0srWlkKLcpYl/gMIMJiyuGq2KeI2YFxUPjdlB+3Lc10seMLtL4cA==}
     engines: {node: '>= 14.6'}
     hasBin: true
-
-  yapyak@0.0.0:
-    resolution: {integrity: sha512-TraxgbOkpkfkWoRtnf8LLQN6AXSjPQhcdD0q0vFi1Ux/0bPZ72du0xE9nj/bMExBexh/euzdxNHcbJI4ule7DQ==}
 
   yargs-parser@22.0.0:
     resolution: {integrity: sha512-rwu/ClNdSMpkSrUb+d6BRsSkLUq1fmfsY6TOpYzTwvwkg1/NRG85KBy3kq++A8LKQwX6lsu+aWad+2khvuXrqw==}
@@ -9799,8 +9796,6 @@ snapshots:
   yallist@3.1.1: {}
 
   yaml@2.9.0: {}
-
-  yapyak@0.0.0: {}
 
   yargs-parser@22.0.0: {}
 

@@ -59,7 +59,7 @@
     "@vue/compiler-core": ">=3.0.0",
     "@vue/compiler-sfc": ">=3.0.0",
     "vue": ">=3.4",
-    "yapyak": ">=0.0.0"
+    "yapyak": "workspace:*"
   },
   "peerDependenciesMeta": {
     "@vue/compiler-core": {

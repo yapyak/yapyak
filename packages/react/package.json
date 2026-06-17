@@ -57,7 +57,7 @@
   },
   "peerDependencies": {
     "react": ">=19",
-    "yapyak": ">=0.0.0"
+    "yapyak": "workspace:*"
   },
   "engines": {
     "node": ">=22"
