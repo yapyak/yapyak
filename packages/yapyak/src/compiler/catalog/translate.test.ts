@@ -1,4 +1,4 @@
-import type { Translator } from '../../translator';
+import type { TranslateRequest, Translator } from '../../translator';
 import type { ExtractedMessage } from '../parser/file/extract';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -187,5 +187,266 @@ describe('autoTranslate', () => {
         translation: 'Spara',
       },
     ]);
+  });
+
+  it('returns `translated: 0` with no errors when no target locales remain', async () => {
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('should not be called')),
+      {
+        batch: () => Promise.reject(new Error('should not be called')),
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Hello',
+      },
+    ];
+
+    const result = await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+    );
+
+    expect(result).toEqual({
+      errors: [],
+      translated: 0,
+    });
+    expect(existsSync(localePath)).toBe(false);
+  });
+
+  it('records a parity error and skips persistence when the translation drops a placeholder', async () => {
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('use batch')),
+      {
+        batch: () =>
+          Promise.resolve([
+            'Hej',
+          ]),
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 10,
+                line: 1,
+                offset: 10,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Hi {name}',
+      },
+    ];
+
+    const result = await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+    );
+
+    expect(result.translated).toBe(0);
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0]).toMatchObject({
+      fileId: 'src/a.tsx',
+      locale: 'sv',
+      source: 'Hi {name}',
+    });
+    expect((result.errors[0]?.error as Error).message).toMatch(
+      /Translation placeholder mismatch.+missing \{name\}/,
+    );
+    expect(existsSync(localePath)).toBe(false);
+  });
+
+  it('records a chunk error per request when the translator invokes `onChunkError`', async () => {
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('use batch')),
+      {
+        batch: (
+          requests: TranslateRequest[],
+          options?: {
+            onChunkError?: (
+              error: unknown,
+              requests: TranslateRequest[],
+            ) => void;
+          },
+        ): Promise<string[]> => {
+          options?.onChunkError?.(new Error('chunk failed'), requests);
+          return Promise.resolve(requests.map(() => ''));
+        },
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Hello',
+      },
+    ];
+
+    const result = await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+    );
+
+    expect(result.translated).toBe(0);
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0]).toMatchObject({
+      fileId: 'src/a.tsx',
+      locale: 'sv',
+      source: 'Hello',
+    });
+    expect((result.errors[0]?.error as Error).message).toBe('chunk failed');
+  });
+
+  it('falls back to single-call translation when the translator lacks `batch`', async () => {
+    const seen: string[] = [];
+    const translator: Translator = Object.assign(
+      (request: TranslateRequest) => {
+        seen.push(request.source);
+        return Promise.resolve('Hej');
+      },
+      {
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Hello',
+      },
+    ];
+
+    const result = await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+    );
+
+    expect(result.translated).toBe(1);
+    expect(seen).toEqual([
+      'Hello',
+    ]);
+    expect(JSON.parse(readFileSync(localePath, 'utf-8'))).toEqual({
+      'src/a.tsx': {
+        Hello: 'Hej',
+      },
+    });
   });
 });

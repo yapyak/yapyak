@@ -202,6 +202,51 @@ describe('resolveFormatter', () => {
     });
   });
 
+  describe('invalid locale fallback', () => {
+    let warnSpy: ReturnType<
+      typeof vi.fn<(message: string, meta?: Record<string, unknown>) => void>
+    >;
+
+    beforeEach(() => {
+      warnSpy =
+        vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
+      setWarn(warnSpy);
+    });
+
+    afterEach(() => {
+      resetWarn();
+    });
+
+    it('falls back without throwing when the locale tag is malformed', () => {
+      const formatter = resolveFormatter(Intl.NumberFormat, 'sv_SE', undefined);
+      expect(formatter.format(1)).toBe('1');
+    });
+
+    it('warns once per malformed locale', () => {
+      resolveFormatter(Intl.NumberFormat, 'xx_YY', undefined);
+      resolveFormatter(Intl.NumberFormat, 'xx_YY', undefined);
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('falls back when the currency code is valid but a sibling option is not', () => {
+    const formatter = resolveFormatter(Intl.NumberFormat, 'en', {
+      currency: 'USD',
+      currencyDisplay: 'definitely-not-valid',
+      style: 'currency',
+    });
+    expect(formatter.format(10)).toBe('10 USD');
+  });
+
+  it('re-throws the underlying Intl error when no safety net matches', () => {
+    expect(() =>
+      resolveFormatter(Intl.DateTimeFormat, 'en', {
+        dateStyle:
+          'definitely-not-valid' as Intl.DateTimeFormatOptions['dateStyle'],
+      }),
+    ).toThrow(RangeError);
+  });
+
   it('clears the oldest formatter from the cache when capacity is reached', () => {
     class FakeFormatter {
       locale: string;

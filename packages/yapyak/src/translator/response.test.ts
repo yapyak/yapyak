@@ -114,4 +114,18 @@ describe('parseResponseBody', () => {
     });
     await expect(parseResponseBody(response, 'gemini')).rejects.toThrow(/…/);
   });
+
+  it('throws a vendor-tagged Error when the body stream errors mid-read', async () => {
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.error(new Error('connection reset'));
+      },
+    });
+    const response = new Response(stream, {
+      status: 200,
+    });
+    await expect(parseResponseBody(response, 'anthropic')).rejects.toThrow(
+      /yapyak anthropic: response body could not be read \(connection reset\)/,
+    );
+  });
 });
