@@ -2,6 +2,7 @@ export type { Patch } from './hmr-patch';
 export type { RuntimeMock } from './runtime-mock';
 
 export {
+  autoSubscribeDev,
   getDevVersion,
   invalidateFile,
   registerCatalog,

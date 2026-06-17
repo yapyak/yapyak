@@ -172,9 +172,9 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
       diagnostics.push(remapDiagnostic(diagnostic, fragment, originalSource));
     }
 
-    const { placeholders } = parsePlaceholders(parsed.source);
-    const id =
-      parsed.source === '' ? '' : toMessageKey(parsed.source, parsed.context);
+    const source = parsed.source.normalize();
+    const { placeholders } = parsePlaceholders(source);
+    const id = source === '' ? '' : toMessageKey(source, parsed.context);
 
     const callSite: ParsedCallSite = {
       binding: fragmentCall.binding,
@@ -183,7 +183,7 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
       node: fragmentCall.node,
       placeholders,
       range: remapRange(fragmentCall.range, fragment, originalSource),
-      source: parsed.source,
+      source,
       sourceExpression: fragmentCall.sourceExpression,
     };
     if (parsed.context !== undefined) {
@@ -206,7 +206,7 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
     }
     callSites.push(callSite);
 
-    if (parsed.source === '') {
+    if (source === '') {
       continue;
     }
 
@@ -231,7 +231,7 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
         location,
       ],
       placeholders,
-      source: parsed.source,
+      source,
     };
     if (parsed.context !== undefined) {
       message.context = parsed.context;

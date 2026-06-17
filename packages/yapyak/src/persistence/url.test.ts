@@ -51,8 +51,8 @@ describe('url', () => {
       expect(getFromUrl('https://app.test/about')).toBeUndefined();
     });
 
-    it('returns `undefined` when locale case does not match', () => {
-      expect(getFromUrl('https://app.test/SV/home')).toBeUndefined();
+    it('returns the configured locale when only the case differs', () => {
+      expect(getFromUrl('https://app.test/SV/home')).toBe('sv');
     });
   });
 

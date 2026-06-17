@@ -62,14 +62,13 @@ function stripControlChars(value: string): string {
 }
 
 export function stripCodeFence(text: string): string {
-  if (!text.startsWith('```')) {
+  const lines = text.split('\n');
+  const start = lines.findIndex((line) => line.startsWith('```'));
+  if (start === -1) {
     return text;
   }
-  const lines = text.split('\n');
-  const start = lines[0]?.startsWith('```') ? 1 : 0;
-  const end =
-    lines[lines.length - 1]?.trimEnd() === '```'
-      ? lines.length - 1
-      : lines.length;
-  return lines.slice(start, end).join('\n');
+  const rest = lines.slice(start + 1);
+  const closeRelative = rest.findIndex((line) => line.trimEnd() === '```');
+  const end = closeRelative === -1 ? lines.length : start + 1 + closeRelative;
+  return lines.slice(start + 1, end).join('\n');
 }

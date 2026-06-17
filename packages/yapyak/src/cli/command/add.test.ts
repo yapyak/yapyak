@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { add } from './add';
 import {
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -152,6 +153,18 @@ describe('add', () => {
     expect(written['src/a.ts'].Save).toBe('Spara');
   });
 
+  it('folds every duplicated locale into a single locale file write', async () => {
+    const code = await add(makeConfig(), root, [
+      'sv',
+      'sv',
+      'sv',
+    ]);
+    expect(code).toBe(0);
+    expect(existsSync(join(root, 'locales', 'sv.json'))).toBe(true);
+    expect(writes.join('')).toContain('Adding locales: sv');
+    expect(writes.join('')).not.toContain('Adding locales: sv, sv');
+  });
+
   it('returns `1` when the translator throws', async () => {
     mkdirSync(join(root, 'src'), {
       recursive: true,
@@ -178,5 +191,36 @@ describe('add', () => {
       ],
     );
     expect(code).toBe(1);
+  });
+
+  it('returns `130` when SIGINT cancels mid-add', async () => {
+    mkdirSync(join(root, 'src'), {
+      recursive: true,
+    });
+    writeFileSync(
+      join(root, 'src', 'a.ts'),
+      `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
+    );
+    const translator = Object.assign(
+      vi.fn(async () => {
+        process.emit('SIGINT');
+        return 'Spara';
+      }),
+      {
+        id: 'fake',
+      },
+    );
+    const code = await add(
+      makeConfig({
+        translator,
+      }),
+      root,
+      [
+        'sv',
+      ],
+    );
+    expect(code).toBe(130);
+    expect(writes.join('')).toContain('cancelled');
+    expect(writes.join('')).toContain('Partial results written');
   });
 });

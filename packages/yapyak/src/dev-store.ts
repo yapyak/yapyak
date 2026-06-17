@@ -1,5 +1,7 @@
 import type { Template } from './template';
 
+import { registerHotDispose } from './hot-dispose';
+
 type Catalog = Record<string, string | Template>;
 
 const catalogs = new Map<string, Catalog>();
@@ -96,6 +98,11 @@ export function subscribeDev(callback: () => void): () => void {
   return () => {
     subscribers.delete(callback);
   };
+}
+
+export function autoSubscribeDev(meta: ImportMeta, callback: () => void): void {
+  const unsubscribe = subscribeDev(callback);
+  registerHotDispose(meta, unsubscribe);
 }
 
 export function getDevVersion(): number {

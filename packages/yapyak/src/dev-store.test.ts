@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
+  autoSubscribeDev,
   getDevVersion,
   invalidateFile,
   registerCatalog,
@@ -8,6 +9,19 @@ import {
   setCatalogEntry,
   subscribeDev,
 } from './dev-store';
+
+function makeMeta(
+  hot?:
+    | {
+        dispose(callback: () => void): void;
+      }
+    | undefined,
+): ImportMeta {
+  return {
+    ...import.meta,
+    hot,
+  };
+}
 
 afterEach(() => {
   resetDevStore();
@@ -272,6 +286,36 @@ describe('invalidateFile', () => {
 
     invalidateFile('src/b.tsx');
 
+    expect(subscriber).not.toHaveBeenCalled();
+  });
+});
+
+describe('autoSubscribeDev', () => {
+  it('notifies the subscriber when an entry fires', () => {
+    const subscriber = vi.fn();
+    autoSubscribeDev(makeMeta(), subscriber);
+
+    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara');
+
+    expect(subscriber).toHaveBeenCalledOnce();
+  });
+
+  it('notifies meta.hot.dispose with an unsubscribe handle', () => {
+    const dispose = vi.fn();
+    const subscriber = vi.fn();
+
+    autoSubscribeDev(
+      makeMeta({
+        dispose,
+      }),
+      subscriber,
+    );
+
+    expect(dispose).toHaveBeenCalledOnce();
+    const unsubscribe = dispose.mock.calls[0]?.[0];
+    expect(unsubscribe).toBeTypeOf('function');
+    unsubscribe?.();
+    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara');
     expect(subscriber).not.toHaveBeenCalled();
   });
 });

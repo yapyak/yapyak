@@ -3,13 +3,13 @@ import type { Ref } from 'vue';
 import { customRef } from 'vue';
 import {
   autoRegisterTracker,
+  autoSubscribeDev,
   getDevVersion,
-  subscribeDev,
 } from 'yapyak/internal';
 
 const devVersion: Ref<number> = customRef<number>((track, trigger) => {
   if (typeof window !== 'undefined') {
-    subscribeDev(trigger);
+    autoSubscribeDev(import.meta, trigger);
     autoRegisterTracker(import.meta, () => {
       void devVersion.value;
     });

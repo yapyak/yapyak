@@ -3,22 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { resolveLocale } from './resolve';
 
 describe('resolveLocale', () => {
-  it('returns persisted value when supported', () => {
-    expect(
-      resolveLocale(
-        'en',
-        [
-          'en',
-          'sv',
-        ],
-        {
-          persisted: 'sv',
-        },
-      ),
-    ).toBe('sv');
-  });
-
-  it('returns Accept-Language value when no persisted value', () => {
+  it('returns the Accept-Language value when supported', () => {
     expect(
       resolveLocale(
         'en',
@@ -33,7 +18,7 @@ describe('resolveLocale', () => {
     ).toBe('sv');
   });
 
-  it('returns lang prefix match when full locale not supported', () => {
+  it('returns the language prefix match when the full locale is not supported', () => {
     expect(
       resolveLocale(
         'en',
@@ -48,7 +33,7 @@ describe('resolveLocale', () => {
     ).toBe('sv');
   });
 
-  it('returns highest q-value locale when ranking candidates', () => {
+  it('returns the highest q-value locale when ranking candidates', () => {
     expect(
       resolveLocale(
         'en',
@@ -64,57 +49,7 @@ describe('resolveLocale', () => {
     ).toBe('fr');
   });
 
-  it('returns navigator.languages value when Accept-Language missing', () => {
-    expect(
-      resolveLocale(
-        'en',
-        [
-          'en',
-          'sv',
-        ],
-        {
-          navigatorLanguages: [
-            'sv-SE',
-            'en',
-          ],
-        },
-      ),
-    ).toBe('sv');
-  });
-
-  it('returns persisted value when both persisted and Accept-Language are present', () => {
-    expect(
-      resolveLocale(
-        'en',
-        [
-          'en',
-          'sv',
-          'fr',
-        ],
-        {
-          acceptLanguage: 'fr',
-          persisted: 'sv',
-        },
-      ),
-    ).toBe('sv');
-  });
-
-  it('returns defaultLocale when persisted value unsupported', () => {
-    expect(
-      resolveLocale(
-        'en',
-        [
-          'en',
-          'sv',
-        ],
-        {
-          persisted: 'de',
-        },
-      ),
-    ).toBe('en');
-  });
-
-  it('returns defaultLocale when nothing matches', () => {
+  it('returns the defaultLocale when nothing matches', () => {
     expect(
       resolveLocale(
         'en',
@@ -129,7 +64,7 @@ describe('resolveLocale', () => {
     ).toBe('en');
   });
 
-  it('returns defaultLocale when no signals provided', () => {
+  it('returns the defaultLocale when no signals are provided', () => {
     expect(
       resolveLocale('en', [
         'en',
@@ -153,7 +88,7 @@ describe('resolveLocale', () => {
     ).toBe('zh-Hant');
   });
 
-  it('falls back to the language subtag when no script variant is supported', () => {
+  it('picks the language subtag when no script variant is supported', () => {
     expect(
       resolveLocale(
         'en',

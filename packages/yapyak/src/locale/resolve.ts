@@ -1,10 +1,9 @@
 import { parseAcceptLanguage } from './accept-language';
+import { findCanonicalLocale } from './canonical';
 import { getLocaleFallbackChain } from './fallback-chain';
 
 export type ResolveLocaleOptions = {
   acceptLanguage?: string;
-  navigatorLanguages?: string[];
-  persisted?: string;
 };
 
 export function resolveLocale(
@@ -12,29 +11,18 @@ export function resolveLocale(
   locales: string[],
   options?: ResolveLocaleOptions,
 ): string {
-  const persisted = options?.persisted;
-  if (persisted !== undefined && locales.includes(persisted)) {
-    return persisted;
+  const acceptLanguage = options?.acceptLanguage;
+  if (acceptLanguage === undefined) {
+    return defaultLocale;
   }
-  const candidates = extractCandidates(options);
+  const candidates = parseAcceptLanguage(acceptLanguage);
   for (const candidate of candidates) {
     for (const subtag of getLocaleFallbackChain(candidate)) {
-      if (locales.includes(subtag)) {
-        return subtag;
+      const match = findCanonicalLocale(subtag, locales);
+      if (match !== undefined) {
+        return match;
       }
     }
   }
   return defaultLocale;
-}
-
-function extractCandidates(
-  options: ResolveLocaleOptions | undefined,
-): string[] {
-  if (options?.acceptLanguage !== undefined) {
-    return parseAcceptLanguage(options.acceptLanguage);
-  }
-  if (options?.navigatorLanguages) {
-    return options.navigatorLanguages.map((language) => language.trim());
-  }
-  return [];
 }

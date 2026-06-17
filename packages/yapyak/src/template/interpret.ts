@@ -109,6 +109,14 @@ function interpretPlural(
     );
     return interpretNodes(node.branches.other ?? [], params, locale, '');
   }
+  if (typeof raw !== 'number') {
+    warn(
+      `Plural "${node.name}" expected a number, got \`${typeof raw}\` — coercing to ${count}.`,
+      {
+        value: raw,
+      },
+    );
+  }
   const formattedCount = resolveFormatter(Intl.NumberFormat, locale, {}).format(
     count,
   );
@@ -137,6 +145,17 @@ function interpretSelect(
   formattedCount: string | undefined,
 ): string {
   const raw = readParam(params, node.name);
+  if (raw === undefined || raw === null) {
+    warn(`Select "${node.name}" missing — falling to the "other" branch.`, {
+      value: raw,
+    });
+    return interpretNodes(
+      node.branches.other ?? [],
+      params,
+      locale,
+      formattedCount,
+    );
+  }
   const value = String(raw);
   const directBranch = node.branches[value];
   if (directBranch) {

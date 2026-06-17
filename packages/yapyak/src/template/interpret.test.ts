@@ -897,6 +897,45 @@ describe('interpret', () => {
       );
     });
 
+    it('warns when a plural argument is coerced from a non-number', () => {
+      const result = interpret(
+        [
+          {
+            branches: {
+              one: [
+                {
+                  kind: 'literal',
+                  value: 'one',
+                },
+              ],
+              other: [
+                {
+                  kind: 'literal',
+                  value: 'other',
+                },
+              ],
+            },
+            kind: 'plural',
+            name: 'count',
+            type: 'cardinal',
+          },
+        ],
+        {
+          count: true,
+        },
+        'en',
+      );
+      expect(result).toBe('one');
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Plural "count" expected a number, got `boolean`',
+        ),
+        expect.objectContaining({
+          value: true,
+        }),
+      );
+    });
+
     it('warns and falls to `other` when a plural argument is `null`', () => {
       const result = interpret(
         [
@@ -1025,6 +1064,33 @@ describe('interpret', () => {
         expect.stringContaining('Select "role"'),
         expect.objectContaining({
           value: 42,
+        }),
+      );
+    });
+
+    it('warns when a select argument is missing', () => {
+      interpret(
+        [
+          {
+            branches: {
+              other: [
+                {
+                  kind: 'literal',
+                  value: 'fallback',
+                },
+              ],
+            },
+            kind: 'select',
+            name: 'role',
+          },
+        ],
+        {},
+        'en',
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Select "role" missing'),
+        expect.objectContaining({
+          value: undefined,
         }),
       );
     });

@@ -17,8 +17,11 @@ import { join } from 'node:path';
 export async function add(
   config: Config,
   projectRoot: string,
-  locales: string[],
+  inputLocales: string[],
 ): Promise<number> {
+  const locales = [
+    ...new Set(inputLocales),
+  ];
   if (locales.length === 0) {
     process.stderr.write(
       `\n  ${symbol.cross} ${color.red('Locale code required.')}\n`,
@@ -145,6 +148,14 @@ export async function add(
 
   const allErrors: TranslationErrorEntry[] = [];
   const startedAt = Date.now();
+  let aborted = false;
+
+  const controller = new AbortController();
+  const onSigint = (): void => {
+    aborted = true;
+    controller.abort(new Error('Add cancelled by SIGINT.'));
+  };
+  process.once('SIGINT', onSigint);
 
   const sp = spinner(
     `Translating ${color.bold(String(totalMissing))} strings…`,
@@ -175,28 +186,39 @@ export async function add(
       projectRoot,
       {
         examples: config.examples,
+        signal: controller.signal,
       },
     );
 
     totalFailed = result.errors.length;
     allErrors.push(...result.errors);
-
-    if (result.errors.length === 0) {
-      sp.succeed(`${done} translated`);
-    } else {
-      sp.fail(
-        `${done} translated · ${color.red(`${result.errors.length} failed`)}`,
-      );
-    }
   } finally {
+    process.off('SIGINT', onSigint);
     sp.stop();
+  }
+
+  const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
+  if (aborted) {
+    sp.fail(
+      `${done} translated · ${color.red('cancelled')} · ${color.dim(`${elapsed}s`)}`,
+    );
+    process.stdout.write(
+      `\n  ${color.dim('Partial results written. Re-run to resume.')}\n\n`,
+    );
+    return 130;
+  }
+  if (totalFailed === 0) {
+    sp.succeed(`${done} translated · ${color.dim(`${elapsed}s`)}`);
+  } else {
+    sp.fail(
+      `${done} translated · ${color.red(`${totalFailed} failed`)} · ${color.dim(`${elapsed}s`)}`,
+    );
   }
 
   if (allErrors.length > 0) {
     process.stdout.write(renderTranslationErrors(allErrors));
   }
 
-  const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
   process.stdout.write(
     `\n  ${color.dim(`Total: ${done} translated · ${elapsed}s`)}\n\n`,
   );

@@ -1,13 +1,13 @@
 import {
   autoRegisterTracker,
+  autoSubscribeDev,
   getDevVersion,
-  subscribeDev,
 } from 'yapyak/internal';
 
 let active = $state(getDevVersion());
 
 if (typeof window !== 'undefined') {
-  subscribeDev(() => {
+  autoSubscribeDev(import.meta, () => {
     active = getDevVersion();
   });
   autoRegisterTracker(import.meta, () => {

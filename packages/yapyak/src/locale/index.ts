@@ -1,5 +1,6 @@
 export type { Locale, Register } from './type';
 
+export { findCanonicalLocale } from './canonical';
 export { getLocaleFallbackChain } from './fallback-chain';
 export {
   appendPendingResponseHeader,

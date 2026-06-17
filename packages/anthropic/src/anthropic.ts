@@ -2,6 +2,7 @@ import type { ContextLevel, Translator } from 'yapyak/translator';
 
 import {
   TranslatorInvalidResponseError,
+  TranslatorSafetyError,
   TranslatorTruncatedError,
   createTranslator,
 } from 'yapyak/translator';
@@ -208,13 +209,26 @@ type AnthropicResponseBody = {
     type: string;
   }[];
   // biome-ignore lint/style/useNamingConvention: yap yap yap
-  stop_reason?: 'end_turn' | 'max_tokens' | 'stop_sequence' | 'tool_use';
+  stop_reason?:
+    | 'end_turn'
+    | 'max_tokens'
+    | 'refusal'
+    | 'stop_sequence'
+    | 'tool_use';
 };
 
 function validateResponse(body: AnthropicResponseBody): void {
   if (body.stop_reason === 'max_tokens') {
     throw new TranslatorTruncatedError(
       "yapyak anthropic: response truncated by token limit (stop_reason='max_tokens'). Lower batchSize or raise `maxTokens` in the translator options.",
+      {
+        vendor: 'anthropic',
+      },
+    );
+  }
+  if (body.stop_reason === 'refusal') {
+    throw new TranslatorSafetyError(
+      "yapyak anthropic: response blocked by Anthropic content policy (stop_reason='refusal'). Adjust voice or glossary, or split the batch to isolate the offending message.",
       {
         vendor: 'anthropic',
       },

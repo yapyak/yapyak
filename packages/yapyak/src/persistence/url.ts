@@ -1,6 +1,7 @@
 import type { Persistence } from './type';
 
 import { warnDiagnostic } from '../diagnostic';
+import { findCanonicalLocale } from '../locale';
 import { subscribeHistory } from './history';
 
 type UrlOptions = {
@@ -43,14 +44,14 @@ function getLocaleFromUrl(
     const target = url.pathname + url.search + url.hash;
     const matched = match.exec(target);
     const captured = matched?.groups?.locale ?? matched?.[1];
-    if (captured && locales.includes(captured)) {
-      return captured;
+    if (captured) {
+      return findCanonicalLocale(captured, locales);
     }
     return undefined;
   }
   const segment = url.pathname.split('/')[1];
-  if (segment && locales.includes(segment)) {
-    return segment;
+  if (segment) {
+    return findCanonicalLocale(segment, locales);
   }
   return undefined;
 }

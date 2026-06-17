@@ -300,6 +300,33 @@ describe('anthropic', () => {
     ).rejects.toThrow(/truncated by token limit/);
   });
 
+  it('throws a content-policy error when `stop_reason` is `refusal`', async () => {
+    vi.stubGlobal(
+      'fetch',
+      async () =>
+        new Response(
+          JSON.stringify({
+            content: [],
+            stop_reason: 'refusal',
+          }),
+          {
+            status: 200,
+          },
+        ),
+    );
+    const translator = anthropic({
+      apiKey: 'k',
+    });
+    await expect(
+      translator({
+        fileId: 'src/a.tsx',
+        source: 'Hello',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      }),
+    ).rejects.toThrow(/blocked by Anthropic content policy/);
+  });
+
   it('writes the scaled `max_tokens` default when `maxTokens` is not set', async () => {
     let capturedBody:
       | {

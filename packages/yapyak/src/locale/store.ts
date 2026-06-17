@@ -11,6 +11,7 @@ import {
 import { warnDiagnostic } from '../diagnostic';
 import { registerHotDispose } from '../hot-dispose';
 import { buildPersistence } from '../persistence';
+import { findCanonicalLocale } from './canonical';
 import { readRequest } from './request';
 import { resolveLocale } from './resolve';
 
@@ -76,8 +77,11 @@ export function parseLocale(value: string): Locale | undefined {
 
 function getInitialLocale(): Locale {
   const persisted = persistence?.get();
-  if (persisted !== undefined && isLocale(persisted)) {
-    return persisted;
+  if (persisted !== undefined) {
+    const match = findCanonicalLocale(persisted, LOCALES);
+    if (match !== undefined) {
+      return match;
+    }
   }
   return DEFAULT_LOCALE;
 }
@@ -110,8 +114,11 @@ function writeLocale(value: Locale): void {
 
 function syncFromPersistence(): void {
   const persisted = persistence?.get();
-  if (persisted !== undefined && isLocale(persisted)) {
-    writeLocale(persisted);
+  if (persisted !== undefined) {
+    const match = findCanonicalLocale(persisted, LOCALES);
+    if (match !== undefined) {
+      writeLocale(match);
+    }
   }
 }
 
@@ -139,8 +146,11 @@ export function getLocale(): Locale {
     const request = readRequest();
     if (request) {
       const fromPersistence = persistence?.getFromRequest?.(request);
-      if (fromPersistence !== undefined && isLocale(fromPersistence)) {
-        return fromPersistence;
+      if (fromPersistence !== undefined) {
+        const match = findCanonicalLocale(fromPersistence, LOCALES);
+        if (match !== undefined) {
+          return match;
+        }
       }
       if (DETECT_ACCEPT_LANGUAGE) {
         const resolved = resolveLocale(DEFAULT_LOCALE, LOCALES, {
