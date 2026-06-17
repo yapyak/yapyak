@@ -19,7 +19,7 @@ This is a multi-package monorepo, not a single library.
 
 ### `yapyak/internal` subpath
 
-`yapyak/internal` is a public subpath that **only** exists for the Vite plugin's emitted code (transformed `t()` calls). Users should never import from it manually. The single export (`pick`) is the runtime side of the compiler — calling it directly bypasses placeholder type-checking the plugin enforces at compile time.
+`yapyak/internal` is a public subpath that **only** exists for the Vite plugin's emitted code (transformed `t()` calls). Users should never import from it manually. Its exports are the runtime side of the compiler — calling them directly bypasses placeholder type-checking the plugin enforces at compile time.
 
 ## Workflow
 

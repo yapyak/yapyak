@@ -504,29 +504,6 @@ describe('myFn', () => {
 });
 ```
 
-### Coverage exclusion — convention-based, never inline
-
-Coverage gaps are addressed through **file naming conventions**, never through inline `/* v8 ignore */` directives. Two file names carry an exclusion contract:
-
-- `bin.ts` — CLI entry shells. Holds `process.argv`, `process.exit`, top-level await of the entry function. Never tested directly; the `run()` function it imports is.
-- `runtime.ts` — build-time-replaced runtime defaults. The published `runtime.ts` exports benign default constants; the Vite plugin overwrites it with the project's real catalog and config at build time. Tests mock `'yapyak/runtime'` via `vi.mock`.
-
-Both are excluded via globs in `vitest.config.ts`:
-
-```ts
-exclude: [
-  '**/bin.ts',                      // CLI entry shells, anywhere in any package
-  'packages/*/src/runtime.ts',      // top-level src/runtime.ts per package — the build-replaced stub
-  // ...
-]
-```
-
-The `runtime.ts` glob is **path-anchored** (top-level `src/` only) so nested files like `config/runtime.ts` — which generate runtime code and have real tests — stay in coverage.
-
-If a future file is genuinely untestable by design, isolate it into a dedicated file matching one of these conventions (or extend the list here in the same commit). Never reach for `/* v8 ignore */` to mask untestable lines inside an otherwise testable file — split the file instead.
-
-Host-integration composition files (e.g., `packages/astro/src/index.ts` that re-exports `.astro` components) are **not** excluded; they are tested by mocking the host-extension module imports (`vi.mock('./RichText.astro', ...)`).
-
 ### File template
 
 ```ts
