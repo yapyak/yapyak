@@ -318,6 +318,32 @@ describe('astro processor — extract', () => {
   });
 });
 
+describe('astro processor — already-compiled input fallback', () => {
+  it('extracts `t()` calls from compiled-by-astro JS that is missing the `---` frontmatter delimiter', () => {
+    const compiled = [
+      "import { render as $$render, createComponent } from 'astro/runtime';",
+      "import { t } from 'yapyak';",
+      '',
+      "const $$Page = createComponent(($$result) => render`<p>${t('Hello')}</p>`);",
+      'export default $$Page;',
+    ].join('\n');
+    const result = extractAstro(compiled);
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
+  });
+
+  it('rewrites `t()` calls in compiled-by-astro JS so the output runs at runtime', () => {
+    const compiled = [
+      "import { render as $$render, createComponent } from 'astro/runtime';",
+      "import { t } from 'yapyak';",
+      '',
+      "const $$Page = createComponent(($$result) => render`<p>${t('Hello')}</p>`);",
+      'export default $$Page;',
+    ].join('\n');
+    const code = runAstroTransform(compiled);
+    expect(code).not.toContain("t('Hello')");
+  });
+});
+
 describe('astro processor — transform', () => {
   it('elides Astro mustache `{t("Hello")}` to bare `Hello`', () => {
     const code = runAstroTransform(

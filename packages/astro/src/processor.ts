@@ -47,13 +47,23 @@ export function astro(): Processor {
         magicString.appendRight(insertAt, `${importStatement}\n`);
         return;
       }
-      magicString.prepend(`---\n${importStatement}\n---\n`);
+      magicString.prepend(`${importStatement}\n`);
     },
     extensions: [
       '.astro',
     ],
     id: 'astro',
     parseFragments: (source) => {
+      if (!FRONTMATTER_OPEN_RX.test(source)) {
+        return [
+          {
+            code: source,
+            kind: 'script',
+            lang: 'ts',
+            originalOffset: 0,
+          },
+        ];
+      }
       const compiler = loadCompiler();
       const { ast } = compiler.parse(source, undefined);
       return fragmentsFromNode(ast, source);
