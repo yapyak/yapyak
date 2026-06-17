@@ -139,7 +139,7 @@ function fragmentsFromExpressionNode(
   source: string,
 ): Fragment[] {
   const children = Array.isArray(node.children) ? node.children : [];
-  const elision = resolveExpressionElision(node, children, source);
+  const elision = resolveExpressionElision(children, source);
   const fragments: Fragment[] = [];
   for (const child of children) {
     if (child.type === 'text') {
@@ -152,11 +152,9 @@ function fragmentsFromExpressionNode(
 }
 
 function resolveExpressionElision(
-  node: ExpressionNode,
   children: Node[],
   source: string,
 ): Fragment['elision'] | undefined {
-  void node;
   if (children.length !== 1) {
     return undefined;
   }

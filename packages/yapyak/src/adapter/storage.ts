@@ -24,7 +24,3 @@ export function createStorage(): Storage {
   });
   return storage;
 }
-
-export function getStorage(): Storage | undefined {
-  return storage;
-}

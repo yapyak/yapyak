@@ -45,7 +45,6 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
     fileId,
     range: STUB_RANGE,
     severity: 'error' as const,
-    source: '',
   };
   let parsed: unknown;
   try {
@@ -272,7 +271,6 @@ export function validateIcuPairs(
         fileId,
         range: location.range,
         severity: 'error' as const,
-        source: '',
       };
 
       for (const [name, placeholder] of sourceByName) {

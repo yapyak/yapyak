@@ -308,6 +308,5 @@ function remapDiagnostic(
   return {
     ...diagnostic,
     range: remapRange(diagnostic.range, fragment, originalSource),
-    source: originalSource,
   };
 }

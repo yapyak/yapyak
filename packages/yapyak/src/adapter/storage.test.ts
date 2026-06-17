@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { createStorage, getStorage } from './storage';
+import { createStorage } from './storage';
 import { AsyncLocalStorage } from 'node:async_hooks';
 
 describe('createStorage', () => {
@@ -12,12 +12,5 @@ describe('createStorage', () => {
 
   it('returns the same instance on repeated calls', () => {
     expect(createStorage()).toBe(createStorage());
-  });
-});
-
-describe('getStorage', () => {
-  it('returns the storage created by `createStorage`', () => {
-    const storage = createStorage();
-    expect(getStorage()).toBe(storage);
   });
 });

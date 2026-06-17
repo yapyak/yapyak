@@ -292,14 +292,12 @@ export type Diagnostic = {
   message: string;
   range: Range;
   severity: 'error' | 'warning';
-  source: string;
 };
 
 export type BuildDiagnosticContext = {
   fileId: string;
   range: Range;
   severity: 'error' | 'warning';
-  source: string;
 };
 
 export function getDocsUrl(code: YapCode): string {
@@ -341,6 +339,5 @@ export function buildDiagnostic<K extends YapKey>(
     message,
     range: context.range,
     severity: context.severity,
-    source: context.source,
   };
 }

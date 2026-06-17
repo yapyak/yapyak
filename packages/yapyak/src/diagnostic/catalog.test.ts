@@ -23,7 +23,6 @@ const CONTEXT: BuildDiagnosticContext = {
   fileId: 'src/a.tsx',
   range: RANGE,
   severity: 'error',
-  source: 'Save',
 };
 
 describe('buildDiagnostic', () => {
@@ -43,7 +42,6 @@ describe('buildDiagnostic', () => {
       message: '`t()` called without arguments.',
       range: RANGE,
       severity: 'error',
-      source: 'Save',
     });
   });
 
@@ -64,7 +62,6 @@ describe('buildDiagnostic', () => {
         'Unsafe file-path key "../shared/Bar.tsx". Paths must be relative, use forward slashes, and contain no ".." segments.',
       range: RANGE,
       severity: 'error',
-      source: 'Save',
     });
   });
 });

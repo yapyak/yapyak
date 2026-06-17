@@ -337,7 +337,6 @@ function reportCapture(
         fileId: sourceFile.fileName,
         range: toRange(call, sourceFile),
         severity: 'error',
-        source: sourceFile.text,
       },
     ),
   );

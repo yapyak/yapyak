@@ -52,7 +52,6 @@ export function findContextDiagnostics(
             fileId: firstLocation.fileId,
             range: firstLocation.range,
             severity: 'error',
-            source: '',
           },
         ),
       );
@@ -76,7 +75,6 @@ export function findContextDiagnostics(
             fileId: firstLocation.fileId,
             range: firstLocation.range,
             severity: 'warning',
-            source: '',
           },
         ),
       );

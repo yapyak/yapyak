@@ -25,7 +25,6 @@ export type ParsedArguments = {
 
 export function parseArguments(callSite: CallSite): ParsedArguments {
   const sourceFile = callSite.node.getSourceFile();
-  const fileText = sourceFile.text;
   const fileId = sourceFile.fileName;
   const diagnostics: Diagnostic[] = [];
 
@@ -44,7 +43,6 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
           fileId,
           range: toRange(contextExpression, sourceFile),
           severity: 'error',
-          source: fileText,
         }),
       );
     }
@@ -62,7 +60,6 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
           fileId,
           range: toRange(callSite.node, sourceFile),
           severity: 'error',
-          source: fileText,
         },
       ),
     );
@@ -84,7 +81,6 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
         fileId,
         range: sourceRange,
         severity: 'error',
-        source: fileText,
       }),
     );
     const result: ParsedArguments = {
@@ -105,7 +101,6 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
         fileId,
         range: sourceRange,
         severity: 'error',
-        source: fileText,
       }),
     );
   }
@@ -118,7 +113,6 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
     diagnostics.push(
       toIcuDiagnostic(issue, {
         fileId,
-        fileText,
         range: sourceRange,
       }),
     );
@@ -134,7 +128,6 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
       callSite,
       diagnostics,
       fileId,
-      fileText,
       params,
       paramsExpressionPresent: paramsExpression !== undefined,
       placeholderKeys,
@@ -157,7 +150,6 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
 
 type IcuDiagnosticContext = {
   fileId: string;
-  fileText: string;
   range: Range;
 };
 
@@ -169,7 +161,6 @@ function toIcuDiagnostic(
     fileId: context.fileId,
     range: context.range,
     severity: 'error' as const,
-    source: context.fileText,
   };
   if (issue.reason === 'missing-other') {
     return buildDiagnostic(
@@ -248,7 +239,6 @@ type ValidateParamsInput = {
   callSite: CallSite;
   diagnostics: Diagnostic[];
   fileId: string;
-  fileText: string;
   params: ParsedParams | undefined;
   paramsExpressionPresent: boolean;
   placeholderKeys: string[];
@@ -259,7 +249,6 @@ function validateParams(input: ValidateParamsInput): void {
     callSite,
     diagnostics,
     fileId,
-    fileText,
     paramsExpressionPresent: hasParamsExpression,
     params,
     placeholderKeys,
@@ -279,7 +268,6 @@ function validateParams(input: ValidateParamsInput): void {
             fileId,
             range: callRange,
             severity: 'warning',
-            source: fileText,
           },
         ),
       );
@@ -297,7 +285,6 @@ function validateParams(input: ValidateParamsInput): void {
             fileId,
             range: callRange,
             severity: 'error',
-            source: fileText,
           },
         ),
       );
@@ -316,7 +303,6 @@ function validateParams(input: ValidateParamsInput): void {
           fileId,
           range: params.range,
           severity: 'warning',
-          source: fileText,
         },
       ),
     );
@@ -337,7 +323,6 @@ function validateParams(input: ValidateParamsInput): void {
             fileId,
             range: params.range,
             severity: 'error',
-            source: fileText,
           },
         ),
       );
@@ -358,7 +343,6 @@ function validateParams(input: ValidateParamsInput): void {
           fileId,
           range: params.range,
           severity: 'warning',
-          source: fileText,
         },
       ),
     );
