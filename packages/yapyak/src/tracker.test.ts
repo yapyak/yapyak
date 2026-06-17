@@ -1,6 +1,7 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { autoRegisterTracker, registerTracker, runTrackers } from './tracker';
+import { resetWarn, setWarn } from './warn';
 
 function makeMeta(
   hot?:
@@ -14,28 +15,6 @@ function makeMeta(
     hot,
   };
 }
-
-describe('registerTracker', () => {
-  it('notifies the tracker on runTrackers', () => {
-    const tracker = vi.fn();
-    const unregister = registerTracker(tracker);
-
-    runTrackers();
-
-    expect(tracker).toHaveBeenCalledOnce();
-    unregister();
-  });
-
-  it('clears the tracker after the returned unregister runs', () => {
-    const tracker = vi.fn();
-    const unregister = registerTracker(tracker);
-
-    unregister();
-    runTrackers();
-
-    expect(tracker).not.toHaveBeenCalled();
-  });
-});
 
 describe('autoRegisterTracker', () => {
   it('notifies the tracker on runTrackers', () => {
@@ -64,5 +43,73 @@ describe('autoRegisterTracker', () => {
     unregister?.();
     runTrackers();
     expect(tracker).not.toHaveBeenCalled();
+  });
+});
+
+describe('registerTracker', () => {
+  it('notifies the tracker on runTrackers', () => {
+    const tracker = vi.fn();
+    const unregister = registerTracker(tracker);
+
+    runTrackers();
+
+    expect(tracker).toHaveBeenCalledOnce();
+    unregister();
+  });
+
+  it('clears the tracker after the returned unregister runs', () => {
+    const tracker = vi.fn();
+    const unregister = registerTracker(tracker);
+
+    unregister();
+    runTrackers();
+
+    expect(tracker).not.toHaveBeenCalled();
+  });
+});
+
+describe('runTrackers', () => {
+  let warnSpy: ReturnType<
+    typeof vi.fn<(message: string, meta?: Record<string, unknown>) => void>
+  >;
+
+  beforeEach(() => {
+    warnSpy =
+      vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
+    setWarn(warnSpy);
+  });
+
+  afterEach(() => {
+    resetWarn();
+  });
+
+  it('warns when a tracker throws', () => {
+    const cause = new Error('boom');
+    const unregister = registerTracker(() => {
+      throw cause;
+    });
+
+    runTrackers();
+
+    expect(warnSpy).toHaveBeenCalledOnce();
+    unregister();
+  });
+
+  it('notifies every remaining tracker when a prior tracker throws', () => {
+    const second = vi.fn();
+    const third = vi.fn();
+    const unregisterFirst = registerTracker(() => {
+      throw new Error('boom');
+    });
+    const unregisterSecond = registerTracker(second);
+    const unregisterThird = registerTracker(third);
+
+    runTrackers();
+
+    expect(second).toHaveBeenCalledOnce();
+    expect(third).toHaveBeenCalledOnce();
+    unregisterFirst();
+    unregisterSecond();
+    unregisterThird();
   });
 });

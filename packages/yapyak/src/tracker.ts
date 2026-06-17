@@ -1,3 +1,4 @@
+import { warnDiagnostic } from './diagnostic';
 import { registerHotDispose } from './hot-dispose';
 
 const trackers = new Set<() => void>();
@@ -16,6 +17,12 @@ export function autoRegisterTracker(meta: ImportMeta, fn: () => void): void {
 
 export function runTrackers(): void {
   for (const tracker of trackers) {
-    tracker();
+    try {
+      tracker();
+    } catch (cause) {
+      warnDiagnostic('TRACKER_THREW', undefined, {
+        cause,
+      });
+    }
   }
 }

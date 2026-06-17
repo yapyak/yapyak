@@ -275,6 +275,11 @@ export const YAP = {
     message: ({ detail, locale }: { detail: string; locale: string }): string =>
       `Locale migration for "${locale}" failed: ${detail}. Yapyak skipped this locale and continued.`,
   },
+  TRACKER_THREW: {
+    code: 'YAP0040',
+    message: (): string =>
+      'Tracker callback threw an exception. Yapyak continued with the remaining trackers.',
+  },
 } as const;
 
 export type YapKey = keyof typeof YAP;
