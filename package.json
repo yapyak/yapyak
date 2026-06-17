@@ -1,6 +1,7 @@
 {
   "name": "yapyak-monorepo",
   "private": true,
+  "author": "Joakim Uhrwing",
   "type": "module",
   "scripts": {
     "build": "pnpm -r --filter \"./packages/*\" build",
