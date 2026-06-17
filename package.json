@@ -6,7 +6,6 @@
     "build": "pnpm -r --filter \"./packages/*\" build",
     "check": "biome check .",
     "check:write": "biome check . --write",
-    "coverage": "vitest --run --coverage",
     "knip": "knip -W './packages/*' -W '!./packages/*-config'",
     "test": "vitest --run",
     "test:watch": "vitest",
@@ -14,7 +13,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",
-    "@vitest/coverage-v8": "catalog:",
     "knip": "catalog:",
     "vitest": "catalog:"
   },
