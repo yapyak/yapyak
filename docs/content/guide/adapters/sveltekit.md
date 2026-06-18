@@ -5,6 +5,14 @@ order: 4
 
 `@yapyak/sveltekit` is the yapyak SSR adapter for [SvelteKit](https://kit.svelte.dev). Re-export it from `hooks.server.ts` and yapyak's per-request locale binding wires across every load function, action, and page render.
 
+## Requirements
+
+- Node.js 22 or later
+- TypeScript 5 or later
+- Vite 6 or later
+- Svelte 5 or later
+- SvelteKit 2 or later
+
 ## Install
 
 {% switch group="pkg" %}

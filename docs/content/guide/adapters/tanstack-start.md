@@ -5,6 +5,14 @@ order: 5
 
 `@yapyak/tanstack-start` is the yapyak SSR adapter for [TanStack Start](https://tanstack.com/start). Register it in your `createStart` instance and yapyak's per-request locale binding is wired across every loader and component render.
 
+## Requirements
+
+- Node.js 22 or later
+- TypeScript 5 or later
+- Vite 6 or later
+- React 19 or later
+- TanStack Start 1.168 or later
+
 ## Install
 
 {% switch group="pkg" %}

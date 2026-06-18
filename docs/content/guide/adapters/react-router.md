@@ -5,6 +5,14 @@ order: 3
 
 `@yapyak/react-router` is the yapyak SSR adapter for [React Router](https://reactrouter.com) v7 in framework mode. Drop it into your root route's middleware array and yapyak's per-request locale binding is wired across every loader, action, and component render.
 
+## Requirements
+
+- Node.js 22 or later
+- TypeScript 5 or later
+- Vite 6 or later
+- React 19 or later
+- React Router 7.9 or later
+
 ## Install
 
 {% switch group="pkg" %}

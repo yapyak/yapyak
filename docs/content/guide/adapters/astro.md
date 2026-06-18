@@ -5,6 +5,12 @@ order: 2
 
 Astro renders every page on the server. yapyak's Astro integration wires the per-request locale binding and the build-time Vite plugin in one step, so the same `t()`, `getLocale()`, and `format.*` calls work in `.astro` frontmatter, in islands, and across navigations.
 
+## Requirements
+
+- Node.js 22 or later
+- TypeScript 5 or later
+- Astro 5 or later
+
 ## Install
 
 {% switch group="pkg" %}
