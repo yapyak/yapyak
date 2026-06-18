@@ -36,8 +36,6 @@ The cookie is set with `SameSite=Lax` and a long expiry. On a fresh browser, it'
 `secure: true` restricts the cookie to HTTPS-only contexts. On plain HTTP, client-side `setLocale()` writes will silently fail — the browser refuses to set a secure cookie. Leave `secure` off for local development; enable it in production. The flag has no effect on `localhost` regardless.
 {% /callout %}
 
-Use cookie persistence whenever your app renders on the server and you want a single source of truth that's available to both the request handler and the client runtime. See [SSR](/guide/adapters/overview) for the per-framework adapter setup.
-
 ## Local storage
 
 Browser-only. The locale lives in `localStorage`, read once at startup and written on every `setLocale()`. There's no server involvement, so this strategy fits client-only apps — a plain Vite + React SPA without SSR.
@@ -78,17 +76,6 @@ persistence: {
 Without `match`, yapyak reads the first path segment — `/sv/settings` resolves to `'sv'` if `'sv'` is one of the locales you've added. Anything else falls through to `defaultLocale`.
 
 With a `match` regex, you control where the locale lives. The example above pulls it from a `lang` query parameter, so URLs look like `/settings?lang=sv` instead of `/sv/settings`.
-
-URL persistence is the right choice when:
-
-- The locale should be shareable through a link (a Swedish reader sends the page URL and the recipient sees Swedish too)
-- You're SEO-sensitive and want per-locale URLs for search engines to index
-- Your routing already has locale-prefixed paths
-
-It's the wrong choice when:
-
-- The locale is a personal preference that shouldn't show up in every URL
-- You don't want every link to grow a parameter
 
 ## None
 

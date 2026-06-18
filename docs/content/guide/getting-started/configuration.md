@@ -5,8 +5,6 @@ order: 3
 
 `yapyak.config.ts` is yapyak's central configuration. It tells the build which files to scan, how to translate empty stubs, and how the runtime should behave. The set of locales your app ships isn't a config field — it comes from the JSON files in your [`localesDir`](#localesdir). Every config field is optional — yapyak has defaults for everything — but you'll set a handful explicitly in any real project.
 
-This page documents every field. Read it once when you set up a project, then dip back into it when you need to look up a specific option.
-
 ## Quick reference
 
 ```ts [yapyak.config.ts]

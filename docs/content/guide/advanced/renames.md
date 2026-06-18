@@ -5,8 +5,6 @@ order: 1
 
 Source code moves around. A component file gets renamed; a string gets edited; the same markup gets copied to a new file. In every case, the translations attached to those strings still exist — yapyak's job is to follow them across the change rather than orphan them.
 
-This page covers how the tracking works, what the configuration knob does, and when you'd want to reach for one behavior over the other.
-
 ## What yapyak tracks
 
 Behind every translation is a position record. yapyak knows:
@@ -55,30 +53,6 @@ A few cases yapyak deliberately doesn't try to handle:
 - **Fuzzy matching across edits.** If you change `'Save'` to `'Saving…'`, that's a different string. yapyak doesn't guess that they mean the same thing.
 - **Semantic matching across locales.** If a translation is great but the source word was tweaked, the translation isn't propagated to a refreshed locale entry. It either stays (with `preserveTranslationsOnRename: true`) or it's regenerated (`false`).
 - **Cross-project matching.** Each yapyak project tracks its own cache; copying a component from project A to project B brings the source but not the translations.
-
-The principle: yapyak preserves what's certain, doesn't guess at what's ambiguous, and surfaces the rest as a stub for you (or the translator) to fill in.
-
-## When to flip the default
-
-`preserveTranslationsOnRename` is the one knob that's worth setting deliberately:
-
-```ts [yapyak.config.ts]
-export default defineConfig({
-  preserveTranslationsOnRename: true,
-});
-```
-
-**Set it `true` when:**
-- You have a translator but want to protect carefully hand-edited translations from being overwritten by small source edits
-- You're rewriting copy in source language and don't want to re-spend tokens on translations that are still good enough
-- You're at a stage of the project where stability matters more than freshness
-
-**Set it `false` when:**
-- You have a translator and trust it to refresh translations when source changes
-- Source edits often carry real semantic shifts (you're polishing not just rewording)
-- You want every source change to result in a translator pass
-
-If neither matches your situation, leave the default. It's tuned for the most common case: with-translator wants `false`, without-translator wants `true`.
 
 ## Restoring a translation manually
 

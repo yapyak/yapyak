@@ -23,8 +23,6 @@ bunx yapyak add pt-BR zh-Hant-TW
 {% /when %}
 {% /switch %}
 
-This page covers the shape of a tag, when to use the long form vs the short, and how to narrow a `string` from outside your code into a known `Locale`.
-
 ## Shape
 
 A BCP 47 tag has up to four parts, all separated by `-`:
@@ -48,8 +46,6 @@ The language subtag is always present; the rest are optional and almost never al
 | `zh-Hant` | Traditional-script Chinese |
 | `zh-Hant-TW` | Traditional Chinese, Taiwan region |
 | `zh-Hans-CN` | Simplified Chinese, mainland China |
-
-Picking how specific to go depends on how much your translations diverge across regions. For many languages, a single tag (`sv`) is enough; for Portuguese, Chinese, and Spanish, the regional distinction usually matters; for English, only sometimes.
 
 {% callout variant="info" %}
 The canonical casing is `lowercase-Titlecase-UPPERCASE` (language lowercase, script title-case, region upper-case). yapyak normalizes input through `Intl.Locale` before matching, so `'EN-US'`, `'en-us'`, and `'en-US'` all match the same added locale — but write the canonical form on disk and in code.
