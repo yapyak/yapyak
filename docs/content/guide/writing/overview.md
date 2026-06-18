@@ -71,9 +71,7 @@ The English (or whatever your `defaultLocale` is) text you pass to `t()` is what
 
 ```json [locales/sv.json]
 {
-  "src/components/save-button.tsx": {
-    "Save changes": "Spara ändringar"
-  }
+  "src/components/save-button.tsx": { "Save changes": "Spara ändringar" }
 }
 ```
 

@@ -8,7 +8,10 @@ By default, every `format.*` call renders for the active locale. When you need t
 ```ts
 import { format } from 'yapyak';
 
-format.in('sv').number(199, { style: 'currency', currency: 'SEK' });
+format.in('sv').number(199, {
+  currency: 'SEK',
+  style: 'currency',
+});
 // '199,00 kr'
 
 format.in('ja').dateTime(new Date(), { dateStyle: 'long' });
@@ -45,7 +48,10 @@ Unlike the active-locale `format`, a `format.in(locale)` call doesn't subscribe 
 When you want both, combine [`t.in()`](/guide/writing/overrides) with `format.in()`:
 
 ```ts
-const balance = format.in('sv').number(199, { style: 'currency', currency: 'SEK' });
+const balance = format.in('sv').number(199, {
+  currency: 'SEK',
+  style: 'currency',
+});
 t.in('sv', 'Your balance is {balance}', { balance });
 // 'Ditt saldo är 199,00 kr'
 ```

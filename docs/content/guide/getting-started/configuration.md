@@ -96,9 +96,9 @@ Patterns yapyak should skip. Same shape as `include`. Tests, generated files, an
 ```ts
 // Default exclude list (you don't need to write this)
 exclude: [
-  '**/*.{test,spec}.*',
+  '**/*.{ spec, test }.*',
   '**/__tests__/**',
-  '**/*.{stories,gen}.{ts,tsx,js,jsx,mjs,cjs}',
+  '**/*.{ gen, stories }.{ cjs, js, jsx, mjs, ts, tsx }',
   '**/*.d.ts',
 ],
 ```
@@ -150,9 +150,7 @@ Hook up a model to fill in missing translations automatically. yapyak ships tran
 ```ts
 import { anthropic } from '@yapyak/anthropic';
 
-translator: anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-}),
+translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),
 ```
 
 See [Translators](/guide/translators/overview) for the full set of options each provider supports — voice, glossary, context, batching, concurrency, model selection, and more.
@@ -201,7 +199,10 @@ Where the active locale lives between page loads.
 
 ```ts
 persistence: 'cookie',         // shorthand
-persistence: { type: 'cookie', name: 'lang' },  // with options
+persistence: {
+  name: 'lang',
+  type: 'cookie',
+},  // with options
 ```
 
 Four strategies are available: `'none'`, `'cookie'`, `'local-storage'`, and `'url'`. Each one can be passed as a shorthand string or as a config object with strategy-specific options.
@@ -280,7 +281,7 @@ In a fixed-locale build, yapyak replaces every eligible `t()` call with the targ
 Most of the time you set yapyak.config.ts once and forget about it. If your code needs to know what's configured at runtime — to render a locale switcher, for example — read it from the runtime exports of `yapyak`:
 
 ```ts
-import { locales, defaultLocale, getLocale } from 'yapyak';
+import { defaultLocale, getLocale, locales } from 'yapyak';
 ```
 
 `locales` and `defaultLocale` reflect what you set in the config. `getLocale()` returns the active value.

@@ -97,7 +97,9 @@ ICU has features yapyak doesn't support — plural offsets, custom number skelet
 // source
 t('{count, plural, one {one} other {other}}');
 // translation
-{ "{count, plural, one {one} other {other}}": "{count, select, ...}" }
+{
+  "{count, plural, one {one} other {other}}": "{count, select, ...}",
+}
 ```
 
 A translation can't change a placeholder's format from `plural` to `select`. The structure has to match.

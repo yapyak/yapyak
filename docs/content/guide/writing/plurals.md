@@ -6,9 +6,7 @@ order: 3
 Plurals are the first place a single-language app starts feeling cramped. "1 message" / "5 messages" works in English with a simple `if` — but it falls apart in languages with two singular forms (Welsh), three plural categories (Russian), or six (Arabic). ICU's `plural` format handles all of them inside a single message string.
 
 ```ts
-t('You have {count, plural, one {# message} other {# messages}}', {
-  count: 5,
-});
+t('You have {count, plural, one {# message} other {# messages}}', { count: 5 });
 // 'You have 5 messages' in English
 // 'Du har 5 meddelanden' in Swedish
 // 'تتوفّر لديك ٥ رسائل' in Arabic
@@ -39,8 +37,7 @@ t('{count, plural, one {# item} other {# items}}', { count: 1 });
 ```json
 // pl.json — Polish gets four
 {
-  "{count, plural, one {# item} other {# items}}":
-    "{count, plural, one {# rzecz} few {# rzeczy} many {# rzeczy} other {# rzeczy}}"
+  "{count, plural, one {# item} other {# items}}": "{count, plural, one {# rzecz} few {# rzeczy} many {# rzeczy} other {# rzeczy}}"
 }
 ```
 
@@ -65,9 +62,7 @@ It's the same as writing `{count, number}` in the same position, but shorter and
 When you want a different branch for an exact value — say, "no messages" for zero — use `=N`:
 
 ```ts
-t('{count, plural, =0 {No messages yet} one {1 new message} other {# new messages}}', {
-  count: 0,
-});
+t('{count, plural, =0 {No messages yet} one {1 new message} other {# new messages}}', { count: 0 });
 // 'No messages yet'
 ```
 
@@ -91,9 +86,7 @@ TypeScript still validates that every placeholder you reference is in the params
 For ordinal numbers ("1st", "2nd", "3rd"), use `selectordinal` instead of `plural`. The categories are the same, but the rules differ — English uses `one` for "1st", `two` for "2nd", `few` for "3rd", and `other` for everything else:
 
 ```ts
-t('{place, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place', {
-  place: 3,
-});
+t('{place, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place', { place: 3 });
 // '3rd place' in English
 ```
 

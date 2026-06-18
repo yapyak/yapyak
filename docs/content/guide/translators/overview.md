@@ -15,7 +15,9 @@ export default defineConfig({
   translator: anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY,
     voice: 'Concise and friendly',
-    glossary: { cart: { sv: 'kundvagn' } },
+    glossary: {
+      cart: { sv: 'kundvagn' },
+    },
   }),
 });
 ```
@@ -63,9 +65,18 @@ Fixed translations for terms the model shouldn't second-guess. Brand names, prod
 
 ```ts
 glossary: {
-  cart: { sv: 'kundvagn', de: 'Warenkorb' },
-  checkout: { sv: 'kassa', de: 'Kasse' },
-  yapyak: { sv: 'yapyak', de: 'yapyak' },  // keep the product name as-is
+  cart: {
+    sv: 'kundvagn',
+    de: 'Warenkorb',
+  },
+  checkout: {
+    sv: 'kassa',
+    de: 'Kasse',
+  },
+  yapyak: {
+    sv: 'yapyak',
+    de: 'yapyak',
+  },  // keep the product name as-is
 },
 ```
 

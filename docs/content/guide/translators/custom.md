@@ -12,7 +12,7 @@ import { createTranslator } from 'yapyak/translator';
 
 const myTranslator = createTranslator({
   id: 'my-translator',
-  async translate({ items, sourceLocale, targetLocales, signal }) {
+  async translate({ items, signal, sourceLocale, targetLocales }) {
     const response = await fetch('https://my-translation.internal/translate', {
       body: JSON.stringify({ items, sourceLocale, targetLocales }),
       method: 'POST',
@@ -29,9 +29,7 @@ Pass it to your config like any other translator:
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 
-export default defineConfig({
-  translator: myTranslator,
-});
+export default defineConfig({ translator: myTranslator });
 ```
 
 yapyak handles the batching, deduplication, retry behavior, and result validation around your function — you only describe how to talk to your backend.
@@ -66,8 +64,14 @@ Return an array of objects, one per item, each keyed by the target locales:
 
 ```ts
 [
-  { sv: 'Spara', de: 'Speichern' },     // for items[0]
-  { sv: 'Avbryt', de: 'Abbrechen' },    // for items[1]
+  {
+    de: 'Speichern',
+    sv: 'Spara',
+  },     // for items[0]
+  {
+    de: 'Abbrechen',
+    sv: 'Avbryt',
+  },    // for items[1]
 ]
 ```
 
@@ -79,13 +83,11 @@ The order matches `items`. Every entry must have one key per locale in `targetLo
 
 ```ts
 const myTranslator = createTranslator({
-  id: 'my-translator',
   batchSize: 10,
   concurrency: 3,
   context: 'rich',
-  async translate({ items, sourceLocale, targetLocales, signal }) {
-    // …
-  },
+  async translate({ items, signal, sourceLocale, targetLocales }) { // … },
+  id: 'my-translator',
 });
 ```
 
@@ -107,9 +109,18 @@ When yapyak's normal model-translator path is overkill — say, for an app whose
 import { createTranslator } from 'yapyak/translator';
 
 const rules: Record<string, Record<string, string>> = {
-  'Save': { sv: 'Spara', de: 'Speichern' },
-  'Cancel': { sv: 'Avbryt', de: 'Abbrechen' },
-  'Settings': { sv: 'Inställningar', de: 'Einstellungen' },
+  'Cancel': {
+    sv: 'Avbryt',
+    de: 'Abbrechen',
+  },
+  'Save': {
+    sv: 'Spara',
+    de: 'Speichern',
+  },
+  'Settings': {
+    sv: 'Inställningar',
+    de: 'Einstellungen',
+  },
 };
 
 const myTranslator = createTranslator({
@@ -117,9 +128,7 @@ const myTranslator = createTranslator({
   async translate({ items, targetLocales }) {
     return items.map((item) => {
       const result: Record<string, string> = {};
-      for (const locale of targetLocales) {
-        result[locale] = rules[item.source]?.[locale] ?? item.source;
-      }
+      for (const locale of targetLocales) { result[locale] = rules[item.source]?.[locale] ?? item.source; }
       return result;
     });
   },
@@ -141,9 +150,9 @@ const claude = anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const gpt = openai({ apiKey: process.env.OPENAI_API_KEY });
 
 const ROUTE = {
+  default: gpt,
   ja: claude,    // Claude is stronger here
   zh: claude,
-  default: gpt,
 };
 
 const myTranslator = createTranslator({
@@ -165,7 +174,11 @@ Pass it through to your fetch (or your internal client's `signal` field). Failur
 
 ```ts
 async translate({ items, signal }) {
-  const response = await fetch(url, { body, method: 'POST', signal });
+  const response = await fetch(url, {
+    body,
+    method: 'POST',
+    signal,
+  });
   // …
 }
 ```
@@ -190,7 +203,10 @@ async translate({ items, signal }) {
   }
   if (response.status === 429) {
     const retryAfter = Number(response.headers.get('retry-after')) * 1000;
-    throw new TranslatorRateLimitError({ retryAfter, vendor: 'my-vendor' });
+    throw new TranslatorRateLimitError({
+      retryAfter,
+      vendor: 'my-vendor',
+    });
   }
   // …
 }

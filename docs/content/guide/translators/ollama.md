@@ -39,9 +39,7 @@ ollama pull llama3.1
 import { defineConfig } from 'yapyak/config';
 import { ollama } from '@yapyak/ollama';
 
-export default defineConfig({
-  translator: ollama(),
-});
+export default defineConfig({ translator: ollama() });
 ```
 
 No `apiKey`. To override the default model or pass a voice:
@@ -101,7 +99,9 @@ If the remote Ollama is behind a proxy that needs auth, use the `headers` option
 ```ts
 translator: ollama({
   endpoint: 'https://ollama-gateway.example.com/api/generate',
-  headers: { Authorization: `Bearer ${process.env.GATEWAY_TOKEN}` },
+  headers: {
+    Authorization: `Bearer ${process.env.GATEWAY_TOKEN}`,
+  },
 }),
 ```
 
@@ -127,9 +127,7 @@ const translator = process.env.CI
   ? anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
   : ollama();
 
-export default defineConfig({
-  translator,
-});
+export default defineConfig({ translator });
 ```
 
 Translations made by either provider are stored in the same locale files; the next time the other runs, it sees them as already done.

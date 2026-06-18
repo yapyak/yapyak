@@ -8,9 +8,7 @@ Without persistence, the active locale lives only for the current page session â
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 
-export default defineConfig({
-  persistence: 'cookie',
-});
+export default defineConfig({ persistence: 'cookie' });
 ```
 
 That's the shorthand. Each strategy also accepts a configuration object for customizing names, keys, or matching patterns.
@@ -22,7 +20,11 @@ The default for server-rendered apps. The cookie is written client-side when `se
 ```ts
 persistence: 'cookie',
 // or with options:
-persistence: { type: 'cookie', name: 'lang', secure: true },
+persistence: {
+  name: 'lang',
+  secure: true,
+  type: 'cookie',
+},
 ```
 
 | Option | Default | Purpose |
@@ -43,7 +45,10 @@ Browser-only. The locale lives in `localStorage`, read once at startup and writt
 ```ts
 persistence: 'local-storage',
 // or with options:
-persistence: { type: 'local-storage', key: 'lang' },
+persistence: {
+  key: 'lang',
+  type: 'local-storage',
+},
 ```
 
 | Option | Default | Purpose |
@@ -64,8 +69,8 @@ The locale lives in the URL, either as a path segment (`/sv/settings`) or as a q
 persistence: 'url',
 // or with a query-parameter matcher:
 persistence: {
-  type: 'url',
   match: /[?&]lang=(?<locale>[^&]+)/,
+  type: 'url',
 },
 ```
 

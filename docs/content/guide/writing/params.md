@@ -46,10 +46,14 @@ t('You have {count} messages from {sender}', {
 
 ```json
 // sv.json — Swedish keeps the order
-{ "You have {count} messages from {sender}": "Du har {count} meddelanden från {sender}" }
+{
+  "You have {count} messages from {sender}": "Du har {count} meddelanden från {sender}",
+}
 
 // ja.json — Japanese reorders naturally
-{ "You have {count} messages from {sender}": "{sender}から{count}件のメッセージがあります" }
+{
+  "You have {count} messages from {sender}": "{sender}から{count}件のメッセージがあります",
+}
 ```
 
 This is one of the quietly important things about a placeholder-based system: the translator (or the model) is free to reshape the sentence as long as every placeholder name shows up.

@@ -35,9 +35,7 @@ When you save, yapyak adds the message to your locale files as an empty stub. Th
 
 ```json [locales/sv.json]
 {
-  "src/components/empty-cart.tsx": {
-    "Your cart is empty": ""
-  }
+  "src/components/empty-cart.tsx": { "Your cart is empty": "" }
 }
 ```
 
@@ -70,9 +68,7 @@ When you save, yapyak collects new messages, sends them to the provider with the
 
 ```json [locales/sv.json]
 {
-  "src/components/empty-cart.tsx": {
-    "Your cart is empty": "Din kundvagn är tom"
-  }
+  "src/components/empty-cart.tsx": { "Your cart is empty": "Din kundvagn är tom" }
 }
 ```
 
@@ -113,9 +109,7 @@ For SSR, translation data can stay on the server while the rendered result is se
 A real interface has counts, prices, dates, and lists. yapyak handles these inside translatable messages using ICU MessageFormat:
 
 ```tsx
-t('You have {count, plural, one {# message} other {# messages}}', {
-  count,
-});
+t('You have {count, plural, one {# message} other {# messages}}', { count });
 ```
 
 ICU is a standard format. models understand its structure, and translators preserve it across locales. yapyak validates it at compile time.

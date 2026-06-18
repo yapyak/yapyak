@@ -6,9 +6,7 @@ order: 4
 `select` picks between branches based on a string value. It's the counterpart to [`plural`](/guide/writing/plurals), which switches on a number. Use `select` whenever the choice is categorical and the translation needs to read differently for each.
 
 ```ts
-t('{role, select, admin {Admin panel} editor {Editor view} other {Reader view}}', {
-  role: 'admin',
-});
+t('{role, select, admin {Admin panel} editor {Editor view} other {Reader view}}', { role: 'admin' });
 // 'Admin panel'
 ```
 
@@ -19,9 +17,7 @@ The keys are arbitrary strings you choose. Unlike `plural`, where the categories
 Every `select` needs an `other` branch as the fallback. If the runtime value doesn't match any of the named branches, `other` is used:
 
 ```ts
-t('{status, select, draft {Draft} published {Published} other {Unknown}}', {
-  status: 'archived',
-});
+t('{status, select, draft {Draft} published {Published} other {Unknown}}', { status: 'archived' });
 // 'Unknown' — no 'archived' branch
 ```
 
@@ -33,22 +29,18 @@ Like with plurals, the translator (human or model) is free to add, remove, or me
 
 ```ts
 // English source — gender doesn't change the verb
-t('{gender, select, female {She is online} male {He is online} other {They are online}}', {
-  gender,
-});
+t('{gender, select, female {She is online} male {He is online} other {They are online}}', { gender });
 ```
 
 ```json
 // es.json — Spanish adds a gendered adjective
 {
-  "{gender, select, female {She is online} male {He is online} other {They are online}}":
-    "{gender, select, female {Está conectada} male {Está conectado} other {Está conectado}}"
+  "{gender, select, female {She is online} male {He is online} other {They are online}}": "{gender, select, female {Está conectada} male {Está conectado} other {Está conectado}}"
 }
 
 // fi.json — Finnish drops the distinction; one branch covers all
 {
-  "{gender, select, female {She is online} male {He is online} other {They are online}}":
-    "{gender, select, other {Hän on paikalla}}"
+  "{gender, select, female {She is online} male {He is online} other {They are online}}": "{gender, select, other {Hän on paikalla}}"
 }
 ```
 
@@ -58,9 +50,9 @@ A `select` branch is a full message. You can put placeholders, plurals, or even 
 
 ```ts
 t('{role, select, admin {Admin {name} has {count, plural, one {# alert} other {# alerts}}} other {{name} has {count, plural, one {# alert} other {# alerts}}}}', {
-  role: 'admin',
-  name: 'Ada',
   count: 3,
+  name: 'Ada',
+  role: 'admin',
 });
 ```
 

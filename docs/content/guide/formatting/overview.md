@@ -8,7 +8,10 @@ yapyak ships a runtime `format` namespace backed by `Intl`. Every call uses the 
 ```ts
 import { format } from 'yapyak';
 
-format.number(199, { style: 'currency', currency: 'EUR' });
+format.number(199, {
+  currency: 'EUR',
+  style: 'currency',
+});
 // '€199.00' in en-US, '199,00 €' in sv-SE
 
 format.dateTime(new Date(), { dateStyle: 'long' });
@@ -35,9 +38,15 @@ Each method maps directly to an `Intl.*Format` class:
 **Currency type-safety.** When `style: 'currency'`, the `currency` field is required and typed against ISO 4217:
 
 ```ts
-format.number(199, { style: 'currency', currency: 'EUR' }); // ✓
+format.number(199, {
+  currency: 'EUR',
+  style: 'currency',
+}); // ✓
 format.number(199, { style: 'currency' });                  // ✗ currency missing
-format.number(199, { style: 'currency', currency: 'XYZ' }); // ✗ not a real code
+format.number(199, {
+  currency: 'XYZ',
+  style: 'currency',
+}); // ✗ not a real code
 ```
 
 The `Currency` type is exported separately for passing through your own functions:
@@ -46,7 +55,10 @@ The `Currency` type is exported separately for passing through your own function
 import type { Currency } from 'yapyak';
 
 function setPrice(amount: number, currency: Currency) {
-  return format.number(amount, { style: 'currency', currency });
+  return format.number(amount, {
+    style: 'currency',
+    currency,
+  });
 }
 ```
 
@@ -54,7 +66,10 @@ function setPrice(amount: number, currency: Currency) {
 
 ```ts
 format.number(0.42, { style: 'percent' });                 // ✓
-format.number(45, { style: 'unit', unit: 'kilometer' });   // ✓
+format.number(45, {
+  style: 'unit',
+  unit: 'kilometer',
+});   // ✓
 format.number(45, { style: 'unit' });                      // ✗ unit missing
 ```
 
@@ -65,7 +80,10 @@ format.number(45, { style: 'unit' });                      // ✗ unit missing
 By default every `format.*` call uses the active locale. Use `format.in(locale)` to scope a call (or chain) to something else:
 
 ```ts
-format.in('sv').number(200, { style: 'currency', currency: 'SEK' });
+format.in('sv').number(200, {
+  currency: 'SEK',
+  style: 'currency',
+});
 // '200,00 kr' regardless of the active locale
 ```
 

@@ -82,12 +82,19 @@ A typical request body looks something like this:
 
 ```json
 {
-  "source": "Save changes",
   "component": "SaveButton",
   "element": "button",
+  "examples": [
+    {
+      "en": "Save",
+      "sv": "Spara",
+    },
+  ],
+  "glossary": {
+    "cart": { "sv": "kundvagn" },
+  },
+  "source": "Save changes",
   "voice": "Concise and friendly",
-  "glossary": { "cart": { "sv": "kundvagn" } },
-  "examples": [{ "en": "Save", "sv": "Spara" }]
 }
 ```
 
@@ -103,9 +110,7 @@ Locale files live in your repository, one per locale, scoped by the source file 
 
 ```json [locales/sv.json]
 {
-  "src/components/save-button.tsx": {
-    "Save changes": "Spara ändringar"
-  }
+  "src/components/save-button.tsx": { "Save changes": "Spara ändringar" }
 }
 ```
 
@@ -139,7 +144,10 @@ import {
   placeholder as _placeholder,
 } from 'yapyak/internal';
 
-const _catalog_$0 = { en: 'Save', sv: 'Spara' };
+const _catalog_$0 = {
+  en: 'Save',
+  sv: 'Spara',
+};
 const _catalog_$1 = {
   en: [_literal('Hi '), _placeholder('name')],
   sv: [_literal('Hej '), _placeholder('name')],

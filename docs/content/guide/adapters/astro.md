@@ -37,9 +37,7 @@ bun add yapyak @yapyak/astro
 import { defineConfig } from 'astro/config';
 import { yapyak } from '@yapyak/astro/integration';
 
-export default defineConfig({
-  integrations: [yapyak()],
-});
+export default defineConfig({ integrations: [yapyak()] });
 ```
 
 The integration registers two things: yapyak's compile-time Vite plugin (so `t()` calls get extracted from your `.astro` files) and a per-request middleware (so `getLocale()` resolves correctly during render).

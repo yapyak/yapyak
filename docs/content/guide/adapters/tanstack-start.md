@@ -43,9 +43,7 @@ In your start entry file:
 import { createStart } from '@tanstack/react-start';
 import { middleware } from '@yapyak/tanstack-start';
 
-export const startInstance = createStart(() => ({
-  requestMiddleware: [middleware],
-}));
+export const startInstance = createStart(() => ({ requestMiddleware: [middleware] }));
 ```
 
 If you have other request middleware, include them too — yapyak's adapter should run first so the locale is available to anything downstream:
@@ -55,9 +53,7 @@ import { createStart } from '@tanstack/react-start';
 import { middleware as yapyakMiddleware } from '@yapyak/tanstack-start';
 import { middleware as authMiddleware } from './auth';
 
-export const startInstance = createStart(() => ({
-  requestMiddleware: [yapyakMiddleware, authMiddleware],
-}));
+export const startInstance = createStart(() => ({ requestMiddleware: [yapyakMiddleware, authMiddleware] }));
 ```
 
 ## Setting `<html lang>`

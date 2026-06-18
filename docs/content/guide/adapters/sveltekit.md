@@ -126,9 +126,7 @@ export const actions: Actions = {
   setLanguage: async ({ request }) => {
     const data = await request.formData();
     const locale = data.get('locale');
-    if (typeof locale === 'string') {
-      setLocale(locale);
-    }
+    if (typeof locale === 'string') { setLocale(locale); }
     return { success: true };
   },
 };

@@ -31,9 +31,7 @@ The simplest framework-specific middleware wraps a request handler:
 ```ts
 import { withResponse } from 'yapyak/adapter';
 
-export const middleware = async (request: Request, next: () => Promise<Response>) => {
-  return withResponse(request, () => next());
-};
+export const middleware = async (request: Request, next: () => Promise<Response>) => { return withResponse(request, () => next()); };
 ```
 
 Plug it into whatever middleware interface your framework expects. Anything that reads `getLocale()` from inside `next()` sees the right value.
@@ -49,7 +47,10 @@ await withResponse(
   request,
   async () => {
     const result = await renderToFrameworkResult(request);
-    return result;  // { response: Response, meta: {...} }
+    return result;  // {
+      meta: {...},
+      response: Response,
+    }
   },
   (result) => result.response,  // tell yapyak where the Response lives
 );

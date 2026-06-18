@@ -32,9 +32,7 @@ import { defineConfig } from 'yapyak/config';
 import { openai } from '@yapyak/openai';
 
 export default defineConfig({
-  translator: openai({
-    apiKey: process.env.OPENAI_API_KEY,
-  }),
+  translator: openai({ apiKey: process.env.OPENAI_API_KEY }),
 });
 ```
 
@@ -43,11 +41,14 @@ With voice and glossary:
 ```ts
 translator: openai({
   apiKey: process.env.OPENAI_API_KEY,
+  glossary: {
+    Cart: {
+      sv: 'Korg',
+      de: 'Warenkorb',
+    },
+  },
   model: 'gpt-5-mini',
   voice: 'Concise and friendly',
-  glossary: {
-    Cart: { sv: 'Korg', de: 'Warenkorb' },
-  },
 }),
 ```
 

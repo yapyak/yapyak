@@ -32,9 +32,7 @@ import { defineConfig } from 'yapyak/config';
 import { gemini } from '@yapyak/gemini';
 
 export default defineConfig({
-  translator: gemini({
-    apiKey: process.env.GEMINI_API_KEY,
-  }),
+  translator: gemini({ apiKey: process.env.GEMINI_API_KEY }),
 });
 ```
 
@@ -43,11 +41,14 @@ With voice and glossary:
 ```ts
 translator: gemini({
   apiKey: process.env.GEMINI_API_KEY,
+  glossary: {
+    Cart: {
+      sv: 'Korg',
+      de: 'Warenkorb',
+    },
+  },
   model: 'gemini-2.5-flash',
   voice: 'Concise and friendly',
-  glossary: {
-    Cart: { sv: 'Korg', de: 'Warenkorb' },
-  },
 }),
 ```
 

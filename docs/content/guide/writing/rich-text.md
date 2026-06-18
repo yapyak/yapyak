@@ -171,11 +171,11 @@ import { parseRichText } from 'yapyak';
 const nodes = parseRichText(t('Read our <link>privacy policy</link>.'));
 // nodes is RichTextNode[]:
 // [
-//   { type: 'text', text: 'Read our ' },
+//   { text: 'Read our ', type: 'text' },
 //   { type: 'tag', name: 'link', children: [
-//     { type: 'text', text: 'privacy policy' }
+//     { text: 'privacy policy', type: 'text' }
 //   ]},
-//   { type: 'text', text: '.' }
+//   { text: '.', type: 'text' }
 // ]
 ```
 

@@ -90,16 +90,14 @@ The middleware reads the URL (or cookie) on the next request, sets the locale fo
 Underneath the framework binding, yapyak exports the raw store:
 
 ```ts
-import { getLocale, setLocale, locales, defaultLocale, subscribeLocale } from 'yapyak';
+import { defaultLocale, getLocale, locales, setLocale, subscribeLocale } from 'yapyak';
 
 getLocale();              // the current Locale
 setLocale('sv');          // switches the active locale
 locales;                  // the array of Locale values you've added
 defaultLocale;            // the fallback Locale from your config
 
-const unsubscribe = subscribeLocale((next) => {
-  console.log('Locale changed to', next);
-});
+const unsubscribe = subscribeLocale((next) => { console.log('Locale changed to', next); });
 unsubscribe();            // stops listening
 ```
 

@@ -84,9 +84,7 @@ Type guard for strings that are already canonical:
 import { isLocale } from 'yapyak';
 
 const input = readFromCookie();    // string
-if (isLocale(input)) {
-  setLocale(input);                // input narrowed to Locale
-}
+if (isLocale(input)) { setLocale(input);                // input narrowed to Locale }
 ```
 
 ### `parseLocale`

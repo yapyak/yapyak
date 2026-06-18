@@ -172,9 +172,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { yapyak } from '@yapyak/vite';
 
-export default defineConfig({
-  plugins: [react(), yapyak()],
-});
+export default defineConfig({ plugins: [react(), yapyak()] });
 ```
 {% /when %}
 
@@ -186,9 +184,7 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { yapyak } from '@yapyak/vite';
 
-export default defineConfig({
-  plugins: [vue(), yapyak()],
-});
+export default defineConfig({ plugins: [vue(), yapyak()] });
 ```
 {% /when %}
 
@@ -200,9 +196,7 @@ import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { yapyak } from '@yapyak/vite';
 
-export default defineConfig({
-  plugins: [svelte(), yapyak()],
-});
+export default defineConfig({ plugins: [svelte(), yapyak()] });
 ```
 {% /when %}
 
@@ -213,9 +207,7 @@ Add the yapyak integration to your `astro.config.ts`. It registers the Vite plug
 import { defineConfig } from 'astro/config';
 import { yapyak } from '@yapyak/astro/integration';
 
-export default defineConfig({
-  integrations: [yapyak()],
-});
+export default defineConfig({ integrations: [yapyak()] });
 ```
 {% /when %}
 
@@ -235,9 +227,7 @@ import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
   processors: [react()],
-  translator: anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-  }),
+  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),
 });
 ```
 {% /when %}
@@ -250,9 +240,7 @@ import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
   processors: [vue()],
-  translator: anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-  }),
+  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),
 });
 ```
 {% /when %}
@@ -265,9 +253,7 @@ import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
   processors: [svelte()],
-  translator: anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-  }),
+  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),
 });
 ```
 {% /when %}
@@ -281,9 +267,7 @@ import { anthropic } from '@yapyak/anthropic';
 export default defineConfig({
   persistence: 'url',
   processors: [astro()],
-  translator: anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-  }),
+  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),
 });
 ```
 {% /when %}
@@ -297,9 +281,7 @@ Drop the `translator` field if you skipped that package — it's optional. See [
 Tell TypeScript about the types yapyak generates so your editor knows the set of locales you've configured:
 
 ```json [tsconfig.json]
-{
-  "include": ["src", ".yapyak/types.d.ts"]
-}
+{ "include": ["src", ".yapyak/types.d.ts"] }
 ```
 
 And ignore yapyak's cache directory:

@@ -43,9 +43,7 @@ React Router v7 middleware is opt-in. Turn it on in `react-router.config.ts`:
 import type { Config } from '@react-router/dev/config';
 
 export default {
-  future: {
-    v8_middleware: true,
-  },
+  future: { v8_middleware: true },
 } satisfies Config;
 ```
 

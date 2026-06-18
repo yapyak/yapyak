@@ -32,9 +32,7 @@ import { defineConfig } from 'yapyak/config';
 import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
-  translator: anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-  }),
+  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),
 });
 ```
 
@@ -43,11 +41,17 @@ That's the minimum. A full setup with voice and glossary:
 ```ts
 translator: anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
-  voice: 'Concise and friendly',
   glossary: {
-    Cart: { sv: 'Korg', de: 'Warenkorb' },
-    Checkout: { sv: 'Kassa', de: 'Kasse' },
+    Cart: {
+      sv: 'Korg',
+      de: 'Warenkorb',
+    },
+    Checkout: {
+      sv: 'Kassa',
+      de: 'Kasse',
+    },
   },
+  voice: 'Concise and friendly',
 }),
 ```
 

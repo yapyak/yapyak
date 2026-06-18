@@ -39,15 +39,24 @@ You can pass any of `Intl.NumberFormat`'s decimal options — minimum/maximum fr
 For prices. `style: 'currency'` requires a `currency` field with an ISO 4217 code.
 
 ```ts
-format.number(199, { style: 'currency', currency: 'USD' });
+format.number(199, {
+  currency: 'USD',
+  style: 'currency',
+});
 // '$199.00'      in en-US
 // '199,00 US$'   in sv-SE
 
-format.number(199, { style: 'currency', currency: 'EUR' });
+format.number(199, {
+  currency: 'EUR',
+  style: 'currency',
+});
 // '€199.00'      in en-US
 // '199,00 €'     in fr-FR
 
-format.number(199, { style: 'currency', currency: 'SEK' });
+format.number(199, {
+  currency: 'SEK',
+  style: 'currency',
+});
 // 'SEK 199.00'   in en-US
 // '199,00 kr'    in sv-SE
 ```
@@ -56,10 +65,10 @@ Extra options on the currency branch:
 
 ```ts
 format.number(199, {
-  style: 'currency',
   currency: 'USD',
   currencyDisplay: 'narrowSymbol',  // 'symbol' | 'narrowSymbol' | 'code' | 'name'
   currencySign: 'accounting',       // 'standard' | 'accounting'
+  style: 'currency',
 });
 ```
 
@@ -77,13 +86,14 @@ For type-safe `currency` arguments, yapyak ships a `Currency` literal union cove
 import { isCurrency, format, type Currency } from 'yapyak';
 
 function setPrice(amount: number, currency: Currency) {
-  return format.number(amount, { style: 'currency', currency });
+  return format.number(amount, {
+    style: 'currency',
+    currency,
+  });
 }
 
 const code = readFromForm();        // string
-if (isCurrency(code)) {
-  setPrice(199, code);              // narrowed to Currency
-}
+if (isCurrency(code)) { setPrice(199, code);              // narrowed to Currency }
 ```
 
 Use `Currency` for typed props and parameters; use `isCurrency` to narrow user input before calling `setPrice`.
@@ -97,7 +107,10 @@ format.number(0.42, { style: 'percent' });
 // '42%'   in en-US
 // '42 %'  in sv-SE
 
-format.number(0.4256, { style: 'percent', maximumFractionDigits: 1 });
+format.number(0.4256, {
+  maximumFractionDigits: 1,
+  style: 'percent',
+});
 // '42.6%'
 ```
 
@@ -108,15 +121,25 @@ This always trips people up at least once. If your value is already in "percent 
 `style: 'unit'` formats with an ISO unit identifier. The `unit` field is required.
 
 ```ts
-format.number(5, { style: 'unit', unit: 'kilometer' });
+format.number(5, {
+  style: 'unit',
+  unit: 'kilometer',
+});
 // '5 km'             in en-US
 // '5 km'             in sv-SE
 
-format.number(5, { style: 'unit', unit: 'kilometer', unitDisplay: 'long' });
+format.number(5, {
+  style: 'unit',
+  unit: 'kilometer',
+  unitDisplay: 'long',
+});
 // '5 kilometers'     in en-US
 // '5 kilometer'      in sv-SE
 
-format.number(72, { style: 'unit', unit: 'mile-per-hour' });
+format.number(72, {
+  style: 'unit',
+  unit: 'mile-per-hour',
+});
 // '72 mph'           in en-US
 ```
 
