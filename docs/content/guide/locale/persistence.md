@@ -5,7 +5,7 @@ order: 3
 
 Without persistence, the active locale lives only for the current page session — close the tab and the choice is gone. yapyak ships four strategies for storing the user's pick somewhere it survives reloads: cookie, local storage, URL, or none.
 
-```ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({

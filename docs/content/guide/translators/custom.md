@@ -26,7 +26,7 @@ const myTranslator = createTranslator({
 
 Pass it to your config like any other translator:
 
-```ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({

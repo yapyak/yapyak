@@ -35,7 +35,7 @@ ollama pull llama3.1
 
 ## Configure
 
-```ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { ollama } from '@yapyak/ollama';
 
@@ -118,7 +118,7 @@ If you're using yapyak in a privacy-sensitive setting and the privacy claim matt
 
 A common pattern: use Ollama locally during development for fast iteration, but switch to a hosted provider in CI for higher quality. The translator is just a field in `yapyak.config.ts`, so you can branch on an environment variable:
 
-```ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { ollama } from '@yapyak/ollama';
 import { anthropic } from '@yapyak/anthropic';

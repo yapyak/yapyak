@@ -27,7 +27,7 @@ bun add @yapyak/openai
 
 ## Configure
 
-```ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { openai } from '@yapyak/openai';
 

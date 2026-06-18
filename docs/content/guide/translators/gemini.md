@@ -27,7 +27,7 @@ bun add @yapyak/gemini
 
 ## Configure
 
-```ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { gemini } from '@yapyak/gemini';
 

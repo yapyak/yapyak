@@ -27,7 +27,7 @@ bun add @yapyak/anthropic
 
 ## Configure
 
-```ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { anthropic } from '@yapyak/anthropic';
 
