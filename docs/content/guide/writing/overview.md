@@ -113,16 +113,4 @@ You'll use the plain form 95% of the time. The other two are there for the momen
 
 ## What's outside `t()`
 
-Some values aren't part of a translated message but still need to follow the active locale — a price in a card, a date in a timestamp, a list separator. For those, yapyak ships a [`format`](/guide/formatting/numbers) namespace built on `Intl`:
-
-```ts
-import { format, t } from 'yapyak';
-
-format.number(99, { currency: 'EUR', style: 'currency' });
-// '99,00 €' in sv-SE, '€99.00' in en-US
-
-format.dateTime(new Date(), { dateStyle: 'long' });
-// '17 juni 2026' in sv, 'June 17, 2026' in en
-```
-
-See [Formatting](/guide/formatting/numbers) for the rest.
+For values outside a `t()` call — prices, dates, list separators — yapyak ships a [`format`](/guide/formatting/overview) namespace built on `Intl`.

@@ -98,19 +98,7 @@ Glossary terms can pin specific translations. Voice can set tone. yapyak forward
 
 ## Bundled with code
 
-yapyak keeps translation lookup synchronous.
-
-The compiler bundles translations into the modules that use them, so the runtime only picks the right value for the active locale.
-
-```ts
-t('Your cart is empty')
-```
-
-compiles to:
-
-```ts
-_pick({ en: 'Your cart is empty', sv: 'Din kundvagn är tom' })
-```
+yapyak keeps translation lookup synchronous. The compiler bundles translations into the modules that use them, so the runtime only picks the right value for the active locale.
 
 Locale switching is immediate, with no locale file to fetch and no suspense or loading state to handle.
 
@@ -175,11 +163,3 @@ In English, the buttons fit comfortably in a dialog or on a mobile screen. In Ge
 The first button is much longer. That can break a dialog footer or a mobile layout.
 
 With live translations, you see this while the layout is still in front of you, not weeks later during QA.
-
-## What changes
-
-Translation becomes part of building the interface, not a separate step that happens later.
-
-Messages follow the code that uses them, and AI fills the stubs on save. Locale files stay in your project, and translations compile alongside the modules that need them. The running app updates as you work.
-
-yapyak is i18n that keeps up with the rest of your codebase.
