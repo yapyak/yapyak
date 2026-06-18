@@ -1,6 +1,6 @@
 ---
 title: Overrides
-order: 4
+order: 5
 ---
 
 By default, every `format.*` call renders for the active locale. When you need to format a value in a different locale on a one-off basis — a server-rendered receipt for a recipient whose preference isn't the request's locale, a side-by-side comparison view, an admin tool that previews how a price reads in every market — `format.in(locale)` scopes the formatter to a fixed locale for one expression.

@@ -1,0 +1,83 @@
+---
+title: Basics
+order: 1
+---
+
+yapyak ships a runtime `format` namespace backed by `Intl`. Every call uses the active locale automatically, and the options surface adds a small layer of type-safety on top of the platform API.
+
+```ts
+import { format } from 'yapyak';
+
+format.number(199, { style: 'currency', currency: 'EUR' });
+// '€199.00' in en-US, '199,00 €' in sv-SE
+
+format.dateTime(new Date(), { dateStyle: 'long' });
+// 'June 18, 2026' in en-US, '18 juni 2026' in sv-SE
+
+format.list(['apple', 'pear', 'orange']);
+// 'apple, pear, and orange' in en-US, 'apple, pear och orange' in sv-SE
+
+format.relativeTime(-1, 'day');
+// '1 day ago' in en-US, 'för 1 dag sedan' in sv-SE
+```
+
+Each method maps directly to an `Intl.*Format` class:
+
+| Method | Backed by |
+|---|---|
+| `format.number` | `Intl.NumberFormat` |
+| `format.dateTime` | `Intl.DateTimeFormat` |
+| `format.list` | `Intl.ListFormat` |
+| `format.relativeTime` | `Intl.RelativeTimeFormat` |
+
+## What it adds beyond `Intl`
+
+**Currency type-safety.** When `style: 'currency'`, the `currency` field is required and typed against ISO 4217:
+
+```ts
+format.number(199, { style: 'currency', currency: 'EUR' }); // ✓
+format.number(199, { style: 'currency' });                  // ✗ currency missing
+format.number(199, { style: 'currency', currency: 'XYZ' }); // ✗ not a real code
+```
+
+The `Currency` type is exported separately for passing through your own functions:
+
+```ts
+import type { Currency } from 'yapyak';
+
+function setPrice(amount: number, currency: Currency) {
+  return format.number(amount, { style: 'currency', currency });
+}
+```
+
+**Required fields per number style.** `format.number`'s options are a discriminated union over `style`. Pick `'percent'` and nothing else is required; pick `'unit'` and the `unit` field becomes mandatory:
+
+```ts
+format.number(0.42, { style: 'percent' });                 // ✓
+format.number(45, { style: 'unit', unit: 'kilometer' });   // ✓
+format.number(45, { style: 'unit' });                      // ✗ unit missing
+```
+
+**Graceful currency fallback.** A currency code unsupported by the host `Intl` doesn't throw — yapyak falls back to a `<value> <code>` rendering so older runtimes don't break your page.
+
+## Scoping to a different locale
+
+By default every `format.*` call uses the active locale. Use `format.in(locale)` to scope a call (or chain) to something else:
+
+```ts
+format.in('sv').number(200, { style: 'currency', currency: 'SEK' });
+// '200,00 kr' regardless of the active locale
+```
+
+The active locale is left untouched.
+
+## When to use `format` vs ICU placeholders
+
+Use `format` for values **outside** a translated message — a price on a card, a date in a timestamp, a list of tags. For values **inside** a `t()` call, prefer ICU placeholders (`{count, number, currency}`) — they live next to the translation and the compiler emits the same `Intl.*Format` machinery underneath.
+
+## See also
+
+- [Numbers](/guide/formatting/numbers) — currency, percent, unit styles
+- [Dates](/guide/formatting/dates) — date/time formatting and styles
+- [Lists](/guide/formatting/lists) — conjunctions, disjunctions
+- [Overrides](/guide/formatting/overrides) — locale chains for edge cases

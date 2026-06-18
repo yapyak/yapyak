@@ -117,32 +117,80 @@ Locale files are normal JSON. If you need to hand-edit a translation — correct
 
 ## What gets compiled
 
-The runtime cost of yapyak in production is one synchronous picker function. After compile, each `t()` call is rewritten to inline the locale data right where the call sits:
+After compile, each `t()` call is rewritten to pick the right locale at render time. The compiler deduplicates imports, catalogs, and factory references across the module so the bundle stays small even with many `t()` calls.
+
+A multi-locale source file:
+
+```ts
+import { t } from 'yapyak';
+
+t('Save');
+t('Save');
+t('Hi {name}', { name });
+t('Hi {name}', { name });
+```
+
+compiles to:
+
+```ts
+import {
+  pick as _pick,
+  literal as _literal,
+  placeholder as _placeholder,
+} from 'yapyak/internal';
+
+const _catalog_$0 = { en: 'Save', sv: 'Spara' };
+const _catalog_$1 = {
+  en: [_literal('Hi '), _placeholder('name')],
+  sv: [_literal('Hej '), _placeholder('name')],
+};
+
+_pick(_catalog_$0);
+_pick(_catalog_$0);
+_pick(_catalog_$1, { name });
+_pick(_catalog_$1, { name });
+```
+
+Three things happen:
+
+- **Factory imports are deduplicated** into a single `import` at module scope. Only the factories this module actually uses are imported — a module with just plain strings imports neither `_placeholder` nor `_literal`.
+- **Identical catalogs are shared.** Both `t('Save')` calls reference the same `_catalog_$0`; the catalog object is declared once.
+- **Vite code-splits these catalog objects** with the modules that contain them. A route that doesn't render a translation never downloads it.
+
+**Single-locale.** When only one locale ends up in the bundle — because that's the only one you've added, or because you've set [`fixedLocale`](/guide/getting-started/configuration#fixed-locale-builds) — the compiler skips `_pick`, the factory imports, and the catalog objects entirely:
 
 ```ts
 t('Save changes');
+// becomes: 'Spara ändringar'
+
+t('Hello {name}', { name });
+// becomes: `Hello ${name}`
 ```
 
-becomes:
+And in JSX, the call disappears into the surrounding markup:
+
+```tsx
+<p>{t('Welcome')}</p>
+// becomes: <p>Welcome</p>
+```
+
+The bundle ships with no i18n runtime at all.
+
+**Formatters use `Intl` directly.** A date, number, or list format compiles to a factory that calls the platform's `Intl` API at render — no ICU library is bundled:
 
 ```ts
-_pick({
-  en: 'Save changes',
-  sv: 'Spara ändringar',
-  es: 'Guardar cambios',
-});
+t('Posted on {date, date, long}', { date });
+// catalog entry: _date('date', 'long')
+// at render:     new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(date)
 ```
 
-For multi-locale bundles, Vite code-splits these locale objects along with the modules that contain them. A route that doesn't render the Save button never downloads the translations for it.
-
-For single-locale builds, yapyak goes further: it inlines the source literal directly and the picker is tree-shaken away.
+**Plurals and selects stay as runtime structures** because branch selection depends on the active locale and the parameter value:
 
 ```ts
-// single-locale build, locale=sv
-'Spara ändringar';
+t('{count, plural, one {# message} other {# messages}}', { count });
+// catalog entry: _plural('count', 'cardinal', { one: [...], other: [...] })
+// at render:     branch picked through Intl.PluralRules.select()
 ```
-
-The bundle ends up with no i18n runtime at all.
 
 ## How locale switching propagates
 
@@ -178,15 +226,19 @@ Source modules aren't recompiled in this case. Component state — open menus, f
 For `.astro` files, the page reloads instead. Astro doesn't run yapyak's runtime in the browser, so updates take the form of a fresh server render.
 {% /callout %}
 
-## Reuse
+## Translation safety
 
-yapyak keeps a copy of translations it has seen in `.yapyak/`. When you rename or move a source file, when you remove a component and add it back later, or when you copy markup to a new file, yapyak restores the existing translation under the new location.
+yapyak runs through four guarantees on every save to keep translations from being lost or overwritten silently.
 
-Reuse is based on exact match of the source message. yapyak doesn't guess that similar text means the same thing — close-but-not-identical strings are treated as new and get translated again.
+**The orphan cache.** Every translation yapyak has ever seen lives in `.yapyak/orphans.json`. Delete a component, add it back three months later, copy markup to a new file — the translations re-appear in `locales/<locale>.json` automatically. The cache has no expiration. Reuse is based on exact match of the source message; close-but-not-identical strings are treated as new.
 
-{% callout variant="info" %}
-When a source message changes in place, yapyak can either keep its existing translation or re-translate from scratch. The behavior is controlled by the `preserveTranslationsOnRename` option in `yapyak.config.ts`. See [Renames](/guide/advanced/renames) for the heuristics.
-{% /callout %}
+**Rename detection.** When you edit a source string in place (`'Save'` → `'Save changes'`), yapyak compares positions in the file to tell a rename apart from a delete-and-add, and preserves the existing translation under the new key. The behavior is controlled by [`preserveTranslationsOnRename`](/guide/getting-started/configuration#preservetranslationsonrename); see [Renames](/guide/advanced/renames) for the heuristics.
+
+**The invariant barrier.** Before any locale file is written, yapyak compares the new state against the existing one. If a write would clear a non-empty translation for a string still present in your source, the write is refused and yapyak surfaces the violation as an error instead of going through with it. There is no path where a still-used translation silently vanishes.
+
+**Atomic multi-file writes.** When yapyak updates several locale files from a single save, all of them are staged to temp files first and renamed into place only once every stage has succeeded. A crash, an SSD failure, or a Ctrl-C mid-write leaves your original locales untouched.
+
+The only path that re-translates an already-filled entry is `yapyak translate --force`. That's a deliberate escape hatch behind an explicit CLI flag.
 
 ## SSR
 

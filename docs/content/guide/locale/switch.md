@@ -1,6 +1,6 @@
 ---
 title: Switch
-order: 1
+order: 2
 ---
 
 There's one active locale at any moment. Reading it, changing it, and re-rendering on changes are all part of the runtime API. Your framework binding wraps `getLocale()` and `setLocale()` from `yapyak` in an idiomatic shape — see below for what that looks like in your stack.

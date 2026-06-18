@@ -7,7 +7,7 @@ yapyak is an i18n compiler built for the way code gets written today: rapidly, o
 
 It's a Vite plugin. Works with React, Vue, Svelte, and Astro. SSR is supported on Astro, React Router, SvelteKit, and TanStack Start.
 
-Four things make yapyak different from most i18n libraries. The same four things make it fit naturally into coding flows that involve an agent.
+Five things make yapyak different from most i18n libraries. The same five things make it fit naturally into coding flows that involve an agent.
 
 **The source string is the key.** No abstract identifiers, no namespace files. You write `t('Your cart is empty')` and that string is the key in every locale file. Interpolated messages use ICU MessageFormat — standard syntax, not a yapyak-specific dialect. An agent doesn't need to learn a parallel naming system to keep translations in sync.
 
@@ -16,6 +16,8 @@ Four things make yapyak different from most i18n libraries. The same four things
 **Your translations live in your repository.** Locale files, translation memory, and glossary all sit alongside your code, read from disk and committed to git. An agent editing the codebase sees them the same way it sees the rest of the project — no separate service to query, integrate with, or pay for.
 
 **ICU is type-checked live, with no build step.** Placeholders, plural branches, and select arms in your source literal turn into typed parameters via TypeScript's template literal types — write `'You have {count} messages'` and `count: number` is required in the editor, instantly. ICU is already a format LLMs write fluently; yapyak makes sure they get the details right.
+
+**Translations are safe to refactor.** When you rename a source string, move a file, or remove a component, yapyak preserves the existing translations and restores them when the source reappears. The compiler refuses to write a locale file in a state that would silently clear a translation still in use — so an agent's wrong move surfaces as a refused write, not a vanished paragraph of Swedish.
 
 ## Translations follow code
 

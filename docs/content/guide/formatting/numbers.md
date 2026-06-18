@@ -1,6 +1,6 @@
 ---
 title: Numbers
-order: 1
+order: 2
 ---
 
 Numbers, currencies, percentages, and units all live in `format.number()`. It's a thin wrapper over [`Intl.NumberFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat) that reads the active locale every time it's called, so a single component renders correctly for every reader.
