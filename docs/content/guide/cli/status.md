@@ -73,3 +73,12 @@ A few things `status` deliberately leaves out:
 ```
 
 The `status` step gives a quick visual of where coverage stands; `check` is what fails the build if something's missing.
+
+## Exit codes and conventions
+
+`status` exits non-zero (`1`) when any translations are missing, zero otherwise. Same for `--json`. If you want a soft check that always exits zero, parse the JSON and decide yourself.
+
+All yapyak CLI commands share two conventions:
+
+- **Flag values can use `=`.** `--write`, `--write=true`, `--write=yes`, `--write=false`, `--write=0`, and `--write=off` are all valid for boolean flags. Useful when piping shell variables: `pnpm yapyak clean --write=$SHOULD_WRITE`.
+- **Color output respects the environment.** Set `NO_COLOR` to disable color anywhere; set `CI` (most CI runners do automatically) and yapyak strips color too.

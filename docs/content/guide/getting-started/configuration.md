@@ -141,6 +141,12 @@ processors: [react({ rsc: true })],
 
 With `rsc: true`, only files marked `'use client'` get the locale subscription hook injected. Server components still have their `t()` calls rewritten, but they read the request-bound locale from the SSR adapter instead of subscribing to a store.
 
+#### Custom processors
+
+For file formats yapyak doesn't ship a processor for, build your own with `createProcessor` from `yapyak/processor`. The factory accepts the file extensions to claim, a fragment parser that splits your format into TypeScript-readable pieces, the runtime module yapyak should wire into compiled output, and an optional `skipHmrCallback: true` for formats whose compiler can't safely embed Vite HMR callbacks at module scope (Astro's `.astro` files use this).
+
+`yapyak/processor` also exports `offsetToOriginalPosition` and `rangeFromOffsets` — utilities for converting byte offsets back to `{ line, column }` positions when emitting diagnostics from your processor's fragment parser.
+
 ## Translator
 
 Hook up a model to fill in missing translations automatically. yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama; any model with a chat completion endpoint is one short [custom translator](/guide/translators/custom) away.

@@ -90,21 +90,17 @@ The middleware reads the URL (or cookie) on the next request, sets the locale fo
 Underneath the framework binding, yapyak exports the raw store:
 
 ```ts
-import { defaultLocale, getLocale, locales, setLocale, subscribeLocale } from 'yapyak';
+import { defaultLocale, getLocale, locales, setLocale } from 'yapyak';
 
 getLocale();              // the current Locale
 setLocale('sv');          // switches the active locale
 locales;                  // the array of Locale values you've added
 defaultLocale;            // the fallback Locale from your config
-
-const unsubscribe = subscribeLocale((next) => { console.log('Locale changed to', next); });
-unsubscribe();            // stops listening
 ```
 
 You'll reach for these directly when:
 
 - Building a locale switcher that lives outside the framework binding (a vanilla script tag, a compile-time helper)
-- Reacting to locale changes from non-component code (analytics, logging, a global event bus)
 - Reading the `locales` array to render a dropdown of every available language
 
 For everything inside a component, prefer the framework binding above — it wires reactivity for you and survives SSR correctly.

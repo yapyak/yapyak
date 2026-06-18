@@ -72,7 +72,7 @@ Server-side persistence writes (a `setLocale()` call inside a request handler) a
 
 ## The processor side
 
-Every framework needs a [processor](/guide/getting-started/configuration#processors) registered in `yapyak.config.ts` so yapyak knows how to scan source files for `t()` calls. For TypeScript/JavaScript-only projects, the built-in parser handles `.ts`/`.tsx` and you don't need to register anything. For frameworks with their own file format, write a [custom processor](/guide/getting-started/installation#a-different-framework) with `createProcessor` from `yapyak/processor`.
+Every framework needs a [processor](/guide/getting-started/configuration#processors) registered in `yapyak.config.ts` so yapyak knows how to scan source files for `t()` calls. For TypeScript/JavaScript-only projects, the built-in parser handles `.ts`/`.tsx` and you don't need to register anything. For frameworks with their own file format, write a [custom processor](/guide/getting-started/configuration#custom-processors) with `createProcessor` from `yapyak/processor`.
 
 ## What the shipped adapters do
 

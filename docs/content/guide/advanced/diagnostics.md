@@ -206,7 +206,7 @@ The runtime is loaded but the build-tool plugin isn't. Add `yapyak()` to your `v
 
 ### `YAP0027` — Locale listener threw
 
-A subscriber registered with `subscribeLocale()` threw an exception during a locale change. yapyak continued with the remaining subscribers; check the message for the failing subscriber.
+A locale-change subscriber threw an exception. yapyak continued with the remaining subscribers; check the message for the failing one.
 
 ### `YAP0030` — Forced locale invalid
 
