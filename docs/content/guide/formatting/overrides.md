@@ -3,7 +3,7 @@ title: Overrides
 order: 5
 ---
 
-By default, every `format.*` call renders for the active locale. When you need to format a value in a different locale on a one-off basis — a server-rendered receipt for a recipient whose preference isn't the request's locale, a side-by-side comparison view, an admin tool that previews how a price reads in every market — `format.in(locale)` scopes the formatter to a fixed locale for one expression.
+By default, every `format.*` call renders for the active locale. When you need to format a value in a different locale on a one-off basis, `format.in(locale)` scopes the formatter to a fixed locale for one expression.
 
 ```ts
 import { format } from 'yapyak';
@@ -42,7 +42,7 @@ Unlike the active-locale `format`, a `format.in(locale)` call doesn't subscribe 
 
 ## Composing with `t.in()`
 
-When you want both — a translated message and locale-aware values inside it, both pinned to a non-active locale — combine [`t.in()`](/guide/writing/overrides) with `format.in()`:
+When you want both, combine [`t.in()`](/guide/writing/overrides) with `format.in()`:
 
 ```ts
 const balance = format.in('sv').number(199, { style: 'currency', currency: 'SEK' });

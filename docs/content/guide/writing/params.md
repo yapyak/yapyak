@@ -3,7 +3,7 @@ title: Params
 order: 2
 ---
 
-When a message contains values that change at runtime — a name, a count, a price — you write them as named placeholders in the source string and pass them in as a second argument.
+When a message contains values that change at runtime, you write them as named placeholders in the source string and pass them in as a second argument.
 
 ```ts
 t('Hi {name}', { name: 'Ada' });

@@ -3,7 +3,7 @@ title: Custom
 order: 6
 ---
 
-If none of the shipped translators fit — a self-hosted model, a translation service that isn't OpenAI-compatible, an internal API that wraps multiple providers — you can build your own with `createTranslator`. The interface is a single function: take a batch of source strings and target locales, return the translations.
+If none of the shipped translators fit, you can build your own with `createTranslator`. The interface is a single function: take a batch of source strings and target locales, return the translations.
 
 ## The shape
 

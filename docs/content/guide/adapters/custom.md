@@ -3,7 +3,7 @@ title: Custom
 order: 6
 ---
 
-If your project is on a Vite-based SSR framework yapyak doesn't ship an adapter for — a self-built server, an experimental framework, anything that doesn't match the shipped four — you can wire the per-request locale binding yourself with `withResponse()`. It's a single function from `yapyak/adapter`, and the shipped adapters are thin wrappers around it.
+If your project is on a Vite-based SSR framework yapyak doesn't ship an adapter for, you can wire the per-request locale binding yourself with `withResponse()`. It's a single function from `yapyak/adapter`, and the shipped adapters are thin wrappers around it.
 
 ## The function
 

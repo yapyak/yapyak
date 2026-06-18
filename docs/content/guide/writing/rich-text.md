@@ -163,7 +163,7 @@ The reverse direction is checked too: if your handler list has a key the source 
 
 ## Working with the parsed nodes directly
 
-The component covers the common case. If you need to walk the structure yourself — to render into a non-DOM target, build a server-rendered string outside of a component, or filter the nodes — yapyak exports the underlying parser:
+The component covers the common case. If you need to walk the structure yourself, yapyak exports the underlying parser:
 
 ```ts
 import { parseRichText } from 'yapyak';

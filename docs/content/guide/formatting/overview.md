@@ -73,4 +73,4 @@ The active locale is left untouched.
 
 ## When to use `format` vs ICU placeholders
 
-Use `format` for values **outside** a translated message — a price on a card, a date in a timestamp, a list of tags. For values **inside** a `t()` call, prefer ICU placeholders (`{count, number, currency}`) — they live next to the translation and the compiler emits the same `Intl.*Format` machinery underneath.
+Use `format` for values **outside** a translated message. For values **inside** a `t()` call, prefer ICU placeholders (`{count, number, currency}`) — they live next to the translation and the compiler emits the same `Intl.*Format` machinery underneath.

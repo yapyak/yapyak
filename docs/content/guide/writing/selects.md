@@ -3,7 +3,7 @@ title: Selects
 order: 4
 ---
 
-`select` picks between branches based on a string value. It's the counterpart to [`plural`](/guide/writing/plurals), which switches on a number. Use `select` whenever the choice is categorical — a status, a tier, a gender, a role — and the translation needs to read differently for each.
+`select` picks between branches based on a string value. It's the counterpart to [`plural`](/guide/writing/plurals), which switches on a number. Use `select` whenever the choice is categorical and the translation needs to read differently for each.
 
 ```ts
 t('{role, select, admin {Admin panel} editor {Editor view} other {Reader view}}', {
