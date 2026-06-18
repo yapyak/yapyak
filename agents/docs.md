@@ -62,6 +62,10 @@ These terms are locked. Don't substitute:
 
 `per-request` is hyphenated as an adjective ("a per-request locale"), unhyphenated as an adverb ("scoped per request").
 
+### Locale codes in `{% output %}` examples
+
+Use the short form (`en`, `sv`, `fr`, `de`, `ja`, `ar`, …), not the regional form (`en-US`, `sv-SE`). Locale variance in formatting examples doesn't depend on region — the short code is the right level of detail and keeps the docs consistent. The regional form is appropriate only when the example specifically demonstrates a regional difference (e.g. `en-US` vs `en-GB` date formats), which is rare.
+
 ### Headings
 
 Short, factual nouns. Examples: `Messages`, `Context`, `ICU`, `Rich text`, `Bundles`, `Files`, `SSR`, `Save loop`, `Refactors`.
@@ -77,7 +81,17 @@ One thesis per section. If a section has two, split it.
 - Sort object properties alphabetically. Exception: config files (`yapyak.config.ts`, `vite.config.ts`) keep author-intended order.
 - ICU strings inside `t()` literals are not object literals — never edit or sort the content of `{count, plural, ...}`.
 - JSX attribute expressions `attr={expr}` are not object literals — leave them as-is.
-- Locale-file JSON is always path-nested: `{ "path/to/file.tsx": { "key": "value" } }`. Never flatten the path away.
+- Locale-file JSON is always path-nested AND fully expanded — the inner `{ "key": "value" }` object always sits on its own lines, never on the same line as the path key:
+
+  ```json
+  {
+    "src/components/empty-cart.tsx": {
+      "Your cart is empty": "Din kundvagn är tom"
+    }
+  }
+  ```
+
+  Never collapse to `{ "src/...": { "Key": "Value" } }`. Never flatten the path away. The single-property-collapse rule does NOT apply to locale files — every translation key gets its own line under its source-path key.
 - Prefer `ts` for API demonstrations. Use the framework-specific language (`tsx`, `vue`, `svelte`, `astro`) only when the example is a component.
 - **Blank line between every top-level statement.** `const options = ...;` followed by `t('Choose one of {options}.', { options });` always has a blank line between them. Same for parallel declarations (`const claude = ...;` / `const gpt = ...;`). Same for repeated demo calls (`t('Save'); t('Save');`). The only exemption is consecutive `import`/`export` lines, which follow standard JS convention and stack without blanks.
 

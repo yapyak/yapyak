@@ -98,15 +98,16 @@ export default function Root() {
 
 `useLocale()` reads the server-bound value during SSR and the client-side store after hydration, so the attribute is correct in both phases. No `syncHtmlLang` setting needed — the component re-renders on locale changes anyway.
 
-## Persistence
+## Configure yapyak
 
-For server-side cookie reads to work, configure `persistence: 'cookie'` in `yapyak.config.ts`. Without it, the request-bound locale falls back to `defaultLocale` on every request — or to [`Accept-Language`](/guide/getting-started/configuration#detectacceptlanguage) detection if you've enabled `detectAcceptLanguage: true`.
+React Router projects keep source code under `app/`, not `src/`. Override yapyak's default `include` so it scans the right folder. Add `persistence: 'cookie'` so the middleware can read the locale on each request — without it, the request-bound locale falls back to `defaultLocale` (or to [`Accept-Language`](/guide/getting-started/configuration#detectacceptlanguage) detection if you've enabled `detectAcceptLanguage: true`).
 
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
+  include: ['app'],
   persistence: 'cookie',
   processors: [react()],
 });

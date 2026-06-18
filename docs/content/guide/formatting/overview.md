@@ -15,8 +15,8 @@ format.number(199, {
 ```
 
 {% output %}
-en-US: '€199.00'
-sv-SE: '199,00 €'
+en: '€199.00'
+sv: '199,00 €'
 {% /output %}
 
 ```ts
@@ -24,8 +24,8 @@ format.dateTime(new Date(), { dateStyle: 'long' });
 ```
 
 {% output %}
-en-US: 'June 18, 2026'
-sv-SE: '18 juni 2026'
+en: 'June 18, 2026'
+sv: '18 juni 2026'
 {% /output %}
 
 ```ts
@@ -33,8 +33,8 @@ format.list(['apple', 'pear', 'orange']);
 ```
 
 {% output %}
-en-US: 'apple, pear, and orange'
-sv-SE: 'apple, pear och orange'
+en: 'apple, pear, and orange'
+sv: 'apple, pear och orange'
 {% /output %}
 
 ```ts
@@ -42,8 +42,8 @@ format.relativeTime(-1, 'day');
 ```
 
 {% output %}
-en-US: '1 day ago'
-sv-SE: 'för 1 dag sedan'
+en: '1 day ago'
+sv: 'för 1 dag sedan'
 {% /output %}
 
 Each method maps directly to an `Intl.*Format` class:

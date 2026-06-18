@@ -111,7 +111,9 @@ Locale files live in your repository, one per locale, scoped by the source file 
 
 ```json [locales/sv.json]
 {
-  "src/components/save-button.tsx": { "Save changes": "Spara ändringar" }
+  "src/components/save-button.tsx": {
+    "Save changes": "Spara ändringar"
+  }
 }
 ```
 

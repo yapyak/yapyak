@@ -12,9 +12,9 @@ format.list(['apple', 'pear', 'orange']);
 ```
 
 {% output %}
-en-US: 'apple, pear, and orange'
-sv-SE: 'apple, pear och orange'
-fr-FR: 'apple, pear et orange'
+en: 'apple, pear, and orange'
+sv: 'apple, pear och orange'
+fr: 'apple, pear et orange'
 {% /output %}
 
 It's a thin wrapper over [`Intl.ListFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat), reading the active locale on every call. Any option from `Intl.ListFormat` works.
@@ -34,8 +34,8 @@ format.list(features);
 ```
 
 {% output %}
-en-US: 'Pull requests, Issues, and Discussions'
-sv-SE: 'Pull requests, Issues och Discussions'
+en: 'Pull requests, Issues, and Discussions'
+sv: 'Pull requests, Issues och Discussions'
 {% /output %}
 
 Each item passes through `t()` first to become locale-aware text. Then `format.list()` joins them in the right way for the active locale. The two layers compose without anyone having to think about it.
@@ -51,7 +51,7 @@ t('Choose one of {options}.', { options });
 ```
 
 {% output %}
-en-US: 'Choose one of email, SMS, and push.'
+en: 'Choose one of email, SMS, and push.'
 {% /output %}
 
 ICU MessageFormat has no list sub-format, so this is the path.

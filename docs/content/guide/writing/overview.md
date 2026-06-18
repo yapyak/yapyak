@@ -71,7 +71,9 @@ The English (or whatever your `defaultLocale` is) text you pass to `t()` is what
 
 ```json [locales/sv.json]
 {
-  "src/components/save-button.tsx": { "Save changes": "Spara ändringar" }
+  "src/components/save-button.tsx": {
+    "Save changes": "Spara ändringar"
+  }
 }
 ```
 
@@ -106,8 +108,6 @@ For everything else, `t()` is a `string`. You can interpolate it, pass it as a p
 | `t(source, params)` | Translate with placeholder values | [Params](/guide/writing/params) |
 | `t.as(context, source)` | Disambiguate identical sources with different meanings | [Homonyms](/guide/writing/homonyms) |
 | `t.in(locale, source)` | Force a specific locale for one call | [Overrides](/guide/writing/overrides) |
-
-You'll use the plain form 95% of the time. The other two are there for the moments when the simple model isn't enough.
 
 ## What's outside `t()`
 

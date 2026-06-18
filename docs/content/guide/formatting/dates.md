@@ -12,9 +12,9 @@ format.dateTime(new Date(), { dateStyle: 'long' });
 ```
 
 {% output %}
-en-US: 'June 17, 2026'
-sv-SE: '17 juni 2026'
-de-DE: '17. Juni 2026'
+en: 'June 17, 2026'
+sv: '17 juni 2026'
+de: '17. Juni 2026'
 {% /output %}
 
 ## Absolute date and time
@@ -28,7 +28,7 @@ format.dateTime(new Date(), { dateStyle: 'short' });
 ```
 
 {% output %}
-en-US: '6/17/26'
+en: '6/17/26'
 {% /output %}
 
 ```ts
@@ -36,7 +36,7 @@ format.dateTime(new Date(), { dateStyle: 'medium' });
 ```
 
 {% output %}
-en-US: 'Jun 17, 2026'
+en: 'Jun 17, 2026'
 {% /output %}
 
 ```ts
@@ -44,7 +44,7 @@ format.dateTime(new Date(), { dateStyle: 'long' });
 ```
 
 {% output %}
-en-US: 'June 17, 2026'
+en: 'June 17, 2026'
 {% /output %}
 
 ```ts
@@ -52,7 +52,7 @@ format.dateTime(new Date(), { dateStyle: 'full' });
 ```
 
 {% output %}
-en-US: 'Wednesday, June 17, 2026'
+en: 'Wednesday, June 17, 2026'
 {% /output %}
 
 ### Time only
@@ -62,8 +62,8 @@ format.dateTime(new Date(), { timeStyle: 'short' });
 ```
 
 {% output %}
-en-US: '4:30 PM'
-sv-SE: '16:30'
+en: '4:30 PM'
+sv: '16:30'
 {% /output %}
 
 ```ts
@@ -71,7 +71,7 @@ format.dateTime(new Date(), { timeStyle: 'full' });
 ```
 
 {% output %}
-en-US: '4:30:15 PM Central European Summer Time'
+en: '4:30:15 PM Central European Summer Time'
 {% /output %}
 
 ### Date and time together
@@ -84,7 +84,7 @@ format.dateTime(new Date(), {
 ```
 
 {% output %}
-en-US: 'Jun 17, 2026, 4:30 PM'
+en: 'Jun 17, 2026, 4:30 PM'
 {% /output %}
 
 ### Finer control with field options
@@ -103,7 +103,7 @@ format.dateTime(new Date(), {
 ```
 
 {% output %}
-en-US: '06/17/2026, 16:30'
+en: '06/17/2026, 16:30'
 {% /output %}
 
 Any option from [`Intl.DateTimeFormatOptions`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#parameters) works (minus `localeMatcher`, which yapyak manages). `timeZone`, `weekday`, `era`, `dayPeriod`, fractional seconds — they all pass through.
@@ -117,8 +117,8 @@ format.relativeTime(-1, 'day');
 ```
 
 {% output %}
-en-US: '1 day ago'
-sv-SE: 'för 1 dag sedan'
+en: '1 day ago'
+sv: 'för 1 dag sedan'
 {% /output %}
 
 ```ts
@@ -126,8 +126,8 @@ format.relativeTime(3, 'hour');
 ```
 
 {% output %}
-en-US: 'in 3 hours'
-sv-SE: 'om 3 timmar'
+en: 'in 3 hours'
+sv: 'om 3 timmar'
 {% /output %}
 
 ### Auto-replace common values with words
@@ -139,8 +139,8 @@ format.relativeTime(-1, 'day', { numeric: 'auto' });
 ```
 
 {% output %}
-en-US: 'yesterday'
-sv-SE: 'igår'
+en: 'yesterday'
+sv: 'igår'
 {% /output %}
 
 ```ts
@@ -148,7 +148,7 @@ format.relativeTime(0, 'day', { numeric: 'auto' });
 ```
 
 {% output %}
-en-US: 'today'
+en: 'today'
 {% /output %}
 
 ```ts
@@ -156,30 +156,10 @@ format.relativeTime(1, 'day', { numeric: 'auto' });
 ```
 
 {% output %}
-en-US: 'tomorrow'
+en: 'tomorrow'
 {% /output %}
 
 For offsets the locale doesn't have a special word for, `numeric: 'auto'` falls back to the numeric phrase.
-
-### Units
-
-Pick the largest unit whose magnitude is comfortable for the offset — "yesterday" reads better than "−24 hours ago". See [`Intl.RelativeTimeFormat` units](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/RelativeTimeFormat/format#unit) for the accepted values.
-
-```ts
-const elapsed = Date.now() - timestamp;
-
-const minutes = Math.round(elapsed / 60_000);
-
-if (minutes < 60) {
-  return format.relativeTime(-minutes, 'minute', { numeric: 'auto' });
-} else if (minutes < 60 * 24) {
-  return format.relativeTime(-Math.round(minutes / 60), 'hour', { numeric: 'auto' });
-} else {
-  return format.relativeTime(-Math.round(minutes / 1440), 'day', { numeric: 'auto' });
-}
-```
-
-This pattern — a small "pick the unit" helper around `format.relativeTime` — is what most apps end up with. yapyak doesn't ship one because the right thresholds depend on your context: a chat app and an annual-report viewer want different boundaries.
 
 ## Inside a `t()` message
 

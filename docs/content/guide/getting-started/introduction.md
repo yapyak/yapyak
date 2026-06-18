@@ -35,7 +35,9 @@ When you save, yapyak adds the message to your locale files as an empty stub. Th
 
 ```json [locales/sv.json]
 {
-  "src/components/empty-cart.tsx": { "Your cart is empty": "" }
+  "src/components/empty-cart.tsx": {
+    "Your cart is empty": ""
+  }
 }
 ```
 
@@ -68,7 +70,9 @@ When you save, yapyak collects new messages, sends them to the provider with the
 
 ```json [locales/sv.json]
 {
-  "src/components/empty-cart.tsx": { "Your cart is empty": "Din kundvagn är tom" }
+  "src/components/empty-cart.tsx": {
+    "Your cart is empty": "Din kundvagn är tom"
+  }
 }
 ```
 
