@@ -3,7 +3,7 @@ title: Switch
 order: 1
 ---
 
-There's one active locale at any moment. Reading it, changing it, and re-rendering on changes are all part of the runtime API. Each framework wraps the same underlying store in idiomatic shape — a hook in React, a ref in Vue, a runed object in Svelte. Underneath, the same `getLocale()` and `setLocale()` from `yapyak` are doing the work.
+There's one active locale at any moment. Reading it, changing it, and re-rendering on changes are all part of the runtime API. Your framework binding wraps `getLocale()` and `setLocale()` from `yapyak` in an idiomatic shape — see below for what that looks like in your stack.
 
 ## The framework binding
 

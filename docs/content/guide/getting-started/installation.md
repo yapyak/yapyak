@@ -176,8 +176,6 @@ export default defineConfig({
   plugins: [react(), yapyak()],
 });
 ```
-
-Position in the `plugins` array doesn't matter — yapyak runs first regardless.
 {% /when %}
 
 {% when value="vue" %}
@@ -192,8 +190,6 @@ export default defineConfig({
   plugins: [vue(), yapyak()],
 });
 ```
-
-Position in the `plugins` array doesn't matter — yapyak runs first regardless.
 {% /when %}
 
 {% when value="svelte" %}
@@ -208,8 +204,6 @@ export default defineConfig({
   plugins: [svelte(), yapyak()],
 });
 ```
-
-Position in the `plugins` array doesn't matter — yapyak runs first regardless.
 {% /when %}
 
 {% when value="astro" %}

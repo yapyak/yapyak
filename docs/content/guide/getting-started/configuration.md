@@ -9,18 +9,33 @@ This page documents every field. Read it once when you set up a project, then di
 
 ## Quick reference
 
-```ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
-  processors: [/* ... */],      // framework processors
-  translator: /* ... */,        // optional translator
-  persistence: 'cookie',        // how the active locale is stored
-  // ... and a few more, covered below
+  // Source files
+  include: ['src'],                       // patterns to scan
+  exclude: [/* ... */],                   // patterns to skip (defaults cover tests, .d.ts, stories, gen)
+  processors: [/* ... */],                // framework processors
+
+  // Locales
+  defaultLocale: 'en',                    // source language
+  localesDir: 'locales',                  // where locale JSON files live
+
+  // Translator
+  translator: /* ... */,                  // optional LLM
+  examples: 5,                            // in-context style examples per request
+  autoTranslateThreshold: 20,             // skip auto-translate above this many new strings on save
+  preserveTranslationsOnRename: true,     // keep existing translations on source edits
+
+  // Runtime
+  persistence: 'none',                    // 'none' | 'cookie' | 'url' | 'local-storage'
+  syncHtmlLang: false,                    // sync <html lang> on locale change
+  detectAcceptLanguage: false,            // detect locale from Accept-Language header
 });
 ```
 
-The full type lives in `yapyak/config`. Your editor will autocomplete every option.
+Every field is optional — the values above are the defaults. Each field is documented in detail below. The full type lives in `yapyak/config`, and your editor will autocomplete every option.
 
 ## Locales
 
