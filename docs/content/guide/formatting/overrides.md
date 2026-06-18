@@ -54,21 +54,3 @@ For everything else, the active locale is what you want — let the regular `for
 
 Unlike the active-locale `format`, a `format.in(locale)` call doesn't subscribe to anything. The result is computed once and stays fixed. If the user switches locale, components that called `format.in('sv').number(...)` keep showing the Swedish format — which is exactly the point, but worth keeping in mind when picking between `format.number()` (active locale, reactive) and `format.in('sv').number()` (fixed locale, static).
 
-## Composing with `t.in()`
-
-When you want both, combine [`t.in()`](/guide/writing/overrides) with `format.in()`:
-
-```ts
-const balance = format.in('sv').number(199, {
-  currency: 'SEK',
-  style: 'currency',
-});
-
-t.in('sv', 'Your balance is {balance}', { balance });
-```
-
-{% output %}
-'Ditt saldo är 199,00 kr'
-{% /output %}
-
-This is the pattern for emails, server-rendered preview cards, and other rendering moments that need a fully-fixed locale across all the text and all the numbers.
