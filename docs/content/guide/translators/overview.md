@@ -3,7 +3,7 @@ title: Overview
 order: 1
 ---
 
-A translator is what fills the empty stubs in your locale files. When yapyak finds a new `t('…')` call on save, it batches the missing translations and asks your configured translator for them. The translator is a function that takes a list of source strings and target locales and returns the translations.
+A translator is what fills the empty stubs in your locale files. When yapyak finds a new `t()` call on save, it batches the missing translations and asks your configured translator for them. The translator is a function that takes a list of source strings and target locales and returns the translations.
 
 yapyak ships four ready-made translators that wrap an model provider's API: [Anthropic](/guide/translators/anthropic), [OpenAI](/guide/translators/openai), [Gemini](/guide/translators/gemini), and [Ollama](/guide/translators/ollama). A [custom translator](/guide/translators/custom) takes a short function for everything else.
 
@@ -91,7 +91,7 @@ Call-site context is sent over the same request as the source string. It goes fr
 
 The translator runs in two situations:
 
-**During development**, on save. When you write a new `t('…')` call, yapyak collects the missing strings, batches them, and calls your translator. The result is written back to your locale files; HMR refreshes the rendered text. The whole loop usually takes a few seconds.
+**During development**, on save. When you write a new `t()` call, yapyak collects the missing strings, batches them, and calls your translator. The result is written back to your locale files; HMR refreshes the rendered text. The whole loop usually takes a few seconds.
 
 A guardrail kicks in for large saves: when a single save adds more than [`autoTranslateThreshold`](/guide/getting-started/configuration#autotranslatethreshold) strings (default 20), yapyak holds off on auto-translating and leaves the stubs empty. You run [`yapyak translate`](/guide/cli/translate) when you're ready — useful for big refactors or agent-generated changes where you'd rather review before spending tokens.
 

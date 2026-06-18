@@ -18,10 +18,10 @@ format.in('ja').dateTime(new Date(), { dateStyle: 'long' });
 `format.in(locale)` returns a `Format` value with the same methods as the top-level `format`. You chain whatever you need:
 
 ```ts
-format.in('sv').number(...);
-format.in('sv').dateTime(...);
-format.in('sv').list(...);
-format.in('sv').relativeTime(...);
+format.in('sv').number(value);
+format.in('sv').dateTime(date);
+format.in('sv').list(items);
+format.in('sv').relativeTime(offset, unit);
 ```
 
 The `locale` argument is typed against your [`Locale`](/guide/getting-started/installation) union, so an unknown code is a compile-time error.

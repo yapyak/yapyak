@@ -6,8 +6,9 @@ export default defineConfig({
       'vite',
     ],
   },
-  entry: [
-    'src/index.ts',
-    'src/vite.ts',
-  ],
+  entry: {
+    'extract-worker': 'src/extract/typedoc/extract-worker.ts',
+    index: 'src/index.ts',
+    vite: 'src/vite.ts',
+  },
 });
