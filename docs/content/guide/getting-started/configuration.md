@@ -3,7 +3,7 @@ title: Configuration
 order: 3
 ---
 
-`yapyak.config.ts` is yapyak's central configuration. It tells the build which files to scan, how to translate empty stubs, and how the runtime should behave. The set of locales your app ships isn't a config field — it comes from the JSON files in your [`localesDir`](#localesdir). Every config field is optional — yapyak has defaults for everything — but you'll set a handful explicitly in any real project.
+`yapyak.config.ts` is where you configure yapyak. Every field is optional.
 
 ## Quick reference
 
@@ -18,11 +18,11 @@ export default defineConfig({
 
   // Locales
   defaultLocale: 'en',                    // source language
-  localesDir: 'locales',                  // where locale file files live
+  localesDir: 'locales',                  // where locale files live
 
   // Translator
   translator: /* ... */,                  // optional model
-  examples: 5,                            // in-context style examples per-request
+  examples: 5,                            // in-context style examples per request
   autoTranslateThreshold: 20,             // skip auto-translate above this many new strings on save
   preserveTranslationsOnRename: true,     // keep existing translations on source edits
 
@@ -143,7 +143,7 @@ With `rsc: true`, only files marked `'use client'` get the locale subscription h
 
 ## Translator
 
-Hook up an model to fill in missing translations automatically. yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama; any model with a chat completion endpoint is one short [custom translator](/guide/translators/custom) away.
+Hook up a model to fill in missing translations automatically. yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama; any model with a chat completion endpoint is one short [custom translator](/guide/translators/custom) away.
 
 ### `translator`
 
@@ -238,7 +238,7 @@ Useful for first-visit defaulting. The detected locale is matched against your c
 
 ### `localesDir`
 
-Where yapyak reads and writes locale file files. Relative to the project root.
+Where yapyak reads and writes locale files. Relative to the project root.
 
 ```ts
 localesDir: 'locales',           // default

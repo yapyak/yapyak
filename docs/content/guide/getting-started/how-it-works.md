@@ -11,7 +11,7 @@ When you save a source file, yapyak runs through six steps:
 
 1. **Extract.** The right processor parses the file (built-in for `.ts` and `.tsx`, framework-specific for `.vue`, `.svelte`, and `.astro`) and finds the `t()` calls inside.
 2. **Validate.** Every call is checked against its source: placeholders match the arguments, plural branches are spelled correctly, the message is a static literal.
-3. **Reconcile.** New messages get added to your locale file files as empty stubs. Renamed or moved files keep their translations.
+3. **Reconcile.** New messages get added to your locale files as empty stubs. Renamed or moved files keep their translations.
 4. **Translate.** If a translator is configured, the new stubs are batched and sent to your provider along with their call-site context.
 5. **Compile.** The `t()` calls are rewritten into synchronous `_pick()` calls that hold the locale values for that module.
 6. **Hot-replace.** Vite pushes the new module to the browser, and the rendered text updates in place.
@@ -72,7 +72,7 @@ import { t } from 'yapyak';
 
 {% /switch %}
 
-A processor isn't framework-specific magic. It's a small adapter that knows how to split a file format into TypeScript-parseable fragments. If yapyak doesn't ship a processor for the file format you need, you can write one through `createProcessor()`.
+A processor is a small adapter that knows how to split a file format into TypeScript-parseable fragments. If yapyak doesn't ship a processor for the file format you need, you can write one through `createProcessor()`.
 
 ## What the translator sees
 

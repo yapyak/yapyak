@@ -49,7 +49,7 @@ const swedish = t.in('sv');           // YAP0020: captured chain
 swedish('Welcome');                   // won't work
 ```
 
-The reason is the compiler — it needs to see the full call (`t.in('sv', 'Welcome')`) in one place to extract the source string. A stored chain would hide the source from the parser. Use the inline form, repeat the prefix if needed.
+The compiler needs to see the full call (`t.in('sv', 'Welcome')`) in one place to extract the source string. A stored chain would hide the source from the parser. Use the inline form, repeat the prefix if needed.
 
 ## When not to use it
 

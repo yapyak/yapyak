@@ -13,7 +13,7 @@ Three things happen inside the adapter middleware on every request:
 
 1. **The request is bound.** `withResponse(request, callback)` puts the request into an `AsyncLocalStorage` scope so anything called inside `callback` sees `getLocale()` resolve through the request's [persistence layer](/guide/locale/persistence), or — if [`detectAcceptLanguage`](/guide/getting-started/configuration#detectacceptlanguage) is on — through the `Accept-Language` header.
 2. **Server-side `setLocale()` writes go through.** If something in the request handler calls `setLocale('sv')` — a form POST that updates the user's preference, an admin tool that previews in another language — yapyak buffers the persistence write (a `Set-Cookie` header, a URL redirect) and drains it onto the outgoing response.
-3. **The page renders with the right locale.** Every `t()` call, every `format.*` call, every `useLocale()` hook reads the request-bound value rather than a shared module-scope one.
+3. **The page renders with the right locale.** Every `t()` call, every `format.*` call, every `useLocale()` hook reads the request-bound value.
 
 Without the adapter, `getLocale()` on the server falls through to the module-scope default, which is the same value across every concurrent request. A `YAP0022` warning fires the first time this happens so you notice — usually it means an SSR endpoint isn't covered by the middleware yet.
 

@@ -58,7 +58,7 @@ In every case, `clean` notices because it walks the codebase, builds the set of 
 
 ## Why it's not on by default
 
-Deletions are irreversible (until you reach for git). yapyak prefers to surface them clearly and let you decide, rather than quietly trimming files in the background. The dev-time save loop also leaves orphans alone for the same reason — if you remove a string, the translation stays around until you `clean` it.
+Deletions are irreversible (until you reach for git). yapyak surfaces them clearly so you can decide, rather than quietly trimming files in the background. The dev-time save loop also leaves orphans alone for the same reason — if you remove a string, the translation stays around until you `clean` it.
 
 This is especially relevant when:
 
@@ -115,4 +115,4 @@ This logs orphans without removing them — a heads-up that locale files have dr
 
 - **It doesn't touch `.yapyak/`.** The translation memory cache stays intact, so removed translations remain recoverable.
 - **It doesn't remove whole locale files.** A locale you no longer ship stays in `localesDir` until you delete its `<locale>.json` by hand.
-- **It doesn't touch source files.** Only locale file files are modified, only with `--write`.
+- **It doesn't touch source files.** Only locale files are modified, only with `--write`.

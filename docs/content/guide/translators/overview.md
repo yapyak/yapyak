@@ -5,7 +5,7 @@ order: 1
 
 A translator is what fills the empty stubs in your locale files. When yapyak finds a new `t()` call on save, it batches the missing translations and asks your configured translator for them. The translator is a function that takes a list of source strings and target locales and returns the translations.
 
-yapyak ships four ready-made translators that wrap an model provider's API: [Anthropic](/guide/translators/anthropic), [OpenAI](/guide/translators/openai), [Gemini](/guide/translators/gemini), and [Ollama](/guide/translators/ollama). A [custom translator](/guide/translators/custom) takes a short function for everything else.
+yapyak ships four ready-made translators that wrap a model provider's API: [Anthropic](/guide/translators/anthropic), [OpenAI](/guide/translators/openai), [Gemini](/guide/translators/gemini), and [Ollama](/guide/translators/ollama). A [custom translator](/guide/translators/custom) takes a short function for everything else.
 
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';

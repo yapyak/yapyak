@@ -7,7 +7,7 @@ Source code moves around. A component file gets renamed; a string gets edited; t
 
 ## What yapyak tracks
 
-Behind every translation is a position record. yapyak knows:
+Every translation has a position record:
 
 - The source file path
 - The source string itself

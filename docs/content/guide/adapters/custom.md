@@ -40,7 +40,7 @@ Plug it into whatever middleware interface your framework expects. Anything that
 
 ## When the response isn't the direct return
 
-Some frameworks return an object that wraps the `Response` rather than the response itself — a context, a result struct. Use the third argument to point yapyak at where the response lives:
+Some frameworks wrap the `Response` in another object. Use the third argument to point yapyak at where the response lives:
 
 ```ts
 import { withResponse } from 'yapyak/adapter';

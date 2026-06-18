@@ -223,7 +223,7 @@ export default defineConfig({
 
 ## Add `yapyak.config.ts`
 
-This is yapyak's own config, separate from the Vite plugin. It tells the build which file types to scan and (optionally) how to reach your translator:
+yapyak's own config, separate from the Vite plugin:
 
 {% switch group="framework" %}
 
@@ -310,7 +310,7 @@ And ignore yapyak's cache directory:
 
 ## Add your first locale
 
-Pick a target language and create its locale file. Any [BCP 47 tag](/guide/locale/tags) works:
+Pick a target language and create its locale file in [`localesDir`](/guide/getting-started/configuration#localesdir) (`locales/` by default). Any [BCP 47 tag](/guide/locale/tags) works:
 
 {% switch group="pkg" %}
 {% when value="pnpm" %}
@@ -331,3 +331,7 @@ bun yapyak add sv
 {% /switch %}
 
 This creates `locales/sv.json` and updates the `Locale` literal type. Run it again with any other tag whenever you want to add a language. See [`yapyak add`](/guide/cli/add) for the full set of options.
+
+{% callout variant="tip" %}
+Or create the file by hand — drop `sv.json` into the folder and yapyak picks it up automatically.
+{% /callout %}

@@ -11,7 +11,7 @@ Five things make yapyak different from most i18n libraries. The same five things
 
 **The source string is the key.** No abstract identifiers, no namespace files. You write `t('Your cart is empty')` and that string is the key in every locale file. Interpolated messages use ICU MessageFormat — standard syntax, not a yapyak-specific dialect. An agent doesn't need to learn a parallel naming system to keep translations in sync.
 
-**Translations write themselves as you save.** With an model wired up, new messages are translated and written to your locale files during the same save, then shown in the running browser through Vite HMR while the layout is still in front of you. Without one, the stubs stay in place ready for you — or the agent next to you — to fill them.
+**Translations write themselves as you save.** With a model wired up, new messages are translated and written to your locale files during the same save, then shown in the running browser through Vite HMR while the layout is still in front of you. Without one, the stubs stay in place ready for you — or the agent next to you — to fill them.
 
 **Your translations live in your repository.** Locale files, translation memory, and glossary all sit alongside your code, read from disk and committed to git. An agent editing the codebase sees them the same way it sees the rest of the project — no separate service to query, integrate with, or pay for.
 
@@ -47,7 +47,7 @@ If you rename or move the source file, yapyak finds the translations again under
 
 The stub can be filled by you, by your coding agent, or by a *translator*.
 
-A translator connects directly to an model using your provider key:
+A translator connects directly to a model using your provider key:
 
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
@@ -162,4 +162,4 @@ In English, the buttons fit comfortably in a dialog or on a mobile screen. In Ge
 
 The first button is much longer. That can break a dialog footer or a mobile layout.
 
-With live translations, you see this while the layout is still in front of you, not weeks later during QA.
+With live translations, you see this while the layout is still in front of you.
