@@ -3,7 +3,7 @@ title: Astro
 order: 2
 ---
 
-Astro renders every page on the server. yapyak's Astro integration wires the per-request locale binding and the build-time Vite plugin in one step, so the same `t()`, `getLocale()`, and `format.*` calls work in `.astro` frontmatter, in islands, and across navigations.
+Astro renders every page on the server. yapyak's Astro integration wires the per-request locale binding and the compile-time Vite plugin in one step, so the same `t()`, `getLocale()`, and `format.*` calls work in `.astro` frontmatter, in islands, and across navigations.
 
 ## Requirements
 
@@ -42,7 +42,7 @@ export default defineConfig({
 });
 ```
 
-The integration registers two things: yapyak's build-time Vite plugin (so `t()` calls get extracted from your `.astro` files) and a per-request middleware (so `getLocale()` resolves correctly during render).
+The integration registers two things: yapyak's compile-time Vite plugin (so `t()` calls get extracted from your `.astro` files) and a per-request middleware (so `getLocale()` resolves correctly during render).
 
 ## Register the processor
 

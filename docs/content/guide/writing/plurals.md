@@ -111,7 +111,7 @@ t('You scored {pct, number, percent}', { pct: 0.42 });
 t('Total {n, number, integer}', { n: 1234.5 });
 ```
 
-Styles: `decimal`, `integer`, `percent`, `currency <ISO 4217>`. yapyak's compiler validates the style at build time.
+Styles: `decimal`, `integer`, `percent`, `currency <ISO 4217>`. yapyak's compiler validates the style at compile time.
 
 ### Dates and times
 

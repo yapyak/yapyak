@@ -44,7 +44,7 @@ Keep contexts short and stable. Treating them like keys in a dictionary (`'open-
 
 The context has to be a literal string at the call site (`t.as('action', 'Open')`), not a variable. The compiler reads it directly to scope the translation, so dynamic contexts can't be extracted.
 
-## With params
+## With parameters
 
 `t.as()` supports the same placeholder shape as plain [`t()`](/guide/writing/params):
 
@@ -52,7 +52,7 @@ The context has to be a literal string at the call site (`t.as('action', 'Open')
 t.as('headline', 'Welcome, {name}', { name: 'Ada' });
 ```
 
-The params and rich-text behavior are identical. The context label only changes which translation slot the call lands in.
+The parameters and rich-text behavior are identical. The context label only changes which translation slot the call lands in.
 
 ## Combining with `t.in()`
 

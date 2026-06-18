@@ -12,7 +12,8 @@
   },
   "scripts": {
     "build": "vite build",
-    "dev": "vite dev",
+    "dev": "SKIP_REFERENCE=1 vite dev",
+    "dev:full": "vite dev",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },

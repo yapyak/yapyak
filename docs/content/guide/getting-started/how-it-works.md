@@ -3,7 +3,7 @@ title: How it works
 order: 4
 ---
 
-yapyak is a build-time compiler with a small runtime. When you save a file, yapyak finds the `t()` calls inside it, brings their messages up to date in your locale files, and rewrites the calls so they pick the right value at render time. This page walks through what happens in each of those steps and what ends up in your production bundle.
+yapyak is a compile-time compiler with a small runtime. When you save a file, yapyak finds the `t()` calls inside it, brings their messages up to date in your locale files, and rewrites the calls so they pick the right value at render time. This page walks through what happens in each of those steps and what ends up in your production bundle.
 
 ## The save loop
 
@@ -11,7 +11,7 @@ When you save a source file, yapyak runs through six steps:
 
 1. **Extract.** The right processor parses the file (built-in for `.ts` and `.tsx`, framework-specific for `.vue`, `.svelte`, and `.astro`) and finds the `t()` calls inside.
 2. **Validate.** Every call is checked against its source: placeholders match the arguments, plural branches are spelled correctly, the message is a static literal.
-3. **Reconcile.** New messages get added to your locale JSON files as empty stubs. Renamed or moved files keep their translations.
+3. **Reconcile.** New messages get added to your locale file files as empty stubs. Renamed or moved files keep their translations.
 4. **Translate.** If a translator is configured, the new stubs are batched and sent to your provider along with their call-site context.
 5. **Compile.** The `t()` calls are rewritten into synchronous `_pick()` calls that hold the locale values for that module.
 6. **Hot-replace.** Vite pushes the new module to the browser, and the rendered text updates in place.
@@ -94,7 +94,7 @@ A typical request body looks something like this:
 The examples are picked from translations already in your repository. Models tend to keep a consistent voice when they've seen prior choices the project made.
 
 {% callout variant="info" %}
-Requests are batched. By default, yapyak groups up to 25 messages per request, runs up to five requests in parallel, and translates every target locale together. Request size, concurrency, and context level are configurable in `yapyak.config.ts`.
+Requests are batched. By default, yapyak groups up to 25 messages per-request, runs up to five requests in parallel, and translates every target locale together. Request size, concurrency, and context level are configurable in `yapyak.config.ts`.
 {% /callout %}
 
 ## What ends up in the locale files
@@ -176,12 +176,12 @@ And in JSX, the call disappears into the surrounding markup:
 
 The bundle ships with no i18n runtime at all.
 
-**Formatters use `Intl` directly.** A date, number, or list format compiles to a factory that calls the platform's `Intl` API at render — no ICU library is bundled:
+**Formatters use `Intl` directly.** A date, number, or list format compiles to a factory that calls the platform's `Intl` API at render time — no ICU library is bundled:
 
 ```ts
 t('Posted on {date, date, long}', { date });
 // catalog entry: _date('date', 'long')
-// at render:     new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(date)
+// at render time:     new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(date)
 ```
 
 **Plurals and selects stay as runtime structures** because branch selection depends on the active locale and the parameter value:
@@ -189,7 +189,7 @@ t('Posted on {date, date, long}', { date });
 ```ts
 t('{count, plural, one {# message} other {# messages}}', { count });
 // catalog entry: _plural('count', 'cardinal', { one: [...], other: [...] })
-// at render:     branch picked through Intl.PluralRules.select()
+// at render time:     branch picked through Intl.PluralRules.select()
 ```
 
 ## How locale switching propagates
@@ -230,11 +230,11 @@ For `.astro` files, the page reloads instead. Astro doesn't run yapyak's runtime
 
 yapyak runs through four guarantees on every save to keep translations from being lost or overwritten silently.
 
-**The orphan cache.** Every translation yapyak has ever seen lives in `.yapyak/orphans.json`. Delete a component, add it back three months later, copy markup to a new file — the translations re-appear in `locales/<locale>.json` automatically. The cache has no expiration. Reuse is based on exact match of the source message; close-but-not-identical strings are treated as new.
+**The orphan cache.** Every translation yapyak has ever seen lives in `.yapyak/orphans.json`. Delete a component, add it back three months later, copy markup to a new file — the translations re-appear in `locales/<locale>.json` automatically. The cache has no expiration. Reuse is based on exact match of the source string; close-but-not-identical strings are treated as new.
 
 **Rename detection.** When you edit a source string in place (`'Save'` → `'Save changes'`), yapyak compares positions in the file to tell a rename apart from a delete-and-add, and preserves the existing translation under the new key. The behavior is controlled by [`preserveTranslationsOnRename`](/guide/getting-started/configuration#preservetranslationsonrename); see [Renames](/guide/advanced/renames) for the heuristics.
 
-**The invariant barrier.** Before any locale file is written, yapyak compares the new state against the existing one. If a write would clear a non-empty translation for a string still present in your source, the write is refused and yapyak surfaces the violation as an error instead of going through with it. There is no path where a still-used translation silently vanishes.
+**The invariant barrier.** Before any locale file is written, yapyak compares the new state against the existing one. If a write would clear a non-empty stub for a string still present in your source, the write is refused and yapyak surfaces the violation as an error instead of going through with it. There is no path where a still-used translation silently vanishes.
 
 **Atomic multi-file writes.** When yapyak updates several locale files from a single save, all of them are staged to temp files first and renamed into place only once every stage has succeeded. A crash, an SSD failure, or a Ctrl-C mid-write leaves your original locales untouched.
 

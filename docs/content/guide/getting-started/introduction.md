@@ -11,11 +11,11 @@ Five things make yapyak different from most i18n libraries. The same five things
 
 **The source string is the key.** No abstract identifiers, no namespace files. You write `t('Your cart is empty')` and that string is the key in every locale file. Interpolated messages use ICU MessageFormat — standard syntax, not a yapyak-specific dialect. An agent doesn't need to learn a parallel naming system to keep translations in sync.
 
-**Translations write themselves as you save.** With an AI model wired up, new messages are translated and written to your locale files during the same save, then shown in the running browser through Vite HMR while the layout is still in front of you. Without one, the stubs stay in place ready for you — or the agent next to you — to fill them.
+**Translations write themselves as you save.** With an model wired up, new messages are translated and written to your locale files during the same save, then shown in the running browser through Vite HMR while the layout is still in front of you. Without one, the stubs stay in place ready for you — or the agent next to you — to fill them.
 
 **Your translations live in your repository.** Locale files, translation memory, and glossary all sit alongside your code, read from disk and committed to git. An agent editing the codebase sees them the same way it sees the rest of the project — no separate service to query, integrate with, or pay for.
 
-**ICU is type-checked live, with no build step.** Placeholders, plural branches, and select arms in your source literal turn into typed parameters via TypeScript's template literal types — write `'You have {count} messages'` and `count: number` is required in the editor, instantly. ICU is already a format LLMs write fluently; yapyak makes sure they get the details right.
+**ICU is type-checked live, with no build step.** Placeholders, plural branches, and select arms in your source string turn into typed parameters via TypeScript's template literal types — write `'You have {count} messages'` and `count: number` is required in the editor, instantly. ICU is already a format models write fluently; yapyak makes sure they get the details right.
 
 **Translations are safe to refactor.** When you rename a source string, move a file, or remove a component, yapyak preserves the existing translations and restores them when the source reappears. The compiler refuses to write a locale file in a state that would silently clear a translation still in use — so an agent's wrong move surfaces as a refused write, not a vanished paragraph of Swedish.
 
@@ -47,7 +47,7 @@ If you rename or move the source file, yapyak finds the translations again under
 
 The stub can be filled by you, by your coding agent, or by a *translator*.
 
-A translator connects directly to an AI model using your provider key:
+A translator connects directly to an model using your provider key:
 
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
@@ -112,7 +112,7 @@ compiles to:
 _pick({ en: 'Your cart is empty', sv: 'Din kundvagn är tom' })
 ```
 
-Locale switching is immediate, with no translation file to fetch and no suspense or loading state to handle.
+Locale switching is immediate, with no locale file to fetch and no suspense or loading state to handle.
 
 This matches Vite's build model. Routes load the modules they need, and those modules already contain the translations they render. Translation data follows the same code-splitting, caching, and deployment path as the code itself.
 
@@ -130,9 +130,9 @@ t('You have {count, plural, one {# message} other {# messages}}', {
 });
 ```
 
-ICU is a standard format. AI models understand its structure, and translators preserve it across locales. yapyak validates it at compile time.
+ICU is a standard format. models understand its structure, and translators preserve it across locales. yapyak validates it at compile time.
 
-TypeScript reads the source literal and infers the parameters. Missing or misspelled params are compile-time errors. Invalid plural categories, broken select branches, and dynamic message strings all surface as YAP diagnostics in your editor and in CI.
+TypeScript reads the source string and infers the parameters. Missing or misspelled parameters are compile-time errors. Invalid plural categories, broken select branches, and dynamic message strings all surface as YAP diagnostics in your editor and in CI.
 
 For values outside a translatable message, like a price in a card or a timestamp in a footer, yapyak provides a `format` namespace covering numbers, dates, lists, and relative time. Everything is built on the platform's `Intl` and respects the active locale.
 

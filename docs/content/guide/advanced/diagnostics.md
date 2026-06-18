@@ -3,7 +3,7 @@ title: Diagnostics
 order: 3
 ---
 
-yapyak's compiler runs every save and surfaces any problem it finds as a `YAP-` diagnostic — a build-time warning or error you'll see in your editor and in your terminal. This page is the reference: every code, what it means, and how to fix it.
+yapyak's compiler runs every save and surfaces any problem it finds as a `YAP-` diagnostic — a compile-time warning or error you'll see in your editor and in your terminal. This page is the reference: every code, what it means, and how to fix it.
 
 ## How diagnostics show up
 
@@ -45,7 +45,7 @@ t('');  // no
 
 Empty strings can't be translation keys. If you genuinely want an empty render, return `''` directly.
 
-### `YAP0004` — Missing param
+### `YAP0004` — Missing parameter
 
 ```ts
 t('Hi {name}', {});           // missing 'name'
@@ -54,15 +54,15 @@ t('Hi {name}', { user: 'A' }); // missing 'name', has extra 'user'
 
 Add the key to the params object.
 
-### `YAP0005` — Extra param
+### `YAP0005` — Extra parameter
 
 ```ts
 t('Hi', { name: 'A' });  // 'name' isn't used
 ```
 
-Either add `{name}` to the source or remove it from the params.
+Either add `{name}` to the source or remove it from the parameters.
 
-### `YAP0006` — Dynamic params
+### `YAP0006` — Dynamic parameters
 
 ```ts
 const params = { name: 'A' };
@@ -246,7 +246,7 @@ Things related to [persistence strategies](/guide/locale/persistence).
 
 ### `YAP0033` — Chunk failed
 
-A batch chunk failed after retries during a translator run. yapyak kept the other chunks and returned partial results. Re-run [`yapyak translate`](/guide/cli/translate) to retry just the missing entries.
+A batch chunk failed after retries during a translator run. yapyak kept the other chunks and returned partial results. Re-run [`yapyak translate`](/guide/cli/translate) to retry just the empty stubs.
 
 ### `YAP0034` — Entry shape invalid
 

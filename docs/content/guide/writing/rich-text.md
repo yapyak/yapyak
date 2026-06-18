@@ -9,7 +9,7 @@ Some translations need to wrap part of the text in a link, a line break, an emph
 t('Read our <link>privacy policy</link> for details.');
 ```
 
-The source is still a single string. yapyak parses the tags at build time, and `<RichText>` renders them through handlers you provide.
+The source is still a single string. yapyak parses the tags at compile time, and `<RichText>` renders them through handlers you provide.
 
 ## Pair tags and void tags
 

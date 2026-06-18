@@ -76,7 +76,7 @@ If you don't have a translator configured, step 3 is skipped — the new files h
 
 ## When the locale already exists
 
-If you pass a locale that already has a JSON file, `add` reconciles it: any missing entries get filled, existing ones are left alone. Useful for catching a locale up after you've held back auto-translation deliberately.
+If you pass a locale that already has a JSON file, `add` reconciles it: any empty stubs get filled, existing ones are left alone. Useful for catching a locale up after you've held back auto-translation deliberately.
 
 In practice you use `add` once per new locale and then rely on the [dev-time save loop](/guide/getting-started/how-it-works#the-save-loop) or [`yapyak translate`](/guide/cli/translate) for ongoing translation work.
 

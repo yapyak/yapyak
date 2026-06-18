@@ -12,9 +12,9 @@ t.in('sv', 'Welcome back');
 // always returns the Swedish translation, regardless of the active locale
 ```
 
-The signature mirrors `t()` — placeholder params, rich-text tags, and ICU sub-formats all work the same. The only difference is that the locale is fixed.
+The signature mirrors `t()` — placeholder parameters, rich-text tags, and ICU sub-formats all work the same. The only difference is that the locale is fixed.
 
-## With params
+## With parameters
 
 Placeholders behave exactly as in [`t()`](/guide/writing/params):
 
@@ -25,7 +25,7 @@ t.in('sv', 'Hi {name}, you have {count, plural, one {# message} other {# message
 });
 ```
 
-TypeScript validates the params against the source string, and the locale argument is typed against your [`Locale`](/guide/getting-started/installation) union — pass a locale you haven't added and you get a compile-time error.
+TypeScript validates the parameters against the source string, and the locale argument is typed against your [`Locale`](/guide/getting-started/installation) union — pass a locale you haven't added and you get a compile-time error.
 
 ## Combining with `.as()`
 

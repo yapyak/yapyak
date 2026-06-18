@@ -12,14 +12,14 @@ The default path: you write a new `t()` call (or edit an existing one), save the
 1. Vite picks up the file change and notifies the yapyak plugin.
 2. The plugin runs your [framework processor](/guide/getting-started/installation) over the file, finds every `t()` call, and validates them.
 3. Missing or changed entries are reconciled against your locale files — new stubs added, removed strings noted, [renames](/guide/advanced/renames) followed.
-4. If a [translator](/guide/translators/overview) is configured, missing entries are sent to it. Results write back to locale files.
+4. If a [translator](/guide/translators/overview) is configured, empty stubs are sent to it. Results write back to locale files.
 5. The compiled module is rewritten with the new `_pick()` lookups inline.
 6. Vite hot-replaces the module. The component re-renders.
 
 The whole loop takes milliseconds for the source-only steps and a few seconds for the translator step. Component state — open dialogs, form inputs, scroll position — stays put because Vite swaps the module without re-mounting.
 
 {% callout variant="info" %}
-For `.astro` files, step 6 differs. Astro doesn't run yapyak's runtime in the browser, so the page reloads instead of doing a module swap. State doesn't survive the reload — but it didn't survive on the server side anyway, so the effect is the same as a normal Astro hot reload.
+For `.astro` files, step 6 differs. Astro doesn't run yapyak's runtime in the browser, so the page reloads instead of doing a module swap. State doesn't survive the reload — but it didn't survive on the server side anyway, so the effect is the same as a normal Astro HMR.
 {% /callout %}
 
 ## Locale file save loop
@@ -55,9 +55,9 @@ Two settings affect this:
 
 A few cases skip the hot path and trigger a full reload:
 
-- **Config file changes.** Editing `yapyak.config.ts` (or `vite.config.ts`) reloads the dev server. yapyak's plugin can't safely hot-swap its own configuration.
+- **Config file changes.** Editing `yapyak.config.ts` (or `vite.config.ts`) reloads the dev server. yapyak's plugin can't safely HMR its own configuration.
 - **Locale-set changes.** Adding a new locale through [`yapyak add`](/guide/cli/add) regenerates `.yapyak/types.d.ts` and reloads the dev server so TypeScript picks up the new union.
-- **Astro pages.** As noted above, `.astro` files reload rather than hot-swap.
+- **Astro pages.** As noted above, `.astro` files reload rather than HMR.
 
 In every case, the trigger is something that has to take effect before yapyak can do any further work — not something yapyak does to be conservative.
 

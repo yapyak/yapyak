@@ -101,7 +101,7 @@ The shipped translators (Anthropic, OpenAI, etc.) are themselves built on top of
 
 ## A real example: a rules-based translator
 
-When yapyak's normal LLM-translator path is overkill — say, for an app whose only translations are a handful of fixed terms — a small rules-based translator drops in cleanly:
+When yapyak's normal model-translator path is overkill — say, for an app whose only translations are a handful of fixed terms — a small rules-based translator drops in cleanly:
 
 ```ts
 import { createTranslator } from 'yapyak/translator';
@@ -126,7 +126,7 @@ const myTranslator = createTranslator({
 });
 ```
 
-Strings not in the rules map fall through to the source text. Useful as a development-time placeholder before you wire up a real translator, or as a strict-no-LLM mode for a small handful of fixed messages.
+Strings not in the rules map fall through to the source string. Useful as a development-time placeholder before you wire up a real translator, or as a strict-no-model mode for a small handful of fixed messages.
 
 ## A real example: a routing translator
 

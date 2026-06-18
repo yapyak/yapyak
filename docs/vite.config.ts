@@ -108,16 +108,23 @@ export default defineConfig({
           root: resolve(import.meta.dirname, 'content/guide'),
           source: 'markdoc',
         },
-        reference: {
-          packages: REFERENCE_PACKAGES.map((pkg) => ({
-            collapsible: pkg.collapsible ?? Boolean(pkg.group),
-            group: pkg.group,
-            name: pkg.dir,
-            root: resolve(import.meta.dirname, `../packages/${pkg.dir}`),
-            subpaths: pkg.subpaths,
-          })),
-          source: 'typedoc',
-        },
+        ...(process.env.SKIP_REFERENCE
+          ? {}
+          : {
+              reference: {
+                packages: REFERENCE_PACKAGES.map((pkg) => ({
+                  collapsible: pkg.collapsible ?? Boolean(pkg.group),
+                  group: pkg.group,
+                  name: pkg.dir,
+                  root: resolve(
+                    import.meta.dirname,
+                    `../packages/${pkg.dir}`,
+                  ),
+                  subpaths: pkg.subpaths,
+                })),
+                source: 'typedoc',
+              },
+            }),
       },
       options: {
         framework: {

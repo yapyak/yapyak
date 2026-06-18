@@ -78,7 +78,7 @@ The minimal CI step:
 - run: pnpm yapyak check
 ```
 
-If you also auto-translate in CI, run `translate` first to fill in any missing entries, then `check` to gate on completeness:
+If you also auto-translate in CI, run `translate` first to fill in any empty stubs, then `check` to gate on completeness:
 
 ```yaml
 - run: pnpm yapyak translate

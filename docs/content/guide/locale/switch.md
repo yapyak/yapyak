@@ -10,7 +10,7 @@ There's one active locale at any moment. Reading it, changing it, and re-renderi
 {% switch group="framework" %}
 
 {% when value="react" %}
-`@yapyak/react` exports a `useLocale` hook that returns a tuple of the current locale and a setter. The shape mirrors React's `useState`, so anything that has used `useState` already knows how to use it:
+`@yapyak/react` exports a `useLocale` hook that returns a tuple of the active locale and a setter. The shape mirrors React's `useState`, so anything that has used `useState` already knows how to use it:
 
 ```tsx
 import { useLocale } from '@yapyak/react';
@@ -105,7 +105,7 @@ unsubscribe();            // stops listening
 
 You'll reach for these directly when:
 
-- Building a locale switcher that lives outside the framework binding (a vanilla script tag, a build-time helper)
+- Building a locale switcher that lives outside the framework binding (a vanilla script tag, a compile-time helper)
 - Reacting to locale changes from non-component code (analytics, logging, a global event bus)
 - Reading the `locales` array to render a dropdown of every available language
 
@@ -187,7 +187,7 @@ const current = getLocale();
 </form>
 ```
 
-With `persistence: 'url'` set, submitting the form navigates to a URL containing the selected locale, and the middleware picks it up on the next render.
+With `persistence: 'url'` set, submitting the form navigates to a URL containing the active locale, and the middleware picks it up on the next render.
 {% /when %}
 
 {% /switch %}

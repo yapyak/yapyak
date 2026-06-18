@@ -64,7 +64,7 @@ The locale lives in the URL, either as a path segment (`/sv/settings`) or as a q
 
 ```ts
 persistence: 'url',
-// or with a query-param matcher:
+// or with a query-parameter matcher:
 persistence: {
   type: 'url',
   match: /[?&]lang=(?<locale>[^&]+)/,

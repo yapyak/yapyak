@@ -10,7 +10,7 @@ t('Hi {name}', { name: 'Ada' });
 // 'Hej Ada' in Swedish, 'Bonjour Ada' in French
 ```
 
-The placeholder syntax is curly braces around the parameter name. The translation file keeps the same placeholders, so translators (human or model) know exactly where the value lands inside each language's sentence.
+The placeholder syntax is curly braces around the parameter name. The locale file keeps the same placeholders, so translators (human or model) know exactly where the value lands inside each language's sentence.
 
 ```json [locales/sv.json]
 {
@@ -69,7 +69,7 @@ t('Hi {name}', params);                      // error: dynamic params
 This catches the most common mistake people make when they're used to other i18n libraries — passing a pre-built object full of optional fields. yapyak wants every translation site to be statically inspectable.
 
 {% callout variant="info" %}
-The same constraint applies to the source string itself. `t(someVariable)` and `` t(`Hi ${name}`) `` both raise a diagnostic at build time. yapyak can only extract what it can see in the source code; anything dynamic should be a placeholder, not a string concatenation.
+The same constraint applies to the source string itself. `t(someVariable)` and `` t(`Hi ${name}`) `` both raise a diagnostic at compile time. yapyak can only extract what it can see in the source code; anything dynamic should be a placeholder, not a string concatenation.
 {% /callout %}
 
 ## When values need formatting
@@ -91,7 +91,7 @@ These follow the [ICU MessageFormat](https://unicode-org.github.io/icu/userguide
 Compile time:
 - Every placeholder in the source has a matching key in the params object
 - Every key in the params object is used by some placeholder in the source
-- Both the source and the params are static literals
+- Both the source and the parameters are static literals
 
 Runtime:
 - The placeholder values are rendered into the active locale's translation

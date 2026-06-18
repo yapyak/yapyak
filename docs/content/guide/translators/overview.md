@@ -5,7 +5,7 @@ order: 1
 
 A translator is what fills the empty stubs in your locale files. When yapyak finds a new `t('…')` call on save, it batches the missing translations and asks your configured translator for them. The translator is a function that takes a list of source strings and target locales and returns the translations.
 
-yapyak ships four ready-made translators that wrap an LLM provider's API: [Anthropic](/guide/translators/anthropic), [OpenAI](/guide/translators/openai), [Gemini](/guide/translators/gemini), and [Ollama](/guide/translators/ollama). A [custom translator](/guide/translators/custom) takes a short function for everything else.
+yapyak ships four ready-made translators that wrap an model provider's API: [Anthropic](/guide/translators/anthropic), [OpenAI](/guide/translators/openai), [Gemini](/guide/translators/gemini), and [Ollama](/guide/translators/ollama). A [custom translator](/guide/translators/custom) takes a short function for everything else.
 
 ```ts
 import { defineConfig } from 'yapyak/config';
@@ -95,9 +95,9 @@ The translator runs in two situations:
 
 A guardrail kicks in for large saves: when a single save adds more than [`autoTranslateThreshold`](/guide/getting-started/configuration#autotranslatethreshold) strings (default 20), yapyak holds off on auto-translating and leaves the stubs empty. You run [`yapyak translate`](/guide/cli/translate) when you're ready — useful for big refactors or agent-generated changes where you'd rather review before spending tokens.
 
-**Through the CLI**, on demand. [`yapyak translate`](/guide/cli/translate) walks every missing entry in your locale files and runs them through your translator. Use it in CI to fill in everything that the dev-time loop didn't catch, or when you've held back auto-translation deliberately.
+**Through the CLI**, on demand. [`yapyak translate`](/guide/cli/translate) walks every empty stub in your locale files and runs them through your translator. Use it in CI to fill in everything that the dev-time loop didn't catch, or when you've held back auto-translation deliberately.
 
-In both cases, only missing entries reach the model. Existing translations stay where they are.
+In both cases, only empty stubs reach the model. Existing translations stay where they are.
 
 ## When you don't need a translator
 

@@ -50,7 +50,7 @@ bunx yapyak clean --write
 
 A translation is an orphan when no `t()` call in your code points to it anymore. Three ways this happens:
 
-1. **The source file was deleted.** The whole file's entry in the locale JSON has no corresponding code.
+1. **The source file was deleted.** The whole file's entry in the locale file has no corresponding code.
 2. **The source string was removed.** A `t('Add to wishlist')` call was deleted from a file that still exists; the translation lingers.
 3. **The source string changed.** A `t('Save')` call became `t('Save changes')`; if [`preserveTranslationsOnRename`](/guide/getting-started/configuration#preservetranslationsonrename) is `false`, the old "Save" translation is orphaned.
 
@@ -70,7 +70,7 @@ For the in-between case (removed but recoverable), yapyak keeps a copy of every 
 
 ## A typical use
 
-Most projects run `clean` periodically — as part of a refactor branch, before a major release, or as a quarterly hygiene pass. It's not a build-time thing; it's a deliberate trim.
+Most projects run `clean` periodically — as part of a refactor branch, before a major release, or as a quarterly hygiene pass. It's not a compile-time thing; it's a deliberate trim.
 
 {% switch group="pkg" %}
 {% when value="pnpm" %}
@@ -115,4 +115,4 @@ This logs orphans without removing them — a heads-up that locale files have dr
 
 - **It doesn't touch `.yapyak/`.** The translation memory cache stays intact, so removed translations remain recoverable.
 - **It doesn't remove whole locale files.** A locale you no longer ship stays in `localesDir` until you delete its `<locale>.json` by hand.
-- **It doesn't touch source files.** Only locale JSON files are modified, only with `--write`.
+- **It doesn't touch source files.** Only locale file files are modified, only with `--write`.

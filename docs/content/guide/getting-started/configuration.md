@@ -3,7 +3,7 @@ title: Configuration
 order: 3
 ---
 
-`yapyak.config.ts` is yapyak's central configuration. It tells the build which files to scan, how to translate missing entries, and how the runtime should behave. The set of locales your app ships isn't a config field — it comes from the JSON files in your [`localesDir`](#localesdir). Every config field is optional — yapyak has defaults for everything — but you'll set a handful explicitly in any real project.
+`yapyak.config.ts` is yapyak's central configuration. It tells the build which files to scan, how to translate empty stubs, and how the runtime should behave. The set of locales your app ships isn't a config field — it comes from the JSON files in your [`localesDir`](#localesdir). Every config field is optional — yapyak has defaults for everything — but you'll set a handful explicitly in any real project.
 
 This page documents every field. Read it once when you set up a project, then dip back into it when you need to look up a specific option.
 
@@ -20,11 +20,11 @@ export default defineConfig({
 
   // Locales
   defaultLocale: 'en',                    // source language
-  localesDir: 'locales',                  // where locale JSON files live
+  localesDir: 'locales',                  // where locale file files live
 
   // Translator
-  translator: /* ... */,                  // optional LLM
-  examples: 5,                            // in-context style examples per request
+  translator: /* ... */,                  // optional model
+  examples: 5,                            // in-context style examples per-request
   autoTranslateThreshold: 20,             // skip auto-translate above this many new strings on save
   preserveTranslationsOnRename: true,     // keep existing translations on source edits
 
@@ -145,7 +145,7 @@ With `rsc: true`, only files marked `'use client'` get the locale subscription h
 
 ## Translator
 
-Hook up an LLM to fill in missing translations automatically. yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama; any LLM with a chat completion endpoint is one short [custom translator](/guide/translators/custom) away.
+Hook up an model to fill in missing translations automatically. yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama; any model with a chat completion endpoint is one short [custom translator](/guide/translators/custom) away.
 
 ### `translator`
 
@@ -240,7 +240,7 @@ Useful for first-visit defaulting. The detected locale is matched against your c
 
 ### `localesDir`
 
-Where yapyak reads and writes locale JSON files. Relative to the project root.
+Where yapyak reads and writes locale file files. Relative to the project root.
 
 ```ts
 localesDir: 'locales',           // default
@@ -274,7 +274,7 @@ YAPYAK_LOCALE=sv pnpm build
 In a fixed-locale build, yapyak replaces every eligible `t()` call with the target locale's literal string, tree-shakes the locale picker out of the bundle, and ships no i18n runtime at all. Calls that need runtime behaviour (`t.as()`, ICU placeholders) stay as compiled lookups.
 
 {% callout variant="info" %}
-`fixedLocale` lives on the Vite plugin rather than `yapyak.config.ts` because it's a build-time toggle that affects the bundle shape — it isn't something the runtime ever observes.
+`fixedLocale` lives on the Vite plugin rather than `yapyak.config.ts` because it's a compile-time toggle that affects the bundle shape — it isn't something the runtime ever observes.
 {% /callout %}
 
 ## Reading config from your code

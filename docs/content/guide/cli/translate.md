@@ -7,7 +7,7 @@ order: 2
 yapyak translate [<locale>] [--force]
 ```
 
-Fills missing translations in your locale files by running them through the configured [translator](/guide/translators/overview). Without arguments, it processes every locale and every missing entry. Useful when:
+Fills missing translations in your locale files by running them through the configured [translator](/guide/translators/overview). Without arguments, it processes every locale and every empty stub. Useful when:
 
 - The dev-time save loop held back auto-translation because a save crossed [`autoTranslateThreshold`](/guide/getting-started/configuration#autotranslatethreshold) (default 20 new strings)
 - You're running translation as part of a CI pipeline rather than at dev time

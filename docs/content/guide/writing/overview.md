@@ -3,7 +3,7 @@ title: Overview
 order: 1
 ---
 
-`t()` is the function you wrap around any text that should be translatable. The string you wrap becomes the source text as well as the key for its translations.
+`t()` is the function you wrap around any text that should be translatable. The string you wrap becomes the source string as well as the key for its translations.
 
 ```ts
 import { t } from 'yapyak';
@@ -77,20 +77,20 @@ The English (or whatever your `defaultLocale` is) text you pass to `t()` is what
 }
 ```
 
-The conversation between code and translation file is direct: read the file, see exactly what English shows up where. Edit the source string in your component and yapyak follows it — either keeping the translation or marking it for re-translation depending on your [`preserveTranslationsOnRename`](/guide/getting-started/configuration) setting.
+The conversation between code and locale file is direct: read the file, see exactly what English shows up where. Edit the source string in your component and yapyak follows it — either keeping the translation or marking it for re-translation depending on your [`preserveTranslationsOnRename`](/guide/getting-started/configuration) setting.
 
 ## What the compiler checks
 
-Every save runs `t()` calls through a parser. Anything ambiguous becomes a [diagnostic](/guide/advanced/diagnostics) — a build-time warning or error you'll see in your editor and in your terminal.
+Every save runs `t()` calls through a parser. Anything ambiguous becomes a [diagnostic](/guide/advanced/diagnostics) — a compile-time warning or error you'll see in your editor and in your terminal.
 
 The most common ones are early-flagged mistakes:
 
 - `t()` with no arguments at all — there's nothing to translate
-- `t('')` — an empty string can't be a translation key
+- `t('')` — an empty string can't be a source string
 - `t(`Hello ${name}`)` — dynamic source strings can't be extracted; use a [placeholder](/guide/writing/params) instead
 - `t(someVariable)` — same reason; the source has to be a static literal
 
-The compiler can only translate what it can see at build time. Anything dynamic — a string built from variables, computed from data, looked up at runtime — has to be expressed through ICU placeholders or a select branch, not concatenation.
+The compiler can only translate what it can see at compile time. Anything dynamic — a string built from variables, computed from data, looked up at runtime — has to be expressed through ICU placeholders or a select branch, not concatenation.
 
 ## What you get back
 
