@@ -165,12 +165,14 @@ Three things happen:
 - **Identical catalogs are shared.** Both `t('Save')` calls reference the same `_catalog_$0`; the catalog object is declared once.
 - **Vite code-splits these catalog objects** with the modules that contain them. A route that doesn't render a translation never downloads it.
 
-**Single-locale.** When only one locale ends up in the bundle — because that's the only one you've added, or because you've set [`fixedLocale`](/guide/getting-started/configuration#fixed-locale-builds) — the compiler skips `_pick`, the factory imports, and the catalog objects entirely:
+**Single-locale.** When only one locale ends up in the bundle — because that's the only one you've added, or because you've set [`fixedLocale`](/guide/getting-started/configuration#fixed-locale-builds) — the compiler skips `_pick`, the factory imports, and the catalog objects entirely. Each `t()` call collapses to whatever value the active locale has on disk (or to the source string if there's no translation):
 
 ```ts
+// fixedLocale: 'sv', with a Swedish translation present:
 t('Save changes');
 // becomes: 'Spara ändringar'
 
+// no translation needed — the source survives as a template literal:
 t('Hello {name}', { name });
 // becomes: `Hello ${name}`
 ```

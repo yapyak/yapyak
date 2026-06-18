@@ -22,7 +22,7 @@ In components, prefer the framework binding — it subscribes the component to c
 yapyak resolves the active locale in this order, taking the first that yields a value:
 
 1. **A persisted choice** — a cookie, URL parameter, or `localStorage` entry written by an earlier `setLocale()` call. Configured via [`persistence`](/guide/getting-started/configuration#persistence).
-2. **The `Accept-Language` header** — on the server only, and only when [`detectAcceptLanguage`](/guide/getting-started/configuration#detectacceptlanguage) is enabled. The header value is matched against your configured locales.
+2. **The `Accept-Language` header** — only on the server, only during an active request (under the [SSR adapter](/guide/adapters/overview)), and only when [`detectAcceptLanguage`](/guide/getting-started/configuration#detectacceptlanguage) is enabled. The header value is matched against your configured locales. Not consulted on the client or during module initialization.
 3. **The `defaultLocale`** — your source language, the catch-all. Set via [`defaultLocale`](/guide/getting-started/configuration#defaultlocale) (defaults to `'en'`).
 
 For fixed-locale builds, the active locale is hard-coded at compile time and there's nothing to resolve at runtime — see [Configuration — fixedLocale](/guide/getting-started/configuration#fixed-locale-builds).

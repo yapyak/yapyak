@@ -96,9 +96,9 @@ Patterns yapyak should skip. Same shape as `include`. Tests, generated files, an
 ```ts
 // Default exclude list (you don't need to write this)
 exclude: [
-  '**/*.{ spec, test }.*',
+  '**/*.{test,spec}.*',
   '**/__tests__/**',
-  '**/*.{ gen, stories }.{ cjs, js, jsx, mjs, ts, tsx }',
+  '**/*.{stories,gen}.{ts,tsx,js,jsx,mjs,cjs}',
   '**/*.d.ts',
 ],
 ```

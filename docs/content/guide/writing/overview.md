@@ -92,7 +92,7 @@ The compiler can only translate what it can see at compile time. Anything dynami
 
 ## What you get back
 
-`t()` returns a string. If your source contains [rich-text tags](/guide/writing/rich-text) (`<link>...</link>` or `<br/>`), the return type is branded to signal that the string should be rendered through `<RichText>` rather than as plain text — TypeScript catches the mistake if you try to put it directly into a `<p>` element.
+`t()` returns a string. If your source contains [rich-text tags](/guide/writing/rich-text) (`<link>...</link>` or `<br/>`), the return type is branded so `<RichText>` accepts it as input. The branding is a signal — render through `<RichText>` rather than as plain text, or the tags appear verbatim.
 
 For everything else, `t()` is a `string`. You can interpolate it, pass it as a prop, log it, store it. It behaves like the literal you'd have written in a single-language version of the same component.
 

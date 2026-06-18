@@ -118,7 +118,9 @@ For [homonyms](/guide/writing/homonyms), the context appears nested under the so
 }
 ```
 
-This is the same JSON shape yapyak reads from your `locales/` directory, which means a hand-off-then-import roundtrip is straightforward: paste the edited file back into `locales/<locale>.json` and you're done.
+The combined export (without `--split`) matches the shape yapyak reads from your `locales/` directory, so a hand-off-then-import roundtrip is straightforward: paste the edited file back into `locales/<locale>.json` and you're done.
+
+With `--split`, each per-locale file is wrapped with its locale key — `sv.json` contains `{ "sv": { "src/components/...": {...} } }`. Unwrap the locale key before pasting back into `locales/<locale>.json`.
 
 ## When you use `export`
 

@@ -190,20 +190,22 @@ When something goes wrong, throw one of yapyak's translator errors so the surrou
 ```ts
 import {
   TranslatorAuthError,
+  TranslatorInvalidResponseError,
   TranslatorNetworkError,
   TranslatorRateLimitError,
   TranslatorSafetyError,
   TranslatorTimeoutError,
+  TranslatorTruncatedError,
 } from 'yapyak/translator';
 
 async translate({ items, signal }) {
   const response = await fetch(url, { signal });
   if (response.status === 401) {
-    throw new TranslatorAuthError({ vendor: 'my-vendor' });
+    throw new TranslatorAuthError('Auth failed', { vendor: 'my-vendor' });
   }
   if (response.status === 429) {
     const retryAfter = Number(response.headers.get('retry-after')) * 1000;
-    throw new TranslatorRateLimitError({
+    throw new TranslatorRateLimitError('Rate limited', {
       retryAfter,
       vendor: 'my-vendor',
     });

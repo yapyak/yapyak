@@ -24,7 +24,7 @@ yapyak supports React, Vue, Svelte, and Astro — switch frameworks in the heade
 - Node.js 22 or later
 - TypeScript 5 or later
 - Vite 6 or later
-- Vue 3.4 or later
+- Vue 3.4 or later (with `@vue/compiler-sfc`, normally already installed)
 {% /when %}
 
 {% when value="svelte" %}
