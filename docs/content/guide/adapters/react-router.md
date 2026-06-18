@@ -105,7 +105,6 @@ import { defineConfig } from 'yapyak/config';
 import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
-  defaultLocale: 'en',
   persistence: 'cookie',
   processors: [react()],
 });

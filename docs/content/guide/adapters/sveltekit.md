@@ -83,7 +83,6 @@ import { defineConfig } from 'yapyak/config';
 import { svelte } from '@yapyak/svelte/processor';
 
 export default defineConfig({
-  defaultLocale: 'en',
   persistence: 'cookie',
   processors: [svelte()],
 });

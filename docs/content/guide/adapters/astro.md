@@ -47,7 +47,6 @@ import { defineConfig } from 'yapyak/config';
 import { astro } from '@yapyak/astro/processor';
 
 export default defineConfig({
-  defaultLocale: 'en',
   persistence: 'cookie',
   processors: [astro()],
 });
@@ -83,7 +82,6 @@ If a React/Vue/Svelte island calls `setLocale()` without triggering a navigation
 ```ts
 // yapyak.config.ts
 export default defineConfig({
-  defaultLocale: 'en',
   persistence: 'cookie',
   processors: [astro()],
   syncHtmlLang: true,

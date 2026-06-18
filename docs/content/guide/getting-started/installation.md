@@ -300,7 +300,7 @@ export default defineConfig({
 
 {% /switch %}
 
-Then create a `yapyak.config.ts` at the project root. This is yapyak's own config — it tells the build which locales you're shipping, what your source language is, which file types to scan, and how to reach your translator if you've added one:
+Then create a `yapyak.config.ts` at the project root. This is yapyak's own config — it tells the build which file types to scan, and how to reach your translator if you've added one. The set of locales your app ships comes from the JSON files in `locales/`, not from this config:
 
 {% switch group="framework" %}
 
@@ -312,7 +312,6 @@ import { react } from '@yapyak/react/processor';
 import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
-  defaultLocale: 'en',
   processors: [react()],
   translator: anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY,
@@ -329,7 +328,6 @@ import { vue } from '@yapyak/vue/processor';
 import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
-  defaultLocale: 'en',
   processors: [vue()],
   translator: anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY,
@@ -346,7 +344,6 @@ import { svelte } from '@yapyak/svelte/processor';
 import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
-  defaultLocale: 'en',
   processors: [svelte()],
   translator: anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY,
@@ -363,7 +360,6 @@ import { astro } from '@yapyak/astro/processor';
 import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
-  defaultLocale: 'en',
   persistence: 'url',
   processors: [astro()],
   translator: anthropic({

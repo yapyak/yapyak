@@ -3,7 +3,7 @@ title: Configuration
 order: 3
 ---
 
-`yapyak.config.ts` is yapyak's central configuration. It tells the build which locales you're shipping, which files to scan, how to translate missing entries, and how the runtime should behave. Every field is optional — yapyak has defaults for everything — but you'll set a handful explicitly in any real project.
+`yapyak.config.ts` is yapyak's central configuration. It tells the build which files to scan, how to translate missing entries, and how the runtime should behave. The set of locales your app ships isn't a config field — it comes from the JSON files in your [`localesDir`](#localesdir). Every config field is optional — yapyak has defaults for everything — but you'll set a handful explicitly in any real project.
 
 This page documents every field. Read it once when you set up a project, then dip back into it when you need to look up a specific option.
 
@@ -13,7 +13,6 @@ This page documents every field. Read it once when you set up a project, then di
 import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
-  defaultLocale: 'en',          // fallback locale
   processors: [/* ... */],      // framework processors
   translator: /* ... */,        // optional translator
   persistence: 'cookie',        // how the active locale is stored
@@ -27,10 +26,10 @@ The full type lives in `yapyak/config`. Your editor will autocomplete every opti
 
 ### `defaultLocale`
 
-The locale yapyak falls back to when nothing else has resolved the active one. Used as the source language for [translator](/guide/translators/overview) requests and as the fallback at the end of a [BCP 47 fallback chain](/guide/locale/tags).
+The locale yapyak falls back to when nothing else has resolved the active one. Used as the source language for [translator](/guide/translators/overview) requests and as the fallback at the end of a [BCP 47 fallback chain](/guide/locale/tags). Defaults to `'en'` — set this only if your source language is something else:
 
 ```ts
-defaultLocale: 'en',
+defaultLocale: 'sv',
 ```
 
 **Type**: `Locale` · **Default**: `'en'`
