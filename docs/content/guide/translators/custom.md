@@ -147,11 +147,12 @@ import { anthropic } from '@yapyak/anthropic';
 import { openai } from '@yapyak/openai';
 
 const claude = anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
 const gpt = openai({ apiKey: process.env.OPENAI_API_KEY });
 
 const ROUTE = {
   default: gpt,
-  ja: claude,    // Claude is stronger here
+  ja: claude,
   zh: claude,
 };
 
@@ -159,12 +160,11 @@ const myTranslator = createTranslator({
   id: 'routed',
   async translate(request) {
     const byProvider = new Map<typeof claude | typeof gpt, typeof request.items>();
-    // …route items per target locale, call each provider, merge results.
   },
 });
 ```
 
-This pattern is heavier than the shipped translators; reach for it when you have specific performance or cost reasons.
+Inside `translate`, route each item to the right provider based on its target locale, call each provider's `batch()` with the routed slice, and merge the results back. This pattern is heavier than the shipped translators; reach for it when you have specific performance or cost reasons.
 
 ## Forwarding the AbortSignal
 

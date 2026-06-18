@@ -19,7 +19,11 @@ The default for server-rendered apps. The cookie is written client-side when `se
 
 ```ts
 persistence: 'cookie',
-// or with options:
+```
+
+Or with options:
+
+```ts
 persistence: {
   name: 'lang',
   secure: true,
@@ -44,7 +48,11 @@ Browser-only. The locale lives in `localStorage`, read once at startup and writt
 
 ```ts
 persistence: 'local-storage',
-// or with options:
+```
+
+Or with options:
+
+```ts
 persistence: {
   key: 'lang',
   type: 'local-storage',
@@ -67,7 +75,11 @@ The locale lives in the URL, either as a path segment (`/sv/settings`) or as a q
 
 ```ts
 persistence: 'url',
-// or with a query-parameter matcher:
+```
+
+Or with a query-parameter matcher:
+
+```ts
 persistence: {
   match: /[?&]lang=(?<locale>[^&]+)/,
   type: 'url',

@@ -78,10 +78,9 @@ include: ['src', 'app/components'],
 
 ### `exclude`
 
-Patterns yapyak should skip. Same shape as `include`. Tests, generated files, and `.d.ts` declarations are excluded by default:
+Patterns yapyak should skip. Same shape as `include`. Tests, generated files, and `.d.ts` declarations are excluded by default — you don't need to write this list yourself:
 
 ```ts
-// Default exclude list (you don't need to write this)
 exclude: [
   '**/*.{test,spec}.*',
   '**/__tests__/**',

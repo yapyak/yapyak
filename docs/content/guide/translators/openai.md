@@ -71,31 +71,41 @@ OpenAI-specific options on top of the [shared translator surface](/guide/transla
 
 ## Compatible providers
 
-The same `openai()` factory works with any provider that mirrors OpenAI's chat-completions schema. Override `endpoint` and you're set:
+The same `openai()` factory works with any provider that mirrors OpenAI's chat-completions schema. Override `endpoint` and you're set.
+
+Groq:
 
 ```ts
-// Groq
 openai({
   apiKey: process.env.GROQ_API_KEY,
   endpoint: 'https://api.groq.com/openai/v1/chat/completions',
   model: 'llama-3.1-70b-versatile',
 });
+```
 
-// DeepSeek
+DeepSeek:
+
+```ts
 openai({
   apiKey: process.env.DEEPSEEK_API_KEY,
   endpoint: 'https://api.deepseek.com/v1/chat/completions',
   model: 'deepseek-chat',
 });
+```
 
-// Mistral
+Mistral:
+
+```ts
 openai({
   apiKey: process.env.MISTRAL_API_KEY,
   endpoint: 'https://api.mistral.ai/v1/chat/completions',
   model: 'mistral-large-latest',
 });
+```
 
-// OpenRouter (aggregator)
+OpenRouter (aggregator):
+
+```ts
 openai({
   apiKey: process.env.OPENROUTER_API_KEY,
   endpoint: 'https://openrouter.ai/api/v1/chat/completions',

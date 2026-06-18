@@ -12,18 +12,29 @@ format.in('sv').number(199, {
   currency: 'SEK',
   style: 'currency',
 });
-// '199,00 kr'
-
-format.in('ja').dateTime(new Date(), { dateStyle: 'long' });
-// '2026年6月17日'
 ```
+
+{% output %}
+'199,00 kr'
+{% /output %}
+
+```ts
+format.in('ja').dateTime(new Date(), { dateStyle: 'long' });
+```
+
+{% output %}
+'2026年6月17日'
+{% /output %}
 
 `format.in(locale)` returns a `Format` value with the same methods as the top-level `format`. You chain whatever you need:
 
 ```ts
 format.in('sv').number(value);
+
 format.in('sv').dateTime(date);
+
 format.in('sv').list(items);
+
 format.in('sv').relativeTime(offset, unit);
 ```
 
@@ -52,8 +63,12 @@ const balance = format.in('sv').number(199, {
   currency: 'SEK',
   style: 'currency',
 });
+
 t.in('sv', 'Your balance is {balance}', { balance });
-// 'Ditt saldo är 199,00 kr'
 ```
+
+{% output %}
+'Ditt saldo är 199,00 kr'
+{% /output %}
 
 This is the pattern for emails, server-rendered preview cards, and other rendering moments that need a fully-fixed locale across all the text and all the numbers.

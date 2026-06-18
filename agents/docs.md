@@ -79,6 +79,26 @@ One thesis per section. If a section has two, split it.
 - JSX attribute expressions `attr={expr}` are not object literals — leave them as-is.
 - Locale-file JSON is always path-nested: `{ "path/to/file.tsx": { "key": "value" } }`. Never flatten the path away.
 - Prefer `ts` for API demonstrations. Use the framework-specific language (`tsx`, `vue`, `svelte`, `astro`) only when the example is a component.
+- **Blank line between every top-level statement.** `const options = ...;` followed by `t('Choose one of {options}.', { options });` always has a blank line between them. Same for parallel declarations (`const claude = ...;` / `const gpt = ...;`). Same for repeated demo calls (`t('Save'); t('Save');`). The only exemption is consecutive `import`/`export` lines, which follow standard JS convention and stack without blanks.
+
+### Comments inside code blocks
+
+Code blocks contain code, not prose. The default is no comments. The narrow exceptions:
+
+- **Type-check pass/fail markers.** `// ✓` and `// ✗` next to lines that demonstrate type-system behavior.
+- **Diagnostic-utfall.** `// error: missing 'name'`, `// no other context for 'Open' anywhere`, `// narrowed to Currency`. What the compiler or editor *says* about the line, not what the author thinks about it.
+- **Genuine code comments** that would appear in real production code (rare in docs examples).
+
+Everything else moves out. Specifically:
+
+- **Editorial labels** like `// English source: just one and other` or `// Swedish keeps the order` — these are prose. They live as a one-line lead-in before the code block, or as a sentence in the surrounding paragraph.
+- **Filename markers** like `// sv.json — link wraps a different word` — use the bracket-fence label: ` ```json [locales/sv.json] `. The annotation moves to the lead-in sentence.
+- **Compile-output annotations** like `// becomes: 'Spara ändringar'` or `// catalog entry: _date(...)` — split into a second code block with `compiles to:` (or similar) prose between, or describe the result in a sentence after the input block.
+- **Variant labels** like `// Groq`, `// or with options:` — split into separate code blocks with a lead-in for each.
+- **Result outputs** like `// 'apple, pear, and orange'` or `// ['zh-Hant-TW', 'zh-Hant', 'zh']` — use `{% output %}`.
+- **Placeholder ellipses** like `// ...your root layout here...` — usually means the example is incomplete; either show real code or refactor the example so the omitted parts aren't relevant.
+
+The principle: a comment in a code block must describe behavior of the code itself (what the type checker or runtime would say). If the comment is describing *the example* or *the docs reader's situation*, it's prose and belongs outside.
 
 ### Framework switching
 

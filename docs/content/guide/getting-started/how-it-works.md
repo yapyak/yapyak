@@ -25,8 +25,9 @@ The compiler reads each file through a processor that understands its format. Th
 {% switch group="framework" %}
 
 {% when value="react" %}
+`@yapyak/react/processor` handles `.tsx` and `.jsx`:
+
 ```tsx
-// .tsx and .jsx — handled by @yapyak/react/processor
 import { t } from 'yapyak';
 
 export function SaveButton() {
@@ -130,9 +131,11 @@ A multi-locale source file:
 import { t } from 'yapyak';
 
 t('Save');
+
 t('Save');
 
 t('Hi {name}', { name });
+
 t('Hi {name}', { name });
 ```
 
@@ -149,15 +152,18 @@ const _catalog_$0 = {
   en: 'Save',
   sv: 'Spara',
 };
+
 const _catalog_$1 = {
   en: [_literal('Hi '), _placeholder('name')],
   sv: [_literal('Hej '), _placeholder('name')],
 };
 
 _pick(_catalog_$0);
+
 _pick(_catalog_$0);
 
 _pick(_catalog_$1, { name });
+
 _pick(_catalog_$1, { name });
 ```
 
@@ -167,23 +173,42 @@ Three things happen:
 - **Identical catalogs are shared.** Both `t('Save')` calls reference the same `_catalog_$0`; the catalog object is declared once.
 - **Vite code-splits these catalog objects** with the modules that contain them. A route that doesn't render a translation never downloads it.
 
-**Single-locale.** When only one locale ends up in the bundle — because that's the only one you've added, or because you've set [`fixedLocale`](/guide/getting-started/configuration#fixed-locale-builds) — the compiler skips `_pick`, the factory imports, and the catalog objects entirely. Each `t()` call collapses to whatever value the active locale has on disk (or to the source string if there's no translation):
+**Single-locale.** When only one locale ends up in the bundle — because that's the only one you've added, or because you've set [`fixedLocale`](/guide/getting-started/configuration#fixed-locale-builds) — the compiler skips `_pick`, the factory imports, and the catalog objects entirely. Each `t()` call collapses to whatever value the active locale has on disk (or to the source string if there's no translation).
+
+With `fixedLocale: 'sv'` and a Swedish translation present:
 
 ```ts
-// fixedLocale: 'sv', with a Swedish translation present:
 t('Save changes');
-// becomes: 'Spara ändringar'
-
-// no translation needed — the source survives as a template literal:
-t('Hello {name}', { name });
-// becomes: `Hello ${name}`
 ```
 
-And in JSX, the call disappears into the surrounding markup:
+compiles to:
+
+```ts
+'Spara ändringar'
+```
+
+Without a translation, the source survives as a template literal:
+
+```ts
+t('Hello {name}', { name });
+```
+
+compiles to:
+
+```ts
+`Hello ${name}`
+```
+
+In JSX, the call disappears into the surrounding markup:
 
 ```tsx
 <p>{t('Welcome')}</p>
-// becomes: <p>Welcome</p>
+```
+
+compiles to:
+
+```tsx
+<p>Welcome</p>
 ```
 
 The bundle ships with no i18n runtime at all.
@@ -192,17 +217,17 @@ The bundle ships with no i18n runtime at all.
 
 ```ts
 t('Posted on {date, date, long}', { date });
-// catalog entry: _date('date', 'long')
-// at render time:     new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(date)
 ```
+
+The catalog entry is `_date('date', 'long')`. At render time it resolves to `new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(date)`.
 
 **Plurals and selects stay as runtime structures** because branch selection depends on the active locale and the parameter value:
 
 ```ts
 t('{count, plural, one {# message} other {# messages}}', { count });
-// catalog entry: _plural('count', 'cardinal', { one: [...], other: [...] })
-// at render time:     branch picked through Intl.PluralRules.select()
 ```
+
+The catalog entry is `_plural('count', 'cardinal', { one: [...], other: [...] })`. At render time the branch is picked through `Intl.PluralRules.select()`.
 
 ## How locale switching propagates
 

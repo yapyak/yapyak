@@ -37,6 +37,8 @@ export type {
   ListBlock,
   ListItemBlock,
   OnlyBlock,
+  OutputBlock,
+  OutputLine,
   PageEntry,
   ParagraphBlock,
   QuoteBlock,

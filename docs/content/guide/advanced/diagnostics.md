@@ -69,6 +69,7 @@ Either add `{name}` to the source or remove it from the parameters.
 
 ```ts
 const params = { name: 'A' };
+
 t('Hi {name}', params);  // can't be statically verified
 ```
 
@@ -96,12 +97,17 @@ ICU has features yapyak doesn't support — plural offsets, custom number skelet
 
 ### `YAP0010` — Kind mismatch
 
+Source:
+
 ```ts
-// source
 t('{count, plural, one {one} other {other}}');
-// translation
+```
+
+Translation:
+
+```json
 {
-  "{count, plural, one {one} other {other}}": "{count, select, ...}",
+  "{count, plural, one {one} other {other}}": "{count, select, ...}"
 }
 ```
 
@@ -117,13 +123,13 @@ A placeholder in the translation isn't in the source. Same idea, other direction
 
 ### `YAP0038` — Missing branch in target
 
+Source:
+
 ```ts
-// source
 '{count, plural, one {1} few {few} other {many}}'
-// sv translation missing the 'few' branch
 ```
 
-Some translations need branches the source doesn't have (Slavic languages, Arabic) and vice versa. The compiler flags it when the target is missing a category the source declares.
+If the Swedish translation omits the `few` branch, the compiler flags it. Some translations need branches the source doesn't have (Slavic languages, Arabic) and vice versa.
 
 ## Catalog — locale file integrity
 
@@ -171,9 +177,11 @@ The first argument to `t.as()` has to be a static string literal.
 
 ### `YAP0018` — Mixed usage
 
+In the same file:
+
 ```ts
-// in the same file:
 t('Open');
+
 t.as('action', 'Open');
 ```
 

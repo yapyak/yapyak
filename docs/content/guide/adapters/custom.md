@@ -11,10 +11,11 @@ If your project is on a Vite-based SSR framework yapyak doesn't ship an adapter 
 import { withResponse } from 'yapyak/adapter';
 
 await withResponse(request, async () => {
-  // anything inside here sees the request-bound locale
   return await render(request);
 });
 ```
+
+Anything inside the callback sees the request-bound locale.
 
 `withResponse(request, callback, responseExtractor?)` does three things:
 

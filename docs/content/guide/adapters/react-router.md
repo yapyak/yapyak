@@ -58,9 +58,9 @@ import type { Route } from './+types/root';
 import { middleware as yapyakMiddleware } from '@yapyak/react-router';
 
 export const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];
-
-// ... your root layout and Outlet ...
 ```
+
+Add the export alongside your existing root layout and `Outlet`.
 
 The middleware runs before every loader and component render, so anything called during the request (`getLocale()`, `t()`, `format.*`, server-side `setLocale()`) sees the right locale.
 

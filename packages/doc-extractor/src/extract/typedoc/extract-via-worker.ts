@@ -61,7 +61,7 @@ export function extractTypedocViaWorker(
     child.on('exit', (code, signal) => {
       settle(() => {
         const reason =
-          signal !== null ? `signal ${signal}` : `exit code ${code ?? 0}`;
+          signal === null ? `exit code ${code ?? 0}` : `signal ${signal}`;
         reject(
           new Error(
             `Typedoc worker exited before responding (${reason}) for ${request.packageDir}`,

@@ -16,6 +16,7 @@ import { BlockRendererNodeLink } from './block-renderer-node-link';
 import { BlockRendererNodeList } from './block-renderer-node-list';
 import { BlockRendererNodeListItem } from './block-renderer-node-list-item';
 import { BlockRendererNodeOnly } from './block-renderer-node-only';
+import { BlockRendererNodeOutput } from './block-renderer-node-output';
 import { BlockRendererNodeParagraph } from './block-renderer-node-paragraph';
 import { BlockRendererNodeQuote } from './block-renderer-node-quote';
 import { BlockRendererNodeStrikethrough } from './block-renderer-node-strikethrough';
@@ -77,6 +78,8 @@ export function BlockRendererNode(props: BlockRendererNodeProps) {
       return <BlockRendererNodeSwitch block={block} />;
     case 'only':
       return <BlockRendererNodeOnly block={block} />;
+    case 'output':
+      return <BlockRendererNodeOutput block={block} />;
     case 'callout':
       return <BlockRendererNodeCallout block={block} />;
     case 'eyebrow':

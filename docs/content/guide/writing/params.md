@@ -7,8 +7,12 @@ When a message contains values that change at runtime, you write them as named p
 
 ```ts
 t('Hi {name}', { name: 'Ada' });
-// 'Hej Ada' in Swedish, 'Bonjour Ada' in French
 ```
+
+{% output %}
+sv-SE: 'Hej Ada'
+fr-FR: 'Bonjour Ada'
+{% /output %}
 
 The placeholder syntax is curly braces around the parameter name. The locale file keeps the same placeholders, so translators (human or model) know exactly where the value lands inside each language's sentence.
 
@@ -47,15 +51,19 @@ t('You have {count} messages from {sender}', {
 });
 ```
 
-```json
-// sv.json — Swedish keeps the order
-{
-  "You have {count} messages from {sender}": "Du har {count} meddelanden från {sender}",
-}
+Swedish keeps the order:
 
-// ja.json — Japanese reorders naturally
+```json [locales/sv.json]
 {
-  "You have {count} messages from {sender}": "{sender}から{count}件のメッセージがあります",
+  "You have {count} messages from {sender}": "Du har {count} meddelanden från {sender}"
+}
+```
+
+Japanese reorders naturally:
+
+```json [locales/ja.json]
+{
+  "You have {count} messages from {sender}": "{sender}から{count}件のメッセージがあります"
 }
 ```
 
@@ -71,6 +79,7 @@ t('Hi {name}', { name: 'Ada' });             // ok
 t('Hi {name}', { name });                    // ok (shorthand still parses)
 
 const params = { name: 'Ada' };
+
 t('Hi {name}', params);                      // error: dynamic params
 ```
 
@@ -86,11 +95,21 @@ The placeholder `{count}` renders as the value's string form — `3`, `Ada`, wha
 
 ```ts
 t('Your balance is {amount, number, currency USD}', { amount: 99.95 });
-// 'Your balance is $99.95' in en-US, 'Ditt saldo är 99,95 US$' in sv-SE
-
-t('Updated {when, date, long}', { when: new Date() });
-// 'Updated June 17, 2026' in en-US, 'Uppdaterad 17 juni 2026' in sv-SE
 ```
+
+{% output %}
+en-US: 'Your balance is $99.95'
+sv-SE: 'Ditt saldo är 99,95 US$'
+{% /output %}
+
+```ts
+t('Updated {when, date, long}', { when: new Date() });
+```
+
+{% output %}
+en-US: 'Updated June 17, 2026'
+sv-SE: 'Uppdaterad 17 juni 2026'
+{% /output %}
 
 These follow the [ICU MessageFormat](https://unicode-org.github.io/icu/userguide/format_parse/messages/) spec and travel with every translation. See [Plurals](/guide/writing/plurals) for the full list of supported sub-formats.
 

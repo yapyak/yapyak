@@ -59,14 +59,27 @@ When a translation isn't available for a more-specific tag but is available for 
 import { getLocaleFallbackChain } from 'yapyak';
 
 getLocaleFallbackChain('zh-Hant-TW');
-// ['zh-Hant-TW', 'zh-Hant', 'zh']
-
-getLocaleFallbackChain('pt-BR');
-// ['pt-BR', 'pt']
-
-getLocaleFallbackChain('sv');
-// ['sv']
 ```
+
+{% output %}
+['zh-Hant-TW', 'zh-Hant', 'zh']
+{% /output %}
+
+```ts
+getLocaleFallbackChain('pt-BR');
+```
+
+{% output %}
+['pt-BR', 'pt']
+{% /output %}
+
+```ts
+getLocaleFallbackChain('sv');
+```
+
+{% output %}
+['sv']
+{% /output %}
 
 Each step drops one subtag from the right. The chain doesn't include your `defaultLocale` at the end; append it yourself when you need a full ordering.
 
@@ -95,6 +108,7 @@ Normalizes BCP 47 casing through `Intl.Locale` before matching, so `'EN-us'` par
 import { parseLocale } from 'yapyak';
 
 const fromUrl = new URL(request.url).searchParams.get('lang') ?? '';
+
 const locale = parseLocale(fromUrl) ?? defaultLocale;
 ```
 

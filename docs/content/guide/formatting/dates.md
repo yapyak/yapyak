@@ -9,10 +9,13 @@ order: 3
 import { format } from 'yapyak';
 
 format.dateTime(new Date(), { dateStyle: 'long' });
-// 'June 17, 2026'   in en-US
-// '17 juni 2026'    in sv-SE
-// '17. Juni 2026'   in de-DE
 ```
+
+{% output %}
+en-US: 'June 17, 2026'
+sv-SE: '17 juni 2026'
+de-DE: '17. Juni 2026'
+{% /output %}
 
 ## Absolute date and time
 
@@ -22,28 +25,54 @@ format.dateTime(new Date(), { dateStyle: 'long' });
 
 ```ts
 format.dateTime(new Date(), { dateStyle: 'short' });
-// '6/17/26'         in en-US
-
-format.dateTime(new Date(), { dateStyle: 'medium' });
-// 'Jun 17, 2026'    in en-US
-
-format.dateTime(new Date(), { dateStyle: 'long' });
-// 'June 17, 2026'   in en-US
-
-format.dateTime(new Date(), { dateStyle: 'full' });
-// 'Wednesday, June 17, 2026'   in en-US
 ```
+
+{% output %}
+en-US: '6/17/26'
+{% /output %}
+
+```ts
+format.dateTime(new Date(), { dateStyle: 'medium' });
+```
+
+{% output %}
+en-US: 'Jun 17, 2026'
+{% /output %}
+
+```ts
+format.dateTime(new Date(), { dateStyle: 'long' });
+```
+
+{% output %}
+en-US: 'June 17, 2026'
+{% /output %}
+
+```ts
+format.dateTime(new Date(), { dateStyle: 'full' });
+```
+
+{% output %}
+en-US: 'Wednesday, June 17, 2026'
+{% /output %}
 
 ### Time only
 
 ```ts
 format.dateTime(new Date(), { timeStyle: 'short' });
-// '4:30 PM'         in en-US
-// '16:30'           in sv-SE
-
-format.dateTime(new Date(), { timeStyle: 'full' });
-// '4:30:15 PM Central European Summer Time'   in en-US
 ```
+
+{% output %}
+en-US: '4:30 PM'
+sv-SE: '16:30'
+{% /output %}
+
+```ts
+format.dateTime(new Date(), { timeStyle: 'full' });
+```
+
+{% output %}
+en-US: '4:30:15 PM Central European Summer Time'
+{% /output %}
 
 ### Date and time together
 
@@ -52,8 +81,11 @@ format.dateTime(new Date(), {
   dateStyle: 'medium',
   timeStyle: 'short',
 });
-// 'Jun 17, 2026, 4:30 PM'   in en-US
 ```
+
+{% output %}
+en-US: 'Jun 17, 2026, 4:30 PM'
+{% /output %}
 
 ### Finer control with field options
 
@@ -68,8 +100,11 @@ format.dateTime(new Date(), {
   month: '2-digit',
   year: 'numeric',
 });
-// '06/17/2026, 16:30'   in en-US
 ```
+
+{% output %}
+en-US: '06/17/2026, 16:30'
+{% /output %}
 
 Any option from [`Intl.DateTimeFormatOptions`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#parameters) works (minus `localeMatcher`, which yapyak manages). `timeZone`, `weekday`, `era`, `dayPeriod`, fractional seconds — they all pass through.
 
@@ -79,13 +114,21 @@ Any option from [`Intl.DateTimeFormatOptions`](https://developer.mozilla.org/en-
 
 ```ts
 format.relativeTime(-1, 'day');
-// '1 day ago'        in en-US
-// 'för 1 dag sedan'  in sv-SE
-
-format.relativeTime(3, 'hour');
-// 'in 3 hours'       in en-US
-// 'om 3 timmar'      in sv-SE
 ```
+
+{% output %}
+en-US: '1 day ago'
+sv-SE: 'för 1 dag sedan'
+{% /output %}
+
+```ts
+format.relativeTime(3, 'hour');
+```
+
+{% output %}
+en-US: 'in 3 hours'
+sv-SE: 'om 3 timmar'
+{% /output %}
 
 ### Auto-replace common values with words
 
@@ -93,15 +136,28 @@ format.relativeTime(3, 'hour');
 
 ```ts
 format.relativeTime(-1, 'day', { numeric: 'auto' });
-// 'yesterday'    in en-US
-// 'igår'         in sv-SE
-
-format.relativeTime(0, 'day', { numeric: 'auto' });
-// 'today'        in en-US
-
-format.relativeTime(1, 'day', { numeric: 'auto' });
-// 'tomorrow'     in en-US
 ```
+
+{% output %}
+en-US: 'yesterday'
+sv-SE: 'igår'
+{% /output %}
+
+```ts
+format.relativeTime(0, 'day', { numeric: 'auto' });
+```
+
+{% output %}
+en-US: 'today'
+{% /output %}
+
+```ts
+format.relativeTime(1, 'day', { numeric: 'auto' });
+```
+
+{% output %}
+en-US: 'tomorrow'
+{% /output %}
 
 For offsets the locale doesn't have a special word for, `numeric: 'auto'` falls back to the numeric phrase.
 
@@ -111,6 +167,7 @@ Pick the largest unit whose magnitude is comfortable for the offset — "yesterd
 
 ```ts
 const elapsed = Date.now() - timestamp;
+
 const minutes = Math.round(elapsed / 60_000);
 
 if (minutes < 60) {

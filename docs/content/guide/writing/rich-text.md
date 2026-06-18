@@ -21,11 +21,11 @@ There are two kinds of tags:
 
 Whichever language a string translates into, the tags travel along — and a translator (or model) will move them to wherever the equivalent meaning sits in the target syntax.
 
-```json
-// sv.json — link wraps a different word in Swedish
+In Swedish the `<link>` wraps a different word:
+
+```json [locales/sv.json]
 {
-  "Read our <link>privacy policy</link> for details.":
-    "Läs vår <link>integritetspolicy</link> för information."
+  "Read our <link>privacy policy</link> for details.": "Läs vår <link>integritetspolicy</link> för information."
 }
 ```
 
@@ -169,14 +169,18 @@ The component covers the common case. If you need to walk the structure yourself
 import { parseRichText } from 'yapyak';
 
 const nodes = parseRichText(t('Read our <link>privacy policy</link>.'));
-// nodes is RichTextNode[]:
-// [
-//   { text: 'Read our ', type: 'text' },
-//   { type: 'tag', name: 'link', children: [
-//     { text: 'privacy policy', type: 'text' }
-//   ]},
-//   { text: '.', type: 'text' }
-// ]
+```
+
+`nodes` is `RichTextNode[]`:
+
+```ts
+[
+  { text: 'Read our ', type: 'text' },
+  { children: [
+    { text: 'privacy policy', type: 'text' },
+  ], name: 'link', type: 'tag' },
+  { text: '.', type: 'text' },
+]
 ```
 
 Each node is `{ type: 'text', text }`, `{ type: 'tag', name, children }`, or `{ type: 'void', name }`. The structure mirrors what `<RichText>` consumes.

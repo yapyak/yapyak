@@ -7,8 +7,11 @@ order: 4
 
 ```ts
 t('{role, select, admin {Admin panel} editor {Editor view} other {Reader view}}', { role: 'admin' });
-// 'Admin panel'
 ```
+
+{% output %}
+'Admin panel'
+{% /output %}
 
 The keys are arbitrary strings you choose. Unlike `plural`, where the categories come from ICU's locale rules, `select` lets you define whatever set fits your data.
 
@@ -18,8 +21,13 @@ Every `select` needs an `other` branch as the fallback. If the runtime value doe
 
 ```ts
 t('{status, select, draft {Draft} published {Published} other {Unknown}}', { status: 'archived' });
-// 'Unknown' — no 'archived' branch
 ```
+
+{% output %}
+'Unknown'
+{% /output %}
+
+`'archived'` doesn't match any named branch, so `other` is used.
 
 Omitting `other` is a compile-time error ([`YAP0008`](/guide/advanced/diagnostics)).
 
@@ -27,18 +35,23 @@ Omitting `other` is a compile-time error ([`YAP0008`](/guide/advanced/diagnostic
 
 Like with plurals, the translator (human or model) is free to add, remove, or merge branches per locale. Some languages need gendered verb forms; others don't.
 
+In the English source the verb doesn't change:
+
 ```ts
-// English source — gender doesn't change the verb
 t('{gender, select, female {She is online} male {He is online} other {They are online}}', { gender });
 ```
 
-```json
-// es.json — Spanish adds a gendered adjective
+Spanish adds a gendered adjective:
+
+```json [locales/es.json]
 {
   "{gender, select, female {She is online} male {He is online} other {They are online}}": "{gender, select, female {Está conectada} male {Está conectado} other {Está conectado}}"
 }
+```
 
-// fi.json — Finnish drops the distinction; one branch covers all
+Finnish drops the distinction; one branch covers all:
+
+```json [locales/fi.json]
 {
   "{gender, select, female {She is online} male {He is online} other {They are online}}": "{gender, select, other {Hän on paikalla}}"
 }

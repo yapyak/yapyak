@@ -1,0 +1,44 @@
+@layer components {
+  .Output {
+    display: grid;
+    gap: var(--spacing-2);
+    padding: var(--spacing-4) var(--spacing-6);
+    font-family: var(--font-family-mono);
+    font-size: 0.875rem;
+    line-height: var(--line-height-normal);
+    color: var(--foreground-soft);
+    background: transparent;
+    border-left: 2px solid var(--ring-stronger);
+    border-radius: 0;
+
+    &[data-with-locales] {
+      grid-template-columns: auto 1fr;
+    }
+  }
+
+  .Line {
+    display: contents;
+  }
+
+  .Locale {
+    align-self: start;
+    padding: 0 var(--spacing-2);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    color: var(--foreground-softer);
+    text-transform: lowercase;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .Value {
+    align-self: start;
+    color: var(--foreground-soft);
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+
+  .Output:not([data-with-locales]) .Line {
+    display: block;
+  }
+}

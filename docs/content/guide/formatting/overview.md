@@ -12,17 +12,39 @@ format.number(199, {
   currency: 'EUR',
   style: 'currency',
 });
-// '€199.00' in en-US, '199,00 €' in sv-SE
-
-format.dateTime(new Date(), { dateStyle: 'long' });
-// 'June 18, 2026' in en-US, '18 juni 2026' in sv-SE
-
-format.list(['apple', 'pear', 'orange']);
-// 'apple, pear, and orange' in en-US, 'apple, pear och orange' in sv-SE
-
-format.relativeTime(-1, 'day');
-// '1 day ago' in en-US, 'för 1 dag sedan' in sv-SE
 ```
+
+{% output %}
+en-US: '€199.00'
+sv-SE: '199,00 €'
+{% /output %}
+
+```ts
+format.dateTime(new Date(), { dateStyle: 'long' });
+```
+
+{% output %}
+en-US: 'June 18, 2026'
+sv-SE: '18 juni 2026'
+{% /output %}
+
+```ts
+format.list(['apple', 'pear', 'orange']);
+```
+
+{% output %}
+en-US: 'apple, pear, and orange'
+sv-SE: 'apple, pear och orange'
+{% /output %}
+
+```ts
+format.relativeTime(-1, 'day');
+```
+
+{% output %}
+en-US: '1 day ago'
+sv-SE: 'för 1 dag sedan'
+{% /output %}
 
 Each method maps directly to an `Intl.*Format` class:
 
@@ -88,10 +110,13 @@ format.in('sv').number(200, {
   currency: 'SEK',
   style: 'currency',
 });
-// '200,00 kr' regardless of the active locale
 ```
 
-The active locale is left untouched.
+{% output %}
+'200,00 kr'
+{% /output %}
+
+The result is the same regardless of the active locale. The active locale itself is left untouched.
 
 ## When to use `format` vs ICU placeholders
 

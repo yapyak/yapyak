@@ -9,10 +9,9 @@ For those, `t.in(locale, source)` forces a single locale on a single call.
 
 ```ts
 t.in('sv', 'Welcome back');
-// always returns the Swedish translation, regardless of the active locale
 ```
 
-The signature mirrors `t()` — placeholder parameters, rich-text tags, and ICU sub-formats all work the same. The only difference is that the locale is fixed.
+This always returns the Swedish translation regardless of the active locale. The signature mirrors `t()` — placeholder parameters, rich-text tags, and ICU sub-formats all work the same. The only difference is that the locale is fixed.
 
 ## With parameters
 

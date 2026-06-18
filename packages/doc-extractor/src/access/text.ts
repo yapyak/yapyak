@@ -35,6 +35,12 @@ export function blockToText(block: Block): string {
         .join('\n\n');
     case 'only':
       return block.children.map(blockToText).join('');
+    case 'output':
+      return block.lines
+        .map((line) =>
+          line.locale === null ? line.value : `${line.locale}: ${line.value}`,
+        )
+        .join('\n');
     case 'table': {
       const rows =
         block.head === null

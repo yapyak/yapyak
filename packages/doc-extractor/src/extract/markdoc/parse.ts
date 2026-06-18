@@ -3,6 +3,8 @@ import type {
   Block,
   CalloutBlock,
   CodeBlock,
+  OutputBlock,
+  OutputLine,
   TableBlock,
   TableCellBlock,
   TableRowBlock,
@@ -256,6 +258,10 @@ function toBlocks(node: unknown): Block[] {
       return [
         buildCallout(node.attributes, children),
       ];
+    case 'Output':
+      return [
+        buildOutput(node.attributes),
+      ];
     default:
       throw new Error(`parseMarkdoc: unknown tag "${node.name}"`);
   }
@@ -318,6 +324,56 @@ function buildCallout(
     type: 'callout',
     variant,
   };
+}
+
+const LOCALE_PREFIX_RX = /^([a-z]{2,3}(?:-[A-Za-z0-9]+){0,3}):[ \t]+(.+)$/;
+
+function buildOutput(attributes: Record<string, unknown>): OutputBlock {
+  const content = getStringAttribute(attributes.content) ?? '';
+  const lines: OutputLine[] = [];
+  for (const raw of content.split('\n')) {
+    const trimmed = raw.trim();
+    if (trimmed.length === 0) {
+      continue;
+    }
+    const match = trimmed.match(LOCALE_PREFIX_RX);
+    if (match === null) {
+      lines.push({
+        locale: null,
+        value: trimmed,
+      });
+      continue;
+    }
+    lines.push({
+      locale: match[1],
+      value: match[2].trim(),
+    });
+  }
+  return {
+    lines,
+    type: 'output',
+  };
+}
+
+type RawMarkdocNode = {
+  attributes?: Record<string, unknown>;
+  children?: RawMarkdocNode[];
+  type?: string;
+};
+
+function extractRawText(node: RawMarkdocNode): string {
+  if (node.type === 'text') {
+    return typeof node.attributes?.content === 'string'
+      ? node.attributes.content
+      : '';
+  }
+  if (node.type === 'softbreak' || node.type === 'hardbreak') {
+    return '\n';
+  }
+  if (Array.isArray(node.children)) {
+    return node.children.map(extractRawText).join('');
+  }
+  return '';
 }
 
 function isListItem(block: Block): block is Extract<
@@ -418,6 +474,15 @@ const callout: Schema = {
   render: 'Callout',
 };
 
+const output: Schema = {
+  transform(node) {
+    const text = extractRawText(node as RawMarkdocNode);
+    return new Markdoc.Tag('Output', {
+      content: text,
+    });
+  },
+};
+
 const codeGroup: Schema = {
   render: 'CodeGroup',
 };
@@ -466,6 +531,7 @@ const markdocConfig: Config = {
     callout,
     'code-group': codeGroup,
     only: onlyTag,
+    output,
     switch: switchTag,
     when: whenTag,
   },

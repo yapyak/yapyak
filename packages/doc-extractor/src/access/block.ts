@@ -16,6 +16,7 @@ export type Block =
   | ListBlock
   | ListItemBlock
   | OnlyBlock
+  | OutputBlock
   | ParagraphBlock
   | StrikethroughBlock
   | StrongBlock
@@ -152,6 +153,16 @@ export type CalloutBlock = {
   title: string | null;
   type: 'callout';
   variant: 'danger' | 'info' | 'tip' | 'warning';
+};
+
+export type OutputLine = {
+  locale: string | null;
+  value: string;
+};
+
+export type OutputBlock = {
+  lines: OutputLine[];
+  type: 'output';
 };
 
 export type ExportKind =
