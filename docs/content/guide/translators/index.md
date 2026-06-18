@@ -1,5 +1,5 @@
 ---
 title: Translators
-order: 6
+order: 5
 redirect: ./overview
 ---

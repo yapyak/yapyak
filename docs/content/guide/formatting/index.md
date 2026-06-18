@@ -1,5 +1,5 @@
 ---
 title: Formatting
-order: 4
-redirect: ./overview
+order: 3
+redirect: ./numbers
 ---

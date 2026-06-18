@@ -3,196 +3,122 @@ title: Custom
 order: 6
 ---
 
-`createTranslator` ships in the `yapyak` package under the `yapyak/translator` subpath — no extra install needed.
+If none of the shipped translators fit — a self-hosted model, a translation service that isn't OpenAI-compatible, an internal API that wraps multiple providers — you can build your own with `createTranslator`. The interface is a single function: take a batch of source strings and target locales, return the translations.
 
-## Setup
-
-Anything that can return translated strings can be a yapyak translator. Use `createTranslator` to build one. It handles batching, deduplication across target locales, validation, and error handling so you only have to wire the LLM call.
+## The shape
 
 ```ts
 import { createTranslator } from 'yapyak/translator';
 
 const myTranslator = createTranslator({
+  id: 'my-translator',
   async translate({ items, sourceLocale, targetLocales, signal }) {
-    // Return one object per item with a translation for every locale in `targetLocales`.
-    return items.map((item) => {
-      const translations = {};
-      for (const locale of targetLocales) {
-        translations[locale] = item.source;  // your LLM call goes here
-      }
-      return translations;
+    const response = await fetch('https://my-translation.internal/translate', {
+      body: JSON.stringify({ items, sourceLocale, targetLocales }),
+      method: 'POST',
+      signal,
     });
+    const data = await response.json();
+    return data.translations;
   },
 });
-
-// In yapyak.config.ts:
-// export default defineConfig({ translator: myTranslator });
 ```
 
-## One request, every target locale
+Pass it to your config like any other translator:
 
-yapyak does not ask the model once per locale. A single request carries every configured target locale, and the model returns one object per source string with a translation for each.
+```ts
+import { defineConfig } from 'yapyak/config';
 
-```json
+export default defineConfig({
+  translator: myTranslator,
+});
+```
+
+yapyak handles the batching, deduplication, retry behavior, and result validation around your function — you only describe how to talk to your backend.
+
+## The input
+
+The `translate` callback receives a `TranslateBatchRequest`:
+
+```ts
+type TranslateBatchRequest = {
+  items: TranslateItem[];
+  sourceLocale: Locale;
+  targetLocales: Locale[];
+  signal?: AbortSignal;
+};
+
+type TranslateItem = {
+  source: string;
+  disambiguation?: string;       // from t.as(context, source)
+  examples?: TranslationExample[];  // prior translations as style hints
+  component?: string;            // call-site component name (if context level allows)
+  element?: string;              // call-site element (if context level allows)
+  snippet?: string;              // surrounding code (only at context: 'rich')
+};
+```
+
+`items` is the batch — yapyak has already chunked it according to your `batchSize`. `sourceLocale` is your `defaultLocale` (`'en'` for most projects). `targetLocales` is every locale missing a translation for any item in the batch. `signal` is an `AbortSignal` you should forward to your fetch so cancellation propagates.
+
+## The output
+
+Return an array of objects, one per item, each keyed by the target locales:
+
+```ts
 [
-  { "sv": "Spara ändringar", "de": "Änderungen speichern", "ja": "変更を保存" },
-  { "sv": "Avbryt", "de": "Abbrechen", "ja": "キャンセル" }
+  { sv: 'Spara', de: 'Speichern' },     // for items[0]
+  { sv: 'Avbryt', de: 'Abbrechen' },    // for items[1]
 ]
 ```
 
-For a project configured with ten locales, that is one round-trip rather than ten. Terminology stays consistent: the same `Save` becomes `Spara` for Swedish and `Speichern` for German in the same response, with both choices visible in the same context window.
+The order matches `items`. Every entry must have one key per locale in `targetLocales`. yapyak validates the shape — if an entry is missing a locale or is the wrong type, the diagnostic [`YAP0034`](/guide/advanced/diagnostics) fires and that entry is dropped.
 
-Deduplication happens before the request. The same source string appearing across multiple locales collapses into a single item; its target locales merge into the union sent to the model.
+## Configuration
 
-## When to build one
-
-| Provider | Use |
-| --- | --- |
-| AWS Bedrock | Custom (uses AWS SDK / SigV4 auth) |
-| Vertex AI (Google enterprise) | Custom (uses GCP IAM / ADC auth) |
-| Azure OpenAI | OpenAI translator with `endpoint` override (Azure exposes OpenAI-compatible API) |
-| Cohere | Custom (has its own API shape) |
-| Internal company AI service | Custom |
-| Local LM Studio / LocalAI | Custom, or OpenAI translator if they expose OpenAI-compatible API |
-| HuggingFace Inference API | Custom |
-| Your own fine-tuned model | Custom |
-| Rules-based / dictionary lookup | Custom (no AI needed) |
-
-For OpenAI-compatible providers (Groq, DeepSeek, Mistral, OpenRouter, Vercel AI Gateway), prefer the [OpenAI translator with `endpoint`](/guide/translators/openai#openai-compatible-providers). No custom translator needed.
-
-## The createTranslator API
+`createTranslator` accepts a few extras alongside `translate`:
 
 ```ts
-interface CreateTranslatorInput {
-  batchSize?: number;
-  concurrency?: number;
-  context?: 'none' | 'minimal' | 'rich';
-  id?: string;
-  translate: (params: TranslateBatchRequest) =>
-    | LocaleTranslations[]
-    | Promise<LocaleTranslations[]>;
-}
-
-interface TranslateBatchRequest {
-  items: Array<{
-    source: string;
-    component?: string;
-    disambiguation?: string;
-    element?: string;
-    snippet?: string;
-    examples?: Array<{ source: string; translation: string }>;
-  }>;
-  sourceLocale: string;
-  targetLocales: string[];
-  signal?: AbortSignal;
-}
-
-type LocaleTranslations = Record<string, string>;
-```
-
-You provide `translate`. The factory handles the rest:
-
-1. Deduplicates incoming requests by source string and disambiguation across locales.
-2. Unions every target locale into a single request to your callback.
-3. Splits a large request set into chunks of `batchSize` (default `25`).
-4. Runs up to `concurrency` chunks in parallel (default `5`).
-5. Validates your return value:
-   - Must be an array of `LocaleTranslations` objects.
-   - Length must equal `items.length`.
-   - Each object should carry a string for every locale in `targetLocales`.
-   - Missing locale entries surface as empty strings. yapyak skips writing them and retries on the next save.
-6. Trims whitespace per translation.
-7. Distributes results back to the original per-locale requests in the same order.
-
-## Strict return contract
-
-`translate` must return `LocaleTranslations[]` (or `Promise<LocaleTranslations[]>`):
-
-| Return for 2-item input, `targetLocales: ['sv', 'de']` | Behavior |
-| --- | --- |
-| `[{ sv: 'Spara', de: 'Speichern' }, { sv: 'Avbryt', de: 'Abbrechen' }]` | ✓ Accepted |
-| `[{ sv: 'Spara' }]` (length mismatch) | ✗ `Error: translate returned 1 item, expected 2` |
-| `[{ sv: 'Spara' }, { sv: 'Avbryt' }]` (missing `de`) | ✓ Accepted, `de` left missing and retried |
-| `null` / `undefined` | ✗ `Error: translate must return an array, got object` |
-| `Promise<LocaleTranslations[]>` | ✓ Awaited, then validated |
-
-No automatic coercion. If your AI returns weird shapes, normalize them inside `translate` before returning. The factory expects clean output.
-
-## Example: factory pattern with options
-
-For a reusable translator with configurable options:
-
-```ts
-import { createTranslator } from 'yapyak/translator';
-
-interface MyLLMOptions {
-  endpoint: string;
-  apiKey: string;
-  model: string;
-  voice?: string;
-  temperature?: number;
-}
-
-export function myLLM(opts: MyLLMOptions) {
-  return createTranslator({
-    id: 'my-llm',
-    async translate({ items, sourceLocale, targetLocales, signal }) {
-      const response = await fetch(opts.endpoint, {
-        method: 'POST',
-        signal,
-        headers: {
-          authorization: `Bearer ${opts.apiKey}`,
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: opts.model,
-          temperature: opts.temperature ?? 0.2,
-          system: buildPrompt(sourceLocale, targetLocales, opts.voice),
-          input: items,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`myLLM: ${response.status} ${await response.text()}`);
-      }
-
-      const data = await response.json();
-      return data.translations;
-    },
-  });
-}
-```
-
-Then use it:
-
-```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak/config';
-import { myLLM } from './my-translator';
-
-export default defineConfig({
-  translator: myLLM({
-    endpoint: 'https://my-llm.example.com/translate',
-    apiKey: process.env.MY_LLM_KEY!,
-    model: 'my-model-v3',
-    voice: 'Casual',
-  }),
+const myTranslator = createTranslator({
+  id: 'my-translator',
+  batchSize: 10,
+  concurrency: 3,
+  context: 'rich',
+  async translate({ items, sourceLocale, targetLocales, signal }) {
+    // …
+  },
 });
 ```
 
-## Example: rules-based translator (no AI)
+| Option | Type | Default | Purpose |
+|---|---|---|---|
+| `id` | `string` | `'custom'` | Stable identifier for logging and observability |
+| `batchSize` | `number` | `25` | Max items per `translate` call — yapyak chunks larger batches itself |
+| `concurrency` | `number` | `5` | Max parallel `translate` calls |
+| `context` | `'none' \| 'minimal' \| 'rich'` | `'minimal'` | What call-site context yapyak attaches to each item |
+| `translate` | `TranslateFn` | required | The batch callback |
 
-For testing, pseudo-locales, or specific deterministic transforms:
+The shipped translators (Anthropic, OpenAI, etc.) are themselves built on top of `createTranslator` — the same defaults apply, the same lifecycle runs underneath.
+
+## A real example: a rules-based translator
+
+When yapyak's normal LLM-translator path is overkill — say, for an app whose only translations are a handful of fixed terms — a small rules-based translator drops in cleanly:
 
 ```ts
 import { createTranslator } from 'yapyak/translator';
 
-export const pseudoLocale = createTranslator({
-  translate({ items, targetLocales }) {
+const rules: Record<string, Record<string, string>> = {
+  'Save': { sv: 'Spara', de: 'Speichern' },
+  'Cancel': { sv: 'Avbryt', de: 'Abbrechen' },
+  'Settings': { sv: 'Inställningar', de: 'Einstellungen' },
+};
+
+const myTranslator = createTranslator({
+  id: 'static-rules',
+  async translate({ items, targetLocales }) {
     return items.map((item) => {
-      const mangled = `⟦${item.source.replace(/[aeiou]/g, (c) => `${c}${c}`)}⟧`;
-      const result = {};
+      const result: Record<string, string> = {};
       for (const locale of targetLocales) {
-        result[locale] = mangled;
+        result[locale] = rules[item.source]?.[locale] ?? item.source;
       }
       return result;
     });
@@ -200,31 +126,81 @@ export const pseudoLocale = createTranslator({
 });
 ```
 
-This translator is *synchronous*. `translate` returns `LocaleTranslations[]` directly, not a Promise. The factory handles both forms.
+Strings not in the rules map fall through to the source text. Useful as a development-time placeholder before you wire up a real translator, or as a strict-no-LLM mode for a small handful of fixed messages.
 
-Use case: catch hard-coded strings (without `t()` wrapping) by setting up a pseudo-locale that mangles every translated string. Anything still showing real English in your UI when running in pseudo mode is a bug.
+## A real example: a routing translator
 
-## Errors and retries
-
-If your `translate` throws, failed strings stay missing in `locales/*.json` and retry on the next save. See [When things go wrong](/guide/translators#when-things-go-wrong) for the full failure model.
-
-For retries inside your own translator (e.g., rate-limited APIs), wrap the HTTP call yourself. The shipped translators use a built-in retry helper with exponential backoff on 408/429/5xx. Replicate that pattern or use any retry library.
-
-## Testing your translator
+Routing translator that sends some locales to one provider and others to another:
 
 ```ts
-import { describe, it, expect } from 'vitest';
-import { myLLM } from './my-translator';
+import { createTranslator } from 'yapyak/translator';
+import { anthropic } from '@yapyak/anthropic';
+import { openai } from '@yapyak/openai';
 
-const translator = myLLM({ apiKey: 'test', model: 'mock', endpoint: '...' });
+const claude = anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const gpt = openai({ apiKey: process.env.OPENAI_API_KEY });
 
-it('translates a batch', async () => {
-  const result = await translator.batch!([
-    { fileId: 'src/a.tsx', source: 'Save', sourceLocale: 'en', targetLocale: 'sv' },
-    { fileId: 'src/a.tsx', source: 'Cancel', sourceLocale: 'en', targetLocale: 'sv' },
-  ]);
-  expect(result).toEqual(['Spara', 'Avbryt']);
+const ROUTE = {
+  ja: claude,    // Claude is stronger here
+  zh: claude,
+  default: gpt,
+};
+
+const myTranslator = createTranslator({
+  id: 'routed',
+  async translate(request) {
+    const byProvider = new Map<typeof claude | typeof gpt, typeof request.items>();
+    // …route items per target locale, call each provider, merge results.
+  },
 });
 ```
 
-The outer `translator.batch(requests)` API stays per-locale on input and output. yapyak's compiler hands it the full list of `(file, source, locale)` requests it needs filled, and the factory deduplicates them before reaching your `translate` callback. The shipped translators have similar tests. Open the source under `packages/yapyak/src/translator/` for examples.
+This pattern is heavier than the shipped translators; reach for it when you have specific performance or cost reasons.
+
+## Forwarding the AbortSignal
+
+The `signal` parameter is an `AbortSignal` that fires when yapyak's batch run is cancelled — by a `Ctrl-C` during a CLI run, by a save during dev that supersedes an earlier in-flight call, or by an explicit `controller.abort()` if you're calling `translator.batch()` yourself.
+
+Pass it through to your fetch (or your internal client's `signal` field). Failure to propagate the signal means cancelled runs still finish their underlying requests — wasted tokens, wasted time:
+
+```ts
+async translate({ items, signal }) {
+  const response = await fetch(url, { body, method: 'POST', signal });
+  // …
+}
+```
+
+## Errors you can throw
+
+When something goes wrong, throw one of yapyak's translator errors so the surrounding machinery handles it correctly:
+
+```ts
+import {
+  TranslatorAuthError,
+  TranslatorNetworkError,
+  TranslatorRateLimitError,
+  TranslatorSafetyError,
+  TranslatorTimeoutError,
+} from 'yapyak/translator';
+
+async translate({ items, signal }) {
+  const response = await fetch(url, { signal });
+  if (response.status === 401) {
+    throw new TranslatorAuthError({ vendor: 'my-vendor' });
+  }
+  if (response.status === 429) {
+    const retryAfter = Number(response.headers.get('retry-after')) * 1000;
+    throw new TranslatorRateLimitError({ retryAfter, vendor: 'my-vendor' });
+  }
+  // …
+}
+```
+
+Throwing the right error type lets yapyak apply the right behavior — backoff for rate-limits, fail-fast for auth, log-and-continue for safety blocks on individual items.
+
+If you throw a plain `Error`, yapyak treats it as a `TranslatorNetworkError` and applies the default retry policy.
+
+## See also
+
+- [Overview](/guide/translators/overview) — what the shipped translators do underneath
+- [Anthropic](/guide/translators/anthropic), [OpenAI](/guide/translators/openai), [Gemini](/guide/translators/gemini), [Ollama](/guide/translators/ollama) — the four shipped translators

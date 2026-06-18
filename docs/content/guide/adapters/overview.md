@@ -3,23 +3,69 @@ title: Overview
 order: 1
 ---
 
-An adapter wires yapyak to your SSR framework so each request renders in its own locale. Without one, server-rendered HTML always uses the default locale.
+On the server, the active locale isn't a long-lived store — it's per-request. Two requests can land on the same Node process at the same time, one in Swedish and one in English, and each one needs `getLocale()` to return the right value for that request without leaking into the other.
 
-## What an adapter does
+yapyak handles this with `withResponse()`, a wrapper that binds an incoming request to a context for the duration of its render. SSR adapters install this binding through the framework's normal middleware mechanism, so you don't have to think about it directly — they register one middleware, and everything inside (`t()`, `getLocale()`, `setLocale()`, `format.*`) sees the right locale.
 
-At request time, the adapter binds `Cookie` and `Accept-Language` to an async-scoped context. Inside that request — route loaders, server components, route handlers — `getLocale()` and `t()` see the per-request locale.
+```ts
+// SvelteKit
+export { handle } from '@yapyak/sveltekit';
 
-## Pure SPAs don't need one
+// TanStack Start
+import { middleware } from '@yapyak/tanstack-start';
+export const startInstance = createStart(() => ({
+  requestMiddleware: [middleware],
+}));
 
-If you ship a fully client-rendered app with no SSR, the locale lives entirely in the browser.
+// React Router (framework mode)
+import { middleware as yapyakMiddleware } from '@yapyak/react-router';
+export const middleware = [yapyakMiddleware];
 
-## Pick your framework
+// Astro
+import { yapyak } from '@yapyak/astro/integration';
+export default defineConfig({
+  integrations: [yapyak()],
+});
+```
 
-yapyak ships adapters for the major SSR frameworks:
+One of these lines per project, depending on framework. The rest of your code keeps using `t()` and `getLocale()` exactly the same on the server as on the client.
 
-- [Astro](/guide/adapters/astro) — middleware re-export
-- [React Router](/guide/adapters/react-router) — root-route middleware (v7 framework mode)
-- [TanStack Start](/guide/adapters/tanstack-start) — request middleware
-- [SvelteKit](/guide/adapters/sveltekit) — handle hook re-export
+## What the adapter does
 
-For anything else, the [custom adapter](/guide/adapters/custom) wraps each request with `withResponse()` — that's the entire surface area.
+Three things happen inside the adapter middleware on every request:
+
+1. **The request is bound.** `withResponse(request, callback)` puts the request into an `AsyncLocalStorage` scope so anything called inside `callback` sees `getLocale()` resolve through the request's [persistence layer](/guide/locale/persistence), or — if [`detectAcceptLanguage`](/guide/getting-started/configuration#detectacceptlanguage) is on — through the `Accept-Language` header.
+2. **Server-side `setLocale()` writes go through.** If something in the request handler calls `setLocale('sv')` — a form POST that updates the user's preference, an admin tool that previews in another language — yapyak buffers the persistence write (a `Set-Cookie` header, a URL redirect) and drains it onto the outgoing response.
+3. **The page renders with the right locale.** Every `t()` call, every `format.*` call, every `useLocale()` hook reads the request-bound value rather than a shared module-scope one.
+
+Without the adapter, `getLocale()` on the server falls through to the module-scope default, which is the same value across every concurrent request. A `YAP0022` warning fires the first time this happens so you notice — usually it means an SSR endpoint isn't covered by the middleware yet.
+
+## Picking your adapter
+
+Pick the one that matches your framework:
+
+| Framework | Adapter | What it registers |
+|---|---|---|
+| [Astro](/guide/adapters/astro) | `@yapyak/astro/integration` | Vite plugin + per-request middleware |
+| [React Router](/guide/adapters/react-router) (v7 framework mode) | `@yapyak/react-router` | Root-route middleware |
+| [SvelteKit](/guide/adapters/sveltekit) | `@yapyak/sveltekit` | `handle` hook with `app.html` placeholder substitution |
+| [TanStack Start](/guide/adapters/tanstack-start) | `@yapyak/tanstack-start` | Request middleware |
+| Anything else | [Custom](/guide/adapters/custom) | `withResponse()` directly |
+
+For any Vite-based SSR framework that isn't on the list, [Custom](/guide/adapters/custom) covers how to wrap `withResponse()` into whatever middleware shape your framework expects.
+
+## Setting `<html lang>`
+
+A small but useful thing: SSR adapters set the `<html lang>` attribute to match the active locale on every page render, so screen readers and browsers see the right language hint immediately. The mechanism differs per framework — Astro reads it through `getLocale()` in your layout, SvelteKit substitutes a `%yapyak.lang%` placeholder, React Router and TanStack Start expose it via the framework's normal lang-attribute APIs. Each adapter page covers the specifics.
+
+For client-side locale switches inside an island or a client component, set [`syncHtmlLang: true`](/guide/getting-started/configuration#synchtmllang) in `yapyak.config.ts` so the attribute follows the locale without a navigation.
+
+## What about client-only apps?
+
+If your app doesn't render on the server — a plain Vite + React SPA with no SSR — you don't need an adapter. The locale is a single client-side store, set through `useLocale()` (or the equivalent reactive value), persisted through cookies/local-storage/URL as configured. The whole SSR section is safe to skip.
+
+## See also
+
+- [Astro](/guide/adapters/astro), [React Router](/guide/adapters/react-router), [SvelteKit](/guide/adapters/sveltekit), [TanStack Start](/guide/adapters/tanstack-start) — per-framework setup
+- [Custom](/guide/adapters/custom) — wrap `withResponse()` for any Vite-based SSR
+- [Persistence](/guide/locale/persistence) — how the active locale survives between requests

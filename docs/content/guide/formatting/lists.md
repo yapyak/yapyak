@@ -1,64 +1,87 @@
 ---
 title: Lists
-order: 4
+order: 3
 ---
 
-Joining strings the way the locale would. `'a, b, and c'` on `en`, `'a, b och c'` on `sv`. One [`Intl.ListFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat) per `(locale, options)` combination, cached until the process restarts.
+`format.list()` joins an array of strings into a single phrase using the active locale's conventions. The boundaries between items, the conjunction word ("and", "or"), and the way the last item connects are all different across languages — `format.list()` handles all of it.
 
 ```ts
 import { format } from 'yapyak';
 
-format.list(['apples', 'pears', 'oranges']);
-// 'apples, pears, and oranges' on en
-// 'apples, pears och oranges' on sv
+format.list(['apple', 'pear', 'orange']);
+// 'apple, pear, and orange'   in en-US
+// 'apple, pear och orange'     in sv-SE
+// 'apple, pear et orange'      in fr-FR
 ```
 
-## format.list
+It's a thin wrapper over [`Intl.ListFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat), reading the active locale on every call.
 
-Accepts any iterable — arrays, sets, generators. Items must already be strings; yapyak does not coerce or format individual items. `FormatListOptions` is [`Intl.ListFormatOptions`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat/ListFormat#options) minus `localeMatcher`.
+## `type` — what kind of join
 
 ```ts
-format.list(items: Iterable<string>, options?: FormatListOptions): string
+format.list(['apple', 'pear'], { type: 'conjunction' });
+// 'apple and pear'    in en-US   (default)
+
+format.list(['apple', 'pear'], { type: 'disjunction' });
+// 'apple or pear'     in en-US
+
+format.list(['$', '€', '¥'], { type: 'unit' });
+// '$, €, ¥'            in en-US
 ```
+
+`'conjunction'` is the default — "and" in English, "och" in Swedish, "et" in French. `'disjunction'` switches to "or". `'unit'` joins without a connector word, used for things like measurement compositions (`'1 hour 30 minutes'`) or symbol sequences.
+
+## `style` — how prominent the connector is
 
 ```ts
-const fruits = ['apples', 'pears'];
-format.list(fruits);                                           // 'apples and pears' on en
+format.list(['apple', 'pear', 'orange'], { style: 'long' });
+// 'apple, pear, and orange'    (default)
 
-const set = new Set(['a', 'b', 'c']);
-format.list(set);                                              // 'a, b, and c' on en
+format.list(['apple', 'pear', 'orange'], { style: 'short' });
+// 'apple, pear, & orange'      (en-US uses ampersand)
+
+format.list(['apple', 'pear', 'orange'], { style: 'narrow' });
+// 'apple, pear, orange'        (no connector at all)
 ```
 
-## Type
+`'long'` is the default. `'short'` uses a more compact form; `'narrow'` drops the connector entirely. The results vary heavily by locale — in Swedish, all three styles render almost identically; in Japanese, the differences are more pronounced.
 
-The `type` option controls which separator words are used.
-
-- `'conjunction'` (default) — *and*: `'a, b, and c'`
-- `'disjunction'` — *or*: `'a, b, or c'`
-- `'unit'` — for unit-of-measure lists: `'1 km, 2 m, 3 cm'`
+## Common pattern: list of localized labels
 
 ```ts
-format.list(['a', 'b', 'c'], { type: 'conjunction' });         // 'a, b, and c' on en
-format.list(['a', 'b', 'c'], { type: 'disjunction' });         // 'a, b, or c' on en
-format.list(['1 km', '2 m', '3 cm'], { type: 'unit' });        // '1 km, 2 m, 3 cm' on en
+import { format, t } from 'yapyak';
+
+const features = [
+  t('Pull requests'),
+  t('Issues'),
+  t('Discussions'),
+];
+
+format.list(features);
+// 'Pull requests, Issues, and Discussions'    in en-US
+// 'Pull requests, Issues och Discussions'     in sv-SE
 ```
 
-::: info
-`type: 'unit'` joins a list of pre-rendered unit values. To format a single number with a unit, see [format.number with style 'unit'](./numbers.md#units).
-:::
+Each item passes through `t()` first to become locale-aware text. Then `format.list()` joins them in the right way for the active locale. The two layers compose without anyone having to think about it.
 
-## Style
+## What about lists inside a sentence?
 
-The `style` option controls the verbosity of the separators.
-
-- `'long'` (default) — full words: `'a, b, and c'` on en
-- `'short'` — abbreviated where the locale provides one: `'a, b, & c'` on en
-- `'narrow'` — even shorter, often just punctuation: `'a, b, c'` on en
+If the list is part of a larger translated message ("Choose one of {options}"), the answer is to render the list separately and pass the result in as a placeholder:
 
 ```ts
-format.list(['a', 'b', 'c']);                                  // 'a, b, and c' on en
-format.list(['a', 'b', 'c'], { style: 'short' });              // 'a, b, & c' on en
-format.list(['a', 'b', 'c'], { style: 'narrow' });             // 'a, b, c' on en
+const options = format.list(['email', 'SMS', 'push']);
+t('Choose one of {options}.', { options });
+// 'Choose one of email, SMS, and push.'   in en-US
 ```
 
-Behavior varies per locale. Swedish renders narrow close to the short form.
+ICU MessageFormat has no list sub-format, so this is the path.
+
+{% callout variant="tip" %}
+If your list always has the same fixed items, consider writing them out in the source string instead of composing through `format.list()`. The translator (or model) handles "apple, pear, and orange" naturally on its own; `format.list()` is for genuinely dynamic lists where the items come from data.
+{% /callout %}
+
+## See also
+
+- [Numbers](/guide/formatting/numbers) — number, currency, percent, unit formatting
+- [Dates](/guide/formatting/dates) — absolute and relative time
+- [Overrides](/guide/formatting/overrides) — `format.in(locale)` for one-off scoped formatting

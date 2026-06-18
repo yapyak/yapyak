@@ -1,121 +1,141 @@
 ---
 title: React Router
-order: 4
+order: 3
 ---
+
+`@yapyak/react-router` is the yapyak SSR adapter for [React Router](https://reactrouter.com) v7 in framework mode. Drop it into your root route's middleware array and yapyak's per-request locale binding is wired across every loader, action, and component render.
 
 ## Install
 
 {% code-group %}
-
-```bash [npm]
-npm install @yapyak/react-router
-```
-
 ```bash [pnpm]
 pnpm add @yapyak/react-router
 ```
-
+```bash [npm]
+npm install @yapyak/react-router
+```
 ```bash [bun]
 bun add @yapyak/react-router
 ```
-
 {% /code-group %}
 
-## Setup
+You also need yapyak, the Vite plugin, and the React binding (covered in [Setup — Install](/guide/getting-started/installation)).
 
-Register yapyak's middleware in your root route. React Router 7 framework mode required, with `v8_middleware` enabled.
+## Enable middleware in React Router
 
-## Enable middleware
-
-In `react-router.config.ts`:
+React Router v7 middleware is opt-in. Turn it on in `react-router.config.ts`:
 
 ```ts
+// react-router.config.ts
 import type { Config } from '@react-router/dev/config';
 
 export default {
-  ssr: true,
   future: {
     v8_middleware: true,
   },
 } satisfies Config;
 ```
 
-## Wire the middleware
+Without this flag, the framework ignores `middleware` exports on your routes.
 
-In `app/root.tsx`:
+## Register the middleware
 
-```tsx [app/root.tsx]
+In your root route:
+
+```tsx
+// app/root.tsx
 import type { Route } from './+types/root';
 import { middleware as yapyakMiddleware } from '@yapyak/react-router';
 
 export const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];
+
+// ... your root layout and Outlet ...
 ```
 
-That's the entire wiring.
+The middleware runs before every loader and component render, so anything called during the request (`getLocale()`, `t()`, `format.*`, server-side `setLocale()`) sees the right locale.
 
-## Composing with other middlewares
-
-The `middleware` export is an array. Add more middlewares to the same array — they run in order:
+If you have other middleware, include it in the array. yapyak's middleware should run first so the locale is available to anything downstream:
 
 ```tsx
+import { middleware as yapyakMiddleware } from '@yapyak/react-router';
+import { middleware as authMiddleware } from './auth';
+
 export const middleware: Route.MiddlewareFunction[] = [
   yapyakMiddleware,
   authMiddleware,
-  loggingMiddleware,
 ];
 ```
 
-yapyak's middleware should run first so subsequent middlewares can read the locale via `getLocale()` if they need to.
+## Setting `<html lang>`
 
-## Set the page language
+In your root component, read `useLocale()` and pass it to `<html lang>`:
 
-Read the locale via `useLocale()` inside your `Layout` to drive `<html lang>` — both on the server (per-request locale) and the client:
-
-```tsx [app/root.tsx]
-import type { ReactNode } from 'react';
-
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
+```tsx
+// app/root.tsx
 import { useLocale } from '@yapyak/react';
 
-export function Layout({ children }: { children: ReactNode }) {
+export default function Root() {
   const [locale] = useLocale();
   return (
     <html lang={locale}>
-      <head>
-        <Meta />
-        <Links />
-      </head>
+      <head>{/* … */}</head>
       <body>
-        {children}
-        <ScrollRestoration />
-        <Scripts />
+        <Outlet />
       </body>
     </html>
   );
 }
-
-export default function App() {
-  return <Outlet />;
-}
 ```
 
-This is the recommended pattern. The `lang` attribute updates reactively, every component that calls `t()` re-renders on its own (the React processor wires it up at transform time), and SSR renders the correct `lang` per request. No `syncHtmlLang` plugin option needed.
+`useLocale()` reads the server-bound value during SSR and the client-side store after hydration, so the attribute is correct in both phases. No `syncHtmlLang` setting needed — the component re-renders on locale changes anyway.
 
-## Cookie persistence
+## Persistence
 
-For SSR locale switching to work, the user's choice must be readable by the server. Enable `persistence: 'cookie'`:
+For server-side cookie reads to work, configure `persistence: 'cookie'` in `yapyak.config.ts`. Without it, the request-bound locale falls back to `defaultLocale` on every request — or to [`Accept-Language`](/guide/getting-started/configuration#detectacceptlanguage) detection if you've enabled `detectAcceptLanguage: true`.
 
-```ts [yapyak.config.ts]
+```ts
+// yapyak.config.ts
 import { defineConfig } from 'yapyak/config';
+import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
+  defaultLocale: 'en',
   persistence: 'cookie',
+  processors: [react()],
 });
 ```
 
-The cookie is written client-side on `setLocale()` and read server-side by the middleware. See [Locales / Persistence](/guide/locales/persistence).
+The cookie is written client-side on `setLocale()` and read server-side by the middleware on the next request.
 
-## Requirements
+## Switching locale
 
-- `react-router >= 7.9.0` — middleware became stable here. Earlier versions used `unstable_middleware`-prefixed APIs.
-- `future.v8_middleware: true` in `react-router.config.ts` — without this, the `middleware` export is ignored silently.
+Use [`useLocale()`](/guide/locale/switch) anywhere in your tree:
+
+```tsx
+import { useLocale } from '@yapyak/react';
+import { t } from 'yapyak';
+
+export function LanguageSwitcher() {
+  const [locale, setLocale] = useLocale();
+
+  return (
+    <button onClick={() => setLocale(locale === 'en' ? 'sv' : 'en')}>
+      {t('Switch language')}
+    </button>
+  );
+}
+```
+
+On click, the client store updates, the cookie writes, and every component that called `t()` re-renders.
+
+## Common issues
+
+- **A YAP0022 diagnostic fires on the server.** The middleware isn't running on that route. Either it's missing from the root route's `middleware` array, or `future.v8_middleware: true` is off in the config.
+- **Locale resets to default on every request.** Persistence isn't configured. Add `persistence: 'cookie'` to your `yapyak.config.ts`.
+- **`<html lang>` is wrong on first paint.** Read it through `useLocale()` in your root component rather than hardcoding it — the middleware provides the right value during SSR.
+
+## See also
+
+- [Overview](/guide/adapters/overview) — what SSR adapters do in general
+- [Locale — Switch](/guide/locale/switch) — the `useLocale` hook
+- [React Router v7 middleware docs](https://reactrouter.com/start/framework/routing#middleware)

@@ -3,56 +3,59 @@ title: Astro
 order: 2
 ---
 
+Astro renders every page on the server. yapyak's Astro integration wires the per-request locale binding and the build-time Vite plugin in one step, so the same `t()`, `getLocale()`, and `format.*` calls work in `.astro` frontmatter, in islands, and across navigations.
+
 ## Install
 
 {% code-group %}
-
-```bash [npm]
-npm install @yapyak/astro
-```
-
 ```bash [pnpm]
-pnpm add @yapyak/astro
+pnpm add yapyak @yapyak/astro
 ```
-
+```bash [npm]
+npm install yapyak @yapyak/astro
+```
 ```bash [bun]
-bun add @yapyak/astro
+bun add yapyak @yapyak/astro
 ```
-
 {% /code-group %}
 
-## Setup
+## Register the integration
 
-Add the integration to `astro.config.ts`.
-
-```ts [astro.config.ts]
-import { yapyak } from '@yapyak/astro/integration';
+```ts
+// astro.config.ts
 import { defineConfig } from 'astro/config';
+import { yapyak } from '@yapyak/astro/integration';
 
 export default defineConfig({
   integrations: [yapyak()],
 });
 ```
 
-Register the Astro processor in `yapyak.config.ts` so `.astro` files are scanned for `t()` calls:
+The integration registers two things: yapyak's build-time Vite plugin (so `t()` calls get extracted from your `.astro` files) and a per-request middleware (so `getLocale()` resolves correctly during render).
 
-```ts [yapyak.config.ts]
-import { astro } from '@yapyak/astro/processor';
+## Register the processor
+
+```ts
+// yapyak.config.ts
 import { defineConfig } from 'yapyak/config';
+import { astro } from '@yapyak/astro/processor';
 
 export default defineConfig({
+  defaultLocale: 'en',
+  persistence: 'cookie',
   processors: [astro()],
 });
 ```
 
-That's the entire wiring. The integration registers the build-time plugin and injects a per-request locale middleware that binds the incoming request — so `getLocale()` and `t()` resolve the right locale during rendering — and flushes any cookie written by a server-side `setLocale()` onto the response. The processor handles `.astro` frontmatter and template extraction.
+The Astro processor is what teaches yapyak how to read `.astro` frontmatter and template expressions. Pair it with `persistence: 'cookie'` for a typical SSR setup — the cookie is written client-side on `setLocale()` and read server-side on every request.
 
-## Set the page language
+## Setting `<html lang>`
 
-Astro renders `<html>` once per page request as static HTML, not through a reactive framework binding. Server-side, read `getLocale()` in your layout:
+Astro renders `<html>` server-side once per page. Set `lang` in your layout by reading `getLocale()`:
 
-```astro [src/layouts/Layout.astro]
+```astro
 ---
+// src/layouts/Layout.astro
 import { getLocale } from 'yapyak';
 ---
 <html lang={getLocale()}>
@@ -65,37 +68,61 @@ import { getLocale } from 'yapyak';
 </html>
 ```
 
-Every navigation re-runs the middleware and re-renders the layout, so `<html lang>` is always correct on full page loads.
+Every navigation re-runs the middleware and re-renders the layout, so `<html lang>` stays correct on full page loads.
 
-### Client-side locale switching (islands)
+## Client-side switching from inside an island
 
-If a React/Vue/Svelte island calls `setLocale()` without triggering a navigation, the static `<html>` element doesn't re-render — the `lang` attribute stays stale.
+If a React/Vue/Svelte island calls `setLocale()` without triggering a navigation, the static `<html>` element doesn't re-render — the attribute stays at whatever the server rendered. Enable [`syncHtmlLang`](/guide/getting-started/configuration#synchtmllang) to update it on every client-side `setLocale()` call:
 
-Enable `syncHtmlLang` to make yapyak update the attribute on every `setLocale()`:
-
-```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak/config';
-
+```ts
+// yapyak.config.ts
 export default defineConfig({
+  defaultLocale: 'en',
   persistence: 'cookie',
+  processors: [astro()],
   syncHtmlLang: true,
 });
 ```
 
-With this set, `document.documentElement.lang` follows the current locale on store init and on every `setLocale()`. SSR still renders the right `lang` via your layout's `getLocale()` — no hydration mismatch.
+With this set, `document.documentElement.lang` follows the active locale through every client-side switch. SSR still renders the right `lang` via your layout's `getLocale()`, so there's no hydration mismatch.
 
-If you only switch locale via full navigations (e.g. `<a href="/sv/...">`), leave `syncHtmlLang` off.
+If you only switch locale through full navigations (`<a href="/sv/...">` style), leave `syncHtmlLang` off — Astro's normal re-render handles it.
 
-## Cookie persistence
+## URL-based switching
 
-For SSR locale switching to work, enable cookie persistence:
+The simplest pattern: read locale from the URL with [`persistence: 'url'`](/guide/locale/persistence#url). A plain link is enough:
 
-```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak/config';
+```astro
+---
+import { getLocale, t } from 'yapyak';
 
-export default defineConfig({
-  persistence: 'cookie',
-});
+const current = getLocale();
+const next = current === 'en' ? 'sv' : 'en';
+---
+
+<a href={`?locale=${next}`}>{t('Switch language')}</a>
 ```
 
-The cookie is written client-side on `setLocale()` and read server-side by the middleware on every request. See [Locales / Persistence](/guide/locales/persistence).
+The middleware reads the URL on the next request, binds the locale, and the layout re-renders. No JS required.
+
+## Cookie-based switching
+
+For longer-lived preference: use [`persistence: 'cookie'`](/guide/locale/persistence#cookie). The client-side switch from an island (React/Vue/Svelte) calls `setLocale()`; the browser writes the cookie; subsequent server renders read it.
+
+For a non-island server-side switch (a form POST to set the cookie from a server endpoint), call `setLocale()` inside the request handler — yapyak buffers the `Set-Cookie` write and flushes it onto the response when the page renders.
+
+## `<RichText>` in `.astro` files
+
+Rich-text rendering works the same way as in other frameworks — see [Rich text](/guide/writing/rich-text) for the Astro-specific slot pattern with `<RichText.Children />`.
+
+## Common issues
+
+- **`getLocale()` returns `defaultLocale` everywhere on the server.** The middleware isn't installed. Make sure `integrations: [yapyak()]` is in `astro.config.ts`.
+- **A YAP0022 diagnostic fires.** Same cause: a render path is happening outside the per-request scope. Usually a custom server-side route or hook that bypasses the integration.
+- **Cookie isn't set after a server-side `setLocale()`.** The handler returned a response before the integration flushed pending headers. Make sure your endpoint returns the response object the framework expects, not a manually-constructed one that bypasses the middleware chain.
+
+## See also
+
+- [Overview](/guide/adapters/overview) — what SSR adapters do in general
+- [Locale — Persistence](/guide/locale/persistence) — cookie, URL, local-storage
+- [Setup — Install](/guide/getting-started/installation) — full Astro setup including processor and Vite integration

@@ -1,109 +1,147 @@
 ---
 title: Dates
-order: 3
+order: 2
 ---
 
-Two methods: `dateTime` for absolute date and time formatting via [`Intl.DateTimeFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat), and `relativeTime` for `'yesterday'`-style phrasing via [`Intl.RelativeTimeFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/RelativeTimeFormat).
+`format.dateTime()` formats an absolute date or time for the active locale. `format.relativeTime()` formats a signed offset ("yesterday", "in 3 days"). Both are thin wrappers over `Intl` — they read the active locale on every call, so the same component renders correctly for every reader.
 
 ```ts
 import { format } from 'yapyak';
 
-format.dateTime(new Date());                                       // 'Nov 12, 2025, 3:42 PM' on en
-format.dateTime(new Date(), { dateStyle: 'medium' });              // 'Nov 12, 2025' on en
-format.dateTime(new Date(), { timeStyle: 'short' });               // '3:42 PM' on en
-format.relativeTime(-1, 'day');                                    // '1 day ago' on en, 'för 1 dag sedan' on sv
+format.dateTime(new Date(), { dateStyle: 'long' });
+// 'June 17, 2026'   in en-US
+// '17 juni 2026'    in sv-SE
+// '17. Juni 2026'   in de-DE
 ```
 
-## format.dateTime
+## Absolute date and time
+
+`format.dateTime(value, options)` accepts a `Date` instance or a millisecond timestamp.
+
+### Date only
 
 ```ts
-format.dateTime(value: Date | number, options?: FormatDateTimeOptions): string
+format.dateTime(new Date(), { dateStyle: 'short' });
+// '6/17/26'         in en-US
+
+format.dateTime(new Date(), { dateStyle: 'medium' });
+// 'Jun 17, 2026'    in en-US
+
+format.dateTime(new Date(), { dateStyle: 'long' });
+// 'June 17, 2026'   in en-US
+
+format.dateTime(new Date(), { dateStyle: 'full' });
+// 'Wednesday, June 17, 2026'   in en-US
 ```
 
-`FormatDateTimeOptions` is [`Intl.DateTimeFormatOptions`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#options) minus `localeMatcher`. Use `dateStyle` for date-only, `timeStyle` for time-only, both for the combined form, or individual field options (`year`, `month`, `day`, `hour`, `minute`, etc.) for finer control.
-
-When `options` is omitted, yapyak passes through to the host runtime's `Intl.DateTimeFormat` default — which renders the date only.
-
-```ts
-format.dateTime(new Date());
-// '11/12/2025' on en — Intl default, no time
-```
-
-### Date-only
-
-```ts
-format.dateTime(new Date('2025-11-12'), { dateStyle: 'medium' });
-// 'Nov 12, 2025' on en
-
-format.dateTime(new Date('2025-11-12'), { dateStyle: 'full' });
-// 'Wednesday, November 12, 2025' on en
-
-format.dateTime(new Date('2025-11-12'), {
-  day: 'numeric',
-  month: 'short',
-});
-// 'Nov 12' on en
-```
-
-### Time-only
+### Time only
 
 ```ts
 format.dateTime(new Date(), { timeStyle: 'short' });
-// '3:42 PM' on en, '15:42' on sv
+// '4:30 PM'         in en-US
+// '16:30'           in sv-SE
 
-format.dateTime(new Date(), { timeStyle: 'long' });
-// '3:42:18 PM PST' on en
-
-format.dateTime(new Date(), { hour: 'numeric' });
-// '3 PM' on en
+format.dateTime(new Date(), { timeStyle: 'full' });
+// '4:30:15 PM Central European Summer Time'   in en-US
 ```
 
-### Combined
+### Date and time together
 
 ```ts
 format.dateTime(new Date(), {
-  dateStyle: 'full',
-  timeStyle: 'long',
-});
-// 'Wednesday, November 12, 2025 at 3:42:18 PM PST' on en
-```
-
-### Empty options
-
-yapyak applies no defaults — `options` undefined and `{}` both pass straight through to `Intl.DateTimeFormat`.
-
-```ts
-const now = new Date();
-
-format.dateTime(now);                                          // '11/12/2025' on en — Intl default
-format.dateTime(now, {});                                      // '11/12/2025' on en — same
-format.dateTime(now, { dateStyle: 'medium' });                 // 'Nov 12, 2025' on en
-format.dateTime(now, {
   dateStyle: 'medium',
   timeStyle: 'short',
-});                                                            // 'Nov 12, 2025, 3:42 PM' on en
+});
+// 'Jun 17, 2026, 4:30 PM'   in en-US
 ```
 
-## format.relativeTime
+### Finer control with field options
+
+When the preset styles don't fit, pass individual field options:
 
 ```ts
-format.relativeTime(value: number, unit: Intl.RelativeTimeFormatUnit, options?: FormatRelativeTimeOptions): string
+format.dateTime(new Date(), {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+});
+// '06/17/2026, 16:30'   in en-US
 ```
 
-The unit is positional, not in options. Accepted values: `'year'`, `'quarter'`, `'month'`, `'week'`, `'day'`, `'hour'`, `'minute'`, `'second'`.
+Any option from [`Intl.DateTimeFormatOptions`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#parameters) works (minus `localeMatcher`, which yapyak manages). `timeZone`, `weekday`, `era`, `dayPeriod`, fractional seconds — they all pass through.
 
-Negative is past, positive is future:
+## Relative time
+
+`format.relativeTime(value, unit, options)` renders a signed offset as a phrase the user reads naturally. Negative values are in the past, positive in the future.
 
 ```ts
-format.relativeTime(-1, 'day');                                // '1 day ago' on en
-format.relativeTime(2, 'hour');                                // 'in 2 hours' on en
-format.relativeTime(-7, 'day');                                // '7 days ago' on en
+format.relativeTime(-1, 'day');
+// '1 day ago'        in en-US
+// 'för 1 dag sedan'  in sv-SE
+
+format.relativeTime(3, 'hour');
+// 'in 3 hours'       in en-US
+// 'om 3 timmar'      in sv-SE
 ```
 
-Pass `{ numeric: 'auto' }` for phrases like `'yesterday'` and `'next week'`:
+### Auto-replace common values with words
+
+`numeric: 'auto'` tells the formatter to use `'yesterday'`, `'tomorrow'`, `'next month'` when the locale has a natural word for the offset:
 
 ```ts
-format.relativeTime(-1, 'day', { numeric: 'auto' });           // 'yesterday' on en, 'i går' on sv
-format.relativeTime(1, 'week', { numeric: 'auto' });           // 'next week' on en
-format.relativeTime(0, 'day', { numeric: 'auto' });            // 'today' on en
+format.relativeTime(-1, 'day', { numeric: 'auto' });
+// 'yesterday'    in en-US
+// 'igår'         in sv-SE
+
+format.relativeTime(0, 'day', { numeric: 'auto' });
+// 'today'        in en-US
+
+format.relativeTime(1, 'day', { numeric: 'auto' });
+// 'tomorrow'     in en-US
 ```
+
+For offsets the locale doesn't have a special word for, `numeric: 'auto'` falls back to the numeric phrase.
+
+### Units
+
+The second argument is one of: `'second'`, `'minute'`, `'hour'`, `'day'`, `'week'`, `'month'`, `'quarter'`, `'year'`. Pick the largest unit whose magnitude is comfortable for the offset — "yesterday" reads better than "−24 hours ago".
+
+```ts
+const elapsed = Date.now() - timestamp;
+const minutes = Math.round(elapsed / 60_000);
+
+if (minutes < 60) {
+  return format.relativeTime(-minutes, 'minute', { numeric: 'auto' });
+} else if (minutes < 60 * 24) {
+  return format.relativeTime(-Math.round(minutes / 60), 'hour', { numeric: 'auto' });
+} else {
+  return format.relativeTime(-Math.round(minutes / 1440), 'day', { numeric: 'auto' });
+}
+```
+
+This pattern — a small "pick the unit" helper around `format.relativeTime` — is what most apps end up with. yapyak doesn't ship one because the right thresholds depend on your context: a chat app and an annual-report viewer want different boundaries.
+
+### Style
+
+```ts
+format.relativeTime(-3, 'day', { style: 'long' });    // '3 days ago'   (default)
+format.relativeTime(-3, 'day', { style: 'short' });   // '3 days ago'
+format.relativeTime(-3, 'day', { style: 'narrow' });  // '3 days ago'   (often same)
+```
+
+English doesn't show much difference between styles for time units, but some locales do — Japanese uses different particles, German uses different prepositions. Test in the languages you care about.
+
+## Inside a `t()` message
+
+The same date/time formatting is available [inside ICU messages](/guide/writing/plurals#dates-and-times) — `{when, date, long}`, `{at, time, short}`. Use `t()` when the date is part of a sentence ("Updated on June 17"); use `format.dateTime()` when it's its own atom (a column header, a footer timestamp).
+
+Relative time doesn't have an ICU sub-format; it's only available through `format.relativeTime()`.
+
+## See also
+
+- [Numbers](/guide/formatting/numbers) — currency, percent, and unit formatting
+- [Overrides](/guide/formatting/overrides) — `format.in(locale)` for one-off scoped formatting
+- [Plurals](/guide/writing/plurals) — `{when, date, long}` inside translatable messages

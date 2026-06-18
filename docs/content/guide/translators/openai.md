@@ -1,115 +1,149 @@
 ---
 title: OpenAI
-order: 5
+order: 3
 ---
+
+`@yapyak/openai` is the yapyak translator for [OpenAI](https://platform.openai.com) and OpenAI-compatible providers. The same package works with Azure OpenAI, Groq, Mistral, DeepSeek, OpenRouter, and a growing number of others — override the endpoint and you're set.
 
 ## Install
 
 {% code-group %}
-
-```bash [npm]
-npm install @yapyak/openai
-```
-
 ```bash [pnpm]
 pnpm add @yapyak/openai
 ```
-
+```bash [npm]
+npm install @yapyak/openai
+```
 ```bash [bun]
 bun add @yapyak/openai
 ```
-
 {% /code-group %}
 
-## Setup
+## Configure
 
-Use OpenAI's GPT models — or any OpenAI-compatible provider (Groq, DeepSeek, Mistral, OpenRouter, Vercel AI Gateway, Together AI) — as your translator.
-
-```ts [yapyak.config.ts]
+```ts
 import { defineConfig } from 'yapyak/config';
 import { openai } from '@yapyak/openai';
 
 export default defineConfig({
   translator: openai({
-    apiKey: process.env.OPENAI_API_KEY!,
-    voice: 'Casual, thoughtful, never corporate.',
+    apiKey: process.env.OPENAI_API_KEY,
   }),
 });
 ```
 
-Get an API key at [platform.openai.com](https://platform.openai.com).
+With voice and glossary:
+
+```ts
+translator: openai({
+  apiKey: process.env.OPENAI_API_KEY,
+  model: 'gpt-5-mini',
+  voice: 'Concise and friendly',
+  glossary: {
+    Cart: { sv: 'Korg', de: 'Warenkorb' },
+  },
+}),
+```
 
 ## Options
 
-```ts
-interface OpenAIOptions {
-  apiKey: string;
-  voice?: string;
-  glossary?: Record<string, Record<string, string>>;
-  context?: 'none' | 'minimal' | 'rich';
-  batchSize?: number;
-  concurrency?: number;
-  model?: string;
-  temperature?: number;
-  endpoint?: string;
-  headers?: Record<string, string>;
-  timeout?: number;
-  maxRetries?: number;
-  organization?: string;
-  seed?: number;
-  user?: string;
-}
-```
+OpenAI-specific options on top of the [shared translator surface](/guide/translators/overview#what-every-translator-shares):
 
-| Option | Default | Notes |
-| --- | --- | --- |
-| `apiKey` | — | Required. |
-| `model` | `'gpt-5-mini'` | Any OpenAI model. |
-| `endpoint` | `'https://api.openai.com/v1/chat/completions'` | Override for any OpenAI-compatible provider. |
-| `organization` | — | Sets `OpenAI-Organization` header for multi-org accounts. |
-| `seed` | — | Reproducible outputs. Same `(prompt, seed)` gives the same result. |
-| `user` | — | End-user tracking string, included in request payload. |
+| Option | Type | Default | Purpose |
+|---|---|---|---|
+| `apiKey` | `string` | required | Your OpenAI API key (or compatible-provider key) |
+| `model` | `string` | `'gpt-5-mini'` | Model ID |
+| `endpoint` | `string` | `'https://api.openai.com/v1/chat/completions'` | Override for compatible providers |
+| `organization` | `string` | undefined | Sent as `OpenAI-Organization` header |
+| `seed` | `number` | undefined | Deterministic seed (reproducible output) |
+| `user` | `string` | undefined | Stable end-user identifier for abuse tracking |
+| `temperature` | `number` | `0.2` | Sampling temperature (ignored by reasoning models) |
+| `timeout` | `number` (ms) | `30_000` | Per-request timeout |
+| `maxRetries` | `number` | `2` | Retries on 408/429/5xx |
+| `maxTokens` | `number` | scaled, max 16,000 | Output token cap |
 
-See [Shared options](/guide/translators#shared-options) for `voice`, `glossary`, `context`, `batchSize`, `concurrency`, `temperature`, `headers`, `timeout`, `maxRetries`.
+## Compatible providers
 
-## OpenAI-compatible providers
-
-Many providers expose OpenAI-compatible endpoints — Groq, DeepSeek, Mistral, OpenRouter, Together AI, Vercel AI Gateway, Ollama (compat mode). Use this translator with their endpoint and the right model name:
+The same `openai()` factory works with any provider that mirrors OpenAI's chat-completions schema. Override `endpoint` and you're set:
 
 ```ts
+// Groq
 openai({
-  apiKey: process.env.GROQ_API_KEY!,
+  apiKey: process.env.GROQ_API_KEY,
   endpoint: 'https://api.groq.com/openai/v1/chat/completions',
   model: 'llama-3.1-70b-versatile',
-})
+});
+
+// DeepSeek
+openai({
+  apiKey: process.env.DEEPSEEK_API_KEY,
+  endpoint: 'https://api.deepseek.com/v1/chat/completions',
+  model: 'deepseek-chat',
+});
+
+// Mistral
+openai({
+  apiKey: process.env.MISTRAL_API_KEY,
+  endpoint: 'https://api.mistral.ai/v1/chat/completions',
+  model: 'mistral-large-latest',
+});
+
+// OpenRouter (aggregator)
+openai({
+  apiKey: process.env.OPENROUTER_API_KEY,
+  endpoint: 'https://openrouter.ai/api/v1/chat/completions',
+  model: 'anthropic/claude-sonnet-4-6',
+});
 ```
 
-For native Ollama integration, prefer the [`ollama` translator](/guide/translators/ollama).
+Each provider has its own model names and rate-limit shapes. yapyak's retry behavior (408/429/5xx with exponential backoff) is provider-agnostic.
 
-## Seed example
+## Reasoning models
 
-For deterministic translation in tests:
+OpenAI's reasoning models (the `gpt-5*` and `o1-*` family) handle a couple of fields differently:
+
+- **`max_completion_tokens`** is sent instead of `max_tokens`. yapyak switches automatically based on the model name; you don't have to think about it.
+- **`temperature`** is ignored by the provider. If you set it, it's quietly dropped by the API. Reasoning models have their own internal sampling.
+
+For translation, reasoning models are slower per request but tend to handle subtle disambiguation better. For bulk translation runs, the non-reasoning models (`gpt-5-mini` is the default) are usually a better fit.
+
+## Reproducible output
+
+The `seed` parameter pins the model's sampling, so the same input produces the same output. Useful for:
+
+- **CI pipelines** that translate on every build and need stable results
+- **Diff-checking translations** when comparing two runs
+- **Debugging** a single weird translation deterministically
 
 ```ts
-openai({
-  apiKey: process.env.OPENAI_API_KEY!,
+translator: openai({
+  apiKey: process.env.OPENAI_API_KEY,
   seed: 42,
-})
+}),
 ```
 
-Same source string + same seed = same output every run. Useful for snapshot testing the translation pipeline.
+The seed isn't a strict guarantee — OpenAI documents it as "best-effort". In practice it works for the vast majority of translation runs.
 
-OpenAI doesn't guarantee strict determinism (model updates can shift output even with seed), but in practice it's stable.
+## Abuse tracking with `user`
 
-## Organization
-
-For users with multiple OpenAI organizations on a single account:
+The `user` field passes through a stable identifier per end-user, used by OpenAI's abuse-detection systems. For yapyak's use case (you're calling the API from your build, not on behalf of end-users), pass a stable identifier for the project or the operator, not a per-user value:
 
 ```ts
-openai({
-  apiKey: process.env.OPENAI_API_KEY!,
-  organization: 'org-acme-prod',
-})
+user: process.env.YAPYAK_OPERATOR_ID ?? 'yapyak-build',
 ```
 
-Sent as the `OpenAI-Organization` HTTP header.
+## Errors
+
+OpenAI-specific failure modes map to yapyak's standard [translator errors](/guide/translators/overview#what-yapyak-protects-you-from):
+
+- A `finish_reason: 'content_filter'` maps to `TranslatorSafetyError` — the moderation layer blocked the response.
+- A `finish_reason: 'length'` maps to `TranslatorTruncatedError` — the output hit the token cap.
+- Auth failures (`401`) raise `TranslatorAuthError`.
+
+All errors extend `TranslatorError` from `yapyak/translator`.
+
+## See also
+
+- [Overview](/guide/translators/overview) — shared options across all translators
+- [Anthropic](/guide/translators/anthropic) — the other most-common choice
+- [Custom](/guide/translators/custom) — when neither shipped option fits

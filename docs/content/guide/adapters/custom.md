@@ -1,112 +1,91 @@
 ---
 title: Custom
-order: 7
+order: 6
 ---
 
-`withResponse` ships in the `yapyak` package under the `yapyak/adapter` subpath — no extra install needed.
+If your project is on a Vite-based SSR framework yapyak doesn't ship an adapter for — a self-built server, an experimental framework, anything that doesn't match the shipped four — you can wire the per-request locale binding yourself with `withResponse()`. It's a single function from `yapyak/adapter`, and the shipped adapters are thin wrappers around it.
 
-## Setup
-
-If your Vite SSR setup isn't TanStack Start or SvelteKit, wrap each request with `withResponse()`.
+## The function
 
 ```ts
 import { withResponse } from 'yapyak/adapter';
 
-function handler(request: Request): Promise<Response> {
-  return withResponse(request, () => renderApp(request));
-}
+await withResponse(request, async () => {
+  // anything inside here sees the request-bound locale
+  return await render(request);
+});
 ```
 
-`withResponse()` reads `Accept-Language` and `Cookie` from the `Request`, binds them to an async-scoped context, runs the handler inside that scope, and drains any pending response headers (e.g. `Set-Cookie` from a server-side `setLocale()` call) onto the produced `Response` before returning it. `getLocale()`, `t()`, and any other yapyak call inside the handler see this request's locale.
+`withResponse(request, callback, responseExtractor?)` does three things:
 
-## What withResponse does
+1. Puts the request into an `AsyncLocalStorage` scope so [`getLocale()`](/guide/locale/switch) resolves through the request's [persistence layer](/guide/locale/persistence), or — if [`detectAcceptLanguage`](/guide/getting-started/configuration#detectacceptlanguage) is on — through the `Accept-Language` header.
+2. Runs `callback()` inside that scope.
+3. Drains any pending response headers buffered by yapyak (a `Set-Cookie` from a server-side `setLocale()` call, for example) onto the response.
 
-It uses Node's `AsyncLocalStorage.run()` for safe per-request isolation. Concurrent requests can't bleed locale state into each other. After the handler returns, yapyak's pending response headers are merged onto the produced `Response`.
+The result of `callback()` is whatever you returned. If you returned a `Response`, yapyak appends the buffered headers to it before passing it back to you.
+
+## Minimal wrapper
+
+The simplest framework-specific middleware wraps a request handler:
 
 ```ts
-withResponse(
-  request: Request,
-  handler: () => Response | Promise<Response>,
-): Promise<Response>;
+import { withResponse } from 'yapyak/adapter';
 
-withResponse<T>(
-  request: Request,
-  handler: () => T | Promise<T>,
-  extractResponse: (result: T) => Response,
-): Promise<T>;
+export const middleware = async (request: Request, next: () => Promise<Response>) => {
+  return withResponse(request, () => next());
+};
 ```
 
-Pass an `extractResponse` function when the handler returns a value that wraps the `Response` (e.g. TanStack Start's `{ response, ... }` middleware result).
+Plug it into whatever middleware interface your framework expects. Anything that reads `getLocale()` from inside `next()` sees the right value.
 
-## Set the page language
+## When the response isn't the direct return
 
-If your root component is a reactive framework binding (React/Vue/Svelte), read the locale there so it re-renders on change:
+Some frameworks return an object that wraps the `Response` rather than the response itself — a context, a result struct. Use the third argument to point yapyak at where the response lives:
 
-{% switch group="framework" %}
+```ts
+import { withResponse } from 'yapyak/adapter';
 
-{% when value="react" %}
-```tsx
-import { useLocale } from '@yapyak/react';
-
-function RootLayout() {
-  const [locale] = useLocale();
-  return <html lang={locale}>{/* ... */}</html>;
-}
-```
-{% /when %}
-
-{% when value="vue" %}
-```vue
-<script setup lang="ts">
-import { locale } from '@yapyak/vue';
-</script>
-
-<template>
-  <html :lang="locale">
-    <!-- ... -->
-  </html>
-</template>
-```
-{% /when %}
-
-{% when value="svelte" %}
-```svelte
-<script lang="ts">
-  import { locale } from '@yapyak/svelte';
-</script>
-
-<svelte:element this="html" lang={$locale}>
-  <!-- ... -->
-</svelte:element>
-```
-{% /when %}
-
-{% when value="astro" %}
-Astro renders `<html>` server-side once per request. Read the locale via `getLocale()` from `yapyak` in your layout — see [Astro adapter](/guide/adapters/astro#set-the-page-language).
-{% /when %}
-
-{% /switch %}
-
-If `<html>` is static HTML (no framework binding), enable `syncHtmlLang` and yapyak will keep `document.documentElement.lang` synced with the current locale:
-
-```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak/config';
-
-export default defineConfig({
-  syncHtmlLang: true,
-});
+await withResponse(
+  request,
+  async () => {
+    const result = await renderToFrameworkResult(request);
+    return result;  // { response: Response, meta: {...} }
+  },
+  (result) => result.response,  // tell yapyak where the Response lives
+);
 ```
 
-## Cookie persistence
+The shipped TanStack Start adapter uses this pattern — the framework's middleware returns `{ response, ... }`, and yapyak's adapter extracts the `Response` to flush pending headers onto.
 
-For SSR locale switching to work, enable cookie persistence:
+## Setting `<html lang>`
 
-```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak/config';
+How you render `<html lang>` depends on your framework, but the source of truth is the same: call [`getLocale()`](/guide/locale/switch) from inside the `withResponse` scope. Pass it to your template, your component, your renderer — whatever is producing the HTML.
 
-export default defineConfig({
-  persistence: 'cookie',
-});
-```
+For client-side switching from inside a React/Vue/Svelte runtime, enable [`syncHtmlLang: true`](/guide/getting-started/configuration#synchtmllang) in `yapyak.config.ts` so the attribute follows the locale without a navigation.
 
-See [Locales / Persistence](/guide/locales/persistence).
+## Persistence considerations
+
+Server-side persistence reads happen inside `withResponse`. Whatever [persistence strategy](/guide/locale/persistence) you've configured ([cookie](/guide/locale/persistence#cookie), [URL](/guide/locale/persistence#url)) is read off the request automatically. If [`detectAcceptLanguage`](/guide/getting-started/configuration#detectacceptlanguage) is enabled, the `Accept-Language` header is consulted too.
+
+Server-side persistence writes (a `setLocale()` call inside a request handler) are buffered until `withResponse` finishes, then flushed onto the response. If your framework constructs its response object outside of `withResponse`, the buffered headers won't reach the user — keep the response construction inside the scope.
+
+## The processor side
+
+Every framework needs a [processor](/guide/getting-started/configuration#processors) registered in `yapyak.config.ts` so yapyak knows how to scan source files for `t()` calls. For TypeScript/JavaScript-only projects, the built-in parser handles `.ts`/`.tsx` and you don't need to register anything. For frameworks with their own file format, write a [custom processor](/guide/getting-started/installation#a-different-framework) with `createProcessor` from `yapyak/processor`.
+
+## What the shipped adapters do
+
+If you'd like to model your wrapper on a known-good example, the shipped adapters are short:
+
+- [React Router](https://github.com/yapyak/yapyak/blob/main/packages/react-router/src/middleware.ts) — wraps `withResponse(request, () => next())` in a React Router middleware function
+- [SvelteKit](https://github.com/yapyak/yapyak/blob/main/packages/sveltekit/src/handle.ts) — wraps `withResponse(event.request, () => resolve(event, ...))` in a SvelteKit `Handle`
+- [TanStack Start](https://github.com/yapyak/yapyak/blob/main/packages/tanstack-start/src/middleware.ts) — wraps `withResponse(request, () => next(), (result) => result.response)` in TanStack Start's middleware shape
+- [Astro](https://github.com/yapyak/yapyak/blob/main/packages/astro/src/integration.ts) — registers `withResponse` as Astro middleware through the integration system
+
+Each one is a single function. Most of the file is JSDoc.
+
+## See also
+
+- [Overview](/guide/adapters/overview) — what SSR adapters do in general
+- [Locale — Persistence](/guide/locale/persistence) — strategies the request-bound locale reads from
+- [Setup — Install](/guide/getting-started/installation#a-different-framework) — writing a custom processor for a non-shipped file format

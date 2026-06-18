@@ -3,125 +3,54 @@ title: Introduction
 order: 1
 ---
 
-yapyak is an i18n compiler for Vite applications. It rewrites `t()` calls at build time and keeps your locale files in sync with the source as you write. New messages are translated through the AI provider you configure, using your API key from your machine.
+yapyak is an i18n compiler built for the way code gets written today: rapidly, often with help from a coding agent, and rarely pausing for a separate translation step.
 
 It works with React, Vue, Svelte, and Astro. SSR is supported on Astro, React Router, SvelteKit, and TanStack Start.
 
-Four things make yapyak different from most i18n libraries.
+Four things make yapyak different from most i18n libraries. The same four things make it fit naturally into coding flows that involve an agent.
 
-The source string is the key. There are no abstract identifiers and no namespace files to invent. You write `t('Your cart is empty')` and that string is the key in every locale file.
+**The source string is the key.** There are no abstract identifiers and no namespace files to invent. You write `t('Your cart is empty')` and that string is the key in every locale file. An agent writing the component doesn't have to learn a parallel naming system to keep the translation file in sync.
 
-Translations write themselves as you save. With an AI model wired up, new messages are translated and written to your locale files during the same save, then shown in the running browser through Vite HMR while the layout is still in front of you.
+**Translations write themselves as you save.** With an AI model wired up, new messages are translated and written to your locale files during the same save, then shown in the running browser through Vite HMR while the layout is still in front of you. Without one, the stubs stay in place ready for you — or the agent next to you — to fill them.
 
-Your translations live in your repository. Locale files, translation memory, and glossary all sit alongside your code, read from disk and committed to git.
+**Your translations live in your repository.** Locale files, translation memory, and glossary all sit alongside your code, read from disk and committed to git. An agent editing the codebase sees them the same way it sees the rest of the project — no separate service to query, no extra integration to learn.
 
-AI translation runs through your provider key directly. There is no yapyak service in the middle, no upgrade tier, and no usage someone else charges you for.
+**AI translation runs through your provider key directly.** There is no yapyak service in the middle. The model can be Anthropic, OpenAI, Gemini, or a local Ollama you control. You pay the provider directly.
 
 ## Translations follow code
 
 You write the source-language message directly in the code that uses it:
 
-{% switch group="framework" %}
-
-{% when value="react" %}
-```tsx [src/components/empty-cart.tsx]
+```tsx
+// src/components/empty-cart.tsx
 import { t } from 'yapyak';
 
 export function EmptyCart() {
   return <p>{t('Your cart is empty')}</p>;
 }
 ```
-{% /when %}
-
-{% when value="vue" %}
-```vue [src/components/EmptyCart.vue]
-<script setup lang="ts">
-import { t } from 'yapyak';
-</script>
-
-<template>
-  <p>{{ t('Your cart is empty') }}</p>
-</template>
-```
-{% /when %}
-
-{% when value="svelte" %}
-```svelte [src/components/EmptyCart.svelte]
-<script lang="ts">
-  import { t } from 'yapyak';
-</script>
-
-<p>{t('Your cart is empty')}</p>
-```
-{% /when %}
-
-{% when value="astro" %}
-```astro [src/components/EmptyCart.astro]
----
-import { t } from 'yapyak';
----
-
-<p>{t('Your cart is empty')}</p>
-```
-{% /when %}
-
-{% /switch %}
 
 When you save, yapyak adds the message to your locale files as an empty stub. The English source is the key:
 
-{% switch group="framework" %}
-
-{% when value="react" %}
-```json [locales/sv.json]
+```json
+// locales/sv.json
 {
   "src/components/empty-cart.tsx": {
     "Your cart is empty": ""
   }
 }
 ```
-{% /when %}
-
-{% when value="vue" %}
-```json [locales/sv.json]
-{
-  "src/components/EmptyCart.vue": {
-    "Your cart is empty": ""
-  }
-}
-```
-{% /when %}
-
-{% when value="svelte" %}
-```json [locales/sv.json]
-{
-  "src/components/EmptyCart.svelte": {
-    "Your cart is empty": ""
-  }
-}
-```
-{% /when %}
-
-{% when value="astro" %}
-```json [locales/sv.json]
-{
-  "src/components/EmptyCart.astro": {
-    "Your cart is empty": ""
-  }
-}
-```
-{% /when %}
-
-{% /switch %}
 
 If you rename or move the source file, yapyak finds the translations again under the new path. Deleting a component and bringing it back later restores the translations from before. Copying markup to a new file brings the translations along.
 
 ## Translations write themselves
 
-The stub can be filled by you, by your coding agent, or by a *translator*.
+The stub can be filled by you, by your coding agent, or by a translator.
 
 A translator connects directly to an AI model using your provider key:
 
-```ts [yapyak.config.ts]
+```ts
+// yapyak.config.ts
 import { defineConfig } from 'yapyak/config';
 import { anthropic } from '@yapyak/anthropic';
 
@@ -140,49 +69,14 @@ yapyak ships bindings for Anthropic, OpenAI, Gemini, and Ollama out of the box. 
 
 When you save, yapyak collects new messages, sends them to the provider with their source context, voice, glossary, and similar earlier translations, and writes the returned translations to your locale files:
 
-{% switch group="framework" %}
-
-{% when value="react" %}
-```json [locales/sv.json]
+```json
+// locales/sv.json
 {
   "src/components/empty-cart.tsx": {
     "Your cart is empty": "Din kundvagn är tom"
   }
 }
 ```
-{% /when %}
-
-{% when value="vue" %}
-```json [locales/sv.json]
-{
-  "src/components/EmptyCart.vue": {
-    "Your cart is empty": "Din kundvagn är tom"
-  }
-}
-```
-{% /when %}
-
-{% when value="svelte" %}
-```json [locales/sv.json]
-{
-  "src/components/EmptyCart.svelte": {
-    "Your cart is empty": "Din kundvagn är tom"
-  }
-}
-```
-{% /when %}
-
-{% when value="astro" %}
-```json [locales/sv.json]
-{
-  "src/components/EmptyCart.astro": {
-    "Your cart is empty": "Din kundvagn är tom"
-  }
-}
-```
-{% /when %}
-
-{% /switch %}
 
 Vite HMR updates the running application with the translated text.
 
@@ -190,7 +84,7 @@ Vite HMR updates the running application with the translated text.
 
 Translation requests go from your machine to your provider, using your API key. There is no yapyak service between your project and the model. The model can live anywhere your machine can reach, including the machine itself.
 
-yapyak batches new messages into as few requests as possible and runs them in parallel. One request carries multiple messages and every configured locale, so related text gets translated together.
+yapyak batches new messages into as few requests as possible and runs them in parallel. One request carries multiple messages and every locale, so related text gets translated together.
 
 You pay your provider directly. yapyak does not take a cut and does not have a billing tier.
 
@@ -232,7 +126,7 @@ For SSR, translation data can stay on the server while the rendered result is se
 
 A real interface has counts, prices, dates, and lists. yapyak handles these inside translatable messages using ICU MessageFormat:
 
-```ts
+```tsx
 t('You have {count, plural, one {# message} other {# messages}}', {
   count,
 });
@@ -240,7 +134,7 @@ t('You have {count, plural, one {# message} other {# messages}}', {
 
 ICU is a standard format. AI models understand its structure, and translators preserve it across locales. yapyak validates it at compile time.
 
-TypeScript reads the source literal and infers the parameters. Missing or misspelled params are compile-time errors. Invalid plural categories, broken select branches, and dynamic message strings all surface as YPK diagnostics in your editor and in CI.
+TypeScript reads the source literal and infers the parameters. Missing or misspelled params are compile-time errors. Invalid plural categories, broken select branches, and dynamic message strings all surface as YAP diagnostics in your editor and in CI.
 
 For values outside a translatable message, like a price in a card or a timestamp in a footer, yapyak provides a `format` namespace covering numbers, dates, lists, and relative time. Everything is built on the platform's `Intl` and respects the active locale.
 
@@ -254,7 +148,7 @@ This changes when you notice translation problems. German words tend to be longe
 
 Take this component:
 
-```html
+```tsx
 <div>
   <h2>Save your recovery key</h2>
   <p>You will need this key if you forget your master password.</p>
@@ -268,7 +162,7 @@ Take this component:
 
 In English, the buttons fit comfortably in a dialog or on a mobile screen. In German:
 
-```html
+```tsx
 <div>
   <h2>Speichern Sie Ihren Wiederherstellungsschlüssel</h2>
   <p>Sie benötigen diesen Schlüssel, wenn Sie Ihr Master-Passwort vergessen.</p>
@@ -291,3 +185,9 @@ Translation becomes part of building the interface, not a separate step that hap
 Messages follow the code that uses them, and AI fills the stubs on save. Locale files stay in your project, and translations compile alongside the modules that need them. The running app updates as you work.
 
 yapyak is i18n that keeps up with the rest of your codebase.
+
+## Where to go next
+
+If you'd like to see this in motion, [Quick start](/guide/getting-started/installation) walks through adding yapyak to a fresh app and watching the first translation land in the browser.
+
+If you'd rather understand the moving parts first, [How it works](/guide/getting-started/how-it-works) goes through the compiler, the processors, and the HMR loop in detail.

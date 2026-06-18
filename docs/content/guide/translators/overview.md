@@ -3,173 +3,151 @@ title: Overview
 order: 1
 ---
 
-A **translator** is the function yapyak calls to actually translate strings. The plugin extracts `t()` calls, batches them, and passes them to the configured translator. The translator makes the HTTP call to an AI provider and returns the translations.
+A translator is what fills the empty stubs in your locale files. When yapyak finds a new `t('…')` call on save, it batches the missing translations and asks your configured translator for them. The translator is a function that takes a list of source strings and target locales and returns the translations.
 
-yapyak ships four translators: **Anthropic**, **OpenAI**, **Gemini**, and **Ollama**. Many other providers (Groq, DeepSeek, Mistral, OpenRouter, Together AI, Vercel AI Gateway) expose OpenAI-compatible APIs — point the OpenAI translator at their endpoint and you're done. For anything else, build a [custom translator](/guide/translators/custom).
+yapyak ships four ready-made translators that wrap an LLM provider's API: [Anthropic](/guide/translators/anthropic), [OpenAI](/guide/translators/openai), [Gemini](/guide/translators/gemini), and [Ollama](/guide/translators/ollama). A [custom translator](/guide/translators/custom) takes a short function for everything else.
 
-```ts [yapyak.config.ts]
+```ts
 import { defineConfig } from 'yapyak/config';
 import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
   translator: anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY!,
-    voice: 'Casual, thoughtful, never corporate.',
+    apiKey: process.env.ANTHROPIC_API_KEY,
+    voice: 'Concise and friendly',
+    glossary: { cart: { sv: 'kundvagn' } },
   }),
 });
 ```
 
-## Shared options
+That's the typical shape. You add an API key, a voice, and a glossary; yapyak does the batching, retries, and result validation underneath.
 
-Every shipped translator accepts the same core options:
+## What every translator shares
 
-| Option | Type | Default | What it does |
-| --- | --- | --- | --- |
-| `voice` | `string` | — | Tone prompt prepended to every translation request |
-| `glossary` | `Record<string, Record<string, string>>` | — | Forced translations per locale for specific source terms |
-| `context` | `'none' \| 'minimal' \| 'rich'` | `'minimal'` | How much call-site context to send to the AI |
-| `batchSize` | `number` | `25` | Source strings per request. Each request asks for every configured locale at once |
-| `concurrency` | `number` | `5` | Maximum requests running in parallel |
-| `model` | `string` | provider-specific | Which model to use |
-| `temperature` | `number` | `0.2` | Randomness of output (low = deterministic) |
-| `endpoint` | `string` | provider-specific | HTTP endpoint override |
-| `headers` | `Record<string, string>` | — | Extra request headers |
+The shipped translators differ in which API they talk to, but their option surface is almost identical. These options appear on all four:
+
+| Option | Type | Default | Purpose |
+|---|---|---|---|
+| `apiKey` | `string` | required | Your provider key (not needed for [Ollama](/guide/translators/ollama)) |
+| `model` | `string` | provider-specific | Model identifier |
+| `voice` | `string` | undefined | Tone guidance, injected into the prompt |
+| `glossary` | `Record<string, Record<Locale, string>>` | `{}` | Fixed translations the model can't override |
+| `context` | `'none' \| 'minimal' \| 'rich'` | `'minimal'` | How much call-site code is sent along |
+| `temperature` | `number` | `0.2` | Sampling temperature |
+| `maxTokens` | `number` | scaled | Output token cap |
 | `timeout` | `number` | `30_000` ms | Per-request timeout |
-| `maxRetries` | `number` | `2` | Retries on 408/429/5xx and network errors |
+| `maxRetries` | `number` | `2` | Retries on 408/429/5xx |
+| `batchSize` | `number` | `25` | Source strings per request |
+| `concurrency` | `number` | `5` | Parallel requests |
+| `headers` | `Record<string, string>` | `{}` | Extra HTTP headers |
+| `endpoint` | `string` | provider URL | Custom API endpoint (for proxies) |
 
-Provider-specific options on top:
+Three options reward thinking about specifically: `voice`, `glossary`, and `context`.
 
-- **Anthropic**: `apiKey` (required)
-- **OpenAI**: `apiKey` (required), `organization`, `seed`, `user`
-- **Gemini**: `apiKey` (required)
-- **Ollama**: no `apiKey` — local
+### Voice
 
-See each provider's page for full details.
-
-## Translation context
-
-`context` controls what data to send per `t()` call:
-
-| Level | Sends | Use when |
-| --- | --- | --- |
-| `'none'` | Just the source string | Privacy-strict; you don't want surrounding code shipped to AI |
-| `'minimal'` (default) | + component name + enclosing JSX element | Default — gives the AI enough to disambiguate without source code |
-| `'rich'` | + ±3 lines of surrounding source code | Maximum quality for nuanced UI copy |
-
-For most UI translation, `'minimal'` is the sweet spot — disambiguation without leakage. `'rich'` helps for translations where layout matters (e.g. a tooltip needs to fit a specific width). `'none'` is for teams that can't ship code samples to third-party AI.
-
-Setting `context: 'none'` also disables [translation examples](#translation-examples) by default, so no prior translations leak alongside the source string. To opt back in, set `examples` to a positive number in `yapyak.config.ts`.
-
-## Voice
-
-Set the tone for every translation:
+A short description of how you'd like the translations to read. The model takes it as system-prompt guidance.
 
 ```ts
-anthropic({
-  apiKey: '...',
-  voice: 'Personal blog voice. Casual, thoughtful, never corporate. Match the original cadence.',
-})
+voice: 'Concise and friendly',
+voice: 'Formal legal language',
+voice: 'A casual SaaS marketing tone',
+voice: 'Like a senior engineer writing release notes',
 ```
 
-The voice string is prepended to every translation prompt.
+Voice is the single biggest knob for shaping output. A vague voice gives bland translations; a specific one gives the registered character. Keep it under a sentence — long voices tend to confuse rather than clarify.
 
-## Glossary
+### Glossary
 
-Force specific translations for terms that must always render the same way:
+Fixed translations for terms the model shouldn't second-guess. Brand names, product features, domain vocabulary.
 
 ```ts
-anthropic({
-  apiKey: '...',
-  glossary: {
-    'sign in': { sv: 'logga in', no: 'logg inn', dk: 'log ind' },
-    'cart': { es: 'carrito', fr: 'panier', de: 'Warenkorb' },
-  },
-})
+glossary: {
+  Cart: { sv: 'Korg', de: 'Warenkorb' },
+  Checkout: { sv: 'Kassa', de: 'Kasse' },
+  Yapyak: { sv: 'Yapyak', de: 'Yapyak' },  // don't translate the product name
+},
 ```
 
-When a source string contains a glossary key, the AI uses the configured translation. For brand terms, regulated language, product vocabulary.
+Glossary terms are injected into the prompt with a strict instruction to keep them as-is. They're matched on the source string — every occurrence of "Cart" anywhere in a translatable message gets pinned to your translation. Use it for vocabulary that has to stay consistent across the whole app.
 
-## Translation examples
+### Context
 
-yapyak passes a few of the project's prior translations to the AI as style reference, so terminology stays consistent across the codebase. When the project already translated `Save` as `Spara`, a new `t('Save changes')` lands on `Spara ändringar` rather than `Lagra ändringar` or `Bevara ändringar`.
+How much surrounding code yapyak sends with each translation request. Three levels:
 
-Configured on the yapyak config, not the translator:
+| Level | What's sent | When to use |
+|---|---|---|
+| `'none'` | Just the source string | Privacy-sensitive code, costs matter |
+| `'minimal'` | + component name and immediate element | Default — gives the model useful disambiguation |
+| `'rich'` | + a snippet of surrounding source code | When voice and glossary aren't enough |
 
-```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak/config';
+A higher context produces better translations for tricky strings ("Open" as button vs status) at the cost of more tokens per request. Most projects do fine with `'minimal'`.
 
-export default defineConfig({
-  examples: 5,  // default
-  translator: anthropic({ apiKey: '...' }),
-});
-```
+{% callout variant="info" %}
+Call-site context is sent over the same request as the source string. It goes from your machine to your provider, and nothing routes through yapyak. If your provider's terms of service worry you for any reason, `'none'` is the strict-privacy setting.
+{% /callout %}
 
-| Value | Behavior |
-| --- | --- |
-| `0` | Disabled — no prior translations sent |
-| `5` (default) | Up to 5 examples per request, picked by source-similarity |
-| Higher | More context, more tokens — diminishing returns above ~10 |
+## When yapyak calls the translator
 
-Examples come from the project's existing locale files and the orphan cache, scoped to the target locale. Same-file entries rank first, then fuzzy word-level similarity. The AI receives them as hints, not constraints — it deviates when a source genuinely calls for different wording.
+The translator runs in two situations:
 
-When the translator's `context` is `'none'`, this defaults to `0` so no prior translations leak alongside the source string. Set `examples` explicitly to opt back in.
+**During development**, on save. When you write a new `t('…')` call, yapyak collects the missing strings, batches them, and calls your translator. The result is written back to your locale files; HMR refreshes the rendered text. The whole loop usually takes a few seconds.
 
-## When things go wrong
+A guardrail kicks in for large saves: when a single save adds more than [`autoTranslateThreshold`](/guide/getting-started/configuration#autotranslatethreshold) strings (default 20), yapyak holds off on auto-translating and leaves the stubs empty. You run [`yapyak translate`](/guide/cli/translate) when you're ready — useful for big refactors or agent-generated changes where you'd rather review before spending tokens.
 
-API calls fail. Networks drop. Providers go down. yapyak's translation layer is designed to fail gracefully.
+**Through the CLI**, on demand. [`yapyak translate`](/guide/cli/translate) walks every missing entry in your locale files and runs them through your translator. Use it in CI to fill in everything that the dev-time loop didn't catch, or when you've held back auto-translation deliberately.
 
-### Automatic retries
+In both cases, only missing entries reach the model. Existing translations stay where they are.
 
-Transient errors are retried with exponential backoff:
+## When you don't need a translator
 
-- Triggers on `408`, `429`, `5xx` and network-level errors
-- Backoff: 250ms, 500ms, 1s, 2s, 4s, capped at 8s
-- Default `maxRetries: 2` (Ollama: `1`)
-- Other `4xx` errors bubble up immediately
+The translator is optional. Without one:
 
-Tune for flakier networks or stricter rate limits:
+- New stubs stay empty in your locale files
+- You (or a teammate) fills them in by hand, or pastes in a professional translation
+- The CLI's [`status`](/guide/cli/status) and [`check`](/guide/cli/check) still work, so you can track coverage and gate CI
+
+This is a perfectly normal pattern for teams that hand-write every translation, or for early-stage projects where one model isn't ready to make tone decisions yet.
+
+## What yapyak protects you from
+
+A few error cases reach the surface, mostly so you can decide whether to retry or surface them to the user:
+
+| Error | When it fires |
+|---|---|
+| `TranslatorAuthError` | 401/403 — bad or missing API key |
+| `TranslatorRateLimitError` | 429 — provider's rate limit; includes `retryAfter` if the provider sent one |
+| `TranslatorTimeoutError` | Request exceeded `timeout` or was aborted |
+| `TranslatorNetworkError` | Other HTTP failures or network errors |
+| `TranslatorSafetyError` | Provider blocked content (Anthropic refusal, OpenAI content filter, Gemini SAFETY/RECITATION) |
+| `TranslatorInvalidResponseError` | Model returned something that doesn't parse — unusual, but possible |
+| `TranslatorTruncatedError` | Model output was cut off by the token limit |
+
+All of them extend `TranslatorError` (importable from `yapyak/translator`), so a single `catch` block handles every case. Within a batch run, a chunk failure shows up as a [`YAP0033`](/guide/advanced/diagnostics) diagnostic — yapyak continues with the rest of the chunks and returns partial results rather than abandoning everything.
 
 ```ts
-anthropic({
-  apiKey: '...',
-  timeout: 60_000,
-  maxRetries: 5,
-})
+try {
+  await translator.batch({ /* ... */ });
+} catch (error) {
+  if (error instanceof TranslatorRateLimitError) {
+    await delay(error.retryAfter ?? 30_000);
+  }
+}
 ```
 
-### After retries are exhausted
+## Picking a provider
 
-Errors are caught per batch — others keep running, failed strings logged:
+The four shipped translators each have their own setup page with the full options table:
 
-```
-[yapyak] translation failed: sv src/components/save-button.tsx "Save changes" Error: ...
-```
+- [Anthropic](/guide/translators/anthropic) — Claude models. Strong on tone and nuance.
+- [OpenAI](/guide/translators/openai) — GPT and reasoning models. Works with OpenAI-compatible endpoints (Azure, Groq, Mistral, OpenRouter).
+- [Gemini](/guide/translators/gemini) — Google's models. Smaller default batch size; lower latency for short messages.
+- [Ollama](/guide/translators/ollama) — Local inference, no API key. Privacy-first.
 
-Failed strings stay missing in `locales/*.json` — no partial writes. On the next save, yapyak retries them automatically because they're still missing.
+None of them are wrong for general use. Pick the provider you already have a key for, or the one whose pricing fits your translation volume. You can switch later by changing one line in your config.
 
-### What the user sees
+## See also
 
-Nothing broken. yapyak shows the source string wherever a translation is missing:
-
-```ts
-t('Save changes')
-// Renders as 'Save changes' in sv until the translation lands.
-```
-
-The app keeps working. No empty UI, no errors.
-
-### Recovery
-
-| Failure | What happens | Fix |
-| --- | --- | --- |
-| Single string fails | Other strings translate, that one stays source-text | Auto-retry next save |
-| Whole batch fails | Other locales/batches continue | Auto-retry next save |
-| Provider down | Console-warnings, app runs on source-text | Auto-retry next save |
-| API key invalid | 401, warnings per stub, app runs on source-text | Fix the key, save again |
-| CI build | `npx yapyak check` fails on missing translations | Translate locally first, or fix CI secret |
-
-Translations retry on every save until the call succeeds, or until you intervene.
-
-## Bring your own
-
-Any LLM provider or service can be a yapyak translator. See [Custom](/guide/translators/custom) for the `createTranslator` API.
+- [Custom translator](/guide/translators/custom) — when none of the four fit
+- [Config — `translator`](/guide/getting-started/configuration#translator) — where the translator lives in your config
+- [CLI — translate](/guide/cli/translate) — manual translation runs
