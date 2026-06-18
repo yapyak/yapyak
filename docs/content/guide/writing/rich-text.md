@@ -151,7 +151,7 @@ Each tag becomes a named slot. Inside a pair-tag slot, place `<RichText.Children
 
 ## Tag names
 
-Names follow HTML rules: lowercase letters, numbers, hyphens. You'll typically pick semantic names (`link`, `strong`, `name`, `price`) rather than tying yourself to specific HTML elements — the handler decides what element to render.
+A tag name starts with a letter and continues with letters or digits. No hyphens, underscores, or attributes. You'll typically pick semantic names (`link`, `strong`, `name`, `price`) rather than tying yourself to specific HTML elements — the handler decides what element to render.
 
 A tag name only has to exist in the source — it doesn't have to be an HTML element. `<discount>` and `<callout>` work as long as you provide a handler.
 

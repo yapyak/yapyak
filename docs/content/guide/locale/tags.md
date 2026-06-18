@@ -96,8 +96,11 @@ Type guard for strings that are already canonical:
 ```ts
 import { isLocale } from 'yapyak';
 
-const input = readFromCookie();    // string
-if (isLocale(input)) { setLocale(input);                // input narrowed to Locale }
+const input = readFromCookie();
+
+if (isLocale(input)) {
+  setLocale(input);
+}
 ```
 
 ### `parseLocale`

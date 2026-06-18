@@ -44,23 +44,4 @@ Keep contexts short and stable. Treating them like keys in a dictionary (`'open-
 
 The context has to be a literal string at the call site (`t.as('action', 'Open')`), not a variable. The compiler reads it directly to scope the translation, so dynamic contexts can't be extracted.
 
-## With parameters
-
-`t.as()` supports the same placeholder shape as plain [`t()`](/guide/writing/params):
-
-```ts
-t.as('headline', 'Welcome, {name}', { name: 'Ada' });
-```
-
-The parameters and rich-text behavior are identical. The context label only changes which translation slot the call lands in.
-
-## Combining with `t.in()`
-
-A homonym can be rendered for a specific locale by chaining `.in()`:
-
-```ts
-t.as('action').in('sv', 'Open');     // Swedish action sense
-t.in('sv').as('action', 'Open');     // same thing, other order
-```
-
-See [Overrides](/guide/writing/overrides) for what `t.in()` does on its own.
+Placeholders, rich-text tags, and ICU sub-formats work the same as in [`t()`](/guide/writing/params) — the context label only changes which translation slot the call lands in. To force a fixed locale on a homonym, chain `.in()` — see [Overrides](/guide/writing/overrides#combining-with-as).

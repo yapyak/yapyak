@@ -11,20 +11,7 @@ For those, `t.in(locale, source)` forces a single locale on a single call.
 t.in('sv', 'Welcome back');
 ```
 
-This always returns the Swedish translation regardless of the active locale. The signature mirrors `t()` — placeholder parameters, rich-text tags, and ICU sub-formats all work the same. The only difference is that the locale is fixed.
-
-## With parameters
-
-Placeholders behave exactly as in [`t()`](/guide/writing/params):
-
-```ts
-t.in('sv', 'Hi {name}, you have {count, plural, one {# message} other {# messages}}', {
-  count: 3,
-  name: 'Ada',
-});
-```
-
-TypeScript validates the parameters against the source string, and the locale argument is typed against your [`Locale`](/guide/locale/overview) union — pass a locale you haven't added and you get a compile-time error.
+This always returns the Swedish translation regardless of the active locale. The signature mirrors `t()` — placeholder parameters, rich-text tags, and ICU sub-formats all work the same. The locale argument is typed against your [`Locale`](/guide/locale/overview) union, so an unknown code is a compile-time error.
 
 ## Combining with `.as()`
 

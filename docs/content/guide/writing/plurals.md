@@ -132,8 +132,4 @@ t('Doors open at {when, time, short}', { when: meeting });
 
 Styles: `short`, `medium`, `long`, `full`. The placeholder accepts `Date` or a millisecond timestamp.
 
-For values that don't belong inside a message, see the [`format` namespace](/guide/formatting/numbers) instead.
-
-## Choosing between plural and select
-
-If your branching is based on a numeric value, use `plural` (or `selectordinal`). If it's based on a string value, see [Selects](/guide/writing/selects).
+For values that don't belong inside a message, see the [`format` namespace](/guide/formatting/numbers) instead. For branching on a string value rather than a number, see [Selects](/guide/writing/selects).
