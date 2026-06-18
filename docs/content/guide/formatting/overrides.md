@@ -24,7 +24,7 @@ format.in('sv').list(items);
 format.in('sv').relativeTime(offset, unit);
 ```
 
-The `locale` argument is typed against your [`Locale`](/guide/getting-started/installation) union, so an unknown code is a compile-time error.
+The `locale` argument is typed against your [`Locale`](/guide/locale/overview) union, so an unknown code is a compile-time error.
 
 ## When to use it
 

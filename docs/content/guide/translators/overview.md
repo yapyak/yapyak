@@ -3,7 +3,7 @@ title: Overview
 order: 1
 ---
 
-A translator is what fills the empty stubs in your locale files. When yapyak finds a new `t()` call on save, it batches the missing translations and asks your configured translator for them. The translator is a function that takes a list of source strings and target locales and returns the translations.
+A translator sends source strings to a model and writes the translations back. yapyak calls it on save for any empty stubs.
 
 yapyak ships four ready-made translators that wrap a model provider's API: [Anthropic](/guide/translators/anthropic), [OpenAI](/guide/translators/openai), [Gemini](/guide/translators/gemini), and [Ollama](/guide/translators/ollama). A [custom translator](/guide/translators/custom) takes a short function for everything else.
 
@@ -63,13 +63,13 @@ Fixed translations for terms the model shouldn't second-guess. Brand names, prod
 
 ```ts
 glossary: {
-  Cart: { sv: 'Korg', de: 'Warenkorb' },
-  Checkout: { sv: 'Kassa', de: 'Kasse' },
-  Yapyak: { sv: 'Yapyak', de: 'Yapyak' },  // don't translate the product name
+  cart: { sv: 'kundvagn', de: 'Warenkorb' },
+  checkout: { sv: 'kassa', de: 'Kasse' },
+  yapyak: { sv: 'yapyak', de: 'yapyak' },  // keep the product name as-is
 },
 ```
 
-Glossary terms are injected into the prompt with a strict instruction to keep them as-is. They're matched on the source string — every occurrence of "Cart" anywhere in a translatable message gets pinned to your translation. Use it for vocabulary that has to stay consistent across the whole app.
+Glossary terms are injected into the prompt with a strict instruction to keep them as-is. They're matched on the source string — every occurrence of "cart" anywhere in a translatable message gets pinned to your translation. Use it for vocabulary that has to stay consistent across the whole app.
 
 ### Context
 
@@ -124,16 +124,6 @@ A few error cases reach the surface, mostly so you can decide whether to retry o
 | `TranslatorTruncatedError` | Model output was cut off by the token limit |
 
 All of them extend `TranslatorError` (importable from `yapyak/translator`), so a single `catch` block handles every case. Within a batch run, a chunk failure shows up as a [`YAP0033`](/guide/advanced/diagnostics) diagnostic — yapyak continues with the rest of the chunks and returns partial results rather than abandoning everything.
-
-```ts
-try {
-  await translator.batch({ /* ... */ });
-} catch (error) {
-  if (error instanceof TranslatorRateLimitError) {
-    await delay(error.retryAfter ?? 30_000);
-  }
-}
-```
 
 ## Picking a provider
 

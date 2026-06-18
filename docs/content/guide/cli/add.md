@@ -70,7 +70,7 @@ Regional variants (`pt-BR`, `zh-Hant`, `en-GB`) work too — the CLI normalizes 
 1. Validates every locale code, abort if any are unrecognized.
 2. Creates an empty `<locale>.json` file in your `localesDir` for each new locale, scoped per-source-file the same way other locale files are.
 3. Runs the [translator](/guide/translators/overview), if configured, to fill the new files with translations of every existing source string.
-4. Regenerates `.yapyak/types.d.ts` so the new locales appear in the [`Locale`](/guide/getting-started/installation) literal union.
+4. Regenerates `.yapyak/types.d.ts` so the new locales appear in the [`Locale`](/guide/locale/overview) literal union.
 
 If you don't have a translator configured, step 3 is skipped — the new files have empty stubs you fill in yourself.
 

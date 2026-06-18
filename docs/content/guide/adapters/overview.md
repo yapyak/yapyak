@@ -3,9 +3,7 @@ title: Overview
 order: 1
 ---
 
-On the server, the active locale isn't a long-lived store — it's per-request. Two requests can land on the same Node process at the same time, one in Swedish and one in English, and each one needs `getLocale()` to return the right value for that request without leaking into the other.
-
-yapyak handles this with `withResponse()`, a wrapper that binds an incoming request to a context for the duration of its render. SSR adapters install this binding through the framework's normal middleware mechanism, so you don't have to think about it directly — they register one middleware, and everything inside (`t()`, `getLocale()`, `setLocale()`, `format.*`) sees the right locale. The rest of your code keeps using `t()` and `getLocale()` the same on the server as on the client.
+An adapter wires per-request locale scoping into your SSR framework so `t()`, `getLocale()`, and `format.*` resolve to the right value for each render.
 
 ## What the adapter does
 

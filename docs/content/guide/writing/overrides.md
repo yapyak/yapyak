@@ -25,7 +25,7 @@ t.in('sv', 'Hi {name}, you have {count, plural, one {# message} other {# message
 });
 ```
 
-TypeScript validates the parameters against the source string, and the locale argument is typed against your [`Locale`](/guide/getting-started/installation) union — pass a locale you haven't added and you get a compile-time error.
+TypeScript validates the parameters against the source string, and the locale argument is typed against your [`Locale`](/guide/locale/overview) union — pass a locale you haven't added and you get a compile-time error.
 
 ## Combining with `.as()`
 

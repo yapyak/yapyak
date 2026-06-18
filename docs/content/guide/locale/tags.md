@@ -74,7 +74,7 @@ In practice, you rarely need to call this directly — yapyak's runtime uses it 
 
 ## Narrowing untrusted strings
 
-Locales arriving from outside your code — URL parameters, form fields, request headers — are typed as `string` until you narrow them. yapyak exports two helpers, both covered in [Types](/guide/getting-started/installation):
+Locales arriving from outside your code — URL parameters, form fields, request headers — are typed as `string` until you narrow them. yapyak exports two helpers:
 
 ### `isLocale`
 
