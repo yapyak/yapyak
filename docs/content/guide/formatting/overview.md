@@ -59,19 +59,11 @@ Each method maps directly to an `Intl.*Format` class:
 
 **Currency type-safety.** When `style: 'currency'`, the `currency` field is required and typed against ISO 4217:
 
-```ts
-format.number(199, {
-  currency: 'EUR',
-  style: 'currency',
-}); // ✓
-
-format.number(199, { style: 'currency' });                  // ✗ currency missing
-
-format.number(199, {
-  currency: 'XYZ',
-  style: 'currency',
-}); // ✗ not a real code
-```
+{% diagnostics %}
+format.number(199, { currency: 'EUR', style: 'currency' });  // ok
+format.number(199, { style: 'currency' });                   // error: currency missing
+format.number(199, { currency: 'XYZ', style: 'currency' });  // error: not a real code
+{% /diagnostics %}
 
 The `Currency` type is exported separately for passing through your own functions:
 
@@ -88,16 +80,11 @@ function setPrice(amount: number, currency: Currency) {
 
 **Required fields per number style.** `format.number`'s options are a discriminated union over `style`. Pick `'percent'` and nothing else is required; pick `'unit'` and the `unit` field becomes mandatory:
 
-```ts
-format.number(0.42, { style: 'percent' });                 // ✓
-
-format.number(45, {
-  style: 'unit',
-  unit: 'kilometer',
-});   // ✓
-
-format.number(45, { style: 'unit' });                      // ✗ unit missing
-```
+{% diagnostics %}
+format.number(0.42, { style: 'percent' });                // ok
+format.number(45, { style: 'unit', unit: 'kilometer' });  // ok
+format.number(45, { style: 'unit' });                     // error: unit missing
+{% /diagnostics %}
 
 **Graceful currency fallback.** A currency code unsupported by the host `Intl` doesn't throw — yapyak falls back to a `<value> <code>` rendering so older runtimes don't break your page.
 

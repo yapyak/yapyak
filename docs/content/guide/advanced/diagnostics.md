@@ -84,9 +84,9 @@ Mismatched braces, empty branches, broken syntax. The detail message tells you w
 
 ### `YAP0008` — Missing `other` branch
 
-```ts
-t('{count, plural, one {one}}', { count });  // missing 'other'
-```
+{% diagnostics %}
+t('{count, plural, one {one}}', { count });  // error: missing 'other'
+{% /diagnostics %}
 
 `plural`, `selectordinal`, and `select` all require an `other` fallback.
 

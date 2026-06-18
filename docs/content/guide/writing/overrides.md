@@ -44,10 +44,10 @@ See [Homonyms](/guide/writing/homonyms) for what `t.as()` does on its own.
 
 `t.in('sv')` and `t.as('action')` return a chain object you complete in the same expression. You can't store the chain in a variable and reuse it:
 
-```ts
-const swedish = t.in('sv');           // YAP0020: captured chain
-swedish('Welcome');                   // won't work
-```
+{% diagnostics %}
+const swedish = t.in('sv');           // error: YAP0020 captured chain
+swedish('Welcome');                   // no
+{% /diagnostics %}
 
 The compiler needs to see the full call (`t.in('sv', 'Welcome')`) in one place to extract the source string. A stored chain would hide the source from the parser. Use the inline form, repeat the prefix if needed.
 
