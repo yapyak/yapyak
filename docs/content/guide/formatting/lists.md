@@ -14,37 +14,7 @@ format.list(['apple', 'pear', 'orange']);
 // 'apple, pear et orange'      in fr-FR
 ```
 
-It's a thin wrapper over [`Intl.ListFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat), reading the active locale on every call.
-
-## `type` — what kind of join
-
-```ts
-format.list(['apple', 'pear'], { type: 'conjunction' });
-// 'apple and pear'    in en-US   (default)
-
-format.list(['apple', 'pear'], { type: 'disjunction' });
-// 'apple or pear'     in en-US
-
-format.list(['$', '€', '¥'], { type: 'unit' });
-// '$, €, ¥'            in en-US
-```
-
-`'conjunction'` is the default — "and" in English, "och" in Swedish, "et" in French. `'disjunction'` switches to "or". `'unit'` joins without a connector word, used for things like measurement compositions (`'1 hour 30 minutes'`) or symbol sequences.
-
-## `style` — how prominent the connector is
-
-```ts
-format.list(['apple', 'pear', 'orange'], { style: 'long' });
-// 'apple, pear, and orange'    (default)
-
-format.list(['apple', 'pear', 'orange'], { style: 'short' });
-// 'apple, pear, & orange'      (en-US uses ampersand)
-
-format.list(['apple', 'pear', 'orange'], { style: 'narrow' });
-// 'apple, pear, orange'        (no connector at all)
-```
-
-`'long'` is the default. `'short'` uses a more compact form; `'narrow'` drops the connector entirely. The results vary heavily by locale — in Swedish, all three styles render almost identically; in Japanese, the differences are more pronounced.
+It's a thin wrapper over [`Intl.ListFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat), reading the active locale on every call. Any option from `Intl.ListFormat` works.
 
 ## Common pattern: list of localized labels
 

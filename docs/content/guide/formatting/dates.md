@@ -107,7 +107,7 @@ For offsets the locale doesn't have a special word for, `numeric: 'auto'` falls 
 
 ### Units
 
-The second argument is one of: `'second'`, `'minute'`, `'hour'`, `'day'`, `'week'`, `'month'`, `'quarter'`, `'year'`. Pick the largest unit whose magnitude is comfortable for the offset — "yesterday" reads better than "−24 hours ago".
+Pick the largest unit whose magnitude is comfortable for the offset — "yesterday" reads better than "−24 hours ago". See [`Intl.RelativeTimeFormat` units](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/RelativeTimeFormat/format#unit) for the accepted values.
 
 ```ts
 const elapsed = Date.now() - timestamp;
@@ -123,16 +123,6 @@ if (minutes < 60) {
 ```
 
 This pattern — a small "pick the unit" helper around `format.relativeTime` — is what most apps end up with. yapyak doesn't ship one because the right thresholds depend on your context: a chat app and an annual-report viewer want different boundaries.
-
-### Style
-
-```ts
-format.relativeTime(-3, 'day', { style: 'long' });    // '3 days ago'   (default)
-format.relativeTime(-3, 'day', { style: 'short' });   // '3 days ago'
-format.relativeTime(-3, 'day', { style: 'narrow' });  // '3 days ago'   (often same)
-```
-
-English doesn't show much difference between styles for time units, but some locales do — Japanese uses different particles, German uses different prepositions. Test in the languages you care about.
 
 ## Inside a `t()` message
 

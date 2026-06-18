@@ -3,37 +3,24 @@ title: Configuration
 order: 3
 ---
 
-`yapyak.config.ts` is where you configure yapyak. Every field is optional.
+`yapyak.config.ts` sits at your project root and configures yapyak. Every field is optional.
 
 ## Quick reference
 
-```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak/config';
-
-export default defineConfig({
-  // Source files
-  include: ['src'],                       // patterns to scan
-  exclude: [/* ... */],                   // patterns to skip (defaults cover tests, .d.ts, stories, gen)
-  processors: [/* ... */],                // framework processors
-
-  // Locales
-  defaultLocale: 'en',                    // source language
-  localesDir: 'locales',                  // where locale files live
-
-  // Translator
-  translator: /* ... */,                  // optional model
-  examples: 5,                            // in-context style examples per request
-  autoTranslateThreshold: 20,             // skip auto-translate above this many new strings on save
-  preserveTranslationsOnRename: true,     // keep existing translations on source edits
-
-  // Runtime
-  persistence: 'none',                    // 'none' | 'cookie' | 'url' | 'local-storage'
-  syncHtmlLang: false,                    // sync <html lang> on locale change
-  detectAcceptLanguage: false,            // detect locale from Accept-Language header
-});
-```
-
-Every field is optional — the values above are the defaults. Each field is documented in detail below. The full type lives in `yapyak/config`, and your editor will autocomplete every option.
+| Field | Default | Description |
+|---|---|---|
+| [`include`](#include) | `['src']` | Patterns to scan |
+| [`exclude`](#exclude) | tests, `.d.ts`, stories, gen | Patterns to skip |
+| [`processors`](#processors) | `[]` | Framework processors |
+| [`defaultLocale`](#defaultlocale) | `'en'` | Source language |
+| [`localesDir`](#localesdir) | `'locales'` | Where locale files live |
+| [`translator`](#translator) | — | Optional model |
+| [`examples`](#examples) | `5` | In-context style examples per request |
+| [`autoTranslateThreshold`](#autotranslatethreshold) | `20` | Skip auto-translate above N new strings on save |
+| [`preserveTranslationsOnRename`](#preservetranslationsonrename) | depends on translator | Keep translations on source edits |
+| [`persistence`](#persistence) | `'none'` | Active-locale storage |
+| [`syncHtmlLang`](#synchtmllang) | `false` | Sync `<html lang>` on locale change |
+| [`detectAcceptLanguage`](#detectacceptlanguage) | `false` | Detect from `Accept-Language` header |
 
 ## Locales
 

@@ -61,19 +61,6 @@ format.number(199, {
 // '199,00 kr'    in sv-SE
 ```
 
-Extra options on the currency branch:
-
-```ts
-format.number(199, {
-  currency: 'USD',
-  currencyDisplay: 'narrowSymbol',  // 'symbol' | 'narrowSymbol' | 'code' | 'name'
-  currencySign: 'accounting',       // 'standard' | 'accounting'
-  style: 'currency',
-});
-```
-
-`currencyDisplay: 'name'` produces "199.00 US dollars" / "199,00 amerikanska dollar" — useful for accessible labels.
-
 {% callout variant="info" %}
 A currency code unsupported by the host `Intl` does not throw — yapyak falls back to a `<value> <code>` rendering. This covers the rare cases where a runtime is missing a freshly-issued currency code (e.g. a regional digital currency) without crashing the page.
 {% /callout %}
@@ -92,8 +79,10 @@ function setPrice(amount: number, currency: Currency) {
   });
 }
 
-const code = readFromForm();        // string
-if (isCurrency(code)) { setPrice(199, code);              // narrowed to Currency }
+const code = readFromForm();
+if (isCurrency(code)) {
+  setPrice(199, code);
+}
 ```
 
 Use `Currency` for typed props and parameters; use `isCurrency` to narrow user input before calling `setPrice`.
@@ -114,7 +103,7 @@ format.number(0.4256, {
 // '42.6%'
 ```
 
-This always trips people up at least once. If your value is already in "percent units" (`42` for "forty-two percent"), divide by 100 before passing it in.
+If your value is already in "percent units" (`42` for "forty-two percent"), divide by 100 before passing it in.
 
 ## Unit
 
@@ -143,7 +132,7 @@ format.number(72, {
 // '72 mph'           in en-US
 ```
 
-`unitDisplay` accepts `'short'` (default), `'narrow'`, or `'long'`. The unit identifiers come from the [Unicode CLDR units list](https://unicode-org.github.io/cldr/ldml/tr35-general.html#Unit_Elements) — common ones include `kilometer`, `mile`, `liter`, `kilogram`, `hour`, `degree`, `byte`, `percent`.
+Unit identifiers come from the [Unicode CLDR units list](https://unicode-org.github.io/cldr/ldml/tr35-general.html#Unit_Elements).
 
 ## Inside a `t()` message
 
