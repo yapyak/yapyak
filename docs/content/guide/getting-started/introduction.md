@@ -15,7 +15,7 @@ Five things make yapyak different from most i18n libraries. The same five things
 
 **Your translations live in your repository.** Locale files, translation memory, and glossary all sit alongside your code, read from disk and committed to git. An agent editing the codebase sees them the same way it sees the rest of the project — no separate service to query, integrate with, or pay for.
 
-**ICU is type-checked live, with no build step.** Placeholders, plural branches, and select arms in your source string turn into typed parameters via TypeScript's template literal types — write `'You have {count} messages'` and `count: number` is required in the editor, instantly. ICU is already a format models write fluently; yapyak makes sure they get the details right.
+**ICU is validated end-to-end.** TypeScript reads your source string and types every parameter instantly — write `'You have {count} messages'` and `count: number` is required in the editor. The compiler then validates the ICU itself across every locale at save time: malformed syntax, missing `other` branches, parameters that drift between source and translation. ICU is a format models write fluently; yapyak makes sure they get the details right.
 
 **Translations are safe to refactor.** When you rename a source string, move a file, or remove a component, yapyak preserves the existing translations and restores them when the source reappears. The compiler refuses to write a locale file in a state that would silently clear a translation still in use.
 

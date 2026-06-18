@@ -12,7 +12,7 @@ function Component() {
   return (
     <>
       <Hero
-        description={t('Translations at the speed of save.')}
+        description={t('For Vite apps that move at the speed of save.')}
         heading={t('i18n that keeps up.')}
       />
       <FeatureSection />

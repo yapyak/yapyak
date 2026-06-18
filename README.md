@@ -19,7 +19,7 @@
 [![Gemini](https://img.shields.io/badge/Gemini-8E75B2?logo=googlegemini&logoColor=fff)](#)
 [![Ollama](https://img.shields.io/badge/Ollama-000?logo=ollama&logoColor=fff)](#)
 
-Translations at the speed of save.
+For Vite apps that move at the speed of save.
 
 ```tsx
 import { t } from 'yapyak'
