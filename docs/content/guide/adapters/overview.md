@@ -5,30 +5,7 @@ order: 1
 
 On the server, the active locale isn't a long-lived store — it's per-request. Two requests can land on the same Node process at the same time, one in Swedish and one in English, and each one needs `getLocale()` to return the right value for that request without leaking into the other.
 
-yapyak handles this with `withResponse()`, a wrapper that binds an incoming request to a context for the duration of its render. SSR adapters install this binding through the framework's normal middleware mechanism, so you don't have to think about it directly — they register one middleware, and everything inside (`t()`, `getLocale()`, `setLocale()`, `format.*`) sees the right locale.
-
-```ts
-// SvelteKit
-export { handle } from '@yapyak/sveltekit';
-
-// TanStack Start
-import { middleware } from '@yapyak/tanstack-start';
-export const startInstance = createStart(() => ({
-  requestMiddleware: [middleware],
-}));
-
-// React Router (framework mode)
-import { middleware as yapyakMiddleware } from '@yapyak/react-router';
-export const middleware = [yapyakMiddleware];
-
-// Astro
-import { yapyak } from '@yapyak/astro/integration';
-export default defineConfig({
-  integrations: [yapyak()],
-});
-```
-
-One of these lines per project, depending on framework. The rest of your code keeps using `t()` and `getLocale()` the same on the server as on the client.
+yapyak handles this with `withResponse()`, a wrapper that binds an incoming request to a context for the duration of its render. SSR adapters install this binding through the framework's normal middleware mechanism, so you don't have to think about it directly — they register one middleware, and everything inside (`t()`, `getLocale()`, `setLocale()`, `format.*`) sees the right locale. The rest of your code keeps using `t()` and `getLocale()` the same on the server as on the client.
 
 ## What the adapter does
 
