@@ -31,15 +31,13 @@ You also need yapyak, the Vite plugin, and the Svelte binding (covered in [Setup
 
 The simplest setup re-exports the handle directly:
 
-```ts
-// src/hooks.server.ts
+```ts [src/hooks.server.ts]
 export { handle } from '@yapyak/sveltekit';
 ```
 
 If you have other handles to compose, use SvelteKit's `sequence`:
 
-```ts
-// src/hooks.server.ts
+```ts [src/hooks.server.ts]
 import { sequence } from '@sveltejs/kit/hooks';
 import { handle as yapyakHandle } from '@yapyak/sveltekit';
 import { handle as authHandle } from './auth';
@@ -77,8 +75,7 @@ Placeholder substitution requires `%yapyak.lang%` to fall within a single stream
 
 ## Register the processor
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { svelte } from '@yapyak/svelte/processor';
 
@@ -113,8 +110,7 @@ On click, the client store updates, the cookie writes, and every component that 
 
 If a server-side load function or form action calls `setLocale()` to update the user's preference, yapyak buffers the `Set-Cookie` write and the handle flushes it onto the outgoing response:
 
-```ts
-// src/routes/settings/+page.server.ts
+```ts [src/routes/settings/+page.server.ts]
 import { setLocale } from 'yapyak';
 import type { Actions } from './$types';
 

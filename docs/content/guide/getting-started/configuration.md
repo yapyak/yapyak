@@ -116,9 +116,17 @@ If your project mixes frameworks, register all of them — each processor takes 
 | Svelte | `import { svelte } from '@yapyak/svelte/processor'` |
 | Astro | `import { astro } from '@yapyak/astro/processor'` |
 
-Only the React processor takes an option (`rsc: boolean`) — see [Installation](/guide/getting-started/installation) for that one detail.
-
 **Type**: `Processor[]` · **Default**: `[]` (TS/JS only)
+
+#### React Server Components
+
+The React processor is the only one that takes an option — `rsc: boolean`. Turn it on for projects using React Server Components:
+
+```ts
+processors: [react({ rsc: true })],
+```
+
+With `rsc: true`, only files marked `'use client'` get the locale subscription hook injected. Server components still have their `t()` calls rewritten, but they read the request-bound locale from the SSR adapter instead of subscribing to a store.
 
 ## Translator
 
@@ -230,10 +238,9 @@ The directory contains one JSON file per locale — `en.json`, `sv.json`, and so
 
 ## Fixed-locale builds
 
-When you want a single-locale artifact — a static deploy that serves one language per build — pass `fixedLocale` to the [Vite plugin](/guide/getting-started/installation) (not `yapyak.config.ts`):
+When you want a single-locale artifact — a static deploy that serves one language per build — pass `fixedLocale` to the Vite plugin (not `yapyak.config.ts`):
 
-```ts
-// vite.config.ts
+```ts [vite.config.ts]
 import { yapyak } from '@yapyak/vite';
 
 export default defineConfig({
@@ -252,7 +259,7 @@ YAPYAK_LOCALE=sv pnpm build
 In a fixed-locale build, yapyak replaces every eligible `t()` call with the target locale's literal string, tree-shakes the locale picker out of the bundle, and ships no i18n runtime at all. Calls that need runtime behaviour (`t.as()`, ICU placeholders) stay as compiled lookups.
 
 {% callout variant="info" %}
-`fixedLocale` lives on the Vite plugin rather than `yapyak.config.ts` because it's a build-time toggle that affects the bundle shape — it isn't something the runtime ever observes. See [Install](/guide/getting-started/installation) for plugin-level options.
+`fixedLocale` lives on the Vite plugin rather than `yapyak.config.ts` because it's a build-time toggle that affects the bundle shape — it isn't something the runtime ever observes.
 {% /callout %}
 
 ## Reading config from your code

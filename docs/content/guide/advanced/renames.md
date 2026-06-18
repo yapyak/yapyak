@@ -62,8 +62,7 @@ The principle: yapyak preserves what's certain, doesn't guess at what's ambiguou
 
 `preserveTranslationsOnRename` is the one knob that's worth setting deliberately:
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 export default defineConfig({
   preserveTranslationsOnRename: true,
 });

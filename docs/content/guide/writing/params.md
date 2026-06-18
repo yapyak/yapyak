@@ -12,8 +12,7 @@ t('Hi {name}', { name: 'Ada' });
 
 The placeholder syntax is curly braces around the parameter name. The translation file keeps the same placeholders, so translators (human or model) know exactly where the value lands inside each language's sentence.
 
-```json
-// locales/sv.json
+```json [locales/sv.json]
 {
   "src/components/greeting.tsx": {
     "Hi {name}": "Hej {name}"

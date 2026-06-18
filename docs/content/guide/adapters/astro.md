@@ -27,8 +27,7 @@ bun add yapyak @yapyak/astro
 
 ## Register the integration
 
-```ts
-// astro.config.ts
+```ts [astro.config.ts]
 import { defineConfig } from 'astro/config';
 import { yapyak } from '@yapyak/astro/integration';
 
@@ -41,8 +40,7 @@ The integration registers two things: yapyak's build-time Vite plugin (so `t()` 
 
 ## Register the processor
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { astro } from '@yapyak/astro/processor';
 
@@ -79,8 +77,7 @@ Every navigation re-runs the middleware and re-renders the layout, so `<html lan
 
 If a React/Vue/Svelte island calls `setLocale()` without triggering a navigation, the static `<html>` element doesn't re-render — the attribute stays at whatever the server rendered. Enable [`syncHtmlLang`](/guide/getting-started/configuration#synchtmllang) to update it on every client-side `setLocale()` call:
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 export default defineConfig({
   persistence: 'cookie',
   processors: [astro()],

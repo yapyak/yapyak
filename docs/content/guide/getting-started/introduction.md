@@ -21,8 +21,7 @@ Four things make yapyak different from most i18n libraries. The same four things
 
 You write the source-language message directly in the code that uses it:
 
-```tsx
-// src/components/empty-cart.tsx
+```tsx [src/components/empty-cart.tsx]
 import { t } from 'yapyak';
 
 export function EmptyCart() {
@@ -32,8 +31,7 @@ export function EmptyCart() {
 
 When you save, yapyak adds the message to your locale files as an empty stub. The English source is the key:
 
-```json
-// locales/sv.json
+```json [locales/sv.json]
 {
   "src/components/empty-cart.tsx": {
     "Your cart is empty": ""
@@ -45,12 +43,11 @@ If you rename or move the source file, yapyak finds the translations again under
 
 ## Translations write themselves
 
-The stub can be filled by you, by your coding agent, or by a translator.
+The stub can be filled by you, by your coding agent, or by a *translator*.
 
 A translator connects directly to an AI model using your provider key:
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { anthropic } from '@yapyak/anthropic';
 
@@ -69,8 +66,7 @@ yapyak ships bindings for Anthropic, OpenAI, Gemini, and Ollama out of the box. 
 
 When you save, yapyak collects new messages, sends them to the provider with their source context, voice, glossary, and similar earlier translations, and writes the returned translations to your locale files:
 
-```json
-// locales/sv.json
+```json [locales/sv.json]
 {
   "src/components/empty-cart.tsx": {
     "Your cart is empty": "Din kundvagn är tom"

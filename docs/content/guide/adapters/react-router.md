@@ -31,8 +31,7 @@ You also need yapyak, the Vite plugin, and the React binding (covered in [Setup 
 
 React Router v7 middleware is opt-in. Turn it on in `react-router.config.ts`:
 
-```ts
-// react-router.config.ts
+```ts [react-router.config.ts]
 import type { Config } from '@react-router/dev/config';
 
 export default {
@@ -48,8 +47,7 @@ Without this flag, the framework ignores `middleware` exports on your routes.
 
 In your root route:
 
-```tsx
-// app/root.tsx
+```tsx [app/root.tsx]
 import type { Route } from './+types/root';
 import { middleware as yapyakMiddleware } from '@yapyak/react-router';
 
@@ -76,8 +74,7 @@ export const middleware: Route.MiddlewareFunction[] = [
 
 In your root component, read `useLocale()` and pass it to `<html lang>`:
 
-```tsx
-// app/root.tsx
+```tsx [app/root.tsx]
 import { useLocale } from '@yapyak/react';
 
 export default function Root() {
@@ -99,8 +96,7 @@ export default function Root() {
 
 For server-side cookie reads to work, configure `persistence: 'cookie'` in `yapyak.config.ts`. Without it, the request-bound locale falls back to `defaultLocale` on every request — or to [`Accept-Language`](/guide/getting-started/configuration#detectacceptlanguage) detection if you've enabled `detectAcceptLanguage: true`.
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { react } from '@yapyak/react/processor';
 

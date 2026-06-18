@@ -101,8 +101,7 @@ Requests are batched. By default, yapyak groups up to 25 messages per request, r
 
 Locale files live in your repository, one per locale, scoped by the source file that owns each message:
 
-```json
-// locales/sv.json
+```json [locales/sv.json]
 {
   "src/components/save-button.tsx": {
     "Save changes": "Spara ändringar"

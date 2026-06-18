@@ -23,8 +23,7 @@ The first argument is a short context label — your description of which sense 
 
 A homonym source nests its translations under the context name:
 
-```json
-// locales/sv.json
+```json [locales/sv.json]
 {
   "src/components/dialog.tsx": {
     "Open": {

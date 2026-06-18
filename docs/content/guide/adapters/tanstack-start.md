@@ -31,8 +31,7 @@ You also need yapyak, the Vite plugin, and the React binding (covered in [Setup 
 
 In your start entry file:
 
-```ts
-// src/start.ts
+```ts [src/start.ts]
 import { createStart } from '@tanstack/react-start';
 import { middleware } from '@yapyak/tanstack-start';
 
@@ -57,8 +56,7 @@ export const startInstance = createStart(() => ({
 
 In your root route, read the locale through the React binding and pass it to `<html lang>`:
 
-```tsx
-// src/routes/__root.tsx
+```tsx [src/routes/__root.tsx]
 import { useLocale } from '@yapyak/react';
 
 function Root() {
@@ -78,8 +76,7 @@ function Root() {
 
 ## Register the processor
 
-```ts
-// yapyak.config.ts
+```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { react } from '@yapyak/react/processor';
 

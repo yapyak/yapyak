@@ -120,8 +120,7 @@ The two paths share results: a translation done by the save loop is found by `ya
 
 A typical pattern: hold back auto-translation in dev (set `autoTranslateThreshold: 0`), let developers write `t()` calls freely, then run `yapyak translate` in CI before building:
 
-```yaml
-# .github/workflows/build.yml
+```yaml [.github/workflows/build.yml]
 - run: pnpm yapyak translate
   env:
     ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}

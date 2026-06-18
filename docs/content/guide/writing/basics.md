@@ -3,7 +3,7 @@ title: Basics
 order: 1
 ---
 
-`t()` is the runtime function you call wherever a piece of text should be translatable. The source string you pass is the contract — what the user reads in your source language, and what every locale file references when storing the translation.
+`t()` is the function you wrap around any text that should be translatable. The string you wrap becomes the source text as well as the key for its translations.
 
 ```ts
 import { t } from 'yapyak';
@@ -11,7 +11,7 @@ import { t } from 'yapyak';
 t('Save changes');
 ```
 
-That's the smallest possible usage. yapyak picks it up on save, makes sure your locale files have an entry for it, and replaces the call at compile time with a synchronous lookup of the right locale's value.
+That's the smallest possible usage. yapyak picks it up on save, makes sure each target locale file has an entry for it, and replaces the call at compile time with a synchronous lookup of the right locale's value.
 
 ## Where you write `t()`
 
@@ -69,8 +69,7 @@ The framework binding handles the reactivity for you. When the user switches loc
 
 The English (or whatever your `defaultLocale` is) text you pass to `t()` is what every locale file uses as its key. There's no parallel naming convention to maintain:
 
-```json
-// locales/sv.json
+```json [locales/sv.json]
 {
   "src/components/save-button.tsx": {
     "Save changes": "Spara ändringar"
