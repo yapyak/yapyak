@@ -15,6 +15,7 @@ export type Block =
   | LinkBlock
   | ListBlock
   | ListItemBlock
+  | DiagnosticsBlock
   | OnlyBlock
   | OutputBlock
   | ParagraphBlock
@@ -163,6 +164,20 @@ export type OutputLine = {
 export type OutputBlock = {
   lines: OutputLine[];
   type: 'output';
+};
+
+export type DiagnosticsStatus = 'error' | 'ok';
+
+export type DiagnosticsLine = {
+  code: string;
+  message: string | null;
+  status: DiagnosticsStatus;
+};
+
+export type DiagnosticsBlock = {
+  language: string;
+  lines: DiagnosticsLine[];
+  type: 'diagnostics';
 };
 
 export type ExportKind =

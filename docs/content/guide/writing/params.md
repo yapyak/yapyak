@@ -28,15 +28,12 @@ The placeholder syntax is curly braces around the parameter name. The locale fil
 
 The parameter object's shape is inferred from the source string. Add a placeholder and TypeScript expects you to pass it in. Pass the wrong name and you get an error before the build runs:
 
-```ts
+{% diagnostics %}
 t('Hi {name}', { name: 'Ada' });             // ok
-
 t('Hi {name}', {});                          // error: missing 'name'
-
 t('Hi {name}', { user: 'Ada' });             // error: 'user' is not assignable
-
 t('Hi {name}, {greeting}', { name: 'Ada' }); // error: missing 'greeting'
-```
+{% /diagnostics %}
 
 Simple placeholders accept `string | number`. They're rendered as their string form — for richer formatting, use [number](/guide/writing/plurals#numbers), [date](/guide/writing/plurals#dates-and-times), or [list](/guide/formatting/lists) sub-formats inside the placeholder.
 
@@ -73,15 +70,18 @@ This is one of the quietly important things about a placeholder-based system: th
 
 The second argument has to be an inline object literal. yapyak's compiler reads it directly to check that every placeholder is satisfied; if it's a variable, the check can't happen:
 
-```ts
+{% diagnostics %}
 t('Hi {name}', { name: 'Ada' });             // ok
+t('Hi {name}', { name });                    // ok: shorthand still parses
+{% /diagnostics %}
 
-t('Hi {name}', { name });                    // ok (shorthand still parses)
-
+```ts
 const params = { name: 'Ada' };
-
-t('Hi {name}', params);                      // error: dynamic params
 ```
+
+{% diagnostics %}
+t('Hi {name}', params);                      // error: dynamic params
+{% /diagnostics %}
 
 This catches the most common mistake people make when they're used to other i18n libraries — passing a pre-built object full of optional fields. The compiler requires every translation site to be statically inspectable.
 

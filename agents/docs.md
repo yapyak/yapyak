@@ -137,6 +137,32 @@ API-only examples that demonstrate `t()` or `format.*` stay as plain `ts` — no
 
 CLI invocations switch on `group="pkg"` with `value="pnpm"|"npm"|"bun"`.
 
+### `{% diagnostics %}` for type-check examples
+
+When showing the type-checker's pass/fail behavior on multiple lines, use the `{% diagnostics %}` Markdoc tag instead of plain code blocks with `// ok` / `// error: ...` comments. The tag's renderer extracts the trailing comment from each line and renders a status indicator (✓/✗) plus the diagnostic message as proper UI chrome — the code stays clean, the diagnostic is visually scannable.
+
+Syntax inside the tag:
+
+```
+{% diagnostics %}
+t('Hi {name}', { name: 'Ada' });             // ok
+t('Hi {name}', {});                          // error: missing 'name'
+t('Hi {name}', { user: 'Ada' });             // error: 'user' is not assignable
+t(`Hi ${name}`);                             // no
+t('Hi {name}', { name });                    // yes
+{% /diagnostics %}
+```
+
+Accepted annotations after the `//`:
+
+- `ok` or `yes` → renders as ✓ (no message)
+- `no` or `error` → renders as ✗ (no message)
+- `ok: <message>` or `ok <message>` → ✓ with message
+- `error: <message>` or `error <message>` → ✗ with message
+- Any other free text → ✗ with the text as the message
+
+Use plain code blocks (no `{% diagnostics %}`) when there's no pass/fail story — just demonstrating an API call. Use `{% diagnostics %}` only when the *contrast* between ok and error lines is the point.
+
 ### Don't document `Intl`
 
 `format.*` is a thin wrapper over `Intl`. The guide explains what yapyak adds — type safety, locale resolution, graceful fallback. For option enums (`currencyDisplay`, `numberingSystem`, `style`, `type`, etc.) link to MDN. Never enumerate `Intl` values inline.

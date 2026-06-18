@@ -1,0 +1,83 @@
+@layer components {
+  .Diagnostics {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    padding: var(--spacing-3) 0;
+    overflow: hidden;
+    background: var(--surface);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-ring-inset);
+  }
+
+  .Line {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--spacing-3);
+    align-items: baseline;
+    padding: var(--spacing-2) var(--spacing-5);
+    font-family: var(--font-family-mono);
+    font-size: 0.875rem;
+    line-height: var(--line-height-normal);
+
+    &[data-status="error"] {
+      background-color: color-mix(in oklab, var(--danger) 4%, transparent);
+    }
+
+    &[data-status="ok"] {
+      background-color: color-mix(in oklab, var(--brand) 3%, transparent);
+    }
+  }
+
+  .Indicator {
+    width: 1rem;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    text-align: center;
+    pointer-events: none;
+    user-select: none;
+
+    .Line[data-status="ok"] & {
+      color: var(--brand);
+    }
+
+    .Line[data-status="error"] & {
+      color: var(--danger);
+    }
+  }
+
+  .Code {
+    overflow-x: auto;
+    font-family: inherit;
+    color: var(--foreground-soft);
+    white-space: pre;
+    scrollbar-color: var(--ring-stronger) transparent;
+    scrollbar-width: thin;
+  }
+
+  .Message {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    color: var(--foreground-softer);
+    text-align: right;
+    white-space: nowrap;
+    user-select: none;
+
+    .Line[data-status="error"] & {
+      color: color-mix(in oklab, var(--danger) 60%, var(--foreground-softer));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .Line {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .Message {
+      grid-column: 2;
+      text-align: left;
+      white-space: normal;
+    }
+  }
+}

@@ -5,6 +5,7 @@ import { BlockRendererNodeCodeBlock } from './block-renderer-node-code-block';
 import { BlockRendererNodeCodeExpression } from './block-renderer-node-code-expression';
 import { BlockRendererNodeCodeGroup } from './block-renderer-node-code-group';
 import { BlockRendererNodeCodeLocation } from './block-renderer-node-code-location';
+import { BlockRendererNodeDiagnostics } from './block-renderer-node-diagnostics';
 import { BlockRendererNodeDivider } from './block-renderer-node-divider';
 import { BlockRendererNodeEmphasis } from './block-renderer-node-emphasis';
 import { BlockRendererNodeEyebrow } from './block-renderer-node-eyebrow';
@@ -80,6 +81,8 @@ export function BlockRendererNode(props: BlockRendererNodeProps) {
       return <BlockRendererNodeOnly block={block} />;
     case 'output':
       return <BlockRendererNodeOutput block={block} />;
+    case 'diagnostics':
+      return <BlockRendererNodeDiagnostics block={block} />;
     case 'callout':
       return <BlockRendererNodeCallout block={block} />;
     case 'eyebrow':

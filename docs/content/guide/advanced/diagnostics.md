@@ -21,47 +21,44 @@ Things the compiler caught while looking at the `t()` call itself.
 
 ### `YAP0001` — No source
 
-```ts
-t();              // missing source
-
-t.as('action');   // missing source
-```
+{% diagnostics %}
+t();              // error: missing source
+t.as('action');   // error: missing source
+{% /diagnostics %}
 
 Pass the source string as the first argument (second for `t.as()`).
 
 ### `YAP0002` — Dynamic template literal
 
-```ts
+{% diagnostics %}
 t(`Hi ${name}`);  // no
-
 t('Hi {name}', { name });  // yes
-```
+{% /diagnostics %}
 
 The source has to be a static string literal so the compiler can extract it. Use a placeholder instead.
 
 ### `YAP0003` — Empty source
 
-```ts
+{% diagnostics %}
 t('');  // no
-```
+{% /diagnostics %}
 
 Empty strings can't be translation keys. If you genuinely want an empty render, return `''` directly.
 
 ### `YAP0004` — Missing parameter
 
-```ts
-t('Hi {name}', {});            // missing 'name'
-
-t('Hi {name}', { user: 'A' }); // missing 'name', has extra 'user'
-```
+{% diagnostics %}
+t('Hi {name}', {});            // error: missing 'name'
+t('Hi {name}', { user: 'A' }); // error: missing 'name', extra 'user'
+{% /diagnostics %}
 
 Add the key to the params object.
 
 ### `YAP0005` — Extra parameter
 
-```ts
-t('Hi', { name: 'A' });  // 'name' isn't used
-```
+{% diagnostics %}
+t('Hi', { name: 'A' });  // error: 'name' isn't used
+{% /diagnostics %}
 
 Either add `{name}` to the source or remove it from the parameters.
 
@@ -69,9 +66,11 @@ Either add `{name}` to the source or remove it from the parameters.
 
 ```ts
 const params = { name: 'A' };
-
-t('Hi {name}', params);  // can't be statically verified
 ```
+
+{% diagnostics %}
+t('Hi {name}', params);  // error: can't be statically verified
+{% /diagnostics %}
 
 Pass the params object inline so the compiler can read it.
 
@@ -167,11 +166,10 @@ Migrating a locale file from an older yapyak format to a newer one failed for on
 
 ### `YAP0017` — Context not literal
 
-```ts
+{% diagnostics %}
 t.as(someVariable, 'Open');  // no
-
 t.as('action', 'Open');      // yes
-```
+{% /diagnostics %}
 
 The first argument to `t.as()` has to be a static string literal.
 
@@ -189,18 +187,18 @@ A source string can't use both `t()` and `t.as()` in one file. Pick one form per
 
 ### `YAP0019` — Unused context
 
-```ts
-t.as('only', 'Open');  // no other context for 'Open' anywhere
-```
+{% diagnostics %}
+t.as('only', 'Open');  // error: no other context for 'Open' anywhere
+{% /diagnostics %}
 
 The whole point of `t.as()` is to distinguish from another context. If there's only one, drop the `.as()`.
 
 ### `YAP0020` — Captured chain
 
-```ts
+{% diagnostics %}
 const tr = t.as('action');  // no
 tr('Open');                 // no
-```
+{% /diagnostics %}
 
 The chain forms (`t.as(...)`, `t.in(...)`) have to be used inline — the compiler can't extract a source through a stored chain.
 

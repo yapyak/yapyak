@@ -3,6 +3,9 @@ import type {
   Block,
   CalloutBlock,
   CodeBlock,
+  DiagnosticsBlock,
+  DiagnosticsLine,
+  DiagnosticsStatus,
   OutputBlock,
   OutputLine,
   TableBlock,
@@ -262,6 +265,10 @@ function toBlocks(node: unknown): Block[] {
       return [
         buildOutput(node.attributes),
       ];
+    case 'Diagnostics':
+      return [
+        buildDiagnostics(node.attributes),
+      ];
     default:
       throw new Error(`parseMarkdoc: unknown tag "${node.name}"`);
   }
@@ -326,6 +333,109 @@ function buildCallout(
   };
 }
 
+function splitCodeAndComment(line: string): [
+  string,
+  string | null,
+] {
+  let inSingle = false;
+  let inDouble = false;
+  let inBacktick = false;
+  for (let i = 0; i < line.length - 1; i++) {
+    const ch = line[i];
+    if (!inDouble && !inBacktick && ch === "'") {
+      inSingle = !inSingle;
+    } else if (!inSingle && !inBacktick && ch === '"') {
+      inDouble = !inDouble;
+    } else if (!inSingle && !inDouble && ch === '`') {
+      inBacktick = !inBacktick;
+    } else if (
+      !inSingle &&
+      !inDouble &&
+      !inBacktick &&
+      ch === '/' &&
+      line[i + 1] === '/'
+    ) {
+      return [
+        line.slice(0, i).trimEnd(),
+        line.slice(i + 2).trim(),
+      ];
+    }
+  }
+  return [
+    line,
+    null,
+  ];
+}
+
+function parseDiagnosticsAnnotation(annotation: string): {
+  message: string | null;
+  status: DiagnosticsStatus;
+} {
+  if (annotation === 'ok' || annotation === 'yes') {
+    return {
+      message: null,
+      status: 'ok',
+    };
+  }
+  if (annotation === 'no' || annotation === 'error') {
+    return {
+      message: null,
+      status: 'error',
+    };
+  }
+  const errorMatch = annotation.match(/^error[:\s]\s*(.+)$/);
+  if (errorMatch !== null) {
+    return {
+      message: errorMatch[1].trim(),
+      status: 'error',
+    };
+  }
+  const okMatch = annotation.match(/^ok[:\s]\s*(.+)$/);
+  if (okMatch !== null) {
+    return {
+      message: okMatch[1].trim(),
+      status: 'ok',
+    };
+  }
+  return {
+    message: annotation,
+    status: 'error',
+  };
+}
+
+function buildDiagnostics(
+  attributes: Record<string, unknown>,
+): DiagnosticsBlock {
+  const content = getStringAttribute(attributes.content) ?? '';
+  const language = getStringAttribute(attributes.language) ?? 'ts';
+  const lines: DiagnosticsLine[] = [];
+  for (const raw of content.split('\n')) {
+    if (raw.trim().length === 0) {
+      continue;
+    }
+    const [code, annotation] = splitCodeAndComment(raw);
+    if (annotation === null) {
+      lines.push({
+        code: code.trimEnd(),
+        message: null,
+        status: 'ok',
+      });
+      continue;
+    }
+    const { message, status } = parseDiagnosticsAnnotation(annotation);
+    lines.push({
+      code: code.trimEnd(),
+      message,
+      status,
+    });
+  }
+  return {
+    language,
+    lines,
+    type: 'diagnostics',
+  };
+}
+
 const LOCALE_PREFIX_RX = /^([a-z]{2,3}(?:-[A-Za-z0-9]+){0,3}):[ \t]+(.+)$/;
 
 function buildOutput(attributes: Record<string, unknown>): OutputBlock {
@@ -366,6 +476,13 @@ function extractRawText(node: RawMarkdocNode): string {
     return typeof node.attributes?.content === 'string'
       ? node.attributes.content
       : '';
+  }
+  if (node.type === 'code') {
+    const content =
+      typeof node.attributes?.content === 'string'
+        ? node.attributes.content
+        : '';
+    return `\`${content}\``;
   }
   if (node.type === 'softbreak' || node.type === 'hardbreak') {
     return '\n';
@@ -483,6 +600,22 @@ const output: Schema = {
   },
 };
 
+const diagnostics: Schema = {
+  attributes: {
+    language: {
+      type: String,
+    },
+  },
+  transform(node, config) {
+    const text = extractRawText(node as RawMarkdocNode);
+    const attributes = node.transformAttributes(config);
+    return new Markdoc.Tag('Diagnostics', {
+      ...attributes,
+      content: text,
+    });
+  },
+};
+
 const codeGroup: Schema = {
   render: 'CodeGroup',
 };
@@ -530,6 +663,7 @@ const markdocConfig: Config = {
   tags: {
     callout,
     'code-group': codeGroup,
+    diagnostics,
     only: onlyTag,
     output,
     switch: switchTag,
