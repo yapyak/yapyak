@@ -135,9 +135,3 @@ For most day-to-day work, `export` doesn't come up — translations live in your
 - **It's not a build artifact.** The file `export` produces isn't what ships to your users — that goes through the [compiler](/guide/getting-started/how-it-works#what-gets-compiled). Don't try to use it as a runtime resource.
 - **It doesn't re-export `.yapyak/` cache.** Only the current state of `locales/<locale>.json` is exported. Orphaned translations in `.yapyak/` are deliberately excluded.
 - **It doesn't notify anyone.** It writes a file. Hooking it up to a notification or CI artifact is up to you.
-
-## See also
-
-- [translate](/guide/cli/translate) — fill missing entries before export
-- [status](/guide/cli/status) — coverage report
-- [check](/guide/cli/check) — gate completeness before exporting

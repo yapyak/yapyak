@@ -109,9 +109,3 @@ The active locale on a fresh visit is resolved in order:
 3. **`defaultLocale`** from your config.
 
 The first match wins. Persistence is checked first because an explicit user choice always beats a guess.
-
-## See also
-
-- [Switch](/guide/locale/switch) — reading and changing the active locale at runtime
-- [Tags](/guide/locale/tags) — what counts as a valid locale string
-- [SSR](/guide/adapters/overview) — per-request locale binding when the server reads cookies or headers

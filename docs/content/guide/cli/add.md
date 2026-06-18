@@ -83,9 +83,3 @@ In practice you use `add` once per new locale and then rely on the [dev-time sav
 ## Common issues
 
 - **The translator ran out partway through.** Network or rate-limit issue. Re-run `yapyak add <locale>` — it picks up where it left off, only translating the entries that are still missing.
-
-## See also
-
-- [translate](/guide/cli/translate) — fill missing translations on demand
-- [status](/guide/cli/status) — see coverage per locale before adding more
-- [Locale — Tags](/guide/locale/tags) — what counts as a valid BCP 47 code

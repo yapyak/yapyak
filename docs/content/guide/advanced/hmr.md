@@ -69,9 +69,3 @@ The runtime registers two HMR handlers:
 - One for config changes (the yapyak.config.ts path)
 
 If you're debugging "why isn't HMR working", check the browser console for messages prefixed `[yapyak]`. The plugin logs every accept and every rejection — usually enough to spot what's blocking the swap (a syntax error in `locales/sv.json`, a TypeScript error in the source, a stale `.yapyak/` cache).
-
-## See also
-
-- [Renames](/guide/advanced/renames) — what HMR does when a source string moves
-- [Diagnostics](/guide/advanced/diagnostics) — what fires during the save loop
-- [Vite's HMR API docs](https://vitejs.dev/guide/api-hmr) — the underlying mechanism

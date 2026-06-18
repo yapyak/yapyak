@@ -1,11 +1,11 @@
 ---
-title: Basics
+title: Overview
 order: 1
 ---
 
 A locale in yapyak is the BCP 47 name of one of the JSON files in your `localesDir` — `'sv'` for `locales/sv.json`, `'en-GB'` for `locales/en-GB.json`. The `Locale` type is generated from the files yapyak finds on disk and refreshed on every [`yapyak add`](/guide/cli/add).
 
-At any moment, one of those locales is the **active locale**. Calling `t()` reads it and returns the matching translation; `format.number`, `format.dateTime`, and the rest of the [`format`](/guide/formatting/basics) namespace do the same. When the active locale changes, every component that read it re-renders.
+At any moment, one of those locales is the **active locale**. Calling `t()` reads it and returns the matching translation; `format.number`, `format.dateTime`, and the rest of the [`format`](/guide/formatting/overview) namespace do the same. When the active locale changes, every component that read it re-renders.
 
 ## Reading the active locale
 
@@ -35,10 +35,4 @@ import { setLocale } from 'yapyak';
 setLocale('sv');
 ```
 
-`setLocale` updates the runtime store and notifies every subscriber. If you've configured persistence, the new choice is also written back so it survives a reload.
-
-## See also
-
-- [Switch](/guide/locale/switch) — reading and changing the locale from each framework
-- [Persistence](/guide/locale/persistence) — cookies, URL, local storage
-- [Tags](/guide/locale/tags) — BCP 47 syntax and the fallback chain
+`setLocale` updates the runtime store and notifies every subscriber. If you've configured persistence, the new choice is written back so it survives a reload.

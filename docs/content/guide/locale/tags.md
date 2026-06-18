@@ -49,7 +49,7 @@ The language subtag is always present; the rest are optional and almost never al
 | `zh-Hant-TW` | Traditional Chinese, Taiwan region |
 | `zh-Hans-CN` | Simplified Chinese, mainland China |
 
-Picking how specific to go depends on how much your translations actually diverge across regions. For many languages, a single tag (`sv`) is enough; for Portuguese, Chinese, and Spanish, the regional distinction usually matters; for English, only sometimes.
+Picking how specific to go depends on how much your translations diverge across regions. For many languages, a single tag (`sv`) is enough; for Portuguese, Chinese, and Spanish, the regional distinction usually matters; for English, only sometimes.
 
 {% callout variant="info" %}
 The canonical casing is `lowercase-Titlecase-UPPERCASE` (language lowercase, script title-case, region upper-case). yapyak normalizes input through `Intl.Locale` before matching, so `'EN-US'`, `'en-us'`, and `'en-US'` all match the same added locale — but write the canonical form on disk and in code.
@@ -120,9 +120,3 @@ A few rules of thumb when deciding which locales to add:
 - **Region matters for Portuguese, Spanish, Chinese.** `'pt-BR'` and `'pt-PT'` are different enough that you'll want both if you ship to both markets. Same for `'es-ES'` vs `'es-MX'`, `'zh-Hant'` vs `'zh-Hans'`.
 - **The script subtag is a single decision per language.** If you ship Chinese, you decide whether it's `zh-Hans` or `zh-Hant` (or both); you don't ship plain `zh` and let it be ambiguous.
 - **A user's browser language is hint, not law.** Always provide a way to override the detected locale — a switcher, a profile setting, a URL parameter.
-
-## See also
-
-- [Switch](/guide/locale/switch) — reading and changing the active locale
-- [Persistence](/guide/locale/persistence) — where the user's choice lives between visits
-- [Types](/guide/getting-started/installation) — the `Locale` literal type and the `isLocale` / `parseLocale` / `getLocaleFallbackChain` helpers

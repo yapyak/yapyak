@@ -133,9 +133,3 @@ The cookie is written automatically — you don't construct the `Set-Cookie` hea
 - **`<html lang>` is `%yapyak.lang%` literally in the browser.** The handle isn't running. Make sure `hooks.server.ts` exports it (either directly or through `sequence`).
 - **A YAP0022 diagnostic fires on the server.** A request path is rendering outside the handle's scope. Usually a custom server route that bypasses SvelteKit's request flow.
 - **Cookie isn't set after a server-side `setLocale()`.** The form action returned a redirect that bypassed the handle's response. Use SvelteKit's `redirect()` helper rather than constructing a `Response` manually.
-
-## See also
-
-- [Overview](/guide/adapters/overview) — what SSR adapters do in general
-- [Locale — Switch](/guide/locale/switch) — the Svelte `locale.current` runtime
-- [SvelteKit handle hooks docs](https://kit.svelte.dev/docs/hooks#server-hooks-handle)

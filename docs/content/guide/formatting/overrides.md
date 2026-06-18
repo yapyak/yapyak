@@ -51,9 +51,3 @@ t.in('sv', 'Your balance is {balance}', { balance });
 ```
 
 This is the pattern for emails, server-rendered preview cards, and other rendering moments that need a fully-fixed locale across all the text and all the numbers.
-
-## See also
-
-- [Numbers](/guide/formatting/numbers), [Dates](/guide/formatting/dates), [Lists](/guide/formatting/lists) — the methods you can chain after `format.in()`
-- [Overrides (Writing)](/guide/writing/overrides) — `t.in()` for the same idea applied to translated text
-- [Switch](/guide/locale/switch) — changing the active locale, the usual way to render in a different language

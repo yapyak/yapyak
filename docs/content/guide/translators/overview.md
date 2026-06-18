@@ -145,9 +145,3 @@ The four shipped translators each have their own setup page with the full option
 - [Ollama](/guide/translators/ollama) — Local inference, no API key. Privacy-first.
 
 None of them are wrong for general use. Pick the provider you already have a key for, or the one whose pricing fits your translation volume. You can switch later by changing one line in your config.
-
-## See also
-
-- [Custom translator](/guide/translators/custom) — when none of the four fit
-- [Config — `translator`](/guide/getting-started/configuration#translator) — where the translator lives in your config
-- [CLI — translate](/guide/cli/translate) — manual translation runs

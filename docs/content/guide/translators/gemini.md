@@ -106,8 +106,3 @@ Gemini-specific failure modes map to yapyak's standard [translator errors](/guid
 - Auth failures (`401`) raise `TranslatorAuthError`.
 
 All errors extend `TranslatorError` from `yapyak/translator`.
-
-## See also
-
-- [Overview](/guide/translators/overview) — shared options across all translators
-- [Custom](/guide/translators/custom) — when none of the four shipped translators fit

@@ -60,8 +60,3 @@ Common misuses to avoid:
 - **As a per-component override.** If a single screen always renders in one language, set the locale at navigation time instead of pinning every call.
 - **For data-driven user preferences.** A user's preferred locale should drive the active locale (through [persistence](/guide/locale/persistence) or a server middleware), not appear as an argument on every `t()`.
 - **Inside a loop over locales.** `t.in()` lets you do this, but if you're rendering the same message in every language, you're probably building a translation tool — see whether reading the locale files directly fits better.
-
-## See also
-
-- [Homonyms](/guide/writing/homonyms) — `t.as()` for distinguishing identical sources with different meanings
-- [Switch](/guide/locale/switch) — changing the active locale, the usual way to render in a different language

@@ -125,9 +125,3 @@ format.number(72, { style: 'unit', unit: 'mile-per-hour' });
 ## Inside a `t()` message
 
 The same number formatting is available [inside ICU messages](/guide/writing/plurals#numbers) — `{value, number, currency USD}`, `{pct, number, percent}`, and so on. Use `t()` when the number is part of a sentence; use `format.number()` when the number is its own atom (a column in a table, a stat in a card, a price label next to a button).
-
-## See also
-
-- [Plurals](/guide/writing/plurals) — number-driven branches inside a translated message
-- [Dates](/guide/formatting/dates) — date, time, and relative-time formatting
-- [Overrides](/guide/formatting/overrides) — `format.in(locale)` for one-off scoped formatting

@@ -64,7 +64,7 @@ t('{role, select, admin {Admin {name} has {count, plural, one {# alert} other {#
 });
 ```
 
-That message reads as a wall of braces, which is fair — long ICU expressions get ugly fast. yapyak doesn't enforce a maximum, but if it stops being readable you might want to extract logic into two separate `t()` calls and let your component decide which to render.
+That message reads as a wall of braces, which is fair — long ICU expressions get ugly fast. yapyak doesn't enforce a maximum, but if it stops being readable, extract logic into two separate `t()` calls and let your component decide which to render.
 
 ## Selectordinal — for ordinal numbers
 
@@ -89,13 +89,3 @@ The compiler validates the structural shape:
 - Every nested placeholder is in the params object
 
 It doesn't enforce that the value type is one of your declared branches — that's your TypeScript discipline at the call site. If you pass `'archived'` and only `'draft'` and `'published'` are listed, runtime falls through to `other` cleanly. No crash, just the fallback.
-
-{% callout variant="tip" %}
-If your select is two branches and a string value of either `'yes'` or `'no'`, consider rewriting it as a plain placeholder in the component instead. ICU `select` shines when the message text genuinely diverges per branch (different word order, different verbs, different politeness levels) — for cosmetic differences, regular code is clearer.
-{% /callout %}
-
-## See also
-
-- [Plurals](/guide/writing/plurals) — the same pattern for numeric values
-- [Params](/guide/writing/params) — plain placeholders without branching
-- [Diagnostics](/guide/advanced/diagnostics) — what the compiler flags inside ICU strings

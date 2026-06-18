@@ -6,7 +6,7 @@ order: 2
 Install yapyak in your project.
 
 {% callout variant="info" %}
-yapyak has first-class support for React, Vue, Svelte, and Astro — switch frameworks in the header menu to see the right install guide.
+yapyak supports React, Vue, Svelte, and Astro — switch frameworks in the header menu to see the right install guide.
 {% /callout %}
 
 ## Requirements
@@ -331,9 +331,3 @@ bun yapyak add sv
 {% /switch %}
 
 This creates `locales/sv.json` and updates the `Locale` literal type. Run it again with any other tag whenever you want to add a language. See [`yapyak add`](/guide/cli/add) for the full set of options.
-
-## Where to go from here
-
-- [Writing — Basics](/guide/writing/basics) — your first `t()` call and the loop on save.
-- [Configuration](/guide/getting-started/configuration) — every field of `yapyak.config.ts`, including [`fixedLocale`](/guide/getting-started/configuration#fixed-locale-builds) for single-locale builds and the `rsc` flag for [React Server Components](/guide/getting-started/configuration#processors).
-- [Adapters](/guide/adapters/overview) — per-request locale binding for SvelteKit, TanStack Start, and React Router.

@@ -63,7 +63,7 @@ It's a `Ref<Locale>` — the standard Vue reactivity contract. Components that r
 </button>
 ```
 
-The shape uses Svelte 5's runes under the hood. `locale.current` is reactive — every component that reads it re-runs when the locale changes.
+The shape uses Svelte 5's runes. `locale.current` is reactive — every component that reads it re-runs when the locale changes.
 {% /when %}
 
 {% when value="astro" %}
@@ -197,9 +197,3 @@ The `labelOf` helper is up to you — yapyak doesn't ship one because the right 
 {% callout variant="tip" %}
 If you want the user's choice to survive a refresh or a new tab, pair the switcher with a [persistence](/guide/locale/persistence) strategy. Without one, the active locale lives only for the current page session.
 {% /callout %}
-
-## See also
-
-- [Persistence](/guide/locale/persistence) — remembering the choice across reloads
-- [Tags](/guide/locale/tags) — what counts as a valid locale, and how to narrow strings into one
-- [SSR](/guide/adapters/overview) — per-request locale binding for server-rendered apps

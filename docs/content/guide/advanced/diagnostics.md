@@ -269,9 +269,3 @@ Same idea for `format.number(..., { unit: '...' })`.
 ## Docs URL pattern
 
 Every diagnostic message includes a `See` URL pointing to its docs entry. The URL format is `https://yapyak.dev/d/<code-lowercased>` — `yap0017` for `YAP0017`, and so on. Click through (or hover in your editor) for the in-context explanation.
-
-## See also
-
-- [check](/guide/cli/check) — gate CI on diagnostics
-- [Writing](/guide/writing/basics) — the calls that produce these warnings
-- [SSR](/guide/adapters/overview) — fixes for the runtime/persistence cluster

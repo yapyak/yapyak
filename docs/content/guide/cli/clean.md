@@ -109,16 +109,10 @@ The diff is your safety net. Anything that shouldn't have gone, you can pick out
 - run: pnpm yapyak clean
 ```
 
-This logs orphans without removing them — useful as a heads-up that locale files have drifted from the code. For a strict policy that fails CI when orphans exist, parse the output yourself; `clean` doesn't gate on orphan count out of the box (since "we know but we'll clean later" is a common stance).
+This logs orphans without removing them — a heads-up that locale files have drifted from the code. For a strict policy that fails CI when orphans exist, parse the output yourself; `clean` doesn't gate on orphan count by default (since "we know but we'll clean later" is a common stance).
 
 ## What `clean` doesn't do
 
 - **It doesn't touch `.yapyak/`.** The translation memory cache stays intact, so removed translations remain recoverable.
 - **It doesn't remove whole locale files.** A locale you no longer ship stays in `localesDir` until you delete its `<locale>.json` by hand.
 - **It doesn't touch source files.** Only locale JSON files are modified, only with `--write`.
-
-## See also
-
-- [Renames](/guide/advanced/renames) — how yapyak restores translations when a source moves or changes
-- [status](/guide/cli/status) — coverage report (also read-only)
-- [check](/guide/cli/check) — gate CI on translation completeness

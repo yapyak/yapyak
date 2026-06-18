@@ -84,7 +84,7 @@ translator: anthropic({
 
 ## Voice examples
 
-Anthropic models are receptive to fairly detailed voice instructions. Some patterns that work well in practice:
+Anthropic models are receptive to detailed voice instructions. Some patterns that work well:
 
 ```ts
 voice: 'Direct and warm — like writing for a small SaaS team product. Avoid corporate language.',
@@ -105,7 +105,7 @@ Anthropic charges by input + output token. yapyak's defaults — batch size 25, 
 A 429 rate-limit response is parsed automatically — yapyak retries with backoff based on the `Retry-After` header. If you keep hitting them, lower `concurrency` first.
 
 {% callout variant="tip" %}
-For very large initial translation runs (filling in thousands of strings the first time you set up yapyak), consider running [`yapyak translate`](/guide/cli/translate) from your terminal rather than relying on the dev-time save loop. The CLI lets you cap concurrency and shows progress, which is friendlier than seeing translations dribble into your editor over five minutes.
+For large initial translation runs (filling in thousands of strings the first time you set up yapyak), consider running [`yapyak translate`](/guide/cli/translate) from your terminal rather than relying on the dev-time save loop. The CLI lets you cap concurrency and shows progress, which is friendlier than seeing translations dribble into your editor over five minutes.
 {% /callout %}
 
 ## Errors
@@ -117,9 +117,3 @@ Anthropic-specific failure modes map to yapyak's standard [translator errors](/g
 - Auth failures (`401`) raise `TranslatorAuthError`.
 
 All translator errors extend `TranslatorError` from `yapyak/translator`, so one `catch` handles everything.
-
-## See also
-
-- [Overview](/guide/translators/overview) — shared options across all translators
-- [OpenAI](/guide/translators/openai) — the other most-common choice
-- [Custom](/guide/translators/custom) — when neither shipped option fits

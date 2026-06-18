@@ -73,10 +73,3 @@ A few things `status` deliberately leaves out:
 ```
 
 The `status` step gives a quick visual of where coverage stands; `check` is what fails the build if something's missing.
-
-## See also
-
-- [check](/guide/cli/check) — fails CI when translations are incomplete or invalid
-- [translate](/guide/cli/translate) — fill missing entries
-- [clean](/guide/cli/clean) — remove translations whose source string is gone
-- [export](/guide/cli/export) — write a snapshot for an external translator or review

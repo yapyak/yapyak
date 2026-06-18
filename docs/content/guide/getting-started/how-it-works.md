@@ -153,7 +153,7 @@ _pick(_catalog_$1, { name });
 
 Three things happen:
 
-- **Factory imports are deduplicated** into a single `import` at module scope. Only the factories this module actually uses are imported — a module with just plain strings imports neither `_placeholder` nor `_literal`.
+- **Factory imports are deduplicated** into a single `import` at module scope. Only the factories this module uses are imported — a module with just plain strings imports neither `_placeholder` nor `_literal`.
 - **Identical catalogs are shared.** Both `t('Save')` calls reference the same `_catalog_$0`; the catalog object is declared once.
 - **Vite code-splits these catalog objects** with the modules that contain them. A route that doesn't render a translation never downloads it.
 

@@ -139,9 +139,3 @@ English doesn't show much difference between styles for time units, but some loc
 The same date/time formatting is available [inside ICU messages](/guide/writing/plurals#dates-and-times) — `{when, date, long}`, `{at, time, short}`. Use `t()` when the date is part of a sentence ("Updated on June 17"); use `format.dateTime()` when it's its own atom (a column header, a footer timestamp).
 
 Relative time doesn't have an ICU sub-format; it's only available through `format.relativeTime()`.
-
-## See also
-
-- [Numbers](/guide/formatting/numbers) — currency, percent, and unit formatting
-- [Overrides](/guide/formatting/overrides) — `format.in(locale)` for one-off scoped formatting
-- [Plurals](/guide/writing/plurals) — `{when, date, long}` inside translatable messages

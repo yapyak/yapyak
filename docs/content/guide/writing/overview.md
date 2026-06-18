@@ -1,5 +1,5 @@
 ---
-title: Basics
+title: Overview
 order: 1
 ---
 
@@ -15,7 +15,7 @@ That's the smallest possible usage. yapyak picks it up on save, makes sure each 
 
 ## Where you write `t()`
 
-Anywhere TypeScript or JavaScript runs in your project. The compiler scans the file types your [processors](/guide/getting-started/installation) register — `.ts` and `.tsx` out of the box, plus `.vue`, `.svelte`, `.astro`, or anything else you've added.
+Anywhere TypeScript or JavaScript runs in your project. The compiler scans the file types your [processors](/guide/getting-started/installation) register — `.ts` and `.tsx` by default, plus `.vue`, `.svelte`, `.astro`, or anything else you've added.
 
 {% switch group="framework" %}
 
@@ -77,7 +77,7 @@ The English (or whatever your `defaultLocale` is) text you pass to `t()` is what
 }
 ```
 
-This means the conversation between code and translation file is direct: read the file, see exactly what English shows up where. Edit the source string in your component and yapyak follows it — either keeping the translation or marking it for re-translation depending on your [`preserveTranslationsOnRename`](/guide/getting-started/configuration) setting.
+The conversation between code and translation file is direct: read the file, see exactly what English shows up where. Edit the source string in your component and yapyak follows it — either keeping the translation or marking it for re-translation depending on your [`preserveTranslationsOnRename`](/guide/getting-started/configuration) setting.
 
 ## What the compiler checks
 

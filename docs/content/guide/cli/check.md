@@ -102,9 +102,3 @@ A few things `check` deliberately doesn't catch:
 - `1` — One or more issues found. The output lists them grouped by category.
 
 The non-zero exit is what makes `check` useful in CI; the human-readable output is what makes the failures easy to fix.
-
-## See also
-
-- [translate](/guide/cli/translate) — fill missing translations before `check`
-- [status](/guide/cli/status) — coverage report without the CI gate
-- [Diagnostics](/guide/advanced/diagnostics) — what the YAP codes mean

@@ -118,9 +118,3 @@ If a server-side route handler calls `setLocale()`, yapyak buffers the `Set-Cook
 - **A YAP0022 diagnostic fires on the server.** The adapter isn't running on that request. Make sure the middleware is registered in `requestMiddleware` of your `createStart` config.
 - **Locale resets to default on every request.** Persistence isn't configured. Add `persistence: 'cookie'` to your `yapyak.config.ts`.
 - **`<html lang>` is wrong on first paint.** Read it through `useLocale()` in your root component rather than hardcoding it.
-
-## See also
-
-- [Overview](/guide/adapters/overview) — what SSR adapters do in general
-- [Locale — Switch](/guide/locale/switch) — the `useLocale` hook
-- [TanStack Start middleware docs](https://tanstack.com/start/latest/docs/framework/react/middleware)

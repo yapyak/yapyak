@@ -83,9 +83,3 @@ If neither matches your situation, leave the default. It's tuned for the most co
 ## Restoring a translation manually
 
 If yapyak's cache lost a translation you wanted (`.yapyak/` was deleted, the project was cloned fresh, the cache was corrupted), the source of truth is still your committed locale files. Pull the older version from git, paste the relevant entry into your current `locales/<locale>.json`, save the file. yapyak picks up the new value through [HMR](/guide/advanced/hmr).
-
-## See also
-
-- [HMR](/guide/advanced/hmr) — how locale file changes propagate while you're editing
-- [Diagnostics](/guide/advanced/diagnostics) — what the compiler flags during the save loop
-- [Config — `preserveTranslationsOnRename`](/guide/getting-started/configuration#preservetranslationsonrename) — the knob in detail

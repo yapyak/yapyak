@@ -121,9 +121,3 @@ Rich-text rendering works the same way as in other frameworks — see [Rich text
 - **`getLocale()` returns `defaultLocale` everywhere on the server.** The middleware isn't installed. Make sure `integrations: [yapyak()]` is in `astro.config.ts`.
 - **A YAP0022 diagnostic fires.** Same cause: a render path is happening outside the per-request scope. Usually a custom server-side route or hook that bypasses the integration.
 - **Cookie isn't set after a server-side `setLocale()`.** The handler returned a response before the integration flushed pending headers. Make sure your endpoint returns the response object the framework expects, not a manually-constructed one that bypasses the middleware chain.
-
-## See also
-
-- [Overview](/guide/adapters/overview) — what SSR adapters do in general
-- [Locale — Persistence](/guide/locale/persistence) — cookie, URL, local-storage
-- [Setup — Install](/guide/getting-started/installation) — full Astro setup including processor and Vite integration

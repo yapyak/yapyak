@@ -155,10 +155,6 @@ Names follow HTML rules: lowercase letters, numbers, hyphens. You'll typically p
 
 A tag name only has to exist in the source — it doesn't have to be an HTML element. `<discount>` and `<callout>` work as long as you provide a handler.
 
-{% callout variant="tip" %}
-If you find yourself reaching for tag names that are really layout containers (`<div>`, `<section>`), step back and consider whether the layout belongs around the entire `<RichText>` instead of inside its content. Rich text is for parts of a sentence that need to be wrapped in something — not for restructuring whole sections of a page.
-{% /callout %}
-
 ## Type safety
 
 The set of tags `<RichText>` expects is inferred from the source string at compile time. Add `<discount>` to the source and the binding requires a `discount` handler; rename `<link>` to `<a>` and the prop name updates accordingly. Removing a handler whose tag is still in the string is a TypeScript error — you can't ship a missing renderer.
@@ -184,8 +180,3 @@ const nodes = parseRichText(t('Read our <link>privacy policy</link>.'));
 ```
 
 Each node is `{ type: 'text', text }`, `{ type: 'tag', name, children }`, or `{ type: 'void', name }`. The structure mirrors what `<RichText>` consumes.
-
-## See also
-
-- [Basics](/guide/writing/basics) — `t()`'s base form, before tags enter the picture
-- [Params](/guide/writing/params) — placeholders inside tag content also work

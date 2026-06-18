@@ -99,9 +99,3 @@ Runtime:
 - A value of the wrong type (`'three'` for a number sub-format, for example) is coerced when possible, warned about when not
 
 In practice, you only see compile-time errors when you're writing — the runtime fallbacks exist as safety nets, not as a substitute for static checking.
-
-## See also
-
-- [Plurals](/guide/writing/plurals) — choosing between branches based on a count
-- [Selects](/guide/writing/selects) — choosing between branches based on a string
-- [Rich text](/guide/writing/rich-text) — embedding markup that survives translation

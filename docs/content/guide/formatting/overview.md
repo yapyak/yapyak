@@ -1,5 +1,5 @@
 ---
-title: Basics
+title: Overview
 order: 1
 ---
 
@@ -74,10 +74,3 @@ The active locale is left untouched.
 ## When to use `format` vs ICU placeholders
 
 Use `format` for values **outside** a translated message — a price on a card, a date in a timestamp, a list of tags. For values **inside** a `t()` call, prefer ICU placeholders (`{count, number, currency}`) — they live next to the translation and the compiler emits the same `Intl.*Format` machinery underneath.
-
-## See also
-
-- [Numbers](/guide/formatting/numbers) — currency, percent, unit styles
-- [Dates](/guide/formatting/dates) — date/time formatting and styles
-- [Lists](/guide/formatting/lists) — conjunctions, disjunctions
-- [Overrides](/guide/formatting/overrides) — locale chains for edge cases

@@ -83,9 +83,3 @@ If you'd like to model your wrapper on a known-good example, the shipped adapter
 - [Astro](https://github.com/yapyak/yapyak/blob/main/packages/astro/src/integration.ts) — registers `withResponse` as Astro middleware through the integration system
 
 Each one is a single function. Most of the file is JSDoc.
-
-## See also
-
-- [Overview](/guide/adapters/overview) — what SSR adapters do in general
-- [Locale — Persistence](/guide/locale/persistence) — strategies the request-bound locale reads from
-- [Setup — Install](/guide/getting-started/installation#a-different-framework) — writing a custom processor for a non-shipped file format

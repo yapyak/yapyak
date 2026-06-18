@@ -134,9 +134,3 @@ On click, the client store updates, the cookie writes, and every component that 
 - **A YAP0022 diagnostic fires on the server.** The middleware isn't running on that route. Either it's missing from the root route's `middleware` array, or `future.v8_middleware: true` is off in the config.
 - **Locale resets to default on every request.** Persistence isn't configured. Add `persistence: 'cookie'` to your `yapyak.config.ts`.
 - **`<html lang>` is wrong on first paint.** Read it through `useLocale()` in your root component rather than hardcoding it — the middleware provides the right value during SSR.
-
-## See also
-
-- [Overview](/guide/adapters/overview) — what SSR adapters do in general
-- [Locale — Switch](/guide/locale/switch) — the `useLocale` hook
-- [React Router v7 middleware docs](https://reactrouter.com/start/framework/routing#middleware)

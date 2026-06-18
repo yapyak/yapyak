@@ -64,17 +64,3 @@ t.in('sv').as('action', 'Open');     // same thing, other order
 ```
 
 See [Overrides](/guide/writing/overrides) for what `t.in()` does on its own.
-
-## When to reach for it
-
-`t.as()` is a tool for genuine semantic ambiguity, not for fine-grained style control. A few rules of thumb:
-
-- **Two calls truly mean different things.** Use it. "Open" as verb vs adjective, "Right" as direction vs correctness.
-- **Same sense, different tone.** Use voice on the [translator](/guide/translators/overview), not a context label. "Save" stays "Save" in two places; how it's translated is governed by the project-level voice.
-- **Long compound contexts.** Step back. If you're writing `t.as('settings-page-save-button', 'Save')` you're trying to use the context as a namespace. Stay with plain `t('Save')` and trust the call-site context the translator picks up.
-- **One-off override.** Don't bother. If you need different translations in two places only because the third is rare, use [`t.in()`](/guide/writing/overrides) at the rare call site instead.
-
-## See also
-
-- [Overrides](/guide/writing/overrides) — forcing a specific locale on one call
-- [Translators](/guide/translators/overview) — how voice, glossary, and call-site context interact with `t.as()` at translation time

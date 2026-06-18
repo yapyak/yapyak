@@ -28,7 +28,7 @@ export default defineConfig({
 });
 ```
 
-One of these lines per project, depending on framework. The rest of your code keeps using `t()` and `getLocale()` exactly the same on the server as on the client.
+One of these lines per project, depending on framework. The rest of your code keeps using `t()` and `getLocale()` the same on the server as on the client.
 
 ## What the adapter does
 
@@ -63,9 +63,3 @@ For client-side locale switches inside an island or a client component, set [`sy
 ## What about client-only apps?
 
 If your app doesn't render on the server — a plain Vite + React SPA with no SSR — you don't need an adapter. The locale is a single client-side store, set through `useLocale()` (or the equivalent reactive value), persisted through cookies/local-storage/URL as configured. The whole SSR section is safe to skip.
-
-## See also
-
-- [Astro](/guide/adapters/astro), [React Router](/guide/adapters/react-router), [SvelteKit](/guide/adapters/sveltekit), [TanStack Start](/guide/adapters/tanstack-start) — per-framework setup
-- [Custom](/guide/adapters/custom) — wrap `withResponse()` for any Vite-based SSR
-- [Persistence](/guide/locale/persistence) — how the active locale survives between requests

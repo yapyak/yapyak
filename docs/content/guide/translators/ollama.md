@@ -143,8 +143,3 @@ Ollama-specific failure modes map to yapyak's standard [translator errors](/guid
 - A timeout (slow inference, model loading) raises `TranslatorTimeoutError`.
 
 All errors extend `TranslatorError` from `yapyak/translator`.
-
-## See also
-
-- [Overview](/guide/translators/overview) — shared options across all translators
-- [Custom](/guide/translators/custom) — for non-Ollama local backends, or for a fully bespoke translator

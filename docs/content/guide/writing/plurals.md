@@ -29,7 +29,7 @@ ICU defines six plural categories:
 | `many` | Polish, Russian, Czech (cardinal: 0, 5+ for many Slavic languages) |
 | `other` | Everywhere — the required fallback |
 
-You only write the categories the source language actually uses. The model fills in the rest per locale when it translates.
+You only write the categories the source language uses. The model fills in the rest per locale when it translates.
 
 ```ts
 // English source: just `one` and `other`
@@ -127,9 +127,3 @@ For values that don't belong inside a message — a date in a footer, a number i
 ## Choosing between plural and select
 
 If your branching is based on a numeric value, use `plural` (or `selectordinal`). If it's based on a string value — gender, status, plan tier — see [Selects](/guide/writing/selects).
-
-## See also
-
-- [Selects](/guide/writing/selects) — same pattern, string-based
-- [Formatting](/guide/formatting/numbers) — `Intl` wrappers for values outside `t()`
-- [Diagnostics](/guide/advanced/diagnostics) — what the compiler flags inside ICU strings

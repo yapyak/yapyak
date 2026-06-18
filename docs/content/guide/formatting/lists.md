@@ -75,13 +75,3 @@ t('Choose one of {options}.', { options });
 ```
 
 ICU MessageFormat has no list sub-format, so this is the path.
-
-{% callout variant="tip" %}
-If your list always has the same fixed items, consider writing them out in the source string instead of composing through `format.list()`. The translator (or model) handles "apple, pear, and orange" naturally on its own; `format.list()` is for genuinely dynamic lists where the items come from data.
-{% /callout %}
-
-## See also
-
-- [Numbers](/guide/formatting/numbers) — number, currency, percent, unit formatting
-- [Dates](/guide/formatting/dates) — absolute and relative time
-- [Overrides](/guide/formatting/overrides) — `format.in(locale)` for one-off scoped formatting

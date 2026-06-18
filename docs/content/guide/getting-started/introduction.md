@@ -64,7 +64,7 @@ export default defineConfig({
 });
 ```
 
-yapyak ships bindings for Anthropic, OpenAI, Gemini, and Ollama out of the box. The provider can run on a hosted API or on your own machine. A custom translator is a short interface if you need one.
+yapyak ships bindings for Anthropic, OpenAI, Gemini, and Ollama. The provider can run on a hosted API or on your own machine. A custom translator is a short interface if you need one.
 
 When you save, yapyak collects new messages, sends them to the provider with their source context, voice, glossary, and similar earlier translations, and writes the returned translations to your locale files:
 
@@ -183,9 +183,3 @@ Translation becomes part of building the interface, not a separate step that hap
 Messages follow the code that uses them, and AI fills the stubs on save. Locale files stay in your project, and translations compile alongside the modules that need them. The running app updates as you work.
 
 yapyak is i18n that keeps up with the rest of your codebase.
-
-## Where to go next
-
-If you'd like to see this in motion, [Quick start](/guide/getting-started/installation) walks through adding yapyak to a fresh app and watching the first translation land in the browser.
-
-If you'd rather understand the moving parts first, [How it works](/guide/getting-started/how-it-works) goes through the compiler, the processors, and the HMR loop in detail.

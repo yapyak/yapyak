@@ -199,8 +199,3 @@ async translate({ items, signal }) {
 Throwing the right error type lets yapyak apply the right behavior — backoff for rate-limits, fail-fast for auth, log-and-continue for safety blocks on individual items.
 
 If you throw a plain `Error`, yapyak treats it as a `TranslatorNetworkError` and applies the default retry policy.
-
-## See also
-
-- [Overview](/guide/translators/overview) — what the shipped translators do underneath
-- [Anthropic](/guide/translators/anthropic), [OpenAI](/guide/translators/openai), [Gemini](/guide/translators/gemini), [Ollama](/guide/translators/ollama) — the four shipped translators
