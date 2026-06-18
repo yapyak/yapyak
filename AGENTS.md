@@ -62,3 +62,7 @@ Every file in `agents/` is a standalone rule module. Each is the source of truth
 ### Build
 
 - [agents/tsdown.md](agents/tsdown.md) — tsdown config conventions
+
+### Docs
+
+- [agents/docs.md](agents/docs.md) — guide-site voice, anti-tells, vocabulary, code-block conventions, framework switching
