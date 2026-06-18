@@ -100,7 +100,9 @@ Plurals are one ICU sub-format. There are three others worth knowing about becau
 
 ```ts
 t('Your balance is {amount, number, currency USD}', { amount: 99.95 });
+
 t('You scored {pct, number, percent}', { pct: 0.42 });
+
 t('Total {n, number, integer}', { n: 1234.5 });
 ```
 
@@ -110,6 +112,7 @@ Styles: `decimal`, `integer`, `percent`, `currency <ISO 4217>`. yapyak's compile
 
 ```ts
 t('Updated {when, date, long}', { when: new Date() });
+
 t('Doors open at {when, time, short}', { when: meeting });
 ```
 

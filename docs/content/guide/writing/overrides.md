@@ -33,6 +33,7 @@ TypeScript validates the parameters against the source string, and the locale ar
 
 ```ts
 t.in('sv').as('action', 'Open');     // chain: locale first
+
 t.as('action').in('sv', 'Open');     // chain: context first
 ```
 

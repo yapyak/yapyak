@@ -131,6 +131,7 @@ import { t } from 'yapyak';
 
 t('Save');
 t('Save');
+
 t('Hi {name}', { name });
 t('Hi {name}', { name });
 ```
@@ -155,6 +156,7 @@ const _catalog_$1 = {
 
 _pick(_catalog_$0);
 _pick(_catalog_$0);
+
 _pick(_catalog_$1, { name });
 _pick(_catalog_$1, { name });
 ```

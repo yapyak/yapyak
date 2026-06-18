@@ -23,6 +23,7 @@ Things the compiler caught while looking at the `t()` call itself.
 
 ```ts
 t();              // missing source
+
 t.as('action');   // missing source
 ```
 
@@ -32,6 +33,7 @@ Pass the source string as the first argument (second for `t.as()`).
 
 ```ts
 t(`Hi ${name}`);  // no
+
 t('Hi {name}', { name });  // yes
 ```
 
@@ -48,7 +50,8 @@ Empty strings can't be translation keys. If you genuinely want an empty render, 
 ### `YAP0004` — Missing parameter
 
 ```ts
-t('Hi {name}', {});           // missing 'name'
+t('Hi {name}', {});            // missing 'name'
+
 t('Hi {name}', { user: 'A' }); // missing 'name', has extra 'user'
 ```
 
@@ -160,6 +163,7 @@ Migrating a locale file from an older yapyak format to a newer one failed for on
 
 ```ts
 t.as(someVariable, 'Open');  // no
+
 t.as('action', 'Open');      // yes
 ```
 

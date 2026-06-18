@@ -25,9 +25,12 @@ The placeholder syntax is curly braces around the parameter name. The locale fil
 The parameter object's shape is inferred from the source string. Add a placeholder and TypeScript expects you to pass it in. Pass the wrong name and you get an error before the build runs:
 
 ```ts
-t('Hi {name}', { name: 'Ada' });           // ok
-t('Hi {name}', {});                        // error: missing 'name'
-t('Hi {name}', { user: 'Ada' });           // error: 'user' is not assignable
+t('Hi {name}', { name: 'Ada' });             // ok
+
+t('Hi {name}', {});                          // error: missing 'name'
+
+t('Hi {name}', { user: 'Ada' });             // error: 'user' is not assignable
+
 t('Hi {name}, {greeting}', { name: 'Ada' }); // error: missing 'greeting'
 ```
 
@@ -64,6 +67,7 @@ The second argument has to be an inline object literal. yapyak's compiler reads 
 
 ```ts
 t('Hi {name}', { name: 'Ada' });             // ok
+
 t('Hi {name}', { name });                    // ok (shorthand still parses)
 
 const params = { name: 'Ada' };

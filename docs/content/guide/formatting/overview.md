@@ -42,7 +42,9 @@ format.number(199, {
   currency: 'EUR',
   style: 'currency',
 }); // ✓
+
 format.number(199, { style: 'currency' });                  // ✗ currency missing
+
 format.number(199, {
   currency: 'XYZ',
   style: 'currency',
@@ -66,10 +68,12 @@ function setPrice(amount: number, currency: Currency) {
 
 ```ts
 format.number(0.42, { style: 'percent' });                 // ✓
+
 format.number(45, {
   style: 'unit',
   unit: 'kilometer',
 });   // ✓
+
 format.number(45, { style: 'unit' });                      // ✗ unit missing
 ```
 
