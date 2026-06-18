@@ -34,59 +34,83 @@ If you don't, this command will set one up for you:
 {% switch group="framework" %}
 
 {% when value="react" %}
-{% code-group %}
-```bash [pnpm]
+{% switch group="pkg" %}
+{% when value="pnpm" %}
+```bash
 pnpm create vite my-app --template react-ts
 ```
-```bash [npm]
+{% /when %}
+{% when value="npm" %}
+```bash
 npm create vite@latest my-app -- --template react-ts
 ```
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bun create vite my-app --template react-ts
 ```
-{% /code-group %}
+{% /when %}
+{% /switch %}
 {% /when %}
 
 {% when value="vue" %}
-{% code-group %}
-```bash [pnpm]
+{% switch group="pkg" %}
+{% when value="pnpm" %}
+```bash
 pnpm create vite my-app --template vue-ts
 ```
-```bash [npm]
+{% /when %}
+{% when value="npm" %}
+```bash
 npm create vite@latest my-app -- --template vue-ts
 ```
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bun create vite my-app --template vue-ts
 ```
-{% /code-group %}
+{% /when %}
+{% /switch %}
 {% /when %}
 
 {% when value="svelte" %}
-{% code-group %}
-```bash [pnpm]
+{% switch group="pkg" %}
+{% when value="pnpm" %}
+```bash
 pnpm create vite my-app --template svelte-ts
 ```
-```bash [npm]
+{% /when %}
+{% when value="npm" %}
+```bash
 npm create vite@latest my-app -- --template svelte-ts
 ```
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bun create vite my-app --template svelte-ts
 ```
-{% /code-group %}
+{% /when %}
+{% /switch %}
 {% /when %}
 
 {% when value="astro" %}
-{% code-group %}
-```bash [pnpm]
+{% switch group="pkg" %}
+{% when value="pnpm" %}
+```bash
 pnpm create astro@latest my-app
 ```
-```bash [npm]
+{% /when %}
+{% when value="npm" %}
+```bash
 npm create astro@latest my-app
 ```
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bun create astro@latest my-app
 ```
-{% /code-group %}
+{% /when %}
+{% /switch %}
 {% /when %}
 
 {% /switch %}
@@ -100,82 +124,112 @@ The rest of this page assumes you've got the project up and a terminal open insi
 {% when value="react" %}
 You'll need three packages from yapyak: the runtime, the Vite plugin, and the React binding.
 
-{% code-group %}
-```bash [pnpm]
+{% switch group="pkg" %}
+{% when value="pnpm" %}
+```bash
 pnpm add yapyak @yapyak/vite @yapyak/react
 ```
-```bash [npm]
+{% /when %}
+{% when value="npm" %}
+```bash
 npm install yapyak @yapyak/vite @yapyak/react
 ```
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bun add yapyak @yapyak/vite @yapyak/react
 ```
-{% /code-group %}
+{% /when %}
+{% /switch %}
 {% /when %}
 
 {% when value="vue" %}
 You'll need three packages from yapyak: the runtime, the Vite plugin, and the Vue binding.
 
-{% code-group %}
-```bash [pnpm]
+{% switch group="pkg" %}
+{% when value="pnpm" %}
+```bash
 pnpm add yapyak @yapyak/vite @yapyak/vue
 ```
-```bash [npm]
+{% /when %}
+{% when value="npm" %}
+```bash
 npm install yapyak @yapyak/vite @yapyak/vue
 ```
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bun add yapyak @yapyak/vite @yapyak/vue
 ```
-{% /code-group %}
+{% /when %}
+{% /switch %}
 {% /when %}
 
 {% when value="svelte" %}
 You'll need three packages from yapyak: the runtime, the Vite plugin, and the Svelte binding.
 
-{% code-group %}
-```bash [pnpm]
+{% switch group="pkg" %}
+{% when value="pnpm" %}
+```bash
 pnpm add yapyak @yapyak/vite @yapyak/svelte
 ```
-```bash [npm]
+{% /when %}
+{% when value="npm" %}
+```bash
 npm install yapyak @yapyak/vite @yapyak/svelte
 ```
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bun add yapyak @yapyak/vite @yapyak/svelte
 ```
-{% /code-group %}
+{% /when %}
+{% /switch %}
 {% /when %}
 
 {% when value="astro" %}
 For Astro you only need two packages — the runtime and the Astro integration. The integration brings the Vite plugin along with it:
 
-{% code-group %}
-```bash [pnpm]
+{% switch group="pkg" %}
+{% when value="pnpm" %}
+```bash
 pnpm add yapyak @yapyak/astro
 ```
-```bash [npm]
+{% /when %}
+{% when value="npm" %}
+```bash
 npm install yapyak @yapyak/astro
 ```
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bun add yapyak @yapyak/astro
 ```
-{% /code-group %}
+{% /when %}
+{% /switch %}
 {% /when %}
 
 {% /switch %}
 
 That's the i18n side. If you'd like new translations to appear on save instead of staying empty until you fill them in yourself, you'll also want a translator. Anthropic, OpenAI, Gemini, and Ollama all ship as small packages — we'll use Anthropic in this walkthrough, but pick whichever provider you have a key for:
 
-{% code-group %}
-```bash [pnpm]
+{% switch group="pkg" %}
+{% when value="pnpm" %}
+```bash
 pnpm add @yapyak/anthropic
 ```
-```bash [npm]
+{% /when %}
+{% when value="npm" %}
+```bash
 npm install @yapyak/anthropic
 ```
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bun add @yapyak/anthropic
 ```
-{% /code-group %}
+{% /when %}
+{% /switch %}
 
 The translator is optional. yapyak works without one — new strings just sit as empty stubs in your locale files until something fills them in.
 
@@ -343,17 +397,23 @@ That's everything. The setup ends here.
 
 Pick a language to translate into. We'll use Swedish for this walkthrough — pick whichever you like, any [BCP 47 tag](/guide/locale/tags) works.
 
-{% code-group %}
-```bash [pnpm]
+{% switch group="pkg" %}
+{% when value="pnpm" %}
+```bash
 pnpm yapyak add sv
 ```
-```bash [npm]
+{% /when %}
+{% when value="npm" %}
+```bash
 npm run yapyak add sv
 ```
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bun yapyak add sv
 ```
-{% /code-group %}
+{% /when %}
+{% /switch %}
 
 This creates `locales/sv.json` and tells TypeScript about the new locale. Run it again with another tag whenever you want to add one.
 
@@ -427,17 +487,23 @@ import { t } from 'yapyak';
 
 Start the dev server:
 
-{% code-group %}
-```bash [pnpm]
+{% switch group="pkg" %}
+{% when value="pnpm" %}
+```bash
 pnpm dev
 ```
-```bash [npm]
+{% /when %}
+{% when value="npm" %}
+```bash
 npm run dev
 ```
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bun dev
 ```
-{% /code-group %}
+{% /when %}
+{% /switch %}
 
 Open the page in your browser. You'll see "Welcome to my shop" — that's your source language, rendered as-is. Behind the scenes, yapyak has already noticed the new string and added an empty stub for it to `locales/sv.json`.
 
@@ -594,6 +660,8 @@ Click the button. The heading switches over, and the button label with it. If "S
 
 If your project renders on the server — SvelteKit, TanStack Start, React Router (framework mode), or Astro — there's a per-request locale binding to set up so `getLocale()` resolves to the right value during render. For Astro this happens automatically through the integration above. For the others, see [Adapters](/guide/adapters/overview).
 
+{% switch group="framework" %}
+{% when value="react" %}
 ## React Server Components
 
 If you're working with React Server Components, the React processor takes an optional `rsc` flag:
@@ -603,6 +671,8 @@ processors: [react({ rsc: true })],
 ```
 
 With `rsc: true`, only files marked `'use client'` get the locale subscription hook injected. Server components still have their `t()` calls rewritten, but they read the request-bound locale from the SSR adapter instead of subscribing to a store.
+{% /when %}
+{% /switch %}
 
 ## Building for a single locale
 

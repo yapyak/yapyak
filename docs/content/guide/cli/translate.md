@@ -13,17 +13,45 @@ Fills missing translations in your locale files by running them through the conf
 - You're running translation as part of a CI pipeline rather than at dev time
 - You disabled auto-translation deliberately and translate in batches
 
+{% switch group="pkg" %}
+{% when value="pnpm" %}
 ```bash
 pnpm yapyak translate
 ```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx yapyak translate
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx yapyak translate
+```
+{% /when %}
+{% /switch %}
 
 ## A specific locale
 
 Pass a locale to only translate that one:
 
+{% switch group="pkg" %}
+{% when value="pnpm" %}
 ```bash
 pnpm yapyak translate sv
 ```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx yapyak translate sv
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx yapyak translate sv
+```
+{% /when %}
+{% /switch %}
 
 Useful when one locale is significantly behind and you want to catch it up without touching the others. Or when you're A/B-testing voice settings against a single language before applying them everywhere.
 
@@ -31,10 +59,26 @@ Useful when one locale is significantly behind and you want to catch it up witho
 
 By default, `translate` only fills in empty stubs — existing translations stay where they are. With `--force` (or `-f`), it ignores existing translations and runs everything through the translator again:
 
+{% switch group="pkg" %}
+{% when value="pnpm" %}
 ```bash
 pnpm yapyak translate --force
 pnpm yapyak translate sv -f
 ```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx yapyak translate --force
+npx yapyak translate sv -f
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx yapyak translate --force
+bunx yapyak translate sv -f
+```
+{% /when %}
+{% /switch %}
 
 Reach for this when:
 

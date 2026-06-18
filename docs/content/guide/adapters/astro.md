@@ -7,17 +7,23 @@ Astro renders every page on the server. yapyak's Astro integration wires the per
 
 ## Install
 
-{% code-group %}
-```bash [pnpm]
+{% switch group="pkg" %}
+{% when value="pnpm" %}
+```bash
 pnpm add yapyak @yapyak/astro
 ```
-```bash [npm]
+{% /when %}
+{% when value="npm" %}
+```bash
 npm install yapyak @yapyak/astro
 ```
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bun add yapyak @yapyak/astro
 ```
-{% /code-group %}
+{% /when %}
+{% /switch %}
 
 ## Register the integration
 

@@ -7,17 +7,23 @@ order: 4
 
 ## Install
 
-{% code-group %}
-```bash [pnpm]
+{% switch group="pkg" %}
+{% when value="pnpm" %}
+```bash
 pnpm add @yapyak/gemini
 ```
-```bash [npm]
+{% /when %}
+{% when value="npm" %}
+```bash
 npm install @yapyak/gemini
 ```
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bun add @yapyak/gemini
 ```
-{% /code-group %}
+{% /when %}
+{% /switch %}
 
 ## Configure
 

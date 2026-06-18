@@ -9,17 +9,23 @@ order: 5
 
 You'll need [Ollama itself](https://ollama.com/download) installed and running, then the binding:
 
-{% code-group %}
-```bash [pnpm]
+{% switch group="pkg" %}
+{% when value="pnpm" %}
+```bash
 pnpm add @yapyak/ollama
 ```
-```bash [npm]
+{% /when %}
+{% when value="npm" %}
+```bash
 npm install @yapyak/ollama
 ```
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bun add @yapyak/ollama
 ```
-{% /code-group %}
+{% /when %}
+{% /switch %}
 
 Pull a model that fits your machine. For translation, a 7B–8B model is usually fast enough:
 

@@ -9,18 +9,48 @@ yapyak export [--out <path>] [--split]
 
 Writes a snapshot of your translations to a file (or a folder) that's easy to hand off to an external translator, a language consultant, or anyone else who needs to review or edit translations outside your repo.
 
+{% switch group="pkg" %}
+{% when value="pnpm" %}
 ```bash
 pnpm yapyak export
 ```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx yapyak export
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx yapyak export
+```
+{% /when %}
+{% /switch %}
 
 By default, writes a single JSON file at `yapyak-export.json` in your project root. The file contains every source string and its translations in every locale, in a flat structure that's friendly to read and to round-trip back in.
 
 ## Choosing where it goes
 
+{% switch group="pkg" %}
+{% when value="pnpm" %}
 ```bash
 pnpm yapyak export --out translations.json
 pnpm yapyak export --out ./hand-off/
 ```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx yapyak export --out translations.json
+npx yapyak export --out ./hand-off/
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx yapyak export --out translations.json
+bunx yapyak export --out ./hand-off/
+```
+{% /when %}
+{% /switch %}
 
 If `--out` ends in a `/` or points at an existing directory, yapyak writes one file inside; otherwise, it treats it as the file path itself. Useful when you have a release process that expects a specific filename.
 
@@ -28,9 +58,23 @@ If `--out` ends in a `/` or points at an existing directory, yapyak writes one f
 
 For workflows where each language goes to a different translator or different reviewer, `--split` writes one file per locale instead of one combined file:
 
+{% switch group="pkg" %}
+{% when value="pnpm" %}
 ```bash
 pnpm yapyak export --out ./hand-off/ --split
 ```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx yapyak export --out ./hand-off/ --split
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx yapyak export --out ./hand-off/ --split
+```
+{% /when %}
+{% /switch %}
 
 Produces:
 

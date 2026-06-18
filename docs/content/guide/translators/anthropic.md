@@ -7,17 +7,23 @@ order: 2
 
 ## Install
 
-{% code-group %}
-```bash [pnpm]
+{% switch group="pkg" %}
+{% when value="pnpm" %}
+```bash
 pnpm add @yapyak/anthropic
 ```
-```bash [npm]
+{% /when %}
+{% when value="npm" %}
+```bash
 npm install @yapyak/anthropic
 ```
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bun add @yapyak/anthropic
 ```
-{% /code-group %}
+{% /when %}
+{% /switch %}
 
 ## Configure
 

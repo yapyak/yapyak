@@ -5,9 +5,23 @@ order: 3
 
 A locale in yapyak is a BCP 47 language tag — the same standard `Intl` uses for its formatters. Tags are short, structured, and case-insensitive in canonical form. Anywhere you write a locale (the argument to [`yapyak add`](/guide/cli/add), the second to `setLocale()`, the first to `t.in()`), you write a BCP 47 tag.
 
+{% switch group="pkg" %}
+{% when value="pnpm" %}
 ```bash
 pnpm yapyak add pt-BR zh-Hant-TW
 ```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx yapyak add pt-BR zh-Hant-TW
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx yapyak add pt-BR zh-Hant-TW
+```
+{% /when %}
+{% /switch %}
 
 This page covers the shape of a tag, when to use the long form vs the short, and how to narrow a `string` from outside your code into a known `Locale`.
 

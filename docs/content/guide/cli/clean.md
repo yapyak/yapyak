@@ -28,9 +28,23 @@ $ pnpm yapyak clean
 
 Dry-run by default. Read the output, sanity-check what's about to disappear, then run again with `--write`:
 
+{% switch group="pkg" %}
+{% when value="pnpm" %}
 ```bash
 pnpm yapyak clean --write
 ```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx yapyak clean --write
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx yapyak clean --write
+```
+{% /when %}
+{% /switch %}
 
 ## What counts as an orphan
 
@@ -58,12 +72,32 @@ For the in-between case (removed but recoverable), yapyak keeps a copy of every 
 
 Most projects run `clean` periodically — as part of a refactor branch, before a major release, or as a quarterly hygiene pass. It's not a build-time thing; it's a deliberate trim.
 
+{% switch group="pkg" %}
+{% when value="pnpm" %}
 ```bash
 git checkout -b clean-locales
 pnpm yapyak clean --write
 git diff locales/
 git commit -am "trim orphan translations"
 ```
+{% /when %}
+{% when value="npm" %}
+```bash
+git checkout -b clean-locales
+npx yapyak clean --write
+git diff locales/
+git commit -am "trim orphan translations"
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+git checkout -b clean-locales
+bunx yapyak clean --write
+git diff locales/
+git commit -am "trim orphan translations"
+```
+{% /when %}
+{% /switch %}
 
 The diff is your safety net. Anything that shouldn't have gone, you can pick out before committing.
 

@@ -7,17 +7,23 @@ order: 3
 
 ## Install
 
-{% code-group %}
-```bash [pnpm]
+{% switch group="pkg" %}
+{% when value="pnpm" %}
+```bash
 pnpm add @yapyak/openai
 ```
-```bash [npm]
+{% /when %}
+{% when value="npm" %}
+```bash
 npm install @yapyak/openai
 ```
-```bash [bun]
+{% /when %}
+{% when value="bun" %}
+```bash
 bun add @yapyak/openai
 ```
-{% /code-group %}
+{% /when %}
+{% /switch %}
 
 ## Configure
 
