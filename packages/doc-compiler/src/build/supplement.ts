@@ -30,7 +30,6 @@ export async function buildSupplement(
   );
 
   const links: {
-    label: string;
     node: SidebarLink;
     order: number;
     slug: string;
@@ -42,7 +41,7 @@ export async function buildSupplement(
       continue;
     }
     const slug = pagePath.slice(pathPrefix.length + 1);
-    if (slug === '' || slug.includes('/')) {
+    if (slug.includes('/')) {
       continue;
     }
     const label = typeof page.meta.title === 'string' ? page.meta.title : slug;
@@ -51,7 +50,6 @@ export async function buildSupplement(
         ? page.meta.order
         : Number.POSITIVE_INFINITY;
     links.push({
-      label,
       node: {
         href: page.href,
         label,
@@ -60,7 +58,7 @@ export async function buildSupplement(
       order,
       slug,
     });
-    symbols[`${supplement.slug}/${slug}`] = {
+    symbols[`${pathPrefix}/${slug}`] = {
       collection: collectionName,
       path: pagePath,
     };
