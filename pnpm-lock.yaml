@@ -186,12 +186,18 @@ importers:
       '@yapyak/typescript-config':
         specifier: workspace:*
         version: link:../packages/typescript-config
+      '@yapyak/vitest-config':
+        specifier: workspace:*
+        version: link:../packages/vitest-config
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
       vite:
         specifier: 'catalog:'
         version: 8.0.16(@types/node@25.9.3)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0)
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.9(@types/node@25.9.3)(happy-dom@20.10.6)(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0))
 
   examples/astro-cookie:
     dependencies:

@@ -14,6 +14,7 @@
     "build": "NODE_OPTIONS=--max-old-space-size=6144 vite build",
     "dev": "vite dev",
     "preview": "vite preview",
+    "test": "pnpm -w vitest --run --project=@yapyak/docs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -33,7 +34,9 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@yapyak/typescript-config": "workspace:*",
+    "@yapyak/vitest-config": "workspace:*",
     "typescript": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "vitest": "catalog:"
   }
 }
