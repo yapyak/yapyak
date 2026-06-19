@@ -384,14 +384,14 @@ function parseDiagnosticsAnnotation(annotation: string): {
     };
   }
   const errorMatch = annotation.match(/^error[:\s]\s*(.+)$/);
-  if (errorMatch !== null) {
+  if (errorMatch?.[1] !== undefined) {
     return {
       message: errorMatch[1].trim(),
       status: 'error',
     };
   }
   const okMatch = annotation.match(/^ok[:\s]\s*(.+)$/);
-  if (okMatch !== null) {
+  if (okMatch?.[1] !== undefined) {
     return {
       message: okMatch[1].trim(),
       status: 'ok',
@@ -447,7 +447,7 @@ function buildOutput(attributes: Record<string, unknown>): OutputBlock {
       continue;
     }
     const match = trimmed.match(LOCALE_PREFIX_RX);
-    if (match === null) {
+    if (match?.[1] === undefined || match[2] === undefined) {
       lines.push({
         locale: null,
         value: trimmed,

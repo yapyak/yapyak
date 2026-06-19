@@ -50,7 +50,6 @@ describe('renderErrorDiagnostics', () => {
             },
           },
           severity: 'error',
-          source: 'Hello',
         },
       ]),
     );
@@ -79,7 +78,6 @@ describe('renderErrorDiagnostics', () => {
             },
           },
           severity: 'warning',
-          source: 'Hello',
         },
       ]),
     );
@@ -114,7 +112,6 @@ describe('renderErrorDiagnostics', () => {
             },
           },
           severity: 'error',
-          source: 'Hello',
         },
         {
           code: 'YAP0007',
@@ -133,7 +130,6 @@ describe('renderErrorDiagnostics', () => {
             },
           },
           severity: 'warning',
-          source: 'Hello',
         },
       ]),
     );
@@ -166,7 +162,6 @@ describe('renderErrorDiagnostics', () => {
             },
           },
           severity: 'error',
-          source: 'Hello',
         },
         {
           code: 'YAP0007',
@@ -185,7 +180,6 @@ describe('renderErrorDiagnostics', () => {
             },
           },
           severity: 'warning',
-          source: 'Hello',
         },
       ]),
     );
@@ -213,7 +207,6 @@ describe('formatDiagnostic', () => {
         },
       },
       severity: 'error',
-      source: 'Hello',
     });
     expect(message).toContain('YAP0001');
     expect(message).toContain('src/a.tsx:3:5');
@@ -237,7 +230,6 @@ describe('formatDiagnostic', () => {
         },
       },
       severity: 'error',
-      source: 'Hello',
     });
     expect(message).toContain('See ');
   });

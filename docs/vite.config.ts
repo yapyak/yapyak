@@ -33,6 +33,9 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
   {
     dir: 'react',
     group: 'Frameworks',
+    subpaths: [
+      './processor',
+    ],
   },
   {
     dir: 'vue',
