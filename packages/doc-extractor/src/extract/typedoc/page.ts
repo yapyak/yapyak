@@ -157,6 +157,9 @@ export function buildSymbolPage(
     if (symbol.shape) {
       blocks.push(buildHeading2Block('Shape'));
       blocks.push(buildShapeBlock(symbol.shape));
+    } else if (symbol.members.length > 0) {
+      blocks.push(buildHeading2Block('Members'));
+      blocks.push(buildMembersTable(symbol.members));
     } else if (symbol.resolvedType.length > 0) {
       blocks.push(buildHeading2Block('Type'));
       blocks.push(buildTypeAliasBlock(symbol));

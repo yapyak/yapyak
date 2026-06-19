@@ -72,6 +72,7 @@ export type ReferenceInterface = ReferenceSymbolBase & {
 
 export type ReferenceTypeAlias = ReferenceSymbolBase & {
   kind: 'type';
+  members: ReferenceMember[];
   resolvedType: TypeToken[];
   signature: string;
 };

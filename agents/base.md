@@ -6,19 +6,19 @@ When a function configures multiple output targets or sub-systems, expose per-ta
 
 ```ts
 // ✓ Right — per-target inline, cross-cutting at top
-interface BuildOptions {
+type BuildOptions = {
   outDir: string;                  // cross-cutting
   sourcemap: boolean;              // cross-cutting
   esm?: { entry: string; minify?: boolean };
   cjs?: { entry: string };
   iife?: { entry: string; name: string };
-}
+};
 
 // ✗ Wrong — cross-cutting duplicated inside each target
-interface BuildOptions {
+type BuildOptions = {
   esm?: { entry: string; outDir: string; sourcemap: boolean; minify?: boolean };
   cjs?: { entry: string; outDir: string; sourcemap: boolean };
-}
+};
 ```
 
 ### Modules
@@ -27,18 +27,13 @@ interface BuildOptions {
 - One concept per file.
 - `index.ts` re-exports the public API of a folder/module.
 
-### `interface` vs `type`
+### Always use `type`, never `interface`
 
-Mechanical rule, no judgement calls.
-
-| Use | When |
-| --- | --- |
-| `interface` | Object shapes — anything with fields (`interface Foo { x: string }`) |
-| `type` | Everything else — unions, tuples, mapped/conditional types, primitives, aliases |
+Every type declaration uses `type` — object shapes, unions, mapped types, conditional types, everything. `interface` is forbidden.
 
 ```ts
 // ✓ — object shape
-interface Options { include: string[]; exclude: string[]; }
+type Options = { include: string[]; exclude: string[] };
 
 // ✓ — union
 type ContextLevel = 'none' | 'minimal' | 'rich';
@@ -49,19 +44,45 @@ type LocaleFile = Record<string, Record<string, string>>;
 // ✓ — mapped/conditional
 type ExtractParams<T extends string> = T extends `${string}{${infer P}}${string}` ? P : never;
 
-// ✗ — type alias for plain object shape
-type Options = { include: string[]; exclude: string[]; };  // use interface
+// ✗ — interface
+interface Options { include: string[]; exclude: string[]; }
 ```
 
-Why the split: `interface` supports declaration merging and gives better tooltips for object shapes; `type` is the only form that handles unions, mapped, and conditional types. The mechanical test — "does it have a `{ fields }`?" — covers 95% of cases without ambiguity.
-
-Discriminated union of object shapes: declare each variant as `interface`, then union with `type`:
+Enforced by biome's `useConsistentTypeDefinitions` with `style: "type"`. Discriminated unions:
 
 ```ts
-interface TextBlock { kind: 'text'; value: string; }
-interface HeadingBlock { kind: 'heading'; depth: 1 | 2 | 3; text: string; }
+type TextBlock = { kind: 'text'; value: string };
+type HeadingBlock = { kind: 'heading'; depth: 1 | 2 | 3; text: string };
 type Block = TextBlock | HeadingBlock;
 ```
+
+Why: a single consistent syntax across the codebase, no judgment calls about when to switch forms, and no surprises from declaration-merging.
+
+#### Exception: declaration-merging augmentation slots
+
+`type` doesn't support declaration merging. The single legitimate use of `interface` is a public augmentation slot that consumers extend through `declare module`. Mark it with the biome-ignore comments.
+
+```ts
+// biome-ignore lint/style/useConsistentTypeDefinitions: declaration merging
+// biome-ignore lint/suspicious/noEmptyInterface: declaration merging
+export interface Register {}
+
+export type Locale = Register extends { Locale: infer L extends string }
+  ? L
+  : string;
+```
+
+The consumer narrows the public surface from their own `.d.ts`:
+
+```ts
+declare module 'yapyak' {
+  interface Register {
+    Locale: 'en' | 'sv' | 'da';
+  }
+}
+```
+
+This is the only place `interface` is allowed. If you reach for declaration merging for any other reason, find a different design.
 
 ### Code organization — splitting into files
 

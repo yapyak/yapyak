@@ -448,12 +448,29 @@ function toReferenceTypeAlias(
 ): ReferenceTypeAlias {
   const base = toReferenceSymbolBase(reflection, context);
   const resolvedType = reflection.type ? toTypeTokens(reflection.type) : [];
+  const members = extractTypeAliasMembers(reflection, context);
   return {
     ...base,
     kind: 'type',
+    members,
     resolvedType,
     signature: `type ${reflection.name} = ${stringifyTokens(resolvedType)};`,
   };
+}
+
+function extractTypeAliasMembers(
+  reflection: DeclarationReflection,
+  context: ExtractContext,
+): ReferenceMember[] {
+  const type = reflection.type;
+  if (!type || type.type !== 'reflection') {
+    return [];
+  }
+  const children = type.declaration.children;
+  if (!children) {
+    return [];
+  }
+  return children.map((child) => toReferenceMember(child, context));
 }
 
 function toReferenceVariable(
