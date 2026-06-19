@@ -43,7 +43,7 @@ export type ReferenceThrows = {
   errorClass: string;
 };
 
-export type ReferenceFunction = ReferenceSymbolBase & {
+type ReferenceFunction = ReferenceSymbolBase & {
   kind: 'function';
   members: ReferenceMember[];
   overloads: ReferenceOverload[];
@@ -63,7 +63,7 @@ export type ReferenceTypeParameter = {
   name: string;
 };
 
-export type ReferenceInterface = ReferenceSymbolBase & {
+type ReferenceInterface = ReferenceSymbolBase & {
   callSignatures: ReferenceCallSignature[];
   kind: 'interface';
   members: ReferenceMember[];
