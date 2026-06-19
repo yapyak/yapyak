@@ -109,5 +109,28 @@
         display: block;
       }
     }
+
+    .CopyButton {
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+
+    @media (hover: hover) {
+      &:hover .CopyButton {
+        pointer-events: auto;
+        opacity: 1;
+      }
+    }
+
+    &:focus-within .CopyButton {
+      pointer-events: auto;
+      opacity: 1;
+    }
+
+    &:has(.CopyButton[data-copied]) .CopyButton {
+      pointer-events: auto;
+      opacity: 1;
+    }
   }
 }

@@ -1,8 +1,8 @@
 @layer components {
   .NotFoundView {
     display: grid;
-    place-self: center;
     place-items: center;
+    place-self: center;
 
     width: 100%;
     padding: var(--spacing-12) var(--spacing-4);

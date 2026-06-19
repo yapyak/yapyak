@@ -6,6 +6,7 @@ import { CodeBlockToken } from '#components/code-block-token';
 import { tokenize } from '#utils/tokenize';
 
 import styles from './code-block.module.css';
+import { CodeBlockCopyButton } from './code-block-copy-button';
 
 export interface CodeBlockProps extends BoxProps {
   bare?: boolean;
@@ -106,6 +107,12 @@ export function CodeBlock(props: CodeBlockProps) {
               ))}
         </Box>
       </Box>
+      {!bare && (
+        <CodeBlockCopyButton
+          className={styles.CopyButton}
+          source={source}
+        />
+      )}
     </Box>
   );
 }

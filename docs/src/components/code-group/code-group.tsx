@@ -1,9 +1,9 @@
 import type { BoxProps } from '#components/box';
 
-import { useId } from 'react';
+import { useId, useState } from 'react';
 
 import { Box } from '#components/box';
-import { CodeBlock } from '#components/code-block';
+import { CodeBlock, CodeBlockCopyButton } from '#components/code-block';
 
 import styles from './code-group.module.css';
 
@@ -19,7 +19,10 @@ export interface CodeGroupProps extends BoxProps {
 
 export function CodeGroup(props: CodeGroupProps) {
   const { className, tabs, ...restProps } = props;
+
   const groupId = useId();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeSource = tabs[activeIndex]?.source ?? '';
 
   return (
     <Box
@@ -42,14 +45,10 @@ export function CodeGroup(props: CodeGroupProps) {
               className={styles.TabInput}
               defaultChecked={index === 0}
               name={groupId}
+              onChange={() => setActiveIndex(index)}
               type="radio"
             />
-            <Box
-              as="span"
-              className={styles.TabText}
-            >
-              {tab.label ?? tab.language ?? 'Code'}
-            </Box>
+            <Box as="span">{tab.label ?? tab.language ?? 'Code'}</Box>
             <Box
               aria-hidden="true"
               className={styles.IndicatorBar}
@@ -71,6 +70,10 @@ export function CodeGroup(props: CodeGroupProps) {
           </Box>
         ))}
       </Box>
+      <CodeBlockCopyButton
+        className={styles.CopyButton}
+        source={activeSource}
+      />
     </Box>
   );
 }

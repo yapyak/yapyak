@@ -19,6 +19,7 @@
       justify-content: space-between;
       padding: var(--spacing-3) var(--spacing-4);
       border-bottom: var(--px) solid var(--rule);
+      transition: opacity var(--transition);
     }
 
     .PathText {
@@ -49,6 +50,7 @@
       text-transform: lowercase;
       pointer-events: none;
       user-select: none;
+      transition: opacity var(--transition);
     }
 
     .PreformattedText {
@@ -63,6 +65,59 @@
 
       code {
         font-family: inherit;
+      }
+    }
+
+    .CopyButton {
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        .CopyButton {
+          pointer-events: auto;
+          opacity: 1;
+        }
+
+        .LanguageText {
+          opacity: 0;
+        }
+
+        .LanguageBadge {
+          opacity: 0;
+        }
+      }
+    }
+
+    &:focus-within {
+      .CopyButton {
+        pointer-events: auto;
+        opacity: 1;
+      }
+
+      .LanguageText {
+        opacity: 0;
+      }
+
+      .LanguageBadge {
+        opacity: 0;
+      }
+    }
+
+    &:has(.CopyButton[data-copied]) {
+      .CopyButton {
+        pointer-events: auto;
+        opacity: 1;
+      }
+
+      .LanguageText {
+        opacity: 0;
+      }
+
+      .LanguageBadge {
+        opacity: 0;
       }
     }
   }
