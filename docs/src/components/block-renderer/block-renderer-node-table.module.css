@@ -2,6 +2,9 @@
   .BlockRendererNodeTableScroll {
     width: 100%;
     overflow-x: auto;
+    background: var(--surface);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-ring-inset);
   }
 
   .BlockRendererNodeTable {

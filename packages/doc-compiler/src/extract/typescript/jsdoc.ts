@@ -44,7 +44,7 @@ export function extractJsDoc(node: Node): ExtractJsDocResult {
     const name = tag.tagName.text;
     const text = getCommentText(tag.comment);
     if (name === 'example') {
-      examples.push(parseExample(text));
+      examples.push(parseExample(readExampleSource(tag)));
       continue;
     }
     if (name === 'throws') {
@@ -126,6 +126,18 @@ function getCommentPart(part: JSDocComment): string {
 }
 
 const EXAMPLE_FENCE_RX = /```(\S*)(?:\s+\[([^\]]+)\])?\n([\s\S]*?)```/;
+
+const EXAMPLE_TAG_PREFIX_RX = /^@example[ \t]?/;
+const JSDOC_LINE_PREFIX_RX = /^[ \t]*\*[ \t]?/;
+
+function readExampleSource(tag: ts.JSDocTag): string {
+  const raw = tag.getText().replace(EXAMPLE_TAG_PREFIX_RX, '');
+  const lines = raw.split('\n');
+  const cleaned = lines.map((line, index) =>
+    index === 0 ? line : line.replace(JSDOC_LINE_PREFIX_RX, ''),
+  );
+  return cleaned.join('\n').trimEnd();
+}
 
 function parseExample(text: string): ReferenceExample {
   const trimmed = text.trim();
