@@ -75,7 +75,7 @@ Return an array of objects, one per item, each keyed by the target locales:
 ]
 ```
 
-The order matches `items`. Every entry must have one key per locale in `targetLocales`. yapyak validates the shape — if an entry is missing a locale or is the wrong type, the diagnostic [`YAP0034`](/guide/advanced/diagnostics) fires and that entry is dropped.
+The order matches `items`. Every entry must have one key per locale in `targetLocales`. yapyak validates the shape — if an entry is missing a locale or is the wrong type, the diagnostic [`YAP0034`](/reference/diagnostics/YAP0034) fires and that entry is dropped.
 
 ## Configuration
 

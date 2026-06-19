@@ -52,7 +52,7 @@ A source string with no entry, or an empty stub, in one of your locales. The mos
 
 ### Compile-time diagnostics
 
-Any [`YAP-`](/guide/advanced/diagnostics) diagnostic that fires during parsing or extraction. These are the same ones you see in your editor during development — malformed ICU, dynamic source strings, missing `other` plural branches, captured chains. `check` re-runs them in CI in case anything slipped through.
+Any [`YAP-`](/reference/diagnostics) diagnostic that fires during parsing or extraction. These are the same ones you see in your editor during development — malformed ICU, dynamic source strings, missing `other` plural branches, captured chains. `check` re-runs them in CI in case anything slipped through.
 
 ### ICU mismatches
 

@@ -136,7 +136,7 @@ A few error cases reach the surface, mostly so you can decide whether to retry o
 | `TranslatorInvalidResponseError` | Model returned something that doesn't parse — unusual, but possible |
 | `TranslatorTruncatedError` | Model output was cut off by the token limit |
 
-All of them extend `TranslatorError` (importable from `yapyak/translator`), so a single `catch` block handles every case. Within a batch run, a chunk failure shows up as a [`YAP0033`](/guide/advanced/diagnostics) diagnostic — yapyak continues with the rest of the chunks and returns partial results rather than abandoning everything.
+All of them extend `TranslatorError` (importable from `yapyak/translator`), so a single `catch` block handles every case. Within a batch run, a chunk failure shows up as a [`YAP0033`](/reference/diagnostics/YAP0033) diagnostic — yapyak continues with the rest of the chunks and returns partial results rather than abandoning everything.
 
 ## Picking a provider
 

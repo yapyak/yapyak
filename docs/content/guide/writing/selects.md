@@ -29,7 +29,7 @@ t('{status, select, draft {Draft} published {Published} other {Unknown}}', { sta
 
 `'archived'` doesn't match any named branch, so `other` is used.
 
-Omitting `other` is a compile-time error ([`YAP0008`](/guide/advanced/diagnostics)).
+Omitting `other` is a compile-time error ([`YAP0008`](/reference/diagnostics/YAP0008)).
 
 ## Why each language can choose differently
 

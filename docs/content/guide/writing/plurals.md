@@ -47,7 +47,7 @@ Polish needs four branches:
 ```
 
 {% callout variant="info" %}
-The `other` branch is required by ICU and by yapyak's compiler — every plural message has to declare it as a fallback. Omitting it raises a [`YAP0008` diagnostic](/guide/advanced/diagnostics).
+The `other` branch is required by ICU and by yapyak's compiler — every plural message has to declare it as a fallback. Omitting it raises a [`YAP0008` diagnostic](/reference/diagnostics/YAP0008).
 {% /callout %}
 
 ## The `#` substitution

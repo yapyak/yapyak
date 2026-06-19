@@ -81,7 +81,7 @@ The conversation between code and locale file is direct: read the file, see exac
 
 ## What the compiler checks
 
-Every save runs `t()` calls through a parser. Anything ambiguous becomes a [diagnostic](/guide/advanced/diagnostics) — a compile-time warning or error you'll see in your editor and in your terminal.
+Every save runs `t()` calls through a parser. Anything ambiguous becomes a [diagnostic](/reference/diagnostics) — a compile-time warning or error you'll see in your editor and in your terminal.
 
 The most common ones are early-flagged mistakes:
 
