@@ -19,12 +19,12 @@ import Markdoc from '@markdoc/markdoc';
 import { nullify } from '../../nullify';
 import { slugify } from '../../slugify';
 
-type ParseMarkdocResult = {
+type ParseMarkdownResult = {
   blocks: Block[];
   frontmatter: Record<string, MetaValue>;
 };
 
-export function parseMarkdoc(source: string): ParseMarkdocResult {
+export function parseMarkdown(source: string): ParseMarkdownResult {
   const ast = Markdoc.parse(transformFenceLabels(source));
   const frontmatterSource = ast.attributes.frontmatter as string | undefined;
   const frontmatter = frontmatterSource

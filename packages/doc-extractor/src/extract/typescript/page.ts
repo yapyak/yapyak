@@ -26,7 +26,7 @@ import type {
 import { nullify } from '../../nullify';
 import { slugify } from '../../slugify';
 import { buildSymbolHref } from '../../symbol-path';
-import { parseMarkdoc } from '../markdoc';
+import { parseMarkdown } from '../markdown';
 import { relative, resolve } from 'node:path';
 
 let currentIndex: SymbolIndex = new Map();
@@ -90,12 +90,12 @@ export function buildSymbolPage(
   }
 
   if (symbol.description) {
-    const parsed = parseMarkdoc(symbol.description);
+    const parsed = parseMarkdown(symbol.description);
     blocks.push(...parsed.blocks);
   }
 
   if (symbol.remarks) {
-    const parsed = parseMarkdoc(symbol.remarks);
+    const parsed = parseMarkdown(symbol.remarks);
     blocks.push(...parsed.blocks);
   }
 
@@ -317,7 +317,7 @@ export function buildModulePage(
   });
 
   if (module.description) {
-    const parsed = parseMarkdoc(module.description);
+    const parsed = parseMarkdown(module.description);
     blocks.push(...parsed.blocks);
   }
 
@@ -815,7 +815,7 @@ function markdownToInline(source: string): Block[] {
       },
     ];
   }
-  const parsed = parseMarkdoc(source);
+  const parsed = parseMarkdown(source);
   const blocks = parsed.blocks;
   if (blocks.length === 1 && blocks[0] && blocks[0].type === 'paragraph') {
     return blocks[0].children;

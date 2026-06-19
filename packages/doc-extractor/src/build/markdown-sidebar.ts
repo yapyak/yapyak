@@ -1,11 +1,11 @@
 import type { Dirent } from 'node:fs';
 import type { SidebarNode } from './manifest';
 
-import { parseFrontmatterOnly } from '../extract/markdoc';
+import { parseFrontmatterOnly } from '../extract/markdown';
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
-export async function buildMarkdocSidebar(
+export async function buildMarkdownSidebar(
   root: string,
   collectionName: string,
 ): Promise<SidebarNode[]> {

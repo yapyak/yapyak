@@ -7,7 +7,7 @@ import type {
   TypeScriptPackage,
 } from '../config';
 
-import { extractMarkdoc } from '../extract/markdoc';
+import { extractMarkdown } from '../extract/markdown';
 import {
   buildModulePage,
   buildPackageIndexPage,
@@ -17,7 +17,7 @@ import {
 } from '../extract/typescript';
 import { slugify } from '../slugify';
 import { encodeSymbolSegment } from '../symbol-path';
-import { buildMarkdocSidebar } from './markdoc-sidebar';
+import { buildMarkdownSidebar } from './markdown-sidebar';
 import { buildPackageRoot } from './package-root';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -125,7 +125,7 @@ async function buildMarkdownCollection(
   collectionName: string,
   root: string,
 ): Promise<Collection> {
-  const { pages: pagesMap, redirects: redirectsMap } = await extractMarkdoc(
+  const { pages: pagesMap, redirects: redirectsMap } = await extractMarkdown(
     root,
     collectionName,
   );
@@ -137,7 +137,7 @@ async function buildMarkdownCollection(
   for (const [path, target] of redirectsMap) {
     redirects[path] = target;
   }
-  const sidebar = await buildMarkdocSidebar(root, collectionName);
+  const sidebar = await buildMarkdownSidebar(root, collectionName);
   return {
     pages,
     redirects,

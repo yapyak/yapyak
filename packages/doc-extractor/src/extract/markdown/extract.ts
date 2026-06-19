@@ -2,20 +2,20 @@ import type { Dirent } from 'node:fs';
 import type { Block } from '../../access';
 import type { Page } from '../../build';
 
-import { parseMarkdoc } from './parse';
+import { parseMarkdown } from './parse';
 import { readFile, readdir } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
 
-type ExtractMarkdocResult = {
+type ExtractMarkdownResult = {
   pages: Map<string, Page>;
   redirects: Map<string, string>;
   watchedFiles: string[];
 };
 
-export async function extractMarkdoc(
+export async function extractMarkdown(
   root: string,
   collectionName: string,
-): Promise<ExtractMarkdocResult> {
+): Promise<ExtractMarkdownResult> {
   const files = await walkMarkdownFiles(root);
   const pages = new Map<string, Page>();
   const redirects = new Map<string, string>();
@@ -23,7 +23,7 @@ export async function extractMarkdoc(
     const path = filePathToRoutePath(absolutePath, root);
     const href =
       path === '' ? `/${collectionName}` : `/${collectionName}/${path}`;
-    const page = await loadMarkdocPage(absolutePath, href);
+    const page = await loadMarkdownPage(absolutePath, href);
     if (page === undefined) {
       continue;
     }
@@ -45,7 +45,7 @@ export async function extractMarkdoc(
   };
 }
 
-async function loadMarkdocPage(
+async function loadMarkdownPage(
   absolutePath: string,
   href: string,
 ): Promise<Page | undefined> {
@@ -55,7 +55,7 @@ async function loadMarkdocPage(
   } catch {
     return undefined;
   }
-  const { blocks, frontmatter } = parseMarkdoc(source);
+  const { blocks, frontmatter } = parseMarkdown(source);
   return {
     blocks: resolveBlocks(blocks, href),
     description: (frontmatter.description as string | undefined) ?? '',
