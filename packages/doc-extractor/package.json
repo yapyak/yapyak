@@ -22,18 +22,19 @@
   ],
   "scripts": {
     "build": "tsdown",
+    "test": "pnpm -w vitest --run --project=@yapyak/doc-extractor",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@markdoc/markdoc": "catalog:",
-    "typedoc": "catalog:"
+    "@markdoc/markdoc": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "@yapyak/tsdown-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "tsdown": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "vite": ">=5"

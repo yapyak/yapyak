@@ -1,8 +1,8 @@
-import type { PackageContext } from '../extract/typedoc';
+import type { PackageContext } from '../extract/typescript';
 import type {
   ReferenceManifest,
   ReferenceModule,
-} from '../extract/typedoc/type';
+} from '../extract/typescript/type';
 import type { SidebarNode } from './manifest';
 
 import { buildSymbolHref } from '../symbol-path';

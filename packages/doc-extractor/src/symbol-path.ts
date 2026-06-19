@@ -1,4 +1,4 @@
-import type { PackageContext } from './extract/typedoc';
+import type { PackageContext } from './extract/typescript';
 
 export function encodeSymbolSegment(name: string): string {
   return name.replace(/^\$/, '');

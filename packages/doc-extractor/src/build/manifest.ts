@@ -13,8 +13,8 @@ import {
   buildSymbolIndex,
   buildSymbolPage,
   buildTypedocPackageIndexPage,
-  extractTypedocViaWorker,
-} from '../extract/typedoc';
+  extractPackage,
+} from '../extract/typescript';
 import { slugify } from '../slugify';
 import { encodeSymbolSegment } from '../symbol-path';
 import { buildMarkdocSidebar } from './markdoc-sidebar';
@@ -168,7 +168,7 @@ async function buildTypedocCollection(
       packageSlug,
     };
 
-    const refManifest = await extractTypedocViaWorker({
+    const refManifest = extractPackage({
       context,
       packageDir: pkg.root,
       subpaths: pkg.subpaths,

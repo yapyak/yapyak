@@ -1,6 +1,7 @@
+export type { ExtractPackageInput } from './extract';
 export type { PackageContext } from './package-context';
 
-export { extractTypedocViaWorker } from './extract-via-worker';
+export { extractPackage } from './extract';
 export {
   buildModulePage,
   buildSymbolPage,
