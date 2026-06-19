@@ -172,7 +172,9 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { yapyak } from '@yapyak/vite';
 
-export default defineConfig({ plugins: [react(), yapyak()] });
+export default defineConfig({
+  plugins: [react(), yapyak()]
+});
 ```
 {% /when %}
 

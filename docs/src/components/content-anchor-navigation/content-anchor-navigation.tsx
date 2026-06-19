@@ -19,6 +19,7 @@ import { ContentAnchorNavigationItem } from './content-anchor-navigation-item';
 const HEADER_OFFSET = 88;
 const SCROLL_GAP = 24;
 const ACTIVE_LINE_PX = HEADER_OFFSET + SCROLL_GAP;
+const BOTTOM_THRESHOLD_PX = 24;
 
 export type ContentAnchorNavigationProps = BoxProps<'nav'> & {
   headings: HeadingEntry[];
@@ -29,69 +30,71 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
 
   const containerRef = useRef<HTMLElement | null>(null);
   const itemRefs = useRef(new Map<string, HTMLAnchorElement>());
-  const [activeId, setActiveId] = useState<string | null>(
-    headings[0]?.id ?? null,
-  );
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   useEffect(() => {
     if (headings.length === 0) {
       return;
     }
 
-    const intersecting = new Map<string, boolean>();
+    let frame = 0;
 
     const recompute = () => {
-      for (const heading of headings) {
-        if (intersecting.get(heading.id)) {
-          setActiveId(heading.id);
-          return;
-        }
+      const viewportBottom = window.scrollY + window.innerHeight;
+      const documentBottom = document.documentElement.scrollHeight;
+      if (viewportBottom >= documentBottom - BOTTOM_THRESHOLD_PX) {
+        setActiveId(null);
+        return;
       }
-      let lastAbove: string | undefined;
+
+      let lastAbove: string | null = null;
       for (const heading of headings) {
         const element = document.getElementById(heading.id);
         if (!element) {
           continue;
         }
-        if (element.getBoundingClientRect().top < ACTIVE_LINE_PX) {
+        const paddingTop = Number.parseFloat(
+          window.getComputedStyle(element).paddingTop || '0',
+        );
+        const textTop = element.getBoundingClientRect().top + paddingTop;
+        if (textTop < ACTIVE_LINE_PX) {
           lastAbove = heading.id;
+        } else {
+          break;
         }
       }
-      if (lastAbove) {
-        setActiveId(lastAbove);
-      }
+      setActiveId(lastAbove);
     };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          const id = (entry.target as HTMLElement).id;
-          intersecting.set(id, entry.isIntersecting);
-        }
-        recompute();
-      },
-      {
-        rootMargin: `-${HEADER_OFFSET}px 0px -70% 0px`,
-        threshold: 0,
-      },
-    );
-
-    for (const heading of headings) {
-      const element = document.getElementById(heading.id);
-      if (element) {
-        observer.observe(element);
+    const onScroll = () => {
+      if (frame !== 0) {
+        return;
       }
-    }
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        recompute();
+      });
+    };
 
     recompute();
+    window.addEventListener('scroll', onScroll, {
+      passive: true,
+    });
+    window.addEventListener('resize', onScroll);
 
-    return () => observer.disconnect();
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (frame !== 0) {
+        window.cancelAnimationFrame(frame);
+      }
+    };
   }, [
     headings,
   ]);
 
   useLayoutEffect(() => {
-    if (!activeId) {
+    if (activeId === null) {
       return;
     }
     const container = containerRef.current;
@@ -115,18 +118,11 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     if (!element) {
       return;
     }
-
-    requestAnimationFrame(() => {
-      const top =
-        element.getBoundingClientRect().top +
-        window.scrollY -
-        HEADER_OFFSET -
-        SCROLL_GAP;
-      window.scrollTo({
+    window.requestAnimationFrame(() => {
+      element.scrollIntoView({
         behavior: 'auto',
-        top,
+        block: 'start',
       });
-      setActiveId(hash);
     });
   }, []);
 
@@ -137,17 +133,10 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
       if (!element) {
         return;
       }
-
-      const top =
-        element.getBoundingClientRect().top +
-        window.scrollY -
-        HEADER_OFFSET -
-        SCROLL_GAP;
-      window.scrollTo({
+      element.scrollIntoView({
         behavior: 'smooth',
-        top,
+        block: 'start',
       });
-      setActiveId(id);
       window.history.pushState(null, '', `#${id}`);
     },
     [],
@@ -187,10 +176,12 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
             />
           ))}
         </Box>
-        <Box
-          aria-hidden="true"
-          className={styles.Indicator}
-        />
+        {activeId !== null && (
+          <Box
+            aria-hidden="true"
+            className={styles.Indicator}
+          />
+        )}
       </Box>
     </Box>
   );
