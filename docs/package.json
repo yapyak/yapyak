@@ -11,7 +11,7 @@
     "#utils/*": "./src/utils/*"
   },
   "scripts": {
-    "build": "vite build",
+    "build": "NODE_OPTIONS=--max-old-space-size=8192 vite build",
     "dev": "vite dev",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
