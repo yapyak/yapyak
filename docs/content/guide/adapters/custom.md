@@ -47,15 +47,13 @@ import { withResponse } from 'yapyak/adapter';
 await withResponse(
   request,
   async () => {
-    const result = await renderToFrameworkResult(request);
-    return result;  // {
-      meta: {...},
-      response: Response,
-    }
+    return await renderToFrameworkResult(request);
   },
-  (result) => result.response,  // tell yapyak where the Response lives
+  (result) => result.response,
 );
 ```
+
+The third argument is a selector that tells yapyak where the `Response` lives on the framework's return value — here, `renderToFrameworkResult` returns `{ meta, response }`, and yapyak flushes pending headers onto `result.response`.
 
 The shipped TanStack Start adapter uses this pattern — the framework's middleware returns `{ response, ... }`, and yapyak's adapter extracts the `Response` to flush pending headers onto.
 

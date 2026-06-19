@@ -12,8 +12,14 @@ At any moment, one of those locales is the **active locale**. Calling `t()` read
 ```ts
 import { getLocale } from 'yapyak';
 
-getLocale(); // 'sv' | 'en' | ...
+getLocale();
 ```
+
+{% output %}
+'sv' | 'en' | ...
+{% /output %}
+
+The return type is the union of every locale code you've added.
 
 In components, prefer the framework binding — it subscribes the component to changes so re-renders happen automatically. See [Switch](/guide/locale/switch) for the per-framework shape.
 

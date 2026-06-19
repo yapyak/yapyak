@@ -91,12 +91,12 @@ Underneath the framework binding, yapyak exports the raw store:
 
 ```ts
 import { defaultLocale, getLocale, locales, setLocale } from 'yapyak';
-
-getLocale();              // the current Locale
-setLocale('sv');          // switches the active locale
-locales;                  // the array of Locale values you've added
-defaultLocale;            // the fallback Locale from your config
 ```
+
+- `getLocale()` returns the current `Locale`.
+- `setLocale('sv')` switches the active locale.
+- `locales` is the array of `Locale` values you've added.
+- `defaultLocale` is the fallback `Locale` from your config.
 
 You'll reach for these directly when:
 

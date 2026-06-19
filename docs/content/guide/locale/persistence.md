@@ -99,8 +99,10 @@ With a `match` regex, you control where the locale lives. The example above pull
 The default. The active locale lives only in memory for the current page session — switching it doesn't persist anywhere. A refresh resets the locale to `defaultLocale`.
 
 ```ts
-persistence: 'none',  // or just omit the field entirely
+persistence: 'none',
 ```
+
+Or just omit the field entirely — `'none'` is the default.
 
 Useful when you genuinely don't want persistence — a kiosk app, a development build, or a setup where another system (the URL path itself, a server-set user preference) carries the locale.
 

@@ -76,9 +76,11 @@ glossary: {
   yapyak: {
     sv: 'yapyak',
     de: 'yapyak',
-  },  // keep the product name as-is
+  },
 },
 ```
+
+The `yapyak` entry pins the product name in every locale so it isn't translated.
 
 Glossary terms are injected into the prompt with a strict instruction to keep them as-is. They're matched on the source string — every occurrence of "cart" anywhere in a translatable message gets pinned to your translation. Use it for vocabulary that has to stay consistent across the whole app.
 

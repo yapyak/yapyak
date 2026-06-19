@@ -163,9 +163,16 @@ examples: 5,
 
 A guardrail for development. When a single save introduces more new strings than this number, yapyak writes the stubs but holds off on translating them automatically — you can run [`yapyak translate`](/guide/cli/translate) when you're ready. The default catches large refactors or AI-generated additions that would otherwise burn through your API budget in one save.
 
+Default:
+
 ```ts
-autoTranslateThreshold: 20,  // default
-autoTranslateThreshold: 0,   // disable automatic translation entirely
+autoTranslateThreshold: 20,
+```
+
+Disable automatic translation entirely:
+
+```ts
+autoTranslateThreshold: 0,
 ```
 
 **Type**: `number` · **Default**: `20`
@@ -174,9 +181,16 @@ autoTranslateThreshold: 0,   // disable automatic translation entirely
 
 When you edit a source string in place (rename `'Save'` to `'Save changes'`), should yapyak keep the existing translation or treat the new wording as a new string?
 
+Keep existing translations:
+
 ```ts
-preserveTranslationsOnRename: true,  // keep existing
-preserveTranslationsOnRename: false, // re-translate
+preserveTranslationsOnRename: true,
+```
+
+Re-translate on rename:
+
+```ts
+preserveTranslationsOnRename: false,
 ```
 
 **Type**: `boolean` · **Default**: `true` without a translator, `false` with one. With a translator, the default favours accuracy: a wording change usually deserves a fresh translation. Without one, the default favours stability: a manually-written translation shouldn't disappear because of a small edit.
@@ -189,12 +203,19 @@ Where the active locale lives between page loads.
 
 ### `persistence`
 
+Shorthand:
+
 ```ts
-persistence: 'cookie',         // shorthand
+persistence: 'cookie',
+```
+
+With options:
+
+```ts
 persistence: {
   name: 'lang',
   type: 'cookie',
-},  // with options
+},
 ```
 
 Four strategies are available: `'none'`, `'cookie'`, `'local-storage'`, and `'url'`. Each one can be passed as a shorthand string or as a config object with strategy-specific options.
@@ -233,9 +254,16 @@ Useful for first-visit defaulting. The detected locale is matched against your c
 
 Where yapyak reads and writes locale files. Relative to the project root.
 
+Default:
+
 ```ts
-localesDir: 'locales',           // default
-localesDir: 'src/i18n/messages', // somewhere else
+localesDir: 'locales',
+```
+
+Custom location:
+
+```ts
+localesDir: 'src/i18n/messages',
 ```
 
 The directory contains one JSON file per locale — `en.json`, `sv.json`, and so on. Each file is keyed by source file path and message text. See [How it works](/guide/getting-started/how-it-works) for the structure.

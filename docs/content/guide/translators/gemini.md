@@ -90,13 +90,13 @@ If you're on Google Cloud and routing through Vertex AI rather than the public G
 
 ```ts
 translator: gemini({
-  apiKey: process.env.VERTEX_AI_TOKEN,  // Vertex AI uses bearer auth differently
+  apiKey: process.env.VERTEX_AI_TOKEN,
   endpoint: 'https://<region>-aiplatform.googleapis.com/v1/projects/<project>/locations/<region>/publishers/google',
   model: 'gemini-2.5-flash',
 }),
 ```
 
-For production Vertex AI use, you'll typically front this with a service-account auth layer that injects the right token. Pass that token through `apiKey`, or supply your own auth via the `headers` option (which merges into every request).
+Vertex AI uses bearer auth differently from the public Gemini API. For production use, front this with a service-account auth layer that injects the right token — pass that token through `apiKey`, or supply your own auth via the `headers` option (which merges into every request).
 
 ## Errors
 

@@ -90,9 +90,11 @@ You can point at a remote Ollama instance — useful for a shared internal serve
 translator: ollama({
   endpoint: 'http://ollama-server.internal:11434/api/generate',
   model: 'qwen2.5:14b',
-  timeout: 300_000,  // raise for slower-shared instances
+  timeout: 300_000,
 }),
 ```
+
+Raise `timeout` for slower shared instances — the default is tuned for a local model on the same machine.
 
 If the remote Ollama is behind a proxy that needs auth, use the `headers` option to add whatever your gateway expects:
 
