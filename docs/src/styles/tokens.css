@@ -67,6 +67,7 @@
 
   --color-mint: oklab(0.87 -0.24 0.06);
   --color-aqua: oklab(0.88 -0.21 0.01);
+  --color-sky: oklab(0.83 -0.06 -0.16);
   --color-coral: oklab(0.83 0.12 0.03);
 
   --color-lilac: oklab(0.74 0.1 -0.03);
@@ -84,6 +85,8 @@
   /* color intent — swap palette here to re-theme */
   --brand: var(--color-mint);
   --accent: var(--color-aqua);
+  --tip: var(--color-mint);
+  --info: var(--color-sky);
   --danger: var(--color-coral);
   --warning: var(--color-amber);
 

@@ -27,15 +27,15 @@
     }
 
     &[data-variant="tip"] {
-      --callout-accent: var(--brand);
-      --callout-background: color-mix(in oklab, var(--brand) 5%, transparent);
-      --callout-border: color-mix(in oklab, var(--brand) 4%, transparent);
+      --callout-accent: var(--tip);
+      --callout-background: color-mix(in oklab, var(--tip) 5%, transparent);
+      --callout-border: color-mix(in oklab, var(--tip) 4%, transparent);
     }
 
     &[data-variant="info"] {
-      --callout-accent: var(--accent);
-      --callout-background: color-mix(in oklab, var(--accent) 5%, transparent);
-      --callout-border: color-mix(in oklab, var(--accent) 4%, transparent);
+      --callout-accent: var(--info);
+      --callout-background: color-mix(in oklab, var(--info) 5%, transparent);
+      --callout-border: color-mix(in oklab, var(--info) 4%, transparent);
     }
 
     &[data-variant="warning"] {
