@@ -89,12 +89,6 @@ function resolveBlock(block: Block, pageHref: string): Block {
         : null,
     };
   }
-  if (block.type === 'code-group') {
-    return {
-      ...block,
-      tabs: block.tabs.map((tab) => resolveBlock(tab, pageHref) as typeof tab),
-    };
-  }
   if (block.type === 'switch') {
     return {
       ...block,

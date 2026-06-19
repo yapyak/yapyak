@@ -3,7 +3,6 @@ export type {
   CalloutBlock,
   CodeBlock,
   CodeExpressionBlock,
-  CodeGroupBlock,
   CodeLocationBlock,
   DiagnosticsBlock,
   DiagnosticsLine,

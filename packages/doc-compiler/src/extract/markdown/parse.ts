@@ -216,15 +216,6 @@ function toBlocks(node: unknown): Block[] {
       return [
         buildCodeBlock(node.attributes),
       ];
-    case 'CodeGroup':
-      return [
-        {
-          tabs: node.children
-            .flatMap(toBlocks)
-            .filter((block): block is CodeBlock => block.type === 'code-block'),
-          type: 'code-group',
-        },
-      ];
     case 'Switch': {
       const group = getStringAttribute(node.attributes.group) ?? '';
       const branches: Record<string, Block[]> = {};
@@ -616,10 +607,6 @@ const diagnostics: Schema = {
   },
 };
 
-const codeGroup: Schema = {
-  render: 'CodeGroup',
-};
-
 const switchTag: Schema = {
   attributes: {
     group: {
@@ -662,7 +649,6 @@ const markdocConfig: Config = {
   },
   tags: {
     callout,
-    'code-group': codeGroup,
     diagnostics,
     only: onlyTag,
     output,

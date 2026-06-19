@@ -3,7 +3,6 @@ export type Block =
   | CalloutBlock
   | CodeBlock
   | CodeExpressionBlock
-  | CodeGroupBlock
   | CodeLocationBlock
   | DividerBlock
   | EmphasisBlock
@@ -131,11 +130,6 @@ export type CodeExpressionBlock = {
   type: 'code-expression';
 };
 
-export type CodeGroupBlock = {
-  tabs: CodeBlock[];
-  type: 'code-group';
-};
-
 export type SwitchBlock = {
   branches: Record<string, Block[]>;
   group: string;
@@ -224,10 +218,6 @@ export function walkBlocks(
       walkBlocks(block.head, visit);
     }
     walkBlocks(block.body, visit);
-  }
-
-  if (block.type === 'code-group') {
-    walkBlocks(block.tabs, visit);
   }
 
   if (block.type === 'switch') {

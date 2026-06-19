@@ -92,30 +92,6 @@ describe('blockToText', () => {
     ).toBe('Hello');
   });
 
-  it('returns tab sources joined by blank line for a `code-group`', () => {
-    expect(
-      blockToText({
-        tabs: [
-          {
-            label: null,
-            language: 'ts',
-            path: null,
-            source: 'Hello',
-            type: 'code-block',
-          },
-          {
-            label: null,
-            language: 'ts',
-            path: null,
-            source: 'World',
-            type: 'code-block',
-          },
-        ],
-        type: 'code-group',
-      }),
-    ).toBe('Hello\n\nWorld');
-  });
-
   it('returns every branch joined by blank line for a `switch`', () => {
     expect(
       blockToText({

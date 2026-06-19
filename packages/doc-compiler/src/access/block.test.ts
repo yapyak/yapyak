@@ -1,10 +1,4 @@
-import type {
-  Block,
-  CodeBlock,
-  CodeGroupBlock,
-  SwitchBlock,
-  TableBlock,
-} from './block';
+import type { Block, SwitchBlock, TableBlock } from './block';
 
 import { describe, expect, it } from 'vitest';
 
@@ -120,24 +114,6 @@ describe('walkBlocks', () => {
     };
 
     expect(collect(table)).toContain(bodyRow);
-  });
-
-  it('walks every `tab` of a `code-group`', () => {
-    const tab: CodeBlock = {
-      label: null,
-      language: 'ts',
-      path: null,
-      source: 'Hello',
-      type: 'code-block',
-    };
-    const group: CodeGroupBlock = {
-      tabs: [
-        tab,
-      ],
-      type: 'code-group',
-    };
-
-    expect(collect(group)).toContain(tab);
   });
 
   it('walks every branch of a `switch`', () => {

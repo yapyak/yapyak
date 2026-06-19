@@ -46,25 +46,6 @@ describe('getCodeBlocks', () => {
     ]);
   });
 
-  it('lists every `code-block` nested in a `code-group`', () => {
-    expect(
-      getCodeBlocks(
-        page([
-          {
-            tabs: [
-              HELLO_CODE_BLOCK,
-              WORLD_CODE_BLOCK,
-            ],
-            type: 'code-group',
-          },
-        ]),
-      ),
-    ).toEqual([
-      HELLO_CODE_BLOCK,
-      WORLD_CODE_BLOCK,
-    ]);
-  });
-
   it('returns an empty list when no `code-block` is present', () => {
     expect(
       getCodeBlocks(

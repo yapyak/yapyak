@@ -27,8 +27,6 @@ export function blockToText(block: Block): string {
       return block.children.map(blockToText).join('\n');
     case 'code-block':
       return block.source;
-    case 'code-group':
-      return block.tabs.map((tab) => tab.source).join('\n\n');
     case 'switch':
       return Object.values(block.branches)
         .map((branchBlocks) => branchBlocks.map(blockToText).join(''))
