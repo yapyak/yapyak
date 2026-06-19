@@ -66,6 +66,10 @@
     white-space: nowrap;
     user-select: none;
 
+    .Line[data-status="ok"] & {
+      color: color-mix(in oklab, var(--brand) 60%, var(--foreground-softer));
+    }
+
     .Line[data-status="error"] & {
       color: color-mix(in oklab, var(--danger) 60%, var(--foreground-softer));
     }
