@@ -11,7 +11,7 @@ import { useOptionsContext } from './options-context';
 import { doc } from 'virtual:doc-extractor';
 
 const PRIMARY_GROUP_ID = 'framework';
-const PACKAGE_MANAGER_GROUP_ID = 'pkg';
+const PACKAGE_MANAGER_GROUP_ID = 'packageManager';
 
 export type DocOptionsProps = {};
 

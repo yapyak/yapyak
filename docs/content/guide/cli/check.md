@@ -15,7 +15,7 @@ A CI-friendly verification step. Walks every source file, extracts every `t()` c
 
 Exits with code `0` if everything looks complete and consistent; exits non-zero otherwise. Suitable for gating a build pipeline.
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm yapyak check

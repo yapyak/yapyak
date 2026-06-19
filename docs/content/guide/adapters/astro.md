@@ -13,7 +13,7 @@ Astro renders every page on the server. yapyak's Astro integration wires the per
 
 ## Install
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm add yapyak @yapyak/astro

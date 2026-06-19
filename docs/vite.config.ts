@@ -146,7 +146,7 @@ export default defineConfig({
             },
           ],
         },
-        pkg: {
+        packageManager: {
           default: 'npm',
           label: 'Package manager',
           options: [

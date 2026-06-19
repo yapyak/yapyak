@@ -38,7 +38,7 @@ defaultLocale: 'sv',
 
 The list of locales your app ships isn't a config field. yapyak reads it from the JSON files in your [`localesDir`](#localesdir) — one file per locale, named after its [BCP 47 tag](/guide/locale/tags). Adding a locale means adding a file:
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm yapyak add sv

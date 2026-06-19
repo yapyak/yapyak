@@ -17,7 +17,7 @@ Works with React Router v7 (7.9+) and v8.
 
 ## Install
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm add @yapyak/react-router

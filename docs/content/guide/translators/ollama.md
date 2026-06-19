@@ -9,7 +9,7 @@ order: 5
 
 You'll need [Ollama itself](https://ollama.com/download) installed and running, then the binding:
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm add @yapyak/ollama

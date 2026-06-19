@@ -7,7 +7,7 @@ order: 2
 
 ## Install
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm add @yapyak/anthropic

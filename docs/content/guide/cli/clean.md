@@ -28,7 +28,7 @@ $ pnpm yapyak clean
 
 Dry-run by default. Read the output, sanity-check what's about to disappear, then run again with `--write`:
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm yapyak clean --write
@@ -72,7 +72,7 @@ For the in-between case (removed but recoverable), yapyak keeps a copy of every 
 
 Most projects run `clean` periodically — as part of a refactor branch, before a major release, or as a quarterly hygiene pass. It's not a compile-time thing; it's a deliberate trim.
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 git checkout -b clean-locales

@@ -9,7 +9,7 @@ yapyak add <locale> [<locale>...]
 
 Adds one or more locales to your project. Each one becomes a new `<locale>.json` file in your [`localesDir`](/guide/getting-started/configuration#localesdir) (default `locales/`), updates the generated `Locale` type so the new locale is recognised at compile time, and — if a translator is configured — fills the new files with translations of every existing source string.
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm yapyak add sv
@@ -33,7 +33,7 @@ That's the usual case: add Swedish, the model fills `locales/sv.json` with trans
 
 Pass multiple locale codes to add them in a single run:
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm yapyak add sv de fr ja pt-BR

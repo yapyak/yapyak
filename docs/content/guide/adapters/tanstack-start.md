@@ -15,7 +15,7 @@ order: 5
 
 ## Install
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm add @yapyak/tanstack-start

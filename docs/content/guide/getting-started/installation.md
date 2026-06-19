@@ -49,7 +49,7 @@ yapyak supports React, Vue, Svelte, and Astro — switch frameworks in the heade
 {% when value="react" %}
 Three packages: the runtime, the Vite plugin, and the React binding.
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm add yapyak @yapyak/vite @yapyak/react
@@ -71,7 +71,7 @@ bun add yapyak @yapyak/vite @yapyak/react
 {% when value="vue" %}
 Three packages: the runtime, the Vite plugin, and the Vue binding.
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm add yapyak @yapyak/vite @yapyak/vue
@@ -93,7 +93,7 @@ bun add yapyak @yapyak/vite @yapyak/vue
 {% when value="svelte" %}
 Three packages: the runtime, the Vite plugin, and the Svelte binding.
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm add yapyak @yapyak/vite @yapyak/svelte
@@ -115,7 +115,7 @@ bun add yapyak @yapyak/vite @yapyak/svelte
 {% when value="astro" %}
 Two packages: the runtime and the Astro integration. The integration bundles the Vite plugin and a per-request middleware in one step.
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm add yapyak @yapyak/astro
@@ -140,7 +140,7 @@ bun add yapyak @yapyak/astro
 
 If you'd like new strings to translate themselves on save, add a [translator](/guide/translators/overview). yapyak ships first-party support for Anthropic, OpenAI, Gemini, and Ollama — we'll use Anthropic as the example, but the install is the same shape for any of them:
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm add @yapyak/anthropic
@@ -294,7 +294,7 @@ And ignore yapyak's cache directory:
 
 Pick a target language and create its locale file in [`localesDir`](/guide/getting-started/configuration#localesdir) (`locales/` by default). Any [BCP 47 tag](/guide/locale/tags) works:
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm yapyak add sv

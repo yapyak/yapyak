@@ -9,7 +9,7 @@ yapyak export [--out <path>] [--split]
 
 Writes a snapshot of your translations to a file (or a folder) that's easy to hand off to an external translator, a language consultant, or anyone else who needs to review or edit translations outside your repo.
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm yapyak export
@@ -31,7 +31,7 @@ By default, writes a single JSON file at `yapyak-export.json` in your project ro
 
 ## Choosing where it goes
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm yapyak export --out translations.json
@@ -58,7 +58,7 @@ If `--out` ends in a `/` or points at an existing directory, yapyak writes one f
 
 For workflows where each language goes to a different translator or different reviewer, `--split` writes one file per locale instead of one combined file:
 
-{% switch group="pkg" %}
+{% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
 pnpm yapyak export --out ./hand-off/ --split
