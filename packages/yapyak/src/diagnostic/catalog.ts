@@ -2,7 +2,7 @@ import type { Range } from '../processor';
 
 import { warn } from '../warn';
 
-const DOCS_BASE = 'https://yapyak.dev/d';
+const DOCS_BASE = 'https://yapyak.dev/reference/diagnostics';
 
 // biome-ignore assist/source/useSortedKeys: yap yap yap
 export const YAP = {
@@ -301,7 +301,7 @@ export type BuildDiagnosticContext = {
 };
 
 export function getDocsUrl(code: YapCode): string {
-  return `${DOCS_BASE}/${code.toLowerCase()}`;
+  return `${DOCS_BASE}/${code}`;
 }
 
 export function warnDiagnostic<K extends YapKey>(

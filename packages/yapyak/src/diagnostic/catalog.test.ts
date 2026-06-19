@@ -68,7 +68,9 @@ describe('buildDiagnostic', () => {
 
 describe('getDocsUrl', () => {
   it('builds the docs URL for a YAP code', () => {
-    expect(getDocsUrl('YAP0001')).toBe('https://yapyak.dev/d/yap0001');
+    expect(getDocsUrl('YAP0001')).toBe(
+      'https://yapyak.dev/reference/diagnostics/YAP0001',
+    );
   });
 });
 
@@ -93,7 +95,7 @@ describe('warnDiagnostic', () => {
     });
 
     expect(warnSpy).toHaveBeenCalledWith(
-      `YAP0028 setLocale call ignored. Value "de" is not in the configured locales.\nSee https://yapyak.dev/d/yap0028`,
+      `YAP0028 setLocale call ignored. Value "de" is not in the configured locales.\nSee https://yapyak.dev/reference/diagnostics/YAP0028`,
       expect.anything(),
     );
   });

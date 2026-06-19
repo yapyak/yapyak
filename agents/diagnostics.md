@@ -23,7 +23,7 @@ YAP0001
 Every diagnostic code lives in **one file** as a typed constant. The library exports this file from a stable internal path (e.g. `src/diagnostics/codes.ts`).
 
 ```ts
-const DOCS_BASE = 'https://yapyak.dev/d';
+const DOCS_BASE = 'https://yapyak.dev/reference/diagnostics';
 
 export const YAP = {
   PARSER_NO_SOURCE: 'YAP0001',
@@ -36,7 +36,7 @@ export const YAP = {
 export type YapCode = (typeof YAP)[keyof typeof YAP];
 
 export function docsUrl(code: YapCode): string {
-  return `${DOCS_BASE}/${code.toLowerCase()}`;
+  return `${DOCS_BASE}/${code}`;
 }
 ```
 
@@ -109,15 +109,15 @@ Format: `<SUBSYSTEM>_<EVENT>` in SCREAMING_SNAKE_CASE.
 URLs are computed from one constant and one function. No other surface.
 
 ```ts
-const DOCS_BASE = 'https://yapyak.dev/d';
+const DOCS_BASE = 'https://yapyak.dev/reference/diagnostics';
 
 export function docsUrl(code: YapCode): string {
-  return `${DOCS_BASE}/${code.toLowerCase()}`;
+  return `${DOCS_BASE}/${code}`;
 }
 ```
 
 - **`DOCS_BASE`** is the single base URL constant. To move the docs (e.g. to `docs.yapyak.com/diagnostics`), change this one line.
-- **`docsUrl(code)`** is the only way to produce a docs URL. URL format (lowercase code as path segment by default) is controlled here.
+- **`docsUrl(code)`** is the only way to produce a docs URL. URL format (code as path segment) is controlled here.
 - **No URL string literal may appear anywhere else in source code.** Every link is computed.
 
 #### URL placement in messages — render-time, not emit-time
@@ -140,7 +140,7 @@ function renderDiagnostic(d: Diagnostic): string {
 // ✗ Wrong — URL hardcoded in the message
 diagnostics.push({
   code: YAP.PARSER_NO_SOURCE,
-  message: 't() called without source string. See https://yapyak.dev/d/yap0001',
+  message: 't() called without source string. See https://yapyak.dev/reference/diagnostics/YAP0001',
 });
 ```
 
@@ -155,7 +155,7 @@ warn('setLocale ignored. Value is not in the configured locales.', {
 
 // what the user sees:
 // [yapyak] YAP0031 setLocale ignored. Value is not in the configured locales.
-// See https://yapyak.dev/d/yap0031
+// See https://yapyak.dev/reference/diagnostics/YAP0031
 ```
 
 ### Message tone — strict rules
