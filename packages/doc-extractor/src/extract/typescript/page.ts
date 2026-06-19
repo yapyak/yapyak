@@ -4,7 +4,7 @@ import type {
   ExportKind,
   TableCellBlock,
   TableRowBlock,
-} from '../../access/block';
+} from '../../access';
 import type { Page } from '../../build';
 import type { SourceUrlConfig } from '../../config';
 import type { PackageContext } from './package-context';
@@ -234,7 +234,7 @@ type BuildPackageIndexPageInput = {
   }[];
 };
 
-export function buildTypedocPackageIndexPage(
+export function buildPackageIndexPage(
   context: PackageContext,
   input: BuildPackageIndexPageInput,
 ): Page {

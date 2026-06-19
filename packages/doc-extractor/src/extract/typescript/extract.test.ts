@@ -1,9 +1,9 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { extractPackage } from './extract';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 let dir = '';
 
@@ -50,7 +50,8 @@ describe('extractPackage', () => {
   it('extracts every requested subpath as an additional module', () => {
     writeFiles({
       'src/index.ts': 'export function greet(): string { return "Hello"; }',
-      'src/processor.ts': 'export function process(): string { return "Save"; }',
+      'src/processor.ts':
+        'export function process(): string { return "Save"; }',
     });
     const manifest = extractPackage({
       context: {

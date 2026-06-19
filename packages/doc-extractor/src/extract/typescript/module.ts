@@ -1,10 +1,10 @@
-import { relative } from 'node:path';
+import type { ReferenceExport, ReferenceModule } from './type';
 
-import { collectExports } from './export';
+import { extractExports } from './export';
 import { extractJsDoc } from './jsdoc';
 import { parseSourceFile } from './source-file';
 import { buildSymbol } from './symbol';
-import type { ReferenceExport, ReferenceModule } from './type';
+import { relative } from 'node:path';
 
 export type ExtractModuleInput = {
   entryFile: string;
@@ -15,7 +15,7 @@ export type ExtractModuleInput = {
 
 export function extractModule(input: ExtractModuleInput): ReferenceModule {
   const { entryFile, moduleId, packageDir, subpath } = input;
-  const exports = collectExports(entryFile);
+  const exports = extractExports(entryFile);
 
   const symbols: ReferenceExport[] = [];
   for (const [name, entry] of exports) {
@@ -32,7 +32,7 @@ export function extractModule(input: ExtractModuleInput): ReferenceModule {
   symbols.sort((left, right) => left.name.localeCompare(right.name));
 
   return {
-    description: readModuleDescription(entryFile),
+    description: getModuleDescription(entryFile),
     exports: symbols,
     id: moduleId,
     sourcePath: relative(packageDir, entryFile).split('\\').join('/'),
@@ -40,7 +40,7 @@ export function extractModule(input: ExtractModuleInput): ReferenceModule {
   };
 }
 
-function readModuleDescription(entryFile: string): string {
+function getModuleDescription(entryFile: string): string {
   const sourceFile = parseSourceFile(entryFile);
   for (const statement of sourceFile.statements) {
     const jsDoc = extractJsDoc(statement);

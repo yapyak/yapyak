@@ -110,7 +110,7 @@ export default defineConfig({
       collections: {
         guide: {
           root: resolve(import.meta.dirname, 'content/guide'),
-          source: 'markdoc',
+          source: 'markdown',
         },
         reference: {
           packages: REFERENCE_PACKAGES.map((pkg) => ({
@@ -120,7 +120,7 @@ export default defineConfig({
             root: resolve(import.meta.dirname, `../packages/${pkg.dir}`),
             subpaths: pkg.subpaths,
           })),
-          source: 'typedoc',
+          source: 'typescript',
         },
       },
       options: {
@@ -147,7 +147,7 @@ export default defineConfig({
           ],
         },
         pkg: {
-          default: 'pnpm',
+          default: 'npm',
           label: 'Package manager',
           options: [
             {

@@ -9,11 +9,11 @@ const VIRTUAL_ID = 'virtual:doc-extractor';
 const RESOLVED_ID = '\0virtual:doc-extractor';
 const REBUILD_DEBOUNCE_MS = 200;
 
-export function docExtractor(options: Config): Plugin {
+export function docExtractor(config: Config): Plugin {
   let outAbsolute = '';
 
   const writeManifestFile = async () => {
-    const manifest = await buildManifest(options);
+    const manifest = await buildManifest(config);
     await mkdir(dirname(outAbsolute), {
       recursive: true,
     });
@@ -22,12 +22,12 @@ export function docExtractor(options: Config): Plugin {
 
   return {
     async buildStart() {
-      outAbsolute = resolve(options.out);
+      outAbsolute = resolve(config.out);
       await writeManifestFile();
     },
 
     configureServer(server: ViteDevServer) {
-      outAbsolute = resolve(options.out);
+      outAbsolute = resolve(config.out);
 
       const rebuild = debounce(async () => {
         try {
@@ -40,7 +40,7 @@ export function docExtractor(options: Config): Plugin {
         }
       }, REBUILD_DEBOUNCE_MS);
 
-      const watchedDirectories = getWatchedDirectories(options);
+      const watchedDirectories = getWatchedDirectories(config);
       for (const directory of watchedDirectories) {
         server.watcher.add(directory);
       }
@@ -103,9 +103,9 @@ export const doc = {
 }
 
 function invalidateVirtualModule(server: ViteDevServer) {
-  const mod = server.moduleGraph.getModuleById(RESOLVED_ID);
-  if (mod) {
-    server.moduleGraph.invalidateModule(mod);
+  const module = server.moduleGraph.getModuleById(RESOLVED_ID);
+  if (module !== undefined) {
+    server.moduleGraph.invalidateModule(module);
     server.ws.send({
       type: 'full-reload',
     });
@@ -115,11 +115,11 @@ function invalidateVirtualModule(server: ViteDevServer) {
 function getWatchedDirectories(config: Config): string[] {
   const directories: string[] = [];
   for (const collection of Object.values(config.collections)) {
-    if (collection.source === 'markdoc') {
+    if (collection.source === 'markdown') {
       directories.push(resolve(collection.root));
     } else {
-      for (const pkg of collection.packages) {
-        directories.push(resolve(pkg.root, 'src'));
+      for (const typescriptPackage of collection.packages) {
+        directories.push(resolve(typescriptPackage.root, 'src'));
       }
     }
   }

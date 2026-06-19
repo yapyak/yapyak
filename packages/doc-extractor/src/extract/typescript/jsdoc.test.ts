@@ -48,7 +48,7 @@ describe('extractJsDoc', () => {
 
   it('extracts `@shape` content as the shape string', () => {
     const node = parseFirstStatement(
-      '/**\n * Locale value.\n * @shape \'en\' | \'sv\'\n */\nexport const locale = "en";',
+      "/**\n * Locale value.\n * @shape 'en' | 'sv'\n */\nexport const locale = \"en\";",
     );
     expect(extractJsDoc(node).shape).toBe(`'en' | 'sv'`);
   });

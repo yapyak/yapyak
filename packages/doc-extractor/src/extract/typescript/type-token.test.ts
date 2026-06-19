@@ -15,10 +15,6 @@ function parseType(code: string): ts.TypeNode | undefined {
 }
 
 describe('buildTypeTokens', () => {
-  it('returns an empty list for an undefined node', () => {
-    expect(buildTypeTokens(undefined)).toEqual([]);
-  });
-
   it('returns a single text token with the node source for a primitive', () => {
     const node = parseType('string');
     expect(buildTypeTokens(node)).toEqual([
@@ -37,5 +33,9 @@ describe('buildTypeTokens', () => {
         text: 'Record<string, number>',
       },
     ]);
+  });
+
+  it('returns an empty list when no node is provided', () => {
+    expect(buildTypeTokens()).toEqual([]);
   });
 });

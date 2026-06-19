@@ -1,7 +1,8 @@
+import type { BuildSymbolInput } from './symbol';
+
 import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 
-import type { BuildSymbolInput } from './symbol';
 import { buildSymbol } from './symbol';
 
 function parseFirstStatement(source: string): {
@@ -24,10 +25,7 @@ function parseFirstStatement(source: string): {
   };
 }
 
-function inputFor(
-  name: string,
-  source: string,
-): BuildSymbolInput {
+function inputFor(name: string, source: string): BuildSymbolInput {
   const { node, sourceFile } = parseFirstStatement(source);
   return {
     name,
@@ -40,7 +38,10 @@ function inputFor(
 describe('buildSymbol', () => {
   it('builds a function symbol with kind `function` and a single overload', () => {
     const symbol = buildSymbol(
-      inputFor('greet', 'export function greet(name: string): string { return name; }'),
+      inputFor(
+        'greet',
+        'export function greet(name: string): string { return name; }',
+      ),
     );
     expect(symbol?.kind).toBe('function');
     if (symbol?.kind === 'function') {
@@ -100,7 +101,9 @@ describe('buildSymbol', () => {
   });
 
   it('returns undefined for an unsupported statement kind', () => {
-    const symbol = buildSymbol(inputFor('throwStmt', 'throw new Error("Cancel");'));
+    const symbol = buildSymbol(
+      inputFor('throwStmt', 'throw new Error("Cancel");'),
+    );
     expect(symbol).toBeUndefined();
   });
 });

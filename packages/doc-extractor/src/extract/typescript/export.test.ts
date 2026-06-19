@@ -1,10 +1,10 @@
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
+import { extractExports } from './export';
+import { resetSourceFileCache } from './source-file';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-
-import { collectExports } from './export';
-import { resetSourceFileCache } from './source-file';
 
 let dir = '';
 
@@ -21,15 +21,19 @@ afterEach(() => {
   resetSourceFileCache();
 });
 
-describe('collectExports', () => {
+describe('extractExports', () => {
   it('collects declarations carrying an export modifier', () => {
     const entry = join(dir, 'index.ts');
     writeFileSync(
       entry,
       'export function greet(): string { return "Hello"; }\nexport type Settings = { theme: string };',
     );
-    const result = collectExports(entry);
-    expect([...result.keys()].sort()).toEqual([
+    const result = extractExports(entry);
+    expect(
+      [
+        ...result.keys(),
+      ].sort(),
+    ).toEqual([
       'Settings',
       'greet',
     ]);
@@ -42,7 +46,9 @@ describe('collectExports', () => {
     );
     const entry = join(dir, 'index.ts');
     writeFileSync(entry, `export { greet } from './leaf';`);
-    expect([...collectExports(entry).keys()]).toEqual([
+    expect([
+      ...extractExports(entry).keys(),
+    ]).toEqual([
       'greet',
     ]);
   });
@@ -57,7 +63,9 @@ describe('collectExports', () => {
     writeFileSync(join(sub, 'index.ts'), `export { translate } from './leaf';`);
     const entry = join(dir, 'index.ts');
     writeFileSync(entry, `export { translate } from './translation';`);
-    expect([...collectExports(entry).keys()]).toEqual([
+    expect([
+      ...extractExports(entry).keys(),
+    ]).toEqual([
       'translate',
     ]);
   });
@@ -69,7 +77,11 @@ describe('collectExports', () => {
     );
     const entry = join(dir, 'index.ts');
     writeFileSync(entry, `export * from './leaf';`);
-    expect([...collectExports(entry).keys()].sort()).toEqual([
+    expect(
+      [
+        ...extractExports(entry).keys(),
+      ].sort(),
+    ).toEqual([
       'a',
       'b',
     ]);
@@ -85,7 +97,9 @@ describe('collectExports', () => {
       entry,
       `export { internalName as publicName } from './leaf';`,
     );
-    expect([...collectExports(entry).keys()]).toEqual([
+    expect([
+      ...extractExports(entry).keys(),
+    ]).toEqual([
       'publicName',
     ]);
   });

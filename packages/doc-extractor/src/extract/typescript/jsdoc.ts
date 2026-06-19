@@ -1,8 +1,7 @@
 import type { JSDoc, JSDocComment, Node } from 'typescript';
+import type { ReferenceExample, ReferenceTag, ReferenceThrows } from './type';
 
 import ts from 'typescript';
-
-import type { ReferenceExample, ReferenceTag, ReferenceThrows } from './type';
 
 export type ExtractJsDocResult = {
   deprecated: string | null;
@@ -15,7 +14,7 @@ export type ExtractJsDocResult = {
   throws: ReferenceThrows[];
 };
 
-const EMPTY: ExtractJsDocResult = {
+const EMPTY_RESULT: ExtractJsDocResult = {
   deprecated: null,
   description: '',
   examples: [],
@@ -29,10 +28,10 @@ const EMPTY: ExtractJsDocResult = {
 export function extractJsDoc(node: Node): ExtractJsDocResult {
   const jsDoc = findLastJsDoc(node);
   if (jsDoc === undefined) {
-    return EMPTY;
+    return EMPTY_RESULT;
   }
 
-  const description = readComment(jsDoc.comment);
+  const description = getCommentText(jsDoc.comment);
   const examples: ReferenceExample[] = [];
   const throws: ReferenceThrows[] = [];
   const seeAlso: string[] = [];
@@ -43,7 +42,7 @@ export function extractJsDoc(node: Node): ExtractJsDocResult {
 
   for (const tag of jsDoc.tags ?? []) {
     const name = tag.tagName.text;
-    const text = readComment(tag.comment);
+    const text = getCommentText(tag.comment);
     if (name === 'example') {
       examples.push(parseExample(text));
       continue;
@@ -53,8 +52,10 @@ export function extractJsDoc(node: Node): ExtractJsDocResult {
       continue;
     }
     if (name === 'see') {
-      const seeTarget = ts.isJSDocSeeTag(tag) ? tag.name?.getText() ?? '' : '';
-      seeAlso.push(seeTarget !== '' ? seeTarget : text);
+      const seeTarget = ts.isJSDocSeeTag(tag)
+        ? (tag.name?.getText() ?? '')
+        : '';
+      seeAlso.push(seeTarget === '' ? text : seeTarget);
       continue;
     }
     if (name === 'remarks') {
@@ -98,7 +99,7 @@ function findLastJsDoc(node: Node): JSDoc | undefined {
   return undefined;
 }
 
-function readComment(
+function getCommentText(
   comment: string | readonly JSDocComment[] | undefined,
 ): string {
   if (comment === undefined) {
@@ -107,14 +108,18 @@ function readComment(
   if (typeof comment === 'string') {
     return comment;
   }
-  return comment.map(readJsDocComment).join('');
+  return comment.map(getCommentPart).join('');
 }
 
-function readJsDocComment(part: JSDocComment): string {
+function getCommentPart(part: JSDocComment): string {
   if (part.text !== undefined && part.text !== '') {
     return part.text;
   }
-  if (ts.isJSDocLink(part) || ts.isJSDocLinkCode(part) || ts.isJSDocLinkPlain(part)) {
+  if (
+    ts.isJSDocLink(part) ||
+    ts.isJSDocLinkCode(part) ||
+    ts.isJSDocLinkPlain(part)
+  ) {
     return part.name?.getText() ?? '';
   }
   return '';
@@ -142,10 +147,7 @@ function parseExample(text: string): ReferenceExample {
   };
 }
 
-function parseThrows(
-  tag: ts.JSDocTag,
-  text: string,
-): ReferenceThrows {
+function parseThrows(tag: ts.JSDocTag, text: string): ReferenceThrows {
   if (ts.isJSDocThrowsTag(tag) && tag.typeExpression !== undefined) {
     return {
       condition: text.trim(),

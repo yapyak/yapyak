@@ -7,19 +7,19 @@ import type {
   TypeAliasDeclaration,
   VariableStatement,
 } from 'typescript';
-
-import { relative } from 'node:path';
-import ts from 'typescript';
-
-import { extractJsDoc } from './jsdoc';
-import { extractMembers } from './member';
-import { buildCallSignature, buildOverload } from './signature';
 import type {
   ReferenceExport,
   ReferenceLocation,
   ReferenceSymbolBase,
 } from './type';
+
+import ts from 'typescript';
+
+import { extractJsDoc } from './jsdoc';
+import { extractMembers } from './member';
+import { buildCallSignature, buildOverload } from './signature';
 import { buildTypeTokens } from './type-token';
+import { relative } from 'node:path';
 
 export type BuildSymbolInput = {
   name: string;
@@ -28,7 +28,9 @@ export type BuildSymbolInput = {
   sourceFile: SourceFile;
 };
 
-export function buildSymbol(input: BuildSymbolInput): ReferenceExport | undefined {
+export function buildSymbol(
+  input: BuildSymbolInput,
+): ReferenceExport | undefined {
   const { name, node } = input;
   if (ts.isFunctionDeclaration(node)) {
     return buildFunctionSymbol(name, node, input);
@@ -68,10 +70,7 @@ function buildBase(
   };
 }
 
-function buildLocation(
-  node: Node,
-  input: BuildSymbolInput,
-): ReferenceLocation {
+function buildLocation(node: Node, input: BuildSymbolInput): ReferenceLocation {
   const { sourceFile, packageDir } = input;
   const start = node.getStart();
   const position = sourceFile.getLineAndCharacterOfPosition(start);
@@ -138,18 +137,20 @@ function buildVariableSymbol(
   input: BuildSymbolInput,
 ): ReferenceExport {
   const declaration = node.declarationList.declarations.find(
-    (decl) => ts.isIdentifier(decl.name) && decl.name.text === name,
+    (candidate) =>
+      ts.isIdentifier(candidate.name) && candidate.name.text === name,
   );
-  const typeTokens = declaration?.type
-    ? buildTypeTokens(declaration.type)
-    : declaration?.initializer
-      ? [
-          {
-            kind: 'text' as const,
-            text: declaration.initializer.getText(),
-          },
-        ]
-      : [];
+  const typeTokens =
+    declaration?.type === undefined
+      ? declaration?.initializer === undefined
+        ? []
+        : [
+            {
+              kind: 'text' as const,
+              text: declaration.initializer.getText(),
+            },
+          ]
+      : buildTypeTokens(declaration.type);
   return {
     ...buildBase(name, node, input),
     kind: 'variable',
@@ -176,11 +177,13 @@ function stripModifiers(text: string): string {
 
 function buildInterfaceSignature(node: InterfaceDeclaration): string {
   const name = node.name.text;
-  const typeParams = node.typeParameters
-    ? `<${node.typeParameters.map((tp) => tp.getText()).join(', ')}>`
-    : '';
-  const heritage = node.heritageClauses
-    ? ` ${node.heritageClauses.map((h) => h.getText()).join(' ')}`
-    : '';
-  return `interface ${name}${typeParams}${heritage}`;
+  const typeParameters =
+    node.typeParameters === undefined
+      ? ''
+      : `<${node.typeParameters.map((typeParameter) => typeParameter.getText()).join(', ')}>`;
+  const heritage =
+    node.heritageClauses === undefined
+      ? ''
+      : ` ${node.heritageClauses.map((clause) => clause.getText()).join(' ')}`;
+  return `interface ${name}${typeParameters}${heritage}`;
 }

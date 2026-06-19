@@ -10,18 +10,18 @@ export type ExportEntry = {
   sourceFile: SourceFile;
 };
 
-const cache = new Map<string, Map<string, ExportEntry>>();
+const exportsByFile = new Map<string, Map<string, ExportEntry>>();
 
-export function collectExports(entryFile: string): Map<string, ExportEntry> {
-  cache.clear();
-  return walk(entryFile, new Set());
+export function extractExports(entryFile: string): Map<string, ExportEntry> {
+  exportsByFile.clear();
+  return walkExports(entryFile, new Set());
 }
 
-function walk(
+function walkExports(
   filePath: string,
   stack: Set<string>,
 ): Map<string, ExportEntry> {
-  const cached = cache.get(filePath);
+  const cached = exportsByFile.get(filePath);
   if (cached !== undefined) {
     return cached;
   }
@@ -33,15 +33,15 @@ function walk(
   const sourceFile = parseSourceFile(filePath);
   const result = new Map<string, ExportEntry>();
 
-  collectLocal(sourceFile, result);
+  collectLocalExports(sourceFile, result);
   collectReExports(sourceFile, filePath, stack, result);
 
   stack.delete(filePath);
-  cache.set(filePath, result);
+  exportsByFile.set(filePath, result);
   return result;
 }
 
-function collectLocal(
+function collectLocalExports(
   sourceFile: SourceFile,
   out: Map<string, ExportEntry>,
 ): void {
@@ -108,7 +108,7 @@ function collectReExports(
     if (resolved === undefined) {
       continue;
     }
-    const nested = walk(resolved, stack);
+    const nested = walkExports(resolved, stack);
 
     if (node.exportClause === undefined) {
       for (const [name, entry] of nested) {
@@ -138,5 +138,7 @@ function hasExportModifier(node: Node): boolean {
   if (modifiers === undefined) {
     return false;
   }
-  return modifiers.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword);
+  return modifiers.some(
+    (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword,
+  );
 }

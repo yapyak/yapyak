@@ -1,10 +1,10 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { extractModule } from './module';
 import { resetSourceFileCache } from './source-file';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 let dir = '';
 
@@ -30,7 +30,9 @@ function writeEntry(content: string): string {
 
 describe('extractModule', () => {
   it('builds a module with id, subpath, and source path', () => {
-    const entry = writeEntry('export function greet(): string { return "Hello"; }');
+    const entry = writeEntry(
+      'export function greet(): string { return "Hello"; }',
+    );
     const module = extractModule({
       entryFile: entry,
       moduleId: 'demo',

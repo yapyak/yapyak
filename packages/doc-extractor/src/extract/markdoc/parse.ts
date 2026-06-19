@@ -19,12 +19,12 @@ import Markdoc from '@markdoc/markdoc';
 import { nullify } from '../../nullify';
 import { slugify } from '../../slugify';
 
-type ParsedContent = {
+type ParseMarkdocResult = {
   blocks: Block[];
   frontmatter: Record<string, MetaValue>;
 };
 
-export function parseMarkdoc(source: string): ParsedContent {
+export function parseMarkdoc(source: string): ParseMarkdocResult {
   const ast = Markdoc.parse(transformFenceLabels(source));
   const frontmatterSource = ast.attributes.frontmatter as string | undefined;
   const frontmatter = frontmatterSource
@@ -340,24 +340,24 @@ function splitCodeAndComment(line: string): [
   let inSingle = false;
   let inDouble = false;
   let inBacktick = false;
-  for (let i = 0; i < line.length - 1; i++) {
-    const ch = line[i];
-    if (!inDouble && !inBacktick && ch === "'") {
+  for (let index = 0; index < line.length - 1; index++) {
+    const character = line[index];
+    if (!inDouble && !inBacktick && character === "'") {
       inSingle = !inSingle;
-    } else if (!inSingle && !inBacktick && ch === '"') {
+    } else if (!inSingle && !inBacktick && character === '"') {
       inDouble = !inDouble;
-    } else if (!inSingle && !inDouble && ch === '`') {
+    } else if (!inSingle && !inDouble && character === '`') {
       inBacktick = !inBacktick;
     } else if (
       !inSingle &&
       !inDouble &&
       !inBacktick &&
-      ch === '/' &&
-      line[i + 1] === '/'
+      character === '/' &&
+      line[index + 1] === '/'
     ) {
       return [
-        line.slice(0, i).trimEnd(),
-        line.slice(i + 2).trim(),
+        line.slice(0, index).trimEnd(),
+        line.slice(index + 2).trim(),
       ];
     }
   }
@@ -671,26 +671,26 @@ const markdocConfig: Config = {
   },
 };
 
-type ParsedLanguageLabel = {
+type ParseLanguageLabelResult = {
   label?: string;
   language?: string;
   path?: string;
 };
 
-function parseLanguageLabel(raw: string | undefined): ParsedLanguageLabel {
-  if (!raw) {
+function parseLanguageLabel(raw: string | undefined): ParseLanguageLabelResult {
+  if (raw === undefined || raw === '') {
     return {};
   }
   const match = raw.match(/^(\S*)\s*\[([^\]]+)\]$/);
-  if (!match) {
+  if (match === null) {
     return {
       language: raw,
     };
   }
   const bracket = match[2] ?? '';
   const language = match[1];
-  const result: ParsedLanguageLabel = {};
-  if (language) {
+  const result: ParseLanguageLabelResult = {};
+  if (language !== undefined && language !== '') {
     result.language = language;
   }
   if (isPathLike(bracket)) {

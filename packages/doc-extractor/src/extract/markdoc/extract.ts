@@ -1,3 +1,4 @@
+import type { Dirent } from 'node:fs';
 import type { Block } from '../../access';
 import type { Page } from '../../build';
 
@@ -5,7 +6,7 @@ import { parseMarkdoc } from './parse';
 import { readFile, readdir } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
 
-type MarkdocExtractResult = {
+type ExtractMarkdocResult = {
   pages: Map<string, Page>;
   redirects: Map<string, string>;
   watchedFiles: string[];
@@ -14,7 +15,7 @@ type MarkdocExtractResult = {
 export async function extractMarkdoc(
   root: string,
   collectionName: string,
-): Promise<MarkdocExtractResult> {
+): Promise<ExtractMarkdocResult> {
   const files = await walkMarkdownFiles(root);
   const pages = new Map<string, Page>();
   const redirects = new Map<string, string>();
@@ -48,8 +49,10 @@ async function loadMarkdocPage(
   absolutePath: string,
   href: string,
 ): Promise<Page | undefined> {
-  const source = await readFile(absolutePath, 'utf8').catch(() => undefined);
-  if (source === undefined) {
+  let source: string;
+  try {
+    source = await readFile(absolutePath, 'utf8');
+  } catch {
     return undefined;
   }
   const { blocks, frontmatter } = parseMarkdoc(source);
@@ -199,21 +202,26 @@ function filePathToRoutePath(absolutePath: string, root: string): string {
 
 async function walkMarkdownFiles(root: string): Promise<string[]> {
   const paths: string[] = [];
-  await collectMarkdownFiles(root, paths);
+  await discoverMarkdownFiles(root, paths);
   return paths;
 }
 
-async function collectMarkdownFiles(
+async function discoverMarkdownFiles(
   directory: string,
   paths: string[],
 ): Promise<void> {
-  const entries = await readdir(directory, {
-    withFileTypes: true,
-  }).catch(() => []);
+  let entries: Dirent[];
+  try {
+    entries = await readdir(directory, {
+      withFileTypes: true,
+    });
+  } catch {
+    return;
+  }
   for (const entry of entries) {
     const fullPath = join(directory, entry.name);
     if (entry.isDirectory()) {
-      await collectMarkdownFiles(fullPath, paths);
+      await discoverMarkdownFiles(fullPath, paths);
       continue;
     }
     if (entry.isFile() && entry.name.endsWith('.md')) {

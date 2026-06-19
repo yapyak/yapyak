@@ -1,8 +1,8 @@
 import type { NodeArray, TypeParameterDeclaration } from 'typescript';
+import type { ReferenceTypeParameter } from './type';
 
 import ts from 'typescript';
 
-import type { ReferenceTypeParameter } from './type';
 import { buildTypeTokens } from './type-token';
 
 export function extractTypeParameters(
@@ -11,17 +11,21 @@ export function extractTypeParameters(
   if (typeParameters === undefined || typeParameters.length === 0) {
     return [];
   }
-  return typeParameters.map((parameter) => ({
-    constraint: parameter.constraint
-      ? buildTypeTokens(parameter.constraint)
-      : null,
-    defaultType: parameter.default ? buildTypeTokens(parameter.default) : null,
-    description: readTypeParamDescription(parameter),
-    name: parameter.name.text,
+  return typeParameters.map((typeParameter) => ({
+    constraint:
+      typeParameter.constraint === undefined
+        ? null
+        : buildTypeTokens(typeParameter.constraint),
+    defaultType:
+      typeParameter.default === undefined
+        ? null
+        : buildTypeTokens(typeParameter.default),
+    description: getTypeParameterDescription(typeParameter),
+    name: typeParameter.name.text,
   }));
 }
 
-function readTypeParamDescription(node: TypeParameterDeclaration): string {
+function getTypeParameterDescription(node: TypeParameterDeclaration): string {
   const parent = node.parent;
   if (parent === undefined) {
     return '';
@@ -30,7 +34,7 @@ function readTypeParamDescription(node: TypeParameterDeclaration): string {
     if (ts.isJSDocTemplateTag(tag)) {
       for (const declared of tag.typeParameters) {
         if (declared.name.text === node.name.text) {
-          return readCommentText(tag.comment);
+          return getCommentText(tag.comment);
         }
       }
     }
@@ -38,14 +42,20 @@ function readTypeParamDescription(node: TypeParameterDeclaration): string {
   return '';
 }
 
-function readCommentText(
-  comment: string | readonly { text?: string }[] | undefined,
+function getCommentText(
+  comment:
+    | string
+    | readonly {
+        text?: string;
+      }[]
+    | undefined,
 ): string {
   if (comment === undefined) {
     return '';
   }
-  const raw = typeof comment === 'string'
-    ? comment
-    : comment.map((part) => part.text ?? '').join('');
+  const raw =
+    typeof comment === 'string'
+      ? comment
+      : comment.map((part) => part.text ?? '').join('');
   return raw.replace(/^[\s-]+/, '');
 }

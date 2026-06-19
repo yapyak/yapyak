@@ -18,11 +18,6 @@ function parseFunction(source: string): ts.FunctionDeclaration {
 }
 
 describe('extractTypeParameters', () => {
-  it('returns an empty list when the function has no generics', () => {
-    const node = parseFunction('export function plain(): void {}');
-    expect(extractTypeParameters(node.typeParameters)).toEqual([]);
-  });
-
   it('extracts a generic with its constraint and default type', () => {
     const node = parseFunction(
       'export function pick<T extends string = "Hello">(): T { return "Hello" as T; }',
@@ -54,5 +49,10 @@ describe('extractTypeParameters', () => {
     expect(extractTypeParameters(node.typeParameters)[0]?.description).toBe(
       'The source string.',
     );
+  });
+
+  it('returns an empty list when the function has no generics', () => {
+    const node = parseFunction('export function plain(): void {}');
+    expect(extractTypeParameters(node.typeParameters)).toEqual([]);
   });
 });

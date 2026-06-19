@@ -11,19 +11,19 @@ export type SourceUrlConfig = {
   workspaceRoot: string;
 };
 
-export type CollectionConfig = MarkdocSource | TypedocSource;
+export type CollectionConfig = MarkdownSource | TypeScriptSource;
 
-export type MarkdocSource = {
+export type MarkdownSource = {
   root: string;
-  source: 'markdoc';
+  source: 'markdown';
 };
 
-export type TypedocSource = {
-  packages: TypedocPackage[];
-  source: 'typedoc';
+export type TypeScriptSource = {
+  packages: TypeScriptPackage[];
+  source: 'typescript';
 };
 
-export type TypedocPackage = {
+export type TypeScriptPackage = {
   collapsible?: boolean;
   expanded?: boolean;
   group?: string;

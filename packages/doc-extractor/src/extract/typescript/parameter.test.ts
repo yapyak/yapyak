@@ -38,9 +38,7 @@ describe('extractParameters', () => {
   });
 
   it('marks a parameter as optional when it carries a `?` token', () => {
-    const node = parseFunction(
-      'export function greet(name?: string): void {}',
-    );
+    const node = parseFunction('export function greet(name?: string): void {}');
     expect(extractParameters(node, node.parameters)[0]?.optional).toBe(true);
   });
 

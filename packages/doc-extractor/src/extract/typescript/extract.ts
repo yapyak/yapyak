@@ -1,10 +1,10 @@
-import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import type { PackageContext } from './package-context';
+import type { ReferenceManifest, ReferenceModule } from './type';
 
 import { extractModule } from './module';
-import type { PackageContext } from './package-context';
 import { resetSourceFileCache } from './source-file';
-import type { ReferenceManifest, ReferenceModule } from './type';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 export type ExtractPackageInput = {
   context: PackageContext;

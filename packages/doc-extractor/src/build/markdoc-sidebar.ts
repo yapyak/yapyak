@@ -1,3 +1,4 @@
+import type { Dirent } from 'node:fs';
 import type { SidebarNode } from './manifest';
 
 import { parseFrontmatterOnly } from '../extract/markdoc';
@@ -15,9 +16,14 @@ async function walkDirectory(
   absoluteDirectory: string,
   urlPrefix: string,
 ): Promise<SidebarNode[]> {
-  const entries = await readdir(absoluteDirectory, {
-    withFileTypes: true,
-  }).catch(() => []);
+  let entries: Dirent[];
+  try {
+    entries = await readdir(absoluteDirectory, {
+      withFileTypes: true,
+    });
+  } catch {
+    return [];
+  }
   const collected: {
     node: SidebarNode;
     order: number;
@@ -36,7 +42,7 @@ async function walkDirectory(
         `${urlPrefix}/${entry.name}`,
         entry.name,
       );
-      if (group !== null) {
+      if (group !== undefined) {
         collected.push({
           name: entry.name,
           node: group.node,
@@ -53,7 +59,7 @@ async function walkDirectory(
     ) {
       const slug = entry.name.replace(/\.md$/, '');
       const link = await buildLink(fullPath, `${urlPrefix}/${slug}`);
-      if (link !== null) {
+      if (link !== undefined) {
         collected.push({
           name: slug,
           node: link.node,
@@ -73,14 +79,16 @@ async function walkDirectory(
   return collected.map((item) => item.node);
 }
 
-async function buildLink(absPath: string, href: string) {
-  const source = await readFile(absPath, 'utf8').catch(() => null);
-  if (source === null) {
-    return null;
+async function buildLink(absolutePath: string, href: string) {
+  let source: string;
+  try {
+    source = await readFile(absolutePath, 'utf8');
+  } catch {
+    return undefined;
   }
   const frontmatter = parseFrontmatterOnly(source);
   if (typeof frontmatter.redirect === 'string') {
-    return null;
+    return undefined;
   }
   const label =
     typeof frontmatter.title === 'string' ? frontmatter.title : getLabel(href);
@@ -104,13 +112,17 @@ async function buildGroup(
   folderName: string,
 ) {
   const indexPath = join(absoluteDirectory, 'index.md');
-  const indexSource = await readFile(indexPath, 'utf8').catch(() => null);
-  const indexFrontmatter =
-    indexSource === null ? {} : parseFrontmatterOnly(indexSource);
+  let indexFrontmatter: Record<string, unknown> = {};
+  try {
+    const indexSource = await readFile(indexPath, 'utf8');
+    indexFrontmatter = parseFrontmatterOnly(indexSource);
+  } catch {
+    indexFrontmatter = {};
+  }
 
   const items = await walkDirectory(absoluteDirectory, urlPrefix);
   if (items.length === 0) {
-    return null;
+    return undefined;
   }
 
   const label =

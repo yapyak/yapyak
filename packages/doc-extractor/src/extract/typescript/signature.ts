@@ -5,11 +5,11 @@ import type {
   Node,
   SignatureDeclaration,
 } from 'typescript';
+import type { ReferenceCallSignature, ReferenceOverload } from './type';
 
 import { extractParameters } from './parameter';
-import type { ReferenceCallSignature, ReferenceOverload } from './type';
-import { buildTypeTokens } from './type-token';
 import { extractTypeParameters } from './type-parameter';
+import { buildTypeTokens } from './type-token';
 
 export function buildOverload(
   node: FunctionDeclaration | ConstructorDeclaration,
@@ -28,12 +28,12 @@ export function buildCallSignature(
   return {
     parameters: extractParameters(node, node.parameters),
     returnType: buildTypeTokens(node.type),
-    signature: stripBody(node, undefined).replace(/;$/, ''),
+    signature: stripBody(node).replace(/;$/, ''),
     typeParameters: extractTypeParameters(node.typeParameters),
   };
 }
 
-function stripBody(node: Node, body: Node | undefined): string {
+function stripBody(node: Node, body?: Node): string {
   const text = node.getText();
   if (body === undefined) {
     return text.trim();

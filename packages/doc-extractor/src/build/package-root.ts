@@ -1,50 +1,51 @@
-import type { PackageContext } from '../extract/typescript';
 import type {
+  PackageContext,
   ReferenceManifest,
   ReferenceModule,
-} from '../extract/typescript/type';
+} from '../extract/typescript';
 import type { SidebarNode } from './manifest';
 
 import { buildSymbolHref } from '../symbol-path';
 
-type BuildTypedocPackageRootInput = {
+type BuildPackageRootInput = {
   collapsible: boolean;
   expanded: boolean;
   label: string;
 };
 
-export function buildTypedocPackageRoot(
+export function buildPackageRoot(
   manifest: ReferenceManifest,
   context: PackageContext,
-  input: BuildTypedocPackageRootInput,
+  input: BuildPackageRootInput,
 ): SidebarNode {
   const { collectionName, packageName, packageSlug } = context;
   const { collapsible, expanded, label } = input;
-  const byId = new Map<string, ReferenceModule>();
+  const modulesById = new Map<string, ReferenceModule>();
   for (const module of manifest.modules) {
-    byId.set(module.id, module);
+    modulesById.set(module.id, module);
   }
-  const childrenById = new Map<string, ReferenceModule[]>();
-  for (const id of byId.keys()) {
-    const parentId = findParentId(id, byId);
+  const childrenByParentId = new Map<string, ReferenceModule[]>();
+  for (const id of modulesById.keys()) {
+    const parentId = findParentId(id, modulesById);
     if (parentId === undefined) {
       continue;
     }
-    let list = childrenById.get(parentId);
-    if (!list) {
+    let list = childrenByParentId.get(parentId);
+    if (list === undefined) {
       list = [];
-      childrenById.set(parentId, list);
+      childrenByParentId.set(parentId, list);
     }
-    const module = byId.get(id);
-    if (module) {
+    const module = modulesById.get(id);
+    if (module !== undefined) {
       list.push(module);
     }
   }
 
-  const root = byId.get(packageName);
-  const children = root
-    ? moduleChildren(root, byId, childrenById, context)
-    : topLevelSubpathChildren(byId, childrenById, context);
+  const root = modulesById.get(packageName);
+  const children =
+    root === undefined
+      ? topLevelSubpathChildren(modulesById, childrenByParentId, context)
+      : moduleChildren(root, modulesById, childrenByParentId, context);
 
   return {
     children,
@@ -60,21 +61,21 @@ export function buildTypedocPackageRoot(
 
 function moduleChildren(
   module: ReferenceModule,
-  byId: Map<string, ReferenceModule>,
-  childrenById: Map<string, ReferenceModule[]>,
+  modulesById: Map<string, ReferenceModule>,
+  childrenByParentId: Map<string, ReferenceModule[]>,
   context: PackageContext,
 ): SidebarNode[] {
   const { collectionName, packageName, packageSlug } = context;
   const nodes: SidebarNode[] = [];
-  for (const api of module.exports) {
+  for (const symbol of module.exports) {
     nodes.push({
-      href: buildSymbolHref(module.id, api.name, {
+      href: buildSymbolHref(module.id, symbol.name, {
         collectionName,
         packageName,
         packageSlug,
       }),
-      label: api.kind === 'function' ? `${api.name}()` : api.name,
-      ...(api.deprecated !== null && {
+      label: symbol.kind === 'function' ? `${symbol.name}()` : symbol.name,
+      ...(symbol.deprecated !== null && {
         badge: {
           variant: 'deprecated' as const,
         },
@@ -82,13 +83,13 @@ function moduleChildren(
       type: 'link',
     });
   }
-  const subModules = (childrenById.get(module.id) ?? [])
+  const subModules = (childrenByParentId.get(module.id) ?? [])
     .slice()
     .sort((a, b) => a.id.localeCompare(b.id));
   for (const child of subModules) {
     const childSlug = child.id.slice(packageName.length + 1);
     nodes.push({
-      children: moduleChildren(child, byId, childrenById, context),
+      children: moduleChildren(child, modulesById, childrenByParentId, context),
       collapsible: true,
       href: `/${collectionName}/${packageSlug}/${childSlug}`,
       label: lastSegment(child.id),
@@ -99,14 +100,14 @@ function moduleChildren(
 }
 
 function topLevelSubpathChildren(
-  byId: Map<string, ReferenceModule>,
-  childrenById: Map<string, ReferenceModule[]>,
+  modulesById: Map<string, ReferenceModule>,
+  childrenByParentId: Map<string, ReferenceModule[]>,
   context: PackageContext,
 ): SidebarNode[] {
   const { collectionName, packageName, packageSlug } = context;
   const prefix = `${packageName}/`;
-  const tops: ReferenceModule[] = [];
-  for (const module of byId.values()) {
+  const topLevel: ReferenceModule[] = [];
+  for (const module of modulesById.values()) {
     if (!module.id.startsWith(prefix)) {
       continue;
     }
@@ -114,11 +115,11 @@ function topLevelSubpathChildren(
     if (tail.includes('/')) {
       continue;
     }
-    tops.push(module);
+    topLevel.push(module);
   }
-  tops.sort((a, b) => a.id.localeCompare(b.id));
-  return tops.map((child) => ({
-    children: moduleChildren(child, byId, childrenById, context),
+  topLevel.sort((a, b) => a.id.localeCompare(b.id));
+  return topLevel.map((child) => ({
+    children: moduleChildren(child, modulesById, childrenByParentId, context),
     collapsible: true,
     href: `/${collectionName}/${packageSlug}/${child.id.slice(prefix.length)}`,
     label: lastSegment(child.id),
@@ -128,7 +129,7 @@ function topLevelSubpathChildren(
 
 function findParentId(
   id: string,
-  byId: Map<string, ReferenceModule>,
+  modulesById: Map<string, ReferenceModule>,
 ): string | undefined {
   let cursor = id;
   while (true) {
@@ -137,7 +138,7 @@ function findParentId(
       return undefined;
     }
     cursor = cursor.slice(0, slashIndex);
-    if (byId.has(cursor)) {
+    if (modulesById.has(cursor)) {
       return cursor;
     }
   }

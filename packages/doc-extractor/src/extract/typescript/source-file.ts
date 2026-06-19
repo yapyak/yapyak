@@ -1,12 +1,13 @@
 import type { SourceFile } from 'typescript';
 
-import { readFileSync } from 'node:fs';
 import ts from 'typescript';
 
-const cache = new Map<string, SourceFile>();
+import { readFileSync } from 'node:fs';
+
+const sourceFileCache = new Map<string, SourceFile>();
 
 export function parseSourceFile(filePath: string): SourceFile {
-  const cached = cache.get(filePath);
+  const cached = sourceFileCache.get(filePath);
   if (cached !== undefined) {
     return cached;
   }
@@ -17,10 +18,10 @@ export function parseSourceFile(filePath: string): SourceFile {
     ts.ScriptTarget.Latest,
     true,
   );
-  cache.set(filePath, sourceFile);
+  sourceFileCache.set(filePath, sourceFile);
   return sourceFile;
 }
 
 export function resetSourceFileCache(): void {
-  cache.clear();
+  sourceFileCache.clear();
 }

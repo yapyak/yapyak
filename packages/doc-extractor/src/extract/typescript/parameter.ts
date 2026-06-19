@@ -1,22 +1,22 @@
 import type { JSDocParameterTag, Node, ParameterDeclaration } from 'typescript';
+import type { ReferenceParameter } from './type';
 
 import ts from 'typescript';
 
-import type { ReferenceParameter } from './type';
 import { buildTypeTokens } from './type-token';
 
 export function extractParameters(
   node: Node,
   parameters: readonly ParameterDeclaration[],
 ): ReferenceParameter[] {
-  const paramTags = collectParamTags(node);
+  const parameterTags = extractParameterTags(node);
   const result: ReferenceParameter[] = [];
   for (const parameter of parameters) {
     const name = parameter.name.getText();
-    const tag = paramTags.get(name);
+    const tag = parameterTags.get(name);
     result.push({
       defaultValue: parameter.initializer?.getText() ?? null,
-      description: readTagComment(tag),
+      description: getTagComment(tag),
       name,
       optional:
         parameter.questionToken !== undefined ||
@@ -28,7 +28,7 @@ export function extractParameters(
   return result;
 }
 
-function collectParamTags(node: Node): Map<string, JSDocParameterTag> {
+function extractParameterTags(node: Node): Map<string, JSDocParameterTag> {
   const tags = new Map<string, JSDocParameterTag>();
   for (const docTag of ts.getJSDocTags(node)) {
     if (ts.isJSDocParameterTag(docTag)) {
@@ -38,7 +38,7 @@ function collectParamTags(node: Node): Map<string, JSDocParameterTag> {
   return tags;
 }
 
-function readTagComment(tag: JSDocParameterTag | undefined): string {
+function getTagComment(tag: JSDocParameterTag | undefined): string {
   if (tag?.comment === undefined) {
     return '';
   }

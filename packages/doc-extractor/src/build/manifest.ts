@@ -4,21 +4,21 @@ import type {
   Config,
   OptionsRegistry,
   SourceUrlConfig,
-  TypedocPackage,
+  TypeScriptPackage,
 } from '../config';
 
 import { extractMarkdoc } from '../extract/markdoc';
 import {
   buildModulePage,
+  buildPackageIndexPage,
   buildSymbolIndex,
   buildSymbolPage,
-  buildTypedocPackageIndexPage,
   extractPackage,
 } from '../extract/typescript';
 import { slugify } from '../slugify';
 import { encodeSymbolSegment } from '../symbol-path';
 import { buildMarkdocSidebar } from './markdoc-sidebar';
-import { buildTypedocPackageRoot } from './typedoc-package-root';
+import { buildPackageRoot } from './package-root';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -110,10 +110,10 @@ async function buildCollection(
   symbols: Record<string, SymbolEntry>,
   sourceUrl: SourceUrlConfig | undefined,
 ): Promise<Collection> {
-  if (config.source === 'markdoc') {
-    return buildMarkdocCollection(collectionName, config.root);
+  if (config.source === 'markdown') {
+    return buildMarkdownCollection(collectionName, config.root);
   }
-  return buildTypedocCollection(
+  return buildTypeScriptCollection(
     collectionName,
     config.packages,
     symbols,
@@ -121,7 +121,7 @@ async function buildCollection(
   );
 }
 
-async function buildMarkdocCollection(
+async function buildMarkdownCollection(
   collectionName: string,
   root: string,
 ): Promise<Collection> {
@@ -145,23 +145,23 @@ async function buildMarkdocCollection(
   };
 }
 
-async function buildTypedocCollection(
+async function buildTypeScriptCollection(
   collectionName: string,
-  packages: TypedocPackage[],
+  packages: TypeScriptPackage[],
   symbols: Record<string, SymbolEntry>,
   sourceUrl: SourceUrlConfig | undefined,
 ): Promise<Collection> {
   const pages: Record<string, Page> = {};
   const redirects: Record<string, string> = {};
-  const groupedNodes = new Map<string, SidebarNode[]>();
+  const nodesByGroup = new Map<string, SidebarNode[]>();
   const groupOrder: string[] = [];
   const ungroupedNodes: SidebarNode[] = [];
 
-  for (const pkg of packages) {
-    const packageName = await readPackageName(pkg.root);
-    const packageSlug = slugify(pkg.name);
+  for (const typescriptPackage of packages) {
+    const packageName = await readPackageName(typescriptPackage.root);
+    const packageSlug = slugify(typescriptPackage.name);
     validateSlug(packageSlug);
-    const displayName = pkg.name;
+    const displayName = typescriptPackage.name;
     const context = {
       collectionName,
       packageName,
@@ -170,8 +170,8 @@ async function buildTypedocCollection(
 
     const refManifest = extractPackage({
       context,
-      packageDir: pkg.root,
-      subpaths: pkg.subpaths,
+      packageDir: typescriptPackage.root,
+      subpaths: typescriptPackage.subpaths,
     });
     const index = buildSymbolIndex(refManifest);
 
@@ -199,7 +199,7 @@ async function buildTypedocCollection(
             href,
             index,
             moduleId: module.id,
-            packageDir: pkg.root,
+            packageDir: typescriptPackage.root,
           },
           {
             sourceUrl,
@@ -239,28 +239,28 @@ async function buildTypedocCollection(
           subpath: `./${tail}`,
         };
       });
-      pages[packageSlug] = buildTypedocPackageIndexPage(context, {
+      pages[packageSlug] = buildPackageIndexPage(context, {
         href: `/${collectionName}/${packageSlug}`,
         label: displayName,
         subpaths,
       });
     }
 
-    const packageNode = buildTypedocPackageRoot(refManifest, context, {
-      collapsible: pkg.collapsible ?? false,
-      expanded: pkg.expanded ?? false,
+    const packageNode = buildPackageRoot(refManifest, context, {
+      collapsible: typescriptPackage.collapsible ?? false,
+      expanded: typescriptPackage.expanded ?? false,
       label: displayName,
     });
 
-    if (!pkg.group) {
+    if (typescriptPackage.group === undefined) {
       ungroupedNodes.push(packageNode);
       continue;
     }
-    let groupBucket = groupedNodes.get(pkg.group);
-    if (!groupBucket) {
+    let groupBucket = nodesByGroup.get(typescriptPackage.group);
+    if (groupBucket === undefined) {
       groupBucket = [];
-      groupedNodes.set(pkg.group, groupBucket);
-      groupOrder.push(pkg.group);
+      nodesByGroup.set(typescriptPackage.group, groupBucket);
+      groupOrder.push(typescriptPackage.group);
     }
     groupBucket.push(packageNode);
   }
@@ -269,7 +269,7 @@ async function buildTypedocCollection(
     ...ungroupedNodes,
   ];
   for (const groupLabel of groupOrder) {
-    const children = groupedNodes.get(groupLabel) ?? [];
+    const children = nodesByGroup.get(groupLabel) ?? [];
     sidebar.push({
       children,
       collapsible: false,

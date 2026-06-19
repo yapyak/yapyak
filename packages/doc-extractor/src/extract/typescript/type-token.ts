@@ -1,8 +1,7 @@
 import type { TypeNode } from 'typescript';
-
 import type { TypeToken } from './type';
 
-export function buildTypeTokens(node: TypeNode | undefined): TypeToken[] {
+export function buildTypeTokens(node?: TypeNode): TypeToken[] {
   if (node === undefined) {
     return [];
   }

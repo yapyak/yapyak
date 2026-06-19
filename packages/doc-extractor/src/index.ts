@@ -67,12 +67,12 @@ export type {
 export type {
   CollectionConfig,
   Config,
-  MarkdocSource,
+  MarkdownSource,
   OptionItem,
   OptionsGroup,
   OptionsRegistry,
   SourceUrlConfig,
-  TypedocSource,
+  TypeScriptSource,
 } from './config';
 
 export {

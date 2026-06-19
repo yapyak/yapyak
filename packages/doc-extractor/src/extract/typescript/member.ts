@@ -1,9 +1,9 @@
 import type { NodeArray, TypeElement } from 'typescript';
+import type { ReferenceMember } from './type';
 
 import ts from 'typescript';
 
 import { extractJsDoc } from './jsdoc';
-import type { ReferenceMember } from './type';
 import { buildTypeTokens } from './type-token';
 
 export function extractMembers(
@@ -29,7 +29,9 @@ export function extractMembers(
   return result;
 }
 
-function buildMemberType(member: TypeElement): ReturnType<typeof buildTypeTokens> {
+function buildMemberType(
+  member: TypeElement,
+): ReturnType<typeof buildTypeTokens> {
   if (ts.isPropertySignature(member)) {
     return buildTypeTokens(member.type);
   }
@@ -42,7 +44,10 @@ function buildMemberType(member: TypeElement): ReturnType<typeof buildTypeTokens
     return [
       {
         kind: 'text',
-        text: text.slice(colonIndex + 1).trim().replace(/;$/, ''),
+        text: text
+          .slice(colonIndex + 1)
+          .trim()
+          .replace(/;$/, ''),
       },
     ];
   }
@@ -50,7 +55,10 @@ function buildMemberType(member: TypeElement): ReturnType<typeof buildTypeTokens
 }
 
 function parseDefaultValue(
-  tags: { name: string; text: string }[],
+  tags: {
+    name: string;
+    text: string;
+  }[],
 ): string | null {
   for (const tag of tags) {
     if (tag.name === 'defaultValue') {
