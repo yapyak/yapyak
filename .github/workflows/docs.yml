@@ -30,6 +30,7 @@ jobs:
       - run: pnpm --filter @yapyak/docs build
         env:
           DOCS_BASEPATH: /yapyak/
+          NODE_OPTIONS: --max-old-space-size=8192
       - uses: actions/upload-pages-artifact@v4
         with:
           path: docs/dist/client

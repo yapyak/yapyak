@@ -96,6 +96,7 @@ export default defineConfig({
   plugins: [
     tanstackStart({
       prerender: {
+        concurrency: 1,
         crawlLinks: true,
         enabled: true,
         failOnError: true,
