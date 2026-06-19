@@ -462,15 +462,19 @@ function extractTypeAliasMembers(
   reflection: DeclarationReflection,
   context: ExtractContext,
 ): ReferenceMember[] {
+  if (reflection.children && reflection.children.length > 0) {
+    return reflection.children.map((child) =>
+      toReferenceMember(child, context),
+    );
+  }
   const type = reflection.type;
-  if (!type || type.type !== 'reflection') {
-    return [];
+  if (type && type.type === 'reflection') {
+    const children = type.declaration.children;
+    if (children) {
+      return children.map((child) => toReferenceMember(child, context));
+    }
   }
-  const children = type.declaration.children;
-  if (!children) {
-    return [];
-  }
-  return children.map((child) => toReferenceMember(child, context));
+  return [];
 }
 
 function toReferenceVariable(
