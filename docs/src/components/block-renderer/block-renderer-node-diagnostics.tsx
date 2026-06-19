@@ -2,7 +2,9 @@ import type { DiagnosticsBlock } from '@yapyak/doc-compiler';
 import type { Language } from '#utils/tokenize';
 
 import { Box } from '#components/box';
+import { CheckIcon } from '#components/check-icon';
 import { CodeBlockToken } from '#components/code-block-token';
+import { XIcon } from '#components/x-icon';
 import { tokenize } from '#utils/tokenize';
 
 import styles from './block-renderer-node-diagnostics.module.css';
@@ -53,7 +55,7 @@ export function BlockRendererNodeDiagnostics(
               aria-label={line.status === 'ok' ? 'valid' : 'error'}
               className={styles.Indicator}
             >
-              {line.status === 'ok' ? '✓' : '✗'}
+              {line.status === 'ok' ? <CheckIcon /> : <XIcon />}
             </Box>
             <Box
               as="code"
