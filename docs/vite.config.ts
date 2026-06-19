@@ -1,6 +1,6 @@
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import react from '@vitejs/plugin-react';
-import { docExtractor } from '@yapyak/doc-extractor/vite';
+import { docCompiler } from '@yapyak/doc-compiler/vite';
 import { yapyak } from '@yapyak/vite';
 import { defineConfig } from 'vite';
 
@@ -106,7 +106,7 @@ export default defineConfig({
       },
     }),
     react(),
-    docExtractor({
+    docCompiler({
       collections: {
         guide: {
           root: resolve(import.meta.dirname, 'content/guide'),

@@ -1,4 +1,4 @@
-import type { QuoteBlock } from '@yapyak/doc-extractor';
+import type { QuoteBlock } from '@yapyak/doc-compiler';
 
 import { Box } from '#components/box';
 

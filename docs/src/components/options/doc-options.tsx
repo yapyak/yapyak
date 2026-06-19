@@ -8,7 +8,7 @@ import { PackageManagerIcon } from '#components/package-manager-icon';
 
 import styles from './doc-options.module.css';
 import { useOptionsContext } from './options-context';
-import { doc } from 'virtual:doc-extractor';
+import { doc } from 'virtual:doc-compiler';
 
 const PRIMARY_GROUP_ID = 'framework';
 const PACKAGE_MANAGER_GROUP_ID = 'packageManager';

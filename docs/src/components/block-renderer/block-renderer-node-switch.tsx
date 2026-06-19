@@ -1,10 +1,10 @@
-import type { SwitchBlock } from '@yapyak/doc-extractor';
+import type { SwitchBlock } from '@yapyak/doc-compiler';
 
 import { Box } from '#components/box';
 import { useOptionsContext } from '#components/options';
 
 import { BlockRenderer } from './block-renderer';
-import { doc } from 'virtual:doc-extractor';
+import { doc } from 'virtual:doc-compiler';
 
 export type BlockRendererNodeSwitchProps = {
   block: SwitchBlock;

@@ -1,4 +1,4 @@
-declare module 'virtual:doc-extractor' {
+declare module 'virtual:doc-compiler' {
   import type {
     AdjacentPages,
     Entry,
@@ -9,7 +9,7 @@ declare module 'virtual:doc-extractor' {
     OptionsRegistry,
     Page,
     SidebarNode,
-  } from '@yapyak/doc-extractor';
+  } from '@yapyak/doc-compiler';
 
   export const doc: {
     findAdjacentPages(page: Page): AdjacentPages;

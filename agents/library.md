@@ -209,12 +209,12 @@ The npm name itself communicates how stable the package is and what the maintain
 | Tier | Naming | What it signals | Examples |
 |---|---|---|---|
 | **Semi-OSS** | `@skiftle/*` | Internal-first. Source-shipped. No stability promises. Breaking changes without deprecation cycles. PRs at maintainer's discretion. "Use at own risk." | `@skiftle/ui`, `@skiftle/intl`, `@skiftle/form` |
-| **Real OSS** | Unscoped name (e.g. `yapyak`) or its own dedicated scope (e.g. `@yapyak/*` for sub-packages of one OSS product) | Semver discipline. Deprecation cycles for breaking changes. Community PRs welcome. Stable public API. | `yapyak`, `@yapyak/doc-extractor` |
+| **Real OSS** | Unscoped name (e.g. `yapyak`) or its own dedicated scope (e.g. `@yapyak/*` for sub-packages of one OSS product) | Semver discipline. Deprecation cycles for breaking changes. Community PRs welcome. Stable public API. | `yapyak`, `@yapyak/doc-compiler` |
 
 Rules:
 
 - **Never mix tiers under one scope.** `@skiftle/*` is reserved for the semi-OSS tier. A real-OSS project from the same org gets its own name or scope (`yapyak`, not `@skiftle/yapyak`).
-- **Sub-packages of a real-OSS product** can share that product's scope (`@yapyak/doc-extractor`, `@yapyak/vite`). The scope IS the product identity in that case, not an org identity.
+- **Sub-packages of a real-OSS product** can share that product's scope (`@yapyak/doc-compiler`, `@yapyak/vite`). The scope IS the product identity in that case, not an org identity.
 - **The scope determines policy.** Source-shipping, deprecation policy, contribution guidelines, README tone — all derive from which tier the package sits in.
 
 @~/GitHub/agents/typescript/library/jsdoc.md

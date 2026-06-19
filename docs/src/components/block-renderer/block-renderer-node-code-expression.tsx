@@ -1,4 +1,4 @@
-import type { Block, CodeExpressionBlock } from '@yapyak/doc-extractor';
+import type { Block, CodeExpressionBlock } from '@yapyak/doc-compiler';
 
 import { Box } from '#components/box';
 

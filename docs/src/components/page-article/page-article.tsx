@@ -1,4 +1,4 @@
-import type { Page } from '@yapyak/doc-extractor';
+import type { Page } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#components/box';
 
 import { BlockRenderer } from '#components/block-renderer';
@@ -6,7 +6,7 @@ import { Box } from '#components/box';
 import { ContentPagination } from '#components/content-pagination';
 
 import styles from './page-article.module.css';
-import { doc } from 'virtual:doc-extractor';
+import { doc } from 'virtual:doc-compiler';
 
 export interface PageArticleProps extends BoxProps<'article'> {
   page: Page;

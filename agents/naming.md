@@ -656,7 +656,7 @@ url(options): Persistence
 
 // Bundler plugin factories — function name = plugin name
 yapyak(): Plugin            // @yapyak/vite's plugin
-docExtractor(options): Plugin // @yapyak/doc-extractor's plugin
+docCompiler(options): Plugin // @yapyak/doc-compiler's plugin
 ```
 
 Rule: ONE noun-named factory per concept per package. If multiple variants exist, use `create*` prefixes (`createAnthropicClient`, `createOpenAIClient`) and disambiguate.

@@ -1,4 +1,4 @@
-import type { SidebarLink } from '@yapyak/doc-extractor';
+import type { SidebarLink } from '@yapyak/doc-compiler';
 
 import { Link } from '@tanstack/react-router';
 

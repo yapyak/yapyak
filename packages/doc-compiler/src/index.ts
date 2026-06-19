@@ -4,9 +4,9 @@
  * ## Installation
  *
  * ```bash
- * npm install @yapyak/doc-extractor
+ * npm install @yapyak/doc-compiler
  * # or
- * pnpm add @yapyak/doc-extractor
+ * pnpm add @yapyak/doc-compiler
  * ```
  *
  * @packageDocumentation

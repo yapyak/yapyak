@@ -1,4 +1,4 @@
-import type { InlineCodeBlock } from '@yapyak/doc-extractor';
+import type { InlineCodeBlock } from '@yapyak/doc-compiler';
 
 import { Box } from '#components/box';
 

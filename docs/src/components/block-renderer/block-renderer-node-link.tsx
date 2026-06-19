@@ -1,4 +1,4 @@
-import type { LinkBlock } from '@yapyak/doc-extractor';
+import type { LinkBlock } from '@yapyak/doc-compiler';
 
 import { Link } from '@tanstack/react-router';
 

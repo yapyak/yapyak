@@ -1,4 +1,4 @@
-import type { HeadingEntry } from '@yapyak/doc-extractor';
+import type { HeadingEntry } from '@yapyak/doc-compiler';
 import type { MouseEvent, Ref } from 'react';
 
 import { Box } from '#components/box';

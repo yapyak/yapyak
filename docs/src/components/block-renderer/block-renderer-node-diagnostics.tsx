@@ -1,4 +1,4 @@
-import type { DiagnosticsBlock } from '@yapyak/doc-extractor';
+import type { DiagnosticsBlock } from '@yapyak/doc-compiler';
 import type { Language } from '#utils/tokenize';
 
 import { Box } from '#components/box';

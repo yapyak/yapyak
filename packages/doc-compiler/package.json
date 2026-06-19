@@ -1,5 +1,5 @@
 {
-  "name": "@yapyak/doc-extractor",
+  "name": "@yapyak/doc-compiler",
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "build": "tsdown",
-    "test": "pnpm -w vitest --run --project=@yapyak/doc-extractor",
+    "test": "pnpm -w vitest --run --project=@yapyak/doc-compiler",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

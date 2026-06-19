@@ -21,7 +21,7 @@
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-start": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "@yapyak/doc-extractor": "workspace:*",
+    "@yapyak/doc-compiler": "workspace:*",
     "@yapyak/react": "workspace:*",
     "@yapyak/tanstack-start": "workspace:*",
     "@yapyak/vite": "workspace:*",

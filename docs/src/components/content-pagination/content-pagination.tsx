@@ -1,4 +1,4 @@
-import type { Page } from '@yapyak/doc-extractor';
+import type { Page } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#components/box';
 
 import { Link } from '@tanstack/react-router';

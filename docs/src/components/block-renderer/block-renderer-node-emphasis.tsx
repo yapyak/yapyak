@@ -1,4 +1,4 @@
-import type { EmphasisBlock } from '@yapyak/doc-extractor';
+import type { EmphasisBlock } from '@yapyak/doc-compiler';
 
 import { Box } from '#components/box';
 

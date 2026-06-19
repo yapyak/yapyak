@@ -1,4 +1,4 @@
-import type { EyebrowBlock } from '@yapyak/doc-extractor';
+import type { EyebrowBlock } from '@yapyak/doc-compiler';
 
 import { Box } from '#components/box';
 

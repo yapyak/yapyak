@@ -1,4 +1,4 @@
-import type { OptionsRegistry } from '@yapyak/doc-extractor';
+import type { OptionsRegistry } from '@yapyak/doc-compiler';
 import type { ReactNode } from 'react';
 
 import {
@@ -9,7 +9,7 @@ import {
   useState,
 } from 'react';
 
-import { doc } from 'virtual:doc-extractor';
+import { doc } from 'virtual:doc-compiler';
 
 type OptionsContextValue = {
   get: (groupId: string) => string;

@@ -25,7 +25,7 @@ import {
 import { Wordmark } from '#components/wordmark';
 import { assetUrl } from '#utils/asset';
 
-import { doc } from 'virtual:doc-extractor';
+import { doc } from 'virtual:doc-compiler';
 
 export const Route = createRootRoute({
   component: Component,

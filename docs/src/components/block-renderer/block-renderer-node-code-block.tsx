@@ -1,4 +1,4 @@
-import type { CodeBlock as CodeBlockData } from '@yapyak/doc-extractor';
+import type { CodeBlock as CodeBlockData } from '@yapyak/doc-compiler';
 
 import { CodeBlock } from '#components/code-block';
 

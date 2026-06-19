@@ -1,4 +1,4 @@
-import type { TableBlock } from '@yapyak/doc-extractor';
+import type { TableBlock } from '@yapyak/doc-compiler';
 
 import { Box } from '#components/box';
 

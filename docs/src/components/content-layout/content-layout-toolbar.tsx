@@ -1,4 +1,4 @@
-import type { Page } from '@yapyak/doc-extractor';
+import type { Page } from '@yapyak/doc-compiler';
 import type { ReactNode } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -11,7 +11,7 @@ import { OutlineIcon } from '#components/outline-icon';
 
 import { useContentLayout } from './content-layout';
 import styles from './content-layout-toolbar.module.css';
-import { doc } from 'virtual:doc-extractor';
+import { doc } from 'virtual:doc-compiler';
 
 export type ContentLayoutToolbarProps = {
   children: ReactNode;

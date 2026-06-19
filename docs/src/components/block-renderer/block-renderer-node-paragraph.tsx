@@ -1,4 +1,4 @@
-import type { ParagraphBlock } from '@yapyak/doc-extractor';
+import type { ParagraphBlock } from '@yapyak/doc-compiler';
 
 import { Box } from '#components/box';
 

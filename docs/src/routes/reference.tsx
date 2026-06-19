@@ -1,12 +1,12 @@
 import { Outlet, createFileRoute, getRouteApi } from '@tanstack/react-router';
-import { getHeadings } from '@yapyak/doc-extractor';
+import { getHeadings } from '@yapyak/doc-compiler';
 import { useMemo } from 'react';
 
 import { ContentAnchorNavigation } from '#components/content-anchor-navigation';
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
 
-import { doc } from 'virtual:doc-extractor';
+import { doc } from 'virtual:doc-compiler';
 
 const splatRoute = getRouteApi('/reference/$');
 

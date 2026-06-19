@@ -1,4 +1,4 @@
-import type { TextBlock } from '@yapyak/doc-extractor';
+import type { TextBlock } from '@yapyak/doc-compiler';
 
 export type BlockRendererNodeTextProps = {
   block: TextBlock;

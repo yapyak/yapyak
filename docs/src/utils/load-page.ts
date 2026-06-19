@@ -1,8 +1,8 @@
-import type { Entry, Page } from '@yapyak/doc-extractor';
+import type { Entry, Page } from '@yapyak/doc-compiler';
 
 import { notFound, redirect } from '@tanstack/react-router';
 
-import { doc } from 'virtual:doc-extractor';
+import { doc } from 'virtual:doc-compiler';
 
 export function loadPage(
   collection: string,

@@ -1,4 +1,4 @@
-import type { OnlyBlock } from '@yapyak/doc-extractor';
+import type { OnlyBlock } from '@yapyak/doc-compiler';
 
 import { Box } from '#components/box';
 import { useOptionsContext } from '#components/options';

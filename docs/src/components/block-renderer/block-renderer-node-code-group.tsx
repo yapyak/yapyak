@@ -1,4 +1,4 @@
-import type { CodeGroupBlock } from '@yapyak/doc-extractor';
+import type { CodeGroupBlock } from '@yapyak/doc-compiler';
 
 import { CodeGroup } from '#components/code-group';
 

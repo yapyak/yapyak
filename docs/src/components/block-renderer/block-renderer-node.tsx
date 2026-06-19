@@ -1,4 +1,4 @@
-import type { Block } from '@yapyak/doc-extractor';
+import type { Block } from '@yapyak/doc-compiler';
 
 import { BlockRendererNodeCallout } from './block-renderer-node-callout';
 import { BlockRendererNodeCodeBlock } from './block-renderer-node-code-block';

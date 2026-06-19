@@ -1,6 +1,6 @@
 # yapyak
 
-`yapyak` is a Vite-first i18n library. The runtime translation function is `t()`. The core package publishes **unscoped** as `yapyak`. Framework adapters, translator providers, and the Vite plugin publish as **public** scoped packages under `@yapyak/*` (e.g. `@yapyak/react`, `@yapyak/vite`, `@yapyak/anthropic`). Internal-only workspace packages are also `@yapyak/*` but marked `private` — `@yapyak/typescript-config`, `@yapyak/tsdown-config`, `@yapyak/vitest-config`, `@yapyak/doc-extractor`, `@yapyak/docs`.
+`yapyak` is a Vite-first i18n library. The runtime translation function is `t()`. The core package publishes **unscoped** as `yapyak`. Framework adapters, translator providers, and the Vite plugin publish as **public** scoped packages under `@yapyak/*` (e.g. `@yapyak/react`, `@yapyak/vite`, `@yapyak/anthropic`). Internal-only workspace packages are also `@yapyak/*` but marked `private` — `@yapyak/typescript-config`, `@yapyak/tsdown-config`, `@yapyak/vitest-config`, `@yapyak/doc-compiler`, `@yapyak/docs`.
 
 ## Project layout
 
@@ -11,7 +11,7 @@ This is a multi-package monorepo, not a single library.
 - `packages/{react,react-router,vue,svelte,sveltekit,tanstack-start,astro}/` — framework adapters (`@yapyak/<framework>`)
 - `packages/{anthropic,gemini,ollama,openai}/` — LLM translator providers (`@yapyak/<provider>`)
 - `packages/{typescript-config,tsdown-config,vitest-config}/` — shared build/test config, private (`@yapyak/*`)
-- `packages/doc-extractor/` — `@yapyak/doc-extractor`, private doc-extraction tooling
+- `packages/doc-compiler/` — `@yapyak/doc-compiler`, private doc-compilation tooling
 - `docs/` — `@yapyak/docs`, Vite + TanStack Start docs site, private
 - `examples/*` — minimal demos named by their stack, e.g. `react-tanstack-start-cookie`, `svelte-sveltekit-url`, `vue-vanilla-local-storage`, `astro-cookie`
 

@@ -5,11 +5,11 @@ import { buildManifest } from './build/manifest';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 
-const VIRTUAL_ID = 'virtual:doc-extractor';
-const RESOLVED_ID = '\0virtual:doc-extractor';
+const VIRTUAL_ID = 'virtual:doc-compiler';
+const RESOLVED_ID = '\0virtual:doc-compiler';
 const REBUILD_DEBOUNCE_MS = 200;
 
-export function docExtractor(config: Config): Plugin {
+export function docCompiler(config: Config): Plugin {
   let outAbsolute = '';
 
   const writeManifestFile = async () => {
@@ -35,7 +35,7 @@ export function docExtractor(config: Config): Plugin {
           invalidateVirtualModule(server);
         } catch (error) {
           server.config.logger.error(
-            `[doc-extractor] rebuild failed: ${String(error)}`,
+            `[doc-compiler] rebuild failed: ${String(error)}`,
           );
         }
       }, REBUILD_DEBOUNCE_MS);
@@ -76,7 +76,7 @@ import {
   getOptions as _getOptions,
   getOptionsGroup as _getOptionsGroup,
   getSidebar as _getSidebar,
-} from '@yapyak/doc-extractor';
+} from '@yapyak/doc-compiler';
 
 export const doc = {
   manifest,
@@ -91,7 +91,7 @@ export const doc = {
 `;
     },
 
-    name: '@yapyak/doc-extractor',
+    name: '@yapyak/doc-compiler',
 
     resolveId(id) {
       if (id === VIRTUAL_ID) {

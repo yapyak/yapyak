@@ -1,4 +1,4 @@
-import type { SidebarGroup, SidebarNode } from '@yapyak/doc-extractor';
+import type { SidebarGroup, SidebarNode } from '@yapyak/doc-compiler';
 import type { ReactNode } from 'react';
 import type { BoxProps } from '#components/box';
 

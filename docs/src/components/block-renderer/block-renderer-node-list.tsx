@@ -1,4 +1,4 @@
-import type { ListBlock } from '@yapyak/doc-extractor';
+import type { ListBlock } from '@yapyak/doc-compiler';
 
 import { Box } from '#components/box';
 

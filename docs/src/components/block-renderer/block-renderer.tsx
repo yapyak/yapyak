@@ -1,4 +1,4 @@
-import type { Block } from '@yapyak/doc-extractor';
+import type { Block } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#components/box';
 
 import { Box } from '#components/box';
