@@ -10,7 +10,7 @@
     padding: var(--spacing-4) var(--spacing-5) var(--spacing-4) var(--spacing-6);
     background-color: var(--callout-background);
     border-radius: var(--border-radius-md);
-    box-shadow: inset 2px 0 0 0 var(--callout-accent);
+    box-shadow: inset 0 0 0 1px var(--callout-border);
 
     .TitleText {
       font-size: var(--font-size-xs);
@@ -29,21 +29,25 @@
     &[data-variant="tip"] {
       --callout-accent: var(--brand);
       --callout-background: color-mix(in oklab, var(--brand) 5%, transparent);
+      --callout-border: color-mix(in oklab, var(--brand) 4%, transparent);
     }
 
     &[data-variant="info"] {
       --callout-accent: var(--accent);
       --callout-background: color-mix(in oklab, var(--accent) 5%, transparent);
+      --callout-border: color-mix(in oklab, var(--accent) 4%, transparent);
     }
 
     &[data-variant="warning"] {
       --callout-accent: var(--warning);
       --callout-background: color-mix(in oklab, var(--warning) 6%, transparent);
+      --callout-border: color-mix(in oklab, var(--warning) 4%, transparent);
     }
 
     &[data-variant="danger"] {
       --callout-accent: var(--danger);
       --callout-background: color-mix(in oklab, var(--danger) 6%, transparent);
+      --callout-border: color-mix(in oklab, var(--danger) 4%, transparent);
     }
   }
 }

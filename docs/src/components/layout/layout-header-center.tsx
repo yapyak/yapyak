@@ -4,7 +4,7 @@ import { Box } from '#components/box';
 
 import styles from './layout-header-center.module.css';
 
-export interface LayoutHeaderCenterProps extends BoxProps {}
+export type LayoutHeaderCenterProps = BoxProps;
 
 export function LayoutHeaderCenter(props: LayoutHeaderCenterProps) {
   const { className, ...restProps } = props;

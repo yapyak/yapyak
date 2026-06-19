@@ -4,7 +4,7 @@ import { Box } from '#components/box';
 
 import styles from './layout-footer.module.css';
 
-export interface LayoutFooterProps extends BoxProps<'footer'> {}
+export type LayoutFooterProps = BoxProps<'footer'>;
 
 export function LayoutFooter(props: LayoutFooterProps) {
   const { className, ...restProps } = props;

@@ -8,10 +8,10 @@ import styles from './callout.module.css';
 
 export type CalloutVariant = 'tip' | 'info' | 'warning' | 'danger';
 
-export interface CalloutProps extends BoxProps<'aside'> {
+export type CalloutProps = BoxProps<'aside'> & {
   title?: string;
   variant: CalloutVariant;
-}
+};
 
 export function Callout(props: CalloutProps) {
   const { children, className, title, variant, ...restProps } = props;

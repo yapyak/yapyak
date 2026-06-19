@@ -9,9 +9,9 @@ import { CopyIcon } from '#components/copy-icon';
 
 import styles from './code-block-copy-button.module.css';
 
-export interface CodeBlockCopyButtonProps extends BoxProps<'button'> {
+export type CodeBlockCopyButtonProps = BoxProps<'button'> & {
   source: string;
-}
+};
 
 const RESET_DELAY_MS = 1500;
 

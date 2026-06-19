@@ -4,7 +4,7 @@ import { Box } from '#components/box';
 
 import styles from './content-layout-sidebar.module.css';
 
-export interface ContentLayoutSidebarProps extends BoxProps<'aside'> {}
+export type ContentLayoutSidebarProps = BoxProps<'aside'>;
 
 export function ContentLayoutSidebar(props: ContentLayoutSidebarProps) {
   const { className, ...restProps } = props;

@@ -15,7 +15,7 @@ import { LayoutHeaderEnd } from './layout-header-end';
 import { LayoutHeaderMenuButton } from './layout-header-menu-button';
 import { LayoutHeaderStart } from './layout-header-start';
 
-export interface LayoutHeaderProps extends BoxProps<'header'> {}
+export type LayoutHeaderProps = BoxProps<'header'>;
 
 export function LayoutHeader(props: LayoutHeaderProps) {
   const { children, className, ...restProps } = props;

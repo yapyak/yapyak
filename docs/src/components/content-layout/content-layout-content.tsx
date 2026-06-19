@@ -4,7 +4,7 @@ import { Box } from '#components/box';
 
 import styles from './content-layout-content.module.css';
 
-export interface ContentLayoutContentProps extends BoxProps<'main'> {}
+export type ContentLayoutContentProps = BoxProps<'main'>;
 
 export function ContentLayoutContent(props: ContentLayoutContentProps) {
   const { children, className, ...restProps } = props;

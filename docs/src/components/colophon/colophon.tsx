@@ -8,7 +8,7 @@ import { assetUrl } from '#utils/asset';
 
 import styles from './colophon.module.css';
 
-export interface ColophonProps extends BoxProps {}
+export type ColophonProps = BoxProps;
 
 export function Colophon(props: ColophonProps) {
   const { className, ...restProps } = props;

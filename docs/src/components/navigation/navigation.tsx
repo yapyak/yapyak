@@ -8,7 +8,7 @@ import { Box } from '#components/box';
 import styles from './navigation.module.css';
 import { NavigationLink } from './navigation-link';
 
-export interface NavigationProps extends BoxProps<'nav'> {}
+export type NavigationProps = BoxProps<'nav'>;
 
 type IndicatorState = {
   height: number;

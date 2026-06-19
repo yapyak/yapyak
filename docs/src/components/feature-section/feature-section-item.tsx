@@ -8,9 +8,9 @@ import styles from './feature-section-item.module.css';
 
 const CODE_PATTERN = /`([^`]+)`|t(?:\.(?:at|in))?\([^)]*\)/g;
 
-export interface FeatureSectionItemProps extends BoxProps<'li'> {
+export type FeatureSectionItemProps = BoxProps<'li'> & {
   feature: Feature;
-}
+};
 
 export function FeatureSectionItem(props: FeatureSectionItemProps) {
   const { className, feature, ...restProps } = props;

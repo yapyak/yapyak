@@ -7,7 +7,7 @@ import { LayoutFooter } from './layout-footer';
 import { LayoutHeader } from './layout-header';
 import { LayoutMain } from './layout-main';
 
-export interface LayoutProps extends BoxProps {}
+export type LayoutProps = BoxProps;
 
 export function Layout(props: LayoutProps) {
   const { children, className, ...restProps } = props;

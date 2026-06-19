@@ -8,13 +8,13 @@ import { tokenize } from '#utils/tokenize';
 import styles from './code-block.module.css';
 import { CodeBlockCopyButton } from './code-block-copy-button';
 
-export interface CodeBlockProps extends BoxProps {
+export type CodeBlockProps = BoxProps & {
   bare?: boolean;
   label?: string;
   language?: string;
   path?: string;
   source: string;
-}
+};
 
 const SUPPORTED_LANGUAGES: Set<string> = new Set<Language>([
   'tsx',

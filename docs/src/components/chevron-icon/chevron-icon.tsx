@@ -1,8 +1,8 @@
 import type { SVGProps } from 'react';
 
-export interface ChevronIconProps extends SVGProps<SVGSVGElement> {
+export type ChevronIconProps = SVGProps<SVGSVGElement> & {
   direction?: 'down' | 'left' | 'right' | 'up';
-}
+};
 
 const ROTATION_MAP: Record<
   NonNullable<ChevronIconProps['direction']>,

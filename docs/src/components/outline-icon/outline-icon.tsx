@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react';
 
-export interface OutlineIconProps extends SVGProps<SVGSVGElement> {}
+export type OutlineIconProps = SVGProps<SVGSVGElement>;
 
 export function OutlineIcon(props: OutlineIconProps) {
   return (

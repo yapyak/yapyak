@@ -8,10 +8,10 @@ import { Box } from '#components/box';
 
 import styles from './content-pagination.module.css';
 
-export interface ContentPaginationProps extends BoxProps<'nav'> {
+export type ContentPaginationProps = BoxProps<'nav'> & {
   nextPage?: Page;
   previousPage?: Page;
-}
+};
 
 export function ContentPagination(props: ContentPaginationProps) {
   const { className, nextPage, previousPage, ...restProps } = props;

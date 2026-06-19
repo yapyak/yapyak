@@ -4,7 +4,7 @@ import { Box } from '#components/box';
 
 import styles from './layout-main.module.css';
 
-export interface LayoutMainProps extends BoxProps<'main'> {}
+export type LayoutMainProps = BoxProps<'main'>;
 
 export function LayoutMain(props: LayoutMainProps) {
   const { className, ...restProps } = props;

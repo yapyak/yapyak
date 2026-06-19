@@ -4,7 +4,7 @@ import { Box } from '#components/box';
 
 import styles from './content-layout-outline.module.css';
 
-export interface ContentLayoutOutlineProps extends BoxProps<'aside'> {}
+export type ContentLayoutOutlineProps = BoxProps<'aside'>;
 
 export function ContentLayoutOutline(props: ContentLayoutOutlineProps) {
   const { className, ...restProps } = props;

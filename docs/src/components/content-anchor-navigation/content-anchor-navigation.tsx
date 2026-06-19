@@ -20,9 +20,9 @@ const HEADER_OFFSET = 88;
 const SCROLL_GAP = 24;
 const ACTIVE_LINE_PX = HEADER_OFFSET + SCROLL_GAP;
 
-export interface ContentAnchorNavigationProps extends BoxProps<'nav'> {
+export type ContentAnchorNavigationProps = BoxProps<'nav'> & {
   headings: HeadingEntry[];
-}
+};
 
 export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
   const { className, headings, ...restProps } = props;

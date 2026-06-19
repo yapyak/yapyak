@@ -11,7 +11,7 @@ import { ContentLayoutOutline } from './content-layout-outline';
 import { ContentLayoutSidebar } from './content-layout-sidebar';
 import { ContentLayoutToolbar } from './content-layout-toolbar';
 
-export interface ContentLayoutProps extends BoxProps {}
+export type ContentLayoutProps = BoxProps;
 
 type ContentLayoutContextValue = {
   closeSidebar: () => void;

@@ -4,7 +4,7 @@ import { Box } from '#components/box';
 
 import styles from './wordmark.module.css';
 
-export interface WordmarkProps extends BoxProps<'span'> {}
+export type WordmarkProps = BoxProps<'span'>;
 
 export function Wordmark(props: WordmarkProps) {
   const { className, ...restProps } = props;

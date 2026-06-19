@@ -50,13 +50,13 @@ export const FRAMEWORKS: [
   },
 ];
 
-export interface HeroDemoEditorProps extends BoxProps {
+export type HeroDemoEditorProps = BoxProps & {
   framework: Framework;
   onFrameworkChange: (framework: Framework) => void;
   saving: boolean;
   source: string;
   typing: boolean;
-}
+};
 
 const CARET_MARKER = 'CARET';
 const T_NAME = 't';

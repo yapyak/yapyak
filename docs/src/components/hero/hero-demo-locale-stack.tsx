@@ -8,12 +8,12 @@ import { LOCALES } from '#utils/hero-demo-scenes';
 import { HeroDemoLocaleFlag } from './hero-demo-locale-flag';
 import styles from './hero-demo-locale-stack.module.css';
 
-export interface HeroDemoLocaleStackProps extends BoxProps {
+export type HeroDemoLocaleStackProps = BoxProps & {
   receiving: boolean;
   savedSource: string;
   shimmering: Set<LocaleCode>;
   translations: Record<LocaleCode, string>;
-}
+};
 
 export function HeroDemoLocaleStack(props: HeroDemoLocaleStackProps) {
   const {

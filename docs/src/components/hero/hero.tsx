@@ -8,10 +8,10 @@ import { Box } from '#components/box';
 import styles from './hero.module.css';
 import { HeroDemo } from './hero-demo';
 
-export interface HeroProps extends BoxProps<'section'> {
+export type HeroProps = BoxProps<'section'> & {
   description: string;
   heading: string;
-}
+};
 
 export function Hero(props: HeroProps) {
   const { className, description, heading, ...restProps } = props;

@@ -10,7 +10,7 @@ import styles from './hero-demo.module.css';
 import { HeroDemoEditor } from './hero-demo-editor';
 import { HeroDemoLocaleStack } from './hero-demo-locale-stack';
 
-export interface HeroDemoProps extends BoxProps {}
+export type HeroDemoProps = BoxProps;
 
 export function HeroDemo(props: HeroDemoProps) {
   const { className, ...restProps } = props;

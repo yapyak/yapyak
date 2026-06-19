@@ -4,7 +4,7 @@ import { Box } from '#components/box';
 
 import styles from './icon-link.module.css';
 
-export interface IconLinkProps extends BoxProps<'a'> {}
+export type IconLinkProps = BoxProps<'a'>;
 
 export function IconLink(props: IconLinkProps) {
   const { className, ...restProps } = props;

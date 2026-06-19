@@ -7,9 +7,9 @@ import styles from './content-navigation.module.css';
 import { ContentNavigationGroup } from './content-navigation-group';
 import { ContentNavigationLink } from './content-navigation-link';
 
-export interface ContentNavigationProps extends BoxProps<'nav'> {
+export type ContentNavigationProps = BoxProps<'nav'> & {
   tree: SidebarNode[];
-}
+};
 
 export function ContentNavigation(props: ContentNavigationProps) {
   const { className, tree, ...restProps } = props;

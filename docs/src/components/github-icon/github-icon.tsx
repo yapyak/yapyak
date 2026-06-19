@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react';
 
-export interface GithubIconProps extends SVGProps<SVGSVGElement> {}
+export type GithubIconProps = SVGProps<SVGSVGElement>;
 
 export function GithubIcon(props: GithubIconProps) {
   return (

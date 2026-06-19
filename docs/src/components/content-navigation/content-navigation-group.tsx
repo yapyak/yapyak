@@ -6,10 +6,10 @@ import { ContentNavigationGroupCollapsible } from './content-navigation-group-co
 import { ContentNavigationGroupStatic } from './content-navigation-group-static';
 import { ContentNavigationLink } from './content-navigation-link';
 
-export interface ContentNavigationGroupProps extends BoxProps {
+export type ContentNavigationGroupProps = BoxProps & {
   depth: number;
   node: SidebarGroup;
-}
+};
 
 export function ContentNavigationGroup(props: ContentNavigationGroupProps) {
   if (props.node.collapsible) {

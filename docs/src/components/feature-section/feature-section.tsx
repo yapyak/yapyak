@@ -13,7 +13,7 @@ export type Feature = {
   title: string;
 };
 
-export interface FeatureSectionProps extends BoxProps<'section'> {}
+export type FeatureSectionProps = BoxProps<'section'>;
 
 export function FeatureSection(props: FeatureSectionProps) {
   const { className, ...restProps } = props;

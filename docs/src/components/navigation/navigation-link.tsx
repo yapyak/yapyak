@@ -6,7 +6,7 @@ import { mergeClassNames } from '#utils/merge-class-names';
 
 import styles from './navigation-link.module.css';
 
-export interface NavigationLinkProps extends ComponentProps<typeof Link> {}
+export type NavigationLinkProps = ComponentProps<typeof Link>;
 
 export function NavigationLink(props: NavigationLinkProps) {
   const { className, ...restProps } = props;

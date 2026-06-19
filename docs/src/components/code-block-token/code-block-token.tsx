@@ -5,9 +5,9 @@ import { Box } from '#components/box';
 
 import styles from './code-block-token.module.css';
 
-export interface CodeBlockTokenProps extends BoxProps<'span'> {
+export type CodeBlockTokenProps = BoxProps<'span'> & {
   type: TokenType;
-}
+};
 
 export function CodeBlockToken(props: CodeBlockTokenProps) {
   const { className, type, ...restProps } = props;

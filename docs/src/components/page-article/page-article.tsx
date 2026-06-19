@@ -8,9 +8,9 @@ import { ContentPagination } from '#components/content-pagination';
 import styles from './page-article.module.css';
 import { doc } from 'virtual:doc-compiler';
 
-export interface PageArticleProps extends BoxProps<'article'> {
+export type PageArticleProps = BoxProps<'article'> & {
   page: Page;
-}
+};
 
 export function PageArticle(props: PageArticleProps) {
   const { className, page, ...restProps } = props;
