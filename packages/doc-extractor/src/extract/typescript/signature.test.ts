@@ -68,6 +68,15 @@ describe('buildOverload', () => {
       },
     ]);
   });
+
+  it('preserves a parameter default value in the signature text', () => {
+    const node = parseFunction(
+      'export function greet(options: { name: string } = { name: "Hello" }): string { return options.name; }',
+    );
+    expect(buildOverload(node).signature).toBe(
+      'export function greet(options: { name: string } = { name: "Hello" }): string',
+    );
+  });
 });
 
 describe('buildCallSignature', () => {

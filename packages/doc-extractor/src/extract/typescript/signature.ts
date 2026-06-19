@@ -2,6 +2,7 @@ import type {
   ConstructorDeclaration,
   FunctionDeclaration,
   MethodSignature,
+  Node,
   SignatureDeclaration,
 } from 'typescript';
 
@@ -16,7 +17,7 @@ export function buildOverload(
   return {
     parameters: extractParameters(node, node.parameters),
     returnType: buildTypeTokens(node.type),
-    signature: stripBody(node.getText()),
+    signature: stripBody(node, node.body),
     typeParameters: extractTypeParameters(node.typeParameters),
   };
 }
@@ -27,15 +28,19 @@ export function buildCallSignature(
   return {
     parameters: extractParameters(node, node.parameters),
     returnType: buildTypeTokens(node.type),
-    signature: stripBody(node.getText()).replace(/;$/, ''),
+    signature: stripBody(node, undefined).replace(/;$/, ''),
     typeParameters: extractTypeParameters(node.typeParameters),
   };
 }
 
-function stripBody(text: string): string {
-  const braceIndex = text.indexOf('{');
-  if (braceIndex === -1) {
+function stripBody(node: Node, body: Node | undefined): string {
+  const text = node.getText();
+  if (body === undefined) {
     return text.trim();
   }
-  return text.slice(0, braceIndex).trim();
+  const offset = body.getStart() - node.getStart();
+  if (offset < 0 || offset > text.length) {
+    return text.trim();
+  }
+  return text.slice(0, offset).trim();
 }
