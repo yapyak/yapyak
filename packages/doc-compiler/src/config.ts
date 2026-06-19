@@ -21,6 +21,7 @@ export type MarkdownSource = {
 export type TypeScriptSource = {
   packages: TypeScriptPackage[];
   source: 'typescript';
+  supplements?: Supplement[];
 };
 
 export type TypeScriptPackage = {
@@ -30,6 +31,14 @@ export type TypeScriptPackage = {
   name: string;
   root: string;
   subpaths?: string[];
+};
+
+export type Supplement = {
+  collapsible?: boolean;
+  expanded?: boolean;
+  label: string;
+  root: string;
+  slug: string;
 };
 
 export type OptionsRegistry = Record<string, OptionsGroup>;

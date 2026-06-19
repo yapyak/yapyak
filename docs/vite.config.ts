@@ -121,6 +121,14 @@ export default defineConfig({
             subpaths: pkg.subpaths,
           })),
           source: 'typescript',
+          supplements: [
+            {
+              collapsible: true,
+              label: 'Diagnostics',
+              root: resolve(import.meta.dirname, 'content/diagnostics'),
+              slug: 'diagnostics',
+            },
+          ],
         },
       },
       options: {

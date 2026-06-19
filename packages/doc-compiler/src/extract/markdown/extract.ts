@@ -15,12 +15,19 @@ type ExtractMarkdownResult = {
 export async function extractMarkdown(
   root: string,
   collectionName: string,
+  pathPrefix?: string,
 ): Promise<ExtractMarkdownResult> {
   const files = await walkMarkdownFiles(root);
   const pages = new Map<string, Page>();
   const redirects = new Map<string, string>();
   for (const absolutePath of files) {
-    const path = filePathToRoutePath(absolutePath, root);
+    const filePath = filePathToRoutePath(absolutePath, root);
+    const path =
+      pathPrefix === undefined || pathPrefix === ''
+        ? filePath
+        : filePath === ''
+          ? pathPrefix
+          : `${pathPrefix}/${filePath}`;
     const href =
       path === '' ? `/${collectionName}` : `/${collectionName}/${path}`;
     const page = await loadMarkdownPage(absolutePath, href);
@@ -197,6 +204,9 @@ function resolvePageRedirectTarget(
 function filePathToRoutePath(absolutePath: string, root: string): string {
   const relativePath = relative(root, absolutePath).split(sep).join('/');
   const withoutExtension = relativePath.replace(/\.md$/, '');
+  if (withoutExtension === 'index') {
+    return '';
+  }
   return withoutExtension.replace(/\/index$/, '');
 }
 

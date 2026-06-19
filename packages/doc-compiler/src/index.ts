@@ -72,6 +72,7 @@ export type {
   OptionsGroup,
   OptionsRegistry,
   SourceUrlConfig,
+  Supplement,
   TypeScriptSource,
 } from './config';
 

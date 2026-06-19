@@ -4,6 +4,7 @@ import type {
   Config,
   OptionsRegistry,
   SourceUrlConfig,
+  Supplement,
   TypeScriptPackage,
 } from '../config';
 
@@ -19,6 +20,7 @@ import { slugify } from '../slugify';
 import { encodeSymbolSegment } from '../symbol-path';
 import { buildMarkdownSidebar } from './markdown-sidebar';
 import { buildPackageRoot } from './package-root';
+import { buildSupplement } from './supplement';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -116,6 +118,7 @@ async function buildCollection(
   return buildTypeScriptCollection(
     collectionName,
     config.packages,
+    config.supplements,
     symbols,
     sourceUrl,
   );
@@ -148,6 +151,7 @@ async function buildMarkdownCollection(
 async function buildTypeScriptCollection(
   collectionName: string,
   packages: TypeScriptPackage[],
+  supplements: Supplement[] | undefined,
   symbols: Record<string, SymbolEntry>,
   sourceUrl: SourceUrlConfig | undefined,
 ): Promise<Collection> {
@@ -265,6 +269,24 @@ async function buildTypeScriptCollection(
     groupBucket.push(packageNode);
   }
 
+  const supplementNodes: SidebarNode[] = [];
+  for (const supplement of supplements ?? []) {
+    const result = await buildSupplement({
+      collectionName,
+      supplement,
+    });
+    for (const [pagePath, page] of result.pages) {
+      pages[pagePath] = page;
+    }
+    for (const [pagePath, target] of result.redirects) {
+      redirects[pagePath] = target;
+    }
+    for (const [symbolKey, entry] of Object.entries(result.symbols)) {
+      symbols[symbolKey] = entry;
+    }
+    supplementNodes.push(result.group);
+  }
+
   const sidebar: SidebarNode[] = [
     ...ungroupedNodes,
   ];
@@ -277,6 +299,7 @@ async function buildTypeScriptCollection(
       type: 'group',
     });
   }
+  sidebar.push(...supplementNodes);
 
   return {
     pages,
