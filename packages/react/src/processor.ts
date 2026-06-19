@@ -5,7 +5,7 @@ import { createProcessor } from 'yapyak/processor';
 const COMPONENT_NAME_RX = /^[A-Z]|^use[A-Z]/;
 
 /** Options for the React processor. */
-export type ReactProcessorOptions = {
+export type ReactOptions = {
   /**
    * Enable React Server Components mode.
    *
@@ -52,7 +52,7 @@ export type ReactProcessorOptions = {
  * });
  * ```
  */
-export function react(options: ReactProcessorOptions = {}): Processor {
+export function react(options: ReactOptions = {}): Processor {
   return createProcessor({
     extensions: [
       '.tsx',
