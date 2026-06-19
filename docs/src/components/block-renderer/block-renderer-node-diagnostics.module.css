@@ -21,6 +21,14 @@
     &:not(:last-child) {
       border-bottom: var(--px) solid var(--rule);
     }
+
+    &[data-status="ok"] {
+      background-color: color-mix(in oklab, var(--brand) 3%, transparent);
+    }
+
+    &[data-status="error"] {
+      background-color: color-mix(in oklab, var(--danger) 3%, transparent);
+    }
   }
 
   .Indicator {
