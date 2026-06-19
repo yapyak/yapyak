@@ -17,6 +17,7 @@ import { GithubIcon } from '#components/github-icon';
 import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
 import { Navigation } from '#components/navigation';
+import { NotFoundView } from '#components/not-found-view';
 import {
   DocOptions,
   OptionsProvider,
@@ -85,6 +86,7 @@ export const Route = createRootRoute({
       ],
     };
   },
+  notFoundComponent: NotFoundComponent,
   shellComponent: ShellComponent,
 });
 
@@ -150,4 +152,8 @@ function ShellComponent(props: ShellComponentProps) {
       </body>
     </html>
   );
+}
+
+function NotFoundComponent() {
+  return <NotFoundView />;
 }

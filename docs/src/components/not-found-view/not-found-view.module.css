@@ -1,0 +1,47 @@
+@layer components {
+  .NotFoundView {
+    display: grid;
+    place-self: center;
+    place-items: center;
+
+    width: 100%;
+    padding: var(--spacing-12) var(--spacing-4);
+
+    @media (min-width: 1024px) {
+      padding: var(--spacing-24) var(--spacing-8);
+    }
+
+    .Stack {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-2);
+      align-items: center;
+      text-align: center;
+    }
+
+    .Heading {
+      font-size: var(--font-size-4xl);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-none);
+      color: var(--foreground);
+      letter-spacing: var(--letter-spacing-tightest);
+
+      @media (min-width: 640px) {
+        font-size: var(--font-size-5xl);
+      }
+
+      @media (min-width: 1024px) {
+        font-size: var(--font-size-6xl);
+      }
+    }
+
+    .Subheading {
+      font-size: var(--font-size-md);
+      color: var(--foreground-soft);
+
+      @media (min-width: 1024px) {
+        font-size: var(--font-size-lg);
+      }
+    }
+  }
+}
