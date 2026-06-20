@@ -4,20 +4,6 @@
     inset: auto;
     top: anchor(bottom);
     flex-direction: column;
-
-    &[data-align="start"] {
-      left: anchor(left);
-    }
-
-    &[data-align="end"] {
-      right: anchor(right);
-    }
-
-    &[data-align="center"] {
-      left: anchor(center);
-      translate: -50% 0;
-    }
-
     gap: var(--spacing-4);
     min-width: 200px;
     padding: var(--spacing-3);
@@ -34,6 +20,24 @@
       display var(--transition) allow-discrete,
       overlay var(--transition) allow-discrete;
     will-change: opacity;
+
+    position-try-fallbacks:
+      flip-block,
+      flip-inline,
+      flip-block flip-inline;
+
+    &[data-align="start"] {
+      left: anchor(left);
+    }
+
+    &[data-align="end"] {
+      right: anchor(right);
+    }
+
+    &[data-align="center"] {
+      left: anchor(center);
+      translate: -50% 0;
+    }
 
     &:popover-open {
       display: flex;
