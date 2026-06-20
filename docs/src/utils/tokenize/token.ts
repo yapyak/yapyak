@@ -308,14 +308,22 @@ export function scanToken(
     const match = /^[A-Za-z_$][\w$]*/.exec(code.slice(index));
     if (match) {
       const value = match[0];
+      const next = code[index + value.length];
+      const isMemberAccess =
+        previous?.type === 'punct' && previous.value === '.';
+      const isObjectPropertyKey =
+        next === ':' &&
+        previous?.type === 'punct' &&
+        (previous.value === '{' || previous.value === ',');
+      const isContextualPlain = isMemberAccess || isObjectPropertyKey;
       let type: TokenType = 'plain';
-      if (KEYWORDS.has(value)) {
+      if (!isContextualPlain && KEYWORDS.has(value)) {
         type = 'keyword';
-      } else if (LITERALS.has(value)) {
+      } else if (!isContextualPlain && LITERALS.has(value)) {
         type = 'literal';
-      } else if (BUILTIN_TYPES.has(value)) {
+      } else if (!isContextualPlain && BUILTIN_TYPES.has(value)) {
         type = 'type';
-      } else if (code[index + value.length] === '(') {
+      } else if (next === '(') {
         type = 'fn-call';
       }
       return {

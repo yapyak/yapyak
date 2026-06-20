@@ -31,7 +31,7 @@ export function tokenize(code: string, language: Language): Token[] {
     return tokenizeYaml(code);
   }
   if (language === 'json') {
-    return tokenizeJson(code);
+    return expandTxSourceTags(expandTxSourcePlaceholders(tokenizeJson(code)));
   }
   if (language === 'translation') {
     return expandTxSourceTags(
