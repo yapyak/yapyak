@@ -25,7 +25,6 @@
       &:hover {
         color: var(--foreground);
         background-color: var(--surface);
-        backdrop-filter: blur(10px) saturate(180%);
       }
     }
 

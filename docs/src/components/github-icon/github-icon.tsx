@@ -8,6 +8,7 @@ export function GithubIcon(props: GithubIconProps) {
       aria-hidden="true"
       fill="currentColor"
       height="1em"
+      shapeRendering="geometricPrecision"
       viewBox="0 0 24 24"
       width="1em"
       xmlns="http://www.w3.org/2000/svg"

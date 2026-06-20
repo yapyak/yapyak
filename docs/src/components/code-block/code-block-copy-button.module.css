@@ -13,10 +13,9 @@
     color: var(--foreground-softer);
     outline: var(--spacing-2) solid transparent;
     outline-offset: 0;
-    background-color: var(--surface);
+    background-color: var(--canvas);
     border-radius: var(--border-radius-sm);
     box-shadow: var(--shadow-ring-inset);
-    backdrop-filter: blur(10px) saturate(180%);
     transition:
       color var(--transition),
       background-color var(--transition),

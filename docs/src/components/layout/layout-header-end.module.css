@@ -5,7 +5,7 @@
 
     @media (min-width: 1024px) {
       display: flex;
-      gap: var(--spacing-3);
+      gap: var(--spacing-2);
       align-items: center;
     }
   }
