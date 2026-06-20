@@ -61,23 +61,20 @@
     box-shadow: 0 12px 60px 0 #0000007d;
 
     opacity: 0;
-    translate: 0 calc(var(--spacing-1) * -1);
     position-anchor: --doc-options-anchor;
+    will-change: opacity;
     transition:
       opacity var(--transition),
-      translate var(--transition),
       display var(--transition) allow-discrete,
       overlay var(--transition) allow-discrete;
 
     &:popover-open {
       opacity: 1;
-      translate: 0 0;
     }
 
     @starting-style {
       &:popover-open {
         opacity: 0;
-        translate: 0 calc(var(--spacing-1) * -1);
       }
     }
   }
@@ -107,7 +104,7 @@
     align-items: center;
     padding: var(--spacing-2) var(--spacing-3);
     font-family: inherit;
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     color: var(--foreground-soft);
     text-align: left;
