@@ -3,15 +3,13 @@ import { useId } from 'react';
 import { Box } from '#components/box';
 import { CheckIcon } from '#components/check-icon';
 import { ChevronIcon } from '#components/chevron-icon';
-import { FrameworkIcon } from '#components/framework-icon';
-import { PackageManagerIcon } from '#components/package-manager-icon';
+import { OptionDot } from '#components/option-dot';
 
 import styles from './doc-options.module.css';
 import { useOptionsContext } from './options-context';
 import { doc } from 'virtual:doc-compiler';
 
 const PRIMARY_GROUP_ID = 'framework';
-const PACKAGE_MANAGER_GROUP_ID = 'packageManager';
 
 export type DocOptionsProps = {};
 
@@ -36,10 +34,11 @@ export function DocOptions(_props: DocOptionsProps) {
       <Box
         as="button"
         className={styles.Trigger}
+        data-option-value={primaryValue}
         popoverTarget={popoverId}
         type="button"
       >
-        <FrameworkIcon name={primaryValue} />
+        <OptionDot />
         <Box
           as="span"
           className={styles.TriggerLabel}
@@ -72,16 +71,12 @@ export function DocOptions(_props: DocOptionsProps) {
                     as="button"
                     className={styles.Option}
                     data-active={option.value === active}
+                    data-option-value={option.value}
                     key={option.value}
                     onClick={() => set(groupId, option.value)}
                     type="button"
                   >
-                    {groupId === PRIMARY_GROUP_ID && (
-                      <FrameworkIcon name={option.value} />
-                    )}
-                    {groupId === PACKAGE_MANAGER_GROUP_ID && (
-                      <PackageManagerIcon name={option.value} />
-                    )}
+                    <OptionDot />
                     <Box
                       as="span"
                       className={styles.OptionLabel}

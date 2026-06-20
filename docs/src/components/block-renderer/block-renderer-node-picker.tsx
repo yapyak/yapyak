@@ -1,6 +1,7 @@
 import type { PickerBlock } from '@yapyak/doc-compiler';
 
 import { Box } from '#components/box';
+import { OptionDot } from '#components/option-dot';
 import { useOptionsContext } from '#components/options';
 
 import styles from './block-renderer-node-picker.module.css';
@@ -37,11 +38,13 @@ export function BlockRendererNodePicker(props: BlockRendererNodePickerProps) {
             as="button"
             className={styles.Option}
             data-active={option.value === active}
+            data-option-value={option.value}
             key={option.value}
             onClick={() => set(block.group, option.value)}
             role="radio"
             type="button"
           >
+            <OptionDot />
             {option.label}
           </Box>
         ))}

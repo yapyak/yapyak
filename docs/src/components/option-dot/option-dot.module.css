@@ -1,0 +1,9 @@
+@layer components {
+  .OptionDot {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    background-color: var(--option-accent, var(--foreground-softer));
+    border-radius: var(--border-radius-full);
+  }
+}

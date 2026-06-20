@@ -11,7 +11,8 @@
     cursor: pointer;
     background-color: transparent;
     border: 0;
-    border-radius: var(--border-radius-full);
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-ring-inset);
     outline: var(--spacing-2) solid transparent;
     outline-offset: 0;
     anchor-name: --doc-options-anchor;
@@ -25,10 +26,7 @@
     @media (hover: hover) {
       &:hover {
         color: var(--foreground);
-        background-color: var(--surface-stronger);
-        box-shadow:
-          inset 0 0 0 var(--px) var(--ring-strong),
-          inset 0 var(--px) var(--ring-strong);
+        background-color: var(--surface);
       }
     }
 
@@ -101,7 +99,6 @@
   .GroupOptions {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-1);
   }
 
   .Option {
@@ -111,26 +108,36 @@
     padding: var(--spacing-2) var(--spacing-3);
     font-family: inherit;
     font-size: var(--font-size-xs);
-    color: var(--foreground);
+    font-weight: var(--font-weight-medium);
+    color: var(--foreground-soft);
     text-align: left;
     cursor: pointer;
-    background: transparent;
+    background-color: transparent;
     border: 0;
     border-radius: var(--border-radius-sm);
+    box-shadow: inset 0 0 0 var(--px) transparent;
     transition:
+      color var(--transition),
       background-color var(--transition),
-      color var(--transition);
+      box-shadow var(--transition),
+      transform var(--transition);
 
     @media (hover: hover) {
-      &:hover {
-        background-color: var(--surface-stronger);
+      &:hover:not([data-active="true"]) {
+        color: var(--foreground);
+        background-color: var(--surface);
+        box-shadow: var(--shadow-ring-inset);
       }
     }
 
+    &:active {
+      transform: scale(0.98);
+    }
+
     &[data-active="true"] {
-      font-weight: var(--font-weight-medium);
-      color: var(--brand-contrast);
-      background: var(--gradient-brand);
+      color: var(--foreground);
+      background-color: var(--surface-stronger);
+      box-shadow: inset 0 0 0 var(--px) var(--ring-stronger);
     }
   }
 
@@ -145,6 +152,6 @@
   }
 
   .Option[data-active="true"] .OptionCheck {
-    color: inherit;
+    color: var(--foreground);
   }
 }

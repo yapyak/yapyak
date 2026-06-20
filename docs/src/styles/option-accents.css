@@ -1,0 +1,37 @@
+:root {
+  --option-accent-react: #61dafb;
+  --option-accent-vue: #41b883;
+  --option-accent-svelte: #ff3e00;
+  --option-accent-astro: #f041ff;
+  --option-accent-pnpm: #f9ad00;
+  --option-accent-npm: #cb3837;
+  --option-accent-bun: #fbf0df;
+}
+
+[data-option-value="react"] {
+  --option-accent: var(--option-accent-react);
+}
+
+[data-option-value="vue"] {
+  --option-accent: var(--option-accent-vue);
+}
+
+[data-option-value="svelte"] {
+  --option-accent: var(--option-accent-svelte);
+}
+
+[data-option-value="astro"] {
+  --option-accent: var(--option-accent-astro);
+}
+
+[data-option-value="pnpm"] {
+  --option-accent: var(--option-accent-pnpm);
+}
+
+[data-option-value="npm"] {
+  --option-accent: var(--option-accent-npm);
+}
+
+[data-option-value="bun"] {
+  --option-accent: var(--option-accent-bun);
+}

@@ -25,6 +25,9 @@
   }
 
   .Option {
+    display: inline-flex;
+    gap: var(--spacing-2);
+    align-items: center;
     padding: var(--spacing-2) var(--spacing-3);
     font-family: inherit;
     font-size: inherit;
@@ -41,13 +44,18 @@
       color var(--transition),
       background-color var(--transition),
       box-shadow var(--transition),
-      outline 400ms;
+      outline 400ms,
+      transform var(--transition);
 
     @media (hover: hover) {
       &:hover:not([data-active]) {
         color: var(--foreground);
         background-color: var(--surface);
       }
+    }
+
+    &:active {
+      transform: scale(0.98);
     }
 
     &:focus-visible {

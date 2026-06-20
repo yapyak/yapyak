@@ -2,4 +2,5 @@
 
 @import url("./reset.css") layer(reset);
 @import url("./tokens.css") layer(tokens);
+@import url("./option-accents.css") layer(tokens);
 @import url("./base.css") layer(base);
