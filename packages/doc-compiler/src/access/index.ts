@@ -22,6 +22,7 @@ export type {
   OutputBlock,
   OutputLine,
   ParagraphBlock,
+  PickerBlock,
   QuoteBlock,
   StrikethroughBlock,
   StrongBlock,

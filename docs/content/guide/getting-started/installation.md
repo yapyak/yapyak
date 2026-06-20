@@ -5,9 +5,9 @@ order: 2
 
 Install yapyak in your project.
 
-{% callout variant="info" %}
-yapyak supports React, Vue, Svelte, and Astro — switch frameworks in the header menu to see the right install guide.
-{% /callout %}
+{% picker group="framework" /%}
+
+{% picker group="packageManager" /%}
 
 ## Requirements
 

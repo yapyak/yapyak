@@ -248,6 +248,13 @@ function toBlocks(node: unknown): Block[] {
           value: getStringAttribute(node.attributes.value) ?? '',
         },
       ];
+    case 'Picker':
+      return [
+        {
+          group: getStringAttribute(node.attributes.group) ?? '',
+          type: 'picker',
+        },
+      ];
     case 'Callout':
       return [
         buildCallout(node.attributes, children),
@@ -641,6 +648,17 @@ const onlyTag: Schema = {
   render: 'Only',
 };
 
+const pickerTag: Schema = {
+  attributes: {
+    group: {
+      required: true,
+      type: String,
+    },
+  },
+  render: 'Picker',
+  selfClosing: true,
+};
+
 const markdocConfig: Config = {
   nodes: {
     document,
@@ -652,6 +670,7 @@ const markdocConfig: Config = {
     diagnostics,
     only: onlyTag,
     output,
+    picker: pickerTag,
     switch: switchTag,
     when: whenTag,
   },

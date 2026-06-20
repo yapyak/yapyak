@@ -43,6 +43,7 @@ export type {
   OutputLine,
   PageEntry,
   ParagraphBlock,
+  PickerBlock,
   QuoteBlock,
   StrikethroughBlock,
   StrongBlock,

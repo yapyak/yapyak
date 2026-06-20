@@ -18,6 +18,7 @@ import { BlockRendererNodeListItem } from './block-renderer-node-list-item';
 import { BlockRendererNodeOnly } from './block-renderer-node-only';
 import { BlockRendererNodeOutput } from './block-renderer-node-output';
 import { BlockRendererNodeParagraph } from './block-renderer-node-paragraph';
+import { BlockRendererNodePicker } from './block-renderer-node-picker';
 import { BlockRendererNodeQuote } from './block-renderer-node-quote';
 import { BlockRendererNodeStrikethrough } from './block-renderer-node-strikethrough';
 import { BlockRendererNodeStrong } from './block-renderer-node-strong';
@@ -78,6 +79,8 @@ export function BlockRendererNode(props: BlockRendererNodeProps) {
       return <BlockRendererNodeOnly block={block} />;
     case 'output':
       return <BlockRendererNodeOutput block={block} />;
+    case 'picker':
+      return <BlockRendererNodePicker block={block} />;
     case 'diagnostics':
       return <BlockRendererNodeDiagnostics block={block} />;
     case 'callout':

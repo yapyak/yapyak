@@ -18,6 +18,7 @@ export type Block =
   | OnlyBlock
   | OutputBlock
   | ParagraphBlock
+  | PickerBlock
   | StrikethroughBlock
   | StrongBlock
   | SwitchBlock
@@ -141,6 +142,11 @@ export type OnlyBlock = {
   group: string;
   type: 'only';
   value: string;
+};
+
+export type PickerBlock = {
+  group: string;
+  type: 'picker';
 };
 
 export type CalloutBlock = {
