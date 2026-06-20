@@ -52,4 +52,31 @@
       letter-spacing: var(--letter-spacing-wide);
     }
   }
+
+  .HeadingLink {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .HashIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-right: var(--spacing-2);
+    margin-left: calc(-1 * (16px + var(--spacing-2)));
+    vertical-align: -2px;
+    color: var(--foreground-softer);
+    opacity: 0;
+    transition:
+      color var(--transition),
+      opacity var(--transition);
+
+    @media (hover: hover) {
+      .BlockRendererNodeHeading:hover & {
+        opacity: 1;
+      }
+    }
+  }
 }

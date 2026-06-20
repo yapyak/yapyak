@@ -1,6 +1,7 @@
 import type { HeadingBlock } from '@yapyak/doc-compiler';
 
 import { Box } from '#components/box';
+import { HashIcon } from '#components/hash-icon';
 
 import { BlockRendererNode } from './block-renderer-node';
 import styles from './block-renderer-node-heading.module.css';
@@ -11,6 +12,15 @@ export type BlockRendererNodeHeadingProps = {
 
 export function BlockRendererNodeHeading(props: BlockRendererNodeHeadingProps) {
   const { block } = props;
+  const isLinkable = block.level >= 2;
+
+  const content = block.children.map((child, index) => (
+    <BlockRendererNode
+      block={child}
+      key={index}
+    />
+  ));
+
   return (
     <Box
       as={headingTag(block.level)}
@@ -18,12 +28,24 @@ export function BlockRendererNodeHeading(props: BlockRendererNodeHeadingProps) {
       data-level={block.level}
       id={block.id}
     >
-      {block.children.map((child, index) => (
-        <BlockRendererNode
-          block={child}
-          key={index}
-        />
-      ))}
+      {isLinkable ? (
+        <Box
+          as="a"
+          className={styles.HeadingLink}
+          href={`#${block.id}`}
+        >
+          <Box
+            aria-hidden="true"
+            as="span"
+            className={styles.HashIcon}
+          >
+            <HashIcon />
+          </Box>
+          {content}
+        </Box>
+      ) : (
+        content
+      )}
     </Box>
   );
 }

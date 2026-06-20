@@ -1,14 +1,7 @@
 import type { HeadingEntry } from '@yapyak/doc-compiler';
-import type { MouseEvent } from 'react';
 import type { BoxProps } from '#components/box';
 
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
 import { Box } from '#components/box';
@@ -126,22 +119,6 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     });
   }, []);
 
-  const handleActivate = useCallback(
-    (event: MouseEvent<HTMLAnchorElement>, id: string) => {
-      event.preventDefault();
-      const element = document.getElementById(id);
-      if (!element) {
-        return;
-      }
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-      window.history.pushState(null, '', `#${id}`);
-    },
-    [],
-  );
-
   if (headings.length === 0) {
     return null;
   }
@@ -165,7 +142,6 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
               heading={heading}
               isActive={activeId === heading.id}
               key={heading.id}
-              onActivate={handleActivate}
               ref={(element) => {
                 if (element) {
                   itemRefs.current.set(heading.id, element);

@@ -8,7 +8,9 @@ Without persistence, the active locale lives only for the current page session â
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 
-export default defineConfig({ persistence: 'cookie' });
+export default defineConfig({
+  persistence: 'cookie'
+});
 ```
 
 That's the shorthand. Each strategy also accepts a configuration object for customizing names, keys, or matching patterns.

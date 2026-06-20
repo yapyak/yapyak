@@ -1,35 +1,31 @@
 import type { HeadingEntry } from '@yapyak/doc-compiler';
-import type { MouseEvent, Ref } from 'react';
+import type { Ref } from 'react';
 
-import { Box } from '#components/box';
+import { Link } from '@tanstack/react-router';
 
 import styles from './content-anchor-navigation-item.module.css';
 
 export type ContentAnchorNavigationItemProps = {
   heading: HeadingEntry;
   isActive: boolean;
-  onActivate: (event: MouseEvent<HTMLAnchorElement>, id: string) => void;
   ref?: Ref<HTMLAnchorElement>;
 };
 
 export function ContentAnchorNavigationItem(
   props: ContentAnchorNavigationItemProps,
 ) {
-  const { heading, isActive, onActivate, ref } = props;
+  const { heading, isActive, ref } = props;
 
   return (
-    <Box
-      as="a"
+    <Link
       className={styles.ContentAnchorNavigationItem}
       data-active={isActive ? '' : undefined}
       data-level={heading.level}
-      href={`#${heading.id}`}
-      onClick={(event: MouseEvent<HTMLAnchorElement>) => {
-        onActivate(event, heading.id);
-      }}
+      hash={heading.id}
       ref={ref}
+      to="."
     >
       {heading.text}
-    </Box>
+    </Link>
   );
 }
