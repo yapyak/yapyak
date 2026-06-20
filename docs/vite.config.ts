@@ -107,11 +107,20 @@ export default defineConfig({
           if (!page.fromCrawl) {
             return true;
           }
+          const basepath = process.env.DOCS_BASEPATH ?? '/';
+          const stripped =
+            basepath === '/'
+              ? page.path
+              : page.path.replace(
+                  new RegExp(`^${basepath.replace(/\/$/, '')}`),
+                  '',
+                );
+          const path = stripped === '' ? '/' : stripped;
           return (
-            page.path === '/' ||
-            page.path.startsWith('/home') ||
-            page.path.startsWith('/guide') ||
-            page.path.startsWith('/reference')
+            path === '/' ||
+            path.startsWith('/home') ||
+            path.startsWith('/guide') ||
+            path.startsWith('/reference')
           );
         },
       },
