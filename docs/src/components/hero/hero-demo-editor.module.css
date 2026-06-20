@@ -106,7 +106,7 @@
     .Code {
       display: block;
       font-family: var(--font-family-mono);
-      font-size: var(--font-size-sm);
+      font-size: var(--font-size-code);
       line-height: var(--line-height-loose);
       white-space: pre;
     }

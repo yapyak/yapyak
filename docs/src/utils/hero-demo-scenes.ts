@@ -30,41 +30,41 @@ export type Scene = {
 };
 
 export const INITIAL_SCENE: Scene = {
-  source: 'Welcome',
+  source: 'Welcome back',
   translations: {
-    de: 'Willkommen',
-    es: 'Bienvenido',
-    ja: 'ようこそ',
-    sv: 'Välkommen',
+    de: 'Willkommen zurück',
+    es: 'Bienvenido de nuevo',
+    ja: 'おかえりなさい',
+    sv: 'Välkommen tillbaka',
   },
 };
 
 export const SCENES: Scene[] = [
   {
-    source: 'Save changes',
+    source: 'Made just for you',
     translations: {
-      de: 'Änderungen speichern',
-      es: 'Guardar cambios',
-      ja: '変更を保存',
-      sv: 'Spara ändringar',
+      de: 'Genau für dich gemacht',
+      es: 'Hecho solo para ti',
+      ja: 'あなただけのために',
+      sv: 'Skapat just för dig',
     },
   },
   {
-    source: 'Your bag is empty',
+    source: 'Continue watching',
     translations: {
-      de: 'Ihr Warenkorb ist leer',
-      es: 'Tu bolsa está vacía',
-      ja: 'カートは空です',
-      sv: 'Din kundvagn är tom',
+      de: 'Weiterschauen',
+      es: 'Continuar viendo',
+      ja: '続きを見る',
+      sv: 'Fortsätt titta',
     },
   },
   {
-    source: 'Continue with Google',
+    source: 'Trending right now',
     translations: {
-      de: 'Mit Google fortfahren',
-      es: 'Continuar con Google',
-      ja: 'Googleで続行',
-      sv: 'Fortsätt med Google',
+      de: 'Gerade im Trend',
+      es: 'Tendencias del momento',
+      ja: '今のトレンド',
+      sv: 'Populärt just nu',
     },
   },
 ];
