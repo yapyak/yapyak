@@ -12,9 +12,9 @@ format.dateTime(new Date(), { dateStyle: 'long' });
 ```
 
 {% output %}
-en: 'June 17, 2026'
-sv: '17 juni 2026'
-de: '17. Juni 2026'
+en-US: 'June 17, 2026'
+sv-SE: '17 juni 2026'
+de-DE: '17. Juni 2026'
 {% /output %}
 
 ## Absolute date and time
@@ -28,7 +28,7 @@ format.dateTime(new Date(), { dateStyle: 'short' });
 ```
 
 {% output %}
-en: '6/17/26'
+en-US: '6/17/26'
 {% /output %}
 
 ```ts
@@ -36,7 +36,7 @@ format.dateTime(new Date(), { dateStyle: 'medium' });
 ```
 
 {% output %}
-en: 'Jun 17, 2026'
+en-US: 'Jun 17, 2026'
 {% /output %}
 
 ```ts
@@ -44,7 +44,7 @@ format.dateTime(new Date(), { dateStyle: 'long' });
 ```
 
 {% output %}
-en: 'June 17, 2026'
+en-US: 'June 17, 2026'
 {% /output %}
 
 ```ts
@@ -52,7 +52,7 @@ format.dateTime(new Date(), { dateStyle: 'full' });
 ```
 
 {% output %}
-en: 'Wednesday, June 17, 2026'
+en-US: 'Wednesday, June 17, 2026'
 {% /output %}
 
 ### Time only
@@ -62,8 +62,8 @@ format.dateTime(new Date(), { timeStyle: 'short' });
 ```
 
 {% output %}
-en: '4:30 PM'
-sv: '16:30'
+en-US: '4:30 PM'
+sv-SE: '16:30'
 {% /output %}
 
 ```ts
@@ -71,7 +71,7 @@ format.dateTime(new Date(), { timeStyle: 'full' });
 ```
 
 {% output %}
-en: '4:30:15 PM Central European Summer Time'
+en-US: '4:30:15 PM Central European Summer Time'
 {% /output %}
 
 ### Date and time together
@@ -84,7 +84,7 @@ format.dateTime(new Date(), {
 ```
 
 {% output %}
-en: 'Jun 17, 2026, 4:30 PM'
+en-US: 'Jun 17, 2026, 4:30 PM'
 {% /output %}
 
 ### Finer control with field options
@@ -103,7 +103,7 @@ format.dateTime(new Date(), {
 ```
 
 {% output %}
-en: '06/17/2026, 16:30'
+en-US: '06/17/2026, 16:30'
 {% /output %}
 
 Any option from [`Intl.DateTimeFormatOptions`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#parameters) works (minus `localeMatcher`, which yapyak manages). `timeZone`, `weekday`, `era`, `dayPeriod`, fractional seconds — they all pass through.
@@ -117,8 +117,8 @@ format.relativeTime(-1, 'day');
 ```
 
 {% output %}
-en: '1 day ago'
-sv: 'för 1 dag sedan'
+en-US: '1 day ago'
+sv-SE: 'för 1 dag sedan'
 {% /output %}
 
 ```ts
@@ -126,8 +126,8 @@ format.relativeTime(3, 'hour');
 ```
 
 {% output %}
-en: 'in 3 hours'
-sv: 'om 3 timmar'
+en-US: 'in 3 hours'
+sv-SE: 'om 3 timmar'
 {% /output %}
 
 ### Auto-replace common values with words
@@ -139,8 +139,8 @@ format.relativeTime(-1, 'day', { numeric: 'auto' });
 ```
 
 {% output %}
-en: 'yesterday'
-sv: 'igår'
+en-US: 'yesterday'
+sv-SE: 'igår'
 {% /output %}
 
 ```ts
@@ -148,7 +148,7 @@ format.relativeTime(0, 'day', { numeric: 'auto' });
 ```
 
 {% output %}
-en: 'today'
+en-US: 'today'
 {% /output %}
 
 ```ts
@@ -156,7 +156,7 @@ format.relativeTime(1, 'day', { numeric: 'auto' });
 ```
 
 {% output %}
-en: 'tomorrow'
+en-US: 'tomorrow'
 {% /output %}
 
 For offsets the locale doesn't have a special word for, `numeric: 'auto'` falls back to the numeric phrase.

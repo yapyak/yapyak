@@ -10,9 +10,9 @@ t('You have {count, plural, one {# message} other {# messages}}', { count: 5 });
 ```
 
 {% output %}
-en: 'You have 5 messages'
-sv: 'Du har 5 meddelanden'
-ar: 'تتوفّر لديك ٥ رسائل'
+en-US: 'You have 5 messages'
+sv-SE: 'Du har 5 meddelanden'
+ar-SA: 'تتوفّر لديك ٥ رسائل'
 {% /output %}
 
 The model (or your translator) writes whichever branches that language needs. English only uses `one` and `other`; Arabic uses six. yapyak's runtime picks the right one based on the count and the locale's plural rules.
@@ -59,8 +59,8 @@ t('{count, plural, one {# message} other {# messages}}', { count: 1000 });
 ```
 
 {% output %}
-en: '1,000 messages'
-sv: '1 000 meddelanden'
+en-US: '1,000 messages'
+sv-SE: '1 000 meddelanden'
 {% /output %}
 
 It's the same as writing `{count, number}` in the same position, but shorter and idiomatic for plurals.
@@ -101,7 +101,7 @@ t('{place, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place', { p
 ```
 
 {% output %}
-en: '3rd place'
+en-US: '3rd place'
 {% /output %}
 
 In a language without ordinal suffixes (Swedish, French), only `other` is used — the translator (or the model) collapses the branches naturally.
