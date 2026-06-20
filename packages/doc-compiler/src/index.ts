@@ -77,6 +77,7 @@ export type {
 } from './config';
 
 export {
+  blocksToMarkdown,
   findAdjacentPages,
   getCodeBlocks,
   getCollection,

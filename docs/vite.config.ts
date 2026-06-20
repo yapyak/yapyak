@@ -107,6 +107,23 @@ export default defineConfig({
     }),
     react(),
     docCompiler({
+      agentArtifact: {
+        description:
+          'i18n that keeps up. For Vite apps that move at the speed of save.',
+        instructions: [
+          'yapyak uses the English source string as the translation key.',
+          "Write `t('Sign up')`, never `t('auth.signupButton')`.",
+          'Source files: `t()` calls in TS/JS/JSX/TSX/Vue/Svelte/Astro.',
+          'Catalogs: JSON files in `localesDir` (default `locales/`).',
+          'A translator is optional. If the user configures one (Anthropic, OpenAI, Gemini, Ollama, or custom), empty stubs are filled on save. Without a translator, stubs stay empty and the user fills them in by hand.',
+          'yapyak only fills empty stubs. Existing translations are never overwritten.',
+          'Large saves are guarded: when a single save adds more than `autoTranslateThreshold` strings (default 20), yapyak skips auto-translate and leaves stubs empty until the user runs `yapyak translate`.',
+          'Every `t()` call is rewritten in place at build time. Locale catalogs code-split along Vite routes.',
+        ].join('\n'),
+        outDir: resolve(import.meta.dirname, 'dist/client'),
+        siteName: 'yapyak',
+        siteUrl: 'https://yapyak.dev',
+      },
       collections: {
         guide: {
           root: resolve(import.meta.dirname, 'content/guide'),

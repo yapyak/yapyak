@@ -4,6 +4,8 @@ import { Box } from '#components/box';
 import { CheckIcon } from '#components/check-icon';
 import { ChevronIcon } from '#components/chevron-icon';
 import { OptionDot } from '#components/option-dot';
+import { Popover } from '#components/popover';
+import popoverStyles from '#components/popover/popover.module.css';
 
 import styles from './doc-options.module.css';
 import { useOptionsContext } from './options-context';
@@ -17,6 +19,7 @@ export function DocOptions(_props: DocOptionsProps) {
   const registry = doc.getOptions();
   const { get, set } = useOptionsContext();
   const popoverId = useId();
+  const anchorName = `--anchor${popoverId.replace(/[^a-z0-9-]/gi, '-')}`;
   const groupIds = Object.keys(registry);
 
   if (groupIds.length === 0) {
@@ -36,6 +39,9 @@ export function DocOptions(_props: DocOptionsProps) {
         className={styles.Trigger}
         data-option-value={primaryValue}
         popoverTarget={popoverId}
+        style={{
+          '--trigger-anchor': anchorName,
+        }}
         type="button"
       >
         <OptionDot />
@@ -47,10 +53,9 @@ export function DocOptions(_props: DocOptionsProps) {
         </Box>
         <ChevronIcon direction="down" />
       </Box>
-      <Box
-        className={styles.Popover}
+      <Popover
+        anchorName={anchorName}
         id={popoverId}
-        popover="auto"
       >
         {groupIds.map((groupId) => {
           const group = registry[groupId];
@@ -69,7 +74,7 @@ export function DocOptions(_props: DocOptionsProps) {
                   <Box
                     aria-pressed={option.value === active}
                     as="button"
-                    className={styles.Option}
+                    className={popoverStyles.Option}
                     data-active={option.value === active}
                     data-option-value={option.value}
                     key={option.value}
@@ -79,14 +84,14 @@ export function DocOptions(_props: DocOptionsProps) {
                     <OptionDot />
                     <Box
                       as="span"
-                      className={styles.OptionLabel}
+                      className={popoverStyles.OptionLabel}
                     >
                       {option.label}
                     </Box>
                     {option.value === active && (
                       <Box
                         as="span"
-                        className={styles.OptionCheck}
+                        className={popoverStyles.OptionTrailing}
                       >
                         <CheckIcon />
                       </Box>
@@ -97,7 +102,7 @@ export function DocOptions(_props: DocOptionsProps) {
             </Box>
           );
         })}
-      </Box>
+      </Popover>
     </>
   );
 }

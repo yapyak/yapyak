@@ -7,7 +7,8 @@
     .Header {
       display: flex;
       flex-direction: column;
-      gap: var(--spacing-2);
+      gap: var(--spacing-4);
+      align-items: flex-start;
 
       .TitleHeading {
         font-size: var(--font-size-3xl);

@@ -6,6 +6,11 @@
   --option-accent-pnpm: #f9ad00;
   --option-accent-npm: #cb3837;
   --option-accent-bun: #fbf0df;
+
+  --option-accent-chatgpt: #10a37f;
+  --option-accent-claude: #cc785c;
+  --option-accent-cursor: #ffffff;
+  --option-accent-t3-chat: #ec4899;
 }
 
 [data-option-value="react"] {
@@ -34,4 +39,20 @@
 
 [data-option-value="bun"] {
   --option-accent: var(--option-accent-bun);
+}
+
+[data-option-value="chatgpt"] {
+  --option-accent: var(--option-accent-chatgpt);
+}
+
+[data-option-value="claude"] {
+  --option-accent: var(--option-accent-claude);
+}
+
+[data-option-value="cursor"] {
+  --option-accent: var(--option-accent-cursor);
+}
+
+[data-option-value="t3-chat"] {
+  --option-accent: var(--option-accent-t3-chat);
 }

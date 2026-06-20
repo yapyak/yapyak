@@ -44,6 +44,7 @@ export { getEntry } from './entry';
 export { getExcerpt } from './excerpt';
 export { getHeadings } from './heading';
 export { getInternalLinks } from './internal-link';
+export { blocksToMarkdown } from './markdown';
 export { getOptions, getOptionsGroup } from './options';
 export { findAdjacentPages, getFirstPage, getPage } from './page';
 export { getSidebar } from './sidebar';

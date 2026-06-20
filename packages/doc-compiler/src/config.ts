@@ -1,9 +1,18 @@
 export type Config = {
+  agentArtifact?: AgentArtifactOption;
   collections: Record<string, CollectionConfig>;
   options?: OptionsRegistry;
   out: string;
   sourceUrl?: SourceUrlConfig;
   validate?: boolean;
+};
+
+export type AgentArtifactOption = {
+  description: string;
+  instructions: string;
+  outDir: string;
+  siteName: string;
+  siteUrl: string;
 };
 
 export type SourceUrlConfig = {

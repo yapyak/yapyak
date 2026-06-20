@@ -1,0 +1,148 @@
+import type { Manifest, Page, SidebarNode } from './manifest';
+
+import { describe, expect, it } from 'vitest';
+
+import { buildAgentArtifact } from './agent-artifact';
+
+function buildPage(overrides: Partial<Page> = {}): Page {
+  return {
+    blocks: [],
+    description: '',
+    href: '/guide/getting-started/installation',
+    meta: {},
+    title: 'Installation',
+    ...overrides,
+  };
+}
+
+function buildSidebar(): SidebarNode[] {
+  return [
+    {
+      children: [
+        {
+          badge: null,
+          href: '/guide/getting-started/installation',
+          label: 'Installation',
+          type: 'link',
+        },
+      ],
+      collapsible: false,
+      href: null,
+      label: 'Getting started',
+      type: 'group',
+    },
+  ];
+}
+
+function buildManifest(page: Page): Manifest {
+  return {
+    collections: {
+      guide: {
+        pages: {
+          'getting-started/installation': page,
+        },
+        redirects: {},
+        sidebar: buildSidebar(),
+      },
+    },
+    options: {},
+    symbols: {},
+    version: 1,
+  };
+}
+
+describe('buildAgentArtifact', () => {
+  it('emits llms.txt with the site name and instructions', () => {
+    const result = buildAgentArtifact(buildManifest(buildPage()), {
+      description: 'i18n that keeps up.',
+      instructions: 'Use t() with the English source as the key.',
+      outDir: '',
+      siteName: 'yapyak',
+      siteUrl: 'https://yapyak.dev',
+    });
+    const index = result.files.get('llms.txt');
+    expect(index).toContain('# yapyak');
+    expect(index).toContain('> i18n that keeps up.');
+    expect(index).toContain('## Instructions');
+    expect(index).toContain('Use t() with the English source as the key.');
+  });
+
+  it('emits llms.txt with absolute URLs for sidebar links', () => {
+    const result = buildAgentArtifact(
+      buildManifest(
+        buildPage({
+          description: 'Install yapyak.',
+        }),
+      ),
+      {
+        description: 'i18n that keeps up.',
+        instructions: '',
+        outDir: '',
+        siteName: 'yapyak',
+        siteUrl: 'https://yapyak.dev',
+      },
+    );
+    const index = result.files.get('llms.txt');
+    expect(index).toContain(
+      '[Installation](https://yapyak.dev/guide/getting-started/installation)',
+    );
+    expect(index).toContain(': Install yapyak.');
+  });
+
+  it('emits llms-full.txt with concatenated page content', () => {
+    const page = buildPage({
+      blocks: [
+        {
+          children: [
+            {
+              type: 'text',
+              value: 'Step 1.',
+            },
+          ],
+          type: 'paragraph',
+        },
+      ],
+      description: 'Install yapyak.',
+    });
+    const result = buildAgentArtifact(buildManifest(page), {
+      description: 'i18n.',
+      instructions: '',
+      outDir: '',
+      siteName: 'yapyak',
+      siteUrl: 'https://yapyak.dev',
+    });
+    const full = result.files.get('llms-full.txt');
+    expect(full).toContain('# Installation');
+    expect(full).toContain('Step 1.');
+  });
+
+  it('emits a markdown file per page mirroring the URL path', () => {
+    const result = buildAgentArtifact(buildManifest(buildPage()), {
+      description: '',
+      instructions: '',
+      outDir: '',
+      siteName: 'yapyak',
+      siteUrl: 'https://yapyak.dev',
+    });
+    expect(result.files.has('guide/getting-started/installation.md')).toBe(
+      true,
+    );
+  });
+
+  it('renders page heading and description in the per-page markdown', () => {
+    const page = buildPage({
+      description: 'Install yapyak.',
+      title: 'Installation',
+    });
+    const result = buildAgentArtifact(buildManifest(page), {
+      description: '',
+      instructions: '',
+      outDir: '',
+      siteName: 'yapyak',
+      siteUrl: 'https://yapyak.dev',
+    });
+    const content = result.files.get('guide/getting-started/installation.md');
+    expect(content).toContain('# Installation');
+    expect(content).toContain('> Install yapyak.');
+  });
+});

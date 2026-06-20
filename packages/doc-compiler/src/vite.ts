@@ -1,6 +1,7 @@
 import type { Plugin, ViteDevServer } from 'vite';
 import type { Config } from './config';
 
+import { buildAgentArtifact } from './build/agent-artifact';
 import { buildManifest } from './build/manifest';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
@@ -24,10 +25,57 @@ export function docCompiler(config: Config): Plugin {
     async buildStart() {
       outAbsolute = resolve(config.out);
       await writeManifestFile();
+      if (config.agentArtifact === undefined) {
+        return;
+      }
+      const manifest = await buildManifest(config);
+      const artifact = buildAgentArtifact(manifest, config.agentArtifact);
+      for (const [relativePath, content] of artifact.files) {
+        this.emitFile({
+          fileName: relativePath,
+          source: content,
+          type: 'asset',
+        });
+      }
     },
 
     configureServer(server: ViteDevServer) {
       outAbsolute = resolve(config.out);
+
+      if (config.agentArtifact !== undefined) {
+        const agentConfig = config.agentArtifact;
+        server.middlewares.use((req, res, next) => {
+          const url = req.url ?? '';
+          const path = url.split('?')[0] ?? '';
+          if (
+            !path.endsWith('.md') &&
+            path !== '/llms.txt' &&
+            path !== '/llms-full.txt'
+          ) {
+            next();
+            return;
+          }
+          void (async () => {
+            try {
+              const manifest = await buildManifest(config);
+              const artifact = buildAgentArtifact(manifest, agentConfig);
+              const fileKey = path.replace(/^\//, '');
+              const content = artifact.files.get(fileKey);
+              if (content === undefined) {
+                next();
+                return;
+              }
+              res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+              res.end(content);
+            } catch (error) {
+              server.config.logger.error(
+                `[doc-compiler] agent artifact request failed: ${String(error)}`,
+              );
+              next();
+            }
+          })();
+        });
+      }
 
       const rebuild = debounce(async () => {
         try {
