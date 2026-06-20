@@ -100,7 +100,7 @@ export default defineConfig({
     tanstackStart({
       prerender: {
         concurrency: 1,
-        crawlLinks: true,
+        crawlLinks: false,
         enabled: true,
         failOnError: true,
       },
