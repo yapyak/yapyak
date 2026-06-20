@@ -53,14 +53,14 @@ export const Route = createRootRoute({
           name: 'viewport',
         },
         {
-          title: 'yapyak — i18n that keeps up.',
+          title: 'yapyak - i18n that keeps up.',
         },
         {
           content: 'For Vite apps that move at the speed of save.',
           name: 'description',
         },
         {
-          content: 'yapyak — i18n that keeps up.',
+          content: 'yapyak - i18n that keeps up.',
           property: 'og:title',
         },
         {
@@ -76,7 +76,7 @@ export const Route = createRootRoute({
           name: 'twitter:card',
         },
         {
-          content: 'yapyak — i18n that keeps up.',
+          content: 'yapyak - i18n that keeps up.',
           name: 'twitter:title',
         },
         {
