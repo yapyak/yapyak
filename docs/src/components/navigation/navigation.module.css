@@ -4,6 +4,7 @@
     --navigation-indicator-width: 0;
     --navigation-indicator-x: 0;
     --navigation-indicator-y: 0;
+    --navigation-slide-duration: 400ms;
 
     position: relative;
     display: inline-flex;
@@ -31,9 +32,9 @@
 
       &[data-ready] {
         transition:
-          transform 320ms var(--ease-snappy),
-          width 320ms var(--ease-snappy),
-          height 320ms var(--ease-snappy);
+          transform var(--navigation-slide-duration) var(--ease-snappy),
+          width var(--navigation-slide-duration) var(--ease-snappy),
+          height var(--navigation-slide-duration) var(--ease-snappy);
       }
     }
 

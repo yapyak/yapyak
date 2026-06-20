@@ -12,7 +12,7 @@
     outline-offset: 0;
     border-radius: var(--border-radius-full);
     transition:
-      color var(--transition),
+      color var(--navigation-slide-duration, var(--transition)) var(--ease-snappy),
       background-color var(--transition),
       box-shadow var(--transition),
       outline 400ms,

@@ -1,7 +1,8 @@
+import type { TransitionEvent } from 'react';
 import type { BoxProps } from '#components/box';
 
 import { useLocation } from '@tanstack/react-router';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 
 import { Box } from '#components/box';
 
@@ -16,8 +17,6 @@ type IndicatorState = {
   x: number;
   y: number;
 };
-
-const SLIDE_DURATION = 320;
 
 export function Navigation(props: NavigationProps) {
   const { children, className, ...restProps } = props;
@@ -60,28 +59,31 @@ export function Navigation(props: NavigationProps) {
       setIsReady(true);
     });
 
-    let timeoutId: number | undefined;
     if (
       previousPathnameRef.current !== null &&
       previousPathnameRef.current !== location.pathname
     ) {
       setIsAnimating(true);
-      timeoutId = window.setTimeout(() => {
-        setIsAnimating(false);
-      }, SLIDE_DURATION);
     }
     previousPathnameRef.current = location.pathname;
 
     return () => {
       observer.disconnect();
       window.cancelAnimationFrame(frame);
-      if (timeoutId !== undefined) {
-        window.clearTimeout(timeoutId);
-      }
     };
   }, [
     location.pathname,
   ]);
+
+  const handleIndicatorTransitionEnd = useCallback(
+    (event: TransitionEvent<HTMLSpanElement>) => {
+      if (event.propertyName !== 'transform') {
+        return;
+      }
+      setIsAnimating(false);
+    },
+    [],
+  );
 
   return (
     <Box
@@ -110,6 +112,7 @@ export function Navigation(props: NavigationProps) {
           as="span"
           className={styles.IndicatorBar}
           data-ready={isReady}
+          onTransitionEnd={handleIndicatorTransitionEnd}
         />
       )}
       {children}
