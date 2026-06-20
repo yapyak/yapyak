@@ -10,7 +10,16 @@
       gap: var(--spacing-4);
       align-items: flex-start;
 
+      .TitleRow {
+        display: flex;
+        gap: var(--spacing-4);
+        align-items: flex-start;
+        justify-content: space-between;
+        width: 100%;
+      }
+
       .TitleHeading {
+        flex: 1 1 auto;
         font-size: var(--font-size-3xl);
         font-weight: var(--font-weight-medium);
         line-height: var(--line-height-tight);

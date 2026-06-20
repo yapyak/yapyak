@@ -30,11 +30,14 @@ export function PageArticle(props: PageArticleProps) {
         as="header"
         className={styles.Header}
       >
-        <Box
-          as="h1"
-          className={styles.TitleHeading}
-        >
-          {page.title}
+        <Box className={styles.TitleRow}>
+          <Box
+            as="h1"
+            className={styles.TitleHeading}
+          >
+            {page.title}
+          </Box>
+          <PageAction href={page.href} />
         </Box>
         {page.description && (
           <Box
@@ -44,7 +47,6 @@ export function PageArticle(props: PageArticleProps) {
             {page.description}
           </Box>
         )}
-        <PageAction href={page.href} />
       </Box>
       <Box className={styles.Body}>
         <BlockRenderer blocks={page.blocks} />

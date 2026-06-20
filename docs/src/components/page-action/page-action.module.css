@@ -1,22 +1,11 @@
 @layer components {
-  .PageAction {
+  .Trigger {
     display: inline-flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-3);
     align-items: center;
-  }
-
-  .Button,
-  .OpenInButton {
-    display: inline-flex;
-    gap: var(--spacing-2);
-    align-items: center;
-    padding: var(--spacing-2) var(--spacing-3);
-    font-family: inherit;
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
+    justify-content: center;
+    width: 32px;
+    height: 32px;
     color: var(--foreground-soft);
-    text-decoration: none;
     cursor: pointer;
     outline: var(--spacing-2) solid transparent;
     outline-offset: 0;
@@ -24,6 +13,7 @@
     border: 0;
     border-radius: var(--border-radius-sm);
     box-shadow: var(--shadow-ring-inset);
+    anchor-name: var(--trigger-anchor);
     transition:
       color var(--transition),
       background-color var(--transition),
@@ -39,29 +29,12 @@
     }
 
     &:active {
-      transform: scale(0.98);
+      transform: scale(0.96);
     }
 
     &:focus-visible {
       outline-width: 3px;
       outline-color: var(--accent-soft);
     }
-
-    &[data-copied="true"] {
-      color: var(--brand);
-    }
-  }
-
-  .OpenInButton {
-    anchor-name: var(--trigger-anchor);
-  }
-
-  .ButtonLabel {
-    line-height: 1;
-  }
-
-  .ProviderList {
-    display: flex;
-    flex-direction: column;
   }
 }

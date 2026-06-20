@@ -2,10 +2,9 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
 import { Box } from '#components/box';
-import { ChatIcon } from '#components/chat-icon';
 import { CheckIcon } from '#components/check-icon';
-import { ChevronIcon } from '#components/chevron-icon';
 import { CopyIcon } from '#components/copy-icon';
+import { DotsIcon } from '#components/dots-icon';
 import { ExternalLinkIcon } from '#components/external-link-icon';
 import { OptionDot } from '#components/option-dot';
 import { Popover } from '#components/popover';
@@ -15,13 +14,13 @@ import styles from './page-action.module.css';
 
 const COPIED_RESET_MS = 1500;
 
-type Provider = {
+type ChatProvider = {
   buildUrl: (encodedPrompt: string) => string;
   label: string;
   value: string;
 };
 
-const PROVIDERS: Provider[] = [
+const CHAT_PROVIDERS: ChatProvider[] = [
   {
     buildUrl: (encoded) => `https://chatgpt.com/?hints=search&q=${encoded}`,
     label: 'ChatGPT',
@@ -52,9 +51,14 @@ export type PageActionProps = {
 export function PageAction(props: PageActionProps) {
   const { href } = props;
   const [copied, setCopied] = useState(false);
+  const [origin, setOrigin] = useState<string | undefined>(undefined);
   const timeoutRef = useRef<number | undefined>(undefined);
   const popoverId = useId();
   const anchorName = `--anchor${popoverId.replace(/[^a-z0-9-]/gi, '-')}`;
+
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
 
   useEffect(
     () => () => {
@@ -66,6 +70,15 @@ export function PageAction(props: PageActionProps) {
   );
 
   const markdownPath = `${href}.md`;
+
+  const buildChatHref = (provider: ChatProvider): string | undefined => {
+    if (origin === undefined) {
+      return undefined;
+    }
+    const absoluteUrl = `${origin}${markdownPath}`;
+    const prompt = `I want you to yap about this page: ${absoluteUrl}`;
+    return provider.buildUrl(encodeURIComponent(prompt));
+  };
 
   const handleCopy = async () => {
     try {
@@ -82,100 +95,86 @@ export function PageAction(props: PageActionProps) {
     } catch {}
   };
 
-  const handleProviderClick = (provider: Provider) => {
-    const absoluteUrl = `${window.location.origin}${markdownPath}`;
-    const prompt = `I want you to yap about this page: ${absoluteUrl}`;
-    const encoded = encodeURIComponent(prompt);
-    window.open(provider.buildUrl(encoded), '_blank', 'noopener,noreferrer');
-  };
-
   return (
-    <Box
-      aria-label={t('Page actions')}
-      as="nav"
-      className={styles.PageAction}
-    >
+    <>
       <Box
-        aria-live="polite"
+        aria-label={t('Page actions')}
         as="button"
-        className={styles.Button}
-        data-copied={copied}
-        onClick={handleCopy}
-        type="button"
-      >
-        {copied ? <CheckIcon /> : <CopyIcon />}
-        <Box
-          as="span"
-          className={styles.ButtonLabel}
-        >
-          {copied ? t('Copied') : t('Copy')}
-        </Box>
-      </Box>
-      <Box
-        as="button"
-        className={styles.OpenInButton}
+        className={styles.Trigger}
         popoverTarget={popoverId}
         style={{
           '--trigger-anchor': anchorName,
         }}
         type="button"
       >
-        <ChatIcon />
-        <Box
-          as="span"
-          className={styles.ButtonLabel}
-        >
-          {t('Chat')}
-        </Box>
-        <ChevronIcon direction="down" />
-      </Box>
-      <Box
-        as="a"
-        className={styles.Button}
-        href={markdownPath}
-        rel="noreferrer"
-        target="_blank"
-      >
-        <ExternalLinkIcon />
-        <Box
-          as="span"
-          className={styles.ButtonLabel}
-        >
-          {t('Open')}
-        </Box>
+        <DotsIcon />
       </Box>
       <Popover
-        align="start"
+        align="end"
         anchorName={anchorName}
         id={popoverId}
       >
-        <Box className={styles.ProviderList}>
-          {PROVIDERS.map((provider) => (
-            <Box
-              as="button"
-              className={popoverStyles.Option}
-              data-option-value={provider.value}
-              key={provider.value}
-              onClick={() => handleProviderClick(provider)}
-              type="button"
-            >
-              <OptionDot />
-              <Box
-                as="span"
-                className={popoverStyles.OptionLabel}
-              >
-                {provider.label}
-              </Box>
-              <Box
-                as="span"
-                className={popoverStyles.OptionTrailing}
-              >
-                <ExternalLinkIcon />
-              </Box>
-            </Box>
-          ))}
+        <Box
+          as="button"
+          className={popoverStyles.Option}
+          onClick={handleCopy}
+          type="button"
+        >
+          {copied ? <CheckIcon /> : <CopyIcon />}
+          <Box
+            as="span"
+            className={popoverStyles.OptionLabel}
+          >
+            {copied ? t('Copied') : t('Copy page')}
+          </Box>
         </Box>
+        <Box
+          as="a"
+          className={popoverStyles.Option}
+          href={markdownPath}
+          rel="noreferrer"
+          target="_blank"
+        >
+          <ExternalLinkIcon />
+          <Box
+            as="span"
+            className={popoverStyles.OptionLabel}
+          >
+            {t('Open markdown')}
+          </Box>
+        </Box>
+        <Box
+          as="span"
+          className={popoverStyles.Eyebrow}
+        >
+          {t('Chat')}
+        </Box>
+        {CHAT_PROVIDERS.map((provider) => (
+          <Box
+            as="a"
+            className={popoverStyles.Option}
+            data-option-value={provider.value}
+            href={buildChatHref(provider)}
+            key={provider.value}
+            rel="noreferrer"
+            target="_blank"
+          >
+            <OptionDot />
+            <Box
+              as="span"
+              className={popoverStyles.OptionLabel}
+            >
+              {provider.label}
+            </Box>
+            <Box
+              as="span"
+              className={popoverStyles.OptionTrailing}
+            >
+              <ExternalLinkIcon />
+            </Box>
+          </Box>
+        ))}
       </Popover>
-    </Box>
+    </>
   );
 }
