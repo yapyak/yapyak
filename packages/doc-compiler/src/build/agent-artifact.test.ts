@@ -20,14 +20,14 @@ function buildSidebar(): SidebarNode[] {
     {
       children: [
         {
-          badge: null,
+          badge: undefined,
           href: '/guide/getting-started/installation',
           label: 'Installation',
           type: 'link',
         },
       ],
       collapsible: false,
-      href: null,
+      href: undefined,
       label: 'Getting started',
       type: 'group',
     },
