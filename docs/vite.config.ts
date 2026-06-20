@@ -100,9 +100,20 @@ export default defineConfig({
     tanstackStart({
       prerender: {
         concurrency: 1,
-        crawlLinks: false,
+        crawlLinks: true,
         enabled: true,
         failOnError: true,
+        filter: (page) => {
+          if (!page.fromCrawl) {
+            return true;
+          }
+          return (
+            page.path === '/' ||
+            page.path.startsWith('/home') ||
+            page.path.startsWith('/guide') ||
+            page.path.startsWith('/reference')
+          );
+        },
       },
     }),
     react(),
