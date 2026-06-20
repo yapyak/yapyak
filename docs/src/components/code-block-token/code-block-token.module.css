@@ -68,6 +68,24 @@
       text-shadow: var(--shadow-brand-glow);
     }
 
+    &[data-type="tx-placeholder"] {
+      font-style: italic;
+      color: var(--foreground);
+    }
+
+    &[data-type="tx-icu-keyword"] {
+      color: var(--syntax-keyword);
+    }
+
+    &[data-type="tx-icu-key"] {
+      color: var(--syntax-literal);
+    }
+
+    &[data-type="tx-icu-hash"] {
+      color: var(--brand);
+      text-shadow: var(--shadow-brand-glow);
+    }
+
     &[data-type="diff-add"] {
       display: inline;
       color: var(--brand);

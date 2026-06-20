@@ -10,6 +10,7 @@ import { markTaggedTemplates } from './tagged-template';
 import { expandTemplateInterpolations } from './template-interpolation';
 import { scanToken } from './token';
 import { tokenizeTranslation } from './translation';
+import { expandTxSourcePlaceholders } from './tx-icu';
 import { applyTypePositions } from './type-position';
 import { expandVueAttributeBindings } from './vue-attribute-binding';
 import { tokenizeYaml } from './yaml';
@@ -32,7 +33,7 @@ export function tokenize(code: string, language: Language): Token[] {
     return tokenizeJson(code);
   }
   if (language === 'translation') {
-    return tokenizeTranslation(code);
+    return expandTxSourcePlaceholders(tokenizeTranslation(code));
   }
   const tokens: Token[] = [];
   let index = 0;
@@ -68,5 +69,6 @@ export function tokenize(code: string, language: Language): Token[] {
     language,
     tokenize,
   );
-  return mergePlainTokens(templateExpanded);
+  const icuExpanded = expandTxSourcePlaceholders(templateExpanded);
+  return mergePlainTokens(icuExpanded);
 }
