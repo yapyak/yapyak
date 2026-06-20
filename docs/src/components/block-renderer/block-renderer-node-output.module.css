@@ -8,7 +8,7 @@
     line-height: var(--line-height-normal);
     color: var(--foreground-soft);
     background: transparent;
-    border-left: 2px solid var(--ring-stronger);
+    border-left: var(--px) solid var(--ring-stronger);
     border-radius: 0;
 
     &[data-with-locales] {
