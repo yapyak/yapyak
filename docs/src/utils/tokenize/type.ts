@@ -36,6 +36,7 @@ export type TokenType =
   | 'tx-icu-keyword'
   | 'tx-icu-key'
   | 'tx-icu-hash'
+  | 'tx-tag'
   | 'diff-add'
   | 'diff-remove'
   | 'diff-hunk'

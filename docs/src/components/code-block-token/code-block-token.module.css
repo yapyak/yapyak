@@ -86,6 +86,10 @@
       text-shadow: var(--shadow-brand-glow);
     }
 
+    &[data-type="tx-tag"] {
+      color: var(--syntax-jsx-tag);
+    }
+
     &[data-type="diff-add"] {
       display: inline;
       color: var(--brand);
