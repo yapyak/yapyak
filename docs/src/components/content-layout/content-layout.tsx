@@ -61,6 +61,17 @@ export function ContentLayout(props: ContentLayoutProps) {
     isSidebarOpen,
   ]);
 
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(min-width: 1024px)');
+    const handleChange = (event: MediaQueryListEvent) => {
+      if (event.matches) {
+        setIsSidebarOpen(false);
+      }
+    };
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
   return (
     <ContentLayoutContext
       value={{
