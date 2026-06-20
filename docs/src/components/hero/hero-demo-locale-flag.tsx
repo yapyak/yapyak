@@ -2,7 +2,7 @@ import { useId } from 'react';
 
 import styles from './hero-demo-locale-flag.module.css';
 
-export type HeroDemoLocaleFlagCode = 'sv' | 'es' | 'ja' | 'de';
+export type HeroDemoLocaleFlagCode = 'es' | 'fr' | 'ja' | 'sv';
 
 export type HeroDemoLocaleFlagProps = {
   code: HeroDemoLocaleFlagCode;
@@ -44,28 +44,6 @@ export function HeroDemoLocaleFlag(props: HeroDemoLocaleFlagProps) {
 
 function renderFlag(code: HeroDemoLocaleFlagCode) {
   switch (code) {
-    case 'sv':
-      return (
-        <>
-          <rect
-            fill="#0061A8"
-            height="12"
-            width="18"
-          />
-          <rect
-            fill="#FECC00"
-            height="2"
-            width="18"
-            y="5"
-          />
-          <rect
-            fill="#FECC00"
-            height="12"
-            width="2"
-            x="5"
-          />
-        </>
-      );
     case 'es':
       return (
         <>
@@ -88,6 +66,28 @@ function renderFlag(code: HeroDemoLocaleFlagCode) {
           />
         </>
       );
+    case 'fr':
+      return (
+        <>
+          <rect
+            fill="#0055A4"
+            height="12"
+            width="6"
+          />
+          <rect
+            fill="#FFFFFF"
+            height="12"
+            width="6"
+            x="6"
+          />
+          <rect
+            fill="#EF4135"
+            height="12"
+            width="6"
+            x="12"
+          />
+        </>
+      );
     case 'ja':
       return (
         <>
@@ -104,25 +104,25 @@ function renderFlag(code: HeroDemoLocaleFlagCode) {
           />
         </>
       );
-    case 'de':
+    case 'sv':
       return (
         <>
           <rect
-            fill="#0A0A0A"
-            height="4"
+            fill="#0061A8"
+            height="12"
             width="18"
           />
           <rect
-            fill="#DD0000"
-            height="4"
+            fill="#FECC00"
+            height="2"
             width="18"
-            y="4"
+            y="5"
           />
           <rect
-            fill="#FFCC00"
-            height="4"
-            width="18"
-            y="8"
+            fill="#FECC00"
+            height="12"
+            width="2"
+            x="5"
           />
         </>
       );

@@ -1,4 +1,4 @@
-export type LocaleCode = 'sv' | 'es' | 'ja' | 'de';
+export type LocaleCode = 'es' | 'fr' | 'ja' | 'sv';
 
 export type Locale = {
   code: LocaleCode;
@@ -7,20 +7,20 @@ export type Locale = {
 
 export const LOCALES: Locale[] = [
   {
-    code: 'sv',
-    filename: 'sv.json',
-  },
-  {
     code: 'es',
     filename: 'es.json',
+  },
+  {
+    code: 'fr',
+    filename: 'fr.json',
   },
   {
     code: 'ja',
     filename: 'ja.json',
   },
   {
-    code: 'de',
-    filename: 'de.json',
+    code: 'sv',
+    filename: 'sv.json',
   },
 ];
 
@@ -32,8 +32,8 @@ export type Scene = {
 export const INITIAL_SCENE: Scene = {
   source: 'Welcome back',
   translations: {
-    de: 'Willkommen zurück',
     es: 'Bienvenido de nuevo',
+    fr: 'Bon retour',
     ja: 'おかえりなさい',
     sv: 'Välkommen tillbaka',
   },
@@ -43,8 +43,8 @@ export const SCENES: Scene[] = [
   {
     source: 'Made just for you',
     translations: {
-      de: 'Genau für dich gemacht',
       es: 'Hecho solo para ti',
+      fr: 'Spécialement pour vous',
       ja: 'あなただけのために',
       sv: 'Skapat just för dig',
     },
@@ -52,8 +52,8 @@ export const SCENES: Scene[] = [
   {
     source: 'Continue watching',
     translations: {
-      de: 'Weiterschauen',
       es: 'Continuar viendo',
+      fr: 'Reprendre la lecture',
       ja: '続きを見る',
       sv: 'Fortsätt titta',
     },
@@ -61,8 +61,8 @@ export const SCENES: Scene[] = [
   {
     source: 'Trending right now',
     translations: {
-      de: 'Gerade im Trend',
       es: 'Tendencias del momento',
+      fr: 'Tendances du moment',
       ja: '今のトレンド',
       sv: 'Populärt just nu',
     },
@@ -70,8 +70,8 @@ export const SCENES: Scene[] = [
 ];
 
 export const EMPTY_TRANSLATIONS: Record<LocaleCode, string> = {
-  de: '',
   es: '',
+  fr: '',
   ja: '',
   sv: '',
 };
