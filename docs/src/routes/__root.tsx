@@ -95,13 +95,13 @@ function Component() {
     <Layout>
       <Layout.Header>
         <Layout.Header.Start>
-          <Link to="/">
+          <Link to="/home">
             <Wordmark />
           </Link>
         </Layout.Header.Start>
         <Layout.Header.Center>
           <Navigation>
-            <Navigation.Link to="/">{t('Home')}</Navigation.Link>
+            <Navigation.Link to="/home">{t('Home')}</Navigation.Link>
             <Navigation.Link to="/guide">{t('Guide')}</Navigation.Link>
             <Navigation.Link to="/reference">{t('Reference')}</Navigation.Link>
           </Navigation>

@@ -83,7 +83,7 @@ export function LayoutHeader(props: LayoutHeaderProps) {
           <Link
             className={styles.Link}
             onClick={closeMenu}
-            to="/"
+            to="/home"
           >
             {t('Home')}
           </Link>

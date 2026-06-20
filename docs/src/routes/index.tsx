@@ -1,21 +1,10 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { t } from 'yapyak';
-
-import { FeatureSection } from '#components/feature-section';
-import { Hero } from '#components/hero';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/')({
-  component: Component,
+  loader() {
+    throw redirect({
+      replace: true,
+      to: '/home',
+    });
+  },
 });
-
-function Component() {
-  return (
-    <>
-      <Hero
-        description={t('For Vite apps that move at the speed of save.')}
-        heading={t('i18n that keeps up.')}
-      />
-      <FeatureSection />
-    </>
-  );
-}
