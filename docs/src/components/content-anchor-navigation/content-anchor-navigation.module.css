@@ -1,5 +1,9 @@
 @layer components {
   .ContentAnchorNavigation {
+    --indicator-top: 0px;
+    --indicator-height: 0px;
+    --indicator-duration: 0ms;
+
     display: block;
 
     .Rail {
@@ -26,10 +30,6 @@
       }
 
       .Indicator {
-        --indicator-top: 0px;
-        --indicator-height: 0px;
-        --indicator-duration: 320ms;
-
         position: absolute;
         top: 0;
         left: calc(-1 * var(--px));
@@ -42,10 +42,14 @@
           transform var(--indicator-duration) var(--ease-smooth),
           height var(--indicator-duration) var(--ease-smooth);
         will-change: transform, height;
+      }
+    }
 
-        @media (prefers-reduced-motion: reduce) {
-          transition: none;
-        }
+    &[data-animation-enabled] {
+      --indicator-duration: 320ms;
+
+      @media (prefers-reduced-motion: reduce) {
+        --indicator-duration: 0ms;
       }
     }
   }

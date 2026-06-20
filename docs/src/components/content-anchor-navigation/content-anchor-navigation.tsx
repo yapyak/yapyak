@@ -26,6 +26,16 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
   const lockTimeoutRef = useRef<number>(undefined);
   const lockReleaseRef = useRef<(() => void) | undefined>(undefined);
   const [activeId, setActiveId] = useState(headings[0]?.id ?? null);
+  const [isAnimationEnabled, setIsAnimationEnabled] = useState(false);
+
+  useEffect(() => {
+    const raf = window.requestAnimationFrame(() => {
+      setIsAnimationEnabled(true);
+    });
+    return () => {
+      window.cancelAnimationFrame(raf);
+    };
+  }, []);
 
   useEffect(() => {
     if (headings.length === 0) {
@@ -225,6 +235,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
         styles.ContentAnchorNavigation,
         className,
       ]}
+      data-animation-enabled={isAnimationEnabled}
       ref={element}
     >
       <Box className={styles.Rail}>
