@@ -45,7 +45,7 @@ export function Footer() {
     <p>
       <RichText
         value={t('Read our <link>privacy policy</link> for details.')}
-        link={(children) => <a href="/privacy">{children}</a>}
+        link={(children) => <a href="https://example.com/privacy">{children}</a>}
       />
     </p>
   );
@@ -75,7 +75,7 @@ import { t } from 'yapyak';
   <p>
     <RichText :value="t('Read our <link>privacy policy</link> for details.')">
       <template #link="{ children }">
-        <a href="/privacy"><component :is="children()" /></a>
+        <a href="https://example.com/privacy"><component :is="children()" /></a>
       </template>
     </RichText>
   </p>
@@ -106,7 +106,7 @@ For a void tag:
   <RichText
     value={t('Read our <link>privacy policy</link> for details.')}
     link={(children) => (
-      <a href="/privacy">{@render children()}</a>
+      <a href="https://example.com/privacy">{@render children()}</a>
     )}
   />
 </p>
@@ -133,7 +133,7 @@ import { t } from 'yapyak';
 
 <p>
   <RichText value={t('Read our <link>privacy policy</link> for details.')}>
-    <a slot="link" href="/privacy"><RichText.Children /></a>
+    <a slot="link" href="https://example.com/privacy"><RichText.Children /></a>
   </RichText>
 </p>
 ```
