@@ -1,7 +1,13 @@
 import type { HeadingEntry } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#components/box';
 
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { t } from 'yapyak';
 
 import { Box } from '#components/box';
@@ -9,10 +15,9 @@ import { Box } from '#components/box';
 import styles from './content-anchor-navigation.module.css';
 import { ContentAnchorNavigationItem } from './content-anchor-navigation-item';
 
-const HEADER_OFFSET = 88;
-const SCROLL_GAP = 24;
-const ACTIVE_LINE_PX = HEADER_OFFSET + SCROLL_GAP;
-const BOTTOM_THRESHOLD_PX = 24;
+const HEADER_OFFSET_PX = 88;
+const BOTTOM_THRESHOLD_PX = 4;
+const SCROLL_LOCK_FALLBACK_MS = 1200;
 
 export type ContentAnchorNavigationProps = BoxProps<'nav'> & {
   headings: HeadingEntry[];
@@ -23,64 +28,98 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
 
   const containerRef = useRef<HTMLElement | null>(null);
   const itemRefs = useRef(new Map<string, HTMLAnchorElement>());
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const lockedIdRef = useRef<string | null>(null);
+  const lockTimeoutRef = useRef<number | undefined>(undefined);
+  const lockReleaseRef = useRef<(() => void) | undefined>(undefined);
+  const [activeId, setActiveId] = useState<string | null>(
+    headings[0]?.id ?? null,
+  );
 
   useEffect(() => {
     if (headings.length === 0) {
       return;
     }
 
-    let frame = 0;
+    const firstHeading = headings[0];
+    const lastHeading = headings[headings.length - 1];
+    if (firstHeading === undefined || lastHeading === undefined) {
+      return;
+    }
+    const firstId = firstHeading.id;
+    const lastId = lastHeading.id;
 
-    const recompute = () => {
-      const viewportBottom = window.scrollY + window.innerHeight;
-      const documentBottom = document.documentElement.scrollHeight;
-      if (viewportBottom >= documentBottom - BOTTOM_THRESHOLD_PX) {
-        setActiveId(null);
-        return;
+    const tryEdges = () => {
+      if (lockedIdRef.current !== null) {
+        return true;
       }
-
-      let lastAbove: string | null = null;
-      for (const heading of headings) {
-        const element = document.getElementById(heading.id);
-        if (!element) {
-          continue;
-        }
-        const paddingTop = Number.parseFloat(
-          window.getComputedStyle(element).paddingTop || '0',
-        );
-        const textTop = element.getBoundingClientRect().top + paddingTop;
-        if (textTop < ACTIVE_LINE_PX) {
-          lastAbove = heading.id;
-        } else {
-          break;
-        }
+      const atBottom =
+        window.scrollY + window.innerHeight >=
+        document.documentElement.scrollHeight - BOTTOM_THRESHOLD_PX;
+      if (atBottom) {
+        setActiveId(lastId);
+        return true;
       }
-      setActiveId(lastAbove);
+      if (window.scrollY <= 0) {
+        setActiveId(firstId);
+        return true;
+      }
+      return false;
     };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (tryEdges()) {
+          return;
+        }
+
+        const intersecting = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        const topmost = intersecting[0];
+        if (topmost !== undefined) {
+          setActiveId(topmost.target.id);
+          return;
+        }
+
+        let lastAbove: string | null = null;
+        for (const heading of headings) {
+          const element = document.getElementById(heading.id);
+          if (!element) {
+            continue;
+          }
+          if (element.getBoundingClientRect().top < HEADER_OFFSET_PX) {
+            lastAbove = heading.id;
+          } else {
+            break;
+          }
+        }
+        if (lastAbove !== null) {
+          setActiveId(lastAbove);
+        }
+      },
+      {
+        rootMargin: `-${HEADER_OFFSET_PX}px 0px -50% 0px`,
+      },
+    );
+
+    for (const heading of headings) {
+      const element = document.getElementById(heading.id);
+      if (element) {
+        observer.observe(element);
+      }
+    }
 
     const onScroll = () => {
-      if (frame !== 0) {
-        return;
-      }
-      frame = window.requestAnimationFrame(() => {
-        frame = 0;
-        recompute();
-      });
+      tryEdges();
     };
-
-    recompute();
     window.addEventListener('scroll', onScroll, {
       passive: true,
     });
-    window.addEventListener('resize', onScroll);
+    tryEdges();
 
     return () => {
+      observer.disconnect();
       window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-      if (frame !== 0) {
-        window.cancelAnimationFrame(frame);
-      }
     };
   }, [
     headings,
@@ -95,7 +134,6 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     if (!container || !item) {
       return;
     }
-
     container.style.setProperty('--indicator-top', `${item.offsetTop}px`);
     container.style.setProperty('--indicator-height', `${item.offsetHeight}px`);
   }, [
@@ -111,12 +149,72 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     if (!element) {
       return;
     }
+    if (headings.some((heading) => heading.id === hash)) {
+      setActiveId(hash);
+    }
     window.requestAnimationFrame(() => {
       element.scrollIntoView({
         behavior: 'auto',
         block: 'start',
       });
     });
+  }, [
+    headings,
+  ]);
+
+  useEffect(
+    () => () => {
+      if (lockTimeoutRef.current !== undefined) {
+        window.clearTimeout(lockTimeoutRef.current);
+      }
+      if (lockReleaseRef.current !== undefined) {
+        window.removeEventListener('scrollend', lockReleaseRef.current);
+      }
+    },
+    [],
+  );
+
+  const handleActivate = useCallback((id: string) => {
+    const element = document.getElementById(id);
+    if (!element) {
+      return;
+    }
+
+    lockedIdRef.current = id;
+    setActiveId(id);
+
+    element.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+
+    if (lockReleaseRef.current !== undefined) {
+      window.removeEventListener('scrollend', lockReleaseRef.current);
+    }
+    if (lockTimeoutRef.current !== undefined) {
+      window.clearTimeout(lockTimeoutRef.current);
+    }
+
+    const release = () => {
+      lockedIdRef.current = null;
+      if (lockReleaseRef.current !== undefined) {
+        window.removeEventListener('scrollend', lockReleaseRef.current);
+        lockReleaseRef.current = undefined;
+      }
+      if (lockTimeoutRef.current !== undefined) {
+        window.clearTimeout(lockTimeoutRef.current);
+        lockTimeoutRef.current = undefined;
+      }
+    };
+
+    lockReleaseRef.current = release;
+    window.addEventListener('scrollend', release, {
+      once: true,
+    });
+    lockTimeoutRef.current = window.setTimeout(
+      release,
+      SCROLL_LOCK_FALLBACK_MS,
+    );
   }, []);
 
   if (headings.length === 0) {
@@ -142,6 +240,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
               heading={heading}
               isActive={activeId === heading.id}
               key={heading.id}
+              onActivate={handleActivate}
               ref={(element) => {
                 if (element) {
                   itemRefs.current.set(heading.id, element);
@@ -152,12 +251,10 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
             />
           ))}
         </Box>
-        {activeId !== null && (
-          <Box
-            aria-hidden="true"
-            className={styles.Indicator}
-          />
-        )}
+        <Box
+          aria-hidden="true"
+          className={styles.Indicator}
+        />
       </Box>
     </Box>
   );

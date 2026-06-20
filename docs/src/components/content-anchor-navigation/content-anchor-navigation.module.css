@@ -37,8 +37,8 @@
     background-color: var(--brand);
     transform: translateY(var(--indicator-top, 0px));
     transition:
-      transform 250ms cubic-bezier(0.16, 1, 0.3, 1),
-      height 250ms cubic-bezier(0.16, 1, 0.3, 1);
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+      height 320ms cubic-bezier(0.22, 1, 0.36, 1);
     will-change: transform, height;
   }
 
