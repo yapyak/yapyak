@@ -6,8 +6,8 @@ import { Link } from '@tanstack/react-router';
 import styles from './content-anchor-navigation-item.module.css';
 
 export type ContentAnchorNavigationItemProps = {
+  active: boolean;
   heading: HeadingEntry;
-  isActive: boolean;
   onActivate: (id: string) => void;
   ref?: Ref<HTMLAnchorElement>;
 };
@@ -15,7 +15,7 @@ export type ContentAnchorNavigationItemProps = {
 export function ContentAnchorNavigationItem(
   props: ContentAnchorNavigationItemProps,
 ) {
-  const { heading, isActive, onActivate, ref } = props;
+  const { active: isActive, heading, onActivate, ref } = props;
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     if (

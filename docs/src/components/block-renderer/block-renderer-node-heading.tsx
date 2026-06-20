@@ -12,6 +12,7 @@ export type BlockRendererNodeHeadingProps = {
 
 export function BlockRendererNodeHeading(props: BlockRendererNodeHeadingProps) {
   const { block } = props;
+
   const isLinkable = block.level >= 2;
 
   const content = block.children.map((child, index) => (
@@ -23,7 +24,7 @@ export function BlockRendererNodeHeading(props: BlockRendererNodeHeadingProps) {
 
   return (
     <Box
-      as={headingTag(block.level)}
+      as={getHeadingTag(block.level)}
       className={styles.BlockRendererNodeHeading}
       data-level={block.level}
       id={block.id}
@@ -50,7 +51,7 @@ export function BlockRendererNodeHeading(props: BlockRendererNodeHeadingProps) {
   );
 }
 
-function headingTag(level: HeadingBlock['level']) {
+function getHeadingTag(level: HeadingBlock['level']) {
   switch (level) {
     case 1:
       return 'h1';

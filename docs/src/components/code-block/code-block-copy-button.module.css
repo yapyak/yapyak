@@ -13,7 +13,7 @@
     color: var(--foreground-softer);
     outline: var(--spacing-2) solid transparent;
     outline-offset: 0;
-    background-color: var(--surface);
+    background-color: var(--surface-stronger);
     border-radius: var(--border-radius-sm);
     box-shadow: var(--shadow-ring-inset);
     transition:

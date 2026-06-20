@@ -1,13 +1,7 @@
 import type { HeadingEntry } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#components/box';
 
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
 import { Box } from '#components/box';
@@ -26,14 +20,12 @@ export type ContentAnchorNavigationProps = BoxProps<'nav'> & {
 export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
   const { className, headings, ...restProps } = props;
 
-  const containerRef = useRef<HTMLElement | null>(null);
-  const itemRefs = useRef(new Map<string, HTMLAnchorElement>());
+  const element = useRef<HTMLElement | null>(null);
+  const itemElementsRef = useRef(new Map<string, HTMLAnchorElement>());
   const lockedIdRef = useRef<string | null>(null);
-  const lockTimeoutRef = useRef<number | undefined>(undefined);
+  const lockTimeoutRef = useRef<number>(undefined);
   const lockReleaseRef = useRef<(() => void) | undefined>(undefined);
-  const [activeId, setActiveId] = useState<string | null>(
-    headings[0]?.id ?? null,
-  );
+  const [activeId, setActiveId] = useState(headings[0]?.id ?? null);
 
   useEffect(() => {
     if (headings.length === 0) {
@@ -83,11 +75,11 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
 
         let lastAbove: string | null = null;
         for (const heading of headings) {
-          const element = document.getElementById(heading.id);
-          if (!element) {
+          const headingElement = document.getElementById(heading.id);
+          if (!headingElement) {
             continue;
           }
-          if (element.getBoundingClientRect().top < HEADER_OFFSET_PX) {
+          if (headingElement.getBoundingClientRect().top < HEADER_OFFSET_PX) {
             lastAbove = heading.id;
           } else {
             break;
@@ -103,9 +95,9 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     );
 
     for (const heading of headings) {
-      const element = document.getElementById(heading.id);
-      if (element) {
-        observer.observe(element);
+      const headingElement = document.getElementById(heading.id);
+      if (headingElement) {
+        observer.observe(headingElement);
       }
     }
 
@@ -129,13 +121,16 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     if (activeId === null) {
       return;
     }
-    const container = containerRef.current;
-    const item = itemRefs.current.get(activeId);
-    if (!container || !item) {
+    const $element = element.current;
+    const itemElement = itemElementsRef.current.get(activeId);
+    if (!$element || !itemElement) {
       return;
     }
-    container.style.setProperty('--indicator-top', `${item.offsetTop}px`);
-    container.style.setProperty('--indicator-height', `${item.offsetHeight}px`);
+    $element.style.setProperty('--indicator-top', `${itemElement.offsetTop}px`);
+    $element.style.setProperty(
+      '--indicator-height',
+      `${itemElement.offsetHeight}px`,
+    );
   }, [
     activeId,
   ]);
@@ -145,15 +140,15 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     if (!hash) {
       return;
     }
-    const element = document.getElementById(hash);
-    if (!element) {
+    const targetElement = document.getElementById(hash);
+    if (!targetElement) {
       return;
     }
     if (headings.some((heading) => heading.id === hash)) {
       setActiveId(hash);
     }
     window.requestAnimationFrame(() => {
-      element.scrollIntoView({
+      targetElement.scrollIntoView({
         behavior: 'auto',
         block: 'start',
       });
@@ -174,16 +169,16 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     [],
   );
 
-  const handleActivate = useCallback((id: string) => {
-    const element = document.getElementById(id);
-    if (!element) {
+  const handleActivate = (id: string) => {
+    const targetElement = document.getElementById(id);
+    if (!targetElement) {
       return;
     }
 
     lockedIdRef.current = id;
     setActiveId(id);
 
-    element.scrollIntoView({
+    targetElement.scrollIntoView({
       behavior: 'smooth',
       block: 'start',
     });
@@ -215,7 +210,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
       release,
       SCROLL_LOCK_FALLBACK_MS,
     );
-  }, []);
+  };
 
   if (headings.length === 0) {
     return null;
@@ -230,22 +225,22 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
         styles.ContentAnchorNavigation,
         className,
       ]}
-      ref={containerRef}
+      ref={element}
     >
       <Box className={styles.Rail}>
         <Box className={styles.Eyebrow}>{t('On this page')}</Box>
         <Box className={styles.List}>
           {headings.map((heading) => (
             <ContentAnchorNavigationItem
+              active={activeId === heading.id}
               heading={heading}
-              isActive={activeId === heading.id}
               key={heading.id}
               onActivate={handleActivate}
-              ref={(element) => {
-                if (element) {
-                  itemRefs.current.set(heading.id, element);
+              ref={(itemElement) => {
+                if (itemElement) {
+                  itemElementsRef.current.set(heading.id, itemElement);
                 } else {
-                  itemRefs.current.delete(heading.id);
+                  itemElementsRef.current.delete(heading.id);
                 }
               }}
             />

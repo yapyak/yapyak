@@ -1,50 +1,52 @@
 @layer components {
   .ContentAnchorNavigation {
     display: block;
-  }
 
-  .Rail {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-3);
-    padding-left: var(--spacing-3);
-    border-left: var(--px) solid var(--rule);
-  }
+    .Rail {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-3);
+      padding-left: var(--spacing-3);
+      border-left: var(--px) solid var(--rule);
 
-  .Eyebrow {
-    padding: 0 var(--spacing-3);
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    color: var(--foreground-softer);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
+      .Eyebrow {
+        padding: 0 var(--spacing-3);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--foreground-softer);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wider);
+      }
 
-  .List {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-1);
-  }
+      .List {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+      }
 
-  .Indicator {
-    position: absolute;
-    top: 0;
-    left: calc(-1 * var(--px));
-    width: var(--px);
-    height: var(--indicator-height, 0px);
-    pointer-events: none;
-    background-color: var(--brand);
-    transform: translateY(var(--indicator-top, 0px));
-    transition:
-      transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
-      height 320ms cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: transform, height;
-  }
+      .Indicator {
+        --indicator-top: 0px;
+        --indicator-height: 0px;
+        --indicator-duration: 320ms;
 
-  @media (prefers-reduced-motion: reduce) {
-    .Indicator {
-      transition: none;
+        position: absolute;
+        top: 0;
+        left: calc(-1 * var(--px));
+        width: var(--px);
+        height: var(--indicator-height);
+        pointer-events: none;
+        background-color: var(--brand);
+        transform: translateY(var(--indicator-top));
+        transition:
+          transform var(--indicator-duration) var(--ease-smooth),
+          height var(--indicator-duration) var(--ease-smooth);
+        will-change: transform, height;
+
+        @media (prefers-reduced-motion: reduce) {
+          transition: none;
+        }
+      }
     }
   }
 }
