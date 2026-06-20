@@ -7,7 +7,7 @@ export type Config = {
   validate?: boolean;
 };
 
-export type AgentArtifactOption = {
+type AgentArtifactOption = {
   description: string;
   instructions: string;
   outDir: string;
