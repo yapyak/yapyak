@@ -23,6 +23,7 @@
         box-shadow:
           inset 0 0 0 var(--px) var(--ring-strong),
           inset 0 var(--px) var(--ring-strong);
+        backdrop-filter: blur(10px) saturate(180%);
       }
     }
 
