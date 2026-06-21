@@ -7,9 +7,11 @@ import type {
   Supplement,
   TypeScriptPackage,
 } from '../config';
+import type { ReferenceExport, TypeToken } from '../extract/typescript';
 
 import { extractMarkdown } from '../extract/markdown';
 import {
+  buildMethodPage,
   buildModulePage,
   buildPackageIndexPage,
   buildSymbolIndex,
@@ -190,12 +192,27 @@ async function buildTypeScriptCollection(
       const moduleHref = `/${collectionName}/${modulePath}`;
       const moduleLabel = isRootModule ? displayName : subSlug;
 
+      const exportsByName = new Map<string, ReferenceExport>();
+      for (const symbol of module.exports) {
+        exportsByName.set(symbol.name, symbol);
+      }
+
       for (const symbol of module.exports) {
         const safeName = encodeSymbolSegment(symbol.name);
         const path = isRootModule
           ? `${packageSlug}/${safeName}`
           : `${packageSlug}/${subSlug}/${safeName}`;
         const href = `/${collectionName}/${path}`;
+        const variableTypeExport =
+          symbol.kind === 'variable'
+            ? resolveTypeExport(symbol.type, exportsByName)
+            : undefined;
+        const isCallableVariable =
+          variableTypeExport !== undefined &&
+          (variableTypeExport.kind === 'type' ||
+            variableTypeExport.kind === 'interface') &&
+          (variableTypeExport.callSignatures.length > 0 ||
+            variableTypeExport.members.some((m) => m.kind === 'method'));
         const page = buildSymbolPage(
           symbol,
           context,
@@ -206,6 +223,9 @@ async function buildTypeScriptCollection(
             packageDir: typescriptPackage.root,
           },
           {
+            ...(isCallableVariable && {
+              eyebrowKind: 'function' as const,
+            }),
             sourceUrl,
           },
         );
@@ -214,6 +234,45 @@ async function buildTypeScriptCollection(
           collection: collectionName,
           path,
         };
+
+        if (
+          variableTypeExport === undefined ||
+          (variableTypeExport.kind !== 'type' &&
+            variableTypeExport.kind !== 'interface')
+        ) {
+          continue;
+        }
+        for (const member of variableTypeExport.members) {
+          if (member.kind !== 'method') {
+            continue;
+          }
+          const subSegment = encodeSymbolSegment(
+            `${symbol.name}.${member.name}`,
+          );
+          const subPath = isRootModule
+            ? `${packageSlug}/${subSegment}`
+            : `${packageSlug}/${subSlug}/${subSegment}`;
+          const subHref = `/${collectionName}/${subPath}`;
+          const subPage = buildMethodPage(
+            symbol,
+            member,
+            context,
+            {
+              href: subHref,
+              index,
+              moduleId: module.id,
+              packageDir: typescriptPackage.root,
+            },
+            {
+              sourceUrl,
+            },
+          );
+          pages[subPath] = subPage;
+          symbols[`${packageSlug}/${symbol.name}.${member.name}`] = {
+            collection: collectionName,
+            path: subPath,
+          };
+        }
       }
 
       pages[modulePath] = buildModulePage(module, context, {
@@ -322,4 +381,35 @@ function validateSlug(slug: string): void {
       `[doc-compiler] Invalid package name "${slug}". Use letters, digits, "@", "/", "_", or "-".`,
     );
   }
+}
+
+function resolveTypeExport(
+  typeTokens: TypeToken[],
+  exportsByName: Map<string, ReferenceExport>,
+): ReferenceExport | undefined {
+  const typeName = findTypeIdentifier(typeTokens);
+  if (typeName === undefined) {
+    return undefined;
+  }
+  const typeExport = exportsByName.get(typeName);
+  if (
+    typeExport !== undefined &&
+    (typeExport.kind === 'type' || typeExport.kind === 'interface')
+  ) {
+    return typeExport;
+  }
+  return undefined;
+}
+
+function findTypeIdentifier(tokens: TypeToken[]): string | undefined {
+  for (const token of tokens) {
+    if (token.kind === 'ref') {
+      return token.name;
+    }
+    const match = /^([A-Z][\w$]*)(?:<.*>)?$/.exec(token.text.trim());
+    if (match !== null) {
+      return match[1];
+    }
+  }
+  return undefined;
 }

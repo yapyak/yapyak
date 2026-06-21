@@ -71,6 +71,7 @@ type ReferenceInterface = ReferenceSymbolBase & {
 };
 
 export type ReferenceTypeAlias = ReferenceSymbolBase & {
+  callSignatures: ReferenceCallSignature[];
   kind: 'type';
   members: ReferenceMember[];
   resolvedType: TypeToken[];
@@ -97,12 +98,21 @@ export type ReferenceParameter = {
   type: TypeToken[];
 };
 
-export type ReferenceMember = {
+export type ReferenceMember = ReferencePropertyMember | ReferenceMethodMember;
+
+export type ReferencePropertyMember = {
   defaultValue: string | null;
   description: string;
+  kind: 'property';
   name: string;
   optional: boolean;
   type: TypeToken[];
+};
+
+export type ReferenceMethodMember = ReferenceSymbolBase & {
+  kind: 'method';
+  optional: boolean;
+  overloads: ReferenceOverload[];
 };
 
 export type ReferenceCallSignature = {

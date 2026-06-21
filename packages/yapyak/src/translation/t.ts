@@ -105,6 +105,8 @@ export type TFn = {
   /**
    * Disambiguates a source string by context, or returns a chain that requires `.in()` to complete.
    *
+   * @shape t.as<T extends string>(context: string, source: T, params?: TParams<T>): string
+   *
    * @remarks
    * The compiler emits `YAP0018` if a source is used with both `t()` and `t.as()` in the same file.
    *
@@ -123,6 +125,8 @@ export type TFn = {
 
   /**
    * Forces a fixed locale for one translation call, or returns a chain that requires `.as()` to complete.
+   *
+   * @shape t.in<T extends string>(locale: Locale, source: T, params?: TParams<T>): string
    *
    * @typeParam T - The source string literal.
    * @param locale - {@shape Locale} The locale code, e.g. `'sv'`.
@@ -189,7 +193,7 @@ export type TFn = {
  * t.in('sv').as('action', 'Open');
  * ```
  */
-export const t = Object.assign(() => throwNotCompiled('t'), {
+export const t: TFn = Object.assign(() => throwNotCompiled('t'), {
   as: () => throwNotCompiled('t.as'),
   in: () => throwNotCompiled('t.in'),
 }) as TFn;

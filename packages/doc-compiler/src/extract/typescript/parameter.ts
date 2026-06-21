@@ -14,18 +14,37 @@ export function extractParameters(
   for (const parameter of parameters) {
     const name = parameter.name.getText();
     const tag = parameterTags.get(name);
+    const rawComment = getTagComment(tag);
+    const { description, shape } = extractInlineShape(rawComment);
     result.push({
       defaultValue: parameter.initializer?.getText() ?? null,
-      description: getTagComment(tag),
+      description,
       name,
       optional:
         parameter.questionToken !== undefined ||
         parameter.initializer !== undefined,
-      shape: '',
+      shape,
       type: buildTypeTokens(parameter.type),
     });
   }
   return result;
+}
+
+function extractInlineShape(comment: string): {
+  description: string;
+  shape: string;
+} {
+  const match = /^\s*\{@shape\s+([^}]+)\}\s*/.exec(comment);
+  if (match === null || match[1] === undefined) {
+    return {
+      description: comment,
+      shape: '',
+    };
+  }
+  return {
+    description: comment.slice(match[0].length).trimStart(),
+    shape: match[1].trim(),
+  };
 }
 
 function extractParameterTags(node: Node): Map<string, JSDocParameterTag> {

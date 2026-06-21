@@ -1,57 +1,116 @@
-import type { NodeArray, TypeElement } from 'typescript';
-import type { ReferenceMember } from './type';
+import type {
+  MethodSignature,
+  NodeArray,
+  PropertySignature,
+  TypeElement,
+} from 'typescript';
+import type {
+  ReferenceMember,
+  ReferenceMethodMember,
+  ReferenceOverload,
+  ReferencePropertyMember,
+} from './type';
 
 import ts from 'typescript';
 
 import { extractJsDoc } from './jsdoc';
+import { buildLocation } from './location';
+import { buildMethodOverload } from './signature';
 import { buildTypeTokens } from './type-token';
+
+export type ExtractMembersContext = {
+  packageDir: string;
+};
 
 export function extractMembers(
   members: NodeArray<TypeElement>,
+  context: ExtractMembersContext,
 ): ReferenceMember[] {
   const result: ReferenceMember[] = [];
+  let pendingName: string | undefined;
+  let pendingFirstNode: MethodSignature | undefined;
+  let pendingOverloads: ReferenceOverload[] = [];
+
+  const flushPending = () => {
+    if (pendingFirstNode === undefined || pendingName === undefined) {
+      return;
+    }
+    result.push(
+      buildMethodMember(
+        pendingName,
+        pendingFirstNode,
+        pendingOverloads,
+        context,
+      ),
+    );
+    pendingName = undefined;
+    pendingFirstNode = undefined;
+    pendingOverloads = [];
+  };
+
   for (const member of members) {
-    if (!ts.isPropertySignature(member) && !ts.isMethodSignature(member)) {
+    if (ts.isMethodSignature(member) && member.name !== undefined) {
+      const name = member.name.getText();
+      if (pendingName === name) {
+        pendingOverloads.push(buildMethodOverload(member));
+        continue;
+      }
+      flushPending();
+      pendingName = name;
+      pendingFirstNode = member;
+      pendingOverloads = [
+        buildMethodOverload(member),
+      ];
       continue;
     }
-    if (member.name === undefined) {
-      continue;
+
+    flushPending();
+
+    if (ts.isPropertySignature(member) && member.name !== undefined) {
+      result.push(buildPropertyMember(member));
     }
-    const jsDoc = extractJsDoc(member);
-    result.push({
-      defaultValue: parseDefaultValue(jsDoc.tags),
-      description: jsDoc.description,
-      name: member.name.getText(),
-      optional: member.questionToken !== undefined,
-      type: buildMemberType(member),
-    });
   }
+
+  flushPending();
+
   return result;
 }
 
-function buildMemberType(
-  member: TypeElement,
-): ReturnType<typeof buildTypeTokens> {
-  if (ts.isPropertySignature(member)) {
-    return buildTypeTokens(member.type);
-  }
-  if (ts.isMethodSignature(member)) {
-    const text = member.getText();
-    const colonIndex = text.indexOf(':');
-    if (colonIndex === -1) {
-      return [];
-    }
-    return [
-      {
-        kind: 'text',
-        text: text
-          .slice(colonIndex + 1)
-          .trim()
-          .replace(/;$/, ''),
-      },
-    ];
-  }
-  return [];
+function buildPropertyMember(node: PropertySignature): ReferencePropertyMember {
+  const jsDoc = extractJsDoc(node);
+  return {
+    defaultValue: parseDefaultValue(jsDoc.tags),
+    description: jsDoc.description,
+    kind: 'property',
+    name: node.name.getText(),
+    optional: node.questionToken !== undefined,
+    type: buildTypeTokens(node.type),
+  };
+}
+
+function buildMethodMember(
+  name: string,
+  firstNode: MethodSignature,
+  overloads: ReferenceOverload[],
+  context: ExtractMembersContext,
+): ReferenceMethodMember {
+  const jsDoc = extractJsDoc(firstNode);
+  const sourceFile = firstNode.getSourceFile();
+  return {
+    deprecated: jsDoc.deprecated,
+    description: jsDoc.description,
+    examples: jsDoc.examples,
+    kind: 'method',
+    location: buildLocation(firstNode, sourceFile, context.packageDir),
+    name,
+    optional: firstNode.questionToken !== undefined,
+    overloads,
+    remarks: jsDoc.remarks,
+    seeAlso: jsDoc.seeAlso,
+    shape: jsDoc.shape,
+    tags: jsDoc.tags,
+    throws: jsDoc.throws,
+  };
 }
 
 function parseDefaultValue(

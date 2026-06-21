@@ -13,9 +13,11 @@ import type {
   ReferenceExample,
   ReferenceExport,
   ReferenceMember,
+  ReferenceMethodMember,
   ReferenceModule,
   ReferenceOverload,
   ReferenceParameter,
+  ReferencePropertyMember,
   ReferenceThrows,
   ReferenceTypeAlias,
   ReferenceTypeParameter,
@@ -42,6 +44,7 @@ type BuildSymbolPageInput = {
 };
 
 type BuildSymbolPageOptions = {
+  eyebrowKind?: ExportKind;
   sourceUrl?: SourceUrlConfig;
 };
 
@@ -60,7 +63,7 @@ export function buildSymbolPage(
   blocks.push(
     buildEyebrowBlock(
       input.moduleId,
-      symbol.kind,
+      options.eyebrowKind ?? symbol.kind,
       resolveSourceHref(
         symbol.location.file,
         symbol.location.line,
@@ -196,6 +199,112 @@ export function buildSymbolPage(
     href: input.href,
     meta: {},
     title: symbol.kind === 'function' ? `${symbol.name}()` : symbol.name,
+  };
+}
+
+export function buildMethodPage(
+  parentSymbol: ReferenceExport,
+  member: ReferenceMethodMember,
+  context: PackageContext,
+  input: BuildSymbolPageInput,
+  options: BuildSymbolPageOptions = {},
+): Page {
+  currentIndex = input.index;
+  currentCollection = context.collectionName;
+  currentPackageName = context.packageName;
+  currentPackageSlug = context.packageSlug;
+
+  const fullName = `${parentSymbol.name}.${member.name}`;
+  const blocks: Block[] = [];
+
+  blocks.push(
+    buildEyebrowBlock(
+      input.moduleId,
+      'function',
+      resolveSourceHref(
+        member.location.file,
+        member.location.line,
+        input.packageDir,
+        options.sourceUrl,
+      ),
+    ),
+  );
+
+  if (member.deprecated !== null) {
+    blocks.push({
+      children: [
+        {
+          children: [
+            {
+              type: 'text',
+              value: member.deprecated,
+            },
+          ],
+          type: 'paragraph',
+        },
+      ],
+      title: 'Deprecated',
+      type: 'callout',
+      variant: 'warning',
+    });
+  }
+
+  if (member.description) {
+    const parsed = parseMarkdown(member.description);
+    blocks.push(...parsed.blocks);
+  }
+
+  if (member.remarks) {
+    const parsed = parseMarkdown(member.remarks);
+    blocks.push(...parsed.blocks);
+  }
+
+  blocks.push(
+    buildImportSnippet(input.moduleId, parentSymbol.name, parentSymbol.kind),
+  );
+
+  blocks.push(buildHeading2Block('Signature'));
+  if (member.shape) {
+    blocks.push(buildShapeBlock(member.shape));
+  } else {
+    blocks.push(buildFunctionSignatureBlock(member.overloads));
+  }
+
+  const typeParameters = normalizeOverloadTypeParameters(member.overloads);
+  if (typeParameters.length > 0) {
+    blocks.push(buildHeading2Block('Type Parameters'));
+    blocks.push(buildTypeParametersTable(typeParameters));
+  }
+
+  const parameters = normalizeOverloadParameters(member.overloads);
+  if (parameters.length > 0) {
+    blocks.push(buildHeading2Block('Parameters'));
+    blocks.push(buildParametersTable(parameters));
+  }
+
+  if (member.throws.length > 0) {
+    blocks.push(buildHeading2Block('Throws'));
+    blocks.push(buildThrowsTable(member.throws));
+  }
+
+  if (member.examples.length > 0) {
+    blocks.push(buildHeading2Block('Examples'));
+    for (const example of member.examples) {
+      blocks.push(...buildExampleBlocks(example));
+    }
+  }
+
+  if (member.seeAlso.length > 0) {
+    blocks.push(buildHeading2Block('See also'));
+    blocks.push(buildSeeAlsoList(member.seeAlso));
+  }
+
+  return {
+    blocks,
+    description: '',
+    href: input.href,
+    meta: {},
+    title: `${fullName}()`,
   };
 }
 
@@ -637,9 +746,14 @@ function buildParametersTable(parameters: ReferenceParameter[]): Block {
 }
 
 function buildMembersTable(members: ReferenceMember[]): Block {
-  const hasDefault = members.some((member) => member.defaultValue !== null);
+  const properties = members.filter(
+    (member): member is ReferencePropertyMember => member.kind === 'property',
+  );
+  const hasDefault = properties.some(
+    (property) => property.defaultValue !== null,
+  );
   return {
-    body: members.map((member) => buildMemberRow(member, hasDefault)),
+    body: properties.map((property) => buildMemberRow(property, hasDefault)),
     head: buildTableHeaderRow(
       hasDefault
         ? [
@@ -698,7 +812,7 @@ function buildParameterRow(
 }
 
 function buildMemberRow(
-  member: ReferenceMember,
+  member: ReferencePropertyMember,
   includeDefault: boolean,
 ): TableRowBlock {
   const children: TableCellBlock[] = [

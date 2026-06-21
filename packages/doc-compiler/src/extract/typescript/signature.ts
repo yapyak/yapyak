@@ -33,6 +33,15 @@ export function buildCallSignature(
   };
 }
 
+export function buildMethodOverload(node: MethodSignature): ReferenceOverload {
+  return {
+    parameters: extractParameters(node, node.parameters),
+    returnType: buildTypeTokens(node.type),
+    signature: stripBody(node).replace(/;$/, ''),
+    typeParameters: extractTypeParameters(node.typeParameters),
+  };
+}
+
 function stripBody(node: Node, body?: Node): string {
   const text = node.getText();
   if (body === undefined) {

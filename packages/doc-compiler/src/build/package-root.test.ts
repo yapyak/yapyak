@@ -176,6 +176,7 @@ describe('buildPackageRoot', () => {
           exports: [
             {
               ...symbol('Settings'),
+              callSignatures: [],
               kind: 'type',
               members: [],
               resolvedType: [],

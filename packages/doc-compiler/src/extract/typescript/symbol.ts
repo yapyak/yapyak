@@ -7,19 +7,15 @@ import type {
   TypeAliasDeclaration,
   VariableStatement,
 } from 'typescript';
-import type {
-  ReferenceExport,
-  ReferenceLocation,
-  ReferenceSymbolBase,
-} from './type';
+import type { ReferenceExport, ReferenceSymbolBase } from './type';
 
 import ts from 'typescript';
 
 import { extractJsDoc } from './jsdoc';
+import { buildLocation } from './location';
 import { extractMembers } from './member';
 import { buildCallSignature, buildOverload } from './signature';
 import { buildTypeTokens } from './type-token';
-import { relative } from 'node:path';
 
 export type BuildSymbolInput = {
   name: string;
@@ -60,24 +56,13 @@ function buildBase(
     deprecated: jsDoc.deprecated,
     description: jsDoc.description,
     examples: jsDoc.examples,
-    location: buildLocation(node, input),
+    location: buildLocation(node, input.sourceFile, input.packageDir),
     name,
     remarks: jsDoc.remarks,
     seeAlso: jsDoc.seeAlso,
     shape: jsDoc.shape,
     tags: jsDoc.tags,
     throws: jsDoc.throws,
-  };
-}
-
-function buildLocation(node: Node, input: BuildSymbolInput): ReferenceLocation {
-  const { sourceFile, packageDir } = input;
-  const start = node.getStart();
-  const position = sourceFile.getLineAndCharacterOfPosition(start);
-  return {
-    column: position.character + 1,
-    file: relative(packageDir, sourceFile.fileName).split('\\').join('/'),
-    line: position.line + 1,
   };
 }
 
@@ -101,11 +86,20 @@ function buildTypeAliasSymbol(
   node: TypeAliasDeclaration,
   input: BuildSymbolInput,
 ): ReferenceExport {
-  const members = ts.isTypeLiteralNode(node.type)
-    ? extractMembers(node.type.members)
+  const isTypeLiteral = ts.isTypeLiteralNode(node.type);
+  const members = isTypeLiteral
+    ? extractMembers(node.type.members, {
+        packageDir: input.packageDir,
+      })
+    : [];
+  const callSignatures = isTypeLiteral
+    ? node.type.members
+        .filter(ts.isCallSignatureDeclaration)
+        .map(buildCallSignature)
     : [];
   return {
     ...buildBase(name, node, input),
+    callSignatures,
     kind: 'type',
     members,
     resolvedType: buildTypeTokens(node.type),
@@ -121,7 +115,9 @@ function buildInterfaceSymbol(
   const callSignatures = node.members
     .filter(ts.isCallSignatureDeclaration)
     .map(buildCallSignature);
-  const members = extractMembers(node.members);
+  const members = extractMembers(node.members, {
+    packageDir: input.packageDir,
+  });
   return {
     ...buildBase(name, node, input),
     callSignatures,

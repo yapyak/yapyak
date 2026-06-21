@@ -75,6 +75,7 @@ function typeSymbol(
   overrides: Partial<ReferenceTypeAlias> = {},
 ): ReferenceTypeAlias {
   return {
+    callSignatures: [],
     deprecated: null,
     description: '',
     examples: [],
