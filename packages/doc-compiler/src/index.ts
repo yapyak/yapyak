@@ -32,6 +32,7 @@ export type {
   ImageBlock,
   InlineCodeBlock,
   InternalLinkEntry,
+  KindBadgeBlock,
   LineBreakBlock,
   LinkBlock,
   ListBlock,

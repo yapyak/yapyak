@@ -14,6 +14,7 @@ export type {
   HeadingBlock,
   ImageBlock,
   InlineCodeBlock,
+  KindBadgeBlock,
   LineBreakBlock,
   LinkBlock,
   ListBlock,

@@ -20,7 +20,7 @@ export type ReferenceExport =
   | ReferenceTypeAlias
   | ReferenceVariable;
 
-export type ReferenceSymbolBase = {
+type ReferenceSymbolBase = {
   deprecated: string | null;
   description: string;
   examples: ReferenceExample[];
