@@ -18,18 +18,34 @@
       color-mix(in oklab, var(--kind-color) var(--kind-ring-alpha), transparent);
 
     &[data-size="sm"] {
-      padding: 1px 5px;
       font-size: var(--font-size-2xs);
     }
 
     &[data-size="md"] {
-      padding: 2px 8px;
       font-size: var(--font-size-xs);
     }
 
     &[data-size="lg"] {
-      padding: 3px 10px;
       font-size: var(--font-size-sm);
+    }
+
+    &[data-appearance="solid"] {
+      &[data-size="sm"] {
+        padding: 1px 5px;
+      }
+
+      &[data-size="md"] {
+        padding: 2px 8px;
+      }
+
+      &[data-size="lg"] {
+        padding: 3px 10px;
+      }
+    }
+
+    &[data-appearance="plain"] {
+      background-color: transparent;
+      box-shadow: none;
     }
 
     &[data-variant="function"] {

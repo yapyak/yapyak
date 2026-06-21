@@ -17,6 +17,7 @@ export function ContentLayoutSidebar(props: ContentLayoutSidebarProps) {
         styles.ContentLayoutSidebar,
         className,
       ]}
+      id="sidebar"
     />
   );
 }

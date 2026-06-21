@@ -64,12 +64,15 @@ export function expandModuleEntries(exports: ReferenceExport[]): ModuleEntry[] {
       const isPureNamespace = !isCallable && documentedMembers.length > 0;
 
       if (!isPureNamespace) {
+        const labelKind = CALLABLE_DISPLAY_KINDS.has(symbol.displayKind)
+          ? symbol.displayKind
+          : isCallable
+            ? 'function'
+            : symbol.displayKind;
         entries.push({
           description: symbol.description,
           kind: symbol.displayKind,
-          label: isCallable
-            ? formatSymbolLabel(symbol.name, symbol.displayKind)
-            : symbol.name,
+          label: formatSymbolLabel(symbol.name, labelKind),
           segment: symbol.name,
         });
       }

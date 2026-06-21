@@ -49,7 +49,10 @@ function Component() {
         <Outlet />
       </ContentLayout.Content>
       <ContentLayout.Outline>
-        <ContentAnchorNavigation headings={headings} />
+        <ContentAnchorNavigation
+          headings={headings}
+          key={page.href}
+        />
       </ContentLayout.Outline>
       <ContentLayout.Toolbar page={page}>
         {sidebarContent}

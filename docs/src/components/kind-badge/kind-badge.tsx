@@ -5,15 +5,23 @@ import { Box } from '#components/box';
 
 import styles from './kind-badge.module.css';
 
+export type KindBadgeAppearance = 'plain' | 'solid';
 export type KindBadgeSize = 'lg' | 'md' | 'sm';
 
 export type KindBadgeProps = BoxProps<'span'> & {
+  appearance?: KindBadgeAppearance;
   size?: KindBadgeSize;
   variant: ExportKind;
 };
 
 export function KindBadge(props: KindBadgeProps) {
-  const { className, size = 'md', variant, ...restProps } = props;
+  const {
+    appearance = 'solid',
+    className,
+    size = 'md',
+    variant,
+    ...restProps
+  } = props;
 
   return (
     <Box
@@ -23,6 +31,7 @@ export function KindBadge(props: KindBadgeProps) {
         styles.KindBadge,
         className,
       ]}
+      data-appearance={appearance}
       data-size={size}
       data-variant={variant}
     >

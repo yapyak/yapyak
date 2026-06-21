@@ -95,6 +95,7 @@ export function BlockRendererNode(props: BlockRendererNodeProps) {
     case 'kind-badge':
       return (
         <KindBadge
+          appearance="plain"
           size="sm"
           variant={block.kind}
         />

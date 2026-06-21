@@ -12,6 +12,9 @@ export function getRouter() {
     defaultPreload: 'intent',
     routeTree,
     scrollRestoration: true,
+    scrollToTopSelectors: [
+      '#sidebar',
+    ],
   });
 }
 
