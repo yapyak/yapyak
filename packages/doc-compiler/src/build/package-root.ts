@@ -6,7 +6,7 @@ import type {
 } from '../extract/typescript';
 import type { SidebarNode } from './manifest';
 
-import { expandModuleEntries } from '../extract/typescript/module-entry';
+import { expandModuleEntries } from '../extract/typescript';
 import { buildSymbolHref } from '../symbol-path';
 
 type BuildPackageRootInput = {
@@ -153,7 +153,10 @@ function findParentId(
   }
 }
 
-function lastSegment(id: string) {
+function lastSegment(id: string): string {
   const slashIndex = id.lastIndexOf('/');
-  return slashIndex === -1 ? id : id.slice(slashIndex + 1);
+  if (slashIndex === -1) {
+    return id;
+  }
+  return id.slice(slashIndex + 1);
 }

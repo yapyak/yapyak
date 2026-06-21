@@ -10,6 +10,12 @@ export type {
 
 export { extractPackage } from './extract';
 export {
+  expandModuleEntries,
+  getTypeCallSignatures,
+  getTypeMembers,
+  resolveTypeExport,
+} from './module-entry';
+export {
   buildMethodPage,
   buildModulePage,
   buildPackageIndexPage,

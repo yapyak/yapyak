@@ -36,6 +36,7 @@ export type BlockRendererNodeProps = {
 
 export function BlockRendererNode(props: BlockRendererNodeProps) {
   const { block } = props;
+
   switch (block.type) {
     case 'text':
       return <BlockRendererNodeText block={block} />;

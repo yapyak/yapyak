@@ -6,13 +6,15 @@ import type {
   SourceFile,
   TypeAliasDeclaration,
   TypeNode,
+  VariableDeclaration,
   VariableStatement,
 } from 'typescript';
 import type { ExportKind } from '../../access';
 import type {
   ReferenceExport,
+  ReferenceExportBase,
   ReferenceMember,
-  ReferenceSymbolBase,
+  TypeToken,
 } from './type';
 
 import ts from 'typescript';
@@ -58,7 +60,7 @@ function buildBase(
   baseKind: ExportKind,
   node: Node,
   input: BuildSymbolInput,
-): ReferenceSymbolBase {
+): ReferenceExportBase {
   const jsDoc = extractJsDoc(node);
   return {
     deprecated: jsDoc.deprecated,
@@ -145,27 +147,32 @@ function buildVariableSymbol(
     (candidate) =>
       ts.isIdentifier(candidate.name) && candidate.name.text === name,
   );
-  const typeTokens =
-    declaration?.type === undefined
-      ? declaration?.initializer === undefined
-        ? []
-        : [
-            {
-              kind: 'text' as const,
-              text: declaration.initializer.getText(),
-            },
-          ]
-      : buildTypeTokens(declaration.type);
-  const members =
-    declaration?.type === undefined
-      ? []
-      : collectInlineTypeMembers(declaration.type, input.packageDir);
   return {
     ...buildBase(name, 'variable', node, input),
     kind: 'variable',
-    members,
-    type: typeTokens,
+    members:
+      declaration?.type === undefined
+        ? []
+        : collectInlineTypeMembers(declaration.type, input.packageDir),
+    type: getVariableTypeTokens(declaration),
   };
+}
+
+function getVariableTypeTokens(
+  declaration: VariableDeclaration | undefined,
+): TypeToken[] {
+  if (declaration?.type !== undefined) {
+    return buildTypeTokens(declaration.type);
+  }
+  if (declaration?.initializer === undefined) {
+    return [];
+  }
+  return [
+    {
+      kind: 'text',
+      text: declaration.initializer.getText(),
+    },
+  ];
 }
 
 function collectInlineTypeMembers(
@@ -195,7 +202,7 @@ function buildClassSymbol(
     kind: 'class',
     members: [],
     signature: `class ${name}`,
-  } as ReferenceExport;
+  };
 }
 
 function stripModifiers(text: string): string {

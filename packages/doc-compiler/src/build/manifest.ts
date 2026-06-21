@@ -7,7 +7,7 @@ import type {
   Supplement,
   TypeScriptPackage,
 } from '../config';
-import type { ReferenceExport, TypeToken } from '../extract/typescript';
+import type { ReferenceExport } from '../extract/typescript';
 
 import { extractMarkdown } from '../extract/markdown';
 import {
@@ -18,6 +18,9 @@ import {
   buildSymbolIndex,
   buildSymbolPage,
   extractPackage,
+  getTypeCallSignatures,
+  getTypeMembers,
+  resolveTypeExport,
 } from '../extract/typescript';
 import { slugify } from '../slugify';
 import { encodeSymbolSegment } from '../symbol-path';
@@ -222,16 +225,13 @@ async function buildTypeScriptCollection(
           symbol.kind === 'variable'
             ? resolveTypeExport(symbol.type, exportsByName)
             : undefined;
-        const variableHasCallSignature =
-          variableTypeExport !== undefined &&
-          (variableTypeExport.kind === 'type' ||
-            variableTypeExport.kind === 'interface') &&
-          variableTypeExport.callSignatures.length > 0;
-        const variableHasMethods =
-          variableTypeExport !== undefined &&
-          (variableTypeExport.kind === 'type' ||
-            variableTypeExport.kind === 'interface') &&
-          variableTypeExport.members.some((m) => m.kind === 'method');
+        const resolvedCallSignatures =
+          getTypeCallSignatures(variableTypeExport);
+        const resolvedMembers = getTypeMembers(variableTypeExport);
+        const variableHasCallSignature = resolvedCallSignatures.length > 0;
+        const variableHasMethods = resolvedMembers.some(
+          (member) => member.kind === 'method',
+        );
         const isPureNamespaceVariable =
           symbol.kind === 'variable' &&
           !variableHasCallSignature &&
@@ -277,11 +277,6 @@ async function buildTypeScriptCollection(
         if (symbol.kind !== 'variable') {
           continue;
         }
-        const resolvedMembers =
-          variableTypeExport?.kind === 'type' ||
-          variableTypeExport?.kind === 'interface'
-            ? variableTypeExport.members
-            : [];
         const documentedMembers = [
           ...symbol.members,
           ...resolvedMembers,
@@ -293,38 +288,25 @@ async function buildTypeScriptCollection(
           const subPath = isRootModule
             ? `${packageSlug}/${subSegment}`
             : `${packageSlug}/${subSlug}/${subSegment}`;
-          const subHref = `/${collectionName}/${subPath}`;
-          const subPage =
+          const subInput = {
+            href: `/${collectionName}/${subPath}`,
+            index,
+            moduleId: module.id,
+            packageDir: typescriptPackage.root,
+          };
+          const subOptions = {
+            sourceUrl,
+          };
+          pages[subPath] =
             member.kind === 'method'
-              ? buildMethodPage(
-                  symbol,
-                  member,
-                  context,
-                  {
-                    href: subHref,
-                    index,
-                    moduleId: module.id,
-                    packageDir: typescriptPackage.root,
-                  },
-                  {
-                    sourceUrl,
-                  },
-                )
+              ? buildMethodPage(symbol, member, context, subInput, subOptions)
               : buildPropertyMemberPage(
                   symbol,
                   member,
                   context,
-                  {
-                    href: subHref,
-                    index,
-                    moduleId: module.id,
-                    packageDir: typescriptPackage.root,
-                  },
-                  {
-                    sourceUrl,
-                  },
+                  subInput,
+                  subOptions,
                 );
-          pages[subPath] = subPage;
           symbols[`${packageSlug}/${symbol.name}.${member.name}`] = {
             collection: collectionName,
             path: subPath,
@@ -438,35 +420,4 @@ function validateSlug(slug: string): void {
       `[doc-compiler] Invalid package name "${slug}". Use letters, digits, "@", "/", "_", or "-".`,
     );
   }
-}
-
-function resolveTypeExport(
-  typeTokens: TypeToken[],
-  exportsByName: Map<string, ReferenceExport>,
-): ReferenceExport | undefined {
-  const typeName = findTypeIdentifier(typeTokens);
-  if (typeName === undefined) {
-    return undefined;
-  }
-  const typeExport = exportsByName.get(typeName);
-  if (
-    typeExport !== undefined &&
-    (typeExport.kind === 'type' || typeExport.kind === 'interface')
-  ) {
-    return typeExport;
-  }
-  return undefined;
-}
-
-function findTypeIdentifier(tokens: TypeToken[]): string | undefined {
-  for (const token of tokens) {
-    if (token.kind === 'ref') {
-      return token.name;
-    }
-    const match = /^([A-Z][\w$]*)(?:<.*>)?$/.exec(token.text.trim());
-    if (match !== null) {
-      return match[1];
-    }
-  }
-  return undefined;
 }

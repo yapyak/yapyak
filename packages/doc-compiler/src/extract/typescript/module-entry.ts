@@ -1,12 +1,12 @@
 import type { ExportKind } from '../../access';
 import type {
+  ReferenceCallSignature,
   ReferenceExport,
   ReferenceMember,
-  ReferenceTag,
   TypeToken,
 } from './type';
 
-import { classifyExportKind } from './classify';
+import { classifyMemberDisplayKind } from './classify';
 
 export type ModuleEntry = {
   description: string;
@@ -41,14 +41,8 @@ export function expandModuleEntries(exports: ReferenceExport[]): ModuleEntry[] {
 
     if (symbol.kind === 'variable') {
       const typeExport = resolveTypeExport(symbol.type, exportsByName);
-      const resolvedCallSignatures =
-        typeExport?.kind === 'type' || typeExport?.kind === 'interface'
-          ? typeExport.callSignatures
-          : [];
-      const resolvedMembers =
-        typeExport?.kind === 'type' || typeExport?.kind === 'interface'
-          ? typeExport.members
-          : [];
+      const resolvedCallSignatures = getTypeCallSignatures(typeExport);
+      const resolvedMembers = getTypeMembers(typeExport);
       const documentedMembers = [
         ...symbol.members,
         ...resolvedMembers,
@@ -68,11 +62,15 @@ export function expandModuleEntries(exports: ReferenceExport[]): ModuleEntry[] {
         });
       }
       for (const member of documentedMembers) {
+        const memberKind = classifyMemberDisplayKind(member);
+        const segment = `${symbol.name}.${member.name}`;
         entries.push({
           description: member.description,
-          kind: memberDisplayKind(member),
-          label: memberLabel(symbol.name, member),
-          segment: `${symbol.name}.${member.name}`,
+          kind: memberKind,
+          label: CALLABLE_DISPLAY_KINDS.has(memberKind)
+            ? `${segment}()`
+            : segment,
+          segment,
         });
       }
       continue;
@@ -88,24 +86,6 @@ export function expandModuleEntries(exports: ReferenceExport[]): ModuleEntry[] {
   return entries;
 }
 
-function memberDisplayKind(member: ReferenceMember): ExportKind {
-  const baseKind: ExportKind =
-    member.kind === 'method' ? 'function' : 'variable';
-  const tags: ReferenceTag[] = member.kind === 'method' ? member.tags : [];
-  return classifyExportKind(member.name, baseKind, tags);
-}
-
-function memberLabel(parentName: string, member: ReferenceMember): string {
-  const displayKind = memberDisplayKind(member);
-  const isCallable =
-    displayKind === 'function' ||
-    displayKind === 'hook' ||
-    displayKind === 'component';
-  return isCallable
-    ? `${parentName}.${member.name}()`
-    : `${parentName}.${member.name}`;
-}
-
 export function resolveTypeExport(
   typeTokens: TypeToken[],
   exportsByName: Map<string, ReferenceExport>,
@@ -115,6 +95,24 @@ export function resolveTypeExport(
     return undefined;
   }
   return exportsByName.get(typeName);
+}
+
+export function getTypeMembers(
+  typeExport: ReferenceExport | undefined,
+): ReferenceMember[] {
+  if (typeExport?.kind !== 'type' && typeExport?.kind !== 'interface') {
+    return [];
+  }
+  return typeExport.members;
+}
+
+export function getTypeCallSignatures(
+  typeExport: ReferenceExport | undefined,
+): ReferenceCallSignature[] {
+  if (typeExport?.kind !== 'type' && typeExport?.kind !== 'interface') {
+    return [];
+  }
+  return typeExport.callSignatures;
 }
 
 function findTypeIdentifier(tokens: TypeToken[]): string | undefined {

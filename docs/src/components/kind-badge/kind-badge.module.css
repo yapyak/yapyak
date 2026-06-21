@@ -1,9 +1,21 @@
 @layer components {
   .KindBadge {
+    --kind-color: var(--foreground-soft);
+    --kind-bg-alpha: 14%;
+    --kind-ring-alpha: 4%;
+
     font-weight: var(--font-weight-semibold);
+    color: var(--kind-color);
     text-transform: uppercase;
     letter-spacing: var(--letter-spacing-wide);
+    background-color: color-mix(
+      in oklab,
+      var(--kind-color) var(--kind-bg-alpha),
+      transparent
+    );
     border-radius: var(--border-radius-sm);
+    box-shadow: inset 0 0 0 var(--px)
+      color-mix(in oklab, var(--kind-color) var(--kind-ring-alpha), transparent);
 
     &[data-size="sm"] {
       padding: 1px 5px;
@@ -21,68 +33,34 @@
     }
 
     &[data-variant="function"] {
-      color: var(--kind-function);
-      background-color: color-mix(
-        in oklab,
-        var(--kind-function) 14%,
-        transparent
-      );
-      box-shadow: inset 0 0 0 var(--px)
-        color-mix(in oklab, var(--kind-function) 4%, transparent);
+      --kind-color: var(--kind-function);
     }
 
     &[data-variant="hook"] {
-      color: var(--kind-hook);
-      background-color: color-mix(in oklab, var(--kind-hook) 14%, transparent);
-      box-shadow: inset 0 0 0 var(--px)
-        color-mix(in oklab, var(--kind-hook) 4%, transparent);
+      --kind-color: var(--kind-hook);
     }
 
     &[data-variant="component"] {
-      color: var(--kind-component);
-      background-color: color-mix(
-        in oklab,
-        var(--kind-component) 14%,
-        transparent
-      );
-      box-shadow: inset 0 0 0 var(--px)
-        color-mix(in oklab, var(--kind-component) 4%, transparent);
-    }
-
-    &[data-variant="interface"] {
-      color: var(--kind-interface);
-      background-color: color-mix(
-        in oklab,
-        var(--kind-interface) 12%,
-        transparent
-      );
-      box-shadow: inset 0 0 0 var(--px)
-        color-mix(in oklab, var(--kind-interface) 4%, transparent);
-    }
-
-    &[data-variant="type"] {
-      color: var(--kind-type);
-      background-color: color-mix(in oklab, var(--kind-type) 12%, transparent);
-      box-shadow: inset 0 0 0 var(--px)
-        color-mix(in oklab, var(--kind-type) 4%, transparent);
-    }
-
-    &[data-variant="variable"] {
-      color: var(--kind-variable);
-      background-color: color-mix(
-        in oklab,
-        var(--kind-variable) 12%,
-        transparent
-      );
-      box-shadow: inset 0 0 0 var(--px)
-        color-mix(in oklab, var(--kind-variable) 4%, transparent);
+      --kind-color: var(--kind-component);
     }
 
     &[data-variant="class"] {
-      color: var(--kind-class);
-      background-color: color-mix(in oklab, var(--kind-class) 14%, transparent);
-      box-shadow: inset 0 0 0 var(--px)
-        color-mix(in oklab, var(--kind-class) 4%, transparent);
+      --kind-color: var(--kind-class);
+    }
+
+    &[data-variant="interface"] {
+      --kind-color: var(--kind-interface);
+      --kind-bg-alpha: 12%;
+    }
+
+    &[data-variant="type"] {
+      --kind-color: var(--kind-type);
+      --kind-bg-alpha: 12%;
+    }
+
+    &[data-variant="variable"] {
+      --kind-color: var(--kind-variable);
+      --kind-bg-alpha: 12%;
     }
   }
 }

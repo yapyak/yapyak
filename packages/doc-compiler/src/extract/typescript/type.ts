@@ -23,7 +23,6 @@ export type ReferenceExport =
 export type ReferenceSymbolBase = {
   deprecated: string | null;
   description: string;
-  displayKind: ExportKind;
   examples: ReferenceExample[];
   location: ReferenceLocation;
   name: string;
@@ -32,6 +31,10 @@ export type ReferenceSymbolBase = {
   shape: string;
   tags: ReferenceTag[];
   throws: ReferenceThrows[];
+};
+
+export type ReferenceExportBase = ReferenceSymbolBase & {
+  displayKind: ExportKind;
 };
 
 export type ReferenceExample = {
@@ -46,7 +49,7 @@ export type ReferenceThrows = {
   errorClass: string;
 };
 
-type ReferenceFunction = ReferenceSymbolBase & {
+type ReferenceFunction = ReferenceExportBase & {
   kind: 'function';
   members: ReferenceMember[];
   overloads: ReferenceOverload[];
@@ -66,14 +69,14 @@ export type ReferenceTypeParameter = {
   name: string;
 };
 
-type ReferenceInterface = ReferenceSymbolBase & {
+type ReferenceInterface = ReferenceExportBase & {
   callSignatures: ReferenceCallSignature[];
   kind: 'interface';
   members: ReferenceMember[];
   signature: string;
 };
 
-export type ReferenceTypeAlias = ReferenceSymbolBase & {
+export type ReferenceTypeAlias = ReferenceExportBase & {
   callSignatures: ReferenceCallSignature[];
   kind: 'type';
   members: ReferenceMember[];
@@ -81,13 +84,13 @@ export type ReferenceTypeAlias = ReferenceSymbolBase & {
   signature: string;
 };
 
-export type ReferenceVariable = ReferenceSymbolBase & {
+export type ReferenceVariable = ReferenceExportBase & {
   kind: 'variable';
   members: ReferenceMember[];
   type: TypeToken[];
 };
 
-type ReferenceClass = ReferenceSymbolBase & {
+type ReferenceClass = ReferenceExportBase & {
   kind: 'class';
   members: ReferenceMember[];
   signature: string;

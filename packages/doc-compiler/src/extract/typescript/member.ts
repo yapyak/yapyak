@@ -9,6 +9,7 @@ import type {
   ReferenceMethodMember,
   ReferenceOverload,
   ReferencePropertyMember,
+  ReferenceTag,
 } from './type';
 
 import ts from 'typescript';
@@ -99,7 +100,6 @@ function buildMethodMember(
   return {
     deprecated: jsDoc.deprecated,
     description: jsDoc.description,
-    displayKind: 'function',
     examples: jsDoc.examples,
     kind: 'method',
     location: buildLocation(firstNode, sourceFile, context.packageDir),
@@ -114,12 +114,7 @@ function buildMethodMember(
   };
 }
 
-function parseDefaultValue(
-  tags: {
-    name: string;
-    text: string;
-  }[],
-): string | null {
+function parseDefaultValue(tags: ReferenceTag[]): string | null {
   for (const tag of tags) {
     if (tag.name === 'defaultValue') {
       return tag.text.trim();

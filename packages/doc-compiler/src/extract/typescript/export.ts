@@ -47,69 +47,15 @@ function collectLocalExports(
 ): void {
   const localByName = new Map<string, ExportEntry>();
   for (const node of sourceFile.statements) {
-    if (ts.isFunctionDeclaration(node) && node.name !== undefined) {
-      localByName.set(node.name.text, {
-        node,
-        sourceFile,
-      });
-    } else if (ts.isTypeAliasDeclaration(node)) {
-      localByName.set(node.name.text, {
-        node,
-        sourceFile,
-      });
-    } else if (ts.isInterfaceDeclaration(node)) {
-      localByName.set(node.name.text, {
-        node,
-        sourceFile,
-      });
-    } else if (ts.isClassDeclaration(node) && node.name !== undefined) {
-      localByName.set(node.name.text, {
-        node,
-        sourceFile,
-      });
-    } else if (ts.isVariableStatement(node)) {
-      for (const declaration of node.declarationList.declarations) {
-        if (ts.isIdentifier(declaration.name)) {
-          localByName.set(declaration.name.text, {
-            node,
-            sourceFile,
-          });
-        }
-      }
+    for (const [name, entry] of declarationEntries(node, sourceFile)) {
+      localByName.set(name, entry);
     }
   }
 
   for (const node of sourceFile.statements) {
     if (hasExportModifier(node)) {
-      if (ts.isFunctionDeclaration(node) && node.name !== undefined) {
-        out.set(node.name.text, {
-          node,
-          sourceFile,
-        });
-      } else if (ts.isTypeAliasDeclaration(node)) {
-        out.set(node.name.text, {
-          node,
-          sourceFile,
-        });
-      } else if (ts.isInterfaceDeclaration(node)) {
-        out.set(node.name.text, {
-          node,
-          sourceFile,
-        });
-      } else if (ts.isClassDeclaration(node) && node.name !== undefined) {
-        out.set(node.name.text, {
-          node,
-          sourceFile,
-        });
-      } else if (ts.isVariableStatement(node)) {
-        for (const declaration of node.declarationList.declarations) {
-          if (ts.isIdentifier(declaration.name)) {
-            out.set(declaration.name.text, {
-              node,
-              sourceFile,
-            });
-          }
-        }
+      for (const [name, entry] of declarationEntries(node, sourceFile)) {
+        out.set(name, entry);
       }
       continue;
     }
@@ -124,6 +70,78 @@ function collectLocalExports(
       }
     }
   }
+}
+
+function declarationEntries(
+  node: Node,
+  sourceFile: SourceFile,
+): [
+  string,
+  ExportEntry,
+][] {
+  if (ts.isFunctionDeclaration(node) && node.name !== undefined) {
+    return [
+      [
+        node.name.text,
+        {
+          node,
+          sourceFile,
+        },
+      ],
+    ];
+  }
+  if (ts.isTypeAliasDeclaration(node)) {
+    return [
+      [
+        node.name.text,
+        {
+          node,
+          sourceFile,
+        },
+      ],
+    ];
+  }
+  if (ts.isInterfaceDeclaration(node)) {
+    return [
+      [
+        node.name.text,
+        {
+          node,
+          sourceFile,
+        },
+      ],
+    ];
+  }
+  if (ts.isClassDeclaration(node) && node.name !== undefined) {
+    return [
+      [
+        node.name.text,
+        {
+          node,
+          sourceFile,
+        },
+      ],
+    ];
+  }
+  if (ts.isVariableStatement(node)) {
+    const entries: [
+      string,
+      ExportEntry,
+    ][] = [];
+    for (const declaration of node.declarationList.declarations) {
+      if (ts.isIdentifier(declaration.name)) {
+        entries.push([
+          declaration.name.text,
+          {
+            node,
+            sourceFile,
+          },
+        ]);
+      }
+    }
+    return entries;
+  }
+  return [];
 }
 
 function collectReExports(

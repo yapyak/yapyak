@@ -1,17 +1,17 @@
 import type { ExportKind } from '../../access';
-import type { ReferenceTag } from './type';
+import type { ReferenceMember, ReferenceTag } from './type';
 
 const HOOK_NAME_RX = /^use[A-Z]/;
 const COMPONENT_NAME_RX = /^[A-Z][a-z]/;
-const ALLOWED_OVERRIDES = new Set<ExportKind>([
-  'class',
-  'component',
-  'function',
-  'hook',
-  'interface',
-  'type',
-  'variable',
-]);
+const EXPORT_KINDS: Record<ExportKind, true> = {
+  class: true,
+  component: true,
+  function: true,
+  hook: true,
+  interface: true,
+  type: true,
+  variable: true,
+};
 
 export function classifyExportKind(
   name: string,
@@ -19,8 +19,8 @@ export function classifyExportKind(
   tags: ReferenceTag[],
 ): ExportKind {
   const override = tags.find((tag) => tag.name === 'kind')?.text.trim();
-  if (override !== undefined && ALLOWED_OVERRIDES.has(override as ExportKind)) {
-    return override as ExportKind;
+  if (override !== undefined && isExportKind(override)) {
+    return override;
   }
   if (baseKind === 'function' || baseKind === 'variable') {
     if (HOOK_NAME_RX.test(name)) {
@@ -31,4 +31,15 @@ export function classifyExportKind(
     }
   }
   return baseKind;
+}
+
+export function classifyMemberDisplayKind(member: ReferenceMember): ExportKind {
+  if (member.kind === 'method') {
+    return classifyExportKind(member.name, 'function', member.tags);
+  }
+  return classifyExportKind(member.name, 'variable', []);
+}
+
+function isExportKind(value: string): value is ExportKind {
+  return value in EXPORT_KINDS;
 }

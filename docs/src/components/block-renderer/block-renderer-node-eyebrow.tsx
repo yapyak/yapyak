@@ -11,13 +11,14 @@ export type BlockRendererNodeEyebrowProps = {
 
 export function BlockRendererNodeEyebrow(props: BlockRendererNodeEyebrowProps) {
   const { block } = props;
+
   return (
     <Box
       as="p"
       className={styles.BlockRendererNodeEyebrow}
     >
-      {block.kind !== null && <KindBadge variant={block.kind} />}
-      {block.module !== null && (
+      {block.kind && <KindBadge variant={block.kind} />}
+      {block.module && (
         <Box
           as="span"
           className={styles.ModuleText}
@@ -25,7 +26,7 @@ export function BlockRendererNodeEyebrow(props: BlockRendererNodeEyebrowProps) {
           {block.module}
         </Box>
       )}
-      {block.sourceHref !== null && (
+      {block.sourceHref && (
         <Box
           as="a"
           className={styles.SourceLink}

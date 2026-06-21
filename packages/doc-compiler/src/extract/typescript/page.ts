@@ -12,7 +12,6 @@ import type { SymbolIndex } from './symbol-index';
 import type {
   ReferenceExample,
   ReferenceExport,
-  ReferenceMember,
   ReferenceMethodMember,
   ReferenceModule,
   ReferenceOverload,
@@ -29,7 +28,7 @@ import { nullify } from '../../nullify';
 import { slugify } from '../../slugify';
 import { buildSymbolHref } from '../../symbol-path';
 import { parseMarkdown } from '../markdown';
-import { classifyExportKind } from './classify';
+import { classifyMemberDisplayKind } from './classify';
 import { expandModuleEntries } from './module-entry';
 import { relative, resolve } from 'node:path';
 
@@ -303,12 +302,13 @@ export function buildPropertyMemberPage(
   currentPackageSlug = context.packageSlug;
 
   const fullName = `${parentSymbol.name}.${member.name}`;
+  const memberKind = classifyMemberDisplayKind(member);
   const blocks: Block[] = [];
 
   blocks.push(
     buildEyebrowBlock(
       input.moduleId,
-      classifyMemberDisplayKind(member),
+      memberKind,
       resolveSourceHref(
         parentSymbol.location.file,
         parentSymbol.location.line,
@@ -327,8 +327,7 @@ export function buildPropertyMemberPage(
     buildImportSnippet(input.moduleId, parentSymbol.name, parentSymbol.kind),
   );
 
-  const memberDisplayKind = classifyMemberDisplayKind(member);
-  if (memberDisplayKind !== 'component' && memberDisplayKind !== 'hook') {
+  if (memberKind !== 'component' && memberKind !== 'hook') {
     blocks.push(buildHeading2Block('Type'));
     blocks.push({
       children: [
@@ -345,13 +344,6 @@ export function buildPropertyMemberPage(
     meta: {},
     title: fullName,
   };
-}
-
-function classifyMemberDisplayKind(member: ReferenceMember): ExportKind {
-  const baseKind: ExportKind =
-    member.kind === 'method' ? 'function' : 'variable';
-  const tags = member.kind === 'method' ? member.tags : [];
-  return classifyExportKind(member.name, baseKind, tags);
 }
 
 export function buildMethodPage(
