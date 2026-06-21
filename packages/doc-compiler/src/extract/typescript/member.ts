@@ -99,6 +99,7 @@ function buildMethodMember(
   return {
     deprecated: jsDoc.deprecated,
     description: jsDoc.description,
+    displayKind: 'function',
     examples: jsDoc.examples,
     kind: 'method',
     location: buildLocation(firstNode, sourceFile, context.packageDir),

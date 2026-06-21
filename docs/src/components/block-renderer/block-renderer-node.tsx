@@ -1,5 +1,7 @@
 import type { Block } from '@yapyak/doc-compiler';
 
+import { KindBadge } from '#components/kind-badge';
+
 import { BlockRendererNodeCallout } from './block-renderer-node-callout';
 import { BlockRendererNodeCodeBlock } from './block-renderer-node-code-block';
 import { BlockRendererNodeCodeExpression } from './block-renderer-node-code-expression';
@@ -89,6 +91,13 @@ export function BlockRendererNode(props: BlockRendererNodeProps) {
       return <BlockRendererNodeEyebrow block={block} />;
     case 'code-location':
       return <BlockRendererNodeCodeLocation block={block} />;
+    case 'kind-badge':
+      return (
+        <KindBadge
+          size="sm"
+          variant={block.kind}
+        />
+      );
     default:
       return null;
   }

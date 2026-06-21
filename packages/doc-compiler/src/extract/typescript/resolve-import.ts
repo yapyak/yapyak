@@ -4,8 +4,10 @@ import { dirname, resolve } from 'node:path';
 const CANDIDATE_SUFFIXES = [
   '.ts',
   '.tsx',
+  '.d.ts',
   '/index.ts',
   '/index.tsx',
+  '/index.d.ts',
 ];
 
 export function resolveImport(

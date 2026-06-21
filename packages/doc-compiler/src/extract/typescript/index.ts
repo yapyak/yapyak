@@ -13,6 +13,7 @@ export {
   buildMethodPage,
   buildModulePage,
   buildPackageIndexPage,
+  buildPropertyMemberPage,
   buildSymbolPage,
 } from './page';
 export { buildSymbolIndex } from './symbol-index';

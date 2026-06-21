@@ -29,6 +29,7 @@ import { nullify } from '../../nullify';
 import { slugify } from '../../slugify';
 import { buildSymbolHref } from '../../symbol-path';
 import { parseMarkdown } from '../markdown';
+import { classifyExportKind } from './classify';
 import { expandModuleEntries } from './module-entry';
 import { relative, resolve } from 'node:path';
 
@@ -65,7 +66,7 @@ export function buildSymbolPage(
   blocks.push(
     buildEyebrowBlock(
       input.moduleId,
-      options.eyebrowKind ?? symbol.kind,
+      options.eyebrowKind ?? symbol.displayKind,
       resolveSourceHref(
         symbol.location.file,
         symbol.location.line,
@@ -143,10 +144,14 @@ export function buildSymbolPage(
   }
 
   if (symbol.kind === 'variable') {
-    blocks.push(buildHeading2Block('Type'));
     if (symbol.shape) {
+      blocks.push(buildHeading2Block('Type'));
       blocks.push(buildShapeBlock(symbol.shape));
-    } else {
+    } else if (
+      symbol.displayKind !== 'component' &&
+      symbol.displayKind !== 'hook'
+    ) {
+      blocks.push(buildHeading2Block('Type'));
       blocks.push({
         children: [
           tokensToCodeExpression(resolveTypeTokens(symbol.type)),
@@ -283,6 +288,70 @@ export function buildSymbolPage(
         ? `${symbol.name}()`
         : symbol.name,
   };
+}
+
+export function buildPropertyMemberPage(
+  parentSymbol: ReferenceExport,
+  member: ReferencePropertyMember,
+  context: PackageContext,
+  input: BuildSymbolPageInput,
+  options: BuildSymbolPageOptions = {},
+): Page {
+  currentIndex = input.index;
+  currentCollection = context.collectionName;
+  currentPackageName = context.packageName;
+  currentPackageSlug = context.packageSlug;
+
+  const fullName = `${parentSymbol.name}.${member.name}`;
+  const blocks: Block[] = [];
+
+  blocks.push(
+    buildEyebrowBlock(
+      input.moduleId,
+      classifyMemberDisplayKind(member),
+      resolveSourceHref(
+        parentSymbol.location.file,
+        parentSymbol.location.line,
+        input.packageDir,
+        options.sourceUrl,
+      ),
+    ),
+  );
+
+  if (member.description) {
+    const parsed = parseMarkdown(member.description);
+    blocks.push(...parsed.blocks);
+  }
+
+  blocks.push(
+    buildImportSnippet(input.moduleId, parentSymbol.name, parentSymbol.kind),
+  );
+
+  const memberDisplayKind = classifyMemberDisplayKind(member);
+  if (memberDisplayKind !== 'component' && memberDisplayKind !== 'hook') {
+    blocks.push(buildHeading2Block('Type'));
+    blocks.push({
+      children: [
+        tokensToCodeExpression(resolveTypeTokens(member.type)),
+      ],
+      type: 'paragraph',
+    });
+  }
+
+  return {
+    blocks,
+    description: '',
+    href: input.href,
+    meta: {},
+    title: fullName,
+  };
+}
+
+function classifyMemberDisplayKind(member: ReferenceMember): ExportKind {
+  const baseKind: ExportKind =
+    member.kind === 'method' ? 'function' : 'variable';
+  const tags = member.kind === 'method' ? member.tags : [];
+  return classifyExportKind(member.name, baseKind, tags);
 }
 
 export function buildMethodPage(
@@ -581,8 +650,8 @@ function buildExportRow(
       ]),
       buildTableBodyCell([
         {
-          type: 'text',
-          value: entry.kind,
+          kind: entry.kind,
+          type: 'kind-badge',
         },
       ]),
       buildTableBodyCell(markdownToInline(getFirstSentence(entry.description))),
@@ -669,9 +738,9 @@ function resolveTypeTokens(tokens: TypeToken[]): TypeToken[] {
 
 function normalizeInlineType(text: string): string {
   let result = text.replace(/\s*\n\s*/g, ' ');
-  result = result.replace(/([[({<])\s+/g, '$1');
-  result = result.replace(/\s+([\])>}])/g, '$1');
-  result = result.replace(/,(\s*[\])>}])/g, '$1');
+  result = result.replace(/([[(<])\s+/g, '$1');
+  result = result.replace(/\s+([\])>])/g, '$1');
+  result = result.replace(/[,;](\s*[\])>}])/g, '$1');
   return result.trim();
 }
 

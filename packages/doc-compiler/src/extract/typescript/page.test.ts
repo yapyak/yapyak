@@ -45,6 +45,7 @@ function functionSymbol(
   return {
     deprecated: null,
     description: '',
+    displayKind: 'function',
     examples: [],
     kind: 'function',
     location: {
@@ -78,6 +79,7 @@ function typeSymbol(
     callSignatures: [],
     deprecated: null,
     description: '',
+    displayKind: 'type',
     examples: [],
     kind: 'type',
     location: {
@@ -104,6 +106,7 @@ function variableSymbol(
   return {
     deprecated: null,
     description: '',
+    displayKind: 'variable',
     examples: [],
     kind: 'variable',
     location: {
@@ -111,6 +114,7 @@ function variableSymbol(
       file: 'src/index.ts',
       line: 1,
     },
+    members: [],
     name: 'settings',
     remarks: '',
     seeAlso: [],

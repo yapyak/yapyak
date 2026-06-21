@@ -3,21 +3,16 @@ import type {
   ReferenceExport,
   ReferenceManifest,
   ReferenceModule,
-  TypeToken,
 } from '../extract/typescript';
 import type { SidebarNode } from './manifest';
 
+import { expandModuleEntries } from '../extract/typescript/module-entry';
 import { buildSymbolHref } from '../symbol-path';
 
 type BuildPackageRootInput = {
   collapsible: boolean;
   expanded: boolean;
   label: string;
-};
-
-type SidebarRow = {
-  label: string;
-  segment: string;
 };
 
 export function buildPackageRoot(
@@ -78,24 +73,24 @@ function moduleChildren(
     exportsByName.set(symbol.name, symbol);
   }
   const nodes: SidebarNode[] = [];
-  for (const symbol of module.exports) {
-    const rows = expandSidebarRows(symbol, exportsByName);
-    for (const row of rows) {
-      nodes.push({
-        href: buildSymbolHref(module.id, row.segment, {
-          collectionName,
-          packageName,
-          packageSlug,
-        }),
-        label: row.label,
-        ...(symbol.deprecated !== null && {
-          badge: {
-            variant: 'deprecated' as const,
-          },
-        }),
-        type: 'link',
-      });
-    }
+  const entries = expandModuleEntries(module.exports);
+  for (const entry of entries) {
+    const parentName = entry.segment.split('.')[0] ?? entry.segment;
+    const parentSymbol = exportsByName.get(parentName);
+    nodes.push({
+      href: buildSymbolHref(module.id, entry.segment, {
+        collectionName,
+        packageName,
+        packageSlug,
+      }),
+      label: entry.label,
+      ...(parentSymbol?.deprecated != null && {
+        badge: {
+          variant: 'deprecated' as const,
+        },
+      }),
+      type: 'link',
+    });
   }
   const subModules = (childrenByParentId.get(module.id) ?? [])
     .slice()
@@ -111,88 +106,6 @@ function moduleChildren(
     });
   }
   return nodes;
-}
-
-function expandSidebarRows(
-  symbol: ReferenceExport,
-  exportsByName: Map<string, ReferenceExport>,
-): SidebarRow[] {
-  if (symbol.kind === 'function') {
-    return [
-      {
-        label: `${symbol.name}()`,
-        segment: symbol.name,
-      },
-    ];
-  }
-  if (symbol.kind === 'variable') {
-    const expanded = expandVariableRows(
-      symbol.name,
-      symbol.type,
-      exportsByName,
-    );
-    if (expanded !== undefined) {
-      return expanded;
-    }
-  }
-  return [
-    {
-      label: symbol.name,
-      segment: symbol.name,
-    },
-  ];
-}
-
-function expandVariableRows(
-  variableName: string,
-  typeTokens: TypeToken[],
-  exportsByName: Map<string, ReferenceExport>,
-): SidebarRow[] | undefined {
-  const typeName = findTypeRefName(typeTokens);
-  if (typeName === undefined) {
-    return undefined;
-  }
-  const typeExport = exportsByName.get(typeName);
-  if (typeExport === undefined) {
-    return undefined;
-  }
-  if (typeExport.kind !== 'type' && typeExport.kind !== 'interface') {
-    return undefined;
-  }
-  const callSignatures = typeExport.callSignatures;
-  const methodMembers = typeExport.members.filter(
-    (member) => member.kind === 'method',
-  );
-  if (callSignatures.length === 0 && methodMembers.length === 0) {
-    return undefined;
-  }
-  const rows: SidebarRow[] = [];
-  if (callSignatures.length > 0) {
-    rows.push({
-      label: `${variableName}()`,
-      segment: variableName,
-    });
-  }
-  for (const method of methodMembers) {
-    rows.push({
-      label: `${variableName}.${method.name}()`,
-      segment: `${variableName}.${method.name}`,
-    });
-  }
-  return rows;
-}
-
-function findTypeRefName(tokens: TypeToken[]): string | undefined {
-  for (const token of tokens) {
-    if (token.kind === 'ref') {
-      return token.name;
-    }
-    const match = /^([A-Z][\w$]*)(?:<.*>)?$/.exec(token.text.trim());
-    if (match !== null) {
-      return match[1];
-    }
-  }
-  return undefined;
 }
 
 function topLevelSubpathChildren(

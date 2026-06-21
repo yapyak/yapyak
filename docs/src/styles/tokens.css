@@ -23,6 +23,7 @@
   --border-radius-lg: 16px;
   --border-radius-full: 9999px;
 
+  --font-size-2xs: 0.6875rem;
   --font-size-xs: 0.8125rem;
   --font-size-sm: 0.9375rem;
   --font-size-md: 1.0625rem;
@@ -143,6 +144,8 @@
   --syntax-string: var(--color-sand);
 
   --kind-function: var(--color-iris);
+  --kind-hook: var(--color-mint);
+  --kind-component: var(--color-coral);
   --kind-interface: var(--color-steel);
   --kind-type: var(--color-lilac);
   --kind-variable: var(--color-amber);

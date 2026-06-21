@@ -17,6 +17,7 @@ function symbol(
   return {
     deprecated,
     description: '',
+    displayKind: 'function',
     examples: [],
     kind: 'function',
     location: {
@@ -177,6 +178,7 @@ describe('buildPackageRoot', () => {
             {
               ...symbol('Settings'),
               callSignatures: [],
+              displayKind: 'type',
               kind: 'type',
               members: [],
               resolvedType: [],

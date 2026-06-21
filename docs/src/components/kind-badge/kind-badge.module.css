@@ -1,11 +1,24 @@
 @layer components {
-  .BlockRendererNodeEyebrowKindBadge {
-    padding: 2px 8px;
-    font-size: var(--font-size-xs);
+  .KindBadge {
     font-weight: var(--font-weight-semibold);
     text-transform: uppercase;
     letter-spacing: var(--letter-spacing-wide);
     border-radius: var(--border-radius-sm);
+
+    &[data-size="sm"] {
+      padding: 1px 5px;
+      font-size: var(--font-size-2xs);
+    }
+
+    &[data-size="md"] {
+      padding: 2px 8px;
+      font-size: var(--font-size-xs);
+    }
+
+    &[data-size="lg"] {
+      padding: 3px 10px;
+      font-size: var(--font-size-sm);
+    }
 
     &[data-variant="function"] {
       color: var(--kind-function);
@@ -16,6 +29,24 @@
       );
       box-shadow: inset 0 0 0 var(--px)
         color-mix(in oklab, var(--kind-function) 4%, transparent);
+    }
+
+    &[data-variant="hook"] {
+      color: var(--kind-hook);
+      background-color: color-mix(in oklab, var(--kind-hook) 14%, transparent);
+      box-shadow: inset 0 0 0 var(--px)
+        color-mix(in oklab, var(--kind-hook) 4%, transparent);
+    }
+
+    &[data-variant="component"] {
+      color: var(--kind-component);
+      background-color: color-mix(
+        in oklab,
+        var(--kind-component) 14%,
+        transparent
+      );
+      box-shadow: inset 0 0 0 var(--px)
+        color-mix(in oklab, var(--kind-component) 4%, transparent);
     }
 
     &[data-variant="interface"] {

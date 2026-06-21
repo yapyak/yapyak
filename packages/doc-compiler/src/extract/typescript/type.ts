@@ -1,3 +1,5 @@
+import type { ExportKind } from '../../access';
+
 export type ReferenceManifest = {
   modules: ReferenceModule[];
   packageName: string;
@@ -21,6 +23,7 @@ export type ReferenceExport =
 export type ReferenceSymbolBase = {
   deprecated: string | null;
   description: string;
+  displayKind: ExportKind;
   examples: ReferenceExample[];
   location: ReferenceLocation;
   name: string;
@@ -80,6 +83,7 @@ export type ReferenceTypeAlias = ReferenceSymbolBase & {
 
 export type ReferenceVariable = ReferenceSymbolBase & {
   kind: 'variable';
+  members: ReferenceMember[];
   type: TypeToken[];
 };
 

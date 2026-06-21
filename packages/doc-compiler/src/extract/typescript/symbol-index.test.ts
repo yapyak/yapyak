@@ -17,6 +17,7 @@ function symbol(
   return {
     deprecated: null,
     description: '',
+    displayKind: 'function',
     examples: [],
     kind: 'function',
     location: {

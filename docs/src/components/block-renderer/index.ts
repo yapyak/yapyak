@@ -5,7 +5,6 @@ export type { BlockRendererNodeCodeBlockProps } from './block-renderer-node-code
 export type { BlockRendererNodeCodeLocationProps } from './block-renderer-node-code-location';
 export type { BlockRendererNodeEmphasisProps } from './block-renderer-node-emphasis';
 export type { BlockRendererNodeEyebrowProps } from './block-renderer-node-eyebrow';
-export type { BlockRendererNodeEyebrowKindBadgeProps } from './block-renderer-node-eyebrow-kind-badge';
 export type { BlockRendererNodeHeadingProps } from './block-renderer-node-heading';
 export type { BlockRendererNodeImageProps } from './block-renderer-node-image';
 export type { BlockRendererNodeInlineCodeProps } from './block-renderer-node-inline-code';
@@ -31,7 +30,6 @@ export { BlockRendererNodeCodeLocation } from './block-renderer-node-code-locati
 export { BlockRendererNodeDivider } from './block-renderer-node-divider';
 export { BlockRendererNodeEmphasis } from './block-renderer-node-emphasis';
 export { BlockRendererNodeEyebrow } from './block-renderer-node-eyebrow';
-export { BlockRendererNodeEyebrowKindBadge } from './block-renderer-node-eyebrow-kind-badge';
 export { BlockRendererNodeHeading } from './block-renderer-node-heading';
 export { BlockRendererNodeImage } from './block-renderer-node-image';
 export { BlockRendererNodeInlineCode } from './block-renderer-node-inline-code';

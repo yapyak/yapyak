@@ -14,6 +14,7 @@ import {
   buildMethodPage,
   buildModulePage,
   buildPackageIndexPage,
+  buildPropertyMemberPage,
   buildSymbolIndex,
   buildSymbolPage,
   extractPackage,
@@ -273,17 +274,19 @@ async function buildTypeScriptCollection(
           };
         }
 
-        if (
-          variableTypeExport === undefined ||
-          (variableTypeExport.kind !== 'type' &&
-            variableTypeExport.kind !== 'interface')
-        ) {
+        if (symbol.kind !== 'variable') {
           continue;
         }
-        for (const member of variableTypeExport.members) {
-          if (member.kind !== 'method') {
-            continue;
-          }
+        const resolvedMembers =
+          variableTypeExport?.kind === 'type' ||
+          variableTypeExport?.kind === 'interface'
+            ? variableTypeExport.members
+            : [];
+        const documentedMembers = [
+          ...symbol.members,
+          ...resolvedMembers,
+        ].filter((member) => member.description.length > 0);
+        for (const member of documentedMembers) {
           const subSegment = encodeSymbolSegment(
             `${symbol.name}.${member.name}`,
           );
@@ -291,20 +294,36 @@ async function buildTypeScriptCollection(
             ? `${packageSlug}/${subSegment}`
             : `${packageSlug}/${subSlug}/${subSegment}`;
           const subHref = `/${collectionName}/${subPath}`;
-          const subPage = buildMethodPage(
-            symbol,
-            member,
-            context,
-            {
-              href: subHref,
-              index,
-              moduleId: module.id,
-              packageDir: typescriptPackage.root,
-            },
-            {
-              sourceUrl,
-            },
-          );
+          const subPage =
+            member.kind === 'method'
+              ? buildMethodPage(
+                  symbol,
+                  member,
+                  context,
+                  {
+                    href: subHref,
+                    index,
+                    moduleId: module.id,
+                    packageDir: typescriptPackage.root,
+                  },
+                  {
+                    sourceUrl,
+                  },
+                )
+              : buildPropertyMemberPage(
+                  symbol,
+                  member,
+                  context,
+                  {
+                    href: subHref,
+                    index,
+                    moduleId: module.id,
+                    packageDir: typescriptPackage.root,
+                  },
+                  {
+                    sourceUrl,
+                  },
+                );
           pages[subPath] = subPage;
           symbols[`${packageSlug}/${symbol.name}.${member.name}`] = {
             collection: collectionName,

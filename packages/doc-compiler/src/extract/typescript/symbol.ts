@@ -5,12 +5,19 @@ import type {
   Node,
   SourceFile,
   TypeAliasDeclaration,
+  TypeNode,
   VariableStatement,
 } from 'typescript';
-import type { ReferenceExport, ReferenceSymbolBase } from './type';
+import type { ExportKind } from '../../access';
+import type {
+  ReferenceExport,
+  ReferenceMember,
+  ReferenceSymbolBase,
+} from './type';
 
 import ts from 'typescript';
 
+import { classifyExportKind } from './classify';
 import { extractJsDoc } from './jsdoc';
 import { buildLocation } from './location';
 import { extractMembers } from './member';
@@ -48,6 +55,7 @@ export function buildSymbol(
 
 function buildBase(
   name: string,
+  baseKind: ExportKind,
   node: Node,
   input: BuildSymbolInput,
 ): ReferenceSymbolBase {
@@ -55,6 +63,7 @@ function buildBase(
   return {
     deprecated: jsDoc.deprecated,
     description: jsDoc.description,
+    displayKind: classifyExportKind(name, baseKind, jsDoc.tags),
     examples: jsDoc.examples,
     location: buildLocation(node, input.sourceFile, input.packageDir),
     name,
@@ -72,7 +81,7 @@ function buildFunctionSymbol(
   input: BuildSymbolInput,
 ): ReferenceExport {
   return {
-    ...buildBase(name, node, input),
+    ...buildBase(name, 'function', node, input),
     kind: 'function',
     members: [],
     overloads: [
@@ -98,7 +107,7 @@ function buildTypeAliasSymbol(
         .map(buildCallSignature)
     : [];
   return {
-    ...buildBase(name, node, input),
+    ...buildBase(name, 'type', node, input),
     callSignatures,
     kind: 'type',
     members,
@@ -119,7 +128,7 @@ function buildInterfaceSymbol(
     packageDir: input.packageDir,
   });
   return {
-    ...buildBase(name, node, input),
+    ...buildBase(name, 'interface', node, input),
     callSignatures,
     kind: 'interface',
     members,
@@ -147,11 +156,33 @@ function buildVariableSymbol(
             },
           ]
       : buildTypeTokens(declaration.type);
+  const members =
+    declaration?.type === undefined
+      ? []
+      : collectInlineTypeMembers(declaration.type, input.packageDir);
   return {
-    ...buildBase(name, node, input),
+    ...buildBase(name, 'variable', node, input),
     kind: 'variable',
+    members,
     type: typeTokens,
   };
+}
+
+function collectInlineTypeMembers(
+  typeNode: TypeNode,
+  packageDir: string,
+): ReferenceMember[] {
+  if (ts.isTypeLiteralNode(typeNode)) {
+    return extractMembers(typeNode.members, {
+      packageDir,
+    });
+  }
+  if (ts.isIntersectionTypeNode(typeNode)) {
+    return typeNode.types.flatMap((part) =>
+      collectInlineTypeMembers(part, packageDir),
+    );
+  }
+  return [];
 }
 
 function buildClassSymbol(
@@ -160,7 +191,7 @@ function buildClassSymbol(
   input: BuildSymbolInput,
 ): ReferenceExport {
   return {
-    ...buildBase(name, node, input),
+    ...buildBase(name, 'class', node, input),
     kind: 'class',
     members: [],
     signature: `class ${name}`,

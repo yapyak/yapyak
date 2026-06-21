@@ -8,6 +8,7 @@ export type Block =
   | EmphasisBlock
   | EyebrowBlock
   | HeadingBlock
+  | KindBadgeBlock
   | ImageBlock
   | InlineCodeBlock
   | LineBreakBlock
@@ -182,7 +183,9 @@ export type DiagnosticsBlock = {
 
 export type ExportKind =
   | 'class'
+  | 'component'
   | 'function'
+  | 'hook'
   | 'interface'
   | 'type'
   | 'variable';
@@ -192,6 +195,11 @@ export type EyebrowBlock = {
   module: string | null;
   sourceHref: string | null;
   type: 'eyebrow';
+};
+
+export type KindBadgeBlock = {
+  kind: ExportKind;
+  type: 'kind-badge';
 };
 
 export type CodeLocationBlock = {

@@ -1,9 +1,9 @@
 import type { EyebrowBlock } from '@yapyak/doc-compiler';
 
 import { Box } from '#components/box';
+import { KindBadge } from '#components/kind-badge';
 
 import styles from './block-renderer-node-eyebrow.module.css';
-import { BlockRendererNodeEyebrowKindBadge } from './block-renderer-node-eyebrow-kind-badge';
 
 export type BlockRendererNodeEyebrowProps = {
   block: EyebrowBlock;
@@ -16,9 +16,7 @@ export function BlockRendererNodeEyebrow(props: BlockRendererNodeEyebrowProps) {
       as="p"
       className={styles.BlockRendererNodeEyebrow}
     >
-      {block.kind !== null && (
-        <BlockRendererNodeEyebrowKindBadge variant={block.kind} />
-      )}
+      {block.kind !== null && <KindBadge variant={block.kind} />}
       {block.module !== null && (
         <Box
           as="span"
