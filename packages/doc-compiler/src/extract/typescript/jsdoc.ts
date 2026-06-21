@@ -44,8 +44,7 @@ export function extractJsDoc(node: Node): ExtractJsDocResult {
     const name = tag.tagName.text;
     const text = getCommentText(tag.comment);
     if (text.startsWith('/')) {
-      const needsSpace =
-        description.length > 0 && !/\s$/.test(description);
+      const needsSpace = description.length > 0 && !/\s$/.test(description);
       description += `${needsSpace ? ' ' : ''}@${name}${text}`;
       continue;
     }
@@ -69,7 +68,7 @@ export function extractJsDoc(node: Node): ExtractJsDocResult {
       continue;
     }
     if (name === 'shape') {
-      shape = unescapeBraces(text);
+      shape = unescapeBraces(extractRawTagText(tag, name));
       continue;
     }
     if (name === 'deprecated') {
@@ -180,4 +179,25 @@ function parseThrows(tag: ts.JSDocTag, text: string): ReferenceThrows {
 
 function unescapeBraces(text: string): string {
   return text.replace(/\\([{}])/g, '$1');
+}
+
+function extractRawTagText(
+  tag: {
+    getText(): string;
+  },
+  name: string,
+): string {
+  const raw = tag.getText();
+  const withoutTagName = raw.replace(new RegExp(`^@${name}\\s*`), '');
+  const lines = withoutTagName.split('\n');
+  const result: string[] = [];
+  for (let index = 0; index < lines.length; index++) {
+    const line = lines[index] ?? '';
+    if (index === 0) {
+      result.push(line);
+      continue;
+    }
+    result.push(line.replace(/^\s*\*\s?/, ''));
+  }
+  return result.join('\n').trimEnd();
 }

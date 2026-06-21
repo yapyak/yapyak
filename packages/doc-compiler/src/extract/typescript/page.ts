@@ -158,7 +158,7 @@ export function buildSymbolPage(
 
   if (symbol.kind === 'interface') {
     if (symbol.shape) {
-      blocks.push(buildHeading2Block('Shape'));
+      blocks.push(buildHeading2Block('Type'));
       blocks.push(buildShapeBlock(symbol.shape));
     } else if (symbol.callSignatures.length > 0) {
       blocks.push(buildHeading2Block('Call signatures'));
@@ -199,7 +199,7 @@ export function buildSymbolPage(
 
   if (symbol.kind === 'type') {
     if (symbol.shape) {
-      blocks.push(buildHeading2Block('Shape'));
+      blocks.push(buildHeading2Block('Type'));
       blocks.push(buildShapeBlock(symbol.shape));
     } else {
       const typeProperties = symbol.members.filter(
@@ -662,9 +662,17 @@ function resolveTypeTokens(tokens: TypeToken[]): TypeToken[] {
       result.push(token);
       continue;
     }
-    result.push(...tokenizeShapeText(token.text));
+    result.push(...tokenizeShapeText(normalizeInlineType(token.text)));
   }
   return result;
+}
+
+function normalizeInlineType(text: string): string {
+  let result = text.replace(/\s*\n\s*/g, ' ');
+  result = result.replace(/([[({<])\s+/g, '$1');
+  result = result.replace(/\s+([\])>}])/g, '$1');
+  result = result.replace(/,(\s*[\])>}])/g, '$1');
+  return result.trim();
 }
 
 function buildTypeAliasBlock(symbol: ReferenceTypeAlias): Block {
