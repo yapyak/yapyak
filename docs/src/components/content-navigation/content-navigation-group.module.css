@@ -130,6 +130,10 @@
         > li > a {
           font-size: var(--font-size-xs);
         }
+
+        .GroupLabel {
+          font-size: var(--font-size-xs);
+        }
       }
     }
 
