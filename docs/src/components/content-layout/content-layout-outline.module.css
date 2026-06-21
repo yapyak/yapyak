@@ -2,7 +2,7 @@
   .ContentLayoutOutline {
     display: none;
 
-    @media (min-width: 1304px) {
+    @media (min-width: 1324px) {
       position: sticky;
       top: var(--header-height);
       display: block;
