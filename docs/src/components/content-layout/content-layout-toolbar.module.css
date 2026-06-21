@@ -21,6 +21,7 @@
 
     .NavContent {
       height: 0;
+      padding: var(--spacing-2);
       overflow: hidden;
       transition: height 400ms cubic-bezier(0.32, 0.72, 0, 1);
     }
@@ -30,7 +31,7 @@
       flex-direction: column;
       gap: var(--spacing-6);
       max-height: 70vh;
-      padding: var(--spacing-6) var(--spacing-6) var(--spacing-4);
+      padding: var(--spacing-4) var(--spacing-4) var(--spacing-2);
       overflow-y: auto;
       scrollbar-color: var(--ring-stronger) transparent;
       scrollbar-width: thin;

@@ -87,6 +87,8 @@
       inset: 0;
       z-index: 220;
       overflow-y: auto;
+      scrollbar-color: var(--ring-stronger) transparent;
+      scrollbar-width: thin;
       border-bottom: none;
 
       .Bar {
