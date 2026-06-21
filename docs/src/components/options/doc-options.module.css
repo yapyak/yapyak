@@ -40,6 +40,16 @@
     }
   }
 
+  .TriggerEntry {
+    display: inline-flex;
+    gap: var(--spacing-2);
+    align-items: center;
+
+    & + & {
+      padding-left: var(--spacing-3);
+    }
+  }
+
   .TriggerLabel {
     line-height: 1;
   }

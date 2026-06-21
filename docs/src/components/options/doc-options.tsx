@@ -11,8 +11,6 @@ import styles from './doc-options.module.css';
 import { useOptionsContext } from './options-context';
 import { doc } from 'virtual:doc-compiler';
 
-const PRIMARY_GROUP_ID = 'framework';
-
 export type DocOptionsProps = {};
 
 export function DocOptions(_props: DocOptionsProps) {
@@ -26,34 +24,56 @@ export function DocOptions(_props: DocOptionsProps) {
     return null;
   }
 
-  const primaryGroup = registry[PRIMARY_GROUP_ID];
-  const primaryValue = primaryGroup ? get(PRIMARY_GROUP_ID) : '';
-  const primaryLabel =
-    primaryGroup?.options.find((option) => option.value === primaryValue)
-      ?.label ?? '';
+  const triggerEntries = groupIds.flatMap((groupId) => {
+    const group = registry[groupId];
+    if (!group) {
+      return [];
+    }
+    const value = get(groupId);
+    const label = group.options.find((option) => option.value === value)?.label;
+    if (label === undefined) {
+      return [];
+    }
+    return [
+      {
+        groupId,
+        label,
+        value,
+      },
+    ];
+  });
 
   return (
     <>
       <Box
         as="button"
         className={styles.Trigger}
-        data-option-value={primaryValue}
         popoverTarget={popoverId}
         style={{
           '--trigger-anchor': anchorName,
         }}
         type="button"
       >
-        <OptionDot />
-        <Box
-          as="span"
-          className={styles.TriggerLabel}
-        >
-          {primaryLabel}
-        </Box>
+        {triggerEntries.map((entry) => (
+          <Box
+            as="span"
+            className={styles.TriggerEntry}
+            data-option-value={entry.value}
+            key={entry.groupId}
+          >
+            <OptionDot />
+            <Box
+              as="span"
+              className={styles.TriggerLabel}
+            >
+              {entry.label}
+            </Box>
+          </Box>
+        ))}
         <ChevronIcon direction="down" />
       </Box>
       <Popover
+        align="center"
         anchorName={anchorName}
         id={popoverId}
       >

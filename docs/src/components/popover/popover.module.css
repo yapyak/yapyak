@@ -35,8 +35,8 @@
     }
 
     &[data-align="center"] {
-      left: anchor(center);
-      translate: -50% 0;
+      justify-self: anchor-center;
+      position-area: block-end;
     }
 
     &:popover-open {
