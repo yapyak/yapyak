@@ -11,7 +11,7 @@ import { resolveFormatter } from './formatter';
  * @remarks
  * Discriminated union over `Intl.NumberFormatOptions`'s `style`. The `currency` branch types the `currency` field as {@link Currency}.
  *
- * @shape Intl.NumberFormatOptions & { style: 'decimal' | 'currency' | 'percent' | 'unit' }
+ * @shape Omit<Intl.NumberFormatOptions, 'localeMatcher'> & \{ style: 'decimal' | 'currency' | 'percent' | 'unit' \}
  *
  * @example
  * ```ts

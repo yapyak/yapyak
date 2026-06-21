@@ -1,4 +1,9 @@
-import type { JSDocParameterTag, Node, ParameterDeclaration } from 'typescript';
+import type {
+  JSDocComment,
+  JSDocParameterTag,
+  Node,
+  ParameterDeclaration,
+} from 'typescript';
 import type { ReferenceParameter } from './type';
 
 import ts from 'typescript';
@@ -65,7 +70,23 @@ function getTagComment(tag: JSDocParameterTag | undefined): string {
     return tag.comment.replace(/^[\s-]+/, '');
   }
   return tag.comment
-    .map((part) => part.text ?? '')
+    .map(commentPartToText)
     .join('')
     .replace(/^[\s-]+/, '');
+}
+
+function commentPartToText(part: JSDocComment): string {
+  if (
+    ts.isJSDocLink(part) ||
+    ts.isJSDocLinkCode(part) ||
+    ts.isJSDocLinkPlain(part)
+  ) {
+    const linkName = part.name?.getText() ?? '';
+    const tail = part.text ?? '';
+    if (tail.startsWith('|')) {
+      return tail.slice(1).trim();
+    }
+    return `${linkName}${tail}`;
+  }
+  return part.text ?? '';
 }

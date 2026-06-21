@@ -13,8 +13,14 @@ type VoidHandler = () => ReactNode;
 /**
  * Props for {@link RichText}. Carries the source `value` and a handler per named tag found in it.
  *
+ * @shape RichTextProps<T extends string> = \{
+ *   value: T,
+ *   [pairTag]: (children: ReactNode) => ReactNode,
+ *   [voidTag]: () => ReactNode,
+ * \}
+ *
  * @remarks
- * Pair tags (`<name>...</name>`) take a `PairHandler` whose first argument is the rendered children. Void tags (`<name/>`) take a `VoidHandler` that receives no arguments — TypeScript rejects passing one for the other.
+ * Pair tags (`<name>...</name>`) take a handler whose first argument is the rendered children. Void tags (`<name/>`) take a handler that receives no arguments — TypeScript rejects passing one for the other.
  *
  * @typeParam T - The source string literal. Tag names are extracted from it.
  */

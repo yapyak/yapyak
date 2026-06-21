@@ -29,6 +29,7 @@ import { nullify } from '../../nullify';
 import { slugify } from '../../slugify';
 import { buildSymbolHref } from '../../symbol-path';
 import { parseMarkdown } from '../markdown';
+import { expandModuleEntries } from './module-entry';
 import { relative, resolve } from 'node:path';
 
 let currentIndex: SymbolIndex = new Map();
@@ -45,6 +46,7 @@ type BuildSymbolPageInput = {
 
 type BuildSymbolPageOptions = {
   eyebrowKind?: ExportKind;
+  methodLinkVariable?: string;
   sourceUrl?: SourceUrlConfig;
 };
 
@@ -121,9 +123,22 @@ export function buildSymbolPage(
       blocks.push(buildHeading2Block('Parameters'));
       blocks.push(buildParametersTable(parameters));
     }
-    if (symbol.members.length > 0) {
+    const returnTokens = normalizeOverloadReturnType(symbol.overloads);
+    if (returnTokens.length > 0) {
+      blocks.push(buildHeading2Block('Returns'));
+      blocks.push({
+        children: [
+          tokensToCodeExpression(resolveTypeTokens(returnTokens)),
+        ],
+        type: 'paragraph',
+      });
+    }
+    const functionProperties = symbol.members.filter(
+      (member): member is ReferencePropertyMember => member.kind === 'property',
+    );
+    if (functionProperties.length > 0) {
       blocks.push(buildHeading2Block('Members'));
-      blocks.push(buildMembersTable(symbol.members));
+      blocks.push(buildMembersTable(functionProperties));
     }
   }
 
@@ -132,7 +147,12 @@ export function buildSymbolPage(
     if (symbol.shape) {
       blocks.push(buildShapeBlock(symbol.shape));
     } else {
-      blocks.push(buildVariableSignatureBlock(symbol));
+      blocks.push({
+        children: [
+          tokensToCodeExpression(resolveTypeTokens(symbol.type)),
+        ],
+        type: 'paragraph',
+      });
     }
   }
 
@@ -150,9 +170,30 @@ export function buildSymbolPage(
         type: 'code-block',
       });
     }
-    if (symbol.members.length > 0) {
+    const interfaceProperties = symbol.members.filter(
+      (member): member is ReferencePropertyMember => member.kind === 'property',
+    );
+    const interfaceMethods = symbol.members.filter(
+      (member): member is ReferenceMethodMember => member.kind === 'method',
+    );
+    if (interfaceProperties.length > 0) {
       blocks.push(buildHeading2Block('Members'));
-      blocks.push(buildMembersTable(symbol.members));
+      blocks.push(buildMembersTable(interfaceProperties));
+    }
+    if (interfaceMethods.length > 0) {
+      blocks.push(buildHeading2Block('Methods'));
+      if (options.methodLinkVariable === undefined) {
+        blocks.push(...buildMethodSections(interfaceMethods));
+      } else {
+        blocks.push(
+          ...buildMethodSummary(
+            interfaceMethods,
+            options.methodLinkVariable,
+            input.moduleId,
+            context,
+          ),
+        );
+      }
     }
   }
 
@@ -160,19 +201,58 @@ export function buildSymbolPage(
     if (symbol.shape) {
       blocks.push(buildHeading2Block('Shape'));
       blocks.push(buildShapeBlock(symbol.shape));
-    } else if (symbol.members.length > 0) {
-      blocks.push(buildHeading2Block('Members'));
-      blocks.push(buildMembersTable(symbol.members));
-    } else if (symbol.resolvedType.length > 0) {
-      blocks.push(buildHeading2Block('Type'));
-      blocks.push(buildTypeAliasBlock(symbol));
+    } else {
+      const typeProperties = symbol.members.filter(
+        (member): member is ReferencePropertyMember =>
+          member.kind === 'property',
+      );
+      const typeMethods = symbol.members.filter(
+        (member): member is ReferenceMethodMember => member.kind === 'method',
+      );
+      if (typeProperties.length > 0) {
+        blocks.push(buildHeading2Block('Members'));
+        blocks.push(buildMembersTable(typeProperties));
+      }
+      if (typeMethods.length > 0) {
+        blocks.push(buildHeading2Block('Methods'));
+        if (options.methodLinkVariable === undefined) {
+          blocks.push(...buildMethodSections(typeMethods));
+        } else {
+          blocks.push(
+            ...buildMethodSummary(
+              typeMethods,
+              options.methodLinkVariable,
+              input.moduleId,
+              context,
+            ),
+          );
+        }
+      }
+      if (
+        typeProperties.length === 0 &&
+        typeMethods.length === 0 &&
+        symbol.resolvedType.length > 0
+      ) {
+        blocks.push(buildHeading2Block('Type'));
+        blocks.push(buildTypeAliasBlock(symbol));
+      }
     }
   }
 
   if (symbol.kind === 'class') {
-    if (symbol.members.length > 0) {
+    const classProperties = symbol.members.filter(
+      (member): member is ReferencePropertyMember => member.kind === 'property',
+    );
+    const classMethods = symbol.members.filter(
+      (member): member is ReferenceMethodMember => member.kind === 'method',
+    );
+    if (classProperties.length > 0) {
       blocks.push(buildHeading2Block('Members'));
-      blocks.push(buildMembersTable(symbol.members));
+      blocks.push(buildMembersTable(classProperties));
+    }
+    if (classMethods.length > 0) {
+      blocks.push(buildHeading2Block('Methods'));
+      blocks.push(...buildMethodSections(classMethods));
     }
   }
 
@@ -198,7 +278,10 @@ export function buildSymbolPage(
     description: '',
     href: input.href,
     meta: {},
-    title: symbol.kind === 'function' ? `${symbol.name}()` : symbol.name,
+    title:
+      (options.eyebrowKind ?? symbol.kind) === 'function'
+        ? `${symbol.name}()`
+        : symbol.name,
   };
 }
 
@@ -280,6 +363,17 @@ export function buildMethodPage(
   if (parameters.length > 0) {
     blocks.push(buildHeading2Block('Parameters'));
     blocks.push(buildParametersTable(parameters));
+  }
+
+  const methodReturnTokens = normalizeOverloadReturnType(member.overloads);
+  if (methodReturnTokens.length > 0) {
+    blocks.push(buildHeading2Block('Returns'));
+    blocks.push({
+      children: [
+        tokensToCodeExpression(resolveTypeTokens(methodReturnTokens)),
+      ],
+      type: 'paragraph',
+    });
   }
 
   if (member.throws.length > 0) {
@@ -448,8 +542,9 @@ function buildExportsTable(
   exports: ReferenceExport[],
   moduleId: string,
 ): Block {
+  const entries = expandModuleEntries(exports);
   return {
-    body: exports.map((entry) => buildExportRow(entry, moduleId)),
+    body: entries.map((entry) => buildExportRow(entry, moduleId)),
     head: buildTableHeaderRow([
       'Name',
       'Kind',
@@ -460,11 +555,15 @@ function buildExportsTable(
 }
 
 function buildExportRow(
-  entry: ReferenceExport,
+  entry: {
+    description: string;
+    kind: ExportKind;
+    label: string;
+    segment: string;
+  },
   moduleId: string,
 ): TableRowBlock {
-  const label = entry.kind === 'function' ? `${entry.name}()` : entry.name;
-  const href = resolveSymbolHref(moduleId, entry.name);
+  const href = resolveSymbolHref(moduleId, entry.segment);
   return {
     children: [
       buildTableBodyCell([
@@ -472,7 +571,7 @@ function buildExportRow(
           children: [
             {
               type: 'inline-code',
-              value: label,
+              value: entry.label,
             },
           ],
           href,
@@ -556,24 +655,95 @@ function tokenizeShapeText(text: string): TypeToken[] {
   return tokens;
 }
 
-function buildVariableSignatureBlock(symbol: ReferenceVariable): Block {
+function resolveTypeTokens(tokens: TypeToken[]): TypeToken[] {
+  const result: TypeToken[] = [];
+  for (const token of tokens) {
+    if (token.kind === 'ref') {
+      result.push(token);
+      continue;
+    }
+    result.push(...tokenizeShapeText(token.text));
+  }
+  return result;
+}
+
+function buildTypeAliasBlock(symbol: ReferenceTypeAlias): Block {
+  const raw = symbol.resolvedType.map((token) => token.text).join('');
   return {
     label: null,
     language: 'ts',
     path: null,
-    source: symbol.type.map((token) => token.text).join(''),
+    source: dedentMultilineSignature(raw),
     type: 'code-block',
   };
 }
 
-function buildTypeAliasBlock(symbol: ReferenceTypeAlias): Block {
-  return {
-    label: null,
-    language: 'ts',
-    path: null,
-    source: symbol.resolvedType.map((token) => token.text).join(''),
-    type: 'code-block',
-  };
+function dedentMultilineSignature(text: string): string {
+  const lines = text.split('\n');
+  if (lines.length <= 1) {
+    return text;
+  }
+  let minIndent = Number.POSITIVE_INFINITY;
+  for (let index = 1; index < lines.length; index++) {
+    const line = lines[index];
+    if (line === undefined || line.trim() === '') {
+      continue;
+    }
+    const match = /^[ \t]*/.exec(line);
+    const indent = match === null ? 0 : match[0].length;
+    if (indent < minIndent) {
+      minIndent = indent;
+    }
+  }
+  if (!Number.isFinite(minIndent) || minIndent === 0) {
+    return text;
+  }
+  const result = [
+    lines[0] ?? '',
+  ];
+  for (let index = 1; index < lines.length; index++) {
+    const line = lines[index] ?? '';
+    result.push(line.slice(minIndent));
+  }
+  return result.join('\n');
+}
+
+function normalizeOverloadReturnType(
+  overloads: ReferenceOverload[],
+): TypeToken[] {
+  const seen = new Set<string>();
+  const segments: TypeToken[][] = [];
+  for (const overload of overloads) {
+    if (overload.returnType.length === 0) {
+      continue;
+    }
+    const key = overload.returnType.map((token) => token.text).join('');
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    segments.push(overload.returnType);
+  }
+  if (segments.length === 0) {
+    return [];
+  }
+  if (segments.length === 1) {
+    return segments[0] ?? [];
+  }
+  const result: TypeToken[] = [];
+  for (let index = 0; index < segments.length; index++) {
+    if (index > 0) {
+      result.push({
+        kind: 'text',
+        text: ' | ',
+      });
+    }
+    const segment = segments[index];
+    if (segment !== undefined) {
+      result.push(...segment);
+    }
+  }
+  return result;
 }
 
 function normalizeOverloadParameters(
@@ -644,6 +814,78 @@ function buildHeading2Block(text: string): Block {
     level: 2,
     type: 'heading',
   };
+}
+
+function buildHeading3Block(text: string, id: string): Block {
+  return {
+    children: [
+      {
+        type: 'text',
+        value: text,
+      },
+    ],
+    id,
+    level: 3,
+    type: 'heading',
+  };
+}
+
+function buildMethodSections(methods: ReferenceMethodMember[]): Block[] {
+  const blocks: Block[] = [];
+  for (const method of methods) {
+    blocks.push(buildHeading3Block(`${method.name}()`, slugify(method.name)));
+    if (method.description) {
+      const parsed = parseMarkdown(method.description);
+      blocks.push(...parsed.blocks);
+    }
+    if (method.shape) {
+      blocks.push(buildShapeBlock(method.shape));
+    } else {
+      blocks.push(buildFunctionSignatureBlock(method.overloads));
+    }
+  }
+  return blocks;
+}
+
+function buildMethodSummary(
+  methods: ReferenceMethodMember[],
+  variableName: string,
+  moduleId: string,
+  context: PackageContext,
+): Block[] {
+  const blocks: Block[] = [];
+  for (const method of methods) {
+    const href = buildSymbolHref(moduleId, `${variableName}.${method.name}`, {
+      collectionName: context.collectionName,
+      packageName: context.packageName,
+      packageSlug: context.packageSlug,
+    });
+    const summary = method.description.split(/\r?\n\r?\n/)[0]?.trim() ?? '';
+    const paragraphChildren: Block[] = [
+      {
+        children: [
+          {
+            type: 'inline-code',
+            value: `${variableName}.${method.name}()`,
+          },
+        ],
+        href,
+        kind: 'internal',
+        type: 'link',
+      },
+    ];
+    if (summary !== '') {
+      paragraphChildren.push({
+        type: 'text',
+        value: ` — ${summary}`,
+      });
+    }
+    blocks.push({
+      children: paragraphChildren,
+      type: 'paragraph',
+    });
+  }
+  return blocks;
 }
 
 function normalizeOverloadTypeParameters(
@@ -745,10 +987,7 @@ function buildParametersTable(parameters: ReferenceParameter[]): Block {
   };
 }
 
-function buildMembersTable(members: ReferenceMember[]): Block {
-  const properties = members.filter(
-    (member): member is ReferencePropertyMember => member.kind === 'property',
-  );
+function buildMembersTable(properties: ReferencePropertyMember[]): Block {
   const hasDefault = properties.some(
     (property) => property.defaultValue !== null,
   );
@@ -778,7 +1017,7 @@ function buildParameterRow(
 ): TableRowBlock {
   const typeExpression = parameter.shape
     ? tokensToCodeExpression(tokenizeShapeText(parameter.shape))
-    : tokensToCodeExpression(parameter.type);
+    : tokensToCodeExpression(resolveTypeTokens(parameter.type));
   const children: TableCellBlock[] = [
     buildTableBodyCell([
       {
@@ -823,7 +1062,7 @@ function buildMemberRow(
       },
     ]),
     buildTableBodyCell([
-      tokensToCodeExpression(member.type),
+      tokensToCodeExpression(resolveTypeTokens(member.type)),
     ]),
   ];
   if (includeDefault) {

@@ -63,7 +63,7 @@ export function extractJsDoc(node: Node): ExtractJsDocResult {
       continue;
     }
     if (name === 'shape') {
-      shape = text;
+      shape = unescapeBraces(text);
       continue;
     }
     if (name === 'deprecated') {
@@ -170,4 +170,8 @@ function parseThrows(tag: ts.JSDocTag, text: string): ReferenceThrows {
     condition: text.trim(),
     errorClass: 'Error',
   };
+}
+
+function unescapeBraces(text: string): string {
+  return text.replace(/\\([{}])/g, '$1');
 }

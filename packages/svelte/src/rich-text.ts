@@ -27,6 +27,12 @@ export type VoidHandler = Snippet<[]>;
 /**
  * Props for {@link RichText}.
  *
+ * @shape RichTextProps<T extends string> = \{
+ *   value: T,
+ *   [pairTag]: PairHandler,
+ *   [voidTag]: VoidHandler,
+ * \}
+ *
  * @remarks
  * Carries the source `value` and a snippet per named tag extracted from it. Pair tags take a {@link PairHandler}, void tags take a {@link VoidHandler}.
  *

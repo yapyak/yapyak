@@ -197,6 +197,20 @@ async function buildTypeScriptCollection(
         exportsByName.set(symbol.name, symbol);
       }
 
+      const variableByTypeName = new Map<string, string>();
+      for (const symbol of module.exports) {
+        if (symbol.kind !== 'variable') {
+          continue;
+        }
+        const typeExport = resolveTypeExport(symbol.type, exportsByName);
+        if (typeExport === undefined) {
+          continue;
+        }
+        if (!variableByTypeName.has(typeExport.name)) {
+          variableByTypeName.set(typeExport.name, symbol.name);
+        }
+      }
+
       for (const symbol of module.exports) {
         const safeName = encodeSymbolSegment(symbol.name);
         const path = isRootModule
@@ -207,33 +221,57 @@ async function buildTypeScriptCollection(
           symbol.kind === 'variable'
             ? resolveTypeExport(symbol.type, exportsByName)
             : undefined;
-        const isCallableVariable =
+        const variableHasCallSignature =
           variableTypeExport !== undefined &&
           (variableTypeExport.kind === 'type' ||
             variableTypeExport.kind === 'interface') &&
-          (variableTypeExport.callSignatures.length > 0 ||
-            variableTypeExport.members.some((m) => m.kind === 'method'));
-        const page = buildSymbolPage(
-          symbol,
-          context,
-          {
-            href,
-            index,
-            moduleId: module.id,
-            packageDir: typescriptPackage.root,
-          },
-          {
-            ...(isCallableVariable && {
-              eyebrowKind: 'function' as const,
-            }),
-            sourceUrl,
-          },
-        );
-        pages[path] = page;
-        symbols[`${packageSlug}/${symbol.name}`] = {
-          collection: collectionName,
-          path,
-        };
+          variableTypeExport.callSignatures.length > 0;
+        const variableHasMethods =
+          variableTypeExport !== undefined &&
+          (variableTypeExport.kind === 'type' ||
+            variableTypeExport.kind === 'interface') &&
+          variableTypeExport.members.some((m) => m.kind === 'method');
+        const isPureNamespaceVariable =
+          symbol.kind === 'variable' &&
+          !variableHasCallSignature &&
+          variableHasMethods;
+
+        if (isPureNamespaceVariable && variableTypeExport !== undefined) {
+          const typeSegment = encodeSymbolSegment(variableTypeExport.name);
+          const typePath = isRootModule
+            ? `${packageSlug}/${typeSegment}`
+            : `${packageSlug}/${subSlug}/${typeSegment}`;
+          symbols[`${packageSlug}/${symbol.name}`] = {
+            collection: collectionName,
+            path: typePath,
+          };
+        } else {
+          const page = buildSymbolPage(
+            symbol,
+            context,
+            {
+              href,
+              index,
+              moduleId: module.id,
+              packageDir: typescriptPackage.root,
+            },
+            {
+              ...(variableHasCallSignature && {
+                eyebrowKind: 'function' as const,
+              }),
+              ...((symbol.kind === 'type' || symbol.kind === 'interface') &&
+                variableByTypeName.get(symbol.name) !== undefined && {
+                  methodLinkVariable: variableByTypeName.get(symbol.name),
+                }),
+              sourceUrl,
+            },
+          );
+          pages[path] = page;
+          symbols[`${packageSlug}/${symbol.name}`] = {
+            collection: collectionName,
+            path,
+          };
+        }
 
         if (
           variableTypeExport === undefined ||
