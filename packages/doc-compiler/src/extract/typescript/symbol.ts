@@ -82,14 +82,39 @@ function buildFunctionSymbol(
   node: FunctionDeclaration,
   input: BuildSymbolInput,
 ): ReferenceExport {
+  const overloadNodes = collectFunctionOverloads(name, node, input.sourceFile);
+  const primaryNode = overloadNodes[0] ?? node;
   return {
-    ...buildBase(name, 'function', node, input),
+    ...buildBase(name, 'function', primaryNode, input),
     kind: 'function',
     members: [],
-    overloads: [
-      buildOverload(node),
-    ],
+    overloads: overloadNodes.map(buildOverload),
   };
+}
+
+function collectFunctionOverloads(
+  name: string,
+  fallback: FunctionDeclaration,
+  sourceFile: SourceFile,
+): FunctionDeclaration[] {
+  const signatures: FunctionDeclaration[] = [];
+  for (const statement of sourceFile.statements) {
+    if (!ts.isFunctionDeclaration(statement)) {
+      continue;
+    }
+    if (statement.name?.text !== name) {
+      continue;
+    }
+    if (statement.body === undefined) {
+      signatures.push(statement);
+    }
+  }
+  if (signatures.length > 0) {
+    return signatures;
+  }
+  return [
+    fallback,
+  ];
 }
 
 function buildTypeAliasSymbol(

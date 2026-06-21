@@ -29,7 +29,8 @@ import { slugify } from '../../slugify';
 import { buildSymbolHref } from '../../symbol-path';
 import { parseMarkdown } from '../markdown';
 import { classifyMemberDisplayKind } from './classify';
-import { expandModuleEntries } from './module-entry';
+import { expandModuleEntries, formatSymbolLabel } from './module-entry';
+import { parseShapeTypeParameters } from './shape';
 import { relative, resolve } from 'node:path';
 
 let currentIndex: SymbolIndex = new Map();
@@ -113,25 +114,31 @@ export function buildSymbolPage(
     } else {
       blocks.push(buildFunctionSignatureBlock(symbol.overloads));
     }
-    const typeParameters = normalizeOverloadTypeParameters(symbol.overloads);
-    if (typeParameters.length > 0) {
+    const typeParameters = symbol.shape
+      ? parseShapeTypeParameters(symbol.shape, symbol.tags)
+      : normalizeOverloadTypeParameters(symbol.overloads);
+    if (typeParameters.some((entry) => entry.description.length > 0)) {
       blocks.push(buildHeading2Block('Type Parameters'));
       blocks.push(buildTypeParametersTable(typeParameters));
     }
-    const parameters = normalizeOverloadParameters(symbol.overloads);
+    const parameters = symbol.shape
+      ? (symbol.overloads[0]?.parameters ?? [])
+      : normalizeOverloadParameters(symbol.overloads);
     if (parameters.length > 0) {
       blocks.push(buildHeading2Block('Parameters'));
       blocks.push(buildParametersTable(parameters));
     }
-    const returnTokens = normalizeOverloadReturnType(symbol.overloads);
-    if (returnTokens.length > 0) {
-      blocks.push(buildHeading2Block('Returns'));
-      blocks.push({
-        children: [
-          tokensToCodeExpression(resolveTypeTokens(returnTokens)),
-        ],
-        type: 'paragraph',
-      });
+    if (!symbol.shape && symbol.displayKind !== 'component') {
+      const returnTokens = normalizeOverloadReturnType(symbol.overloads);
+      if (returnTokens.length > 0) {
+        blocks.push(buildHeading2Block('Returns'));
+        blocks.push({
+          children: [
+            tokensToCodeExpression(resolveTypeTokens(returnTokens)),
+          ],
+          type: 'paragraph',
+        });
+      }
     }
     const functionProperties = symbol.members.filter(
       (member): member is ReferencePropertyMember => member.kind === 'property',
@@ -282,10 +289,10 @@ export function buildSymbolPage(
     description: '',
     href: input.href,
     meta: {},
-    title:
-      (options.eyebrowKind ?? symbol.kind) === 'function'
-        ? `${symbol.name}()`
-        : symbol.name,
+    title: formatSymbolLabel(
+      symbol.name,
+      options.eyebrowKind ?? symbol.displayKind,
+    ),
   };
 }
 
@@ -342,7 +349,7 @@ export function buildPropertyMemberPage(
     description: '',
     href: input.href,
     meta: {},
-    title: fullName,
+    title: formatSymbolLabel(fullName, memberKind),
   };
 }
 
@@ -414,27 +421,33 @@ export function buildMethodPage(
     blocks.push(buildFunctionSignatureBlock(member.overloads));
   }
 
-  const typeParameters = normalizeOverloadTypeParameters(member.overloads);
-  if (typeParameters.length > 0) {
+  const typeParameters = member.shape
+    ? parseShapeTypeParameters(member.shape, member.tags)
+    : normalizeOverloadTypeParameters(member.overloads);
+  if (typeParameters.some((entry) => entry.description.length > 0)) {
     blocks.push(buildHeading2Block('Type Parameters'));
     blocks.push(buildTypeParametersTable(typeParameters));
   }
 
-  const parameters = normalizeOverloadParameters(member.overloads);
+  const parameters = member.shape
+    ? (member.overloads[0]?.parameters ?? [])
+    : normalizeOverloadParameters(member.overloads);
   if (parameters.length > 0) {
     blocks.push(buildHeading2Block('Parameters'));
     blocks.push(buildParametersTable(parameters));
   }
 
-  const methodReturnTokens = normalizeOverloadReturnType(member.overloads);
-  if (methodReturnTokens.length > 0) {
-    blocks.push(buildHeading2Block('Returns'));
-    blocks.push({
-      children: [
-        tokensToCodeExpression(resolveTypeTokens(methodReturnTokens)),
-      ],
-      type: 'paragraph',
-    });
+  if (!member.shape && classifyMemberDisplayKind(member) !== 'component') {
+    const methodReturnTokens = normalizeOverloadReturnType(member.overloads);
+    if (methodReturnTokens.length > 0) {
+      blocks.push(buildHeading2Block('Returns'));
+      blocks.push({
+        children: [
+          tokensToCodeExpression(resolveTypeTokens(methodReturnTokens)),
+        ],
+        type: 'paragraph',
+      });
+    }
   }
 
   if (member.throws.length > 0) {
@@ -459,7 +472,7 @@ export function buildMethodPage(
     description: '',
     href: input.href,
     meta: {},
-    title: `${fullName}()`,
+    title: formatSymbolLabel(fullName, classifyMemberDisplayKind(member)),
   };
 }
 
@@ -733,7 +746,7 @@ function normalizeInlineType(text: string): string {
   result = result.replace(/([[(<])\s+/g, '$1');
   result = result.replace(/\s+([\])>])/g, '$1');
   result = result.replace(/[,;](\s*[\])>}])/g, '$1');
-  return result.trim();
+  return result;
 }
 
 function buildTypeAliasBlock(symbol: ReferenceTypeAlias): Block {
@@ -902,7 +915,12 @@ function buildHeading3Block(text: string, id: string): Block {
 function buildMethodSections(methods: ReferenceMethodMember[]): Block[] {
   const blocks: Block[] = [];
   for (const method of methods) {
-    blocks.push(buildHeading3Block(`${method.name}()`, slugify(method.name)));
+    blocks.push(
+      buildHeading3Block(
+        formatSymbolLabel(method.name, classifyMemberDisplayKind(method)),
+        slugify(method.name),
+      ),
+    );
     if (method.description) {
       const parsed = parseMarkdown(method.description);
       blocks.push(...parsed.blocks);
@@ -935,7 +953,10 @@ function buildMethodSummary(
         children: [
           {
             type: 'inline-code',
-            value: `${variableName}.${method.name}()`,
+            value: formatSymbolLabel(
+              `${variableName}.${method.name}`,
+              classifyMemberDisplayKind(method),
+            ),
           },
         ],
         href,

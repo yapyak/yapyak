@@ -27,7 +27,8 @@ export function extractParameters(
       name,
       optional:
         parameter.questionToken !== undefined ||
-        parameter.initializer !== undefined,
+        parameter.initializer !== undefined ||
+        parameter.dotDotDotToken !== undefined,
       shape,
       type: buildTypeTokens(parameter.type),
     });

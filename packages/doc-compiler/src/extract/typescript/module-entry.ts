@@ -21,6 +21,16 @@ const CALLABLE_DISPLAY_KINDS = new Set<ExportKind>([
   'hook',
 ]);
 
+export function formatSymbolLabel(name: string, kind: ExportKind): string {
+  if (kind === 'component') {
+    return `<${name}>`;
+  }
+  if (kind === 'function' || kind === 'hook') {
+    return `${name}()`;
+  }
+  return name;
+}
+
 export function expandModuleEntries(exports: ReferenceExport[]): ModuleEntry[] {
   const exportsByName = new Map<string, ReferenceExport>();
   for (const symbol of exports) {
@@ -33,7 +43,7 @@ export function expandModuleEntries(exports: ReferenceExport[]): ModuleEntry[] {
       entries.push({
         description: symbol.description,
         kind: symbol.displayKind,
-        label: `${symbol.name}()`,
+        label: formatSymbolLabel(symbol.name, symbol.displayKind),
         segment: symbol.name,
       });
       continue;
@@ -57,7 +67,9 @@ export function expandModuleEntries(exports: ReferenceExport[]): ModuleEntry[] {
         entries.push({
           description: symbol.description,
           kind: symbol.displayKind,
-          label: isCallable ? `${symbol.name}()` : symbol.name,
+          label: isCallable
+            ? formatSymbolLabel(symbol.name, symbol.displayKind)
+            : symbol.name,
           segment: symbol.name,
         });
       }
@@ -67,9 +79,7 @@ export function expandModuleEntries(exports: ReferenceExport[]): ModuleEntry[] {
         entries.push({
           description: member.description,
           kind: memberKind,
-          label: CALLABLE_DISPLAY_KINDS.has(memberKind)
-            ? `${segment}()`
-            : segment,
+          label: formatSymbolLabel(segment, memberKind),
           segment,
         });
       }

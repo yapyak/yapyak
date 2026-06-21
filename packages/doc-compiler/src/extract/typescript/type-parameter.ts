@@ -30,13 +30,26 @@ function getTypeParameterDescription(node: TypeParameterDeclaration): string {
   if (parent === undefined) {
     return '';
   }
+  const targetName = node.name.text;
   for (const tag of ts.getJSDocTags(parent)) {
     if (ts.isJSDocTemplateTag(tag)) {
       for (const declared of tag.typeParameters) {
-        if (declared.name.text === node.name.text) {
+        if (declared.name.text === targetName) {
           return getCommentText(tag.comment);
         }
       }
+      continue;
+    }
+    if (tag.tagName.text !== 'typeParam') {
+      continue;
+    }
+    const text = getCommentText(tag.comment);
+    const match = /^([A-Za-z_$][\w$]*)\s*-?\s*(.*)$/s.exec(text);
+    if (match === null) {
+      continue;
+    }
+    if (match[1] === targetName) {
+      return match[2] ?? '';
     }
   }
   return '';
