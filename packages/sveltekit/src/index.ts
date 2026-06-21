@@ -5,8 +5,6 @@
  *
  * ```bash
  * npm install @yapyak/sveltekit
- * # or
- * pnpm add @yapyak/sveltekit
  * ```
  *
  * @packageDocumentation

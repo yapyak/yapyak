@@ -5,8 +5,6 @@
  *
  * ```bash
  * npm install @yapyak/react-router
- * # or
- * pnpm add @yapyak/react-router
  * ```
  *
  * @packageDocumentation

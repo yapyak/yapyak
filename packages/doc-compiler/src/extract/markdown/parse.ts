@@ -1,4 +1,4 @@
-import type { Config, Schema } from '@markdoc/markdoc';
+import type { Config, Schema, Tag } from '@markdoc/markdoc';
 import type {
   Block,
   CalloutBlock,
@@ -563,12 +563,81 @@ const fence: Schema = {
     const rawLanguage = node.attributes.language as string | undefined;
     const content = node.attributes.content as string;
     const parsed = parseLanguageLabel(rawLanguage);
+    const installSwitch = tryExpandInstallCommand(content, parsed.language);
+    if (installSwitch !== undefined) {
+      return installSwitch;
+    }
     return new Markdoc.Tag('CodeBlock', {
       source: content,
       ...parsed,
     });
   },
 };
+
+const INSTALL_COMMAND_RX =
+  /^(?:npm\s+install|pnpm\s+add|bun\s+add|yarn\s+add)\s+(.+)$/;
+
+function tryExpandInstallCommand(
+  content: string,
+  language: string | undefined,
+): Tag | undefined {
+  if (language !== 'bash' && language !== 'sh' && language !== 'shell') {
+    return undefined;
+  }
+  const trimmed = content.trim();
+  if (trimmed.includes('\n')) {
+    return undefined;
+  }
+  const match = INSTALL_COMMAND_RX.exec(trimmed);
+  if (match === null || match[1] === undefined) {
+    return undefined;
+  }
+  const packages = match[1].trim();
+  return new Markdoc.Tag(
+    'Switch',
+    {
+      group: 'packageManager',
+    },
+    [
+      new Markdoc.Tag(
+        'When',
+        {
+          value: 'pnpm',
+        },
+        [
+          new Markdoc.Tag('CodeBlock', {
+            language: 'bash',
+            source: `pnpm add ${packages}`,
+          }),
+        ],
+      ),
+      new Markdoc.Tag(
+        'When',
+        {
+          value: 'npm',
+        },
+        [
+          new Markdoc.Tag('CodeBlock', {
+            language: 'bash',
+            source: `npm install ${packages}`,
+          }),
+        ],
+      ),
+      new Markdoc.Tag(
+        'When',
+        {
+          value: 'bun',
+        },
+        [
+          new Markdoc.Tag('CodeBlock', {
+            language: 'bash',
+            source: `bun add ${packages}`,
+          }),
+        ],
+      ),
+    ],
+  );
+}
 
 const callout: Schema = {
   attributes: {

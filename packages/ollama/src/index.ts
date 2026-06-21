@@ -5,8 +5,6 @@
  *
  * ```bash
  * npm install @yapyak/ollama
- * # or
- * pnpm add @yapyak/ollama
  * ```
  *
  * @packageDocumentation

@@ -31,7 +31,7 @@ export function extractJsDoc(node: Node): ExtractJsDocResult {
     return EMPTY_RESULT;
   }
 
-  const description = getCommentText(jsDoc.comment);
+  let description = getCommentText(jsDoc.comment);
   const examples: ReferenceExample[] = [];
   const throws: ReferenceThrows[] = [];
   const seeAlso: string[] = [];
@@ -43,6 +43,12 @@ export function extractJsDoc(node: Node): ExtractJsDocResult {
   for (const tag of jsDoc.tags ?? []) {
     const name = tag.tagName.text;
     const text = getCommentText(tag.comment);
+    if (text.startsWith('/')) {
+      const needsSpace =
+        description.length > 0 && !/\s$/.test(description);
+      description += `${needsSpace ? ' ' : ''}@${name}${text}`;
+      continue;
+    }
     if (name === 'example') {
       examples.push(parseExample(readExampleSource(tag)));
       continue;

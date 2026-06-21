@@ -5,8 +5,6 @@
  *
  * ```bash
  * npm install @yapyak/tanstack-start
- * # or
- * pnpm add @yapyak/tanstack-start
  * ```
  *
  * @packageDocumentation

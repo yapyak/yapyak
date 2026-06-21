@@ -5,8 +5,6 @@
  *
  * ```bash
  * npm install yapyak @yapyak/vue
- * # or
- * pnpm add yapyak @yapyak/vue
  * ```
  *
  * @packageDocumentation

@@ -5,8 +5,6 @@
  *
  * ```bash
  * npm install @yapyak/doc-compiler
- * # or
- * pnpm add @yapyak/doc-compiler
  * ```
  *
  * @packageDocumentation

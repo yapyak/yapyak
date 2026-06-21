@@ -5,8 +5,6 @@
  *
  * ```bash
  * npm install @yapyak/gemini
- * # or
- * pnpm add @yapyak/gemini
  * ```
  *
  * @packageDocumentation

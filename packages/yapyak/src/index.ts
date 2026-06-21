@@ -5,8 +5,6 @@
  *
  * ```bash
  * npm install yapyak
- * # or
- * pnpm add yapyak
  * ```
  *
  * @packageDocumentation

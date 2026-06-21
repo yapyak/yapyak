@@ -5,8 +5,6 @@
  *
  * ```bash
  * npm install @yapyak/anthropic
- * # or
- * pnpm add @yapyak/anthropic
  * ```
  *
  * @packageDocumentation

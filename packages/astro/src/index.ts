@@ -5,8 +5,6 @@
  *
  * ```bash
  * npm install yapyak @yapyak/astro
- * # or
- * pnpm add yapyak @yapyak/astro
  * ```
  *
  * @packageDocumentation
