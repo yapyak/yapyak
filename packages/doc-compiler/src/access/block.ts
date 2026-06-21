@@ -115,9 +115,12 @@ export type TableRowBlock = {
 
 export type TableCellBlock = {
   children: Block[];
+  column?: TableCellColumn;
   header: boolean;
   type: 'table-cell';
 };
+
+export type TableCellColumn = 'identifier' | 'literal' | 'prose';
 
 export type CodeBlock = {
   label: string | null;

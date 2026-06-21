@@ -3,6 +3,7 @@ import type {
   CodeExpressionBlock,
   ExportKind,
   TableCellBlock,
+  TableCellColumn,
   TableRowBlock,
 } from '../../access';
 import type { Page } from '../../build';
@@ -548,21 +549,25 @@ function buildSubpathsTable(
   return {
     body: subpaths.map((entry) => ({
       children: [
-        buildTableBodyCell([
-          {
-            children: [
-              {
-                type: 'inline-code',
-                value: entry.subpath,
-              },
-            ],
-            href: entry.href,
-            kind: 'internal',
-            type: 'link',
-          },
-        ]),
+        buildTableBodyCell(
+          [
+            {
+              children: [
+                {
+                  type: 'inline-code',
+                  value: entry.subpath,
+                },
+              ],
+              href: entry.href,
+              kind: 'internal',
+              type: 'link',
+            },
+          ],
+          'identifier',
+        ),
         buildTableBodyCell(
           markdownToInline(getFirstSentence(entry.description)),
+          'prose',
         ),
       ],
       type: 'table-row',
@@ -640,26 +645,32 @@ function buildExportRow(
   const href = resolveSymbolHref(moduleId, entry.segment);
   return {
     children: [
-      buildTableBodyCell([
-        {
-          children: [
-            {
-              type: 'inline-code',
-              value: entry.label,
-            },
-          ],
-          href,
-          kind: 'internal',
-          type: 'link',
-        },
-      ]),
+      buildTableBodyCell(
+        [
+          {
+            children: [
+              {
+                type: 'inline-code',
+                value: entry.label,
+              },
+            ],
+            href,
+            kind: 'internal',
+            type: 'link',
+          },
+        ],
+        'identifier',
+      ),
       buildTableBodyCell([
         {
           kind: entry.kind,
           type: 'kind-badge',
         },
       ]),
-      buildTableBodyCell(markdownToInline(getFirstSentence(entry.description))),
+      buildTableBodyCell(
+        markdownToInline(getFirstSentence(entry.description)),
+        'prose',
+      ),
     ],
     type: 'table-row',
   };
@@ -1015,12 +1026,15 @@ function buildTypeParameterRow(
 ): TableRowBlock {
   return {
     children: [
-      buildTableBodyCell([
-        {
-          type: 'inline-code',
-          value: typeParameter.name,
-        },
-      ]),
+      buildTableBodyCell(
+        [
+          {
+            type: 'inline-code',
+            value: typeParameter.name,
+          },
+        ],
+        'identifier',
+      ),
       buildTableBodyCell(
         typeParameter.constraint === null
           ? [
@@ -1032,6 +1046,7 @@ function buildTypeParameterRow(
           : [
               tokensToCodeExpression(typeParameter.constraint),
             ],
+        'literal',
       ),
       buildTableBodyCell(
         typeParameter.defaultType === null
@@ -1044,8 +1059,9 @@ function buildTypeParameterRow(
           : [
               tokensToCodeExpression(typeParameter.defaultType),
             ],
+        'literal',
       ),
-      buildTableBodyCell(markdownToInline(typeParameter.description)),
+      buildTableBodyCell(markdownToInline(typeParameter.description), 'prose'),
     ],
     type: 'table-row',
   };
@@ -1109,15 +1125,21 @@ function buildParameterRow(
     ? tokensToCodeExpression(tokenizeShapeText(parameter.shape))
     : tokensToCodeExpression(resolveTypeTokens(parameter.type));
   const children: TableCellBlock[] = [
-    buildTableBodyCell([
-      {
-        type: 'inline-code',
-        value: parameter.name + (parameter.optional ? '?' : ''),
-      },
-    ]),
-    buildTableBodyCell([
-      typeExpression,
-    ]),
+    buildTableBodyCell(
+      [
+        {
+          type: 'inline-code',
+          value: parameter.name + (parameter.optional ? '?' : ''),
+        },
+      ],
+      'identifier',
+    ),
+    buildTableBodyCell(
+      [
+        typeExpression,
+      ],
+      'literal',
+    ),
   ];
   if (includeDefault) {
     children.push(
@@ -1130,10 +1152,13 @@ function buildParameterRow(
               },
             ]
           : markdownToInline(parameter.defaultValue),
+        'literal',
       ),
     );
   }
-  children.push(buildTableBodyCell(markdownToInline(parameter.description)));
+  children.push(
+    buildTableBodyCell(markdownToInline(parameter.description), 'prose'),
+  );
   return {
     children,
     type: 'table-row',
@@ -1145,15 +1170,21 @@ function buildMemberRow(
   includeDefault: boolean,
 ): TableRowBlock {
   const children: TableCellBlock[] = [
-    buildTableBodyCell([
-      {
-        type: 'inline-code',
-        value: member.name + (member.optional ? '?' : ''),
-      },
-    ]),
-    buildTableBodyCell([
-      tokensToCodeExpression(resolveTypeTokens(member.type)),
-    ]),
+    buildTableBodyCell(
+      [
+        {
+          type: 'inline-code',
+          value: member.name + (member.optional ? '?' : ''),
+        },
+      ],
+      'identifier',
+    ),
+    buildTableBodyCell(
+      [
+        tokensToCodeExpression(resolveTypeTokens(member.type)),
+      ],
+      'literal',
+    ),
   ];
   if (includeDefault) {
     children.push(
@@ -1166,21 +1197,30 @@ function buildMemberRow(
               },
             ]
           : markdownToInline(member.defaultValue),
+        'literal',
       ),
     );
   }
-  children.push(buildTableBodyCell(markdownToInline(member.description)));
+  children.push(
+    buildTableBodyCell(markdownToInline(member.description), 'prose'),
+  );
   return {
     children,
     type: 'table-row',
   };
 }
 
-function buildTableBodyCell(children: Block[]) {
+function buildTableBodyCell(
+  children: Block[],
+  column?: TableCellColumn,
+): TableCellBlock {
   return {
     children,
+    ...(column !== undefined && {
+      column,
+    }),
     header: false,
-    type: 'table-cell' as const,
+    type: 'table-cell',
   };
 }
 
@@ -1319,8 +1359,9 @@ function buildThrowsRow(entry: ReferenceThrows): TableRowBlock {
                 value: '',
               },
             ],
+        'identifier',
       ),
-      buildTableBodyCell(markdownToInline(entry.condition)),
+      buildTableBodyCell(markdownToInline(entry.condition), 'prose'),
     ],
     type: 'table-row',
   };

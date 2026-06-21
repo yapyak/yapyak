@@ -24,5 +24,10 @@
     tbody tr:last-child & {
       border-bottom: 0;
     }
+
+    &[data-column="literal"] code {
+      overflow-wrap: anywhere;
+      white-space: normal;
+    }
   }
 }

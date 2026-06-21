@@ -13,10 +13,12 @@ export function BlockRendererNodeTableCell(
   props: BlockRendererNodeTableCellProps,
 ) {
   const { block } = props;
+
   return (
     <Box
       as={block.header ? 'th' : 'td'}
       className={styles.BlockRendererNodeTableCell}
+      data-column={block.column}
       data-header={block.header}
     >
       {block.children.map((child, index) => (

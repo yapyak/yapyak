@@ -30,6 +30,7 @@ export type {
   SwitchBlock,
   TableBlock,
   TableCellBlock,
+  TableCellColumn,
   TableRowBlock,
   TextBlock,
 } from './block';
