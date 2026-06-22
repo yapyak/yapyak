@@ -20,9 +20,6 @@ export interface Register {}
 /**
  * The locale. Holds a BCP 47 language tag.
  *
- * @remarks
- * Narrows to `Register['Locale']` when augmented; falls back to `string`.
- *
  * @shape 'en' | 'sv' | ...
  *
  * @see [BCP 47](https://datatracker.ietf.org/doc/html/bcp47)

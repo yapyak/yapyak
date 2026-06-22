@@ -20,9 +20,6 @@ export type ReactOptions = {
 /**
  * Creates a React processor for yapyak's compiler.
  *
- * @remarks
- * Handles `.tsx` and `.jsx` files.
- *
  * @param options - The options.
  *
  * @example

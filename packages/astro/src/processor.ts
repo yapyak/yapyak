@@ -25,9 +25,6 @@ let cached: typeof AstroCompilerSync | undefined;
 /**
  * Creates an Astro processor for yapyak's compiler.
  *
- * @remarks
- * Handles `.astro` files.
- *
  * @example
  * ```ts [yapyak.config.ts]
  * import { defineConfig } from 'yapyak/config';
