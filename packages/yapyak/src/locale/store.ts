@@ -29,9 +29,8 @@ const persistence = buildPersistence(PERSISTENCE_CONFIG, LOCALES);
  * ```ts
  * import { isLocale } from 'yapyak';
  *
- * if (isLocale(params.locale)) {
- *   // params.locale: Locale
- * }
+ * isLocale('sv'); // output: true
+ * isLocale('xx'); // output: false
  * ```
  */
 export function isLocale(value: string): value is Locale {
@@ -50,10 +49,8 @@ export function isLocale(value: string): value is Locale {
  * ```ts
  * import { parseLocale } from 'yapyak';
  *
- * const locale = parseLocale(params.locale);
- * if (locale) {
- *   // locale: Locale
- * }
+ * parseLocale('SV'); // output: 'sv'
+ * parseLocale('invalid'); // output: undefined
  * ```
  *
  * @see [BCP 47](https://datatracker.ietf.org/doc/html/bcp47)

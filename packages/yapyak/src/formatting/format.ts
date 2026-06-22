@@ -80,16 +80,27 @@ export type Format = {
    * @example
    * ```ts
    * format.number(1234.5);
+   * // output:
+   * // en-US: '1,234.5'
+   * // sv-SE: '1 234,5'
+   * // de-DE: '1.234,5'
    * ```
    *
    * @example Currency
    * ```ts
    * format.number(199, { style: 'currency', currency: 'EUR' });
+   * // output:
+   * // en-US: '€199.00'
+   * // sv-SE: '199,00 €'
+   * // pt-BR: '€ 199,00'
    * ```
    *
    * @example Percent
    * ```ts
    * format.number(0.42, { style: 'percent' });
+   * // output:
+   * // en-US: '42%'
+   * // sv-SE: '42 %'
    * ```
    */
   number(value: number, options?: FormatNumberOptions): string;
@@ -103,16 +114,24 @@ export type Format = {
    * @example
    * ```ts
    * format.dateTime(new Date());
+   * // output:
+   * // en-US: '6/17/2026'
+   * // sv-SE: '2026-06-17'
    * ```
    *
    * @example Date style
    * ```ts
    * format.dateTime(new Date(), { dateStyle: 'long' });
+   * // output:
+   * // en-US: 'June 17, 2026'
+   * // sv-SE: '17 juni 2026'
+   * // ja-JP: '2026年6月17日'
    * ```
    *
    * @example Date and time combined
    * ```ts
    * format.dateTime(new Date(), { dateStyle: 'medium', timeStyle: 'short' });
+   * // output: en-US: 'Jun 17, 2026, 4:30 PM'
    * ```
    */
   dateTime(value: Date | number, options?: FormatDateTimeOptions): string;
@@ -125,6 +144,7 @@ export type Format = {
    * @example
    * ```ts
    * format.in('sv').number(199, { style: 'currency', currency: 'SEK' });
+   * // output: '199,00 kr'
    * ```
    */
   in(locale: Locale): Format;
@@ -138,11 +158,15 @@ export type Format = {
    * @example
    * ```ts
    * format.list(['apple', 'pear', 'orange']);
+   * // output:
+   * // en-US: 'apple, pear, and orange'
+   * // sv-SE: 'apple, pear och orange'
    * ```
    *
    * @example Disjunction
    * ```ts
    * format.list(['apple', 'pear'], { type: 'disjunction' });
+   * // output: en-US: 'apple or pear'
    * ```
    */
   list(items: Iterable<string>, options?: FormatListOptions): string;
@@ -157,6 +181,9 @@ export type Format = {
    * @example
    * ```ts
    * format.relativeTime(-1, 'day');
+   * // output:
+   * // en-US: '1 day ago'
+   * // sv-SE: 'för 1 dag sedan'
    * ```
    */
   relativeTime(
@@ -174,7 +201,12 @@ export type Format = {
  * import { format } from 'yapyak';
  *
  * format.number(1000);
+ * // output:
+ * // en-US: '1,000'
+ * // sv-SE: '1 000'
+ *
  * format.in('sv').number(200, { style: 'currency', currency: 'SEK' });
+ * // output: '200,00 kr'
  * ```
  */
 export const format: Format = createFormat();

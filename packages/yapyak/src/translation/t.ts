@@ -130,8 +130,15 @@ export type TFn = {
  * import { t } from 'yapyak';
  *
  * t('Save changes');
+ * // output:
+ * // en-US: 'Save changes'
+ * // sv-SE: 'Spara ändringar'
+ *
  * t('Hello, {name}!', { name: 'Alex' });
+ * // output: en-US: 'Hello, Alex!'
+ *
  * t('You have {count, plural, one {# item} other {# items}}', { count: 1 });
+ * // output: en-US: 'You have 1 item'
  * ```
  *
  * @example Forced locale
@@ -139,14 +146,15 @@ export type TFn = {
  * import { t } from 'yapyak';
  *
  * t.in('sv', 'Welcome back, {name}!', { name: 'Alex' });
+ * // output: 'Välkommen tillbaka, Alex!'
  * ```
  *
  * @example Disambiguation
  * ```ts
  * import { t } from 'yapyak';
  *
- * t.as('action', 'Open');
- * t.as('status', 'Open');
+ * t.as('action', 'Open'); // output: sv-SE: 'Öppna'
+ * t.as('status', 'Open'); // output: sv-SE: 'Öppen'
  * ```
  *
  * @example Forced locale with disambiguation
@@ -154,6 +162,7 @@ export type TFn = {
  * import { t } from 'yapyak';
  *
  * t.in('sv').as('action', 'Open');
+ * // output: 'Öppna'
  * ```
  */
 export const t: TFn = Object.assign(() => throwNotCompiled('t'), {

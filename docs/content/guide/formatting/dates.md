@@ -12,7 +12,7 @@ format.dateTime(new Date(), { dateStyle: 'long' });
 // output:
 // en-US: 'June 17, 2026'
 // sv-SE: '17 juni 2026'
-// de-DE: '17. Juni 2026'
+// ja-JP: '2026年6月17日'
 ```
 
 ## Absolute date and time
