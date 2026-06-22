@@ -1,6 +1,6 @@
 import type { Plugin, ViteDevServer } from 'vite';
-import type { Config } from './config';
 import type { Manifest } from './build/manifest';
+import type { Config } from './config';
 
 import { buildAgentArtifact } from './build/agent-artifact';
 import { buildManifest } from './build/manifest';
@@ -37,10 +37,6 @@ export function docCompiler(config: Config): Plugin {
   };
 
   return {
-    configResolved(resolvedConfig) {
-      isBuild = resolvedConfig.command === 'build';
-    },
-
     async buildStart() {
       outAbsolute = resolve(config.out);
       await writeManifestFile();
@@ -56,6 +52,9 @@ export function docCompiler(config: Config): Plugin {
           type: 'asset',
         });
       }
+    },
+    configResolved(resolvedConfig) {
+      isBuild = resolvedConfig.command === 'build';
     },
 
     configureServer(server: ViteDevServer) {
