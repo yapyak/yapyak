@@ -8,7 +8,6 @@ export type {
 export { extractPackage } from './extract';
 export {
   expandModuleEntries,
-  formatSymbolLabel,
   getTypeCallSignatures,
   getTypeMembers,
   resolveTypeExport,
