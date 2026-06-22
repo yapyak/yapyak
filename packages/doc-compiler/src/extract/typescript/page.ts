@@ -144,7 +144,7 @@ export function buildSymbolPage(
     const functionProperties = symbol.members.filter(
       (member): member is ReferencePropertyMember => member.kind === 'property',
     );
-    if (!symbol.shape && functionProperties.length > 0) {
+    if (functionProperties.length > 0) {
       blocks.push(buildHeading2Block('Members'));
       blocks.push(buildMembersTable(functionProperties));
     }
@@ -182,79 +182,73 @@ export function buildSymbolPage(
         type: 'code-block',
       });
     }
-    if (!symbol.shape) {
-      const interfaceProperties = symbol.members.filter(
-        (member): member is ReferencePropertyMember =>
-          member.kind === 'property',
-      );
-      const interfaceMethods = symbol.members.filter(
-        (member): member is ReferenceMethodMember => member.kind === 'method',
-      );
-      if (interfaceProperties.length > 0) {
-        blocks.push(buildHeading2Block('Members'));
-        blocks.push(buildMembersTable(interfaceProperties));
-      }
-      if (interfaceMethods.length > 0) {
-        blocks.push(buildHeading2Block('Methods'));
-        if (options.methodLinkVariable === undefined) {
-          blocks.push(...buildMethodSections(interfaceMethods));
-        } else {
-          blocks.push(
-            ...buildMethodSummary(
-              interfaceMethods,
-              options.methodLinkVariable,
-              input.moduleId,
-              context,
-            ),
-          );
-        }
+    const interfaceProperties = symbol.members.filter(
+      (member): member is ReferencePropertyMember => member.kind === 'property',
+    );
+    const interfaceMethods = symbol.members.filter(
+      (member): member is ReferenceMethodMember => member.kind === 'method',
+    );
+    if (interfaceProperties.length > 0) {
+      blocks.push(buildHeading2Block('Members'));
+      blocks.push(buildMembersTable(interfaceProperties));
+    }
+    if (interfaceMethods.length > 0) {
+      blocks.push(buildHeading2Block('Methods'));
+      if (options.methodLinkVariable === undefined) {
+        blocks.push(...buildMethodSections(interfaceMethods));
+      } else {
+        blocks.push(
+          ...buildMethodSummary(
+            interfaceMethods,
+            options.methodLinkVariable,
+            input.moduleId,
+            context,
+          ),
+        );
       }
     }
   }
 
   if (symbol.kind === 'type') {
+    const typeProperties = symbol.members.filter(
+      (member): member is ReferencePropertyMember => member.kind === 'property',
+    );
+    const typeMethods = symbol.members.filter(
+      (member): member is ReferenceMethodMember => member.kind === 'method',
+    );
     if (symbol.shape) {
       blocks.push(buildHeading2Block('Type'));
       blocks.push(buildShapeBlock(symbol.shape));
-    } else {
-      const typeProperties = symbol.members.filter(
-        (member): member is ReferencePropertyMember =>
-          member.kind === 'property',
-      );
-      const typeMethods = symbol.members.filter(
-        (member): member is ReferenceMethodMember => member.kind === 'method',
-      );
-      if (typeProperties.length > 0) {
-        blocks.push(buildHeading2Block('Members'));
-        blocks.push(buildMembersTable(typeProperties));
-      }
-      if (typeMethods.length > 0) {
-        blocks.push(buildHeading2Block('Methods'));
-        if (options.methodLinkVariable === undefined) {
-          blocks.push(...buildMethodSections(typeMethods));
-        } else {
-          blocks.push(
-            ...buildMethodSummary(
-              typeMethods,
-              options.methodLinkVariable,
-              input.moduleId,
-              context,
-            ),
-          );
-        }
-      }
-      if (
-        typeProperties.length === 0 &&
-        typeMethods.length === 0 &&
-        symbol.resolvedType.length > 0
-      ) {
-        blocks.push(buildHeading2Block('Type'));
-        blocks.push(buildTypeAliasBlock(symbol));
+    } else if (
+      typeProperties.length === 0 &&
+      typeMethods.length === 0 &&
+      symbol.resolvedType.length > 0
+    ) {
+      blocks.push(buildHeading2Block('Type'));
+      blocks.push(buildTypeAliasBlock(symbol));
+    }
+    if (typeProperties.length > 0) {
+      blocks.push(buildHeading2Block('Members'));
+      blocks.push(buildMembersTable(typeProperties));
+    }
+    if (typeMethods.length > 0) {
+      blocks.push(buildHeading2Block('Methods'));
+      if (options.methodLinkVariable === undefined) {
+        blocks.push(...buildMethodSections(typeMethods));
+      } else {
+        blocks.push(
+          ...buildMethodSummary(
+            typeMethods,
+            options.methodLinkVariable,
+            input.moduleId,
+            context,
+          ),
+        );
       }
     }
   }
 
-  if (symbol.kind === 'class' && !symbol.shape) {
+  if (symbol.kind === 'class') {
     const classProperties = symbol.members.filter(
       (member): member is ReferencePropertyMember => member.kind === 'property',
     );

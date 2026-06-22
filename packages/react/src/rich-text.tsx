@@ -25,6 +25,7 @@ type VoidHandler = () => ReactNode;
  * @typeParam T - The source string literal. Tag names are extracted from it.
  */
 export type RichTextProps<T extends string> = {
+  /** The source string carrying named tags. */
   value: T;
 } & {
   [Pair in PairsOf<T>]: PairHandler;
