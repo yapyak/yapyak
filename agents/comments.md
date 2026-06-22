@@ -4,7 +4,7 @@
 
 Format exactly as `// biome-ignore <rule>: yap yap yap`.
 
-- Description is always literally `yap yap yap`. A wink at the project name.
+- Description is always literally `yap yap yap`.
 - Never replace with a real justification.
 - Never explain why the rule is suppressed.
 - Never describe what the code does.
