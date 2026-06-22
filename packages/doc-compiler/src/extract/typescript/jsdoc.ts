@@ -3,6 +3,8 @@ import type { ReferenceExample, ReferenceTag, ReferenceThrows } from './type';
 
 import ts from 'typescript';
 
+export const SYMBOL_HREF_PREFIX = 'symbol:';
+
 export type ExtractJsDocResult = {
   deprecated: string | null;
   description: string;
@@ -57,7 +59,7 @@ export function extractJsDoc(node: Node): ExtractJsDocResult {
       continue;
     }
     if (name === 'see') {
-      seeAlso.push(parseSeeTarget(tag, text));
+      seeAlso.push(resolveSeeTarget(tag, text));
       continue;
     }
     if (name === 'remarks') {
@@ -90,9 +92,13 @@ export function extractJsDoc(node: Node): ExtractJsDocResult {
   };
 }
 
-function parseSeeTarget(tag: ts.JSDocTag, text: string): string {
+function resolveSeeTarget(tag: ts.JSDocTag, text: string): string {
   if (!ts.isJSDocSeeTag(tag)) {
     return text;
+  }
+  const linkName = findFirstJsDocLinkName(tag.comment);
+  if (linkName !== undefined) {
+    return linkName;
   }
   const tagName = tag.name?.getText() ?? '';
   if (tagName === '') {
@@ -102,6 +108,24 @@ function parseSeeTarget(tag: ts.JSDocTag, text: string): string {
     return `${tagName}${text}`;
   }
   return tagName;
+}
+
+function findFirstJsDocLinkName(
+  comment: string | readonly JSDocComment[] | undefined,
+): string | undefined {
+  if (comment === undefined || typeof comment === 'string') {
+    return undefined;
+  }
+  for (const part of comment) {
+    if (
+      ts.isJSDocLink(part) ||
+      ts.isJSDocLinkCode(part) ||
+      ts.isJSDocLinkPlain(part)
+    ) {
+      return part.name?.getText();
+    }
+  }
+  return undefined;
 }
 
 function findLastJsDoc(node: Node): JSDoc | undefined {
@@ -128,17 +152,20 @@ export function getCommentText(
 }
 
 function getCommentPart(part: JSDocComment): string {
-  if (part.text !== undefined && part.text !== '') {
-    return part.text;
-  }
   if (
     ts.isJSDocLink(part) ||
     ts.isJSDocLinkCode(part) ||
     ts.isJSDocLinkPlain(part)
   ) {
-    return part.name?.getText() ?? '';
+    const name = part.name?.getText() ?? '';
+    if (name === '') {
+      return '';
+    }
+    const label = (part.text ?? '').replace(/^\|/, '').trim();
+    const display = label === '' ? name : label;
+    return `[${display}](${SYMBOL_HREF_PREFIX}${name})`;
   }
-  return '';
+  return part.text ?? '';
 }
 
 const EXAMPLE_FENCE_RX = /```(\S*)(?:\s+\[([^\]]+)\])?\n([\s\S]*?)```/;

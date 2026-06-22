@@ -1,3 +1,4 @@
+import type { Block, LinkBlock } from '../../access';
 import type {
   ReferenceExport,
   ReferenceModule,
@@ -22,7 +23,7 @@ const CONTEXT = {
 
 const SYMBOL_PAGE_INPUT = {
   href: '/reference/yapyak/createTranslator',
-  index: new Map<string, string>(),
+  index: buildSymbolIndex([]),
   moduleId: 'yapyak',
   packageDir: '/tmp/yapyak',
 };
@@ -138,12 +139,7 @@ describe('buildModulePage', () => {
 
     const page = buildModulePage(module, CONTEXT, {
       href: '/reference/yapyak',
-      index: buildSymbolIndex({
-        modules: [
-          module,
-        ],
-        packageName: 'yapyak',
-      }),
+      index: buildSymbolIndex([]),
       label: 'yapyak',
     });
 
@@ -165,12 +161,15 @@ describe('buildModulePage', () => {
 
     const page = buildModulePage(module, CONTEXT, {
       href: '/reference/yapyak',
-      index: buildSymbolIndex({
-        modules: [
-          module,
-        ],
-        packageName: 'yapyak',
-      }),
+      index: buildSymbolIndex([
+        {
+          href: '/reference/yapyak/createTranslator',
+          hrefsByMemberName: new Map(),
+          moduleId: 'yapyak',
+          name: 'createTranslator',
+          packageSlug: 'yapyak',
+        },
+      ]),
       label: 'yapyak',
     });
 
@@ -432,4 +431,178 @@ describe('buildSymbolPage', () => {
       type: 'eyebrow',
     });
   });
+
+  it('resolves an inline `{@link X}` reference in the description to an internal link when `X` is in the index', () => {
+    const index = buildSymbolIndex([
+      {
+        href: '/reference/yapyak/translator/createTranslator',
+        hrefsByMemberName: new Map(),
+        moduleId: 'yapyak/translator',
+        name: 'createTranslator',
+        packageSlug: 'yapyak',
+      },
+    ]);
+    const page = buildSymbolPage(
+      typeSymbol({
+        description: 'Returned by [createTranslator](symbol:createTranslator).',
+        name: 'Translator',
+      }),
+      CONTEXT,
+      {
+        ...SYMBOL_PAGE_INPUT,
+        href: '/reference/yapyak/translator/Translator',
+        index,
+      },
+    );
+
+    const link = findFirstLink(page.blocks);
+    expect(link).toEqual({
+      children: [
+        {
+          type: 'text',
+          value: 'createTranslator',
+        },
+      ],
+      href: '/reference/yapyak/translator/createTranslator',
+      kind: 'internal',
+      type: 'link',
+    });
+  });
+
+  it('falls back to plain text when an inline `{@link X}` reference cannot be resolved', () => {
+    const page = buildSymbolPage(
+      typeSymbol({
+        description: 'Returned by [createTranslator](symbol:createTranslator).',
+        name: 'Translator',
+      }),
+      CONTEXT,
+      {
+        ...SYMBOL_PAGE_INPUT,
+        href: '/reference/yapyak/translator/Translator',
+        index: buildSymbolIndex([]),
+      },
+    );
+
+    const link = findFirstLink(page.blocks);
+    expect(link).toBeUndefined();
+    const text = collectText(page.blocks);
+    expect(text).toContain('Returned by createTranslator.');
+  });
+
+  it('resolves a `@see {@link X}` entry to an internal link when `X` is in the index', () => {
+    const index = buildSymbolIndex([
+      {
+        href: '/reference/yapyak/translator/createTranslator',
+        hrefsByMemberName: new Map(),
+        moduleId: 'yapyak/translator',
+        name: 'createTranslator',
+        packageSlug: 'yapyak',
+      },
+    ]);
+    const page = buildSymbolPage(
+      functionSymbol({
+        seeAlso: [
+          'createTranslator',
+        ],
+      }),
+      CONTEXT,
+      {
+        ...SYMBOL_PAGE_INPUT,
+        index,
+      },
+    );
+
+    const link = findFirstLink(page.blocks);
+    expect(link).toEqual({
+      children: [
+        {
+          type: 'text',
+          value: 'createTranslator',
+        },
+      ],
+      href: '/reference/yapyak/translator/createTranslator',
+      kind: 'internal',
+      type: 'link',
+    });
+  });
+
+  it('falls back to plain text in `See also` when the symbol reference cannot be resolved', () => {
+    const page = buildSymbolPage(
+      functionSymbol({
+        seeAlso: [
+          'unknownThing',
+        ],
+      }),
+      CONTEXT,
+      {
+        ...SYMBOL_PAGE_INPUT,
+        index: buildSymbolIndex([]),
+      },
+    );
+
+    const link = findFirstLink(page.blocks);
+    expect(link).toBeUndefined();
+    const text = collectText(page.blocks);
+    expect(text).toContain('unknownThing');
+  });
 });
+
+function findFirstLink(blocks: Block[]): LinkBlock | undefined {
+  for (const block of blocks) {
+    if (block.type === 'link') {
+      return block;
+    }
+    if ('children' in block && Array.isArray(block.children)) {
+      const nested = findFirstLink(block.children);
+      if (nested !== undefined) {
+        return nested;
+      }
+    }
+    if (block.type === 'table') {
+      const head =
+        block.head === null
+          ? []
+          : [
+              block.head,
+            ];
+      const inHead = findFirstLink(head);
+      if (inHead !== undefined) {
+        return inHead;
+      }
+      const inBody = findFirstLink(block.body);
+      if (inBody !== undefined) {
+        return inBody;
+      }
+    }
+  }
+  return undefined;
+}
+
+function collectText(blocks: Block[]): string {
+  const parts: string[] = [];
+  walkText(blocks, parts);
+  return parts.join('');
+}
+
+function walkText(blocks: Block[], out: string[]): void {
+  for (const block of blocks) {
+    if (block.type === 'text' || block.type === 'inline-code') {
+      out.push(block.value);
+      continue;
+    }
+    if ('children' in block && Array.isArray(block.children)) {
+      walkText(block.children, out);
+    }
+    if (block.type === 'table') {
+      if (block.head !== null) {
+        walkText(
+          [
+            block.head,
+          ],
+          out,
+        );
+      }
+      walkText(block.body, out);
+    }
+  }
+}

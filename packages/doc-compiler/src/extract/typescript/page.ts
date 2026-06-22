@@ -9,7 +9,7 @@ import type {
 import type { Page } from '../../build';
 import type { SourceUrlConfig } from '../../config';
 import type { PackageContext } from './package-context';
-import type { SymbolIndex } from './symbol-index';
+import type { SymbolIndex, SymbolIndexEntry } from './symbol-index';
 import type {
   ReferenceExample,
   ReferenceExport,
@@ -30,14 +30,13 @@ import { slugify } from '../../slugify';
 import { buildSymbolHref } from '../../symbol-path';
 import { parseMarkdown, tryBuildDiagnosticsFromCode } from '../markdown';
 import { classifyMemberDisplayKind } from './classify';
+import { SYMBOL_HREF_PREFIX } from './jsdoc';
 import { expandModuleEntries, formatSymbolLabel } from './module-entry';
 import { parseShapeTypeParameters } from './shape';
+import { resolveSymbolLink } from './symbol-index';
 import { relative, resolve } from 'node:path';
 
 let currentIndex: SymbolIndex = new Map();
-let currentCollection = 'reference';
-let currentPackageName = '';
-let currentPackageSlug = '';
 
 type BuildSymbolPageInput = {
   href: string;
@@ -59,9 +58,6 @@ export function buildSymbolPage(
   options: BuildSymbolPageOptions = {},
 ): Page {
   currentIndex = input.index;
-  currentCollection = context.collectionName;
-  currentPackageName = context.packageName;
-  currentPackageSlug = context.packageSlug;
   const blocks: Block[] = [];
 
   blocks.push(
@@ -98,12 +94,12 @@ export function buildSymbolPage(
 
   if (symbol.description) {
     const parsed = parseMarkdown(symbol.description);
-    blocks.push(...parsed.blocks);
+    blocks.push(...resolveSymbolLinkBlocks(parsed.blocks));
   }
 
   if (symbol.remarks) {
     const parsed = parseMarkdown(symbol.remarks);
-    blocks.push(...parsed.blocks);
+    blocks.push(...resolveSymbolLinkBlocks(parsed.blocks));
   }
 
   blocks.push(buildImportSnippet(input.moduleId, symbol.name, symbol.kind));
@@ -302,9 +298,6 @@ export function buildPropertyMemberPage(
   options: BuildSymbolPageOptions = {},
 ): Page {
   currentIndex = input.index;
-  currentCollection = context.collectionName;
-  currentPackageName = context.packageName;
-  currentPackageSlug = context.packageSlug;
 
   const fullName = `${parentSymbol.name}.${member.name}`;
   const memberKind = classifyMemberDisplayKind(member);
@@ -325,7 +318,7 @@ export function buildPropertyMemberPage(
 
   if (member.description) {
     const parsed = parseMarkdown(member.description);
-    blocks.push(...parsed.blocks);
+    blocks.push(...resolveSymbolLinkBlocks(parsed.blocks));
   }
 
   blocks.push(
@@ -359,9 +352,6 @@ export function buildMethodPage(
   options: BuildSymbolPageOptions = {},
 ): Page {
   currentIndex = input.index;
-  currentCollection = context.collectionName;
-  currentPackageName = context.packageName;
-  currentPackageSlug = context.packageSlug;
 
   const fullName = `${parentSymbol.name}.${member.name}`;
   const blocks: Block[] = [];
@@ -400,12 +390,12 @@ export function buildMethodPage(
 
   if (member.description) {
     const parsed = parseMarkdown(member.description);
-    blocks.push(...parsed.blocks);
+    blocks.push(...resolveSymbolLinkBlocks(parsed.blocks));
   }
 
   if (member.remarks) {
     const parsed = parseMarkdown(member.remarks);
-    blocks.push(...parsed.blocks);
+    blocks.push(...resolveSymbolLinkBlocks(parsed.blocks));
   }
 
   blocks.push(
@@ -583,9 +573,6 @@ export function buildModulePage(
   input: BuildModulePageInput,
 ): Page {
   currentIndex = input.index;
-  currentCollection = context.collectionName;
-  currentPackageName = context.packageName;
-  currentPackageSlug = context.packageSlug;
   const blocks: Block[] = [];
 
   blocks.push({
@@ -597,7 +584,7 @@ export function buildModulePage(
 
   if (module.description) {
     const parsed = parseMarkdown(module.description);
-    blocks.push(...parsed.blocks);
+    blocks.push(...resolveSymbolLinkBlocks(parsed.blocks));
   }
 
   if (module.exports.length > 0) {
@@ -639,7 +626,7 @@ function buildExportRow(
   },
   moduleId: string,
 ): TableRowBlock {
-  const href = resolveSymbolHref(moduleId, entry.segment);
+  const href = resolveExportHref(moduleId, entry.segment);
   return {
     children: [
       buildTableBodyCell(
@@ -710,8 +697,8 @@ function tokenizeShapeText(text: string): TypeToken[] {
   match = identifierRx.exec(text);
   while (match !== null) {
     const name = match[0];
-    const moduleId = currentIndex.get(name);
-    if (moduleId !== undefined) {
+    const entry = currentIndex.get(name);
+    if (entry !== undefined) {
       if (match.index > lastIndex) {
         tokens.push({
           kind: 'text',
@@ -720,7 +707,7 @@ function tokenizeShapeText(text: string): TypeToken[] {
       }
       tokens.push({
         kind: 'ref',
-        module: moduleId,
+        module: entry.moduleId,
         name,
         text: name,
       });
@@ -931,7 +918,7 @@ function buildMethodSections(methods: ReferenceMethodMember[]): Block[] {
     );
     if (method.description) {
       const parsed = parseMarkdown(method.description);
-      blocks.push(...parsed.blocks);
+      blocks.push(...resolveSymbolLinkBlocks(parsed.blocks));
     }
     if (method.shape) {
       blocks.push(buildShapeBlock(method.shape));
@@ -1240,9 +1227,8 @@ function buildTableHeaderRow(labels: string[]): TableRowBlock {
 function tokensToCodeExpression(tokens: TypeToken[]): CodeExpressionBlock {
   const children: Block[] = [];
   for (const token of tokens) {
-    const resolvedModule =
-      token.kind === 'ref' ? resolveModule(token) : undefined;
-    if (token.kind === 'ref' && resolvedModule !== undefined) {
+    const entry = token.kind === 'ref' ? resolveModule(token) : undefined;
+    if (token.kind === 'ref' && entry !== undefined) {
       children.push({
         children: [
           {
@@ -1250,7 +1236,7 @@ function tokensToCodeExpression(tokens: TypeToken[]): CodeExpressionBlock {
             value: token.text,
           },
         ],
-        href: resolveSymbolHref(resolvedModule, token.name),
+        href: entry.href,
         kind: 'internal',
         type: 'link',
       });
@@ -1270,20 +1256,23 @@ function tokensToCodeExpression(tokens: TypeToken[]): CodeExpressionBlock {
 function resolveModule(token: {
   module: string;
   name: string;
-}): string | undefined {
-  const exactKey = `${token.module}::${token.name}`;
-  if (currentIndex.has(exactKey)) {
-    return token.module;
+}): SymbolIndexEntry | undefined {
+  const exact = currentIndex.get(`${token.module}::${token.name}`);
+  if (exact !== undefined) {
+    return exact;
   }
   return currentIndex.get(token.name);
 }
 
-function resolveSymbolHref(moduleId: string, name: string): string {
-  return buildSymbolHref(moduleId, name, {
-    collectionName: currentCollection,
-    packageName: currentPackageName,
-    packageSlug: currentPackageSlug,
-  });
+function resolveExportHref(moduleId: string, segment: string): string {
+  const dotIndex = segment.indexOf('.');
+  if (dotIndex === -1) {
+    return currentIndex.get(`${moduleId}::${segment}`)?.href ?? '';
+  }
+  const base = segment.slice(0, dotIndex);
+  const member = segment.slice(dotIndex + 1);
+  const baseEntry = currentIndex.get(`${moduleId}::${base}`);
+  return baseEntry?.hrefsByMemberName.get(member) ?? '';
 }
 
 function markdownToInline(source: string): Block[] {
@@ -1296,11 +1285,78 @@ function markdownToInline(source: string): Block[] {
     ];
   }
   const parsed = parseMarkdown(source);
-  const blocks = parsed.blocks;
+  const blocks = resolveSymbolLinkBlocks(parsed.blocks);
   if (blocks.length === 1 && blocks[0] && blocks[0].type === 'paragraph') {
     return blocks[0].children;
   }
   return blocks;
+}
+
+function resolveSymbolLinkBlocks(blocks: Block[]): Block[] {
+  return blocks.flatMap(resolveSymbolLinksInBlock);
+}
+
+function resolveSymbolLinksInBlock(block: Block): Block[] {
+  if (block.type === 'link' && block.href.startsWith(SYMBOL_HREF_PREFIX)) {
+    const reference = block.href.slice(SYMBOL_HREF_PREFIX.length);
+    const resolvedChildren = resolveSymbolLinkBlocks(block.children);
+    const entry = resolveSymbolLink(currentIndex, reference);
+    if (entry === undefined) {
+      return resolvedChildren;
+    }
+    return [
+      {
+        children: resolvedChildren,
+        href: entry.href,
+        kind: 'internal',
+        type: 'link',
+      },
+    ];
+  }
+  if (block.type === 'table') {
+    return [
+      {
+        body: block.body.map(resolveSymbolLinksInTableRow),
+        head:
+          block.head === null ? null : resolveSymbolLinksInTableRow(block.head),
+        type: 'table',
+      },
+    ];
+  }
+  if (block.type === 'switch') {
+    const branches: Record<string, Block[]> = {};
+    for (const [key, value] of Object.entries(block.branches)) {
+      branches[key] = resolveSymbolLinkBlocks(value);
+    }
+    return [
+      {
+        branches,
+        group: block.group,
+        type: 'switch',
+      },
+    ];
+  }
+  if ('children' in block && Array.isArray(block.children)) {
+    return [
+      {
+        ...block,
+        children: resolveSymbolLinkBlocks(block.children),
+      } as Block,
+    ];
+  }
+  return [
+    block,
+  ];
+}
+
+function resolveSymbolLinksInTableRow(row: TableRowBlock): TableRowBlock {
+  return {
+    children: row.children.map((cell) => ({
+      ...cell,
+      children: resolveSymbolLinkBlocks(cell.children),
+    })),
+    type: 'table-row',
+  };
 }
 
 function buildExampleBlocks(example: ReferenceExample): Block[] {
@@ -1375,10 +1431,30 @@ function buildThrowsRow(entry: ReferenceThrows): TableRowBlock {
 function buildSeeAlsoList(entries: string[]): Block {
   return {
     children: entries.map((entry) => ({
-      children: markdownToInline(entry),
+      children: resolveSeeAlsoEntry(entry),
       type: 'list-item',
     })),
     ordered: false,
     type: 'list',
   };
+}
+
+function resolveSeeAlsoEntry(entry: string): Block[] {
+  const resolved = resolveSymbolLink(currentIndex, entry);
+  if (resolved !== undefined) {
+    return [
+      {
+        children: [
+          {
+            type: 'text',
+            value: entry,
+          },
+        ],
+        href: resolved.href,
+        kind: 'internal',
+        type: 'link',
+      },
+    ];
+  }
+  return markdownToInline(entry);
 }

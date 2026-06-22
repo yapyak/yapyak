@@ -1,94 +1,125 @@
-import type { ReferenceManifest } from './type';
+import type { SymbolIndexEntry } from './symbol-index';
 
 import { describe, expect, it } from 'vitest';
 
-import { buildSymbolIndex } from './symbol-index';
+import { buildSymbolIndex, resolveSymbolLink } from './symbol-index';
 
-function manifest(modules: ReferenceManifest['modules']): ReferenceManifest {
+function entry(overrides: Partial<SymbolIndexEntry> = {}): SymbolIndexEntry {
   return {
-    modules,
-    packageName: 'yapyak',
-  };
-}
-
-function symbol(
-  name: string,
-): ReferenceManifest['modules'][number]['exports'][number] {
-  return {
-    deprecated: null,
-    description: '',
-    displayKind: 'function',
-    examples: [],
-    kind: 'function',
-    location: {
-      column: 1,
-      file: 'src/index.ts',
-      line: 1,
-    },
-    members: [],
-    name,
-    overloads: [],
-    remarks: '',
-    seeAlso: [],
-    shape: '',
-    tags: [],
-    throws: [],
+    href: '/reference/yapyak/createTranslator',
+    hrefsByMemberName: new Map(),
+    moduleId: 'yapyak/translator',
+    name: 'createTranslator',
+    packageSlug: 'yapyak',
+    ...overrides,
   };
 }
 
 describe('buildSymbolIndex', () => {
-  it('builds bare and fully-qualified entries for every export', () => {
-    const result = buildSymbolIndex(
-      manifest([
-        {
-          description: '',
-          exports: [
-            symbol('createTranslator'),
-          ],
-          id: 'yapyak/translator',
-          sourcePath: 'src/translator/index.ts',
-          subpath: './translator',
-        },
-      ]),
-    );
+  it('builds bare and module-qualified entries from `SymbolIndexEntry[]`', () => {
+    const result = buildSymbolIndex([
+      entry(),
+    ]);
 
-    expect(result.get('yapyak/translator::createTranslator')).toBe(
-      'yapyak/translator',
-    );
-    expect(result.get('createTranslator')).toBe('yapyak/translator');
+    const bare = result.get('createTranslator');
+    expect(bare?.moduleId).toBe('yapyak/translator');
+    expect(bare?.href).toBe('/reference/yapyak/createTranslator');
+
+    const qualified = result.get('yapyak/translator::createTranslator');
+    expect(qualified?.moduleId).toBe('yapyak/translator');
+    expect(qualified?.href).toBe('/reference/yapyak/createTranslator');
   });
 
-  it('keeps the first module when two exports share a bare name', () => {
-    const result = buildSymbolIndex(
-      manifest([
-        {
-          description: '',
-          exports: [
-            symbol('createTranslator'),
-          ],
-          id: 'yapyak/translator',
-          sourcePath: 'src/translator/index.ts',
-          subpath: './translator',
-        },
-        {
-          description: '',
-          exports: [
-            symbol('createTranslator'),
-          ],
-          id: 'yapyak/processor',
-          sourcePath: 'src/processor/index.ts',
-          subpath: './processor',
-        },
-      ]),
-    );
+  it('keeps the first symbol when two share a bare name', () => {
+    const result = buildSymbolIndex([
+      entry({
+        href: '/reference/yapyak/createTranslator',
+        moduleId: 'yapyak/translator',
+      }),
+      entry({
+        href: '/reference/yapyak/processor/createTranslator',
+        moduleId: 'yapyak/processor',
+      }),
+    ]);
 
-    expect(result.get('createTranslator')).toBe('yapyak/translator');
-    expect(result.get('yapyak/processor::createTranslator')).toBe(
-      'yapyak/processor',
+    expect(result.get('createTranslator')?.moduleId).toBe('yapyak/translator');
+    expect(result.get('yapyak/processor::createTranslator')?.href).toBe(
+      '/reference/yapyak/processor/createTranslator',
     );
   });
 
-  it('returns an empty index for a manifest with no modules', () => {
-    expect(buildSymbolIndex(manifest([])).size).toBe(0);
+  it('returns an empty index for an empty input', () => {
+    expect(buildSymbolIndex([]).size).toBe(0);
+  });
+});
+
+describe('resolveSymbolLink', () => {
+  it('resolves a bare name to its entry', () => {
+    const index = buildSymbolIndex([
+      entry(),
+    ]);
+
+    const resolved = resolveSymbolLink(index, 'createTranslator');
+    expect(resolved?.href).toBe('/reference/yapyak/createTranslator');
+    expect(resolved?.name).toBe('createTranslator');
+  });
+
+  it('resolves an `X.member` path to the member href', () => {
+    const index = buildSymbolIndex([
+      entry({
+        hrefsByMemberName: new Map([
+          [
+            'translate',
+            '/reference/yapyak/createTranslator.translate',
+          ],
+        ]),
+      }),
+    ]);
+
+    const resolved = resolveSymbolLink(index, 'createTranslator.translate');
+    expect(resolved?.href).toBe('/reference/yapyak/createTranslator.translate');
+    expect(resolved?.name).toBe('createTranslator.translate');
+  });
+
+  it('resolves an `X#member` path to the member href', () => {
+    const index = buildSymbolIndex([
+      entry({
+        hrefsByMemberName: new Map([
+          [
+            'translate',
+            '/reference/yapyak/createTranslator.translate',
+          ],
+        ]),
+      }),
+    ]);
+
+    const resolved = resolveSymbolLink(index, 'createTranslator#translate');
+    expect(resolved?.href).toBe('/reference/yapyak/createTranslator.translate');
+    expect(resolved?.name).toBe('createTranslator.translate');
+  });
+
+  it('returns `undefined` for an unknown bare reference', () => {
+    const index = buildSymbolIndex([
+      entry(),
+    ]);
+
+    expect(resolveSymbolLink(index, 'unknownThing')).toBeUndefined();
+  });
+
+  it('returns `undefined` when the base resolves but the member does not', () => {
+    const index = buildSymbolIndex([
+      entry({
+        hrefsByMemberName: new Map([
+          [
+            'translate',
+            '/reference/yapyak/createTranslator.translate',
+          ],
+        ]),
+      }),
+    ]);
+
+    expect(
+      resolveSymbolLink(index, 'createTranslator.missingMember'),
+    ).toBeUndefined();
   });
 });

@@ -7,7 +7,13 @@ import type {
   Supplement,
   TypeScriptPackage,
 } from '../config';
-import type { ReferenceExport } from '../extract/typescript';
+import type {
+  PackageContext,
+  ReferenceExport,
+  ReferenceManifest,
+  ReferenceModule,
+  SymbolIndexEntry,
+} from '../extract/typescript';
 
 import { extractMarkdown } from '../extract/markdown';
 import {
@@ -154,6 +160,26 @@ async function buildMarkdownCollection(
   };
 }
 
+type PackageRenderContext = {
+  context: PackageContext;
+  displayName: string;
+  modules: ModuleRenderContext[];
+  packageName: string;
+  packageSlug: string;
+  referenceManifest: ReferenceManifest;
+  typescriptPackage: TypeScriptPackage;
+};
+
+type ModuleRenderContext = {
+  module: ReferenceModule;
+  moduleHref: string;
+  moduleLabel: string;
+  modulePath: string;
+  root: boolean;
+  subSlug: string;
+  variableByTypeName: Map<string, string>;
+};
+
 async function buildTypeScriptCollection(
   collectionName: string,
   packages: TypeScriptPackage[],
@@ -167,25 +193,29 @@ async function buildTypeScriptCollection(
   const groupOrder: string[] = [];
   const ungroupedNodes: SidebarNode[] = [];
 
+  const renderContexts: PackageRenderContext[] = [];
+  const entries: SymbolIndexEntry[] = [];
+
   for (const typescriptPackage of packages) {
     const packageName = await readPackageName(typescriptPackage.root);
     const packageSlug = slugify(typescriptPackage.name);
     validateSlug(packageSlug);
     const displayName = typescriptPackage.name;
-    const context = {
+    const context: PackageContext = {
       collectionName,
       packageName,
       packageSlug,
     };
 
-    const refManifest = extractPackage({
+    const referenceManifest = extractPackage({
       context,
       packageDir: typescriptPackage.root,
       subpaths: typescriptPackage.subpaths,
     });
-    const index = buildSymbolIndex(refManifest);
 
-    for (const module of refManifest.modules) {
+    const moduleContexts: ModuleRenderContext[] = [];
+
+    for (const module of referenceManifest.modules) {
       const isRootModule = module.id === packageName;
       const subSlug = isRootModule
         ? ''
@@ -213,6 +243,114 @@ async function buildTypeScriptCollection(
         if (!variableByTypeName.has(typeExport.name)) {
           variableByTypeName.set(typeExport.name, symbol.name);
         }
+      }
+
+      for (const symbol of module.exports) {
+        const safeName = encodeSymbolSegment(symbol.name);
+        const path = isRootModule
+          ? `${packageSlug}/${safeName}`
+          : `${packageSlug}/${subSlug}/${safeName}`;
+        const href = `/${collectionName}/${path}`;
+        const variableTypeExport =
+          symbol.kind === 'variable'
+            ? resolveTypeExport(symbol.type, exportsByName)
+            : undefined;
+        const resolvedCallSignatures =
+          getTypeCallSignatures(variableTypeExport);
+        const resolvedMembers = getTypeMembers(variableTypeExport);
+        const variableHasCallSignature = resolvedCallSignatures.length > 0;
+        const variableHasMethods = resolvedMembers.some(
+          (member) => member.kind === 'method',
+        );
+        const isPureNamespaceVariable =
+          symbol.kind === 'variable' &&
+          !variableHasCallSignature &&
+          variableHasMethods;
+
+        let symbolHref = href;
+        if (isPureNamespaceVariable && variableTypeExport !== undefined) {
+          const typeSegment = encodeSymbolSegment(variableTypeExport.name);
+          const typePath = isRootModule
+            ? `${packageSlug}/${typeSegment}`
+            : `${packageSlug}/${subSlug}/${typeSegment}`;
+          symbolHref = `/${collectionName}/${typePath}`;
+        }
+
+        const hrefsByMemberName = new Map<string, string>();
+        if (symbol.kind === 'variable') {
+          const documentedMembers = [
+            ...symbol.members,
+            ...resolvedMembers,
+          ].filter((member) => member.description.length > 0);
+          for (const member of documentedMembers) {
+            const subSegment = encodeSymbolSegment(
+              `${symbol.name}.${member.name}`,
+            );
+            const subPath = isRootModule
+              ? `${packageSlug}/${subSegment}`
+              : `${packageSlug}/${subSlug}/${subSegment}`;
+            hrefsByMemberName.set(member.name, `/${collectionName}/${subPath}`);
+          }
+        }
+
+        entries.push({
+          href: symbolHref,
+          hrefsByMemberName,
+          moduleId: module.id,
+          name: symbol.name,
+          packageSlug,
+        });
+      }
+
+      moduleContexts.push({
+        module,
+        moduleHref,
+        moduleLabel,
+        modulePath,
+        root: isRootModule,
+        subSlug,
+        variableByTypeName,
+      });
+    }
+
+    renderContexts.push({
+      context,
+      displayName,
+      modules: moduleContexts,
+      packageName,
+      packageSlug,
+      referenceManifest,
+      typescriptPackage,
+    });
+  }
+
+  const index = buildSymbolIndex(entries);
+
+  for (const renderContext of renderContexts) {
+    const {
+      context,
+      displayName,
+      modules: moduleContexts,
+      packageName,
+      packageSlug,
+      referenceManifest,
+      typescriptPackage,
+    } = renderContext;
+
+    for (const moduleContext of moduleContexts) {
+      const {
+        module,
+        moduleHref,
+        moduleLabel,
+        modulePath,
+        root: isRootModule,
+        subSlug,
+        variableByTypeName,
+      } = moduleContext;
+
+      const exportsByName = new Map<string, ReferenceExport>();
+      for (const symbol of module.exports) {
+        exportsByName.set(symbol.name, symbol);
       }
 
       for (const symbol of module.exports) {
@@ -321,12 +459,12 @@ async function buildTypeScriptCollection(
       });
     }
 
-    const hasRootModule = refManifest.modules.some(
+    const hasRootModule = referenceManifest.modules.some(
       (module) => module.id === packageName,
     );
     if (!hasRootModule) {
       const prefix = `${packageName}/`;
-      const topLevelSubModules = refManifest.modules
+      const topLevelSubModules = referenceManifest.modules
         .filter(
           (module) =>
             module.id.startsWith(prefix) &&
@@ -348,7 +486,7 @@ async function buildTypeScriptCollection(
       });
     }
 
-    const packageNode = buildPackageRoot(refManifest, context, {
+    const packageNode = buildPackageRoot(referenceManifest, context, {
       collapsible: typescriptPackage.collapsible ?? false,
       expanded: typescriptPackage.expanded ?? false,
       label: displayName,

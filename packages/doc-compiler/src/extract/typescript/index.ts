@@ -1,4 +1,5 @@
 export type { PackageContext } from './package-context';
+export type { SymbolIndex, SymbolIndexEntry } from './symbol-index';
 export type {
   ReferenceExport,
   ReferenceManifest,

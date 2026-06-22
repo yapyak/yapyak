@@ -105,6 +105,69 @@ describe('extractJsDoc', () => {
     ]);
   });
 
+  it('emits an inline `{@link X}` reference as a markdown link with a `symbol:` href', () => {
+    const node = parseFirstStatement(
+      '/** See {@link createTranslator}. */\nexport const greeting = "Hi";',
+    );
+    expect(extractJsDoc(node).description).toBe(
+      'See [createTranslator](symbol:createTranslator).',
+    );
+  });
+
+  it('emits a dotted `{@link X.member}` reference as a markdown link preserving the path', () => {
+    const node = parseFirstStatement(
+      '/** See {@link X.member}. */\nexport const greeting = "Hi";',
+    );
+    expect(extractJsDoc(node).description).toBe(
+      'See [X.member](symbol:X.member).',
+    );
+  });
+
+  it('uses the `{@link X | label}` label as the link text when one is provided', () => {
+    const node = parseFirstStatement(
+      '/** See {@link createTranslator | the helper}. */\nexport const greeting = "Hi";',
+    );
+    expect(extractJsDoc(node).description).toBe(
+      'See [the helper](symbol:createTranslator).',
+    );
+  });
+
+  it('uses the `{@link X label}` (space-separated) label as the link text when one is provided', () => {
+    const node = parseFirstStatement(
+      '/** See {@link createTranslator the helper}. */\nexport const greeting = "Hi";',
+    );
+    expect(extractJsDoc(node).description).toBe(
+      'See [the helper](symbol:createTranslator).',
+    );
+  });
+
+  it('emits multiple `{@link}` references in a single description', () => {
+    const node = parseFirstStatement(
+      '/** See {@link X} and {@link Y}. */\nexport const greeting = "Hi";',
+    );
+    expect(extractJsDoc(node).description).toBe(
+      'See [X](symbol:X) and [Y](symbol:Y).',
+    );
+  });
+
+  it('extracts the bare symbol reference from a `@see {@link X}` entry', () => {
+    const node = parseFirstStatement(
+      '/**\n * @see {@link createTranslator}\n */\nexport const greeting = "Hi";',
+    );
+    expect(extractJsDoc(node).seeAlso).toEqual([
+      'createTranslator',
+    ]);
+  });
+
+  it('extracts the dotted reference from a `@see {@link X.member}` entry', () => {
+    const node = parseFirstStatement(
+      '/**\n * @see {@link X.member}\n */\nexport const greeting = "Hi";',
+    );
+    expect(extractJsDoc(node).seeAlso).toEqual([
+      'X.member',
+    ]);
+  });
+
   it('preserves unknown JSDoc tags as generic tags', () => {
     const node = parseFirstStatement(
       '/**\n * @custom payload\n */\nexport const greeting = "Hello";',
