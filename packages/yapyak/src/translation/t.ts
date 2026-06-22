@@ -123,9 +123,6 @@ export type TFn = {
 /**
  * Translates a source string for the active locale.
  *
- * @remarks
- * Requires a build-tool plugin to rewrite call sites.
- *
  * @shape t<T extends string>(source: T, params?: TParams<T>): string
  *
  * @example

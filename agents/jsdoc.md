@@ -560,6 +560,83 @@ function t<T extends string>(source: T): string;
  */
 ```
 
+#### Internal `@see {@link X}` — peer-pair rule
+
+`@see` for in-project symbols is **mechanical** — never a judgment call. A symbol gets `@see {@link Peer}` if and only if it shares a closed-set **peer-pair** relationship with another public symbol from the same module.
+
+**Closed peer-pair table:**
+
+| Pair prefix | Operational meaning |
+|---|---|
+| `get*` / `set*` | Read / write the same value |
+| `get*` / `reset*` | Read / restore the same value |
+| `set*` / `reset*` | Write / restore the same value |
+| `subscribe*` / `get*` | Observe / read the same value |
+| `parse*` / `stringify*` | Decode / encode the same shape |
+
+**Mechanical algorithm:**
+
+1. Take the symbol's name.
+2. Strip its leading prefix if it matches one of `get`/`set`/`reset`/`subscribe`/`parse`/`stringify` — call the remainder the **root noun** (capitalize first letter, e.g., `Locale`).
+3. For every OTHER prefix in the closed table, check whether `<otherPrefix><RootNoun>` exists as a public symbol in the same module.
+4. For each match, the symbol carries `@see {@link <otherPrefix><RootNoun>}` — alphabetically ordered with any other in-project `@see`.
+
+**Symmetry is enforced:** if A carries `@see {@link B}`, then B carries `@see {@link A}`. A one-way link is a violation.
+
+**No other internal `@see` cases.** If a relationship isn't in the peer-pair table, navigation belongs in the sidebar or in formula-slot `{@link X}` inline — not in `@see`.
+
+```ts
+// ✓ Right — get/set peer pair
+/**
+ * The current locale.
+ *
+ * @see {@link setLocale}
+ *
+ * @example
+ * ```ts
+ * import { getLocale } from 'yapyak';
+ *
+ * getLocale(); // => 'sv'
+ * ```
+ */
+export function getLocale(): Locale { /* ... */ }
+
+/**
+ * Switches the locale.
+ *
+ * @param value - The locale to switch to.
+ *
+ * @see {@link getLocale}
+ *
+ * @example
+ * ```ts
+ * import { setLocale } from 'yapyak';
+ *
+ * setLocale('sv');
+ * ```
+ */
+export function setLocale(value: Locale): void { /* ... */ }
+
+// ✗ Wrong — same-module symbols outside the peer-pair table
+/**
+ * Type guard for `Locale`.
+ *
+ * @see {@link parseLocale}  ← isLocale ↔ parseLocale is not a peer pair
+ */
+export function isLocale(value: string): value is Locale { /* ... */ }
+```
+
+#### Parent / member navigation is auto-generated — never written by hand
+
+When a public symbol has documented members that render as their own pages (e.g., `format.number`, `t.in`), the renderer auto-injects a "See also" section on each member page listing:
+
+1. The parent symbol (link to its page, redirect-resolved if the parent is a pure-namespace variable).
+2. Every sibling documented member, in declaration order.
+
+**Authors do not write `@see {@link parent}` or `@see {@link parent.sibling}` for namespace navigation** — it is structural data the renderer derives from the manifest. Manual entries the author writes (peer-pair rule above) appear first; auto-injected parent/sibling entries appear after, deterministically.
+
+This rule applies wherever a symbol has at least one documented member that gets its own page (`name.member` URL). It is the only place where a "See also" section can contain entries the author did not write.
+
 #### External standard references — MDN / ISO / RFC / Wikipedia
 
 When a public type **structurally** wraps or extends a Web Platform / Intl / ECMA / DOM type, or when the type's description names a specific ISO standard or RFC, link to its canonical spec via `@see <URL>`. This is the **only** context where `@see` may target an external URL instead of an in-project `{@link Symbol}`.
@@ -1173,6 +1250,8 @@ For every public API symbol:
 18b. Inline `{@link}` in description prose only when the link occupies a formula-slot from the closed set.
 18c. `@see` blocks alphabetical by target name; in-project `{@link X}` blocks come before external URL blocks.
 18d. Public types that structurally wrap a Web Platform / Intl / ECMA / DOM type carry `@see <MDN URL>` per the External standard-library references rule.
+18e. Symbols with a `get*`/`set*`/`reset*`/`subscribe*`/`parse*`/`stringify*` prefix carry `@see {@link Peer}` for every same-module peer per the closed peer-pair table — symmetrically (A→B implies B→A).
+18f. No manual `@see` for parent or sibling members of namespace symbols — those entries are auto-injected by the renderer.
 19. `@deprecated` always includes migration path.
 20. `@remarks` adds actionable nuance, not decorative facts.
 20a. `@remarks` contains no banned implementation-detail patterns (environment checks, server/client narration, escape-char lists, internal modules, compiler/transform internals, internal call sequences, cross-framework comparison, documenting absence, Web 101, internal-variable names).

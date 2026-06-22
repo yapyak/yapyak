@@ -9,8 +9,10 @@ import type {
 import { describe, expect, it } from 'vitest';
 
 import {
+  buildMethodPage,
   buildModulePage,
   buildPackageIndexPage,
+  buildPropertyMemberPage,
   buildSymbolPage,
 } from './page';
 import { buildSymbolIndex } from './symbol-index';
@@ -546,6 +548,214 @@ describe('buildSymbolPage', () => {
     expect(text).toContain('unknownThing');
   });
 });
+
+describe('buildMethodPage', () => {
+  const FormatParent = variableSymbol({
+    name: 'format',
+  });
+  const ParentLink = {
+    href: '/reference/yapyak/Format',
+    label: 'format',
+  };
+  const SiblingLinks = [
+    {
+      href: '/reference/yapyak/format.dateTime',
+      label: 'format.dateTime',
+    },
+    {
+      href: '/reference/yapyak/format.list',
+      label: 'format.list',
+    },
+  ];
+
+  function methodMember(name: string) {
+    return {
+      deprecated: null,
+      description: 'Method description.',
+      displayKind: 'function' as const,
+      examples: [],
+      kind: 'method' as const,
+      location: {
+        column: 1,
+        file: 'src/index.ts',
+        line: 1,
+      },
+      members: [],
+      name,
+      optional: false,
+      overloads: [
+        {
+          parameters: [],
+          returnType: [],
+          signature: `${name}(): void`,
+          typeParameters: [],
+        },
+      ],
+      remarks: '',
+      seeAlso: [] as string[],
+      shape: '',
+      tags: [],
+      throws: [],
+    };
+  }
+
+  it('auto-injects parent and sibling links into the `See also` section', () => {
+    const page = buildMethodPage(
+      FormatParent,
+      methodMember('number'),
+      CONTEXT,
+      {
+        ...SYMBOL_PAGE_INPUT,
+        href: '/reference/yapyak/format.number',
+        parent: ParentLink,
+        siblings: SiblingLinks,
+      },
+    );
+
+    expect(page.blocks).toContainEqual({
+      children: [
+        {
+          type: 'text',
+          value: 'See also',
+        },
+      ],
+      id: 'see-also',
+      level: 2,
+      type: 'heading',
+    });
+
+    const hrefs = collectHrefs(page.blocks);
+    expect(hrefs).toContain('/reference/yapyak/Format');
+    expect(hrefs).toContain('/reference/yapyak/format.dateTime');
+    expect(hrefs).toContain('/reference/yapyak/format.list');
+  });
+
+  it('keeps author `@see` entries before auto-injected entries', () => {
+    const page = buildMethodPage(
+      FormatParent,
+      {
+        ...methodMember('number'),
+        seeAlso: [
+          'parseRichText',
+        ],
+      },
+      CONTEXT,
+      {
+        ...SYMBOL_PAGE_INPUT,
+        href: '/reference/yapyak/format.number',
+        index: buildSymbolIndex([
+          {
+            href: '/reference/yapyak/parseRichText',
+            hrefsByMemberName: new Map(),
+            moduleId: 'yapyak',
+            name: 'parseRichText',
+            packageSlug: 'yapyak',
+          },
+        ]),
+        parent: ParentLink,
+        siblings: SiblingLinks,
+      },
+    );
+
+    const hrefs = collectHrefs(page.blocks);
+    const parseIndex = hrefs.indexOf('/reference/yapyak/parseRichText');
+    const parentIndex = hrefs.indexOf('/reference/yapyak/Format');
+    expect(parseIndex).toBeGreaterThanOrEqual(0);
+    expect(parentIndex).toBeGreaterThan(parseIndex);
+  });
+
+  it('emits a `See also` section with only auto entries when the method has no author `@see`', () => {
+    const page = buildMethodPage(
+      FormatParent,
+      methodMember('number'),
+      CONTEXT,
+      {
+        ...SYMBOL_PAGE_INPUT,
+        href: '/reference/yapyak/format.number',
+        parent: ParentLink,
+        siblings: SiblingLinks,
+      },
+    );
+
+    const hrefs = collectHrefs(page.blocks);
+    expect(hrefs).toEqual([
+      '/reference/yapyak/Format',
+      '/reference/yapyak/format.dateTime',
+      '/reference/yapyak/format.list',
+    ]);
+  });
+});
+
+describe('buildPropertyMemberPage', () => {
+  const ParentLink = {
+    href: '/reference/yapyak/settings',
+    label: 'settings',
+  };
+
+  function propertyMember(name: string) {
+    return {
+      defaultValue: null,
+      description: 'Property description.',
+      kind: 'property' as const,
+      name,
+      optional: false,
+      type: [],
+    };
+  }
+
+  it('auto-injects parent and sibling links into the `See also` section', () => {
+    const page = buildPropertyMemberPage(
+      variableSymbol({
+        name: 'settings',
+      }),
+      propertyMember('theme'),
+      CONTEXT,
+      {
+        ...SYMBOL_PAGE_INPUT,
+        href: '/reference/yapyak/settings.theme',
+        parent: ParentLink,
+        siblings: [
+          {
+            href: '/reference/yapyak/settings.locale',
+            label: 'settings.locale',
+          },
+        ],
+      },
+    );
+
+    const hrefs = collectHrefs(page.blocks);
+    expect(hrefs).toContain('/reference/yapyak/settings');
+    expect(hrefs).toContain('/reference/yapyak/settings.locale');
+  });
+});
+
+function collectHrefs(blocks: Block[]): string[] {
+  const hrefs: string[] = [];
+  walkHrefs(blocks, hrefs);
+  return hrefs;
+}
+
+function walkHrefs(blocks: Block[], out: string[]): void {
+  for (const block of blocks) {
+    if (block.type === 'link') {
+      out.push(block.href);
+    }
+    if ('children' in block && Array.isArray(block.children)) {
+      walkHrefs(block.children, out);
+    }
+    if (block.type === 'table') {
+      if (block.head !== null) {
+        walkHrefs(
+          [
+            block.head,
+          ],
+          out,
+        );
+      }
+      walkHrefs(block.body, out);
+    }
+  }
+}
 
 function findFirstLink(blocks: Block[]): LinkBlock | undefined {
   for (const block of blocks) {

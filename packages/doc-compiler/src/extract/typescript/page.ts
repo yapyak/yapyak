@@ -11,8 +11,10 @@ import type { SourceUrlConfig } from '../../config';
 import type { PackageContext } from './package-context';
 import type { SymbolIndex, SymbolIndexEntry } from './symbol-index';
 import type {
+  ReferenceCallSignature,
   ReferenceExample,
   ReferenceExport,
+  ReferenceMember,
   ReferenceMethodMember,
   ReferenceModule,
   ReferenceOverload,
@@ -37,6 +39,7 @@ import { resolveSymbolLink } from './symbol-index';
 import { relative, resolve } from 'node:path';
 
 let currentIndex: SymbolIndex = new Map();
+let currentLinkedNames: Set<string> = new Set();
 
 type BuildSymbolPageInput = {
   href: string;
@@ -45,10 +48,21 @@ type BuildSymbolPageInput = {
   packageDir: string;
 };
 
+type MemberNavLink = {
+  href: string;
+  label: string;
+};
+
+type BuildMemberPageInput = BuildSymbolPageInput & {
+  parent: MemberNavLink;
+  siblings: MemberNavLink[];
+};
+
 type BuildSymbolPageOptions = {
   eyebrowKind?: ExportKind;
   methodLinkVariable?: string;
   sourceUrl?: SourceUrlConfig;
+  variableMethods?: ReferenceMethodMember[];
 };
 
 export function buildSymbolPage(
@@ -58,6 +72,7 @@ export function buildSymbolPage(
   options: BuildSymbolPageOptions = {},
 ): Page {
   currentIndex = input.index;
+  currentLinkedNames = new Set();
   const blocks: Block[] = [];
 
   blocks.push(
@@ -161,6 +176,21 @@ export function buildSymbolPage(
         ],
         type: 'paragraph',
       });
+    }
+    if (
+      options.variableMethods !== undefined &&
+      options.variableMethods.length > 0 &&
+      options.methodLinkVariable !== undefined
+    ) {
+      blocks.push(buildHeading2Block('Methods'));
+      blocks.push(
+        ...buildMethodSummary(
+          options.variableMethods,
+          options.methodLinkVariable,
+          input.moduleId,
+          context,
+        ),
+      );
     }
   }
 
@@ -273,9 +303,13 @@ export function buildSymbolPage(
     }
   }
 
-  if (symbol.seeAlso.length > 0) {
+  const seeAlsoEntries = buildSymbolSeeAlsoEntries(
+    symbol,
+    options.variableMethods,
+  );
+  if (seeAlsoEntries.length > 0) {
     blocks.push(buildHeading2Block('See also'));
-    blocks.push(buildSeeAlsoList(symbol.seeAlso));
+    blocks.push(buildSeeAlsoList(seeAlsoEntries));
   }
 
   return {
@@ -294,10 +328,11 @@ export function buildPropertyMemberPage(
   parentSymbol: ReferenceExport,
   member: ReferencePropertyMember,
   context: PackageContext,
-  input: BuildSymbolPageInput,
+  input: BuildMemberPageInput,
   options: BuildSymbolPageOptions = {},
 ): Page {
   currentIndex = input.index;
+  currentLinkedNames = new Set();
 
   const fullName = `${parentSymbol.name}.${member.name}`;
   const memberKind = classifyMemberDisplayKind(member);
@@ -335,6 +370,17 @@ export function buildPropertyMemberPage(
     });
   }
 
+  const seeAlsoEntries = buildMemberSeeAlsoEntries(
+    [],
+    input.parent,
+    input.siblings,
+    extractPropertyMemberReferencedNames(member),
+  );
+  if (seeAlsoEntries.length > 0) {
+    blocks.push(buildHeading2Block('See also'));
+    blocks.push(buildSeeAlsoList(seeAlsoEntries));
+  }
+
   return {
     blocks,
     description: '',
@@ -344,14 +390,36 @@ export function buildPropertyMemberPage(
   };
 }
 
+function extractPropertyMemberReferencedNames(
+  member: ReferencePropertyMember,
+): string[] {
+  const out = new Set<string>();
+  walkTypeTokens(member.type, out);
+  return [
+    ...out,
+  ].sort((a, b) => a.localeCompare(b));
+}
+
+function extractMethodMemberReferencedNames(
+  member: ReferenceMethodMember,
+): string[] {
+  const out = new Set<string>();
+  walkOverloads(member.overloads, out);
+  walkShapeText(member.shape, out);
+  return [
+    ...out,
+  ].sort((a, b) => a.localeCompare(b));
+}
+
 export function buildMethodPage(
   parentSymbol: ReferenceExport,
   member: ReferenceMethodMember,
   context: PackageContext,
-  input: BuildSymbolPageInput,
+  input: BuildMemberPageInput,
   options: BuildSymbolPageOptions = {},
 ): Page {
   currentIndex = input.index;
+  currentLinkedNames = new Set();
 
   const fullName = `${parentSymbol.name}.${member.name}`;
   const blocks: Block[] = [];
@@ -450,9 +518,15 @@ export function buildMethodPage(
     }
   }
 
-  if (member.seeAlso.length > 0) {
+  const seeAlsoEntries = buildMemberSeeAlsoEntries(
+    member.seeAlso,
+    input.parent,
+    input.siblings,
+    extractMethodMemberReferencedNames(member),
+  );
+  if (seeAlsoEntries.length > 0) {
     blocks.push(buildHeading2Block('See also'));
-    blocks.push(buildSeeAlsoList(member.seeAlso));
+    blocks.push(buildSeeAlsoList(seeAlsoEntries));
   }
 
   return {
@@ -573,6 +647,7 @@ export function buildModulePage(
   input: BuildModulePageInput,
 ): Page {
   currentIndex = input.index;
+  currentLinkedNames = new Set();
   const blocks: Block[] = [];
 
   blocks.push({
@@ -1229,6 +1304,7 @@ function tokensToCodeExpression(tokens: TypeToken[]): CodeExpressionBlock {
   for (const token of tokens) {
     const entry = token.kind === 'ref' ? resolveModule(token) : undefined;
     if (token.kind === 'ref' && entry !== undefined) {
+      currentLinkedNames.add(token.name);
       children.push({
         children: [
           {
@@ -1437,6 +1513,182 @@ function buildSeeAlsoList(entries: string[]): Block {
     ordered: false,
     type: 'list',
   };
+}
+
+function buildMemberSeeAlsoEntries(
+  manualEntries: string[],
+  parent: MemberNavLink,
+  siblings: MemberNavLink[],
+  referencedNames: string[],
+): string[] {
+  const navEntries: string[] = [
+    formatNavLinkAsMarkdown(parent),
+    ...siblings.map(formatNavLinkAsMarkdown),
+  ];
+  const referencedLinks = buildAutoSeeAlsoLinks(referencedNames, manualEntries);
+  return [
+    ...manualEntries,
+    ...navEntries,
+    ...referencedLinks,
+  ];
+}
+
+function buildSymbolSeeAlsoEntries(
+  symbol: ReferenceExport,
+  variableMethods: ReferenceMethodMember[] | undefined,
+): string[] {
+  const manualEntries = symbol.seeAlso;
+  const referencedNames = extractReferencedSymbolNames(symbol, variableMethods);
+  const autoEntries = buildAutoSeeAlsoLinks(referencedNames, manualEntries);
+  return [
+    ...manualEntries,
+    ...autoEntries,
+  ];
+}
+
+function buildAutoSeeAlsoLinks(
+  referencedNames: string[],
+  manualEntries: string[],
+): string[] {
+  const manualSet = new Set(manualEntries.map((entry) => entry.trim()));
+  const autoEntries: string[] = [];
+  for (const name of referencedNames) {
+    if (manualSet.has(name)) {
+      continue;
+    }
+    if (currentLinkedNames.has(name)) {
+      continue;
+    }
+    const entry = resolveSymbolLink(currentIndex, name);
+    if (entry === undefined) {
+      continue;
+    }
+    autoEntries.push(
+      formatNavLinkAsMarkdown({
+        href: entry.href,
+        label: name,
+      }),
+    );
+  }
+  return autoEntries;
+}
+
+function extractReferencedSymbolNames(
+  symbol: ReferenceExport,
+  variableMethods: ReferenceMethodMember[] | undefined,
+): string[] {
+  const out = new Set<string>();
+  walkSymbolStructure(symbol, variableMethods, out);
+  walkShapeText(symbol.shape, out);
+  out.delete(symbol.name);
+  return [
+    ...out,
+  ].sort((a, b) => a.localeCompare(b));
+}
+
+function walkSymbolStructure(
+  symbol: ReferenceExport,
+  variableMethods: ReferenceMethodMember[] | undefined,
+  out: Set<string>,
+): void {
+  switch (symbol.kind) {
+    case 'function':
+      walkOverloads(symbol.overloads, out);
+      return;
+    case 'type':
+      walkCallSignatures(symbol.callSignatures, out);
+      walkMembers(symbol.members, out);
+      walkTypeTokens(symbol.resolvedType, out);
+      return;
+    case 'interface':
+      walkCallSignatures(symbol.callSignatures, out);
+      walkMembers(symbol.members, out);
+      return;
+    case 'variable':
+      walkTypeTokens(symbol.type, out);
+      if (variableMethods !== undefined) {
+        walkMembers(variableMethods, out);
+      }
+      return;
+    case 'class':
+      return;
+  }
+}
+
+function walkOverloads(
+  overloads: ReferenceOverload[],
+  out: Set<string>,
+): void {
+  for (const overload of overloads) {
+    for (const parameter of overload.parameters) {
+      walkTypeTokens(parameter.type, out);
+      walkShapeText(parameter.shape, out);
+    }
+    walkTypeTokens(overload.returnType, out);
+    for (const typeParameter of overload.typeParameters) {
+      if (typeParameter.constraint !== null) {
+        walkTypeTokens(typeParameter.constraint, out);
+      }
+      if (typeParameter.defaultType !== null) {
+        walkTypeTokens(typeParameter.defaultType, out);
+      }
+    }
+  }
+}
+
+function walkCallSignatures(
+  signatures: ReferenceCallSignature[],
+  out: Set<string>,
+): void {
+  for (const signature of signatures) {
+    for (const parameter of signature.parameters) {
+      walkTypeTokens(parameter.type, out);
+      walkShapeText(parameter.shape, out);
+    }
+    walkTypeTokens(signature.returnType, out);
+    for (const typeParameter of signature.typeParameters) {
+      if (typeParameter.constraint !== null) {
+        walkTypeTokens(typeParameter.constraint, out);
+      }
+      if (typeParameter.defaultType !== null) {
+        walkTypeTokens(typeParameter.defaultType, out);
+      }
+    }
+  }
+}
+
+function walkMembers(members: ReferenceMember[], out: Set<string>): void {
+  for (const member of members) {
+    if (member.kind === 'method') {
+      walkOverloads(member.overloads, out);
+      walkShapeText(member.shape, out);
+      continue;
+    }
+    walkTypeTokens(member.type, out);
+  }
+}
+
+function walkTypeTokens(tokens: TypeToken[], out: Set<string>): void {
+  for (const token of resolveTypeTokens(tokens)) {
+    if (token.kind === 'ref') {
+      out.add(token.name);
+    }
+  }
+}
+
+function walkShapeText(shape: string, out: Set<string>): void {
+  if (shape === '') {
+    return;
+  }
+  for (const token of tokenizeShapeText(shape)) {
+    if (token.kind === 'ref') {
+      out.add(token.name);
+    }
+  }
+}
+
+function formatNavLinkAsMarkdown(link: MemberNavLink): string {
+  return `[${link.label}](${link.href})`;
 }
 
 function resolveSeeAlsoEntry(entry: string): Block[] {

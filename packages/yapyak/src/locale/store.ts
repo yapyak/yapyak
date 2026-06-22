@@ -129,6 +129,8 @@ persistence?.subscribe?.(syncFromPersistence);
  *
  * getLocale(); // => 'sv'
  * ```
+ *
+ * @see {@link setLocale}
  */
 export function getLocale(): Locale {
   if (!hasWarnedUninitialized && LOCALES.length === 0) {
@@ -172,6 +174,8 @@ export function getLocale(): Locale {
  *
  * setLocale('sv');
  * ```
+ *
+ * @see {@link getLocale}
  */
 export function setLocale(value: Locale): void {
   if (!LOCALES.includes(value)) {

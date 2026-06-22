@@ -375,6 +375,14 @@ async function buildTypeScriptCollection(
           !variableHasCallSignature &&
           variableHasMethods;
 
+        const variableDocumentedMethods =
+          symbol.kind === 'variable'
+            ? resolvedMembers.filter(
+                (member): member is typeof member & { kind: 'method' } =>
+                  member.kind === 'method' && member.description.length > 0,
+              )
+            : [];
+
         if (isPureNamespaceVariable && variableTypeExport !== undefined) {
           const typeSegment = encodeSymbolSegment(variableTypeExport.name);
           const typePath = isRootModule
@@ -402,6 +410,11 @@ async function buildTypeScriptCollection(
                 variableByTypeName.get(symbol.name) !== undefined && {
                   methodLinkVariable: variableByTypeName.get(symbol.name),
                 }),
+              ...(symbol.kind === 'variable' &&
+                variableDocumentedMethods.length > 0 && {
+                  methodLinkVariable: symbol.name,
+                  variableMethods: variableDocumentedMethods,
+                }),
               sourceUrl,
             },
           );
@@ -419,23 +432,50 @@ async function buildTypeScriptCollection(
           ...symbol.members,
           ...resolvedMembers,
         ].filter((member) => member.description.length > 0);
+        const parentEntry = symbols[`${packageSlug}/${symbol.name}`];
+        if (parentEntry === undefined) {
+          continue;
+        }
+        const parentLink = {
+          href: `/${parentEntry.collection}/${parentEntry.path}`,
+          label:
+            isPureNamespaceVariable && variableTypeExport !== undefined
+              ? variableTypeExport.name
+              : symbol.name,
+        };
+        const memberPathsByName = new Map<string, string>();
         for (const member of documentedMembers) {
-          const subSegment = encodeSymbolSegment(
-            `${symbol.name}.${member.name}`,
+          const segment = encodeSymbolSegment(`${symbol.name}.${member.name}`);
+          memberPathsByName.set(
+            member.name,
+            isRootModule
+              ? `${packageSlug}/${segment}`
+              : `${packageSlug}/${subSlug}/${segment}`,
           );
-          const subPath = isRootModule
-            ? `${packageSlug}/${subSegment}`
-            : `${packageSlug}/${subSlug}/${subSegment}`;
+        }
+        for (const member of documentedMembers) {
+          const memberPath = memberPathsByName.get(member.name);
+          if (memberPath === undefined) {
+            continue;
+          }
+          const siblings = documentedMembers
+            .filter((other) => other.name !== member.name)
+            .map((other) => ({
+              href: `/${collectionName}/${memberPathsByName.get(other.name)}`,
+              label: `${symbol.name}.${other.name}`,
+            }));
           const subInput = {
-            href: `/${collectionName}/${subPath}`,
+            href: `/${collectionName}/${memberPath}`,
             index,
             moduleId: module.id,
             packageDir: typescriptPackage.root,
+            parent: parentLink,
+            siblings,
           };
           const subOptions = {
             sourceUrl,
           };
-          pages[subPath] =
+          pages[memberPath] =
             member.kind === 'method'
               ? buildMethodPage(symbol, member, context, subInput, subOptions)
               : buildPropertyMemberPage(
@@ -447,7 +487,7 @@ async function buildTypeScriptCollection(
                 );
           symbols[`${packageSlug}/${symbol.name}.${member.name}`] = {
             collection: collectionName,
-            path: subPath,
+            path: memberPath,
           };
         }
       }
