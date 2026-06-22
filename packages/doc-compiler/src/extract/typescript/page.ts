@@ -9,7 +9,11 @@ import type {
 import type { Page } from '../../build';
 import type { SourceUrlConfig } from '../../config';
 import type { PackageContext } from './package-context';
-import type { SymbolIndex, SymbolIndexEntry } from './symbol-index';
+import type {
+  ReverseRefIndex,
+  SymbolIndex,
+  SymbolIndexEntry,
+} from './symbol-index';
 import type {
   ReferenceCallSignature,
   ReferenceExample,
@@ -44,12 +48,15 @@ import { relative, resolve } from 'node:path';
 
 let currentIndex: SymbolIndex = new Map();
 let currentLinkedNames: Set<string> = new Set();
+let currentReverseRefs: ReverseRefIndex = new Map();
+let currentSourceModuleId: string | undefined;
 
 type BuildSymbolPageInput = {
   href: string;
   index: SymbolIndex;
   moduleId: string;
   packageDir: string;
+  reverseRefs: ReverseRefIndex;
 };
 
 type MemberNavLink = {
@@ -77,6 +84,8 @@ export function buildSymbolPage(
 ): Page {
   currentIndex = input.index;
   currentLinkedNames = new Set();
+  currentReverseRefs = input.reverseRefs;
+  currentSourceModuleId = input.moduleId;
   const blocks: Block[] = [];
 
   blocks.push(
@@ -337,6 +346,8 @@ export function buildPropertyMemberPage(
 ): Page {
   currentIndex = input.index;
   currentLinkedNames = new Set();
+  currentReverseRefs = input.reverseRefs;
+  currentSourceModuleId = input.moduleId;
 
   const fullName = `${parentSymbol.name}.${member.name}`;
   const memberKind = classifyMemberDisplayKind(member);
@@ -424,6 +435,8 @@ export function buildMethodPage(
 ): Page {
   currentIndex = input.index;
   currentLinkedNames = new Set();
+  currentReverseRefs = input.reverseRefs;
+  currentSourceModuleId = input.moduleId;
 
   const fullName = `${parentSymbol.name}.${member.name}`;
   const blocks: Block[] = [];
@@ -565,6 +578,8 @@ type BuildModulePageInput = {
   href: string;
   index: SymbolIndex;
   label: string;
+  moduleId: string;
+  reverseRefs: ReverseRefIndex;
 };
 
 type BuildPackageIndexPageInput = {
@@ -652,6 +667,8 @@ export function buildModulePage(
 ): Page {
   currentIndex = input.index;
   currentLinkedNames = new Set();
+  currentReverseRefs = input.reverseRefs;
+  currentSourceModuleId = input.moduleId;
   const blocks: Block[] = [];
 
   blocks.push({
@@ -1380,7 +1397,7 @@ function resolveSymbolLinksInBlock(block: Block): Block[] {
   if (block.type === 'link' && block.href.startsWith(SYMBOL_HREF_PREFIX)) {
     const reference = block.href.slice(SYMBOL_HREF_PREFIX.length);
     const resolvedChildren = resolveSymbolLinkBlocks(block.children);
-    const entry = resolveSymbolLink(currentIndex, reference);
+    const entry = resolveSymbolLink(currentIndex, reference, currentSourceModuleId);
     if (entry === undefined) {
       return resolvedChildren;
     }
@@ -1552,11 +1569,26 @@ function buildSymbolSeeAlsoEntries(
 ): string[] {
   const manualEntries = symbol.seeAlso;
   const referencedNames = extractReferencedSymbolNames(symbol, variableMethods);
-  const autoEntries = buildAutoSeeAlsoLinks(referencedNames, manualEntries);
+  const backrefNames = extractBackrefNames(symbol.name);
+  const combinedNames = [
+    ...referencedNames,
+    ...backrefNames,
+  ];
+  const autoEntries = buildAutoSeeAlsoLinks(combinedNames, manualEntries);
   return [
     ...manualEntries,
     ...autoEntries,
   ];
+}
+
+function extractBackrefNames(symbolName: string): string[] {
+  const set = currentReverseRefs.get(symbolName);
+  if (set === undefined) {
+    return [];
+  }
+  return [
+    ...set,
+  ].sort((a, b) => a.localeCompare(b));
 }
 
 function buildAutoSeeAlsoLinks(
@@ -1572,7 +1604,7 @@ function buildAutoSeeAlsoLinks(
     if (currentLinkedNames.has(name)) {
       continue;
     }
-    const entry = resolveSymbolLink(currentIndex, name);
+    const entry = resolveSymbolLink(currentIndex, name, currentSourceModuleId);
     if (entry === undefined) {
       continue;
     }
@@ -1705,7 +1737,7 @@ function formatNavLinkAsMarkdown(link: MemberNavLink): string {
 }
 
 function resolveSeeAlsoEntry(entry: string): Block[] {
-  const resolved = resolveSymbolLink(currentIndex, entry);
+  const resolved = resolveSymbolLink(currentIndex, entry, currentSourceModuleId);
   if (resolved !== undefined) {
     return [
       {

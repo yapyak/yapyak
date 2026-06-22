@@ -12,8 +12,16 @@ import type {
   ReferenceExport,
   ReferenceManifest,
   ReferenceModule,
+  ReverseRefIndex,
+  SymbolIndex,
   SymbolIndexEntry,
 } from '../extract/typescript';
+import type {
+  ReferenceMember,
+  ReferenceOverload,
+  ReferenceCallSignature,
+  TypeToken,
+} from '../extract/typescript/type';
 
 import { extractMarkdown } from '../extract/markdown';
 import {
@@ -23,6 +31,7 @@ import {
   buildPropertyMemberPage,
   buildSymbolIndex,
   buildSymbolPage,
+  extractIndexedRefNamesFromText,
   extractPackage,
   getTypeCallSignatures,
   getTypeMembers,
@@ -325,6 +334,7 @@ async function buildTypeScriptCollection(
   }
 
   const index = buildSymbolIndex(entries);
+  const reverseRefs = buildReverseRefIndex(renderContexts, index);
 
   for (const renderContext of renderContexts) {
     const {
@@ -401,6 +411,7 @@ async function buildTypeScriptCollection(
               index,
               moduleId: module.id,
               packageDir: typescriptPackage.root,
+              reverseRefs,
             },
             {
               ...(variableHasCallSignature && {
@@ -470,6 +481,7 @@ async function buildTypeScriptCollection(
             moduleId: module.id,
             packageDir: typescriptPackage.root,
             parent: parentLink,
+            reverseRefs,
             siblings,
           };
           const subOptions = {
@@ -496,6 +508,8 @@ async function buildTypeScriptCollection(
         href: moduleHref,
         index,
         label: moduleLabel,
+        moduleId: module.id,
+        reverseRefs,
       });
     }
 
@@ -582,6 +596,214 @@ async function buildTypeScriptCollection(
     redirects,
     sidebar,
   };
+}
+
+function buildReverseRefIndex(
+  renderContexts: PackageRenderContext[],
+  index: SymbolIndex,
+): ReverseRefIndex {
+  const reverseRefs: ReverseRefIndex = new Map();
+  for (const renderContext of renderContexts) {
+    for (const moduleContext of renderContext.modules) {
+      const exportsByName = new Map<string, ReferenceExport>();
+      for (const symbol of moduleContext.module.exports) {
+        exportsByName.set(symbol.name, symbol);
+      }
+      for (const symbol of moduleContext.module.exports) {
+        addReverseRefsForSymbol(
+          symbol,
+          exportsByName,
+          index,
+          reverseRefs,
+        );
+      }
+    }
+  }
+  return reverseRefs;
+}
+
+function addReverseRefsForSymbol(
+  symbol: ReferenceExport,
+  exportsByName: Map<string, ReferenceExport>,
+  index: SymbolIndex,
+  reverseRefs: ReverseRefIndex,
+): void {
+  switch (symbol.kind) {
+    case 'function':
+      addRefsForOverloads(symbol.overloads, symbol.name, index, reverseRefs);
+      return;
+    case 'type':
+    case 'interface':
+      addRefsForCallSignatures(
+        symbol.callSignatures,
+        symbol.name,
+        index,
+        reverseRefs,
+      );
+      for (const member of symbol.members) {
+        addRefsForMember(
+          member,
+          `${symbol.name}.${member.name}`,
+          index,
+          reverseRefs,
+        );
+      }
+      if (symbol.kind === 'type') {
+        addRefsForTokens(
+          symbol.resolvedType,
+          symbol.name,
+          index,
+          reverseRefs,
+        );
+      }
+      return;
+    case 'variable': {
+      addRefsForTokens(symbol.type, symbol.name, index, reverseRefs);
+      const variableTypeExport = resolveTypeExport(symbol.type, exportsByName);
+      const resolvedMembers = getTypeMembers(variableTypeExport);
+      for (const member of resolvedMembers) {
+        addRefsForMember(
+          member,
+          `${symbol.name}.${member.name}`,
+          index,
+          reverseRefs,
+        );
+      }
+      return;
+    }
+    case 'class':
+      return;
+  }
+}
+
+function addRefsForOverloads(
+  overloads: ReferenceOverload[],
+  sourceKey: string,
+  index: SymbolIndex,
+  reverseRefs: ReverseRefIndex,
+): void {
+  for (const overload of overloads) {
+    for (const parameter of overload.parameters) {
+      addRefsForTokens(parameter.type, sourceKey, index, reverseRefs);
+      addRefsForText(parameter.shape, sourceKey, index, reverseRefs);
+    }
+    addRefsForTokens(overload.returnType, sourceKey, index, reverseRefs);
+    for (const typeParameter of overload.typeParameters) {
+      if (typeParameter.constraint !== null) {
+        addRefsForTokens(
+          typeParameter.constraint,
+          sourceKey,
+          index,
+          reverseRefs,
+        );
+      }
+      if (typeParameter.defaultType !== null) {
+        addRefsForTokens(
+          typeParameter.defaultType,
+          sourceKey,
+          index,
+          reverseRefs,
+        );
+      }
+    }
+  }
+}
+
+function addRefsForCallSignatures(
+  signatures: ReferenceCallSignature[],
+  sourceKey: string,
+  index: SymbolIndex,
+  reverseRefs: ReverseRefIndex,
+): void {
+  for (const signature of signatures) {
+    for (const parameter of signature.parameters) {
+      addRefsForTokens(parameter.type, sourceKey, index, reverseRefs);
+      addRefsForText(parameter.shape, sourceKey, index, reverseRefs);
+    }
+    addRefsForTokens(signature.returnType, sourceKey, index, reverseRefs);
+    for (const typeParameter of signature.typeParameters) {
+      if (typeParameter.constraint !== null) {
+        addRefsForTokens(
+          typeParameter.constraint,
+          sourceKey,
+          index,
+          reverseRefs,
+        );
+      }
+      if (typeParameter.defaultType !== null) {
+        addRefsForTokens(
+          typeParameter.defaultType,
+          sourceKey,
+          index,
+          reverseRefs,
+        );
+      }
+    }
+  }
+}
+
+function addRefsForMember(
+  member: ReferenceMember,
+  sourceKey: string,
+  index: SymbolIndex,
+  reverseRefs: ReverseRefIndex,
+): void {
+  if (member.kind === 'method') {
+    addRefsForOverloads(member.overloads, sourceKey, index, reverseRefs);
+    addRefsForText(member.shape, sourceKey, index, reverseRefs);
+    return;
+  }
+  addRefsForTokens(member.type, sourceKey, index, reverseRefs);
+}
+
+function addRefsForTokens(
+  tokens: TypeToken[],
+  sourceKey: string,
+  index: SymbolIndex,
+  reverseRefs: ReverseRefIndex,
+): void {
+  for (const token of tokens) {
+    if (token.kind === 'ref') {
+      addReverseRef(token.name, sourceKey, reverseRefs);
+      continue;
+    }
+    for (const name of extractIndexedRefNamesFromText(token.text, index)) {
+      addReverseRef(name, sourceKey, reverseRefs);
+    }
+  }
+}
+
+function addRefsForText(
+  text: string,
+  sourceKey: string,
+  index: SymbolIndex,
+  reverseRefs: ReverseRefIndex,
+): void {
+  if (text === '') {
+    return;
+  }
+  for (const name of extractIndexedRefNamesFromText(text, index)) {
+    addReverseRef(name, sourceKey, reverseRefs);
+  }
+}
+
+function addReverseRef(
+  targetName: string,
+  sourceKey: string,
+  reverseRefs: ReverseRefIndex,
+): void {
+  if (targetName === sourceKey) {
+    return;
+  }
+  if (sourceKey.startsWith(`${targetName}.`)) {
+    return;
+  }
+  let set = reverseRefs.get(targetName);
+  if (set === undefined) {
+    set = new Set();
+    reverseRefs.set(targetName, set);
+  }
+  set.add(sourceKey);
 }
 
 async function readPackageName(packageDir: string): Promise<string> {

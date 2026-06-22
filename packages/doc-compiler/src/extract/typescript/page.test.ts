@@ -28,6 +28,7 @@ const SYMBOL_PAGE_INPUT = {
   index: buildSymbolIndex([]),
   moduleId: 'yapyak',
   packageDir: '/tmp/yapyak',
+  reverseRefs: new Map<string, Set<string>>(),
 };
 
 function functionSymbol(
@@ -143,6 +144,8 @@ describe('buildModulePage', () => {
       href: '/reference/yapyak',
       index: buildSymbolIndex([]),
       label: 'yapyak',
+      moduleId: 'yapyak',
+      reverseRefs: new Map<string, Set<string>>(),
     });
 
     expect(page.title).toBe('yapyak');
@@ -173,6 +176,8 @@ describe('buildModulePage', () => {
         },
       ]),
       label: 'yapyak',
+      moduleId: 'yapyak',
+      reverseRefs: new Map<string, Set<string>>(),
     });
 
     expect(page.blocks).toContainEqual({
@@ -201,6 +206,8 @@ describe('buildModulePage', () => {
       href: '/reference/yapyak',
       index: new Map(),
       label: 'yapyak',
+      moduleId: 'yapyak',
+      reverseRefs: new Map<string, Set<string>>(),
     });
 
     const hasExportsHeading = page.blocks.some(

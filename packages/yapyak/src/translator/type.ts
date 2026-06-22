@@ -44,8 +44,6 @@ export type TranslateRequest = {
 
 /**
  * Translates source strings into target locales.
- *
- * @see {@link createTranslator}
  */
 export type Translator = {
   /**
@@ -72,7 +70,7 @@ export type Translator = {
   (request: TranslateRequest): Promise<string>;
 };
 
-/** Options for {@link Translator.batch}. */
+/** Options for {@link Translator}. */
 export type TranslateBatchOptions = {
   /** Called when a chunk resolves. */
   onChunk?: (count: number) => void;

@@ -6,7 +6,7 @@ import { runTrackers } from '../tracker';
 import { resolveFormatter } from './formatter';
 
 /**
- * Options for {@link Format.number}.
+ * Options for {@link format.number}.
  *
  * @see [Intl.NumberFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat)
  */
@@ -41,7 +41,7 @@ export type FormatNumberOptions = Omit<
   );
 
 /**
- * Options for {@link Format.dateTime}.
+ * Options for {@link format.dateTime}.
  *
  * @see [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat)
  */
@@ -51,14 +51,14 @@ export type FormatDateTimeOptions = Omit<
 >;
 
 /**
- * Options for {@link Format.list}.
+ * Options for {@link format.list}.
  *
  * @see [Intl.ListFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat/ListFormat)
  */
 export type FormatListOptions = Omit<Intl.ListFormatOptions, 'localeMatcher'>;
 
 /**
- * Options for {@link Format.relativeTime}.
+ * Options for {@link format.relativeTime}.
  *
  * @see [Intl.RelativeTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/RelativeTimeFormat/RelativeTimeFormat)
  */
