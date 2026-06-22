@@ -1,6 +1,6 @@
-import type { ReferenceTag, ReferenceTypeParameter } from './type';
+import type { ReferenceTag, ReferenceTypeParameter, TypeToken } from './type';
 
-import ts, { ScriptTarget, createSourceFile } from 'typescript';
+import ts from 'typescript';
 
 import { buildTypeTokens } from './type-token';
 
@@ -103,18 +103,18 @@ function collectTypeParamDescriptions(
   return result;
 }
 
-function parseTypeText(text: string) {
-  const sourceFile = createSourceFile(
+function parseTypeText(text: string): TypeToken[] {
+  const sourceFile = ts.createSourceFile(
     'shape.ts',
     `type _ = ${text};`,
-    ScriptTarget.Latest,
+    ts.ScriptTarget.Latest,
     true,
   );
   const declaration = sourceFile.statements.find(ts.isTypeAliasDeclaration);
   if (declaration === undefined) {
     return [
       {
-        kind: 'text' as const,
+        kind: 'text',
         text,
       },
     ];

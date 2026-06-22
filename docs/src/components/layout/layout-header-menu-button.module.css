@@ -38,7 +38,7 @@
     .Line {
       display: block;
       width: 20px;
-      height: 2px;
+      height: var(--spacing-05);
       background-color: var(--foreground);
       border-radius: var(--border-radius-full);
       transition:

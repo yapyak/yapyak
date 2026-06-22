@@ -3,6 +3,7 @@ import type { ReferenceTypeParameter } from './type';
 
 import ts from 'typescript';
 
+import { getCommentText } from './jsdoc';
 import { buildTypeTokens } from './type-token';
 
 export function extractTypeParameters(
@@ -35,7 +36,7 @@ function getTypeParameterDescription(node: TypeParameterDeclaration): string {
     if (ts.isJSDocTemplateTag(tag)) {
       for (const declared of tag.typeParameters) {
         if (declared.name.text === targetName) {
-          return getCommentText(tag.comment);
+          return stripLeadingDash(getCommentText(tag.comment));
         }
       }
       continue;
@@ -55,20 +56,6 @@ function getTypeParameterDescription(node: TypeParameterDeclaration): string {
   return '';
 }
 
-function getCommentText(
-  comment:
-    | string
-    | readonly {
-        text?: string;
-      }[]
-    | undefined,
-): string {
-  if (comment === undefined) {
-    return '';
-  }
-  const raw =
-    typeof comment === 'string'
-      ? comment
-      : comment.map((part) => part.text ?? '').join('');
-  return raw.replace(/^[\s-]+/, '');
+function stripLeadingDash(text: string): string {
+  return text.replace(/^[\s-]+/, '');
 }

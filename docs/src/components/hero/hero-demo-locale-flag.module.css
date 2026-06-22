@@ -2,7 +2,8 @@
   .HeroDemoLocaleFlag {
     flex: none;
     filter: drop-shadow(
-      0 var(--px) 2px color-mix(in oklab, var(--color-black) 30%, transparent)
+      0 var(--px) var(--spacing-05)
+        color-mix(in oklab, var(--color-black) 30%, transparent)
     );
   }
 }

@@ -104,7 +104,7 @@ function findLastJsDoc(node: Node): JSDoc | undefined {
   return undefined;
 }
 
-function getCommentText(
+export function getCommentText(
   comment: string | readonly JSDocComment[] | undefined,
 ): string {
   if (comment === undefined) {

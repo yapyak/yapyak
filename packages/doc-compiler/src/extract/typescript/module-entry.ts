@@ -64,9 +64,8 @@ export function expandModuleEntries(exports: ReferenceExport[]): ModuleEntry[] {
       const isPureNamespace = !isCallable && documentedMembers.length > 0;
 
       if (!isPureNamespace) {
-        const labelKind = CALLABLE_DISPLAY_KINDS.has(symbol.displayKind)
-          ? symbol.displayKind
-          : isCallable
+        const labelKind =
+          isCallable && !CALLABLE_DISPLAY_KINDS.has(symbol.displayKind)
             ? 'function'
             : symbol.displayKind;
         entries.push({

@@ -17,7 +17,7 @@
         height: var(--hash-icon-size);
         margin-right: var(--spacing-2);
         margin-left: calc(-1 * (var(--hash-icon-size) + var(--spacing-2)));
-        vertical-align: -2px;
+        vertical-align: calc(-1 * var(--spacing-05));
         color: var(--foreground-softer);
         opacity: 0;
         transition:
