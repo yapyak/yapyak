@@ -182,7 +182,7 @@ function getSupportedCurrencies(): Set<string> {
 }
 
 /**
- * Type guard for `Currency`.
+ * Type guard for {@link Currency}.
  *
  * @param value - The candidate code.
  *

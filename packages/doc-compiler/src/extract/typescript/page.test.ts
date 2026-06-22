@@ -169,7 +169,9 @@ describe('buildModulePage', () => {
       index: buildSymbolIndex([
         {
           href: '/reference/yapyak/createTranslator',
-          hrefsByMemberName: new Map(),
+          callable: false,
+        callableMemberNames: new Set(),
+        hrefsByMemberName: new Map(),
           moduleId: 'yapyak',
           name: 'createTranslator',
           packageSlug: 'yapyak',
@@ -445,6 +447,8 @@ describe('buildSymbolPage', () => {
     const index = buildSymbolIndex([
       {
         href: '/reference/yapyak/translator/createTranslator',
+        callable: false,
+        callableMemberNames: new Set(),
         hrefsByMemberName: new Map(),
         moduleId: 'yapyak/translator',
         name: 'createTranslator',
@@ -502,6 +506,8 @@ describe('buildSymbolPage', () => {
     const index = buildSymbolIndex([
       {
         href: '/reference/yapyak/translator/createTranslator',
+        callable: false,
+        callableMemberNames: new Set(),
         hrefsByMemberName: new Map(),
         moduleId: 'yapyak/translator',
         name: 'createTranslator',
@@ -653,7 +659,9 @@ describe('buildMethodPage', () => {
         index: buildSymbolIndex([
           {
             href: '/reference/yapyak/parseRichText',
-            hrefsByMemberName: new Map(),
+            callable: false,
+        callableMemberNames: new Set(),
+        hrefsByMemberName: new Map(),
             moduleId: 'yapyak',
             name: 'parseRichText',
             packageSlug: 'yapyak',

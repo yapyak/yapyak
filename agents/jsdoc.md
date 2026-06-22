@@ -151,6 +151,7 @@ Empty lines separate the summary, `@remarks`, and each tag block. Inside a tag g
 - **Backticks** around code identifiers, types, values, file paths: `t()`, `string`, `null`, `'cookie'`, `package.json`.
 - **Banned verbs in descriptions:** "gets", "sets", "gets or sets" — use category formulas instead.
 - **Banned adverbs:** "simply", "just", "easily", "automatically".
+- **Banned em-dash (`—`) in descriptions.** Hard rule — em-dashes are forbidden anywhere in JSDoc description text (the prose before the first `@tag`). Use other punctuation: a period for sentence breaks, a colon for definition or expansion, parentheses for parenthetical, or rewrite to two clean sentences. Includes bullet lists inside descriptions — `` - `'value'`: meaning `` not `` - `'value'` — meaning ``. (This banishment applies to the description prose only — `@remarks`, `@example`, and other tag bodies are unaffected.)
 - **No redundant subject:** "The type." not "The type of this attribute."
 - **Reference other symbols with `{@link}`** — never restate what they are.
 - **`{@link}` vs backticks — mechanical rule:**

@@ -98,9 +98,9 @@ export type TranslateBatchOptions = {
 /**
  * The context level. Determines how much call-site context is passed to the translator.
  *
- * - `'none'` — sends the source string only.
- * - `'minimal'` — sends the source string, the component name, and the enclosing element.
- * - `'rich'` — sends the source string, the component name, the enclosing element, and the surrounding code snippet.
+ * - `'none'`: sends the source string only.
+ * - `'minimal'`: sends the source string, the component name, and the enclosing element.
+ * - `'rich'`: sends the source string, the component name, the enclosing element, and the surrounding code snippet.
  */
 export type ContextLevel = 'none' | 'minimal' | 'rich';
 

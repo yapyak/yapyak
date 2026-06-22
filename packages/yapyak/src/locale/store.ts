@@ -21,7 +21,7 @@ let hasWarnedSsrFallback = false;
 const persistence = buildPersistence(PERSISTENCE_CONFIG, LOCALES);
 
 /**
- * Type guard for `Locale`.
+ * Type guard for {@link Locale}.
  *
  * @param value - The candidate string.
  *

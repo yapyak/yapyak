@@ -1393,6 +1393,26 @@ function resolveSymbolLinkBlocks(blocks: Block[]): Block[] {
   return blocks.flatMap(resolveSymbolLinksInBlock);
 }
 
+function appendCallableSuffix(children: Block[], reference: string): Block[] {
+  if (children.length === 0) {
+    return children;
+  }
+  const last = children[children.length - 1];
+  if (last === undefined || last.type !== 'text') {
+    return children;
+  }
+  if (last.value !== reference) {
+    return children;
+  }
+  return [
+    ...children.slice(0, -1),
+    {
+      type: 'text',
+      value: `${last.value}()`,
+    },
+  ];
+}
+
 function resolveSymbolLinksInBlock(block: Block): Block[] {
   if (block.type === 'link' && block.href.startsWith(SYMBOL_HREF_PREFIX)) {
     const reference = block.href.slice(SYMBOL_HREF_PREFIX.length);
@@ -1401,9 +1421,12 @@ function resolveSymbolLinksInBlock(block: Block): Block[] {
     if (entry === undefined) {
       return resolvedChildren;
     }
+    const displayChildren = entry.callable
+      ? appendCallableSuffix(resolvedChildren, reference)
+      : resolvedChildren;
     return [
       {
-        children: resolvedChildren,
+        children: displayChildren,
         href: entry.href,
         kind: 'internal',
         type: 'link',

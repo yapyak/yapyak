@@ -1,4 +1,6 @@
 export type SymbolIndexEntry = {
+  callable: boolean;
+  callableMemberNames: Set<string>;
   href: string;
   hrefsByMemberName: Map<string, string>;
   moduleId: string;
@@ -70,6 +72,8 @@ export function resolveSymbolLink(
   }
   return {
     ...baseEntry,
+    callable: baseEntry.callableMemberNames.has(member),
+    callableMemberNames: new Set(),
     href: memberHref,
     name: `${baseEntry.name}.${member}`,
   };

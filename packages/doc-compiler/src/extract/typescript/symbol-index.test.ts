@@ -7,7 +7,9 @@ import { buildSymbolIndex, resolveSymbolLink } from './symbol-index';
 function entry(overrides: Partial<SymbolIndexEntry> = {}): SymbolIndexEntry {
   return {
     href: '/reference/yapyak/createTranslator',
-    hrefsByMemberName: new Map(),
+    callable: false,
+        callableMemberNames: new Set(),
+        hrefsByMemberName: new Map(),
     moduleId: 'yapyak/translator',
     name: 'createTranslator',
     packageSlug: 'yapyak',
@@ -67,6 +69,8 @@ describe('resolveSymbolLink', () => {
   it('resolves an `X.member` path to the member href', () => {
     const index = buildSymbolIndex([
       entry({
+        callable: false,
+        callableMemberNames: new Set(),
         hrefsByMemberName: new Map([
           [
             'translate',
@@ -84,6 +88,8 @@ describe('resolveSymbolLink', () => {
   it('resolves an `X#member` path to the member href', () => {
     const index = buildSymbolIndex([
       entry({
+        callable: false,
+        callableMemberNames: new Set(),
         hrefsByMemberName: new Map([
           [
             'translate',
@@ -109,6 +115,8 @@ describe('resolveSymbolLink', () => {
   it('returns `undefined` when the base resolves but the member does not', () => {
     const index = buildSymbolIndex([
       entry({
+        callable: false,
+        callableMemberNames: new Set(),
         hrefsByMemberName: new Map([
           [
             'translate',

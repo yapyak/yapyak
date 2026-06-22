@@ -286,6 +286,7 @@ async function buildTypeScriptCollection(
         }
 
         const hrefsByMemberName = new Map<string, string>();
+        const callableMemberNames = new Set<string>();
         if (symbol.kind === 'variable') {
           const documentedMembers = [
             ...symbol.members,
@@ -299,11 +300,20 @@ async function buildTypeScriptCollection(
               ? `${packageSlug}/${subSegment}`
               : `${packageSlug}/${subSlug}/${subSegment}`;
             hrefsByMemberName.set(member.name, `/${collectionName}/${subPath}`);
+            if (member.kind === 'method') {
+              callableMemberNames.add(member.name);
+            }
           }
         }
+        const isCallable =
+          symbol.kind === 'function' ||
+          symbol.kind === 'class' ||
+          (symbol.kind === 'variable' && variableHasCallSignature);
 
         entries.push({
           href: symbolHref,
+          callable: isCallable,
+          callableMemberNames,
           hrefsByMemberName,
           moduleId: module.id,
           name: symbol.name,
