@@ -10,9 +10,9 @@
  * ```ts
  * import { getLocaleFallbackChain } from 'yapyak';
  *
- * getLocaleFallbackChain('zh-Hant-TW'); // => ['zh-Hant-TW', 'zh-Hant', 'zh']
- * getLocaleFallbackChain('sv-FI'); // => ['sv-FI', 'sv']
- * getLocaleFallbackChain('en'); // => ['en']
+ * getLocaleFallbackChain('zh-Hant-TW'); // output: ['zh-Hant-TW', 'zh-Hant', 'zh']
+ * getLocaleFallbackChain('sv-FI'); // output: ['sv-FI', 'sv']
+ * getLocaleFallbackChain('en'); // output: ['en']
  * ```
  *
  * @see [BCP 47](https://datatracker.ietf.org/doc/html/bcp47)

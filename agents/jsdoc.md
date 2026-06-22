@@ -596,7 +596,7 @@ function t<T extends string>(source: T): string;
  * ```ts
  * import { getLocale } from 'yapyak';
  *
- * getLocale(); // => 'sv'
+ * getLocale(); // output: 'sv'
  * ```
  */
 export function getLocale(): Locale { /* ... */ }
@@ -906,7 +906,7 @@ If the implementation cannot be read (binary dependency, generated code), stop a
 - **Always include imports.** Every `@example` ships the necessary `import` statements. Even if redundant across sibling examples. The reader copy-pastes into a fresh file.
 - **Parallel import forms.** When an example shows the project's symbol alongside a placeholder for a sibling symbol, both imports use the **same form**. If we write `import { middleware as yapyakMiddleware } from 'yapyak/adapter/astro';`, the user's stand-in must mirror that shape: `import { middleware as authMiddleware } from './auth';` — never `import { authMiddleware } from './auth';`. Same rule for any other symbol kind (`{ handle as X }`, `{ default as X }`, etc.). Parallelism makes the example read as "two of the same thing", not "ours vs theirs".
 - **No placeholder identifiers** in examples. Pull from the Yak Pool in [[testing]] § Test voice.
-- **Return values:** show with `// =>` — one space before, no column alignment.
+- **Return values:** show with `// output:` — promotes to a separate OutputBlock in rendered docs. Multi-line outputs continue on `//`-prefixed lines.
 - **Code-block language identifier — mechanical choice:**
 
   | Content | Identifier |
@@ -963,10 +963,38 @@ Only the following four comment forms appear inside example code. No others.
 
 | Form | Use |
 |---|---|
-| `// => value` | Return / evaluated value. One space before `=>`. No column alignment. |
+| `// output: <value>` | Return / evaluated value. Promotes the block to alternating CodeBlock + OutputBlock in the rendered docs. |
 | `// error: <reason>` | Marks a line that fails to compile or throws at runtime. Promotes the block to a DiagnosticsBlock in the rendered docs. |
 | `// ok: <reason>` | Positive verification marker. Same rendering as `error:`. |
 | `// ...` | Elision when the example needs to gesture at code it does not show. |
+
+`// output:` has two forms — pick the one that's visually cleaner per case:
+
+**Inline** — for a single value or short multi-line content:
+
+```ts
+getLocale(); // output: 'sv'
+```
+
+```ts
+parseRichText('Click <link>here</link>.');
+// output: [
+//   { type: 'text', text: 'Click ' },
+//   { type: 'tag', name: 'link', children: [{ type: 'text', text: 'here' }] },
+// ]
+```
+
+**Bare header + continuation** — for multi-locale output where putting the first locale on the marker line creates a visually ugly double-colon:
+
+```ts
+format.number(199, { style: 'currency', currency: 'EUR' });
+// output:
+// en-US: '€199.00'
+// sv-SE: '199,00 €'
+// de-DE: '199,00 €'
+```
+
+Both forms produce the same OutputBlock — pick by readability. Bare header always preferred when the output is locale-prefixed.
 
 Banned: explanatory comments (`// this calls format`), decorative separators (`// ---`), per-line narration (`// returns the price`), authorial asides. The example must read like working source. If a fact about the example isn't visible from the code + the four markers above, it doesn't belong in the example — move it to `@remarks` or rethink the API.
 
@@ -1241,7 +1269,7 @@ For every public API symbol:
 15a. ≤ 3 `@example` blocks (≤ 5 for umbrella symbols with structurally distinct call forms).
 15b. First `@example` carries no title, shows the simplest invocation.
 15c. Each `@example` shows one scenario; multiple scenarios use multiple blocks.
-15d. Comments inside example code use only the closed vocabulary: `// =>`, `// error:`, `// ok:`, `// ...`.
+15d. Comments inside example code use only the closed vocabulary: `// output:`, `// error:`, `// ok:`, `// ...`.
 15e. One blank line between imports and body; no other blank lines inside the body.
 15f. Identifier names consistent across same-symbol example blocks.
 16. `@typeParam` for every type parameter, alphabetical.

@@ -3,4 +3,5 @@ export {
   parseFrontmatterOnly,
   parseMarkdown,
   tryBuildDiagnosticsFromCode,
+  tryBuildExampleOutputsFromCode,
 } from './parse';

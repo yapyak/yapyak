@@ -7,13 +7,11 @@ Plurals are the first place a single-language app starts feeling cramped. "1 mes
 
 ```ts
 t('You have {count, plural, one {# message} other {# messages}}', { count: 5 });
+// output:
+// en-US: 'You have 5 messages'
+// sv-SE: 'Du har 5 meddelanden'
+// ar-SA: 'تتوفّر لديك ٥ رسائل'
 ```
-
-{% output %}
-en-US: 'You have 5 messages'
-sv-SE: 'Du har 5 meddelanden'
-ar-SA: 'تتوفّر لديك ٥ رسائل'
-{% /output %}
 
 The model (or your translator) writes whichever branches that language needs. English only uses `one` and `other`; Arabic uses six. yapyak's runtime picks the right one based on the count and the locale's plural rules.
 
@@ -56,12 +54,10 @@ Inside any plural branch, `#` renders the count itself, formatted using the loca
 
 ```ts
 t('{count, plural, one {# message} other {# messages}}', { count: 1000 });
+// output:
+// en-US: '1,000 messages'
+// sv-SE: '1 000 meddelanden'
 ```
-
-{% output %}
-en-US: '1,000 messages'
-sv-SE: '1 000 meddelanden'
-{% /output %}
 
 It's the same as writing `{count, number}` in the same position, but shorter and idiomatic for plurals.
 
@@ -71,11 +67,8 @@ When you want a different branch for an exact value — say, "no messages" for z
 
 ```ts
 t('{count, plural, =0 {No messages yet} one {1 new message} other {# new messages}}', { count: 0 });
+// output: 'No messages yet'
 ```
-
-{% output %}
-'No messages yet'
-{% /output %}
 
 Exact matches are tried before category matches. They only match non-negative integers; for negative values or fractions, fall through to the categories.
 
@@ -98,11 +91,8 @@ For ordinal numbers ("1st", "2nd", "3rd"), use `selectordinal` instead of `plura
 
 ```ts
 t('{place, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place', { place: 3 });
+// output: en-US: '3rd place'
 ```
-
-{% output %}
-en-US: '3rd place'
-{% /output %}
 
 In a language without ordinal suffixes (Swedish, French), only `other` is used — the translator (or the model) collapses the branches naturally.
 

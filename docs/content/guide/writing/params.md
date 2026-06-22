@@ -7,12 +7,10 @@ When a message contains values that change at runtime, you write them as named p
 
 ```ts
 t('Hi {name}', { name: 'Ada' });
+// output:
+// sv-SE: 'Hej Ada'
+// fr-FR: 'Bonjour Ada'
 ```
-
-{% output %}
-sv-SE: 'Hej Ada'
-fr-FR: 'Bonjour Ada'
-{% /output %}
 
 The placeholder syntax is curly braces around the parameter name. The locale file keeps the same placeholders, so translators (human or model) know exactly where the value lands inside each language's sentence.
 
@@ -95,21 +93,17 @@ The placeholder `{count}` renders as the value's string form — `3`, `Ada`, wha
 
 ```ts
 t('Your balance is {amount, number, currency USD}', { amount: 99.95 });
+// output:
+// en-US: 'Your balance is $99.95'
+// sv-SE: 'Ditt saldo är 99,95 US$'
 ```
-
-{% output %}
-en-US: 'Your balance is $99.95'
-sv-SE: 'Ditt saldo är 99,95 US$'
-{% /output %}
 
 ```ts
 t('Updated {when, date, long}', { when: new Date() });
+// output:
+// en-US: 'Updated June 17, 2026'
+// sv-SE: 'Uppdaterad 17 juni 2026'
 ```
-
-{% output %}
-en-US: 'Updated June 17, 2026'
-sv-SE: 'Uppdaterad 17 juni 2026'
-{% /output %}
 
 These follow the [ICU MessageFormat](https://unicode-org.github.io/icu/userguide/format_parse/messages/) spec and travel with every translation. See [Plurals](/guide/writing/plurals) for the full list of supported sub-formats.
 

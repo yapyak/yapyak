@@ -9,13 +9,11 @@ Numbers, currencies, percentages, and units all live in `format.number()`. It's 
 import { format } from 'yapyak';
 
 format.number(1234.5);
+// output:
+// en-US: '1,234.5'
+// sv-SE: '1 234,5'
+// de-DE: '1.234,5'
 ```
-
-{% output %}
-en-US: '1,234.5'
-sv-SE: '1 234,5'
-de-DE: '1.234,5'
-{% /output %}
 
 The `style` option discriminates between four formatting modes. Each one types its own extra options.
 
@@ -25,28 +23,20 @@ The default. Renders a plain number with the locale's grouping and decimal conve
 
 ```ts
 format.number(1000000);
+// output:
+// en-US: '1,000,000'
+// sv-SE: '1 000 000'
 ```
-
-{% output %}
-en-US: '1,000,000'
-sv-SE: '1 000 000'
-{% /output %}
 
 ```ts
 format.number(3.14159, { maximumFractionDigits: 2 });
+// output: en-US: '3.14'
 ```
-
-{% output %}
-en-US: '3.14'
-{% /output %}
 
 ```ts
 format.number(0.5, { minimumFractionDigits: 2 });
+// output: en-US: '0.50'
 ```
-
-{% output %}
-en-US: '0.50'
-{% /output %}
 
 You can pass any of `Intl.NumberFormat`'s decimal options — minimum/maximum fraction digits, minimum integer digits, grouping toggles, notation modes.
 
@@ -59,36 +49,30 @@ format.number(199, {
   currency: 'USD',
   style: 'currency'
 });
+// output:
+// en-US: '$199.00'
+// sv-SE: '199,00 US$'
 ```
-
-{% output %}
-en-US: '$199.00'
-sv-SE: '199,00 US$'
-{% /output %}
 
 ```ts
 format.number(199, {
   currency: 'EUR',
   style: 'currency'
 });
+// output:
+// en-US: '€199.00'
+// fr-FR: '199,00 €'
 ```
-
-{% output %}
-en-US: '€199.00'
-fr-FR: '199,00 €'
-{% /output %}
 
 ```ts
 format.number(199, {
   currency: 'SEK',
   style: 'currency'
 });
+// output:
+// en-US: 'SEK 199.00'
+// sv-SE: '199,00 kr'
 ```
-
-{% output %}
-en-US: 'SEK 199.00'
-sv-SE: '199,00 kr'
-{% /output %}
 
 {% callout variant="info" %}
 A currency code unsupported by the host `Intl` does not throw — yapyak falls back to a `<value> <code>` rendering. This covers the rare cases where a runtime is missing a freshly-issued currency code (e.g. a regional digital currency) without crashing the page.
@@ -123,23 +107,18 @@ Use `Currency` for typed props and parameters; use `isCurrency` to narrow user i
 
 ```ts
 format.number(0.42, { style: 'percent' });
+// output:
+// en-US: '42%'
+// sv-SE: '42 %'
 ```
-
-{% output %}
-en-US: '42%'
-sv-SE: '42 %'
-{% /output %}
 
 ```ts
 format.number(0.4256, {
   maximumFractionDigits: 1,
   style: 'percent'
 });
+// output: '42.6%'
 ```
-
-{% output %}
-'42.6%'
-{% /output %}
 
 If your value is already in "percent units" (`42` for "forty-two percent"), divide by 100 before passing it in.
 
@@ -152,12 +131,10 @@ format.number(5, {
   style: 'unit',
   unit: 'kilometer'
 });
+// output:
+// en-US: '5 km'
+// sv-SE: '5 km'
 ```
-
-{% output %}
-en-US: '5 km'
-sv-SE: '5 km'
-{% /output %}
 
 ```ts
 format.number(5, {
@@ -165,23 +142,18 @@ format.number(5, {
   unit: 'kilometer',
   unitDisplay: 'long'
 });
+// output:
+// en-US: '5 kilometers'
+// sv-SE: '5 kilometer'
 ```
-
-{% output %}
-en-US: '5 kilometers'
-sv-SE: '5 kilometer'
-{% /output %}
 
 ```ts
 format.number(72, {
   style: 'unit',
   unit: 'mile-per-hour'
 });
+// output: en-US: '72 mph'
 ```
-
-{% output %}
-en-US: '72 mph'
-{% /output %}
 
 Unit identifiers come from the [Unicode CLDR units list](https://unicode-org.github.io/cldr/ldml/tr35-general.html#Unit_Elements).
 

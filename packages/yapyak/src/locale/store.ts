@@ -127,7 +127,7 @@ persistence?.subscribe?.(syncFromPersistence);
  * ```ts
  * import { getLocale } from 'yapyak';
  *
- * getLocale(); // => 'sv'
+ * getLocale(); // output: 'sv'
  * ```
  *
  * @see {@link setLocale}

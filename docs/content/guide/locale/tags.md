@@ -59,27 +59,18 @@ When a translation isn't available for a more-specific tag but is available for 
 import { getLocaleFallbackChain } from 'yapyak';
 
 getLocaleFallbackChain('zh-Hant-TW');
+// output: ['zh-Hant-TW', 'zh-Hant', 'zh']
 ```
-
-{% output %}
-['zh-Hant-TW', 'zh-Hant', 'zh']
-{% /output %}
 
 ```ts
 getLocaleFallbackChain('pt-BR');
+// output: ['pt-BR', 'pt']
 ```
-
-{% output %}
-['pt-BR', 'pt']
-{% /output %}
 
 ```ts
 getLocaleFallbackChain('sv');
+// output: ['sv']
 ```
-
-{% output %}
-['sv']
-{% /output %}
 
 Each step drops one subtag from the right. The chain doesn't include your `defaultLocale` at the end; append it yourself when you need a full ordering.
 

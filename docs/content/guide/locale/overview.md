@@ -13,11 +13,8 @@ At any moment, one of those locales is the **active locale**. Calling `t()` read
 import { getLocale } from 'yapyak';
 
 getLocale();
+// output: 'sv' | 'en' | ...
 ```
-
-{% output %}
-'sv' | 'en' | ...
-{% /output %}
 
 The return type is the union of every locale code you've added.
 

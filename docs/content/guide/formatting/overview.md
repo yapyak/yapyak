@@ -12,39 +12,31 @@ format.number(199, {
   currency: 'EUR',
   style: 'currency'
 });
+// output:
+// en-US: '€199.00'
+// sv-SE: '199,00 €'
 ```
-
-{% output %}
-en-US: '€199.00'
-sv-SE: '199,00 €'
-{% /output %}
 
 ```ts
 format.dateTime(new Date(), { dateStyle: 'long' });
+// output:
+// en-US: 'June 18, 2026'
+// sv-SE: '18 juni 2026'
 ```
-
-{% output %}
-en-US: 'June 18, 2026'
-sv-SE: '18 juni 2026'
-{% /output %}
 
 ```ts
 format.list(['apple', 'pear', 'orange']);
+// output:
+// en-US: 'apple, pear, and orange'
+// sv-SE: 'apple, pear och orange'
 ```
-
-{% output %}
-en-US: 'apple, pear, and orange'
-sv-SE: 'apple, pear och orange'
-{% /output %}
 
 ```ts
 format.relativeTime(-1, 'day');
+// output:
+// en-US: '1 day ago'
+// sv-SE: 'för 1 dag sedan'
 ```
-
-{% output %}
-en-US: '1 day ago'
-sv-SE: 'för 1 dag sedan'
-{% /output %}
 
 Each method maps directly to an `Intl.*Format` class:
 
@@ -97,11 +89,8 @@ format.in('sv').number(200, {
   currency: 'SEK',
   style: 'currency'
 });
+// output: '200,00 kr'
 ```
-
-{% output %}
-'200,00 kr'
-{% /output %}
 
 The result is the same regardless of the active locale. The active locale itself is left untouched.
 

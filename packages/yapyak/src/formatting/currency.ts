@@ -190,8 +190,8 @@ function getSupportedCurrencies(): Set<string> {
  * ```ts
  * import { isCurrency } from 'yapyak';
  *
- * isCurrency('EUR'); // => true
- * isCurrency('XYZ'); // => false
+ * isCurrency('EUR'); // output: true
+ * isCurrency('XYZ'); // output: false
  * ```
  */
 export function isCurrency(value: string): value is Currency {

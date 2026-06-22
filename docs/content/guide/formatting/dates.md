@@ -9,13 +9,11 @@ order: 3
 import { format } from 'yapyak';
 
 format.dateTime(new Date(), { dateStyle: 'long' });
+// output:
+// en-US: 'June 17, 2026'
+// sv-SE: '17 juni 2026'
+// de-DE: '17. Juni 2026'
 ```
-
-{% output %}
-en-US: 'June 17, 2026'
-sv-SE: '17 juni 2026'
-de-DE: '17. Juni 2026'
-{% /output %}
 
 ## Absolute date and time
 
@@ -25,54 +23,37 @@ de-DE: '17. Juni 2026'
 
 ```ts
 format.dateTime(new Date(), { dateStyle: 'short' });
+// output: en-US: '6/17/26'
 ```
-
-{% output %}
-en-US: '6/17/26'
-{% /output %}
 
 ```ts
 format.dateTime(new Date(), { dateStyle: 'medium' });
+// output: en-US: 'Jun 17, 2026'
 ```
-
-{% output %}
-en-US: 'Jun 17, 2026'
-{% /output %}
 
 ```ts
 format.dateTime(new Date(), { dateStyle: 'long' });
+// output: en-US: 'June 17, 2026'
 ```
-
-{% output %}
-en-US: 'June 17, 2026'
-{% /output %}
 
 ```ts
 format.dateTime(new Date(), { dateStyle: 'full' });
+// output: en-US: 'Wednesday, June 17, 2026'
 ```
-
-{% output %}
-en-US: 'Wednesday, June 17, 2026'
-{% /output %}
 
 ### Time only
 
 ```ts
 format.dateTime(new Date(), { timeStyle: 'short' });
+// output:
+// en-US: '4:30 PM'
+// sv-SE: '16:30'
 ```
-
-{% output %}
-en-US: '4:30 PM'
-sv-SE: '16:30'
-{% /output %}
 
 ```ts
 format.dateTime(new Date(), { timeStyle: 'full' });
+// output: en-US: '4:30:15 PM Central European Summer Time'
 ```
-
-{% output %}
-en-US: '4:30:15 PM Central European Summer Time'
-{% /output %}
 
 ### Date and time together
 
@@ -81,11 +62,8 @@ format.dateTime(new Date(), {
   dateStyle: 'medium',
   timeStyle: 'short'
 });
+// output: en-US: 'Jun 17, 2026, 4:30 PM'
 ```
-
-{% output %}
-en-US: 'Jun 17, 2026, 4:30 PM'
-{% /output %}
 
 ### Finer control with field options
 
@@ -100,11 +78,8 @@ format.dateTime(new Date(), {
   month: '2-digit',
   year: 'numeric'
 });
+// output: en-US: '06/17/2026, 16:30'
 ```
-
-{% output %}
-en-US: '06/17/2026, 16:30'
-{% /output %}
 
 Any option from [`Intl.DateTimeFormatOptions`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#parameters) works (minus `localeMatcher`, which yapyak manages). `timeZone`, `weekday`, `era`, `dayPeriod`, fractional seconds — they all pass through.
 
@@ -114,21 +89,17 @@ Any option from [`Intl.DateTimeFormatOptions`](https://developer.mozilla.org/en-
 
 ```ts
 format.relativeTime(-1, 'day');
+// output:
+// en-US: '1 day ago'
+// sv-SE: 'för 1 dag sedan'
 ```
-
-{% output %}
-en-US: '1 day ago'
-sv-SE: 'för 1 dag sedan'
-{% /output %}
 
 ```ts
 format.relativeTime(3, 'hour');
+// output:
+// en-US: 'in 3 hours'
+// sv-SE: 'om 3 timmar'
 ```
-
-{% output %}
-en-US: 'in 3 hours'
-sv-SE: 'om 3 timmar'
-{% /output %}
 
 ### Auto-replace common values with words
 
@@ -136,28 +107,20 @@ sv-SE: 'om 3 timmar'
 
 ```ts
 format.relativeTime(-1, 'day', { numeric: 'auto' });
+// output:
+// en-US: 'yesterday'
+// sv-SE: 'igår'
 ```
-
-{% output %}
-en-US: 'yesterday'
-sv-SE: 'igår'
-{% /output %}
 
 ```ts
 format.relativeTime(0, 'day', { numeric: 'auto' });
+// output: en-US: 'today'
 ```
-
-{% output %}
-en-US: 'today'
-{% /output %}
 
 ```ts
 format.relativeTime(1, 'day', { numeric: 'auto' });
+// output: en-US: 'tomorrow'
 ```
-
-{% output %}
-en-US: 'tomorrow'
-{% /output %}
 
 For offsets the locale doesn't have a special word for, `numeric: 'auto'` falls back to the numeric phrase.
 

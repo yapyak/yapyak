@@ -212,10 +212,29 @@ function toBlocks(node: unknown): Block[] {
           type: 'table-cell',
         },
       ];
-    case 'CodeBlock':
+    case 'CodeBlock': {
+      const codeBlock = buildCodeBlock(node.attributes);
+      const diagnostics = tryBuildDiagnosticsFromCode(
+        codeBlock.source,
+        codeBlock.language ?? '',
+      );
+      if (diagnostics !== null) {
+        return [
+          diagnostics,
+        ];
+      }
+      const outputs = tryBuildExampleOutputsFromCode(
+        codeBlock.source,
+        codeBlock.language ?? '',
+        codeBlock.path,
+      );
+      if (outputs !== null) {
+        return outputs;
+      }
       return [
-        buildCodeBlock(node.attributes),
+        codeBlock,
       ];
+    }
     case 'Switch': {
       const group = getStringAttribute(node.attributes.group) ?? '';
       const branches: Record<string, Block[]> = {};
@@ -258,10 +277,6 @@ function toBlocks(node: unknown): Block[] {
     case 'Callout':
       return [
         buildCallout(node.attributes, children),
-      ];
-    case 'Output':
-      return [
-        buildOutput(node.attributes),
       ];
     case 'Diagnostics':
       return [
@@ -458,20 +473,20 @@ export function tryBuildDiagnosticsFromCode(
 }
 
 const LOCALE_PREFIX_RX = /^([a-z]{2,3}(?:-[A-Za-z0-9]+){0,3}):[ \t]+(.+)$/;
+const OUTPUT_MARKER_RX = /^(.*?)\s*\/\/\s*output:[ \t]?(.*)$/;
+const OUTPUT_CONTINUATION_RX = /^\s*\/\/[ \t]?(.*)$/;
 
-function buildOutput(attributes: Record<string, unknown>): OutputBlock {
-  const content = getStringAttribute(attributes.content) ?? '';
+function buildOutputBlock(rawLines: string[]): OutputBlock {
   const lines: OutputLine[] = [];
-  for (const raw of content.split('\n')) {
-    const trimmed = raw.trim();
-    if (trimmed.length === 0) {
+  for (const raw of rawLines) {
+    if (raw.trim().length === 0) {
       continue;
     }
-    const match = trimmed.match(LOCALE_PREFIX_RX);
+    const match = raw.trim().match(LOCALE_PREFIX_RX);
     if (match?.[1] === undefined || match[2] === undefined) {
       lines.push({
         locale: null,
-        value: trimmed,
+        value: raw.trimEnd(),
       });
       continue;
     }
@@ -484,6 +499,94 @@ function buildOutput(attributes: Record<string, unknown>): OutputBlock {
     lines,
     type: 'output',
   };
+}
+
+export function tryBuildExampleOutputsFromCode(
+  content: string,
+  language: string,
+  path: string | null,
+): Block[] | null {
+  const rawLines = content.split('\n');
+  const hasOutput = rawLines.some((line) => OUTPUT_MARKER_RX.test(line));
+  if (!hasOutput) {
+    return null;
+  }
+  type Segment = {
+    kind: 'code' | 'output';
+    lines: string[];
+  };
+  const segments: Segment[] = [];
+  let currentKind: 'code' | 'output' = 'code';
+  let currentLines: string[] = [];
+  const flush = (): void => {
+    if (currentLines.length === 0) {
+      return;
+    }
+    segments.push({
+      kind: currentKind,
+      lines: currentLines,
+    });
+    currentLines = [];
+  };
+  for (const line of rawLines) {
+    const inlineMatch = line.match(OUTPUT_MARKER_RX);
+    if (inlineMatch !== null) {
+      const codePart = inlineMatch[1] ?? '';
+      const outputPart = inlineMatch[2] ?? '';
+      if (codePart.trim().length > 0) {
+        if (currentKind !== 'code') {
+          flush();
+          currentKind = 'code';
+        }
+        currentLines.push(codePart.trimEnd());
+        flush();
+        currentKind = 'output';
+        currentLines.push(outputPart);
+        continue;
+      }
+      if (currentKind !== 'output') {
+        flush();
+        currentKind = 'output';
+      }
+      currentLines.push(outputPart);
+      continue;
+    }
+    if (currentKind === 'output') {
+      const continuationMatch = line.match(OUTPUT_CONTINUATION_RX);
+      if (continuationMatch !== null) {
+        currentLines.push(continuationMatch[1] ?? '');
+        continue;
+      }
+      flush();
+      currentKind = 'code';
+      if (line.trim().length === 0) {
+        continue;
+      }
+      currentLines.push(line);
+      continue;
+    }
+    currentLines.push(line);
+  }
+  flush();
+  const blocks: Block[] = [];
+  for (const segment of segments) {
+    if (segment.kind === 'output') {
+      blocks.push(buildOutputBlock(segment.lines));
+      continue;
+    }
+    const source = segment.lines.join('\n').replace(/^\n+|\n+$/g, '');
+    if (source.length === 0) {
+      continue;
+    }
+    blocks.push({
+      label: null,
+      language,
+      path,
+      source,
+      type: 'code-block',
+    });
+  }
+  return blocks;
 }
 
 type RawMarkdocNode = {
@@ -681,15 +784,6 @@ const callout: Schema = {
   render: 'Callout',
 };
 
-const output: Schema = {
-  transform(node) {
-    const text = extractRawText(node as RawMarkdocNode);
-    return new Markdoc.Tag('Output', {
-      content: text,
-    });
-  },
-};
-
 const diagnostics: Schema = {
   attributes: {
     language: {
@@ -761,7 +855,6 @@ const markdocConfig: Config = {
     callout,
     diagnostics,
     only: onlyTag,
-    output,
     picker: pickerTag,
     switch: switchTag,
     when: whenTag,

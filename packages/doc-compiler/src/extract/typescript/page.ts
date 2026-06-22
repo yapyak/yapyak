@@ -30,7 +30,11 @@ import type {
 import { nullify } from '../../nullify';
 import { slugify } from '../../slugify';
 import { buildSymbolHref } from '../../symbol-path';
-import { parseMarkdown, tryBuildDiagnosticsFromCode } from '../markdown';
+import {
+  parseMarkdown,
+  tryBuildDiagnosticsFromCode,
+  tryBuildExampleOutputsFromCode,
+} from '../markdown';
 import { classifyMemberDisplayKind } from './classify';
 import { SYMBOL_HREF_PREFIX } from './jsdoc';
 import { expandModuleEntries, formatSymbolLabel } from './module-entry';
@@ -1456,6 +1460,15 @@ function buildExampleBlocks(example: ReferenceExample): Block[] {
   );
   if (diagnostics !== null) {
     result.push(diagnostics);
+    return result;
+  }
+  const outputs = tryBuildExampleOutputsFromCode(
+    example.code,
+    example.language,
+    example.path,
+  );
+  if (outputs !== null) {
+    result.push(...outputs);
     return result;
   }
   result.push({

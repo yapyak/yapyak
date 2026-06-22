@@ -215,18 +215,21 @@ describe('parseMarkdown', () => {
     });
   });
 
-  it('parses an `output` tag with locale prefix to a labelled `output` line', () => {
-    const source = '{% output %}\nen: Hello\nsv: Hej\n{% /output %}';
+  it('extracts a single `// output:` line into a code + output block pair', () => {
+    const source = "```ts\nt('Save'); // output: 'Spara'\n```";
     expect(parseMarkdown(source).blocks).toEqual([
+      {
+        label: null,
+        language: 'ts',
+        path: null,
+        source: "t('Save');",
+        type: 'code-block',
+      },
       {
         lines: [
           {
-            locale: 'en',
-            value: 'Hello',
-          },
-          {
-            locale: 'sv',
-            value: 'Hej',
+            locale: null,
+            value: "'Spara'",
           },
         ],
         type: 'output',
@@ -234,14 +237,89 @@ describe('parseMarkdown', () => {
     ]);
   });
 
-  it('parses an `output` tag without locale prefix to a `null`-locale line', () => {
-    const source = '{% output %}\nHello\n{% /output %}';
+  it('extracts a bare `// output:` header followed by locale-prefixed continuation lines', () => {
+    const source = [
+      '```ts',
+      "format.number(199, { style: 'currency', currency: 'EUR' });",
+      '// output:',
+      "// en-US: '€199.00'",
+      "// sv-SE: '199,00 €'",
+      '```',
+    ].join('\n');
     expect(parseMarkdown(source).blocks).toEqual([
+      {
+        label: null,
+        language: 'ts',
+        path: null,
+        source: "format.number(199, { style: 'currency', currency: 'EUR' });",
+        type: 'code-block',
+      },
+      {
+        lines: [
+          {
+            locale: 'en-US',
+            value: "'€199.00'",
+          },
+          {
+            locale: 'sv-SE',
+            value: "'199,00 €'",
+          },
+        ],
+        type: 'output',
+      },
+    ]);
+  });
+
+  it('extracts consecutive `// output:` lines with locale prefix into a single output block', () => {
+    const source = "```ts\nt('Save');\n// output: en: 'Save'\n// output: sv: 'Spara'\n```";
+    expect(parseMarkdown(source).blocks).toEqual([
+      {
+        label: null,
+        language: 'ts',
+        path: null,
+        source: "t('Save');",
+        type: 'code-block',
+      },
+      {
+        lines: [
+          {
+            locale: 'en',
+            value: "'Save'",
+          },
+          {
+            locale: 'sv',
+            value: "'Spara'",
+          },
+        ],
+        type: 'output',
+      },
+    ]);
+  });
+
+  it('extracts a multi-line `// output:` continuation with preserved indentation', () => {
+    const source =
+      '```ts\nparseRichText(t(\'Hello\'));\n// output: [\n//   { type: \'text\', text: \'Hello\' },\n// ]\n```';
+    expect(parseMarkdown(source).blocks).toEqual([
+      {
+        label: null,
+        language: 'ts',
+        path: null,
+        source: "parseRichText(t('Hello'));",
+        type: 'code-block',
+      },
       {
         lines: [
           {
             locale: null,
-            value: 'Hello',
+            value: '[',
+          },
+          {
+            locale: null,
+            value: "  { type: 'text', text: 'Hello' },",
+          },
+          {
+            locale: null,
+            value: ']',
           },
         ],
         type: 'output',

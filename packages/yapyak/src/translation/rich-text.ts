@@ -29,7 +29,7 @@ export type RichTextNode =
  * import { parseRichText, t } from 'yapyak';
  *
  * parseRichText(t('Click <link>here</link>.'));
- * // => [
+ * // output: [
  * //   { type: 'text', text: 'Click ' },
  * //   { type: 'tag', name: 'link', children: [{ type: 'text', text: 'here' }] },
  * //   { type: 'text', text: '.' },
@@ -41,7 +41,7 @@ export type RichTextNode =
  * import { parseRichText } from 'yapyak';
  *
  * parseRichText('First<br/>Second');
- * // => [
+ * // output: [
  * //   { type: 'text', text: 'First' },
  * //   { type: 'void', name: 'br' },
  * //   { type: 'text', text: 'Second' },
@@ -63,7 +63,7 @@ export type RichTextNode =
  * }
  *
  * toPlain(parseRichText('Click <link>here</link>.'));
- * // => 'Click here.'
+ * // output: 'Click here.'
  * ```
  */
 export function parseRichText(source: string): RichTextNode[] {
