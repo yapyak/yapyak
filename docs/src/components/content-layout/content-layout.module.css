@@ -6,7 +6,7 @@
     place-self: center;
     width: 100%;
     max-width: 1024px;
-    padding: var(--spacing-6) var(--spacing-6) 0;
+    padding: 0 var(--spacing-6);
 
     .Backdrop {
       display: none;

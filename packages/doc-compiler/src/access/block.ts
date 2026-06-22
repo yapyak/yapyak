@@ -61,6 +61,7 @@ export type ImageBlock = {
 export type ListBlock = {
   children: ListItemBlock[];
   ordered: boolean;
+  size?: 'lg' | 'md' | 'sm';
   type: 'list';
 };
 

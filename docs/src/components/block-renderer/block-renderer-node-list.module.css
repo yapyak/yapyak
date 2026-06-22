@@ -22,5 +22,17 @@
     & li::marker {
       color: var(--foreground-softer);
     }
+
+    &[data-size="sm"] {
+      font-size: var(--font-size-sm);
+    }
+
+    &[data-size="md"] {
+      font-size: var(--font-size-md);
+    }
+
+    &[data-size="lg"] {
+      font-size: var(--font-size-lg);
+    }
   }
 }

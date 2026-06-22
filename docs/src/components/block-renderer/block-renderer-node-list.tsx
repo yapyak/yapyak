@@ -15,6 +15,7 @@ export function BlockRendererNodeList(props: BlockRendererNodeListProps) {
     <Box
       as={block.ordered ? 'ol' : 'ul'}
       className={styles.BlockRendererNodeList}
+      data-size={block.size}
     >
       {block.children.map((child, index) => (
         <BlockRendererNode

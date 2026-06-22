@@ -1558,6 +1558,7 @@ function buildSeeAlsoList(entries: string[]): Block {
       type: 'list-item',
     })),
     ordered: false,
+    size: 'sm',
     type: 'list',
   };
 }
@@ -1647,7 +1648,7 @@ function buildAutoSeeAlsoLinks(
     autoEntries.push(
       formatNavLinkAsMarkdown({
         href: entry.href,
-        label: name,
+        label: entry.callable ? `${name}()` : name,
       }),
     );
   }
@@ -1778,12 +1779,13 @@ function resolveSeeAlsoEntry(entry: string): Block[] {
     currentSourceModuleId,
   );
   if (resolved !== undefined) {
+    const label = resolved.callable ? `${entry}()` : entry;
     return [
       {
         children: [
           {
             type: 'text',
-            value: entry,
+            value: label,
           },
         ],
         href: resolved.href,

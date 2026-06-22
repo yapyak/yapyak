@@ -475,7 +475,10 @@ async function buildTypeScriptCollection(
             .filter((other) => other.name !== member.name)
             .map((other) => ({
               href: `/${collectionName}/${memberPathsByName.get(other.name)}`,
-              label: `${symbol.name}.${other.name}`,
+              label:
+                other.kind === 'method'
+                  ? `${symbol.name}.${other.name}()`
+                  : `${symbol.name}.${other.name}`,
             }));
           const subInput = {
             href: `/${collectionName}/${memberPath}`,
