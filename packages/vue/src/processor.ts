@@ -37,7 +37,7 @@ let cached: typeof VueSfc | undefined;
  * import { vue } from '@yapyak/vue/processor';
  *
  * export default defineConfig({
- *   processors: [vue()],
+ *   processors: [vue()]
  * });
  * ```
  */

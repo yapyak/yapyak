@@ -177,9 +177,9 @@ const nodes = parseRichText(t('Read our <link>privacy policy</link>.'));
 [
   { text: 'Read our ', type: 'text' },
   { children: [
-    { text: 'privacy policy', type: 'text' },
+    { text: 'privacy policy', type: 'text' }
   ], name: 'link', type: 'tag' },
-  { text: '.', type: 'text' },
+  { text: '.', type: 'text' }
 ]
 ```
 

@@ -105,7 +105,7 @@ const REASONING_MODEL_RX = /^(gpt-5|o[1-9])/;
  * import { openai } from '@yapyak/openai';
  *
  * export default defineConfig({
- *   translator: openai({ apiKey: process.env.OPENAI_API_KEY! }),
+ *   translator: openai({ apiKey: process.env.OPENAI_API_KEY! })
  * });
  * ```
  *

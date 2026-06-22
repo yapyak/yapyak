@@ -44,7 +44,7 @@ Order doesn't matter — the parameter object is keyed by name, not position. A 
 ```ts
 t('You have {count} messages from {sender}', {
   count: 3,
-  sender: 'Alex',
+  sender: 'Alex'
 });
 ```
 

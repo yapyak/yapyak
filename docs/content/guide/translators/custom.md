@@ -16,11 +16,11 @@ const myTranslator = createTranslator({
     const response = await fetch('https://my-translation.internal/translate', {
       body: JSON.stringify({ items, sourceLocale, targetLocales }),
       method: 'POST',
-      signal,
+      signal
     });
     const data = await response.json();
     return data.translations;
-  },
+  }
 });
 ```
 
@@ -66,11 +66,11 @@ Return an array of objects, one per item, each keyed by the target locales:
 [
   {
     de: 'Speichern',
-    sv: 'Spara',
+    sv: 'Spara'
   },     // for items[0]
   {
     de: 'Abbrechen',
-    sv: 'Avbryt',
+    sv: 'Avbryt'
   },    // for items[1]
 ]
 ```
@@ -87,7 +87,7 @@ const myTranslator = createTranslator({
   concurrency: 3,
   context: 'rich',
   async translate({ items, signal, sourceLocale, targetLocales }) { // … },
-  id: 'my-translator',
+  id: 'my-translator'
 });
 ```
 
@@ -111,16 +111,16 @@ import { createTranslator } from 'yapyak/translator';
 const rules: Record<string, Record<string, string>> = {
   'Cancel': {
     sv: 'Avbryt',
-    de: 'Abbrechen',
+    de: 'Abbrechen'
   },
   'Save': {
     sv: 'Spara',
-    de: 'Speichern',
+    de: 'Speichern'
   },
   'Settings': {
     sv: 'Inställningar',
-    de: 'Einstellungen',
-  },
+    de: 'Einstellungen'
+  }
 };
 
 const myTranslator = createTranslator({
@@ -131,7 +131,7 @@ const myTranslator = createTranslator({
       for (const locale of targetLocales) { result[locale] = rules[item.source]?.[locale] ?? item.source; }
       return result;
     });
-  },
+  }
 });
 ```
 
@@ -153,14 +153,14 @@ const gpt = openai({ apiKey: process.env.OPENAI_API_KEY });
 const ROUTE = {
   default: gpt,
   ja: claude,
-  zh: claude,
+  zh: claude
 };
 
 const myTranslator = createTranslator({
   id: 'routed',
   async translate(request) {
     const byProvider = new Map<typeof claude | typeof gpt, typeof request.items>();
-  },
+  }
 });
 ```
 
@@ -177,7 +177,7 @@ async translate({ items, signal }) {
   const response = await fetch(url, {
     body,
     method: 'POST',
-    signal,
+    signal
   });
   // …
 }
@@ -195,7 +195,7 @@ import {
   TranslatorRateLimitError,
   TranslatorSafetyError,
   TranslatorTimeoutError,
-  TranslatorTruncatedError,
+  TranslatorTruncatedError
 } from 'yapyak/translator';
 
 async translate({ items, signal }) {
@@ -207,7 +207,7 @@ async translate({ items, signal }) {
     const retryAfter = Number(response.headers.get('retry-after')) * 1000;
     throw new TranslatorRateLimitError('Rate limited', {
       retryAfter,
-      vendor: 'my-vendor',
+      vendor: 'my-vendor'
     });
   }
   // …

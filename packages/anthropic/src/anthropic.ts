@@ -99,7 +99,7 @@ const MAX_TOKENS_PER_ITEM = 96;
  * import { anthropic } from '@yapyak/anthropic';
  *
  * export default defineConfig({
- *   translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! }),
+ *   translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
  * });
  * ```
  *

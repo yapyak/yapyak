@@ -79,7 +79,7 @@ en-US: '4:30:15 PM Central European Summer Time'
 ```ts
 format.dateTime(new Date(), {
   dateStyle: 'medium',
-  timeStyle: 'short',
+  timeStyle: 'short'
 });
 ```
 
@@ -98,7 +98,7 @@ format.dateTime(new Date(), {
   hour12: false,
   minute: '2-digit',
   month: '2-digit',
-  year: 'numeric',
+  year: 'numeric'
 });
 ```
 

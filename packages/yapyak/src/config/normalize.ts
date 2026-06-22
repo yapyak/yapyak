@@ -38,7 +38,7 @@ const DEFAULT_STORAGE_KEY = 'locale';
  * import { DEFAULT_INCLUDE, defineConfig } from 'yapyak/config';
  *
  * export default defineConfig({
- *   include: [...DEFAULT_INCLUDE, 'app'],
+ *   include: [...DEFAULT_INCLUDE, 'app']
  * });
  * ```
  */
@@ -54,7 +54,7 @@ export const DEFAULT_INCLUDE: FilterPattern = [
  * import { DEFAULT_EXCLUDE, defineConfig } from 'yapyak/config';
  *
  * export default defineConfig({
- *   exclude: [...DEFAULT_EXCLUDE, 'legacy'],
+ *   exclude: [...DEFAULT_EXCLUDE, 'legacy']
  * });
  * ```
  */

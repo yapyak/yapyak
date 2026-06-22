@@ -10,7 +10,7 @@ import { format } from 'yapyak';
 
 format.number(199, {
   currency: 'EUR',
-  style: 'currency',
+  style: 'currency'
 });
 ```
 
@@ -73,7 +73,7 @@ import type { Currency } from 'yapyak';
 function setPrice(amount: number, currency: Currency) {
   return format.number(amount, {
     style: 'currency',
-    currency,
+    currency
   });
 }
 ```
@@ -95,7 +95,7 @@ By default every `format.*` call uses the active locale. Use `format.in(locale)`
 ```ts
 format.in('sv').number(200, {
   currency: 'SEK',
-  style: 'currency',
+  style: 'currency'
 });
 ```
 

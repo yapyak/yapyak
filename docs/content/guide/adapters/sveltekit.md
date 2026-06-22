@@ -89,7 +89,7 @@ import { svelte } from '@yapyak/svelte/processor';
 
 export default defineConfig({
   persistence: 'cookie',
-  processors: [svelte()],
+  processors: [svelte()]
 });
 ```
 
@@ -128,7 +128,7 @@ export const actions: Actions = {
     const locale = data.get('locale');
     if (typeof locale === 'string') { setLocale(locale); }
     return { success: true };
-  },
+  }
 };
 ```
 

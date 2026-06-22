@@ -57,7 +57,7 @@ For prices. `style: 'currency'` requires a `currency` field with an ISO 4217 cod
 ```ts
 format.number(199, {
   currency: 'USD',
-  style: 'currency',
+  style: 'currency'
 });
 ```
 
@@ -69,7 +69,7 @@ sv-SE: '199,00 US$'
 ```ts
 format.number(199, {
   currency: 'EUR',
-  style: 'currency',
+  style: 'currency'
 });
 ```
 
@@ -81,7 +81,7 @@ fr-FR: '199,00 €'
 ```ts
 format.number(199, {
   currency: 'SEK',
-  style: 'currency',
+  style: 'currency'
 });
 ```
 
@@ -104,7 +104,7 @@ import { isCurrency, format, type Currency } from 'yapyak';
 function setPrice(amount: number, currency: Currency) {
   return format.number(amount, {
     style: 'currency',
-    currency,
+    currency
   });
 }
 
@@ -133,7 +133,7 @@ sv-SE: '42 %'
 ```ts
 format.number(0.4256, {
   maximumFractionDigits: 1,
-  style: 'percent',
+  style: 'percent'
 });
 ```
 
@@ -150,7 +150,7 @@ If your value is already in "percent units" (`42` for "forty-two percent"), divi
 ```ts
 format.number(5, {
   style: 'unit',
-  unit: 'kilometer',
+  unit: 'kilometer'
 });
 ```
 
@@ -163,7 +163,7 @@ sv-SE: '5 km'
 format.number(5, {
   style: 'unit',
   unit: 'kilometer',
-  unitDisplay: 'long',
+  unitDisplay: 'long'
 });
 ```
 
@@ -175,7 +175,7 @@ sv-SE: '5 kilometer'
 ```ts
 format.number(72, {
   style: 'unit',
-  unit: 'mile-per-hour',
+  unit: 'mile-per-hour'
 });
 ```
 

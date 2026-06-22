@@ -27,7 +27,7 @@ import { format, t } from 'yapyak';
 const features = [
   t('Pull requests'),
   t('Issues'),
-  t('Discussions'),
+  t('Discussions')
 ];
 
 format.list(features);

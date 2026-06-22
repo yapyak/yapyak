@@ -36,7 +36,7 @@ export type YapyakOptions = {
  * import { defineConfig } from 'vite';
  *
  * export default defineConfig({
- *   plugins: [yapyak()],
+ *   plugins: [yapyak()]
  * });
  * ```
  *
@@ -46,7 +46,7 @@ export type YapyakOptions = {
  * import { defineConfig } from 'vite';
  *
  * export default defineConfig({
- *   plugins: [yapyak({ fixedLocale: process.env.YAPYAK_LOCALE })],
+ *   plugins: [yapyak({ fixedLocale: process.env.YAPYAK_LOCALE })]
  * });
  * ```
  */

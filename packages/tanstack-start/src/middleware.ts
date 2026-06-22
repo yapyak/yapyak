@@ -12,7 +12,7 @@ import { withResponse } from 'yapyak/adapter';
  * import { middleware } from '@yapyak/tanstack-start';
  *
  * export const startInstance = createStart(() => ({
- *   requestMiddleware: [middleware],
+ *   requestMiddleware: [middleware]
  * }));
  * ```
  */

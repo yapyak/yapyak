@@ -85,7 +85,7 @@ exclude: [
   '**/*.{test,spec}.*',
   '**/__tests__/**',
   '**/*.{stories,gen}.{ts,tsx,js,jsx,mjs,cjs}',
-  '**/*.d.ts',
+  '**/*.d.ts'
 ],
 ```
 
@@ -103,7 +103,7 @@ Framework-specific processors that teach yapyak how to read `.vue`, `.svelte`, `
 import { react } from '@yapyak/react/processor';
 import { vue } from '@yapyak/vue/processor';
 
-processors: [react(), vue()],
+processors: [react(), vue()]
 ```
 
 If your project mixes frameworks, register all of them — each processor takes responsibility for its own file extensions. The factories live in their respective binding packages:
@@ -122,7 +122,7 @@ If your project mixes frameworks, register all of them — each processor takes 
 The React processor is the only one that takes an option — `rsc: boolean`. Turn it on for projects using React Server Components:
 
 ```ts
-processors: [react({ rsc: true })],
+processors: [react({ rsc: true })]
 ```
 
 With `rsc: true`, only files marked `'use client'` get the locale subscription hook injected. Server components still have their `t()` calls rewritten, but they read the request-bound locale from the SSR adapter instead of subscribing to a store.
@@ -214,7 +214,7 @@ With options:
 ```ts
 persistence: {
   name: 'lang',
-  type: 'cookie',
+  type: 'cookie'
 },
 ```
 
@@ -279,8 +279,8 @@ import { yapyak } from '@yapyak/vite';
 
 export default defineConfig({
   plugins: [
-    yapyak({ fixedLocale: 'sv' }),
-  ],
+    yapyak({ fixedLocale: 'sv' })
+  ]
 });
 ```
 

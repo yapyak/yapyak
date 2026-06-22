@@ -32,7 +32,7 @@ import { defineConfig } from 'yapyak/config';
 import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
-  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),
+  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 });
 ```
 
@@ -44,14 +44,14 @@ translator: anthropic({
   glossary: {
     Cart: {
       sv: 'Korg',
-      de: 'Warenkorb',
+      de: 'Warenkorb'
     },
     Checkout: {
       sv: 'Kassa',
-      de: 'Kasse',
-    },
+      de: 'Kasse'
+    }
   },
-  voice: 'Concise and friendly',
+  voice: 'Concise and friendly'
 }),
 ```
 
@@ -82,7 +82,7 @@ The default `'claude-sonnet-4-6'` is the recommended Sonnet for general translat
 ```ts
 translator: anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
-  model: 'claude-opus-4-8',
+  model: 'claude-opus-4-8'
 }),
 ```
 

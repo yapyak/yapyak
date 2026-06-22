@@ -47,7 +47,7 @@ In v7 (7.9+), middleware is opt-in. Turn it on in `react-router.config.ts`:
 import type { Config } from '@react-router/dev/config';
 
 export default {
-  future: { v8_middleware: true },
+  future: { v8_middleware: true }
 } satisfies Config;
 ```
 
@@ -76,7 +76,7 @@ import { middleware as authMiddleware } from './auth';
 
 export const middleware: Route.MiddlewareFunction[] = [
   yapyakMiddleware,
-  authMiddleware,
+  authMiddleware
 ];
 ```
 
@@ -113,7 +113,7 @@ import { react } from '@yapyak/react/processor';
 export default defineConfig({
   include: ['app'],
   persistence: 'cookie',
-  processors: [react()],
+  processors: [react()]
 });
 ```
 
@@ -153,7 +153,7 @@ import { react } from '@yapyak/react/processor';
 export default defineConfig({
   include: ['app'],
   persistence: 'cookie',
-  processors: [react({ rsc: true })],
+  processors: [react({ rsc: true })]
 });
 ```
 
@@ -166,7 +166,7 @@ import { yapyak } from '@yapyak/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  plugins: [reactRouterRSC(), rsc(), yapyak()],
+  plugins: [reactRouterRSC(), rsc(), yapyak()]
 });
 ```
 

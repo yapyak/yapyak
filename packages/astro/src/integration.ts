@@ -11,7 +11,7 @@ import { yapyak as yapyakVite } from '@yapyak/vite';
  * import { defineConfig } from 'astro/config';
  *
  * export default defineConfig({
- *   integrations: [yapyak()],
+ *   integrations: [yapyak()]
  * });
  * ```
  *
@@ -21,7 +21,7 @@ import { yapyak as yapyakVite } from '@yapyak/vite';
  * import { defineConfig } from 'yapyak/config';
  *
  * export default defineConfig({
- *   processors: [astro()],
+ *   processors: [astro()]
  * });
  * ```
  */

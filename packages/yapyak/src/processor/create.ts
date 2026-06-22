@@ -33,7 +33,7 @@ export type CreateProcessorInput = {
  * export const myProcessor = createProcessor({
  *   id: 'my-framework',
  *   extensions: ['.mfx'],
- *   runtime: { module: '@my-framework/binding/internal' },
+ *   runtime: { module: '@my-framework/binding/internal' }
  * });
  * ```
  *

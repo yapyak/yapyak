@@ -96,7 +96,7 @@ const MAX_TOKENS_PER_ITEM = 96;
  * import { ollama } from '@yapyak/ollama';
  *
  * export default defineConfig({
- *   translator: ollama({ model: 'llama3.1' }),
+ *   translator: ollama({ model: 'llama3.1' })
  * });
  * ```
  */

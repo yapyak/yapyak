@@ -47,7 +47,7 @@ No `apiKey`. To override the default model or pass a voice:
 ```ts
 translator: ollama({
   model: 'qwen2.5',
-  voice: 'Concise and friendly',
+  voice: 'Concise and friendly'
 }),
 ```
 
@@ -90,7 +90,7 @@ You can point at a remote Ollama instance — useful for a shared internal serve
 translator: ollama({
   endpoint: 'http://ollama-server.internal:11434/api/generate',
   model: 'qwen2.5:14b',
-  timeout: 300_000,
+  timeout: 300_000
 }),
 ```
 
@@ -102,8 +102,8 @@ If the remote Ollama is behind a proxy that needs auth, use the `headers` option
 translator: ollama({
   endpoint: 'https://ollama-gateway.example.com/api/generate',
   headers: {
-    Authorization: `Bearer ${process.env.GATEWAY_TOKEN}`,
-  },
+    Authorization: `Bearer ${process.env.GATEWAY_TOKEN}`
+  }
 }),
 ```
 

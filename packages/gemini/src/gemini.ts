@@ -99,7 +99,7 @@ const MAX_TOKENS_PER_ITEM = 96;
  * import { gemini } from '@yapyak/gemini';
  *
  * export default defineConfig({
- *   translator: gemini({ apiKey: process.env.GEMINI_API_KEY! }),
+ *   translator: gemini({ apiKey: process.env.GEMINI_API_KEY! })
  * });
  * ```
  *

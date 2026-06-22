@@ -86,7 +86,7 @@ A plural branch is a full message in its own right. You can nest more placeholde
 ```ts
 t('{count, plural, one {# message from {sender}} other {# messages from {sender}}}', {
   count: 3,
-  sender: 'Ada',
+  sender: 'Ada'
 });
 ```
 

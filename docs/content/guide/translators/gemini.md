@@ -32,7 +32,7 @@ import { defineConfig } from 'yapyak/config';
 import { gemini } from '@yapyak/gemini';
 
 export default defineConfig({
-  translator: gemini({ apiKey: process.env.GEMINI_API_KEY }),
+  translator: gemini({ apiKey: process.env.GEMINI_API_KEY })
 });
 ```
 
@@ -44,11 +44,11 @@ translator: gemini({
   glossary: {
     Cart: {
       sv: 'Korg',
-      de: 'Warenkorb',
-    },
+      de: 'Warenkorb'
+    }
   },
   model: 'gemini-2.5-flash',
-  voice: 'Concise and friendly',
+  voice: 'Concise and friendly'
 }),
 ```
 
@@ -78,7 +78,7 @@ The default `'gemini-2.5-flash'` is the fast, cost-effective Flash tier — well
 ```ts
 translator: gemini({
   apiKey: process.env.GEMINI_API_KEY,
-  model: 'gemini-2.5-pro',
+  model: 'gemini-2.5-pro'
 }),
 ```
 
@@ -92,7 +92,7 @@ If you're on Google Cloud and routing through Vertex AI rather than the public G
 translator: gemini({
   apiKey: process.env.VERTEX_AI_TOKEN,
   endpoint: 'https://<region>-aiplatform.googleapis.com/v1/projects/<project>/locations/<region>/publishers/google',
-  model: 'gemini-2.5-flash',
+  model: 'gemini-2.5-flash'
 }),
 ```
 

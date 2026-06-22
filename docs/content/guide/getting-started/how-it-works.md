@@ -88,14 +88,14 @@ A typical request body looks something like this:
   "examples": [
     {
       "en": "Save",
-      "sv": "Spara",
-    },
+      "sv": "Spara"
+    }
   ],
   "glossary": {
-    "cart": { "sv": "kundvagn" },
+    "cart": { "sv": "kundvagn" }
   },
   "source": "Save changes",
-  "voice": "Concise and friendly",
+  "voice": "Concise and friendly"
 }
 ```
 
@@ -147,17 +147,17 @@ compiles to:
 import {
   pick as _pick,
   literal as _literal,
-  placeholder as _placeholder,
+  placeholder as _placeholder
 } from 'yapyak/internal';
 
 const _catalog_$0 = {
   en: 'Save',
-  sv: 'Spara',
+  sv: 'Spara'
 };
 
 const _catalog_$1 = {
   en: [_literal('Hi '), _placeholder('name')],
-  sv: [_literal('Hej '), _placeholder('name')],
+  sv: [_literal('Hej '), _placeholder('name')]
 };
 
 _pick(_catalog_$0);

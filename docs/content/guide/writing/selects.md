@@ -65,7 +65,7 @@ A `select` branch is a full message. You can put placeholders, plurals, or even 
 t('{role, select, admin {Admin {name} has {count, plural, one {# alert} other {# alerts}}} other {{name} has {count, plural, one {# alert} other {# alerts}}}}', {
   count: 3,
   name: 'Ada',
-  role: 'admin',
+  role: 'admin'
 });
 ```
 

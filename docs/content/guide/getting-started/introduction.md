@@ -58,9 +58,9 @@ export default defineConfig({
     apiKey: process.env.ANTHROPIC_API_KEY,
     voice: 'Concise and friendly',
     glossary: {
-      cart: { sv: 'kundvagn' },
-    },
-  }),
+      cart: { sv: 'kundvagn' }
+    }
+  })
 });
 ```
 

@@ -10,7 +10,7 @@ import { format } from 'yapyak';
 
 format.in('sv').number(199, {
   currency: 'SEK',
-  style: 'currency',
+  style: 'currency'
 });
 ```
 

@@ -21,7 +21,7 @@ let cached: typeof SvelteCompiler | undefined;
  * import { svelte } from '@yapyak/svelte/processor';
  *
  * export default defineConfig({
- *   processors: [svelte()],
+ *   processors: [svelte()]
  * });
  * ```
  */

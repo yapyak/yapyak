@@ -86,7 +86,7 @@ import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
   persistence: 'cookie',
-  processors: [react()],
+  processors: [react()]
 });
 ```
 

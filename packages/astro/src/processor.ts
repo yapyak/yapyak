@@ -31,7 +31,7 @@ let cached: typeof AstroCompilerSync | undefined;
  * import { astro } from '@yapyak/astro/processor';
  *
  * export default defineConfig({
- *   processors: [astro()],
+ *   processors: [astro()]
  * });
  * ```
  */

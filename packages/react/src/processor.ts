@@ -28,7 +28,7 @@ export type ReactOptions = {
  * import { react } from '@yapyak/react/processor';
  *
  * export default defineConfig({
- *   processors: [react()],
+ *   processors: [react()]
  * });
  * ```
  *
@@ -38,7 +38,7 @@ export type ReactOptions = {
  * import { react } from '@yapyak/react/processor';
  *
  * export default defineConfig({
- *   processors: [react({ rsc: true })],
+ *   processors: [react({ rsc: true })]
  * });
  * ```
  */

@@ -31,7 +31,7 @@ export function withResponse(
  * import { createMiddleware } from '@tanstack/react-start';
  *
  * export const middleware = createMiddleware().server(({ next, request }) =>
- *   withResponse(request, () => next(), (result) => result.response),
+ *   withResponse(request, () => next(), (result) => result.response)
  * );
  * ```
  */

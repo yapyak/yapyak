@@ -10,7 +10,7 @@ import type { YapyakConfig } from './type';
  * import { defineConfig } from 'yapyak/config';
  *
  * export default defineConfig({
- *   persistence: 'cookie',
+ *   persistence: 'cookie'
  * });
  * ```
  */

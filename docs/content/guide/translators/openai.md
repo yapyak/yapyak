@@ -32,7 +32,7 @@ import { defineConfig } from 'yapyak/config';
 import { openai } from '@yapyak/openai';
 
 export default defineConfig({
-  translator: openai({ apiKey: process.env.OPENAI_API_KEY }),
+  translator: openai({ apiKey: process.env.OPENAI_API_KEY })
 });
 ```
 
@@ -44,11 +44,11 @@ translator: openai({
   glossary: {
     Cart: {
       sv: 'Korg',
-      de: 'Warenkorb',
-    },
+      de: 'Warenkorb'
+    }
   },
   model: 'gpt-5-mini',
-  voice: 'Concise and friendly',
+  voice: 'Concise and friendly'
 }),
 ```
 
@@ -79,7 +79,7 @@ Groq:
 openai({
   apiKey: process.env.GROQ_API_KEY,
   endpoint: 'https://api.groq.com/openai/v1/chat/completions',
-  model: 'llama-3.1-70b-versatile',
+  model: 'llama-3.1-70b-versatile'
 });
 ```
 
@@ -89,7 +89,7 @@ DeepSeek:
 openai({
   apiKey: process.env.DEEPSEEK_API_KEY,
   endpoint: 'https://api.deepseek.com/v1/chat/completions',
-  model: 'deepseek-chat',
+  model: 'deepseek-chat'
 });
 ```
 
@@ -99,7 +99,7 @@ Mistral:
 openai({
   apiKey: process.env.MISTRAL_API_KEY,
   endpoint: 'https://api.mistral.ai/v1/chat/completions',
-  model: 'mistral-large-latest',
+  model: 'mistral-large-latest'
 });
 ```
 
@@ -109,7 +109,7 @@ OpenRouter (aggregator):
 openai({
   apiKey: process.env.OPENROUTER_API_KEY,
   endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-  model: 'anthropic/claude-sonnet-4-6',
+  model: 'anthropic/claude-sonnet-4-6'
 });
 ```
 
@@ -135,7 +135,7 @@ The `seed` parameter pins the model's sampling, so the same input produces the s
 ```ts
 translator: openai({
   apiKey: process.env.OPENAI_API_KEY,
-  seed: 42,
+  seed: 42
 }),
 ```
 

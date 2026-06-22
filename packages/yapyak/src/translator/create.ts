@@ -27,11 +27,11 @@ const DEFAULT_ID = 'custom';
  *   translate: async ({ items, sourceLocale, targetLocales }) => {
  *     const response = await fetch('https://my-api.example/translate', {
  *       method: 'POST',
- *       body: JSON.stringify({ items, sourceLocale, targetLocales }),
+ *       body: JSON.stringify({ items, sourceLocale, targetLocales })
  *     });
  *     const { translations } = await response.json();
  *     return translations;
- *   },
+ *   }
  * });
  * ```
  */

@@ -29,7 +29,7 @@ Or with options:
 persistence: {
   name: 'lang',
   secure: true,
-  type: 'cookie',
+  type: 'cookie'
 },
 ```
 
@@ -57,7 +57,7 @@ Or with options:
 ```ts
 persistence: {
   key: 'lang',
-  type: 'local-storage',
+  type: 'local-storage'
 },
 ```
 
@@ -84,7 +84,7 @@ Or with a query-parameter matcher:
 ```ts
 persistence: {
   match: /[?&]lang=(?<locale>[^&]+)/,
-  type: 'url',
+  type: 'url'
 },
 ```
 

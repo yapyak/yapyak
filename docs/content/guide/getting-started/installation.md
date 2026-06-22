@@ -228,8 +228,8 @@ import { react } from '@yapyak/react/processor';
 import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
-  processors: [react()],
-  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),
+  processors: [react()]
+  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 });
 ```
 {% /when %}
@@ -241,8 +241,8 @@ import { vue } from '@yapyak/vue/processor';
 import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
-  processors: [vue()],
-  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),
+  processors: [vue()]
+  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 });
 ```
 {% /when %}
@@ -254,8 +254,8 @@ import { svelte } from '@yapyak/svelte/processor';
 import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
-  processors: [svelte()],
-  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),
+  processors: [svelte()]
+  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 });
 ```
 {% /when %}
@@ -268,8 +268,8 @@ import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
   persistence: 'url',
-  processors: [astro()],
-  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),
+  processors: [astro()]
+  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 });
 ```
 {% /when %}

@@ -49,7 +49,7 @@ await withResponse(
   async () => {
     return await renderToFrameworkResult(request);
   },
-  (result) => result.response,
+  (result) => result.response
 );
 ```
 
