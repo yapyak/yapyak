@@ -20,7 +20,7 @@ export type RichTextNode =
  * Parses a source string with `<tag>` markers into rich-text nodes.
  *
  * @remarks
- * Tag names must match `[A-Za-z][A-Za-z0-9]*`. Tags with attributes or no matching close marker remain in the output as literal text.
+ * Tag names must start with a letter; subsequent characters are letters or digits. Tags with attributes or no matching close marker remain in the output as literal text.
  *
  * @param source - The source string.
  *
