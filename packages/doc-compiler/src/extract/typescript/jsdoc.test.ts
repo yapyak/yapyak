@@ -70,6 +70,15 @@ describe('extractJsDoc', () => {
     ]);
   });
 
+  it('keeps the full URL when `@see` targets an external link', () => {
+    const node = parseFirstStatement(
+      '/**\n * Setting.\n * @see https://example.com/docs\n */\nexport const greeting = "Settings";',
+    );
+    expect(extractJsDoc(node).seeAlso).toEqual([
+      'https://example.com/docs',
+    ]);
+  });
+
   it('extracts `@throws` with a brace-delimited error class', () => {
     const node = parseFirstStatement(
       '/**\n * @throws {RangeError} When out of bounds.\n */\nexport function step(): void {}',

@@ -4,16 +4,16 @@ import type { Locale } from '../locale';
  * The message context.
  */
 export type MessageContext = {
-  /** The component name derived from the file path. */
+  /** The component name. */
   componentName: string;
-  /** The nearest enclosing JSX/HTML element above the call. */
+  /** The enclosing element. */
   enclosingElement: string | undefined;
-  /** The surrounding code snippet. */
+  /** The code snippet. */
   snippet: string;
 };
 
 /**
- * An example translation.
+ * The translation example.
  */
 export type TranslationExample = {
   /** The source string. */
@@ -28,18 +28,13 @@ export type TranslationExample = {
 export type TranslateRequest = {
   /** The call-site context. */
   context?: MessageContext;
-  /**
-   * The developer-supplied disambiguation context.
-   *
-   * @remarks
-   * Set via `t.as(context, source)` at the call site.
-   */
+  /** The disambiguation context. */
   disambiguation?: string;
-  /** Example translations from the project, supplied as style reference. */
+  /** The style-reference examples. */
   examples?: TranslationExample[];
-  /** The file path the source string came from. */
+  /** The file path. */
   fileId: string;
-  /** The source string to translate. */
+  /** The source string. */
   source: string;
   /** The source locale. */
   sourceLocale: Locale;
@@ -65,7 +60,7 @@ export type Translator = {
     options?: TranslateBatchOptions,
   ): Promise<string[]>;
   /**
-   * The resolved context level.
+   * The call-site context level.
    */
   context?: ContextLevel;
   /**
@@ -114,22 +109,22 @@ export type ContextLevel = 'none' | 'minimal' | 'rich';
 
 /** An item in a translate batch. */
 export type TranslateItem = {
-  /** The component name derived from the file path. */
+  /** The component name. */
   component?: string;
-  /** The developer-supplied disambiguation context. Set via `t.as(context, source)` at the call site. */
+  /** The disambiguation context. */
   disambiguation?: string;
-  /** The nearest enclosing JSX/HTML element. */
+  /** The enclosing element. */
   element?: string;
-  /** Example translations from the project, supplied as style reference. */
+  /** The style-reference examples. */
   examples?: TranslationExample[];
-  /** The surrounding code snippet (only with `context: 'rich'`). */
+  /** The code snippet. */
   snippet?: string;
-  /** The source string to translate. */
+  /** The source string. */
   source: string;
 };
 
 /**
- * The translations for one input item, keyed by target locale.
+ * The locale translations. Holds one translated string per target locale.
  */
 export type LocaleTranslations = Record<string, string>;
 

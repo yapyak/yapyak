@@ -28,7 +28,7 @@ export type YapyakOptions = {
  * @remarks
  * Configuration is read from `yapyak.config.{ts,mts,mjs,js}` in the project root.
  *
- * @param options - The plugin options.
+ * @param options - The options.
  *
  * @example
  * ```ts [vite.config.ts]

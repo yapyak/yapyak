@@ -23,7 +23,7 @@ export type ReactOptions = {
  * @remarks
  * Handles `.tsx` and `.jsx` files.
  *
- * @param options - The processor options.
+ * @param options - The options.
  *
  * @example
  * ```ts [yapyak.config.ts]

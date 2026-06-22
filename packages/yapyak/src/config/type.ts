@@ -11,13 +11,13 @@ export type {
   UrlPersistenceOptions,
 } from '../persistence';
 
-/** Glob pattern for include/exclude filtering. */
+/** The filter pattern. */
 export type FilterPattern = string | RegExp | (string | RegExp)[];
 
 /** Configuration for yapyak. */
 export type YapyakConfig = {
   /**
-   * The maximum number of cumulative untranslated strings eligible for auto-translation during dev.
+   * The auto-translate threshold for untranslated strings during dev.
    *
    * @remarks
    * `0` disables auto-translation.
@@ -38,7 +38,7 @@ export type YapyakConfig = {
    */
   detectAcceptLanguage?: boolean;
   /**
-   * The maximum number of prior translations passed to the translator as style reference per request.
+   * The maximum style-reference examples per request.
    *
    * @remarks
    * `0` disables the feature.
@@ -97,6 +97,6 @@ export type YapyakConfig = {
    * @defaultValue `false`
    */
   syncHtmlLang?: boolean;
-  /** The translator used to fill missing entries. Stubs stay empty without one. */
+  /** The translator. */
   translator?: Translator;
 };

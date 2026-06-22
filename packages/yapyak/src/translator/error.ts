@@ -21,6 +21,7 @@ import { parseRetryAfterMs } from './fetch';
  * ```
  */
 export class TranslatorError extends Error {
+  /** The translator vendor id. */
   vendor: string;
 
   constructor(
@@ -47,6 +48,7 @@ export class TranslatorError extends Error {
  * Thrown when the translator API returned HTTP 429.
  */
 export class TranslatorRateLimitError extends TranslatorError {
+  /** The suggested wait in milliseconds. */
   retryAfter: number | undefined;
 
   constructor(
@@ -143,6 +145,7 @@ export class TranslatorSafetyError extends TranslatorError {
  * Thrown when the translator API returned a non-retryable HTTP error or the fetch layer failed.
  */
 export class TranslatorNetworkError extends TranslatorError {
+  /** The HTTP status code. */
   status: number | undefined;
 
   constructor(
@@ -159,12 +162,6 @@ export class TranslatorNetworkError extends TranslatorError {
   }
 }
 
-/**
- * Converts a non-OK `Response` into a `TranslatorError`.
- *
- * @param response - The non-OK HTTP response.
- * @param vendor - The translator vendor id.
- */
 export async function responseToError(
   response: Response,
   vendor: string,
@@ -193,12 +190,6 @@ export async function responseToError(
   });
 }
 
-/**
- * Converts an error thrown by the fetch layer into a `TranslatorError`.
- *
- * @param cause - The caught error.
- * @param vendor - The translator vendor id.
- */
 export function causeToError(cause: unknown, vendor: string): TranslatorError {
   if (cause instanceof Error) {
     if (cause.name === 'AbortError' || cause.name === 'TimeoutError') {

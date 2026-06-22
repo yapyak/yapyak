@@ -55,6 +55,8 @@ export function isLocale(value: string): value is Locale {
  *   // locale: Locale
  * }
  * ```
+ *
+ * @see [BCP 47](https://datatracker.ietf.org/doc/html/bcp47)
  */
 export function parseLocale(value: string): Locale | undefined {
   if (isLocale(value)) {

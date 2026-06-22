@@ -8,7 +8,7 @@ import { resolveFormatter } from './formatter';
 /**
  * Options for {@link Format.number}.
  *
- * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat
+ * @see [Intl.NumberFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat)
  */
 export type FormatNumberOptions = Omit<
   Intl.NumberFormatOptions,
@@ -43,7 +43,7 @@ export type FormatNumberOptions = Omit<
 /**
  * Options for {@link Format.dateTime}.
  *
- * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat
+ * @see [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat)
  */
 export type FormatDateTimeOptions = Omit<
   Intl.DateTimeFormatOptions,
@@ -53,14 +53,14 @@ export type FormatDateTimeOptions = Omit<
 /**
  * Options for {@link Format.list}.
  *
- * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat/ListFormat
+ * @see [Intl.ListFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat/ListFormat)
  */
 export type FormatListOptions = Omit<Intl.ListFormatOptions, 'localeMatcher'>;
 
 /**
  * Options for {@link Format.relativeTime}.
  *
- * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/RelativeTimeFormat/RelativeTimeFormat
+ * @see [Intl.RelativeTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/RelativeTimeFormat/RelativeTimeFormat)
  */
 export type FormatRelativeTimeOptions = Omit<
   Intl.RelativeTimeFormatOptions,

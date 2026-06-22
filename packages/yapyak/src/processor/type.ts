@@ -18,7 +18,7 @@ export type Range = {
 };
 
 /**
- * Elision context for source-text portions that should be skipped when reading the surrounding code.
+ * The elision context.
  */
 export type ElisionContext = {
   attributeName?: string;
@@ -40,9 +40,9 @@ export type Fragment = {
 /**
  * Injects a `yapyak` import into framework-specific source.
  *
- * @param magicString - The {@link MagicString} instance to mutate.
- * @param source - The original source text.
- * @param importStatement - The import statement to inject.
+ * @param magicString - The `MagicString` instance.
+ * @param source - The source text.
+ * @param importStatement - The import statement.
  */
 export type ApplyImportFn = (
   magicString: MagicString,

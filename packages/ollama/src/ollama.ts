@@ -20,17 +20,17 @@ export type OllamaOptions = {
   /**
    * The maximum items per API call.
    *
-   * @defaultValue `25`
+   * @defaultValue `8`
    */
   batchSize?: number;
   /**
-   * The maximum number of API calls running in parallel.
+   * The maximum parallel API calls.
    *
    * @defaultValue `5`
    */
   concurrency?: number;
   /**
-   * How much call-site context to include.
+   * The call-site context level.
    *
    * @defaultValue `'minimal'`
    */
@@ -41,12 +41,12 @@ export type OllamaOptions = {
    * @defaultValue `'http://localhost:11434/api/generate'`
    */
   endpoint?: string;
-  /** The glossary of fixed translations, keyed by source string then locale. */
+  /** The translation glossary. */
   glossary?: Record<string, Record<string, string>>;
   /** The extra request headers. */
   headers?: Record<string, string>;
   /**
-   * The maximum retry attempts on transient failures.
+   * The maximum retry attempts.
    *
    * @defaultValue `1`
    */
@@ -71,7 +71,7 @@ export type OllamaOptions = {
    * @defaultValue `120_000`
    */
   timeout?: number;
-  /** The voice and tone guidance passed to the model. */
+  /** The voice and tone guidance. */
   voice?: string;
 };
 
@@ -88,7 +88,7 @@ const MAX_TOKENS_PER_ITEM = 96;
 /**
  * Creates an Ollama translator.
  *
- * @param options - The translator options.
+ * @param options - The options.
  *
  * @example
  * ```ts [yapyak.config.ts]

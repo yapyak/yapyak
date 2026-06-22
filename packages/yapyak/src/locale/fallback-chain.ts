@@ -14,6 +14,8 @@
  * getLocaleFallbackChain('sv-FI'); // => ['sv-FI', 'sv']
  * getLocaleFallbackChain('en'); // => ['en']
  * ```
+ *
+ * @see [BCP 47](https://datatracker.ietf.org/doc/html/bcp47)
  */
 export function getLocaleFallbackChain(locale: string): string[] {
   const chain: string[] = [

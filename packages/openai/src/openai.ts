@@ -27,13 +27,13 @@ export type OpenAIOptions = {
    */
   batchSize?: number;
   /**
-   * The maximum number of API calls running in parallel.
+   * The maximum parallel API calls.
    *
    * @defaultValue `5`
    */
   concurrency?: number;
   /**
-   * How much call-site context to include.
+   * The call-site context level.
    *
    * @defaultValue `'minimal'`
    */
@@ -44,12 +44,12 @@ export type OpenAIOptions = {
    * @defaultValue `'https://api.openai.com/v1/chat/completions'`
    */
   endpoint?: string;
-  /** The glossary of fixed translations, keyed by source string then locale. */
+  /** The translation glossary. */
   glossary?: Record<string, Record<string, string>>;
   /** The extra request headers. */
   headers?: Record<string, string>;
   /**
-   * The maximum retry attempts on transient failures.
+   * The maximum retry attempts.
    *
    * @defaultValue `2`
    */
@@ -62,9 +62,9 @@ export type OpenAIOptions = {
    * @defaultValue `'gpt-5-mini'`
    */
   model?: string;
-  /** The OpenAI organization ID. */
+  /** The organization ID. */
   organization?: string;
-  /** The deterministic seed for reproducible output. */
+  /** The deterministic seed. */
   seed?: number;
   /**
    * The sampling temperature.
@@ -78,9 +78,9 @@ export type OpenAIOptions = {
    * @defaultValue `30_000`
    */
   timeout?: number;
-  /** The stable end-user identifier forwarded to OpenAI. */
+  /** The end-user identifier. */
   user?: string;
-  /** The voice and tone guidance passed to the model. */
+  /** The voice and tone guidance. */
   voice?: string;
 };
 
@@ -97,7 +97,7 @@ const REASONING_MODEL_RX = /^(gpt-5|o[1-9])/;
 /**
  * Creates an OpenAI translator.
  *
- * @param options - The translator options.
+ * @param options - The options.
  *
  * @example
  * ```ts [yapyak.config.ts]

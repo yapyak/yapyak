@@ -231,6 +231,7 @@ Suffix-driven, matches the type suffix vocabulary from [[naming]].
 | Suffix | Formula |
 |---|---|
 | `*Options` | "Options for [function]." |
+| `*Input` | "Input for [function]." |
 | `*Config` | "Configuration for [thing]." |
 | `*Result` | "Result of [function]." |
 | `*Request` | "Request shape for [endpoint]." |
@@ -501,6 +502,7 @@ Linking is mechanical. The rendered reference page **already** links every type 
 
 - `Props for {@link Component}.`
 - `Options for {@link function}.`
+- `Input for {@link function}.`
 - `Result of {@link function}.`
 - `Request shape for {@link endpoint}.`
 - `Response shape for {@link endpoint}.`
@@ -558,32 +560,50 @@ function t<T extends string>(source: T): string;
  */
 ```
 
-#### External standard-library references — Web Platform / Intl / ECMA / DOM
+#### External standard references — MDN / ISO / RFC / Wikipedia
 
-When a public type **structurally** wraps or extends a Web Platform, Intl, ECMA, or DOM type, link to its MDN documentation via `@see <URL>`. This is the **only** context where `@see` may target an external URL instead of an in-project `{@link Symbol}`.
+When a public type **structurally** wraps or extends a Web Platform / Intl / ECMA / DOM type, or when the type's description names a specific ISO standard or RFC, link to its canonical spec via `@see <URL>`. This is the **only** context where `@see` may target an external URL instead of an in-project `{@link Symbol}`.
 
-**Mechanical trigger:** the type signature uses one of these patterns referencing a built-in (`Intl.X`, `Web.X`, `DOM.X`, `Response`, `Request`, `Headers`, ...):
+**Mechanical triggers:**
 
-- `type T = Omit<Intl.X, ...>`
-- `type T = Pick<Intl.X, ...>`
-- `type T = Intl.X & { ... }`
-- `type T extends Intl.X`
-- `interface T extends Intl.X`
+| Trigger | Canonical URL host |
+|---|---|
+| Type signature uses `Omit<Intl.X, ...>`, `Pick<Intl.X, ...>`, `Intl.X & { ... }`, `extends Intl.X` | `developer.mozilla.org` |
+| Description names an ISO standard (`ISO 4217`, `ISO 639`, `BCP 47`, ...) | `www.iso.org` |
+| Description names an RFC by number (`RFC 7231`, ...) | `datatracker.ietf.org` |
+| Description names a well-known concept best documented on Wikipedia | `en.wikipedia.org` |
 
-Using the built-in as a **parameter type** or **return type** of a method does *not* trigger the rule — the consumer is expected to know `Response`/`Request` already. Only structural wrapping triggers it.
+Using a Web built-in as a **parameter type** or **return type** of a method does *not* trigger the MDN rule — the consumer is expected to know `Response`/`Request` already. Only structural wrapping triggers it.
 
-**Format:** plain MDN URL, on its own line, **after** any in-project `@see {@link X}` blocks (in-project first, external second). Multiple external URLs each on their own line, alphabetical.
+**Format — required markdown link syntax:** `@see [Label](URL)`. The label is mandatory; the renderer does not derive labels from URLs. Each `@see` on its own line, **after** any in-project `@see {@link X}` blocks (in-project first, external second). Multiple external links each on their own line, alphabetical by label.
 
 ```ts
 /**
+ * The currency. Holds an ISO 4217 currency code.
+ *
+ * @see [ISO 4217](https://www.iso.org/iso-4217-currency-codes.html)
+ */
+export type Currency = 'AED' | ...;
+
+/**
  * Options for {@link Format.dateTime}.
  *
- * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat
+ * @see [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat)
  */
 export type FormatDateTimeOptions = Omit<Intl.DateTimeFormatOptions, 'localeMatcher'>;
 ```
 
-**URL canonical form:**
+**Canonical label per source:**
+
+| Source | Label form |
+|---|---|
+| MDN | The bare symbol or namespace path. `Intl.DateTimeFormat`, `Intl.NumberFormat`, `Response`, `URL`. |
+| ISO | `ISO NNNN`. `ISO 4217`, `ISO 639`. |
+| IETF RFC | `RFC NNNN`. `RFC 7231`. |
+| IETF BCP | `BCP NN`. `BCP 47`. |
+| Wikipedia | The page title verbatim. `Wikipedia` prefix is not used. |
+
+**MDN URL rules:**
 
 - Always `https://developer.mozilla.org/en-US/...` (canonical English path).
 - Point to the `<Type>/<Type>` constructor page (where the options table lives), not the namespace root. Example: `Intl/DateTimeFormat/DateTimeFormat`, not `Intl/DateTimeFormat`.

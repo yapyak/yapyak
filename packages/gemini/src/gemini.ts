@@ -23,33 +23,33 @@ export type GeminiOptions = {
   /**
    * The maximum items per API call.
    *
-   * @defaultValue `25`
+   * @defaultValue `15`
    */
   batchSize?: number;
   /**
-   * The maximum number of API calls running in parallel.
+   * The maximum parallel API calls.
    *
    * @defaultValue `5`
    */
   concurrency?: number;
   /**
-   * How much call-site context to include.
+   * The call-site context level.
    *
    * @defaultValue `'minimal'`
    */
   context?: ContextLevel;
   /**
-   * The API endpoint base URL.
+   * The API endpoint.
    *
    * @defaultValue `'https://generativelanguage.googleapis.com/v1beta'`
    */
   endpoint?: string;
-  /** The glossary of fixed translations, keyed by source string then locale. */
+  /** The translation glossary. */
   glossary?: Record<string, Record<string, string>>;
   /** The extra request headers. */
   headers?: Record<string, string>;
   /**
-   * The maximum retry attempts on transient failures.
+   * The maximum retry attempts.
    *
    * @defaultValue `2`
    */
@@ -74,7 +74,7 @@ export type GeminiOptions = {
    * @defaultValue `30_000`
    */
   timeout?: number;
-  /** The voice and tone guidance passed to the model. */
+  /** The voice and tone guidance. */
   voice?: string;
 };
 
@@ -91,7 +91,7 @@ const MAX_TOKENS_PER_ITEM = 96;
 /**
  * Creates a Gemini translator.
  *
- * @param options - The translator options.
+ * @param options - The options.
  *
  * @example
  * ```ts [yapyak.config.ts]

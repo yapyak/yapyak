@@ -57,10 +57,7 @@ export function extractJsDoc(node: Node): ExtractJsDocResult {
       continue;
     }
     if (name === 'see') {
-      const seeTarget = ts.isJSDocSeeTag(tag)
-        ? (tag.name?.getText() ?? '')
-        : '';
-      seeAlso.push(seeTarget === '' ? text : seeTarget);
+      seeAlso.push(parseSeeTarget(tag, text));
       continue;
     }
     if (name === 'remarks') {
@@ -91,6 +88,20 @@ export function extractJsDoc(node: Node): ExtractJsDocResult {
     tags,
     throws,
   };
+}
+
+function parseSeeTarget(tag: ts.JSDocTag, text: string): string {
+  if (!ts.isJSDocSeeTag(tag)) {
+    return text;
+  }
+  const tagName = tag.name?.getText() ?? '';
+  if (tagName === '') {
+    return text;
+  }
+  if (text.startsWith('://')) {
+    return `${tagName}${text}`;
+  }
+  return tagName;
 }
 
 function findLastJsDoc(node: Node): JSDoc | undefined {

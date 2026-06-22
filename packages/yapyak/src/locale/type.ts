@@ -18,9 +18,14 @@
 export interface Register {}
 
 /**
- * The locale. Narrows to `Register['Locale']` when augmented; falls back to `string`.
+ * The locale. Holds a BCP 47 language tag.
+ *
+ * @remarks
+ * Narrows to `Register['Locale']` when augmented; falls back to `string`.
  *
  * @shape 'en' | 'sv' | ...
+ *
+ * @see [BCP 47](https://datatracker.ietf.org/doc/html/bcp47)
  */
 export type Locale = Register extends {
   // biome-ignore lint/style/useNamingConvention: yap yap yap
