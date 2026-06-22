@@ -1,17 +1,5 @@
 /**
- * The currency. Lists the ISO 4217 codes returned by `Intl.supportedValuesOf('currency')`.
- *
- * @example
- * ```ts
- * function setPrice(amount: number, currency: Currency) {
- *   return format.number(amount, { style: 'currency', currency });
- * }
- *
- * setPrice(199, 'USD');
- * setPrice(199, 'XYZ'); // error: compile error
- *
- * const prices: Record<Currency, number> = { SEK: 199, USD: 19, EUR: 18 };
- * ```
+ * The currency. Holds an ISO 4217 currency code.
  */
 export type Currency =
   | 'AED'
@@ -192,15 +180,16 @@ function getSupportedCurrencies(): Set<string> {
 }
 
 /**
- * Type guard — narrows a `string` to {@link Currency}.
+ * Type guard for `Currency`.
  *
  * @param value - The candidate code.
  *
  * @example
  * ```ts
- * if (isCurrency(row.currency)) {
- *   format.number(row.amount, { style: 'currency', currency: row.currency });
- * }
+ * import { isCurrency } from 'yapyak';
+ *
+ * isCurrency('EUR'); // => true
+ * isCurrency('XYZ'); // => false
  * ```
  */
 export function isCurrency(value: string): value is Currency {

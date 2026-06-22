@@ -21,16 +21,16 @@ let hasWarnedSsrFallback = false;
 const persistence = buildPersistence(PERSISTENCE_CONFIG, LOCALES);
 
 /**
- * Type guard — narrows `string` to {@link Locale} when value matches a configured locale.
+ * Type guard for `Locale`.
  *
  * @param value - The candidate string.
  *
- * @example Narrow a URL parameter to Locale
+ * @example
  * ```ts
  * import { isLocale } from 'yapyak';
  *
  * if (isLocale(params.locale)) {
- *   // params.locale is now typed as Locale
+ *   // params.locale: Locale
  * }
  * ```
  */
@@ -39,26 +39,20 @@ export function isLocale(value: string): value is Locale {
 }
 
 /**
- * Parses a string into a {@link Locale}, normalizing tag casing.
- *
- * @param value - The candidate string.
- * @returns The matching configured {@link Locale}, or `undefined` when the value
- *   is not a recognized locale tag for this app.
+ * Parses a string into a locale.
  *
  * @remarks
- * Useful for trusting unknown input — URL params, cookies, HTTP headers — where
- * runtime values bypass the {@link Locale} type's compile-time guarantee. Tries
- * the input verbatim first; on miss, normalizes via {@link Intl.Locale} (BCP 47
- * canonical form) and retries. Returns `undefined` for malformed tags and for
- * well-formed tags that are not in the configured {@link locales} list.
+ * Normalizes via BCP 47 canonical form if an exact match fails.
  *
- * @example Narrow a URL parameter to Locale
+ * @param value - The candidate string.
+ *
+ * @example
  * ```ts
  * import { parseLocale } from 'yapyak';
  *
  * const locale = parseLocale(params.locale);
  * if (locale) {
- *   // locale is now typed as Locale
+ *   // locale: Locale
  * }
  * ```
  */
@@ -127,10 +121,7 @@ persistence?.subscribe?.(syncFromPersistence);
 /**
  * The current locale.
  *
- * @remarks
- * Server-side, reads from the request bound by {@link withResponse} via persistence or the `Accept-Language` header. When no request is bound (e.g. outside any host-integration middleware), falls through to the module-scope locale shared across requests — the same value {@link setLocale} writes — which can leak between concurrent requests. A `YAP0022` warning fires once on the first such fallback. Client-side, returns the locale set by {@link setLocale}.
- *
- * @example Read the current locale
+ * @example
  * ```ts
  * import { getLocale } from 'yapyak';
  *
@@ -171,20 +162,9 @@ export function getLocale(): Locale {
 /**
  * Switches the locale.
  *
- * @remarks
- * Warns and no-ops if `value` is not in {@link locales}. Behavior beyond validation depends on the configured persistence:
- *
- * - `'none'` (client) — Updates the in-memory locale and notifies subscribers.
- * - `'none'` (server) — Warns with `YAP0029` and no-ops; mutating the shared module-global locale would leak between concurrent requests.
- * - `'cookie'` (client) — Writes `document.cookie`, updates the in-memory locale, and notifies subscribers.
- * - `'cookie'` (server) — Appends a `Set-Cookie` header via the bound response writer (or warns if no writer is bound). Does not update the in-memory locale and does not notify subscribers — the cookie reaches the next request, not this one's render.
- * - `'local-storage'` (client) — Writes to `localStorage`, updates the in-memory locale, and notifies subscribers.
- * - `'local-storage'` (server) — Warns and no-ops; `localStorage` is browser-only.
- * - `'url'` (any environment) — Warns and no-ops. The URL is the source of truth — drive locale switches through router navigation.
- *
  * @param value - The locale to switch to.
  *
- * @example Switch to Swedish
+ * @example
  * ```ts
  * import { setLocale } from 'yapyak';
  *
@@ -221,12 +201,12 @@ export function setLocale(value: Locale): void {
   writeLocale(value);
 }
 
-/** The configured locales, frozen at module load from values injected by yapyak's compiler. */
+/** The configured locales. */
 export const locales: Locale[] = Object.freeze([
   ...LOCALES,
 ]) as Locale[];
 
-/** The default locale. Build-time constant. Inlined by yapyak's compiler. */
+/** The default locale. */
 export const defaultLocale: Locale = DEFAULT_LOCALE;
 
 export function subscribeLocale(fn: (locale: Locale) => void): () => void {

@@ -7,7 +7,7 @@ import type { ExtractPairTags, ExtractVoidTags } from './tag';
  * The params for a source string's placeholders.
  *
  * @remarks
- * Resolves to the placeholder names and value types read from the source literal. `never` if the source has no placeholders.
+ * Resolves to `never` when the source has no placeholders.
  *
  * @shape TParams<T extends string> = \{ [placeholder]: string | number \}
  *
@@ -27,10 +27,7 @@ type TArgs<T extends string> =
 declare const brand: unique symbol;
 
 /**
- * The return type of {@link t}.
- *
- * @remarks
- * A `string` branded with the rich-text tag names found in the source — pair tags (with content) in `TPair` and void tags (self-closing) in `TVoid` — so a `<RichText>` can require a handler per tag with the right signature. A source with no tags returns a plain `string`.
+ * Returned by {@link t}.
  *
  * @shape string
  *
@@ -53,19 +50,6 @@ export type TReturn<
       };
     };
 
-/**
- * The inline chain returned by `t.in(locale)`. Completes via `.as(context, source)`.
- *
- * @remarks
- * Has no callable signature, so it cannot be captured and used as a translator.
- *
- * @example Forced locale with disambiguation
- * ```ts
- * import { t } from 'yapyak';
- *
- * t.in('sv').as('action', 'Open');
- * ```
- */
 export type TInChain = {
   as<TContext extends string, TSource extends string>(
     context: TContext,
@@ -74,19 +58,6 @@ export type TInChain = {
   ): TReturn<ExtractPairTags<TSource>, ExtractVoidTags<TSource>>;
 };
 
-/**
- * The inline chain returned by `t.as(context)`. Completes via `.in(locale, source)`.
- *
- * @remarks
- * Has no callable signature, so it cannot be captured and used as a translator.
- *
- * @example Disambiguation with forced locale
- * ```ts
- * import { t } from 'yapyak';
- *
- * t.as('action').in('sv', 'Open');
- * ```
- */
 export type TAsChain = {
   in<T extends string>(
     locale: Locale,
@@ -97,9 +68,6 @@ export type TAsChain = {
 
 /**
  * Translates a source string for the active locale.
- *
- * @remarks
- * The type of {@link t}. Modifiers `in` and `as` are inline: they accept the source directly, or return a constrained chain that requires the other modifier to complete the call. They do not return translators and cannot be captured.
  */
 export type TFn = {
   /**
@@ -107,14 +75,12 @@ export type TFn = {
    *
    * @shape t.as<T extends string>(context: string, source: T, params?: TParams<T>): string
    *
-   * @remarks
-   * The compiler emits `YAP0018` if a source is used with both `t()` and `t.as()` in the same file.
-   *
    * @typeParam TContext - The disambiguating context literal.
    * @typeParam TSource - The source string literal.
+   *
    * @param context - {@shape string} The disambiguating context.
-   * @param source - {@shape T} The source string literal, supplied to translate inline.
-   * @param params - {@shape TParams<T>} Object with placeholder values. Required when the source has placeholders.
+   * @param source - {@shape T} The source string literal.
+   * @param params - {@shape TParams<T>} The placeholder values.
    */
   as<TContext extends string, TSource extends string>(
     context: TContext,
@@ -129,9 +95,10 @@ export type TFn = {
    * @shape t.in<T extends string>(locale: Locale, source: T, params?: TParams<T>): string
    *
    * @typeParam T - The source string literal.
-   * @param locale - {@shape Locale} The locale code, e.g. `'sv'`.
-   * @param source - {@shape T} The source string literal, supplied to translate inline.
-   * @param params - {@shape TParams<T>} Object with placeholder values. Required when the source has placeholders.
+   *
+   * @param locale - {@shape Locale} The locale code.
+   * @param source - {@shape T} The source string literal.
+   * @param params - {@shape TParams<T>} The placeholder values.
    */
   in<T extends string>(
     locale: Locale,
@@ -143,8 +110,9 @@ export type TFn = {
    * Translates `source` for the active locale.
    *
    * @typeParam T - The source string literal.
+   *
    * @param source - {@shape T} The source string literal.
-   * @param params - {@shape TParams<T>} Object with placeholder values. Required when the source has placeholders.
+   * @param params - {@shape TParams<T>} The placeholder values.
    */
   <T extends string>(
     source: ValidateSource<T>,
@@ -155,14 +123,12 @@ export type TFn = {
 /**
  * Translates a source string for the active locale.
  *
+ * @remarks
+ * Requires a build-tool plugin to rewrite call sites.
+ *
  * @shape t<T extends string>(source: T, params?: TParams<T>): string
  *
- * @remarks
- * Yapyak's compiler rewrites every `t()` call site at build to inline the active-locale's catalog lookup. The source argument must be a string literal — wrapping breaks extraction. Placeholders use `{name}` and their values are type-checked from the source literal. A fixed locale is pinned via `t.in(locale, source)`, and modifiers chain inline: `t.in('sv').as('action', 'Save')`.
- *
- * Every `t.*` call is a compile-time construct — the runtime form throws if it was not rewritten by the build-tool plugin. Yapyak requires the plugin to be registered; the runtime is not a fallback translator.
- *
- * @example Translate, with and without placeholders
+ * @example
  * ```ts
  * import { t } from 'yapyak';
  *
@@ -171,14 +137,14 @@ export type TFn = {
  * t('You have {count, plural, one {# item} other {# items}}', { count: 1 });
  * ```
  *
- * @example Forced locale at the call site
+ * @example Forced locale
  * ```ts
  * import { t } from 'yapyak';
  *
  * t.in('sv', 'Welcome back, {name}!', { name: 'Alex' });
  * ```
  *
- * @example Disambiguating homonyms
+ * @example Disambiguation
  * ```ts
  * import { t } from 'yapyak';
  *
@@ -186,7 +152,7 @@ export type TFn = {
  * t.as('status', 'Open');
  * ```
  *
- * @example Combining forced locale and disambiguation
+ * @example Forced locale with disambiguation
  * ```ts
  * import { t } from 'yapyak';
  *

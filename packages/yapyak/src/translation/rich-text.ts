@@ -1,5 +1,5 @@
 /**
- * The rich text node. Holds either a plain-text leaf, a tag wrapping recursively-parsed children, or a void tag carrying no children.
+ * The rich-text node.
  */
 export type RichTextNode =
   | {
@@ -17,16 +17,14 @@ export type RichTextNode =
     };
 
 /**
- * Parses a source string with `<tag>` markers into a tree of {@link RichTextNode}.
+ * Parses a source string with `<tag>` markers into rich-text nodes.
  *
  * @remarks
- * The primitive behind every framework `<RichText>` component. Use directly when building a non-framework rendering target — server-rendered HTML emails, plain-text fallbacks, custom string formats, or a renderer for a framework yapyak does not ship.
- *
- * Tag names must match `[A-Za-z][A-Za-z0-9]*`. Tags with attributes and tags whose matching close marker is missing are not parsed and remain in the surrounding text as-is. Self-closing tags parse as `void` nodes that carry no children — both `<name/>` and `<name />` (with whitespace before the slash) are accepted; tag names have no HTML semantics, so the unslashed form `<name>` is always a pair opener.
+ * Tag names must match `[A-Za-z][A-Za-z0-9]*`. Tags with attributes or no matching close marker remain in the output as literal text.
  *
  * @param source - The source string.
  *
- * @example Parse a translated string
+ * @example
  * ```ts
  * import { parseRichText, t } from 'yapyak';
  *
@@ -38,7 +36,7 @@ export type RichTextNode =
  * // ]
  * ```
  *
- * @example Parse a void tag
+ * @example Void tag
  * ```ts
  * import { parseRichText } from 'yapyak';
  *
@@ -50,7 +48,7 @@ export type RichTextNode =
  * // ]
  * ```
  *
- * @example Build a plain-text renderer
+ * @example Plain-text renderer
  * ```ts
  * import { parseRichText, type RichTextNode } from 'yapyak';
  *

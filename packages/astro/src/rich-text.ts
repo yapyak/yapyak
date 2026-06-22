@@ -7,12 +7,9 @@ import _RichText from './RichText.astro';
 export type { RichTextProps } from './RichText.astro';
 
 /**
- * Renders rich text by resolving named tags via Astro slots.
+ * Renders rich text by binding each named tag to a named slot.
  *
- * @remarks
- * Each named tag found in `value` is matched against an Astro slot of the same name. Inside the slot, place a `<RichText.Children />` marker where the matched tag's children should appear. Translator output is HTML-escaped (`&`, `<`, `>`, `"`, `'`), safe for element content and quoted attribute values. Slot content itself is developer-authored — quote your attributes, as with React, Vue, and Lit.
- *
- * @example Render a translated string with a link tag
+ * @example
  * ```astro
  * ---
  * import { RichText } from '@yapyak/astro';
@@ -26,10 +23,7 @@ export type { RichTextProps } from './RichText.astro';
  */
 export const RichText: typeof _RichText & {
   /**
-   * Marker for "render the matched tag's children here" inside a {@link RichText} named slot.
-   *
-   * @remarks
-   * Has no props. Place exactly where the children should appear within the slot's element tree.
+   * Marker for the matched tag's children inside a named slot.
    */
   // biome-ignore lint/style/useNamingConvention: yap yap yap
   Children: typeof _Children;
@@ -37,28 +31,11 @@ export const RichText: typeof _RichText & {
   Children: _Children,
 });
 
-/**
- * The Astro slot accessor surface used by {@link renderRichText}.
- *
- * @remarks
- * Structural match for `Astro.slots`. Lifted into its own type so the renderer can be unit-tested with a plain mock object.
- */
 export type SlotAccessor = {
   has(name: string): boolean;
   render(name: string): Promise<string>;
 };
 
-/**
- * Walks a parsed rich-text tree and produces HTML, resolving each tag against a named Astro slot.
- *
- * @remarks
- * Leaf text and unmatched tag names are HTML-escaped before they reach the output. A matched slot's pre-rendered template is inlined with every `CHILDREN_TOKEN` occurrence replaced by the rendered children of that tag occurrence; the slot template itself is treated as developer-authored HTML and emitted verbatim.
- *
- * @param nodes - The parsed rich-text tree.
- * @param slotAccessor - The Astro slot accessor (or a structural mock).
- *
- * @returns The HTML output.
- */
 export async function renderRichText(
   nodes: RichTextNode[],
   slotAccessor: SlotAccessor,

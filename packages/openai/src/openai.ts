@@ -54,12 +54,7 @@ export type OpenAIOptions = {
    * @defaultValue `2`
    */
   maxRetries?: number;
-  /**
-   * The output-token cap sent to the OpenAI API.
-   *
-   * @remarks
-   * Sent as `max_completion_tokens` for reasoning models (`gpt-5*`, `o[1-9]*`) and as `max_tokens` for chat-completion models. When omitted, the translator scales the cap to `items × targetLocales × 96` with a floor of `1024` and a ceiling of `16_000`. Set this to override the scaled default for batches that need more or less headroom.
-   */
+  /** The output-token cap. */
   maxTokens?: number;
   /**
    * The model name.
@@ -104,7 +99,7 @@ const REASONING_MODEL_RX = /^(gpt-5|o[1-9])/;
  *
  * @param options - The translator options.
  *
- * @example Configure as the translator
+ * @example
  * ```ts [yapyak.config.ts]
  * import { defineConfig } from 'yapyak/config';
  * import { openai } from '@yapyak/openai';

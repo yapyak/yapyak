@@ -6,10 +6,7 @@ import { withResponse } from 'yapyak/adapter';
 /**
  * Middleware for TanStack Start. Provides yapyak's per-request locale context.
  *
- * @remarks
- * Drains pending response headers buffered by yapyak (e.g. `Set-Cookie` from a server-side `setLocale()` call) onto the outgoing `Response`.
- *
- * @example Register in src/start.ts
+ * @example
  * ```ts [src/start.ts]
  * import { createStart } from '@tanstack/react-start';
  * import { middleware } from '@yapyak/tanstack-start';

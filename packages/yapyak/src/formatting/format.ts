@@ -7,21 +7,6 @@ import { resolveFormatter } from './formatter';
 
 /**
  * Options for {@link Format.number}.
- *
- * @remarks
- * Discriminated union over `Intl.NumberFormatOptions`'s `style`. The `currency` branch types the `currency` field as {@link Currency}.
- *
- * @shape Omit<Intl.NumberFormatOptions, 'localeMatcher'> & \{ style: 'decimal' | 'currency' | 'percent' | 'unit' \}
- *
- * @example
- * ```ts
- * format.number(1234.5, { maximumFractionDigits: 1 });
- * format.number(199, { style: 'currency', currency: 'EUR' });
- * format.number(199, { style: 'currency' }); // error: currency missing
- * format.number(0.42, { style: 'percent' });
- * format.number(45, { style: 'unit', unit: 'kilometer' });
- * format.number(45, { style: 'unit' }); // error: unit missing
- * ```
  */
 export type FormatNumberOptions = Omit<
   Intl.NumberFormatOptions,
@@ -55,16 +40,6 @@ export type FormatNumberOptions = Omit<
 
 /**
  * Options for {@link Format.dateTime}.
- *
- * @remarks
- * `Intl.DateTimeFormatOptions` minus `localeMatcher`.
- *
- * @example
- * ```ts
- * format.dateTime(new Date(), { dateStyle: 'long' });
- * format.dateTime(new Date(), { timeStyle: 'short' });
- * format.dateTime(new Date(), { dateStyle: 'medium', timeStyle: 'short' });
- * ```
  */
 export type FormatDateTimeOptions = Omit<
   Intl.DateTimeFormatOptions,
@@ -73,30 +48,11 @@ export type FormatDateTimeOptions = Omit<
 
 /**
  * Options for {@link Format.list}.
- *
- * @remarks
- * `Intl.ListFormatOptions` minus `localeMatcher`.
- *
- * @example
- * ```ts
- * format.list(['apple', 'pear', 'orange']);
- * format.list(['apple', 'pear'], { type: 'disjunction' });
- * format.list(['a', 'b', 'c'], { style: 'narrow' });
- * ```
  */
 export type FormatListOptions = Omit<Intl.ListFormatOptions, 'localeMatcher'>;
 
 /**
  * Options for {@link Format.relativeTime}.
- *
- * @remarks
- * `Intl.RelativeTimeFormatOptions` minus `localeMatcher`.
- *
- * @example
- * ```ts
- * format.relativeTime(-1, 'day');
- * format.relativeTime(-1, 'day', { numeric: 'auto' });
- * ```
  */
 export type FormatRelativeTimeOptions = Omit<
   Intl.RelativeTimeFormatOptions,
@@ -104,20 +60,19 @@ export type FormatRelativeTimeOptions = Omit<
 >;
 
 /**
- * The format. Formats values for the active locale via `Intl`.
- *
- * @remarks
- * One method per underlying `Intl.*Format` class. Scope a fixed locale with {@link Format.in}.
+ * The format. Formats values for the active locale.
  */
 export type Format = {
   /**
    * Formats a number for the active locale.
    *
-   * @remarks
-   * Handles decimal, currency, percent, and unit styles via the `style` option. When `style` is `'currency'`, the `currency` field is required and typed against ISO 4217. When `style` is `'unit'`, the `unit` field is required. A currency code unsupported by the host `Intl` does not throw — yapyak falls back to a `<value> <code>` rendering.
-   *
    * @param value - The numeric value.
-   * @param options - Number-format options. See {@link FormatNumberOptions}.
+   * @param options - The options.
+   *
+   * @example
+   * ```ts
+   * format.number(1234.5);
+   * ```
    *
    * @example Currency
    * ```ts
@@ -134,20 +89,22 @@ export type Format = {
   /**
    * Formats a date or time for the active locale.
    *
-   * @remarks
-   * Supply `dateStyle` alone, `timeStyle` alone, both for the combined form, or individual field options for finer control.
-   *
    * @param value - The date or timestamp.
-   * @param options - Date-time-format options. See {@link FormatDateTimeOptions}.
+   * @param options - The options.
    *
-   * @example Date only
+   * @example
+   * ```ts
+   * format.dateTime(new Date());
+   * ```
+   *
+   * @example Date style
    * ```ts
    * format.dateTime(new Date(), { dateStyle: 'long' });
    * ```
    *
-   * @example Time only
+   * @example Date and time combined
    * ```ts
-   * format.dateTime(new Date(), { timeStyle: 'short' });
+   * format.dateTime(new Date(), { dateStyle: 'medium', timeStyle: 'short' });
    * ```
    */
   dateTime(value: Date | number, options?: FormatDateTimeOptions): string;
@@ -155,7 +112,7 @@ export type Format = {
   /**
    * Scopes formatting to a fixed locale.
    *
-   * @param locale - The locale code, e.g. `'sv'`.
+   * @param locale - The locale code.
    *
    * @example
    * ```ts
@@ -167,23 +124,32 @@ export type Format = {
   /**
    * Formats a list of strings as an enumeration for the active locale.
    *
-   * @remarks
-   * Joins with the active locale's conventions. Use `type: 'disjunction'` for `'or'`-style joins and `type: 'unit'` for unit lists.
-   *
    * @param items - The items to join.
-   * @param options - List-format options. See {@link FormatListOptions}.
+   * @param options - The options.
+   *
+   * @example
+   * ```ts
+   * format.list(['apple', 'pear', 'orange']);
+   * ```
+   *
+   * @example Disjunction
+   * ```ts
+   * format.list(['apple', 'pear'], { type: 'disjunction' });
+   * ```
    */
   list(items: Iterable<string>, options?: FormatListOptions): string;
 
   /**
    * Formats a relative time offset for the active locale.
    *
-   * @remarks
-   * Negative values render in the past, positive in the future, per the locale's rules.
-   *
    * @param value - The signed integer offset.
-   * @param unit - The time unit, e.g. `'day'`.
-   * @param options - Relative-time-format options. See {@link FormatRelativeTimeOptions}.
+   * @param unit - The time unit.
+   * @param options - The options.
+   *
+   * @example
+   * ```ts
+   * format.relativeTime(-1, 'day');
+   * ```
    */
   relativeTime(
     value: number,
@@ -193,9 +159,9 @@ export type Format = {
 };
 
 /**
- * Locale-aware formatting backed by `Intl`.
+ * The default formatter.
  *
- * @example Active locale and a scoped locale
+ * @example
  * ```ts
  * import { format } from 'yapyak';
  *

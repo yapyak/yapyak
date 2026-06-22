@@ -8,14 +8,11 @@ import { autoRegisterTracker, autoSubscribeLocale } from 'yapyak/internal';
 /**
  * Reactive locale ref.
  *
- * @remarks
- * Auto-unwraps in templates. On the client, reads track reactivity and writes call {@link setLocale}. On the server, `track()` runs but no subscriber is registered — Vue's reactivity is wired only when `typeof window !== 'undefined'`, so reads return {@link getLocale} without a re-trigger pathway.
- *
- * @example Read and write the locale in a template
+ * @example
  * ```vue
  * <script setup>
- * import { t } from 'yapyak';
- * import { locale } from '@yapyak/vue';
+ *   import { t } from 'yapyak';
+ *   import { locale } from '@yapyak/vue';
  * </script>
  *
  * <template>

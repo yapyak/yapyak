@@ -10,34 +10,30 @@ type RichTextSlots = Record<string, SlotFn>;
 /**
  * Props for {@link RichText}.
  *
- * @typeParam T - The source string literal carrying the tag names.
+ * @typeParam T - The source string literal.
  */
 export type RichTextProps<T extends string> = {
+  /** The source string. */
   value: T;
 };
 
 /**
- * Renders rich text by resolving named tags via scoped slots.
+ * Renders rich text by binding each named tag to a named slot.
  *
- * @remarks
- * Every named tag in `value` is bound to a slot of the same name. The slot receives a `children` thunk — for pair tags it renders the resolved inner content, for void tags it returns an empty array. Void-tag slots typically ignore `children` entirely.
- *
- * @example Pair tag with rendered children
+ * @example
  * ```vue
- * <RichText :value="t('Click <link>here</link>.')">
- *   <template #link="{ children }">
- *     <a href="/docs"><component :is="children" /></a>
- *   </template>
- * </RichText>
- * ```
+ * <script setup>
+ *   import { RichText } from '@yapyak/vue';
+ *   import { t } from 'yapyak';
+ * </script>
  *
- * @example Void tag for a line break
- * ```vue
- * <RichText :value="t('Line one<br/>line two')">
- *   <template #br>
- *     <br/>
- *   </template>
- * </RichText>
+ * <template>
+ *   <RichText :value="t('Click <link>here</link>.')">
+ *     <template #link="{ children }">
+ *       <a href="/docs"><component :is="children" /></a>
+ *     </template>
+ *   </RichText>
+ * </template>
  * ```
  */
 export const RichText: FunctionalComponent<

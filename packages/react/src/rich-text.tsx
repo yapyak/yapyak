@@ -11,7 +11,7 @@ type PairHandler = (children: ReactNode) => ReactNode;
 type VoidHandler = () => ReactNode;
 
 /**
- * Props for {@link RichText}. Carries the source `value` and a handler per named tag found in it.
+ * Props for {@link RichText}.
  *
  * @shape RichTextProps<T extends string> = \{
  *   value: T,
@@ -19,13 +19,10 @@ type VoidHandler = () => ReactNode;
  *   [voidTag]: () => ReactNode,
  * \}
  *
- * @remarks
- * Pair tags (`<name>...</name>`) take a handler whose first argument is the rendered children. Void tags (`<name/>`) take a handler that receives no arguments — TypeScript rejects passing one for the other.
- *
- * @typeParam T - The source string literal. Tag names are extracted from it.
+ * @typeParam T - The source string literal.
  */
 export type RichTextProps<T extends string> = {
-  /** The source string carrying named tags. */
+  /** The source string. */
   value: T;
 } & {
   [Pair in PairsOf<T>]: PairHandler;
@@ -34,24 +31,16 @@ export type RichTextProps<T extends string> = {
 };
 
 /**
- * Renders rich text from a string with named tags into handlers supplied by the caller as props.
- *
- * @remarks
- * See {@link RichTextProps} for the prop shape.
+ * Renders rich text by binding each named tag to a handler prop.
  *
  * @example
  * ```tsx
+ * import { RichText } from '@yapyak/react';
+ * import { t } from 'yapyak';
+ *
  * <RichText
  *   value={t('Click <link>here</link>.')}
  *   link={(children) => <a href="/docs">{children}</a>}
- * />
- * ```
- *
- * @example Void tag for a line break
- * ```tsx
- * <RichText
- *   value={t('First line<br/>second line')}
- *   br={() => <br />}
  * />
  * ```
  */

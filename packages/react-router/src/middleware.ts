@@ -6,9 +6,9 @@ import { withResponse } from 'yapyak/adapter';
  * Middleware for React Router. Provides yapyak's per-request locale context.
  *
  * @remarks
- * Requires `future.v8_middleware: true` in `react-router.config.ts`. Drains pending response headers buffered by yapyak (e.g. `Set-Cookie` from a server-side `setLocale()` call) onto the outgoing `Response`.
+ * Requires `future.v8_middleware: true` in `react-router.config.ts`.
  *
- * @example Register in app/root.tsx
+ * @example
  * ```tsx [app/root.tsx]
  * import type { Route } from './+types/root';
  * import { middleware as yapyakMiddleware } from '@yapyak/react-router';

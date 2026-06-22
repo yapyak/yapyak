@@ -54,12 +54,7 @@ export type GeminiOptions = {
    * @defaultValue `2`
    */
   maxRetries?: number;
-  /**
-   * The output-token cap sent as `generationConfig.maxOutputTokens` to the Gemini API.
-   *
-   * @remarks
-   * When omitted, the translator scales the cap to `items × targetLocales × 96` with a floor of `1024` and a ceiling of `8000`. Set this to override the scaled default for batches that need more or less headroom.
-   */
+  /** The output-token cap. */
   maxTokens?: number;
   /**
    * The model name.
@@ -98,7 +93,7 @@ const MAX_TOKENS_PER_ITEM = 96;
  *
  * @param options - The translator options.
  *
- * @example Configure as the translator
+ * @example
  * ```ts [yapyak.config.ts]
  * import { defineConfig } from 'yapyak/config';
  * import { gemini } from '@yapyak/gemini';
