@@ -1,6 +1,5 @@
 export type { Patch } from './hmr-patch';
 export type { RuntimeMock } from './runtime-mock';
-export type { TReturn } from './translation';
 
 export {
   autoSubscribeDev,
