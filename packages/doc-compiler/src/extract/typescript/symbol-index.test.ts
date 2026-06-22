@@ -6,10 +6,10 @@ import { buildSymbolIndex, resolveSymbolLink } from './symbol-index';
 
 function entry(overrides: Partial<SymbolIndexEntry> = {}): SymbolIndexEntry {
   return {
-    href: '/reference/yapyak/createTranslator',
     callable: false,
-        callableMemberNames: new Set(),
-        hrefsByMemberName: new Map(),
+    callableMemberNames: new Set(),
+    href: '/reference/yapyak/createTranslator',
+    hrefsByMemberName: new Map(),
     moduleId: 'yapyak/translator',
     name: 'createTranslator',
     packageSlug: 'yapyak',

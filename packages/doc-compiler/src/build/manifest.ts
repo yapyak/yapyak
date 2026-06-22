@@ -302,9 +302,9 @@ async function buildTypeScriptCollection(
           (symbol.kind === 'variable' && variableHasCallSignature);
 
         entries.push({
-          href: symbolHref,
           callable: isCallable,
           callableMemberNames,
+          href: symbolHref,
           hrefsByMemberName,
           moduleId: module.id,
           name: symbol.name,
@@ -388,8 +388,11 @@ async function buildTypeScriptCollection(
         const variableDocumentedMethods =
           symbol.kind === 'variable'
             ? resolvedMembers.filter(
-                (member): member is typeof member & { kind: 'method' } =>
-                  member.kind === 'method' && member.description.length > 0,
+                (
+                  member,
+                ): member is typeof member & {
+                  kind: 'method';
+                } => member.kind === 'method' && member.description.length > 0,
               )
             : [];
 

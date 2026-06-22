@@ -1406,7 +1406,11 @@ function resolveSymbolLinksInBlock(block: Block): Block[] {
   if (block.type === 'link' && block.href.startsWith(SYMBOL_HREF_PREFIX)) {
     const reference = block.href.slice(SYMBOL_HREF_PREFIX.length);
     const resolvedChildren = resolveSymbolLinkBlocks(block.children);
-    const entry = resolveSymbolLink(currentIndex, reference, currentSourceModuleId);
+    const entry = resolveSymbolLink(
+      currentIndex,
+      reference,
+      currentSourceModuleId,
+    );
     if (entry === undefined) {
       return resolvedChildren;
     }
@@ -1688,13 +1692,12 @@ function walkSymbolStructure(
       return;
     case 'class':
       return;
+    default:
+      return;
   }
 }
 
-function walkOverloads(
-  overloads: ReferenceOverload[],
-  out: Set<string>,
-): void {
+function walkOverloads(overloads: ReferenceOverload[], out: Set<string>): void {
   for (const overload of overloads) {
     for (const parameter of overload.parameters) {
       walkTypeTokens(parameter.type, out);
@@ -1768,7 +1771,11 @@ function formatNavLinkAsMarkdown(link: MemberNavLink): string {
 }
 
 function resolveSeeAlsoEntry(entry: string): Block[] {
-  const resolved = resolveSymbolLink(currentIndex, entry, currentSourceModuleId);
+  const resolved = resolveSymbolLink(
+    currentIndex,
+    entry,
+    currentSourceModuleId,
+  );
   if (resolved !== undefined) {
     return [
       {

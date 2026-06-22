@@ -271,7 +271,8 @@ describe('parseMarkdown', () => {
   });
 
   it('extracts consecutive `// output:` lines with locale prefix into a single output block', () => {
-    const source = "```ts\nt('Save');\n// output: en: 'Save'\n// output: sv: 'Spara'\n```";
+    const source =
+      "```ts\nt('Save');\n// output: en: 'Save'\n// output: sv: 'Spara'\n```";
     expect(parseMarkdown(source).blocks).toEqual([
       {
         label: null,
@@ -298,7 +299,7 @@ describe('parseMarkdown', () => {
 
   it('extracts a multi-line `// output:` continuation with preserved indentation', () => {
     const source =
-      '```ts\nparseRichText(t(\'Hello\'));\n// output: [\n//   { type: \'text\', text: \'Hello\' },\n// ]\n```';
+      "```ts\nparseRichText(t('Hello'));\n// output: [\n//   { type: 'text', text: 'Hello' },\n// ]\n```";
     expect(parseMarkdown(source).blocks).toEqual([
       {
         label: null,

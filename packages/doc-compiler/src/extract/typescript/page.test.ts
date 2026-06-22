@@ -166,10 +166,10 @@ describe('buildModulePage', () => {
       href: '/reference/yapyak',
       index: buildSymbolIndex([
         {
-          href: '/reference/yapyak/createTranslator',
           callable: false,
-        callableMemberNames: new Set(),
-        hrefsByMemberName: new Map(),
+          callableMemberNames: new Set(),
+          href: '/reference/yapyak/createTranslator',
+          hrefsByMemberName: new Map(),
           moduleId: 'yapyak',
           name: 'createTranslator',
           packageSlug: 'yapyak',
@@ -442,9 +442,9 @@ describe('buildSymbolPage', () => {
   it('resolves an inline `{@link X}` reference in the description to an internal link when `X` is in the index', () => {
     const index = buildSymbolIndex([
       {
-        href: '/reference/yapyak/translator/createTranslator',
         callable: false,
         callableMemberNames: new Set(),
+        href: '/reference/yapyak/translator/createTranslator',
         hrefsByMemberName: new Map(),
         moduleId: 'yapyak/translator',
         name: 'createTranslator',
@@ -501,9 +501,9 @@ describe('buildSymbolPage', () => {
   it('resolves a `@see {@link X}` entry to an internal link when `X` is in the index', () => {
     const index = buildSymbolIndex([
       {
-        href: '/reference/yapyak/translator/createTranslator',
         callable: false,
         callableMemberNames: new Set(),
+        href: '/reference/yapyak/translator/createTranslator',
         hrefsByMemberName: new Map(),
         moduleId: 'yapyak/translator',
         name: 'createTranslator',
@@ -654,10 +654,10 @@ describe('buildMethodPage', () => {
         href: '/reference/yapyak/format.number',
         index: buildSymbolIndex([
           {
-            href: '/reference/yapyak/parseRichText',
             callable: false,
-        callableMemberNames: new Set(),
-        hrefsByMemberName: new Map(),
+            callableMemberNames: new Set(),
+            href: '/reference/yapyak/parseRichText',
+            hrefsByMemberName: new Map(),
             moduleId: 'yapyak',
             name: 'parseRichText',
             packageSlug: 'yapyak',

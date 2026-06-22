@@ -41,6 +41,27 @@ Before declaring done:
 
 Partial migrations are exceptional. If genuinely required (published API mid-release), name the in-flight state explicitly in a top-level note with planned removal version.
 
+### Verify after changes
+
+After any substantive code change (source-file edits, refactor, API change, JSDoc batch update), run the full verification gauntlet before declaring done. Mechanical, in order:
+
+```
+pnpm typecheck      # catches type errors across all packages
+pnpm test           # catches regressions
+pnpm check:write    # biome: format + auto-fix lint (writes changes)
+pnpm knip           # catches unused exports / dead deps
+pnpm build          # catches build-time errors
+```
+
+All five must pass. If `check:write` modifies files, re-run `typecheck` and `test`. If `knip` reports anything, delete the unused symbols in the same change (see Leave nothing behind).
+
+**Skip-conditions** — none of these are valid reasons to skip a step:
+- "Tests passed before my change" — they may fail after.
+- "Knip didn't complain about this file last time" — exports drift.
+- "I'll run check at the end" — running mid-batch catches issues earlier.
+
+**Exception** — purely doc-content edits (markdown guides, agents files) that touch no `.ts`/`.tsx` files skip `typecheck`, `test`, `build` since none apply. `check:write` and `knip` still run if any `package.json` or config file changed.
+
 ### Trade-offs
 
 | Do | Don't |
