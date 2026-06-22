@@ -9,11 +9,7 @@ import type {
 import type { Page } from '../../build';
 import type { SourceUrlConfig } from '../../config';
 import type { PackageContext } from './package-context';
-import type {
-  ReverseRefIndex,
-  SymbolIndex,
-  SymbolIndexEntry,
-} from './symbol-index';
+import type { SymbolIndex, SymbolIndexEntry } from './symbol-index';
 import type {
   ReferenceCallSignature,
   ReferenceExample,
@@ -48,7 +44,6 @@ import { relative, resolve } from 'node:path';
 
 let currentIndex: SymbolIndex = new Map();
 let currentLinkedNames: Set<string> = new Set();
-let currentReverseRefs: ReverseRefIndex = new Map();
 let currentSourceModuleId: string | undefined;
 
 type BuildSymbolPageInput = {
@@ -56,7 +51,6 @@ type BuildSymbolPageInput = {
   index: SymbolIndex;
   moduleId: string;
   packageDir: string;
-  reverseRefs: ReverseRefIndex;
 };
 
 type MemberNavLink = {
@@ -84,7 +78,6 @@ export function buildSymbolPage(
 ): Page {
   currentIndex = input.index;
   currentLinkedNames = new Set();
-  currentReverseRefs = input.reverseRefs;
   currentSourceModuleId = input.moduleId;
   const blocks: Block[] = [];
 
@@ -346,7 +339,6 @@ export function buildPropertyMemberPage(
 ): Page {
   currentIndex = input.index;
   currentLinkedNames = new Set();
-  currentReverseRefs = input.reverseRefs;
   currentSourceModuleId = input.moduleId;
 
   const fullName = `${parentSymbol.name}.${member.name}`;
@@ -435,7 +427,6 @@ export function buildMethodPage(
 ): Page {
   currentIndex = input.index;
   currentLinkedNames = new Set();
-  currentReverseRefs = input.reverseRefs;
   currentSourceModuleId = input.moduleId;
 
   const fullName = `${parentSymbol.name}.${member.name}`;
@@ -579,7 +570,6 @@ type BuildModulePageInput = {
   index: SymbolIndex;
   label: string;
   moduleId: string;
-  reverseRefs: ReverseRefIndex;
 };
 
 type BuildPackageIndexPageInput = {
@@ -667,7 +657,6 @@ export function buildModulePage(
 ): Page {
   currentIndex = input.index;
   currentLinkedNames = new Set();
-  currentReverseRefs = input.reverseRefs;
   currentSourceModuleId = input.moduleId;
   const blocks: Block[] = [];
 
@@ -1579,11 +1568,11 @@ function buildMemberSeeAlsoEntries(
     ...siblings.map(formatNavLinkAsMarkdown),
   ];
   const referencedLinks = buildAutoSeeAlsoLinks(referencedNames, manualEntries);
-  return [
+  return sortSeeAlsoEntries([
     ...manualEntries,
     ...navEntries,
     ...referencedLinks,
-  ];
+  ]);
 }
 
 function buildSymbolSeeAlsoEntries(
@@ -1592,26 +1581,45 @@ function buildSymbolSeeAlsoEntries(
 ): string[] {
   const manualEntries = symbol.seeAlso;
   const referencedNames = extractReferencedSymbolNames(symbol, variableMethods);
-  const backrefNames = extractBackrefNames(symbol.name);
-  const combinedNames = [
-    ...referencedNames,
-    ...backrefNames,
-  ];
-  const autoEntries = buildAutoSeeAlsoLinks(combinedNames, manualEntries);
-  return [
+  const autoEntries = buildAutoSeeAlsoLinks(referencedNames, manualEntries);
+  return sortSeeAlsoEntries([
     ...manualEntries,
     ...autoEntries,
+  ]);
+}
+
+const SEE_ALSO_LABEL_RX = /^\[([^\]]+)\]/;
+const SEE_ALSO_EXTERNAL_RX = /^\[[^\]]+\]\(https?:\/\//;
+
+function sortSeeAlsoEntries(entries: string[]): string[] {
+  const external: string[] = [];
+  const internal: string[] = [];
+  for (const entry of entries) {
+    if (SEE_ALSO_EXTERNAL_RX.test(entry.trim())) {
+      external.push(entry);
+      continue;
+    }
+    internal.push(entry);
+  }
+  const byLabel = (a: string, b: string): number =>
+    extractSeeAlsoLabel(a).localeCompare(extractSeeAlsoLabel(b), undefined, {
+      sensitivity: 'base',
+    });
+  external.sort(byLabel);
+  internal.sort(byLabel);
+  return [
+    ...external,
+    ...internal,
   ];
 }
 
-function extractBackrefNames(symbolName: string): string[] {
-  const set = currentReverseRefs.get(symbolName);
-  if (set === undefined) {
-    return [];
+function extractSeeAlsoLabel(entry: string): string {
+  const trimmed = entry.trim();
+  const match = trimmed.match(SEE_ALSO_LABEL_RX);
+  if (match?.[1] !== undefined) {
+    return match[1];
   }
-  return [
-    ...set,
-  ].sort((a, b) => a.localeCompare(b));
+  return trimmed;
 }
 
 function buildAutoSeeAlsoLinks(

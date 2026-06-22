@@ -44,6 +44,8 @@ export type TranslateRequest = {
 
 /**
  * Translates source strings into target locales.
+ *
+ * @see {@link createTranslator}
  */
 export type Translator = {
   /**

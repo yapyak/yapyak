@@ -81,6 +81,8 @@ export type Runtime = {
 
 /**
  * The processor.
+ *
+ * @see {@link createProcessor}
  */
 export type Processor = {
   /** The import-injection function. */

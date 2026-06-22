@@ -23,6 +23,10 @@ export interface Register {}
  * @shape 'en' | 'sv' | ...
  *
  * @see [BCP 47](https://datatracker.ietf.org/doc/html/bcp47)
+ * @see {@link getLocale}
+ * @see {@link isLocale}
+ * @see {@link parseLocale}
+ * @see {@link setLocale}
  */
 export type Locale = Register extends {
   // biome-ignore lint/style/useNamingConvention: yap yap yap

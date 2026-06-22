@@ -1,6 +1,7 @@
 /**
  * The currency. Holds an ISO 4217 currency code.
  *
+ * @see {@link isCurrency}
  * @see [ISO 4217](https://www.iso.org/iso-4217-currency-codes.html)
  */
 export type Currency =

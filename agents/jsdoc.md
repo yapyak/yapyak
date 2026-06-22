@@ -550,7 +550,12 @@ type RichTextProps<T extends string> = { /* ... */ };
 function t<T extends string>(source: T): string;
 ```
 
-**Multiple `@see`** — each on its own line, alphabetical order by target name.
+**Multiple `@see`** — each on its own line, grouped and sorted:
+
+1. **External links first**, alphabetically by displayed label (case-insensitive).
+2. **Internal links second**, alphabetically by displayed label (case-insensitive).
+
+An entry is external when its href is an absolute URL (`http://` or `https://`); otherwise it is internal. The two groups never interleave — every external entry precedes every internal entry, no exceptions.
 
 ```ts
 /**
@@ -584,7 +589,48 @@ function t<T extends string>(source: T): string;
 
 **Symmetry is enforced:** if A carries `@see {@link B}`, then B carries `@see {@link A}`. A one-way link is a violation.
 
-**No other internal `@see` cases.** If a relationship isn't in the peer-pair table, navigation belongs in the sidebar or in formula-slot `{@link X}` inline — not in `@see`.
+#### Internal `@see {@link X}` — target-family rule
+
+In addition to the peer-pair rule above, a **type T** carries `@see` entries for every function in the same module whose name follows a target-family prefix pattern against T.
+
+**Closed target-family table** (prefix attaches to the type's name):
+
+| Function name pattern | Relationship to T |
+|---|---|
+| `create<T>` | Factory that returns T |
+| `get<T>` | Reads the current T |
+| `set<T>` | Writes T (parameter type) |
+| `reset<T>` | Restores T to default |
+| `is<T>` | Type guard narrowing to T |
+| `parse<T>` | Parser that returns `T \| undefined` |
+
+**Mechanical algorithm (apply on every public type T):**
+
+1. For each prefix in the table, check whether `<prefix><T>` exists as a public symbol in the same module.
+2. For each match, T carries `@see {@link <prefix><T>}` — alphabetically ordered with any other `@see`.
+
+The reverse direction is NOT auto-added: `createT` does not need `@see {@link T}` (T is already reachable structurally via its return-type column on `createT`'s page).
+
+**Example — `Locale`:**
+
+```ts
+/**
+ * The locale. Holds a BCP 47 language tag.
+ *
+ * @see {@link getLocale}
+ * @see {@link isLocale}
+ * @see {@link parseLocale}
+ * @see {@link setLocale}
+ * @see [BCP 47](https://datatracker.ietf.org/doc/html/bcp47)
+ */
+export type Locale = ...;
+```
+
+All four target-family functions exist in `yapyak/locale`, so all four are listed alphabetically. The external spec link is sorted in by its displayed text (`BCP 47` → starts with `B`).
+
+#### No other internal `@see` cases
+
+If a relationship isn't in the peer-pair table or the target-family table, navigation belongs in the sidebar or in formula-slot `{@link X}` inline — not in `@see`.
 
 ```ts
 // ✓ Right — get/set peer pair

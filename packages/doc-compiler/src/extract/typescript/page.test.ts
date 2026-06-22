@@ -28,7 +28,6 @@ const SYMBOL_PAGE_INPUT = {
   index: buildSymbolIndex([]),
   moduleId: 'yapyak',
   packageDir: '/tmp/yapyak',
-  reverseRefs: new Map<string, Set<string>>(),
 };
 
 function functionSymbol(
@@ -145,7 +144,6 @@ describe('buildModulePage', () => {
       index: buildSymbolIndex([]),
       label: 'yapyak',
       moduleId: 'yapyak',
-      reverseRefs: new Map<string, Set<string>>(),
     });
 
     expect(page.title).toBe('yapyak');
@@ -179,7 +177,6 @@ describe('buildModulePage', () => {
       ]),
       label: 'yapyak',
       moduleId: 'yapyak',
-      reverseRefs: new Map<string, Set<string>>(),
     });
 
     expect(page.blocks).toContainEqual({
@@ -209,7 +206,6 @@ describe('buildModulePage', () => {
       index: new Map(),
       label: 'yapyak',
       moduleId: 'yapyak',
-      reverseRefs: new Map<string, Set<string>>(),
     });
 
     const hasExportsHeading = page.blocks.some(
@@ -643,7 +639,7 @@ describe('buildMethodPage', () => {
     expect(hrefs).toContain('/reference/yapyak/format.list');
   });
 
-  it('keeps author `@see` entries before auto-injected entries', () => {
+  it('sorts `@see` entries alphabetically by displayed label', () => {
     const page = buildMethodPage(
       FormatParent,
       {
@@ -673,10 +669,10 @@ describe('buildMethodPage', () => {
     );
 
     const hrefs = collectHrefs(page.blocks);
-    const parseIndex = hrefs.indexOf('/reference/yapyak/parseRichText');
     const parentIndex = hrefs.indexOf('/reference/yapyak/Format');
-    expect(parseIndex).toBeGreaterThanOrEqual(0);
-    expect(parentIndex).toBeGreaterThan(parseIndex);
+    const parseIndex = hrefs.indexOf('/reference/yapyak/parseRichText');
+    expect(parentIndex).toBeGreaterThanOrEqual(0);
+    expect(parseIndex).toBeGreaterThan(parentIndex);
   });
 
   it('emits a `See also` section with only auto entries when the method has no author `@see`', () => {

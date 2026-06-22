@@ -10,26 +10,6 @@ export type SymbolIndexEntry = {
 
 export type SymbolIndex = Map<string, SymbolIndexEntry>;
 
-export type ReverseRefIndex = Map<string, Set<string>>;
-
-const IDENTIFIER_RX = /[A-Z][A-Za-z0-9]*/g;
-
-export function extractIndexedRefNamesFromText(
-  text: string,
-  index: SymbolIndex,
-): string[] {
-  const names: string[] = [];
-  let match: RegExpExecArray | null;
-  match = IDENTIFIER_RX.exec(text);
-  while (match !== null) {
-    if (index.has(match[0])) {
-      names.push(match[0]);
-    }
-    match = IDENTIFIER_RX.exec(text);
-  }
-  return names;
-}
-
 export function buildSymbolIndex(entries: SymbolIndexEntry[]): SymbolIndex {
   const index: SymbolIndex = new Map();
   for (const entry of entries) {
