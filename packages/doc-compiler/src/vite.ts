@@ -1,5 +1,6 @@
 import type { Plugin, ViteDevServer } from 'vite';
 import type { Config } from './config';
+import type { Manifest } from './build/manifest';
 
 import { buildAgentArtifact } from './build/agent-artifact';
 import { buildManifest } from './build/manifest';
@@ -12,9 +13,23 @@ const REBUILD_DEBOUNCE_MS = 200;
 
 export function docCompiler(config: Config): Plugin {
   let outAbsolute = '';
+  let isBuild = false;
+  let cachedManifest: Manifest | undefined;
+
+  const getManifest = async (): Promise<Manifest> => {
+    if (cachedManifest !== undefined) {
+      return cachedManifest;
+    }
+    cachedManifest = await buildManifest(config);
+    return cachedManifest;
+  };
+
+  const invalidateManifest = (): void => {
+    cachedManifest = undefined;
+  };
 
   const writeManifestFile = async () => {
-    const manifest = await buildManifest(config);
+    const manifest = await getManifest();
     await mkdir(dirname(outAbsolute), {
       recursive: true,
     });
@@ -22,13 +37,17 @@ export function docCompiler(config: Config): Plugin {
   };
 
   return {
+    configResolved(resolvedConfig) {
+      isBuild = resolvedConfig.command === 'build';
+    },
+
     async buildStart() {
       outAbsolute = resolve(config.out);
       await writeManifestFile();
-      if (config.agentArtifact === undefined) {
+      if (config.agentArtifact === undefined || !isBuild) {
         return;
       }
-      const manifest = await buildManifest(config);
+      const manifest = await getManifest();
       const artifact = buildAgentArtifact(manifest, config.agentArtifact);
       for (const [relativePath, content] of artifact.files) {
         this.emitFile({
@@ -57,7 +76,7 @@ export function docCompiler(config: Config): Plugin {
           }
           void (async () => {
             try {
-              const manifest = await buildManifest(config);
+              const manifest = await getManifest();
               const artifact = buildAgentArtifact(manifest, agentConfig);
               const fileKey = path.replace(/^\//, '');
               const content = artifact.files.get(fileKey);
@@ -79,6 +98,7 @@ export function docCompiler(config: Config): Plugin {
 
       const rebuild = debounce(async () => {
         try {
+          invalidateManifest();
           await writeManifestFile();
           invalidateVirtualModule(server);
         } catch (error) {
