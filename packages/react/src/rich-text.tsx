@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { TReturn } from 'yapyak';
+import type { TReturn } from 'yapyak/internal';
 
 import { Fragment } from 'react';
 import { walkRichText } from 'yapyak/internal';

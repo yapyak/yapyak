@@ -19,7 +19,7 @@ export type {
   FormatRelativeTimeOptions,
 } from './formatting';
 export type { Locale, Register } from './locale';
-export type { RichTextNode, TFn, TParams, TReturn } from './translation';
+export type { RichTextNode, TFn, TParams } from './translation';
 
 export { format, isCurrency } from './formatting';
 export {

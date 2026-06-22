@@ -1,5 +1,5 @@
 import type { Snippet } from 'svelte';
-import type { TReturn } from 'yapyak';
+import type { TReturn } from 'yapyak/internal';
 
 type PairsOf<T> = T extends TReturn<infer Pair, string> ? Pair : never;
 type VoidsOf<T> = T extends TReturn<string, infer Void> ? Void : never;

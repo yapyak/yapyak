@@ -13,4 +13,11 @@
       }
     }
   }
+
+  .ExternalIcon {
+    color: var(--foreground-softer);
+    display: inline-flex;
+    margin-inline-start: 0.25em;
+    vertical-align: 0.15em;
+  }
 }
