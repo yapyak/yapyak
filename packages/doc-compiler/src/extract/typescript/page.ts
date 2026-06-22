@@ -28,7 +28,7 @@ import type {
 import { nullify } from '../../nullify';
 import { slugify } from '../../slugify';
 import { buildSymbolHref } from '../../symbol-path';
-import { parseMarkdown } from '../markdown';
+import { parseMarkdown, tryBuildDiagnosticsFromCode } from '../markdown';
 import { classifyMemberDisplayKind } from './classify';
 import { expandModuleEntries, formatSymbolLabel } from './module-entry';
 import { parseShapeTypeParameters } from './shape';
@@ -144,7 +144,7 @@ export function buildSymbolPage(
     const functionProperties = symbol.members.filter(
       (member): member is ReferencePropertyMember => member.kind === 'property',
     );
-    if (functionProperties.length > 0) {
+    if (!symbol.shape && functionProperties.length > 0) {
       blocks.push(buildHeading2Block('Members'));
       blocks.push(buildMembersTable(functionProperties));
     }
@@ -182,29 +182,32 @@ export function buildSymbolPage(
         type: 'code-block',
       });
     }
-    const interfaceProperties = symbol.members.filter(
-      (member): member is ReferencePropertyMember => member.kind === 'property',
-    );
-    const interfaceMethods = symbol.members.filter(
-      (member): member is ReferenceMethodMember => member.kind === 'method',
-    );
-    if (interfaceProperties.length > 0) {
-      blocks.push(buildHeading2Block('Members'));
-      blocks.push(buildMembersTable(interfaceProperties));
-    }
-    if (interfaceMethods.length > 0) {
-      blocks.push(buildHeading2Block('Methods'));
-      if (options.methodLinkVariable === undefined) {
-        blocks.push(...buildMethodSections(interfaceMethods));
-      } else {
-        blocks.push(
-          ...buildMethodSummary(
-            interfaceMethods,
-            options.methodLinkVariable,
-            input.moduleId,
-            context,
-          ),
-        );
+    if (!symbol.shape) {
+      const interfaceProperties = symbol.members.filter(
+        (member): member is ReferencePropertyMember =>
+          member.kind === 'property',
+      );
+      const interfaceMethods = symbol.members.filter(
+        (member): member is ReferenceMethodMember => member.kind === 'method',
+      );
+      if (interfaceProperties.length > 0) {
+        blocks.push(buildHeading2Block('Members'));
+        blocks.push(buildMembersTable(interfaceProperties));
+      }
+      if (interfaceMethods.length > 0) {
+        blocks.push(buildHeading2Block('Methods'));
+        if (options.methodLinkVariable === undefined) {
+          blocks.push(...buildMethodSections(interfaceMethods));
+        } else {
+          blocks.push(
+            ...buildMethodSummary(
+              interfaceMethods,
+              options.methodLinkVariable,
+              input.moduleId,
+              context,
+            ),
+          );
+        }
       }
     }
   }
@@ -251,7 +254,7 @@ export function buildSymbolPage(
     }
   }
 
-  if (symbol.kind === 'class') {
+  if (symbol.kind === 'class' && !symbol.shape) {
     const classProperties = symbol.members.filter(
       (member): member is ReferencePropertyMember => member.kind === 'property',
     );
@@ -1320,6 +1323,14 @@ function buildExampleBlocks(example: ReferenceExample): Block[] {
       level: 3,
       type: 'heading',
     });
+  }
+  const diagnostics = tryBuildDiagnosticsFromCode(
+    example.code,
+    example.language,
+  );
+  if (diagnostics !== null) {
+    result.push(diagnostics);
+    return result;
   }
   result.push({
     label: null,

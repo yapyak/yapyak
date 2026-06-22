@@ -73,7 +73,7 @@ export function DocOptions(_props: DocOptionsProps) {
         <ChevronIcon direction="down" />
       </Box>
       <Popover
-        align="center"
+        align="end"
         anchorName={anchorName}
         id={popoverId}
       >

@@ -11,6 +11,7 @@ import type {
 } from 'typescript';
 import type { ExportKind } from '../../access';
 import type {
+  ReferenceCallSignature,
   ReferenceExport,
   ReferenceExportBase,
   ReferenceMember,
@@ -122,22 +123,11 @@ function buildTypeAliasSymbol(
   node: TypeAliasDeclaration,
   input: BuildSymbolInput,
 ): ReferenceExport {
-  const isTypeLiteral = ts.isTypeLiteralNode(node.type);
-  const members = isTypeLiteral
-    ? extractMembers(node.type.members, {
-        packageDir: input.packageDir,
-      })
-    : [];
-  const callSignatures = isTypeLiteral
-    ? node.type.members
-        .filter(ts.isCallSignatureDeclaration)
-        .map(buildCallSignature)
-    : [];
   return {
     ...buildBase(name, 'type', node, input),
-    callSignatures,
+    callSignatures: collectInlineCallSignatures(node.type),
     kind: 'type',
-    members,
+    members: collectInlineTypeMembers(node.type, input.packageDir),
     resolvedType: buildTypeTokens(node.type),
     signature: stripModifiers(node.getText()),
   };
@@ -213,6 +203,20 @@ function collectInlineTypeMembers(
     return typeNode.types.flatMap((part) =>
       collectInlineTypeMembers(part, packageDir),
     );
+  }
+  return [];
+}
+
+function collectInlineCallSignatures(
+  typeNode: TypeNode,
+): ReferenceCallSignature[] {
+  if (ts.isTypeLiteralNode(typeNode)) {
+    return typeNode.members
+      .filter(ts.isCallSignatureDeclaration)
+      .map(buildCallSignature);
+  }
+  if (ts.isIntersectionTypeNode(typeNode)) {
+    return typeNode.types.flatMap(collectInlineCallSignatures);
   }
   return [];
 }

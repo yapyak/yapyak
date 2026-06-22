@@ -406,6 +406,13 @@ function buildDiagnostics(
 ): DiagnosticsBlock {
   const content = getStringAttribute(attributes.content) ?? '';
   const language = getStringAttribute(attributes.language) ?? 'ts';
+  return buildDiagnosticsBlock(content, language);
+}
+
+function buildDiagnosticsBlock(
+  content: string,
+  language: string,
+): DiagnosticsBlock {
   const lines: DiagnosticsLine[] = [];
   for (const raw of content.split('\n')) {
     if (raw.trim().length === 0) {
@@ -432,6 +439,22 @@ function buildDiagnostics(
     lines,
     type: 'diagnostics',
   };
+}
+
+const DIAGNOSTICS_KEYWORD_RX = /^(ok|yes|no|error)(?:[:\s]|$)/;
+
+export function tryBuildDiagnosticsFromCode(
+  content: string,
+  language: string,
+): DiagnosticsBlock | null {
+  const hasAnnotation = content.split('\n').some((line) => {
+    const [, annotation] = splitCodeAndComment(line);
+    return annotation !== null && DIAGNOSTICS_KEYWORD_RX.test(annotation);
+  });
+  if (!hasAnnotation) {
+    return null;
+  }
+  return buildDiagnosticsBlock(content, language);
 }
 
 const LOCALE_PREFIX_RX = /^([a-z]{2,3}(?:-[A-Za-z0-9]+){0,3}):[ \t]+(.+)$/;

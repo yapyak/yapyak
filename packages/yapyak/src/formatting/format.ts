@@ -17,10 +17,10 @@ import { resolveFormatter } from './formatter';
  * ```ts
  * format.number(1234.5, { maximumFractionDigits: 1 });
  * format.number(199, { style: 'currency', currency: 'EUR' });
- * format.number(199, { style: 'currency' }); // ✗ currency missing
+ * format.number(199, { style: 'currency' }); // error: currency missing
  * format.number(0.42, { style: 'percent' });
  * format.number(45, { style: 'unit', unit: 'kilometer' });
- * format.number(45, { style: 'unit' }); // ✗ unit missing
+ * format.number(45, { style: 'unit' }); // error: unit missing
  * ```
  */
 export type FormatNumberOptions = Omit<

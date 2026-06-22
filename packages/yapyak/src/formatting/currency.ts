@@ -8,7 +8,7 @@
  * }
  *
  * setPrice(199, 'USD');
- * setPrice(199, 'XYZ'); // ✗ compile error
+ * setPrice(199, 'XYZ'); // error: compile error
  *
  * const prices: Record<Currency, number> = { SEK: 199, USD: 19, EUR: 18 };
  * ```
