@@ -1047,8 +1047,9 @@ function buildMethodSummary(
     if (summary !== '') {
       paragraphChildren.push({
         type: 'text',
-        value: ` — ${summary}`,
+        value: ' — ',
       });
+      paragraphChildren.push(...markdownToInline(summary));
     }
     blocks.push({
       children: paragraphChildren,
