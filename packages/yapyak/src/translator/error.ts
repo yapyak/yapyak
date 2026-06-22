@@ -3,14 +3,7 @@ import { parseRetryAfterMs } from './fetch';
 /**
  * Base error thrown by every yapyak translator.
  *
- * @remarks
- * Catch this to handle every translator failure mode uniformly. Use the
- * subclasses ({@link TranslatorRateLimitError}, {@link TranslatorAuthError},
- * {@link TranslatorInvalidResponseError}, {@link TranslatorTruncatedError},
- * {@link TranslatorTimeoutError}, {@link TranslatorSafetyError},
- * {@link TranslatorNetworkError}) for typed discrimination.
- *
- * @example Handle a translator failure
+ * @example
  * ```ts
  * import { TranslatorError, TranslatorRateLimitError } from 'yapyak/translator';
  *
@@ -51,12 +44,7 @@ export class TranslatorError extends Error {
 }
 
 /**
- * Thrown when the translator API returned HTTP 429 (rate limit exceeded).
- *
- * @remarks
- * The {@link retryAfter} field carries the server-suggested wait in
- * milliseconds, parsed from the `Retry-After` header. Falls back to
- * `undefined` when the header is missing or malformed.
+ * Thrown when the translator API returned HTTP 429.
  */
 export class TranslatorRateLimitError extends TranslatorError {
   retryAfter: number | undefined;
@@ -75,7 +63,7 @@ export class TranslatorRateLimitError extends TranslatorError {
   }
 }
 
-/** Thrown when the translator API returned HTTP 401 or 403 (auth failed). */
+/** Thrown when the translator API returned HTTP 401 or 403. */
 export class TranslatorAuthError extends TranslatorError {
   constructor(
     message: string,
@@ -90,9 +78,7 @@ export class TranslatorAuthError extends TranslatorError {
 }
 
 /**
- * Thrown when the translator API response is not parseable JSON, the wrong
- * shape, or otherwise unusable. Includes responses that exceed the configured
- * token budget but were not flagged truncated by the API itself.
+ * Thrown when the translator API response is not parseable or has the wrong shape.
  */
 export class TranslatorInvalidResponseError extends TranslatorError {
   constructor(
@@ -108,10 +94,7 @@ export class TranslatorInvalidResponseError extends TranslatorError {
 }
 
 /**
- * Thrown when the translator API signaled the response was truncated by the
- * token limit (e.g. Anthropic `stop_reason: max_tokens`, OpenAI
- * `finish_reason: length`, Gemini `finishReason: MAX_TOKENS`, Ollama
- * `done_reason: length`).
+ * Thrown when the translator API signaled the response was truncated by the token limit.
  */
 export class TranslatorTruncatedError extends TranslatorError {
   constructor(
@@ -141,8 +124,7 @@ export class TranslatorTimeoutError extends TranslatorError {
 }
 
 /**
- * Thrown when the translator API blocked the response via a safety/content
- * filter (e.g. Gemini `finishReason: SAFETY` or `RECITATION`).
+ * Thrown when the translator API blocked the response via a safety filter.
  */
 export class TranslatorSafetyError extends TranslatorError {
   constructor(
@@ -158,9 +140,7 @@ export class TranslatorSafetyError extends TranslatorError {
 }
 
 /**
- * Thrown when the translator API returned a non-retryable HTTP error
- * (status other than 401/403/429) or when the fetch layer failed for
- * reasons other than timeout/abort.
+ * Thrown when the translator API returned a non-retryable HTTP error or the fetch layer failed.
  */
 export class TranslatorNetworkError extends TranslatorError {
   status: number | undefined;
@@ -180,12 +160,10 @@ export class TranslatorNetworkError extends TranslatorError {
 }
 
 /**
- * Converts a non-OK {@link Response} into the appropriate {@link TranslatorError}.
+ * Converts a non-OK `Response` into a `TranslatorError`.
  *
- * @param response - The non-OK HTTP response from the translator API.
- * @param vendor - The translator vendor id (e.g. `'anthropic'`).
- * @returns A {@link TranslatorRateLimitError} for `429`, {@link TranslatorAuthError}
- *   for `401`/`403`, otherwise {@link TranslatorNetworkError} carrying the status.
+ * @param response - The non-OK HTTP response.
+ * @param vendor - The translator vendor id.
  */
 export async function responseToError(
   response: Response,
@@ -216,13 +194,10 @@ export async function responseToError(
 }
 
 /**
- * Converts an error thrown by the fetch layer (abort, timeout, network) into
- * the appropriate {@link TranslatorError}.
+ * Converts an error thrown by the fetch layer into a `TranslatorError`.
  *
- * @param cause - The error caught around `fetchWithRetry` (or `fetch`).
+ * @param cause - The caught error.
  * @param vendor - The translator vendor id.
- * @returns A {@link TranslatorTimeoutError} for abort/timeout signals,
- *   otherwise {@link TranslatorNetworkError}.
  */
 export function causeToError(cause: unknown, vendor: string): TranslatorError {
   if (cause instanceof Error) {

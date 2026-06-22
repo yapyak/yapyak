@@ -15,10 +15,7 @@ type RichTextComponent = {
 };
 
 /**
- * Renders rich text by resolving named tags via snippet props.
- *
- * @remarks
- * The prop shape is {@link RichTextProps}.
+ * Renders rich text by binding each named tag to a snippet.
  *
  * @example
  * ```svelte

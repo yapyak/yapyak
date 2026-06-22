@@ -1,13 +1,10 @@
 import type { Position, Range } from './type';
 
 /**
- * Converts a byte offset into a 1-based line/column {@link Position} in `source`.
+ * Converts a byte offset into a 1-based line/column position in `source`.
  *
- * @remarks
- * Walks the source from the start, counting newlines. Used by framework processors when emitting diagnostics whose locations must be reported in the original file.
- *
- * @param source - The original source text.
- * @param offset - The byte offset into `source`.
+ * @param source - The source text.
+ * @param offset - The byte offset.
  */
 export function offsetToOriginalPosition(
   source: string,
@@ -31,12 +28,9 @@ export function offsetToOriginalPosition(
 }
 
 /**
- * Builds a {@link Range} from two byte offsets in `source`.
+ * Builds a range from two byte offsets in `source`.
  *
- * @remarks
- * Resolves each offset to its 1-based line/column position via {@link offsetToOriginalPosition}.
- *
- * @param source - The original source text.
+ * @param source - The source text.
  * @param startOffset - The start byte offset, inclusive.
  * @param endOffset - The end byte offset, exclusive.
  */

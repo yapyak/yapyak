@@ -1,36 +1,29 @@
 import type { Locale } from '../locale';
 
 /**
- * Call-site context for a translation request.
- *
- * Sent to translators and used as input to AI prompt building for tone-correct output. Renaming or removing fields is a breaking change.
+ * The message context.
  */
 export type MessageContext = {
   /** The component name derived from the file path. */
   componentName: string;
   /** The nearest enclosing JSX/HTML element above the call. */
   enclosingElement: string | undefined;
-  /** The surrounding code snippet, three lines above and below. */
+  /** The surrounding code snippet. */
   snippet: string;
 };
 
 /**
- * An example translation drawn from the project's existing locale files.
- *
- * @remarks
- * Passed to translators as style reference so the AI keeps terminology consistent with prior choices. yapyak collects these from the active locale files and the orphan cache; consumers do not construct them by hand.
+ * An example translation.
  */
 export type TranslationExample = {
-  /** The source string from a prior call. */
+  /** The source string. */
   source: string;
-  /** The translation that was chosen for it. */
+  /** The translation. */
   translation: string;
 };
 
 /**
  * Request shape for {@link Translator}.
- *
- * The fundamental input contract for every translator implementation. Renaming or removing fields is a breaking change.
  */
 export type TranslateRequest = {
   /** The call-site context. */
@@ -58,33 +51,28 @@ export type TranslateRequest = {
  * Translates source strings into target locales.
  *
  * @remarks
- * Returned by {@link createTranslator} and by the provider packages (`@yapyak/anthropic`, `@yapyak/openai`, `@yapyak/gemini`, `@yapyak/ollama`). Passed to yapyak's compiler via the `translator` option.
- *
- * Public extension point. Implemented by the provider packages and by third-party translators. Adding optional fields is allowed; renaming or removing fields is a breaking change.
+ * Returned by {@link createTranslator}.
  */
 export type Translator = {
   /**
    * Translates a batch of requests.
    *
-   * @param requests - The requests to translate.
-   * @param options - The batch options.
+   * @param requests - The requests.
+   * @param options - The options.
    */
   batch?(
     requests: TranslateRequest[],
     options?: TranslateBatchOptions,
   ): Promise<string[]>;
   /**
-   * The resolved context level for this translator.
-   *
-   * @remarks
-   * Set by {@link createTranslator} from its `context` option. The compiler reads this field to align privacy-sensitive defaults — when set to `'none'`, the `examples` default falls to `0` so no prior translations leak alongside the source string. Custom translators that bypass {@link createTranslator} should set this field to match their effective context level.
+   * The resolved context level.
    */
   context?: ContextLevel;
   /**
-   * The stable identifier for this translator.
+   * The stable identifier.
    *
    * @remarks
-   * Convention: lowercase suffix matching the package name (`'anthropic'`, `'openai'`, `'gemini'`, `'ollama'`).
+   * Convention: lowercase suffix matching the package name.
    */
   id: string;
   (request: TranslateRequest): Promise<string>;
@@ -95,10 +83,10 @@ export type TranslateBatchOptions = {
   /** Called when a chunk resolves. */
   onChunk?: (count: number) => void;
   /**
-   * Called when a chunk resolves with the per-locale translations for that chunk.
+   * Called when a chunk resolves with its per-locale translations.
    *
    * @remarks
-   * Fires before {@link onChunk}. Enables incremental persistence so abort or crash mid-batch keeps already-completed work. The `result` array is aligned with `requests` (1:1, in order).
+   * Fires before `onChunk`. The `result` array is aligned with `requests`.
    */
   onChunkComplete?: (
     requests: TranslateRequest[],
@@ -108,15 +96,10 @@ export type TranslateBatchOptions = {
    * Called when a chunk fails after retries.
    *
    * @remarks
-   * Invoked once per failed chunk with the original requests so the caller can persist already-completed chunks and record per-stub errors. Abort errors propagated through `signal` do not fire this callback — they bubble out so cancellation stops the batch.
+   * Abort errors do not fire this callback; they propagate via `signal`.
    */
   onChunkError?: (error: unknown, requests: TranslateRequest[]) => void;
-  /**
-   * The abort signal for cancellation.
-   *
-   * @remarks
-   * Forwarded as {@link TranslateBatchRequest.signal} to the user-supplied `translate` callback so it reaches the underlying fetch/SDK call.
-   */
+  /** The abort signal. */
   signal?: AbortSignal;
 };
 
@@ -126,16 +109,6 @@ export type TranslateBatchOptions = {
  * - `'none'` — sends the source string only.
  * - `'minimal'` — sends the source string, the component name, and the enclosing element.
  * - `'rich'` — sends the source string, the component name, the enclosing element, and the surrounding code snippet.
- *
- * @remarks
- * Selecting `'none'` keeps the calling code from leaving the project. The compiler reads the resolved level off {@link Translator.context} and aligns privacy-sensitive defaults — at `'none'`, the `examples` setting also resolves to `0`.
- *
- * @example
- * ```ts
- * function buildTranslator(translate: TranslateFn, level: ContextLevel): Translator {
- *   return createTranslator(translate, { context: level });
- * }
- * ```
  */
 export type ContextLevel = 'none' | 'minimal' | 'rich';
 
@@ -157,54 +130,20 @@ export type TranslateItem = {
 
 /**
  * The translations for one input item, keyed by target locale.
- *
- * @remarks
- * Keys match `targetLocales` from the request. Each value is the translated string. The `translate` callback returns one of these per input item.
  */
 export type LocaleTranslations = Record<string, string>;
 
 /**
  * Request shape for the `translate` callback.
- *
- * @remarks
- * `items`, `sourceLocale`, and `targetLocales` are always present. The callback returns one {@link LocaleTranslations} per item, with a key per locale in `targetLocales`. The `signal` field forwards cancellation through to the underlying fetch/SDK call.
- *
- * @example Custom translate callback wired to a fetch endpoint
- * ```ts
- * import { createTranslator } from 'yapyak/translator';
- * import type { TranslateBatchRequest } from 'yapyak/translator';
- *
- * async function myTranslate(params: TranslateBatchRequest) {
- *   const response = await fetch('https://api.example/translate', {
- *     method: 'POST',
- *     body: JSON.stringify(params),
- *     signal: params.signal,
- *   });
- *   const { translations } = await response.json();
- *   return translations;
- * }
- *
- * createTranslator(myTranslate);
- * ```
  */
 export type TranslateBatchRequest = {
-  /**
-   * The items to translate.
-   *
-   * @remarks
-   * Each item's result must include a translation for every locale in `targetLocales`.
-   */
+  /** The items to translate. */
   items: TranslateItem[];
-  /**
-   * The abort signal for cancellation.
-   *
-   * @remarks
-   * Forwarded to the underlying fetch/SDK call.
-   */
+  /** The abort signal. */
   signal?: AbortSignal;
   /** The source locale. */
   sourceLocale: Locale;
-  /** The target locales required in every item's result. */
+  /** The target locales. */
   targetLocales: Locale[];
 };
 
@@ -212,7 +151,7 @@ export type TranslateBatchRequest = {
  * Translates a batch of items into every target locale.
  *
  * @remarks
- * Must return one {@link LocaleTranslations} per item, in the same order as `items`.
+ * Returns one item per input, in order.
  */
 export type TranslateFn = (
   params: TranslateBatchRequest,
@@ -221,31 +160,29 @@ export type TranslateFn = (
 /** Input for {@link createTranslator}. */
 export type CreateTranslatorInput = {
   /**
-   * The maximum number of items per `translate` call.
+   * The maximum items per `translate` call.
    *
    * @defaultValue `25`
    */
   batchSize?: number;
   /**
-   * The maximum number of `translate` calls running in parallel.
+   * The maximum parallel `translate` calls.
    *
    * @defaultValue `5`
    */
   concurrency?: number;
   /**
-   * How much call-site context to include.
+   * The call-site context level.
    *
    * @defaultValue `'minimal'`
    */
   context?: ContextLevel;
   /**
-   * Stable identifier for the translator. Surfaced as {@link Translator.id} and used for logging, cost attribution, and dashboard observability.
+   * The stable identifier.
    *
    * @defaultValue `'custom'`
    */
   id?: string;
-  /**
-   * Translates a batch of items into every target locale.
-   */
+  /** The translate callback. */
   translate: TranslateFn;
 };

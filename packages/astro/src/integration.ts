@@ -5,10 +5,7 @@ import { yapyak as yapyakVite } from '@yapyak/vite';
 /**
  * Creates the yapyak integration for Astro.
  *
- * @remarks
- * Registers yapyak's Vite plugin and injects the per-request locale middleware. Pair with the `astro()` processor in `yapyak.config.ts` so `.astro` frontmatter and templates are parsed for `t()` calls.
- *
- * @example Register in astro.config.ts
+ * @example
  * ```ts [astro.config.ts]
  * import { yapyak } from '@yapyak/astro/integration';
  * import { defineConfig } from 'astro/config';

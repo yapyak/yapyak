@@ -27,7 +27,7 @@ export type ElisionContext = {
 };
 
 /**
- * The fragment. Holds TS-parseable code extracted from a framework-specific source file.
+ * The fragment.
  */
 export type Fragment = {
   code: string;
@@ -58,59 +58,48 @@ export type ApplyImportFn = (
 export type ParseFragmentsFn = (source: string) => Fragment[];
 
 /**
- * Per-component hook injection. Compiler walks each eligible script fragment,
- * finds functions whose name matches `namePattern` and contain at least one
- * `t()` call site, and injects `invoke()` at the start of the function body.
- *
- * Declare for frameworks where component functions re-run on state change
- * and need to subscribe to locale updates per component (React, Solid, Qwik).
- * Omit for frameworks whose reactivity is module-level (Vue, Svelte, Astro).
+ * The component hook.
  */
 export type ComponentHook = {
-  /** String directive that must appear in the file's prologue for injection to apply. Omit to inject in every file. */
+  /** The eligibility directive. */
   eligibilityDirective?: string;
-  /** Function name to import from `Runtime.module` and call at the start of every matching component body. */
+  /** The function name imported and invoked at the start of each matching component body. */
   invoke: string;
-  /** Regex matching component-like function names — PascalCase, `use*`-prefixed, framework-specific. */
+  /** The regex matching eligible component-function names. */
   namePattern: RegExp;
 };
 
 /**
- * Framework runtime wiring. The transform emits a side-effect import of
- * `module` so the framework can register HMR or set up reactivity primitives.
- * When `componentHook` is set, the transform additionally imports and injects
- * the named function per matching component.
+ * The framework runtime wiring.
  */
 export type Runtime = {
-  /** Optional per-component hook injection. */
+  /** The component hook. */
   componentHook?: ComponentHook;
-  /** Framework runtime module imported once per file containing any `t()` call. */
+  /** The framework runtime module. */
   module: string;
 };
 
 /**
- * The processor. Extracts framework-specific source into fragments yapyak's compiler can read.
+ * The processor.
  *
  * @remarks
- * Returned by {@link createProcessor} and by the framework processor packages (`@yapyak/vue/processor`, `@yapyak/svelte/processor`, `@yapyak/astro/processor`). Registered in `yapyak.config.ts` via the `processors` field.
- *
- * Public extension point. Implemented by the framework processor packages and by third-party processors.
+ * Returned by {@link createProcessor}.
  */
 export type Processor = {
-  /** Injects a `yapyak` import into framework-specific source. Defaults to prepending the statement when omitted — fits plain TS/JS files. */
+  /** The import-injection function. */
   applyImport?(
     magicString: MagicString,
     source: string,
     importStatement: string,
   ): void;
-  /** File extensions this processor handles. */
+  /** The file extensions handled by this processor. */
   extensions: string[];
-  /** Stable identifier for diagnostics. */
+  /** The stable identifier. */
   id: string;
-  /** Breaks framework-specific source into TS-parseable fragments. Defaults to the whole source as one script when omitted — fits plain TS/JS files. */
+  /** The fragment-extraction function. */
   parseFragments?(source: string): Fragment[];
-  /** Framework runtime wiring. See {@link Runtime}. */
+  /** The runtime wiring. */
   runtime?: Runtime;
-  /** Skips the dev-mode `import.meta.hot.dispose(...)` callback yapyak normally injects to invalidate cached catalogs on file change. Set when the host framework's compiler cannot safely embed Vite HMR callbacks at the top level (e.g. Astro). */
+  /** Whether to skip the HMR-dispose callback. */
   skipHmrCallback?: boolean;
 };

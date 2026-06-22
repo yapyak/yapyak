@@ -19,10 +19,7 @@ const DEFAULT_ID = 'custom';
 /**
  * Builds a translator from a `translate` function.
  *
- * @remarks
- * Handles batching, context shaping, deduplication across target locales, and result validation. The provided function talks to the AI and receives every target locale in one call so terminology stays consistent and round-trips stay minimal.
- *
- * @param input - Translator construction input. See {@link CreateTranslatorInput}.
+ * @param input - The input.
  *
  * @example
  * ```ts

@@ -558,6 +558,38 @@ function t<T extends string>(source: T): string;
  */
 ```
 
+#### External standard-library references — Web Platform / Intl / ECMA / DOM
+
+When a public type **structurally** wraps or extends a Web Platform, Intl, ECMA, or DOM type, link to its MDN documentation via `@see <URL>`. This is the **only** context where `@see` may target an external URL instead of an in-project `{@link Symbol}`.
+
+**Mechanical trigger:** the type signature uses one of these patterns referencing a built-in (`Intl.X`, `Web.X`, `DOM.X`, `Response`, `Request`, `Headers`, ...):
+
+- `type T = Omit<Intl.X, ...>`
+- `type T = Pick<Intl.X, ...>`
+- `type T = Intl.X & { ... }`
+- `type T extends Intl.X`
+- `interface T extends Intl.X`
+
+Using the built-in as a **parameter type** or **return type** of a method does *not* trigger the rule — the consumer is expected to know `Response`/`Request` already. Only structural wrapping triggers it.
+
+**Format:** plain MDN URL, on its own line, **after** any in-project `@see {@link X}` blocks (in-project first, external second). Multiple external URLs each on their own line, alphabetical.
+
+```ts
+/**
+ * Options for {@link Format.dateTime}.
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat
+ */
+export type FormatDateTimeOptions = Omit<Intl.DateTimeFormatOptions, 'localeMatcher'>;
+```
+
+**URL canonical form:**
+
+- Always `https://developer.mozilla.org/en-US/...` (canonical English path).
+- Point to the `<Type>/<Type>` constructor page (where the options table lives), not the namespace root. Example: `Intl/DateTimeFormat/DateTimeFormat`, not `Intl/DateTimeFormat`.
+- No fragments (`#section`) unless the page genuinely has no other landing for the option set.
+- No tracking parameters.
+
 ### `@remarks` — beyond the summary
 
 The summary is one sentence. Anything longer goes in `@remarks`. The summary shows up in IDE quick-info / hover; `@remarks` only renders in full-page documentation.
@@ -1119,7 +1151,8 @@ For every public API symbol:
 18. `{@link}` used for in-project public symbols; backticks for literals, third-party, internal.
 18a. No `{@link X}` or `@see {@link X}` to a target already structurally linked on the same rendered page (Type column, Param-type, Returns, formula-slot).
 18b. Inline `{@link}` in description prose only when the link occupies a formula-slot from the closed set.
-18c. `@see` blocks alphabetical by target name.
+18c. `@see` blocks alphabetical by target name; in-project `{@link X}` blocks come before external URL blocks.
+18d. Public types that structurally wrap a Web Platform / Intl / ECMA / DOM type carry `@see <MDN URL>` per the External standard-library references rule.
 19. `@deprecated` always includes migration path.
 20. `@remarks` adds actionable nuance, not decorative facts.
 20a. `@remarks` contains no banned implementation-detail patterns (environment checks, server/client narration, escape-char lists, internal modules, compiler/transform internals, internal call sequences, cross-framework comparison, documenting absence, Web 101, internal-variable names).

@@ -16,9 +16,9 @@ let cached: typeof SvelteCompiler | undefined;
  * Creates a Svelte processor for yapyak's compiler.
  *
  * @remarks
- * Handles `.svelte` components. Extracts `<script>` blocks and template expressions for yapyak's `t()` scanning.
+ * Handles `.svelte` files.
  *
- * @example Register in yapyak.config.ts
+ * @example
  * ```ts [yapyak.config.ts]
  * import { defineConfig } from 'yapyak/config';
  * import { svelte } from '@yapyak/svelte/processor';

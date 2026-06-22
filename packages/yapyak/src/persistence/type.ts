@@ -1,4 +1,3 @@
-/** The runtime persistence instance. */
 export type Persistence = {
   get(): string | undefined;
   getFromRequest?(request: Request): string | undefined;
@@ -8,16 +7,6 @@ export type Persistence = {
 
 /**
  * The cookie persistence configuration.
- *
- * @example Store locale under a custom cookie name
- * ```ts [yapyak.config.ts]
- * import { defineConfig } from 'yapyak/config';
- *
- * export default defineConfig({
- *   defaultLocale: 'sv',
- *   persistence: { type: 'cookie', name: 'lang' },
- * });
- * ```
  */
 export type CookiePersistenceOptions = {
   /**
@@ -27,29 +16,17 @@ export type CookiePersistenceOptions = {
    */
   name?: string;
   /**
-   * Whether the cookie is marked as `Secure`, restricting it to HTTPS-only contexts.
-   *
-   * @remarks
-   * Enable for server-driven locale switching (e.g., a form POST that sets the cookie). Client-side `setLocale()` calls work only when the page is served over HTTPS (or from `localhost`) — on plain HTTP they silently fail.
+   * Whether the cookie is marked as `Secure`.
    *
    * @defaultValue `false`
    */
   secure?: boolean;
+  /** The discriminator. */
   type: 'cookie';
 };
 
 /**
  * The localStorage persistence configuration.
- *
- * @example Store locale under a custom storage key
- * ```ts [yapyak.config.ts]
- * import { defineConfig } from 'yapyak/config';
- *
- * export default defineConfig({
- *   defaultLocale: 'sv',
- *   persistence: { type: 'local-storage', key: 'lang' },
- * });
- * ```
  */
 export type LocalStoragePersistenceOptions = {
   /**
@@ -58,38 +35,28 @@ export type LocalStoragePersistenceOptions = {
    * @defaultValue `'locale'`
    */
   key?: string;
+  /** The discriminator. */
   type: 'local-storage';
 };
 
 /**
  * The URL persistence configuration.
- *
- * @example Read locale from a query parameter
- * ```ts [yapyak.config.ts]
- * import { defineConfig } from 'yapyak/config';
- *
- * export default defineConfig({
- *   defaultLocale: 'sv',
- *   persistence: {
- *     type: 'url',
- *     match: /[?&]lang=(?<locale>[^&]+)/,
- *   },
- * });
- * ```
  */
 export type UrlPersistenceOptions = {
   /**
-   * The pattern that matches the locale segment in the URL.
+   * The pattern matching the locale segment.
    *
    * @remarks
-   * The first capture group (named `locale` or positional `$1`) supplies the locale string. When omitted, the locale is read from the first path segment via `url.pathname.split('/')[1]` and only accepted when it's in the configured locales.
+   * The first capture group supplies the locale. Falls back to the first path segment when omitted.
    */
   match?: RegExp;
+  /** The discriminator. */
   type: 'url';
 };
 
 /** The none persistence configuration. */
 export type NonePersistenceOptions = {
+  /** The discriminator. */
   type: 'none';
 };
 

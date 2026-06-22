@@ -33,10 +33,7 @@ const DEFAULT_STORAGE_KEY = 'locale';
 /**
  * The default include patterns.
  *
- * @remarks
- * Spreading this constant into a `defineConfig` call's `include` keeps yapyak's defaults and adds entries on top.
- *
- * @example Extend the default include list
+ * @example
  * ```ts
  * import { DEFAULT_INCLUDE, defineConfig } from 'yapyak/config';
  *
@@ -52,10 +49,7 @@ export const DEFAULT_INCLUDE: FilterPattern = [
 /**
  * The default exclude patterns.
  *
- * @remarks
- * Spreading this constant into a `defineConfig` call's `exclude` keeps yapyak's defaults and adds entries on top. The default covers files that legitimately live alongside source code but never contain real translation calls: tests, stories, generated code, and type declarations.
- *
- * @example Extend the default exclude list
+ * @example
  * ```ts
  * import { DEFAULT_EXCLUDE, defineConfig } from 'yapyak/config';
  *

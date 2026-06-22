@@ -2,27 +2,29 @@ import type { ApplyImportFn, ParseFragmentsFn, Processor } from './type';
 
 /** Input for {@link createProcessor}. */
 export type CreateProcessorInput = {
-  /** Injects a `yapyak` import into framework-specific source. Omit to use the default `prepend`-the-statement behavior — fits plain TS/JS files. */
+  /** The import-injection function. */
   applyImport?: ApplyImportFn;
-  /** File extensions this processor handles, e.g. `['.vue']`. */
+  /** The file extensions handled by this processor. */
   extensions: string[];
-  /** Stable identifier for diagnostics. Convention: lowercase suffix matching the package name. */
+  /**
+   * The stable identifier.
+   *
+   * @remarks
+   * Convention: lowercase suffix matching the package name.
+   */
   id: string;
-  /** Breaks framework-specific source into TS-parseable fragments. Omit to use the default whole-source-as-one-script behavior — fits plain TS/JS files. */
+  /** The fragment-extraction function. */
   parseFragments?: ParseFragmentsFn;
-  /** Compiler-emitted runtime wiring. See {@link Processor.runtime}. */
+  /** The runtime wiring. */
   runtime?: Processor['runtime'];
-  /** Skips the dev-mode `import.meta.hot.dispose(...)` callback yapyak normally injects to invalidate cached catalogs on file change. Set when the host framework's compiler cannot safely embed Vite HMR callbacks at the top level (e.g. Astro). */
+  /** Whether to skip the HMR-dispose callback. */
   skipHmrCallback?: boolean;
 };
 
 /**
  * Builds a processor from per-framework hooks.
  *
- * @remarks
- * Yapyak's compiler dispatches to the resulting processor based on file extension. The shipped processor packages (`@yapyak/react/processor`, `@yapyak/vue/processor`, `@yapyak/svelte/processor`, `@yapyak/astro/processor`) wrap this factory. Processors are registered in `yapyak.config.ts` via the `processors` field.
- *
- * @param input - Processor construction input. See {@link CreateProcessorInput}.
+ * @param input - The input.
  *
  * @example
  * ```ts

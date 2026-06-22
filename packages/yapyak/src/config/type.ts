@@ -17,10 +17,10 @@ export type FilterPattern = string | RegExp | (string | RegExp)[];
 /** Configuration for yapyak. */
 export type YapyakConfig = {
   /**
-   * The maximum number of cumulative project-wide untranslated strings eligible for auto-translation during dev.
+   * The maximum number of cumulative untranslated strings eligible for auto-translation during dev.
    *
    * @remarks
-   * Compared against the total untranslated count across all extracted messages. When the count exceeds the threshold, auto-translate is skipped and the user is prompted to run `yapyak translate` manually. `0` disables auto-translation entirely.
+   * `0` disables auto-translation.
    *
    * @defaultValue `20`
    */
@@ -38,10 +38,10 @@ export type YapyakConfig = {
    */
   detectAcceptLanguage?: boolean;
   /**
-   * The maximum number of prior project translations passed to the translator as style reference per request.
+   * The maximum number of prior translations passed to the translator as style reference per request.
    *
    * @remarks
-   * Drawn from the project's existing locale files and orphan cache, scoped to the same locale. Ranked by fuzzy similarity to the source string, with same-file entries used as a tiebreaker when similarity scores are equal. A value of `0` disables the feature entirely. The default tracks the translator's privacy posture so no prior translations leak alongside the source string when context is suppressed.
+   * `0` disables the feature.
    *
    * @defaultValue `5`, or `0` when the translator's `context` is `'none'`
    */
@@ -50,52 +50,18 @@ export type YapyakConfig = {
    * The patterns to exclude from extraction.
    *
    * @remarks
-   * yapyak applies these patterns after {@link YapyakConfig.include}. Each string entry is either a directory shortcut (no glob characters) or an explicit glob. Directory shortcuts expand to `<entry>/**\/*.{<extensions>}` using the extensions from `processors`. Explicit globs and `RegExp` entries pass through unchanged. The default covers files that legitimately live alongside source code but never contain real translation calls: tests, stories, generated code, and type declarations. Setting the field replaces the default entirely; spreading `DEFAULT_EXCLUDE` keeps the defaults and adds entries on top.
+   * Directory shortcuts (no glob characters) expand to `<entry>/**\/*.{<extensions>}`. Setting the field replaces the default; spreading `DEFAULT_EXCLUDE` extends it.
    *
    * @defaultValue `['**\/*.{test,spec}.*', '**\/__tests__/**', '**\/*.{stories,gen}.{ts,tsx,js,jsx,mjs,cjs}', '**\/*.d.ts']`
-   *
-   * @example Directory shortcut, glob, and RegExp entries
-   * ```ts
-   * defineConfig({ exclude: ['legacy'] });                    // expands to 'legacy/**\/*.{cjs,cts,...,tsx}'
-   * defineConfig({ exclude: ['legacy', 'sandbox'] });         // multiple directories
-   * defineConfig({ exclude: ['**\/*.test.*'] });              // explicit glob, used as-is
-   * defineConfig({ exclude: [/\.deprecated\.ts$/] });         // RegExp, used as-is
-   * ```
-   *
-   * @example Extend the defaults
-   * ```ts
-   * import { DEFAULT_EXCLUDE, defineConfig } from 'yapyak/config';
-   *
-   * export default defineConfig({
-   *   exclude: [...DEFAULT_EXCLUDE, 'legacy'],
-   * });
-   * ```
    */
   exclude?: FilterPattern;
   /**
    * The patterns to include for extraction.
    *
    * @remarks
-   * Each string entry is either a directory shortcut (no glob characters) or an explicit glob. Directory shortcuts expand to `<entry>/**\/*.{<extensions>}` using the extensions from `processors`. Explicit globs and `RegExp` entries pass through unchanged. Setting the field replaces the default entirely; spreading `DEFAULT_INCLUDE` keeps the defaults and adds entries on top.
+   * Directory shortcuts (no glob characters) expand to `<entry>/**\/*.{<extensions>}`. Setting the field replaces the default; spreading `DEFAULT_INCLUDE` extends it.
    *
    * @defaultValue `['src']`
-   *
-   * @example Directory shortcut, glob, and RegExp entries
-   * ```ts
-   * defineConfig({ include: ['src'] });                       // expands to 'src/**\/*.{cjs,cts,...,tsx}'
-   * defineConfig({ include: ['src', 'app'] });                // multiple roots
-   * defineConfig({ include: ['src/components/**\/*.tsx'] });  // explicit glob, used as-is
-   * defineConfig({ include: [/\.svelte$/] });                 // RegExp, used as-is
-   * ```
-   *
-   * @example Extend the defaults
-   * ```ts
-   * import { DEFAULT_INCLUDE, defineConfig } from 'yapyak/config';
-   *
-   * export default defineConfig({
-   *   include: [...DEFAULT_INCLUDE, 'app'],
-   * });
-   * ```
    */
   include?: FilterPattern;
   /**
@@ -117,19 +83,16 @@ export type YapyakConfig = {
    */
   preserveTranslationsOnRename?: boolean;
   /**
-   * Processors for framework-specific file formats (`.vue`, `.svelte`, `.astro`, etc.).
+   * The processors for framework-specific file formats.
    *
    * @remarks
-   * Each processor handles a set of file extensions. Vanilla `.ts`, `.tsx`, `.js`, `.jsx`, `.mts`, `.mjs`, `.cts`, `.cjs` are handled by the built-in processor without registration. The shipped processor packages (`@yapyak/vue/processor`, `@yapyak/svelte/processor`, `@yapyak/astro/processor`) cover the listed frameworks; custom processors implement {@link Processor}.
+   * Vanilla `.ts`, `.tsx`, `.js`, `.jsx`, `.mts`, `.mjs`, `.cts`, `.cjs` are handled without registration.
    *
    * @defaultValue `[]`
    */
   processors?: Processor[];
   /**
    * Whether to keep `document.documentElement.lang` synced with the current locale.
-   *
-   * @remarks
-   * Without it, yapyak does not touch the DOM. Enable for SvelteKit, Astro, and SPA setups where the `<html>` element isn't owned by a reactive framework binding.
    *
    * @defaultValue `false`
    */

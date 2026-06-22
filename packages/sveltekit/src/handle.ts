@@ -8,9 +8,6 @@ const PLACEHOLDER = '%yapyak.lang%';
 /**
  * Handle for SvelteKit. Provides yapyak's per-request locale context.
  *
- * @remarks
- * Substitutes the `%yapyak.lang%` placeholder in `app.html` with the resolved locale. The placeholder must fall within the first streamed chunk.
- *
  * @example
  * ```html [src/app.html]
  * <html lang="%yapyak.lang%">

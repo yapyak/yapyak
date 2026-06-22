@@ -32,9 +32,9 @@ let cached: typeof VueSfc | undefined;
  * Creates a Vue processor for yapyak's compiler.
  *
  * @remarks
- * Handles `.vue` single-file components. Extracts `<script>`/`<script setup>` blocks and template expressions for yapyak's `t()` scanning.
+ * Handles `.vue` files.
  *
- * @example Register in yapyak.config.ts
+ * @example
  * ```ts [yapyak.config.ts]
  * import { defineConfig } from 'yapyak/config';
  * import { vue } from '@yapyak/vue/processor';
