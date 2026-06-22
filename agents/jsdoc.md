@@ -2,6 +2,35 @@
 
 The standard is TSDoc (Microsoft's TypeScript-aware spec, used by TypeDoc and api-extractor) — not generic JSDoc.
 
+### Prime directives
+
+These two rules outrank everything else in this file. When a category formula, a phrasing catalog entry, or any "should be present" instruction conflicts with them, they win.
+
+**1. Omit before vague.**
+
+If a fact cannot be stated mechanically (per a formula, the closed standard-phrasings catalog, or a verified observation from source) and **briefly**, it does not appear at all. A short, true, derivable summary beats a longer one that drifts into hedge words, hand-wave, or inference. When in doubt:
+
+- Drop the second sentence rather than reach for "usually", "typically", "often", "sometimes", "may", "roughly", "approximately".
+- Drop the `@remarks` rather than fill it.
+- Drop the `@example` rather than fabricate a scenario.
+- Drop the `@throws` rather than restate the type signature.
+
+Empty is better than wrong. Empty is better than padded. A symbol with **only** a single-sentence category-formula summary is a complete, passing JSDoc block.
+
+**2. Every claim is verified against actual source code.**
+
+Every word in description, `@remarks`, `@param`, `@throws`, `@example`, and `@see` corresponds to a line of code that was read for this JSDoc block. No claim is written from:
+
+- The symbol's name alone.
+- A sibling symbol's JSDoc.
+- External documentation of a delegated primitive (`Intl.NumberFormat`, `React`, etc.) without confirming the delegation.
+- Recollection of how the symbol "probably" works.
+- Inference from the call signature.
+
+If the implementation cannot be read end-to-end (binary dependency, opaque generated code), the JSDoc stops at what the signature alone can support. Fabrication — describing behavior that is plausible but not verifiable — is the single hardest violation in this file. There is no fix at review time other than deletion: a claim that is plausible-but-unverified is poison, because future maintainers and AI agents will trust and propagate it.
+
+When these two rules conflict with the urge to "say more", the rules win. Always.
+
 ### Generation algorithm
 
 ```
@@ -79,26 +108,29 @@ TSDoc groups tags into three categories. The category dictates placement.
 
 ### Canonical tag order
 
+Tags appear in this exact order. No variation. Every public JSDoc block follows the same outline — if a tag isn't used, the block skips its row; the remaining rows stay in this order.
+
 ```
 @public | @beta | @alpha | @experimental    ← release stage (one only, optional)
 @deprecated [+ migration path]               ← optional
 [summary — single sentence, period]
 
-@remarks
+@remarks                                     ← prose only, no code, triple-test
 [longer prose — only when summary needs expansion]
 
+@shape <inline signature override>           ← rendering-only, project-specific, before @typeParam
 @typeParam T - description                   ← generics, alphabetical
 @param name - description                    ← signature order
 @defaultValue [value]                        ← for properties only
-@throws {ErrorClass} when [condition]
-@see {@link OtherSymbol}                     ← only when not already linked inline
-@example [optional title]
+@throws {ErrorClass} when [condition]        ← one block per exception type
+@see {@link OtherSymbol}                     ← only when target not structurally linked
+@example [optional title]                    ← required for categories; ≤ 3 blocks
   ```ts
   // code
   ```
 ```
 
-Empty lines separate the summary, `@remarks`, and each tag block.
+Empty lines separate the summary, `@remarks`, and each tag block. Inside a tag group of the same kind (e.g., consecutive `@param` lines), no blank lines.
 
 ### Description rules
 
@@ -447,25 +479,84 @@ For longer migration guidance, put it in the deprecation message:
  */
 ```
 
-### `{@link Symbol}` — inline cross-references
+### `{@link Symbol}` and `@see` — when to link, mechanical rule
 
-The primary cross-reference mechanism in TSDoc. Use it within prose, not `@see`.
+Linking is mechanical. The rendered reference page **already** links every type in the Type column, every parameter type in the Param table, the Return type, and any formula-slot link in the summary. Do not duplicate those.
+
+**Step 1 — is the target already structurally linked on this page?**
+
+| Where target already appears | Then |
+|---|---|
+| Type column of a Members row, Param-type column, Returns row, or a formula-slot `{@link}` in the summary | **No link in prose. No `@see`.** Period. |
+| Nowhere on this page | Continue to Step 2. |
+
+**Step 2 — when an external link IS needed, pick form mechanically.**
+
+| Link role in the sentence | Form |
+|---|---|
+| The link **is** the description subject (formula-slot) | Inline `{@link X}` |
+| Genuine cross-reference to a different concept not visible elsewhere on the page | `@see {@link X}` block |
+
+**Formula slots with an inline `{@link}`** — closed set, mirrors the category-formula tables:
+
+- `Props for {@link Component}.`
+- `Options for {@link function}.`
+- `Result of {@link function}.`
+- `Request shape for {@link endpoint}.`
+- `Response shape for {@link endpoint}.`
+- `Returned by {@link X}.`
+- `Created by {@link X}.`
+- `Equivalent to {@link X}.`
+- `Discriminator for {@link Union}.`
+
+Outside the formula-slot set, links never appear inside description prose. Either the target is already structurally linked (no link needed), or it isn't (use `@see`).
 
 ```ts
-// ✓ Right — inline link
+// ✓ Right — Type column already links Currency
 /**
- * Wraps the response according to {@link Wrapper} configuration.
+ * The currency code.
  */
+currency: Currency;
 
-// ✗ Wrong — @see when inline link would do
+// ✗ Wrong — Type column already links Currency; @see is a duplicate
 /**
- * Wraps the response according to the configured wrapper.
+ * The currency code.
  *
- * @see Wrapper
+ * @see {@link Currency}
  */
+currency: Currency;
+
+// ✗ Wrong — link inside prose is not a formula slot
+/**
+ * The currency code from the {@link Currency} set.
+ */
+currency: Currency;
+
+// ✓ Right — formula slot
+/**
+ * Props for {@link RichText}.
+ */
+type RichTextProps<T extends string> = { /* ... */ };
+
+// ✓ Right — genuine cross-reference, not visible elsewhere on this page
+/**
+ * Translates a source string for the active locale.
+ *
+ * @see {@link createTranslator}
+ */
+function t<T extends string>(source: T): string;
 ```
 
-Use `@see {@link X}` **only** when the related symbol is not naturally referenced in the description prose. Never duplicate — if `{@link X}` appears in the description, no `@see X` below.
+**Multiple `@see`** — each on its own line, alphabetical order by target name.
+
+```ts
+/**
+ * Configures the doc-extractor plugin.
+ *
+ * @see {@link defineConfig}
+ * @see {@link RichText}
+ */
+```
 
 ### `@remarks` — beyond the summary
 
@@ -521,6 +612,161 @@ Host-framework version requirements live in `package.json` `peerDependencies` on
  * @param options - The translator configuration.
  */
 ```
+
+#### Banned implementation-detail patterns
+
+Any of these in description or `@remarks` is a hard violation. The consumer of the public API never observes them at the call site; they belong in the code, not the docs.
+
+| Pattern | Example violation | Why banned |
+|---|---|---|
+| **Environment checks** | "On the server, `typeof window !== 'undefined'` is false, so the subscriber is not registered." | Internal control flow — not part of the symbol's contract. |
+| **Server vs client narration** | "On the client, reads track reactivity. On the server, no subscriber registers." | Same — the consumer reads a value, the rest is implementation. |
+| **HTML / character-escape lists** | "Output is HTML-escaped (`&`, `<`, `>`, `\"`, `'`)." | Implementation. The symbol's name implies safe output; the consumer doesn't enumerate the escape set. |
+| **Internal module / file mentions** | "Declares `@yapyak/react/internal` so the dev transform side-effect-imports it." | Internal wiring. Not part of the consumer surface. |
+| **Compiler / transform / plugin internals** | "The compiler injects `useYapyak()` at the top of every function component containing `t()`." | Build-tool internals. |
+| **Internal call sequences** | "When write is called, `setLocale` is invoked, which fires the trigger, which calls subscribers." | Restates code in prose. |
+| **Cross-framework comparison** | "Slot content is developer-authored — quote your attributes, as with React, Vue, and Lit." | Off-topic, marketing-adjacent, irrelevant to this symbol. |
+| **Documenting absence** | "Has no props." / "Returns nothing." | The signature already shows this. |
+| **Pedagogical Web 101** | "Quote your attributes." / "Always escape user input." | Not API-specific. Belongs in a guide, not in API docs. |
+| **Internal-variable names** | "Replaces every `CHILDREN_TOKEN` occurrence with the rendered children." | Internal symbol exposed in prose. |
+
+Mechanical test before writing any `@remarks` sentence: **could a reader observe this from the public call site alone?** If no, omit. If yes but it duplicates the signature, omit. Only behavior that is consumer-visible AND non-derivable survives.
+
+### Dedup — primary owns examples and remarks, secondaries reference
+
+A primary symbol (function, component, hook, factory, class) and its secondary types (Options, Props, Result, Request, Response, Config, Event, Context) describe **one feature**. The feature's `@example` and `@remarks` live on **exactly one symbol** — the primary. Secondaries carry the formula sentence only.
+
+**Mechanical rule:**
+
+| Symbol role | Description | `@remarks` | `@example` |
+|---|---|---|---|
+| **Primary** (function, component, hook, factory, class) | Category formula | If triple-test passes | Required-or-optional per category |
+| **Secondary** (`*Options`, `*Props`, `*Result`, `*Request`, `*Response`, `*Config`, `*Event`, `*Context`) | Suffix formula, with formula-slot `{@link Primary}` | **Never** | **Never** |
+
+The formula-slot link in the secondary's description (`Options for {@link translate}.`, `Props for {@link RichText}.`) is the cross-reference. No additional `@see` is added — the primary is already linked structurally.
+
+Duplicated `@example` or `@remarks` across primary and secondary is a hard violation. If you need to add a remark and you're inside the secondary's JSDoc, the remark belongs on the primary. Move it.
+
+When **multiple primaries** consume the same secondary, the canonical lives on the primary that is the umbrella entry point (the one named most plainly, the one a user imports first). Other primaries link to it via the formula slot of their own return / option types where applicable.
+
+```ts
+// ✗ Wrong — duplication
+/**
+ * Renders rich text by binding each named tag to an Astro slot.
+ *
+ * @example
+ * ```astro
+ * <RichText value={t('Click <link>here</link>.')}>...</RichText>
+ * ```
+ */
+export const RichText = ...;
+
+/**
+ * Props for {@link RichText}.
+ *
+ * @remarks
+ * `value` carries the source string with named tags. Each tag is resolved by an Astro named slot...
+ *
+ * @example
+ * ```astro
+ * <RichText value={t('Click <link>here</link>.')}>...</RichText>
+ * ```
+ */
+export type RichTextProps = { value: string };
+
+// ✓ Right — primary owns the example, secondary is one line
+/**
+ * Renders rich text by binding each named tag to an Astro slot.
+ *
+ * @example
+ * ```astro
+ * <RichText value={t('Click <link>here</link>.')}>...</RichText>
+ * ```
+ */
+export const RichText = ...;
+
+/**
+ * Props for {@link RichText}.
+ */
+export type RichTextProps = { value: string };
+```
+
+### Cross-framework sibling consistency
+
+When the same conceptual symbol exists in multiple framework packages (e.g., `RichText` in `@yapyak/astro`, `@yapyak/react`, `@yapyak/svelte`, `@yapyak/vue`; `locale` in framework binding packages; `middleware` in adapter packages), their JSDoc is **mechanically parallel**.
+
+**Sibling family** = the same conceptual export shared across two or more framework packages, identified by identical export name.
+
+**Mechanical rules for a sibling family:**
+
+1. **Identical summary template.** Same verb, same noun, same clause structure. The framework-specific term occupies one slot — that slot is the **only** difference.
+
+   ```
+   Renders rich text by binding each named tag to a [BINDING].
+   ```
+
+   Where `[BINDING]` per framework, closed set, mirrors Reactive binding kind table:
+
+   | Framework | `[BINDING]` |
+   |---|---|
+   | Astro | named slot |
+   | React | handler prop |
+   | Solid | handler prop |
+   | Svelte | snippet |
+   | Vue | named slot |
+
+2. **Identical `@remarks` policy.** Either all variants have `@remarks` or none do. If a remark applies to one but not all, audit whether the difference is real (then write a different remark per variant) or accidental (then remove or align).
+
+3. **Identical `@example` shape.** Same scenario, same Yak Pool fixture, same tag names (`<link>...</link>` if one uses it, all use it), same surrounding prose-comment structure. Only framework-syntax differs:
+
+   ```tsx
+   // React
+   <RichText value={t('Click <link>here</link>.')} link={(children) => <a href="/docs">{children}</a>} />
+
+   // Svelte
+   <RichText value={t('Click <link>here</link>.')}>
+     {#snippet link(children)}<a href="/docs">{@render children()}</a>{/snippet}
+   </RichText>
+
+   // Vue
+   <RichText :value="t('Click <link>here</link>.')">
+     <template #link="{ children }"><a href="/docs"><component :is="children" /></a></template>
+   </RichText>
+
+   // Astro
+   <RichText value={t('Click <link>here</link>.')}>
+     <a slot="link" href="/docs"><RichText.Children /></a>
+   </RichText>
+   ```
+
+   Number of `@example` blocks per sibling is identical across the family. Titles are identical across the family (or absent across the family).
+
+4. **Identical secondary-type treatment.** `RichTextProps` exists in every framework package — every variant gets the same JSDoc form (formula sentence + formula-slot link to its `RichText`, no `@remarks`, no `@example`).
+
+5. **Asymmetry must reflect actual code difference.** If one variant has type-safe per-tag props (React, Svelte via `PairsOf<T>` / `VoidsOf<T>`) and another doesn't (Astro, Vue with `value: string` only), the type signature already shows it — JSDoc says nothing extra. If one variant adds a sub-symbol (Astro's `RichText.Children`), document it on its own JSDoc — never in the parent's `@remarks`.
+
+**Mechanical test before publishing a sibling family:**
+
+Place all variants' JSDoc side-by-side. The summaries must be byte-identical except for the `[BINDING]` slot. The number of `@example` blocks must match. The number of `@param` / type-parameter lines must match where the type signature is parallel. Any unjustified asymmetry is a regression.
+
+### Verify against code — strict
+
+Every claim in JSDoc — summary, `@remarks`, `@param`, `@throws`, `@example` — must be traceable to a line of source code in the symbol's implementation or its callers. No claim is written from inference, naming, or guesswork.
+
+**Before writing a JSDoc block:**
+
+1. Read the symbol's implementation top to bottom.
+2. Read at least one real call site (test or downstream usage).
+3. If a behavior is only assumed (not observable in source), it does not appear in JSDoc.
+
+**Banned shortcuts:**
+
+- Inferring behavior from the symbol's name alone ("`createTranslator` so it must instantiate a Translator…") without reading the body.
+- Copying language from a sibling symbol's JSDoc without verifying the same behavior is present here.
+- Borrowing claims from external docs (`Intl.NumberFormat`, `React`, etc.) without confirming the symbol actually delegates to that primitive.
+- Hand-wavy ranges ("returns roughly X", "usually Y") — if the bound isn't verifiable, drop it.
+
+If the implementation cannot be read (binary dependency, generated code), stop and ask. Never publish unverified claims.
 
 ### `@example`
 
@@ -580,6 +826,97 @@ Host-framework version requirements live in `package.json` `peerDependencies` on
 ```
 
 Multiple `@example` blocks order: lowest argument count first → increasing complexity → framework-specific cases last.
+
+#### Inline comments inside example code — closed vocabulary
+
+Only the following four comment forms appear inside example code. No others.
+
+| Form | Use |
+|---|---|
+| `// => value` | Return / evaluated value. One space before `=>`. No column alignment. |
+| `// error: <reason>` | Marks a line that fails to compile or throws at runtime. Promotes the block to a DiagnosticsBlock in the rendered docs. |
+| `// ok: <reason>` | Positive verification marker. Same rendering as `error:`. |
+| `// ...` | Elision when the example needs to gesture at code it does not show. |
+
+Banned: explanatory comments (`// this calls format`), decorative separators (`// ---`), per-line narration (`// returns the price`), authorial asides. The example must read like working source. If a fact about the example isn't visible from the code + the four markers above, it doesn't belong in the example — move it to `@remarks` or rethink the API.
+
+#### One scenario per `@example` block
+
+Each `@example` block shows **one** scenario. A scenario is one usage pattern: basic call, error case, composition.
+
+A block may show **variations of the same pattern** back-to-back (different inputs, same shape). Variation is not a new scenario.
+
+```ts
+// ✓ Right — variation of the same pattern
+/**
+ * @example Different styles
+ * ```ts
+ * format.number(199, { style: 'currency', currency: 'EUR' });
+ * format.number(0.42, { style: 'percent' });
+ * format.number(45, { style: 'unit', unit: 'kilometer' });
+ * ```
+ */
+
+// ✗ Wrong — two scenarios in one block (wrapping helper + lookup record)
+/**
+ * @example
+ * ```ts
+ * function setPrice(amount: number, currency: Currency) { ... }
+ * setPrice(199, 'USD');
+ *
+ * const prices: Record<Currency, number> = { SEK: 199, USD: 19 };
+ * ```
+ */
+```
+
+#### Maximum 3 `@example` blocks per symbol
+
+Cap at **3**. Pick the 3 most distinct scenarios. More than 3 signals the symbol has too many modes — fix the API, not the docs.
+
+Exception: an umbrella symbol with structurally distinct call forms (positional vs object args, sync vs async, chained variants like `t.in()` / `t.as()`) may have one block per call form, capped at **5**.
+
+#### First example — no title, simplest form
+
+The first `@example` block of any symbol has **no title** and shows the **simplest possible invocation**. Subsequent blocks carry verb-phrase titles. A symbol with a single block also goes title-less.
+
+```ts
+// ✓ Right
+/**
+ * @example
+ * ```ts
+ * t('Save changes');
+ * ```
+ *
+ * @example Forced locale at the call site
+ * ```ts
+ * t.in('sv', 'Welcome back, {name}!', { name: 'Alex' });
+ * ```
+ */
+```
+
+#### Whitespace inside example body
+
+- **One blank line** between imports and the body. Always.
+- **No other blank lines** inside the body — variations of the same pattern stack consecutively.
+
+```ts
+// ✓ Right
+/**
+ * @example
+ * ```ts
+ * import { format } from 'yapyak';
+ *
+ * format.number(199, { style: 'currency', currency: 'EUR' });
+ * format.number(0.42, { style: 'percent' });
+ * ```
+ */
+```
+
+#### Identifier names inside examples — consistent within a symbol
+
+Across all `@example` blocks for the **same** symbol, the same concept uses the same identifier. If example 1 names the input `amount`, example 3 uses `amount` — never silently renamed mid-symbol. Fixture values still come from the Yak Pool ([[testing]] § Test voice); identifier names follow the API's natural domain term.
+
+#### Composition examples
 
 Composition / "use with other things" examples are justified only when:
 
@@ -771,11 +1108,25 @@ For every public API symbol:
 13. `@example` includes imports.
 14. `@example` code-block language identifier is the most specific applicable (`ts`/`tsx`/`vue`/`svelte`/...).
 15. Multiple `@example` blocks ordered: lowest arg-count → complex → framework-specific.
+15a. ≤ 3 `@example` blocks (≤ 5 for umbrella symbols with structurally distinct call forms).
+15b. First `@example` carries no title, shows the simplest invocation.
+15c. Each `@example` shows one scenario; multiple scenarios use multiple blocks.
+15d. Comments inside example code use only the closed vocabulary: `// =>`, `// error:`, `// ok:`, `// ...`.
+15e. One blank line between imports and body; no other blank lines inside the body.
+15f. Identifier names consistent across same-symbol example blocks.
 16. `@typeParam` for every type parameter, alphabetical.
 17. `@throws` for every non-trivial exception type.
 18. `{@link}` used for in-project public symbols; backticks for literals, third-party, internal.
+18a. No `{@link X}` or `@see {@link X}` to a target already structurally linked on the same rendered page (Type column, Param-type, Returns, formula-slot).
+18b. Inline `{@link}` in description prose only when the link occupies a formula-slot from the closed set.
+18c. `@see` blocks alphabetical by target name.
 19. `@deprecated` always includes migration path.
 20. `@remarks` adds actionable nuance, not decorative facts.
+20a. `@remarks` contains no banned implementation-detail patterns (environment checks, server/client narration, escape-char lists, internal modules, compiler/transform internals, internal call sequences, cross-framework comparison, documenting absence, Web 101, internal-variable names).
+20b. Every claim in description / `@remarks` / `@param` / `@throws` is verified against the symbol's implementation or a real call site.
+20c. Secondary types (`*Options`, `*Props`, `*Result`, `*Request`, `*Response`, `*Config`, `*Event`, `*Context`) carry **no** `@remarks` and **no** `@example` — those live on the primary symbol only.
+20d. No `@example` or `@remarks` text duplicated between a primary and its secondaries (or between sibling symbols in the same domain).
+20e. Cross-framework sibling families (`RichText`, `locale`, `middleware`, etc.) have byte-identical summaries except for the framework-specific binding slot, identical `@example` shape/count/titles, and identical secondary-type treatment.
 21. No defaults inline in prose — only `@defaultValue` tag.
 22. No second-person pronouns (`your`/`you`/`yours`).
 23. No domain elaboration in summary (API names, product names beyond the function name itself).
