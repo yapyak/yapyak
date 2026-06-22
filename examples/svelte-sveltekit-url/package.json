@@ -5,6 +5,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite dev",
+    "prepare": "svelte-kit sync || echo ''",
     "preview": "vite preview"
   },
   "dependencies": {
