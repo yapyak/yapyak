@@ -1,7 +1,7 @@
 import type { ContentNavigationGroupProps } from './content-navigation-group';
 
 import { Link, useLocation } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Box } from '#components/box';
 
@@ -21,8 +21,17 @@ export function ContentNavigationGroupCollapsible(
   const isOnPath = childrenContainPath(node.children, location.pathname);
   const isActive = node.href !== undefined && location.pathname === node.href;
   const [isOpen, setIsOpen] = useState(
-    node.defaultOpen ?? (isOnPath || isActive),
+    node.defaultOpen || isOnPath || isActive,
   );
+
+  useEffect(() => {
+    if (isOnPath || isActive) {
+      setIsOpen(true);
+    }
+  }, [
+    isOnPath,
+    isActive,
+  ]);
 
   return (
     <Box
