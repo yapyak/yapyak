@@ -20,17 +20,14 @@ export function ContentNavigationGroupCollapsible(
   const location = useLocation();
   const isOnPath = childrenContainPath(node.children, location.pathname);
   const isActive = node.href !== undefined && location.pathname === node.href;
-  const [isOpen, setIsOpen] = useState(
-    node.defaultOpen || isOnPath || isActive,
-  );
+  const [isOpen, setIsOpen] = useState(node.defaultOpen || isOnPath);
 
   useEffect(() => {
-    if (isOnPath || isActive) {
+    if (isOnPath) {
       setIsOpen(true);
     }
   }, [
     isOnPath,
-    isActive,
   ]);
 
   return (
