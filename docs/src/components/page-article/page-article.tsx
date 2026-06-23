@@ -15,7 +15,8 @@ export type PageArticleProps = BoxProps<'article'> & {
 
 export function PageArticle(props: PageArticleProps) {
   const { className, page, ...restProps } = props;
-  const { nextPage, previousPage } = doc.findAdjacentPages(page);
+  const { nextPage, nextParentLabel, previousPage, previousParentLabel } =
+    doc.findAdjacentPages(page);
 
   return (
     <Box
@@ -58,7 +59,9 @@ export function PageArticle(props: PageArticleProps) {
         >
           <ContentPagination
             nextPage={nextPage}
+            nextParentLabel={nextParentLabel}
             previousPage={previousPage}
+            previousParentLabel={previousParentLabel}
           />
         </Box>
       )}

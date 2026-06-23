@@ -2,7 +2,6 @@ import type { Page } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#components/box';
 
 import { Link } from '@tanstack/react-router';
-import { t } from 'yapyak';
 
 import { Box } from '#components/box';
 
@@ -10,11 +9,20 @@ import styles from './content-pagination.module.css';
 
 export type ContentPaginationProps = BoxProps<'nav'> & {
   nextPage?: Page;
+  nextParentLabel?: string;
   previousPage?: Page;
+  previousParentLabel?: string;
 };
 
 export function ContentPagination(props: ContentPaginationProps) {
-  const { className, nextPage, previousPage, ...restProps } = props;
+  const {
+    className,
+    nextPage,
+    nextParentLabel,
+    previousPage,
+    previousParentLabel,
+    ...restProps
+  } = props;
 
   if (!nextPage && !previousPage) {
     return null;
@@ -34,18 +42,28 @@ export function ContentPagination(props: ContentPaginationProps) {
           className={styles.PreviousCard}
           to={previousPage.href}
         >
-          <Box
-            as="span"
-            className={styles.LabelText}
-          >
-            {t('Previous')}
-          </Box>
+          {previousParentLabel !== undefined && (
+            <Box
+              as="span"
+              className={styles.ParentText}
+            >
+              {previousParentLabel}
+            </Box>
+          )}
           <Box
             as="span"
             className={styles.TitleText}
           >
             {previousPage.title}
           </Box>
+          {previousPage.description && (
+            <Box
+              as="span"
+              className={styles.DescriptionText}
+            >
+              {previousPage.description}
+            </Box>
+          )}
         </Link>
       ) : (
         <Box className={styles.Spacer} />
@@ -55,18 +73,28 @@ export function ContentPagination(props: ContentPaginationProps) {
           className={styles.NextCard}
           to={nextPage.href}
         >
-          <Box
-            as="span"
-            className={styles.LabelText}
-          >
-            {t('Next')}
-          </Box>
+          {nextParentLabel !== undefined && (
+            <Box
+              as="span"
+              className={styles.ParentText}
+            >
+              {nextParentLabel}
+            </Box>
+          )}
           <Box
             as="span"
             className={styles.TitleText}
           >
             {nextPage.title}
           </Box>
+          {nextPage.description && (
+            <Box
+              as="span"
+              className={styles.DescriptionText}
+            >
+              {nextPage.description}
+            </Box>
+          )}
         </Link>
       ) : (
         <Box className={styles.Spacer} />

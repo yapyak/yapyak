@@ -1,0 +1,40 @@
+@layer components {
+  .ExternalLink {
+    --inline-code-color: currentColor;
+    display: inline-flex;
+    gap: var(--spacing-2);
+    align-items: center;
+    color: var(--brand);
+    letter-spacing: var(--letter-spacing-tight);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 4px;
+    transition: text-decoration-color var(--transition);
+
+    @media (hover: hover) {
+      &:hover {
+        text-decoration-color: currentColor;
+      }
+    }
+
+    &[data-size="sm"] {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+    }
+
+    &[data-size="md"] {
+      font-size: var(--font-size-md);
+    }
+
+    &[data-size="lg"] {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .Icon {
+      display: inline-flex;
+      align-items: center;
+      color: var(--foreground-softer);
+    }
+  }
+}

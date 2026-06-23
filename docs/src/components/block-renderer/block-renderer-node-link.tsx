@@ -3,7 +3,7 @@ import type { LinkBlock } from '@yapyak/doc-compiler';
 import { Link } from '@tanstack/react-router';
 
 import { Box } from '#components/box';
-import { ExternalLinkIcon } from '#components/external-link-icon';
+import { ExternalLink } from '#components/external-link';
 
 import { BlockRendererNode } from './block-renderer-node';
 import styles from './block-renderer-node-link.module.css';
@@ -33,21 +33,5 @@ export function BlockRendererNodeLink(props: BlockRendererNodeLinkProps) {
     );
   }
 
-  return (
-    <Box
-      as="a"
-      className={styles.BlockRendererNodeLink}
-      href={block.href}
-      rel="noreferrer"
-      target="_blank"
-    >
-      {children}
-      <Box
-        as="span"
-        className={styles.ExternalIcon}
-      >
-        <ExternalLinkIcon size={12} />
-      </Box>
-    </Box>
-  );
+  return <ExternalLink href={block.href}>{children}</ExternalLink>;
 }

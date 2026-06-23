@@ -2,7 +2,14 @@ import type { Manifest, Page, SidebarLink, SidebarNode } from '../build';
 
 export type AdjacentPages = {
   nextPage?: Page;
+  nextParentLabel?: string;
   previousPage?: Page;
+  previousParentLabel?: string;
+};
+
+type FlatEntry = {
+  link: SidebarLink;
+  parentLabel?: string;
 };
 
 export type PageEntry = {
@@ -52,23 +59,25 @@ export function findAdjacentPages(
     return {};
   }
   const flat = flattenLinks(collectionData.sidebar);
-  const index = flat.findIndex((link) => link.href === page.href);
+  const index = flat.findIndex((entry) => entry.link.href === page.href);
   if (index === -1) {
     return {};
   }
-  const previousLink = index > 0 ? flat[index - 1] : undefined;
-  const nextLink = index < flat.length - 1 ? flat[index + 1] : undefined;
+  const previousEntry = index > 0 ? flat[index - 1] : undefined;
+  const nextEntry = index < flat.length - 1 ? flat[index + 1] : undefined;
   const result: AdjacentPages = {};
-  if (nextLink) {
-    const nextPage = findPageByHref(manifest, nextLink.href);
+  if (nextEntry) {
+    const nextPage = findPageByHref(manifest, nextEntry.link.href);
     if (nextPage) {
       result.nextPage = nextPage;
+      result.nextParentLabel = nextEntry.parentLabel;
     }
   }
-  if (previousLink) {
-    const previousPage = findPageByHref(manifest, previousLink.href);
+  if (previousEntry) {
+    const previousPage = findPageByHref(manifest, previousEntry.link.href);
     if (previousPage) {
       result.previousPage = previousPage;
+      result.previousParentLabel = previousEntry.parentLabel;
     }
   }
   return result;
@@ -106,13 +115,27 @@ function findPageByHref(manifest: Manifest, href: string): Page | undefined {
   return undefined;
 }
 
-function flattenLinks(nodes: SidebarNode[]): SidebarLink[] {
-  const result: SidebarLink[] = [];
+function flattenLinks(nodes: SidebarNode[], parentLabel?: string): FlatEntry[] {
+  const result: FlatEntry[] = [];
   for (const node of nodes) {
     if (node.type === 'link') {
-      result.push(node);
+      result.push({
+        link: node,
+        parentLabel,
+      });
     } else {
-      result.push(...flattenLinks(node.children));
+      if (node.href !== undefined) {
+        result.push({
+          link: {
+            badge: node.badge,
+            href: node.href,
+            label: node.label,
+            type: 'link',
+          },
+          parentLabel,
+        });
+      }
+      result.push(...flattenLinks(node.children, node.label));
     }
   }
   return result;
