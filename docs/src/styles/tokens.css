@@ -136,7 +136,7 @@
     color-mix(in oklab, var(--color-silver), var(--color-ink) 40%) 100%
   );
 
-  --header-height: 88px;
+  --header-height: 82px;
 
   --syntax-keyword: var(--color-lilac);
   --syntax-fn-call: var(--color-iris);

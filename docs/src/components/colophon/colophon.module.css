@@ -18,6 +18,14 @@
     .BubbleImage {
       width: 72px;
       height: 72px;
+
+      .GradientStart {
+        stop-color: var(--brand);
+      }
+
+      .GradientEnd {
+        stop-color: var(--accent);
+      }
     }
 
     .TaglineParagraph {

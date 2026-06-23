@@ -1,23 +1,19 @@
 @layer components {
   .Wordmark {
-    display: inline-flex;
-    align-items: center;
-    font-size: var(--font-size-md);
-    font-weight: var(--font-weight-semibold);
-    line-height: var(--line-height-none);
-    letter-spacing: var(--letter-spacing-tighter);
+    width: auto;
+    height: 21px;
+    shape-rendering: geometricPrecision;
 
-    border-radius: var(--border-radius-full) var(--border-radius-full)
-      var(--border-radius-full) 0;
-
-    .YapText {
-      color: var(--foreground);
+    .GradientStart {
+      stop-color: var(--brand);
     }
 
-    .YakText {
-      color: transparent;
-      background: var(--gradient-brand);
-      background-clip: text;
+    .GradientEnd {
+      stop-color: var(--accent);
+    }
+
+    .YapText {
+      fill: var(--foreground);
     }
   }
 }
