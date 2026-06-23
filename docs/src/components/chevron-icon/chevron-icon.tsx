@@ -21,7 +21,7 @@ export function ChevronIcon(props: ChevronIconProps) {
       aria-hidden="true"
       fill="none"
       height="1em"
-      viewBox="0 0 16 16"
+      viewBox="0 0 24 24"
       width="1em"
       xmlns="http://www.w3.org/2000/svg"
       {...restProps}
@@ -31,11 +31,11 @@ export function ChevronIcon(props: ChevronIconProps) {
       }}
     >
       <path
-        d="M4 6l4 4 4-4"
+        d="M7 10l5 5 5-5"
         stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeWidth="1.5"
+        strokeWidth="2"
       />
     </svg>
   );
