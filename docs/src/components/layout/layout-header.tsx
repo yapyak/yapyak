@@ -44,11 +44,19 @@ export function LayoutHeader(props: LayoutHeaderProps) {
         setIsMenuOpen(false);
       }
     };
+    const mediaQuery = window.matchMedia('(min-width: 1024px)');
+    const handleMediaChange = () => {
+      if (mediaQuery.matches) {
+        setIsMenuOpen(false);
+      }
+    };
     document.addEventListener('keydown', handleKeydown);
+    mediaQuery.addEventListener('change', handleMediaChange);
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'clip';
     return () => {
       document.removeEventListener('keydown', handleKeydown);
+      mediaQuery.removeEventListener('change', handleMediaChange);
       document.body.style.overflow = previousOverflow;
     };
   }, [
