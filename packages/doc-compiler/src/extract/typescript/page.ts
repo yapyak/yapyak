@@ -570,11 +570,13 @@ type BuildModulePageInput = {
   index: SymbolIndex;
   label: string;
   moduleId: string;
+  sourceHref?: string;
 };
 
 type BuildPackageIndexPageInput = {
   href: string;
   label: string;
+  sourceHref?: string;
   subpaths: {
     description: string;
     href: string;
@@ -591,7 +593,7 @@ export function buildPackageIndexPage(
   blocks.push({
     kind: null,
     module: context.packageName,
-    sourceHref: null,
+    sourceHref: input.sourceHref ?? null,
     type: 'eyebrow',
   });
 
@@ -663,7 +665,7 @@ export function buildModulePage(
   blocks.push({
     kind: null,
     module: module.id,
-    sourceHref: null,
+    sourceHref: input.sourceHref ?? null,
     type: 'eyebrow',
   });
 

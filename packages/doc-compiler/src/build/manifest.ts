@@ -34,7 +34,7 @@ import { buildMarkdownSidebar } from './markdown-sidebar';
 import { buildPackageRoot } from './package-root';
 import { buildSupplement } from './supplement';
 import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 
 export type MetaValue =
   | string
@@ -179,6 +179,23 @@ type ModuleRenderContext = {
   subSlug: string;
   variableByTypeName: Map<string, string>;
 };
+
+function buildDirectorySourceHref(
+  absolutePath: string,
+  sourceUrl: SourceUrlConfig | undefined,
+): string | undefined {
+  if (sourceUrl === undefined) {
+    return undefined;
+  }
+  const path = relative(sourceUrl.workspaceRoot, absolutePath).replaceAll(
+    '\\',
+    '/',
+  );
+  return sourceUrl.template
+    .replaceAll('{path}', path)
+    .replace(/#L?\{line\}/, '')
+    .replaceAll('{line}', '');
+}
 
 async function buildTypeScriptCollection(
   collectionName: string,
@@ -513,6 +530,10 @@ async function buildTypeScriptCollection(
         index,
         label: moduleLabel,
         moduleId: module.id,
+        sourceHref: buildDirectorySourceHref(
+          join(typescriptPackage.root, module.sourcePath),
+          sourceUrl,
+        ),
       });
     }
 
@@ -539,6 +560,7 @@ async function buildTypeScriptCollection(
       pages[packageSlug] = buildPackageIndexPage(context, {
         href: `/${collectionName}/${packageSlug}`,
         label: displayName,
+        sourceHref: buildDirectorySourceHref(typescriptPackage.root, sourceUrl),
         subpaths,
       });
     }

@@ -26,12 +26,16 @@ export function ContentNavigation(props: ContentNavigationProps) {
       {tree.map((node) =>
         node.type === 'group' ? (
           <ContentNavigationGroup
+            className={
+              node.collapsible ? styles.CollapsibleGroup : styles.StaticGroup
+            }
             depth={0}
             key={`group:${node.label}`}
             node={node}
           />
         ) : (
           <ContentNavigationLink
+            className={styles.Link}
             key={node.href}
             node={node}
           />
