@@ -129,7 +129,11 @@ function Component() {
       <Layout.Main>
         <Outlet />
       </Layout.Main>
-      {hasFooter && <Colophon />}
+      {hasFooter && (
+        <Layout.Footer>
+          <Colophon />
+        </Layout.Footer>
+      )}
     </Layout>
   );
 }
