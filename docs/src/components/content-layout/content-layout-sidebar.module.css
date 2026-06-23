@@ -3,14 +3,19 @@
     display: none;
 
     @media (min-width: 1024px) {
-      position: sticky;
+      position: fixed;
       top: var(--header-height);
+      bottom: 0;
+      left: 0;
       display: flex;
       flex-direction: column;
       gap: var(--spacing-5);
-      align-self: start;
-      max-height: calc(100vh - var(--header-height));
-      padding: var(--spacing-5) var(--spacing-4);
+      width: calc(
+        var(--content-layout-sidebar-width) +
+        var(--content-layout-side-bleed)
+      );
+      padding: var(--spacing-5) var(--spacing-4) var(--spacing-5)
+        calc(var(--spacing-4) + var(--content-layout-side-bleed));
       overflow-y: auto;
       scrollbar-color: var(--ring-stronger) transparent;
       scrollbar-width: thin;

@@ -3,11 +3,17 @@
     display: none;
 
     @media (min-width: 1324px) {
-      position: sticky;
+      position: fixed;
       top: var(--header-height);
+      right: 0;
+      bottom: 0;
       display: block;
-      align-self: start;
-      padding: var(--spacing-5) 0;
+      width: calc(
+        var(--content-layout-outline-width) +
+        var(--content-layout-side-bleed)
+      );
+      padding: var(--spacing-5) var(--content-layout-side-bleed)
+        var(--spacing-5) 0;
       overflow-y: auto;
       scrollbar-color: var(--ring-stronger) transparent;
       scrollbar-width: thin;
