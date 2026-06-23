@@ -28,8 +28,12 @@ export function getRouter() {
 }
 
 declare module '@tanstack/react-router' {
-  // biome-ignore lint/style/useConsistentTypeDefinitions: yap yap yap
+  // biome-ignore-start lint/style/useConsistentTypeDefinitions: yap yap yap
   interface Register {
     router: ReturnType<typeof getRouter>;
   }
+  interface StaticDataRouteOption {
+    footer?: boolean;
+  }
+  // biome-ignore-end lint/style/useConsistentTypeDefinitions: yap yap yap
 }

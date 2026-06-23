@@ -8,6 +8,7 @@ import {
   Outlet,
   Scripts,
   createRootRoute,
+  useMatches,
 } from '@tanstack/react-router';
 import { useLocale } from '@yapyak/react';
 import { t } from 'yapyak';
@@ -91,6 +92,11 @@ export const Route = createRootRoute({
 });
 
 function Component() {
+  const hasFooter = useMatches({
+    select: (matches) =>
+      matches.some((match) => match.staticData.footer === true),
+  });
+
   return (
     <Layout>
       <Layout.Header>
@@ -119,9 +125,7 @@ function Component() {
       <Layout.Main>
         <Outlet />
       </Layout.Main>
-      <Layout.Footer>
-        <Colophon />
-      </Layout.Footer>
+      {hasFooter && <Colophon />}
     </Layout>
   );
 }
