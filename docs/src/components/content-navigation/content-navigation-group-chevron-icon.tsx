@@ -5,9 +5,9 @@ export function ContentNavigationGroupChevronIcon() {
     <svg
       aria-hidden="true"
       className={styles.ChevronIcon}
-      height="10"
+      height="12"
       viewBox="0 0 10 10"
-      width="10"
+      width="12"
     >
       <path
         d="M3.5 2L7 5L3.5 8"
