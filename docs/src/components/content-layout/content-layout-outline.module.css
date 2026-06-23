@@ -8,12 +8,8 @@
       right: 0;
       bottom: 0;
       display: block;
-      width: calc(
-        var(--content-layout-outline-width) +
-        var(--content-layout-side-bleed)
-      );
-      padding: var(--spacing-5) var(--content-layout-side-bleed)
-        var(--spacing-5) 0;
+      width: calc(var(--layout-outline-width) + var(--layout-side-bleed));
+      padding: var(--spacing-5) var(--layout-side-bleed) var(--spacing-5) 0;
       overflow-y: auto;
       scrollbar-color: var(--ring-stronger) transparent;
       scrollbar-width: thin;

@@ -31,8 +31,11 @@
       display: grid;
       grid-template-columns: 1fr auto;
       align-items: center;
+      width: 100%;
+      max-width: var(--layout-max-width);
       height: calc(var(--header-height) - var(--px));
       padding: 0 var(--spacing-6);
+      margin-inline: auto;
     }
 
     .MenuButtonSlot {

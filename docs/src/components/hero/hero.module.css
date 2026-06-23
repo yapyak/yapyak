@@ -8,7 +8,7 @@
 
     width: 100%;
     max-width: 1024px;
-    padding: var(--spacing-12) var(--spacing-4);
+    padding: var(--spacing-12) var(--spacing-6);
 
     .Stack {
       display: flex;
@@ -17,7 +17,7 @@
     }
 
     @media (min-width: 1024px) {
-      padding: var(--spacing-24) var(--spacing-8);
+      padding: var(--spacing-24) var(--spacing-6);
 
       .Stack {
         gap: var(--spacing-6);

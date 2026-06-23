@@ -21,7 +21,6 @@
 
     .NavContent {
       height: 0;
-      padding: var(--spacing-2);
       overflow: hidden;
       transition: height 400ms cubic-bezier(0.32, 0.72, 0, 1);
     }
@@ -137,6 +136,7 @@
 
       .NavContent {
         height: auto;
+        padding: var(--spacing-2);
         border-bottom: var(--px) solid var(--rule);
       }
 
