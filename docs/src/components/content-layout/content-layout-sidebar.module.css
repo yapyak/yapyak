@@ -12,7 +12,7 @@
       gap: var(--spacing-5);
       width: calc(var(--layout-sidebar-width) + var(--layout-side-bleed));
       padding: var(--spacing-5) var(--spacing-4) var(--spacing-5)
-        calc(var(--spacing-4) + var(--layout-side-bleed));
+        calc(var(--spacing-3) + var(--layout-side-bleed));
       overflow-y: auto;
       scrollbar-color: var(--ring-stronger) transparent;
       scrollbar-width: thin;

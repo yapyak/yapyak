@@ -24,7 +24,7 @@
     &[data-fade-border] {
       animation: layout-header-border-fade linear both;
       animation-timeline: scroll(root);
-      animation-range: 0 40px;
+      animation-range: 0 80px;
     }
 
     .Bar {
