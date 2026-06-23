@@ -33,6 +33,7 @@ declare module '@tanstack/react-router' {
     router: ReturnType<typeof getRouter>;
   }
   interface StaticDataRouteOption {
+    fadeBorder?: boolean;
     footer?: boolean;
   }
   // biome-ignore-end lint/style/useConsistentTypeDefinitions: yap yap yap

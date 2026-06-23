@@ -15,10 +15,12 @@ import { LayoutHeaderEnd } from './layout-header-end';
 import { LayoutHeaderMenuButton } from './layout-header-menu-button';
 import { LayoutHeaderStart } from './layout-header-start';
 
-export type LayoutHeaderProps = BoxProps<'header'>;
+export type LayoutHeaderProps = BoxProps<'header'> & {
+  fadeBorder?: boolean;
+};
 
 export function LayoutHeader(props: LayoutHeaderProps) {
-  const { children, className, ...restProps } = props;
+  const { children, className, fadeBorder, ...restProps } = props;
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -63,6 +65,7 @@ export function LayoutHeader(props: LayoutHeaderProps) {
         styles.LayoutHeader,
         className,
       ]}
+      data-fade-border={fadeBorder}
       data-menu-open={isMenuOpen}
       data-scrolled={isScrolled}
     >

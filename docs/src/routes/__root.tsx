@@ -96,10 +96,14 @@ function Component() {
     select: (matches) =>
       matches.some((match) => match.staticData.footer === true),
   });
+  const fadeBorder = useMatches({
+    select: (matches) =>
+      matches.some((match) => match.staticData.fadeBorder === true),
+  });
 
   return (
     <Layout>
-      <Layout.Header>
+      <Layout.Header fadeBorder={fadeBorder}>
         <Layout.Header.Start>
           <Link to="/home">
             <Wordmark />

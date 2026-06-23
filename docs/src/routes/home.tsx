@@ -7,6 +7,7 @@ import { Hero } from '#components/hero';
 export const Route = createFileRoute('/home')({
   component: Component,
   staticData: {
+    fadeBorder: true,
     footer: true,
   },
 });

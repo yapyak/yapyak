@@ -1,13 +1,15 @@
 @property --layout-header-border-opacity {
   syntax: "<number>";
   inherits: false;
-  initial-value: 0;
+  initial-value: 1;
 }
 
 @layer components {
   .LayoutHeader {
-    position: sticky;
+    position: fixed;
     top: 0;
+    right: 0;
+    left: 0;
     z-index: 100;
     display: flex;
     flex-direction: column;
@@ -18,9 +20,12 @@
         var(--rule) calc(var(--layout-header-border-opacity) * 100%),
         transparent
       );
-    animation: layout-header-border-fade linear both;
-    animation-timeline: scroll(root);
-    animation-range: 0 40px;
+
+    &[data-fade-border] {
+      animation: layout-header-border-fade linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 40px;
+    }
 
     .Bar {
       display: grid;
@@ -122,6 +127,9 @@
   }
 
   @keyframes layout-header-border-fade {
+    from {
+      --layout-header-border-opacity: 0;
+    }
     to {
       --layout-header-border-opacity: 1;
     }
