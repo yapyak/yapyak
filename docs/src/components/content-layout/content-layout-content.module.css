@@ -4,7 +4,6 @@
 
     @media (min-width: 1024px) {
       grid-column: 2;
-      border-left: var(--px) solid var(--rule);
     }
   }
 

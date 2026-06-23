@@ -31,6 +31,7 @@
       display: grid;
       grid-template-columns: 1fr auto;
       align-items: center;
+      height: calc(var(--header-height) - var(--px));
       padding: var(--spacing-4) var(--spacing-6);
     }
 
