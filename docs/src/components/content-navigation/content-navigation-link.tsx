@@ -15,19 +15,18 @@ export function ContentNavigationLink(props: ContentNavigationLinkProps) {
   const { node } = props;
   const isDeprecated = node.badge?.variant === 'deprecated';
   const ref = useRef<HTMLAnchorElement>(null);
-  const isActive = useLocation({
-    select: (location) => location.pathname === node.href,
+  const initialPathname = useLocation({
+    select: (location) => location.pathname,
   });
+  const isActiveOnMountRef = useRef(initialPathname === node.href);
 
   useEffect(() => {
-    if (isActive) {
+    if (isActiveOnMountRef.current) {
       ref.current?.scrollIntoView({
         block: 'nearest',
       });
     }
-  }, [
-    isActive,
-  ]);
+  }, []);
 
   return (
     <Box
