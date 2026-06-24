@@ -20,9 +20,11 @@ export type TParams<T extends string> = T extends `${string}{${string}`
 type TArgs<T extends string> =
   TParams<T> extends never
     ? []
-    : [
-        params: TParams<T>,
-      ];
+    : unknown extends TParams<T>
+      ? []
+      : [
+          params: TParams<T>,
+        ];
 
 declare const brand: unique symbol;
 

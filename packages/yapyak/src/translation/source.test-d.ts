@@ -51,6 +51,30 @@ describe('ValidateSource', () => {
     }>();
   });
 
+  it('refuses a source with an unclosed `{`', () => {
+    expectTypeOf<ValidateSource<'Hello {'>>().toEqualTypeOf<{
+      $yapyakTypeError: `Invalid source "Hello {": contains an unclosed '{' — close it as a placeholder like "{name}" or remove the brace`;
+    }>();
+  });
+
+  it('refuses a source with an unclosed `{` after a valid placeholder', () => {
+    expectTypeOf<ValidateSource<'Hi {name}, opens {'>>().toEqualTypeOf<{
+      $yapyakTypeError: `Invalid source "Hi {name}, opens {": contains an unclosed '{' — close it as a placeholder like "{name}" or remove the brace`;
+    }>();
+  });
+
+  it('refuses a source with an unmatched `}`', () => {
+    expectTypeOf<ValidateSource<'Hello }'>>().toEqualTypeOf<{
+      $yapyakTypeError: `Invalid source "Hello }": contains an unmatched '}' — remove it or add a matching '{'`;
+    }>();
+  });
+
+  it('refuses a source with an unmatched `}` after a valid placeholder', () => {
+    expectTypeOf<ValidateSource<'Hi {name}, }'>>().toEqualTypeOf<{
+      $yapyakTypeError: `Invalid source "Hi {name}, }": contains an unmatched '}' — remove it or add a matching '{'`;
+    }>();
+  });
+
   it('preserves a valid plural placeholder', () => {
     expectTypeOf<
       ValidateSource<'You have {count, plural, one {# msg} other {# msgs}}'>

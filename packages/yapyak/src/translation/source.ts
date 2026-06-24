@@ -171,14 +171,52 @@ type ValidatePlaceholder<T extends string> =
       ? OrElse<ValidateName<Trim<TName>>, ValidateFormat<Trim<TFormat>>>
       : ValidateName<Trim<T>>;
 
-type FindFirstSourceError<T extends string> =
-  T extends `${string}{${infer TInner}`
-    ? BalancedSplit<TInner> extends [
-        infer TBody extends string,
-        infer TRest extends string,
-      ]
-      ? OrElse<ValidatePlaceholder<TBody>, FindFirstSourceError<TRest>>
+type FindFirstSourceError<
+  T extends string,
+  TOriginal extends string = T,
+> = T extends `${string}{${infer TInner}`
+  ? [
+      BalancedSplit<TInner>,
+    ] extends [
+      never,
+    ]
+    ? {
+        $yapyakTypeError: `Invalid source "${TOriginal}": contains an unclosed '{' — close it as a placeholder like "{name}" or remove the brace`;
+      }
+    : BalancedSplit<TInner> extends [
+          infer TBody extends string,
+          infer TRest extends string,
+        ]
+      ? OrElse<
+          ValidatePlaceholder<TBody>,
+          FindFirstSourceError<TRest, TOriginal>
+        >
       : never
+  : never;
+
+type ConsumeBalanced<
+  T extends string,
+  TAcc extends string = '',
+> = T extends `${infer TPre}{${infer TAfter}`
+  ? [
+      BalancedSplit<TAfter>,
+    ] extends [
+      never,
+    ]
+    ? `${TAcc}${T}`
+    : BalancedSplit<TAfter> extends [
+          string,
+          infer TRest extends string,
+        ]
+      ? ConsumeBalanced<TRest, `${TAcc}${TPre}`>
+      : `${TAcc}${T}`
+  : `${TAcc}${T}`;
+
+type FindStrayCloseError<T extends string, TOriginal extends string = T> =
+  ConsumeBalanced<T> extends `${string}}${string}`
+    ? {
+        $yapyakTypeError: `Invalid source "${TOriginal}": contains an unmatched '}' — remove it or add a matching '{'`;
+      }
     : never;
 
 export type ValidateSource<T extends string> = string extends T
@@ -187,4 +225,4 @@ export type ValidateSource<T extends string> = string extends T
     ? {
         $yapyakTypeError: 'Invalid source: must not be an empty string';
       }
-    : OrElse<FindFirstSourceError<T>, T>;
+    : OrElse<FindFirstSourceError<T>, OrElse<FindStrayCloseError<T>, T>>;
