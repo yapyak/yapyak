@@ -100,6 +100,21 @@ export default defineConfig({
     transformer: 'lightningcss',
   },
   plugins: [
+    {
+      enforce: 'post',
+      generateBundle(_options, bundle) {
+        for (const file of Object.values(bundle)) {
+          if (file.type === 'asset' && file.fileName.endsWith('.css')) {
+            const css =
+              typeof file.source === 'string'
+                ? file.source
+                : new TextDecoder().decode(file.source);
+            file.source = `@layer reset, tokens, base, components;\n${css}`;
+          }
+        }
+      },
+      name: 'preserve-css-layer-order',
+    },
     tanstackStart({
       prerender: {
         concurrency: 1,
