@@ -17,7 +17,14 @@ export type PopoverProps = BoxProps & {
 };
 
 export function Popover(props: PopoverProps) {
-  const { align = 'end', anchorName, className, id, ...restProps } = props;
+  const {
+    align = 'end',
+    anchorName,
+    children,
+    className,
+    id,
+    ...restProps
+  } = props;
 
   return (
     <Box
@@ -32,7 +39,13 @@ export function Popover(props: PopoverProps) {
       style={{
         '--popover-anchor': anchorName,
       }}
-    />
+    >
+      <Box
+        aria-hidden="true"
+        className={styles.GrainOverlay}
+      />
+      {children}
+    </Box>
   );
 }
 

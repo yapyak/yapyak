@@ -10,7 +10,7 @@
     margin: 0;
     margin-top: var(--spacing-2);
     background: var(--surface-elevated);
-    border: var(--px) solid var(--rule);
+    border: var(--px) solid var(--ring);
     border-radius: var(--border-radius-md);
     box-shadow: 0 16px 80px
       color-mix(in oklab, var(--color-black) 60%, transparent);
@@ -49,6 +49,15 @@
       &:popover-open {
         opacity: 0;
       }
+    }
+
+    .GrainOverlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: var(--grain-noise);
+      border-radius: inherit;
+      opacity: var(--grain-opacity);
     }
   }
 
