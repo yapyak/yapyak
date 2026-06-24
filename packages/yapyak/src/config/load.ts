@@ -49,6 +49,7 @@ export async function loadYapyakConfig(
     }
     const jiti = createJiti(cwd, {
       interopDefault: true,
+      moduleCache: false,
     });
     let loaded: unknown;
     try {
