@@ -6,7 +6,6 @@
     place-self: center;
     width: 100%;
     max-width: 1024px;
-    padding: 0 var(--spacing-6);
 
     .Backdrop {
       display: none;
@@ -27,7 +26,6 @@
       grid-template-columns: var(--layout-sidebar-width) minmax(0, 1fr);
       gap: 0;
       max-width: var(--layout-max-width);
-      padding-inline: 0;
     }
 
     @media (min-width: 1324px) {

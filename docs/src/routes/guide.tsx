@@ -47,7 +47,9 @@ function Component() {
       <ContentLayout.Sidebar>{sidebarContent}</ContentLayout.Sidebar>
       <ContentLayout.Content>
         <ContentLayout.ContentHeader page={page} />
-        <Outlet />
+        <ContentLayout.ContentContent>
+          <Outlet />
+        </ContentLayout.ContentContent>
       </ContentLayout.Content>
       <ContentLayout.Outline>
         <ContentAnchorNavigation

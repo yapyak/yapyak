@@ -10,7 +10,7 @@ export type ContentLayoutOutlineProps = Omit<DrawerProps, 'direction' | 'open'>;
 export function ContentLayoutOutline(props: ContentLayoutOutlineProps) {
   const { className, ...restProps } = props;
 
-  const { outlineOpen } = useContentLayout();
+  const { outlineOpen, resizing } = useContentLayout();
 
   return (
     <Drawer
@@ -19,6 +19,7 @@ export function ContentLayoutOutline(props: ContentLayoutOutlineProps) {
         styles.ContentLayoutOutline,
         className,
       ]}
+      data-no-transition={resizing ? '' : undefined}
       direction="end"
       open={outlineOpen}
     />

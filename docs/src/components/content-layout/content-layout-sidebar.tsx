@@ -10,7 +10,7 @@ export type ContentLayoutSidebarProps = Omit<DrawerProps, 'direction' | 'open'>;
 export function ContentLayoutSidebar(props: ContentLayoutSidebarProps) {
   const { className, ...restProps } = props;
 
-  const { sidebarOpen } = useContentLayout();
+  const { resizing, sidebarOpen } = useContentLayout();
 
   return (
     <Drawer
@@ -19,6 +19,7 @@ export function ContentLayoutSidebar(props: ContentLayoutSidebarProps) {
         styles.ContentLayoutSidebar,
         className,
       ]}
+      data-no-transition={resizing ? '' : undefined}
       direction="start"
       id="sidebar"
       open={sidebarOpen}
