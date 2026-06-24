@@ -1,7 +1,7 @@
 import type { OnlyBlock } from '@yapyak/doc-compiler';
 
 import { Box } from '#components/box';
-import { useOptionsContext } from '#components/options';
+import { useOptionContext } from '#components/option-provider';
 
 import { BlockRenderer } from './block-renderer';
 
@@ -11,7 +11,7 @@ export type BlockRendererNodeOnlyProps = {
 
 export function BlockRendererNodeOnly(props: BlockRendererNodeOnlyProps) {
   const { block } = props;
-  const { get } = useOptionsContext();
+  const { get } = useOptionContext();
   const active = get(block.group);
   const visible = active === block.value;
 

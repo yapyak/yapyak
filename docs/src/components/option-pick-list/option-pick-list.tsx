@@ -1,21 +1,23 @@
+import type { BoxProps } from '#components/box';
+
 import { useId } from 'react';
 
 import { Box } from '#components/box';
-import { CheckIcon } from '#components/check-icon';
 import { ChevronIcon } from '#components/chevron-icon';
 import { OptionDot } from '#components/option-dot';
+import { useOptionContext } from '#components/option-provider';
 import { Popover } from '#components/popover';
-import popoverStyles from '#components/popover/popover.module.css';
 
-import styles from './doc-options.module.css';
-import { useOptionsContext } from './options-context';
+import styles from './option-pick-list.module.css';
+import { OptionPickListItem } from './option-pick-list-item';
 import { doc } from 'virtual:doc-compiler';
 
-export type DocOptionsProps = {};
+export type OptionPickListProps = BoxProps;
 
-export function DocOptions(_props: DocOptionsProps) {
+export function OptionPickList(props: OptionPickListProps) {
+  const { className, ...restProps } = props;
   const registry = doc.getOptions();
-  const { get, set } = useOptionsContext();
+  const { get, set } = useOptionContext();
   const popoverId = useId();
   const anchorName = `--anchor${popoverId.replace(/[^a-z0-9-]/gi, '-')}`;
   const groupIds = Object.keys(registry);
@@ -44,7 +46,13 @@ export function DocOptions(_props: DocOptionsProps) {
   });
 
   return (
-    <>
+    <Box
+      {...restProps}
+      className={[
+        styles.OptionPickList,
+        className,
+      ]}
+    >
       <Box
         as="button"
         className={styles.Trigger}
@@ -91,38 +99,19 @@ export function DocOptions(_props: DocOptionsProps) {
               <Box className={styles.GroupLabel}>{group.label}</Box>
               <Box className={styles.GroupOptions}>
                 {group.options.map((option) => (
-                  <Box
-                    aria-pressed={option.value === active}
-                    as="button"
-                    className={popoverStyles.Option}
-                    data-active={option.value === active}
-                    data-option-value={option.value}
+                  <OptionPickListItem
+                    active={option.value === active}
+                    groupId={groupId}
                     key={option.value}
-                    onClick={() => set(groupId, option.value)}
-                    type="button"
-                  >
-                    <OptionDot />
-                    <Box
-                      as="span"
-                      className={popoverStyles.OptionLabel}
-                    >
-                      {option.label}
-                    </Box>
-                    {option.value === active && (
-                      <Box
-                        as="span"
-                        className={popoverStyles.OptionTrailing}
-                      >
-                        <CheckIcon />
-                      </Box>
-                    )}
-                  </Box>
+                    onActivate={set}
+                    option={option}
+                  />
                 ))}
               </Box>
             </Box>
           );
         })}
       </Popover>
-    </>
+    </Box>
   );
 }

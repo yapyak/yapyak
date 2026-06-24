@@ -1,7 +1,7 @@
 import type { SwitchBlock } from '@yapyak/doc-compiler';
 
 import { Box } from '#components/box';
-import { useOptionsContext } from '#components/options';
+import { useOptionContext } from '#components/option-provider';
 
 import { BlockRenderer } from './block-renderer';
 import { doc } from 'virtual:doc-compiler';
@@ -12,7 +12,7 @@ export type BlockRendererNodeSwitchProps = {
 
 export function BlockRendererNodeSwitch(props: BlockRendererNodeSwitchProps) {
   const { block } = props;
-  const { get } = useOptionsContext();
+  const { get } = useOptionContext();
   const group = doc.getOptionsGroup(block.group);
   if (group === undefined) {
     return null;

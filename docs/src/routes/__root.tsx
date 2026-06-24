@@ -19,11 +19,11 @@ import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
 import { Navigation } from '#components/navigation';
 import { NotFoundView } from '#components/not-found-view';
+import { OptionPickList } from '#components/option-pick-list';
 import {
-  DocOptions,
-  OptionsProvider,
+  OptionProvider,
   buildPrepaintScript,
-} from '#components/options';
+} from '#components/option-provider';
 import { Wordmark } from '#components/wordmark';
 import { assetUrl } from '#utils/asset';
 
@@ -92,18 +92,19 @@ export const Route = createRootRoute({
 });
 
 function Component() {
-  const hasFooter = useMatches({
-    select: (matches) =>
-      matches.some((match) => match.staticData.footer === true),
-  });
-  const fadeBorder = useMatches({
+  const shouldFadeBorder = useMatches({
     select: (matches) =>
       matches.some((match) => match.staticData.fadeBorder === true),
   });
 
+  const hasFooter = useMatches({
+    select: (matches) =>
+      matches.some((match) => match.staticData.footer === true),
+  });
+
   return (
     <Layout>
-      <Layout.Header fadeBorder={fadeBorder}>
+      <Layout.Header fadeBorder={shouldFadeBorder}>
         <Layout.Header.Start>
           <Link to="/home">
             <Wordmark />
@@ -117,7 +118,7 @@ function Component() {
           </Navigation>
         </Layout.Header.Center>
         <Layout.Header.End>
-          <DocOptions />
+          <OptionPickList />
           <IconLink
             aria-label={t('View on GitHub')}
             href="https://github.com/yapyak/yapyak"
@@ -159,7 +160,7 @@ function ShellComponent(props: ShellComponentProps) {
         />
       </head>
       <body>
-        <OptionsProvider>{children}</OptionsProvider>
+        <OptionProvider>{children}</OptionProvider>
         <Scripts />
       </body>
     </html>

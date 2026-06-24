@@ -1,4 +1,8 @@
 @layer components {
+  .OptionPickList {
+    display: inline-flex;
+  }
+
   .Trigger {
     display: inline-flex;
     gap: var(--spacing-2);

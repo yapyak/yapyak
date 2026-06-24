@@ -1,3 +1,5 @@
+import type { BoxProps } from '#components/box';
+
 import { useEffect, useId, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
@@ -8,7 +10,6 @@ import { DotsIcon } from '#components/dots-icon';
 import { ExternalLinkIcon } from '#components/external-link-icon';
 import { OptionDot } from '#components/option-dot';
 import { Popover } from '#components/popover';
-import popoverStyles from '#components/popover/popover.module.css';
 
 import styles from './page-action.module.css';
 
@@ -44,12 +45,12 @@ const CHAT_PROVIDERS: ChatProvider[] = [
   },
 ];
 
-export type PageActionProps = {
+export type PageActionProps = BoxProps & {
   href: string;
 };
 
 export function PageAction(props: PageActionProps) {
-  const { href } = props;
+  const { className, href, ...restProps } = props;
   const [copied, setCopied] = useState(false);
   const [origin, setOrigin] = useState<string | undefined>(undefined);
   const timeoutRef = useRef<number | undefined>(undefined);
@@ -96,7 +97,13 @@ export function PageAction(props: PageActionProps) {
   };
 
   return (
-    <>
+    <Box
+      {...restProps}
+      className={[
+        styles.PageAction,
+        className,
+      ]}
+    >
       <Box
         aria-label={t('Page actions')}
         as="button"
@@ -114,45 +121,25 @@ export function PageAction(props: PageActionProps) {
         anchorName={anchorName}
         id={popoverId}
       >
-        <Box
-          as="button"
-          className={popoverStyles.Option}
-          onClick={handleCopy}
-          type="button"
-        >
+        <Popover.Option onClick={handleCopy}>
           {copied ? <CheckIcon /> : <CopyIcon />}
-          <Box
-            as="span"
-            className={popoverStyles.OptionLabel}
-          >
+          <Popover.OptionLabel>
             {copied ? t('Copied') : t('Copy page')}
-          </Box>
-        </Box>
-        <Box
+          </Popover.OptionLabel>
+        </Popover.Option>
+        <Popover.Option
           as="a"
-          className={popoverStyles.Option}
           href={markdownPath}
           rel="noreferrer"
           target="_blank"
         >
           <ExternalLinkIcon />
-          <Box
-            as="span"
-            className={popoverStyles.OptionLabel}
-          >
-            {t('Open markdown')}
-          </Box>
-        </Box>
-        <Box
-          as="span"
-          className={popoverStyles.Eyebrow}
-        >
-          {t('Chat')}
-        </Box>
+          <Popover.OptionLabel>{t('Open markdown')}</Popover.OptionLabel>
+        </Popover.Option>
+        <Popover.Eyebrow>{t('Chat')}</Popover.Eyebrow>
         {CHAT_PROVIDERS.map((provider) => (
-          <Box
+          <Popover.Option
             as="a"
-            className={popoverStyles.Option}
             data-option-value={provider.value}
             href={buildChatHref(provider)}
             key={provider.value}
@@ -160,21 +147,13 @@ export function PageAction(props: PageActionProps) {
             target="_blank"
           >
             <OptionDot />
-            <Box
-              as="span"
-              className={popoverStyles.OptionLabel}
-            >
-              {provider.label}
-            </Box>
-            <Box
-              as="span"
-              className={popoverStyles.OptionTrailing}
-            >
+            <Popover.OptionLabel>{provider.label}</Popover.OptionLabel>
+            <Popover.OptionTrailing>
               <ExternalLinkIcon />
-            </Box>
-          </Box>
+            </Popover.OptionTrailing>
+          </Popover.Option>
         ))}
       </Popover>
-    </>
+    </Box>
   );
 }

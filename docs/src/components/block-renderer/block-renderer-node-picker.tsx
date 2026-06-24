@@ -2,7 +2,7 @@ import type { PickerBlock } from '@yapyak/doc-compiler';
 
 import { Box } from '#components/box';
 import { OptionDot } from '#components/option-dot';
-import { useOptionsContext } from '#components/options';
+import { useOptionContext } from '#components/option-provider';
 
 import styles from './block-renderer-node-picker.module.css';
 import { doc } from 'virtual:doc-compiler';
@@ -13,7 +13,7 @@ export type BlockRendererNodePickerProps = {
 
 export function BlockRendererNodePicker(props: BlockRendererNodePickerProps) {
   const { block } = props;
-  const { get, set } = useOptionsContext();
+  const { get, set } = useOptionContext();
   const group = doc.getOptionsGroup(block.group);
   const active = get(block.group);
 

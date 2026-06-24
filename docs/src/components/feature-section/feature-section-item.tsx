@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import type { BoxProps } from '#components/box';
-import type { Feature } from '#components/feature-section';
+import type { Feature } from './feature-section';
 
 import { Box } from '#components/box';
 

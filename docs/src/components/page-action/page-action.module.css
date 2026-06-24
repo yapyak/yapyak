@@ -1,4 +1,8 @@
 @layer components {
+  .PageAction {
+    display: inline-flex;
+  }
+
   .Trigger {
     display: inline-flex;
     align-items: center;

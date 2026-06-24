@@ -1,4 +1,12 @@
 @layer components {
+  .PageOutline {
+    display: inline-flex;
+
+    @media (min-width: 1324px) {
+      display: none;
+    }
+  }
+
   .Trigger {
     display: inline-flex;
     gap: var(--spacing-2);
@@ -37,10 +45,6 @@
     &:focus-visible {
       outline-width: 4px;
       outline-color: var(--accent-soft);
-    }
-
-    @media (min-width: 1324px) {
-      display: none;
     }
   }
 

@@ -1,4 +1,5 @@
 import type { Page } from '@yapyak/doc-compiler';
+import type { BoxProps } from '#components/box';
 
 import { useId, useMemo } from 'react';
 import { t } from 'yapyak';
@@ -10,12 +11,12 @@ import { Popover } from '#components/popover';
 import styles from './page-outline.module.css';
 import { doc } from 'virtual:doc-compiler';
 
-export type PageOutlineProps = {
+export type PageOutlineProps = BoxProps & {
   page: Page;
 };
 
 export function PageOutline(props: PageOutlineProps) {
-  const { page } = props;
+  const { className, page, ...restProps } = props;
   const popoverId = useId();
   const anchorName = `--anchor${popoverId.replace(/[^a-z0-9-]/gi, '-')}`;
   const headings = useMemo(
@@ -34,7 +35,13 @@ export function PageOutline(props: PageOutlineProps) {
   }
 
   return (
-    <>
+    <Box
+      {...restProps}
+      className={[
+        styles.PageOutline,
+        className,
+      ]}
+    >
       <Box
         as="button"
         className={styles.Trigger}
@@ -84,6 +91,6 @@ export function PageOutline(props: PageOutlineProps) {
           ))}
         </Box>
       </Popover>
-    </>
+    </Box>
   );
 }

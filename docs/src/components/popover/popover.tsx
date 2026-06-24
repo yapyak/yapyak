@@ -1,25 +1,27 @@
-import type { ReactNode } from 'react';
-import type { ClassName } from '#types';
+import type { BoxProps } from '#components/box';
 
 import { Box } from '#components/box';
 
 import styles from './popover.module.css';
+import { PopoverEyebrow } from './popover-eyebrow';
+import { PopoverOption } from './popover-option';
+import { PopoverOptionLabel } from './popover-option-label';
+import { PopoverOptionTrailing } from './popover-option-trailing';
 
 export type PopoverAlignment = 'center' | 'end' | 'start';
 
-export type PopoverProps = {
+export type PopoverProps = BoxProps & {
   align?: PopoverAlignment;
   anchorName: string;
-  children: ReactNode;
-  className?: ClassName;
   id: string;
 };
 
 export function Popover(props: PopoverProps) {
-  const { align = 'end', anchorName, children, className, id } = props;
+  const { align = 'end', anchorName, className, id, ...restProps } = props;
 
   return (
     <Box
+      {...restProps}
       className={[
         styles.Popover,
         className,
@@ -30,8 +32,11 @@ export function Popover(props: PopoverProps) {
       style={{
         '--popover-anchor': anchorName,
       }}
-    >
-      {children}
-    </Box>
+    />
   );
 }
+
+Popover.Option = PopoverOption;
+Popover.OptionLabel = PopoverOptionLabel;
+Popover.OptionTrailing = PopoverOptionTrailing;
+Popover.Eyebrow = PopoverEyebrow;
