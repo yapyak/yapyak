@@ -5,6 +5,7 @@
   --spacing-0: 0;
   --spacing-05: 2px;
   --spacing-1: 4px;
+  --spacing-1-5: 6px;
   --spacing-2: 8px;
   --spacing-3: 12px;
   --spacing-4: 16px;
@@ -136,7 +137,7 @@
     color-mix(in oklab, var(--color-silver), var(--color-ink) 40%) 100%
   );
 
-  --header-height: 82px;
+  --header-height: 76px;
 
   --syntax-keyword: var(--color-lilac);
   --syntax-fn-call: var(--color-iris);

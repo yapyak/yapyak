@@ -7,6 +7,7 @@
     }
 
     @media (min-width: 1324px) {
+      width: 100%;
       max-width: 784px;
       margin-inline: auto;
     }
