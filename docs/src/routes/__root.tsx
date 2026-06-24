@@ -152,11 +152,6 @@ function ShellComponent(props: ShellComponentProps) {
   return (
     <html lang={locale}>
       <head>
-        <style
-          dangerouslySetInnerHTML={{
-            __html: '@layer reset, tokens, base, components;',
-          }}
-        />
         <HeadContent />
         <script
           dangerouslySetInnerHTML={{

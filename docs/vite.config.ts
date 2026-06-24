@@ -93,6 +93,9 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
 
 export default defineConfig({
   base: process.env.DOCS_BASEPATH ?? '/',
+  build: {
+    cssCodeSplit: false,
+  },
   css: {
     transformer: 'lightningcss',
   },
