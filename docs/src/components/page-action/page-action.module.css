@@ -1,44 +1,74 @@
 @layer components {
   .PageAction {
-    display: inline-flex;
-  }
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
 
-  .Trigger {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    color: var(--foreground-soft);
-    cursor: pointer;
-    outline: var(--spacing-2) solid transparent;
-    outline-offset: 0;
-    background-color: transparent;
-    border: 0;
-    border-radius: var(--border-radius-sm);
-    box-shadow: var(--shadow-ring-inset);
-    anchor-name: var(--trigger-anchor);
-    transition:
-      color var(--transition),
-      background-color var(--transition),
-      box-shadow var(--transition),
-      outline 400ms,
-      transform var(--transition);
+    @media (min-width: 1324px) {
+      padding-left: var(--spacing-3);
+    }
 
-    @media (hover: hover) {
-      &:hover {
-        color: var(--foreground);
-        background-color: var(--surface);
+    .Eyebrow {
+      padding: 0 var(--spacing-3);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--foreground-softer);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-wider);
+    }
+
+    .List {
+      display: flex;
+      flex-direction: column;
+
+      .Item {
+        display: flex;
+        gap: var(--spacing-2);
+        align-items: center;
+        padding: var(--spacing-1) var(--spacing-3);
+        font-family: inherit;
+        font-size: var(--font-size-xs);
+        color: var(--foreground-soft);
+        text-align: left;
+        text-decoration: none;
+        cursor: pointer;
+        outline: var(--spacing-2) solid transparent;
+        outline-offset: 0;
+        background-color: transparent;
+        border: 0;
+        border-radius: var(--border-radius-sm);
+        transition:
+          color var(--transition),
+          outline 400ms;
+
+        .Text {
+          flex: 1 1 auto;
+        }
+
+        .TrailingIcon {
+          color: var(--foreground-softer);
+        }
+
+        @media (hover: hover) {
+          &:hover {
+            color: var(--foreground);
+          }
+        }
+
+        &:active {
+          color: var(--foreground);
+        }
+
+        &:focus-visible {
+          color: var(--foreground);
+          outline-width: var(--spacing-05);
+          outline-color: var(--accent-soft);
+        }
       }
-    }
 
-    &:active {
-      transform: scale(0.96);
-    }
-
-    &:focus-visible {
-      outline-width: 3px;
-      outline-color: var(--accent-soft);
+      .ChatItem {
+        anchor-name: var(--trigger-anchor);
+      }
     }
   }
 }

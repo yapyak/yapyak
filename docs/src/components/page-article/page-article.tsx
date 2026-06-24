@@ -4,7 +4,6 @@ import type { BoxProps } from '#components/box';
 import { BlockRenderer } from '#components/block-renderer';
 import { Box } from '#components/box';
 import { ContentPagination } from '#components/content-pagination';
-import { PageAction } from '#components/page-action';
 
 import styles from './page-article.module.css';
 import { doc } from 'virtual:doc-compiler';
@@ -31,14 +30,11 @@ export function PageArticle(props: PageArticleProps) {
         as="header"
         className={styles.Header}
       >
-        <Box className={styles.TitleRow}>
-          <Box
-            as="h1"
-            className={styles.TitleHeading}
-          >
-            {page.title}
-          </Box>
-          <PageAction href={page.href} />
+        <Box
+          as="h1"
+          className={styles.TitleHeading}
+        >
+          {page.title}
         </Box>
         {page.description && (
           <Box

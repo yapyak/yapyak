@@ -30,7 +30,7 @@
       align-items: center;
       padding: 0 var(--spacing-2);
       font-family: inherit;
-      font-size: var(--font-size-sm);
+      font-size: var(--font-size-xs);
       font-weight: var(--font-weight-medium);
       color: var(--foreground-soft);
       cursor: pointer;

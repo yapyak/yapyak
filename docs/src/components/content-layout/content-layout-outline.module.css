@@ -1,5 +1,6 @@
 @layer components {
   .ContentLayoutOutline {
+    gap: var(--spacing-6);
     padding: var(--spacing-5) var(--spacing-4);
 
     @media (min-width: 1324px) {

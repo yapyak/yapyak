@@ -5,8 +5,8 @@ import { useMemo } from 'react';
 import { t } from 'yapyak';
 
 import { Box } from '#components/box';
-import { ChevronIcon } from '#components/chevron-icon';
 import { OutlineIcon } from '#components/outline-icon';
+import { SidebarIcon } from '#components/sidebar-icon';
 
 import { useContentLayout } from './content-layout';
 import styles from './content-layout-content-header.module.css';
@@ -49,7 +49,7 @@ export function ContentLayoutContentHeader(
         onClick={openSidebar}
         type="button"
       >
-        <OutlineIcon className={styles.Icon} />
+        <SidebarIcon className={styles.Icon} />
         <Box
           as="span"
           className={styles.Text}
@@ -69,12 +69,9 @@ export function ContentLayoutContentHeader(
             as="span"
             className={styles.Text}
           >
-            {t('On this page')}
+            {t('Page')}
           </Box>
-          <ChevronIcon
-            className={styles.Icon}
-            direction="right"
-          />
+          <OutlineIcon className={styles.Icon} />
         </Box>
       )}
     </Box>

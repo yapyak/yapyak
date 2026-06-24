@@ -1,8 +1,8 @@
 import type { SVGProps } from 'react';
 
-export type OutlineIconProps = SVGProps<SVGSVGElement>;
+export type SidebarIconProps = SVGProps<SVGSVGElement>;
 
-export function OutlineIcon(props: OutlineIconProps) {
+export function SidebarIcon(props: SidebarIconProps) {
   return (
     <svg
       {...props}
@@ -25,8 +25,8 @@ export function OutlineIcon(props: OutlineIconProps) {
         y="5"
       />
       <line
-        x1="15"
-        x2="15"
+        x1="9"
+        x2="9"
         y1="5"
         y2="19"
       />

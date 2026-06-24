@@ -4,14 +4,11 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
 import { Box } from '#components/box';
-import { CheckIcon } from '#components/check-icon';
-import { CopyIcon } from '#components/copy-icon';
-import { DotsIcon } from '#components/dots-icon';
-import { ExternalLinkIcon } from '#components/external-link-icon';
-import { OptionDot } from '#components/option-dot';
+import { ChevronIcon } from '#components/chevron-icon';
 import { Popover } from '#components/popover';
 
 import styles from './page-action.module.css';
+import { PageActionChatItem } from './page-action-chat-item';
 
 const COPIED_RESET_MS = 1500;
 
@@ -45,13 +42,13 @@ const CHAT_PROVIDERS: ChatProvider[] = [
   },
 ];
 
-export type PageActionProps = BoxProps & {
+export type PageActionProps = BoxProps<'nav'> & {
   href: string;
 };
 
 export function PageAction(props: PageActionProps) {
   const { className, href, ...restProps } = props;
-  const [copied, setCopied] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   const [origin, setOrigin] = useState<string | undefined>(undefined);
   const timeoutRef = useRef<number | undefined>(undefined);
   const popoverId = useId();
@@ -86,12 +83,12 @@ export function PageAction(props: PageActionProps) {
       const response = await fetch(markdownPath);
       const text = await response.text();
       await navigator.clipboard.writeText(text);
-      setCopied(true);
+      setIsCopied(true);
       if (timeoutRef.current !== undefined) {
         window.clearTimeout(timeoutRef.current);
       }
       timeoutRef.current = window.setTimeout(() => {
-        setCopied(false);
+        setIsCopied(false);
       }, COPIED_RESET_MS);
     } catch {}
   };
@@ -99,59 +96,78 @@ export function PageAction(props: PageActionProps) {
   return (
     <Box
       {...restProps}
+      aria-label={t('Page actions')}
+      as="nav"
       className={[
         styles.PageAction,
         className,
       ]}
     >
-      <Box
-        aria-label={t('Page actions')}
-        as="button"
-        className={styles.Trigger}
-        popoverTarget={popoverId}
-        style={{
-          '--trigger-anchor': anchorName,
-        }}
-        type="button"
-      >
-        <DotsIcon />
+      <Box className={styles.Eyebrow}>{t('Actions')}</Box>
+      <Box className={styles.List}>
+        <Box
+          as="button"
+          className={styles.Item}
+          onClick={handleCopy}
+          type="button"
+        >
+          <Box
+            as="span"
+            className={styles.Text}
+          >
+            {isCopied ? t('Copied') : t('Copy page')}
+          </Box>
+        </Box>
+        <Box
+          as="a"
+          className={styles.Item}
+          href={markdownPath}
+          rel="noreferrer"
+          target="_blank"
+        >
+          <Box
+            as="span"
+            className={styles.Text}
+          >
+            {t('Open markdown')}
+          </Box>
+        </Box>
+        <Box
+          as="button"
+          className={[
+            styles.Item,
+            styles.ChatItem,
+          ]}
+          popoverTarget={popoverId}
+          style={{
+            '--trigger-anchor': anchorName,
+          }}
+          type="button"
+        >
+          <Box
+            as="span"
+            className={styles.Text}
+          >
+            {t('Chat')}
+          </Box>
+          <ChevronIcon
+            className={styles.TrailingIcon}
+            direction="right"
+          />
+        </Box>
       </Box>
       <Popover
         align="end"
         anchorName={anchorName}
         id={popoverId}
       >
-        <Popover.Option onClick={handleCopy}>
-          {copied ? <CheckIcon /> : <CopyIcon />}
-          <Popover.OptionLabel>
-            {copied ? t('Copied') : t('Copy page')}
-          </Popover.OptionLabel>
-        </Popover.Option>
-        <Popover.Option
-          as="a"
-          href={markdownPath}
-          rel="noreferrer"
-          target="_blank"
-        >
-          <ExternalLinkIcon />
-          <Popover.OptionLabel>{t('Open markdown')}</Popover.OptionLabel>
-        </Popover.Option>
-        <Popover.Eyebrow>{t('Chat')}</Popover.Eyebrow>
         {CHAT_PROVIDERS.map((provider) => (
-          <Popover.Option
-            as="a"
-            data-option-value={provider.value}
+          <PageActionChatItem
             href={buildChatHref(provider)}
             key={provider.value}
-            rel="noreferrer"
-            target="_blank"
-          >
-            <OptionDot />
-            <Popover.OptionLabel>{provider.label}</Popover.OptionLabel>
-            <Popover.OptionTrailing>
-              <ExternalLinkIcon />
-            </Popover.OptionTrailing>
-          </Popover.Option>
+            label={provider.label}
+            value={provider.value}
+          />
         ))}
       </Popover>
     </Box>

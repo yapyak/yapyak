@@ -6,6 +6,7 @@ import { t } from 'yapyak';
 import { ContentAnchorNavigation } from '#components/content-anchor-navigation';
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
+import { PageAction } from '#components/page-action';
 
 import { doc } from 'virtual:doc-compiler';
 
@@ -56,6 +57,7 @@ function Component() {
           headings={headings}
           key={page.href}
         />
+        <PageAction href={page.href} />
       </ContentLayout.Outline>
     </ContentLayout>
   );
