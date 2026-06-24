@@ -81,7 +81,7 @@
       color: var(--brand-contrast);
       outline: var(--spacing-2) solid transparent;
       outline-offset: 0;
-      background: var(--gradient-brand);
+      background-color: var(--brand);
       border-radius: var(--border-radius-full);
       transition:
         filter var(--transition),

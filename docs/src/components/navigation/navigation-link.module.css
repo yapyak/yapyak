@@ -26,7 +26,7 @@
 
     &[data-status="active"] {
       color: var(--brand-contrast);
-      background: var(--gradient-brand);
+      background-color: var(--brand);
     }
 
     &:not([data-status="active"]) {

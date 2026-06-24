@@ -22,7 +22,7 @@
       width: var(--navigation-indicator-width);
       height: var(--navigation-indicator-height);
       pointer-events: none;
-      background: var(--gradient-brand);
+      background-color: var(--brand);
       border-radius: var(--border-radius-full);
       opacity: 0;
       transform: translate(
@@ -44,7 +44,7 @@
       }
 
       a[data-status="active"] {
-        background: transparent;
+        background-color: transparent;
       }
     }
   }

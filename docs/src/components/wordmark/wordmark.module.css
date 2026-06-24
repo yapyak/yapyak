@@ -4,12 +4,8 @@
     height: 21px;
     shape-rendering: geometricPrecision;
 
-    .GradientStart {
-      stop-color: var(--brand);
-    }
-
-    .GradientEnd {
-      stop-color: var(--accent);
+    .BrandFill {
+      fill: var(--brand);
     }
 
     .YapText {
