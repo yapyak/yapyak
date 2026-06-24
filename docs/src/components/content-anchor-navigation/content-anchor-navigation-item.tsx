@@ -17,13 +17,7 @@ export type ContentAnchorNavigationItemProps = BoxProps<'a'> & {
 export function ContentAnchorNavigationItem(
   props: ContentAnchorNavigationItemProps,
 ) {
-  const {
-    active: isActive,
-    className,
-    heading,
-    onActivate,
-    ...restProps
-  } = props;
+  const { active, className, heading, onActivate, ...restProps } = props;
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     if (
@@ -46,7 +40,7 @@ export function ContentAnchorNavigationItem(
         styles.ContentAnchorNavigationItem,
         className,
       ]}
-      data-active={isActive ? '' : undefined}
+      data-active={active ? '' : undefined}
       data-level={heading.level}
       hash={heading.id}
       hashScrollIntoView={false}

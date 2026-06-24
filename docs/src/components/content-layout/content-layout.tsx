@@ -7,21 +7,27 @@ import { Box } from '#components/box';
 
 import styles from './content-layout.module.css';
 import { ContentLayoutContent } from './content-layout-content';
+import { ContentLayoutContentHeader } from './content-layout-content-header';
 import { ContentLayoutOutline } from './content-layout-outline';
 import { ContentLayoutSidebar } from './content-layout-sidebar';
-import { ContentLayoutToolbar } from './content-layout-toolbar';
 
 export type ContentLayoutProps = BoxProps;
 
 type ContentLayoutContextValue = {
+  closeOutline: () => void;
   closeSidebar: () => void;
+  openOutline: () => void;
   openSidebar: () => void;
+  outlineOpen: boolean;
   sidebarOpen: boolean;
 };
 
 const ContentLayoutContext = createContext<ContentLayoutContextValue>({
+  closeOutline: () => {},
   closeSidebar: () => {},
+  openOutline: () => {},
   openSidebar: () => {},
+  outlineOpen: false,
   sidebarOpen: false,
 });
 
@@ -32,22 +38,28 @@ export function useContentLayout() {
 export function ContentLayout(props: ContentLayoutProps) {
   const { children, className, ...restProps } = props;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isOutlineOpen, setIsOutlineOpen] = useState(false);
   const location = useLocation();
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: yap yap yap
+  const isAnyDrawerOpen = isSidebarOpen || isOutlineOpen;
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: closes drawers on navigation
   useEffect(() => {
     setIsSidebarOpen(false);
+    setIsOutlineOpen(false);
   }, [
     location.pathname,
+    location.hash,
   ]);
 
   useEffect(() => {
-    if (!isSidebarOpen) {
+    if (!isAnyDrawerOpen) {
       return;
     }
     const handleKeydown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setIsSidebarOpen(false);
+        setIsOutlineOpen(false);
       }
     };
     document.addEventListener('keydown', handleKeydown);
@@ -58,25 +70,44 @@ export function ContentLayout(props: ContentLayoutProps) {
       document.body.style.overflow = previousOverflow;
     };
   }, [
-    isSidebarOpen,
+    isAnyDrawerOpen,
   ]);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(min-width: 1024px)');
-    const handleChange = (event: MediaQueryListEvent) => {
+    const sidebarMedia = window.matchMedia('(min-width: 1024px)');
+    const handleSidebar = (event: MediaQueryListEvent) => {
       if (event.matches) {
         setIsSidebarOpen(false);
       }
     };
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
+    sidebarMedia.addEventListener('change', handleSidebar);
+    return () => sidebarMedia.removeEventListener('change', handleSidebar);
   }, []);
+
+  useEffect(() => {
+    const outlineMedia = window.matchMedia('(min-width: 1324px)');
+    const handleOutline = (event: MediaQueryListEvent) => {
+      if (event.matches) {
+        setIsOutlineOpen(false);
+      }
+    };
+    outlineMedia.addEventListener('change', handleOutline);
+    return () => outlineMedia.removeEventListener('change', handleOutline);
+  }, []);
+
+  const closeAll = () => {
+    setIsSidebarOpen(false);
+    setIsOutlineOpen(false);
+  };
 
   return (
     <ContentLayoutContext
       value={{
+        closeOutline: () => setIsOutlineOpen(false),
         closeSidebar: () => setIsSidebarOpen(false),
+        openOutline: () => setIsOutlineOpen(true),
         openSidebar: () => setIsSidebarOpen(true),
+        outlineOpen: isOutlineOpen,
         sidebarOpen: isSidebarOpen,
       }}
     >
@@ -86,12 +117,12 @@ export function ContentLayout(props: ContentLayoutProps) {
           styles.ContentLayout,
           className,
         ]}
-        data-sidebar-open={isSidebarOpen}
+        data-drawer-open={isAnyDrawerOpen ? '' : undefined}
       >
         <Box
           aria-hidden="true"
           className={styles.Backdrop}
-          onClick={() => setIsSidebarOpen(false)}
+          onClick={closeAll}
         />
         {children}
       </Box>
@@ -101,5 +132,5 @@ export function ContentLayout(props: ContentLayoutProps) {
 
 ContentLayout.Sidebar = ContentLayoutSidebar;
 ContentLayout.Content = ContentLayoutContent;
+ContentLayout.ContentHeader = ContentLayoutContentHeader;
 ContentLayout.Outline = ContentLayoutOutline;
-ContentLayout.Toolbar = ContentLayoutToolbar;

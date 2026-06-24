@@ -1,21 +1,11 @@
 @layer components {
   .ContentLayoutContent {
-    padding: var(--spacing-8) 0 var(--spacing-32);
+    display: flex;
+    flex-direction: column;
+    padding-bottom: var(--spacing-32);
 
     @media (min-width: 1024px) {
       grid-column: 2;
-    }
-  }
-
-  .Inner {
-    @media (min-width: 1024px) {
-      width: 100%;
-      padding-inline: var(--spacing-12);
-    }
-
-    @media (min-width: 1324px) {
-      max-width: 784px;
-      margin-inline: auto;
     }
   }
 }

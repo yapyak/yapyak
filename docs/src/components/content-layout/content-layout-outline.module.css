@@ -1,19 +1,16 @@
 @layer components {
   .ContentLayoutOutline {
-    display: none;
+    padding: var(--spacing-5) var(--spacing-4);
 
     @media (min-width: 1324px) {
-      position: fixed;
       top: var(--header-height);
-      right: 0;
-      bottom: 0;
-      display: block;
+      z-index: auto;
       width: calc(var(--layout-outline-width) + var(--layout-side-bleed));
       padding: var(--spacing-5) var(--layout-side-bleed) var(--spacing-5) 0;
-      overflow-y: auto;
-      scrollbar-color: var(--ring-stronger) transparent;
-      scrollbar-width: thin;
       background-color: transparent;
+      border-left: none;
+      transform: none;
+      transition: none;
     }
   }
 }

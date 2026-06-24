@@ -725,28 +725,42 @@ items.sort((a, b) => a.order - b.order);
 
 The rule depends on **where** the boolean lives. Standalone variables and object properties follow different conventions because they're read differently — `if (isActive)` reads as a sentence; `<Button disabled />` reads as an attribute.
 
-**Three absolutes — no exceptions:**
+**Three rules:**
 
-1. **Boolean variables (incl. `useState`)** — ALWAYS carry `is*`/`has*`/`can*`/`should*`/`will*`/`was*`/`are*` prefix.
+1. **Fresh boolean variables** (created via `useState`, `const x = expr`, `let`, function returns) — ALWAYS carry `is*`/`has*`/`can*`/`should*`/`will*`/`was*`/`are*` prefix.
 2. **Object property fields** (interface fields, context values, options, config, props) — NEVER carry that prefix. Bare adjective or verb-phrase.
-3. **When a variable meets an object** — ALIAS `{ property: variable }`. The alias is the **bridge** between the two conventions, not a smell. Never break rule #1 or #2 to avoid the alias.
+3. **Crossing the boundary:**
+   - **Fresh variable → property** (assignment INTO an object): ALIAS `{ property: variable }`. The alias bridges rule 1 to rule 2.
+   - **Property → local binding** (destructuring OUT of props/context/options): KEEP the bare property name. No alias needed — the parameter/destructure context already carries the meaning; renaming is pure ceremony.
 
 ```ts
-// ✓ Right — three rules respected, alias bridges them
-const [isSidebarOpen, setIsSidebarOpen] = useState(false);       // rule 1: variable has prefix
-interface ContextValue { sidebarOpen: boolean; closeSidebar: () => void; }  // rule 2: property bare
+// ✓ Right — fresh useState carries prefix (rule 1), property bare (rule 2),
+//   assignment into property aliases (rule 3)
+const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+interface ContextValue { sidebarOpen: boolean; closeSidebar: () => void; }
 return (
-  <Context value={{ sidebarOpen: isSidebarOpen, closeSidebar }}> {/* rule 3: alias */}
+  <Context value={{ sidebarOpen: isSidebarOpen, closeSidebar }}>
 );
 
-// ✓ Right — consumer destructures back to prefixed variable
-const { sidebarOpen: isSidebarOpen } = useContext(Context);
+// ✓ Right — destructuring out: keep the bare property name
+const { sidebarOpen } = useContext(Context);
+if (sidebarOpen) { /* reads fine in local scope */ }
 
-// ✗ Wrong — variable without prefix to avoid alias
+function Drawer(props: DrawerProps) {
+  const { open, direction } = props;   // bare, no alias
+  return <Box data-open={open ? '' : undefined} />;
+}
+
+// ✓ Also fine — alias on destructure only if the bare name would shadow / be ambiguous
+
+// ✗ Wrong — fresh variable without prefix to avoid the assignment-side alias
 const [sidebarOpen, setSidebarOpen] = useState(false);
 
-// ✗ Wrong — object property with prefix to match variable
+// ✗ Wrong — object property with prefix to match a variable
 interface ContextValue { isSidebarOpen: boolean; ... }
+
+// ✗ Wrong — pointless alias on destructure-out (rule 3)
+const { sidebarOpen: isSidebarOpen } = useContext(Context);
 ```
 
 JSX prop binding (`<MenuButton open={isMenuOpen} />`) is **not** aliasing — `open` is the component's prop name (bare per rule 2), `isMenuOpen` is the local variable (prefix per rule 1). Different names is normal variable-to-prop passing, no alias needed.

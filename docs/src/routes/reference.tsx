@@ -45,6 +45,7 @@ function Component() {
     <ContentLayout>
       <ContentLayout.Sidebar>{sidebarContent}</ContentLayout.Sidebar>
       <ContentLayout.Content>
+        <ContentLayout.ContentHeader page={page} />
         <Outlet />
       </ContentLayout.Content>
       <ContentLayout.Outline>
@@ -53,9 +54,6 @@ function Component() {
           key={page.href}
         />
       </ContentLayout.Outline>
-      <ContentLayout.Toolbar page={page}>
-        {sidebarContent}
-      </ContentLayout.Toolbar>
     </ContentLayout>
   );
 }

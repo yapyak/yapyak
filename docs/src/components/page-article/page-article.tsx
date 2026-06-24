@@ -5,7 +5,6 @@ import { BlockRenderer } from '#components/block-renderer';
 import { Box } from '#components/box';
 import { ContentPagination } from '#components/content-pagination';
 import { PageAction } from '#components/page-action';
-import { PageOutline } from '#components/page-outline';
 
 import styles from './page-article.module.css';
 import { doc } from 'virtual:doc-compiler';
@@ -39,7 +38,6 @@ export function PageArticle(props: PageArticleProps) {
           >
             {page.title}
           </Box>
-          <PageOutline page={page} />
           <PageAction href={page.href} />
         </Box>
         {page.description && (

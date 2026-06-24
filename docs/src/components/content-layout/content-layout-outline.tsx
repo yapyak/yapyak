@@ -1,22 +1,26 @@
-import type { BoxProps } from '#components/box';
+import type { DrawerProps } from '#components/drawer';
 
-import { Box } from '#components/box';
+import { Drawer } from '#components/drawer';
 
+import { useContentLayout } from './content-layout';
 import styles from './content-layout-outline.module.css';
 
-export type ContentLayoutOutlineProps = BoxProps<'aside'>;
+export type ContentLayoutOutlineProps = Omit<DrawerProps, 'direction' | 'open'>;
 
 export function ContentLayoutOutline(props: ContentLayoutOutlineProps) {
   const { className, ...restProps } = props;
 
+  const { outlineOpen } = useContentLayout();
+
   return (
-    <Box
+    <Drawer
       {...restProps}
-      as="aside"
       className={[
         styles.ContentLayoutOutline,
         className,
       ]}
+      direction="end"
+      open={outlineOpen}
     />
   );
 }

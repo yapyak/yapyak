@@ -7,7 +7,7 @@ import styles from './content-layout-content.module.css';
 export type ContentLayoutContentProps = BoxProps<'main'>;
 
 export function ContentLayoutContent(props: ContentLayoutContentProps) {
-  const { children, className, ...restProps } = props;
+  const { className, ...restProps } = props;
 
   return (
     <Box
@@ -17,8 +17,6 @@ export function ContentLayoutContent(props: ContentLayoutContentProps) {
         styles.ContentLayoutContent,
         className,
       ]}
-    >
-      <div className={styles.Inner}>{children}</div>
-    </Box>
+    />
   );
 }
