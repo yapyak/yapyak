@@ -106,6 +106,48 @@ describe('responseToError', () => {
     expect(error).toBeInstanceOf(TranslatorNetworkError);
     expect((error as TranslatorNetworkError).status).toBe(503);
   });
+
+  it('extracts the nested `error.message` from a JSON body', async () => {
+    const body = JSON.stringify({
+      error: {
+        message: 'Your credit balance is too low',
+        type: 'invalid_request_error',
+      },
+      type: 'error',
+    });
+    const error = await responseToError(
+      new Response(body, {
+        status: 400,
+      }),
+      'anthropic',
+    );
+    expect(error.message).toBe(
+      'yapyak anthropic: HTTP 400 — Your credit balance is too low',
+    );
+  });
+
+  it('extracts the top-level `message` from a JSON body', async () => {
+    const body = JSON.stringify({
+      message: 'Quota exceeded',
+    });
+    const error = await responseToError(
+      new Response(body, {
+        status: 400,
+      }),
+      'openai',
+    );
+    expect(error.message).toBe('yapyak openai: HTTP 400 — Quota exceeded');
+  });
+
+  it('falls back to the raw body when JSON parsing fails', async () => {
+    const error = await responseToError(
+      new Response('plain text error', {
+        status: 500,
+      }),
+      'ollama',
+    );
+    expect(error.message).toBe('yapyak ollama: HTTP 500 — plain text error');
+  });
 });
 
 describe('causeToError', () => {

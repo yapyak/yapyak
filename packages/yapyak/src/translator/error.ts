@@ -172,7 +172,8 @@ export async function responseToError(
   } catch {
     body = '';
   }
-  const message = `yapyak ${vendor}: HTTP ${response.status}${body === '' ? '' : ` ${body}`}`;
+  const detail = extractBodyDetail(body);
+  const message = `yapyak ${vendor}: HTTP ${response.status}${detail === '' ? '' : ` — ${detail}`}`;
   if (response.status === 429) {
     return new TranslatorRateLimitError(message, {
       retryAfter: parseRetryAfterMs(response.headers.get('retry-after')),
@@ -188,6 +189,29 @@ export async function responseToError(
     status: response.status,
     vendor,
   });
+}
+
+function extractBodyDetail(body: string): string {
+  if (body === '') {
+    return '';
+  }
+  try {
+    const parsed: unknown = JSON.parse(body);
+    if (parsed && typeof parsed === 'object') {
+      const record = parsed as Record<string, unknown>;
+      const nested = record.error;
+      if (nested && typeof nested === 'object') {
+        const nestedMessage = (nested as Record<string, unknown>).message;
+        if (typeof nestedMessage === 'string' && nestedMessage !== '') {
+          return nestedMessage;
+        }
+      }
+      if (typeof record.message === 'string' && record.message !== '') {
+        return record.message;
+      }
+    }
+  } catch {}
+  return body;
 }
 
 export function causeToError(cause: unknown, vendor: string): TranslatorError {

@@ -206,7 +206,8 @@ function buildErrorGroups(
 }
 
 function renderTranslationErrorGroup(group: TranslationErrorGroup): string {
-  const message = String(group.error);
+  const message =
+    group.error instanceof Error ? group.error.message : String(group.error);
   const [firstEntry] = group.entries;
   if (!firstEntry) {
     return `[yapyak] translation failed: ${group.locale} — ${message}`;
