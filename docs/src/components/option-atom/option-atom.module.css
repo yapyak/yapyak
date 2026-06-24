@@ -1,0 +1,13 @@
+@layer components {
+  .OptionAtom {
+    display: flex;
+    flex: 1 1 auto;
+    gap: var(--spacing-2);
+    align-items: center;
+    min-width: 0;
+
+    .Text {
+      line-height: 1;
+    }
+  }
+}

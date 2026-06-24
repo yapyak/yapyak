@@ -4,7 +4,7 @@ import { useId } from 'react';
 
 import { Box } from '#components/box';
 import { ChevronIcon } from '#components/chevron-icon';
-import { OptionDot } from '#components/option-dot';
+import { OptionAtom } from '#components/option-atom';
 import { useOptionContext } from '#components/option-provider';
 import { Popover } from '#components/popover';
 
@@ -62,22 +62,15 @@ export function OptionPickList(props: OptionPickListProps) {
         }}
         type="button"
       >
-        {triggerEntries.map((entry) => (
-          <Box
-            as="span"
-            className={styles.TriggerEntry}
-            data-option-value={entry.value}
-            key={entry.groupId}
-          >
-            <OptionDot />
-            <Box
-              as="span"
-              className={styles.TriggerLabel}
-            >
-              {entry.label}
-            </Box>
-          </Box>
-        ))}
+        <Box className={styles.AtomRow}>
+          {triggerEntries.map((entry) => (
+            <OptionAtom
+              key={entry.groupId}
+              label={entry.label}
+              value={entry.value}
+            />
+          ))}
+        </Box>
         <ChevronIcon direction="down" />
       </Box>
       <Popover

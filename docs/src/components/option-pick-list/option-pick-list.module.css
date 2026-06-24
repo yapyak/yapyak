@@ -24,8 +24,7 @@
       color var(--transition),
       background-color var(--transition),
       box-shadow var(--transition),
-      outline 400ms,
-      transform var(--transition);
+      outline 400ms;
 
     @media (hover: hover) {
       &:hover {
@@ -35,27 +34,25 @@
     }
 
     &:active {
-      transform: scale(0.96);
+      color: var(--foreground);
+      background-color: var(--surface);
     }
 
     &:focus-visible {
       outline-width: 4px;
       outline-color: var(--accent-soft);
     }
-  }
 
-  .TriggerEntry {
-    display: inline-flex;
-    gap: var(--spacing-2);
-    align-items: center;
-
-    & + & {
-      padding-left: var(--spacing-3);
+    &:has(+ :popover-open) {
+      color: var(--foreground);
+      background-color: var(--surface);
     }
-  }
 
-  .TriggerLabel {
-    line-height: 1;
+    .AtomRow {
+      display: flex;
+      gap: var(--spacing-5);
+      align-items: center;
+    }
   }
 
   .Group {

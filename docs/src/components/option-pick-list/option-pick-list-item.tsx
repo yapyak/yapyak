@@ -2,7 +2,7 @@ import type { OptionItem } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#components/box';
 
 import { CheckIcon } from '#components/check-icon';
-import { OptionDot } from '#components/option-dot';
+import { OptionAtom } from '#components/option-atom';
 import { Popover } from '#components/popover';
 
 export type OptionPickListItemProps = BoxProps<'button'> & {
@@ -20,11 +20,12 @@ export function OptionPickListItem(props: OptionPickListItemProps) {
       {...restProps}
       aria-pressed={active}
       data-active={active}
-      data-option-value={option.value}
       onClick={() => onActivate(groupId, option.value)}
     >
-      <OptionDot />
-      <Popover.OptionLabel>{option.label}</Popover.OptionLabel>
+      <OptionAtom
+        label={option.label}
+        value={option.value}
+      />
       {active && (
         <Popover.OptionTrailing>
           <CheckIcon />
