@@ -177,7 +177,7 @@ describe('yapyak', () => {
       expect(newFileIds).toHaveLength(5);
     });
 
-    it('triggers a full reload when adding a locale file so the runtime picks up the new locale', async () => {
+    it('notifies the client of a full reload when adding a locale file', async () => {
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
       invokeBuildStart(plugin);
@@ -199,7 +199,7 @@ describe('yapyak', () => {
       });
     });
 
-    it('triggers a full reload when removing a locale file so the runtime drops the locale', async () => {
+    it('notifies the client of a full reload when removing a locale file', async () => {
       writeFileSync(join(root, 'locales', 'fr.json'), '{}');
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');

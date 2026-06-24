@@ -65,7 +65,7 @@ function buildMessage(source: string): ExtractedMessage {
 }
 
 describe('fillStubs', () => {
-  it('aborts the in-flight controller and replaces it when called a second time', () => {
+  it('notifies the previous controller when called a second time', () => {
     const translator: Translator = Object.assign(
       () => new Promise<string>(() => {}),
       {
@@ -97,7 +97,7 @@ describe('fillStubs', () => {
     expect(second?.signal.aborted).toBe(false);
   });
 
-  it('aborts the in-flight controller even when the second call has no missing strings to translate', () => {
+  it('notifies the previous controller when called with no missing strings', () => {
     const translator: Translator = Object.assign(
       () => new Promise<string>(() => {}),
       {

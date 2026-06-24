@@ -450,7 +450,7 @@ describe('autoTranslate', () => {
     });
   });
 
-  it('skips persistence when the signal aborts before the translator returns', async () => {
+  it('blocks persistence when the signal aborts before the translator returns', async () => {
     const controller = new AbortController();
     const translator: Translator = Object.assign(
       () => Promise.reject(new Error('use batch')),
@@ -514,7 +514,7 @@ describe('autoTranslate', () => {
     expect(existsSync(localePath)).toBe(false);
   });
 
-  it('skips persistence in `onChunkComplete` after the signal aborts mid-batch', async () => {
+  it('blocks persistence in `onChunkComplete` after the signal aborts mid-batch', async () => {
     const controller = new AbortController();
     const translator: Translator = Object.assign(
       () => Promise.reject(new Error('use batch')),
