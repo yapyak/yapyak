@@ -1,19 +1,23 @@
 import type { ListItemBlock } from '@yapyak/doc-compiler';
+import type { BoxProps } from '#components/box';
 
 import { Box } from '#components/box';
 
 import { BlockRendererNode } from './block-renderer-node';
 
-export type BlockRendererNodeListItemProps = {
+export type BlockRendererNodeListItemProps = BoxProps<'li'> & {
   block: ListItemBlock;
 };
 
 export function BlockRendererNodeListItem(
   props: BlockRendererNodeListItemProps,
 ) {
-  const { block } = props;
+  const { block, className, ...restProps } = props;
   return (
-    <Box as="li">
+    <Box
+      {...restProps}
+      as="li"
+    >
       {block.children.map((child, index) => (
         <BlockRendererNode
           block={child}

@@ -1,4 +1,5 @@
 import type { DiagnosticsBlock } from '@yapyak/doc-compiler';
+import type { BoxProps } from '#components/box';
 import type { Language } from '#utils/tokenize';
 
 import { Box } from '#components/box';
@@ -9,7 +10,7 @@ import { tokenize } from '#utils/tokenize';
 
 import styles from './block-renderer-node-diagnostics.module.css';
 
-export type BlockRendererNodeDiagnosticsProps = {
+export type BlockRendererNodeDiagnosticsProps = BoxProps<'code'> & {
   block: DiagnosticsBlock;
 };
 
@@ -36,13 +37,18 @@ function isSupportedLanguage(value: string): value is Language {
 export function BlockRendererNodeDiagnostics(
   props: BlockRendererNodeDiagnosticsProps,
 ) {
-  const { block } = props;
+  const { block, className, ...restProps } = props;
   const language: Language = isSupportedLanguage(block.language)
     ? block.language
     : 'ts';
 
   return (
-    <Box className={styles.Diagnostics}>
+    <Box
+      className={[
+        styles.Diagnostics,
+        className,
+      ]}
+    >
       {block.lines.map((line, index) => {
         const highlighted = tokenize(line.code, language);
         return (
@@ -58,6 +64,7 @@ export function BlockRendererNodeDiagnostics(
               {line.status === 'ok' ? <CheckIcon /> : <XIcon />}
             </Box>
             <Box
+              {...restProps}
               as="code"
               className={styles.Code}
             >

@@ -1,19 +1,22 @@
+import type { SVGProps } from 'react';
+
 import { useId } from 'react';
 
 import styles from './hero-demo-locale-flag.module.css';
 
 export type HeroDemoLocaleFlagCode = 'es' | 'fr' | 'ja' | 'sv';
 
-export type HeroDemoLocaleFlagProps = {
+export type HeroDemoLocaleFlagProps = SVGProps<SVGSVGElement> & {
   code: HeroDemoLocaleFlagCode;
 };
 
 export function HeroDemoLocaleFlag(props: HeroDemoLocaleFlagProps) {
-  const { code } = props;
+  const { code, ...restProps } = props;
   const id = useId();
   const clipId = `${id}-clip`;
   return (
     <svg
+      {...restProps}
       aria-hidden="true"
       className={styles.HeroDemoLocaleFlag}
       height={12}

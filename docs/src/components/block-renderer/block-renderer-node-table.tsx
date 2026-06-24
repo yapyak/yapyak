@@ -1,19 +1,26 @@
 import type { TableBlock } from '@yapyak/doc-compiler';
+import type { BoxProps } from '#components/box';
 
 import { Box } from '#components/box';
 
 import { BlockRendererNode } from './block-renderer-node';
 import styles from './block-renderer-node-table.module.css';
 
-export type BlockRendererNodeTableProps = {
+export type BlockRendererNodeTableProps = BoxProps<'table'> & {
   block: TableBlock;
 };
 
 export function BlockRendererNodeTable(props: BlockRendererNodeTableProps) {
-  const { block } = props;
+  const { block, className, ...restProps } = props;
   return (
-    <Box className={styles.BlockRendererNodeTableScroll}>
+    <Box
+      className={[
+        styles.BlockRendererNodeTableScroll,
+        className,
+      ]}
+    >
       <Box
+        {...restProps}
         as="table"
         className={styles.BlockRendererNodeTable}
       >

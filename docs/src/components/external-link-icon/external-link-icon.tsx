@@ -1,14 +1,15 @@
-import type { ReactElement } from 'react';
+import type { ReactElement, SVGProps } from 'react';
 
-export type ExternalLinkIconProps = {
+export type ExternalLinkIconProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
 export function ExternalLinkIcon(props: ExternalLinkIconProps): ReactElement {
-  const { size = 14 } = props;
+  const { size = 14, ...restProps } = props;
 
   return (
     <svg
+      {...restProps}
       aria-hidden="true"
       fill="none"
       height={size}

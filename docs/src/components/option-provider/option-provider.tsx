@@ -1,5 +1,5 @@
 import type { OptionsRegistry } from '@yapyak/doc-compiler';
-import type { ReactNode } from 'react';
+import type { PropsWithChildren } from 'react';
 
 import { useEffect, useState } from 'react';
 
@@ -18,9 +18,7 @@ function readDefaults(registry: OptionsRegistry): Record<string, string> {
   return initial;
 }
 
-export type OptionProviderProps = {
-  children: ReactNode;
-};
+export type OptionProviderProps = PropsWithChildren;
 
 export function OptionProvider(props: OptionProviderProps) {
   const { children } = props;

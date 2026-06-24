@@ -1,6 +1,6 @@
-import type { ReactElement } from 'react';
+import type { ReactElement, SVGProps } from 'react';
 
-export type PackageManagerIconProps = {
+export type PackageManagerIconProps = SVGProps<SVGSVGElement> & {
   name: string;
   size?: number;
 };
@@ -8,12 +8,13 @@ export type PackageManagerIconProps = {
 export function PackageManagerIcon(
   props: PackageManagerIconProps,
 ): ReactElement | null {
-  const { name, size = 16 } = props;
+  const { name, size = 16, ...restProps } = props;
 
   switch (name) {
     case 'npm':
       return (
         <svg
+          {...restProps}
           aria-hidden="true"
           height={size}
           shapeRendering="geometricPrecision"

@@ -1,4 +1,5 @@
 import type { PickerBlock } from '@yapyak/doc-compiler';
+import type { BoxProps } from '#components/box';
 
 import { Box } from '#components/box';
 import { OptionDot } from '#components/option-dot';
@@ -7,12 +8,12 @@ import { useOptionContext } from '#components/option-provider';
 import styles from './block-renderer-node-picker.module.css';
 import { doc } from 'virtual:doc-compiler';
 
-export type BlockRendererNodePickerProps = {
+export type BlockRendererNodePickerProps = BoxProps<'section'> & {
   block: PickerBlock;
 };
 
 export function BlockRendererNodePicker(props: BlockRendererNodePickerProps) {
-  const { block } = props;
+  const { block, className, ...restProps } = props;
   const { get, set } = useOptionContext();
   const group = doc.getOptionsGroup(block.group);
   const active = get(block.group);
@@ -23,8 +24,12 @@ export function BlockRendererNodePicker(props: BlockRendererNodePickerProps) {
 
   return (
     <Box
+      {...restProps}
       as="section"
-      className={styles.Picker}
+      className={[
+        styles.Picker,
+        className,
+      ]}
     >
       <Box className={styles.Label}>{group.label}</Box>
       <Box

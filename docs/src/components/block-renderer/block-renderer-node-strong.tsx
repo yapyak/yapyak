@@ -1,20 +1,25 @@
 import type { StrongBlock } from '@yapyak/doc-compiler';
+import type { BoxProps } from '#components/box';
 
 import { Box } from '#components/box';
 
 import { BlockRendererNode } from './block-renderer-node';
 import styles from './block-renderer-node-strong.module.css';
 
-export type BlockRendererNodeStrongProps = {
+export type BlockRendererNodeStrongProps = BoxProps<'strong'> & {
   block: StrongBlock;
 };
 
 export function BlockRendererNodeStrong(props: BlockRendererNodeStrongProps) {
-  const { block } = props;
+  const { block, className, ...restProps } = props;
   return (
     <Box
+      {...restProps}
       as="strong"
-      className={styles.BlockRendererNodeStrong}
+      className={[
+        styles.BlockRendererNodeStrong,
+        className,
+      ]}
     >
       {block.children.map((child, index) => (
         <BlockRendererNode

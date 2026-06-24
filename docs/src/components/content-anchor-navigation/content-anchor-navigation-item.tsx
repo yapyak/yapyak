@@ -1,21 +1,29 @@
 import type { HeadingEntry } from '@yapyak/doc-compiler';
-import type { MouseEvent, Ref } from 'react';
+import type { MouseEvent } from 'react';
+import type { BoxProps } from '#components/box';
 
 import { Link } from '@tanstack/react-router';
 
+import { Box } from '#components/box';
+
 import styles from './content-anchor-navigation-item.module.css';
 
-export type ContentAnchorNavigationItemProps = {
+export type ContentAnchorNavigationItemProps = BoxProps<'a'> & {
   active: boolean;
   heading: HeadingEntry;
   onActivate: (id: string) => void;
-  ref?: Ref<HTMLAnchorElement>;
 };
 
 export function ContentAnchorNavigationItem(
   props: ContentAnchorNavigationItemProps,
 ) {
-  const { active: isActive, heading, onActivate, ref } = props;
+  const {
+    active: isActive,
+    className,
+    heading,
+    onActivate,
+    ...restProps
+  } = props;
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     if (
@@ -31,17 +39,21 @@ export function ContentAnchorNavigationItem(
   };
 
   return (
-    <Link
-      className={styles.ContentAnchorNavigationItem}
+    <Box
+      {...restProps}
+      as={Link}
+      className={[
+        styles.ContentAnchorNavigationItem,
+        className,
+      ]}
       data-active={isActive ? '' : undefined}
       data-level={heading.level}
       hash={heading.id}
       hashScrollIntoView={false}
       onClick={handleClick}
-      ref={ref}
       to="."
     >
       {heading.text}
-    </Link>
+    </Box>
   );
 }

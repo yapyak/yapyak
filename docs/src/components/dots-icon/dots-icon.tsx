@@ -1,14 +1,15 @@
-import type { ReactElement } from 'react';
+import type { ReactElement, SVGProps } from 'react';
 
-export type DotsIconProps = {
+export type DotsIconProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
 export function DotsIcon(props: DotsIconProps): ReactElement {
-  const { size = 16 } = props;
+  const { size = 16, ...restProps } = props;
 
   return (
     <svg
+      {...restProps}
       aria-hidden="true"
       fill="currentColor"
       height={size}

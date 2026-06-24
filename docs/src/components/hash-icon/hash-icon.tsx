@@ -1,14 +1,15 @@
-import type { ReactElement } from 'react';
+import type { ReactElement, SVGProps } from 'react';
 
-export type HashIconProps = {
+export type HashIconProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
 export function HashIcon(props: HashIconProps): ReactElement {
-  const { size = 16 } = props;
+  const { size = 16, ...restProps } = props;
 
   return (
     <svg
+      {...restProps}
       aria-hidden="true"
       fill="none"
       height={size}

@@ -1,20 +1,24 @@
 import type { OutputBlock } from '@yapyak/doc-compiler';
+import type { BoxProps } from '#components/box';
 
 import { Box } from '#components/box';
 
 import styles from './block-renderer-node-output.module.css';
 
-export type BlockRendererNodeOutputProps = {
+export type BlockRendererNodeOutputProps = BoxProps<'span'> & {
   block: OutputBlock;
 };
 
 export function BlockRendererNodeOutput(props: BlockRendererNodeOutputProps) {
-  const { block } = props;
+  const { block, className, ...restProps } = props;
   const hasLocales = block.lines.some((line) => line.locale !== null);
 
   return (
     <Box
-      className={styles.Output}
+      className={[
+        styles.Output,
+        className,
+      ]}
       data-with-locales={hasLocales}
     >
       {block.lines.map((line, index) => (
@@ -24,6 +28,7 @@ export function BlockRendererNodeOutput(props: BlockRendererNodeOutputProps) {
         >
           {line.locale !== null && (
             <Box
+              {...restProps}
               as="span"
               className={styles.Locale}
             >

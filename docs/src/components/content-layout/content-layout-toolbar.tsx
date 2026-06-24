@@ -1,5 +1,5 @@
 import type { Page } from '@yapyak/doc-compiler';
-import type { ReactNode } from 'react';
+import type { BoxProps } from '#components/box';
 
 import { Link } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
@@ -13,13 +13,12 @@ import { useContentLayout } from './content-layout';
 import styles from './content-layout-toolbar.module.css';
 import { doc } from 'virtual:doc-compiler';
 
-export type ContentLayoutToolbarProps = {
-  children: ReactNode;
+export type ContentLayoutToolbarProps = BoxProps & {
   page?: Page;
 };
 
 export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
-  const { children, page } = props;
+  const { children, className, page, ...restProps } = props;
   const { nextPage, previousPage } = page
     ? doc.findAdjacentPages(page)
     : {
@@ -71,7 +70,11 @@ export function ContentLayoutToolbar(props: ContentLayoutToolbarProps) {
 
   return (
     <Box
-      className={styles.ContentLayoutToolbar}
+      {...restProps}
+      className={[
+        styles.ContentLayoutToolbar,
+        className,
+      ]}
       data-hidden={isHidden}
       data-open={isSidebarOpen}
     >

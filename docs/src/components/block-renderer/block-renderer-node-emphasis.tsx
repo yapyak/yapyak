@@ -1,23 +1,28 @@
 import type { EmphasisBlock } from '@yapyak/doc-compiler';
+import type { BoxProps } from '#components/box';
 
 import { Box } from '#components/box';
 
 import { BlockRendererNode } from './block-renderer-node';
 import styles from './block-renderer-node-emphasis.module.css';
 
-export type BlockRendererNodeEmphasisProps = {
+export type BlockRendererNodeEmphasisProps = BoxProps<'em'> & {
   block: EmphasisBlock;
 };
 
 export function BlockRendererNodeEmphasis(
   props: BlockRendererNodeEmphasisProps,
 ) {
-  const { block } = props;
+  const { block, className, ...restProps } = props;
 
   return (
     <Box
+      {...restProps}
       as="em"
-      className={styles.BlockRendererNodeEmphasis}
+      className={[
+        styles.BlockRendererNodeEmphasis,
+        className,
+      ]}
     >
       {block.children.map((child, index) => (
         <BlockRendererNode

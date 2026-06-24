@@ -1,14 +1,15 @@
-import type { ReactElement } from 'react';
+import type { ReactElement, SVGProps } from 'react';
 
-export type XIconProps = {
+export type XIconProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
 export function XIcon(props: XIconProps): ReactElement {
-  const { size = 14 } = props;
+  const { size = 14, ...restProps } = props;
 
   return (
     <svg
+      {...restProps}
       aria-hidden="true"
       fill="none"
       height={size}

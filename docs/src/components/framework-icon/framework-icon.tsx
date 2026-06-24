@@ -1,17 +1,18 @@
-import type { ReactElement } from 'react';
+import type { ReactElement, SVGProps } from 'react';
 
-export type FrameworkIconProps = {
+export type FrameworkIconProps = SVGProps<SVGSVGElement> & {
   name: string;
   size?: number;
 };
 
 export function FrameworkIcon(props: FrameworkIconProps): ReactElement | null {
-  const { name, size = 16 } = props;
+  const { name, size = 16, ...restProps } = props;
 
   switch (name) {
     case 'react':
       return (
         <svg
+          {...restProps}
           aria-hidden="true"
           height={size}
           shapeRendering="geometricPrecision"

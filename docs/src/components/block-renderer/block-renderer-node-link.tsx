@@ -1,4 +1,5 @@
 import type { LinkBlock } from '@yapyak/doc-compiler';
+import type { BoxProps } from '#components/box';
 
 import { Link } from '@tanstack/react-router';
 
@@ -8,12 +9,12 @@ import { ExternalLink } from '#components/external-link';
 import { BlockRendererNode } from './block-renderer-node';
 import styles from './block-renderer-node-link.module.css';
 
-export type BlockRendererNodeLinkProps = {
+export type BlockRendererNodeLinkProps = BoxProps & {
   block: LinkBlock;
 };
 
 export function BlockRendererNodeLink(props: BlockRendererNodeLinkProps) {
-  const { block } = props;
+  const { block, className, ...restProps } = props;
   const children = block.children.map((child, index) => (
     <BlockRendererNode
       block={child}
@@ -25,7 +26,10 @@ export function BlockRendererNodeLink(props: BlockRendererNodeLinkProps) {
     return (
       <Box
         as={Link}
-        className={styles.BlockRendererNodeLink}
+        className={[
+          styles.BlockRendererNodeLink,
+          className,
+        ]}
         to={block.href}
       >
         {children}
