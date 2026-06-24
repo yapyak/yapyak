@@ -6,7 +6,6 @@
     padding: var(--spacing-1) var(--spacing-6);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
-    color: var(--foreground-softer);
     text-align: center;
     outline: var(--spacing-2) solid transparent;
     outline-offset: 0;
@@ -14,7 +13,6 @@
     transition:
       color var(--navigation-slide-duration, var(--transition))
       var(--ease-snappy),
-      background-color var(--transition),
       box-shadow var(--transition),
       outline 400ms,
       transform var(--transition);
@@ -37,6 +35,13 @@
           box-shadow:
             inset 0 0 0 var(--px) var(--ring-strong),
             inset 0 var(--px) var(--ring-strong);
+          transition:
+            color var(--navigation-slide-duration, var(--transition))
+            var(--ease-snappy),
+            background-color var(--transition),
+            box-shadow var(--transition),
+            outline 400ms,
+            transform var(--transition);
         }
       }
 
