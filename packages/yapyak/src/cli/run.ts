@@ -1,4 +1,12 @@
-import { add, check, clean, exportCommand, status, translate } from './command';
+import {
+  add,
+  check,
+  clean,
+  exportCommand,
+  retranslate,
+  status,
+  translate,
+} from './command';
 import { loadConfig } from './config';
 import { color, symbol } from './tui';
 import { readFileSync } from 'node:fs';
@@ -13,6 +21,11 @@ const FLAGS_BY_COMMAND: Record<string, Set<string>> = {
   export: new Set([
     '--out',
     '--split',
+  ]),
+  retranslate: new Set([
+    '--as',
+    '--file',
+    '--locale',
   ]),
   status: new Set([
     '--json',
@@ -43,6 +56,7 @@ export async function run(argv: string[]): Promise<number> {
     case 'clean':
     case 'add':
     case 'translate':
+    case 'retranslate':
     case 'export': {
       const unknown = findUnknownFlags(rest, FLAGS_BY_COMMAND[command]);
       if (unknown.length > 0) {
@@ -75,6 +89,23 @@ export async function run(argv: string[]): Promise<number> {
         return translate(config, projectRoot, {
           force: hasFlag(rest, '--force') || hasFlag(rest, '-f'),
           locale,
+        });
+      }
+      if (command === 'retranslate') {
+        const source = rest.find((entry) => !entry.startsWith('-')) ?? '';
+        const asValue = flagValue(rest, '--as');
+        const fileValue = flagValue(rest, '--file');
+        const localeValue = flagValue(rest, '--locale');
+        return retranslate(config, projectRoot, source, {
+          ...(asValue !== undefined && {
+            as: asValue,
+          }),
+          ...(fileValue !== undefined && {
+            file: fileValue,
+          }),
+          ...(localeValue !== undefined && {
+            locale: localeValue,
+          }),
         });
       }
       const exportArgs = parseExportArgs(rest);
@@ -144,6 +175,27 @@ const FALSE_FLAG_VALUES = new Set([
   'off',
 ]);
 
+function flagValue(entries: string[], flag: string): string | undefined {
+  const prefix = `${flag}=`;
+  for (let index = 0; index < entries.length; index++) {
+    const entry = entries[index];
+    if (entry === undefined) {
+      continue;
+    }
+    if (entry === flag) {
+      const next = entries[index + 1];
+      if (next !== undefined && !next.startsWith('-')) {
+        return next;
+      }
+      return undefined;
+    }
+    if (entry.startsWith(prefix)) {
+      return entry.slice(prefix.length);
+    }
+  }
+  return undefined;
+}
+
 function hasFlag(entries: string[], flag: string): boolean {
   const prefix = `${flag}=`;
   for (const entry of entries) {
@@ -201,6 +253,7 @@ function printHelp(): void {
     ${color.cyan('add')} ${color.dim('<locale...>')}       ${color.dim('Add one or more locales, auto-translate everything')}
     ${color.cyan('translate')} ${color.dim('[locale]')}    ${color.dim('Fill missing translations via the translator in yapyak.config.ts')}
     ${color.cyan('translate --force')}     ${color.dim('Re-translate everything, including existing values')}
+    ${color.cyan('retranslate')} ${color.dim('<source>')}  ${color.dim('Re-translate one source string (--locale, --as, --file)')}
     ${color.cyan('export')} ${color.dim('[locale...]')}    ${color.dim('Snapshot locales as wrapped JSON to stdout')}
     ${color.cyan('export --out=path')}     ${color.dim('Write snapshot to a file')}
     ${color.cyan('export --split --out=dir')}  ${color.dim('Write one file per locale into a directory')}

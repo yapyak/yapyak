@@ -1,6 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { add, check, clean, exportCommand, status, translate } from './command';
+import {
+  add,
+  check,
+  clean,
+  exportCommand,
+  retranslate,
+  status,
+  translate,
+} from './command';
 import { run } from './run';
 
 vi.mock('./command', () => ({
@@ -8,6 +16,7 @@ vi.mock('./command', () => ({
   check: vi.fn(() => 0),
   clean: vi.fn(() => 0),
   exportCommand: vi.fn(() => 0),
+  retranslate: vi.fn(async () => 0),
   status: vi.fn(() => 0),
   translate: vi.fn(async () => 0),
 }));
@@ -112,6 +121,77 @@ describe('run', () => {
       'translate',
     ]);
     expect(translate).toHaveBeenCalledTimes(1);
+  });
+
+  it('picks the `retranslate` command', async () => {
+    await run([
+      'retranslate',
+      'Save',
+    ]);
+    expect(retranslate).toHaveBeenCalledTimes(1);
+  });
+
+  it('extracts the source as a positional arg into the `retranslate` command', async () => {
+    await run([
+      'retranslate',
+      'Save',
+    ]);
+    expect(retranslate).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      'Save',
+      expect.any(Object),
+    );
+  });
+
+  it('extracts `--locale` into the `retranslate` options', async () => {
+    await run([
+      'retranslate',
+      'Save',
+      '--locale',
+      'sv',
+    ]);
+    expect(retranslate).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      'Save',
+      expect.objectContaining({
+        locale: 'sv',
+      }),
+    );
+  });
+
+  it('extracts `--as` into the `retranslate` options', async () => {
+    await run([
+      'retranslate',
+      'Save',
+      '--as=badge',
+    ]);
+    expect(retranslate).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      'Save',
+      expect.objectContaining({
+        as: 'badge',
+      }),
+    );
+  });
+
+  it('extracts `--file` into the `retranslate` options', async () => {
+    await run([
+      'retranslate',
+      'Save',
+      '--file',
+      'src/a.tsx',
+    ]);
+    expect(retranslate).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      'Save',
+      expect.objectContaining({
+        file: 'src/a.tsx',
+      }),
+    );
   });
 
   it('picks the `export` command', async () => {
