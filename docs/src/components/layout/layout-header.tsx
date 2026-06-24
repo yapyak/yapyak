@@ -113,7 +113,10 @@ export function LayoutHeader(props: LayoutHeaderProps) {
             {t('Reference')}
           </Link>
         </Box>
-        <Box className={styles.GithubSlot}>
+        <Box
+          as="footer"
+          className={styles.Footer}
+        >
           <OptionPickList />
           <IconLink
             aria-label={t('View on GitHub')}

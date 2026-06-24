@@ -3,30 +3,26 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: var(--spacing-8);
-    height: var(--spacing-8);
-    font-size: 16px;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
     color: var(--foreground-soft);
     outline: var(--spacing-2) solid transparent;
     outline-offset: 0;
     border-radius: var(--border-radius-sm);
-    box-shadow: var(--shadow-ring-inset);
     transition:
       color var(--transition),
-      background-color var(--transition),
-      box-shadow var(--transition),
       outline 400ms,
       transform var(--transition);
 
     @media (hover: hover) {
       &:hover {
         color: var(--foreground);
-        background-color: var(--surface);
       }
     }
 
     &:active {
-      transform: scale(0.94);
+      transform: scale(0.98);
     }
 
     &:focus-visible {

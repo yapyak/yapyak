@@ -17,9 +17,9 @@
 
     opacity: 0;
     transition:
-      opacity var(--transition),
-      display var(--transition) allow-discrete,
-      overlay var(--transition) allow-discrete;
+      opacity 80ms ease,
+      display 80ms ease allow-discrete,
+      overlay 80ms ease allow-discrete;
     will-change: opacity;
 
     position-try-fallbacks:

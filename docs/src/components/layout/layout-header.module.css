@@ -84,9 +84,11 @@
       }
     }
 
-    .GithubSlot {
+    .Footer {
       display: flex;
-      justify-content: center;
+      gap: var(--spacing-3);
+      align-items: center;
+      justify-content: space-between;
       padding: var(--spacing-6);
       box-shadow: inset 0 var(--px) 0 var(--rule);
     }
