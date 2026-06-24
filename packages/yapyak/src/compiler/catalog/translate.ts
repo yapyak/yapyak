@@ -132,6 +132,9 @@ export async function autoTranslate(
   const touchedLocales = new Set<string>();
   const persistedStubs = new Set<TranslationStub>();
   const persistResult = (stub: TranslationStub, value: string): void => {
+    if (signal?.aborted) {
+      return;
+    }
     if (persistedStubs.has(stub)) {
       return;
     }

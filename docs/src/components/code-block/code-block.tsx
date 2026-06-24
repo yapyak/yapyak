@@ -32,10 +32,6 @@ const SUPPORTED_LANGUAGES: Set<string> = new Set<Language>([
   'translation',
 ]);
 
-const HIDDEN_LABEL_LANGUAGES: Set<string> = new Set<Language>([
-  'translation',
-]);
-
 function isSupportedLanguage(value: string | undefined): value is Language {
   return value !== undefined && SUPPORTED_LANGUAGES.has(value);
 }
@@ -44,12 +40,6 @@ export function CodeBlock(props: CodeBlockProps) {
   const { bare, className, label, language, path, source, ...restProps } =
     props;
 
-  const showLanguageTag =
-    language !== undefined && !HIDDEN_LABEL_LANGUAGES.has(language);
-  const tag = label ?? language;
-  const showHeader = path !== undefined;
-  const showCornerLabel =
-    !showHeader && !bare && (label !== undefined || showLanguageTag);
   const highlighted = isSupportedLanguage(language)
     ? tokenize(source, language)
     : null;
@@ -64,7 +54,7 @@ export function CodeBlock(props: CodeBlockProps) {
       data-bare={bare === true ? '' : undefined}
       data-language={language}
     >
-      {showHeader && (
+      {path !== undefined && (
         <Box className={styles.Header}>
           <Box
             as="span"
@@ -72,22 +62,14 @@ export function CodeBlock(props: CodeBlockProps) {
           >
             {path}
           </Box>
-          {showLanguageTag && language !== undefined && (
-            <Box
-              as="span"
-              className={styles.LanguageBadge}
-            >
-              {language}
-            </Box>
-          )}
         </Box>
       )}
-      {showCornerLabel && tag !== undefined && (
+      {path === undefined && label !== undefined && (
         <Box
           as="span"
-          className={styles.LanguageText}
+          className={styles.LabelText}
         >
-          {tag}
+          {label}
         </Box>
       )}
       <Box
@@ -107,12 +89,10 @@ export function CodeBlock(props: CodeBlockProps) {
               ))}
         </Box>
       </Box>
-      {!bare && (
-        <CodeBlockCopyButton
-          className={styles.CopyButton}
-          source={source}
-        />
-      )}
+      <CodeBlockCopyButton
+        className={styles.CopyButton}
+        source={source}
+      />
     </Box>
   );
 }

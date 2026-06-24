@@ -449,4 +449,147 @@ describe('autoTranslate', () => {
       },
     });
   });
+
+  it('skips persistence when the signal aborts before the translator returns', async () => {
+    const controller = new AbortController();
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('use batch')),
+      {
+        batch: () => {
+          controller.abort();
+          return Promise.resolve([
+            'Hej',
+          ]);
+        },
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Hello',
+      },
+    ];
+
+    const result = await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+      {
+        signal: controller.signal,
+      },
+    );
+
+    expect(result.translated).toBe(0);
+    expect(existsSync(localePath)).toBe(false);
+  });
+
+  it('skips persistence in `onChunkComplete` after the signal aborts mid-batch', async () => {
+    const controller = new AbortController();
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('use batch')),
+      {
+        batch: (
+          requests: TranslateRequest[],
+          options?: {
+            onChunkComplete?: (
+              chunk: TranslateRequest[],
+              result: {
+                sv: string;
+              }[],
+            ) => void;
+          },
+        ): Promise<string[]> => {
+          controller.abort();
+          options?.onChunkComplete?.(requests, [
+            {
+              sv: 'Hej',
+            },
+          ]);
+          return Promise.resolve([
+            'Hej',
+          ]);
+        },
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Hello',
+      },
+    ];
+
+    const result = await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+      {
+        signal: controller.signal,
+      },
+    );
+
+    expect(result.translated).toBe(0);
+    expect(existsSync(localePath)).toBe(false);
+  });
 });

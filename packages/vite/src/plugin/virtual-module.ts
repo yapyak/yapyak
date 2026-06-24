@@ -3,7 +3,7 @@ import type { State } from './state';
 
 import { defineRuntime } from 'yapyak/config/internal';
 
-import { HMR_LISTENER, RUNTIME_ID, RUNTIME_RESOLVED } from '../virtual-runtime';
+import { RUNTIME_ID, RUNTIME_RESOLVED } from '../virtual-runtime';
 import { getNormalized, getResolver } from './state';
 
 export function createVirtualModulePlugin(state: State): Plugin {
@@ -13,14 +13,13 @@ export function createVirtualModulePlugin(state: State): Plugin {
       if (id === RUNTIME_RESOLVED) {
         const normalized = getNormalized(state);
         const emitted = getResolver(state).getEmittedLocales();
-        const runtime = defineRuntime({
+        return defineRuntime({
           defaultLocale: emitted.defaultLocale,
           detectAcceptLanguage: normalized.detectAcceptLanguage,
           locales: emitted.locales,
           persistence: normalized.persistence,
           syncHtmlLang: normalized.syncHtmlLang,
         });
-        return `${runtime}\n${HMR_LISTENER}`;
       }
       return null;
     },

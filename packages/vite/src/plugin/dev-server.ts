@@ -20,6 +20,7 @@ import {
   writeRegister,
 } from 'yapyak/compiler/internal';
 
+import { RUNTIME_RESOLVED } from '../virtual-runtime';
 import { isCandidateId } from './candidate-id';
 import { renderErrorDiagnostics } from './error-diagnostic';
 import { toFileId } from './file-id';
@@ -142,7 +143,6 @@ export function createDevServerPlugin(state: State): Plugin {
       state.teardownCallbacks.push(sendLocalePatches.cancel);
 
       const announceLocaleStructure = debounce(() => {
-        getResolver(state).invalidateStructure();
         const { defaultLocale, locales } =
           getResolver(state).getProjectLocales();
         const allMessages: ExtractedMessage[] = [];
@@ -215,6 +215,8 @@ export function createDevServerPlugin(state: State): Plugin {
             return;
           }
           const hint = `Run \`${runYapyakCommand(`translate ${locale}`)}\` to fill the stubs.`;
+          getResolver(state).invalidateStructure();
+          reloadRuntimeModule(server);
           announceLocaleStructure();
           state.logger.info(
             `[yapyak] New locale '${locale}' detected. ${hint}`,
@@ -231,14 +233,6 @@ export function createDevServerPlugin(state: State): Plugin {
               type: 'custom',
             });
           }
-          server.ws.send({
-            data: {
-              hint,
-              locale,
-            },
-            event: 'yapyak:locale-added',
-            type: 'custom',
-          });
         }
       });
 
@@ -254,15 +248,10 @@ export function createDevServerPlugin(state: State): Plugin {
         if (isLocaleFile(state, path)) {
           const locale = localeFromPath(path);
           previousLocaleData.delete(locale);
+          getResolver(state).invalidateStructure();
+          reloadRuntimeModule(server);
           announceLocaleStructure();
           state.logger.info(`[yapyak] Locale '${locale}' removed.`);
-          server.ws.send({
-            data: {
-              locale,
-            },
-            event: 'yapyak:locale-removed',
-            type: 'custom',
-          });
         }
       });
     },
@@ -286,7 +275,10 @@ export function createDevServerPlugin(state: State): Plugin {
         before.flatMap(toCallSitePositions),
         after.flatMap(toCallSitePositions),
       );
-      if (renames.length > 0) {
+      if (
+        renames.length > 0 &&
+        getNormalized(state).preserveTranslationsOnRename
+      ) {
         const migrationResult = migrateLocales(
           {
             extractedKeys: toExtractedKeysForFile(fileId, after),
@@ -300,8 +292,7 @@ export function createDevServerPlugin(state: State): Plugin {
           },
           state.projectRoot,
           {
-            preserveTranslations:
-              getNormalized(state).preserveTranslationsOnRename,
+            preserveTranslations: true,
           },
         );
         for (const conflict of migrationResult.conflicts) {
@@ -321,6 +312,16 @@ export function createDevServerPlugin(state: State): Plugin {
     },
     name: 'yapyak:dev-server',
   };
+}
+
+function reloadRuntimeModule(server: ViteDevServer): void {
+  const runtimeModule = server.moduleGraph.getModuleById(RUNTIME_RESOLVED);
+  if (runtimeModule) {
+    server.moduleGraph.invalidateModule(runtimeModule);
+  }
+  server.ws.send({
+    type: 'full-reload',
+  });
 }
 
 function isLocaleFile(state: State, path: string): boolean {

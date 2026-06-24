@@ -4,6 +4,7 @@ import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
 import type { LocaleResolver } from '../locale-resolver';
 
 export type State = {
+  autoTranslateController: AbortController | undefined;
   command: 'build' | 'serve';
   configFile: string | undefined;
   filter: (path: string) => boolean;
@@ -23,6 +24,7 @@ export type CreateStateOptions = {
 
 export function createState(options: CreateStateOptions): State {
   return {
+    autoTranslateController: undefined,
     command: 'serve',
     configFile: undefined,
     filter: () => false,

@@ -26,6 +26,8 @@ type TranslationErrorGroup = {
 };
 
 export function fillStubs(state: State): void {
+  state.autoTranslateController?.abort();
+  state.autoTranslateController = undefined;
   const config = getNormalized(state);
   const translator = config.translator;
   if (!translator) {
@@ -70,10 +72,13 @@ export function fillStubs(state: State): void {
   state.logger.info(
     `[yapyak] translating ${filtered.length} ${pluralize('string', filtered.length)} × ${targetLocaleCount} ${pluralize('locale', targetLocaleCount)} via ${translator.id}…`,
   );
+  const controller = new AbortController();
+  state.autoTranslateController = controller;
   void runAutoTranslate(state, {
     defaultLocale,
     filtered,
     locales,
+    signal: controller.signal,
     startedAt,
     translator,
   });
@@ -83,6 +88,7 @@ type RunAutoTranslateInput = {
   defaultLocale: string;
   filtered: ExtractedMessage[];
   locales: string[];
+  signal: AbortSignal;
   startedAt: number;
   translator: Translator;
 };
@@ -106,9 +112,13 @@ async function runAutoTranslate(
       state.projectRoot,
       {
         examples: config.examples,
+        signal: input.signal,
         yapyakDir: state.yapyakDir,
       },
     );
+    if (input.signal.aborted) {
+      return;
+    }
     if (result.translated > 0) {
       getResolver(state).invalidateData();
     }
@@ -126,6 +136,9 @@ async function runAutoTranslate(
       state.logger.warn(renderTranslationErrorGroup(group));
     }
   } catch (error: unknown) {
+    if (input.signal.aborted) {
+      return;
+    }
     const elapsed = formatElapsed(Date.now() - input.startedAt);
     state.logger.warn(
       `[yapyak] auto-translate error · ${elapsed} · ${String(error)}`,

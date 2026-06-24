@@ -16,10 +16,8 @@
       display: flex;
       gap: var(--spacing-3);
       align-items: center;
-      justify-content: space-between;
       padding: var(--spacing-3) var(--spacing-4);
       border-bottom: var(--px) solid var(--rule);
-      transition: opacity var(--transition);
     }
 
     .PathText {
@@ -31,30 +29,20 @@
       white-space: nowrap;
     }
 
-    .LanguageBadge {
-      font-family: var(--font-family-mono);
-      font-size: var(--font-size-xs);
-      color: var(--foreground-softer);
-      text-transform: lowercase;
-      pointer-events: none;
-      user-select: none;
-    }
-
-    .LanguageText {
+    .LabelText {
       position: absolute;
       top: var(--spacing-3);
-      right: var(--spacing-4);
+      left: var(--spacing-4);
       font-family: var(--font-family-mono);
       font-size: var(--font-size-xs);
       color: var(--foreground-softer);
-      text-transform: lowercase;
       pointer-events: none;
       user-select: none;
-      transition: opacity var(--transition);
     }
 
     .PreformattedText {
-      padding: var(--spacing-5) var(--spacing-6);
+      padding: var(--spacing-5) var(--spacing-20) var(--spacing-5)
+        var(--spacing-6);
       overflow-x: auto;
       font-family: var(--font-family-mono);
       font-size: var(--font-size-xs);
@@ -62,62 +50,26 @@
       color: var(--foreground-soft);
       scrollbar-color: var(--ring-stronger) transparent;
       scrollbar-width: thin;
+      mask-image:
+        linear-gradient(
+          to right,
+          transparent 0,
+          black var(--spacing-5),
+          black calc(100% - var(--spacing-20)),
+          transparent calc(100% - var(--spacing-10))
+        ),
+        linear-gradient(black, black);
+      mask-repeat: no-repeat;
+      mask-position:
+        0 0,
+        0 100%;
+      mask-size:
+        100% calc(100% - var(--spacing-3)),
+        100% var(--spacing-3);
+      mask-composite: add;
 
       code {
         font-family: inherit;
-      }
-    }
-
-    .CopyButton {
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity var(--transition);
-    }
-
-    @media (hover: hover) {
-      &:hover {
-        .CopyButton {
-          pointer-events: auto;
-          opacity: 1;
-        }
-
-        .LanguageText {
-          opacity: 0;
-        }
-
-        .LanguageBadge {
-          opacity: 0;
-        }
-      }
-    }
-
-    &:focus-within {
-      .CopyButton {
-        pointer-events: auto;
-        opacity: 1;
-      }
-
-      .LanguageText {
-        opacity: 0;
-      }
-
-      .LanguageBadge {
-        opacity: 0;
-      }
-    }
-
-    &:has(.CopyButton[data-copied]) {
-      .CopyButton {
-        pointer-events: auto;
-        opacity: 1;
-      }
-
-      .LanguageText {
-        opacity: 0;
-      }
-
-      .LanguageBadge {
-        opacity: 0;
       }
     }
   }

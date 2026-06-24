@@ -41,6 +41,7 @@ describe('createState', () => {
     const state = createState({
       fixedLocale: undefined,
     });
+    expect(state.autoTranslateController).toBeUndefined();
     expect(state.command).toBe('serve');
     expect(state.configFile).toBeUndefined();
     expect(state.fixedLocale).toBeUndefined();

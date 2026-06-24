@@ -177,7 +177,7 @@ describe('yapyak', () => {
       expect(newFileIds).toHaveLength(5);
     });
 
-    it('notifies the client when adding a locale file', async () => {
+    it('triggers a full reload when adding a locale file so the runtime picks up the new locale', async () => {
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
       invokeBuildStart(plugin);
@@ -194,18 +194,12 @@ describe('yapyak', () => {
       watcher.emit('add', newLocale);
       await vi.advanceTimersByTimeAsync(60);
 
-      expect(send).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({
-            locale: 'fr',
-          }),
-          event: 'yapyak:locale-added',
-          type: 'custom',
-        }),
-      );
+      expect(send).toHaveBeenCalledWith({
+        type: 'full-reload',
+      });
     });
 
-    it('notifies the client when removing a locale file', async () => {
+    it('triggers a full reload when removing a locale file so the runtime drops the locale', async () => {
       writeFileSync(join(root, 'locales', 'fr.json'), '{}');
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
@@ -223,15 +217,9 @@ describe('yapyak', () => {
       watcher.emit('unlink', removed);
       await vi.advanceTimersByTimeAsync(60);
 
-      expect(send).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: {
-            locale: 'fr',
-          },
-          event: 'yapyak:locale-removed',
-          type: 'custom',
-        }),
-      );
+      expect(send).toHaveBeenCalledWith({
+        type: 'full-reload',
+      });
     });
 
     it('blocks notification for non-`.json` files in the locales directory', async () => {
@@ -980,12 +968,11 @@ describe('yapyak', () => {
       expect(invokeResolveId(plugin, 'react')).toBeNull();
     });
 
-    it('loads the resolved runtime virtual id with HMR listener', async () => {
+    it('loads the resolved runtime virtual id with the runtime constants', async () => {
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
       const result = invokeLoad(plugin, ' yapyak:runtime');
       expect(result).toContain('export const');
-      expect(result).toContain('yapyak:locale-added');
     });
 
     it('returns `null` for `load` on an unrelated id', async () => {
