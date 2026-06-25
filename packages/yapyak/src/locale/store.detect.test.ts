@@ -25,33 +25,35 @@ afterEach(() => {
   resetLocale();
 });
 
-describe('getLocale on the client with `detectUserLocale`', () => {
-  it('returns the first matching locale from `navigator.languages`', () => {
-    vi.stubGlobal('navigator', {
-      languages: [
-        'sv-SE',
-        'sv',
-        'en',
-      ],
+describe('getLocale', () => {
+  describe('with `detectUserLocale` on the client', () => {
+    it('returns the first matching locale from `navigator.languages`', () => {
+      vi.stubGlobal('navigator', {
+        languages: [
+          'sv-SE',
+          'sv',
+          'en',
+        ],
+      });
+      resetLocale();
+      expect(getLocale()).toBe('sv');
     });
-    resetLocale();
-    expect(getLocale()).toBe('sv');
-  });
 
-  it('returns the default locale when `navigator.languages` has no match', () => {
-    vi.stubGlobal('navigator', {
-      languages: [
-        'ja',
-        'ko',
-      ],
+    it('returns the default locale when `navigator.languages` has no match', () => {
+      vi.stubGlobal('navigator', {
+        languages: [
+          'ja',
+          'ko',
+        ],
+      });
+      resetLocale();
+      expect(getLocale()).toBe('en');
     });
-    resetLocale();
-    expect(getLocale()).toBe('en');
-  });
 
-  it('returns the default locale when `navigator` is undefined', () => {
-    vi.stubGlobal('navigator', undefined);
-    resetLocale();
-    expect(getLocale()).toBe('en');
+    it('returns the default locale when `navigator` is undefined', () => {
+      vi.stubGlobal('navigator', undefined);
+      resetLocale();
+      expect(getLocale()).toBe('en');
+    });
   });
 });

@@ -32,7 +32,10 @@ export type YapyakConfig = {
    */
   defaultLocale?: Locale;
   /**
-   * Whether to detect the user's locale from the environment: `Accept-Language` on the server, `navigator.languages` in the browser.
+   * Whether to detect the user's locale from the environment.
+   *
+   * @remarks
+   * On the server, reads the `Accept-Language` request header. In the browser, reads `navigator.languages` at runtime initialization. Detection only runs when no persisted value is found.
    *
    * @defaultValue `false`
    */
