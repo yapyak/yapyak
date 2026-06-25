@@ -25,10 +25,6 @@ export function FeatureSectionItem(props: FeatureSectionItemProps) {
       ]}
     >
       <Box
-        aria-hidden="true"
-        className={styles.IndicatorBar}
-      />
-      <Box
         as="span"
         className={styles.NumeralText}
       >

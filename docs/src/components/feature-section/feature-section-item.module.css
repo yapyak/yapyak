@@ -12,25 +12,6 @@
       border-bottom: none;
     }
 
-    .IndicatorBar {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: calc(var(--px) * -1);
-      width: var(--px);
-      pointer-events: none;
-      background-color: var(--brand);
-      box-shadow: 0 0 8px var(--brand-soft);
-      opacity: 0;
-      transition: opacity 220ms ease;
-    }
-
-    @media (hover: hover) {
-      &:hover .IndicatorBar {
-        opacity: 1;
-      }
-    }
-
     .NumeralText {
       font-size: 3.5rem;
       font-weight: var(--font-weight-medium);

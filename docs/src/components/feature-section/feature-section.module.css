@@ -17,7 +17,6 @@
     .List {
       position: relative;
       width: 100%;
-      border-left: var(--px) solid var(--rule);
     }
 
     @media (min-width: 1024px) {

@@ -3,7 +3,10 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-color: var(--ring-stronger) transparent;
+    scrollbar-width: thin;
     background: var(--surface);
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-ring-inset);
@@ -34,8 +37,12 @@
       align-items: center;
       padding: var(--spacing-3) var(--spacing-4);
       font-family: var(--font-family-mono);
-      font-size: var(--font-size-xs);
+      font-size: var(--font-size-2xs);
       border-bottom: var(--px) solid var(--rule);
+
+      @media (min-width: 640px) {
+        font-size: var(--font-size-xs);
+      }
 
       &:last-child {
         border-bottom: none;
@@ -56,9 +63,6 @@
     .JsonText {
       display: inline-flex;
       align-items: center;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
       color: var(--foreground);
       white-space: nowrap;
     }
