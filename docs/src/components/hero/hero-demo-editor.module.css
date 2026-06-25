@@ -57,7 +57,6 @@
       font-family: var(--font-family-mono);
       font-size: var(--font-size-2xs);
       color: var(--foreground-softer);
-      box-shadow: inset calc(var(--px) * -1) 0 0 var(--rule);
       transition:
         background-color var(--transition),
         box-shadow var(--transition),
@@ -76,11 +75,6 @@
         &:hover {
           color: var(--foreground-soft);
           background-color: var(--surface);
-          box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
-        }
-
-        &:has(+ .TabButton:hover) {
-          box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
         }
       }
 
@@ -88,10 +82,21 @@
         color: var(--foreground);
         background-color: var(--surface);
       }
+    }
 
-      &:has(+ .TabButton[data-active]) {
-        box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring-strong);
+    .TabButton + .TabButton {
+      box-shadow: inset var(--px) 0 0 var(--rule);
+    }
+
+    @media (hover: hover) {
+      .TabButton:hover + .TabButton,
+      .TabButton + .TabButton:hover {
+        box-shadow: inset var(--px) 0 0 var(--ring);
       }
+    }
+
+    .TabButton + .TabButton[data-active] {
+      box-shadow: inset var(--px) 0 0 var(--ring-strong);
     }
 
     .TabFilenameTextShort,
