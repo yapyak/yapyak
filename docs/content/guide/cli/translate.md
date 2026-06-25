@@ -57,7 +57,7 @@ Useful when one locale is significantly behind and you want to catch it up witho
 
 ## Re-translate everything with `--force`
 
-By default, `translate` only fills in empty stubs — existing translations stay where they are. With `--force` (or `-f`), it ignores existing translations and runs everything through the translator again:
+By default, `translate` only fills in empty stubs. Existing translations stay where they are. With `--force` (or `-f`), it ignores existing translations and runs everything through the translator again:
 
 {% switch group="packageManager" %}
 {% when value="pnpm" %}
@@ -112,7 +112,7 @@ If you want to fill in translations by hand or paste them from somewhere else, j
 
 ## How it differs from the save-time loop
 
-The dev-time auto-translate that runs on save is the same translator, but it works incrementally — only the strings that just changed get sent. `yapyak translate` walks every locale file, finds every empty stub, and processes all of them in one go.
+The dev-time auto-translate that runs on save is the same translator, but it works incrementally. Only the strings that just changed get sent. `yapyak translate` walks every locale file, finds every empty stub, and processes all of them in one go.
 
 The two paths share results: a translation done by the save loop is found by `yapyak translate` as already filled in (and skipped), and the reverse holds too.
 
@@ -132,6 +132,6 @@ This keeps API costs predictable, centralizes the translation step, and avoids s
 
 ## Common issues
 
-- **The run hung partway through.** Re-run — `translate` is incremental, so it resumes where it stopped without re-spending tokens on already-translated strings.
+- **The run hung partway through.** Re-run. `translate` is incremental, so it resumes where it stopped without re-spending tokens on already-translated strings.
 - **A `YAP0033 TRANSLATE_CHUNK_FAILED` appears.** A specific batch failed after retries. The other batches still completed. Re-run to retry the failed ones; if it persists, check the translator's `maxRetries` and `concurrency` settings.
-- **Translations look weird after `--force`.** Your `voice` or `glossary` settings changed since you last translated. That's the point — review the new output, adjust the voice or glossary if needed, run `--force` again.
+- **Translations look weird after `--force`.** Your `voice` or `glossary` settings changed since you last translated, which is exactly what `--force` exercises. Review the new output, adjust the voice or glossary if needed, run `--force` again.

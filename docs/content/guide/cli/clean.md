@@ -7,23 +7,21 @@ order: 6
 yapyak clean [--write]
 ```
 
-Finds translations whose source string no longer exists in your code — orphans that linger in locale files after the component or string they belonged to was removed. By default it lists them; `--write` applies the deletion.
+Finds translations whose source string no longer exists in your code. Orphans that linger in locale files after the component or string they belonged to was removed. By default it lists them; `--write` applies the deletion.
 
 ```bash
 $ pnpm yapyak clean
 
-  Orphan translations
+  Locale cleanup
 
-  sv/src/components/old-button.tsx
-    "Save changes"      (file removed)
-  de/src/components/old-button.tsx
-    "Save changes"      (file removed)
-  sv/src/components/cart.tsx
-    "Empty cart"        (source string changed)
-  sv/src/components/cart.tsx
-    "Add to wishlist"   (source string removed)
+  ✗ 4 orphan source(s)
 
-  Run with --write to delete.
+    sv. Src/components/old-button.tsx. Save changes
+    de. Src/components/old-button.tsx. Save changes
+    sv. Src/components/cart.tsx. Empty cart
+    sv. Src/components/cart.tsx. Add to wishlist
+
+  Run yapyak clean --write to remove these entries.
 ```
 
 Dry-run by default. Read the output, sanity-check what's about to disappear, then run again with `--write`:
@@ -58,7 +56,7 @@ In every case, `clean` notices because it walks the codebase, builds the set of 
 
 ## Why it's not on by default
 
-Deletions are irreversible (until you reach for git). yapyak surfaces them clearly so you can decide, rather than quietly trimming files in the background. The dev-time save loop also leaves orphans alone for the same reason — if you remove a string, the translation stays around until you `clean` it.
+Deletions are irreversible (until you reach for git). yapyak surfaces them clearly so you can decide, rather than quietly trimming files in the background. The dev-time save loop also leaves orphans alone for the same reason. If you remove a string, the translation stays around until you `clean` it.
 
 This is especially relevant when:
 
@@ -66,11 +64,11 @@ This is especially relevant when:
 - A translation took a model a long time to get right, and you'd rather keep it for paste-back than re-generate it
 - You're auditing a codebase and want to see what's stale before committing to remove it
 
-For the in-between case (removed but recoverable), yapyak keeps a copy of every translation it's ever seen in `.yapyak/`. Even after `clean --write`, the translation is recoverable from the cache if the source string reappears later — [renames behavior](/guide/advanced/renames) restores it automatically.
+For the in-between case (removed but recoverable), yapyak keeps a copy of every translation it's ever seen in `.yapyak/`. Even after `clean --write`, the translation is recoverable from the cache if the source string reappears later. [renames behavior](/guide/advanced/renames) restores it automatically.
 
 ## A typical use
 
-Most projects run `clean` periodically — as part of a refactor branch, before a major release, or as a quarterly hygiene pass. It's not a compile-time thing; it's a deliberate trim.
+Most projects run `clean` periodically. As part of a refactor branch, before a major release, or as a quarterly hygiene pass. It's not a compile-time thing; it's a deliberate trim.
 
 {% switch group="packageManager" %}
 {% when value="pnpm" %}
@@ -109,7 +107,7 @@ The diff is your safety net. Anything that shouldn't have gone, you can pick out
 - run: pnpm yapyak clean
 ```
 
-This logs orphans without removing them — a heads-up that locale files have drifted from the code. For a strict policy that fails CI when orphans exist, parse the output yourself; `clean` doesn't gate on orphan count by default (since "we know but we'll clean later" is a common stance).
+This logs orphans without removing them. A heads-up that locale files have drifted from the code. For a strict policy that fails CI when orphans exist, parse the output yourself; `clean` doesn't gate on orphan count by default (since "we know but we'll clean later" is a common stance).
 
 ## What `clean` doesn't do
 

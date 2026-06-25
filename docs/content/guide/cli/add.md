@@ -7,7 +7,7 @@ order: 1
 yapyak add <locale> [<locale>...]
 ```
 
-Adds one or more locales to your project. Each one becomes a new `<locale>.json` file in your [`localesDir`](/guide/getting-started/configuration#localesdir) (default `locales/`), updates the generated `Locale` type so the new locale is recognised at compile time, and — if a translator is configured — fills the new files with translations of every existing source string.
+Adds one or more locales to your project. Each one becomes a new `<locale>.json` file in your [`localesDir`](/guide/getting-started/configuration#localesdir) (default `locales/`) and updates the generated `Locale` type so the new locale is recognised at compile time. If a translator is configured, the new files are filled with translations of every existing source string.
 
 {% switch group="packageManager" %}
 {% when value="pnpm" %}
@@ -27,7 +27,7 @@ bunx yapyak add sv
 {% /when %}
 {% /switch %}
 
-That's the usual case: add Swedish, the model fills `locales/sv.json` with translations of everything you've already written.
+The usual case: add Swedish, and the model fills `locales/sv.json` with translations of everything you've already written.
 
 ## Adding several at once
 
@@ -51,7 +51,7 @@ bunx yapyak add sv de fr ja pt-BR
 {% /when %}
 {% /switch %}
 
-This is cheaper than running `add` once per locale — yapyak batches the translation requests across all the new locales together, so the translator sees every target language in each request and can produce all of them at once.
+This is cheaper than running `add` once per locale. yapyak batches the translation requests across all the new locales together, so the translator sees every target language in each request and can produce all of them at once.
 
 ## Locale codes
 
@@ -60,10 +60,10 @@ The argument is a [BCP 47 tag](/guide/locale/tags). The CLI validates against th
 ```bash
 $ pnpm yapyak add svenska
   ✗ Invalid locale code.
-    svenska is not a recognized ISO 639-1 language code. — did you mean sv?
+    svenska is not a recognized ISO 639-1 language code.. Did you mean sv?
 ```
 
-Regional variants (`pt-BR`, `zh-Hant`, `en-GB`) work too — the CLI normalizes case through `Intl.Locale` before validation.
+Regional variants (`pt-BR`, `zh-Hant`, `en-GB`) work too. The CLI normalizes case through `Intl.Locale` before validation.
 
 ## What `add` does, in order
 
@@ -72,7 +72,7 @@ Regional variants (`pt-BR`, `zh-Hant`, `en-GB`) work too — the CLI normalizes 
 3. Runs the [translator](/guide/translators/overview), if configured, to fill the new files with translations of every existing source string.
 4. Regenerates `.yapyak/types.d.ts` so the new locales appear in the [`Locale`](/guide/locale/overview) literal union.
 
-If you don't have a translator configured, step 3 is skipped — the new files have empty stubs you fill in yourself.
+If you don't have a translator configured, step 3 is skipped. The new files have empty stubs you fill in yourself.
 
 ## When the locale already exists
 
@@ -82,4 +82,4 @@ In practice you use `add` once per new locale and then rely on the [dev-time sav
 
 ## Common issues
 
-- **The translator ran out partway through.** Network or rate-limit issue. Re-run `yapyak add <locale>` — it picks up where it left off, only translating the entries that are still missing.
+- **The translator ran out partway through.** Network or rate-limit issue. Re-run `yapyak add <locale>`. It picks up where it left off, only translating the entries that are still missing.

@@ -3,7 +3,7 @@ title: How it works
 order: 4
 ---
 
-yapyak is a compile-time compiler with a small runtime. When you save a file, yapyak finds the `t()` calls inside it, brings their messages up to date in your locale files, and rewrites the calls so they pick the right value at render time. This page walks through what happens in each of those steps and what ends up in your production bundle.
+yapyak is a compiler with a small runtime. When you save a file, yapyak finds the `t()` calls inside it, brings their messages up to date in your locale files, and rewrites the calls so they pick the right value at render time. This page walks through what happens in each of those steps and what ends up in your production bundle.
 
 ## The save loop
 
@@ -38,7 +38,7 @@ export function SaveButton() {
 
 {% when value="vue" %}
 ```vue
-<!-- .vue — handled by @yapyak/vue/processor -->
+<!-- .vue. Handled by @yapyak/vue/processor -->
 <script setup lang="ts">
 import { t } from 'yapyak';
 </script>
@@ -51,7 +51,7 @@ import { t } from 'yapyak';
 
 {% when value="svelte" %}
 ```svelte
-<!-- .svelte — handled by @yapyak/svelte/processor -->
+<!-- .svelte. Handled by @yapyak/svelte/processor -->
 <script lang="ts">
   import { t } from 'yapyak';
 </script>
@@ -63,7 +63,7 @@ import { t } from 'yapyak';
 {% when value="astro" %}
 ```astro
 ---
-// .astro — handled by @yapyak/astro/processor
+// .astro. Handled by @yapyak/astro/processor
 import { t } from 'yapyak';
 ---
 
@@ -120,7 +120,7 @@ Locale files live in your repository, one per locale, scoped by the source file 
 The scope is what lets yapyak follow your translations when you move or rename source files. yapyak remembers prior locations in `.yapyak/` and restores translations to the new path on save.
 
 {% callout variant="tip" %}
-Locale files are normal JSON. If you need to hand-edit a translation — correct a model's choice, set a tone manually, paste in something from a professional translator — open the file and edit it. yapyak watches those files too and refreshes the browser when they change.
+Locale files are normal JSON. If you need to hand-edit a translation. Correct a model's choice, set a tone manually, paste in something from a professional translator. Open the file and edit it. yapyak watches those files too and refreshes the browser when they change.
 {% /callout %}
 
 ## What gets compiled
@@ -171,11 +171,11 @@ _pick(_catalog_$1, { name });
 
 Three things happen:
 
-- **Factory imports are deduplicated** into a single `import` at module scope. Only the factories this module uses are imported — a module with just plain strings imports neither `_placeholder` nor `_literal`.
+- **Factory imports are deduplicated** into a single `import` at module scope. Only the factories this module uses are imported. A module with just plain strings imports neither `_placeholder` nor `_literal`.
 - **Identical catalogs are shared.** Both `t('Save')` calls reference the same `_catalog_$0`; the catalog object is declared once.
 - **Vite code-splits these catalog objects** with the modules that contain them. A route that doesn't render a translation never downloads it.
 
-**Single-locale.** When only one locale ends up in the bundle — because that's the only one you've added, or because you've set [`fixedLocale`](/guide/getting-started/configuration#fixed-locale-builds) — the compiler skips `_pick`, the factory imports, and the catalog objects entirely. Each `t()` call collapses to whatever value the active locale has on disk (or to the source string if there's no translation).
+**Single-locale.** When only one locale ends up in the bundle. Because that's the only one you've added, or because you've set [`fixedLocale`](/guide/getting-started/configuration#fixed-locale-builds). The compiler skips `_pick`, the factory imports, and the catalog objects entirely. Each `t()` call collapses to whatever value the active locale has on disk (or to the source string if there's no translation).
 
 With `fixedLocale: 'sv'` and a Swedish translation present:
 
@@ -215,7 +215,7 @@ compiles to:
 
 The bundle ships with no i18n runtime at all.
 
-**Formatters use `Intl` directly.** A date, number, or list format compiles to a factory that calls the platform's `Intl` API at render time — no ICU library is bundled:
+**Formatters use `Intl` directly.** A date, number, or list format compiles to a factory that calls the platform's `Intl` API at render time. No ICU library is bundled:
 
 ```ts
 t('Posted on {date, date, long}', { date });
@@ -259,7 +259,7 @@ Astro pages render on the server with the active locale. Switching locale reload
 
 Editing a locale file is a special case. yapyak watches your JSON files and, when one changes, sends just the changed entries to the browser over Vite's WebSocket. The runtime updates them in memory and components re-render with the new text.
 
-Source modules aren't recompiled in this case. Component state — open menus, form input, scroll position — stays where it was. This is the same path the automatic save loop takes: when a model returns a translation, yapyak writes it to the locale file and HMR picks it up from there.
+Source modules aren't recompiled in this case. Component state. Open menus, form input, scroll position. Stays where it was. This is the same path the automatic save loop takes: when a model returns a translation, yapyak writes it to the locale file and HMR picks it up from there.
 
 {% callout variant="info" %}
 For `.astro` files, the page reloads instead. Astro doesn't run yapyak's runtime in the browser, so updates take the form of a fresh server render.
@@ -269,7 +269,7 @@ For `.astro` files, the page reloads instead. Astro doesn't run yapyak's runtime
 
 yapyak runs through four guarantees on every save to keep translations from being lost or overwritten silently.
 
-**The orphan cache.** Every translation yapyak has ever seen lives in `.yapyak/orphans.json`. Delete a component, add it back three months later, copy markup to a new file — the translations re-appear in `locales/<locale>.json` automatically. The cache has no expiration. Reuse is based on exact match of the source string; close-but-not-identical strings are treated as new.
+**The orphan cache.** Every translation yapyak has ever seen lives in `.yapyak/orphans.json`. Delete a component, add it back three months later, copy markup to a new file. The translations re-appear in `locales/<locale>.json` automatically. The cache has no expiration. Reuse is based on exact match of the source string; close-but-not-identical strings are treated as new.
 
 **Rename detection.** When you edit a source string in place (`'Save'` → `'Save changes'`), yapyak compares positions in the file to tell a rename apart from a delete-and-add, and preserves the existing translation under the new key. The behavior is controlled by [`preserveTranslationsOnRename`](/guide/getting-started/configuration#preservetranslationsonrename); see [Renames](/guide/advanced/renames) for the heuristics.
 
@@ -281,4 +281,4 @@ The only path that re-translates an already-filled entry is `yapyak translate --
 
 ## SSR
 
-The server renders the same compiled modules the client does. There's no separate catalog to load before rendering an interface. Per-request locale binding is set up through a small SSR adapter — see [SSR](/guide/adapters/overview) for the details.
+The server renders the same compiled modules the client does. There's no separate catalog to load before rendering an interface. Per-request locale binding is set up through a small SSR adapter. See [SSR](/guide/adapters/overview) for the details.

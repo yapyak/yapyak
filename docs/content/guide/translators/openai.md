@@ -3,7 +3,7 @@ title: OpenAI
 order: 3
 ---
 
-`@yapyak/openai` is the yapyak translator for [OpenAI](https://platform.openai.com) and OpenAI-compatible providers. The same package works with Azure OpenAI, Groq, Mistral, DeepSeek, OpenRouter, and a growing number of others — override the endpoint and you're set.
+`@yapyak/openai` is the yapyak translator for [OpenAI](https://platform.openai.com) and OpenAI-compatible providers. The same package works with Azure OpenAI, Groq, Mistral, DeepSeek, OpenRouter, and a growing number of others. Override the endpoint and you're set.
 
 ## Install
 
@@ -139,7 +139,7 @@ translator: openai({
 }),
 ```
 
-The seed isn't a strict guarantee — OpenAI documents it as "best-effort". In practice it works for the vast majority of translation runs.
+The seed isn't a strict guarantee. OpenAI documents it as "best-effort". In practice it works for the vast majority of translation runs.
 
 ## Abuse tracking with `user`
 
@@ -153,8 +153,8 @@ user: process.env.YAPYAK_OPERATOR_ID ?? 'yapyak-build',
 
 OpenAI-specific failure modes map to yapyak's standard [translator errors](/guide/translators/overview#what-yapyak-protects-you-from):
 
-- A `finish_reason: 'content_filter'` maps to `TranslatorSafetyError` — the moderation layer blocked the response.
-- A `finish_reason: 'length'` maps to `TranslatorTruncatedError` — the output hit the token cap.
+- A `finish_reason: 'content_filter'` maps to `TranslatorSafetyError`. The moderation layer blocked the response.
+- A `finish_reason: 'length'` maps to `TranslatorTruncatedError`. The output hit the token cap.
 - Auth failures (`401`) raise `TranslatorAuthError`.
 
 All errors extend `TranslatorError` from `yapyak/translator`.

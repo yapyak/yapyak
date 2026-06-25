@@ -7,7 +7,7 @@ order: 4
 yapyak status [--json]
 ```
 
-Reports translation coverage per locale — how many strings are translated, how many are still missing. Read-only; doesn't modify any files.
+Reports translation coverage per locale. How many strings are translated, how many are still missing. Read-only; doesn't modify any files.
 
 ```bash
 $ pnpm yapyak status
@@ -47,11 +47,11 @@ $ pnpm yapyak status --json
 }
 ```
 
-The structure is stable across yapyak versions — safe to parse from scripts.
+The structure is stable across yapyak versions. Safe to parse from scripts.
 
 ## What counts as "translated"
 
-A locale entry counts as translated when its value isn't an empty string. yapyak doesn't try to judge quality — a one-character translation counts as translated. Use `status` to track that translations exist, and your own review process (PRs, manual review, a linguist's sign-off) to track that they're good.
+A locale entry counts as translated when its value isn't an empty string. yapyak doesn't try to judge quality. A one-character translation counts as translated. Use `status` to track that translations exist, and your own review process (PRs, manual review, a linguist's sign-off) to track that they're good.
 
 For [homonyms](/guide/writing/homonyms) (`t.as('action', 'Open')`), each context counts as a separate entry. A source string with three contexts contributes three entries to the total per locale.
 
@@ -65,7 +65,7 @@ A few things `status` deliberately leaves out:
 
 ## In CI
 
-`status` is informational — `check` is what you gate on. A common pattern is to log status output before running `check` so the report is visible in CI logs:
+`status` is informational. `check` is what you gate on. A common pattern is to log status output before running `check` so the report is visible in CI logs:
 
 ```yaml
 - run: pnpm yapyak status

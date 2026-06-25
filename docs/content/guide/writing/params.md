@@ -33,11 +33,11 @@ t('Hi {name}', { user: 'Ada' });             // error: 'user' is not assignable
 t('Hi {name}, {greeting}', { name: 'Ada' }); // error: missing 'greeting'
 {% /diagnostics %}
 
-Simple placeholders accept `string | number`. They're rendered as their string form — for richer formatting, use [number](/guide/writing/plurals#numbers), [date](/guide/writing/plurals#dates-and-times), or [list](/guide/formatting/lists) sub-formats inside the placeholder.
+Simple placeholders accept `string | number`. They're rendered as their string form. For richer formatting, use [number](/guide/writing/plurals#numbers), [date](/guide/writing/plurals#dates-and-times), or [list](/guide/formatting/lists) sub-formats inside the placeholder.
 
 ## Multiple placeholders
 
-Order doesn't matter — the parameter object is keyed by name, not position. A translation can reorder placeholders freely to fit each language's grammar:
+Order doesn't matter. The parameter object is keyed by name, not position. A translation can reorder placeholders freely to fit each language's grammar:
 
 ```ts
 t('You have {count} messages from {sender}', {
@@ -81,7 +81,7 @@ const params = { name: 'Ada' };
 t('Hi {name}', params);                      // error: dynamic params
 {% /diagnostics %}
 
-This catches the most common mistake people make when they're used to other i18n libraries — passing a pre-built object full of optional fields. The compiler requires every translation site to be statically inspectable.
+This catches the most common mistake people make when they're used to other i18n libraries. Passing a pre-built object full of optional fields. The compiler requires every translation site to be statically inspectable.
 
 {% callout variant="info" %}
 The same constraint applies to the source string itself. `t(someVariable)` and `` t(`Hi ${name}`) `` both raise a diagnostic at compile time. yapyak can only extract what it can see in the source code; anything dynamic should be a placeholder, not a string concatenation.
@@ -89,7 +89,7 @@ The same constraint applies to the source string itself. `t(someVariable)` and `
 
 ## When values need formatting
 
-The placeholder `{count}` renders as the value's string form — `3`, `Ada`, whatever you pass. When you want locale-aware formatting inside the message, ICU sub-formats take care of it:
+The placeholder `{count}` renders as the value's string form. `3`, `Ada`, whatever you pass. When you want locale-aware formatting inside the message, ICU sub-formats take care of it:
 
 ```ts
 t('Your balance is {amount, number, currency USD}', { amount: 99.95 });
@@ -119,4 +119,4 @@ Runtime:
 - A missing value falls back to an empty string, with a warning in dev
 - A value of the wrong type (`'three'` for a number sub-format, for example) is coerced when possible, warned about when not
 
-In practice, you only see compile-time errors when you're writing — the runtime fallbacks exist as safety nets, not as a substitute for static checking.
+In practice, you only see compile-time errors when you're writing. The runtime fallbacks exist as safety nets, not as a substitute for static checking.

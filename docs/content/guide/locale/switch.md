@@ -3,7 +3,7 @@ title: Switch
 order: 2
 ---
 
-There's one active locale at any moment. Reading it, changing it, and re-rendering on changes are all part of the runtime API. Your framework binding wraps `getLocale()` and `setLocale()` from `yapyak` in an idiomatic shape — see below for what that looks like in your stack.
+There's one active locale at any moment. Reading it, changing it, and re-rendering on changes are all part of the runtime API. Your framework binding wraps `getLocale()` and `setLocale()` from `yapyak` in an idiomatic shape. See below for what that looks like in your stack.
 
 ## The framework binding
 
@@ -27,7 +27,7 @@ export function LanguageButton() {
 }
 ```
 
-The hook subscribes the component to locale changes. Anything that calls it re-renders when `setLocale()` is called from anywhere in the app — your locale switcher, a server-rendered cookie, a forced URL parameter.
+The hook subscribes the component to locale changes. Anything that calls it re-renders when `setLocale()` is called from anywhere in the app: your locale switcher, a server-rendered cookie, a forced URL parameter.
 {% /when %}
 
 {% when value="vue" %}
@@ -46,7 +46,7 @@ import { t } from 'yapyak';
 </template>
 ```
 
-It's a `Ref<Locale>` — the standard Vue reactivity contract. Components that read `locale.value` (or rely on auto-unwrapping in templates) re-render when it changes, and an assignment triggers every subscriber.
+It's a `Ref<Locale>`. The standard Vue reactivity contract. Components that read `locale.value` (or rely on auto-unwrapping in templates) re-render when it changes, and an assignment triggers every subscriber.
 {% /when %}
 
 {% when value="svelte" %}
@@ -63,11 +63,11 @@ It's a `Ref<Locale>` — the standard Vue reactivity contract. Components that r
 </button>
 ```
 
-The shape uses Svelte 5's runes. `locale.current` is reactive — every component that reads it re-runs when the locale changes.
+The shape uses Svelte 5's runes. `locale.current` is reactive. Every component that reads it re-runs when the locale changes.
 {% /when %}
 
 {% when value="astro" %}
-Astro renders on the server, so locale switching doesn't happen client-side reactively — it happens through a navigation that the middleware translates into a new active locale. With `persistence: 'url'` (or `'cookie'`) set in your config, a plain link is enough:
+Astro renders on the server, so locale switching doesn't happen client-side reactively. It happens through a navigation that the middleware translates into a new active locale. With `persistence: 'url'` (or `'cookie'`) set in your config, a plain link is enough:
 
 ```astro
 ---
@@ -103,24 +103,32 @@ You'll reach for these directly when:
 - Building a locale switcher that lives outside the framework binding (a vanilla script tag, a compile-time helper)
 - Reading the `locales` array to render a dropdown of every available language
 
-For everything inside a component, prefer the framework binding above — it wires reactivity for you and survives SSR correctly.
+For everything inside a component, prefer the framework binding above. It wires reactivity for you and survives SSR correctly.
 
 ## Rendering a locale switcher
 
-A common pattern: a dropdown that lists every available locale and switches to whichever one the user picks. The `locales` array is the source — it reflects every `<locale>.json` file in your [`localesDir`](/guide/getting-started/configuration#localesdir).
+A common pattern: a dropdown that lists every available locale and switches to whichever one the user picks. The `locales` array is the source. It reflects every `<locale>.json` file in your [`localesDir`](/guide/getting-started/configuration#localesdir).
 
 {% switch group="framework" %}
 
 {% when value="react" %}
 ```tsx
 import { useLocale } from '@yapyak/react';
-import { locales } from 'yapyak';
+import { locales, parseLocale } from 'yapyak';
 
 export function LocaleSwitcher() {
   const [locale, setLocale] = useLocale();
 
   return (
-    <select value={locale} onChange={(e) => setLocale(e.target.value)}>
+    <select
+      value={locale}
+      onChange={(event) => {
+        const next = parseLocale(event.target.value);
+        if (next) {
+          setLocale(next);
+        }
+      }}
+    >
       {locales.map((value) => (
         <option key={value} value={value}>
           {labelOf(value)}
@@ -186,7 +194,7 @@ With `persistence: 'url'` set, submitting the form navigates to a URL containing
 
 {% /switch %}
 
-The `labelOf` helper is up to you — yapyak doesn't ship one because the right label depends on your app. A common choice is the locale's native name (`labelOf('sv') === 'Svenska'`), often computed with `new Intl.DisplayNames(value, { type: 'language' }).of(value)`.
+The `labelOf` helper is up to you. yapyak doesn't ship one because the right label depends on your app. A common choice is the locale's native name (`labelOf('sv') === 'Svenska'`), often computed with `new Intl.DisplayNames(value, { type: 'language' }).of(value)`.
 
 {% callout variant="tip" %}
 If you want the user's choice to survive a refresh or a new tab, pair the switcher with a [persistence](/guide/locale/persistence) strategy. Without one, the active locale lives only for the current page session.

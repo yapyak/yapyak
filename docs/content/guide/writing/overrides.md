@@ -3,7 +3,7 @@ title: Overrides
 order: 6
 ---
 
-Most of the time, `t()` renders the active locale. There are a few moments where you want to lock a specific call to one language regardless of who's reading — a locale-preview pane in your CMS, a server-side email rendered for a recipient whose preference isn't the request's locale, a debugging tool that shows every language side-by-side.
+Most of the time, `t()` renders the active locale. There are a few moments where you want to lock a specific call to one language regardless of who's reading. A locale-preview pane in your CMS, a server-side email rendered for a recipient whose preference isn't the request's locale, a debugging tool that shows every language side-by-side.
 
 For those, `t.in(locale, source)` forces a single locale on a single call.
 
@@ -11,11 +11,11 @@ For those, `t.in(locale, source)` forces a single locale on a single call.
 t.in('sv', 'Welcome back');
 ```
 
-This always returns the Swedish translation regardless of the active locale. The signature mirrors `t()` — placeholder parameters, rich-text tags, and ICU sub-formats all work the same. The locale argument is typed against your [`Locale`](/guide/locale/overview) union, so an unknown code is a compile-time error.
+This always returns the Swedish translation regardless of the active locale. The signature mirrors `t()`. Placeholder parameters, rich-text tags, and ICU sub-formats all work the same. The locale argument is typed against your [`Locale`](/guide/locale/overview) union, so an unknown code is a compile-time error.
 
 ## Combining with `.as()`
 
-`t.in()` and `t.as()` chain in either order. The result is the same — a translation for the named locale, disambiguated by the given context:
+`t.in()` and `t.as()` chain in either order. The result is the same. A translation for the named locale, disambiguated by the given context:
 
 ```ts
 t.in('sv').as('action', 'Open');     // chain: locale first
@@ -23,7 +23,7 @@ t.in('sv').as('action', 'Open');     // chain: locale first
 t.as('action').in('sv', 'Open');     // chain: context first
 ```
 
-You'd use this when you need both at once — say, rendering the Swedish "Open" button label inside an admin tool that also runs in English.
+You'd use this when you need both at once. Say, rendering the Swedish "Open" button label inside an admin tool that also runs in English.
 
 See [Homonyms](/guide/writing/homonyms) for what `t.as()` does on its own.
 
@@ -40,10 +40,10 @@ The compiler needs to see the full call (`t.in('sv', 'Welcome')`) in one place t
 
 ## When not to use it
 
-`t.in()` is a sharp tool. Reach for it when you genuinely need to render in a non-active locale: a side-by-side comparison, a server-rendered email, an admin-only preview. For everything else, the active locale is what you want — let the regular `t()` and your locale-switcher handle it.
+`t.in()` is a sharp tool. Reach for it when you genuinely need to render in a non-active locale: a side-by-side comparison, a server-rendered email, an admin-only preview. For everything else, the active locale is what you want. Let the regular `t()` and your locale-switcher handle it.
 
 Common misuses to avoid:
 
 - **As a per-component override.** If a single screen always renders in one language, set the locale at navigation time instead of pinning every call.
 - **For data-driven user preferences.** A user's preferred locale should drive the active locale (through [persistence](/guide/locale/persistence) or a server middleware), not appear as an argument on every `t()`.
-- **Inside a loop over locales.** `t.in()` lets you do this, but if you're rendering the same message in every language, you're probably building a translation tool — see whether reading the locale files directly fits better.
+- **Inside a loop over locales.** `t.in()` lets you do this, but if you're rendering the same message in every language, you're probably building a translation tool. See whether reading the locale files directly fits better.

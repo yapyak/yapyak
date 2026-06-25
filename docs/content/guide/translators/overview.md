@@ -22,7 +22,7 @@ export default defineConfig({
 });
 ```
 
-That's the typical shape. You add an API key, a voice, and a glossary; yapyak does the batching, retries, and result validation underneath.
+The typical shape: an API key, a voice, and a glossary. yapyak handles the batching, retries, and result validation underneath.
 
 ## What every translator shares
 
@@ -39,7 +39,7 @@ The shipped translators differ in which API they talk to, but their option surfa
 | `maxTokens` | `number` | scaled | Output token cap |
 | `timeout` | `number` | `30_000` ms | Per-request timeout |
 | `maxRetries` | `number` | `2` | Retries on 408/429/5xx |
-| `batchSize` | `number` | `25` | Source strings per request |
+| `batchSize` | `number` | `25` (Gemini `15`, Ollama `8`) | Source strings per request |
 | `concurrency` | `number` | `5` | Parallel requests |
 | `headers` | `Record<string, string>` | `{}` | Extra HTTP headers |
 | `endpoint` | `string` | provider URL | Custom API endpoint (for proxies) |
@@ -57,7 +57,7 @@ voice: 'A casual SaaS marketing tone',
 voice: 'Like a senior engineer writing release notes',
 ```
 
-Voice is the single biggest knob for shaping output. A vague voice gives bland translations; a specific one gives the registered character. Keep it under a sentence — long voices tend to confuse rather than clarify.
+Voice is the single biggest knob for shaping output. A vague voice gives bland translations; a specific one gives the registered character. Keep it under a sentence. Long voices tend to confuse rather than clarify.
 
 ### Glossary
 
@@ -82,7 +82,7 @@ glossary: {
 
 The `yapyak` entry pins the product name in every locale so it isn't translated.
 
-Glossary terms are injected into the prompt with a strict instruction to keep them as-is. They're matched on the source string — every occurrence of "cart" anywhere in a translatable message gets pinned to your translation. Use it for vocabulary that has to stay consistent across the whole app.
+Glossary terms are injected into the prompt with a strict instruction to keep them as-is. They're matched on the source string. Every occurrence of "cart" anywhere in a translatable message gets pinned to your translation. Use it for vocabulary that has to stay consistent across the whole app.
 
 ### Context
 
@@ -91,7 +91,7 @@ How much surrounding code yapyak sends with each translation request. Three leve
 | Level | What's sent | When to use |
 |---|---|---|
 | `'none'` | Just the source string | Privacy-sensitive code, costs matter |
-| `'minimal'` | + component name and immediate element | Default — gives the model useful disambiguation |
+| `'minimal'` | + component name and immediate element | Default. Gives the model useful disambiguation |
 | `'rich'` | + a snippet of surrounding source code | When voice and glossary aren't enough |
 
 A higher context produces better translations for tricky strings ("Open" as button vs status) at the cost of more tokens per request. Most projects do fine with `'minimal'`.
@@ -106,7 +106,7 @@ The translator runs in two situations:
 
 **During development**, on save. When you write a new `t()` call, yapyak collects the missing strings, batches them, and calls your translator. The result is written back to your locale files; HMR refreshes the rendered text. The whole loop usually takes a few seconds.
 
-A guardrail kicks in for large saves: when a single save adds more than [`autoTranslateThreshold`](/guide/getting-started/configuration#autotranslatethreshold) strings (default 20), yapyak holds off on auto-translating and leaves the stubs empty. You run [`yapyak translate`](/guide/cli/translate) when you're ready — useful for big refactors or agent-generated changes where you'd rather review before spending tokens.
+A guardrail kicks in for large saves: when a single save adds more than [`autoTranslateThreshold`](/guide/getting-started/configuration#autotranslatethreshold) strings (default 20), yapyak holds off on auto-translating and leaves the stubs empty. You run [`yapyak translate`](/guide/cli/translate) when you're ready. Useful for big refactors or agent-generated changes where you'd rather review before spending tokens.
 
 **Through the CLI**, on demand. [`yapyak translate`](/guide/cli/translate) walks every empty stub in your locale files and runs them through your translator. Use it in CI to fill in everything that the dev-time loop didn't catch, or when you've held back auto-translation deliberately.
 
@@ -128,23 +128,23 @@ A few error cases reach the surface, mostly so you can decide whether to retry o
 
 | Error | When it fires |
 |---|---|
-| `TranslatorAuthError` | 401/403 — bad or missing API key |
-| `TranslatorRateLimitError` | 429 — provider's rate limit; includes `retryAfter` if the provider sent one |
+| `TranslatorAuthError` | 401/403. Bad or missing API key |
+| `TranslatorRateLimitError` | 429. Provider's rate limit; includes `retryAfter` if the provider sent one |
 | `TranslatorTimeoutError` | Request exceeded `timeout` or was aborted |
 | `TranslatorNetworkError` | Other HTTP failures or network errors |
 | `TranslatorSafetyError` | Provider blocked content (Anthropic refusal, OpenAI content filter, Gemini SAFETY/RECITATION) |
-| `TranslatorInvalidResponseError` | Model returned something that doesn't parse — unusual, but possible |
+| `TranslatorInvalidResponseError` | Model returned something that doesn't parse. Unusual, but possible |
 | `TranslatorTruncatedError` | Model output was cut off by the token limit |
 
-All of them extend `TranslatorError` (importable from `yapyak/translator`), so a single `catch` block handles every case. Within a batch run, a chunk failure shows up as a [`YAP0033`](/reference/diagnostics/YAP0033) diagnostic — yapyak continues with the rest of the chunks and returns partial results rather than abandoning everything.
+All of them extend `TranslatorError` (importable from `yapyak/translator`), so a single `catch` block handles every case. Within a batch run, a chunk failure shows up as a [`YAP0033`](/reference/diagnostics/YAP0033) diagnostic. yapyak continues with the rest of the chunks and returns partial results rather than abandoning everything.
 
 ## Picking a provider
 
 The four shipped translators each have their own setup page with the full options table:
 
-- [Anthropic](/guide/translators/anthropic) — Claude models. Strong on tone and nuance.
-- [OpenAI](/guide/translators/openai) — GPT and reasoning models. Works with OpenAI-compatible endpoints (Azure, Groq, Mistral, OpenRouter).
-- [Gemini](/guide/translators/gemini) — Google's models. Smaller default batch size; lower latency for short messages.
-- [Ollama](/guide/translators/ollama) — Local inference, no API key. Privacy-first.
+- [Anthropic](/guide/translators/anthropic). Claude models. Strong on tone and nuance.
+- [OpenAI](/guide/translators/openai). GPT and reasoning models. Works with OpenAI-compatible endpoints (Azure, Groq, Mistral, OpenRouter).
+- [Gemini](/guide/translators/gemini). Google's models. Smaller default batch size; lower latency for short messages.
+- [Ollama](/guide/translators/ollama). Local inference, no API key. Privacy-first.
 
 None of them are wrong for general use. Pick the provider you already have a key for, or the one whose pricing fits your translation volume. You can switch later by changing one line in your config.

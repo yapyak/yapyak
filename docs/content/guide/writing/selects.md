@@ -63,9 +63,9 @@ t('{role, select, admin {Admin {name} has {count, plural, one {# alert} other {#
 });
 ```
 
-That message reads as a wall of braces, which is fair — long ICU expressions get ugly fast. yapyak doesn't enforce a maximum, but if it stops being readable, extract logic into two separate `t()` calls and let your component decide which to render.
+That message reads as a wall of braces, which is fair. Long ICU expressions get ugly fast. yapyak doesn't enforce a maximum, but if it stops being readable, extract logic into two separate `t()` calls and let your component decide which to render.
 
-## Selectordinal — for ordinal numbers
+## Selectordinal (for ordinal numbers)
 
 If your branching looks like a select but the value is an ordinal ("1st place", "2nd place", "3rd place"), that's `selectordinal`. It's covered in [Plurals](/guide/writing/plurals#ordinals-selectordinal) since the categories and rules match `plural`.
 
@@ -87,4 +87,4 @@ The compiler validates the structural shape:
 - `other` is present
 - Every nested placeholder is in the params object
 
-It doesn't enforce that the value type is one of your declared branches — that's your TypeScript discipline at the call site. If you pass `'archived'` and only `'draft'` and `'published'` are listed, runtime falls through to `other` cleanly. No crash, just the fallback.
+It doesn't enforce that the value type is one of your declared branches. That's your TypeScript discipline at the call site. If you pass `'archived'` and only `'draft'` and `'published'` are listed, runtime falls through to `other` cleanly. No crash, just the fallback.

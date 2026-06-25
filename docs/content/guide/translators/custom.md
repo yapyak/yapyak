@@ -32,7 +32,7 @@ import { defineConfig } from 'yapyak/config';
 export default defineConfig({ translator: myTranslator });
 ```
 
-yapyak handles the batching, deduplication, retry behavior, and result validation around your function — you only describe how to talk to your backend.
+yapyak handles the batching, deduplication, retry behavior, and result validation around your function. You only describe how to talk to your backend.
 
 ## The input
 
@@ -56,7 +56,7 @@ type TranslateItem = {
 };
 ```
 
-`items` is the batch — yapyak has already chunked it according to your `batchSize`. `sourceLocale` is your `defaultLocale` (`'en'` for most projects). `targetLocales` is every locale missing a translation for any item in the batch. `signal` is an `AbortSignal` you should forward to your fetch so cancellation propagates.
+`items` is the batch. yapyak has already chunked it according to your `batchSize`. `sourceLocale` is your `defaultLocale` (`'en'` for most projects). `targetLocales` is every locale missing a translation for any item in the batch. `signal` is an `AbortSignal` you should forward to your fetch so cancellation propagates.
 
 ## The output
 
@@ -75,7 +75,7 @@ Return an array of objects, one per item, each keyed by the target locales:
 ]
 ```
 
-The order matches `items`. Every entry must have one key per locale in `targetLocales`. yapyak validates the shape — if an entry is missing a locale or is the wrong type, the diagnostic [`YAP0034`](/reference/diagnostics/YAP0034) fires and that entry is dropped.
+The order matches `items`. Every entry must have one key per locale in `targetLocales`. yapyak validates the shape. If an entry is missing a locale or is the wrong type, the diagnostic [`YAP0034`](/reference/diagnostics/YAP0034) fires and that entry is dropped.
 
 ## Configuration
 
@@ -94,16 +94,16 @@ const myTranslator = createTranslator({
 | Option | Type | Default | Purpose |
 |---|---|---|---|
 | `id` | `string` | `'custom'` | Stable identifier for logging and observability |
-| `batchSize` | `number` | `25` | Max items per `translate` call — yapyak chunks larger batches itself |
+| `batchSize` | `number` | `25` | Max items per `translate` call. yapyak chunks larger batches itself |
 | `concurrency` | `number` | `5` | Max parallel `translate` calls |
 | `context` | `'none' \| 'minimal' \| 'rich'` | `'minimal'` | What call-site context yapyak attaches to each item |
 | `translate` | `TranslateFn` | required | The batch callback |
 
-The shipped translators (Anthropic, OpenAI, etc.) are themselves built on top of `createTranslator` — the same defaults apply, the same lifecycle runs underneath.
+The shipped translators (Anthropic, OpenAI, etc.) are themselves built on top of `createTranslator`. The same defaults apply, the same lifecycle runs underneath.
 
 ## A real example: a rules-based translator
 
-When yapyak's normal model-translator path is overkill — say, for an app whose only translations are a handful of fixed terms — a small rules-based translator drops in cleanly:
+When yapyak's normal model-translator path is overkill. Say, for an app whose only translations are a handful of fixed terms. A small rules-based translator drops in cleanly:
 
 ```ts
 import { createTranslator } from 'yapyak/translator';
@@ -147,30 +147,40 @@ import { anthropic } from '@yapyak/anthropic';
 import { openai } from '@yapyak/openai';
 
 const claude = anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
 const gpt = openai({ apiKey: process.env.OPENAI_API_KEY });
 
-const ROUTE = {
-  default: gpt,
-  ja: claude,
-  zh: claude
-};
+function pickProvider(targetLocale: string) {
+  if (targetLocale === 'ja' || targetLocale === 'zh') {
+    return claude;
+  }
+  return gpt;
+}
 
 const myTranslator = createTranslator({
   id: 'routed',
-  async translate(request) {
-    const byProvider = new Map<typeof claude | typeof gpt, typeof request.items>();
+  async translate({ items, signal, sourceLocale, targetLocales }) {
+    const results = await Promise.all(
+      targetLocales.map((targetLocale) =>
+        pickProvider(targetLocale)({
+          items,
+          signal,
+          sourceLocale,
+          targetLocales: [targetLocale],
+        }),
+      ),
+    );
+    return results.flat();
   }
 });
 ```
 
-Inside `translate`, route each item to the right provider based on its target locale, call each provider's `batch()` with the routed slice, and merge the results back. This pattern is heavier than the shipped translators; reach for it when you have specific performance or cost reasons.
+Each target locale is routed to its provider, and `Promise.all` fans the calls out concurrently. yapyak handles the outer batching and result validation. This pattern is heavier than the shipped translators; reach for it when you have specific performance or cost reasons.
 
 ## Forwarding the AbortSignal
 
-The `signal` parameter is an `AbortSignal` that fires when yapyak's batch run is cancelled — by a `Ctrl-C` during a CLI run, by a save during dev that supersedes an earlier in-flight call, or by an explicit `controller.abort()` if you're calling `translator.batch()` yourself.
+The `signal` parameter is an `AbortSignal` that fires when yapyak's batch run is cancelled: by a `Ctrl-C` during a CLI run, by a save during dev that supersedes an earlier in-flight call, or by an explicit `controller.abort()` if you're calling `translator.batch()` yourself.
 
-Pass it through to your fetch (or your internal client's `signal` field). Failure to propagate the signal means cancelled runs still finish their underlying requests — wasted tokens, wasted time:
+Pass it through to your fetch (or your internal client's `signal` field). Failure to propagate the signal means cancelled runs still finish their underlying requests, wasting tokens and time:
 
 ```ts
 async translate({ items, signal }) {
@@ -214,6 +224,6 @@ async translate({ items, signal }) {
 }
 ```
 
-Throwing the right error type lets yapyak apply the right behavior — backoff for rate-limits, fail-fast for auth, log-and-continue for safety blocks on individual items.
+Throwing the right error type lets yapyak apply the right behavior. Backoff for rate-limits, fail-fast for auth, log-and-continue for safety blocks on individual items.
 
 If you throw a plain `Error`, yapyak treats it as a `TranslatorNetworkError` and applies the default retry policy.

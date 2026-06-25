@@ -73,7 +73,7 @@ Gemini's default batch size is lower than the shared default of 25, since Gemini
 
 ## Models
 
-The default `'gemini-2.5-flash'` is the fast, cost-effective Flash tier — well-suited to translation. Heavier work that needs more nuance can use a Pro model:
+The default `'gemini-2.5-flash'` is the fast, cost-effective Flash tier. Well-suited to translation. Heavier work that needs more nuance can use a Pro model:
 
 ```ts
 translator: gemini({
@@ -86,24 +86,27 @@ The full list of available Gemini models lives in [Google's docs](https://ai.goo
 
 ## Vertex AI
 
-If you're on Google Cloud and routing through Vertex AI rather than the public Gemini endpoint, override the `endpoint` to point at your Vertex AI URL. The path structure differs slightly from the public API — yapyak constructs the full URL as `${endpoint}/models/${model}:generateContent`, so configure your endpoint to match.
+If you're on Google Cloud and routing through Vertex AI rather than the public Gemini endpoint, override the `endpoint` to point at your Vertex AI URL. yapyak constructs the full URL as `${endpoint}/models/${model}:generateContent`, so configure your endpoint to match.
 
 ```ts
 translator: gemini({
-  apiKey: process.env.VERTEX_AI_TOKEN,
+  apiKey: 'unused',
   endpoint: 'https://<region>-aiplatform.googleapis.com/v1/projects/<project>/locations/<region>/publishers/google',
-  model: 'gemini-2.5-flash'
+  headers: {
+    Authorization: `Bearer ${process.env.VERTEX_AI_TOKEN}`,
+  },
+  model: 'gemini-2.5-flash',
 }),
 ```
 
-Vertex AI uses bearer auth differently from the public Gemini API. For production use, front this with a service-account auth layer that injects the right token — pass that token through `apiKey`, or supply your own auth via the `headers` option (which merges into every request).
+Vertex AI uses `Authorization: Bearer <token>`, but yapyak's Gemini translator sends `apiKey` via the `x-goog-api-key` header (the public API's convention). Pass the bearer token through the `headers` option instead. `apiKey` is still required by the translator's type signature; any non-empty placeholder works.
 
 ## Errors
 
 Gemini-specific failure modes map to yapyak's standard [translator errors](/guide/translators/overview#what-yapyak-protects-you-from):
 
-- A `finishReason: 'SAFETY'` or `finishReason: 'RECITATION'` maps to `TranslatorSafetyError` — the safety layer blocked the response.
-- A `finishReason: 'MAX_TOKENS'` maps to `TranslatorTruncatedError` — the output hit the cap.
+- A `finishReason: 'SAFETY'` or `finishReason: 'RECITATION'` maps to `TranslatorSafetyError`. The safety layer blocked the response.
+- A `finishReason: 'MAX_TOKENS'` maps to `TranslatorTruncatedError`. The output hit the cap.
 - Auth failures (`401`) raise `TranslatorAuthError`.
 
 All errors extend `TranslatorError` from `yapyak/translator`.

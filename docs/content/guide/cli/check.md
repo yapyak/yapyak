@@ -52,7 +52,7 @@ A source string with no entry, or an empty stub, in one of your locales. The mos
 
 ### Compile-time diagnostics
 
-Any [`YAP-`](/reference/diagnostics) diagnostic that fires during parsing or extraction. These are the same ones you see in your editor during development — malformed ICU, dynamic source strings, missing `other` plural branches, captured chains. `check` re-runs them in CI in case anything slipped through.
+Any [`YAP-`](/reference/diagnostics) diagnostic that fires during parsing or extraction. These are the same ones you see in your editor during development. Malformed ICU, dynamic source strings, missing `other` plural branches, captured chains. `check` re-runs them in CI in case anything slipped through.
 
 ### ICU mismatches
 
@@ -93,12 +93,12 @@ If you also auto-translate in CI, run `translate` first to fill in any empty stu
 A few things `check` deliberately doesn't catch:
 
 - **Translation quality.** A correct-but-bad translation passes.
-- **Pluralization correctness in target locales.** If your Swedish translation declares only `one` and `other`, that passes — yapyak trusts the translator's judgment about which plural categories the language uses.
+- **Pluralization correctness in target locales.** If your Swedish translation declares only `one` and `other`, that passes. yapyak trusts the translator's judgment about which plural categories the language uses.
 - **Stale translations.** If your source string changed and the translation is now outdated, `check` doesn't notice unless the structure (placeholders, tags) changed too. Use [renames behavior](/guide/advanced/renames) to control this.
 
 ## Exit codes
 
-- `0` — Everything checks out.
-- `1` — One or more issues found. The output lists them grouped by category.
+- `0`: everything checks out.
+- `1`: one or more issues found. The output lists them grouped by category.
 
 The non-zero exit is what makes `check` useful in CI; the human-readable output is what makes the failures easy to fix.

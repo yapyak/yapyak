@@ -3,7 +3,7 @@ title: Lists
 order: 4
 ---
 
-`format.list()` joins an array of strings into a single phrase using the active locale's conventions. The boundaries between items, the conjunction word ("and", "or"), and the way the last item connects are all different across languages — `format.list()` handles all of it.
+`format.list()` joins an array of strings into a single phrase using the active locale's conventions. The boundaries between items, the conjunction word ("and", "or"), and the way the last item connects are all different across languages. `format.list()` handles all of it.
 
 ```ts
 import { format } from 'yapyak';

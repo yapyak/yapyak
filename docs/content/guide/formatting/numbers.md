@@ -38,7 +38,7 @@ format.number(0.5, { minimumFractionDigits: 2 });
 // output: en-US: '0.50'
 ```
 
-You can pass any of `Intl.NumberFormat`'s decimal options — minimum/maximum fraction digits, minimum integer digits, grouping toggles, notation modes.
+You can pass any of `Intl.NumberFormat`'s decimal options. Minimum/maximum fraction digits, minimum integer digits, grouping toggles, notation modes.
 
 ## Currency
 
@@ -75,7 +75,7 @@ format.number(199, {
 ```
 
 {% callout variant="info" %}
-A currency code unsupported by the host `Intl` does not throw — yapyak falls back to a `<value> <code>` rendering. This covers the rare cases where a runtime is missing a freshly-issued currency code (e.g. a regional digital currency) without crashing the page.
+A currency code unsupported by the host `Intl` does not throw. yapyak falls back to a `<value> <code>` rendering. This covers the rare cases where a runtime is missing a freshly-issued currency code (e.g. a regional digital currency) without crashing the page.
 {% /callout %}
 
 ## The `Currency` type and `isCurrency`
@@ -103,7 +103,7 @@ Use `Currency` for typed props and parameters; use `isCurrency` to narrow user i
 
 ## Percent
 
-`style: 'percent'` formats fractional values. The input is the decimal fraction — `0.42` renders as `42%`, not `0.42%`.
+`style: 'percent'` formats fractional values. The input is the decimal fraction. `0.42` renders as `42%`, not `0.42%`.
 
 ```ts
 format.number(0.42, { style: 'percent' });
@@ -159,4 +159,4 @@ Unit identifiers come from the [Unicode CLDR units list](https://unicode-org.git
 
 ## Inside a `t()` message
 
-The same number formatting is available [inside ICU messages](/guide/writing/plurals#numbers) — `{value, number, currency USD}`, `{pct, number, percent}`, and so on. Use `t()` when the number is part of a sentence; use `format.number()` when the number is its own atom (a column in a table, a stat in a card, a price label next to a button).
+The same number formatting is available [inside ICU messages](/guide/writing/plurals#numbers). `{value, number, currency USD}`, `{pct, number, percent}`, and so on. Use `t()` when the number is part of a sentence; use `format.number()` when the number is its own atom (a column in a table, a stat in a card, a price label next to a button).

@@ -3,7 +3,7 @@ title: Persistence
 order: 3
 ---
 
-Without persistence, the active locale lives only for the current page session — close the tab and the choice is gone. yapyak ships four strategies for storing the user's pick somewhere it survives reloads: cookie, local storage, URL, or none.
+Without persistence, the active locale lives only for the current page session. Close the tab and the choice is gone. yapyak ships four strategies for storing the user's pick somewhere it survives reloads: cookie, local storage, URL, or none.
 
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
@@ -13,11 +13,11 @@ export default defineConfig({
 });
 ```
 
-That's the shorthand. Each strategy also accepts a configuration object for customizing names, keys, or matching patterns.
+Each strategy also accepts a configuration object for customizing names, keys, or matching patterns.
 
 ## Cookie
 
-The default for server-rendered apps. The cookie is written client-side when `setLocale()` is called, and read server-side by the middleware on every request — so the same locale renders on both sides without a hydration mismatch.
+The default for server-rendered apps. The cookie is written client-side when `setLocale()` is called, and read server-side by the middleware on every request, so the same locale renders on both sides without a hydration mismatch.
 
 ```ts
 persistence: 'cookie',
@@ -41,12 +41,12 @@ persistence: {
 The cookie is set with `SameSite=Lax` and a long expiry. On a fresh browser, it's absent until the first `setLocale()` call. Until then, the active locale falls back to `defaultLocale` (or to [environment detection](/guide/getting-started/configuration#detectuserlocale) if enabled).
 
 {% callout variant="info" %}
-`secure: true` restricts the cookie to HTTPS-only contexts. On plain HTTP, client-side `setLocale()` writes will silently fail — the browser refuses to set a secure cookie. Leave `secure` off for local development; enable it in production. The flag has no effect on `localhost` regardless.
+`secure: true` restricts the cookie to HTTPS-only contexts. On plain HTTP, client-side `setLocale()` writes silently fail because the browser refuses to set a secure cookie. Leave `secure` off for local development; enable it in production. The flag has no effect on `localhost` regardless.
 {% /callout %}
 
 ## Local storage
 
-Browser-only. The locale lives in `localStorage`, read once at startup and written on every `setLocale()`. There's no server involvement, so this strategy fits client-only apps — a plain Vite + React SPA without SSR.
+Browser-only. The locale lives in `localStorage`, read once at startup and written on every `setLocale()`. There's no server involvement, so this strategy fits client-only apps (a plain Vite + React SPA without SSR).
 
 ```ts
 persistence: 'local-storage',
@@ -65,10 +65,10 @@ persistence: {
 |---|---|---|
 | `key` | `'locale'` | The `localStorage` key |
 
-`localStorage` is per-origin and survives across tabs and sessions. On a fresh device, the key is absent until the first `setLocale()` call — the active locale starts at `defaultLocale`.
+`localStorage` is per-origin and survives across tabs and sessions. On a fresh device, the key is absent until the first `setLocale()` call; the active locale starts at `defaultLocale`.
 
 {% callout variant="warning" %}
-Local storage isn't available during SSR. If your app server-renders, the server has no way to read the user's stored choice on the first request, and the initial render will be in `defaultLocale`. The page then hydrates and the runtime reads `localStorage` and triggers a re-render in the right locale — visible as a flash of the wrong language. Use [cookie](#cookie) or [url](#url) persistence for server-rendered apps.
+Local storage isn't available during SSR. If your app server-renders, the server has no way to read the user's stored choice on the first request, and the initial render will be in `defaultLocale`. The page then hydrates and the runtime reads `localStorage` and triggers a re-render in the right locale, visible as a flash of the wrong language. Use [cookie](#cookie) or [url](#url) persistence for server-rendered apps.
 {% /callout %}
 
 ## URL
@@ -92,28 +92,22 @@ persistence: {
 |---|---|---|
 | `match` | first path segment | A `RegExp` whose first capture group (named `locale` or positional `$1`) carries the locale string |
 
-Without `match`, yapyak reads the first path segment — `/sv/settings` resolves to `'sv'` if `'sv'` is one of the locales you've added. Anything else falls through to `defaultLocale`.
+Without `match`, yapyak reads the first path segment. `/sv/settings` resolves to `'sv'` if `'sv'` is one of the locales you've added. Anything else falls through to `defaultLocale`.
 
 With a `match` regex, you control where the locale lives. The example above pulls it from a `lang` query parameter, so URLs look like `/settings?lang=sv` instead of `/sv/settings`.
 
 ## None
 
-The default. The active locale lives only in memory for the current page session — switching it doesn't persist anywhere. A refresh resets the locale to `defaultLocale`.
+The default. The active locale lives only in memory for the current page session; switching it doesn't persist anywhere, and a refresh resets the locale to `defaultLocale`.
 
 ```ts
 persistence: 'none',
 ```
 
-Or just omit the field entirely — `'none'` is the default.
+Or just omit the field entirely. `'none'` is the default.
 
-Useful when you genuinely don't want persistence — a kiosk app, a development build, or a setup where another system (the URL path itself, a server-set user preference) carries the locale.
+Useful when you don't want persistence: a kiosk app, a development build, or a setup where another system (the URL path itself, a server-set user preference) carries the locale.
 
 ## Composing with `defaultLocale` and detection
 
-The active locale on a fresh visit is resolved in order:
-
-1. **Persisted value**, if any. Cookie, local-storage entry, or URL match.
-2. **[Detected value](/guide/getting-started/configuration#detectuserlocale)** from `Accept-Language` (server) or `navigator.languages` (browser), if `detectUserLocale: true`.
-3. **`defaultLocale`** from your config.
-
-The first match wins. Persistence is checked first because an explicit user choice always beats a guess.
+Persistence sits at the top of the resolution chain: an explicit user choice always beats a guess. When no persisted value exists, yapyak falls back to environment detection (if enabled) and then to `defaultLocale`. See [Locale overview](/guide/locale/overview#where-the-active-locale-comes-from) for the full order.

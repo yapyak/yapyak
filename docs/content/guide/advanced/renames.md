@@ -3,7 +3,7 @@ title: Renames
 order: 1
 ---
 
-Source code moves around. A component file gets renamed; a string gets edited; the same markup gets copied to a new file. In every case, the translations attached to those strings still exist — yapyak's job is to follow them across the change rather than orphan them.
+Source code moves around. A component file gets renamed; a string gets edited; the same markup gets copied to a new file. In every case, the translations attached to those strings still exist. Yapyak's job is to follow them across the change rather than orphan them.
 
 ## What yapyak tracks
 
@@ -33,16 +33,16 @@ The string `'Add to cart'` still exists, in the same form, but it's in a differe
 + t('Save changes')
 ```
 
-This is the trickier case. The translation for `'Save'` — `'Spara'` in Swedish — may or may not still be right for `'Save changes'` (`'Spara ändringar'`). yapyak's behavior here is controlled by [`preserveTranslationsOnRename`](/guide/getting-started/configuration#preservetranslationsonrename):
+This is the trickier case. The translation for `'Save'` (`'Spara'` in Swedish) may or may not still be right for `'Save changes'` (`'Spara ändringar'`). yapyak's behavior here is controlled by [`preserveTranslationsOnRename`](/guide/getting-started/configuration#preservetranslationsonrename):
 
-- `true` — Keep the existing translation. Useful for small edits where "save" becoming "save changes" is unlikely to break anything.
-- `false` — Treat it as a new string. The translation is regenerated (if you have a translator) or marked empty (if you don't).
+- `true`: keep the existing translation. Useful for small edits where "save" becoming "save changes" is unlikely to break anything.
+- `false`: treat it as a new string. The translation is regenerated (if you have a translator) or marked empty (if you don't).
 
 The default flips based on whether you have a translator configured: `true` without one (so manual translations aren't lost on small edits), `false` with one (so the translator can refresh anything that changed).
 
 ### Same source, deleted then re-added
 
-A component gets deleted, and a few commits later the same markup comes back. yapyak's cache in `.yapyak/` keeps a copy of every translation it's ever seen — when the source reappears, the cache restores its translation under the new path.
+A component gets deleted, and a few commits later the same markup comes back. yapyak's cache in `.yapyak/` keeps a copy of every translation it's ever seen. When the source reappears, the cache restores its translation under the new path.
 
 This works regardless of whether the path is the same. Copy the JSX into a different file, give it a new name, and the translations follow.
 

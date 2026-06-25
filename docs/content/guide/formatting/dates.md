@@ -3,7 +3,7 @@ title: Dates
 order: 3
 ---
 
-`format.dateTime()` formats an absolute date or time for the active locale. `format.relativeTime()` formats a signed offset ("yesterday", "in 3 days"). Both are thin wrappers over `Intl` — they read the active locale on every call, so the same component renders correctly for every reader.
+`format.dateTime()` formats an absolute date or time for the active locale. `format.relativeTime()` formats a signed offset ("yesterday", "in 3 days"). Both are thin wrappers over `Intl`. They read the active locale on every call, so the same component renders correctly for every reader.
 
 ```ts
 import { format } from 'yapyak';
@@ -81,7 +81,7 @@ format.dateTime(new Date(), {
 // output: en-US: '06/17/2026, 16:30'
 ```
 
-Any option from [`Intl.DateTimeFormatOptions`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#parameters) works (minus `localeMatcher`, which yapyak manages). `timeZone`, `weekday`, `era`, `dayPeriod`, fractional seconds — they all pass through.
+Any option from [`Intl.DateTimeFormatOptions`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#parameters) works (minus `localeMatcher`, which yapyak manages). `timeZone`, `weekday`, `era`, `dayPeriod`, fractional seconds. They all pass through.
 
 ## Relative time
 
@@ -126,6 +126,6 @@ For offsets the locale doesn't have a special word for, `numeric: 'auto'` falls 
 
 ## Inside a `t()` message
 
-The same date/time formatting is available [inside ICU messages](/guide/writing/plurals#dates-and-times) — `{when, date, long}`, `{at, time, short}`. Use `t()` when the date is part of a sentence ("Updated on June 17"); use `format.dateTime()` when it's its own atom (a column header, a footer timestamp).
+The same date/time formatting is available [inside ICU messages](/guide/writing/plurals#dates-and-times). `{when, date, long}`, `{at, time, short}`. Use `t()` when the date is part of a sentence ("Updated on June 17"); use `format.dateTime()` when it's its own atom (a column header, a footer timestamp).
 
 Relative time doesn't have an ICU sub-format; it's only available through `format.relativeTime()`.

@@ -33,7 +33,7 @@ bun add @yapyak/sveltekit
 {% /when %}
 {% /switch %}
 
-You also need yapyak, the Vite plugin, and the Svelte binding (covered in [Setup — Install](/guide/getting-started/installation)).
+You also need yapyak, the Vite plugin, and the Svelte binding (covered in [Install](/guide/getting-started/installation)).
 
 ## Register the handle
 
@@ -75,10 +75,10 @@ The handle substitutes a `%yapyak.lang%` placeholder in `app.html` with the reso
 </html>
 ```
 
-The handle replaces `%yapyak.lang%` with the active locale on every page render — `en`, `sv`, whatever the request resolved to. The browser, screen readers, and search engines see the right language hint immediately.
+The handle replaces `%yapyak.lang%` with the active locale on every page render. `en`, `sv`, whatever the request resolved to. The browser, screen readers, and search engines see the right language hint immediately.
 
 {% callout variant="info" %}
-Placeholder substitution requires `%yapyak.lang%` to fall within a single streamed chunk. Placing it at the top of `app.html` (inside the first `<html>` tag) keeps it in the first chunk. Long head content that pushes the placeholder past a chunk boundary causes substitution to silently skip — keep it early in the document.
+Placeholder substitution requires `%yapyak.lang%` to fall within a single streamed chunk. Placing it at the top of `app.html` (inside the first `<html>` tag) keeps it in the first chunk. Long head content that pushes the placeholder past a chunk boundary causes substitution to silently skip. Keep it early in the document.
 {% /callout %}
 
 ## Register the processor
@@ -132,7 +132,7 @@ export const actions: Actions = {
 };
 ```
 
-The cookie is written automatically — you don't construct the `Set-Cookie` header yourself.
+The cookie is written automatically. You don't construct the `Set-Cookie` header yourself.
 
 ## Common issues
 

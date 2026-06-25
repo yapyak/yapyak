@@ -3,7 +3,7 @@ title: Tags
 order: 4
 ---
 
-A locale in yapyak is a BCP 47 language tag — the same standard `Intl` uses for its formatters. Tags are short, structured, and case-insensitive in canonical form. Anywhere you write a locale (the argument to [`yapyak add`](/guide/cli/add), the second to `setLocale()`, the first to `t.in()`), you write a BCP 47 tag.
+A locale in yapyak is a BCP 47 language tag, the same standard `Intl` uses for its formatters. Tags are short, structured, and case-insensitive in canonical form. Anywhere you write a locale (the argument to [`yapyak add`](/guide/cli/add), the argument to `setLocale()`, the first to `t.in()`), you write a BCP 47 tag.
 
 {% switch group="packageManager" %}
 {% when value="pnpm" %}
@@ -48,7 +48,7 @@ The language subtag is always present; the rest are optional and almost never al
 | `zh-Hans-CN` | Simplified Chinese, mainland China |
 
 {% callout variant="info" %}
-The canonical casing is `lowercase-Titlecase-UPPERCASE` (language lowercase, script title-case, region upper-case). yapyak normalizes input through `Intl.Locale` before matching, so `'EN-US'`, `'en-us'`, and `'en-US'` all match the same added locale — but write the canonical form on disk and in code.
+The canonical casing is `lowercase-Titlecase-UPPERCASE` (language lowercase, script title-case, region upper-case). yapyak normalizes input through `Intl.Locale` before matching, so `'EN-US'`, `'en-us'`, and `'en-US'` all match the same added locale. But write the canonical form on disk and in code.
 {% /callout %}
 
 ## Fallbacks
@@ -74,11 +74,11 @@ getLocaleFallbackChain('sv');
 
 Each step drops one subtag from the right. The chain doesn't include your `defaultLocale` at the end; append it yourself when you need a full ordering.
 
-In practice, you rarely need to call this directly — yapyak's runtime uses it internally during translation lookup. Reach for it when you're implementing custom locale negotiation, for example in a server middleware that compares an `Accept-Language` header against your shipped locales.
+In practice, you rarely need to call this directly. Yapyak's runtime uses it internally during translation lookup. Reach for it when you're implementing custom locale negotiation, for example in a server middleware that compares an `Accept-Language` header against your shipped locales.
 
 ## Narrowing untrusted strings
 
-Locales arriving from outside your code — URL parameters, form fields, request headers — are typed as `string` until you narrow them. yapyak exports two helpers:
+Locales arriving from outside your code. URL parameters, form fields, request headers. Are typed as `string` until you narrow them. yapyak exports two helpers:
 
 ### `isLocale`
 
@@ -110,15 +110,15 @@ Returns the matched `Locale` or `undefined` if no shipped locale matches even af
 
 ## Accept-Language and content negotiation
 
-When the client sends an `Accept-Language` header (`sv,en;q=0.8,en-US;q=0.6`), yapyak parses it into an ordered list — most preferred first. If [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is enabled in your config, the locale resolver walks that list and picks the first entry that matches a shipped locale (using the fallback chain above).
+When the client sends an `Accept-Language` header (`sv,en;q=0.8,en-US;q=0.6`), yapyak parses it into an ordered list. Most preferred first. If [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is enabled in your config, the locale resolver walks that list and picks the first entry that matches a shipped locale (using the fallback chain above).
 
-This is how a fresh visit gets a sensible default — the user's browser preferences take effect even before they've made an explicit choice or had their cookie set.
+This is how a fresh visit gets a sensible default. The user's browser preferences take effect even before they've made an explicit choice or had their cookie set.
 
 ## Picking your locales
 
 A few rules of thumb when deciding which locales to add:
 
-- **Start coarse.** `'en'` and `'sv'` are usually enough — add the region (`'en-GB'`, `'en-AU'`) only if your translations genuinely differ.
+- **Start coarse.** `'en'` and `'sv'` are usually enough. Add the region (`'en-GB'`, `'en-AU'`) only if your translations differ.
 - **Region matters for Portuguese, Spanish, Chinese.** `'pt-BR'` and `'pt-PT'` are different enough that you'll want both if you ship to both markets. Same for `'es-ES'` vs `'es-MX'`, `'zh-Hant'` vs `'zh-Hans'`.
 - **The script subtag is a single decision per language.** If you ship Chinese, you decide whether it's `zh-Hans` or `zh-Hant` (or both); you don't ship plain `zh` and let it be ambiguous.
-- **A user's browser language is hint, not law.** Always provide a way to override the detected locale — a switcher, a profile setting, a URL parameter.
+- **A user's browser language is hint, not law.** Always provide a way to override the detected locale. A switcher, a profile setting, a URL parameter.

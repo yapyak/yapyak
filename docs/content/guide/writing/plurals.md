@@ -3,7 +3,7 @@ title: Plurals
 order: 3
 ---
 
-Plurals are the first place a single-language app starts feeling cramped. "1 message" / "5 messages" works in English with a simple `if` — but it falls apart in languages with two singular forms (Welsh), three plural categories (Russian), or six (Arabic). ICU's `plural` format handles all of them inside a single message string.
+Plurals are the first place a single-language app starts feeling cramped. "1 message" / "5 messages" works in English with a simple `if`. But it falls apart in languages with two singular forms (Welsh), three plural categories (Russian), or six (Arabic). ICU's `plural` format handles all of them inside a single message string.
 
 ```ts
 t('You have {count, plural, one {# message} other {# messages}}', { count: 5 });
@@ -26,7 +26,7 @@ ICU defines six plural categories:
 | `two` | Welsh, Arabic, Hebrew (cardinal: 2) |
 | `few` | Polish, Russian (cardinal: 2–4 in most Slavic languages) |
 | `many` | Polish, Russian, Czech (cardinal: 0, 5+ for many Slavic languages) |
-| `other` | Everywhere — the required fallback |
+| `other` | Everywhere. The required fallback |
 
 You only write the categories the source language uses. The model fills in the rest per locale when it translates.
 
@@ -45,7 +45,7 @@ Polish needs four branches:
 ```
 
 {% callout variant="info" %}
-The `other` branch is required by ICU and by yapyak's compiler — every plural message has to declare it as a fallback. Omitting it raises a [`YAP0008` diagnostic](/reference/diagnostics/YAP0008).
+The `other` branch is required by ICU and by yapyak's compiler. Every plural message has to declare it as a fallback. Omitting it raises a [`YAP0008` diagnostic](/reference/diagnostics/YAP0008).
 {% /callout %}
 
 ## The `#` substitution
@@ -63,7 +63,7 @@ It's the same as writing `{count, number}` in the same position, but shorter and
 
 ## Exact matches
 
-When you want a different branch for an exact value — say, "no messages" for zero — use `=N`:
+When you want a different branch for an exact value. Say, "no messages" for zero. Use `=N`:
 
 ```ts
 t('{count, plural, =0 {No messages yet} one {1 new message} other {# new messages}}', { count: 0 });
@@ -83,18 +83,18 @@ t('{count, plural, one {# message from {sender}} other {# messages from {sender}
 });
 ```
 
-TypeScript still validates that every placeholder you reference is in the params object — `sender` would be required here.
+TypeScript still validates that every placeholder you reference is in the params object. `sender` would be required here.
 
-## Ordinals — `selectordinal`
+## Ordinals (`selectordinal`)
 
-For ordinal numbers ("1st", "2nd", "3rd"), use `selectordinal` instead of `plural`. The categories are the same, but the rules differ — English uses `one` for "1st", `two` for "2nd", `few` for "3rd", and `other` for everything else:
+For ordinal numbers ("1st", "2nd", "3rd"), use `selectordinal` instead of `plural`. The categories are the same, but the rules differ. English uses `one` for "1st", `two` for "2nd", `few` for "3rd", and `other` for everything else:
 
 ```ts
 t('{place, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place', { place: 3 });
 // output: en-US: '3rd place'
 ```
 
-In a language without ordinal suffixes (Swedish, French), only `other` is used — the translator (or the model) collapses the branches naturally.
+In a language without ordinal suffixes (Swedish, French), only `other` is used. The translator (or the model) collapses the branches naturally.
 
 ## Numbers, currencies, dates
 

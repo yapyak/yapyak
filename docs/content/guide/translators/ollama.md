@@ -3,7 +3,7 @@ title: Ollama
 order: 5
 ---
 
-`@yapyak/ollama` is the yapyak translator for [Ollama](https://ollama.com) — local inference, no API key, no provider account, no requests leaving your machine. Useful for privacy-sensitive projects, air-gapped environments, or development setups where you'd rather not burn through an API quota.
+`@yapyak/ollama` is the yapyak translator for [Ollama](https://ollama.com). Local inference, no API key, no provider account, no requests leaving your machine. Useful for privacy-sensitive projects, air-gapped environments, or development setups where you'd rather not burn through an API quota.
 
 ## Install
 
@@ -66,25 +66,25 @@ Ollama-specific options on top of the [shared translator surface](/guide/transla
 | `batchSize` | `number` | `8` | Source strings per request (smaller for local inference) |
 
 {% callout variant="info" %}
-Ollama's defaults reflect what local inference costs: longer timeouts (models take longer than hosted APIs), smaller batches (limited GPU memory), fewer retries (a failure is more likely to be permanent — wrong model name, server not running — than transient).
+Ollama's defaults reflect what local inference costs: longer timeouts (models take longer than hosted APIs), smaller batches (limited GPU memory), fewer retries (a failure is more likely to be permanent, such as a wrong model name or server not running, than transient).
 {% /callout %}
 
 ## Picking a model
 
 Translation quality varies hugely across local models. A few rules of thumb:
 
-- **`llama3.1` (8B)** — yapyak's default. Good general balance for English-source translations.
-- **`qwen2.5` (7B / 14B)** — strong for non-Latin scripts (Chinese, Japanese, Korean).
-- **`mistral` (7B)** — strong for European languages.
-- **`gemma3` (12B / 27B)** — newer model, strong general performance.
-- **`phi4-mini` (4B)** — useful when memory is tight.
+- **`llama3.1` (8B).** Yapyak's default. Good general balance for English-source translations.
+- **`qwen2.5` (7B / 14B).** Strong for non-Latin scripts (Chinese, Japanese, Korean).
+- **`mistral` (7B).** Strong for European languages.
+- **`gemma3` (12B / 27B).** Newer model, strong general performance.
+- **`phi4-mini` (4B).** Useful when memory is tight.
 - Anything below ~3B is probably too small for production-quality translation.
 
 You'll need to download whichever model you pick (`ollama pull <model>`). Bigger models give better translations but need more RAM and run slower.
 
 ## Remote Ollama
 
-You can point at a remote Ollama instance — useful for a shared internal server, or for using a beefier machine than your laptop:
+You can point at a remote Ollama instance. Useful for a shared internal server, or for using a beefier machine than your laptop:
 
 ```ts
 translator: ollama({
@@ -94,7 +94,7 @@ translator: ollama({
 }),
 ```
 
-Raise `timeout` for slower shared instances — the default is tuned for a local model on the same machine.
+Raise `timeout` for slower shared instances. The default is tuned for a local model on the same machine.
 
 If the remote Ollama is behind a proxy that needs auth, use the `headers` option to add whatever your gateway expects:
 
@@ -109,7 +109,7 @@ translator: ollama({
 
 ## Privacy guarantees
 
-Ollama runs locally (or on hardware you control). yapyak makes no requests anywhere else when configured with the Ollama translator — every source string goes from your machine, to your Ollama instance, and back. No hosted API receives the text.
+Ollama runs locally (or on hardware you control). yapyak makes no requests anywhere else when configured with the Ollama translator. Every source string goes from your machine, to your Ollama instance, and back. No hosted API receives the text.
 
 If you're using yapyak in a privacy-sensitive setting and the privacy claim matters formally, two things to watch:
 
@@ -138,7 +138,7 @@ Translations made by either provider are stored in the same locale files; the ne
 
 Ollama-specific failure modes map to yapyak's standard [translator errors](/guide/translators/overview#what-yapyak-protects-you-from):
 
-- A `done_reason: 'length'` maps to `TranslatorTruncatedError` — the output hit the token cap.
+- A `done_reason: 'length'` maps to `TranslatorTruncatedError`. The output hit the token cap.
 - A failed fetch (server not running, wrong endpoint, refused connection) raises `TranslatorNetworkError`.
 - A timeout (slow inference, model loading) raises `TranslatorTimeoutError`.
 

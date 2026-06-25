@@ -9,13 +9,13 @@ It's a Vite plugin. Works with React, Vue, Svelte, and Astro. SSR is supported o
 
 Five things make yapyak different from most i18n libraries. The same five things make it fit naturally into coding flows that involve an agent.
 
-**The source string is the key.** No abstract identifiers, no namespace files. You write `t('Your cart is empty')` and that string is the key in every locale file. Interpolated messages use ICU MessageFormat — standard syntax, not a yapyak-specific dialect. An agent doesn't need to learn a parallel naming system to keep translations in sync.
+**The source string is the key.** No abstract identifiers, no namespace files. You write `t('Your cart is empty')` and that string is the key in every locale file. Interpolated messages use ICU MessageFormat. Standard syntax, not a yapyak-specific dialect. An agent doesn't need to learn a parallel naming system to keep translations in sync.
 
-**Translations write themselves as you save.** With a model wired up, new messages are translated and written to your locale files during the same save, then shown in the running browser through Vite HMR while the layout is still in front of you. Without one, the stubs stay in place ready for you — or the agent next to you — to fill them.
+**Translations write themselves as you save.** With a model wired up, new messages are translated and written to your locale files during the same save, then shown in the running browser through Vite HMR while the layout is still in front of you. Without one, the stubs stay in place ready for you. Or the agent next to you. To fill them.
 
-**Your translations live in your repository.** Locale files, translation memory, and glossary all sit alongside your code, read from disk and committed to git. An agent editing the codebase sees them the same way it sees the rest of the project — no separate service to query, integrate with, or pay for.
+**Your translations live in your repository.** Locale files, translation memory, and glossary all sit alongside your code, read from disk and committed to git. An agent editing the codebase sees them the same way it sees the rest of the project. No separate service to query, integrate with, or pay for.
 
-**ICU is validated end-to-end.** TypeScript reads your source string and types every parameter instantly — write `'You have {count} messages'` and `count: number` is required in the editor. The compiler then validates the ICU itself across every locale at save time: malformed syntax, missing `other` branches, parameters that drift between source and translation. ICU is a format models write fluently; yapyak makes sure they get the details right.
+**ICU is validated end-to-end.** TypeScript reads your source string and types every parameter instantly. Write `'You have {count} messages'` and `count: number` is required in the editor. The compiler then validates the ICU itself across every locale at save time: malformed syntax, missing `other` branches, parameters that drift between source and translation. ICU is a format models write fluently; yapyak makes sure they get the details right.
 
 **Translations are safe to refactor.** When you rename a source string, move a file, or remove a component, yapyak preserves the existing translations and restores them when the source reappears. The compiler refuses to write a locale file in a state that would silently clear a translation still in use.
 

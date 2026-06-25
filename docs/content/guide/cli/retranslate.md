@@ -7,7 +7,7 @@ order: 3
 yapyak retranslate <source> [--locale <code>] [--as <ctx>] [--file <path>]
 ```
 
-Re-translates one specific source string, ignoring any existing translation. Targeted alternative to `translate --force` — only the call sites matching the source you name go through the translator.
+Re-translates one specific source string, ignoring any existing translation. Targeted alternative to `translate --force`. Only the call sites matching the source you name go through the translator.
 
 Reach for it when:
 
@@ -107,11 +107,11 @@ bunx yapyak retranslate "Save" --file src/profile/form.tsx
 
 Other call sites of `t('Save')` in other files keep their existing translation. The path is the same `fileId` that appears as a key in the locale JSON files.
 
-`--locale`, `--as`, and `--file` compose — `--locale sv --as badge --file src/a.tsx` re-translates exactly one cell of the matrix.
+`--locale`, `--as`, and `--file` compose. `--locale sv --as badge --file src/a.tsx` re-translates exactly one cell of the matrix.
 
 ## How it differs from `translate --force`
 
-`translate --force` re-translates **every** stub in **every** locale. `retranslate` re-translates exactly the call sites matching the source you name — minimal API spend, surgical scope.
+`translate --force` re-translates **every** stub in **every** locale. `retranslate` re-translates exactly the call sites matching the source you name. Minimal API spend, surgical scope.
 
 | Goal | Use |
 |---|---|
@@ -123,7 +123,7 @@ Other call sites of `t('Save')` in other files keep their existing translation. 
 
 ## Requirements
 
-`retranslate` needs a configured translator. Without one, it errors out the same way `translate` does — see [translate](/guide/cli/translate#requirements) for the setup hint.
+`retranslate` needs a configured translator. Without one, it errors out the same way `translate` does. See [translate](/guide/cli/translate#requirements) for the setup hint.
 
 ## No matching call sites
 

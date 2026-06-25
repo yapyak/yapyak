@@ -138,7 +138,7 @@ bun add yapyak @yapyak/astro
 
 ### Optional: a translator
 
-If you'd like new strings to translate themselves on save, add a [translator](/guide/translators/overview). yapyak ships first-party support for Anthropic, OpenAI, Gemini, and Ollama — we'll use Anthropic as the example, but the install is the same shape for any of them:
+If you'd like new strings to translate themselves on save, add a [translator](/guide/translators/overview). yapyak ships first-party support for Anthropic, OpenAI, Gemini, and Ollama. We'll use Anthropic as the example, but the install is the same shape for any of them:
 
 {% switch group="packageManager" %}
 {% when value="pnpm" %}
@@ -158,7 +158,7 @@ bun add @yapyak/anthropic
 {% /when %}
 {% /switch %}
 
-Without a translator, new strings sit as empty stubs in your locale files — which works just as well if you'd rather fill them in yourself, or have your code agent (Claude, Cursor, etc.) do it.
+Without a translator, new strings sit as empty stubs in your locale files. Which works just as well if you'd rather fill them in yourself, or have your code agent (Claude, Cursor, etc.) do it.
 
 ## Wire up the build
 
@@ -228,7 +228,7 @@ import { react } from '@yapyak/react/processor';
 import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
-  processors: [react()]
+  processors: [react()],
   translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 });
 ```
@@ -241,7 +241,7 @@ import { vue } from '@yapyak/vue/processor';
 import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
-  processors: [vue()]
+  processors: [vue()],
   translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 });
 ```
@@ -254,7 +254,7 @@ import { svelte } from '@yapyak/svelte/processor';
 import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
-  processors: [svelte()]
+  processors: [svelte()],
   translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 });
 ```
@@ -268,7 +268,7 @@ import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
   persistence: 'url',
-  processors: [astro()]
+  processors: [astro()],
   translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 });
 ```
@@ -276,7 +276,7 @@ export default defineConfig({
 
 {% /switch %}
 
-Drop the `translator` field if you skipped that package — it's optional. See [Configuration](/guide/getting-started/configuration) for every field this file accepts.
+Drop the `translator` field if you skipped that package. It's optional. See [Configuration](/guide/getting-started/configuration) for every field this file accepts.
 
 ## TypeScript and Git
 
@@ -317,5 +317,5 @@ bun yapyak add sv
 This creates `locales/sv.json` and updates the `Locale` literal type. Run it again with any other tag whenever you want to add a language. See [`yapyak add`](/guide/cli/add) for the full set of options.
 
 {% callout variant="tip" %}
-Or create the file by hand — drop `sv.json` into the folder and yapyak picks it up automatically.
+Or create the file by hand. Drop `sv.json` into the folder and yapyak picks it up automatically.
 {% /callout %}

@@ -19,7 +19,7 @@ Anything inside the callback sees the request-bound locale.
 
 `withResponse(request, callback, responseExtractor?)` does three things:
 
-1. Puts the request into an `AsyncLocalStorage` scope so [`getLocale()`](/guide/locale/switch) resolves through the request's [persistence layer](/guide/locale/persistence), or — if [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is on — through the `Accept-Language` header.
+1. Puts the request into an `AsyncLocalStorage` scope so [`getLocale()`](/guide/locale/switch) resolves through the request's [persistence layer](/guide/locale/persistence), or through the `Accept-Language` header when [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is on.
 2. Runs `callback()` inside that scope.
 3. Drains any pending response headers buffered by yapyak (a `Set-Cookie` from a server-side `setLocale()` call, for example) onto the response.
 
@@ -53,13 +53,13 @@ await withResponse(
 );
 ```
 
-The third argument is a selector that tells yapyak where the `Response` lives on the framework's return value — here, `renderToFrameworkResult` returns `{ meta, response }`, and yapyak flushes pending headers onto `result.response`.
+The third argument is a selector that tells yapyak where the `Response` lives on the framework's return value. Here, `renderToFrameworkResult` returns `{ meta, response }`, and yapyak flushes pending headers onto `result.response`.
 
-The shipped TanStack Start adapter uses this pattern — the framework's middleware returns `{ response, ... }`, and yapyak's adapter extracts the `Response` to flush pending headers onto.
+The shipped TanStack Start adapter uses this pattern. The framework's middleware returns `{ response, ... }`, and yapyak's adapter extracts the `Response` to flush pending headers onto.
 
 ## Setting `<html lang>`
 
-How you render `<html lang>` depends on your framework, but the source of truth is the same: call [`getLocale()`](/guide/locale/switch) from inside the `withResponse` scope. Pass it to your template, your component, your renderer — whatever is producing the HTML.
+How you render `<html lang>` depends on your framework, but the source of truth is the same: call [`getLocale()`](/guide/locale/switch) from inside the `withResponse` scope. Pass it to your template, your component, your renderer. Whatever is producing the HTML.
 
 For client-side switching from inside a React/Vue/Svelte runtime, enable [`syncHtmlLang: true`](/guide/getting-started/configuration#synchtmllang) in `yapyak.config.ts` so the attribute follows the locale without a navigation.
 
@@ -67,7 +67,7 @@ For client-side switching from inside a React/Vue/Svelte runtime, enable [`syncH
 
 Server-side persistence reads happen inside `withResponse`. Whatever [persistence strategy](/guide/locale/persistence) you've configured ([cookie](/guide/locale/persistence#cookie), [URL](/guide/locale/persistence#url)) is read off the request automatically. If [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is enabled, the `Accept-Language` header is consulted too.
 
-Server-side persistence writes (a `setLocale()` call inside a request handler) are buffered until `withResponse` finishes, then flushed onto the response. If your framework constructs its response object outside of `withResponse`, the buffered headers won't reach the user — keep the response construction inside the scope.
+Server-side persistence writes (a `setLocale()` call inside a request handler) are buffered until `withResponse` finishes, then flushed onto the response. If your framework constructs its response object outside of `withResponse`, the buffered headers won't reach the user. Keep the response construction inside the scope.
 
 ## The processor side
 
@@ -77,9 +77,9 @@ Every framework needs a [processor](/guide/getting-started/configuration#process
 
 If you'd like to model your wrapper on a known-good example, the shipped adapters are short:
 
-- [React Router](https://github.com/yapyak/yapyak/blob/main/packages/react-router/src/middleware.ts) — wraps `withResponse(request, () => next())` in a React Router middleware function
-- [SvelteKit](https://github.com/yapyak/yapyak/blob/main/packages/sveltekit/src/handle.ts) — wraps `withResponse(event.request, () => resolve(event, ...))` in a SvelteKit `Handle`
-- [TanStack Start](https://github.com/yapyak/yapyak/blob/main/packages/tanstack-start/src/middleware.ts) — wraps `withResponse(request, () => next(), (result) => result.response)` in TanStack Start's middleware shape
-- [Astro](https://github.com/yapyak/yapyak/blob/main/packages/astro/src/integration.ts) — registers `withResponse` as Astro middleware through the integration system
+- [React Router](https://github.com/yapyak/yapyak/blob/main/packages/react-router/src/middleware.ts). Wraps `withResponse(request, () => next())` in a React Router middleware function
+- [SvelteKit](https://github.com/yapyak/yapyak/blob/main/packages/sveltekit/src/handle.ts). Wraps `withResponse(event.request, () => resolve(event, ...))` in a SvelteKit `Handle`
+- [TanStack Start](https://github.com/yapyak/yapyak/blob/main/packages/tanstack-start/src/middleware.ts). Wraps `withResponse(request, () => next(), (result) => result.response)` in TanStack Start's middleware shape
+- [Astro](https://github.com/yapyak/yapyak/blob/main/packages/astro/src/integration.ts). Registers `withResponse` as Astro middleware through the integration system
 
 Each one is a single function. Most of the file is JSDoc.

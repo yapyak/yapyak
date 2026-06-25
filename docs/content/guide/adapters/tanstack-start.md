@@ -33,7 +33,7 @@ bun add @yapyak/tanstack-start
 {% /when %}
 {% /switch %}
 
-You also need yapyak, the Vite plugin, and the React binding (covered in [Setup — Install](/guide/getting-started/installation)).
+You also need yapyak, the Vite plugin, and the React binding (covered in [Install](/guide/getting-started/installation)).
 
 ## Register the middleware
 
@@ -46,7 +46,7 @@ import { middleware } from '@yapyak/tanstack-start';
 export const startInstance = createStart(() => ({ requestMiddleware: [middleware] }));
 ```
 
-If you have other request middleware, include them too — yapyak's adapter should run first so the locale is available to anything downstream:
+If you have other request middleware, include them too. Yapyak's adapter should run first so the locale is available to anything downstream:
 
 ```ts
 import { createStart } from '@tanstack/react-start';
@@ -90,7 +90,7 @@ export default defineConfig({
 });
 ```
 
-`persistence: 'cookie'` is the typical pairing — the cookie is written client-side on `setLocale()` and read server-side by the middleware on every request.
+`persistence: 'cookie'` is the typical pairing. The cookie is written client-side on `setLocale()` and read server-side by the middleware on every request.
 
 ## Switching locale
 
@@ -115,7 +115,7 @@ On click, the client store updates, the cookie writes, and every component that 
 
 ## SSR-side `setLocale()`
 
-If a server-side route handler calls `setLocale()`, yapyak buffers the `Set-Cookie` write and the middleware flushes it onto the outgoing response. The cookie is written automatically — you don't construct the header yourself.
+If a server-side route handler calls `setLocale()`, yapyak buffers the `Set-Cookie` write and the middleware flushes it onto the outgoing response. The cookie is written automatically. You don't construct the header yourself.
 
 ## Common issues
 

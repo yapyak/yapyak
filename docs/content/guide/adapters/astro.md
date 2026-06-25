@@ -54,7 +54,7 @@ export default defineConfig({
 });
 ```
 
-The Astro processor is what teaches yapyak how to read `.astro` frontmatter and template expressions. Pair it with `persistence: 'cookie'` for a typical SSR setup — the cookie is written client-side on `setLocale()` and read server-side on every request.
+The Astro processor is what teaches yapyak how to read `.astro` frontmatter and template expressions. Pair it with `persistence: 'cookie'` for a typical SSR setup. The cookie is written client-side on `setLocale()` and read server-side on every request.
 
 ## Setting `<html lang>`
 
@@ -79,19 +79,19 @@ Every navigation re-runs the middleware and re-renders the layout, so `<html lan
 
 ## Client-side switching from inside an island
 
-If a React/Vue/Svelte island calls `setLocale()` without triggering a navigation, the static `<html>` element doesn't re-render — the attribute stays at whatever the server rendered. Enable [`syncHtmlLang`](/guide/getting-started/configuration#synchtmllang) to update it on every client-side `setLocale()` call:
+If a React/Vue/Svelte island calls `setLocale()` without triggering a navigation, the static `<html>` element doesn't re-render. The attribute stays at whatever the server rendered. Enable [`syncHtmlLang`](/guide/getting-started/configuration#synchtmllang) to update it on every client-side `setLocale()` call:
 
 ```ts [yapyak.config.ts]
 export default defineConfig({
   persistence: 'cookie',
-  processors: [astro()]
+  processors: [astro()],
   syncHtmlLang: true
 });
 ```
 
 With this set, `document.documentElement.lang` follows the active locale through every client-side switch. SSR still renders the right `lang` via your layout's `getLocale()`, so there's no hydration mismatch.
 
-If you only switch locale through full navigations (`<a href="/sv/...">` style), leave `syncHtmlLang` off — Astro's normal re-render handles it.
+If you only switch locale through full navigations (`<a href="/sv/...">` style), leave `syncHtmlLang` off. Astro's normal re-render handles it.
 
 ## URL-based switching
 
@@ -114,11 +114,11 @@ The middleware reads the URL on the next request, binds the locale, and the layo
 
 For longer-lived preference: use [`persistence: 'cookie'`](/guide/locale/persistence#cookie). The client-side switch from an island (React/Vue/Svelte) calls `setLocale()`; the browser writes the cookie; subsequent server renders read it.
 
-For a non-island server-side switch (a form POST to set the cookie from a server endpoint), call `setLocale()` inside the request handler — yapyak buffers the `Set-Cookie` write and flushes it onto the response when the page renders.
+For a non-island server-side switch (a form POST to set the cookie from a server endpoint), call `setLocale()` inside the request handler. yapyak buffers the `Set-Cookie` write and flushes it onto the response when the page renders.
 
 ## `<RichText>` in `.astro` files
 
-Rich-text rendering works the same way as in other frameworks — see [Rich text](/guide/writing/rich-text) for the Astro-specific slot pattern with `<RichText.Children />`.
+Rich-text rendering works the same way as in other frameworks. See [Rich text](/guide/writing/rich-text) for the Astro-specific slot pattern with `<RichText.Children />`.
 
 ## Common issues
 
