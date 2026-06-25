@@ -1,7 +1,8 @@
+import type { TransitionEvent } from 'react';
 import type { BoxProps } from '#components/box';
 import type { Language } from '#utils/tokenize';
 
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 
 import { Box } from '#components/box';
 import { CodeBlockToken } from '#components/code-block-token';
@@ -82,8 +83,9 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
   const tokens = tokenize(code, config.language);
 
   const tabsElement = useRef<HTMLDivElement>(null);
+  const previousFrameworkRef = useRef<Framework | null>(null);
   const [indicator, setIndicator] = useState<IndicatorState | null>(null);
-  const [isReady, setIsReady] = useState(false);
+  const [animating, setAnimating] = useState(false);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: yap yap yap
   useLayoutEffect(() => {
@@ -96,26 +98,42 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
       if (!(activeTabElement instanceof HTMLElement)) {
         return;
       }
+      const hasPreviousTab =
+        activeTabElement.previousElementSibling?.tagName === 'BUTTON';
+      const extraLeft = hasPreviousTab ? 1 : 0;
       setIndicator({
-        width: activeTabElement.offsetWidth,
-        x: activeTabElement.offsetLeft,
+        width: activeTabElement.offsetWidth + extraLeft,
+        x: activeTabElement.offsetLeft - extraLeft,
       });
     };
     updateIndicator();
-    const frame = window.requestAnimationFrame(() => {
-      setIsReady(true);
-    });
+    if (
+      previousFrameworkRef.current !== null &&
+      previousFrameworkRef.current !== framework
+    ) {
+      setAnimating(true);
+    }
+    previousFrameworkRef.current = framework;
     const observer = new ResizeObserver(updateIndicator);
     for (const tabElement of $tabsElement.querySelectorAll('button')) {
       observer.observe(tabElement);
     }
     return () => {
-      window.cancelAnimationFrame(frame);
       observer.disconnect();
     };
   }, [
     framework,
   ]);
+
+  const handleIndicatorTransitionEnd = useCallback(
+    (event: TransitionEvent<HTMLSpanElement>) => {
+      if (event.propertyName !== 'transform') {
+        return;
+      }
+      setAnimating(false);
+    },
+    [],
+  );
 
   return (
     <Box
@@ -124,6 +142,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
         styles.HeroDemoEditor,
         className,
       ]}
+      data-animating={animating}
       data-saving={saving}
       style={
         indicator
@@ -143,7 +162,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
             aria-hidden="true"
             as="span"
             className={styles.TabIndicatorBar}
-            data-ready={isReady}
+            onTransitionEnd={handleIndicatorTransitionEnd}
           />
         )}
         {FRAMEWORKS.map((entry) => {
@@ -161,6 +180,10 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
               onClick={() => onFrameworkChange(entry.id)}
               type="button"
             >
+              <Box
+                aria-hidden="true"
+                className={styles.TabFill}
+              />
               <Box
                 as="span"
                 className={styles.TabFilenameTextShort}

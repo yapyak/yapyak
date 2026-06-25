@@ -31,14 +31,20 @@
       height: var(--px);
       pointer-events: none;
       background-color: var(--brand);
+      opacity: 0;
       transform: translateX(var(--demo-editor-tab-indicator-x));
       transform-origin: center;
+      transition:
+        transform 320ms var(--ease-snappy),
+        width 320ms var(--ease-snappy);
+    }
 
-      &[data-ready] {
-        transition:
-          transform 320ms var(--ease-snappy),
-          width 320ms var(--ease-snappy);
-      }
+    &[data-animating] .TabIndicatorBar {
+      opacity: 1;
+    }
+
+    &[data-animating] .TabButton[data-active]::after {
+      display: none;
     }
 
     &[data-saving] .TabDot[data-dirty] {
@@ -57,10 +63,8 @@
       font-family: var(--font-family-mono);
       font-size: var(--font-size-2xs);
       color: var(--foreground-softer);
-      transition:
-        background-color var(--transition),
-        box-shadow var(--transition),
-        color var(--transition);
+      box-shadow: inset calc(var(--px) * -1) 0 0 var(--rule);
+      transition: color var(--transition);
 
       @media (min-width: 640px) {
         flex: 0 0 auto;
@@ -74,25 +78,57 @@
       @media (hover: hover) {
         &:hover {
           color: var(--foreground-soft);
-          background-color: var(--surface);
+          box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
+        }
+
+        &:not([data-active]):has(+ .TabButton:hover) {
+          box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
         }
       }
 
       &[data-active] {
         color: var(--foreground);
+        box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
+
+        &::after {
+          position: absolute;
+          right: 0;
+          bottom: 0;
+          left: calc(var(--px) * -1);
+          height: var(--px);
+          pointer-events: none;
+          content: "";
+          background-color: var(--brand);
+        }
+
+        &:first-of-type::after {
+          left: 0;
+        }
+      }
+
+      &:not([data-active]):has(+ .TabButton[data-active]) {
+        box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
+      }
+    }
+
+    .TabFill {
+      position: absolute;
+      inset: 0;
+      right: var(--px);
+      z-index: -1;
+      pointer-events: none;
+      background-color: transparent;
+      transition: background-color var(--transition);
+    }
+
+    @media (hover: hover) {
+      .TabButton:hover .TabFill {
         background-color: var(--surface);
       }
     }
 
-    .TabButton + .TabButton {
-      box-shadow: inset var(--px) 0 0 var(--rule);
-    }
-
-    @media (hover: hover) {
-      .TabButton:hover + .TabButton,
-      .TabButton + .TabButton:hover {
-        box-shadow: inset var(--px) 0 0 var(--ring);
-      }
+    .TabButton[data-active] .TabFill {
+      background-color: var(--surface);
     }
 
     .TabFilenameTextShort,
