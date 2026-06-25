@@ -95,10 +95,6 @@
       }
     }
 
-    .TabButton + .TabButton[data-active] {
-      box-shadow: inset var(--px) 0 0 var(--ring-strong);
-    }
-
     .TabFilenameTextShort,
     .TabFilenameTextFull {
       overflow: hidden;

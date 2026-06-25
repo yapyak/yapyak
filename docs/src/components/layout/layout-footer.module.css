@@ -4,6 +4,6 @@
     justify-content: center;
     padding: var(--spacing-20) var(--spacing-8);
     background-color: var(--canvas-strong);
-    box-shadow: 0 calc(var(--px) * -1) 0 var(--ring);
+    box-shadow: 0 calc(var(--px) * -1) 0 var(--rule);
   }
 }
