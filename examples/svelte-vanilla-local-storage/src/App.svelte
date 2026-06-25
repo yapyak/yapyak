@@ -5,6 +5,8 @@
   const date = new Date("2024-01-01T08:30:00Z");
 </script>
 
+{t("This example uses<> ")}
+
 <main style="font-family: system-ui; max-width: 720px; padding: 32px;">
   <h1>{t("Hello there")}</h1>
   <p>{t("This is the {name} example.", { name: "yapyak" })}</p>
@@ -69,13 +71,15 @@
   <h2>{t("Rich text")}</h2>
   <p>
     <RichText
-      value={t("Translate <b>everything</b> with <link>yapyak</link>.<br/>Even with <b>line breaks</b>.")}
+      value={t(
+        "Translate <b>everything</b> with <link>yapyak</link>.<br/>Even with <b>line breaks</b>.",
+      )}
     >
       {#snippet b(children)}
         <strong>{@render children()}</strong>
       {/snippet}
       {#snippet br()}
-        <br/>
+        <br />
       {/snippet}
       {#snippet link(children)}
         <a href="https://yapyak.dev">{@render children()}</a>

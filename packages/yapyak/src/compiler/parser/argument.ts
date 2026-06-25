@@ -2,12 +2,14 @@ import type { Range } from '../../processor';
 import type { CallSite } from './call';
 import type { Diagnostic } from './diagnostic';
 import type { TemplateDiagnostic } from './placeholder';
+import type { TagIssue } from './tag';
 
 import ts from 'typescript';
 
 import { buildDiagnostic } from '../../diagnostic';
 import { parsePlaceholders } from './placeholder';
 import { toRange } from './range';
+import { validateRichTextTags } from './tag';
 
 type ParsedParams = {
   keys: string[];
@@ -117,6 +119,14 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
       }),
     );
   }
+  for (const issue of validateRichTextTags(source)) {
+    diagnostics.push(
+      toTagDiagnostic(issue, {
+        fileId,
+        range: sourceRange,
+      }),
+    );
+  }
 
   let params: ParsedParams | undefined;
   const paramsExpression = callSite.paramsExpression;
@@ -185,6 +195,50 @@ function toIcuDiagnostic(
     {
       feature: issue.feature,
       name: issue.name,
+    },
+    diagnosticContext,
+  );
+}
+
+function toTagDiagnostic(
+  issue: TagIssue,
+  context: IcuDiagnosticContext,
+): Diagnostic {
+  const diagnosticContext = {
+    fileId: context.fileId,
+    range: context.range,
+    severity: 'error' as const,
+  };
+  if (issue.kind === 'unclosed-open') {
+    return buildDiagnostic(
+      'RICHTEXT_TAG_UNCLOSED',
+      {
+        name: issue.name,
+      },
+      diagnosticContext,
+    );
+  }
+  if (issue.kind === 'unopened-close') {
+    return buildDiagnostic(
+      'RICHTEXT_TAG_UNOPENED',
+      {
+        name: issue.name,
+      },
+      diagnosticContext,
+    );
+  }
+  if (issue.kind === 'name-missing') {
+    return buildDiagnostic(
+      'RICHTEXT_TAG_NAME_MISSING',
+      undefined,
+      diagnosticContext,
+    );
+  }
+  return buildDiagnostic(
+    'RICHTEXT_TAG_MISMATCHED',
+    {
+      actual: issue.actual,
+      expected: issue.expected,
     },
     diagnosticContext,
   );

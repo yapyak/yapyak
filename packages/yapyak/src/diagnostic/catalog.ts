@@ -280,6 +280,38 @@ export const YAP = {
     message: (): string =>
       'Tracker callback threw an exception. Yapyak continued with the remaining trackers.',
   },
+  RICHTEXT_TAG_UNCLOSED: {
+    code: 'YAP0041',
+    hint: ({ name }: { name: string }): string =>
+      `Close the tag with \`</${name}>\` or rewrite as a void tag \`<${name}/>\`.`,
+    message: ({ name }: { name: string }): string =>
+      `Opening tag \`<${name}>\` has no closing tag.`,
+  },
+  RICHTEXT_TAG_MISMATCHED: {
+    code: 'YAP0042',
+    hint: ({ expected }: { expected: string }): string =>
+      `Close the opening tag first with \`</${expected}>\`.`,
+    message: ({
+      actual,
+      expected,
+    }: {
+      actual: string;
+      expected: string;
+    }): string =>
+      `Closing tag \`</${actual}>\` does not match opening \`<${expected}>\`.`,
+  },
+  RICHTEXT_TAG_UNOPENED: {
+    code: 'YAP0043',
+    hint: ({ name }: { name: string }): string =>
+      `Add an opening \`<${name}>\` or remove the closing tag.`,
+    message: ({ name }: { name: string }): string =>
+      `Closing tag \`</${name}>\` has no matching opening tag.`,
+  },
+  RICHTEXT_TAG_NAME_MISSING: {
+    code: 'YAP0044',
+    hint: (): string => 'Provide a name like `<link>` or remove the brackets.',
+    message: (): string => 'Tag has no name.',
+  },
 } as const;
 
 export type YapKey = keyof typeof YAP;

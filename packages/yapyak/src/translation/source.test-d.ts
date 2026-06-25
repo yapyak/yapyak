@@ -23,55 +23,109 @@ describe('ValidateSource', () => {
 
   it('refuses an empty source literal', () => {
     expectTypeOf<ValidateSource<''>>().toEqualTypeOf<{
-      $yapyakTypeError: 'Invalid source: must not be an empty string';
+      $yapyakTypeError: 'Invalid source: must not be an empty string.';
     }>();
   });
 
   it('refuses a digit-first placeholder name', () => {
     expectTypeOf<ValidateSource<'Item {0}'>>().toEqualTypeOf<{
-      $yapyakTypeError: 'Invalid placeholder "0": must start with a letter or underscore (not a digit)';
+      $yapyakTypeError: 'Invalid placeholder "0": must start with a letter or underscore (not a digit).';
     }>();
   });
 
   it('refuses a dotted placeholder name', () => {
     expectTypeOf<ValidateSource<'Hi {user.name}'>>().toEqualTypeOf<{
-      $yapyakTypeError: 'Invalid placeholder "user.name": cannot contain spaces, dots, or other punctuation';
+      $yapyakTypeError: 'Invalid placeholder "user.name": cannot contain spaces, dots, or other punctuation.';
     }>();
   });
 
   it('refuses a spaced placeholder name', () => {
     expectTypeOf<ValidateSource<'Hi {first name}'>>().toEqualTypeOf<{
-      $yapyakTypeError: 'Invalid placeholder "first name": cannot contain spaces, dots, or other punctuation';
+      $yapyakTypeError: 'Invalid placeholder "first name": cannot contain spaces, dots, or other punctuation.';
     }>();
   });
 
   it('refuses an empty placeholder name', () => {
     expectTypeOf<ValidateSource<'Hello {}'>>().toEqualTypeOf<{
-      $yapyakTypeError: 'Invalid placeholder "": name cannot be empty';
+      $yapyakTypeError: 'Invalid placeholder "": name cannot be empty.';
     }>();
   });
 
   it('refuses a source with an unclosed `{`', () => {
     expectTypeOf<ValidateSource<'Hello {'>>().toEqualTypeOf<{
-      $yapyakTypeError: `Invalid source "Hello {": contains an unclosed '{' — close it as a placeholder like "{name}" or remove the brace`;
+      $yapyakTypeError: `Invalid source "Hello {": contains an unclosed '{'. Close it as a placeholder like "{name}" or remove the brace.`;
     }>();
   });
 
   it('refuses a source with an unclosed `{` after a valid placeholder', () => {
     expectTypeOf<ValidateSource<'Hi {name}, opens {'>>().toEqualTypeOf<{
-      $yapyakTypeError: `Invalid source "Hi {name}, opens {": contains an unclosed '{' — close it as a placeholder like "{name}" or remove the brace`;
+      $yapyakTypeError: `Invalid source "Hi {name}, opens {": contains an unclosed '{'. Close it as a placeholder like "{name}" or remove the brace.`;
     }>();
   });
 
   it('refuses a source with an unmatched `}`', () => {
     expectTypeOf<ValidateSource<'Hello }'>>().toEqualTypeOf<{
-      $yapyakTypeError: `Invalid source "Hello }": contains an unmatched '}' — remove it or add a matching '{'`;
+      $yapyakTypeError: `Invalid source "Hello }": contains an unmatched '}'. Remove it or add a matching '{'.`;
     }>();
   });
 
   it('refuses a source with an unmatched `}` after a valid placeholder', () => {
     expectTypeOf<ValidateSource<'Hi {name}, }'>>().toEqualTypeOf<{
-      $yapyakTypeError: `Invalid source "Hi {name}, }": contains an unmatched '}' — remove it or add a matching '{'`;
+      $yapyakTypeError: `Invalid source "Hi {name}, }": contains an unmatched '}'. Remove it or add a matching '{'.`;
+    }>();
+  });
+
+  it('preserves a source with matching paired tags', () => {
+    expectTypeOf<
+      ValidateSource<'Read <link>terms</link>'>
+    >().toEqualTypeOf<'Read <link>terms</link>'>();
+  });
+
+  it('preserves a source with nested matching tags', () => {
+    expectTypeOf<
+      ValidateSource<'<b><link>terms</link></b>'>
+    >().toEqualTypeOf<'<b><link>terms</link></b>'>();
+  });
+
+  it('preserves a source with a self-closing void tag', () => {
+    expectTypeOf<
+      ValidateSource<'line<br/>break'>
+    >().toEqualTypeOf<'line<br/>break'>();
+  });
+
+  it('preserves a source with an attributed tag and its matching close', () => {
+    expectTypeOf<
+      ValidateSource<'an <a href="x">html</a> link'>
+    >().toEqualTypeOf<'an <a href="x">html</a> link'>();
+  });
+
+  it('refuses a source with an empty `<>` tag', () => {
+    expectTypeOf<ValidateSource<'This example uses<> cool'>>().toEqualTypeOf<{
+      $yapyakTypeError: `Invalid source "This example uses<> cool": contains an empty tag. Provide a name like "<link>" or remove the brackets.`;
+    }>();
+  });
+
+  it('refuses a source with an empty `</>` closing tag', () => {
+    expectTypeOf<ValidateSource<'This example uses</> cool'>>().toEqualTypeOf<{
+      $yapyakTypeError: `Invalid source "This example uses</> cool": contains an empty tag. Provide a name like "<link>" or remove the brackets.`;
+    }>();
+  });
+
+  it('refuses a source with an unclosed opening tag', () => {
+    expectTypeOf<ValidateSource<'Read <link>terms'>>().toEqualTypeOf<{
+      $yapyakTypeError: `Invalid source "Read <link>terms": opening tag "<link>" has no closing tag. Add "</link>".`;
+    }>();
+  });
+
+  it('refuses a source with a closing tag that has no opening', () => {
+    expectTypeOf<ValidateSource<'terms</link>'>>().toEqualTypeOf<{
+      $yapyakTypeError: `Invalid source "terms</link>": closing tag "</link>" has no matching opening tag.`;
+    }>();
+  });
+
+  it('refuses a source where the closing tag does not match the opening', () => {
+    expectTypeOf<ValidateSource<'<link>terms</bold>'>>().toEqualTypeOf<{
+      $yapyakTypeError: `Invalid source "<link>terms</bold>": closing tag "</bold>" does not match opening "<link>". Close the opening tag first.`;
     }>();
   });
 
@@ -85,7 +139,7 @@ describe('ValidateSource', () => {
     expectTypeOf<
       ValidateSource<'{count, plural, one {# msg} two {# msgs}}'>
     >().toEqualTypeOf<{
-      $yapyakTypeError: `Plural "{count}" is missing the required 'other' branch`;
+      $yapyakTypeError: `Plural "{count}" is missing the required 'other' branch.`;
     }>();
   });
 
@@ -93,7 +147,7 @@ describe('ValidateSource', () => {
     expectTypeOf<
       ValidateSource<'{n, selectordinal, one {1st} two {2nd}}'>
     >().toEqualTypeOf<{
-      $yapyakTypeError: `Selectordinal "{n}" is missing the required 'other' branch`;
+      $yapyakTypeError: `Selectordinal "{n}" is missing the required 'other' branch.`;
     }>();
   });
 
@@ -101,7 +155,7 @@ describe('ValidateSource', () => {
     expectTypeOf<
       ValidateSource<'{theme, select, dark {Dark} light {Light}}'>
     >().toEqualTypeOf<{
-      $yapyakTypeError: `Select "{theme}" is missing the required 'other' branch`;
+      $yapyakTypeError: `Select "{theme}" is missing the required 'other' branch.`;
     }>();
   });
 
@@ -109,7 +163,7 @@ describe('ValidateSource', () => {
     expectTypeOf<
       ValidateSource<'{x, plurral, one {a} other {b}}'>
     >().toEqualTypeOf<{
-      $yapyakTypeError: 'Unknown ICU format "plurral" — expected one of: plural, selectordinal, select, number, date, time';
+      $yapyakTypeError: 'Unknown ICU format "plurral". Expected one of: plural, selectordinal, select, number, date, time.';
     }>();
   });
 
@@ -147,7 +201,7 @@ describe('ValidateSource', () => {
     expectTypeOf<
       ValidateSource<'Price: {amount, number, ::compact-short}'>
     >().toEqualTypeOf<{
-      $yapyakTypeError: 'Unknown number style "::compact-short" — expected one of: decimal, percent, currency, integer (or "currency <code>")';
+      $yapyakTypeError: 'Unknown number style "::compact-short". Expected one of: decimal, percent, currency, integer (or "currency <code>").';
     }>();
   });
 
@@ -155,7 +209,7 @@ describe('ValidateSource', () => {
     expectTypeOf<
       ValidateSource<'Price: {amount, number, foo}'>
     >().toEqualTypeOf<{
-      $yapyakTypeError: 'Unknown number style "foo" — expected one of: decimal, percent, currency, integer (or "currency <code>")';
+      $yapyakTypeError: 'Unknown number style "foo". Expected one of: decimal, percent, currency, integer (or "currency <code>").';
     }>();
   });
 
@@ -163,13 +217,13 @@ describe('ValidateSource', () => {
     expectTypeOf<
       ValidateSource<'Updated: {when, date, banana}'>
     >().toEqualTypeOf<{
-      $yapyakTypeError: 'Unknown date style "banana" — expected one of: short, medium, long, full';
+      $yapyakTypeError: 'Unknown date style "banana". Expected one of: short, medium, long, full.';
     }>();
   });
 
   it('refuses an unknown time style', () => {
     expectTypeOf<ValidateSource<'At: {when, time, weird}'>>().toEqualTypeOf<{
-      $yapyakTypeError: 'Unknown time style "weird" — expected one of: short, medium, long, full';
+      $yapyakTypeError: 'Unknown time style "weird". Expected one of: short, medium, long, full.';
     }>();
   });
 
@@ -183,7 +237,7 @@ describe('ValidateSource', () => {
     expectTypeOf<
       ValidateSource<'{c, plural, =foo {x} other {y}}'>
     >().toEqualTypeOf<{
-      $yapyakTypeError: 'Invalid =N literal "=foo": N must be a non-negative integer';
+      $yapyakTypeError: 'Invalid =N literal "=foo": N must be a non-negative integer.';
     }>();
   });
 
@@ -191,7 +245,7 @@ describe('ValidateSource', () => {
     expectTypeOf<
       ValidateSource<'{c, plural, = {x} other {y}}'>
     >().toEqualTypeOf<{
-      $yapyakTypeError: 'Invalid =N literal "=": N must be a non-negative integer';
+      $yapyakTypeError: 'Invalid =N literal "=": N must be a non-negative integer.';
     }>();
   });
 
@@ -199,7 +253,7 @@ describe('ValidateSource', () => {
     expectTypeOf<
       ValidateSource<'{c, plural, ones {# msg} other {# msgs}}'>
     >().toEqualTypeOf<{
-      $yapyakTypeError: 'Unknown plural keyword "ones" — expected one of: zero, one, two, few, many, other, or =N literal';
+      $yapyakTypeError: 'Unknown plural keyword "ones". Expected one of: zero, one, two, few, many, other, or =N literal.';
     }>();
   });
 
@@ -207,7 +261,7 @@ describe('ValidateSource', () => {
     expectTypeOf<
       ValidateSource<'{c, plural, one {# msg} mny {# msgs} other {# many msgs}}'>
     >().toEqualTypeOf<{
-      $yapyakTypeError: 'Unknown plural keyword "mny" — expected one of: zero, one, two, few, many, other, or =N literal';
+      $yapyakTypeError: 'Unknown plural keyword "mny". Expected one of: zero, one, two, few, many, other, or =N literal.';
     }>();
   });
 
@@ -215,7 +269,7 @@ describe('ValidateSource', () => {
     expectTypeOf<
       ValidateSource<'{n, selectordinal, frst {1st} other {Nth}}'>
     >().toEqualTypeOf<{
-      $yapyakTypeError: 'Unknown selectordinal keyword "frst" — expected one of: zero, one, two, few, many, other, or =N literal';
+      $yapyakTypeError: 'Unknown selectordinal keyword "frst". Expected one of: zero, one, two, few, many, other, or =N literal.';
     }>();
   });
 
@@ -227,7 +281,7 @@ describe('ValidateSource', () => {
 
   it('holds the first error when a source has multiple violations', () => {
     expectTypeOf<ValidateSource<'Hi {0}, {user.name}'>>().toEqualTypeOf<{
-      $yapyakTypeError: 'Invalid placeholder "0": must start with a letter or underscore (not a digit)';
+      $yapyakTypeError: 'Invalid placeholder "0": must start with a letter or underscore (not a digit).';
     }>();
   });
 
@@ -262,7 +316,7 @@ describe('ValidateSource', () => {
     expectTypeOf<
       ValidateSource<'You have {count, plural, one {# item}}'>
     >().toEqualTypeOf<{
-      $yapyakTypeError: 'Plural "{count}" is missing the required \'other\' branch';
+      $yapyakTypeError: 'Plural "{count}" is missing the required \'other\' branch.';
     }>();
   });
 
@@ -270,7 +324,7 @@ describe('ValidateSource', () => {
     expectTypeOf<
       ValidateSource<'{gender, select, male {Mr.} female {Ms.}}'>
     >().toEqualTypeOf<{
-      $yapyakTypeError: 'Select "{gender}" is missing the required \'other\' branch';
+      $yapyakTypeError: 'Select "{gender}" is missing the required \'other\' branch.';
     }>();
   });
 

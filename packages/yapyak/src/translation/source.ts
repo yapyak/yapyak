@@ -24,22 +24,22 @@ type KnownPluralKeyword = 'few' | 'many' | 'one' | 'other' | 'two' | 'zero';
 
 type ValidateName<T extends string> = T extends ''
   ? {
-      $yapyakTypeError: 'Invalid placeholder "": name cannot be empty';
+      $yapyakTypeError: 'Invalid placeholder "": name cannot be empty.';
     }
   : T extends `${Digit}${string}`
     ? {
-        $yapyakTypeError: `Invalid placeholder "${T}": must start with a letter or underscore (not a digit)`;
+        $yapyakTypeError: `Invalid placeholder "${T}": must start with a letter or underscore (not a digit).`;
       }
     : T extends `${string}${NonIdentifierChar}${string}`
       ? {
-          $yapyakTypeError: `Invalid placeholder "${T}": cannot contain spaces, dots, or other punctuation`;
+          $yapyakTypeError: `Invalid placeholder "${T}": cannot contain spaces, dots, or other punctuation.`;
         }
       : never;
 
 type ValidateFormat<T extends string> = T extends KnownIcuFormat
   ? never
   : {
-      $yapyakTypeError: `Unknown ICU format "${T}" — expected one of: plural, selectordinal, select, number, date, time`;
+      $yapyakTypeError: `Unknown ICU format "${T}". Expected one of: plural, selectordinal, select, number, date, time.`;
     };
 
 type ValidateNumberStyle<TStyle extends string> =
@@ -48,7 +48,7 @@ type ValidateNumberStyle<TStyle extends string> =
     : TStyle extends `currency${string}`
       ? never
       : {
-          $yapyakTypeError: `Unknown number style "${TStyle}" — expected one of: decimal, percent, currency, integer (or "currency <code>")`;
+          $yapyakTypeError: `Unknown number style "${TStyle}". Expected one of: decimal, percent, currency, integer (or "currency <code>").`;
         };
 
 type ValidateStyle<
@@ -60,13 +60,13 @@ type ValidateStyle<
     ? TStyle extends KnownDateTimeStyle
       ? never
       : {
-          $yapyakTypeError: `Unknown date style "${TStyle}" — expected one of: short, medium, long, full`;
+          $yapyakTypeError: `Unknown date style "${TStyle}". Expected one of: short, medium, long, full.`;
         }
     : TFormat extends 'time'
       ? TStyle extends KnownDateTimeStyle
         ? never
         : {
-            $yapyakTypeError: `Unknown time style "${TStyle}" — expected one of: short, medium, long, full`;
+            $yapyakTypeError: `Unknown time style "${TStyle}". Expected one of: short, medium, long, full.`;
           }
       : never;
 
@@ -92,14 +92,14 @@ type ValidatePluralKeyword<
     ? never
     : T extends `=${string}`
       ? {
-          $yapyakTypeError: `Invalid =N literal "${T}": N must be a non-negative integer`;
+          $yapyakTypeError: `Invalid =N literal "${T}": N must be a non-negative integer.`;
         }
       : TFormat extends 'plural'
         ? {
-            $yapyakTypeError: `Unknown plural keyword "${T}" — expected one of: zero, one, two, few, many, other, or =N literal`;
+            $yapyakTypeError: `Unknown plural keyword "${T}". Expected one of: zero, one, two, few, many, other, or =N literal.`;
           }
         : {
-            $yapyakTypeError: `Unknown selectordinal keyword "${T}" — expected one of: zero, one, two, few, many, other, or =N literal`;
+            $yapyakTypeError: `Unknown selectordinal keyword "${T}". Expected one of: zero, one, two, few, many, other, or =N literal.`;
           };
 
 type AllBranchesParseable<T extends string> =
@@ -140,19 +140,19 @@ type ValidateBranches<
   ? HasOtherBranch<TBody> extends true
     ? ValidatePluralBranches<TBody, 'plural'>
     : {
-        $yapyakTypeError: `Plural "{${TName}}" is missing the required 'other' branch`;
+        $yapyakTypeError: `Plural "{${TName}}" is missing the required 'other' branch.`;
       }
   : TFormat extends 'selectordinal'
     ? HasOtherBranch<TBody> extends true
       ? ValidatePluralBranches<TBody, 'selectordinal'>
       : {
-          $yapyakTypeError: `Selectordinal "{${TName}}" is missing the required 'other' branch`;
+          $yapyakTypeError: `Selectordinal "{${TName}}" is missing the required 'other' branch.`;
         }
     : TFormat extends 'select'
       ? HasOtherBranch<TBody> extends true
         ? never
         : {
-            $yapyakTypeError: `Select "{${TName}}" is missing the required 'other' branch`;
+            $yapyakTypeError: `Select "{${TName}}" is missing the required 'other' branch.`;
           }
       : TFormat extends 'date' | 'number' | 'time'
         ? ValidateStyle<TFormat, Trim<TBody>>
@@ -181,7 +181,7 @@ type FindFirstSourceError<
       never,
     ]
     ? {
-        $yapyakTypeError: `Invalid source "${TOriginal}": contains an unclosed '{' — close it as a placeholder like "{name}" or remove the brace`;
+        $yapyakTypeError: `Invalid source "${TOriginal}": contains an unclosed '{'. Close it as a placeholder like "{name}" or remove the brace.`;
       }
     : BalancedSplit<TInner> extends [
           infer TBody extends string,
@@ -215,7 +215,66 @@ type ConsumeBalanced<
 type FindStrayCloseError<T extends string, TOriginal extends string = T> =
   ConsumeBalanced<T> extends `${string}}${string}`
     ? {
-        $yapyakTypeError: `Invalid source "${TOriginal}": contains an unmatched '}' — remove it or add a matching '{'`;
+        $yapyakTypeError: `Invalid source "${TOriginal}": contains an unmatched '}'. Remove it or add a matching '{'.`;
+      }
+    : never;
+
+type IsTagNameToken<T extends string> = T extends ''
+  ? false
+  : T extends `${string}${'/' | ' ' | '=' | '<'}${string}`
+    ? false
+    : true;
+
+type HasAttributedTag<T extends string, TName extends string> = T extends
+  | `${string}<${TName} ${string}`
+  | `${string}<${TName}/${string}`
+  ? true
+  : false;
+
+type FindTagError<
+  T extends string,
+  TStack extends string[] = [],
+  TOriginal extends string = T,
+> = T extends `${string}<${infer TInner}>${infer TRest}`
+  ? TInner extends '' | '/'
+    ? {
+        $yapyakTypeError: `Invalid source "${TOriginal}": contains an empty tag. Provide a name like "<link>" or remove the brackets.`;
+      }
+    : TInner extends `/${infer TCloseName}`
+      ? IsTagNameToken<TCloseName> extends true
+        ? HasAttributedTag<TOriginal, TCloseName> extends true
+          ? FindTagError<TRest, TStack, TOriginal>
+          : TStack extends [
+                infer TTop extends string,
+                ...infer TRestStack extends string[],
+              ]
+            ? TCloseName extends TTop
+              ? FindTagError<TRest, TRestStack, TOriginal>
+              : {
+                  $yapyakTypeError: `Invalid source "${TOriginal}": closing tag "</${TCloseName}>" does not match opening "<${TTop}>". Close the opening tag first.`;
+                }
+            : {
+                $yapyakTypeError: `Invalid source "${TOriginal}": closing tag "</${TCloseName}>" has no matching opening tag.`;
+              }
+        : FindTagError<TRest, TStack, TOriginal>
+      : TInner extends `${string}/`
+        ? FindTagError<TRest, TStack, TOriginal>
+        : IsTagNameToken<TInner> extends true
+          ? FindTagError<
+              TRest,
+              [
+                TInner,
+                ...TStack,
+              ],
+              TOriginal
+            >
+          : FindTagError<TRest, TStack, TOriginal>
+  : TStack extends [
+        infer TTop extends string,
+        ...string[],
+      ]
+    ? {
+        $yapyakTypeError: `Invalid source "${TOriginal}": opening tag "<${TTop}>" has no closing tag. Add "</${TTop}>".`;
       }
     : never;
 
@@ -223,6 +282,9 @@ export type ValidateSource<T extends string> = string extends T
   ? T
   : T extends ''
     ? {
-        $yapyakTypeError: 'Invalid source: must not be an empty string';
+        $yapyakTypeError: 'Invalid source: must not be an empty string.';
       }
-    : OrElse<FindFirstSourceError<T>, OrElse<FindStrayCloseError<T>, T>>;
+    : OrElse<
+        FindFirstSourceError<T>,
+        OrElse<FindStrayCloseError<T>, OrElse<FindTagError<T>, T>>
+      >;

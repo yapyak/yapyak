@@ -103,6 +103,7 @@ Format: `<SUBSYSTEM>_<EVENT>` in SCREAMING_SNAKE_CASE.
 | `LOCALE` | `getLocale` / `setLocale` / locale state mutations |
 | `TRANSLATE` | Auto-translate runtime |
 | `FORMAT` | `Intl.*Format` runtime fallbacks (currency, unit, time zone) |
+| `RICHTEXT` | Rich-text `<tag>` markup validation in source strings |
 
 ### Documentation URLs
 
