@@ -251,3 +251,89 @@ Adding or changing a diagnostic touches **three artifacts in one commit**:
 3. The emit site — references `YAP.<NAME>` and respects the tone rules.
 
 Code review checks all three are in sync. There is no diagnostic in source without an entry in `codes.ts` and a row in the catalog.
+
+### Per-code documentation pages
+
+Every YAP code has a dedicated markdown file at `docs/content/diagnostics/YAPxxxx.md`. The file follows a mechanical template.
+
+**Frontmatter — exactly four fields, in this order:**
+
+```yaml
+---
+title: YAPxxxx
+name: [Short Title Case, 2-4 words]
+severity: error | warning
+summary: [One-line present-tense, no period, max 80 chars]
+---
+```
+
+**Body — pick one shape based on the diagnostic's category:**
+
+#### Shape A: Source-code violations
+
+For diagnostics triggered by user code in `t()` calls or source strings (parser, placeholder, context, richtext).
+
+````md
+[One-sentence intro stating when this fires.]
+
+{% diagnostics %}
+```ts
+t('bad example');                  // error
+t('good example', { name: 'A' });  // ok
+```
+{% /diagnostics %}
+
+[Optional 1-2 sentences explaining why or edge cases.]
+````
+
+Comment convention:
+- `// error` — the bad case
+- `// error: <short detail>` — when the detail clarifies WHICH error (e.g., `// error: missing 'name'`)
+- `// ok` — the fixed case
+
+Error line FIRST, ok line SECOND, in the same fenced block. No blank line between. Default language `ts`.
+
+#### Shape B: Catalog/translation issues
+
+For diagnostics about locale-file shape or translation divergence (catalog, placeholder-in-translation).
+
+````md
+[Intro sentence.]
+
+**Source code:**
+
+```ts
+t('You have {count, plural, one {# msg} other {# msgs}}', { count: 1 })
+```
+
+**Translation:**
+
+```json
+{
+  "src/a.tsx": {
+    "...": "..."
+  }
+}
+```
+
+[Explanation of mismatch and fix.]
+````
+
+#### Shape C: Runtime/environment issues
+
+For diagnostics where the fix is configuration or environment, not source code (runtime, persistence, locale state, translate, format, tracker).
+
+```md
+[1-2 sentences: what happened and why.]
+
+[1-2 sentences: how to fix, with link to relevant guide if applicable.]
+```
+
+#### Universal body rules
+
+1. **No em-dashes** (`—`). Use period + sentence or colon + clarifier.
+2. **Period after every full sentence.**
+3. **Code identifiers in backticks**: `` `t()` ``, `` `<link>` ``, `` `setLocale` ``.
+4. **`name` is Title Case**, 2-4 words: `No source`, `Tag unclosed`, `Catalog corrupt`.
+5. **`summary` is present tense**, no trailing period, max 80 chars, does not repeat `name`.
+6. **One blank line** between body sections.
