@@ -5,8 +5,6 @@
   const date = new Date("2024-01-01T08:30:00Z");
 </script>
 
-{t("This example uses<> ")}
-
 <main style="font-family: system-ui; max-width: 720px; padding: 32px;">
   <h1>{t("Hello there")}</h1>
   <p>{t("This is the {name} example.", { name: "yapyak" })}</p>
