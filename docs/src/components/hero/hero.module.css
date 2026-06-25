@@ -26,16 +26,12 @@
     }
 
     .Heading {
-      font-size: var(--font-size-4xl);
+      font-size: var(--font-size-5xl);
       font-weight: var(--font-weight-medium);
       line-height: var(--line-height-none);
       color: var(--foreground);
       letter-spacing: var(--letter-spacing-tightest);
       text-wrap: balance;
-
-      @media (min-width: 640px) {
-        font-size: var(--font-size-5xl);
-      }
 
       @media (min-width: 1024px) {
         font-size: var(--font-size-6xl);
