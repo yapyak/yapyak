@@ -3,27 +3,27 @@ import { describe, expect, it } from 'vitest';
 import { validateRichTextTags } from './tag';
 
 describe('validateRichTextTags', () => {
-  it('returns no issues for a source without tags', () => {
+  it('returns no issues when the source has no tags', () => {
     expect(validateRichTextTags('Save changes')).toEqual([]);
   });
 
-  it('returns no issues for matching paired tags', () => {
+  it('returns no issues when paired tags match', () => {
     expect(validateRichTextTags('Read <link>terms</link>')).toEqual([]);
   });
 
-  it('returns no issues for nested matching tags', () => {
+  it('returns no issues when paired tags are nested', () => {
     expect(validateRichTextTags('<b><link>terms</link></b>')).toEqual([]);
   });
 
-  it('returns no issues for a void tag', () => {
+  it('returns no issues when the source has a void tag', () => {
     expect(validateRichTextTags('line<br/>break')).toEqual([]);
   });
 
-  it('returns no issues for a void tag with a space before the slash', () => {
+  it('returns no issues when a void tag has a space before the slash', () => {
     expect(validateRichTextTags('line<br />break')).toEqual([]);
   });
 
-  it('returns no issues for a tag with attributes treated as literal text', () => {
+  it('returns no issues when a tag has attributes', () => {
     expect(validateRichTextTags('an <a href="x">html</a> link')).toEqual([]);
   });
 
