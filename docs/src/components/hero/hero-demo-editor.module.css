@@ -43,8 +43,8 @@
       opacity: 1;
     }
 
-    &[data-animating] .TabButton[data-active]::after {
-      display: none;
+    &[data-animating] .TabButton[data-active] .TabActiveIndicator {
+      opacity: 0;
     }
 
     &[data-saving] .TabDot[data-dirty] {
@@ -90,19 +90,8 @@
         color: var(--foreground);
         box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
 
-        &::after {
-          position: absolute;
-          right: 0;
-          bottom: 0;
-          left: calc(var(--px) * -1);
-          height: var(--px);
-          pointer-events: none;
-          content: "";
-          background-color: var(--brand);
-        }
-
-        &:first-of-type::after {
-          left: 0;
+        .TabActiveIndicator {
+          opacity: 1;
         }
       }
 
@@ -119,6 +108,21 @@
       pointer-events: none;
       background-color: transparent;
       transition: background-color var(--transition);
+    }
+
+    .TabActiveIndicator {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: calc(var(--px) * -1);
+      height: var(--px);
+      pointer-events: none;
+      background-color: var(--brand);
+      opacity: 0;
+    }
+
+    .TabButton:first-of-type .TabActiveIndicator {
+      left: 0;
     }
 
     @media (hover: hover) {
