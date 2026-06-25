@@ -91,18 +91,28 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
     if ($tabsElement === null) {
       return;
     }
-    const activeTabElement = $tabsElement.querySelector('[data-active]');
-    if (!(activeTabElement instanceof HTMLElement)) {
-      return;
-    }
-    setIndicator({
-      width: activeTabElement.offsetWidth,
-      x: activeTabElement.offsetLeft,
-    });
+    const updateIndicator = () => {
+      const activeTabElement = $tabsElement.querySelector('[data-active]');
+      if (!(activeTabElement instanceof HTMLElement)) {
+        return;
+      }
+      setIndicator({
+        width: activeTabElement.offsetWidth,
+        x: activeTabElement.offsetLeft,
+      });
+    };
+    updateIndicator();
     const frame = window.requestAnimationFrame(() => {
       setIsReady(true);
     });
-    return () => window.cancelAnimationFrame(frame);
+    const observer = new ResizeObserver(updateIndicator);
+    for (const tabElement of $tabsElement.querySelectorAll('button')) {
+      observer.observe(tabElement);
+    }
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
   }, [
     framework,
   ]);
@@ -139,6 +149,9 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
         {FRAMEWORKS.map((entry) => {
           const isActive = entry.id === framework;
           const isDirty = isActive && (typing || saving);
+          const extension = entry.filename.slice(
+            entry.filename.indexOf('.') + 1,
+          );
           return (
             <Box
               as="button"
@@ -150,7 +163,13 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
             >
               <Box
                 as="span"
-                className={styles.TabFilenameText}
+                className={styles.TabFilenameTextShort}
+              >
+                {extension}
+              </Box>
+              <Box
+                as="span"
+                className={styles.TabFilenameTextFull}
               >
                 {entry.filename}
               </Box>

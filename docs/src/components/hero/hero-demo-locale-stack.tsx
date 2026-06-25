@@ -64,19 +64,24 @@ export function HeroDemoLocaleStack(props: HeroDemoLocaleStackProps) {
               as="span"
               className={styles.JsonText}
             >
-              <CodeBlockToken type="punct">{'{'}</CodeBlockToken>
               <Box
                 as="span"
-                className={styles.KeyText}
-                key={savedSource}
+                className={styles.JsonOpening}
               >
-                <CodeBlockToken type="string">
-                  <Box as="span">"</Box>
-                  {savedSource}
-                  <Box as="span">"</Box>
-                </CodeBlockToken>
+                <CodeBlockToken type="punct">{'{'}</CodeBlockToken>
+                <Box
+                  as="span"
+                  className={styles.KeyText}
+                  key={savedSource}
+                >
+                  <CodeBlockToken type="string">
+                    <Box as="span">"</Box>
+                    {savedSource}
+                    <Box as="span">"</Box>
+                  </CodeBlockToken>
+                </Box>
+                <CodeBlockToken type="punct">:</CodeBlockToken>
               </Box>
-              <CodeBlockToken type="punct">:</CodeBlockToken>
               {isShimmering || !value ? (
                 <Box
                   aria-hidden="true"
@@ -96,7 +101,12 @@ export function HeroDemoLocaleStack(props: HeroDemoLocaleStackProps) {
                   </CodeBlockToken>
                 </Box>
               )}
-              <CodeBlockToken type="punct">{'}'}</CodeBlockToken>
+              <Box
+                as="span"
+                className={styles.JsonClosing}
+              >
+                <CodeBlockToken type="punct">{'}'}</CodeBlockToken>
+              </Box>
             </Box>
           </Box>
         );

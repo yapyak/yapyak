@@ -63,6 +63,15 @@
       white-space: nowrap;
     }
 
+    .JsonOpening,
+    .JsonClosing {
+      display: none;
+
+      @media (min-width: 640px) {
+        display: contents;
+      }
+    }
+
     .KeyText {
       display: inline-block;
       margin-inline-start: 1ch;
