@@ -3,21 +3,9 @@ title: Introduction
 order: 1
 ---
 
-yapyak is an i18n compiler built for the way code gets written today: rapidly, often with help from a coding agent, and rarely pausing for a separate translation step.
+yapyak is an i18n compiler with a small runtime, built for the way code gets written today: rapidly, often with help from a coding agent, and rarely pausing for a separate translation step.
 
 It's a Vite plugin. Works with React, Vue, Svelte, and Astro. SSR is supported on Astro, React Router, SvelteKit, and TanStack Start.
-
-Five things make yapyak different from most i18n libraries. The same five things make it fit naturally into coding flows that involve an agent.
-
-**The source string is the key.** No abstract identifiers, no namespace files. You write `t('Your cart is empty')` and that string is the key in every locale file. Interpolated messages use ICU MessageFormat. Standard syntax, not a yapyak-specific dialect. An agent doesn't need to learn a parallel naming system to keep translations in sync.
-
-**Translations write themselves as you save.** With a model wired up, new messages are translated and written to your locale files during the same save, then shown in the running browser through Vite HMR while the layout is still in front of you. Without one, the stubs stay in place ready for you. Or the agent next to you. To fill them.
-
-**Your translations live in your repository.** Locale files, translation memory, and glossary all sit alongside your code, read from disk and committed to git. An agent editing the codebase sees them the same way it sees the rest of the project. No separate service to query, integrate with, or pay for.
-
-**ICU is validated end-to-end.** TypeScript reads your source string and types every parameter instantly. Write `'You have {count} messages'` and `count: number` is required in the editor. The compiler then validates the ICU itself across every locale at save time: malformed syntax, missing `other` branches, parameters that drift between source and translation. ICU is a format models write fluently; yapyak makes sure they get the details right.
-
-**Translations are safe to refactor.** When you rename a source string, move a file, or remove a component, yapyak preserves the existing translations and restores them when the source reappears. The compiler refuses to write a locale file in a state that would silently clear a translation still in use.
 
 ## Translations follow code
 
@@ -41,7 +29,7 @@ When you save, yapyak adds the message to your locale files as an empty stub. Th
 }
 ```
 
-If you rename or move the source file, yapyak finds the translations again under the new path. Deleting a component and bringing it back later restores the translations from before. Copying markup to a new file brings the translations along.
+If you rename or move the source file, yapyak finds the translations again under the new path. Deleting a component and bringing it back later restores the translations from before. Copying markup to a new file brings the translations along. The compiler refuses to write a locale file in a state that would silently clear a translation still in use.
 
 ## Translations write themselves
 
@@ -86,6 +74,8 @@ yapyak batches new messages into as few requests as possible and runs them in pa
 
 You pay your provider directly. yapyak does not take a cut and does not have a billing tier.
 
+Locale files, translation memory, and glossary all live in your repository, read from disk and committed to git.
+
 ## Code is the context
 
 Short interface text often needs context. `Open` may be a button, a menu item, or a heading.
@@ -108,7 +98,7 @@ For static deploys, a build can target a single locale at compile time. The comp
 
 For SSR, translation data can stay on the server while the rendered result is sent to the client.
 
-## Validated at compile time
+## ICU validated end-to-end
 
 A real interface has counts, prices, dates, and lists. yapyak handles these inside translatable messages using ICU MessageFormat:
 
@@ -116,9 +106,17 @@ A real interface has counts, prices, dates, and lists. yapyak handles these insi
 t('You have {count, plural, one {# message} other {# messages}}', { count });
 ```
 
-ICU is a standard format. models understand its structure, and translators preserve it across locales. yapyak validates it at compile time.
+TypeScript reads the source string and types every parameter instantly. Write `'You have {count} messages'` and `{ count: number }` is required at the call site:
 
-TypeScript reads the source string and infers the parameters. Missing or misspelled parameters are compile-time errors. Invalid plural categories, broken select branches, and dynamic message strings all surface as YAP diagnostics in your editor and in CI.
+{% diagnostics %}
+t('You have {count} messages', { count: 3 }); // ok
+t('You have {count} messages', {});           // error: missing 'count'
+t('You have {count} messages', { n: 3 });     // error: 'n' is not assignable
+{% /diagnostics %}
+
+The compiler then validates the ICU itself across every locale at save time. Malformed syntax, missing `other` branches in plurals and selects, parameters that drift between source and translation, dynamic message strings, and unbalanced rich-text tags inside a message all surface as YAP diagnostics. 44 codes in total, spanning source parsing, ICU validation, rich-text structure, locale persistence, and runtime safety.
+
+ICU is a format models write fluently. yapyak makes sure they get the details right.
 
 For values outside a translatable message, like a price in a card or a timestamp in a footer, yapyak provides a `format` namespace covering numbers, dates, lists, and relative time. Everything is built on the platform's `Intl` and respects the active locale.
 
@@ -161,3 +159,15 @@ In English, the buttons fit comfortably in a dialog or on a mobile screen. In Ge
 The first button is much longer. That can break a dialog footer or a mobile layout.
 
 With live translations, you see this while the layout is still in front of you.
+
+## Built for agents
+
+The cumulative effect of these choices: an agent writing your application doesn't have to think about i18n. And barely you either.
+
+It writes `<button>{t('Save changes')}</button>` because that's the natural way to express what the button says. The compiler extracts it, validates it, sends it to the translator, writes the result back, restores it on refactor, and compiles it into the bundle.
+
+The agent doesn't learn a key naming system. Doesn't edit JSON. Doesn't integrate with a translation vendor. The English string at the call site is the only artifact anyone has to produce. Everything else is mechanical.
+
+yapyak does the heavy lifting, then leaves the result where an agent already knows to look: in your repo, in a file, committed to git.
+
+yapyak is i18n that keeps up. With your code, with your agents, with the pace they set.
