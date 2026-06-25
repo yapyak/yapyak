@@ -32,11 +32,11 @@ export type YapyakConfig = {
    */
   defaultLocale?: Locale;
   /**
-   * Whether to detect locale from the `Accept-Language` header on the server.
+   * Whether to detect the user's locale from the environment: `Accept-Language` on the server, `navigator.languages` in the browser.
    *
    * @defaultValue `false`
    */
-  detectAcceptLanguage?: boolean;
+  detectUserLocale?: boolean;
   /**
    * The maximum style-reference examples per request.
    *

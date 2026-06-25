@@ -6,5 +6,5 @@ export const DEFAULT_LOCALE: Locale = 'en';
 export const PERSISTENCE_CONFIG: NormalizedPersistenceConfig = {
   type: 'none',
 };
-export const DETECT_ACCEPT_LANGUAGE = false;
+export const DETECT_USER_LOCALE = false;
 export const SYNC_HTML_LANG = false;

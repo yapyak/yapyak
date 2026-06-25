@@ -110,7 +110,7 @@ Returns the matched `Locale` or `undefined` if no shipped locale matches even af
 
 ## Accept-Language and content negotiation
 
-When the client sends an `Accept-Language` header (`sv,en;q=0.8,en-US;q=0.6`), yapyak parses it into an ordered list — most preferred first. If [`detectAcceptLanguage`](/guide/getting-started/configuration#detectacceptlanguage) is enabled in your config, the locale resolver walks that list and picks the first entry that matches a shipped locale (using the fallback chain above).
+When the client sends an `Accept-Language` header (`sv,en;q=0.8,en-US;q=0.6`), yapyak parses it into an ordered list — most preferred first. If [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is enabled in your config, the locale resolver walks that list and picks the first entry that matches a shipped locale (using the fallback chain above).
 
 This is how a fresh visit gets a sensible default — the user's browser preferences take effect even before they've made an explicit choice or had their cookie set.
 

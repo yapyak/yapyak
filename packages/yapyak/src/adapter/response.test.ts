@@ -6,7 +6,7 @@ import { withResponse } from './response';
 
 vi.mock('yapyak/runtime', () => ({
   DEFAULT_LOCALE: 'en',
-  DETECT_ACCEPT_LANGUAGE: true,
+  DETECT_USER_LOCALE: true,
   LOCALES: [
     'en',
     'sv',

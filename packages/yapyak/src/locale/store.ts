@@ -2,7 +2,7 @@ import type { Locale } from './type';
 
 import {
   DEFAULT_LOCALE,
-  DETECT_ACCEPT_LANGUAGE,
+  DETECT_USER_LOCALE,
   LOCALES,
   PERSISTENCE_CONFIG,
   SYNC_HTML_LANG,
@@ -76,6 +76,14 @@ function getInitialLocale(): Locale {
       return match;
     }
   }
+  if (DETECT_USER_LOCALE && typeof navigator !== 'undefined') {
+    const resolved = resolveLocale(DEFAULT_LOCALE, LOCALES, {
+      acceptLanguage: navigator.languages.join(','),
+    });
+    if (isLocale(resolved)) {
+      return resolved;
+    }
+  }
   return DEFAULT_LOCALE;
 }
 
@@ -144,7 +152,7 @@ export function getLocale(): Locale {
           return match;
         }
       }
-      if (DETECT_ACCEPT_LANGUAGE) {
+      if (DETECT_USER_LOCALE) {
         const resolved = resolveLocale(DEFAULT_LOCALE, LOCALES, {
           acceptLanguage: request.headers.get('accept-language') ?? undefined,
         });

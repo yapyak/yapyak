@@ -20,7 +20,7 @@ order: 3
 | [`preserveTranslationsOnRename`](#preservetranslationsonrename) | depends on translator | Keep translations on source edits |
 | [`persistence`](#persistence) | `'none'` | Active-locale storage |
 | [`syncHtmlLang`](#synchtmllang) | `false` | Sync `<html lang>` on locale change |
-| [`detectAcceptLanguage`](#detectacceptlanguage) | `false` | Detect from `Accept-Language` header |
+| [`detectUserLocale`](#detectuserlocale) | `false` | Detect from `Accept-Language` (server) or `navigator.languages` (browser) |
 
 ## Locales
 
@@ -236,15 +236,18 @@ Turn it on for SPA frameworks (React, Vue, Svelte) and for Astro projects that s
 
 **Type**: `boolean` · **Default**: `false`
 
-### `detectAcceptLanguage`
+### `detectUserLocale`
 
-On the server, whether to detect the user's locale from the `Accept-Language` request header when no persisted value is found.
+Whether to detect the user's locale from the environment when no persisted value is found.
+
+- **On the server:** reads the `Accept-Language` request header.
+- **In the browser:** reads `navigator.languages` during runtime initialization.
 
 ```ts
-detectAcceptLanguage: true,
+detectUserLocale: true,
 ```
 
-Useful for first-visit defaulting. The detected locale is matched against your configured `locales`; if none match, the request falls through to `defaultLocale`.
+Useful for first-visit defaulting. The detected value is matched against your configured `locales`; if none match, resolution falls through to `defaultLocale`. Detection only runs when no persisted value exists, so a persisted choice (cookie, local-storage, URL) always wins.
 
 **Type**: `boolean` · **Default**: `false`
 

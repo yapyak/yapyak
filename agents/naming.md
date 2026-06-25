@@ -792,7 +792,7 @@ const shouldRefetch = stale && online;
 | Category | Form | Examples |
 | --- | --- | --- |
 | **State** — what the thing *is* | bare adjective / state noun | `disabled`, `selected`, `open`, `hidden`, `loading`, `checked`, `expanded` |
-| **Behavior flag** — what `true` *does* | **verb phrase** | `syncHtmlLang`, `detectAcceptLanguage`, `preserveTranslationsOnRename`, `minify`, `usePolling`, `clearScreen`, `renderLegacyChunks`, `emptyOutDir` |
+| **Behavior flag** — what `true` *does* | **verb phrase** | `syncHtmlLang`, `detectUserLocale`, `preserveTranslationsOnRename`, `minify`, `usePolling`, `clearScreen`, `renderLegacyChunks`, `emptyOutDir` |
 | **Artifact emitter** — the noun *is* the output | bare noun (the output's name) | `sourcemap`, `manifest`, `polyfills` |
 
 **Quick test:** ask "what does `field: true` cause?"
@@ -801,7 +801,7 @@ const shouldRefetch = stale && online;
 - "The system *does* X" → **verb** form
 - "An X is produced" → **artifact** form
 
-**Bare nouns as behavior flags are forbidden.** Use a verb phrase instead — `htmlLang` → `syncHtmlLang`, `acceptLanguage` → `detectAcceptLanguage`.
+**Bare nouns as behavior flags are forbidden.** Use a verb phrase instead — `htmlLang` → `syncHtmlLang`, `acceptLanguage` → `detectUserLocale`.
 
 #### Typed-value fields and parameters — name mirrors the type, unless context carries it
 
@@ -865,7 +865,7 @@ This is a special case of the **no abbreviations** rule (§ No abbreviations): e
 <Button disabled selected />
 
 // ✓ Behavior flag — verb phrase
-yapyak({ syncHtmlLang: true, detectAcceptLanguage: true })
+yapyak({ syncHtmlLang: true, detectUserLocale: true })
 
 // ✓ Artifact emitter — bare noun
 defineConfig({ build: { sourcemap: true, manifest: true } })
@@ -875,7 +875,7 @@ yapyak({ htmlLang: true })          // sync it? detect it? render it?
 yapyak({ acceptLanguage: true })    // detect it? forward it? translate to it?
 ```
 
-When a public option flows through internal layers (normalized options, virtual module constants, etc.), the **same name** carries through every layer — never reintroduce a prefix mid-chain. The chain `detectAcceptLanguage` (option) → `detectAcceptLanguage` (normalized) → `DETECT_ACCEPT_LANGUAGE` (virtual constant) is correct; `shouldDetectAcceptLanguage` mid-chain is not.
+When a public option flows through internal layers (normalized options, virtual module constants, etc.), the **same name** carries through every layer — never reintroduce a prefix mid-chain. The chain `detectUserLocale` (option) → `detectUserLocale` (normalized) → `DETECT_USER_LOCALE` (virtual constant) is correct; `shouldDetectAcceptLanguage` mid-chain is not.
 
 ### String-literal values
 

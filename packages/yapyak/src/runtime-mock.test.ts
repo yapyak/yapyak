@@ -8,8 +8,8 @@ describe('buildRuntimeMock', () => {
       expect(buildRuntimeMock().DEFAULT_LOCALE).toBe('en');
     });
 
-    it('returns `false` as `DETECT_ACCEPT_LANGUAGE`', () => {
-      expect(buildRuntimeMock().DETECT_ACCEPT_LANGUAGE).toBe(false);
+    it('returns `false` as `DETECT_USER_LOCALE`', () => {
+      expect(buildRuntimeMock().DETECT_USER_LOCALE).toBe(false);
     });
 
     it('returns `[en, sv]` as `LOCALES`', () => {
@@ -39,11 +39,11 @@ describe('buildRuntimeMock', () => {
       ).toBe('sv');
     });
 
-    it('returns the configured `detectAcceptLanguage`', () => {
+    it('returns the configured `detectUserLocale`', () => {
       expect(
         buildRuntimeMock({
-          detectAcceptLanguage: true,
-        }).DETECT_ACCEPT_LANGUAGE,
+          detectUserLocale: true,
+        }).DETECT_USER_LOCALE,
       ).toBe(true);
     });
 

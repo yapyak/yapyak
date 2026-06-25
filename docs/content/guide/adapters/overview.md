@@ -9,7 +9,7 @@ An adapter wires per-request locale scoping into your SSR framework so `t()`, `g
 
 Three things happen inside the adapter middleware on every request:
 
-1. **The request is bound.** `withResponse(request, callback)` puts the request into an `AsyncLocalStorage` scope so anything called inside `callback` sees `getLocale()` resolve through the request's [persistence layer](/guide/locale/persistence), or — if [`detectAcceptLanguage`](/guide/getting-started/configuration#detectacceptlanguage) is on — through the `Accept-Language` header.
+1. **The request is bound.** `withResponse(request, callback)` puts the request into an `AsyncLocalStorage` scope so anything called inside `callback` sees `getLocale()` resolve through the request's [persistence layer](/guide/locale/persistence), or — if [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is on — through the `Accept-Language` header.
 2. **Server-side `setLocale()` writes go through.** If something in the request handler calls `setLocale('sv')` — a form POST that updates the user's preference, an admin tool that previews in another language — yapyak buffers the persistence write (a `Set-Cookie` header, a URL redirect) and drains it onto the outgoing response.
 3. **The page renders with the right locale.** Every `t()` call, every `format.*` call, every `useLocale()` hook reads the request-bound value.
 

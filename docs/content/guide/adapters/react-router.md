@@ -104,7 +104,7 @@ export default function Root() {
 
 ## Configure yapyak
 
-React Router projects keep source code under `app/`, not `src/`. Override yapyak's default `include` so it scans the right folder. Add `persistence: 'cookie'` so the middleware can read the locale on each request — without it, the request-bound locale falls back to `defaultLocale` (or to [`Accept-Language`](/guide/getting-started/configuration#detectacceptlanguage) detection if you've enabled `detectAcceptLanguage: true`).
+React Router projects keep source code under `app/`, not `src/`. Override yapyak's default `include` so it scans the right folder. Add `persistence: 'cookie'` so the middleware can read the locale on each request — without it, the request-bound locale falls back to `defaultLocale` (or to [`Accept-Language`](/guide/getting-started/configuration#detectuserlocale) detection if you've enabled `detectUserLocale: true`).
 
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';

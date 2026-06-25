@@ -11,7 +11,7 @@ import { vanillaProcessor } from '../compiler/internal';
 export type NormalizedYapyakConfig = {
   autoTranslateThreshold: number;
   defaultLocale: string;
-  detectAcceptLanguage: boolean;
+  detectUserLocale: boolean;
   examples: number;
   exclude: FilterPattern;
   include: FilterPattern;
@@ -87,7 +87,7 @@ export function normalizeYapyakConfig(
   return {
     autoTranslateThreshold,
     defaultLocale,
-    detectAcceptLanguage: config.detectAcceptLanguage ?? false,
+    detectUserLocale: config.detectUserLocale ?? false,
     examples: resolveExamples(config),
     exclude: resolvePatterns(config.exclude ?? DEFAULT_EXCLUDE, processors),
     include: resolvePatterns(config.include ?? DEFAULT_INCLUDE, processors),

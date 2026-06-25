@@ -19,7 +19,7 @@ Anything inside the callback sees the request-bound locale.
 
 `withResponse(request, callback, responseExtractor?)` does three things:
 
-1. Puts the request into an `AsyncLocalStorage` scope so [`getLocale()`](/guide/locale/switch) resolves through the request's [persistence layer](/guide/locale/persistence), or — if [`detectAcceptLanguage`](/guide/getting-started/configuration#detectacceptlanguage) is on — through the `Accept-Language` header.
+1. Puts the request into an `AsyncLocalStorage` scope so [`getLocale()`](/guide/locale/switch) resolves through the request's [persistence layer](/guide/locale/persistence), or — if [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is on — through the `Accept-Language` header.
 2. Runs `callback()` inside that scope.
 3. Drains any pending response headers buffered by yapyak (a `Set-Cookie` from a server-side `setLocale()` call, for example) onto the response.
 
@@ -65,7 +65,7 @@ For client-side switching from inside a React/Vue/Svelte runtime, enable [`syncH
 
 ## Persistence considerations
 
-Server-side persistence reads happen inside `withResponse`. Whatever [persistence strategy](/guide/locale/persistence) you've configured ([cookie](/guide/locale/persistence#cookie), [URL](/guide/locale/persistence#url)) is read off the request automatically. If [`detectAcceptLanguage`](/guide/getting-started/configuration#detectacceptlanguage) is enabled, the `Accept-Language` header is consulted too.
+Server-side persistence reads happen inside `withResponse`. Whatever [persistence strategy](/guide/locale/persistence) you've configured ([cookie](/guide/locale/persistence#cookie), [URL](/guide/locale/persistence#url)) is read off the request automatically. If [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is enabled, the `Accept-Language` header is consulted too.
 
 Server-side persistence writes (a `setLocale()` call inside a request handler) are buffered until `withResponse` finishes, then flushed onto the response. If your framework constructs its response object outside of `withResponse`, the buffered headers won't reach the user — keep the response construction inside the scope.
 

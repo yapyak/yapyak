@@ -15,7 +15,7 @@ export function createVirtualModulePlugin(state: State): Plugin {
         const emitted = getResolver(state).getEmittedLocales();
         return defineRuntime({
           defaultLocale: emitted.defaultLocale,
-          detectAcceptLanguage: normalized.detectAcceptLanguage,
+          detectUserLocale: normalized.detectUserLocale,
           locales: emitted.locales,
           persistence: normalized.persistence,
           syncHtmlLang: normalized.syncHtmlLang,

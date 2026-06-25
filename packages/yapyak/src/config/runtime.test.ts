@@ -4,7 +4,7 @@ import { defineRuntime } from './runtime';
 
 const baseInput = {
   defaultLocale: 'en',
-  detectAcceptLanguage: false,
+  detectUserLocale: false,
   locales: [
     'en',
     'sv',
@@ -22,7 +22,7 @@ describe('defineRuntime', () => {
     });
     expect(code).toContain('export const LOCALES = ["en","sv"];');
     expect(code).toContain('export const DEFAULT_LOCALE = "en";');
-    expect(code).toContain('export const DETECT_ACCEPT_LANGUAGE = false;');
+    expect(code).toContain('export const DETECT_USER_LOCALE = false;');
     expect(code).toContain('export const SYNC_HTML_LANG = false;');
   });
 

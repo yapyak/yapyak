@@ -3,7 +3,7 @@ import type { NormalizedPersistenceConfig } from './persistence';
 
 export type RuntimeMock = {
   defaultLocale: Locale;
-  detectAcceptLanguage: boolean;
+  detectUserLocale: boolean;
   locales: Locale[];
   persistence: NormalizedPersistenceConfig;
   syncHtmlLang: boolean;
@@ -12,7 +12,7 @@ export type RuntimeMock = {
 export function buildRuntimeMock(runtime: Partial<RuntimeMock> = {}): {
   // biome-ignore-start lint/style/useNamingConvention: yap yap yap
   DEFAULT_LOCALE: Locale;
-  DETECT_ACCEPT_LANGUAGE: boolean;
+  DETECT_USER_LOCALE: boolean;
   LOCALES: Locale[];
   PERSISTENCE_CONFIG: NormalizedPersistenceConfig;
   SYNC_HTML_LANG: boolean;
@@ -20,7 +20,7 @@ export function buildRuntimeMock(runtime: Partial<RuntimeMock> = {}): {
 } {
   const {
     defaultLocale = 'en',
-    detectAcceptLanguage = false,
+    detectUserLocale = false,
     locales = [
       'en',
       'sv',
@@ -32,7 +32,7 @@ export function buildRuntimeMock(runtime: Partial<RuntimeMock> = {}): {
   } = runtime;
   return {
     DEFAULT_LOCALE: defaultLocale,
-    DETECT_ACCEPT_LANGUAGE: detectAcceptLanguage,
+    DETECT_USER_LOCALE: detectUserLocale,
     LOCALES: locales.includes(defaultLocale)
       ? locales
       : [

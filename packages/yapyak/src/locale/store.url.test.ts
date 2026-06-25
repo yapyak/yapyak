@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('yapyak/runtime', () => ({
   DEFAULT_LOCALE: 'en',
-  DETECT_ACCEPT_LANGUAGE: false,
+  DETECT_USER_LOCALE: false,
   LOCALES: [
     'en',
     'sv',

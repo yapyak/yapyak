@@ -654,7 +654,7 @@ collapsible: !!pkg.group                           // string | undefined → boo
 result && doStuff(result)                          // narrowing guard
 
 // ✗ — boolean | undefined where false matters
-if (options.detectAcceptLanguage) { ... }          // false silently treated as "not set"
+if (options.detectUserLocale) { ... }          // false silently treated as "not set"
 ```
 
 `!!x` is the idiomatic boolean coercion. `Boolean(x)` is also fine but reads as a function call.
@@ -665,7 +665,7 @@ Use explicit comparison when you need to distinguish "not set" from a meaningful
 
 ```ts
 // ✓ — boolean | undefined where false is a real configuration choice
-if (options.detectAcceptLanguage !== undefined) {
+if (options.detectUserLocale !== undefined) {
   // user explicitly passed true OR false
 }
 

@@ -2,7 +2,7 @@ import type { NormalizedPersistenceConfig } from '../persistence';
 
 export type DefineRuntimeInput = {
   defaultLocale: string;
-  detectAcceptLanguage: boolean;
+  detectUserLocale: boolean;
   locales: string[];
   persistence: NormalizedPersistenceConfig;
   syncHtmlLang: boolean;
@@ -13,7 +13,7 @@ export function defineRuntime(input: DefineRuntimeInput): string {
     `export const LOCALES = ${JSON.stringify(input.locales)};`,
     `export const DEFAULT_LOCALE = ${JSON.stringify(input.defaultLocale)};`,
     `export const PERSISTENCE_CONFIG = ${emitPersistenceConfig(input.persistence)};`,
-    `export const DETECT_ACCEPT_LANGUAGE = ${JSON.stringify(input.detectAcceptLanguage)};`,
+    `export const DETECT_USER_LOCALE = ${JSON.stringify(input.detectUserLocale)};`,
     `export const SYNC_HTML_LANG = ${JSON.stringify(input.syncHtmlLang)};`,
   ].join('\n');
 }

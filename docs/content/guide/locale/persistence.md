@@ -38,7 +38,7 @@ persistence: {
 | `name` | `'locale'` | The cookie's name |
 | `secure` | `false` | Marks the cookie `Secure`, restricting it to HTTPS contexts |
 
-The cookie is set with `SameSite=Lax` and a long expiry. On a fresh browser, it's absent until the first `setLocale()` call — until then, the active locale falls back to `defaultLocale` (or to [`Accept-Language`](/guide/getting-started/configuration#detectacceptlanguage) detection if enabled).
+The cookie is set with `SameSite=Lax` and a long expiry. On a fresh browser, it's absent until the first `setLocale()` call. Until then, the active locale falls back to `defaultLocale` (or to [environment detection](/guide/getting-started/configuration#detectuserlocale) if enabled).
 
 {% callout variant="info" %}
 `secure: true` restricts the cookie to HTTPS-only contexts. On plain HTTP, client-side `setLocale()` writes will silently fail — the browser refuses to set a secure cookie. Leave `secure` off for local development; enable it in production. The flag has no effect on `localhost` regardless.
@@ -108,12 +108,12 @@ Or just omit the field entirely — `'none'` is the default.
 
 Useful when you genuinely don't want persistence — a kiosk app, a development build, or a setup where another system (the URL path itself, a server-set user preference) carries the locale.
 
-## Composing with `defaultLocale` and `Accept-Language`
+## Composing with `defaultLocale` and detection
 
 The active locale on a fresh visit is resolved in order:
 
 1. **Persisted value**, if any. Cookie, local-storage entry, or URL match.
-2. **[`Accept-Language` header](/guide/getting-started/configuration#detectacceptlanguage)**, if `detectAcceptLanguage: true` and the request includes one.
+2. **[Detected value](/guide/getting-started/configuration#detectuserlocale)** from `Accept-Language` (server) or `navigator.languages` (browser), if `detectUserLocale: true`.
 3. **`defaultLocale`** from your config.
 
 The first match wins. Persistence is checked first because an explicit user choice always beats a guess.

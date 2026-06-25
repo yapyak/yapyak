@@ -346,7 +346,7 @@ function createTranslator(options: TranslatorOptions): Translator;
 | Callback | "Called when [event]." | "Called when the locale changes." |
 | Options bundle | "Options bundle. See {@link OptionsType}." | "Options bundle. See {@link TranslatorOptions}." |
 
-**State predicate vs behavior flag — disambiguation:** matches the boolean-naming rule in [[naming]] § Boolean naming. A field named with a bare adjective (`disabled`, `selected`) is a state predicate. A field named with a verb-phrase (`detectAcceptLanguage`, `syncHtmlLang`, `preserveTranslationsOnRename`) is a behavior flag. The description form must match the field-name form.
+**State predicate vs behavior flag — disambiguation:** matches the boolean-naming rule in [[naming]] § Boolean naming. A field named with a bare adjective (`disabled`, `selected`) is a state predicate. A field named with a verb-phrase (`detectUserLocale`, `syncHtmlLang`, `preserveTranslationsOnRename`) is a behavior flag. The description form must match the field-name form.
 
 ### Options interface field order — alphabetical
 
@@ -360,7 +360,7 @@ When a type lists fields:
 // ✓ Right — alphabetical
 interface YapyakOptions {
   defaultLocale?: string;
-  detectAcceptLanguage?: boolean;
+  detectUserLocale?: boolean;
   exclude?: FilterPattern;
   include?: FilterPattern;
   localesDir?: string;
