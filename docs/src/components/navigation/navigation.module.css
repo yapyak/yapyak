@@ -4,7 +4,7 @@
     --navigation-indicator-width: 0;
     --navigation-indicator-x: 0;
     --navigation-indicator-y: 0;
-    --navigation-slide-duration: 400ms;
+    --navigation-slide-duration: 600ms;
 
     position: relative;
     display: inline-flex;
