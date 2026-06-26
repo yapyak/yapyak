@@ -154,7 +154,9 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { yapyak } from '@yapyak/vite';
 
-export default defineConfig({ plugins: [vue(), yapyak()] });
+export default defineConfig({
+  plugins: [vue(), yapyak()]
+});
 ```
 {% /when %}
 
@@ -166,7 +168,9 @@ import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { yapyak } from '@yapyak/vite';
 
-export default defineConfig({ plugins: [svelte(), yapyak()] });
+export default defineConfig({
+  plugins: [svelte(), yapyak()]
+});
 ```
 {% /when %}
 
@@ -177,7 +181,9 @@ export default defineConfig({ plugins: [svelte(), yapyak()] });
 import { defineConfig } from 'astro/config';
 import { yapyak } from '@yapyak/astro/integration';
 
-export default defineConfig({ integrations: [yapyak()] });
+export default defineConfig({
+  integrations: [yapyak()]
+});
 ```
 {% /when %}
 
@@ -191,11 +197,9 @@ export default defineConfig({ integrations: [yapyak()] });
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { react } from '@yapyak/react/processor';
-import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
-  processors: [react()],
-  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  processors: [react()]
 });
 ```
 {% /when %}
@@ -204,11 +208,9 @@ export default defineConfig({
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { vue } from '@yapyak/vue/processor';
-import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
-  processors: [vue()],
-  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  processors: [vue()]
 });
 ```
 {% /when %}
@@ -217,11 +219,9 @@ export default defineConfig({
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { svelte } from '@yapyak/svelte/processor';
-import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
-  processors: [svelte()],
-  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  processors: [svelte()]
 });
 ```
 {% /when %}
@@ -230,19 +230,14 @@ export default defineConfig({
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { astro } from '@yapyak/astro/processor';
-import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
-  persistence: 'url',
-  processors: [astro()],
-  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  processors: [astro()]
 });
 ```
 {% /when %}
 
 {% /switch %}
-
-Drop the `translator` field if you skipped that package. See [Configuration](/guide/getting-started/configuration) for every field this file accepts.
 
 ### tsconfig.json
 
@@ -256,7 +251,7 @@ Drop the `translator` field if you skipped that package. See [Configuration](/gu
 .yapyak
 ```
 
-## Optional: a translator
+## Translator
 
 If you'd like new strings to translate themselves on save, add a [translator](/guide/translators/overview). yapyak ships first-party support for Anthropic, OpenAI, Gemini, and Ollama. We'll use Anthropic as the example, but the install is the same shape for any of them:
 
@@ -276,6 +271,64 @@ npm install @yapyak/anthropic
 bun add @yapyak/anthropic
 ```
 {% /when %}
+{% /switch %}
+
+Wire it into your `yapyak.config.ts`:
+
+{% switch group="framework" %}
+
+{% when value="react" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { anthropic } from '@yapyak/anthropic';
+import { react } from '@yapyak/react/processor';
+
+export default defineConfig({
+  processors: [react()],
+  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+});
+```
+{% /when %}
+
+{% when value="vue" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { anthropic } from '@yapyak/anthropic';
+import { vue } from '@yapyak/vue/processor';
+
+export default defineConfig({
+  processors: [vue()],
+  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+});
+```
+{% /when %}
+
+{% when value="svelte" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { anthropic } from '@yapyak/anthropic';
+import { svelte } from '@yapyak/svelte/processor';
+
+export default defineConfig({
+  processors: [svelte()],
+  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+});
+```
+{% /when %}
+
+{% when value="astro" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { anthropic } from '@yapyak/anthropic';
+import { astro } from '@yapyak/astro/processor';
+
+export default defineConfig({
+  processors: [astro()],
+  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+});
+```
+{% /when %}
+
 {% /switch %}
 
 Without a translator, new strings sit as empty stubs in your locale files. Which works just as well if you'd rather fill them in yourself, or have your code agent (Claude, Cursor, etc.) do it.

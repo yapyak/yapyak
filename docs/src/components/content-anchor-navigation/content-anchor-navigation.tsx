@@ -1,10 +1,11 @@
 import type { HeadingEntry } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#components/box';
 
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
 import { Box } from '#components/box';
+import { useOptionContext } from '#components/option-provider';
 
 import styles from './content-anchor-navigation.module.css';
 import { ContentAnchorNavigationItem } from './content-anchor-navigation-item';
@@ -18,7 +19,21 @@ export type ContentAnchorNavigationProps = BoxProps<'nav'> & {
 };
 
 export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
-  const { className, headings, ...restProps } = props;
+  const { className, headings: allHeadings, ...restProps } = props;
+
+  const { get } = useOptionContext();
+  const headings = useMemo(
+    () =>
+      allHeadings.filter((heading) =>
+        heading.switchContexts.every(
+          (context) => get(context.group) === context.value,
+        ),
+      ),
+    [
+      allHeadings,
+      get,
+    ],
+  );
 
   const element = useRef<HTMLElement | null>(null);
   const itemElementsRef = useRef(new Map<string, HTMLAnchorElement>());
@@ -36,6 +51,18 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
       window.cancelAnimationFrame(raf);
     };
   }, []);
+
+  useEffect(() => {
+    if (
+      activeId !== null &&
+      !headings.some((heading) => heading.id === activeId)
+    ) {
+      setActiveId(headings[0]?.id ?? null);
+    }
+  }, [
+    activeId,
+    headings,
+  ]);
 
   useEffect(() => {
     if (headings.length === 0) {

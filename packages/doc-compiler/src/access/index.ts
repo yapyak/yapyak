@@ -36,7 +36,11 @@ export type {
 } from './block';
 export type { Entry } from './entry';
 export type { GetExcerptOptions } from './excerpt';
-export type { GetHeadingsOptions, HeadingEntry } from './heading';
+export type {
+  GetHeadingsOptions,
+  HeadingEntry,
+  SwitchContext,
+} from './heading';
 export type { InternalLinkEntry } from './internal-link';
 export type { AdjacentPages, PageEntry } from './page';
 

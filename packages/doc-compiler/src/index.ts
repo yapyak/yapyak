@@ -47,6 +47,7 @@ export type {
   StrikethroughBlock,
   StrongBlock,
   SwitchBlock,
+  SwitchContext,
   TableBlock,
   TableCellBlock,
   TableCellColumn,
