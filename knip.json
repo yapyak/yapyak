@@ -3,5 +3,12 @@
   "ignore": [
     "packages/yapyak/src/compiler/parser/fixture/**",
     "examples/svelte-sveltekit-*/vite.config.ts"
-  ]
+  ],
+  "workspaces": {
+    "packages/astro": {
+      "ignoreDependencies": [
+        "@types/estree"
+      ]
+    }
+  }
 }
