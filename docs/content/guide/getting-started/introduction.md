@@ -52,9 +52,11 @@ export default defineConfig({
 });
 ```
 
-yapyak ships bindings for Anthropic, OpenAI, Gemini, and Ollama. The provider can run on a hosted API or on your own machine. A custom translator is a short interface if you need one.
+yapyak ships bindings for Anthropic, OpenAI, Gemini, and Ollama. A custom translator is a short interface if you need one.
 
-When you save, yapyak collects new messages, sends them to the provider with their source context, voice, glossary, and similar earlier translations, and writes the returned translations to your locale files:
+Requests go directly from your machine to the model. There is no yapyak service in between, and the model can live anywhere your machine can reach, including the machine itself.
+
+When you save, yapyak collects new messages and batches them into as few requests as possible. One request carries multiple messages and every locale, so related text gets translated together. The returned translations are written to your locale files:
 
 ```json [locales/sv.json]
 {
@@ -66,25 +68,25 @@ When you save, yapyak collects new messages, sends them to the provider with the
 
 Vite HMR updates the running application with the translated text.
 
-## Straight to the model
-
-Translation requests go from your machine to your provider, using your API key. There is no yapyak service between your project and the model. The model can live anywhere your machine can reach, including the machine itself.
-
-yapyak batches new messages into as few requests as possible and runs them in parallel. One request carries multiple messages and every locale, so related text gets translated together.
-
-You pay your provider directly. yapyak does not take a cut and does not have a billing tier.
-
-Locale files, translation memory, and glossary all live in your repository, read from disk and committed to git.
-
 ## Code is the context
 
-Short interface text often needs context. `Open` may be a button, a menu item, or a heading.
+Because yapyak is a compiler, it can read the code around each message and send that context along to the model. Especially useful for short messages, where a single word can mean different things in different places. Consider this:
 
-Because yapyak is a compiler, it reads the code around each message. The model sees the source string together with the component name, the surrounding element, and nearby lines.
+```tsx [src/components/file-menu.tsx]
+<button onClick={openFile}>{t('Open')}</button>
+```
 
-yapyak also sends similar earlier translations from your project as examples. If `Save` already translates to `Spara`, that travels along as a hint when translating `Save changes`. The example travels with the same request, so wording stays consistent without a separate service or model call.
+The request to the translator carries this context:
 
-Glossary terms can pin specific translations. Voice can set tone. yapyak forwards both with every request.
+```ts
+{
+  componentName: 'FileMenu',
+  enclosingElement: 'button',
+  snippet: "<button onClick={openFile}>{t('Open')}</button>",
+}
+```
+
+All of this happens automatically. You decide how much context the model sees, including none at all.
 
 ## Bundled with code
 
@@ -95,8 +97,6 @@ Locale switching is immediate, with no locale file to fetch and no suspense or l
 This matches Vite's build model. Routes load the modules they need, and those modules already contain the translations they render. Translation data follows the same code-splitting, caching, and deployment path as the code itself.
 
 For static deploys, a build can target a single locale at compile time. The compiler rewrites every `t()` call to its target literal and tree-shakes the picker away. The resulting bundle contains no i18n runtime at all.
-
-For SSR, translation data can stay on the server while the rendered result is sent to the client.
 
 ## ICU validated end-to-end
 
