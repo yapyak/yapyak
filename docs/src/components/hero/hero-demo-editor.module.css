@@ -170,9 +170,13 @@
 
     .PreformattedText {
       padding: var(--spacing-4);
-      overflow-x: auto;
-      scrollbar-color: var(--ring-stronger) transparent;
-      scrollbar-width: thin;
+      overflow: hidden;
+      mask-image: linear-gradient(
+        to right,
+        black 0,
+        black calc(100% - var(--spacing-4)),
+        transparent 100%
+      );
     }
 
     .Code {

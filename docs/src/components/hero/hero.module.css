@@ -82,8 +82,7 @@
       transition:
         filter var(--transition),
         outline 400ms,
-        box-shadow 400ms,
-        transform var(--transition);
+        box-shadow 400ms;
 
       @media (hover: hover) {
         &:hover {
@@ -92,7 +91,7 @@
       }
 
       &:active {
-        transform: scale(0.96);
+        filter: brightness(1.1);
       }
 
       &:focus-visible {
@@ -118,8 +117,7 @@
       transition:
         background-color var(--transition),
         outline 400ms,
-        box-shadow 400ms,
-        transform var(--transition);
+        box-shadow 400ms;
 
       @media (hover: hover) {
         &:hover {
@@ -128,7 +126,7 @@
       }
 
       &:active {
-        transform: scale(0.96);
+        background-color: var(--surface-stronger);
       }
 
       &:focus-visible {

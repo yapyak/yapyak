@@ -3,10 +3,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-color: var(--ring-stronger) transparent;
-    scrollbar-width: thin;
+    overflow: hidden;
     background: var(--surface);
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-ring-inset);
@@ -32,7 +29,7 @@
 
     .LocaleRow {
       display: grid;
-      grid-template-columns: auto auto 1fr;
+      grid-template-columns: auto auto minmax(0, 1fr);
       gap: var(--spacing-3);
       align-items: center;
       padding: var(--spacing-3) var(--spacing-4);
@@ -59,8 +56,15 @@
     .JsonText {
       display: inline-flex;
       align-items: center;
+      overflow: hidden;
       color: var(--foreground);
       white-space: nowrap;
+      mask-image: linear-gradient(
+        to right,
+        black 0,
+        black calc(100% - var(--spacing-4)),
+        transparent 100%
+      );
     }
 
     .JsonOpening,

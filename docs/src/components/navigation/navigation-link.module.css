@@ -14,8 +14,7 @@
       color var(--navigation-slide-duration, var(--transition))
       var(--ease-snappy),
       box-shadow var(--transition),
-      outline 400ms,
-      transform var(--transition);
+      outline 400ms;
 
     &:focus-visible {
       outline-width: 4px;
@@ -43,10 +42,6 @@
             outline 400ms,
             transform var(--transition);
         }
-      }
-
-      &:active {
-        transform: scale(0.96);
       }
     }
   }
