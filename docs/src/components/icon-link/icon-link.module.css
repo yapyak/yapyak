@@ -12,17 +12,12 @@
     border-radius: var(--border-radius-sm);
     transition:
       color var(--transition),
-      outline 400ms,
-      transform var(--transition);
+      outline 400ms;
 
     @media (hover: hover) {
       &:hover {
         color: var(--foreground);
       }
-    }
-
-    &:active {
-      transform: scale(0.98);
     }
 
     &:focus-visible {

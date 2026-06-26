@@ -17,8 +17,7 @@
     border-radius: var(--border-radius-sm);
     transition:
       color var(--transition),
-      outline 400ms,
-      transform var(--transition);
+      outline 400ms;
 
     .Line {
       display: block;
@@ -35,10 +34,6 @@
       &:hover {
         color: var(--foreground);
       }
-    }
-
-    &:active {
-      transform: scale(0.98);
     }
 
     &:focus-visible {

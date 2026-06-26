@@ -24,22 +24,9 @@
       }
     }
 
-    .PreviousCard {
-      transform-origin: left center;
-
-      &:active {
-        transform: scale(0.96);
-      }
-    }
-
     .NextCard {
       align-items: flex-end;
       text-align: right;
-      transform-origin: right center;
-
-      &:active {
-        transform: scale(0.96);
-      }
     }
 
     .ParentText {

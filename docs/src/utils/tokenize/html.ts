@@ -20,6 +20,17 @@ export function tokenizeHtml(code: string): Token[] {
         continue;
       }
 
+      if (code.startsWith('<!', index)) {
+        const end = code.indexOf('>', index);
+        const stop = end === -1 ? code.length : end + 1;
+        tokens.push({
+          type: 'jsx-tag',
+          value: code.slice(index, stop),
+        });
+        index = stop;
+        continue;
+      }
+
       if (code[index] === '<') {
         const match = /^<\/?[A-Za-z][\w.-]*/.exec(code.slice(index));
         if (match) {
@@ -31,6 +42,12 @@ export function tokenizeHtml(code: string): Token[] {
           mode = 'tag';
           continue;
         }
+        tokens.push({
+          type: 'plain',
+          value: '<',
+        });
+        index++;
+        continue;
       }
 
       const nextOpen = code.indexOf('<', index);

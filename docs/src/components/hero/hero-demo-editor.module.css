@@ -61,7 +61,7 @@
       min-width: 0;
       padding: var(--spacing-2) var(--spacing-1);
       font-family: var(--font-family-mono);
-      font-size: var(--font-size-2xs);
+      font-size: var(--font-size-xs);
       color: var(--foreground-softer);
       box-shadow: inset calc(var(--px) * -1) 0 0 var(--rule);
       transition: color var(--transition);
@@ -72,7 +72,6 @@
         justify-content: flex-start;
         padding: var(--spacing-3) var(--spacing-4) var(--spacing-3)
           calc(var(--spacing-4) + var(--spacing-2) + 6px);
-        font-size: var(--font-size-xs);
       }
 
       @media (hover: hover) {
@@ -97,6 +96,19 @@
 
       &:not([data-active]):has(+ .TabButton[data-active]) {
         box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
+      }
+
+      &:first-child {
+        border-top-left-radius: var(--border-radius-md);
+      }
+
+      &:focus-visible {
+        outline: none;
+
+        .TabFill {
+          border-radius: 2px;
+          box-shadow: inset 0 0 0 1px var(--accent);
+        }
       }
     }
 

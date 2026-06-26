@@ -43,18 +43,13 @@
       color var(--transition),
       background-color var(--transition),
       box-shadow var(--transition),
-      outline 400ms,
-      transform var(--transition);
+      outline 400ms;
 
     @media (hover: hover) {
       &:hover:not([data-active]) {
         color: var(--foreground);
         background-color: var(--surface);
       }
-    }
-
-    &:active {
-      transform: scale(0.98);
     }
 
     &:focus-visible {

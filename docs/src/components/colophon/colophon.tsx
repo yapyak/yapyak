@@ -34,7 +34,7 @@ export function Colophon(props: ColophonProps) {
         as="p"
         className={styles.TaglineParagraph}
       >
-        {t("Who's yakking in the back? That's yapyak.")}
+        {t("Who's yakking in the back?​ That's yapyak.")}
       </Box>
       <Box
         as="p"

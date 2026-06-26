@@ -41,8 +41,7 @@
       border-radius: var(--border-radius-sm);
       transition:
         color var(--transition),
-        outline 400ms,
-        transform var(--transition);
+        outline 400ms;
 
       .Icon {
         font-size: 18px;
@@ -56,10 +55,6 @@
         &:hover {
           color: var(--foreground);
         }
-      }
-
-      &:active {
-        transform: scale(0.98);
       }
 
       &:focus-visible {

@@ -4,7 +4,6 @@ import type { ReactNode } from 'react';
 
 import {
   HeadContent,
-  Link,
   Outlet,
   Scripts,
   createRootRoute,
@@ -17,6 +16,7 @@ import { Colophon } from '#components/colophon';
 import { GithubIcon } from '#components/github-icon';
 import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
+import { LogoLink } from '#components/logo-link';
 import { Navigation } from '#components/navigation';
 import { NotFoundView } from '#components/not-found-view';
 import { OptionPickList } from '#components/option-pick-list';
@@ -24,7 +24,6 @@ import {
   OptionProvider,
   buildPrepaintScript,
 } from '#components/option-provider';
-import { Wordmark } from '#components/wordmark';
 import { assetUrl } from '#utils/asset';
 
 import { doc } from 'virtual:doc-compiler';
@@ -106,9 +105,7 @@ function Component() {
     <Layout>
       <Layout.Header fadeBorder={shouldFadeBorder}>
         <Layout.Header.Start>
-          <Link to="/home">
-            <Wordmark />
-          </Link>
+          <LogoLink />
         </Layout.Header.Start>
         <Layout.Header.Center>
           <Navigation>
