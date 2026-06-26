@@ -7,9 +7,9 @@ Astro renders every page on the server. yapyak's Astro integration wires the per
 
 ## Requirements
 
-- Node.js 22 or later
+- Node.js 22.12 or later
 - TypeScript 5 or later
-- Astro 5 or later
+- Astro 7 or later
 
 ## Install
 

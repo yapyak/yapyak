@@ -3,7 +3,7 @@ title: How it works
 order: 4
 ---
 
-yapyak is a compiler with a small runtime. When you save a file, yapyak finds the `t()` calls inside it, brings their messages up to date in your locale files, and rewrites the calls so they pick the right value at render time. This page walks through what happens in each of those steps and what ends up in your production bundle.
+Learn how yapyak works during development and in production.
 
 ## The save loop
 

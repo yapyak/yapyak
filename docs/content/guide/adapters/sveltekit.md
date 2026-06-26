@@ -7,9 +7,9 @@ order: 4
 
 ## Requirements
 
-- Node.js 22 or later
+- Node.js 22.12 or later
 - TypeScript 5 or later
-- Vite 6 or later
+- Vite 8 or later
 - Svelte 5 or later
 - SvelteKit 2 or later
 

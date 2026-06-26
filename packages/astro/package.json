@@ -49,10 +49,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@astrojs/compiler-rs": "catalog:",
     "@yapyak/vite": "workspace:*"
   },
   "devDependencies": {
-    "@astrojs/compiler": "catalog:",
+    "@types/estree": "catalog:",
+    "@types/estree-jsx": "catalog:",
     "@types/node": "catalog:",
     "@yapyak/tsdown-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
@@ -62,16 +64,10 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "@astrojs/compiler": ">=2.0.0",
-    "astro": ">=5",
+    "astro": "^7",
     "yapyak": "workspace:*"
   },
-  "peerDependenciesMeta": {
-    "@astrojs/compiler": {
-      "optional": true
-    }
-  },
   "engines": {
-    "node": ">=22"
+    "node": ">=22.12"
   }
 }

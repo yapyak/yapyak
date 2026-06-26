@@ -9,9 +9,9 @@ Works with React Router v7 (7.9+) and v8.
 
 ## Requirements
 
-- Node.js 22 or later
+- Node.js 22.22 or later
 - TypeScript 5 or later
-- Vite 6 or later
+- Vite 8 or later
 - React 19 or later
 - React Router 7.9 or later
 

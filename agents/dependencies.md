@@ -24,7 +24,7 @@ Adding a new external dep: pin the exact version in `pnpm-workspace.yaml` under 
     "react": ">=19"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22.12"
   }
 }
 

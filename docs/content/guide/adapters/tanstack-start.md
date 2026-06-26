@@ -7,9 +7,9 @@ order: 5
 
 ## Requirements
 
-- Node.js 22 or later
+- Node.js 22.12 or later
 - TypeScript 5 or later
-- Vite 6 or later
+- Vite 8 or later
 - React 19 or later
 - TanStack Start 1.168 or later
 

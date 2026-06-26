@@ -14,30 +14,30 @@ Install yapyak in your project.
 {% switch group="framework" %}
 
 {% when value="react" %}
-- Node.js 22 or later
+- Node.js 22.12 or later
 - TypeScript 5 or later
-- Vite 6 or later
+- Vite 8 or later
 - React 19 or later
 {% /when %}
 
 {% when value="vue" %}
-- Node.js 22 or later
+- Node.js 22.12 or later
 - TypeScript 5 or later
-- Vite 6 or later
+- Vite 8 or later
 - Vue 3.4 or later
 {% /when %}
 
 {% when value="svelte" %}
-- Node.js 22 or later
+- Node.js 22.12 or later
 - TypeScript 5 or later
-- Vite 6 or later
+- Vite 8 or later
 - Svelte 5 or later
 {% /when %}
 
 {% when value="astro" %}
-- Node.js 22 or later
+- Node.js 22.12 or later
 - TypeScript 5 or later
-- Astro 5 or later
+- Astro 7 or later
 {% /when %}
 
 {% /switch %}
