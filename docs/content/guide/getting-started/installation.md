@@ -47,8 +47,6 @@ Install yapyak in your project.
 {% switch group="framework" %}
 
 {% when value="react" %}
-Three packages: the runtime, the Vite plugin, and the React binding.
-
 {% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
@@ -69,8 +67,6 @@ bun add yapyak @yapyak/vite @yapyak/react
 {% /when %}
 
 {% when value="vue" %}
-Three packages: the runtime, the Vite plugin, and the Vue binding.
-
 {% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
@@ -91,8 +87,6 @@ bun add yapyak @yapyak/vite @yapyak/vue
 {% /when %}
 
 {% when value="svelte" %}
-Three packages: the runtime, the Vite plugin, and the Svelte binding.
-
 {% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
@@ -113,8 +107,6 @@ bun add yapyak @yapyak/vite @yapyak/svelte
 {% /when %}
 
 {% when value="astro" %}
-Two packages: the runtime and the Astro integration. The integration bundles the Vite plugin and a per-request middleware in one step.
-
 {% switch group="packageManager" %}
 {% when value="pnpm" %}
 ```bash
@@ -136,36 +128,12 @@ bun add yapyak @yapyak/astro
 
 {% /switch %}
 
-### Optional: a translator
-
-If you'd like new strings to translate themselves on save, add a [translator](/guide/translators/overview). yapyak ships first-party support for Anthropic, OpenAI, Gemini, and Ollama. We'll use Anthropic as the example, but the install is the same shape for any of them:
-
-{% switch group="packageManager" %}
-{% when value="pnpm" %}
-```bash
-pnpm add @yapyak/anthropic
-```
-{% /when %}
-{% when value="npm" %}
-```bash
-npm install @yapyak/anthropic
-```
-{% /when %}
-{% when value="bun" %}
-```bash
-bun add @yapyak/anthropic
-```
-{% /when %}
-{% /switch %}
-
-Without a translator, new strings sit as empty stubs in your locale files. Which works just as well if you'd rather fill them in yourself, or have your code agent (Claude, Cursor, etc.) do it.
-
-## Wire up the build
+## Setup
 
 {% switch group="framework" %}
 
 {% when value="react" %}
-Add the yapyak plugin to your `vite.config.ts`:
+### vite.config.ts
 
 ```ts [vite.config.ts]
 import { defineConfig } from 'vite';
@@ -179,7 +147,7 @@ export default defineConfig({
 {% /when %}
 
 {% when value="vue" %}
-Add the yapyak plugin to your `vite.config.ts`:
+### vite.config.ts
 
 ```ts [vite.config.ts]
 import { defineConfig } from 'vite';
@@ -191,7 +159,7 @@ export default defineConfig({ plugins: [vue(), yapyak()] });
 {% /when %}
 
 {% when value="svelte" %}
-Add the yapyak plugin to your `vite.config.ts`:
+### vite.config.ts
 
 ```ts [vite.config.ts]
 import { defineConfig } from 'vite';
@@ -203,7 +171,7 @@ export default defineConfig({ plugins: [svelte(), yapyak()] });
 {% /when %}
 
 {% when value="astro" %}
-Add the yapyak integration to your `astro.config.ts`. It registers the Vite plugin and a per-request middleware in one step:
+### astro.config.ts
 
 ```ts [astro.config.ts]
 import { defineConfig } from 'astro/config';
@@ -215,9 +183,7 @@ export default defineConfig({ integrations: [yapyak()] });
 
 {% /switch %}
 
-## Add `yapyak.config.ts`
-
-yapyak's own config, separate from the Vite plugin:
+### yapyak.config.ts
 
 {% switch group="framework" %}
 
@@ -276,21 +242,43 @@ export default defineConfig({
 
 {% /switch %}
 
-Drop the `translator` field if you skipped that package. It's optional. See [Configuration](/guide/getting-started/configuration) for every field this file accepts.
+Drop the `translator` field if you skipped that package. See [Configuration](/guide/getting-started/configuration) for every field this file accepts.
 
-## TypeScript and Git
-
-Tell TypeScript about the types yapyak generates so your editor knows the set of locales you've configured:
+### tsconfig.json
 
 ```json [tsconfig.json]
 { "include": ["src", ".yapyak/types.d.ts"] }
 ```
 
-And ignore yapyak's cache directory:
+### .gitignore
 
 ```[.gitignore]
 .yapyak
 ```
+
+## Optional: a translator
+
+If you'd like new strings to translate themselves on save, add a [translator](/guide/translators/overview). yapyak ships first-party support for Anthropic, OpenAI, Gemini, and Ollama. We'll use Anthropic as the example, but the install is the same shape for any of them:
+
+{% switch group="packageManager" %}
+{% when value="pnpm" %}
+```bash
+pnpm add @yapyak/anthropic
+```
+{% /when %}
+{% when value="npm" %}
+```bash
+npm install @yapyak/anthropic
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bun add @yapyak/anthropic
+```
+{% /when %}
+{% /switch %}
+
+Without a translator, new strings sit as empty stubs in your locale files. Which works just as well if you'd rather fill them in yourself, or have your code agent (Claude, Cursor, etc.) do it.
 
 ## Add your first locale
 
