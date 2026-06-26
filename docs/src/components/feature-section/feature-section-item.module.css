@@ -63,10 +63,11 @@
       font-family: var(--font-family-mono);
       font-size: 0.78em;
       color: var(--foreground-soft);
-      white-space: nowrap;
+      overflow-wrap: anywhere;
       background-color: var(--surface-strong);
       border-radius: var(--border-radius-sm);
       box-shadow: var(--shadow-ring-inset);
+      box-decoration-break: clone;
     }
 
     @media (hover: hover) {

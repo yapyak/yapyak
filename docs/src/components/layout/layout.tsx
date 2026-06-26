@@ -10,7 +10,7 @@ import { LayoutMain } from './layout-main';
 export type LayoutProps = BoxProps;
 
 export function Layout(props: LayoutProps) {
-  const { children, className, ...restProps } = props;
+  const { className, ...restProps } = props;
 
   return (
     <Box
@@ -19,13 +19,7 @@ export function Layout(props: LayoutProps) {
         styles.Layout,
         className,
       ]}
-    >
-      <Box
-        aria-hidden="true"
-        className={styles.GrainOverlay}
-      />
-      {children}
-    </Box>
+    />
   );
 }
 

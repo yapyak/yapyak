@@ -13,14 +13,5 @@
     @media (min-width: 1324px) {
       --layout-max-width: 1460px;
     }
-
-    .GrainOverlay {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      pointer-events: none;
-      background-image: var(--grain-noise);
-      opacity: var(--grain-opacity);
-    }
   }
 }

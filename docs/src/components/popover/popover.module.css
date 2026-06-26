@@ -50,15 +50,6 @@
         opacity: 0;
       }
     }
-
-    .GrainOverlay {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background-image: var(--grain-noise);
-      border-radius: inherit;
-      opacity: var(--grain-opacity);
-    }
   }
 
   .Option {
