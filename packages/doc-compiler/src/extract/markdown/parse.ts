@@ -18,7 +18,6 @@ import Markdoc from '@markdoc/markdoc';
 
 import { nullify } from '../../nullify';
 import { slugify } from '../../slugify';
-import { prefixHeadingIds } from './heading-id';
 
 type ParseMarkdownResult = {
   blocks: Block[];
@@ -38,7 +37,6 @@ export function parseMarkdown(source: string): ParseMarkdownResult {
         transformed,
       ];
   const blocks = raw.flatMap(toBlocks);
-  prefixHeadingIds(blocks);
   return {
     blocks,
     frontmatter,
