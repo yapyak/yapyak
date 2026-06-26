@@ -10,4 +10,20 @@ describe('slugify', () => {
   it('returns an empty string when input is empty', () => {
     expect(slugify('')).toBe('');
   });
+
+  it('replaces dots with dashes', () => {
+    expect(slugify('vite.config.ts')).toBe('vite-config-ts');
+  });
+
+  it('strips a leading dot before the first word', () => {
+    expect(slugify('.gitignore')).toBe('gitignore');
+  });
+
+  it('collapses runs of separators into a single dash', () => {
+    expect(slugify('foo... bar')).toBe('foo-bar');
+  });
+
+  it('treats underscores as separators', () => {
+    expect(slugify('foo_bar')).toBe('foo-bar');
+  });
 });

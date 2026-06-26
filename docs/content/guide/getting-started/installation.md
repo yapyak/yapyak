@@ -130,11 +130,11 @@ bun add yapyak @yapyak/astro
 
 ## Setup
 
+Add the yapyak plugin to your build config:
+
 {% switch group="framework" %}
 
 {% when value="react" %}
-### vite.config.ts
-
 ```ts [vite.config.ts]
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -147,8 +147,6 @@ export default defineConfig({
 {% /when %}
 
 {% when value="vue" %}
-### vite.config.ts
-
 ```ts [vite.config.ts]
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
@@ -161,8 +159,6 @@ export default defineConfig({
 {% /when %}
 
 {% when value="svelte" %}
-### vite.config.ts
-
 ```ts [vite.config.ts]
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
@@ -175,8 +171,6 @@ export default defineConfig({
 {% /when %}
 
 {% when value="astro" %}
-### astro.config.ts
-
 ```ts [astro.config.ts]
 import { defineConfig } from 'astro/config';
 import { yapyak } from '@yapyak/astro/integration';
@@ -189,7 +183,7 @@ export default defineConfig({
 
 {% /switch %}
 
-### yapyak.config.ts
+Add yapyak's own config:
 
 {% switch group="framework" %}
 
@@ -239,13 +233,13 @@ export default defineConfig({
 
 {% /switch %}
 
-### tsconfig.json
+Tell TypeScript about yapyak's generated types:
 
 ```json [tsconfig.json]
 { "include": ["src", ".yapyak/types.d.ts"] }
 ```
 
-### .gitignore
+Ignore yapyak's cache directory:
 
 ```[.gitignore]
 .yapyak
