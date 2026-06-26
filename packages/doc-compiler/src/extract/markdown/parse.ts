@@ -892,7 +892,7 @@ function parseLanguageLabel(raw: string | undefined): ParseLanguageLabelResult {
 }
 
 function isPathLike(value: string): boolean {
-  return /^[\w./-]+\.[a-z]\w*$/i.test(value);
+  return /^\.[a-z][\w-]*$/i.test(value) || /^[\w./-]+\.[a-z]\w*$/i.test(value);
 }
 
 function extractText(children: unknown[]) {

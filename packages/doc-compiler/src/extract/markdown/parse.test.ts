@@ -158,6 +158,19 @@ describe('parseMarkdown', () => {
     ]);
   });
 
+  it('parses a fenced code block with a dotfile `[.gitignore]` to a `code-block` with `path`', () => {
+    const source = '```[.gitignore]\n.yapyak\n```';
+    expect(parseMarkdown(source).blocks).toEqual([
+      {
+        label: null,
+        language: null,
+        path: '.gitignore',
+        source: '.yapyak\n',
+        type: 'code-block',
+      },
+    ]);
+  });
+
   it('parses a `callout` tag to a `callout` block', () => {
     const source = '{% callout variant="info" %}\nHello\n{% /callout %}';
     expect(parseMarkdown(source).blocks).toEqual([
