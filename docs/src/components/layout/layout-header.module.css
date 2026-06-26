@@ -61,9 +61,7 @@
       color: var(--foreground-soft);
       letter-spacing: var(--letter-spacing-tight);
       border-bottom: var(--px) solid var(--rule);
-      transition:
-        color var(--transition),
-        transform var(--transition);
+      transition: color var(--transition);
 
       &:last-child {
         border-bottom: none;
@@ -73,10 +71,6 @@
         &:hover {
           color: var(--foreground);
         }
-      }
-
-      &:active {
-        transform: scale(0.99);
       }
 
       &[data-status="active"] {
