@@ -63,28 +63,30 @@ export function BlockRendererNodeDiagnostics(
             >
               {line.status === 'ok' ? <CheckIcon /> : <XIcon />}
             </Box>
-            <Box
-              {...restProps}
-              as="code"
-              className={styles.Code}
-            >
-              {highlighted.map((token, tokenIndex) => (
-                <CodeBlockToken
-                  key={tokenIndex}
-                  type={token.type}
-                >
-                  {token.value}
-                </CodeBlockToken>
-              ))}
-            </Box>
-            {line.message !== null && (
+            <Box className={styles.Body}>
               <Box
-                as="span"
-                className={styles.Message}
+                {...restProps}
+                as="code"
+                className={styles.Code}
               >
-                {line.message}
+                {highlighted.map((token, tokenIndex) => (
+                  <CodeBlockToken
+                    key={tokenIndex}
+                    type={token.type}
+                  >
+                    {token.value}
+                  </CodeBlockToken>
+                ))}
               </Box>
-            )}
+              {line.message !== null && (
+                <Box
+                  as="span"
+                  className={styles.Message}
+                >
+                  {line.message}
+                </Box>
+              )}
+            </Box>
           </Box>
         );
       })}

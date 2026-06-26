@@ -10,13 +10,16 @@
 
   .Line {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr);
     gap: var(--spacing-3);
-    align-items: center;
+    align-items: start;
     padding: var(--spacing-3) var(--spacing-5);
+    overflow-x: auto;
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
     line-height: var(--line-height-normal);
+    scrollbar-color: var(--ring-stronger) transparent;
+    scrollbar-width: thin;
 
     &:not(:last-child) {
       border-bottom: var(--px) solid var(--rule);
@@ -49,41 +52,27 @@
     }
   }
 
+  .Body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    min-width: 0;
+  }
+
   .Code {
-    overflow-x: auto;
     font-family: inherit;
     color: var(--foreground-soft);
     white-space: pre;
-    scrollbar-color: var(--ring-stronger) transparent;
-    scrollbar-width: thin;
   }
 
   .Message {
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
     color: var(--foreground-softer);
-    text-align: right;
-    white-space: nowrap;
     user-select: none;
-
-    .Line[data-status="ok"] & {
-      color: color-mix(in oklab, var(--brand) 60%, var(--foreground-softer));
-    }
 
     .Line[data-status="error"] & {
       color: color-mix(in oklab, var(--danger) 60%, var(--foreground-softer));
-    }
-  }
-
-  @media (max-width: 640px) {
-    .Line {
-      grid-template-columns: auto minmax(0, 1fr);
-    }
-
-    .Message {
-      grid-column: 2;
-      text-align: left;
-      white-space: normal;
     }
   }
 }
