@@ -41,8 +41,7 @@
     }
 
     .PreformattedText {
-      padding: var(--spacing-5) var(--spacing-20) var(--spacing-5)
-        var(--spacing-6);
+      padding: var(--spacing-4);
       overflow-x: auto;
       font-family: var(--font-family-mono);
       font-size: var(--font-size-xs);
@@ -54,9 +53,9 @@
         linear-gradient(
           to right,
           transparent 0,
-          black var(--spacing-5),
-          black calc(100% - var(--spacing-20)),
-          transparent calc(100% - var(--spacing-10))
+          black var(--spacing-4),
+          black calc(100% - var(--spacing-12)),
+          transparent calc(100% - var(--spacing-4))
         ),
         linear-gradient(black, black);
       mask-repeat: no-repeat;

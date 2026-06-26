@@ -1,6 +1,6 @@
 import type { BoxProps } from '#components/box';
 
-import { Link } from '@tanstack/react-router';
+import { Link, useLocation } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { t } from 'yapyak';
 
@@ -23,6 +23,14 @@ export function LayoutHeader(props: LayoutHeaderProps) {
   const { children, className, fadeBorder, ...restProps } = props;
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: close menu on navigation
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [
+    location,
+  ]);
 
   useEffect(() => {
     const update = () => {
@@ -63,8 +71,6 @@ export function LayoutHeader(props: LayoutHeaderProps) {
     isMenuOpen,
   ]);
 
-  const closeMenu = () => setIsMenuOpen(false);
-
   return (
     <Box
       {...restProps}
@@ -93,21 +99,18 @@ export function LayoutHeader(props: LayoutHeaderProps) {
         <Box className={styles.LinkStack}>
           <Link
             className={styles.Link}
-            onClick={closeMenu}
             to="/home"
           >
             {t('Home')}
           </Link>
           <Link
             className={styles.Link}
-            onClick={closeMenu}
             to="/guide"
           >
             {t('Guide')}
           </Link>
           <Link
             className={styles.Link}
-            onClick={closeMenu}
             to="/reference"
           >
             {t('Reference')}
@@ -121,7 +124,6 @@ export function LayoutHeader(props: LayoutHeaderProps) {
           <IconLink
             aria-label={t('View on GitHub')}
             href="https://github.com/yapyak/yapyak"
-            onClick={closeMenu}
             rel="noopener noreferrer"
             target="_blank"
           >

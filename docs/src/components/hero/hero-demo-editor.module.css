@@ -169,7 +169,7 @@
     }
 
     .PreformattedText {
-      padding: var(--spacing-5) var(--spacing-6);
+      padding: var(--spacing-4);
       overflow-x: auto;
       scrollbar-color: var(--ring-stronger) transparent;
       scrollbar-width: thin;
@@ -178,13 +178,9 @@
     .Code {
       display: block;
       font-family: var(--font-family-mono);
-      font-size: var(--font-size-2xs);
+      font-size: var(--font-size-xs);
       line-height: var(--line-height-loose);
       white-space: pre;
-
-      @media (min-width: 640px) {
-        font-size: var(--font-size-xs);
-      }
     }
 
     .Caret {

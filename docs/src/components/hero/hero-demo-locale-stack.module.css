@@ -37,12 +37,8 @@
       align-items: center;
       padding: var(--spacing-3) var(--spacing-4);
       font-family: var(--font-family-mono);
-      font-size: var(--font-size-2xs);
+      font-size: var(--font-size-xs);
       border-bottom: var(--px) solid var(--rule);
-
-      @media (min-width: 640px) {
-        font-size: var(--font-size-xs);
-      }
 
       &:last-child {
         border-bottom: none;
