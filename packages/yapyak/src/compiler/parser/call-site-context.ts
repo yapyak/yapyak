@@ -1,7 +1,7 @@
 import ts from 'typescript';
 
 export type CallSiteContext = {
-  componentName?: string;
+  enclosingComponent?: string;
   enclosingJsx?: string;
 };
 
@@ -28,8 +28,8 @@ export function resolveCallSiteContext(
     }
 
     const fnName = readFunctionName(current);
-    if (fnName && !result.componentName && isComponentName(fnName)) {
-      result.componentName = fnName;
+    if (fnName && !result.enclosingComponent && isComponentName(fnName)) {
+      result.enclosingComponent = fnName;
     }
 
     current = current.parent;

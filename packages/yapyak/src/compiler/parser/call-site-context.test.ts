@@ -44,7 +44,7 @@ describe('resolveCallSiteContext', () => {
       findFirstCall(sourceFile),
       sourceFile,
     );
-    expect(context.componentName).toBe('Greeting');
+    expect(context.enclosingComponent).toBe('Greeting');
   });
 
   it('returns the arrow component name from its variable declaration', () => {
@@ -56,7 +56,7 @@ describe('resolveCallSiteContext', () => {
       findFirstCall(sourceFile),
       sourceFile,
     );
-    expect(context.componentName).toBe('Greeting');
+    expect(context.enclosingComponent).toBe('Greeting');
   });
 
   it('returns the `forwardRef` component name', () => {
@@ -69,7 +69,7 @@ describe('resolveCallSiteContext', () => {
       findFirstCall(sourceFile),
       sourceFile,
     );
-    expect(context.componentName).toBe('Greeting');
+    expect(context.enclosingComponent).toBe('Greeting');
   });
 
   it('returns the `memo` component name', () => {
@@ -82,7 +82,7 @@ describe('resolveCallSiteContext', () => {
       findFirstCall(sourceFile),
       sourceFile,
     );
-    expect(context.componentName).toBe('Greeting');
+    expect(context.enclosingComponent).toBe('Greeting');
   });
 
   it('returns no component name for a hook', () => {
@@ -96,7 +96,7 @@ describe('resolveCallSiteContext', () => {
       findFirstCall(sourceFile),
       sourceFile,
     );
-    expect(context.componentName).toBeUndefined();
+    expect(context.enclosingComponent).toBeUndefined();
   });
 
   it('returns the outer component name through a nested hook', () => {
@@ -113,7 +113,7 @@ describe('resolveCallSiteContext', () => {
       findFirstCall(sourceFile),
       sourceFile,
     );
-    expect(context.componentName).toBe('Greeting');
+    expect(context.enclosingComponent).toBe('Greeting');
   });
 
   it('returns the closest enclosing JSX element tag', () => {
@@ -128,7 +128,7 @@ describe('resolveCallSiteContext', () => {
       sourceFile,
     );
     expect(context.enclosingJsx).toBe('h1');
-    expect(context.componentName).toBe('Greeting');
+    expect(context.enclosingComponent).toBe('Greeting');
   });
 
   it('returns the JSX tag for a self-closing element', () => {
@@ -187,7 +187,7 @@ describe('resolveCallSiteContext', () => {
     expect(contexts[1]?.enclosingJsx).toBe('p');
     expect(contexts[2]?.enclosingJsx).toBe('button');
     for (const context of contexts) {
-      expect(context.componentName).toBe('Greeting');
+      expect(context.enclosingComponent).toBe('Greeting');
     }
   });
 
@@ -200,7 +200,7 @@ describe('resolveCallSiteContext', () => {
       findFirstCall(sourceFile),
       sourceFile,
     );
-    expect(context.componentName).toBeUndefined();
+    expect(context.enclosingComponent).toBeUndefined();
     expect(context.enclosingJsx).toBeUndefined();
   });
 
@@ -213,7 +213,7 @@ describe('resolveCallSiteContext', () => {
       findFirstCall(sourceFile),
       sourceFile,
     );
-    expect(context.componentName).toBeUndefined();
+    expect(context.enclosingComponent).toBeUndefined();
   });
 
   it('returns no component name for `t()` inside a class method', () => {
@@ -229,7 +229,7 @@ describe('resolveCallSiteContext', () => {
       findFirstCall(sourceFile),
       sourceFile,
     );
-    expect(context.componentName).toBeUndefined();
+    expect(context.enclosingComponent).toBeUndefined();
   });
 
   it('returns the component name from a named function expression', () => {
@@ -241,7 +241,7 @@ describe('resolveCallSiteContext', () => {
       findFirstCall(sourceFile),
       sourceFile,
     );
-    expect(context.componentName).toBe('Greeting');
+    expect(context.enclosingComponent).toBe('Greeting');
   });
 
   it('returns no component name for `t()` inside a non-HOC bare function call', () => {
@@ -254,6 +254,6 @@ describe('resolveCallSiteContext', () => {
       findFirstCall(sourceFile),
       sourceFile,
     );
-    expect(context.componentName).toBeUndefined();
+    expect(context.enclosingComponent).toBeUndefined();
   });
 });

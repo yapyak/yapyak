@@ -55,7 +55,7 @@ describe('extractFile', () => {
     const result = extractFixture('call', 'nested-jsx.tsx');
     expect(result.messages).toHaveLength(3);
     for (const message of result.messages) {
-      expect(message.locations[0]?.callSiteContext.componentName).toBe(
+      expect(message.locations[0]?.callSiteContext.enclosingComponent).toBe(
         'Greeting',
       );
     }

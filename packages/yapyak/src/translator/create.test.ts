@@ -506,7 +506,7 @@ describe('createTranslator', () => {
     await translator.batch?.([
       {
         context: {
-          componentName: 'Header',
+          enclosingComponent: 'Header',
           enclosingElement: 'h1',
           snippet: '<h1>Save</h1>',
         },
@@ -552,7 +552,7 @@ describe('createTranslator', () => {
     expect(item.examples).toBeUndefined();
   });
 
-  it('builds an item with `componentName` and `enclosingElement` at `minimal` context', async () => {
+  it('builds an item with `enclosingComponent` and `enclosingElement` at `minimal` context', async () => {
     let receivedItems: unknown[] | undefined;
     const translator = createTranslator({
       translate: (params) => {
@@ -565,7 +565,7 @@ describe('createTranslator', () => {
     await translator.batch?.([
       {
         context: {
-          componentName: 'Header',
+          enclosingComponent: 'Header',
           enclosingElement: 'h1',
           snippet: '<h1>Save</h1>',
         },
@@ -649,7 +649,7 @@ describe('createTranslator', () => {
     await translator.batch?.([
       {
         context: {
-          componentName: '',
+          enclosingComponent: '',
           enclosingElement: '',
           snippet: '<h1>Save</h1>',
         },

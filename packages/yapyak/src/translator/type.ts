@@ -4,9 +4,9 @@ import type { Locale } from '../locale';
  * The message context.
  */
 export type MessageContext = {
-  /** The component name. */
-  componentName: string;
-  /** The enclosing element. */
+  /** The enclosing component name. */
+  enclosingComponent: string;
+  /** The enclosing element name. */
   enclosingElement: string | undefined;
   /** The code snippet. */
   snippet: string;
@@ -108,11 +108,11 @@ export type ContextLevel = 'none' | 'minimal' | 'rich';
 
 /** An item in a translate batch. */
 export type TranslateItem = {
-  /** The component name. */
+  /** The enclosing component name. */
   component?: string;
   /** The disambiguation context. */
   disambiguation?: string;
-  /** The enclosing element. */
+  /** The enclosing element name. */
   element?: string;
   /** The style-reference examples. */
   examples?: TranslationExample[];

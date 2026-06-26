@@ -230,8 +230,8 @@ function toItem(request: TranslateRequest, level: ContextLevel): TranslateItem {
   }
   const context = request.context;
   if (context) {
-    if (context.componentName !== '') {
-      item.component = context.componentName;
+    if (context.enclosingComponent !== '') {
+      item.component = context.enclosingComponent;
     }
     if (context.enclosingElement) {
       item.element = context.enclosingElement;

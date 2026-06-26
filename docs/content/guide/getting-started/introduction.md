@@ -80,7 +80,7 @@ The request to the translator carries this context:
 
 ```ts
 {
-  componentName: 'FileMenu',
+  enclosingComponent: 'FileMenu',
   enclosingElement: 'button',
   snippet: "<button onClick={openFile}>{t('Open')}</button>",
 }

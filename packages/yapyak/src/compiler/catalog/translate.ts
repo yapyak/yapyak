@@ -380,7 +380,7 @@ function extractContexts(
 
 function toLegacyContext(location: Location): MessageContext {
   return {
-    componentName: location.callSiteContext.componentName ?? '',
+    enclosingComponent: location.callSiteContext.enclosingComponent ?? '',
     enclosingElement: location.callSiteContext.enclosingJsx,
     snippet: '',
   };
