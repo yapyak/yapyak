@@ -29,7 +29,9 @@ Default is `'minimal'`.
 
 A higher level produces better translations for tricky strings at the cost of more tokens per request.
 
+{% callout variant="info" %}
 A [disambiguation](/guide/writing/homonyms) from `t.as(context, source)` is sent at every level, including `'none'`. It travels with the source string rather than with the call-site context.
+{% /callout %}
 
 ## What `'minimal'` actually sends
 

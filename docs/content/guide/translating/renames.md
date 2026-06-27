@@ -3,7 +3,7 @@ title: Renames
 order: 9
 ---
 
-Source code moves around. A component file gets renamed; a string gets edited; the same markup gets copied to a new file. In every case, the translations attached to those strings still exist. yapyak's job is to follow them across the change rather than orphan them.
+Source code changes over time. yapyak follows the translations across rather than orphaning them.
 
 ## What yapyak tracks
 

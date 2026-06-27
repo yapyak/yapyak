@@ -3,7 +3,7 @@ title: Loop
 order: 2
 ---
 
-The save loop is yapyak's dev-time translation path. A `t()` call appears, the file is saved, the translator fills the new stubs, and the running browser updates.
+The save loop is yapyak's dev-time translation path. New `t()` calls appear; their translations appear in the running browser a second or two later.
 
 ```tsx [src/components/empty-cart.tsx]
 import { t } from 'yapyak';
@@ -12,8 +12,6 @@ export function EmptyCart() {
   return <p>{t('Your cart is empty')}</p>;
 }
 ```
-
-Save the file. The Swedish translation appears in the browser a second or two later.
 
 ## What runs on save
 
@@ -53,5 +51,3 @@ Adding a locale with `yapyak add sv` runs the translator over every existing sou
 ## The locale-file save loop
 
 A direct edit to `locales/sv.json` follows a separate path. yapyak diffs the file against its cached version, sends only the changed entries to the browser, and the runtime updates them in memory. Source modules are not recompiled. Component state survives. The whole loop is sub-second.
-
-You can lean on this. Open `locales/sv.json` next to the running app, edit a translation, watch it land before you've lifted your finger off `Cmd-S`.

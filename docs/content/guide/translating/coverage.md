@@ -3,7 +3,7 @@ title: Coverage
 order: 8
 ---
 
-Coverage is the share of your source strings that have a non-empty translation in each locale. Three CLI commands work the coverage story end to end: `yapyak status` reports it, `yapyak translate` fills the gaps, `yapyak check` gates CI on completeness.
+Coverage is the share of your source strings that have a non-empty translation in each locale.
 
 ```bash
 $ pnpm yapyak status
@@ -80,7 +80,9 @@ Two situations reach for `translate` rather than the [save loop](/guide/translat
 pnpm yapyak translate --force
 ```
 
+{% callout variant="warning" %}
 `--force` overwrites hand-edits. Commit your locale files before running it so you can review or revert.
+{% /callout %}
 
 For a single source string, [`yapyak retranslate`](/guide/cli/retranslate) is the targeted alternative. It re-translates exactly the call sites matching the source you name.
 

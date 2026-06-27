@@ -3,7 +3,7 @@ title: Overview
 order: 1
 ---
 
-A translation in yapyak is the value a `t()` call resolves to in a non-source locale. Every source string you write adds an empty entry to each of your locale files; this section is about how those entries get filled.
+A translation in yapyak is the value a `t()` call resolves to in a non-source locale. Every call adds an empty entry to your locale files until something writes a value in.
 
 ```json [locales/sv.json]
 {
@@ -12,8 +12,6 @@ A translation in yapyak is the value a `t()` call resolves to in a non-source lo
   }
 }
 ```
-
-The entry is empty until something writes a value into it.
 
 ## Three ways to fill
 

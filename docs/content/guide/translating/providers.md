@@ -3,7 +3,7 @@ title: Providers
 order: 3
 ---
 
-A translator connects yapyak to a model. yapyak ships four: Anthropic, OpenAI, Gemini, and Ollama. Any other backend is a [custom translator](/guide/translating/custom) away.
+A translator connects yapyak to a model. yapyak ships four; any other backend is a [custom translator](/guide/translating/custom) away.
 
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
@@ -15,8 +15,6 @@ export default defineConfig({
   })
 });
 ```
-
-Requests go from your machine directly to the provider. No yapyak service in between.
 
 ## The four
 

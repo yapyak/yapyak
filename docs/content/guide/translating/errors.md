@@ -3,7 +3,7 @@ title: Errors
 order: 10
 ---
 
-Translator failures surface as typed errors from `yapyak/translator`. yapyak catches them, applies the right retry behavior per type, and reports failures that survive retries as YAP diagnostics.
+Translator failures surface as typed errors from `yapyak/translator`. `TranslatorError` is the base; the seven specific types extend it.
 
 ```ts
 import { TranslatorError } from 'yapyak/translator';
@@ -16,8 +16,6 @@ try {
   }
 }
 ```
-
-`TranslatorError` is the base class. The seven specific types extend it.
 
 ## The error types
 
@@ -65,7 +63,9 @@ export default defineConfig({
 
 When an error escapes retries (or fires from a non-retryable type), yapyak catches it at the chunk boundary. The whole chunk's translations are lost; the surrounding chunks complete normally; the failure surfaces as [`YAP0033`](/reference/diagnostics/YAP0033).
 
+{% callout variant="warning" %}
 A chunk is `batchSize` items. A safety block on one item drops the rest of that chunk's translations along with it. The partial result is what survives.
+{% /callout %}
 
 The translator never throws back to your application code. Chunk failures are reported through the diagnostic stream and the dev-time loop continues with whatever completed.
 

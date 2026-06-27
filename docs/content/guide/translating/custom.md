@@ -113,7 +113,9 @@ See [Errors](/guide/translating/errors) for the diagnostic taxonomy.
 
 The `signal` parameter fires when yapyak's batch run is cancelled: by `Ctrl-C` during a CLI run, by a new save that supersedes an earlier in-flight call, or by an explicit `controller.abort()` from your own code.
 
+{% callout variant="warning" %}
 Forward it to your fetch (or your client's `signal` field). Without it, cancelled runs still complete their underlying requests, wasting tokens and time.
+{% /callout %}
 
 ```ts
 async translate({ items, signal }) {
