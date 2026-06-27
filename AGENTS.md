@@ -66,3 +66,4 @@ Every file in `agents/` is a standalone rule module. Each is the source of truth
 ### Docs
 
 - [agents/docs.md](agents/docs.md) — guide-site voice, anti-tells, vocabulary, code-block conventions, framework switching
+- [agents/terminology.md](agents/terminology.md) — binding terminology table: same concept, same word, every page

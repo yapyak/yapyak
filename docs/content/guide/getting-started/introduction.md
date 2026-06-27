@@ -9,7 +9,7 @@ It's a Vite plugin. Works with React, Vue, Svelte, and Astro. SSR is supported o
 
 ## Translations follow code
 
-You write the source-language message directly in the code that uses it:
+You write the source string directly in the code that uses it:
 
 ```tsx [src/components/empty-cart.tsx]
 import { t } from 'yapyak';
@@ -19,7 +19,7 @@ export function EmptyCart() {
 }
 ```
 
-When you save, yapyak adds the message to your locale files as an empty stub. The English source is the key:
+When you save, yapyak adds the message to your locale files as an empty stub. The source string is the key:
 
 ```json [locales/sv.json]
 {
@@ -52,7 +52,7 @@ export default defineConfig({
 });
 ```
 
-yapyak ships bindings for Anthropic, OpenAI, Gemini, and Ollama. A custom translator is a short interface if you need one.
+yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama. A custom translator is a short interface if you need one.
 
 Requests go directly from your machine to the model. There is no yapyak service in between, and the model can live anywhere your machine can reach, including the machine itself.
 

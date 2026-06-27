@@ -3,7 +3,7 @@ title: Loop
 order: 2
 ---
 
-The save loop is yapyak's dev-time translation path. New `t()` calls appear; their translations appear in the running browser a second or two later.
+The save loop runs at dev-time. New `t()` calls appear; their translations appear in the running browser a second or two later.
 
 ```tsx [src/components/empty-cart.tsx]
 import { t } from 'yapyak';

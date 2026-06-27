@@ -60,7 +60,7 @@ const myTranslator = createTranslator({
 | `context` | `'none' \| 'minimal' \| 'rich'` | `'minimal'` | What call-site context yapyak attaches to each item. See [Context](/guide/translating/context). |
 | `translate` | [`TranslateFn`](/reference/yapyak/translator/TranslateFn) | required | The batch callback. |
 
-The shipped [providers](/guide/translating/providers) are themselves built on `createTranslator`. The same defaults apply, the same lifecycle runs underneath.
+The shipped [translators](/guide/translating/providers) are themselves built on `createTranslator`. The same defaults apply, the same lifecycle runs underneath.
 
 ## The input
 
@@ -204,7 +204,7 @@ const rulesTranslator = createTranslator({
 });
 ```
 
-Strings not in the rules map fall through to the source string. Useful as a development-time placeholder, or as a strict-no-model mode for a small handful of fixed messages.
+Strings not in the rules map fall through to the source string. Useful as a dev-time placeholder, or as a strict-no-model mode for a small handful of fixed messages.
 
 ## A routing translator
 
@@ -243,4 +243,4 @@ const routedTranslator = createTranslator({
 });
 ```
 
-Each target locale routes to its provider. `Promise.all` fans the calls out concurrently. yapyak handles the outer batching and result validation. Heavier than the shipped providers; reach for it when you have a specific reason.
+Each target locale routes to its provider. `Promise.all` fans the calls out concurrently. yapyak handles the outer batching and result validation. Heavier than the shipped translators; reach for it when you have a specific reason.

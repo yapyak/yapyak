@@ -37,7 +37,7 @@ A homonym source nests its translations under the context name:
 }
 ```
 
-The compiler reads the JSON shape to decide whether a call is plain or contextualized. The same source can't be used both ways inside a single file. Pick one form per call site or split the calls into separate files. If you mix them, yapyak raises a [`YAP0018` diagnostic](/reference/diagnostics/YAP0018) on save.
+The compiler reads the JSON shape to decide whether a call is plain or contextualized. The same source can't be used both ways inside a single file. Pick one form per call or split the calls into separate files. If you mix them, yapyak raises a [`YAP0018` diagnostic](/reference/diagnostics/YAP0018) on save.
 
 ## What the context string can be
 

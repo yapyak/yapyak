@@ -70,7 +70,7 @@ bunx yapyak translate sv
 Two situations reach for `translate` rather than the [save loop](/guide/translating/loop):
 
 - A save crossed [`autoTranslateThreshold`](/guide/translating/loop#the-threshold-guardrail) and the loop held off. Run `translate` when you're ready.
-- You translate in CI rather than at dev time, to keep API costs in one predictable place.
+- You translate in CI rather than at dev-time, to keep API costs in one predictable place.
 
 ## Re-translating
 

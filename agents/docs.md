@@ -1,6 +1,6 @@
 ## Docs (guide site)
 
-Rules for writing the user-facing guide at `docs/content/guide/*.md`. JSDoc/TSDoc rules live in [jsdoc.md](jsdoc.md); README rules live in [package-json.md](package-json.md).
+Rules for writing the user-facing guide at `docs/content/guide/*.md`. JSDoc/TSDoc rules live in [jsdoc.md](jsdoc.md); README rules live in [package-json.md](package-json.md); the binding terminology table lives in [terminology.md](terminology.md).
 
 ### Voice
 

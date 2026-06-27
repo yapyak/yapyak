@@ -44,7 +44,7 @@ The same source-file save loop, but with the translator step taking real time. T
 2. You save. The string renders in your source language immediately (no need to wait).
 3. A second or two later, the Swedish translation appears in the running browser as the model's response writes back to the locale file and HMR picks it up.
 
-The split keeps the dev loop snappy even when the translator is doing real work. The source string is visible immediately and the translation arrives shortly after. You're not blocked on the model.
+The split keeps the save loop snappy even when the translator is doing real work. The source string is visible immediately and the translation arrives shortly after. You're not blocked on the model.
 
 Two settings affect this:
 
