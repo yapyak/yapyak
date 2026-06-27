@@ -3,6 +3,8 @@ title: How it works
 order: 4
 ---
 
+Learn how yapyak works during development and in production.
+
 ## The save loop
 
 When you save a source file, yapyak runs six steps:
