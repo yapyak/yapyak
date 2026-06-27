@@ -3,7 +3,7 @@ title: TanStack Start
 order: 5
 ---
 
-`@yapyak/tanstack-start` is the yapyak SSR adapter for [TanStack Start](https://tanstack.com/start). Register it in your `createStart` instance and yapyak's per-request locale binding is wired across every loader and component render.
+[TanStack Start](https://tanstack.com/start) adapter for yapyak.
 
 ## Requirements
 
@@ -117,8 +117,3 @@ On click, the client store updates, the cookie writes, and every component that 
 
 If a server-side route handler calls `setLocale()`, yapyak buffers the `Set-Cookie` write and the middleware flushes it onto the outgoing response. The cookie is written automatically. You don't construct the header yourself.
 
-## Common issues
-
-- **A YAP0022 diagnostic fires on the server.** The adapter isn't running on that request. Make sure the middleware is registered in `requestMiddleware` of your `createStart` config.
-- **Locale resets to default on every request.** Persistence isn't configured. Add `persistence: 'cookie'` to your `yapyak.config.ts`.
-- **`<html lang>` is wrong on first paint.** Read it through `useLocale()` in your root component rather than hardcoding it.

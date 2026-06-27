@@ -3,9 +3,7 @@ title: React Router
 order: 3
 ---
 
-`@yapyak/react-router` is the yapyak SSR adapter for [React Router](https://reactrouter.com) in framework mode. Drop it into your root route's middleware array and yapyak's per-request locale binding is wired across every loader, action, and component render.
-
-Works with React Router v7 (7.9+) and v8.
+[React Router](https://reactrouter.com) adapter for yapyak.
 
 ## Requirements
 
@@ -102,7 +100,7 @@ export default function Root() {
 
 `useLocale()` reads the server-bound value during SSR and the client-side store after hydration, so the attribute is correct in both phases. No `syncHtmlLang` setting needed. The component re-renders on locale changes anyway.
 
-## Configure yapyak
+## Register the processor
 
 React Router projects keep source code under `app/`, not `src/`. Override yapyak's default `include` so it scans the right folder. Add `persistence: 'cookie'` so the middleware can read the locale on each request. Without it, the request-bound locale falls back to `defaultLocale` (or to [`Accept-Language`](/guide/getting-started/configuration#detectuserlocale) detection if you've enabled `detectUserLocale: true`).
 
@@ -174,8 +172,3 @@ export default defineConfig({
 Pin `@react-router/dev`, `@vitejs/plugin-rsc`, and `@yapyak/react` while RSC is unstable. The stack has already broken once across a `@vitejs/plugin-rsc` minor (RR issue [#14633](https://github.com/remix-run/react-router/issues/14633), fixed in 7.11.0). The `unstable_reactRouterRSC` plugin name will change when RR stabilizes the API. Expect the import to be renamed in a future minor.
 {% /callout %}
 
-## Common issues
-
-- **A YAP0022 diagnostic fires on the server.** The middleware isn't running on that route. It's either missing from the root route's `middleware` array, or (on v7) `future.v8_middleware: true` is off in the config.
-- **Locale resets to default on every request.** Persistence isn't configured. Add `persistence: 'cookie'` to your `yapyak.config.ts`.
-- **`<html lang>` is wrong on first paint.** Read it through `useLocale()` in your root component rather than hardcoding it. The middleware provides the right value during SSR.

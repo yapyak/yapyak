@@ -3,7 +3,7 @@ title: SvelteKit
 order: 4
 ---
 
-`@yapyak/sveltekit` is the yapyak SSR adapter for [SvelteKit](https://kit.svelte.dev). Re-export it from `hooks.server.ts` and yapyak's per-request locale binding wires across every load function, action, and page render.
+[SvelteKit](https://kit.svelte.dev) adapter for yapyak.
 
 ## Requirements
 
@@ -55,7 +55,7 @@ export const handle = sequence(yapyakHandle, authHandle);
 
 `yapyakHandle` should run first so the request-bound locale is available to anything downstream.
 
-## Set the page language placeholder
+## Setting `<html lang>`
 
 The handle substitutes a `%yapyak.lang%` placeholder in `app.html` with the resolved locale on every request. Put the placeholder at the top of the file:
 
@@ -134,8 +134,3 @@ export const actions: Actions = {
 
 The cookie is written automatically. You don't construct the `Set-Cookie` header yourself.
 
-## Common issues
-
-- **`<html lang>` is `%yapyak.lang%` literally in the browser.** The handle isn't running. Make sure `hooks.server.ts` exports it (either directly or through `sequence`).
-- **A YAP0022 diagnostic fires on the server.** A request path is rendering outside the handle's scope. Usually a custom server route that bypasses SvelteKit's request flow.
-- **Cookie isn't set after a server-side `setLocale()`.** The form action returned a redirect that bypassed the handle's response. Use SvelteKit's `redirect()` helper rather than constructing a `Response` manually.

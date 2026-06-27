@@ -5,7 +5,7 @@ order: 1
 
 A translator sends source strings to a model and writes the translations back. yapyak calls it on save for any empty stubs.
 
-yapyak ships four ready-made translators that wrap a model provider's API: [Anthropic](/guide/translators/anthropic), [OpenAI](/guide/translators/openai), [Gemini](/guide/translators/gemini), and [Ollama](/guide/translators/ollama). A [custom translator](/guide/translators/custom) takes a short function for everything else.
+yapyak ships four ready-made translators that wrap a model provider's API: [Anthropic](/reference/anthropic), [OpenAI](/reference/openai), [Gemini](/reference/gemini), and [Ollama](/reference/ollama). A [custom translator](/guide/advanced/custom-translator) takes a short function for everything else.
 
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
@@ -30,7 +30,7 @@ The shipped translators differ in which API they talk to, but their option surfa
 
 | Option | Type | Default | Purpose |
 |---|---|---|---|
-| `apiKey` | `string` | required | Your provider key (not needed for [Ollama](/guide/translators/ollama)) |
+| `apiKey` | `string` | required | Your provider key (not needed for [Ollama](/reference/ollama)) |
 | `model` | `string` | provider-specific | Model identifier |
 | `voice` | `string` | undefined | Tone guidance, injected into the prompt |
 | `glossary` | `Record<string, Record<Locale, string>>` | `{}` | Fixed translations the model can't override |
@@ -140,11 +140,9 @@ All of them extend `TranslatorError` (importable from `yapyak/translator`), so a
 
 ## Picking a provider
 
-The four shipped translators each have their own setup page with the full options table:
-
-- [Anthropic](/guide/translators/anthropic). Claude models. Strong on tone and nuance.
-- [OpenAI](/guide/translators/openai). GPT and reasoning models. Works with OpenAI-compatible endpoints (Azure, Groq, Mistral, OpenRouter).
-- [Gemini](/guide/translators/gemini). Google's models. Smaller default batch size; lower latency for short messages.
-- [Ollama](/guide/translators/ollama). Local inference, no API key. Privacy-first.
+- [Anthropic](/reference/anthropic). Claude models. Strong on tone and nuance.
+- [OpenAI](/reference/openai). GPT and reasoning models. Works with OpenAI-compatible endpoints (Azure, Groq, Mistral, OpenRouter).
+- [Gemini](/reference/gemini). Google's models. Smaller default batch size; lower latency for short messages.
+- [Ollama](/reference/ollama). Local inference, no API key. Privacy-first.
 
 None of them are wrong for general use. Pick the provider you already have a key for, or the one whose pricing fits your translation volume. You can switch later by changing one line in your config.

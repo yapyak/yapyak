@@ -3,7 +3,7 @@ title: Astro
 order: 2
 ---
 
-Astro renders every page on the server. yapyak's Astro integration wires the per-request locale binding and the compile-time Vite plugin in one step, so the same `t()`, `getLocale()`, and `format.*` calls work in `.astro` frontmatter, in islands, and across navigations.
+[Astro](https://astro.build) adapter for yapyak.
 
 ## Requirements
 
@@ -120,8 +120,3 @@ For a non-island server-side switch (a form POST to set the cookie from a server
 
 Rich-text rendering works the same way as in other frameworks. See [Rich text](/guide/writing/rich-text) for the Astro-specific slot pattern with `<RichText.Children />`.
 
-## Common issues
-
-- **`getLocale()` returns `defaultLocale` everywhere on the server.** The middleware isn't installed. Make sure `integrations: [yapyak()]` is in `astro.config.ts`.
-- **A YAP0022 diagnostic fires.** Same cause: a render path is happening outside the per-request scope. Usually a custom server-side route or hook that bypasses the integration.
-- **Cookie isn't set after a server-side `setLocale()`.** The handler returned a response before the integration flushed pending headers. Make sure your endpoint returns the response object the framework expects, not a manually-constructed one that bypasses the middleware chain.

@@ -3,6 +3,7 @@ import type { PropsWithChildren } from 'react';
 
 import { useEffect, useState } from 'react';
 
+import { filterAdaptersByFramework } from '../../adapter';
 import { OptionContext } from './option-context';
 import {
   OPTION_PREPAINT_STYLE_ID,
@@ -52,21 +53,48 @@ export function OptionProvider(props: OptionProviderProps) {
     registry,
   ]);
 
-  const get = (groupId: string) =>
-    state[groupId] ?? registry[groupId]?.default ?? '';
+  const get = (groupId: string) => {
+    const stored = state[groupId] ?? registry[groupId]?.default ?? '';
+    if (groupId !== 'adapter') {
+      return stored;
+    }
+    const framework = state.framework ?? registry.framework?.default ?? '';
+    const valid = filterAdaptersByFramework(framework).map(
+      (adapter) => adapter.value,
+    );
+    return valid.includes(stored) ? stored : (valid[0] ?? stored);
+  };
 
   const set = (groupId: string, value: string) => {
-    setState((previous) => ({
-      ...previous,
-      [groupId]: value,
-    }));
+    setState((previous) => {
+      const next = {
+        ...previous,
+        [groupId]: value,
+      };
+      if (groupId === 'framework') {
+        const currentAdapter = previous.adapter ?? registry.adapter?.default;
+        const valid = filterAdaptersByFramework(value).map(
+          (adapter) => adapter.value,
+        );
+        if (currentAdapter === undefined || !valid.includes(currentAdapter)) {
+          const fallback = valid[0] ?? registry.adapter?.default ?? 'none';
+          next.adapter = fallback;
+          persistOption('adapter', fallback);
+        }
+      }
+      return next;
+    });
+    persistOption(groupId, value);
+  };
+
+  function persistOption(groupId: string, value: string): void {
     if (typeof window === 'undefined') {
       return;
     }
     try {
       window.localStorage.setItem(`${OPTION_STORAGE_PREFIX}${groupId}`, value);
     } catch {}
-  };
+  }
 
   return (
     <OptionContext

@@ -7,6 +7,16 @@
   --option-accent-npm: #cb3837;
   --option-accent-bun: #fbf0df;
 
+  --option-accent-none: #ffffff;
+  --option-accent-react-router: #f44250;
+  --option-accent-tanstack-start: #ffd93d;
+  --option-accent-sveltekit: #ff3e00;
+
+  --option-accent-anthropic: #cc785c;
+  --option-accent-openai: #10a37f;
+  --option-accent-gemini: #4285f4;
+  --option-accent-ollama: #f5f5f5;
+
   --option-accent-chatgpt: #10a37f;
   --option-accent-claude: #cc785c;
   --option-accent-cursor: #ffffff;
@@ -39,6 +49,38 @@
 
 [data-option-value="bun"] {
   --option-accent: var(--option-accent-bun);
+}
+
+[data-option-value="none"] {
+  --option-accent: var(--option-accent-none);
+}
+
+[data-option-value="react-router"] {
+  --option-accent: var(--option-accent-react-router);
+}
+
+[data-option-value="tanstack-start"] {
+  --option-accent: var(--option-accent-tanstack-start);
+}
+
+[data-option-value="sveltekit"] {
+  --option-accent: var(--option-accent-sveltekit);
+}
+
+[data-option-value="anthropic"] {
+  --option-accent: var(--option-accent-anthropic);
+}
+
+[data-option-value="openai"] {
+  --option-accent: var(--option-accent-openai);
+}
+
+[data-option-value="gemini"] {
+  --option-accent: var(--option-accent-gemini);
+}
+
+[data-option-value="ollama"] {
+  --option-accent: var(--option-accent-ollama);
 }
 
 [data-option-value="chatgpt"] {

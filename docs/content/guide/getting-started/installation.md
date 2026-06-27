@@ -7,6 +7,10 @@ Install yapyak in your project.
 
 {% picker group="framework" /%}
 
+{% picker group="adapter" /%}
+
+{% picker group="translator" /%}
+
 {% picker group="packageManager" /%}
 
 ## Requirements
@@ -14,10 +18,28 @@ Install yapyak in your project.
 {% switch group="framework" %}
 
 {% when value="react" %}
+{% switch group="adapter" %}
+{% when value="none" %}
 - Node.js 22.12 or later
 - TypeScript 5 or later
 - Vite 8 or later
 - React 19 or later
+{% /when %}
+{% when value="react-router" %}
+- Node.js 22.22 or later
+- TypeScript 5 or later
+- Vite 8 or later
+- React 19 or later
+- React Router 7.9 or later
+{% /when %}
+{% when value="tanstack-start" %}
+- Node.js 22.12 or later
+- TypeScript 5 or later
+- Vite 8 or later
+- React 19 or later
+- TanStack Start 1.168 or later
+{% /when %}
+{% /switch %}
 {% /when %}
 
 {% when value="vue" %}
@@ -28,10 +50,21 @@ Install yapyak in your project.
 {% /when %}
 
 {% when value="svelte" %}
+{% switch group="adapter" %}
+{% when value="none" %}
 - Node.js 22.12 or later
 - TypeScript 5 or later
 - Vite 8 or later
 - Svelte 5 or later
+{% /when %}
+{% when value="sveltekit" %}
+- Node.js 22.12 or later
+- TypeScript 5 or later
+- Vite 8 or later
+- Svelte 5 or later
+- SvelteKit 2 or later
+{% /when %}
+{% /switch %}
 {% /when %}
 
 {% when value="astro" %}
@@ -44,83 +77,226 @@ Install yapyak in your project.
 
 ## Install
 
+{% only group="translator" value="ollama" %}
+Install and run [Ollama](https://ollama.com/download), then pull a model:
+
+```bash
+ollama pull llama3.1
+```
+{% /only %}
+
 {% switch group="framework" %}
 
 {% when value="react" %}
-{% switch group="packageManager" %}
-{% when value="pnpm" %}
-```bash
-pnpm add yapyak @yapyak/vite @yapyak/react
-```
-{% /when %}
-{% when value="npm" %}
+{% switch group="adapter" %}
+{% when value="none" %}
+{% switch group="translator" %}
+{% when value="none" %}
 ```bash
 npm install yapyak @yapyak/vite @yapyak/react
 ```
 {% /when %}
-{% when value="bun" %}
+{% when value="anthropic" %}
 ```bash
-bun add yapyak @yapyak/vite @yapyak/react
+npm install yapyak @yapyak/vite @yapyak/react @yapyak/anthropic
 ```
+{% /when %}
+{% when value="openai" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/react @yapyak/openai
+```
+{% /when %}
+{% when value="gemini" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/react @yapyak/gemini
+```
+{% /when %}
+{% when value="ollama" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/react @yapyak/ollama
+```
+{% /when %}
+{% /switch %}
+{% /when %}
+{% when value="react-router" %}
+{% switch group="translator" %}
+{% when value="none" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/react @yapyak/react-router
+```
+{% /when %}
+{% when value="anthropic" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/react @yapyak/react-router @yapyak/anthropic
+```
+{% /when %}
+{% when value="openai" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/react @yapyak/react-router @yapyak/openai
+```
+{% /when %}
+{% when value="gemini" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/react @yapyak/react-router @yapyak/gemini
+```
+{% /when %}
+{% when value="ollama" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/react @yapyak/react-router @yapyak/ollama
+```
+{% /when %}
+{% /switch %}
+{% /when %}
+{% when value="tanstack-start" %}
+{% switch group="translator" %}
+{% when value="none" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/react @yapyak/tanstack-start
+```
+{% /when %}
+{% when value="anthropic" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/react @yapyak/tanstack-start @yapyak/anthropic
+```
+{% /when %}
+{% when value="openai" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/react @yapyak/tanstack-start @yapyak/openai
+```
+{% /when %}
+{% when value="gemini" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/react @yapyak/tanstack-start @yapyak/gemini
+```
+{% /when %}
+{% when value="ollama" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/react @yapyak/tanstack-start @yapyak/ollama
+```
+{% /when %}
+{% /switch %}
 {% /when %}
 {% /switch %}
 {% /when %}
 
 {% when value="vue" %}
-{% switch group="packageManager" %}
-{% when value="pnpm" %}
-```bash
-pnpm add yapyak @yapyak/vite @yapyak/vue
-```
-{% /when %}
-{% when value="npm" %}
+{% switch group="translator" %}
+{% when value="none" %}
 ```bash
 npm install yapyak @yapyak/vite @yapyak/vue
 ```
 {% /when %}
-{% when value="bun" %}
+{% when value="anthropic" %}
 ```bash
-bun add yapyak @yapyak/vite @yapyak/vue
+npm install yapyak @yapyak/vite @yapyak/vue @yapyak/anthropic
+```
+{% /when %}
+{% when value="openai" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/vue @yapyak/openai
+```
+{% /when %}
+{% when value="gemini" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/vue @yapyak/gemini
+```
+{% /when %}
+{% when value="ollama" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/vue @yapyak/ollama
 ```
 {% /when %}
 {% /switch %}
 {% /when %}
 
 {% when value="svelte" %}
-{% switch group="packageManager" %}
-{% when value="pnpm" %}
-```bash
-pnpm add yapyak @yapyak/vite @yapyak/svelte
-```
-{% /when %}
-{% when value="npm" %}
+{% switch group="adapter" %}
+{% when value="none" %}
+{% switch group="translator" %}
+{% when value="none" %}
 ```bash
 npm install yapyak @yapyak/vite @yapyak/svelte
 ```
 {% /when %}
-{% when value="bun" %}
+{% when value="anthropic" %}
 ```bash
-bun add yapyak @yapyak/vite @yapyak/svelte
+npm install yapyak @yapyak/vite @yapyak/svelte @yapyak/anthropic
 ```
+{% /when %}
+{% when value="openai" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/svelte @yapyak/openai
+```
+{% /when %}
+{% when value="gemini" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/svelte @yapyak/gemini
+```
+{% /when %}
+{% when value="ollama" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/svelte @yapyak/ollama
+```
+{% /when %}
+{% /switch %}
+{% /when %}
+{% when value="sveltekit" %}
+{% switch group="translator" %}
+{% when value="none" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/svelte @yapyak/sveltekit
+```
+{% /when %}
+{% when value="anthropic" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/svelte @yapyak/sveltekit @yapyak/anthropic
+```
+{% /when %}
+{% when value="openai" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/svelte @yapyak/sveltekit @yapyak/openai
+```
+{% /when %}
+{% when value="gemini" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/svelte @yapyak/sveltekit @yapyak/gemini
+```
+{% /when %}
+{% when value="ollama" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/svelte @yapyak/sveltekit @yapyak/ollama
+```
+{% /when %}
+{% /switch %}
 {% /when %}
 {% /switch %}
 {% /when %}
 
 {% when value="astro" %}
-{% switch group="packageManager" %}
-{% when value="pnpm" %}
-```bash
-pnpm add yapyak @yapyak/astro
-```
-{% /when %}
-{% when value="npm" %}
+{% switch group="translator" %}
+{% when value="none" %}
 ```bash
 npm install yapyak @yapyak/astro
 ```
 {% /when %}
-{% when value="bun" %}
+{% when value="anthropic" %}
 ```bash
-bun add yapyak @yapyak/astro
+npm install yapyak @yapyak/astro @yapyak/anthropic
+```
+{% /when %}
+{% when value="openai" %}
+```bash
+npm install yapyak @yapyak/astro @yapyak/openai
+```
+{% /when %}
+{% when value="gemini" %}
+```bash
+npm install yapyak @yapyak/astro @yapyak/gemini
+```
+{% /when %}
+{% when value="ollama" %}
+```bash
+npm install yapyak @yapyak/astro @yapyak/ollama
 ```
 {% /when %}
 {% /switch %}
@@ -188,6 +364,8 @@ Add yapyak's own config:
 {% switch group="framework" %}
 
 {% when value="react" %}
+{% switch group="translator" %}
+{% when value="none" %}
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { react } from '@yapyak/react/processor';
@@ -197,8 +375,66 @@ export default defineConfig({
 });
 ```
 {% /when %}
+{% when value="anthropic" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { anthropic } from '@yapyak/anthropic';
+import { react } from '@yapyak/react/processor';
+
+export default defineConfig({
+  processors: [react()],
+  translator: anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+  })
+});
+```
+{% /when %}
+{% when value="openai" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { openai } from '@yapyak/openai';
+import { react } from '@yapyak/react/processor';
+
+export default defineConfig({
+  processors: [react()],
+  translator: openai({
+    apiKey: process.env.OPENAI_API_KEY,
+  })
+});
+```
+{% /when %}
+{% when value="gemini" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { gemini } from '@yapyak/gemini';
+import { react } from '@yapyak/react/processor';
+
+export default defineConfig({
+  processors: [react()],
+  translator: gemini({
+    apiKey: process.env.GEMINI_API_KEY,
+  })
+});
+```
+{% /when %}
+{% when value="ollama" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { ollama } from '@yapyak/ollama';
+import { react } from '@yapyak/react/processor';
+
+export default defineConfig({
+  processors: [react()],
+  translator: ollama()
+});
+```
+{% /when %}
+{% /switch %}
+{% /when %}
 
 {% when value="vue" %}
+{% switch group="translator" %}
+{% when value="none" %}
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { vue } from '@yapyak/vue/processor';
@@ -208,8 +444,66 @@ export default defineConfig({
 });
 ```
 {% /when %}
+{% when value="anthropic" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { anthropic } from '@yapyak/anthropic';
+import { vue } from '@yapyak/vue/processor';
+
+export default defineConfig({
+  processors: [vue()],
+  translator: anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+  })
+});
+```
+{% /when %}
+{% when value="openai" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { openai } from '@yapyak/openai';
+import { vue } from '@yapyak/vue/processor';
+
+export default defineConfig({
+  processors: [vue()],
+  translator: openai({
+    apiKey: process.env.OPENAI_API_KEY,
+  })
+});
+```
+{% /when %}
+{% when value="gemini" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { gemini } from '@yapyak/gemini';
+import { vue } from '@yapyak/vue/processor';
+
+export default defineConfig({
+  processors: [vue()],
+  translator: gemini({
+    apiKey: process.env.GEMINI_API_KEY,
+  })
+});
+```
+{% /when %}
+{% when value="ollama" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { ollama } from '@yapyak/ollama';
+import { vue } from '@yapyak/vue/processor';
+
+export default defineConfig({
+  processors: [vue()],
+  translator: ollama()
+});
+```
+{% /when %}
+{% /switch %}
+{% /when %}
 
 {% when value="svelte" %}
+{% switch group="translator" %}
+{% when value="none" %}
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { svelte } from '@yapyak/svelte/processor';
@@ -219,8 +513,66 @@ export default defineConfig({
 });
 ```
 {% /when %}
+{% when value="anthropic" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { anthropic } from '@yapyak/anthropic';
+import { svelte } from '@yapyak/svelte/processor';
+
+export default defineConfig({
+  processors: [svelte()],
+  translator: anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+  })
+});
+```
+{% /when %}
+{% when value="openai" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { openai } from '@yapyak/openai';
+import { svelte } from '@yapyak/svelte/processor';
+
+export default defineConfig({
+  processors: [svelte()],
+  translator: openai({
+    apiKey: process.env.OPENAI_API_KEY,
+  })
+});
+```
+{% /when %}
+{% when value="gemini" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { gemini } from '@yapyak/gemini';
+import { svelte } from '@yapyak/svelte/processor';
+
+export default defineConfig({
+  processors: [svelte()],
+  translator: gemini({
+    apiKey: process.env.GEMINI_API_KEY,
+  })
+});
+```
+{% /when %}
+{% when value="ollama" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { ollama } from '@yapyak/ollama';
+import { svelte } from '@yapyak/svelte/processor';
+
+export default defineConfig({
+  processors: [svelte()],
+  translator: ollama()
+});
+```
+{% /when %}
+{% /switch %}
+{% /when %}
 
 {% when value="astro" %}
+{% switch group="translator" %}
+{% when value="none" %}
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { astro } from '@yapyak/astro/processor';
@@ -230,87 +582,7 @@ export default defineConfig({
 });
 ```
 {% /when %}
-
-{% /switch %}
-
-Tell TypeScript about yapyak's generated types:
-
-```json [tsconfig.json]
-{ "include": ["src", ".yapyak/types.d.ts"] }
-```
-
-Ignore yapyak's cache directory:
-
-```[.gitignore]
-.yapyak
-```
-
-## Translator
-
-If you'd like new strings to translate themselves on save, add a [translator](/guide/translators/overview). yapyak ships first-party support for Anthropic, OpenAI, Gemini, and Ollama. We'll use Anthropic as the example, but the install is the same shape for any of them:
-
-{% switch group="packageManager" %}
-{% when value="pnpm" %}
-```bash
-pnpm add @yapyak/anthropic
-```
-{% /when %}
-{% when value="npm" %}
-```bash
-npm install @yapyak/anthropic
-```
-{% /when %}
-{% when value="bun" %}
-```bash
-bun add @yapyak/anthropic
-```
-{% /when %}
-{% /switch %}
-
-Wire it into your `yapyak.config.ts`:
-
-{% switch group="framework" %}
-
-{% when value="react" %}
-```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak/config';
-import { anthropic } from '@yapyak/anthropic';
-import { react } from '@yapyak/react/processor';
-
-export default defineConfig({
-  processors: [react()],
-  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-});
-```
-{% /when %}
-
-{% when value="vue" %}
-```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak/config';
-import { anthropic } from '@yapyak/anthropic';
-import { vue } from '@yapyak/vue/processor';
-
-export default defineConfig({
-  processors: [vue()],
-  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-});
-```
-{% /when %}
-
-{% when value="svelte" %}
-```ts [yapyak.config.ts]
-import { defineConfig } from 'yapyak/config';
-import { anthropic } from '@yapyak/anthropic';
-import { svelte } from '@yapyak/svelte/processor';
-
-export default defineConfig({
-  processors: [svelte()],
-  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-});
-```
-{% /when %}
-
-{% when value="astro" %}
+{% when value="anthropic" %}
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { anthropic } from '@yapyak/anthropic';
@@ -318,14 +590,99 @@ import { astro } from '@yapyak/astro/processor';
 
 export default defineConfig({
   processors: [astro()],
-  translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  translator: anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+  })
 });
 ```
+{% /when %}
+{% when value="openai" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { openai } from '@yapyak/openai';
+import { astro } from '@yapyak/astro/processor';
+
+export default defineConfig({
+  processors: [astro()],
+  translator: openai({
+    apiKey: process.env.OPENAI_API_KEY,
+  })
+});
+```
+{% /when %}
+{% when value="gemini" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { gemini } from '@yapyak/gemini';
+import { astro } from '@yapyak/astro/processor';
+
+export default defineConfig({
+  processors: [astro()],
+  translator: gemini({
+    apiKey: process.env.GEMINI_API_KEY,
+  })
+});
+```
+{% /when %}
+{% when value="ollama" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { ollama } from '@yapyak/ollama';
+import { astro } from '@yapyak/astro/processor';
+
+export default defineConfig({
+  processors: [astro()],
+  translator: ollama()
+});
+```
+{% /when %}
+{% /switch %}
 {% /when %}
 
 {% /switch %}
 
-Without a translator, new strings sit as empty stubs in your locale files. Which works just as well if you'd rather fill them in yourself, or have your code agent (Claude, Cursor, etc.) do it.
+Tell TypeScript about yapyak's generated types:
+
+{% switch group="adapter" %}
+{% when value="sveltekit" %}
+```diff [src/app.d.ts]
++/// <reference path="../.yapyak/types.d.ts" />
+```
+{% /when %}
+{% when value="none" %}
+```diff [tsconfig.json]
+ {
+   "include": [
++    ".yapyak/types.d.ts"
+   ]
+ }
+```
+{% /when %}
+{% when value="react-router" %}
+```diff [tsconfig.json]
+ {
+   "include": [
++    ".yapyak/types.d.ts"
+   ]
+ }
+```
+{% /when %}
+{% when value="tanstack-start" %}
+```diff [tsconfig.json]
+ {
+   "include": [
++    ".yapyak/types.d.ts"
+   ]
+ }
+```
+{% /when %}
+{% /switch %}
+
+Ignore yapyak's cache directory:
+
+```diff [.gitignore]
++.yapyak
+```
 
 ## Add your first locale
 

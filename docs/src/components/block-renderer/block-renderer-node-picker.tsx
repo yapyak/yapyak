@@ -5,6 +5,7 @@ import { Box } from '#components/box';
 import { OptionDot } from '#components/option-dot';
 import { useOptionContext } from '#components/option-provider';
 
+import { visibleOptionsForGroup } from '../../adapter';
 import styles from './block-renderer-node-picker.module.css';
 import { doc } from 'virtual:doc-compiler';
 
@@ -19,6 +20,15 @@ export function BlockRendererNodePicker(props: BlockRendererNodePickerProps) {
   const active = get(block.group);
 
   if (group === undefined) {
+    return null;
+  }
+
+  const options = visibleOptionsForGroup(
+    block.group,
+    group.options,
+    get('framework'),
+  );
+  if (options.length < 2) {
     return null;
   }
 
@@ -37,7 +47,7 @@ export function BlockRendererNodePicker(props: BlockRendererNodePickerProps) {
         className={styles.Group}
         role="radiogroup"
       >
-        {group.options.map((option) => (
+        {options.map((option) => (
           <Box
             aria-checked={option.value === active}
             as="button"

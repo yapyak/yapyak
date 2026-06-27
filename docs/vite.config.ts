@@ -4,6 +4,7 @@ import { docCompiler } from '@yapyak/doc-compiler/vite';
 import { yapyak } from '@yapyak/vite';
 import { defineConfig } from 'vite';
 
+import { ADAPTERS } from './src/adapter';
 import { resolve } from 'node:path';
 
 type ReferencePackage = {
@@ -184,6 +185,14 @@ export default defineConfig({
         },
       },
       options: {
+        adapter: {
+          default: 'none',
+          label: 'Adapter',
+          options: ADAPTERS.map(({ label, value }) => ({
+            label,
+            value,
+          })),
+        },
         framework: {
           default: 'react',
           label: 'Framework',
@@ -221,6 +230,32 @@ export default defineConfig({
             {
               label: 'bun',
               value: 'bun',
+            },
+          ],
+        },
+        translator: {
+          default: 'none',
+          label: 'Translator',
+          options: [
+            {
+              label: 'None',
+              value: 'none',
+            },
+            {
+              label: 'Anthropic',
+              value: 'anthropic',
+            },
+            {
+              label: 'OpenAI',
+              value: 'openai',
+            },
+            {
+              label: 'Gemini',
+              value: 'gemini',
+            },
+            {
+              label: 'Ollama',
+              value: 'ollama',
             },
           ],
         },

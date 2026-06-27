@@ -20,7 +20,9 @@ export function OptionPickList(props: OptionPickListProps) {
   const { get, set } = useOptionContext();
   const popoverId = useId();
   const anchorName = `--anchor${popoverId.replace(/[^a-z0-9-]/gi, '-')}`;
-  const groupIds = Object.keys(registry);
+  const groupIds = Object.keys(registry).filter(
+    (groupId) => groupId !== 'adapter' && groupId !== 'translator',
+  );
 
   if (groupIds.length === 0) {
     return null;

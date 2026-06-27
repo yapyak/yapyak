@@ -135,7 +135,7 @@ For file formats yapyak doesn't ship a processor for, build your own with `creat
 
 ## Translator
 
-Hook up a model to fill in missing translations automatically. yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama; any model with a chat completion endpoint is one short [custom translator](/guide/translators/custom) away.
+Hook up a model to fill in missing translations automatically. yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama; any model with a chat completion endpoint is one short [custom translator](/guide/advanced/custom-translator) away.
 
 ### `translator`
 

@@ -1,6 +1,6 @@
 ---
-title: Custom
-order: 6
+title: Custom translator
+order: 3
 ---
 
 If none of the shipped translators fit, you can build your own with `createTranslator`. The interface is a single function: take a batch of source strings and target locales, return the translations.
