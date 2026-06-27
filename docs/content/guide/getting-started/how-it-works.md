@@ -9,7 +9,7 @@ Learn how yapyak works during development and in production.
 
 When you save a source file, yapyak runs through six steps:
 
-1. **Extract.** The right processor parses the file (built-in for `.ts` and `.tsx`, framework-specific for `.vue`, `.svelte`, and `.astro`) and finds the `t()` calls inside.
+1. **Extract.** The right processor parses the file and finds the `t()` calls inside. The built-in processor handles `.ts` and `.tsx`; framework processors handle `.vue`, `.svelte`, and `.astro`.
 2. **Validate.** Every call is checked against its source: placeholders match the arguments, plural branches are spelled correctly, the message is a static literal.
 3. **Reconcile.** New messages get added to your locale files as empty stubs. Renamed or moved files keep their translations.
 4. **Translate.** If a translator is configured, the new stubs are batched and sent to your provider along with their call-site context.
@@ -269,11 +269,13 @@ For `.astro` files, the page reloads instead. Astro doesn't run yapyak's runtime
 
 yapyak runs through four guarantees on every save to prevent silent loss or overwrite of translations.
 
-**The orphan cache.** Every translation yapyak has ever seen lives in `.yapyak/orphans.json`. Delete a component, add it back three months later, copy markup to a new file. The translations re-appear in `locales/<locale>.json` automatically. The cache has no expiration. Reuse is based on exact match of the source string; close-but-not-identical strings are treated as new.
+**The orphan cache.** Every translation yapyak has ever seen lives in `.yapyak/orphans.json`. Delete a component, add it back three months later, copy markup to a new file — the translations re-appear in `locales/<locale>.json` automatically. The cache has no expiration.
+
+Reuse is based on exact match of the source string. Close-but-not-identical strings are treated as new.
 
 **Rename detection.** When you edit a source string in place (`'Save'` → `'Save changes'`), yapyak compares positions in the file to tell a rename apart from a delete-and-add, and preserves the existing translation under the new key. The behavior is controlled by [`preserveTranslationsOnRename`](/guide/getting-started/configuration#preservetranslationsonrename); see [Renames](/guide/translating/renames) for the heuristics.
 
-**The invariant barrier.** Before any locale file is written, yapyak compares the new state against the existing one. If a write would clear a non-empty stub for a string still present in your source, the write is refused and yapyak surfaces the violation as an error instead of going through with it. There is no path where a still-used translation silently vanishes.
+**The invariant barrier.** Before any locale file is written, yapyak compares the new state against the existing one. If a write would clear a non-empty stub for a string still present in your source, the write is refused and the violation surfaces as an error. A still-used translation can't silently vanish.
 
 **Atomic multi-file writes.** When yapyak updates several locale files from a single save, all of them are staged to temp files first and renamed into place only once every stage has succeeded. A crash, an SSD failure, or a Ctrl-C mid-write leaves your original locales untouched.
 

@@ -49,9 +49,13 @@ Each method maps directly to an `Intl.*Format` class:
 
 ## What it adds
 
-**Currency type-safety.** When `style: 'currency'`, the `currency` field is required and typed against ISO 4217. The [`Currency`](/reference/yapyak/Currency) type is exported separately for passing through your own functions. See [Numbers](/guide/formatting/numbers#currency) for the full pattern.
+### Currency type-safety
 
-**Required fields per number style.** `format.number`'s options are a discriminated union over `style`. Pick `'percent'` and nothing else is required; pick `'unit'` and the `unit` field becomes mandatory:
+When `style: 'currency'`, the `currency` field is required and typed against ISO 4217. The [`Currency`](/reference/yapyak/Currency) type is exported separately for passing through your own functions. See [Numbers](/guide/formatting/numbers#currency) for the full pattern.
+
+### Required fields per style
+
+`format.number`'s options are a discriminated union over `style`. Pick `'percent'` and nothing else is required; pick `'unit'` and the `unit` field becomes mandatory:
 
 {% diagnostics %}
 format.number(0.42, { style: 'percent' });                // ok
@@ -59,7 +63,9 @@ format.number(45, { style: 'unit', unit: 'kilometer' });  // ok
 format.number(45, { style: 'unit' });                     // error: unit missing
 {% /diagnostics %}
 
-**Graceful currency fallback.** A currency code unsupported by the host `Intl` doesn't throw. yapyak falls back to a `<value> <code>` rendering so older runtimes don't break your page.
+### Graceful currency fallback
+
+A currency code unsupported by the host `Intl` doesn't throw. yapyak falls back to a `<value> <code>` rendering so older runtimes don't break your page.
 
 ## Scoping to a different locale
 

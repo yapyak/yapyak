@@ -17,7 +17,12 @@ Each strategy also accepts a configuration object for customizing names, keys, o
 
 ## Cookie
 
-The default for server-rendered apps. The cookie is written client-side when `setLocale()` is called, and read server-side by the middleware on every request, so the same locale renders on both sides without a hydration mismatch.
+The default for server-rendered apps. Two sides:
+
+- **Write:** the cookie is set client-side when `setLocale()` is called.
+- **Read:** the middleware reads it server-side on every request.
+
+The same locale renders on both sides, so there's no hydration mismatch.
 
 ```ts
 persistence: 'cookie',
@@ -68,7 +73,11 @@ persistence: {
 `localStorage` is per-origin and survives across tabs and sessions. On a fresh device, the key is absent until the first `setLocale()` call; the active locale starts at `defaultLocale`.
 
 {% callout variant="warning" %}
-Local storage isn't available during SSR. If your app server-renders, the server has no way to read the user's stored choice on the first request, so the initial render uses `defaultLocale`. The page then hydrates, the runtime reads `localStorage`, and a re-render in the right locale follows — visible as a flash of the wrong language. Use [cookie](#cookie) or [url](#url) persistence for server-rendered apps.
+Local storage isn't available during SSR. If your app server-renders, the server can't read the user's stored choice on the first request, so the initial render uses `defaultLocale`.
+
+What the user sees: the page renders in the default locale, hydrates, the runtime reads `localStorage`, and the locale flips. That flip is a visible flash of the wrong language.
+
+Use [cookie](#cookie) or [url](#url) persistence for server-rendered apps.
 {% /callout %}
 
 ## URL

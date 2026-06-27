@@ -15,7 +15,14 @@ export function EmptyCart() {
 
 ## What runs on save
 
-yapyak's plugin extracts the new `t()` calls, reconciles them against your locale files, sends any new stubs to the configured [translator](/guide/translating/providers), and writes the results back. Source-only steps take milliseconds; the translator step takes a second or two for typical batches. See [HMR](/guide/advanced/hmr) for the full mechanics.
+On save, yapyak's plugin runs four steps:
+
+1. Extracts the new `t()` calls
+2. Reconciles them against your locale files
+3. Sends any new stubs to the configured [translator](/guide/translating/providers)
+4. Writes the results back
+
+The source-only steps take milliseconds. The translator step takes a second or two for typical batches. See [HMR](/guide/advanced/hmr) for the full mechanics.
 
 ## The render is not blocked
 

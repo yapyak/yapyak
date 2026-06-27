@@ -61,7 +61,11 @@ export default defineConfig({
 
 ## Chunk failure
 
-When an error escapes retries (or fires from a non-retryable type), yapyak catches it at the chunk boundary. The whole chunk's translations are lost; the surrounding chunks complete normally; the failure surfaces as [`YAP0033`](/reference/diagnostics/YAP0033).
+When an error escapes retries (or fires from a non-retryable type), yapyak catches it at the chunk boundary. Three things happen:
+
+- The whole chunk's translations are lost.
+- The surrounding chunks complete normally.
+- The failure surfaces as [`YAP0033`](/reference/diagnostics/YAP0033).
 
 {% callout variant="warning" %}
 A chunk is `batchSize` items. A safety block on one item drops the rest of that chunk's translations along with it. The partial result is what survives.

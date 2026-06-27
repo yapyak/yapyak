@@ -52,7 +52,9 @@ export function Footer() {
 }
 ```
 
-Each pair tag becomes a prop on `<RichText>` named after the tag, accepting `(children: ReactNode) => ReactNode`. Each void tag becomes a no-argument prop returning a `ReactNode`. TypeScript infers which props are required from the source string. Leave one out and the editor warns you.
+Each pair tag becomes a prop on `<RichText>` named after the tag, accepting `(children: ReactNode) => ReactNode`. Each void tag becomes a no-argument prop returning a `ReactNode`.
+
+TypeScript infers which props are required from the source string. Leave one out and the editor warns you.
 
 For a void tag:
 

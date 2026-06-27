@@ -82,7 +82,10 @@ type TranslateItem = {
 };
 ```
 
-`items` is the batch, chunked by yapyak according to your `batchSize`. `sourceLocale` is your `defaultLocale` (`'en'` for most projects). `targetLocales` is every locale missing a translation for any item in the batch. `signal` is an `AbortSignal` you forward to your fetch so cancellation propagates.
+- **`items`** — the batch, chunked by yapyak according to your `batchSize`.
+- **`sourceLocale`** — your `defaultLocale` (`'en'` for most projects).
+- **`targetLocales`** — every locale missing a translation for any item in the batch.
+- **`signal`** — an `AbortSignal` you forward to your fetch so cancellation propagates.
 
 ## The output
 

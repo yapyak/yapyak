@@ -19,7 +19,7 @@ The default path: you write a new `t()` call (or edit an existing one), save the
 The whole loop takes milliseconds for the source-only steps and a few seconds for the translator step. Component state — open dialogs, form inputs, scroll position — stays put because Vite swaps the module without re-mounting.
 
 {% callout variant="info" %}
-For `.astro` files, step 6 differs. Astro doesn't run yapyak's runtime in the browser, so the page reloads instead of doing a module swap. State doesn't survive the reload. But it didn't survive on the server side anyway, so the effect is the same as a normal Astro HMR.
+For `.astro` files, step 6 differs. Astro doesn't run yapyak's runtime in the browser, so the page reloads instead of doing a module swap. State doesn't survive — but it wouldn't on the server side either, so the effect matches normal Astro HMR.
 {% /callout %}
 
 ## Locale file save loop

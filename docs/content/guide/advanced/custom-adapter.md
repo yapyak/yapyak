@@ -19,9 +19,9 @@ Anything inside the callback sees the request-bound locale.
 
 `withResponse(request, callback, responseExtractor?)` does three things:
 
-1. Puts the request into an `AsyncLocalStorage` scope so [`getLocale()`](/guide/switching/switch) resolves through the request's [persistence layer](/guide/switching/persistence), or through the `Accept-Language` header when [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is on.
-2. Runs `callback()` inside that scope.
-3. Drains any pending response headers buffered by yapyak (a `Set-Cookie` from a server-side `setLocale()` call, for example) onto the response.
+1. **Scopes the locale.** Puts the request into an `AsyncLocalStorage` scope so [`getLocale()`](/guide/switching/switch) resolves through the request's [persistence layer](/guide/switching/persistence). With [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) on, it falls back to the `Accept-Language` header.
+2. **Runs the callback** inside that scope.
+3. **Flushes pending headers.** Drains any response headers yapyak buffered onto the response. A `Set-Cookie` from a server-side `setLocale()` is the common case.
 
 The result of `callback()` is whatever you returned. If you returned a `Response`, yapyak appends the buffered headers to it before passing it back to you.
 

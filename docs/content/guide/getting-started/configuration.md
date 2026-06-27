@@ -125,13 +125,20 @@ The React processor is the only one that takes an option. `rsc: boolean`. Turn i
 processors: [react({ rsc: true })]
 ```
 
-With `rsc: true`, only files marked `'use client'` get the locale subscription hook injected. Server components still have their `t()` calls rewritten, but they read the request-bound locale from the SSR adapter instead of subscribing to a store.
+With `rsc: true`, only files marked `'use client'` get the locale subscription hook injected.
+
+Server components still have their `t()` calls rewritten. Instead of subscribing to the client locale store, they read the request-bound locale from the SSR adapter.
 
 #### Custom processors
 
-For file formats yapyak doesn't ship a processor for, build your own with [`createProcessor`](/reference/yapyak/processor/createProcessor) from `yapyak/processor`. The factory accepts the file extensions to claim, a fragment parser that splits your format into TypeScript-readable pieces, the runtime module yapyak should wire into compiled output, and an optional `skipHmrCallback: true` for formats whose compiler can't safely embed Vite HMR callbacks at module scope (Astro's `.astro` files use this).
+For file formats yapyak doesn't ship a processor for, build your own with [`createProcessor`](/reference/yapyak/processor/createProcessor) from `yapyak/processor`. The factory takes:
 
-`yapyak/processor` also exports [`offsetToOriginalPosition`](/reference/yapyak/processor/offsetToOriginalPosition) and [`rangeFromOffsets`](/reference/yapyak/processor/rangeFromOffsets). Utilities for converting byte offsets back to `{ line, column }` positions when emitting diagnostics from your processor's fragment parser.
+- The file extensions to claim
+- A fragment parser that splits your format into TypeScript-readable pieces
+- The runtime module yapyak should wire into compiled output
+- An optional `skipHmrCallback: true` for formats whose compiler can't safely embed Vite HMR callbacks at module scope. Astro's `.astro` files use this.
+
+`yapyak/processor` also exports [`offsetToOriginalPosition`](/reference/yapyak/processor/offsetToOriginalPosition) and [`rangeFromOffsets`](/reference/yapyak/processor/rangeFromOffsets) — utilities for converting byte offsets back to `{ line, column }` positions when emitting diagnostics from your processor's fragment parser.
 
 ## Translator
 
@@ -263,7 +270,13 @@ You can also drive it from the environment, useful for CI matrix builds:
 YAPYAK_LOCALE=sv pnpm build
 ```
 
-In a fixed-locale build, yapyak replaces every eligible `t()` call with the target locale's literal string, tree-shakes the locale picker out of the bundle, and ships no i18n runtime at all. Calls that need runtime behaviour (`t.as()`, ICU placeholders) stay as compiled lookups.
+In a fixed-locale build, yapyak does three things:
+
+- Replaces every eligible `t()` call with the target locale's literal string
+- Tree-shakes the locale picker out of the bundle
+- Ships no i18n runtime at all
+
+Calls that need runtime behaviour — `t.as()`, ICU placeholders — stay as compiled lookups.
 
 {% callout variant="info" %}
 `fixedLocale` lives on the Vite plugin rather than `yapyak.config.ts` because it's a compile-time toggle that affects the bundle shape. It isn't something the runtime ever observes.

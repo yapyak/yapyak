@@ -38,7 +38,10 @@ The translation for `'Save'` (`'Spara'` in Swedish) may or may not still be righ
 - `true`: keep the existing translation. Small edits like adding a word are unlikely to break it.
 - `false`: treat the edit as a new string. The translation is regenerated (with a translator) or marked empty (without one).
 
-The default flips based on whether a translator is configured. `true` without one, so manual translations aren't lost on small edits. `false` with one, so the translator refreshes anything that changed.
+The default flips based on whether a translator is configured:
+
+- **Without a translator:** `true`. Manual translations aren't lost on small edits.
+- **With a translator:** `false`. The translator refreshes anything that changed.
 
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
