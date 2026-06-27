@@ -75,7 +75,7 @@ format.number(199, {
 ```
 
 {% callout variant="info" %}
-A currency code unsupported by the host `Intl` does not throw. yapyak falls back to a `<value> <code>` rendering. This covers the rare cases where a runtime is missing a freshly-issued currency code (e.g. a regional digital currency) without crashing the page.
+A currency code unsupported by the host `Intl` does not throw. yapyak falls back to a `<value> <code>` rendering.
 {% /callout %}
 
 ## The Currency type

@@ -1000,9 +1000,6 @@ Replace `<html lang>` with yapyak's placeholder:
 </html>
 ```
 
-{% callout variant="warning" %}
-Placeholder substitution requires `%yapyak.lang%` to fall within the first streamed chunk. Keep it at the top of `app.html` (inside the first `<html>` tag). Long head content that pushes the placeholder past a chunk boundary causes substitution to silently skip.
-{% /callout %}
 {% /when %}
 
 {% /switch %}

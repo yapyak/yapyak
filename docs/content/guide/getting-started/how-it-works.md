@@ -96,9 +96,7 @@ The examples are picked from translations already in your repository. Models ten
 
 [Voice](/guide/translating/voice) and [glossary](/guide/translating/glossary) are configured once on the translator and applied to every batch the model sees.
 
-{% callout variant="info" %}
-Requests are batched. By default, yapyak groups up to 25 messages per-request, runs up to five requests in parallel, and translates every target locale together. Request size, concurrency, and context level are configurable in `yapyak.config.ts`.
-{% /callout %}
+By default, yapyak batches up to 25 messages per request and runs up to 5 requests in parallel, translating every target locale together. Batch size, concurrency, and context level are configurable in `yapyak.config.ts`.
 
 ## What ends up in the locale files
 
@@ -255,10 +253,6 @@ Astro pages render on the server with the active locale. Switching locale reload
 Editing a locale file is a special case. yapyak watches your JSON files and, when one changes, sends just the changed entries to the browser over Vite's WebSocket. The runtime updates them in memory and components re-render with the new text.
 
 Source modules aren't recompiled in this case, so component state survives — open menus, form input, scroll position all stay where they were. This is the same path the automatic save loop takes: when a model returns a translation, yapyak writes it to the locale file and HMR picks it up from there.
-
-{% callout variant="info" %}
-For `.astro` files, the page reloads instead. Astro doesn't run yapyak's runtime in the browser, so updates take the form of a fresh server render.
-{% /callout %}
 
 ## Translation safety
 
