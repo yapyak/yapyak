@@ -1,6 +1,6 @@
 ---
 title: Custom translator
-order: 1
+order: 3
 ---
 
 When the [shipped translators](/guide/translating/providers) don't fit, `createTranslator` is the escape hatch. The interface is a single function: take a batch of source strings and target locales, return the translations.

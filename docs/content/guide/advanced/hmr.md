@@ -1,6 +1,6 @@
 ---
 title: HMR
-order: 3
+order: 1
 ---
 
 yapyak's runtime is wired into [Vite's HMR](https://vitejs.dev/guide/api-hmr) so a save in your code, a model writing to a locale file, or a hand-edit to `locales/sv.json` all land in the running browser without a reload. This page covers the three paths and the moments where they behave differently from a plain code edit.
