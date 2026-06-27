@@ -38,7 +38,7 @@ The compiler reads the JSON shape to decide whether a call is plain or contextua
 
 ## What the context string can be
 
-Anything that helps a translator (or model) distinguish the meaning. Short labels work well: `action`, `status`, `noun`, `verb`, `imperative`, `count`, `currency`. A model translating the message sees the context alongside the source, plus the [call-site context](/guide/translators/overview#context) yapyak forwards by default, and uses both to choose the right word.
+Anything that helps a translator (or model) distinguish the meaning. Short labels work well: `action`, `status`, `noun`, `verb`, `imperative`, `count`, `currency`. A model translating the message sees the context alongside the source, plus the [call-site context](/guide/translating/context) yapyak forwards by default, and uses both to choose the right word.
 
 Keep contexts short and stable. Treating them like keys in a dictionary (`'open-action-button-primary'`) defeats the purpose. You've reinvented the synthetic-key habit yapyak was designed to avoid. A bare adjective or noun is usually all the model needs.
 

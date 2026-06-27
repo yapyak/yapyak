@@ -649,7 +649,7 @@ Tell TypeScript about yapyak's generated types:
 +/// <reference path="../.yapyak/types.d.ts" />
 ```
 {% /when %}
-{% when value="none" %}
+{% else %}
 ```diff [tsconfig.json]
  {
    "include": [
@@ -657,25 +657,7 @@ Tell TypeScript about yapyak's generated types:
    ]
  }
 ```
-{% /when %}
-{% when value="react-router" %}
-```diff [tsconfig.json]
- {
-   "include": [
-+    ".yapyak/types.d.ts"
-   ]
- }
-```
-{% /when %}
-{% when value="tanstack-start" %}
-```diff [tsconfig.json]
- {
-   "include": [
-+    ".yapyak/types.d.ts"
-   ]
- }
-```
-{% /when %}
+{% /else %}
 {% /switch %}
 
 Ignore yapyak's cache directory:
@@ -686,7 +668,7 @@ Ignore yapyak's cache directory:
 
 ## Add your first locale
 
-Pick a target language and create its locale file in [`localesDir`](/guide/getting-started/configuration#localesdir) (`locales/` by default). Any [BCP 47 tag](/guide/locale/tags) works:
+Pick a target language and create its locale file in [`localesDir`](/guide/getting-started/configuration#localesdir) (`locales/` by default). Any [BCP 47 tag](/guide/switching/tags) works:
 
 {% switch group="packageManager" %}
 {% when value="pnpm" %}

@@ -94,7 +94,7 @@ A few things `check` deliberately doesn't catch:
 
 - **Translation quality.** A correct-but-bad translation passes.
 - **Pluralization correctness in target locales.** If your Swedish translation declares only `one` and `other`, that passes. yapyak trusts the translator's judgment about which plural categories the language uses.
-- **Stale translations.** If your source string changed and the translation is now outdated, `check` doesn't notice unless the structure (placeholders, tags) changed too. Use [renames behavior](/guide/advanced/renames) to control this.
+- **Stale translations.** If your source string changed and the translation is now outdated, `check` doesn't notice unless the structure (placeholders, tags) changed too. Use [renames behavior](/guide/translating/renames) to control this.
 
 ## Exit codes
 

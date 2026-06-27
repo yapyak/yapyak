@@ -19,7 +19,7 @@ Anything inside the callback sees the request-bound locale.
 
 `withResponse(request, callback, responseExtractor?)` does three things:
 
-1. Puts the request into an `AsyncLocalStorage` scope so [`getLocale()`](/guide/locale/switch) resolves through the request's [persistence layer](/guide/locale/persistence), or through the `Accept-Language` header when [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is on.
+1. Puts the request into an `AsyncLocalStorage` scope so [`getLocale()`](/guide/switching/switch) resolves through the request's [persistence layer](/guide/switching/persistence), or through the `Accept-Language` header when [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is on.
 2. Runs `callback()` inside that scope.
 3. Drains any pending response headers buffered by yapyak (a `Set-Cookie` from a server-side `setLocale()` call, for example) onto the response.
 
@@ -59,13 +59,13 @@ The shipped TanStack Start adapter uses this pattern. The framework's middleware
 
 ## Setting `<html lang>`
 
-How you render `<html lang>` depends on your framework, but the source of truth is the same: call [`getLocale()`](/guide/locale/switch) from inside the `withResponse` scope. Pass it to your template, your component, your renderer. Whatever is producing the HTML.
+How you render `<html lang>` depends on your framework, but the source of truth is the same: call [`getLocale()`](/guide/switching/switch) from inside the `withResponse` scope. Pass it to your template, your component, your renderer. Whatever is producing the HTML.
 
 For client-side switching from inside a React/Vue/Svelte runtime, enable [`syncHtmlLang: true`](/guide/getting-started/configuration#synchtmllang) in `yapyak.config.ts` so the attribute follows the locale without a navigation.
 
 ## Persistence considerations
 
-Server-side persistence reads happen inside `withResponse`. Whatever [persistence strategy](/guide/locale/persistence) you've configured ([cookie](/guide/locale/persistence#cookie), [URL](/guide/locale/persistence#url)) is read off the request automatically. If [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is enabled, the `Accept-Language` header is consulted too.
+Server-side persistence reads happen inside `withResponse`. Whatever [persistence strategy](/guide/switching/persistence) you've configured ([cookie](/guide/switching/persistence#cookie), [URL](/guide/switching/persistence#url)) is read off the request automatically. If [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is enabled, the `Accept-Language` header is consulted too.
 
 Server-side persistence writes (a `setLocale()` call inside a request handler) are buffered until `withResponse` finishes, then flushed onto the response. If your framework constructs its response object outside of `withResponse`, the buffered headers won't reach the user. Keep the response construction inside the scope.
 

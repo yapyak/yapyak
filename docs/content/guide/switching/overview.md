@@ -18,7 +18,7 @@ getLocale();
 
 The return type is the union of every locale code you've added.
 
-In components, prefer the framework binding. It subscribes the component to changes so re-renders happen automatically. See [Switch](/guide/locale/switch) for the per-framework shape.
+In components, prefer the framework binding. It subscribes the component to changes so re-renders happen automatically. See [Switch](/guide/switching/switch) for the per-framework shape.
 
 ## Where the active locale comes from
 

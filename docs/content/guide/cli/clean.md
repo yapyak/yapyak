@@ -64,7 +64,7 @@ This is especially relevant when:
 - A translation took a model a long time to get right, and you'd rather keep it for paste-back than re-generate it
 - You're auditing a codebase and want to see what's stale before committing to remove it
 
-For the in-between case (removed but recoverable), yapyak keeps a copy of every translation it's ever seen in `.yapyak/`. Even after `clean --write`, the translation is recoverable from the cache if the source string reappears later. [renames behavior](/guide/advanced/renames) restores it automatically.
+For the in-between case (removed but recoverable), yapyak keeps a copy of every translation it's ever seen in `.yapyak/`. Even after `clean --write`, the translation is recoverable from the cache if the source string reappears later. [renames behavior](/guide/translating/renames) restores it automatically.
 
 ## A typical use
 

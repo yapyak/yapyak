@@ -197,5 +197,5 @@ With `persistence: 'url'` set, submitting the form navigates to a URL containing
 The `labelOf` helper is up to you. yapyak doesn't ship one because the right label depends on your app. A common choice is the locale's native name (`labelOf('sv') === 'Svenska'`), often computed with `new Intl.DisplayNames(value, { type: 'language' }).of(value)`.
 
 {% callout variant="tip" %}
-If you want the user's choice to survive a refresh or a new tab, pair the switcher with a [persistence](/guide/locale/persistence) strategy. Without one, the active locale lives only for the current page session.
+If you want the user's choice to survive a refresh or a new tab, pair the switcher with a [persistence](/guide/switching/persistence) strategy. Without one, the active locale lives only for the current page session.
 {% /callout %}

@@ -238,25 +238,34 @@ function toBlocks(node: unknown): Block[] {
     case 'Switch': {
       const group = getStringAttribute(node.attributes.group) ?? '';
       const branches: Record<string, Block[]> = {};
+      let fallback: Block[] | undefined;
       for (const child of node.children) {
-        if (!Markdoc.Tag.isTag(child) || child.name !== 'When') {
+        if (!Markdoc.Tag.isTag(child)) {
           continue;
         }
-        const value = getStringAttribute(child.attributes.value) ?? '';
-        if (value === '') {
-          continue;
+        if (child.name === 'When') {
+          const value = getStringAttribute(child.attributes.value) ?? '';
+          if (value === '') {
+            continue;
+          }
+          branches[value] = child.children.flatMap(toBlocks);
+        } else if (child.name === 'Else') {
+          fallback = child.children.flatMap(toBlocks);
         }
-        branches[value] = child.children.flatMap(toBlocks);
       }
       return [
         {
           branches,
+          ...(fallback !== undefined && {
+            fallback,
+          }),
           group,
           type: 'switch',
         },
       ];
     }
     case 'When':
+    case 'Else':
       return children;
     case 'Only':
       return [
@@ -820,6 +829,10 @@ const whenTag: Schema = {
   render: 'When',
 };
 
+const elseTag: Schema = {
+  render: 'Else',
+};
+
 const onlyTag: Schema = {
   attributes: {
     group: {
@@ -854,6 +867,7 @@ const markdocConfig: Config = {
   tags: {
     callout,
     diagnostics,
+    else: elseTag,
     only: onlyTag,
     picker: pickerTag,
     switch: switchTag,

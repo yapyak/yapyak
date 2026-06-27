@@ -138,6 +138,7 @@ export type CodeExpressionBlock = {
 
 export type SwitchBlock = {
   branches: Record<string, Block[]>;
+  fallback?: Block[];
   group: string;
   type: 'switch';
 };

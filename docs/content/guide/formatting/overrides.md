@@ -20,7 +20,7 @@ format.in('ja').dateTime(new Date(), { dateStyle: 'long' });
 // output: '2026年6月17日'
 ```
 
-`format.in(locale)` returns a `Format` value with the same methods as the top-level `format`. The `locale` argument is typed against your [`Locale`](/guide/locale/overview) union, so an unknown code is a compile-time error.
+`format.in(locale)` returns a `Format` value with the same methods as the top-level `format`. The `locale` argument is typed against your [`Locale`](/guide/switching/overview) union, so an unknown code is a compile-time error.
 
 ## When to use it
 

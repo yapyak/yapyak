@@ -23,7 +23,8 @@ export function BlockRendererNodeSwitch(props: BlockRendererNodeSwitchProps) {
   return (
     <Box data-switch-group={block.group}>
       {group.options.map((option) => {
-        const branchBlocks = block.branches[option.value] ?? [];
+        const branchBlocks =
+          block.branches[option.value] ?? block.fallback ?? [];
         const visible = option.value === active;
         return (
           <Box

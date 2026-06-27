@@ -81,7 +81,7 @@ Things yapyak noticed while running, usually pointing at a setup issue.
 
 ### Persistence
 
-Things related to [persistence strategies](/guide/locale/persistence).
+Things related to [persistence strategies](/guide/switching/persistence).
 
 - [`YAP0023`](/reference/diagnostics/YAP0023): Cookie writer missing
 - [`YAP0024`](/reference/diagnostics/YAP0024): Local-storage SSR skipped

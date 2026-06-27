@@ -55,7 +55,7 @@ This is cheaper than running `add` once per locale. yapyak batches the translati
 
 ## Locale codes
 
-The argument is a [BCP 47 tag](/guide/locale/tags). The CLI validates against the ISO 639-1 language list, with a helpful suggestion when it doesn't recognize the code:
+The argument is a [BCP 47 tag](/guide/switching/tags). The CLI validates against the ISO 639-1 language list, with a helpful suggestion when it doesn't recognize the code:
 
 ```bash
 $ pnpm yapyak add svenska
@@ -69,8 +69,8 @@ Regional variants (`pt-BR`, `zh-Hant`, `en-GB`) work too. The CLI normalizes cas
 
 1. Validates every locale code, abort if any are unrecognized.
 2. Creates an empty `<locale>.json` file in your `localesDir` for each new locale, scoped per-source-file the same way other locale files are.
-3. Runs the [translator](/guide/translators/overview), if configured, to fill the new files with translations of every existing source string.
-4. Regenerates `.yapyak/types.d.ts` so the new locales appear in the [`Locale`](/guide/locale/overview) literal union.
+3. Runs the [translator](/guide/translating/overview), if configured, to fill the new files with translations of every existing source string.
+4. Regenerates `.yapyak/types.d.ts` so the new locales appear in the [`Locale`](/guide/switching/overview) literal union.
 
 If you don't have a translator configured, step 3 is skipped. The new files have empty stubs you fill in yourself.
 

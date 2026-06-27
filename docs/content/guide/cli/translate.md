@@ -7,7 +7,7 @@ order: 2
 yapyak translate [<locale>] [--force]
 ```
 
-Fills missing translations in your locale files by running them through the configured [translator](/guide/translators/overview). Without arguments, it processes every locale and every empty stub. Useful when:
+Fills missing translations in your locale files by running them through the configured [translator](/guide/translating/overview). Without arguments, it processes every locale and every empty stub. Useful when:
 
 - The dev-time save loop held back auto-translation because a save crossed [`autoTranslateThreshold`](/guide/getting-started/configuration#autotranslatethreshold) (default 20 new strings)
 - You're running translation as part of a CI pipeline rather than at dev time
@@ -82,8 +82,8 @@ bunx yapyak translate sv -f
 
 Reach for this when:
 
-- You changed your [voice setting](/guide/translators/overview#voice) and want all translations re-done with the new tone
-- You updated the [glossary](/guide/translators/overview#glossary) and need existing translations to respect the new pinned terms
+- You changed your [voice setting](/guide/translating/voice) and want all translations re-done with the new tone
+- You updated the [glossary](/guide/translating/glossary) and need existing translations to respect the new pinned terms
 - You're switching providers (from Anthropic to OpenAI, say) and want a clean redo
 
 {% callout variant="warning" %}

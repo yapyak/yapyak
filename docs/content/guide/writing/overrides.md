@@ -11,7 +11,7 @@ For those, `t.in(locale, source)` forces a single locale on a single call.
 t.in('sv', 'Welcome back');
 ```
 
-This always returns the Swedish translation regardless of the active locale. The signature mirrors `t()`. Placeholder parameters, rich-text tags, and ICU sub-formats all work the same. The locale argument is typed against your [`Locale`](/guide/locale/overview) union, so an unknown code is a compile-time error.
+This always returns the Swedish translation regardless of the active locale. The signature mirrors `t()`. Placeholder parameters, rich-text tags, and ICU sub-formats all work the same. The locale argument is typed against your [`Locale`](/guide/switching/overview) union, so an unknown code is a compile-time error.
 
 ## Combining with `.as()`
 
@@ -45,5 +45,5 @@ The compiler needs to see the full call (`t.in('sv', 'Welcome')`) in one place t
 Common misuses to avoid:
 
 - **As a per-component override.** If a single screen always renders in one language, set the locale at navigation time instead of pinning every call.
-- **For data-driven user preferences.** A user's preferred locale should drive the active locale (through [persistence](/guide/locale/persistence) or a server middleware), not appear as an argument on every `t()`.
+- **For data-driven user preferences.** A user's preferred locale should drive the active locale (through [persistence](/guide/switching/persistence) or a server middleware), not appear as an argument on every `t()`.
 - **Inside a loop over locales.** `t.in()` lets you do this, but if you're rendering the same message in every language, you're probably building a translation tool. See whether reading the locale files directly fits better.

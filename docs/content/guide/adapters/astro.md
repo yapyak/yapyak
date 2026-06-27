@@ -95,7 +95,7 @@ If you only switch locale through full navigations (`<a href="/sv/...">` style),
 
 ## URL-based switching
 
-The simplest pattern: read locale from the URL with [`persistence: 'url'`](/guide/locale/persistence#url). A plain link is enough:
+The simplest pattern: read locale from the URL with [`persistence: 'url'`](/guide/switching/persistence#url). A plain link is enough:
 
 ```astro
 ---
@@ -112,7 +112,7 @@ The middleware reads the URL on the next request, binds the locale, and the layo
 
 ## Cookie-based switching
 
-For longer-lived preference: use [`persistence: 'cookie'`](/guide/locale/persistence#cookie). The client-side switch from an island (React/Vue/Svelte) calls `setLocale()`; the browser writes the cookie; subsequent server renders read it.
+For longer-lived preference: use [`persistence: 'cookie'`](/guide/switching/persistence#cookie). The client-side switch from an island (React/Vue/Svelte) calls `setLocale()`; the browser writes the cookie; subsequent server renders read it.
 
 For a non-island server-side switch (a form POST to set the cookie from a server endpoint), call `setLocale()` inside the request handler. yapyak buffers the `Set-Cookie` write and flushes it onto the response when the page renders.
 

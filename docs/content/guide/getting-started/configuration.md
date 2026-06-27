@@ -26,7 +26,7 @@ order: 3
 
 ### `defaultLocale`
 
-The locale yapyak falls back to when nothing else has resolved the active one. Used as the source language for [translator](/guide/translators/overview) requests and as the fallback at the end of a [BCP 47 fallback chain](/guide/locale/tags). Defaults to `'en'`. Set this only if your source language is something else:
+The locale yapyak falls back to when nothing else has resolved the active one. Used as the source language for [translator](/guide/translating/overview) requests and as the fallback at the end of a [BCP 47 fallback chain](/guide/switching/tags). Defaults to `'en'`. Set this only if your source language is something else:
 
 ```ts
 defaultLocale: 'sv',
@@ -36,7 +36,7 @@ defaultLocale: 'sv',
 
 ### The set of locales
 
-The list of locales your app ships isn't a config field. yapyak reads it from the JSON files in your [`localesDir`](#localesdir). One file per locale, named after its [BCP 47 tag](/guide/locale/tags). Adding a locale means adding a file:
+The list of locales your app ships isn't a config field. yapyak reads it from the JSON files in your [`localesDir`](#localesdir). One file per locale, named after its [BCP 47 tag](/guide/switching/tags). Adding a locale means adding a file:
 
 {% switch group="packageManager" %}
 {% when value="pnpm" %}
@@ -135,7 +135,7 @@ For file formats yapyak doesn't ship a processor for, build your own with `creat
 
 ## Translator
 
-Hook up a model to fill in missing translations automatically. yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama; any model with a chat completion endpoint is one short [custom translator](/guide/advanced/custom-translator) away.
+Hook up a model to fill in missing translations automatically. yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama; any model with a chat completion endpoint is one short [custom translator](/guide/translating/custom) away.
 
 ### `translator`
 
@@ -145,7 +145,7 @@ import { anthropic } from '@yapyak/anthropic';
 translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),
 ```
 
-See [Translators](/guide/translators/overview) for the full set of options each provider supports. Voice, glossary, context, batching, concurrency, model selection, and more.
+See [Translators](/guide/translating/overview) for the full set of options each provider supports. Voice, glossary, context, batching, concurrency, model selection, and more.
 
 **Type**: `Translator` · **Default**: `undefined` (stubs stay empty)
 
@@ -195,7 +195,7 @@ preserveTranslationsOnRename: false,
 
 **Type**: `boolean` · **Default**: `true` without a translator, `false` with one. With a translator, the default favors accuracy: a wording change usually deserves a fresh translation. Without one, the default favors stability: a manually-written translation shouldn't disappear because of a small edit.
 
-See [Renames](/guide/advanced/renames) for the heuristics in detail.
+See [Renames](/guide/translating/renames) for the heuristics in detail.
 
 ## Persistence
 
@@ -222,7 +222,7 @@ Four strategies are available: `'none'`, `'cookie'`, `'local-storage'`, and `'ur
 
 **Type**: `PersistenceConfig` · **Default**: `'none'`
 
-See [Persistence](/guide/locale/persistence) for the full options of each strategy.
+See [Persistence](/guide/switching/persistence) for the full options of each strategy.
 
 ### `syncHtmlLang`
 
@@ -309,4 +309,4 @@ import { defaultLocale, getLocale, locales } from 'yapyak';
 
 `locales` and `defaultLocale` reflect what you set in the config. `getLocale()` returns the active value.
 
-See [Switch](/guide/locale/switch) for the rest of the runtime locale API.
+See [Switch](/guide/switching/switch) for the rest of the runtime locale API.

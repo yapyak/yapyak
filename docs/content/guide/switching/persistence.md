@@ -110,4 +110,4 @@ Useful when you don't want persistence: a kiosk app, a development build, or a s
 
 ## Composing with `defaultLocale` and detection
 
-Persistence sits at the top of the resolution chain: an explicit user choice always beats a guess. When no persisted value exists, yapyak falls back to environment detection (if enabled) and then to `defaultLocale`. See [Locale overview](/guide/locale/overview#where-the-active-locale-comes-from) for the full order.
+Persistence sits at the top of the resolution chain: an explicit user choice always beats a guess. When no persisted value exists, yapyak falls back to environment detection (if enabled) and then to `defaultLocale`. See [Locale overview](/guide/switching/overview#where-the-active-locale-comes-from) for the full order.

@@ -94,7 +94,7 @@ export default defineConfig({
 
 ## Switching locale
 
-Use [`useLocale()`](/guide/locale/switch) anywhere in your tree:
+Use [`useLocale()`](/guide/switching/switch) anywhere in your tree:
 
 ```tsx
 import { useLocale } from '@yapyak/react';

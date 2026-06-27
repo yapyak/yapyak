@@ -97,7 +97,7 @@ export default defineConfig({
 
 ## Switching locale
 
-Use the [`locale` rune](/guide/locale/switch) anywhere in a Svelte component:
+Use the [`locale` rune](/guide/switching/switch) anywhere in a Svelte component:
 
 ```svelte
 <script lang="ts">

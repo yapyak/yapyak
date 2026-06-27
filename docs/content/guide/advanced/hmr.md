@@ -11,8 +11,8 @@ The default path: you write a new `t()` call (or edit an existing one), save the
 
 1. Vite picks up the file change and notifies the yapyak plugin.
 2. The plugin runs your [framework processor](/guide/getting-started/installation) over the file, finds every `t()` call, and validates them.
-3. Missing or changed entries are reconciled against your locale files. New stubs added, removed strings noted, [renames](/guide/advanced/renames) followed.
-4. If a [translator](/guide/translators/overview) is configured, empty stubs are sent to it. Results write back to locale files.
+3. Missing or changed entries are reconciled against your locale files. New stubs added, removed strings noted, [renames](/guide/translating/renames) followed.
+4. If a [translator](/guide/translating/overview) is configured, empty stubs are sent to it. Results write back to locale files.
 5. The compiled module is rewritten with the new `_pick()` lookups inline.
 6. Vite hot-replaces the module. The component re-renders.
 
@@ -49,7 +49,7 @@ The split. Source visible immediately, translation arrives shortly. Keeps the de
 Two settings affect this:
 
 - [`autoTranslateThreshold`](/guide/getting-started/configuration#autotranslatethreshold). When a single save adds more new strings than this number (default 20), yapyak writes stubs but holds off on the translator. Run [`yapyak translate`](/guide/cli/translate) when you're ready.
-- [`concurrency`](/guide/translators/overview#what-every-translator-shares). Higher concurrency speeds up large translator runs but presses harder on your provider's rate limit.
+- [`concurrency`](/guide/translating/providers#shared-options). Higher concurrency speeds up large translator runs but presses harder on your provider's rate limit.
 
 ## When HMR doesn't apply
 

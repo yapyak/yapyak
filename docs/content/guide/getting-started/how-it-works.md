@@ -271,7 +271,7 @@ yapyak runs through four guarantees on every save to keep translations from bein
 
 **The orphan cache.** Every translation yapyak has ever seen lives in `.yapyak/orphans.json`. Delete a component, add it back three months later, copy markup to a new file. The translations re-appear in `locales/<locale>.json` automatically. The cache has no expiration. Reuse is based on exact match of the source string; close-but-not-identical strings are treated as new.
 
-**Rename detection.** When you edit a source string in place (`'Save'` → `'Save changes'`), yapyak compares positions in the file to tell a rename apart from a delete-and-add, and preserves the existing translation under the new key. The behavior is controlled by [`preserveTranslationsOnRename`](/guide/getting-started/configuration#preservetranslationsonrename); see [Renames](/guide/advanced/renames) for the heuristics.
+**Rename detection.** When you edit a source string in place (`'Save'` → `'Save changes'`), yapyak compares positions in the file to tell a rename apart from a delete-and-add, and preserves the existing translation under the new key. The behavior is controlled by [`preserveTranslationsOnRename`](/guide/getting-started/configuration#preservetranslationsonrename); see [Renames](/guide/translating/renames) for the heuristics.
 
 **The invariant barrier.** Before any locale file is written, yapyak compares the new state against the existing one. If a write would clear a non-empty stub for a string still present in your source, the write is refused and yapyak surfaces the violation as an error instead of going through with it. There is no path where a still-used translation silently vanishes.
 
