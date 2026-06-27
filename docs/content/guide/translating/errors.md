@@ -35,13 +35,17 @@ All seven extend `TranslatorError`, so one `catch (cause instanceof TranslatorEr
 
 ## Retry behavior
 
-yapyak applies a different retry policy per error type:
+Retries happen inside the provider before an error escapes. Three error types are retryable; the rest fail fast.
 
-- **`TranslatorRateLimitError`.** Backoff and retry up to `maxRetries`. Honors `retryAfter` when present.
-- **`TranslatorTimeoutError`, `TranslatorNetworkError`.** Retry up to `maxRetries`.
-- **`TranslatorAuthError`.** Fail fast. Retries don't help a bad key.
-- **`TranslatorSafetyError`.** Skip the offending item, continue with the rest of the batch.
-- **`TranslatorInvalidResponseError`, `TranslatorTruncatedError`.** Surface as `YAP0034` and drop the affected entries.
+| Type | Retried? |
+|---|---|
+| `TranslatorRateLimitError` | Yes. Backoff up to `maxRetries`. Honors `retryAfter` when present. |
+| `TranslatorTimeoutError` | Yes. Up to `maxRetries`. |
+| `TranslatorNetworkError` | Yes. Up to `maxRetries`. |
+| `TranslatorAuthError` | No. Retries don't help a bad key. |
+| `TranslatorSafetyError` | No. The block is a verdict, not a transient. |
+| `TranslatorInvalidResponseError` | No. |
+| `TranslatorTruncatedError` | No. |
 
 `maxRetries` defaults to `2` (Ollama: `1`). Override per provider:
 
@@ -57,14 +61,21 @@ export default defineConfig({
 });
 ```
 
-## The two diagnostics
+## Chunk failure
 
-Failures that survive retries become YAP diagnostics so the dev-time loop and CI runs report them the same way.
+When an error escapes retries (or fires from a non-retryable type), yapyak catches it at the chunk boundary. The whole chunk's translations are lost; the surrounding chunks complete normally; the failure surfaces as [`YAP0033`](/reference/diagnostics/YAP0033).
 
-- [`YAP0033`](/reference/diagnostics/YAP0033). A batch chunk failed after retries. yapyak kept the other chunks and returned partial results.
-- [`YAP0034`](/reference/diagnostics/YAP0034). The translator returned a result entry with the wrong shape. The entry was dropped and its translations were left empty.
+A chunk is `batchSize` items. A safety block on one item drops the rest of that chunk's translations along with it. The partial result is what survives.
 
-Both are surfaced through the same diagnostic stream as parse and ICU errors. See [Diagnostics](/reference/diagnostics).
+The translator never throws back to your application code. Chunk failures are reported through the diagnostic stream and the dev-time loop continues with whatever completed.
+
+## Per-entry shape failure
+
+[`YAP0034`](/reference/diagnostics/YAP0034) is the narrower diagnostic. It fires when the response is a valid array but an individual entry has the wrong shape — a string or `null` instead of an object keyed by target locales. The bad entry's translations are left empty and the rest of the chunk's entries are written normally.
+
+This is distinct from a chunk failure: the response was parseable, the array length matched, only one entry was malformed.
+
+Both diagnostics surface through the same stream as parse and ICU errors. See [Diagnostics](/reference/diagnostics).
 
 ## Throwing from a custom translator
 

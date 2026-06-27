@@ -28,9 +28,9 @@ The string `'Add to cart'` still exists, in the same form, but in a different fi
 
 ### Same path, edited source string
 
-```ts
-- t('Save')
-+ t('Save changes')
+```diff
+-t('Save')
++t('Save changes')
 ```
 
 The translation for `'Save'` (`'Spara'` in Swedish) may or may not still be right for `'Save changes'` (`'Spara ändringar'`). Behavior is controlled by `preserveTranslationsOnRename`:
@@ -52,7 +52,7 @@ export default defineConfig({
 
 A component gets deleted, and a few commits later the same markup comes back. The cache in `.yapyak/` keeps every translation yapyak has ever seen. When the source reappears, the cache restores its translation under the new path.
 
-This works regardless of whether the path is the same. Copy the JSX into a different file, give it a new name, and the translations follow.
+This works regardless of whether the path is the same. Copy the markup into a different file, give it a new name, and the translations follow.
 
 ## What yapyak doesn't do
 

@@ -48,7 +48,7 @@ The guardrail catches large refactors and agent-generated additions that would o
 
 ## Adding a locale
 
-Calling `yapyak add sv` triggers the loop for every existing source string in the new locale. The new file is filled in one run rather than one save at a time. See [Coverage](/guide/translating/coverage).
+Adding a locale with `yapyak add sv` runs the translator over every existing source string in one batch rather than waiting for them to come in on save. See [Coverage](/guide/translating/coverage).
 
 ## The locale-file save loop
 

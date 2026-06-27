@@ -41,12 +41,12 @@ Every occurrence of "cart" in a translatable message is pinned to `kundvagn` for
 ## The shape
 
 ```ts
-type Glossary = Record<string, Record<Locale, string>>;
+type Glossary = Record<string, Record<string, string>>;
 ```
 
-Outer keys are the source-language term (lower-case is conventional). Inner keys are locale codes. Values are the pinned translation.
+Outer keys are source-language terms (lower-case is conventional). Inner keys are locale codes. Values are the pinned translation.
 
-Each entry is matched as a substring against the source string. A message that contains "cart" anywhere triggers the pin; one that contains "cartoon" does not.
+The glossary is sent verbatim in the prompt to the model, with instructions to use the pinned values when a corresponding term appears in a source string. No client-side matching runs; the model decides when each entry applies.
 
 ## Glossary vs voice
 

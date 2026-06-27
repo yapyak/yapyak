@@ -38,7 +38,7 @@ The four factories accept the same option surface. Provider pages add a handful 
 | `apiKey` | `string` | required | Provider key (not used by Ollama). |
 | `model` | `string` | provider-specific | Model identifier. |
 | `voice` | `string` | undefined | Tone guidance for the model. See [Voice](/guide/translating/voice). |
-| `glossary` | `Record<string, Record<Locale, string>>` | `{}` | Pinned source-to-target translations. See [Glossary](/guide/translating/glossary). |
+| `glossary` | `Record<string, Record<string, string>>` | `{}` | Pinned source-to-target translations. Inner keys are locale codes. See [Glossary](/guide/translating/glossary). |
 | `context` | `'none' \| 'minimal' \| 'rich'` | `'minimal'` | How much call-site code is sent. See [Context](/guide/translating/context). |
 | `temperature` | `number` | `0.2` | Sampling temperature. |
 | `maxTokens` | `number` | provider-scaled | Output token cap. |

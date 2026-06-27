@@ -101,7 +101,13 @@ Return an array of objects, one per item, each keyed by the target locales:
 ]
 ```
 
-The order matches `items`. Every entry has one key per locale in `targetLocales`. yapyak validates the shape; a missing locale or wrong type fires [`YAP0034`](/reference/diagnostics/YAP0034) and the entry is dropped.
+The order matches `items`. Every entry has one key per locale in `targetLocales`. yapyak validates the result:
+
+- A return that isn't an array, or an array whose length doesn't match `items.length`, fails the whole chunk and surfaces as [`YAP0033`](/reference/diagnostics/YAP0033).
+- An individual entry that isn't an object (a string, `null`, an array) fires [`YAP0034`](/reference/diagnostics/YAP0034) and that entry's translations are left empty; the rest of the chunk's entries are still written.
+- A missing locale key on an otherwise-valid entry leaves that locale's value empty without firing a diagnostic.
+
+See [Errors](/guide/translating/errors) for the diagnostic taxonomy.
 
 ## Forwarding the AbortSignal
 

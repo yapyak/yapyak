@@ -24,10 +24,12 @@ Default is `'minimal'`.
 | Level | What's sent | When to use |
 |---|---|---|
 | `'none'` | Source string only. | Privacy-sensitive code. The strict-no-leakage setting. |
-| `'minimal'` | Source + component name + enclosing element. | Default. Enough to tell `Open` (button) from `Open` (status badge). |
-| `'rich'` | Above + a snippet of surrounding source code. | When voice and glossary aren't enough to disambiguate. |
+| `'minimal'` | Source, plus component name and enclosing element when known. | Default. Enough to tell `Open` (button) from `Open` (status badge). |
+| `'rich'` | Above plus a snippet of surrounding source code. | When voice and glossary aren't enough to disambiguate. |
 
 A higher level produces better translations for tricky strings at the cost of more tokens per request.
+
+A [disambiguation](/guide/writing/homonyms) from `t.as(context, source)` is sent at every level, including `'none'`. It travels with the source string rather than with the call-site context.
 
 ## What `'minimal'` actually sends
 
@@ -62,7 +64,7 @@ The same call at `context: 'rich'` adds a `snippet`:
 }
 ```
 
-The model sees the handler name and any sibling JSX, which is usually enough to nail down meaning the component name alone misses.
+The model sees the handler name and any sibling markup, which is usually enough to nail down meaning the component name alone misses.
 
 ## Privacy
 

@@ -23,6 +23,8 @@ Each translation request carries N source-translation pairs the model can imitat
 
 `5`. Or `0` when the translator's [`context`](/guide/translating/context) is `'none'`, since `'none'` means no per-item context goes out at all.
 
+`context: 'none'` also drops examples from the request regardless of what you set `examples` to. The level overrides the count.
+
 ## Why it helps
 
 Voice instructs in the abstract; examples show the result. A few well-chosen pairs anchor tone consistency far more concretely than a sentence of guidance. The model sees the registered character of your existing translations and produces output in the same character.
