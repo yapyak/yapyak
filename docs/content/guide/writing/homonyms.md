@@ -45,6 +45,6 @@ Anything that helps a translator (or model) distinguish the meaning. Short label
 
 Keep contexts short and stable. Treating them like keys in a dictionary (`'open-action-button-primary'`) defeats the purpose. You've reinvented the synthetic-key habit yapyak was designed to avoid. A bare adjective or noun is usually all the model needs.
 
-The context has to be a literal string at the call site (`t.as('action', 'Open')`), not a variable. The compiler reads it directly to scope the translation, so dynamic contexts can't be extracted.
+The context has to be a literal string at the call site (`t.as('action', 'Open')`), not a variable. The compiler reads it directly to scope the translation, so dynamic contexts can't be extracted. A non-literal context raises [`YAP0017`](/reference/diagnostics/YAP0017).
 
 Placeholders, rich-text tags, and ICU sub-formats work the same as in [`t()`](/guide/writing/params). The context label only changes which translation slot the call lands in. To force a fixed locale on a homonym, chain `.in()`. See [Overrides](/guide/writing/overrides#combining-with-as).

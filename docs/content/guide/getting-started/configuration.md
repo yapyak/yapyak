@@ -89,7 +89,17 @@ exclude: [
 ],
 ```
 
-If you set `exclude` yourself, you're replacing the defaults, not adding to them. Re-list anything you want to keep excluded.
+If you set `exclude` yourself, you're replacing the defaults, not adding to them. To extend rather than replace, spread the `DEFAULT_EXCLUDE` constant exported from `yapyak/config`:
+
+```ts
+import { defineConfig, DEFAULT_EXCLUDE } from 'yapyak/config';
+
+export default defineConfig({
+  exclude: [...DEFAULT_EXCLUDE, '**/*.vendor.ts']
+});
+```
+
+`DEFAULT_INCLUDE` is exported the same way.
 
 **Type**: [`FilterPattern`](/reference/yapyak/config/FilterPattern) · **Default**: see above
 

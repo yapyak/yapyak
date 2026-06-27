@@ -7,7 +7,8 @@ order: 4
 
 ```ts
 t('{role, select, admin {Admin panel} editor {Editor view} other {Reader view}}', { role: 'admin' });
-// output: 'Admin panel'
+// output:
+// en-US: 'Admin panel'
 ```
 
 The keys are arbitrary strings you choose. Unlike `plural`, where the categories come from ICU's locale rules, `select` lets you define whatever set fits your data.
@@ -18,7 +19,8 @@ Every `select` needs an `other` branch as the fallback. If the runtime value doe
 
 ```ts
 t('{status, select, draft {Draft} published {Published} other {Unknown}}', { status: 'archived' });
-// output: 'Unknown'
+// output:
+// en-US: 'Unknown'
 ```
 
 `'archived'` doesn't match any named branch, so `other` is used.

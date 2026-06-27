@@ -7,6 +7,7 @@ const SUBCOMMAND_TOOLS = new Set([
   'pnpm',
   'yarn',
   'bun',
+  'bunx',
   'npx',
   'pnpx',
   'git',
@@ -110,14 +111,18 @@ export function tokenizeBash(code: string): Token[] {
     }
 
     if (character >= '0' && character <= '9') {
-      const match = /^\d+(?:\.\d+)?/.exec(code.slice(index));
-      if (match) {
-        tokens.push({
-          type: 'number',
-          value: match[0],
-        });
-        index += match[0].length;
-        continue;
+      const previous = index > 0 ? (code[index - 1] ?? '') : '';
+      const isWordContinuation = /[A-Za-z_]/.test(previous);
+      if (!isWordContinuation) {
+        const match = /^\d+(?:\.\d+)?/.exec(code.slice(index));
+        if (match) {
+          tokens.push({
+            type: 'number',
+            value: match[0],
+          });
+          index += match[0].length;
+          continue;
+        }
       }
     }
 
