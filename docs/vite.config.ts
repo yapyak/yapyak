@@ -177,6 +177,12 @@ export default defineConfig({
           supplements: [
             {
               collapsible: true,
+              label: 'CLI',
+              root: resolve(import.meta.dirname, 'content/cli'),
+              slug: 'cli',
+            },
+            {
+              collapsible: true,
               label: 'Diagnostics',
               root: resolve(import.meta.dirname, 'content/diagnostics'),
               slug: 'diagnostics',

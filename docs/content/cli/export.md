@@ -126,18 +126,7 @@ For [homonyms](/guide/writing/homonyms), the context appears nested under the so
 
 With `--split`, each file is wrapped with its locale key. `sv.json` contains `{ "sv": { "src/components/...": {...} } }`. To round-trip back into your repo, take the inner object (the value under the locale key) and paste it into `locales/<locale>.json`.
 
-## When you use `export`
-
-Three common moments:
-
-- **Sending translations to a professional service.** Some services prefer a single file with structured context. Export it, send it, paste the result back.
-- **Auditing.** Reading a flat dump is sometimes easier than navigating `locales/` in the IDE, especially for non-developer reviewers.
-- **Backing up.** A pre-release snapshot you can roll back to if a `--force` translate goes wrong.
-
-For most day-to-day work, `export` doesn't come up. Translations live in your repo and travel with normal git commits. It's there for the workflows that step outside that path.
-
 ## What `export` doesn't do
 
-- **It's not a build artifact.** The file `export` produces isn't what ships to your users. That goes through the [compiler](/guide/getting-started/how-it-works#what-gets-compiled). Don't try to use it as a runtime resource.
+- **It's not a build artifact.** The file `export` produces isn't what ships to your users. That goes through the [compiler](/guide/getting-started/how-it-works#what-gets-compiled).
 - **It doesn't re-export `.yapyak/` cache.** Only the current state of `locales/<locale>.json` is exported. Orphaned translations in `.yapyak/` are deliberately excluded.
-- **It doesn't notify anyone.** It writes a file (or pipes to stdout). Hooking it up to a notification or CI artifact is up to you.

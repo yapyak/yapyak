@@ -56,7 +56,7 @@ bunx yapyak add sv
 {% /when %}
 {% /switch %}
 
-The CLI creates `locales/sv.json`, fills any existing source strings through your translator, and regenerates the `Locale` literal type. See [`yapyak add`](/guide/cli/add).
+The CLI creates `locales/sv.json`, fills any existing source strings through your translator, and regenerates the `Locale` literal type. See [`yapyak add`](/reference/cli/add).
 
 ## Source files
 
@@ -135,7 +135,7 @@ For file formats yapyak doesn't ship a processor for, build your own with `creat
 
 ## Translator
 
-Hook up a model to fill in missing translations automatically. yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama; any model with a chat completion endpoint is one short [custom translator](/guide/translating/custom) away.
+Hook up a model to fill in missing translations automatically. yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama; any model with a chat completion endpoint is one short [custom translator](/guide/advanced/custom-translator) away.
 
 ### `translator`
 
@@ -161,7 +161,7 @@ examples: 5,
 
 ### `autoTranslateThreshold`
 
-A guardrail for development. When a single save introduces more new strings than this number, yapyak writes the stubs but holds off on translating them automatically. You can run [`yapyak translate`](/guide/cli/translate) when you're ready. The default catches large refactors or AI-generated additions that would otherwise burn through your API budget in one save.
+A guardrail for development. When a single save introduces more new strings than this number, yapyak writes the stubs but holds off on translating them automatically. You can run [`yapyak translate`](/reference/cli/translate) when you're ready. The default catches large refactors or AI-generated additions that would otherwise burn through your API budget in one save.
 
 Default:
 

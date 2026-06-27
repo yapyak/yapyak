@@ -23,7 +23,7 @@ $ pnpm yapyak status
 
 ## Filling the gaps
 
-[`yapyak translate`](/guide/cli/translate) walks every locale file, finds every empty stub, and runs them through the configured translator. Existing translations stay where they are.
+[`yapyak translate`](/reference/cli/translate) walks every locale file, finds every empty stub, and runs them through the configured translator. Existing translations stay where they are.
 
 {% switch group="packageManager" %}
 {% when value="pnpm" %}
@@ -84,11 +84,11 @@ pnpm yapyak translate --force
 `--force` overwrites hand-edits. Commit your locale files before running it so you can review or revert.
 {% /callout %}
 
-For a single source string, [`yapyak retranslate`](/guide/cli/retranslate) is the targeted alternative. It re-translates exactly the call sites matching the source you name.
+For a single source string, [`yapyak retranslate`](/reference/cli/retranslate) is the targeted alternative. It re-translates exactly the call sites matching the source you name.
 
 ## Gating CI
 
-[`yapyak check`](/guide/cli/check) exits non-zero when any locale has missing translations, mismatched ICU placeholders, or other extraction diagnostics. Wire it into your build pipeline:
+[`yapyak check`](/reference/cli/check) exits non-zero when any locale has missing translations, mismatched ICU placeholders, or other extraction diagnostics. Wire it into your build pipeline:
 
 ```yaml [.github/workflows/build.yml]
 - run: pnpm yapyak translate
@@ -112,7 +112,7 @@ For a single source string, [`yapyak retranslate`](/guide/cli/retranslate) is th
 
 ## Adding a locale
 
-[`yapyak add <locale>`](/guide/cli/add) creates the locale file and, if a translator is configured, fills every existing source string in one run. Same path as `translate`, but scoped to a new locale and run once.
+[`yapyak add <locale>`](/reference/cli/add) creates the locale file and, if a translator is configured, fills every existing source string in one run. Same path as `translate`, but scoped to a new locale and run once.
 
 {% switch group="packageManager" %}
 {% when value="pnpm" %}

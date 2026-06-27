@@ -61,24 +61,8 @@ A few things `status` deliberately leaves out:
 
 - **Quality.** Whether the translations read well is a human judgment.
 - **Consistency across locales.** Two locales may have wildly different totals if you've been adding strings in one before the other catches up.
-- **Diagnostics.** If a translation has a malformed ICU placeholder or a missing parameter, [`yapyak check`](/guide/cli/check) is what you want.
+- **Diagnostics.** If a translation has a malformed ICU placeholder or a missing parameter, [`yapyak check`](/reference/cli/check) is what you want.
 
-## In CI
+## Exit codes
 
-`status` is informational. `check` is what you gate on. A common pattern is to log status output before running `check` so the report is visible in CI logs:
-
-```yaml
-- run: pnpm yapyak status
-- run: pnpm yapyak check
-```
-
-The `status` step gives a quick visual of where coverage stands; `check` is what fails the build if something's missing.
-
-## Exit codes and conventions
-
-`status` exits non-zero (`1`) when any translations are missing, zero otherwise. Same for `--json`. If you want a soft check that always exits zero, parse the JSON and decide yourself.
-
-All yapyak CLI commands share two conventions:
-
-- **Flag values can use `=`.** `--write`, `--write=true`, `--write=yes`, `--write=false`, `--write=0`, and `--write=off` are all valid for boolean flags. Useful when piping shell variables: `pnpm yapyak clean --write=$SHOULD_WRITE`.
-- **Color output respects the environment.** Set `NO_COLOR` to disable color anywhere; set `CI` (most CI runners do automatically) and yapyak strips color too.
+`status` exits non-zero (`1`) when any translations are missing, zero otherwise. Same for `--json`. To parse the JSON and decide yourself, redirect output and inspect the `perLocale.<locale>.missing` count.

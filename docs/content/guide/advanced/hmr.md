@@ -1,6 +1,6 @@
 ---
 title: HMR
-order: 2
+order: 3
 ---
 
 yapyak's runtime is wired into [Vite's HMR](https://vitejs.dev/guide/api-hmr) so a save in your code, a model writing to a locale file, or a hand-edit to `locales/sv.json` all land in the running browser without a reload. This page covers the three paths and the moments where they behave differently from a plain code edit.
@@ -48,7 +48,7 @@ The split. Source visible immediately, translation arrives shortly. Keeps the de
 
 Two settings affect this:
 
-- [`autoTranslateThreshold`](/guide/getting-started/configuration#autotranslatethreshold). When a single save adds more new strings than this number (default 20), yapyak writes stubs but holds off on the translator. Run [`yapyak translate`](/guide/cli/translate) when you're ready.
+- [`autoTranslateThreshold`](/guide/getting-started/configuration#autotranslatethreshold). When a single save adds more new strings than this number (default 20), yapyak writes stubs but holds off on the translator. Run [`yapyak translate`](/reference/cli/translate) when you're ready.
 - [`concurrency`](/guide/translating/providers#shared-options). Higher concurrency speeds up large translator runs but presses harder on your provider's rate limit.
 
 ## When HMR doesn't apply
@@ -56,7 +56,7 @@ Two settings affect this:
 A few cases skip the hot path and trigger a full reload:
 
 - **Config file changes.** Editing `yapyak.config.ts` (or `vite.config.ts`) reloads the dev server. yapyak's plugin can't safely HMR its own configuration.
-- **Locale-set changes.** Adding a new locale through [`yapyak add`](/guide/cli/add) regenerates `.yapyak/types.d.ts` and reloads the dev server so TypeScript picks up the new union.
+- **Locale-set changes.** Adding a new locale through [`yapyak add`](/reference/cli/add) regenerates `.yapyak/types.d.ts` and reloads the dev server so TypeScript picks up the new union.
 - **Astro pages.** As noted above, `.astro` files reload rather than HMR.
 
 In every case, the trigger is something that has to take effect before yapyak can do any further work. Not something yapyak does to be conservative.

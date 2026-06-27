@@ -364,6 +364,9 @@ Add yapyak's own config:
 {% switch group="framework" %}
 
 {% when value="react" %}
+{% switch group="adapter" %}
+
+{% when value="none" %}
 {% switch group="translator" %}
 {% when value="none" %}
 ```ts [yapyak.config.ts]
@@ -371,6 +374,82 @@ import { defineConfig } from 'yapyak/config';
 import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
+  processors: [react()],
+  syncHtmlLang: true
+});
+```
+{% /when %}
+{% when value="anthropic" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { anthropic } from '@yapyak/anthropic';
+import { react } from '@yapyak/react/processor';
+
+export default defineConfig({
+  processors: [react()],
+  syncHtmlLang: true,
+  translator: anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY
+  })
+});
+```
+{% /when %}
+{% when value="openai" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { openai } from '@yapyak/openai';
+import { react } from '@yapyak/react/processor';
+
+export default defineConfig({
+  processors: [react()],
+  syncHtmlLang: true,
+  translator: openai({
+    apiKey: process.env.OPENAI_API_KEY
+  })
+});
+```
+{% /when %}
+{% when value="gemini" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { gemini } from '@yapyak/gemini';
+import { react } from '@yapyak/react/processor';
+
+export default defineConfig({
+  processors: [react()],
+  syncHtmlLang: true,
+  translator: gemini({
+    apiKey: process.env.GEMINI_API_KEY
+  })
+});
+```
+{% /when %}
+{% when value="ollama" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { ollama } from '@yapyak/ollama';
+import { react } from '@yapyak/react/processor';
+
+export default defineConfig({
+  processors: [react()],
+  syncHtmlLang: true,
+  translator: ollama()
+});
+```
+{% /when %}
+{% /switch %}
+{% /when %}
+
+{% when value="react-router" %}
+{% switch group="translator" %}
+{% when value="none" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { react } from '@yapyak/react/processor';
+
+export default defineConfig({
+  include: ['app'],
+  persistence: 'cookie',
   processors: [react()]
 });
 ```
@@ -382,9 +461,11 @@ import { anthropic } from '@yapyak/anthropic';
 import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
+  include: ['app'],
+  persistence: 'cookie',
   processors: [react()],
   translator: anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
+    apiKey: process.env.ANTHROPIC_API_KEY
   })
 });
 ```
@@ -396,9 +477,11 @@ import { openai } from '@yapyak/openai';
 import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
+  include: ['app'],
+  persistence: 'cookie',
   processors: [react()],
   translator: openai({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: process.env.OPENAI_API_KEY
   })
 });
 ```
@@ -410,9 +493,11 @@ import { gemini } from '@yapyak/gemini';
 import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
+  include: ['app'],
+  persistence: 'cookie',
   processors: [react()],
   translator: gemini({
-    apiKey: process.env.GEMINI_API_KEY,
+    apiKey: process.env.GEMINI_API_KEY
   })
 });
 ```
@@ -424,11 +509,90 @@ import { ollama } from '@yapyak/ollama';
 import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
+  include: ['app'],
+  persistence: 'cookie',
   processors: [react()],
   translator: ollama()
 });
 ```
 {% /when %}
+{% /switch %}
+{% /when %}
+
+{% when value="tanstack-start" %}
+{% switch group="translator" %}
+{% when value="none" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { react } from '@yapyak/react/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [react()]
+});
+```
+{% /when %}
+{% when value="anthropic" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { anthropic } from '@yapyak/anthropic';
+import { react } from '@yapyak/react/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [react()],
+  translator: anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY
+  })
+});
+```
+{% /when %}
+{% when value="openai" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { openai } from '@yapyak/openai';
+import { react } from '@yapyak/react/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [react()],
+  translator: openai({
+    apiKey: process.env.OPENAI_API_KEY
+  })
+});
+```
+{% /when %}
+{% when value="gemini" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { gemini } from '@yapyak/gemini';
+import { react } from '@yapyak/react/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [react()],
+  translator: gemini({
+    apiKey: process.env.GEMINI_API_KEY
+  })
+});
+```
+{% /when %}
+{% when value="ollama" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { ollama } from '@yapyak/ollama';
+import { react } from '@yapyak/react/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [react()],
+  translator: ollama()
+});
+```
+{% /when %}
+{% /switch %}
+{% /when %}
+
 {% /switch %}
 {% /when %}
 
@@ -440,7 +604,8 @@ import { defineConfig } from 'yapyak/config';
 import { vue } from '@yapyak/vue/processor';
 
 export default defineConfig({
-  processors: [vue()]
+  processors: [vue()],
+  syncHtmlLang: true
 });
 ```
 {% /when %}
@@ -452,8 +617,9 @@ import { vue } from '@yapyak/vue/processor';
 
 export default defineConfig({
   processors: [vue()],
+  syncHtmlLang: true,
   translator: anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
+    apiKey: process.env.ANTHROPIC_API_KEY
   })
 });
 ```
@@ -466,8 +632,9 @@ import { vue } from '@yapyak/vue/processor';
 
 export default defineConfig({
   processors: [vue()],
+  syncHtmlLang: true,
   translator: openai({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: process.env.OPENAI_API_KEY
   })
 });
 ```
@@ -480,8 +647,9 @@ import { vue } from '@yapyak/vue/processor';
 
 export default defineConfig({
   processors: [vue()],
+  syncHtmlLang: true,
   translator: gemini({
-    apiKey: process.env.GEMINI_API_KEY,
+    apiKey: process.env.GEMINI_API_KEY
   })
 });
 ```
@@ -494,6 +662,7 @@ import { vue } from '@yapyak/vue/processor';
 
 export default defineConfig({
   processors: [vue()],
+  syncHtmlLang: true,
   translator: ollama()
 });
 ```
@@ -502,6 +671,9 @@ export default defineConfig({
 {% /when %}
 
 {% when value="svelte" %}
+{% switch group="adapter" %}
+
+{% when value="none" %}
 {% switch group="translator" %}
 {% when value="none" %}
 ```ts [yapyak.config.ts]
@@ -509,7 +681,8 @@ import { defineConfig } from 'yapyak/config';
 import { svelte } from '@yapyak/svelte/processor';
 
 export default defineConfig({
-  processors: [svelte()]
+  processors: [svelte()],
+  syncHtmlLang: true
 });
 ```
 {% /when %}
@@ -521,8 +694,9 @@ import { svelte } from '@yapyak/svelte/processor';
 
 export default defineConfig({
   processors: [svelte()],
+  syncHtmlLang: true,
   translator: anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
+    apiKey: process.env.ANTHROPIC_API_KEY
   })
 });
 ```
@@ -535,8 +709,9 @@ import { svelte } from '@yapyak/svelte/processor';
 
 export default defineConfig({
   processors: [svelte()],
+  syncHtmlLang: true,
   translator: openai({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: process.env.OPENAI_API_KEY
   })
 });
 ```
@@ -549,8 +724,9 @@ import { svelte } from '@yapyak/svelte/processor';
 
 export default defineConfig({
   processors: [svelte()],
+  syncHtmlLang: true,
   translator: gemini({
-    apiKey: process.env.GEMINI_API_KEY,
+    apiKey: process.env.GEMINI_API_KEY
   })
 });
 ```
@@ -563,10 +739,93 @@ import { svelte } from '@yapyak/svelte/processor';
 
 export default defineConfig({
   processors: [svelte()],
+  syncHtmlLang: true,
   translator: ollama()
 });
 ```
 {% /when %}
+{% /switch %}
+{% /when %}
+
+{% when value="sveltekit" %}
+{% switch group="translator" %}
+{% when value="none" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { svelte } from '@yapyak/svelte/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [svelte()],
+  syncHtmlLang: true
+});
+```
+{% /when %}
+{% when value="anthropic" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { anthropic } from '@yapyak/anthropic';
+import { svelte } from '@yapyak/svelte/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [svelte()],
+  syncHtmlLang: true,
+  translator: anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY
+  })
+});
+```
+{% /when %}
+{% when value="openai" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { openai } from '@yapyak/openai';
+import { svelte } from '@yapyak/svelte/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [svelte()],
+  syncHtmlLang: true,
+  translator: openai({
+    apiKey: process.env.OPENAI_API_KEY
+  })
+});
+```
+{% /when %}
+{% when value="gemini" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { gemini } from '@yapyak/gemini';
+import { svelte } from '@yapyak/svelte/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [svelte()],
+  syncHtmlLang: true,
+  translator: gemini({
+    apiKey: process.env.GEMINI_API_KEY
+  })
+});
+```
+{% /when %}
+{% when value="ollama" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { ollama } from '@yapyak/ollama';
+import { svelte } from '@yapyak/svelte/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [svelte()],
+  syncHtmlLang: true,
+  translator: ollama()
+});
+```
+{% /when %}
+{% /switch %}
+{% /when %}
+
 {% /switch %}
 {% /when %}
 
@@ -578,7 +837,9 @@ import { defineConfig } from 'yapyak/config';
 import { astro } from '@yapyak/astro/processor';
 
 export default defineConfig({
-  processors: [astro()]
+  persistence: 'cookie',
+  processors: [astro()],
+  syncHtmlLang: true
 });
 ```
 {% /when %}
@@ -589,9 +850,11 @@ import { anthropic } from '@yapyak/anthropic';
 import { astro } from '@yapyak/astro/processor';
 
 export default defineConfig({
+  persistence: 'cookie',
   processors: [astro()],
+  syncHtmlLang: true,
   translator: anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
+    apiKey: process.env.ANTHROPIC_API_KEY
   })
 });
 ```
@@ -603,9 +866,11 @@ import { openai } from '@yapyak/openai';
 import { astro } from '@yapyak/astro/processor';
 
 export default defineConfig({
+  persistence: 'cookie',
   processors: [astro()],
+  syncHtmlLang: true,
   translator: openai({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: process.env.OPENAI_API_KEY
   })
 });
 ```
@@ -617,9 +882,11 @@ import { gemini } from '@yapyak/gemini';
 import { astro } from '@yapyak/astro/processor';
 
 export default defineConfig({
+  persistence: 'cookie',
   processors: [astro()],
+  syncHtmlLang: true,
   translator: gemini({
-    apiKey: process.env.GEMINI_API_KEY,
+    apiKey: process.env.GEMINI_API_KEY
   })
 });
 ```
@@ -631,12 +898,130 @@ import { ollama } from '@yapyak/ollama';
 import { astro } from '@yapyak/astro/processor';
 
 export default defineConfig({
+  persistence: 'cookie',
   processors: [astro()],
+  syncHtmlLang: true,
   translator: ollama()
 });
 ```
 {% /when %}
 {% /switch %}
+{% /when %}
+
+{% /switch %}
+
+{% switch group="framework" %}
+
+{% when value="react" %}
+{% switch group="adapter" %}
+
+{% when value="react-router" %}
+Register yapyak's middleware in your root route, and read the locale through `useLocale()` for `<html lang>`:
+
+```tsx [app/root.tsx]
+import type { Route } from './+types/root';
+import { useLocale } from '@yapyak/react';
+import { middleware as yapyakMiddleware } from '@yapyak/react-router';
+
+export const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];
+
+export default function Root() {
+  const [locale] = useLocale();
+  return (
+    <html lang={locale}>
+      <head>{/* ... */}</head>
+      <body>
+        <Outlet />
+      </body>
+    </html>
+  );
+}
+```
+
+{% callout variant="info" %}
+On React Router 7.9 through 7.x, middleware is opt-in. Enable it with `future: { v8_middleware: true }` in `react-router.config.ts`. On v8, middleware is default.
+{% /callout %}
+{% /when %}
+
+{% when value="tanstack-start" %}
+Register yapyak's middleware in your start entry, and read the locale through `useLocale()` in your root route for `<html lang>`:
+
+```ts [src/start.ts]
+import { createStart } from '@tanstack/react-start';
+import { middleware } from '@yapyak/tanstack-start';
+
+export const startInstance = createStart(() => ({
+  requestMiddleware: [middleware]
+}));
+```
+
+```tsx [src/routes/__root.tsx]
+import { useLocale } from '@yapyak/react';
+
+function Root() {
+  const [locale] = useLocale();
+  return (
+    <html lang={locale}>
+      <head>{/* ... */}</head>
+      <body>{/* ... */}</body>
+    </html>
+  );
+}
+```
+{% /when %}
+
+{% /switch %}
+{% /when %}
+
+{% when value="svelte" %}
+{% switch group="adapter" %}
+
+{% when value="sveltekit" %}
+Register the SvelteKit handle:
+
+```ts [src/hooks.server.ts]
+export { handle } from '@yapyak/sveltekit';
+```
+
+Replace `<html lang>` with yapyak's placeholder:
+
+```html [src/app.html]
+<!DOCTYPE html>
+<html lang="%yapyak.lang%">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%sveltekit.assets%/favicon.png" />
+    <meta name="viewport" content="width=device-width" />
+    %sveltekit.head%
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents">%sveltekit.body%</div>
+  </body>
+</html>
+```
+
+{% callout variant="warning" %}
+Placeholder substitution requires `%yapyak.lang%` to fall within the first streamed chunk. Keep it at the top of `app.html` (inside the first `<html>` tag). Long head content that pushes the placeholder past a chunk boundary causes substitution to silently skip.
+{% /callout %}
+{% /when %}
+
+{% /switch %}
+{% /when %}
+
+{% when value="astro" %}
+Set `<html lang>` via `getLocale()` in your layout:
+
+```astro [src/layouts/Layout.astro]
+---
+import { getLocale } from 'yapyak';
+---
+<html lang={getLocale()}>
+  <head><slot name="head" /></head>
+  <body><slot /></body>
+</html>
+```
+
+Every navigation re-runs the middleware and re-renders the layout, so `<html lang>` stays correct on full page loads.
 {% /when %}
 
 {% /switch %}
@@ -688,7 +1073,7 @@ bun yapyak add sv
 {% /when %}
 {% /switch %}
 
-This creates `locales/sv.json` and updates the `Locale` literal type. Run it again with any other tag whenever you want to add a language. See [`yapyak add`](/guide/cli/add) for the full set of options.
+This creates `locales/sv.json` and updates the `Locale` literal type. Run it again with any other tag whenever you want to add a language. See [`yapyak add`](/reference/cli/add) for the full set of options.
 
 {% callout variant="tip" %}
 Or create the file by hand. Drop `sv.json` into the folder and yapyak picks it up automatically.

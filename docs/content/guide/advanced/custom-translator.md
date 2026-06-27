@@ -1,9 +1,9 @@
 ---
-title: Custom
-order: 11
+title: Custom translator
+order: 1
 ---
 
-`createTranslator` lets you ship a translator that talks to any backend. The interface is a single function: take a batch of source strings and target locales, return the translations.
+When the [shipped translators](/guide/translating/providers) don't fit, `createTranslator` is the escape hatch. The interface is a single function: take a batch of source strings and target locales, return the translations.
 
 ```ts
 import { createTranslator } from 'yapyak/translator';

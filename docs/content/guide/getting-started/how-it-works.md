@@ -281,4 +281,4 @@ The only path that re-translates an already-filled entry is `yapyak translate --
 
 ## SSR
 
-The server renders the same compiled modules the client does. There's no separate catalog to load before rendering an interface. Per-request locale binding is set up through a small SSR adapter. See [SSR](/guide/adapters/overview) for the details.
+The server renders the same compiled modules the client does. There's no separate catalog to load before rendering an interface. Per-request locale binding is set up through a small SSR adapter. See [SSR](/guide/getting-started/installation) for the details.

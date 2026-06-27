@@ -79,6 +79,6 @@ Both diagnostics surface through the same stream as parse and ICU errors. See [D
 
 ## Throwing from a custom translator
 
-A [custom translator](/guide/translating/custom) should throw the matching error type so yapyak applies the right behavior. See [Custom](/guide/translating/custom#errors-to-throw) for the patterns.
+A [custom translator](/guide/advanced/custom-translator) should throw the matching error type so yapyak applies the right behavior. See [Custom](/guide/advanced/custom-translator#errors-to-throw) for the patterns.
 
 A plain `Error` thrown from a custom translator is treated as a `TranslatorNetworkError` and gets the default retry policy.

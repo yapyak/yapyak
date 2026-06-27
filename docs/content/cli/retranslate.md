@@ -7,13 +7,7 @@ order: 3
 yapyak retranslate <source> [--locale <code>] [--as <ctx>] [--file <path>]
 ```
 
-Re-translates one specific source string, ignoring any existing translation. Targeted alternative to `translate --force`. Only the call sites matching the source you name go through the translator.
-
-Reach for it when:
-
-- You changed your mind about a single word's translation and want a fresh take from the translator
-- A glossary update should propagate to one specific term without re-translating the whole catalog
-- You're tuning translations one string at a time and want to iterate cheaply
+Re-translates one specific source string, ignoring any existing translation. Targeted alternative to [`translate --force`](/reference/cli/translate#re-translate-everything-with---force). Only the call sites matching the source you name go through the translator.
 
 {% switch group="packageManager" %}
 {% when value="pnpm" %}
@@ -123,7 +117,7 @@ Other call sites of `t('Save')` in other files keep their existing translation. 
 
 ## Requirements
 
-`retranslate` needs a configured translator. Without one, it errors out the same way `translate` does. See [translate](/guide/cli/translate#requirements) for the setup hint.
+`retranslate` needs a configured translator. Without one, it errors out the same way `translate` does. See [translate](/reference/cli/translate#requirements) for the setup hint.
 
 ## No matching call sites
 

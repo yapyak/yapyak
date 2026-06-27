@@ -3,7 +3,7 @@ title: Providers
 order: 3
 ---
 
-A translator connects yapyak to a model. yapyak ships four; any other backend is a [custom translator](/guide/translating/custom) away.
+A translator connects yapyak to a model. yapyak ships four; any other backend is a [custom translator](/guide/advanced/custom-translator) away.
 
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';

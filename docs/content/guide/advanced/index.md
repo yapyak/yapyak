@@ -1,5 +1,5 @@
 ---
 title: Advanced
 order: 8
-redirect: ./hmr
+redirect: ./custom-translator
 ---

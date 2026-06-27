@@ -39,4 +39,4 @@ Common for teams that hand-write every translation, or for early-stage projects 
 
 ## Picking a translator
 
-yapyak ships translators for four providers and accepts a [custom translator](/guide/translating/custom) for anything else. See [Providers](/guide/translating/providers).
+yapyak ships translators for four providers and accepts a [custom translator](/guide/advanced/custom-translator) for anything else. See [Providers](/guide/translating/providers).

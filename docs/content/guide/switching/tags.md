@@ -3,7 +3,7 @@ title: Tags
 order: 4
 ---
 
-A locale in yapyak is a BCP 47 language tag, the same standard `Intl` uses for its formatters. Tags are short, structured, and case-insensitive in canonical form. Anywhere you write a locale (the argument to [`yapyak add`](/guide/cli/add), the argument to `setLocale()`, the first to `t.in()`), you write a BCP 47 tag.
+A locale in yapyak is a BCP 47 language tag, the same standard `Intl` uses for its formatters. Tags are short, structured, and case-insensitive in canonical form. Anywhere you write a locale (the argument to [`yapyak add`](/reference/cli/add), the argument to `setLocale()`, the first to `t.in()`), you write a BCP 47 tag.
 
 {% switch group="packageManager" %}
 {% when value="pnpm" %}

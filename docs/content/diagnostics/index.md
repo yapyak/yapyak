@@ -9,7 +9,7 @@ yapyak's compiler runs every save and surfaces any problem it finds as a `YAP-` 
 Three places:
 
 - **Your editor.** TypeScript surfaces them inline through the language service, with the YAP code, the message, and a hint.
-- **Your terminal.** Vite logs each diagnostic during dev. The CLI ([`yapyak check`](/guide/cli/check)) prints them with full file/line context.
+- **Your terminal.** Vite logs each diagnostic during dev. The CLI ([`yapyak check`](/reference/cli/check)) prints them with full file/line context.
 - **CI output.** The `yapyak check` step fails with a non-zero exit code if any diagnostic with `severity: error` fires.
 
 Each diagnostic has a code, a one-line message, and (for most) a hint suggesting the fix. Codes are stable across versions: once `YAP0017` means "context not literal", that's what it will keep meaning.

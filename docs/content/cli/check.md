@@ -70,35 +70,13 @@ t('You have {count, plural, one {# message} other {# messages}}', { count })
 
 `check` flags it because the structure no longer matches. Usually a hand-edit slip; sometimes a translator mistake. Either way, it's caught before the build ships.
 
-## In CI
-
-The minimal CI step:
-
-```yaml
-- run: pnpm yapyak check
-```
-
-If you also auto-translate in CI, run `translate` first to fill in any empty stubs, then `check` to gate on completeness:
-
-```yaml
-- run: pnpm yapyak translate
-  env:
-    ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-- run: pnpm yapyak check
-- run: pnpm build
-```
-
-## What `check` doesn't do
-
-A few things `check` deliberately doesn't catch:
+## What `check` doesn't catch
 
 - **Translation quality.** A correct-but-bad translation passes.
 - **Pluralization correctness in target locales.** If your Swedish translation declares only `one` and `other`, that passes. yapyak trusts the translator's judgment about which plural categories the language uses.
-- **Stale translations.** If your source string changed and the translation is now outdated, `check` doesn't notice unless the structure (placeholders, tags) changed too. Use [renames behavior](/guide/translating/renames) to control this.
+- **Stale translations.** If your source string changed and the translation is now outdated, `check` doesn't notice unless the structure (placeholders, tags) changed too. See [Renames](/guide/translating/renames).
 
 ## Exit codes
 
 - `0`: everything checks out.
 - `1`: one or more issues found. The output lists them grouped by category.
-
-The non-zero exit is what makes `check` useful in CI; the human-readable output is what makes the failures easy to fix.
