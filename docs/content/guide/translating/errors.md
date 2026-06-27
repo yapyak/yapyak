@@ -33,17 +33,17 @@ All seven extend `TranslatorError`, so one `catch (cause instanceof TranslatorEr
 
 ## Retry behavior
 
-Retries happen inside the provider before an error escapes. Three error types are retryable; the rest fail fast.
+Retries happen inside the provider's fetch layer before any error escapes. yapyak retries on HTTP 408, 429, 5xx, and on network-level failures (aborted, timed out, connection failed). Everything else fails fast.
 
 | Type | Retried? |
 |---|---|
-| `TranslatorRateLimitError` | Yes. Backoff up to `maxRetries`. Honors `retryAfter` when present. |
+| `TranslatorRateLimitError` | Yes (429). Backoff up to `maxRetries`. Honors `retryAfter` when present. |
 | `TranslatorTimeoutError` | Yes. Up to `maxRetries`. |
-| `TranslatorNetworkError` | Yes. Up to `maxRetries`. |
-| `TranslatorAuthError` | No. Retries don't help a bad key. |
+| `TranslatorNetworkError` | Only for 5xx and network-level failures. Other 4xx responses are not retried. |
+| `TranslatorAuthError` | No (401/403). Retries don't help a bad key. |
 | `TranslatorSafetyError` | No. The block is a verdict, not a transient. |
-| `TranslatorInvalidResponseError` | No. |
-| `TranslatorTruncatedError` | No. |
+| `TranslatorInvalidResponseError` | No. The response parsed but didn't validate. |
+| `TranslatorTruncatedError` | No. Output cut off by the token limit. |
 
 `maxRetries` defaults to `2` (Ollama: `1`). Override per provider:
 

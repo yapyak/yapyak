@@ -264,7 +264,11 @@ export default defineConfig({
 });
 ```
 
-You can also drive it from the environment, useful for CI matrix builds:
+You can also drive it from an environment variable, useful for CI matrix builds:
+
+```ts [vite.config.ts]
+yapyak({ fixedLocale: process.env.YAPYAK_LOCALE })
+```
 
 ```bash
 YAPYAK_LOCALE=sv pnpm build

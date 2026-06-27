@@ -21,7 +21,7 @@ export default defineConfig({
 | Provider | Import | Notes |
 |---|---|---|
 | [Anthropic](/reference/anthropic) | `@yapyak/anthropic` | Claude models. |
-| [OpenAI](/reference/openai) | `@yapyak/openai` | GPT and reasoning models. Works with OpenAI-compatible endpoints (Azure, Groq, Mistral, OpenRouter). |
+| [OpenAI](/reference/openai) | `@yapyak/openai` | GPT and reasoning models. Other OpenAI-compatible endpoints work by overriding `endpoint` and `headers`. |
 | [Gemini](/reference/gemini) | `@yapyak/gemini` | Google's models. Default batch size 15. |
 | [Ollama](/reference/ollama) | `@yapyak/ollama` | Local inference. No API key. Default batch size 8, timeout 120s. |
 
@@ -48,6 +48,39 @@ The four factories accept the same option surface. Provider pages add a handful 
 | `endpoint` | `string` | provider URL | Custom API endpoint. |
 
 The three options that reward thought before defaulting: [Voice](/guide/translating/voice), [Glossary](/guide/translating/glossary), and [Context](/guide/translating/context).
+
+## OpenAI extras
+
+The OpenAI factory accepts three options the others don't: `seed` (deterministic sampling), `organization` (org ID header), and `user` (end-user identifier passed through to OpenAI).
+
+```ts
+openai({
+  apiKey: process.env.OPENAI_API_KEY,
+  seed: 42,
+  organization: 'org-abc',
+  user: 'user-123'
+})
+```
+
+Reasoning models (`gpt-5*`, `o1`–`o9`) auto-switch internally: `maxTokens` becomes `max_completion_tokens` in the API call, and `temperature` is dropped since reasoning models don't accept it.
+
+## Gemini extras
+
+Gemini exposes two distinct safety verdicts: a generic `SAFETY` block and a `RECITATION` block (model output too close to training data). Both surface as [`TranslatorSafetyError`](/reference/yapyak/translator/TranslatorSafetyError), but the `cause` differs so you can branch on it.
+
+## Ollama (local inference)
+
+`ollama()` has no required arguments. It defaults to `http://localhost:11434/api/generate` and model `llama3.1`. Install [Ollama](https://ollama.com/download), pull the model, and the factory connects:
+
+```bash
+ollama pull llama3.1
+```
+
+```ts
+ollama()
+```
+
+Ollama defaults to a 120s timeout and 1 retry (versus 30s/2 for the API providers) to accommodate cold-start latency on local hardware.
 
 ## Switching providers
 

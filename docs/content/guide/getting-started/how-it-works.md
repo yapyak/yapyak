@@ -77,29 +77,24 @@ A processor is a small adapter that knows how to split a file format into TypeSc
 
 ## What the translator sees
 
-When yapyak sends a new message to the model, it includes context from the call site. By default that's the component name and the immediate element wrapping the `t()` call. You can configure more context (nearby lines, the whole component) or less (just the message), and you can pin glossary terms or pass a voice.
+When yapyak sends a new message to the model, it attaches context from the call site. By default that's the component name and the immediate element wrapping the `t()` call. You can configure more context (nearby lines, the whole component) or less (just the message).
 
-A typical request body looks something like this:
+A typical batch item looks something like this:
 
 ```json
 {
+  "source": "Save changes",
   "component": "SaveButton",
   "element": "button",
   "examples": [
-    {
-      "en": "Save",
-      "sv": "Spara"
-    }
-  ],
-  "glossary": {
-    "cart": { "sv": "kundvagn" }
-  },
-  "source": "Save changes",
-  "voice": "Concise and friendly"
+    { "source": "Save", "translation": "Spara" }
+  ]
 }
 ```
 
 The examples are picked from translations already in your repository. Models tend to keep a consistent voice when they've seen prior choices the project made.
+
+[Voice](/guide/translating/voice) and [glossary](/guide/translating/glossary) are configured once on the translator and applied to every batch the model sees.
 
 {% callout variant="info" %}
 Requests are batched. By default, yapyak groups up to 25 messages per-request, runs up to five requests in parallel, and translates every target locale together. Request size, concurrency, and context level are configurable in `yapyak.config.ts`.
@@ -283,4 +278,4 @@ The only path that re-translates an already-filled entry is `yapyak translate --
 
 ## SSR
 
-The server renders the same compiled modules the client does. There's no separate catalog to load before rendering an interface. A small SSR adapter binds each request to its own locale. See [SSR](/guide/getting-started/installation) for the details.
+The server renders the same compiled modules the client does. There's no separate catalog to load before rendering an interface. A small SSR adapter binds each request to its own locale. See the [Installation](/guide/getting-started/installation) page for per-framework setup.

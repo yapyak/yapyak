@@ -23,6 +23,8 @@ Each translation request carries N source-translation pairs the model can imitat
 
 `5`. Or `0` when the translator's [`context`](/guide/translating/context) is `'none'`, since `'none'` means no per-item context goes out at all.
 
+Set `examples: 0` to disable in-context examples explicitly.
+
 {% callout variant="warning" %}
 `context: 'none'` drops examples from the request regardless of what you set `examples` to. The level overrides the count.
 {% /callout %}
@@ -45,4 +47,4 @@ Voice instructs in the abstract; examples show the result. A few well-chosen pai
 
 ## How yapyak picks which examples
 
-yapyak picks N translations from elsewhere in your project, biased toward entries that share locale and surface area with the current batch. The selection is deterministic — same input, same examples — so two runs of the same batch produce the same prompt.
+yapyak only considers translations for the same target locale as the current batch. From those, it scores candidates by word-level similarity to each source string, with a tiebreaker that prefers examples from the same source file. The selection is deterministic — same input, same examples — so two runs of the same batch produce the same prompt.

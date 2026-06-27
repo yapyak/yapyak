@@ -51,7 +51,7 @@ Each method maps directly to an `Intl.*Format` class:
 
 ### Currency type-safety
 
-When `style: 'currency'`, the `currency` field is required and typed against ISO 4217. The [`Currency`](/reference/yapyak/Currency) type is exported separately for passing through your own functions. See [Numbers](/guide/formatting/numbers#currency) for the full pattern.
+When `style: 'currency'`, the `currency` field is required. The [`Currency`](/reference/yapyak/Currency) type autocompletes ISO 4217 codes (it's a `Currency | (string & {})` union, so arbitrary strings still type-check). See [Numbers](/guide/formatting/numbers#currency) for the full pattern.
 
 ### Required fields per style
 
@@ -65,7 +65,7 @@ format.number(45, { style: 'unit' });                     // error: unit missing
 
 ### Graceful currency fallback
 
-A currency code unsupported by the host `Intl` doesn't throw. yapyak falls back to a `<value> <code>` rendering so older runtimes don't break your page.
+A currency code unsupported by the host `Intl` doesn't throw. yapyak falls back to a `<value> <code>` rendering so older runtimes don't break your page, and emits a [`YAP0035`](/reference/diagnostics/YAP0035) diagnostic to flag the unsupported code. The same fallback applies to units ([`YAP0036`](/reference/diagnostics/YAP0036)) and time zones ([`YAP0037`](/reference/diagnostics/YAP0037)).
 
 ## Scoping to a different locale
 

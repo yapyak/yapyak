@@ -7,14 +7,9 @@ Source code changes over time. yapyak follows the translations across rather tha
 
 ## What yapyak tracks
 
-Every translation has a position record:
+Within each source file, yapyak records the `line` and `column` of every `t()` call alongside its source string. Cross-file translation memory lives separately in the orphan cache (`.yapyak/orphans.json`), which keeps every translation yapyak has ever seen.
 
-- The source file path
-- The source string itself
-- The line and column of the `t()` call
-- The disambiguation context, if any (`t.as('action', 'Open')`)
-
-On save, the compiler builds a fresh set of records from the current code and compares them against your locale files and the cache in `.yapyak/`.
+On save, the compiler builds a fresh set of records from the current code and reconciles them against your locale files and the orphan cache.
 
 Three cases come up.
 
@@ -24,7 +19,7 @@ Three cases come up.
 src/components/cart-button.tsx  becomes  src/components/checkout/cart-button.tsx
 ```
 
-The string `'Add to cart'` still exists, in the same form, but in a different file. Locale files are keyed by source-file path, so a naive read would treat this as a removal plus an addition. The compiler matches the relocated string against the cache and rewrites the locale entry under the new path. The translation moves with it.
+The string `'Add to cart'` still exists, in the same form, but in a different file. Locale files are keyed by source-file path, so a naive read would treat this as a removal plus an addition. The orphan cache restores the translation under the new path on the next save.
 
 ### Same path, edited source string
 

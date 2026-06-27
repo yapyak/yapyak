@@ -40,7 +40,7 @@ export default defineConfig({
 });
 ```
 
-Default is `20`. Set it to `0` to skip auto-translation entirely; set it to a large number to never skip.
+Default is `20`. Set it to `0` to disable auto-translation entirely (you run [`yapyak translate`](/reference/cli/translate) when you're ready); set it to a large number to never skip.
 
 The guardrail catches large refactors and agent-generated additions that would otherwise burn through your API budget on one save.
 

@@ -33,7 +33,7 @@ t('Hi {name}', { user: 'Ada' });             // error: 'user' is not assignable
 t('Hi {name}, {greeting}', { name: 'Ada' }); // error: missing 'greeting'
 {% /diagnostics %}
 
-Simple placeholders accept `string | number`. They're rendered as their string form. For richer formatting, use [number](/guide/writing/plurals#numbers), [date](/guide/writing/plurals#dates-and-times), or [list](/guide/formatting/lists) sub-formats inside the placeholder.
+Simple placeholders accept `string | number`. They're rendered as their string form. For richer formatting, use [number](/guide/writing/plurals#numbers) or [date](/guide/writing/plurals#dates-and-times) sub-formats inside the placeholder. For lists, format them outside `t()` with [`format.list`](/guide/formatting/lists).
 
 ## Multiple placeholders
 

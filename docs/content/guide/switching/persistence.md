@@ -19,8 +19,8 @@ Each strategy also accepts a configuration object for customizing names, keys, o
 
 The default for server-rendered apps. Two sides:
 
-- **Write:** the cookie is set client-side when `setLocale()` is called.
-- **Read:** the middleware reads it server-side on every request.
+- **Write:** `setLocale()` writes the cookie. Client-side, that's `document.cookie`. Server-side (inside an SSR adapter), yapyak buffers a `Set-Cookie` header and flushes it onto the response.
+- **Read:** the SSR adapter reads the cookie off the request on every render.
 
 The same locale renders on both sides, so there's no hydration mismatch.
 
@@ -104,6 +104,10 @@ persistence: {
 Without `match`, yapyak reads the first path segment. `/sv/settings` resolves to `'sv'` if `'sv'` is one of the locales you've added. Anything else falls through to `defaultLocale`.
 
 With a `match` regex, you control where the locale lives. The example above pulls it from a `lang` query parameter, so URLs look like `/settings?lang=sv` instead of `/sv/settings`.
+
+{% callout variant="info" %}
+Calling `setLocale()` under URL persistence is a no-op — the URL itself carries the locale, so a programmatic switch needs a navigation. yapyak emits a `YAP0026` diagnostic when this happens.
+{% /callout %}
 
 ## None
 

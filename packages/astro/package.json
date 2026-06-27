@@ -64,7 +64,7 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "astro": "^7",
+    "astro": ">=7",
     "yapyak": "workspace:*"
   },
   "engines": {

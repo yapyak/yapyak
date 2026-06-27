@@ -34,6 +34,8 @@ export default defineConfig({
 
 yapyak handles batching, deduplication, retry behavior, and result validation around your function. You describe how to talk to your backend.
 
+Deduplication runs before your callback is invoked. Two `t()` calls with the same `fileId`, source string, and disambiguation translate once and the result is fanned back out, so your `translate` never sees the duplicate.
+
 ## Options
 
 `createTranslator` accepts a few options alongside `translate`:
@@ -162,9 +164,9 @@ async translate({ items, signal }) {
 }
 ```
 
-Throwing the right type lets yapyak apply the right policy: backoff for rate limits, fail-fast for auth, log-and-continue for safety blocks on individual items. See [Errors](/guide/translating/errors) for the full taxonomy.
+Throwing the right type lets yapyak apply the right policy: backoff for rate limits, fail-fast for auth. See [Errors](/guide/translating/errors) for the full taxonomy.
 
-A plain `Error` is treated as a `TranslatorNetworkError` and gets the default retry policy.
+Any other error that escapes the callback — a plain `Error`, an exception from your fetch client — fails the whole chunk and surfaces as [`YAP0033`](/reference/diagnostics/YAP0033). The rest of the batch's chunks complete normally.
 
 ## A rules-based translator
 

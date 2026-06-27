@@ -63,9 +63,6 @@ In every case, the trigger is something that has to take effect before yapyak ca
 
 ## What the runtime watches for
 
-The runtime registers two HMR handlers:
-
-- One for translation map updates (the locale file path)
-- One for config changes (the yapyak.config.ts path)
+The framework binding registers one HMR handler: `import.meta.hot.on('yapyak:patch', applyPatches)`. The plugin sends patches over this channel whenever a locale file or compiled module changes, and the runtime updates the in-memory map. Config changes don't go through this channel — they trigger a full dev-server restart instead.
 
 If you're debugging "why isn't HMR working", check the browser console for messages prefixed `[yapyak]`. The plugin logs every accept and every rejection. Usually enough to spot what's blocking the swap (a syntax error in `locales/sv.json`, a TypeScript error in the source, a stale `.yapyak/` cache).

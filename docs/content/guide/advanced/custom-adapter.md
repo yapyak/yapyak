@@ -19,7 +19,7 @@ Anything inside the callback sees the request-bound locale.
 
 `withResponse(request, callback, responseExtractor?)` does three things:
 
-1. **Scopes the locale.** Puts the request into an `AsyncLocalStorage` scope so [`getLocale()`](/guide/switching/switch) resolves through the request's [persistence layer](/guide/switching/persistence). With [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) on, it falls back to the `Accept-Language` header.
+1. **Scopes the request.** Puts it into an `AsyncLocalStorage` scope so [`getLocale()`](/guide/switching/switch) can read the request's persistence + `Accept-Language` header inside the callback.
 2. **Runs the callback** inside that scope.
 3. **Flushes pending headers.** Drains any response headers yapyak buffered onto the response. A `Set-Cookie` from a server-side `setLocale()` is the common case.
 
