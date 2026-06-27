@@ -3,7 +3,7 @@ title: Overview
 order: 1
 ---
 
-yapyak ships a runtime `format` namespace backed by `Intl`. Every call uses the active locale automatically, and the options surface adds a small layer of type-safety on top of the platform API.
+yapyak ships a runtime [`format`](/reference/yapyak/Format) namespace backed by `Intl`. Every call uses the active locale automatically, and the options surface adds a small layer of type-safety on top of the platform API.
 
 ```ts
 import { format } from 'yapyak';
@@ -42,14 +42,14 @@ Each method maps directly to an `Intl.*Format` class:
 
 | Method | Backed by |
 |---|---|
-| `format.number` | `Intl.NumberFormat` |
-| `format.dateTime` | `Intl.DateTimeFormat` |
-| `format.list` | `Intl.ListFormat` |
-| `format.relativeTime` | `Intl.RelativeTimeFormat` |
+| [`format.number`](/reference/yapyak/format.number) | `Intl.NumberFormat` |
+| [`format.dateTime`](/reference/yapyak/format.dateTime) | `Intl.DateTimeFormat` |
+| [`format.list`](/reference/yapyak/format.list) | `Intl.ListFormat` |
+| [`format.relativeTime`](/reference/yapyak/format.relativeTime) | `Intl.RelativeTimeFormat` |
 
 ## What it adds beyond `Intl`
 
-**Currency type-safety.** When `style: 'currency'`, the `currency` field is required and typed against ISO 4217. The `Currency` type is exported separately for passing through your own functions. See [Numbers](/guide/formatting/numbers#currency) for the full pattern.
+**Currency type-safety.** When `style: 'currency'`, the `currency` field is required and typed against ISO 4217. The [`Currency`](/reference/yapyak/Currency) type is exported separately for passing through your own functions. See [Numbers](/guide/formatting/numbers#currency) for the full pattern.
 
 **Required fields per number style.** `format.number`'s options are a discriminated union over `style`. Pick `'percent'` and nothing else is required; pick `'unit'` and the `unit` field becomes mandatory:
 
@@ -63,7 +63,7 @@ format.number(45, { style: 'unit' });                     // error: unit missing
 
 ## Scoping to a different locale
 
-By default every `format.*` call uses the active locale. Use `format.in(locale)` to scope a call (or chain) to something else:
+By default every `format.*` call uses the active locale. Use [`format.in(locale)`](/reference/yapyak/format.in) to scope a call (or chain) to something else:
 
 ```ts
 format.in('sv').number(200, {

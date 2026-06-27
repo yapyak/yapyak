@@ -916,7 +916,7 @@ export default defineConfig({
 {% switch group="adapter" %}
 
 {% when value="react-router" %}
-Register yapyak's middleware in your root route, and read the locale through `useLocale()` for `<html lang>`:
+Register yapyak's middleware in your root route, and read the locale through [`useLocale()`](/reference/react/useLocale) for `<html lang>`:
 
 ```tsx [app/root.tsx]
 import type { Route } from './+types/root';
@@ -944,7 +944,7 @@ On React Router 7.9 through 7.x, middleware is opt-in. Enable it with `future: {
 {% /when %}
 
 {% when value="tanstack-start" %}
-Register yapyak's middleware in your start entry, and read the locale through `useLocale()` in your root route for `<html lang>`:
+Register yapyak's middleware in your start entry, and read the locale through [`useLocale()`](/reference/react/useLocale) in your root route for `<html lang>`:
 
 ```ts [src/start.ts]
 import { createStart } from '@tanstack/react-start';
@@ -1009,7 +1009,7 @@ Placeholder substitution requires `%yapyak.lang%` to fall within the first strea
 {% /when %}
 
 {% when value="astro" %}
-Set `<html lang>` via `getLocale()` in your layout:
+Set `<html lang>` via [`getLocale()`](/reference/yapyak/getLocale) in your layout:
 
 ```astro [src/layouts/Layout.astro]
 ---

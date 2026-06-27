@@ -3,7 +3,7 @@ title: Custom translator
 order: 3
 ---
 
-When the [shipped translators](/guide/translating/providers) don't fit, `createTranslator` is the escape hatch. The interface is a single function: take a batch of source strings and target locales, return the translations.
+When the [shipped translators](/guide/translating/providers) don't fit, [`createTranslator`](/reference/yapyak/translator/createTranslator) is the escape hatch. The interface is a single function: take a batch of source strings and target locales, return the translations.
 
 ```ts
 import { createTranslator } from 'yapyak/translator';
@@ -56,13 +56,13 @@ const myTranslator = createTranslator({
 | `batchSize` | `number` | `25` | Max items per `translate` call. yapyak chunks larger batches itself. |
 | `concurrency` | `number` | `5` | Max parallel `translate` calls. |
 | `context` | `'none' \| 'minimal' \| 'rich'` | `'minimal'` | What call-site context yapyak attaches to each item. See [Context](/guide/translating/context). |
-| `translate` | `TranslateFn` | required | The batch callback. |
+| `translate` | [`TranslateFn`](/reference/yapyak/translator/TranslateFn) | required | The batch callback. |
 
 The shipped [providers](/guide/translating/providers) are themselves built on `createTranslator`. The same defaults apply, the same lifecycle runs underneath.
 
 ## The input
 
-The `translate` callback receives a `TranslateBatchRequest`:
+The `translate` callback receives a [`TranslateBatchRequest`](/reference/yapyak/translator/TranslateBatchRequest):
 
 ```ts
 type TranslateBatchRequest = {
@@ -101,13 +101,7 @@ Return an array of objects, one per item, each keyed by the target locales:
 ]
 ```
 
-The order matches `items`. Every entry has one key per locale in `targetLocales`. yapyak validates the result:
-
-- A return that isn't an array, or an array whose length doesn't match `items.length`, fails the whole chunk and surfaces as [`YAP0033`](/reference/diagnostics/YAP0033).
-- An individual entry that isn't an object (a string, `null`, an array) fires [`YAP0034`](/reference/diagnostics/YAP0034) and that entry's translations are left empty; the rest of the chunk's entries are still written.
-- A missing locale key on an otherwise-valid entry leaves that locale's value empty without firing a diagnostic.
-
-See [Errors](/guide/translating/errors) for the diagnostic taxonomy.
+The order matches `items`. Every entry has one key per locale in `targetLocales`. yapyak validates the result and surfaces shape failures as YAP diagnostics. See [Errors](/guide/translating/errors).
 
 ## Forwarding the AbortSignal
 
@@ -130,7 +124,7 @@ async translate({ items, signal }) {
 
 ## Errors to throw
 
-When something goes wrong, throw one of yapyak's translator error types so the surrounding machinery handles it correctly:
+When something goes wrong, throw one of yapyak's [translator error types](/guide/translating/errors) so the surrounding machinery handles it correctly:
 
 ```ts
 import {

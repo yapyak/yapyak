@@ -5,13 +5,13 @@ order: 6
 
 Most of the time, `t()` renders the active locale. There are a few moments where you want to lock a specific call to one language regardless of who's reading. A locale-preview pane in your CMS, a server-side email rendered for a recipient whose preference isn't the request's locale, a debugging tool that shows every language side-by-side.
 
-For those, `t.in(locale, source)` forces a single locale on a single call.
+For those, [`t.in(locale, source)`](/reference/yapyak/t.in) forces a single locale on a single call.
 
 ```ts
 t.in('sv', 'Welcome back');
 ```
 
-This always returns the Swedish translation regardless of the active locale. The signature mirrors `t()`. Placeholder parameters, rich-text tags, and ICU sub-formats all work the same. The locale argument is typed against your [`Locale`](/guide/switching/overview) union, so an unknown code is a compile-time error.
+This always returns the Swedish translation regardless of the active locale. The signature mirrors `t()`. Placeholder parameters, rich-text tags, and ICU sub-formats all work the same. The locale argument is typed against your [`Locale`](/reference/yapyak/Locale) union, so an unknown code is a compile-time error.
 
 ## Combining with `.as()`
 

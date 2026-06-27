@@ -3,7 +3,7 @@ title: Overview
 order: 1
 ---
 
-`t()` is the function you wrap around any text that should be translatable. The string you wrap becomes the source string as well as the key for its translations.
+[`t()`](/reference/yapyak/t) is the function you wrap around any text that should be translatable. The string you wrap becomes the source string as well as the key for its translations.
 
 ```ts
 import { t } from 'yapyak';

@@ -3,7 +3,7 @@ title: Custom adapter
 order: 2
 ---
 
-When the shipped adapters don't cover your Vite-based SSR framework, `withResponse()` is the escape hatch. It's a single function from `yapyak/adapter` that the shipped adapters wrap.
+When the shipped adapters don't cover your Vite-based SSR framework, [`withResponse()`](/reference/yapyak/adapter/withResponse) is the escape hatch. It's a single function from `yapyak/adapter` that the shipped adapters wrap.
 
 ## The function
 

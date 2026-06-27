@@ -93,10 +93,10 @@ Underneath the framework binding, yapyak exports the raw store:
 import { defaultLocale, getLocale, locales, setLocale } from 'yapyak';
 ```
 
-- `getLocale()` returns the current `Locale`.
-- `setLocale('sv')` switches the active locale.
-- `locales` is the array of `Locale` values you've added.
-- `defaultLocale` is the fallback `Locale` from your config.
+- [`getLocale()`](/reference/yapyak/getLocale) returns the current [`Locale`](/reference/yapyak/Locale).
+- [`setLocale('sv')`](/reference/yapyak/setLocale) switches the active locale.
+- [`locales`](/reference/yapyak/locales) is the array of `Locale` values you've added.
+- [`defaultLocale`](/reference/yapyak/defaultLocale) is the fallback `Locale` from your config.
 
 You'll reach for these directly when:
 

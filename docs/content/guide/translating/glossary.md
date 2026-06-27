@@ -48,10 +48,6 @@ Outer keys are source-language terms (lower-case is conventional). Inner keys ar
 
 The glossary is sent verbatim in the prompt to the model, with instructions to use the pinned values when a corresponding term appears in a source string. No client-side matching runs; the model decides when each entry applies.
 
-## Glossary vs voice
-
-[Voice](/guide/translating/voice) shapes how the model phrases things. Glossary pins specific terms the model is not allowed to phrase differently. Voice changes how `'Add to cart'` reads in Swedish; glossary fixes what `cart` becomes in every message.
-
 ## When you change it
 
 A glossary change only affects new translations. To propagate it across existing translations, run `yapyak translate --force` (every entry) or `yapyak retranslate "<source>"` (one source string at a time). See [Coverage](/guide/translating/coverage).

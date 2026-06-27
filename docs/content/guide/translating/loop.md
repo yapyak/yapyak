@@ -15,14 +15,7 @@ export function EmptyCart() {
 
 ## What runs on save
 
-1. Vite picks up the file change and notifies the yapyak plugin.
-2. The plugin extracts every `t()` call and reconciles them against your locale files.
-3. New entries are written as empty stubs. Removed entries are noted. [Renames](/guide/translating/renames) are followed.
-4. If a [translator](/guide/translating/providers) is configured, the new stubs are batched and sent.
-5. Returned translations are written back to your locale files.
-6. Vite's HMR updates the running browser. Component state survives.
-
-Source-only steps take milliseconds. The translator step takes a second or two for typical batches.
+yapyak's plugin extracts the new `t()` calls, reconciles them against your locale files, sends any new stubs to the configured [translator](/guide/translating/providers), and writes the results back. Source-only steps take milliseconds; the translator step takes a second or two for typical batches. See [HMR](/guide/advanced/hmr) for the full mechanics.
 
 ## The render is not blocked
 
@@ -48,6 +41,6 @@ The guardrail catches large refactors and agent-generated additions that would o
 
 Adding a locale with `yapyak add sv` runs the translator over every existing source string in one batch rather than waiting for them to come in on save. See [Coverage](/guide/translating/coverage).
 
-## The locale-file save loop
+## Locale-file edits
 
-A direct edit to `locales/sv.json` follows a separate path. yapyak diffs the file against its cached version, sends only the changed entries to the browser, and the runtime updates them in memory. Source modules are not recompiled. Component state survives. The whole loop is sub-second.
+A direct edit to `locales/sv.json` follows a separate sub-second path that diffs the file and updates the runtime in place. See [HMR](/guide/advanced/hmr#locale-file-save-loop).

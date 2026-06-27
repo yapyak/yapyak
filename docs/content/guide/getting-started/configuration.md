@@ -32,7 +32,7 @@ The locale yapyak falls back to when nothing else has resolved the active one. U
 defaultLocale: 'sv',
 ```
 
-**Type**: `Locale` · **Default**: `'en'`
+**Type**: [`Locale`](/reference/yapyak/Locale) · **Default**: `'en'`
 
 ### The set of locales
 
@@ -74,7 +74,7 @@ Patterns yapyak should scan. Each entry can be:
 include: ['src', 'app/components'],
 ```
 
-**Type**: `FilterPattern` · **Default**: `['src']`
+**Type**: [`FilterPattern`](/reference/yapyak/config/FilterPattern) · **Default**: `['src']`
 
 ### `exclude`
 
@@ -91,7 +91,7 @@ exclude: [
 
 If you set `exclude` yourself, you're replacing the defaults, not adding to them. Re-list anything you want to keep excluded.
 
-**Type**: `FilterPattern` · **Default**: see above
+**Type**: [`FilterPattern`](/reference/yapyak/config/FilterPattern) · **Default**: see above
 
 ## Processors
 
@@ -115,7 +115,7 @@ If your project mixes frameworks, register all of them. Each processor takes res
 | Svelte | `import { svelte } from '@yapyak/svelte/processor'` |
 | Astro | `import { astro } from '@yapyak/astro/processor'` |
 
-**Type**: `Processor[]` · **Default**: `[]` (TS/JS only)
+**Type**: [`Processor[]`](/reference/yapyak/processor/Processor) · **Default**: `[]` (TS/JS only)
 
 #### React Server Components
 
@@ -129,9 +129,9 @@ With `rsc: true`, only files marked `'use client'` get the locale subscription h
 
 #### Custom processors
 
-For file formats yapyak doesn't ship a processor for, build your own with `createProcessor` from `yapyak/processor`. The factory accepts the file extensions to claim, a fragment parser that splits your format into TypeScript-readable pieces, the runtime module yapyak should wire into compiled output, and an optional `skipHmrCallback: true` for formats whose compiler can't safely embed Vite HMR callbacks at module scope (Astro's `.astro` files use this).
+For file formats yapyak doesn't ship a processor for, build your own with [`createProcessor`](/reference/yapyak/processor/createProcessor) from `yapyak/processor`. The factory accepts the file extensions to claim, a fragment parser that splits your format into TypeScript-readable pieces, the runtime module yapyak should wire into compiled output, and an optional `skipHmrCallback: true` for formats whose compiler can't safely embed Vite HMR callbacks at module scope (Astro's `.astro` files use this).
 
-`yapyak/processor` also exports `offsetToOriginalPosition` and `rangeFromOffsets`. Utilities for converting byte offsets back to `{ line, column }` positions when emitting diagnostics from your processor's fragment parser.
+`yapyak/processor` also exports [`offsetToOriginalPosition`](/reference/yapyak/processor/offsetToOriginalPosition) and [`rangeFromOffsets`](/reference/yapyak/processor/rangeFromOffsets). Utilities for converting byte offsets back to `{ line, column }` positions when emitting diagnostics from your processor's fragment parser.
 
 ## Translator
 
@@ -147,55 +147,25 @@ translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),
 
 See [Translators](/guide/translating/overview) for the full set of options each provider supports. Voice, glossary, context, batching, concurrency, model selection, and more.
 
-**Type**: `Translator` · **Default**: `undefined` (stubs stay empty)
+**Type**: [`Translator`](/reference/yapyak/translator/Translator) · **Default**: `undefined` (stubs stay empty)
 
 ### `examples`
 
-How many existing translations from your project yapyak sends to the model as in-context style examples for each request. More examples nudge the model toward the voice it's already used; too many add latency and cost.
-
-```ts
-examples: 5,
-```
+How many existing translations yapyak sends to the model as in-context style examples per request. See [Examples](/guide/translating/examples).
 
 **Type**: `number` · **Default**: `5` (or `0` when the translator is configured with `context: 'none'`)
 
 ### `autoTranslateThreshold`
 
-A guardrail for development. When a single save introduces more new strings than this number, yapyak writes the stubs but holds off on translating them automatically. You can run [`yapyak translate`](/reference/cli/translate) when you're ready. The default catches large refactors or AI-generated additions that would otherwise burn through your API budget in one save.
-
-Default:
-
-```ts
-autoTranslateThreshold: 20,
-```
-
-Disable automatic translation entirely:
-
-```ts
-autoTranslateThreshold: 0,
-```
+A guardrail for development. When a single save introduces more new strings than this number, yapyak writes the stubs but holds off on auto-translating. See [Loop](/guide/translating/loop#the-threshold-guardrail).
 
 **Type**: `number` · **Default**: `20`
 
 ### `preserveTranslationsOnRename`
 
-When you edit a source string in place (rename `'Save'` to `'Save changes'`), should yapyak keep the existing translation or treat the new wording as a new string?
+Whether yapyak keeps the existing translation when you edit a source string in place. See [Renames](/guide/translating/renames#same-path-edited-source-string).
 
-Keep existing translations:
-
-```ts
-preserveTranslationsOnRename: true,
-```
-
-Re-translate on rename:
-
-```ts
-preserveTranslationsOnRename: false,
-```
-
-**Type**: `boolean` · **Default**: `true` without a translator, `false` with one. With a translator, the default favors accuracy: a wording change usually deserves a fresh translation. Without one, the default favors stability: a manually-written translation shouldn't disappear because of a small edit.
-
-See [Renames](/guide/translating/renames) for the heuristics in detail.
+**Type**: `boolean` · **Default**: `true` without a translator, `false` with one.
 
 ## Persistence
 
@@ -220,7 +190,7 @@ persistence: {
 
 Four strategies are available: `'none'`, `'cookie'`, `'local-storage'`, and `'url'`. Each one can be passed as a shorthand string or as a config object with strategy-specific options.
 
-**Type**: `PersistenceConfig` · **Default**: `'none'`
+**Type**: [`PersistenceConfig`](/reference/yapyak/config/PersistenceConfig) · **Default**: `'none'`
 
 See [Persistence](/guide/switching/persistence) for the full options of each strategy.
 

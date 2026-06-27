@@ -3,9 +3,9 @@ title: Overview
 order: 1
 ---
 
-A locale in yapyak is the BCP 47 name of one of the JSON files in your `localesDir`: `'sv'` for `locales/sv.json`, `'en-GB'` for `locales/en-GB.json`. The `Locale` type is generated from the files yapyak finds on disk and refreshed on every [`yapyak add`](/reference/cli/add).
+A locale in yapyak is the BCP 47 name of one of the JSON files in your `localesDir`: `'sv'` for `locales/sv.json`, `'en-GB'` for `locales/en-GB.json`. The [`Locale`](/reference/yapyak/Locale) type is generated from the files yapyak finds on disk and refreshed on every [`yapyak add`](/reference/cli/add).
 
-At any moment, one of those locales is the **active locale.** Calling `t()` reads it and returns the matching translation; `format.number`, `format.dateTime`, and the rest of the [`format`](/guide/formatting/overview) namespace do the same. When the active locale changes, every component that read it re-renders.
+At any moment, one of those locales is the **active locale.** Calling [`t()`](/reference/yapyak/t) reads it and returns the matching translation; `format.number`, `format.dateTime`, and the rest of the [`format`](/guide/formatting/overview) namespace do the same. When the active locale changes, every component that read it re-renders.
 
 ## Reading the active locale
 
@@ -15,6 +15,8 @@ import { getLocale } from 'yapyak';
 getLocale();
 // output: 'sv' | 'en' | ...
 ```
+
+[`getLocale()`](/reference/yapyak/getLocale) returns the current locale.
 
 The return type is the union of every locale code you've added.
 
@@ -38,4 +40,4 @@ import { setLocale } from 'yapyak';
 setLocale('sv');
 ```
 
-`setLocale` updates the runtime store and notifies every subscriber. If you've configured persistence, the new choice is written back so it survives a reload.
+[`setLocale()`](/reference/yapyak/setLocale) updates the runtime store and notifies every subscriber. If you've configured persistence, the new choice is written back so it survives a reload.

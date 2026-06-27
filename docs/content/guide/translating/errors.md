@@ -3,7 +3,7 @@ title: Errors
 order: 10
 ---
 
-Translator failures surface as typed errors from `yapyak/translator`. `TranslatorError` is the base; the seven specific types extend it.
+Translator failures surface as typed errors from `yapyak/translator`. [`TranslatorError`](/reference/yapyak/translator/TranslatorError) is the base; the seven specific types extend it.
 
 ```ts
 import { TranslatorError } from 'yapyak/translator';
@@ -21,13 +21,13 @@ try {
 
 | Class | Fires on | Carries |
 |---|---|---|
-| `TranslatorAuthError` | HTTP 401 or 403. Bad or missing API key. | `vendor` |
-| `TranslatorRateLimitError` | HTTP 429. Provider rate limit. | `vendor`, `retryAfter` (ms) when the provider sent one |
-| `TranslatorTimeoutError` | Request exceeded `timeout` or was aborted. | `vendor` |
-| `TranslatorNetworkError` | Other HTTP failures and network errors. | `vendor`, `status` when known |
-| `TranslatorSafetyError` | Provider blocked content. Anthropic refusal, OpenAI content filter, Gemini SAFETY or RECITATION. | `vendor` |
-| `TranslatorInvalidResponseError` | Model returned something that doesn't parse. | `vendor` |
-| `TranslatorTruncatedError` | Model output was cut off by the token limit. | `vendor` |
+| [`TranslatorAuthError`](/reference/yapyak/translator/TranslatorAuthError) | HTTP 401 or 403. Bad or missing API key. | `vendor` |
+| [`TranslatorRateLimitError`](/reference/yapyak/translator/TranslatorRateLimitError) | HTTP 429. Provider rate limit. | `vendor`, `retryAfter` (ms) when the provider sent one |
+| [`TranslatorTimeoutError`](/reference/yapyak/translator/TranslatorTimeoutError) | Request exceeded `timeout` or was aborted. | `vendor` |
+| [`TranslatorNetworkError`](/reference/yapyak/translator/TranslatorNetworkError) | Other HTTP failures and network errors. | `vendor`, `status` when known |
+| [`TranslatorSafetyError`](/reference/yapyak/translator/TranslatorSafetyError) | Provider blocked content. Anthropic refusal, OpenAI content filter, Gemini SAFETY or RECITATION. | `vendor` |
+| [`TranslatorInvalidResponseError`](/reference/yapyak/translator/TranslatorInvalidResponseError) | Model returned something that doesn't parse. | `vendor` |
+| [`TranslatorTruncatedError`](/reference/yapyak/translator/TranslatorTruncatedError) | Model output was cut off by the token limit. | `vendor` |
 
 All seven extend `TranslatorError`, so one `catch (cause instanceof TranslatorError)` handles every case.
 

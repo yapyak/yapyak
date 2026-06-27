@@ -10,7 +10,7 @@ t('Open');  // a button: "Öppna" in Swedish
 t('Open');  // a status: "Öppen" in Swedish
 ```
 
-With the simple form, yapyak has no way to tell those two calls apart. They share a locale-file entry, and only one Swedish translation gets stored. `t.as(context, source)` is how you split them.
+With the simple form, yapyak has no way to tell those two calls apart. They share a locale-file entry, and only one Swedish translation gets stored. [`t.as(context, source)`](/reference/yapyak/t.as) is how you split them.
 
 ```ts
 t.as('action', 'Open');   // "Öppna"

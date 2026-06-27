@@ -53,7 +53,7 @@ The canonical casing is `lowercase-Titlecase-UPPERCASE` (language lowercase, scr
 
 ## Fallbacks
 
-When a translation isn't available for a more-specific tag but is available for a less-specific one, yapyak walks the chain from specific to general. `getLocaleFallbackChain()` exposes the order:
+When a translation isn't available for a more-specific tag but is available for a less-specific one, yapyak walks the chain from specific to general. [`getLocaleFallbackChain()`](/reference/yapyak/getLocaleFallbackChain) exposes the order:
 
 ```ts
 import { getLocaleFallbackChain } from 'yapyak';
@@ -80,7 +80,7 @@ In practice, you rarely need to call this directly. Yapyak's runtime uses it int
 
 Locales arriving from outside your code. URL parameters, form fields, request headers. Are typed as `string` until you narrow them. yapyak exports two helpers:
 
-### `isLocale`
+### [`isLocale`](/reference/yapyak/isLocale)
 
 Type guard for strings that are already canonical:
 
@@ -94,7 +94,7 @@ if (isLocale(input)) {
 }
 ```
 
-### `parseLocale`
+### [`parseLocale`](/reference/yapyak/parseLocale)
 
 Normalizes BCP 47 casing through `Intl.Locale` before matching, so `'EN-us'` parses the same as `'en-US'`. Use this for inputs you can't fully trust to be canonical:
 
