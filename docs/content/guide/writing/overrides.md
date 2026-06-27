@@ -13,12 +13,12 @@ This always returns the Swedish translation regardless of the active locale. The
 
 ## Combining with `.as()`
 
-`t.in()` and `t.as()` chain in either order. The result is the same. A translation for the named locale, disambiguated by the given context:
+`t.in()` and `t.as()` chain in either order. Locale-first reads `t.in('sv').as('action', 'Open')`; context-first reads `t.as('action').in('sv', 'Open')`. The result is the same — a translation for the named locale, disambiguated by the given context.
 
 ```ts
-t.in('sv').as('action', 'Open');     // chain: locale first
+t.in('sv').as('action', 'Open');
 
-t.as('action').in('sv', 'Open');     // chain: context first
+t.as('action').in('sv', 'Open');
 ```
 
 You'd use this when you need both at once. Say, rendering the Swedish "Open" button label inside an admin tool that also runs in English.

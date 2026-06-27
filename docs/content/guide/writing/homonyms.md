@@ -3,18 +3,21 @@ title: Homonyms
 order: 7
 ---
 
-Sometimes two `t()` calls use the same English source but mean different things. "Open" is the canonical example: the same English word for a button that performs an action and for a status that describes a state. Many languages need different translations for each.
+Sometimes two `t()` calls use the same English source but mean different things. "Open" is the canonical example: the same English word for a button that performs an action and for a status that describes a state. Many languages need different translations for each — `'Öppna'` for the button, `'Öppen'` for the status.
 
 ```ts
-t('Open');  // a button: "Öppna" in Swedish
-t('Open');  // a status: "Öppen" in Swedish
+t('Open');
+t('Open');
 ```
 
 With the simple form, yapyak has no way to tell those two calls apart. They share a locale-file entry, and only one Swedish translation gets stored. [`t.as(context, source)`](/reference/yapyak/t.as) is how you split them.
 
 ```ts
-t.as('action', 'Open');   // "Öppna"
-t.as('status', 'Open');   // "Öppen"
+t.as('action', 'Open');
+// output: 'Öppna'
+
+t.as('status', 'Open');
+// output: 'Öppen'
 ```
 
 The first argument is a short context label — your description of which sense you mean. It's not shown to the user. It exists to give translators (human or model) enough signal to render the right word, and to keep the two versions stored separately in your locale file.

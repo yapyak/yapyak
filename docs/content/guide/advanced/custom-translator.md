@@ -74,33 +74,44 @@ type TranslateBatchRequest = {
 
 type TranslateItem = {
   source: string;
-  component?: string;       // call-site component name (with context 'minimal' or 'rich')
-  element?: string;         // enclosing element (with context 'minimal' or 'rich')
-  snippet?: string;         // surrounding code (only at context 'rich')
-  disambiguation?: string;  // from t.as(context, source)
-  examples?: TranslationExample[];  // prior translations as style hints
+  component?: string;
+  element?: string;
+  snippet?: string;
+  disambiguation?: string;
+  examples?: TranslationExample[];
 };
 ```
+
+`TranslateBatchRequest`:
 
 - **`items`** — the batch, chunked by yapyak according to your `batchSize`.
 - **`sourceLocale`** — your `defaultLocale` (`'en'` for most projects).
 - **`targetLocales`** — every locale missing a translation for any item in the batch.
 - **`signal`** — an `AbortSignal` you forward to your fetch so cancellation propagates.
 
+`TranslateItem`:
+
+- **`source`** — the string to translate.
+- **`component`** — the call-site component name (sent at context `'minimal'` or `'rich'`).
+- **`element`** — the enclosing element (sent at context `'minimal'` or `'rich'`).
+- **`snippet`** — surrounding code (sent only at context `'rich'`).
+- **`disambiguation`** — from `t.as(context, source)`, sent at every level.
+- **`examples`** — prior translations sent as style hints.
+
 ## The output
 
-Return an array of objects, one per item, each keyed by the target locales:
+Return an array of objects — same order as `items`, each keyed by the target locales:
 
 ```ts
 [
   {
     de: 'Speichern',
     sv: 'Spara'
-  },     // for items[0]
+  },
   {
     de: 'Abbrechen',
     sv: 'Avbryt'
-  }     // for items[1]
+  }
 ]
 ```
 
