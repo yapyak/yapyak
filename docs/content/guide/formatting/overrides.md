@@ -24,7 +24,7 @@ format.in('ja').dateTime(new Date(), { dateStyle: 'long' });
 
 ## When to use it
 
-Reach for `format.in()` when you genuinely need a value rendered in a non-active locale. Typical cases:
+Use `format.in()` when you need a value rendered in a non-active locale. Typical cases:
 
 - **Server-rendered email or invoice.** The HTTP request might be in English, but the recipient prefers Swedish. Render their currency and dates accordingly.
 - **Admin previews and comparison views.** Show how a price reads in every supported market without switching the whole page's locale.

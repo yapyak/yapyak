@@ -31,7 +31,7 @@ Set `examples: 0` to disable in-context examples explicitly.
 
 ## Why it helps
 
-Voice instructs in the abstract; examples show the result. A few well-chosen pairs anchor tone consistency far more concretely than a sentence of guidance. The model sees the registered character of your existing translations and produces output in the same character.
+Voice describes the tone in the abstract. Examples show it. A few well-chosen pairs guide the model more concretely than a sentence of instruction. The model reads the tone of your existing translations and matches it.
 
 ## When to raise it
 
@@ -47,4 +47,4 @@ Voice instructs in the abstract; examples show the result. A few well-chosen pai
 
 ## How yapyak picks which examples
 
-yapyak only considers translations for the same target locale as the current batch. From those, it scores candidates by word-level similarity to each source string, with a tiebreaker that prefers examples from the same source file. The selection is deterministic — same input, same examples — so two runs of the same batch produce the same prompt.
+yapyak only considers translations for the same target locale as the current batch. Candidates are scored by word-level similarity to each source string; ties go to examples from the same source file. The selection is deterministic: the same input produces the same prompt.

@@ -30,11 +30,11 @@ voice: 'A casual SaaS marketing tone';
 voice: 'Like a senior engineer writing release notes';
 ```
 
-Voice is the single biggest knob for shaping output. A vague voice gives bland translations. A specific one gives the registered character.
+Voice is the single biggest knob for shaping output. A vague voice gives bland translations. A specific one gives translations in the tone you asked for.
 
 ## Keep it short
 
-A sentence or two. Long voices confuse rather than clarify; the model starts trading off between the voice instruction and the meaning of each string.
+A sentence or two. Long voices confuse the model; it starts weighing the voice instruction against the meaning of each string.
 
 ## When you change it
 

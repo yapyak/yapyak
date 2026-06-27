@@ -47,7 +47,7 @@ The four factories accept the same option surface. Provider pages add a handful 
 | `headers` | `Record<string, string>` | `{}` | Extra HTTP headers. |
 | `endpoint` | `string` | provider URL | Custom API endpoint. |
 
-The three options that reward thought before defaulting: [Voice](/guide/translating/voice), [Glossary](/guide/translating/glossary), and [Context](/guide/translating/context).
+The three options worth thought before defaulting: [Voice](/guide/translating/voice), [Glossary](/guide/translating/glossary), and [Context](/guide/translating/context).
 
 ## OpenAI extras
 

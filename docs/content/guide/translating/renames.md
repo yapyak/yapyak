@@ -3,7 +3,7 @@ title: Renames
 order: 9
 ---
 
-Source code changes over time. yapyak follows the translations across rather than orphaning them.
+Source code changes over time. yapyak follows translations across renames and moves instead of orphaning them.
 
 ## What yapyak tracks
 

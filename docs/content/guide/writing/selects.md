@@ -65,7 +65,7 @@ t('{role, select, admin {Admin {name} has {count, plural, one {# alert} other {#
 });
 ```
 
-That message reads as a wall of braces, which is fair. Long ICU expressions get ugly fast. yapyak doesn't enforce a maximum, but if it stops being readable, extract logic into two separate `t()` calls and let your component decide which to render.
+Long ICU expressions get hard to read. yapyak doesn't cap the length. If a message is unreadable, split it into two `t()` calls and let the component pick.
 
 ## Selectordinal (for ordinal numbers)
 

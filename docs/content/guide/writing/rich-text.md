@@ -19,7 +19,7 @@ There are two kinds of tags:
 
 **Void tags** stand alone: `<br/>`, `<hr/>`. The handler renders something at that position with no children.
 
-Whichever language a string translates into, the tags travel along. And a translator (or model) will move them to wherever the equivalent meaning sits in the target syntax.
+The tags travel with the string into every translation. A translator (or model) moves them to where the meaning lands in each language.
 
 In Swedish the `<link>` wraps a different word:
 
@@ -153,7 +153,7 @@ Each tag becomes a named slot. Inside a pair-tag slot, place `<RichText.Children
 
 ## Tag names
 
-A tag name starts with a letter and continues with letters or digits. No hyphens, underscores, or attributes. You'll typically pick semantic names (`link`, `strong`, `name`, `price`) rather than tying yourself to specific HTML elements. The handler decides what element to render.
+A tag name starts with a letter and continues with letters or digits. No hyphens, underscores, or attributes. Pick semantic names (`link`, `strong`, `name`, `price`) — not HTML element names. The handler decides which element to render.
 
 A tag name only has to exist in the source. It doesn't have to be an HTML element. `<discount>` and `<callout>` work as long as you provide a handler.
 

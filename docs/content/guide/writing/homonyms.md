@@ -20,7 +20,7 @@ t.as('status', 'Open');
 // output: 'Öppen'
 ```
 
-The first argument is a short context label — your description of which sense you mean. It's not shown to the user. It exists to give translators (human or model) enough signal to render the right word, and to keep the two versions stored separately in your locale file.
+The first argument is a short context label — your description of which sense you mean. It's not shown to the user. It gives translators (human or model) the signal they need to pick the right word. It also stores the two versions separately in your locale file.
 
 ## What ends up in the locale file
 

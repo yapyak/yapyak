@@ -62,7 +62,7 @@ Japanese reorders naturally:
 }
 ```
 
-This is one of the quietly important things about a placeholder-based system: the translator (or the model) is free to reshape the sentence as long as every placeholder name shows up.
+The translator (or model) is free to reshape the sentence. Only the placeholder names have to appear.
 
 ## Inline literals only
 
@@ -81,7 +81,7 @@ const params = { name: 'Ada' };
 t('Hi {name}', params);                      // error: dynamic params
 {% /diagnostics %}
 
-This catches the most common mistake from other i18n libraries: passing a pre-built object full of optional fields. The compiler requires every translation site to be statically inspectable.
+This catches the most common mistake from other i18n libraries: passing a pre-built object full of optional fields. The compiler needs to read every call site directly.
 
 {% callout variant="info" %}
 The same constraint applies to the source string itself. `t(someVariable)` and `` t(`Hi ${name}`) `` both raise a diagnostic at compile time. yapyak can only extract what it can see in the source code; anything dynamic should be a placeholder, not a string concatenation.

@@ -3,7 +3,7 @@ title: HMR
 order: 1
 ---
 
-yapyak's runtime is wired into [Vite's HMR](https://vitejs.dev/guide/api-hmr) so a save in your code, a model writing to a locale file, or a hand-edit to `locales/sv.json` all land in the running browser without a reload. This page covers the three paths and the moments where they behave differently from a plain code edit.
+yapyak's runtime is wired into [Vite's HMR](https://vitejs.dev/guide/api-hmr). A save in your code, a model writing to a locale file, or a hand-edit to `locales/sv.json` all land in the running browser without a reload.
 
 ## Source-file save loop
 
@@ -34,7 +34,7 @@ When a model returns a new translation, yapyak writes it to your `locales/<local
 
 This is the fast path. The source modules aren't recompiled, so component state survives. The whole loop is sub-second for typical edits.
 
-You can lean on this in practice: open `locales/sv.json` in your editor alongside the running app, edit a translation, and watch the change land in the browser before you've lifted your finger off `Cmd-S`. Useful for fine-tuning copy without round-tripping through a model.
+In practice: open `locales/sv.json` in your editor next to the running app, edit a translation, and the change lands in the browser before you've lifted your finger off `Cmd-S`. Useful for fine-tuning copy without going through a model.
 
 ## Translator save loop
 
@@ -44,7 +44,7 @@ The same source-file save loop, but with the translator step taking real time. T
 2. You save. The string renders in your source language immediately (no need to wait).
 3. A second or two later, the Swedish translation appears in the running browser as the model's response writes back to the locale file and HMR picks it up.
 
-The split keeps the save loop snappy even when the translator is doing real work. The source string is visible immediately and the translation arrives shortly after. You're not blocked on the model.
+The split keeps the save loop snappy even when the translator is doing real work. The source string is visible immediately and the translation arrives shortly after.
 
 Two settings affect this:
 
@@ -59,7 +59,6 @@ A few cases skip the hot path and trigger a full reload:
 - **Locale-set changes.** Adding a new locale through [`yapyak add`](/reference/cli/add) regenerates `.yapyak/types.d.ts` and reloads the dev server so TypeScript picks up the new union.
 - **Astro pages.** As noted above, `.astro` files reload rather than HMR.
 
-In every case, the trigger is something that has to take effect before yapyak can do any further work, not something yapyak does to be conservative.
 
 ## What the runtime watches for
 

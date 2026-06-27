@@ -3,7 +3,7 @@ title: Lists
 order: 4
 ---
 
-`format.list()` joins an array of strings into a single phrase using the active locale's conventions. The boundaries between items, the conjunction word ("and", "or"), and the way the last item connects are all different across languages. `format.list()` handles all of it.
+`format.list()` joins an array of strings into a phrase using the active locale's conventions. Item separators, the word for "and"/"or", and how the last item connects all differ across languages.
 
 ```ts
 import { format } from 'yapyak';
@@ -34,7 +34,7 @@ format.list(features);
 // sv-SE: 'Pull requests, Issues och Discussions'
 ```
 
-Each item passes through `t()` first to become locale-aware text. Then `format.list()` joins them in the right way for the active locale. The two layers compose without anyone having to think about it.
+Each item passes through `t()` first to become locale-aware text. Then `format.list()` joins them in the right way for the active locale.
 
 ## What about lists inside a sentence?
 

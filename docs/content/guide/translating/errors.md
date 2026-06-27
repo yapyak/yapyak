@@ -71,7 +71,7 @@ When an error escapes retries (or fires from a non-retryable type), yapyak catch
 A chunk is `batchSize` items. A safety block on one item drops the rest of that chunk's translations along with it. The partial result is what survives.
 {% /callout %}
 
-The translator never throws back to your application code. Chunk failures are reported through the diagnostic stream and the dev-time loop continues with whatever completed.
+The translator never throws back to your application code. Chunk failures surface through the diagnostic stream; the dev-time loop continues with whatever completed.
 
 ## Per-entry shape failure
 

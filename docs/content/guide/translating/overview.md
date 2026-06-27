@@ -21,7 +21,7 @@ Three sources can write a translation:
 - **Your coding agent.** Same path: the agent edits the JSON file and saves.
 - **A translator.** A model translator configured in `yapyak.config.ts` fills empty stubs as soon as they appear, batched into requests that go straight from your machine to the provider.
 
-The three paths coexist. The translator leaves hand-written translations alone, and you can rewrite a translator-written value by hand at any time. The locale files are the single source of truth.
+The three paths coexist. The translator leaves hand-written translations alone. You can also overwrite a translator-written value by hand at any time.
 
 ## When the translator runs
 

@@ -3,8 +3,6 @@ title: Installation
 order: 2
 ---
 
-Install yapyak in your project.
-
 {% picker group="framework" /%}
 
 {% picker group="adapter" /%}

@@ -32,9 +32,9 @@ export default defineConfig({
 });
 ```
 
-yapyak handles batching, deduplication, retry behavior, and result validation around your function. You describe how to talk to your backend.
+yapyak handles batching, deduplication, retries, and result validation around your function. You write the call to your backend.
 
-Deduplication runs before your callback is invoked. Two `t()` calls with the same `fileId`, source string, and disambiguation translate once and the result is fanned back out, so your `translate` never sees the duplicate.
+Deduplication runs before your callback. Two `t()` calls with the same `fileId`, source string, and disambiguation translate once; the result is reused for both, so your `translate` never sees the duplicate.
 
 ## Options
 

@@ -3,7 +3,7 @@ title: Overview
 order: 1
 ---
 
-yapyak ships a runtime [`format`](/reference/yapyak/Format) namespace backed by `Intl`. Every call uses the active locale automatically, and the options surface adds a small layer of type-safety on top of the platform API.
+yapyak ships a runtime [`format`](/reference/yapyak/Format) namespace backed by `Intl`. Every call uses the active locale. yapyak's options add a layer of type safety over the platform API.
 
 ```ts
 import { format } from 'yapyak';
@@ -47,7 +47,7 @@ Each method maps directly to an `Intl.*Format` class:
 | [`format.list`](/reference/yapyak/format.list) | `Intl.ListFormat` |
 | [`format.relativeTime`](/reference/yapyak/format.relativeTime) | `Intl.RelativeTimeFormat` |
 
-## What it adds
+## Beyond Intl
 
 ### Currency type-safety
 

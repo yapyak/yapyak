@@ -3,7 +3,7 @@ title: Tags
 order: 4
 ---
 
-A locale in yapyak is a BCP 47 language tag — the same standard `Intl` uses for its formatters. Tags are short, structured, and case-insensitive in canonical form.
+A locale in yapyak is a BCP 47 language tag — the IETF standard `Intl` also uses (examples: `en`, `en-US`, `zh-Hant-TW`). Tags are short, structured, and case-insensitive in canonical form.
 
 {% switch group="packageManager" %}
 {% when value="pnpm" %}
@@ -78,7 +78,7 @@ In practice, you rarely need to call this directly. yapyak's runtime uses it int
 
 ## Narrowing untrusted strings
 
-Locales arriving from outside your code. URL parameters, form fields, request headers. Are typed as `string` until you narrow them. yapyak exports two helpers:
+Locales arriving from outside your code — URL parameters, form fields, request headers — are typed as `string` until you narrow them. yapyak exports two helpers:
 
 ### [`isLocale`](/reference/yapyak/isLocale)
 

@@ -38,7 +38,7 @@ The compiler needs to see the full call (`t.in('sv', 'Welcome')`) in one place t
 
 ## When not to use it
 
-`t.in()` is a sharp tool. Reach for it when you genuinely need to render in a non-active locale: a side-by-side comparison, a server-rendered email, an admin-only preview. For everything else, the active locale is what you want. Let the regular `t()` and your locale-switcher handle it.
+Use `t.in()` only when you need to render in a non-active locale: a side-by-side comparison, a server-rendered email, an admin-only preview. For everything else, the active locale is what you want. Let the regular `t()` and your locale-switcher handle it.
 
 Common misuses to avoid:
 

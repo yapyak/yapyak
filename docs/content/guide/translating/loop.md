@@ -28,7 +28,7 @@ The source-only steps take milliseconds. The translator step takes a second or t
 
 The source string renders in the browser immediately. The translation arrives shortly after as the translator response writes back through HMR. You're not blocked on the model.
 
-## The threshold guardrail
+## Threshold
 
 A single save that adds more than `autoTranslateThreshold` new strings holds off auto-translation. yapyak writes the stubs and logs that the translator was skipped. Run [`yapyak translate`](/guide/translating/coverage) when you're ready.
 

@@ -3,7 +3,7 @@ title: Switch
 order: 2
 ---
 
-There's one active locale at any moment. Reading it, changing it, and re-rendering on changes are all part of the runtime API. Your framework binding wraps `getLocale()` and `setLocale()` from `yapyak` in an idiomatic shape. See below for what that looks like in your stack.
+There's one active locale at any moment. Reading it, changing it, and re-rendering on changes are all part of the runtime API. Your framework binding wraps `getLocale()` and `setLocale()` in an idiomatic shape.
 
 ## The framework binding
 
@@ -27,7 +27,7 @@ export function LanguageButton() {
 }
 ```
 
-The hook subscribes the component to locale changes. Anything that calls it re-renders when `setLocale()` is called from anywhere in the app: your locale switcher, a server-rendered cookie, a forced URL parameter.
+The hook subscribes the component to locale changes. Any `setLocale()` call re-renders every subscribed component, no matter where it comes from.
 {% /when %}
 
 {% when value="vue" %}

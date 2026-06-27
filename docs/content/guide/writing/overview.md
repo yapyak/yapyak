@@ -3,7 +3,7 @@ title: Overview
 order: 1
 ---
 
-[`t()`](/reference/yapyak/t) is the function you wrap around any text that should be translatable. The string you wrap becomes the source string as well as the key for its translations.
+[`t()`](/reference/yapyak/t) wraps any text that should be translatable. The string you wrap becomes the source string as well as the key for its translations.
 
 ```ts
 import { t } from 'yapyak';
@@ -11,7 +11,7 @@ import { t } from 'yapyak';
 t('Save changes');
 ```
 
-The smallest possible usage. yapyak picks it up on save, makes sure each target locale file has an entry for it, and replaces the call at compile time with a synchronous lookup of the right locale's value.
+The smallest possible usage. On save, yapyak picks it up and adds an entry to each target locale file. At compile-time, the call is rewritten as a synchronous lookup of the active locale's value.
 
 ## Where you write `t()`
 
@@ -77,7 +77,7 @@ The English (or whatever your `defaultLocale` is) text you pass to `t()` is what
 }
 ```
 
-The conversation between code and locale file is direct: read the file, see exactly what English shows up where. Edit the source string in your component and yapyak follows it, either keeping the translation or marking it for re-translation depending on your [`preserveTranslationsOnRename`](/guide/getting-started/configuration) setting.
+Open the file and you see exactly which source string is used where. Edit the source string in your component and yapyak follows it. Depending on [`preserveTranslationsOnRename`](/guide/getting-started/configuration), the existing translation is kept or marked for re-translation.
 
 ## What the compiler checks
 
@@ -94,7 +94,7 @@ The compiler can only translate what it can see at compile time. Anything dynami
 
 ## What you get back
 
-`t()` returns a string. If your source contains [rich-text tags](/guide/writing/rich-text) (`<link>...</link>` or `<br/>`), the return type is branded so `<RichText>` accepts it as input. The branding is a signal. Render through `<RichText>` rather than as plain text, or the tags appear verbatim.
+`t()` returns a string. If your source contains [rich-text tags](/guide/writing/rich-text) (`<link>...</link>` or `<br/>`), the return type is branded so `<RichText>` accepts it. Render through `<RichText>` — if you render the string as plain text, the tags appear verbatim.
 
 For everything else, `t()` is a `string`. You can interpolate it, pass it as a prop, log it, store it. It behaves like the literal you'd have written in a single-language version of the same component.
 

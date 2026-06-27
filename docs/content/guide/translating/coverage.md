@@ -98,7 +98,7 @@ For a single source string, [`yapyak retranslate`](/reference/cli/retranslate) i
 - run: pnpm build
 ```
 
-`translate` fills gaps, `check` confirms nothing slipped, `build` ships. A check failure stops the pipeline before a half-translated bundle is built.
+`translate` fills gaps, `check` confirms nothing slipped, `build` ships the bundle. A failed check stops the pipeline before a half-translated bundle is built.
 
 ## Status vs check
 

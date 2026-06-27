@@ -3,11 +3,9 @@ title: How it works
 order: 4
 ---
 
-Learn how yapyak works during development and in production.
-
 ## The save loop
 
-When you save a source file, yapyak runs through six steps:
+When you save a source file, yapyak runs six steps:
 
 1. **Extract.** The right processor parses the file and finds the `t()` calls inside. The built-in processor handles `.ts` and `.tsx`; framework processors handle `.vue`, `.svelte`, and `.astro`.
 2. **Validate.** Every call is checked against its source: placeholders match the arguments, plural branches are spelled correctly, the message is a static literal.
@@ -110,7 +108,7 @@ Locale files live in your repository, one per locale, scoped by the source file 
 }
 ```
 
-The scope is what lets yapyak follow your translations when you move or rename source files. yapyak remembers prior locations in `.yapyak/` and restores translations to the new path on save.
+The scope lets yapyak follow your translations when you move or rename source files. yapyak records prior locations in `.yapyak/` and restores translations to the new path on save.
 
 {% callout variant="tip" %}
 Locale files are normal JSON. Open one and edit it directly to correct a model's choice, adjust tone manually, or paste in a result from a professional translator. yapyak watches the files and refreshes the browser when they change.
@@ -256,13 +254,13 @@ Source modules aren't recompiled in this case, so component state survives — o
 
 ## Translation safety
 
-yapyak runs through four guarantees on every save to prevent silent loss or overwrite of translations.
+yapyak makes four guarantees on every save to prevent silent loss or overwrite of translations.
 
 **The orphan cache.** Every translation yapyak has ever seen lives in `.yapyak/orphans.json`. Delete a component, add it back three months later, copy markup to a new file — the translations re-appear in `locales/<locale>.json` automatically. The cache has no expiration.
 
 Reuse is based on exact match of the source string. Close-but-not-identical strings are treated as new.
 
-**Rename detection.** When you edit a source string in place (`'Save'` → `'Save changes'`), yapyak compares positions in the file to tell a rename apart from a delete-and-add, and preserves the existing translation under the new key. The behavior is controlled by [`preserveTranslationsOnRename`](/guide/getting-started/configuration#preservetranslationsonrename); see [Renames](/guide/translating/renames) for the heuristics.
+**Rename detection.** When you edit a source string in place (`'Save'` → `'Save changes'`), yapyak uses position in the file to tell a rename apart from a delete-and-add. It preserves the existing translation under the new key. The behavior is controlled by [`preserveTranslationsOnRename`](/guide/getting-started/configuration#preservetranslationsonrename); see [Renames](/guide/translating/renames) for the heuristics.
 
 **The invariant barrier.** Before any locale file is written, yapyak compares the new state against the existing one. If a write would clear a non-empty stub for a string still present in your source, the write is refused and the violation surfaces as an error. A still-used translation can't silently vanish.
 

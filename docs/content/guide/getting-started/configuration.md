@@ -3,7 +3,7 @@ title: Configuration
 order: 3
 ---
 
-`yapyak.config.ts` sits at your project root and configures yapyak. Every field is optional.
+`yapyak.config.ts` lives at your project root and configures yapyak. Every field is optional.
 
 ## Quick reference
 
@@ -89,7 +89,7 @@ exclude: [
 ],
 ```
 
-If you set `exclude` yourself, you're replacing the defaults, not adding to them. To extend rather than replace, spread the `DEFAULT_EXCLUDE` constant exported from `yapyak/config`:
+If you set `exclude` yourself, you're replacing the defaults — not adding to them. To extend rather than replace, spread the `DEFAULT_EXCLUDE` constant exported from `yapyak/config`:
 
 ```ts
 import { defineConfig, DEFAULT_EXCLUDE } from 'yapyak/config';
@@ -152,7 +152,7 @@ For file formats yapyak doesn't ship a processor for, build your own with [`crea
 
 ## Translator
 
-Hook up a model to fill in empty stubs automatically. yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama; any model with a chat completion endpoint is one short [custom translator](/guide/advanced/custom-translator) away.
+Hook up a model to fill in empty stubs automatically. yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama. For anything else, write a [custom translator](/guide/advanced/custom-translator).
 
 ### `translator`
 
@@ -262,7 +262,7 @@ The directory contains one JSON file per locale. `en.json`, `sv.json`, and so on
 
 ## Fixed-locale builds
 
-When you want a single-locale artifact. A static deploy that serves one language per build. Pass `fixedLocale` to the Vite plugin (not `yapyak.config.ts`):
+For a single-locale artifact — a static deploy that serves one language per build — pass `fixedLocale` to the Vite plugin (not `yapyak.config.ts`):
 
 ```ts [vite.config.ts]
 import { yapyak } from '@yapyak/vite';
@@ -298,7 +298,7 @@ Calls that need runtime behaviour — `t.as()`, ICU placeholders — stay as com
 
 ## Reading config from your code
 
-Most of the time you set yapyak.config.ts once and forget about it. If your code needs to know what's configured at runtime. To render a locale switcher, for example. Read it from the runtime exports of `yapyak`:
+Most of the time you set yapyak.config.ts once and forget about it. If your code needs to read the config at runtime — to render a locale switcher, for example — read it from the runtime exports of `yapyak`:
 
 ```ts
 import { defaultLocale, getLocale, locales } from 'yapyak';

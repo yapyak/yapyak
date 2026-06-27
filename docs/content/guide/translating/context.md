@@ -70,7 +70,7 @@ The model sees the handler name and any sibling markup, which is usually enough 
 
 ## Privacy
 
-Call-site context is part of the request to your provider. It goes from your machine to the model and never routes through yapyak. If your provider's terms of service worry you, `'none'` is the strict-privacy setting and turns off [`examples`](/guide/translating/examples) as well.
+Call-site context is part of the request to your provider. It goes from your machine to the model and never routes through yapyak. To send the source string only, set `'none'` — that level also turns off [`examples`](/guide/translating/examples).
 
 ## Per-item examples
 
