@@ -3,7 +3,7 @@ title: Homonyms
 order: 7
 ---
 
-Sometimes two `t()` calls use the same English source but mean different things. "Open" is the most common. A button that performs an action, and a status that describes a state. In English they're the same word; in many other languages they aren't.
+Sometimes two `t()` calls use the same English source but mean different things. "Open" is the canonical example: the same English word for a button that performs an action and for a status that describes a state. Many languages need different translations for each.
 
 ```ts
 t('Open');  // a button: "Öppna" in Swedish
@@ -17,7 +17,7 @@ t.as('action', 'Open');   // "Öppna"
 t.as('status', 'Open');   // "Öppen"
 ```
 
-The first argument is a short context label. Your description of which sense you mean. It's not shown to the user. It exists to give translators (human or model) enough signal to render the right word, and to keep the two versions stored separately in your locale file.
+The first argument is a short context label — your description of which sense you mean. It's not shown to the user. It exists to give translators (human or model) enough signal to render the right word, and to keep the two versions stored separately in your locale file.
 
 ## What ends up in the locale file
 

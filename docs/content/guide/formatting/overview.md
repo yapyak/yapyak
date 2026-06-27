@@ -47,7 +47,7 @@ Each method maps directly to an `Intl.*Format` class:
 | [`format.list`](/reference/yapyak/format.list) | `Intl.ListFormat` |
 | [`format.relativeTime`](/reference/yapyak/format.relativeTime) | `Intl.RelativeTimeFormat` |
 
-## What it adds beyond `Intl`
+## What it adds
 
 **Currency type-safety.** When `style: 'currency'`, the `currency` field is required and typed against ISO 4217. The [`Currency`](/reference/yapyak/Currency) type is exported separately for passing through your own functions. See [Numbers](/guide/formatting/numbers#currency) for the full pattern.
 
@@ -75,6 +75,6 @@ format.in('sv').number(200, {
 
 The result is the same regardless of the active locale. The active locale itself is left untouched.
 
-## When to use `format` vs ICU placeholders
+## Format vs ICU
 
 Use `format` for values **outside** a translated message. For values **inside** a `t()` call, prefer ICU placeholders (`{count, number, currency}`). They live next to the translation and the compiler emits the same `Intl.*Format` machinery underneath.

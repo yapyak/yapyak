@@ -124,7 +124,7 @@ format.relativeTime(1, 'day', { numeric: 'auto' });
 
 For offsets the locale doesn't have a special word for, `numeric: 'auto'` falls back to the numeric phrase.
 
-## Inside a `t()` message
+## Inside a translation
 
 The same date/time formatting is available [inside ICU messages](/guide/writing/plurals#dates-and-times). `{when, date, long}`, `{at, time, short}`. Use `t()` when the date is part of a sentence ("Updated on June 17"); use `format.dateTime()` when it's its own atom (a column header, a footer timestamp).
 

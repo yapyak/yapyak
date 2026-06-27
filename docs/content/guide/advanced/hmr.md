@@ -16,7 +16,7 @@ The default path: you write a new `t()` call (or edit an existing one), save the
 5. The compiled module is rewritten with the new `_pick()` lookups inline.
 6. Vite hot-replaces the module. The component re-renders.
 
-The whole loop takes milliseconds for the source-only steps and a few seconds for the translator step. Component state. Open dialogs, form inputs, scroll position. Stays put because Vite swaps the module without re-mounting.
+The whole loop takes milliseconds for the source-only steps and a few seconds for the translator step. Component state — open dialogs, form inputs, scroll position — stays put because Vite swaps the module without re-mounting.
 
 {% callout variant="info" %}
 For `.astro` files, step 6 differs. Astro doesn't run yapyak's runtime in the browser, so the page reloads instead of doing a module swap. State doesn't survive the reload. But it didn't survive on the server side anyway, so the effect is the same as a normal Astro HMR.
@@ -44,7 +44,7 @@ The same source-file save loop, but with the translator step taking real time. T
 2. You save. The string renders in your source language immediately (no need to wait).
 3. A second or two later, the Swedish translation appears in the running browser as the model's response writes back to the locale file and HMR picks it up.
 
-The split. Source visible immediately, translation arrives shortly. Keeps the dev loop snappy even when the translator is doing real work. You're not blocked on the model.
+The split keeps the dev loop snappy even when the translator is doing real work. The source string is visible immediately and the translation arrives shortly after. You're not blocked on the model.
 
 Two settings affect this:
 
@@ -59,7 +59,7 @@ A few cases skip the hot path and trigger a full reload:
 - **Locale-set changes.** Adding a new locale through [`yapyak add`](/reference/cli/add) regenerates `.yapyak/types.d.ts` and reloads the dev server so TypeScript picks up the new union.
 - **Astro pages.** As noted above, `.astro` files reload rather than HMR.
 
-In every case, the trigger is something that has to take effect before yapyak can do any further work. Not something yapyak does to be conservative.
+In every case, the trigger is something that has to take effect before yapyak can do any further work, not something yapyak does to be conservative.
 
 ## What the runtime watches for
 

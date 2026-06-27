@@ -154,7 +154,7 @@ A plain `Error` is treated as a `TranslatorNetworkError` and gets the default re
 
 ## A rules-based translator
 
-When the model translator path is overkill. An app whose only translations are a handful of fixed terms:
+When the model translator path is overkill — say, an app whose only translations are a handful of fixed terms:
 
 ```ts
 import { createTranslator } from 'yapyak/translator';

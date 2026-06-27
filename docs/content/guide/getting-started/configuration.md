@@ -14,7 +14,7 @@ order: 3
 | [`processors`](#processors) | `[]` | Framework processors |
 | [`defaultLocale`](#defaultlocale) | `'en'` | Source language |
 | [`localesDir`](#localesdir) | `'locales'` | Where locale files live |
-| [`translator`](#translator) |. | Optional model |
+| [`translator`](#translator) | — | Optional model |
 | [`examples`](#examples) | `5` | In-context style examples per request |
 | [`autoTranslateThreshold`](#autotranslatethreshold) | `20` | Skip auto-translate above N new strings on save |
 | [`preserveTranslationsOnRename`](#preservetranslationsonrename) | depends on translator | Keep translations on source edits |

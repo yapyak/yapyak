@@ -3,7 +3,7 @@ title: Tags
 order: 4
 ---
 
-A locale in yapyak is a BCP 47 language tag, the same standard `Intl` uses for its formatters. Tags are short, structured, and case-insensitive in canonical form. Anywhere you write a locale (the argument to [`yapyak add`](/reference/cli/add), the argument to `setLocale()`, the first to `t.in()`), you write a BCP 47 tag.
+A locale in yapyak is a BCP 47 language tag — the same standard `Intl` uses for its formatters. Tags are short, structured, and case-insensitive in canonical form.
 
 {% switch group="packageManager" %}
 {% when value="pnpm" %}
@@ -53,7 +53,7 @@ The canonical casing is `lowercase-Titlecase-UPPERCASE` (language lowercase, scr
 
 ## Fallbacks
 
-When a translation isn't available for a more-specific tag but is available for a less-specific one, yapyak walks the chain from specific to general. [`getLocaleFallbackChain()`](/reference/yapyak/getLocaleFallbackChain) exposes the order:
+When a more-specific tag has no translation but a less-specific one does, yapyak walks the chain from specific to general. [`getLocaleFallbackChain()`](/reference/yapyak/getLocaleFallbackChain) exposes the order:
 
 ```ts
 import { getLocaleFallbackChain } from 'yapyak';
@@ -74,7 +74,7 @@ getLocaleFallbackChain('sv');
 
 Each step drops one subtag from the right. The chain doesn't include your `defaultLocale` at the end; append it yourself when you need a full ordering.
 
-In practice, you rarely need to call this directly. Yapyak's runtime uses it internally during translation lookup. Reach for it when you're implementing custom locale negotiation, for example in a server middleware that compares an `Accept-Language` header against your shipped locales.
+In practice, you rarely need to call this directly. yapyak's runtime uses it internally during translation lookup. Reach for it when you're implementing custom locale negotiation, for example in a server middleware that compares an `Accept-Language` header against your shipped locales.
 
 ## Narrowing untrusted strings
 
@@ -110,7 +110,7 @@ Returns the matched `Locale` or `undefined` if no shipped locale matches even af
 
 ## Accept-Language and content negotiation
 
-When the client sends an `Accept-Language` header (`sv,en;q=0.8,en-US;q=0.6`), yapyak parses it into an ordered list. Most preferred first. If [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is enabled in your config, the locale resolver walks that list and picks the first entry that matches a shipped locale (using the fallback chain above).
+When the client sends an `Accept-Language` header (`sv,en;q=0.8,en-US;q=0.6`), yapyak parses it into an ordered list with the most preferred entry first. If [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is enabled in your config, the locale resolver walks that list and picks the first entry that matches a shipped locale (using the fallback chain above).
 
 This is how a fresh visit gets a sensible default. The user's browser preferences take effect even before they've made an explicit choice or had their cookie set.
 

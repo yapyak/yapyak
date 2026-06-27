@@ -3,7 +3,7 @@ title: Rich text
 order: 5
 ---
 
-Some translations need to wrap part of the text in a link, a line break, an emphasis, or a custom component. Concatenation doesn't survive translation. Every language puts the wrapped part in a different place. Rich text solves this by letting you write tags inside the source string and bind them to components in the call site.
+Rich text lets a translation wrap part of itself in a link, a line break, an emphasis, or a custom component. You write tags inside the source string and bind them to components at the call site.
 
 ```ts
 t('Read our <link>privacy policy</link> for details.');

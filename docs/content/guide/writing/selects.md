@@ -87,4 +87,4 @@ The compiler validates the structural shape:
 - `other` is present
 - Every nested placeholder is in the params object
 
-It doesn't enforce that the value type is one of your declared branches. That's your TypeScript discipline at the call site. If you pass `'archived'` and only `'draft'` and `'published'` are listed, runtime falls through to `other` cleanly. No crash, just the fallback.
+It doesn't enforce that the value type is one of your declared branches. That's your TypeScript discipline at the call site. If you pass `'archived'` and only `'draft'` and `'published'` are listed, the runtime falls through to `other` cleanly. The `other` branch renders; nothing crashes.

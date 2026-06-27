@@ -67,7 +67,7 @@ For client-side switching from inside a React/Vue/Svelte runtime, enable [`syncH
 
 Server-side persistence reads happen inside `withResponse`. Whatever [persistence strategy](/guide/switching/persistence) you've configured ([cookie](/guide/switching/persistence#cookie), [URL](/guide/switching/persistence#url)) is read off the request automatically. If [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is enabled, the `Accept-Language` header is consulted too.
 
-Server-side persistence writes (a `setLocale()` call inside a request handler) are buffered until `withResponse` finishes, then flushed onto the response. If your framework constructs its response object outside of `withResponse`, the buffered headers won't reach the user. Keep the response construction inside the scope.
+For server-side persistence writes (a `setLocale()` call inside a request handler), yapyak buffers the headers until `withResponse` finishes, then flushes them onto the response. If your framework constructs its response object outside of `withResponse`, the buffered headers won't reach the user. Keep the response construction inside the scope.
 
 ## The processor side
 

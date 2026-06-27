@@ -3,7 +3,7 @@ title: Overview
 order: 1
 ---
 
-A locale in yapyak is the BCP 47 name of one of the JSON files in your `localesDir`: `'sv'` for `locales/sv.json`, `'en-GB'` for `locales/en-GB.json`. The [`Locale`](/reference/yapyak/Locale) type is generated from the files yapyak finds on disk and refreshed on every [`yapyak add`](/reference/cli/add).
+A locale in yapyak is the BCP 47 name of one of the JSON files in your `localesDir`: `'sv'` for `locales/sv.json`, `'en-GB'` for `locales/en-GB.json`. yapyak generates the [`Locale`](/reference/yapyak/Locale) type from the files it finds on disk, refreshed on every [`yapyak add`](/reference/cli/add).
 
 At any moment, one of those locales is the **active locale.** Calling [`t()`](/reference/yapyak/t) reads it and returns the matching translation; `format.number`, `format.dateTime`, and the rest of the [`format`](/guide/formatting/overview) namespace do the same. When the active locale changes, every component that read it re-renders.
 

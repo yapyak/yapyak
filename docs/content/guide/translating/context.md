@@ -33,7 +33,7 @@ A higher level produces better translations for tricky strings at the cost of mo
 A [disambiguation](/guide/writing/homonyms) from `t.as(context, source)` is sent at every level, including `'none'`. It travels with the source string rather than with the call-site context.
 {% /callout %}
 
-## What `'minimal'` actually sends
+## Minimal in practice
 
 For this call:
 
@@ -53,7 +53,7 @@ The request carries:
 
 Enough for the model to translate `Open` as the imperative verb on a button rather than the adjective "open" describing a state.
 
-## What `'rich'` adds
+## Rich in practice
 
 The same call at `context: 'rich'` adds a `snippet`:
 

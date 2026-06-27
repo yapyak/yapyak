@@ -120,7 +120,7 @@ Locale files live in your repository, one per locale, scoped by the source file 
 The scope is what lets yapyak follow your translations when you move or rename source files. yapyak remembers prior locations in `.yapyak/` and restores translations to the new path on save.
 
 {% callout variant="tip" %}
-Locale files are normal JSON. If you need to hand-edit a translation. Correct a model's choice, set a tone manually, paste in something from a professional translator. Open the file and edit it. yapyak watches those files too and refreshes the browser when they change.
+Locale files are normal JSON. Open one and edit it directly to correct a model's choice, adjust tone manually, or paste in a result from a professional translator. yapyak watches the files and refreshes the browser when they change.
 {% /callout %}
 
 ## What gets compiled
@@ -175,7 +175,7 @@ Three things happen:
 - **Identical catalogs are shared.** Both `t('Save')` calls reference the same `_catalog_$0`; the catalog object is declared once.
 - **Vite code-splits these catalog objects** with the modules that contain them. A route that doesn't render a translation never downloads it.
 
-**Single-locale.** When only one locale ends up in the bundle. Because that's the only one you've added, or because you've set [`fixedLocale`](/guide/getting-started/configuration#fixed-locale-builds). The compiler skips `_pick`, the factory imports, and the catalog objects entirely. Each `t()` call collapses to whatever value the active locale has on disk (or to the source string if there's no translation).
+**Single-locale.** When only one locale ends up in the bundle — either because that's the only one you've added, or because you've set [`fixedLocale`](/guide/getting-started/configuration#fixed-locale-builds) — the compiler skips `_pick`, the factory imports, and the catalog objects entirely. Each `t()` call collapses to whatever value the active locale has on disk (or to the source string if there's no translation).
 
 With `fixedLocale: 'sv'` and a Swedish translation present:
 
@@ -259,7 +259,7 @@ Astro pages render on the server with the active locale. Switching locale reload
 
 Editing a locale file is a special case. yapyak watches your JSON files and, when one changes, sends just the changed entries to the browser over Vite's WebSocket. The runtime updates them in memory and components re-render with the new text.
 
-Source modules aren't recompiled in this case. Component state. Open menus, form input, scroll position. Stays where it was. This is the same path the automatic save loop takes: when a model returns a translation, yapyak writes it to the locale file and HMR picks it up from there.
+Source modules aren't recompiled in this case, so component state survives — open menus, form input, scroll position all stay where they were. This is the same path the automatic save loop takes: when a model returns a translation, yapyak writes it to the locale file and HMR picks it up from there.
 
 {% callout variant="info" %}
 For `.astro` files, the page reloads instead. Astro doesn't run yapyak's runtime in the browser, so updates take the form of a fresh server render.
@@ -267,7 +267,7 @@ For `.astro` files, the page reloads instead. Astro doesn't run yapyak's runtime
 
 ## Translation safety
 
-yapyak runs through four guarantees on every save to keep translations from being lost or overwritten silently.
+yapyak runs through four guarantees on every save to prevent silent loss or overwrite of translations.
 
 **The orphan cache.** Every translation yapyak has ever seen lives in `.yapyak/orphans.json`. Delete a component, add it back three months later, copy markup to a new file. The translations re-appear in `locales/<locale>.json` automatically. The cache has no expiration. Reuse is based on exact match of the source string; close-but-not-identical strings are treated as new.
 
@@ -281,4 +281,4 @@ The only path that re-translates an already-filled entry is `yapyak translate --
 
 ## SSR
 
-The server renders the same compiled modules the client does. There's no separate catalog to load before rendering an interface. Per-request locale binding is set up through a small SSR adapter. See [SSR](/guide/getting-started/installation) for the details.
+The server renders the same compiled modules the client does. There's no separate catalog to load before rendering an interface. A small SSR adapter binds each request to its own locale. See [SSR](/guide/getting-started/installation) for the details.

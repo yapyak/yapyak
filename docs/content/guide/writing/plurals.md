@@ -3,7 +3,7 @@ title: Plurals
 order: 3
 ---
 
-Plurals are the first place a single-language app starts feeling cramped. "1 message" / "5 messages" works in English with a simple `if`. But it falls apart in languages with two singular forms (Welsh), three plural categories (Russian), or six (Arabic). ICU's `plural` format handles all of them inside a single message string.
+ICU's `plural` format handles count-driven word changes inside a single message string. Languages with two singular forms (Welsh), three plural categories (Russian), or six (Arabic) all fit the same syntax.
 
 ```ts
 t('You have {count, plural, one {# message} other {# messages}}', { count: 5 });

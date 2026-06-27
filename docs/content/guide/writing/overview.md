@@ -77,11 +77,11 @@ The English (or whatever your `defaultLocale` is) text you pass to `t()` is what
 }
 ```
 
-The conversation between code and locale file is direct: read the file, see exactly what English shows up where. Edit the source string in your component and yapyak follows it. Either keeping the translation or marking it for re-translation depending on your [`preserveTranslationsOnRename`](/guide/getting-started/configuration) setting.
+The conversation between code and locale file is direct: read the file, see exactly what English shows up where. Edit the source string in your component and yapyak follows it, either keeping the translation or marking it for re-translation depending on your [`preserveTranslationsOnRename`](/guide/getting-started/configuration) setting.
 
 ## What the compiler checks
 
-Every save runs `t()` calls through a parser. Anything ambiguous becomes a [diagnostic](/reference/diagnostics). A compile-time warning or error you'll see in your editor and in your terminal.
+Every save runs `t()` calls through a parser. Anything ambiguous becomes a [diagnostic](/reference/diagnostics) — a compile-time warning or error you'll see in your editor and in your terminal.
 
 The most common ones are early-flagged mistakes:
 

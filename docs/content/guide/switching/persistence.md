@@ -68,7 +68,7 @@ persistence: {
 `localStorage` is per-origin and survives across tabs and sessions. On a fresh device, the key is absent until the first `setLocale()` call; the active locale starts at `defaultLocale`.
 
 {% callout variant="warning" %}
-Local storage isn't available during SSR. If your app server-renders, the server has no way to read the user's stored choice on the first request, and the initial render will be in `defaultLocale`. The page then hydrates and the runtime reads `localStorage` and triggers a re-render in the right locale, visible as a flash of the wrong language. Use [cookie](#cookie) or [url](#url) persistence for server-rendered apps.
+Local storage isn't available during SSR. If your app server-renders, the server has no way to read the user's stored choice on the first request, so the initial render uses `defaultLocale`. The page then hydrates, the runtime reads `localStorage`, and a re-render in the right locale follows — visible as a flash of the wrong language. Use [cookie](#cookie) or [url](#url) persistence for server-rendered apps.
 {% /callout %}
 
 ## URL
@@ -104,7 +104,7 @@ The default. The active locale lives only in memory for the current page session
 persistence: 'none',
 ```
 
-Or just omit the field entirely. `'none'` is the default.
+Or omit the field entirely. `'none'` is the default.
 
 Useful when you don't want persistence: a kiosk app, a development build, or a setup where another system (the URL path itself, a server-set user preference) carries the locale.
 

@@ -3,9 +3,7 @@ title: Overrides
 order: 6
 ---
 
-Most of the time, `t()` renders the active locale. There are a few moments where you want to lock a specific call to one language regardless of who's reading. A locale-preview pane in your CMS, a server-side email rendered for a recipient whose preference isn't the request's locale, a debugging tool that shows every language side-by-side.
-
-For those, [`t.in(locale, source)`](/reference/yapyak/t.in) forces a single locale on a single call.
+[`t.in(locale, source)`](/reference/yapyak/t.in) forces a single locale on one call, regardless of the active locale.
 
 ```ts
 t.in('sv', 'Welcome back');

@@ -46,7 +46,7 @@ import { t } from 'yapyak';
 </template>
 ```
 
-It's a `Ref<Locale>`. The standard Vue reactivity contract. Components that read `locale.value` (or rely on auto-unwrapping in templates) re-render when it changes, and an assignment triggers every subscriber.
+It's a `Ref<Locale>` — the standard Vue reactivity contract. Components that read `locale.value` (or rely on auto-unwrapping in templates) re-render when it changes, and an assignment triggers every subscriber.
 {% /when %}
 
 {% when value="svelte" %}
