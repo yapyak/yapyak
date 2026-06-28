@@ -14,9 +14,9 @@ export type ReferenceModule = {
 };
 
 export type ReferenceExport =
-  | ReferenceClass
+  | ReferenceClassSymbol
   | ReferenceFunction
-  | ReferenceInterface
+  | ReferenceInterfaceSymbol
   | ReferenceTypeAlias
   | ReferenceVariable;
 
@@ -69,7 +69,7 @@ export type ReferenceTypeParameter = {
   name: string;
 };
 
-type ReferenceInterface = ReferenceExportBase & {
+type ReferenceInterfaceSymbol = ReferenceExportBase & {
   callSignatures: ReferenceCallSignature[];
   kind: 'interface';
   members: ReferenceMember[];
@@ -90,7 +90,7 @@ export type ReferenceVariable = ReferenceExportBase & {
   type: TypeToken[];
 };
 
-type ReferenceClass = ReferenceExportBase & {
+type ReferenceClassSymbol = ReferenceExportBase & {
   kind: 'class';
   members: ReferenceMember[];
   signature: string;

@@ -4,36 +4,34 @@ import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
 import type { LocaleResolver } from '../locale-resolver';
 
 export type State = {
-  autoTranslateController: AbortController | undefined;
+  autoTranslateController?: AbortController;
   command: 'build' | 'serve';
-  configFile: string | undefined;
+  configFile?: string;
   filter: (path: string) => boolean;
-  fixedLocale: string | undefined;
+  fixedLocale?: string;
   logger: Logger;
   messagesByFile: Map<string, ExtractedMessage[]>;
-  normalized: NormalizedYapyakConfig | undefined;
+  normalized?: NormalizedYapyakConfig;
   projectRoot: string;
-  resolver: LocaleResolver | undefined;
+  resolver?: LocaleResolver;
   teardownCallbacks: (() => void)[];
   yapyakDir: string;
 };
 
 export type CreateStateOptions = {
-  fixedLocale: string | undefined;
+  fixedLocale?: string;
 };
 
-export function createState(options: CreateStateOptions): State {
+export function createState(options: CreateStateOptions = {}): State {
   return {
-    autoTranslateController: undefined,
     command: 'serve',
-    configFile: undefined,
     filter: () => false,
-    fixedLocale: options.fixedLocale,
+    ...(options.fixedLocale !== undefined && {
+      fixedLocale: options.fixedLocale,
+    }),
     logger: createConsoleLogger(),
     messagesByFile: new Map(),
-    normalized: undefined,
     projectRoot: process.cwd(),
-    resolver: undefined,
     teardownCallbacks: [],
     yapyakDir: '',
   };

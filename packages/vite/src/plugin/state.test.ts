@@ -38,9 +38,7 @@ function buildResolver(): LocaleResolver {
 
 describe('createState', () => {
   it('builds default state with `serve` command and empty messages', () => {
-    const state = createState({
-      fixedLocale: undefined,
-    });
+    const state = createState();
     expect(state.autoTranslateController).toBeUndefined();
     expect(state.command).toBe('serve');
     expect(state.configFile).toBeUndefined();
@@ -60,9 +58,7 @@ describe('createState', () => {
   });
 
   it('builds a default filter that blocks every path', () => {
-    const state = createState({
-      fixedLocale: undefined,
-    });
+    const state = createState();
     expect(state.filter('src/a.tsx')).toBe(false);
   });
 
@@ -70,9 +66,7 @@ describe('createState', () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-    const state = createState({
-      fixedLocale: undefined,
-    });
+    const state = createState();
     state.logger.clearScreen('error');
     state.logger.info('Hello');
     state.logger.warn('Hello');
@@ -88,18 +82,14 @@ describe('createState', () => {
 
 describe('getNormalized', () => {
   it('returns the normalized config when set', () => {
-    const state = createState({
-      fixedLocale: undefined,
-    });
+    const state = createState();
     const normalized = normalizeYapyakConfig({});
     state.normalized = normalized;
     expect(getNormalized(state)).toBe(normalized);
   });
 
   it('throws when the normalized config is not set', () => {
-    const state = createState({
-      fixedLocale: undefined,
-    });
+    const state = createState();
     expect(() => getNormalized(state)).toThrow(
       /plugin used before configResolved/,
     );
@@ -108,18 +98,14 @@ describe('getNormalized', () => {
 
 describe('getResolver', () => {
   it('returns the resolver when set', () => {
-    const state = createState({
-      fixedLocale: undefined,
-    });
+    const state = createState();
     const resolver = buildResolver();
     state.resolver = resolver;
     expect(getResolver(state)).toBe(resolver);
   });
 
   it('throws when the resolver is not set', () => {
-    const state = createState({
-      fixedLocale: undefined,
-    });
+    const state = createState();
     expect(() => getResolver(state)).toThrow(
       /plugin used before configResolved/,
     );

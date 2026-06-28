@@ -73,9 +73,7 @@ describe('fillStubs', () => {
         id: 'mock',
       },
     );
-    const state = createState({
-      fixedLocale: undefined,
-    });
+    const state = createState();
     state.normalized = normalizeYapyakConfig({
       translator,
     });
@@ -105,9 +103,7 @@ describe('fillStubs', () => {
         id: 'mock',
       },
     );
-    const state = createState({
-      fixedLocale: undefined,
-    });
+    const state = createState();
     state.normalized = normalizeYapyakConfig({
       translator,
     });

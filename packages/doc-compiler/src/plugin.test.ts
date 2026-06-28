@@ -2,7 +2,7 @@ import type { Config } from './config';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { docCompiler } from './vite';
+import { docCompiler } from './plugin';
 import { EventEmitter } from 'node:events';
 import {
   existsSync,
