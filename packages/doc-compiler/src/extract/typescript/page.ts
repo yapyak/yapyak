@@ -23,7 +23,6 @@ import type {
   ReferenceThrows,
   ReferenceTypeAlias,
   ReferenceTypeParameter,
-  ReferenceVariable,
   TypeToken,
 } from './type';
 
@@ -333,7 +332,7 @@ export function buildSymbolPage(
 export function buildPropertyMemberPage(
   parentSymbol: ReferenceExport,
   member: ReferencePropertyMember,
-  context: PackageContext,
+  _context: PackageContext,
   input: BuildMemberPageInput,
   options: BuildSymbolPageOptions = {},
 ): Page {
@@ -421,7 +420,7 @@ function extractMethodMemberReferencedNames(
 export function buildMethodPage(
   parentSymbol: ReferenceExport,
   member: ReferenceMethodMember,
-  context: PackageContext,
+  _context: PackageContext,
   input: BuildMemberPageInput,
   options: BuildSymbolPageOptions = {},
 ): Page {
@@ -654,7 +653,7 @@ function buildSubpathsTable(
 
 export function buildModulePage(
   module: ReferenceModule,
-  context: PackageContext,
+  _context: PackageContext,
   input: BuildModulePageInput,
 ): Page {
   currentIndex = input.index;
