@@ -2,11 +2,15 @@ import type { ExtractedMessage, LocaleData } from 'yapyak/compiler/internal';
 import type { Translator } from 'yapyak/translator';
 import type { LocaleResolver } from '../locale-resolver';
 
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { normalizeYapyakConfig } from 'yapyak/config/internal';
 
 import { createState } from './state';
 import { fillStubs } from './stub';
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 function buildResolver(localeData: LocaleData = {}): LocaleResolver {
   return {
@@ -66,6 +70,7 @@ function buildMessage(source: string): ExtractedMessage {
 
 describe('fillStubs', () => {
   it('notifies the previous controller when called a second time', () => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
     const translator: Translator = Object.assign(
       () => new Promise<string>(() => {}),
       {
@@ -96,6 +101,7 @@ describe('fillStubs', () => {
   });
 
   it('notifies the previous controller when called with no missing strings', () => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
     const translator: Translator = Object.assign(
       () => new Promise<string>(() => {}),
       {
