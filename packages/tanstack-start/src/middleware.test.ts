@@ -59,7 +59,7 @@ describe('middleware', () => {
     expect(result).toBe(expected);
   });
 
-  it('drains Set-Cookie from a server-side `setLocale()` call onto the wrapped response', async () => {
+  it('writes Set-Cookie onto the wrapped response when `setLocale()` is called server-side', async () => {
     const server = getServer();
     const request = new Request('http://example.com/');
     const response = new Response('body');

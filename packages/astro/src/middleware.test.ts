@@ -37,7 +37,7 @@ describe('middleware', () => {
     expect(result).toBe(expected);
   });
 
-  it('drains Set-Cookie from a server-side `setLocale()` call onto the response', async () => {
+  it('writes Set-Cookie onto the response when `setLocale()` is called server-side', async () => {
     const request = new Request('http://example.com/');
     const response = new Response('body');
     await middleware(

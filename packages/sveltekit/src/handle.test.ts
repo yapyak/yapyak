@@ -54,7 +54,7 @@ describe('handle', () => {
     expect(calls).toHaveLength(1);
   });
 
-  it('drains Set-Cookie from a server-side `setLocale()` call onto the response', async () => {
+  it('writes Set-Cookie onto the response when `setLocale()` is called server-side', async () => {
     const event = makeEvent(new Request('http://example.com/'));
     const response = await handle({
       event,
