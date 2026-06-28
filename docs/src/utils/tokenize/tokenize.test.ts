@@ -75,8 +75,10 @@ describe('tokenize', () => {
     ).toBe(true);
   });
 
+  // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
   it('expands a `${expr}` interpolation in a `ts` template', () => {
     expect(
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
       tokenize('`Hello, ${name}`', 'ts').some(
         (token) => token.type === 'punct' && token.value === '${',
       ),

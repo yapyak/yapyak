@@ -14,7 +14,7 @@ export type BlockRendererNodeLinkProps = BoxProps & {
 };
 
 export function BlockRendererNodeLink(props: BlockRendererNodeLinkProps) {
-  const { block, className, ...restProps } = props;
+  const { block, className } = props;
   const children = block.children.map((child, index) => (
     <BlockRendererNode
       block={child}

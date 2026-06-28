@@ -14,10 +14,12 @@ const tokenizeStub = () => [
 ];
 
 describe('expandTemplateInterpolations', () => {
+  // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
   it('splits a template with `${expr}` into segments around the interpolation', () => {
     const tokens: Token[] = [
       {
         type: 'template',
+        // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
         value: '`Hello, ${name}`',
       },
     ];

@@ -87,7 +87,6 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
   const [indicator, setIndicator] = useState<IndicatorState | null>(null);
   const [animating, setAnimating] = useState(false);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: yap yap yap
   useLayoutEffect(() => {
     const $tabsElement = tabsElement.current;
     if ($tabsElement === null) {

@@ -13,7 +13,7 @@ export type BlockRendererNodeTableCellProps = BoxProps & {
 export function BlockRendererNodeTableCell(
   props: BlockRendererNodeTableCellProps,
 ) {
-  const { block, className, ...restProps } = props;
+  const { block, className } = props;
 
   return (
     <Box

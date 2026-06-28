@@ -129,6 +129,7 @@ describe('buildSupplement', () => {
     );
   });
 
+  // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
   it('registers every entry under `symbols` keyed by `${supplement.slug}/${slug}`', async () => {
     writeFileSync(join(dir, 'YAP0001.md'), '---\ntitle: Hello\n---');
 

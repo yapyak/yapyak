@@ -11,7 +11,7 @@ export type BlockRendererNodeListProps = BoxProps & {
 };
 
 export function BlockRendererNodeList(props: BlockRendererNodeListProps) {
-  const { block, className, ...restProps } = props;
+  const { block, className } = props;
   return (
     <Box
       as={block.ordered ? 'ol' : 'ul'}

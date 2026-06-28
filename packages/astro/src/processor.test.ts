@@ -324,6 +324,7 @@ describe('astro processor — already-compiled input fallback', () => {
       "import { render as $$render, createComponent } from 'astro/runtime';",
       "import { t } from 'yapyak';",
       '',
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
       "const $$Page = createComponent(($$result) => render`<p>${t('Hello')}</p>`);",
       'export default $$Page;',
     ].join('\n');
@@ -336,6 +337,7 @@ describe('astro processor — already-compiled input fallback', () => {
       "import { render as $$render, createComponent } from 'astro/runtime';",
       "import { t } from 'yapyak';",
       '',
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
       "const $$Page = createComponent(($$result) => render`<p>${t('Hello')}</p>`);",
       'export default $$Page;',
     ].join('\n');

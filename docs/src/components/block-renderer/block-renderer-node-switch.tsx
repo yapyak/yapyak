@@ -12,7 +12,7 @@ export type BlockRendererNodeSwitchProps = BoxProps & {
 };
 
 export function BlockRendererNodeSwitch(props: BlockRendererNodeSwitchProps) {
-  const { block, className, ...restProps } = props;
+  const { block } = props;
   const { get } = useOptionContext();
   const group = doc.getOptionsGroup(block.group);
   if (group === undefined) {

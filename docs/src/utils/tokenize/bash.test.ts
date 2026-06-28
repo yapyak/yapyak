@@ -25,7 +25,9 @@ describe('tokenizeBash', () => {
     expect(types('echo $HOME')).toContain('bash-var');
   });
 
+  // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
   it('returns a `bash-var` token for a `${VAR}` reference', () => {
+    // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
     expect(types('echo ${HOME}')).toContain('bash-var');
   });
 

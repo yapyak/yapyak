@@ -18,6 +18,7 @@
   },
   "license": "MIT",
   "author": "Joakim Uhrwing",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {

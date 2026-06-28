@@ -11,7 +11,7 @@ export type BlockRendererNodeOnlyProps = BoxProps & {
 };
 
 export function BlockRendererNodeOnly(props: BlockRendererNodeOnlyProps) {
-  const { block, className, ...restProps } = props;
+  const { block } = props;
   const { get } = useOptionContext();
   const active = get(block.group);
   const visible = active === block.value;

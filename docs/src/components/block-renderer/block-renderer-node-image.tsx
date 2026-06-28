@@ -8,7 +8,7 @@ export type BlockRendererNodeImageProps = BoxProps<'img'> & {
 };
 
 export function BlockRendererNodeImage(props: BlockRendererNodeImageProps) {
-  const { block, className, ...restProps } = props;
+  const { block } = props;
   return (
     <Box
       alt={block.alt ?? ''}
