@@ -1,8 +1,6 @@
 ## Diagnostics
 
-Every yapyak-style library emits diagnostics: compile-time errors/warnings from the build pipeline, and runtime warnings from app code. This document defines the **single uniform system** for those diagnostics: code format, allocation policy, constant naming, documentation URLs, and message tone.
-
-The goal is *structural consistency* — no team-discretion, no exception-ridden style, no drift between code and docs.
+`YAP00xx` code format, allocation policy, constant naming, documentation URLs, message tone.
 
 ### Code format
 

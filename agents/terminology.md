@@ -1,6 +1,6 @@
 ## Terminology
 
-Binding terminology table for the yapyak guide. Same concept, same word, every page. Add new terms here when introducing them; never coin synonyms at write-time. See also [docs.md](docs.md) for voice rules.
+Locked vocabulary for the yapyak guide. Same concept, same word, every page. Add new terms here when introducing them. Never coin synonyms at write-time. Voice rules live in [[docs]].
 
 ### Source code and messages
 

@@ -2,7 +2,9 @@
 
 Mechanical, deterministic. Two reviewers reach the same answer on any line.
 
-### Type decision (top to bottom, first match wins)
+### Type decision
+
+Apply top to bottom. First match wins.
 
 ```
 Q1: Literal value required by an external API?
@@ -14,7 +16,7 @@ Q2: Type owned by a platform or 3rd-party library?
     (DOM: localStorage.getItem, Headers.get, Element.closest, Document.querySelector;
      parser ASTs: @formatjs/*, typescript.*, @markdoc/*;
      Node: process.X, fs callbacks)
-    YES → keep their typing (usually `T | null`) — you don't own the type
+    YES → keep their typing (usually `T | null`)
     NO  → Q3
 
 Q3: Does the value cross a JSON.stringify boundary
@@ -25,19 +27,21 @@ Q3: Does the value cross a JSON.stringify boundary
 
 Q4: Runtime typeof-quirk guard?
     (`typeof x === 'object' && x !== null` — because `typeof null === 'object'`)
-    YES → keep `=== null` / `!== null` at the runtime check (mechanically required)
+    YES → keep `=== null` / `!== null` at the runtime check
     NO  → undefined
 ```
 
-### Expression decision (only reached when Q4 says undefined)
+### Expression decision
+
+Only reached when Q4 says `undefined`.
 
 ```
-S1: Is this an object/interface field?
+S1: Object/interface field?
     YES → `field?: T` and omit the key when absent.
-         FORBIDDEN: `field: T | undefined` paired with `field: undefined` literal value.
+         FORBIDDEN: `field: T | undefined` paired with `field: undefined` literal.
     NO  → S2
 
-S2: Is this a function parameter?
+S2: Function parameter?
     YES → `param?: T` and omit at call site.
          FORBIDDEN: calling `f(undefined)` to mean "no value".
          To clear a mutable slot, define `resetX()` instead.
@@ -53,28 +57,28 @@ S4: Mutable local or module variable?
 
 ### Allowed `null` — closed list
 
-`null` appears in source code only when one of these is true:
+`null` appears in source only when one is true:
 
 | Category | Example |
 |---|---|
 | 3rd-party API literal arg | `JSON.stringify(x, null, 2)` |
 | Platform return type | `Headers.get()` returns `string \| null` |
-| JSON wire-format field | `interface Block { label: string \| null }` (serialized to disk) |
+| JSON wire-format field | `type Block = { label: string \| null }` (serialized to disk) |
 | Runtime typeof guard | `if (typeof x === 'object' && x !== null)` |
 
 Any other `null` is a violation.
 
 ### Forbidden patterns
 
-1. **`field: undefined` as a value in an object literal.** Use `field?: T` and omit the key.
-2. **`f(undefined)` to signal "absent".** Make the parameter optional and call `f()`, or define `resetX()`.
-3. **`let x: T | undefined = null`.** Use `let x: T | undefined;` (no init).
-4. **`let x: T | null = null` for in-memory state that never serializes.** Use `let x: T | undefined;`.
-5. **`field: T | null` inside `*Options` / `*Input` / `*Config` interfaces** that don't represent a JSON wire format. Use `field?: T`.
+1. `field: undefined` as a value in an object literal. Use `field?: T` and omit the key.
+2. `f(undefined)` to signal "absent". Make the parameter optional and call `f()`, or define `resetX()`.
+3. `let x: T | undefined = null`. Use `let x: T | undefined;` (no init).
+4. `let x: T | null = null` for in-memory state that never serializes. Use `let x: T | undefined;`.
+5. `field: T | null` inside `*Options` / `*Input` / `*Config` types that do not represent a JSON wire format. Use `field?: T`.
 
 ### Wire boundaries — make them visible
 
-When in-memory data (using `undefined`) crosses into a wire-format type (using `null` per Q3), the conversion should be **explicit and greppable**. Define a single helper:
+When in-memory data (using `undefined`) crosses into a wire-format type (using `null` per Q3), the conversion is explicit and greppable. Define one helper:
 
 ```ts
 export function nullify<T>(value: T | undefined): T | null {
@@ -85,28 +89,58 @@ export function nullify<T>(value: T | undefined): T | null {
 Use it at every wire-boundary site:
 
 ```ts
-// ✓ Wire boundary is visible — grep for `nullify(` to find every one
+// ✓ Wire boundary is visible — grep for `nullify(` finds every one
 return {
   label: nullify(getStringAttribute(attributes.label)),
   language: nullify(getStringAttribute(attributes.language)),
   source: getStringAttribute(attributes.source) ?? '',  // sentinel, not wire
   type: 'code-block',
 };
+```
 
-// ✗ Wire boundary hidden as defaulting — easy to miss in review
-return {
-  label: getStringAttribute(attributes.label) ?? null,
-  language: getStringAttribute(attributes.language) ?? null,
-  ...
+Rule: if the field is `T | null` AND the value is `T | undefined`, wrap in `nullify(...)`. Plain `?? null` is reserved for sentinel-defaulting (e.g. `?? ''` for empty string).
+
+### App layer — domain vs UI
+
+App code has two layers with two different conventions. Never mix them.
+
+**Domain types use `null` for missing optional values.** Treat parsed/loaded content as if it came from a backend. Stable shape (the field is always present), explicit "intentionally absent" semantics, serializable to JSON. Applies to route loaders, parsed content, anything cached or sent over a wire.
+
+```ts
+// ✓ Domain
+type CalloutBlock = {
+  type: "callout";
+  title: string | null; // stable shape, null = author did not provide
+  variant: CalloutVariant;
+  children: Block[];
 };
 ```
 
-Rule of thumb: if the field has type `T | null` AND the value being assigned is `T | undefined`, **wrap it in `nullify(...)`**. Plain `?? null` is reserved for sentinel-defaulting (e.g. `?? ''` for empty string).
+**UI components use `?:` optional fields.** React-idiomatic, `undefined` for missing. Components do not accept `null` in their props.
+
+```ts
+// ✓ UI
+type CalloutProps = BoxProps<"aside"> & {
+  title?: string;
+  variant: CalloutVariant;
+};
+```
+
+**The conversion lives inline at the dispatcher node** — the boundary between layers. Per-prop `?? undefined` translates domain-null to UI-undefined. Do not hide this in adapter functions; the visible `?? undefined` IS the layer-boundary marker.
+
+```tsx
+// ✓ Dispatcher node — translation visible at the boundary
+<Callout title={block.title ?? undefined} variant={block.variant}>
+  ...
+</Callout>
+```
+
+**Display defaults belong in the UI, not in the dispatcher.** If a callout has no title, the `Callout` component decides what to show. The dispatcher only translates absence.
 
 ### Mechanical verification
 
 ```bash
-# Forbidden #1: literal `: undefined` in object/interface
+# Forbidden #1: literal `: undefined` in object/type
 grep -rE ":\s*undefined\b" --include="*.ts" src/
 
 # Forbidden #2: literal `undefined` argument
@@ -117,9 +151,6 @@ grep -rE "let \w+:\s*\w+\s*\|\s*undefined\s*=\s*null" --include="*.ts" src/
 
 # Audit candidates for Q3 — every `T | null` must justify itself
 grep -rEn ":\s*[A-Za-z_<>[\] ,]+\s*\|\s*null\b" --include="*.ts" src/
-# → for each hit, verify: does this type cross JSON.stringify to disk/wire?
-#   YES → keep
-#   NO  → convert per the undefined ladder above
 ```
 
 ### Worked examples
@@ -128,9 +159,9 @@ grep -rEn ":\s*[A-Za-z_<>[\] ,]+\s*\|\s*null\b" --include="*.ts" src/
 |---|---|---|
 | `JSON.stringify(report, null, 2)` | Q1 | `null` ✓ |
 | `localStorage.getItem('locale')` returns `string \| null` | Q2 | accept `\| null` ✓ |
-| `interface CodeBlock { label: string \| null }` (serialized to `manifest.json`) | Q3 | `null` ✓ |
+| `type CodeBlock = { label: string \| null }` (serialized to `manifest.json`) | Q3 | `null` ✓ |
 | `if (typeof parsed === 'object' && parsed !== null)` | Q4-runtime | `=== null` ✓ |
-| `interface LoadResult { configFile: string \| null }` (in-memory only) | Q4→S1 | `configFile?: string` |
+| `type LoadResult = { configFile: string \| null }` (in-memory only) | Q4→S1 | `configFile?: string` |
 | `function findUser(): User \| null` (in-memory only) | Q4→S3 | `User \| undefined` |
 | `let timer: ReturnType<typeof setTimeout> \| null = null` | Q4→S4 | `let timer: ReturnType<typeof setTimeout> \| undefined;` |
 | `setWriter(writer \| null)` with `setWriter(null)` to clear | Q4→S2 | `setWriter(writer)` + `resetWriter()` |
