@@ -16,7 +16,7 @@ export default defineConfig({
 });
 ```
 
-## The four
+## Shipped translators
 
 | Provider | Import | Notes |
 |---|---|---|
@@ -47,7 +47,7 @@ The four factories accept the same option surface. Provider pages add a handful 
 | `headers` | `Record<string, string>` | `{}` | Extra HTTP headers. |
 | `endpoint` | `string` | provider URL | Custom API endpoint. |
 
-The three options worth thought before defaulting: [Voice](/guide/translating/voice), [Glossary](/guide/translating/glossary), and [Context](/guide/translating/context).
+Three options usually need configuration: [Voice](/guide/translating/voice), [Glossary](/guide/translating/glossary), and [Context](/guide/translating/context).
 
 ## OpenAI extras
 
@@ -68,7 +68,7 @@ Reasoning models (`gpt-5*`, `o1`–`o9`) auto-switch internally: `maxTokens` bec
 
 Gemini exposes two distinct safety verdicts: a generic `SAFETY` block and a `RECITATION` block (model output too close to training data). Both surface as [`TranslatorSafetyError`](/reference/yapyak/translator/TranslatorSafetyError), but the `cause` differs so you can branch on it.
 
-## Ollama (local inference)
+## Ollama
 
 `ollama()` has no required arguments. It defaults to `http://localhost:11434/api/generate` and model `llama3.1`. Install [Ollama](https://ollama.com/download), pull the model, and the factory connects:
 

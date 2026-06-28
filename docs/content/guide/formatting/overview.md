@@ -3,7 +3,7 @@ title: Overview
 order: 1
 ---
 
-yapyak ships a runtime [`format`](/reference/yapyak/Format) namespace backed by `Intl`. Every call uses the active locale. yapyak's options add a layer of type safety over the platform API.
+[`format`](/reference/yapyak/Format) wraps the platform's `Intl` API. Every call reads the active locale, and yapyak's typed options surface compile-time errors that raw `Intl` doesn't.
 
 ```ts
 import { format } from 'yapyak';
@@ -47,7 +47,7 @@ Each method maps directly to an `Intl.*Format` class:
 | [`format.list`](/reference/yapyak/format.list) | `Intl.ListFormat` |
 | [`format.relativeTime`](/reference/yapyak/format.relativeTime) | `Intl.RelativeTimeFormat` |
 
-## Beyond Intl
+## What yapyak adds
 
 ### Currency type-safety
 
@@ -81,6 +81,6 @@ format.in('sv').number(200, {
 
 The result is the same regardless of the active locale. The active locale itself is left untouched.
 
-## Format vs ICU
+## Inside or outside a message
 
 Use `format` for values **outside** a translated message. For values **inside** a `t()` call, prefer ICU placeholders (`{count, number, currency}`).

@@ -3,7 +3,7 @@ title: Overview
 order: 1
 ---
 
-A translation in yapyak is the value a `t()` call resolves to in a non-default locale. Every call adds an empty stub to your locale files until something writes a value in.
+A translation in yapyak is the value a `t()` call resolves to in a non-default locale. Every call adds an empty stub to your locale files until something fills it.
 
 ```json [locales/sv.json]
 {
@@ -13,7 +13,7 @@ A translation in yapyak is the value a `t()` call resolves to in a non-default l
 }
 ```
 
-## Three ways to fill
+## Sources of translations
 
 Three sources can write a translation:
 
@@ -35,7 +35,7 @@ The translator is optional. Without one, new stubs stay empty until you write a 
 - You paste in translations from a professional service.
 - [`yapyak status`](/guide/translating/coverage) and [`yapyak check`](/guide/translating/coverage) still track coverage and gate CI.
 
-Common for teams that hand-write every translation, or for early-stage projects where one model isn't ready to make tone decisions yet.
+Teams that hand-write every translation, or early-stage projects where model tone hasn't been calibrated, use this path.
 
 ## Picking a translator
 

@@ -17,7 +17,7 @@ format.list(['apple', 'pear', 'orange']);
 
 It's a thin wrapper over [`Intl.ListFormat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/ListFormat), reading the active locale on every call. Any option from `Intl.ListFormat` works.
 
-## Common pattern: list of localized labels
+## Localized labels
 
 ```ts
 import { format, t } from 'yapyak';
@@ -36,7 +36,7 @@ format.list(features);
 
 Each item passes through `t()` first to become locale-aware text. Then `format.list()` joins them in the right way for the active locale.
 
-## What about lists inside a sentence?
+## Lists inside a sentence
 
 If the list is part of a larger translated message ("Choose one of {options}"), the answer is to render the list separately and pass the result in as a placeholder:
 

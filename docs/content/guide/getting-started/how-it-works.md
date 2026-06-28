@@ -3,7 +3,7 @@ title: How it works
 order: 4
 ---
 
-Learn how yapyak works during development and in production.
+yapyak runs in two phases: a save loop during development, and a compile step at build time.
 
 ## The save loop
 
@@ -96,7 +96,7 @@ The examples are picked from translations already in your repository. Models ten
 
 [Voice](/guide/translating/voice) and [glossary](/guide/translating/glossary) are configured once on the translator and applied to every batch the model sees.
 
-By default, yapyak batches up to 25 messages per request and runs up to 5 requests in parallel, translating every target locale together. Batch size, concurrency, and context level are configurable in `yapyak.config.ts`.
+By default, yapyak batches up to 25 source strings per request and runs up to 5 requests in parallel, translating every target locale together. Batch size, concurrency, and context level are configurable in `yapyak.config.ts`.
 
 ## What ends up in the locale files
 
@@ -162,11 +162,7 @@ _pick(_catalog_$1, { name });
 _pick(_catalog_$1, { name });
 ```
 
-Three things happen:
-
-- **Factory imports are deduplicated** into a single `import` at module scope. Only the factories this module uses are imported. A module with just plain strings imports neither `_placeholder` nor `_literal`.
-- **Identical catalogs are shared.** Both `t('Save')` calls reference the same `_catalog_$0`; the catalog object is declared once.
-- **Vite code-splits these catalog objects** with the modules that contain them. A route that doesn't render a translation never downloads it.
+The compiler deduplicates factory imports into a single `import` at module scope, sharing one catalog object across identical calls (both `t('Save')` calls reference the same `_catalog_$0`). Vite code-splits the catalogs with the modules that contain them, so a route that doesn't render a translation never downloads it.
 
 **Single-locale.** When only one locale ends up in the bundle — either because that's the only one you've added, or because you've set [`fixedLocale`](/guide/getting-started/configuration#fixed-locale-builds) — the compiler skips `_pick`, the factory imports, and the catalog objects entirely. Each `t()` call collapses to whatever value the active locale has on disk (or to the source string if there's no translation).
 

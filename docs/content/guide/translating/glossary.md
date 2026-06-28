@@ -46,7 +46,7 @@ type Glossary = Record<string, Record<string, string>>;
 
 Outer keys are source-language terms (lower-case is conventional). Inner keys are locale codes. Values are the pinned translation.
 
-The glossary is sent verbatim in the prompt to the model, with instructions to use the pinned values when a corresponding term appears in a source string. No client-side matching runs; the model decides when each entry applies.
+The glossary is sent verbatim in the prompt with instructions to use the pinned values when a matching term appears in a source string. The model selects matches at generation time; yapyak runs no client-side substitution.
 
 ## When you change it
 

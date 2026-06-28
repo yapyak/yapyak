@@ -81,7 +81,7 @@ const params = { name: 'Ada' };
 t('Hi {name}', params);                      // error: dynamic params
 {% /diagnostics %}
 
-This catches the most common mistake from other i18n libraries: passing a pre-built object full of optional fields. The compiler needs to read every call site directly.
+Pre-built parameter objects hide what each call site requires. The compiler reads each call literal at compile time, so the second argument has to be inline.
 
 {% callout variant="info" %}
 The same constraint applies to the source string itself. `t(someVariable)` and `` t(`Hi ${name}`) `` both raise a diagnostic at compile time. yapyak can only extract what it can see in the source code; anything dynamic should be a placeholder, not a string concatenation.

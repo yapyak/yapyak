@@ -151,9 +151,9 @@ Each tag becomes a named slot. Inside a pair-tag slot, place `<RichText.Children
 
 ## Tag names
 
-A tag name starts with a letter and continues with letters or digits. No hyphens or underscores. Tags with attributes pass through as literal text (the parser doesn't reject them, but they aren't bound to handlers). Pick semantic names (`link`, `strong`, `name`, `price`) — not HTML element names. The handler decides which element to render.
+Tag names start with a letter and continue with letters or digits — no hyphens or underscores. Tags with attributes pass through as literal text (the parser doesn't reject them, but they aren't bound to handlers). Pick semantic names (`link`, `strong`, `name`, `price`) — not HTML element names. The handler picks the element to render.
 
-A tag name only has to exist in the source. It doesn't have to be an HTML element. `<discount>` and `<callout>` work as long as you provide a handler.
+A tag name only has to exist in the source. `<discount>` and `<callout>` work as long as you provide a handler.
 
 ## Validation
 

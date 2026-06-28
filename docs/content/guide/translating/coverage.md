@@ -19,7 +19,7 @@ $ pnpm yapyak status
   de              51 / 124   █████████░░░░░░░░░░░  41%
 ```
 
-`defaultLocale` is always 100% — every source string is by definition translated to itself.
+`defaultLocale` is always 100%: every source string is its own translation.
 
 ## Filling the gaps
 
@@ -65,14 +65,14 @@ bunx yapyak translate sv
 
 `yapyak translate` is incremental. A run that fails partway through resumes from the next empty stub without re-spending tokens on what's already filled.
 
-## When to run translate
+## When to run
 
 Two situations reach for `translate` rather than the [save loop](/guide/translating/loop):
 
 - A save crossed [`autoTranslateThreshold`](/guide/translating/loop#the-threshold-guardrail) and the loop held off. Run `translate` when you're ready.
 - You translate in CI rather than at dev-time, to keep API costs in one predictable place.
 
-## Re-translating
+## Force re-translate
 
 `--force` ignores existing translations and runs every entry through the translator again. Use it after a [voice](/guide/translating/voice) or [glossary](/guide/translating/glossary) change you want propagated everywhere:
 
@@ -100,7 +100,7 @@ For a single source string, [`yapyak retranslate`](/reference/cli/retranslate) i
 
 A failed check stops the pipeline before a half-translated bundle is built.
 
-## Status vs check
+## Status and check
 
 | Goal | Reach for |
 |---|---|
@@ -110,7 +110,7 @@ A failed check stops the pipeline before a half-translated bundle is built.
 
 `status` is informational. `check` is gating. A common pattern is to log `status` before `check` so the report is visible in CI logs even when the build passes.
 
-## Adding a locale
+## New locales
 
 [`yapyak add <locale>`](/reference/cli/add) creates the locale file and, if a translator is configured, fills every existing source string in one run. Same path as `translate`, but scoped to a new locale and run once.
 

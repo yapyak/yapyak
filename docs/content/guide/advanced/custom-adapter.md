@@ -69,7 +69,7 @@ Server-side persistence reads happen inside `withResponse`. Whatever [persistenc
 
 For server-side persistence writes (a `setLocale()` call inside a request handler), yapyak buffers the headers until `withResponse` finishes, then flushes them onto the response. If your framework constructs its response object outside of `withResponse`, the buffered headers won't reach the user. Keep the response construction inside the scope.
 
-## What the shipped adapters do
+## Shipped adapters
 
 If you'd like to model your wrapper on a known-good example, the shipped adapters are short:
 

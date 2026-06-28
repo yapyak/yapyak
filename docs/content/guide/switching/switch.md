@@ -3,7 +3,7 @@ title: Switch
 order: 2
 ---
 
-There's one active locale at any moment. Reading it, changing it, and re-rendering on changes are all part of the runtime API. Your framework binding wraps `getLocale()` and `setLocale()` in an idiomatic shape.
+Each framework binding wraps `getLocale()` and `setLocale()` in an idiomatic shape — a hook, a ref, a rune. Use the binding from inside components; the bare functions work everywhere else.
 
 ## The framework binding
 
@@ -103,7 +103,7 @@ You'll reach for these directly when:
 - Building a locale switcher that lives outside the framework binding (a vanilla script tag, a compile-time helper)
 - Reading the `locales` array to render a dropdown of every available language
 
-For everything inside a component, prefer the framework binding above. It wires reactivity for you and survives SSR correctly.
+Inside a component, prefer the framework binding above: it subscribes the component to locale changes and reads correctly under SSR.
 
 ## Rendering a locale switcher
 

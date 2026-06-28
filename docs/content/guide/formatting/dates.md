@@ -67,7 +67,7 @@ format.dateTime(new Date(), {
 // output: en-US: 'Jun 17, 2026, 4:30 PM'
 ```
 
-### Finer control with field options
+### Field options
 
 When the preset styles don't fit, pass individual field options:
 
@@ -103,7 +103,7 @@ format.relativeTime(3, 'hour');
 // sv-SE: 'om 3 timmar'
 ```
 
-### Auto-replace common values with words
+### Numeric: auto
 
 `numeric: 'auto'` tells the formatter to use `'yesterday'`, `'tomorrow'`, `'next month'` when the locale has a natural word for the offset:
 

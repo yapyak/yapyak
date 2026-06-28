@@ -3,7 +3,7 @@ title: Persistence
 order: 3
 ---
 
-Without persistence, the active locale exists only for the current page session. Close the tab and the choice is gone. yapyak ships three strategies that survive reloads: cookie, local storage, or URL.
+Without persistence, the active locale lasts only for the current page session; a reload returns the user to `defaultLocale`. yapyak ships three strategies that survive reloads: cookie, local storage, or URL.
 
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';

@@ -3,7 +3,7 @@ title: Plurals
 order: 3
 ---
 
-ICU's `plural` format handles count-driven word changes inside a single message string. Languages with two singular forms (Welsh), three plural categories (Russian), or six (Arabic) all fit the same syntax.
+ICU's `plural` format handles count-driven word changes inside a single message string. Six plural categories cover every language ICU supports.
 
 ```ts
 t('You have {count, plural, one {# message} other {# messages}}', { count: 5 });
@@ -94,9 +94,9 @@ t('{place, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place', { p
 
 In a language without ordinal suffixes (Swedish, French), only `other` is used. The translator (or the model) collapses the branches naturally.
 
-## Numbers, currencies, dates
+## Number and date sub-formats
 
-Plurals are one ICU sub-format. There are three others worth knowing about because they also live inside the message string:
+Plurals are one ICU sub-format. Three others appear inside the message string:
 
 ### Numbers
 

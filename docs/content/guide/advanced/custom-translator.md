@@ -3,7 +3,7 @@ title: Custom translator
 order: 3
 ---
 
-When the [shipped translators](/guide/translating/providers) don't fit, [`createTranslator`](/reference/yapyak/translator/createTranslator) is the escape hatch. The interface is a single function: take a batch of source strings and target locales, return the translations.
+[`createTranslator`](/reference/yapyak/translator/createTranslator) builds a translator from a single async callback. Use it when the [shipped translators](/guide/translating/providers) don't cover your provider — a self-hosted endpoint, a custom proxy, a TMS integration.
 
 ```ts
 import { createTranslator } from 'yapyak/translator';
@@ -60,7 +60,7 @@ const myTranslator = createTranslator({
 | `context` | `'none' \| 'minimal' \| 'rich'` | `'minimal'` | What call-site context yapyak attaches to each item. See [Context](/guide/translating/context). |
 | `translate` | [`TranslateFn`](/reference/yapyak/translator/TranslateFn) | required | The batch callback. |
 
-The shipped [translators](/guide/translating/providers) are themselves built on `createTranslator`. The same defaults apply, the same lifecycle runs underneath.
+The shipped [translators](/guide/translating/providers) are themselves built on `createTranslator` with these same defaults and lifecycle.
 
 ## The input
 

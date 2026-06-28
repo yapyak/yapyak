@@ -19,11 +19,9 @@ export default defineConfig({
 
 Each translation request carries N source-translation pairs the model can imitate.
 
-## The default
+## Default
 
-`5`. Or `0` when the translator's [`context`](/guide/translating/context) is `'none'`, since `'none'` means no per-item context goes out at all.
-
-Set `examples: 0` to disable in-context examples explicitly.
+`5`. Or `0` if the translator's [`context`](/guide/translating/context) is `'none'`, since `'none'` means no per-item context goes out at all. Set `examples: 0` to disable in-context examples explicitly.
 
 {% callout variant="warning" %}
 `context: 'none'` drops examples from the request regardless of what you set `examples` to. The level overrides the count.
@@ -31,20 +29,14 @@ Set `examples: 0` to disable in-context examples explicitly.
 
 ## Why it helps
 
-Voice describes the tone in the abstract. Examples show it. A few well-chosen pairs guide the model more concretely than a sentence of instruction. The model reads the tone of your existing translations and matches it.
+Voice instructs the model. Examples demonstrate. A handful of source-translation pairs constrains the output more concretely than a one-sentence brief. The model reads the tone of your existing translations and matches it.
 
-## When to raise it
+## Tuning
 
-- Translations are drifting in tone between requests despite a clear voice.
-- The model is making different formality choices for similar messages.
-- You've hand-edited translations into a specific style and want the model to follow.
+Raise `examples` if translations drift in tone between requests, if the model is making different formality choices for similar messages, or if you've hand-edited translations into a specific style and want the model to follow.
 
-## When to lower it
+Lower `examples` if token cost or latency matters and tone is consistent enough already, if your existing translations are inconsistent and would mislead more than guide, or for privacy — every example is part of the prompt sent to the provider.
 
-- Token cost or latency matters and tone is consistent enough already.
-- Your existing translations are inconsistent and would mislead more than guide.
-- Privacy: every example is part of the prompt sent to the provider. With `context: 'none'`, examples default to `0` for the same reason.
+## Selection
 
-## How yapyak picks which examples
-
-yapyak only considers translations for the same target locale as the current batch. Candidates are scored by word-level similarity to each source string; ties go to examples from the same source file, then alphabetically by source. The selection is deterministic: the same input produces the same prompt.
+yapyak scores candidates by word-level similarity to each source string, only considering translations for the same target locale as the current batch. Ties break by same-file proximity, then alphabetically by source. The selection is deterministic: the same input produces the same prompt.

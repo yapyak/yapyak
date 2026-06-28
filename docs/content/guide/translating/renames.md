@@ -3,15 +3,13 @@ title: Renames
 order: 9
 ---
 
-Source code changes over time. yapyak follows translations across renames and moves instead of orphaning them.
+yapyak follows translations across renames and file moves through an orphan cache and same-position rename detection, instead of orphaning them.
 
 ## What yapyak tracks
 
 Within each source file, yapyak records the `line` and `column` of every `t()` call alongside its source string. Cross-file translation memory lives separately in the orphan cache (`.yapyak/orphans.json`), which keeps every translation yapyak has ever seen.
 
 On save, the compiler builds a fresh set of records from the current code and reconciles them against your locale files and the orphan cache.
-
-Three cases come up.
 
 ### Same source, new path
 

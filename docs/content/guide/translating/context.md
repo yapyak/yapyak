@@ -17,15 +17,17 @@ export default defineConfig({
 });
 ```
 
-Default is `'minimal'`.
+## Default
 
-## The three levels
+`'minimal'`.
+
+## Levels
 
 | Level | What's sent | When to use |
 |---|---|---|
 | `'none'` | Source string only. | Privacy-sensitive code. The strict-no-leakage setting. |
 | `'minimal'` | Source, plus component name and enclosing element when known. | Default. Enough to tell `Open` (button) from `Open` (status badge). |
-| `'rich'` | Above plus a snippet of surrounding source code. | When voice and glossary aren't enough to disambiguate. |
+| `'rich'` | Above plus a snippet of surrounding source code. | If voice and glossary aren't enough to disambiguate. |
 
 A higher level produces better translations for tricky strings at the cost of more tokens per request.
 
@@ -33,7 +35,7 @@ A higher level produces better translations for tricky strings at the cost of mo
 A [disambiguation](/guide/writing/homonyms) from `t.as(context, source)` is sent at every level, including `'none'`. It travels with the source string rather than with the call-site context.
 {% /callout %}
 
-## Minimal in practice
+## Minimal
 
 For this call:
 
@@ -53,7 +55,7 @@ The request carries:
 
 Enough for the model to translate `Open` as the imperative verb on a button rather than the adjective "open" describing a state.
 
-## Rich in practice
+## Rich
 
 The same call at `context: 'rich'` adds a `snippet`:
 

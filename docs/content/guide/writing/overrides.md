@@ -11,7 +11,7 @@ t.in('sv', 'Welcome back');
 
 This always returns the Swedish translation regardless of the active locale. The signature mirrors `t()`. Placeholder parameters, rich-text tags, and ICU sub-formats all work the same. The locale argument is typed against your [`Locale`](/reference/yapyak/Locale) union, so an unknown code is a compile-time error.
 
-## Combining with `.as()`
+## Chaining with as
 
 `t.in()` and `t.as()` chain in either order. Locale-first reads `t.in('sv').as('action', 'Open')`; context-first reads `t.as('action').in('sv', 'Open')`. The result is the same — a translation for the named locale, disambiguated by the given context.
 
@@ -21,7 +21,7 @@ t.in('sv').as('action', 'Open');
 t.as('action').in('sv', 'Open');
 ```
 
-You'd use this when you need both at once. Say, rendering the Swedish "Open" button label inside an admin tool that also runs in English.
+Use both when you need a specific locale and a homonym disambiguation in the same call — for example, the Swedish "Open" button label inside an admin tool that also runs in English.
 
 See [Homonyms](/guide/writing/homonyms) for what `t.as()` does on its own.
 

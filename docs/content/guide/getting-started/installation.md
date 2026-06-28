@@ -3,7 +3,7 @@ title: Installation
 order: 2
 ---
 
-Install yapyak in your project.
+yapyak installs as a Vite plugin plus a framework binding and (optionally) an SSR adapter and translator.
 
 {% picker group="framework" /%}
 

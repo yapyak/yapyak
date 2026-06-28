@@ -3,7 +3,7 @@ title: HMR
 order: 1
 ---
 
-yapyak's runtime is wired into [Vite's HMR](https://vitejs.dev/guide/api-hmr). A save in your code, a model writing to a locale file, or a hand-edit to `locales/sv.json` all land in the running browser without a reload.
+yapyak's runtime is wired into [Vite's HMR](https://vitejs.dev/guide/api-hmr). Code edits, model-written translations, and hand-edits to `locales/<locale>.json` all reach the running browser without a reload.
 
 ## Source-file save loop
 
@@ -24,7 +24,7 @@ For `.astro` files, step 6 differs. Astro doesn't run yapyak's runtime in the br
 
 ## Locale file save loop
 
-When a model returns a new translation, yapyak writes it to your `locales/<locale>.json` file. Same thing happens when you hand-edit a translation. In both cases:
+A model-returned translation and a hand-edit both write to `locales/<locale>.json`, and both follow this path:
 
 1. Vite picks up the JSON change.
 2. The yapyak plugin reads the new file and diffs it against the cached version.
@@ -34,7 +34,7 @@ When a model returns a new translation, yapyak writes it to your `locales/<local
 
 This is the fast path. The source modules aren't recompiled, so component state survives. The whole loop is sub-second for typical edits.
 
-In practice: open `locales/sv.json` in your editor next to the running app, edit a translation, and the change lands in the browser before you've lifted your finger off `Cmd-S`. Useful for fine-tuning copy without going through a model.
+Open `locales/sv.json` in your editor next to the running app, edit a translation, save — the change appears in the browser within the same render cycle. Useful for tuning copy outside the model path.
 
 ## Translator save loop
 
@@ -44,7 +44,7 @@ The same source-file save loop, but with the translator step taking real time. T
 2. You save. The string renders in your source language immediately (no need to wait).
 3. A second or two later, the Swedish translation appears in the running browser as the model's response writes back to the locale file and HMR picks it up.
 
-The split keeps the save loop snappy even when the translator is doing real work. The source string is visible immediately and the translation arrives shortly after.
+The split keeps the save loop short. The source string appears immediately; the translation arrives once the model returns.
 
 Two settings affect this:
 
@@ -52,8 +52,6 @@ Two settings affect this:
 - [`concurrency`](/guide/translating/providers#shared-options). Higher concurrency speeds up large translator runs but presses harder on your provider's rate limit.
 
 ## When HMR doesn't apply
-
-A few cases skip the hot path and trigger a full reload:
 
 - **Config file changes.** Editing `yapyak.config.ts` (or `vite.config.ts`) reloads the dev server. yapyak's plugin can't safely HMR its own configuration.
 - **Locale-set changes.** Adding a new locale through [`yapyak add`](/reference/cli/add) regenerates `.yapyak/types.d.ts` and reloads the dev server so TypeScript picks up the new union.

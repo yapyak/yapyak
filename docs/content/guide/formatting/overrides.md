@@ -3,7 +3,7 @@ title: Overrides
 order: 5
 ---
 
-By default, every `format.*` call renders for the active locale. When you need to format a value in a different locale on a one-off basis, `format.in(locale)` scopes the formatter to a fixed locale for one expression.
+[`format.in(locale)`](/reference/yapyak/Format) scopes a `format.*` call (or chain) to a fixed locale, regardless of the active one. Use it for one-off formatting in a non-active locale.
 
 ```ts
 import { format } from 'yapyak';

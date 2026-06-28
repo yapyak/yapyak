@@ -3,7 +3,7 @@ title: Configuration
 order: 3
 ---
 
-`yapyak.config.ts` lives at your project root and configures yapyak. Every field is optional.
+`yapyak.config.ts` at your project root configures yapyak. Every field is optional.
 
 ## Quick reference
 
@@ -78,7 +78,7 @@ include: ['src', 'app/components'],
 
 ### `exclude`
 
-Patterns yapyak should skip. Same shape as `include`. Tests, generated files, and `.d.ts` declarations are excluded by default. You don't need to write this list yourself:
+Patterns yapyak should skip. Same shape as `include`. Tests, generated files, and `.d.ts` declarations are excluded by default. The default list:
 
 ```ts
 exclude: [
@@ -105,7 +105,7 @@ export default defineConfig({
 
 ## Processors
 
-Framework-specific processors that teach yapyak how to read `.vue`, `.svelte`, `.astro`, or any custom format. The built-in TypeScript/JavaScript parser handles `.ts`, `.tsx`, `.js`, `.jsx`, `.mts`, `.mjs`, `.cts`, and `.cjs` without one.
+Framework-specific processors that parse `.vue`, `.svelte`, `.astro`, or any custom format so yapyak can extract `t()` calls. The built-in TypeScript/JavaScript parser handles `.ts`, `.tsx`, `.js`, `.jsx`, `.mts`, `.mjs`, `.cts`, and `.cjs` without one.
 
 ### `processors`
 
@@ -215,7 +215,7 @@ See [Persistence](/guide/switching/persistence) for the full options of each str
 
 ### `syncHtmlLang`
 
-Whether yapyak should keep `<html lang>` in sync with the active locale as the user switches.
+Keeps `<html lang>` in sync with the active locale on every switch.
 
 ```ts
 syncHtmlLang: true,
@@ -286,21 +286,15 @@ yapyak({ fixedLocale: process.env.YAPYAK_LOCALE })
 YAPYAK_LOCALE=sv pnpm build
 ```
 
-In a fixed-locale build, yapyak does three things:
-
-- Replaces every eligible `t()` call with the target locale's literal string
-- Tree-shakes the locale picker out of the bundle
-- Ships no i18n runtime at all
-
-Calls that need runtime behaviour — `t.as()`, ICU placeholders — stay as compiled lookups.
+In a fixed-locale build, yapyak replaces every eligible `t()` call with the target locale's literal string, tree-shakes the locale picker out of the bundle, and ships no i18n runtime at all. Calls that need runtime behaviour — `t.as()`, ICU placeholders — stay as compiled lookups.
 
 {% callout variant="info" %}
 `fixedLocale` lives on the Vite plugin rather than `yapyak.config.ts` because it's a compile-time toggle that affects the bundle shape. It isn't something the runtime ever observes.
 {% /callout %}
 
-## Reading config from your code
+## Reading config
 
-Most of the time you set yapyak.config.ts once and forget about it. If your code needs to read the config at runtime — to render a locale switcher, for example — read it from the runtime exports of `yapyak`:
+Set `yapyak.config.ts` once. If your code needs to read the config at runtime — to render a locale switcher, for example — read it from the runtime exports of `yapyak`:
 
 ```ts
 import { defaultLocale, getLocale, locales } from 'yapyak';

@@ -95,7 +95,7 @@ Open the file and you see exactly which source string is used where. Edit the so
 
 ## What the compiler checks
 
-Every save runs `t()` calls through a parser. Anything ambiguous becomes a [diagnostic](/reference/diagnostics) — a compile-time warning or error you'll see in your editor and in your terminal.
+Every save runs `t()` calls through a parser. Anything ambiguous becomes a [diagnostic](/reference/diagnostics) — a compile-time warning or error visible in your editor and your terminal.
 
 The most common ones are early-flagged mistakes:
 
@@ -104,7 +104,7 @@ The most common ones are early-flagged mistakes:
 - `` t(`Hello ${name}`) ``: dynamic source strings can't be extracted; use a [placeholder](/guide/writing/params) instead.
 - `t(someVariable)`: same reason; the source has to be a static literal.
 
-The compiler can only translate what it can see at compile time. Anything dynamic (a string built from variables, computed from data, looked up at runtime) has to be expressed through ICU placeholders or a select branch, not concatenation.
+The compiler can only translate what it can see at compile time. Dynamic strings — built from variables or computed at runtime — must use ICU placeholders or a select branch instead of concatenation.
 
 ## The whole API
 

@@ -19,22 +19,22 @@ export default defineConfig({
 
 The model reads it on every call and shapes its output accordingly.
 
-## What a good voice reads like
+## Default
+
+Undefined. The model defaults to provider-typical tone.
+
+## What works
 
 A short, specific characterization of the audience and tone you want:
 
 ```ts
-voice: 'Concise and friendly';
-voice: 'Formal legal language';
-voice: 'A casual SaaS marketing tone';
-voice: 'Like a senior engineer writing release notes';
+voice: 'Concise and friendly'
+voice: 'Formal legal language'
+voice: 'A casual SaaS marketing tone'
+voice: 'Like a senior engineer writing release notes'
 ```
 
-Voice is the biggest knob for shaping tone. Vague gives bland; specific gives character.
-
-## Keep it short
-
-A sentence or two. Long voices confuse the model; it starts weighing the voice instruction against the meaning of each string.
+Keep it to a sentence or two. Long voices confuse the model, which starts weighing the voice instruction against the meaning of each string.
 
 ## When you change it
 

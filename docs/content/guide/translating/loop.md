@@ -3,7 +3,7 @@ title: Loop
 order: 2
 ---
 
-The save loop runs at dev-time. New `t()` calls appear; their translations appear in the running browser a second or two later.
+yapyak's save loop runs during development. New `t()` calls appear; their translations appear in the running browser a second or two later.
 
 ```tsx [src/components/empty-cart.tsx]
 import { t } from 'yapyak';
@@ -13,16 +13,7 @@ export function EmptyCart() {
 }
 ```
 
-## What runs on save
-
-On save, yapyak's plugin runs four steps:
-
-1. Extracts the new `t()` calls
-2. Reconciles them against your locale files
-3. Sends any new stubs to the configured [translator](/guide/translating/providers)
-4. Writes the results back
-
-The source-only steps take milliseconds. The translator step takes a second or two for typical batches. See [HMR](/guide/advanced/hmr) for the full mechanics.
+See [How it works](/guide/getting-started/how-it-works) for the full step sequence and [HMR](/guide/advanced/hmr) for the hot-replace mechanics. This page covers the translator's role in that loop.
 
 ## Threshold
 

@@ -27,7 +27,7 @@ t('{status, select, draft {Draft} published {Published} other {Unknown}}', { sta
 
 Omitting `other` is a compile-time error ([`YAP0008`](/reference/diagnostics/YAP0008)).
 
-## Why each language can choose differently
+## Per-locale branching
 
 Like with plurals, the translator (human or model) is free to add, remove, or merge branches per locale. Some languages need gendered verb forms; others don't.
 
@@ -67,11 +67,11 @@ t('{role, select, admin {Admin {name} has {count, plural, one {# alert} other {#
 
 Long ICU expressions get hard to read. yapyak doesn't cap the length. If a message is unreadable, split it into two `t()` calls and let the component pick.
 
-## Selectordinal (for ordinal numbers)
+## Selectordinal
 
 If your branching looks like a select but the value is an ordinal ("1st place", "2nd place", "3rd place"), that's `selectordinal`. It's covered in [Plurals](/guide/writing/plurals#ordinals-selectordinal) since the categories and rules match `plural`.
 
-## What `select` accepts at runtime
+## Runtime values
 
 The parameter value is whatever you pass in:
 
