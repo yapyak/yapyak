@@ -57,10 +57,27 @@ This is cheaper than running `add` once per locale. yapyak batches the translati
 
 The argument is a [BCP 47 tag](/guide/switching/tags). The CLI validates against the ISO 639-1 language list, with a helpful suggestion when it doesn't recognize the code:
 
+{% switch group="packageManager" %}
+{% when value="pnpm" %}
 ```bash
-$ pnpm yapyak add svenska
-  ✗ Invalid locale code.
-    svenska is not a recognized ISO 639-1 language code.. Did you mean sv?
+pnpm yapyak add svenska
+```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx yapyak add svenska
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx yapyak add svenska
+```
+{% /when %}
+{% /switch %}
+
+```terminal
+  <r>✗</r> <r>Invalid locale code.</r>
+    <d>svenska is not a recognized ISO 639-1 language code. Did you mean</d> <c>sv</c><d>?</d>
 ```
 
 Regional variants (`pt-BR`, `zh-Hant`, `en-GB`) work too. The CLI normalizes case through `Intl.Locale` before validation.

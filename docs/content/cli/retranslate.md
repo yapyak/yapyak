@@ -123,13 +123,29 @@ Other call sites of `t('Save')` in other files keep their existing translation. 
 
 If the source string you pass doesn't appear in any `t()` or `t.as()` call in the project (or no call site matches the `--file` / `--as` filter), `retranslate` returns `0` without touching anything:
 
+{% switch group="packageManager" %}
+{% when value="pnpm" %}
 ```bash
-$ pnpm yapyak retranslate "Greetings"
+pnpm yapyak retranslate "Greetings"
+```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx yapyak retranslate "Greetings"
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx yapyak retranslate "Greetings"
+```
+{% /when %}
+{% /switch %}
 
-  Re-translating
-  "Greetings"
+```terminal
+  <b>Re-translating</b>
+  <d>"Greetings"</d>
 
-  ✓ No matching call sites.
+  <g>✔</g> <g>No matching call sites.</g>
 ```
 
 Check the spelling and that the source string matches a call site literal exactly (including casing and punctuation).

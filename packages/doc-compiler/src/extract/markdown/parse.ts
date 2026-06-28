@@ -11,6 +11,9 @@ import type {
   TableBlock,
   TableCellBlock,
   TableRowBlock,
+  TerminalBlock,
+  TerminalLine,
+  TerminalSegment,
 } from '../../access';
 import type { MetaValue } from '../../build';
 
@@ -214,6 +217,11 @@ function toBlocks(node: unknown): Block[] {
       ];
     case 'CodeBlock': {
       const codeBlock = buildCodeBlock(node.attributes);
+      if (codeBlock.language === 'terminal') {
+        return [
+          buildTerminalBlock(codeBlock.source),
+        ];
+      }
       const diagnostics = tryBuildDiagnosticsFromCode(
         codeBlock.source,
         codeBlock.language ?? '',
@@ -431,6 +439,137 @@ function buildDiagnostics(
   const content = getStringAttribute(attributes.content) ?? '';
   const language = getStringAttribute(attributes.language) ?? 'ts';
   return buildDiagnosticsBlock(content, language);
+}
+
+type TerminalTagKind = Extract<
+  TerminalSegment['kind'],
+  'bold' | 'cyan' | 'dim' | 'green' | 'red' | 'yellow'
+>;
+
+const TERMINAL_TAGS: Record<string, TerminalTagKind> = {
+  b: 'bold',
+  c: 'cyan',
+  d: 'dim',
+  g: 'green',
+  r: 'red',
+  y: 'yellow',
+};
+
+function buildTerminalBlock(content: string): TerminalBlock {
+  const rawLines = content.split('\n');
+  while (rawLines.length > 0 && rawLines[0]?.trim() === '') {
+    rawLines.shift();
+  }
+  while (rawLines.length > 0 && rawLines[rawLines.length - 1]?.trim() === '') {
+    rawLines.pop();
+  }
+  const dedented = dedentTerminalLines(rawLines);
+  const lines: TerminalLine[] = dedented.map((raw) => ({
+    segments: segmentTerminalLine(raw),
+    type: 'terminal-line',
+  }));
+  return {
+    lines,
+    type: 'terminal',
+  };
+}
+
+function dedentTerminalLines(rawLines: string[]): string[] {
+  let minIndent = Number.POSITIVE_INFINITY;
+  for (const line of rawLines) {
+    if (line.trim() === '') {
+      continue;
+    }
+    const indent = line.length - line.trimStart().length;
+    if (indent < minIndent) {
+      minIndent = indent;
+    }
+  }
+  if (minIndent === 0 || minIndent === Number.POSITIVE_INFINITY) {
+    return rawLines;
+  }
+  return rawLines.map((line) =>
+    line.trim() === '' ? line : line.slice(minIndent),
+  );
+}
+
+function segmentTerminalLine(line: string): TerminalSegment[] {
+  const segments: TerminalSegment[] = [];
+  let buffer = '';
+  let currentStyle: TerminalTagKind | null = null;
+  let currentBarKind: 'bar-empty' | 'bar-fill' | null = null;
+
+  const flush = (): void => {
+    if (buffer.length === 0) {
+      return;
+    }
+    const kind: TerminalSegment['kind'] =
+      currentBarKind ?? currentStyle ?? 'text';
+    segments.push({
+      kind,
+      type: 'terminal-segment',
+      value: buffer,
+    });
+    buffer = '';
+  };
+
+  let index = 0;
+  while (index < line.length) {
+    const tagMatch = matchTerminalTag(line, index);
+    if (tagMatch !== null) {
+      flush();
+      currentBarKind = null;
+      currentStyle = tagMatch.closing ? null : tagMatch.kind;
+      index += tagMatch.length;
+      continue;
+    }
+
+    const character = line[index];
+    if (character === undefined) {
+      break;
+    }
+    const barKind: 'bar-empty' | 'bar-fill' | null =
+      character === '█' ? 'bar-fill' : character === '░' ? 'bar-empty' : null;
+    if (barKind !== currentBarKind) {
+      flush();
+      currentBarKind = barKind;
+    }
+    buffer += character;
+    index += 1;
+  }
+  flush();
+  return segments;
+}
+
+function matchTerminalTag(
+  source: string,
+  index: number,
+): {
+  closing: boolean;
+  kind: TerminalTagKind;
+  length: number;
+} | null {
+  if (source[index] !== '<') {
+    return null;
+  }
+  const closing = source[index + 1] === '/';
+  const nameStart = closing ? index + 2 : index + 1;
+  const nameChar = source[nameStart];
+  if (nameChar === undefined) {
+    return null;
+  }
+  if (source[nameStart + 1] !== '>') {
+    return null;
+  }
+  const kind = TERMINAL_TAGS[nameChar];
+  if (kind === undefined) {
+    return null;
+  }
+  return {
+    closing,
+    kind,
+    length: closing ? 4 : 3,
+  };
 }
 
 function buildDiagnosticsBlock(

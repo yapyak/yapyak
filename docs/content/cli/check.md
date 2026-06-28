@@ -39,13 +39,21 @@ The three failure modes:
 
 ### Missing translations
 
-```
-✗ Missing translations:
-    sv/src/components/cart.tsx
-      "Your cart is empty"
-    de/src/components/cart.tsx
-      "Your cart is empty"
-      "Browse products"
+```terminal
+  <b>Translation check</b>
+
+  <r>✗</r> <r>3 missing translations</r>
+
+  <b>sv</b> <d>(1)</d>
+    <d>src/components/cart.tsx</d>
+      <d>—</d> <b>Your cart is empty</b>
+
+  <b>de</b> <d>(2)</d>
+    <d>src/components/cart.tsx</d>
+      <d>—</d> <b>Your cart is empty</b>
+      <d>—</d> <b>Browse products</b>
+
+  <d>Run</d> <c>yapyak add sv</c> <d>to translate, or fill in the locale file manually.</d>
 ```
 
 A source string with no entry, or an empty stub, in one of your locales. The most common failure in projects that hand-write translations.

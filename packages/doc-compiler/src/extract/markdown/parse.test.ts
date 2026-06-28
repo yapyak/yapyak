@@ -393,4 +393,411 @@ describe('parseMarkdown', () => {
       type: 'paragraph',
     });
   });
+
+  it('parses a fenced code block with language `terminal` into a `terminal` block', () => {
+    const source = '```terminal\nHello world\n```';
+    expect(parseMarkdown(source).blocks).toEqual([
+      {
+        lines: [
+          {
+            segments: [
+              {
+                kind: 'text',
+                type: 'terminal-segment',
+                value: 'Hello world',
+              },
+            ],
+            type: 'terminal-line',
+          },
+        ],
+        type: 'terminal',
+      },
+    ]);
+  });
+
+  it('preserves leading indentation on each line inside a `terminal` fence', () => {
+    const source = [
+      '```terminal',
+      'Header',
+      '    indented once',
+      '      indented twice',
+      '```',
+    ].join('\n');
+    const [block] = parseMarkdown(source).blocks;
+
+    expect(block).toEqual({
+      lines: [
+        {
+          segments: [
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: 'Header',
+            },
+          ],
+          type: 'terminal-line',
+        },
+        {
+          segments: [
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: '    indented once',
+            },
+          ],
+          type: 'terminal-line',
+        },
+        {
+          segments: [
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: '      indented twice',
+            },
+          ],
+          type: 'terminal-line',
+        },
+      ],
+      type: 'terminal',
+    });
+  });
+
+  it('preserves blank lines between content inside a `terminal` fence', () => {
+    const source = [
+      '```terminal',
+      'First section',
+      '',
+      'Second section',
+      '```',
+    ].join('\n');
+    const [block] = parseMarkdown(source).blocks;
+
+    expect(block).toEqual({
+      lines: [
+        {
+          segments: [
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: 'First section',
+            },
+          ],
+          type: 'terminal-line',
+        },
+        {
+          segments: [],
+          type: 'terminal-line',
+        },
+        {
+          segments: [
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: 'Second section',
+            },
+          ],
+          type: 'terminal-line',
+        },
+      ],
+      type: 'terminal',
+    });
+  });
+
+  it('segments `█` characters into `bar-fill` segments and `░` characters into `bar-empty` segments', () => {
+    const source = '```terminal\nsv  ████░░  50%\n```';
+    const [block] = parseMarkdown(source).blocks;
+
+    expect(block).toEqual({
+      lines: [
+        {
+          segments: [
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: 'sv  ',
+            },
+            {
+              kind: 'bar-fill',
+              type: 'terminal-segment',
+              value: '████',
+            },
+            {
+              kind: 'bar-empty',
+              type: 'terminal-segment',
+              value: '░░',
+            },
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: '  50%',
+            },
+          ],
+          type: 'terminal-line',
+        },
+      ],
+      type: 'terminal',
+    });
+  });
+
+  it('parses inline `<b>`, `<d>`, `<c>`, `<g>`, `<r>`, `<y>` tags into typed segments', () => {
+    const source = [
+      '```terminal',
+      '<b>Translation status</b>',
+      '<d>Locales</d> · <g>✔</g> ok · <r>✗</r> err · <y>⚠</y> warn · <c>arrow</c>',
+      '```',
+    ].join('\n');
+    const [block] = parseMarkdown(source).blocks;
+
+    expect(block).toEqual({
+      lines: [
+        {
+          segments: [
+            {
+              kind: 'bold',
+              type: 'terminal-segment',
+              value: 'Translation status',
+            },
+          ],
+          type: 'terminal-line',
+        },
+        {
+          segments: [
+            {
+              kind: 'dim',
+              type: 'terminal-segment',
+              value: 'Locales',
+            },
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: ' · ',
+            },
+            {
+              kind: 'green',
+              type: 'terminal-segment',
+              value: '✔',
+            },
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: ' ok · ',
+            },
+            {
+              kind: 'red',
+              type: 'terminal-segment',
+              value: '✗',
+            },
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: ' err · ',
+            },
+            {
+              kind: 'yellow',
+              type: 'terminal-segment',
+              value: '⚠',
+            },
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: ' warn · ',
+            },
+            {
+              kind: 'cyan',
+              type: 'terminal-segment',
+              value: 'arrow',
+            },
+          ],
+          type: 'terminal-line',
+        },
+      ],
+      type: 'terminal',
+    });
+  });
+
+  it('treats `█` as `bar-fill` regardless of an enclosing style tag', () => {
+    const source = '```terminal\n<c>████</c><d>░░░</d>\n```';
+    const [block] = parseMarkdown(source).blocks;
+
+    expect(block).toEqual({
+      lines: [
+        {
+          segments: [
+            {
+              kind: 'bar-fill',
+              type: 'terminal-segment',
+              value: '████',
+            },
+            {
+              kind: 'bar-empty',
+              type: 'terminal-segment',
+              value: '░░░',
+            },
+          ],
+          type: 'terminal-line',
+        },
+      ],
+      type: 'terminal',
+    });
+  });
+
+  it('emits a plain `text` segment for an unknown one-letter tag', () => {
+    const source = '```terminal\n<x>not a tag</x>\n```';
+    const [block] = parseMarkdown(source).blocks;
+
+    expect(block).toEqual({
+      lines: [
+        {
+          segments: [
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: '<x>not a tag</x>',
+            },
+          ],
+          type: 'terminal-line',
+        },
+      ],
+      type: 'terminal',
+    });
+  });
+
+  it('strips the minimum common leading indent across non-blank lines in a `terminal` fence', () => {
+    const source = [
+      '```terminal',
+      '  Header',
+      '',
+      '  ✗ orphans',
+      '    sv — entry',
+      '    de — entry',
+      '  Run yapyak clean',
+      '```',
+    ].join('\n');
+    const [block] = parseMarkdown(source).blocks;
+
+    expect(block).toEqual({
+      lines: [
+        {
+          segments: [
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: 'Header',
+            },
+          ],
+          type: 'terminal-line',
+        },
+        {
+          segments: [],
+          type: 'terminal-line',
+        },
+        {
+          segments: [
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: '✗ orphans',
+            },
+          ],
+          type: 'terminal-line',
+        },
+        {
+          segments: [
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: '  sv — entry',
+            },
+          ],
+          type: 'terminal-line',
+        },
+        {
+          segments: [
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: '  de — entry',
+            },
+          ],
+          type: 'terminal-line',
+        },
+        {
+          segments: [
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: 'Run yapyak clean',
+            },
+          ],
+          type: 'terminal-line',
+        },
+      ],
+      type: 'terminal',
+    });
+  });
+
+  it('does not strip indentation when at least one line has no leading whitespace', () => {
+    const source = [
+      '```terminal',
+      'Header',
+      '  child',
+      '```',
+    ].join('\n');
+    const [block] = parseMarkdown(source).blocks;
+
+    expect(block).toEqual({
+      lines: [
+        {
+          segments: [
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: 'Header',
+            },
+          ],
+          type: 'terminal-line',
+        },
+        {
+          segments: [
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: '  child',
+            },
+          ],
+          type: 'terminal-line',
+        },
+      ],
+      type: 'terminal',
+    });
+  });
+
+  it('trims leading and trailing blank lines from a `terminal` fence', () => {
+    const source = [
+      '```terminal',
+      '',
+      '',
+      'Content',
+      '',
+      '',
+      '```',
+    ].join('\n');
+    const [block] = parseMarkdown(source).blocks;
+
+    expect(block).toEqual({
+      lines: [
+        {
+          segments: [
+            {
+              kind: 'text',
+              type: 'terminal-segment',
+              value: 'Content',
+            },
+          ],
+          type: 'terminal-line',
+        },
+      ],
+      type: 'terminal',
+    });
+  });
 });

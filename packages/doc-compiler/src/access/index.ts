@@ -32,6 +32,10 @@ export type {
   TableCellBlock,
   TableCellColumn,
   TableRowBlock,
+  TerminalBlock,
+  TerminalLine,
+  TerminalSegment,
+  TerminalSegmentKind,
   TextBlock,
 } from './block';
 export type { Entry } from './entry';

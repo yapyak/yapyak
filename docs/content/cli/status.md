@@ -9,19 +9,37 @@ yapyak status [--json]
 
 Reports translation coverage per locale. How many strings are translated, how many are still missing. Read-only; doesn't modify any files.
 
+{% switch group="packageManager" %}
+{% when value="pnpm" %}
 ```bash
-$ pnpm yapyak status
+pnpm yapyak status
+```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx yapyak status
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx yapyak status
+```
+{% /when %}
+{% /switch %}
 
-  Translation status
+```terminal
+  <b>Translation status</b>
+  <d>Locales</d>   <b>en</b> <d>(default)</d> <d>·</d> <b>sv</b>
+  <d>Total</d>     <b>521</b> messages × 2 = <b>1042</b> translations
 
-  Locales   en (default) · sv · de · ja
-  Total     124 messages × 4 = 496 translations
+  ┌──────────────┬───────────┬────────────────────────────────────┐
+  │ <b>Locale</b>       │  <b>Coverage</b> │                                    │
+  ├──────────────┼───────────┼────────────────────────────────────┤
+  │ en <d>(default)</d> │ 521 / 521 │ ████████████████████ 521/521  100% │
+  │ sv           │ 521 / 521 │ ████████████████████ 521/521  100% │
+  └──────────────┴───────────┴────────────────────────────────────┘
 
-  Locale          Coverage
-  en (default)   124 / 124   ████████████████████  100%
-  sv             108 / 124   █████████████████░░░  87%
-  de              51 / 124   █████████░░░░░░░░░░░  41%
-  ja               8 / 124   █░░░░░░░░░░░░░░░░░░░  6%
+  <g>✔</g> <g>All translations present.</g>
 ```
 
 Each row shows the locale, how many translations exist out of the total, a progress bar, and the percentage. `defaultLocale` is always 100% since every source string is by definition translated to itself.
@@ -30,8 +48,25 @@ Each row shows the locale, how many translations exist out of the total, a progr
 
 For CI dashboards, monitoring, or anything that consumes the output programmatically, use `--json`:
 
+{% switch group="packageManager" %}
+{% when value="pnpm" %}
 ```bash
-$ pnpm yapyak status --json
+pnpm yapyak status --json
+```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx yapyak status --json
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx yapyak status --json
+```
+{% /when %}
+{% /switch %}
+
+```terminal
 {
   "defaultLocale": "en",
   "locales": ["de", "en", "ja", "sv"],

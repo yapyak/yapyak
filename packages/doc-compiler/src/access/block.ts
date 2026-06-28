@@ -26,6 +26,7 @@ export type Block =
   | TableBlock
   | TableCellBlock
   | TableRowBlock
+  | TerminalBlock
   | TextBlock;
 
 export type TextBlock = {
@@ -170,6 +171,33 @@ export type OutputLine = {
 export type OutputBlock = {
   lines: OutputLine[];
   type: 'output';
+};
+
+export type TerminalSegmentKind =
+  | 'bar-empty'
+  | 'bar-fill'
+  | 'bold'
+  | 'cyan'
+  | 'dim'
+  | 'green'
+  | 'red'
+  | 'text'
+  | 'yellow';
+
+export type TerminalSegment = {
+  kind: TerminalSegmentKind;
+  type: 'terminal-segment';
+  value: string;
+};
+
+export type TerminalLine = {
+  segments: TerminalSegment[];
+  type: 'terminal-line';
+};
+
+export type TerminalBlock = {
+  lines: TerminalLine[];
+  type: 'terminal';
 };
 
 export type DiagnosticsStatus = 'error' | 'ok';

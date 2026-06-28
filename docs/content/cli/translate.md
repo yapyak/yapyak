@@ -84,11 +84,10 @@ bunx yapyak translate sv -f
 
 `translate` needs a configured translator. Without one, it errors out with a hint about adding it to `yapyak.config.ts`:
 
-```bash
-$ pnpm yapyak translate
-  ✗ No translator configured.
+```terminal
+  <r>✗</r> <r>No translator configured.</r>
 
-  Add a translator to yapyak.config.ts:
+  <d>Add a translator to</d> <c>yapyak.config.ts</c><d>:</d>
 
     import { anthropic } from '@yapyak/anthropic';
 

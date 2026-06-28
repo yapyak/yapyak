@@ -51,6 +51,10 @@ export type {
   TableCellBlock,
   TableCellColumn,
   TableRowBlock,
+  TerminalBlock,
+  TerminalLine,
+  TerminalSegment,
+  TerminalSegmentKind,
   TextBlock,
 } from './access';
 export type {

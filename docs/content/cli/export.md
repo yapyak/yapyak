@@ -78,8 +78,8 @@ pnpm yapyak export --out ./hand-off/ --split
 
 Produces:
 
-```
-hand-off/
+```terminal
+<b>hand-off/</b>
 ├── en.json
 ├── sv.json
 ├── de.json

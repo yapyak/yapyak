@@ -5,18 +5,38 @@ order: 8
 
 Coverage is the share of your source strings that have a non-empty translation in each locale.
 
+{% switch group="packageManager" %}
+{% when value="pnpm" %}
 ```bash
-$ pnpm yapyak status
+pnpm yapyak status
+```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx yapyak status
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx yapyak status
+```
+{% /when %}
+{% /switch %}
 
-  Translation status
+```terminal
+  <b>Translation status</b>
+  <d>Locales</d>   <b>en</b> <d>(default)</d> <d>·</d> <b>sv</b> <d>·</d> <b>de</b>
+  <d>Total</d>     <b>124</b> messages × 3 = <b>372</b> translations
 
-  Locales   en (default) · sv · de
-  Total     124 messages × 3 = 372 translations
+  ┌──────────────┬───────────┬────────────────────────────────────┐
+  │ <b>Locale</b>       │  <b>Coverage</b> │                                    │
+  ├──────────────┼───────────┼────────────────────────────────────┤
+  │ en <d>(default)</d> │ 124 / 124 │ ████████████████████ 124/124  100% │
+  │ sv           │ 108 / 124 │ █████████████████░░░ 108/124   87% │
+  │ de           │  51 / 124 │ █████████░░░░░░░░░░░  51/124   41% │
+  └──────────────┴───────────┴────────────────────────────────────┘
 
-  Locale          Coverage
-  en (default)   124 / 124   ████████████████████  100%
-  sv             108 / 124   █████████████████░░░  87%
-  de              51 / 124   █████████░░░░░░░░░░░  41%
+  <y>⚠</y> <y>89 missing in <b>de</b>, 16 missing in <b>sv</b></y>
 ```
 
 `defaultLocale` is always 100%: every source string is its own translation.

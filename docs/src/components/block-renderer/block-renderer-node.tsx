@@ -28,6 +28,7 @@ import { BlockRendererNodeSwitch } from './block-renderer-node-switch';
 import { BlockRendererNodeTable } from './block-renderer-node-table';
 import { BlockRendererNodeTableCell } from './block-renderer-node-table-cell';
 import { BlockRendererNodeTableRow } from './block-renderer-node-table-row';
+import { BlockRendererNodeTerminal } from './block-renderer-node-terminal';
 import { BlockRendererNodeText } from './block-renderer-node-text';
 
 export type BlockRendererNodeProps = {
@@ -88,6 +89,8 @@ export function BlockRendererNode(props: BlockRendererNodeProps) {
       return <BlockRendererNodeDiagnostics block={block} />;
     case 'callout':
       return <BlockRendererNodeCallout block={block} />;
+    case 'terminal':
+      return <BlockRendererNodeTerminal block={block} />;
     case 'eyebrow':
       return <BlockRendererNodeEyebrow block={block} />;
     case 'code-location':

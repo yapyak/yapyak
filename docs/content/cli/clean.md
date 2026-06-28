@@ -9,19 +9,35 @@ yapyak clean [--write]
 
 Finds translations whose source string no longer exists in your code. Orphans that linger in locale files after the component or string they belonged to was removed. By default it lists them; `--write` applies the deletion.
 
+{% switch group="packageManager" %}
+{% when value="pnpm" %}
 ```bash
-$ pnpm yapyak clean
+pnpm yapyak clean
+```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx yapyak clean
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx yapyak clean
+```
+{% /when %}
+{% /switch %}
 
-  Locale cleanup
+```terminal
+  <b>Locale cleanup</b>
 
-  ✗ 4 orphan source(s)
+  <r>✗</r> <r>4 orphan source(s)</r>
 
-    sv. Src/components/old-button.tsx. Save changes
-    de. Src/components/old-button.tsx. Save changes
-    sv. Src/components/cart.tsx. Empty cart
-    sv. Src/components/cart.tsx. Add to wishlist
+    <d>sv</d> <d>—</d> <d>src/components/old-button.tsx</d> <d>—</d> <b>Save changes</b>
+    <d>de</d> <d>—</d> <d>src/components/old-button.tsx</d> <d>—</d> <b>Save changes</b>
+    <d>sv</d> <d>—</d> <d>src/components/cart.tsx</d> <d>—</d> <b>Empty cart</b>
+    <d>sv</d> <d>—</d> <d>src/components/cart.tsx</d> <d>—</d> <b>Add to wishlist</b>
 
-  Run yapyak clean --write to remove these entries.
+  <d>Run</d> <c>yapyak clean --write</c> <d>to remove these entries.</d>
 ```
 
 Dry-run by default. Read the output, sanity-check what's about to disappear, then run again with `--write`:
