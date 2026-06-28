@@ -14,13 +14,12 @@ const BOTTOM_THRESHOLD_PX = 4;
 const SCROLL_LOCK_FALLBACK_MS = 1200;
 const SMOOTHSTEP_EDGE_LOW = 0.4;
 const SMOOTHSTEP_EDGE_HIGH = 1;
-const STRETCH_STIFFNESS = 200;
-const STRETCH_DAMPING = 18;
-const SCROLL_VELOCITY_TO_STRETCH = 0.05;
-const MAX_STRETCH_PX = 56;
+const EDGE_SPRING_STIFFNESS = 180;
+const EDGE_SPRING_DAMPING = 12;
+const EDGE_KICK_FACTOR = 0.15;
 const MAX_FRAME_DT_SEC = 0.032;
-const STRETCH_REST_THRESHOLD = 0.4;
-const SCROLL_VELOCITY_REST = 1;
+const EDGE_REST_THRESHOLD_PX = 0.3;
+const EDGE_REST_VELOCITY = 0.3;
 
 function smoothstep(edge0: number, edge1: number, x: number): number {
   const t = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
@@ -65,10 +64,13 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     const lastId = lastHeading.id;
 
     let rafId: number | undefined;
-    let stretchAmount = 0;
-    let stretchVelocity = 0;
+    let edgeBounce = 0;
+    let edgeBounceVelocity = 0;
+    let wasAtBottom = false;
+    let wasVisible = false;
     let lastScrollY = window.scrollY;
     let lastFrameTime = performance.now();
+    const firstId = headings[0]?.id;
 
     const resolveTarget = (): ResolvedTarget | null => {
       const atBottom =
@@ -163,7 +165,14 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
       const dt = Math.min(MAX_FRAME_DT_SEC, (now - lastFrameTime) / 1000);
       lastFrameTime = now;
 
+      const scrollY = window.scrollY;
+      const scrollVelocity = dt > 0 ? (scrollY - lastScrollY) / dt : 0;
+      lastScrollY = scrollY;
+
       if (lockedIdRef.current !== null) {
+        edgeBounce = 0;
+        edgeBounceVelocity = 0;
+        wasAtBottom = false;
         return;
       }
 
@@ -172,44 +181,82 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
         return;
       }
 
-      const scrollY = window.scrollY;
-      const scrollVelocity = dt > 0 ? (scrollY - lastScrollY) / dt : 0;
-      lastScrollY = scrollY;
+      const atBottom =
+        scrollY + window.innerHeight >=
+        document.documentElement.scrollHeight - BOTTOM_THRESHOLD_PX;
+
+      if (atBottom && !wasAtBottom && scrollVelocity > 0) {
+        edgeBounceVelocity += scrollVelocity * EDGE_KICK_FACTOR;
+      }
+      wasAtBottom = atBottom;
 
       const target = resolveTarget();
+
+      const edgeForce =
+        -EDGE_SPRING_STIFFNESS * edgeBounce -
+        EDGE_SPRING_DAMPING * edgeBounceVelocity;
+      edgeBounceVelocity += edgeForce * dt;
+      edgeBounce += edgeBounceVelocity * dt;
+
       if (target === null) {
+        if (
+          wasVisible &&
+          scrollVelocity < 0 &&
+          edgeBounce > -EDGE_REST_THRESHOLD_PX &&
+          edgeBounceVelocity > -EDGE_REST_VELOCITY &&
+          firstId !== undefined
+        ) {
+          edgeBounceVelocity += scrollVelocity * EDGE_KICK_FACTOR;
+        }
+
+        const inTopBounce =
+          firstId !== undefined &&
+          (edgeBounce < -EDGE_REST_THRESHOLD_PX ||
+            Math.abs(edgeBounceVelocity) > EDGE_REST_VELOCITY);
+
+        if (inTopBounce) {
+          const firstItem = itemElementsRef.current.get(firstId);
+          if (firstItem) {
+            const displayedTop = firstItem.offsetTop + edgeBounce;
+            const displayedHeight = firstItem.offsetHeight - edgeBounce;
+            $element.style.setProperty('--indicator-top', `${displayedTop}px`);
+            $element.style.setProperty(
+              '--indicator-height',
+              `${displayedHeight}px`,
+            );
+            setIsVisible(true);
+            wasVisible = true;
+            rafId = window.requestAnimationFrame(tick);
+            return;
+          }
+        }
+
         setIsVisible(false);
-        stretchAmount = 0;
-        stretchVelocity = 0;
+        wasVisible = false;
+        edgeBounce = 0;
+        edgeBounceVelocity = 0;
         return;
       }
 
-      const targetStretch = clamp(
-        scrollVelocity * SCROLL_VELOCITY_TO_STRETCH,
-        -MAX_STRETCH_PX,
-        MAX_STRETCH_PX,
-      );
-      const stretchAccel =
-        -STRETCH_STIFFNESS * (stretchAmount - targetStretch) -
-        STRETCH_DAMPING * stretchVelocity;
-      stretchVelocity += stretchAccel * dt;
-      stretchAmount += stretchVelocity * dt;
-
-      const displayedHeight = target.height + Math.abs(stretchAmount);
-      const displayedTop =
-        stretchAmount < 0 ? target.top + stretchAmount : target.top;
+      let displayedTop = target.top;
+      let displayedHeight = target.height;
+      if (edgeBounce > 0) {
+        displayedHeight = target.height + edgeBounce;
+      } else if (edgeBounce < 0) {
+        displayedTop = target.top + edgeBounce;
+        displayedHeight = target.height - edgeBounce;
+      }
 
       setActiveId(target.activeId);
       setIsVisible(true);
+      wasVisible = true;
       $element.style.setProperty('--indicator-top', `${displayedTop}px`);
       $element.style.setProperty('--indicator-height', `${displayedHeight}px`);
 
-      const stretchAtRest =
-        Math.abs(stretchAmount) < STRETCH_REST_THRESHOLD &&
-        Math.abs(stretchVelocity) < STRETCH_REST_THRESHOLD &&
-        Math.abs(targetStretch) < STRETCH_REST_THRESHOLD;
-      const scrollAtRest = Math.abs(scrollVelocity) < SCROLL_VELOCITY_REST;
-      if (stretchAtRest && scrollAtRest) {
+      const edgeAtRest =
+        Math.abs(edgeBounce) < EDGE_REST_THRESHOLD_PX &&
+        Math.abs(edgeBounceVelocity) < EDGE_REST_VELOCITY;
+      if (edgeAtRest) {
         return;
       }
       rafId = window.requestAnimationFrame(tick);
@@ -220,7 +267,6 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
         return;
       }
       lastFrameTime = performance.now();
-      lastScrollY = window.scrollY;
       rafId = window.requestAnimationFrame(tick);
     };
 
