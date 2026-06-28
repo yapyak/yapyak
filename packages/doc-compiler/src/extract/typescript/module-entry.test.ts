@@ -139,6 +139,7 @@ describe('expandModuleEntries', () => {
           kind: 'ref',
           module: '.',
           name: 'Format',
+          text: 'Format',
         },
       ],
     });
@@ -264,6 +265,7 @@ describe('resolveTypeExport', () => {
         kind: 'ref',
         module: '.',
         name: 'Format',
+        text: 'Format',
       },
     ];
     expect(resolveTypeExport(tokens, map)).toBe(target);

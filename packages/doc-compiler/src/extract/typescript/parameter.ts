@@ -2,6 +2,7 @@ import type {
   JSDocComment,
   JSDocParameterTag,
   Node,
+  NodeArray,
   ParameterDeclaration,
 } from 'typescript';
 import type { ReferenceParameter } from './type';
@@ -12,7 +13,7 @@ import { buildTypeTokens } from './type-token';
 
 export function extractParameters(
   node: Node,
-  parameters: ParameterDeclaration[],
+  parameters: NodeArray<ParameterDeclaration>,
 ): ReferenceParameter[] {
   const parameterTags = extractParameterTags(node);
   const result: ReferenceParameter[] = [];

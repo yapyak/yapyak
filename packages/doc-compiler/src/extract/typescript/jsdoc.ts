@@ -1,4 +1,4 @@
-import type { JSDoc, JSDocComment, Node } from 'typescript';
+import type { JSDoc, JSDocComment, Node, NodeArray } from 'typescript';
 import type { ReferenceExample, ReferenceTag, ReferenceThrows } from './type';
 
 import ts from 'typescript';
@@ -113,7 +113,7 @@ function resolveSeeTarget(tag: ts.JSDocTag, text: string): string {
 }
 
 function findFirstJsDocLinkName(
-  comment: string | JSDocComment[] | undefined,
+  comment: string | NodeArray<JSDocComment> | undefined,
 ): string | undefined {
   if (comment === undefined || typeof comment === 'string') {
     return undefined;
@@ -142,7 +142,7 @@ function findLastJsDoc(node: Node): JSDoc | undefined {
 }
 
 export function getCommentText(
-  comment: string | JSDocComment[] | undefined,
+  comment: string | NodeArray<JSDocComment> | undefined,
 ): string {
   if (comment === undefined) {
     return '';
