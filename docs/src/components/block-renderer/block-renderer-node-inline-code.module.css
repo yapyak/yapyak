@@ -4,7 +4,7 @@
     font-family: var(--font-family-mono);
     font-size: 0.78em;
     color: var(--inline-code-color, var(--foreground-soft));
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
     background-color: var(--surface-strong);
     border-radius: var(--border-radius-sm);
     box-shadow: var(--shadow-ring-inset);

@@ -13,8 +13,8 @@ On save, the compiler builds a fresh set of records from the current code and re
 
 ### Same source, new path
 
-```
-src/components/cart-button.tsx  becomes  src/components/checkout/cart-button.tsx
+```terminal
+<d>src/components/cart-button.tsx</d>  becomes  <d>src/components/checkout/cart-button.tsx</d>
 ```
 
 The string `'Add to cart'` still exists, in the same form, but in a different file. Locale files are keyed by source-file path, so a naive read would treat this as a removal plus an addition. The orphan cache restores the translation under the new path on the next save.

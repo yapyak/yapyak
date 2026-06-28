@@ -394,6 +394,56 @@ describe('parseMarkdown', () => {
     });
   });
 
+  it('classifies a table column as `identifier` when every body cell is a single inline-code identifier', () => {
+    const source = [
+      '| Class | Description |',
+      '|---|---|',
+      '| `TranslatorAuthError` | Bad API key. |',
+      '| `TranslatorRateLimitError` | Rate limited. |',
+      '| `TranslatorNetworkError` | Network failure. |',
+    ].join('\n');
+    const [block] = parseMarkdown(source).blocks;
+
+    expect(block?.type).toBe('table');
+    if (block?.type !== 'table') {
+      return;
+    }
+    expect(block.body[0]?.children[0]?.column).toBe('identifier');
+    expect(block.body[0]?.children[1]?.column).toBeUndefined();
+  });
+
+  it('classifies a table column as `identifier` when cells wrap inline-code identifiers in a link', () => {
+    const source = [
+      '| Class |',
+      '|---|',
+      '| [`TranslatorAuthError`](/x) |',
+      '| [`TranslatorRateLimitError`](/y) |',
+    ].join('\n');
+    const [block] = parseMarkdown(source).blocks;
+
+    expect(block?.type).toBe('table');
+    if (block?.type !== 'table') {
+      return;
+    }
+    expect(block.body[0]?.children[0]?.column).toBe('identifier');
+  });
+
+  it('does not classify a column as `identifier` when any cell mixes prose with code', () => {
+    const source = [
+      '| Item |',
+      '|---|',
+      '| `TranslatorAuthError` |',
+      '| `TranslatorRateLimitError`, with retry. |',
+    ].join('\n');
+    const [block] = parseMarkdown(source).blocks;
+
+    expect(block?.type).toBe('table');
+    if (block?.type !== 'table') {
+      return;
+    }
+    expect(block.body[0]?.children[0]?.column).toBeUndefined();
+  });
+
   it('parses a fenced code block with language `terminal` into a `terminal` block', () => {
     const source = '```terminal\nHello world\n```';
     expect(parseMarkdown(source).blocks).toEqual([

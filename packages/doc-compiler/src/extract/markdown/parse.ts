@@ -326,10 +326,91 @@ function buildTable(children: unknown[]): TableBlock {
   }
 
   return {
-    body,
+    body: classifyColumns(body),
     head: nullify(head),
     type: 'table',
   };
+}
+
+function classifyColumns(body: TableRowBlock[]): TableRowBlock[] {
+  const columnCount = body.reduce(
+    (max, row) => Math.max(max, row.children.length),
+    0,
+  );
+  const columnTypes: (TableCellBlock['column'] | undefined)[] = [];
+  for (let columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+    const cells = body
+      .map((row) => row.children[columnIndex])
+      .filter((cell): cell is TableCellBlock => cell !== undefined);
+    columnTypes[columnIndex] = classifyColumn(cells);
+  }
+  return body.map((row) => ({
+    ...row,
+    children: row.children.map((cell, columnIndex) => {
+      const column = columnTypes[columnIndex];
+      if (column === undefined || cell.column !== undefined) {
+        return cell;
+      }
+      return {
+        ...cell,
+        column,
+      };
+    }),
+  }));
+}
+
+function classifyColumn(
+  cells: TableCellBlock[],
+): TableCellBlock['column'] | undefined {
+  if (cells.length === 0) {
+    return undefined;
+  }
+  let identifierCount = 0;
+  for (const cell of cells) {
+    if (isIdentifierCell(cell)) {
+      identifierCount += 1;
+    }
+  }
+  if (identifierCount === cells.length) {
+    return 'identifier';
+  }
+  return undefined;
+}
+
+function isIdentifierCell(cell: TableCellBlock): boolean {
+  const inlineCode = findSingleInlineCode(cell.children);
+  if (inlineCode === null) {
+    return false;
+  }
+  return /^[A-Za-z_$][\w$.]*$/.test(inlineCode);
+}
+
+function findSingleInlineCode(blocks: Block[]): string | null {
+  const meaningful = blocks.filter((block) => !isBlank(block));
+  if (meaningful.length !== 1) {
+    return null;
+  }
+  const first = meaningful[0];
+  if (first === undefined) {
+    return null;
+  }
+  if (first.type === 'inline-code') {
+    return first.value;
+  }
+  if (first.type === 'link' && first.children.length === 1) {
+    const inner = first.children[0];
+    if (inner !== undefined && inner.type === 'inline-code') {
+      return inner.value;
+    }
+  }
+  if (first.type === 'paragraph') {
+    return findSingleInlineCode(first.children);
+  }
+  return null;
+}
+
+function isBlank(block: Block): boolean {
+  return block.type === 'text' && block.value.trim() === '';
 }
 
 function buildCodeBlock(attributes: Record<string, unknown>): CodeBlock {

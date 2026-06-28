@@ -29,5 +29,14 @@
       overflow-wrap: anywhere;
       white-space: normal;
     }
+
+    &[data-column="identifier"] {
+      white-space: nowrap;
+
+      code {
+        word-break: keep-all;
+        overflow-wrap: normal;
+      }
+    }
   }
 }
