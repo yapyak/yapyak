@@ -28,7 +28,7 @@ function exportBase(
     examples: [],
     location: {
       column: 1,
-      file: '/pkg/src/a.ts',
+      file: 'src/a.ts',
       line: 1,
     },
     name,

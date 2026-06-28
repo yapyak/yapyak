@@ -28,7 +28,7 @@ describe('parseShapeTypeParameters', () => {
 
   it('parses every parameter when separated by depth-zero commas', () => {
     const result = parseShapeTypeParameters('foo<T, U, V>', NO_TAGS);
-    expect(result.map((p) => p.name)).toEqual([
+    expect(result.map((parameter) => parameter.name)).toEqual([
       'T',
       'U',
       'V',
@@ -63,7 +63,7 @@ describe('parseShapeTypeParameters', () => {
       'foo<T extends Record<string, number>, U>',
       NO_TAGS,
     );
-    expect(result.map((p) => p.name)).toEqual([
+    expect(result.map((parameter) => parameter.name)).toEqual([
       'T',
       'U',
     ]);
@@ -77,9 +77,10 @@ describe('parseShapeTypeParameters', () => {
   });
 
   it('parses a function-type default with parens', () => {
-    const result = parseShapeTypeParameters('foo<T = (x: number) => string>', [
-      ...NO_TAGS,
-    ]);
+    const result = parseShapeTypeParameters(
+      'foo<T = (x: number) => string>',
+      NO_TAGS,
+    );
     expect(result[0]?.name).toBe('T');
     expect(result[0]?.defaultType).not.toBeNull();
   });

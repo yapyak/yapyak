@@ -15,9 +15,9 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-interface MockWatcher extends EventEmitter {
-  add(path: string): void;
-}
+type MockWatcher = EventEmitter & {
+  add: (path: string) => void;
+};
 
 type MockServer = {
   config: {
@@ -128,44 +128,8 @@ describe('docCompiler', () => {
     };
   }
 
-  describe('resolveId', () => {
-    it('returns the resolved virtual id when given `virtual:doc-compiler`', () => {
-      const plugin = docCompiler(configFor());
-      const result = (plugin.resolveId as (id: string) => string | undefined)(
-        'virtual:doc-compiler',
-      );
-      expect(result).toBe('\0virtual:doc-compiler');
-    });
-
-    it('returns `undefined` for any other id', () => {
-      const plugin = docCompiler(configFor());
-      const result = (plugin.resolveId as (id: string) => string | undefined)(
-        'some-other-id',
-      );
-      expect(result).toBeUndefined();
-    });
-  });
-
-  describe('load', () => {
-    it('returns module source code when given the resolved virtual id', () => {
-      const plugin = docCompiler(configFor());
-      const result = (plugin.load as (id: string) => string | undefined)(
-        '\0virtual:doc-compiler',
-      );
-      expect(result).toContain('export const doc');
-    });
-
-    it('returns `undefined` for any other id', () => {
-      const plugin = docCompiler(configFor());
-      const result = (plugin.load as (id: string) => string | undefined)(
-        'some-other-id',
-      );
-      expect(result).toBeUndefined();
-    });
-  });
-
   describe('buildStart', () => {
-    it('writes the manifest file to `out` when invoked', async () => {
+    it('writes the manifest file to `out`', async () => {
       const plugin = docCompiler(configFor());
       await (plugin.buildStart as () => Promise<void>).call({
         emitFile: () => undefined,
@@ -212,7 +176,7 @@ describe('docCompiler', () => {
       });
       (plugin.configureServer as (server: MockServer) => void)(server);
 
-      const siblingFile = join(siblingRoot, 'foo.md');
+      const siblingFile = join(siblingRoot, 'a.md');
       writeFileSync(siblingFile, 'body');
       server.watcher.emit('change', siblingFile);
       await vi.advanceTimersByTimeAsync(220);
@@ -220,7 +184,7 @@ describe('docCompiler', () => {
       expect(invalidationAttempted).toBe(false);
     });
 
-    it('serves the agent artifact body when middleware receives a known `.md` path', async () => {
+    it('writes the agent artifact body when middleware receives a known `.md` path', async () => {
       const plugin = docCompiler({
         ...configFor(),
         agentArtifact: {
@@ -304,6 +268,42 @@ describe('docCompiler', () => {
         },
       );
       expect(nextCalled).toBe(true);
+    });
+  });
+
+  describe('load', () => {
+    it('returns module source code when given the resolved virtual id', () => {
+      const plugin = docCompiler(configFor());
+      const result = (plugin.load as (id: string) => string | undefined)(
+        '\0virtual:doc-compiler',
+      );
+      expect(result).toContain('export const doc');
+    });
+
+    it('returns `undefined` for any other id', () => {
+      const plugin = docCompiler(configFor());
+      const result = (plugin.load as (id: string) => string | undefined)(
+        'some-other-id',
+      );
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe('resolveId', () => {
+    it('returns the resolved virtual id when given `virtual:doc-compiler`', () => {
+      const plugin = docCompiler(configFor());
+      const result = (plugin.resolveId as (id: string) => string | undefined)(
+        'virtual:doc-compiler',
+      );
+      expect(result).toBe('\0virtual:doc-compiler');
+    });
+
+    it('returns `undefined` for any other id', () => {
+      const plugin = docCompiler(configFor());
+      const result = (plugin.resolveId as (id: string) => string | undefined)(
+        'some-other-id',
+      );
+      expect(result).toBeUndefined();
     });
   });
 });
