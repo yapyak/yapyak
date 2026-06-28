@@ -194,7 +194,7 @@ compiles to:
 `Hello ${name}`
 ```
 
-In JSX, the call disappears into the surrounding markup:
+Inside a template expression, the call disappears into the surrounding markup:
 
 ```tsx
 <p>{t('Welcome')}</p>

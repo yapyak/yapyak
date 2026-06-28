@@ -92,12 +92,6 @@ The most common ones are early-flagged mistakes:
 
 The compiler can only translate what it can see at compile time. Anything dynamic (a string built from variables, computed from data, looked up at runtime) has to be expressed through ICU placeholders or a select branch, not concatenation.
 
-## What you get back
-
-`t()` returns a string. If your source contains [rich-text tags](/guide/writing/rich-text) (`<link>...</link>` or `<br/>`), the return type is branded so `<RichText>` accepts it. Render through `<RichText>` — if you render the string as plain text, the tags appear verbatim.
-
-For everything else, `t()` is a `string`. You can interpolate it, pass it as a prop, log it, store it. It behaves like the literal you'd have written in a single-language version of the same component.
-
 ## The whole API
 
 `t()` is the entry point. Two methods chain off it:
