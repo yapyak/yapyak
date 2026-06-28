@@ -2,7 +2,6 @@
   .ContentAnchorNavigation {
     --indicator-top: 0px;
     --indicator-height: 0px;
-    --indicator-duration: 0ms;
 
     display: block;
 
@@ -36,11 +35,14 @@
         height: var(--indicator-height);
         pointer-events: none;
         background-color: var(--brand);
+        opacity: 0;
         transform: translateY(var(--indicator-top));
-        transition:
-          transform var(--indicator-duration) var(--ease-smooth),
-          height var(--indicator-duration) var(--ease-smooth);
-        will-change: transform, height;
+        transition: opacity 180ms var(--ease-smooth);
+        will-change: transform, height, opacity;
+
+        @media (prefers-reduced-motion: reduce) {
+          transition: none;
+        }
       }
 
       @media (min-width: 1324px) {
@@ -52,11 +54,18 @@
       }
     }
 
-    &[data-animation-enabled] {
-      --indicator-duration: 320ms;
+    &[data-visible] .Indicator {
+      opacity: 1;
+    }
+
+    &[data-locked] .Indicator {
+      transition:
+        opacity 180ms var(--ease-smooth),
+        transform 320ms var(--ease-smooth),
+        height 320ms var(--ease-smooth);
 
       @media (prefers-reduced-motion: reduce) {
-        --indicator-duration: 0ms;
+        transition: none;
       }
     }
   }
