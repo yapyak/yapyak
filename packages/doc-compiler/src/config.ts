@@ -1,5 +1,5 @@
 export type Config = {
-  agentArtifact?: AgentArtifactOption;
+  agentArtifact?: AgentArtifactOptions;
   collections: Record<string, CollectionConfig>;
   options?: OptionsRegistry;
   out: string;
@@ -7,7 +7,7 @@ export type Config = {
   validate?: boolean;
 };
 
-type AgentArtifactOption = {
+type AgentArtifactOptions = {
   description: string;
   instructions: string;
   outDir: string;

@@ -14,7 +14,7 @@ import { parse } from '@astrojs/compiler-rs';
 import { createProcessor, rangeFromOffsets } from 'yapyak/processor';
 
 declare module 'estree' {
-  // biome-ignore lint/style/useConsistentTypeDefinitions: module augmentation requires interface merging
+  // biome-ignore lint/style/useConsistentTypeDefinitions: yap yap yap
   interface BaseNode {
     end: number;
     start: number;

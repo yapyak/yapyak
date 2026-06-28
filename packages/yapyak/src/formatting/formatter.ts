@@ -102,7 +102,7 @@ function isCurrencyConstruction(
   ctor: IntlFormatterCtor<unknown>,
   options: object | undefined,
 ): boolean {
-  if (ctor !== (Intl.NumberFormat as unknown as IntlFormatterCtor<unknown>)) {
+  if ((ctor as typeof Intl.NumberFormat) !== Intl.NumberFormat) {
     return false;
   }
   const numberOptions = options as Intl.NumberFormatOptions | undefined;
@@ -116,7 +116,7 @@ function isUnitConstruction(
   ctor: IntlFormatterCtor<unknown>,
   options: object | undefined,
 ): boolean {
-  if (ctor !== (Intl.NumberFormat as unknown as IntlFormatterCtor<unknown>)) {
+  if ((ctor as typeof Intl.NumberFormat) !== Intl.NumberFormat) {
     return false;
   }
   const numberOptions = options as Intl.NumberFormatOptions | undefined;
@@ -129,7 +129,7 @@ function isTimeZoneConstruction(
   ctor: IntlFormatterCtor<unknown>,
   options: object | undefined,
 ): boolean {
-  if (ctor !== (Intl.DateTimeFormat as unknown as IntlFormatterCtor<unknown>)) {
+  if ((ctor as typeof Intl.DateTimeFormat) !== Intl.DateTimeFormat) {
     return false;
   }
   const dateOptions = options as Intl.DateTimeFormatOptions | undefined;

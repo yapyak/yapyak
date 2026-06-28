@@ -2,7 +2,7 @@ import { createRouter } from '@tanstack/react-router';
 
 import { routeTree } from './routeTree.gen';
 
-let lastSection: string | null = null;
+let lastSection: string | undefined;
 
 export function getRouter() {
   return createRouter({

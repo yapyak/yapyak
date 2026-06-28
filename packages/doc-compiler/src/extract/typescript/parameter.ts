@@ -12,7 +12,7 @@ import { buildTypeTokens } from './type-token';
 
 export function extractParameters(
   node: Node,
-  parameters: readonly ParameterDeclaration[],
+  parameters: ParameterDeclaration[],
 ): ReferenceParameter[] {
   const parameterTags = extractParameterTags(node);
   const result: ReferenceParameter[] = [];

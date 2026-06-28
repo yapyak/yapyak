@@ -1,4 +1,4 @@
-import type { ExtractedMessage, Location } from '../parser/file/extract';
+import type { ExtractedMessage, Location } from '../parser';
 
 import { describe, expect, it } from 'vitest';
 

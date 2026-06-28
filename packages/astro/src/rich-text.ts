@@ -54,8 +54,8 @@ function extractTagNames(nodes: RichTextNode[]): Set<string> {
   walk(nodes);
   return names;
 
-  function walk(ns: RichTextNode[]): void {
-    for (const node of ns) {
+  function walk(nodes: RichTextNode[]): void {
+    for (const node of nodes) {
       if (node.type === 'pair') {
         names.add(node.name);
         walk(node.children);

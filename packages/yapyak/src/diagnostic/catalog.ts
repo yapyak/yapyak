@@ -336,9 +336,9 @@ export function getDocsUrl(code: YapCode): string {
   return `${DOCS_BASE}/${code}`;
 }
 
-export function warnDiagnostic<K extends YapKey>(
-  key: K,
-  params: Parameters<(typeof YAP)[K]['message']>[0],
+export function warnDiagnostic<T extends YapKey>(
+  key: T,
+  params: Parameters<(typeof YAP)[T]['message']>[0],
   meta?: Record<string, unknown>,
 ): void {
   const entry = YAP[key];
@@ -351,9 +351,9 @@ export function warnDiagnostic<K extends YapKey>(
   });
 }
 
-export function buildDiagnostic<K extends YapKey>(
-  key: K,
-  params: Parameters<(typeof YAP)[K]['message']>[0],
+export function buildDiagnostic<T extends YapKey>(
+  key: T,
+  params: Parameters<(typeof YAP)[T]['message']>[0],
   context: BuildDiagnosticContext,
 ): Diagnostic {
   const entry = YAP[key];

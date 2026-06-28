@@ -1,13 +1,13 @@
 import { renameSync, unlinkSync, writeFileSync } from 'node:fs';
 
 export function writeAtomic(path: string, content: string): void {
-  const tempPath = `${path}.${process.pid}.${Date.now()}.tmp`;
+  const temporaryPath = `${path}.${process.pid}.${Date.now()}.tmp`;
   try {
-    writeFileSync(tempPath, content);
-    renameSync(tempPath, path);
+    writeFileSync(temporaryPath, content);
+    renameSync(temporaryPath, path);
   } catch (cause) {
     try {
-      unlinkSync(tempPath);
+      unlinkSync(temporaryPath);
     } catch {}
     throw cause;
   }
@@ -21,32 +21,32 @@ export function writeAtomicAll(
 ): void {
   const staged: {
     finalPath: string;
-    tempPath: string;
+    temporaryPath: string;
   }[] = [];
   try {
     for (const [index, write] of writes.entries()) {
-      const tempPath = `${write.path}.${process.pid}.${Date.now()}.${index}.tmp`;
-      writeFileSync(tempPath, write.content);
+      const temporaryPath = `${write.path}.${process.pid}.${Date.now()}.${index}.tmp`;
+      writeFileSync(temporaryPath, write.content);
       staged.push({
         finalPath: write.path,
-        tempPath,
+        temporaryPath,
       });
     }
   } catch (cause) {
     for (const stage of staged) {
       try {
-        unlinkSync(stage.tempPath);
+        unlinkSync(stage.temporaryPath);
       } catch {}
     }
     throw cause;
   }
   for (const [index, stage] of staged.entries()) {
     try {
-      renameSync(stage.tempPath, stage.finalPath);
+      renameSync(stage.temporaryPath, stage.finalPath);
     } catch (cause) {
       for (const remaining of staged.slice(index)) {
         try {
-          unlinkSync(remaining.tempPath);
+          unlinkSync(remaining.temporaryPath);
         } catch {}
       }
       throw cause;

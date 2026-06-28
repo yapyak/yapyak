@@ -1,6 +1,6 @@
 export function findCanonicalLocale<T extends string>(
   candidate: string,
-  locales: readonly T[],
+  locales: T[],
 ): T | undefined {
   const target = toCanonicalKey(candidate);
   for (const locale of locales) {

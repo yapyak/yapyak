@@ -1,5 +1,5 @@
 import type { TranslateRequest, Translator } from '../../translator';
-import type { ExtractedMessage } from '../parser/file/extract';
+import type { ExtractedMessage } from '../parser';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 

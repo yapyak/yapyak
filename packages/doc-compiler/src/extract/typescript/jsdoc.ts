@@ -3,6 +3,8 @@ import type { ReferenceExample, ReferenceTag, ReferenceThrows } from './type';
 
 import ts from 'typescript';
 
+import { nullify } from '../../nullify';
+
 export const SYMBOL_HREF_PREFIX = 'symbol:';
 
 export type ExtractJsDocResult = {
@@ -40,7 +42,7 @@ export function extractJsDoc(node: Node): ExtractJsDocResult {
   const tags: ReferenceTag[] = [];
   let remarks = '';
   let shape = '';
-  let deprecated: string | null = null;
+  let deprecated: string | undefined;
 
   for (const tag of jsDoc.tags ?? []) {
     const name = tag.tagName.text;
@@ -81,7 +83,7 @@ export function extractJsDoc(node: Node): ExtractJsDocResult {
   }
 
   return {
-    deprecated,
+    deprecated: nullify(deprecated),
     description,
     examples,
     remarks,
@@ -111,7 +113,7 @@ function resolveSeeTarget(tag: ts.JSDocTag, text: string): string {
 }
 
 function findFirstJsDocLinkName(
-  comment: string | readonly JSDocComment[] | undefined,
+  comment: string | JSDocComment[] | undefined,
 ): string | undefined {
   if (comment === undefined || typeof comment === 'string') {
     return undefined;
@@ -140,7 +142,7 @@ function findLastJsDoc(node: Node): JSDoc | undefined {
 }
 
 export function getCommentText(
-  comment: string | readonly JSDocComment[] | undefined,
+  comment: string | JSDocComment[] | undefined,
 ): string {
   if (comment === undefined) {
     return '';

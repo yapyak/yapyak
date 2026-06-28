@@ -577,8 +577,8 @@ function dedentTerminalLines(rawLines: string[]): string[] {
 function segmentTerminalLine(line: string): TerminalSegment[] {
   const segments: TerminalSegment[] = [];
   let buffer = '';
-  let currentStyle: TerminalTagKind | null = null;
-  let currentBarKind: 'bar-empty' | 'bar-fill' | null = null;
+  let currentStyle: TerminalTagKind | undefined;
+  let currentBarKind: 'bar-empty' | 'bar-fill' | undefined;
 
   const flush = (): void => {
     if (buffer.length === 0) {
@@ -599,8 +599,8 @@ function segmentTerminalLine(line: string): TerminalSegment[] {
     const tagMatch = matchTerminalTag(line, index);
     if (tagMatch !== null) {
       flush();
-      currentBarKind = null;
-      currentStyle = tagMatch.closing ? null : tagMatch.kind;
+      currentBarKind = undefined;
+      currentStyle = tagMatch.closing ? undefined : tagMatch.kind;
       index += tagMatch.length;
       continue;
     }
@@ -609,8 +609,12 @@ function segmentTerminalLine(line: string): TerminalSegment[] {
     if (character === undefined) {
       break;
     }
-    const barKind: 'bar-empty' | 'bar-fill' | null =
-      character === '█' ? 'bar-fill' : character === '░' ? 'bar-empty' : null;
+    const barKind: 'bar-empty' | 'bar-fill' | undefined =
+      character === '█'
+        ? 'bar-fill'
+        : character === '░'
+          ? 'bar-empty'
+          : undefined;
     if (barKind !== currentBarKind) {
       flush();
       currentBarKind = barKind;

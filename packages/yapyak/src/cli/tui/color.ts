@@ -9,7 +9,7 @@ type ColorPalette = {
   yellow(text: string): string;
 };
 
-function colorEnabled(): boolean {
+function isColorEnabled(): boolean {
   if (process.env.NO_COLOR !== undefined) {
     return false;
   }
@@ -20,7 +20,7 @@ function colorEnabled(): boolean {
 }
 
 function wrap(code: string, text: string): string {
-  if (!colorEnabled()) {
+  if (!isColorEnabled()) {
     return text;
   }
   return `${ESC}${code}m${text}${ESC}0m`;

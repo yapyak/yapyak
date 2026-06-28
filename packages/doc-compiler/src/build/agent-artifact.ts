@@ -1,6 +1,6 @@
 import type { Manifest, Page, SidebarNode } from './manifest';
 
-import { blocksToMarkdown } from '../access/markdown';
+import { blocksToMarkdown } from '../access';
 
 export type AgentArtifactConfig = {
   description: string;
