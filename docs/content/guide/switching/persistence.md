@@ -3,7 +3,7 @@ title: Persistence
 order: 3
 ---
 
-Without persistence, the active locale exists only for the current page session. Close the tab and the choice is gone. yapyak ships four strategies that survive reloads: cookie, local storage, URL, or none.
+Without persistence, the active locale exists only for the current page session. Close the tab and the choice is gone. yapyak ships three strategies that survive reloads: cookie, local storage, or URL.
 
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
@@ -17,7 +17,9 @@ Each strategy also accepts a configuration object for customizing names, keys, o
 
 ## Cookie
 
-The default for server-rendered apps. Two sides:
+The locale lives in a cookie that travels with every request. Fits SSR apps that want URLs free of locale segments.
+
+Two sides:
 
 - **Write:** `setLocale()` writes the cookie. Client-side, that's `document.cookie`. Server-side (inside an SSR adapter), yapyak buffers a `Set-Cookie` header and flushes it onto the response.
 - **Read:** the SSR adapter reads the cookie off the request on every render.
