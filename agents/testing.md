@@ -317,23 +317,6 @@ If a test does not exercise one of these edge cases, use the regular pool string
 
 Slarv basenames (`foo`, `bar`, `new`, `app`, `page`) are forbidden.
 
-#### Mechanical algorithm
-
-```
-1. Identify the function's action. Map to a Yap List verb.
-   No fit → reformulate or add the verb to the list FIRST.
-
-2. Pick a shape:
-   - No condition, no extra subject → S1
-   - Has a condition (when ...)     → S2
-   - Has a subject distinct from object → S3
-   - Has a quantifier on the object → S4
-
-3. Object is a domain noun. Fixture data from the Yak Pool.
-
-4. Apply lexical rules.
-```
-
 ### Extending the lists
 
 Yap List and Yak Pool are closed. Adding a verb or fixture entry requires editing this file in the same commit as the first test that uses it.
@@ -508,16 +491,16 @@ Inline literal values for everything that fits in one screen.
 
 For larger fixtures (compiler tests with source-code samples), put them in a `fixtures/` sibling folder, one file per fixture. Reference by path, not by import — the fixture content is treated as raw text.
 
-### Checklist
+### Audit before commit
 
-1. File next to source: `<source>.ts` + `<source>.test.ts`.
-2. Imports follow [[modules]] order.
-3. One `describe` per exported function, alphabetical.
-4. Each function categorized; test count matches the formula.
-5. Edge cases derived from signature.
-6. `it` names follow the formula + Yap List.
-7. No forbidden `it` patterns.
-8. Fixtures from the Yak Pool.
-9. Mocks restored in `afterEach`.
-10. No snapshots (unless in the allowed exceptions).
-11. Tests pass with `vitest --run`.
+| Group | Check |
+|---|---|
+| **File** | `<source>.ts` paired with `<source>.test.ts`. |
+| **Imports** | Vitest helpers first, then symbol via relative import. Per [[modules]]. |
+| **Structure** | One `describe` per exported function, alphabetical. Order: happy-path → edge → error. |
+| **Coverage** | Function categorized; test count matches the formula. Edge cases derived from signature. |
+| **`it` names** | Formula shape + Yap List verb. No forbidden patterns. |
+| **Fixtures** | Yak Pool only. No invented strings. |
+| **Mocks** | Restored in `afterEach`. |
+| **Snapshots** | None (unless in the allowed exceptions). |
+| **Run** | `vitest --run` passes. |

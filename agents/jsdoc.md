@@ -47,16 +47,6 @@ If implementation cannot be read end-to-end, the JSDoc stops at what the signatu
 13. Run the pre-publish audit checklist.
 ```
 
-### Worked example
-
-`createTranslator()`:
-
-1. Kind: function.
-2. Category: name starts with `create*`, returns new instance → Factory.
-3. Qualifier: not listed.
-4. Formula: `Creates a [T] [minimal-context].` → `Creates a translator.`
-5. Acronyms: none.
-
 ### Scope — what gets JSDoc
 
 | Visibility | JSDoc |
@@ -946,55 +936,27 @@ Pick from this catalog rather than inventing.
 
 If no row fits, write the most boring possible declarative sentence.
 
-### Pre-publish audit checklist
+### Pre-publish audit
 
-For every public API symbol:
+Grouped by category. Each row points back to the section that defines the rule.
 
-1. JSDoc block present.
-2. Summary ≤ 100 chars, one sentence, period at end, capital at start.
-3. Summary is 3rd-person indicative.
-4. Category formula applied.
-5. Second sentence present only when name triggers it.
-6. Acronyms uppercase.
-7. `@param` matches signature order AND names exactly.
-8. `@param` uses hyphen separator, no types.
-9. Boolean fields use correct shape: `Whether [subject] is/has [adjective].` (state) or `Whether to [verb-phrase].` (behavior).
-10. Options-type fields alphabetical (discriminator first in union variants).
-11. No `@returns` block.
-12. `@example` present for required categories.
-13. `@example` includes imports.
-14. `@example` language identifier is the most specific applicable.
-15. Multiple `@example` blocks ordered: lowest arg-count → complex → framework-specific.
-16. ≤ 3 `@example` blocks (≤ 5 for umbrella symbols with distinct call forms).
-17. First `@example` carries no title, shows simplest invocation.
-18. Each `@example` shows one scenario.
-19. Comments inside example code use only `// output:`, `// error:`, `// ok:`, `// ...`.
-20. One blank line between imports and body; no other blank lines inside.
-21. Identifier names consistent across same-symbol example blocks.
-22. `@typeParam` for every type parameter, alphabetical.
-23. `@throws` for every non-trivial exception type.
-24. `{@link}` for in-project public symbols; backticks for literals, third-party, internal.
-25. No `{@link X}` to a target already structurally linked on the same rendered page.
-26. Inline `{@link}` in description prose only when occupying a formula-slot.
-27. `@see` blocks alphabetical; in-project `{@link X}` first, external URL second.
-28. Public types that structurally wrap a Web Platform / Intl type carry `@see <MDN URL>`.
-29. Symbols with peer-pair prefixes carry `@see {@link Peer}` symmetrically.
-30. No manual `@see` for parent/sibling members of namespace symbols.
-31. `@deprecated` always includes migration path.
-32. `@remarks` adds actionable nuance, passes the triple test.
-33. `@remarks` contains no banned implementation-detail patterns.
-34. Every claim verified against the symbol's implementation.
-35. Secondary types carry no `@remarks` and no `@example`.
-36. No duplicated `@example` or `@remarks` between primary and secondaries.
-37. Cross-framework sibling families have byte-identical summaries except the binding slot.
-38. No defaults inline in prose — only `@defaultValue`.
-39. No second-person pronouns.
-40. No domain elaboration in summary.
-41. Sibling descriptions parallel.
-42. All sentences are full natural prose.
-43. Whitespace: empty line between each tag group, none within groups.
-44. Standard phrasings used where applicable.
-45. No banned words: `gets`, `sets`, `simply`, `just`, `automatically`, `easily`.
-46. No placeholder identifiers in examples — Yak Pool only.
-47. Code in `@example` is runnable.
-48. `@packageDocumentation` present on each public entry file.
+| Group | Check |
+|---|---|
+| **Summary** | ≤ 100 chars, period, 3rd-person, category formula applied, no domain elaboration, no banned words (`gets`, `sets`, `simply`, `just`, `automatically`, `easily`). |
+| **Second sentence** | Present only when name triggers it (discriminator suffix, generic placeholder, ≤ 1 substantive word). |
+| **Verification** | Every claim verified against the implementation or a real call site. No fabrication. |
+| **`@param`** | Signature order, names match exactly, hyphen separator, no types, every parameter described. Boolean fields use the state/behavior shape. |
+| **Field order** | Type fields alphabetical. Discriminator first per union variant. Signature parameters keep signature order. |
+| **`@returns`** | None. Banned. |
+| **`@example`** | Present for required categories. Imports included. Language identifier is most specific (`tsx`/`ts`/`vue`/`svelte`). Title-less first block, simplest invocation. ≤ 3 blocks (≤ 5 for umbrella). One scenario per block. Only `// output:` / `// error:` / `// ok:` / `// ...` comments. Yak Pool identifiers. Runnable. |
+| **`{@link}` / `@see`** | No link to a target already structurally linked. Inline `{@link}` only in formula-slots. Peer-pair symmetric. Target-family auto-applied on types. `@see` external URLs after in-project. No manual parent/sibling `@see`. |
+| **`@throws`** | One per non-trivial exception type, `when [condition]`. |
+| **`@typeParam`** | One per type parameter, alphabetical. |
+| **`@deprecated`** | Migration path always included. |
+| **`@remarks`** | Triple test passes. No banned implementation-detail patterns. No code blocks. |
+| **Defaults** | `@defaultValue` only. Never inline in prose. |
+| **Secondary types** | `*Options`/`*Props`/`*Result`/`*Request`/`*Response`/`*Config`/`*Event`/`*Context` carry no `@remarks`, no `@example`. Formula sentence + `{@link Primary}`. |
+| **Sibling families** | Byte-identical summaries except the binding slot. Identical `@example` shape and count. |
+| **Prose hygiene** | No second-person pronouns. Sibling descriptions parallel. Standard phrasings used. No em-dash in descriptions. |
+| **Whitespace** | Empty line between tag groups, none within groups. |
+| **`@packageDocumentation`** | Present on every public entry file. |

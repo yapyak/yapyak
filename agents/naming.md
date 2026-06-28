@@ -56,14 +56,10 @@ Modifiers describe position/quantity/relation. They are NOT subtypes. `internal`
 
 | Export | Trace | Filename |
 | --- | --- | --- |
-| `getSidebar` | drop `get` → Sidebar | `sidebar.ts` |
 | `getAllPages` | drop `get` → AllPages → drop `all` → Pages → Page | `page.ts` |
-| `getInternalLinks` | drop `get` → InternalLinks → InternalLink | `internal-link.ts` |
 | `walkSourceFiles` | drop `walk` → SourceFiles → SourceFile | `source-file.ts` |
 | `wrapWithProgress` | drop `wrap` → WithProgress → drop `with` → Progress | `progress.ts` |
-| `migrateLocales` | drop `migrate` → Locales → Locale | `locale.ts` |
 | `toMessageId` | drop `to` → MessageId | `message-id.ts` |
-| `createIntl` | drop `create` → Intl | `intl.tsx` |
 | `interpolate` | drop `interpolate` → empty → fall back | `interpolate.ts` |
 | `t` | drop `t` → empty → fall back | `t.ts` |
 
