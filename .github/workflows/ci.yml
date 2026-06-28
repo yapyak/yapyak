@@ -25,4 +25,5 @@ jobs:
       - run: pnpm -r --parallel typecheck
       - run: pnpm test
       - run: pnpm --filter @yapyak/docs build
+      - run: pnpm -r --filter "./examples/*" build
       - run: pnpm knip
