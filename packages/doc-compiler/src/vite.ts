@@ -5,7 +5,7 @@ import type { Config } from './config';
 import { buildAgentArtifact } from './build/agent-artifact';
 import { buildManifest } from './build/manifest';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
+import { dirname, resolve, sep } from 'node:path';
 
 const VIRTUAL_ID = 'virtual:doc-compiler';
 const RESOLVED_ID = '\0virtual:doc-compiler';
@@ -195,8 +195,9 @@ function getWatchedDirectories(config: Config): string[] {
 
 function isRelevantFile(file: string, watchedDirectories: string[]): boolean {
   const normalized = resolve(file);
-  return watchedDirectories.some((directory) =>
-    normalized.startsWith(directory),
+  return watchedDirectories.some(
+    (directory) =>
+      normalized === directory || normalized.startsWith(directory + sep),
   );
 }
 
