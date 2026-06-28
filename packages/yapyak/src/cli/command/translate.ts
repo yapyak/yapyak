@@ -95,13 +95,13 @@ export async function translate(
   );
   let done = 0;
   let failed = 0;
-  let aborted = false;
+  let wasAborted = false;
   const allErrors: TranslationErrorEntry[] = [];
   const startedAt = Date.now();
 
   const controller = new AbortController();
   const onSigint = (): void => {
-    aborted = true;
+    wasAborted = true;
     controller.abort(new Error('Translate cancelled by SIGINT.'));
   };
   process.once('SIGINT', onSigint);
@@ -145,7 +145,7 @@ export async function translate(
   }
 
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
-  if (aborted) {
+  if (wasAborted) {
     sp.fail(
       `${done} translated · ${color.red('cancelled')} · ${color.dim(`${elapsed}s`)}`,
     );

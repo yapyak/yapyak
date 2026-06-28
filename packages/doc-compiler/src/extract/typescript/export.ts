@@ -31,14 +31,14 @@ function walkExports(
   stack.add(filePath);
 
   const sourceFile = parseSourceFile(filePath);
-  const result = new Map<string, ExportEntry>();
+  const exportsByName = new Map<string, ExportEntry>();
 
-  collectLocalExports(sourceFile, result);
-  collectReExports(sourceFile, filePath, stack, result);
+  collectLocalExports(sourceFile, exportsByName);
+  collectReExports(sourceFile, filePath, stack, exportsByName);
 
   stack.delete(filePath);
-  exportsByFile.set(filePath, result);
-  return result;
+  exportsByFile.set(filePath, exportsByName);
+  return exportsByName;
 }
 
 function collectLocalExports(

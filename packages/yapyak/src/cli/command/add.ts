@@ -148,11 +148,11 @@ export async function add(
 
   const allErrors: TranslationErrorEntry[] = [];
   const startedAt = Date.now();
-  let aborted = false;
+  let wasAborted = false;
 
   const controller = new AbortController();
   const onSigint = (): void => {
-    aborted = true;
+    wasAborted = true;
     controller.abort(new Error('Add cancelled by SIGINT.'));
   };
   process.once('SIGINT', onSigint);
@@ -198,7 +198,7 @@ export async function add(
   }
 
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
-  if (aborted) {
+  if (wasAborted) {
     sp.fail(
       `${done} translated · ${color.red('cancelled')} · ${color.dim(`${elapsed}s`)}`,
     );

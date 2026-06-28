@@ -148,7 +148,7 @@ export type TranslateBatchRequest = {
  * Returns one item per input, in order.
  */
 export type TranslateFn = (
-  params: TranslateBatchRequest,
+  request: TranslateBatchRequest,
 ) => LocaleTranslations[] | Promise<LocaleTranslations[]>;
 
 /** Input for {@link createTranslator}. */

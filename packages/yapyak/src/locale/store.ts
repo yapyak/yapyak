@@ -220,18 +220,20 @@ export const locales: Locale[] = Object.freeze([
 /** The default locale. */
 export const defaultLocale: Locale = DEFAULT_LOCALE;
 
-export function subscribeLocale(fn: (locale: Locale) => void): () => void {
-  listeners.add(fn);
+export function subscribeLocale(
+  listener: (locale: Locale) => void,
+): () => void {
+  listeners.add(listener);
   return (): void => {
-    listeners.delete(fn);
+    listeners.delete(listener);
   };
 }
 
 export function autoSubscribeLocale(
   meta: ImportMeta,
-  fn: (locale: Locale) => void,
+  listener: (locale: Locale) => void,
 ): void {
-  const unsubscribe = subscribeLocale(fn);
+  const unsubscribe = subscribeLocale(listener);
   registerHotDispose(meta, unsubscribe);
 }
 

@@ -3,15 +3,18 @@ import { registerHotDispose } from './hot-dispose';
 
 const trackers = new Set<() => void>();
 
-export function registerTracker(fn: () => void): () => void {
-  trackers.add(fn);
+export function registerTracker(tracker: () => void): () => void {
+  trackers.add(tracker);
   return () => {
-    trackers.delete(fn);
+    trackers.delete(tracker);
   };
 }
 
-export function autoRegisterTracker(meta: ImportMeta, fn: () => void): void {
-  const unregister = registerTracker(fn);
+export function autoRegisterTracker(
+  meta: ImportMeta,
+  tracker: () => void,
+): void {
+  const unregister = registerTracker(tracker);
   registerHotDispose(meta, unregister);
 }
 

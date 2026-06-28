@@ -181,19 +181,22 @@ function getParamExpressions(
   if (!ts.isObjectLiteralExpression(paramsExpression)) {
     return undefined;
   }
-  const result = new Map<string, string>();
+  const expressionsByParam = new Map<string, string>();
   for (const property of paramsExpression.properties) {
     if (ts.isShorthandPropertyAssignment(property)) {
-      result.set(property.name.text, property.name.text);
+      expressionsByParam.set(property.name.text, property.name.text);
       continue;
     }
     if (ts.isPropertyAssignment(property) && ts.isIdentifier(property.name)) {
-      result.set(property.name.text, property.initializer.getText());
+      expressionsByParam.set(
+        property.name.text,
+        property.initializer.getText(),
+      );
       continue;
     }
     return undefined;
   }
-  return result;
+  return expressionsByParam;
 }
 
 function buildTemplateLiteral(

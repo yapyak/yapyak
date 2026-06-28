@@ -89,7 +89,7 @@ function parseTypeParameterSegment(
 function collectTypeParamDescriptions(
   tags: ReferenceTag[],
 ): Map<string, string> {
-  const result = new Map<string, string>();
+  const descriptionsByName = new Map<string, string>();
   for (const tag of tags) {
     if (tag.name !== 'typeParam') {
       continue;
@@ -98,9 +98,9 @@ function collectTypeParamDescriptions(
     if (match === null || match[1] === undefined) {
       continue;
     }
-    result.set(match[1], match[2]?.trim() ?? '');
+    descriptionsByName.set(match[1], match[2]?.trim() ?? '');
   }
-  return result;
+  return descriptionsByName;
 }
 
 function parseTypeText(text: string): TypeToken[] {

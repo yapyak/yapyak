@@ -75,20 +75,20 @@ export function setCatalogEntry(
 
 export function invalidateFile(fileId: string): void {
   const prefix = `${fileId}\0`;
-  let dirty = false;
+  let isDirty = false;
   for (const key of catalogs.keys()) {
     if (key.startsWith(prefix)) {
       catalogs.delete(key);
-      dirty = true;
+      isDirty = true;
     }
   }
   for (const key of pendingPatches.keys()) {
     if (key.startsWith(prefix)) {
       pendingPatches.delete(key);
-      dirty = true;
+      isDirty = true;
     }
   }
-  if (dirty) {
+  if (isDirty) {
     runSubscribers();
   }
 }

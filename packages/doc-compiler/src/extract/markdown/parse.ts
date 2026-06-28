@@ -448,21 +448,21 @@ function splitCodeAndComment(line: string): [
   string,
   string | null,
 ] {
-  let inSingle = false;
-  let inDouble = false;
-  let inBacktick = false;
+  let isInSingle = false;
+  let isInDouble = false;
+  let isInBacktick = false;
   for (let index = 0; index < line.length - 1; index++) {
     const character = line[index];
-    if (!inDouble && !inBacktick && character === "'") {
-      inSingle = !inSingle;
-    } else if (!inSingle && !inBacktick && character === '"') {
-      inDouble = !inDouble;
-    } else if (!inSingle && !inDouble && character === '`') {
-      inBacktick = !inBacktick;
+    if (!isInDouble && !isInBacktick && character === "'") {
+      isInSingle = !isInSingle;
+    } else if (!isInSingle && !isInBacktick && character === '"') {
+      isInDouble = !isInDouble;
+    } else if (!isInSingle && !isInDouble && character === '`') {
+      isInBacktick = !isInBacktick;
     } else if (
-      !inSingle &&
-      !inDouble &&
-      !inBacktick &&
+      !isInSingle &&
+      !isInDouble &&
+      !isInBacktick &&
       character === '/' &&
       line[index + 1] === '/'
     ) {
