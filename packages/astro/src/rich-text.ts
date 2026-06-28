@@ -56,7 +56,7 @@ function extractTagNames(nodes: RichTextNode[]): Set<string> {
 
   function walk(ns: RichTextNode[]): void {
     for (const node of ns) {
-      if (node.type === 'tag') {
+      if (node.type === 'pair') {
         names.add(node.name);
         walk(node.children);
         continue;
@@ -75,7 +75,7 @@ function renderNodes(
   let out = '';
   for (const node of nodes) {
     if (node.type === 'text') {
-      out += escapeHtml(node.text);
+      out += escapeHtml(node.value);
       continue;
     }
     if (node.type === 'void') {

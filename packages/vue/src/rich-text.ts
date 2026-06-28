@@ -49,7 +49,7 @@ function renderNodes(
   const out: VNodeChild[] = [];
   for (const node of nodes) {
     if (node.type === 'text') {
-      out.push(node.text);
+      out.push(node.value);
       continue;
     }
     if (node.type === 'void') {

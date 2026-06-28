@@ -184,12 +184,12 @@ const nodes = parseRichText(t('Read our <link>privacy policy</link>.'));
 
 ```ts
 [
-  { text: 'Read our ', type: 'text' },
+  { type: 'text', value: 'Read our ' },
   { children: [
-    { text: 'privacy policy', type: 'text' }
-  ], name: 'link', type: 'tag' },
-  { text: '.', type: 'text' }
+    { type: 'text', value: 'privacy policy' }
+  ], name: 'link', type: 'pair' },
+  { type: 'text', value: '.' }
 ]
 ```
 
-Each node is `{ type: 'text', text }`, `{ type: 'tag', name, children }`, or `{ type: 'void', name }`. The structure mirrors what `<RichText>` consumes.
+Each node is `{ type: 'text', value }`, `{ type: 'pair', name, children }`, or `{ type: 'void', name }`. The structure mirrors what `<RichText>` consumes.

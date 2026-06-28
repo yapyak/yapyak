@@ -16,7 +16,7 @@
 
 {#each nodes as node, index (index)}
   {#if node.type === "text"}
-    {node.text}
+    {node.value}
   {:else if node.type === "void"}
     {#if handlers[node.name]}
       {@render (handlers[node.name] as VoidHandler)()}

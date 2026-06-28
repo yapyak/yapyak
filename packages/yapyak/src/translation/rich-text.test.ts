@@ -9,8 +9,8 @@ describe('parseRichText', () => {
   it('returns a single text node for a source without tags', () => {
     expect(parseRichText('Save changes')).toEqual([
       {
-        text: 'Save changes',
         type: 'text',
+        value: 'Save changes',
       },
     ]);
   });
@@ -22,22 +22,22 @@ describe('parseRichText', () => {
   it('parses a pair tag with text children', () => {
     expect(parseRichText('Click <link>here</link>.')).toEqual([
       {
-        text: 'Click ',
         type: 'text',
+        value: 'Click ',
       },
       {
         children: [
           {
-            text: 'here',
             type: 'text',
+            value: 'here',
           },
         ],
         name: 'link',
-        type: 'tag',
+        type: 'pair',
       },
       {
-        text: '.',
         type: 'text',
+        value: '.',
       },
     ]);
   });
@@ -47,26 +47,26 @@ describe('parseRichText', () => {
       {
         children: [
           {
-            text: 'x ',
             type: 'text',
+            value: 'x ',
           },
           {
             children: [
               {
-                text: 'y',
                 type: 'text',
+                value: 'y',
               },
             ],
             name: 'b',
-            type: 'tag',
+            type: 'pair',
           },
           {
-            text: ' z',
             type: 'text',
+            value: ' z',
           },
         ],
         name: 'a',
-        type: 'tag',
+        type: 'pair',
       },
     ]);
   });
@@ -74,16 +74,16 @@ describe('parseRichText', () => {
   it('parses a void tag as a void node with no children', () => {
     expect(parseRichText('First<br/>Second')).toEqual([
       {
-        text: 'First',
         type: 'text',
+        value: 'First',
       },
       {
         name: 'br',
         type: 'void',
       },
       {
-        text: 'Second',
         type: 'text',
+        value: 'Second',
       },
     ]);
   });
@@ -91,16 +91,16 @@ describe('parseRichText', () => {
   it('parses a void tag with a single space before the slash', () => {
     expect(parseRichText('First<br />Second')).toEqual([
       {
-        text: 'First',
         type: 'text',
+        value: 'First',
       },
       {
         name: 'br',
         type: 'void',
       },
       {
-        text: 'Second',
         type: 'text',
+        value: 'Second',
       },
     ]);
   });
@@ -108,16 +108,16 @@ describe('parseRichText', () => {
   it('parses a void tag with multiple spaces before the slash', () => {
     expect(parseRichText('First<br   />Second')).toEqual([
       {
-        text: 'First',
         type: 'text',
+        value: 'First',
       },
       {
         name: 'br',
         type: 'void',
       },
       {
-        text: 'Second',
         type: 'text',
+        value: 'Second',
       },
     ]);
   });
@@ -127,20 +127,20 @@ describe('parseRichText', () => {
       {
         children: [
           {
-            text: 'click ',
             type: 'text',
+            value: 'click ',
           },
           {
             name: 'icon',
             type: 'void',
           },
           {
-            text: ' here',
             type: 'text',
+            value: ' here',
           },
         ],
         name: 'link',
-        type: 'tag',
+        type: 'pair',
       },
     ]);
   });
@@ -148,8 +148,8 @@ describe('parseRichText', () => {
   it('preserves a tag with attributes as literal text', () => {
     expect(parseRichText('<a href="x">click</a>')).toEqual([
       {
-        text: '<a href="x">click</a>',
         type: 'text',
+        value: '<a href="x">click</a>',
       },
     ]);
   });
@@ -157,8 +157,8 @@ describe('parseRichText', () => {
   it('preserves an unclosed pair tag as literal text', () => {
     expect(parseRichText('A <link>unclosed string')).toEqual([
       {
-        text: 'A <link>unclosed string',
         type: 'text',
+        value: 'A <link>unclosed string',
       },
     ]);
   });
@@ -166,8 +166,8 @@ describe('parseRichText', () => {
   it('refuses a tag name containing characters outside `[A-Za-z][A-Za-z0-9]*`', () => {
     expect(parseRichText('<my-link>x</my-link>')).toEqual([
       {
-        text: '<my-link>x</my-link>',
         type: 'text',
+        value: '<my-link>x</my-link>',
       },
     ]);
   });
@@ -261,8 +261,8 @@ describe('properties', () => {
       }
       expect(result).toEqual([
         {
-          text: source,
           type: 'text',
+          value: source,
         },
       ]);
     },
@@ -273,7 +273,7 @@ describe('properties', () => {
   ])('lists no empty text node in the result', (source) => {
     for (const node of parseRichText(source)) {
       if (node.type === 'text') {
-        expect(node.text).not.toBe('');
+        expect(node.value).not.toBe('');
       }
     }
   });
@@ -287,7 +287,7 @@ describe('properties', () => {
     const source = `${'<b>'.repeat(8000)}x${'</b>'.repeat(8000)}`;
     const result = parseRichText(source);
     let node: RichTextNode | undefined = result[0];
-    while (node?.type === 'tag') {
+    while (node?.type === 'pair') {
       node = node.children[0];
     }
     expect(node?.type).toBe('text');
@@ -298,12 +298,12 @@ describe('properties', () => {
     const result = parseRichText(source);
     let node: RichTextNode | undefined = result[0];
     let depth = 0;
-    while (node?.type === 'tag') {
+    while (node?.type === 'pair') {
       node = node.children[0];
       depth += 1;
     }
     expect(node?.type).toBe('text');
-    expect(node?.type === 'text' ? node.text : '').toBe('x');
+    expect(node?.type === 'text' ? node.value : '').toBe('x');
     expect(depth).toBe(1000);
   });
 });

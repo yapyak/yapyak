@@ -3,17 +3,17 @@
  */
 export type RichTextNode =
   | {
-      type: 'tag';
+      type: 'text';
+      value: string;
+    }
+  | {
+      type: 'pair';
       name: string;
       children: RichTextNode[];
     }
   | {
       type: 'void';
       name: string;
-    }
-  | {
-      type: 'text';
-      text: string;
     };
 
 /**
@@ -30,9 +30,9 @@ export type RichTextNode =
  *
  * parseRichText(t('Click <link>here</link>.'));
  * // output: [
- * //   { type: 'text', text: 'Click ' },
- * //   { type: 'tag', name: 'link', children: [{ type: 'text', text: 'here' }] },
- * //   { type: 'text', text: '.' },
+ * //   { type: 'text', value: 'Click ' },
+ * //   { type: 'pair', name: 'link', children: [{ type: 'text', value: 'here' }] },
+ * //   { type: 'text', value: '.' },
  * // ]
  * ```
  *
@@ -42,9 +42,9 @@ export type RichTextNode =
  *
  * parseRichText('First<br/>Second');
  * // output: [
- * //   { type: 'text', text: 'First' },
+ * //   { type: 'text', value: 'First' },
  * //   { type: 'void', name: 'br' },
- * //   { type: 'text', text: 'Second' },
+ * //   { type: 'text', value: 'Second' },
  * // ]
  * ```
  *
@@ -55,7 +55,7 @@ export type RichTextNode =
  * function toPlain(nodes: RichTextNode[]): string {
  *   return nodes
  *     .map((node) => {
- *       if (node.type === 'text') return node.text;
+ *       if (node.type === 'text') return node.value;
  *       if (node.type === 'void') return '';
  *       return toPlain(node.children);
  *     })
@@ -78,8 +78,8 @@ function parseRichTextAtDepth(source: string, depth: number): RichTextNode[] {
       ? []
       : [
           {
-            text: source,
             type: 'text',
+            value: source,
           },
         ];
   }
@@ -90,8 +90,8 @@ function parseRichTextAtDepth(source: string, depth: number): RichTextNode[] {
   const flush = (): void => {
     if (text !== '') {
       nodes.push({
-        text,
         type: 'text',
+        value: text,
       });
       text = '';
     }
@@ -120,7 +120,7 @@ function parseRichTextAtDepth(source: string, depth: number): RichTextNode[] {
             depth + 1,
           ),
           name: openTag.name,
-          type: 'tag',
+          type: 'pair',
         });
         index = close.end;
         continue;
@@ -155,7 +155,7 @@ function renderNodes<T>(
   const parts: T[] = [];
   for (const node of nodes) {
     if (node.type === 'text') {
-      parts.push(renderer.leaf(node.text));
+      parts.push(renderer.leaf(node.value));
       continue;
     }
     if (node.type === 'void') {
