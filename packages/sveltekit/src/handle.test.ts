@@ -65,4 +65,36 @@ describe('handle', () => {
     } as Parameters<typeof handle>[0]);
     expect(response.headers.get('Set-Cookie')).toContain('locale=sv');
   });
+
+  it('binds the locale to each event when invoked concurrently', async () => {
+    const targets = Array.from(
+      {
+        length: 100,
+      },
+      (_, index) => (index % 2 === 0 ? 'en' : 'sv'),
+    );
+    const responses = await Promise.all(
+      targets.map(async (target) => {
+        const event = makeEvent(new Request('http://example.com/'));
+        return handle({
+          event,
+          resolve: async () => {
+            await new Promise((resolve) =>
+              setTimeout(resolve, Math.floor(Math.random() * 5)),
+            );
+            setLocale(target);
+            await new Promise((resolve) =>
+              setTimeout(resolve, Math.floor(Math.random() * 5)),
+            );
+            return new Response('body');
+          },
+        } as Parameters<typeof handle>[0]);
+      }),
+    );
+    responses.forEach((response, index) => {
+      expect(response.headers.get('Set-Cookie')).toContain(
+        `locale=${targets[index]}`,
+      );
+    });
+  });
 });

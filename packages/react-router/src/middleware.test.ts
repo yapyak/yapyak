@@ -53,4 +53,41 @@ describe('middleware', () => {
     );
     expect(response.headers.get('Set-Cookie')).toContain('locale=sv');
   });
+
+  it('binds the locale to each request when invoked concurrently', async () => {
+    const targets = Array.from(
+      {
+        length: 100,
+      },
+      (_, index) => (index % 2 === 0 ? 'en' : 'sv'),
+    );
+    const responses = await Promise.all(
+      targets.map(async (target) => {
+        const request = new Request('http://example.com/');
+        const response = new Response('body');
+        // biome-ignore lint/nursery/useAwaitThenable: yap yap yap
+        await middleware(
+          {
+            request,
+          } as Parameters<typeof middleware>[0],
+          async () => {
+            await new Promise((resolve) =>
+              setTimeout(resolve, Math.floor(Math.random() * 5)),
+            );
+            setLocale(target);
+            await new Promise((resolve) =>
+              setTimeout(resolve, Math.floor(Math.random() * 5)),
+            );
+            return response;
+          },
+        );
+        return response;
+      }),
+    );
+    responses.forEach((response, index) => {
+      expect(response.headers.get('Set-Cookie')).toContain(
+        `locale=${targets[index]}`,
+      );
+    });
+  });
 });
