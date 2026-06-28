@@ -62,7 +62,25 @@ These terms are locked. Don't substitute:
 
 `per-request` is hyphenated as an adjective ("a per-request locale"), unhyphenated as an adverb ("scoped per request").
 
-### Locale codes in `{% output %}` examples
+### Output blocks
+
+Show a computed result with a `// output:` comment inside the code block. The compiler extracts it and renders it as distinct output chrome — there is no `{% output %}` tag.
+
+```ts
+t('{count, plural, one {# message} other {# messages}}', { count: 5 });
+// output: 'You have 5 messages'
+```
+
+For per-locale results, put one `// <locale>: '…'` line under a bare `// output:`:
+
+```ts
+format.number(1000);
+// output:
+// en: '1,000'
+// sv: '1 000'
+```
+
+#### Locale codes in output examples
 
 Use the short form (`en`, `sv`, `fr`, `de`, `ja`, `ar`, …), not the regional form (`en-US`, `sv-SE`). Locale variance in formatting examples doesn't depend on region — the short code is the right level of detail and keeps the docs consistent. The regional form is appropriate only when the example specifically demonstrates a regional difference (e.g. `en-US` vs `en-GB` date formats), which is rare.
 
@@ -109,7 +127,7 @@ Everything else moves out. Specifically:
 - **Filename markers** like `// sv.json — link wraps a different word` — use the bracket-fence label: ` ```json [locales/sv.json] `. The annotation moves to the lead-in sentence.
 - **Compile-output annotations** like `// becomes: 'Spara ändringar'` or `// catalog entry: _date(...)` — split into a second code block with `compiles to:` (or similar) prose between, or describe the result in a sentence after the input block.
 - **Variant labels** like `// Groq`, `// or with options:` — split into separate code blocks with a lead-in for each.
-- **Result outputs** like `// 'apple, pear, and orange'` or `// ['zh-Hant-TW', 'zh-Hant', 'zh']` — use `{% output %}`.
+- **Result outputs** like `// 'apple, pear, and orange'` or `// ['zh-Hant-TW', 'zh-Hant', 'zh']` — use a `// output:` marker (see "Output blocks" above).
 - **Placeholder ellipses** like `// ...your root layout here...` — usually means the example is incomplete; either show real code or refactor the example so the omitted parts aren't relevant.
 
 The principle: a comment in a code block must describe behavior of the code itself (what the type checker or runtime would say). If the comment is describing *the example* or *the docs reader's situation*, it's prose and belongs outside.
@@ -133,9 +151,13 @@ Examples that show framework-specific code (component shapes, not the API itself
 
 API-only examples that demonstrate `t()` or `format.*` stay as plain `ts` — no switch needed. Adding a switch where the code is identical across frameworks is boilerplate that bloats the page.
 
+The four switch groups the compiler recognizes are `framework` (`react`/`vue`/`svelte`/`astro`), `adapter`, `translator`, and `packageManager`. Use `{% when value="…" %}` branches inside the switch, the same shape as the framework example above.
+
+For a single forced branch with no alternatives, use `{% only group="…" value="…" %}`; for an inline option selector, `{% picker group="…" %}`.
+
 ### Package-manager switching
 
-CLI invocations switch on `group="pkg"` with `value="pnpm"|"npm"|"bun"`.
+CLI invocations switch on `group="packageManager"` with `value="pnpm"|"npm"|"bun"`. Install commands (`pnpm add …`) are auto-detected and wrapped in this switch by the compiler — you usually don't write it by hand.
 
 ### `{% diagnostics %}` for type-check examples
 
