@@ -374,6 +374,33 @@ Apply top-down. **First match wins.** No two questions can both apply to the sam
 **The intuition:**
 - `*Config` = user **picks** (file shape or strategy union)
 - `*Options` = user **fills in** (typed bag of fields)
+- `*Input` = **internal helper** takes a structured bundle (parameter literally named `input`)
+
+**Field optionality is NOT part of the test.** A `*Options` type may have required fields, optional fields, or both. The suffix is decided by **call-site role**, not by counting `?` markers.
+
+```ts
+// ✓ Right — public factory with required field. Q11 → *Options.
+type AnthropicOptions = {
+  apiKey: string;          // required — totally fine in *Options
+  model?: string;
+  temperature?: number;
+};
+export function anthropic(options: AnthropicOptions): Translator { ... }
+
+// ✓ Right — internal helper. Q10 → *Input.
+type ExtractFileInput = {
+  fileId: string;
+  source: string;
+  processors: Processor[];
+};
+function extractFile(input: ExtractFileInput): ExtractFileResult { ... }
+```
+
+**Forbidden reasoning** (do not rename based on this):
+- ❌ "This `*Options` type has a required field → must be `*Input`." Wrong — Q11 doesn't ask about optionality.
+- ❌ "All-optional bundles must be `*Options`, anything else `*Input`." Wrong — same reason.
+
+The mechanical decider for Options vs Input is **who calls it and what the parameter is named**, not the shape of the fields inside.
 
 **Inside a `*Config` union, each pure-object variant gets `*Options`:**
 

@@ -217,4 +217,3 @@ Rules:
 - **Sub-packages of a real-OSS product** can share that product's scope (`@yapyak/doc-compiler`, `@yapyak/vite`). The scope IS the product identity in that case, not an org identity.
 - **The scope determines policy.** Source-shipping, deprecation policy, contribution guidelines, README tone — all derive from which tier the package sits in.
 
-@~/GitHub/agents/typescript/library/jsdoc.md
