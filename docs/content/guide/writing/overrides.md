@@ -31,7 +31,7 @@ See [Homonyms](/guide/writing/homonyms) for what `t.as()` does on its own.
 
 {% diagnostics %}
 const swedish = t.in('sv');           // error: YAP0020 captured chain
-swedish('Welcome');                   // no
+swedish.as('action', 'Welcome');      // no
 {% /diagnostics %}
 
 The compiler needs to see the full call (`t.in('sv', 'Welcome')`) in one place to extract the source string. A stored chain would hide the source from the parser. Use the inline form, repeat the prefix if needed.

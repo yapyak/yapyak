@@ -143,10 +143,12 @@ Server components still have their `t()` calls rewritten. Instead of subscribing
 
 For file formats yapyak doesn't ship a processor for, build your own with [`createProcessor`](/reference/yapyak/processor/createProcessor) from `yapyak/processor`. The factory takes:
 
-- The file extensions to claim
-- A fragment parser that splits your format into TypeScript-readable pieces
-- The runtime module yapyak should wire into compiled output
-- An optional `skipHmrCallback: true` for formats whose compiler can't safely embed Vite HMR callbacks at module scope. Astro's `.astro` files use this.
+- `id` — a stable, non-empty identifier (convention: lowercase suffix matching the package name)
+- `extensions` — file extensions to claim
+- `parseFragments` — optional, splits your format into TypeScript-readable pieces
+- `runtime` — optional, the runtime module yapyak should wire into compiled output
+- `applyImport` — optional, controls how imports are injected
+- `skipHmrCallback: true` — optional, for formats whose compiler can't safely embed Vite HMR callbacks at module scope. Astro's `.astro` files use this.
 
 `yapyak/processor` also exports [`offsetToOriginalPosition`](/reference/yapyak/processor/offsetToOriginalPosition) and [`rangeFromOffsets`](/reference/yapyak/processor/rangeFromOffsets) — utilities for converting byte offsets back to `{ line, column }` positions when emitting diagnostics from your processor's fragment parser.
 

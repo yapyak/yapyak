@@ -77,14 +77,14 @@ import { t } from 'yapyak';
   <p>
     <RichText :value="t('Read our <link>privacy policy</link> for details.')">
       <template #link="{ children }">
-        <a href="https://example.com/privacy"><component :is="children()" /></a>
+        <a href="https://example.com/privacy"><component :is="children" /></a>
       </template>
     </RichText>
   </p>
 </template>
 ```
 
-Each tag becomes a named slot. Pair-tag slots receive `{ children }`. Call `children()` to render the inner content. Void-tag slots receive nothing; render whatever should appear at that position.
+Each tag becomes a named slot. Pair-tag slots receive `{ children }` — pass it to `<component :is="children" />` to render the inner content. Void-tag slots receive nothing; render whatever should appear at that position.
 
 For a void tag:
 
@@ -105,24 +105,22 @@ For a void tag:
 </script>
 
 <p>
-  <RichText
-    value={t('Read our <link>privacy policy</link> for details.')}
-    link={(children) => (
+  <RichText value={t('Read our <link>privacy policy</link> for details.')}>
+    {#snippet link(children)}
       <a href="https://example.com/privacy">{@render children()}</a>
-    )}
-  />
+    {/snippet}
+  </RichText>
 </p>
 ```
 
-Each tag becomes a snippet prop named after the tag. Pair-tag snippets receive a `children` snippet. Render it with `{@render children()}` to insert the inner content.
+Each tag becomes a snippet prop named after the tag, passed as a `{#snippet ...}` block inside `<RichText>`. Pair-tag snippets receive a `children` snippet — render it with `{@render children()}` to insert the inner content.
 
 For a void tag:
 
 ```svelte
-<RichText
-  value={t('Line one<br/>line two')}
-  br={() => <br/>}
-/>
+<RichText value={t('Line one<br/>line two')}>
+  {#snippet br()}<br />{/snippet}
+</RichText>
 ```
 {% /when %}
 
@@ -140,7 +138,7 @@ import { t } from 'yapyak';
 </p>
 ```
 
-Each tag becomes a named slot. Inside a pair-tag slot, place `<RichText.Children />` where the inner content should render. yapyak inlines it during the build. For a void tag, omit the marker.
+Each tag becomes a named slot. Inside a pair-tag slot, place `<RichText.Children />` where the inner content should render. yapyak replaces it at component render with the inner content. For a void tag, omit the marker.
 
 ```astro
 <RichText value={t('Line one<br/>line two')}>
@@ -153,7 +151,7 @@ Each tag becomes a named slot. Inside a pair-tag slot, place `<RichText.Children
 
 ## Tag names
 
-A tag name starts with a letter and continues with letters or digits. No hyphens, underscores, or attributes. Pick semantic names (`link`, `strong`, `name`, `price`) — not HTML element names. The handler decides which element to render.
+A tag name starts with a letter and continues with letters or digits. No hyphens or underscores. Tags with attributes pass through as literal text (the parser doesn't reject them, but they aren't bound to handlers). Pick semantic names (`link`, `strong`, `name`, `price`) — not HTML element names. The handler decides which element to render.
 
 A tag name only has to exist in the source. It doesn't have to be an HTML element. `<discount>` and `<callout>` work as long as you provide a handler.
 

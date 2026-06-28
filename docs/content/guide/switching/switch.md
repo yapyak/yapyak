@@ -67,7 +67,7 @@ The shape uses Svelte 5's runes. `locale.current` is reactive. Every component t
 {% /when %}
 
 {% when value="astro" %}
-Astro renders on the server, so locale switching doesn't happen client-side reactively. It happens through a navigation that the middleware translates into a new active locale. With `persistence: 'url'` (or `'cookie'`) set in your config, a plain link is enough:
+Astro renders on the server, so locale switching doesn't happen client-side reactively. It happens through a navigation that the middleware translates into a new active locale. With `persistence: 'url'` (the default reads the first path segment), a plain link is enough:
 
 ```astro
 ---
@@ -77,10 +77,10 @@ const current = getLocale();
 const next = current === 'en' ? 'sv' : 'en';
 ---
 
-<a href={`?locale=${next}`}>{t('Switch language')}</a>
+<a href={`/${next}/`}>{t('Switch language')}</a>
 ```
 
-The middleware reads the URL (or cookie) on the next request, sets the locale for that render, and the layout re-renders in the new language. For richer client-side switching from inside an Astro island, use the React/Vue/Svelte binding from within that island.
+The middleware reads the URL on the next request, sets the locale for that render, and the layout re-renders in the new language. For richer client-side switching from inside an Astro island, use the React/Vue/Svelte binding from within that island.
 {% /when %}
 
 {% /switch %}

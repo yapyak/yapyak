@@ -47,4 +47,4 @@ Voice describes the tone in the abstract. Examples show it. A few well-chosen pa
 
 ## How yapyak picks which examples
 
-yapyak only considers translations for the same target locale as the current batch. Candidates are scored by word-level similarity to each source string; ties go to examples from the same source file. The selection is deterministic: the same input produces the same prompt.
+yapyak only considers translations for the same target locale as the current batch. Candidates are scored by word-level similarity to each source string; ties go to examples from the same source file, then alphabetically by source. The selection is deterministic: the same input produces the same prompt.

@@ -33,17 +33,18 @@ All seven extend `TranslatorError`, so one `catch (cause instanceof TranslatorEr
 
 ## Retry behavior
 
-Retries happen inside the provider's fetch layer before any error escapes. yapyak retries on HTTP 408, 429, 5xx, and on network-level failures (aborted, timed out, connection failed). Everything else fails fast.
+Retries happen inside the provider's fetch layer **before** any typed error is constructed. yapyak retries on HTTP 408, 429, 5xx, and on network-level failures (aborted, timed out, connection failed). Everything else fails fast. A typed error only surfaces once retries are exhausted or the failure is non-retryable.
 
-| Type | Retried? |
-|---|---|
-| `TranslatorRateLimitError` | Yes (429). Backoff up to `maxRetries`. Honors `retryAfter` when present. |
-| `TranslatorTimeoutError` | Yes. Up to `maxRetries`. |
-| `TranslatorNetworkError` | Only for 5xx and network-level failures. Other 4xx responses are not retried. |
-| `TranslatorAuthError` | No (401/403). Retries don't help a bad key. |
-| `TranslatorSafetyError` | No. The block is a verdict, not a transient. |
-| `TranslatorInvalidResponseError` | No. The response parsed but didn't validate. |
-| `TranslatorTruncatedError` | No. Output cut off by the token limit. |
+| Source of failure | Retried? | Surfaces as |
+|---|---|---|
+| HTTP 429 | Yes. Backoff up to `maxRetries`. Honors `Retry-After`. | `TranslatorRateLimitError` |
+| HTTP 408 / 5xx | Yes. Up to `maxRetries`. | `TranslatorNetworkError` (with `status`) |
+| Network failure (abort, timeout, connection error) | Yes. Up to `maxRetries`. | `TranslatorTimeoutError` or `TranslatorNetworkError` |
+| HTTP 4xx (other than 408/429) | No. | `TranslatorNetworkError` (with `status`) |
+| HTTP 401 / 403 | No. Retries don't help a bad key. | `TranslatorAuthError` |
+| Provider safety block | No. The block is a verdict, not a transient. | `TranslatorSafetyError` |
+| Unparseable response | No. | `TranslatorInvalidResponseError` |
+| Truncated by token limit | No. | `TranslatorTruncatedError` |
 
 `maxRetries` defaults to `2` (Ollama: `1`). Override per provider:
 
@@ -75,7 +76,7 @@ The translator never throws back to your application code. Chunk failures surfac
 
 ## Per-entry shape failure
 
-[`YAP0034`](/reference/diagnostics/YAP0034) is the narrower diagnostic. It fires when the response is a valid array but an individual entry has the wrong shape — a string or `null` instead of an object keyed by target locales. The bad entry's translations are left empty and the rest of the chunk's entries are written normally.
+[`YAP0034`](/reference/diagnostics/YAP0034) is the narrower diagnostic. It fires when the response is a valid array but an individual entry has the wrong shape — a string, `null`, or an array instead of an object keyed by target locales. The bad entry's translations are left empty and the rest of the chunk's entries are written normally.
 
 This is distinct from a chunk failure: the response was parseable, the array length matched, only one entry was malformed.
 
@@ -85,4 +86,4 @@ Both diagnostics surface through the same stream as parse and ICU errors. See [D
 
 A [custom translator](/guide/advanced/custom-translator) should throw the matching error type so yapyak applies the right behavior. See [Custom](/guide/advanced/custom-translator#errors-to-throw) for the patterns.
 
-A plain `Error` thrown from a custom translator is treated as a `TranslatorNetworkError` and gets the default retry policy.
+Any other error that escapes the callback — a plain `Error`, an exception from your fetch client — fails the whole chunk and surfaces as [`YAP0033`](/reference/diagnostics/YAP0033). yapyak doesn't retry custom-translator callbacks.
