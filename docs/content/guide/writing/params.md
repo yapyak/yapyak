@@ -107,16 +107,3 @@ t('Updated {when, date, long}', { when: new Date() });
 
 These follow the [ICU MessageFormat](https://unicode-org.github.io/icu/userguide/format_parse/messages/) spec and travel with every translation. See [Plurals](/guide/writing/plurals) for the full list of supported sub-formats.
 
-## What runs at compile time vs runtime
-
-Compile time:
-- Every placeholder in the source has a matching key in the params object
-- Every key in the params object is used by some placeholder in the source
-- Both the source and the parameters are static literals
-
-Runtime:
-- The placeholder values are rendered into the active locale's translation
-- A missing value falls back to an empty string, with a warning in dev
-- A value of the wrong type (`'three'` for a number sub-format, for example) is coerced when possible, warned about when not
-
-In practice, you only see compile-time errors when you're writing. The runtime fallbacks exist as safety nets, not as a substitute for static checking.

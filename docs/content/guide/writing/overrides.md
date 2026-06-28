@@ -36,12 +36,3 @@ swedish('Welcome');                   // no
 
 The compiler needs to see the full call (`t.in('sv', 'Welcome')`) in one place to extract the source string. A stored chain would hide the source from the parser. Use the inline form, repeat the prefix if needed.
 
-## When not to use it
-
-Use `t.in()` only when you need to render in a non-active locale: a side-by-side comparison, a server-rendered email, an admin-only preview. For everything else, the active locale is what you want. Let the regular `t()` and your locale-switcher handle it.
-
-Common misuses to avoid:
-
-- **As a per-component override.** If a single screen always renders in one language, set the locale at navigation time instead of pinning every call.
-- **For data-driven user preferences.** A user's preferred locale should drive the active locale (through [persistence](/guide/switching/persistence) or a server middleware), not appear as an argument on every `t()`.
-- **Inside a loop over locales.** `t.in()` lets you do this, but if you're rendering the same message in every language, you're probably building a translation tool. See whether reading the locale files directly fits better.

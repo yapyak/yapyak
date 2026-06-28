@@ -47,4 +47,4 @@ Keep contexts short and stable. Treating them like keys in a dictionary (`'open-
 
 The context has to be a literal string at the call site (`t.as('action', 'Open')`), not a variable. The compiler reads it directly to scope the translation, so dynamic contexts can't be extracted. A non-literal context raises [`YAP0017`](/reference/diagnostics/YAP0017).
 
-Placeholders, rich-text tags, and ICU sub-formats work the same as in [`t()`](/guide/writing/params). The context label only changes which translation slot the call lands in. To force a fixed locale on a homonym, chain `.in()`. See [Overrides](/guide/writing/overrides#combining-with-as).
+To force a fixed locale on a homonym, chain `.in()`. See [Overrides](/guide/writing/overrides#combining-with-as).

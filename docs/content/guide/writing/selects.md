@@ -81,12 +81,3 @@ The parameter value is whatever you pass in:
 
 Keeping the values typed (a union literal like `'admin' | 'editor' | 'viewer'`) is the easiest way to be sure every legal value has a branch. TypeScript can't introspect the branches at the source-string level, but a tight union type at the call site catches mismatches at the call site.
 
-## Compile-time checks
-
-The compiler validates the structural shape:
-
-- Every branch has a key and a body
-- `other` is present
-- Every nested placeholder is in the params object
-
-It doesn't enforce that the value type is one of your declared branches. That's your TypeScript discipline at the call site. If you pass `'archived'` and only `'draft'` and `'published'` are listed, the runtime falls through to `other` cleanly. The `other` branch renders; nothing crashes.

@@ -159,4 +159,4 @@ Unit identifiers come from the [Unicode CLDR units list](https://unicode-org.git
 
 ## Inside a translation
 
-The same number formatting is available [inside ICU messages](/guide/writing/plurals#numbers). `{value, number, currency USD}`, `{pct, number, percent}`, and so on. Use `t()` when the number is part of a sentence; use `format.number()` when the number is its own atom (a column in a table, a stat in a card, a price label next to a button).
+The same number formatting is available [inside ICU messages](/guide/writing/plurals#numbers): `{value, number, currency USD}`, `{pct, number, percent}`, etc.

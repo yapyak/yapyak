@@ -121,6 +121,3 @@ Or omit the field entirely. `'none'` is the default.
 
 Useful when you don't want persistence: a kiosk app, a development build, or a setup where another system (the URL path itself, a server-set user preference) carries the locale.
 
-## Composing with `defaultLocale` and detection
-
-Persistence sits at the top of the resolution chain: an explicit user choice always beats a guess. When no persisted value exists, yapyak falls back to environment detection (if enabled) and then to `defaultLocale`. See [Locale overview](/guide/switching/overview#where-the-active-locale-comes-from) for the full order.

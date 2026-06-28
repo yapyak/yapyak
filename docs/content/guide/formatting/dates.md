@@ -128,6 +128,6 @@ For offsets the locale doesn't have a special word for, `numeric: 'auto'` falls 
 
 ## Inside a translation
 
-The same date/time formatting is available [inside ICU messages](/guide/writing/plurals#dates-and-times). `{when, date, long}`, `{at, time, short}`. Use `t()` when the date is part of a sentence ("Updated on June 17"); use `format.dateTime()` when it's its own atom (a column header, a footer timestamp).
+The same date/time formatting is available [inside ICU messages](/guide/writing/plurals#dates-and-times): `{when, date, long}`, `{at, time, short}`.
 
-Relative time doesn't have an ICU sub-format; it's only available through `format.relativeTime()`.
+Relative time has no ICU sub-format; it's only available through `format.relativeTime()`.

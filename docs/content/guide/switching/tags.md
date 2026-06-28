@@ -116,11 +116,3 @@ If [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) i
 
 This is how a fresh visit gets a sensible default. The user's browser preferences take effect even before they've made an explicit choice or had their cookie set.
 
-## Picking your locales
-
-A few rules of thumb when deciding which locales to add:
-
-- **Start coarse.** `'en'` and `'sv'` are usually enough. Add the region (`'en-GB'`, `'en-AU'`) only if your translations differ.
-- **Region matters for Portuguese, Spanish, Chinese.** `'pt-BR'` and `'pt-PT'` are different enough that you'll want both if you ship to both markets. Same for `'es-ES'` vs `'es-MX'`, `'zh-Hant'` vs `'zh-Hans'`.
-- **The script subtag is a single decision per language.** If you ship Chinese, you decide whether it's `zh-Hans` or `zh-Hant` (or both); you don't ship plain `zh` and let it be ambiguous.
-- **A user's browser language is hint, not law.** Always provide a way to override the detected locale. A switcher, a profile setting, a URL parameter.

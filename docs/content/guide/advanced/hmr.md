@@ -60,8 +60,6 @@ A few cases skip the hot path and trigger a full reload:
 - **Astro pages.** As noted above, `.astro` files reload rather than HMR.
 
 
-## What the runtime watches for
+## Debugging HMR
 
-The framework binding registers one HMR handler: `import.meta.hot.on('yapyak:patch', applyPatches)`. The plugin sends patches over this channel whenever a locale file or compiled module changes, and the runtime updates the in-memory map. Config changes don't go through this channel — they trigger a full dev-server restart instead.
-
-If you're debugging "why isn't HMR working", check the browser console for messages prefixed `[yapyak]`. The plugin logs every accept and every rejection. Usually enough to spot what's blocking the swap (a syntax error in `locales/sv.json`, a TypeScript error in the source, a stale `.yapyak/` cache).
+Check the browser console for messages prefixed `[yapyak]`. The plugin logs every accept and every rejection — usually enough to spot what's blocking the swap (a syntax error in `locales/sv.json`, a TypeScript error in the source, a stale `.yapyak/` cache).

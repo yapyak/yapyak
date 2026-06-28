@@ -30,7 +30,7 @@ voice: 'A casual SaaS marketing tone';
 voice: 'Like a senior engineer writing release notes';
 ```
 
-Voice is the single biggest knob for shaping output. A vague voice gives bland translations. A specific one gives translations in the tone you asked for.
+Voice is the biggest knob for shaping tone. Vague gives bland; specific gives character.
 
 ## Keep it short
 
@@ -40,6 +40,3 @@ A sentence or two. Long voices confuse the model; it starts weighing the voice i
 
 A voice change only affects new translations. Existing translations stay as written. Run `yapyak translate --force` to re-translate everything with the new voice, or `yapyak retranslate "<source>"` to redo one source string. See [Coverage](/guide/translating/coverage).
 
-## Voice vs glossary
-
-Voice shapes how the model phrases things. [Glossary](/guide/translating/glossary) pins specific terms the model is not allowed to phrase differently. Use voice for tone, glossary for vocabulary.

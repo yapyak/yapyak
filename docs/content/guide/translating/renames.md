@@ -52,13 +52,6 @@ A component gets deleted, and a few commits later the same markup comes back. Th
 
 This works regardless of whether the path is the same. Copy the markup into a different file, give it a new name, and the translations follow.
 
-## What yapyak doesn't do
-
-A few cases yapyak deliberately doesn't handle:
-
-- **Fuzzy matching across edits.** If you change `'Save'` to `'Saving...'`, that's a different string. yapyak doesn't guess that they mean the same thing.
-- **Cross-project matching.** Each yapyak project tracks its own cache. Copying a component from project A to project B brings the source but not the translations.
-
 ## Restoring a lost translation
 
 If the cache lost a translation you wanted (`.yapyak/` was deleted, the project was cloned fresh, the cache was corrupted), the source of truth is still your committed locale files. Pull the older version from git, paste the entry into your current `locales/<locale>.json`, save the file. yapyak picks up the new value through HMR.

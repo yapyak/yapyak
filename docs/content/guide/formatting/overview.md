@@ -83,4 +83,4 @@ The result is the same regardless of the active locale. The active locale itself
 
 ## Format vs ICU
 
-Use `format` for values **outside** a translated message. For values **inside** a `t()` call, prefer ICU placeholders (`{count, number, currency}`). They live next to the translation and the compiler emits the same `Intl.*Format` machinery underneath.
+Use `format` for values **outside** a translated message. For values **inside** a `t()` call, prefer ICU placeholders (`{count, number, currency}`).

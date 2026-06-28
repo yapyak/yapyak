@@ -11,8 +11,6 @@ import { t } from 'yapyak';
 t('Save changes');
 ```
 
-The smallest possible usage. On save, yapyak picks it up and adds an entry to each target locale file. At compile-time, the call is rewritten as a synchronous lookup of the active locale's value.
-
 ## Where you write `t()`
 
 Anywhere TypeScript or JavaScript runs in your project. The compiler scans the file types your [processors](/guide/getting-started/installation) register. `.ts` and `.tsx` by default, plus `.vue`, `.svelte`, `.astro`, or anything else you've added.
@@ -63,8 +61,6 @@ import { t } from 'yapyak';
 
 {% /switch %}
 
-The framework binding handles the reactivity for you. When the user switches locale, every component that called `t()` re-renders with the new copy. See [How it works](/guide/getting-started/how-it-works) for the mechanism per framework.
-
 ## The source string is the key
 
 The English (or whatever your `defaultLocale` is) text you pass to `t()` is what every locale file uses as its key. There's no parallel naming convention to maintain:
@@ -103,6 +99,3 @@ The compiler can only translate what it can see at compile time. Anything dynami
 | `t.as(context, source)` | Disambiguate identical sources with different meanings | [Homonyms](/guide/writing/homonyms) |
 | `t.in(locale, source)` | Force a specific locale for one call | [Overrides](/guide/writing/overrides) |
 
-## What's outside `t()`
-
-For values outside a `t()` call. Prices, dates, list separators. yapyak ships a [`format`](/guide/formatting/overview) namespace built on `Intl`.

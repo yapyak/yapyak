@@ -69,10 +69,6 @@ Server-side persistence reads happen inside `withResponse`. Whatever [persistenc
 
 For server-side persistence writes (a `setLocale()` call inside a request handler), yapyak buffers the headers until `withResponse` finishes, then flushes them onto the response. If your framework constructs its response object outside of `withResponse`, the buffered headers won't reach the user. Keep the response construction inside the scope.
 
-## The processor side
-
-Every framework needs a [processor](/guide/getting-started/configuration#processors) registered in `yapyak.config.ts` so yapyak knows how to scan source files for `t()` calls. For TypeScript/JavaScript-only projects, the built-in parser handles `.ts`/`.tsx` and you don't need to register anything. For frameworks with their own file format, write a [custom processor](/guide/getting-started/configuration#custom-processors) with `createProcessor` from `yapyak/processor`.
-
 ## What the shipped adapters do
 
 If you'd like to model your wrapper on a known-good example, the shipped adapters are short:

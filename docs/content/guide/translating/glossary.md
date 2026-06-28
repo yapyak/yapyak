@@ -30,7 +30,7 @@ export default defineConfig({
 });
 ```
 
-Every occurrence of "cart" in a translatable message is pinned to `kundvagn` for Swedish. The `yapyak` entry pins the product name across locales so it isn't translated at all.
+The `yapyak` entry pins the product name across locales so it isn't translated.
 
 ## When to reach for it
 
