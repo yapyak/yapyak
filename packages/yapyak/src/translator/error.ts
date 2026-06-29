@@ -21,6 +21,12 @@ import { parseRetryAfterMs } from './fetch';
  * ```
  */
 export class TranslatorError extends Error {
+  /** The suggested wait in milliseconds. */
+  retryAfter: number | undefined;
+
+  /** The HTTP status code. */
+  status: number | undefined;
+
   /** The translator vendor id. */
   vendor: string;
 
@@ -28,6 +34,8 @@ export class TranslatorError extends Error {
     message: string,
     options: {
       cause?: unknown;
+      retryAfter?: number;
+      status?: number;
       vendor: string;
     },
   ) {
@@ -40,6 +48,8 @@ export class TranslatorError extends Error {
           },
     );
     this.name = 'TranslatorError';
+    this.retryAfter = options.retryAfter;
+    this.status = options.status;
     this.vendor = options.vendor;
   }
 }
@@ -48,9 +58,6 @@ export class TranslatorError extends Error {
  * Thrown when the translator API returned HTTP 429.
  */
 export class TranslatorRateLimitError extends TranslatorError {
-  /** The suggested wait in milliseconds. */
-  retryAfter: number | undefined;
-
   constructor(
     message: string,
     options: {
@@ -61,7 +68,6 @@ export class TranslatorRateLimitError extends TranslatorError {
   ) {
     super(message, options);
     this.name = 'TranslatorRateLimitError';
-    this.retryAfter = options.retryAfter;
   }
 }
 
@@ -145,9 +151,6 @@ export class TranslatorSafetyError extends TranslatorError {
  * Thrown when the translator API returned a non-retryable HTTP error or the fetch layer failed.
  */
 export class TranslatorNetworkError extends TranslatorError {
-  /** The HTTP status code. */
-  status: number | undefined;
-
   constructor(
     message: string,
     options: {
@@ -158,7 +161,6 @@ export class TranslatorNetworkError extends TranslatorError {
   ) {
     super(message, options);
     this.name = 'TranslatorNetworkError';
-    this.status = options.status;
   }
 }
 

@@ -43,7 +43,7 @@ export function parseTemplate(source: string): ParseTemplateResult {
     diagnostics,
     source,
   };
-  const template = parseNodes(context, 0, false, null).value;
+  const template = parseNodes(context, 0, false, undefined).value;
   return {
     diagnostics,
     template,
@@ -65,7 +65,7 @@ function parseNodes(
   context: ParseContext,
   start: number,
   isInPluralBranch: boolean,
-  terminator: '}' | null,
+  terminator: '}' | undefined,
 ): ParseResult<Template> {
   if (context.depth > MAX_TEMPLATE_DEPTH) {
     const end =
@@ -95,7 +95,7 @@ function parseNodes(
     if (character === terminator) {
       break;
     }
-    if (character === '}' && terminator === null) {
+    if (character === '}' && terminator === undefined) {
       context.diagnostics.push({
         message: `unbalanced '}' at index ${position}: missing opening '{'`,
         range: {
@@ -112,7 +112,7 @@ function parseNodes(
       continue;
     }
     const node = parseNode(context, position, isInPluralBranch);
-    if (node === null) {
+    if (node === undefined) {
       break;
     }
     nodes.push(node.value);
@@ -129,7 +129,7 @@ function parseNode(
   context: ParseContext,
   position: number,
   isInPluralBranch: boolean,
-): ParseResult<TemplateNode> | null {
+): ParseResult<TemplateNode> | undefined {
   return (
     parseToken(context, position, isInPluralBranch) ??
     parseCount(context, position, isInPluralBranch) ??
@@ -141,7 +141,7 @@ function parseLiteral(
   context: ParseContext,
   position: number,
   isInPluralBranch: boolean,
-): ParseResult<TemplateNode> | null {
+): ParseResult<TemplateNode> | undefined {
   let end = position;
   while (end < context.source.length) {
     const character = context.source[end];
@@ -154,7 +154,7 @@ function parseLiteral(
     end++;
   }
   if (end === position) {
-    return null;
+    return undefined;
   }
   const node: LiteralNode = {
     kind: 'literal',
@@ -170,12 +170,12 @@ function parseCount(
   context: ParseContext,
   position: number,
   isInPluralBranch: boolean,
-): ParseResult<TemplateNode> | null {
+): ParseResult<TemplateNode> | undefined {
   if (!isInPluralBranch) {
-    return null;
+    return undefined;
   }
   if (context.source[position] !== '#') {
-    return null;
+    return undefined;
   }
   const node: CountNode = {
     kind: 'count',
@@ -190,9 +190,9 @@ function parseToken(
   context: ParseContext,
   position: number,
   isInPluralBranch: boolean,
-): ParseResult<TemplateNode> | null {
+): ParseResult<TemplateNode> | undefined {
   if (context.source[position] !== '{') {
-    return null;
+    return undefined;
   }
   const closeIndex = findMatchingBrace(context.source, position);
   if (closeIndex === undefined) {

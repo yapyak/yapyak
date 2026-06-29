@@ -86,8 +86,16 @@ function buildCanonicalKey(
   if (!options) {
     return locale;
   }
-  const optionEntries = Object.entries(options).sort(([a], [b]) =>
-    a < b ? -1 : a > b ? 1 : 0,
+  const optionEntries = Object.entries(options).sort(
+    ([leftKey], [rightKey]) => {
+      if (leftKey < rightKey) {
+        return -1;
+      }
+      if (leftKey > rightKey) {
+        return 1;
+      }
+      return 0;
+    },
   );
   const parts = [
     locale,

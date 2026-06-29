@@ -343,8 +343,7 @@ export function warnDiagnostic<T extends YapKey>(
 ): void {
   const entry = YAP[key];
   const url = getDocsUrl(entry.code);
-  // biome-ignore lint/suspicious/noExplicitAny: yap yap yap
-  const message = (entry.message as (input: unknown) => string)(params as any);
+  const message = (entry.message as (input: typeof params) => string)(params);
   warn(`${entry.code} ${message}\nSee ${url}`, {
     code: entry.code,
     ...meta,
@@ -357,12 +356,10 @@ export function buildDiagnostic<T extends YapKey>(
   context: BuildDiagnosticContext,
 ): Diagnostic {
   const entry = YAP[key];
-  // biome-ignore lint/suspicious/noExplicitAny: yap yap yap
-  const message = (entry.message as (input: unknown) => string)(params as any);
+  const message = (entry.message as (input: typeof params) => string)(params);
   const hint =
     'hint' in entry
-      ? // biome-ignore lint/suspicious/noExplicitAny: yap yap yap
-        (entry.hint as (input: unknown) => string)(params as any)
+      ? (entry.hint as (input: typeof params) => string)(params)
       : undefined;
   return {
     code: entry.code,

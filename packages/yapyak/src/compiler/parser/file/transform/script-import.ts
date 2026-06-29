@@ -17,7 +17,7 @@ export function transformScriptImports(
 ): void {
   const referenceAsts = input.fragments
     .map((fragment) => parseFragmentReferenceAst(input, fragment))
-    .filter((ast): ast is ts.SourceFile => ast !== null);
+    .filter((ast): ast is ts.SourceFile => ast !== undefined);
   for (const fragment of input.fragments) {
     if (fragment.type !== 'script') {
       continue;
@@ -44,7 +44,7 @@ export function transformScriptImports(
 function parseFragmentReferenceAst(
   input: TransformScriptImportsInput,
   fragment: Fragment,
-): ts.SourceFile | null {
+): ts.SourceFile | undefined {
   let postTransformCode: string;
   try {
     postTransformCode = input.magicString.slice(
@@ -52,10 +52,7 @@ function parseFragmentReferenceAst(
       fragment.originalOffset + fragment.code.length,
     );
   } catch {
-    // Fragment range was wholesale-consumed by an outer overwrite (typically a
-    // call-site elision). Its content is gone from the output, so it can no
-    // longer contribute references.
-    return null;
+    return undefined;
   }
   return ts.createSourceFile(
     input.fileId,
