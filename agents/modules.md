@@ -84,7 +84,9 @@ Folder names are singular: `adapter/`, `locale/`, `runtime/`. Plural only for pe
 
 Named imports (`import { X } from './x'`) and default imports are forbidden in barrels — they create local bindings that imply hidden use.
 
-### `utils/` and `helpers/` are banned
+### `utils/` and `helpers/`
+
+Banned in **library code** (published `packages/*`). Every utility has a concept — name the file after it.
 
 | Situation | Correct response |
 | --- | --- |
@@ -93,7 +95,7 @@ Named imports (`import { X } from './x'`) and default imports are forbidden in b
 | Multiple unrelated utilities | Split into concept files, each in its own home |
 | Multiple tightly-related utilities | Merge into concept file (`string-format.ts`) |
 
-App code does not get an exception.
+**App-code exception.** Private app packages MAY keep a single top-level `src/utils/` for pure, domain-agnostic helpers — see § `lib/` vs `utils/` in apps below. `helpers/` stays banned everywhere.
 
 ### Decision flow when writing new code
 
@@ -153,12 +155,17 @@ import { Box } from '#components/box';
 
 #### `lib/` vs `utils/` in apps
 
-- `lib/` — domain-aware code. Wraps external libraries with project conventions.
-- `utils/` — pure, domain-agnostic helpers. Could be copy-pasted to another codebase and still work.
+Private app packages get exactly **one** top-level `src/utils/` and **one** top-level `src/lib/` — never nested `utils/` folders inside feature directories.
 
-**Test:** could this file be lifted into a separate package without modification?
-- Yes → `utils/`
-- No → `lib/`
+- `utils/` — **pure, domain-agnostic** helpers. No import of any project package, no project domain type. Could be copy-pasted into an unrelated codebase and still work.
+- `lib/` — **domain-aware** code. Imports a project package or domain type, or wraps an external library with project conventions.
+
+**The lift test** — could this file be lifted into a separate package without modification?
+
+- Yes → `utils/` (`merge-class-names.ts`, `merge-refs.ts`, `format-currency.ts`)
+- No → `lib/` (anything importing `@yapyak/*`, a generated type, or app-specific content)
+
+A file that imports from a project package but is otherwise generic still goes in `lib/` — the import is the domain coupling. When in doubt, `lib/`.
 
 ### Import statement order
 

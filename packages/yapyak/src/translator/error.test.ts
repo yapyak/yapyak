@@ -13,14 +13,14 @@ import {
 } from './error';
 
 describe('TranslatorError', () => {
-  it('carries the vendor', () => {
+  it('holds the vendor', () => {
     const error = new TranslatorError('Boom.', {
       vendor: 'anthropic',
     });
     expect(error.vendor).toBe('anthropic');
   });
 
-  it('wires the cause through via the `Error.cause` field when supplied', () => {
+  it('forwards the cause through the `Error.cause` field when supplied', () => {
     const cause = new Error('Underlying');
     const error = new TranslatorError('Boom.', {
       cause,
@@ -31,7 +31,7 @@ describe('TranslatorError', () => {
 });
 
 describe('TranslatorRateLimitError', () => {
-  it('carries the retryAfter when supplied', () => {
+  it('holds the `retryAfter` when supplied', () => {
     const error = new TranslatorRateLimitError('Too many.', {
       retryAfter: 5000,
       vendor: 'openai',
@@ -40,7 +40,7 @@ describe('TranslatorRateLimitError', () => {
     expect(error.name).toBe('TranslatorRateLimitError');
   });
 
-  it('is an instance of `TranslatorError`', () => {
+  it('holds `TranslatorError` in its prototype chain', () => {
     const error = new TranslatorRateLimitError('Too many.', {
       vendor: 'openai',
     });
@@ -172,7 +172,7 @@ describe('causeToError', () => {
 });
 
 describe('subclass identity', () => {
-  it('exposes distinct error names for instanceof-friendly catch blocks', () => {
+  it('holds distinct error names for instanceof-friendly catch blocks', () => {
     expect(
       new TranslatorAuthError('a', {
         vendor: 'x',

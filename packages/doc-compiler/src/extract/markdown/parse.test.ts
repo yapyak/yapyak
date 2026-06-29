@@ -428,7 +428,7 @@ describe('parseMarkdown', () => {
     expect(block.body[0]?.children[0]?.column).toBe('identifier');
   });
 
-  it('does not classify a column as `identifier` when any cell mixes prose with code', () => {
+  it('refuses to classify a column as `identifier` when any cell mixes prose with code', () => {
     const source = [
       '| Item |',
       '|---|',
@@ -786,7 +786,7 @@ describe('parseMarkdown', () => {
     });
   });
 
-  it('does not strip indentation when at least one line has no leading whitespace', () => {
+  it('preserves indentation when at least one line has no leading whitespace', () => {
     const source = [
       '```terminal',
       'Header',
@@ -822,7 +822,7 @@ describe('parseMarkdown', () => {
     });
   });
 
-  it('trims leading and trailing blank lines from a `terminal` fence', () => {
+  it('strips leading and trailing blank lines from a `terminal` fence', () => {
     const source = [
       '```terminal',
       '',

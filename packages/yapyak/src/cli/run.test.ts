@@ -355,7 +355,7 @@ describe('run', () => {
     );
   });
 
-  it('does not treat the `--out` value as a locale', async () => {
+  it('blocks the `--out` value from parsing as a locale', async () => {
     await run([
       'export',
       '--out',

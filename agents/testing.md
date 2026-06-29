@@ -215,29 +215,63 @@ Closed set of verbs allowed in `it` names. Alphabetical.
 | `binds` | binding/scope resolution |
 | `blocks` | guard returns early without throwing |
 | `builds` | constructs a value from parts |
+| `captures` | retains an extracted value |
+| `classifies` | token/symbol categorization |
 | `clears` | explicit value removal |
+| `collapses` | merges adjacent/whitespace into one |
+| `collects` | gathers items into a result |
+| `drops` | removes an entry from a sequence |
 | `elides` | compiler removes dead code |
 | `emits` | compiler outputs code/artifacts |
+| `expands` | placeholder/macro expansion into parts |
 | `extracts` | parser pulling messages out |
+| `falls` | fallback path (`falls back`/`falls through`) |
 | `finds` | lookup that may miss |
 | `folds` | collapses multiple inputs to one |
+| `follows` | re-export/redirect chasing |
+| `forwards` | passes a value onward unchanged |
+| `groups` | buckets items by key |
 | `holds` | value-storing assertion |
 | `interpolates` | string templating with placeholders |
+| `isolates` | per-request/per-scope separation |
 | `lists` | collects/returns an array |
 | `loads` | IO read with parsing |
+| `maps` | key → value association |
+| `marks` | tokenizer classification tag |
+| `merges` | combines two sources |
 | `migrates` | locale-key transformation |
 | `normalizes` | option/config canonicalization |
 | `notifies` | invokes subscribers/observers |
+| `overrides` | replaces a default with a value |
 | `parses` | text → structured value |
 | `picks` | locale catalog selection |
+| `prefers` | selects one candidate over another |
 | `preserves` | invariant-respecting no-change |
+| `queues` | defers work onto a queue |
 | `reads` | plain IO read |
+| `records` | accumulates a diagnostic/entry |
 | `refuses` | typed invariant rejection |
+| `registers` | adds to a registry |
+| `renames` | locale-key/export rename |
+| `renders` | produces display output (markdown/JSX) |
+| `replaces` | substitutes one value for another |
+| `reports` | surfaces a count/summary |
 | `resolves` | symbol/binding resolution |
 | `returns` | plain return value |
+| `rewrites` | compiler source rewriting |
+| `segments` | splits text around boundaries |
+| `sends` | dispatches a request |
+| `separates` | partitions into parts |
+| `skips` | guard skips an item without error |
+| `sorts` | orders a collection |
+| `splits` | divides into parts |
+| `stops` | halts a running process |
+| `strips` | removes a prefix/wrapper |
 | `syncs` | bring two stores in line |
 | `throws` | generic error path |
 | `transforms` | input → modified output |
+| `treats` | input-equivalence handling |
+| `truncates` | shortens to a limit |
 | `walks` | recursive iteration |
 | `warns` | logs a diagnostic warning |
 | `writes` | IO write |

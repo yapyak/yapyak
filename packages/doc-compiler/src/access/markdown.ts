@@ -77,7 +77,7 @@ function renderBlock(block: Block): string {
 }
 
 function renderInline(blocks: Block[]): string {
-  return blocks.map((block) => renderBlock(block)).join('');
+  return blocks.map(renderBlock).join('');
 }
 
 function renderBlocks(blocks: Block[]): string {

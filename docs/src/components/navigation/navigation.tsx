@@ -52,7 +52,10 @@ export function Navigation(props: NavigationProps) {
     observer.observe($element);
 
     if (typeof document !== 'undefined' && document.fonts) {
-      void document.fonts.ready.then(measure);
+      void (async () => {
+        await document.fonts.ready;
+        measure();
+      })();
     }
 
     const frame = window.requestAnimationFrame(() => {

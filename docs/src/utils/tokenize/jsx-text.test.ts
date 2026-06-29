@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { reclassifyJsxText } from './jsx-text';
 
 describe('reclassifyJsxText', () => {
-  it('reclassifies a `keyword` token inside JSX text as `plain`', () => {
+  it('marks a `keyword` token inside JSX text as `plain`', () => {
     const tokens: Token[] = [
       {
         type: 'jsx-tag',

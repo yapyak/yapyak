@@ -153,7 +153,7 @@ describe('expandTxSourcePlaceholders', () => {
     expect(hashes[0]?.value).toBe('#');
   });
 
-  it('handles numeric branch keys like =0 and =1', () => {
+  it('marks numeric branch keys `=0` and `=1`', () => {
     const result = expandTxSourcePlaceholders([
       tx("'{count, plural, =0 {none} =1 {one} other {many}}'"),
     ]);
@@ -167,7 +167,7 @@ describe('expandTxSourcePlaceholders', () => {
     ]);
   });
 
-  it('handles nested placeholders inside branches', () => {
+  it('expands nested placeholders inside branches', () => {
     const result = expandTxSourcePlaceholders([
       tx("'{count, plural, one {1 message from {sender}} other {# messages}}'"),
     ]);
@@ -188,7 +188,7 @@ describe('expandTxSourcePlaceholders', () => {
     expect(keyword?.value).toBe('number');
   });
 
-  it('keeps unmatched brace as plain tx-source', () => {
+  it('preserves an unmatched brace as plain tx-source', () => {
     const result = expandTxSourcePlaceholders([
       tx("'broken {name'"),
     ]);
@@ -203,7 +203,7 @@ describe('expandTxSourcePlaceholders', () => {
     expect(joined).toBe("'{count, plural, one {item} other {items}}'");
   });
 
-  it('handles a tx-source value without surrounding quotes', () => {
+  it('marks a tx-source value without surrounding quotes', () => {
     const result = expandTxSourcePlaceholders([
       tx('Hi {name}'),
     ]);
@@ -215,7 +215,7 @@ describe('expandTxSourcePlaceholders', () => {
     ]);
   });
 
-  it('leaves non tx-source tokens untouched between expansions', () => {
+  it('preserves non tx-source tokens between expansions', () => {
     const result = expandTxSourcePlaceholders([
       {
         type: 'keyword',

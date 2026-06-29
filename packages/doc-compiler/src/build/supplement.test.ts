@@ -81,7 +81,7 @@ describe('buildSupplement', () => {
     });
   });
 
-  it('sets the group `href` to the index page when `index.md` exists', async () => {
+  it('writes the group `href` to the index page when `index.md` exists', async () => {
     writeFileSync(join(dir, 'index.md'), '---\ntitle: Overview\n---');
     writeFileSync(join(dir, 'YAP0001.md'), '---\ntitle: Hello\n---');
 

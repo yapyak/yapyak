@@ -4,6 +4,7 @@ export { findCanonicalLocale } from './canonical';
 export { getLocaleFallbackChain } from './fallback-chain';
 export {
   appendPendingResponseHeader,
+  resetResponseHeaderWriter,
   setResponseHeaderWriter,
 } from './pending-response-header';
 export { setRequestReader } from './request';

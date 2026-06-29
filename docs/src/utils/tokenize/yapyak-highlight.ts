@@ -28,16 +28,17 @@ export function applyYapyakHighlight(tokens: Token[]): void {
       }
 
       if (tokens[next]?.type === 'punct' && tokens[next]?.value === '(') {
-        const arg = findNextSignificant(tokens, next + 1);
-        if (arg !== undefined) {
-          const argToken = tokens[arg];
+        const argumentIndex = findNextSignificant(tokens, next + 1);
+        if (argumentIndex !== undefined) {
+          const argumentToken = tokens[argumentIndex];
           if (
-            argToken !== undefined &&
-            (argToken.type === 'string' || argToken.type === 'template') &&
-            !isDottedKey(argToken.value)
+            argumentToken !== undefined &&
+            (argumentToken.type === 'string' ||
+              argumentToken.type === 'template') &&
+            !isDottedKey(argumentToken.value)
           ) {
             token.type = 'tx-call';
-            argToken.type = 'tx-source';
+            argumentToken.type = 'tx-source';
           }
         }
         continue;

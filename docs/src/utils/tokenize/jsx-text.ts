@@ -11,17 +11,17 @@ const RAW_TEXT_CLOSE_TAGS = new Set([
 
 export function reclassifyJsxText(tokens: Token[]): void {
   let depth = 0;
-  let inText = false;
+  let isInText = false;
   let exprDepth = 0;
   let rawTextDepth = 0;
 
   for (const token of tokens) {
     if (token.type === 'jsx-tag') {
-      inText = false;
+      isInText = false;
       if (token.value === '/>') {
         depth = Math.max(0, depth - 1);
         if (depth > 0 && exprDepth === 0 && rawTextDepth === 0) {
-          inText = true;
+          isInText = true;
         }
       } else if (token.value.startsWith('</')) {
         depth = Math.max(0, depth - 1);
@@ -41,17 +41,17 @@ export function reclassifyJsxText(tokens: Token[]): void {
       const value = token.value;
       if (value === '>') {
         if (depth > 0 && exprDepth === 0 && rawTextDepth === 0) {
-          inText = true;
+          isInText = true;
         }
         continue;
       }
       if (value === '<') {
-        inText = false;
+        isInText = false;
         continue;
       }
-      if (value === '{' && inText) {
+      if (value === '{' && isInText) {
         exprDepth++;
-        inText = false;
+        isInText = false;
         token.type = 'jsx-brace';
         continue;
       }
@@ -59,7 +59,7 @@ export function reclassifyJsxText(tokens: Token[]): void {
         const wasOutermost = exprDepth === 1;
         exprDepth--;
         if (exprDepth === 0 && depth > 0 && rawTextDepth === 0) {
-          inText = true;
+          isInText = true;
         }
         if (wasOutermost && depth > 0) {
           token.type = 'jsx-brace';
@@ -68,7 +68,7 @@ export function reclassifyJsxText(tokens: Token[]): void {
       }
     }
 
-    if (inText) {
+    if (isInText) {
       if (
         token.type === 'keyword' ||
         token.type === 'literal' ||

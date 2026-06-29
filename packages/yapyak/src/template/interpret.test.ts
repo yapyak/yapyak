@@ -222,7 +222,7 @@ describe('interpret', () => {
       ).toBe('none');
     });
 
-    it('does not match an exact `=N` branch for negative integers', () => {
+    it('skips an exact `=N` branch for negative integers', () => {
       const template: Template = [
         {
           branches: {

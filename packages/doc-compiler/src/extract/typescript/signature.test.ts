@@ -55,7 +55,7 @@ describe('buildOverload', () => {
     ]);
   });
 
-  it('includes type parameters in the result', () => {
+  it('lists type parameters in the result', () => {
     const node = parseFunction(
       'export function identity<T>(value: T): T { return value; }',
     );

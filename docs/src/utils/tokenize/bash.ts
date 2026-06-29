@@ -19,9 +19,9 @@ const SUBCOMMAND_TOOLS = new Set([
 export function tokenizeBash(code: string): Token[] {
   const tokens: Token[] = [];
   let index = 0;
-  let atLineStart = true;
-  let expectSubcommand = false;
-  let inArgs = false;
+  let isAtLineStart = true;
+  let isExpectingSubcommand = false;
+  let isInArgs = false;
   while (index < code.length) {
     const character = code[index] ?? '';
 
@@ -38,9 +38,9 @@ export function tokenizeBash(code: string): Token[] {
           value: match[0],
         });
         if (match[0].includes('\n')) {
-          atLineStart = true;
-          expectSubcommand = false;
-          inArgs = false;
+          isAtLineStart = true;
+          isExpectingSubcommand = false;
+          isInArgs = false;
         }
         index += match[0].length;
         continue;
@@ -126,37 +126,37 @@ export function tokenizeBash(code: string): Token[] {
       }
     }
 
-    if (atLineStart && /[A-Za-z_]/.test(character)) {
+    if (isAtLineStart && /[A-Za-z_]/.test(character)) {
       const match = /^[A-Za-z_][\w-]*/.exec(code.slice(index));
       if (match) {
         tokens.push({
           type: 'fn-call',
           value: match[0],
         });
-        atLineStart = false;
+        isAtLineStart = false;
         if (SUBCOMMAND_TOOLS.has(match[0])) {
-          expectSubcommand = true;
+          isExpectingSubcommand = true;
         }
         index += match[0].length;
         continue;
       }
     }
 
-    if (expectSubcommand && /[A-Za-z_]/.test(character)) {
+    if (isExpectingSubcommand && /[A-Za-z_]/.test(character)) {
       const match = /^[A-Za-z_][\w-]*/.exec(code.slice(index));
       if (match) {
         tokens.push({
           type: 'bash-subcommand',
           value: match[0],
         });
-        expectSubcommand = false;
-        inArgs = true;
+        isExpectingSubcommand = false;
+        isInArgs = true;
         index += match[0].length;
         continue;
       }
     }
 
-    if (inArgs && /[@A-Za-z_]/.test(character)) {
+    if (isInArgs && /[@A-Za-z_]/.test(character)) {
       const match = /^@?[\w][\w./@-]*/.exec(code.slice(index));
       if (match) {
         tokens.push({
@@ -169,7 +169,7 @@ export function tokenizeBash(code: string): Token[] {
     }
 
     if (character !== '\n') {
-      atLineStart = false;
+      isAtLineStart = false;
     }
     tokens.push({
       type: 'plain',

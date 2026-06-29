@@ -608,7 +608,7 @@ describe('buildMethodPage', () => {
     };
   }
 
-  it('auto-injects parent and sibling links into the `See also` section', () => {
+  it('writes parent and sibling links into the `See also` section', () => {
     const page = buildMethodPage(
       FormatParent,
       methodMember('number'),
@@ -714,7 +714,7 @@ describe('buildPropertyMemberPage', () => {
     };
   }
 
-  it('auto-injects parent and sibling links into the `See also` section', () => {
+  it('writes parent and sibling links into the `See also` section', () => {
     const page = buildPropertyMemberPage(
       variableSymbol({
         name: 'settings',

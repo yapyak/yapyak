@@ -188,7 +188,9 @@ type Variants = Record<string, string | Template>;
 
 `*Dict` is banned.
 
-### `utils/` and `helpers/` — banned
+### `utils/` and `helpers/`
+
+Banned in **library code** (published `packages/*`). Every utility has a concept — name the file after it.
 
 | Situation | Correct response |
 | --- | --- |
@@ -197,7 +199,7 @@ type Variants = Record<string, string | Template>;
 | Multiple unrelated utilities | Split into concept files |
 | Multiple tightly-related utilities | Merge into concept file (`string-format.ts`) |
 
-App code does not get an exception.
+**App-code exception.** Private app packages MAY keep a single top-level `src/utils/` for **pure, domain-agnostic** helpers (the `lib/` vs `utils/` split lives in [[modules]] § `lib/` vs `utils/` in apps). Domain-aware code goes in `lib/`, never `utils/`. `helpers/` stays banned everywhere, library and app alike.
 
 ### Type suffix vocabulary
 
@@ -352,10 +354,25 @@ UseLocaleHookReturn                     // Hook + Return
 | --- | --- |
 | `*Instance` | Every type is implicitly an instance |
 | `*Object` | Vacuous |
-| `*Type` | Meta-jargon — the thing is already a type |
+| `*Type` | Meta-jargon **when redundant** — the base noun is already a type (`OptionsType`, `ConfigType`) |
 | `*Class` | Meta-jargon |
 | `*Interface` | Meta-jargon |
 | `*Impl` / `*Implementation` | The implementation IS the type |
+
+**`*Type` exception — category of a distinct concrete thing.** `*Type` is allowed when the `Type` is **load-bearing**: the base noun names a concrete value/struct, and `*Type` names its *category/classification* (a distinct concept), AND `*Type` is the established term of art in that domain. The test: is there a separate `Foo` value whose category `FooType` describes?
+
+```ts
+// ✓ Allowed — Token is the struct, TokenType is its category (ecosystem-idiomatic, à la TS `SyntaxKind`)
+type Token = { type: TokenType; value: string };
+type TokenType = 'keyword' | 'string' | 'punct' | ...;
+
+// ✓ Allowed — Event is the object, EventType its category; ContentType, NodeType, MediaType similarly
+// ✗ Banned — redundant: Options/Config are ALREADY types, "Type" adds nothing
+type OptionsType = { ... };   // → Options
+type ConfigType = { ... };    // → Config
+```
+
+When `*Type` is allowed, its discriminator field keeps the matching name (`token.type: TokenType`) — do not rename the field to `kind`, since the field and type must agree.
 
 **Past-participle prefix pattern.** A type representing the post-processed form of a base type uses the participle as a prefix:
 
@@ -452,6 +469,19 @@ Closed list. Every function starts with one of these (or follows a documented ex
 | `warn*` | Diagnostic-emitting paired with `warnDiagnostic` | `warnDiagnostic()` |
 | `inject*` | Insert generated code into existing source | `injectComponentHooks()` |
 | `try*` | Attempt — returns result or `undefined` | `tryBareElision()` |
+| `apply*` | Apply a set of changes/patches | `applyPatches()` |
+| `collect*` | Gather items into a result set | `collectExports()` |
+| `count*` | Tally occurrences | `countReferences()` |
+| `emit*` | Produce derived output/diagnostics | `emitPersistenceConfig()` |
+| `expand*` | Expand a source into parts | `expandModuleEntries()` |
+| `filter*` | Narrow a collection by predicate | `filterAdaptersByFramework()` |
+| `interpret*` | Evaluate a parsed structure | `interpretNode()` |
+| `mark*` | Tag/annotate tokens in place | `markTaggedTemplates()` |
+| `print*` | Write formatted output to a stream | `printHelp()` |
+| `scan*` | Sweep source/tokens linearly | `scanToken()` |
+| `skip*` | Advance past a span | `skipBalancedBraces()` |
+| `sort*` | Order a collection | `sortKeys()` |
+| `split*` | Divide into parts | `splitAtDepthZero()` |
 
 #### Composite `*To*` / `*From*` converters
 

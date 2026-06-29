@@ -125,7 +125,7 @@ describe('applyPatches', () => {
     });
   });
 
-  it('is a no-op when the patches array is empty', () => {
+  it('preserves state when the patches array is empty', () => {
     expect(() =>
       applyPatches({
         patches: [],

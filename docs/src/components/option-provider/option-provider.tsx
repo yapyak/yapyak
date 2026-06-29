@@ -31,7 +31,7 @@ export function OptionProvider(props: OptionProviderProps) {
   useEffect(() => {
     const stored = window.__yapyakOptions ?? {};
     setState((previous) => {
-      let changed = false;
+      let hasChanged = false;
       const next = {
         ...previous,
       };
@@ -43,10 +43,10 @@ export function OptionProvider(props: OptionProviderProps) {
           next[groupId] !== value
         ) {
           next[groupId] = value;
-          changed = true;
+          hasChanged = true;
         }
       }
-      return changed ? next : previous;
+      return hasChanged ? next : previous;
     });
     document.getElementById(OPTION_PREPAINT_STYLE_ID)?.remove();
   }, [

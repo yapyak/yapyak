@@ -49,7 +49,7 @@ export function ContentLayout(props: ContentLayoutProps) {
 
   const isAnyDrawerOpen = isSidebarOpen || isOutlineOpen;
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: closes drawers on navigation
+  // biome-ignore lint/correctness/useExhaustiveDependencies: yap yap yap
   useEffect(() => {
     setIsSidebarOpen(false);
     setIsOutlineOpen(false);

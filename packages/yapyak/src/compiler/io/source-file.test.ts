@@ -115,7 +115,7 @@ describe('walkSourceFiles', () => {
     expect(files).toEqual([]);
   });
 
-  it('does not let a filtered-out symlink shadow a filtered-in path to the same real dir', () => {
+  it('blocks a filtered-out symlink from shadowing a filtered-in path to the same real dir', () => {
     const externalRoot = mkdtempSync(join(tmpdir(), 'yapyak-external-'));
     try {
       const realDir = join(externalRoot, 'real');

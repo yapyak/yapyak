@@ -16,7 +16,7 @@ describe('isUnsafeKey', () => {
   });
 
   it('returns `false` for a normal file-path key', () => {
-    expect(isUnsafeKey('src/foo.ts')).toBe(false);
+    expect(isUnsafeKey('src/a.ts')).toBe(false);
   });
 
   it('returns `false` for an empty string', () => {

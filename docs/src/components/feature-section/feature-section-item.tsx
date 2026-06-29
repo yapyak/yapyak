@@ -6,7 +6,7 @@ import { Box } from '#components/box';
 
 import styles from './feature-section-item.module.css';
 
-const CODE_PATTERN = /`([^`]+)`|t(?:\.(?:at|in))?\([^)]*\)/g;
+const CODE_RX = /`([^`]+)`|t(?:\.(?:at|in))?\([^)]*\)/g;
 
 export type FeatureSectionItemProps = BoxProps<'li'> & {
   feature: Feature;
@@ -57,8 +57,8 @@ function renderDescription(text: string): ReactNode[] {
   const parts: ReactNode[] = [];
   let lastIndex = 0;
   let keyIndex = 0;
-  CODE_PATTERN.lastIndex = 0;
-  let match = CODE_PATTERN.exec(text);
+  CODE_RX.lastIndex = 0;
+  let match = CODE_RX.exec(text);
   while (match !== null) {
     if (match.index > lastIndex) {
       parts.push(text.slice(lastIndex, match.index));
@@ -75,7 +75,7 @@ function renderDescription(text: string): ReactNode[] {
     );
     keyIndex++;
     lastIndex = match.index + match[0].length;
-    match = CODE_PATTERN.exec(text);
+    match = CODE_RX.exec(text);
   }
   if (lastIndex < text.length) {
     parts.push(text.slice(lastIndex));

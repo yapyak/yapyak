@@ -25,7 +25,7 @@ export function LayoutHeader(props: LayoutHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: close menu on navigation
+  // biome-ignore lint/correctness/useExhaustiveDependencies: yap yap yap
   useEffect(() => {
     setIsMenuOpen(false);
   }, [

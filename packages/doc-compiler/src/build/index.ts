@@ -9,3 +9,6 @@ export type {
   SidebarNode,
   SymbolEntry,
 } from './manifest';
+
+export { buildAgentArtifact } from './agent-artifact';
+export { buildManifest } from './manifest';

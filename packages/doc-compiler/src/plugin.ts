@@ -1,9 +1,8 @@
 import type { Plugin, ViteDevServer } from 'vite';
-import type { Manifest } from './build/manifest';
+import type { Manifest } from './build';
 import type { Config } from './config';
 
-import { buildAgentArtifact } from './build/agent-artifact';
-import { buildManifest } from './build/manifest';
+import { buildAgentArtifact, buildManifest } from './build';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve, sep } from 'node:path';
 
@@ -61,7 +60,7 @@ export function docCompiler(config: Config): Plugin {
       outAbsolute = resolve(config.out);
 
       if (config.agentArtifact !== undefined) {
-        const agentConfig = config.agentArtifact;
+        const agentArtifact = config.agentArtifact;
         server.middlewares.use((req, res, next) => {
           const url = req.url ?? '';
           const path = url.split('?')[0] ?? '';
@@ -76,7 +75,7 @@ export function docCompiler(config: Config): Plugin {
           void (async () => {
             try {
               const manifest = await getManifest();
-              const artifact = buildAgentArtifact(manifest, agentConfig);
+              const artifact = buildAgentArtifact(manifest, agentArtifact);
               const fileKey = path.replace(/^\//, '');
               const content = artifact.files.get(fileKey);
               if (content === undefined) {

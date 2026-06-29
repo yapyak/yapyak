@@ -32,7 +32,7 @@ describe('buildSymbolIndex', () => {
     expect(qualified?.href).toBe('/reference/yapyak/createTranslator');
   });
 
-  it('keeps the first symbol when two share a bare name', () => {
+  it('preserves the first symbol when two share a bare name', () => {
     const result = buildSymbolIndex([
       entry({
         href: '/reference/yapyak/createTranslator',

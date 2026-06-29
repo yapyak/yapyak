@@ -45,7 +45,7 @@ describe('withResponse', () => {
     expect(result).toBe(produced);
   });
 
-  it('awaits a handler that returns Promise<Response>', async () => {
+  it('returns the `Response` from a `Promise`-returning handler', async () => {
     const result = await withResponse(
       makeRequest(),
       async () => new Response('ok'),

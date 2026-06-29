@@ -166,13 +166,13 @@ function buildVariantsByFile(
       variants.set(key, variant);
     }
   }
-  const result = new Map<string, ExportVariant[]>();
+  const variantsByFile = new Map<string, ExportVariant[]>();
   for (const [fileId, variants] of byFile) {
-    result.set(fileId, [
+    variantsByFile.set(fileId, [
       ...variants.values(),
     ]);
   }
-  return result;
+  return variantsByFile;
 }
 
 function buildSnapshot(args: {

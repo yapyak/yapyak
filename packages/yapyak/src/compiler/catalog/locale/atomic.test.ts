@@ -91,7 +91,7 @@ describe('writeAtomicAll', () => {
     expect(readFileSync(secondPath, 'utf-8')).toBe('{"b":2}');
   });
 
-  it('leaves every existing target untouched when staging fails', () => {
+  it('preserves every existing target when staging fails', () => {
     const firstPath = join(directory, 'a.json');
     const secondPath = join(directory, 'missing', 'b.json');
     writeFileSync(firstPath, '{"a":"original"}');
@@ -110,7 +110,7 @@ describe('writeAtomicAll', () => {
     expect(readFileSync(firstPath, 'utf-8')).toBe('{"a":"original"}');
   });
 
-  it('leaves no `.tmp` artefacts after a failed staging', () => {
+  it('writes no `.tmp` artefact after a failed staging', () => {
     const firstPath = join(directory, 'a.json');
     const secondPath = join(directory, 'missing', 'b.json');
     expect(() =>
@@ -131,7 +131,7 @@ describe('writeAtomicAll', () => {
     expect(remaining).toEqual([]);
   });
 
-  it('leaves no `.tmp` artefacts after a successful write', () => {
+  it('writes no `.tmp` artefact after a successful write', () => {
     writeAtomicAll([
       {
         content: '{"a":1}',
@@ -153,7 +153,7 @@ describe('writeAtomicAll', () => {
     expect(readdirSync(directory)).toEqual([]);
   });
 
-  it('leaves no `.tmp` artefacts when a later rename fails mid-commit', () => {
+  it('writes no `.tmp` artefact when a later rename fails mid-commit', () => {
     const firstPath = join(directory, 'a.json');
     const secondPath = join(directory, 'b.json');
     mkdirSync(secondPath);

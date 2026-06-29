@@ -1,6 +1,6 @@
 import type { Token } from './type';
 
-const ICU_KEYWORDS: ReadonlySet<string> = new Set([
+const ICU_KEYWORDS: Set<string> = new Set([
   'plural',
   'select',
   'selectordinal',

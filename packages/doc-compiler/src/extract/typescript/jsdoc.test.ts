@@ -70,7 +70,7 @@ describe('extractJsDoc', () => {
     ]);
   });
 
-  it('keeps the full URL when `@see` targets an external link', () => {
+  it('preserves the full URL when `@see` targets an external link', () => {
     const node = parseFirstStatement(
       '/**\n * Setting.\n * @see https://example.com/docs\n */\nexport const greeting = "Settings";',
     );
@@ -123,7 +123,7 @@ describe('extractJsDoc', () => {
     );
   });
 
-  it('uses the `{@link X | label}` label as the link text when one is provided', () => {
+  it('returns the `{@link X | label}` label as the link text when one is provided', () => {
     const node = parseFirstStatement(
       '/** See {@link createTranslator | the helper}. */\nexport const greeting = "Hi";',
     );
@@ -132,7 +132,7 @@ describe('extractJsDoc', () => {
     );
   });
 
-  it('uses the `{@link X label}` (space-separated) label as the link text when one is provided', () => {
+  it('returns the `{@link X label}` (space-separated) label as the link text when one is provided', () => {
     const node = parseFirstStatement(
       '/** See {@link createTranslator the helper}. */\nexport const greeting = "Hi";',
     );
