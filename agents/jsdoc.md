@@ -722,7 +722,7 @@ Only four comment forms appear inside example code.
 | `// ok: <reason>` | Positive verification marker. Same rendering as `error:`. |
 | `// ...` | Elision when the example needs to gesture at code it does not show. |
 
-**`// output:` has two forms** — pick the cleaner per case:
+**`// output:` has two forms, chosen by output shape** — inline for a single value, bare header + continuation for multiple lines:
 
 ```ts
 // Inline — single value or short multi-line

@@ -1,6 +1,6 @@
 ## Naming
 
-Files, folders, symbols, suffixes, verbs, booleans — closed vocabularies.
+Files, folders, symbols, suffixes, verbs, booleans — closed vocabularies. Every rule here is a deterministic operation on an export or type name. The only human input is coining a brand-new domain noun — itself bound by the suffix and form rules. No taste, no judgment.
 
 ### Files and folders
 
@@ -69,7 +69,7 @@ Modifiers describe position/quantity/relation. They are NOT subtypes. `internal`
 Create folder X iff 2+ files in the same parent would resolve to the same name.
 ```
 
-The algorithm naturally drives this — when two files compute to the same name, create a folder named after the shared concept. The parent-strip step shortens inner filenames.
+The algorithm drives this — when two files compute to the same name, create a folder named after that shared name. The parent-strip step shortens inner filenames.
 
 ```
 extractFile    → file.ts
@@ -181,11 +181,14 @@ When you can name the file after the noun the types share (`persistence`, `bindi
 | `*Registry` | Mutable collection of registered handlers/factories | `TrackerRegistry` |
 | `*File` | Shape of a single file's contents | `LocaleFile` |
 
-**Step 2 — no role applies → plural form of the contained thing:**
+**Step 2 — no role applies:**
+
+- Value is a **single named type** → its plural: `Record<string, Template>` → `Templates`.
+- Value is a **primitive or union** → a plural noun for what the values represent — the one place a concept is coined; it must be a plural noun:
 
 ```ts
-type LocaleTranslations = Record<string, string>;
-type Variants = Record<string, string | Template>;
+type LocaleTranslations = Record<string, string>;        // primitive value
+type Variants = Record<string, string | Template>;       // union value
 ```
 
 `*Dict` is banned.
@@ -657,10 +660,12 @@ When a field or parameter holds a value of a specific named type, the name is th
 
 | Case | Name | Example |
 | --- | --- | --- |
-| Holds a single named type, no surrounding context carries it | type name in camelCase | `attributeNode: AttributeNode` |
-| Polymorphic (union of node kinds) | generic concept noun | `node: AstNode` |
-| Collection of one named type | plural of type name | `attributeNodes: AttributeNode[]` |
-| Callable type (`*Fn` / function) | the role it performs, **dropping `Fn`** | `warn: WarnFn` |
+| Holds a single named type, no surrounding context carries it | `camelCase(TypeName)` | `attributeNode: AttributeNode` |
+| Polymorphic (the type **is** a union) | `camelCase` of the type's **last** PascalCase segment | `node: AstNode` |
+| Collection of one named type | plural of `camelCase(TypeName)` | `attributeNodes: AttributeNode[]` |
+| Callable type (`*Fn` / function) | `camelCase(TypeName)` with the trailing `Fn` **removed** | `warn: WarnFn` |
+
+Each row is a string operation on the type name — no judgment. Polymorphic `AstNode` → last segment `Node` → `node`; callable `WarnFn` → drop `Fn` → `warn`; `ParseFragmentsFn` → `parseFragments`.
 
 **Context-carry exception.** When a function operates on a single named type, the function name carries the full type name; the parameter drops to the generic noun from the type's last PascalCase segment:
 
@@ -676,7 +681,7 @@ function handleAttributeNode(node: AttributeNode): void { ... }
 function resolveCallSite(site: CallSite): ResolvedSite { ... }
 ```
 
-**Callable types are named by role.** A field or parameter holding a function type (`*Fn`, or any `(...) => ...`) is named for the **action it performs**, dropping the `Fn` suffix: `WarnFn` → `warn`, `ParseFragmentsFn` → `parseFragments`. Never `warnFn` (the `Fn` marks the *type*, not the value), nor the bare `fn`.
+**Callable types drop `Fn`.** A value held in a **named** `*Fn` type is `camelCase(TypeName)` minus the trailing `Fn`: `WarnFn` → `warn`, `ParseFragmentsFn` → `parseFragments` — never `warnFn` (the `Fn` marks the *type*, not the value). A **roleless generic** function — the wrapped callback in a `memoize`/`once`-style helper, `(...) => T` with no concept — is `callback`, or `fn`: `function` is a reserved word, so the short form is the [[#no-abbreviations]] reserved-spelling exception. That exception is what makes `fn` legal and nothing else: a generic string/number/object value names its type **in full** (`string`, `number`, `object`, `value`), never `str`/`num`/`obj`, because those words are legal identifiers.
 
 ### Discriminator fields — `type` vs `kind`
 

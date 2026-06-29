@@ -42,6 +42,7 @@ Each file in `agents/` is a standalone rule module. Subject-noun, kebab-case, si
 ### React
 
 - [agents/react.md](agents/react.md) — components, hooks, refs, JSX rules
+- [agents/box.md](agents/box.md) — `Box` primitive: render `Box` for every element, `BoxProps<T>`, `data-*` passthrough, `className` forwarding, styled-component variants
 
 ### Library
 

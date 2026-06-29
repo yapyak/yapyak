@@ -101,7 +101,7 @@ Banned in **library code** (published `packages/*`). Every utility has a concept
 
 1. New exportable symbol → file matching its name (kebab-case primary export).
 2. Existing folder fits → add the file there. If consumed from outside, add to barrel.
-3. No existing folder fits, single new file → put at appropriate level. Do not create a folder yet.
+3. No existing folder fits, single new file → place it in the directory of its consumer (the importing module); if consumed from several modules, the nearest shared ancestor directory. Do not create a folder yet.
 4. Multiple new files share a new concept → create folder + barrel.
 
 ### Cross-module imports — library packages

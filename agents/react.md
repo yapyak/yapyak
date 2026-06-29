@@ -99,7 +99,7 @@ The plural is encoded in the element type (`List`, `Stack`, `Section`, `Grid`), 
 
 A component's name ends with the name of its root JSX element: `SortIcon` renders `<Icon>`, `RateRow` renders `<tr>`, `ClientPickList` renders `<ul>`.
 
-**Exception:** components whose root is `*Base`, `Box`, or `Icon`. These primitives carry no opinion on the suffix; built-on components pick the suffix from the role they play (`Stack`, `Section`, `Chevron`).
+**Exception:** components whose root is `*Base`, `Box`, or `Icon` carry no element-derived suffix. An `Icon`-based component takes the icon's own name (`ChevronIcon` → `Chevron`, `SortIcon` → `Sort`) — mechanical. A `Box`/`*Base`-based one takes the layout noun it coins (`Stack`, `Section`) — the one coined name, still bound by the suffix rules.
 
 ### Component architecture
 
@@ -397,11 +397,9 @@ function ActionButton(props: { action: Action }) {
 - Pass domain data as-is through the component tree. Derive computed values at the point of use.
 - `data-*` attributes use lowercase kebab-case: `data-animating`, never `data-isAnimating`.
 - `data-*` attributes never use `is`/`has` prefix: `data-active`, `data-disabled` — never `data-is-active`.
-- Never pass `|| undefined` to `data-*` attributes — the underlying primitive handles falsy values automatically.
 - CSS custom properties (`style={{ '--x': value }}`) are always set on the root element.
 - Cross-component CSS variables must be prefixed with the owning component's kebab-case name (`--selection-indicator-fill-color`).
-- Avoid passing `className` to styled components. Use variants (`size`, `appearance`, `intent`).
-- Never pass explicit generic type arguments in JSX. The generic is inferred from `as=` or other props.
+- **Box-consumer rules** — rendering `Box` for every element, `BoxProps<T>` shape, `data-*` value passthrough (no `|| undefined`), `className` forwarding, styled-component variants over `className`, and JSX generics — live in [[box]].
 
 ### Extending component props
 
