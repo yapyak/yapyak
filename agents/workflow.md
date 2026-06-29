@@ -79,7 +79,7 @@ Respect the layering the user has stated. If the architecture is A → B → C, 
 
 ### Ambiguity
 
-If two reasonable interpretations exist, ask. Never pick. "Vague enough that I'm guessing" = stop.
+Stop and ask iff the input admits two interpretations that produce different output AND no rule file disambiguates — never pick between them. Otherwise proceed. When the design is wrong, report why and stop — do not produce code to look productive.
 
 ### Don't invent
 
@@ -105,7 +105,7 @@ If caught inventing: stop, remove, acknowledge. Do not defend, qualify, or half-
 | --- | --- |
 | Optimize for understanding | Show off cleverness |
 | Think in surfaces (API, contracts, behavior) | Build for "future reuse" |
-| Small, focused objects with one responsibility | Use meta-programming without extreme justification |
+| Small, focused objects with one responsibility | Never use meta-programming (runtime proxies, dynamic property access, runtime codegen). If a case seems to need it, stop and report. |
 | Explicit over implicit | Leave ambiguity in public APIs |
 | Three similar lines beats a premature abstraction | Defensive fallbacks for impossible states |
 
@@ -113,23 +113,14 @@ If caught inventing: stop, remove, acknowledge. Do not defend, qualify, or half-
 
 Before code is done:
 
-1. Can I understand this in 6 months?
-2. Is there exactly one way to use this?
-3. Is this idiomatic for the language/framework?
-4. Could this be simpler without introducing variation?
-
-"Yes, but…" → rewrite.
+1. Is there exactly one documented call form? If a second exists, delete it.
 
 ### Abstraction discipline
 
 Abstractions absorb pressure, not anticipate it. Pressure = a third call site copy-pasting the same block, or genuine reuse from a different layer.
 
-Until then, inline beats extracted. A 200-line function with one tightly-coupled flow is fine. A 30-line file split across 5 modules is overengineered.
+Until then, inline beats extracted. Extract only when a third call site copy-pastes the same block. Below that, never split for size.
 
 ### Surface vs implementation
 
 Design APIs by what callers think about, not what the implementation needs. Two implementations of the same contract must not leak their differences into the contract.
-
-### Production cadence
-
-Producing code is not the goal. Building the right thing is. Spending a turn saying "this design is wrong, here is why" is work, not stalling.

@@ -90,16 +90,16 @@ export function Button(props: ButtonProps) {
 |---|---|
 | `children` — don't destructure | `children` flows through `...restProps`. Self-close `<Box />` instead of `<Box>{children}</Box>`. Destructure only when you wrap, transform, or render them alongside other content. |
 | `className` always forwarded | Destructure consumer `className` and pass it along: `className={[styles.Button, className]}`. Never `className={styles.Button}` alone. Never use `cn()`, `clsx`, template strings, or ternaries to merge — Box does it. |
-| Control props pass through to native | `isDisabled` → both `data-disabled={isDisabled}` (CSS) AND `disabled={isDisabled}` (native behavior). |
-| `data-*` attributes pass through directly | Box normalizes booleans → empty string / undefined. Write `data-pressed={isPressed}`, never `data-pressed={isPressed \|\| undefined}`. |
+| Control props pass through to native | `disabled` → both `data-disabled={disabled}` (CSS) AND `disabled={disabled}` (native behavior). |
+| `data-*` attributes pass through directly | Box normalizes booleans → empty string / undefined. Write `data-pressed={pressed}`, never `data-pressed={pressed \|\| undefined}`. |
 | `<div>` root is implicit | Write `extends BoxProps` (not `BoxProps<'div'>`) and omit `as="div"`. |
 | Non-`div` roots are explicit | `BoxProps<'button'>` + `as="button"`, `BoxProps<'a'>` + `as="a"`, etc. |
 | Props extend `BoxProps<T>` | `T` is the root element. Never write a standalone props interface. |
 | Spread `...restProps` first on `Box` | Explicit props (className, data-*, as) declared after the spread always win. |
 
-### Avoid `className` on styled components
+### `className` on styled components
 
-Use variants (`size`, `appearance`, `intent`) to customize styled components (`Button`, `Badge`, `Link`, etc.). If no variant fits — add one to the component, or use a base primitive for full control. **`className` on styled components is a code smell — it means the component API is incomplete.**
+A styled component (`Button`, `Badge`, `Link`) accepts `className` **only for cross-component layout** — position, margin, or grid-placement passed from a parent per [[css]]. Never use `className` to change its **appearance** (color, size, typography); add a variant (`size`, `appearance`, `intent`) instead. If the customization is reusable, add a variant to the component; if it is a one-off structural need, drop to a base primitive. Appearance via `className` means the component API is incomplete.
 
 ### Never pass explicit generic type arguments in JSX
 

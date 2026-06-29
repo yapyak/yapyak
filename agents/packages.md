@@ -51,7 +51,7 @@ engines, packageManager, publishConfig, pnpm, workspaces
 }
 ```
 
-Include only conditions needed. Keep relative order regardless of subset.
+Include only conditions needed. Keep relative order regardless of subset. Decision rule: `types` and `default` always. Add `browser`/`node` only when the package ships environment-divergent builds (separate `dist/browser` + `dist/node` outputs exist). Add `source`/`development` only when a `src` export is wired for the dev bundler.
 
 ### Sub-path export keys
 
@@ -199,7 +199,7 @@ A regular npm dependency never goes in `neverBundle`.
 
 #### File order in `tsdown.config.ts`
 
-`src/index.ts` first, then alphabetical. `deps` above `entry` (alphabetical top-level).
+Top-level keys are alphabetical. Inside `entry`, `src/index.ts` first, then alphabetical.
 
 ### Package README convention
 
@@ -210,4 +210,4 @@ Every `packages/*` README has a blockquote one line under the title:
 ```
 
 - `Internal` added when `"private": true` or package is workspace-consumed only.
-- Runtime classifier omitted only for config-only packages with no executable code.
+- Omit the runtime classifier iff the package's `dist` ships no `.js` with runtime logic (every export is a type, or the only `.js` is a passthrough `defineConfig`). Otherwise classify Node-only / Browser-only / Universal by the `engines`/`browser` fields.

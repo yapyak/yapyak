@@ -16,7 +16,7 @@ Q2: Type owned by a platform or 3rd-party library?
     (DOM: localStorage.getItem, Headers.get, Element.closest, Document.querySelector;
      parser ASTs: @formatjs/*, typescript.*, @markdoc/*;
      Node: process.X, fs callbacks)
-    YES → keep their typing (usually `T | null`)
+    YES → mirror the upstream type's exact nullability verbatim (`T | null`, `T | undefined`, or `T`). Never substitute.
     NO  → Q3
 
 Q3: Does the value cross a JSON.stringify boundary
@@ -98,7 +98,7 @@ return {
 };
 ```
 
-Rule: if the field is `T | null` AND the value is `T | undefined`, wrap in `nullify(...)`. Plain `?? null` is reserved for sentinel-defaulting (e.g. `?? ''` for empty string).
+Rule: if the field is `T | null` AND the value is `T | undefined`, wrap in `nullify(...)`. A bare `?? <literal>` defaulting expression (e.g. `?? ''`, `?? 0`) is sentinel-defaulting and needs no `nullify`. Use `nullify(x)` instead of `x ?? null` whenever the target field is a `T | null` wire field.
 
 ### App layer — domain vs UI
 

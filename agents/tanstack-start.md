@@ -85,5 +85,5 @@ component: FooPage,
 - **Route-specific server helpers** live next to the route: `routes/post.$.server.ts` is the companion to `routes/post.$.tsx`.
 - **Cross-route shared server helpers** live in `lib/*.server.ts`.
 - **Function names inside `.server.ts`** are plain action verbs — `loadArticle`, `loadManifest`, `parseSource`. No prefix/suffix to mark them server-only; the file extension already does.
-- **Types shared between client and server live in a non-`.server.ts` file.** Functions in `lib/x.server.ts`, types in `lib/x.ts`. Client components import types via `import type` from the type file.
+- **Types shared between client and server live in a non-`.server.ts` file.** Functions in `lib/x.server.ts`, types in `lib/x.ts`. Client components import types via `import type` from the type file. Domain/content types live in the shared `.ts` type file and are imported. A UI `?:`-optional Props type is declared in the component file (per [[react]]) and derived from the domain type; never re-declared in the shared file.
 - **If a type must stay in a `.server.ts`** (rare), client imports it via `import type` only — erased at build, no runtime leak.

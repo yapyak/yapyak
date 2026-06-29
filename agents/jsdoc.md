@@ -38,7 +38,7 @@ If implementation cannot be read end-to-end, the JSDoc stops at what the signatu
 4.  Apply Acronyms table to the formula's filled slots.
 5.  Write summary using the formula (≤ 100 chars, period, 3rd-person indicative).
 6.  Add second sentence ONLY if the name is opaque per the trigger list.
-7.  Add @remarks ONLY if actionable nuance exists. Otherwise omit.
+7.  Add @remarks ONLY if the Triple test (§ @remarks) passes. Otherwise omit.
 8.  List @typeParam tags (alphabetical).
 9.  List @param tags in signature order — names match exactly, hyphen separator.
 10. Add @defaultValue (properties only).
@@ -100,7 +100,7 @@ Empty lines separate the summary, `@remarks`, and each tag block. Inside a tag g
 - **3rd-person indicative.** Descriptions describe what the symbol *is* or *does*. Never imperative directions to the reader.
 - **Present tense, active voice.** No future ("will"), no passive.
 - **No second-person pronouns.** Never "your", "yours", "you". Use article + noun.
-- **No arbitrary domain elaboration in summaries.** Summary must be derivable from the symbol's name + category + immediate type signature alone. Product-name detail goes in `@remarks`.
+- **No arbitrary domain elaboration in summaries.** The summary is the category-formula output and nothing more — no product-specific detail beyond what the name + category + signature already carry. Deeper (verified) detail goes in `@remarks`, never the summary.
 
   - ✗ "Creates a translator backed by the OpenAI Chat Completions API."
   - ✓ "Creates an OpenAI translator."
@@ -146,7 +146,7 @@ Apply the decision tree top-down. First match wins.
 | Return type `x is T` | Type guard | "Type guard — narrows [X] to [T] when [condition]." |
 | Name `use*`, returns hook value | Hook | "[Verb-phrase action of the hook]." |
 | Name PascalCase, returns JSX/ReactElement | Component | "Renders [what]." |
-| Name `create*` / `make*`, returns new instance | Factory | "Creates a [T] [minimal-context]." |
+| Name `create*` / `make*` AND **not** a provider identifier, returns new instance | Factory | "Creates a [T] [minimal-context]." |
 | Name is a brand / provider / source identifier (lowercase function), returns T | Provider factory | "Creates [an\|a] [CapitalizedName] [T]." |
 | Name `find*` / `lookup*`, returns `T \| undefined` | Finder | "Finds [what] by [key]. Returns `undefined` if [condition]." |
 | Name `parse*` | Parser | "Parses [input] into [output]." |
@@ -159,6 +159,10 @@ Apply the decision tree top-down. First match wins.
 | Const named `middleware` / `handle` / `integration` with host-framework type | Host integration | "[Capitalized symbol-name] for [package identifier]. Provides yapyak's per-request locale context." |
 | Const exported as a framework-specific reactive primitive | Reactive binding | "Reactive [identifier] [binding-kind]." |
 | Otherwise (returns derived value, noun-named) | Getter | "The [thing]." |
+
+`provider identifier` = an Identifier in the [Package identifier and role table](#package-identifier-and-role-table) whose role is `translator`.
+
+`host-framework type` = a type imported from a framework in `neverBundle` (`react` / `vue` / `svelte` / `@sveltejs/kit` / `vite`) or a `peerDependencies` framework.
 
 #### Action verb list
 
@@ -206,7 +210,7 @@ Suffix-driven, matches the type suffix vocabulary in [[naming]].
 | `*Tag` / `*Kind` | "Discriminator for [union type]." |
 | `*Props` | "Props for {@link Component}." |
 
-For inline-union types (no name), put the JSDoc on the field that holds the union per [[types]] § Union types — inline vs named.
+For inline-union types (no name), put the JSDoc on the field that holds the union per [[types]] § Union types — inline vs named. When 2+ fields hold the same inline union, each field holding the inline union carries its own field-level JSDoc; there is no shared union doc.
 
 ### Type / interface — deterministic first sentence
 
@@ -220,7 +224,10 @@ When no suffix formula applies:
      - Name ends with discriminator suffix: `Level`, `Mode`, `Kind`, `Type`, `Tag`, `Group`.
      - Name is a generic placeholder used standalone: `Result`, `Config`, `State`, `Context` without contextual prefix.
      - Name resolves to ≤ 1 substantive word after PascalCase split.
-   - **Second sentence — OPTIONAL otherwise.** Omit unless an actionable behavior-clause genuinely adds information.
+
+       substantive word = a token after PascalCase + acronym split, excluding the known suffix words (`Options`, `Config`, `State`, `Context`, `Result`, `Input`, `Data`); each acronym counts as one word.
+
+   - **Second sentence — OPTIONAL otherwise.** Write the optional second sentence iff it passes the Triple test (§ @remarks). Otherwise omit.
    - **Second sentence form:** single sentence, verb-driven (`Determines …`, `Holds …`, `Wraps …`, `Carries …`, `Lists …`, `Maps …`), period at end.
 
 ```ts
@@ -248,7 +255,7 @@ export type Translator = (request: TranslateRequest) => Promise<string>;
 - PascalCase → spaced lowercase: `ContextLevel` → "context level".
 - Acronyms preserved per Acronym table: `APIKeyConfig` → "API key config".
 - Verb-formed nouns kept as-is: `TranslateItem` → "translate item".
-- First article is always `The` (except `*Entry` / `*Item` which use `A`/`An`).
+- First article is always `The` (except `*Entry` / `*Item` which use `A`/`An`). Use `An` before a name whose first token starts with a vowel sound — initials `A, E, F, H, I, L, M, N, O, R, S, X`, or a lowercase `a/e/i/o/u`; else `A`.
 
 ### `@param` rules
 
@@ -432,8 +439,8 @@ Outside the formula-slot set, links never appear inside description prose.
 
 **Multiple `@see`** — each on its own line:
 
-1. External links first, alphabetically by displayed label.
-2. Internal links second, alphabetically by displayed label.
+1. Internal `{@link}` links first, alphabetically by displayed label.
+2. External URL links second, alphabetically by displayed label.
 
 External = absolute URL (`http://` or `https://`). The two groups never interleave.
 
@@ -652,12 +659,16 @@ When the same conceptual symbol exists in multiple framework packages (`RichText
 
 ### `@example`
 
-- **Required for:** hooks, factories with non-trivial flow, provider factories, async functions, type guards with non-trivial narrowing, builders, callbacks-as-args.
+- **Required for:** hooks, factories with non-trivial flow, provider factories, async functions, type guards with non-trivial narrowing, builders, callbacks-as-args — UNLESS no runnable, non-fabricated example exists, in which case omit it (Prime Directive 1 wins).
+
+  - non-trivial flow = the factory reads ≥1 option field to branch, OR returns an object with ≥2 methods (trivial = a single `new`/closure, no branching).
+  - type-guard non-trivial = narrows to a union member or a generic (trivial = narrows a primitive).
+  - builder = a Factory whose returned instance exposes chainable methods; callback-as-arg = a function whose signature includes a callback/`fn` parameter.
 - **Optional for:** predicates, simple converters, getters, components with obvious props.
 - **Code must be runnable.**
 - **No trailing commas.** Mechanical: if the next non-whitespace character is `}`, `]`, or `)`, the preceding comma is trailing → remove it. Applies to every example block.
 - **Always include imports.** Every `@example` ships the necessary `import` statements.
-- **Parallel import forms.** When showing the project's symbol alongside a placeholder for a sibling symbol, both imports use the same form.
+- **Parallel import forms.** When showing the project's symbol alongside a placeholder for a sibling symbol, both imports use the same form. Both use the named-import-with-alias form (`import { middleware as <role>Middleware } from '...'`), matching the form the package actually exports.
 
   ```ts
   import { middleware as yapyakMiddleware } from 'yapyak/adapter/astro';
@@ -680,7 +691,7 @@ When the same conceptual symbol exists in multiple framework packages (`RichText
   | JSON | `json` |
   | Shell / pnpm / npm / bash | `shell` |
 
-- **Title format:** verb-phrase use case (`Per-request locale in TanStack Start`). Omit title for a single trivial example.
+- **Title format:** verb-phrase use case (`Per-request locale in TanStack Start`). The first block never has a title (§ First example); every subsequent block has one.
 - **Titles are plain text** — no markdown, no backticks, no HTML/JSX, no braces. Code, tag names, identifiers belong inside the code block.
 
   Forbidden in titles:
@@ -709,7 +720,7 @@ When the same conceptual symbol exists in multiple framework packages (`RichText
  */
 ```
 
-Multiple `@example` blocks order: lowest argument count first → increasing complexity → framework-specific last.
+Multiple `@example` blocks order: sort `@example` blocks by argument count ascending; ties by line count ascending; framework-specific blocks last.
 
 #### Inline comments inside example code — closed vocabulary
 
@@ -760,6 +771,8 @@ Cap at 3. More than 3 signals the symbol has too many modes.
 
 **Exception:** an umbrella symbol with structurally distinct call forms (positional vs object args, sync vs async, chained variants) may have one block per call form, capped at 5.
 
+umbrella symbol = a symbol whose documented members render as their own pages (e.g. `format.number`, `t.in`), OR a single export with ≥2 structurally distinct call signatures. All others cap at 3.
+
 #### First example — no title, simplest form
 
 The first `@example` block of any symbol has no title and shows the simplest possible invocation. Subsequent blocks carry verb-phrase titles.
@@ -775,11 +788,7 @@ Across all `@example` blocks for the same symbol, the same concept uses the same
 
 #### Composition examples
 
-Composition / "use with other things" examples are justified only when:
-
-1. The composition mechanism is non-obvious, AND
-2. The composition has a canonical pattern the consumer is expected to follow, AND
-3. There is no plain-language way to convey it in `@remarks` alone.
+Include a composition `@example` iff the composition requires a specific ordering or a wrapper call that the type signature does not enforce. Otherwise omit.
 
 If composition reduces to "add to the array" or "spread into the config", drop the example.
 
@@ -854,7 +863,7 @@ The root `yapyak` package summary is hand-authored.
 |---|---|
 | Adjectives | `basic`, `core`, `low-level`, `main`, `reactive`, `shared`, `simple` |
 | Filler nouns | `binding`, `entry`, `entry point`, `helpers`, `primitives`, `runtime`, `toolkit` |
-| Marketing verbs | `Enables`, `Exposes`, `Powers`, `Provides`, `Wraps` |
+| Marketing verbs (applies to `@packageDocumentation` package summaries only) | `Enables`, `Exposes`, `Powers`, `Provides`, `Wraps` |
 | Cross-references | `{@link}` — covered by the Exports table |
 | Listing | Enumerating exports |
 
@@ -934,7 +943,7 @@ Pick from this catalog rather than inventing.
 | Side effect notice | "Notifies [subscribers]." |
 | Same as another symbol | "Equivalent to {@link X}." |
 
-If no row fits, write the most boring possible declarative sentence.
+If no row fits, apply the Getter formula `The [thing].` where `[thing]` is the name as a noun phrase.
 
 ### Pre-publish audit
 
@@ -948,7 +957,7 @@ Grouped by category. Each row points back to the section that defines the rule.
 | **`@param`** | Signature order, names match exactly, hyphen separator, no types, every parameter described. Boolean fields use the state/behavior shape. |
 | **Field order** | Type fields alphabetical. Discriminator first per union variant. Signature parameters keep signature order. |
 | **`@returns`** | None. Banned. |
-| **`@example`** | Present for required categories. Imports included. Language identifier is most specific (`tsx`/`ts`/`vue`/`svelte`). Title-less first block, simplest invocation. ≤ 3 blocks (≤ 5 for umbrella). One scenario per block. Only `// output:` / `// error:` / `// ok:` / `// ...` comments. Yak Pool identifiers. Runnable. |
+| **`@example`** | Present for required categories (unless Prime Directive 1 forces omission — no non-fabricated example). Imports included. Language identifier is most specific (`tsx`/`ts`/`vue`/`svelte`). Title-less first block, simplest invocation. ≤ 3 blocks (≤ 5 for umbrella). One scenario per block. Only `// output:` / `// error:` / `// ok:` / `// ...` comments. Yak Pool identifiers. Runnable. |
 | **`{@link}` / `@see`** | No link to a target already structurally linked. Inline `{@link}` only in formula-slots. Peer-pair symmetric. Target-family auto-applied on types. `@see` external URLs after in-project. No manual parent/sibling `@see`. |
 | **`@throws`** | One per non-trivial exception type, `when [condition]`. |
 | **`@typeParam`** | One per type parameter, alphabetical. |

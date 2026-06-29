@@ -2,7 +2,7 @@
 
 ### Components
 
-- Props type is an exported `type` in the same file: `export type ComponentNameProps = { ... }`. Always `type` for React props.
+- Props type is an exported `type` extending `BoxProps<T>` in the same file: `export type ComponentNameProps = BoxProps<T> & { ... }` (see [[box]]). Always `type`; a standalone object type only for the raw-SVG leaf exception.
 - Props are destructured on the first line of the function body, not in the signature.
 - Blank line between destructuring and the rest of the function body.
 - Defaults are set in the destructuring assignment.
@@ -11,19 +11,20 @@
 **Exception:** `interface` for Props only when declaration merging is required.
 
 ```tsx
-export type ButtonProps = {
-  className?: string;
-  isDisabled?: boolean;
+export type ButtonProps = BoxProps<'button'> & {
+  disabled?: boolean;
 };
 
 export function Button(props: ButtonProps) {
-  const { className, isDisabled, ...restProps } = props;
+  const { className, disabled, ...restProps } = props;
 
   return (
-    <button
+    <Box
       {...restProps}
-      className={["Button", className].filter(Boolean).join(" ")}
-      disabled={isDisabled}
+      as="button"
+      className={[styles.Button, className]}
+      data-disabled={disabled}
+      disabled={disabled}
     />
   );
 }
@@ -95,9 +96,9 @@ The plural is encoded in the element type (`List`, `Stack`, `Section`, `Grid`), 
 
 ### Component suffix matches its root element
 
-A component's name ends with the name of its root JSX element: `SortIcon` renders `<Icon>`, `RateRow` renders `<tr>`, `ClientPickList` renders `<ul>`.
+A component's name ends with the name of its root JSX element: `ChevronIcon` renders `<Icon>`, `ReferenceRow` renders `<tr>`, `OptionPickList` renders `<ul>`.
 
-**Exception:** components whose root is `*Base`, `Box`, or `Icon` carry no element-derived suffix. An `Icon`-based component takes the icon's own name (`ChevronIcon` → `Chevron`, `SortIcon` → `Sort`) — mechanical. A `Box`/`*Base`-based one takes the layout noun it coins (`Stack`, `Section`) — the one coined name, still bound by the suffix rules.
+**Exception:** components whose root is `*Base`, `Box`, or `Icon` carry no element-derived suffix. An `Icon`-based component takes the icon's own name (`ChevronIcon` → `Chevron`, `CopyIcon` → `Copy`) — mechanical. A `Box`/`*Base`-based one: the coined noun MUST be an ElementType from [[css]]'s group/layout vocabulary, selected by DOM shape (column→`Stack`, row→`Row`, grid→`Grid`, landmark→`Section`).
 
 ### Component architecture
 
@@ -162,11 +163,10 @@ A JSX block becomes a component if at least one trigger fires. Size is NOT a tri
 ```
 ☐ T1  Wraps <Outlet />
 ☐ T2  Rendered at 2+ call sites
-☐ T3  Owns a defineTranslation
-☐ T4  Owns hardcoded route links (to="...")
-☐ T5  Owns its own hooks (useState, useEffect, useMutation)
-☐ T6  Branches on a domain enum
-☐ T7  Is a structural sub-region of a Layout or Detail (compound slot)
+☐ T3  Owns hardcoded route links (to="...")
+☐ T4  Owns its own hooks (useState, useEffect)
+☐ T5  Branches on a domain enum
+☐ T6  Is a structural sub-region of a Layout or Detail (compound slot)
 ```
 
 No triggers fire → inline.
@@ -177,7 +177,7 @@ No triggers fire → inline.
 | --- | --- |
 | T1 + master-detail / workspace shell | LAYOUT |
 | T1 + instance shell | DETAIL |
-| T7 (structural slot, no domain logic) | COMPOUND SLOT |
+| T6 (structural slot, no domain logic) | COMPOUND SLOT |
 | Any other trigger | DOMAIN COMPONENT |
 
 #### Step 3: Pick suffix from closed vocabulary
@@ -194,19 +194,15 @@ ROUTE SHELLS (wrap <Outlet />)
 INSTANCE VIEWS
   Summary             <dl> of fields (read-only)
   Card                bordered preview block
-  Form                input form (create/edit)
 
 COLLECTION VIEWS
   Table               <table>
-  BrowseList          <ul> of navigation links
   PickList            <ul> of selectable rows
   List                generic <ul>
   Row                 single row
 
 CHROME
   Navigation          set of route-links (tabs, side-nav)
-  BulkActionsBar      actions on multi-selection
-  BrowseActionsBar    actions in browse-mode
   ActionsBar          generic actions strip
 
 ATOMIC
@@ -214,7 +210,6 @@ ATOMIC
   SearchInput         wrapped search input
   Input               wrapped generic input
   EmptyMessage        empty state
-  Avatar              profile picture
 ```
 
 **Slot vocabulary (COMPOUND SLOTS):**
@@ -239,15 +234,14 @@ HEADER SUB-SLOTS
 
 #### Step 4: Compose
 
-- **Standalone domain component:** `[Resource][Element]` (`ClientSummary`, `ClientPickList`).
-- **Compound slot:** `[Parent][Slot]` via dot notation (`ClientDetail.Header`).
-- **Layout/Detail:** `[Resource][Layout|Detail]` (`ClientLayout`, `ClientDetail`).
+- **Standalone domain component:** `[Resource][Element]` (`OptionPickList`, `ReferenceTable`).
+- **Compound slot:** `[Parent][Slot]` via dot notation (`GuideDetail.Header`).
+- **Layout/Detail:** `[Resource][Layout|Detail]` (`GuideLayout`, `GuideDetail`).
 
 #### Compound slot vs standalone — the test
 
 A sub-component is `Parent.Slot` if and only if it is a pure layout shell:
 
-- No `defineTranslation`
 - No hardcoded `to=` route links
 - No hooks
 - No domain switch/if
@@ -401,16 +395,16 @@ function ActionButton(props: { action: Action }) {
 
 ### Extending component props
 
-Always extend the underlying component's prop type (`BoxProps`, `PickListProps`). Never re-declare props that are already inherited — most HTML attributes (`aria-*`, `role`, `id`, `className`, `style`) live on the base prop type.
+Always extend the underlying component's prop type (`BoxProps`, `OptionPickListProps`). Never re-declare props that are already inherited — most HTML attributes (`aria-*`, `role`, `id`, `className`, `style`) live on the base prop type.
 
 ```ts
 // ✗
-type MyComponentProps = Omit<PickListProps, "aria-label" | "children"> & {
+type MyComponentProps = Omit<OptionPickListProps, "aria-label" | "children"> & {
   "aria-label"?: string;
 };
 
 // ✓
-type MyComponentProps = Omit<PickListProps, "children"> & { /* ... */ };
+type MyComponentProps = Omit<OptionPickListProps, "children"> & { /* ... */ };
 ```
 
 ### Root attributes belong to the root
@@ -486,10 +480,7 @@ const targetElement = document.getElementById(id);
 
 ### Variable extraction discipline
 
-Never extract a variable used exactly once. Inline the expression. Exceptions:
-
-- The name documents non-obvious intent.
-- The extraction is required by another rule (e.g. null-check before use).
+Never extract a variable used exactly once. Inline the expression. Extract a single-use value only when (a) a later rule requires a null-check before use, or (b) the expression contains a function call whose result isn't named by an adjacent literal. Otherwise inline.
 
 Values derived from the root element are named after what they return:
 

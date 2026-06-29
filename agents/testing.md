@@ -19,6 +19,9 @@ Apply in order. First match wins.
 
 5. File has ≥8 conditional keywords total?
    → MUST test entry points. Safety net for hidden logic.
+   (entry points = every exported symbol in the file; conditional
+    keywords = the same keywords counted in 'Counting code paths',
+    summed across all functions in the file.)
 
 6. Otherwise:
    → NO test. Tested through single consumer.
@@ -47,6 +50,8 @@ Code paths = 1 + count of branching keywords in the function body.
 Count: `if`, `else if`, `?:`, `case` (each branch), `&&` / `||` / `??` returning different value.
 
 Do NOT count: `else`, `switch` keyword itself, `try/catch` (counts as 1 extra path), pure boolean `&&`/`||`, optional chains `?.`.
+
+Syntactic test for `&&`/`||`/`??`: count it iff its result is assigned, returned, or passed as an argument (value position). Do NOT count it when it is the whole condition of an `if`/`while`/ternary or is coerced to boolean (`!`, `Boolean()`, `if (a && b)`).
 
 ```ts
 function resolve(opts?: Options): string {      // 4 paths (1 + 3 if)
@@ -85,7 +90,7 @@ describe('isPlainObject', () => {
 });
 ```
 
-`it` naming: `'returns true when <condition>'` / `'returns false when <condition>'`. Shortcut to `'returns true for <input>'` when condition is obvious.
+`it` naming: `'returns true when <condition>'` / `'returns false when <condition>'`. Use `'returns true for <input>'` when the truth is fully determined by a single literal argument. Use `'returns true when <condition>'` when truth depends on relationships between multiple args or external state.
 
 #### Pure
 
@@ -135,6 +140,10 @@ Exactly 2 tests — found + not found.
 
 1 test per output variant. No edge cases unless the signature signals them.
 
+Output variant = each distinct return type/shape the function can produce (e.g. string vs null), not each distinct value. For value variety use the 'Edge cases from signature' table.
+
+The 'Edge cases from signature' table is mandatory for every category, Converter included. 'No edge cases unless the signature signals them' means: add none BEYOND those the signature table requires.
+
 `it` naming: `'builds <output> from <input>'`, `'parses <input> to <output>'`, `'formats <input> as <output>'`.
 
 #### Configurable
@@ -142,7 +151,7 @@ Exactly 2 tests — found + not found.
 Exactly 2 `describe` sub-blocks: `with defaults` and `with overrides`.
 
 - `with defaults` — call with only required args. Assert every default explicitly.
-- `with overrides` — call with every accepted option set to a non-default. Assert each individually.
+- `with overrides` — call with every accepted option set to a non-default. Assert each individually. If an option has no non-default value, assert it in the defaults test only and note it has no override.
 
 ### Edge cases from signature
 
@@ -364,7 +373,7 @@ A function gets property tests if all four hold:
 1. **Pure** — input → output, no side effects.
 2. **Large input domain** — strings, numbers, AST trees, arbitrary records.
 3. **Clear invariant** — `f(f(x)) === f(x)`, `interpret(parse(s), p) === expected`.
-4. **Core correctness** — bugs ship to users.
+4. **Gated** — the function is in the closed 'Where it lives' list, OR the PR names a never-before-tested invariant.
 
 #### Where it lives (closed list)
 
@@ -476,7 +485,7 @@ Always add `afterEach(() => vi.unstubAllGlobals())` when using `stubGlobal`. Stu
 
 #### Helper functions for shared setup
 
-When 3+ tests share complex setup, extract a helper.
+When 3+ tests share setup of 2+ statements, extract a helper. A single shared statement stays inline.
 
 ### `beforeEach` / `afterEach`
 
@@ -519,7 +528,7 @@ Snapshots are allowed only in:
 
 ### Fixture data
 
-Inline literal values for everything that fits in one screen.
+Inline fixtures up to 20 lines. At 21+ lines, move to a `fixtures/` sibling file.
 
 For larger fixtures (compiler tests with source-code samples), put them in a `fixtures/` sibling folder, one file per fixture. Reference by path, not by import — the fixture content is treated as raw text.
 

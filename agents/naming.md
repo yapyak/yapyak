@@ -14,6 +14,7 @@ Filename derives from the primary export through a deterministic algorithm. No c
 
 ```
 ALGORITHM:
+  0. If the file is in `utils/`, filename = kebab-case(primary export name) verbatim — skip steps 2–6 (no verb-drop, no singularize). A concept name is equally valid; see § `utils/` and `helpers/`.
   1. Kebab-case the primary export name.
   2. Drop the FIRST segment (the verb — always, no list lookup).
   3. While first remaining segment is in PREPOSITION list, drop it.
@@ -43,13 +44,13 @@ HOST-INTEGRATION FILENAMES (4):
   plugin, middleware, handle, integration
 ```
 
-Modifiers describe position/quantity/relation. They are NOT subtypes. `internal` (subtype) is kept; `first` (position) is dropped.
+Step 4 drops a leading segment **iff it is literally in the MODIFIER closed list** — never by judging meaning. (`internal` is not in the list → kept; `first` is → dropped.)
 
 **Singularize rules:**
 
-- Trailing `s` → drop (`pages` → `page`)
+- Trailing `s` → drop (`pages` → `page`). Skip singularization when the trailing segment ends in `ss`, or is in this closed exception list: `status`, `address`, `process`, `bias`, `lens`, `series`, `news`, `props`.
 - Trailing `ies` → `y` (`entries` → `entry`)
-- Trailing `es` after sibilants → drop `es` (`boxes` → `box`)
+- Trailing `es` after sibilants → drop `es` only when the stem ends in `s`, `x`, `z`, `ch`, or `sh`; otherwise apply the trailing-`s` rule (`boxes` → `box`)
 - Irregulars per the closed list
 
 **Worked examples:**
@@ -200,13 +201,13 @@ Banned in **library code** (published `packages/*`). Every utility has a concept
 | Situation | Correct response |
 | --- | --- |
 | 1 utility, 1 consumer | Inline at consumer |
-| 1 utility, 2+ consumers | Concept-named file (`pluralize.ts`) |
+| 1 utility, 2+ consumers | Own file — concept name or full function name (`pluralize.ts`, `merge-refs.ts`) |
 | Multiple unrelated utilities | Split into concept files |
 | Multiple tightly-related utilities | Merge into concept file (`string-format.ts`) |
 
 **App-code exception.** Private app packages MAY keep a single top-level `src/utils/` for **pure, domain-agnostic** helpers (the `lib/` vs `utils/` split lives in [[modules]] § `lib/` vs `utils/` in apps). Domain-aware code goes in `lib/`, never `utils/`. `helpers/` stays banned everywhere, library and app alike.
 
-A `utils/` helper takes its **function's** name, so a plural function name gives a plural filename: `mergeRefs` → `merge-refs.ts`, `normalizeProps` → `normalize-props.ts`. Operation names, not domain concepts — the singular rule does not apply.
+A single-function `utils/` file is named after **either** its concept (`pluralize.ts`) **or** its full function name — kebab-cased with no verb-drop and no singularization (`mergeRefs` → `merge-refs.ts`, `normalizeProps` → `normalize-props.ts`). The general filename algorithm's stripping and singularizing never apply in `utils/`.
 
 ### Type suffix vocabulary
 
@@ -217,7 +218,7 @@ Closed list. Extend before coining.
 | `*Options` | Pure object bundle of fields, used as input. Paired with `options` parameter. | `CookieOptions` |
 | `*Input` | Bundle of inputs to an internal helper. Paired with `input`. | `ApplyOrphanMutationsInput` |
 | `*Config` | User configuration. Disk-loaded file shape OR a union with strategy shortcuts. Paired with `config`. | `YapyakConfig`, `PersistenceConfig` |
-| `*Result` | Return value of a non-trivial action/computation | `ExtractFileResult` |
+| `*Result` | Return of a computation: an object with 2+ fields OR a `changed`/status flag (never a single scalar or single domain object) | `ExtractFileResult` |
 | `*Entry` | A single key-value pair in a collection/map | `CacheEntry` |
 | `*Item` | A single element in an ordered sequence | `TranslateItem` |
 | `*Context` | Bundle of state passed through a flow | `MessageContext` |
@@ -249,7 +250,7 @@ Apply top-down. First match wins. No two questions can both apply.
 | Q2 | Is the type a union including shorthand alternatives (strings, primitives, `null`)? | `*Config` |
 | Q3 | Does the type match a domain suffix (`*Context`, `*Data`, `*Entry`, `*Item`, `*Stats`, `*Position`, `*Site`, `*Range`, `*Pattern`, `*Level`, `*Tree`, `*Accessor`, `*Conflict`)? | the matching domain suffix |
 | Q4 | Is the type a custom error class (extends `Error`)? | `*Error` |
-| Q5 | Is the type the return value of a non-trivial action/computation function? | `*Result` |
+| Q5 | Is the type the return of a computation — an object with 2+ fields or a `changed`/status flag (not a single scalar or domain object)? | `*Result` |
 | Q6 | Is the type the return value of a React hook? | `*Return` |
 | Q7 | Is the type a callable/function type? | `*Fn` |
 | Q8 | Is the type a function's parameters tuple? | `*Params` |
@@ -308,7 +309,7 @@ The name describes what the value holds. When a value's type carries a suffix, t
 | --- | --- | --- |
 | `Persistence` | `persistence` | `PERSISTENCE` |
 | `PersistenceConfig` | `persistenceConfig` | `PERSISTENCE_CONFIG` |
-| `NormalizedPersistenceConfig` | `normalizedPersistenceConfig` (or `persistenceConfig` if context disambiguates) | `PERSISTENCE_CONFIG` |
+| `NormalizedPersistenceConfig` | `normalizedPersistenceConfig` (drop a participle prefix like `normalized` only when an identically-named binding without it is already in scope in the same function body) | `PERSISTENCE_CONFIG` |
 | `Translator` | `translator` | `TRANSLATOR` |
 | `TranslatorOptions` | `translatorOptions` | — |
 
@@ -499,7 +500,7 @@ blockToText(block): string
 rangeFromOffsets(start, end): Range
 ```
 
-Avoid for simple conversions where the source is obvious — `toDate(value)` beats `valueToDate(value)`.
+Use the bare `to*`/`from*` prefix when the source value is the function's sole parameter (`toDate(value)`). Use the `*To*`/`*From*` form when there are 2+ parameters (`rangeFromOffsets(start, end)`).
 
 #### Well-known utility verbs
 
@@ -510,7 +511,7 @@ slugify(text): string       // Lodash, GitHub Pages
 debounce(fn, ms): function  // Lodash, RxJS
 ```
 
-Test: would a TypeScript developer recognize this verb from `lodash`, `remeda`, `rxjs`? If yes — allowed.
+Test: allowed iff the verb is an exported function name in `lodash`, `remeda`, or `rxjs` (verifiable in their published API). Extend the project's verb-prefix list before coining a verb that isn't.
 
 #### Factory-by-name pattern
 
@@ -681,7 +682,7 @@ function handleAttributeNode(node: AttributeNode): void { ... }
 function resolveCallSite(site: CallSite): ResolvedSite { ... }
 ```
 
-**Callable types drop `Fn`.** A value held in a **named** `*Fn` type is `camelCase(TypeName)` minus the trailing `Fn`: `WarnFn` → `warn`, `ParseFragmentsFn` → `parseFragments` — never `warnFn` (the `Fn` marks the *type*, not the value). A **roleless generic** function — the wrapped callback in a `memoize`/`once`-style helper, `(...) => T` with no concept — is `callback`, or `fn`: `function` is a reserved word, so the short form is the [[#no-abbreviations]] reserved-spelling exception. That exception is what makes `fn` legal and nothing else: a generic string/number/object value names its type **in full** (`string`, `number`, `object`, `value`), never `str`/`num`/`obj`, because those words are legal identifiers.
+**Callable types drop `Fn`.** A value held in a **named** `*Fn` type is `camelCase(TypeName)` minus the trailing `Fn`: `WarnFn` → `warn`, `ParseFragmentsFn` → `parseFragments` — never `warnFn` (the `Fn` marks the *type*, not the value). A **roleless generic** function — the wrapped callback in a `memoize`/`once`-style helper, `(...) => T` with no concept — defaults to `callback`; use `fn` only when `callback` already names another binding in scope. `function` is a reserved word, so the short form `fn` is the [[#no-abbreviations]] reserved-spelling exception. That exception is what makes `fn` legal and nothing else: a generic string/number/object value names its type **in full** (`string`, `number`, `object`, `value`), never `str`/`num`/`obj`, because those words are legal identifiers.
 
 ### Discriminator fields — `type` vs `kind`
 

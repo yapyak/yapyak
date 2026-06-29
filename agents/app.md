@@ -21,9 +21,7 @@ export function Button(props: ButtonProps): ReactElement {
 
 **Annotate only when required:**
 
-- The function returns multiple unrelated branches that TS infers too loosely
-- A specific generic signature can't otherwise be expressed
-- The inferred type leaks an internal type alias that shouldn't be public
+Annotate the return type only when one holds: (a) omitting it produces a TypeScript error at a call site; (b) the inferred type is a union wider than the function's contract (includes a branch callers must not receive); (c) the function is generic and inference does not preserve the type-parameter relation in the return. Otherwise — if it compiles and callers are satisfied — do not annotate.
 
 ### Domain vs UI — `null` vs `undefined`
 

@@ -10,7 +10,7 @@ Classify the package itself before applying the symbol-level model.
 | **Internal** | Transitively installed via other packages. Consumed by sibling packages. | No | No | No — the package itself is the boundary | No |
 | **Workspace-private** | `"private": true`. Not published. | No | No | No | No |
 
-An internal package does not need a `/internal` subpath — the whole package IS the boundary. Adding `/internal` to an already-internal package is ceremony.
+An internal package does not need a `/internal` subpath — the whole package IS the boundary. An internal package MUST NOT declare a `/internal` subpath. If one exists, remove it.
 
 **JSDoc exception for re-exported types:** if an internal package defines a type that a public package re-exports to end users (e.g. `YapyakConfig` from `@yapyak/config` re-exported by `@yapyak/vite/config`), JSDoc on that type stays.
 
@@ -25,11 +25,11 @@ An internal package does not need a `/internal` subpath — the whole package IS
 
 ### Default to NOT exposing
 
-Adding a public export later is non-breaking; removing one is breaking. Err on the side of internal.
+Adding a public export later is non-breaking; removing one is breaking. Default private. Promote to public only when a Consumption / Annotation / Extension example exists (see the test below).
 
 ### The "would a realistic user type this name" test
 
-Before promoting a symbol to public, construct a concrete usage example. If none exists, keep it internal.
+A symbol is public iff a concrete example exists in at least one of these three categories: Consumption, Annotation, Extension. No other example justifies promotion.
 
 A symbol is legitimately public if it serves at least one:
 

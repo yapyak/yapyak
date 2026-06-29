@@ -39,7 +39,7 @@ A file stays together regardless of size when ALL hold:
 1. One public entry point drives all other symbols.
 2. Sub-functions operate on the same input/output types.
 3. No external consumers of helpers.
-4. Top-to-bottom is the natural reading order.
+4. Every helper is called (directly or transitively) only by the single public entry point.
 
 ### Pre-split checklist
 
@@ -68,7 +68,7 @@ Folder names are singular: `adapter/`, `locale/`, `runtime/`. Plural only for pe
 
 #### When to split into sub-folders
 
-- 5+ files AND they fall into clear sub-concepts → sub-folder per sub-concept.
+- Create a sub-folder only when the folder has 5+ files AND 2+ of them resolve (per the naming algorithm) to names sharing a common leading domain segment; the sub-folder is named after that segment.
 - Otherwise, stay flat.
 
 ### `index.ts` is always a barrel
@@ -163,7 +163,7 @@ Private app packages get exactly **one** top-level `src/utils/` and **one** top-
 - Yes → `utils/` (`merge-class-names.ts`, `merge-refs.ts`, `format-currency.ts`)
 - No → `lib/` (anything importing `@yapyak/*`, a generated type, or app-specific content)
 
-A file that imports from a project package but is otherwise generic still goes in `lib/` — the import is the domain coupling. When in doubt, `lib/`.
+A file that imports from a project package but is otherwise generic still goes in `lib/` — the import is the domain coupling. If the lift test is ambiguous because the file has zero imports, it is domain-agnostic → `utils/`.
 
 ### Import statement order
 

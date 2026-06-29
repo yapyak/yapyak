@@ -51,7 +51,7 @@ Sequential. Append-only. Never reused.
 1. **Allocating a new code:** find the highest existing number in `codes.ts`, add one, append a new constant. Never insert between existing entries.
 2. **Retiring a code:** mark the constant `[RETIRED]` in its line comment and keep it in the file. **Do not delete. Do not reuse the number.**
 3. **Re-purposing an existing code is forbidden.** If meaning changes, retire the old one and allocate a new one.
-4. **A code describes exactly one state.** If two situations need different diagnostic context, allocate two codes.
+4. **A code describes exactly one state.** If two situations need different diagnostic context, allocate two codes. Two situations are the same state iff they share an identical fix sentence AND an identical observation template (placeholders aside). If either differs, allocate separate codes.
 
 ```ts
 // ✓ Right — sequential allocation, single-purpose
@@ -164,7 +164,7 @@ Every diagnostic message follows the same tone. No team-discretion.
 1. **No em-dashes (`—`).** Use period + sentence, or colon + clarifier.
 2. **Subject-first.** `Source "X" is empty.` not `There is an empty source "X".`
 3. **Present tense, indicative.** Not `will fail`, not `failed to`.
-4. **Two sentences exactly:** *what was observed* + *what to do about it*. No more, no less.
+4. **Observation + fix.** Without a `hint` field, `message` is exactly two sentences (*what was observed* + *what to do about it*). With a `hint` field, `message` is exactly one sentence (the observation) and `hint` is exactly one sentence (the fix) — see Diagnostic-object semantics. No more, no less.
 5. **Period ends every sentence.** Always.
 6. **No first-person, no apology, no please.** State facts. `setLocale ignored.` not `We've ignored your setLocale call, sorry.`
 7. **No hedging.** No `consider`, `might want to`, `perhaps`, `you should`. Use imperative: `Replace X with Y.`
@@ -322,7 +322,7 @@ For diagnostics where the fix is configuration or environment, not source code (
 ```md
 [1-2 sentences: what happened and why.]
 
-[1-2 sentences: how to fix, with link to relevant guide if applicable.]
+[How to fix. Include a guide link iff a `docs/content/guide/*.md` page covers the fix; format `[<guide title>](/guide/<slug>)`. Use 1 sentence when the fix is a single change, 2 when it needs a prerequisite + the change.]
 ```
 
 #### Universal body rules
@@ -330,6 +330,6 @@ For diagnostics where the fix is configuration or environment, not source code (
 1. **No em-dashes** (`—`). Use period + sentence or colon + clarifier.
 2. **Period after every full sentence.**
 3. **Code identifiers in backticks**: `` `t()` ``, `` `<link>` ``, `` `setLocale` ``.
-4. **`name` is Title Case**, 2-4 words: `No source`, `Tag unclosed`, `Catalog corrupt`.
+4. **`name` is Title Case**, 2-4 words: `No source`, `Tag unclosed`, `Catalog corrupt`. `name` is the Title-Case rendering of the event; if the event is one word, prepend the subsystem word (so `name` is always 2–4 words).
 5. **`summary` is present tense**, no trailing period, max 80 chars, does not repeat `name`.
 6. **One blank line** between body sections.

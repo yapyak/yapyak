@@ -45,13 +45,12 @@ Helpers never appear above the exported function they support.
 
 A union/object type only ever referenced from one public field is not a concept. Inline it.
 
-Inline the entire union on the field when ALL hold:
+Inline the entire union on the field when BOTH hold:
 
 1. Referenced from exactly one location in the public surface.
 2. Consumers have no realistic need to derive variants via `Extract<>` / `Pick<>`.
-3. No natural name exists.
 
-Otherwise extract a named type.
+Otherwise extract a named type. (The former third condition, "No natural name exists," is dropped: it has no mechanical test. Rely only on the two conditions above.)
 
 ```ts
 // ✓ Inline — single-use field shape, no natural name
@@ -156,7 +155,7 @@ type NormalizerOptions = {
 };
 ```
 
-If a feature "should" be on by default, the feature must be unconditional (no flag) — not a boolean opt-out.
+If you would otherwise write a `?? true` default for a flag, remove the flag and make the behavior unconditional instead. A boolean flag may only ever default to `false`.
 
 ### Argument shape — positional vs options
 

@@ -47,20 +47,7 @@ Same information, no personification, no marketing, no reassurance.
 
 ### Vocabulary
 
-These terms are locked. Don't substitute:
-
-| Use | Not |
-|---|---|
-| source string | source text, source message |
-| active locale | current locale, selected locale |
-| compile time | build time |
-| model | AI, LLM, AI model |
-| empty stub | missing entry, blank value, placeholder |
-| locale file | locale JSON, translations file |
-| save loop | yapyak-specific, keep as-is |
-| translator | the configured provider integration. Not a synonym for "model" |
-
-`per-request` is hyphenated as an adjective ("a per-request locale"), unhyphenated as an adverb ("scoped per request").
+Locked terms — canonical word + banned synonyms — live in [[terminology]]. Use them; never coin a synonym in prose.
 
 ### Output blocks
 
@@ -110,7 +97,7 @@ One thesis per section. If a section has two, split it.
   ```
 
   Never collapse to `{ "src/...": { "Key": "Value" } }`. Never flatten the path away. The single-property-collapse rule does NOT apply to locale files — every translation key gets its own line under its source-path key.
-- Prefer `ts` for API demonstrations. Use the framework-specific language (`tsx`, `vue`, `svelte`, `astro`) only when the example is a component.
+- Use `ts` for API demonstrations. Use the framework-specific language (`tsx`/`vue`/`svelte`/`astro`) if and only if the snippet renders as a component.
 - **Blank line between every top-level statement.** `const options = ...;` followed by `t('Choose one of {options}.', { options });` always has a blank line between them. Same for parallel declarations (`const claude = ...;` / `const gpt = ...;`). Same for repeated demo calls (`t('Save'); t('Save');`). The only exemption is consecutive `import`/`export` lines, which follow standard JS convention and stack without blanks.
 
 ### Comments inside code blocks
@@ -128,7 +115,7 @@ Everything else moves out. Specifically:
 - **Compile-output annotations** like `// becomes: 'Spara ändringar'` or `// catalog entry: _date(...)` — split into a second code block with `compiles to:` (or similar) prose between, or describe the result in a sentence after the input block.
 - **Variant labels** like `// Groq`, `// or with options:` — split into separate code blocks with a lead-in for each.
 - **Result outputs** like `// 'apple, pear, and orange'` or `// ['zh-Hant-TW', 'zh-Hant', 'zh']` — use a `// output:` marker (see "Output blocks" above).
-- **Placeholder ellipses** like `// ...your root layout here...` — usually means the example is incomplete; either show real code or refactor the example so the omitted parts aren't relevant.
+- **Placeholder ellipses** like `// ...your root layout here...` — delete every `// ...placeholder...` comment. If the omitted code is load-bearing, replace it with real code; otherwise restructure so it never appears. A code block contains only runnable lines.
 
 The principle: a comment in a code block must describe behavior of the code itself (what the type checker or runtime would say). If the comment is describing *the example* or *the docs reader's situation*, it's prose and belongs outside.
 
@@ -157,7 +144,7 @@ For a single forced branch with no alternatives, use `{% only group="…" value=
 
 ### Package-manager switching
 
-CLI invocations switch on `group="packageManager"` with `value="pnpm"|"npm"|"bun"`. Install commands (`pnpm add …`) are auto-detected and wrapped in this switch by the compiler — you usually don't write it by hand.
+CLI invocations switch on `group="packageManager"` with `value="pnpm"|"npm"|"bun"`. Never hand-write the package-manager switch around install commands — the compiler wraps `pnpm add …` automatically. Write it manually only for non-install CLI invocations (`pnpm yapyak add sv`).
 
 ### `{% diagnostics %}` for type-check examples
 
@@ -195,13 +182,13 @@ For a related pattern: if the only thing a section says is "here are the values 
 
 ### Inline option enums
 
-Avoid inline-comment enumerations like:
+Never write inline-comment enumerations (`// 'none' | 'cookie' | …`). For yapyak's own surface use a Field/Default/Description table; for `Intl` options link to MDN.
 
 ```ts
 persistence: 'none',   // 'none' | 'cookie' | 'url' | 'local-storage'
 ```
 
-For yapyak's own surface, use a table with `Field`, `Default`, `Description`. For `Intl` options, link to MDN. The inline-comment-as-documentation pattern collapses signal and is hard to scan.
+The inline-comment-as-documentation pattern collapses signal and is hard to scan.
 
 ### When refining text
 
@@ -323,7 +310,7 @@ The example is the explanation — but it should be a small *code block*, not en
 - ✓ Write a short code block showing `t('Save changes')` in context. Body prose stays clean.
 - ✗ *"Call `t()` with a `source` string and optional `params` for `{placeholder}` interpolation against the `Intl` primitives configured in `yapyak.config.ts`."* — every other word is in backticks. Show, don't sprinkle.
 
-Rule of thumb: if a sentence has 3+ inline `code` spans, replace it with a small code block.
+A sentence with 3 or more inline `code` spans must become a code block.
 
 #### Canonical examples
 
@@ -367,7 +354,7 @@ When the *call shape itself* differs per framework — `<RichText>` with render-
 
 When the call shape is identical JS that happens to sit inside a component (`t()`, `t.as()`, `t.in()`, `format.number()`, `parseRichText()`), the framework is just wrapping context for the call. A reader on Vue or Svelte understands the React snippet immediately because the only difference is the surrounding JSX. Repeating the same example three times dilutes the lesson and falsely signals "this is framework-specific."
 
-Default to React for the single example. Mention the line is identical in Vue and Svelte if it isn't obvious.
+Default to React for the single example. Never add an 'identical in Vue/Svelte' note — the framework-agnostic-API rule already implies it.
 
 **Order in the switch.**
 
@@ -538,24 +525,9 @@ For *every* concept, there is exactly **one** canonical home. Every other refere
 
 If a page explains a concept that has a canonical home elsewhere, the page is **wrong**. Cut the explanation, link instead.
 
-#### Terminology lock — yapyak terms
+#### Terminology lock
 
-| Concept | The word | Banned alternatives |
-|---|---|---|
-| The translation function | `t()` | `the translate function`, `the t helper` |
-| A configured `t()` invocation | **call site** | call location, invocation site, t() spot |
-| The user's source-language string | **source string** | source text, key, source key, English (when language-agnostic) |
-| The JSON files under `locales/` | **locale files** | translation files, i18n JSON, translation JSON, language files |
-| What the AI receives | **call-site context** | context payload, request context, translation hint |
-| What the Vite plugin produces | **inlined object** / **inlined variants** | compiled translations, baked translations, baked-in translations |
-| The configured AI providers | **translator** (singular) / **translators** | provider, AI provider, model provider, AI service |
-| The adapter package for a framework | **adapter** | wrapper, integration, plugin (no — Vite *plugin* is the plugin) |
-| `defaultLocale` runtime behavior | **default locale** | source locale, fallback locale, base locale |
-| Per-call locale override | **forced locale** (via `t.in()`) | locked locale, scoped locale, fixed locale |
-| The buffer of removed translations | **orphan cache** | translation cache, undo cache, graveyard, backup |
-| Prior translations passed to the AI as style reference | **translation examples** | translation memory, TM, style hints, glossary (separate concept), references |
-
-When introducing a new term, add it to this table. When two writers reach for two words for the same thing, the table picks the winner.
+Every yapyak term's canonical word and banned synonyms live in [[terminology]]. Add new terms there.
 
 #### Examples — good vs bad
 
@@ -583,16 +555,16 @@ When introducing a new term, add it to this table. When two writers reach for tw
 
 #### Where to inject tone — the half-funny pattern
 
-Guide content drifts toward sterile reference-manual prose. The fix: each page carries **one to two droll observations** that pass the calibration anchors above — *technically true*, *specific*, *quietly funny*.
+Guide content drifts toward sterile reference-manual prose. The fix: each page carries droll observations that pass the calibration anchors above — *technically true*, *specific*, *quietly funny*. A voice line is eligible only if it matches an approved-voice anchor or a calibration-drill row already in this file; 0–2 per page. (Do not attempt to mechanize whether a line is funny.)
 
 | Page type | Tone budget | What it lands on |
 |---|---|---|
 | **Overview / Introduction** | 1-2 lines | The pain that drove yapyak's design choice (e.g. *"Without one, the server cheerfully serves everyone the default locale, every time."*) |
 | **How-it-works** | 1-2 lines | Edge cases and what yapyak does when it gives up (e.g. *"yapyak treats it as a delete plus add, and the translation is lost. Fuzzy matching would silently rebind unrelated strings."*) |
-| **API / Options reference** | 0-1 lines | Resist humor in option tables. One column may carry a specific example (e.g. *"Set a voice ('friendly', 'terse', 'lawyer at a dinner party')."*). |
+| **API / Options reference** | 0-1 lines | Option tables, setup code, and command listings carry 0 droll observations. One column may carry a specific example (e.g. *"Set a voice ('friendly', 'terse', 'lawyer at a dinner party')."*). |
 | **Translators (per-provider)** | 1 line | Genuine differentiation observation — *"Empirically strong on Japanese, Korean, Arabic, Hebrew."* / *"Without negotiating with a vendor."* |
-| **Adapters (per-framework)** | 0-1 lines | Don't inject humor in setup code. One line of context may carry observation if framework has notable quirk. |
-| **CLI reference** | 0-1 lines | Specific descriptions of behaviors that commonly surprise. Resist over-decorating commands. |
+| **Adapters (per-framework)** | 0-1 lines | One line of context may carry an observation only if the framework has a notable quirk. |
+| **CLI reference** | 0-1 lines | Specific descriptions of behaviors that commonly surprise. |
 | **Locales (regional vs language)** | 1-2 lines | The exactly-here-everyone-gets-confused topic — relate. *"This is the one place tags collapse."* |
 | **Errors / Recovery** | 1 line | What the user sees when things fail — keep grounded, not dramatic. |
 

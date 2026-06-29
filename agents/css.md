@@ -178,7 +178,7 @@ Role is picked by strict priority — stop at the first match:
 1. Data field — if rendering a named data field, Role = PascalCase field name
    - `{action.description}` → Role `Description`
    - `{user.firstName}` → Role `FirstName`
-2. Domain concept — if the element represents a named domain concept, Role = that concept
+2. Domain concept — if the element represents a named domain concept, Role = that concept. A domain-concept Role is allowed ONLY if the name is an exported domain/resource/enum name from the content schema or yapyak public types. If it isn't, fall through to step 3 (Qualifier).
    - `MethodBadge + Path` together = `Endpoint` (REST term)
 3. Qualifier from fixed vocab — when multiple siblings share an ElementType:
 
@@ -188,7 +188,9 @@ Role is picked by strict priority — stop at the first match:
    | Position (vertical) | `Top` / `Bottom` |
    | Importance | `Primary` / `Secondary` |
    | Function | `Search`, `Submit`, `Cancel`, `Confirm`, `Close`, `Empty` |
-4. No role — only when the element has no semantic role AND there is only one such element in its parent.
+4. No Role — when EITHER:
+   - the ElementType is an HTML5 landmark (the `Header` / `Footer` / `Content` / `Sidebar` / `Main` / `Nav` / `StartBar` / `EndBar` group) or a decorative ElementType (`Icon`, `Chevron`, `Divider`, …) appearing once in its parent; OR
+   - steps 1–3 produced no Role and only one such element exists in its parent.
 
 ##### Examples
 
@@ -224,7 +226,6 @@ The component's root class is just the component name (no Role, no ElementType s
 - Class names NOT ending with a vocabulary ElementType:
   - ✗ `.Description` (must be `.DescriptionParagraph`)
   - ✗ `.Title` (must be `.NameHeading`, `.PageHeading`, etc.)
-  - ✗ `.Content` (must be `.ContentSection` — or the structure is wrong; extract a sub-component)
 - Semantic group names without ElementType: `.Actions`, `.Meta`, `.Info`, `.Details`, `.Body`
 - Fantasy suffixes not in vocab: `.Container`, `.Inner`, `.Outer`, `.Group`, `.Block`, `.Panel`, `.Holder`
 
@@ -502,7 +503,7 @@ The global reset (under `@layer reset`) strips browser defaults. Typical resets 
 | `h1`–`h6` | `font-size: inherit`, `font-weight: inherit` |
 | `th` | `text-align: left` |
 
-Never write any of these properties in a component CSS to "reset" them — the reset already did. If a property looks like a reset, ask: would the element have this anyway? If yes → delete. If no → it's component-specific styling and belongs.
+Never write any of these properties in a component CSS to "reset" them — the reset already did. Delete any property/value that exactly matches a row in the reset table above. Keep everything else. Do not reason about browser defaults beyond that table.
 
 If a new reset is needed broadly, add it to the global reset file — not per-component.
 
@@ -522,11 +523,9 @@ appearance: none;
 
 #### Prefer `flex` / `grid` + `gap` over `margin`
 
-Default to gap when laying out siblings — restructure the parent into a flex/grid container when possible.
+Default to gap when laying out siblings — always restructure the parent to flex/grid + `gap` unless one of the two `margin` exceptions below applies.
 
-Use `margin` only when gap can't express the spacing cleanly (asymmetric per-child spacing, non-uniform offsets between specific siblings, or when adding a parent flex container would cascade unwanted side-effects).
-
-When you reach for margin, make sure it's because gap genuinely doesn't fit — not because you skipped restructuring.
+Use `margin` only for (1) optical alignment of a single element against a container edge, or (2) spacing between siblings that are NOT in a shared flex/grid parent where creating one would change the rendered box of an unrelated element. Every other sibling-spacing case uses `gap`. If unsure, use `gap`.
 
 #### TOTALLY FORBIDDEN: `flex-grow`, `flex-shrink`, `flex-basis`
 
@@ -548,18 +547,11 @@ flex: auto;       /* grow, shrink, basis auto (= 1 1 auto) */
 
 #### Never leave unnecessary properties
 
-Every property must pay for itself. Common dead properties to prune:
-
-- `display: inline-block` on a flex/grid item (flex/grid overrides it)
-- `width: 100%` on a block element that already fills its container
-- Redundant `color` matching the inherited value
-- `margin: 0` on an element that has no default margin
-- `overflow: hidden` when nothing overflows
-- Duplicate properties across sibling rules that could be merged
+Every property must pay for itself. Prune only statically-detectable dead properties: a property whose value equals its reset-table value; a `display`/`width` that a flex/grid parent already imposes. Do not prune on runtime layout guesses.
 
 #### Use `background-color`, not `background` shorthand
 
-Unless you're setting multiple background properties (image + position + repeat), use the specific property:
+Single value → specific longhand: solid color → `background-color`, gradient/image → `background-image`. Use the `background` shorthand only when setting two or more of {image, position, size, repeat, color} in one declaration.
 
 ```css
 /* ✓ */
@@ -708,7 +700,7 @@ Mobile-first. Default CSS targets mobile. `@media (min-width: 1024px)` enhances 
 }
 ```
 
-If a different threshold is needed for a specific component (rare), document why. Generally everything that shifts between mobile and desktop uses 1024px.
+Every layout-shift breakpoint is exactly `min-width: 1024px`. No other value is permitted. If a component seems to need a different threshold, the structure is wrong — fix the structure.
 
 #### Length units — `px` for layout, `rem` only for font-size
 
@@ -784,4 +776,4 @@ margin-top: 14px;
 gap: 8px;          /* or var(--spacing-2) */
 ```
 
-Prefer spacing tokens for paddings/gaps/margins where the value matches the scale, but don't force a token when an off-scale even value is the right call (e.g., `26px`, `38px`).
+Prefer spacing tokens for paddings/gaps/margins where the value matches the scale. Use the spacing token whose value exactly equals the needed px. If no token equals it exactly, use the bare even px. Never round a value to fit a token.
