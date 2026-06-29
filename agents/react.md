@@ -52,7 +52,7 @@ components/
 
 #### File naming
 
-Folder name = primary component name (kebab-case). Primary component file = `<folder-name>.tsx`. Sibling files are prefix-flat — every filename starts with the folder name.
+Folder name = primary component name (kebab-case). Primary component file = `<folder-name>.tsx`. Sibling files are prefix-flat — every filename starts with the folder name. This scheme governs component files; [[naming]]'s filename-derivation algorithm does not apply to them.
 
 ```
 button/                            → Button
