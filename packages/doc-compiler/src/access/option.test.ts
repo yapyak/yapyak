@@ -3,7 +3,7 @@ import type { OptionsRegistry } from '../config';
 
 import { describe, expect, it } from 'vitest';
 
-import { getOptions, getOptionsGroup } from './options';
+import { getOptions, getOptionsGroup } from './option';
 
 function manifest(options: OptionsRegistry): Manifest {
   return {

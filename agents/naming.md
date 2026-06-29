@@ -132,7 +132,7 @@ use-query.ts     exports useQuery()
 
 ### Singular vs plural
 
-Folders and files are always singular. Plural is allowed only for collection variables.
+**Domain-specific** files and folders — the names you coin for your own concepts — are always singular. Plural is allowed only for collection variables.
 
 ```ts
 const locale = 'sv';
@@ -142,6 +142,8 @@ cookie.ts, locale.ts, endpoint.ts       // singular files
 adapter/, locale/, runtime/             // singular folders
 cli/command/, route/, fixture/          // singular folders (peer instances)
 ```
+
+**App-code exception — framework scaffolding.** The rule reaches only domain names. In **app packages**, the conventional scaffolding folders the framework and ecosystem expect keep their conventional (often plural) names — `components/`, `hooks/`, `routes/`, `styles/`, `utils/` — as does a shared top-level `types.ts`. These are framework/tooling vocabulary, not domain concepts, so the singular rule does not touch them. It still governs every domain name *inside* them: `lib/page.ts` (not `pages.ts`), `hero-demo.ts` (not `hero-demo-scenes.ts`). Library code (`packages/*`) has no such scaffolding and follows the rule strictly.
 
 ### Type-only files
 
@@ -163,7 +165,7 @@ export type ProcessorKind = ...;
 
 When you can name the file after the noun the types share (`persistence`, `binding`, `block`), use that noun. `type.ts` is the fallback when no shared noun exists.
 
-`type.ts` is always singular. `types.ts` is banned.
+`type.ts` is always singular. In library code, `types.ts` is banned — use `type.ts`. A shared top-level `types.ts` of cross-cutting primitives is allowed in **app code only**, per the framework-scaffolding exception above.
 
 ### Record-shaped types
 
@@ -200,6 +202,8 @@ Banned in **library code** (published `packages/*`). Every utility has a concept
 | Multiple tightly-related utilities | Merge into concept file (`string-format.ts`) |
 
 **App-code exception.** Private app packages MAY keep a single top-level `src/utils/` for **pure, domain-agnostic** helpers (the `lib/` vs `utils/` split lives in [[modules]] § `lib/` vs `utils/` in apps). Domain-aware code goes in `lib/`, never `utils/`. `helpers/` stays banned everywhere, library and app alike.
+
+A `utils/` helper is named after its **function**, so a plural function name gives a plural filename — `mergeRefs` → `merge-refs.ts`, `mergeStyles` → `merge-styles.ts`, `normalizeProps` → `normalize-props.ts`. The singular-file rule does not apply: these are operation names, not domain concepts. (Functions naturally act on collections, hence the plural.)
 
 ### Type suffix vocabulary
 

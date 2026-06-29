@@ -25,7 +25,7 @@ describe('extractFile', () => {
   });
 
   it('returns placeholders for messages with interpolation', () => {
-    const result = extractFixture('call', 'placeholders.ts');
+    const result = extractFixture('call', 'placeholder.ts');
     expect(result.messages).toHaveLength(2);
     const greeting = result.messages.find(
       (message) => message.source === 'Hi {name}',

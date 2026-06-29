@@ -66,7 +66,7 @@ A folder always has an `index.ts` barrel. Cross-folder imports go through the ba
 
 Single-file concepts do not get folders. A standalone `parser.ts` stays a file until a second file joins it.
 
-Folder names are singular: `adapter/`, `locale/`, `runtime/`. Plural only for peer-item dictionary folders (`cli/command/`).
+Folder names are singular: `adapter/`, `locale/`, `runtime/`. Plural only for peer-item dictionary folders (`cli/command/`), or app framework-scaffolding (`components/`, `hooks/`, `routes/`, `styles/`) — see [[naming]] § Singular vs plural.
 
 #### When to split into sub-folders
 

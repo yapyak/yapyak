@@ -53,7 +53,7 @@ describe('parseArguments', () => {
   });
 
   it('parses a single placeholder with matching params', () => {
-    const parsed = parseAll('call', 'placeholders.ts');
+    const parsed = parseAll('call', 'placeholder.ts');
     expect(parsed[0]?.source).toBe('Hi {name}');
     expect(parsed[0]?.params?.keys).toEqual([
       'name',
@@ -63,7 +63,7 @@ describe('parseArguments', () => {
   });
 
   it('parses multiple placeholders', () => {
-    const parsed = parseAll('call', 'placeholders.ts');
+    const parsed = parseAll('call', 'placeholder.ts');
     const summary = parsed[1];
     expect(summary?.source).toBe('Hi {name}, you have {count} messages');
     expect(summary?.params?.keys.sort()).toEqual([
@@ -147,7 +147,7 @@ describe('parseArguments', () => {
     });
 
     it('emits YAP0006 for spread params', () => {
-      const [parsed] = parseAll('diagnostic', 'ypk106-spread-params.ts');
+      const [parsed] = parseAll('diagnostic', 'ypk106-spread-param.ts');
       expect(parsed?.params?.kind).toBe('spread');
       const ypk106 = parsed?.diagnostics.filter(
         (diagnostic) => diagnostic.code === 'YAP0006',
