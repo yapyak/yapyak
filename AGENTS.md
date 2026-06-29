@@ -10,7 +10,7 @@
 - `packages/{anthropic,gemini,ollama,openai}/` — LLM translator providers (`@yapyak/<provider>`)
 - `packages/{typescript-config,tsdown-config,vitest-config}/` — shared build/test config
 - `packages/doc-compiler/` — `@yapyak/doc-compiler`, doc-compilation tooling
-- `docs/` — `@yapyak/docs`, Vite + TanStack Start docs site
+- `docs/` — `@yapyak/docs`, Vite + TanStack Start app
 - `examples/*` — minimal demos named by their stack
 
 ## Architecture invariants
@@ -39,11 +39,6 @@ Each file in `agents/` is a standalone rule module. Subject-noun, kebab-case, si
 - [agents/null-vs-undefined.md](agents/null-vs-undefined.md) — mechanical decision tree
 - [agents/comments.md](agents/comments.md) — biome-ignore, `@ts-*`
 
-### React
-
-- [agents/react.md](agents/react.md) — components, hooks, refs, JSX rules
-- [agents/box.md](agents/box.md) — `Box` primitive: render `Box` for every element, `BoxProps<T>`, `data-*` passthrough, `className` forwarding, styled-component variants
-
 ### Library
 
 - [agents/visibility.md](agents/visibility.md) — public, semi-public, private, `/internal` subpath
@@ -57,5 +52,8 @@ Each file in `agents/` is a standalone rule module. Subject-noun, kebab-case, si
 ### Yapyak-specific
 
 - [agents/diagnostics.md](agents/diagnostics.md) — `YAP00xx` code format, allocation, doc URLs
-- [agents/docs.md](agents/docs.md) — guide-site voice and structure
 - [agents/terminology.md](agents/terminology.md) — locked vocabulary
+
+### `docs/`
+
+`docs/` is a React app on TanStack Start. Its app-layer rule modules — React, `Box`, CSS, TanStack, app-code TypeScript, and the guide authoring rules — live in [docs/AGENTS.md](docs/AGENTS.md) and load **only** when working in `docs/`. The rule files themselves sit in the shared `agents/` directory; `docs/AGENTS.md` selects the app-only subset.
