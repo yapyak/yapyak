@@ -132,7 +132,7 @@ use-query.ts     exports useQuery()
 
 ### Singular vs plural
 
-**Domain-specific** files and folders — the names you coin for your own concepts — are always singular. Plural is allowed only for collection variables.
+**Domain-specific** files and folders are always singular. Plural only for collection variables.
 
 ```ts
 const locale = 'sv';
@@ -143,7 +143,7 @@ adapter/, locale/, runtime/             // singular folders
 cli/command/, route/, fixture/          // singular folders (peer instances)
 ```
 
-**App-code exception — framework scaffolding.** The rule reaches only domain names. In **app packages**, the conventional scaffolding folders the framework and ecosystem expect keep their conventional (often plural) names — `components/`, `hooks/`, `routes/`, `styles/`, `utils/` — as does a shared top-level `types.ts`. These are framework/tooling vocabulary, not domain concepts, so the singular rule does not touch them. It still governs every domain name *inside* them: `lib/page.ts` (not `pages.ts`), `hero-demo.ts` (not `hero-demo-scenes.ts`). Library code (`packages/*`) has no such scaffolding and follows the rule strictly.
+**App-code exception.** App-package scaffolding keeps its conventional (often plural) names — `components/`, `hooks/`, `routes/`, `styles/`, `utils/`, and a shared `types.ts` — framework vocabulary, not domain concepts. The rule still governs domain names *inside* them: `lib/page.ts` not `pages.ts`, `hero-demo.ts` not `hero-demo-scenes.ts`. Library code (`packages/*`) has no scaffolding and follows it strictly.
 
 ### Type-only files
 
@@ -165,7 +165,7 @@ export type ProcessorKind = ...;
 
 When you can name the file after the noun the types share (`persistence`, `binding`, `block`), use that noun. `type.ts` is the fallback when no shared noun exists.
 
-`type.ts` is always singular. In library code, `types.ts` is banned — use `type.ts`. A shared top-level `types.ts` of cross-cutting primitives is allowed in **app code only**, per the framework-scaffolding exception above.
+`type.ts` is always singular; `types.ts` is banned in library code. A shared `types.ts` of cross-cutting primitives is allowed in app code only (scaffolding exception).
 
 ### Record-shaped types
 
@@ -203,7 +203,7 @@ Banned in **library code** (published `packages/*`). Every utility has a concept
 
 **App-code exception.** Private app packages MAY keep a single top-level `src/utils/` for **pure, domain-agnostic** helpers (the `lib/` vs `utils/` split lives in [[modules]] § `lib/` vs `utils/` in apps). Domain-aware code goes in `lib/`, never `utils/`. `helpers/` stays banned everywhere, library and app alike.
 
-A `utils/` helper is named after its **function**, so a plural function name gives a plural filename — `mergeRefs` → `merge-refs.ts`, `mergeStyles` → `merge-styles.ts`, `normalizeProps` → `normalize-props.ts`. The singular-file rule does not apply: these are operation names, not domain concepts. (Functions naturally act on collections, hence the plural.)
+A `utils/` helper takes its **function's** name, so a plural function name gives a plural filename: `mergeRefs` → `merge-refs.ts`, `normalizeProps` → `normalize-props.ts`. Operation names, not domain concepts — the singular rule does not apply.
 
 ### Type suffix vocabulary
 
@@ -366,8 +366,7 @@ UseLocaleHookReturn                     // Hook + Return
 **`*Type` exception — a discriminator category on the public surface.** `*Type` is allowed only when it names the category of a **public** discriminated union whose field is `type` (see § Discriminator fields). The type name and field must agree: field `type` ↔ type `*Type`; field `kind` ↔ type `*Kind`.
 
 ```ts
-// ✓ Allowed — public discriminator, field is `type`, so the named category is `*Type`
-//   (load-bearing: the base noun is a concrete value, `*Type` is its category, à la `ContentType`/`MediaType`)
+// ✓ Allowed — public discriminator, field `type`, so its category is `*Type` (à la `ContentType`)
 type Event = { type: EventType; ... };
 type EventType = 'click' | 'submit' | ...;
 
@@ -679,16 +678,12 @@ The discriminator field of a tagged union is named by a single mechanical rule. 
 
 > **The field is `type` if and only if its type is reachable from a *public* export of a package that is NOT `"private": true`. Every other discriminator field is `kind`.**
 
-A "public export" is any entry in the package's `package.json` `exports` map **except an `/internal` subpath** (`./internal`, `./compiler/internal`, …). `/internal` subpaths are library-internal cross-package plumbing, not the external-user surface.
-
-A two-step lookup, applied to the type that declares the field:
+A public export is any `exports` entry except an `/internal` subpath (`./internal`, `./compiler/internal`, …) — library-internal plumbing, not the external surface. Apply to the package that declares the field:
 
 1. Open the declaring package's `package.json`. Is `"private": true`? → **`kind`**. Done.
 2. Else: is the type re-exported (transitively) from any public export — the `.` entry **or any non-`/internal` subpath** (`./config`, `./processor`, `./adapter`, …)? **Yes → `type`. No (only via an `/internal` subpath, or unexported) → `kind`.**
 
-That is the whole rule. Free of "is this a value or a node?", "does it mirror TypeScript?", or any other call.
-
-**Why this cut.** `type` is the discriminator the **public API exposes to external users**, who live in the config/data ecosystem where `type` is the universal tag (Redux, config files, `node.type`). `kind` is the discriminator on the **internal machinery** — compiler IR, AST nodes, private-package output — where the compiler idiom rules: it matches TypeScript's own `SyntaxKind`, and avoids the cognitive collision between a `type` field and the `type` keyword in type-heavy traversal code. Public contract speaks the ecosystem's language; internals speak the compiler's.
+`type` is the ecosystem's public tag (Redux, config, `node.type`); `kind` is the compiler's internal one (`SyntaxKind`, AST nodes, private output), and dodges the `type`-keyword collision in traversal code.
 
 | Type | Package | Reachable from a public export? | Field |
 |---|---|---|---|
@@ -703,7 +698,7 @@ The discriminator **type name** (when named) matches the field: field `type` ↔
 
 A type has exactly one home package and one public/internal status, so its field name is fixed at declaration — it never changes based on where it is used.
 
-**Lineage rule — a derived form inherits its source's name.** The two-step lookup decides **original** types (a tagged union first introduced as its own concept, or built from untyped input like raw text). A **derived** type — a normalized, resolved, or otherwise remapped form of another *typed* union — **inherits that source union's discriminator field name**, even when the derived form lives behind an `/internal` subpath. The name is decided once, at the data's first typed origin, and **never flips along a transformation chain**.
+**Lineage exception — a derived form inherits its source's name.** A normalized, resolved, or remapped form of another *typed* union keeps that union's discriminator name, even behind an `/internal` subpath — decided once at the first typed origin, never flipped along a transform chain. A union built fresh from untyped input (raw text) is *original*, and takes the base rule.
 
 ```ts
 // PersistenceConfig is public → `type`.
@@ -714,22 +709,14 @@ type PersistenceConfig = { type: 'cookie'; ... } | { type: 'url'; ... } | ...;
 type NormalizedPersistenceConfig = { type: 'cookie'; ... } | { type: 'url'; ... };
 ```
 
-So the only thing that decides `type` vs `kind` for a derived union is **its source**, not its own visibility. A union never changes discriminator name just because a transformed copy of it crossed into internal code.
-
-**Upstream-mirror exception.** A type that merely **declares the shape of an external library's runtime value** — so the code can read that value — mirrors the library's own discriminator field name; the rule above does not apply. yapyak does not own that shape and cannot rename a field the upstream object actually carries.
+**Upstream-mirror exception.** A type that declares the shape of an external library's runtime value mirrors that library's discriminator field name — yapyak does not own the shape and cannot rename a field the object carries. See [[#platform-api-mirroring]].
 
 ```ts
-// `parse()` from @astrojs/compiler returns nodes tagged with `type`. The local
-// declaration mirrors that runtime shape — it stays `type`, regardless of visibility.
+// @astrojs/compiler tags nodes `type` — mirror it, regardless of visibility
 type AstroRoot = { type: 'AstroRoot'; children: BodyNode[] };
-const ast = parse(source).ast as AstroRoot;   // the object literally has `.type`
 ```
 
-This is the discriminator-level case of [[#platform-api-mirroring]]: mirror the platform/library key verbatim.
-
-This closes the only seam the base rule could create. A public union (`type`) and its internal normalized form both read `type`; a public union built from internal nodes still only ever contains its own `type`-tagged shapes (the internal nodes are a separate union, never interleaved).
-
-**Collision rule — the discriminator wins the canonical name.** When the rule assigns a discriminator a name that already exists as a *secondary* field on the same object, the **discriminator keeps the canonical name** (`type`/`kind`); the secondary field is renamed to `<noun>Kind`/`<noun>Type` describing what it classifies. A union variant never carries two `kind` (or two `type`) fields.
+**Collision exception — the discriminator keeps the canonical name.** When the assigned name (`type`/`kind`) already exists as a *secondary* field, the discriminator keeps it; the secondary becomes `<noun>Kind`/`<noun>Type`. A variant never carries two `kind` (or two `type`) fields.
 
 ```ts
 // ✗ Collision — Block is private → discriminator `kind`, but a secondary `kind` already exists
@@ -739,7 +726,7 @@ type LinkBlock = { kind: 'link'; kind: 'external' | 'internal'; href: string };
 type LinkBlock = { kind: 'link'; linkKind: 'external' | 'internal'; href: string };
 ```
 
-Likewise a secondary `type` field next to a `kind` discriminator is renamed (`type: 'cardinal' | 'ordinal'` next to `kind: 'plural'` → `pluralKind`), so the two tag-like fields never sit unprefixed on one object.
+A secondary `type` beside a `kind` discriminator is renamed the same way: `type: 'cardinal' | 'ordinal'` beside `kind: 'plural'` → `pluralKind`.
 
 ### String-literal values
 
