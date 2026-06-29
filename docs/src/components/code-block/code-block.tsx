@@ -1,9 +1,9 @@
 import type { BoxProps } from '#components/box';
-import type { Language } from '#utils/tokenize';
+import type { Language } from '#lib/tokenize';
 
 import { Box } from '#components/box';
 import { CodeBlockToken } from '#components/code-block-token';
-import { tokenize } from '#utils/tokenize';
+import { tokenize } from '#lib/tokenize';
 
 import styles from './code-block.module.css';
 import { CodeBlockCopyButton } from './code-block-copy-button';

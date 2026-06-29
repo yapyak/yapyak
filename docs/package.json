@@ -6,6 +6,7 @@
     "#components/*": "./src/components/*",
     "#docs/*": "./src/docs/*",
     "#hooks/*": "./src/hooks/*",
+    "#lib/*": "./src/lib/*",
     "#styles/*": "./src/styles/*",
     "#types": "./src/types.ts",
     "#utils/*": "./src/utils/*"

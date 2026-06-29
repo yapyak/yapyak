@@ -12,6 +12,9 @@
       "#hooks/*": [
         "./src/hooks/*"
       ],
+      "#lib/*": [
+        "./src/lib/*"
+      ],
       "#styles/*": [
         "./src/styles/*"
       ],

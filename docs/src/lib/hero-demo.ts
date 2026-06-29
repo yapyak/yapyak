@@ -1,11 +1,11 @@
 export type LocaleCode = 'es' | 'fr' | 'ja' | 'sv';
 
-export type Locale = {
+export type DemoLocale = {
   code: LocaleCode;
   filename: string;
 };
 
-export const LOCALES: Locale[] = [
+export const LOCALES: DemoLocale[] = [
   {
     code: 'es',
     filename: 'es.json',

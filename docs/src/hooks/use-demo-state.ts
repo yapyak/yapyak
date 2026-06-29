@@ -1,4 +1,4 @@
-import type { LocaleCode } from '#utils/hero-demo-scenes';
+import type { LocaleCode } from '#lib/hero-demo';
 
 import { useEffect, useState } from 'react';
 
@@ -7,7 +7,7 @@ import {
   INITIAL_SCENE,
   LOCALES,
   SCENES,
-} from '#utils/hero-demo-scenes';
+} from '#lib/hero-demo';
 
 export type DemoState = {
   receiving: boolean;

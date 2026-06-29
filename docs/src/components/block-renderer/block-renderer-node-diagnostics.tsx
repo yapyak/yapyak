@@ -1,12 +1,12 @@
 import type { DiagnosticsBlock } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#components/box';
-import type { Language } from '#utils/tokenize';
+import type { Language } from '#lib/tokenize';
 
 import { Box } from '#components/box';
 import { CheckIcon } from '#components/check-icon';
 import { CodeBlockToken } from '#components/code-block-token';
 import { XIcon } from '#components/x-icon';
-import { tokenize } from '#utils/tokenize';
+import { tokenize } from '#lib/tokenize';
 
 import styles from './block-renderer-node-diagnostics.module.css';
 

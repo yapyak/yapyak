@@ -3,7 +3,7 @@ import type { Page } from '@yapyak/doc-compiler';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { PageArticle } from '#components/page-article';
-import { loadPage } from '#utils/load-page';
+import { loadPage } from '#lib/page';
 
 type LoaderData = {
   page: Page;

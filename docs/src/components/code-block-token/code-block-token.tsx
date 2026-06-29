@@ -1,5 +1,5 @@
 import type { BoxProps } from '#components/box';
-import type { TokenKind } from '#utils/tokenize';
+import type { TokenKind } from '#lib/tokenize';
 
 import { Box } from '#components/box';
 
