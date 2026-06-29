@@ -1,7 +1,5 @@
 ## React
 
-Components, hooks, refs, JSX rules.
-
 ### Components
 
 - Props type is an exported `type` in the same file: `export type ComponentNameProps = { ... }`. Always `type` for React props.

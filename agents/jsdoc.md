@@ -1,6 +1,6 @@
 ## JSDoc
 
-TSDoc (Microsoft's TypeScript-aware spec) on public API symbols only — generation algorithm, category formulas, tag rules.
+TSDoc on public API symbols only.
 
 ### Prime directives
 

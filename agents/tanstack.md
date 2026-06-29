@@ -1,7 +1,5 @@
 ## TanStack Start + Router
 
-Rules for apps built on `@tanstack/react-router` (file-based routing) and `@tanstack/react-start` (server functions).
-
 ### Route files
 
 - Route files (`src/routes/`) contain the Route definition (loader + `Component` function).

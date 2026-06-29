@@ -1,6 +1,6 @@
 ## CSS — design-tokens
 
-Tokens live in `src/styles/tokens.css` (or equivalent) and follow a strict two-tier architecture.
+Tokens live in `src/styles/tokens.css`.
 
 ### Tier 1 — Palette (`--color-*`)
 

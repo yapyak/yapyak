@@ -1,6 +1,6 @@
 ## Naming
 
-Files, folders, symbols, suffixes, verbs, booleans — closed vocabularies. Every rule here is a deterministic operation on an export or type name. The only human input is coining a brand-new domain noun — itself bound by the suffix and form rules. No taste, no judgment.
+Every rule here is a deterministic operation on an export or type name. The only human input is coining a brand-new domain noun — itself bound by the suffix and form rules. No taste, no judgment.
 
 ### Files and folders
 

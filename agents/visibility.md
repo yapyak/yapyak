@@ -1,7 +1,5 @@
 ## Visibility
 
-Public, semi-public, private — how symbols cross package boundaries.
-
 ### Package kinds
 
 Classify the package itself before applying the symbol-level model.

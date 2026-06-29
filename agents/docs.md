@@ -1,6 +1,6 @@
 ## Docs
 
-Voice, vocabulary, and structure for the user-facing guide at `docs/content/guide/*.md`. JSDoc rules live in [[jsdoc]]. README rules live in [[packages]]. Locked vocabulary lives in [[terminology]].
+User-facing guide at `docs/content/guide/*.md`. JSDoc → [[jsdoc]], README → [[packages]], vocabulary → [[terminology]].
 
 ### Voice
 

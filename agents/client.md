@@ -1,6 +1,6 @@
 ## TypeScript — client
 
-Rules for code that runs in the browser (client-side). Excludes Node servers, CLIs, and isomorphic code that runs on both sides.
+Browser-only code — not Node, CLIs, or isomorphic code.
 
 ### Timers — `window.*` only
 

@@ -25,11 +25,12 @@ Always run `pnpm check:write` after changes.
 
 ## Rule modules
 
-Each file in `agents/` is a standalone rule module. Subject-noun, kebab-case, single source of truth for its topic.
+One file per topic, kebab-case, single source of truth.
 
 ### Process
 
 - [agents/workflow.md](agents/workflow.md) — verify, stop signals, "kör" scope, ambiguity, leave nothing behind
+- [agents/style.md](agents/style.md) — how every rule file is written: the nine tests
 
 ### Code
 
@@ -56,4 +57,4 @@ Each file in `agents/` is a standalone rule module. Subject-noun, kebab-case, si
 
 ### `docs/`
 
-`docs/` is a React app on TanStack Start. Its app-layer rule modules — React, `Box`, CSS, TanStack, app-code TypeScript, and the guide authoring rules — live in [docs/AGENTS.md](docs/AGENTS.md) and load **only** when working in `docs/`. The rule files themselves sit in the shared `agents/` directory; `docs/AGENTS.md` selects the app-only subset.
+App-layer rules (React, CSS, TanStack, Box, app-code TS): [docs/AGENTS.md](docs/AGENTS.md).

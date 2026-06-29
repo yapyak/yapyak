@@ -1,7 +1,5 @@
 ## Types
 
-TypeScript type-system rules — declarations, unions, defaults, arguments, error classes, language atoms.
-
 ### Always use `type`, never `interface`
 
 Every type declaration uses `type`. `interface` is forbidden. Enforced by Biome's `useConsistentTypeDefinitions` with `style: "type"`.

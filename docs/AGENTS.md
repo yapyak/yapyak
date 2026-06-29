@@ -1,8 +1,6 @@
 # @yapyak/docs
 
-A React app on TanStack Start, styled with CSS Modules.
-
-**Extends the repo-root [AGENTS.md](../AGENTS.md)** — every shared rule there applies here too. The modules below add the app-layer stack (React, CSS, TanStack, app-code TypeScript) plus this site's authoring rules. They load only when working in `docs/`; the rule files themselves live in the central `../agents/`.
+React app on TanStack Start, CSS Modules. Extends root [AGENTS.md](../AGENTS.md).
 
 ## Rule modules
 

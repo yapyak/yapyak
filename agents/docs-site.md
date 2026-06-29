@@ -1,7 +1,5 @@
 ## yapyak docs authoring
 
-yapyak-specific docs authoring — voice, brand conventions, canonical examples, page templates, terminology lock, and tone budget. These add to the shared library and stack rules.
-
 ## yapyak-site overrides
 
 These deviations apply specifically to `yapyak/docs/`:

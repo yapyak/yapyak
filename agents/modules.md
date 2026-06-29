@@ -1,7 +1,5 @@
 ## Modules
 
-Module organization — files, folders, exports, imports.
-
 ### Export form
 
 - Named exports only. `export default` is forbidden.

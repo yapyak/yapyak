@@ -1,7 +1,5 @@
 ## Workflow
 
-How to operate — verification, scope, ambiguity, and what to do after changes.
-
 ### Verify against code
 
 Never document or assert what is not verifiable. Before writing prose about behavior — JSDoc, README, error messages, in-code comments:

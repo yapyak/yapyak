@@ -1,7 +1,5 @@
 ## Diagnostics
 
-`YAP00xx` code format, allocation policy, constant naming, documentation URLs, message tone.
-
 ### Code format
 
 ```

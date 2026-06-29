@@ -1,7 +1,5 @@
 ## Packages
 
-`package.json` field order, `exports` rules, dependencies, build config, scope naming.
-
 ### TypeScript config
 
 - Library packages extend the workspace's `library` tsconfig preset.

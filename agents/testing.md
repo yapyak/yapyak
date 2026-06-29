@@ -1,7 +1,5 @@
 ## Testing
 
-Vitest conventions — what to test, how to name, the Yap List, the Yak Pool, property-based testing.
-
 ### Which symbols to unit test
 
 Apply in order. First match wins.
