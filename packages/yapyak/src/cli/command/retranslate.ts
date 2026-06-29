@@ -120,7 +120,9 @@ export async function retranslate(
     ),
   );
 
-  const sp = spinner(`Re-translating ${color.bold(String(total))} entries…`);
+  const activeSpinner = spinner(
+    `Re-translating ${color.bold(String(total))} entries…`,
+  );
   let done = 0;
   let failed = 0;
   let wasAborted = false;
@@ -136,7 +138,7 @@ export async function retranslate(
 
   const onProgress = (count: number): void => {
     done += count;
-    sp.update(
+    activeSpinner.update(
       `${color.bold(`${done}/${total}`)} ${color.dim('·')} ${progressBar(done, total, 24)}`,
     );
   };
@@ -166,20 +168,22 @@ export async function retranslate(
     allErrors.push(...result.errors);
   } finally {
     process.off('SIGINT', onSigint);
-    sp.stop();
+    activeSpinner.stop();
   }
 
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
   if (wasAborted) {
-    sp.fail(
+    activeSpinner.fail(
       `${done} re-translated · ${color.red('cancelled')} · ${color.dim(`${elapsed}s`)}`,
     );
     return 130;
   }
   if (failed === 0) {
-    sp.succeed(`${done} re-translated · ${color.dim(`${elapsed}s`)}`);
+    activeSpinner.succeed(
+      `${done} re-translated · ${color.dim(`${elapsed}s`)}`,
+    );
   } else {
-    sp.fail(
+    activeSpinner.fail(
       `${done} re-translated · ${color.red(`${failed} failed`)} · ${color.dim(`${elapsed}s`)}`,
     );
   }

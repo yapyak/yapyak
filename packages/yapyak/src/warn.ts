@@ -6,8 +6,8 @@ export function warn(message: string, meta?: Record<string, unknown>): void {
   active(message, meta);
 }
 
-export function setWarn(fn: WarnFn): void {
-  active = fn;
+export function setWarn(warn: WarnFn): void {
+  active = warn;
 }
 
 export function resetWarn(): void {

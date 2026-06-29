@@ -30,22 +30,24 @@ export function expandTxSourcePlaceholders(tokens: Token[]): Token[] {
 
 function expandSingleSource(value: string): Token[] {
   const result: Token[] = [];
-  const firstChar = value.charAt(0);
-  const lastChar = value.charAt(value.length - 1);
+  const firstCharacter = value.charAt(0);
+  const lastCharacter = value.charAt(value.length - 1);
   const isQuoted =
-    (firstChar === "'" || firstChar === '"' || firstChar === '`') &&
-    firstChar === lastChar &&
+    (firstCharacter === "'" ||
+      firstCharacter === '"' ||
+      firstCharacter === '`') &&
+    firstCharacter === lastCharacter &&
     value.length >= 2;
 
   if (isQuoted) {
     result.push({
       kind: 'tx-source',
-      value: firstChar,
+      value: firstCharacter,
     });
     parseTextWithPlaceholders(value.slice(1, -1), result);
     result.push({
       kind: 'tx-source',
-      value: lastChar,
+      value: lastCharacter,
     });
     return result;
   }
@@ -250,8 +252,8 @@ function parseBranchText(text: string, output: Token[]): void {
   };
 
   while (index < text.length) {
-    const char = text.charAt(index);
-    if (char === '#') {
+    const character = text.charAt(index);
+    if (character === '#') {
       flushPlain();
       output.push({
         kind: 'tx-icu-hash',
@@ -259,7 +261,7 @@ function parseBranchText(text: string, output: Token[]): void {
       });
       index++;
       plainStart = index;
-    } else if (char === '{') {
+    } else if (character === '{') {
       flushPlain();
       const closeIndex = findMatchingClose(text, index);
       if (closeIndex === -1) {
@@ -296,10 +298,10 @@ function emitLeadingWhitespace(text: string, output: Token[]): void {
 function findMatchingClose(text: string, start: number): number {
   let depth = 0;
   for (let index = start; index < text.length; index++) {
-    const char = text.charAt(index);
-    if (char === '{') {
+    const character = text.charAt(index);
+    if (character === '{') {
       depth++;
-    } else if (char === '}') {
+    } else if (character === '}') {
       depth--;
       if (depth === 0) {
         return index;
@@ -312,20 +314,25 @@ function findMatchingClose(text: string, start: number): number {
 function findTopLevelComma(text: string, from: number): number {
   let depth = 0;
   for (let index = from; index < text.length; index++) {
-    const char = text.charAt(index);
-    if (char === '{') {
+    const character = text.charAt(index);
+    if (character === '{') {
       depth++;
-    } else if (char === '}') {
+    } else if (character === '}') {
       depth--;
-    } else if (char === ',' && depth === 0) {
+    } else if (character === ',' && depth === 0) {
       return index;
     }
   }
   return -1;
 }
 
-function isWhitespace(char: string): boolean {
-  return char === ' ' || char === '\t' || char === '\n' || char === '\r';
+function isWhitespace(character: string): boolean {
+  return (
+    character === ' ' ||
+    character === '\t' ||
+    character === '\n' ||
+    character === '\r'
+  );
 }
 
 export const ICU_KEYWORD_SET = ICU_KEYWORDS;

@@ -1,4 +1,4 @@
-const ESC = '\x1b[';
+const ESCAPE = '\x1b[';
 
 type ColorPalette = {
   bold(text: string): string;
@@ -23,7 +23,7 @@ function wrap(code: string, text: string): string {
   if (!isColorEnabled()) {
     return text;
   }
-  return `${ESC}${code}m${text}${ESC}0m`;
+  return `${ESCAPE}${code}m${text}${ESCAPE}0m`;
 }
 
 export const color: ColorPalette = {

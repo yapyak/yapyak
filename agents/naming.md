@@ -591,6 +591,9 @@ Use the full domain word. Forbidden: `cfg`, `opts`, `ctx`, `arg`, `req`, `res`, 
   const argumentToken = tokens[argumentIndex];                  // ✗ a parsed token, not an arg parameter
   ```
 
+- **Platform-standard terms.** Use the platform's own name for a concept verbatim, even when shorter than the spelled-out word: `dir` (Node — `readdir`, `mkdir`, `dirname`, `__dirname`), `init` (the fetch `RequestInit` argument), `lang` (DOM `documentElement.lang`), `cwd` (`process.cwd()`). The term must be the platform's *own* spelling in its API — a user shortening that appears in no platform API (`cfg`, `opts`, `ctx`) stays forbidden. This is the local-identifier side of [[#platform-api-mirroring]].
+- **Reserved or restricted spellings.** When the spelled-out word can't legally be that identifier — a reserved word (`arguments`, `function`, `class`), a global the language or linter forbids shadowing (`constructor`, `eval`, `window`, `globalThis`), or similar — fall back to the established short form or a qualified alternative. `ctor` for a constructor reference (`constructor` shadows `Object.prototype.constructor`); `args` for an `arguments`-style list. The bar is a hard language/linter constraint, never preference — if the full word *is* a legal identifier, use it.
+
 ```ts
 items.sort((a, b) => a.order - b.order);
 ```
@@ -657,6 +660,7 @@ When a field or parameter holds a value of a specific named type, the name is th
 | Holds a single named type, no surrounding context carries it | type name in camelCase | `attributeNode: AttributeNode` |
 | Polymorphic (union of node kinds) | generic concept noun | `node: AstNode` |
 | Collection of one named type | plural of type name | `attributeNodes: AttributeNode[]` |
+| Callable type (`*Fn` / function) | the role it performs, **dropping `Fn`** | `warn: WarnFn` |
 
 **Context-carry exception.** When a function operates on a single named type, the function name carries the full type name; the parameter drops to the generic noun from the type's last PascalCase segment:
 
@@ -671,6 +675,8 @@ When a field or parameter holds a value of a specific named type, the name is th
 function handleAttributeNode(node: AttributeNode): void { ... }
 function resolveCallSite(site: CallSite): ResolvedSite { ... }
 ```
+
+**Callable types are named by role.** A field or parameter holding a function type (`*Fn`, or any `(...) => ...`) is named for the **action it performs**, dropping the `Fn` suffix: `WarnFn` → `warn`, `ParseFragmentsFn` → `parseFragments`. Never `warnFn` (the `Fn` marks the *type*, not the value), nor the bare `fn`.
 
 ### Discriminator fields — `type` vs `kind`
 

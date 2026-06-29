@@ -210,7 +210,9 @@ export function buildSymbolPage(
         label: null,
         language: 'ts',
         path: null,
-        source: symbol.callSignatures.map((sig) => sig.signature).join('\n'),
+        source: symbol.callSignatures
+          .map((signature) => signature.signature)
+          .join('\n'),
       });
     }
     const interfaceProperties = symbol.members.filter(

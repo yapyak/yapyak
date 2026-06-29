@@ -15,17 +15,17 @@ export type Entry =
 
 export function getEntry(
   manifest: Manifest,
-  collection: string,
+  collectionName: string,
   path = '',
 ): Entry {
-  const collectionData = manifest.collections[collection];
-  if (!collectionData) {
+  const collection = manifest.collections[collectionName];
+  if (!collection) {
     return {
       kind: 'not-found',
     };
   }
 
-  const page = collectionData.pages[path];
+  const page = collection.pages[path];
   if (page) {
     return {
       kind: 'page',
@@ -33,7 +33,7 @@ export function getEntry(
     };
   }
 
-  const redirect = collectionData.redirects[path];
+  const redirect = collection.redirects[path];
   if (redirect) {
     return {
       kind: 'redirect',

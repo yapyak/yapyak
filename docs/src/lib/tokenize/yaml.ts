@@ -83,13 +83,13 @@ export function tokenizeYaml(code: string): Token[] {
     while (cursor < line.length) {
       const remainder = line.slice(cursor);
 
-      const ws = /^[ \t]+/.exec(remainder);
-      if (ws) {
+      const whitespace = /^[ \t]+/.exec(remainder);
+      if (whitespace) {
         tokens.push({
           kind: 'plain',
-          value: ws[0],
+          value: whitespace[0],
         });
-        cursor += ws[0].length;
+        cursor += whitespace[0].length;
         continue;
       }
 

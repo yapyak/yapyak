@@ -41,12 +41,12 @@ function isPrologueDirective(
 function resolveLineEndAfter(source: string, position: number): number {
   let cursor = position;
   while (cursor < source.length) {
-    const char = source[cursor];
-    if (char === ' ' || char === '\t' || char === ';') {
+    const character = source[cursor];
+    if (character === ' ' || character === '\t' || character === ';') {
       cursor += 1;
       continue;
     }
-    if (char === '/' && source[cursor + 1] === '/') {
+    if (character === '/' && source[cursor + 1] === '/') {
       const newline = source.indexOf('\n', cursor);
       if (newline === -1) {
         return source.length;
@@ -54,7 +54,7 @@ function resolveLineEndAfter(source: string, position: number): number {
       cursor = newline;
       continue;
     }
-    if (char === '/' && source[cursor + 1] === '*') {
+    if (character === '/' && source[cursor + 1] === '*') {
       const close = source.indexOf('*/', cursor + 2);
       if (close === -1) {
         return source.length;
@@ -62,14 +62,14 @@ function resolveLineEndAfter(source: string, position: number): number {
       cursor = close + 2;
       continue;
     }
-    if (char === '\r') {
+    if (character === '\r') {
       cursor += 1;
       if (source[cursor] === '\n') {
         cursor += 1;
       }
       return cursor;
     }
-    if (char === '\n') {
+    if (character === '\n') {
       return cursor + 1;
     }
     return cursor;

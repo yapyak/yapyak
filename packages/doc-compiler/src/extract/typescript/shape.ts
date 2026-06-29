@@ -26,10 +26,10 @@ function extractTypeParameterContent(shape: string): string | undefined {
   }
   let depth = 0;
   for (let index = angleStart; index < shape.length; index++) {
-    const char = shape[index];
-    if (char === '<') {
+    const character = shape[index];
+    if (character === '<') {
       depth++;
-    } else if (char === '>') {
+    } else if (character === '>') {
       depth--;
       if (depth === 0) {
         return shape.slice(angleStart + 1, index);
@@ -44,12 +44,22 @@ function splitAtDepthZero(content: string): string[] {
   let depth = 0;
   let start = 0;
   for (let index = 0; index < content.length; index++) {
-    const char = content[index];
-    if (char === '<' || char === '(' || char === '[' || char === '{') {
+    const character = content[index];
+    if (
+      character === '<' ||
+      character === '(' ||
+      character === '[' ||
+      character === '{'
+    ) {
       depth++;
-    } else if (char === '>' || char === ')' || char === ']' || char === '}') {
+    } else if (
+      character === '>' ||
+      character === ')' ||
+      character === ']' ||
+      character === '}'
+    ) {
       depth--;
-    } else if (char === ',' && depth === 0) {
+    } else if (character === ',' && depth === 0) {
       segments.push(content.slice(start, index).trim());
       start = index + 1;
     }

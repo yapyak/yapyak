@@ -361,27 +361,30 @@ function extractBranchesByName(source: string): BranchesByName {
   return branchesByName;
 }
 
-function walkForBranches(template: Template, out: BranchesByName): void {
+function walkForBranches(
+  template: Template,
+  branchesByName: BranchesByName,
+): void {
   for (const node of template) {
     if (node.kind === 'plural') {
-      if (!out.has(node.name)) {
-        out.set(node.name, {
+      if (!branchesByName.has(node.name)) {
+        branchesByName.set(node.name, {
           branches: new Set(Object.keys(node.branches)),
           kind: node.pluralKind === 'ordinal' ? 'selectordinal' : 'plural',
         });
       }
       for (const branch of Object.values(node.branches)) {
-        walkForBranches(branch, out);
+        walkForBranches(branch, branchesByName);
       }
     } else if (node.kind === 'select') {
-      if (!out.has(node.name)) {
-        out.set(node.name, {
+      if (!branchesByName.has(node.name)) {
+        branchesByName.set(node.name, {
           branches: new Set(Object.keys(node.branches)),
           kind: 'select',
         });
       }
       for (const branch of Object.values(node.branches)) {
-        walkForBranches(branch, out);
+        walkForBranches(branch, branchesByName);
       }
     }
   }

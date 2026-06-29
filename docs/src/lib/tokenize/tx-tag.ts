@@ -76,37 +76,37 @@ function matchTagEnd(text: string, start: number): number {
 }
 
 function emitTag(raw: string, output: Token[]): void {
-  let pos = 0;
+  let position = 0;
   output.push({
     kind: 'punct',
     value: '<',
   });
-  pos++;
-  if (raw.charAt(pos) === '/') {
+  position++;
+  if (raw.charAt(position) === '/') {
     output.push({
       kind: 'punct',
       value: '/',
     });
-    pos++;
+    position++;
   }
-  let nameEnd = pos;
+  let nameEnd = position;
   while (nameEnd < raw.length && isNameChar(raw.charAt(nameEnd))) {
     nameEnd++;
   }
   output.push({
     kind: 'tx-tag',
-    value: raw.slice(pos, nameEnd),
+    value: raw.slice(position, nameEnd),
   });
-  pos = nameEnd;
-  while (pos < raw.length && isWhitespace(raw.charAt(pos))) {
-    pos++;
+  position = nameEnd;
+  while (position < raw.length && isWhitespace(raw.charAt(position))) {
+    position++;
   }
-  if (raw.charAt(pos) === '/') {
+  if (raw.charAt(position) === '/') {
     output.push({
       kind: 'punct',
       value: '/',
     });
-    pos++;
+    position++;
   }
   output.push({
     kind: 'punct',
@@ -114,15 +114,20 @@ function emitTag(raw: string, output: Token[]): void {
   });
 }
 
-function isNameChar(char: string): boolean {
+function isNameChar(character: string): boolean {
   return (
-    (char >= 'a' && char <= 'z') ||
-    (char >= 'A' && char <= 'Z') ||
-    (char >= '0' && char <= '9') ||
-    char === '-'
+    (character >= 'a' && character <= 'z') ||
+    (character >= 'A' && character <= 'Z') ||
+    (character >= '0' && character <= '9') ||
+    character === '-'
   );
 }
 
-function isWhitespace(char: string): boolean {
-  return char === ' ' || char === '\t' || char === '\n' || char === '\r';
+function isWhitespace(character: string): boolean {
+  return (
+    character === ' ' ||
+    character === '\t' ||
+    character === '\n' ||
+    character === '\r'
+  );
 }

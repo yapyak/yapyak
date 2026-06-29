@@ -66,9 +66,9 @@ export async function add(
     return 1;
   }
 
-  const localesDirAbs = join(projectRoot, config.localesDir);
-  if (!existsSync(localesDirAbs)) {
-    mkdirSync(localesDirAbs, {
+  const localesDirAbsolute = join(projectRoot, config.localesDir);
+  if (!existsSync(localesDirAbsolute)) {
+    mkdirSync(localesDirAbsolute, {
       recursive: true,
     });
   }
@@ -77,7 +77,7 @@ export async function add(
   process.stdout.write(header(`Adding locales: ${labelLine}`));
 
   for (const locale of locales) {
-    const localePath = join(localesDirAbs, `${locale}.json`);
+    const localePath = join(localesDirAbsolute, `${locale}.json`);
     if (existsSync(localePath)) {
       process.stdout.write(
         `  ${symbol.warn} ${color.yellow(`${config.localesDir}/${locale}.json already exists — leaving it alone.`)}\n`,
@@ -91,7 +91,7 @@ export async function add(
   }
 
   const { defaultLocale } = config;
-  const allLocales = readdirSync(localesDirAbs)
+  const allLocales = readdirSync(localesDirAbsolute)
     .filter((name) => name.endsWith('.json'))
     .map((name) => name.replace(/\.json$/, ''));
   if (!allLocales.includes(defaultLocale)) {
@@ -157,13 +157,13 @@ export async function add(
   };
   process.once('SIGINT', onSigint);
 
-  const sp = spinner(
+  const activeSpinner = spinner(
     `Translating ${color.bold(String(totalMissing))} strings…`,
   );
   let done = 0;
   const onProgress = (count: number): void => {
     done += count;
-    sp.update(
+    activeSpinner.update(
       `${color.bold(`${done}/${totalMissing}`)} ${color.dim('·')} ${progressBar(done, totalMissing, 24)}`,
     );
   };
@@ -194,12 +194,12 @@ export async function add(
     allErrors.push(...result.errors);
   } finally {
     process.off('SIGINT', onSigint);
-    sp.stop();
+    activeSpinner.stop();
   }
 
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
   if (wasAborted) {
-    sp.fail(
+    activeSpinner.fail(
       `${done} translated · ${color.red('cancelled')} · ${color.dim(`${elapsed}s`)}`,
     );
     process.stdout.write(
@@ -208,9 +208,9 @@ export async function add(
     return 130;
   }
   if (totalFailed === 0) {
-    sp.succeed(`${done} translated · ${color.dim(`${elapsed}s`)}`);
+    activeSpinner.succeed(`${done} translated · ${color.dim(`${elapsed}s`)}`);
   } else {
-    sp.fail(
+    activeSpinner.fail(
       `${done} translated · ${color.red(`${totalFailed} failed`)} · ${color.dim(`${elapsed}s`)}`,
     );
   }

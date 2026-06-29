@@ -19,50 +19,50 @@ export type BuildCatalogLiteralInput = {
 };
 
 export function toSafeJsString(text: string): string {
-  let out = "'";
-  for (const ch of text) {
-    const code = ch.charCodeAt(0);
-    switch (ch) {
+  let output = "'";
+  for (const character of text) {
+    const code = character.charCodeAt(0);
+    switch (character) {
       case '\\':
-        out += '\\\\';
+        output += '\\\\';
         break;
       case "'":
-        out += '\\u0027';
+        output += '\\u0027';
         break;
       case '"':
-        out += '\\u0022';
+        output += '\\u0022';
         break;
       case '{':
-        out += '\\u007b';
+        output += '\\u007b';
         break;
       case '}':
-        out += '\\u007d';
+        output += '\\u007d';
         break;
       case '\n':
-        out += '\\n';
+        output += '\\n';
         break;
       case '\r':
-        out += '\\r';
+        output += '\\r';
         break;
       case '\t':
-        out += '\\t';
+        output += '\\t';
         break;
       case '\b':
-        out += '\\b';
+        output += '\\b';
         break;
       case '\f':
-        out += '\\f';
+        output += '\\f';
         break;
       default:
         if (code < 0x20 || code === 0x20_28 || code === 0x20_29) {
-          out += `\\u${code.toString(16).padStart(4, '0')}`;
+          output += `\\u${code.toString(16).padStart(4, '0')}`;
         } else {
-          out += ch;
+          output += character;
         }
     }
   }
-  out += "'";
-  return out;
+  output += "'";
+  return output;
 }
 
 export function pickLocaleText(input: PickLocaleTextInput): string {

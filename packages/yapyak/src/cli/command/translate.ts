@@ -90,7 +90,7 @@ export async function translate(
     return 0;
   }
 
-  const sp = spinner(
+  const activeSpinner = spinner(
     `Translating ${color.bold(String(stubsToFill.length))} strings…`,
   );
   let done = 0;
@@ -108,7 +108,7 @@ export async function translate(
 
   const onProgress = (count: number): void => {
     done += count;
-    sp.update(
+    activeSpinner.update(
       `${color.bold(`${done}/${stubsToFill.length}`)} ${color.dim('·')} ${progressBar(done, stubsToFill.length, 24)}`,
     );
   };
@@ -141,12 +141,12 @@ export async function translate(
     allErrors.push(...result.errors);
   } finally {
     process.off('SIGINT', onSigint);
-    sp.stop();
+    activeSpinner.stop();
   }
 
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
   if (wasAborted) {
-    sp.fail(
+    activeSpinner.fail(
       `${done} translated · ${color.red('cancelled')} · ${color.dim(`${elapsed}s`)}`,
     );
     process.stdout.write(
@@ -155,9 +155,9 @@ export async function translate(
     return 130;
   }
   if (failed === 0) {
-    sp.succeed(`${done} translated · ${color.dim(`${elapsed}s`)}`);
+    activeSpinner.succeed(`${done} translated · ${color.dim(`${elapsed}s`)}`);
   } else {
-    sp.fail(
+    activeSpinner.fail(
       `${done} translated · ${color.red(`${failed} failed`)} · ${color.dim(`${elapsed}s`)}`,
     );
   }

@@ -238,11 +238,15 @@ function isInsideLocalesDir(
   projectRoot: string,
   localesDir: string,
 ): boolean {
-  const absOut = isAbsolute(out) ? out : resolve(projectRoot, out);
-  const absLocales = resolve(projectRoot, localesDir);
-  if (absOut === absLocales) {
+  const absoluteOut = isAbsolute(out) ? out : resolve(projectRoot, out);
+  const absoluteLocales = resolve(projectRoot, localesDir);
+  if (absoluteOut === absoluteLocales) {
     return true;
   }
-  const rel = relative(absLocales, absOut);
-  return rel !== '' && !rel.startsWith('..') && !isAbsolute(rel);
+  const relativePath = relative(absoluteLocales, absoluteOut);
+  return (
+    relativePath !== '' &&
+    !relativePath.startsWith('..') &&
+    !isAbsolute(relativePath)
+  );
 }

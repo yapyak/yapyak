@@ -37,7 +37,7 @@ export function plural(
   branches: Record<string, Template>,
 ): PluralNode {
   return {
-    branches: toNullProtoDict(branches),
+    branches: withNullPrototype(branches),
     kind: 'plural',
     name,
     pluralKind,
@@ -49,7 +49,7 @@ export function select(
   branches: Record<string, Template>,
 ): SelectNode {
   return {
-    branches: toNullProtoDict(branches),
+    branches: withNullPrototype(branches),
     kind: 'select',
     name,
   };
@@ -82,6 +82,6 @@ export function time(name: string, style: DateTimeStyle): TimeNode {
   };
 }
 
-function toNullProtoDict<T>(source: Record<string, T>): Record<string, T> {
+function withNullPrototype<T>(source: Record<string, T>): Record<string, T> {
   return Object.assign(Object.create(null) as Record<string, T>, source);
 }

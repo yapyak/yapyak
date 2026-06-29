@@ -13,32 +13,32 @@ type FlatEntry = {
 };
 
 export type PageEntry = {
-  collection: string;
+  collectionName: string;
   page: Page;
   path: string;
 };
 
 export function getPage(
   manifest: Manifest,
-  collection: string,
+  collectionName: string,
   path = '',
 ): Page | undefined {
-  return manifest.collections[collection]?.pages[path];
+  return manifest.collections[collectionName]?.pages[path];
 }
 
 export function getFirstPage(
   manifest: Manifest,
-  collection: string,
+  collectionName: string,
 ): Page | undefined {
-  const collectionData = manifest.collections[collection];
-  if (!collectionData) {
+  const collection = manifest.collections[collectionName];
+  if (!collection) {
     return undefined;
   }
-  const firstHref = findFirstHref(collectionData.sidebar);
+  const firstHref = findFirstHref(collection.sidebar);
   if (firstHref === undefined) {
     return undefined;
   }
-  for (const page of Object.values(collectionData.pages)) {
+  for (const page of Object.values(collection.pages)) {
     if (page.href === firstHref) {
       return page;
     }
@@ -50,15 +50,15 @@ export function findAdjacentPages(
   manifest: Manifest,
   page: Page,
 ): AdjacentPages {
-  const collection = collectionFromHref(page.href);
-  if (collection === undefined) {
+  const collectionName = collectionFromHref(page.href);
+  if (collectionName === undefined) {
     return {};
   }
-  const collectionData = manifest.collections[collection];
-  if (!collectionData) {
+  const collection = manifest.collections[collectionName];
+  if (!collection) {
     return {};
   }
-  const flat = flattenLinks(collectionData.sidebar);
+  const flat = flattenLinks(collection.sidebar);
   const index = flat.findIndex((entry) => entry.link.href === page.href);
   if (index === -1) {
     return {};
@@ -105,8 +105,8 @@ function collectionFromHref(href: string): string | undefined {
 }
 
 function findPageByHref(manifest: Manifest, href: string): Page | undefined {
-  for (const collection of Object.values(manifest.collections)) {
-    for (const page of Object.values(collection.pages)) {
+  for (const collectionName of Object.values(manifest.collections)) {
+    for (const page of Object.values(collectionName.pages)) {
       if (page.href === href) {
         return page;
       }

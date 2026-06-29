@@ -41,13 +41,13 @@ export function renderTable(
   }
 
   const top = `┌${widths.map((width) => '─'.repeat(width + 2)).join('┬')}┐`;
-  const sep = `├${widths.map((width) => '─'.repeat(width + 2)).join('┼')}┤`;
+  const separator = `├${widths.map((width) => '─'.repeat(width + 2)).join('┼')}┤`;
   const bottom = `└${widths.map((width) => '─'.repeat(width + 2)).join('┴')}┘`;
 
   const lines = [
     top,
     renderRow(headers),
-    sep,
+    separator,
   ];
   for (const row of rows) {
     lines.push(renderRow(row));

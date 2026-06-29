@@ -12,7 +12,7 @@ const RAW_TEXT_CLOSE_TAGS = new Set([
 export function reclassifyJsxText(tokens: Token[]): void {
   let depth = 0;
   let isInText = false;
-  let exprDepth = 0;
+  let expressionDepth = 0;
   let rawTextDepth = 0;
 
   for (const token of tokens) {
@@ -20,7 +20,7 @@ export function reclassifyJsxText(tokens: Token[]): void {
       isInText = false;
       if (token.value === '/>') {
         depth = Math.max(0, depth - 1);
-        if (depth > 0 && exprDepth === 0 && rawTextDepth === 0) {
+        if (depth > 0 && expressionDepth === 0 && rawTextDepth === 0) {
           isInText = true;
         }
       } else if (token.value.startsWith('</')) {
@@ -40,7 +40,7 @@ export function reclassifyJsxText(tokens: Token[]): void {
     if (token.kind === 'punct') {
       const value = token.value;
       if (value === '>') {
-        if (depth > 0 && exprDepth === 0 && rawTextDepth === 0) {
+        if (depth > 0 && expressionDepth === 0 && rawTextDepth === 0) {
           isInText = true;
         }
         continue;
@@ -50,15 +50,15 @@ export function reclassifyJsxText(tokens: Token[]): void {
         continue;
       }
       if (value === '{' && isInText) {
-        exprDepth++;
+        expressionDepth++;
         isInText = false;
         token.kind = 'jsx-brace';
         continue;
       }
-      if (value === '}' && exprDepth > 0) {
-        const wasOutermost = exprDepth === 1;
-        exprDepth--;
-        if (exprDepth === 0 && depth > 0 && rawTextDepth === 0) {
+      if (value === '}' && expressionDepth > 0) {
+        const wasOutermost = expressionDepth === 1;
+        expressionDepth--;
+        if (expressionDepth === 0 && depth > 0 && rawTextDepth === 0) {
           isInText = true;
         }
         if (wasOutermost && depth > 0) {

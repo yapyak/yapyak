@@ -20,16 +20,19 @@ export function expandVueAttributeBindings(
       token.kind === 'punct' &&
       (token.value === ':' || token.value === '@')
     ) {
-      const identIndex = findNextNonWhitespace(tokens, index + 1);
-      if (identIndex !== -1) {
-        const ident = tokens[identIndex];
+      const identifierIndex = findNextNonWhitespace(tokens, index + 1);
+      if (identifierIndex !== -1) {
+        const identifier = tokens[identifierIndex];
         if (
-          ident !== undefined &&
-          (ident.kind === 'fn-call' ||
-            ident.kind === 'plain' ||
-            ident.kind === 'keyword')
+          identifier !== undefined &&
+          (identifier.kind === 'fn-call' ||
+            identifier.kind === 'plain' ||
+            identifier.kind === 'keyword')
         ) {
-          const equalsIndex = findNextNonWhitespace(tokens, identIndex + 1);
+          const equalsIndex = findNextNonWhitespace(
+            tokens,
+            identifierIndex + 1,
+          );
           if (equalsIndex !== -1) {
             const equals = tokens[equalsIndex];
             if (equals?.kind === 'punct' && equals.value === '=') {
@@ -38,16 +41,19 @@ export function expandVueAttributeBindings(
                 equalsIndex + 1,
               );
               if (stringIndex !== -1) {
-                const str = tokens[stringIndex];
-                if (str?.kind === 'string' && str.value.length >= 2) {
+                const stringToken = tokens[stringIndex];
+                if (
+                  stringToken?.kind === 'string' &&
+                  stringToken.value.length >= 2
+                ) {
                   for (let cursor = index; cursor < stringIndex; cursor++) {
                     const passthrough = tokens[cursor];
                     if (passthrough !== undefined) {
                       result.push(passthrough);
                     }
                   }
-                  const quote = str.value[0] ?? '"';
-                  const inner = str.value.slice(1, -1);
+                  const quote = stringToken.value[0] ?? '"';
+                  const inner = stringToken.value.slice(1, -1);
                   const innerTokens = tokenize(inner, 'ts');
                   result.push({
                     kind: 'string',

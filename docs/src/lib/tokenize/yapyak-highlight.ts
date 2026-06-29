@@ -61,19 +61,19 @@ export function applyYapyakHighlight(tokens: Token[]): void {
         ) {
           continue;
         }
-        const firstArg = findNextSignificant(tokens, paren + 1);
-        if (firstArg === undefined) {
+        const firstArgument = findNextSignificant(tokens, paren + 1);
+        if (firstArgument === undefined) {
           continue;
         }
-        const comma = findTopLevelComma(tokens, firstArg + 1);
+        const comma = findTopLevelComma(tokens, firstArgument + 1);
         if (comma === undefined) {
           continue;
         }
-        const secondArg = findNextSignificant(tokens, comma + 1);
-        if (secondArg === undefined) {
+        const secondArgument = findNextSignificant(tokens, comma + 1);
+        if (secondArgument === undefined) {
           continue;
         }
-        const secondToken = tokens[secondArg];
+        const secondToken = tokens[secondArgument];
         if (
           secondToken !== undefined &&
           (secondToken.kind === 'string' || secondToken.kind === 'template') &&
