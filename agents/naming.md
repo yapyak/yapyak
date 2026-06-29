@@ -5,18 +5,20 @@ Every rule here is a deterministic operation on an export or type name. The only
 ### Files and folders
 
 - All files and folders use `kebab-case`. No exceptions.
-- Filename matches primary export by spelling, not casing: `createIntl` → `create-intl.tsx`, `useLocale` → `use-locale.ts`.
+- Filename derives from the primary export via the algorithm below — kebab-case, leading verb dropped. `createStorage` → `storage.ts`; `useLocale` → `use-locale.ts` (hooks keep `use`).
 - When only one of a kind exists in a module, drop qualifiers: `vite/parser.ts`, not `vite/vite-parser.ts`.
 
 ### Mechanical filename derivation
 
 Filename derives from the primary export through a deterministic algorithm. No closed list of verbs to maintain.
 
+**Two keep-the-name exceptions:** `utils/` (whole name, step 0) and `use*` hooks (keep the `use` prefix, step 2). Everything else drops the leading verb.
+
 ```
 ALGORITHM:
   0. If the file is in `utils/`, filename = kebab-case(primary export name) verbatim — skip steps 2–6 (no verb-drop, no singularize). A concept name is equally valid; see § `utils/` and `helpers/`.
   1. Kebab-case the primary export name.
-  2. Drop the FIRST segment (the verb — always, no list lookup).
+  2. Drop the FIRST segment (the verb — always, no list lookup). Exception: a leading `use` is kept (React hooks: `useLocale` → `use-locale.ts`).
   3. While first remaining segment is in PREPOSITION list, drop it.
   4. While first remaining segment is in MODIFIER list, drop it.
   5. Singularize the trailing segment.
@@ -59,6 +61,8 @@ Step 4 drops a leading segment **iff it is literally in the MODIFIER closed list
 | --- | --- | --- |
 | `getAllPages` | drop `get` → AllPages → drop `all` → Pages → Page | `page.ts` |
 | `walkSourceFiles` | drop `walk` → SourceFiles → SourceFile | `source-file.ts` |
+| `useLocale` | `use` kept (hook); kebab the rest | `use-locale.ts` |
+| `createStorage` | drop `create` → Storage | `storage.ts` |
 | `wrapWithProgress` | drop `wrap` → WithProgress → drop `with` → Progress | `progress.ts` |
 | `toMessageId` | drop `to` → MessageId | `message-id.ts` |
 | `interpolate` | drop `interpolate` → empty → fall back | `interpolate.ts` |
