@@ -24,27 +24,27 @@ export function applyTypePositions(tokens: Token[]): void {
       continue;
     }
 
-    if (token.type === 'punct' && token.value === '<') {
+    if (token.kind === 'punct' && token.value === '<') {
       const previousIndex = findPreviousSignificant(tokens, index - 1);
       const previous =
         previousIndex === undefined ? undefined : tokens[previousIndex];
       const isGenericOpen =
         previous !== undefined &&
-        (previous.type === 'type' ||
-          previous.type === 'fn-call' ||
-          (previous.type === 'plain' && /^[A-Z][\w$]*$/.test(previous.value)));
+        (previous.kind === 'type' ||
+          previous.kind === 'fn-call' ||
+          (previous.kind === 'plain' && /^[A-Z][\w$]*$/.test(previous.value)));
       if (isGenericOpen) {
         genericDepth++;
       }
     } else if (
-      token.type === 'punct' &&
+      token.kind === 'punct' &&
       token.value === '>' &&
       genericDepth > 0
     ) {
       genericDepth--;
     }
 
-    if (token.type !== 'plain' && token.type !== 'fn-call') {
+    if (token.kind !== 'plain' && token.kind !== 'fn-call') {
       continue;
     }
     if (!/^[A-Z][\w$]*$/.test(token.value)) {
@@ -52,7 +52,7 @@ export function applyTypePositions(tokens: Token[]): void {
     }
 
     if (genericDepth > 0) {
-      token.type = 'type';
+      token.kind = 'type';
       continue;
     }
 
@@ -66,19 +66,19 @@ export function applyTypePositions(tokens: Token[]): void {
     }
 
     const isTriggered =
-      (previous.type === 'punct' && /^[:<|&?]$/.test(previous.value)) ||
-      (previous.type === 'keyword' && TYPE_KEYWORDS.has(previous.value));
+      (previous.kind === 'punct' && /^[:<|&?]$/.test(previous.value)) ||
+      (previous.kind === 'keyword' && TYPE_KEYWORDS.has(previous.value));
 
     if (isTriggered) {
-      token.type = 'type';
+      token.kind = 'type';
       continue;
     }
 
     const nextIndex = findNextSignificant(tokens, index + 1);
     if (nextIndex !== undefined) {
       const next = tokens[nextIndex];
-      if (next?.type === 'keyword' && next.value === 'in') {
-        token.type = 'type';
+      if (next?.kind === 'keyword' && next.value === 'in') {
+        token.kind = 'type';
       }
     }
   }
@@ -93,10 +93,10 @@ function findPreviousSignificant(
     if (token === undefined) {
       continue;
     }
-    if (token.type === 'plain' && /^\s*$/.test(token.value)) {
+    if (token.kind === 'plain' && /^\s*$/.test(token.value)) {
       continue;
     }
-    if (token.type === 'comment') {
+    if (token.kind === 'comment') {
       continue;
     }
     return index;

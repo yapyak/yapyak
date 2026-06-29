@@ -3,7 +3,7 @@ import type { Token } from './type';
 export function expandTxSourceTags(tokens: Token[]): Token[] {
   const result: Token[] = [];
   for (const token of tokens) {
-    if (token.type !== 'tx-source' || !token.value.includes('<')) {
+    if (token.kind !== 'tx-source' || !token.value.includes('<')) {
       result.push(token);
       continue;
     }
@@ -19,7 +19,7 @@ function extractTags(text: string, output: Token[]): void {
   const flushPlain = () => {
     if (index > plainStart) {
       output.push({
-        type: 'tx-source',
+        kind: 'tx-source',
         value: text.slice(plainStart, index),
       });
     }
@@ -78,13 +78,13 @@ function matchTagEnd(text: string, start: number): number {
 function emitTag(raw: string, output: Token[]): void {
   let pos = 0;
   output.push({
-    type: 'punct',
+    kind: 'punct',
     value: '<',
   });
   pos++;
   if (raw.charAt(pos) === '/') {
     output.push({
-      type: 'punct',
+      kind: 'punct',
       value: '/',
     });
     pos++;
@@ -94,7 +94,7 @@ function emitTag(raw: string, output: Token[]): void {
     nameEnd++;
   }
   output.push({
-    type: 'tx-tag',
+    kind: 'tx-tag',
     value: raw.slice(pos, nameEnd),
   });
   pos = nameEnd;
@@ -103,13 +103,13 @@ function emitTag(raw: string, output: Token[]): void {
   }
   if (raw.charAt(pos) === '/') {
     output.push({
-      type: 'punct',
+      kind: 'punct',
       value: '/',
     });
     pos++;
   }
   output.push({
-    type: 'punct',
+    kind: 'punct',
     value: '>',
   });
 }

@@ -10,7 +10,7 @@ export function expandTemplateInterpolations(
   const result: Token[] = [];
 
   for (const token of tokens) {
-    if (token.type !== 'template') {
+    if (token.kind !== 'template') {
       result.push(token);
       continue;
     }
@@ -40,7 +40,7 @@ export function expandTemplateInterpolations(
         hasInterpolation = true;
         if (cursor > lastEnd) {
           segments.push({
-            type: 'template',
+            kind: 'template',
             value: body.slice(lastEnd, cursor),
           });
         }
@@ -62,7 +62,7 @@ export function expandTemplateInterpolations(
           end++;
         }
         segments.push({
-          type: 'punct',
+          kind: 'punct',
           value: '${',
         });
         const inner = body.slice(cursor + 2, end);
@@ -70,7 +70,7 @@ export function expandTemplateInterpolations(
           segments.push(innerToken);
         }
         segments.push({
-          type: 'punct',
+          kind: 'punct',
           value: '}',
         });
         cursor = end + 1;
@@ -87,20 +87,20 @@ export function expandTemplateInterpolations(
 
     if (lastEnd < body.length) {
       segments.push({
-        type: 'template',
+        kind: 'template',
         value: body.slice(lastEnd),
       });
     }
 
     result.push({
-      type: 'template',
+      kind: 'template',
       value: '`',
     });
     for (const segment of segments) {
       result.push(segment);
     }
     result.push({
-      type: 'template',
+      kind: 'template',
       value: '`',
     });
   }

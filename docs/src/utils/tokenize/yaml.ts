@@ -14,7 +14,7 @@ export function tokenizeYaml(code: string): Token[] {
     const indent = /^[ \t]*/.exec(line)?.[0] ?? '';
     if (indent) {
       tokens.push({
-        type: 'plain',
+        kind: 'plain',
         value: indent,
       });
       cursor += indent.length;
@@ -23,7 +23,7 @@ export function tokenizeYaml(code: string): Token[] {
     if (cursor >= line.length) {
       if (trailing) {
         tokens.push({
-          type: 'plain',
+          kind: 'plain',
           value: trailing,
         });
       }
@@ -32,7 +32,7 @@ export function tokenizeYaml(code: string): Token[] {
 
     if (line[cursor] === '#') {
       tokens.push({
-        type: 'comment',
+        kind: 'comment',
         value: line.slice(cursor) + trailing,
       });
       continue;
@@ -43,7 +43,7 @@ export function tokenizeYaml(code: string): Token[] {
       (line[cursor + 1] === ' ' || cursor + 1 === line.length)
     ) {
       tokens.push({
-        type: 'punct',
+        kind: 'punct',
         value: '-',
       });
       cursor++;
@@ -51,7 +51,7 @@ export function tokenizeYaml(code: string): Token[] {
 
     while (cursor < line.length && line[cursor] === ' ') {
       tokens.push({
-        type: 'plain',
+        kind: 'plain',
         value: ' ',
       });
       cursor++;
@@ -60,7 +60,7 @@ export function tokenizeYaml(code: string): Token[] {
     if (cursor >= line.length) {
       if (trailing) {
         tokens.push({
-          type: 'plain',
+          kind: 'plain',
           value: trailing,
         });
       }
@@ -70,11 +70,11 @@ export function tokenizeYaml(code: string): Token[] {
     const keyMatch = /^([A-Za-z_][\w-]*)(\s*:)(\s|$)/.exec(line.slice(cursor));
     if (keyMatch) {
       tokens.push({
-        type: 'keyword',
+        kind: 'keyword',
         value: keyMatch[1] ?? '',
       });
       tokens.push({
-        type: 'punct',
+        kind: 'punct',
         value: keyMatch[2] ?? '',
       });
       cursor += (keyMatch[1]?.length ?? 0) + (keyMatch[2]?.length ?? 0);
@@ -86,7 +86,7 @@ export function tokenizeYaml(code: string): Token[] {
       const ws = /^[ \t]+/.exec(remainder);
       if (ws) {
         tokens.push({
-          type: 'plain',
+          kind: 'plain',
           value: ws[0],
         });
         cursor += ws[0].length;
@@ -95,7 +95,7 @@ export function tokenizeYaml(code: string): Token[] {
 
       if (remainder[0] === '#') {
         tokens.push({
-          type: 'comment',
+          kind: 'comment',
           value: line.slice(cursor),
         });
         cursor = line.length;
@@ -109,7 +109,7 @@ export function tokenizeYaml(code: string): Token[] {
         const match = regex.exec(remainder);
         if (match) {
           tokens.push({
-            type: 'string',
+            kind: 'string',
             value: match[0],
           });
           cursor += match[0].length;
@@ -120,7 +120,7 @@ export function tokenizeYaml(code: string): Token[] {
       const numberMatch = /^-?\d+(?:\.\d+)?(?=\s|$|,)/.exec(remainder);
       if (numberMatch) {
         tokens.push({
-          type: 'number',
+          kind: 'number',
           value: numberMatch[0],
         });
         cursor += numberMatch[0].length;
@@ -130,7 +130,7 @@ export function tokenizeYaml(code: string): Token[] {
       const literalMatch = /^(true|false|null|~)(?=\s|$|,)/.exec(remainder);
       if (literalMatch) {
         tokens.push({
-          type: 'literal',
+          kind: 'literal',
           value: literalMatch[0],
         });
         cursor += literalMatch[0].length;
@@ -138,7 +138,7 @@ export function tokenizeYaml(code: string): Token[] {
       }
 
       tokens.push({
-        type: 'plain',
+        kind: 'plain',
         value: remainder,
       });
       cursor = line.length;
@@ -146,7 +146,7 @@ export function tokenizeYaml(code: string): Token[] {
 
     if (trailing) {
       tokens.push({
-        type: 'plain',
+        kind: 'plain',
         value: trailing,
       });
     }

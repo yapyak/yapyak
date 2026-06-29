@@ -16,7 +16,7 @@ export function reclassifyJsxText(tokens: Token[]): void {
   let rawTextDepth = 0;
 
   for (const token of tokens) {
-    if (token.type === 'jsx-tag') {
+    if (token.kind === 'jsx-tag') {
       isInText = false;
       if (token.value === '/>') {
         depth = Math.max(0, depth - 1);
@@ -37,7 +37,7 @@ export function reclassifyJsxText(tokens: Token[]): void {
       continue;
     }
 
-    if (token.type === 'punct') {
+    if (token.kind === 'punct') {
       const value = token.value;
       if (value === '>') {
         if (depth > 0 && exprDepth === 0 && rawTextDepth === 0) {
@@ -52,7 +52,7 @@ export function reclassifyJsxText(tokens: Token[]): void {
       if (value === '{' && isInText) {
         exprDepth++;
         isInText = false;
-        token.type = 'jsx-brace';
+        token.kind = 'jsx-brace';
         continue;
       }
       if (value === '}' && exprDepth > 0) {
@@ -62,7 +62,7 @@ export function reclassifyJsxText(tokens: Token[]): void {
           isInText = true;
         }
         if (wasOutermost && depth > 0) {
-          token.type = 'jsx-brace';
+          token.kind = 'jsx-brace';
         }
         continue;
       }
@@ -70,12 +70,12 @@ export function reclassifyJsxText(tokens: Token[]): void {
 
     if (isInText) {
       if (
-        token.type === 'keyword' ||
-        token.type === 'literal' ||
-        token.type === 'type' ||
-        token.type === 'fn-call'
+        token.kind === 'keyword' ||
+        token.kind === 'literal' ||
+        token.kind === 'type' ||
+        token.kind === 'fn-call'
       ) {
-        token.type = 'plain';
+        token.kind = 'plain';
       }
     }
   }

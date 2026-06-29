@@ -1,13 +1,13 @@
-import type { TokenType } from './type';
+import type { TokenKind } from './type';
 
 import { describe, expect, it } from 'vitest';
 
 import { tokenizeBash } from './bash';
 
-function types(code: string): TokenType[] {
+function types(code: string): TokenKind[] {
   return tokenizeBash(code)
-    .filter((token) => token.type !== 'plain')
-    .map((token) => token.type);
+    .filter((token) => token.kind !== 'plain')
+    .map((token) => token.kind);
 }
 
 describe('tokenizeBash', () => {

@@ -13,13 +13,13 @@ export function applyYapyakHighlight(tokens: Token[]): void {
       continue;
     }
 
-    if (token.type === 'string' && YAPYAK_STRING_RX.test(token.value)) {
-      token.type = 'tx-yapyak';
+    if (token.kind === 'string' && YAPYAK_STRING_RX.test(token.value)) {
+      token.kind = 'tx-yapyak';
       continue;
     }
 
     if (
-      (token.type === 'fn-call' || token.type === 'plain') &&
+      (token.kind === 'fn-call' || token.kind === 'plain') &&
       token.value === 't'
     ) {
       const next = findNextSignificant(tokens, index + 1);
@@ -27,24 +27,24 @@ export function applyYapyakHighlight(tokens: Token[]): void {
         continue;
       }
 
-      if (tokens[next]?.type === 'punct' && tokens[next]?.value === '(') {
+      if (tokens[next]?.kind === 'punct' && tokens[next]?.value === '(') {
         const argumentIndex = findNextSignificant(tokens, next + 1);
         if (argumentIndex !== undefined) {
           const argumentToken = tokens[argumentIndex];
           if (
             argumentToken !== undefined &&
-            (argumentToken.type === 'string' ||
-              argumentToken.type === 'template') &&
+            (argumentToken.kind === 'string' ||
+              argumentToken.kind === 'template') &&
             !isDottedKey(argumentToken.value)
           ) {
-            token.type = 'tx-call';
-            argumentToken.type = 'tx-source';
+            token.kind = 'tx-call';
+            argumentToken.kind = 'tx-source';
           }
         }
         continue;
       }
 
-      if (tokens[next]?.type === 'punct' && tokens[next]?.value === '.') {
+      if (tokens[next]?.kind === 'punct' && tokens[next]?.value === '.') {
         const method = findNextSignificant(tokens, next + 1);
         if (method === undefined) {
           continue;
@@ -56,7 +56,7 @@ export function applyYapyakHighlight(tokens: Token[]): void {
         const paren = findNextSignificant(tokens, method + 1);
         if (
           paren === undefined ||
-          tokens[paren]?.type !== 'punct' ||
+          tokens[paren]?.kind !== 'punct' ||
           tokens[paren]?.value !== '('
         ) {
           continue;
@@ -76,19 +76,19 @@ export function applyYapyakHighlight(tokens: Token[]): void {
         const secondToken = tokens[secondArg];
         if (
           secondToken !== undefined &&
-          (secondToken.type === 'string' || secondToken.type === 'template') &&
+          (secondToken.kind === 'string' || secondToken.kind === 'template') &&
           !isDottedKey(secondToken.value)
         ) {
-          secondToken.type = 'tx-source';
+          secondToken.kind = 'tx-source';
         }
       }
     }
 
-    if (token.type === 'fn-call' && token.value === '_$pick') {
+    if (token.kind === 'fn-call' && token.value === '_$pick') {
       const openParen = findNextSignificant(tokens, index + 1);
       if (
         openParen !== undefined &&
-        tokens[openParen]?.type === 'punct' &&
+        tokens[openParen]?.kind === 'punct' &&
         tokens[openParen]?.value === '('
       ) {
         let depth = 1;
@@ -98,15 +98,15 @@ export function applyYapyakHighlight(tokens: Token[]): void {
           if (inner === undefined) {
             break;
           }
-          if (inner.type === 'punct') {
+          if (inner.kind === 'punct') {
             if (inner.value === '(') {
               depth++;
             } else if (inner.value === ')') {
               depth--;
             }
           }
-          if (inner.type === 'string' || inner.type === 'template') {
-            inner.type = 'tx-source';
+          if (inner.kind === 'string' || inner.kind === 'template') {
+            inner.kind = 'tx-source';
           }
           cursor++;
         }
@@ -127,7 +127,7 @@ function findTopLevelComma(tokens: Token[], from: number): number | undefined {
     if (token === undefined) {
       continue;
     }
-    if (token.type === 'punct') {
+    if (token.kind === 'punct') {
       if (token.value === '(' || token.value === '[' || token.value === '{') {
         depth++;
         continue;

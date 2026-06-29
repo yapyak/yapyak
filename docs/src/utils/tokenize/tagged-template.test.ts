@@ -8,49 +8,49 @@ describe('markTaggedTemplates', () => {
   it('marks an identifier preceding a template as `fn-call`', () => {
     const tokens: Token[] = [
       {
-        type: 'plain',
+        kind: 'plain',
         value: 'css',
       },
       {
-        type: 'template',
+        kind: 'template',
         value: '`Hello`',
       },
     ];
     markTaggedTemplates(tokens);
-    expect(tokens[0]?.type).toBe('fn-call');
+    expect(tokens[0]?.kind).toBe('fn-call');
   });
 
   it('preserves a `type` token preceding a template by re-marking it as `fn-call`', () => {
     const tokens: Token[] = [
       {
-        type: 'type',
+        kind: 'type',
         value: 'String',
       },
       {
-        type: 'template',
+        kind: 'template',
         value: '`Hello`',
       },
     ];
     markTaggedTemplates(tokens);
-    expect(tokens[0]?.type).toBe('fn-call');
+    expect(tokens[0]?.kind).toBe('fn-call');
   });
 
   it('preserves an identifier separated from the template by whitespace', () => {
     const tokens: Token[] = [
       {
-        type: 'plain',
+        kind: 'plain',
         value: 'css',
       },
       {
-        type: 'plain',
+        kind: 'plain',
         value: ' ',
       },
       {
-        type: 'template',
+        kind: 'template',
         value: '`Hello`',
       },
     ];
     markTaggedTemplates(tokens);
-    expect(tokens[0]?.type).toBe('plain');
+    expect(tokens[0]?.kind).toBe('plain');
   });
 });

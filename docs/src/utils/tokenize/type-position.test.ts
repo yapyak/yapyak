@@ -8,88 +8,88 @@ describe('applyTypePositions', () => {
   it('marks an identifier after `:` as `type`', () => {
     const tokens: Token[] = [
       {
-        type: 'plain',
+        kind: 'plain',
         value: 'value',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: ':',
       },
       {
-        type: 'plain',
+        kind: 'plain',
         value: ' ',
       },
       {
-        type: 'plain',
+        kind: 'plain',
         value: 'Hello',
       },
     ];
     applyTypePositions(tokens);
-    expect(tokens[3]?.type).toBe('type');
+    expect(tokens[3]?.kind).toBe('type');
   });
 
   it('marks an identifier after `extends` as `type`', () => {
     const tokens: Token[] = [
       {
-        type: 'keyword',
+        kind: 'keyword',
         value: 'extends',
       },
       {
-        type: 'plain',
+        kind: 'plain',
         value: ' ',
       },
       {
-        type: 'plain',
+        kind: 'plain',
         value: 'Hello',
       },
     ];
     applyTypePositions(tokens);
-    expect(tokens[2]?.type).toBe('type');
+    expect(tokens[2]?.kind).toBe('type');
   });
 
   it('marks an identifier inside a generic `<...>` as `type`', () => {
     const tokens: Token[] = [
       {
-        type: 'plain',
+        kind: 'plain',
         value: 'Settings',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '<',
       },
       {
-        type: 'plain',
+        kind: 'plain',
         value: 'Hello',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '>',
       },
     ];
     applyTypePositions(tokens);
-    expect(tokens[2]?.type).toBe('type');
+    expect(tokens[2]?.kind).toBe('type');
   });
 
   it('preserves a lowercase identifier after `:`', () => {
     const tokens: Token[] = [
       {
-        type: 'plain',
+        kind: 'plain',
         value: 'value',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: ':',
       },
       {
-        type: 'plain',
+        kind: 'plain',
         value: ' ',
       },
       {
-        type: 'plain',
+        kind: 'plain',
         value: 'hello',
       },
     ];
     applyTypePositions(tokens);
-    expect(tokens[3]?.type).toBe('plain');
+    expect(tokens[3]?.kind).toBe('plain');
   });
 });

@@ -34,7 +34,7 @@ export function tokenizeBash(code: string): Token[] {
       const match = /^[\s]+/.exec(code.slice(index));
       if (match) {
         tokens.push({
-          type: 'plain',
+          kind: 'plain',
           value: match[0],
         });
         if (match[0].includes('\n')) {
@@ -52,7 +52,7 @@ export function tokenizeBash(code: string): Token[] {
       const value =
         newline === -1 ? code.slice(index) : code.slice(index, newline);
       tokens.push({
-        type: 'comment',
+        kind: 'comment',
         value,
       });
       index += value.length;
@@ -65,7 +65,7 @@ export function tokenizeBash(code: string): Token[] {
       const match = re.exec(code.slice(index));
       if (match) {
         tokens.push({
-          type: 'string',
+          kind: 'string',
           value: match[0],
         });
         index += match[0].length;
@@ -77,7 +77,7 @@ export function tokenizeBash(code: string): Token[] {
       const braced = /^\$\{[^}]+\}/.exec(code.slice(index));
       if (braced) {
         tokens.push({
-          type: 'bash-var',
+          kind: 'bash-var',
           value: braced[0],
         });
         index += braced[0].length;
@@ -86,7 +86,7 @@ export function tokenizeBash(code: string): Token[] {
       const plain = /^\$[A-Za-z_][\w]*/.exec(code.slice(index));
       if (plain) {
         tokens.push({
-          type: 'bash-var',
+          kind: 'bash-var',
           value: plain[0],
         });
         index += plain[0].length;
@@ -101,7 +101,7 @@ export function tokenizeBash(code: string): Token[] {
         const flag = /^--?[A-Za-z][\w-]*/.exec(code.slice(index));
         if (flag) {
           tokens.push({
-            type: 'bash-flag',
+            kind: 'bash-flag',
             value: flag[0],
           });
           index += flag[0].length;
@@ -117,7 +117,7 @@ export function tokenizeBash(code: string): Token[] {
         const match = /^\d+(?:\.\d+)?/.exec(code.slice(index));
         if (match) {
           tokens.push({
-            type: 'number',
+            kind: 'number',
             value: match[0],
           });
           index += match[0].length;
@@ -130,7 +130,7 @@ export function tokenizeBash(code: string): Token[] {
       const match = /^[A-Za-z_][\w-]*/.exec(code.slice(index));
       if (match) {
         tokens.push({
-          type: 'fn-call',
+          kind: 'fn-call',
           value: match[0],
         });
         isAtLineStart = false;
@@ -146,7 +146,7 @@ export function tokenizeBash(code: string): Token[] {
       const match = /^[A-Za-z_][\w-]*/.exec(code.slice(index));
       if (match) {
         tokens.push({
-          type: 'bash-subcommand',
+          kind: 'bash-subcommand',
           value: match[0],
         });
         isExpectingSubcommand = false;
@@ -160,7 +160,7 @@ export function tokenizeBash(code: string): Token[] {
       const match = /^@?[\w][\w./@-]*/.exec(code.slice(index));
       if (match) {
         tokens.push({
-          type: 'bash-package',
+          kind: 'bash-package',
           value: match[0],
         });
         index += match[0].length;
@@ -172,7 +172,7 @@ export function tokenizeBash(code: string): Token[] {
       isAtLineStart = false;
     }
     tokens.push({
-      type: 'plain',
+      kind: 'plain',
       value: character,
     });
     index++;

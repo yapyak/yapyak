@@ -8,11 +8,11 @@ describe('findNextSignificant', () => {
   it('returns the index of the next non-whitespace token', () => {
     const tokens: Token[] = [
       {
-        type: 'plain',
+        kind: 'plain',
         value: '  ',
       },
       {
-        type: 'keyword',
+        kind: 'keyword',
         value: 'const',
       },
     ];
@@ -23,7 +23,7 @@ describe('findNextSignificant', () => {
   it('returns `undefined` when no significant token follows', () => {
     const tokens: Token[] = [
       {
-        type: 'plain',
+        kind: 'plain',
         value: '  ',
       },
     ];

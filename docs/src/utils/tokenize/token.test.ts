@@ -7,7 +7,7 @@ describe('scanToken', () => {
     expect(scanToken('const x = 1', 0, 'ts', undefined)).toEqual({
       end: 5,
       token: {
-        type: 'keyword',
+        kind: 'keyword',
         value: 'const',
       },
     });
@@ -17,7 +17,7 @@ describe('scanToken', () => {
     expect(scanToken('true', 0, 'ts', undefined)).toEqual({
       end: 4,
       token: {
-        type: 'literal',
+        kind: 'literal',
         value: 'true',
       },
     });
@@ -27,7 +27,7 @@ describe('scanToken', () => {
     expect(scanToken('string', 0, 'ts', undefined)).toEqual({
       end: 6,
       token: {
-        type: 'type',
+        kind: 'type',
         value: 'string',
       },
     });
@@ -35,77 +35,77 @@ describe('scanToken', () => {
 
   it('returns a `fn-call` token for an identifier followed by `(`', () => {
     expect(scanToken('hello(', 0, 'ts', undefined)?.token).toEqual({
-      type: 'fn-call',
+      kind: 'fn-call',
       value: 'hello',
     });
   });
 
   it('returns a `comment` token for a line comment', () => {
     expect(scanToken('// Hello', 0, 'ts', undefined)?.token).toEqual({
-      type: 'comment',
+      kind: 'comment',
       value: '// Hello',
     });
   });
 
   it('returns a `comment` token for a block comment', () => {
     expect(scanToken('/* Hello */', 0, 'ts', undefined)?.token).toEqual({
-      type: 'comment',
+      kind: 'comment',
       value: '/* Hello */',
     });
   });
 
   it('returns a `string` token for a double-quoted string', () => {
     expect(scanToken('"Hello"', 0, 'ts', undefined)?.token).toEqual({
-      type: 'string',
+      kind: 'string',
       value: '"Hello"',
     });
   });
 
   it('returns a `template` token for a backtick string', () => {
     expect(scanToken('`Hello`', 0, 'ts', undefined)?.token).toEqual({
-      type: 'template',
+      kind: 'template',
       value: '`Hello`',
     });
   });
 
   it('returns a `number` token for a decimal literal', () => {
     expect(scanToken('42', 0, 'ts', undefined)?.token).toEqual({
-      type: 'number',
+      kind: 'number',
       value: '42',
     });
   });
 
   it('returns a `number` token for a hex literal', () => {
     expect(scanToken('0x1a', 0, 'ts', undefined)?.token).toEqual({
-      type: 'number',
+      kind: 'number',
       value: '0x1a',
     });
   });
 
   it('returns a `spread` token for `...`', () => {
     expect(scanToken('...', 0, 'ts', undefined)?.token).toEqual({
-      type: 'spread',
+      kind: 'spread',
       value: '...',
     });
   });
 
   it('returns a `decorator` token for an `@name` annotation', () => {
     expect(scanToken('@Hello', 0, 'ts', undefined)?.token).toEqual({
-      type: 'decorator',
+      kind: 'decorator',
       value: '@Hello',
     });
   });
 
   it('returns a `punct` token for a single punctuation character', () => {
     expect(scanToken(';', 0, 'ts', undefined)?.token).toEqual({
-      type: 'punct',
+      kind: 'punct',
       value: ';',
     });
   });
 
   it('returns a `jsx-tag` token for a JSX opening tag', () => {
     expect(scanToken('<div', 0, 'tsx', undefined)?.token).toEqual({
-      type: 'jsx-tag',
+      kind: 'jsx-tag',
       value: '<div',
     });
   });
@@ -113,11 +113,11 @@ describe('scanToken', () => {
   it('returns a `regex` token after a `(` punctuation', () => {
     expect(
       scanToken('/abc/g', 0, 'ts', {
-        type: 'punct',
+        kind: 'punct',
         value: '(',
       })?.token,
     ).toEqual({
-      type: 'regex',
+      kind: 'regex',
       value: '/abc/g',
     });
   });

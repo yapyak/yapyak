@@ -9,7 +9,7 @@ export function findNextSignificant(
     if (token === undefined) {
       continue;
     }
-    if (token.type === 'plain' && /^\s*$/.test(token.value)) {
+    if (token.kind === 'plain' && /^\s*$/.test(token.value)) {
       continue;
     }
     return index;

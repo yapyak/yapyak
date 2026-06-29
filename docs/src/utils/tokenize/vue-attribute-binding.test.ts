@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { expandVueAttributeBindings } from './vue-attribute-binding';
 
 const HELLO_TOKEN: Token = {
-  type: 'plain',
+  kind: 'plain',
   value: 'Hello',
 };
 
@@ -17,19 +17,19 @@ describe('expandVueAttributeBindings', () => {
   it('expands a `:attr="..."` binding by re-tokenizing the inner string', () => {
     const tokens: Token[] = [
       {
-        type: 'punct',
+        kind: 'punct',
         value: ':',
       },
       {
-        type: 'fn-call',
+        kind: 'fn-call',
         value: 'value',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '=',
       },
       {
-        type: 'string',
+        kind: 'string',
         value: '"World"',
       },
     ];
@@ -41,19 +41,19 @@ describe('expandVueAttributeBindings', () => {
   it('expands an `@event="..."` binding by re-tokenizing the inner string', () => {
     const tokens: Token[] = [
       {
-        type: 'punct',
+        kind: 'punct',
         value: '@',
       },
       {
-        type: 'fn-call',
+        kind: 'fn-call',
         value: 'click',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '=',
       },
       {
-        type: 'string',
+        kind: 'string',
         value: '"World"',
       },
     ];
@@ -65,15 +65,15 @@ describe('expandVueAttributeBindings', () => {
   it('preserves a string value when no `:` or `@` binding precedes it', () => {
     const tokens: Token[] = [
       {
-        type: 'fn-call',
+        kind: 'fn-call',
         value: 'class',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '=',
       },
       {
-        type: 'string',
+        kind: 'string',
         value: '"Hello"',
       },
     ];

@@ -6,8 +6,8 @@ export function mergePlainTokens(tokens: Token[]): Token[] {
     const previous = result[result.length - 1];
     if (
       previous !== undefined &&
-      previous.type === 'plain' &&
-      token.type === 'plain'
+      previous.kind === 'plain' &&
+      token.kind === 'plain'
     ) {
       previous.value += token.value;
     } else {

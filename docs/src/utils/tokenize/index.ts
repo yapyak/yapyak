@@ -1,3 +1,3 @@
-export type { Language, Token, TokenType } from './type';
+export type { Language, Token, TokenKind } from './type';
 
 export { tokenize } from './tokenize';

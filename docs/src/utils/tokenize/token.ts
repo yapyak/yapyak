@@ -1,4 +1,4 @@
-import type { Language, Token, TokenType } from './type';
+import type { Language, Token, TokenKind } from './type';
 
 const KEYWORDS = new Set([
   'import',
@@ -134,7 +134,7 @@ export function scanToken(
       return {
         end: index + match[0].length,
         token: {
-          type: 'plain',
+          kind: 'plain',
           value: match[0],
         },
       };
@@ -148,7 +148,7 @@ export function scanToken(
     return {
       end: index + value.length,
       token: {
-        type: 'comment',
+        kind: 'comment',
         value,
       },
     };
@@ -160,7 +160,7 @@ export function scanToken(
     return {
       end,
       token: {
-        type: 'comment',
+        kind: 'comment',
         value: code.slice(index, end),
       },
     };
@@ -174,7 +174,7 @@ export function scanToken(
       return {
         end: index + match[0].length,
         token: {
-          type: 'regex',
+          kind: 'regex',
           value: match[0],
         },
       };
@@ -189,7 +189,7 @@ export function scanToken(
       return {
         end: index + match[0].length,
         token: {
-          type: 'string',
+          kind: 'string',
           value: match[0],
         },
       };
@@ -202,7 +202,7 @@ export function scanToken(
       return {
         end: index + match[0].length,
         token: {
-          type: 'template',
+          kind: 'template',
           value: match[0],
         },
       };
@@ -215,7 +215,7 @@ export function scanToken(
       return {
         end: index + match[0].length,
         token: {
-          type: 'jsx-tag',
+          kind: 'jsx-tag',
           value: match[0],
         },
       };
@@ -230,7 +230,7 @@ export function scanToken(
     return {
       end: index + 2,
       token: {
-        type: 'jsx-tag',
+        kind: 'jsx-tag',
         value: '/>',
       },
     };
@@ -243,7 +243,7 @@ export function scanToken(
       return {
         end: index + hex[0].length,
         token: {
-          type: 'number',
+          kind: 'number',
           value: hex[0],
         },
       };
@@ -253,7 +253,7 @@ export function scanToken(
       return {
         end: index + bin[0].length,
         token: {
-          type: 'number',
+          kind: 'number',
           value: bin[0],
         },
       };
@@ -263,7 +263,7 @@ export function scanToken(
       return {
         end: index + oct[0].length,
         token: {
-          type: 'number',
+          kind: 'number',
           value: oct[0],
         },
       };
@@ -274,7 +274,7 @@ export function scanToken(
       return {
         end: index + decimal[0].length,
         token: {
-          type: 'number',
+          kind: 'number',
           value: decimal[0],
         },
       };
@@ -285,7 +285,7 @@ export function scanToken(
     return {
       end: index + 3,
       token: {
-        type: 'spread',
+        kind: 'spread',
         value: '...',
       },
     };
@@ -297,7 +297,7 @@ export function scanToken(
       return {
         end: index + match[0].length,
         token: {
-          type: 'decorator',
+          kind: 'decorator',
           value: match[0],
         },
       };
@@ -310,26 +310,26 @@ export function scanToken(
       const value = match[0];
       const next = code[index + value.length];
       const isMemberAccess =
-        previous?.type === 'punct' && previous.value === '.';
+        previous?.kind === 'punct' && previous.value === '.';
       const isObjectPropertyKey =
         next === ':' &&
-        previous?.type === 'punct' &&
+        previous?.kind === 'punct' &&
         (previous.value === '{' || previous.value === ',');
       const isContextualPlain = isMemberAccess || isObjectPropertyKey;
-      let type: TokenType = 'plain';
+      let kind: TokenKind = 'plain';
       if (!isContextualPlain && KEYWORDS.has(value)) {
-        type = 'keyword';
+        kind = 'keyword';
       } else if (!isContextualPlain && LITERALS.has(value)) {
-        type = 'literal';
+        kind = 'literal';
       } else if (!isContextualPlain && BUILTIN_TYPES.has(value)) {
-        type = 'type';
+        kind = 'type';
       } else if (next === '(') {
-        type = 'fn-call';
+        kind = 'fn-call';
       }
       return {
         end: index + value.length,
         token: {
-          type,
+          kind,
           value,
         },
       };
@@ -340,7 +340,7 @@ export function scanToken(
     return {
       end: index + 1,
       token: {
-        type: 'punct',
+        kind: 'punct',
         value: character,
       },
     };
@@ -353,10 +353,10 @@ function isRegexContext(previous: Token | undefined): boolean {
   if (previous === undefined) {
     return true;
   }
-  if (previous.type === 'punct' && REGEX_PREV_PUNCT_RX.test(previous.value)) {
+  if (previous.kind === 'punct' && REGEX_PREV_PUNCT_RX.test(previous.value)) {
     return true;
   }
-  if (previous.type === 'keyword' && REGEX_PREV_KEYWORDS.has(previous.value)) {
+  if (previous.kind === 'keyword' && REGEX_PREV_KEYWORDS.has(previous.value)) {
     return true;
   }
   return false;

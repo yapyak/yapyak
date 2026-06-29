@@ -15,7 +15,7 @@ const ICU_KEYWORDS: Set<string> = new Set([
 export function expandTxSourcePlaceholders(tokens: Token[]): Token[] {
   const result: Token[] = [];
   for (const token of tokens) {
-    if (token.type !== 'tx-source') {
+    if (token.kind !== 'tx-source') {
       result.push(token);
       continue;
     }
@@ -39,12 +39,12 @@ function expandSingleSource(value: string): Token[] {
 
   if (isQuoted) {
     result.push({
-      type: 'tx-source',
+      kind: 'tx-source',
       value: firstChar,
     });
     parseTextWithPlaceholders(value.slice(1, -1), result);
     result.push({
-      type: 'tx-source',
+      kind: 'tx-source',
       value: lastChar,
     });
     return result;
@@ -61,7 +61,7 @@ function parseTextWithPlaceholders(text: string, output: Token[]): void {
   const flushPlain = () => {
     if (index > plainStart) {
       output.push({
-        type: 'tx-source',
+        kind: 'tx-source',
         value: text.slice(plainStart, index),
       });
     }
@@ -73,7 +73,7 @@ function parseTextWithPlaceholders(text: string, output: Token[]): void {
       const closeIndex = findMatchingClose(text, index);
       if (closeIndex === -1) {
         output.push({
-          type: 'tx-source',
+          kind: 'tx-source',
           value: text.slice(index),
         });
         return;
@@ -91,7 +91,7 @@ function parseTextWithPlaceholders(text: string, output: Token[]): void {
 
 function parsePlaceholder(text: string, output: Token[]): void {
   output.push({
-    type: 'punct',
+    kind: 'punct',
     value: '{',
   });
 
@@ -100,11 +100,11 @@ function parsePlaceholder(text: string, output: Token[]): void {
 
   if (firstComma === -1) {
     output.push({
-      type: 'tx-placeholder',
+      kind: 'tx-placeholder',
       value: inner,
     });
     output.push({
-      type: 'punct',
+      kind: 'punct',
       value: '}',
     });
     return;
@@ -112,11 +112,11 @@ function parsePlaceholder(text: string, output: Token[]): void {
 
   const variableName = inner.slice(0, firstComma);
   output.push({
-    type: 'tx-placeholder',
+    kind: 'tx-placeholder',
     value: variableName,
   });
   output.push({
-    type: 'punct',
+    kind: 'punct',
     value: ',',
   });
 
@@ -130,11 +130,11 @@ function parsePlaceholder(text: string, output: Token[]): void {
 
   if (secondComma === -1) {
     output.push({
-      type: 'tx-icu-keyword',
+      kind: 'tx-icu-keyword',
       value: trimmedAfterFirst,
     });
     output.push({
-      type: 'punct',
+      kind: 'punct',
       value: '}',
     });
     return;
@@ -143,14 +143,14 @@ function parsePlaceholder(text: string, output: Token[]): void {
   const keywordEnd = secondComma - (firstComma + 1) - consumedFirstWhitespace;
   const keyword = trimmedAfterFirst.slice(0, keywordEnd).trimEnd();
   output.push({
-    type: 'tx-icu-keyword',
+    kind: 'tx-icu-keyword',
     value: keyword,
   });
   const keywordTrailingWhitespace =
     trimmedAfterFirst.slice(0, keywordEnd).length - keyword.length;
   if (keywordTrailingWhitespace > 0) {
     output.push({
-      type: 'plain',
+      kind: 'plain',
       value: trimmedAfterFirst.slice(
         keyword.length,
         keyword.length + keywordTrailingWhitespace,
@@ -158,13 +158,13 @@ function parsePlaceholder(text: string, output: Token[]): void {
     });
   }
   output.push({
-    type: 'punct',
+    kind: 'punct',
     value: ',',
   });
 
   parseBranches(inner.slice(secondComma + 1), output);
   output.push({
-    type: 'punct',
+    kind: 'punct',
     value: '}',
   });
 }
@@ -178,7 +178,7 @@ function parseBranches(text: string, output: Token[]): void {
     }
     if (index > leadingStart) {
       output.push({
-        type: 'plain',
+        kind: 'plain',
         value: text.slice(leadingStart, index),
       });
     }
@@ -197,7 +197,7 @@ function parseBranches(text: string, output: Token[]): void {
     const key = text.slice(keyStart, index);
     if (key.length > 0) {
       output.push({
-        type: 'tx-icu-key',
+        kind: 'tx-icu-key',
         value: key,
       });
     }
@@ -208,7 +208,7 @@ function parseBranches(text: string, output: Token[]): void {
     }
     if (index > trailingStart) {
       output.push({
-        type: 'plain',
+        kind: 'plain',
         value: text.slice(trailingStart, index),
       });
     }
@@ -217,18 +217,18 @@ function parseBranches(text: string, output: Token[]): void {
       const closeIndex = findMatchingClose(text, index);
       if (closeIndex === -1) {
         output.push({
-          type: 'tx-source',
+          kind: 'tx-source',
           value: text.slice(index),
         });
         return;
       }
       output.push({
-        type: 'punct',
+        kind: 'punct',
         value: '{',
       });
       parseBranchText(text.slice(index + 1, closeIndex), output);
       output.push({
-        type: 'punct',
+        kind: 'punct',
         value: '}',
       });
       index = closeIndex + 1;
@@ -243,7 +243,7 @@ function parseBranchText(text: string, output: Token[]): void {
   const flushPlain = () => {
     if (index > plainStart) {
       output.push({
-        type: 'tx-source',
+        kind: 'tx-source',
         value: text.slice(plainStart, index),
       });
     }
@@ -254,7 +254,7 @@ function parseBranchText(text: string, output: Token[]): void {
     if (char === '#') {
       flushPlain();
       output.push({
-        type: 'tx-icu-hash',
+        kind: 'tx-icu-hash',
         value: '#',
       });
       index++;
@@ -264,7 +264,7 @@ function parseBranchText(text: string, output: Token[]): void {
       const closeIndex = findMatchingClose(text, index);
       if (closeIndex === -1) {
         output.push({
-          type: 'tx-source',
+          kind: 'tx-source',
           value: text.slice(index),
         });
         return;
@@ -287,7 +287,7 @@ function emitLeadingWhitespace(text: string, output: Token[]): void {
   }
   if (end > 0) {
     output.push({
-      type: 'plain',
+      kind: 'plain',
       value: text.slice(0, end),
     });
   }

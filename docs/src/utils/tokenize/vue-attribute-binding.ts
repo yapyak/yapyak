@@ -17,7 +17,7 @@ export function expandVueAttributeBindings(
     }
 
     if (
-      token.type === 'punct' &&
+      token.kind === 'punct' &&
       (token.value === ':' || token.value === '@')
     ) {
       const identIndex = findNextNonWhitespace(tokens, index + 1);
@@ -25,21 +25,21 @@ export function expandVueAttributeBindings(
         const ident = tokens[identIndex];
         if (
           ident !== undefined &&
-          (ident.type === 'fn-call' ||
-            ident.type === 'plain' ||
-            ident.type === 'keyword')
+          (ident.kind === 'fn-call' ||
+            ident.kind === 'plain' ||
+            ident.kind === 'keyword')
         ) {
           const equalsIndex = findNextNonWhitespace(tokens, identIndex + 1);
           if (equalsIndex !== -1) {
             const equals = tokens[equalsIndex];
-            if (equals?.type === 'punct' && equals.value === '=') {
+            if (equals?.kind === 'punct' && equals.value === '=') {
               const stringIndex = findNextNonWhitespace(
                 tokens,
                 equalsIndex + 1,
               );
               if (stringIndex !== -1) {
                 const str = tokens[stringIndex];
-                if (str?.type === 'string' && str.value.length >= 2) {
+                if (str?.kind === 'string' && str.value.length >= 2) {
                   for (let cursor = index; cursor < stringIndex; cursor++) {
                     const passthrough = tokens[cursor];
                     if (passthrough !== undefined) {
@@ -50,14 +50,14 @@ export function expandVueAttributeBindings(
                   const inner = str.value.slice(1, -1);
                   const innerTokens = tokenize(inner, 'ts');
                   result.push({
-                    type: 'string',
+                    kind: 'string',
                     value: quote,
                   });
                   for (const innerToken of innerTokens) {
                     result.push(innerToken);
                   }
                   result.push({
-                    type: 'string',
+                    kind: 'string',
                     value: quote,
                   });
                   index = stringIndex + 1;
@@ -83,7 +83,7 @@ function findNextNonWhitespace(tokens: Token[], from: number): number {
     if (token === undefined) {
       continue;
     }
-    if (token.type === 'plain' && /^\s+$/.test(token.value)) {
+    if (token.kind === 'plain' && /^\s+$/.test(token.value)) {
       continue;
     }
     return index;

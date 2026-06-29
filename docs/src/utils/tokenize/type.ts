@@ -13,7 +13,7 @@ export type Language =
   | 'yaml'
   | 'translation';
 
-export type TokenType =
+export type TokenKind =
   | 'plain'
   | 'keyword'
   | 'type'
@@ -46,6 +46,6 @@ export type TokenType =
   | 'bash-package';
 
 export type Token = {
-  type: TokenType;
+  kind: TokenKind;
   value: string;
 };

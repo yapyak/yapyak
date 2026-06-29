@@ -6,13 +6,13 @@ import { expandTxSourcePlaceholders } from './tx-icu';
 
 function tx(value: string): Token {
   return {
-    type: 'tx-source',
+    kind: 'tx-source',
     value,
   };
 }
 
 function types(tokens: Token[]): string[] {
-  return tokens.map((token) => token.type);
+  return tokens.map((token) => token.kind);
 }
 
 function values(tokens: Token[]): string[] {
@@ -23,11 +23,11 @@ describe('expandTxSourcePlaceholders', () => {
   it('returns input unchanged when no tx-source tokens', () => {
     const input: Token[] = [
       {
-        type: 'keyword',
+        kind: 'keyword',
         value: 'return',
       },
       {
-        type: 'plain',
+        kind: 'plain',
         value: ' ',
       },
     ];
@@ -112,14 +112,14 @@ describe('expandTxSourcePlaceholders', () => {
     expect(types(result)).toContain('tx-icu-keyword');
     expect(types(result)).toContain('tx-icu-key');
 
-    const keyword = result.find((token) => token.type === 'tx-icu-keyword');
+    const keyword = result.find((token) => token.kind === 'tx-icu-keyword');
     expect(keyword?.value).toBe('plural');
 
-    const placeholder = result.find((token) => token.type === 'tx-placeholder');
+    const placeholder = result.find((token) => token.kind === 'tx-placeholder');
     expect(placeholder?.value).toBe('count');
 
     const keys = result
-      .filter((token) => token.type === 'tx-icu-key')
+      .filter((token) => token.kind === 'tx-icu-key')
       .map((token) => token.value);
     expect(keys).toEqual([
       'one',
@@ -131,11 +131,11 @@ describe('expandTxSourcePlaceholders', () => {
     const result = expandTxSourcePlaceholders([
       tx("'{gender, select, male {he} female {she} other {they}}'"),
     ]);
-    const keyword = result.find((token) => token.type === 'tx-icu-keyword');
+    const keyword = result.find((token) => token.kind === 'tx-icu-keyword');
     expect(keyword?.value).toBe('select');
 
     const keys = result
-      .filter((token) => token.type === 'tx-icu-key')
+      .filter((token) => token.kind === 'tx-icu-key')
       .map((token) => token.value);
     expect(keys).toEqual([
       'male',
@@ -148,7 +148,7 @@ describe('expandTxSourcePlaceholders', () => {
     const result = expandTxSourcePlaceholders([
       tx("'{count, plural, one {# item} other {# items}}'"),
     ]);
-    const hashes = result.filter((token) => token.type === 'tx-icu-hash');
+    const hashes = result.filter((token) => token.kind === 'tx-icu-hash');
     expect(hashes).toHaveLength(2);
     expect(hashes[0]?.value).toBe('#');
   });
@@ -158,7 +158,7 @@ describe('expandTxSourcePlaceholders', () => {
       tx("'{count, plural, =0 {none} =1 {one} other {many}}'"),
     ]);
     const keys = result
-      .filter((token) => token.type === 'tx-icu-key')
+      .filter((token) => token.kind === 'tx-icu-key')
       .map((token) => token.value);
     expect(keys).toEqual([
       '=0',
@@ -172,7 +172,7 @@ describe('expandTxSourcePlaceholders', () => {
       tx("'{count, plural, one {1 message from {sender}} other {# messages}}'"),
     ]);
     const placeholders = result
-      .filter((token) => token.type === 'tx-placeholder')
+      .filter((token) => token.kind === 'tx-placeholder')
       .map((token) => token.value);
     expect(placeholders).toEqual([
       'count',
@@ -184,7 +184,7 @@ describe('expandTxSourcePlaceholders', () => {
     const result = expandTxSourcePlaceholders([
       tx("'{price, number, ::currency/USD}'"),
     ]);
-    const keyword = result.find((token) => token.type === 'tx-icu-keyword');
+    const keyword = result.find((token) => token.kind === 'tx-icu-keyword');
     expect(keyword?.value).toBe('number');
   });
 
@@ -192,7 +192,7 @@ describe('expandTxSourcePlaceholders', () => {
     const result = expandTxSourcePlaceholders([
       tx("'broken {name'"),
     ]);
-    expect(result.some((token) => token.type === 'tx-placeholder')).toBe(false);
+    expect(result.some((token) => token.kind === 'tx-placeholder')).toBe(false);
   });
 
   it('preserves whitespace around ICU syntax via plain tokens', () => {
@@ -218,21 +218,21 @@ describe('expandTxSourcePlaceholders', () => {
   it('preserves non tx-source tokens between expansions', () => {
     const result = expandTxSourcePlaceholders([
       {
-        type: 'keyword',
+        kind: 'keyword',
         value: 'return',
       },
       tx("'{a}'"),
       {
-        type: 'punct',
+        kind: 'punct',
         value: ';',
       },
     ]);
     expect(result[0]).toEqual({
-      type: 'keyword',
+      kind: 'keyword',
       value: 'return',
     });
     expect(result[result.length - 1]).toEqual({
-      type: 'punct',
+      kind: 'punct',
       value: ';',
     });
   });

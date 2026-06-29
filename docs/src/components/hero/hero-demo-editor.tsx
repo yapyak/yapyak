@@ -219,7 +219,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
         >
           {tokens.map((token, index) => {
             if (
-              token.type === 'tx-source' &&
+              token.kind === 'tx-source' &&
               token.value.includes(CARET_MARKER)
             ) {
               const inner = token.value.slice(1, -1);
@@ -229,7 +229,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
               return (
                 <CodeBlockToken
                   key={index}
-                  type="tx-source"
+                  kind="tx-source"
                 >
                   <Box as="span">'</Box>
                   {before}
@@ -247,7 +247,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
             return (
               <CodeBlockToken
                 key={index}
-                type={token.type}
+                kind={token.kind}
               >
                 {token.value}
               </CodeBlockToken>

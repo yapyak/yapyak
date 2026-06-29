@@ -72,7 +72,7 @@ export function BlockRendererNodeDiagnostics(
                 {highlighted.map((token, tokenIndex) => (
                   <CodeBlockToken
                     key={tokenIndex}
-                    type={token.type}
+                    kind={token.kind}
                   >
                     {token.value}
                   </CodeBlockToken>

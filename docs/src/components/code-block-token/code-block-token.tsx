@@ -1,16 +1,16 @@
 import type { BoxProps } from '#components/box';
-import type { TokenType } from '#utils/tokenize';
+import type { TokenKind } from '#utils/tokenize';
 
 import { Box } from '#components/box';
 
 import styles from './code-block-token.module.css';
 
 export type CodeBlockTokenProps = BoxProps<'span'> & {
-  type: TokenType;
+  kind: TokenKind;
 };
 
 export function CodeBlockToken(props: CodeBlockTokenProps) {
-  const { className, type, ...restProps } = props;
+  const { className, kind, ...restProps } = props;
 
   return (
     <Box
@@ -20,7 +20,7 @@ export function CodeBlockToken(props: CodeBlockTokenProps) {
         styles.CodeBlockToken,
         className,
       ]}
-      data-type={type}
+      data-kind={kind}
     />
   );
 }

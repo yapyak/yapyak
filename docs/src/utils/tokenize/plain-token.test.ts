@@ -8,22 +8,22 @@ describe('mergePlainTokens', () => {
   it('merges every adjacent `plain` token into a single token', () => {
     const tokens: Token[] = [
       {
-        type: 'plain',
+        kind: 'plain',
         value: 'Hello',
       },
       {
-        type: 'plain',
+        kind: 'plain',
         value: ' ',
       },
       {
-        type: 'plain',
+        kind: 'plain',
         value: 'World',
       },
     ];
 
     expect(mergePlainTokens(tokens)).toEqual([
       {
-        type: 'plain',
+        kind: 'plain',
         value: 'Hello World',
       },
     ]);
@@ -32,30 +32,30 @@ describe('mergePlainTokens', () => {
   it('preserves a non-`plain` token between two `plain` tokens', () => {
     const tokens: Token[] = [
       {
-        type: 'plain',
+        kind: 'plain',
         value: 'Hello ',
       },
       {
-        type: 'keyword',
+        kind: 'keyword',
         value: 'const',
       },
       {
-        type: 'plain',
+        kind: 'plain',
         value: ' World',
       },
     ];
 
     expect(mergePlainTokens(tokens)).toEqual([
       {
-        type: 'plain',
+        kind: 'plain',
         value: 'Hello ',
       },
       {
-        type: 'keyword',
+        kind: 'keyword',
         value: 'const',
       },
       {
-        type: 'plain',
+        kind: 'plain',
         value: ' World',
       },
     ]);

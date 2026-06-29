@@ -1,126 +1,126 @@
 @layer components {
   .CodeBlockToken {
-    &[data-type="plain"] {
+    &[data-kind="plain"] {
       color: inherit;
     }
 
-    &[data-type="keyword"] {
+    &[data-kind="keyword"] {
       color: var(--syntax-keyword);
     }
 
-    &[data-type="type"] {
+    &[data-kind="type"] {
       color: var(--syntax-type);
     }
 
-    &[data-type="literal"] {
+    &[data-kind="literal"] {
       color: var(--syntax-literal);
     }
 
-    &[data-type="string"],
-    &[data-type="template"] {
+    &[data-kind="string"],
+    &[data-kind="template"] {
       color: var(--syntax-string);
     }
 
-    &[data-type="number"] {
+    &[data-kind="number"] {
       color: var(--syntax-number);
     }
 
-    &[data-type="comment"] {
+    &[data-kind="comment"] {
       font-style: italic;
       color: var(--foreground-softer);
     }
 
-    &[data-type="fn-call"],
-    &[data-type="tx-call"] {
+    &[data-kind="fn-call"],
+    &[data-kind="tx-call"] {
       color: var(--syntax-fn-call);
     }
 
-    &[data-type="jsx-tag"] {
+    &[data-kind="jsx-tag"] {
       color: var(--syntax-jsx-tag);
     }
 
-    &[data-type="jsx-brace"] {
+    &[data-kind="jsx-brace"] {
       color: var(--syntax-jsx-tag);
     }
 
-    &[data-type="punct"] {
+    &[data-kind="punct"] {
       color: var(--foreground-softer);
     }
 
-    &[data-type="spread"] {
+    &[data-kind="spread"] {
       color: var(--syntax-keyword);
     }
 
-    &[data-type="regex"] {
+    &[data-kind="regex"] {
       color: var(--syntax-string);
     }
 
-    &[data-type="decorator"] {
+    &[data-kind="decorator"] {
       color: var(--syntax-fn-call);
     }
 
-    &[data-type="tx-yapyak"] {
+    &[data-kind="tx-yapyak"] {
       color: var(--syntax-string);
     }
 
-    &[data-type="tx-source"] {
+    &[data-kind="tx-source"] {
       color: var(--brand);
       text-shadow: var(--shadow-brand-glow);
     }
 
-    &[data-type="tx-placeholder"] {
+    &[data-kind="tx-placeholder"] {
       font-style: italic;
       color: var(--foreground);
     }
 
-    &[data-type="tx-icu-keyword"] {
+    &[data-kind="tx-icu-keyword"] {
       color: var(--syntax-keyword);
     }
 
-    &[data-type="tx-icu-key"] {
+    &[data-kind="tx-icu-key"] {
       color: var(--syntax-literal);
     }
 
-    &[data-type="tx-icu-hash"] {
+    &[data-kind="tx-icu-hash"] {
       color: var(--brand);
       text-shadow: var(--shadow-brand-glow);
     }
 
-    &[data-type="tx-tag"] {
+    &[data-kind="tx-tag"] {
       color: var(--syntax-jsx-tag);
     }
 
-    &[data-type="diff-add"] {
+    &[data-kind="diff-add"] {
       display: inline;
       color: var(--brand);
       background-color: var(--brand-softer);
     }
 
-    &[data-type="diff-remove"] {
+    &[data-kind="diff-remove"] {
       display: inline;
       color: var(--danger);
       background-color: color-mix(in oklab, var(--danger) 8%, transparent);
     }
 
-    &[data-type="diff-hunk"] {
+    &[data-kind="diff-hunk"] {
       display: inline;
       font-weight: var(--font-weight-medium);
       color: var(--syntax-type);
     }
 
-    &[data-type="bash-var"] {
+    &[data-kind="bash-var"] {
       color: var(--syntax-fn-call);
     }
 
-    &[data-type="bash-flag"] {
+    &[data-kind="bash-flag"] {
       color: var(--syntax-type);
     }
 
-    &[data-type="bash-subcommand"] {
+    &[data-kind="bash-subcommand"] {
       color: var(--syntax-keyword);
     }
 
-    &[data-type="bash-package"] {
+    &[data-kind="bash-package"] {
       color: var(--syntax-string);
     }
   }

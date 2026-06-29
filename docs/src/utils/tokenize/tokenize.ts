@@ -45,7 +45,7 @@ export function tokenize(code: string, language: Language): Token[] {
     const result = scanToken(code, index, language, lastSignificant);
     if (result === undefined) {
       const fallback: Token = {
-        type: 'plain',
+        kind: 'plain',
         value: code[index] ?? '',
       };
       tokens.push(fallback);
@@ -55,7 +55,7 @@ export function tokenize(code: string, language: Language): Token[] {
       index++;
     } else {
       tokens.push(result.token);
-      if (result.token.type !== 'plain' || !/^\s+$/.test(result.token.value)) {
+      if (result.token.kind !== 'plain' || !/^\s+$/.test(result.token.value)) {
         lastSignificant = result.token;
       }
       index = result.end;

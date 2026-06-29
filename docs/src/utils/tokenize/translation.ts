@@ -18,18 +18,18 @@ export function tokenizeTranslation(code: string): Token[] {
         const prefix = match[1] ?? '';
         const content = match[2] ?? '';
         tokens.push({
-          type: 'comment',
+          kind: 'comment',
           value: prefix,
         });
         if (content.length > 0) {
           tokens.push({
-            type: 'tx-source',
+            kind: 'tx-source',
             value: content,
           });
         }
       } else {
         tokens.push({
-          type: 'tx-source',
+          kind: 'tx-source',
           value: line,
         });
       }
@@ -37,7 +37,7 @@ export function tokenizeTranslation(code: string): Token[] {
 
     if (trailing.length > 0) {
       tokens.push({
-        type: 'plain',
+        kind: 'plain',
         value: trailing,
       });
     }

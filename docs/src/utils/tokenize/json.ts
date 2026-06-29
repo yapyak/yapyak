@@ -19,7 +19,7 @@ export function tokenizeJson(code: string): Token[] {
       const match = /^[\s]+/.exec(code.slice(index));
       if (match) {
         tokens.push({
-          type: 'plain',
+          kind: 'plain',
           value: match[0],
         });
         index += match[0].length;
@@ -29,7 +29,7 @@ export function tokenizeJson(code: string): Token[] {
 
     if (character === '{' || character === '[') {
       tokens.push({
-        type: 'punct',
+        kind: 'punct',
         value: character,
       });
       lastWas = 'open';
@@ -39,7 +39,7 @@ export function tokenizeJson(code: string): Token[] {
 
     if (character === '}' || character === ']') {
       tokens.push({
-        type: 'punct',
+        kind: 'punct',
         value: character,
       });
       lastWas = 'value';
@@ -49,7 +49,7 @@ export function tokenizeJson(code: string): Token[] {
 
     if (character === ':') {
       tokens.push({
-        type: 'punct',
+        kind: 'punct',
         value: character,
       });
       lastWas = 'colon';
@@ -59,7 +59,7 @@ export function tokenizeJson(code: string): Token[] {
 
     if (character === ',') {
       tokens.push({
-        type: 'punct',
+        kind: 'punct',
         value: character,
       });
       lastWas = 'comma';
@@ -72,7 +72,7 @@ export function tokenizeJson(code: string): Token[] {
       if (match) {
         const isValue = lastWas === 'colon';
         tokens.push({
-          type: isValue ? 'tx-source' : 'string',
+          kind: isValue ? 'tx-source' : 'string',
           value: match[0],
         });
         lastWas = 'value';
@@ -85,7 +85,7 @@ export function tokenizeJson(code: string): Token[] {
       const match = /^-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/.exec(code.slice(index));
       if (match) {
         tokens.push({
-          type: 'number',
+          kind: 'number',
           value: match[0],
         });
         lastWas = 'value';
@@ -98,7 +98,7 @@ export function tokenizeJson(code: string): Token[] {
       const match = /^(true|false|null)\b/.exec(code.slice(index));
       if (match) {
         tokens.push({
-          type: 'literal',
+          kind: 'literal',
           value: match[0],
         });
         lastWas = 'value';
@@ -108,7 +108,7 @@ export function tokenizeJson(code: string): Token[] {
     }
 
     tokens.push({
-      type: 'plain',
+      kind: 'plain',
       value: character,
     });
     index++;

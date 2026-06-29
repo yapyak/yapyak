@@ -8,152 +8,152 @@ describe('applyYapyakHighlight', () => {
   it('marks a `yapyak` import string as `tx-yapyak`', () => {
     const tokens: Token[] = [
       {
-        type: 'keyword',
+        kind: 'keyword',
         value: 'from',
       },
       {
-        type: 'plain',
+        kind: 'plain',
         value: ' ',
       },
       {
-        type: 'string',
+        kind: 'string',
         value: "'yapyak'",
       },
     ];
     applyYapyakHighlight(tokens);
-    expect(tokens[2]?.type).toBe('tx-yapyak');
+    expect(tokens[2]?.kind).toBe('tx-yapyak');
   });
 
   it('marks a subpath `yapyak/internal` import string as `tx-yapyak`', () => {
     const tokens: Token[] = [
       {
-        type: 'string',
+        kind: 'string',
         value: "'yapyak/internal'",
       },
     ];
     applyYapyakHighlight(tokens);
-    expect(tokens[0]?.type).toBe('tx-yapyak');
+    expect(tokens[0]?.kind).toBe('tx-yapyak');
   });
 
   it('marks the source string in a `t()` call as `tx-source`', () => {
     const tokens: Token[] = [
       {
-        type: 'fn-call',
+        kind: 'fn-call',
         value: 't',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '(',
       },
       {
-        type: 'string',
+        kind: 'string',
         value: "'Hello'",
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: ')',
       },
     ];
     applyYapyakHighlight(tokens);
-    expect(tokens[0]?.type).toBe('tx-call');
-    expect(tokens[2]?.type).toBe('tx-source');
+    expect(tokens[0]?.kind).toBe('tx-call');
+    expect(tokens[2]?.kind).toBe('tx-source');
   });
 
   it('preserves a dotted-key `t()` argument as a plain string', () => {
     const tokens: Token[] = [
       {
-        type: 'fn-call',
+        kind: 'fn-call',
         value: 't',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '(',
       },
       {
-        type: 'string',
+        kind: 'string',
         value: "'page.settings.title'",
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: ')',
       },
     ];
     applyYapyakHighlight(tokens);
-    expect(tokens[2]?.type).toBe('string');
+    expect(tokens[2]?.kind).toBe('string');
   });
 
   it('marks the second argument of `t.as()` as `tx-source`', () => {
     const tokens: Token[] = [
       {
-        type: 'fn-call',
+        kind: 'fn-call',
         value: 't',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '.',
       },
       {
-        type: 'keyword',
+        kind: 'keyword',
         value: 'as',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '(',
       },
       {
-        type: 'string',
+        kind: 'string',
         value: "'button'",
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: ',',
       },
       {
-        type: 'plain',
+        kind: 'plain',
         value: ' ',
       },
       {
-        type: 'string',
+        kind: 'string',
         value: "'Cancel'",
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: ')',
       },
     ];
     applyYapyakHighlight(tokens);
-    expect(tokens[7]?.type).toBe('tx-source');
+    expect(tokens[7]?.kind).toBe('tx-source');
   });
 
   it('marks every string inside a `_$pick()` call as `tx-source`', () => {
     const tokens: Token[] = [
       {
-        type: 'fn-call',
+        kind: 'fn-call',
         value: '_$pick',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '(',
       },
       {
-        type: 'string',
+        kind: 'string',
         value: "'Hello'",
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: ',',
       },
       {
-        type: 'string',
+        kind: 'string',
         value: "'World'",
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: ')',
       },
     ];
     applyYapyakHighlight(tokens);
-    expect(tokens[2]?.type).toBe('tx-source');
-    expect(tokens[4]?.type).toBe('tx-source');
+    expect(tokens[2]?.kind).toBe('tx-source');
+    expect(tokens[4]?.kind).toBe('tx-source');
   });
 });

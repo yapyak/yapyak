@@ -5,28 +5,28 @@ import { tokenize } from './tokenize';
 describe('tokenize', () => {
   it('returns `diff-add` tokens for a `diff` source', () => {
     expect(
-      tokenize('+Hello', 'diff').some((token) => token.type === 'diff-add'),
+      tokenize('+Hello', 'diff').some((token) => token.kind === 'diff-add'),
     ).toBe(true);
   });
 
   it('returns `bash-flag` tokens for a `bash` source', () => {
     expect(
       tokenize('cmd --hello', 'bash').some(
-        (token) => token.type === 'bash-flag',
+        (token) => token.kind === 'bash-flag',
       ),
     ).toBe(true);
   });
 
   it('returns `jsx-tag` tokens for an `html` source', () => {
     expect(
-      tokenize('<div>', 'html').some((token) => token.type === 'jsx-tag'),
+      tokenize('<div>', 'html').some((token) => token.kind === 'jsx-tag'),
     ).toBe(true);
   });
 
   it('returns `keyword` tokens for a `yaml` source', () => {
     expect(
       tokenize('title: Hello', 'yaml').some(
-        (token) => token.type === 'keyword',
+        (token) => token.kind === 'keyword',
       ),
     ).toBe(true);
   });
@@ -34,7 +34,7 @@ describe('tokenize', () => {
   it('returns `tx-source` tokens for a `json` source value after `:`', () => {
     expect(
       tokenize('{"key": "Hello"}', 'json').some(
-        (token) => token.type === 'tx-source',
+        (token) => token.kind === 'tx-source',
       ),
     ).toBe(true);
   });
@@ -42,7 +42,7 @@ describe('tokenize', () => {
   it('returns `tx-source` tokens for a `translation` source', () => {
     expect(
       tokenize('Hello', 'translation').some(
-        (token) => token.type === 'tx-source',
+        (token) => token.kind === 'tx-source',
       ),
     ).toBe(true);
   });
@@ -50,7 +50,7 @@ describe('tokenize', () => {
   it('returns a `keyword` token for `const` in a `ts` source', () => {
     expect(
       tokenize('const x = 1', 'ts').some(
-        (token) => token.type === 'keyword' && token.value === 'const',
+        (token) => token.kind === 'keyword' && token.value === 'const',
       ),
     ).toBe(true);
   });
@@ -58,7 +58,7 @@ describe('tokenize', () => {
   it('marks a `yapyak` import string as `tx-yapyak` in a `ts` source', () => {
     expect(
       tokenize("import { t } from 'yapyak'", 'ts').some(
-        (token) => token.type === 'tx-yapyak',
+        (token) => token.kind === 'tx-yapyak',
       ),
     ).toBe(true);
   });
@@ -67,11 +67,11 @@ describe('tokenize', () => {
     const tokens = tokenize("t('Hello')", 'ts');
     expect(
       tokens.some(
-        (token) => token.type === 'tx-source' && token.value === "'Hello'",
+        (token) => token.kind === 'tx-source' && token.value === "'Hello'",
       ),
     ).toBe(true);
     expect(
-      tokens.some((token) => token.type === 'tx-call' && token.value === 't'),
+      tokens.some((token) => token.kind === 'tx-call' && token.value === 't'),
     ).toBe(true);
   });
 
@@ -80,7 +80,7 @@ describe('tokenize', () => {
     expect(
       // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
       tokenize('`Hello, ${name}`', 'ts').some(
-        (token) => token.type === 'punct' && token.value === '${',
+        (token) => token.kind === 'punct' && token.value === '${',
       ),
     ).toBe(true);
   });
@@ -88,7 +88,7 @@ describe('tokenize', () => {
   it('marks an identifier after `:` as `type` in a `ts` source', () => {
     expect(
       tokenize('const value: Settings = {}', 'ts').some(
-        (token) => token.type === 'type' && token.value === 'Settings',
+        (token) => token.kind === 'type' && token.value === 'Settings',
       ),
     ).toBe(true);
   });

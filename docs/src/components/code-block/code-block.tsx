@@ -82,7 +82,7 @@ export function CodeBlock(props: CodeBlockProps) {
             : highlighted.map((token, index) => (
                 <CodeBlockToken
                   key={index}
-                  type={token.type}
+                  kind={token.kind}
                 >
                   {token.value}
                 </CodeBlockToken>

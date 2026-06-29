@@ -6,11 +6,11 @@ describe('tokenizeTranslation', () => {
   it('returns a `comment` prefix and `tx-source` content for a locale-prefixed line', () => {
     expect(tokenizeTranslation('sv: Hej')).toEqual([
       {
-        type: 'comment',
+        kind: 'comment',
         value: 'sv: ',
       },
       {
-        type: 'tx-source',
+        kind: 'tx-source',
         value: 'Hej',
       },
     ]);
@@ -19,7 +19,7 @@ describe('tokenizeTranslation', () => {
   it('returns a `tx-source` token for a line without a locale prefix', () => {
     expect(tokenizeTranslation('Hello')).toEqual([
       {
-        type: 'tx-source',
+        kind: 'tx-source',
         value: 'Hello',
       },
     ]);
@@ -28,7 +28,7 @@ describe('tokenizeTranslation', () => {
   it('preserves the trailing newline between lines as a `plain` token', () => {
     const result = tokenizeTranslation('Hello\nWorld');
     expect(result).toContainEqual({
-      type: 'plain',
+      kind: 'plain',
       value: '\n',
     });
   });

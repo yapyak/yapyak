@@ -1,13 +1,13 @@
-import type { TokenType } from './type';
+import type { TokenKind } from './type';
 
 import { describe, expect, it } from 'vitest';
 
 import { tokenizeHtml } from './html';
 
-function types(code: string): TokenType[] {
+function types(code: string): TokenKind[] {
   return tokenizeHtml(code)
-    .filter((token) => token.type !== 'plain')
-    .map((token) => token.type);
+    .filter((token) => token.kind !== 'plain')
+    .map((token) => token.kind);
 }
 
 describe('tokenizeHtml', () => {

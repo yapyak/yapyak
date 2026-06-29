@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { expandTemplateInterpolations } from './template-interpolation';
 
 const NAME_TOKEN: Token = {
-  type: 'plain',
+  kind: 'plain',
   value: 'name',
 };
 
@@ -18,7 +18,7 @@ describe('expandTemplateInterpolations', () => {
   it('splits a template with `${expr}` into segments around the interpolation', () => {
     const tokens: Token[] = [
       {
-        type: 'template',
+        kind: 'template',
         // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
         value: '`Hello, ${name}`',
       },
@@ -28,24 +28,24 @@ describe('expandTemplateInterpolations', () => {
 
     expect(result).toEqual([
       {
-        type: 'template',
+        kind: 'template',
         value: '`',
       },
       {
-        type: 'template',
+        kind: 'template',
         value: 'Hello, ',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '${',
       },
       NAME_TOKEN,
       {
-        type: 'punct',
+        kind: 'punct',
         value: '}',
       },
       {
-        type: 'template',
+        kind: 'template',
         value: '`',
       },
     ]);
@@ -54,7 +54,7 @@ describe('expandTemplateInterpolations', () => {
   it('preserves a template with no interpolation', () => {
     const tokens: Token[] = [
       {
-        type: 'template',
+        kind: 'template',
         value: '`Hello`',
       },
     ];
@@ -67,7 +67,7 @@ describe('expandTemplateInterpolations', () => {
   it('preserves a non-`template` token unchanged', () => {
     const tokens: Token[] = [
       {
-        type: 'keyword',
+        kind: 'keyword',
         value: 'const',
       },
     ];

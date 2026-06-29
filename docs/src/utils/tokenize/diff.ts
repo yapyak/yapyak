@@ -10,22 +10,22 @@ export function tokenizeDiff(code: string): Token[] {
     const trailing = index < lines.length - 1 ? '\n' : '';
     if (line.startsWith('@@')) {
       tokens.push({
-        type: 'diff-hunk',
+        kind: 'diff-hunk',
         value: line + trailing,
       });
     } else if (line.startsWith('+') && !line.startsWith('+++')) {
       tokens.push({
-        type: 'diff-add',
+        kind: 'diff-add',
         value: line + trailing,
       });
     } else if (line.startsWith('-') && !line.startsWith('---')) {
       tokens.push({
-        type: 'diff-remove',
+        kind: 'diff-remove',
         value: line + trailing,
       });
     } else {
       tokens.push({
-        type: 'plain',
+        kind: 'plain',
         value: line + trailing,
       });
     }

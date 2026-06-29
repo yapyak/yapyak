@@ -3,7 +3,7 @@ import type { Token } from './type';
 export function markTaggedTemplates(tokens: Token[]): void {
   for (let index = 0; index < tokens.length; index++) {
     const token = tokens[index];
-    if (token === undefined || token.type !== 'template') {
+    if (token === undefined || token.kind !== 'template') {
       continue;
     }
     let cursor = index - 1;
@@ -12,19 +12,19 @@ export function markTaggedTemplates(tokens: Token[]): void {
       if (previous === undefined) {
         break;
       }
-      if (previous.type === 'plain' && /^\s+$/.test(previous.value)) {
+      if (previous.kind === 'plain' && /^\s+$/.test(previous.value)) {
         break;
       }
       if (
-        previous.type === 'plain' ||
-        previous.type === 'fn-call' ||
-        previous.type === 'type'
+        previous.kind === 'plain' ||
+        previous.kind === 'fn-call' ||
+        previous.kind === 'type'
       ) {
-        previous.type = 'fn-call';
+        previous.kind = 'fn-call';
         cursor--;
         continue;
       }
-      if (previous.type === 'punct' && previous.value === '.') {
+      if (previous.kind === 'punct' && previous.value === '.') {
         cursor--;
         continue;
       }

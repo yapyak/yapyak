@@ -13,7 +13,7 @@ export function tokenizeHtml(code: string): Token[] {
         const end = code.indexOf('-->', index + 4);
         const stop = end === -1 ? code.length : end + 3;
         tokens.push({
-          type: 'comment',
+          kind: 'comment',
           value: code.slice(index, stop),
         });
         index = stop;
@@ -24,7 +24,7 @@ export function tokenizeHtml(code: string): Token[] {
         const end = code.indexOf('>', index);
         const stop = end === -1 ? code.length : end + 1;
         tokens.push({
-          type: 'jsx-tag',
+          kind: 'jsx-tag',
           value: code.slice(index, stop),
         });
         index = stop;
@@ -35,7 +35,7 @@ export function tokenizeHtml(code: string): Token[] {
         const match = /^<\/?[A-Za-z][\w.-]*/.exec(code.slice(index));
         if (match) {
           tokens.push({
-            type: 'jsx-tag',
+            kind: 'jsx-tag',
             value: match[0],
           });
           index += match[0].length;
@@ -43,7 +43,7 @@ export function tokenizeHtml(code: string): Token[] {
           continue;
         }
         tokens.push({
-          type: 'plain',
+          kind: 'plain',
           value: '<',
         });
         index++;
@@ -53,7 +53,7 @@ export function tokenizeHtml(code: string): Token[] {
       const nextOpen = code.indexOf('<', index);
       const stop = nextOpen === -1 ? code.length : nextOpen;
       tokens.push({
-        type: 'plain',
+        kind: 'plain',
         value: code.slice(index, stop),
       });
       index = stop;
@@ -62,7 +62,7 @@ export function tokenizeHtml(code: string): Token[] {
 
     if (code[index] === '/' && code[index + 1] === '>') {
       tokens.push({
-        type: 'jsx-tag',
+        kind: 'jsx-tag',
         value: '/>',
       });
       index += 2;
@@ -72,7 +72,7 @@ export function tokenizeHtml(code: string): Token[] {
 
     if (code[index] === '>') {
       tokens.push({
-        type: 'jsx-tag',
+        kind: 'jsx-tag',
         value: '>',
       });
       index++;
@@ -83,7 +83,7 @@ export function tokenizeHtml(code: string): Token[] {
     const whitespace = /^[\s]+/.exec(code.slice(index));
     if (whitespace) {
       tokens.push({
-        type: 'plain',
+        kind: 'plain',
         value: whitespace[0],
       });
       index += whitespace[0].length;
@@ -92,7 +92,7 @@ export function tokenizeHtml(code: string): Token[] {
 
     if (code[index] === '=') {
       tokens.push({
-        type: 'punct',
+        kind: 'punct',
         value: '=',
       });
       index++;
@@ -105,7 +105,7 @@ export function tokenizeHtml(code: string): Token[] {
       const match = regex.exec(code.slice(index));
       if (match) {
         tokens.push({
-          type: 'string',
+          kind: 'string',
           value: match[0],
         });
         index += match[0].length;
@@ -116,7 +116,7 @@ export function tokenizeHtml(code: string): Token[] {
     const attribute = /^[A-Za-z_:@][\w:.-]*/.exec(code.slice(index));
     if (attribute) {
       tokens.push({
-        type: 'fn-call',
+        kind: 'fn-call',
         value: attribute[0],
       });
       index += attribute[0].length;
@@ -124,7 +124,7 @@ export function tokenizeHtml(code: string): Token[] {
     }
 
     tokens.push({
-      type: 'plain',
+      kind: 'plain',
       value: code[index] ?? '',
     });
     index++;

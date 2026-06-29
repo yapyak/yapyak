@@ -8,90 +8,90 @@ describe('reclassifyJsxText', () => {
   it('marks a `keyword` token inside JSX text as `plain`', () => {
     const tokens: Token[] = [
       {
-        type: 'jsx-tag',
+        kind: 'jsx-tag',
         value: '<div',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '>',
       },
       {
-        type: 'keyword',
+        kind: 'keyword',
         value: 'return',
       },
       {
-        type: 'jsx-tag',
+        kind: 'jsx-tag',
         value: '</div',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '>',
       },
     ];
     reclassifyJsxText(tokens);
-    expect(tokens[2]?.type).toBe('plain');
+    expect(tokens[2]?.kind).toBe('plain');
   });
 
   it('marks the opening `{` of a JSX expression as `jsx-brace`', () => {
     const tokens: Token[] = [
       {
-        type: 'jsx-tag',
+        kind: 'jsx-tag',
         value: '<div',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '>',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '{',
       },
       {
-        type: 'plain',
+        kind: 'plain',
         value: 'Hello',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '}',
       },
       {
-        type: 'jsx-tag',
+        kind: 'jsx-tag',
         value: '</div',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '>',
       },
     ];
     reclassifyJsxText(tokens);
-    expect(tokens[2]?.type).toBe('jsx-brace');
-    expect(tokens[4]?.type).toBe('jsx-brace');
+    expect(tokens[2]?.kind).toBe('jsx-brace');
+    expect(tokens[4]?.kind).toBe('jsx-brace');
   });
 
   it('preserves a `keyword` token inside a `<script>` raw-text block', () => {
     const tokens: Token[] = [
       {
-        type: 'jsx-tag',
+        kind: 'jsx-tag',
         value: '<script',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '>',
       },
       {
-        type: 'keyword',
+        kind: 'keyword',
         value: 'return',
       },
       {
-        type: 'jsx-tag',
+        kind: 'jsx-tag',
         value: '</script',
       },
       {
-        type: 'punct',
+        kind: 'punct',
         value: '>',
       },
     ];
     reclassifyJsxText(tokens);
-    expect(tokens[2]?.type).toBe('keyword');
+    expect(tokens[2]?.kind).toBe('keyword');
   });
 });
