@@ -198,11 +198,11 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
     if (fragmentCall.paramsExpression) {
       callSite.paramsExpression = fragmentCall.paramsExpression;
     }
-    const elision =
+    const elisionContext =
       fragment.elisionContext ??
       detectJsxElision(fragmentCall.node, sourceFile, fragment, originalSource);
-    if (elision) {
-      callSite.elision = elision;
+    if (elisionContext) {
+      callSite.elisionContext = elisionContext;
     }
     callSites.push(callSite);
 

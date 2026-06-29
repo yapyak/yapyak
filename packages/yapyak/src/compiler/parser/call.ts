@@ -11,7 +11,7 @@ import { toRange } from './range';
 export type CallSite = {
   binding: Binding;
   contextExpression?: ts.Expression;
-  elision?: ElisionContext;
+  elisionContext?: ElisionContext;
   localeExpression?: ts.Expression;
   node: ts.CallExpression;
   paramsExpression?: ts.Expression;

@@ -139,14 +139,14 @@ type FragmentNode = AST.Fragment['nodes'][number];
 
 function fragmentsFromNode(node: FragmentNode, source: string): Fragment[] {
   if (isExpressionTagLike(node)) {
-    const elision =
+    const elisionContext =
       node.type === 'ExpressionTag'
         ? {
             mode: 'text' as const,
             range: rangeFromOffsets(source, node.start, node.end),
           }
         : undefined;
-    return fragmentsFromExpression(node.expression, source, elision);
+    return fragmentsFromExpression(node.expression, source, elisionContext);
   }
   if (node.type === 'IfBlock') {
     const fragments = fragmentsFromExpression(node.test, source);
@@ -275,7 +275,7 @@ function fragmentsFromAttribute(
       }
       return fragments;
     }
-    const elision =
+    const elisionContext =
       value.type === 'ExpressionTag'
         ? {
             attributeName: node.name,
@@ -283,7 +283,7 @@ function fragmentsFromAttribute(
             range: rangeFromOffsets(source, node.start, node.end),
           }
         : undefined;
-    return fragmentsFromExpression(value.expression, source, elision);
+    return fragmentsFromExpression(value.expression, source, elisionContext);
   }
   if (node.type === 'SpreadAttribute') {
     return fragmentsFromExpression(node.expression, source);
@@ -316,7 +316,7 @@ function fragmentsFromAttribute(
 function fragmentsFromExpression(
   expression: unknown,
   source: string,
-  elision?: Fragment['elisionContext'],
+  elisionContext?: Fragment['elisionContext'],
 ): Fragment[] {
   if (expression === null || expression === undefined) {
     return [];
@@ -347,8 +347,8 @@ function fragmentsFromExpression(
     originalOffset: start,
     type: 'template-expression',
   };
-  if (elision) {
-    fragment.elisionContext = elision;
+  if (elisionContext) {
+    fragment.elisionContext = elisionContext;
   }
   return [
     fragment,

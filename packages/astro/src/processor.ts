@@ -184,7 +184,7 @@ function attributeNameString(name: JSXIdentifier | JSXNamespacedName): string {
 function fragmentsFromExpression(
   expression: Expression | JSXEmptyExpression,
   source: string,
-  elision?: ElisionContext,
+  elisionContext?: ElisionContext,
 ): Fragment[] {
   if (expression.type === 'JSXEmptyExpression') {
     return [];
@@ -202,7 +202,8 @@ function fragmentsFromExpression(
   return [
     {
       code: source.slice(expression.start, expression.end),
-      elisionContext: elision && embedded.length === 0 ? elision : undefined,
+      elisionContext:
+        elisionContext && embedded.length === 0 ? elisionContext : undefined,
       language: 'ts',
       originalOffset: expression.start,
       type: 'template-expression',

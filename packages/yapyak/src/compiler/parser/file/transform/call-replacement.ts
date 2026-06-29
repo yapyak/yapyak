@@ -351,13 +351,13 @@ function tryBareElision(
   callSite: ParsedCallSite,
   placeholders: Placeholder[],
 ): CallReplacement | undefined {
-  if (!callSite.elision) {
+  if (!callSite.elisionContext) {
     return undefined;
   }
   if (placeholders.length > 0) {
     return undefined;
   }
-  const { mode, range, attributeName } = callSite.elision;
+  const { mode, range, attributeName } = callSite.elisionContext;
   if (mode === 'text') {
     if (!isSafeJsxText(source)) {
       return undefined;
