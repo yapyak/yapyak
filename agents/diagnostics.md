@@ -49,7 +49,7 @@ export function docsUrl(code: YapCode): string {
 Sequential. Append-only. Never reused.
 
 1. **Allocating a new code:** find the highest existing number in `codes.ts`, add one, append a new constant. Never insert between existing entries.
-2. **Retiring a code:** mark the constant `[RETIRED]` in its line comment and keep it in the file. **Do not delete. Do not reuse the number.**
+2. **Retiring a code:** mark the constant `[RETIRED]` in its line comment and keep it in the file. **Never delete. Never reuse the number.**
 3. **Re-purposing an existing code is forbidden.** If meaning changes, retire the old one and allocate a new one.
 4. **A code describes exactly one state.** If two situations need different diagnostic context, allocate two codes. Two situations are the same state iff they share an identical fix sentence AND an identical observation template (placeholders aside). If either differs, allocate separate codes.
 
@@ -178,7 +178,7 @@ Every diagnostic message follows the same tone. No team-discretion.
 
 #### Diagnostic-object semantics
 
-When the diagnostic object carries `hint`, the **`message` field carries the observation only** and **`hint` carries the fix**. Do not put hint phrases in the message.
+When the diagnostic object carries `hint`, the **`message` field carries the observation only** and **`hint` carries the fix**. Never put hint phrases in the message.
 
 ```ts
 // ✓ Right
@@ -284,7 +284,7 @@ t('good example', { name: 'A' });  // ok
 
 Comment convention:
 - `// error` — the bad case
-- `// error: <short detail>` — when the detail clarifies WHICH error (e.g., `// error: missing 'name'`)
+- `// error: <short detail>` — when the detail clarifies WHICH error (e.g. `// error: missing 'name'`)
 - `// ok` — the fixed case
 
 Error line FIRST, ok line SECOND, in the same fenced block. No blank line between. Default language `ts`.

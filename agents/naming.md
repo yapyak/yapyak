@@ -170,7 +170,7 @@ export type ProcessorKind = ...;
 
 When you can name the file after the noun the types share (`persistence`, `binding`, `block`), use that noun. `type.ts` is the fallback when no shared noun exists.
 
-`type.ts` is always singular; `types.ts` is banned in library code. A shared `types.ts` of cross-cutting primitives is allowed in app code only (scaffolding exception).
+`type.ts` is always singular; `types.ts` is forbidden in library code. A shared `types.ts` of cross-cutting primitives is allowed in app code only (scaffolding exception).
 
 ### Record-shaped types
 
@@ -196,11 +196,11 @@ type LocaleTranslations = Record<string, string>;        // primitive value
 type Variants = Record<string, string | Template>;       // union value
 ```
 
-`*Dict` is banned.
+`*Dict` is forbidden.
 
 ### `utils/` and `helpers/`
 
-Banned in **library code** (published `packages/*`). Every utility has a concept — name the file after it.
+Forbidden in **library code** (published `packages/*`). Every utility has a concept — name the file after it.
 
 | Situation | Correct response |
 | --- | --- |
@@ -209,7 +209,7 @@ Banned in **library code** (published `packages/*`). Every utility has a concept
 | Multiple unrelated utilities | Split into concept files |
 | Multiple tightly-related utilities | Merge into concept file (`string-format.ts`) |
 
-**App-code exception.** Private app packages MAY keep a single top-level `src/utils/` for **pure, domain-agnostic** helpers (the `lib/` vs `utils/` split lives in [[modules]] § `lib/` vs `utils/` in apps). Domain-aware code goes in `lib/`, never `utils/`. `helpers/` stays banned everywhere, library and app alike.
+**App-code exception.** Private app packages MAY keep a single top-level `src/utils/` for **pure, domain-agnostic** helpers (the `lib/` vs `utils/` split lives in [[modules]] § `lib/` vs `utils/` in apps). Domain-aware code goes in `lib/`, never `utils/`. `helpers/` stays forbidden everywhere, library and app alike.
 
 A single-function `utils/` file is named after **either** its concept (`pluralize.ts`) **or** its full function name — kebab-cased with no verb-drop and no singularization (`mergeRefs` → `merge-refs.ts`, `normalizeProps` → `normalize-props.ts`). The general filename algorithm's stripping and singularizing never apply in `utils/`.
 
@@ -362,7 +362,7 @@ UseLocaleHookReturn                     // Hook + Return
 
 ### Forbidden suffixes
 
-| Banned suffix | Why |
+| Forbidden suffix | Why |
 | --- | --- |
 | `*Instance` | Every type is implicitly an instance |
 | `*Object` | Vacuous |
@@ -704,7 +704,7 @@ function resolveCallSite(site: CallSite): ResolvedSite { ... }
 
 The discriminator field of a tagged union is named by a single mechanical rule. No judgment.
 
-> **The field is `type` if and only if its type is reachable from a *public* export of a package that is NOT `"private": true`. Every other discriminator field is `kind`.**
+> **The field is `type` iff its type is reachable from a *public* export of a package that is NOT `"private": true`. Every other discriminator field is `kind`.**
 
 A public export is any `exports` entry except an `/internal` subpath (`./internal`, `./compiler/internal`, …) — library-internal plumbing, not the external surface. Apply to the package that declares the field:
 

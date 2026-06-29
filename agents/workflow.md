@@ -8,7 +8,7 @@ Never document or assert what is not verifiable. Before writing prose about beha
 2. Search for callers, related types, tests.
 3. Run the code if uncertain.
 
-If behavior is not verifiable, do not document it. Applies to every claim about runtime behavior. Mechanical formulas (category formulas, naming algorithms) are deterministic and need no code-verification, but the behavior they describe still must.
+If behavior is not verifiable, never document it. Applies to every claim about runtime behavior. Mechanical formulas (category formulas, naming algorithms) are deterministic and need no code-verification, but the behavior they describe still must.
 
 ### Consistency
 
@@ -52,7 +52,7 @@ All five must pass. If `check:write` modifies files, re-run `typecheck` and `tes
 
 ### Stop signals
 
-Stop and report — do not work around:
+Stop and report — never work around:
 
 - Circular dependency between two symbols.
 - A side-effect whose only job is to mirror a value.
@@ -79,9 +79,9 @@ Respect the layering the user has stated. If the architecture is A → B → C, 
 
 ### Ambiguity
 
-Stop and ask iff the input admits two interpretations that produce different output AND no rule file disambiguates — never pick between them. Otherwise proceed. When the design is wrong, report why and stop — do not produce code to look productive.
+Stop and ask iff the input admits two interpretations that produce different output AND no rule file disambiguates — never pick between them. Otherwise proceed. When the design is wrong, report why and stop — never produce code to look productive.
 
-### Don't invent
+### Never invent
 
 Before adding a tag, annotation, naming convention, or claim that "X is standard" — verify it exists in a real spec, in shipping tooling, or in established practice. If a source cannot be cited, the convention is invented.
 
@@ -97,11 +97,11 @@ Project-local conventions are fine when explicitly named as such. `// yapyak-man
 
 If a local convention is needed, name it so it cannot be mistaken for standard. Document it. Never describe it as a "convention" in conversation — say "I added this for the project."
 
-If caught inventing: stop, remove, acknowledge. Do not defend, qualify, or half-revert.
+If caught inventing: stop, remove, acknowledge. Never defend, qualify, or half-revert.
 
 ### Trade-offs
 
-| Do | Do not |
+| Do | Don't |
 | --- | --- |
 | Optimize for understanding | Show off cleverness |
 | Think in surfaces (API, contracts, behavior) | Build for "future reuse" |

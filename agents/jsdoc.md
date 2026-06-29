@@ -95,7 +95,7 @@ Empty lines separate the summary, `@remarks`, and each tag block. Inside a tag g
 
 ### Description rules
 
-- **Summary line:** one sentence, sentence-case capital at start, period at end. Hard limit 100 characters. Overflow goes in `@remarks`.
+- **Summary line:** one sentence, sentence-case capital at start, period at end. Hard limit 100 chars. Overflow goes in `@remarks`.
 - **No hard-wrapping.** Each paragraph is a single physical line. Long lines are fine; the editor soft-wraps.
 - **3rd-person indicative.** Descriptions describe what the symbol *is* or *does*. Never imperative directions to the reader.
 - **Present tense, active voice.** No future ("will"), no passive.
@@ -318,7 +318,7 @@ type Shape =
 
 Positional function parameters keep signature order. Alphabetical only inside object field lists.
 
-### `@returns` — banned
+### `@returns` — forbidden
 
 `@returns` is forbidden. Return values are documented by the type signature alone.
 
@@ -406,7 +406,7 @@ For longer migration guidance:
 
 ### `{@link Symbol}` and `@see` — when to link
 
-The rendered reference page already links every type in the Type column, every parameter type in the Param table, the Return type, and any formula-slot link in the summary. Do not duplicate those.
+The rendered reference page already links every type in the Type column, every parameter type in the Param table, the Return type, and any formula-slot link in the summary. Never duplicate those.
 
 **Step 1 — is the target already structurally linked on this page?**
 
@@ -446,7 +446,7 @@ External = absolute URL (`http://` or `https://`). The two groups never interlea
 
 #### Internal `@see` — peer-pair rule
 
-A symbol gets `@see {@link Peer}` if and only if it shares a closed-set peer-pair relationship with another public symbol from the same module.
+A symbol gets `@see {@link Peer}` iff it shares a closed-set peer-pair relationship with another public symbol from the same module.
 
 | Pair prefix | Operational meaning |
 |---|---|
@@ -582,11 +582,11 @@ Examples: `` Requires `future.v8_middleware: true` in `react-router.config.ts`. 
 
 Host-framework version requirements live in `package.json` `peerDependencies` only.
 
-#### Banned implementation-detail patterns
+#### Forbidden implementation-detail patterns
 
 Any of these in description or `@remarks` is a violation.
 
-| Pattern | Example | Why banned |
+| Pattern | Example | Why forbidden |
 |---|---|---|
 | **Environment checks** | "On the server, `typeof window !== 'undefined'` is false." | Internal control flow. |
 | **Server vs client narration** | "On the client, reads track reactivity." | Implementation. |
@@ -661,7 +661,7 @@ When the same conceptual symbol exists in multiple framework packages (`RichText
 
 - **Required for:** hooks, factories with non-trivial flow, provider factories, async functions, type guards with non-trivial narrowing, builders, callbacks-as-args — UNLESS no runnable, non-fabricated example exists, in which case omit it (Prime Directive 1 wins).
 
-  - non-trivial flow = the factory reads ≥1 option field to branch, OR returns an object with ≥2 methods (trivial = a single `new`/closure, no branching).
+  - non-trivial flow = the factory reads 1+ option field to branch, OR returns an object with 2+ methods (trivial = a single `new`/closure, no branching).
   - type-guard non-trivial = narrows to a union member or a generic (trivial = narrows a primitive).
   - builder = a Factory whose returned instance exposes chainable methods; callback-as-arg = a function whose signature includes a callback/`fn` parameter.
 - **Optional for:** predicates, simple converters, getters, components with obvious props.
@@ -747,7 +747,7 @@ format.number(199, { style: 'currency', currency: 'EUR' });
 // de-DE: '199,00 €'
 ```
 
-Banned: explanatory comments, decorative separators, per-line narration, authorial asides.
+Forbidden: explanatory comments, decorative separators, per-line narration, authorial asides.
 
 #### One scenario per `@example` block
 
@@ -771,7 +771,7 @@ Cap at 3. More than 3 signals the symbol has too many modes.
 
 **Exception:** an umbrella symbol with structurally distinct call forms (positional vs object args, sync vs async, chained variants) may have one block per call form, capped at 5.
 
-umbrella symbol = a symbol whose documented members render as their own pages (e.g. `format.number`, `t.in`), OR a single export with ≥2 structurally distinct call signatures. All others cap at 3.
+umbrella symbol = a symbol whose documented members render as their own pages (e.g. `format.number`, `t.in`), OR a single export with 2+ structurally distinct call signatures. All others cap at 3.
 
 #### First example — no title, simplest form
 
@@ -956,13 +956,13 @@ Grouped by category. Each row points back to the section that defines the rule.
 | **Verification** | Every claim verified against the implementation or a real call site. No fabrication. |
 | **`@param`** | Signature order, names match exactly, hyphen separator, no types, every parameter described. Boolean fields use the state/behavior shape. |
 | **Field order** | Type fields alphabetical. Discriminator first per union variant. Signature parameters keep signature order. |
-| **`@returns`** | None. Banned. |
+| **`@returns`** | None. Forbidden. |
 | **`@example`** | Present for required categories (unless Prime Directive 1 forces omission — no non-fabricated example). Imports included. Language identifier is most specific (`tsx`/`ts`/`vue`/`svelte`). Title-less first block, simplest invocation. ≤ 3 blocks (≤ 5 for umbrella). One scenario per block. Only `// output:` / `// error:` / `// ok:` / `// ...` comments. Yak Pool identifiers. Runnable. |
 | **`{@link}` / `@see`** | No link to a target already structurally linked. Inline `{@link}` only in formula-slots. Peer-pair symmetric. Target-family auto-applied on types. `@see` external URLs after in-project. No manual parent/sibling `@see`. |
 | **`@throws`** | One per non-trivial exception type, `when [condition]`. |
 | **`@typeParam`** | One per type parameter, alphabetical. |
 | **`@deprecated`** | Migration path always included. |
-| **`@remarks`** | Triple test passes. No banned implementation-detail patterns. No code blocks. |
+| **`@remarks`** | Triple test passes. No forbidden implementation-detail patterns. No code blocks. |
 | **Defaults** | `@defaultValue` only. Never inline in prose. |
 | **Secondary types** | `*Options`/`*Props`/`*Result`/`*Request`/`*Response`/`*Config`/`*Event`/`*Context` carry no `@remarks`, no `@example`. Formula sentence + `{@link Primary}`. |
 | **Sibling families** | Byte-identical summaries except the binding slot. Identical `@example` shape and count. |

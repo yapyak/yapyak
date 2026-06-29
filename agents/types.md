@@ -157,7 +157,7 @@ type NormalizerOptions = {
 
 If you would otherwise write a bare `?? true` default for a flag, remove the flag and make the behavior unconditional instead. A boolean flag's default is either `false` or a derived expression (see below) — never a bare `?? true`.
 
-**Exception — derived default.** A boolean MAY default to an expression computed from another already-resolved config field. Mechanical test on the `??` fallback: `false` is the norm; a bare `true` is forbidden; an expression referencing ≥ 1 other config field is allowed — a context-derived default (sometimes `true`, sometimes `false` by context), not a blanket opt-out.
+**Exception — derived default.** A boolean MAY default to an expression computed from another already-resolved config field. Mechanical test on the `??` fallback: `false` is the norm; a bare `true` is forbidden; an expression referencing 1+ other config fields is allowed — a context-derived default (sometimes `true`, sometimes `false` by context), not a blanket opt-out.
 
 ```ts
 // ✓ — default derived from another field, not a literal
@@ -236,13 +236,13 @@ function createProcessor(input: CreateProcessorInput): Processor;
 
 #### Hard cap — 5+ required positional
 
-≥5 required positional arguments triggers the refactor recipe. Lift recurring sub-bundles into named domain types per [[naming]] § Type suffix vocabulary.
+5+ required positional arguments triggers the refactor recipe. Lift recurring sub-bundles into named domain types per [[naming]] § Type suffix vocabulary.
 
 #### Refactor recipe
 
 1. List every required field.
 2. Cluster by concept: operation input, domain context, optional tweaks.
-3. If a cluster (≥2 fields) appears in 2+ functions → lift to a shared `*Context`/`*Config`.
+3. If a cluster (2+ fields) appears in 2+ functions → lift to a shared `*Context`/`*Config`.
 4. Function-specific clusters → `*Input` or `*Request`.
 5. Optional tweaks → `*Options`.
 6. New signature: `fn(input: *Input, context: *Context, ...standalone positionals, options?: *Options)`. Universal positionals (e.g. `projectRoot: string`) stay standalone.

@@ -11,7 +11,7 @@ The guide is technical documentation, not a pitch. Every sentence must answer on
 3. What problem does it solve?
 4. What's the tradeoff?
 
-If a sentence doesn't answer one of those, cut it. Don't try to repair it.
+If a sentence doesn't answer one of those, cut it. Never try to repair it.
 
 Start each page with what the thing is, followed by a code example. Show what the developer writes, what yapyak produces or compiles, and what problem it solves. Explain only what is needed.
 
@@ -26,7 +26,7 @@ Specific patterns that signal AI-generated marketing prose. Cut on sight:
 - **"Lives in" / "sits at".** "The full type lives in X." Just say where it is.
 - **Em-dash example lists.** "Locales — English, Swedish, French — all do X." Cut the list or use a real list.
 - **Hedge words.** `just`, `simply`, `actually`, `really`, `basically`, `essentially`.
-- **Restate after code.** "As you can see above..." Code speaks. Don't translate it back to prose.
+- **Restate after code.** "As you can see above..." Code speaks. Never translate it back to prose.
 - **Closers.** "The principle:" / "What this gives you is..." / "In other words..."
 - **Openers.** "This page covers..." / "Let's explore..." / "In this section we'll..."
 - **Reassurance.** "Don't worry, X is easy." "There's no need to..."
@@ -97,7 +97,7 @@ One thesis per section. If a section has two, split it.
   ```
 
   Never collapse to `{ "src/...": { "Key": "Value" } }`. Never flatten the path away. The single-property-collapse rule does NOT apply to locale files — every translation key gets its own line under its source-path key.
-- Use `ts` for API demonstrations. Use the framework-specific language (`tsx`/`vue`/`svelte`/`astro`) if and only if the snippet renders as a component.
+- Use `ts` for API demonstrations. Use the framework-specific language (`tsx`/`vue`/`svelte`/`astro`) iff the snippet renders as a component.
 - **Blank line between every top-level statement.** `const options = ...;` followed by `t('Choose one of {options}.', { options });` always has a blank line between them. Same for parallel declarations (`const claude = ...;` / `const gpt = ...;`). Same for repeated demo calls (`t('Save'); t('Save');`). The only exemption is consecutive `import`/`export` lines, which follow standard JS convention and stack without blanks.
 
 ### Comments inside code blocks
@@ -174,7 +174,7 @@ Use plain code blocks (no `{% diagnostics %}`) when there's no pass/fail story �
 
 Inside `{% diagnostics %}`, each line is one diagnostic case. The multi-property-per-line rule is suspended for these blocks — inline `{ currency: 'EUR', style: 'currency' }` is correct since the format requires one entry per line and the focus is on the diagnostic pattern, not the object's shape details.
 
-### Don't document `Intl`
+### Never document `Intl`
 
 `format.*` is a thin wrapper over `Intl`. The guide explains what yapyak adds — type safety, locale resolution, graceful fallback. For option enums (`currencyDisplay`, `numberingSystem`, `style`, `type`, etc.) link to MDN. Never enumerate `Intl` values inline.
 
@@ -192,7 +192,7 @@ The inline-comment-as-documentation pattern collapses signal and is hard to scan
 
 ### When refining text
 
-Rebuild freely. Cut every repetition. Cut every preaching sentence. If a paragraph survives the 4-question test only after heavy patching, replace it; don't repair it.
+Rebuild freely. Cut every repetition. Cut every preaching sentence. If a paragraph survives the 4-question test only after heavy patching, replace it; never repair it.
 
 Two specific failure modes to watch for:
 
@@ -212,7 +212,7 @@ Only document symbols exported from the public package entry (e.g. `yapyak`, `@y
 - **Design tokens live in `src/style.css`** as CSS custom properties (`--bg`, `--text`, `--mint`, `--space-*`, `--radius-*`, etc.). CSS Modules conventions otherwise per [[css]].
 - **No backend.** Types come from `yapyak`'s public exports and each route's own data shape.
 - **No backend mutations.** If a route needs an action (rare), use a server function or plain `fetch` directly.
-- **Loaders return Markdown content** for `/guide/$slug` routes. The shape is `{ title, description, content }` parsed from frontmatter — pass through to the component unchanged. **Do NOT set `description` in page frontmatter:** the renderer turns it into a `<p>` directly under the `<h1>`, which becomes a second lede paragraph competing with the body's opening line. Only `title` and `order` belong in frontmatter for guide pages.
+- **Loaders return Markdown content** for `/guide/$slug` routes. The shape is `{ title, description, content }` parsed from frontmatter — pass through to the component unchanged. **Never set `description` in page frontmatter:** the renderer turns it into a `<p>` directly under the `<h1>`, which becomes a second lede paragraph competing with the body's opening line. Only `title` and `order` belong in frontmatter for guide pages.
 - **Path aliases** `#components/*` and `#lib/*` are wired via package.json `imports` and tsconfig `paths`. Use them for cross-folder imports, not relative paths.
 
 ### The yapyak ethos
@@ -314,7 +314,7 @@ A sentence with 3 or more inline `code` spans must become a code block.
 
 #### Canonical examples
 
-One canonical set used everywhere. Don't invent throwaway examples.
+One canonical set used everywhere. Never invent throwaway examples.
 
 - **Canonical example string**: `t('Save changes')`. Use `t('Hello, {name}!')` only when illustrating interpolation specifically.
 - **Canonical filename**: `save-button.tsx`.
@@ -323,7 +323,7 @@ One canonical set used everywhere. Don't invent throwaway examples.
 
 #### Examples never show explicit return types
 
-Guide code examples target what a *reader would write*, not what the library's `isolatedDeclarations` setting enforces internally. Inference is the everyday TypeScript flow. Don't import `ReactElement` / `JSX.Element` just to annotate the return.
+Guide code examples target what a *reader would write*, not what the library's `isolatedDeclarations` setting enforces internally. Inference is the everyday TypeScript flow. Never import `ReactElement` / `JSX.Element` just to annotate the return.
 
 ```tsx
 // ✓ Inferred return
@@ -358,7 +358,7 @@ Default to React for the single example. Never add an 'identical in Vue/Svelte' 
 
 **Order in the switch.**
 
-The order is always **React, Vue, Svelte** — one `{% when value="…" %}` branch each, with plain `tsx` / `vue` / `svelte` code fences. Don't add `[React]` / `[Vue]` / `[Svelte]` tab labels; the switch renders the labels.
+The order is always **React, Vue, Svelte** — one `{% when value="…" %}` branch each, with plain `tsx` / `vue` / `svelte` code fences. Never add `[React]` / `[Vue]` / `[Svelte]` tab labels; the switch renders the labels.
 
 ````markdown
 {% switch group="framework" %}
@@ -555,7 +555,7 @@ Every yapyak term's canonical word and banned synonyms live in [[terminology]]. 
 
 #### Where to inject tone — the half-funny pattern
 
-Guide content drifts toward sterile reference-manual prose. The fix: each page carries droll observations that pass the calibration anchors above — *technically true*, *specific*, *quietly funny*. A voice line is eligible only if it matches an approved-voice anchor or a calibration-drill row already in this file; 0–2 per page. (Do not attempt to mechanize whether a line is funny.)
+Guide content drifts toward sterile reference-manual prose. The fix: each page carries droll observations that pass the calibration anchors above — *technically true*, *specific*, *quietly funny*. A voice line is eligible only if it matches an approved-voice anchor or a calibration-drill row already in this file; 0–2 per page. (Never attempt to mechanize whether a line is funny.)
 
 | Page type | Tone budget | What it lands on |
 |---|---|---|

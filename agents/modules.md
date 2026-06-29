@@ -84,7 +84,7 @@ Named imports (`import { X } from './x'`) and default imports are forbidden in b
 
 ### `utils/` and `helpers/`
 
-Banned in **library code** (published `packages/*`). Every utility has a concept — name the file after it.
+Forbidden in **library code** (published `packages/*`). Every utility has a concept — name the file after it.
 
 | Situation | Correct response |
 | --- | --- |
@@ -93,13 +93,13 @@ Banned in **library code** (published `packages/*`). Every utility has a concept
 | Multiple unrelated utilities | Split into concept files, each in its own home |
 | Multiple tightly-related utilities | Merge into concept file (`string-format.ts`) |
 
-**App-code exception.** Private app packages MAY keep a single top-level `src/utils/` for pure, domain-agnostic helpers — see § `lib/` vs `utils/` in apps below. `helpers/` stays banned everywhere.
+**App-code exception.** Private app packages MAY keep a single top-level `src/utils/` for pure, domain-agnostic helpers — see § `lib/` vs `utils/` in apps below. `helpers/` stays forbidden everywhere.
 
 ### Decision flow when writing new code
 
 1. New exportable symbol → file matching its name (kebab-case primary export).
 2. Existing folder fits → add the file there. If consumed from outside, add to barrel.
-3. No existing folder fits, single new file → place it in the directory of its consumer (the importing module); if consumed from several modules, the nearest shared ancestor directory. Do not create a folder yet.
+3. No existing folder fits, single new file → place it in the directory of its consumer (the importing module); if consumed from several modules, the nearest shared ancestor directory. No folder yet.
 4. Multiple new files share a new concept → create folder + barrel.
 
 ### Cross-module imports — library packages

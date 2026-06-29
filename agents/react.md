@@ -240,7 +240,7 @@ HEADER SUB-SLOTS
 
 #### Compound slot vs standalone — the test
 
-A sub-component is `Parent.Slot` if and only if it is a pure layout shell:
+A sub-component is `Parent.Slot` iff it is a pure layout shell:
 
 - No hardcoded `to=` route links
 - No hooks

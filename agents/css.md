@@ -31,7 +31,7 @@ What components actually use. Named after intent (what the color DOES).
 
 1. Components only use tier 2. Never `var(--color-mint)` in a component CSS — use `var(--brand)`.
 2. Tier 2 variants derive from tier 2 intent, not from palette. `--brand-soft` mixes from `--brand`, not from `--color-mint`. This keeps the swap chain working: change `--brand` → all `--brand-*` variants follow.
-3. No raw hex/rgba/oklab in component CSS. If you need a translucent brand color, write `color-mix(in oklch, var(--brand) X%, transparent)` inline. Don't inline `oklab(0.87 -0.24 0.06 / X)`.
+3. No raw hex/rgba/oklab in component CSS. If you need a translucent brand color, write `color-mix(in oklch, var(--brand) X%, transparent)` inline. Never inline `oklab(0.87 -0.24 0.06 / X)`.
 4. Re-theming is a swap: change `--brand: var(--color-aqua)` and the entire site updates without touching components.
 
 ### Modules
@@ -65,7 +65,7 @@ CLASS NAME = [Role]ElementType
 
 Every class name must end with one of these. Nothing else is valid.
 
-Group / layout (element wraps ≥2 children):
+Group / layout (element wraps 2+ children):
 
 | Name | Meaning |
 |---|---|
@@ -77,7 +77,7 @@ Group / layout (element wraps ≥2 children):
 | `Term` | `<dt>` (label half of a `<dl>` pair) |
 | `Description` | `<dd>` (value half of a `<dl>` pair) |
 
-HTML5 landmarks (element IS a landmark region). Two layout trios — pick one per container, don't mix.
+HTML5 landmarks (element IS a landmark region). Two layout trios — pick one per container, never mix.
 
 Vertical trio (stacked top-to-bottom):
 
@@ -264,7 +264,7 @@ Every nested rule reflects the actual element hierarchy. A class lives at the ex
 
 No combined descendant selectors at the top level. This includes `>` (child) combinators: `.Foo > .Bar` becomes `.Foo { > .Bar { ... } }`.
 
-**Exception:** classes that legitimately appear at multiple DOM positions. Nest under the nearest common parent — don't duplicate the rule under every possible parent.
+**Exception:** classes that legitimately appear at multiple DOM positions. Nest under the nearest common parent — never duplicate the rule under every possible parent.
 
 ```css
 /* DOM: .Description appears inside both .Article.Body and .Article.Header */
@@ -312,7 +312,7 @@ Always open a new nested block for each state/variant — never chain state and 
 #### State selectors
 
 - Root states go on the component root class only — never on a child. This covers `data-*`, `aria-*`, `:has()`, `:not()`. Child styling under a root state is done by nesting child selectors inside the state block on root.
-- Pseudo-class states on interactive leaf elements stay on the element. `:hover`, `:focus`, `:focus-visible`, `:active`, `:disabled`, `:checked` on `Button`, `Link`, `Input`, `Textarea`, `Select`, `Option` belong on the element — don't hoist to root.
+- Pseudo-class states on interactive leaf elements stay on the element. `:hover`, `:focus`, `:focus-visible`, `:active`, `:disabled`, `:checked` on `Button`, `Link`, `Input`, `Textarea`, `Select`, `Option` belong on the element — never hoist to root.
 - `::before` and `::after` are forbidden. No decorative pseudo-elements. They can't be inspected as DOM nodes, can't carry children, can't carry semantic attributes, and duplicate intent across CSS and HTML. Render a real element instead — `<hr>`, `<div>`, `<span>` — with its own class. For visual effects like inset dividers, use `background-image` or `border` on the real element.
 - `::placeholder`, `::selection`, `::marker`, `::first-letter`, and other browser-rendered pseudo-elements are allowed — they style content the browser already renders, with no real-element alternative. They stay on the element.
 - State blocks come last in a rule — after own properties and all child selectors.
@@ -503,7 +503,7 @@ The global reset (under `@layer reset`) strips browser defaults. Typical resets 
 | `h1`–`h6` | `font-size: inherit`, `font-weight: inherit` |
 | `th` | `text-align: left` |
 
-Never write any of these properties in a component CSS to "reset" them — the reset already did. Delete any property/value that exactly matches a row in the reset table above. Keep everything else. Do not reason about browser defaults beyond that table.
+Never write any of these properties in a component CSS to "reset" them — the reset already did. Delete any property/value that exactly matches a row in the reset table above. Keep everything else. Never reason about browser defaults beyond that table.
 
 If a new reset is needed broadly, add it to the global reset file — not per-component.
 
@@ -527,7 +527,7 @@ Default to gap when laying out siblings — always restructure the parent to fle
 
 Use `margin` only for (1) optical alignment of a single element against a container edge, or (2) spacing between siblings that are NOT in a shared flex/grid parent where creating one would change the rendered box of an unrelated element. Every other sibling-spacing case uses `gap`. If unsure, use `gap`.
 
-#### TOTALLY FORBIDDEN: `flex-grow`, `flex-shrink`, `flex-basis`
+#### Never write `flex-grow`, `flex-shrink`, `flex-basis`
 
 Always use the `flex` shorthand. No exceptions.
 
@@ -547,7 +547,7 @@ flex: auto;       /* grow, shrink, basis auto (= 1 1 auto) */
 
 #### Never leave unnecessary properties
 
-Every property must pay for itself. Prune only statically-detectable dead properties: a property whose value equals its reset-table value; a `display`/`width` that a flex/grid parent already imposes. Do not prune on runtime layout guesses.
+Every property must pay for itself. Prune only statically-detectable dead properties: a property whose value equals its reset-table value; a `display`/`width` that a flex/grid parent already imposes. Never prune on runtime layout guesses.
 
 #### Use `background-color`, not `background` shorthand
 

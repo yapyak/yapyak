@@ -14,10 +14,10 @@ Apply in order. First match wins.
 3. Consumed by 2+ files in the package?
    → MUST test. Intra-package shared contract.
 
-4. Function has ≥3 code paths?
+4. Function has 3+ code paths?
    → MUST test. Branchy logic.
 
-5. File has ≥8 conditional keywords total?
+5. File has 8+ conditional keywords total?
    → MUST test entry points. Safety net for hidden logic.
    (entry points = every exported symbol in the file; conditional
     keywords = the same keywords counted in 'Counting code paths',
@@ -493,7 +493,7 @@ When 3+ tests share setup of 2+ statements, extract a helper. A single shared st
 | --- | --- |
 | `afterEach(() => vi.unstubAllGlobals())` | After any `vi.stubGlobal` |
 | `afterEach(() => resetState())` | After tests that mutate module-level state |
-| `beforeEach(() => createFreshDb())` | When ≥3 tests need fresh setup |
+| `beforeEach(() => createFreshDb())` | When 3+ tests need fresh setup |
 | `beforeAll` | Almost never |
 
 ### Test isolation

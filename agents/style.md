@@ -45,7 +45,7 @@ Test completeness by enumerating the decisions, never by explaining them. `namin
 
 A rationale line is permitted iff removing it would let an agent apply the rule incorrectly (the action depends on the reason). If the action is identical with or without it, delete it. Default: none.
 
-### Prose & symbols
+### Prose and symbols
 
 Every rule line: imperative, verb-first, one rule per line. No hedges (`simply`, `just`, `please`, `easy`, `quickly`). Parallel form — the same kind of rule shares one shape (a decision list is all `When X → Y`; a suffix table is all `*Suffix | meaning | example`).
 
@@ -56,5 +56,17 @@ Every rule line: imperative, verb-first, one rule per line. No hedges (`simply`,
 - Generic marker is `// ✓ Right` / `// ✗ Wrong`. A specific reason replaces the generic word and stands alone — `// ✓ Same folder`, `// ✗ ../ reaches a different module` — never doubled.
 - A bare `// ✓` / `// ✗` is a type-check pass/fail marker on one line — a different use; keep it bare.
 - Inline and table markers use the bare glyph, text only.
+
+**Prohibition lexicon — one word per form:**
+
+- Absolute rule → `Never <verb>` (imperative) or `<thing> is forbidden` (predicate). `Avoid` and `not allowed` are unused.
+- `don't` / `do not` only for a soft default (documented exceptions) or a statement of behavior — never for an absolute rule.
+- `banned` marks a forbidden *word* (lexical bans — [[terminology]] "Banned alternatives", voice word-lists); `forbidden` marks a code pattern. Product copy (diagnostic message strings) follows [[diagnostics]], not this.
+- A do/don't contrast table heads its columns `Do | Don't`.
+
+**Quantifiers and logic:**
+
+- "At least N" → `N+`. "At most N" → `≤ N` (spaced). Never `≥N`.
+- Biconditional → `iff`, never "if and only if".
 
 One canonical example domain per file; never invent throwaway names per example.

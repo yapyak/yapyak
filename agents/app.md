@@ -49,7 +49,7 @@ type CalloutProps = BoxProps<"aside"> & {
 };
 ```
 
-**The conversion lives inline at the dispatcher node** — the boundary between the two layers. Per-prop `?? undefined` translates domain-null to UI-undefined. **Don't hide this in adapter functions**; the visible `?? undefined` IS the layer-boundary marker.
+**The conversion lives inline at the dispatcher node** — the boundary between the two layers. Per-prop `?? undefined` translates domain-null to UI-undefined. **Never hide this in adapter functions**; the visible `?? undefined` IS the layer-boundary marker.
 
 ```tsx
 // ✓ Dispatcher node — translation visible at the boundary
