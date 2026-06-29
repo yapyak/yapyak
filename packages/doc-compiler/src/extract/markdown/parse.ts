@@ -637,14 +637,14 @@ function matchTerminalTag(
   }
   const closing = source[index + 1] === '/';
   const nameStart = closing ? index + 2 : index + 1;
-  const nameChar = source[nameStart];
-  if (nameChar === undefined) {
+  const nameCharacter = source[nameStart];
+  if (nameCharacter === undefined) {
     return null;
   }
   if (source[nameStart + 1] !== '>') {
     return null;
   }
-  const kind = TERMINAL_TAGS[nameChar];
+  const kind = TERMINAL_TAGS[nameCharacter];
   if (kind === undefined) {
     return null;
   }

@@ -107,6 +107,10 @@ function readFunctionExpressionName(
 }
 
 function isComponentName(name: string): boolean {
-  const firstChar = name[0];
-  return firstChar !== undefined && firstChar >= 'A' && firstChar <= 'Z';
+  const firstCharacter = name[0];
+  return (
+    firstCharacter !== undefined &&
+    firstCharacter >= 'A' &&
+    firstCharacter <= 'Z'
+  );
 }

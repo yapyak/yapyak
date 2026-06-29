@@ -4,36 +4,36 @@ import {
   findFreeIdentifier,
   findFreeIdentifiers,
   hasIdentifier,
-  isIdentifierChar,
+  isIdentifierCharacter,
 } from './identifier';
 
-describe('isIdentifierChar', () => {
+describe('isIdentifierCharacter', () => {
   it('returns true for a letter', () => {
-    expect(isIdentifierChar('a')).toBe(true);
+    expect(isIdentifierCharacter('a')).toBe(true);
   });
 
   it('returns true for a digit', () => {
-    expect(isIdentifierChar('5')).toBe(true);
+    expect(isIdentifierCharacter('5')).toBe(true);
   });
 
   it('returns true for `_`', () => {
-    expect(isIdentifierChar('_')).toBe(true);
+    expect(isIdentifierCharacter('_')).toBe(true);
   });
 
   it('returns true for `$`', () => {
-    expect(isIdentifierChar('$')).toBe(true);
+    expect(isIdentifierCharacter('$')).toBe(true);
   });
 
   it('returns false for whitespace', () => {
-    expect(isIdentifierChar(' ')).toBe(false);
+    expect(isIdentifierCharacter(' ')).toBe(false);
   });
 
   it('returns false for punctuation', () => {
-    expect(isIdentifierChar('.')).toBe(false);
+    expect(isIdentifierCharacter('.')).toBe(false);
   });
 
   it('returns false for `undefined`', () => {
-    expect(isIdentifierChar(undefined)).toBe(false);
+    expect(isIdentifierCharacter(undefined)).toBe(false);
   });
 });
 

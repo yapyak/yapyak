@@ -19,7 +19,7 @@ export function buildSystem(
     'Preserve all {placeholder} tokens and ICU patterns exactly as written, identically in every target locale.',
   ];
   if (options?.voice) {
-    lines.push(`Voice: ${stripControlChars(options.voice)}`);
+    lines.push(`Voice: ${stripControlCharacters(options.voice)}`);
   }
   const glossarySection = extractGlossary(options?.glossary, targetLocales);
   if (glossarySection.length > 0) {
@@ -46,17 +46,17 @@ function extractGlossary(
     for (const locale of targetLocales) {
       const translation = perLocale[locale];
       if (typeof translation === 'string' && translation) {
-        pairs.push(`${locale}="${stripControlChars(translation)}"`);
+        pairs.push(`${locale}="${stripControlCharacters(translation)}"`);
       }
     }
     if (pairs.length > 0) {
-      lines.push(`"${stripControlChars(source)}" → ${pairs.join(', ')}`);
+      lines.push(`"${stripControlCharacters(source)}" → ${pairs.join(', ')}`);
     }
   }
   return lines;
 }
 
-function stripControlChars(value: string): string {
+function stripControlCharacters(value: string): string {
   // biome-ignore lint/suspicious/noControlCharactersInRegex: yap yap yap
   return value.replace(/[\u0000-\u001f\u007f]/g, ' ').trim();
 }

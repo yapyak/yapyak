@@ -1,4 +1,9 @@
-import type { BalancedSplit, Digit, NonIdentifierChar, Trim } from './t-param';
+import type {
+  BalancedSplit,
+  Digit,
+  NonIdentifierCharacter,
+  Trim,
+} from './t-param';
 
 type OrElse<TValue, TFallback> = [
   TValue,
@@ -30,7 +35,7 @@ type ValidateName<T extends string> = T extends ''
     ? {
         $yapyakTypeError: `Invalid placeholder "${T}": must start with a letter or underscore (not a digit).`;
       }
-    : T extends `${string}${NonIdentifierChar}${string}`
+    : T extends `${string}${NonIdentifierCharacter}${string}`
       ? {
           $yapyakTypeError: `Invalid placeholder "${T}": cannot contain spaces, dots, or other punctuation.`;
         }

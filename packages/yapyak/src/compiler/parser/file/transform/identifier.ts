@@ -1,4 +1,4 @@
-export function isIdentifierChar(character: string | undefined): boolean {
+export function isIdentifierCharacter(character: string | undefined): boolean {
   if (!character) {
     return false;
   }
@@ -10,7 +10,7 @@ export function hasIdentifier(source: string, name: string): boolean {
   while (index !== -1) {
     const before = source[index - 1];
     const after = source[index + name.length];
-    if (!isIdentifierChar(before) && !isIdentifierChar(after)) {
+    if (!isIdentifierCharacter(before) && !isIdentifierCharacter(after)) {
       return true;
     }
     index = source.indexOf(name, index + name.length);

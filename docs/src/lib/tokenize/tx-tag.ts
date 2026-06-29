@@ -54,7 +54,7 @@ function matchTagEnd(text: string, start: number): number {
     index++;
   }
   const nameStart = index;
-  while (index < text.length && isNameChar(text.charAt(index))) {
+  while (index < text.length && isNameCharacter(text.charAt(index))) {
     index++;
   }
   if (index === nameStart) {
@@ -90,7 +90,7 @@ function emitTag(raw: string, output: Token[]): void {
     position++;
   }
   let nameEnd = position;
-  while (nameEnd < raw.length && isNameChar(raw.charAt(nameEnd))) {
+  while (nameEnd < raw.length && isNameCharacter(raw.charAt(nameEnd))) {
     nameEnd++;
   }
   output.push({
@@ -114,7 +114,7 @@ function emitTag(raw: string, output: Token[]): void {
   });
 }
 
-function isNameChar(character: string): boolean {
+function isNameCharacter(character: string): boolean {
   return (
     (character >= 'a' && character <= 'z') ||
     (character >= 'A' && character <= 'Z') ||

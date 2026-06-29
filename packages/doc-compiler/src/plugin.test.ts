@@ -34,7 +34,7 @@ type MockServer = {
   };
   watcher: MockWatcher;
   ws: {
-    send: (msg: unknown) => void;
+    send: (message: unknown) => void;
   };
 };
 

@@ -4,7 +4,7 @@ export type Trim<T extends string> = T extends ` ${infer TRest}`
     ? Trim<TRest>
     : T;
 
-export type NonIdentifierChar =
+export type NonIdentifierCharacter =
   | ' '
   | '.'
   | ','
@@ -29,7 +29,7 @@ type SimpleParam<T extends string> =
     ? never
     : T extends `${string}{${string}`
       ? never
-      : Trim<T> extends `${string}${NonIdentifierChar}${string}`
+      : Trim<T> extends `${string}${NonIdentifierCharacter}${string}`
         ? never
         : Trim<T> extends `#${string}`
           ? never
